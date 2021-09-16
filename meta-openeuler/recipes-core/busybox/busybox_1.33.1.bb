@@ -15,9 +15,9 @@ DEPENDS += "virtual/libc"
 inherit kernel-arch
 
 SRC_URI = "file://busybox/busybox-1.33.1.tar.bz2 \
-           file://rtos-defconfig \
+           file://yocto-embedded-tools/config/arm64/defconfig-busybox \
 "
-FILESPATH:prepend += "${LOCAL_FILES}/${BPN}:"
+FILESPATH_prepend += "${LOCAL_FILES}/${BPN}:"
 S = "${WORKDIR}/${BPN}-${PV}"
 
 #not split debug files with dwarfsrcfiles,no dwarfsrcfiles
@@ -38,37 +38,37 @@ EXTRA_OEMAKE += "PKG_CONFIG=pkg-config"
 
 PACKAGES =+ "${PN}-httpd ${PN}-udhcpd ${PN}-udhcpc ${PN}-syslog ${PN}-mdev ${PN}-hwclock"
 
-FILES:${PN}-httpd = "${sysconfdir}/init.d/busybox-httpd /srv/www"
-FILES:${PN}-syslog = "${sysconfdir}/init.d/syslog* ${sysconfdir}/syslog-startup.conf* ${sysconfdir}/syslog.conf* ${systemd_unitdir}/system/syslog.service ${sysconfdir}/default/busybox-syslog"
-FILES:${PN}-mdev = "${sysconfdir}/init.d/mdev ${sysconfdir}/mdev.conf ${sysconfdir}/mdev/*"
-FILES:${PN}-udhcpd = "${sysconfdir}/init.d/busybox-udhcpd"
-FILES:${PN}-udhcpc = "${sysconfdir}/udhcpc.d ${datadir}/udhcpc"
-FILES:${PN}-hwclock = "${sysconfdir}/init.d/hwclock.sh"
+FILES_${PN}-httpd = "${sysconfdir}/init.d/busybox-httpd /srv/www"
+FILES_${PN}-syslog = "${sysconfdir}/init.d/syslog* ${sysconfdir}/syslog-startup.conf* ${sysconfdir}/syslog.conf* ${systemd_unitdir}/system/syslog.service ${sysconfdir}/default/busybox-syslog"
+FILES_${PN}-mdev = "${sysconfdir}/init.d/mdev ${sysconfdir}/mdev.conf ${sysconfdir}/mdev/*"
+FILES_${PN}-udhcpd = "${sysconfdir}/init.d/busybox-udhcpd"
+FILES_${PN}-udhcpc = "${sysconfdir}/udhcpc.d ${datadir}/udhcpc"
+FILES_${PN}-hwclock = "${sysconfdir}/init.d/hwclock.sh"
 
 INITSCRIPT_PACKAGES = "${PN}-httpd ${PN}-syslog ${PN}-udhcpd ${PN}-mdev ${PN}-hwclock"
 
-INITSCRIPT_NAME:${PN}-httpd = "busybox-httpd"
-INITSCRIPT_NAME:${PN}-hwclock = "hwclock.sh"
-INITSCRIPT_NAME:${PN}-mdev = "mdev"
-INITSCRIPT_PARAMS:${PN}-mdev = "start 04 S ."
-INITSCRIPT_NAME:${PN}-syslog = "syslog"
-INITSCRIPT_NAME:${PN}-udhcpd = "busybox-udhcpd"
+INITSCRIPT_NAME_${PN}-httpd = "busybox-httpd"
+INITSCRIPT_NAME_${PN}-hwclock = "hwclock.sh"
+INITSCRIPT_NAME_${PN}-mdev = "mdev"
+INITSCRIPT_PARAMS_${PN}-mdev = "start 04 S ."
+INITSCRIPT_NAME_${PN}-syslog = "syslog"
+INITSCRIPT_NAME_${PN}-udhcpd = "busybox-udhcpd"
 
 SYSTEMD_PACKAGES = "${PN}-syslog"
-SYSTEMD_SERVICE:${PN}-syslog = "${@bb.utils.contains('SRC_URI', 'file://syslog.cfg', 'busybox-syslog.service', '', d)}"
+SYSTEMD_SERVICE_${PN}-syslog = "${@bb.utils.contains('SRC_URI', 'file://syslog.cfg', 'busybox-syslog.service', '', d)}"
 
-RDEPENDS:${PN}-syslog = "busybox"
-CONFFILES:${PN}-syslog = "${sysconfdir}/syslog-startup.conf"
-RCONFLICTS:${PN}-syslog = "rsyslog sysklogd syslog-ng"
+RDEPENDS_${PN}-syslog = "busybox"
+CONFFILES_${PN}-syslog = "${sysconfdir}/syslog-startup.conf"
+RCONFLICTS_${PN}-syslog = "rsyslog sysklogd syslog-ng"
 
-CONFFILES:${PN}-mdev = "${sysconfdir}/mdev.conf"
+CONFFILES_${PN}-mdev = "${sysconfdir}/mdev.conf"
 
-RRECOMMENDS:${PN} = "${PN}-udhcpc"
+RRECOMMENDS_${PN} = "${PN}-udhcpc"
 
-RDEPENDS:${PN} = "${@["", "busybox-inittab"][(d.getVar('VIRTUAL-RUNTIME_init_manager') == 'busybox')]}"
+RDEPENDS_${PN} = "${@["", "busybox-inittab"][(d.getVar('VIRTUAL-RUNTIME_init_manager') == 'busybox')]}"
 
 do_configure() {
-        cp ../rtos-defconfig .config
+        cp ../yocto-embedded-tools/config/arm64/defconfig-busybox .config
         set -e
         unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS
         yes '' | oe_runmake oldconfig

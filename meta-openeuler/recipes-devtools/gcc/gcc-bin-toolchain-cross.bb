@@ -16,7 +16,7 @@ bindir = "${exec_prefix}/bin/"
 libdir = "${exec_prefix}/lib/"
 libexecdir = "${exec_prefix}/libexec/"
 
-do_install:class-cross() {
+do_install_class-cross() {
     install -m 0755 -d ${D}/${prefix}
     cp -pPR ${B}/* ${D}/${prefix}
     for f in ${D}/${prefix}/bin/${EULER_TOOLCHAIN_SYSNAME}-*; do

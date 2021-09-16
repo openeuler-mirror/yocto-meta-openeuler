@@ -11,18 +11,18 @@ inherit core-image
 IMAGE_TYPES = "cpio"
 IMAGE_FSTYPES_DEBUGFS = "cpio"
 #tar:lower version has no --sort=name
-IMAGE_CMD:tar = "${IMAGE_CMD_TAR} --format=posix --numeric-owner -cf ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.tar -C ${IMAGE_ROOTFS} . || [ $? -eq 1 ]"
+IMAGE_CMD_tar = "${IMAGE_CMD_TAR} --format=posix --numeric-owner -cf ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.tar -C ${IMAGE_ROOTFS} . || [ $? -eq 1 ]"
 #not depends to update-alternatives
 do_rootfs[depends] = ""
 #not depends to ldconfig-native
 #LDCONFIGDEPEND = ""
-DEPENDS:remove += "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])} qemuwrapper-cross depmodwrapper-cross cross-localedef-native"
+DEPENDS_remove += "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])} qemuwrapper-cross depmodwrapper-cross cross-localedef-native"
 RPMROOTFSDEPENDS = ""
-FEATURE_PACKAGES_tools-sdk:remove = " packagegroup-core-sdk packagegroup-core-standalone-sdk-target"
-TOOLCHAIN_TARGET_TASK:remove += "${@multilib_pkg_extend(d, 'packagegroup-core-standalone-sdk-target')}"
+FEATURE_PACKAGES_tools-sdk_remove = " packagegroup-core-sdk packagegroup-core-standalone-sdk-target"
+TOOLCHAIN_TARGET_TASK_remove += "${@multilib_pkg_extend(d, 'packagegroup-core-standalone-sdk-target')}"
 
 #IMAGE_ROOTFS_SIZE ?= "8192"
-#IMAGE_ROOTFS_EXTRA_SPACE:append = "${@bb.utils.contains("DISTRO_FEATURES", "systemd", " + 4096", "", d)}"
+#IMAGE_ROOTFS_EXTRA_SPACE_append = "${@bb.utils.contains("DISTRO_FEATURES", "systemd", " + 4096", "", d)}"
 
 #do_package depends to command zstd
 python do_package() {

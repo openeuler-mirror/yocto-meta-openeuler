@@ -1,14 +1,14 @@
-DEPENDS:remove += "sqlite3 attr"
+DEPENDS_remove += "sqlite3 attr"
 XSRC_URI = "git://git.yoctoproject.org/pseudo;branch=oe-core \
            file://0001-configure-Prune-PIE-flags.patch \
            file://fallback-passwd \
            file://fallback-group \
            "
-FILESPATH:prepend += "${LOCAL_FILES}:"
-SRC_URI:remove:class-native = " \
+FILESPATH_prepend += "${LOCAL_FILES}:"
+SRC_URI_remove_class-native = " \
     http://downloads.yoctoproject.org/mirror/sources/pseudo-prebuilt-2.33.tar.xz;subdir=git/prebuilt;name=prebuilt \
     file://older-glibc-symbols.patch"
-SRC_URI:class-native = "file://pseudo \
+SRC_URI_class-native = "file://yocto-pseudo/pseudo-060058bb29f70b244e685b3c704eb0641b736f73.tar.gz \
            file://fallback-passwd \
            file://fallback-group \
            "
@@ -16,8 +16,9 @@ SRC_URI:class-native = "file://pseudo \
 PV = "1.9.0"
 LIC_FILES_CHKSUM = "file://COPYING;md5=243b725d71bb5df4a1e5920b344b86ad"
 LIC_FILES_CHKSUM = "file://COPYING;md5=a1d8023a6f953ac6ea4af765ff62d574"
-S = "${WORKDIR}/${BPN}"
-PSEUDO_EXTRA_OPTS:remove = "--enable-xattr"
+LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
+S = "${WORKDIR}/${BPN}-060058bb29f70b244e685b3c704eb0641b736f73"
+PSEUDO_EXTRA_OPTS_remove = "--enable-xattr"
 
 #set --with-sqlite to system host,use system headers
 do_compile () {
@@ -30,7 +31,7 @@ do_compile () {
 }
 
 #do install使用了chrpath，需新增
-xxdo_install:append:class-native () {
+xxdo_install_append_class-native () {
         xchrpath ${D}${bindir}/pseudo -r `chrpath ${D}${bindir}/pseudo | cut -d = -f 2 | sed s/XORIGIN/\\$ORIGIN/`
         install -d ${D}${sysconfdir}
         # The fallback files should never be modified

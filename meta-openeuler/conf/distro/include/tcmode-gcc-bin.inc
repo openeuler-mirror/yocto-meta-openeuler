@@ -20,7 +20,7 @@ PREFERRED_PROVIDER_libgcc-initial = "gcc-bin-toolchain-compilerlibs-${TARGET_ARC
 
 GCCVERSION = "7.3.0"
 
-PATH:append = ":${COMPONENTS_DIR}/${BUILD_ARCH}/gcc-bin-toolchain-cross-${TARGET_ARCH}/usr/bin"
+PATH_append = ":${COMPONENTS_DIR}/${BUILD_ARCH}/gcc-bin-toolchain-cross-${TARGET_ARCH}/usr/bin"
 
 #cannot set with linaro gcc,set it null
 DEBUG_PREFIX_MAP = ""
