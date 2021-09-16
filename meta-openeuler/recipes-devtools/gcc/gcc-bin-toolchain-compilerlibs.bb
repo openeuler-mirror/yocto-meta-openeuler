@@ -110,14 +110,14 @@ INHIBIT_SYSROOT_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 INHIBIT_PACKAGE_STRIP = "1"
 
-ERROR_QA:remove += "dev-elf dev-so"
-WARN_QA:remove += "libdir"
+ERROR_QA_remove += "dev-elf dev-so"
+WARN_QA_remove += "libdir"
 
 INSANE_SKIP += "installed-vs-shipped"
 do_package_qa[noexec] = "1"
 
-SYSROOT_DIRS:append =" \
+SYSROOT_DIRS_append =" \
     ${sublibdir} \
     ${subincludedir} \
 "
-SYSROOT_DIRS_NATIVE:append = "${subbindir}"
+SYSROOT_DIRS_NATIVE_append = "${subbindir}"

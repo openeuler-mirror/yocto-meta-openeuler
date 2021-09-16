@@ -15,7 +15,7 @@ PROVIDES += " \
     virtual/libiconv \
 "
 PROVIDES += "virtual/libc virtual/libiconv virtual/libintl"
-#RPROVIDES:${PN}-dev += "libc-dev"
+#RPROVIDES_${PN}-dev += "libc-dev"
 
 
 INHIBIT_DEFAULT_DEPS = "1"
@@ -23,11 +23,11 @@ INHIBIT_DEFAULT_DEPS = "1"
 PR = "r1"
 
 SRC_URI = "file://sysroot-glibc-linaro-2.25-2018.05-aarch64-linux-gnu"
-#FILESPATH:prepend += "${LOCAL_FILES}:"
+#FILESPATH_prepend += "${LOCAL_FILES}:"
 DL_DIR = "${LOCAL_SYSROOT_DL_DIR}"
 S = "${WORKDIR}/sysroot-glibc-linaro-2.25-2018.05-aarch64-linux-gnu"
 PSEUDO_DISABLED = "1"
-PRIVATE_LIBS:${PN}-dev:append = "libdl.so.2 libresolv.so.2 libm.so.6 librt.so.1 libnsl.so.1 libnss_files.so.2 "
+PRIVATE_LIBS_${PN}-dev_append = "libdl.so.2 libresolv.so.2 libm.so.6 librt.so.1 libnsl.so.1 libnss_files.so.2 "
 
 do_configure() {
 	:
