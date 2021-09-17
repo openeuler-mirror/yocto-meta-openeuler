@@ -26,15 +26,15 @@ KERNEL_CLASSES ?= " kernel-uimage "
 inherit ${KERNEL_CLASSES}
 
 KERNEL_VERSION = "${@get_kernelversion_headers('${B}')}"
-KERNEL_IMAGETYPE_FOR_MAKE = "Image"
+KERNEL_IMAGETYPE_FOR_MAKE = "zImage"
 KERNEL_PACKAGE_NAME ??= "kernel"
-KERNEL_IMAGETYPE ?= "Image"
+KERNEL_IMAGETYPE ?= "zImage"
 # kernel-base becomes kernel-${KERNEL_VERSION}
 # kernel-image becomes kernel-image-${KERNEL_VERSION}
 PACKAGES = "${PN} ${KERNEL_PACKAGE_NAME} ${KERNEL_PACKAGE_NAME}-base ${KERNEL_PACKAGE_NAME}-vmlinux ${KERNEL_PACKAGE_NAME}-image ${KERNEL_PACKAGE_NAME}-dev ${KERNEL_PACKAGE_NAME}-modules"
 FILES_${PN} = ""
 FILES_${KERNEL_PACKAGE_NAME}-base = "${nonarch_base_libdir}/modules/${KERNEL_VERSION}/modules.order ${nonarch_base_libdir}/modules/${KERNEL_VERSION}/modules.builtin ${nonarch_base_libdir}/modules/${KERNEL_VERSION}/modules.builtin.modinfo"
-FILES_${KERNEL_PACKAGE_NAME}-image = "/boot/Image-${KERNEL_VERSION} /boot/vmlinux-${KERNEL_VERSION}"
+FILES_${KERNEL_PACKAGE_NAME}-image = "/boot/${KERNEL_IMAGETYPE}-${KERNEL_VERSION} /boot/vmlinux-${KERNEL_VERSION}"
 FILES_${KERNEL_PACKAGE_NAME}-dev = "/boot/System.map* /boot/Module.symvers* /boot/config* ${KERNEL_SRC_PATH} ${nonarch_base_libdir}/modules/${KERNEL_VERSION}/build"
 FILES_${KERNEL_PACKAGE_NAME}-vmlinux = "/boot/vmlinux-${KERNEL_VERSION_NAME}"
 FILES_${KERNEL_PACKAGE_NAME}-modules = ""
@@ -63,6 +63,7 @@ PR = "r1"
 
 SRC_URI = "file://kernel-5.10 \
            file://yocto-embedded-tools/config/arm64/defconfig-kernel \
+           file://yocto-embedded-tools/patches/arm64/0001-arm64-add-zImage-support-for-arm64.patch \
           "
 S = "${WORKDIR}/kernel-5.10"
 B = "${WORKDIR}/build"
