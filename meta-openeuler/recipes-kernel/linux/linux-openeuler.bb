@@ -62,9 +62,11 @@ COMPATIBLE_HOST = ".*-linux"
 PR = "r1"
 
 SRC_URI = "file://kernel-5.10 \
-           file://yocto-embedded-tools/config/arm64/defconfig-kernel \
-           file://yocto-embedded-tools/patches/arm64/0001-arm64-add-zImage-support-for-arm64.patch \
+           file://yocto-embedded-tools/config/${ARCH}/defconfig-kernel \
           "
+SRC_URI_append_aarch64 += " \
+    file://yocto-embedded-tools/patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch \
+"
 S = "${WORKDIR}/kernel-5.10"
 B = "${WORKDIR}/build"
 
@@ -96,10 +98,10 @@ python do_symlink_kernsrc () {
 addtask symlink_kernsrc before do_patch do_configure after do_unpack
 
 do_configure() {
-        cp ../yocto-embedded-tools/config/arm64/defconfig-kernel .config
+        cp ../yocto-embedded-tools/config/${ARCH}/defconfig-kernel .config
         set -e
         unset CFLAGS CPPFLAGS CXXFLAGS LDFLAGS
-        oe_runmake -C ${S} ARCH=arm64 mrproper
+        oe_runmake -C ${S} ARCH=${ARCH} mrproper
         ${KERNEL_CONFIG_COMMAND}
         #yes '' | oe_runmake oldconfig
         oe_runmake -C ${B} savedefconfig

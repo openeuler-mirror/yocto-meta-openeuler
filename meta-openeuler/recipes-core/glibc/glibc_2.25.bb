@@ -22,10 +22,12 @@ INHIBIT_DEFAULT_DEPS = "1"
 
 PR = "r1"
 
-SRC_URI = "file://sysroot-glibc-linaro-2.25-2018.05-aarch64-linux-gnu"
+SRC_URI_aarch64 = "file://sysroot-glibc-linaro-2.25-2018.05-aarch64-linux-gnu"
+SRC_URI_arm = "file://sysroot-glibc-linaro-2.25-2018.05-arm-linux-gnueabi"
 #FILESPATH_prepend += "${LOCAL_FILES}:"
 DL_DIR = "${LOCAL_SYSROOT_DL_DIR}"
-S = "${WORKDIR}/sysroot-glibc-linaro-2.25-2018.05-aarch64-linux-gnu"
+S_aarch64 = "${WORKDIR}/sysroot-glibc-linaro-2.25-2018.05-aarch64-linux-gnu"
+S_arm = "${WORKDIR}/sysroot-glibc-linaro-2.25-2018.05-arm-linux-gnueabi"
 PSEUDO_DISABLED = "1"
 PRIVATE_LIBS_${PN}-dev_append = "libdl.so.2 libresolv.so.2 libm.so.6 librt.so.1 libnsl.so.1 libnss_files.so.2 "
 
