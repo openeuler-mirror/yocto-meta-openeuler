@@ -25,30 +25,19 @@ inherit cmake
 
 OECMAKE_GENERATOR = "Unix Makefiles"
 
-#OECMAKE_C_COMPILER += "${OECMAKE_C_FLAGS}"
-#OECMAKE_CXX_COMPILER += "${OECMAKE_CXX_FLAGS}"
-
 DEPENDS = "yajl lxc"
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
+FILES_${PN} += "${libdir}/* "
+#FILES_${PN} += "/usr/local/lib/* "
+#FILES_${PN}-dev = "/usr/local/*"
 
-FILES_${PN} += "/usr/local/lib/* "
-FILES_${PN}-dev = "/usr/local/*"
-do_compile() {
-	cd ${S}
-	rm -rf build
-	mkdir build
-	cd build
-	cmake --prefix=/usr/ ..
-	make
+do_configure_prepend() {
+        grep -q CMAKE_SYSROOT ${WORKDIR}/toolchain.cmake || cat >> ${WORKDIR}/toolchain.cmake <<EOF
+        set( CMAKE_SYSROOT ${STAGING_DIR_HOST} )
+EOF
 }
 
-do_install() {
-	cd ${S}/build/
-	oe_runmake install DESTDIR="${D}" \
-                prefix="${prefix}" \
-                SBINDIR="${sbindir}"
-}
 do_install_append() {
 	[[ "${libdir}" != "/usr/local/lib" ]] || return 0
 	if test -d ${D}/usr/local/lib; then
