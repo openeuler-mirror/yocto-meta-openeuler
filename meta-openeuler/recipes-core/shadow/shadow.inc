@@ -78,7 +78,8 @@ SRC_URI_EXTRA = "file://pam.d/chfn \
                file://pam.d/login \
                file://pam.d/newusers \
                file://pam.d/passwd \
-               file://pam.d/su"
+               file://pam.d/su  \
+               file://pam.d/groupmems"
 
 do_install() {
         oe_runmake DESTDIR="${D}" sbindir="${base_sbindir}" usbindir="${sbindir}" install

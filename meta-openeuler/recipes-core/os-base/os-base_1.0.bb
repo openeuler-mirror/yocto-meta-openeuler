@@ -2,25 +2,26 @@ SUMMARY = "OS basic configuration files"
 DESCRIPTION = "base files"
 SECTION = "base"
 PR = "r1"
-LICENSE = "MulanPSL-2.0"
+LICENSE = "CLOSED"
 
-
+FILESPATH = "${THISDIR}/${BPN}/"
+DL_DIR = "${THISDIR}/${BPN}/"
 LIC_FILES_CHKSUM = "file://${WORKDIR}/LICENSE;md5=1acb172ffd3d252285dd1b8b8459941e"
 
-SRC_URI = "file://${WORKDIR}/bashrc \
-	file://${WORKDIR}/fstab \
-	file://${WORKDIR}/group \
-	file://${WORKDIR}/inittab \
-	file://${WORKDIR}/issue \
-	file://${WORKDIR}/issue.net \
-	file://${WORKDIR}/LICENSE \
-	file://${WORKDIR}/login.defs \
-	file://${WORKDIR}/motd \
-	file://${WORKDIR}/passwd \
-	file://${WORKDIR}/profile \
-	file://${WORKDIR}/securetty \
-	file://${WORKDIR}/shadow \
-	file://${WORKDIR}/sysctl.conf"
+SRC_URI = "file://bashrc \
+	file://fstab \
+	file://group \
+	file://inittab \
+	file://issue \
+	file://issue.net \
+	file://LICENSE \
+	file://login.defs \
+	file://motd \
+	file://passwd \
+	file://profile \
+	file://securetty \
+	file://shadow \
+	file://sysctl.conf"
 
 do_install() {
 	install -d ${D}/etc
@@ -41,3 +42,4 @@ do_install() {
 
 
 FILES_${PN} = "/"
+INHIBIT_DEFAULT_DEPS = "1"
