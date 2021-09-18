@@ -7,7 +7,7 @@ def eulertoolchain_raw_prefix(arch):
 
 def eulertoolchain_euler_prefix(arch):
     euler_prefix_dict = {
-        "arm"       : "arm-openeuler-linux",
+        "arm"       : "arm-openeuler-linux-gnueabi",
         "aarch64"   : "aarch64-openeuler-linux",
     }
     return euler_prefix_dict[arch]
