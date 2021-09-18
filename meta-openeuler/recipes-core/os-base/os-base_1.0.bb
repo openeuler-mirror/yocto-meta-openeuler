@@ -21,7 +21,9 @@ SRC_URI = "file://bashrc \
 	file://profile \
 	file://securetty \
 	file://shadow \
-	file://sysctl.conf"
+	file://sysctl.conf \
+	file://rc.functions \
+	file://rc.sysinit"
 
 do_install() {
 	install -d ${D}/etc
@@ -38,6 +40,9 @@ do_install() {
 	cp ${WORKDIR}/securetty  	${D}/etc/
 	cp ${WORKDIR}/shadow  		${D}/etc/
 	cp ${WORKDIR}/sysctl.conf  	${D}/etc/
+	install -d ${D}/etc/rc.d
+	cp ${WORKDIR}/rc.functions  	${D}/etc/rc.d
+	cp ${WORKDIR}/rc.sysinit  	${D}/etc/rc.d
 }
 
 
