@@ -48,4 +48,13 @@ xxdo_image_complete() {
 IMAGE_INSTALL += " \
 busybox \
 linux-openeuler \
+glibc \
+zlib \
+libcap-ng \
+cracklib \
+libpam \
+audit \
+libpwquality \
+shadow \
+openssh \
 "
