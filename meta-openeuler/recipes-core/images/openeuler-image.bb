@@ -48,6 +48,7 @@ xxdo_image_complete() {
 IMAGE_INSTALL += " \
 busybox \
 linux-openeuler \
+os-base \
 zlib \
 libcap-ng \
 cracklib \
