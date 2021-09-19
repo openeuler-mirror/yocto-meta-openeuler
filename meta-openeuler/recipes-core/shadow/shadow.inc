@@ -70,8 +70,8 @@ SRC_URI = "file://shadow/shadow-4.8.1.tar.xz"
 
 LIC_FILES_CHKSUM="file://COPYING;md5=ed80ff1c2b40843cf5768e5229cf16e5"
 
-PAM_SRC_URI = "file://pam.d"
-SRC_URI_EXTRA = "file://pam.d/chfn \
+#PAM_SRC_URI = "file://pam.d"
+SRC_URI += "file://pam.d/chfn \
                file://login_defs_pam.sed \
                file://pam.d/chpasswd \
                file://pam.d/chsh \
@@ -152,6 +152,7 @@ do_install_append() {
         fi
 
         install -d ${D}${sbindir} ${D}${base_sbindir} ${D}${base_bindir}
+	cp ${WORKDIR}/pam.d/* ${D}${sysconfdir}/pam.d/
 
         # Move binaries to the locations we want
         rm ${D}${sbindir}/vigr
