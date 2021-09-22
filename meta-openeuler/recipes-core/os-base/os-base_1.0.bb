@@ -23,7 +23,8 @@ SRC_URI = "file://bashrc \
 	file://shadow \
 	file://sysctl.conf \
 	file://rc.functions \
-	file://rc.sysinit"
+	file://rc.sysinit \
+	file://rc.local"
 
 do_install() {
 	install -d ${D}/etc
@@ -43,6 +44,7 @@ do_install() {
 	install -d ${D}/etc/rc.d
 	cp ${WORKDIR}/rc.functions  	${D}/etc/rc.d
 	cp ${WORKDIR}/rc.sysinit  	${D}/etc/rc.d
+	cp ${WORKDIR}/rc.local  	${D}/etc/rc.d
 }
 
 

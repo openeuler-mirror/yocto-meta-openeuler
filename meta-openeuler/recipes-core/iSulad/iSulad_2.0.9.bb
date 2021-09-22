@@ -6,6 +6,7 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;m
 SRC_URI = "file://iSulad/v2.0.9.tar.gz \
 	   file://fix_bug_disable_selinux_not_selinux_label_file.patch \
 	   file://delete_call_setlocale.patch \
+	   file://modify_printf_to_arm32.patch \
 	"
 
 FILESPATH_prepend += "${LOCAL_FILES}/${BPN}:"

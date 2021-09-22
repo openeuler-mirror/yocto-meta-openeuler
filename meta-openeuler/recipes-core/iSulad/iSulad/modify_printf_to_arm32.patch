@@ -1,0 +1,208 @@
+commit 5c290cec5e0022eb81e082ebcbc3bbcdf4f9807d
+Author: lisimin <lisimin@huawei.com>
+Date:   Wed Sep 22 10:05:34 2021 +0800
+
+    modify printf to arm32
+    
+    Signed-off-by: lisimin <lisimin@huawei.com>
+
+diff --git a/src/cmd/isula/extend/stats.c b/src/cmd/isula/extend/stats.c
+index b35156a..8fd23a7 100644
+--- a/src/cmd/isula/extend/stats.c
++++ b/src/cmd/isula/extend/stats.c
+@@ -20,6 +20,7 @@
+ #include <stdint.h>
+ #include <unistd.h>
+ #include <string.h>
++#include <inttypes.h>
+ 
+ #include "client_arguments.h"
+ #include "utils.h"
+@@ -169,7 +170,7 @@ static void stats_print_original_data(const struct isula_container_info *stats)
+         short_id[SHORTIDLEN] = '\0';
+     }
+ 
+-    printf("%-16s %-10llu %-10s %-20lu %-20lu %-15u %-15lu %-15lu %-15lu %-15lu %-15lu %-15lu %-40s", short_id,
++    printf("%-16s %-10llu %-10s %-20"PRIu64" %-20"PRIu64" %-15u %-15"PRIu64" %-15"PRIu64" %-15"PRIu64" %-15"PRIu64" %-15"PRIu64" %-15"PRIu64" %-40s", short_id,
+            (unsigned long long)stats->pids_current, stats->status, stats->cpu_use_nanos, stats->cpu_system_use,
+            stats->online_cpus, stats->blkio_read, stats->blkio_write, stats->mem_used, stats->mem_limit,
+            stats->kmem_used, stats->cache, stats->name);
+diff --git a/src/cmd/isulad/isulad_commands.c b/src/cmd/isulad/isulad_commands.c
+index d0ab029..8df1dbc 100644
+--- a/src/cmd/isulad/isulad_commands.c
++++ b/src/cmd/isulad/isulad_commands.c
+@@ -19,6 +19,7 @@
+ #include <limits.h>
+ #include <isula_libutils/host_config.h>
+ #include <strings.h>
++#include <inttypes.h>
+ 
+ #include "config.h"
+ #include "isula_libutils/log.h"
+@@ -250,7 +251,7 @@ static int check_args_log_conf(const struct service_arguments *args)
+     /* validate max-size */
+     if ((args->json_confs->log_driver && strcasecmp("file", args->json_confs->log_driver) == 0) &&
+         (args->max_size < (4 * 1024))) {
+-        ERROR("Max-size \"%ld\" must large than 4KB.", args->max_size);
++        ERROR("Max-size \"%"PRId64"\" must large than 4KB.", args->max_size);
+         ret = -1;
+         goto out;
+     }
+diff --git a/src/daemon/executor/container_cb/execution_stream.c b/src/daemon/executor/container_cb/execution_stream.c
+index 7d165fb..c83162f 100644
+--- a/src/daemon/executor/container_cb/execution_stream.c
++++ b/src/daemon/executor/container_cb/execution_stream.c
+@@ -40,6 +40,7 @@
+ #include <string.h>
+ #include <sys/prctl.h>
+ #include <time.h>
++#include <inttypes.h>
+ 
+ #include "isula_libutils/log.h"
+ #include "io_wrapper.h"
+@@ -1622,7 +1623,7 @@ static int container_logs_cb(const struct isulad_logs_request *request, stream_f
+         goto out;
+     }
+ 
+-    EVENT("Event: {Object: %s, Content: path: %s, rotate: %d, size: %ld }", id, log_config->path, log_config->rotate,
++    EVENT("Event: {Object: %s, Content: path: %s, rotate: %d, size: %"PRId64" }", id, log_config->path, log_config->rotate,
+           log_config->size);
+ 
+     nret = check_log_config(log_config);
+diff --git a/src/daemon/executor/container_cb/list.c b/src/daemon/executor/container_cb/list.c
+index d8f2632..fee7d23 100644
+--- a/src/daemon/executor/container_cb/list.c
++++ b/src/daemon/executor/container_cb/list.c
+@@ -620,7 +620,7 @@ static int pack_list_containers(char **idsarray, const struct list_context *ctx,
+     }
+ 
+     if (container_nums > (SIZE_MAX / sizeof(container_container *))) {
+-        ERROR("Get too many containers:%ld", container_nums);
++        ERROR("Get too many containers: %zu", container_nums);
+         ret = -1;
+         goto out;
+     }
+diff --git a/src/daemon/modules/log/log_gather.c b/src/daemon/modules/log/log_gather.c
+index b981391..2c42f84 100644
+--- a/src/daemon/modules/log/log_gather.c
++++ b/src/daemon/modules/log/log_gather.c
+@@ -26,6 +26,7 @@
+ #include <stdio.h>
+ #include <strings.h>
+ #include <sys/prctl.h>
++#include <inttypes.h>
+ 
+ #include "log_gather_api.h"
+ #include "isula_libutils/log.h"
+@@ -223,7 +224,7 @@ static int check_log_file()
+         if (ret != 0) {
+             COMMAND_ERROR("Rotate log file %s failed.", g_log_file);
+         } else {
+-            INFO("Log file large than %lu, rotate it.", g_max_size);
++            INFO("Log file large than %"PRId64", rotate it.", g_max_size);
+         }
+     } else {
+         ret = 0;
+diff --git a/src/daemon/modules/plugin/plugin.c b/src/daemon/modules/plugin/plugin.c
+index 2532656..20ce4ec 100644
+--- a/src/daemon/modules/plugin/plugin.c
++++ b/src/daemon/modules/plugin/plugin.c
+@@ -31,6 +31,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <sys/select.h>
++#include <inttypes.h>
+ 
+ #include "isula_libutils/log.h"
+ #include "plugin_api.h"
+@@ -519,7 +520,7 @@ static int pm_register_plugin(const char *name, const char *addr)
+         goto failed;
+     }
+ 
+-    INFO("add activated plugin %s 0x%lx", plugin->name, plugin->manifest->watch_event);
++    INFO("add activated plugin %s %"PRIu64"", plugin->name, plugin->manifest->watch_event);
+     return 0;
+ 
+ failed:
+@@ -854,7 +855,7 @@ bool plugin_is_watching(plugin_t *plugin, uint64_t pe)
+     }
+     plugin_unlock(plugin);
+ 
+-    INFO("plugin %s watching=%s for event 0x%lx", plugin->name, (ok ? "true" : "false"), pe);
++    INFO("plugin %s watching=%s for event %"PRIu64"", plugin->name, (ok ? "true" : "false"), pe);
+ 
+     return ok;
+ }
+@@ -885,7 +886,7 @@ static int unpack_activate_response(const struct parsed_http_message *message, v
+         goto out;
+     }
+ 
+-    INFO("get resp 0x%lx", resp->watch_event);
++    INFO("get resp %"PRIu64"", resp->watch_event);
+     manifest->init_type = resp->init_type;
+     manifest->watch_event = resp->watch_event;
+ 
+@@ -1371,7 +1372,7 @@ static int plugin_event_handle_dispath_impl(const char *cid, const char *plugins
+                 ret = plugin_event_post_remove_handle(plugin, cid);
+                 break;
+             default:
+-                ERROR("plugin event %ld not support.", pe);
++                ERROR("plugin event %"PRIu64" not support.", pe);
+                 ret = -1;
+                 break;
+         }
+diff --git a/src/daemon/modules/spec/verify.c b/src/daemon/modules/spec/verify.c
+index 57501cd..42300b6 100644
+--- a/src/daemon/modules/spec/verify.c
++++ b/src/daemon/modules/spec/verify.c
+@@ -34,6 +34,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <linux/oom.h>
++#include <inttypes.h>
+ 
+ #include "constants.h"
+ #include "err_msg.h"
+@@ -962,7 +963,7 @@ static bool check_hugetlbs_repeated(size_t newlen, const char *pagesize,
+ 
+     for (j = 0; j < newlen; j++) {
+         if (newtlb[j] != NULL && newtlb[j]->page_size != NULL && !strcmp(newtlb[j]->page_size, pagesize)) {
+-            WARN("hugetlb-limit setting of %s is repeated, former setting %lu will be replaced with %lu", pagesize,
++            WARN("hugetlb-limit setting of %s is repeated, former setting %"PRIu64" will be replaced with %"PRIu64"", pagesize,
+                  newtlb[j]->limit, hugetlb->limit);
+             newtlb[j]->limit = hugetlb->limit;
+             repeated = true;
+@@ -1090,9 +1091,9 @@ static int verify_resources_device(defs_resources *resources)
+ 
+     for (i = 0; i < resources->devices_len; i++) {
+         if (!util_valid_device_mode(resources->devices[i]->access)) {
+-            ERROR("Invalid device mode \"%s\" for device \"%ld %ld\"", resources->devices[i]->access,
++            ERROR("Invalid device mode \"%s\" for device \"%"PRId64" %"PRId64"\"", resources->devices[i]->access,
+                   resources->devices[i]->major, resources->devices[i]->minor);
+-            isulad_set_error_message("Invalid device mode \"%s\" for device \"%ld %ld\"", resources->devices[i]->access,
++            isulad_set_error_message("Invalid device mode \"%s\" for device \"%"PRId64" %"PRId64"\"", resources->devices[i]->access,
+                                      resources->devices[i]->major, resources->devices[i]->minor);
+             ret = -1;
+             goto out;
+@@ -1678,7 +1679,7 @@ static int add_hugetbl_element(host_config_hugetlbs_element ***hugetlb, size_t *
+     for (j = 0; j < *len; j++) {
+         if (strcmp((*hugetlb)[j]->page_size, pagesize) == 0) {
+             WARN("Hostconfig: hugetlb-limit setting of %s is repeated, "
+-                 "former setting %lu will be replaced with %lu",
++                 "former setting %"PRIu64" will be replaced with %"PRIu64"",
+                  pagesize, (*hugetlb)[j]->limit, element->limit);
+             (*hugetlb)[j]->limit = element->limit;
+             goto out;
+diff --git a/src/utils/cutils/utils_base64.c b/src/utils/cutils/utils_base64.c
+index 2eb6b6b..aebf097 100644
+--- a/src/utils/cutils/utils_base64.c
++++ b/src/utils/cutils/utils_base64.c
+@@ -115,7 +115,7 @@ size_t util_base64_decode_len(const char *input, size_t len)
+     size_t padding_count = 0;
+ 
+     if (input == NULL || len < 4 || len % 4 != 0) {
+-        ERROR("Invalid param for base64 decode length, length is %ld", len);
++        ERROR("Invalid param for base64 decode length, length is %zu ", len);
+         return -1;
+     }
+ 
