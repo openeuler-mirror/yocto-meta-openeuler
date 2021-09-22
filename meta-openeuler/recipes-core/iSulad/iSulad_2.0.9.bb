@@ -11,6 +11,7 @@ SRC_URI = "file://iSulad/v2.0.9.tar.gz \
 FILESPATH_prepend += "${LOCAL_FILES}/${BPN}:"
 DL_DIR = "${LOCAL_FILES}"
 S = "${WORKDIR}/${BPN}"
+WARN_QA_remove += "uppercase-pn"
 
 inherit cmake
 OECMAKE_GENERATOR = "Unix Makefiles"
