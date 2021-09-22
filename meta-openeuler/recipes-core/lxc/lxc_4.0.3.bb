@@ -32,6 +32,7 @@ SRC_URI = "file://lxc/lxc-4.0.3.tar.gz \
 	  file://lxc/0024-log-adjust-log-level-from-error-to-warn.patch \
 	  file://lxc/0025-get-cgroup-data-len-first-and-malloc-read-buff-by-le.patch \
           file://lxc/0026-coredump-fix-coredump-when-cgroup-get-return-error.patch \
+	  file://support_arm32.patch \
 	"
 
 FILESPATH_prepend += "${LOCAL_FILES}/${BPN}:"
