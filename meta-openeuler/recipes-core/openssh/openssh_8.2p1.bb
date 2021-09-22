@@ -71,6 +71,9 @@ file://sshd@.service \
 file://sshdgenkeys.service \
 file://volatiles.99_sshd \
 file://config/common/sshd_check_keys \
+file://sshd_config \
+file://sshd_config_readonly \
+file://sshd \
 "
 
 
@@ -128,6 +131,11 @@ do_install_append () {
 
         sed -i -e 's,@LIBEXECDIR@,${libexecdir}/${BPN},g' \
                 ${D}${sysconfdir}/init.d/sshd
+	cp ${WORKDIR}/ssh_config ${D}${sysconfdir}/ssh/ssh_config
+	cp ${WORKDIR}/sshd_config ${D}${sysconfdir}/ssh/sshd_config
+	cp ${WORKDIR}/sshd_config_readonly ${D}${sysconfdir}/ssh/sshd_config_readonly
+	install -d ${D}${sysconfdir}/pam.d
+	cp ${WORKDIR}/sshd ${D}${sysconfdir}/pam.d/sshd
 
         install -D -m 0755 ${WORKDIR}/config/common/sshd_check_keys ${D}${libexecdir}/${BPN}/sshd_check_keys
 	chmod -s ${D}/usr/libexec/ssh-keysign
