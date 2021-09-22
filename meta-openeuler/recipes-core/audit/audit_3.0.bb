@@ -10,7 +10,10 @@ LICENSE = "GPLv2+ & LGPLv2+"
 inherit autotools
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=94d55d512a9ba36caa9b7df079bae19f"
-SRC_URI = "file://audit/audit-${PV}.tar.gz"
+SRC_URI = "file://audit/audit-${PV}.tar.gz \
+           file://auditd.conf \
+           file://audit.rules \
+          "
 
 
 UPDATERCPN = "auditd"
@@ -88,7 +91,8 @@ do_install_append() {
 
 	# audit-2.5 doesn't install any rules by default, so we do that here
 	mkdir -p ${D}/etc/audit ${D}/etc/audit/rules.d
-	cp ${S}/rules/10-base-config.rules ${D}/etc/audit/rules.d/audit.rules
+	cp ${WORKDIR}/audit.rules ${D}/etc/audit/rules.d/audit.rules
+	cp ${WORKDIR}/auditd.conf ${D}/etc/audit/auditd.conf
 
 	chmod 750 ${D}/etc/audit ${D}/etc/audit/rules.d
 	chmod 640 ${D}/etc/audit/auditd.conf ${D}/etc/audit/rules.d/audit.rules
