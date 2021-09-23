@@ -19,6 +19,11 @@ export AUTOHEADER = "true"
 RDEPENDS_${PN}-ptest += "make"
 
 PARALLEL_MAKE = ""
+
+do_configure () {
+	oe_runconf
+}
+
 do_configure_prepend () {
 	rm -f ${S}/y.tab.c
 	if [ ! -e ${S}/acinclude.m4 ]; then
