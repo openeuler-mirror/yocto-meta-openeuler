@@ -4,6 +4,7 @@ inherit eulertoolchain
 require gcc-bin-toolchain.inc
 
 INHIBIT_DEFAULT_DEPS = "1"
+INHIBIT_SYSROOT_STRIP = "1"
 
 PROVIDES = "\
     virtual/${EULER_TOOLCHAIN_TARGET_PREFIX}binutils \
@@ -40,4 +41,4 @@ do_packagedata () {
 }
 addtask do_packagedata
 
-INSANE_SKIP += "already-stripped"
+INSANE_SKIP_${PN} += " already-stripped "
