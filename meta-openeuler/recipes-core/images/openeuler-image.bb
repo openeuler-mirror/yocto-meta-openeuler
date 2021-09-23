@@ -28,7 +28,8 @@ TOOLCHAIN_TARGET_TASK_remove += "${@multilib_pkg_extend(d, 'packagegroup-core-st
 python do_package() {
     bb.note("do nothing");
 }
-#deltask package
+TOOLCHAIN_HOST_TASK_task-populate-sdk-ext = ""
+TOOLCHAIN_HOST_TASK = ""
 #do_rootfs depends to command createrepo_c, so create an empty rootfs for do_image_tar
 python do_rootfs() {
     bb.note("do nothing");
@@ -39,10 +40,6 @@ python do_image() {
     rootfs = os.path.join(workdir, "rootfs")
     if not os.path.exists(rootfs):
         os.makedirs(rootfs)
-}
-
-xxdo_image_complete() {
-        :
 }
 
 IMAGE_INSTALL += " \
