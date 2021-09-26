@@ -1,0 +1,46 @@
+From 6a691ebaed9ecee727623d677501956500f86576 Mon Sep 17 00:00:00 2001
+From: lisimin <lisimin@huawei.com>
+Date: Sun, 26 Sep 2021 17:07:32 +0800
+Subject: [PATCH] deamon do not support attach and pause
+
+Signed-off-by: lisimin <lisimin@huawei.com>
+---
+ src/cmd/isula/main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/cmd/isula/main.c b/src/cmd/isula/main.c
+index 476750a..e1eff2b 100644
+--- a/src/cmd/isula/main.c
++++ b/src/cmd/isula/main.c
+@@ -86,6 +86,7 @@ struct command g_commands[] = {
+         // `inspect` sub-command
+         "inspect", false, cmd_inspect_main, g_cmd_inspect_desc, NULL, &g_cmd_inspect_args
+     },
++#ifdef GRPC_CONNECTOR
+     {
+         // `pause` sub-command
+         "pause", false, cmd_pause_main, g_cmd_pause_desc, NULL, &g_cmd_pause_args
+@@ -94,6 +95,7 @@ struct command g_commands[] = {
+         // `unpause` sub-command
+         "unpause", false, cmd_resume_main, g_cmd_resume_desc, NULL, &g_cmd_resume_args
+     },
++#endif
+ #ifdef ENABLE_OCI_IMAGE
+     {
+         // `stats` sub-command
+@@ -158,10 +160,12 @@ struct command g_commands[] = {
+         "update", false, cmd_update_main, g_cmd_update_desc, NULL, &g_cmd_update_args
+     },
+ #endif
++#ifdef GRPC_CONNECTOR
+     {
+         // `attach` sub-command
+         "attach", false, cmd_attach_main, g_cmd_attach_desc, NULL, &g_cmd_attach_args
+     },
++#endif
+ #ifdef ENABLE_OCI_IMAGE
+     {
+         // `export` sub-command
+-- 
+2.16.4
+
