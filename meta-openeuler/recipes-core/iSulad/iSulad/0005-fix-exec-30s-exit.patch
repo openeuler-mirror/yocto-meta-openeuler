@@ -1,0 +1,26 @@
+From 17355d674552731da40d80855ad2c50db3d60f25 Mon Sep 17 00:00:00 2001
+From: lisimin <lisimin@huawei.com>
+Date: Sun, 26 Sep 2021 20:05:54 +0800
+Subject: [PATCH] fix exec 30s exit
+
+Signed-off-by: lisimin <lisimin@huawei.com>
+---
+ src/utils/http/http.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/src/utils/http/http.c b/src/utils/http/http.c
+index 0dcbcd5..72f9c9e 100644
+--- a/src/utils/http/http.c
++++ b/src/utils/http/http.c
+@@ -424,8 +424,6 @@ int http_request(const char *url, struct http_get_options *options, long *respon
+     /* complete connection within 30 seconds */
+     curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, 30L);
+     /* if less than 1k data is received in 30s, abort */
+-    curl_easy_setopt(curl_handle, CURLOPT_LOW_SPEED_LIMIT, 1024L);
+-    curl_easy_setopt(curl_handle, CURLOPT_LOW_SPEED_TIME, 30L);
+     /* provide a buffer to store errors in */
+     curl_easy_setopt(curl_handle, CURLOPT_ERRORBUFFER, errbuf);
+     curl_easy_setopt(curl_handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+-- 
+2.16.4
+
