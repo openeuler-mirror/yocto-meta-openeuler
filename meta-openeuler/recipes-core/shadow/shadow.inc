@@ -79,7 +79,9 @@ SRC_URI += "file://pam.d/chfn \
                file://pam.d/newusers \
                file://pam.d/passwd \
                file://pam.d/su  \
-               file://pam.d/groupmems"
+               file://pam.d/groupmems \
+               file://login.defs \
+	    "
 
 do_install() {
         oe_runmake DESTDIR="${D}" sbindir="${base_sbindir}" usbindir="${sbindir}" install
@@ -169,6 +171,7 @@ do_install_append() {
         # Handle link properly after rename, otherwise missing files would
         # lead rpm failed dependencies.
         ln -sf newgrp.${BPN} ${D}${bindir}/sg
+        cp ${WORKDIR}/login.defs ${D}${sysconfdir}/
 }
 
 PACKAGES =+ "${PN}-base"

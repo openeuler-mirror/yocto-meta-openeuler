@@ -15,7 +15,6 @@ SRC_URI = "file://bashrc \
 	file://issue \
 	file://issue.net \
 	file://LICENSE \
-	file://login.defs \
 	file://motd \
 	file://passwd \
 	file://profile \
@@ -34,8 +33,7 @@ do_install() {
 	cp ${WORKDIR}/inittab  		${D}/etc/
 	cp ${WORKDIR}/issue  		${D}/etc/
 	cp ${WORKDIR}/issue.net  	${D}/etc/
-	cp ${WORKDIR}/login.defs  	${D}/etc/
-	cp ${WORKDIR}/motd  		${D}/etc/
+	cp ${WORKDIR}/motd		${D}/etc/
 	cp ${WORKDIR}/passwd  		${D}/etc/
 	cp ${WORKDIR}/profile  		${D}/etc/
 	cp ${WORKDIR}/securetty  	${D}/etc/
