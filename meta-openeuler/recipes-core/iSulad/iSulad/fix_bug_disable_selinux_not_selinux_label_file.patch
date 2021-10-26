@@ -1,0 +1,45 @@
+commit f05e1aaea1ac77f6294afe993197609aaf725c52
+Author: dongxinhua <dongxinhua@huawei.com>
+Date:   Fri Sep 17 20:21:09 2021 +0800
+
+    fix bug when disable selinux,should not contain selinux_label.c file
+    
+    Signed-off-by: dongxinhua <dongxinhua@huawei.com>
+
+diff --git a/src/daemon/modules/image/CMakeLists.txt b/src/daemon/modules/image/CMakeLists.txt
+index 00a096e..d24a4e8 100644
+--- a/src/daemon/modules/image/CMakeLists.txt
++++ b/src/daemon/modules/image/CMakeLists.txt
+@@ -45,7 +45,7 @@ set(IMAGE_INCS
+ # set sources and headers for libisulad_img
+ set(LIB_ISULAD_IMG libisulad_img)
+ 
+-add_library(${LIB_ISULAD_IMG} ${LIBTYPE}
++set(ISULAD_IMG_SRCS
+     ${local_image_srcs}
+     ${CMAKE_SOURCE_DIR}/src/utils/cutils/utils.c
+     ${CMAKE_SOURCE_DIR}/src/utils/cutils/utils_regex.c
+@@ -66,13 +66,22 @@ add_library(${LIB_ISULAD_IMG} ${LIBTYPE}
+     ${CMAKE_SOURCE_DIR}/src/utils/sha256/sha256.c
+     ${CMAKE_SOURCE_DIR}/src/utils/buffer/buffer.c
+     ${CMAKE_SOURCE_DIR}/src/daemon/common/err_msg.c
+-    ${CMAKE_SOURCE_DIR}/src/daemon/common/selinux_label.c
+     ${CMAKE_SOURCE_DIR}/src/daemon/common/sysinfo.c
+     ${CMAKE_SOURCE_DIR}/src/utils/tar/isulad_tar.c
+     ${CMAKE_SOURCE_DIR}/src/utils/tar/util_archive.c
+     ${CMAKE_SOURCE_DIR}/src/utils/tar/util_gzip.c
+     )
+ 
++if (ENABLE_SELINUX)
++    list(APPEND ISULAD_IMG_SRCS
++        ${CMAKE_SOURCE_DIR}/src/daemon/common/selinux_label.c
++        )
++endif()
++
++add_library(${LIB_ISULAD_IMG} ${LIBTYPE}
++    ${ISULAD_IMG_SRCS}
++    )
++
+ target_include_directories(${LIB_ISULAD_IMG} PUBLIC
+     ${local_image_incs}
+     ${CMAKE_SOURCE_DIR}/src/daemon/modules/api
