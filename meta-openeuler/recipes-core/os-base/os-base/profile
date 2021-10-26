@@ -1,0 +1,58 @@
+# /etc/profile
+# init bash prompt and enviroment.
+#
+#
+
+PS1="\[\033[32m\]\h \w\[\033[m\] \\$ "
+
+#init PATH
+PATH=/usr/local/bin:/usr/bin:/bin
+if [ `id -u` -eq 0 ]; then
+	PATH=/sbin:/usr/sbin:/usr/local/sbin:/root/bin:$PATH
+fi
+
+ulimit -c 0
+
+if [ `id -u` -eq 0 ]; then
+	umask 077
+else
+	umask 077
+fi
+
+USER=`id -un`
+LOGNAME=$USER
+
+HOSTNAME=`/bin/hostname`
+HISTSIZE=1000
+
+TMOUT=300
+
+EDITOR=vi
+VISUAL=vi
+
+PAGER=more
+
+INPUTRC="/etc/inputrc"
+
+export PATH PS1 USER LOGNAME HOSTNAME HISTSIZE EDITOR VISUAL PAGER INPUTRC TMOUT
+
+
+# Running the local scripts from the user
+for i in /etc/profile.d/*.sh ; do
+	if [ -x $i ]; then
+		. $i
+	fi
+done
+unset i
+
+alias ls="ls --color=auto"
+alias ll="ls -l"
+PS1="\[\033[32m\]\h \w\[\033[m\] \\$ "
+export PS1
+export TERM=vt200
+PS1="\[\033[32m\]\H \w\[\033[m\] \\$ "
+export PS1
+export VERSION=1.0
+export PRODUCT_NAME=openeuler
+export HISTSIZE TMOUT
+alias su='su -l'
