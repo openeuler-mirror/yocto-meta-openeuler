@@ -1,0 +1,59 @@
+# Functions used by init scripts
+
+title()
+{
+    echo -en "\033[1m"
+    echo -en $@
+    echo -e "\033[0m"
+}
+
+
+broadcastmessage()
+{
+        for ttys in `who | awk '{print $2}'`;
+        do
+                echo $1 > /dev/$ttys
+        done
+}
+
+mount_a()
+{
+        FSTAB="/etc/fstab"
+        TMPDIR="/tmp/var-$RANDOM"
+        TMPFILE="/tmp/tmp-faillog-$RANDOM"
+
+	mount -t tmpfs tmpfs /tmp
+	touch ${TMPFILE}
+	while read line
+	do
+
+IFS=" " read device mountdir fstype options dump fsck<< EOF
+$line
+EOF
+	if [ "$mountdir" == "/tmp" ] || [ "$mountdir" == "/tmp/" ] ;then
+		mount $mountdir -o remount,$options
+	elif [ "$fstype" == "proc" ] || [ "$fstype" == "sysfs" ] ;then
+		umount $mountdir 2>${TMPFILE}
+		mount -t $fstype $device $mountdir -o $options
+	else
+		if [ -d "$mountdir" ]
+		then
+			mkdir ${TMPDIR}
+		        # Copy the contents instead of moving, since this would be done on every boot.
+			cp -rf $mountdir/. ${TMPDIR}/ 2> ${TMPFILE}
+			mount -t $fstype $device $mountdir -o $options
+			cp -rf ${TMPDIR}/. $mountdir  2> ${TMPFILE}
+			rm -rf ${TMPDIR}  2> ${TMPFILE}
+
+		else
+			mkdir -p $mountdir
+			mount -t $fstype $device $mountdir -o $options
+		fi
+	fi
+	done < ${FSTAB}
+
+	rm -f ${TMPFILE}
+
+	[ ! -d /dev/pts ] && mkdir /dev/pts
+	[ ! -d /dev/pts ] && mkdir /dev/shm
+}
