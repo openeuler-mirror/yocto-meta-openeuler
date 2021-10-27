@@ -3,18 +3,7 @@ LICENSE = "MIT"
 
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
-SRC_URI = "file://lcr/v2.0.5.tar.gz \
-	  file://lcr/0001-support-quiet-of-log-config.patch \
-	  file://lcr/0002-lcr-add-inactive-file-total-metric.patch \
-          file://lcr/0003-lcr-add-default-runtime-field-for-isula-info.patch \
-          file://lcr/0004-support-isula-exec-workdir.patch \
-          file://lcr/0005-add-secure-compile-options.patch \
-          file://lcr/0006-remove-invalid-fuzz-option.patch \
-          file://lcr/0007-support-cgroup-v2.patch \
-          file://lcr/0008-fix-pause-container-error.patch \
-          file://lcr/0009-Fix-spelling-errors.patch \
-          file://lcr/0010-fix-memory-usage-of-stats-not-right-when-runtime-is-.patch \
-          file://lcr/0011-support-auto-resize-of-isulad-shim.patch \
+SRC_URI = "file://lcr/v2.0.6.tar.gz \
 	  "
 
 FILESPATH_prepend += "${LOCAL_FILES}/${BPN}:"
