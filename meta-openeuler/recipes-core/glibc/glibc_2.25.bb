@@ -22,12 +22,15 @@ INHIBIT_DEFAULT_DEPS = "1"
 
 PR = "r1"
 
-SRC_URI_aarch64 = "file://sysroot-glibc-linaro-2.25-2018.05-aarch64-linux-gnu"
-SRC_URI_arm = "file://sysroot-glibc-linaro-2.25-2018.05-arm-linux-gnueabi"
+require ../../recipes-devtools/gcc/gcc-bin-toolchain.inc
+SRC_URI_aarch64 = "file://openeuler_gcc_arm64le"
+SRC_URI_arm = "file://openeuler_gcc_arm32le"
+#Not strip toolchain
+INHIBIT_SYSROOT_STRIP = "1"
 #FILESPATH_prepend += "${LOCAL_FILES}:"
 DL_DIR = "${LOCAL_SYSROOT_DL_DIR}"
-S_aarch64 = "${WORKDIR}/sysroot-glibc-linaro-2.25-2018.05-aarch64-linux-gnu"
-S_arm = "${WORKDIR}/sysroot-glibc-linaro-2.25-2018.05-arm-linux-gnueabi"
+S_aarch64 = "${WORKDIR}/openeuler_gcc_arm64le/sysroot"
+S_arm = "${WORKDIR}/openeuler_gcc_arm32le/sysroot"
 PSEUDO_DISABLED = "1"
 PRIVATE_LIBS_${PN}-dev_append = "libdl.so.2 libresolv.so.2 libm.so.6 librt.so.1 libnsl.so.1 libnss_files.so.2 "
 
@@ -41,23 +44,20 @@ do_compile () {
 
 do_install() {
     install -m 0755 -d ${D}/
-    cp -pPR ${B}/* ${D}/
+    cp -pPR ${S}/* ${D}/
     #for f in ${D}${bindir}/${EULER_TOOLCHAIN_SYSNAME}-*; do
     echo "EULER_TOOLCHAIN_SYSNAME:$EULER_TOOLCHAIN_SYSNAME"
     echo "TARGET_PREFIX:$TARGET_PREFIX"
-    EULER_TOOLCHAIN_SYSNAME="aarch64-linux-gnu"
+    EULER_TOOLCHAIN_SYSNAME="aarch64-openeuler-linux-gnu"
     EULER_TOOLCHAIN_TARGET_PREFIX="aarch64-openeuler-linux-"
     echo "D:${D}"
     rm -rf ${D}/etc/rpc
-    rm -rf ${D}/lib/debug
-    rm -f ${D}/lib/libgcc_s.so*
-    rm -r ${D}/usr/share/i18n
-    rm -r ${D}//usr/lib/gconv
-    rm -r ${D}/usr/lib/audit/
-    rm -r ${D}/lib/*.spec
-    rm -r ${D}/lib/ld-2.25.so
+    rm -rf ${D}/${base_libdir}/debug
+    echo ${libdir}
+    echo ${base_libdir}
 }
 
+SYSROOT_DIRS += "/*"
 #depends by glibc-locale
 do_stash_locale() {
         :

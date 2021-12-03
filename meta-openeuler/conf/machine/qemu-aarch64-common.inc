@@ -1,7 +1,4 @@
-# Copyright (C) Huawei Technologies Co., Ltd. 2020. All rights reserved.
 # Description: Config for arm64 machine
-# Author: Huawei OS Kernel Lab
-# Create: Sat Aug 29 01:15:17 2020
 
 MACHINEOVERRIDES =. "march64:"
 require conf/machine/qemu-common.inc
@@ -20,10 +17,7 @@ require conf/machine/include/arm/arch-armv8a.inc
 TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexa9', ' -mtune=cortex-a9', '', d)}"
 MACHINEOVERRIDES =. "${@bb.utils.contains('TUNE_FEATURES', 'cortexa9', 'armv7a:', '' ,d)}"
 
-COMPAT32_MACHINEOVERRIDES_DEL =. "march64:"
-COMPAT32_MACHINEOVERRIDES_ADD =. "march32:"
-COMPAT32_TUNE_FEATURES_APPEND += " cortexa9"
-COMPAT32_TUNE_FEATURES_REMOVE += " vfp"
-
-HMKERNEL_ARCH_march64 = 'aarch64'
-HMKERNEL_ARCH_compat32 = 'arm'
+MACHINEOVERRIDES_remove_virtclass-multilib-lib32 =. "march64:"
+MACHINEOVERRIDES_append_virtclass-multilib-lib32 =. "march32:"
+TUNE_FEATURES_append_virtclass-multilib-lib32 += " cortexa9"
+TUNE_FEATURES_remove_virtclass-multilib-lib32 += " vfp"

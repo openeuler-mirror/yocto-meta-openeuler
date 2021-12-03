@@ -11,18 +11,7 @@ PREFERRED_PROVIDER_virtual/libc-headers = "linux-libc-headers"
 PREFERRED_PROVIDER_libstdc++ = "gcc-bin-toolchain-compilerlibs-${TARGET_ARCH}"
 PREFERRED_PROVIDER_libgcc-initial = "gcc-bin-toolchain-compilerlibs-${TARGET_ARCH}"
 
-# PREFERRED_PROVIDER_libgcc-initial = "gcc-bin-toolchain-libgcc"
-# PREFERRED_PROVIDER_libgcc = "gcc-bin-toolchain-libgcc"
-# PREFERRED_PROVIDER_compiler-rt = "gcc-bin-toolchain-libgcc"
-# PREFERRED_PROVIDER_libunwind-llvm = "gcc-bin-toolchain-libgcc"
-# PREFERRED_PROVIDER_libcxx = "gcc-bin-toolchain-runtime"
-# PREFERRED_PROVIDER_libcxxabi = "gcc-bin-toolchain-runtime"
-
-GCCVERSION = "7.3.0"
-
-PATH_append = ":${COMPONENTS_DIR}/${BUILD_ARCH}/gcc-bin-toolchain-cross-${TARGET_ARCH}/usr/bin"
+PATH_append = ":${COMPONENTS_DIR}/${BUILD_ARCH}/gcc-bin-toolchain-cross-${TARGET_ARCH}/bin"
 
 #cannot set with linaro gcc,set it null
 DEBUG_PREFIX_MAP = ""
-#STAGING_DIR_TARGET:arm = "/usr1/openeuler/gcc/sysroot-glibc-linaro-2.25-2018.05-arm-linux-gnueabi"
-#STAGING_DIR_TARGET:aarch64 = "/usr1/openeuler/gcc/sysroot-glibc-linaro-2.25-2018.05-aarch64-linux-gnu"

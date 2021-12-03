@@ -18,8 +18,6 @@ DEPENDS = "yajl lxc"
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 FILES_${PN} += "${libdir}/* "
-#FILES_${PN} += "/usr/local/lib/* "
-#FILES_${PN}-dev = "/usr/local/*"
 
 do_configure_prepend() {
         grep -q CMAKE_SYSROOT ${WORKDIR}/toolchain.cmake || cat >> ${WORKDIR}/toolchain.cmake <<EOF
@@ -28,14 +26,13 @@ EOF
 }
 
 do_install_append() {
-	[[ "${libdir}" != "/usr/local/lib" ]] || return 0
-	if test -d ${D}/usr/local/lib; then
-		mv ${D}/usr/local/lib ${D}/${libdir}
+	[[ "${libdir}" != "/usr/lib" ]] || return 0
+	if test -d ${D}/usr/lib; then
+		mv ${D}/usr/lib ${D}/${libdir}
 	fi
         if test -d ${D}/usr/local/include ; then
                 mv ${D}/usr/local/include ${D}/${includedir}
         fi
-        rm -rf ${D}/usr/local
 }
 
 do_package() {

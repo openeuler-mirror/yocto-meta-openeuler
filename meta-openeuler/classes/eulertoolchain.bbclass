@@ -1,7 +1,7 @@
 def eulertoolchain_raw_prefix(arch):
     raw_prefix_dict = {
         "arm"       : "arm-linux-gnueabi",
-        "aarch64"   : "aarch64-linux-gnu",
+        "aarch64"   : "aarch64-openeuler-linux-gnu",
     }
     return raw_prefix_dict[arch]
 
@@ -25,12 +25,14 @@ python eulertoolchain_virtclass_handler () {
     if cls != "eulertoolchain" or not variant:
         return
 
-    d.setVar("PN", d.getVar("PN", False) + '-' + variant)
+    multilib = d.getVar("MULTILIB", True)
+    prefix = ""
+    if "64" not in variant and multilib:
+        prefix = "lib32-"
     d.setVar("TARGET_ARCH", variant)
-
-    d.setVar("EULER_TOOLCHAIN_SYSNAME",            eulertoolchain_raw_prefix(variant))
-    d.setVar("EULER_TOOLCHAIN_TARGET_PREFIX",      eulertoolchain_euler_prefix(variant) + '-')
-    d.setVar("EULER_TOOLCHAIN_TARGET_PREFIX_RAW",  eulertoolchain_euler_prefix(variant))
+    d.setVar("EULER_TOOLCHAIN_SYSNAME",            prefix + eulertoolchain_raw_prefix(variant))
+    d.setVar("EULER_TOOLCHAIN_TARGET_PREFIX",      prefix + eulertoolchain_euler_prefix(variant) + '-')
+    d.setVar("EULER_TOOLCHAIN_TARGET_PREFIX_RAW",  prefix + eulertoolchain_euler_prefix(variant))
 
     d.setVar("OVERRIDES", d.getVar("OVERRIDES", False) +
                     ":{}".format(variant.replace('_', '-')))

@@ -18,15 +18,11 @@ S = "${WORKDIR}/${BPN}-${PV}"
 inherit cmake
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
+INSANE_SKIP_${PN} += "already-stripped"
 
 FILES_${PN} += "${libdir}/libyajl.so* "
 
 do_install_append() {
-	[[ "${libdir}" != "/usr/lib" ]] || return 0
-	if test -d ${D}/usr/lib; then
-		mv ${D}/usr/lib ${D}/${libdir}
-	fi
-
         ${STRIP} ${D}/${libdir}/*.so*
 }
 

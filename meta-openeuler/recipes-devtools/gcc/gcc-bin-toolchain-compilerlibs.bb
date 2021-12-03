@@ -1,19 +1,16 @@
-# Copyright (C) Huawei Technologies Co., Ltd. 2020. All rights reserved.
 # Description: Extract libgcc and compiler-rt from toolchain
-# Author: Huawei OS Kernel Lab
-# Create: Mon Sep 07 13:39:28 2020
 
 inherit eulertoolchain
 require gcc-bin-toolchain.inc
 
 INHIBIT_DEFAULT_DEPS = "1"
-DEPENDS = "virtual/${EULER_TOOLCHAIN_TARGET_PREFIX}gcc \
-           virtual/${EULER_TOOLCHAIN_TARGET_PREFIX}g++"
-#DEPENDS = "virtual/${TARGET_PREFIX}gcc \
-#           virtual/${TARGET_PREFIX}g++"
+#DEPENDS = "virtual/${EULER_TOOLCHAIN_TARGET_PREFIX}gcc \
+#           virtual/${EULER_TOOLCHAIN_TARGET_PREFIX}g++"
+DEPENDS = "virtual/${TARGET_PREFIX}gcc \
+           virtual/${TARGET_PREFIX}g++"
 
-PROVIDES = "virtual/${EULER_TOOLCHAIN_TARGET_PREFIX}compilerlibs gcc-runtime libstdc++ libgcc-initial"
-#PROVIDES = "gcc-runtime libstdc++ libgcc-initial virtual/${TARGET_PREFIX}compilerlibs"
+#PROVIDES = "virtual/${EULER_TOOLCHAIN_TARGET_PREFIX}compilerlibs gcc-runtime libstdc++ libgcc-initial"
+PROVIDES = "gcc-runtime libstdc++ libgcc-initial virtual/${TARGET_PREFIX}compilerlibs"
 
 
 # Insert lib and usr/lib into SYSROOT_DIRS so these 2 dir
@@ -25,7 +22,6 @@ PROVIDES = "virtual/${EULER_TOOLCHAIN_TARGET_PREFIX}compilerlibs gcc-runtime lib
 #SYSROOT_DIRS += "${LIBDIR_COMPAT_EXTRA}"
 
 do_install () {
-#exit 0
     bbnote "Installing libgcc/libclang from Compiler CPU binary toolchain"
     install -m 0755 -d ${D}${libdir_native}/${EULER_TOOLCHAIN_GCC_PATH_INNER}
 
@@ -121,3 +117,4 @@ SYSROOT_DIRS_append =" \
     ${subincludedir} \
 "
 SYSROOT_DIRS_NATIVE_append = "${subbindir}"
+INSANE_SKIP_${PN} += "installed-vs-shipped"
