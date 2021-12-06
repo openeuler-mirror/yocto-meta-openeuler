@@ -25,6 +25,7 @@ python eulertoolchain_virtclass_handler () {
     if cls != "eulertoolchain" or not variant:
         return
 
+    d.setVar("PN", d.getVar("PN", False) + '-' + variant)
     multilib = d.getVar("MULTILIB", True)
     prefix = ""
     if "64" not in variant and multilib:
