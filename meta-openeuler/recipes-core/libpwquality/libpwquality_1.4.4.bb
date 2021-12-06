@@ -26,7 +26,7 @@ EXTRA_OECONF += "--enable-python-bindings=no \
 "
 
 do_install_append() {
-	rm  -r ${D}/lib/pkgconfig
+	rm  -r ${D}/${base_libdir}/pkgconfig
 }
 
 PACKAGECONFIG ??= "pam"

@@ -3,7 +3,7 @@ LICENSE = "MIT"
 
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
-SRC_URI = "file://iSulad/v2.0.9.tar.gz \
+SRC_URI = "file://iSulad/v2.0.10.tar.gz \
            file://0001-fix-bug-disable-selinux-not-selinux-label-file.patch \
            file://0002-delete-call-setlocale.patch \
            file://0003-modify-printf-to-arm32.patch \

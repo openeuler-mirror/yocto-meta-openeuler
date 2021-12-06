@@ -16,11 +16,12 @@ inherit cmake
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
 FILES_${PN} += "${libdir}/libarchive.so* "
+INSANE_SKIP_${PN} += "already-stripped"
 
 do_install_append() {
 	[[ "${libdir}" != "/usr/lib" ]] || return 0
 	if test -d ${D}/usr/lib; then
-		mv ${D}/usr/lib ${D}/${libdir}
+            mv ${D}/usr/lib ${D}/${libdir}
 	fi
 
         ${STRIP} ${D}/${libdir}/*.so*

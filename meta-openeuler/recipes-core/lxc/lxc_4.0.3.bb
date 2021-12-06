@@ -32,6 +32,14 @@ SRC_URI = "file://lxc/lxc-4.0.3.tar.gz \
 	  file://lxc/0024-log-adjust-log-level-from-error-to-warn.patch \
 	  file://lxc/0025-get-cgroup-data-len-first-and-malloc-read-buff-by-le.patch \
           file://lxc/0026-coredump-fix-coredump-when-cgroup-get-return-error.patch \
+          file://lxc/0027-add-help-for-new-arguments.patch \
+          file://lxc/0028-seccomp-init-and-destroy-notifier.cookie.patch \
+          file://lxc/0029-just-use-origin-loop-if-do-not-have-io.patch \
+          file://lxc/0030-conf-fix-a-memory-leak.patch \
+          file://lxc/0031-fix-lsm_se_mount_context-memory-leak.patch \
+          file://lxc/0032-disable-lxc_keep-with-oci-image.patch \
+          file://lxc/0033-conf-ensure-that-the-idmap-pointer-itself-is-freed.patch \
+          file://lxc/0034-cgfsng-fix-cgroup-attach-cgroup-creation.patch \
 	  file://support_arm32.patch \
 	  file://check_only_rootfs_as_filesystem_type.patch \
 	"

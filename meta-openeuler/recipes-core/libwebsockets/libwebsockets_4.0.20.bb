@@ -30,12 +30,9 @@ EXTRA_OECMAKE = "-D LWS_WITH_HTTP2=ON -D LWS_IPV6=ON -D LWS_WITH_ZIP_FOPS=ON -D 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
 FILES_${PN} += "${libdir}/*"
+INSANE_SKIP_${PN} += "already-stripped"
 
 do_install_append() {
 	rm -rf ${D}/usr/share
-	[[ "${libdir}" != "/usr/lib" ]] || return 0
-	if test -d ${D}/usr/lib; then
-		mv ${D}/usr/lib ${D}/${libdir}
-	fi
         ${STRIP} ${D}/${libdir}/*.so*
 }

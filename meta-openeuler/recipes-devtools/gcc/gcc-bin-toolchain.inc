@@ -1,11 +1,10 @@
-TOOLCHAIN_GCC_VERSION = "7.3.1"
+TOOLCHAIN_GCC_VERSION = "10.3.0"
 LICENSE = "CLOSED"
 SECTION = "toolchain"
 
 EULER_TOOLCHAIN_GCC_PATH_INNER = "${EULER_TOOLCHAIN_SYSNAME}/${TOOLCHAIN_GCC_VERSION}"
 EULER_TOOLCHAIN_GCC_PATH = "/gcc/${EULER_TOOLCHAIN_GCC_PATH_INNER}"
 
-#BUILD_TOOLS = "/usr1/openeuler/gcc/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu"
 python () {
     import os
     import platform
@@ -21,8 +20,13 @@ python () {
     if not os.path.exists(local_toolchain):
         return 1
     if os.path.exists(local_toolchain):
+        if "glibc" == d.getVar('BPN', True):
+            gcctopdir = os.path.abspath(os.path.dirname(local_toolchain))
+            d.setVar("DL_DIR", gcctopdir)
+            return 0
         d.setVar("S", local_toolchain)
         d.setVarFlag("do_fetch",  "noexec", "1")
         d.setVarFlag("do_unpack", "noexec", "1")
         d.setVarFlag("do_patch",  "noexec", "1")
+        d.setVarFlag("do_configure",  "noexec", "1")
 }

@@ -33,6 +33,10 @@ do_configure() {
 
 do_install() {
         oe_runmake DESTDIR=${D} install
+        [[ "${libdir}" != "/usr/lib" ]] || return 0
+        if test -d ${D}/usr/lib; then
+            mv ${D}/usr/lib ${D}/${libdir}
+        fi
 }
 
 do_package_qa() {
