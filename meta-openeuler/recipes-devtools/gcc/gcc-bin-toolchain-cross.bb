@@ -1,8 +1,7 @@
 inherit cross
-inherit eulertoolchain
-
 require gcc-bin-toolchain.inc
 
+PN = "gcc-bin-toolchain-cross-${TARGET_ARCH}"
 INHIBIT_DEFAULT_DEPS = "1"
 INHIBIT_SYSROOT_STRIP = "1"
 
@@ -23,9 +22,9 @@ libexecdir = "${STAGING_DIR_NATIVE}/${prefix_native}/libexec/"
 do_install_class-cross() {
     install -m 0755 -d ${D}/${STAGING_DIR_NATIVE}
     cp -pPR ${B}/* ${D}/${STAGING_DIR_NATIVE}
-    for f in ${D}/${STAGING_DIR_NATIVE}/bin/${EULER_TOOLCHAIN_SYSNAME}-*; do
+    for f in ${D}/${STAGING_DIR_NATIVE}/bin/${TOOLCHAIN_PREFIX}-*; do
         bin=$(basename ${f})
-        lnk=$(basename ${f} | sed "s/^${EULER_TOOLCHAIN_SYSNAME}-/${EULER_TOOLCHAIN_TARGET_PREFIX}/g")
+        lnk=$(basename ${f} | sed "s/^${TOOLCHAIN_PREFIX}-/${TARGET_PREFIX}/g")
         ln -svf ${bin} ${D}/${STAGING_DIR_NATIVE}/bin/${lnk}
     done
 }
