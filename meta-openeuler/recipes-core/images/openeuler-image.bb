@@ -16,8 +16,7 @@ IMAGE_CMD_tar = "${IMAGE_CMD_TAR} --format=posix --numeric-owner -cf ${IMGDEPLOY
 do_rootfs[depends] = ""
 #not depends to ldconfig-native
 #LDCONFIGDEPEND = ""
-DEPENDS_remove += "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])} qemuwrapper-cross depmodwrapper-cross cross-localedef-native"
-SDK_DEPENDS_remove += "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])} depmodwrapper-cross cross-localedef-native"
+DEPENDS_remove += "qemuwrapper-cross depmodwrapper-cross cross-localedef-native"
 RPMROOTFSDEPENDS = ""
 FEATURE_PACKAGES_tools-sdk_remove = " packagegroup-core-sdk packagegroup-core-standalone-sdk-target"
 TOOLCHAIN_TARGET_TASK_remove += "${@multilib_pkg_extend(d, 'packagegroup-core-standalone-sdk-target')}"
@@ -44,6 +43,7 @@ python do_image() {
 }
 
 IMAGE_INSTALL += " \
+bash \
 busybox \
 linux-openeuler \
 os-base \

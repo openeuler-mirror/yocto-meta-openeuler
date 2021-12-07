@@ -1,33 +1,20 @@
 # Description: Extract libgcc and compiler-rt from toolchain
 
-inherit eulertoolchain
 require gcc-bin-toolchain.inc
 
+PN = "gcc-bin-toolchain-compilerlibs-${TARGET_ARCH}"
 INHIBIT_DEFAULT_DEPS = "1"
-#DEPENDS = "virtual/${EULER_TOOLCHAIN_TARGET_PREFIX}gcc \
-#           virtual/${EULER_TOOLCHAIN_TARGET_PREFIX}g++"
 DEPENDS = "virtual/${TARGET_PREFIX}gcc \
            virtual/${TARGET_PREFIX}g++"
-
-#PROVIDES = "virtual/${EULER_TOOLCHAIN_TARGET_PREFIX}compilerlibs gcc-runtime libstdc++ libgcc-initial"
 PROVIDES = "gcc-runtime libstdc++ libgcc-initial virtual/${TARGET_PREFIX}compilerlibs"
-
-
-# Insert lib and usr/lib into SYSROOT_DIRS so these 2 dir
-# will be found by building of bb depends on this bb. It
-# is required because we set BASELIB to lib32, which makes
-# yocto stage lib32 and usr/lib32. However, compiler has
-# built-in path to find libgcc, which is /lib or /usr/lib.
-#LIBDIR_COMPAT_EXTRA = "${@ '' if not is_compat(d) else '/lib /usr/lib'}"
-#SYSROOT_DIRS += "${LIBDIR_COMPAT_EXTRA}"
 
 do_install () {
     bbnote "Installing libgcc/libclang from Compiler CPU binary toolchain"
     install -m 0755 -d ${D}${libdir_native}/${EULER_TOOLCHAIN_GCC_PATH_INNER}
 
     finddirs=''
-    test -d ${B}/${EULER_TOOLCHAIN_SYSNAME}/lib     && finddirs="$finddirs ${B}/${EULER_TOOLCHAIN_SYSNAME}/lib"
-    test -d ${B}/${EULER_TOOLCHAIN_SYSNAME}/lib64   && finddirs="$finddirs ${B}/${EULER_TOOLCHAIN_SYSNAME}/lib64"
+    test -d ${B}/${TOOLCHAIN_PREFIX}/lib     && finddirs="$finddirs ${B}/${TOOLCHAIN_PREFIX}/lib"
+    test -d ${B}/${TOOLCHAIN_PREFIX}/lib64   && finddirs="$finddirs ${B}/${TOOLCHAIN_PREFIX}/lib64"
     test -d ${B}/lib/${EULER_TOOLCHAIN_GCC_PATH}    && finddirs="$finddirs ${B}/lib/${EULER_TOOLCHAIN_GCC_PATH}"
     test -d ${B}/lib64/${EULER_TOOLCHAIN_GCC_PATH}  && finddirs="$finddirs ${B}/lib64/${EULER_TOOLCHAIN_GCC_PATH}"
 
@@ -71,7 +58,7 @@ do_install () {
         rel=$(realpath --relative-to=$(dirname $f) ${D}$destdir)
         ln -s $rel/$bn $(dirname $f)
     done
-    rm -r ${D}${libdir_native}/${EULER_TOOLCHAIN_SYSNAME}
+    rm -r ${D}${libdir_native}/${TOOLCHAIN_PREFIX}
 }
 
 # Package will be called as libgcc-s1. Don't know why.
