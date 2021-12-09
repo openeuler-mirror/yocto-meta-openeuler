@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=f835cce8852481e4b2bbbdd23b5e47f3 \
 PROVIDES = "virtual/librpc"
 
 SRC_URI = "file://libtirpc/libtirpc-${PV}.tar.bz2"
-UPSTREAM_CHECK_URI = "https://gitee.com/src-openeuler/libtirpc/tree/openEuler-22.03-LTS-Next/"
+UPSTREAM_CHECK_URI = "https://sourceforge.net/projects/libtirpc/files/libtirpc/"
 UPSTREAM_CHECK_REGEX = "(?P<pver>\d+(\.\d+)+)/"
 SRC_URI[sha256sum] = "245895caf066bec5e3d4375942c8cb4366adad184c29c618d97f724ea309ee17"
 
