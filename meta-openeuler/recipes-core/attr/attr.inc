@@ -15,6 +15,7 @@ LIC_FILES_CHKSUM = "file://doc/COPYING;md5=2d0aa14b3fce4694e4f615e30186335f \
                     file://libattr/libattr.c;endline=17;md5=7970f77049f8fa1199fff62a7ab724fb"
 
 SRC_URI = "file://attr/attr-${PV}.tar.gz \
+           file://attr/0001-bypass-wrong-output-when-enabled-selinux.patch \
            file://run-ptest \
 "
 
