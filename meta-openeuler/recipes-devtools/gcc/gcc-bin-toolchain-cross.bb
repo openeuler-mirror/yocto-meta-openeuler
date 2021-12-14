@@ -22,6 +22,9 @@ libexecdir = "${STAGING_DIR_NATIVE}/${prefix_native}/libexec/"
 do_install_class-cross() {
     install -m 0755 -d ${D}/${STAGING_DIR_NATIVE}
     cp -pPR ${B}/* ${D}/${STAGING_DIR_NATIVE}
+    if [ ${TOOLCHAIN_PREFIX}- == ${TARGET_PREFIX} ]; then
+	return
+    fi
     for f in ${D}/${STAGING_DIR_NATIVE}/bin/${TOOLCHAIN_PREFIX}-*; do
         bin=$(basename ${f})
         lnk=$(basename ${f} | sed "s/^${TOOLCHAIN_PREFIX}-/${TARGET_PREFIX}/g")
