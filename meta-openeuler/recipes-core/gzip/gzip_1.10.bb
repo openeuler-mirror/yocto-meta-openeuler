@@ -2,9 +2,12 @@ require gzip.inc
 
 LICENSE = "GPLv3+"
 
-SRC_URI = "${GNU_MIRROR}/gzip/${BP}.tar.gz \
+SRC_URI = "file://gzip/gzip-${PV}.tar.xz \
+           file://gzip/fix-verbose-disable.patch \
+           file://gzip/gzexe.patch \
            file://run-ptest \
           "
+#file://gzip/performance-neoncrc32-and-prfm.patch 
 SRC_URI_append_class-target = " file://wrong-path-fix.patch"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504 \
