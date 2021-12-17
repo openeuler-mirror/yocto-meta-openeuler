@@ -12,6 +12,7 @@ PR = "r1"
 
 DEPENDS += "virtual/libc"
 DEPENDS += "libtirpc"
+CFLAGS += "-I${STAGING_INCDIR}/tirpc"
 #get arch info
 inherit kernel-arch
 
