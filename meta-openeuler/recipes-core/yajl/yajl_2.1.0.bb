@@ -21,6 +21,7 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 INSANE_SKIP_${PN} += "already-stripped"
 
 FILES_${PN} += "${libdir}/libyajl.so* "
+FILES_SOLIBSDEV = ""
 
 do_install_append() {
         ${STRIP} ${D}/${libdir}/*.so*
