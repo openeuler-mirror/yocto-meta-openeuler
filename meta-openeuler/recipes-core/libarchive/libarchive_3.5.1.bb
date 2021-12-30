@@ -16,7 +16,8 @@ inherit cmake
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
 FILES_${PN} += "${libdir}/libarchive.so* "
-INSANE_SKIP_${PN} += "already-stripped"
+INSANE_SKIP_${PN} += "already-stripped dev-so"
+FILES_SOLIBSDEV = ""
 
 do_install_append() {
 	[[ "${libdir}" != "/usr/lib" ]] || return 0

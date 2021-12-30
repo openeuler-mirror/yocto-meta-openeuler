@@ -10,6 +10,7 @@ LIC_FILES_CHKSUM = "file://${WORKDIR}/LICENSE;md5=1acb172ffd3d252285dd1b8b845994
 
 SRC_URI = "file://bashrc \
 	file://fstab \
+	file://rcS \
 	file://group \
 	file://inittab \
 	file://issue \
@@ -18,7 +19,6 @@ SRC_URI = "file://bashrc \
 	file://motd \
 	file://passwd \
 	file://profile \
-	file://securetty \
 	file://shadow \
 	file://sysctl.conf \
 	file://rc.functions \
@@ -28,7 +28,7 @@ SRC_URI = "file://bashrc \
 do_install() {
 	install -d ${D}/etc
 	cp ${WORKDIR}/bashrc  		${D}/etc/
-	cp ${WORKDIR}/fstab  		${D}/etc/
+	install -m 0600 ${WORKDIR}/fstab ${D}/etc/
 	cp ${WORKDIR}/group  		${D}/etc/
 	cp ${WORKDIR}/inittab  		${D}/etc/
 	cp ${WORKDIR}/issue  		${D}/etc/
@@ -36,15 +36,15 @@ do_install() {
 	cp ${WORKDIR}/motd		${D}/etc/
 	cp ${WORKDIR}/passwd  		${D}/etc/
 	cp ${WORKDIR}/profile  		${D}/etc/
-	cp ${WORKDIR}/securetty  	${D}/etc/
-	cp ${WORKDIR}/shadow  		${D}/etc/
-	cp ${WORKDIR}/sysctl.conf  	${D}/etc/
+	install -m 0600 ${WORKDIR}/shadow ${D}/etc/
+	install -m 0600 ${WORKDIR}/sysctl.conf ${D}/etc/
 	install -d ${D}/etc/rc.d
 	cp ${WORKDIR}/rc.functions  	${D}/etc/rc.d
 	cp ${WORKDIR}/rc.sysinit  	${D}/etc/rc.d
 	cp ${WORKDIR}/rc.local  	${D}/etc/rc.d
+        install -m 0755 -d ${D}/etc/init.d/
+	install -m 0750 ${WORKDIR}/rcS ${D}/etc/init.d/
 }
-
 
 FILES_${PN} = "/"
 INHIBIT_DEFAULT_DEPS = "1"

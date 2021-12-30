@@ -44,7 +44,11 @@ FILES_${PN}-mdev = "${sysconfdir}/init.d/mdev ${sysconfdir}/mdev.conf ${sysconfd
 FILES_${PN}-udhcpd = "${sysconfdir}/init.d/busybox-udhcpd"
 FILES_${PN}-udhcpc = "${sysconfdir}/udhcpc.d ${datadir}/udhcpc"
 FILES_${PN}-hwclock = "${sysconfdir}/init.d/hwclock.sh"
-FILES_${PN}-linuxrc = "/linuxrc"
+FILES_${PN}-linuxrc = "/linuxrc /init"
+PACKAGES =+ "${PN}-bash ${PN}-login ${PN}-groups"
+FILES_${PN}-bash = "${base_bindir}/bash"
+FILES_${PN}-login = "${base_bindir}/login"
+FILES_${PN}-groups = "${bindir}/groups"
 
 INITSCRIPT_PACKAGES = "${PN}-httpd ${PN}-syslog ${PN}-udhcpd ${PN}-mdev ${PN}-hwclock"
 
@@ -106,5 +110,8 @@ do_compile () {
 
 do_install () {
         oe_runmake CONFIG_PREFIX="${D}" install
+        pushd "${D}"
+        ln -s bin/busybox init
+        popd
 }
 INSANE_SKIP += "already-stripped"

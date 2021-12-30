@@ -31,6 +31,7 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
 FILES_${PN} += "${libdir}/*"
 INSANE_SKIP_${PN} += "already-stripped"
+FILES_SOLIBSDEV = ""
 
 do_install_append() {
 	rm -rf ${D}/usr/share
