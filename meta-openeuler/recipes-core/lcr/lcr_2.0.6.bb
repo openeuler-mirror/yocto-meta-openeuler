@@ -17,6 +17,8 @@ OECMAKE_GENERATOR = "Unix Makefiles"
 DEPENDS = "yajl lxc"
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
+#remove so from ${PN}-dev
+FILES_SOLIBSDEV = ""
 FILES_${PN} += "${libdir}/* "
 
 do_configure_prepend() {
@@ -34,11 +36,3 @@ do_install_append() {
                 mv ${D}/usr/local/include ${D}/${includedir}
         fi
 }
-
-do_package() {
-:
-}
-do_package_write_rpm() {
-:
-}
-

@@ -29,6 +29,8 @@ EXTRA_OECMAKE = "-DENABLE_GRPC=OFF -DENABLE_SYSTEMD_NOTIFY=OFF -DENABLE_SELINUX=
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
 FILES_${PN} += "${libdir}/* "
+#remove so from ${PN}-dev
+FILES_SOLIBSDEV = ""
 
 do_configure_prepend() {
         grep -q CMAKE_SYSROOT ${WORKDIR}/toolchain.cmake || cat >> ${WORKDIR}/toolchain.cmake <<EOF
@@ -37,19 +39,10 @@ EOF
 }
 
 do_install_append() {
-        [[ "${libdir}" != "/usr/local/lib" ]] || return 0
-        if test -d ${D}/usr/local/lib; then
-                mv ${D}/usr/local/lib ${D}/${libdir}
+        [[ "${libdir}" == "/usr/lib64" ]] || return 0
+        if test -d ${D}/usr/lib; then
+                mkdir -p ${D}/${libdir}
+                mv ${D}/usr/lib/* ${D}/${libdir}
+                rm -r ${D}/usr/lib/
         fi
-        if test -d ${D}/usr/local/include ; then
-                mv ${D}/usr/local/include ${D}/${includedir}
-        fi
-        rm -rf ${D}/usr/local
-}
-
-do_package() {
-:
-}
-do_package_write_rpm() {
-:
 }
