@@ -28,13 +28,13 @@ SRC_URI = "file://kexec-tools/kexec-tools-${PV}.tar.xz \
 SRC_URI_append_aarch64 += " \
            file://kexec-tools/arm64-support-more-than-one-crash-kernel-regions.patch \
 "
-SRC_URI_append = " \
+SRC_URI_append += " \
            file://kexec-tools/kexec-Add-quick-kexec-support.patch \
 "
 SRC_URI_append_aarch64 += " \
            file://kexec-tools/kexec-Quick-kexec-implementation-for-arm64.patch \
 "
-SRC_URI_append = " \
+SRC_URI_append += " \
           file://kexec-tools/backport-print-add-support-for-lockless-ringbuffer.patch \
           file://kdump \
           file://kdump.conf \
