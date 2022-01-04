@@ -18,8 +18,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'yocto-doc'
-copyright = '2021, lisiming'
-author = 'lisiming'
+copyright = '2021, openEuler Embedded'
+author = 'openEuler Embedded'
 
 # The full version, including alpha/beta/rc tags
 release = '1.0.0'
