@@ -186,13 +186,3 @@ FILES_${PN}-base = "\
 RDEPENDS_${PN} += "${PN}-base"
 
 PACKAGE_WRITE_DEPS += "shadow-native"
-pkg_postinst_${PN}_class-target () {
-        if [ "x$D" != "x" ]; then
-                rootarg="--root $D"
-        else
-        rootarg=""
-        fi
-
-        pwconv $rootarg || exit 1
-        grpconv $rootarg || exit 1
-}

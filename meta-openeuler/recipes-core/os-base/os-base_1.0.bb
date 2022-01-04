@@ -44,6 +44,11 @@ do_install() {
 	cp ${WORKDIR}/rc.local  	${D}/etc/rc.d
         install -m 0755 -d ${D}/etc/init.d/
 	install -m 0750 ${WORKDIR}/rcS ${D}/etc/init.d/
+        mkdir -p ${D}/var/log/
+        touch ${D}/var/log/messages ${D}/var/log/lastlog
+        mkdir -p ${D}/var/run/faillock ${D}/tmp
+        mkdir -p ${D}/proc ${D}/sys ${D}/root ${D}/dev ${D}/sys/fs/cgroup
+        mkdir -p ${D}/var/log/audit ${D}/var/run/sshd
 }
 
 FILES_${PN} = "/"
