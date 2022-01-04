@@ -101,3 +101,7 @@ do_install_append() {
 	cp ${D}/etc/audit/rules.d/audit.rules ${D}/etc/audit/audit.rules
 	rm -rf ${D}/lib/pkgconfig
 }
+
+do_install_append_arm() {
+    sed -i "/arch=b64/d" ${D}/etc/audit/audit.rules
+}
