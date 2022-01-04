@@ -50,6 +50,7 @@ do_install_ptest () {
 }
 
 pkg_postinst_${PN} () {
+        mkdir -p $D${sysconfdir}/ || echo ""
 	touch $D${sysconfdir}/shells
 	grep -q "bin/bash" $D${sysconfdir}/shells || echo /bin/bash >> $D${sysconfdir}/shells
 	grep -q "bin/sh" $D${sysconfdir}/shells || echo /bin/sh >> $D${sysconfdir}/shells
