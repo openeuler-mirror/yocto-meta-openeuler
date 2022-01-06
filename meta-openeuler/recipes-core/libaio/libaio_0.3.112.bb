@@ -9,7 +9,6 @@ SRC_URI = "file://libaio/libaio-${PV}.tar.gz \
 	   file://libaio/0001-libaio-arm64-ilp32.patch \
 	   file://libaio/0002-libaio-makefile-cflags.patch \
 	   file://libaio/0003-libaio-fix-for-x32.patch \
-           file://00_arches.patch \
            "
 EXTRA_OEMAKE =+ "prefix=${prefix} includedir=${includedir} libdir=${libdir}"
 
