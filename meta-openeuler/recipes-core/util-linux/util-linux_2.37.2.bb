@@ -49,9 +49,8 @@ python util_linux_binpackages () {
 # we must execute before update-alternatives PACKAGE_PREPROCESS_FUNCS
 PACKAGE_PREPROCESS_FUNCS =+ "util_linux_binpackages "
 
-# skip libuuid as it will be packaged by the util-linux-libuuid recipe
 python util_linux_libpackages() {
-    do_split_packages(d, root=d.getVar('UTIL_LINUX_LIBDIR'), file_regex=r'^lib(?!uuid)(.*)\.so\..*$',
+    do_split_packages(d, root=d.getVar('UTIL_LINUX_LIBDIR'), file_regex=r'^lib(.*)\.so\..*$',
                       output_pattern='${PN}-lib%s',
                       description='${PN} lib%s',
                       extra_depends='', prepend=True, allow_links=True)
@@ -196,12 +195,6 @@ do_install_append_class-target () {
 do_install_append_class-native () {
 	rm -f ${D}${base_sbindir}/nologin
 	rm -f ${D}${base_bindir}/kill
-}
-
-# dm-verity support introduces a circular build dependency, so util-linux-libuuid is split out for target builds
-# Need to build libuuid for uuidgen, but then delete it and let the other recipe ship it
-do_install_append () {
-	rm -rf ${D}${includedir}/uuid ${D}${libdir}/pkgconfig/uuid.pc ${D}${libdir}/libuuid* ${D}${base_libdir}/libuuid*
 }
 
 ALTERNATIVE_PRIORITY = "80"

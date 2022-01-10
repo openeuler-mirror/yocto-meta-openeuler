@@ -28,16 +28,8 @@ LIC_FILES_CHKSUM = "file://README.licensing;md5=0fd5c050c6187d2bf0a4492b7f4e33da
 FILESEXTRAPATHS_prepend := "${THISDIR}/util-linux:"
 MAJOR_VERSION = "${@'.'.join(d.getVar('PV').split('.')[0:2])}"
 SRC_URI = "file://util-linux/util-linux-${PV}.tar.xz \
-	   file://util-linux/2.36-login-lastlog-create.patch \
-	   file://util-linux/Add-check-to-resolve-uname26-version-test-failed.patch \
-	   file://util-linux/backport-CVE-2021-37600.patch \
-	   file://util-linux/backport-libblkid-improve-debug-for-proc-partitions.patch \
-	   file://util-linux/backport-libblkid-use-sys-to-read-all-block-devices.patch \
-	   file://util-linux/backport-libfdisk-make-fdisk_partname-more-robust.patch \
-	   file://util-linux/backport-libmount-fix-tab-parser-for-badly-terminated-lines.patch \
-	   file://util-linux/Do-not-excute-Utmp-testcases.patch \
 	   file://runuser.pamd \
 	   file://runuser-l.pamd \
 	   "
 
-SRC_URI[sha256sum] = "09fac242172cd8ec27f0739d8d192402c69417617091d8c6e974841568f37eed"
+SRC_URI[sha256sum] = "6a0764c1aae7fb607ef8a6dd2c0f6c47d5e5fd27aa08820abaad9ec14e28e9d9 "
