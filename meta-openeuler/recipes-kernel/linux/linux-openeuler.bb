@@ -1,7 +1,6 @@
-SUMMARY = "Dummy Linux kernel"
-DESCRIPTION = "Dummy Linux kernel, to be selected as the preferred \
-provider for virtual/kernel to satisfy dependencies for situations \
-where you wish to build the kernel externally from the build system."
+SUMMARY = "openEuler Linux kernel"
+DESCRIPTION = "openEuler Embedded shares the same linux kernel with other \
+               openEuler linux distribution"
 SECTION = "kernel"
 
 LICENSE = "GPLv2"
@@ -59,6 +58,7 @@ inherit kernel-devicetree
 
 COMPATIBLE_HOST = ".*-linux"
 
+PV = "5.10"
 PR = "r1"
 
 SRC_URI = "file://kernel-5.10 \
