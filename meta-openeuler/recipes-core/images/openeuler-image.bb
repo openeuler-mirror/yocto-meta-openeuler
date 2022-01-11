@@ -66,7 +66,6 @@ IMAGE_INSTALL_normal = " \
 audit \
 auditd \
 audispd-plugins \
-busybox-login \
 cracklib \
 libpwquality \
 libpam \
