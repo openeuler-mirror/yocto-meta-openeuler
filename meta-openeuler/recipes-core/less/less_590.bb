@@ -26,26 +26,12 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504 \
 DEPENDS = "ncurses"
 
 SRC_URI = "file://${BPN}/${BPN}-${PV}.tar.gz \
-           file://${BPN}/backport-Create-only-one-ifile-when-a-file-is-opened-under-di.patch \
-           file://${BPN}/backport-Fix-crash-when-call-set_ifilename-with-a-pointer-to-.patch \
-           file://${BPN}/backport-Fix-minor-memory-leak-with-input-preprocessor.-150.patch  \
-           file://${BPN}/backport-Fix-Tag-not-found-error-while-looking-for-a-tag-s-lo.patch \
-           file://${BPN}/backport-Ignore-SIGTSTP-in-secure-mode.patch  \
-           file://${BPN}/backport-Lesskey-don-t-translate-ctrl-K-in-an-EXTRA-string.patch \
-           file://${BPN}/backport-Make-histpattern-return-negative-value-to-indicate-e.patch \
-           file://${BPN}/backport-Protect-from-buffer-overrun.patch \
-           file://${BPN}/backport-Remove-extraneous-frees-associated-with-removed-call.patch \
-           file://${BPN}/backport-Remove-unnecessary-call-to-pshift-in-pappend.patch \
-           file://${BPN}/backport-Reset-horizontal-shift-when-opening-a-new-file.patch \
            file://${BPN}/less-394-time.patch \ 
 	  "
-#file://${BPN}/less-418-fsync.patch
-
-SRC_URI[sha256sum] = "ce5b6d2b9fc4442d7a07c93ab128d2dff2ce09a1d4f2d055b95cf28dd0dc9a9a"
+SRC_URI[sha256sum] = "6aadf54be8bf57d0e2999a3c5d67b1de63808bb90deb8f77b028eafae3a08e10"
 
 UPSTREAM_CHECK_URI = "http://www.greenwoodsoftware.com/less/download.html"
 
-#inherit autotools update-alternatives
 inherit autotools
 
 do_install () {
