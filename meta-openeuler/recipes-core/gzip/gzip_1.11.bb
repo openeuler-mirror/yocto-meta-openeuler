@@ -2,9 +2,8 @@ require gzip.inc
 
 LICENSE = "GPLv3+"
 
-SRC_URI = "file://gzip/gzip-${PV}.tar.xz \
+SRC_URI = "file://gzip/${BP}.tar.xz \
            file://gzip/fix-verbose-disable.patch \
-           file://gzip/gzexe.patch \
            file://run-ptest \
           "
 #file://gzip/performance-neoncrc32-and-prfm.patch 
@@ -39,5 +38,5 @@ do_install_ptest() {
             ${B}/tests/Makefile > ${D}${PTEST_PATH}/src/tests/Makefile
 }
 
-SRC_URI[md5sum] = "cf9ee51aff167ff69844d5d7d71c8b20"
-SRC_URI[sha256sum] = "c91f74430bf7bc20402e1f657d0b252cb80aa66ba333a25704512af346633c68"
+SRC_URI[md5sum] = "d1e93996dba00cab0caa7903cd01d454"
+SRC_URI[sha256sum] = "9b9a95d68fdcb936849a4d6fada8bf8686cddf58b9b26c9c4289ed0c92a77907"

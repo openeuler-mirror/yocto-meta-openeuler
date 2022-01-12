@@ -6,11 +6,8 @@ SECTION = "console/utils"
 LICENSE = "GPLv3"
 LIC_FILES_CHKSUM = "file://COPYING;md5=1ebbd3e34237af26da5dc08a4e440464"
 
-SRC_URI = "file://grep/grep-${PV}.tar.xz \
-"
-#file://grep/grep-3.6-gnulib-c-stack-fix.patch
-
-SRC_URI[sha256sum] = "667e15e8afe189e93f9f21a7cd3a7b3f776202f417330b248c2ad4f997d9373e"
+SRC_URI = "file://grep/grep-${PV}.tar.xz"
+SRC_URI[sha256sum] = "5c10da312460aec721984d5d83246d24520ec438dd48d7ab5a05dbc0d6d6823c"
 
 inherit autotools gettext texinfo pkgconfig
 
@@ -32,8 +29,6 @@ do_install () {
 		rmdir ${D}${bindir}/
 	fi
 }
-
-#inherit update-alternatives
 
 PACKAGECONFIG ??= "pcre"
 PACKAGECONFIG[pcre] = "--enable-perl-regexp,--disable-perl-regexp,libpcre"

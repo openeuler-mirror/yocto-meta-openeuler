@@ -9,38 +9,14 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=ea5bed2f60d357618ca161ad539f7c0a \
 DEPENDS = "zlib"
 
 SRC_URI = "file://kexec-tools/kexec-tools-${PV}.tar.xz \
-           file://kexec-tools/kexec-tools-2.0.20-fix-broken-multiboot2-buliding-for-i386.patch \
-           file://kexec-tools/kexec-tools-2.0.20-Remove-duplicated-variable-declarations.patch \
-           file://kexec-tools/kexec-add-variant-helper-functions-for-handling-memory-regions.patch \
-           file://kexec-tools/arm64-kexec-allocate-memory-space-avoiding-reserved-regions.patch \
-           file://kexec-tools/x86-Fix-PAGE_OFFSET-for-kernels-since-4.20.patch \
-           file://kexec-tools/Cleanup-remove-the-read_elf_kcore.patch \
-           file://kexec-tools/Fix-an-error-definition-about-the-variable-fname.patch \
-           file://kexec-tools/Cleanup-move-it-back-from-util_lib-elf_info.c.patch \
-           file://kexec-tools/Limit-the-size-of-vmcore-dmesg.txt-to-2G.patch \
-           file://kexec-tools/vmcore-dmesg-vmcore-dmesg.c-Fix-shifting-error-reported-by-cppcheck.patch \
-           file://kexec-tools/kexec-tools-Fix-possible-out-of-bounds-access-in-ifdown.patch \
-           file://kexec-tools/kexec-tools-Fix-kexec_file_load-2-error-handling.patch \
-           file://kexec-tools/kexec-tools-Reset-getopt-before-falling-back-to-legacy.patch \ 
-           file://kexec-tools/kexec-support-parsing-the-string-Reserved-to-get-the-correct-e820-reserved-region.patch \
-           file://kexec-tools/arm64-kdump-deal-with-a-lot-of-resource-entries-in-proc-iomem.patch \
-"
-SRC_URI_append_aarch64 += " \
            file://kexec-tools/arm64-support-more-than-one-crash-kernel-regions.patch \
-"
-SRC_URI_append += " \
            file://kexec-tools/kexec-Add-quick-kexec-support.patch \
-"
-SRC_URI_append_aarch64 += " \
            file://kexec-tools/kexec-Quick-kexec-implementation-for-arm64.patch \
+           file://kdump \
+           file://kdump.conf \
+           file://kdump.service \
 "
-SRC_URI_append += " \
-          file://kexec-tools/backport-print-add-support-for-lockless-ringbuffer.patch \
-          file://kdump \
-          file://kdump.conf \
-          file://kdump.service \
-"
-SRC_URI[sha256sum] = "dad8077f0315445d1f6335579fc4ade222facf82a67124974c7be5303ba4f8c8"
+SRC_URI[sha256sum] = "aa63cd6c7dd95b06ceba6240a7fdc6792789cada75a655e6714987175224241b"
 
 inherit autotools
 
