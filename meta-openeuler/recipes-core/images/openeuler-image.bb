@@ -29,7 +29,6 @@ TOOLCHAIN_TARGET_TASK_remove += "${@multilib_pkg_extend(d, 'packagegroup-core-st
 TOOLCHAIN_HOST_TASK_task-populate-sdk-ext = ""
 TOOLCHAIN_HOST_TASK = ""
 OUTPUT_DIR = "${TOPDIR}/output"
-HOSTNAME = "openeuler"
 
 fakeroot do_openeuler_initrd() {
     test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
@@ -42,10 +41,7 @@ fakeroot do_openeuler_initrd() {
     mv boot/${imagename} "${OUTPUT_DIR}"/$(echo ${imagename} | cut -d "-" -f 1)
     mv boot/vmlinux* "${OUTPUT_DIR}"/
     mv boot/Image* "${OUTPUT_DIR}"/
-    echo "${HOSTNAME}" > etc/hostname
     chmod +x etc/rc.d/*
-    touch etc/security/opasswd
-    chmod 600 etc/security/opasswd
     rm -r ./boot
     chown -R root:root ./*
     find . | cpio -H newc -o | gzip -c > "${OUTPUT_DIR}"/initrd
