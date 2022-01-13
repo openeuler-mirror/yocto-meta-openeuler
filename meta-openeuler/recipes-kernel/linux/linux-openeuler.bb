@@ -14,7 +14,6 @@ inherit kernel-version kernel-module-split
 export EXTRA_CFLAGS = "${CFLAGS}"
 export EXTRA_LDFLAGS = "${LDFLAGS}"
 
-EXTRA_OEMAKE = "CC='${CC}' LD='${CCLD}' V=1 ARCH=${ARCH} CROSS_COMPILE=${TARGET_PREFIX} SKIP_STRIP=y HOSTCC='${BUILD_CC}' HOSTCPP='${BUILD_CPP}'"
 EXTRA_OEMAKE = "CC='${CC}' V=1 ARCH=${ARCH} CROSS_COMPILE=${TARGET_PREFIX} SKIP_STRIP=y HOSTCC='${BUILD_CC}' HOSTCPP='${BUILD_CPP}'"
 
 PACKAGES_DYNAMIC += "^kernel-module-.*"
@@ -25,13 +24,12 @@ KERNEL_CLASSES ?= " kernel-uimage "
 inherit ${KERNEL_CLASSES}
 
 KERNEL_VERSION = "${@get_kernelversion_headers('${B}')}"
-KERNEL_IMAGETYPE_FOR_MAKE = "zImage"
 KERNEL_PACKAGE_NAME ??= "kernel"
-KERNEL_IMAGETYPE ?= "zImage"
 # kernel-base becomes kernel-${KERNEL_VERSION}
 # kernel-image becomes kernel-image-${KERNEL_VERSION}
-PACKAGES = "${PN} ${KERNEL_PACKAGE_NAME} ${KERNEL_PACKAGE_NAME}-base ${KERNEL_PACKAGE_NAME}-vmlinux ${KERNEL_PACKAGE_NAME}-image ${KERNEL_PACKAGE_NAME}-dev ${KERNEL_PACKAGE_NAME}-modules"
+PACKAGES = "${PN} ${KERNEL_PACKAGE_NAME} ${KERNEL_PACKAGE_NAME}-base ${KERNEL_PACKAGE_NAME}-vmlinux ${KERNEL_PACKAGE_NAME}-image ${KERNEL_PACKAGE_NAME}-dev ${KERNEL_PACKAGE_NAME}-modules ${KERNEL_PACKAGE_NAME}-img"
 FILES_${PN} = ""
+FILES_${KERNEL_PACKAGE_NAME}-img = "/boot/Image-${KERNEL_VERSION}"
 FILES_${KERNEL_PACKAGE_NAME}-base = "${nonarch_base_libdir}/modules/${KERNEL_VERSION}/modules.order ${nonarch_base_libdir}/modules/${KERNEL_VERSION}/modules.builtin ${nonarch_base_libdir}/modules/${KERNEL_VERSION}/modules.builtin.modinfo"
 FILES_${KERNEL_PACKAGE_NAME}-image = "/boot/${KERNEL_IMAGETYPE}-${KERNEL_VERSION} /boot/vmlinux-${KERNEL_VERSION}"
 FILES_${KERNEL_PACKAGE_NAME}-dev = "/boot/System.map* /boot/Module.symvers* /boot/config* ${KERNEL_SRC_PATH} ${nonarch_base_libdir}/modules/${KERNEL_VERSION}/build"
@@ -159,6 +157,7 @@ do_install() {
         install -m 0644 System.map ${D}/boot/System.map-${KERNEL_VERSION}
         install -m 0644 .config ${D}/boot/config-${KERNEL_VERSION}
         install -m 0644 vmlinux ${D}/boot/vmlinux-${KERNEL_VERSION}
+        install -m 0644 ${KERNEL_OUTPUT_DIR}/Image ${D}/${KERNEL_IMAGEDEST}/Image-${KERNEL_VERSION}
         [ -e Module.symvers ] && install -m 0644 Module.symvers ${D}/boot/Module.symvers-${KERNEL_VERSION}
         install -d ${D}${sysconfdir}/modules-load.d
         install -d ${D}${sysconfdir}/modprobe.d

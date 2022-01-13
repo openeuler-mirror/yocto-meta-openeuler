@@ -8,12 +8,15 @@ IMAGE_LINGUAS = " "
 LICENSE = "MIT"
 
 inherit core-image
-IMAGE_TYPES = "cpio"
-IMAGE_FSTYPES_DEBUGFS = "cpio"
+IMAGE_FSTYPES = "cpio.gz"
+IMAGE_FSTYPES_DEBUGFS = "cpio.gz"
+INITRAMFS_MAXSIZE = "262144"
+#delete depends to cpio-native
+do_image_cpio[depends] = ""
+
 #not add run-postinsts to PACKAGE_INSTALL, so that not fail when do_rootfs??
 ROOTFS_BOOTSTRAP_INSTALL = ""
-#tar:lower version has no --sort=name
-IMAGE_CMD_tar = "${IMAGE_CMD_TAR} --format=posix --numeric-owner -cf ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.tar -C ${IMAGE_ROOTFS} . || [ $? -eq 1 ]"
+
 #not depends to update-alternatives
 do_rootfs[depends] = ""
 #not depends to ldconfig-native
@@ -29,27 +32,24 @@ TOOLCHAIN_TARGET_TASK_remove += "${@multilib_pkg_extend(d, 'packagegroup-core-st
 TOOLCHAIN_HOST_TASK_task-populate-sdk-ext = ""
 TOOLCHAIN_HOST_TASK = ""
 OUTPUT_DIR = "${TOPDIR}/output"
-HOSTNAME = "openeuler"
 
-fakeroot do_openeuler_initrd() {
+delete_boot_from_rootfs() {
     test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
-    local rootfs_dir="${WORKDIR}/rootfs_tmp"
-    test -d "${rootfs_dir}" && rm -r "${rootfs_dir}"
-    cp -a "${WORKDIR}/rootfs" "${rootfs_dir}"
-    pushd "${rootfs_dir}"
-    local imagename=$(ls boot/*Image-* | xargs basename)
-    rm -f "${OUTPUT_DIR}"/*Image "${OUTPUT_DIR}"/initrd
-    mv boot/${imagename} "${OUTPUT_DIR}"/$(echo ${imagename} | cut -d "-" -f 1)
-    echo "${HOSTNAME}" > etc/hostname
-    chmod +x etc/rc.d/*
-    touch etc/security/opasswd
-    chmod 600 etc/security/opasswd
+    pushd "${IMAGE_ROOTFS}"
+    rm -f "${OUTPUT_DIR}"/*Image* "${OUTPUT_DIR}"/initrd "${OUTPUT_DIR}"/vmlinux*
+    mv boot/${KERNEL_IMAGETYPE}-* "${OUTPUT_DIR}"/${KERNEL_IMAGETYPE}
+    mv boot/vmlinux* "${OUTPUT_DIR}"/
+    mv boot/Image* "${OUTPUT_DIR}"/
     rm -r ./boot
-    chown -R root:root ./*
-    find . | cpio -H newc -o | gzip -c > "${OUTPUT_DIR}"/initrd
     popd
 }
-addtask do_openeuler_initrd after do_image_complete before do_build
+
+copy_openeuler_distro() {
+    cp -fp ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.${IMAGE_FSTYPES} "${OUTPUT_DIR}"/initrd
+}
+
+IMAGE_PREPROCESS_COMMAND += "delete_boot_from_rootfs;"
+IMAGE_POSTPROCESS_COMMAND += "copy_openeuler_distro;"
 
 #No kernel-abiversion file found, cannot run depmod, aborting
 USE_DEPMOD = "0"
@@ -130,6 +130,7 @@ libarchive \
 libevent \
 iSulad \
 kernel-module-overlay-5.10.0 \
+kernel-img \
 "
 
 IMAGE_INSTALL += "${ROOTFS_BOOTSTRAP_INSTALL} ${IMAGE_INSTALL_normal} ${IMAGE_INSTALL_pro}"

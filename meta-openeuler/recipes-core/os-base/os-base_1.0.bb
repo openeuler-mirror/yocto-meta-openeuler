@@ -25,6 +25,8 @@ SRC_URI = "file://bashrc \
 	file://rc.sysinit \
 	file://rc.local"
 
+hostname = "openeuler"
+
 do_install() {
 	install -d ${D}/etc
 	cp ${WORKDIR}/bashrc  		${D}/etc/
@@ -39,9 +41,9 @@ do_install() {
 	install -m 0600 ${WORKDIR}/shadow ${D}/etc/
 	install -m 0600 ${WORKDIR}/sysctl.conf ${D}/etc/
 	install -d ${D}/etc/rc.d
-	cp ${WORKDIR}/rc.functions  	${D}/etc/rc.d
-	cp ${WORKDIR}/rc.sysinit  	${D}/etc/rc.d
-	cp ${WORKDIR}/rc.local  	${D}/etc/rc.d
+	install -m 0744 ${WORKDIR}/rc.functions ${D}/etc/rc.d
+	install -m 0744 ${WORKDIR}/rc.sysinit ${D}/etc/rc.d
+	install -m 0744 ${WORKDIR}/rc.local ${D}/etc/rc.d
         install -m 0755 -d ${D}/etc/init.d/
 	install -m 0750 ${WORKDIR}/rcS ${D}/etc/init.d/
         mkdir -p ${D}/var/log/
@@ -49,6 +51,13 @@ do_install() {
         mkdir -p ${D}/var/run/faillock ${D}/tmp
         mkdir -p ${D}/proc ${D}/sys ${D}/root ${D}/dev ${D}/sys/fs/cgroup
         mkdir -p ${D}/var/log/audit ${D}/var/run/sshd
+        if [ "${hostname}" ]; then
+            echo ${hostname} > ${D}${sysconfdir}/hostname
+            echo "127.0.1.1 ${hostname}" >> ${D}${sysconfdir}/hosts
+        fi
+        mkdir -p ${D}${sysconfdir}/security/
+        touch ${D}${sysconfdir}/security/opasswd
+        chmod 600 ${D}${sysconfdir}/security/opasswd
 }
 
 FILES_${PN} = "/"
