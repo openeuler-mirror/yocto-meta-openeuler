@@ -37,9 +37,11 @@ fakeroot do_openeuler_initrd() {
     test -d "${rootfs_dir}" && rm -r "${rootfs_dir}"
     cp -a "${WORKDIR}/rootfs" "${rootfs_dir}"
     pushd "${rootfs_dir}"
-    local imagename=$(ls boot/*Image-* | xargs basename)
+    local imagename=$(ls boot/${KERNEL_IMAGETYPE}-* | xargs basename)
     rm -f "${OUTPUT_DIR}"/*Image "${OUTPUT_DIR}"/initrd
     mv boot/${imagename} "${OUTPUT_DIR}"/$(echo ${imagename} | cut -d "-" -f 1)
+    mv boot/vmlinux* "${OUTPUT_DIR}"/
+    mv boot/Image* "${OUTPUT_DIR}"/
     echo "${HOSTNAME}" > etc/hostname
     chmod +x etc/rc.d/*
     touch etc/security/opasswd
@@ -130,6 +132,7 @@ libarchive \
 libevent \
 iSulad \
 kernel-module-overlay-5.10.0 \
+kernel-img \
 "
 
 IMAGE_INSTALL += "${ROOTFS_BOOTSTRAP_INSTALL} ${IMAGE_INSTALL_normal} ${IMAGE_INSTALL_pro}"
