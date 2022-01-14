@@ -7,8 +7,6 @@ SRC_URI = "file://libarchive/libarchive-3.5.1.tar.gz   \
 	   file://libarchive/libarchive-uninitialized-value.patch \ 
 	"
 
-FILESPATH_prepend += "${LOCAL_FILES}/${BPN}:"
-DL_DIR = "${LOCAL_FILES}"
 S = "${WORKDIR}/${BPN}-${PV}"
 
 inherit cmake

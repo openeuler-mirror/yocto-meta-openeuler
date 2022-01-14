@@ -26,8 +26,7 @@ SRC_URI = "file://iSulad/v2.0.10.tar.gz \
 	   file://iSulad/0019-add-pull-request-gateway-checker-for-build-and-ut.patch \
 	   file://iSulad/0020-Optimize-websocket-streaming-service-code.patch \
 	"
-FILESPATH_prepend += "${LOCAL_FILES}/${BPN}:"
-DL_DIR = "${LOCAL_FILES}"
+
 S = "${WORKDIR}/${BPN}"
 WARN_QA_remove += "uppercase-pn"
 

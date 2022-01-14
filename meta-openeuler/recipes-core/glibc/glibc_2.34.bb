@@ -28,7 +28,6 @@ SRC_URI_arm = "file://openeuler_gcc_arm32le"
 #Not strip toolchain
 INHIBIT_SYSROOT_STRIP = "1"
 INSANE_SKIP_${PN} += "already-stripped"
-#FILESPATH_prepend += "${LOCAL_FILES}:"
 DL_DIR = "${LOCAL_SYSROOT_DL_DIR}"
 S_aarch64 = "${WORKDIR}/openeuler_gcc_arm64le"
 S_arm = "${WORKDIR}/openeuler_gcc_arm32le"

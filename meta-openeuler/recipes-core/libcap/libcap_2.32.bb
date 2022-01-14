@@ -13,8 +13,6 @@ SRC_URI = "file://libcap/libcap-2.32.tar.gz \
 	   file://libcap/Avoid-segfaulting-when-the-kernel-is-ahead-of-libcap.patch \
 	  "
 
-FILESPATH_prepend += "${LOCAL_FILES}/${BPN}:"
-DL_DIR = "${LOCAL_FILES}"
 S = "${WORKDIR}/${BPN}-${PV}"
 
 DEPENDS = "hostperl-runtime-native gperf-native"

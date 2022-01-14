@@ -12,9 +12,6 @@ SRC_URI = "file://libevent/libevent-2.1.12-stable.tar.gz \
 	   file://libevent/http-add-callback-to-allow-server-to-decline-and-the.patch \
 	 "
 
-FILESPATH_prepend += "${LOCAL_FILES}/${BPN}:"
-DL_DIR = "${LOCAL_FILES}"
-
 UPSTREAM_CHECK_URI = "http://libevent.org/"
 
 S = "${WORKDIR}/${BPN}-${PV}-stable"
