@@ -11,8 +11,6 @@ SRC_URI = "file://yajl/2.1.0.tar.gz \
 	   file://yajl/yajl-2.1.0-fix-memory-leak.patch    \
 	  "
 
-FILESPATH_prepend += "${LOCAL_FILES}/${BPN}:"
-DL_DIR = "${LOCAL_FILES}"
 S = "${WORKDIR}/${BPN}-${PV}"
 
 inherit cmake

@@ -44,8 +44,6 @@ SRC_URI = "file://lxc/lxc-4.0.3.tar.gz \
 	  file://check_only_rootfs_as_filesystem_type.patch \
 	"
 
-FILESPATH_prepend += "${LOCAL_FILES}/${BPN}:"
-DL_DIR = "${LOCAL_FILES}"
 
 DEPENDS = "yajl libseccomp libcap"
 

@@ -9,8 +9,6 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=94d55d512a9ba36caa9b7df079bae19f \
 
 SRC_URI = "file://libcap-ng/libcap-ng-${PV}.tar.gz"
 
-FILESPATH_prepend += "${LOCAL_FILES}/${BPN}:"
-DL_DIR = "${LOCAL_FILES}"
 S = "${WORKDIR}/${BPN}-${PV}"
 
 SRC_URI[md5sum] = "5883ed10b621c87e29a05cff36d2928e"

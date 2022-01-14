@@ -6,8 +6,6 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;m
 SRC_URI = "file://lcr/v2.0.6.tar.gz \
 	  "
 
-FILESPATH_prepend += "${LOCAL_FILES}/${BPN}:"
-DL_DIR = "${LOCAL_FILES}"
 S = "${WORKDIR}/${BPN}"
 
 inherit cmake

@@ -4,7 +4,7 @@ XSRC_URI = "git://git.yoctoproject.org/pseudo;branch=oe-core \
            file://fallback-passwd \
            file://fallback-group \
            "
-FILESPATH_prepend += "${LOCAL_FILES}:"
+
 SRC_URI_remove_class-native = " \
     http://downloads.yoctoproject.org/mirror/sources/pseudo-prebuilt-2.33.tar.xz;subdir=git/prebuilt;name=prebuilt \
     file://older-glibc-symbols.patch"

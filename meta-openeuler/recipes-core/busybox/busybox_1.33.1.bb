@@ -19,7 +19,6 @@ inherit kernel-arch
 SRC_URI = "file://busybox/busybox-1.33.1.tar.bz2 \
            file://yocto-embedded-tools/config/arm64/defconfig-busybox \
 "
-FILESPATH_prepend += "${LOCAL_FILES}/${BPN}:"
 S = "${WORKDIR}/${BPN}-${PV}"
 
 #not split debug files with dwarfsrcfiles,no dwarfsrcfiles

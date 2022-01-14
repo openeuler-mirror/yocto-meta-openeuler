@@ -8,8 +8,6 @@ SRC_URI = "file://clibcni/v2.0.4.tar.gz \
 	   file://clibcni/0002-add-error-info-for-failed-run-cni-plugin.patch \
 	  "
 
-FILESPATH_prepend += "${LOCAL_FILES}/${BPN}:"
-DL_DIR = "${LOCAL_FILES}"
 S = "${WORKDIR}/${BPN}"
 
 inherit cmake

@@ -16,8 +16,6 @@ SRC_URI = "file://curl/curl-7.77.0.tar.xz \
           file://curl/backport-CVE-2021-22926.patch \
           "
 
-FILESPATH_prepend += "${LOCAL_FILES}/${BPN}:"
-DL_DIR = "${LOCAL_FILES}"
 S = "${WORKDIR}/${BPN}-${PV}"
 
 CVE_PRODUCT = "curl libcurl"

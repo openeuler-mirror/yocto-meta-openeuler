@@ -13,8 +13,6 @@ SRC_URI = "file://libevhtp/1.2.18.tar.gz \
 	   file://libevhtp/0005-libevhtp-add-securce-compile-options.patch \
 	  "
 
-FILESPATH_prepend += "${LOCAL_FILES}/${BPN}:"
-DL_DIR = "${LOCAL_FILES}"
 S = "${WORKDIR}/${BPN}-${PV}"
 
 DEPENDS = "libevent"
