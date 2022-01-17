@@ -36,11 +36,15 @@ OUTPUT_DIR = "${TOPDIR}/output"
 delete_boot_from_rootfs() {
     test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
     pushd "${IMAGE_ROOTFS}"
-    rm -f "${OUTPUT_DIR}"/*Image* "${OUTPUT_DIR}"/initrd "${OUTPUT_DIR}"/vmlinux*
-    mv boot/${KERNEL_IMAGETYPE}-* "${OUTPUT_DIR}"/${KERNEL_IMAGETYPE}
-    mv boot/vmlinux* "${OUTPUT_DIR}"/
-    mv boot/Image* "${OUTPUT_DIR}"/
-    rm -r ./boot
+    rm -f "${OUTPUT_DIR}"/initrd
+    # remove /boot from rootfs for final image
+    if [-d ./boot]; then
+        rm -f "${OUTPUT_DIR}"/Image* "${OUTPUT_DIR}"/vmlinux*
+        mv boot/${KERNEL_IMAGETYPE}-* "${OUTPUT_DIR}"/${KERNEL_IMAGETYPE}
+        mv boot/vmlinux* "${OUTPUT_DIR}"/
+        mv boot/Image* "${OUTPUT_DIR}"/
+        rm -r ./boot
+    fi
     popd
 }
 
