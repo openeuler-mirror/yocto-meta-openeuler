@@ -9,16 +9,8 @@ EULER_TOOLCHAIN_GCC_PATH = "/gcc/${EULER_TOOLCHAIN_GCC_PATH_INNER}"
 
 python () {
     import os
-    import platform
-    import subprocess
-    host = platform.machine()
-    tune = d.getVar('TARGET_ARCH', True)
-    config_xml = d.getVar('EULER_CONFIG_FILE', True)
-    cmd = 'grep "name=\\\"sdk\\\"" %s | grep "tune=\\\"%s\\\"" | grep "hostmachine=\\\"%s\\\""  | awk -F"[<>]" \'{print $3}\'' % (config_xml, tune, host)
-    compiler_path  = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-    stdout, stderr = compiler_path.communicate()
 
-    local_toolchain = str(stdout, "utf-8").strip()
+    local_toolchain = str(d.getVar('OPENEULER_TOOLCHAIN_DIR', True))
     if not os.path.exists(local_toolchain):
         return 1
     if os.path.exists(local_toolchain):
