@@ -33,28 +33,6 @@ TOOLCHAIN_HOST_TASK_task-populate-sdk-ext = ""
 TOOLCHAIN_HOST_TASK = ""
 OUTPUT_DIR = "${TOPDIR}/output"
 
-delete_boot_from_rootfs() {
-    test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
-    pushd "${IMAGE_ROOTFS}"
-    rm -f "${OUTPUT_DIR}"/initrd
-    # remove /boot from rootfs for final image
-    if [-d ./boot]; then
-        rm -f "${OUTPUT_DIR}"/Image* "${OUTPUT_DIR}"/vmlinux*
-        mv boot/${KERNEL_IMAGETYPE}-* "${OUTPUT_DIR}"/${KERNEL_IMAGETYPE}
-        mv boot/vmlinux* "${OUTPUT_DIR}"/
-        mv boot/Image* "${OUTPUT_DIR}"/
-        rm -r ./boot
-    fi
-    popd
-}
-
-copy_openeuler_distro() {
-    cp -fp ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.${IMAGE_FSTYPES} "${OUTPUT_DIR}"/initrd
-}
-
-IMAGE_PREPROCESS_COMMAND += "delete_boot_from_rootfs;"
-IMAGE_POSTPROCESS_COMMAND += "copy_openeuler_distro;"
-
 #No kernel-abiversion file found, cannot run depmod, aborting
 USE_DEPMOD = "0"
 
@@ -140,3 +118,5 @@ kernel-img \
 IMAGE_INSTALL += "${ROOTFS_BOOTSTRAP_INSTALL} ${IMAGE_INSTALL_normal} ${IMAGE_INSTALL_pro}"
 
 DISTRO_FEATURES += "glibc"
+
+require recipes-core/images/${MACHINE}.inc
