@@ -3,11 +3,11 @@ LICENSE = "MIT"
 
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
-SRC_URI = "file://libarchive/libarchive-3.5.1.tar.gz   \
-	   file://libarchive/libarchive-uninitialized-value.patch \ 
-	"
+SRC_URI = "file://libarchive/${BP}.tar.gz   \
+           file://libarchive/backport-libarchive-3.5.2-symlink-fix.patch \
+"
 
-S = "${WORKDIR}/${BPN}-${PV}"
+S = "${WORKDIR}/${BP}"
 
 inherit cmake
 
