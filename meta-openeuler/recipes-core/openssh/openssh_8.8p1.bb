@@ -28,7 +28,7 @@ SYSTEMD_SERVICE_${PN}-sshd = "sshd.socket"
 
 inherit autotools-brokensep
 
-LIC_FILES_CHKSUM="file://LICENCE;md5=18d9e5a8b3dd1790d73502f50426d4d3"
+LIC_FILES_CHKSUM="file://LICENCE;md5=d9d2753bdef9f19466dc7bc959114b11"
 EXTRA_AUTORECONF_DEFINE = " ACLOCAL=echo "
 
 PACKAGECONFIG ??= ""
@@ -63,7 +63,7 @@ CACHED_CONFIGUREVARS += "ac_cv_path_PATH_PASSWD_PROG=${bindir}/passwd"
 CACHED_CONFIGUREVARS += "ac_cv_header_maillock_h=no"
 
 # copy SRC_URI files
-SRC_URI = "file://openssh/openssh-8.2p1.tar.gz \
+SRC_URI = "file://openssh/${BP}.tar.gz \
 file://ssh_config \
 file://init \
 file://sshd.socket \
@@ -75,7 +75,6 @@ file://sshd_config \
 file://sshd_config_readonly \
 file://sshd \
 "
-
 
 PAM_SRC_URI = "file://sshd"
 SRC_URI_EXTRA = "file://ssh_config \
