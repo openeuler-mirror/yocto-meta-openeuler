@@ -23,6 +23,7 @@ require ../../recipes-devtools/gcc/gcc-bin-toolchain.inc
 
 SRC_URI_aarch64 = "file://openeuler_gcc_arm64le"
 SRC_URI_arm = "file://openeuler_gcc_arm32le"
+SRC_URI_class-nativesdk = ""
 
 #Not strip toolchain
 INHIBIT_SYSROOT_STRIP = "1"
@@ -48,12 +49,21 @@ do_install() {
     install -m 0755 -d ${D}/${libdir}
     cp -pPR ${S}/sysroot/* ${D}/
     rm -rf ${D}/etc/rpc
-    rm -rf ${D}/${base_libdir}/debug
+    rm -rf ${D}${datadir}/info
+    rm -rf ${D}${base_libdir}/debug
     chown root:root ${D}/ -R
 }
 
+do_install_class-nativesdk() {
+    test -d ${D}/${base_libdir} ||  mkdir -p ${D}/${base_libdir}
+    pushd ${D}/${base_libdir}
+    local ldso="$(ldconfig -p | grep ld-linux | awk '{print $NF}')"
+    cp -p "${ldso}" ld-linux.so
+    popd
+}
+
 FILES_${PN} = " \
-    ${base_libdir}/ld-linux*.so.* \
+    ${base_libdir}/ld-linux*.so* \
     ${libdir}/libc.so \
     ${base_libdir}/libm.so \
     ${base_libdir}/libc.so.6 \
