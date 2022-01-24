@@ -37,7 +37,7 @@ ROOTFS_BOOTSTRAP_INSTALL = ""
 do_rootfs[depends] = ""
 #not depends to ldconfig-native
 #LDCONFIGDEPEND = ""
-DEPENDS_remove += "qemuwrapper-cross depmodwrapper-cross cross-localedef-native"
+DEPENDS_remove += "cross-localedef-native"
 RPMROOTFSDEPENDS = ""
 
 #IMAGE_ROOTFS_SIZE ?= "8192"
@@ -125,6 +125,7 @@ libevent \
 iSulad \
 kernel-module-overlay-5.10.0 \
 kernel-img \
+kernel-vmlinux \
 "
 
 IMAGE_INSTALL += "${ROOTFS_BOOTSTRAP_INSTALL} ${IMAGE_INSTALL_normal} ${IMAGE_INSTALL_pro}"
