@@ -132,4 +132,9 @@ IMAGE_INSTALL += "${ROOTFS_BOOTSTRAP_INSTALL} ${IMAGE_INSTALL_normal} ${IMAGE_IN
 
 DISTRO_FEATURES += "glibc"
 
+copy_opeueuler_sdk() {
+   cp -fp ${SDKDEPLOYDIR}/${TOOLCHAIN_OUTPUTNAME}.sh "${OUTPUT_DIR}"/
+}
+SDK_POSTPROCESS_COMMAND += "copy_opeueuler_sdk;"
+
 require recipes-core/images/${MACHINE}.inc
