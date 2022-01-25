@@ -123,7 +123,7 @@ libevhtp \
 libarchive \
 libevent \
 iSulad \
-kernel-module-overlay-5.10.0 \
+kernel-module-overlay \
 kernel-img \
 kernel-vmlinux \
 "
