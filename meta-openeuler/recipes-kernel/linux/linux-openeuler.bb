@@ -16,6 +16,8 @@ S = "${WORKDIR}/kernel-5.10"
 
 LINUX_VERSION ?= "5.10"
 LINUX_VERSION_EXTENSION_append = "-openeuler"
+#delete v8 in kernel module name, such as kernel-module-xxx-5.10.0-v8
+KERNEL_MODULE_PACKAGE_SUFFIX = ""
 
 PV = "${LINUX_VERSION}"
 
