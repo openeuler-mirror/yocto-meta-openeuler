@@ -18,13 +18,13 @@ inherit populate_sdk
 #set IMAGE_LOCALES_ARCHIVE to 0 and unset SDKIMAGE_LINGUAS, to avoid run generate_locale_archive()
 IMAGE_LOCALES_ARCHIVE = "0"
 SDKIMAGE_LINGUAS = ""
+SDK_RELOCATE_AFTER_INSTALL = "0"
 
 inherit populate_sdk_ext
 export SDK_OS = "linux"
 TOOLCHAIN_HOST_TASK_task-populate-sdk-ext = ""
 TOOLCHAIN_HOST_TASK = " \
 meta-environment-${MACHINE} \
-nativesdk-glibc \
 "
 FEATURE_PACKAGES_tools-sdk_remove = " packagegroup-core-sdk packagegroup-core-standalone-sdk-target"
 TOOLCHAIN_TARGET_TASK_remove += "${@multilib_pkg_extend(d, 'packagegroup-core-standalone-sdk-target')}"
