@@ -37,7 +37,9 @@ ROOTFS_BOOTSTRAP_INSTALL = ""
 do_rootfs[depends] = ""
 #not depends to ldconfig-native
 #LDCONFIGDEPEND = ""
-DEPENDS_remove += "cross-localedef-native"
+#not depends to lib32-qemuwrapper-cross when no other lib32 pkgs
+DEPENDS_remove += "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])} cross-localedef-native"
+SDK_DEPENDS_remove += "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])}"
 RPMROOTFSDEPENDS = ""
 
 #IMAGE_ROOTFS_SIZE ?= "8192"
