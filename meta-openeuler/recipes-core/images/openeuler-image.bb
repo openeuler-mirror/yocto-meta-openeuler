@@ -123,7 +123,7 @@ libevhtp \
 libarchive \
 libevent \
 iSulad \
-kernel-module-overlay-5.10.0 \
+kernel-module-overlay \
 kernel-img \
 kernel-vmlinux \
 "
@@ -131,5 +131,10 @@ kernel-vmlinux \
 IMAGE_INSTALL += "${ROOTFS_BOOTSTRAP_INSTALL} ${IMAGE_INSTALL_normal} ${IMAGE_INSTALL_pro}"
 
 DISTRO_FEATURES += "glibc"
+
+copy_opeueuler_sdk() {
+   cp -fp ${SDKDEPLOYDIR}/${TOOLCHAIN_OUTPUTNAME}.sh "${OUTPUT_DIR}"/
+}
+SDK_POSTPROCESS_COMMAND += "copy_opeueuler_sdk;"
 
 require recipes-core/images/${MACHINE}.inc
