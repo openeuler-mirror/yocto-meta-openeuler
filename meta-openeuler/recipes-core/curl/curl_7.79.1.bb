@@ -7,16 +7,11 @@ LICENSE = "MIT"
 
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
-SRC_URI = "file://curl/curl-7.77.0.tar.xz \
-          file://curl/0101-curl-7.32.0-multilib.patch \
-          file://curl/0102-curl-7.36.0-debug.patch \
-          file://curl/0105-curl-7.63.0-lib1560-valgrind.patch \
-          file://curl/0106-curl-fix-CVE-2019-15601.patch \
-          file://curl/backport-CVE-2021-22925.patch \
-          file://curl/backport-CVE-2021-22926.patch \
-          "
+SRC_URI = "file://curl/${BP}.tar.xz \
+           file://curl/backport-0101-curl-7.32.0-multilib.patch \
+"
 
-S = "${WORKDIR}/${BPN}-${PV}"
+S = "${WORKDIR}/${BP}"
 
 CVE_PRODUCT = "curl libcurl"
 inherit autotools

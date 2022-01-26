@@ -11,10 +11,20 @@ DEPENDS = "perl-native-runtime nettle"
 DEPENDS_append_class-target = " openssl-native"
 #DEPENDS_append_class-target = " linux-libc-headers"
 
-SRC_URI = "file://openssl/openssl-1.1.1f.tar.gz"
+SRC_URI = "file://openssl/${BP}.tar.gz \
+           file://openssl/openssl-1.1.1-build.patch \
+           file://openssl/openssl-1.1.1-fips.patch \
+	   file://0001-buildinfo-strip-sysroot-and-debug-prefix-map-from-co.patch \
+	   file://0001-skip-test_symbol_presence.patch \
+	   file://0003-Add-support-for-io_pgetevents_time64-syscall.patch \
+	   file://0004-Fixup-support-for-io_pgetevents_time64-syscall.patch \
+	   file://afalg.patch \
+	   file://reproducible.patch \
+"
+
 LIC_FILES_CHKSUM = "file://LICENSE;md5=d343e62fc9c833710bbbed25f27364c8"
 
-S = "${WORKDIR}/openssl-${PV}"
+S = "${WORKDIR}/${BP}"
 
 PACKAGECONFIG[perl] = ",,,"
 

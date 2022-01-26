@@ -10,11 +10,34 @@ LICENSE = "GPLv2+ & LGPLv2+"
 inherit autotools
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=94d55d512a9ba36caa9b7df079bae19f"
-SRC_URI = "file://audit/audit-${PV}.tar.gz \
+SRC_URI = "file://audit/${BP}.tar.gz \
+           file://audit/bugfix-audit-support-armv7b.patch \
+           file://audit/bugfix-audit-userspace-missing-syscalls-for-aarm64.patch \
+           file://audit/bugfix-audit-reload-coredump.patch \
+           file://audit/backport-Fix-the-default-location-for-zos-remote.conf-171.patch \
+           file://audit/backport-Add-missing-call-to-free_interpretation_list.patch \
+           file://audit/backport-fix-2-more-issues-found-by-fuzzing.patch \
+           file://audit/backport-Fix-an-auparse-memory-leak-caused-in-recent-glibc.patch \
+           file://audit/backport-Fix-double-free-with-corrupted-logs.patch \
+           file://audit/backport-Fix-the-closing-timing-of-audit_fd-166.patch \
+           file://audit/backport-Fix-some-string-length-issues.patch \
+           file://audit/backport-Move-the-free_config-to-success-path.patch \
+           file://audit/backport-Check-for-fuzzer-induced-invalid-value.patch \
+           file://audit/backport-error-out-if-log-is-mangled.patch \
+           file://audit/backport-Dont-run-off-the-end-with-corrupt-logs.patch \
+           file://audit/backport-Another-hardening-measure-for-corrupted-logs.patch \
+           file://audit/backport-Fix-busy-loop-in-normalizer-when-logs-are-corrupt.patch \
+           file://audit/backport-Better-fix-for-busy-loop-in-normalizer-when-logs-are.patch \
+           file://audit/backport-flush-uid-gid-caches-when-user-group-added-deleted-m.patch \
+           file://audit/backport-In-auditd-check-if-log_file-is-valid-before-closing-.patch \
+           file://audit/backport-Check-ctime-return-code.patch \
+           file://audit/backport-When-interpreting-if-val-is-NULL-return-an-empty-str.patch \
+           file://audit/backport-auditd.service-Restart-on-failure-ignoring-some-exit.patch \
+           file://audit/backport-0001-In-auditd-close-the-logging-file-descriptor-when-log.patch \
+           file://audit/backport-0002-In-auditd-close-the-logging-file-descriptor-when-log.patch \
            file://auditd.conf \
            file://audit.rules \
-          "
-
+"
 
 UPDATERCPN = "auditd"
 INITSCRIPT_NAME = "auditd"

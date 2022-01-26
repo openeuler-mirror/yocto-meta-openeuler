@@ -7,10 +7,10 @@ LICENSE = "LGPL-2.1"
 
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
-SRC_URI = "file://libseccomp/libseccomp-2.5.1.tar.gz"
+SRC_URI = "file://libseccomp/${BP}.tar.gz"
 
 
-S = "${WORKDIR}/${BPN}-${PV}"
+S = "${WORKDIR}/${BP}"
 
 inherit autotools
 

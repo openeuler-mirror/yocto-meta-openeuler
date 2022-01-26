@@ -16,10 +16,11 @@ CFLAGS += "-I${STAGING_INCDIR}/tirpc"
 #get arch info
 inherit kernel-arch
 
-SRC_URI = "file://busybox/busybox-1.33.1.tar.bz2 \
+SRC_URI = "file://busybox/${BP}.tar.bz2 \
            file://yocto-embedded-tools/config/arm64/defconfig-busybox \
 "
-S = "${WORKDIR}/${BPN}-${PV}"
+
+S = "${WORKDIR}/${BP}"
 
 #not split debug files with dwarfsrcfiles,no dwarfsrcfiles
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"

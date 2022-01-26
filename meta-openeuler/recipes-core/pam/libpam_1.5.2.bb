@@ -13,6 +13,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=7eb5c1bf854e8881005d673599ee74d3 \
                     "
 
 SRC_URI = "file://pam/Linux-PAM-${PV}.tar.xz \
+           file://pam/bugfix-pam-1.1.8-faillock-systemtime.patch \
+           file://pam/openEuler-change-ndbm-to-gdbm.patch \
+           file://pam/0001-bugfix-cannot-open-database-file.patch \
+           file://pam/add-sm3-crypt-support.patch \
            file://99_pam \
            file://pam.d/common-account \
            file://pam.d/common-auth \
@@ -21,13 +25,11 @@ SRC_URI = "file://pam/Linux-PAM-${PV}.tar.xz \
            file://pam.d/common-session-noninteractive \
            file://pam.d/other \
            file://libpam-xtests.patch \
-           file://0001-modules-pam_namespace-Makefile.am-correctly-install-.patch \
-           file://0001-Makefile.am-support-usrmage.patch \
            file://run-ptest \
            file://pam-volatiles.conf \
-           "
+"
 
-SRC_URI[sha256sum] = "201d40730b1135b1b3cdea09f2c28ac634d73181ccd0172ceddee3649c5792fc"
+SRC_URI[sha256sum] = "e4ec7131a91da44512574268f493c6d8ca105c87091691b8e9b56ca685d4f94d"
 
 #DEPENDS = "bison-native flex flex-native cracklib libxml2-native virtual/crypt"
 DEPENDS = "cracklib"
@@ -51,11 +53,13 @@ PACKAGECONFIG ??= ""
 PACKAGECONFIG[audit] = "--enable-audit,--disable-audit,audit,"
 PACKAGECONFIG[userdb] = "--enable-db=db,--enable-db=no,db,"
 
-PACKAGES += "${PN}-runtime ${PN}-xtests"
+PACKAGES += "${PN}-runtime ${PN}-xtests ${PN}-pkgconfig ${PN}-service"
 FILES_${PN} = "${base_libdir}/lib*${SOLIBS}"
 FILES_${PN}-dev += "${base_libdir}/security/*.la ${base_libdir}/*.la ${base_libdir}/lib*${SOLIBSDEV}"
 FILES_${PN}-runtime = "${sysconfdir} ${sbindir} ${systemd_system_unitdir}"
 FILES_${PN}-xtests = "${datadir}/Linux-PAM/xtests"
+FILES_${PN}-pkgconfig = "${base_libdir}/pkgconfig"
+FILES_${PN}-service = "/usr/lib/systemd/system"
 
 PACKAGES_DYNAMIC += "^${MLPREFIX}pam-plugin-.*"
 

@@ -3,9 +3,12 @@ LICENSE = "MIT"
 
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
-SRC_URI = "file://libwebsockets/libwebsockets-4.0.20.tar.gz"
+SRC_URI = "file://libwebsockets/${BP}.tar.gz \
+           file://libwebsockets/0001-add-secure-compile-option-in-Makefile.patch \
+           file://libwebsockets/0002-solve-the-BEP-problem.patch \
+"
 
-S = "${WORKDIR}/${BPN}-${PV}"
+S = "${WORKDIR}/${BP}"
 
 inherit cmake
 

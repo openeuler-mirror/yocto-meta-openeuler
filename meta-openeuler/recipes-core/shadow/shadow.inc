@@ -66,7 +66,30 @@ RDEPENDS_${PN}_remove += "base-passwd"
 RDEPENDS_${PN}_class-native = ""
 RDEPENDS_${PN}_class-nativesdk = ""
 
-SRC_URI = "file://shadow/shadow-4.8.1.tar.xz"
+SRC_URI = "file://shadow/${BP}.tar.xz \
+           file://shadow/shadow-4.8-goodname.patch \
+           file://shadow/shadow-4.9-null-tm.patch \
+           file://shadow/shadow-4.8-long-entry.patch \
+           file://shadow/usermod-unlock.patch \
+           file://shadow/useradd-create-directories-after-the-SELinux-user.patch \
+           file://shadow/shadow-4.1.5.1-var-lock.patch \
+           file://shadow/shadow-utils-fix-lock-file-residue.patch \
+           file://shadow/Makefile-include-libeconf-dependency-in-new-idmap.patch \
+           file://shadow/usermod-allow-all-group-types-with-G-option.patch \
+           file://shadow/useradd-avoid-generating-an-empty-subid-range.patch \
+           file://shadow/libmisc-fix-default-value-in-SHA_get_salt_rounds.patch \
+           file://shadow/semanage-close-the-selabel-handle.patch \
+           file://shadow/Revert-useradd.c-fix-memleaks-of-grp.patch \
+           file://shadow/useradd-change-SELinux-labels-for-home-files.patch \
+           file://shadow/libsubid-link-to-PAM-libraries.patch \
+           file://shadow/Fix-out-of-tree-builds-with-respect-to-libsubid-incl.patch \
+           file://shadow/Respect-enable-static-no-in-libsubid.patch \
+           file://shadow/Fixes-the-linking-issues-when-libsubid-is-static-and.patch \
+           file://shadow/pwck-fix-segfault-when-calling-fprintf.patch \
+           file://shadow/newgrp-fix-segmentation-fault.patch \
+           file://shadow/groupdel-fix-SIGSEGV-when-passwd-does-not-exist.patch \
+           file://shadow/shadow-add-sm3-crypt-support.patch \
+"
 
 LIC_FILES_CHKSUM="file://COPYING;md5=ed80ff1c2b40843cf5768e5229cf16e5"
 
@@ -132,11 +155,11 @@ do_install() {
 	sed -i 's/^#MAIL_DIR/MAIL_DIR/g' ${D}${sysconfdir}/login.defs
 
         # Now we don't have a mail system. Disable mail creation for now.
-        sed -i 's:/bin/bash:/bin/sh:g' ${D}${sysconfdir}/default/useradd
-        sed -i '/^CREATE_MAIL_SPOOL/ s:^:#:' ${D}${sysconfdir}/default/useradd
+	#sed -i 's:/bin/bash:/bin/sh:g' ${D}${sysconfdir}/default/useradd
+	#sed -i '/^CREATE_MAIL_SPOOL/ s:^:#:' ${D}${sysconfdir}/default/useradd
 
         # Use users group by default
-        sed -i 's,^GROUP=1000,GROUP=100,g' ${D}${sysconfdir}/default/useradd
+	#sed -i 's,^GROUP=1000,GROUP=100,g' ${D}${sysconfdir}/default/useradd
 }
 
 do_install_append() {
