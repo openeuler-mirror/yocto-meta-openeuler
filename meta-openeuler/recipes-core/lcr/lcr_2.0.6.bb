@@ -1,24 +1,43 @@
-DESCRIPTION = "Yet Another JSON Library - A Portable JSON parsing and serialization library in ANSI C"
-LICENSE = "MIT"
+### Descriptive metadata
+SUMMARY = "lcr(Lightweight Container Runtime)"
+DESCRIPTION = "lcr`(Lightweight Container Runtime) is CLI tool for spawning and running containers according to \
+               OCI specification. It is based on `liblxc` and written by `C`. It can use by container engine: \
+               iSulad"
+AUTHOR = ""
+HOMEPAGE = "https://gitee.com/openeuler/lcr"
+BUGTRACKER = "https://gitee.com/openeuler/yocto-meta-openeuler"
 
+### License metadata
+LICENSE = "LGPLv2.1"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
+### Inheritance and includes if needed
+inherit cmake
+
+### Build metadata
 SRC_URI = "file://lcr/v2.0.6.tar.gz \
+           file://lcr/0001-modified-ipconfig.json-to-adapt-to-newest-version-of.patch \
+           file://lcr/0002-disable-lxc_keep-with-oci-image.patch \
+           file://lcr/0003-add-self-def-runtime-for-shimv2.patch \
+           file://lcr/0004-move-cri-runtimes-to-daemon.patch \
+           file://lcr/0005-config-v2-and-inspect-were-modified-to-support-modif.patch \
+           file://lcr/0006-support-null-value-in-json.patch \
+           file://lcr/0007-fix-the-error-of-gcc-compilation-optimization-level.patch \
 	  "
 
 S = "${WORKDIR}/${BPN}"
-
-inherit cmake
 
 OECMAKE_GENERATOR = "Unix Makefiles"
 
 DEPENDS = "yajl lxc"
 
+### Package metadata
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 #remove so from ${PN}-dev
 FILES_SOLIBSDEV = ""
 FILES_${PN} += "${libdir}/* "
 
+### Tasks for package
 do_configure_prepend() {
         grep -q CMAKE_SYSROOT ${WORKDIR}/toolchain.cmake || cat >> ${WORKDIR}/toolchain.cmake <<EOF
         set( CMAKE_SYSROOT ${STAGING_DIR_HOST} )
