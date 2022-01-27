@@ -1,5 +1,3 @@
-#require libcap.inc
-#require ${OPEN_SRC_DIR}/${BPN}/series_yocto.conf
 SUMMARY = "Library for getting/setting POSIX.1e capabilities"
 HOMEPAGE = "http://sites.google.com/site/fullycapable/"
 
@@ -8,10 +6,9 @@ LICENSE = "BSD | GPLv2"
 
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
-SRC_URI = "file://libcap/libcap-2.32.tar.gz \
-	   file://libcap/libcap-buildflags.patch \
-	   file://libcap/Avoid-segfaulting-when-the-kernel-is-ahead-of-libcap.patch \
-	  "
+SRC_URI = "file://libcap/${BP}.tar.gz \
+           file://libcap/libcap-buildflags.patch \
+"
 
 S = "${WORKDIR}/${BPN}-${PV}"
 
@@ -19,15 +16,6 @@ DEPENDS = "hostperl-runtime-native gperf-native"
 
 
 inherit lib_package
-
-# do NOT pass target cflags to host compilations
-#
-do_configure() {
-        # libcap uses := for compilers, fortunately, it gives us a hint
-        # on what should be replaced with ?=
-        sed -e 's,:=,?=,g' -i Make.Rules
-        sed -e 's,^BUILD_CFLAGS ?= $(.*CFLAGS),BUILD_CFLAGS := $(BUILD_CFLAGS),' -i Make.Rules
-}
 
 PACKAGECONFIG ??= "${@bb.utils.filter('DISTRO_FEATURES', 'pam', d)}"
 PACKAGECONFIG_class-native ??= ""
@@ -50,7 +38,14 @@ INSANE_SKIP += "installed-vs-shipped"
 CFLAGS += "-D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64"
 
 do_compile() {
-        oe_runmake ${PACKAGECONFIG_CONFARGS}
+        unset CFLAGS BUILD_CFLAGS
+        oe_runmake ${PACKAGECONFIG_CONFARGS} \
+                AR="${AR}" \
+                CC="${CC}" \
+                RANLIB="${RANLIB}" \
+                OBJCOPY="${OBJCOPY}" \
+                COPTS="${CFLAGS}" \
+                BUILD_COPTS="${BUILD_CFLAGS}" 
 }
 
 do_install() {
@@ -77,7 +72,7 @@ do_install_append() {
 #FILES_${PN}-dev += "${base_libdir}/*.so"
 
 # pam files
-FILES_${PN} += "/lib/security/*.so"
+FILES_${PN} += "${base_libdir}/security/*.so"
 
 BBCLASSEXTEND = "native nativesdk"
 
