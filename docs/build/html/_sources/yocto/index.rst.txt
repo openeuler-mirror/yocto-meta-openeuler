@@ -11,7 +11,7 @@ https://docs.yoctoproject.org/overview-manual/yp-intro.html#what-is-the-yocto-pr
 https://docs.yoctoproject.org/overview-manual/yp-intro.html#the-yocto-project-layer-model
 
 
-1.2 主要组件和工具
+1.2 主要组件工具
 ********************
 
 
