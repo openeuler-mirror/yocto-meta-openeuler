@@ -4,7 +4,6 @@ LICENSE = "GPLv2"
 LIC_FILES_CHKSUM ?= "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 inherit kernel
-#require recipes-kernel/linux/linux-yocto.inc
 
 SRC_URI = "file://kernel-5.10 \
      file://yocto-embedded-tools/config/${ARCH}/defconfig-kernel \
