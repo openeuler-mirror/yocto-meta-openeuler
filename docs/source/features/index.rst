@@ -1,7 +1,7 @@
 .. _openeuler_embedded_features:
 
 
-openEuler embedded关键特性
+openEuler Embedded关键特性
 ################################
 
 .. toctree::
