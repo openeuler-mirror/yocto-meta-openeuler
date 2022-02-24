@@ -1,0 +1,244 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>快速构建 &#8212; yocto-doc 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Yocto介绍" href="overview.html" />
+    <link rel="prev" title="openEuler Embedded构建系统" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="overview.html" title="Yocto介绍"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="openEuler Embedded构建系统"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">yocto-doc 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">openEuler Embedded构建系统</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="yocto-quickstart">
+<span id="id1"></span><h1>快速构建<a class="headerlink" href="#yocto-quickstart" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id2">
+<h2>构建环境的准备<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>主机工具</li>
+</ul>
+<p>Yocto或者说Bitbake本质上一组python程序，其最小运行环境要求如下：
+- Python3 &gt; 3.6.0
+- Git &gt; 1.8.3.1
+- Tar 1.28
+在构建过程中所需要的其他工具，Yocto都可以根据相应的软件包配方自行构建出来，从而达到自包含的效果。
+在这个过程中，Yocto还会依据自身需要，对相应的工具打上yocto专属补丁（如dnf, rpm）等。这些主机工具
+会在第一次的构建中从源码开始构建，因此Yocto第一次构建比较费时。</p>
+<p>为了加速构建特别是第一次构建，openEuler Embedded采取了“能用原生工具就用原生工具，能不构建就不构建”的策略，尽可能使用主机上预编译的原生的工具。
+这就需要依赖主机上软件包管理工具（apt, dnf, yum, zypper等)实现安装好。</p>
+<p>Yocto是通过HOSTTOOLS变量来实现主机工具的引入，为会每个在HOSTTOOLS中列出的工具建立相应的软链接。为了避免来自主机对构建环境的污染，Yocto会重新
+准备不同于主机的环境，例如PATH变量等，因此如果新增依赖主机上的某个命令，需显示在Yocto的HOSTTOOLS变量中增加，否则即使主机上存在，Yocto构建时也会
+报错找不到相应的工具。相应流程如下图所示：</p>
+<img alt="../_images/hosttools.png" src="../_images/hosttools.png" />
+<p>当前openEuler Embedded所需要主机工具已经默认在local.conf.sample中的HOSTTOOLS定义，各个工具描述如下：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="41%" />
+<col width="59%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">工具名</th>
+<th class="head">用途</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>cmake</td>
+<td>cmake构建工具</td>
+</tr>
+<tr class="row-odd"><td>ninjia</td>
+<td>cmake构建后端</td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li>预编译的交叉工具链和库</li>
+</ul>
+<p>Yocto可以构建出交叉编译所需的交叉工具链和C库，但整个流程复杂且耗时，不亚于内核乃至镜像的构建，而且除了第一次构建，后面很少会再涉及。同时，绝大部分开发者
+都不会直接与工具链和C库构建打交道。所以为了简化该流程，openEuler Embedded采取的策略是采用预编译的交叉工具链和库，会专门维护和发布相应的带有C库的工具链，
+目前提供了对arm32位和aarch64位的支持。</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://gitee.com/openeuler/yocto-embedded-tools/attach_files/911963/download/openeuler_gcc_arm32le.tar.xz">ARM 32位工具链</a></li>
+<li><a class="reference external" href="https://gitee.com/openeuler/yocto-embedded-tools/attach_files/911964/download/openeuler_gcc_arm64le.tar.xz">ARM 64位工具链</a></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li>构建容器</li>
+</ul>
+<p>openEuler Embedded的构建过程中会使用到大量的各式各样的主机工具。如前文所述，为了加速构建，openEuler Embedded依赖主机事先安装好相应的工具，但这也会带
+来一不同主机环境会有不同的工具版本的问题，例如构建需要cmake高于1.9版本，但主机上最高只有cmake 1.8。为了解决这一问题，openEuler Embedded提供了专门的构
+建容器，提供统一的构建环境。</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="https://repo.openeuler.org/openEuler-20.03-LTS-SP2/docker_img/x86_64/openEuler-docker.x86_64.tar.xz">openEuler Embedded构建容器</a></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="pokyopeneuler">
+<h2>poky及openEuler代码下载<a class="headerlink" href="#pokyopeneuler" title="Permalink to this headline">¶</a></h2>
+<p>假设openeuler_embedded为顶层目录，则所有代码包位于src子目录下：</p>
+<ul class="simple">
+<li>git clone Yocto相关仓库<ul>
+<li><dl class="first docutils">
+<dt>Yocto核心组件：</dt>
+<dd><ul class="first last">
+<li>poky: <a class="reference external" href="https://gitee.com/openeuler/yocto-poky">https://gitee.com/openeuler/yocto-poky</a></li>
+<li>pseudo: <a class="reference external" href="https://gitee.com/src-openeuler/yocto-pseudo">https://gitee.com/src-openeuler/yocto-pseudo</a></li>
+<li>opkg-utils: <a class="reference external" href="https://gitee.com/src-openeuler/yocto-opkg-utils">https://gitee.com/src-openeuler/yocto-opkg-utils</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>核心开发工具：</dt>
+<dd><ul class="first last">
+<li>yocto-embedded-tools: <a class="reference external" href="https://gitee.com/openeuler/yocto-embedded-tools">https://gitee.com/openeuler/yocto-embedded-tools</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>openEuler Embedded构建模板和方法:</dt>
+<dd><ul class="first last">
+<li>yocto-meta-openeuler: <a class="reference external" href="https://gitee.com/openeuler/yocto-meta-openeuler">https://gitee.com/openeuler/yocto-meta-openeuler</a></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</li>
+<li>软件包源代码的准备</li>
+</ul>
+</div>
+<div class="section" id="qemu">
+<h2>版本构建及qemu部署<a class="headerlink" href="#qemu" title="Permalink to this headline">¶</a></h2>
+<p>一键式构建脚本：<a class="reference external" href="https://gitee.com/ilisimin/yocto-pseudo/blob/openEuler-21.09/scripts/build.sh">https://gitee.com/ilisimin/yocto-pseudo/blob/openEuler-21.09/scripts/build.sh</a>
+qemu部署：<a class="reference external" href="https://gitee.com/openeuler/docs/blob/master/docs/zh/docs/Embedded/embedded.md">https://gitee.com/openeuler/docs/blob/master/docs/zh/docs/Embedded/embedded.md</a></p>
+<p>主要构建流程：</p>
+<ol class="arabic simple">
+<li>设置PATH增加额外工具路径</li>
+<li>TEMPLATECONF指定配置文件路径</li>
+<li>调用poky仓的oe-init-build-env进行初始化配置</li>
+<li>在conf/local.conf中配置MACHINE，按需增加额外新增的层</li>
+<li>执行bitbake openeuler-image编译openeuler的image和sdk</li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export PATH=&quot;/opt/buildtools/ninja-1.10.1/bin/:$PATH&quot;
+TEMPLATECONF=&quot;${SRC_DIR}/yocto-meta-openeuler/meta-openeuler/conf&quot;
+rm -rf &quot;${BUILD_DIR}&quot;
+mkdir -p &quot;${BUILD_DIR}&quot;
+source &quot;${SRC_DIR}&quot;/yocto-poky/oe-init-build-env ${BUILD_DIR}
+
+sed -i &quot;s|^MACHINE.*|MACHINE = \&quot;${MACHINE}\&quot;|g&quot; conf/local.conf
+echo &quot;$MACHINE&quot; | grep &quot;^raspberrypi&quot;
+if [ $? -eq 0 ];then
+\    grep &quot;meta-raspberrypi&quot; conf/bblayers.conf |grep -v &quot;^[[:space:]]*#&quot; || sed -i &quot;/\/meta-openeuler /a \  ${SRC_DIR}/yocto-meta-openeuler/bsp/meta-raspberrypi \\\\&quot; conf/bblayers.conf
+fi
+
+AUTOMAKE_V=$(ls /usr/bin/automake-1.* |awk -F &quot;/&quot; &#39;{print $4}&#39;)
+grep &quot;HOSTTOOLS .*$AUTOMAKE_V&quot; conf/local.conf || echo &quot;HOSTTOOLS += \&quot;$AUTOMAKE_V\&quot;&quot; &gt;&gt; conf/local.conf
+bitbake openeuler-image
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">快速构建</a><ul>
+<li><a class="reference internal" href="#id2">构建环境的准备</a></li>
+<li><a class="reference internal" href="#pokyopeneuler">poky及openEuler代码下载</a></li>
+<li><a class="reference internal" href="#qemu">版本构建及qemu部署</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">openEuler Embedded构建系统</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="overview.html"
+                        title="next chapter">Yocto介绍</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/yocto/quickstart.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="overview.html" title="Yocto介绍"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="openEuler Embedded构建系统"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">yocto-doc 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >openEuler Embedded构建系统</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, openEuler Embedded.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.4.
+    </div>
+  </body>
+</html>

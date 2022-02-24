@@ -1,0 +1,249 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Yocto开发 &#8212; yocto-doc 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="版本说明" href="../releases/index.html" />
+    <link rel="prev" title="深入Yocto" href="exploration.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../releases/index.html" title="版本说明"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="exploration.html" title="深入Yocto"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">yocto-doc 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">openEuler Embedded构建系统</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="yocto">
+<span id="yocto-development"></span><h1>Yocto开发<a class="headerlink" href="#yocto" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="layer">
+<h2>如何定制添加layer<a class="headerlink" href="#layer" title="Permalink to this headline">¶</a></h2>
+<img alt="../_images/create_layer.png" src="../_images/create_layer.png" />
+<p>即使你只有一两个配方文件，还是建议你创建自己的层，而不是把配方添加到OE-Core或者Yocto项目层，随着你的配方越来越多，这种好处更能体现出来，且容易迁移到你的其它
+项目中去。你可以修改配置文件，使你的层添加到项目中。还可以用yocto-layer脚本来创建层。</p>
+<p>通常一个layer的结构包含3个文件夹：conf、classes、recipes-xxx。开发人员可以自行创建recipes-*文件夹，存放其他软件包的bb文件。recipes-xxx目录仅用于区分
+不同类型的软件包/特性，实际可以作为一个recipes目录存放的。classes目录和poky原生的目录类似，主要存放自研的bbclass。conf目录是必须存在的，用于配置此layer的
+信息。</p>
+<blockquote>
+<div><ul class="simple">
+<li>classes: 类文件(.bbclass)中提供了一些可以和其他配方（和类文件在同一层中）共享的功能，多个配方可以从同一个类文件继承一些配置和功能。</li>
+<li>conf: 这个区域包含了针对这个层和发行相关的配置信息（比如说conf/layer.conf)。local.conf和bblayers.conf的定制模板也可以放在此目录，构建时通过
+TEMPLATECONF变量指定。</li>
+<li>recipes-xx: 包含了一些会影响全局的配方文件和配方追加文件。其中一些配方和追加文件被用来增加初始化脚本，特定发行版的配置和自定义的配方等文件。recepies-xx
+目录的例子就是recipes-core和recipes-kernel。不同recepies-*目录下的内容和结构也会有所不同。通常来说，这些目录下含了配方文件(*.bb)和配方追加文件(*.bbappend)，
+还有一些针对发行版的配置文件和其他文件。</li>
+</ul>
+</div></blockquote>
+<p>添加新层可以通过以下步骤完成：</p>
+<ol class="arabic simple">
+<li>创建新层文件夹meta-xxx</li>
+<li>创建新层配置文件conf/layer.conf。</li>
+<li>告诉 Bitbake 关于新层bblayers.conf</li>
+<li>根据层类型，添加内容。如果层添加了对机器的支持，则在层内的 conf/machine/ 文件中添加机器配置。如果层添加了发行版策略，则在层内的 conf/distro/ 文件中添加发行版配置。如果层引入了新的配方，则将需要的配方放在该层内的 recipes-* 子目录中。</li>
+</ol>
+<p>以下是一个层的主要目录结构:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> ./
+├── build/ 编译目录
+│   ├── bitbake.lock
+│   └── conf/
+│       ├── local.conf
+│       └── bblayers.conf
+├── meta-openeuler/  新层
+│   ├── classes/  如果需要提供公共类，则添加
+│   ├── recipe-core/
+│       ├── glibc/
+│            ├── files/
+│            ├── glibc_2.31.bb
+│            └── glibc.inc
+│   └── conf/
+│       ├── machine/ **按需添加** ，新硬件平台则需要
+│            ├── qemu_arm.conf
+│            └── qemu_aarch64.conf
+│       ├── distro/ **按需添加** ，新的发行版
+│            └── openeuler.conf
+│       ├── local.conf.sample
+│       ├── layer.conf
+│       └── bblayers.conf.sample
+└── meta/   原始yocto社区poky下
+    ├── classes/
+    │   └── base.bbclass
+    └── conf/
+        ├── bitbake.conf
+        └── layer.conf
+</pre></div>
+</div>
+<p>通过TEMPLATECONF变量指向新层的conf目录，yocto会自动将.sample赋值到build目录
+当前也可以通过yocto提供的工具添加新的基础layer：</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">bitbake-layers</span> <span class="pre">create-layer</span> <span class="pre">../layers/meta-hello</span></code> 创建层</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">bitbake-layers</span> <span class="pre">add-layer</span> <span class="pre">meta-hello</span></code> 将层添加到conf/bblayers.conf</div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="image">
+<h2>添加image<a class="headerlink" href="#image" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="bb">
+<h2>添加一个新的配方bb<a class="headerlink" href="#bb" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="recipetoolbb">
+<h3>使用recipetool自动添加bb文件<a class="headerlink" href="#recipetoolbb" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="devtoolbb">
+<h3>使用devtool自动添加bb文件<a class="headerlink" href="#devtoolbb" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="id1">
+<h3>从零添加bb<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="bbclass">
+<h2>添加bbclass<a class="headerlink" href="#bbclass" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id2">
+<h2>添加新架构<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="config">
+<h2>支持多config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id3">
+<h2>使用外部工具链<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="recipes">
+<h2>recipes版本选择<a class="headerlink" href="#recipes" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="src-uri">
+<h2>SRC_URI中文件和目录查找<a class="headerlink" href="#src-uri" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id4">
+<h2>配方打包时如何分包<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id5">
+<h2>配方中添加日志打印<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id6">
+<h2>对指定架构或任务等进行定制配置（选项、补丁等）<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id7">
+<h2>编译选项配置<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="id8">
+<h2>依赖关系配置（包、任务）<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="provides">
+<h2>配方中的虚拟provides<a class="headerlink" href="#provides" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Yocto开发</a><ul>
+<li><a class="reference internal" href="#layer">如何定制添加layer</a></li>
+<li><a class="reference internal" href="#image">添加image</a></li>
+<li><a class="reference internal" href="#bb">添加一个新的配方bb</a><ul>
+<li><a class="reference internal" href="#recipetoolbb">使用recipetool自动添加bb文件</a></li>
+<li><a class="reference internal" href="#devtoolbb">使用devtool自动添加bb文件</a></li>
+<li><a class="reference internal" href="#id1">从零添加bb</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#bbclass">添加bbclass</a></li>
+<li><a class="reference internal" href="#id2">添加新架构</a></li>
+<li><a class="reference internal" href="#config">支持多config</a></li>
+<li><a class="reference internal" href="#id3">使用外部工具链</a></li>
+<li><a class="reference internal" href="#recipes">recipes版本选择</a></li>
+<li><a class="reference internal" href="#src-uri">SRC_URI中文件和目录查找</a></li>
+<li><a class="reference internal" href="#id4">配方打包时如何分包</a></li>
+<li><a class="reference internal" href="#id5">配方中添加日志打印</a></li>
+<li><a class="reference internal" href="#id6">对指定架构或任务等进行定制配置（选项、补丁等）</a></li>
+<li><a class="reference internal" href="#id7">编译选项配置</a></li>
+<li><a class="reference internal" href="#id8">依赖关系配置（包、任务）</a></li>
+<li><a class="reference internal" href="#provides">配方中的虚拟provides</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="exploration.html"
+                        title="previous chapter">深入Yocto</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../releases/index.html"
+                        title="next chapter">版本说明</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/yocto/development.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../releases/index.html" title="版本说明"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="exploration.html" title="深入Yocto"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">yocto-doc 1.0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >openEuler Embedded构建系统</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, openEuler Embedded.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.4.
+    </div>
+  </body>
+</html>
