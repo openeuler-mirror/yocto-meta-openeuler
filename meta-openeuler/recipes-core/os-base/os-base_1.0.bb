@@ -60,5 +60,7 @@ do_install() {
         chmod 600 ${D}${sysconfdir}/security/opasswd
 }
 
+PACKAGES =+ "${PN}-sysctl"
 FILES_${PN} = "/"
+FILES_${PN}-sysctl = "${sysconfdir}/sysctl.conf"
 INHIBIT_DEFAULT_DEPS = "1"
