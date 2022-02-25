@@ -3,7 +3,6 @@ SUMMARY = "lcr(Lightweight Container Runtime)"
 DESCRIPTION = "lcr`(Lightweight Container Runtime) is CLI tool for spawning and running containers according to \
                OCI specification. It is based on `liblxc` and written by `C`. It can use by container engine: \
                iSulad"
-AUTHOR = ""
 HOMEPAGE = "https://gitee.com/openeuler/lcr"
 BUGTRACKER = "https://gitee.com/openeuler/yocto-meta-openeuler"
 
@@ -15,17 +14,10 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;m
 inherit cmake
 
 ### Build metadata
-SRC_URI = "file://lcr/v2.0.6.tar.gz \
-           file://lcr/0001-modified-ipconfig.json-to-adapt-to-newest-version-of.patch \
-           file://lcr/0002-disable-lxc_keep-with-oci-image.patch \
-           file://lcr/0003-add-self-def-runtime-for-shimv2.patch \
-           file://lcr/0004-move-cri-runtimes-to-daemon.patch \
-           file://lcr/0005-config-v2-and-inspect-were-modified-to-support-modif.patch \
-           file://lcr/0006-support-null-value-in-json.patch \
-           file://lcr/0007-fix-the-error-of-gcc-compilation-optimization-level.patch \
+SRC_URI = "file://lcr/v${PV}.tar.gz \
 	  "
 
-S = "${WORKDIR}/${BPN}"
+S = "${WORKDIR}/${BPN}-v${PV}"
 
 OECMAKE_GENERATOR = "Unix Makefiles"
 
