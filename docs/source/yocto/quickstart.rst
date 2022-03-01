@@ -37,8 +37,8 @@ ninjia        cmake构建后端
 * 预编译的交叉工具链和库
 
 Yocto可以构建出交叉编译所需的交叉工具链和C库，但整个流程复杂且耗时，不亚于内核乃至镜像的构建，而且除了第一次构建，后面很少会再涉及。同时，绝大部分开发者
-都不会直接与工具链和C库构建打交道。所以为了简化该流程，openEuler Embedded采取的策略是采用预编译的交叉工具链和库，会专门维护和发布相应的带有C库的工具链，
-目前提供了对arm32位和aarch64位的支持。
+都不会直接与工具链和C库构建打交道。所以为了简化该流程，openEuler Embedded采取的策略是采用预编译的交叉工具链和库，会专门维护和发布相应的带有C库的工具链。
+目前我们提供了对arm32位和aarch64位两种架构的工具链支持， 通过下方链接可以获得：
 
  - `ARM 32位工具链 <https://gitee.com/openeuler/yocto-embedded-tools/attach_files/911963/download/openeuler_gcc_arm32le.tar.xz>`_
  - `ARM 64位工具链 <https://gitee.com/openeuler/yocto-embedded-tools/attach_files/911964/download/openeuler_gcc_arm64le.tar.xz>`_
@@ -49,15 +49,26 @@ openEuler Embedded的构建过程中会使用到大量的各式各样的主机�
 来一不同主机环境会有不同的工具版本的问题，例如构建需要cmake高于1.9版本，但主机上最高只有cmake 1.8。为了解决这一问题，openEuler Embedded提供了专门的构
 建容器，提供统一的构建环境。
 
- - `openEuler Embedded构建容器 <https://repo.openeuler.org/openEuler-20.03-LTS-SP2/docker_img/x86_64/openEuler-docker.x86_64.tar.xz>`_
+使用者可以通过如下链接获得容器构建文件和基础镜像，构建出相应的容器：
+
+ - `openEuler Embedded构建容器的构建文件 <https://gitee.com/openeuler/yocto-embedded-tools/blob/openEuler-21.09/dockerfile/Dockerfile>`_
+ - `openEuler Embedded构建容器的基础镜像 <https://repo.openeuler.org/openEuler-21.03/docker_img/x86_64/openEuler-docker.x86_64.tar.xz>`_
+
+完整的预编译好的容器镜像稍后会提供
+
+构建代码与软件包代码的下载与准备
+*********************************************
+
+openEuler Embedded整个构建工程的文件布局如下，假设openeuler_embedded为顶层目录：
+
+::
+
+    <顶层目录openeuler_embedded>
+    ├── src  源代码目录，包含所有软件包代码、内核代码和Yocto构建代码
+    ├── build  openEuler Embedded的构建目录，生成的各种镜像放在此目录下
 
 
-poky及openEuler代码下载
-***************************
-
-假设openeuler_embedded为顶层目录，则所有代码包位于src子目录下：
-
-* git clone Yocto相关仓库
+* 准备Yocto构建代码相关仓库，请在src目录下克隆如下仓库， 并切换到相应分支：
 
   - Yocto核心组件：
      + poky: https://gitee.com/openeuler/yocto-poky
@@ -69,14 +80,14 @@ poky及openEuler代码下载
   - openEuler Embedded构建模板和方法:
      + yocto-meta-openeuler: https://gitee.com/openeuler/yocto-meta-openeuler
 
-* 软件包源代码的准备
+* 软件包源代码的准备，请在src目录根据需要下载或克隆内核和软件包仓库
 
+稍后会提供工具，帮助使用者快速构建好相应的环境。
 
 版本构建及qemu部署
 ***********************
 
-一键式构建脚本：https://gitee.com/ilisimin/yocto-pseudo/blob/openEuler-21.09/scripts/build.sh
-qemu部署：https://gitee.com/openeuler/docs/blob/master/docs/zh/docs/Embedded/embedded.md
+一键式构建脚本：:file:`scr/yocto-meta-openeuler/scripts/build.sh` , 具体细节可以参考该脚本
 
 主要构建流程：
 
@@ -85,21 +96,3 @@ qemu部署：https://gitee.com/openeuler/docs/blob/master/docs/zh/docs/Embedded/
 #. 调用poky仓的oe-init-build-env进行初始化配置
 #. 在conf/local.conf中配置MACHINE，按需增加额外新增的层
 #. 执行bitbake openeuler-image编译openeuler的image和sdk
-
-::
-
- export PATH="/opt/buildtools/ninja-1.10.1/bin/:$PATH"
- TEMPLATECONF="${SRC_DIR}/yocto-meta-openeuler/meta-openeuler/conf"
- rm -rf "${BUILD_DIR}"
- mkdir -p "${BUILD_DIR}"
- source "${SRC_DIR}"/yocto-poky/oe-init-build-env ${BUILD_DIR}
-
- sed -i "s|^MACHINE.*|MACHINE = \"${MACHINE}\"|g" conf/local.conf
- echo "$MACHINE" | grep "^raspberrypi"
- if [ $? -eq 0 ];then
- \    grep "meta-raspberrypi" conf/bblayers.conf |grep -v "^[[:space:]]*#" || sed -i "/\/meta-openeuler /a \  ${SRC_DIR}/yocto-meta-openeuler/bsp/meta-raspberrypi \\\\" conf/bblayers.conf
- fi
-
- AUTOMAKE_V=$(ls /usr/bin/automake-1.* |awk -F "/" '{print $4}')
- grep "HOSTTOOLS .*$AUTOMAKE_V" conf/local.conf || echo "HOSTTOOLS += \"$AUTOMAKE_V\"" >> conf/local.conf
- bitbake openeuler-image
