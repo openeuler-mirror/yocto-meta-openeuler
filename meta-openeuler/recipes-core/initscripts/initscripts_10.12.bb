@@ -32,6 +32,8 @@ RDEPENDS_${PN} = "initd-functions \
 RRECOMMENDS_${PN} = "${PN}-functions"
 RPROVIDES_${PN}-functions = "initd-functions"
 RCONFLICTS_${PN}-functions = "lsbinitscripts"
+FILES_${PN}-functions = "${sysconfdir}/init.d/functions*"
+FILES_${PN}-sushell = "{base_sbindir}/sushell"
 
 HALTARGS ?= "-d -f"
 

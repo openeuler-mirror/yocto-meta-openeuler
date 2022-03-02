@@ -71,7 +71,6 @@ python __anonymous() {
 CVE_CHECK_WHITELIST += "CVE-2018-1121"
 
 PROCPS_PACKAGES = "${PN}-lib \
-                   ${PN}-ps \
                    ${PN}-sysctl"
 
 PACKAGE_BEFORE_PN = "${PROCPS_PACKAGES}"

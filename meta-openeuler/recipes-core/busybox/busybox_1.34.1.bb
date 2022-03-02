@@ -36,8 +36,9 @@ EXTRA_OEMAKE = "CC='${CC}' V=1 ARCH=${ARCH} CROSS_COMPILE=${TARGET_PREFIX} SKIP_
 EXTRA_OECONF += "PKG_CONFIG=pkg-config"
 EXTRA_OEMAKE += "PKG_CONFIG=pkg-config"
 
-PACKAGES =+ "${PN}-linuxrc ${PN}-httpd ${PN}-udhcpd ${PN}-udhcpc ${PN}-syslog ${PN}-mdev ${PN}-hwclock"
-
+PACKAGES =+ "${PN}-linuxrc ${PN}-httpd ${PN}-udhcpd ${PN}-udhcpc ${PN}-syslog ${PN}-mdev ${PN}-hwclock \
+             ${PN}-less ${PN}-sed ${PN}-pciutils ${PN}-grep ${PN}-cronie ${PN}-gzip ${PN}-kmod ${PN}-procps \
+"
 FILES_${PN}-httpd = "${sysconfdir}/init.d/busybox-httpd /srv/www"
 FILES_${PN}-syslog = "${sysconfdir}/init.d/syslog* ${sysconfdir}/syslog-startup.conf* ${sysconfdir}/syslog.conf* ${systemd_unitdir}/system/syslog.service ${sysconfdir}/default/busybox-syslog"
 FILES_${PN}-mdev = "${sysconfdir}/init.d/mdev ${sysconfdir}/mdev.conf ${sysconfdir}/mdev/*"
@@ -49,6 +50,16 @@ PACKAGES =+ "${PN}-bash ${PN}-login ${PN}-groups"
 FILES_${PN}-bash = "${base_bindir}/bash"
 FILES_${PN}-login = "${base_bindir}/login"
 FILES_${PN}-groups = "${bindir}/groups"
+FILES_${PN}-less = "${bindir}/less"
+FILES_${PN}-sed="${base_bindir}/sed"
+FILES_${PN}-pciutils="${bindir}/lspci"
+FILES_${PN}-grep="${base_bindir}/*grep"
+FILES_${PN}-cronie="${bindir}/crontab ${sbindir}/crond"
+FILES_${PN}-gzip="${base_bindir}/gunzip ${base_bindir}/gzip ${base_bindir}/zcat"
+FILES_${PN}-kmod="${base_sbindir}/mod* ${base_sbindir}/depmod ${base_sbindir}/insmod ${base_sbindir}/rmmod"
+FILES_${PN}-procps = "${base_bindir}/kill ${base_bindir}/ps ${base_bindir}/pidof ${base_sbindir}/sysctl \
+                      ${bindir}/free ${bindir}/pkill ${bindir}/top ${bindir}/uptime \
+"
 
 INITSCRIPT_PACKAGES = "${PN}-httpd ${PN}-syslog ${PN}-udhcpd ${PN}-mdev ${PN}-hwclock"
 
@@ -114,4 +125,5 @@ do_install () {
         ln -s bin/busybox init
         popd
 }
+
 INSANE_SKIP += "already-stripped"

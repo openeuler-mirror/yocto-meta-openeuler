@@ -155,12 +155,6 @@ FILES_${PN}-client = "${base_sbindir}/dhclient \
 
 FILES_${PN}-omshell = "${bindir}/omshell"
 
-pkg_postinst_dhcp-server() {
-    mkdir -p $D/${localstatedir}/lib/dhcp
-    touch $D/${localstatedir}/lib/dhcp/dhcpd.leases
-    touch $D/${localstatedir}/lib/dhcp/dhcpd6.leases
-}
-
 pkg_postinst_dhcp-client() {
     mkdir -p $D/${localstatedir}/lib/dhcp
 }

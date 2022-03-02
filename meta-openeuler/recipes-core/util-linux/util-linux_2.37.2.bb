@@ -118,8 +118,9 @@ CONFFILES_${PN}-su = "${sysconfdir}/pam.d/su-l"
 FILES_${PN}-pylibmount = "${PYTHON_SITEPACKAGES_DIR}/libmount/pylibmount.so \
                           ${PYTHON_SITEPACKAGES_DIR}/libmount/__init__.* \
                           ${PYTHON_SITEPACKAGES_DIR}/libmount/__pycache__/*"
+PACKAGES += "${PN}-bash-completion ${PN}-procps"
 FILES_${PN}-bash-completion += "${datadir}/bash-completion/*"
-PACKAGES += "${PN}-bash-completion"
+FILES_${PN}-procps = "${base_bindir}/kill"
 # Util-linux' blkid replaces the e2fsprogs one
 RCONFLICTS_${PN}-blkid = "${MLPREFIX}e2fsprogs-blkid"
 RREPLACES_${PN}-blkid = "${MLPREFIX}e2fsprogs-blkid"
