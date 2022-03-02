@@ -128,6 +128,7 @@ download_code()
     update_code_repo src-openeuler/procps-ng openEuler-22.03-LTS-Next
     update_code_repo src-openeuler/tzdata openEuler-22.03-LTS-Next
     update_code_repo src-openeuler/glib2 openEuler-22.03-LTS-Next
+    update_code_repo src-openeuler/raspberrypi-firmware openEuler-22.03-LTS-Next
 }
 
 download_iSulad_code()
