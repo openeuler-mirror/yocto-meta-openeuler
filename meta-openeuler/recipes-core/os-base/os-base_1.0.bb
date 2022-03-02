@@ -60,6 +60,11 @@ do_install() {
         chmod 600 ${D}${sysconfdir}/security/opasswd
 }
 
+do_install_append_raspberrypi4() {
+	sed -i 's/ttyAMA0/ttyS0/g' ${D}/etc/inittab
+	sed -i '/\# load kernel modules/imount -o remount,rw \/' ${D}/etc/rc.d/rc.sysinit
+}
+
 PACKAGES =+ "${PN}-sysctl"
 FILES_${PN} = "/"
 FILES_${PN}-sysctl = "${sysconfdir}/sysctl.conf"
