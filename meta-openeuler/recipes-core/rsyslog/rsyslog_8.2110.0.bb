@@ -18,7 +18,6 @@ SRC_URI = "file://${BPN}/${BP}.tar.gz \
            file://${BPN}/rsyslog-8.24.0-ensure-parent-dir-exists-when-writting-log-file.patch \
            file://${BPN}/bugfix-rsyslog-7.4.7-imjournal-add-monotonic-timestamp.patch \
            file://${BPN}/bugfix-rsyslog-7.4.7-add-configuration-to-avoid-memory-leak.patch \
-           file://${BPN}/rsyslog-8.24.0-set-permission-of-syslogd-dot-pid-to-0644.patch \
            file://${BPN}/rsyslog-8.37.0-initialize-variables-and-check-return-value.patch \
            file://initscript \
            file://rsyslog.conf \

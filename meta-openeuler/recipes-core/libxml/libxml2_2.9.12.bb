@@ -17,14 +17,14 @@ SRC_URI = "file://libxml2/${BP}.tar.gz \
            file://libxml2/Fix-XPath-recursion-limit.patch \
            file://libxml2/Fix-Null-deref-in-xmlSchemaGetComponentTargetNs.patch \
            file://libxml2/Fix-memleaks-in-xmlXIncludeProcessFlags.patch \
-           file://libxml2/Fix-heap-use-after-free-in-xmlAddNextSibling-and-xmlAddChild.patch \
+           file://libxml2/xmlAddChild-and-xmlAddNextSibling-may-not-attach-the.patch \
            file://libxml2/Work-around-lxml-API-abuse.patch \
            file://libxml2/Fix-regression-in-xmlNodeDumpOutputInternal.patch \
            file://libxml2/Fix-whitespace-when-serializing-empty-HTML-documents.patch \
            file://libxml2/Patch-to-forbid-epsilon-reduction-of-final-states.patch \
            file://libxml2/Fix-buffering-in-xmlOutputBufferWrite.patch \
            file://run-ptest \
-           "
+"
 
 SRC_URI[sha256sum] = "c8d6681e38c56f172892c85ddc0852e1fd4b53b4209e7f4ebf17f7e2eae71d92"
 
