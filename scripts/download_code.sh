@@ -55,10 +55,10 @@ update_code_repo()
 download_code()
 {
     rm -f "${SRC_DIR}"/code.list
+    update_code_repo openeuler/yocto-meta-openeuler openEuler-21.09
     update_code_repo openeuler/kernel openEuler-21.09 kernel-5.10
     update_code_repo src-openeuler/kernel openEuler-21.09 src-kernel-5.10
     update_code_repo src-openeuler/busybox openEuler-22.03-LTS-Next
-    update_code_repo openeuler/yocto-meta-openeuler openEuler-21.09
     update_code_repo openeuler/yocto-embedded-tools openEuler-21.09
     update_code_repo openeuler/yocto-poky openEuler-21.09
     update_code_repo src-openeuler/yocto-pseudo openEuler-21.09
