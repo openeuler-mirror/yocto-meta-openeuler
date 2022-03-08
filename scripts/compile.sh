@@ -85,8 +85,7 @@ set_env()
     fi
 
 # if raspberrypi is selected, add the layer of meta-raspberry pi
-    echo "$MACHINE" | grep -q "^raspberrypi"
-    if [ $? -eq 0 ];then
+    if echo "$MACHINE" | grep -q "^raspberrypi";then
         grep "meta-raspberrypi" conf/bblayers.conf |grep -qv "^[[:space:]]*#" || sed -i "/\/meta-openeuler /a \  "${SRC_DIR}"/yocto-meta-openeuler/bsp/meta-raspberrypi \\\\" conf/bblayers.conf
     fi
 # set the correct automake command and add it into HOSTTOOLS
