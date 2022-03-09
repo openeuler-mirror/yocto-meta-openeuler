@@ -1,8 +1,8 @@
-SUMMARY = "Dummy Linux kernel"
-DESCRIPTION = "Dummy Linux kernel, to be selected as the preferred \
-provider for virtual/kernel to satisfy dependencies for situations \
-where you wish to build the kernel externally from the build system."
-SECTION = "kernel"
+SUMMARY = "Tiny versions of many common UNIX utilities in a single small executable"
+DESCRIPTION = "BusyBox combines tiny versions of many common UNIX utilities into a single small executable. It provides minimalist replacements for most of the utilities you usually find in GNU fileutils, shellutils, etc. The utilities in BusyBox generally have fewer options than their full-featured GNU cousins; however, the options that are included provide the expected functionality and behave very much like their GNU counterparts. BusyBox provides a fairly complete POSIX environment for any small or embedded system."
+HOMEPAGE = "https://www.busybox.net"
+BUGTRACKER = "https://bugs.busybox.net/"
+SECTION = "base"
 
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
