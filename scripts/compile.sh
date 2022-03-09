@@ -38,13 +38,13 @@ get_build_info()
         exit 1
     fi
 
-# show help message if no arguments
+    # show help message if no arguments
     if [ $# -eq 0 ]; then
         usage
     fi
 
-# get the src dir which contains all src code packages, include yocto repos, linux kernel
-# busybox etc..
+    # get the src dir which contains all src code packages, include yocto repos, linux kernel
+    # busybox etc..
     SRC_DIR="$(cd $(dirname "${BASH_SOURCE[0]}")/../../;pwd)"
     [[ -z "${BUILD_DIR}" ]] && BUILD_DIR="${SRC_DIR}/build"
 
@@ -62,37 +62,44 @@ get_build_info()
 # this function sets up the yocto build environment
 set_env()
 {
-# as tools like ldconfig will be used, add /usr/sbin in $PATH
+    # as tools like ldconfig will be used, add /usr/sbin in $PATH
     export PATH="/usr/sbin/:$PATH"
 
-# set the TEMPLATECONF of yocto, make build dir and init the yocto build
-# environment
+    # set the TEMPLATECONF of yocto, make build dir and init the yocto build
+    # environment
     TEMPLATECONF="${SRC_DIR}/yocto-meta-openeuler/meta-openeuler/conf"
     mkdir -p "${BUILD_DIR}"
     source "${SRC_DIR}"/yocto-poky/oe-init-build-env "${BUILD_DIR}"
     set +x
 
-# after oe-init-build-env, will be in ${BUILD_DIR}
-# set the MACHINE variable in local.conf through sed cmd
+    # after oe-init-build-env, will be in ${BUILD_DIR}
+    # set the MACHINE variable in local.conf through sed cmd
     sed -i "s|^MACHINE.*|MACHINE = \"${MACHINE}\"|g" conf/local.conf
 
-# set the OPENUERL_SP_DIR variable
+    # set the OPENUERL_SP_DIR variable
     sed -i "s|^OPENEULER_SP_DIR .*|OPENEULER_SP_DIR = \"${SRC_DIR}\"|g" conf/local.conf
 
-# set the OPENEULER_TOOLCHAIN_DIR_xxx variable
+    # set the OPENEULER_TOOLCHAIN_DIR_xxx variable
     if [[ -n ${TOOLCHAIN_DIR} ]];then
         sed -i "s|^${OPENEULER_TOOLCHAIN_DIR}.*|${OPENEULER_TOOLCHAIN_DIR} = \"${TOOLCHAIN_DIR}\"|g" conf/local.conf
     fi
 
-# if raspberrypi is selected, add the layer of meta-raspberry pi
+    # if raspberrypi is selected, add the layer of meta-raspberry pi
     if echo "$MACHINE" | grep -q "^raspberrypi";then
         grep "meta-raspberrypi" conf/bblayers.conf |grep -qv "^[[:space:]]*#" || sed -i "/\/meta-openeuler /a \  "${SRC_DIR}"/yocto-meta-openeuler/bsp/meta-raspberrypi \\\\" conf/bblayers.conf
     fi
-# set the correct automake command and add it into HOSTTOOLS
-    AUTOMAKE_V=$(ls /usr/bin/automake-1.* |awk -F "/" '{print $4}')
-# if automake-1.* is not in HOSTOOLS, append it
-    grep -q "HOSTTOOLS .*$AUTOMAKE_V" conf/local.conf || echo "HOSTTOOLS += \"$AUTOMAKE_V\"" >> conf/local.conf
+    # set the correct automake command and add it into HOSTTOOLS
+    # if automake-1.* is not in HOSTOOLS, append it
+    local automake_v=$(ls /usr/bin/automake-1.* |awk -F "/" '{print $4}')
+    grep -q "HOSTTOOLS .*$automake_v" conf/local.conf || echo "HOSTTOOLS += \"$automake_v\"" >> conf/local.conf
 
+    # set DATETIME in conf/local.conf
+    # you can set DATETIME from environment variable or get time by date
+    # not reset DATETIME when rebuilt in the same directory
+    if [[ -z "${DATETIME}" ]];then
+        DATETIME="$(date +%Y%m%d%H%M%S)"
+    fi
+    grep -q "DATETIME" conf/local.conf || echo "DATETIME = \"${DATETIME}\"" >> conf/local.conf
 }
 
 main()
