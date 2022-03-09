@@ -29,6 +29,7 @@ meta-environment-${MACHINE} \
 FEATURE_PACKAGES_tools-sdk_remove = " packagegroup-core-sdk packagegroup-core-standalone-sdk-target"
 TOOLCHAIN_TARGET_TASK_remove += "${@multilib_pkg_extend(d, 'packagegroup-core-standalone-sdk-target')}"
 
+TOOLCHAIN_TARGET_TASK += "kernel-devsrc"
 
 #not add run-postinsts to PACKAGE_INSTALL, so that not fail when do_rootfs??
 ROOTFS_BOOTSTRAP_INSTALL = ""
