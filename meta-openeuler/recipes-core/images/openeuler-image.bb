@@ -51,6 +51,35 @@ OUTPUT_DIR = "${TOPDIR}/output/${DATETIME}"
 #No kernel-abiversion file found, cannot run depmod, aborting
 USE_DEPMOD = "0"
 
+# openEuler embedded uses pre-built dnf tool which is different with Yocto's patched dnf.
+# Yocto's dnf is patched  with special handlings for yocto's build flow
+# (see poky/meta/recipes-devtools/dnf).
+# In prebuilt dnf, the log dir will be in the install dir of target rootfs, this will
+# pollute the target rootfs. That's why 0005-Do-not-prepend-installroot-to-logdir.path is
+# needed.
+# in openEuler, we do some modifications (meta/lib/oe/package_manager/rpm/__init__.py),
+# add a DNF_LOG_DIR to handle the case of prebuilt dnf.
+# Through DNF_LOG_DIR, the dnf logs will be written in DNF_LOG_DIR of target rootfs.
+# After the install of rootfs, these logs should be deleted to avoid pollution of target rootfs
+
+# What's tricky, the logs of DNF can de divided into two parts, dnf*.log and hawky.log.
+# dnf*.log's rootfs dir is the target rootfs dir, hawky.log's rootfs dir is the host rootfs dir.,
+# i.e, hawky.log will be written into ${WORKDIR}/temp, dnf*.log will be written into ${WORKDIR}/rootfs
+# ${WORKDIR}/temp. So a workaround here is set DNF_LOG_DIR = "/tmp", that both dnf*.log and hawky.log
+# can be written successfully
+
+DNF_LOG_DIR = "/tmp"
+
+IMAGE_PREPROCESS_COMMAND += "delete_dnf_logs_from_rootfs;"
+
+delete_dnf_logs_from_rootfs() {
+   pushd "${IMAGE_ROOTFS}"
+   if [ -e ./tmp/dnf.log ];then
+      mv ./tmp/dnf*.log ${T}
+   fi
+   popd
+}
+
 ROOTFS_BOOTSTRAP_INSTALL = " \
 busybox-linuxrc \
 kernel \
