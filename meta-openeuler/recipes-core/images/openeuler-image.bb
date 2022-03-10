@@ -46,7 +46,7 @@ RPMROOTFSDEPENDS = ""
 #IMAGE_ROOTFS_SIZE ?= "8192"
 #IMAGE_ROOTFS_EXTRA_SPACE_append = "${@bb.utils.contains("DISTRO_FEATURES", "systemd", " + 4096", "", d)}"
 
-OUTPUT_DIR = "${TOPDIR}/output"
+OUTPUT_DIR = "${TOPDIR}/output/${DATETIME}"
 
 #No kernel-abiversion file found, cannot run depmod, aborting
 USE_DEPMOD = "0"
@@ -57,6 +57,7 @@ kernel \
 busybox \
 os-base \
 glibc \
+os-release \
 "
 
 IMAGE_INSTALL_normal = " \
