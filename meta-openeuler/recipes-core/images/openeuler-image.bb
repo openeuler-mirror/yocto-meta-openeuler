@@ -46,7 +46,10 @@ RPMROOTFSDEPENDS = ""
 #IMAGE_ROOTFS_SIZE ?= "8192"
 #IMAGE_ROOTFS_EXTRA_SPACE_append = "${@bb.utils.contains("DISTRO_FEATURES", "systemd", " + 4096", "", d)}"
 
-OUTPUT_DIR = "${TOPDIR}/output/${DATETIME}"
+OUTPUTTIME = "${DATETIME}"
+# Ignore how DATETIME is computed
+OUTPUTTIME[vardepsexclude] = "DATETIME"
+OUTPUT_DIR = "${TOPDIR}/output/${OUTPUTTIME}"
 
 #No kernel-abiversion file found, cannot run depmod, aborting
 USE_DEPMOD = "0"
