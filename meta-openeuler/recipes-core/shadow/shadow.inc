@@ -11,7 +11,6 @@ UPSTREAM_CHECK_URI = "https://github.com/shadow-maint/shadow/releases"
 FILESEXTRAPATHS_prepend .= "${OPEN_SRC_DIR}/shadow-utils:"
 
 inherit autotools gettext
-#inherit autotools
 
 export CONFIG_SHELL="/bin/sh"
 
@@ -89,6 +88,7 @@ SRC_URI = "file://shadow/${BP}.tar.xz \
            file://shadow/newgrp-fix-segmentation-fault.patch \
            file://shadow/groupdel-fix-SIGSEGV-when-passwd-does-not-exist.patch \
            file://shadow/shadow-add-sm3-crypt-support.patch \
+	   file://shadow/backport-useradd-modify-check-ID-range-for-system-users.patch \
 "
 
 LIC_FILES_CHKSUM="file://COPYING;md5=ed80ff1c2b40843cf5768e5229cf16e5"

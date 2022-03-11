@@ -19,6 +19,9 @@ USERADD_PARAM_${PN}-client = "--system  --home-dir /var/lib/nfs \
 SRC_URI = "file://nfs-utils/${BP}.tar.xz \
            file://nfs-utils/0000-systemd-idmapd-require-rpc-pipefs.patch \
            file://nfs-utils/0001-correct-the-statd-path-in-man.patch \
+           file://nfs-utils/0002-nfs-utils-set-use-gss-proxy-1-to-enable-gss-proxy-by.patch \
+           file://nfs-utils/0003-idmapd-Fix-error-status-when-nfs-idmapd-exits.patch \
+           file://nfs-utils/0004-fix-coredump-in-bl_add_disk.patch \
            file://nfsserver \
            file://nfscommon \
            file://nfs-utils.conf \

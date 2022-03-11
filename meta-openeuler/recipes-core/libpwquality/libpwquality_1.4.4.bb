@@ -7,15 +7,14 @@ PARALLEL_MAKE = "-j 1"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bd2f1386df813a459a0c34fde676fc2"
 
-SRC_URI += "file://libpwquality/libpwquality-1.4.4.tar.bz2"
-
-#S = "${WORKDIR}/${SRCNAME}-${PV}"
+SRC_URI = "file://libpwquality/${BP}.tar.bz2 \
+           file://libpwquality/modify-pwquality_conf.patch \
+           file://libpwquality/fix-password-similarity.patch \
+"
 
 DEPENDS = "cracklib"
 
 inherit autotools gettext
-
-#B = "${S}"
 
 export PYTHON_DIR
 export BUILD_SYS

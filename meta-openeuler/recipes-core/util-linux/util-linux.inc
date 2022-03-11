@@ -28,6 +28,15 @@ LIC_FILES_CHKSUM = "file://README.licensing;md5=0fd5c050c6187d2bf0a4492b7f4e33da
 FILESEXTRAPATHS_prepend := "${THISDIR}/util-linux:"
 MAJOR_VERSION = "${@'.'.join(d.getVar('PV').split('.')[0:2])}"
 SRC_URI = "file://util-linux/util-linux-${PV}.tar.xz \
+           file://util-linux/2.36-login-lastlog-create.patch \
+           file://util-linux/backport-CVE-2021-3995.patch \
+           file://util-linux/backport-CVE-2021-3996.patch \
+           file://util-linux/realloc-buffer-when-header-size-changed.patch \
+           file://util-linux/fix-size-use-for-stdin.patch \
+           file://util-linux/segmentation-fault-on-invalid-unicode-input-passed-to-s-option.patch \
+           file://util-linux/backport-fix-by-ignoring-EINVAL-on-remount-of-proc.patch \
+           file://util-linux/Add-check-to-resolve-uname26-version-test-failed.patch \
+           file://util-linux/SKIPPED-no-root-permissions-test.patch \
 	   file://runuser.pamd \
 	   file://runuser-l.pamd \
 	   "

@@ -11,6 +11,7 @@ DEPENDS_append_libc-musl = " argp-standalone fts musl-obstack "
 # The Debian patches below are from:
 # http://ftp.de.debian.org/debian/pool/main/e/elfutils/elfutils_0.176-1.debian.tar.xz
 SRC_URI = "file://elfutils/${BP}.tar.bz2 \
+           file://elfutils/eu-elfclassify-no-stdin-should-use-classify_flag_no_stdin.patch \
            file://run-ptest \
 "
 

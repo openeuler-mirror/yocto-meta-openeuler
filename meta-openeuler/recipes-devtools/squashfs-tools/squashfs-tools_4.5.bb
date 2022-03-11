@@ -13,6 +13,7 @@ SRC_URI = "file://squashfs-tools/squashfs4.5.tar.gz \
            file://squashfs-tools/0003-CVE-2021-41072.patch \
            file://squashfs-tools/0004-CVE-2021-41072.patch \
            file://squashfs-tools/0005-CVE-2021-41072.patch \
+           file://0001-Avoid-use-of-INSTALL_DIR-for-symlink-targets.patch \
 "
 
 S = "${WORKDIR}/${BP}"

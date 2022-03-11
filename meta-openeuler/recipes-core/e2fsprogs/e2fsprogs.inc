@@ -19,7 +19,18 @@ LIC_FILES_CHKSUM = "file://NOTICE;md5=d50be0580c0b0a7fbc7a4830bbe6c12b \
 SECTION = "base"
 DEPENDS = "util-linux attr"
 
-SRC_URI = "file://e2fsprogs/${BP}.tar.xz"
+SRC_URI = "file://e2fsprogs/${BP}.tar.xz \
+           file://e2fsprogs/0001-e2fsprogs-set-hugefile-from-4T-to-1T-in-hugefile-tes.patch \
+           file://e2fsprogs/0002-libss-add-newer-libreadline.so.8-to-dlopen-path.patch \
+           file://e2fsprogs/0003-tests-update-expect-files-for-f_mmp_garbage.patch \
+           file://e2fsprogs/0004-tests-update-expect-files-for-f_large_dir-and-f_larg.patch \
+           file://e2fsprogs/0005-resize2fs-resize2fs-disk-hardlinks-will-be-error.patch \
+           file://e2fsprogs/0006-e2fsck-exit-journal-recovery-when-find-EIO-ENOMEM-er.patch \
+           file://e2fsprogs/0007-e2fsck-exit-journal-recovery-when-jounral-superblock.patch \
+           file://e2fsprogs/0008-e2fsck-add-env-param-E2FS_UNRELIABLE_IO-to-fi.patch \
+           file://e2fsprogs/0009-e2mmpstatus.8.in-detele-filesystem-can-be-UUID-or-LA.patch \
+           file://run-ptest \
+"
 
 inherit autotools gettext texinfo pkgconfig multilib_header ptest
 

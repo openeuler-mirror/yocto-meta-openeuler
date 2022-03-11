@@ -15,7 +15,9 @@ SRC_URI = "file://rpcbind/${BP}.tar.bz2 \
            file://rpcbind/rpcbind-0.2.4-runstatdir.patch \
            file://rpcbind/rpcbind-0.2.4-systemd-service.patch \
            file://rpcbind/rpcbind-0.2.4-systemd-rundir.patch \
+           file://rpcbind/bugfix-rpcbind-GETADDR-return-client-ip.patch \
            file://rpcbind/CVE-2017-8779.patch \
+           file://rpcbind/backport-fix-double-free-in-init_transport.patch \
            file://rpcbind/bugfix-listen-tcp-port-111.patch \
            file://init.d \
            file://rpcbind.conf \
