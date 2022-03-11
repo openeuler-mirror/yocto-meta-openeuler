@@ -1,6 +1,9 @@
 inherit cross-canadian
 require gcc-bin-toolchain.inc
 
+# not depends to chrpath-native, use chrpath command at host
+DEPENDS_remove += " chrpath-replacement-native"
+
 PN = "gcc-bin-toolchain-cross-canadian-${TARGET_ARCH}"
 INHIBIT_DEFAULT_DEPS = "1"
 INHIBIT_PACKAGE_STRIP = "1"
