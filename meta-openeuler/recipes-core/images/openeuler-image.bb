@@ -25,6 +25,7 @@ export SDK_OS = "linux"
 TOOLCHAIN_HOST_TASK_task-populate-sdk-ext = ""
 TOOLCHAIN_HOST_TASK = " \
 meta-environment-${MACHINE} \
+gcc-bin-toolchain-cross-canadian-${TRANSLATED_TARGET_ARCH} \
 "
 FEATURE_PACKAGES_tools-sdk_remove = " packagegroup-core-sdk packagegroup-core-standalone-sdk-target"
 TOOLCHAIN_TARGET_TASK_remove += "${@multilib_pkg_extend(d, 'packagegroup-core-standalone-sdk-target')}"
