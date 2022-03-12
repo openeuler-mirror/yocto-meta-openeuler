@@ -61,14 +61,14 @@ download_code()
     update_code_repo openeuler/yocto-poky ${SRC_BRANCH_FIXED}
     update_code_repo src-openeuler/yocto-pseudo ${SRC_BRANCH_FIXED}
     update_code_repo src-openeuler/audit ${SRC_BRANCH}
-    update_code_repo src-openeuler/cracklib ${SRC_BRANCH_FIXED}
+    update_code_repo src-openeuler/cracklib ${SRC_BRANCH}
     update_code_repo src-openeuler/libcap-ng ${SRC_BRANCH}
-    update_code_repo src-openeuler/libpwquality ${SRC_BRANCH_FIXED}
+    update_code_repo src-openeuler/libpwquality ${SRC_BRANCH}
     update_code_repo src-openeuler/openssh ${SRC_BRANCH}
     update_code_repo src-openeuler/openssl ${SRC_BRANCH}
     update_code_repo src-openeuler/pam ${SRC_BRANCH}
     update_code_repo src-openeuler/shadow ${SRC_BRANCH}
-    update_code_repo src-openeuler/ncurses ${SRC_BRANCH_FIXED}
+    update_code_repo src-openeuler/ncurses ${SRC_BRANCH}
     update_code_repo src-openeuler/bash ${SRC_BRANCH}
     update_code_repo src-openeuler/libtirpc ${SRC_BRANCH}
     update_code_repo src-openeuler/grep ${SRC_BRANCH}
@@ -127,25 +127,26 @@ download_code()
     update_code_repo src-openeuler/tzdata ${SRC_BRANCH}
     update_code_repo src-openeuler/glib2 ${SRC_BRANCH}
     update_code_repo src-openeuler/raspberrypi-firmware ${SRC_BRANCH}
+    update_code_repo src-openeuler/gmp ${SRC_BRANCH}
+    update_code_repo src-openeuler/gdb ${SRC_BRANCH}
 }
 
 # download iSulad related packages
 download_iSulad_code()
 {
-   update_code_repo src-openeuler/zlib ${SRC_BRANCH_FIXED}
+   update_code_repo src-openeuler/zlib ${SRC_BRANCH}
    update_code_repo src-openeuler/libcap ${SRC_BRANCH}
-   update_code_repo src-openeuler/yajl ${SRC_BRANCH_FIXED}
+   update_code_repo src-openeuler/yajl ${SRC_BRANCH}
    update_code_repo src-openeuler/libseccomp ${SRC_BRANCH}
    update_code_repo src-openeuler/curl ${SRC_BRANCH}
-   update_code_repo src-openeuler/lxc ${SRC_BRANCH_FIXED}
-   update_code_repo src-openeuler/lcr ${SRC_BRANCH_FIXED}
-   update_code_repo src-openeuler/clibcni ${SRC_BRANCH_FIXED}
+   update_code_repo src-openeuler/lxc ${SRC_BRANCH}
+   update_code_repo src-openeuler/lcr ${SRC_BRANCH}
    update_code_repo src-openeuler/libarchive ${SRC_BRANCH}
-   update_code_repo src-openeuler/libevent ${SRC_BRANCH_FIXED}
-   update_code_repo src-openeuler/libevhtp ${SRC_BRANCH_FIXED}
-   update_code_repo src-openeuler/http-parser ${SRC_BRANCH_FIXED}
+   update_code_repo src-openeuler/libevent ${SRC_BRANCH}
+   update_code_repo src-openeuler/libevhtp ${SRC_BRANCH}
+   update_code_repo src-openeuler/http-parser ${SRC_BRANCH}
    update_code_repo src-openeuler/libwebsockets ${SRC_BRANCH}
-   update_code_repo src-openeuler/iSulad ${SRC_BRANCH_FIXED}
+   update_code_repo src-openeuler/iSulad ${SRC_BRANCH}
 }
 
 usage()
@@ -167,7 +168,7 @@ fi
 if [[ -z "${SRC_BRANCH}" ]];then
     usage
     # the latest release branch
-    SRC_BRANCH="openEuler-22.03-LTS-Next"
+    SRC_BRANCH="openEuler-22.03-LTS"
 fi
 
 URL_PREFIX="https://gitee.com/"
