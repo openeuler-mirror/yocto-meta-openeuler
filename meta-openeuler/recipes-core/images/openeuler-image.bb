@@ -1,6 +1,5 @@
 SUMMARY = "A small image just capable of allowing a device to boot."
 
-#IMAGE_INSTALL = "packagegroup-core-boot ${CORE_IMAGE_EXTRA_INSTALL}"
 IMAGE_INSTALL = ""
 
 IMAGE_LINGUAS = " "
@@ -23,14 +22,9 @@ SDK_RELOCATE_AFTER_INSTALL = "0"
 inherit populate_sdk_ext
 export SDK_OS = "linux"
 TOOLCHAIN_HOST_TASK_task-populate-sdk-ext = ""
-TOOLCHAIN_HOST_TASK = " \
-meta-environment-${MACHINE} \
-gcc-bin-toolchain-cross-canadian-${TRANSLATED_TARGET_ARCH} \
-"
+
 FEATURE_PACKAGES_tools-sdk_remove = " packagegroup-core-sdk packagegroup-core-standalone-sdk-target"
 TOOLCHAIN_TARGET_TASK_remove += "${@multilib_pkg_extend(d, 'packagegroup-core-standalone-sdk-target')}"
-
-TOOLCHAIN_TARGET_TASK += "kernel-devsrc"
 
 #not add run-postinsts to PACKAGE_INSTALL, so that not fail when do_rootfs??
 ROOTFS_BOOTSTRAP_INSTALL = ""
@@ -84,134 +78,39 @@ delete_dnf_logs_from_rootfs() {
    popd
 }
 
-ROOTFS_BOOTSTRAP_INSTALL = " \
-busybox-linuxrc \
-kernel \
-busybox \
-os-base \
-glibc \
-os-release \
-"
-
-IMAGE_INSTALL_normal = " \
-audit \
-auditd \
-audispd-plugins \
-cracklib \
-libpwquality \
-libpam \
-packagegroup-pam-plugins \
-openssh-ssh \
-openssh-sshd \
-openssh-scp \
-shadow \
-shadow-securetty \
-bash \
-"
-IMAGE_INSTALL_normal_append_arm += "kernel-module-unix"
-
-IMAGE_INSTALL_pro = " \
-${IMAGE_INSTALL_normal} \
-libseccomp \
-libwebsockets \
-yajl \
-lcr \
-lxc \
-libevhtp \
-libarchive \
-libevent \
-iSulad \
-kernel-module-overlay \
-kernel-img \
-kernel-vmlinux \
-acl \
-attr \
-bind-utils \
-cifs-utils \
-cronie \
-curl \
-dhcp \
-dhcp-libs \
-dhcp-server \
-dhcp-server-config \
-dosfstools \
-e2fsprogs \
-ethtool \
-expat \
-glib-2.0 \
-grep \
-gzip \
-initscripts \
-iproute2-ip \
-iptables \
-json-c \
-kexec \
-kmod \
-less \
-libaio \
-libasm \
-libbfd \
-libcap \
-libcap-bin \
-libcap-ng \
-libcap-ng-bin \
-libdw \
-libffi \
-libhugetlbfs \
-libnl \
-libnl-cli \
-libnl-xfrm \
-libpcap \
-libpwquality \
-libselinux-bin \
-libsepol-bin \
-libusb1 \
-libxml2 \
-libxml2-utils \
-logrotate \
-lvm2 \
-ncurses \
-ncurses-libform \
-ncurses-libmenu \
-ncurses-libpanel \
-ncurses-terminfo \
-ncurses-terminfo-base \
-nfs-utils \
-nfs-utils-client \
-openssh-keygen \
-openssh-misc \
-openssh-sftp \
-openssh-sftp-server \
-pciutils \
-policycoreutils \
-policycoreutils-fixfiles \
-policycoreutils-hll \
-policycoreutils-loadpolicy \
-policycoreutils-semodule \
-policycoreutils-sestatus \
-policycoreutils-setfiles \
-procps \
-pstree \
-quota \
-rpcbind \
-rsyslog \
-sed \
-shadow-base \
-squashfs-tools \
-strace \
-tzdata-core \
-util-linux-su \
-util-linux-libfdisk \
-xz \
-"
-
-IMAGE_INSTALL += "${ROOTFS_BOOTSTRAP_INSTALL} ${IMAGE_INSTALL_normal} ${IMAGE_INSTALL_pro}"
-
 DISTRO_FEATURES += "glibc"
 
 copy_opeueuler_sdk() {
    cp -fp ${SDKDEPLOYDIR}/${TOOLCHAIN_OUTPUTNAME}.sh "${OUTPUT_DIR}"/
 }
 SDK_POSTPROCESS_COMMAND += "copy_opeueuler_sdk;"
+
+# packages added to rootfs and target sdk
+# put packages allowing a device to boot into "packagegroup-core-boot"
+# put stantard base packages to "packagegroup-core-base-utils"
+# put extra base packages to "packagegroup-base"
+# put extended packages to "packagegroup-base-extended"
+# put other class of packages to "packagegroup-xxx"
+IMAGE_INSTALL += " \
+packagegroup-core-boot \
+packagegroup-core-base-utils \
+packagegroup-base \
+packagegroup-base-extended \
+packagegroup-openssh \
+packagegroup-debugtools \
+packagegroup-isulad \
+"
+
+# host nativesdk packages added to sdk
+TOOLCHAIN_HOST_TASK = " \
+meta-environment-${MACHINE} \
+gcc-bin-toolchain-cross-canadian-${TRANSLATED_TARGET_ARCH} \
+"
+
+# extra target packages added to sdk
+TOOLCHAIN_TARGET_TASK += " \
+kernel-devsrc \
+"
+
 
 require recipes-core/images/${MACHINE}.inc
