@@ -5,6 +5,3 @@ require shadow.inc
 #BUILD_LDFLAGS_append_class-target = " ${@bb.utils.contains('DISTRO_FEATURES', 'pam', '-lcrypt', '', d)}"
 
 BBCLASSEXTEND = "native nativesdk"
-
-
-

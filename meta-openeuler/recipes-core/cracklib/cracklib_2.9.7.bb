@@ -3,7 +3,10 @@ HOMEPAGE = "http://sourceforge.net/projects/cracklib"
 
 LICENSE = "LGPLv2.1+"
 
-SRC_URI = "file://cracklib/cracklib-${PV}.tar.gz"
+SRC_URI = "file://cracklib/cracklib-${PV}.tar.gz \
+           file://cracklib/fix-problem-of-error-message-about-simplistic-passwo.patch \
+           file://cracklib/backport-cracklib-2.9.6-lookup.patch \
+"
 
 LIC_FILES_CHKSUM = "file://COPYING.LIB;md5=e3eda01d9815f8d24aae2dbd89b68b06"
 

@@ -17,6 +17,7 @@ SRC_URI = "file://procps-ng/procps-ng-${PV}.tar.xz \
            file://procps-ng/0002-top-In-the-bye_bye-function-replace-fputs-with-the-w.patch \
            file://procps-ng/0003-add-options-M-and-N-for-top.patch \
            file://procps-ng/0004-top-exit-with-error-when-pid-overflow.patch \
+           file://procps-ng/0005-fix-a-fix-for-the-bye_bye-function.patch \
            file://sysctl.conf \
            "
 SRC_URI[sha256sum] = "4518b3e7aafd34ec07d0063d250fd474999b20b200218c3ae56f5d2113f141b4"

@@ -16,11 +16,12 @@ LIC_FILES_CHKSUM = "file://doc/COPYING;md5=2d0aa14b3fce4694e4f615e30186335f \
 
 SRC_URI = "file://attr/attr-${PV}.tar.gz \
            file://attr/0001-bypass-wrong-output-when-enabled-selinux.patch \
+	   file://attr/0002-dont-skip-security.evm-when-copy-xattr.patch \
            file://run-ptest \
 "
 
 #inherit ptest update-alternatives autotools gettext
-inherit autotools gettext
+inherit autotools gettext ptest
 
 PACKAGES =+ "lib${BPN}"
 

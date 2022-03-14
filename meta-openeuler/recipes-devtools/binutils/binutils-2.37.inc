@@ -20,13 +20,17 @@ PV = "2.37"
 CVE_VERSION = "2.37"
 
 SRC_URI = "file://binutils/${BP}.tar.xz \
-	   file://binutils/backport-CVE-2021-45078.patch \
-	   file://binutils/binutils-2.20.51.0.2-libtool-lib64.patch \
-	   file://binutils/binutils-2.22.52.0.4-no-config-h-check.patch \
-	   file://binutils/CVE-2019-1010204.patch \
-	   file://binutils/binutils-2.27-aarch64-ifunc.patch \
-	   file://binutils/export-demangle.h-in-devel-package.patch \
-	   file://binutils/Fix-a-potential-use-of-an-uninitialised-value-in-the.patch \
+           file://binutils/binutils-2.20.51.0.2-libtool-lib64.patch \
+           file://binutils/export-demangle.h-in-devel-package.patch \
+           file://binutils/binutils-2.22.52.0.4-no-config-h-check.patch \
+           file://binutils/binutils-2.27-aarch64-ifunc.patch \
+           file://binutils/CVE-2019-1010204.patch \
+           file://binutils/Fix-a-potential-use-of-an-uninitialised-value-in-the.patch \
+           file://binutils/backport-CVE-2021-45078.patch \
+           file://binutils/backport-0001-CVE-2021-42574.patch \
+           file://binutils/backport-0002-CVE-2021-42574.patch \
+           file://binutils/backport-0003-CVE-2021-42574.patch \
+           file://binutils/bfd-Close-the-file-descriptor-if-there-is-no-archive.patch \
 	   file://0005-Point-scripts-location-to-libdir.patch \
 "
 

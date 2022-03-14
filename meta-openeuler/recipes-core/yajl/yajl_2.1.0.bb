@@ -3,12 +3,13 @@ LICENSE = "MIT"
 
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
-SRC_URI = "file://yajl/2.1.0.tar.gz \
+SRC_URI = "file://yajl/${PV}.tar.gz \
 	   file://yajl/yajl-2.1.0-pkgconfig-location.patch    \
 	   file://yajl/yajl-2.1.0-pkgconfig-includedir.patch    \
 	   file://yajl/yajl-2.1.0-test-location.patch    \
 	   file://yajl/yajl-2.1.0-dynlink-binaries.patch    \
 	   file://yajl/yajl-2.1.0-fix-memory-leak.patch    \
+           file://yajl/backport-fix-memory-leaks.patch \
 	  "
 
 S = "${WORKDIR}/${BPN}-${PV}"

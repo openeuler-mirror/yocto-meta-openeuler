@@ -46,6 +46,10 @@ SRC_URI = "file://dhcp/${BP}.tar.gz \
 	   file://dhcp/backport-CVE-2021-25217.patch \
 	   file://dhcp/fix-multiple-definition-with-gcc-10-1.patch \
 	   file://dhcp/fix-multiple-definition-with-gcc-10-2.patch \
+	   file://dhcp/fix-coredump-when-client-active-is-NULL.patch \
+           file://dhcp/bugfix-error-message-display.patch \
+           file://dhcp/feature-lease-time-config-ipv6.patch \
+           file://dhcp/add-a-test-case-to-parse-code93-in-option_unittest.patch \
 	   file://0007-Add-configure-argument-to-make-the-libxml2-dependenc.patch \
 	   file://0013-fixup_use_libbind.patch \
 	   file://init-server file://default-server \

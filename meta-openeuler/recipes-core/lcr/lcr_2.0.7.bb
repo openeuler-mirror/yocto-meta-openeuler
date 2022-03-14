@@ -15,7 +15,8 @@ inherit cmake
 
 ### Build metadata
 SRC_URI = "file://lcr/v${PV}.tar.gz \
-	  "
+           file://lcr/0001-parse-userns-remap-in-daemmon.json.patch \
+"
 
 S = "${WORKDIR}/${BPN}-v${PV}"
 

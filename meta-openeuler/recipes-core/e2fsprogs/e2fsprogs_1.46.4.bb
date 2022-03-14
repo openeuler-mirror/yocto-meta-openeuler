@@ -1,12 +1,5 @@
 require e2fsprogs.inc
 
-SRC_URI += "file://e2fsprogs/0001-e2fsprogs-set-hugefile-from-4T-to-1T-in-hugefile-tes.patch \
-           file://e2fsprogs/0002-libss-add-newer-libreadline.so.8-to-dlopen-path.patch \
-           file://e2fsprogs/0003-tests-update-expect-files-for-f_mmp_garbage.patch \
-           file://e2fsprogs/0004-tests-update-expect-files-for-f_large_dir-and-f_larg.patch \
-           file://run-ptest \
-"
-
 UPSTREAM_CHECK_GITTAGREGEX = "v(?P<pver>\d+\.\d+(\.\d+)*)$"
 
 EXTRA_OECONF += "--libdir=${base_libdir} --sbindir=${base_sbindir} \

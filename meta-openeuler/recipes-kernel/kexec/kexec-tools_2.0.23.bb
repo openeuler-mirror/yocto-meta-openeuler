@@ -12,6 +12,7 @@ SRC_URI = "file://kexec-tools/kexec-tools-${PV}.tar.xz \
            file://kexec-tools/arm64-support-more-than-one-crash-kernel-regions.patch \
            file://kexec-tools/kexec-Add-quick-kexec-support.patch \
            file://kexec-tools/kexec-Quick-kexec-implementation-for-arm64.patch \
+           file://kexec-tools/arm64-crashdump-deduce-paddr-of-_text-based-on-kerne.patch \
            file://kdump \
            file://kdump.conf \
            file://kdump.service \
