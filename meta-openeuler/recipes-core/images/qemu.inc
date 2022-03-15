@@ -12,8 +12,8 @@ delete_boot_from_rootfs() {
 }
 
 copy_openeuler_distro() {
-    rm -f "${OUTPUT_DIR}"/initrd
-    cp -fp ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.${IMAGE_FSTYPES} "${OUTPUT_DIR}"/initrd
+    rm -f "${OUTPUT_DIR}"/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.${IMAGE_FSTYPES}
+    cp -fp ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.${IMAGE_FSTYPES} "${OUTPUT_DIR}"/
 }
 
 IMAGE_PREPROCESS_COMMAND += "delete_boot_from_rootfs;"
