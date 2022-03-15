@@ -3,19 +3,21 @@
 
 usage()
 {
-    echo "Tip: . $(basename "${BASH_SOURCE[0]}") <MACHINE> [BUILD_DIR] [TOOLCHAIN_DIR]"
-    echo "       Supportted machine:"
-    echo "                       qemu-aarch64 (default)"
-    echo "                       qemu-arm"
+    echo "Tip: . $(basename "${BASH_SOURCE[0]}") <PLATFORM> [BUILD_DIR] [TOOLCHAIN_DIR]"
+    echo "       Supportted PLATFORM:"
+    echo "                       aarch64-std (default)"
+    echo "                       aarch64-pro"
+    echo "                       arm-std"
     echo "                       raspberrypi4-64"
     echo "       Build dir: <above dir of yocto-meta-openeuler >/build (defaut)"
     echo "       External toolchain dir(absoulte path):"
     echo "                       /usr1/openeuler/gcc/openeuler_gcc_arm64le (default)"
+    return 1
 }
 
 get_build_info()
 {
-    MACHINE="$1"
+    PLATFORM="$1"
     BUILD_DIR="$2"
     TOOLCHAIN_DIR="$3"
     OPENEULER_TOOLCHAIN_DIR="OPENEULER_TOOLCHAIN_DIR_aarch64"
@@ -28,19 +30,18 @@ get_build_info()
         THIS_SCRIPT="$(pwd)/compile.sh"
         if [ ! -e "$THIS_SCRIPT" ]; then
             echo "Error: $THIS_SCRIPT doesn't exist!"
-            exit 1
+            return 1
         fi
     fi
 
     if [ -z "$ZSH_NAME" ] && [ "$0" = "$THIS_SCRIPT" ]; then
         echo "Error: This script needs to be sourced. Please run as '. $THIS_SCRIPT'" >&2
-        usage
-        exit 1
+        usage || return 1
     fi
 
     # show help message if no arguments
     if [ $# -eq 0 ]; then
-        usage
+        usage || return 1
     fi
 
     # get the src dir which contains all src code packages, include yocto repos, linux kernel
@@ -48,14 +49,37 @@ get_build_info()
     SRC_DIR="$(cd $(dirname "${BASH_SOURCE[0]}")/../../;pwd)"
     [[ -z "${BUILD_DIR}" ]] && BUILD_DIR="${SRC_DIR}/build"
 
+    # set MACHINE and bitbake option
+    BITBAKE_OPT="openeuler-image"
+    case $PLATFORM in
+    "raspberrypi4-64")
+        MACHINE="raspberrypi4-64"
+        ;;
+    "aarch64-std")
+        MACHINE="qemu-aarch64"
+        BITBAKE_OPT="openeuler-image openeuler-image-tiny"
+        ;;
+    "aarch64-pro")
+        MACHINE="qemu-aarch64"
+        ;;
+    "arm-std")
+        MACHINE="qemu-arm"
+        ;;
+    *)
+        echo "unknown platform, use aarch64-std as default"
+        PLATFORM="aarch64-std"
+        MACHINE="qemu-aarch64"
+    esac
+
+    # set toolchain path
     case $MACHINE in
     "qemu-aarch64" | "raspberrypi4-64")
         OPENEULER_TOOLCHAIN_DIR="OPENEULER_TOOLCHAIN_DIR_aarch64";;
     "qemu-arm")
         OPENEULER_TOOLCHAIN_DIR="OPENEULER_TOOLCHAIN_DIR_arm";;
     *)
-        echo "unknown machine, use qemu-aarch64 as default"
-        MACHINE="qemu-aarch64";;
+        echo "unknown machine"
+        usage || return 1
     esac
 }
 
@@ -74,7 +98,8 @@ set_env()
 
     # after oe-init-build-env, will be in ${BUILD_DIR}
     # set the MACHINE variable in local.conf through sed cmd
-    sed -i "s|^MACHINE.*|MACHINE = \"${MACHINE}\"|g" conf/local.conf
+    sed -i "s|^MACHINE .*|MACHINE = \"${MACHINE}\"|g" conf/local.conf
+    sed -i "s|^OPENEULER_PLATFORM .*|OPENEULER_PLATFORM = \"${PLATFORM}\"|g" conf/local.conf
 
     # set the OPENUERL_SP_DIR variable
     sed -i "s|^OPENEULER_SP_DIR .*|OPENEULER_SP_DIR = \"${SRC_DIR}\"|g" conf/local.conf
@@ -104,9 +129,9 @@ set_env()
 
 main()
 {
-    get_build_info $@
+    get_build_info "$@" || return 1
     set_env
-    echo -e "Tip: You can now run 'bitbake openeuler-image'.\n"
+    echo -e "Tip: You can now run 'bitbake ${BITBAKE_OPT}'.\n"
 }
 
-main $@
+main "$@"
