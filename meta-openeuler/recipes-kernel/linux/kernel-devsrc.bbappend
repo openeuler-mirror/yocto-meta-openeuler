@@ -10,6 +10,8 @@ do_install_append() {
         cp .config $kerneldir/build/
         cp -a --parents arch/${ARCH}/include/generated/uapi/asm/ $kerneldir/build/
         # delete host tools caused do_package task error
+        rm -f $kerneldir/build/scripts/selinux/genheaders/genheaders
+        rm -f $kerneldir/build/scripts/selinux/mdp/mdp
         rm -f $kerneldir/build/scripts/dtc/dtc
         rm -f $kerneldir/build/scripts/extract-cert
         rm -f $kerneldir/build/scripts/kallsyms
