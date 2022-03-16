@@ -8,9 +8,16 @@ inherit kernel
 SRC_URI = "file://kernel-5.10 \
      file://yocto-embedded-tools/config/${ARCH}/defconfig-kernel \
 "
+# add patches only for aarch64
 SRC_URI_append_aarch64 += " \
     file://yocto-embedded-tools/patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch \
 "
+
+# add patches for OPENEULER_PLATFROM such as aarch64-pro
+#SRC_URI_append_aarch64-pro += " \
+#    file://yocto-embedded-tools/patches/${ARCH}/xxx \
+#"
+
 S = "${WORKDIR}/kernel-5.10"
 
 LINUX_VERSION ?= "5.10"
