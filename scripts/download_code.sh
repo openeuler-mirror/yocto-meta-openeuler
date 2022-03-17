@@ -13,9 +13,10 @@ EOF
     while read line
     do
         local revision="$(echo $line| awk '{print $2}')"
+        local branchname="$(echo $line| awk '{print $3}')"
         local repo="$(echo $line| awk '{print $1}')"
         local localpath="$(basename ${repo} | sed "s|\.git$||")"
-        echo "    <project name=\"${repo}.git\" path=\"${localpath}\" revision=\"${revision=}\" groups=\"openeuler\">" >> "${SRC_DIR}"/manifest.xml
+        echo "    <project name=\"${repo}.git\" path=\"${localpath}\" revision=\"${revision=}\" groups=\"openeuler\" upstream=\"${branchname}\"/>" >> "${SRC_DIR}"/manifest.xml
     done < "${SRC_DIR}"/code.list.sort
     echo "</manifest>" >> "${SRC_DIR}"/manifest.xml
     rm -f "${SRC_DIR}"/code.list.sort
@@ -45,7 +46,7 @@ update_code_repo()
     git status | grep "is up to date with" || exit 1
     local newest_commitid="$(git log --pretty=oneline  -n1 | awk '{print $1}')"
     #update the code list
-    echo "${repo} ${newest_commitid}" >> "${SRC_DIR}"/code.list
+    echo "${repo} ${newest_commitid} ${branchname}" >> "${SRC_DIR}"/code.list
     popd
     popd
 }
@@ -156,6 +157,7 @@ usage()
 
 SRC_DIR="$1"
 # the git branch to sync
+# you can set branch/tag/commitid
 SRC_BRANCH="$2"
 # the fixed git branch
 SRC_BRANCH_FIXED="openEuler-21.09"
