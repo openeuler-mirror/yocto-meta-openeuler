@@ -57,14 +57,15 @@ USE_DEPMOD = "0"
 # ${WORKDIR}/temp. So a workaround here is set DNF_LOG_DIR = "/tmp", that both dnf*.log and hawky.log
 # can be written successfully
 
-DNF_LOG_DIR = "/tmp"
+DNF_LOG_DIR ?= "/tmp"
 
 IMAGE_PREPROCESS_COMMAND += "delete_dnf_logs_from_rootfs;"
 
 delete_dnf_logs_from_rootfs() {
    pushd "${IMAGE_ROOTFS}"
-   if [ -e ./tmp/dnf.log ];then
-      mv ./tmp/dnf*.log ${T}
+   # move dnf logs into ${T}
+   if [ -e .${DNF_LOG_DIR}/dnf.log ];then
+      mv .${DNF_LOG_DIR}/dnf*.log ${T}
    fi
    popd
 }
