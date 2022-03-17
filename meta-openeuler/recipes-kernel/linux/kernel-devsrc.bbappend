@@ -1,6 +1,11 @@
 RDEPENDS_${PN} = ""
 RDEPENDS_${PN}_remove_aarch64 = " gawk"
 
+# not strip, host tools under scripts arch is different, cannot strip
+# and cannot check arch in do_package_qa
+INHIBIT_PACKAGE_STRIP = "1"
+INSANE_SKIP_${PN} += "arch"
+
 do_install_append() {
     # copy the entie source tree. copy source from build dir and then copy source dir
     # copy in parts from the build that we'll need later
@@ -9,19 +14,6 @@ do_install_append() {
         find . -depth -not -name "*.cmd" -not -name "*.o" -not -path "./.*" -print0 | cpio --null -pdu  $kerneldir/build/
         cp .config $kerneldir/build/
         cp -a --parents arch/${ARCH}/include/generated/uapi/asm/ $kerneldir/build/
-        # delete host tools caused do_package task error
-        rm -f $kerneldir/build/scripts/selinux/genheaders/genheaders
-        rm -f $kerneldir/build/scripts/selinux/mdp/mdp
-        rm -f $kerneldir/build/scripts/dtc/dtc
-        rm -f $kerneldir/build/scripts/extract-cert
-        rm -f $kerneldir/build/scripts/kallsyms
-        rm -f $kerneldir/build/scripts/mod/mk_elfconfig
-        rm -f $kerneldir/build/scripts/sorttable
-        rm -f $kerneldir/build/scripts/kconfig/conf
-        rm -f $kerneldir/build/scripts/mod/modpost
-        rm -f $kerneldir/build/scripts/genksyms/genksyms
-        rm -f $kerneldir/build/scripts/basic/fixdep
-        rm -f $kerneldir/build/scripts/asn1_compiler
         rm -f $(find $kerneldir/build/ -name "*\.dbg")
     )
     if [ "${S}" != "${B}" ];then
