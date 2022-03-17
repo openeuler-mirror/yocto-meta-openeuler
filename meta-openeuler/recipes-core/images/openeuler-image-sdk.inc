@@ -11,6 +11,7 @@ TOOLCHAIN_HOST_TASK_task-populate-sdk-ext = ""
 SDK_DEPENDS_remove += "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])}"
 
 copy_opeueuler_sdk() {
+   test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
    cp -fp ${SDKDEPLOYDIR}/${TOOLCHAIN_OUTPUTNAME}.sh "${OUTPUT_DIR}"/
 }
 SDK_POSTPROCESS_COMMAND += "copy_opeueuler_sdk;"
