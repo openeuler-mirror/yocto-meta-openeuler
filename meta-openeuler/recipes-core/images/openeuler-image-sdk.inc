@@ -4,9 +4,7 @@ IMAGE_LOCALES_ARCHIVE = "0"
 SDKIMAGE_LINGUAS = ""
 SDK_RELOCATE_AFTER_INSTALL = "0"
 
-inherit populate_sdk_ext
 export SDK_OS = "linux"
-TOOLCHAIN_HOST_TASK_task-populate-sdk-ext = ""
 
 SDK_DEPENDS_remove += "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])}"
 
