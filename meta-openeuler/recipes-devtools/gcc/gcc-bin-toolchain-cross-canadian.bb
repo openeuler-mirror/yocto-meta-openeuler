@@ -17,7 +17,7 @@ SDKTARGETSYSROOT = "${SDKPATH}/sysroots/${REAL_MULTIMACH_TARGET_SYS}"
 do_install() {
     install -m 0755 -d ${D}/${SDKTARGETSYSROOT}/
     cp -pPR ${B}/* ${D}/${SDKTARGETSYSROOT}/
-    chown root:root ${D}
+    chown -R root:root ${D}
 }
 
 SYSROOT_DIRS = ""
