@@ -1,0 +1,346 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="zh-CN" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="zh-CN" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>openEuler容器构建指导 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="openEuler Embedded关键特性" href="../features/index.html" />
+    <link rel="prev" title="快速上手" href="regular-build.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">内容</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">介绍</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">openEuler Embedded快速构建指导</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="regular-build.html">快速上手</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">openEuler容器构建指导</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#docker">1. 准备主机端docker工具</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#a-docker">a) 检查当前环境是否已安装docker环境</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#b">b) 如果没有安装，可参考官方链接安装</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">2. 获取容器镜像</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#a-pull">a) 从华为云pull镜像到宿主机</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">3. 拉起容器构建环境（启动命令仅供参考）</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#a">a) 启动容器</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#b-id">b) 查看已启动的容器id</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#c">c) 进入容器</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#yocto">4. yocto一键式构建流程</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#a-clone-yocto-meta-openeuler">a) clone yocto-meta-openeuler代码仓</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">b) 下载源码</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">c) 开始编译</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#d">d) 获取结果件</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../features/index.html">openEuler Embedded关键特性</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../yocto/index.html">openEuler Embedded构建系统</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute_doc.html">如何撰写并贡献文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">openEuler Embedded在线文档</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">openEuler Embedded快速构建指导</a> &raquo;</li>
+        
+      <li>openEuler容器构建指导</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/getting_started/container-build.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="openeuler">
+<h1>openEuler容器构建指导<a class="headerlink" href="#openeuler" title="永久链接至标题">¶</a></h1>
+<div class="section" id="docker">
+<h2>1. 准备主机端docker工具<a class="headerlink" href="#docker" title="永久链接至标题">¶</a></h2>
+<div class="section" id="a-docker">
+<h3>a) 检查当前环境是否已安装docker环境<a class="headerlink" href="#a-docker" title="永久链接至标题">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker version</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="b">
+<h3>b) 如果没有安装，可参考官方链接安装<a class="headerlink" href="#b" title="永久链接至标题">¶</a></h3>
+<p>官网地址：<a class="reference external" href="http://www.dockerinfo.net/document">http://www.dockerinfo.net/document</a></p>
+<p>openEuler环境可参考Centos安装Docker</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo yum install docker</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>2. 获取容器镜像<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<div class="section" id="a-pull">
+<h3>a) 从华为云pull镜像到宿主机<a class="headerlink" href="#a-pull" title="永久链接至标题">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/rtos-openeuler-21.03:v001</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id2">
+<h2>3. 拉起容器构建环境（启动命令仅供参考）<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<div class="section" id="a">
+<h3>a) 启动容器<a class="headerlink" href="#a" title="永久链接至标题">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker run -idt swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/rtos-openeuler-21.03:v001 bash</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="b-id">
+<h3>b) 查看已启动的容器id<a class="headerlink" href="#b-id" title="永久链接至标题">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker ps</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="c">
+<h3>c) 进入容器<a class="headerlink" href="#c" title="永久链接至标题">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker exec -it 容器id bash</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="yocto">
+<h2>4. yocto一键式构建流程<a class="headerlink" href="#yocto" title="永久链接至标题">¶</a></h2>
+<div class="section" id="a-clone-yocto-meta-openeuler">
+<h3>a) clone yocto-meta-openeuler代码仓<a class="headerlink" href="#a-clone-yocto-meta-openeuler" title="永久链接至标题">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">git clone https://gitee.com/openeuler/yocto-meta-openeuler.git -b openEuler-22.03-LTS -v /usr1/yocto-meta-openeuler</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h3>b) 下载源码<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd /usr1/yocto-meta-openeuler</span>
+<span class="go">sh scripts/download_code.sh /usr1/openeuler/src</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>c) 开始编译<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">chown -R huawei:users /usr1</span>
+<span class="go">su huawei</span>
+<span class="go">cd /usr1/openeuler/src/yocto-meta-openeuler/scripts</span>
+<span class="go">source compile.sh aarch64-std /usr1/build /usr1/openeuler/src /usr1/openeuler/gcc/openeuler_gcc_arm64le</span>
+</pre></div>
+</div>
+<ul>
+<li><p class="first">编译架构: aarch64-std、aarch64-pro、arm-std、raspberrypi4-64</p>
+</li>
+<li><p class="first">构建目录: /usr1/build</p>
+</li>
+<li><p class="first">源码目录: /usr1/openeuler/src</p>
+</li>
+<li><p class="first">编译器所在路径: /usr1/openeuler/gcc/openeuler_gcc_arm64le</p>
+<blockquote>
+<div><ul class="simple">
+<li>aarch64-std、aarch64-pro、raspberrypi4-64使用openeuler_gcc_arm64le编译器</li>
+<li>arm-std使用openeuler_gcc_arm32le编译器</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="d">
+<h2>d) 获取结果件<a class="headerlink" href="#d" title="永久链接至标题">¶</a></h2>
+<p>结果件默认生成在构建目录下的output</p>
+<p>如aarch64-std编译完成后产物如下：</p>
+<ul class="simple">
+<li>openeuler嵌入式镜像: Image-5.10.0</li>
+<li>openeuler嵌入式sdk工具链: openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-21.09.30.sh</li>
+<li>openeuler嵌入式文件系统: openeuler-image-qemu-aarch64-20220318114250.rootfs.cpio.gz</li>
+<li>openeuer嵌入式压缩镜像: zImage</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../features/index.html" class="btn btn-neutral float-right" title="openEuler Embedded关键特性" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="regular-build.html" class="btn btn-neutral" title="快速上手" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2022, openEuler Embedded
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/translations.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
