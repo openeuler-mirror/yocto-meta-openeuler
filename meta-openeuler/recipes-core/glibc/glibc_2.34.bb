@@ -10,7 +10,8 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;m
 
 PACKAGES = "${PN} ${PN}-dev ${PN}-staticdev"
 
-#DEPENDS = "virtual/${TARGET_PREFIX}gcc libgcc-initial linux-libc-headers"
+#need strip command from compiler when do_package
+DEPENDS = "virtual/${TARGET_PREFIX}gcc"
 PROVIDES += "virtual/libc virtual/libiconv virtual/libintl"
 #RPROVIDES_${PN}-dev += "libc-dev"
 
