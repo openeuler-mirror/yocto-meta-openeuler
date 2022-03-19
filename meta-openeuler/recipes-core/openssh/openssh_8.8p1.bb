@@ -7,7 +7,7 @@ HOMEPAGE = "http://www.openssh.com/"
 SECTION = "console/network"
 LICENSE = "BSD & ISC & MIT"
 
-DEPENDS = "zlib"
+DEPENDS = "zlib openssl"
 #DEPENDS = "zlib openssl virtual/crypt"
 DEPENDS += "${@bb.utils.contains('DISTRO_FEATURES', 'pam', 'libpam', '', d)}"
 
@@ -45,7 +45,6 @@ EXTRA_OECONF = "'LOGIN_PROGRAM=${base_bindir}/login' \
                 --sysconfdir=${sysconfdir}/ssh \
                 --with-xauth=${bindir}/xauth \
                 --disable-strip \
-                 --without-openssl \
                 "
 
 # musl doesn't implement wtmp/utmp
