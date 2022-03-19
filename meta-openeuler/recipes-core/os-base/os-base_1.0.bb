@@ -60,6 +60,10 @@ do_install() {
         chmod 600 ${D}${sysconfdir}/security/opasswd
 }
 
+do_install_append_arm() {
+	echo "insmod /lib/modules/5.10.0/kernel/net/unix/unix.ko" >> ${D}/etc/rc.d/rc.local
+}
+
 do_install_append_raspberrypi4() {
 	sed -i 's/ttyAMA0/ttyS0/g' ${D}/etc/inittab
 	sed -i '/\# load kernel modules/imount -o remount,rw \/' ${D}/etc/rc.d/rc.sysinit
