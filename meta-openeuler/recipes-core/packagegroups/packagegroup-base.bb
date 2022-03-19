@@ -1,6 +1,12 @@
 SUMMARY = "image base utils"
-inherit packagegroup
 PR = "r1"
+
+#
+# packages which content depend on MACHINE_FEATURES need to be MACHINE_ARCH
+#
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
+inherit packagegroup
 
 # PACKAGES is "${PN}" by default
 # if you want to add new groups by RDEPENDS_xx, you show add new group to PACKAGES
