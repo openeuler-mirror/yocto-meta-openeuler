@@ -40,7 +40,7 @@ a) 启动容器
 
 .. code-block:: console
 
-    docker run -idt swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/rtos-openeuler-21.03:v001 bash
+    docker run -idt --network host swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/rtos-openeuler-21.03:v001 bash
 
 b) 查看已启动的容器id
 ^^^^^^^^^^^^^^^^^^^^^
@@ -64,15 +64,15 @@ a) clone yocto-meta-openeuler代码仓
 
 .. code-block:: console
 
-    git clone https://gitee.com/openeuler/yocto-meta-openeuler.git -b openEuler-22.03-LTS -v /usr1/yocto-meta-openeuler
+    git clone https://gitee.com/openeuler/yocto-meta-openeuler.git -b openEuler-22.03-LTS -v /usr1/openeuler/src/yocto-meta-openeuler
 
 b) 下载源码
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: console
 
-    cd /usr1/yocto-meta-openeuler
-    sh scripts/download_code.sh /usr1/openeuler/src
+    cd /usr1/openeuler/src/yocto-meta-openeuler/scripts
+    sh download_code.sh /usr1/openeuler/src
 
 c) 开始编译
 ******************************************
@@ -82,7 +82,7 @@ c) 开始编译
     chown -R huawei:users /usr1
     su huawei
     cd /usr1/openeuler/src/yocto-meta-openeuler/scripts
-    source compile.sh aarch64-std /usr1/build /usr1/openeuler/src /usr1/openeuler/gcc/openeuler_gcc_arm64le
+    source compile.sh aarch64-std /usr1/build /usr1/openeuler/gcc/openeuler_gcc_arm64le
 
 - 编译架构: aarch64-std、aarch64-pro、arm-std、raspberrypi4-64
 
