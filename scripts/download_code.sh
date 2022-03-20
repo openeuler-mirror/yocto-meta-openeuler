@@ -38,12 +38,14 @@ update_code_repo()
     test -d ./"${pkg}"/.git || { rm -rf ./"${pkg}";git clone "${URL_PREFIX}/${repo}" ${branch} ${git_param} -v "${pkg}"; }
     pushd ./"${pkg}"
     # checkout to branch, or report failure
-    git checkout ${branchname} || echo "git checkout failure, please check ${pkg}"
-    git branch | grep "^*" | grep " ${branchname}$" || exit 1
-    # pull from orgin
-    git config pull.ff only
-    git pull || echo "git pull failure, please check ${pkg}"
-    git status | grep "is up to date with" || exit 1
+    git checkout ${branchname}
+    if git branch -a | grep "/${branchname}$";then
+        git branch | grep "^*" | grep " ${branchname}$" || exit 1
+        # pull from orgin
+        git config pull.ff only
+        git pull || echo "git pull failure, please check ${pkg}"
+        git status | grep "is up to date with" || exit 1
+    fi
     local newest_commitid="$(git log --pretty=oneline  -n1 | awk '{print $1}')"
     #update the code list
     echo "${repo} ${newest_commitid} ${branchname}" >> "${SRC_DIR}"/code.list
@@ -56,11 +58,11 @@ download_code()
     # add new package here if required
     rm -f "${SRC_DIR}"/code.list
     update_code_repo openeuler/kernel ${SRC_BRANCH_FIXED} kernel-5.10
-    update_code_repo src-openeuler/kernel ${SRC_BRANCH_FIXED} src-kernel-5.10
+    update_code_repo src-openeuler/kernel ${SRC_BRANCH} src-kernel-5.10
     update_code_repo src-openeuler/busybox ${SRC_BRANCH}
-    update_code_repo openeuler/yocto-embedded-tools ${SRC_BRANCH_FIXED}
-    update_code_repo openeuler/yocto-poky ${SRC_BRANCH_FIXED}
-    update_code_repo src-openeuler/yocto-pseudo ${SRC_BRANCH_FIXED}
+    update_code_repo openeuler/yocto-embedded-tools ${SRC_BRANCH}
+    update_code_repo openeuler/yocto-poky ${SRC_BRANCH}
+    update_code_repo src-openeuler/yocto-pseudo ${SRC_BRANCH}
     update_code_repo src-openeuler/audit ${SRC_BRANCH}
     update_code_repo src-openeuler/cracklib ${SRC_BRANCH}
     update_code_repo src-openeuler/libcap-ng ${SRC_BRANCH}
