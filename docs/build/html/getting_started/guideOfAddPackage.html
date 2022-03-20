@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>OpenEuler容器镜像使用指导 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
+  <title>openEuler新增软件包指导 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
   
 
   
@@ -79,7 +79,7 @@
               <p class="caption"><span class="caption-text">内容</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">介绍</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">openEuler Embedded快速构建指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">快速上手</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features/index.html">openEuler Embedded关键特性</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../yocto/index.html">openEuler Embedded构建系统</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contribute_doc.html">如何撰写并贡献文档</a></li>
@@ -129,13 +129,13 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-      <li>OpenEuler容器镜像使用指导</li>
+      <li>openEuler新增软件包指导</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/docker/container_recover_guide.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/getting_started/guideOfAddPackage.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -149,54 +149,59 @@
            <div itemprop="articleBody">
             
   <div class="section" id="openeuler">
-<h1>OpenEuler容器镜像使用指导<a class="headerlink" href="#openeuler" title="永久链接至标题">¶</a></h1>
-<div class="section" id="docker">
-<h2>1. 准备docker环境<a class="headerlink" href="#docker" title="永久链接至标题">¶</a></h2>
-<div class="section" id="a-docker">
-<h3>a) 检查当前环境是否已安装docker环境<a class="headerlink" href="#a-docker" title="永久链接至标题">¶</a></h3>
-<ul class="simple">
-<li>docker version</li>
-</ul>
+<h1>openEuler新增软件包指导<a class="headerlink" href="#openeuler" title="永久链接至标题">¶</a></h1>
+<div class="section" id="bb">
+<h2>1.从零开始写bb<a class="headerlink" href="#bb" title="永久链接至标题">¶</a></h2>
+<div class="section" id="i-src">
+<h3>Ⅰ) 软件包代码放在src<a class="headerlink" href="#i-src" title="永久链接至标题">¶</a></h3>
 </div>
-<div class="section" id="b">
-<h3>b) 如果没有安装，可参考官方链接安装<a class="headerlink" href="#b" title="永久链接至标题">¶</a></h3>
-<p>官网地址：<a class="reference external" href="http://www.dockerinfo.net/document">http://www.dockerinfo.net/document</a></p>
-<p>openEuler环境可参考Centos安装Docker</p>
-<ul class="simple">
-<li>sudo yum install docker</li>
-</ul>
+<div class="section" id="ii-yocto-meta-openeulermeta-openeuler-recipes-xx">
+<h3>Ⅱ) 在yocto-meta-openeuler仓库meta-openeuler/recipes-xx新增软件包目录<a class="headerlink" href="#ii-yocto-meta-openeulermeta-openeuler-recipes-xx" title="永久链接至标题">¶</a></h3>
+<p><strong>recipes当前分成4类，recipes-core存放核心软件包bb文件，recipes-devtools存放编译用软件包bb文件，recipes-kernel存放内核bb文件，recipes-labtools存放调试软件包bb文件。</strong></p>
+</div>
+<div class="section" id="iii-bbbb-package-version-bb">
+<h3>Ⅲ) 编写bb文件。bb文件名称：&lt;package&gt;_&lt;version&gt;.bb<a class="headerlink" href="#iii-bbbb-package-version-bb" title="永久链接至标题">¶</a></h3>
+</div>
+<div class="section" id="iv">
+<h3>Ⅳ) 执行单包编译验证<a class="headerlink" href="#iv" title="永久链接至标题">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake &lt;package&gt;</span>
+</pre></div>
 </div>
 </div>
-<div class="section" id="pull">
-<h2>2. 从华为云pull容器镜像到本地<a class="headerlink" href="#pull" title="永久链接至标题">¶</a></h2>
-<ul class="simple">
-<li>docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/rtos-openeuler-21.03:v001</li>
-</ul>
+<div class="section" id="v-layer">
+<h3>Ⅴ) 将包添加到layer<a class="headerlink" href="#v-layer" title="永久链接至标题">¶</a></h3>
+<p><strong>bb文件适配完成并验证ok后，将该软件包追加到layer配置文件IMAGE_INSTALL变量中（ 当前配置文件位于yocto-meta-openeuler工程meta-openeuler /recipes-core/packagegroups/packagegroup-xxx.bb ）。</strong></p>
+</div>
 </div>
 <div class="section" id="id1">
-<h2>3. 使用pull下来的镜像启动容器（启动命令仅供参考）<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
-<div class="section" id="a">
-<h3>a) 启动容器<a class="headerlink" href="#a" title="永久链接至标题">¶</a></h3>
-<ul class="simple">
-<li>docker run -idt swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/rtos-openeuler-21.03:v001 bash</li>
-</ul>
-</div>
-<div class="section" id="b-id">
-<h3>b) 查看已启动的容器id<a class="headerlink" href="#b-id" title="永久链接至标题">¶</a></h3>
-<ul class="simple">
-<li>docker ps</li>
-</ul>
-<p>例如容器id为xxxxxx</p>
-</div>
-<div class="section" id="c">
-<h3>c) 进入容器<a class="headerlink" href="#c" title="永久链接至标题">¶</a></h3>
-<ul class="simple">
-<li>docker exec -it xxxxxx bash</li>
-</ul>
-</div>
+<h2>2.参考社区移植bb<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<div class="section" id="i-openeulersrc">
+<h3>Ⅰ) 下载openEuler软件包到src下<a class="headerlink" href="#i-openeulersrc" title="永久链接至标题">¶</a></h3>
 </div>
 <div class="section" id="id2">
-<h2>4. 开始构建，具体过程不再赘述。<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<h3>Ⅱ) 在yocto-meta-openeuler仓库meta-openeuler/recipes-xx新增软件包目录<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h3>
+<p><strong>recipes当前分成4类，recipes-core存放核心软件包bb文件，recipes-devtools存放编译用软件包bb文件，recipes-kernel存放内核bb文件，recipes-labtools存放调试软件包bb文件。</strong></p>
+</div>
+<div class="section" id="id3">
+<h3>Ⅲ) 搜索并适配修改bb文件。bb文件名称：&lt;package&gt;_&lt;version&gt;.bb<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h3>
+<p>①. <strong>搜索yocto-poky仓库是否可以找到相应软件包的bb文件;</strong></p>
+<p>②. <strong>http://layers.openembedded.org/layerindex/branch/master/recipes/，网页中可搜索相应软件包的bb文件。如果未找到相应版本的bb文件，可基于相近版本修改;</strong></p>
+<p>③. <strong>修改bb文件适配openEuler yocto工程，主要需要修改如下字段：</strong></p>
+<ol class="loweralpha simple">
+<li>SRC_URI修改源码包来源本地，如果openEuler上该软件包有额外补丁也需要加上；</li>
+<li>删除部分inherit、DEPENDS依赖。如texinfo、update-alternatives、python3等，这些class需要引入软件包，暂时没有支持起来。</li>
+</ol>
+</div>
+<div class="section" id="id4">
+<h3>Ⅳ) 执行单包编译验证<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake &lt;package&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id5">
+<h3>Ⅴ) 将包添加到layer<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h3>
+<p><strong>bb文件适配完成并验证ok后，将该软件包追加到layer配置文件IMAGE_INSTALL变量中（ 当前配置文件位于yocto-meta-openeuler工程meta-openeuler /recipes-core/packagegroups/packagegroup-xxx.bb ）。</strong></p>
+</div>
 </div>
 </div>
 

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>openEuler Embedded快速构建指导 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
+  <title>快速上手 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
   
 
   
@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="索引" href="../genindex.html" />
     <link rel="search" title="搜索" href="../search.html" />
-    <link rel="next" title="快速上手" href="regular-build.html" />
+    <link rel="next" title="openEuler Embedded关键特性" href="../features/index.html" />
     <link rel="prev" title="介绍" href="../introduction/index.html" /> 
 
   
@@ -81,9 +81,16 @@
               <p class="caption"><span class="caption-text">内容</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">介绍</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">openEuler Embedded快速构建指导</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="regular-build.html">快速上手</a></li>
-<li class="toctree-l2"><a class="reference internal" href="container-build.html">openEuler容器构建指导</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">快速上手</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">获取镜像</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">镜像内容</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">运行镜像</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id5">极简运行场景</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">使能共享文件系统场景</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">使能网络场景</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#openeuler-embedded">基于openEuler embedded的用户态应用开发</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../features/index.html">openEuler Embedded关键特性</a></li>
@@ -135,7 +142,7 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
-      <li>openEuler Embedded快速构建指导</li>
+      <li>快速上手</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -154,14 +161,186 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="openeuler-embedded">
-<span id="getting-started"></span><h1>openEuler Embedded快速构建指导<a class="headerlink" href="#openeuler-embedded" title="永久链接至标题">¶</a></h1>
-<p>本章主要提供了两种方式准备构建环境，并描述了详细的构建流程，具体内容如下：</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="regular-build.html">快速上手</a></li>
-<li class="toctree-l1"><a class="reference internal" href="container-build.html">openEuler容器构建指导</a></li>
+  <div class="section" id="getting-started">
+<span id="id1"></span><h1>快速上手<a class="headerlink" href="#getting-started" title="永久链接至标题">¶</a></h1>
+<p>openEuler Embedded是基于openEuler社区面向嵌入式场景的Linux版本。由于嵌入式系统应用受到多个因素的约束，如资源、功耗、多样性等，
+使得面向服务器领域的Linux及相应的构建系统很难满足嵌入式场景的要求，因此业界广泛采用 <a class="reference external" href="https://www.yoctoproject.org/">Yocto</a>
+来定制化构建嵌入式Linux。openEuler Embedded当前也采用的Yocto构建，但实现了与openEuler其他版本代码同源，具体的构建方法请参考
+<a class="reference external" href="https://gitee.com/openeuler/community/tree/master/sig/sig-Yocto">SIG-Yocto</a>
+下相关代码仓中的内容。</p>
+<p>本文档主要用于介绍如何获取预先构建好的镜像，如何运行镜像，以及如何基于镜像完成基本的嵌入式Linux应用开发。</p>
+<div class="section" id="id2">
+<h2>获取镜像<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<p>当前发布的已构建好的镜像，只支持arm和aarch64两种架构，且只支持qemu中ARM virt-4.0平台，您可以通过如下链接获得相应的镜像：</p>
+<ul class="simple">
+<li><a class="reference external" href="https://repo.openeuler.org/openEuler-21.09/embedded_img/qemu-arm">qemu_arm</a>： 32位arm架构, ARM Cortex A15处理器</li>
+<li><a class="reference external" href="https://repo.openeuler.org/openEuler-21.09/embedded_img/qemu-aarch64">qemu_aarch64</a>: 64位aarch64架构 ARM Cortex A57处理器</li>
 </ul>
+<p>只要相应环境支持qemu仿真器（版本5.0以上），您可以将提供的openEuler Embedded镜像部署在物理裸机、云环境、容器或虚拟机上。</p>
+</div>
+<div class="section" id="id3">
+<h2>镜像内容<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<p>所下载的镜像，由以下几部分组成：</p>
+<ul class="simple">
+<li>内核镜像 <strong>zImage</strong>: 基于openEuler社区Linux 5.10代码构建得到。相应的内核配置可通过如下链接获取：<ul>
+<li><a class="reference external" href="https://gitee.com/openeuler/yocto-embedded-tools/blob/openEuler-21.09/config/arm/defconfig-kernel">arm(cortex a15)</a></li>
+<li><a class="reference external" href="https://gitee.com/openeuler/yocto-embedded-tools/blob/openEuler-21.09/config/arm64/defconfig-kernel">arm(cortex a57)</a>,
+针对aarch64架构，额外增加了镜像自解压功能，可以参见相应的 <a class="reference external" href="https://gitee.com/openeuler/yocto-embedded-tools/blob/openEuler-21.09/patches/arm64/0001-arm64-add-zImage-support-for-arm64.patch">patch</a></li>
+</ul>
+</li>
+<li>根文件系统镜像（依据具体需求，以下二选一）<ul>
+<li><strong>initrd_tiny</strong>：极简根文件系统镜像，只包含基本功能。包含 busybox 和基本的 glibc 库。该镜像功能简单，但内存消耗很小，适合探索 Linux内核相关功能。</li>
+<li><strong>initrd</strong>：标准根文件系统镜像，在极简根文件系统镜像的基础上，进行了必要安全加固，增加了audit、cracklib、OpenSSH、Linux PAM、shadow、iSula容器等软件包。该镜像适合进行更加丰富的功能探索。</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="id4">
+<h2>运行镜像<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<p>通过运行镜像，一方面您可以体验openEuler Embedded的功能，一方面也可以完成基本的嵌入式Linux开发。</p>
+<div class="admonition note">
+<p class="first admonition-title">注解</p>
+<ul class="last simple">
+<li>建议使用QEMU5.0以上版本运行镜像，由于一些额外功能（网络、共享文件系统)需要依赖QEMU的virtio-net, virtio-fs等特性，如未在QEMU中使能，则运行时可能会产生错误，此时可能需要从源码重新编译QEMU。</li>
+<li>运行镜像时，建议把内核镜像和根文件系统镜像放在同一目录下，后续说明以标准根文件系统为例(initrd)。</li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h3>极简运行场景<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h3>
+<p>该场景下，qemu未使能网络和共享文件系统，适合快速的功能体验。</p>
+<p>针对arm(ARM Cortex A15)，运行如下命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-arm -M virt-4.0 -cpu cortex-a15 -nographic -kernel zImage -initrd initrd</span>
+</pre></div>
+</div>
+<p>针对aarch64(ARM Cortex A57)，运行如下命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-aarch64 -M virt-4.0 -cpu cortex-a57 -nographic -kernel zImage -initrd initrd</span>
+</pre></div>
+</div>
+<p>由于标准根文件系统镜像进行了安全加固，因此第一次启动时，需要为登录用户名root设置密码，且密码强度有相应要求， 需要数字、字母、特殊字符组合最少8位，例如openEuler&#64;2021。当使用极简根文件系统镜像时，系统会自动登录, 无需输入用户名和密码。</p>
+<p>qemu运行成功并登录后，将会呈现openEuler Embedded的Shell。</p>
+</div>
+<div class="section" id="id6">
+<h3>使能共享文件系统场景<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h3>
+<p>通过共享文件系统，可以使得运行qemu仿真器的宿主机和openEuler Embedded共享文件，这样在宿主机上交叉编译的程序，拷贝到共享目录中，即可在openEuler Embedded上运行。</p>
+<p>假设将宿主机的/tmp目录作为共享目录，并事先在其中创建了名为hello_openeuler.txt的文件，使能共享文件系统功能的操作指导如下：</p>
+<ol class="arabic simple">
+<li><strong>启动qemu</strong></li>
+</ol>
+<p>针对arm(ARM Cortex A15)，运行如下命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-arm -M virt-4.0 -cpu cortex-a15 -nographic -kernel zImage -initrd initrd -device virtio-9p-device,fsdev=fs1,mount_tag=host -fsdev local,security_model=passthrough,id=fs1,path=/tmp</span>
+</pre></div>
+</div>
+<p>针对aarch64(ARM Cortex A57)，运行如下命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-aarch64 -M virt-4.0 -cpu cortex-a57 -nographic -kernel zImage -initrd initrd -device virtio-9p-device,fsdev=fs1,mount_tag=host -fsdev local,security_model=passthrough,id=fs1,path=/tmp</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><strong>映射文件系统</strong></li>
+</ol>
+<p>在openEuler Embedded启动并登录之后，需要运行如下命令，映射(mount)共享文件系统</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd /tmp</span>
+<span class="go">mkdir host</span>
+<span class="go">mount -t 9p -o trans=virtio,version=9p2000.L host /tmp/host</span>
+</pre></div>
+</div>
+<p>即把共享文件系统映射到openEuler Embedded的/tmp/host目录下。</p>
+<ol class="arabic simple" start="3">
+<li><strong>检查共享是否成功</strong></li>
+</ol>
+<p>在openEuler Embedded中，运行如下命令:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd /tmp/host</span>
+<span class="go">ls</span>
+</pre></div>
+</div>
+<p>如能发现hello_openeuler.txt，则共享成功。</p>
+</div>
+<div class="section" id="id7">
+<h3>使能网络场景<a class="headerlink" href="#id7" title="永久链接至标题">¶</a></h3>
+<p>通过qemu的virtio-net和宿主机上的虚拟网卡，可以实现宿主机和openEuler embedded之间的网络通信。</p>
+<ol class="arabic simple">
+<li><strong>启动qemu</strong></li>
+</ol>
+<p>针对arm(ARM Cortex A15)，运行如下命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-arm -M virt-4.0 -cpu cortex-a15 -nographic -kernel zImage -initrd initrd -device virtio-net-device,netdev=tap0 -netdev tap,id=tap0,script=/etc/qemu-ifup</span>
+</pre></div>
+</div>
+<p>针对aarch64(ARM Cortex A57)，运行如下命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-aarch64 -M virt-4.0 -cpu cortex-a57 -nographic -kernel zImage -initrd initrd -device virtio-net-device,netdev=tap0 -netdev tap,id=tap0,script=/etc/qemu-ifup</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><strong>宿主上建立虚拟网卡</strong></li>
+</ol>
+<p>在宿主机上需要建立名为tap0的虚拟网卡，可以借助/etc/qemu-ifup脚本实现，其执行需要root权限，具体内容如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>!/bin/bash
+<span class="go">ifconfig $1 192.168.10.1 up</span>
+</pre></div>
+</div>
+<p>通过qemu-ifup脚本，宿主机上将创建名为tap0的虚拟网卡，地址为192.168.10.1。</p>
+<ol class="arabic simple" start="3">
+<li><strong>配置openEuler embedded网卡</strong></li>
+</ol>
+<p>openEuler Embedded登陆后，执行如下命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ifconfig eth0 192.168.10.2</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><strong>确认网络连通</strong></li>
+</ol>
+<p>在openEuler Embedded中，执行如下命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ping 192.168.10.1</span>
+</pre></div>
+</div>
+<p>如能ping通，则宿主机和openEuler Embedded之间的网络是连通的。</p>
+<div class="admonition note">
+<p class="first admonition-title">注解</p>
+<p class="last">如需openEuler embedded借助宿主机访问互联网，则需要在宿主机上建立网桥，此处不详述，如有需要，请自行查阅相关资料。</p>
+</div>
+</div>
+</div>
+<div class="section" id="openeuler-embedded">
+<h2>基于openEuler embedded的用户态应用开发<a class="headerlink" href="#openeuler-embedded" title="永久链接至标题">¶</a></h2>
+<p>当前发布的镜像除了体验openEuler Embedded的基本功能外，还可以进行基本的用户态应用开发，也即在openEuler embedded上运行用户自己的程序。</p>
+<ol class="arabic simple">
+<li><strong>环境准备</strong></li>
+</ol>
+<p>由于当前镜像采用了linaro arm/aarch64 gcc 7.3.1工具链构建，因此建议应用开发也使用相同的工具链接进行，可以从如下链接中获取相应工具链：</p>
+<ul class="simple">
+<li><a class="reference external" href="https://releases.linaro.org/components/toolchain/binaries/7.3-2018.05/arm-linux-gnueabi/gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabi.tar.xz">linaro arm</a></li>
+<li><a class="reference external" href="https://releases.linaro.org/components/toolchain/binaries/7.3-2018.05/arm-linux-gnueabi/sysroot-glibc-linaro-2.25-2018.05-arm-linux-gnueabi.tar.xz">linrao arm sysroot</a></li>
+<li><a class="reference external" href="https://releases.linaro.org/components/toolchain/binaries/7.3-2018.05/aarch64-linux-gnu/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu.tar.xz">linaro aarch64</a></li>
+<li><a class="reference external" href="https://releases.linaro.org/components/toolchain/binaries/7.3-2018.05/aarch64-linux-gnu/sysroot-glibc-linaro-2.25-2018.05-aarch64-linux-gnu.tar.xz">linrao aarch64 sysroot</a></li>
+</ul>
+<p>下载并解压到指定的目录中，例如/opt/openEuler_toolchain。</p>
+<ol class="arabic simple" start="2">
+<li><strong>创建并编译用户态程序</strong></li>
+</ol>
+<p>以构建一个hello openEuler程序为例，运行在aarch64的标准根文件系统镜像中。</p>
+<p>在宿主机中，创建一个hello.c文件，源码如下：</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;hello openEuler</span><span class="se">\r\n</span><span class="s">&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>然后在宿主机上使用对应的工具链编译, 相应命令如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">export PATH=$PATH:/opt/openEuler_toolchain/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin</span>
+<span class="go">aarch64-linux-gnu-gcc --sysroot=&lt;path-to-sysroot-glibc-linaro-2.25-2018.05-aarch64-linux-gnu&gt; hello.c -o hello</span>
+<span class="go">mv hello /temp</span>
+</pre></div>
+</div>
+<p>把交叉编译好的hello程序拷贝到/tmp目录下，然后参照使能共享文件系统中的描述，使得openEuler embedded可以访问宿主机的目录。</p>
+<ol class="arabic simple" start="3">
+<li><strong>运行用户态程序</strong></li>
+</ol>
+<p>在openEuler embedded中运行hello程序。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd /tmp/host</span>
+<span class="go">./hello</span>
+</pre></div>
+</div>
+<p>如运行成功，openEuler Embedded的shell中就会输出hello openEuler。</p>
 </div>
 </div>
 
@@ -173,7 +352,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="regular-build.html" class="btn btn-neutral float-right" title="快速上手" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="../features/index.html" class="btn btn-neutral float-right" title="openEuler Embedded关键特性" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="../introduction/index.html" class="btn btn-neutral" title="介绍" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
