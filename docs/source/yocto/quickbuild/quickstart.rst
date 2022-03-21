@@ -1,5 +1,5 @@
 openEuler快速构建指导
-=================
+====================
 
 构建环境的准备
 *********************************************
@@ -21,7 +21,7 @@ Yocto是通过HOSTTOOLS变量来实现主机工具的引入，为会每个在HOS
 准备不同于主机的环境，例如PATH变量等，因此如果新增依赖主机上的某个命令，需显示在Yocto的HOSTTOOLS变量中增加，否则即使主机上存在，Yocto构建时也会
 报错找不到相应的工具。相应流程如下图所示：
 
-.. image:: ../../image/yocto/hosttools.png
+.. image:: ../../../image/yocto/hosttools.png
 
 当前openEuler Embedded所需要主机工具已经默认在local.conf.sample中的HOSTTOOLS定义，各个工具描述如下：
 
@@ -82,15 +82,114 @@ openEuler Embedded整个构建工程的文件布局如下，假设openeuler_embe
 
 稍后会提供工具，帮助使用者快速构建好相应的环境。
 
-版本构建及qemu部署
+版本构建及使用
 ***********************
 
-一键式构建脚本：:file:`scr/yocto-meta-openeuler/scripts/build.sh` , 具体细节可以参考该脚本
+一键式构建脚本：:file:`src/yocto-meta-openeuler/scripts/compile.sh` , 具体细节可以参考该脚本
 
-主要构建流程：
+以编译标准arm架构为例:
+
+::
+
+    source src/yocto-meta-openeuler/scripts/compile.sh arm-std
+    bitbake openeuler-image  #执行第一条source后，会提示出bitbake命令
+
+主要流程说明：
 
 1. 设置PATH增加额外工具路径
-#. TEMPLATECONF指定配置文件路径
+#. TEMPLATECONF指定local.conf.sample等配置文件路径
 #. 调用poky仓的oe-init-build-env进行初始化配置
 #. 在conf/local.conf中配置MACHINE，按需增加额外新增的层
 #. 执行bitbake openeuler-image编译openeuler的image和sdk
+
+openeuler发布件使用
+***********************
+
+sdk使用
+^^^^^^^^^^
+**1  执行sdk脚本**
+ | 例如 ``sh openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-22.03.sh``
+ | 根据提示输入工具链的安装路径，默认路径是"/opt/openeuler/<openeuler version>/";
+ | 若不设置，则按默认路径安装
+
+ a)配置相对路径安装
+
+ # ``sh ./openeuler-glibc-x86_64-openeuler-image-armv7a-qemu-arm-toolchain-22.03.sh``
+
+ | openEuler embedded(openEuler Embedded Reference Distro) SDK installer version 22.03
+ | ================================================================
+ | Enter target directory for SDK (default: /opt/openeuler/22.03): sdk
+ | You are about to install the SDK to "/usr1/openeuler/sdk". Proceed [Y/n]? y
+ | Extracting SDK...............................................done
+ | Setting it up...SDK has been successfully set up and is ready to be used.
+ | Each time you wish to use the SDK in a new shell session, you need to source the environment setup script e.g.
+ | $ ``. /usr1/openeuler/sdk/environment-setup-armv7a-openeuler-linux-gnueabi``
+
+ b)配置绝对路径安装
+
+ # ``sh ./openeuler-glibc-x86_64-openeuler-image-armv7a-qemu-arm-toolchain-22.03.sh``
+
+ | openEuler embedded(openEuler Embedded Reference Distro) SDK installer version 22.03
+ | ================================================================
+ | Enter target directory for SDK (default: /opt/openeuler/22.03): /usr1/openeuler/myfiles/sdk
+ | You are about to install the SDK to "/usr1/openeuler/myfiles/sdk". Proceed [Y/n]? y
+ | Extracting SDK...............................................done
+ | Setting it up...SDK has been successfully set up and is ready to be used.
+ | Each time you wish to use the SDK in a new shell session, you need to source the environment setup script e.g.
+ | $ ``. /usr1/openeuler/myfiles/sdk/environment-setup-armv7a-openeuler-linux-gnueabi``
+
+**2   source环境变量设置脚本**
+ | 前一步执行结束最后已打印source命令
+ | 例如以上 ``. /usr1/openeuler/myfiles/sdk/environment-setup-armv7a-openeuler-linux-gnueabi``
+
+**3   使用sdk编译**
+ | 例如:  ``arm-openeuler-linux-gnueabi-gcc -v`` 查看gcc版本
+
+1）. **准备代码**
+以构建一个hello world程序为例，运行在openEuler根文件系统镜像中。
+
+创建一个hello.c文件，源码如下：
+
+.. code-block:: c
+
+    #include <stdio.h>
+
+    int main(void)
+    {
+        printf("hello world\n");
+    }
+
+编写CMakelist.txt，和hello.c文件放在同一个目录
+
+::
+
+ project(hello C)
+
+ add_executable(hello hello.c)
+
+
+2）. **编译生成二进制**
+
+进入hello.c文件所在目录，使用工具链编译, 命令如下：
+
+::
+
+    cmake ..
+    make
+
+把编译好的hello程序拷贝到/tmp/某个目录下（例如/tmp/myfiles/）。
+
+3）. **运行用户态程序**
+
+在openEuler系统中运行hello程序。
+
+.. code-block:: console
+
+    cd /tmp/myfiles/
+    ./hello
+
+如运行成功，则会输出"hello world"。
+
+image使用
+^^^^^^^^^^
+见《快速上手》章节
