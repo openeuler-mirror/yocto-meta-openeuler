@@ -68,9 +68,5 @@ INSANE_SKIP_${PN} += "installed-vs-shipped"
 INSANE_SKIP += "dev-elf dev-so"
 
 SYSROOT_DIRS += "/*"
-#depends by glibc-locale
-do_stash_locale() {
-        :
-}
-addtask do_stash_locale
+
 BBCLASSEXTEND = "nativesdk"
