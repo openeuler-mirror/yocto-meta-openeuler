@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>meta-openeuler层 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
+  <title>openeuler层结构及演进策略 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
   
 
   
@@ -86,7 +86,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">openEuler Embedded构建系统</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="quickbuild/index.html">快速构建</a></li>
 <li class="toctree-l2"><a class="reference internal" href="overview.html">Yocto介绍</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">meta-openeuler层</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">openeuler层结构及演进策略</a></li>
 <li class="toctree-l2"><a class="reference internal" href="exploration.html">深入Yocto</a></li>
 <li class="toctree-l2"><a class="reference internal" href="development.html">Yocto开发</a></li>
 </ul>
@@ -140,7 +140,7 @@
         
           <li><a href="index.html">openEuler Embedded构建系统</a> &raquo;</li>
         
-      <li>meta-openeuler层</li>
+      <li>openeuler层结构及演进策略</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -159,8 +159,52 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="meta-openeuler">
-<span id="yocto-meta-openeuler"></span><h1>meta-openeuler层<a class="headerlink" href="#meta-openeuler" title="永久链接至标题">¶</a></h1>
+  <div class="section" id="openeuler">
+<span id="yocto-meta-openeuler"></span><h1>openeuler层结构及演进策略<a class="headerlink" href="#openeuler" title="永久链接至标题">¶</a></h1>
+<p>以下是一个openeuler新增层的主要目录结构样例(例如添加了meta-raspberrypi和meta-intel层):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>yocto-meta-openeuler/
+├── bsp/
+│   ├── meta-openeuler-bsp/ 定制openeuler补丁
+│   │   ├── conf/
+│   │   │   ├── distro/
+│   │   │   │   └── openeuler-bsp.conf
+│   │   │   ├── layer.conf
+│   │   │   └── machine/
+│   │   │       └── openeuler-raspberrypi4-64.conf
+│   │   ├── intel/  定制intel的补丁，当meta-intel层生效时才生效
+│   │   └── raspberrypi/  定制树莓派的补丁，当meta-rapberrypi层生效时才生效
+│   │       ├── recipes-core/
+│   │       └── recipes-kernel/
+│   ├── meta-intel/  社区原生intel
+│   └── meta-raspberrypi/  社区原生树莓派
+├── docs/  对外的openeuler文档目录
+└── meta-openeuler/  自研openeuler的qemu版本
+
+
+meta-openeuler/
+├── classes/  自研公共类目录
+│   └── ….
+├── conf/  定制的openeuler配置模板,含local.conf.sample等
+│   └── …
+├── recipes-core/ 核心配方
+│   ├── busybox/
+│   │   └── busybox_1.34.1.bb
+│   ├── images/
+│   │   ├── openeuler-image.bb
+│   │   ├── qemu-aarch64.inc
+│   │   ├── qemu-arm.inc
+│   │   └── qemu.inc
+│   └── …
+│       └── …
+├── recipes-devtools/ 工具类配方，如cmake等
+│   └── …
+├── recipes-kernel/ 内核相关配方
+│   └── linux/
+│       └── linux-openeuler.bb
+├── recipes-labtools/ 实验室工具配方
+└── recipes-support/ 其它配方依赖的配方，不打包到image
+</pre></div>
+</div>
 </div>
 
 
