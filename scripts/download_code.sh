@@ -4,11 +4,22 @@ set -e
 create_manifest()
 {
     cat > "${SRC_DIR}"/manifest.xml <<EOF
-<!xml version="1.0" encodeing="utf-8">
+<?xml version="1.0" encoding="utf-8"?>
 <manifest>
     <remote name="gitee" fetch="https://gitee.com/" review="https://gitee.com/"/>
-    <default revision="openEuler-21.09" remote="gitee" sync-j="8"/>
+    <default revision="${SRC_BRANCH}" remote="gitee" sync-j="8"/>
 EOF
+
+    #add info for yocto-meta-openeuler
+    pushd "${SRC_DIR}"/yocto-meta-openeuler/
+    #add info for yocto-meta-openeuler
+    mycommitid="$(git log --pretty=oneline  -n1 | awk '{print $1}')"
+    myrepo="openeuler/yocto-meta-openeuler"
+    mybranch="$(git branch | grep "^* " | awk '{print $NF}')"
+    git branch -a | grep "/${branchname}$" || { mybranch="${mycommitid}"; }
+    echo "${myrepo} ${mycommitid} ${mybranch}" >> "${SRC_DIR}"/code.list
+    popd
+
     cat "${SRC_DIR}"/code.list | sort | uniq > "${SRC_DIR}"/code.list.sort
     while read line
     do
@@ -36,9 +47,10 @@ update_code_repo()
     pushd "${SRC_DIR}"
     # if git repo exits, continue, or clone the package repo
     test -d ./"${pkg}"/.git || { rm -rf ./"${pkg}";git clone "${URL_PREFIX}/${repo}" ${branch} ${git_param} -v "${pkg}"; }
+
     pushd ./"${pkg}"
     # checkout to branch, or report failure
-    git checkout ${branchname}
+    git checkout ${branchname} || { echo "ERROR: checkout ${repo} ${branchname} to ${pkg} failed";exit 1; }
     if git branch -a | grep "/${branchname}$";then
         git branch | grep "^*" | grep " ${branchname}$" || exit 1
         # pull from orgin
@@ -46,7 +58,18 @@ update_code_repo()
         git pull || echo "git pull failure, please check ${pkg}"
         git status | grep "is up to date with" || exit 1
     fi
+
+    #check if checkout tag successfully
     local newest_commitid="$(git log --pretty=oneline  -n1 | awk '{print $1}')"
+    if git tag -l | grep "^${branchname}$";then
+        branchname="refs/tags/${branchname}"
+        tagcommit=$(git show "${branchname}" | grep "^commit " | awk '{print $NF}')
+        if [[ "${tagcommit}" != "${newest_commitid}" ]];then
+            echo "${repo} ${branchname} checkout failed"
+            exit 1
+        fi
+    fi
+
     #update the code list
     echo "${repo} ${newest_commitid} ${branchname}" >> "${SRC_DIR}"/code.list
     popd
@@ -57,7 +80,7 @@ download_code()
 {
     # add new package here if required
     rm -f "${SRC_DIR}"/code.list
-    update_code_repo openeuler/kernel ${SRC_BRANCH_FIXED} kernel-5.10
+    update_code_repo openeuler/kernel ${KERNEL_BRANCH} kernel-5.10
     update_code_repo src-openeuler/kernel ${SRC_BRANCH} src-kernel-5.10
     update_code_repo src-openeuler/busybox ${SRC_BRANCH}
     update_code_repo openeuler/yocto-embedded-tools ${SRC_BRANCH}
@@ -163,6 +186,7 @@ SRC_DIR="$1"
 SRC_BRANCH="$2"
 # the fixed git branch
 SRC_BRANCH_FIXED="openEuler-21.09"
+KERNEL_BRANCH="5.10.0-60.14.0"
 
 if [[ -z "${SRC_DIR}" ]];then
     usage
@@ -174,6 +198,7 @@ if [[ -z "${SRC_BRANCH}" ]];then
     # the latest release branch
     SRC_BRANCH="openEuler-22.03-LTS"
 fi
+[[ -z "${KERNEL_BRANCH}" ]] && KERNEL_BRANCH="${SRC_BRANCH}"
 
 URL_PREFIX="https://gitee.com/"
 download_code
