@@ -20,6 +20,7 @@ do_install() {
     cp -pPR ${B}/sysroot/* ${D}/${SDKTARGETSYSROOT}/
     cp -pPR ${B}/* ${D}/${SDKTARGETSYSROOT}/
     if [ ${TOOLCHAIN_PREFIX}- == ${TARGET_PREFIX} ]; then
+        chown -R root:root ${D}
         return 0
     fi
     for f in ${D}/${SDKTARGETSYSROOT}/bin/${TOOLCHAIN_PREFIX}-*; do
