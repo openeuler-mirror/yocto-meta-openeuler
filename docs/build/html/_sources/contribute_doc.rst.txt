@@ -41,8 +41,8 @@ openEuler Embedded采用了Sphinx来构建文档，生成html静态面，并最�
 reStructuredText的语法与Markdown十分类似，但能以更好的结构化的方式撰写专业文档，vscode中也有相应的插件提供辅助。
 reStructuredText的语法无需专门记忆，需要用到时再去查询即可，具体可以参考 [#rst_tutorial]_ 。
 
-如何贡献文档
-==================
+如何贡献文档（Linux环境）
+======================
 
 * git clone yocto-meta-openeuler仓库
 
@@ -88,6 +88,131 @@ reStructuredText的语法无需专门记忆，需要用到时再去查询即可�
 
   像提交代码一样，把所有的修改以commit的形式提交，然后在gitee上生成PR提交到openEuler Embedded对应的仓库, 经过审查后，
   修改就会被CI自动编译并发布。
+
+如何贡献文档（Windows环境）
+======================
+
+* git clone yocto-meta-openeuler仓库
+
+    .. code-block:: bash
+
+        git clone https://gitee.com/openeuler/yocto-meta-openeuler.git
+
+* 环境准备
+
+sphinx依赖于python，所以要先安装python环境，并安装pip工具和sphinx。
+
+1.python3和pip3的详细安装指导及安装包见链接：http://3ms.huawei.com/km/blogs/details/9658481
+
+2.使用pip3安装sphinx（运行此命令）:
+
+    .. code-block:: bash
+
+        pip3 install sphinx
+     
+3.在python的 :file:`Scripts` 目录下，找到easy_install，在控制台下执行该命令，在命令行输入
+
+    .. code-block:: bash
+
+        easy_install sphinx
+
+easy_install可以自动下载并安装sphinx以及它所依赖的其他模块。
+
+4.安装完成后，命令行会提示Finished Processing dependencies for shinx
+
+5.在命令行输入sphinx-build,如果在安装python时，没有设置环境变量，可能会弹出sphinx-build不是内部或者外部命令。
+
+6.通过pip3按照如下命令安装相应的python软件包，包括sphinx、文档主题等：
+
+    .. code-block:: bash
+
+        pip3 install --user -r yocto-meta-openeuler/scripts/requirements-doc.txt
+
+*  创建工程
+
+安装完sphinx后，会在python的 :file:`Scripts` 目录下(默认安装目录 :file:`C:/Users/y00353996/AppData/Local/Programs/Python/Python37/Scripts`  )产生sphinx-quickstart，确保该目录已经添加到系统环境变量中。
+
+1.启动cmd。进入要创建sphinx文档的目录，如 :file:`D:/Learn/python` 。
+
+    .. code-block:: bash
+
+        cd /d d:\Learn\python
+
+或直接在 :file:`D:/Learn/python` 目录下，按住Shift，点击鼠标右键选择在此处打开Powershell窗口(S)。
+
+2.执行下面过程，创建编写Python文档的工程，其实设置工程名、作者名、版本号，其他默认就行。我们这里把source和build两个目录分开，因为这样比较方便。
+
+    .. code-block:: bash
+
+        PS D:\Learn\python> sphinx-quickstart
+        Welcome to the Sphinx 3.5.4 quickstart utility.
+
+        Please enter values for the following settings (just press Enter to accept a default value, if one is given in brackets).
+
+        Selected root path: .
+
+        You have two options for placing the build directory for Sphinx output.
+        Either, you use a directory "_build" within the root path, or you separate "source" and "build" directories within the root path.
+
+        > Separate source and build directories (y/n) [n]: y
+
+        The project name will occur in several places in the built documentation.
+
+        > Project name: embedded
+        > Author name(s): yang
+        > Project release []: 1.0.0
+
+        If the documents are to be written in a language other than English, you can select a language here by its language code. Sphinx will then translate text that it generates into that language.
+
+        For a list of supported codes, see https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-language.
+
+        > Project language [en]:
+
+        Creating file D:\Learn\python\source\conf.py.
+        Creating file D:\Learn\python\source\index.rst.
+        Creating file D:\Learn\python\Makefile.
+        Creating file D:\Learn\python\make.bat.
+
+        Finished: An initial directory structure has been created.
+
+        You should now populate your master file D:\Learn\python\source\index.rst and create other documentation source files. Use the Makefile to build the docs, like so:
+           make builder
+        where "builder" is one of the supported builders, e.g. html, latex or linkcheck.
+
+        PS D:\Learn\python>
+
+安装完成后，将clone的 :file:`yocto-meta-openeuler/docs/` 目录下的 :file:`image` 和 :file:`source` 目录全部复制到新建工程目录（ :file:`D:/Learn/python` ）内并替换原文件。
+
+* 编辑文档
+
+相关文档源码位于 :file:`docs/source` 目录，根据你的需要修改或新增相应的文档，请按照如下目录规则布局文档:
+
+    .. csv-table:: 文档目录布局
+        :header: "文件/目录名", "用途"
+        :widths: 20, 20
+
+        "index.rst", "目录页"
+        "introduction", "openEuler Embedded总揽与简介"
+        "getting_started", "openEuler Embedded快速使用入门"
+        "features", "openEuler Embedded主要特性介绍"
+        "yocto", "openeuler Embedded的Yocto构建系统"
+        "release", "openEuler Embedded的发布说明"
+
+
+*  编译文档
+
+将 :file:`docs` 下的 :file:`image` 和 :file:`source` 目录内新增和修改的文件全部复制替换到工程（:file:`D:/Learn/python`）对应目录内，在 :file:`docs` 目录下编译文档
+
+    .. code-block:: bash
+
+        .\make html
+
+编译成功之后，可以打开 :file:`docs/build/html` 目录下的html文件查看最终生成的网页形式的文档。
+
+* 提交修改
+
+像提交代码一样，把所有的修改以commit的形式提交，然后在gitee上生成PR提交到openEuler Embedded对应的仓库, 经过审查后，修改就会被CI自动编译并发布。
+
 
 .. [#sphinx_web] `Sphinx官方网站 <https://www.sphinx.org.cn/index.html>`_
 .. [#rst_wikipedia] `reStructuredText维基百科 <https://zh.wikipedia.org/wiki/ReStructuredText>`_
