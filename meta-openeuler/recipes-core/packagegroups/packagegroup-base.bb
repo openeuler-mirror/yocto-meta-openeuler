@@ -23,6 +23,7 @@ cronie \
 curl \
 dosfstools \
 e2fsprogs \
+e2fsprogs-tune2fs \
 ethtool \
 expat \
 gdb \
