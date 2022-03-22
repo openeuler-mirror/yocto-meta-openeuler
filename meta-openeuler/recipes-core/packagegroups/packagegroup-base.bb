@@ -15,6 +15,7 @@ PACKAGES = "${PN} ${PN}-extended"
 RDEPENDS_packagegroup-base = " \
 packagegroup-core-base-utils \
 kernel-module-overlay \
+kernel-module-8021q \
 acl \
 attr \
 bind-utils \
