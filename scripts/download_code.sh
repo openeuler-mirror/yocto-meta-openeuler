@@ -186,7 +186,7 @@ SRC_DIR="$1"
 SRC_BRANCH="$2"
 # the fixed git branch
 SRC_BRANCH_FIXED="openEuler-21.09"
-KERNEL_BRANCH="5.10.0-60.14.0"
+KERNEL_BRANCH="5.10.0-34.0.0"
 
 if [[ -z "${SRC_DIR}" ]];then
     usage
