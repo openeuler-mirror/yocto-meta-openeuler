@@ -18,6 +18,7 @@ inherit cmake
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 INSANE_SKIP_${PN} += "already-stripped"
+INSANE_SKIP_${PN} += "dev-so"
 
 FILES_${PN} += "${libdir}/libyajl.so* "
 FILES_SOLIBSDEV = ""
