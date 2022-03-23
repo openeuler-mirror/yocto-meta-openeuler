@@ -59,7 +59,6 @@ initscripts \
 iproute2-ip \
 iptables \
 json-c \
-kexec \
 kmod \
 less \
 libaio \
