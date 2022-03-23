@@ -32,6 +32,7 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
 FILES_${PN} += "${libdir}/*"
 INSANE_SKIP_${PN} += "already-stripped"
+INSANE_SKIP_${PN} += "dev-so"
 FILES_SOLIBSDEV = ""
 
 do_install_append() {
