@@ -16,6 +16,7 @@ packagegroup-base-extended \
 packagegroup-openssh \
 packagegroup-debugtools \
 packagegroup-isulad \
+packagegroup-kernel-modules \
 "
 
 
