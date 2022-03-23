@@ -1,88 +1,121 @@
-openEuler容器构建指导
-======================
+openEuler Embedded容器构建指导
+=================================
 
-1. 准备主机端docker工具
+由于openEuler Embedded构建过程需要基于openEuler操作系统，且需要安装较多系统工具和构建工具。
+为方便开发人员快速搭建构建环境，我们将构建过程所依赖的操作系统和工具封装到一个容器中，
+这就使得开发人员可以快速搭建一个构建环境，进而投入到代码开发中去，避免在准备环境阶段消耗大量时间。
+
+1. 环境准备
+**************
+
+需要使用docker创建容器环境，为了确保docker成功安装，需满足以下软件硬件要求
+
+- 操作系统: 推荐使用Ubuntu、Debian和RHEL（Centos、Fedora等）
+
+- 内核: 推荐3.8及以上的内核
+
+- 驱动: 内核必须支持一种合适的存储驱动，例如: Device Mapper、AUFS、vfs、btrfs、ZFS
+
+- 架构: 运行64位架构的计算机（x86_64和amd64）
+
+2. 安装docker
 ************************
 
-a) 检查当前环境是否已安装docker环境
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+1) 检查当前环境是否已安装docker工具
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+运行如下命令，可以看到当前docker版本信息，则说明当前环境已安装docker，无需再次安装
 
 .. code-block:: console
 
     docker version
 
-b) 如果没有安装，可参考官方链接安装
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2) 如果没有安装，可参考官方链接安装
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-官网地址：http://www.dockerinfo.net/document
+官网地址: http://www.dockerinfo.net/document
 
 openEuler环境可参考Centos安装Docker
+
+例: openEuler环境docker安装命令如下
 
 .. code-block:: console
 
     sudo yum install docker
 
-2. 获取容器镜像
+3. 获取容器镜像
 ****************
 
-a) 从华为云pull镜像到宿主机
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+通过docker pull命令拉取华为云中的镜像到宿主机。命令如下: 
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: console
 
-    docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/rtos-openeuler-21.03:v001
+    docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:lastest
 
-3. 拉起容器构建环境（启动命令仅供参考）
-*************************************
+4. 准备容器构建环境
+*********************
 
-a) 启动容器
+1) 启动容器
 ^^^^^^^^^^^^^
 
+可通过docker run命令启动容器，为了保证容器启动后可以在后台运行，且可以正常访问网络，建议使用如下命令启动: 
+
 .. code-block:: console
 
-    docker run -idt --network host swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/rtos-openeuler-21.03:v001 bash
+    docker run -idt --network host swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:lastest bash
 
-b) 查看已启动的容器id
-^^^^^^^^^^^^^^^^^^^^^
+参数说明: 
+
+- -i 让容器的标准输入保持打开
+
+- -d 让 Docker 容器在后台以守护态（Daemonized）形式运行
+
+- -t 选项让Docker分配一个伪终端（pseudo-tty）并绑定到容器的标准输入上
+
+- --network 将容器连接到（host）网络
+
+- swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:lastest （镜像名称:镜像版本）
+
+- bash 进入容器的方式
+
+2) 查看已启动的容器id
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: console
 
     docker ps
 
-c) 进入容器
+3) 进入容器
 ^^^^^^^^^^^^
 
 .. code-block:: console
 
     docker exec -it 容器id bash
 
-4. yocto一键式构建流程
-*************************************
+构建环境已准备完成，下面就可以在容器中进行构建了
 
-a) clone yocto-meta-openeuler代码仓
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+5. 开始构建
+************
+
+1) 下载源码
+^^^^^^^^^^^^
+
+- 获取源码下载脚本
 
 .. code-block:: console
 
     git clone https://gitee.com/openeuler/yocto-meta-openeuler.git -b openEuler-22.03-LTS -v /usr1/openeuler/src/yocto-meta-openeuler
 
-b) 下载源码
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+- 通过脚本下载源码
 
 .. code-block:: console
 
     cd /usr1/openeuler/src/yocto-meta-openeuler/scripts
     sh download_code.sh /usr1/openeuler/src
 
-c) 开始编译
-******************************************
-
-.. code-block:: console
-
-    chown -R huawei:users /usr1
-    su huawei
-    cd /usr1/openeuler/src/yocto-meta-openeuler/scripts
-    source compile.sh aarch64-std /usr1/build /usr1/openeuler/gcc/openeuler_gcc_arm64le
+2) 编译构建
+**************
 
 - 编译架构: aarch64-std、aarch64-pro、arm-std、raspberrypi4-64
 
@@ -92,21 +125,45 @@ c) 开始编译
 
 - 编译器所在路径: /usr1/openeuler/gcc/openeuler_gcc_arm64le
 
-    - aarch64-std、aarch64-pro、raspberrypi4-64使用openeuler_gcc_arm64le编译器
+说明: 不同的编译架构使用不同的编译器，aarch64-std、aarch64-pro、raspberrypi4-64使用openeuler_gcc_arm64le编译器，
+arm-std使用openeuler_gcc_arm32le编译器，下面以以aarch64-std目标架构编译为例
 
-    - arm-std使用openeuler_gcc_arm32le编译器
+a) 将/usr1目录所属群组改为openeuler，否则切换至openeuler用户构建会存在权限问题
 
-d) 获取结果件
-**************
+.. code-block:: console
 
-结果件默认生成在构建目录下的output
+    chown -R openeuler:users /usr1
 
-如aarch64-std编译完成后产物如下：
+b) 切换至openeuler用户
 
-- openeuler嵌入式镜像: Image-5.10.0
+.. code-block:: console
 
-- openeuler嵌入式sdk工具链: openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-21.09.30.sh
+    su openeuler
 
-- openeuler嵌入式文件系统: openeuler-image-qemu-aarch64-20220318114250.rootfs.cpio.gz
+c) 进入构建脚本所在路径，运行编译脚本
 
-- openeuer嵌入式压缩镜像: zImage
+.. code-block:: console
+
+    cd /usr1/openeuler/src/yocto-meta-openeuler/scripts
+    source compile.sh aarch64-std /usr1/build /usr1/openeuler/gcc/openeuler_gcc_arm64le
+    bitbake openeuler-image
+
+3) 构建结果说明
+*****************
+
+结果件默认生成在构建目录下的output目录下，例如上面aarch64-std的构建结果件生成在/usr1/build/output
+
++---------------------------------------------+-------------------------------------------------------------+
+|      filename                               |             description                                     |
++=============================================+=============================================================+
+| Image-5.10.0                                | openEuler Embedded image                                    |
++---------------------------------------------+-------------------------------------------------------------+
+| openeuler-glibc-x86_64-openeuler-image      | openEuler Embedded sdk toolchain                            |
+| -aarch64-qemu-aarch64-toolchain-21.09.30.sh |                                                             |
++---------------------------------------------+-------------------------------------------------------------+
+| openeuler-image-qemu-aarch64-               | openEuler Embedded file system                              | 
+| 20220318114250.rootfs.cpio.gz               |                                                             |
++---------------------------------------------+-------------------------------------------------------------+
+| zImage                                      | openEuler Embedded compressed image                         |
++---------------------------------------------+-------------------------------------------------------------+
+
