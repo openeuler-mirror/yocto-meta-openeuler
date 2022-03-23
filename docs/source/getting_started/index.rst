@@ -37,6 +37,11 @@ openEuler Embedded是基于openEuler社区面向嵌入式场景的Linux版本。
   - **initrd_tiny**：极简根文件系统镜像，只包含基本功能。包含 busybox 和基本的 glibc 库。该镜像功能简单，但内存消耗很小，适合探索 Linux内核相关功能。
   - **initrd**：标准根文件系统镜像，在极简根文件系统镜像的基础上，进行了必要安全加固，增加了audit、cracklib、OpenSSH、Linux PAM、shadow、iSula容器等软件包。该镜像适合进行更加丰富的功能探索。
 
+- sdk工具
+
+  - **openeuler*.sh**：用户编译内核ko及用户态程序的sdk包
+
+
 运行镜像
 ***********
 
@@ -171,28 +176,42 @@ openEuler Embedded登陆后，执行如下命令：
 
 
 
-基于openEuler embedded的用户态应用开发
+基于openEuler embedded的sdk应用开发
 ********************************************
 
-当前发布的镜像除了体验openEuler Embedded的基本功能外，还可以进行基本的用户态应用开发，也即在openEuler embedded上运行用户自己的程序。
+当前发布的镜像除了体验openEuler Embedded的基本功能外，还可以进行基本的应用开发，也即在openEuler embedded上运行用户自己的程序。
 
+**1  执行sdk脚本**
+ | 例如 ``sh openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-22.03.sh``
+ | 根据提示输入工具链的安装路径，默认路径是"/opt/openeuler/<openeuler version>/";
+ | 若不设置，则按默认路径安装；也可以配置相对路径或绝对路径
 
-1. **环境准备**
+ 执行样例：
 
-由于当前镜像采用了linaro arm/aarch64 gcc 7.3.1工具链构建，因此建议应用开发也使用相同的工具链接进行，可以从如下链接中获取相应工具链：
+ # ``sh ./openeuler-glibc-x86_64-openeuler-image-armv7a-qemu-arm-toolchain-22.03.sh``
 
-- `linaro arm <https://releases.linaro.org/components/toolchain/binaries/7.3-2018.05/arm-linux-gnueabi/gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabi.tar.xz>`_
-- `linrao arm sysroot <https://releases.linaro.org/components/toolchain/binaries/7.3-2018.05/arm-linux-gnueabi/sysroot-glibc-linaro-2.25-2018.05-arm-linux-gnueabi.tar.xz>`_
-- `linaro aarch64 <https://releases.linaro.org/components/toolchain/binaries/7.3-2018.05/aarch64-linux-gnu/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu.tar.xz>`_
-- `linrao aarch64 sysroot <https://releases.linaro.org/components/toolchain/binaries/7.3-2018.05/aarch64-linux-gnu/sysroot-glibc-linaro-2.25-2018.05-aarch64-linux-gnu.tar.xz>`_
+ | openEuler embedded(openEuler Embedded Reference Distro) SDK installer version 22.03
+ | ================================================================
+ | Enter target directory for SDK (default: /opt/openeuler/22.03): **sdk**
+ | You are about to install the SDK to "/usr1/openeuler/sdk". Proceed [Y/n]? **y**
+ | Extracting SDK...............................................done
+ | Setting it up...SDK has been successfully set up and is ready to be used.
+ | Each time you wish to use the SDK in a new shell session, you need to source the environment setup script e.g.
+ | $ . /usr1/openeuler/sdk/environment-setup-armv7a-openeuler-linux-gnueabi
 
-下载并解压到指定的目录中，例如/opt/openEuler_toolchain。
+**2   source环境变量设置脚本**
+ | 前一步执行结束最后已打印source命令
+ | 例如以上：
+ |  ``. /usr1/openeuler/myfiles/sdk/environment-setup-armv7a-openeuler-linux-gnueabi``
 
-2. **创建并编译用户态程序**
+**3   使用sdk编译**
+ | 例如:  ``arm-openeuler-linux-gnueabi-gcc -v`` 查看gcc版本
 
-以构建一个hello openEuler程序为例，运行在aarch64的标准根文件系统镜像中。
+使用sdk编译hello world样例：
+1）. **准备代码**
+以构建一个hello world程序为例，运行在openEuler根文件系统镜像中。
 
-在宿主机中，创建一个hello.c文件，源码如下：
+创建一个hello.c文件，源码如下：
 
 .. code-block:: c
 
@@ -200,26 +219,36 @@ openEuler Embedded登陆后，执行如下命令：
 
     int main(void)
     {
-        printf("hello openEuler\r\n");
+        printf("hello world\n");
     }
 
-然后在宿主机上使用对应的工具链编译, 相应命令如下：
+编写CMakelist.txt，和hello.c文件放在同一个目录
+
+::
+
+ project(hello C)
+
+ add_executable(hello hello.c)
+
+
+2）. **编译生成二进制**
+
+进入hello.c文件所在目录，使用工具链编译, 命令如下：
+
+::
+
+    cmake ..
+    make
+
+把编译好的hello程序拷贝到/tmp/某个目录下（例如/tmp/myfiles/）。
+
+3）. **运行用户态程序**
+
+在openEuler系统中运行hello程序。
 
 .. code-block:: console
 
-    export PATH=$PATH:/opt/openEuler_toolchain/gcc-linaro-7.3.1-2018.05-x86_64_aarch64-linux-gnu/bin
-    aarch64-linux-gnu-gcc --sysroot=<path-to-sysroot-glibc-linaro-2.25-2018.05-aarch64-linux-gnu> hello.c -o hello
-    mv hello /temp
-
-把交叉编译好的hello程序拷贝到/tmp目录下，然后参照使能共享文件系统中的描述，使得openEuler embedded可以访问宿主机的目录。
-
-3. **运行用户态程序**
-
-在openEuler embedded中运行hello程序。
-
-.. code-block:: console
-
-    cd /tmp/host
+    cd /tmp/myfiles/
     ./hello
 
-如运行成功，openEuler Embedded的shell中就会输出hello openEuler。
+如运行成功，则会输出"hello world"。
