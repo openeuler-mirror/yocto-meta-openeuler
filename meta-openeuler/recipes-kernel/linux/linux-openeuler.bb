@@ -14,9 +14,11 @@ SRC_URI_append_aarch64 += " \
 "
 
 # add patches for OPENEULER_PLATFROM such as aarch64-pro
-#SRC_URI_append_aarch64-pro += " \
-#    file://yocto-embedded-tools/patches/${ARCH}/xxx \
-#"
+SRC_URI_append_aarch64-pro += " \
+    file://src-kernel-5.10/0000-raspberrypi-kernel.patch \
+    file://src-kernel-5.10/0001-add-preemptRT-patch.patch \
+    file://src-kernel-5.10/0002-modifty-bcm2711_defconfig-for-rt-rpi-kernel.patch \
+"
 
 S = "${WORKDIR}/kernel-5.10"
 
@@ -46,7 +48,11 @@ KERNEL_CC_append_aarch64 = " ${TOOLCHAIN_OPTIONS}"
 KERNEL_LD_append_aarch64 = " ${TOOLCHAIN_OPTIONS}"
 
 OPENEULER_KERNEL_CONFIG = "../yocto-embedded-tools/config/${ARCH}/defconfig-kernel"
+OPENEULER_KERNEL_CONFIG_aarch64-pro = "${S}/arch/${ARCH}/configs/bcm2711_defconfig"
 do_configure_prepend() {
+    if [[ ${OPENEULER_PLATFORM} == "aarch64-pro" ]]; then
+        sed -i '$a CONFIG_ACPI=y' ${OPENEULER_KERNEL_CONFIG}
+    fi
     cp -f "${OPENEULER_KERNEL_CONFIG}" .config
 }
 
