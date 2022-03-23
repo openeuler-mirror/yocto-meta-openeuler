@@ -23,7 +23,9 @@ SRC_URI = "file://bashrc \
 	file://sysctl.conf \
 	file://rc.functions \
 	file://rc.sysinit \
-	file://rc.local"
+	file://rc.local \
+        file://load_modules \
+"
 
 hostname = "openeuler"
 
@@ -46,6 +48,7 @@ do_install() {
 	install -m 0744 ${WORKDIR}/rc.local ${D}/etc/rc.d
         install -m 0755 -d ${D}/etc/init.d/
 	install -m 0750 ${WORKDIR}/rcS ${D}/etc/init.d/
+	install -m 0750 ${WORKDIR}/load_modules ${D}/etc/init.d/
         mkdir -p ${D}/var/log/
         touch ${D}/var/log/messages ${D}/var/log/lastlog
         mkdir -p ${D}/var/run/faillock ${D}/tmp
@@ -61,7 +64,7 @@ do_install() {
 }
 
 do_install_append_arm() {
-	echo "insmod /lib/modules/5.10.0/kernel/net/unix/unix.ko" >> ${D}/etc/rc.d/rc.local
+       echo "insmod /lib/modules/5.10.0/kernel/net/unix/unix.ko" >> ${D}/etc/init.d/load_modules
 }
 
 do_install_append_raspberrypi4() {
