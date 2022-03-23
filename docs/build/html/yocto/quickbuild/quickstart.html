@@ -89,7 +89,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#id1">构建环境的准备</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id3">构建代码与软件包代码的下载与准备</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id4">版本构建及使用</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id5">openeuler发布件使用</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="container-build.html">openEuler容器构建指导</a></li>
@@ -293,94 +292,10 @@
 <li>设置PATH增加额外工具路径</li>
 <li>TEMPLATECONF指定local.conf.sample等配置文件路径</li>
 <li>调用poky仓的oe-init-build-env进行初始化配置</li>
-<li>在conf/local.conf中配置MACHINE，按需增加额外新增的层</li>
-<li>执行bitbake openeuler-image编译openeuler的image和sdk</li>
+<li>在编译目录的conf/local.conf中配置MACHINE，按需增加额外新增的层</li>
+<li>在编译目录执行bitbake openeuler-image编译openeuler的image和sdk</li>
+<li>执行完发布件在编译目录的output目录下</li>
 </ol>
-</div>
-<div class="section" id="id5">
-<h2>openeuler发布件使用<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
-<div class="section" id="sdk">
-<h3>sdk使用<a class="headerlink" href="#sdk" title="永久链接至标题">¶</a></h3>
-<dl class="docutils">
-<dt><strong>1  执行sdk脚本</strong></dt>
-<dd><div class="first line-block">
-<div class="line">例如 <code class="docutils literal notranslate"><span class="pre">sh</span> <span class="pre">openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-22.03.sh</span></code></div>
-<div class="line">根据提示输入工具链的安装路径，默认路径是”/opt/openeuler/&lt;openeuler version&gt;/”;</div>
-<div class="line">若不设置，则按默认路径安装</div>
-</div>
-<p>a)配置相对路径安装</p>
-<p># <code class="docutils literal notranslate"><span class="pre">sh</span> <span class="pre">./openeuler-glibc-x86_64-openeuler-image-armv7a-qemu-arm-toolchain-22.03.sh</span></code></p>
-<div class="line-block">
-<div class="line">openEuler embedded(openEuler Embedded Reference Distro) SDK installer version 22.03</div>
-<div class="line">================================================================</div>
-<div class="line">Enter target directory for SDK (default: /opt/openeuler/22.03): sdk</div>
-<div class="line">You are about to install the SDK to “/usr1/openeuler/sdk”. Proceed [Y/n]? y</div>
-<div class="line">Extracting SDK………………………………………..done</div>
-<div class="line">Setting it up…SDK has been successfully set up and is ready to be used.</div>
-<div class="line">Each time you wish to use the SDK in a new shell session, you need to source the environment setup script e.g.</div>
-<div class="line">$ <code class="docutils literal notranslate"><span class="pre">.</span> <span class="pre">/usr1/openeuler/sdk/environment-setup-armv7a-openeuler-linux-gnueabi</span></code></div>
-</div>
-<p>b)配置绝对路径安装</p>
-<p># <code class="docutils literal notranslate"><span class="pre">sh</span> <span class="pre">./openeuler-glibc-x86_64-openeuler-image-armv7a-qemu-arm-toolchain-22.03.sh</span></code></p>
-<div class="last line-block">
-<div class="line">openEuler embedded(openEuler Embedded Reference Distro) SDK installer version 22.03</div>
-<div class="line">================================================================</div>
-<div class="line">Enter target directory for SDK (default: /opt/openeuler/22.03): /usr1/openeuler/myfiles/sdk</div>
-<div class="line">You are about to install the SDK to “/usr1/openeuler/myfiles/sdk”. Proceed [Y/n]? y</div>
-<div class="line">Extracting SDK………………………………………..done</div>
-<div class="line">Setting it up…SDK has been successfully set up and is ready to be used.</div>
-<div class="line">Each time you wish to use the SDK in a new shell session, you need to source the environment setup script e.g.</div>
-<div class="line">$ <code class="docutils literal notranslate"><span class="pre">.</span> <span class="pre">/usr1/openeuler/myfiles/sdk/environment-setup-armv7a-openeuler-linux-gnueabi</span></code></div>
-</div>
-</dd>
-<dt><strong>2   source环境变量设置脚本</strong></dt>
-<dd><div class="first last line-block">
-<div class="line">前一步执行结束最后已打印source命令</div>
-<div class="line">例如以上 <code class="docutils literal notranslate"><span class="pre">.</span> <span class="pre">/usr1/openeuler/myfiles/sdk/environment-setup-armv7a-openeuler-linux-gnueabi</span></code></div>
-</div>
-</dd>
-<dt><strong>3   使用sdk编译</strong></dt>
-<dd><div class="first last line-block">
-<div class="line">例如:  <code class="docutils literal notranslate"><span class="pre">arm-openeuler-linux-gnueabi-gcc</span> <span class="pre">-v</span></code> 查看gcc版本</div>
-</div>
-</dd>
-</dl>
-<p>1）. <strong>准备代码</strong>
-以构建一个hello world程序为例，运行在openEuler根文件系统镜像中。</p>
-<p>创建一个hello.c文件，源码如下：</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
-
-<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;hello world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>编写CMakelist.txt，和hello.c文件放在同一个目录</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="p">(</span><span class="n">hello</span> <span class="n">C</span><span class="p">)</span>
-
-<span class="n">add_executable</span><span class="p">(</span><span class="n">hello</span> <span class="n">hello</span><span class="o">.</span><span class="n">c</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>2）. <strong>编译生成二进制</strong></p>
-<p>进入hello.c文件所在目录，使用工具链编译, 命令如下：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cmake</span> <span class="o">..</span>
-<span class="n">make</span>
-</pre></div>
-</div>
-<p>把编译好的hello程序拷贝到/tmp/某个目录下（例如/tmp/myfiles/）。</p>
-<p>3）. <strong>运行用户态程序</strong></p>
-<p>在openEuler系统中运行hello程序。</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd /tmp/myfiles/</span>
-<span class="go">./hello</span>
-</pre></div>
-</div>
-<p>如运行成功，则会输出”hello world”。</p>
-</div>
-<div class="section" id="image">
-<h3>image使用<a class="headerlink" href="#image" title="永久链接至标题">¶</a></h3>
-<p>见《快速上手》章节</p>
-</div>
 </div>
 </div>
 
