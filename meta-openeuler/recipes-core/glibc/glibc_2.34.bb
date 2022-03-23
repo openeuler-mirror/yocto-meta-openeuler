@@ -47,6 +47,7 @@ do_install() {
     install -m 0755 -d ${D}/${base_libdir}
     install -m 0755 -d ${D}/${libdir}
     cp -pPR ${S}/sysroot/* ${D}/
+    chmod -R 755 ${D}/${libdir}
     rm -rf ${D}/etc/rpc
     rm -rf ${D}${datadir}/info
     rm -rf ${D}${base_libdir}/debug
