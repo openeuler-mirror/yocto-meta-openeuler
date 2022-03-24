@@ -91,7 +91,6 @@ INSANE_SKIP = "file-rdeps ldflags arch"
 POPULATESYSROOTDEPS_class-target = ""
 INHIBIT_SYSROOT_STRIP = "1"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
-INHIBIT_PACKAGE_STRIP = "1"
 
 ERROR_QA_remove += "dev-elf dev-so"
 WARN_QA_remove += "libdir"
