@@ -11,13 +11,16 @@ python () {
     import os
 
     local_toolchain = str(d.getVar('OPENEULER_TOOLCHAIN_DIR', True))
+    #nativesdk no arch, nativesdk-glibc cannot get specific toolchain
+    if bb.data.inherits_class('nativesdk', d):
+        return True
     if not os.path.exists(local_toolchain):
-        return 1
+        bb.fatal("%s is not a directory [%s]!" % (local_toolchain, d.getVar('PN', True)))
     if os.path.exists(local_toolchain):
         if "glibc" == d.getVar('BPN', True):
             gcctopdir = os.path.abspath(os.path.dirname(local_toolchain))
             d.setVar("DL_DIR", gcctopdir)
-            return 0
+            return True
         d.setVar("S", local_toolchain)
         d.setVarFlag("do_fetch",  "noexec", "1")
         d.setVarFlag("do_unpack", "noexec", "1")
