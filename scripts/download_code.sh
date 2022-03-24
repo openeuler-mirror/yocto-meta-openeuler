@@ -206,6 +206,102 @@ download_iSulad_code()
    update_code_repo src-openeuler/iSulad ${SRC_BRANCH}
 }
 
+clone_dsoftbus_code()
+{
+    update_code_repo openeuler/dsoftbus_standard ${SRC_BRANCH}
+    update_code_repo openeuler/yocto-embedded-tools ${SRC_BRANCH}
+    update_code_repo src-openeuler/libboundscheck ${SRC_BRANCH}
+}
+
+init_dsoftbus_codedir()
+{
+    rm -rf ${dsoftbus_build_dir}
+    mkdir -p ${dsoftbus_buildtools}
+    mkdir -p ${dsoftbus_thirdparty}
+    mkdir -p ${dsoftbus_utils}
+    mkdir -p ${dsoftbus_src}
+}
+
+unpack_dsoftbus_code()
+{
+    build="build-OpenHarmony-v3.0.2-LTS"
+    gn="gn-linux-x86-1717"
+    ninja="ninja-linux-x86-1.10.1"
+    cJSON="third_party_cJSON-OpenHarmony-v3.0.2-LTS"
+    jinja2="third_party_jinja2-OpenHarmony-v3.0.2-LTS"
+    libcoap="third_party_libcoap-OpenHarmony-v3.0.2-LTS"
+    markupsafe="third_party_markupsafe-OpenHarmony-v3.0.2-LTS"
+    mbedtls="third_party_mbedtls-OpenHarmony-v3.0.2-LTS"
+    bounds_checking_function="libboundscheck-v1.1.11"
+    utils="utils_native-OpenHarmony-v3.0.2-LTS"
+
+    #unpack build
+    unzip -qd ${dsoftbus_build_dir} ${prefix_dir}/build/${build}.zip
+    mv ${dsoftbus_build_dir}/${build} ${dsoftbus_build_dir}/build
+    
+    #unpack build_tools
+    for i in  $gn $ninja
+    do
+        tar -C ${dsoftbus_buildtools} -zxf ${prefix_dir}/build_tools/${i}.tar.gz
+    done
+
+    #unpack third_party
+    for i in  cJSON jinja2 libcoap markupsafe mbedtls
+    do
+	pkg=`eval echo '$'"$i"`
+        unzip -qd ${dsoftbus_thirdparty} ${prefix_dir}/third_party/${i}/${pkg}.zip
+        mv ${dsoftbus_thirdparty}/${pkg} ${dsoftbus_thirdparty}/${i}
+    done
+
+    #unpack boundcheck
+    tar -C ${dsoftbus_thirdparty} -zxf ${SRC_DIR}/libboundscheck/${bounds_checking_function}.tar.gz
+    mv ${dsoftbus_thirdparty}/${bounds_checking_function} ${dsoftbus_thirdparty}/bounds_checking_function
+
+    #unpack utils
+    unzip -qd ${dsoftbus_utils} ${prefix_dir}/utils/${utils}.zip
+    mv ${dsoftbus_utils}/${utils} ${dsoftbus_utils}/native
+}
+
+init_dsoftbus_selfcode()
+{
+    toolchain_path="/usr1/openeuler/gcc/openeuler_gcc_arm64le"
+    build_patch="0001-add-dsoftbus-build-support-for-embedded-env.patch"
+    utils_patch="0001-Adaptation-for-dsoftbus.patch"
+    boundscheck_patch="0001-Adaptation-for-dsoftbus.patch"
+
+    #init gn root
+    ln -s ${dsoftbus_build_dir}/build/build_scripts/build.sh ${dsoftbus_build_dir}/build.sh
+    ln -s ${dsoftbus_build_dir}/build/core/gn/dotfile.gn ${dsoftbus_build_dir}/.gn
+
+    #link selfcode
+    ln -s ${prefix_dir}/productdefine ${dsoftbus_build_dir}/productdefine
+    ln -s ${prefix_dir}/depend ${dsoftbus_build_dir}/depend
+    ln -s ${SRC_DIR}/dsoftbus_standard ${dsoftbus_src}/dsoftbus
+
+    #link toolchain
+    ln -s ${toolchain_path} ${dsoftbus_build_dir}/toolchain
+
+    #do patch
+    patch -p1 -d ${dsoftbus_build_dir}/build < ${prefix_dir}/build/${build_patch}
+    patch -p1 -d ${dsoftbus_utils}/native < ${prefix_dir}/utils/${utils_patch}
+    patch -p1 -d ${dsoftbus_thirdparty}/bounds_checking_function < ${prefix_dir}/bounds_checking_function/${boundscheck_patch}
+}
+
+download_dsoftbus_code()
+{
+    prefix_dir="${SRC_DIR}/yocto-embedded-tools/dsoftbus"
+    dsoftbus_build_dir="${SRC_DIR}/dsoftbus_build"
+    dsoftbus_buildtools="${dsoftbus_build_dir}/prebuilts/build-tools/linux-x86/bin"
+    dsoftbus_thirdparty="${dsoftbus_build_dir}/third_party"
+    dsoftbus_utils="${dsoftbus_build_dir}/utils"
+    dsoftbus_src="${dsoftbus_build_dir}/foundation/communication"
+
+    clone_dsoftbus_code
+    init_dsoftbus_codedir
+    unpack_dsoftbus_code
+    init_dsoftbus_selfcode
+}
+
 usage()
 {
     echo -e "Tip: sh $(basename "$0") [top/directory/to/put/your/code] [branch] <manifest path>\n"
@@ -239,5 +335,6 @@ if [ -f "${MANIFEST}" ];then
 else
     download_code
     download_iSulad_code
+    download_dsoftbus_code
     create_manifest
 fi

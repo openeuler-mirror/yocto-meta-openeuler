@@ -134,4 +134,31 @@ main()
     echo -e "Tip: You can now run 'bitbake ${BITBAKE_OPT}'.\n"
 }
 
-main "$@"
+do_dsoftbus_compile()
+{
+    rm -rf ${SRC_DIR}/dsoftbus_build/out
+    cd ${SRC_DIR}/dsoftbus_build
+    ./build.sh --product-name openEuler
+}
+
+do_dsoftbus_package()
+{
+    rm -rf ${SRC_DIR}/dsoftbus_output
+    mkdir ${SRC_DIR}/dsoftbus_output
+    mkdir ${SRC_DIR}/dsoftbus_output/include/
+    cp ${SRC_DIR}/dsoftbus_build/out/ohos-arm64-release/common/common/*.so ${SRC_DIR}/dsoftbus_output/
+    cp ${SRC_DIR}/dsoftbus_build/out/ohos-arm64-release/communication/dsoftbus_standard/*.so ${SRC_DIR}/dsoftbus_output/
+    cp -r ${SRC_DIR}/dsoftbus_build/foundation/communication/dsoftbus/interfaces/kits/ ${SRC_DIR}/dsoftbus_output/include/
+}
+
+if [ "$1" == "dsoftbus" ];then
+    SRC_DIR=$2
+    if [ -z "${SRC_DIR}" ];then
+        SRC_DIR="$(cd $(dirname $0)/../../;pwd)"
+    fi
+
+    do_dsoftbus_compile
+    do_dsoftbus_package
+else
+    main "$@"
+fi
