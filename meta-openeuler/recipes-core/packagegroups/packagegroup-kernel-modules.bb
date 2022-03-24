@@ -33,6 +33,7 @@ kernel-module-nf-reject-ipv6 \
 kernel-module-x-tables \
 kernel-module-xt-tcpudp \
 kernel-module-tunnel4 \
+kernel-module-af-packet \
 "
 RDEPENDS_${PN}_raspberrypi4 = " \
 "
