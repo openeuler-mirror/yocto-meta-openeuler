@@ -11,22 +11,22 @@ create_manifest()
 EOF
 
     #add info for yocto-meta-openeuler
-    pushd "${SRC_DIR}"/yocto-meta-openeuler/
+    pushd "${SRC_DIR}"/yocto-meta-openeuler/ >/dev/null
     #add info for yocto-meta-openeuler
     mycommitid="$(git log --pretty=oneline  -n1 | awk '{print $1}')"
     myrepo="openeuler/yocto-meta-openeuler"
     mybranch="$(git branch | grep "^* " | awk '{print $NF}')"
-    git branch -a | grep "/${branchname}$" || { mybranch="${mycommitid}"; }
-    echo "${myrepo} ${mycommitid} ${mybranch}" >> "${SRC_DIR}"/code.list
-    popd
+    git branch -a | grep "/${mybranch}$" || { mybranch="${mycommitid}"; }
+    echo "${myrepo} yocto-meta-openeuler ${mycommitid} ${mybranch}" >> "${SRC_DIR}"/code.list
+    popd  >/dev/null
 
     cat "${SRC_DIR}"/code.list | sort | uniq > "${SRC_DIR}"/code.list.sort
     while read line
     do
-        local revision="$(echo $line| awk '{print $2}')"
-        local branchname="$(echo $line| awk '{print $3}')"
         local repo="$(echo $line| awk '{print $1}')"
-        local localpath="$(basename ${repo} | sed "s|\.git$||")"
+        local localpath="$(echo $line| awk '{print $2}')"
+        local revision="$(echo $line| awk '{print $3}')"
+        local branchname="$(echo $line| awk '{print $4}')"
         echo "    <project name=\"${repo}.git\" path=\"${localpath}\" revision=\"${revision=}\" groups=\"openeuler\" upstream=\"${branchname}\"/>" >> "${SRC_DIR}"/manifest.xml
     done < "${SRC_DIR}"/code.list.sort
     echo "</manifest>" >> "${SRC_DIR}"/manifest.xml
@@ -38,25 +38,31 @@ update_code_repo()
     local repo="$1"
     local branch="-b $2"
     local realdir="$3"
-    local pkg="$(basename ${repo})"
+    local commitid="$4"
+    local pkg="$(basename ${repo} | sed "s|\.git$||g")"
     local branchname="$2"
+    [[ -z "$branchname" ]] && exit 1
+    [[ -z "$pkg" ]] && exit 1
+    #branch is also commitid,cannot clone -b <commitid>
+    [[ "$branchname" == "$commitid" ]] && branch=""
     #change dir name if required
     [[ -z "${realdir}" ]] || pkg="$(basename ${realdir})"
     #shallow clone for linux kernel as it's too large
     [[ "${pkg}" == "kernel-5.10" ]] && local git_param="--depth 1"
-    pushd "${SRC_DIR}"
+    test -d "${SRC_DIR}" || mkdir -p "${SRC_DIR}"
+    pushd "${SRC_DIR}"  >/dev/null
     # if git repo exits, continue, or clone the package repo
     test -d ./"${pkg}"/.git || { rm -rf ./"${pkg}";git clone "${URL_PREFIX}/${repo}" ${branch} ${git_param} -v "${pkg}"; }
 
-    pushd ./"${pkg}"
+    pushd ./"${pkg}"  >/dev/null
     # checkout to branch, or report failure
     git checkout ${branchname} || { echo "ERROR: checkout ${repo} ${branchname} to ${pkg} failed";exit 1; }
-    if git branch -a | grep "/${branchname}$";then
-        git branch | grep "^*" | grep " ${branchname}$" || exit 1
+    if git branch -a | grep -q "/${branchname}$";then
+        git branch | grep "^*" | grep -q " ${branchname}$" || exit 1
         # pull from orgin
         git config pull.ff only
         git pull || echo "git pull failure, please check ${pkg}"
-        git status | grep -E "is up to date with|is up-to-date with" || exit 1
+        git status | grep -Eq "is up to date with|is up-to-date with" || exit 1
     fi
 
     #check if checkout tag successfully
@@ -70,10 +76,35 @@ update_code_repo()
         fi
     fi
 
+    if [ ! -z "$commitid" ];then
+        git reset --hard "$commitid"
+    fi
     #update the code list
-    echo "${repo} ${newest_commitid} ${branchname}" >> "${SRC_DIR}"/code.list
-    popd
-    popd
+    echo "${repo} ${pkg} ${newest_commitid} ${branchname}" >> "${SRC_DIR}"/code.list
+    echo -e "===== Successfully download ${repo} ${branchname} ${newest_commitid} -> ${pkg} ...\n"
+    popd  >/dev/null
+    popd >/dev/null
+}
+
+
+download_by_manifest()
+{
+    while read line
+    do
+        echo "$line" | grep -q "<project " || continue
+        local name="$(echo "$line" | grep -o " name=.*" | awk -F\" '{print $2}')"
+        local localpath="$(echo "$line" | grep -o " path=.*" | awk -F\" '{print $2}')"
+        local revision="$(echo "$line" | grep -o " revision=.*" | awk -F\" '{print $2}')"
+        local upstream="$(echo "$line" | grep -o " upstream=.*" | awk -F\" '{print $2}')"
+        if [[ x"$upstream" =~ x"refs/tags/" ]];then
+            branch=$(echo "$upstream" | sed "s|^refs/tags/||g")
+        else
+            branch="$upstream"
+            commitid="$revision"
+        fi
+        update_code_repo "$name" "$branch" "$localpath" "$commitid"
+
+    done < "${MANIFEST}"
 }
 
 download_code()
@@ -177,13 +208,15 @@ download_iSulad_code()
 
 usage()
 {
-    echo "Tip: sh $(basename "$0") [top/directory/to/put/your/code] [branch]"
+    echo -e "Tip: sh $(basename "$0") [top/directory/to/put/your/code] [branch] <manifest path>\n"
 }
 
 SRC_DIR="$1"
 # the git branch to sync
 # you can set branch/tag/commitid
 SRC_BRANCH="$2"
+# manifest file include the git url, revision, path info
+MANIFEST="$3"
 # the fixed git branch
 SRC_BRANCH_FIXED="openEuler-21.09"
 KERNEL_BRANCH="5.10.0-60.16.0"
@@ -201,6 +234,10 @@ fi
 [[ -z "${KERNEL_BRANCH}" ]] && KERNEL_BRANCH="${SRC_BRANCH}"
 
 URL_PREFIX="https://gitee.com/"
-download_code
-download_iSulad_code
-create_manifest
+if [ -f "${MANIFEST}" ];then
+    download_by_manifest
+else
+    download_code
+    download_iSulad_code
+    create_manifest
+fi
