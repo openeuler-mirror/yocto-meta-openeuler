@@ -27,7 +27,9 @@
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="索引" href="../genindex.html" />
-    <link rel="search" title="搜索" href="../search.html" /> 
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="openEuler Embedded构建系统" href="../yocto/index.html" />
+    <link rel="prev" title="分布式软总线" href="distributed_soft_bus.html" /> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -77,10 +79,20 @@
             
             
               <p class="caption"><span class="caption-text">内容</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">介绍</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
-<li class="toctree-l1"><a class="reference internal" href="index.html">openEuler Embedded关键特性</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">openEuler Embedded关键特性</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="mcs.html">混合关键性系统</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distributed_soft_bus.html">分布式软总线</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">openEuler嵌入式树莓派系统</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">树莓派镜像构建指导</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">树莓派镜像使用</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">树莓派镜像特性介绍</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../yocto/index.html">openEuler Embedded构建系统</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../contribute_doc.html">如何撰写并贡献文档</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
@@ -129,6 +141,8 @@
     
       <li><a href="../index.html">Docs</a> &raquo;</li>
         
+          <li><a href="index.html">openEuler Embedded关键特性</a> &raquo;</li>
+        
       <li>openEuler嵌入式树莓派系统</li>
     
     
@@ -159,7 +173,7 @@
 <ul class="simple">
 <li>构建命令示例:</li>
 </ul>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">su huawei</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">su openeuler</span>
 
 <span class="go">source /usr1/openeuler/src/yocto-meta-openeuler/scripts/compile.sh raspberrypi4-64 /usr1/openeuler/src/build/build-raspberrypi4-64/</span>
 
@@ -246,7 +260,13 @@
 <p>以下内容引用: <a class="reference external" href="https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E6%A0%91%E8%8E%93%E6%B4%BE%E4%BD%BF%E7%94%A8.md">树莓派使用:启用树莓派:分区扩容</a></p>
 <p>默认根目录分区空间比较小，在使用之前，需要对分区进行扩容。</p>
 <p>1.查看磁盘分区信息</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">执行 fdisk -l 命令查看磁盘分区信息。命令和回显如下：</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">执行 fdisk -l 命令查看磁盘分区信息。回显如下：</span>
+
+<span class="go">Device        Boot StartCHS   EndCHS        StartLBA  EndBLA  Sectors size Id  Type</span>
+
+<span class="go">/dev/mmcblk0p1 *   64,0,1     831,3,32      8192      106495  98304   48.0M c  Win95 FAT32(LBA)</span>
+
+<span class="go">/dev/mmcblk0p2     832,0,1    1023,3,32     106496    360447  253952  124M  83 Linux</span>
 </pre></div>
 </div>
 <p>SD 卡对应盘符为 /dev/mmcblk0，包括 2 个分区，分别为</p>
@@ -257,11 +277,14 @@
 </div>
 <p>这里我们需要将根目录分区 /dev/mmcblk0p2 进行扩容。</p>
 <p>2.分区扩容</p>
+<ul class="simple">
+<li>对根目录/dev/mmcblk0p2进行扩容</li>
+</ul>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">执行 fdisk /dev/mmcblk0 命令进入到交互式命令行界面，按照以下步骤扩展分区，如下图所示。</span>
 
 <span class="go">输入 p，查看分区信息。</span>
 
-<span class="go">记录分区 /dev/mmcblk0p2 的起始扇区号，即 /dev/mmcblk0p2 分区信息中 Start 列的值，示例中为 1593344。</span>
+<span class="go">记录分区 /dev/mmcblk0p2 的起始扇区号，即 /dev/mmcblk0p2 分区信息中 Start 列的值，示例中为 106496。</span>
 
 <span class="go">输入 d，删除分区。</span>
 
@@ -273,7 +296,7 @@
 
 <span class="go">输入 2 或直接按 Enter，创建序号为 2 的分区，即 /dev/mmcblk0p2 分区。</span>
 
-<span class="go">输入新分区的起始扇区号，即第 1 步中记录的起始扇区号，示例中为 1593344。</span>
+<span class="go">输入新分区的起始扇区号，即第 1 步中记录的起始扇区号，示例中为 106496。</span>
 
 <span class="go">须知：</span>
 
@@ -281,9 +304,11 @@
 
 <span class="go">按 Enter，使用默认的最后一个扇区号作为新分区的终止扇区号。</span>
 
-<span class="go">输入 N，不修改扇区标记。</span>
-
 <span class="go">输入 w，保存分区设置并退出交互式命令行界面。</span>
+</pre></div>
+</div>
+<p>-增大未加载的文件系统大小</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">resize2fs /dev/mmcblk0p2</span>
 </pre></div>
 </div>
 </div>
@@ -292,9 +317,7 @@
 <p>1.树莓派硬件特性，参考:<a class="reference external" href="https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E6%A0%91%E8%8E%93%E6%B4%BE%E4%BD%BF%E7%94%A8.md#%E5%90%AF%E7%94%A8%E6%A0%91%E8%8E%93%E6%B4%BE">树莓派使用:GPIO介绍</a></p>
 <p>目前已使能串口设备，可以访问mini-uart，其他硬件特性暂不支持。</p>
 <p>2.支持百级嵌入式软件包，见软件包功能列表</p>
-<ol class="arabic simple" start="3">
-<li>支持部署rt实时内核</li>
-</ol>
+<p>3.支持部署rt实时内核</p>
 </div>
 </div>
 
@@ -303,6 +326,15 @@
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../yocto/index.html" class="btn btn-neutral float-right" title="openEuler Embedded构建系统" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="distributed_soft_bus.html" class="btn btn-neutral" title="分布式软总线" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>
