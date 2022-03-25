@@ -98,3 +98,6 @@ dhcp-server-config \
 RDEPENDS_packagegroup-base_append_raspberrypi4 += " \
 e2fsprogs-resize2fs \
 "
+RDEPENDS_packagegroup-base_append_aarch64-std = " \
+dsoftbus \
+"
