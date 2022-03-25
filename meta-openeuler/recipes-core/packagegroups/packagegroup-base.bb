@@ -94,3 +94,7 @@ dhcp-libs \
 dhcp-server \
 dhcp-server-config \
 "
+
+RDEPENDS_packagegroup-base_append_raspberrypi4 += " \
+e2fsprogs-resize2fs \
+"
