@@ -23,6 +23,7 @@ SRC_URI = "file://libxml2/${BP}.tar.gz \
            file://libxml2/Fix-whitespace-when-serializing-empty-HTML-documents.patch \
            file://libxml2/Patch-to-forbid-epsilon-reduction-of-final-states.patch \
            file://libxml2/Fix-buffering-in-xmlOutputBufferWrite.patch \
+           file://libxml2/backport-CVE-2022-23308-Use-after-free-of-ID-and-IDREF-attrib.patch \
            file://run-ptest \
 "
 
