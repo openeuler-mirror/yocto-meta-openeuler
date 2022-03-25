@@ -282,3 +282,75 @@ openEuler Embedded登陆后，执行如下命令：
     ./hello
 
 如运行成功，则会输出"hello world"。
+
+使用SDK编译内核模块样例
+=============================
+
+1. **准备代码**
+
+以编译一个内核模块为例，运行在openEuler Embedded内核中。
+
+创建一个hello.c文件，源码如下：
+
+.. code-block:: c
+
+    #include <linux/init.h>
+    #include <linux/module.h>
+
+    static int hello_init(void)
+    {
+        printk("Hello, openEuler Embedded!\r\n");
+        return 0;
+    }
+
+    static void hello_exit(void)
+    {
+        printk("Byebye!");
+    }
+
+    module_init(hello_init);
+    module_exit(hello_exit);
+
+    MODULE_LICENSE(GPL);
+
+编写Makefile，和hello.c文件放在同一个目录：
+
+::
+
+ KERNELDIR := ${DL_SDK_KERNELDIR}
+ CURRENT_PATH := $(shell pwd)
+
+ target := hello
+ obj-m := $(target).o
+
+ build := kernel_modules
+
+ kernel_modules:
+ 		$(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) modules
+ clean:
+ 		$(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) clean
+
+:file:`DL_SDK_KERNELDIR` 为SDK中内核源码树的目录。
+
+2. **编译生成内核模块**
+
+进入hello.c文件所在目录，使用工具链编译，命令如下：
+
+.. code-block:: console
+
+    make
+    
+将编译好的hello.ko拷贝到openEuler Embedded系统的目录下。
+
+如何拷贝可以参考前文所述共享文件系统场景。
+
+3. **插入内核模块**
+
+在openEuler Embedded系统中插入内核模块:
+
+.. code-block:: console
+
+    insmod hello.ko
+
+如运行成功，则会在内核日志中出现"Hello, openEuler Embedded!"。
+
