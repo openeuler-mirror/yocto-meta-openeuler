@@ -93,6 +93,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#openeuler-embeddedsdk">基于openEuler Embedded的SDK应用开发</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#sdk">安装SDK</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#sdkhello-world">使用SDK编译hello world样例</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">使用SDK编译内核模块样例</a></li>
 </ul>
 </li>
 </ul>
@@ -391,6 +392,67 @@
 </pre></div>
 </div>
 <p>如运行成功，则会输出”hello world”。</p>
+</div>
+<div class="section" id="id9">
+<h3>使用SDK编译内核模块样例<a class="headerlink" href="#id9" title="永久链接至标题">¶</a></h3>
+<ol class="arabic simple">
+<li><strong>准备代码</strong></li>
+</ol>
+<p>以编译一个内核模块为例，运行在openEuler Embedded内核中。</p>
+<p>创建一个hello.c文件，源码如下：</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;linux/init.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;linux/module.h&gt;</span><span class="cp"></span>
+
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">hello_init</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printk</span><span class="p">(</span><span class="s">&quot;Hello, openEuler Embedded!</span><span class="se">\r\n</span><span class="s">&quot;</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">hello_exit</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printk</span><span class="p">(</span><span class="s">&quot;Byebye!&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">module_init</span><span class="p">(</span><span class="n">hello_init</span><span class="p">);</span>
+<span class="n">module_exit</span><span class="p">(</span><span class="n">hello_exit</span><span class="p">);</span>
+
+<span class="n">MODULE_LICENSE</span><span class="p">(</span><span class="n">GPL</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>编写Makefile，和hello.c文件放在同一个目录：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>KERNELDIR := ${DL_SDK_KERNELDIR}
+CURRENT_PATH := $(shell pwd)
+
+target := hello
+obj-m := $(target).o
+
+build := kernel_modules
+
+kernel_modules:
+               $(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) modules
+clean:
+               $(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) clean
+</pre></div>
+</div>
+<p><code class="file docutils literal notranslate"><span class="pre">DL_SDK_KERNELDIR</span></code> 为SDK中内核源码树的目录。</p>
+<ol class="arabic simple" start="2">
+<li><strong>编译生成内核模块</strong></li>
+</ol>
+<p>进入hello.c文件所在目录，使用工具链编译，命令如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">make</span>
+</pre></div>
+</div>
+<p>将编译好的hello.ko拷贝到openEuler Embedded系统的目录下。</p>
+<p>如何拷贝可以参考前文所述共享文件系统场景。</p>
+<ol class="arabic simple" start="3">
+<li><strong>插入内核模块</strong></li>
+</ol>
+<p>在openEuler Embedded系统中插入内核模块:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">insmod hello.ko</span>
+</pre></div>
+</div>
+<p>如运行成功，则会在内核日志中出现”Hello, openEuler Embedded!”。</p>
 </div>
 </div>
 </div>
