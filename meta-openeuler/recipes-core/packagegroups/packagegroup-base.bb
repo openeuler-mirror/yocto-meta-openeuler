@@ -93,6 +93,9 @@ dhcp \
 dhcp-libs \
 dhcp-server \
 dhcp-server-config \
+sysfsutils \
+libmetal \
+openamp \
 "
 
 RDEPENDS_packagegroup-base_append_raspberrypi4 += " \
