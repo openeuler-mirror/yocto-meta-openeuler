@@ -25,6 +25,7 @@ openEUler Embedded在内核版本、软件包版本等代码层面会与openEule
    getting_started/index.rst
    features/index.rst
    yocto/index.rst
+   qemu/index.rst
    contribute_doc.rst
    releases/index.rst
 
