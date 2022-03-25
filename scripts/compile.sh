@@ -147,8 +147,10 @@ do_dsoftbus_package()
     mkdir ${SRC_DIR}/dsoftbus_output
     install -d ${SRC_DIR}/dsoftbus_output/usr/include/
     install -d ${SRC_DIR}/dsoftbus_output/usr/lib64/
+    install -d ${SRC_DIR}/dsoftbus_output/usr/bin
     cp ${SRC_DIR}/dsoftbus_build/out/ohos-arm64-release/common/common/*.so ${SRC_DIR}/dsoftbus_output/usr/lib64/
     cp ${SRC_DIR}/dsoftbus_build/out/ohos-arm64-release/communication/dsoftbus_standard/*.so ${SRC_DIR}/dsoftbus_output/usr/lib64/
+    cp ${SRC_DIR}/dsoftbus_build/out/ohos-arm64-release/communication/dsoftbus_standard/softbus_server_main ${SRC_DIR}/dsoftbus_output/usr/bin
     cp -r ${SRC_DIR}/dsoftbus_build/foundation/communication/dsoftbus/interfaces/kits/ ${SRC_DIR}/dsoftbus_output/usr/include/
 }
 
