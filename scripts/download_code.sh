@@ -332,6 +332,9 @@ fi
 URL_PREFIX="https://gitee.com/"
 if [ -f "${MANIFEST}" ];then
     download_by_manifest
+elif [ "$1" == "dsoftbus" ];then
+    SRC_DIR="$(cd $(dirname $0)/../../;pwd)"
+    download_dsoftbus_code
 else
     download_code
     download_iSulad_code
