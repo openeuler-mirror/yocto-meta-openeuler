@@ -34,6 +34,18 @@ kernel-module-x-tables \
 kernel-module-xt-tcpudp \
 kernel-module-tunnel4 \
 kernel-module-af-packet \
+kernel-module-nfs-ssc \
+kernel-module-fscache \
+kernel-module-grace \
+kernel-module-sunrpc \
+kernel-module-auth-rpcgss \
+kernel-module-lockd \
+kernel-module-nfs-acl \
+kernel-module-nfs \
+kernel-module-nfsv3 \
+kernel-module-nfsd \
+kernel-module-crc-ccitt \
+kernel-module-ipv6 \
 "
 RDEPENDS_${PN}_raspberrypi4 = " \
 "
