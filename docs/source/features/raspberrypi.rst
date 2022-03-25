@@ -17,7 +17,7 @@ openEuler嵌入式树莓派系统
 
 .. code-block:: console
 
-  su huawei
+  su openeuler
 
   source /usr1/openeuler/src/yocto-meta-openeuler/scripts/compile.sh raspberrypi4-64 /usr1/openeuler/src/build/build-raspberrypi4-64/
 
@@ -144,7 +144,13 @@ b.使用hdmi登陆：
 
 .. code-block:: console
 
-  执行 fdisk -l 命令查看磁盘分区信息。命令和回显如下：
+  执行 fdisk -l 命令查看磁盘分区信息。回显如下：
+
+  Device        Boot StartCHS   EndCHS        StartLBA  EndBLA  Sectors size Id  Type
+
+  /dev/mmcblk0p1 *   64,0,1     831,3,32      8192      106495  98304   48.0M c  Win95 FAT32(LBA)
+
+  /dev/mmcblk0p2     832,0,1    1023,3,32     106496    360447  253952  124M  83 Linux
 
 SD 卡对应盘符为 /dev/mmcblk0，包括 2 个分区，分别为
 
@@ -158,13 +164,15 @@ SD 卡对应盘符为 /dev/mmcblk0，包括 2 个分区，分别为
 
 2.分区扩容
 
+- 对根目录/dev/mmcblk0p2进行扩容
+
 .. code-block:: console
    
   执行 fdisk /dev/mmcblk0 命令进入到交互式命令行界面，按照以下步骤扩展分区，如下图所示。
 
   输入 p，查看分区信息。
 
-  记录分区 /dev/mmcblk0p2 的起始扇区号，即 /dev/mmcblk0p2 分区信息中 Start 列的值，示例中为 1593344。
+  记录分区 /dev/mmcblk0p2 的起始扇区号，即 /dev/mmcblk0p2 分区信息中 Start 列的值，示例中为 106496。
 
   输入 d，删除分区。
 
@@ -176,7 +184,7 @@ SD 卡对应盘符为 /dev/mmcblk0，包括 2 个分区，分别为
 
   输入 2 或直接按 Enter，创建序号为 2 的分区，即 /dev/mmcblk0p2 分区。
 
-  输入新分区的起始扇区号，即第 1 步中记录的起始扇区号，示例中为 1593344。
+  输入新分区的起始扇区号，即第 1 步中记录的起始扇区号，示例中为 106496。
 
   须知：
 
@@ -184,10 +192,13 @@ SD 卡对应盘符为 /dev/mmcblk0，包括 2 个分区，分别为
 
   按 Enter，使用默认的最后一个扇区号作为新分区的终止扇区号。
 
-  输入 N，不修改扇区标记。
-
   输入 w，保存分区设置并退出交互式命令行界面。
         
+-增大未加载的文件系统大小
+
+.. code-block:: console
+
+   resize2fs /dev/mmcblk0p2
 
 树莓派镜像特性介绍
 ************
@@ -198,4 +209,4 @@ SD 卡对应盘符为 /dev/mmcblk0，包括 2 个分区，分别为
 
 2.支持百级嵌入式软件包，见软件包功能列表
 
-3. 支持部署rt实时内核
+3.支持部署rt实时内核
