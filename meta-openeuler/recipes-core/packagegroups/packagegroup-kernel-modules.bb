@@ -37,3 +37,5 @@ kernel-module-af-packet \
 "
 RDEPENDS_${PN}_raspberrypi4 = " \
 "
+RDEPENDS_${PN}_aarch64-pro = " \
+"
