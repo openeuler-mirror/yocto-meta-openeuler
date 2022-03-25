@@ -186,6 +186,8 @@ download_code()
     update_code_repo src-openeuler/raspberrypi-firmware ${SRC_BRANCH}
     update_code_repo src-openeuler/gmp ${SRC_BRANCH}
     update_code_repo src-openeuler/gdb ${SRC_BRANCH}
+    update_code_repo src-openeuler/libmetal ${SRC_BRANCH}
+    update_code_repo src-openeuler/OpenAMP ${SRC_BRANCH}
 }
 
 # download iSulad related packages
