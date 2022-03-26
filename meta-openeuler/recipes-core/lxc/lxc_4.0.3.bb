@@ -55,4 +55,4 @@ inherit autotools
 
 BBCLASSEXTEND = "native nativesdk"
 
-CFLAGS_append = "-Wno-error=stringop-overflow"
+CFLAGS_append = "-Wno-error=stringop-overflow -Wno-error=strict-prototypes -Wno-error=old-style-definition"
