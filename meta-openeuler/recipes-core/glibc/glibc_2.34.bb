@@ -60,6 +60,7 @@ FILES_${PN} = " \
     ${base_libdir}/*.so.* \
     ${libdir}/*.so \
     ${libdir}/*.so.* \
+    ${base_sbindir}/ldconfig \
 "
 FILES_${PN}-staticdev = " \
     ${base_libdir}/*.a \
