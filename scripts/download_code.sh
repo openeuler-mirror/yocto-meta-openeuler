@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 create_manifest()
 {
@@ -56,6 +55,7 @@ update_code_repo()
 
     pushd ./"${pkg}"  >/dev/null
     # checkout to branch, or report failure
+    git pull
     git checkout ${branchname} || { echo "ERROR: checkout ${repo} ${branchname} to ${pkg} failed";exit 1; }
     if git branch -a | grep -q "/${branchname}$";then
         git branch | grep "^*" | grep -q " ${branchname}$" || exit 1
@@ -306,40 +306,65 @@ download_dsoftbus_code()
 
 usage()
 {
-    echo -e "Tip: sh $(basename "$0") [top/directory/to/put/your/code] [branch] <manifest path>\n"
+    echo -e "Tip: sh "$THIS_SCRIPT" [top/directory/to/put/your/code] [branch] <manifest path>\n"
 }
 
-SRC_DIR="$1"
-# the git branch to sync
-# you can set branch/tag/commitid
-SRC_BRANCH="$2"
-# manifest file include the git url, revision, path info
-MANIFEST="$3"
-# the fixed git branch
-SRC_BRANCH_FIXED="openEuler-21.09"
-KERNEL_BRANCH="5.10.0-60.17.0"
+check_use()
+{
+    if [ -n "$BASH_SOURCE" ]; then
+        THIS_SCRIPT="$BASH_SOURCE"
+    elif [ -n "$ZSH_NAME" ]; then
+        THIS_SCRIPT="$0"
+    else
+        THIS_SCRIPT="$(pwd)/compile.sh"
+        if [ ! -e "$THIS_SCRIPT" ]; then
+            echo "Error: $THIS_SCRIPT doesn't exist!"
+            return 1
+        fi
+    fi
 
-if [[ -z "${SRC_DIR}" ]];then
-    usage
-    SRC_DIR="$(cd $(dirname $0)/../../;pwd)"
-fi
+    if [ "$0" != "$THIS_SCRIPT" ]; then
+        echo "Error: This script cannot be sourced. Please run as 'sh $THIS_SCRIPT'" >&2
+        usage
+        return 1
+    fi
+}
 
-if [[ -z "${SRC_BRANCH}" ]];then
-    usage
-    # the latest release branch
-    SRC_BRANCH="openEuler-22.03-LTS"
-fi
-[[ -z "${KERNEL_BRANCH}" ]] && KERNEL_BRANCH="${SRC_BRANCH}"
+main()
+{
+    SRC_DIR="$1"
+    # the git branch to sync, you can set branch/tag/commitid
+    SRC_BRANCH="$2"
+    # manifest file include the git url, revision, path info
+    MANIFEST="$3"
+    KERNEL_BRANCH="5.10.0-60.17.0"
 
-URL_PREFIX="https://gitee.com/"
-if [ -f "${MANIFEST}" ];then
-    download_by_manifest
-elif [ "$1" == "dsoftbus" ];then
-    SRC_DIR="$(cd $(dirname $0)/../../;pwd)"
-    download_dsoftbus_code
-else
-    download_code
-    download_iSulad_code
-    download_dsoftbus_code
-    create_manifest
-fi
+    check_use || return 1
+    set -e
+
+    if [[ -z "${SRC_DIR}" ]];then
+        SRC_DIR="$(cd $(dirname $0)/../../;pwd)"
+    fi
+    SRC_DIR="$(realpath ${SRC_DIR})"
+
+    if [[ -z "${SRC_BRANCH}" ]];then
+        # the latest release branch
+        SRC_BRANCH="openEuler-22.03-LTS"
+    fi
+    [[ -z "${KERNEL_BRANCH}" ]] && KERNEL_BRANCH="${SRC_BRANCH}"
+
+    URL_PREFIX="https://gitee.com/"
+    if [ -f "${MANIFEST}" ];then
+        download_by_manifest
+    elif [ "$1" == "dsoftbus" ];then
+        SRC_DIR="$(cd $(dirname $0)/../../;pwd)"
+        download_dsoftbus_code
+    else
+        download_code
+        download_iSulad_code
+        download_dsoftbus_code
+        create_manifest
+    fi
+}
+
+main "$@"
