@@ -8,7 +8,7 @@ XSRC_URI = "git://git.yoctoproject.org/pseudo;branch=oe-core \
 SRC_URI_remove_class-native = " \
     http://downloads.yoctoproject.org/mirror/sources/pseudo-prebuilt-2.33.tar.xz;subdir=git/prebuilt;name=prebuilt \
     file://older-glibc-symbols.patch"
-SRC_URI_class-native = "file://yocto-pseudo/pseudo-060058bb29f70b244e685b3c704eb0641b736f73.tar.gz \
+SRC_URI_class-native = "file://yocto-pseudo/pseudo-df1d1321fb093283485c387e3c933d2d264e509c.tar.gz \
            file://fallback-passwd \
            file://fallback-group \
            "
@@ -17,7 +17,7 @@ PV = "1.9.0"
 LIC_FILES_CHKSUM = "file://COPYING;md5=243b725d71bb5df4a1e5920b344b86ad"
 LIC_FILES_CHKSUM = "file://COPYING;md5=a1d8023a6f953ac6ea4af765ff62d574"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
-S = "${WORKDIR}/${BPN}-060058bb29f70b244e685b3c704eb0641b736f73"
+S = "${WORKDIR}/${BPN}-df1d1321fb093283485c387e3c933d2d264e509c"
 PSEUDO_EXTRA_OPTS_remove = "--enable-xattr"
 
 #set --with-sqlite to system host,use system headers
