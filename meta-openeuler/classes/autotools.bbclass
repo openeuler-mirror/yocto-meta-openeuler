@@ -32,7 +32,7 @@ inherit siteinfo
 # the contents of the sysroot.
 export CONFIG_SITE = "${@siteinfo_get_files(d)}"
 acpaths ?= "default"
-EXTRA_AUTORECONF_DEFINE = " AUTOPOINT=echo "
+EXTRA_AUTORECONF_DEFINE = " AUTOPOINT=echo GTKDOCIZE=echo "
 
 export lt_cv_sys_lib_dlsearch_path_spec = "${libdir} ${base_libdir}"
 
