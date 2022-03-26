@@ -42,7 +42,7 @@ reStructuredText的语法与Markdown十分类似，但能以更好的结构化�
 reStructuredText的语法无需专门记忆，需要用到时再去查询即可，具体可以参考 [#rst_tutorial]_ 。
 
 如何贡献文档（Linux环境）
-======================
+==============================
 
 * git clone yocto-meta-openeuler仓库
 
@@ -52,16 +52,17 @@ reStructuredText的语法无需专门记忆，需要用到时再去查询即可�
 
 * 环境准备
 
-    如果你只是开发文档的话，那么你需要准备好python3, 然后通过pip3按照如下命令安装相应的python软件包，包括sphinx、文
+    如果你只是开发文档的话，那么你需要准备好python3， 然后通过pip3按照如下命令安装相应的python软件包，包括sphinx、文
     档主题等：
 
     .. code-block:: bash
 
+        pip3 install sphinx
         pip3 install --user -r yocto-meta-openeuler/scripts/requirements-doc.txt
 
 * 编辑文档
 
-    相关文档源码位于 :file:`docs/source` 目录，根据你的需要修改或新增相应的文档，请按照如下目录规则布局文档:
+    相关文档源码位于 :file:`docs/source` 目录，根据你的需要修改或新增相应的文档，新增文档命名要按照Linux命名方法命名为xxx_yyy_zzz.rst，请按照如下目录规则布局文档:
 
     .. csv-table:: 文档目录布局
         :header: "文件/目录名", "用途"
@@ -82,15 +83,21 @@ reStructuredText的语法无需专门记忆，需要用到时再去查询即可�
 
         make html
 
-    编译成功之后，可以打开 :file:`docs/build/html/index.html` 查看最终生成的网页形式的文档。
+    编译成功之后，可以切换到gitee_pages分支，打开 :file:`docs/build/html/*.html` 查看最终生成的网页形式的文档。
 
 * 提交修改
 
   像提交代码一样，把所有的修改以commit的形式提交，然后在gitee上生成PR提交到openEuler Embedded对应的仓库, 经过审查后，
   修改就会被CI自动编译并发布。
+  
+  .. attention::
+
+   - 新增文档必须将该文档加入到对应目录的index索引文件中，新增目录必须将目录和索引加入到 :file:`docs/source/getting_started/index.html` 中，图片加入到 :file:`docs/image/` 目录中。
+   - git提交时标题加上 :file:`doc:` 开头，例如doc:(空一格)modify doc。并加上Signed-off-by，与提交的message中间空一行。
+   - 提交PR时标题要以  :file:`[文档]` 开头，例如[文档]：修改xx文档内容。如果有issue，要和issue进行关联。
 
 如何贡献文档（Windows环境）
-======================
+================================
 
 * git clone yocto-meta-openeuler仓库
 
@@ -102,7 +109,23 @@ reStructuredText的语法无需专门记忆，需要用到时再去查询即可�
 
 sphinx依赖于python，所以要先安装python环境，并安装pip工具和sphinx。
 
-1.python3和pip3的详细安装指导及安装包见链接：http://3ms.huawei.com/km/blogs/details/9658481
+1.下载并安装python3 for windows：https://www.python.org/downloads/windows/
+
+- 下载python3.10.3安装包
+
+- 安装python3，默认安装或自定义安装路径如 :file:`D:/python3`
+
+- 添加到系统路径，如python3安装到 :file:`D:/python3` 下，则将 :file:`D:/Python3` 和 :file:`D:/Python3/Scripts` 添加到系统环境变量Path中，后面那个路径一般是easy_install，pip等扩展工具安装的目录。
+
+- 安装pip3，默认pip3已经在 :file:`Scripts` 目录中了无需额外安装，如果没有，则下载并安装：
+
+  - 下载 :file:`get-pip.py` 脚本到 :file:`Scripts` 目录，地址： https://bootstrap.pypa.io/get-pip.py
+
+  - 在 :file:`Scripts` 目录运行下面命令安装pip3：
+
+      .. code-block:: python
+
+          python3 get-pip.py
 
 2.使用pip3安装sphinx（运行此命令）:
 
@@ -120,7 +143,7 @@ easy_install可以自动下载并安装sphinx以及它所依赖的其他模块�
 
 4.安装完成后，命令行会提示Finished Processing dependencies for shinx
 
-5.在命令行输入sphinx-build,如果在安装python时，没有设置环境变量，可能会弹出sphinx-build不是内部或者外部命令。
+5.在命令行输入sphinx-build，如果在安装python时，没有设置环境变量，可能会弹出sphinx-build不是内部或者外部命令。
 
 6.通过pip3按照如下命令安装相应的python软件包，包括sphinx、文档主题等：
 
@@ -130,7 +153,7 @@ easy_install可以自动下载并安装sphinx以及它所依赖的其他模块�
 
 *  创建工程
 
-安装完sphinx后，会在python的 :file:`Scripts` 目录下(默认安装目录 :file:`C:/Users/y00353996/AppData/Local/Programs/Python/Python37/Scripts`  )产生sphinx-quickstart，确保该目录已经添加到系统环境变量中。
+安装完sphinx后，会在python的 :file:`Scripts` 目录下产生sphinx-quickstart，确保该目录已经添加到系统环境变量中。
 
 1.启动cmd。进入要创建sphinx文档的目录，如 :file:`D:/Learn/python` 。
 
@@ -185,7 +208,7 @@ easy_install可以自动下载并安装sphinx以及它所依赖的其他模块�
 
 * 编辑文档
 
-相关文档源码位于 :file:`docs/source` 目录，根据你的需要修改或新增相应的文档，请按照如下目录规则布局文档:
+相关文档源码位于 :file:`docs/source` 目录，根据你的需要修改或新增相应的文档，新增文档命名要按照Linux命名方法命名为xxx_yyy_zzz.rst，请按照如下目录规则布局文档:
 
     .. csv-table:: 文档目录布局
         :header: "文件/目录名", "用途"
@@ -201,18 +224,23 @@ easy_install可以自动下载并安装sphinx以及它所依赖的其他模块�
 
 *  编译文档
 
-将 :file:`docs` 下的 :file:`image` 和 :file:`source` 目录内新增和修改的文件全部复制替换到工程（:file:`D:/Learn/python`）对应目录内，在 :file:`docs` 目录下编译文档
+将 :file:`docs` 下的 :file:`image` 和 :file:`source` 目录内新增和修改的文件全部复制替换到工程（:file:`D:/Learn/python`）对应目录内，在该目录下编译文档
 
     .. code-block:: bash
 
         .\make html
 
-编译成功之后，可以打开 :file:`docs/build/html` 目录下的html文件查看最终生成的网页形式的文档。
+编译成功之后，可以打开 :file:`build/html` 目录下的html文件查看最终生成的网页形式的文档。
 
 * 提交修改
 
 像提交代码一样，把所有的修改以commit的形式提交，然后在gitee上生成PR提交到openEuler Embedded对应的仓库, 经过审查后，修改就会被CI自动编译并发布。
 
+  .. attention::
+
+   - 新增文档必须将该文档加入到对应目录的index索引文件中，新增目录必须将目录和索引加入到 :file:`docs/source/getting_started/index.html` 中，图片加入到 :file:`docs/image/` 目录中。
+   - git提交时标题加上 :file:`doc:` 开头，例如doc:(空一格)modify doc。并加上Signed-off-by，与提交的message中间空一行。
+   - 提交PR时标题要以  :file:`[文档]` 开头，例如[文档]：修改xx文档内容。如果有issue，要和issue进行关联。
 
 .. [#sphinx_web] `Sphinx官方网站 <https://www.sphinx.org.cn/index.html>`_
 .. [#rst_wikipedia] `reStructuredText维基百科 <https://zh.wikipedia.org/wiki/ReStructuredText>`_
