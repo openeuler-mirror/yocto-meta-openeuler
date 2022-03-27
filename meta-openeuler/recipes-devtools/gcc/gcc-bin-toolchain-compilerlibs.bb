@@ -30,8 +30,7 @@ do_install () {
                 -o -name 'libstdc++*.so*' \
                 -o -name 'libclang_rt*.so*'  \
                 -o -name 'libunwind*.so*'  |
-        xargs sh -c 'cp -P --preserve=mode,timestamps,links -v $@ ${D}${libdir_native}/${EULER_TOOLCHAIN_GCC_PATH_INNER}; \
-		chmod 644 $1' sh
+        xargs sh -c 'cp -P --preserve=mode,timestamps,links -v $@ ${D}${libdir_native}/${EULER_TOOLCHAIN_GCC_PATH_INNER}' sh
 
     # Remove executable permission for crt*.o to avoid being stripped
     for f in ${D}${libdir_native}/${EULER_TOOLCHAIN_GCC_PATH_INNER}/*.o
