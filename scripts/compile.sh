@@ -3,14 +3,18 @@
 
 usage()
 {
-    echo "Tip: . $(basename "${BASH_SOURCE[0]}") <PLATFORM> [BUILD_DIR] [TOOLCHAIN_DIR]"
-    echo "       Supportted PLATFORM:"
+    echo "Tip: "
+    echo "     to build dsoftbu:"
+    echo "         # sh $(basename "${BASH_SOURCE[0]}") \"dsoftbus\""
+    echo "     to build openEuler Embedded packages:"
+    echo "         # . $(basename "${BASH_SOURCE[0]}") <PLATFORM> [BUILD_DIR] [TOOLCHAIN_DIR]"
+    echo "           Supportted PLATFORM:"
     echo "                       aarch64-std (default)"
     echo "                       aarch64-pro"
     echo "                       arm-std"
     echo "                       raspberrypi4-64"
-    echo "       Build dir: <above dir of yocto-meta-openeuler >/build (defaut)"
-    echo "       External toolchain dir(absoulte path):"
+    echo "           Build dir: <above dir of yocto-meta-openeuler >/build (defaut)"
+    echo "           External toolchain dir(absoulte path):"
     echo "                       /usr1/openeuler/gcc/openeuler_gcc_arm64le (default)"
     return 1
 }
@@ -48,6 +52,7 @@ get_build_info()
     # busybox etc..
     SRC_DIR="$(cd $(dirname "${BASH_SOURCE[0]}")/../../;pwd)"
     [[ -z "${BUILD_DIR}" ]] && BUILD_DIR="${SRC_DIR}/build"
+    BUILD_DIR="$(realpath ${BUILD_DIR})"
 
     # set MACHINE and bitbake option
     BITBAKE_OPT="openeuler-image"
