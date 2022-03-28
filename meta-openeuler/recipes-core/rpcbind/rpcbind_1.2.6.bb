@@ -11,10 +11,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=b46486e4c4a416602693a711bb5bfa39 \
                     file://src/rpcinfo.c;beginline=1;endline=27;md5=f8a8cd2cb25ac5aa16767364fb0e3c24"
 
 SRC_URI = "file://rpcbind/${BP}.tar.bz2 \
-           file://rpcbind/rpcbind-0.2.3-systemd-envfile.patch \
            file://rpcbind/rpcbind-0.2.4-runstatdir.patch \
-           file://rpcbind/rpcbind-0.2.4-systemd-service.patch \
-           file://rpcbind/rpcbind-0.2.4-systemd-rundir.patch \
            file://rpcbind/bugfix-rpcbind-GETADDR-return-client-ip.patch \
            file://rpcbind/CVE-2017-8779.patch \
            file://rpcbind/backport-fix-double-free-in-init_transport.patch \
