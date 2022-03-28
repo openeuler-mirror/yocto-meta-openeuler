@@ -1,19 +1,19 @@
 .. raspberrypi:
 
-openeuler Embedded树莓派系统介绍
-#############
+openEuler Embedded树莓派系统介绍
+######################################
 
-本章主要介绍openeuler Embedded树莓派系统的构建,使用和特性介绍。
+本章主要介绍openEuler Embedded树莓派系统的构建，使用和特性介绍。
 
 树莓派镜像构建指导
-************
+***********************************
 **构建环境**
 
 1.构建环境推荐：openEuler-22.03 LTS
 
-2.构建指导: `参考容器构建指导 <https://openeuler.gitee.io/yocto-meta-openeuler/getting_started/container-build.html>`_
+2.构建指导: `参考容器构建指导 <https://openeuler.gitee.io/yocto-meta-openeuler/yocto/quickbuild/container-build.html>`_
 
-- 构建命令示例:
+- 构建命令示例：
 
 .. code-block:: console
 
@@ -23,7 +23,7 @@ openeuler Embedded树莓派系统介绍
 
   bitbake openeuler-image
 
-- 构建镜像生成目录(示例)：
+- 构建镜像生成目录示例：
 
 .. code-block:: console
 
@@ -36,7 +36,7 @@ openeuler Embedded树莓派系统介绍
 
   2. openeuler-glibc-x86-64-openeuler-image-cortexa72-raspberrypi4-64-toolchain-22.03.30.sh: SDK工具链
 
-  3. openeuler-image-raspberrypi4-64-*.rootfs.rpi-sdimg: openeuler Embedded树莓派支持SD卡镜像
+  3. openeuler-image-raspberrypi4-64-\*.rootfs.rpi-sdimg: openEuler Embedded树莓派支持SD卡镜像
   
 
 **镜像使用方法**
@@ -47,28 +47,28 @@ openeuler Embedded树莓派系统介绍
 
 2.镜像使用
 
-- 使用losetup将磁盘镜像文件虚拟成块设备
+- 使用 losetup 将磁盘镜像文件虚拟成块设备
 
 .. code-block:: console
 
   losetup -f --show openeuler-image-raspberrypi4-64-*.rootfs.rpi-sdimg
 
-例如，显示结果为/dev/loop0
+例如，显示结果为 /dev/loop0
 
-- 使用kpartx创建分区表/dev/loop0的设备映射
+- 使用 kpartx 创建分区表 /dev/loop0 的设备映射
 
 .. code-block:: console
 
   kpartx -va /dev/loop0
     
-得到结果是/dev/loop0的两个分区设备
+得到结果是 /dev/loop0 的两个分区设备
 
 .. code-block:: console
 
   add map loop0p1
   add map loop0p2
 
-运行 ls /dev/mapper/loop0p*可以看到对应的两个分区
+运行 ls /dev/mapper/loop0p* 可以看到对应的两个分区
 
 .. code-block:: console
 
@@ -94,20 +94,18 @@ openeuler Embedded树莓派系统介绍
 
   mount -t ext4 /dev/mapper/loop0p2 ${WORKDIR}/root
 
-挂载完成后，可以查看boot分区和root分区下树莓派镜像的文件，其中boot分区为启动引导分区，包含了引导程序，内核镜像，设备树，config.txt和cmdline等配置文件，
+挂载完成后，可以查看boot分区和root分区下树莓派镜像的文件，其中boot分区为启动引导分区，包含了引导程序，内核镜像，设备树，config.txt和cmdline等配置文件，root分区为根文件系统分区。
 
-root分区为根文件系统分区。
-
-基于openeuler Embedded树莓派使用
-************
+基于openEuler Embedded树莓派使用
+**********************************************
 
 **启用树莓派**
 
-硬件版本要求:树莓派4B
+硬件版本要求：树莓派4B
 
-默认用户名:root，密码:第一次启动没有默认密码，需重新配置，长度大于14位，格式：特殊字符+英文字符+数字 如: !Abcdefg1234567
+默认用户名：root，密码：第一次启动没有默认密码，需重新配置，长度大于14位，格式：特殊字符+英文字符+数字，如: !Abcdefg1234567
 
-将刷写镜像后的SD卡插入树莓派，通电启用
+将刷写镜像后的SD卡插入树莓派，通电启用。
 
 **树莓派登录方式**
 
@@ -115,13 +113,15 @@ root分区为根文件系统分区。
 
 a.使用串口登录：
 
-镜像使能了串口登录功能，按照树莓派的串口连接方式，如下图，可以启用串口操作；
+镜像使能了串口登录功能，按照树莓派的串口连接方式，如下图，可以启用串口操作。
 
 示例：使用ttyusb转接器，将树莓派串口通过USB连接到putty：
 
 .. image:: ../../image/raspberrypi/rasp-ttyusb-connect.png
 
 putty配置参考： Serial line:ttyUSB0 speed:115200 Connection type:Serial
+
+.. image:: ../../image/raspberrypi/putty_config.png
 
 b.使用HDMI登录：
 
@@ -136,11 +136,11 @@ b.使用HDMI登录：
 
 2.ssh 远程登录
 
-参考: `树莓派使用:启用树莓派:ssh登录 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E6%A0%91%E8%8E%93%E6%B4%BE%E4%BD%BF%E7%94%A8.md>`_
+参考: `树莓派使用：启用树莓派：ssh 登录 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E6%A0%91%E8%8E%93%E6%B4%BE%E4%BD%BF%E7%94%A8.md#%E5%90%AF%E7%94%A8%E6%A0%91%E8%8E%93%E6%B4%BE>`_
 
 **分区扩容**
 
-以下内容引用: `树莓派使用:启用树莓派:分区扩容 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E6%A0%91%E8%8E%93%E6%B4%BE%E4%BD%BF%E7%94%A8.md>`_
+以下内容引用: `树莓派使用：启用树莓派：分区扩容 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E6%A0%91%E8%8E%93%E6%B4%BE%E4%BD%BF%E7%94%A8.md#%E5%88%86%E5%8C%BA%E6%89%A9%E5%AE%B9>`_
 
 默认根目录分区空间比较小，在使用之前，需要对分区进行扩容。
 
@@ -189,13 +189,12 @@ SD 卡对应盘符为 /dev/mmcblk0，包括 2 个分区，分别为
   9.输入新分区的起始扇区号，即第 1 步中记录的起始扇区号，示例中为 106496。
 
   须知：
-
-  请勿直接按“Enter”或使用默认参数,否则会擦损磁盘数据。
-
+  请勿直接按“Enter”或使用默认参数，否则会擦损磁盘数据。
+  
   10.按 Enter，使用默认的最后一个扇区号作为新分区的终止扇区号。
-
+  
   11.输入 w，保存分区设置并退出交互式命令行界面。
-        
+
 - 增大未加载的文件系统大小
 
 .. code-block:: console
@@ -203,12 +202,12 @@ SD 卡对应盘符为 /dev/mmcblk0，包括 2 个分区，分别为
    resize2fs /dev/mmcblk0p2
 
 树莓派镜像特性介绍
-************
+**************************
 
 1.树莓派硬件特性，参考:`树莓派使用:GPIO介绍 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E6%A0%91%E8%8E%93%E6%B4%BE%E4%BD%BF%E7%94%A8.md#gpio>`_
 
 目前已使能串口设备，可以访问mini-uart，其他硬件特性暂不支持。
 
-2.支持百级嵌入式软件包，见软件包功能列表
+2.支持百级嵌入式软件包，见软件包功能列表。
 
-3.支持部署rt实时内核
+3.支持部署rt实时内核。
