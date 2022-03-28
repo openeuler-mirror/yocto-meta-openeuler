@@ -77,7 +77,6 @@ policycoreutils-setfiles \
 procps \
 pstree \
 quota \
-rpcbind \
 rsyslog \
 sed \
 shadow-base \
