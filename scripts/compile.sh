@@ -150,13 +150,25 @@ do_dsoftbus_package()
 {
     rm -rf ${SRC_DIR}/dsoftbus_output
     mkdir ${SRC_DIR}/dsoftbus_output
-    install -d ${SRC_DIR}/dsoftbus_output/usr/include/
+    install -d ${SRC_DIR}/dsoftbus_output/usr/include/dsoftbus
     install -d ${SRC_DIR}/dsoftbus_output/usr/lib64/
     install -d ${SRC_DIR}/dsoftbus_output/usr/bin
+
+    # prepare so
     cp ${SRC_DIR}/dsoftbus_build/out/ohos-arm64-release/common/common/*.so ${SRC_DIR}/dsoftbus_output/usr/lib64/
     cp ${SRC_DIR}/dsoftbus_build/out/ohos-arm64-release/communication/dsoftbus_standard/*.so ${SRC_DIR}/dsoftbus_output/usr/lib64/
+
+    # prepare bin
     cp ${SRC_DIR}/dsoftbus_build/out/ohos-arm64-release/communication/dsoftbus_standard/softbus_server_main ${SRC_DIR}/dsoftbus_output/usr/bin
-    cp -r ${SRC_DIR}/dsoftbus_build/foundation/communication/dsoftbus/interfaces/kits/ ${SRC_DIR}/dsoftbus_output/usr/include/
+
+    # prepare head files
+    cp \
+	${SRC_DIR}/dsoftbus_build/foundation/communication/dsoftbus/interfaces/kits/discovery/*.h \
+	${SRC_DIR}/dsoftbus_build/foundation/communication/dsoftbus/interfaces/kits/common/*.h \
+	${SRC_DIR}/dsoftbus_build/foundation/communication/dsoftbus/interfaces/kits/bus_center/*.h \
+	${SRC_DIR}/dsoftbus_build/foundation/communication/dsoftbus/interfaces/kits/transport/*.h \
+	${SRC_DIR}/dsoftbus_build/foundation/communication/dsoftbus/core/common/include/softbus_errcode.h \
+	${SRC_DIR}/dsoftbus_output/usr/include/dsoftbus
 }
 
 if [ "$1" == "dsoftbus" ];then
