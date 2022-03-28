@@ -12,3 +12,4 @@ openEuler Embedded关键特性
    mcs.rst
    distributed_soft_bus.rst
    raspberrypi.rst
+   preempt_rt.rst
