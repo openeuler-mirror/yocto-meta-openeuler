@@ -109,8 +109,8 @@ HIGH_RLIMIT_NOFILE ??= "4096"
 
 do_install_append () {
 	install -d ${D}${sysconfdir}/init.d
-	install -m 0755 ${WORKDIR}/nfsserver ${D}${sysconfdir}/init.d/nfsserver
-	install -m 0755 ${WORKDIR}/nfscommon ${D}${sysconfdir}/init.d/nfscommon
+	install -m 0750 ${WORKDIR}/nfsserver ${D}${sysconfdir}/init.d/nfsserver
+	install -m 0750 ${WORKDIR}/nfscommon ${D}${sysconfdir}/init.d/nfscommon
 
 	install -m 0755 ${WORKDIR}/nfs-utils.conf ${D}${sysconfdir}
 	install -m 0755 ${S}/utils/mount/nfsmount.conf ${D}${sysconfdir}

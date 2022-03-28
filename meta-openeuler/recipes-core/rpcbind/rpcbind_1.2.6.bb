@@ -49,7 +49,7 @@ do_install_append () {
 	sed -e 's,/etc/,${sysconfdir}/,g' \
 		-e 's,/sbin/,${sbindir}/,g' \
 		${WORKDIR}/init.d > ${D}${sysconfdir}/init.d/rpcbind
-	chmod 0755 ${D}${sysconfdir}/init.d/rpcbind
+	chmod 0750 ${D}${sysconfdir}/init.d/rpcbind
 }
 
 ALTERNATIVE_${PN} = "rpcinfo"
