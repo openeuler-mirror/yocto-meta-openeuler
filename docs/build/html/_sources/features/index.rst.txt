@@ -8,6 +8,7 @@ openEuler Embedded关键特性
    :maxdepth: 1
    :caption: 内容
 
+   software_package_description.rst
    mcs.rst
    distributed_soft_bus.rst
    raspberrypi.rst
