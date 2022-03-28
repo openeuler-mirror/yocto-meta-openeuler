@@ -46,21 +46,25 @@ do_install() {
 	install -m 0744 ${WORKDIR}/rc.functions ${D}/etc/rc.d
 	install -m 0744 ${WORKDIR}/rc.sysinit ${D}/etc/rc.d
 	install -m 0744 ${WORKDIR}/rc.local ${D}/etc/rc.d
-        install -m 0755 -d ${D}/etc/init.d/
+    install -m 0750 -d ${D}/etc/init.d/
 	install -m 0750 ${WORKDIR}/rcS ${D}/etc/init.d/
 	install -m 0750 ${WORKDIR}/load_modules ${D}/etc/init.d/
-        mkdir -p ${D}/var/log/
-        touch ${D}/var/log/messages ${D}/var/log/lastlog
-        mkdir -p ${D}/var/run/faillock ${D}/tmp
-        mkdir -p ${D}/proc ${D}/sys ${D}/root ${D}/dev ${D}/sys/fs/cgroup
-        mkdir -p ${D}/var/log/audit ${D}/var/run/sshd
-        if [ "${hostname}" ]; then
-            echo ${hostname} > ${D}${sysconfdir}/hostname
-            echo "127.0.1.1 ${hostname}" >> ${D}${sysconfdir}/hosts
-        fi
-        mkdir -p ${D}${sysconfdir}/security/
-        touch ${D}${sysconfdir}/security/opasswd
-        chmod 600 ${D}${sysconfdir}/security/opasswd
+    mkdir -p ${D}/var/log/
+    touch ${D}/var/log/messages ${D}/var/log/lastlog
+    mkdir -p ${D}/var/run/faillock ${D}/tmp
+    mkdir -p ${D}/proc ${D}/sys ${D}/root ${D}/dev ${D}/sys/fs/cgroup
+    mkdir -p ${D}/var/log/audit ${D}/var/run/sshd
+    if [ "${hostname}" ]; then
+        echo ${hostname} > ${D}${sysconfdir}/hostname
+        echo "127.0.1.1 ${hostname}" >> ${D}${sysconfdir}/hosts
+    fi
+    mkdir -p ${D}${sysconfdir}/security/
+    touch ${D}${sysconfdir}/security/opasswd
+    chmod 600 ${D}${sysconfdir}/security/opasswd
+    chmod 750 ${D}$/lib/modules
+    chmod 750 ${D}/var/volatile/log
+    chmod 700 ${D}/root
+
 }
 
 do_install_append_arm() {

@@ -49,7 +49,7 @@ do_install_append () {
 	install -d ${D}${sysconfdir}/sysconfig/
 	install -d ${D}${sysconfdir}/init.d/
 	install -m 0644 ${S}/crond.sysconfig ${D}${sysconfdir}/sysconfig/crond
-	install -m 0755 ${WORKDIR}/crond.init ${D}${sysconfdir}/init.d/crond
+	install -m 0750 ${WORKDIR}/crond.init ${D}${sysconfdir}/init.d/crond
 
 	# install systemd unit files
 	install -d ${D}${systemd_unitdir}/system

@@ -48,7 +48,7 @@ do_install () {
         install ${S}/network-scripts/* ${D}/etc/sysconfig/network-scripts/ 
 
         mkdir -p ${D}/etc/init.d
-        install ${S}/etc/rc.d/init.d/* ${D}/etc/init.d/
+        install -m 0750 ${S}/etc/rc.d/init.d/* ${D}/etc/init.d/
 }
 
 MASKED_SCRIPTS = ""

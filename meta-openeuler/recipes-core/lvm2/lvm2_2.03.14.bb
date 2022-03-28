@@ -16,6 +16,8 @@ do_install_append() {
     else
         oe_runmake 'DESTDIR=${D}' install install_initscripts
         mv ${D}${sysconfdir}/rc.d/init.d ${D}${sysconfdir}/init.d
+        chmod 0750 ${D}${sysconfdir}/init.d/blk-availability
+        chmod 0750 ${D}${sysconfdir}/init.d/lvm2-monitor
         rm -rf ${D}${sysconfdir}/rc.d
     fi
 }
