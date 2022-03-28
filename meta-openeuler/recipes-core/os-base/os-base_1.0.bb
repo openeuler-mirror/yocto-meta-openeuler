@@ -53,7 +53,7 @@ do_install() {
     touch ${D}/var/log/messages ${D}/var/log/lastlog
     mkdir -p ${D}/var/run/faillock ${D}/tmp
     mkdir -p ${D}/proc ${D}/sys ${D}/root ${D}/dev ${D}/sys/fs/cgroup
-    mkdir -p ${D}/var/log/audit ${D}/var/run/sshd
+    mkdir -p ${D}/var/log/audit ${D}/var/run/sshd ${D}$/lib/modules
     if [ "${hostname}" ]; then
         echo ${hostname} > ${D}${sysconfdir}/hostname
         echo "127.0.1.1 ${hostname}" >> ${D}${sysconfdir}/hosts
