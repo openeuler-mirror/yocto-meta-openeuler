@@ -317,7 +317,7 @@ openEuler Embedded登陆后，执行如下命令：
 
 ::
 
- KERNELDIR := ${DL_SDK_KERNELDIR}
+ KERNELDIR := ${KERNEL_SRC_DIR}
  CURRENT_PATH := $(shell pwd)
 
  target := hello
@@ -330,7 +330,7 @@ openEuler Embedded登陆后，执行如下命令：
  clean:
  		$(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) clean
 
-:file:`DL_SDK_KERNELDIR` 为SDK中内核源码树的目录。
+:file:`KERNEL_SRC_DIR` 为SDK中内核源码树的目录，该变量在安装SDK后会被自动设置。
 
 2. **编译生成内核模块**
 
