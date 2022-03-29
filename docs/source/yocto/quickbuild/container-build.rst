@@ -51,7 +51,7 @@ openEuler环境可参考Centos安装Docker
 
 .. code-block:: console
 
-    docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:lastest
+    docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container
 
 4. 准备容器构建环境
 *********************
@@ -63,7 +63,7 @@ openEuler环境可参考Centos安装Docker
 
 .. code-block:: console
 
-    docker run -idt --network host swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:lastest bash
+    docker run -idt --network host swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container bash
 
 参数说明: 
 
@@ -75,7 +75,7 @@ openEuler环境可参考Centos安装Docker
 
 - --network 将容器连接到（host）网络
 
-- swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:lastest （镜像名称:镜像版本）
+- swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container 指定镜像名称
 
 - bash 进入容器的方式
 
@@ -115,7 +115,7 @@ openEuler环境可参考Centos安装Docker
     sh download_code.sh /usr1/openeuler/src
 
 2) 编译构建
-**************
+^^^^^^^^^^^^^
 
 - 编译架构: aarch64-std、aarch64-pro、arm-std、raspberrypi4-64
 
@@ -149,7 +149,7 @@ c) 进入构建脚本所在路径，运行编译脚本
     bitbake openeuler-image
 
 3) 构建结果说明
-*****************
+^^^^^^^^^^^^^^^^^
 
 结果件默认生成在构建目录下的output目录下，例如上面aarch64-std的构建结果件生成在/usr1/build/output
 
