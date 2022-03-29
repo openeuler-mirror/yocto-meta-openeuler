@@ -64,3 +64,5 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_static_path = ['_static']
 
 master_doc= 'index'
+
+html_show_sourcelink = False
