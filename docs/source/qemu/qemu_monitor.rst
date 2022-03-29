@@ -1,3 +1,5 @@
+.. _qemu_monitor:
+
 Qemu控制台
 ##########
 
