@@ -13,6 +13,7 @@ FILES_${PN}-dev = "${includedir}"
 FILES_${PN} = "${libdir} ${bindir} /data/"
 
 INSANE_SKIP_${PN} += "already-stripped"
+ALLOW_EMPTY_${PN} = "1"
 
 do_install() {
     #not fail when not exist dsoftbus_output
