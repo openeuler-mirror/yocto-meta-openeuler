@@ -59,7 +59,17 @@ USE_DEPMOD = "0"
 
 DNF_LOG_DIR ?= "/tmp"
 
-IMAGE_PREPROCESS_COMMAND += "delete_dnf_logs_from_rootfs;"
+IMAGE_PREPROCESS_COMMAND += "delete_dnf_logs_from_rootfs; set_permissions_from_rootfs;"
+
+set_permissions_from_rootfs() {
+   pushd "${IMAGE_ROOTFS}"
+   # set file permissions for secure
+   chmod 750 ./var/volatile/log
+   chmod 750 ./etc/init.d
+
+   # delete /etc/ld.so.cache
+   rm -f ./etc/ld.so.cache
+}
 
 delete_dnf_logs_from_rootfs() {
    pushd "${IMAGE_ROOTFS}"
