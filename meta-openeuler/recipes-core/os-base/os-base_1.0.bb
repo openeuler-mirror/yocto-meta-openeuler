@@ -46,7 +46,7 @@ do_install() {
 	install -m 0744 ${WORKDIR}/rc.functions ${D}/etc/rc.d
 	install -m 0744 ${WORKDIR}/rc.sysinit ${D}/etc/rc.d
 	install -m 0744 ${WORKDIR}/rc.local ${D}/etc/rc.d
-    install -m 0750 -d ${D}/etc/init.d/
+        install -m 0755 -d ${D}/etc/init.d/
 	install -m 0750 ${WORKDIR}/rcS ${D}/etc/init.d/
 	install -m 0750 ${WORKDIR}/load_modules ${D}/etc/init.d/
     mkdir -p ${D}/var/log/
@@ -62,7 +62,6 @@ do_install() {
     touch ${D}${sysconfdir}/security/opasswd
     chmod 600 ${D}${sysconfdir}/security/opasswd
     chmod 750 ${D}$/lib/modules
-    chmod 750 ${D}/var/volatile/log
     chmod 700 ${D}/root
 
 }
