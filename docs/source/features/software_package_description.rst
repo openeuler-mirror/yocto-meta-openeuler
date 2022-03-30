@@ -46,7 +46,7 @@ openEuler Embedded所支持的软件包
    "expat",	"libexpat1-2.4.1-r0.aarch64.rpm",	"libexpat1",	"XML解析器工具包",	"提供libexpat.so.1好libexpat.so.1.8.1动态库",	"/bin/sh;glibc >= 2.34"
    "gcc-bin-toolchain-compilerlibs-aarch64",	"gcc-bin-toolchain-compilerlibs-aarch64-1.0-r0.aarch64.rpm",	"gcc-bin-toolchain-compilerlibs-aarch64",	"编译工具链",	"",	"/bin/sh"
    "gdb",	"gdb-11.1-r0.aarch64.rpm",	"gdb",	"用于C、C++、Fortran和其他语言的GNU源代码级调试器",	"GDB是GNU调试器，允许您调试用C、C++、Java和其他语言编写的程序，方法是以受控的方式执行这些程序并打印它们的数据。",	"gcc-bin-toolchain-compilerlibs-aarch64 >= 1.0;glibc >= 2.34;libexpat1 >= 2.4.1;libgmp10 >= 6.2.1;libreadline8 >= 8.1;libtinfo5 >= 6.3"
-   "gdb",	"gdbserver-11.1-r0.aarch64.rpm",	"gdbserver",	"GDB（GNU源级调试器）的独立服务器",	"此软件包提供了一个程序，允许您在运行正在调试程序的计算机之外的计算机上运行GDB。",	"gcc-bin-toolchain-compilerlibs-aarch64 >= 1.0;glibc >= 2.34"
+   "gdb",	"gdbserver-11.1-r0.aarch64.rpm",	"gdbserver",	"GDB（GNU源级调试器）的独立服务器",	"此软件包提供了一个程序，允许您在运行正在调试程序的计算机之外的计算机上运行GDB。openEuler Embedded 330 版本中，SDK中暂时不支持主机端交叉调试工具gdb，可以使用gdb-multiarch代替，一般都可以通过zypper/apt/yum 安装（openeuler镜像暂不支持）。",	"gcc-bin-toolchain-compilerlibs-aarch64 >= 1.0;glibc >= 2.34"
    "glib-2.0",	"libglib-2.0-0-2.68.1-r0.aarch64.rpm",	"libglib-2.0-0",	"通用使用程序库",	"",	"/bin/sh;glibc >= 2.34;libffi8 >= 3.4.2;libmount1 >= 2.37.2;libpcre1 >= 8.45;libz1 >= 1.2.11"
    "glibc",	"glibc-2.34-r1.aarch64.rpm",	"glibc",	"GNU C库",	"包含重要的共享库集：标准C库和标准数学库。",	"/bin/sh"
    "gmp",	"libgmp10-6.2.1-r0.aarch64.rpm",	"libgmp10",	"一个用于计算巨大数字的库",	"GMP是一个用于任意精度算术的库，对有符号整数、有理数和浮点数进行操作。",	"/bin/sh;glibc >= 2.34"
