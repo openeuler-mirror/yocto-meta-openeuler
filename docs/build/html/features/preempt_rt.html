@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>openEuler Embedded软实时系统 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
+  <title>openEuler Embedded软实时系统介绍 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
   
 
   
@@ -87,7 +87,7 @@
 <li class="toctree-l2"><a class="reference internal" href="mcs.html">混合关键性系统</a></li>
 <li class="toctree-l2"><a class="reference internal" href="distributed_soft_bus.html">分布式软总线</a></li>
 <li class="toctree-l2"><a class="reference internal" href="raspberrypi.html">openEuler Embedded树莓派系统介绍</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">openEuler Embedded软实时系统</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">openEuler Embedded软实时系统介绍</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id1">软实时特性介绍</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id2">软实时镜像构建指导</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id5">软实时性能测试</a></li>
@@ -147,7 +147,7 @@
         
           <li><a href="index.html">openEuler Embedded关键特性</a> &raquo;</li>
         
-      <li>openEuler Embedded软实时系统</li>
+      <li>openEuler Embedded软实时系统介绍</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -165,14 +165,15 @@
            <div itemprop="articleBody">
             
   <div class="section" id="openeuler-embedded">
-<h1>openEuler Embedded软实时系统<a class="headerlink" href="#openeuler-embedded" title="永久链接至标题">¶</a></h1>
+<h1>openEuler Embedded软实时系统介绍<a class="headerlink" href="#openeuler-embedded" title="永久链接至标题">¶</a></h1>
+<p>本章主要介绍openEuler Embedded软实时系统的特性说明，构建方式和性能测试。</p>
 <div class="section" id="id1">
 <h2>软实时特性介绍<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
 <p><strong>实时性简介</strong></p>
 <p>实时的诉求通常是事件的响应时间不能超过规定的期限，一个事件的最大响应时间应该是确定的、可以预测的。</p>
 <p><strong>PREEMPT_RT补丁简介</strong></p>
-<p>PREEMPT_RT补丁（以下简称RT补丁）可直接打在内核源码上，并通过内核配置 CONFIG_PREEMPT_RT 使能软实时功能。RT补丁实现的核心在于最小化内核中不可抢占部分的代码，从而使高优先级任务就绪时能及时抢占低优先级任务，减少切换时延。除此之外，还对锁、驱动等模块进行优化，采取多种降低时延的措施。</p>
-<p>openEuler嵌入式版本中可使用的RT补丁请参考：</p>
+<p>PREEMPT_RT补丁（以下简称RT补丁）可直接打在内核源码上，并通过内核配置选项 CONFIG_PREEMPT_RT=y 使能软实时功能。RT补丁实现的核心在于最小化内核中不可抢占部分的代码，从而使高优先级任务就绪时能及时抢占低优先级任务，减少切换时延。除此之外，补丁通过多种降低时延的措施，对锁、驱动等模块也进行了优化。</p>
+<p>openEuler Embedded版本中可使用的RT补丁请参考：</p>
 <ol class="arabic simple">
 <li>qemu：</li>
 </ol>
@@ -192,20 +193,19 @@
 <li><a class="reference external" href="https://gitee.com/src-openeuler/kernel/blob/openEuler-22.03-LTS/0002-modifty-bcm2711_defconfig-for-rt-rpi-kernel.patch">0002-modifty-bcm2711_defconfig-for-rt-rpi-kernel.patch</a></li>
 </ol>
 </div></blockquote>
-<p><strong>关键功能</strong></p>
+<p><strong>补丁关键功能举例</strong></p>
 <ol class="arabic simple">
 <li>增加中断程序的可抢占性（中断线程化、软中断线程化）</li>
 <li>增加临界区的可抢占性（如自旋锁）</li>
 <li>增加关中断代码的可抢占性</li>
 <li>解决优先级反转问题（优先级继承）</li>
 </ol>
-<p>等降低时延的措施。</p>
 </div>
 <div class="section" id="id2">
 <h2>软实时镜像构建指导<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
 <p>具体下载源码和编译流程建议参考：<a class="reference external" href="https://openeuler.gitee.io/yocto-meta-openeuler/yocto/quickbuild/container-build.html">openEuler Embedded容器构建指导</a></p>
 <p><strong>通用构建方式</strong></p>
-<p>如需构建openEuler嵌入式软实时镜像，可以根据所需BSP，在内核源码打入上述补丁后进行编译和调试。</p>
+<p>如需构建openEuler Embedded软实时镜像，可以根据所需板级支持包（Board Support Package），在内核源码打入上述补丁后进行编译和调试。</p>
 <ul class="simple">
 <li>步骤：</li>
 </ul>
@@ -229,7 +229,7 @@
 </ul>
 <ol class="arabic simple">
 <li>如果开发人员使用的内核配置不是RT补丁中修改的defconfig（qemu：<code class="file docutils literal notranslate"><span class="pre">arch/arm64/configs/openeuler_defconfig</span></code>，树莓派：<code class="file docutils literal notranslate"><span class="pre">arch/arm64/configs/bcm2711_defconfig</span></code>），则需要在自己的defconfig中开启内核配置选项 CONFIG_PREEMPT_RT</li>
-<li>当前仅支持 arm64 架构</li>
+<li>openEuler Embedded 软实时特性当前仅支持 arm64 架构</li>
 </ol>
 <p><strong>aarch64-pro一键式构建方式</strong></p>
 <p>yocto-meta-openeuler中也提供了一个可直接构建RT镜像的架构，便于开发人员一键式构建，无需再手动打RT补丁。通过 <a class="reference external" href="https://openeuler.gitee.io/yocto-meta-openeuler/yocto/quickbuild/container-build.html#id10">编译构建</a> 中选择 <strong>aarch64-pro</strong> 架构，即可编译出支持树莓派的RT镜像。</p>
@@ -255,24 +255,28 @@
 <li><code class="file docutils literal notranslate"><span class="pre">zImage</span></code>: 树莓派RT内核的压缩镜像</li>
 </ol>
 </li>
-<li><p class="first">验证环境的软实时是否使能，可查看系统是否有PREEMPT_RT字样，示例：</p>
+<li><p class="first">验证环境的软实时是否使能，可查看系统是否有PREEMPT_RT字样：</p>
 </li>
 </ul>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">openeuler ~ # uname -a</span>
-<span class="go">Linux openeuler 5.10.0-rt62-v8 #1 SMP PREEMPT_RT Fri Mar 25 03:58:22 UTC 2022 aarch64 GNU/Linux</span>
+<p>输入示例：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">uname -a</span>
+</pre></div>
+</div>
+<p>输出示例：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Linux openeuler 5.10.0-rt62-v8 #1 SMP PREEMPT_RT Fri Mar 25 03:58:22 UTC 2022 aarch64 GNU/Linux</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="id5">
 <h2>软实时性能测试<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
 <p><strong>软实时相关测试</strong></p>
-<p>参考 <a class="reference external" href="https://wiki.linuxfoundation.org/realtime/documentation/howto/tools/rt-tests">RT-Tests 指导</a> 进行软实时相关测试，例如：</p>
+<p>参考 <a class="reference external" href="https://wiki.linuxfoundation.org/realtime/documentation/howto/tools/rt-tests">RT-Tests 指导</a> 进行软实时相关测试，用例包括但不限于：</p>
 <ol class="arabic simple">
 <li>cyclictest 时延性能测试</li>
 <li>pi_stress 优先级继承测试</li>
 <li>hackbench 负载构造工具</li>
 </ol>
-<p>等等</p>
+<p>下面以cyclictest 时延性能测试为例进行说明。</p>
 <p><strong>cyclictest 时延性能测试</strong></p>
 <ol class="arabic simple">
 <li>准备开发环境</li>
@@ -296,7 +300,7 @@
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
-<li>用例执行</li>
+<li>执行用例</li>
 </ol>
 <p>编译完成后生成二进制 <code class="file docutils literal notranslate"><span class="pre">cyclictest</span></code>，传入单板环境后可查看执行cyclictest时可配置的参数：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">./cyclictest --help</span>
