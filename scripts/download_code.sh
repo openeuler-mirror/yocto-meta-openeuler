@@ -338,7 +338,7 @@ main()
     SRC_BRANCH="$2"
     # manifest file include the git url, revision, path info
     MANIFEST="$3"
-    KERNEL_BRANCH="5.10.0-60.17.0"
+    KERNEL_BRANCH="5.10.0-60.18.0"
 
     check_use || return 1
     set -e
