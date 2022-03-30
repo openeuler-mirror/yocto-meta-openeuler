@@ -1,7 +1,9 @@
 .. preempt_rt:
 
-openEuler Embedded软实时系统
-############################
+openEuler Embedded软实时系统介绍
+################################
+
+本章主要介绍openEuler Embedded软实时系统的特性说明，构建方式和性能测试。
 
 软实时特性介绍
 **************
@@ -12,9 +14,9 @@ openEuler Embedded软实时系统
 
 **PREEMPT_RT补丁简介**
 
-PREEMPT_RT补丁（以下简称RT补丁）可直接打在内核源码上，并通过内核配置 CONFIG_PREEMPT_RT 使能软实时功能。RT补丁实现的核心在于最小化内核中不可抢占部分的代码，从而使高优先级任务就绪时能及时抢占低优先级任务，减少切换时延。除此之外，还对锁、驱动等模块进行优化，采取多种降低时延的措施。
+PREEMPT_RT补丁（以下简称RT补丁）可直接打在内核源码上，并通过内核配置选项 CONFIG_PREEMPT_RT=y 使能软实时功能。RT补丁实现的核心在于最小化内核中不可抢占部分的代码，从而使高优先级任务就绪时能及时抢占低优先级任务，减少切换时延。除此之外，补丁通过多种降低时延的措施，对锁、驱动等模块也进行了优化。
 
-openEuler嵌入式版本中可使用的RT补丁请参考：
+openEuler Embedded版本中可使用的RT补丁请参考：
 
 1. qemu：
 
@@ -30,7 +32,7 @@ openEuler嵌入式版本中可使用的RT补丁请参考：
 
   3. `0002-modifty-bcm2711_defconfig-for-rt-rpi-kernel.patch <https://gitee.com/src-openeuler/kernel/blob/openEuler-22.03-LTS/0002-modifty-bcm2711_defconfig-for-rt-rpi-kernel.patch>`_
 
-**关键功能**
+**补丁关键功能举例**
 
 1. 增加中断程序的可抢占性（中断线程化、软中断线程化）
 
@@ -40,8 +42,6 @@ openEuler嵌入式版本中可使用的RT补丁请参考：
 
 4. 解决优先级反转问题（优先级继承）
 
-等降低时延的措施。
-
 软实时镜像构建指导
 ******************
 
@@ -49,7 +49,7 @@ openEuler嵌入式版本中可使用的RT补丁请参考：
 
 **通用构建方式**
 
-如需构建openEuler嵌入式软实时镜像，可以根据所需BSP，在内核源码打入上述补丁后进行编译和调试。
+如需构建openEuler Embedded软实时镜像，可以根据所需板级支持包（Board Support Package），在内核源码打入上述补丁后进行编译和调试。
 
 - 步骤：
 
@@ -73,7 +73,7 @@ openEuler嵌入式版本中可使用的RT补丁请参考：
 
 1. 如果开发人员使用的内核配置不是RT补丁中修改的defconfig（qemu：:file:`arch/arm64/configs/openeuler_defconfig`，树莓派：:file:`arch/arm64/configs/bcm2711_defconfig`），则需要在自己的defconfig中开启内核配置选项 CONFIG_PREEMPT_RT
 
-2. 当前仅支持 arm64 架构
+2. openEuler Embedded 软实时特性当前仅支持 arm64 架构
 
 **aarch64-pro一键式构建方式**
 
@@ -103,11 +103,18 @@ yocto-meta-openeuler中也提供了一个可直接构建RT镜像的架构，便�
 
   4. :file:`zImage`: 树莓派RT内核的压缩镜像
 
-- 验证环境的软实时是否使能，可查看系统是否有PREEMPT_RT字样，示例：
+- 验证环境的软实时是否使能，可查看系统是否有PREEMPT_RT字样：
+
+输入示例：
 
 .. code-block:: console
 
-  openeuler ~ # uname -a
+  uname -a
+
+输出示例：
+
+.. code-block:: console
+
   Linux openeuler 5.10.0-rt62-v8 #1 SMP PREEMPT_RT Fri Mar 25 03:58:22 UTC 2022 aarch64 GNU/Linux
 
 软实时性能测试
@@ -115,7 +122,7 @@ yocto-meta-openeuler中也提供了一个可直接构建RT镜像的架构，便�
 
 **软实时相关测试**
 
-参考 `RT-Tests 指导 <https://wiki.linuxfoundation.org/realtime/documentation/howto/tools/rt-tests>`_ 进行软实时相关测试，例如：
+参考 `RT-Tests 指导 <https://wiki.linuxfoundation.org/realtime/documentation/howto/tools/rt-tests>`_ 进行软实时相关测试，用例包括但不限于：
 
 1. cyclictest 时延性能测试
 
@@ -123,7 +130,7 @@ yocto-meta-openeuler中也提供了一个可直接构建RT镜像的架构，便�
 
 3. hackbench 负载构造工具
 
-等等
+下面以cyclictest 时延性能测试为例进行说明。
 
 **cyclictest 时延性能测试**
 
@@ -149,7 +156,7 @@ yocto-meta-openeuler中也提供了一个可直接构建RT镜像的架构，便�
 
   make all
 
-3. 用例执行
+3. 执行用例
 
 编译完成后生成二进制 :file:`cyclictest`，传入单板环境后可查看执行cyclictest时可配置的参数：
 
