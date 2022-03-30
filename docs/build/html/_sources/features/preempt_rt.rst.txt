@@ -1,7 +1,7 @@
 .. preempt_rt:
 
-openEuler嵌入式软实时系统
-#########################
+openEuler Embedded软实时系统
+############################
 
 软实时特性介绍
 **************
@@ -18,17 +18,17 @@ openEuler嵌入式版本中可使用的RT补丁请参考：
 
 1. qemu：
 
-- `patch-5.10.0-60.10.0-rt62.patch <https://gitee.com/src-openeuler/kernel/blob/openEuler-22.03-LTS/patch-5.10.0-60.10.0-rt62.patch>`_
+  1. `patch-5.10.0-60.10.0-rt62.patch <https://gitee.com/src-openeuler/kernel/blob/openEuler-22.03-LTS/patch-5.10.0-60.10.0-rt62.patch>`_
 
-- `patch-5.10.0-60.10.0-rt62_openeuler_defconfig.patch <https://gitee.com/src-openeuler/kernel/blob/openEuler-22.03-LTS/patch-5.10.0-60.10.0-rt62_openeuler_defconfig.patch>`_
+  2. `patch-5.10.0-60.10.0-rt62_openeuler_defconfig.patch <https://gitee.com/src-openeuler/kernel/blob/openEuler-22.03-LTS/patch-5.10.0-60.10.0-rt62_openeuler_defconfig.patch>`_
 
 2. raspberrypi：
 
-- `0000-raspberrypi-kernel.patch （树莓派补丁） <https://gitee.com/src-openeuler/kernel/blob/openEuler-22.03-LTS/0000-raspberrypi-kernel.patch>`_
+  1. `0000-raspberrypi-kernel.patch （树莓派补丁） <https://gitee.com/src-openeuler/kernel/blob/openEuler-22.03-LTS/0000-raspberrypi-kernel.patch>`_
 
-- `0001-add-preemptRT-patch.patch <https://gitee.com/src-openeuler/kernel/blob/openEuler-22.03-LTS/0001-add-preemptRT-patch.patch>`_
+  2. `0001-add-preemptRT-patch.patch <https://gitee.com/src-openeuler/kernel/blob/openEuler-22.03-LTS/0001-add-preemptRT-patch.patch>`_
 
-- `0002-modifty-bcm2711_defconfig-for-rt-rpi-kernel.patch <https://gitee.com/src-openeuler/kernel/blob/openEuler-22.03-LTS/0002-modifty-bcm2711_defconfig-for-rt-rpi-kernel.patch>`_
+  3. `0002-modifty-bcm2711_defconfig-for-rt-rpi-kernel.patch <https://gitee.com/src-openeuler/kernel/blob/openEuler-22.03-LTS/0002-modifty-bcm2711_defconfig-for-rt-rpi-kernel.patch>`_
 
 **关键功能**
 
