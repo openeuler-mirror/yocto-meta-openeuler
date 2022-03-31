@@ -89,7 +89,7 @@ reStructuredText的语法无需专门记忆，需要用到时再去查询即可�
 
   像提交代码一样，把所有的修改以commit的形式提交，然后在gitee上生成PR提交到openEuler Embedded对应的仓库, 经过审查后，
   修改就会被CI自动编译并发布。
-  
+
   .. attention::
 
    - 新增文档必须将该文档加入到对应目录的index索引文件中，新增目录必须将目录和索引加入到 :file:`docs/source/getting_started/index.html` 中，图片加入到 :file:`docs/image/` 目录中。
@@ -132,7 +132,7 @@ sphinx依赖于python，所以要先安装python环境，并安装pip工具和sp
     .. code-block:: bash
 
         pip3 install sphinx
-     
+
 3.在python的 :file:`Scripts` 目录下，找到easy_install，在控制台下执行该命令，在命令行输入
 
     .. code-block:: bash

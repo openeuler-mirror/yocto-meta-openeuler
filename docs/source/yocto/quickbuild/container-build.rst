@@ -1,3 +1,5 @@
+.. _container_build:
+
 openEuler Embedded容器构建指导
 =================================
 

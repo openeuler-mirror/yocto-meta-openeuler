@@ -1,4 +1,4 @@
-.. preempt_rt:
+.. _preempt_rt:
 
 openEuler Embedded软实时系统介绍
 ################################
