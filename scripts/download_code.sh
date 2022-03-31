@@ -98,6 +98,7 @@ download_by_manifest()
         local upstream="$(echo "$line" | grep -o " upstream=.*" | awk -F\" '{print $2}')"
         if [[ x"$upstream" =~ x"refs/tags/" ]];then
             branch=$(echo "$upstream" | sed "s|^refs/tags/||g")
+            commitid=""
         else
             branch="$upstream"
             commitid="$revision"
