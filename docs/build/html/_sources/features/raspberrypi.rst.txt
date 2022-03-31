@@ -1,4 +1,4 @@
-.. raspberrypi:
+.. _raspberrypi:
 
 openEuler Embedded树莓派系统介绍
 ######################################

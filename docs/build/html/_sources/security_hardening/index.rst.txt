@@ -1,4 +1,4 @@
-.. _openeuler_embedded_security_hardening:
+.. _security_hardening:
 
 
 openEuler Embedded的安全加固说明
