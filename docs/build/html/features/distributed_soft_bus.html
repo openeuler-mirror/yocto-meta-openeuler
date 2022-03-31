@@ -178,10 +178,12 @@
 <div class="figure">
 <img alt="../_images/dsoftbus_architecture.png" src="../_images/dsoftbus_architecture.png" />
 </div>
-<p>软总线主体功能分为发现、组网、连接和传输四个基本模块，实现：
-即插即用：快速便捷发现周边设备
-自由流转：各设备间自组网，任意建立业务连接，实现自由通信
-高效传输：通过wifi、蓝牙设备下软硬件协同最大化发挥硬件传输性能</p>
+<p>软总线主体功能分为发现、组网、连接和传输四个基本模块，实现：</p>
+<ul class="simple">
+<li><strong>即插即用</strong>：快速便捷发现周边设备</li>
+<li><strong>自由流转</strong>：各设备间自组网，任意建立业务连接，实现自由通信</li>
+<li><strong>高效传输</strong>：通过wifi、蓝牙设备下软硬件协同最大化发挥硬件传输性能</li>
+</ul>
 <p>软总线南向支持标准以太网通信，同时后续可持续拓展wifi、蓝牙等多种通信方式。并为北向的分布式应用提供统一的API接口，屏蔽底层通信机制。</p>
 <p>软总线依赖于设备认证、IPC、日志和系统参数（SN号）等周边模块，嵌入式系统中将这些依赖模块进行了样板性质的替换，以实现软总线基本功能。实际的周边模块功能实现，还需要用户根据实际业务场景进行丰富和替换，以拓展软总线能力。</p>
 </div>
@@ -204,25 +206,64 @@
 <p>当服务端被拉起时，会主动通过名为ethX的网络设备进行coap广播，若探测到对端设备存在则会启动自组网。</p>
 <p><strong>客户端API</strong></p>
 <p>头文件在sdk和initrd中均存放在/usr/include/dsoftbus/下，其中：</p>
-<p>1.discovery_service.h：发现模块头文件，支持应用主动探测和发布的API</p>
-<blockquote>
-<div><p>a.PublishService：发布特定服务能力</p>
-<p>b.UnPublishService：取消发布特定服务能力</p>
-<p>c.StartDiscovery：订阅/探测特定服务能力</p>
-<p>d.StopDiscovery：取消订阅特性服务能力</p>
-</div></blockquote>
+<p>1.discovery_service.h：发现模块头文件，支持应用主动探测和发布的API如下：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="71%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>PublishService</td>
+<td>发布特定服务能力</td>
+</tr>
+<tr class="row-even"><td>UnPublishService</td>
+<td>取消发布特定服务能力</td>
+</tr>
+<tr class="row-odd"><td>StartDiscovery</td>
+<td>订阅/探测特定服务能力</td>
+</tr>
+<tr class="row-even"><td>StopDiscovery</td>
+<td>取消订阅特性服务能力</td>
+</tr>
+</tbody>
+</table>
 <p>其中服务能力通过g_capbilityMap数组定义，用户若新增能力需要自定义修改该数组，并重新编译软总线服务端和客户端程序来生效。</p>
-<p>2.softbus_bus_center.h：组网模块头文件，支持获取组网内设备信息API</p>
-<blockquote>
-<div>a.GetAllNodeDeviceInfo：获取当前组网内所有节点信息</div></blockquote>
-<p>3.session.h：连接/传输模块头文件，支持创建session和数据传输API</p>
-<blockquote>
-<div><p>a.CreateSessionServer：创建session服务端</p>
-<p>b.RemoveSessionServer：移除session服务端</p>
-<p>c.OpenSession：创建到对端的传输连接（同时依赖于本端和对端提前创建的SessionServer）</p>
-<p>d.CloseSession：断开传输连接</p>
-<p>e.SendBytes：根据建好的连接ID，进行数据传输。</p>
-</div></blockquote>
+<p>2.softbus_bus_center.h：组网模块头文件，支持获取组网内设备信息API如下：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="71%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>GetAllNodeDeviceInfo</td>
+<td>获取当前组网内所有节点信息</td>
+</tr>
+</tbody>
+</table>
+<p>3.session.h：连接/传输模块头文件，支持创建session和数据传输API如下：</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="71%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>CreateSessionServer</td>
+<td>创建session服务端</td>
+</tr>
+<tr class="row-even"><td>RemoveSessionServer</td>
+<td>移除session服务端</td>
+</tr>
+<tr class="row-odd"><td>OpenSession</td>
+<td>创建到对端的传输连接（同时依赖于本端和对端提前创建的SessionServer）</td>
+</tr>
+<tr class="row-even"><td>CloseSession</td>
+<td>断开传输连接</td>
+</tr>
+<tr class="row-odd"><td>SendBytes</td>
+<td>根据建好的连接ID，进行数据传输。</td>
+</tr>
+</tbody>
+</table>
 <p>各API参数详见头文件描述。</p>
 </div>
 <div class="section" id="id4">
