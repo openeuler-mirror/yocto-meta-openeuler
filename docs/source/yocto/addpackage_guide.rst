@@ -1,4 +1,6 @@
-openEuler新增软件包指导
+.. _yocto_add_software_package:
+
+新增软件包指导
 ###############################
 
 配方（.bb 文件）是 Yocto 项目环境中的基本组件。 OpenEmbedded 构建系统构建的每个软件组件都需要一个配方来定义组件；
@@ -12,8 +14,8 @@ openEuler新增软件包指导
 
 软件包源码放在src（yocto-meta-openeuler同级目录）下。
 
-2. **获取配方（.bb文件）**
-    
+2. **获取配方（.bb文件）**、
+
 从yocto-poky仓库寻找相应软件包的bb文件；
 
 .. code-block:: console
@@ -22,7 +24,6 @@ openEuler新增软件包指导
 
 `OpenEmbedded Layer <http://layers.openembedded.org/layerindex/branch/master/recipes/>`_ 可直接搜索相应软件包的bb文件。
 
-    
 3. **适配配方**
 
 在上一步中如果未找到相应版本的bb文件，可基于相近版本修改;

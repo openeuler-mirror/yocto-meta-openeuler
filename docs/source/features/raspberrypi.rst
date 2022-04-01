@@ -1,9 +1,9 @@
 .. _raspberrypi:
 
-openEuler Embedded树莓派系统介绍
+树莓派4B的支持
 ######################################
 
-本章主要介绍openEuler Embedded树莓派系统的构建，使用和特性介绍。
+本章主要介绍openEuler Embedded中树莓派4B的构建，使用和特性介绍。
 
 树莓派镜像构建指导
 ***********************************
@@ -37,7 +37,6 @@ openEuler Embedded树莓派系统介绍
   2. openeuler-glibc-x86-64-openeuler-image-cortexa72-raspberrypi4-64-toolchain-22.03.30.sh: SDK工具链
 
   3. openeuler-image-raspberrypi4-64-\*.rootfs.rpi-sdimg: openEuler Embedded树莓派支持SD卡镜像
-  
 
 **镜像使用方法**
 
