@@ -1,4 +1,4 @@
-.. __openeuler_embedded :
+.. _openeuler_embedded:
 
 
 openEuler Embedded使用与开发手册

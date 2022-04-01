@@ -1,7 +1,7 @@
 .. _security_hardening:
 
 
-openEuler Embedded的安全加固说明
+安全加固说明
 ################################
 
 .. toctree::
