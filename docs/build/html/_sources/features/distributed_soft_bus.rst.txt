@@ -18,7 +18,8 @@ OpenHarmony主要面向强交互等需求的智能终端、物联网终端和工
 
 软总线的主要架构如下：
 
-.. figure:: ../../image/dsoftbus/dsoftbus_architecture.png
+    .. figure:: ../../image/dsoftbus/dsoftbus_architecture.png
+        :align: center
 
 软总线主体功能分为发现、组网、连接和传输四个基本模块，实现：
 
@@ -39,7 +40,8 @@ OpenHarmony主要面向强交互等需求的智能终端、物联网终端和工
 
 软总线支持局域网内多设备部署，设备间通过以太网通信。单设备上分为server和client，二者通过IPC模块进行交互。
 
-.. figure:: ../../image/dsoftbus/dsoftbus_networking.png
+    .. figure:: ../../image/dsoftbus/dsoftbus_networking.png
+        :align: center
 
 .. attention::
 

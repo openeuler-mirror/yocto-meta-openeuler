@@ -1,12 +1,12 @@
 .. _software_packages_list:
 
-openEuler Embedded所支持的软件包
-############################################
+当前所支持的软件包
+##########################
 
 .. csv-table::
    :header: "软件名称","RPM名称","软件包名称","功能说明","详细情况","依赖关系"
    :widths: 10,50,20,50,80,80
-   
+
    "acl",	"acl-2.3.1-r0.aarch64.rpm",	"acl",	"提供操纵访问控制列表的命令",	"提供操作程序控制列表的getfacl和setfacl程序。",	"glibc >= 2.34;libacl1 >= 2.3.1;"
    "acl",	"libacl1-2.3.1-r0.aarch64.rpm",	"libacl1",	"提供用于访问POSIX访问控制列表的动态库",	"提供libacl.so动态库，其中包含POSIX 1003.1e标准草案中用于操作访问控制列表的17个函数。",	"/bin/sh;glibc >= 2.34;libattr1 >= 2.5.1"
    "attr",	"attr-2.5.1-r0.aarch64.rpm",	"attr",	"用于管理文件系统扩展属性",	"一种在文件系统对象上操作扩展属性的工具集，特别是getfattr和setfattr工具。;还提供了一个attr命令，它在很大程度上兼容使用同名的SGI IRIX工具。",	"glibc >= 2.34;libattr1 >= 2.5.1"

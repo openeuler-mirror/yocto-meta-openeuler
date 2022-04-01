@@ -1,7 +1,7 @@
 .. _yocto_meta_openeuler:
 
 openeuler层结构及演进策略
-===================
+=========================================
 
 以下是一个openeuler新增层的主要目录结构样例(例如添加了meta-raspberrypi和meta-intel层):
 

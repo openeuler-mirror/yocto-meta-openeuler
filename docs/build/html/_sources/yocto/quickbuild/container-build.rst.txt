@@ -1,6 +1,6 @@
 .. _container_build:
 
-openEuler Embedded容器构建指导
+容器环境下的快速构建指导
 =================================
 
 由于openEuler Embedded构建过程需要基于openEuler操作系统，且需要安装较多系统工具和构建工具。

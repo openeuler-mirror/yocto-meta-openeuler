@@ -1,6 +1,6 @@
 .. _preempt_rt:
 
-openEuler Embedded软实时系统介绍
+软实时系统介绍
 ################################
 
 本章主要介绍openEuler Embedded软实时系统的特性说明，构建方式和性能测试。
