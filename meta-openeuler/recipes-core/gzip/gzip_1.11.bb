@@ -3,10 +3,13 @@ require gzip.inc
 LICENSE = "GPLv3+"
 
 SRC_URI = "file://gzip/${BP}.tar.xz \
+           file://gzip/gzip-l-now-outputs-accurate-size.patch \
+           file://gzip/doc-document-gzip-l-change.patch \
+           file://gzip/zdiff-fix-arg-handling-bug.patch \
+           file://gzip/zdiff-fix-another-arg-handling-bug.patch \
            file://gzip/fix-verbose-disable.patch \
            file://run-ptest \
           "
-#file://gzip/performance-neoncrc32-and-prfm.patch 
 SRC_URI_append_class-target = " file://wrong-path-fix.patch"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504 \
