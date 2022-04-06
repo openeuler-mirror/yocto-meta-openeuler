@@ -45,47 +45,75 @@ openEuler Embedded版本中可使用的RT补丁请参考：
 软实时镜像构建指导
 ******************
 
-具体下载源码和编译流程建议参考：`openEuler Embedded容器构建指导 <https://openeuler.gitee.io/yocto-meta-openeuler/yocto/quickbuild/container-build.html>`_
+具体下载源码和编译流程建议参考：`容器环境下的快速构建指导 <https://openeuler.gitee.io/yocto-meta-openeuler/yocto/quickbuild/container-build.html>`_
 
-**通用构建方式**
-
-如需构建openEuler Embedded软实时镜像，可以根据所需板级支持包（Board Support Package），在内核源码打入上述补丁后进行编译和调试。
+**qemu RT镜像构建方式**
 
 - 步骤：
 
-下载源码 --> 从源码仓 :file:`src-kernel-5.10` 获取RT补丁 --> 在内核  :file:`kernel-5.10`  打入RT补丁 --> 编译构建
+下载源码 --> 修改bb文件打入RT补丁 --> 手动打开CONFIG_PREEMPT_RT --> 编译构建
 
-- 以树莓派为例，打补丁方法示例：
+- 更改aarch64镜像内核bb文件，使其构建时自动打入RT补丁，示例：
 
 .. code-block:: console
 
-  cd /path/to/src/kernel-5.10/
+  cd /usr1/openeuler/src/yocto-meta-openeuler/meta-openeuler/recipes-kernel/linux/
 
-  cp ../src-kernel-5.10/*.patch ./
+  sed -i '/0001-arm64-add-zImage/a\    file://src-kernel-5.10/patch-5.10.0-60.10.0-rt62.patch \\' linux-openeuler.bb
 
-  patch -p1 < 0000-raspberrypi-kernel.patch
+  sed -i '/patch-5.10.0-60.10.0-rt62.patch/a\    file://src-kernel-5.10/patch-5.10.0-60.10.0-rt62_openeuler_defconfig.patch \\' linux-openeuler.bb
 
-  patch -p1 < 0001-add-preemptRT-patch.patch
+git diff 输出示例：
 
-  patch -p1 < 0002-modifty-bcm2711_defconfig-for-rt-rpi-kernel.patch
+.. code-block:: console
 
-- 注意：
+  diff --git a/meta-openeuler/recipes-kernel/linux/linux-openeuler.bb b/meta-openeuler/recipes-kernel/linux/linux-openeuler.bb
+  index 77d8717..5a4b2b8 100644
+  --- a/meta-openeuler/recipes-kernel/linux/linux-openeuler.bb
+  +++ b/meta-openeuler/recipes-kernel/linux/linux-openeuler.bb
+  @@ -11,6 +11,8 @@ SRC_URI = "file://kernel-5.10 \
+   # add patches only for aarch64
+   SRC_URI_append_aarch64 += " \
+       file://yocto-embedded-tools/patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch \
+  +    file://src-kernel-5.10/patch-5.10.0-60.10.0-rt62.patch \
+  +    file://src-kernel-5.10/patch-5.10.0-60.10.0-rt62_openeuler_defconfig.patch \
+   "
+ 
+   # add patches for OPENEULER_PLATFROM such as aarch64-pro
 
-1. 如果开发人员使用的内核配置不是RT补丁中修改的defconfig（qemu：:file:`arch/arm64/configs/openeuler_defconfig`，树莓派：:file:`arch/arm64/configs/bcm2711_defconfig`），则需要在自己的defconfig中开启内核配置选项 CONFIG_PREEMPT_RT
+- 打开aarch64镜像defconfig中的CONFIG_PREEMPT_RT，示例：
 
-2. openEuler Embedded 软实时特性当前仅支持 arm64 架构
+.. code-block:: console
 
-**aarch64-pro一键式构建方式**
+  cd /usr1/openeuler/src/yocto-embedded-tools/config/arm64/
 
-yocto-meta-openeuler中也提供了一个可直接构建RT镜像的架构，便于开发人员一键式构建，无需再手动打RT补丁。通过 `编译构建 <https://openeuler.gitee.io/yocto-meta-openeuler/yocto/quickbuild/container-build.html#id10>`_ 中选择 **aarch64-pro** 架构，即可编译出支持树莓派的RT镜像。
+  sed -i 's/CONFIG_PREEMPT=y/CONFIG_PREEMPT_RT=y/g' defconfig-kernel
 
-- 构建命令示例:
+git diff 输出示例：
+
+.. code-block:: console
+
+  diff --git a/config/arm64/defconfig-kernel b/config/arm64/defconfig-kernel
+  index dece4f7..c4ef7ab 100644
+  --- a/config/arm64/defconfig-kernel
+  +++ b/config/arm64/defconfig-kernel
+  @@ -80,7 +80,7 @@ CONFIG_HIGH_RES_TIMERS=y
+ 
+   # CONFIG_PREEMPT_NONE is not set
+   # CONFIG_PREEMPT_VOLUNTARY is not set
+  -CONFIG_PREEMPT=y
+  +CONFIG_PREEMPT_RT=y
+   CONFIG_PREEMPT_COUNT=y
+   CONFIG_PREEMPTION=y
+
+
+- 编译时选择 aarch64-std 架构，示例：
 
 .. code-block:: console
 
   cd /usr1/openeuler/src/yocto-meta-openeuler/scripts
 
-  source compile.sh aarch64-pro /usr1/build /usr1/openeuler/gcc/openeuler_gcc_arm64le
+  source compile.sh aarch64-std /usr1/build /usr1/openeuler/gcc/openeuler_gcc_arm64le
 
   bitbake openeuler-image
 
@@ -95,15 +123,81 @@ yocto-meta-openeuler中也提供了一个可直接构建RT镜像的架构，便�
 
 - 二进制介绍：
 
-  1. :file:`Image-5.10.0-rt62-v8`: 树莓派RT内核镜像
+  1. :file:`Image-5.10.0`: qemu RT内核镜像
 
-  2. :file:`openeuler-image-qemu-aarch64-<时间戳>.rootfs.cpio.gz`：树莓派RT文件系统
+  2. :file:`openeuler-image-qemu-aarch64-<时间戳>.rootfs.cpio.gz`：qemu文件系统
 
-  3. :file:`openeuler-glibc-x86-64-openeuler-image-aarch64-qemu-aarch64-toolchain-22.03.30.sh`: sdk工具链
+  3. :file:`openeuler-glibc-x86-64-openeuler-image-aarch64-qemu-aarch64-toolchain-22.03.sh`: sdk工具链
 
-  4. :file:`zImage`: 树莓派RT内核的压缩镜像
+  4. :file:`zImage`: qemu RT内核的压缩镜像
 
-- 验证环境的软实时是否使能，可查看系统是否有PREEMPT_RT字样：
+**树莓派RT镜像构建方式**
+
+- 步骤：
+
+下载源码 --> 修改bb文件打入RT补丁（补丁已自动打开CONFIG_PREEMPT_RT） --> 编译构建
+
+- 更改raspberrypi镜像内核bb文件，使其构建时自动打入RT补丁并打开CONFIG_PREEMPT_RT，示例：
+
+.. code-block:: console
+
+  cd /usr1/openeuler/src/yocto-meta-openeuler/bsp/meta-openeuler-bsp/raspberrypi/recipes-kernel/linux/
+
+  sed -i '/0000-raspberrypi-kernel.patch/a\    file://src-kernel-5.10/0001-add-preemptRT-patch.patch \\' linux-openeuler.bbappend
+
+  sed -i '/0001-add-preemptRT-patch.patch/a\    file://src-kernel-5.10/0002-modifty-bcm2711_defconfig-for-rt-rpi-kernel.patch \\' linux-openeuler.bbappend
+
+git diff 输出示例：
+
+.. code-block:: console
+
+  diff --git a/bsp/meta-openeuler-bsp/raspberrypi/recipes-kernel/linux/linux-openeuler.bbappend b/bsp/meta-openeuler-bsp/raspberrypi/recipes-kernel/linux/linux-openeuler.bbappend
+  index ad6ebab..cf52b3d 100644
+  --- a/bsp/meta-openeuler-bsp/raspberrypi/recipes-kernel/linux/linux-openeuler.bbappend
+  +++ b/bsp/meta-openeuler-bsp/raspberrypi/recipes-kernel/linux/linux-openeuler.bbappend
+  @@ -1,5 +1,7 @@
+   SRC_URI += "\
+       file://src-kernel-5.10/0000-raspberrypi-kernel.patch \
+  +    file://src-kernel-5.10/0001-add-preemptRT-patch.patch \
+  +    file://src-kernel-5.10/0002-modifty-bcm2711_defconfig-for-rt-rpi-kernel.patch \
+   "
+   OPENEULER_KERNEL_CONFIG = "${S}/arch/${ARCH}/configs/bcm2711_defconfig"
+   do_configure_prepend() {
+
+- 编译时选择 raspberrypi4-64 架构，示例:
+
+.. code-block:: console
+
+  cd /usr1/openeuler/src/yocto-meta-openeuler/scripts
+
+  source compile.sh raspberrypi4-64 /usr1/build /usr1/openeuler/gcc/openeuler_gcc_arm64le
+
+  bitbake openeuler-image
+
+- 构建镜像生成目录：
+
+  :file:`/usr1/build/output/`
+
+- 二进制介绍：
+
+  1. :file:`Image`: 树莓派RT内核镜像
+
+  2. :file:`openeuler-image-raspberrypi4-64-<时间戳>.rootfs.rpi-sdimg`：树莓派RT支持SD卡镜像
+
+  3. :file:`openeuler-glibc-x86-64-openeuler-image-cortexa72-raspberrypi4-64-toolchain-22.03.sh`: sdk工具链
+
+树莓派4B的具体使用方法请参考：`树莓派4B的支持 <https://openeuler.gitee.io/yocto-meta-openeuler/features/raspberrypi.html>`_
+
+.. note::
+
+  1. 如果开发人员使用的内核配置不是RT补丁中修改的defconfig（qemu：:file:`arch/arm64/configs/openeuler_defconfig`，树莓派：:file:`arch/arm64/configs/bcm2711_defconfig`），则需要在自己的defconfig中开启内核配置选项 CONFIG_PREEMPT_RT，例如上面qemu构建方式中的 yocto-embedded-tools/config/arm64/defconfig-kernel
+
+  2. openEuler Embedded 软实时特性当前仅支持 arm64 架构
+
+验证环境的软实时是否使能
+************************
+
+- 查看系统是否有PREEMPT_RT字样：
 
 输入示例：
 
@@ -183,3 +277,26 @@ cyclictest有多种参数配置方法，用例具体的入参设计可参考：`
 
 即用例循环1000万次后，平均时延为8us，最坏时延为16us（该数据仅为示例，具体以环境实测为准）。
 
+.. attention::
+
+  如果树莓派4B的空载情况下，平均时延较差（如超过20us），可查看使用的树莓派固件是否将CPU频率配置为了节能模式，并根据需要将CPU频率配置为最高运行频率。如无cpufreq相关接口，则不涉及。
+
+  输入示例：
+
+  .. code-block:: console
+
+    cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
+
+  输出示例：
+
+  .. code-block:: console
+
+    powersave
+
+  如上结果表示CPU频率为节能模式。
+
+  配置CPU最高运行频率，输入示例：
+
+  .. code-block:: console
+
+    echo performance > /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
