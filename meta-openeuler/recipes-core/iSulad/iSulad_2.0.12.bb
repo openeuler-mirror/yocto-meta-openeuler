@@ -4,8 +4,6 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
 SRC_URI = "file://iSulad/v${PV}.tar.gz \
-           file://iSulad/0001-iSulad-Add-the-function-of-isolating-the-user-namesp.patch \
-           file://iSulad/0002-let-isulad-root-path-configable-when-userns-remap.patch \
 "
 
 S = "${WORKDIR}/${BPN}-v${PV}"
