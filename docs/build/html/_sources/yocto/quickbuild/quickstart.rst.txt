@@ -44,10 +44,15 @@ openEuler Embedded所需构建工具
 
 3）预编译的交叉工具链和库
  | Yocto可以构建出交叉编译所需的交叉工具链和C库，但整个流程复杂且耗时，不亚于内核乃至镜像的构建，而且除了第一次构建，后面很少会再涉及。同时，绝大部分开发者都不会直接与工具链和C库构建打交道。所以为了简化该流程，openEuler Embedded采取的策略是采用预编译的交叉工具链和库，会专门维护和发布相应的带有C库的工具链。
- | 目前我们提供了对arm32位和aarch64位两种架构的工具链支持， 通过下方链接可以获得：
+ | 目前我们提供了对arm32位和aarch64位两种架构的工具链支持， 通过如下方式可以获得：
 
- - `ARM 32位工具链 <https://gitee.com/openeuler/yocto-embedded-tools/attach_files/1003463/download/openeuler_gcc_arm32le.tar.xz>`_
- - `ARM 64位工具链 <https://gitee.com/openeuler/yocto-embedded-tools/attach_files/1003462/download/openeuler_gcc_arm64le.tar.xz>`_
+ - 下载rpm包: ``wget https://repo.openeuler.org/openEuler-22.03-LTS/EPOL/main/x86_64/Packages/gcc-cross-1.0-0.oe2203.x86_64.rpm``
+ - 解压rpm包: ``rpm2cpio gcc-cross-1.0-0.oe2203.x86_64.rpm | cpio -id``
+
+ - 解压后可以看到当前路径下会有tmp目录，编译链存放于该目录下
+ 
+   - ARM 32位工具链: openeuler_gcc_arm32le.tar.xz
+   - ARM 64位工具链: openeuler_gcc_arm64le.tar.xz
 
 已安装好工具的构建容器
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
