@@ -282,7 +282,17 @@ openEuler Embedded登陆后，执行如下命令：
 使用SDK编译内核模块样例
 =============================
 
-1. **准备代码**
+1. **准备环境**
+
+在设置好SDK环境的基础之上，编译内核模块还需准备相应环境，但只需要准备一次即可。运行如下命令
+会创建相应的内核模块编译环境：
+
+.. code-block:: console
+
+    cd <SDK_PATH>/sysroots/<target>-openeuler-linux/usr/src/kernel
+    make  module_prepare
+
+2. **准备代码**
 
 以编译一个最简单的内核模块为例，运行在openEuler Embedded内核中。
 
@@ -328,7 +338,7 @@ openEuler Embedded登陆后，执行如下命令：
 
 :file:`KERNEL_SRC_DIR` 为SDK中内核源码树的目录，该变量在安装SDK后会被自动设置。
 
-2. **编译生成内核模块**
+3. **编译生成内核模块**
 
 进入hello.c文件所在目录，使用工具链编译，命令如下：
 
@@ -340,7 +350,7 @@ openEuler Embedded登陆后，执行如下命令：
 
 如何拷贝可以参考前文所述共享文件系统场景。
 
-3. **插入内核模块**
+4. **插入内核模块**
 
 在openEuler Embedded系统中插入内核模块:
 
