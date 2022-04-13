@@ -3,8 +3,7 @@
 容器环境下的快速构建指导
 =================================
 
-由于openEuler Embedded构建过程需要基于openEuler操作系统，且需要安装较多系统工具和构建工具。
-为方便开发人员快速搭建构建环境，我们将构建过程所依赖的操作系统和工具封装到一个容器中，
+由于openEuler Embedded构建过程需要基于openEuler操作系统，且需要安装较多系统工具和构建工具。为方便开发人员快速搭建构建环境，我们将构建过程所依赖的操作系统和工具封装到一个容器中，
 这就使得开发人员可以快速搭建一个构建环境，进而投入到代码开发中去，避免在准备环境阶段消耗大量时间。
 
 1. 环境准备
@@ -26,7 +25,7 @@
 1) 检查当前环境是否已安装docker工具
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-运行如下命令，可以看到当前docker版本信息，则说明当前环境已安装docker，无需再次安装
+运行如下命令，可以看到当前docker版本信息，则说明当前环境已安装docker，无需再次安装。
 
 .. code-block:: console
 
@@ -37,9 +36,9 @@
 
 官网地址: http://www.dockerinfo.net/document
 
-openEuler环境可参考Centos安装Docker
+openEuler环境可参考Centos安装Docker。
 
-例: openEuler环境docker安装命令如下
+例: openEuler环境docker安装命令如下：
 
 .. code-block:: console
 
@@ -48,8 +47,7 @@ openEuler环境可参考Centos安装Docker
 3. 获取容器镜像
 ****************
 
-通过docker pull命令拉取华为云中的镜像到宿主机。命令如下: 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+通过 ``docker pull`` 命令拉取华为云中的镜像到宿主机。命令如下: 
 
 .. code-block:: console
 
@@ -61,7 +59,7 @@ openEuler环境可参考Centos安装Docker
 1) 启动容器
 ^^^^^^^^^^^^^
 
-可通过docker run命令启动容器，为了保证容器启动后可以在后台运行，且可以正常访问网络，建议使用如下命令启动: 
+可通过 ``docker run`` 命令启动容器，为了保证容器启动后可以在后台运行，且可以正常访问网络，建议使用如下命令启动：
 
 .. code-block:: console
 
@@ -95,7 +93,7 @@ openEuler环境可参考Centos安装Docker
 
     docker exec -it 容器id bash
 
-构建环境已准备完成，下面就可以在容器中进行构建了
+构建环境已准备完成，下面就可以在容器中进行构建了。
 
 5. 开始构建
 ************
@@ -127,8 +125,10 @@ openEuler环境可参考Centos安装Docker
 
 - 编译器所在路径: /usr1/openeuler/gcc/openeuler_gcc_arm64le
 
-说明: 不同的编译架构使用不同的编译器，aarch64-std、aarch64-pro、raspberrypi4-64使用openeuler_gcc_arm64le编译器，
-arm-std使用openeuler_gcc_arm32le编译器，下面以以aarch64-std目标架构编译为例
+ .. note::
+
+   - 不同的编译架构使用不同的编译器，aarch64-std、aarch64-pro、raspberrypi4-64使用openeuler_gcc_arm64le编译器，arm-std使用openeuler_gcc_arm32le编译器。
+   - 下面以以aarch64-std目标架构编译为例。
 
 a) 将/usr1目录所属群组改为openeuler，否则切换至openeuler用户构建会存在权限问题
 
@@ -153,7 +153,7 @@ c) 进入构建脚本所在路径，运行编译脚本
 3) 构建结果说明
 ^^^^^^^^^^^^^^^^^
 
-结果件默认生成在构建目录下的output目录下，例如上面aarch64-std的构建结果件生成在/usr1/build/output
+结果件默认生成在构建目录下的output目录下，例如上面aarch64-std的构建结果件生成在 :file:`/usr1/build/output` 目录下，如下表：
 
 +---------------------------------------------+-------------------------------------------------------------+
 |      filename                               |             description                                     |
@@ -161,10 +161,10 @@ c) 进入构建脚本所在路径，运行编译脚本
 | Image-5.10.0                                | openEuler Embedded image                                    |
 +---------------------------------------------+-------------------------------------------------------------+
 | openeuler-glibc-x86_64-openeuler-image      | openEuler Embedded sdk toolchain                            |
-| -aarch64-qemu-aarch64-toolchain-21.09.30.sh |                                                             |
+| -\*-toolchain-\*.sh                         |                                                             |
 +---------------------------------------------+-------------------------------------------------------------+
 | openeuler-image-qemu-aarch64-               | openEuler Embedded file system                              | 
-| 20220318114250.rootfs.cpio.gz               |                                                             |
+| \*.rootfs.cpio.gz                           |                                                             |
 +---------------------------------------------+-------------------------------------------------------------+
 | zImage                                      | openEuler Embedded compressed image                         |
 +---------------------------------------------+-------------------------------------------------------------+
