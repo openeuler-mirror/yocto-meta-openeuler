@@ -1,7 +1,5 @@
 require lvm2.inc
 
-DEPENDS += "autoconf-archive-native"
-
 MULTILIB_SCRIPTS = "${PN}:${sysconfdir}/lvm/lvm.conf"
 
 CACHED_CONFIGUREVARS += "MODPROBE_CMD=${base_sbindir}/modprobe"
