@@ -4,6 +4,8 @@ PR = "r1"
 
 inherit packagegroup
 
+PACKAGES = "${PN} ${PN}-tiny"
+
 RDEPENDS_${PN} = " \
 busybox-linuxrc \
 kernel \
@@ -13,4 +15,12 @@ busybox \
 os-base \
 glibc \
 os-release \
+"
+
+RDEPENDS_${PN}-tiny = " \
+busybox-login \
+busybox-groups \
+busybox-bash \
+busybox-grep \
+busybox-sed \
 "
