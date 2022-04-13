@@ -71,7 +71,7 @@ do_install_append_arm() {
 }
 
 do_install_append_raspberrypi4() {
-	sed -i 's/ttyAMA0/ttyS0/g' ${D}/etc/inittab
+	sed -i 's/ttyAMA0/tty1/g' ${D}/etc/inittab
 	sed -i '/\# load kernel modules/imount -o remount,rw \/' ${D}/etc/rc.d/rc.sysinit
 }
 
