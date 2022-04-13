@@ -16,8 +16,8 @@ openEuler Embedded是基于openEuler社区面向嵌入式场景的Linux版本。
 
 当前发布的已构建好的镜像中，只支持arm和aarch64两种架构，且只支持qemu中ARM virt-4.0平台，您可以通过如下链接获得相应的镜像：
 
-- `qemu_arm <https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm32/arm-std>`_： 32位arm架构, ARM Cortex A15处理器
-- `qemu_aarch64 <https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm64/aarch64-std>`_: 64位aarch64架构 ARM Cortex A57处理器
+- `qemu_arm <https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm32/arm-std>`_：32位arm架构, ARM Cortex A15处理器
+- `qemu_aarch64 <https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm64/aarch64-std>`_：64位aarch64架构 ARM Cortex A57处理器
 
 只要相应环境支持QEMU仿真器（版本5.0以上），您可以将提供的openEuler Embedded镜像部署在物理裸机、云环境、容器或虚拟机上。
 
@@ -38,7 +38,7 @@ openEuler Embedded是基于openEuler社区面向嵌入式场景的Linux版本。
 
 - SDK(Software Development Kit)工具
 
-  - :file:`openeuler-glibc-x86_64-xxxxx.sh`：openEuler Embedded SDK自解压安装包，SDK包含了进行开发（用户态程序、内核模块啦.ko等)所必需的工具、库和头文件等。
+  - :file:`openeuler-glibc-x86_64-xxxxx.sh`：openEuler Embedded SDK自解压安装包，SDK包含了进行开发（用户态程序、内核模块等)所必需的工具、库和头文件等。
 
 
 运行镜像
@@ -50,7 +50,7 @@ openEuler Embedded是基于openEuler社区面向嵌入式场景的Linux版本。
 
    - 建议使用QEMU 5.0以上版本运行镜像，由于一些额外功能（网络、共享文件系统)需要依赖QEMU的virtio-net, virtio-fs等特性，如未在QEMU中使能，则运行时可能会产生错误，此时可能需要从源码重新编译QEMU。
 
-   - 运行镜像时，建议把内核镜像和根文件系统镜像放在同一目录下，后续说明以标准根文件系统为例(initrd)。
+   - 运行镜像时，建议把内核镜像和根文件系统镜像放在同一目录下。
 
 
 QEMU的下载与安装可以参考 `QEMU官方网站 <https://www.qemu.org/download/#linux>`_ , 或者下载 `源码 <https://www.qemu.org/download/#source>`_ 单独编译安装。安装好后可以运行如下命令
@@ -66,6 +66,8 @@ QEMU的下载与安装可以参考 `QEMU官方网站 <https://www.qemu.org/downl
 
 该场景下，QEMU未使能网络和共享文件系统，适合快速的功能体验。
 
+1. **启动QEMU**
+
 针对arm(ARM Cortex A15)，运行如下命令：
 
 .. code-block:: console
@@ -79,7 +81,12 @@ QEMU的下载与安装可以参考 `QEMU官方网站 <https://www.qemu.org/downl
     qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz>
 
 
-由于标准根文件系统镜像进行了安全加固，因此第一次启动时，需要为登录用户名root设置密码，且密码强度有相应要求， 需要数字、字母、特殊字符组合最少8位，例如openEuler@2021
+.. note::
+
+   由于标准根文件系统镜像进行了安全加固，因此第一次启动时，需要为登录用户名root设置密码，且密码强度有相应要求， 需要数字、字母、特殊字符组合最少8位，例如openEuler@2021
+
+2. **检查运行是否成功**
+
 QEMU运行成功并登录后，将会呈现openEuler Embedded的Shell。
 
 使能共享文件系统场景
@@ -149,12 +156,18 @@ openEuler Embedded传输文件。
 
 2. **宿主上建立虚拟网卡**
 
-在宿主机上需要建立名为tap0的虚拟网卡，可以借助 :file:`/etc/qemu-ifup` 脚本实现（如没有，则需要创建），其执行需要root权限，具体内容如下：
+在宿主机上需要建立名为tap0的虚拟网卡，可以借助脚本实现，创建 :file:`qemu-ifup` 脚本，放在 :file:`/etc/` 目录下，具体内容如下：
 
 .. code-block:: console
 
     #!/bin/bash
     ifconfig $1 192.168.10.1 up
+
+其执行需要root权限：
+
+.. code-block:: console
+
+    chmod a+x qemu-ifup
 
 通过 :file:`qemu-ifup` 脚本，宿主机上将创建名为tap0的虚拟网卡，地址为192.168.10.1。
 
@@ -216,7 +229,7 @@ openEuler Embedded登陆后，执行如下命令：
 
 2. **设置SDK环境变量**
 
-前一步执行结束最后已打印source命令，运行即可
+前一步执行结束最后已打印source命令，运行即可。
 
 .. code-block:: console
 
@@ -224,7 +237,7 @@ openEuler Embedded登陆后，执行如下命令：
 
 3. **查看是否安装成功**
 
-运行如下命令，查看是否安装成功、环境设置成功
+运行如下命令，查看是否安装成功、环境设置成功。
 
 .. code-block:: console
 
@@ -248,7 +261,7 @@ openEuler Embedded登陆后，执行如下命令：
         printf("hello world\n");
     }
 
-编写CMakelist.txt，和hello.c文件放在同一个目录
+编写CMakelist.txt，和hello.c文件放在同一个目录。
 
 ::
 
@@ -266,7 +279,7 @@ openEuler Embedded登陆后，执行如下命令：
     cmake ..
     make
 
-把编译好的hello程序拷贝到openEuler Embedded系统的 :file:`/tmp/` 某个目录下（例如 :file:`/tmp/myfiles/` ）。如何拷贝可以参考前文所述共享文件系统场景
+把编译好的hello程序拷贝到openEuler Embedded系统的 :file:`/tmp/` 某个目录下（例如 :file:`/tmp/myfiles/` ）。如何拷贝可以参考前文所述共享文件系统场景。
 
 3. **运行用户态程序**
 
@@ -284,8 +297,7 @@ openEuler Embedded登陆后，执行如下命令：
 
 1. **准备环境**
 
-在设置好SDK环境的基础之上，编译内核模块还需准备相应环境，但只需要准备一次即可。运行如下命令
-会创建相应的内核模块编译环境：
+在设置好SDK环境的基础之上，编译内核模块还需准备相应环境，但只需要准备一次即可。运行如下命令会创建相应的内核模块编译环境：
 
 .. code-block:: console
 

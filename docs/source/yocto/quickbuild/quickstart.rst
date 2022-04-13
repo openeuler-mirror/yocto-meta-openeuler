@@ -40,11 +40,13 @@ openEuler Embedded所需构建工具
  - `操作系统:openEuler-20.03-LTS-SP2 <https://repo.openeuler.org/openEuler-20.03-LTS-SP2/docker_img/x86_64/openEuler-docker.x86_64.tar.xz>`_
 
 2）安装系统额外工具
- - yum -y install tar cmake gperf sqlite-devel chrpath gcc-c++ patch rpm-build flex autoconf automake m4 bison bc libtool gettext-devel createrepo_c rpcgen texinfo hostname python meson dosfstools mtools parted ninja-build autoconf-archive libmpc-devel gmp-devel
+ ::
+ 
+       yum -y install tar cmake gperf sqlite-devel chrpath gcc-c++ patch rpm-build flex autoconf automake m4 bison bc libtool gettext-devel createrepo_c rpcgen texinfo hostname python meson dosfstools mtools parted ninja-build autoconf-archive libmpc-devel gmp-devel
 
 3）预编译的交叉工具链和库
  | Yocto可以构建出交叉编译所需的交叉工具链和C库，但整个流程复杂且耗时，不亚于内核乃至镜像的构建，而且除了第一次构建，后面很少会再涉及。同时，绝大部分开发者都不会直接与工具链和C库构建打交道。所以为了简化该流程，openEuler Embedded采取的策略是采用预编译的交叉工具链和库，会专门维护和发布相应的带有C库的工具链。
- | 目前我们提供了对arm32位和aarch64位两种架构的工具链支持， 通过如下方式可以获得：
+ | 目前我们提供了对arm32位和aarch64位两种架构的工具链支持，通过如下方式可以获得：
 
  - 下载rpm包: ``wget https://repo.openeuler.org/openEuler-22.03-LTS/EPOL/main/x86_64/Packages/gcc-cross-1.0-0.oe2203.x86_64.rpm``
  - 解压rpm包: ``rpm2cpio gcc-cross-1.0-0.oe2203.x86_64.rpm | cpio -id``
@@ -93,7 +95,7 @@ openEuler Embedded整个构建工程的文件布局如下，假设openeuler_embe
 openEuler Embedded版本构建
 *****************************
 
-一键式构建脚本：:file:`src/yocto-meta-openeuler/scripts/compile.sh` , 具体细节可以参考该脚本
+一键式构建脚本：:file:`src/yocto-meta-openeuler/scripts/compile.sh` , 具体细节可以参考该脚本。
 
 编译脚本的主要流程：
 
