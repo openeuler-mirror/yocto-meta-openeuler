@@ -27,8 +27,8 @@ do_install_append() {
 
 do_compile_prepend() {
 	#fix open source compile error because of the dependency problem
-	cat Makefile | grep "@\$(MAKE) \$(AM_MAKEFLAGS) install-exec-am install-data-am" || return  1
-	sed -i 's/^[[:space:]]@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am/\t\@\$(MAKE) \$(AM_MAKEFLAGS) install-data-am\n\t\@\$(MAKE) \$(AM_MAKEFLAGS) install-exec-am/g' Makefile
+	cat ${S}/Makefile.in | grep "@\$(MAKE) \$(AM_MAKEFLAGS) install-exec-am install-data-am" || return  1
+	sed -i 's/^[[:space:]]@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am/\t\@\$(MAKE) \$(AM_MAKEFLAGS) install-data-am\n\t\@\$(MAKE) \$(AM_MAKEFLAGS) install-exec-am/g' ${S}/Makefile.in
 }
 
 FILES_${PN} += "${base_libdir}/security"
