@@ -1,15 +1,4 @@
-SUMMARY = "Secure Socket Layer"
-DESCRIPTION = "Secure Socket Layer (SSL) binary and related cryptographic tools."
-HOMEPAGE = "http://www.openssl.org/"
-BUGTRACKER = "http://www.openssl.org/news/vulnerabilities.html"
-SECTION = "libs/network"
-
-# "openssl | SSLeay" dual license
-LICENSE = "openssl"
-
 DEPENDS = "perl-native-runtime nettle"
-DEPENDS_append_class-target = " openssl-native"
-#DEPENDS_append_class-target = " linux-libc-headers"
 
 SRC_URI = "file://openssl/${BP}.tar.gz \
            file://openssl/openssl-1.1.1-build.patch \
@@ -26,8 +15,6 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=d343e62fc9c833710bbbed25f27364c8"
 
 S = "${WORKDIR}/${BP}"
 
-PACKAGECONFIG[perl] = ",,,"
-
 #AR_append = " r"
 # Avoid binaries being marked as requiring an executable stack since it
 # doesn't(which causes and this causes issues with SELinux
@@ -43,24 +30,7 @@ export DIRS = "crypto ssl apps"
 export EX_LIBS = "-lgcc -ldl"
 export AS = "${CC} -c"
 
-inherit pkgconfig siteinfo multilib_header ptest
-
-PACKAGES =+ "libcrypto libssl ${PN}-misc openssl-conf"
-FILES_libcrypto = "${base_libdir}/libcrypto${SOLIBS}"
-FILES_libssl = "${libdir}/libssl.so.*"
-FILES_${PN} =+ " ${libdir}/ssl/*"
-FILES_${PN}-misc = "${libdir}/ssl/misc ${bindir}/c_rehash"
-RDEPENDS_${PN}-misc = "${@bb.utils.contains('PACKAGECONFIG', 'perl', 'perl', '', d)}"
-FILES_${PN}-dev += "${base_libdir}/libcrypto${SOLIBSDEV}"
-
-# Add the openssl.cnf file to the openssl-conf package.  Make the libcrypto
-# package RRECOMMENDS on this package.  This will enable the configuration
-# file to be installed for both the base openssl package and the libcrypto
-# package since the base openssl package depends on the libcrypto package.
-FILES_openssl-conf = "${libdir}/ssl/openssl.cnf"
-CONFFILES_openssl-conf = "${libdir}/ssl/openssl.cnf"
-RRECOMMENDS_libcrypto += "openssl-conf"
-RDEPENDS_${PN}-ptest += "${PN}-misc make perl perl-module-filehandle bc"
+inherit pkgconfig siteinfo ptest
 
 # Remove this to enable SSLv3. SSLv3 is defaulted to disabled due to the POODLE
 # vulnerability
@@ -68,101 +38,6 @@ EXTRA_OECONF = " -no-ssl3"
 
 do_configure_prepend_darwin () {
  sed -i -e '/version-script=openssl\.ld/d' Configure
-}
-
-do_configure () {
- cd util
- perl perlpath.pl ${STAGING_BINDIR_NATIVE}
- cd ..
- ln -sf apps/openssl.pod crypto/crypto.pod ssl/ssl.pod doc/
-
- os=${HOST_OS}
- case $os in
- linux-uclibc |\
- linux-uclibceabi |\
- linux-gnueabi |\
- linux-uclibcspe |\
- linux-gnuspe |\
- linux-musl*)
- os=linux
- ;;
- *)
- ;;
- esac
- if [ "${libdir}" != "/usr/libilp32" ]; then
- target="$os-${HOST_ARCH}"
- else
- target="${HOST_OS}-${HOST_ARCH}"
- fi
- case $target in
- linux-arm)
- target=linux-armv4
- ;;
- linux-armeb)
- target=linux-elf-armeb
- ;;
- linux-aarch64*)
- target=linux-generic64
- ;;
-    linux-gnuilp32-aarch64*)
- target=linux-aarch64-ilp32
- ;;
- linux-sh3)
- target=debian-sh3
- ;;
- linux-sh4)
- target=debian-sh4
- ;;
- linux-i486)
- target=debian-i386-i486
- ;;
- linux-i586 | linux-viac3)
- target=debian-i386-i586
- ;;
- linux-i686)
- target=debian-i386-i686/cmov
- ;;
- linux-gnux32-x86_64)
- target=linux-x32
- ;;
- linux-gnu64-x86_64)
- target=linux-x86_64
- ;;
- linux-mips)
- target=debian-mips
- ;;
- linux-mipsel)
- target=debian-mipsel
- ;;
-        linux-*-mips64)
-               target=linux-mips
-                ;;
- linux-microblaze*)
- target=linux-generic32
- ;;
- linux-powerpc)
- target=linux-ppc
- ;;
- linux-powerpc64)
- target=linux-ppc64
- ;;
- linux-supersparc)
- target=linux-sparcv8
- ;;
- linux-sparc)
- target=linux-sparcv8
- ;;
- darwin-i386)
- target=darwin-i386-cc
- ;;
- esac
- # inject machine-specific flags
- sed -i -e "s|^\(\"$target\",\s*\"[^:]\+\):\([^:]\+\)|\1:${CFLAG}|g" Configure
-        useprefix=${prefix}
-        if [ "x$useprefix" = "x" ]; then
-                useprefix=/
-        fi       
- perl ./Configure ${EXTRA_OECONF} shared --prefix=$useprefix --openssldir=${libdir}/ssl --libdir=`basename ${libdir}` $target
 }
 
 do_compile_prepend_class-target () {
@@ -175,41 +50,6 @@ do_compile () {
 
 do_compile_ptest () {
  oe_runmake buildtest
-}
-
-do_install () {
- # Create ${D}/${prefix} to fix parallel issues
- mkdir -p ${D}/${prefix}/
-
- oe_runmake INSTALL_PREFIX="${D}" MANDIR="${mandir}" install
-
- oe_libinstall -so libcrypto ${D}${libdir}
- oe_libinstall -so libssl ${D}${libdir}
-
- # Moving libcrypto to /lib
- if [ ! ${D}${libdir} -ef ${D}${base_libdir} ]; then
- mkdir -p ${D}/${base_libdir}/
- mv ${D}${libdir}/libcrypto* ${D}${base_libdir}/
- sed -i s#libdir=\$\{exec_prefix\}\/lib#libdir=${base_libdir}# ${D}/${libdir}/pkgconfig/libcrypto.pc
- fi
-
- install -d ${D}${includedir}
- cp --dereference -R include/openssl ${D}${includedir}
-
- if [ "${libdir}" != "/usr/libilp32" ]; then
- oe_multilib_header openssl/opensslconf.h
- fi
-
- if [ "${@bb.utils.contains('PACKAGECONFIG', 'perl', 'perl', '', d)}" = "perl" ]; then
- install -m 0755 ${S}/tools/c_rehash ${D}${bindir}
- sed -i -e '1s,.*,#!${bindir}/env perl,' ${D}${bindir}/c_rehash
- sed -i -e '1s,.*,#!${bindir}/env perl,' ${D}${libdir}/ssl/misc/CA.pl
- sed -i -e '1s,.*,#!${bindir}/env perl,' ${D}${libdir}/ssl/misc/tsget
- # The c_rehash utility isn't installed by the normal installation process.
- else
- rm -f ${D}${bindir}/c_rehash
- rm -f ${D}${libdir}/ssl/misc/CA.pl ${D}${libdir}/ssl/misc/tsget
- fi
 }
 
 do_install_ptest () {
