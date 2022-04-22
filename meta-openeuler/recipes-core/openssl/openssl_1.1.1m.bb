@@ -17,7 +17,7 @@ MULTILIB_SCRIPTS = "${PN}-bin:${bindir}/c_rehash"
 PACKAGECONFIG ?= ""
 PACKAGECONFIG_class-native = ""
 PACKAGECONFIG_class-nativesdk = ""
-
+PACKAGECONFIG[perl] = ",,,"
 PACKAGECONFIG[cryptodev-linux] = "enable-devcryptoeng,disable-devcryptoeng,cryptodev-linux"
 
 #| ./libcrypto.so: undefined reference to `getcontext'
@@ -149,6 +149,8 @@ do_install_append_class-nativesdk () {
         sed 's|/usr/lib/ssl/|/usr/lib/ssl-1.1/|g' -i ${D}${SDKPATHNATIVE}/environment-setup.d/openssl.sh
 }
 
+PACKAGES =+ "libcrypto libssl ${PN}-conf ${PN}-misc"
+
 # Add the openssl.cnf file to the openssl-conf package. Make the libcrypto
 # package RRECOMMENDS on this package. This will enable the configuration
 # file to be installed for both the openssl-bin package and the libcrypto
@@ -156,20 +158,16 @@ do_install_append_class-nativesdk () {
 
 FILES_libcrypto = "${libdir}/libcrypto${SOLIBS}"
 FILES_libssl = "${libdir}/libssl${SOLIBS}"
-FILES_openssl-conf = "${sysconfdir}/ssl/openssl.cnf"
-FILES_${PN}-engines = "${libdir}/engines-1.1"
+FILES_${PN}-conf = "${sysconfdir}/ssl/openssl.cnf"
 FILES_${PN}-misc = "${libdir}/ssl-1.1/misc"
-FILES_${PN} += "${libdir}/ssl-1.1/* ${sysconfdir}/ssl/*"
+FILES_${PN} += "${libdir}/ssl-1.1/* ${sysconfdir}/ssl/* ${libdir}/engines-1.1/*"
 FILES_${PN}_append_class-nativesdk = " ${SDKPATHNATIVE}/environment-setup.d/openssl.sh"
-FILES_${PN} += "${libdir}/engines-1.1/*"
 
 CONFFILES_openssl-conf = "${sysconfdir}/ssl/openssl.cnf"
 
 RRECOMMENDS_libcrypto += "openssl-conf"
-RDEPENDS_${PN}-ptest += "openssl-bin perl perl-modules bash"
-
-# Remove bash dependencies for all image
-RDEPENDS_${PN}-ptest_remove += "bash"
+RDEPENDS_${PN}-misc = "${@bb.utils.contains('PACKAGECONFIG', 'perl', 'perl', '', d)}"
+RDEPENDS_${PN}-ptest += "openssl-bin perl perl-modules"
 
 BBCLASSEXTEND = "native nativesdk"
 
