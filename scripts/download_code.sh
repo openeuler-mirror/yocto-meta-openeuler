@@ -62,7 +62,7 @@ update_code_repo()
         # pull from orgin
         git config pull.ff only
         git pull || echo "git pull failure, please check ${pkg}"
-        git status | grep -Eq "is up to date with|is up-to-date with" || exit 1
+        LANG="en_US.UTF-8" git status | grep -Eq "is up to date with|is up-to-date with" || exit 1
     fi
 
     #check if checkout tag successfully
