@@ -66,4 +66,17 @@ yocto-meta-embedded核心是构建Yocto Poky之上，但针对openEuler Embedded
 1.  Fork 本仓库
 2.  新建 Feat_xxx 分支
 3.  提交代码
+
+一个合格的git提交信息如下所示，请尽可能在提交信息中描述相关信息，例如修改的原因，改动的地方，如何验证等等：
+
+```
+　　module: this is git commit msg titile
+
+   this is git commit msg body
+
+   Signed-off-by: xxxx <yyyy@zzz.com>
+```
+
+本仓库采用了gitlint检查每次git提交，　建议提交前使用 [**gitlint**](https://jorisroovers.com/gitlint) 检查您的提交，以避免CI门禁检查失败．
+
 4.  新建 Pull Request
