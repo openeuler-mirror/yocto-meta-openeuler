@@ -97,6 +97,178 @@ OpenHarmony主要面向强交互等需求的智能终端、物联网终端和工
 
 各API参数详见头文件描述。
 
+**应用示例**
+
+使用qemu部署分布式软总线，编写客户端程序，使其能够列出所有发现的设备信息。
+
+1. 编写客户端程序
+
+    编写客户端程序依托于embedded版本发布的SDK，请参考 :ref:`getting_started` 章节进行SDK环境使用准备
+
+    创建一个 :file:`main.c` 文件，源码如下：
+
+    .. code-block:: c
+
+        #include "dsoftbus/softbus_bus_center.h"
+        #include <stdio.h>
+        #include <stdlib.h>
+        int main(void) 
+        {
+            int32_t infoNum = 10;
+            NodeBasicInfo **testInfo = malloc(sizeof(NodeBasicInfo *) * infoNum);
+            int ret = GetAllNodeDeviceInfo("testClient", testInfo, &infoNum);
+            if (ret != 0) {
+                printf("Get node device info fail.\n");
+                return 0;
+            }
+            printf("Get node num: %d\n", infoNum);
+            for (int i = 0; i < infoNum; i++) {
+                printf("\t networkId: %s, deviceName: %s, deviceTypeId: %d\n",
+                testInfo[i]->networkId,
+                testInfo[i]->deviceName,
+                testInfo[i]->deviceTypeId);
+            }
+            for (int i = 0; i < infoNum; i++) {
+                FreeNodeInfo(testInfo[i]);
+            }
+            free(testInfo);
+            testInfo = NULL;
+
+            return 0;
+        }
+
+
+    创建一个 :file:`CMakeLists.txt` 文件，源码如下：
+
+    .. code-block:: cmake
+
+        project(dsoftbus_hello C)
+        add_executable(dsoftbus_hello main.c)
+        target_link_libraries(dsoftbus_hello dsoftbus_bus_center_service_sdk.z)
+
+    编译客户端
+
+    .. code-block:: console
+
+        mkdir build 
+        cd build
+        cmake .. 
+        make
+
+
+    编译完成后会得到dsoftbus_hello
+
+2. 构建qemu组网环境
+
+    在host中创建网桥br0
+
+    .. code-block:: console
+
+        brctl addbr br0
+
+    启动qemu1
+
+    .. code-block:: console
+
+        qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz> -device virtio-net-device,netdev=tap0,mac=52:54:00:12:34:56 -netdev bridge,id=tap0
+
+    .. attention:: 
+        首次运行如果出现如下错误提示，
+
+        .. code-block:: console
+
+            failed to parse default acl file `/usr/local/libexec/../etc/qemu/bridge.conf'
+            qemu-system-aarch64: bridge helper failed
+        
+        则需要向指示的文件添加"allow br0"
+
+        .. code-block:: console
+
+            echo "allow br0" > /usr/local/libexec/../etc/qemu/bridge.conf
+
+    启动qemu2
+
+    .. code-block:: console
+
+        qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd openeuler-image-qemu-aarch64-20220331025547.rootfs.cpio.gz  -device virtio-net-device,netdev=tap1,mac=52:54:00:12:34:78 -netdev bridge,id=tap1
+
+    .. attention:: 
+
+        qemu1与qemu2的mac地址需要配置为不同的值
+
+
+    配置IP
+
+    配置host的网桥地址
+
+    .. code-block:: console
+
+        ifconfig br0 192.168.10.1 up
+        
+    配置qemu1的网络地址
+
+    .. code-block:: console
+
+        ifconfig eth0 192.168.10.2
+
+    配置qemu2的网络地址
+
+    .. code-block:: console
+
+        ifconfig eth0 192.168.10.3
+
+    分别在host、qemu1、qemu2使用ping进行测试，确保qemu1可以ping通qemu2。
+
+3. 启动分布式软总线
+   
+   在qemu1和qemu2中启动分布式软总线的服务端
+
+    .. code-block:: console
+
+        softbus_server_main >log.file &
+
+    将编译好的客户端分发到qemu1和qemu2的根目录中
+
+    .. code-block:: console
+
+        scp dsoftbus_hello root@192.168.10.2:/
+        scp dsoftbus_hello root@192.168.10.3:/
+
+    分别在qemu1和qemu2的根目录下运行dsoftbus_hello，将得到如下输出
+    
+    qemu1
+
+    .. code-block:: console
+
+        [LNN]NodeStateCbCount is 10
+        [LNN]BusCenterClientInit init OK!
+        [DISC]Init success
+        [TRAN]init tcp direct channel success.
+        [TRAN]init succ
+        [COMM]softbus server register service success!
+
+        [COMM]softbus sdk frame init success.
+        Get node num: 1
+                networkId: 714373d691265f9a736442c01459ba39236642c743a71750bb63eb73cde24f5f, deviceName: UNKNOWN, deviceTypeId: 0
+    
+    qemu2
+
+    .. code-block:: console
+
+        [LNN]NodeStateCbCount is 10
+        [LNN]BusCenterClientInit init OK!
+        [DISC]Init success
+        [TRAN]init tcp direct channel success.
+        [TRAN]init succ
+        [COMM]softbus server register service success!
+
+        [COMM]softbus sdk frame init success.
+        Get node num: 1
+                networkId: eaf591f64bab3c20304ed3d3ff4fe1d878a0fd60bf8c85c96e8a8430d81e4076, deviceName: UNKNOWN, deviceTypeId: 0
+
+    qemu1和qemu2分别输出了发现的对方设备的基础信息。
+
+
 编译指导
 **************
 
