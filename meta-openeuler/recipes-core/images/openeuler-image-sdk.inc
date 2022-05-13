@@ -1,6 +1,7 @@
 inherit populate_sdk
 #set IMAGE_LOCALES_ARCHIVE to 0 and unset SDKIMAGE_LINGUAS, to avoid run generate_locale_archive()
 IMAGE_LOCALES_ARCHIVE = "0"
+# currently we don't install language configurations
 SDKIMAGE_LINGUAS = ""
 SDK_RELOCATE_AFTER_INSTALL = "0"
 
@@ -19,17 +20,6 @@ delete_bin_from_sdk() {
     rm -f ./usr/bin/*
     rm -f ./usr/sbin/*
     rm -f ./sbin/*
-    pushd ./bin/
-    #only reserve compiler command
-    cc="$(echo "${CC}" | awk '{print $1}')"
-    cc_prefix="${cc%-*}"
-    real_cc_prefix="xxxxx"
-    if [ -L "${cc}" ];then
-        real_cc="$(ls -l "${cc}" | awk '{print $NF}')"
-        real_cc_prefix="${real_cc%-*}"
-    fi
-    rm -f $(ls | grep -Ev "${cc_prefix}|${real_cc_prefix}")
-    popd
     popd
 }
 

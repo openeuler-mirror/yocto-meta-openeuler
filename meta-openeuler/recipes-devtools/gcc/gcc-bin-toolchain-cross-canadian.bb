@@ -11,22 +11,21 @@ INHIBIT_PACKAGE_STRIP = "1"
 # Ignore how TARGET_ARCH is computed
 TARGET_ARCH[vardepvalue] = "${TARGET_ARCH}"
 
-REAL_MULTIMACH_TARGET_SYS = "${TUNE_PKGARCH}${TARGET_VENDOR}-${TARGET_OS}"
-SDKTARGETSYSROOT = "${SDKPATH}/sysroots/${REAL_MULTIMACH_TARGET_SYS}"
+SDKINSTALLDIR = "${SDKPATHNATIVE}"
 
 do_install() {
-    install -m 0755 -d ${D}/${SDKTARGETSYSROOT}/
+    install -m 0755 -d ${D}/${SDKINSTALLDIR}/
     #some files are under sysroot in compiler, need to copy to new sysroot
-    cp -pPR ${B}/sysroot/* ${D}/${SDKTARGETSYSROOT}/
-    cp -pPR ${B}/* ${D}/${SDKTARGETSYSROOT}/
+    cp -pPR ${B}/sysroot/* ${D}/${SDKINSTALLDIR}/
+    cp -pPR ${B}/* ${D}/${SDKINSTALLDIR}/
     if [ ${TOOLCHAIN_PREFIX}- == ${TARGET_PREFIX} ]; then
         chown -R root:root ${D}
         return 0
     fi
-    for f in ${D}/${SDKTARGETSYSROOT}/bin/${TOOLCHAIN_PREFIX}-*; do
+    for f in ${D}/${SDKINSTALLDIR}/bin/${TOOLCHAIN_PREFIX}-*; do
         bin=$(basename ${f})
         lnk=$(basename ${f} | sed "s/^${TOOLCHAIN_PREFIX}-/${TARGET_PREFIX}/g")
-        ln -svf ${bin} ${D}/${SDKTARGETSYSROOT}/bin/${lnk}
+        ln -svf ${bin} ${D}/${SDKINSTALLDIR}/bin/${lnk}
     done
     chown -R root:root ${D}
 }
