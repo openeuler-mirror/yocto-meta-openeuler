@@ -25,8 +25,6 @@ S = "${WORKDIR}/${BP}"
 #not split debug files with dwarfsrcfiles,no dwarfsrcfiles
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
-# Whether to split the suid apps into a seperate binary
-BUSYBOX_SPLIT_SUID ?= "1"
 
 export EXTRA_CFLAGS = "${CFLAGS}"
 export EXTRA_LDFLAGS = "${LDFLAGS}"
@@ -61,19 +59,6 @@ FILES_${PN}-procps = "${base_bindir}/kill ${base_bindir}/ps ${base_bindir}/pidof
                       ${bindir}/free ${bindir}/pkill ${bindir}/top ${bindir}/uptime \
 "
 
-INITSCRIPT_PACKAGES = "${PN}-httpd ${PN}-syslog ${PN}-udhcpd ${PN}-mdev ${PN}-hwclock"
-
-INITSCRIPT_NAME_${PN}-httpd = "busybox-httpd"
-INITSCRIPT_NAME_${PN}-hwclock = "hwclock.sh"
-INITSCRIPT_NAME_${PN}-mdev = "mdev"
-INITSCRIPT_PARAMS_${PN}-mdev = "start 04 S ."
-INITSCRIPT_NAME_${PN}-syslog = "syslog"
-INITSCRIPT_NAME_${PN}-udhcpd = "busybox-udhcpd"
-INITSCRIPT_NAME_${PN}-initrc = "initrc"
-
-SYSTEMD_PACKAGES = "${PN}-syslog"
-SYSTEMD_SERVICE_${PN}-syslog = "${@bb.utils.contains('SRC_URI', 'file://syslog.cfg', 'busybox-syslog.service', '', d)}"
-
 RDEPENDS_${PN}-syslog = "busybox"
 CONFFILES_${PN}-syslog = "${sysconfdir}/syslog-startup.conf"
 RCONFLICTS_${PN}-syslog = "rsyslog sysklogd syslog-ng"
@@ -82,7 +67,6 @@ CONFFILES_${PN}-mdev = "${sysconfdir}/mdev.conf"
 
 RRECOMMENDS_${PN} = "${PN}-udhcpc"
 
-RDEPENDS_${PN} = "${@["", "busybox-inittab"][(d.getVar('VIRTUAL-RUNTIME_init_manager') == 'busybox')]}"
 
 do_configure() {
         cp ../yocto-embedded-tools/config/arm64/defconfig-busybox .config
