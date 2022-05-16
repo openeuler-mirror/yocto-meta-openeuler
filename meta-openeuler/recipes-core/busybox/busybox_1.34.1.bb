@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;m
 INHIBIT_DEFAULT_DEPS = "1"
 PR = "r1"
 
-DEPENDS += "virtual/libc"
+DEPENDS += "virtual/libc virtual/${TARGET_PREFIX}gcc virtual/crypt"
 DEPENDS += "libtirpc"
 CFLAGS += "-I${STAGING_INCDIR}/tirpc"
 #get arch info

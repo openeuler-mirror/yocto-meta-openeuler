@@ -32,7 +32,7 @@ SRC_URI = "file://pam/Linux-PAM-${PV}.tar.xz \
 SRC_URI[sha256sum] = "e4ec7131a91da44512574268f493c6d8ca105c87091691b8e9b56ca685d4f94d"
 
 #DEPENDS = "bison-native flex flex-native cracklib libxml2-native virtual/crypt"
-DEPENDS = "cracklib"
+DEPENDS = "cracklib virtual/crypt"
 
 EXTRA_OECONF = "--includedir=${includedir}/security \
                 --libdir=${base_libdir} \

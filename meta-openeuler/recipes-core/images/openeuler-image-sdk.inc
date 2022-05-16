@@ -31,8 +31,9 @@ SDK_POSTPROCESS_COMMAND =+ "delete_bin_from_sdk;"
 # host nativesdk packages added to sdk
 TOOLCHAIN_HOST_TASK = " \
 meta-environment-${MACHINE} \
-gcc-bin-toolchain-cross-canadian-${TRANSLATED_TARGET_ARCH} \
+gcc-external-cross-canadian-${TRANSLATED_TARGET_ARCH} \
 "
+
 
 # extra target packages added to sdk
 TOOLCHAIN_TARGET_TASK += " \

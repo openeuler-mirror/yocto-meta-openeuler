@@ -319,7 +319,7 @@ ASSUME_PROVIDED += "rpm-native dwarfsrcfiles-native depmodwrapper-cross kmod-nat
                 bmap-tools-native openssl-native \
                 "
 PATCHTOOL = "patch"
-TCMODE = "gcc-bin"
+TCMODE = "external-openeuler"
 INHERIT_remove += "uninative"
 PATCHDEPENDENCY_remove += "patch-replacement-native:do_populate_sysroot"
 PREMIRRORS = "\
@@ -346,12 +346,14 @@ OPENEULER_SP_DIR  = "/usr1/openeuler/src/"
 # openEuler cross toolchain dir
 # prebuilt toolchain with c library is used to build openEuler embedded
 # distribution.  The prebuilt toolchain should be downloaded and placed in
-# OPENEULER_TOOLCHAIN_DIR with the following format:
-# <OPENEULER_TOOLCHAIN_DIR>
+# EXTERNAL_TOOLCHAIN with the following format:
+# <EXTERNAL_TOOLCHAIN>
 #   openeuler_gcc_arm64le  <the toolchain of aarch64 provided by openEuler>
 #   openeuler_gcc_arm32le" <the toolchain of arm32 provided by openEuler>
-OPENEULER_TOOLCHAIN_DIR_aarch64 = "/usr1/openeuler/gcc/openeuler_gcc_arm64le"
-OPENEULER_TOOLCHAIN_DIR_arm = "/usr1/openeuler/gcc/openeuler_gcc_arm32le"
+EXTERNAL_TOOLCHAIN_arm = "/usr1/openeuler/gcc/openeuler_gcc_arm32le"
+EXTERNAL_TOOLCHAIN_aarch64 = "/usr1/openeuler/gcc/openeuler_gcc_arm64le"
+EXTERNAL_TARGET_SYS_arm = "arm-openeuler-linux-gnueabi"
+EXTERNAL_TARGET_SYS_aarch64 = "aarch64-openeuler-linux-gnu"
 
 # default openeuler platform
 OPENEULER_PLATFORM = "aarch64-std"
@@ -360,3 +362,6 @@ MACHINEOVERRIDES =. "${OPENEULER_PLATFORM}:"
 # add openeuler security flags
 require conf/distro/include/security_flags.inc
 require conf/distro/include/security_flags_openeuler.inc
+
+# OE-built toolchains assume en_US is utf8
+EXTERNAL_TOOLCHAIN_FEATURES_DEFAULT = "locale-utf8-is-default"

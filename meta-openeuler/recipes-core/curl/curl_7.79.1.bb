@@ -78,3 +78,6 @@ FILES_${PN} += "${datadir}/zsh"
 #MULTILIB_SCRIPTS = "${PN}-dev:${bindir}/curl-config"
 
 BBCLASSEXTEND = "native nativesdk"
+
+#fixme
+INSANE_SKIP += "pkgconfig"
