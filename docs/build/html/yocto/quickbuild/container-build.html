@@ -107,6 +107,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../contribute_doc.html">如何撰写并贡献文档</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../security_hardening/index.html">安全加固说明</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bsp/index.html">周边设备和硬件底层软件适配</a></li>
 </ul>
 
             
@@ -175,8 +176,7 @@
             
   <div class="section" id="container-build">
 <span id="id1"></span><h1>容器环境下的快速构建指导<a class="headerlink" href="#container-build" title="永久链接至标题">¶</a></h1>
-<p>由于openEuler Embedded构建过程需要基于openEuler操作系统，且需要安装较多系统工具和构建工具。
-为方便开发人员快速搭建构建环境，我们将构建过程所依赖的操作系统和工具封装到一个容器中，
+<p>由于openEuler Embedded构建过程需要基于openEuler操作系统，且需要安装较多系统工具和构建工具。为方便开发人员快速搭建构建环境，我们将构建过程所依赖的操作系统和工具封装到一个容器中，
 这就使得开发人员可以快速搭建一个构建环境，进而投入到代码开发中去，避免在准备环境阶段消耗大量时间。</p>
 <div class="section" id="id2">
 <h2>1. 环境准备<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
@@ -192,7 +192,7 @@
 <h2>2. 安装docker<a class="headerlink" href="#docker" title="永久链接至标题">¶</a></h2>
 <div class="section" id="id3">
 <h3>1) 检查当前环境是否已安装docker工具<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h3>
-<p>运行如下命令，可以看到当前docker版本信息，则说明当前环境已安装docker，无需再次安装</p>
+<p>运行如下命令，可以看到当前docker版本信息，则说明当前环境已安装docker，无需再次安装。</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker version</span>
 </pre></div>
 </div>
@@ -200,8 +200,8 @@
 <div class="section" id="id4">
 <h3>2) 如果没有安装，可参考官方链接安装<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h3>
 <p>官网地址: <a class="reference external" href="http://www.dockerinfo.net/document">http://www.dockerinfo.net/document</a></p>
-<p>openEuler环境可参考Centos安装Docker</p>
-<p>例: openEuler环境docker安装命令如下</p>
+<p>openEuler环境可参考Centos安装Docker。</p>
+<p>例: openEuler环境docker安装命令如下：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo yum install docker</span>
 </pre></div>
 </div>
@@ -209,18 +209,16 @@
 </div>
 <div class="section" id="id5">
 <h2>3. 获取容器镜像<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
-<div class="section" id="docker-pull">
-<h3>通过docker pull命令拉取华为云中的镜像到宿主机。命令如下:<a class="headerlink" href="#docker-pull" title="永久链接至标题">¶</a></h3>
+<p>通过 <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">pull</span></code> 命令拉取华为云中的镜像到宿主机。命令如下:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container</span>
 </pre></div>
-</div>
 </div>
 </div>
 <div class="section" id="id6">
 <h2>4. 准备容器构建环境<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h2>
 <div class="section" id="id7">
 <h3>1) 启动容器<a class="headerlink" href="#id7" title="永久链接至标题">¶</a></h3>
-<p>可通过docker run命令启动容器，为了保证容器启动后可以在后台运行，且可以正常访问网络，建议使用如下命令启动:</p>
+<p>可通过 <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code> 命令启动容器，为了保证容器启动后可以在后台运行，且可以正常访问网络，建议使用如下命令启动：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker run -idt --network host swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container bash</span>
 </pre></div>
 </div>
@@ -245,7 +243,7 @@
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker exec -it 容器id bash</span>
 </pre></div>
 </div>
-<p>构建环境已准备完成，下面就可以在容器中进行构建了</p>
+<p>构建环境已准备完成，下面就可以在容器中进行构建了。</p>
 </div>
 </div>
 <div class="section" id="id9">
@@ -274,8 +272,15 @@
 <li>源码目录: /usr1/openeuler/src</li>
 <li>编译器所在路径: /usr1/openeuler/gcc/openeuler_gcc_arm64le</li>
 </ul>
-<p>说明: 不同的编译架构使用不同的编译器，aarch64-std、aarch64-pro、raspberrypi4-64使用openeuler_gcc_arm64le编译器，
-arm-std使用openeuler_gcc_arm32le编译器，下面以以aarch64-std目标架构编译为例</p>
+<blockquote>
+<div><div class="admonition note">
+<p class="first admonition-title">注解</p>
+<ul class="last simple">
+<li>不同的编译架构使用不同的编译器，aarch64-std、aarch64-pro、raspberrypi4-64使用openeuler_gcc_arm64le编译器，arm-std使用openeuler_gcc_arm32le编译器。</li>
+<li>下面以以aarch64-std目标架构编译为例。</li>
+</ul>
+</div>
+</div></blockquote>
 <ol class="loweralpha simple">
 <li>将/usr1目录所属群组改为openeuler，否则切换至openeuler用户构建会存在权限问题</li>
 </ol>
@@ -299,7 +304,7 @@ arm-std使用openeuler_gcc_arm32le编译器，下面以以aarch64-std目标架�
 </div>
 <div class="section" id="id12">
 <h3>3) 构建结果说明<a class="headerlink" href="#id12" title="永久链接至标题">¶</a></h3>
-<p>结果件默认生成在构建目录下的output目录下，例如上面aarch64-std的构建结果件生成在/usr1/build/output</p>
+<p>结果件默认生成在构建目录下的output目录下，例如上面aarch64-std的构建结果件生成在 <code class="file docutils literal notranslate"><span class="pre">/usr1/build/output</span></code> 目录下，如下表：</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="42%" />
@@ -315,11 +320,11 @@ arm-std使用openeuler_gcc_arm32le编译器，下面以以aarch64-std目标架�
 <td>openEuler Embedded image</td>
 </tr>
 <tr class="row-odd"><td>openeuler-glibc-x86_64-openeuler-image
--aarch64-qemu-aarch64-toolchain-21.09.30.sh</td>
+-*-toolchain-*.sh</td>
 <td>openEuler Embedded sdk toolchain</td>
 </tr>
 <tr class="row-even"><td>openeuler-image-qemu-aarch64-
-20220318114250.rootfs.cpio.gz</td>
+*.rootfs.cpio.gz</td>
 <td>openEuler Embedded file system</td>
 </tr>
 <tr class="row-odd"><td>zImage</td>

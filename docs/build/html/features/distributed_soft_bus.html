@@ -101,6 +101,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../contribute_doc.html">如何撰写并贡献文档</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../security_hardening/index.html">安全加固说明</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bsp/index.html">周边设备和硬件底层软件适配</a></li>
 </ul>
 
             
@@ -231,7 +232,7 @@
 </tr>
 </tbody>
 </table>
-<p>其中服务能力通过g_capbilityMap数组定义，用户若新增能力需要自定义修改该数组，并重新编译软总线服务端和客户端程序来生效。</p>
+<p>其中服务能力通过g_capabilityMap数组定义，用户若新增能力需要自定义修改该数组，并重新编译软总线服务端和客户端程序来生效。</p>
 <p>2.softbus_bus_center.h：组网模块头文件，支持获取组网内设备信息API如下：</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -269,10 +270,150 @@
 </tbody>
 </table>
 <p>各API参数详见头文件描述。</p>
+<p><strong>应用示例</strong></p>
+<p>使用qemu部署分布式软总线，编写客户端程序，使其能够列出所有发现的设备信息。</p>
+<ol class="arabic">
+<li><p class="first">编写客户端程序</p>
+<blockquote>
+<div><p>编写客户端程序依托于embedded版本发布的SDK，请参考 <a class="reference internal" href="../getting_started/index.html#getting-started"><span class="std std-ref">快速上手</span></a> 章节进行SDK环境使用准备</p>
+<p>创建一个 <code class="file docutils literal notranslate"><span class="pre">main.c</span></code> 文件，源码如下：</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;dsoftbus/softbus_bus_center.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int32_t</span> <span class="n">infoNum</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+    <span class="n">NodeBasicInfo</span> <span class="o">**</span><span class="n">testInfo</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">NodeBasicInfo</span> <span class="o">*</span><span class="p">)</span> <span class="o">*</span> <span class="n">infoNum</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">GetAllNodeDeviceInfo</span><span class="p">(</span><span class="s">&quot;testClient&quot;</span><span class="p">,</span> <span class="n">testInfo</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">infoNum</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Get node device info fail.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Get node num: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">infoNum</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">infoNum</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\t</span><span class="s"> networkId: %s, deviceName: %s, deviceTypeId: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+        <span class="n">testInfo</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">networkId</span><span class="p">,</span>
+        <span class="n">testInfo</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">deviceName</span><span class="p">,</span>
+        <span class="n">testInfo</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">deviceTypeId</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">infoNum</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">FreeNodeInfo</span><span class="p">(</span><span class="n">testInfo</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="p">}</span>
+    <span class="n">free</span><span class="p">(</span><span class="n">testInfo</span><span class="p">);</span>
+    <span class="n">testInfo</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>创建一个 <code class="file docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> 文件，源码如下：</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">project</span><span class="p">(</span><span class="s">dsoftbus_hello</span> <span class="s">C</span><span class="p">)</span>
+<span class="nb">add_executable</span><span class="p">(</span><span class="s">dsoftbus_hello</span> <span class="s">main.c</span><span class="p">)</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">dsoftbus_hello</span> <span class="s">dsoftbus_bus_center_service_sdk.z</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>编译客户端</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mkdir build</span>
+<span class="go">cd build</span>
+<span class="go">cmake ..</span>
+<span class="go">make</span>
+</pre></div>
+</div>
+<p>编译完成后会得到dsoftbus_hello</p>
+</div></blockquote>
+</li>
+<li><p class="first">构建qemu组网环境</p>
+<blockquote>
+<div><p>在host中创建网桥br0</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">brctl addbr br0</span>
+</pre></div>
+</div>
+<p>启动qemu1</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd &lt;openeuler-image-qemu-xxx.cpio.gz&gt; -device virtio-net-device,netdev=tap0,mac=52:54:00:12:34:56 -netdev bridge,id=tap0</span>
+</pre></div>
+</div>
+<div class="admonition attention">
+<p class="first admonition-title">注意</p>
+<p>首次运行如果出现如下错误提示，</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">failed to parse default acl file `/usr/local/libexec/../etc/qemu/bridge.conf&#39;</span>
+<span class="go">qemu-system-aarch64: bridge helper failed</span>
+</pre></div>
+</div>
+<p>则需要向指示的文件添加”allow br0”</p>
+<div class="last highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">echo &quot;allow br0&quot; &gt; /usr/local/libexec/../etc/qemu/bridge.conf</span>
+</pre></div>
+</div>
+</div>
+<p>启动qemu2</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd openeuler-image-qemu-aarch64-20220331025547.rootfs.cpio.gz  -device virtio-net-device,netdev=tap1,mac=52:54:00:12:34:78 -netdev bridge,id=tap1</span>
+</pre></div>
+</div>
+<div class="admonition attention">
+<p class="first admonition-title">注意</p>
+<p class="last">qemu1与qemu2的mac地址需要配置为不同的值</p>
+</div>
+<p>配置IP</p>
+<p>配置host的网桥地址</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ifconfig br0 192.168.10.1 up</span>
+</pre></div>
+</div>
+<p>配置qemu1的网络地址</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ifconfig eth0 192.168.10.2</span>
+</pre></div>
+</div>
+<p>配置qemu2的网络地址</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ifconfig eth0 192.168.10.3</span>
+</pre></div>
+</div>
+<p>分别在host、qemu1、qemu2使用ping进行测试，确保qemu1可以ping通qemu2。</p>
+</div></blockquote>
+</li>
+<li><p class="first">启动分布式软总线</p>
+<p>在qemu1和qemu2中启动分布式软总线的服务端</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">softbus_server_main &gt;log.file &amp;</span>
+</pre></div>
+</div>
+<p>将编译好的客户端分发到qemu1和qemu2的根目录中</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scp dsoftbus_hello root@192.168.10.2:/</span>
+<span class="go">scp dsoftbus_hello root@192.168.10.3:/</span>
+</pre></div>
+</div>
+<p>分别在qemu1和qemu2的根目录下运行dsoftbus_hello，将得到如下输出</p>
+<p>qemu1</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[LNN]NodeStateCbCount is 10</span>
+<span class="go">[LNN]BusCenterClientInit init OK!</span>
+<span class="go">[DISC]Init success</span>
+<span class="go">[TRAN]init tcp direct channel success.</span>
+<span class="go">[TRAN]init succ</span>
+<span class="go">[COMM]softbus server register service success!</span>
+
+<span class="go">[COMM]softbus sdk frame init success.</span>
+<span class="go">Get node num: 1</span>
+<span class="go">        networkId: 714373d691265f9a736442c01459ba39236642c743a71750bb63eb73cde24f5f, deviceName: UNKNOWN, deviceTypeId: 0</span>
+</pre></div>
+</div>
+<p>qemu2</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[LNN]NodeStateCbCount is 10</span>
+<span class="go">[LNN]BusCenterClientInit init OK!</span>
+<span class="go">[DISC]Init success</span>
+<span class="go">[TRAN]init tcp direct channel success.</span>
+<span class="go">[TRAN]init succ</span>
+<span class="go">[COMM]softbus server register service success!</span>
+
+<span class="go">[COMM]softbus sdk frame init success.</span>
+<span class="go">Get node num: 1</span>
+<span class="go">        networkId: eaf591f64bab3c20304ed3d3ff4fe1d878a0fd60bf8c85c96e8a8430d81e4076, deviceName: UNKNOWN, deviceTypeId: 0</span>
+</pre></div>
+</div>
+<p>qemu1和qemu2分别输出了发现的对方设备的基础信息。</p>
+</div></blockquote>
+</li>
+</ol>
 </div>
 <div class="section" id="id4">
 <h2>编译指导<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
-<p>编译依托于embedded版本发布的容器镜像，请参考“openEuler Embedded容器构建指导”章节进行容器环境准备。</p>
+<p>编译依托于embedded版本发布的容器镜像，请参考 <a class="reference internal" href="../yocto/quickbuild/container-build.html#container-build"><span class="std std-ref">容器环境下的快速构建指导</span></a> 章节进行容器环境准备。</p>
 <p>1）下载脚本所在仓库(例如下载到src/yocto-meta-openeuler目录下)</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">git clone https://gitee.com/openeuler/yocto-meta-openeuler.git -b openEuler-22.03-LTS -v src/yocto-meta-openeuler</span>
 </pre></div>

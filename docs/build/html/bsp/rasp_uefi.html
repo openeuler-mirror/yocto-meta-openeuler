@@ -1,0 +1,437 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="zh-CN" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="zh-CN" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>树莓派的UEFI支持和网络启动 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="prev" title="周边设备和硬件底层软件适配" href="index.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">内容</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/index.html">关键特性</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../yocto/index.html">构建系统</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../qemu/index.html">QEMU仿真器的使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute_doc.html">如何撰写并贡献文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../security_hardening/index.html">安全加固说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">周边设备和硬件底层软件适配</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">树莓派的UEFI支持和网络启动</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#buefi-psci">刷新固件使树莓派4B支持UEFI引导（混合部署依赖此固件的PSCI支持）</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">环境/工具准备</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#b-uefi">树莓派4B UEFI固件下载和刷新方法</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#openeuler-embedded">树莓派网络启动openEuler Embedded</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pxe">1 准备PXE部署服务器</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dhcp">2 使能DHCP服务</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tftp">3 使能TFTP服务</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#grub-grub">4 grub准备（编译+制作grub启动组件）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#openeuler-embeddedimage-gzinitrd">附：openEuler/Embedded内核Image.gz和文件系统initrd的获取</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">openEuler Embedded在线文档</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">周边设备和硬件底层软件适配</a> &raquo;</li>
+        
+      <li>树莓派的UEFI支持和网络启动</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="uefi">
+<span id="rasp-uefi"></span><h1>树莓派的UEFI支持和网络启动<a class="headerlink" href="#uefi" title="永久链接至标题">¶</a></h1>
+<p>本文档介绍如何让树莓派4B支持UEFI（UEFI第三方固件支持PSCI标准实现，混合部署的从核启停依赖此功能），并通过网络启动openEuler Embedded</p>
+<div class="section" id="buefi-psci">
+<h2>刷新固件使树莓派4B支持UEFI引导（混合部署依赖此固件的PSCI支持）<a class="headerlink" href="#buefi-psci" title="永久链接至标题">¶</a></h2>
+<div class="section" id="id1">
+<h3>环境/工具准备<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h3>
+<p>编译工具链：可用openEuler Embedded的交叉编译工具链，参照 <a class="reference internal" href="../getting_started/index.html#getting-started"><span class="std std-ref">快速上手/基于SDK的应用开发</span></a> 部分。</p>
+<p>设备：建议树莓派4B的出厂配置，包括树莓派4B基础套件和SD卡</p>
+</div>
+<div class="section" id="b-uefi">
+<h3>树莓派4B UEFI固件下载和刷新方法<a class="headerlink" href="#b-uefi" title="永久链接至标题">¶</a></h3>
+<p><strong>1 下载树莓派官方固件</strong></p>
+<ul>
+<li><p class="first"><a class="reference external" href="https://github.com/raspberrypi/firmware/archive/master.zip">树莓派官方固件</a></p>
+<ul class="simple">
+<li>下载上述固件后解压，将boot目录下的内容，拷贝到SD卡（boot盘）根目录,删除kernel*.img文件:</li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">rm /xxx/firmware-master/boot/kernel*.img</span>
+<span class="go">cp -rf /xxx/firmware-master/boot/* SDbootVolumes/</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p><strong>2 下载树莓派UEFI固件</strong></p>
+<ul>
+<li><p class="first"><a class="reference external" href="https://github.com/pftf/RPi4/releases/download/v1.32/RPi4_UEFI_Firmware_v1.32.zip">树莓派UEFI固件(v1.32版本为例)</a></p>
+<ul class="simple">
+<li>下载上述固件后解压，将所有文件拷贝到SD卡（boot盘）根目录（覆盖之前的文件）:</li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cp -rf /xxx/RPi4_UEFI_Firmware_v1.32/* SDbootVolumes/</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div><div class="admonition attention">
+<p class="first admonition-title">注意</p>
+<ul class="last simple">
+<li>此UEFI版本的固件默认使用3G内存limit，可以在UEFI菜单中关闭3G limit，否则系统启动后你看到的内存只有3G【参考 <a class="reference external" href="https://github.com/pftf/RPi4/">官方配置说明</a> 】</li>
+<li>UEFI+ACPI部署方法，树莓派使用的内核必须支持ACPI特性</li>
+</ul>
+</div>
+</div></blockquote>
+</div>
+</div>
+<div class="section" id="openeuler-embedded">
+<h2>树莓派网络启动openEuler Embedded<a class="headerlink" href="#openeuler-embedded" title="永久链接至标题">¶</a></h2>
+<div class="section" id="pxe">
+<h3>1 准备PXE部署服务器<a class="headerlink" href="#pxe" title="永久链接至标题">¶</a></h3>
+<p>以ubunutu 14.04为例，dhcp中指定的filename就是grup的efi引导文件名</p>
+<p>假设服务器网段为192.168.10.x，服务器ip为192.168.10.1，网卡eth0用于dhcp服务，初始化服务器ip例：</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo ifconfig eth0 192.168.10.1 up</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="dhcp">
+<h3>2 使能DHCP服务<a class="headerlink" href="#dhcp" title="永久链接至标题">¶</a></h3>
+<p>安装DHCP软件:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt-get install isc-dhcp-server</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>编辑/etc/dhcp/dhcpd.conf文件，内容示例：</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">allow booting;</span>
+<span class="go">allow bootp;</span>
+<span class="go">option domain-name &quot;example.org&quot;;</span>
+<span class="go">default-lease-time 600;</span>
+<span class="go">max-lease-time 7200;</span>
+<span class="go">ddns-update-style none;</span>
+
+<span class="go">subnet 192.168.10.0 netmask 255.255.255.0 {</span>
+<span class="go">range 192.168.10.100 192.168.10.200;</span>
+<span class="go">filename &quot;mygrub.efi&quot;; #默认下载的grub文件名，和3中制作的efi引导程序名字需匹配</span>
+<span class="go">option routers 192.168.10.1;</span>
+<span class="go">next-server 192.168.10.1; #tftp服务器IP，PXE必须，HTTPBOOT可选</span>
+<span class="go">option broadcast-address 192.168.10.255;</span>
+<span class="go">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>配置DHCP服务网络接口,编辑文件/etc/default/isc-dhcp-server 增加/修改字段：</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">INTERFACES=”eth0” #dhcp使用的网卡</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>启动DHCP服务:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo /etc/init.d/isc-dhcp-server restart</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="tftp">
+<h3>3 使能TFTP服务<a class="headerlink" href="#tftp" title="永久链接至标题">¶</a></h3>
+<p>安装TFTP服务器软件:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo apt-get install tftpd-hpa</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>配置TFTP服务，编辑/etc/default/tftpd-hpa 文件，示例内容如下:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">TFTP_USERNAME=&quot;tftp&quot;</span>
+<span class="go">TFTP_ADDRESS=&quot;:69&quot;</span>
+<span class="go">TFTP_DIRECTORY=&quot;/var/lib/tftpboot/&quot;</span>
+<span class="go">TFTP_OPTIONS=&quot;--secure -l -c -s&quot;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>启动TFTP服务:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo /etc/init.d/tftpd-hpa restart</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="grub-grub">
+<h3>4 grub准备（编译+制作grub启动组件）<a class="headerlink" href="#grub-grub" title="永久链接至标题">¶</a></h3>
+<p><strong>grub源码获取</strong></p>
+<p>下载地址：<a class="reference external" href="https://github.com/coreos/grub/releases/tag/grub-2.02">https://github.com/coreos/grub/releases/tag/grub-2.02</a></p>
+<p><strong>grub组件编译</strong></p>
+<p>解压源码包并进入根目录，准备开始构建arm64-efi（交叉编译）的grub库，注意此时交叉编译工具已经配置完毕，按如下步骤执行:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">./autogen.sh</span>
+<span class="go">./configure --prefix=/xxx/grub-2.02/build --with-platform=efi --disable-werror --target=aarch64-openeuler-linux-gnu</span>
+<span class="go">make</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>构建成功后，在当前目录会生成对应的二进制和grub组件依赖库，其中，grub-core即制作grub-efi需要的工具库，grub-mkimage即制作板子grub.efi引导的host-tool。</p>
+<p><strong>制作引导程序</strong></p>
+<p>接下来制作板子引导grub程序，下例输出名为mygrub.efi：</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">./grub-mkimage -d ./grub-core -O arm64-efi -o mygrub.efi -p &#39;&#39; ls grub-core/*.mod | cut -d &quot;.&quot; -f 1</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">注解</p>
+<p class="last">xxxxx目录中请不要带“.”，否则请适配上述语法。</p>
+</div>
+</div></blockquote>
+<p><strong>制作引导配置文件</strong></p>
+<p>最后，编辑grub.cfg配置文件，grub.cfg配置文件放在tftp的根目录（/var/lib/tftpboot/grub.cfg），grub.cfg示例内容如下（— 后面是cmdline内容，linux gz压缩的内核，initrd文件系统）：</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">insmod gzio</span>
+<span class="go">set timeout=0</span>
+
+<span class="go">menuentry &#39;Start OpenEuler&#39; {</span>
+<span class="go">echo &quot;openEuler test.&quot;</span>
+<span class="go">linux /Image.gz console=ttyAMA0,115200</span>
+<span class="go">initrd /initrd.cpio.gz</span>
+<span class="go">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">注解</p>
+<p class="last">console=ttyAMA0,115200 这里ttyAMA0是树莓派硬件串口，使用引脚14TXD和15RXD作为控制台，若有HDMI驱动，可另外指定console，比如console=tty1</p>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="openeuler-embeddedimage-gzinitrd">
+<h3>附：openEuler/Embedded内核Image.gz和文件系统initrd的获取<a class="headerlink" href="#openeuler-embeddedimage-gzinitrd" title="永久链接至标题">¶</a></h3>
+<p><strong>文件系统例子</strong></p>
+<p>可使用openEuler Embedded发布的qemu-aarch64参考 <a class="reference external" href="https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm64/aarch64-std/openeuler-image-qemu-aarch64-20220331025547.rootfs.cpio.gz">文件系统</a></p>
+<blockquote>
+<div><div class="admonition note">
+<p class="first admonition-title">注解</p>
+<p class="last">文件系统/etc/inittab的配置注意getty登录时串口重定向要使用ttyAMA0.（树莓派4硬件串口PL011对应，引脚14TXD和15RXD）</p>
+</div>
+</div></blockquote>
+<p><strong>内核单独编译例子（openEuler）</strong></p>
+<p>参考： <a class="reference external" href="https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91%E5%86%85%E6%A0%B8.md">openEuler树莓派交叉编译内核</a></p>
+<blockquote>
+<div><div class="admonition attention">
+<p class="first admonition-title">注意</p>
+<ul class="last simple">
+<li>上述UEFI+ACPI部署方法，必须在config中开启ACPI系列功能支持。在make menuconfig ARCH=arm64菜单中，选中ACPI默认系列支持，经测试当前UEFI固件只能选ACPI启动，其他两项UEFI+DTB、DTB均未成功。</li>
+<li>编译生成的Image，在上述grub.cfg的引导示例中，需使用gz命令压缩成Image.gz</li>
+</ul>
+</div>
+</div></blockquote>
+<p><strong>操作说明</strong></p>
+<p>将上述内核和文件系统，放在tftp服务目录下（/var/lib/tftpboot）即可进行网络启动。</p>
+<p>网络启动基本流程如下：</p>
+<ol class="loweralpha simple">
+<li>DHCP服务器给单板分配IP</li>
+<li>单板启动UEFI选择PXE启动</li>
+<li>PXE根据DHCP的filename和tftp服务器地址，从tftp服务器下载mygrub.efi</li>
+<li>进入grub引导程序，根据grub.cfg配置，从对应tftp目录下载文件系统和内核并加载启动</li>
+</ol>
+<p>其中，使用的ACPI资源表/DTB是UEFI固件初始化好的（引导内核前已放在对应内存），不过cmdline/bootargs可通过grub.cfg进行配置，在加载内核时，grub会传递给UEFI并上报给系统。</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../_images/rasp_uefi.png" src="../_images/rasp_uefi.png" />
+</div>
+</div></blockquote>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="周边设备和硬件底层软件适配" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2022, openEuler Embedded
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script type="text/javascript" src="../_static/translations.js"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

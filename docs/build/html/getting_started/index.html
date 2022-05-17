@@ -104,6 +104,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../contribute_doc.html">如何撰写并贡献文档</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../security_hardening/index.html">安全加固说明</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bsp/index.html">周边设备和硬件底层软件适配</a></li>
 </ul>
 
             
@@ -178,8 +179,8 @@
 <h2>获取镜像<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
 <p>当前发布的已构建好的镜像中，只支持arm和aarch64两种架构，且只支持qemu中ARM virt-4.0平台，您可以通过如下链接获得相应的镜像：</p>
 <ul class="simple">
-<li><a class="reference external" href="https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm32/arm-std">qemu_arm</a>： 32位arm架构, ARM Cortex A15处理器</li>
-<li><a class="reference external" href="https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm64/aarch64-std">qemu_aarch64</a>: 64位aarch64架构 ARM Cortex A57处理器</li>
+<li><a class="reference external" href="https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm32/arm-std">qemu_arm</a>：32位arm架构, ARM Cortex A15处理器</li>
+<li><a class="reference external" href="https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm64/aarch64-std">qemu_aarch64</a>：64位aarch64架构 ARM Cortex A57处理器</li>
 </ul>
 <p>只要相应环境支持QEMU仿真器（版本5.0以上），您可以将提供的openEuler Embedded镜像部署在物理裸机、云环境、容器或虚拟机上。</p>
 </div>
@@ -198,7 +199,7 @@
 </ul>
 </li>
 <li>SDK(Software Development Kit)工具<ul>
-<li><code class="file docutils literal notranslate"><span class="pre">openeuler-glibc-x86_64-xxxxx.sh</span></code>：openEuler Embedded SDK自解压安装包，SDK包含了进行开发（用户态程序、内核模块啦.ko等)所必需的工具、库和头文件等。</li>
+<li><code class="file docutils literal notranslate"><span class="pre">openeuler-glibc-x86_64-xxxxx.sh</span></code>：openEuler Embedded SDK自解压安装包，SDK包含了进行开发（用户态程序、内核模块等)所必需的工具、库和头文件等。</li>
 </ul>
 </li>
 </ul>
@@ -210,7 +211,7 @@
 <p class="first admonition-title">注解</p>
 <ul class="last simple">
 <li>建议使用QEMU 5.0以上版本运行镜像，由于一些额外功能（网络、共享文件系统)需要依赖QEMU的virtio-net, virtio-fs等特性，如未在QEMU中使能，则运行时可能会产生错误，此时可能需要从源码重新编译QEMU。</li>
-<li>运行镜像时，建议把内核镜像和根文件系统镜像放在同一目录下，后续说明以标准根文件系统为例(initrd)。</li>
+<li>运行镜像时，建议把内核镜像和根文件系统镜像放在同一目录下。</li>
 </ul>
 </div>
 <p>QEMU的下载与安装可以参考 <a class="reference external" href="https://www.qemu.org/download/#linux">QEMU官方网站</a> , 或者下载 <a class="reference external" href="https://www.qemu.org/download/#source">源码</a> 单独编译安装。安装好后可以运行如下命令
@@ -221,6 +222,9 @@
 <div class="section" id="id6">
 <h3>极简运行场景<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h3>
 <p>该场景下，QEMU未使能网络和共享文件系统，适合快速的功能体验。</p>
+<ol class="arabic simple">
+<li><strong>启动QEMU</strong></li>
+</ol>
 <p>针对arm(ARM Cortex A15)，运行如下命令：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-arm -M virt-4.0 -m 1G -cpu cortex-a15 -nographic -kernel zImage -initrd &lt;openeuler-image-qemu-xxx.cpio.gz&gt;</span>
 </pre></div>
@@ -229,8 +233,14 @@
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd &lt;openeuler-image-qemu-xxx.cpio.gz&gt;</span>
 </pre></div>
 </div>
-<p>由于标准根文件系统镜像进行了安全加固，因此第一次启动时，需要为登录用户名root设置密码，且密码强度有相应要求， 需要数字、字母、特殊字符组合最少8位，例如openEuler&#64;2021
-QEMU运行成功并登录后，将会呈现openEuler Embedded的Shell。</p>
+<div class="admonition note">
+<p class="first admonition-title">注解</p>
+<p class="last">由于标准根文件系统镜像进行了安全加固，因此第一次启动时，需要为登录用户名root设置密码，且密码强度有相应要求， 需要数字、字母、特殊字符组合最少8位，例如openEuler&#64;2021</p>
+</div>
+<ol class="arabic simple" start="2">
+<li><strong>检查运行是否成功</strong></li>
+</ol>
+<p>QEMU运行成功并登录后，将会呈现openEuler Embedded的Shell。</p>
 </div>
 <div class="section" id="id7">
 <h3>使能共享文件系统场景<a class="headerlink" href="#id7" title="永久链接至标题">¶</a></h3>
@@ -285,9 +295,13 @@ openEuler Embedded传输文件。</p>
 <ol class="arabic simple" start="2">
 <li><strong>宿主上建立虚拟网卡</strong></li>
 </ol>
-<p>在宿主机上需要建立名为tap0的虚拟网卡，可以借助 <code class="file docutils literal notranslate"><span class="pre">/etc/qemu-ifup</span></code> 脚本实现（如没有，则需要创建），其执行需要root权限，具体内容如下：</p>
+<p>在宿主机上需要建立名为tap0的虚拟网卡，可以借助脚本实现，创建 <code class="file docutils literal notranslate"><span class="pre">qemu-ifup</span></code> 脚本，放在 <code class="file docutils literal notranslate"><span class="pre">/etc/</span></code> 目录下，具体内容如下：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>!/bin/bash
 <span class="go">ifconfig $1 192.168.10.1 up</span>
+</pre></div>
+</div>
+<p>其执行需要root权限：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">chmod a+x qemu-ifup</span>
 </pre></div>
 </div>
 <p>通过 <code class="file docutils literal notranslate"><span class="pre">qemu-ifup</span></code> 脚本，宿主机上将创建名为tap0的虚拟网卡，地址为192.168.10.1。</p>
@@ -341,14 +355,14 @@ openEuler Embedded传输文件。</p>
 <ol class="arabic simple" start="2">
 <li><strong>设置SDK环境变量</strong></li>
 </ol>
-<p>前一步执行结束最后已打印source命令，运行即可</p>
+<p>前一步执行结束最后已打印source命令，运行即可。</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">. /usr1/openeuler/myfiles/sdk/environment-setup-armv7a-openeuler-linux-gnueabi</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
 <li><strong>查看是否安装成功</strong></li>
 </ol>
-<p>运行如下命令，查看是否安装成功、环境设置成功</p>
+<p>运行如下命令，查看是否安装成功、环境设置成功。</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">arm-openeuler-linux-gnueabi-gcc -v</span>
 </pre></div>
 </div>
@@ -368,7 +382,7 @@ openEuler Embedded传输文件。</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>编写CMakelist.txt，和hello.c文件放在同一个目录</p>
+<p>编写CMakelist.txt，和hello.c文件放在同一个目录。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="p">(</span><span class="n">hello</span> <span class="n">C</span><span class="p">)</span>
 
 <span class="n">add_executable</span><span class="p">(</span><span class="n">hello</span> <span class="n">hello</span><span class="o">.</span><span class="n">c</span><span class="p">)</span>
@@ -382,7 +396,7 @@ openEuler Embedded传输文件。</p>
 <span class="go">make</span>
 </pre></div>
 </div>
-<p>把编译好的hello程序拷贝到openEuler Embedded系统的 <code class="file docutils literal notranslate"><span class="pre">/tmp/</span></code> 某个目录下（例如 <code class="file docutils literal notranslate"><span class="pre">/tmp/myfiles/</span></code> ）。如何拷贝可以参考前文所述共享文件系统场景</p>
+<p>把编译好的hello程序拷贝到openEuler Embedded系统的 <code class="file docutils literal notranslate"><span class="pre">/tmp/</span></code> 某个目录下（例如 <code class="file docutils literal notranslate"><span class="pre">/tmp/myfiles/</span></code> ）。如何拷贝可以参考前文所述共享文件系统场景。</p>
 <ol class="arabic simple" start="3">
 <li><strong>运行用户态程序</strong></li>
 </ol>
@@ -398,8 +412,7 @@ openEuler Embedded传输文件。</p>
 <ol class="arabic simple">
 <li><strong>准备环境</strong></li>
 </ol>
-<p>在设置好SDK环境的基础之上，编译内核模块还需准备相应环境，但只需要准备一次即可。运行如下命令
-会创建相应的内核模块编译环境：</p>
+<p>在设置好SDK环境的基础之上，编译内核模块还需准备相应环境，但只需要准备一次即可。运行如下命令会创建相应的内核模块编译环境：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd &lt;SDK_PATH&gt;/sysroots/&lt;target&gt;-openeuler-linux/usr/src/kernel</span>
 <span class="go">make  module_prepare</span>
 </pre></div>
