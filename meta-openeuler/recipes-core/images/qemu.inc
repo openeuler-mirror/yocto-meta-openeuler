@@ -5,7 +5,7 @@ delete_boot_from_rootfs() {
         rm -f "${OUTPUT_DIR}"/*Image* "${OUTPUT_DIR}"/vmlinux*
         mv boot/${KERNEL_IMAGETYPE}-* "${OUTPUT_DIR}"/${KERNEL_IMAGETYPE}
         mv boot/vmlinux* "${OUTPUT_DIR}"/
-        mv boot/Image* "${OUTPUT_DIR}"/
+        [[ "${KERNEL_IMAGETYPE}" =~ ^Image.* ]] || mv boot/Image* "${OUTPUT_DIR}"/
         rm -r ./boot
     fi
     popd
