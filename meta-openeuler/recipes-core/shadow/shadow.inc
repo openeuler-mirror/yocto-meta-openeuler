@@ -209,3 +209,4 @@ FILES_${PN}-base = "\
 RDEPENDS_${PN} += "${PN}-base"
 
 PACKAGE_WRITE_DEPS += "shadow-native"
+PACKAGE_WRITE_DEPS_remove += "shadow-native"

@@ -1,3 +1,4 @@
+# cross-canadian.bbclass depends on chrpath-native, change to chrpath on the host
 inherit external-toolchain cross-canadian
 
 # Toolchain binaries are expected to run on both this host and SDKMACHINE, so

@@ -11,6 +11,8 @@ SRC_URI = "file://cracklib/cracklib-${PV}.tar.gz \
 LIC_FILES_CHKSUM = "file://COPYING.LIB;md5=e3eda01d9815f8d24aae2dbd89b68b06"
 
 DEPENDS = "cracklib-native zlib"
+#use command(create-cracklib-dict cracklib-format cracklib-packer) on the host, not from cracklib-native
+DEPENDS_remove += "cracklib-native"
 DEPENDS_class-native = "zlib"
 
 EXTRA_OECONF = "--without-python --libdir=${base_libdir}"

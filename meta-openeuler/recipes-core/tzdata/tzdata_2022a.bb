@@ -1,6 +1,8 @@
 require timezone.inc
 
 DEPENDS = "tzcode-native"
+#use zic on host
+DEPENDS_remove += "tzcode-native"
 
 #inherit allarch
 
@@ -21,11 +23,11 @@ TZONES= "africa antarctica asia australasia europe northamerica southamerica  \
 
 do_compile () {
         for zone in ${TZONES}; do \
-            ${STAGING_BINDIR_NATIVE}/zic -d ${WORKDIR}${datadir}/zoneinfo -L /dev/null \
+            zic -d ${WORKDIR}${datadir}/zoneinfo -L /dev/null \
                 ${S}/${zone} ; \
-            ${STAGING_BINDIR_NATIVE}/zic -d ${WORKDIR}${datadir}/zoneinfo/posix -L /dev/null \
+            zic -d ${WORKDIR}${datadir}/zoneinfo/posix -L /dev/null \
                 ${S}/${zone} ; \
-            ${STAGING_BINDIR_NATIVE}/zic -d ${WORKDIR}${datadir}/zoneinfo/right -L ${S}/leapseconds \
+            zic -d ${WORKDIR}${datadir}/zoneinfo/right -L ${S}/leapseconds \
                 ${S}/${zone} ; \
         done
 }

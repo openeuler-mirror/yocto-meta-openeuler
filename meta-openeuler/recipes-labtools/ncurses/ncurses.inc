@@ -5,6 +5,8 @@ LICENSE = "MIT"
 SECTION = "libs"
 DEPENDS = "ncurses-native"
 DEPENDS_class-native = ""
+#use tic on the host, not from ncurses-native
+DEPENDS_remove += "ncurses-native"
 
 BINCONFIG = "${bindir}/ncurses5-config ${bindir}/ncursesw5-config \
         ${bindir}/ncurses6-config ${bindir}/ncursesw6-config"
