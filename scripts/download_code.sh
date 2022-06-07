@@ -190,6 +190,8 @@ download_code()
     update_code_repo src-openeuler/libmetal ${SRC_BRANCH}
     update_code_repo src-openeuler/OpenAMP ${SRC_BRANCH}
     update_code_repo src-openeuler/sysfsutils ${SRC_BRANCH}
+    update_code_repo src-openeuler/tcl ${SRC_BRANCH}
+    update_code_repo src-openeuler/expect ${SRC_BRANCH}
 }
 
 # download iSulad related packages
