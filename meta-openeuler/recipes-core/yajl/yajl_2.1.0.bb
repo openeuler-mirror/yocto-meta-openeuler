@@ -4,12 +4,13 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
 SRC_URI = "file://yajl/${PV}.tar.gz \
-	   file://yajl/yajl-2.1.0-pkgconfig-location.patch    \
-	   file://yajl/yajl-2.1.0-pkgconfig-includedir.patch    \
-	   file://yajl/yajl-2.1.0-test-location.patch    \
-	   file://yajl/yajl-2.1.0-dynlink-binaries.patch    \
-	   file://yajl/yajl-2.1.0-fix-memory-leak.patch    \
-           file://yajl/backport-fix-memory-leaks.patch \
+	   file://yajl/0001-yajl-2.1.0-pkgconfig-location.patch    \
+	   file://yajl/0002-yajl-2.1.0-pkgconfig-includedir.patch    \
+	   file://yajl/0003-yajl-2.1.0-test-location.patch    \
+	   file://yajl/0004-yajl-2.1.0-dynlink-binaries.patch    \
+	   file://yajl/0005-yajl-2.1.0-fix-memory-leak.patch    \
+	   file://yajl/0006-fix-memory-leak-of-ctx-root.patch \
+	   file://yajl/0007-add-cmake-option-for-test-and-binary.patch \
 	  "
 
 S = "${WORKDIR}/${BPN}-${PV}"
