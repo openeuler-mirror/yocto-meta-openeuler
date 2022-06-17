@@ -43,11 +43,11 @@ update_code_repo()
     [ -z "$branchname" ] && exit 1
     [ -z "$pkg" ] && exit 1
     #branch is also commitid,cannot clone -b <commitid>
-    [ "$branchname" eq "$commitid" ] && branch=""
+    [[ "$branchname" == "$commitid" ]] && branch=""
     #change dir name if required
     [ -z "${realdir}" ] || pkg="$(basename ${realdir})"
     #shallow clone for linux kernel as it's too large
-    [ "${pkg}" eq "kernel-5.10" ] && local git_param="--depth 1"
+    [[ "${pkg}" == "kernel-5.10" ]] && local git_param="--depth 1"
     test -d "${SRC_DIR}" || mkdir -p "${SRC_DIR}"
     pushd "${SRC_DIR}"  >/dev/null
     # if git repo exits, continue, or clone the package repo
@@ -242,7 +242,7 @@ unpack_dsoftbus_code()
     #unpack build
     unzip -qd ${dsoftbus_build_dir} ${prefix_dir}/build/${build}.zip
     mv ${dsoftbus_build_dir}/${build} ${dsoftbus_build_dir}/build
-    
+
     #unpack build_tools
     for i in  $gn $ninja
     do
@@ -358,7 +358,7 @@ main()
     URL_PREFIX="https://gitee.com/"
     if [ -f "${MANIFEST}" ];then
         download_by_manifest
-    elif [ "$1" eq "dsoftbus" ];then
+    elif [[ "$1" == "dsoftbus" ]];then
         SRC_DIR="$(cd $(dirname $0)/../../;pwd)"
         download_dsoftbus_code
     else
