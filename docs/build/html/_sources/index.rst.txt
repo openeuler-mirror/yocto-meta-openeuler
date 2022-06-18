@@ -27,6 +27,7 @@ openEuler Embedded在内核版本、软件包版本等代码层面会与openEule
    security_hardening/index.rst
    releases/index.rst
    bsp/index.rst
+   republish/index.rst
 
 索引与表格
 ***********
