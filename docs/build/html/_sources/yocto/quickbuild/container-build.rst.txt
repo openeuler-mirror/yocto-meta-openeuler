@@ -53,6 +53,27 @@ openEuler环境可参考Centos安装Docker。
 
     docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container
 
+默认下载最新镜像，也可以根据需要编译的版本指定下载镜像版本，命令如下:
+
+.. code-block:: console
+
+   docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:[Image Version]
+
+容器镜像信息列表：
+
++---------------------------------------------+----------------+-----------------------------------+----------------+--------------+
+|      Image Name                             | Image Version  | Recommended to build using branch | Kernel Version | Libc Version |
++=============================================+================+===================================+================+==============+
+| swr.cn-north-4.myhuaweicloud.com/openeuler  | latest         | master                            | 22.03 LTS      | 2.34         |
+| -embedded/openeuler-container               |                |                                   |                |              |
++---------------------------------------------+----------------+-----------------------------------+----------------+--------------+
+| swr.cn-north-4.myhuaweicloud.com/openeuler  | 22.03-lts      | openEuler-22.03-LTS               | 22.03 LTS      | 2.34         |
+| -embedded/openeuler-container               |                |                                   |                |              |
++---------------------------------------------+----------------+-----------------------------------+----------------+--------------+
+| swr.cn-north-4.myhuaweicloud.com/openeuler  | 21.09          | openEuler-21.09                   | 21.03          | 2.31         |
+| -embedded/openeuler-container               |                |                                   |                |              |
++---------------------------------------------+----------------+-----------------------------------+----------------+--------------+
+
 4. 准备容器构建环境
 *********************
 
