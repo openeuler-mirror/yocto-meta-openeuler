@@ -7,7 +7,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 DEPENDS = "popt"
 
-SRC_URI = "file://${BPN}/${BP}.tar.xz"
+SRC_URI = "file://${BPN}/${BP}.tar.xz\
+           file://${BPN}/0001-logrotate-3.20.1-lock-state-msg.patch"
 UPSTREAM_CHECK_URI = "https://github.com/${BPN}/${BPN}/releases"
 UPSTREAM_CHECK_REGEX = "logrotate-(?P<pver>\d+(\.\d+)+).tar"
 
