@@ -53,7 +53,7 @@ openEuler环境可参考Centos安装Docker
 
 .. code-block:: console
 
-    docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container
+    docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:22.03-lts
 
 4. 准备容器构建环境
 *********************
@@ -65,7 +65,7 @@ openEuler环境可参考Centos安装Docker
 
 .. code-block:: console
 
-    docker run -idt --network host swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container bash
+    docker run -idt --network host swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:22.03-lts bash
 
 参数说明: 
 
