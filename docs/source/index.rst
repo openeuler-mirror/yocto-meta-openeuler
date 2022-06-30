@@ -23,6 +23,7 @@ openEuler Embedded在内核版本、软件包版本等代码层面会与openEule
    features/index.rst
    yocto/index.rst
    qemu/index.rst
+   commit_msg/index.rst
    contribute_doc.rst
    security_hardening/index.rst
    releases/index.rst
