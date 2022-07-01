@@ -20,11 +20,14 @@ def run(d, cmd, *args):
 
         bb.debug(1, 'oe.external.run({})'.format(repr(args)))
         try:
-            output, _ = bb.process.run(args, cwd=topdir)
+            stdout, stderr = bb.process.run(args, cwd=topdir)
         except bb.process.CmdError as exc:
             bb.debug(1, 'oe.external.run: {} failed: {}'.format(subprocess.list2cmdline(args), exc))
         else:
-            return output
+# cmd like gcc -v will output to stderr not stdout, so do special handling for it
+            if (stdout == ''):
+                stdout = stderr
+            return stdout
 
     return 'UNKNOWN'
 
