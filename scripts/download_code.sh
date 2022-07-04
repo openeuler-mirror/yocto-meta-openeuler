@@ -215,7 +215,9 @@ download_iSulad_code()
 clone_dsoftbus_code()
 {
     update_code_repo openeuler/dsoftbus_standard ${SRC_BRANCH}
-    update_code_repo openeuler/yocto-embedded-tools ${SRC_BRANCH}
+    # 暂时固定yocto-embedded-tools分支为openEuler-22.03-LTS
+    # update_code_repo openeuler/yocto-embedded-tools ${SRC_BRANCH}
+    update_code_repo openeuler/yocto-embedded-tools "openEuler-22.03-LTS"
     update_code_repo src-openeuler/libboundscheck ${SRC_BRANCH}
 }
 
