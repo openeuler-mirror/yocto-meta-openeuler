@@ -1,6 +1,7 @@
-delete_boot_from_rootfs() {
+delete_unneeded_from_rootfs() {
     test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
     pushd "${IMAGE_ROOTFS}"
+    #  remove /boot folder
     if [ -d ./boot ];then
         rm -f "${OUTPUT_DIR}"/*Image* "${OUTPUT_DIR}"/vmlinux*
         mv boot/${KERNEL_IMAGETYPE}-* "${OUTPUT_DIR}"/${KERNEL_IMAGETYPE}
@@ -16,5 +17,5 @@ copy_openeuler_distro() {
     cp -fp ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.${IMAGE_FSTYPES} "${OUTPUT_DIR}"/
 }
 
-IMAGE_PREPROCESS_COMMAND += "delete_boot_from_rootfs;"
+IMAGE_PREPROCESS_COMMAND += "delete_unneeded_from_rootfs;"
 IMAGE_POSTPROCESS_COMMAND += "copy_openeuler_distro;"
