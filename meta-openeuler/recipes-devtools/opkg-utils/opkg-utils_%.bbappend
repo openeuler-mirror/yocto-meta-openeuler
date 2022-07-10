@@ -1,6 +1,8 @@
 # acl version in openEuler
 PV = "0.5.0"
 
+OPENEULER_REPO_NAME = "yocto-opkg-utils"
+
 # currently, openeuler_embedded only supports update-alternatives, no python
 PACKAGECONFIG = "update-alternatives"
 
