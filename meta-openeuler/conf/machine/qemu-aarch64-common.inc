@@ -21,3 +21,7 @@ MACHINEOVERRIDES_remove_virtclass-multilib-lib32 =. "march64:"
 MACHINEOVERRIDES_append_virtclass-multilib-lib32 =. "march32:"
 TUNE_FEATURES_append_virtclass-multilib-lib32 += " cortexa9"
 TUNE_FEATURES_remove_virtclass-multilib-lib32 += " vfp"
+
+# simplest serial console setting, no VT
+SERIAL_CONSOLES ?= "115200;ttyAMA0"
+USE_VT ?= "0"
