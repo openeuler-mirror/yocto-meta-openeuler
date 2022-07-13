@@ -80,4 +80,5 @@ ASSUME_PROVIDED += "gperf-native perl-native  \
                     init-system-helpers \
                     cross-localedef-native nativesdk-glibc-locale \
                     openssl-native ncurses-native \
+                    gtk-doc-native \
                     "
