@@ -72,9 +72,6 @@ ASSUME_PROVIDED += "qemu-native rsync-native nativesdk-qemuwrapper-cross"
 ## dwarfsrcfiles-native is used in package.bbclass, it needs elfutil
 ## \todo remove dwarfsrcfiles-native after elfutil is added into nativesdk
 ASSUME_PROVIDED += "dwarfsrcfiles-native"
-## kern-tools-native has some script tools for kernel development
-## \tood remove kern-tools-native after it's added into yocto-embedded-tools
-ASSUME_PROVIDED += "kern-tools-native"
 
 ASSUME_PROVIDED += "gperf-native perl-native  \
                     init-system-helpers \
