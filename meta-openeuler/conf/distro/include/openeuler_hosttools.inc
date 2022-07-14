@@ -77,6 +77,8 @@ ASSUME_PROVIDED += "dwarfsrcfiles-native"
 ASSUME_PROVIDED += "libxml2-native"
 # used by make-mod-scripts
 ASSUME_PROVIDED += "gmp-native"
+# used by cracklib
+ASSUME_PROVIDED += "cracklib-native"
 
 ASSUME_PROVIDED += "gperf-native perl-native  \
                     init-system-helpers \
