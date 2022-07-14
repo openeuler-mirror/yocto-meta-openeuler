@@ -74,7 +74,7 @@ ASSUME_PROVIDED += "qemu-native rsync-native nativesdk-qemuwrapper-cross"
 ASSUME_PROVIDED += "dwarfsrcfiles-native"
 
 # used by libpam
-ASSUME_PROVIDED += "libxml2-native"
+ASSUME_PROVIDED += "libxml2-native attr-native"
 # used by make-mod-scripts
 ASSUME_PROVIDED += "gmp-native"
 # used by cracklib

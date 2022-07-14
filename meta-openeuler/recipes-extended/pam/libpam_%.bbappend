@@ -20,6 +20,11 @@ SRC_URI[sha256sum] = "e4ec7131a91da44512574268f493c6d8ca105c87091691b8e9b56ca685
 
 DEPENDS_remove += "flex"
 
+# no coreutils in openeuler
+RDEPENDS_${PN}-xtests_remove += " \
+    coreutils \
+"
+
 PACKAGES += "${PN}-pkgconfig ${PN}-service"
 FILES_${PN}-pkgconfig = "${base_libdir}/pkgconfig"
 FILES_${PN}-service = "/usr/lib/systemd/system"
