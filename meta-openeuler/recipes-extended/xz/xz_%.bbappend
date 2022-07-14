@@ -1,0 +1,11 @@
+# main bbfile: yocto-poky/meta/recipes-extended/xz/xz_5.2.5.bb
+
+# Use the source packages from openEuler
+SRC_URI_remove = "https://tukaani.org/xz/xz-${PV}.tar.gz"
+SRC_URI += "file://xz/xz-${PV}.tar.xz \
+            file://xz/backport-CVE-2022-1271.patch \
+            "
+
+SRC_URI[md5sum] = "aa1621ec7013a19abab52a8aff04fe5b"
+SRC_URI[sha256sum] = "3e1e518ffc912f86608a8cb35e4bd41ad1aec210df2a47aaa1f95e7f5576ef56"
+
