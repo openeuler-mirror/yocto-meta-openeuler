@@ -1,14 +1,17 @@
-DESCRIPTION = "Yet Another JSON Library - A Portable JSON parsing and serialization library in ANSI C"
-LICENSE = "MIT"
+SUMMARY = "A lightweight C++/C based container runtime daemon"
+DESCRIPTION = "iSulad is a lightweight container runtime daemon which is designed for IOT and \
+                Cloud infrastructure.iSulad has the characteristics of light, fast and not limited \
+                by hardware specifications and architecture, and can be applied more widely"
+HOMEPAGE = "https://gitee.com/openeuler/iSulad"
+LICENSE = "MulanPSLv2"
 
-LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
+LIC_FILES_CHKSUM = "file://LICENSES/LICENSE;md5=1acb172ffd3d252285dd1b8b8459941e"
 
 SRC_URI = "file://iSulad/v${PV}.tar.gz \
            file://iSulad/0001-do-not-mkdir-of-isulad-if-no-controller-found.patch \
-"
+        "
 
 S = "${WORKDIR}/${BPN}-v${PV}"
-WARN_QA_remove += "uppercase-pn"
 
 inherit cmake
 OECMAKE_GENERATOR = "Unix Makefiles"

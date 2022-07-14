@@ -14,5 +14,5 @@ lxc \
 libevhtp \
 libarchive \
 libevent \
-iSulad \
+isulad \
     "
