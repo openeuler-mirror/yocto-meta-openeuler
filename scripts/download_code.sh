@@ -135,6 +135,7 @@ download_code()
     update_code_repo src-openeuler/gzip ${SRC_BRANCH}
     update_code_repo src-openeuler/xz ${SRC_BRANCH}
     update_code_repo src-openeuler/lzo ${SRC_BRANCH}
+    update_code_repo src-openeuler/lz4 ${SRC_BRANCH}
     update_code_repo src-openeuler/bzip2 ${SRC_BRANCH}
     update_code_repo src-openeuler/sed ${SRC_BRANCH}
     update_code_repo src-openeuler/json-c ${SRC_BRANCH}
