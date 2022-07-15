@@ -3,9 +3,7 @@ LICENSE = "MIT"
 
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
-SRC_URI = "file://iSulad/v${PV}.tar.gz \
-           file://iSulad/0001-do-not-mkdir-of-isulad-if-no-controller-found.patch \
-"
+SRC_URI = "file://iSulad/v${PV}.tar.gz"
 
 S = "${WORKDIR}/${BPN}-v${PV}"
 WARN_QA_remove += "uppercase-pn"
