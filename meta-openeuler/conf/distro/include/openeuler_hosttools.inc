@@ -34,13 +34,6 @@ ASSUME_PROVIDED +="ldconfig-native "
 HOSTTOOLS_NONFATAL += "xz"
 ASSUME_PROVIDED += "xz-native pigz-native gzip-native"
 
-# used by shadow, built from shadow-native
-HOSTTOOLS_NONFATAL += "pwconv grpconv"
-ASSUME_PROVIDED += "shadow-native"
-
-# used by update-rc.d.bbclass and update-alternatives.bbclass
-HOSTTOOLS_NONFATAL += "update-rc.d update-alternatives"
-ASSUME_PROVIDED += "update-rc.d-native virtual/update-alternatives-native"
 
 # gettext amd documentation related tools
 HOSTTOOLS_NONFATAL += "msgfmt msgmerge makeinfo"
