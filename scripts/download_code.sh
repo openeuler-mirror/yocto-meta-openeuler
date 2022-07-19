@@ -123,6 +123,7 @@ download_code()
     update_code_repo src-openeuler/libcap-ng ${SRC_BRANCH}
     update_code_repo src-openeuler/libpwquality ${SRC_BRANCH}
     update_code_repo src-openeuler/openssh ${SRC_BRANCH}
+    update_code_repo src-openeuler/libnsl2 ${SRC_BRANCH}
     update_code_repo src-openeuler/openssl ${SRC_BRANCH}
     update_code_repo src-openeuler/pam ${SRC_BRANCH}
     update_code_repo src-openeuler/shadow ${SRC_BRANCH}
