@@ -1,81 +1,73 @@
-SUMMARY = "OS basic configuration files"
-DESCRIPTION = "base files"
+SUMMARY = "extra basic configuration files of openEuler Embedded"
+DESCRIPTION = "extra basic configuration files as a supplement of poky's base-files bb"
 SECTION = "base"
 PR = "r1"
-LICENSE = "CLOSED"
+LICENSE = "GPLv2"
+LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
-FILESPATH = "${THISDIR}/${BPN}/"
-DL_DIR = "${THISDIR}/${BPN}/"
-LIC_FILES_CHKSUM = "file://${WORKDIR}/LICENSE;md5=1acb172ffd3d252285dd1b8b8459941e"
+INHIBIT_DEFAULT_DEPS = "1"
 
 SRC_URI = "file://bashrc \
-	file://fstab \
-	file://rcS \
-	file://group \
-	file://inittab \
-	file://issue \
-	file://issue.net \
-	file://LICENSE \
-	file://motd \
 	file://passwd \
-	file://profile \
+	file://group \
 	file://shadow \
 	file://sysctl.conf \
 	file://rc.functions \
 	file://rc.sysinit \
 	file://rc.local \
-        file://modules \
+    file://modules \
+	file://ethertypes \
+	file://services \
+	file://protocols \
+	file://rpc \
 "
 
-hostname = "openeuler"
-
 do_install() {
-	install -d ${D}/etc
-	cp ${WORKDIR}/bashrc  		${D}/etc/
-	install -m 0600 ${WORKDIR}/fstab ${D}/etc/
-	cp ${WORKDIR}/group  		${D}/etc/
-	cp ${WORKDIR}/inittab  		${D}/etc/
-	cp ${WORKDIR}/issue  		${D}/etc/
-	cp ${WORKDIR}/issue.net  	${D}/etc/
-	cp ${WORKDIR}/motd		${D}/etc/
-	cp ${WORKDIR}/passwd  		${D}/etc/
-	cp ${WORKDIR}/profile  		${D}/etc/
-	install -m 0600 ${WORKDIR}/shadow ${D}/etc/
-	install -m 0600 ${WORKDIR}/sysctl.conf ${D}/etc/
-	install -d ${D}/etc/rc.d
-	install -m 0744 ${WORKDIR}/rc.functions ${D}/etc/rc.d
-	install -m 0744 ${WORKDIR}/rc.sysinit ${D}/etc/rc.d
-	install -m 0744 ${WORKDIR}/rc.local ${D}/etc/rc.d
-        install -m 0755 -d ${D}/etc/init.d/
-	install -m 0750 ${WORKDIR}/rcS ${D}/etc/init.d/
-        install -m 0750 ${WORKDIR}/modules ${D}/etc/
-    mkdir -p ${D}/var/log/
-    touch ${D}/var/log/messages ${D}/var/log/lastlog
-    mkdir -p ${D}/var/run/faillock ${D}/tmp
-    mkdir -p ${D}/proc ${D}/sys ${D}/root ${D}/dev ${D}/sys/fs/cgroup
-    mkdir -p ${D}/var/log/audit ${D}/var/run/sshd ${D}$/lib/modules
-    if [ "${hostname}" ]; then
-        echo ${hostname} > ${D}${sysconfdir}/hostname
-        echo "127.0.1.1 ${hostname}" >> ${D}${sysconfdir}/hosts
-    fi
-    mkdir -p ${D}${sysconfdir}/security/
+## the contents of configuration should be changed according features, user configuration etc.
+
+## add config files in /etc folder
+	install -d ${D}${sysconfdir}
+	cp ${WORKDIR}/bashrc ${D}${sysconfdir}/
+# passwwd and group refer some settings in base-passwd.bb's src code
+	install -m 0644 ${WORKDIR}/group  ${D}${sysconfdir}/
+	install -m 0644 ${WORKDIR}/passwd ${D}${sysconfdir}/
+# \todo shadow needs further configuration
+	install -m 0600 ${WORKDIR}/shadow ${D}${sysconfdir}/
+# sysctl
+	install -m 0600 ${WORKDIR}/sysctl.conf ${D}${sysconfdir}/
+# init scripts
+	install -d ${D}${sysconfdir}/rc.d
+	install -m 0744 ${WORKDIR}/rc.functions ${D}${sysconfdir}/rc.d
+	install -m 0744 ${WORKDIR}/rc.sysinit ${D}${sysconfdir}/rc.d
+	install -m 0744 ${WORKDIR}/rc.local ${D}${sysconfdir}/rc.d
+    install -m 0750 ${WORKDIR}/modules ${D}${sysconfdir}/
+	mkdir -p ${D}${sysconfdir}/security/
     touch ${D}${sysconfdir}/security/opasswd
     chmod 600 ${D}${sysconfdir}/security/opasswd
-    chmod 750 ${D}$/lib/modules
-    chmod 700 ${D}/root
 
+# necessary infrastructure for basic TCP/IP based networking from netbase_6.2.bb
+	install -m 0644 ${WORKDIR}/rpc ${D}${sysconfdir}/rpc
+	install -m 0644 ${WORKDIR}/protocols ${D}${sysconfdir}/protocols
+	install -m 0644 ${WORKDIR}/services ${D}${sysconfdir}/services
+	install -m 0644 ${WORKDIR}/ethertypes ${D}${sysconfdir}/ethertypes
+
+# add config file in /var folder
+   	mkdir -p ${D}/var/log/
+    touch ${D}/var/log/messages ${D}/var/log/lastlog
+
+    mkdir -p ${D}$/lib/modules
+    chmod 750 ${D}$/lib/modules
 }
 
+# architecture/bsp specific configuration, better in architecture/bsp's os-base_%.bbappend
 do_install_append_arm() {
        echo "unix" >> ${D}/etc/modules
 }
 
 do_install_append_raspberrypi4() {
-	sed -i 's/ttyAMA0/tty1/g' ${D}/etc/inittab
 	sed -i '/\# load kernel modules/imount -o remount,rw \/' ${D}/etc/rc.d/rc.sysinit
 }
 
 PACKAGES =+ "${PN}-sysctl"
 FILES_${PN} = "/"
 FILES_${PN}-sysctl = "${sysconfdir}/sysctl.conf"
-INHIBIT_DEFAULT_DEPS = "1"
