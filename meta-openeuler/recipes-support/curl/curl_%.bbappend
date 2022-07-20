@@ -24,9 +24,6 @@ SRC_URI[tarball.md5sum] = "74d3c4ca8aaa6c0619806d6e246e65fb"
 SRC_URI[tarball.sha256sum] = "0606f74b1182ab732a17c11613cbbaf7084f2e6cca432642d0e3ad7c224c3689"
 
 # configure.ac in openEuler can't handle --without-libmetalink variable
-# ca-certificates is RRECOMMENDS, and openEuler dosen't have ca-certificates.crt
 EXTRA_OECONF_remove = " \
         --without-libmetalink \
-        --with-ca-bundle=${sysconfdir}/ssl/certs/ca-certificates.crt \
 "
-RRECOMMENDS_lib${BPN}_remove = "ca-certificates"
