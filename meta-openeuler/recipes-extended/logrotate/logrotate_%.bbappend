@@ -4,12 +4,14 @@
 PV = "3.20.1"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
+# disable-check-different-filesystems.patch apply to 3.20.1 version fail
 SRC_URI_remove = " \
         https://github.com/${BPN}/${BPN}/releases/download/${PV}/${BP}.tar.xz \
+        file://disable-check-different-filesystems.patch \
 "
 
 # files, patches that come from openeuler
-SRC_URI += " \
+SRC_URI_prepend = " \
         file://${BPN}/${BP}.tar.xz;name=tarball \
         file://${BPN}/0001-logrotate-3.20.1-lock-state-msg.patch \
 "
