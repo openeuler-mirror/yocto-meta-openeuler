@@ -206,6 +206,7 @@ download_code()
     update_code_repo src-openeuler/coreutils ${SRC_BRANCH}
     update_code_repo src-openeuler/findutils ${SRC_BRANCH}
     update_code_repo src-openeuler/gawk ${SRC_BRANCH}
+    update_code_repo src-openeuler/libmnl ${SRC_BRANCH}
 }
 
 # download iSulad related packages
