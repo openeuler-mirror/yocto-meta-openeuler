@@ -1,44 +1,12 @@
 #! /bin/sh
-
 PATH=/sbin:/usr/sbin:/usr/local/sbin:/root/bin:/usr/local/bin:/usr/bin:/bin
 
-function fs_mount()
-{
-        echo "mount file system"
-        mount_a
-}
-
-function loading_module()
-{
-        echo "Loading the kernel modules: "
-	depmod
-        cat /etc/modules | sed -e '/^[ \t]*$/d' |
-        while read module
-        do
-            echo "Loading module: $module"
-            modprobe $module
-        done
-}
-
-. /etc/rc.d/rc.functions
-
-# mount file system
-        fs_mount
-
-# load kernel modules
-        loading_module
-
-#creating a soft link for /dev/fd to /proc/self/fd
-	ln -s /proc/self/fd /dev/fd
-
+# include rc.functions
+        . /etc/init.d/rc.functions
 # creating device driver instances
 	echo "Making device instances:"
 	echo /sbin/mdev > /proc/sys/kernel/hotplug
 	mdev -s
-
-# setting up initial hostname
-        echo "Setting hostname: "
-        hostname -F /etc/hostname
 
 # Cleaning up the Directory tmp
         echo "Cleaning up tmp :"
@@ -55,23 +23,9 @@ function loading_module()
         echo "Setting up interface lo: "
         ifconfig lo up 127.0.0.1
 
-# running local startup scripts
-        echo "Running local startup scripts."
-        for i in `ls /etc/rc.d/rc.start/* 2>/dev/null` ; do
-                if [ -x $i ]; then
-                        $i start
-                fi
-        done
-
 #print uptime after finish running rc.start
         if [ -r /proc/uptime ]
         then
                 echo -n "System booting cost:"
                 cat /proc/uptime
         fi
-
-# calling user defined scripts if any
-        if [ -x /etc/rc.d/rc.local ]; then
-                /etc/rc.d/rc.local
-        fi
-
