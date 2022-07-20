@@ -11,7 +11,6 @@ SRC_URI += " \
     file://configure.patch \
 "
 
-do_install_append() {
-    # delete useless files
-    rm -rf ${D}/usr/share/hwdata/
-}
+# file of ids package is /usr/share/hwdata/pci.ids.gz, but datadir is /usr/share/
+# update it from FILES_${PN}-ids = "${datadir}/pci.ids*" in poky bb.
+FILES_${PN}-ids = "${datadir}/*/pci.ids*"
