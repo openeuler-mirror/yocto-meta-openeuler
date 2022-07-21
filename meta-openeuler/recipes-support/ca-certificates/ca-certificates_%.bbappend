@@ -5,7 +5,7 @@ SRC_URI_remove = " \
         git://salsa.debian.org/debian/ca-certificates.git;protocol=https \
 "
 
-# get extra config files from openeuler
+# get extra tarball locally, because ca-certificates src repository dosen't have ca-certificates.crt or tarball
 FILESEXTRAPATHS_append := "${THISDIR}/files/:"
 SRC_URI += " \
         file://${BP}.tar.gz;name=tarball \
