@@ -11,6 +11,8 @@ DEPENDS += "libsepol libselinux libsemanage libcap gettext-native"
 EXTRA_DEPENDS = "libcap-ng"
 DEPENDS += "${@['', '${EXTRA_DEPENDS}']['${PN}' != '${BPN}-native']}"
 
+S = "${WORKDIR}/selinux-${BP}/${BPN}"
+
 inherit selinux
 DEPENDS += "${@target_selinux(d, 'audit')}"
 
