@@ -25,4 +25,4 @@ SYSROOT_DIRS += "${localstatedir}"
 
 PACKAGES =+ "${PN}-var"
 
-FILES_${PN}-var = "/run"
+FILES_${PN}-var = "/run ${localstatedir}/run"
