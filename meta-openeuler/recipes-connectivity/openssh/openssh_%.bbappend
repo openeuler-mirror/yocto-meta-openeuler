@@ -49,12 +49,3 @@ file://openssh/backport-openssh-5.9p1-ipv6man.patch \
 
 # checksum changed
 SRC_URI[sha256sum] = "4590890ea9bb9ace4f71ae331785a3a5823232435161960ed5fc86588f331fe9"
-
-# useradd depend sysroot of /var/run, always make a default one.
-do_prepare_recipe_sysroot_prepend() {
-    bb.build.exec_func('do_fix_useradd_var_run', d)
-}
-
-do_fix_useradd_var_run() {
-    mkdir -p ${PKG_CONFIG_SYSROOT_DIR}/var/run/
-}

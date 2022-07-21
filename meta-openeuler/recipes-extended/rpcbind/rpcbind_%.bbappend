@@ -28,15 +28,6 @@ do_install_append() {
     chmod 0750 ${D}${sysconfdir}/init.d/rpcbind
 }
 
-#useradd depend sysroot of /var/run, always make a default one.
-do_prepare_recipe_sysroot_prepend() {
-    bb.build.exec_func('do_fix_useradd_var_run', d)
-}
-
-do_fix_useradd_var_run () {
-    mkdir -p ${PKG_CONFIG_SYSROOT_DIR}/var/run/
-}
-
 SRC_URI[tarball.md5sum] = "2d84ebbb7d6fb1fc3566d2d4b37f214b"
 SRC_URI[tarball.sha256sum] = "5613746489cae5ae23a443bb85c05a11741a5f12c8f55d2bb5e83b9defeee8de"
 
