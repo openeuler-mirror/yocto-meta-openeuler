@@ -3,7 +3,6 @@ PV = "4.9"
 # get extra config files from openeuler
 FILESEXTRAPATHS_append := "${THISDIR}/files/:"
 
-# apply source code and patches in openeuler
 SRC_URI = "file://${BP}.tar.xz \
            ${@bb.utils.contains('PACKAGECONFIG', 'pam', '${PAM_SRC_URI}', '', d)} \
            file://shadow-4.8-goodname.patch \
@@ -32,27 +31,29 @@ SRC_URI = "file://${BP}.tar.xz \
 "
 
 # add extra pam files for openeuler
-PAM_SRC_URI += " \
+PAM_SRC_URI_class-target += " \
         file://pam.d/groupmems \
         file://login.defs \
-" 
+"
 
-# delete native patches from poky, patch failed
-SRC_URI_remove_class-native += " \
+# delete native patches from poky, patch failed, as it's for 4.8.1
+SRC_URI_remove_class-native = " \
            file://0001-Disable-use-of-syslog-for-sysroot.patch \
            file://0002-Allow-for-setting-password-in-clear-text.patch \
-           "
+           file://commonio.c-fix-unexpected-open-failure-in-chroot-env.patch \
+"
+
+# apply 4.9 specific patches, remove these when poky's shadow upgrade to 4.9
+SRC_URI_append_class-native = " \
+           file://49-0001-Disable-use-of-syslog-for-sysroot.patch \
+           file://49-commonio.c-fix-unexpected-open-failure-in-chroot-env.patch \
+"
 
 SRC_URI[md5sum] = "3d97f11e66bfb0b14702b115fa8be480"
 SRC_URI[sha256sum] = "3ee3081fbbcbcfea5c8916419e46bc724807bab271072104f23e7a29e9668f3a"
 
 # no ${mandir} installed in openeuler
 ALTERNATIVE_${PN}-doc = ""
-
-# no base-passwd in openeuler
-RDEPENDS_${PN}_remove += " \
-                  base-passwd \
-"
 
 do_install_prepend () {
     # poky modify useradd config, need to change path
