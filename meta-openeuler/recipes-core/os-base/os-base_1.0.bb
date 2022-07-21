@@ -13,9 +13,6 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 DEPENDS_append = " update-rc.d-native"
 
 SRC_URI = " \
-	file://passwd \
-	file://group \
-	file://sysctl.conf \
 	file://rc.functions \
 	file://rc.sysinit \
 	file://ethertypes \
@@ -29,12 +26,7 @@ do_install() {
 
 ## add config files in /etc folder
 	install -d ${D}${sysconfdir}
-# passwwd and group refer some settings in base-passwd.bb's src code
-	install -m 0644 ${WORKDIR}/group  ${D}${sysconfdir}/
-	install -m 0644 ${WORKDIR}/passwd ${D}${sysconfdir}/
 
-# sysctl
-	install -m 0600 ${WORKDIR}/sysctl.conf ${D}${sysconfdir}/
 # all init scripts should be in /etc/init.d, currently openeuler embedded specific init functions are mainly
 # located in rc.functions and rc.sysinit
 	install -d ${D}${sysconfdir}/init.d
