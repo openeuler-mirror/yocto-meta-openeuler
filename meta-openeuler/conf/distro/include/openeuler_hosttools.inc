@@ -41,6 +41,9 @@ ASSUME_PROVIDED += "gettext-native texinfo-dummy-native"
 
 HOSTTOOLS_NONFATAL += "rpcgen"
 
+# openssl tools
+HOSTTOOLS_NONFATAL += "openssl"
+
 ##commands used by raspberrrypi4 specially
 HOSTTOOLS_NONFATAL_append_raspberrypi4 += "mkdosfs mcopy mkfs.ext4 debugfs fsck.ext4 dumpe2fs \
                                            parted mkfs.vfat mmd"
