@@ -144,7 +144,7 @@ do_install[prefuncs] += "autotools_aclocals"
 do_configure[postfuncs] += "autotools_postconfigure"
 
 ACLOCALDIR = "${STAGING_DATADIR}/aclocal"
-ACLOCALEXTRAPATH = ""
+ACLOCALEXTRAPATH = "-I ${NATIVESDK_DATADIR}/aclocal/"
 ACLOCALEXTRAPATH_class-target = " -I ${NATIVESDK_DATADIR}/aclocal/"
 ACLOCALEXTRAPATH_class-nativesdk = " -I ${NATIVESDK_DATADIR}/aclocal/"
 
