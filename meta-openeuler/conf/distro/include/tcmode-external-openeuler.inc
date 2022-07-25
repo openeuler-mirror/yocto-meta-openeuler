@@ -28,7 +28,8 @@ def openeuler_version(d):
         version = 'UNKNOWN'
 
     if version != 'UNKNOWN':
-        main_version = version.split()[-1].rstrip(')')
+        # gcc version xx.yy.zz nnnnnnn, here we get xx.yy.zz
+        main_version = version.split()[2]
         if main_version == 'Preview':
             main_version = version.split()[-3]
         elif '(GCC' in main_version or '(gcc' in main_version:

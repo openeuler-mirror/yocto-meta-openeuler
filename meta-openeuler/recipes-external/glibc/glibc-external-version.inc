@@ -1,8 +1,10 @@
 def get_external_libc_version(d):
     if (d.getVar('TCMODE', True).startswith('external') and
             d.getVar('EXTERNAL_TOOLCHAIN', True)):
-        cc = os.path.join(d.getVar('EXTERNAL_TOOLCHAIN_BIN', True), d.getVar('EXTERNAL_CC', True))
-        cmd = "strings %s | grep '^GLIBC_' | awk -F_ '{print $2}' | sort -V | tail -n1" % cc
+        cc = os.path.join(d.getVar('EXTERNAL_TOOLCHAIN_SYSROOT', True), "usr/bin/ldd --version")
+        # ldd is a script, ldd --version will output "ldd (xxx yyy) zzz", zzz is version
+        # for aws use ')'as delimiter, use '{$1=$1;print}' to strip space, then get zzz
+        cmd = "%s | head -n1 | awk -F\) '{print $2}' | awk '{$1=$1;print}' " % cc
         import subprocess
         p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
         stdout, stderr = p.communicate()
