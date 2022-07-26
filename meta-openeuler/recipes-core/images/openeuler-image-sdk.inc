@@ -36,6 +36,8 @@ gcc-external-cross-canadian-${TRANSLATED_TARGET_ARCH} \
 
 
 # extra target packages added to sdk
+# libgcc(libgcc_s.so) is required for user space application
 TOOLCHAIN_TARGET_TASK += " \
+libgcc \
 kernel-devsrc \
 "
