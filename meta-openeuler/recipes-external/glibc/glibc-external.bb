@@ -200,8 +200,15 @@ FILES_${PN} += "\
 
 FILES_${PN}-dev_remove := "${datadir}/aclocal"
 
-FILES_${PN}-dev_remove = "/lib/*.o"
+# use base_libdir to replace /lib
+FILES_${PN}-dev_remove = "${base_libdir}/*.o"
 FILES_${PN}-dev += "${libdir}/*crt*.o"
+# currently no dbg fils for glibc-external
+FILES_${PN}-dbg = ""
+# no strip .o files used for startup, as user space app may need symbol information
+# here INHIBIT_PACKAGE_STRIP to avoid all strip, future we can use
+# INHIBIT_PACKAGE_STRIP_FILES for fine-grained control
+INHIBIT_PACKAGE_STRIP = "1"
 
 linux_include_subdirs = "asm asm-generic bits drm linux mtd rdma sound sys video"
 FILES_${PN}-dev += "${@' '.join('${includedir}/%s' % d for d in '${linux_include_subdirs}'.split())}"
