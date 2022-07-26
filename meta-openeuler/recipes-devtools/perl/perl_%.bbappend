@@ -1,3 +1,5 @@
+# main bbfile: yocto-poky/meta/recipes-devtools/perl/perl_5.32.1.bb
+# add perlcross-native dependency according to http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-devtools/perl/perl_5.34.0.bb?h=honister
 PV = "5.34.0"
 
 #patches from openeuler
@@ -29,3 +31,6 @@ do_copy_perlcross() {
     :
 }
 DEPENDS += "perlcross-native"
+
+# Specify the sysroot when running do_configure, solving compilation problem: "No error definitions found at Errno_pm.PL"
+EXTRA_OECONF_class-target += "--sysroot=${STAGING_DIR_HOST}"
