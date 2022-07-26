@@ -11,13 +11,13 @@ require openeuler-image-sdk.inc
 IMAGE_INSTALL += " \
 packagegroup-core-boot \
 packagegroup-core-base-utils \
+packagegroup-core-tools-debug \
 packagegroup-base \
 packagegroup-base-extended \
 packagegroup-openssh \
-packagegroup-debugtools \
-packagegroup-isulad \
 packagegroup-kernel-modules \
 "
-
+#thie packagegroup should add after refactor
+#packagegroup-isulad
 
 require recipes-core/images/${MACHINE}.inc

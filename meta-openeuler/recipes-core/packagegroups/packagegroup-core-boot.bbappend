@@ -1,3 +1,5 @@
+#main bbfile: yocto-poky/meta/recipes-core/packagegroups/packagegroup-core-boot.bb
+
 # we add kernel-img and kernel-vmlinux
 RDEPENDS_${PN} += " \
     kernel \
