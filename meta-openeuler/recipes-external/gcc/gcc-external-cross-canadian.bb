@@ -13,6 +13,13 @@ FILES_${PN} = "\
     ${@' '.join('${base_bindir}/${EXTERNAL_TARGET_SYS}-' + i for i in '${gcc_binaries}'.split())} \
 "
 
+# no debug package
+FILES_${PN}-dbg = ""
+# no need do autolibname(handle the dependency of .so libs)
+# auto_libname in debian.bbclass will call ${TARGET_PREFIX}objdump to get shlibs2 related info
+# for gcc-external-cross-canadian, can't find ${TARGET_PREFIX}objdump
+AUTO_LIBNAME_PKGS = ""
+
 external_libroot = "${@os.path.realpath('${EXTERNAL_TOOLCHAIN_LIBROOT}').replace(os.path.realpath('${EXTERNAL_TOOLCHAIN}') + '/', '/')}"
 FILES_MIRRORS =. "${libdir}/gcc/${EXTERNAL_TARGET_SYS}/${BINV}/|${external_libroot}/\n"
 

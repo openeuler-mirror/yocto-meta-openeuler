@@ -12,7 +12,7 @@ PACKAGE_DEPENDS_remove = "virtual/${TARGET_PREFIX}binutils"
 EXTERNAL_INSTALL_SOURCE_PATHS = "${EXTERNAL_TOOLCHAIN}"
 FILES_MIRRORS += "\
     ${bindir}/|/bin/\n \
-    ${libdir}/|/lib/\n \
+    ${libdir}/|/lib64/\n \
     ${libexecdir}/|/libexec/\n \
     ${prefix}/|${target_prefix}/\n \
     ${prefix}/|${target_base_prefix}/\n \
@@ -24,7 +24,7 @@ FILES_MIRRORS += "\
 # Align with more typical toolchain layout. Everything is already isolated by
 # EXTERNAL_TARGET_SYS, we don't need cross-canadian.bbclass to do it for us.
 bindir = "${exec_prefix}/bin"
-libdir = "${exec_prefix}/lib"
+libdir = "${exec_prefix}/lib64"
 libexecdir = "${exec_prefix}/libexec"
 
 # We're relying on a compatible host libc, not one from a nativesdk build
