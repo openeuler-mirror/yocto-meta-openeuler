@@ -22,4 +22,3 @@ shadow-securetty \
 bash \
 "
 
-RDEPENDS_${PN}_append_arm += "kernel-module-unix"

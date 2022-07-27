@@ -3,6 +3,10 @@
 MACHINEOVERRIDES =. "march64:"
 require conf/machine/qemu-common.inc
 
+#kernel modules to install and autoload
+require conf/machine/kernel-modules-conf/common.inc
+KERNEL_MODULE_AUTOLOAD = "${INSTALLMODULES}"
+
 # Different from arm32, here we use armv8a.inc instead
 # of conf/machine/include/tune-cortexa53.inc because
 # we are not sure our CPU is cortex a53.

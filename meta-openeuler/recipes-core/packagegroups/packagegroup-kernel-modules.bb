@@ -7,51 +7,12 @@ inherit packagegroup
 
 PACKAGES = "${PN}"
 
-RDEPENDS_${PN} = " \
-kernel-module-overlay \
-kernel-module-8021q \
-kernel-module-jbd2 \
-kernel-module-mbcache \
-kernel-module-ext2 \
-kernel-module-ext4 \
-kernel-module-inet-diag \
-kernel-module-ip-tables \
-kernel-module-ip-tunnel \
-kernel-module-ip6-tables \
-kernel-module-ip6-udp-tunnel \
-kernel-module-ip6table-filter \
-kernel-module-ipip \
-kernel-module-ipt-reject \
-kernel-module-iptable-filter \
-kernel-module-ipv6 \
-kernel-module-nf-conntrack \
-kernel-module-nf-defrag-ipv4 \
-kernel-module-nf-defrag-ipv6 \
-kernel-module-nf-nat \
-kernel-module-nf-reject-ipv4 \
-kernel-module-nf-reject-ipv6 \
-kernel-module-x-tables \
-kernel-module-xt-tcpudp \
-kernel-module-tunnel4 \
-kernel-module-af-packet \
-kernel-module-nfs-ssc \
-kernel-module-fscache \
-kernel-module-grace \
-kernel-module-sunrpc \
-kernel-module-auth-rpcgss \
-kernel-module-lockd \
-kernel-module-nfs-acl \
-kernel-module-nfs \
-kernel-module-nfsv3 \
-kernel-module-nfsd \
-kernel-module-crc-ccitt \
-kernel-module-ipv6 \
-kernel-module-iptable-nat \
-kernel-module-ip6table-nat \
-kernel-module-ip6t-reject \
-kernel-module-xt-nat \
+RDEPENDS_${PN} += " \
+modutils-initscripts \
 "
-RDEPENDS_${PN}_raspberrypi4 = " \
-"
-RDEPENDS_${PN}_aarch64-pro = " \
-"
+
+# please do not add any MACHINE related modules here
+# You can use INSTALLMODULES which is defined in machine conf layer
+# like: meta-openeuler/conf/machine/kernel-modules-conf/common.inc 
+RDEPENDS_${PN} += "${INSTALLMODULES}"
+
