@@ -87,6 +87,8 @@ ASSUME_PROVIDED += "gmp-native"
 ASSUME_PROVIDED += "cracklib-native"
 # used by glib-2.0
 ASSUME_PROVIDED += "glib-2.0-native"
+# used by libarchive
+ASSUME_PROVIDED += "e2fsprogs-native"
 
 ASSUME_PROVIDED += "gperf-native perl-native \
                     init-system-helpers \
