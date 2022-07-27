@@ -33,4 +33,4 @@ do_copy_perlcross() {
 DEPENDS += "perlcross-native"
 
 # Specify the sysroot when running do_configure, solving compilation problem: "No error definitions found at Errno_pm.PL"
-EXTRA_OECONF_class-target += "--sysroot=${STAGING_DIR_HOST}"
+PACKAGECONFIG_CONFARGS_class-target += "--sysroot=${STAGING_DIR_HOST}"
