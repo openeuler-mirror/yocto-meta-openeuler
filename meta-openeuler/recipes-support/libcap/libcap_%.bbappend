@@ -15,7 +15,7 @@ SRC_URI += " \
 
 # use cross compile objcopy
 # set lib dir, not use ldd to find, maybe fail
-EXTRA_OEMAKE = " \
+EXTRA_OEMAKE_class-target = " \
     OBJCOPY="${OBJCOPY}" \ 
     lib="${base_libdir}" \
 "
