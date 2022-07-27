@@ -2,32 +2,37 @@
 # use as many as possible prebuild nativesdk/host tools to replace native tools.
 # this file has related HOSTTOOLS and ASSUME_PROVIDED settings.
 
+HOSTTOOLS_remove += "chrpath cpp rpcgen"
+HOSTTOOLS_NONFATAL += "chrpath cpp rpcgen"
 # basic tools
-HOSTTOOLS += "python3 python pod2man gnu-configize pkg-config"
+HOSTTOOLS += "python3 python pod2man pkg-config"
+HOSTTOOLS_NONFATAL += "gnu-configize"
+# used by perl-native
+HOSTTOOLS_NONFATAL += "cc"
 ASSUME_PROVIDED += "python3-native python3-setuptools-native pkgconfig-native chrpath-replacement-native"
 
 # package management tools
-HOSTTOOLS += "rpmbuild createrepo_c dnf"
+HOSTTOOLS_NONFATAL += "rpmbuild createrepo_c dnf"
 ASSUME_PROVIDED += "rpm-native createrepo-c-native"
 
 # commands used by kernel build
-HOSTTOOLS += "flex bison bc"
+HOSTTOOLS_NONFATAL += "flex bison bc"
 ASSUME_PROVIDED += "bc-native bison-native flex-native kmod-native"
 
 # autotools related tools
-HOSTTOOLS += "automake autoreconf aclocal libtoolize m4 autoconf autoheader automake-1.16 aclocal-1.16 \
+HOSTTOOLS_NONFATAL += "automake autoreconf aclocal libtoolize m4 autoconf autoheader automake-1.16 aclocal-1.16 \
               libtool autopoint autoscan autom4te autoupdate"
 ASSUME_PROVIDED += "automake-native autoconf-native libtool-native m4-native"
 
 # source file build tools
-HOSTTOOLS += "cmake ninja meson"
+HOSTTOOLS_NONFATAL += "cmake ninja meson"
 ASSUME_PROVIDED += "cmake-native ninja-native meson-native make-native"
 
 # used by cracklib, built from cracklib-native
 HOSTTOOLS_NONFATAL += "create-cracklib-dict cracklib-format cracklib-packer cracklib-unpacker"
 
 # commands for create image
-HOSTTOOLS += "ldconfig"
+HOSTTOOLS_NONFATAL += "ldconfig"
 ASSUME_PROVIDED +="ldconfig-native "
 
 # compress and uncompress tools
@@ -38,8 +43,6 @@ ASSUME_PROVIDED += "xz-native pigz-native gzip-native"
 # gettext amd documentation related tools
 HOSTTOOLS_NONFATAL += "msgfmt msgmerge makeinfo"
 ASSUME_PROVIDED += "gettext-native texinfo-dummy-native"
-
-HOSTTOOLS_NONFATAL += "rpcgen"
 
 # openssl tools
 HOSTTOOLS_NONFATAL += "openssl"
@@ -82,8 +85,10 @@ ASSUME_PROVIDED += "libxml2-native attr-native"
 ASSUME_PROVIDED += "gmp-native"
 # used by cracklib
 ASSUME_PROVIDED += "cracklib-native"
+# used by glib-2.0
+ASSUME_PROVIDED += "glib-2.0-native"
 
-ASSUME_PROVIDED += "gperf-native perl-native  \
+ASSUME_PROVIDED += "gperf-native perl-native \
                     init-system-helpers \
                     cross-localedef-native nativesdk-glibc-locale \
                     openssl-native ncurses-native \
