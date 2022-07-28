@@ -36,7 +36,6 @@ kernel-module-nfs \
 kernel-module-nfsv3 \
 kernel-module-nfsd \
 kernel-module-crc-ccitt \
-kernel-module-ipv6 \
 kernel-module-iptable-nat \
 kernel-module-ip6table-nat \
 kernel-module-ip6t-reject \
