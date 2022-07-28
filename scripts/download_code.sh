@@ -221,6 +221,7 @@ download_code()
     update_code_repo src-openeuler/nasm ${SRC_BRANCH}
     update_code_repo src-openeuler/syslinux ${SRC_BRANCH}
     update_code_repo src-openeuler/cdrkit ${SRC_BRANCH}
+    update_code_repo src-openeuler/yocto-opkg-utils ${SRC_BRANCH}
 }
 
 # download iSulad related packages
