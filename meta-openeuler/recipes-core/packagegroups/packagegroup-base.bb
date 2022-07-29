@@ -15,7 +15,13 @@ PACKAGES = "${PN} ${PN}-extended"
 RDEPENDS_packagegroup-base = " \
 acl \
 attr \
-bind-utils \
+bind-dhclient \
+bind-dhclient-utils \
+dhcp-client \
+dhcp-server \
+dhcp-server-config \
+dhcp-omshell \
+dhcp-relay \
 cifs-utils \
 cronie \
 curl \
