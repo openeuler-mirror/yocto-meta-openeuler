@@ -12,7 +12,7 @@ HOSTTOOLS_NONFATAL += "cc"
 ASSUME_PROVIDED += "python3-native python3-setuptools-native pkgconfig-native chrpath-replacement-native"
 
 # package management tools
-HOSTTOOLS_NONFATAL += "rpmbuild createrepo_c dnf"
+HOSTTOOLS_NONFATAL += "rpm rpmbuild createrepo_c dnf"
 ASSUME_PROVIDED += "rpm-native createrepo-c-native"
 
 # commands used by kernel build
