@@ -1,0 +1,37 @@
+From 7278f2529a4f811db8f1d7f5f4e36402986a4470 Mon Sep 17 00:00:00 2001
+From: Mark Andrews <marka@isc.org>
+Date: Mon, 23 Dec 2019 07:37:13 +1100
+Subject: [PATCH] revert d10fbdec for lib/dns/gen.c as it is a build platform
+ executable
+
+---
+ lib/dns/gen.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/lib/dns/gen.c b/lib/dns/gen.c
+index 99f0395b3a..6c6e55d4c6 100644
+--- a/lib/dns/gen.c
++++ b/lib/dns/gen.c
+@@ -26,8 +26,6 @@
+ 
+ #include <sys/types.h>
+ 
+-#include <isc/platform.h>
+-
+ #include <ctype.h>
+ #include <limits.h>
+ #include <stdint.h>
+@@ -39,6 +37,10 @@
+ #include <errno.h>
+ #include <limits.h>
+ 
++#ifndef PATH_MAX
++#define PATH_MAX 1024
++#endif
++
+ #ifdef WIN32
+ #include "gen-win32.h"
+ #else
+-- 
+2.12.3
+
