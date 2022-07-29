@@ -21,3 +21,9 @@ packagegroup-kernel-modules \
 #packagegroup-isulad
 
 require recipes-core/images/${MACHINE}.inc
+
+inherit extrausers
+EXTRA_USERS_PARAMS = "\
+    useradd -p '' openeuler; \
+    "
+

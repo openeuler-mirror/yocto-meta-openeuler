@@ -1,0 +1,262 @@
+--- etc/login.defs	2018-03-09 12:34:56.000000000 +0000
++++ /usr1/openeuler/src/yocto-meta-openeuler/meta-openeuler/recipes-extended/shadow/files/login.defs	2022-07-29 13:27:19.063850481 +0000
+@@ -9,10 +9,10 @@
+ # Note: When PAM is used, some modules may enforce a minimum delay (e.g.
+ #       pam_unix(8) enforces a 2s delay)
+ #
+-FAIL_DELAY		3
++#FAIL_DELAY		3
+ 
+ #
+-# Enable logging and display of /var/log/faillog login(1) failure info.
++# Enable logging and display of /var/log/faillog2 login(1) failure info.
+ #
+ #FAILLOG_ENAB		yes
+ 
+@@ -29,7 +29,7 @@ LOG_OK_LOGINS		no
+ #
+ # Enable logging and display of /var/log/lastlog login(1) time info.
+ #
+-#LASTLOG_ENAB		yes
++LASTLOG_ENAB		yes
+ 
+ #
+ # Limit the highest user ID number for which the lastlog entries should
+@@ -67,15 +67,15 @@ LOG_OK_LOGINS		no
+ # Enable "syslog" logging of su(1) activity - in addition to sulog file logging.
+ # SYSLOG_SG_ENAB does the same for newgrp(1) and sg(1).
+ #
+-SYSLOG_SU_ENAB		yes
+-SYSLOG_SG_ENAB		yes
++#SYSLOG_SU_ENAB		yes
++#SYSLOG_SG_ENAB		yes
+ 
+ #
+ # If defined, either full pathname of a file containing device names or
+ # a ":" delimited list of device names.  Root logins will be allowed only
+ # from these devices.
+ #
+-CONSOLE		/etc/securetty
++#CONSOLE		/etc/securetty
+ #CONSOLE	console:tty01:tty02:tty03:tty04
+ 
+ #
+@@ -136,7 +136,7 @@ MAIL_FILE	.mail
+ # user's name or shell are found in the file.  If not a full pathname, then
+ # hushed mode will be enabled if the file exists in the user's home directory.
+ #
+-HUSHLOGIN_FILE	.hushlogin
++#HUSHLOGIN_FILE	.hushlogin
+ #HUSHLOGIN_FILE	/etc/hushlogins
+ 
+ #
+@@ -158,8 +158,8 @@ HUSHLOGIN_FILE	.hushlogin
+ # *REQUIRED*  The default PATH settings, for superuser and normal users.
+ #
+ # (they are minimal, add the rest in the shell startup files)
+-ENV_SUPATH	PATH=/sbin:/bin:/usr/sbin:/usr/bin
+-ENV_PATH	PATH=/bin:/usr/bin
++ENV_SUPATH PATH=/sbin:/usr/sbin:/usr/local/sbin:/root/bin:/usr/local/bin:/usr/bin:/bin
++ENV_PATH PATH=/usr/local/bin:/usr/bin:/bin
+ 
+ #
+ # Terminal permissions
+@@ -172,7 +172,7 @@ ENV_PATH	PATH=/bin:/usr/bin
+ # and TTYPERM as 0620.  Otherwise leave TTYGROUP commented out and
+ # set TTYPERM to either 622 or 600.
+ #
+-TTYGROUP	tty
++#TTYGROUP	tty
+ TTYPERM		0600
+ 
+ #
+@@ -188,8 +188,8 @@ TTYPERM		0600
+ #
+ # Prefix these values with "0" to get octal, "0x" to get hexadecimal.
+ #
+-ERASECHAR	0177
+-KILLCHAR	025
++#ERASECHAR	0177
++#KILLCHAR	025
+ #ULIMIT		2097152
+ 
+ # Default initial "umask" value used by login(1) on non-PAM enabled systems.
+@@ -199,7 +199,7 @@ KILLCHAR	025
+ # 022 is the default value, but 027, or even 077, could be considered
+ # for increased privacy. There is no One True Answer here: each sysadmin
+ # must make up their mind.
+-UMASK		022
++UMASK		077
+ 
+ # HOME_MODE is used by useradd(8) and newusers(8) to set the mode for new
+ # home directories.
+@@ -214,10 +214,10 @@ UMASK		022
+ #	PASS_MIN_LEN	Minimum acceptable password length.
+ #	PASS_WARN_AGE	Number of days warning given before a password expires.
+ #
+-PASS_MAX_DAYS	99999
+-PASS_MIN_DAYS	0
++PASS_MAX_DAYS 90
++PASS_MIN_DAYS 7
+ #PASS_MIN_LEN	5
+-PASS_WARN_AGE	7
++PASS_WARN_AGE 7
+ 
+ #
+ # If "yes", the user must be listed as a member of the first gid 0 group
+@@ -235,11 +235,11 @@ PASS_WARN_AGE	7
+ #
+ # Min/max values for automatic uid selection in useradd(8)
+ #
+-UID_MIN			 1000
++UID_MIN 500
+ UID_MAX			60000
+ # System accounts
+ SYS_UID_MIN		  101
+-SYS_UID_MAX		  999
++#SYS_UID_MAX		  999
+ # Extra per user uids
+ SUB_UID_MIN		   100000
+ SUB_UID_MAX		600100000
+@@ -248,11 +248,11 @@ SUB_UID_COUNT		    65536
+ #
+ # Min/max values for automatic gid selection in groupadd(8)
+ #
+-GID_MIN			 1000
++GID_MIN 500
+ GID_MAX			60000
+ # System accounts
+ SYS_GID_MIN		  101
+-SYS_GID_MAX		  999
++#SYS_GID_MAX		  999
+ # Extra per user group ids
+ SUB_GID_MIN		   100000
+ SUB_GID_MAX		600100000
+@@ -261,7 +261,7 @@ SUB_GID_COUNT		    65536
+ #
+ # Max number of login(1) retries if password is bad
+ #
+-LOGIN_RETRIES		5
++#LOGIN_RETRIES		5
+ 
+ #
+ # Max time in seconds for login(1)
+@@ -295,8 +295,8 @@ LOGIN_TIMEOUT		60
+ # any combination of letters "frwh" (full name, room number, work
+ # phone, home phone).  If not defined, no changes are allowed.
+ # For backward compatibility, "yes" = "rwh" and "no" = "frwh".
+-#
+-CHFN_RESTRICT		rwh
++# 
++#CHFN_RESTRICT		rwh
+ 
+ #
+ # Password prompt (%s will be replaced by user name).
+@@ -326,9 +326,7 @@ CHFN_RESTRICT		rwh
+ # If set to SHA256, SHA256-based algorithm will be used for encrypting password
+ # If set to SHA512, SHA512-based algorithm will be used for encrypting password
+ # If set to BCRYPT, BCRYPT-based algorithm will be used for encrypting password
+-# If set to YESCRYPT, YESCRYPT-based algorithm will be used for encrypting password
+ # If set to DES, DES-based algorithm will be used for encrypting password (default)
+-# MD5 and DES should not be used for new hashes, see crypt(5) for recommendations.
+ # Overrides the MD5_CRYPT_ENAB option
+ #
+ # Note: If you use PAM, it is recommended to use a value consistent with
+@@ -344,8 +342,7 @@ ENCRYPT_METHOD SHA512
+ # However, more CPU resources will be needed to authenticate users if
+ # this value is increased.
+ #
+-# If not specified, the libc will choose the default number of rounds (5000),
+-# which is orders of magnitude too low for modern hardware.
++# If not specified, the libc will choose the default number of rounds (5000).
+ # The values must be within the 1000-999999999 range.
+ # If only one of the MIN or MAX values is set, then this value will be used.
+ # If MIN > MAX, the highest value will be used.
+@@ -354,23 +351,6 @@ ENCRYPT_METHOD SHA512
+ #SHA_CRYPT_MAX_ROUNDS 5000
+ 
+ #
+-# Only works if ENCRYPT_METHOD is set to SM3.
+-#
+-# Define the number of SM3 rounds.
+-# With a lot of rounds, it is more difficult to brute-force the password.
+-# However, more CPU resources will be needed to authenticate users if
+-# this value is increased.
+-#
+-# If not specified, the libc will choose the default number of rounds (5000),
+-# which is orders of magnitude too low for modern hardware.
+-# The values must be within the 1000-999999999 range.
+-# If only one of the MIN or MAX values is set, then this value will be used.
+-# If MIN > MAX, the highest value will be used.
+-#
+-#SM3_CRYPT_MAX_ROUNDS 5000
+-#SM3_CRYPT_MIN_ROUNDS 5000
+-
+-#
+ # Only works if ENCRYPT_METHOD is set to BCRYPT.
+ #
+ # Define the number of BCRYPT rounds.
+@@ -386,19 +366,6 @@ ENCRYPT_METHOD SHA512
+ #BCRYPT_MAX_ROUNDS 13
+ 
+ #
+-# Only works if ENCRYPT_METHOD is set to YESCRYPT.
+-#
+-# Define the YESCRYPT cost factor.
+-# With a higher cost factor, it is more difficult to brute-force the password.
+-# However, more CPU time and more memory will be needed to authenticate users
+-# if this value is increased.
+-#
+-# If not specified, a cost factor of 5 will be used.
+-# The value must be within the 1-11 range.
+-#
+-#YESCRYPT_COST_FACTOR 5
+-
+-#
+ # List of groups to add to the user's supplementary group set
+ # when logging in from the console (as determined by the CONSOLE
+ # setting).  Default is none.
+@@ -416,14 +383,6 @@ ENCRYPT_METHOD SHA512
+ DEFAULT_HOME	yes
+ 
+ #
+-# The pwck(8) utility emits a warning for any system account with a home
+-# directory that does not exist.  Some system accounts intentionally do
+-# not have a home directory.  Such accounts may have this string as
+-# their home directory in /etc/passwd to avoid a spurious warning.
+-#
+-NONEXISTENT	/nonexistent
+-
+-#
+ # If this file exists and is readable, login environment will be
+ # read from it.  Every line should be in the form name=value.
+ #
+@@ -469,28 +428,3 @@ CREATE_HOME     yes
+ # missing.
+ #
+ #FORCE_SHADOW    yes
+-
+-#
+-# Allow newuidmap and newgidmap when running under an alternative
+-# primary group.
+-#
+-#GRANT_AUX_GROUP_SUBIDS yes
+-
+-#
+-# Prevents an empty password field to be interpreted as "no authentication
+-# required".
+-# Set to "yes" to prevent for all accounts
+-# Set to "superuser" to prevent for UID 0 / root (default)
+-# Set to "no" to not prevent for any account (dangerous, historical default)
+-
+-PREVENT_NO_AUTH superuser
+-
+-#
+-# Select the HMAC cryptography algorithm.
+-# Used in pam_timestamp module to calculate the keyed-hash message
+-# authentication code.
+-#
+-# Note: It is recommended to check hmac(3) to see the possible algorithms
+-# that are available in your system.
+-#
+-#HMAC_CRYPTO_ALGO SHA512

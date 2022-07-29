@@ -1,3 +1,5 @@
+#main bbfile: yocto-poky/meta/recipes-extended/shadow/shadow_4.8.1.bb
+
 PV = "4.9"
 
 # get extra config files from openeuler
@@ -28,10 +30,12 @@ SRC_URI = "file://${BP}.tar.xz \
            file://groupdel-fix-SIGSEGV-when-passwd-does-not-exist.patch \
            file://shadow-add-sm3-crypt-support.patch \
            file://backport-useradd-modify-check-ID-range-for-system-users.patch \
+           file://useradd \
 "
 
 # add extra pam files for openeuler
-PAM_SRC_URI_class-target += " \
+# poky shadow.inc have added: chfn chpasswd chsh login newusers passwd su
+PAM_SRC_URI += " \
         file://pam.d/groupmems \
         file://login.defs \
 "
@@ -47,6 +51,7 @@ SRC_URI_remove_class-native = " \
 SRC_URI_append_class-native = " \
            file://49-0001-Disable-use-of-syslog-for-sysroot.patch \
            file://49-commonio.c-fix-unexpected-open-failure-in-chroot-env.patch \
+           file://login.defs \
 "
 
 SRC_URI[md5sum] = "3d97f11e66bfb0b14702b115fa8be480"
@@ -56,7 +61,48 @@ SRC_URI[sha256sum] = "3ee3081fbbcbcfea5c8916419e46bc724807bab271072104f23e7a29e9
 ALTERNATIVE_${PN}-doc = ""
 
 do_install_prepend () {
-    # poky modify useradd config, need to change path
+    # we use a higher version useradd config from poky honister, these functions have applied:
+    # * Disable mail creation: "CREATE_MAIL_SPOOL=no"
+    # * Use users group by default: "GROUP=100"
+    # see: https://git.yoctoproject.org/poky/tree/meta/recipes-extended/shadow?h=honister
     mkdir -p ${D}${sysconfdir}/default/
-    install ${S}/etc/pam.d/useradd ${D}${sysconfdir}/default/useradd
+    install -m 0644 ${WORKDIR}/useradd ${D}${sysconfdir}/default
+}
+
+do_install_append () {
+    # use login.defs from openeuler, we have applied these functions as poky:
+    # * Enable CREATE_HOME by default: "CREATE_HOME     yes"
+    # * Make the users mailbox in ~/ not /var/spool/mail by default on an embedded system: "MAIL_FILE  .mail"  and "#MAIL_DIR    /var/spool/mail"
+    # * Disable checking emails: "#MAIL_CHECK_ENAB        yes"
+    # * Comment out SU_NAME to work correctly with busybox (See Bug#5359 and Bug#7173): "#SU_NAME        su"
+    # * Use proper encryption for passwords: "ENCRYPT_METHOD SHA512"
+    # * other list of function that compare with poky's shadow (yocto-poky/meta/recipes-extended/shadow/files/login_defs_pam.sed) :
+    #   Function                login_defs_pam.sed          openeuler
+    #   FAILLOG_ENAB            comment                     comment
+    #   LASTLOG_ENAB            comment                     "LASTLOG_ENAB yes"
+    #   MAIL_CHECK_ENAB         comment                     comment
+    #   OBSCURE_CHECKS_ENAB     comment                     comment
+    #   PORTTIME_CHECKS_ENAB    comment                     comment
+    #   QUOTAS_ENAB             comment                     comment
+    #   MOTD_FILE               comment                     comment
+    #   FTMP_FILE               comment                     comment
+    #   NOLOGINS_FILE           comment                     comment
+    #   ENV_HZ                  comment                     comment
+    #   ENV_TZ                  comment                     comment
+    #   PASS_MIN_LEN            comment                     comment
+    #   SU_WHEEL_ONLY           comment                     comment
+    #   CRACKLIB_DICTPATH       comment                     comment
+    #   PASS_CHANGE_TRIES       comment                     comment
+    #   PASS_ALWAYS_WARN        comment                     comment
+    #   PASS_MAX_LEN            comment                     comment
+    #   PASS_MIN_LEN            comment                     comment
+    #   CHFN_AUTH               comment                     comment
+    #   CHSH_AUTH               comment                     noexist
+    #   ISSUE_FILE              comment                     comment
+    #   LOGIN_STRING            comment                     comment
+    #   ULIMIT                  comment                     comment
+    #   ENVIRON_FILE            comment                     comment
+    # * for other difference between poky's shadow login.defs, see diff_login_defs.txt
+
+    install -m 0644 ${WORKDIR}/login.defs ${D}${sysconfdir}/login.defs
 }
