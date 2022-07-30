@@ -43,6 +43,10 @@ UPDATERCPN = "auditd"
 INITSCRIPT_NAME = "auditd"
 INITSCRIPT_PARAMS = "defaults"
 
+# current we not enable sysvint in DISTRO_FEATURES, just use busybox's init, but we want populate_packages_updatercd to work.
+# In other word, we want update-rc.d always work when INITSCRIPT_NAME and INITSCRIPT_PARAMS generate with all none systemd scene.
+PACKAGESPLITFUNCS_prepend = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '', 'populate_packages_updatercd ', d)}"
+
 SYSTEMD_PACKAGES = "auditd"
 SYSTEMD_SERVICE_auditd = "auditd.service"
 
