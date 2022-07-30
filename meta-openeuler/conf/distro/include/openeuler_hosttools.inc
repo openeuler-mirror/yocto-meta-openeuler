@@ -9,7 +9,7 @@ HOSTTOOLS += "python3 python pod2man pkg-config"
 HOSTTOOLS_NONFATAL += "gnu-configize"
 # used by perl-native
 HOSTTOOLS_NONFATAL += "cc"
-ASSUME_PROVIDED += "python3-native python3-setuptools-native pkgconfig-native chrpath-replacement-native"
+ASSUME_PROVIDED += "util-linux-native python3-setuptools-native pkgconfig-native chrpath-replacement-native"
 
 # package management tools
 HOSTTOOLS_NONFATAL += "rpm rpmbuild createrepo_c dnf"
@@ -37,7 +37,7 @@ ASSUME_PROVIDED +="ldconfig-native "
 
 # compress and uncompress tools
 HOSTTOOLS_NONFATAL += "xz"
-ASSUME_PROVIDED += "xz-native pigz-native gzip-native"
+ASSUME_PROVIDED += " pigz-native gzip-native"
 
 
 # gettext amd documentation related tools
@@ -89,10 +89,11 @@ ASSUME_PROVIDED += "cracklib-native"
 ASSUME_PROVIDED += "glib-2.0-native"
 # used by libarchive
 ASSUME_PROVIDED += "e2fsprogs-native"
+ASSUME_PROVIDED += "file-native"
 
 ASSUME_PROVIDED += "gperf-native perl-native \
                     init-system-helpers \
                     cross-localedef-native nativesdk-glibc-locale \
-                    openssl-native ncurses-native \
+                      \
                     gtk-doc-native \
                     "
