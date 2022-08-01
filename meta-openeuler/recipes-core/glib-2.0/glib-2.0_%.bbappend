@@ -28,5 +28,13 @@ SRC_URI += " \
 # delete depends to shared-mime-info
 SHAREDMIMEDEP_remove += "shared-mime-info"
 
+# glib2-codegn is a collection of python scripts.
+# here, remove the runtime depends of python3, to simplify build
+# when python3 support becomes mature, remove the following codes
+RDEPENDS_${PN}-codegen = ""
+# glib needs meson, meson needs python3-natve
+# here use nativesdk's meson-native and python3-native
+DEPENDS_remove += "python3-native"
+
 #delete depends to util-linux-native
 PACKAGECONFIG_remove_class-target += "libmount"
