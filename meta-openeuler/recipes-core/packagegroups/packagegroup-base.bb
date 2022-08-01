@@ -83,10 +83,11 @@ tzdata-core \
 util-linux-su \
 util-linux-libfdisk \
 xz \
+nfs-utils \
+nfs-utils-client \
+libusb1 \
 "
 #this packages should add after refactor:
-#nfs-utils nfs-utils-client
-#libusb1
 #glib-2.0
 #libbfd (from binutils)
 
@@ -95,8 +96,6 @@ sysfsutils \
 libmetal \
 openamp \
 "
-#this packages should add after refactor:
-#dhcp dhcp-libs dhcp-server dhcp-server-config 
 
 RDEPENDS_packagegroup-base_append_raspberrypi4 += " \
 e2fsprogs-resize2fs \
