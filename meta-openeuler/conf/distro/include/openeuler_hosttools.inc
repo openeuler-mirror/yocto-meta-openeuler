@@ -90,6 +90,8 @@ ASSUME_PROVIDED += "glib-2.0-native"
 # used by libarchive
 ASSUME_PROVIDED += "e2fsprogs-native"
 ASSUME_PROVIDED += "file-native"
+# used by binutils
+ASSUME_PROVIDED += "gnu-config-native"
 
 ASSUME_PROVIDED += "gperf-native perl-native \
                     init-system-helpers \
