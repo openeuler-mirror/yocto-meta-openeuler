@@ -38,3 +38,16 @@ DEPENDS_remove += "python3-native"
 
 #delete depends to util-linux-native
 PACKAGECONFIG_remove_class-target += "libmount"
+
+# glib-2.0 will inherit gio-module-cache.bbclass to update
+# gio module after glib-2.0 is installed.
+# to update the cache, gio-querymodules of glib-2.0 will be called.
+# gio-querymodules is a target binary which can't be directly executed in host
+# to do this, yocto use qemu user mode to simulate the execution of gio-querymodules.
+# The call of qemu user mode will make things more complex, so better not to use
+# A workaround is to delay the call of  gio-querymodules in target.
+# Here, we set GIO_MODULLE_PACKAGES to empty to bypass the gio_module_cache_common in
+# gio-module-cache.bbclass
+# In future, if we figure out the related stuff of gio-querymodules, we can remove the
+# following codes
+GIO_MODULE_PACKAGES = ""
