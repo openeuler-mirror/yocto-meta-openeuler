@@ -6,7 +6,9 @@ delete_unneeded_from_rootfs() {
         rm -f "${OUTPUT_DIR}"/*Image* "${OUTPUT_DIR}"/vmlinux*
         mv boot/${KERNEL_IMAGETYPE}-* "${OUTPUT_DIR}"/${KERNEL_IMAGETYPE}
         mv boot/vmlinux* "${OUTPUT_DIR}"/
-        [[ "${KERNEL_IMAGETYPE}" =~ ^Image.* ]] || mv boot/Image* "${OUTPUT_DIR}"/
+        if [[ ! "${KERNEL_IMAGETYPE}" =~ ^Image.* ]] && [[ $(ls boot/ | grep ^Image.*) ]]; then
+            mv boot/Image* "${OUTPUT_DIR}"/
+        fi
         rm -r ./boot
     fi
     popd

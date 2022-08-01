@@ -31,10 +31,6 @@ PV = "${LINUX_VERSION}"
 
 COMPATIBLE_MACHINE = "qemuarm|qemuarmv5|qemuarm64|qemux86|qemuppc|qemuppc64|qemumips|qemumips64|qemux86-64|qemuriscv64|qemuriscv32|qemu-aarch64|qemu-arm|raspberrypi4-64"
 
-PACKAGES += "${KERNEL_PACKAGE_NAME}-img"
-FILES_${KERNEL_PACKAGE_NAME}-img = "/boot/Image-${KERNEL_VERSION}"
-
-
 # Skip processing of this recipe if it is not explicitly specified as the
 # PREFERRED_PROVIDER for virtual/kernel. This avoids network access required
 # by the use of AUTOREV SRCREVs, which are the default for this recipe.
@@ -56,8 +52,13 @@ do_configure_prepend() {
     cp -f "${OPENEULER_KERNEL_CONFIG}" .config
 }
 
+# Even if the KERNEL_IMAGETYPE is zImage, we will install Image, so add it into PACKAGES
+PACKAGES += "${KERNEL_PACKAGE_NAME}-img"
+FILES_${KERNEL_PACKAGE_NAME}-img = "/boot/Image-${KERNEL_VERSION}"
 do_install_append(){
-    install -m 0644 ${KERNEL_OUTPUT_DIR}/Image ${D}/${KERNEL_IMAGEDEST}/Image-${KERNEL_VERSION}
+    if [ -e ${KERNEL_OUTPUT_DIR}/Image ]; then
+        install -m 0644 ${KERNEL_OUTPUT_DIR}/Image ${D}/${KERNEL_IMAGEDEST}/Image-${KERNEL_VERSION}
+    fi
 }
 
 #not found depmodwrapper, not run postinst now
