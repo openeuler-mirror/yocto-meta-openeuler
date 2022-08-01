@@ -86,10 +86,9 @@ xz \
 nfs-utils \
 nfs-utils-client \
 libusb1 \
+glib-2.0 \
+libbfd \
 "
-#this packages should add after refactor:
-#glib-2.0
-#libbfd (from binutils)
 
 RDEPENDS_packagegroup-base-extended = " \
 sysfsutils \
