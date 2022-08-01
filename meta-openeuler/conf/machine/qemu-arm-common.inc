@@ -15,3 +15,7 @@ TUNE_FEATURES_append += " cortexa9"
 TUNE_FEATURES_remove += " vfp"
 
 TUNE_CCARGS .= " -mno-unaligned-access"
+
+# simplest serial console setting, no VT
+SERIAL_CONSOLES ?= "115200;ttyAMA0"
+USE_VT ?= "0"
