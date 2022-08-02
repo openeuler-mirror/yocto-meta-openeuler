@@ -223,6 +223,12 @@ download_code()
     update_code_repo src-openeuler/cdrkit ${SRC_BRANCH}
     update_code_repo src-openeuler/yocto-opkg-utils ${SRC_BRANCH}
     update_code_repo src-openeuler/python3 ${SRC_BRANCH}
+    update_code_repo src-openeuler/libgpg-error ${SRC_BRANCH}
+    update_code_repo src-openeuler/libgcrypt ${SRC_BRANCH}
+    update_code_repo src-openeuler/kbd ${SRC_BRANCH}
+    # using higher version, otherwise there are too many cve patches to apply.
+    update_code_repo src-openeuler/dbus openEuler-22.09
+    update_code_repo src-openeuler/wpa-supplicant openEuler-22.09
 }
 
 # download iSulad related packages
