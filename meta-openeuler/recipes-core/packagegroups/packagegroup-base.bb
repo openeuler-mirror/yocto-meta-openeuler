@@ -98,6 +98,8 @@ openamp \
 
 RDEPENDS_packagegroup-base_append_raspberrypi4 += " \
 e2fsprogs-resize2fs \
+linux-firmware-rpidistro-bcm43455 \
+wpa-supplicant \
 "
 RDEPENDS_packagegroup-base_append_aarch64-std = " \
 dsoftbus \
