@@ -226,6 +226,8 @@ download_code()
     update_code_repo src-openeuler/libgpg-error ${SRC_BRANCH}
     update_code_repo src-openeuler/libgcrypt ${SRC_BRANCH}
     update_code_repo src-openeuler/kbd ${SRC_BRANCH}
+    update_code_repo src-openeuler/autoconf-archive ${SRC_BRANCH}
+    update_code_repo src-openeuler/libxslt ${SRC_BRANCH}
     # using higher version, otherwise there are too many cve patches to apply.
     update_code_repo src-openeuler/dbus openEuler-22.09
     update_code_repo src-openeuler/wpa_supplicant openEuler-22.09
