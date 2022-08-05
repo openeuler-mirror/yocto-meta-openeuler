@@ -47,10 +47,9 @@ ASSUME_PROVIDED += "gettext-native texinfo-dummy-native"
 # openssl tools
 HOSTTOOLS_NONFATAL += "openssl"
 
-##commands used by raspberrrypi4 specially
-HOSTTOOLS_NONFATAL_append_raspberrypi4 += "mkdosfs mcopy mkfs.ext4 debugfs fsck.ext4 dumpe2fs \
-                                           parted mkfs.vfat mmd"
-ASSUME_PROVIDED += "parted-native dosfstools-native  mtools-native bmap-tools-native gptfdisk-native"
+# commands used by iso and wic
+HOSTTOOLS_NONFATAL += "cpio mkdosfs mcopy mkfs.ext4 debugfs fsck.ext4 dumpe2fs parted mkfs.vfat mmd"
+ASSUME_PROVIDED += "cpio-native parted-native dosfstools-native  mtools-native bmap-tools-native gptfdisk-native"
 
 # graphics related
 ASSUME_PROVIDED +=  "pixman-native mesa-native virglrenderer-native libsdl2-native"
@@ -80,7 +79,8 @@ ASSUME_PROVIDED += "qemu-native rsync-native nativesdk-qemuwrapper-cross"
 ASSUME_PROVIDED += "dwarfsrcfiles-native"
 
 # used by libpam
-ASSUME_PROVIDED += "libxml2-native attr-native"
+#ASSUME_PROVIDED += "libxml2-native attr-native"
+ASSUME_PROVIDED += "attr-native"
 # used by make-mod-scripts
 ASSUME_PROVIDED += "gmp-native"
 # used by cracklib

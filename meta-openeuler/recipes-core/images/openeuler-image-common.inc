@@ -5,13 +5,12 @@ IMAGE_LINGUAS = ""
 
 LICENSE = "MIT"
 
-inherit core-image
+IMAGE_FSTYPES ?= "cpio.gz"
+IMAGE_FSTYPES_DEBUGFS ?= "cpio.gz"
+INITRAMFS_MAXSIZE ?= "262144"
+do_image_cpio[depends] ?= ""
 
-IMAGE_FSTYPES = "cpio.gz"
-IMAGE_FSTYPES_DEBUGFS = "cpio.gz"
-INITRAMFS_MAXSIZE = "262144"
-#delete depends to cpio-native, use nativesdk's cpio
-do_image_cpio[depends] = ""
+inherit core-image
 
 #delete useless sdk depends
 FEATURE_PACKAGES_tools-sdk_remove = " packagegroup-core-sdk packagegroup-core-standalone-sdk-target"

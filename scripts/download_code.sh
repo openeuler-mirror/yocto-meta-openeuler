@@ -231,6 +231,8 @@ download_code()
     # using higher version, otherwise there are too many cve patches to apply.
     update_code_repo src-openeuler/dbus openEuler-22.09
     update_code_repo src-openeuler/wpa_supplicant openEuler-22.09
+    update_code_repo src-openeuler/grub2 openEuler-22.09
+    update_code_repo src-openeuler/parted openEuler-22.09
 }
 
 # download iSulad related packages

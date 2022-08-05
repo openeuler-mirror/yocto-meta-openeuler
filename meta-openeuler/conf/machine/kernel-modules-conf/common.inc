@@ -41,3 +41,6 @@ kernel-module-ip6table-nat \
 kernel-module-ip6t-reject \
 kernel-module-xt-nat \
 "
+
+INSTALLMODULES = " \
+"
