@@ -7,6 +7,7 @@ SRC_URI += " \
     file://backport-libarchive-3.5.2-symlink-fix.patch \
     file://backport-CVE-2021-36976.patch \
     file://backport-CVE-2021-31566.patch \
+    file://backport-CVE-2022-26280.patch \
     file://libarchive-uninitialized-value.patch \
 "
 
