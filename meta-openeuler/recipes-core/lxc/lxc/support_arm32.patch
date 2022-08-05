@@ -18,35 +18,6 @@ index 9eb6dcb..929d670 100644
  else
  	AC_MSG_RESULT([no])
  fi
-diff --git a/src/lxc/confile.c b/src/lxc/confile.c
-index e898e23..522fefa 100644
---- a/src/lxc/confile.c
-+++ b/src/lxc/confile.c
-@@ -6233,21 +6233,21 @@ static int set_config_init_args(const char *key, const char *value,
- 				 struct lxc_conf *lxc_conf, void *data)
- {
- 	int ret = 0;
--	char *tmp = NULL;
-+	char **tmp = NULL;
- 	char *new_value = NULL;
- 
- 	ret = set_config_string_item(&new_value, value);
- 	if (ret || !new_value)
- 		return ret;
- 
--	tmp = realloc(lxc_conf->init_argv, (lxc_conf->init_argc + 1) * sizeof(char *));
-+	tmp = (char **)realloc(lxc_conf->init_argv, (lxc_conf->init_argc + 1) * sizeof(char *));
- 	if (!tmp) {
- 		ERROR("Out of memory");
- 		free(new_value);
- 		return -1;
- 	}
- 
--	lxc_conf->init_argv = (char **)tmp;
-+	lxc_conf->init_argv = tmp;
- 
- 	lxc_conf->init_argv[lxc_conf->init_argc] = new_value;
- 	lxc_conf->init_argc++;
 diff --git a/src/lxc/json/json_common.c b/src/lxc/json/json_common.c
 index ec20c59..87895b0 100755
 --- a/src/lxc/json/json_common.c
