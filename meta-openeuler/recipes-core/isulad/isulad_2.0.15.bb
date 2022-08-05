@@ -7,11 +7,18 @@ LICENSE = "MulanPSLv2"
 
 LIC_FILES_CHKSUM = "file://LICENSES/LICENSE;md5=1acb172ffd3d252285dd1b8b8459941e"
 
-SRC_URI = "file://iSulad/v${PV}.tar.gz \
-           file://iSulad/0001-do-not-mkdir-of-isulad-if-no-controller-found.patch \
+OPENEULER_REPO_NAME = "iSulad"
+
+SRC_URI = "file://v${PV}.tar.gz \
+           file://0001-do-not-use-tmpfile.patch \
+           file://0002-use-only-TLS-v1.2-or-later.patch \
+           file://0003-don-t-mount-shareable-dirs-if-user-set-mount-for-dev.patch \
+           file://0004-tolerate-arch-unspecified-seccomp-profiles.patch \
+           file://0005-add-a-CI-test-case-checking-seccomp-option.patch \
+           file://0006-fix-cri-attach-when-stdout-and-stderr-are-false.patch \
         "
 
-S = "${WORKDIR}/${BPN}-v${PV}"
+S = "${WORKDIR}/iSulad-v${PV}"
 
 inherit cmake
 OECMAKE_GENERATOR = "Unix Makefiles"
