@@ -7,6 +7,7 @@ require conf/machine/qemu-common.inc
 
 #kernel modules to install and autoload
 require conf/machine/kernel-modules-conf/common.inc
+require conf/machine/kernel-modules-conf/iso-install.inc
 KERNEL_MODULE_AUTOLOAD = "${INSTALLMODULES}"
 
 # Different from arm32, here we use armv8a.inc instead
