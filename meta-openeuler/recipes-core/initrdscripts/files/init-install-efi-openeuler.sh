@@ -32,7 +32,7 @@ if [ "$ext4_support" != "ext4" ]; then
     exit 1
 fi
 
-cdromlists=`ls /sys/block/ | grep sr` || true
+cdromlists=`ls /sys/block/ | grep -Ev "ram|loop"` || true
 if [ -z "${cdromlists}" ]; then
     echo "Can't find any CDROM. Please check CDROM to install ISO image."
     exit 1
