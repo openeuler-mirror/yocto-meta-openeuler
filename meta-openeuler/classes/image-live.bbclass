@@ -28,7 +28,6 @@ do_bootimg[depends] += "dosfstools-native:do_populate_sysroot \
                         mtools-native:do_populate_sysroot \
                         cdrkit-native:do_populate_sysroot \
                         virtual/kernel:do_deploy \
-                        ${@bb.utils.contains("MACHINE_FEATURES", "isohybrid", "${MLPREFIX}syslinux:do_populate_sysroot", "", d)} \
                         ${@bb.utils.contains("MACHINE_FEATURES", "isohybrid", "syslinux-native:do_populate_sysroot", "", d)} \
                         ${@'%s:do_image_%s' % (d.getVar('PN'), d.getVar('LIVE_ROOTFS_TYPE').replace('-', '_')) if d.getVar('ROOTFS') else ''} \
                         "
@@ -67,7 +66,7 @@ ISO_BOOTCAT = "isolinux/boot.cat"
 MKISOFS_OPTIONS = "-no-emul-boot -boot-load-size 4 -boot-info-table"
 
 # this options make iso support uppercase character. it is important to install process.
-OPENEULER_MKISOFS_OPTIONS = "-R -J -T -r -l -d -joliet-long -allow-multidot -allow-leading-dots -no-bak "
+OPENEULER_MKISOFS_OPTIONS = "-R -J -T -r -l -d -joliet-long -allow-multidot -allow-leading-dots -no-bak -input-charset utf-8 "
 
 BOOTIMG_VOLUME_ID   ?= "boot"
 BOOTIMG_EXTRA_SPACE ?= "512"
@@ -119,7 +118,7 @@ build_iso() {
 		# Work around bug in isohybrid where it requires isolinux.bin
 		# In the boot catalog, even though it is not used
 		mkdir -p ${ISODIR}/${ISOLINUXDIR}
-		install -m 0644 ${STAGING_DATADIR}/syslinux/isolinux.bin ${ISODIR}${ISOLINUXDIR}
+		install -m 0644 ${STAGING_DATADIR_NATIVE}/syslinux/isolinux.bin ${ISODIR}${ISOLINUXDIR}
 	fi
 
 	# We used to have support for zisofs; this is a relic of that
@@ -153,9 +152,9 @@ build_iso() {
 		        -o ${IMGDEPLOYDIR}/${IMAGE_NAME}.iso \
             ${OPENEULER_MKISOFS_OPTIONS} \
             ${@bb.utils.contains("MACHINE_FEATURES", "isohybrid", "-b ${ISO_BOOTIMG} -c ${ISO_BOOTCAT}", "", d)} \
-            ${@bb.utils.contains("MACHINE_FEATURES", "isohybrid", "-eltorito-alt-boot -eltorito-platform efi", "", d)} \
             ${@bb.utils.contains("MACHINE_FEATURES", "isohybrid", "$mkisofs_compress_opts ${MKISOFS_OPTIONS} $mkisofs_iso_level", "", d)} \
-			-b efi.img -no-emul-boot \
+            ${@bb.utils.contains("MACHINE_FEATURES", "isohybrid", "-eltorito-alt-boot", "", d)} \
+            ${@bb.utils.contains("MACHINE_FEATURES", "isohybrid", "-e efi.img", "-b efi.img", d)} -no-emul-boot \
 			${ISODIR}
 		isohybrid_args="-u"
 	fi
