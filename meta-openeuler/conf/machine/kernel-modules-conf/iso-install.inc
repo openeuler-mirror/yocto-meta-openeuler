@@ -5,7 +5,8 @@ kernel-module-cdrom \
 kernel-module-sr-mod \
 kernel-module-isofs \
 kernel-module-msdos \
-kernel-module-virtio-pci \
 kernel-module-virtio-scsi \
 kernel-module-virtiofs \
+kernel-module-scsi-mod \
+kernel-module-sd-mod \
 "
