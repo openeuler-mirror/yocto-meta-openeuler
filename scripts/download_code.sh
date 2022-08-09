@@ -216,6 +216,11 @@ download_code()
     update_code_repo src-openeuler/perl ${SRC_BRANCH}
     update_code_repo src-openeuler/userspace-rcu ${SRC_BRANCH}
     update_code_repo src-openeuler/lttng-ust ${SRC_BRANCH}
+    update_code_repo src-openeuler/libdb ${SRC_BRANCH}
+    update_code_repo src-openeuler/groff ${SRC_BRANCH}
+    update_code_repo src-openeuler/nasm ${SRC_BRANCH}
+    update_code_repo src-openeuler/syslinux ${SRC_BRANCH}
+    update_code_repo src-openeuler/cdrkit ${SRC_BRANCH}
 }
 
 # download iSulad related packages
