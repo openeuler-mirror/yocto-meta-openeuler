@@ -1,0 +1,30 @@
+INSTALLMODULES += " \
+kernel-module-ipv6 \
+kernel-module-ip6table-filter \
+kernel-module-ip6table-mangle \
+kernel-module-ip6table-raw \
+kernel-module-iptable-filter \
+kernel-module-iptable-mangle \
+kernel-module-iptable-raw \
+kernel-module-ipt-reject \
+kernel-module-sg \
+kernel-module-joydev \
+kernel-module-pcspkr \
+kernel-module-fuse \
+kernel-module-sr-mod \
+kernel-module-ata-generic \
+kernel-module-igb \
+kernel-module-ahci \
+kernel-module-chipreg \
+kernel-module-mtdblock \
+kernel-module-nfsd \
+kernel-module-xhci-plat-hcd \
+kernel-module-xhci-pci \
+kernel-module-usb-storage \
+kernel-module-vfat \
+kernel-module-quota-v1 \
+kernel-module-quota-v2 \
+kernel-module-virtio-net \
+kernel-module-virtio-balloon \
+kernel-module-virtio-console \
+"
