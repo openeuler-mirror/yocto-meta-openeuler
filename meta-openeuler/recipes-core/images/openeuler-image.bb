@@ -32,9 +32,9 @@ packagegroup-base \
 packagegroup-base-extended \
 packagegroup-openssh \
 packagegroup-kernel-modules \
+packagegroup-isulad \
 "
 #thie packagegroup should add after refactor
-#packagegroup-isulad
 
 inherit extrausers
 EXTRA_USERS_PARAMS = "\

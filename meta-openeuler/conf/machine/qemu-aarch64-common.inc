@@ -32,3 +32,5 @@ TUNE_FEATURES_remove_virtclass-multilib-lib32 += " vfp"
 # simplest serial console setting, no VT
 SERIAL_CONSOLES ?= "115200;ttyAMA0"
 USE_VT ?= "0"
+# make a APPEND cmdline for grub.cfg while using iso with grub
+APPEND += " console=ttyAMA0,115200 "

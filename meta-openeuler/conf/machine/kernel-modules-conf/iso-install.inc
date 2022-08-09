@@ -7,6 +7,4 @@ kernel-module-isofs \
 kernel-module-msdos \
 kernel-module-virtio-scsi \
 kernel-module-virtiofs \
-kernel-module-scsi-mod \
-kernel-module-sd-mod \
 "
