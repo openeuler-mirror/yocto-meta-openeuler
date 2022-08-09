@@ -6,6 +6,7 @@ inherit external-toolchain cross-canadian
 STRIP_task-package = "strip"
 STRIP_task-populate-sysroot = "strip"
 OBJCOPY_task-package = "objcopy"
+PACKAGE_DEPENDS_remove = "virtual/${TARGET_PREFIX}binutils"
 
 # Scan just toolchains root directory, but include some additional mirrors
 EXTERNAL_INSTALL_SOURCE_PATHS = "${EXTERNAL_TOOLCHAIN}"
@@ -24,7 +25,6 @@ FILES_MIRRORS += "\
 # EXTERNAL_TARGET_SYS, we don't need cross-canadian.bbclass to do it for us.
 bindir = "${exec_prefix}/bin"
 libdir = "${exec_prefix}/lib"
-libdir_aarch64 = "${exec_prefix}/lib64"
 libexecdir = "${exec_prefix}/libexec"
 
 # We're relying on a compatible host libc, not one from a nativesdk build

@@ -7,6 +7,3 @@ SRC_URI = "file://policycoreutils/${BP}.tar.gz \
            file://policycoreutils/fix-fixfiles-N-date-function.patch;patchdir=.. \
            file://policycoreutils/fix-fixfiles-N-date-function-two.patch;patchdir=.. \
 "
-
-S = "${WORKDIR}/selinux-${BPN}-${PV}/${BPN}"
-B = "${WORKDIR}/selinux-${BPN}-${PV}/${BPN}"

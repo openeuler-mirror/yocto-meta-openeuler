@@ -15,7 +15,9 @@ inherit cmake
 
 ### Build metadata
 SRC_URI = "file://lcr/v${PV}.tar.gz \
-           file://lcr/0001-feat-Add-json-spec-for-rest-resize-api.patch \
+           file://lcr/0001-parse-userns-remap-in-daemmon.json.patch \
+           file://lcr/0002-add-rename-json-schema-for-rename-subcommand-in-rest.patch \
+           file://lcr/0003-Add-restful-interface-isula-pull.patch \
 "
 
 S = "${WORKDIR}/${BPN}-v${PV}"
