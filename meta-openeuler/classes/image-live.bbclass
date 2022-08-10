@@ -119,6 +119,7 @@ build_iso() {
 		# In the boot catalog, even though it is not used
 		mkdir -p ${ISODIR}/${ISOLINUXDIR}
 		install -m 0644 ${STAGING_DATADIR_NATIVE}/syslinux/isolinux.bin ${ISODIR}${ISOLINUXDIR}
+		install -m 0644 ${STAGING_DATADIR_NATIVE}/syslinux/ldlinux.c32 ${ISODIR}${ISOLINUXDIR}
 	fi
 
 	# We used to have support for zisofs; this is a relic of that

@@ -239,6 +239,7 @@ download_code()
     update_code_repo src-openeuler/perl-XML-Parser openEuler-22.09
     update_code_repo src-openeuler/systemd openEuler-22.09
     update_code_repo src-openeuler/gnu-efi openEuler-22.09
+    update_code_repo src-openeuler/screen openEuler-22.09
 }
 
 # download iSulad related packages
