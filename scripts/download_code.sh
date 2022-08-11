@@ -412,9 +412,9 @@ main()
         SRC_DIR="$(cd $(dirname $0)/../../;pwd)"
         download_dsoftbus_code
     else
-        download_code
         download_iSulad_code
         download_dsoftbus_code
+        download_code
         create_manifest
     fi
 }

@@ -1,7 +1,7 @@
 # main bbfile: yocto-poky/meta/recipes-support/nettle/nettle_3.7.2.bb
 
 # version in openEuler
-PV = "3.7.3"
+PV = "3.8.1"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
@@ -14,5 +14,5 @@ SRC_URI += " \
         file://${BP}.tar.gz;name=tarball \
 "
 
-SRC_URI[tarball.md5sum] = "a60273d0fab9c808646fcf5e9edc2e8f"
-SRC_URI[tarball.sha256sum] = "661f5eb03f048a3b924c3a8ad2515d4068e40f67e774e8a26827658007e3bcf0"
+SRC_URI[tarball.md5sum] = "e15c5fd5cc901f5dde6a271d7f2320d1"
+SRC_URI[tarball.sha256sum] = "364f3e2b77cd7dcde83fd7c45219c834e54b0c75e428b6f894a23d12dd41cbfe"
