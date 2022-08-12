@@ -7,7 +7,7 @@ SECTION = "base"
 LICENSE = "GPLv2+ & LGPLv2+"
 
 #inherit autotools python3native update-rc.d systemd
-inherit autotools
+inherit autotools update-rc.d systemd
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=94d55d512a9ba36caa9b7df079bae19f"
 SRC_URI = "file://audit/${BP}.tar.gz \
@@ -42,10 +42,6 @@ SRC_URI = "file://audit/${BP}.tar.gz \
 UPDATERCPN = "auditd"
 INITSCRIPT_NAME = "auditd"
 INITSCRIPT_PARAMS = "defaults"
-
-# current we not enable sysvint in DISTRO_FEATURES, just use busybox's init, but we want populate_packages_updatercd to work.
-# In other word, we want update-rc.d always work when INITSCRIPT_NAME and INITSCRIPT_PARAMS generate with all none systemd scene.
-PACKAGESPLITFUNCS_prepend = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '', 'populate_packages_updatercd ', d)}"
 
 SYSTEMD_PACKAGES = "auditd"
 SYSTEMD_SERVICE_auditd = "auditd.service"

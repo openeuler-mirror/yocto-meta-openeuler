@@ -50,9 +50,3 @@ file://openssh/backport-openssh-5.9p1-ipv6man.patch \
 # checksum changed
 SRC_URI[sha256sum] = "4590890ea9bb9ace4f71ae331785a3a5823232435161960ed5fc86588f331fe9"
 
-# current we not enable sysvint in DISTRO_FEATURES, just use busybox's init, but we want populate_packages_updatercd to work.
-# In other word, we want update-rc.d always work when INITSCRIPT_NAME and INITSCRIPT_PARAMS generate with all none systemd scene.
-# update-rc.d config from yocto-poky/meta/recipes-connectivity/openssh/openssh_8.5p1.bb : 
-# INITSCRIPT_NAME_${PN}-sshd = "sshd"
-# INITSCRIPT_PARAMS_${PN}-sshd = "defaults 9"
-PACKAGESPLITFUNCS_prepend = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '', 'populate_packages_updatercd ', d)}"
