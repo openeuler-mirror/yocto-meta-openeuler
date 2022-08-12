@@ -299,11 +299,12 @@ mount $rootfs /tgt_root
 mount -o rw,loop,noatime,nodiratime /run/media/${TARGET_CDROM_NAME}/${rootfs_name} /src_root
 echo "Copying rootfs files..."
 cp -a /src_root/* /tgt_root
-if [ -d /tgt_root/etc/ ] ; then
+# you may should manually add it to fstab or if you already has a udev rules.
+if [ -d /tgt_root/etc/ ]; then
     boot_uuid=$(blkid -o value -s UUID ${bootfs})
     swap_part_uuid=$(blkid -o value -s PARTUUID ${swap})
-    echo "/dev/disk/by-partuuid/$swap_part_uuid                swap             swap       defaults              0  0" >> /tgt_root/etc/fstab
-    echo "UUID=$boot_uuid              /boot            vfat       defaults              1  2" >> /tgt_root/etc/fstab
+    echo "#/dev/disk/by-partuuid/$swap_part_uuid                swap             swap       defaults              0  0" >> /tgt_root/etc/fstab
+    echo "#UUID=$boot_uuid              /boot            vfat       defaults              1  2" >> /tgt_root/etc/fstab
     # We dont want udev to mount our root device while we're booting...
     if [ -d /tgt_root/etc/udev/ ] ; then
         echo "${device}" >> /tgt_root/etc/udev/mount.blacklist
