@@ -10,7 +10,8 @@ INITRAMFS_SCRIPTS ?= "\
                         initramfs-module-install-efi \
                      "
 
-VIRTUAL-RUNTIME_base-utils = "packagegroup-core-boot"
+# we want a non systemd init manager, packagegroup-core-boot-live is for it.
+VIRTUAL-RUNTIME_base-utils = "packagegroup-core-boot-live"
 PACKAGE_INSTALL = "${INITRAMFS_SCRIPTS} \
         ${VIRTUAL-RUNTIME_base-utils} \
         base-passwd \
