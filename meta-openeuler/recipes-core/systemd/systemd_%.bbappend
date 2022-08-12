@@ -53,3 +53,10 @@ DEPENDS_remove += "python3-native"
 
 #delete depends to util-linux-native
 PACKAGECONFIG_remove_class-target += "libmount"
+
+pkg_postinst_udev-hwdb () {
+    # current we don't support qemuwrapper to pre build the config for rootfs
+    # so if you wan't to update hwdb, do 'udevadm hwdb --update' in your own script on service or copy the configs into rootfs directly.
+    :
+}
+
