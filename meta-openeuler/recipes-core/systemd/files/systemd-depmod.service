@@ -1,0 +1,22 @@
+[Unit]
+Description=Do depmod Before Load Kernel Modules
+DefaultDependencies=no
+Conflicts=shutdown.target
+Before=systemd-modules-load.service sysinit.target shutdown.target
+ConditionCapability=CAP_SYS_MODULE
+ConditionDirectoryNotEmpty=|/lib/modules-load.d
+ConditionDirectoryNotEmpty=|/usr/lib/modules-load.d
+ConditionDirectoryNotEmpty=|/usr/local/lib/modules-load.d
+ConditionDirectoryNotEmpty=|/etc/modules-load.d
+ConditionDirectoryNotEmpty=|/run/modules-load.d
+ConditionKernelCommandLine=|modules-load
+ConditionKernelCommandLine=|rd.modules-load
+ConditionFileIsExecutable=/sbin/depmod
+ConditionFileNotEmpty=!/lib/modules/%v/modules.dep
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/sbin/depmod -a
+TimeoutSec=90s
+
