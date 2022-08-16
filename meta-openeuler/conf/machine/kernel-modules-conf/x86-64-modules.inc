@@ -27,4 +27,8 @@ kernel-module-quota-v2 \
 kernel-module-virtio-net \
 kernel-module-virtio-balloon \
 kernel-module-virtio-console \
+kernel-module-virtio-gpu \
+kernel-module-bochs-drm \
+kernel-module-qxl \
+kernel-module-cirrus \
 "
