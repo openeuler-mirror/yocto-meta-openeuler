@@ -272,33 +272,15 @@ OpenHarmony主要面向强交互等需求的智能终端、物联网终端和工
 编译指导
 **************
 
-编译依托于embedded版本发布的容器镜像，请参考 :ref:`container_build` 章节进行容器环境准备。
+当前dsoftbus代码已集成于yocto，作为一个package存在，建议编译依托于embedded版本发布的容器镜像进行，请参考 :ref:`container_build` 章节进行容器环境准备。
 
-1）下载脚本所在仓库(例如下载到src/yocto-meta-openeuler目录下)
-
-.. code-block:: console
-
-    git clone https://gitee.com/openeuler/yocto-meta-openeuler.git -b openEuler-22.03-LTS -v src/yocto-meta-openeuler
-
-2）执行下载脚本
-
-下载最新软总线代码:
+默认标准镜像已集成dsoftbus，用户也可按照镜像编译指导完成环境准备后按如下命令单独进行编译（和单独编译package方法一致）
 
 .. code-block:: console
 
-    sh src/yocto-meta-openeuler/scripts/download_code.sh dsoftbus
+    bitbake dsoftbus
 
-代码默认下载到与yocto-meta-openeuler同级别的路径，如需修改软总线或者其依赖的模块代码可到对应路径下查找dsoftbus_standard和yocto-embedded-tools仓库进行对应修改。
-
-3）编译编译脚本
-
-编译最新软总线代码:
-
-.. code-block:: console
-
- sh src/yocto-meta-openeuler/scripts/compile.sh dsoftbus
-
-编译工作目录名为“dsoftbus_build”，编译生成件目录名为“dsoftbus_output”，二者均默认与yocto-meta-openeuler在同级别路径。
+除了默认集成标准镜像内的产物外（含sdk），也可通过在yocto对应包的工作目录中找到输出件，如对应包的WORKDIR的image或deploy_rpms目录
 
 限制约束
 **************
