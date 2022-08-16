@@ -116,10 +116,9 @@ download_code()
     update_code_repo src-openeuler/kernel ${SRC_BRANCH} src-kernel-5.10
     update_code_repo src-openeuler/busybox ${SRC_BRANCH}
     # dsoftbus repos
-   update_code_repo openeuler/dsoftbus_standard ${SRC_BRANCH}
-   update_code_repo src-openeuler/libboundscheck ${SRC_BRANCH}
-    # update_code_repo openeuler/yocto-embedded-tools ${SRC_BRANCH}
-    update_code_repo openeuler/yocto-embedded-tools yoctor_refactor
+    update_code_repo openeuler/dsoftbus_standard ${SRC_BRANCH}
+    update_code_repo src-openeuler/libboundscheck ${SRC_BRANCH}
+    update_code_repo openeuler/yocto-embedded-tools master
     update_code_repo openeuler/yocto-poky ${SRC_BRANCH}
     update_code_repo src-openeuler/yocto-pseudo ${SRC_BRANCH}
     update_code_repo src-openeuler/audit ${SRC_BRANCH}

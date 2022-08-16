@@ -7,8 +7,8 @@ script_dir=$(realpath $(dirname $0))
 usage () {
 cat << EOF
 Usage: 
-download mode: $script [-D] [-d DOWNLOAD_DIR] <-b BRANCH> <-m MANIFEST_FILE>
-compile mode: $script [-C] [-p PLATFORM] [-o BUILD_DIR] <-t TOOLCHAIN_DIR>  <-i INIT_MANAGER>
+download mode: source $script [-D] [-d DOWNLOAD_DIR] <-b BRANCH> <-m MANIFEST_FILE>
+compile mode: source $script [-C] [-p PLATFORM] [-o BUILD_DIR] <-t TOOLCHAIN_DIR>  <-i INIT_MANAGER>
   [] -- need   <> -- Optional
 -------------------------------------------------------
   -h                show this help and exit.
@@ -35,6 +35,28 @@ compile mode: $script [-C] [-p PLATFORM] [-o BUILD_DIR] <-t TOOLCHAIN_DIR>  <-i 
 EOF
 }                                                                            
 
+
+check_cmd_source () {
+    if [ -n "$BASH_SOURCE" ]; then
+        THIS_SCRIPT="$BASH_SOURCE"
+    elif [ -n "$ZSH_NAME" ]; then
+        THIS_SCRIPT="$0"
+    else
+        THIS_SCRIPT="$(pwd)/oe_helper.sh"
+        if [ ! -e "$THIS_SCRIPT" ]; then
+            echo "Error: $THIS_SCRIPT doesn't exist!"
+            return 1
+        fi
+    fi
+
+    if [ -z "$ZSH_NAME" ] && [ "$0" = "$THIS_SCRIPT" ]; then
+        echo "Error: This script needs to be sourced. Please run as '. $THIS_SCRIPT'" >&2
+        usage
+        return 1
+    fi
+}
+
+check_cmd_source || exit 1
 compile_mode=0
 download_mode=0
 INIT_MANAGER="busybox"
