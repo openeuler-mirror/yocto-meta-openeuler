@@ -41,6 +41,9 @@ RDEPENDS_${PN} = "\
     busybox-inittab \
     "
 
+# No rule to make target "Image" for x86-64, remove it
+RDEPENDS_${PN}_remove_x86-64 += "kernel-img"
+
 RRECOMMENDS_${PN} = "\
     ${VIRTUAL-RUNTIME_base-utils-syslog} \
     ${MACHINE_ESSENTIAL_EXTRA_RRECOMMENDS}"
