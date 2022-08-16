@@ -9,7 +9,6 @@ cat << EOF
 Usage: 
 download mode: $script [-D] [-d DOWNLOAD_DIR] <-b BRANCH> <-m MANIFEST_FILE>
 compile mode: $script [-C] [-p PLATFORM] [-o BUILD_DIR] <-t TOOLCHAIN_DIR>  <-i INIT_MANAGER>
-compile mode (just dsoftbus): $script [-S]
   [] -- need   <> -- Optional
 -------------------------------------------------------
   -h                show this help and exit.
@@ -33,13 +32,11 @@ compile mode (just dsoftbus): $script [-S]
   -i INIT_MANAGER   INIT_MANAGER suooprt:
                         busybox (defaut)
                         systemd
-  -S                build dsoftbus
 EOF
 }                                                                            
 
 compile_mode=0
 download_mode=0
-dsoftbus_compile_mode=0
 INIT_MANAGER="busybox"
 OPTIND=1
 
@@ -53,9 +50,6 @@ while getopts "hDCSd:b:m:p:o:t:i:" opt; do
             ;;
         C)  compile_mode=1
             echo compile_mode
-            ;;
-        S)  dsoftbus_compile_mode=1
-            echo dsoftbus_compile_mode
             ;;
         d)  DOWNLOAD_DIR=$OPTARG
             ;;
@@ -77,7 +71,7 @@ while getopts "hDCSd:b:m:p:o:t:i:" opt; do
     esac
 done
 
-if [ $download_mode == 0 ] && [ $compile_mode == 0 ] && [ $dsoftbus_compile_mode == 0 ]; then
+if [ $download_mode == 0 ] && [ $compile_mode == 0 ]; then
     echo "Invalid input."
     usage
     return 1
@@ -119,7 +113,3 @@ if [ $compile_mode == 1 ]; then
     return 0
 fi
 
-if [ $dsoftbus_compile_mode == 1 ]; then
-    source ${script_dir}/compile.sh dsoftbus
-    return 0
-fi

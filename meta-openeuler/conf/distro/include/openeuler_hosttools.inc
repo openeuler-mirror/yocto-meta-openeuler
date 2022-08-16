@@ -12,8 +12,8 @@ HOSTTOOLS_NONFATAL += "cc"
 ASSUME_PROVIDED += "util-linux-native python3-setuptools-native pkgconfig-native chrpath-replacement-native"
 
 # package management tools
-HOSTTOOLS_NONFATAL += "rpm rpmbuild createrepo_c dnf"
-ASSUME_PROVIDED += "rpm-native createrepo-c-native"
+HOSTTOOLS_NONFATAL += "rpm rpmbuild createrepo_c dnf unzip"
+ASSUME_PROVIDED += "rpm-native createrepo-c-native unzip-native"
 
 # commands used by kernel build
 HOSTTOOLS_NONFATAL += "flex bison bc"

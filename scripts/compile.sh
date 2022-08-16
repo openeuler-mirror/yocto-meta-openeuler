@@ -4,9 +4,7 @@
 usage()
 {
     echo "Tip: "
-    echo "     to build dsoftbu:"
-    echo "         # sh $(basename "${BASH_SOURCE[0]}") \"dsoftbus\""
-    echo "     to build openEuler Embedded packages:"
+    echo "     to build openEuler Embedded:"
     echo "         # . $(basename "${BASH_SOURCE[0]}") <PLATFORM> [BUILD_DIR] [TOOLCHAIN_DIR]"
     echo "           Supportted PLATFORM:"
     echo "                       aarch64-std (default)"
@@ -139,46 +137,4 @@ main()
     echo -e "Tip: You can now run 'bitbake ${BITBAKE_OPT}'.\n"
 }
 
-do_dsoftbus_compile()
-{
-    rm -rf ${SRC_DIR}/dsoftbus_build/out
-    cd ${SRC_DIR}/dsoftbus_build
-    ./build.sh --product-name openEuler
-}
-
-do_dsoftbus_package()
-{
-    rm -rf ${SRC_DIR}/dsoftbus_output
-    mkdir ${SRC_DIR}/dsoftbus_output
-    install -d ${SRC_DIR}/dsoftbus_output/usr/include/dsoftbus
-    install -d ${SRC_DIR}/dsoftbus_output/usr/lib64/
-    install -d ${SRC_DIR}/dsoftbus_output/usr/bin
-
-    # prepare so
-    cp ${SRC_DIR}/dsoftbus_build/out/ohos-arm64-release/common/common/*.so ${SRC_DIR}/dsoftbus_output/usr/lib64/
-    cp ${SRC_DIR}/dsoftbus_build/out/ohos-arm64-release/communication/dsoftbus_standard/*.so ${SRC_DIR}/dsoftbus_output/usr/lib64/
-
-    # prepare bin
-    cp ${SRC_DIR}/dsoftbus_build/out/ohos-arm64-release/communication/dsoftbus_standard/softbus_server_main ${SRC_DIR}/dsoftbus_output/usr/bin
-
-    # prepare head files
-    cp \
-	${SRC_DIR}/dsoftbus_build/foundation/communication/dsoftbus/interfaces/kits/discovery/*.h \
-	${SRC_DIR}/dsoftbus_build/foundation/communication/dsoftbus/interfaces/kits/common/*.h \
-	${SRC_DIR}/dsoftbus_build/foundation/communication/dsoftbus/interfaces/kits/bus_center/*.h \
-	${SRC_DIR}/dsoftbus_build/foundation/communication/dsoftbus/interfaces/kits/transport/*.h \
-	${SRC_DIR}/dsoftbus_build/foundation/communication/dsoftbus/core/common/include/softbus_errcode.h \
-	${SRC_DIR}/dsoftbus_output/usr/include/dsoftbus
-}
-
-if [ "$1" == "dsoftbus" ];then
-    SRC_DIR=$2
-    if [ -z "${SRC_DIR}" ];then
-        SRC_DIR="$(cd $(dirname $0)/../../;pwd)"
-    fi
-
-    do_dsoftbus_compile
-    do_dsoftbus_package
-else
-    main "$@"
-fi
+main "$@"
