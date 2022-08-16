@@ -15,6 +15,37 @@ SRC_URI = " \
     file://backport-0002-CVE-2021-42574.patch \
     file://backport-0003-CVE-2021-42574.patch \
     file://bfd-Close-the-file-descriptor-if-there-is-no-archive.patch \
+    file://binutils-AArch64-EFI.patch \
+    file://backport-0001-PR28391-strip-objcopy-preserve-dates-.a-cannot-set-t.patch \
+    file://0001-x86-Add-int1-as-one-byte-opcode-0xf1.patch \
+    file://0002-x86-drop-OP_Mask.patch \
+    file://0003-x86-correct-VCVT-U-SI2SD-rounding-mode-handling.patch \
+    file://0004-x86-64-generalize-OP_G-s-EVEX.R-handling.patch \
+    file://0005-x86-64-properly-bounds-check-bnd-N-in-OP_G.patch \
+    file://0006-x86-fold-duplicate-register-printing-code.patch \
+    file://0007-x86-fold-duplicate-code-in-MOVSXD_Fixup.patch \
+    file://0008-x86-correct-EVEX.V-handling-outside-of-64-bit-mode.patch \
+    file://0009-x86-drop-vex_mode-and-vex_scalar_mode.patch \
+    file://0010-x86-fold-duplicate-vector-register-printing-code.patch \
+    file://0011-x86-drop-xmm_m-b-w-d-q-_mode.patch \
+    file://0012-x86-drop-vex_scalar_w_dq_mode.patch \
+    file://0013-x86-drop-dq-b-d-_mode.patch \
+    file://0014-x86-express-unduly-set-rounding-control-bits-in-disa.patch \
+    file://0015-x86-Simplify-check-for-distinct-TMM-register-operand.patch \
+    file://0016-PATCH-1-2-Enable-Intel-AVX512_FP16-instructions.patch \
+    file://0017-PATCH-2-2-Add-tests-for-Intel-AVX512_FP16-instructio.patch \
+    file://0018-x86-ELF-fix-.tfloat-output.patch \
+    file://0019-x86-ELF-fix-.ds.x-output.patch \
+    file://0020-x86-ELF-fix-.tfloat-output-with-hex-input.patch \
+    file://0021-x86-introduce-.hfloat-directive.patch \
+    file://0022-x86-Avoid-abort-on-invalid-broadcast.patch \
+    file://0023-x86-Put-back-3-aborts-in-OP_E_memory.patch \
+    file://0024-x86-Print-bad-on-invalid-broadcast-in-OP_E_memory.patch \
+    file://0025-x86-Terminate-mnemonicendp-in-swap_operand.patch \
+    file://0026-opcodes-Make-i386-dis.c-thread-safe.patch \
+    file://0027-x86-reduce-AVX512-FP16-set-of-insns-decoded-through-.patch \
+    file://0028-x86-reduce-AVX512-FP-set-of-insns-decoded-through-ve.patch \
+    file://0029-x86-consistently-use-scalar_mode-for-AVX512-FP16-sca.patch \
 "
 
 # apply used patches from poky

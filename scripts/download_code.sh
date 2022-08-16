@@ -121,17 +121,17 @@ download_code()
     update_code_repo openeuler/yocto-embedded-tools master
     update_code_repo openeuler/yocto-poky ${SRC_BRANCH}
     update_code_repo src-openeuler/yocto-pseudo ${SRC_BRANCH}
-    update_code_repo src-openeuler/audit ${SRC_BRANCH}
+    update_code_repo src-openeuler/audit openEuler-22.09
     update_code_repo src-openeuler/cracklib ${SRC_BRANCH}
     update_code_repo src-openeuler/libcap-ng ${SRC_BRANCH}
     update_code_repo src-openeuler/libpwquality ${SRC_BRANCH}
     update_code_repo src-openeuler/openssh ${SRC_BRANCH}
-    update_code_repo src-openeuler/libnsl2 ${SRC_BRANCH}
+    update_code_repo src-openeuler/libnsl2 openEuler-22.09
     update_code_repo src-openeuler/openssl ${SRC_BRANCH}
     update_code_repo src-openeuler/pam ${SRC_BRANCH}
     update_code_repo src-openeuler/shadow ${SRC_BRANCH}
     update_code_repo src-openeuler/ncurses ${SRC_BRANCH}
-    update_code_repo src-openeuler/bash ${SRC_BRANCH}
+    update_code_repo src-openeuler/bash openEuler-22.09
     update_code_repo src-openeuler/libtirpc ${SRC_BRANCH}
     update_code_repo src-openeuler/grep ${SRC_BRANCH}
     update_code_repo src-openeuler/pcre ${SRC_BRANCH}
@@ -139,7 +139,7 @@ download_code()
     update_code_repo src-openeuler/gzip ${SRC_BRANCH}
     update_code_repo src-openeuler/xz openEuler-22.09
     update_code_repo src-openeuler/lzo openEuler-22.09
-    update_code_repo src-openeuler/lz4 ${SRC_BRANCH}
+    update_code_repo src-openeuler/lz4 openEuler-22.09
     update_code_repo src-openeuler/bzip2 openEuler-22.09
     update_code_repo src-openeuler/sed ${SRC_BRANCH}
     update_code_repo src-openeuler/json-c openEuler-22.09
@@ -187,12 +187,12 @@ download_code()
     update_code_repo src-openeuler/lvm2 ${SRC_BRANCH}
     update_code_repo src-openeuler/quota openEuler-22.09
     update_code_repo src-openeuler/pciutils openEuler-22.09
-    update_code_repo src-openeuler/procps-ng ${SRC_BRANCH}
-    update_code_repo src-openeuler/tzdata ${SRC_BRANCH}
+    update_code_repo src-openeuler/procps-ng openEuler-22.09
+    update_code_repo src-openeuler/tzdata openEuler-22.09
     update_code_repo src-openeuler/glib2 ${SRC_BRANCH}
     update_code_repo src-openeuler/raspberrypi-firmware openEuler-22.09
     update_code_repo src-openeuler/gmp ${SRC_BRANCH}
-    update_code_repo src-openeuler/gdb ${SRC_BRANCH}
+    update_code_repo src-openeuler/gdb openEuler-22.09
     update_code_repo src-openeuler/libmetal master
     update_code_repo src-openeuler/OpenAMP master
     update_code_repo src-openeuler/sysfsutils openEuler-22.09
@@ -247,7 +247,7 @@ download_code()
 # download iSulad related packages
 download_iSulad_code()
 {
-   update_code_repo src-openeuler/zlib ${SRC_BRANCH}
+   update_code_repo src-openeuler/zlib openEuler-22.09
    update_code_repo src-openeuler/libcap ${SRC_BRANCH}
    update_code_repo src-openeuler/yajl openEuler-22.09
    update_code_repo src-openeuler/libseccomp ${SRC_BRANCH}
