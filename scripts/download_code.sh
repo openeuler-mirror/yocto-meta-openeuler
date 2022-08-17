@@ -180,7 +180,7 @@ download_code()
     update_code_repo src-openeuler/nfs-utils openEuler-22.09
     update_code_repo src-openeuler/rpcbind openEuler-22.09
     update_code_repo src-openeuler/cronie openEuler-22.09
-    update_code_repo src-openeuler/kmod ${SRC_BRANCH}
+    update_code_repo src-openeuler/kmod openEuler-22.09
     update_code_repo src-openeuler/kpatch ${SRC_BRANCH}
     update_code_repo src-openeuler/libusbx openEuler-22.09
     update_code_repo src-openeuler/libxml2 openEuler-22.09
