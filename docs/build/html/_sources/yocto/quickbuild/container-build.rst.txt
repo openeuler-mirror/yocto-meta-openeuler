@@ -64,7 +64,7 @@ openEuler环境可参考Centos安装Docker。
 +---------------------------------------------+----------------+-----------------------------------+----------------+--------------+
 |      Image Name                             | Image Version  | Recommended to build using branch | Kernel Version | Libc Version |
 +=============================================+================+===================================+================+==============+
-| swr.cn-north-4.myhuaweicloud.com/openeuler  | latest         | master                            | 22.03 LTS      | 2.34         |
+| swr.cn-north-4.myhuaweicloud.com/openeuler  | latest         | master                            | 21.03          | 2.31         |
 | -embedded/openeuler-container               |                |                                   |                |              |
 +---------------------------------------------+----------------+-----------------------------------+----------------+--------------+
 | swr.cn-north-4.myhuaweicloud.com/openeuler  | 22.03-lts      | openEuler-22.03-LTS               | 22.03 LTS      | 2.34         |
@@ -168,6 +168,7 @@ c) 进入构建脚本所在路径，运行编译脚本
 .. code-block:: console
 
     cd /usr1/openeuler/src/yocto-meta-openeuler/scripts
+    . /opt/buildtools/nativesdk/environment-setup-x86_64-pokysdk-linux
     source compile.sh aarch64-std /usr1/build /usr1/openeuler/gcc/openeuler_gcc_arm64le
     bitbake openeuler-image
 
