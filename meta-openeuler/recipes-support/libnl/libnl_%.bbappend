@@ -7,4 +7,6 @@ SRC_URI += " \
     file://backport-rtnl-link-fix-leaking-rtnl_link_af_ops-in-link_msg_parser.patch \
     file://backport-rtnl-route-fix-NLE_NOMEM-handling-in-parse_multipath.patch \
     file://solve-redefinition-of-struct-ipv6_mreq.patch \
+    file://add-a-test-test-add-route.patch \
+    file://add-some-tests-about-addr-class-rule-neigh-qdisc.patch \
 "

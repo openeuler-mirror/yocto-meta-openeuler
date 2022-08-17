@@ -4,6 +4,7 @@
 PV = "590"
 
 # Use the source packages from openEuler
+# less-475-fsync.patch can't apply: cannot run test program while cross compiling
 SRC_URI_remove = "http://www.greenwoodsoftware.com/${BPN}/${BPN}-${PV}.tar.gz"
 SRC_URI += "file://${BPN}/${BPN}-${PV}.tar.gz \
             file://${BPN}/less-394-time.patch \

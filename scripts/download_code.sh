@@ -135,7 +135,7 @@ download_code()
     update_code_repo src-openeuler/libtirpc openEuler-22.09
     update_code_repo src-openeuler/grep openEuler-22.09
     update_code_repo src-openeuler/pcre openEuler-22.09
-    update_code_repo src-openeuler/less ${SRC_BRANCH}
+    update_code_repo src-openeuler/less openEuler-22.09
     update_code_repo src-openeuler/gzip ${SRC_BRANCH}
     update_code_repo src-openeuler/xz openEuler-22.09
     update_code_repo src-openeuler/lzo openEuler-22.09
@@ -144,7 +144,7 @@ download_code()
     update_code_repo src-openeuler/sed openEuler-22.09
     update_code_repo src-openeuler/json-c openEuler-22.09
     update_code_repo src-openeuler/ethtool openEuler-22.09
-    update_code_repo src-openeuler/expat ${SRC_BRANCH}
+    update_code_repo src-openeuler/expat openEuler-22.09
     update_code_repo src-openeuler/acl openEuler-22.09
     update_code_repo src-openeuler/attr openEuler-22.09
     update_code_repo src-openeuler/readline ${SRC_BRANCH}
@@ -171,11 +171,11 @@ download_code()
     update_code_repo src-openeuler/dosfstools openEuler-22.09
     update_code_repo src-openeuler/e2fsprogs openEuler-22.09
     update_code_repo src-openeuler/iproute openEuler-22.09
-    update_code_repo src-openeuler/iptables ${SRC_BRANCH}
+    update_code_repo src-openeuler/iptables openEuler-22.09
     update_code_repo src-openeuler/bind ${SRC_BRANCH}
     update_code_repo src-openeuler/dhcp openEuler-22.09
     update_code_repo src-openeuler/libhugetlbfs openEuler-22.09
-    update_code_repo src-openeuler/libnl3 ${SRC_BRANCH}
+    update_code_repo src-openeuler/libnl3 openEuler-22.09
     update_code_repo src-openeuler/libpcap ${SRC_BRANCH}
     update_code_repo src-openeuler/nfs-utils openEuler-22.09
     update_code_repo src-openeuler/rpcbind openEuler-22.09
@@ -254,9 +254,9 @@ download_iSulad_code()
    update_code_repo src-openeuler/libseccomp openEuler-22.09
    update_code_repo src-openeuler/curl openEuler-22.09
    update_code_repo src-openeuler/lxc openEuler-22.09
-   update_code_repo src-openeuler/lcr ${SRC_BRANCH}
-   update_code_repo src-openeuler/libarchive ${SRC_BRANCH}
-   update_code_repo src-openeuler/libevent ${SRC_BRANCH}
+   update_code_repo src-openeuler/lcr openEuler-22.09
+   update_code_repo src-openeuler/libarchive openEuler-22.09
+   update_code_repo src-openeuler/libevent openEuler-22.09
    update_code_repo src-openeuler/libevhtp openEuler-22.09
    update_code_repo src-openeuler/http-parser openEuler-22.09
    update_code_repo src-openeuler/libwebsockets openEuler-22.09
