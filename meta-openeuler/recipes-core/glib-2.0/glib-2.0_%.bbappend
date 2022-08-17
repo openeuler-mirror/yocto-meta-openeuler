@@ -1,16 +1,17 @@
-PV = "2.68.1"
+PV = "2.72.2"
 OPENEULER_REPO_NAME = "glib2"
 
 # use new relocate-modules.patch to fix build error of glib-2.0-native
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
 
-SRC_URI[sha256sum] = "241654b96bd36b88aaa12814efc4843b578e55d47440103727959ac346944333"
-
-SRC_URI = "${GNOME_MIRROR}/glib/${SHRT_VER}/glib-${PV}.tar.xz \
-    file://glib-2-glibc-2.34-close_range.patch \
+# no such file, add dependency on libpcre
+LIC_FILES_CHKSUM_remove = " file://glib/pcre/pcre.h;beginline=8;endline=36;md5=3e2977dae4ad05217f58c446237298fc \
 "
-# apply patches from poky
-SRC_URI += " \
+DEPENDS += "libpcre"
+
+# source version differs greatly from poky, use SRC_URI of a later version 
+# from http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-core/glib-2.0/glib-2.0_2.72.3.bb
+SRC_URI = "${GNOME_MIRROR}/glib/${SHRT_VER}/glib-${PV}.tar.xz \
            file://run-ptest \
            file://0001-Fix-DATADIRNAME-on-uclibc-Linux.patch \
            file://Enable-more-tests-while-cross-compiling.patch \
@@ -22,8 +23,9 @@ SRC_URI += " \
            file://0001-Do-not-write-bindir-into-pkg-config-files.patch \
            file://0001-meson-Run-atomics-test-on-clang-as-well.patch \
            file://0001-gio-tests-resources.c-comment-out-a-build-host-only-.patch \
-           file://0001-gio-tests-codegen.py-bump-timeout-to-100-seconds.patch \
-"
+           "
+
+SRC_URI[sha256sum] = "78d599a133dba7fe2036dfa8db8fb6131ab9642783fc9578b07a20995252d2de"
 
 # delete depends to shared-mime-info
 SHAREDMIMEDEP_remove += "shared-mime-info"
@@ -36,8 +38,10 @@ RDEPENDS_${PN}-codegen = ""
 # here use nativesdk's meson-native and python3-native
 DEPENDS_remove += "python3-native"
 
-#delete depends to util-linux-native
+# delete depends to util-linux-native
 PACKAGECONFIG_remove_class-target += "libmount"
+# no internal_pcre configuration option
+PACKAGECONFIG[system-pcre] = ""
 
 # glib-2.0 will inherit gio-module-cache.bbclass to update
 # gio module after glib-2.0 is installed.

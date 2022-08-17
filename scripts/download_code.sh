@@ -157,7 +157,7 @@ download_code()
     update_code_repo src-openeuler/psmisc openEuler-22.09
     update_code_repo src-openeuler/squashfs-tools openEuler-22.09
     update_code_repo src-openeuler/strace openEuler-22.09
-    update_code_repo src-openeuler/util-linux ${SRC_BRANCH}
+    update_code_repo src-openeuler/util-linux openEuler-22.09 
     update_code_repo src-openeuler/libsepol openEuler-22.09
     update_code_repo src-openeuler/libselinux openEuler-22.09
     update_code_repo src-openeuler/libsemanage openEuler-22.09
@@ -189,7 +189,7 @@ download_code()
     update_code_repo src-openeuler/pciutils openEuler-22.09
     update_code_repo src-openeuler/procps-ng openEuler-22.09
     update_code_repo src-openeuler/tzdata openEuler-22.09
-    update_code_repo src-openeuler/glib2 ${SRC_BRANCH}
+    update_code_repo src-openeuler/glib2 openEuler-22.09 
     update_code_repo src-openeuler/raspberrypi-firmware openEuler-22.09
     update_code_repo src-openeuler/gmp openEuler-22.09
     update_code_repo src-openeuler/gdb openEuler-22.09
