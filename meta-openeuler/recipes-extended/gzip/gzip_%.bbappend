@@ -6,7 +6,6 @@ PV = "1.12"
 # Use the source packages from openEuler
 SRC_URI_remove = "${GNU_MIRROR}/gzip/${BP}.tar.gz"
 SRC_URI_prepend += "file://${BP}.tar.xz \
-                    file://performance-neoncrc32-and-prfm.patch \
                     file://fix-verbose-disable.patch \
                     "
 
