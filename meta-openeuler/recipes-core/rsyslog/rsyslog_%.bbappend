@@ -15,8 +15,6 @@ SRC_URI += " \
         file://bugfix-rsyslog-7.4.7-imjournal-add-monotonic-timestamp.patch \
         file://bugfix-rsyslog-7.4.7-add-configuration-to-avoid-memory-leak.patch \
         file://rsyslog-8.37.0-initialize-variables-and-check-return-value.patch \
-        file://print-main-queue-info-to-journal-when-queue-full.patch \
-        file://print-main-queue-info-to-journal-when-receive-USR1-signal.patch \
         file://bugfix-CVE-2022-24903.patch \
 "
 
