@@ -152,7 +152,7 @@ download_code()
     update_code_repo src-openeuler/libffi openEuler-22.09
     update_code_repo src-openeuler/popt openEuler-22.09
     update_code_repo src-openeuler/binutils openEuler-22.09
-    update_code_repo src-openeuler/elfutils ${SRC_BRANCH}
+    update_code_repo src-openeuler/elfutils openEuler-22.09
     update_code_repo src-openeuler/kexec-tools ${SRC_BRANCH}
     update_code_repo src-openeuler/psmisc openEuler-22.09
     update_code_repo src-openeuler/squashfs-tools openEuler-22.09
@@ -191,7 +191,7 @@ download_code()
     update_code_repo src-openeuler/tzdata openEuler-22.09
     update_code_repo src-openeuler/glib2 ${SRC_BRANCH}
     update_code_repo src-openeuler/raspberrypi-firmware openEuler-22.09
-    update_code_repo src-openeuler/gmp ${SRC_BRANCH}
+    update_code_repo src-openeuler/gmp openEuler-22.09
     update_code_repo src-openeuler/gdb openEuler-22.09
     update_code_repo src-openeuler/libmetal master
     update_code_repo src-openeuler/OpenAMP master
@@ -204,7 +204,7 @@ download_code()
     update_code_repo src-openeuler/libtool openEuler-22.09
     update_code_repo src-openeuler/libidn2 openEuler-22.09
     update_code_repo src-openeuler/libunistring openEuler-22.09
-    update_code_repo src-openeuler/gnutls ${SRC_BRANCH}
+    update_code_repo src-openeuler/gnutls openEuler-22.09
     update_code_repo src-openeuler/nettle ${SRC_BRANCH}
     update_code_repo src-openeuler/rng-tools openEuler-22.09
     update_code_repo src-openeuler/bash-completion openEuler-22.09

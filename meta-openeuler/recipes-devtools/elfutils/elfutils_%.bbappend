@@ -1,13 +1,19 @@
-PV = "0.185"
+PV = "0.187"
 
 # add patches from openeuler
 SRC_URI += " \
-    file://eu-elfclassify-no-stdin-should-use-classify_flag_no_stdin.patch \
+    file://Fix-segfault-in-eu-ar-m.patch \
+    file://elfutils-${PV}.tar.bz2 \
 "
 
-SRC_URI[sha256sum] = "dc8d3e74ab209465e7f568e1b3bb9a5a142f8656e2b57d10049a73da2ae6b5a6"
+SRC_URI[sha256sum] = "e70b0dfbe610f90c4d1fe0d71af142a4e25c3c4ef9ebab8d2d72b65159d454c8"
+
+LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504 \
+                    file://debuginfod/debuginfod-client.c;endline=27;md5=7eb69ae4d5654e590c840538256a7bfe \
+                    "
 
 # delete conflict patches from poky
 SRC_URI_remove += " \
            file://0001-add-support-for-ipkg-to-debuginfod.cxx.patch \
+           https://sourceware.org/elfutils/ftp/${PV}/${BP}.tar.bz2 \
 "
