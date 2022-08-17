@@ -133,7 +133,7 @@ download_code()
     update_code_repo src-openeuler/ncurses openEuler-22.09
     update_code_repo src-openeuler/bash openEuler-22.09
     update_code_repo src-openeuler/libtirpc openEuler-22.09
-    update_code_repo src-openeuler/grep ${SRC_BRANCH}
+    update_code_repo src-openeuler/grep openEuler-22.09
     update_code_repo src-openeuler/pcre openEuler-22.09
     update_code_repo src-openeuler/less ${SRC_BRANCH}
     update_code_repo src-openeuler/gzip ${SRC_BRANCH}
@@ -242,6 +242,7 @@ download_code()
     update_code_repo src-openeuler/systemd openEuler-22.09
     update_code_repo src-openeuler/gnu-efi openEuler-22.09
     update_code_repo src-openeuler/screen openEuler-22.09
+    update_code_repo src-openeuler/pcre2 openEuler-22.09
 }
 
 # download iSulad related packages
