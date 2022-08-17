@@ -166,7 +166,7 @@ download_code()
     update_code_repo src-openeuler/libestr openEuler-22.09
     update_code_repo src-openeuler/libfastjson openEuler-22.09
     update_code_repo src-openeuler/logrotate openEuler-22.09
-    update_code_repo src-openeuler/rsyslog ${SRC_BRANCH}
+    update_code_repo src-openeuler/rsyslog openEuler-22.09
     update_code_repo src-openeuler/cifs-utils openEuler-22.09
     update_code_repo src-openeuler/dosfstools openEuler-22.09
     update_code_repo src-openeuler/e2fsprogs openEuler-22.09
@@ -183,7 +183,7 @@ download_code()
     update_code_repo src-openeuler/kmod ${SRC_BRANCH}
     update_code_repo src-openeuler/kpatch ${SRC_BRANCH}
     update_code_repo src-openeuler/libusbx openEuler-22.09
-    update_code_repo src-openeuler/libxml2 ${SRC_BRANCH}
+    update_code_repo src-openeuler/libxml2 openEuler-22.09
     update_code_repo src-openeuler/lvm2 openEuler-22.09
     update_code_repo src-openeuler/quota openEuler-22.09
     update_code_repo src-openeuler/pciutils openEuler-22.09
@@ -205,7 +205,8 @@ download_code()
     update_code_repo src-openeuler/libidn2 openEuler-22.09
     update_code_repo src-openeuler/libunistring openEuler-22.09
     update_code_repo src-openeuler/gnutls openEuler-22.09
-    update_code_repo src-openeuler/nettle ${SRC_BRANCH}
+    # openeuler nettle in 22.03 is newer than 22.09, use 22.03
+    update_code_repo src-openeuler/nettle openEuler-22.03-LTS
     update_code_repo src-openeuler/rng-tools openEuler-22.09
     update_code_repo src-openeuler/bash-completion openEuler-22.09
     update_code_repo src-openeuler/coreutils ${SRC_BRANCH}
@@ -217,19 +218,20 @@ download_code()
     update_code_repo src-openeuler/sqlite openEuler-22.09
     update_code_repo src-openeuler/bison openEuler-22.09
     update_code_repo src-openeuler/perl openEuler-22.09
-    update_code_repo src-openeuler/userspace-rcu ${SRC_BRANCH}
+    update_code_repo src-openeuler/userspace-rcu openEuler-22.09
     update_code_repo src-openeuler/lttng-ust openEuler-22.09
     update_code_repo src-openeuler/libdb openEuler-22.09
     update_code_repo src-openeuler/groff openEuler-22.09
     update_code_repo src-openeuler/nasm openEuler-22.09
     update_code_repo src-openeuler/syslinux openEuler-22.09
     update_code_repo src-openeuler/cdrkit openEuler-22.09
+    #current yocto-opkg-utils has no 22.09, use master
     update_code_repo src-openeuler/yocto-opkg-utils master
-    update_code_repo src-openeuler/python3 ${SRC_BRANCH}
+    update_code_repo src-openeuler/python3 openEuler-22.09
     update_code_repo src-openeuler/libgpg-error openEuler-22.09
-    update_code_repo src-openeuler/libgcrypt ${SRC_BRANCH}
+    update_code_repo src-openeuler/libgcrypt openEuler-22.09
     update_code_repo src-openeuler/kbd openEuler-22.09
-    update_code_repo src-openeuler/autoconf-archive ${SRC_BRANCH}
+    update_code_repo src-openeuler/autoconf-archive openEuler-22.09
     update_code_repo src-openeuler/libxslt openEuler-22.09
     # using higher version, otherwise there are too many cve patches to apply.
     update_code_repo src-openeuler/dbus openEuler-22.09
