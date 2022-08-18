@@ -245,6 +245,9 @@ download_code()
     update_code_repo src-openeuler/gnu-efi openEuler-22.09
     update_code_repo src-openeuler/screen openEuler-22.09
     update_code_repo src-openeuler/pcre2 openEuler-22.09
+    update_code_repo src-openeuler/mosquitto openEuler-22.09
+    update_code_repo src-openeuler/uthash openEuler-22.09
+    update_code_repo src-openeuler/ppp openEuler-22.09
 }
 
 # download iSulad related packages
