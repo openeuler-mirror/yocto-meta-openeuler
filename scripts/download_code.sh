@@ -127,8 +127,8 @@ download_code()
     update_code_repo src-openeuler/libpwquality openEuler-22.09
     update_code_repo src-openeuler/openssh ${SRC_BRANCH}
     update_code_repo src-openeuler/libnsl2 openEuler-22.09
-    update_code_repo src-openeuler/openssl ${SRC_BRANCH}
-    update_code_repo src-openeuler/pam ${SRC_BRANCH}
+    update_code_repo src-openeuler/openssl openEuler-22.09
+    update_code_repo src-openeuler/pam openEuler-22.09
     update_code_repo src-openeuler/shadow openEuler-22.09
     update_code_repo src-openeuler/ncurses openEuler-22.09
     update_code_repo src-openeuler/bash openEuler-22.09
