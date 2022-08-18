@@ -147,7 +147,7 @@ download_code()
     update_code_repo src-openeuler/expat openEuler-22.09
     update_code_repo src-openeuler/acl openEuler-22.09
     update_code_repo src-openeuler/attr openEuler-22.09
-    update_code_repo src-openeuler/readline ${SRC_BRANCH}
+    update_code_repo src-openeuler/readline openEuler-22.09 
     update_code_repo src-openeuler/libaio openEuler-22.09
     update_code_repo src-openeuler/libffi openEuler-22.09
     update_code_repo src-openeuler/popt openEuler-22.09
@@ -176,7 +176,7 @@ download_code()
     update_code_repo src-openeuler/dhcp openEuler-22.09
     update_code_repo src-openeuler/libhugetlbfs openEuler-22.09
     update_code_repo src-openeuler/libnl3 openEuler-22.09
-    update_code_repo src-openeuler/libpcap ${SRC_BRANCH}
+    update_code_repo src-openeuler/libpcap openEuler-22.09 
     update_code_repo src-openeuler/nfs-utils openEuler-22.09
     update_code_repo src-openeuler/rpcbind openEuler-22.09
     update_code_repo src-openeuler/cronie openEuler-22.09
