@@ -153,7 +153,7 @@ download_code()
     update_code_repo src-openeuler/popt openEuler-22.09
     update_code_repo src-openeuler/binutils openEuler-22.09
     update_code_repo src-openeuler/elfutils openEuler-22.09
-    update_code_repo src-openeuler/kexec-tools ${SRC_BRANCH}
+    update_code_repo src-openeuler/kexec-tools openEuler-22.09
     update_code_repo src-openeuler/psmisc openEuler-22.09
     update_code_repo src-openeuler/squashfs-tools openEuler-22.09
     update_code_repo src-openeuler/strace openEuler-22.09
@@ -209,7 +209,7 @@ download_code()
     update_code_repo src-openeuler/nettle openEuler-22.03-LTS
     update_code_repo src-openeuler/rng-tools openEuler-22.09
     update_code_repo src-openeuler/bash-completion openEuler-22.09
-    update_code_repo src-openeuler/coreutils ${SRC_BRANCH}
+    update_code_repo src-openeuler/coreutils openEuler-22.09
     update_code_repo src-openeuler/findutils openEuler-22.09
     update_code_repo src-openeuler/gawk openEuler-22.09
     update_code_repo src-openeuler/libmnl openEuler-22.09
