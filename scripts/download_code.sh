@@ -227,7 +227,8 @@ download_code()
     update_code_repo src-openeuler/cdrkit openEuler-22.09
     #current yocto-opkg-utils has no 22.09, use master
     update_code_repo src-openeuler/yocto-opkg-utils master
-    update_code_repo src-openeuler/python3 openEuler-22.09
+    # version of openeuler 3.10.2 for 22.09 is hard to support as our poky version(Hardknott), use 22.03
+    update_code_repo src-openeuler/python3 openEuler-22.03-LTS
     update_code_repo src-openeuler/libgpg-error openEuler-22.09
     update_code_repo src-openeuler/libgcrypt openEuler-22.09
     update_code_repo src-openeuler/kbd openEuler-22.09
