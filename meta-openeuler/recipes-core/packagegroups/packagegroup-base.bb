@@ -88,6 +88,7 @@ nfs-utils-client \
 libusb1 \
 glib-2.0 \
 libbfd \
+expect \
 "
 
 RDEPENDS_packagegroup-base-extended = " \
