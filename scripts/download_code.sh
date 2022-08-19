@@ -196,7 +196,7 @@ download_code()
     update_code_repo src-openeuler/libmetal master
     update_code_repo src-openeuler/OpenAMP master
     update_code_repo src-openeuler/sysfsutils openEuler-22.09
-    update_code_repo src-openeuler/tcl ${SRC_BRANCH}
+    update_code_repo src-openeuler/tcl openEuler-22.09
     update_code_repo src-openeuler/expect openEuler-22.09
     update_code_repo src-openeuler/jitterentropy-library ${SRC_BRANCH}
     update_code_repo src-openeuler/m4 openEuler-22.09
