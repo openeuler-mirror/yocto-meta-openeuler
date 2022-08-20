@@ -105,3 +105,13 @@ wpa-supplicant \
 RDEPENDS_packagegroup-base_append_aarch64-std = " \
 dsoftbus \
 "
+
+RDEPENDS_packagegroup-base_remove_riscv64 += " \
+libhugetlbfs \
+"
+
+RDEPENDS_packagegroup-base-extended_remove_riscv64 += " \
+libmetal \
+openamp \
+"
+

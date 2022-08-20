@@ -23,6 +23,7 @@ compile mode: source $script [-C] [-p PLATFORM] [-o BUILD_DIR] <-t TOOLCHAIN_DIR
                          arm-std
                          x86-64-std
                          raspberrypi4-64
+                         riscv64-std
   -o BUILD_DIR      Build dir: 
                     <above dir of yocto-meta-openeuler >/build (defaut)
   -t TOOLCHAIN_DIR  External toolchain dir(absoulte path):

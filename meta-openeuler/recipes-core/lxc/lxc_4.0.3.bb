@@ -54,6 +54,7 @@ SRC_URI = "file://lxc-4.0.3.tar.gz \
 SRC_URI_append = " \
 		   file://check_only_rootfs_as_filesystem_type.patch \
 		   file://support_arm32.patch \
+		   file://0036-add-riscv-support.patch \
 "
 
 DEPENDS = "yajl libseccomp libcap"

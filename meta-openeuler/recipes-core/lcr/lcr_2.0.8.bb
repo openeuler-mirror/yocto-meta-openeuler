@@ -31,6 +31,7 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 #remove so from ${PN}-dev
 FILES_SOLIBSDEV = ""
 FILES_${PN} += "${libdir}/* "
+FILES_${PN}-staticdev_riscv64 += "${libdir}/*.a"
 
 ### Tasks for package
 do_configure_prepend() {
@@ -42,9 +43,12 @@ EOF
 do_install_append() {
 	[[ "${libdir}" != "/usr/lib" ]] || return 0
 	if test -d ${D}/usr/lib; then
-		mv ${D}/usr/lib ${D}/${libdir}
+        install -d ${D}/${libdir}
+		mv ${D}/usr/lib/* ${D}/${libdir}
+        rm -rf ${D}/usr/lib/
 	fi
         if test -d ${D}/usr/local/include ; then
                 mv ${D}/usr/local/include ${D}/${includedir}
         fi
 }
+

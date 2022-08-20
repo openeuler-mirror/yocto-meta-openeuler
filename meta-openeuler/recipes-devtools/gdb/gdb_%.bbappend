@@ -114,3 +114,4 @@ EXTRA_OECONF_append += " \
         --with-libgmp-prefix=${STAGING_EXECPREFIXDIR} \
         "
 
+FILES_${PN}-dev_riscv64 += "/usr/lib64"

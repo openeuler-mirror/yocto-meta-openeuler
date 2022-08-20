@@ -42,11 +42,11 @@ do_configure_prepend() {
 EOF
 }
 
-do_install_append() {
-        [[ "${libdir}" == "/usr/lib64" ]] || return 0
-        if test -d ${D}/usr/lib; then
-                mkdir -p ${D}/${libdir}
+do_install_append () {
+        [[ "${libdir}" != "/usr/lib" ]] || return 0
+        if test -d ${D}/usr/lib ; then
+                install -d ${D}/${libdir}
                 mv ${D}/usr/lib/* ${D}/${libdir}
-                rm -r ${D}/usr/lib/
+                rm -rf ${D}/usr/lib/
         fi
 }

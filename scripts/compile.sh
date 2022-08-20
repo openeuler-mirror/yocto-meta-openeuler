@@ -73,6 +73,10 @@ get_build_info()
         MACHINE="qemu-x86-64"
         BITBAKE_OPT="openeuler-image openeuler-image-tiny"
         ;;
+    "riscv64-std")
+        MACHINE="qemu-riscv64"
+        BITBAKE_OPT="openeuler-image openeuler-image-tiny"
+        ;;
    *)
         echo "unknown platform, use aarch64-std as default"
         PLATFORM="aarch64-std"
@@ -87,6 +91,8 @@ get_build_info()
         OPENEULER_TOOLCHAIN_DIR="OPENEULER_TOOLCHAIN_DIR_arm";;
     "qemu-x86-64")
         OPENEULER_TOOLCHAIN_DIR="OPENEULER_TOOLCHAIN_DIR_x86-64";;
+    "qemu-riscv64")
+        OPENEULER_TOOLCHAIN_DIR="OPENEULER_TOOLCHAIN_DIR_riscv64";;
     *)
         echo "unknown machine"
         usage || return 1

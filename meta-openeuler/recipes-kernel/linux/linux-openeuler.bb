@@ -29,7 +29,7 @@ KERNEL_MODULE_PACKAGE_SUFFIX = ""
 
 PV = "${LINUX_VERSION}"
 
-COMPATIBLE_MACHINE = "qemuarm|qemuarmv5|qemuarm64|qemux86|qemuppc|qemuppc64|qemumips|qemumips64|qemux86-64|qemuriscv64|qemuriscv32|qemu-aarch64|qemu-arm|raspberrypi4-64|qemu-x86-64"
+COMPATIBLE_MACHINE = "qemuarm|qemuarmv5|qemuarm64|qemux86|qemuppc|qemuppc64|qemumips|qemumips64|qemux86-64|qemuriscv64|qemuriscv32|qemu-aarch64|qemu-arm|raspberrypi4-64|qemu-x86-64|qemu-riscv64"
 
 # Skip processing of this recipe if it is not explicitly specified as the
 # PREFERRED_PROVIDER for virtual/kernel. This avoids network access required
@@ -42,6 +42,9 @@ python () {
 
 KERNEL_CC_append_aarch64 = " ${TOOLCHAIN_OPTIONS}"
 KERNEL_LD_append_aarch64 = " ${TOOLCHAIN_OPTIONS}"
+
+KERNEL_CC_append_riscv64 = " ${TOOLCHAIN_OPTIONS}"
+KERNEL_LD_append_riscv64 = " ${TOOLCHAIN_OPTIONS}"
 
 OPENEULER_KERNEL_CONFIG = "../yocto-embedded-tools/config/${ARCH}/defconfig-kernel"
 OPENEULER_KERNEL_CONFIG_aarch64-pro = "${S}/arch/${ARCH}/configs/bcm2711_defconfig"
