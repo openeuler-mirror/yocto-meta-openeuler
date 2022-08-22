@@ -17,9 +17,10 @@ copy_opeueuler_sdk() {
 delete_bin_from_sdk() {
     #delete binary from sdk to ignore command function error, we need command at host
     pushd ${SDK_OUTPUT}/${SDKTARGETSYSROOT}/
-    rm -f ./usr/bin/*
-    rm -f ./usr/sbin/*
-    rm -f ./sbin/*
+    for d in ./bin ./usr/bin/ ./usr/sbin/ ./sbin/
+    do
+        test -d "$d" && rm -r "$d"
+    done
     popd
 }
 
