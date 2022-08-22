@@ -172,7 +172,6 @@ download_code()
     update_code_repo src-openeuler/e2fsprogs openEuler-22.09
     update_code_repo src-openeuler/iproute openEuler-22.09
     update_code_repo src-openeuler/iptables openEuler-22.09
-    update_code_repo src-openeuler/bind ${SRC_BRANCH}
     update_code_repo src-openeuler/dhcp openEuler-22.09
     update_code_repo src-openeuler/libhugetlbfs openEuler-22.09
     update_code_repo src-openeuler/libnl3 openEuler-22.09
@@ -181,7 +180,6 @@ download_code()
     update_code_repo src-openeuler/rpcbind openEuler-22.09
     update_code_repo src-openeuler/cronie openEuler-22.09
     update_code_repo src-openeuler/kmod openEuler-22.09
-    update_code_repo src-openeuler/kpatch ${SRC_BRANCH}
     update_code_repo src-openeuler/libusbx openEuler-22.09
     update_code_repo src-openeuler/libxml2 openEuler-22.09
     update_code_repo src-openeuler/lvm2 openEuler-22.09
