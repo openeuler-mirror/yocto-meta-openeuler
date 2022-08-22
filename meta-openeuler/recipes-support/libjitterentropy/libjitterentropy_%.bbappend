@@ -1,10 +1,14 @@
 # main bbfile: yocto-poky/meta/recipes-support/libjitterentropy_3.0.1.bb
 
+OPENEULER_REPO_NAME = "jitterentropy-library"
+
 # version in openEuler
 PV = "3.3.1"
 
 # poky's recipe use git protocol and no patchs in SRC_URI, so overwrite directly.
-SRC_URI = "file://jitterentropy-library/jitterentropy-library-${PV}.tar.gz"
+SRC_URI = "file://jitterentropy-library-${PV}.tar.gz \
+           file://jitterentropy-rh-makefile.patch;striplevel=0 \
+"
 
 # license file checksum changed.
 LIC_FILES_CHKSUM = "file://LICENSE;md5=1c94a9d191202a5552f381a023551396 \
