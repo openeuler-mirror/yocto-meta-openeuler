@@ -125,7 +125,7 @@ download_code()
     update_code_repo src-openeuler/cracklib openEuler-22.09
     update_code_repo src-openeuler/libcap-ng openEuler-22.09
     update_code_repo src-openeuler/libpwquality openEuler-22.09
-    update_code_repo src-openeuler/openssh ${SRC_BRANCH}
+    update_code_repo src-openeuler/openssh openEuler-22.09 
     update_code_repo src-openeuler/libnsl2 openEuler-22.09
     update_code_repo src-openeuler/openssl openEuler-22.09
     update_code_repo src-openeuler/pam openEuler-22.09
