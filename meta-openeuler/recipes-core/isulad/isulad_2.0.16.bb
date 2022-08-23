@@ -9,14 +9,7 @@ LIC_FILES_CHKSUM = "file://LICENSES/LICENSE;md5=1acb172ffd3d252285dd1b8b8459941e
 
 OPENEULER_REPO_NAME = "iSulad"
 
-SRC_URI = "file://v${PV}.tar.gz \
-           file://0001-do-not-use-tmpfile.patch \
-           file://0002-use-only-TLS-v1.2-or-later.patch \
-           file://0003-don-t-mount-shareable-dirs-if-user-set-mount-for-dev.patch \
-           file://0004-tolerate-arch-unspecified-seccomp-profiles.patch \
-           file://0005-add-a-CI-test-case-checking-seccomp-option.patch \
-           file://0006-fix-cri-attach-when-stdout-and-stderr-are-false.patch \
-        "
+SRC_URI = "file://v${PV}.tar.gz"
 
 S = "${WORKDIR}/iSulad-v${PV}"
 
