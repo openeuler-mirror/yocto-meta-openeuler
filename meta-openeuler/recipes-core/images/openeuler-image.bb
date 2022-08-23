@@ -10,6 +10,7 @@ do_image_cpio[depends] = ""
 # notice we need MACHINE_FEATURES += "efi" in machine conf
 IMAGE_FSTYPES_append_aarch64 += " iso "
 IMAGE_FSTYPES_append_x86-64 += " iso "
+IMAGE_FSTYPES_remove_raspberrypi4 += " iso "
 INITRD_IMAGE_LIVE = "openeuler-image-live"
 
 # notice: IMAGE_FEATURE configs such as IMAGE_FSTYPES shuold defined befor openeuler-image-common.inc(before core-image and image.bbclass)
