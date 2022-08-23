@@ -3,19 +3,21 @@ PV = "2.9.14"
 
 # remove patches can't apply
 SRC_URI_remove = "http://www.xmlsoft.org/sources/libxml2-${PV}.tar.gz;name=libtar \
-           	  http://www.w3.org/XML/Test/xmlts20080827.tar.gz;subdir=${BP};name=testtar \
-		  file://libxml-m4-use-pkgconfig.patch \
-		  file://0001-Make-ptest-run-the-python-tests-if-python-is-enabled.patch \
-		  file://CVE-2020-7595.patch \
-		  file://CVE-2019-20388.patch \
-		  file://CVE-2020-24977.patch \
-		  file://fix-python39.patch \
-           	  file://CVE-2021-3517.patch \
-           	  file://CVE-2021-3516.patch \
-           	  file://CVE-2021-3518-0001.patch \
-           	  file://CVE-2021-3518-0002.patch \
-           	  file://CVE-2021-3537.patch \
-           	  file://CVE-2021-3541.patch \
+            http://www.w3.org/XML/Test/xmlts20080827.tar.gz;subdir=${BP};name=testtar \
+            file://libxml-m4-use-pkgconfig.patch \
+            file://0001-Make-ptest-run-the-python-tests-if-python-is-enabled.patch \
+            file://CVE-2020-7595.patch \
+            file://CVE-2019-20388.patch \
+            file://CVE-2020-24977.patch \
+            file://fix-python39.patch \
+            file://CVE-2021-3517.patch \
+            file://CVE-2021-3516.patch \
+            file://CVE-2021-3518-0001.patch \
+            file://CVE-2021-3518-0002.patch \
+            file://CVE-2021-3537.patch \
+            file://CVE-2021-3541.patch \
+            file://CVE-2022-23308.patch \
+            file://CVE-2022-23308-fix-regression.patch \
 "
 
 # apply openEuler source package

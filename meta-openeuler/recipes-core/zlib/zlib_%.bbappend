@@ -5,7 +5,8 @@ PV = "1.2.11"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
-            "
+        file://CVE-2018-25032.patch \
+        "
 # files, patches that come from openeuler
 SRC_URI += " \
         file://zlib-1.2.5-minizip-fixuncrypt.patch \

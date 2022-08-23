@@ -2,6 +2,7 @@
 
 # remove conflict files from poky
 SRC_URI_remove = "git://sourceware.org/git/bzip2-tests.git;name=bzip2-tests \
+        git://sourceware.org/git/bzip2-tests.git;name=bzip2-tests;branch=master \
 "
 
 LIC_FILES_CHKSUM = "file://LICENSE;beginline=4;endline=37;md5=600af43c50f1fcb82e32f19b32df4664 \

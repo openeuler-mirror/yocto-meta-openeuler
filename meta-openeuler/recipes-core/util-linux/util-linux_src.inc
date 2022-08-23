@@ -4,6 +4,7 @@ PV = "2.37.2"
 SRC_URI_remove += " \
            file://avoid_parallel_tests.patch \
            file://Automake-use-EXTRA_LTLIBRARIES-instead-of-noinst_LTL.patch \
+           file://CVE-2021-37600.patch \
 "
 
 # files, patches that come from openeuler

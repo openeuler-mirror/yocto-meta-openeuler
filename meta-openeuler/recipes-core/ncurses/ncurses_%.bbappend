@@ -1,10 +1,13 @@
 PV = "6.3"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
+# CVE-2021-39537.patch from poky is for 6.2 and no need for openeuler 6.3 version
 SRC_URI_remove += " \
-           git://salsa.debian.org/debian/ncurses.git;protocol=https \
-           file://0002-configure-reproducible.patch \
-           file://0003-gen-pkgconfig.in-Do-not-include-LDFLAGS-in-generated.patch \
+            git://salsa.debian.org/debian/ncurses.git;protocol=https \
+            git://salsa.debian.org/debian/ncurses.git;protocol=https;branch=master \
+            file://0002-configure-reproducible.patch \
+            file://0003-gen-pkgconfig.in-Do-not-include-LDFLAGS-in-generated.patch \
+            file://CVE-2021-39537.patch \
 "
 
 S = "${WORKDIR}/${BPN}-${PV}"

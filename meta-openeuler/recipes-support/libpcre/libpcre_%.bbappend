@@ -9,6 +9,7 @@ LIC_FILES_CHKSUM = "file://LICENCE;md5=b5d5d1a69a24ea2718263f1ff85a1c58"
 # remove conflict files from poky
 SRC_URI_remove = " \
         https://ftp.pcre.org/pub/pcre/pcre-${PV}.tar.bz2 \
+        ${SOURCEFORGE_MIRROR}/pcre/pcre-${PV}.tar.bz2 \
 "
 
 # bb name is libpcre, but we want pcre in openeuler

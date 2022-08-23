@@ -3,7 +3,9 @@
 # version in openEuler
 PV = "1.42.0"
 
-SRC_URI_remove = "git://github.com/libuv/libuv;branch=v1.x"
+SRC_URI_remove = "git://github.com/libuv/libuv;branch=v1.x \
+        git://github.com/libuv/libuv;branch=v1.x;protocol=https \
+        "
 
 # apply openEuler source package
 SRC_URI_prepend = "file://${BPN}-v${PV}.tar.gz \
