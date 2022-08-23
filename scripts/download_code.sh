@@ -113,7 +113,7 @@ download_code()
     # add new package here if required
     rm -f "${SRC_DIR}"/code.list
     update_code_repo openeuler/kernel ${KERNEL_BRANCH} kernel-5.10
-    update_code_repo src-openeuler/kernel ${SRC_BRANCH} src-kernel-5.10
+    update_code_repo src-openeuler/kernel openEuler-22.09 src-kernel-5.10
     update_code_repo src-openeuler/busybox openEuler-22.09
     # dsoftbus repos
     update_code_repo openeuler/dsoftbus_standard ${SRC_BRANCH}
@@ -300,7 +300,7 @@ main()
     SRC_BRANCH="$2"
     # manifest file include the git url, revision, path info
     MANIFEST="$3"
-    KERNEL_BRANCH="5.10.0-60.18.0"
+    KERNEL_BRANCH="5.10.0-106.6.0"
 
     check_use || return 1
     set -e
