@@ -14,6 +14,7 @@ LIC_FILES_CHKSUM += " \
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
         ${GNU_MIRROR}/coreutils/${BP}.tar.xz \
+        file://remove-usr-local-lib-from-m4.patch \
         file://fix-selinux-flask.patch \
         file://0001-uname-report-processor-and-hardware-correctly.patch \
         file://disable-ls-output-quoting.patch \
@@ -24,13 +25,20 @@ SRC_URI_remove = " \
 SRC_URI_prepend = " \
         file://${BP}.tar.xz;name=tarball \
         file://0001-disable-test-of-rwlock.patch \
-        file://backport-timeout-ensure-foreground-k-exits-with-status-137.patch \
+        file://coreutils-8.2-uname-processortype.patch \
+        file://coreutils-getgrouplist.patch \
+        file://bugfix-remove-usr-local-lib-from-m4.patch \
+        file://bugfix-dummy_help2man.patch \
+        file://bugfix-selinux-flask.patch \
         file://skip-the-tests-that-require-selinux-if-selinux-is-di.patch \
         file://backport-chmod-fix-exit-status-when-ignoring-symlinks.patch \
-        file://bugfix-dummy_help2man.patch \
-        file://coreutils-8.2-uname-processortype.patch \
+        file://backport-timeout-ensure-foreground-k-exits-with-status-137.patch \
+        file://backport-dd-improve-integer-overflow-checking.patch \
+        file://backport-dd-do-not-access-uninitialized.patch \
+        file://backport-df-fix-memory-leak.patch \
+        file://backport-ls-avoid-triggering-automounts.patch \
+        file://backport-stat-only-automount-with-cached-never.patch \
         file://backport-config-color-alias-for-ls.patch \
-        file://coreutils-getgrouplist.patch \
 "
 
 SRC_URI[tarball.md5sum] = "0d79ae8a6124546e3b94171375e5e5d0"
