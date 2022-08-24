@@ -23,7 +23,7 @@ get_build_info()
     PLATFORM="$1"
     BUILD_DIR="$2"
     TOOLCHAIN_DIR="$3"
-    OPENEULER_TOOLCHAIN_DIR="OPENEULER_TOOLCHAIN_DIR_aarch64"
+    EXTERNAL_TOOLCHAIN_DIR="EXTERNAL_TOOLCHAIN_aarch64"
 
     if [ -n "$BASH_SOURCE" ]; then
         THIS_SCRIPT="$BASH_SOURCE"
@@ -86,13 +86,13 @@ get_build_info()
     # set toolchain path
     case $MACHINE in
     "qemu-aarch64" | "raspberrypi4-64")
-        OPENEULER_TOOLCHAIN_DIR="OPENEULER_TOOLCHAIN_DIR_aarch64";;
+        EXTERNAL_TOOLCHAIN_DIR="EXTERNAL_TOOLCHAIN_aarch64";;
     "qemu-arm")
-        OPENEULER_TOOLCHAIN_DIR="OPENEULER_TOOLCHAIN_DIR_arm";;
+        EXTERNAL_TOOLCHAIN_DIR="EXTERNAL_TOOLCHAIN_arm";;
     "qemu-x86-64")
-        OPENEULER_TOOLCHAIN_DIR="OPENEULER_TOOLCHAIN_DIR_x86-64";;
+        EXTERNAL_TOOLCHAIN_DIR="EXTERNAL_TOOLCHAIN_x86-64";;
     "qemu-riscv64")
-        OPENEULER_TOOLCHAIN_DIR="OPENEULER_TOOLCHAIN_DIR_riscv64";;
+        EXTERNAL_TOOLCHAIN_DIR="EXTERNAL_TOOLCHAIN_riscv64";;
     *)
         echo "unknown machine"
         usage || return 1
@@ -117,9 +117,9 @@ set_env()
     # set the OPENUERL_SP_DIR variable
     sed -i "s|^OPENEULER_SP_DIR .*|OPENEULER_SP_DIR = \"${SRC_DIR}\"|g" conf/local.conf
 
-    # set the OPENEULER_TOOLCHAIN_DIR_xxx variable
+    # set the EXTERNAL_TOOLCHAIN_DIR_xxx variable
     if [[ -n ${TOOLCHAIN_DIR} ]];then
-        sed -i "s|^${OPENEULER_TOOLCHAIN_DIR}.*|${OPENEULER_TOOLCHAIN_DIR} = \"${TOOLCHAIN_DIR}\"|g" conf/local.conf
+        sed -i "s|^${EXTERNAL_TOOLCHAIN_DIR}.*|${EXTERNAL_TOOLCHAIN_DIR} = \"${TOOLCHAIN_DIR}\"|g" conf/local.conf
     fi
 
     # if raspberrypi is selected, add the layer of meta-raspberry pi
