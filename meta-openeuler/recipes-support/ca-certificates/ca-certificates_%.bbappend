@@ -3,15 +3,16 @@
 # don't donwload ca-certificates by network
 SRC_URI_remove = " \
         git://salsa.debian.org/debian/ca-certificates.git;protocol=https \
+        git://salsa.debian.org/debian/ca-certificates.git;protocol=https;branch=master \
 "
 
 # get extra tarball locally, because ca-certificates src repository dosen't have ca-certificates.crt or tarball
 FILESEXTRAPATHS_append := "${THISDIR}/files/:"
-SRC_URI += " \
-        file://${BP}.tar.gz;name=tarball \
+SRC_URI =+ " \
+        file://${BP}.tar.gz \
 "
 
-SRC_URI[tarball.md5sum] = "8c582657fde36a021e6387019526b545"
-SRC_URI[tarball.sha256sum] = "a639f1d0598fa8f7a864c7c93860bde2eb00c5a51e66c0f7b0e716f092852eaf"
+SRC_URI[md5sum] = "94e83fc89f8e793dcb20939816c2011d"
+SRC_URI[sha256sum] = "ad8db6bbea76741fe1108677bbddd2cab83f86427251703cabbdced6476e2113"
 
 S = "${WORKDIR}/${BP}"
