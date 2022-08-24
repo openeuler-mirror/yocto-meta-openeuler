@@ -8,6 +8,7 @@ S = "${WORKDIR}/${BPN}-${PV}"
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
             git://gitlab.com/procps-ng/procps.git;protocol=https \
+            git://gitlab.com/procps-ng/procps.git;protocol=https;branch=master \
             "
 # files, patches that come from openeuler
 SRC_URI += " \

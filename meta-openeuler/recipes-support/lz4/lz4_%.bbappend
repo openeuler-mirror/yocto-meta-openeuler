@@ -8,6 +8,8 @@ S = "${WORKDIR}/${BPN}-${PV}"
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
             git://github.com/lz4/lz4.git;branch=release \
+            git://github.com/lz4/lz4.git;branch=release;protocol=https \
+            file://CVE-2021-3520.patch \
             "
 
 SRC_URI += " \

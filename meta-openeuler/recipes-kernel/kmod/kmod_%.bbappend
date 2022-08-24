@@ -4,7 +4,9 @@
 PV = "30"
 
 # Use the source packages from openEuler
-SRC_URI_remove = "git://git.kernel.org/pub/scm/utils/kernel/kmod/kmod.git"
+SRC_URI_remove = "git://git.kernel.org/pub/scm/utils/kernel/kmod/kmod.git \
+        git://git.kernel.org/pub/scm/utils/kernel/kmod/kmod.git;branch=master \
+        "
 SRC_URI_prepend = "file://${BP}.tar.xz "
 
 SRC_URI[md5sum] = "85202f0740a75eb52f2163c776f9b564"

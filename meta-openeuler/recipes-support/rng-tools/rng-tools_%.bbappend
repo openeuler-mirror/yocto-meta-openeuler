@@ -4,6 +4,7 @@ PV = "6.14"
 # remove git protocol
 SRC_URI_remove = "\
     git://github.com/nhorman/rng-tools.git \
+    git://github.com/nhorman/rng-tools.git;branch=master;protocol=https \
 "
 
 SRC_URI_prepend = "\
