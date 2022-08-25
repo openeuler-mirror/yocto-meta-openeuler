@@ -29,6 +29,7 @@ SRC_URI = " \
         file://yocto-embedded-tools/dsoftbus/build/0001-add-dsoftbus-build-support-for-embedded-env.patch;patchdir=${S}/build \
         file://yocto-embedded-tools/dsoftbus/utils/0001-Adaptation-for-dsoftbus.patch;patchdir=${dsoftbus-utils}/native \
         file://yocto-embedded-tools/dsoftbus/bounds_checking_function/0001-Adaptation-for-dsoftbus.patch;patchdir=${dsoftbus-thirdparty}/bounds_checking_function \
+        file://yocto-embedded-tools/dsoftbus/third_party/mbedtls/0001-Adaptation-for-dsoftbus-v3.1.patch;patchdir=${dsoftbus-thirdparty}/mbedtls \
         "
 
 FILES_${PN}-dev = "${includedir}"
