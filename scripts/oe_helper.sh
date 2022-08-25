@@ -1,8 +1,8 @@
 #!/bin/bash
 # this script is used to setup the yocto build envrionment of openEuler Embedded
 
-script=`basename $0`
-script_dir=$(realpath $(dirname $0))
+script=`basename "${BASH_SOURCE[0]}"`
+script_dir=$(realpath $(dirname "${BASH_SOURCE[0]}"))
 
 usage () {
 cat << EOF
