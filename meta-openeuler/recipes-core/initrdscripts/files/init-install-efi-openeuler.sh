@@ -56,6 +56,13 @@ for cdname in $cdromlists; do
     echo
 done
 
+cdromlists_parent=$cdromlists
+cdromlists=""
+for cdrom_parent in $cdromlists_parent; do
+    cdroms=`ls /dev/${cdrom_parent}* | awk -F '/' '{print $3}'`
+    cdromlists="$cdromlists $cdroms"
+done
+
 # Get user choice
 TARGET_CDROM_NAME=""
 while true; do
