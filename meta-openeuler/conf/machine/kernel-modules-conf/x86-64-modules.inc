@@ -31,4 +31,6 @@ kernel-module-virtio-gpu \
 kernel-module-bochs-drm \
 kernel-module-qxl \
 kernel-module-cirrus \
+kernel-module-nvme \
+kernel-module-i915 \
 "
