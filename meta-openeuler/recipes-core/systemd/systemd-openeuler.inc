@@ -4,13 +4,18 @@ LIC_FILES_CHKSUM = "file://${WORKDIR}/systemd-${PV}/LICENSE.GPL2;md5=751419260aa
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
-            git://github.com/systemd/systemd-stable.git;protocol=git;branch=${SRCBRANCH} \
+            git://github.com/systemd/systemd-stable.git;protocol=https;branch=${SRCBRANCH} \
             file://0001-binfmt-Don-t-install-dependency-links-at-install-tim.patch \
             file://0003-implment-systemd-sysv-install-for-OE.patch \
             file://0001-systemd.pc.in-use-ROOTPREFIX-without-suffixed-slash.patch \
             file://0001-logind-Restore-chvt-as-non-root-user-without-polkit.patch \
             file://0027-proc-dont-trigger-mount-error-with-invalid-options-o.patch \
             file://0001-analyze-resolve-executable-path-if-it-is-relative.patch \
+            file://0001-sd-dhcp-client-check-error-earlier-and-reduce-indent.patch \
+            file://0002-sd-dhcp-client-shorten-code-a-bit.patch \
+            file://0003-sd-dhcp-client-logs-when-dhcp-client-unexpectedly-ga.patch \
+            file://0004-sd-dhcp-client-tentatively-ignore-FORCERENEW-command.patch \
+            file://0001-basic-unit-name-do-not-use-strdupa-on-a-path.patch \
             "
 # files, patches that come from openeuler
 SRC_URI =+ " \
