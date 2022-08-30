@@ -49,18 +49,24 @@
 <li class="toctree-l1"><a class="reference internal" href="../contribute_doc.html">如何撰写并贡献文档</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../security_hardening/index.html">安全加固说明</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docker_list/index.html">openEuler Embedded 容器介绍</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">周边设备和硬件底层软件适配</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">树莓派的UEFI支持和网络启动</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#buefi-psci">刷新固件使树莓派4B支持UEFI引导（混合部署依赖此固件的PSCI支持）</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id1">环境/工具准备</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#b-uefi">树莓派4B UEFI固件下载和刷新方法</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#openeuler-embedded-uefi">openEuler Embedded + UEFI固件下载和刷新方法（建议）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#openeuler-embedded-4b-uefi">官方（非openEuler Embedded）树莓派4B固件+UEFI固件下载和刷新方法（不建议）</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#uefi-sdopeneuler-embedded">树莓派UEFI SD卡启动openEuler Embedded</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#grub-grub">grub准备（编译+制作grub启动组件）</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#openeuler-embedded">树莓派网络启动openEuler Embedded</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#pxe">1 准备PXE部署服务器</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#dhcp">2 使能DHCP服务</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tftp">3 使能TFTP服务</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#grub-grub">4 grub准备（编译+制作grub启动组件）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">4 grub准备（编译+制作grub启动组件）</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#openeuler-embeddedimage-gzinitrd">附：openEuler/Embedded内核Image.gz和文件系统initrd的获取</a></li>
 </ul>
 </li>
@@ -98,7 +104,7 @@
              
   <section id="uefi">
 <span id="rasp-uefi"></span><h1>树莓派的UEFI支持和网络启动<a class="headerlink" href="#uefi" title="永久链接至标题">¶</a></h1>
-<p>本文档介绍如何让树莓派4B支持UEFI（UEFI第三方固件支持PSCI标准实现，混合部署的从核启停依赖此功能），并通过网络启动openEuler Embedded</p>
+<p>本文档介绍如何让树莓派4B支持UEFI（UEFI第三方固件支持PSCI标准实现，混合部署的从核启停依赖此功能），并可通过SD卡或网络启动openEuler Embedded</p>
 <section id="buefi-psci">
 <h2>刷新固件使树莓派4B支持UEFI引导（混合部署依赖此固件的PSCI支持）<a class="headerlink" href="#buefi-psci" title="永久链接至标题">¶</a></h2>
 <section id="id1">
@@ -106,8 +112,47 @@
 <p>编译工具链：可用openEuler Embedded的交叉编译工具链，参照 <a class="reference internal" href="../getting_started/index.html#getting-started"><span class="std std-ref">快速上手/基于SDK的应用开发</span></a> 部分。</p>
 <p>设备：建议树莓派4B的出厂配置，包括树莓派4B基础套件和SD卡</p>
 </section>
-<section id="b-uefi">
-<h3>树莓派4B UEFI固件下载和刷新方法<a class="headerlink" href="#b-uefi" title="永久链接至标题">¶</a></h3>
+<section id="openeuler-embedded-uefi">
+<h3>openEuler Embedded + UEFI固件下载和刷新方法（建议）<a class="headerlink" href="#openeuler-embedded-uefi" title="永久链接至标题">¶</a></h3>
+<p><strong>1 将openEuler Embedded树莓派镜像烧录到SD卡</strong></p>
+<ul>
+<li><p><a class="reference external" href="https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E5%88%B7%E5%86%99%E9%95%9C%E5%83%8F.md#%E5%88%B7%E5%86%99-sd-%E5%8D%A1">openEuler烧录参考</a></p>
+<ul class="simple">
+<li><p>如何获得openEuler Embedded树莓派镜像，参照 <span class="xref std std-ref">关键特性/树莓派4B的支持/树莓派镜像构建指导</span> 部分</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>假设镜像名 openeuler-image-raspberrypi4-64.rootfs.rpi-sdimg， SD卡识别为/dev/sda <span class="o">(</span>linux环境<span class="o">)</span>
+<span class="go">sudo dd bs=4M if=openeuler-image-raspberrypi4-64.rootfs.rpi-sdimg of=/dev/sda</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p><strong>2 下载树莓派UEFI固件</strong></p>
+<ul>
+<li><p><a class="reference external" href="https://github.com/pftf/RPi4/releases/download/v1.33/RPi4_UEFI_Firmware_v1.33.zip">树莓派UEFI固件(v1.33版本为例)</a></p>
+<ul class="simple">
+<li><p>下载上述固件后解压，将除了bcm2711-rpi-4-b.dtb之外的所有文件拷贝到SD卡（boot盘）根目录（覆盖之前的文件）:</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>备份bcm2711-rpi-4-b.dtb
+<span class="go">cp SDbootVolumes/bcm2711-rpi-4-b.dtb /bakdir/bcm2711-rpi-4-b.dtb</span>
+<span class="go">cp -rf /xxx/RPi4_UEFI_Firmware_v1.33/* SDbootVolumes/</span>
+<span class="gp"># </span>恢复使用备份的openEuler Embedded的dtb
+<span class="go">cp /bakdir/bcm2711-rpi-4-b.dtb SDbootVolumes/</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<blockquote>
+<div><div class="admonition attention">
+<p class="admonition-title">注意</p>
+<ul class="simple">
+<li><p>此UEFI版本的固件默认使用3G内存limit，可以在UEFI菜单中关闭3G limit，否则系统启动后你看到的内存只有3G【参考 <a class="reference external" href="https://github.com/pftf/RPi4/">官方配置说明</a> 】</p></li>
+<li><p>该版本UEFI+ACPI部署方法有缺陷（HDMI驱动异常），首次使用必须进入UEFI菜单，使用DEVICETREE模式（参考同上UEFI Advanced Settings相关配置）</p></li>
+</ul>
+</div>
+</div></blockquote>
+</section>
+<section id="openeuler-embedded-4b-uefi">
+<h3>官方（非openEuler Embedded）树莓派4B固件+UEFI固件下载和刷新方法（不建议）<a class="headerlink" href="#openeuler-embedded-4b-uefi" title="永久链接至标题">¶</a></h3>
 <p><strong>1 下载树莓派官方固件</strong></p>
 <ul>
 <li><p><a class="reference external" href="https://github.com/raspberrypi/firmware/archive/master.zip">树莓派官方固件</a></p>
@@ -122,11 +167,11 @@
 </ul>
 <p><strong>2 下载树莓派UEFI固件</strong></p>
 <ul>
-<li><p><a class="reference external" href="https://github.com/pftf/RPi4/releases/download/v1.32/RPi4_UEFI_Firmware_v1.32.zip">树莓派UEFI固件(v1.32版本为例)</a></p>
+<li><p><a class="reference external" href="https://github.com/pftf/RPi4/releases/download/v1.33/RPi4_UEFI_Firmware_v1.33.zip">树莓派UEFI固件(v1.33版本为例)</a></p>
 <ul class="simple">
 <li><p>下载上述固件后解压，将所有文件拷贝到SD卡（boot盘）根目录（覆盖之前的文件）:</p></li>
 </ul>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cp -rf /xxx/RPi4_UEFI_Firmware_v1.32/* SDbootVolumes/</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cp -rf /xxx/RPi4_UEFI_Firmware_v1.33/* SDbootVolumes/</span>
 </pre></div>
 </div>
 </li>
@@ -138,6 +183,54 @@
 <li><p>此UEFI版本的固件默认使用3G内存limit，可以在UEFI菜单中关闭3G limit，否则系统启动后你看到的内存只有3G【参考 <a class="reference external" href="https://github.com/pftf/RPi4/">官方配置说明</a> 】</p></li>
 <li><p>UEFI+ACPI部署方法，树莓派使用的内核必须支持ACPI特性</p></li>
 </ul>
+</div>
+</div></blockquote>
+</section>
+</section>
+<section id="uefi-sdopeneuler-embedded">
+<h2>树莓派UEFI SD卡启动openEuler Embedded<a class="headerlink" href="#uefi-sdopeneuler-embedded" title="永久链接至标题">¶</a></h2>
+<section id="grub-grub">
+<h3>grub准备（编译+制作grub启动组件）<a class="headerlink" href="#grub-grub" title="永久链接至标题">¶</a></h3>
+<p><strong>grub源码获取</strong></p>
+<p>下载地址：<a class="reference external" href="https://github.com/coreos/grub/releases/tag/grub-2.02">https://github.com/coreos/grub/releases/tag/grub-2.02</a></p>
+<p><strong>grub组件编译</strong></p>
+<p>解压源码包并进入根目录，准备开始构建arm64-efi（交叉编译）的grub库，注意此时交叉编译工具已经配置完毕，按如下步骤执行:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">./autogen.sh</span>
+<span class="go">./configure --prefix=/xxx/grub-2.02/build --with-platform=efi --disable-werror --target=aarch64-openeuler-linux-gnu</span>
+<span class="go">make</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>构建成功后，在当前目录会生成对应的二进制和grub组件依赖库，其中，grub-core即制作grub-efi需要的工具库，grub-mkimage即制作板子grub.efi引导的host-tool。</p>
+<p><strong>制作引导程序</strong></p>
+<p>接下来制作板子引导grub程序，下例输出名为bootaa64.efi，生成后请放置到SD卡boot分区的对应目录(/EFI/BOOT/bootaa64.efi)：</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">./grub-mkimage -d ./grub-core -O arm64-efi -o bootaa64.efi -p &#39;&#39; ls grub-core/*.mod | cut -d &quot;.&quot; -f 1</span>
+<span class="go">mkdir -p SDbootVolumes/EFI/BOOT</span>
+<span class="go">cp ./bootaa64.efi SDbootVolumes/EFI/BOOT/</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注解</p>
+<p>xxxxx目录中请不要带“.”，否则请适配上述语法。</p>
+</div>
+</div></blockquote>
+<p><strong>制作引导配置文件</strong></p>
+<p>最后，编辑grub.cfg配置文件，grub.cfg配置文件同bootaa64.efi放在一起（/EFI/BOOT/grub.cfg），就绪后在UEFI菜单中选择SD卡启动即可。grub.cfg示例内容如下（后面是cmdline内容，linux gz压缩的内核，使用sd卡分区，不需要initrd）：</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">insmod gzio</span>
+<span class="go">set timeout=0</span>
+
+<span class="go">menuentry &#39;Start OpenEuler&#39; {</span>
+<span class="go">echo &quot;openEuler test.&quot;</span>
+<span class="go">linux /Image.gz coherent_pool=1M 8250.nr_uarts=1 snd_bcm2835.enable_compat_alsa=0 snd_bcm2835.enable_hdmi=1 bcm2708_fb.fbwidth=1824 bcm2708_fb.fbheight=984 bcm2708_fb.fbswap=1 smsc95xx.macaddr=E4:5F:01:38:E2:E2 vc_mem.mem_base=0x3ec00000 vc_mem.mem_size=0x40000000  dwc_otg.lpm_enable=0 console=tty1 console=ttyS0,115200 console=ttyAMA0,115200 root=/dev/mmcblk0p2 rootfstype=ext4 rootwait</span>
+<span class="go">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注解</p>
+<p>上述内容需配合oepnEuler embedded构建的树莓派镜像，并在UEFI 非ACPI（DEVICETREE）下使用，dtb使用openEuler embedded镜像中的内容。其中Image.gz即内核Image的gizp压缩，可通过gzip -c kernel8.img &gt; Image.gz获得（若使用openEuler embedded镜像），kernel8.img不再需要，清务必删除，否则将影响启动。</p>
 </div>
 </div></blockquote>
 </section>
@@ -218,8 +311,8 @@
 </div>
 </div></blockquote>
 </section>
-<section id="grub-grub">
-<h3>4 grub准备（编译+制作grub启动组件）<a class="headerlink" href="#grub-grub" title="永久链接至标题">¶</a></h3>
+<section id="id6">
+<h3>4 grub准备（编译+制作grub启动组件）<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h3>
 <p><strong>grub源码获取</strong></p>
 <p>下载地址：<a class="reference external" href="https://github.com/coreos/grub/releases/tag/grub-2.02">https://github.com/coreos/grub/releases/tag/grub-2.02</a></p>
 <p><strong>grub组件编译</strong></p>
@@ -244,14 +337,14 @@
 </div>
 </div></blockquote>
 <p><strong>制作引导配置文件</strong></p>
-<p>最后，编辑grub.cfg配置文件，grub.cfg配置文件放在tftp的根目录（/var/lib/tftpboot/grub.cfg），grub.cfg示例内容如下（— 后面是cmdline内容，linux gz压缩的内核，initrd文件系统）：</p>
+<p>最后，编辑grub.cfg配置文件，grub.cfg配置文件放在tftp的根目录（/var/lib/tftpboot/grub.cfg），就绪后在UEFI菜单中选择IPV4网络启动即可，grub.cfg示例内容如下（Image.gz后面是cmdline内容，linux gz压缩的内核，initrd文件系统）：</p>
 <blockquote>
 <div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">insmod gzio</span>
 <span class="go">set timeout=0</span>
 
 <span class="go">menuentry &#39;Start OpenEuler&#39; {</span>
 <span class="go">echo &quot;openEuler test.&quot;</span>
-<span class="go">linux /Image.gz console=ttyAMA0,115200</span>
+<span class="go">linux /Image.gz coherent_pool=1M 8250.nr_uarts=1 snd_bcm2835.enable_compat_alsa=0 snd_bcm2835.enable_hdmi=1 bcm2708_fb.fbwidth=1824 bcm2708_fb.fbheight=984 bcm2708_fb.fbswap=1 smsc95xx.macaddr=E4:5F:01:38:E2:E2 vc_mem.mem_base=0x3ec00000 vc_mem.mem_size=0x40000000  dwc_otg.lpm_enable=0 console=tty1 console=ttyS0,115200 console=ttyAMA0,115200</span>
 <span class="go">initrd /initrd.cpio.gz</span>
 <span class="go">}</span>
 </pre></div>
@@ -265,7 +358,7 @@
 <section id="openeuler-embeddedimage-gzinitrd">
 <h3>附：openEuler/Embedded内核Image.gz和文件系统initrd的获取<a class="headerlink" href="#openeuler-embeddedimage-gzinitrd" title="永久链接至标题">¶</a></h3>
 <p><strong>文件系统例子</strong></p>
-<p>可使用openEuler Embedded发布的qemu-aarch64参考 <a class="reference external" href="https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm64/aarch64-std/openeuler-image-qemu-aarch64-20220331025547.rootfs.cpio.gz">文件系统</a></p>
+<p>若使用网络启动，可使用openEuler Embedded发布的qemu-aarch64参考 <a class="reference external" href="https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm64/aarch64-std/openeuler-image-qemu-aarch64-20220331025547.rootfs.cpio.gz">文件系统</a></p>
 <blockquote>
 <div><div class="admonition note">
 <p class="admonition-title">注解</p>
@@ -278,7 +371,7 @@
 <div><div class="admonition attention">
 <p class="admonition-title">注意</p>
 <ul class="simple">
-<li><p>上述UEFI+ACPI部署方法，必须在config中开启ACPI系列功能支持。在make menuconfig ARCH=arm64菜单中，选中ACPI默认系列支持，经测试当前UEFI固件只能选ACPI启动，其他两项UEFI+DTB、DTB均未成功。</p></li>
+<li><p>若使用上述UEFI+ACPI部署方法（不建议，UEFI未完全支持ACPI，有缺陷），必须在config中开启ACPI系列功能支持。在make menuconfig ARCH=arm64菜单中，选中ACPI默认系列支持。建议在UEFI中关闭ACPI选用DEVICETREE（参考UEFI Advanced Settings相关配置)</p></li>
 <li><p>编译生成的Image，在上述grub.cfg的引导示例中，需使用gz命令压缩成Image.gz</p></li>
 </ul>
 </div>

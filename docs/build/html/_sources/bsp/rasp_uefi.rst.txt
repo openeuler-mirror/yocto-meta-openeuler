@@ -3,7 +3,7 @@
 树莓派的UEFI支持和网络启动
 ##############################
 
-本文档介绍如何让树莓派4B支持UEFI（UEFI第三方固件支持PSCI标准实现，混合部署的从核启停依赖此功能），并通过网络启动openEuler Embedded
+本文档介绍如何让树莓派4B支持UEFI（UEFI第三方固件支持PSCI标准实现，混合部署的从核启停依赖此功能），并可通过SD卡或网络启动openEuler Embedded
 
 刷新固件使树莓派4B支持UEFI引导（混合部署依赖此固件的PSCI支持）
 ************************************************************************************************
@@ -15,7 +15,41 @@
 
 设备：建议树莓派4B的出厂配置，包括树莓派4B基础套件和SD卡
 
-树莓派4B UEFI固件下载和刷新方法
+openEuler Embedded + UEFI固件下载和刷新方法（建议）
+================================================
+
+**1 将openEuler Embedded树莓派镜像烧录到SD卡**
+
+- `openEuler烧录参考 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E5%88%B7%E5%86%99%E9%95%9C%E5%83%8F.md#%E5%88%B7%E5%86%99-sd-%E5%8D%A1>`_
+
+  - 如何获得openEuler Embedded树莓派镜像，参照 :ref:`关键特性/树莓派4B的支持/树莓派镜像构建指导<features>` 部分
+
+  .. code-block:: console
+
+      # 假设镜像名 openeuler-image-raspberrypi4-64.rootfs.rpi-sdimg， SD卡识别为/dev/sda (linux环境)
+      sudo dd bs=4M if=openeuler-image-raspberrypi4-64.rootfs.rpi-sdimg of=/dev/sda
+
+**2 下载树莓派UEFI固件**
+
+- `树莓派UEFI固件(v1.33版本为例) <https://github.com/pftf/RPi4/releases/download/v1.33/RPi4_UEFI_Firmware_v1.33.zip>`_
+
+  - 下载上述固件后解压，将除了bcm2711-rpi-4-b.dtb之外的所有文件拷贝到SD卡（boot盘）根目录（覆盖之前的文件）:
+
+  .. code-block:: console
+
+      # 备份bcm2711-rpi-4-b.dtb
+      cp SDbootVolumes/bcm2711-rpi-4-b.dtb /bakdir/bcm2711-rpi-4-b.dtb
+      cp -rf /xxx/RPi4_UEFI_Firmware_v1.33/* SDbootVolumes/
+      # 恢复使用备份的openEuler Embedded的dtb
+      cp /bakdir/bcm2711-rpi-4-b.dtb SDbootVolumes/
+
+ .. attention::
+
+      * 此UEFI版本的固件默认使用3G内存limit，可以在UEFI菜单中关闭3G limit，否则系统启动后你看到的内存只有3G【参考 `官方配置说明 <https://github.com/pftf/RPi4/>`_ 】
+
+      * 该版本UEFI+ACPI部署方法有缺陷（HDMI驱动异常），首次使用必须进入UEFI菜单，使用DEVICETREE模式（参考同上UEFI Advanced Settings相关配置）
+
+官方（非openEuler Embedded）树莓派4B固件+UEFI固件下载和刷新方法（不建议）
 ================================================
 
 **1 下载树莓派官方固件**
@@ -31,19 +65,74 @@
 
 **2 下载树莓派UEFI固件**
 
-- `树莓派UEFI固件(v1.32版本为例) <https://github.com/pftf/RPi4/releases/download/v1.32/RPi4_UEFI_Firmware_v1.32.zip>`_
+- `树莓派UEFI固件(v1.33版本为例) <https://github.com/pftf/RPi4/releases/download/v1.33/RPi4_UEFI_Firmware_v1.33.zip>`_
 
   - 下载上述固件后解压，将所有文件拷贝到SD卡（boot盘）根目录（覆盖之前的文件）:
 
   .. code-block:: console
 
-      cp -rf /xxx/RPi4_UEFI_Firmware_v1.32/* SDbootVolumes/
+      cp -rf /xxx/RPi4_UEFI_Firmware_v1.33/* SDbootVolumes/
 
  .. attention::
 
       * 此UEFI版本的固件默认使用3G内存limit，可以在UEFI菜单中关闭3G limit，否则系统启动后你看到的内存只有3G【参考 `官方配置说明 <https://github.com/pftf/RPi4/>`_ 】
 
       * UEFI+ACPI部署方法，树莓派使用的内核必须支持ACPI特性
+
+树莓派UEFI SD卡启动openEuler Embedded
+************************************************
+
+grub准备（编译+制作grub启动组件）
+================================================
+
+**grub源码获取**
+
+下载地址：https://github.com/coreos/grub/releases/tag/grub-2.02
+
+**grub组件编译**
+
+解压源码包并进入根目录，准备开始构建arm64-efi（交叉编译）的grub库，注意此时交叉编译工具已经配置完毕，按如下步骤执行:
+
+  .. code-block:: console
+
+    ./autogen.sh
+    ./configure --prefix=/xxx/grub-2.02/build --with-platform=efi --disable-werror --target=aarch64-openeuler-linux-gnu
+    make
+
+构建成功后，在当前目录会生成对应的二进制和grub组件依赖库，其中，grub-core即制作grub-efi需要的工具库，grub-mkimage即制作板子grub.efi引导的host-tool。
+
+**制作引导程序**
+
+接下来制作板子引导grub程序，下例输出名为bootaa64.efi，生成后请放置到SD卡boot分区的对应目录(/EFI/BOOT/bootaa64.efi)：
+
+  .. code-block:: console
+
+    ./grub-mkimage -d ./grub-core -O arm64-efi -o bootaa64.efi -p '' ls grub-core/*.mod | cut -d "." -f 1
+    mkdir -p SDbootVolumes/EFI/BOOT
+    cp ./bootaa64.efi SDbootVolumes/EFI/BOOT/
+
+  .. note::
+
+        xxxxx目录中请不要带“.”，否则请适配上述语法。
+
+**制作引导配置文件**
+
+最后，编辑grub.cfg配置文件，grub.cfg配置文件同bootaa64.efi放在一起（/EFI/BOOT/grub.cfg），就绪后在UEFI菜单中选择SD卡启动即可。grub.cfg示例内容如下（后面是cmdline内容，linux gz压缩的内核，使用sd卡分区，不需要initrd）：
+
+  .. code-block:: console
+
+    insmod gzio
+    set timeout=0
+
+    menuentry 'Start OpenEuler' {
+    echo "openEuler test."
+    linux /Image.gz coherent_pool=1M 8250.nr_uarts=1 snd_bcm2835.enable_compat_alsa=0 snd_bcm2835.enable_hdmi=1 bcm2708_fb.fbwidth=1824 bcm2708_fb.fbheight=984 bcm2708_fb.fbswap=1 smsc95xx.macaddr=E4:5F:01:38:E2:E2 vc_mem.mem_base=0x3ec00000 vc_mem.mem_size=0x40000000  dwc_otg.lpm_enable=0 console=tty1 console=ttyS0,115200 console=ttyAMA0,115200 root=/dev/mmcblk0p2 rootfstype=ext4 rootwait
+    }
+
+  .. note::
+
+    上述内容需配合oepnEuler embedded构建的树莓派镜像，并在UEFI 非ACPI（DEVICETREE）下使用，dtb使用openEuler embedded镜像中的内容。其中Image.gz即内核Image的gizp压缩，可通过gzip -c kernel8.img > Image.gz获得（若使用openEuler embedded镜像），kernel8.img不再需要，清务必删除，否则将影响启动。
+
 
 树莓派网络启动openEuler Embedded
 ************************************************
@@ -156,7 +245,7 @@
 
 **制作引导配置文件**
 
-最后，编辑grub.cfg配置文件，grub.cfg配置文件放在tftp的根目录（/var/lib/tftpboot/grub.cfg），grub.cfg示例内容如下（--- 后面是cmdline内容，linux gz压缩的内核，initrd文件系统）：
+最后，编辑grub.cfg配置文件，grub.cfg配置文件放在tftp的根目录（/var/lib/tftpboot/grub.cfg），就绪后在UEFI菜单中选择IPV4网络启动即可，grub.cfg示例内容如下（Image.gz后面是cmdline内容，linux gz压缩的内核，initrd文件系统）：
 
   .. code-block:: console
 
@@ -165,7 +254,7 @@
 
     menuentry 'Start OpenEuler' {
     echo "openEuler test."
-    linux /Image.gz console=ttyAMA0,115200
+    linux /Image.gz coherent_pool=1M 8250.nr_uarts=1 snd_bcm2835.enable_compat_alsa=0 snd_bcm2835.enable_hdmi=1 bcm2708_fb.fbwidth=1824 bcm2708_fb.fbheight=984 bcm2708_fb.fbswap=1 smsc95xx.macaddr=E4:5F:01:38:E2:E2 vc_mem.mem_base=0x3ec00000 vc_mem.mem_size=0x40000000  dwc_otg.lpm_enable=0 console=tty1 console=ttyS0,115200 console=ttyAMA0,115200
     initrd /initrd.cpio.gz
     }
 
@@ -178,7 +267,7 @@
 
 **文件系统例子**
 
-可使用openEuler Embedded发布的qemu-aarch64参考 `文件系统 <https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm64/aarch64-std/openeuler-image-qemu-aarch64-20220331025547.rootfs.cpio.gz>`_ 
+若使用网络启动，可使用openEuler Embedded发布的qemu-aarch64参考 `文件系统 <https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm64/aarch64-std/openeuler-image-qemu-aarch64-20220331025547.rootfs.cpio.gz>`_ 
 
  .. note::
 
@@ -190,7 +279,7 @@
 
  .. attention::
 
-   * 上述UEFI+ACPI部署方法，必须在config中开启ACPI系列功能支持。在make menuconfig ARCH=arm64菜单中，选中ACPI默认系列支持，经测试当前UEFI固件只能选ACPI启动，其他两项UEFI+DTB、DTB均未成功。
+   * 若使用上述UEFI+ACPI部署方法（不建议，UEFI未完全支持ACPI，有缺陷），必须在config中开启ACPI系列功能支持。在make menuconfig ARCH=arm64菜单中，选中ACPI默认系列支持。建议在UEFI中关闭ACPI选用DEVICETREE（参考UEFI Advanced Settings相关配置)
 
    * 编译生成的Image，在上述grub.cfg的引导示例中，需使用gz命令压缩成Image.gz
 
