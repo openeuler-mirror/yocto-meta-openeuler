@@ -1,7 +1,9 @@
 PV = "2.37.2"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
+# ptest.patch, patch-fuzz warning
 SRC_URI_remove += " \
+           file://ptest.patch \
            file://avoid_parallel_tests.patch \
            file://Automake-use-EXTRA_LTLIBRARIES-instead-of-noinst_LTL.patch \
            file://CVE-2021-37600.patch \

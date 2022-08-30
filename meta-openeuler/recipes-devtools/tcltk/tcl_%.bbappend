@@ -18,4 +18,5 @@ SRC_URI[sha256sum] = "186748f1131cef3d637421a18d70892f808e526a29c694bebfeb1c540f
 
 # no such patch in later version
 SRC_URI_remove = "file://no_packages.patch \
+           file://fix_issue_with_old_distro_glibc.patch \
 "

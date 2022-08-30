@@ -2,10 +2,12 @@
 PV = "2.9.14"
 
 # remove patches can't apply
+# fix-execution-of-ptests.patch, patch-fuzz warning
 SRC_URI_remove = "http://www.xmlsoft.org/sources/libxml2-${PV}.tar.gz;name=libtar \
             http://www.w3.org/XML/Test/xmlts20080827.tar.gz;subdir=${BP};name=testtar \
             file://libxml-m4-use-pkgconfig.patch \
             file://0001-Make-ptest-run-the-python-tests-if-python-is-enabled.patch \
+            file://fix-execution-of-ptests.patch \
             file://CVE-2020-7595.patch \
             file://CVE-2019-20388.patch \
             file://CVE-2020-24977.patch \
@@ -21,11 +23,12 @@ SRC_URI_remove = "http://www.xmlsoft.org/sources/libxml2-${PV}.tar.gz;name=libta
 "
 
 # apply openEuler source package
-SRC_URI_prepend = "file://libxml2/${BP}.tar.xz \
+SRC_URI_prepend = "file://${BP}.tar.xz \
 "
 
 # add patches in openEuler
 SRC_URI += " \
+        file://libxml2-multilib.patch \
         file://Fix-memleaks-in-xmlXIncludeProcessFlags.patch \
         file://Fix-memory-leaks-for-xmlACatalogAdd.patch \
         file://Fix-memory-leaks-in-xmlACatalogAdd-when-xmlHashAddEntry-failed.patch \
