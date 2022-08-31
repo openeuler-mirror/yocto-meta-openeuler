@@ -10,6 +10,7 @@ FILES_${PN} = "\
     ${libdir}/gcc/${EXTERNAL_TARGET_SYS}/${BINV} \
     ${libexecdir}/gcc/${EXTERNAL_TARGET_SYS}/${BINV} \
     ${libdir}/libcc1* \
+    /lib64/libcc1* \
     ${@' '.join('${base_bindir}/${EXTERNAL_TARGET_SYS}-' + i for i in '${gcc_binaries}'.split())} \
 "
 
