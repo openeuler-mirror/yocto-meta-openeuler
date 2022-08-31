@@ -1,0 +1,88 @@
+# no host package for image-tiny
+TOOLCHAIN_HOST_TASK = ""
+
+SUMMARY = "A small image embedded with uefi and mcs configurations for rpi 4"
+
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+# fix mkfs.ext4 running error, add -E no_copy_xattrs to mkfs.ext4
+WKS_FILE = "sdimage-rpi.wks"
+WKS_FILE_DEPENDS = ""
+
+SDIMG_KERNELIMAGE = "Image"
+
+# we need more space for boot: see defination in sdcard_image-rpi.bbclass
+BOOT_SPACE = "131072" 
+
+require recipes-core/images/${MACHINE}.inc
+require recipes-core/images/openeuler-image-common.inc
+
+IMAGE_INSTALL += " \
+packagegroup-core-boot \
+packagegroup-openssh \
+sysfsutils \
+libmetal \
+openamp \
+"
+
+IMAGE_CMD_rpi-sdimg_append() {
+    # we use Image.gz for grub.cfg here
+    gzip -c "${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}" > "${DEPLOY_DIR_IMAGE}/Image.gz"
+    mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/Image.gz ::Image.gz || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/Image.gz into boot.img"
+    # here we want uefi to boot
+    mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/RPI_EFI.fd ::RPI_EFI.fd || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/RPI_EFI.fd into boot.img"
+    # here we use efi and grub to boot
+    mmd -i ${WORKDIR}/boot.img EFI
+    mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/EFI/* ::EFI/ || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/EFI/* into boot.img"
+    # here we want a reseved memory for mcs features.
+    mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/mcs-memreserve.dtbo ::overlays/mcs-memreserve.dtbo || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/mcs-memreserve.dtbo into boot.img"
+    rm ${SDIMG}
+    # after new mcpoy add to boot.img, we should reRun Burn Partitions, see sdcard_image-rpi.bbclass IMAGE_CMD_rpi-sdimg: 
+    # Burn Partitions
+    dd if=${WORKDIR}/boot.img of=${SDIMG} conv=notrunc seek=1 bs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024)
+    # If SDIMG_ROOTFS_TYPE is a .xz file use xzcat
+    if echo "${SDIMG_ROOTFS_TYPE}" | egrep -q "*\.xz"
+    then
+        xzcat ${SDIMG_ROOTFS} | dd of=${SDIMG} conv=notrunc seek=1 bs=$(expr 1024 \* ${BOOT_SPACE_ALIGNED} + ${IMAGE_ROOTFS_ALIGNMENT} \* 1024)
+    else
+        dd if=${SDIMG_ROOTFS} of=${SDIMG} conv=notrunc seek=1 bs=$(expr 1024 \* ${BOOT_SPACE_ALIGNED} + ${IMAGE_ROOTFS_ALIGNMENT} \* 1024)
+    fi
+}
+
+# make no login and standard PATH
+set_permissions_from_rootfs_append() {
+    if [ -f ./etc/inittab ]; then
+        sed -i "s#respawn:/sbin/getty.*#respawn:-/bin/sh#g" ./etc/inittab
+    fi
+    if [ -f ./etc/profile ]; then
+        sed -i "s#^PATH=.*#PATH=\"/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin\"#g" ./etc/profile
+    fi
+}
+
+change_bootfiles_to_enable_uefi() {
+    CONFIGFILE=${DEPLOY_DIR_IMAGE}/${BOOTFILES_DIR_NAME}/config.txt
+    
+    # change configs to use uefi and load mcs dtoverlay
+    eficfg=`cat ${CONFIGFILE}  | grep RPI_EFI || true`
+    if [ -z "$eficfg" ]; then
+        echo "arm_64bit=1" >> ${CONFIGFILE}
+        echo "uart_2ndstage=1" >> ${CONFIGFILE}
+        echo "enable_gic=1" >> ${CONFIGFILE}
+        echo "armstub=RPI_EFI.fd" >> ${CONFIGFILE}
+        echo "disable_commandline_tags=1" >> ${CONFIGFILE}
+        echo "disable_overscan=1" >> ${CONFIGFILE}
+        echo "device_tree_address=0x1f0000" >> ${CONFIGFILE}
+        echo "device_tree_end=0x200000" >> ${CONFIGFILE}
+    fi
+
+    # add mcs dtoverlay config
+    dtcfg=`cat ${CONFIGFILE}  | grep mcs-memreserve || true`
+    if [ -z "$dtcfg" ]; then
+        echo "dtoverlay=mcs-memreserve" >> ${CONFIGFILE}
+    fi
+
+    #change grub.cfg to use Image.gz to launch
+    sed -i 's/linux \/Image /linux \/Image.gz /' ${DEPLOY_DIR_IMAGE}/EFI/BOOT/grub.cfg
+
+}
+
+IMAGE_PREPROCESS_COMMAND_append += "change_bootfiles_to_enable_uefi"
