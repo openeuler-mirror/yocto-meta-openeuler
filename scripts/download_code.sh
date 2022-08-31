@@ -246,6 +246,7 @@ download_code()
     update_code_repo src-openeuler/ppp ${SRC_BRANCH}
     update_code_repo src-openeuler/libdrm ${SRC_BRANCH}
     update_code_repo src-openeuler/mtd-utils openEuler-22.03-LTS
+    update_code_repo src-openeuler/dtc ${SRC_BRANCH}
 }
 
 # download iSulad related packages
