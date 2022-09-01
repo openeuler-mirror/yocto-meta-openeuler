@@ -24,10 +24,19 @@ delete_bin_from_sdk() {
     popd
 }
 
+add_sysroot_link() {
+    # users may use aarch64-openeuler-linux-gcc to compile files without --sysroot
+    # add sysroot link to the real sysroot dir for using convenient.
+    pushd ${SDK_OUTPUT}/${SDKPATHNATIVE}/usr/${EXTERNAL_TARGET_SYS}/
+    # must relative path, otherwise will not found after decompression.
+    ln -s ../../../${REAL_MULTIMACH_TARGET_SYS} sysroot
+    popd
+}
+
 #funcs added to last after sdk has been created
 SDK_POSTPROCESS_COMMAND += "copy_opeueuler_sdk;"
 #funcs prepend to the front before sdk has been packaged
-SDK_POSTPROCESS_COMMAND =+ "delete_bin_from_sdk;"
+SDK_POSTPROCESS_COMMAND =+ "delete_bin_from_sdk; add_sysroot_link;"
 
 # host nativesdk packages added to sdk
 TOOLCHAIN_HOST_TASK = " \
@@ -41,4 +50,5 @@ gcc-external-cross-canadian-${TRANSLATED_TARGET_ARCH} \
 TOOLCHAIN_TARGET_TASK += " \
 libgcc \
 kernel-devsrc \
+glibc-external-staticdev \
 "
