@@ -5,7 +5,85 @@
 
 本文档介绍如何让树莓派4B支持UEFI（UEFI第三方固件支持PSCI标准实现，混合部署的从核启停依赖此功能），并可通过SD卡或网络启动openEuler Embedded
 
-刷新固件使树莓派4B支持UEFI引导（混合部署依赖此固件的PSCI支持）
+使用openEuler Embedded UEFI+GRUB的树莓派镜像
+************************************************************************************************
+
+openEuler Embedded 的UEFI树莓派镜像集成了基于树梅派4B的混合部署环境依赖，因此建议直接使用openEuler Embedded UEFI+GRUB的树莓派镜像
+
+该镜像对齐tiny镜像的软件包配置，并集成openssh支持网络登录、混合部署mcs依赖库及混合部署mcs预留内存mcsmem dtoverlay。
+
+构建树梅派openeuler-image-uefi镜像和烧录
+========================
+
+分支支持要求：openEuler-22.09及之后的主线master分支。
+
+环境准备流程参照 :ref:`关键特性/树梅派4B的支持/树梅派构建指导<features>` 构建指导部分。
+
+- 构建命令示例：
+
+  .. code-block:: console
+
+      su openeuler
+      source /usr1/openeuler/src/yocto-meta-openeuler/scripts/compile.sh raspberrypi4-64 /usr1/openeuler/src/build/build-raspberrypi4-64/
+      bitbake openeuler-image-uefi
+
+- 构建镜像生成示例：
+
+  .. code-block:: console
+
+      openeuler-image-uefi-raspberrypi4-64-*.rootfs.rpi-sdimg
+
+- 将openeuler-image-uefi-raspberrypi4-64-*.rpi-sdimg烧录到SD卡
+
+- `openEuler烧录参考 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E5%88%B7%E5%86%99%E9%95%9C%E5%83%8F.md#%E5%88%B7%E5%86%99-sd-%E5%8D%A1>`_
+
+openeuler-image-uefi启动使用指导
+================================================
+
+**1 烧录后首次启动需修改UEFI配置，启动阶段按ESC进入UEFI，按下图操作解锁3G内存限制并关闭ACPI选用DEVICETREE，保存重启后再操作步骤2**
+
+    .. figure:: ../../image/bsp/launch_step1.png
+        :align: center
+
+    .. figure:: ../../image/bsp/launch_step2.png
+        :align: center
+
+    .. figure:: ../../image/bsp/launch_step3.png
+        :align: center
+
+    .. figure:: ../../image/bsp/launch_step4.png
+        :align: center
+
+    .. figure:: ../../image/bsp/launch_step5.png
+        :align: center
+
+**2 更改boot order或手动选择SD卡启动，如下，最后选择Commit Changes and Exit**
+
+    .. figure:: ../../image/bsp/boot_order1.png
+        :align: center
+
+    .. figure:: ../../image/bsp/boot_order2.png
+        :align: center
+
+    .. figure:: ../../image/bsp/boot_order3.png
+        :align: center
+
+    .. figure:: ../../image/bsp/boot_order4.png
+        :align: center
+
+**启动截图**
+
+    .. figure:: ../../image/bsp/boot.png
+        :align: center
+
+ .. attention::
+
+      * 此UEFI版本的固件默认使用3G内存limit，可以在UEFI菜单中关闭3G limit，否则系统启动后你看到的内存只有3G【`官方说明 <https://github.com/pftf/RPi4/>`_ 】
+
+      * 该版本UEFI+ACPI部署方法有缺陷（HDMI驱动异常），首次使用必须进入UEFI菜单，使用DEVICETREE模式
+
+
+手动刷新固件使树莓派4B支持UEFI引导
 ************************************************************************************************
 
 环境/工具准备
@@ -15,7 +93,7 @@
 
 设备：建议树莓派4B的出厂配置，包括树莓派4B基础套件和SD卡
 
-openEuler Embedded + UEFI固件下载和刷新方法（建议）
+openEuler Embedded标准镜像 + UEFI固件下载和刷新方法
 ================================================
 
 **1 将openEuler Embedded树莓派镜像烧录到SD卡**
@@ -28,6 +106,14 @@ openEuler Embedded + UEFI固件下载和刷新方法（建议）
 
       # 假设镜像名 openeuler-image-raspberrypi4-64.rootfs.rpi-sdimg， SD卡识别为/dev/sda (linux环境)
       sudo dd bs=4M if=openeuler-image-raspberrypi4-64.rootfs.rpi-sdimg of=/dev/sda
+      
+  - 烧录完成后，将SD卡（boot盘）根目录的kernel8.img文件压缩成Image.gz:
+
+  .. code-block:: console
+
+      # boot分区可能已经满了，移出kernel8.img再操作
+      mv SDbootVolumes/kernel8.img /tmp/Image
+      gzip -c /tmp/Image > SDbootVolumes/Image.gz
 
 **2 下载树莓派UEFI固件**
 
@@ -45,41 +131,17 @@ openEuler Embedded + UEFI固件下载和刷新方法（建议）
 
  .. attention::
 
-      * 此UEFI版本的固件默认使用3G内存limit，可以在UEFI菜单中关闭3G limit，否则系统启动后你看到的内存只有3G【参考 `官方配置说明 <https://github.com/pftf/RPi4/>`_ 】
+      * 3G内存解锁和关闭ACPI使能DEVICETREE请参考上述"openeuler-image-uefi启动使用指导"章节
+ 
+      * kernel8.img不再需要，清务必删除，否则将影响启动。
 
-      * 该版本UEFI+ACPI部署方法有缺陷（HDMI驱动异常），首次使用必须进入UEFI菜单，使用DEVICETREE模式（参考同上UEFI Advanced Settings相关配置）
+**3 制作grub并选择启动方式**
 
-官方（非openEuler Embedded）树莓派4B固件+UEFI固件下载和刷新方法（不建议）
-================================================
+  - SD卡启动参考本文档章节： 树莓派UEFI之手动制作grub并通过SD卡启动openEuler Embedded
 
-**1 下载树莓派官方固件**
+  - 网络卡启动参考本文档章节： 树莓派UEFI之手动制作grub并通过网络启动openEuler Embedded
 
-- `树莓派官方固件 <https://github.com/raspberrypi/firmware/archive/master.zip>`_
-
-  - 下载上述固件后解压，将boot目录下的内容，拷贝到SD卡（boot盘）根目录,删除kernel*.img文件:
-
-  .. code-block:: console
-
-      rm /xxx/firmware-master/boot/kernel*.img
-      cp -rf /xxx/firmware-master/boot/* SDbootVolumes/
-
-**2 下载树莓派UEFI固件**
-
-- `树莓派UEFI固件(v1.33版本为例) <https://github.com/pftf/RPi4/releases/download/v1.33/RPi4_UEFI_Firmware_v1.33.zip>`_
-
-  - 下载上述固件后解压，将所有文件拷贝到SD卡（boot盘）根目录（覆盖之前的文件）:
-
-  .. code-block:: console
-
-      cp -rf /xxx/RPi4_UEFI_Firmware_v1.33/* SDbootVolumes/
-
- .. attention::
-
-      * 此UEFI版本的固件默认使用3G内存limit，可以在UEFI菜单中关闭3G limit，否则系统启动后你看到的内存只有3G【参考 `官方配置说明 <https://github.com/pftf/RPi4/>`_ 】
-
-      * UEFI+ACPI部署方法，树莓派使用的内核必须支持ACPI特性
-
-树莓派UEFI SD卡启动openEuler Embedded
+树莓派UEFI之手动制作grub并通过SD卡启动openEuler Embedded
 ************************************************
 
 grub准备（编译+制作grub启动组件）
@@ -134,7 +196,7 @@ grub准备（编译+制作grub启动组件）
     上述内容需配合oepnEuler embedded构建的树莓派镜像，并在UEFI 非ACPI（DEVICETREE）下使用，dtb使用openEuler embedded镜像中的内容。其中Image.gz即内核Image的gizp压缩，可通过gzip -c kernel8.img > Image.gz获得（若使用openEuler embedded镜像），kernel8.img不再需要，清务必删除，否则将影响启动。
 
 
-树莓派网络启动openEuler Embedded
+树莓派UEFI之手动制作grub并通过网络启动openEuler Embedded
 ************************************************
 
 1 准备PXE部署服务器
@@ -258,20 +320,30 @@ grub准备（编译+制作grub启动组件）
     initrd /initrd.cpio.gz
     }
 
-  .. note::
 
-    console=ttyAMA0,115200 这里ttyAMA0是树莓派硬件串口，使用引脚14TXD和15RXD作为控制台，若有HDMI驱动，可另外指定console，比如console=tty1
-
-附：openEuler/Embedded内核Image.gz和文件系统initrd的获取
+附：网络启动时，内核Image.gz和文件系统initrd的来源说明
 ========================================================================
 
 **文件系统例子**
 
-若使用网络启动，可使用openEuler Embedded发布的qemu-aarch64参考 `文件系统 <https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm64/aarch64-std/openeuler-image-qemu-aarch64-20220331025547.rootfs.cpio.gz>`_ 
+若使用网络启动，可使用openEuler Embedded构建的标准树梅派镜像构建过程中的rootfs并手动打包，也可使用openEuler Embedded发布的qemu-aarch64参考 `文件系统 <https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm64/aarch64-std/openeuler-image-qemu-aarch64-20220331025547.rootfs.cpio.gz>`_ 
+
+手动打包rootfs例子（预先需准备openEuler Embedded树梅派已构建完成的环境）:
+
+  .. code-block:: console
+
+    # 假设已经处于构建build目录
+    cd tmp/work/raspberrypi4_64-openeuler-linux/openeuler-image/1.0-r0/rootfs/
+    find . | cpio -H newc -o | gzip -n9c > ../initrd.cpio.gz
+    # 生成在上层目录的initrd.cpio.gz即为所需文件系统
 
  .. note::
 
-    文件系统/etc/inittab的配置注意getty登录时串口重定向要使用ttyAMA0.（树莓派4硬件串口PL011对应，引脚14TXD和15RXD）
+    配置文件系统/etc/inittab时注意getty登录时串口重定向要配置正确，否则可能没有打印。（树莓派4B硬件串口PL011对应，引脚14TXD和15RXD）
+
+**内核例子**
+
+若使用网络启动，可使用openEuler Embedded构建的标准树梅派镜像中的kernel8.img，格式即Image，然后通过gzip压缩为Image.gz格式
 
 **内核单独编译例子（openEuler）**
 
@@ -279,9 +351,9 @@ grub准备（编译+制作grub启动组件）
 
  .. attention::
 
-   * 若使用上述UEFI+ACPI部署方法（不建议，UEFI未完全支持ACPI，有缺陷），必须在config中开启ACPI系列功能支持。在make menuconfig ARCH=arm64菜单中，选中ACPI默认系列支持。建议在UEFI中关闭ACPI选用DEVICETREE（参考UEFI Advanced Settings相关配置)
+   * 若使用上述UEFI+ACPI部署方法，必须在config中开启ACPI系列功能支持。在make menuconfig ARCH=arm64菜单中，选中ACPI默认系列支持。建议在UEFI中关闭ACPI选用DEVICETREE（参考openeuler-image-uefi启动使用指导相关配置)
 
-   * 编译生成的Image，在上述grub.cfg的引导示例中，需使用gz命令压缩成Image.gz
+   * 编译生成的Image，在上述efi配置下，grub.cfg的linux格式需使用gz命令压缩成Image.gz
 
 **操作说明**
 
