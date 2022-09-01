@@ -92,6 +92,7 @@ def split_overlays(d, out, ver=None):
 
 
 uefi_configuration() {
+    echo "uefi_configuration make nothing"
 }
 
 IMAGE_CMD_rpi-sdimg () {
