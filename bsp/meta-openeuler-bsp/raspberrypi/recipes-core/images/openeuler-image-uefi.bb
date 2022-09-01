@@ -11,7 +11,7 @@ WKS_FILE_DEPENDS = ""
 SDIMG_KERNELIMAGE = "Image"
 
 # we need more space for boot: see defination in sdcard_image-rpi.bbclass
-BOOT_SPACE = "131072" 
+BOOT_SPACE = "196608" 
 
 require recipes-core/images/${MACHINE}.inc
 require recipes-core/images/openeuler-image-common.inc
@@ -24,7 +24,8 @@ libmetal \
 openamp \
 "
 
-IMAGE_CMD_rpi-sdimg_append() {
+# Notice: we need our sdcard_image-rpi.bbclass in meta-openeuler-bsp to work.
+uefi_configuration() {
     # we use Image.gz for grub.cfg here
     gzip -c "${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}" > "${DEPLOY_DIR_IMAGE}/Image.gz"
     mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/Image.gz ::Image.gz || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/Image.gz into boot.img"
@@ -35,17 +36,6 @@ IMAGE_CMD_rpi-sdimg_append() {
     mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/EFI/* ::EFI/ || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/EFI/* into boot.img"
     # here we want a reseved memory for mcs features.
     mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/mcs-memreserve.dtbo ::overlays/mcs-memreserve.dtbo || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/mcs-memreserve.dtbo into boot.img"
-    rm ${SDIMG}
-    # after new mcpoy add to boot.img, we should reRun Burn Partitions, see sdcard_image-rpi.bbclass IMAGE_CMD_rpi-sdimg: 
-    # Burn Partitions
-    dd if=${WORKDIR}/boot.img of=${SDIMG} conv=notrunc seek=1 bs=$(expr ${IMAGE_ROOTFS_ALIGNMENT} \* 1024)
-    # If SDIMG_ROOTFS_TYPE is a .xz file use xzcat
-    if echo "${SDIMG_ROOTFS_TYPE}" | egrep -q "*\.xz"
-    then
-        xzcat ${SDIMG_ROOTFS} | dd of=${SDIMG} conv=notrunc seek=1 bs=$(expr 1024 \* ${BOOT_SPACE_ALIGNED} + ${IMAGE_ROOTFS_ALIGNMENT} \* 1024)
-    else
-        dd if=${SDIMG_ROOTFS} of=${SDIMG} conv=notrunc seek=1 bs=$(expr 1024 \* ${BOOT_SPACE_ALIGNED} + ${IMAGE_ROOTFS_ALIGNMENT} \* 1024)
-    fi
 }
 
 # make no login and standard PATH
