@@ -16,7 +16,7 @@ EXTRA_OEMESON += "-Defi-ld=${EFI_LD} "
 SRC_URI[tarball.md5sum] = "8e8adf909c255914dfc10709bd372e69"
 SRC_URI[tarball.sha256sum] = "174091ce5f2c02123f76d546622b14078097af105870086d18d55c1c2667d855"
 
-# glib needs meson, meson needs python3-natve
+# glib needs meson, meson needs python3-native
 # here use nativesdk's meson-native and python3-native
 DEPENDS_remove += "python3-native"
 

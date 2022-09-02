@@ -20,4 +20,3 @@ SRC_URI_prepend += " \
         "
 
 SRC_URI[sha256sum] = "0f03caf57f81d9ff362ac28cd389c055ec2bf0678d277349a1a4bee00ad6d440"
-

@@ -109,4 +109,3 @@ RDEPENDS_packagegroup-base-extended_remove_riscv64 += " \
 libmetal \
 openamp \
 "
-

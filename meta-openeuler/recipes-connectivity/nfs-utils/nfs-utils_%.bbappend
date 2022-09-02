@@ -14,6 +14,6 @@ PACKAGECONFIG_remove = "tcp-wrappers"
 SRC_URI[sha256sum] = "51997d94e4c8bcef5456dd36a9ccc38e231207c4e9b6a9a2c108841e6aebe3dd"
 
 # nfs-utils-stats has a collection of python scripts
-# remove the dependcy of python3-core to simplify the build
+# remove the dependency of python3-core to simplify the build
 # when python3 support becomes mature, remove the following code
 RDEPENDS_${PN}-stats = ""

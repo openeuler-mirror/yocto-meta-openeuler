@@ -5,7 +5,7 @@ OPENEULER_REPO_NAME = "jitterentropy-library"
 # version in openEuler
 PV = "3.3.1"
 
-# poky's recipe use git protocol and no patchs in SRC_URI, so overwrite directly.
+# poky's recipe use git protocol and no patches in SRC_URI, so overwrite directly.
 SRC_URI = "file://jitterentropy-library-${PV}.tar.gz \
            file://jitterentropy-rh-makefile.patch;striplevel=0 \
 "

@@ -9,7 +9,7 @@ LIC_FILES_CHKSUM = "file://COPYRIGHT;md5=8f17f64e47e83b60cd920a1e4b54419e"
 SRC_URI_remove = "https://ftp.isc.org/isc/bind9/${PV}/${PACKAGE_FETCH_NAME}-${PV}.tar.gz \
 "
 
-# intergrate the patch of a later version, apply openEuler/dhcp patch adapt
+# integrate the patch of a later version, apply openEuler/dhcp patch adapt
 SRC_URI_prepend = "file://dhcp/dhcp-4.4.2.tar.gz;name=dhcp.tarball \
            file://backport-0025-bind-Detect-system-time-changes.patch \
            file://0001-revert-d10fbdec-for-lib-dns-gen.c-as-it-is-a-build-p.patch \

@@ -1,7 +1,7 @@
 # version in openEuler
 PV = "8.8p1"
 
-# poky patches confiect with openeuler
+# poky patches conflict with openeuler
 SRC_URI_remove += " \
         file://CVE-2021-41617.patch \
         "

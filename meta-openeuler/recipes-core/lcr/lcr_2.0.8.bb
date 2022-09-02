@@ -51,4 +51,3 @@ do_install_append() {
                 mv ${D}/usr/local/include ${D}/${includedir}
         fi
 }
-

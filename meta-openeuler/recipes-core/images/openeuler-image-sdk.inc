@@ -33,9 +33,9 @@ add_sysroot_link() {
     popd
 }
 
-#funcs added to last after sdk has been created
+#functions added to last after sdk has been created
 SDK_POSTPROCESS_COMMAND += "copy_opeueuler_sdk;"
-#funcs prepend to the front before sdk has been packaged
+#functions prepend to the front before sdk has been packaged
 SDK_POSTPROCESS_COMMAND =+ "delete_bin_from_sdk; add_sysroot_link;"
 
 # host nativesdk packages added to sdk

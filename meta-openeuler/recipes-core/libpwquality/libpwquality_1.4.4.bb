@@ -34,4 +34,3 @@ FILES_${PN} += "${base_libdir}/security/pam_pwquality.so"
 FILES_${PN}-dbg += "${base_libdir}/security/.debug"
 FILES_${PN}-staticdev += "${base_libdir}/security/pam_pwquality.a"
 FILES_${PN}-dev += "${base_libdir}/security/pam_pwquality.la"
-

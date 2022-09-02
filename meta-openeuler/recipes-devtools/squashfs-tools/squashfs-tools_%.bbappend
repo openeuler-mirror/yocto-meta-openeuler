@@ -22,4 +22,3 @@ SRC_URI =+ " \
         file://0005-CVE-2021-41072.patch;striplevel=2 \
         file://0001-Avoid-use-of-INSTALL_DIR-for-symlink-targets.patch;striplevel=2 \
         "
-

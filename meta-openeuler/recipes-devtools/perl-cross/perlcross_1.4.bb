@@ -37,4 +37,3 @@ do_install_class-native() {
 }
 
 BBCLASSEXTEND = "native"
-

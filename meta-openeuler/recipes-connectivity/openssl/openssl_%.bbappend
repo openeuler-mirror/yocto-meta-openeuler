@@ -33,5 +33,5 @@ SRC_URI += "\
 
 SRC_URI[sha256sum] = "f89199be8b23ca45fc7cb9f1d8d3ee67312318286ad030f5316aca6462db6c96"
 
-# if PACKAGECONFIG variant has perl, add perl RDEPENS
+# if PACKAGECONFIG variant has perl, add perl RDEPENDS
 RDEPENDS_${PN}-misc = "${@bb.utils.contains('PACKAGECONFIG', 'perl', 'perl', '', d)}"

@@ -1,4 +1,4 @@
-# we can't move pseudo-native into native sdk currenlty because of deep couple of pseduo and yocto,
+# we can't move pseudo-native into native sdk currently because of deep couple of pseduo and yocto,
 # but we can use native sdk to build pseudo-native to remove the dependency of sqlite-native and attr-native
 DEPENDS_remove_class-native += "sqlite3-native attr-native"
 

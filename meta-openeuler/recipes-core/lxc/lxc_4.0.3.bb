@@ -1,4 +1,4 @@
-SUMMARY = "Protocol Buffers - structured data serialisation mechanism"
+SUMMARY = "Protocol Buffers - structured data serialization mechanism"
 DESCRIPTION = "Yet Another JSON Library - A Portable JSON parsing and serialization library in ANSI C"
 SECTION = "console/tools"
 LICENSE = "BSD-2-Clause"

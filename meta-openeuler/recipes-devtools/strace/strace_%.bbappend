@@ -3,7 +3,7 @@
 # strace version in openEuler
 PV = "5.14"
 
-# remove conflicting patch
+# remove conflict patch
 SRC_URI_remove += "file://Makefile-ptest.patch"
 
 SRC_URI[md5sum] = "36c1c17f31855617b7898d2fd5abb9e2"

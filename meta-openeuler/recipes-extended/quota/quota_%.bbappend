@@ -8,7 +8,7 @@ S = "${WORKDIR}/${BPN}-${PV}"
 DEPENDS_remove += "dbus"
 PACKAGECONFIG_remove += "tcp-wrappers"
 
-# files, atches can't be applied in openeuler or conflict with openeuler
+# files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
             ${SOURCEFORGE_MIRROR}/project/linuxquota/quota-tools/${PV}/quota-${PV}.tar.gz \
             "
@@ -22,4 +22,3 @@ SRC_URI += " \
 
 SRC_URI[tarball.md5sum] = "aef94648438832b684978d46fdf75110"
 SRC_URI[tarball.sha256sum] = "2f3e03039f378d4f0d97acdb49daf581dcaad64d2e1ddf129495fd579fbd268d"
-

@@ -28,4 +28,3 @@ FILES_SOLIBSDEV = ""
 do_install_append() {
         ${STRIP} ${D}/${libdir}/*.so*
 }
-

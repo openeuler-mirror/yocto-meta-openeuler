@@ -28,4 +28,3 @@ SRC_URI_append_aarch64 += " \
 
 SRC_URI[tarball.md5sum] = "85adef240c5f370b308da8c938951a68"
 SRC_URI[tarball.sha256sum] = "4ff941449631ace0d4d203e3483be9dbc9da454084111f97ea0a2114e19bf066"
-

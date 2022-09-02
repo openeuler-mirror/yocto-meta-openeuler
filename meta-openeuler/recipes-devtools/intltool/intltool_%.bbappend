@@ -8,7 +8,7 @@ SRC_URI_remove = " \
 "
 
 # append files and patches from openeuler
-# failed patches of openeuler: intltool-perl5.26-regex-fixes.patch 
+# failed patches of openeuler: intltool-perl5.26-regex-fixes.patch
 SRC_URI_append = " \
     file://intltool-${PV}.tar.gz \
     file://intltool-merge-Create-cache-file-atomically.patch \

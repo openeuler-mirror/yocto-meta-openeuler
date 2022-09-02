@@ -16,8 +16,8 @@ KERNEL_MODULE_AUTOLOAD = "${INSTALLMODULES}"
 require conf/machine/include/arm/arch-armv8a.inc
 
 # but we are sure in compat32 we should use -mcpu=cortexa9.
-# This is may not correct, but to make sure compat32 and arm32
-# give same binary.
+# This may be not correct, but to make sure compat32 and arm32
+# generate the same binary.
 # Should not use conf/machine/include/tune-cortexa9.inc directly.
 # In case when using compat32, we alert cflags with same way in tune-cortexa9.inc
 

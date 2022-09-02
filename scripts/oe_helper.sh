@@ -6,7 +6,7 @@ script_dir=$(realpath $(dirname "${BASH_SOURCE[0]}"))
 
 usage () {
 cat << EOF
-Usage: 
+Usage:
 download mode: source $script [-D] [-d DOWNLOAD_DIR] <-b BRANCH> <-m MANIFEST_FILE>
 compile mode: source $script [-C] [-p PLATFORM] [-o BUILD_DIR] <-t TOOLCHAIN_DIR>  <-i INIT_MANAGER> <--enable-rt>
   [] -- need   <> -- Optional
@@ -35,7 +35,7 @@ compile mode: source $script [-C] [-p PLATFORM] [-o BUILD_DIR] <-t TOOLCHAIN_DIR
                         systemd
   --enable-rt       Enable PREEMPT_RT kernel
 EOF
-}                                                                            
+}
 
 
 check_cmd_source () {
@@ -150,4 +150,3 @@ if [ $compile_mode == 1 ]; then
     esac
     return 0
 fi
-

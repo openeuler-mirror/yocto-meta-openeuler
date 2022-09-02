@@ -1,5 +1,5 @@
-# to save initial build time, unnecessary software dependecy, openeuler embedded will
-# use as many as possible prebuild nativesdk/host tools to replace native tools.
+# to save initial build time, remove unnecessary software dependency, openeuler embedded will
+# use as many as possible prebuilt nativesdk/host tools to replace native tools.
 # this file has related HOSTTOOLS and ASSUME_PROVIDED settings.
 
 HOSTTOOLS_remove += "chrpath cpp rpcgen"
@@ -35,7 +35,7 @@ HOSTTOOLS_NONFATAL += "create-cracklib-dict cracklib-format cracklib-packer crac
 HOSTTOOLS_NONFATAL += "ldconfig"
 ASSUME_PROVIDED +="ldconfig-native "
 
-# compress and uncompress tools
+# compress and decompress tools
 HOSTTOOLS_NONFATAL += "xz"
 ASSUME_PROVIDED += " pigz-native gzip-native"
 

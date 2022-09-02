@@ -34,7 +34,7 @@ SHAREDMIMEDEP_remove += "shared-mime-info"
 # here, remove the runtime depends of python3, to simplify build
 # when python3 support becomes mature, remove the following codes
 RDEPENDS_${PN}-codegen = ""
-# glib needs meson, meson needs python3-natve
+# glib needs meson, meson needs python3-native
 # here use nativesdk's meson-native and python3-native
 DEPENDS_remove += "python3-native"
 

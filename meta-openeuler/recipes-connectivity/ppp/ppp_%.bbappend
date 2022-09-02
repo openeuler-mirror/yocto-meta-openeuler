@@ -30,4 +30,3 @@ SRC_URI_append_riscv64 += " \
 "
 
 SRC_URI[sha256sum] = "f938b35eccde533ea800b15a7445b2f1137da7f88e32a16898d02dee8adc058d"
-

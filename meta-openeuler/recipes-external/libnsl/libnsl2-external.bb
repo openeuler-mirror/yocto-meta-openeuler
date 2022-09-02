@@ -19,7 +19,7 @@ RDEPENDS_${PN} += "${libc_rdep}"
 
 do_install_extra () {
     # Depending on whether this comes from the standalone libnsl2 or glibc, the
-    # soname may vary, hence covering both 1 and 2, and it may be installed in
+    # so name may vary, hence covering both 1 and 2, and it may be installed in
     # base_libdir instead of libdir, but the FILES configuration may result in its
     # location changing, breaking the libnsl.so symlink, so recreate it here.
     cd ${D}${libdir}/ || exit 1

@@ -24,4 +24,3 @@ SRC_URI[tarball.sha256sum] = "3f904ec137ca6412e8273f7896d962ecb589f7d0c589bdf16b
 # according to openEuler, no need to use flex-native liblogging libgcrypt
 DEPENDS_remove = "flex-native liblogging"
 PACKAGECONFIG_remove = "libgcrypt"
-

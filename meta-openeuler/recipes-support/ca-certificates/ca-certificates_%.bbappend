@@ -6,7 +6,7 @@ SRC_URI_remove = " \
         git://salsa.debian.org/debian/ca-certificates.git;protocol=https;branch=master \
 "
 
-# get extra tarball locally, because ca-certificates src repository dosen't have ca-certificates.crt or tarball
+# get extra tarball locally, because ca-certificates src repository doesn't have ca-certificates.crt or tarball
 FILESEXTRAPATHS_append := "${THISDIR}/files/:"
 SRC_URI =+ " \
         file://${BP}.tar.gz \

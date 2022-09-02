@@ -12,4 +12,3 @@ SRC_URI_remove = " \
 SRC_URI_prepend = " \
         file://v${PV}.tar.gz \
 "
-

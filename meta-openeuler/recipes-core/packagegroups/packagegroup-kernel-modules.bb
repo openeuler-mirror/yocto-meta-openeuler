@@ -16,4 +16,3 @@ modutils-initscripts \
 # like: meta-openeuler/conf/machine/kernel-modules-conf/common.inc 
 INSTALLMODULES ?= ""
 RDEPENDS_${PN} += "${INSTALLMODULES}"
-

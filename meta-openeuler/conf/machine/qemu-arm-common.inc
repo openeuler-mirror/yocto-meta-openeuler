@@ -1,4 +1,4 @@
-# Description: Conf for arm
+# Description: Machine description for little-endian arm32
 
 MACHINEOVERRIDES =. "march32:"
 require conf/machine/qemu-common.inc

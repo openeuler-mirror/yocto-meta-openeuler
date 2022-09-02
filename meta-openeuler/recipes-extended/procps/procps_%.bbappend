@@ -30,4 +30,3 @@ do_configure_prepend() {
 
 SRC_URI[tarball.md5sum] = "d60613e88c2f442ebd462b5a75313d56"
 SRC_URI[tarball.sha256sum] = "4518b3e7aafd34ec07d0063d250fd474999b20b200218c3ae56f5d2113f141b4"
-

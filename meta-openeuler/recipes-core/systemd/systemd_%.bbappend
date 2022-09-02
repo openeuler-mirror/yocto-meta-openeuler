@@ -9,7 +9,7 @@ require systemd-openeuler.inc
 OPENEULER_REPO_NAME = "systemd"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
 
-# feture sync with systemd_249.7.bb from poky honister
+# feature sync with systemd_249.7.bb from poky honister
 # see https://git.yoctoproject.org/poky/tree/meta/recipes-core/systemd/systemd_249.7.bb?h=honister
 PACKAGECONFIG_append += "wheel-group"
 # we don't wan zstd PACKAGECONFIG += "zstd"
@@ -45,8 +45,8 @@ FILES_udev += " \
         ${rootlibexecdir}/udev/rules.d/73-idrac.rules \
         "
 
-# depmodwrapper is not valid to do depmod in buildtime, add a service to do it in runtime as a wrokaround.
-# as modutils.sh is not run under systed
+# depmodwrapper is not valid to do depmod in buildtime, add a service to do it in runtime as a workaround.
+# as modutils.sh is not run under systemd
 PACKAGE_BEFORE_PN_append = "${PN}-depmod "
 SRC_URI_append += "file://systemd-depmod.service"
 FILES_${PN}-depmod = "${systemd_unitdir}/system/systemd-depmod.service"
@@ -59,7 +59,7 @@ do_install_append () {
 SRC_URI[tarball.md5sum] = "8e8adf909c255914dfc10709bd372e69"
 SRC_URI[tarball.sha256sum] = "174091ce5f2c02123f76d546622b14078097af105870086d18d55c1c2667d855"
 
-# glib needs meson, meson needs python3-natve
+# glib needs meson, meson needs python3-native
 # here use nativesdk's meson-native and python3-native
 DEPENDS_remove += "python3-native"
 

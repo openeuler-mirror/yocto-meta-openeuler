@@ -13,4 +13,3 @@ SRC_URI += " \
             file://attr/0001-bypass-wrong-output-when-enabled-selinux.patch \
             file://attr/0002-dont-skip-security.evm-when-copy-xattr.patch \
         "
-
