@@ -9,7 +9,7 @@
 ***********************************
 **构建环境**
 
-1.构建环境推荐：openEuler-22.03 LTS
+1.构建环境推荐：master, openEuler-22.03-LTS
 
 2.构建指导: `参考容器构建指导 <https://openeuler.gitee.io/yocto-meta-openeuler/yocto/quickbuild/container-build.html>`_
 
