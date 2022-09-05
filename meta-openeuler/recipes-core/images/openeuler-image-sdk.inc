@@ -51,4 +51,5 @@ TOOLCHAIN_TARGET_TASK += " \
 libgcc \
 kernel-devsrc \
 glibc-external-staticdev \
+libstdc++-dev \
 "
