@@ -1,6 +1,7 @@
 PV = "1.34.1"
 
-DL_DIR = "${OPENEULER_SP_DIR}/${BPN}"
+# use openEuler defconfig
+FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
@@ -13,10 +14,31 @@ SRC_URI_remove = " \
 
 #we always want busybox with mdev\init packages to support multi init manager
 SRC_URI_append = " \
+        file://backport-CVE-2022-28391.patch \
+        file://backport-CVE-2022-30065.patch \
         file://init.cfg \
         file://rcS.default \
         file://mdev.cfg \
         "
+
+# support NFS, which depends on libtirpc
+DEPENDS += "libtirpc"
+CFLAGS += "${@bb.utils.contains('DEPENDS', 'libtirpc', '-I${STAGING_INCDIR}/tirpc', '', d)}"
+
+do_prepare_config_append () {
+    set +e
+    grep -E '^CONFIG_FEATURE_MOUNT_NFS=y|^CONFIG_FEATURE_INETD_RPC=y' ${S}/.config
+    ret=$?
+    if [ $ret -eq 0 ]; then
+        grep -E '^CONFIG_EXTRA_CFLAGS=".*-I/usr/include/tirpc|^CONFIG_EXTRA_LDLIBS=".*tirpc' ${S}/.config
+        ret=$?
+        if [ $ret -ne 0 ]; then
+            sed -i 's/^CONFIG_EXTRA_LDLIBS="/CONFIG_EXTRA_LDLIBS="tirpc /g' ${S}/.config
+        fi
+    fi
+    set -e
+}
+
 do_install_append () {
     if grep -q "CONFIG_INIT=y" ${B}/.config ; then
         install -D -m 0755 ${WORKDIR}/rcS ${D}${sysconfdir}/init.d/rcS
@@ -25,8 +47,4 @@ do_install_append () {
     fi
 }
 
-# files, patches that come from openeuler
-SRC_URI += ""
-
 SRC_URI[tarball.sha256sum] = "415fbd89e5344c96acf449d94a6f956dbed62e18e835fc83e064db33a34bd549"
-
