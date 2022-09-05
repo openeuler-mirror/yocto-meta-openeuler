@@ -7,6 +7,7 @@ RDEPENDS_${PN} += " \
     kernel-image \
     kernel-vmlinux \
     os-base \
+    os-release \
 "
 # No rule to make target "Image" for x86-64, remove it
 RDEPENDS_${PN}_remove_x86-64 += "kernel-img"
