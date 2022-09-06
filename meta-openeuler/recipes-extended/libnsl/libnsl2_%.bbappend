@@ -7,8 +7,8 @@ S = "${WORKDIR}/libnsl-${PV}"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
-            git://github.com/thkukuk/libnsl \
-            "
+        git://github.com/thkukuk/libnsl;branch=master;protocol=https \
+        "
 # files, patches that come from openeuler
 SRC_URI += " \
         file://libnsl2/libnsl-2.0.0.tar.gz \
