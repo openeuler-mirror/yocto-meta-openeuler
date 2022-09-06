@@ -41,7 +41,10 @@ SRC_URI = "file://audit/${BP}.tar.gz \
 
 UPDATERCPN = "auditd"
 INITSCRIPT_NAME = "auditd"
-INITSCRIPT_PARAMS = "defaults"
+# we current use rc5.d of rcS, in normal mode we don't want it autostart for performance
+# what's more, openeuler 22.03 is not auto enable, current we sync it.
+# If you care secure more, we suggest you to use INITSCRIPT_PARAMS = "defaults"
+INITSCRIPT_PARAMS = "start 20 2 3 4 . stop 20 0 1 6 ."
 
 SYSTEMD_PACKAGES = "auditd"
 SYSTEMD_SERVICE_auditd = "auditd.service"
