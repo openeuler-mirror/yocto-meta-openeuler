@@ -139,7 +139,8 @@
 </pre></div>
 </div>
 <p>默认下载最新镜像，也可以根据需要编译的版本指定下载镜像版本，命令如下:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:[Image Version]</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker pull [Container Image Name]:[Tag]</span>
+<span class="gp"># </span>example: docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
 </pre></div>
 </div>
 <p>容器镜像信息列表：</p>
@@ -152,9 +153,9 @@
 <col style="width: 11%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Image Name</p></th>
-<th class="head"><p>Image Version</p></th>
-<th class="head"><p>Recommended to build using branch</p></th>
+<tr class="row-odd"><th class="head"><p>Container Image Name</p></th>
+<th class="head"><p>Tag</p></th>
+<th class="head"><p>For Image Branch</p></th>
 <th class="head"><p>Kernel Version</p></th>
 <th class="head"><p>Libc Version</p></th>
 </tr>
@@ -169,12 +170,19 @@
 </tr>
 <tr class="row-odd"><td><p>swr.cn-north-4.myhuaweicloud.com/openeuler
 -embedded/openeuler-container</p></td>
+<td><p>22.09</p></td>
+<td><p>openEuler-22.09</p></td>
+<td><p>21.03</p></td>
+<td><p>2.31</p></td>
+</tr>
+<tr class="row-even"><td><p>swr.cn-north-4.myhuaweicloud.com/openeuler
+-embedded/openeuler-container</p></td>
 <td><p>22.03-lts</p></td>
 <td><p>openEuler-22.03-LTS</p></td>
 <td><p>22.03 LTS</p></td>
 <td><p>2.34</p></td>
 </tr>
-<tr class="row-even"><td><p>swr.cn-north-4.myhuaweicloud.com/openeuler
+<tr class="row-odd"><td><p>swr.cn-north-4.myhuaweicloud.com/openeuler
 -embedded/openeuler-container</p></td>
 <td><p>21.09</p></td>
 <td><p>openEuler-21.09</p></td>
@@ -183,6 +191,13 @@
 </tr>
 </tbody>
 </table>
+<blockquote>
+<div><div class="admonition note">
+<p class="admonition-title">注解</p>
+<p>构建不同分支/版本的openEuler镜像，需使用不同的容器，如“For which image build branch”一列即为对应关系
+另外，新的容器镜像，为了兼容主机端工具以及yocto poky的nativesdk,我们使用了内置libc 2.31版本的容器，所以C库版本会比22.03时要更早</p>
+</div>
+</div></blockquote>
 </section>
 <section id="id6">
 <h2>4. 准备容器构建环境<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h2>
@@ -223,14 +238,26 @@
 <ul class="simple">
 <li><p>获取源码下载脚本</p></li>
 </ul>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">git clone https://gitee.com/openeuler/yocto-meta-openeuler.git -b openEuler-22.03-LTS -v /usr1/openeuler/src/yocto-meta-openeuler</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">  git clone https://gitee.com/openeuler/yocto-meta-openeuler.git -b &lt;For Image Branch&gt; -v /usr1/openeuler/src/yocto-meta-openeuler</span>
+<span class="gp">  #</span>example: git clone https://gitee.com/openeuler/yocto-meta-openeuler.git -b master -v /usr1/openeuler/src/yocto-meta-openeuler
+
+<span class="go">.. note::</span>
+
+<span class="go">  &lt;For Image Branch&gt; 参见容器镜像列表一列内容</span>
+<span class="go">  因构建所需全量代码的获取来源由yocto-meta-openeuler仓库承载，所以如要构建对应版本的代码（如openEuler-22.09或openEuler-22.03-LTS等），需下载对应分支的yocto-meta-openeuler</span>
+<span class="go">  另外请注意，构建不同分支/版本的openEuler镜像，需使用不同的容器</span>
 </pre></div>
 </div>
 <ul class="simple">
 <li><p>通过脚本下载源码</p></li>
 </ul>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd /usr1/openeuler/src/yocto-meta-openeuler/scripts</span>
-<span class="go">sh download_code.sh /usr1/openeuler/src</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">  cd /usr1/openeuler/src/yocto-meta-openeuler/scripts</span>
+<span class="go">  sh download_code.sh /usr1/openeuler/src</span>
+
+<span class="go">.. note::</span>
+
+<span class="go">  22.09及master之后的版本支持/usr1/openeuler/src/yocto-meta-openeuler/script/oe_helper.sh</span>
+<span class="go">  可通过source oe_helper.sh参见usage说明来下载代码</span>
 </pre></div>
 </div>
 </section>
@@ -266,10 +293,23 @@
 <ol class="loweralpha simple" start="3">
 <li><p>进入构建脚本所在路径，运行编译脚本</p></li>
 </ol>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd /usr1/openeuler/src/yocto-meta-openeuler/scripts</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>进入编译初始化脚本目录
+<span class="go">cd /usr1/openeuler/src/yocto-meta-openeuler/scripts</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span><span class="m">22</span>.03及其之前版本请跳过此命令（22.09及其之后版本请务必执行此命令）：
+<span class="gp"># </span>初始化容器构建依赖工具（poky nativesdk）
 <span class="go">. /opt/buildtools/nativesdk/environment-setup-x86_64-pokysdk-linux</span>
-<span class="go">source compile.sh aarch64-std /usr1/build /usr1/openeuler/gcc/openeuler_gcc_arm64le</span>
-<span class="go">bitbake openeuler-image</span>
+</pre></div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">  # </span>通过编译初始化脚本初始化编译环境
+<span class="go">  source compile.sh aarch64-std /usr1/build /usr1/openeuler/gcc/openeuler_gcc_arm64le</span>
+<span class="go">  bitbake openeuler-image</span>
+
+<span class="go">.. note::</span>
+
+<span class="go">  22.09及master之后的版本支持/usr1/openeuler/src/yocto-meta-openeuler/script/oe_helper.sh</span>
+<span class="go">  可通过source oe_helper.sh参见usage说明来初始化编译环境</span>
 </pre></div>
 </div>
 </section>

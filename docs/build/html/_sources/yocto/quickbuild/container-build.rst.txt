@@ -57,14 +57,18 @@ openEuler环境可参考Centos安装Docker。
 
 .. code-block:: console
 
-   docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:[Image Version]
+   docker pull [Container Image Name]:[Tag]
+   # example: docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
 
 容器镜像信息列表：
 
 +---------------------------------------------+----------------+-----------------------------------+----------------+--------------+
-|      Image Name                             | Image Version  | Recommended to build using branch | Kernel Version | Libc Version |
+|   Container Image Name                      | Tag            | For Image Branch                  | Kernel Version | Libc Version |
 +=============================================+================+===================================+================+==============+
 | swr.cn-north-4.myhuaweicloud.com/openeuler  | latest         | master                            | 21.03          | 2.31         |
+| -embedded/openeuler-container               |                |                                   |                |              |
++---------------------------------------------+----------------+-----------------------------------+----------------+--------------+
+| swr.cn-north-4.myhuaweicloud.com/openeuler  | 22.09          | openEuler-22.09                   | 21.03          | 2.31         |
 | -embedded/openeuler-container               |                |                                   |                |              |
 +---------------------------------------------+----------------+-----------------------------------+----------------+--------------+
 | swr.cn-north-4.myhuaweicloud.com/openeuler  | 22.03-lts      | openEuler-22.03-LTS               | 22.03 LTS      | 2.34         |
@@ -73,6 +77,11 @@ openEuler环境可参考Centos安装Docker。
 | swr.cn-north-4.myhuaweicloud.com/openeuler  | 21.09          | openEuler-21.09                   | 21.03          | 2.31         |
 | -embedded/openeuler-container               |                |                                   |                |              |
 +---------------------------------------------+----------------+-----------------------------------+----------------+--------------+
+
+  .. note::
+
+    构建不同分支/版本的openEuler镜像，需使用不同的容器，如“For which image build branch”一列即为对应关系
+    另外，新的容器镜像，为了兼容主机端工具以及yocto poky的nativesdk,我们使用了内置libc 2.31版本的容器，所以C库版本会比22.03时要更早
 
 4. 准备容器构建环境
 *********************
@@ -126,7 +135,14 @@ openEuler环境可参考Centos安装Docker。
 
 .. code-block:: console
 
-    git clone https://gitee.com/openeuler/yocto-meta-openeuler.git -b openEuler-22.03-LTS -v /usr1/openeuler/src/yocto-meta-openeuler
+    git clone https://gitee.com/openeuler/yocto-meta-openeuler.git -b <For Image Branch> -v /usr1/openeuler/src/yocto-meta-openeuler
+    #example: git clone https://gitee.com/openeuler/yocto-meta-openeuler.git -b master -v /usr1/openeuler/src/yocto-meta-openeuler
+
+  .. note::
+
+    <For Image Branch> 参见容器镜像列表一列内容
+    因构建所需全量代码的获取来源由yocto-meta-openeuler仓库承载，所以如要构建对应版本的代码（如openEuler-22.09或openEuler-22.03-LTS等），需下载对应分支的yocto-meta-openeuler
+    另外请注意，构建不同分支/版本的openEuler镜像，需使用不同的容器
 
 - 通过脚本下载源码
 
@@ -134,6 +150,11 @@ openEuler环境可参考Centos安装Docker。
 
     cd /usr1/openeuler/src/yocto-meta-openeuler/scripts
     sh download_code.sh /usr1/openeuler/src
+    
+  .. note::
+    
+    22.09及master之后的版本支持/usr1/openeuler/src/yocto-meta-openeuler/script/oe_helper.sh
+    可通过source oe_helper.sh参见usage说明来下载代码
 
 2) 编译构建
 ^^^^^^^^^^^^^
@@ -166,11 +187,26 @@ b) 切换至openeuler用户
 c) 进入构建脚本所在路径，运行编译脚本
 
 .. code-block:: console
-
+     
+    # 进入编译初始化脚本目录
     cd /usr1/openeuler/src/yocto-meta-openeuler/scripts
+
+.. code-block:: console
+
+    # 22.03及其之前版本请跳过此命令（22.09及其之后版本请务必执行此命令）：
+    # 初始化容器构建依赖工具（poky nativesdk）
     . /opt/buildtools/nativesdk/environment-setup-x86_64-pokysdk-linux
+
+.. code-block:: console
+
+    # 通过编译初始化脚本初始化编译环境
     source compile.sh aarch64-std /usr1/build /usr1/openeuler/gcc/openeuler_gcc_arm64le
     bitbake openeuler-image
+
+  .. note::
+    
+    22.09及master之后的版本支持/usr1/openeuler/src/yocto-meta-openeuler/script/oe_helper.sh
+    可通过source oe_helper.sh参见usage说明来初始化编译环境
 
 3) 构建结果说明
 ^^^^^^^^^^^^^^^^^
