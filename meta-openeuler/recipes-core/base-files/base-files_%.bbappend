@@ -3,3 +3,15 @@
 # config files use openeuler's, see base-files under this dir
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/base-files/:"
+
+# add secure option for banner use
+do_install_basefilesissue_append () {
+    BANNERSTR="Authorized uses only. All activity may be monitored and reported."
+    echo "${BANNERSTR}"  >> ${D}${sysconfdir}/issue.net
+    echo >> ${D}${sysconfdir}/issue.net
+    echo "${BANNERSTR}"  >> ${D}${sysconfdir}/issue
+    echo >> ${D}${sysconfdir}/issue
+    echo "${BANNERSTR}"  >> ${D}${sysconfdir}/motd
+    echo >> ${D}${sysconfdir}/motd
+}
+
