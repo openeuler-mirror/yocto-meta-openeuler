@@ -68,26 +68,27 @@ QEMU的下载与安装可以参考 `QEMU官方网站 <https://www.qemu.org/downl
 
 1. **启动QEMU**
 
-针对arm(ARM Cortex A15)，运行如下命令：
+  针对arm(ARM Cortex A15)，运行如下命令：
 
-.. code-block:: console
+  .. code-block:: console
 
-    qemu-system-arm -M virt-4.0 -m 1G -cpu cortex-a15 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz>
+      qemu-system-arm -M virt-4.0 -m 1G -cpu cortex-a15 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz>
 
-针对aarch64(ARM Cortex A57)，运行如下命令：
+  针对aarch64(ARM Cortex A57)，运行如下命令：
 
-.. code-block:: console
+  .. code-block:: console
 
-    qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz>
+      qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz>
 
 
-.. note::
+  .. note::
 
-   由于标准根文件系统镜像进行了安全加固，因此第一次启动时，需要为登录用户名root设置密码，且密码强度有相应要求， 需要数字、字母、特殊字符组合最少8位，例如openEuler@2021
+     由于标准根文件系统镜像进行了安全加固，因此第一次启动时，需要为登录用户名root设置密码，且密码强度有相应要求， 需要数字、字母、特殊字符组合最少8位，例如openEuler@2021
 
 2. **检查运行是否成功**
 
-QEMU运行成功并登录后，将会呈现openEuler Embedded的Shell。
+  QEMU运行成功并登录后，将会呈现openEuler Embedded的Shell。
+
 
 使能共享文件系统场景
 ==========================
@@ -98,41 +99,41 @@ QEMU运行成功并登录后，将会呈现openEuler Embedded的Shell。
 
 1. **启动QEMU**
 
-针对arm(ARM Cortex A15)，运行如下命令：
+  针对arm(ARM Cortex A15)，运行如下命令：
 
-.. code-block:: console
+  .. code-block:: console
 
-    qemu-system-arm -M virt-4.0 -m 1G -cpu cortex-a15 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz>  -device virtio-9p-device,fsdev=fs1,mount_tag=host -fsdev local,security_model=passthrough,id=fs1,path=/tmp
+      qemu-system-arm -M virt-4.0 -m 1G -cpu cortex-a15 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz>  -device virtio-9p-device,fsdev=fs1,mount_tag=host -fsdev local,security_model=passthrough,id=fs1,path=/tmp
 
-针对aarch64(ARM Cortex A57)，运行如下命令：
+  针对aarch64(ARM Cortex A57)，运行如下命令：
 
-.. code-block:: console
+  .. code-block:: console
 
-    qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz> -device virtio-9p-device,fsdev=fs1,mount_tag=host -fsdev local,security_model=passthrough,id=fs1,path=/tmp
+      qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz> -device virtio-9p-device,fsdev=fs1,mount_tag=host -fsdev local,security_model=passthrough,id=fs1,path=/tmp
 
 
 2. **映射文件系统**
 
-在openEuler Embedded启动并登录之后，需要运行如下命令，映射(mount)共享文件系统
+  在openEuler Embedded启动并登录之后，需要运行如下命令，映射(mount)共享文件系统
 
-.. code-block:: console
+  .. code-block:: console
 
-    cd /tmp
-    mkdir host
-    mount -t 9p -o trans=virtio,version=9p2000.L host /tmp/host
+      cd /tmp
+      mkdir host
+      mount -t 9p -o trans=virtio,version=9p2000.L host /tmp/host
 
-即把共享文件系统映射到openEuler Embedded的/tmp/host目录下。
+  即把共享文件系统映射到openEuler Embedded的/tmp/host目录下。
 
 3. **检查共享是否成功**
 
-在openEuler Embedded中，运行如下命令:
+  在openEuler Embedded中，运行如下命令:
 
-.. code-block:: console
+  .. code-block:: console
 
-    cd /tmp/host
-    ls
+      cd /tmp/host
+      ls
 
-如能发现hello_openeuler.txt，则共享成功。
+  如能发现hello_openeuler.txt，则共享成功。
 
 使能网络场景
 ===============
@@ -142,57 +143,57 @@ openEuler Embedded传输文件。
 
 1. **启动QEMU**
 
-针对arm(ARM Cortex A15)，运行如下命令：
+  针对arm(ARM Cortex A15)，运行如下命令：
 
-.. code-block:: console
+  .. code-block:: console
 
-    qemu-system-arm -M virt-4.0 -m 1G -cpu cortex-a15 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz> -device virtio-net-device,netdev=tap0 -netdev tap,id=tap0,script=/etc/qemu-ifup
+      qemu-system-arm -M virt-4.0 -m 1G -cpu cortex-a15 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz> -device virtio-net-device,netdev=tap0 -netdev tap,id=tap0,script=/etc/qemu-ifup
 
-针对aarch64(ARM Cortex A57)，运行如下命令：
+  针对aarch64(ARM Cortex A57)，运行如下命令：
 
-.. code-block:: console
+  .. code-block:: console
 
-    qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz> -device virtio-net-device,netdev=tap0 -netdev tap,id=tap0,script=/etc/qemu-ifup
+      qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz> -device virtio-net-device,netdev=tap0 -netdev tap,id=tap0,script=/etc/qemu-ifup
 
 2. **宿主上建立虚拟网卡**
 
-在宿主机上需要建立名为tap0的虚拟网卡，可以借助脚本实现，创建 :file:`qemu-ifup` 脚本，放在 :file:`/etc/` 目录下，具体内容如下：
+  在宿主机上需要建立名为tap0的虚拟网卡，可以借助脚本实现，创建 :file:`qemu-ifup` 脚本，放在 :file:`/etc/` 目录下，具体内容如下：
 
-.. code-block:: console
+  .. code-block:: console
 
-    #!/bin/bash
-    ifconfig $1 192.168.10.1 up
+      #!/bin/bash
+      ifconfig $1 192.168.10.1 up
 
-其执行需要root权限：
+  其执行需要root权限：
 
-.. code-block:: console
+  .. code-block:: console
 
-    chmod a+x qemu-ifup
+      chmod a+x qemu-ifup
 
-通过 :file:`qemu-ifup` 脚本，宿主机上将创建名为tap0的虚拟网卡，地址为192.168.10.1。
+  通过 :file:`qemu-ifup` 脚本，宿主机上将创建名为tap0的虚拟网卡，地址为192.168.10.1。
 
 3. **配置openEuler Embedded网卡**
 
-openEuler Embedded登陆后，执行如下命令：
+  openEuler Embedded登陆后，执行如下命令：
 
-.. code-block:: console
+  .. code-block:: console
 
-    ifconfig eth0 192.168.10.2
+      ifconfig eth0 192.168.10.2
 
 
 4. **确认网络连通**
 
-在openEuler Embedded中，执行如下命令：
+  在openEuler Embedded中，执行如下命令：
 
-.. code-block:: console
+  .. code-block:: console
 
-    ping 192.168.10.1
+      ping 192.168.10.1
 
-如能ping通，则宿主机和openEuler Embedded之间的网络是连通的。
+  如能ping通，则宿主机和openEuler Embedded之间的网络是连通的。
 
-.. note::
+  .. note::
 
-    如需openEuler Embedded借助宿主机访问互联网，则需要在宿主机上建立网桥，此处不详述，如有需要，请自行查阅相关资料。
+      如需openEuler Embedded借助宿主机访问互联网，则需要在宿主机上建立网桥，此处不详述，如有需要，请自行查阅相关资料。
 
 基于SDK的应用开发
 ********************************************
@@ -202,22 +203,34 @@ openEuler Embedded登陆后，执行如下命令：
 安装SDK
 =============
 
-1. **执行SDK自解压安装脚本**
+1. **安装依赖软件包**
 
-运行如下命令：
+  使用SDK开发内核模块需要安装一些必要的软件包，运行如下命令：
 
-.. code-block:: console
+  .. code-block:: console
+
+    在 openeuler 上安装:
+      yum install make gcc g++ flex bison gmp-devel libmpc-devel openssl-devel
+
+    在 Ubuntu 上安装：
+      apt-get install make gcc g++ flex bison libgmp3-dev libmpc-dev libssl-dev
+
+2. **执行SDK自解压安装脚本**
+
+  运行如下命令：
+
+  .. code-block:: console
 
     sh openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-22.03.sh
 
-根据提示输入工具链的安装路径，默认路径是 :file:`/opt/openeuler/<openeuler version>/`;
-若不设置，则按默认路径安装；也可以配置相对路径或绝对路径。
+  根据提示输入工具链的安装路径，默认路径是 :file:`/opt/openeuler/<openeuler version>/`;
+  若不设置，则按默认路径安装；也可以配置相对路径或绝对路径。
 
-一个例子如下：
+  一个例子如下：
 
-.. code-block:: console
+  .. code-block:: console
 
-    sh ./openeuler-glibc-x86_64-openeuler-image-armv7a-qemu-arm-toolchain-22.03.sh``
+    sh openeuler-glibc-x86_64-openeuler-image-armv7a-qemu-arm-toolchain-22.03.sh
     openEuler embedded(openEuler Embedded Reference Distro) SDK installer version 22.03
     ================================================================
     Enter target directory for SDK (default: /opt/openeuler/22.03): sdk
@@ -227,19 +240,19 @@ openEuler Embedded登陆后，执行如下命令：
     Each time you wish to use the SDK in a new shell session, you need to source the environment setup script e.g.
     $ . /usr1/openeuler/sdk/environment-setup-armv7a-openeuler-linux-gnueabi
 
-2. **设置SDK环境变量**
+3. **设置SDK环境变量**
 
-前一步执行结束最后已打印source命令，运行即可。
+  前一步执行结束最后已打印source命令，运行即可。
 
-.. code-block:: console
+  .. code-block:: console
 
     . /usr1/openeuler/myfiles/sdk/environment-setup-armv7a-openeuler-linux-gnueabi
 
 3. **查看是否安装成功**
 
-运行如下命令，查看是否安装成功、环境设置成功。
+  运行如下命令，查看是否安装成功、环境设置成功。
 
-.. code-block:: console
+  .. code-block:: console
 
     arm-openeuler-linux-gnueabi-gcc -v
 
@@ -248,126 +261,126 @@ openEuler Embedded登陆后，执行如下命令：
 
 1. **准备代码**
 
-以构建一个hello world程序为例，运行在openEuler Embedded根文件系统镜像中。
+  以构建一个hello world程序为例，运行在openEuler Embedded根文件系统镜像中。
 
-创建一个 :file:`1hello.c` 文件，源码如下：
+  创建一个 :file:`hello.c` 文件，源码如下：
 
-.. code-block:: c
+  .. code-block:: c
 
-    #include <stdio.h>
+      #include <stdio.h>
 
-    int main(void)
-    {
-        printf("hello world\n");
-    }
+      int main(void)
+      {
+          printf("hello world\n");
+      }
 
-编写CMakelist.txt，和hello.c文件放在同一个目录。
+  编写CMakelist.txt，和hello.c文件放在同一个目录。
 
-::
+  ::
 
- project(hello C)
+   project(hello C)
 
- add_executable(hello hello.c)
+   add_executable(hello hello.c)
 
 
 2. **编译生成二进制**
 
-进入 :file:`hello.c` 文件所在目录，使用工具链编译, 命令如下：
+  进入 :file:`hello.c` 文件所在目录，使用工具链编译, 命令如下：
 
-.. code-block:: console
+  .. code-block:: console
 
-    cmake ..
-    make
+      cmake ..
+      make
 
-把编译好的hello程序拷贝到openEuler Embedded系统的 :file:`/tmp/` 某个目录下（例如 :file:`/tmp/myfiles/` ）。如何拷贝可以参考前文所述共享文件系统场景。
+  把编译好的hello程序拷贝到openEuler Embedded系统的 :file:`/tmp/` 某个目录下（例如 :file:`/tmp/myfiles/` ）。如何拷贝可以参考前文所述共享文件系统场景。
 
 3. **运行用户态程序**
 
-在openEuler Embedded系统中运行hello程序。
+  在openEuler Embedded系统中运行hello程序。
 
-.. code-block:: console
+  .. code-block:: console
 
-    cd /tmp/myfiles/
-    ./hello
+      cd /tmp/myfiles/
+      ./hello
 
-如运行成功，则会输出"hello world"。
+  如运行成功，则会输出"hello world"。
 
 使用SDK编译内核模块样例
 =============================
 
 1. **准备环境**
 
-在设置好SDK环境的基础之上，编译内核模块还需准备相应环境，但只需要准备一次即可。运行如下命令会创建相应的内核模块编译环境：
+  在设置好SDK环境的基础之上，编译内核模块还需准备相应环境，但只需要准备一次即可。运行如下命令会创建相应的内核模块编译环境：
 
-.. code-block:: console
+  .. code-block:: console
 
-    cd <SDK_PATH>/sysroots/<target>-openeuler-linux/usr/src/kernel
-    make  module_prepare
+      cd <SDK_PATH>/sysroots/<target>-openeuler-linux/usr/src/kernel
+      make  module_prepare
 
 2. **准备代码**
 
-以编译一个最简单的内核模块为例，运行在openEuler Embedded内核中。
+  以编译一个最简单的内核模块为例，运行在openEuler Embedded内核中。
 
-创建一个 :file:`hello.c` 文件，源码如下：
+  创建一个 :file:`hello.c` 文件，源码如下：
 
-.. code-block:: c
+  .. code-block:: c
 
-    #include <linux/init.h>
-    #include <linux/module.h>
+      #include <linux/init.h>
+      #include <linux/module.h>
 
-    static int hello_init(void)
-    {
-        printk("Hello, openEuler Embedded!\r\n");
-        return 0;
-    }
+      static int hello_init(void)
+      {
+          printk("Hello, openEuler Embedded!\r\n");
+          return 0;
+      }
 
-    static void hello_exit(void)
-    {
-        printk("Byebye!");
-    }
+      static void hello_exit(void)
+      {
+          printk("Byebye!");
+      }
 
-    module_init(hello_init);
-    module_exit(hello_exit);
+      module_init(hello_init)
+      module_exit(hello_exit)
 
-    MODULE_LICENSE(GPL);
+      MODULE_LICENSE("GPL");
 
-编写Makefile，和hello.c文件放在同一个目录：
+  编写Makefile，和hello.c文件放在同一个目录：
 
-::
+  ::
 
- KERNELDIR := ${KERNEL_SRC_DIR}
- CURRENT_PATH := $(shell pwd)
+   KERNELDIR := ${KERNEL_SRC_DIR}
+   CURRENT_PATH := $(shell pwd)
 
- target := hello
- obj-m := $(target).o
+   target := hello
+   obj-m := $(target).o
 
- build := kernel_modules
+   build := kernel_modules
 
- kernel_modules:
- 		$(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) modules
- clean:
- 		$(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) clean
+   kernel_modules:
+   	 $$(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) modules
+   clean:
+   	 $(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) clean
 
-:file:`KERNEL_SRC_DIR` 为SDK中内核源码树的目录，该变量在安装SDK后会被自动设置。
+  :file:`KERNEL_SRC_DIR` 为SDK中内核源码树的目录，该变量在安装SDK后会被自动设置。
 
 3. **编译生成内核模块**
 
-进入hello.c文件所在目录，使用工具链编译，命令如下：
+  进入hello.c文件所在目录，使用工具链编译，命令如下：
 
-.. code-block:: console
+  .. code-block:: console
 
-    make
+      make
 
-将编译好的hello.ko拷贝到openEuler Embedded系统的目录下。
+  将编译好的hello.ko拷贝到openEuler Embedded系统的目录下。
 
-如何拷贝可以参考前文所述共享文件系统场景。
+  如何拷贝可以参考前文所述共享文件系统场景。
 
 4. **插入内核模块**
 
-在openEuler Embedded系统中插入内核模块:
+  在openEuler Embedded系统中插入内核模块:
 
-.. code-block:: console
+  .. code-block:: console
 
-    insmod hello.ko
+      insmod hello.ko
 
-如运行成功，则会在内核日志中出现"Hello, openEuler Embedded!"。
+  如运行成功，则会在内核日志中出现"Hello, openEuler Embedded!"。
