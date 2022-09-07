@@ -1,6 +1,8 @@
 # version in openEuler
 PV = "8.8p1"
 
+FILESEXTRAPATHS_prepend := "${THISDIR}/openssh/:"
+
 # poky patches conflict with openeuler
 SRC_URI_remove += " \
         file://CVE-2021-41617.patch \
