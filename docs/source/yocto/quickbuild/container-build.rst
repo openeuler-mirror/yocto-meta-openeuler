@@ -80,7 +80,7 @@ openEuler环境可参考Centos安装Docker。
 
   .. note::
 
-    构建不同分支/版本的openEuler镜像，需使用不同的容器，如“For which image build branch”一列即为对应关系
+    构建不同分支/版本的openEuler镜像，需使用不同的容器，如“For Image Branch”一列即为对应关系
     另外，新的容器镜像，为了兼容主机端工具以及yocto poky的nativesdk,我们使用了内置libc 2.31版本的容器，所以C库版本会比22.03时要更早
 
 4. 准备容器构建环境
