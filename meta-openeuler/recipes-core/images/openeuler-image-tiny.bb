@@ -17,12 +17,9 @@ IMAGE_INSTALL += " \
 packagegroup-core-boot \
 "
 
-# make no login and standard PATH
+# make no login
 set_permissions_from_rootfs_append() {
     if [ -f ./etc/inittab ]; then
         sed -i "s#respawn:/sbin/getty.*#respawn:-/bin/sh#g" ./etc/inittab
-    fi
-    if [ -f ./etc/profile ]; then
-        sed -i "s#^PATH=.*#PATH=\"/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin\"#g" ./etc/profile
     fi
 }
