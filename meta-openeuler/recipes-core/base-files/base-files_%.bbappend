@@ -11,7 +11,10 @@ do_install_basefilesissue_append () {
     echo >> ${D}${sysconfdir}/issue.net
     echo "${BANNERSTR}"  >> ${D}${sysconfdir}/issue
     echo >> ${D}${sysconfdir}/issue
+}
+
+do_install_append () {
+    BANNERSTR="Authorized uses only. All activity may be monitored and reported."
     echo "${BANNERSTR}"  >> ${D}${sysconfdir}/motd
     echo >> ${D}${sysconfdir}/motd
 }
-
