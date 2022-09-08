@@ -155,7 +155,8 @@
 <ol class="arabic simple">
 <li><p><strong>启动QEMU</strong></p></li>
 </ol>
-<p>针对arm(ARM Cortex A15)，运行如下命令：</p>
+<blockquote>
+<div><p>针对arm(ARM Cortex A15)，运行如下命令：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-arm -M virt-4.0 -m 1G -cpu cortex-a15 -nographic -kernel zImage -initrd &lt;openeuler-image-qemu-xxx.cpio.gz&gt;</span>
 </pre></div>
 </div>
@@ -167,10 +168,13 @@
 <p class="admonition-title">注解</p>
 <p>由于标准根文件系统镜像进行了安全加固，因此第一次启动时，需要为登录用户名root设置密码，且密码强度有相应要求， 需要数字、字母、特殊字符组合最少8位，例如openEuler&#64;2021</p>
 </div>
+</div></blockquote>
 <ol class="arabic simple" start="2">
 <li><p><strong>检查运行是否成功</strong></p></li>
 </ol>
-<p>QEMU运行成功并登录后，将会呈现openEuler Embedded的Shell。</p>
+<blockquote>
+<div><p>QEMU运行成功并登录后，将会呈现openEuler Embedded的Shell。</p>
+</div></blockquote>
 </section>
 <section id="id7">
 <h3>使能共享文件系统场景<a class="headerlink" href="#id7" title="永久链接至标题">¶</a></h3>
@@ -179,7 +183,8 @@
 <ol class="arabic simple">
 <li><p><strong>启动QEMU</strong></p></li>
 </ol>
-<p>针对arm(ARM Cortex A15)，运行如下命令：</p>
+<blockquote>
+<div><p>针对arm(ARM Cortex A15)，运行如下命令：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-arm -M virt-4.0 -m 1G -cpu cortex-a15 -nographic -kernel zImage -initrd &lt;openeuler-image-qemu-xxx.cpio.gz&gt;  -device virtio-9p-device,fsdev=fs1,mount_tag=host -fsdev local,security_model=passthrough,id=fs1,path=/tmp</span>
 </pre></div>
 </div>
@@ -187,25 +192,30 @@
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd &lt;openeuler-image-qemu-xxx.cpio.gz&gt; -device virtio-9p-device,fsdev=fs1,mount_tag=host -fsdev local,security_model=passthrough,id=fs1,path=/tmp</span>
 </pre></div>
 </div>
+</div></blockquote>
 <ol class="arabic simple" start="2">
 <li><p><strong>映射文件系统</strong></p></li>
 </ol>
-<p>在openEuler Embedded启动并登录之后，需要运行如下命令，映射(mount)共享文件系统</p>
+<blockquote>
+<div><p>在openEuler Embedded启动并登录之后，需要运行如下命令，映射(mount)共享文件系统</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd /tmp</span>
 <span class="go">mkdir host</span>
 <span class="go">mount -t 9p -o trans=virtio,version=9p2000.L host /tmp/host</span>
 </pre></div>
 </div>
 <p>即把共享文件系统映射到openEuler Embedded的/tmp/host目录下。</p>
+</div></blockquote>
 <ol class="arabic simple" start="3">
 <li><p><strong>检查共享是否成功</strong></p></li>
 </ol>
-<p>在openEuler Embedded中，运行如下命令:</p>
+<blockquote>
+<div><p>在openEuler Embedded中，运行如下命令:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd /tmp/host</span>
 <span class="go">ls</span>
 </pre></div>
 </div>
 <p>如能发现hello_openeuler.txt，则共享成功。</p>
+</div></blockquote>
 </section>
 <section id="id8">
 <h3>使能网络场景<a class="headerlink" href="#id8" title="永久链接至标题">¶</a></h3>
@@ -214,7 +224,8 @@ openEuler Embedded传输文件。</p>
 <ol class="arabic simple">
 <li><p><strong>启动QEMU</strong></p></li>
 </ol>
-<p>针对arm(ARM Cortex A15)，运行如下命令：</p>
+<blockquote>
+<div><p>针对arm(ARM Cortex A15)，运行如下命令：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-arm -M virt-4.0 -m 1G -cpu cortex-a15 -nographic -kernel zImage -initrd &lt;openeuler-image-qemu-xxx.cpio.gz&gt; -device virtio-net-device,netdev=tap0 -netdev tap,id=tap0,script=/etc/qemu-ifup</span>
 </pre></div>
 </div>
@@ -222,10 +233,12 @@ openEuler Embedded传输文件。</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd &lt;openeuler-image-qemu-xxx.cpio.gz&gt; -device virtio-net-device,netdev=tap0 -netdev tap,id=tap0,script=/etc/qemu-ifup</span>
 </pre></div>
 </div>
+</div></blockquote>
 <ol class="arabic simple" start="2">
 <li><p><strong>宿主上建立虚拟网卡</strong></p></li>
 </ol>
-<p>在宿主机上需要建立名为tap0的虚拟网卡，可以借助脚本实现，创建 <code class="file docutils literal notranslate"><span class="pre">qemu-ifup</span></code> 脚本，放在 <code class="file docutils literal notranslate"><span class="pre">/etc/</span></code> 目录下，具体内容如下：</p>
+<blockquote>
+<div><p>在宿主机上需要建立名为tap0的虚拟网卡，可以借助脚本实现，创建 <code class="file docutils literal notranslate"><span class="pre">qemu-ifup</span></code> 脚本，放在 <code class="file docutils literal notranslate"><span class="pre">/etc/</span></code> 目录下，具体内容如下：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>!/bin/bash
 <span class="go">ifconfig $1 192.168.10.1 up</span>
 </pre></div>
@@ -235,17 +248,21 @@ openEuler Embedded传输文件。</p>
 </pre></div>
 </div>
 <p>通过 <code class="file docutils literal notranslate"><span class="pre">qemu-ifup</span></code> 脚本，宿主机上将创建名为tap0的虚拟网卡，地址为192.168.10.1。</p>
+</div></blockquote>
 <ol class="arabic simple" start="3">
 <li><p><strong>配置openEuler Embedded网卡</strong></p></li>
 </ol>
-<p>openEuler Embedded登陆后，执行如下命令：</p>
+<blockquote>
+<div><p>openEuler Embedded登陆后，执行如下命令：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ifconfig eth0 192.168.10.2</span>
 </pre></div>
 </div>
+</div></blockquote>
 <ol class="arabic simple" start="4">
 <li><p><strong>确认网络连通</strong></p></li>
 </ol>
-<p>在openEuler Embedded中，执行如下命令：</p>
+<blockquote>
+<div><p>在openEuler Embedded中，执行如下命令：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ping 192.168.10.1</span>
 </pre></div>
 </div>
@@ -254,6 +271,7 @@ openEuler Embedded传输文件。</p>
 <p class="admonition-title">注解</p>
 <p>如需openEuler Embedded借助宿主机访问互联网，则需要在宿主机上建立网桥，此处不详述，如有需要，请自行查阅相关资料。</p>
 </div>
+</div></blockquote>
 </section>
 </section>
 <section id="sdk">
@@ -262,16 +280,30 @@ openEuler Embedded传输文件。</p>
 <section id="id9">
 <h3>安装SDK<a class="headerlink" href="#id9" title="永久链接至标题">¶</a></h3>
 <ol class="arabic simple">
+<li><p><strong>安装依赖软件包</strong></p></li>
+</ol>
+<blockquote>
+<div><p>使用SDK开发内核模块需要安装一些必要的软件包，运行如下命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">在 openeuler 上安装:</span>
+<span class="go">  yum install make gcc g++ flex bison gmp-devel libmpc-devel openssl-devel</span>
+
+<span class="go">在 Ubuntu 上安装：</span>
+<span class="go">  apt-get install make gcc g++ flex bison libgmp3-dev libmpc-dev libssl-dev</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="2">
 <li><p><strong>执行SDK自解压安装脚本</strong></p></li>
 </ol>
-<p>运行如下命令：</p>
+<blockquote>
+<div><p>运行如下命令：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sh openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-22.03.sh</span>
 </pre></div>
 </div>
 <p>根据提示输入工具链的安装路径，默认路径是 <code class="file docutils literal notranslate"><span class="pre">/opt/openeuler/&lt;openeuler</span> <span class="pre">version&gt;/</span></code>;
 若不设置，则按默认路径安装；也可以配置相对路径或绝对路径。</p>
 <p>一个例子如下：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sh ./openeuler-glibc-x86_64-openeuler-image-armv7a-qemu-arm-toolchain-22.03.sh``</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sh openeuler-glibc-x86_64-openeuler-image-armv7a-qemu-arm-toolchain-22.03.sh</span>
 <span class="go">openEuler embedded(openEuler Embedded Reference Distro) SDK installer version 22.03</span>
 <span class="go">================================================================</span>
 <span class="go">Enter target directory for SDK (default: /opt/openeuler/22.03): sdk</span>
@@ -282,28 +314,34 @@ openEuler Embedded传输文件。</p>
 <span class="gp">$ </span>. /usr1/openeuler/sdk/environment-setup-armv7a-openeuler-linux-gnueabi
 </pre></div>
 </div>
-<ol class="arabic simple" start="2">
+</div></blockquote>
+<ol class="arabic simple" start="3">
 <li><p><strong>设置SDK环境变量</strong></p></li>
 </ol>
-<p>前一步执行结束最后已打印source命令，运行即可。</p>
+<blockquote>
+<div><p>前一步执行结束最后已打印source命令，运行即可。</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">. /usr1/openeuler/myfiles/sdk/environment-setup-armv7a-openeuler-linux-gnueabi</span>
 </pre></div>
 </div>
+</div></blockquote>
 <ol class="arabic simple" start="3">
 <li><p><strong>查看是否安装成功</strong></p></li>
 </ol>
-<p>运行如下命令，查看是否安装成功、环境设置成功。</p>
+<blockquote>
+<div><p>运行如下命令，查看是否安装成功、环境设置成功。</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">arm-openeuler-linux-gnueabi-gcc -v</span>
 </pre></div>
 </div>
+</div></blockquote>
 </section>
 <section id="sdkhello-world">
 <h3>使用SDK编译hello world样例<a class="headerlink" href="#sdkhello-world" title="永久链接至标题">¶</a></h3>
 <ol class="arabic simple">
 <li><p><strong>准备代码</strong></p></li>
 </ol>
-<p>以构建一个hello world程序为例，运行在openEuler Embedded根文件系统镜像中。</p>
-<p>创建一个 <code class="file docutils literal notranslate"><span class="pre">1hello.c</span></code> 文件，源码如下：</p>
+<blockquote>
+<div><p>以构建一个hello world程序为例，运行在openEuler Embedded根文件系统镜像中。</p>
+<p>创建一个 <code class="file docutils literal notranslate"><span class="pre">hello.c</span></code> 文件，源码如下：</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
 
 <span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"></span>
@@ -318,39 +356,47 @@ openEuler Embedded传输文件。</p>
 <span class="n">add_executable</span><span class="p">(</span><span class="n">hello</span> <span class="n">hello</span><span class="o">.</span><span class="n">c</span><span class="p">)</span>
 </pre></div>
 </div>
+</div></blockquote>
 <ol class="arabic simple" start="2">
 <li><p><strong>编译生成二进制</strong></p></li>
 </ol>
-<p>进入 <code class="file docutils literal notranslate"><span class="pre">hello.c</span></code> 文件所在目录，使用工具链编译, 命令如下：</p>
+<blockquote>
+<div><p>进入 <code class="file docutils literal notranslate"><span class="pre">hello.c</span></code> 文件所在目录，使用工具链编译, 命令如下：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cmake ..</span>
 <span class="go">make</span>
 </pre></div>
 </div>
 <p>把编译好的hello程序拷贝到openEuler Embedded系统的 <code class="file docutils literal notranslate"><span class="pre">/tmp/</span></code> 某个目录下（例如 <code class="file docutils literal notranslate"><span class="pre">/tmp/myfiles/</span></code> ）。如何拷贝可以参考前文所述共享文件系统场景。</p>
+</div></blockquote>
 <ol class="arabic simple" start="3">
 <li><p><strong>运行用户态程序</strong></p></li>
 </ol>
-<p>在openEuler Embedded系统中运行hello程序。</p>
+<blockquote>
+<div><p>在openEuler Embedded系统中运行hello程序。</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd /tmp/myfiles/</span>
 <span class="go">./hello</span>
 </pre></div>
 </div>
 <p>如运行成功，则会输出”hello world”。</p>
+</div></blockquote>
 </section>
 <section id="id10">
 <h3>使用SDK编译内核模块样例<a class="headerlink" href="#id10" title="永久链接至标题">¶</a></h3>
 <ol class="arabic simple">
 <li><p><strong>准备环境</strong></p></li>
 </ol>
-<p>在设置好SDK环境的基础之上，编译内核模块还需准备相应环境，但只需要准备一次即可。运行如下命令会创建相应的内核模块编译环境：</p>
+<blockquote>
+<div><p>在设置好SDK环境的基础之上，编译内核模块还需准备相应环境，但只需要准备一次即可。运行如下命令会创建相应的内核模块编译环境：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd &lt;SDK_PATH&gt;/sysroots/&lt;target&gt;-openeuler-linux/usr/src/kernel</span>
 <span class="go">make  module_prepare</span>
 </pre></div>
 </div>
+</div></blockquote>
 <ol class="arabic simple" start="2">
 <li><p><strong>准备代码</strong></p></li>
 </ol>
-<p>以编译一个最简单的内核模块为例，运行在openEuler Embedded内核中。</p>
+<blockquote>
+<div><p>以编译一个最简单的内核模块为例，运行在openEuler Embedded内核中。</p>
 <p>创建一个 <code class="file docutils literal notranslate"><span class="pre">hello.c</span></code> 文件，源码如下：</p>
 <div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;linux/init.h&gt;</span><span class="cp"></span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;linux/module.h&gt;</span><span class="cp"></span>
@@ -366,10 +412,10 @@ openEuler Embedded传输文件。</p>
 <span class="w">    </span><span class="n">printk</span><span class="p">(</span><span class="s">&quot;Byebye!&quot;</span><span class="p">);</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 
-<span class="n">module_init</span><span class="p">(</span><span class="n">hello_init</span><span class="p">);</span><span class="w"></span>
-<span class="n">module_exit</span><span class="p">(</span><span class="n">hello_exit</span><span class="p">);</span><span class="w"></span>
+<span class="n">module_init</span><span class="p">(</span><span class="n">hello_init</span><span class="p">)</span><span class="w"></span>
+<span class="n">module_exit</span><span class="p">(</span><span class="n">hello_exit</span><span class="p">)</span><span class="w"></span>
 
-<span class="n">MODULE_LICENSE</span><span class="p">(</span><span class="n">GPL</span><span class="p">);</span><span class="w"></span>
+<span class="n">MODULE_LICENSE</span><span class="p">(</span><span class="s">&quot;GPL&quot;</span><span class="p">);</span><span class="w"></span>
 </pre></div>
 </div>
 <p>编写Makefile，和hello.c文件放在同一个目录：</p>
@@ -382,29 +428,34 @@ obj-m := $(target).o
 build := kernel_modules
 
 kernel_modules:
-               $(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) modules
+      $$(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) modules
 clean:
-               $(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) clean
+      $(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) clean
 </pre></div>
 </div>
 <p><code class="file docutils literal notranslate"><span class="pre">KERNEL_SRC_DIR</span></code> 为SDK中内核源码树的目录，该变量在安装SDK后会被自动设置。</p>
+</div></blockquote>
 <ol class="arabic simple" start="3">
 <li><p><strong>编译生成内核模块</strong></p></li>
 </ol>
-<p>进入hello.c文件所在目录，使用工具链编译，命令如下：</p>
+<blockquote>
+<div><p>进入hello.c文件所在目录，使用工具链编译，命令如下：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">make</span>
 </pre></div>
 </div>
 <p>将编译好的hello.ko拷贝到openEuler Embedded系统的目录下。</p>
 <p>如何拷贝可以参考前文所述共享文件系统场景。</p>
+</div></blockquote>
 <ol class="arabic simple" start="4">
 <li><p><strong>插入内核模块</strong></p></li>
 </ol>
-<p>在openEuler Embedded系统中插入内核模块:</p>
+<blockquote>
+<div><p>在openEuler Embedded系统中插入内核模块:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">insmod hello.ko</span>
 </pre></div>
 </div>
 <p>如运行成功，则会在内核日志中出现”Hello, openEuler Embedded!”。</p>
+</div></blockquote>
 </section>
 </section>
 </section>
