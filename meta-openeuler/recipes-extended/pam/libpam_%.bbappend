@@ -29,6 +29,12 @@ PACKAGES += "${PN}-pkgconfig ${PN}-service"
 FILES_${PN}-pkgconfig = "${base_libdir}/pkgconfig"
 FILES_${PN}-service = "/usr/lib/systemd/system"
 
+RDEPENDS_${PN}-runtime += " \
+    libpwquality \
+    ${MLPREFIX}pam-plugin-faillock-${libpam_suffix} \
+    ${MLPREFIX}pam-plugin-pwhistory-${libpam_suffix} \
+    "
+
 do_install_append() {
     sed -i -e '0,/^$/s//\
 # lock out any user after three unsuccessful attempts and unlock that user after 5 minutes\
