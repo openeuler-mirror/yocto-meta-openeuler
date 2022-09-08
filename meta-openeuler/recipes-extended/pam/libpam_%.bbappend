@@ -28,3 +28,21 @@ RDEPENDS_${PN}-xtests_remove += " \
 PACKAGES += "${PN}-pkgconfig ${PN}-service"
 FILES_${PN}-pkgconfig = "${base_libdir}/pkgconfig"
 FILES_${PN}-service = "/usr/lib/systemd/system"
+
+do_install_append() {
+    sed -i -e '0,/^$/s//\
+# lock out any user after three unsuccessful attempts and unlock that user after 5 minutes\
+autu	required			pam_faillock.so preauth silent audit deny=3 unlock_time=300\
+auth	sufficient			pam_unix.so nullok try_first_pass\
+auth	[default=die]			pam_faillock.so authfail audit deny=3 unlock_time=300/' ${D}${sysconfdir}/pam.d/common-auth
+
+    sed -i -e '0,/^$/s//\
+# locks the account in case there were more than deny consecutive failed authentications\
+account required			ppam_faillock.so/' ${D}${sysconfdir}/pam.d/common-account
+
+    sed -i -e '0,/^$/s//\
+# forcing strong passwords\
+password	requisite			pam_pwquality.so try_first_pass minclass=3 minlen=8 lcredit=0 ucredit=0 dcredit=0 ocredit=0 reject_username gecoscheck retry=3 enforce_for_root\
+# prevent users from using the last 5 passwords\
+password	required			pam_pwhistory.so remember=5 use_authtok enforce_for_root/' ${D}${sysconfdir}/pam.d/common-password
+}
