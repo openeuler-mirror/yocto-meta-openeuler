@@ -7,7 +7,10 @@ PV = "30"
 SRC_URI_remove = "git://git.kernel.org/pub/scm/utils/kernel/kmod/kmod.git \
         git://git.kernel.org/pub/scm/utils/kernel/kmod/kmod.git;branch=master \
         "
-SRC_URI_prepend = "file://${BP}.tar.xz "
+SRC_URI_prepend = "file://${BP}.tar.xz \
+        file://0001-Module-replace-the-module-with-new-module.patch \
+        file://0002-Module-suspend-the-module-by-rmmod-r-option.patch \
+        "
 
 SRC_URI[md5sum] = "85202f0740a75eb52f2163c776f9b564"
 SRC_URI[sha256sum] = "f897dd72698dc6ac1ef03255cd0a5734ad932318e4adbaebc7338ef2f5202f9f"
