@@ -10,6 +10,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 SRC_URI_remove = " \
         https://mesa.freedesktop.org/archive/mesa-${PV}.tar.xz \
         file://0002-meson.build-make-TLS-ELF-optional.patch \
+        file://0001-gallium-dri-Make-YUV-formats-we-re-going-to-emulate-.patch \
 "
 
 # files, patches that come from openeuler
