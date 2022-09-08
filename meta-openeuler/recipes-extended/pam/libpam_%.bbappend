@@ -32,13 +32,13 @@ FILES_${PN}-service = "/usr/lib/systemd/system"
 do_install_append() {
     sed -i -e '0,/^$/s//\
 # lock out any user after three unsuccessful attempts and unlock that user after 5 minutes\
-autu	required			pam_faillock.so preauth silent audit deny=3 unlock_time=300\
+auth	required			pam_faillock.so preauth silent audit deny=3 even_deny_root unlock_time=300\
 auth	sufficient			pam_unix.so nullok try_first_pass\
-auth	[default=die]			pam_faillock.so authfail audit deny=3 unlock_time=300/' ${D}${sysconfdir}/pam.d/common-auth
+auth	[default=die]			pam_faillock.so authfail audit deny=3 even_deny_root unlock_time=300/' ${D}${sysconfdir}/pam.d/common-auth
 
     sed -i -e '0,/^$/s//\
 # locks the account in case there were more than deny consecutive failed authentications\
-account required			ppam_faillock.so/' ${D}${sysconfdir}/pam.d/common-account
+account required			pam_faillock.so/' ${D}${sysconfdir}/pam.d/common-account
 
     sed -i -e '0,/^$/s//\
 # forcing strong passwords\
