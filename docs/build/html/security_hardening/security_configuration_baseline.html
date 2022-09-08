@@ -175,12 +175,16 @@
 <p><strong>规则背景说明：</strong></p>
 <p>为了防止给系统带来风险，外置存储、日志分区、临时存储分区中不要有可执行文件、setuid可执行文件、设备节点等文件，各分区应使用nodev,
 nosuid, noexec,
-ro等挂载选项。对于数据文件等分区应以noexec方式挂载分区；对于文件禁止修改的分区应以ro方式挂载；对于不需要SUID/SGID的分区应以nosuid方式挂载；/var、/tmp目录应以nodev方式挂载。请根据场景判断分区挂载选项的合理性，使用对应的挂载选项。</p>
+ro等挂载选项。对于数据文件等分区应以noexec方式挂载分区；对于文件禁止修改的分区应以ro方式挂载；对于不需要SUID/SGID的分区应以nosuid方式挂载；/var日志分区、/tmp目录应以nodev方式挂载。请根据场景判断分区挂载选项的合理性，使用对应的挂载选项。</p>
 <p><strong>检查方法：</strong></p>
-<p>查看/var、/tmp和/dev/shm是否设置了合适的挂载选项。
-例如，通过以下命令查看是否为/var目录设置了合适的挂载选项：</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># mount | grep /var</span>
+<p>查看/var日志分区、/tmp和/dev/shm是否设置了合适的挂载选项。
+例如，通过以下命令查看是否为/var日志分区目录设置了合适的挂载选项：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 假设/var整个目录都为日志所用</span>
+mount <span class="p">|</span> grep var
 none on /var <span class="nb">type</span> tmpfs <span class="o">(</span>rw,nosuid,nodev,relatime,mode<span class="o">=</span><span class="m">755</span><span class="o">)</span>
+<span class="c1"># 或 假设/var/volatile为对应日志分区</span>
+mount <span class="p">|</span> grep var
+tmpfs on /var/volatile <span class="nb">type</span> tmpfs <span class="o">(</span>rw,nosuid,nodev,relatime,mode<span class="o">=</span><span class="m">755</span><span class="o">)</span>
 </pre></div>
 </div>
 <p>编辑/etc/fstab文件：</p>

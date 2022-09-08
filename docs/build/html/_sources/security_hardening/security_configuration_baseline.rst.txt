@@ -83,17 +83,21 @@ openEuler Embedded安全配置基线
 
 为了防止给系统带来风险，外置存储、日志分区、临时存储分区中不要有可执行文件、setuid可执行文件、设备节点等文件，各分区应使用nodev,
 nosuid, noexec,
-ro等挂载选项。对于数据文件等分区应以noexec方式挂载分区；对于文件禁止修改的分区应以ro方式挂载；对于不需要SUID/SGID的分区应以nosuid方式挂载；/var、/tmp目录应以nodev方式挂载。请根据场景判断分区挂载选项的合理性，使用对应的挂载选项。
+ro等挂载选项。对于数据文件等分区应以noexec方式挂载分区；对于文件禁止修改的分区应以ro方式挂载；对于不需要SUID/SGID的分区应以nosuid方式挂载；/var日志分区、/tmp目录应以nodev方式挂载。请根据场景判断分区挂载选项的合理性，使用对应的挂载选项。
 
 **检查方法：**
 
-查看/var、/tmp和/dev/shm是否设置了合适的挂载选项。
-例如，通过以下命令查看是否为/var目录设置了合适的挂载选项：
+查看/var日志分区、/tmp和/dev/shm是否设置了合适的挂载选项。
+例如，通过以下命令查看是否为/var日志分区目录设置了合适的挂载选项：
 
 .. code-block:: bash
 
-    # mount | grep /var
+    # 假设/var整个目录都为日志所用
+    mount | grep var
     none on /var type tmpfs (rw,nosuid,nodev,relatime,mode=755)
+    # 或 假设/var/volatile为对应日志分区
+    mount | grep var
+    tmpfs on /var/volatile type tmpfs (rw,nosuid,nodev,relatime,mode=755)
 
 编辑/etc/fstab文件：
 
