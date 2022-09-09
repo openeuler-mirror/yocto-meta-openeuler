@@ -345,7 +345,7 @@ Linux系统中为某些服务而提供的账户通常称为系统用户，这些
 
 .. code-block:: bash
 
-    # cat /etc/passwd | awk -F: '($1!="root" && $3<500 && $7!="/sbin/nologin" && $7!="/bin/false") {print}'
+    # cat /etc/passwd | awk -F: '($1!="root" && $3<500 && $7!="/sbin/nologin" && $7!="/bin/false" && $7!="/bin/sync") {print}'
 
 确保连续3次输入错误口令后锁定用户
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
