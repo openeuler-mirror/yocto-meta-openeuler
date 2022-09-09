@@ -10,6 +10,7 @@ SRC_URI = "file://${BPN}_${PV}.tar.gz \
            file://input.patch \
            file://disable-docs.patch \
            file://kvm.patch \
+           file://openeuler_secure_nologin.patch \
            "
 
 # a workaround to fix the error ”useradd: /var/run/passwd: No such file or directory“

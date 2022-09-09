@@ -17,6 +17,10 @@ SRC_URI_prepend = "file://dhcp/dhcp-4.4.2.tar.gz;name=dhcp.tarball \
 
 SRC_URI[dhcp.tarball.sha256sum] = "1a7ccd64a16e5e68f7b5e0f527fd07240a2892ea53fe245620f4f5f607004521"
 
+# bind users do not need shell/login access for secure
+USERADD_PARAM_${PN} = "--system --home ${localstatedir}/cache/bind --no-create-home \
+                       --shell /sbin/nologin --user-group bind"
+
 # decompress the source code from dhcp-4.4.2.tar.gz
 do_unpack_bind () {
         cd ${WORKDIR}
