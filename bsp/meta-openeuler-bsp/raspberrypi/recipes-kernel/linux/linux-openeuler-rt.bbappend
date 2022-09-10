@@ -1,3 +1,9 @@
+# For the Raspberry Pi, we don't need to apply the aarch64 patches
+SRC_URI_remove_raspberrypi4 += " \
+    file://src-kernel-5.10/0000-kernel-rt62.patch \
+    file://src-kernel-5.10/0001-kernel-rt62-modify-defconfig.patch \
+"
+
 SRC_URI += "\
     file://src-kernel-5.10/0000-raspberrypi-kernel.patch \
     file://src-kernel-5.10/0001-raspberrypi-kernel-rt62.patch \
