@@ -47,3 +47,16 @@ SRC_URI_prepend = "file://backport-0001-change-bug-url.patch \
 
 SRC_URI[sha256sum] = "1a7ccd64a16e5e68f7b5e0f527fd07240a2892ea53fe245620f4f5f607004521"
 SRC_URI[md5sum] = "2afdaf8498dc1edaf3012efdd589b3e1"
+
+# it will make a error when using dhclient 
+# because backport-0007-Change-paths-to-conform-to-our-standards.patch 
+# changed the path /sbin/dhclient-script to /usr/sbin/dhclient-script for dhclient finding dhclient-script
+# so re-install the dhclient-script to fix it.
+do_install_append() {
+        rm -f ${D}${base_sbindir}/dhclient-script
+        install -m 0755 ${S}/client/scripts/linux ${D}${sbindir}/dhclient-script
+}
+
+FILES_${PN}-client += "${sbindir}/dhclient-script "
+
+FILES_${PN}-client_remove = "${base_sbindir}/dhclient-script"
