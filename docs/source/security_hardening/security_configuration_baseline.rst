@@ -258,6 +258,12 @@ umask如果设置不合理，可能导致新建文件权限过小或过大，从
     $ ll -d testdir/
     drwx------    2 test     test            40 May 17 23:55 testdir/
 
+-  其他说明：使用ssh -C远程命令（如ssh root@xxx -C "umask"）或scp时，在/etc/profile等文件中配置的umask不会生效，因为ssh远程命令是非login shell，所以不会触发/etc/profile、bashrc中的umask。该情况的配置为高安全要求，可能影响ssh、scp的基本功能使用，在版本中不做自动配置，用户如需要进行加固，可通过在/etc/pam.d/sshd中加入如下内容：
+
+.. code-block:: bash
+
+    session optional pam_umask.so umask=0077
+
 确保全局可写目录设置粘滞位
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
