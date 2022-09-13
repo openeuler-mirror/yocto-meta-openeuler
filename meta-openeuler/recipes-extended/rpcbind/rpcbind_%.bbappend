@@ -28,3 +28,6 @@ do_install_append() {
 
 SRC_URI[tarball.md5sum] = "2d84ebbb7d6fb1fc3566d2d4b37f214b"
 SRC_URI[tarball.sha256sum] = "5613746489cae5ae23a443bb85c05a11741a5f12c8f55d2bb5e83b9defeee8de"
+
+# we current use rc5.d of rcS, in normal mode we don't want it autostart default for security
+INITSCRIPT_PARAMS = "start 12 2 3 4 . stop 60 0 1 6 ."
