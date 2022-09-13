@@ -48,3 +48,10 @@ SRC_URI[tarball.sha256sum] = "0606f74b1182ab732a17c11613cbbaf7084f2e6cca432642d0
 EXTRA_OECONF_remove = " \
         --without-libmetalink \
 "
+
+# It is not safe to pack crt files in rootfs by default, if you sure what you want, comment these lines:
+EXTRA_OECONF_remove += " \
+        --with-ca-bundle=${sysconfdir}/ssl/certs/ca-certificates.crt \
+"
+RRECOMMENDS_lib${BPN}_remove += "ca-certificates"
+
