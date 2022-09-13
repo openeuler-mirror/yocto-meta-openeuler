@@ -244,6 +244,7 @@ download_code()
     update_code_repo src-openeuler/mosquitto ${SRC_BRANCH}
     update_code_repo src-openeuler/uthash ${SRC_BRANCH}
     update_code_repo src-openeuler/ppp ${SRC_BRANCH}
+    update_code_repo src-openeuler/freetype ${SRC_BRANCH}
     update_code_repo src-openeuler/mesa ${SRC_BRANCH}
     update_code_repo src-openeuler/libdrm ${SRC_BRANCH}
     update_code_repo src-openeuler/xorg-x11-proto-devel ${SRC_BRANCH}
