@@ -20,3 +20,8 @@ SRC_URI_prepend = "file://expect-5.43.0-log_file.patch \
 SRC_URI_remove = "file://0001-Resolve-string-formatting-issues.patch \
            file://0001-expect-Fix-segfaults-if-Tcl-is-built-with-stubs-and-.patch \
 "
+
+# we don't need .c file pack in rootfs
+FILES_${PN}-dev_append += " \
+        ${libdir}/expect${PV}/*.c \
+        "

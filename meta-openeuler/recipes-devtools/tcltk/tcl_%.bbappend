@@ -17,6 +17,9 @@ BASE_SRC_URI =+ "file://${BPN}-core${PV}-src.tar.gz \
 SRC_URI[sha256sum] = "186748f1131cef3d637421a18d70892f808e526a29c694bebfeb1c540f98727c"
 
 # no such patch in later version
-SRC_URI_remove = "file://no_packages.patch \
+SRC_URI_remove = " \
            file://fix_issue_with_old_distro_glibc.patch \
 "
+
+# we don't need .c file pack in rootfs
+FILES_${PN}-dev_append += "${libdir}/tcl8.6/*.c"
