@@ -22,7 +22,7 @@ SRC_URI = " \
         file://yocto-embedded-tools/dsoftbus/third_party/jinja2/third_party_jinja2-OpenHarmony-v3.0.2-LTS.zip \
         file://yocto-embedded-tools/dsoftbus/third_party/libcoap/third_party_libcoap-OpenHarmony-v3.0.2-LTS.zip \
         file://yocto-embedded-tools/dsoftbus/third_party/markupsafe/third_party_markupsafe-OpenHarmony-v3.0.2-LTS.zip \
-        file://yocto-embedded-tools/dsoftbus/third_party/mbedtls/third_party_mbedtls-OpenHarmony-v3.0.2-LTS.zip \
+        file://yocto-embedded-tools/dsoftbus/third_party/mbedtls/third_party_mbedtls-OpenHarmony-v3.1.2-Release.zip \
         file://yocto-embedded-tools/dsoftbus/third_party/openssl/third_party_openssl-OpenHarmony-v3.1.2-Release.zip \
         file://yocto-embedded-tools/dsoftbus/utils/utils_native-OpenHarmony-v3.0.2-LTS.zip \
         file://yocto-embedded-tools/dsoftbus/hichain/huks/security_huks-OpenHarmony-v3.1.2-Release.zip \
@@ -34,7 +34,9 @@ SRC_URI = " \
         file://yocto-embedded-tools/dsoftbus/build/0002-support-hichian-for-openeuler.patch;patchdir=${S}/build \
         file://yocto-embedded-tools/dsoftbus/utils/0001-Adaptation-for-dsoftbus.patch;patchdir=${dsoftbus-utils}/native \
         file://yocto-embedded-tools/dsoftbus/bounds_checking_function/0001-Adaptation-for-dsoftbus.patch;patchdir=${dsoftbus-thirdparty}/bounds_checking_function \
-        file://yocto-embedded-tools/dsoftbus/third_party/mbedtls/0001-Adaptation-for-dsoftbus-v3.1.patch;patchdir=${dsoftbus-thirdparty}/mbedtls \
+        file://yocto-embedded-tools/dsoftbus/third_party/mbedtls/0001-Adaptation-for-dsoftbus-v3.1.2.patch;patchdir=${dsoftbus-thirdparty}/mbedtls \
+        file://yocto-embedded-tools/dsoftbus/third_party/mbedtls/0002-fix-CVE-2021-43666.patch;patchdir=${dsoftbus-thirdparty}/mbedtls \
+        file://yocto-embedded-tools/dsoftbus/third_party/mbedtls/0003-fix-CVE-2021-45451.patch;patchdir=${dsoftbus-thirdparty}/mbedtls \
         file://yocto-embedded-tools/dsoftbus/third_party/openssl/0001-support-openssl-for-dsoftbus.patch;patchdir=${dsoftbus-thirdparty}/openssl \
         file://yocto-embedded-tools/dsoftbus/hichain/huks/0001-support-huks-for-openeuler.patch;patchdir=${dsoftbus-hichain}/huks \
         file://yocto-embedded-tools/dsoftbus/hichain/deviceauth/0001-support-deviceauth-for-openeuler.patch;patchdir=${dsoftbus-hichain}/deviceauth \
@@ -73,7 +75,7 @@ do_copy_dsoftbus_source() {
     cp -rfp ${WORKDIR}/third_party_jinja2-OpenHarmony-v3.0.2-LTS/* ${dsoftbus-thirdparty}/jinja2/
     cp -rfp ${WORKDIR}/third_party_libcoap-OpenHarmony-v3.0.2-LTS/* ${dsoftbus-thirdparty}/libcoap/
     cp -rfp ${WORKDIR}/third_party_markupsafe-OpenHarmony-v3.0.2-LTS/* ${dsoftbus-thirdparty}/markupsafe/
-    cp -rfp ${WORKDIR}/third_party_mbedtls-OpenHarmony-v3.0.2-LTS/* ${dsoftbus-thirdparty}/mbedtls/
+    cp -rfp ${WORKDIR}/third_party_mbedtls-OpenHarmony-v3.1.2-Release/* ${dsoftbus-thirdparty}/mbedtls/
     cp -rfp ${WORKDIR}/third_party_openssl-OpenHarmony-v3.1.2-Release/* ${dsoftbus-thirdparty}/openssl/
     cp -rfp ${WORKDIR}/security_huks-OpenHarmony-v3.1.2-Release/* ${dsoftbus-hichain}/huks/
     cp -rfp ${WORKDIR}/security_device_auth-OpenHarmony-v3.1.2-Release/* ${dsoftbus-hichain}/deviceauth/
