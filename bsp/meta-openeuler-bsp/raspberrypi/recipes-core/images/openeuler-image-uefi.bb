@@ -72,7 +72,8 @@ change_bootfiles_to_enable_uefi() {
 
     #change grub.cfg to use Image.gz to launch
     sed -i 's/linux \/Image /linux \/Image.gz /' ${DEPLOY_DIR_IMAGE}/EFI/BOOT/grub.cfg
-
+    #set maxcpus=3, reserve cpu3 for clientos
+    sed -i 's/linux \/Image.gz/& maxcpus=3 /' ${DEPLOY_DIR_IMAGE}/EFI/BOOT/grub.cfg
 }
 
 IMAGE_PREPROCESS_COMMAND_append += "change_bootfiles_to_enable_uefi"
