@@ -3,66 +3,88 @@
 新增软件包指导
 ###############################
 
-配方（.bb 文件）是 Yocto 项目环境中的基本组件。 OpenEmbedded 构建系统构建的每个软件组件都需要一个配方来定义组件；
+配方（bb文件）是 Yocto 项目中的基本组件。Yocto 构建系统构建的每个软件组件都需要一个配方来定义组件；bbappend 文件是 bb 文件的补充，在最后解析。
 
-新增软件包到镜像中需要有软件包的源码，对应的bb文件。
+新增软件包到镜像中需要软件包的源码和对应的 bb 文件。
 
 主要过程
-********************
+==============
 
-1. **源码获取/下载**
+1. **源码获取**
 
-软件包源码放在src（yocto-meta-openeuler同级目录）下。
+源码通常在 `src-openEuler <https://gitee.com/organizations/src-openeuler/projects>`_ 上获取，在 download_code.sh 脚本中增加下载相关代码的命令；如果 src-openEuler 上不存在对应源码，可以从官网获取后放在 SRC_DIR 目录（yocto-meta-openeuler同级目录）下。
 
-2. **获取配方（.bb文件）**、
+例如，在 download_code.sh 脚本中增加下载 audit 源码：
 
-从yocto-poky仓库寻找相应软件包的bb文件；
+.. code-block:: console
+    
+    ...
+    download_code()
+    {
+        ...
+        update_code_repo src-openeuler/audit ${SRC_BRANCH}  //SRC_BRANCH为分支名
+    }
+
+2. **获取配方（bb文件）**
+
+先确认 yocto-poky 仓是否存在相应软件包的 bb 文件：
 
 .. code-block:: console
 
-    find yocto-poky -name package*.bb
+    $ find yocto-poky -name <package>*.bb
 
-`OpenEmbedded Layer <http://layers.openembedded.org/layerindex/branch/master/recipes/>`_ 可直接搜索相应软件包的bb文件。
+如果没有找到则可以在 `OpenEmbedded Layer <http://layers.openembedded.org/layerindex/branch/master/recipes/>`_ 搜索，然后拷贝需要的文件（bb、补丁等）到 meta-openeuler 层。
 
 3. **适配配方**
 
-在上一步中如果未找到相应版本的bb文件，可基于相近版本修改;
+| bbappend 文件作为 bb 文件的补充，开发者可以通过在 bbappend 文件中增加内容来对 bb 文件进行覆盖更改，而不用直接对 bb 文件进行更改。
+| 开发者首先在 meta-openeuler 层 bb 文件对应的目录下创建 bbappend 文件，文件命名为 <package>_%.bbappend，Yocto 中 "%" 为通配符，这样命名能匹配任何一个找到的 bb 文件版本；下一步根据构建需求编写 bbappend 内容，并做好相应注释说明，大多数情况下编写的内容如下：
+
+- OPENEULER_REPO_NAME: src-openEuler存储仓名称；
+- PV: 版本；
+- SRC_URI: 源码来源；
+- SRC_URI[md5sum/sha256sum]: 源码校验码；
+- S: 源码解压后目录。
 
 .. code-block:: console
 
-    mv package_version1.bb package_version2.bb //修改bb文件名为所需版本
+    OPENEULER_REPO_NAME = "仓库具体命名"
+    PV = "版本号"
+    SRC_URI_remove = "原源码链接"
+    SRC_URI_prepend = "file://源码包 \
+    "
+    SRC_URI[sha256sum] = "校验码" //执行 sha256sum 源码包
+    S = "${WORKDIR}/${BP}" //BP变量表示软件名-版本号，如果不符合则需要修改
 
-修改bb文件适配openEuler yocto工程，主要需要修改如下字段；
+举例：查看 meta-openeuler/recipes-support/libjitterentropy/libjitterentropy_%.bbappend 的编写。
 
-SRC_URI：表示软件包来源，修改源码包来源为本地，如果源码是从src-openEuler下载到本地，src-openEuler上该软件包有额外补丁也需要加上。
+优先构建未支持的依赖包，从下往上依次适配；查看依赖方法：
 
 .. code-block:: console
 
-    SRC_URI = "file://package//${BP}.tar.*"   //BP变量表示软件名-版本号，*需改为相应的后缀。
-
-依赖相关字段，如inherit、DEPENDS、RDEPENDS；
-
-.. code-block:: console
-
-    bitbake <package> -g  //此命令可查看软件依赖
+    bitbake <package> -g  //此命令输出软件依赖到文件中
     cat pn-buildlist
 
-发现未支持依赖需优先编译依赖软件或者视情况解耦掉依赖软件。删除不支持的依赖，如inherit texinfo update-alternatives python3，这些class需要引入软件包，暂时没有支持起来。
+4. **单包构建**
 
-4. **单包编译**
+.. code-block:: console
 
-    bitbake <package>
+    $ bitbake <package>
 
 5. **加入镜像**
 
-bb文件适配完成并验证ok后，将所需子包追加到layer配置文件RDEPNDNS变量中（ 当前配置文件位于yocto-meta-openeuler工程meta-openeuler /recipes-core/packagegroups/packagegroup-xxx.bb ）。
-
-如果在加入镜像中与已有子包文件发生冲突的话需选择需要的子包，将另一个包从RDEPENDS变量值去除，但这个操作可能会引起一些麻烦，由于被删除子包中可能会包含其它必要的文件。
-
-6. **编译镜像**
+单包构建完成后，将所需子包追加到包管理 bb 文件 RDEPNDNS 变量中（文件位于 meta-openeuler/recipes-core/packagegroups/packagegroup-xxx.bb）。例如：
 
 .. code-block:: console
 
-    bitbake openeuler-image
+    RDEPENDS_${PN} += "audit"
 
-这时产生的镜像中已经包含了你所需的软件包功能。
+6. **构建镜像**
+
+openeuler-image-tiny 镜像中只包含了运行系统所需的最基本的包文件，构建所需时间较少；为了避免构建时间过长，推荐先将所需子包加入到 openeuler-image-tiny 镜像进行验证，验证通过后再加入到 openeuler-image 镜像中。
+
+.. code-block:: console
+
+    bitbake openeuler-image or openeuler-image-tiny
+
+这时产生的镜像中已经包含了你所需的软件包。
