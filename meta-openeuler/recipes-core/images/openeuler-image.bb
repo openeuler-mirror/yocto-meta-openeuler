@@ -36,9 +36,7 @@ packagegroup-openssh \
 packagegroup-kernel-modules \
 packagegroup-isulad \
 "
-#thie packagegroup should add after refactor
 
-inherit extrausers
-EXTRA_USERS_PARAMS = "\
-    useradd -p '' openeuler; \
-    "
+# You can add extra user here, suck like:
+# inherit extrausers
+# EXTRA_USERS_PARAMS = "useradd -p '' openeuler;"
