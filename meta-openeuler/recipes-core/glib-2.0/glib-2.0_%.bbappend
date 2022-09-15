@@ -55,3 +55,18 @@ PACKAGECONFIG[system-pcre] = ""
 # In future, if we figure out the related stuff of gio-querymodules, we can remove the
 # following codes
 GIO_MODULE_PACKAGES = ""
+
+# rpath may generate by meson and may not auto delete rpath, it is no secure, so let we do it as a workaround
+do_install_append () {
+    if [ -f ${D}${libexecdir}/gio-querymodules${EXEEXT} ]; then
+        chrpath --delete ${D}${libexecdir}/gio-querymodules${EXEEXT}
+    fi
+    if [ -f ${D}${libexecdir}/${MLPREFIX}gio-querymodules${EXEEXT} ]; then
+        chrpath --delete ${D}${libexecdir}/${MLPREFIX}gio-querymodules${EXEEXT}
+    fi
+    chrpath --delete ${D}${libdir}/libgio-2.0.so
+    chrpath --delete ${D}${libdir}/libgthread-2.0.so
+    chrpath --delete ${D}${libdir}/libgobject-2.0.so
+    chrpath --delete ${D}${libdir}/libgmodule-2.0.so
+}
+

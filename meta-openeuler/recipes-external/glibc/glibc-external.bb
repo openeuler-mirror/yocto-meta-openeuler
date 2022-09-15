@@ -213,9 +213,8 @@ FILES_${PN}-dev += "${libdir}/*crt*.o"
 # currently no dbg fils for glibc-external
 FILES_${PN}-dbg = ""
 # no strip .o files used for startup, as user space app may need symbol information
-# here INHIBIT_PACKAGE_STRIP to avoid all strip, future we can use
-# INHIBIT_PACKAGE_STRIP_FILES for fine-grained control
-INHIBIT_PACKAGE_STRIP = "1"
+# here INHIBIT_PACKAGE_STRIP is no need to set to 1, 
+# because poky package.bbclass will not strip the file with no executable permission except .so or .node
 
 linux_include_subdirs = "asm asm-generic bits drm linux mtd rdma sound sys video"
 FILES_${PN}-dev += "${@' '.join('${includedir}/%s' % d for d in '${linux_include_subdirs}'.split())}"
