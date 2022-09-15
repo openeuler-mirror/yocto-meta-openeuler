@@ -17,3 +17,7 @@ SRC_URI[sha256sum] = "51997d94e4c8bcef5456dd36a9ccc38e231207c4e9b6a9a2c108841e6a
 # remove the dependency of python3-core to simplify the build
 # when python3 support becomes mature, remove the following code
 RDEPENDS_${PN}-stats = ""
+
+# we current use rc5.d of rcS, in normal mode we don't want it autostart default for security
+INITSCRIPT_PARAMS = "start 20 2 3 4 . stop 20 0 1 6 ."
+INITSCRIPT_PARAMS-${PN}-client = "start 19 2 3 4 . stop 21 0 1 6 ."
