@@ -23,7 +23,7 @@
 面对上述硬件和应用的变化，结合自身原有的特点，嵌入式系统未来演进的方向之一就是 **混合关键性系统(MCS, Mixed Criticality System)**, 这可以从典型的
 嵌入式系统-汽车电子的最近发展趋势略见一斑。
 
-    .. figure:: ../../image/mcs_architecture.png
+    .. figure:: ../../image/mcs/mcs_architecture.png
         :align: center
 
         图 1 openEuler Embedded中的混合关键性系统大致架构
@@ -54,7 +54,7 @@ Linux负责系统管理与服务、1个实时操作系统负责实时控制、1�
 openEuler Embedded中多OS混合部署框架的架构图如下所示，引入了开源框架 `OpenAMP <https://www.openampproject.org/>`_ 作为基础， 并结合自身需要
 进一步创新。
 
-    .. figure:: ../../image/openamp_architecture.png
+    .. figure:: ../../image/mcs/openamp_architecture.png
         :align: center
 
         图 2 多OS混合部署框架的基础架构
@@ -65,15 +65,25 @@ openEuler Embedded中多OS混合部署框架的架构图如下所示，引入了
 在openEuler Embedded 22.03中，集成了OpenAMP相关支持并与openEuler的 `SIG Zephyr <https://gitee.com/openeuler/community/tree/master/sig/sig-Zephyr>`_ 合作
 实现了openEuler Embedded与实时操作系统 `Zephyr <https://www.zephyrproject.org/>`_ 在QEMU平台上的混合部署，具体可以参考
 
-`多OS混合部署Demo <https://gitee.com/openeuler/yocto-embedded-tools/tree/openEuler-22.03-LTS/mcs>`_
+`22.03 多OS混合部署Demo <https://gitee.com/openeuler/yocto-embedded-tools/tree/openEuler-22.03-LTS/mcs>`_
+
+在openEuler Embedded 22.09中，新增串口服务demo，实现通过Linux shell命令行访问Client OS的功能，样例支持多用户多线程场景。
+在openEuler Embedded 22.09中，混合部署demo支持运行在树莓派4B上。
+
+`22.09 多OS混合部署Demo和串口服务Demo <https://gitee.com/openeuler/yocto-embedded-tools/tree/master/mcs>`_
+
+    .. figure:: ../../image/mcs/rpmsg-pty-shell.png
+        :align: center
+
+        图 3 串口服务demo
 
 在此基础上，openEuler Embedded的混合部署框架还会继续演进，包括对接更多的实时操作系统，如国产开源实时操作系统 `RT-Thread <https://www.rt-thread.org/>`_，实现如下图所示的
 多OS服务化部署并适时引入基于虚拟化技术的嵌入式弹性底座。
 
-    .. figure:: ../../image/os_services.png
+    .. figure:: ../../image/mcs/os_services.png
         :align: center
 
-        图 3 多OS服务化部署架构
+        图 4 多OS服务化部署架构
 
 在上述多OS服务化部署架构中，openEuler Embedded是中心，主要对其他OS提供管理、网络、文件系统等通用服务，其他OS可以专注于其所擅长的领域提诸如实时控制、监控等服务，并通过shell、log和debug
 等通道与Linux丰富而强大维测体对接从而简化开发工作。
