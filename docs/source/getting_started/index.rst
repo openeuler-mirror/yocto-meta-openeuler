@@ -358,7 +358,7 @@ openEuler Embedded传输文件。
    build := kernel_modules
 
    kernel_modules:
-   	 $$(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) modules
+   	 $(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) modules
    clean:
    	 $(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) clean
 
