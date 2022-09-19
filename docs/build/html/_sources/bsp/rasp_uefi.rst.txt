@@ -13,11 +13,11 @@ openEuler Embedded 的UEFI树莓派镜像集成了基于树梅派4B的混合部�
 该镜像对齐tiny镜像的软件包配置，并集成openssh支持网络登录、混合部署mcs依赖库及混合部署mcs预留内存mcsmem dtoverlay。
 
 构建树梅派openeuler-image-uefi镜像和烧录
-========================
+==============================================
 
 分支支持要求：openEuler-22.09及之后的主线master分支。
 
-环境准备流程参照 :ref:`关键特性/树梅派4B的支持/树梅派构建指导<features>` 构建指导部分。
+环境准备流程参照 :ref:`关键特性/树梅派4B的支持/树梅派构建指导 <raspberrypi>` 构建指导部分。
 
 - 构建命令示例：
 
@@ -33,9 +33,7 @@ openEuler Embedded 的UEFI树莓派镜像集成了基于树梅派4B的混合部�
 
       openeuler-image-uefi-raspberrypi4-64-*.rootfs.rpi-sdimg
 
-- 将openeuler-image-uefi-raspberrypi4-64-*.rpi-sdimg烧录到SD卡
-
-- `openEuler烧录参考 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E5%88%B7%E5%86%99%E9%95%9C%E5%83%8F.md#%E5%88%B7%E5%86%99-sd-%E5%8D%A1>`_
+- 将构建生成的rpi-sdimg烧录到SD卡 :ref:`关键特性/树莓派4B的支持/树莓派镜像构建指导/镜像使用方法/镜像烧录 <raspberrypi>`
 
 openeuler-image-uefi启动使用指导
 ================================================
@@ -94,13 +92,13 @@ openeuler-image-uefi启动使用指导
 设备：建议树莓派4B的出厂配置，包括树莓派4B基础套件和SD卡
 
 openEuler Embedded标准镜像 + UEFI固件下载和刷新方法
-================================================
+==========================================================
 
 **1 将openEuler Embedded树莓派镜像烧录到SD卡**
 
 - `openEuler烧录参考 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E5%88%B7%E5%86%99%E9%95%9C%E5%83%8F.md#%E5%88%B7%E5%86%99-sd-%E5%8D%A1>`_
 
-  - 如何获得openEuler Embedded树莓派镜像，参照 :ref:`关键特性/树莓派4B的支持/树莓派镜像构建指导<features>` 部分
+  - 如何获得openEuler Embedded树莓派镜像，参照 :ref:`关键特性/树莓派4B的支持/树莓派镜像构建指导 <raspberrypi>` 部分
 
   .. code-block:: console
 
@@ -142,7 +140,7 @@ openEuler Embedded标准镜像 + UEFI固件下载和刷新方法
   - 网络卡启动参考本文档章节： 树莓派UEFI之手动制作grub并通过网络启动openEuler Embedded
 
 树莓派UEFI之手动制作grub并通过SD卡启动openEuler Embedded
-************************************************
+***********************************************************
 
 grub准备（编译+制作grub启动组件）
 ================================================
@@ -197,7 +195,7 @@ grub准备（编译+制作grub启动组件）
 
 
 树莓派UEFI之手动制作grub并通过网络启动openEuler Embedded
-************************************************
+***********************************************************
 
 1 准备PXE部署服务器
 ========================

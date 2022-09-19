@@ -3,6 +3,8 @@
 原生环境下的快速构建指导
 ===========================================
 
+原生环境构建配置过于复杂，约束较多，当前 **不建议** 用户使用此方法进行构建。
+
 构建环境的准备
 *********************************************
 
@@ -46,7 +48,7 @@ openEuler Embedded所需构建工具
 
 3）预编译的交叉工具链和库
  | Yocto可以构建出交叉编译所需的交叉工具链和C库，但整个流程复杂且耗时，不亚于内核乃至镜像的构建，而且除了第一次构建，后面很少会再涉及。同时，绝大部分开发者都不会直接与工具链和C库构建打交道。所以为了简化该流程，openEuler Embedded采取的策略是采用预编译的交叉工具链和库，会专门维护和发布相应的带有C库的工具链。
- | 目前我们提供了对arm32位和aarch64位两种架构的工具链支持，通过如下方式可以获得：
+ | 目前在22.03我们提供了对arm32位和aarch64位两种架构的工具链支持，通过如下方式可以获得：
 
  - 下载rpm包: ``wget https://repo.openeuler.org/openEuler-22.03-LTS/EPOL/main/x86_64/Packages/gcc-cross-1.0-0.oe2203.x86_64.rpm``
  - 解压rpm包: ``rpm2cpio gcc-cross-1.0-0.oe2203.x86_64.rpm | cpio -id``
@@ -55,6 +57,10 @@ openEuler Embedded所需构建工具
  
    - ARM 32位工具链: openeuler_gcc_arm32le.tar.xz
    - ARM 64位工具链: openeuler_gcc_arm64le.tar.xz
+
+ | 在22.09我们提供了ct-ng作为工具生成的工具链，已集成于22.09分支的镜像构建容器中，用户也可自行构建，构建方法见：
+ 
+ - `22.09及master支持基于ct-ng构建编译器的使用方法 <https://gitee.com/openeuler/yocto-embedded-tools/blob/master/cross_tools/README.md>`_
 
 已安装好工具的构建容器
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -77,7 +83,7 @@ openEuler Embedded整个构建工程的文件布局如下，假设openeuler_embe
     ├── src  源代码目录，包含所有软件包代码、内核代码和Yocto构建代码
     ├── build  openEuler Embedded的构建目录，生成的各种镜像放在此目录下
 
-1）下载脚本所在仓库(例如下载到src/yocto-meta-openeuler目录下)
+1）下载脚本所在仓库(例如下载到src/yocto-meta-openeuler目录下),以openEuler-22.03-LTS分支为例，其他分支请修改：
  | ``git clone https://gitee.com/openeuler/yocto-meta-openeuler.git -b openEuler-22.03-LTS -v src/yocto-meta-openeuler``
  | 脚本为src/yocto-meta-openeuler/scripts/download_code.sh
  |      此脚本有3个参数：

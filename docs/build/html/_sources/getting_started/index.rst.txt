@@ -14,7 +14,7 @@ openEuler Embedded是基于openEuler社区面向嵌入式场景的Linux版本。
 获取镜像
 ***********
 
-当前发布的已构建好的镜像中，只支持arm和aarch64两种架构，且只支持qemu中ARM virt-4.0平台，您可以通过如下链接获得相应的镜像：
+当前发布的已构建好的镜像示例中，只支持arm和aarch64两种架构，且只支持qemu中ARM virt-4.0平台，您可以通过如下链接获得相应的镜像（以22.03为例）：
 
 - `qemu_arm <https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm32/arm-std>`_：32位arm架构, ARM Cortex A15处理器
 - `qemu_aarch64 <https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm64/aarch64-std>`_：64位aarch64架构 ARM Cortex A57处理器
@@ -26,7 +26,7 @@ openEuler Embedded是基于openEuler社区面向嵌入式场景的Linux版本。
 
 所下载的镜像，由以下几部分组成：
 
-- 内核镜像 :file:`zImage` : 基于openEuler社区Linux 5.10代码构建得到。相应的内核配置可通过如下链接获取：
+- 内核镜像 :file:`zImage` : 基于openEuler社区Linux 5.10代码构建得到。相应的内核配置可通过如下链接获取（以openEuler-22.03-LTS为例，其他分支修改分支名跳转即可）：
 
   - `arm(cortex a15) <https://gitee.com/openeuler/yocto-embedded-tools/blob/openEuler-22.03-LTS/config/arm/defconfig-kernel>`_
   - `arm(cortex a57) <https://gitee.com/openeuler/yocto-embedded-tools/blob/openEuler-22.03-LTS/config/arm64/defconfig-kernel>`_,
@@ -221,12 +221,13 @@ openEuler Embedded传输文件。
 
   .. code-block:: console
 
-    sh openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-22.03.sh
+    sh openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-*.sh
 
   根据提示输入工具链的安装路径，默认路径是 :file:`/opt/openeuler/<openeuler version>/`;
   若不设置，则按默认路径安装；也可以配置相对路径或绝对路径。
+  其中“*”根据分支不同生成字符不同，如22.03、22.09。
 
-  一个例子如下：
+  一个例子如下（22.03例子，22.09等版本类似）：
 
   .. code-block:: console
 

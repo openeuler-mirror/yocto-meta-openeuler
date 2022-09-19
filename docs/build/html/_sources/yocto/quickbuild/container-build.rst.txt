@@ -47,7 +47,7 @@ openEuler环境可参考Centos安装Docker。
 3. 获取容器镜像
 ****************
 
-通过 ``docker pull`` 命令拉取华为云中的镜像到宿主机。命令如下: 
+通过 ``docker pull`` 命令拉取华为云中的镜像到宿主机。命令如下:
 
 .. code-block:: console
 
@@ -95,7 +95,7 @@ openEuler环境可参考Centos安装Docker。
 
     docker run -idt --network host swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container bash
 
-参数说明: 
+参数说明:
 
 - -i 让容器的标准输入保持打开
 
@@ -138,7 +138,7 @@ openEuler环境可参考Centos安装Docker。
     git clone https://gitee.com/openeuler/yocto-meta-openeuler.git -b <For Image Branch> -v /usr1/openeuler/src/yocto-meta-openeuler
     #example: git clone https://gitee.com/openeuler/yocto-meta-openeuler.git -b master -v /usr1/openeuler/src/yocto-meta-openeuler
 
-  .. note::
+.. note::
 
     <For Image Branch> 参见容器镜像列表一列内容
     因构建所需全量代码的获取来源由yocto-meta-openeuler仓库承载，所以如要构建对应版本的代码（如openEuler-22.09或openEuler-22.03-LTS等），需下载对应分支的yocto-meta-openeuler
@@ -150,9 +150,9 @@ openEuler环境可参考Centos安装Docker。
 
     cd /usr1/openeuler/src/yocto-meta-openeuler/scripts
     sh download_code.sh /usr1/openeuler/src
-    
-  .. note::
-    
+
+.. note::
+
     22.09及master之后的版本支持/usr1/openeuler/src/yocto-meta-openeuler/script/oe_helper.sh
     可通过source oe_helper.sh参见usage说明来下载代码
 
@@ -170,7 +170,8 @@ openEuler环境可参考Centos安装Docker。
  .. note::
 
    - 不同的编译架构使用不同的编译器，aarch64-std、aarch64-pro、raspberrypi4-64使用openeuler_gcc_arm64le编译器，arm-std使用openeuler_gcc_arm32le编译器。
-   - 下面以以aarch64-std目标架构编译为例。
+
+- 下面以以aarch64-std目标架构编译为例。
 
 a) 将/usr1目录所属群组改为openeuler，否则切换至openeuler用户构建会存在权限问题
 
@@ -187,7 +188,7 @@ b) 切换至openeuler用户
 c) 进入构建脚本所在路径，运行编译脚本
 
 .. code-block:: console
-     
+
     # 进入编译初始化脚本目录
     cd /usr1/openeuler/src/yocto-meta-openeuler/scripts
 
@@ -203,8 +204,8 @@ c) 进入构建脚本所在路径，运行编译脚本
     source compile.sh aarch64-std /usr1/build /usr1/openeuler/gcc/openeuler_gcc_arm64le
     bitbake openeuler-image
 
-  .. note::
-    
+.. note::
+
     22.09及master之后的版本支持/usr1/openeuler/src/yocto-meta-openeuler/script/oe_helper.sh
     可通过source oe_helper.sh参见usage说明来初始化编译环境
 
@@ -221,7 +222,7 @@ c) 进入构建脚本所在路径，运行编译脚本
 | openeuler-glibc-x86_64-openeuler-image      | openEuler Embedded sdk toolchain                            |
 | -\*-toolchain-\*.sh                         |                                                             |
 +---------------------------------------------+-------------------------------------------------------------+
-| openeuler-image-qemu-aarch64-               | openEuler Embedded file system                              | 
+| openeuler-image-qemu-aarch64-               | openEuler Embedded file system                              |
 | \*.rootfs.cpio.gz                           |                                                             |
 +---------------------------------------------+-------------------------------------------------------------+
 | zImage                                      | openEuler Embedded compressed image                         |

@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>分布式软总线 &mdash; openEuler Embedded在线文档 1.0.0 文档</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="树莓派4B的支持" href="raspberrypi.html" />
+    <link rel="prev" title="多OS混合部署框架" href="mcs.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">内容</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">关键特性</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="software_package_description.html">当前所支持的软件包</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mcs.html">多OS混合部署框架</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">分布式软总线</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">特性介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">应用指南</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">可信设备添加</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">全量编译指导</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">限制约束</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="raspberrypi.html">树莓派4B的支持</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preempt_rt.html">软实时系统介绍</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../yocto/index.html">构建系统</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../qemu/index.html">QEMU仿真器的使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../commit_msg/index.html">commit提交规范</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute_doc.html">如何撰写并贡献文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../security_hardening/index.html">安全加固说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docker_list/index.html">openEuler Embedded 容器介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bsp/index.html">周边设备和硬件底层软件适配</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../network/index.html">网络配置</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../republish/index.html">商业发行版发行说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test_project/index.html">测试工程</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">关键特性</a> &raquo;</li>
+      <li>分布式软总线</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="distributed-softbus">
+<span id="id1"></span><h1>分布式软总线<a class="headerlink" href="#distributed-softbus" title="永久链接至标题">¶</a></h1>
+<div class="section" id="id2">
+<h2>特性介绍<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<p><strong>背景</strong></p>
+<p>openEuler秉承着打造“数字化基础设施操作系统”的愿景，为促进与OpenHarmony生态的合作与互通，实现端边领域的互通和协同，首次在嵌入式领域引入分布式软总线技术。</p>
+<p>分布式软总线是OpenHarmony社区开源的分布式设备通信基座，为设备之间的互通互联提供统一的分布式协同能力，实现设备无感发现和高效传输。</p>
+<p>OpenHarmony主要面向强交互等需求的智能终端、物联网终端和工业终端。openEuler主要面向有高可靠、高性能等需求的服务器、边缘计算、云和嵌入式设备，二者各有侧重。通过以分布式软总线为代表的技术进行生态互通，以期实现“1+1&gt;2”的效果，支撑社区用户开拓更广阔的行业空间。</p>
+<p><strong>架构</strong></p>
+<p>软总线的主要架构如下：</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../_images/dsoftbus_architecture.png" src="../_images/dsoftbus_architecture.png" />
+</div>
+</div></blockquote>
+<p>软总线主体功能分为发现、组网、连接和传输四个基本模块，实现：</p>
+<ul class="simple">
+<li><p><strong>即插即用</strong>:快速便捷发现周边设备</p></li>
+<li><p><strong>自由流转</strong>:各设备间自组网，任意建立业务连接，实现自由通信</p></li>
+<li><p><strong>高效传输</strong>:通过wifi、蓝牙设备下软硬件协同最大化发挥硬件传输性能</p></li>
+</ul>
+<p>软总线南向支持wifi（22.09新增）和有线以太网通信，同时后续可持续拓展蓝牙等通信方式。并为北向的分布式应用提供统一的API接口，屏蔽底层通信机制。</p>
+<p>软总线依赖于设备认证、IPC、日志和系统参数（SN号）等周边模块，嵌入式系统中将这些依赖模块进行了样板性质的替换，以实现软总线基本功能。实际的周边模块功能实现，还需要用户根据实际业务场景进行丰富和替换，以拓展软总线能力。</p>
+</div>
+<div class="section" id="id3">
+<h2>应用指南<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<p>此部分内容基于22.09描述，建议使用22.09分支的分布式软总线特性，功能更为完善。</p>
+<p>其他历史信息请基于对应分支的yocto-meta-openeuler/docs进行查阅。</p>
+<p><strong>部署示意</strong></p>
+<p>软总线支持局域网内多设备部署，设备间通过以太网通信。</p>
+<p>单设备上分为server和client，二者通过IPC模块进行交互。</p>
+<p>单节点上支持多client同时接入单一server。</p>
+<blockquote>
+<div><div class="figure align-center">
+<img alt="../_images/dsoftbus_networking.png" src="../_images/dsoftbus_networking.png" />
+</div>
+</div></blockquote>
+<p><strong>服务端启动</strong></p>
+<p>服务端主程序名为softbus_server_main。</p>
+<p>如部署模型，软总线通过独立进程部署的方式对外提供服务，通过执行服务端主程序可拉起软总线进程提供对外服务。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">openeuler ~ # softbus_server_main &gt;log.file &amp;</span>
+</pre></div>
+</div>
+<p>1.当服务端被拉起时，会主动通过名为ethX/wifiX的网络设备进行coap广播，对对端设备进行自动探测。</p>
+<p>2.当探测到对端设备且对端设备为可信设备时，还会自动组网操作，以便后后续客户端进行快速连接和传输。（“添加可信设备”见后续章节）</p>
+<p>3.日志模块可通过重定向接管，有条件者还可通过实现和替换软总线依赖的hilog模块，进行更细致的日志管理。</p>
+<div class="admonition attention">
+<p class="admonition-title">注意</p>
+<p>用户请参考部署模型，保证单设备节点上有且仅有唯一的softbus_server_main进程。</p>
+</div>
+<p><strong>客户端API</strong></p>
+<p>softbus客户端API头文件在嵌入式版本提供的sdk中对外开放，可在客户端代码中引用。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>include <span class="s2">&quot;discovery_service.h&quot;</span>
+<span class="gp">#</span>include <span class="s2">&quot;softbus_bus_center.h&quot;</span>
+<span class="gp">#</span>include <span class="s2">&quot;session.h&quot;</span>
+</pre></div>
+</div>
+<p>其中：</p>
+<p>1.discovery_service.h：发现模块头文件，支持应用主动探测和发布的API如下：</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 71%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>PublishService</p></td>
+<td><p>发布特定服务能力</p></td>
+</tr>
+<tr class="row-even"><td><p>UnPublishService</p></td>
+<td><p>取消发布特定服务能力</p></td>
+</tr>
+<tr class="row-odd"><td><p>StartDiscovery</p></td>
+<td><p>订阅/探测特定服务能力</p></td>
+</tr>
+<tr class="row-even"><td><p>StopDiscovery</p></td>
+<td><p>取消订阅特性服务能力</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition attention">
+<p class="admonition-title">注意</p>
+<p>服务能力通过g_capabilityMap数组定义，用户若新增能力需要自定义修改该数组，并重新编译软总线服务端和客户端程序来生效。</p>
+</div>
+<p>2.softbus_bus_center.h：组网模块头文件，支持获取组网内设备信息API如下：</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 71%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>GetAllNodeDeviceInfo</p></td>
+<td><p>获取当前组网内所有节点信息</p></td>
+</tr>
+</tbody>
+</table>
+<p>3.session.h：连接/传输模块头文件，支持创建session和数据传输API如下：</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 71%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>CreateSessionServer</p></td>
+<td><p>创建session服务端</p></td>
+</tr>
+<tr class="row-even"><td><p>RemoveSessionServer</p></td>
+<td><p>移除session服务端</p></td>
+</tr>
+<tr class="row-odd"><td><p>OpenSession</p></td>
+<td><p>创建到对端的传输连接（同时依赖于本端和对端提前创建的SessionServer）</p></td>
+</tr>
+<tr class="row-even"><td><p>CloseSession</p></td>
+<td><p>断开传输连接</p></td>
+</tr>
+<tr class="row-odd"><td><p>SendBytes</p></td>
+<td><p>根据建好的连接ID，进行数据传输。</p></td>
+</tr>
+</tbody>
+</table>
+<p>各API参数详见头文件描述。</p>
+<p><strong>客户端编译</strong></p>
+<p>客户端提供动态链接库：libsoftbus_client.z.so</p>
+<p>用户使用软总线时，需要作为客户端程序显示链接该动态库，即可通过函数调用使用软总线提供的API。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>: <span class="k">$(</span>CROSS_COMPILE<span class="k">)</span>-ld -lsoftbus_client.z
+</pre></div>
+</div>
+<p><strong>应用示例</strong></p>
+<p>使用qemu部署分布式软总线，编写客户端程序，使其能够列出所有发现的设备信息。</p>
+<ol class="arabic">
+<li><p>编写客户端程序</p>
+<blockquote>
+<div><p>编写客户端程序依托于embedded版本发布的SDK，请参考 <a class="reference internal" href="../getting_started/index.html#getting-started"><span class="std std-ref">快速上手</span></a> 章节进行SDK环境使用准备</p>
+<p>创建一个 <code class="file docutils literal notranslate"><span class="pre">main.c</span></code> 文件，源码如下：</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&quot;dsoftbus/softbus_bus_center.h&quot;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp"></span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int32_t</span> <span class="n">infoNum</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+    <span class="n">NodeBasicInfo</span> <span class="o">**</span><span class="n">testInfo</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">NodeBasicInfo</span> <span class="o">*</span><span class="p">)</span> <span class="o">*</span> <span class="n">infoNum</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">GetAllNodeDeviceInfo</span><span class="p">(</span><span class="s">&quot;testClient&quot;</span><span class="p">,</span> <span class="n">testInfo</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">infoNum</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Get node device info fail.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;Get node num: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">infoNum</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">infoNum</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\t</span><span class="s"> networkId: %s, deviceName: %s, deviceTypeId: %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+        <span class="n">testInfo</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">networkId</span><span class="p">,</span>
+        <span class="n">testInfo</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">deviceName</span><span class="p">,</span>
+        <span class="n">testInfo</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">deviceTypeId</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">infoNum</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">FreeNodeInfo</span><span class="p">(</span><span class="n">testInfo</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="p">}</span>
+    <span class="n">free</span><span class="p">(</span><span class="n">testInfo</span><span class="p">);</span>
+    <span class="n">testInfo</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>创建一个 <code class="file docutils literal notranslate"><span class="pre">CMakeLists.txt</span></code> 文件，源码如下：</p>
+<div class="highlight-cmake notranslate"><div class="highlight"><pre><span></span><span class="nb">project</span><span class="p">(</span><span class="s">dsoftbus_hello</span> <span class="s">C</span><span class="p">)</span>
+<span class="nb">add_executable</span><span class="p">(</span><span class="s">dsoftbus_hello</span> <span class="s">main.c</span><span class="p">)</span>
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="s">dsoftbus_hello</span> <span class="s">dsoftbus_bus_center_service_sdk.z</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>编译客户端</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mkdir build</span>
+<span class="go">cd build</span>
+<span class="go">cmake ..</span>
+<span class="go">make</span>
+</pre></div>
+</div>
+<p>编译完成后会得到dsoftbus_hello</p>
+</div></blockquote>
+</li>
+<li><p>构建qemu组网环境</p>
+<blockquote>
+<div><p>在host中创建网桥br0</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">brctl addbr br0</span>
+</pre></div>
+</div>
+<p>启动qemu1</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd &lt;openeuler-image-qemu-xxx.cpio.gz&gt; -device virtio-net-device,netdev=tap0,mac=52:54:00:12:34:56 -netdev bridge,id=tap0</span>
+</pre></div>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">注意</p>
+<p>首次运行如果出现如下错误提示，</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">failed to parse default acl file `/usr/local/libexec/../etc/qemu/bridge.conf&#39;</span>
+<span class="go">qemu-system-aarch64: bridge helper failed</span>
+</pre></div>
+</div>
+<p>则需要向指示的文件添加”allow br0”</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">echo &quot;allow br0&quot; &gt; /usr/local/libexec/../etc/qemu/bridge.conf</span>
+</pre></div>
+</div>
+</div>
+<p>启动qemu2</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd openeuler-image-qemu-aarch64-20220331025547.rootfs.cpio.gz  -device virtio-net-device,netdev=tap1,mac=52:54:00:12:34:78 -netdev bridge,id=tap1</span>
+</pre></div>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">注意</p>
+<p>qemu1与qemu2的mac地址需要配置为不同的值</p>
+</div>
+<p>配置IP</p>
+<p>配置host的网桥地址</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ifconfig br0 192.168.10.1 up</span>
+</pre></div>
+</div>
+<p>配置qemu1的网络地址</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ifconfig eth0 192.168.10.2</span>
+</pre></div>
+</div>
+<p>配置qemu2的网络地址</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ifconfig eth0 192.168.10.3</span>
+</pre></div>
+</div>
+<p>分别在host、qemu1、qemu2使用ping进行测试，确保qemu1可以ping通qemu2。</p>
+</div></blockquote>
+</li>
+<li><p>启动分布式软总线</p>
+<p>在qemu1和qemu2中启动分布式软总线的服务端</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">softbus_server_main &gt;log.file &amp;</span>
+</pre></div>
+</div>
+<p>将编译好的客户端分发到qemu1和qemu2的根目录中</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">scp dsoftbus_hello root@192.168.10.2:/</span>
+<span class="go">scp dsoftbus_hello root@192.168.10.3:/</span>
+</pre></div>
+</div>
+<p>分别在qemu1和qemu2的根目录下运行dsoftbus_hello，将得到如下输出</p>
+<p>qemu1</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[LNN]NodeStateCbCount is 10</span>
+<span class="go">[LNN]BusCenterClientInit init OK!</span>
+<span class="go">[DISC]Init success</span>
+<span class="go">[TRAN]init tcp direct channel success.</span>
+<span class="go">[TRAN]init succ</span>
+<span class="go">[COMM]softbus server register service success!</span>
+
+<span class="go">[COMM]softbus sdk frame init success.</span>
+<span class="go">Get node num: 1</span>
+<span class="go">        networkId: 714373d691265f9a736442c01459ba39236642c743a71750bb63eb73cde24f5f, deviceName: UNKNOWN, deviceTypeId: 0</span>
+</pre></div>
+</div>
+<p>qemu2</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[LNN]NodeStateCbCount is 10</span>
+<span class="go">[LNN]BusCenterClientInit init OK!</span>
+<span class="go">[DISC]Init success</span>
+<span class="go">[TRAN]init tcp direct channel success.</span>
+<span class="go">[TRAN]init succ</span>
+<span class="go">[COMM]softbus server register service success!</span>
+
+<span class="go">[COMM]softbus sdk frame init success.</span>
+<span class="go">Get node num: 1</span>
+<span class="go">        networkId: eaf591f64bab3c20304ed3d3ff4fe1d878a0fd60bf8c85c96e8a8430d81e4076, deviceName: UNKNOWN, deviceTypeId: 0</span>
+</pre></div>
+</div>
+<p>qemu1和qemu2分别输出了发现的对方设备的基础信息。</p>
+</div></blockquote>
+</li>
+</ol>
+</div>
+<div class="section" id="id4">
+<h2>可信设备添加<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<p><strong>背景</strong></p>
+<p>软总线在创建连接的过程中，会调用hichain模块的认证接口，与对端的设备进行认证操作。hichain模块为OpenHarmony提供设备认证能力，支持通过点对点认证方式创建可信群组。</p>
+<p>若仅为openEuler之间的软总线连接，可以通过绕过hichain认证或者自定义认证实现。但如果openEuler和OpenHarmony设备之间要互连互通，则需要在openEuler上支持hichain的点对点认证和可信群组创建能力。</p>
+<p><strong>应用说明</strong></p>
+<p>hichain模块与软总线一样，分为服务端和客户端:</p>
+<ul class="simple">
+<li><p><strong>服务端</strong>:在openEuler上，实现了hichain和softbus的服务端共进程，即用户仅需拉起softbus服务端，无需额外操作hichain服务端。</p></li>
+<li><p><strong>客户端</strong>:通过hichain的客户端提供的API，可以创建群组，并请求添加群组成员，从而将多个设备添加到可信群组。</p></li>
+</ul>
+<p>hichain的客户端为动态链接库，用户可以单独链接hichain的客户端进行可信群组创建。在可信群组创建后，软总线会自动触发组网，支持后续软总线客户端的连接和传输。</p>
+<p><strong>客户端API</strong></p>
+<p>hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，可在客户端代码中引用。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>include <span class="s2">&quot;device_auth.h&quot;</span>
+</pre></div>
+</div>
+<p>1.直接调用接口</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 71%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>InitDeviceAuthService</p></td>
+<td><p>初始化hichain客户端</p></td>
+</tr>
+<tr class="row-even"><td><p>GetGmInstance</p></td>
+<td><p>获取客户端群组管理的操作函数组</p></td>
+</tr>
+<tr class="row-odd"><td><p>DestroyDeviceAuthService</p></td>
+<td><p>注销hichain客户端</p></td>
+</tr>
+</tbody>
+</table>
+<p>2.GetGmInstance返回的操作函数组</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 71%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>regCallback</p></td>
+<td><p>注册群组创建和请求回调函数</p></td>
+</tr>
+<tr class="row-even"><td><p>createGroup</p></td>
+<td><p>创建新的群组</p></td>
+</tr>
+<tr class="row-odd"><td><p>getGroupInfo</p></td>
+<td><p>查询本地群组信息</p></td>
+</tr>
+<tr class="row-even"><td><p>addMemberToGroup</p></td>
+<td><p>请求添加成员到群组</p></td>
+</tr>
+<tr class="row-odd"><td><p>unRegCallback</p></td>
+<td><p>解注册群组回调函</p></td>
+</tr>
+<tr class="row-even"><td><p>deleteGroup</p></td>
+<td><p>删除群组</p></td>
+</tr>
+<tr class="row-odd"><td><p>deleteMemberFromGroup</p></td>
+<td><p>从群组内删除成员</p></td>
+</tr>
+</tbody>
+</table>
+<p>更详细的接口说明，请参考hichain模块代码实现。</p>
+<p><strong>客户端编译</strong></p>
+<p>客户端提供动态链接库：libdeviceauth_sdk.z.so</p>
+<p>用户使用hichain创建群组和添加可信设备时，需要作为客户端程序显示链接该动态库，即可通过函数调用使用hichain提供的API。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>: <span class="k">$(</span>CROSS_COMPILE<span class="k">)</span>-ld -ldeviceauth_sdk.z
+</pre></div>
+</div>
+<p><strong>使用范例</strong></p>
+<p>1.按照hichain的点对点pin码认证方式，需要一台设备创建群组（host），另一个台设备请求添加成员到改群组（target），实例代码如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>include <span class="s2">&quot;bus_center_adapter.h&quot;</span>
+<span class="gp">#</span>define DEFAULT_GROUP_ID <span class="s2">&quot;54E8637468D7518EF4AACA71A958313A5FAACFC899DD1207AAB60568B20FF876&quot;</span>
+<span class="gp">#</span>define APP_ID <span class="s2">&quot;test&quot;</span>
+<span class="gp">#</span>define DEFAULT_REQ_ID <span class="m">1000000000</span>
+<span class="gp">#</span>define DEFAULT_PIN_CODE <span class="s2">&quot;123456&quot;</span>
+<span class="gp">#</span>define MAX_LEN <span class="m">65</span>
+
+<span class="go">static char DEFAULT_UDID_NAME[MAX_LEN];</span>
+<span class="go">static int DEFAULT_PORT;</span>
+<span class="go">static DeviceAuthCallback g_GroupManagerCallback;</span>
+
+<span class="go">void HichainGetGroupID(const char *param, bool isArray)</span>
+<span class="go">{</span>
+<span class="go">    char groupID[MAX_LEN];</span>
+<span class="go">    cJSON *msg = cJSON_Parse(param);</span>
+<span class="go">    if (isArray) {</span>
+<span class="go">         cJSON *Item = cJSON_GetArrayItem(msg, 0);</span>
+<span class="go">         GetJsonObjectStringItem(Item, FIELD_GROUP_ID, groupID, MAX_LEN);</span>
+<span class="go">    } else {</span>
+<span class="go">         GetJsonObjectStringItem(msg, FIELD_GROUP_ID, groupID, MAX_LEN);</span>
+<span class="go">    }</span>
+<span class="go">    cJSON_Delete(msg);</span>
+<span class="go">    SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_INFO, &quot;HichainSaveGroupID:groupID=%s&quot;, groupID);</span>
+<span class="go">}</span>
+
+<span class="go">void HiChainGmOnFinish(int64_t requestId, int operationCode, const char *returnData)</span>
+<span class="go">{</span>
+<span class="go">    if (requestId == DEFAULT_REQ_ID &amp;&amp; operationCode == GROUP_CREATE &amp;&amp; returnData != NULL) {</span>
+<span class="go">        SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_INFO, &quot;HiChainGmOnFinish returnData=%s&quot;, returnData);</span>
+<span class="go">        HichainGetGroupID(returnData, false);</span>
+<span class="go">    }</span>
+<span class="go">}</span>
+
+<span class="go">void HiChainGmOnError(int64_t requestId, int operationCode, int errorCode, const char *errorReturn)</span>
+<span class="go">{</span>
+<span class="go">    SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_INFO, &quot;HiChainGmOnError:requestId=%ld, operationCode=%d, errorCode=%d, errorReturn=%s&quot;, requestId, operationCode, errorCode, errorReturn);</span>
+<span class="go">}</span>
+
+<span class="go">char *HiChainGmOnRuest(int64_t requestId, int operationCode, const char *reqParams)</span>
+<span class="go">{</span>
+<span class="go">    cJSON *msg = cJSON_CreateObject();</span>
+
+<span class="go">    SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_INFO, &quot;HiChainGmOnRuest:requestId=%ld, operationCode=%d, reqParams=%s&quot;, requestId, operationCode, reqParams);</span>
+
+<span class="go">    AddNumberToJsonObject(msg, FIELD_CONFIRMATION, REQUEST_ACCEPTED);</span>
+<span class="go">    AddStringToJsonObject(msg, FIELD_PIN_CODE, DEFAULT_PIN_CODE);</span>
+<span class="go">    AddStringToJsonObject(msg, FIELD_DEVICE_ID, DEFAULT_UDID_NAME);</span>
+<span class="go">    char *param = cJSON_PrintUnformatted(msg);</span>
+<span class="go">    char *buf = strdup(param);</span>
+<span class="go">    cJSON_free(param);</span>
+<span class="go">    cJSON_Delete(msg);</span>
+<span class="go">    return buf;</span>
+<span class="go">}</span>
+
+<span class="go">static int32_t HichainGmRegCallback(void)</span>
+<span class="go">{</span>
+<span class="go">    int32_t ret;</span>
+
+<span class="go">    g_GroupManagerCallback.onRequest = HiChainGmOnRuest;</span>
+<span class="go">    g_GroupManagerCallback.onError = HiChainGmOnError;</span>
+<span class="go">    g_GroupManagerCallback.onFinish = HiChainGmOnFinish;</span>
+<span class="go">    ret = g_hichainGmInstance-&gt;regCallback(APP_ID, &amp;g_GroupManagerCallback);</span>
+<span class="go">    return ret;</span>
+<span class="go">}</span>
+
+<span class="go">int32_t HichainGmAddMemberToGroup(void)</span>
+<span class="go">{</span>
+<span class="go">    cJSON *msg = cJSON_CreateObject();</span>
+<span class="go">    cJSON *addr = cJSON_CreateObject();</span>
+<span class="go">    char *param = NULL;</span>
+<span class="go">    int32_t ret;</span>
+
+<span class="go">    AddStringToJsonObject(msg, FIELD_GROUP_ID, DEFAULT_GROUP_ID);</span>
+<span class="go">    AddNumberToJsonObject(msg, FIELD_GROUP_TYPE, PEER_TO_PEER_GROUP);</span>
+<span class="go">    AddStringToJsonObject(msg, FIELD_PIN_CODE, DEFAULT_PIN_CODE);</span>
+<span class="go">    cJSON_AddBoolToObject(msg, FIELD_IS_ADMIN, false);</span>
+<span class="go">    AddStringToJsonObject(msg, FIELD_DEVICE_ID, DEFAULT_UDID_NAME);</span>
+<span class="go">    AddStringToJsonObject(msg, FIELD_GROUP_NAME, &quot;dsoftbus&quot;);</span>
+<span class="go">    AddNumberToJsonObject(msg, FIELD_IS_ADMIN, false);</span>
+
+<span class="go">    AddStringToJsonObject(addr, &quot;ETH_IP&quot;, &quot;192.168.1.3&quot;);</span>
+<span class="go">    AddNumberToJsonObject(addr, &quot;ETH_PORT&quot;, DEFAULT_PORT);</span>
+<span class="go">    param = cJSON_PrintUnformatted(addr);</span>
+<span class="go">    AddStringToJsonObject(msg, FIELD_CONNECT_PARAMS, param);</span>
+<span class="go">    printf(&quot;addr string:%s\n&quot;, param);</span>
+<span class="go">    cJSON_free(param);</span>
+
+<span class="go">    param = cJSON_PrintUnformatted(msg);</span>
+<span class="go">    printf(&quot;member string:%s\n&quot;, param);</span>
+
+<span class="go">    ret = g_hichainGmInstance-&gt;addMemberToGroup(ANY_OS_ACCOUNT, DEFAULT_REQ_ID, APP_ID, param);</span>
+
+<span class="go">    cJSON_free(param);</span>
+<span class="go">    cJSON_Delete(msg);</span>
+<span class="go">    return ret ;</span>
+<span class="go">}</span>
+
+<span class="go">int32_t HichainGmCreatGroup(void)</span>
+<span class="go">{</span>
+<span class="go">    cJSON *msg = cJSON_CreateObject();</span>
+<span class="go">    char *param = NULL;</span>
+<span class="go">    int32_t ret;</span>
+
+<span class="go">    AddNumberToJsonObject(msg, FIELD_GROUP_TYPE, PEER_TO_PEER_GROUP);</span>
+<span class="go">    AddStringToJsonObject(msg, FIELD_DEVICE_ID, DEFAULT_UDID_NAME);</span>
+<span class="go">    AddStringToJsonObject(msg, FIELD_GROUP_NAME, &quot;dsoftbus&quot;);</span>
+<span class="go">    AddNumberToJsonObject(msg, FIELD_USER_TYPE, 0);</span>
+<span class="go">    AddNumberToJsonObject(msg, FIELD_GROUP_VISIBILITY, GROUP_VISIBILITY_PUBLIC);</span>
+<span class="go">    AddNumberToJsonObject(msg, FIELD_EXPIRE_TIME, EXPIRE_TIME_MAX);</span>
+<span class="go">    param = cJSON_PrintUnformatted(msg);</span>
+
+<span class="go">    ret = g_hichainGmInstance-&gt;createGroup(ANY_OS_ACCOUNT, DEFAULT_REQ_ID, APP_ID, param);</span>
+
+<span class="go">    cJSON_free(param);</span>
+<span class="go">    cJSON_Delete(msg);</span>
+<span class="go">    return ret;</span>
+<span class="go">}</span>
+
+<span class="go">static int32_t HichainGmGetGroupInfo(uint32_t *num)</span>
+<span class="go">{</span>
+<span class="go">    cJSON *msg = cJSON_CreateObject();</span>
+<span class="go">    char *param = NULL;</span>
+<span class="go">    char *groupVec = NULL;</span>
+<span class="go">    int32_t ret;</span>
+
+<span class="go">    AddNumberToJsonObject(msg, FIELD_GROUP_TYPE, PEER_TO_PEER_GROUP);</span>
+<span class="go">    AddStringToJsonObject(msg, FIELD_GROUP_NAME, &quot;dsoftbus&quot;);</span>
+<span class="go">    AddNumberToJsonObject(msg, FIELD_GROUP_VISIBILITY, GROUP_VISIBILITY_PUBLIC);</span>
+<span class="go">    param = cJSON_PrintUnformatted(msg);</span>
+
+<span class="go">    ret = g_hichainGmInstance-&gt;getGroupInfo(ANY_OS_ACCOUNT, APP_ID, param, &amp;groupVec, num);</span>
+<span class="go">    if (*num) {</span>
+<span class="go">        SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_INFO, &quot;HichainGmGetGroupInfo:groupVec=%s&quot;, groupVec);</span>
+<span class="go">        HichainGetGroupID(groupVec, true);</span>
+<span class="go">    }</span>
+
+<span class="go">    cJSON_free(param);</span>
+<span class="go">    cJSON_Delete(msg);</span>
+<span class="go">    return ret;</span>
+<span class="go">}</span>
+
+<span class="go">int32_t HichainGmInit(void)</span>
+<span class="go">{</span>
+<span class="go">    uint32_t num = 0;</span>
+<span class="go">    int32_t ret;</span>
+
+<span class="go">    ret = GetCommonDevInfo(COMM_DEVICE_KEY_UDID, DEFAULT_UDID_NAME, MAX_LEN);</span>
+<span class="go">    printf(&quot;ret=%d, UDID=%s\n&quot;, ret, DEFAULT_UDID_NAME);</span>
+
+<span class="go">    ret = HichainGmRegCallback();</span>
+<span class="go">    if (ret != SOFTBUS_OK) {</span>
+<span class="go">        SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_ERROR, &quot;HichainGmregCallback failed\n&quot;);</span>
+<span class="go">        goto err_HichainGmRegCallback;</span>
+<span class="go">    }</span>
+
+<span class="go">    ret = HichainGmGetGroupInfo(&amp;num);</span>
+<span class="go">    if (ret != SOFTBUS_OK) {</span>
+<span class="go">        SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_ERROR, &quot;HichainGmGetGroupInfo failed\n&quot;);</span>
+<span class="go">        goto err_HichainGmGetGroupInfo;</span>
+<span class="go">    }</span>
+
+<span class="gp">#</span><span class="k">if</span> host
+<span class="go">    if (num == 0) {</span>
+<span class="go">        ret = HichainGmCreatGroup();</span>
+<span class="go">        if (ret) {</span>
+<span class="go">            SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_ERROR, &quot;HichainGmCreatGroup failed\n&quot;);</span>
+<span class="go">            return ret;</span>
+<span class="go">        }</span>
+<span class="go">    }</span>
+<span class="gp">#</span><span class="k">else</span>
+<span class="go">    ret = scanf(&quot;%d&quot;, &amp;DEFAULT_PORT);</span>
+<span class="go">    if (ret &lt; 0) {</span>
+<span class="go">         printf(&quot;scanf error\n&quot;);</span>
+<span class="go">    }</span>
+<span class="go">    printf(&quot;port is:%d\n&quot;, DEFAULT_PORT);</span>
+<span class="go">    ret = HichainGmAddMemberToGroup();</span>
+<span class="go">    if (ret) {</span>
+<span class="go">        SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_ERROR, &quot;HichainGmAddMemberToGroup failed\n&quot;);</span>
+<span class="go">        return ret;</span>
+<span class="go">    }</span>
+<span class="gp">#</span>endif
+<span class="go">    return ret;</span>
+
+<span class="go">err_HichainGmGetGroupInfo:</span>
+<span class="go">err_HichainGmRegCallback:</span>
+<span class="go">    return ret;</span>
+<span class="go">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注解</p>
+<ul class="simple">
+<li><p>通过host宏定义区分host和target设备：在host上创建群组，target上申请添加成员。</p></li>
+<li><p>认证中使用的pin码，可由用户随机生成并传入。</p></li>
+<li><p>认证过程中需要交互部分对端信息，如groupID等，实际应用中需要借助软总线的发现能力和认证通道进行数据交互。</p></li>
+</ul>
+</div>
+<p>2.与OpenHarmony互联时，可通过上述方式创建双方信任的可信群组和成员，也可使用分布式硬件中的device manger模块进行更便捷的可信群组创建，该模块兼容OpenHarmony的pin码弹窗等功能，但需要openEuler额外支持。</p>
+</div>
+<div class="section" id="id5">
+<h2>全量编译指导<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
+<p>当用户有需求自定义修改软总线功能模块时，可使用全量编译方式构建软总线的各个子模块。</p>
+<p>嵌入式版本提供的dsoftbus代码已集成于yocto构建系统，作为一个package存在，编译依托于embedded版本发布的容器镜像进行，搭建容器构建环境请参考 <a class="reference internal" href="../yocto/quickbuild/container-build.html#container-build"><span class="std std-ref">容器环境下的快速构建指导</span></a> 章节。</p>
+<p>用户也可按照镜像编译指导完成环境准备后按如下命令单独进行编译（和单独编译package方法一致）</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake dsoftbus</span>
+</pre></div>
+</div>
+<p>编译过程和结果遵循yocto构建策略，日志和生成物参考yocto bb文件和默认工作目录。</p>
+</div>
+<div class="section" id="id6">
+<h2>限制约束<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h2>
+<p>1.支持wifi和有限的标准以太局域网下的coap设备发现和传输。ble等南向协议拓展功能在后续版本中持续支持。</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mcs.html" class="btn btn-neutral float-left" title="多OS混合部署框架" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="raspberrypi.html" class="btn btn-neutral float-right" title="树莓派4B的支持" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2022, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

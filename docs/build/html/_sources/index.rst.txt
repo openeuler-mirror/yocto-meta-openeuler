@@ -29,6 +29,7 @@ openEuler Embedded在内核版本、软件包版本等代码层面会与openEule
    releases/index.rst
    docker_list/index.rst
    bsp/index.rst
+   network/index.rst
    republish/index.rst
    test_project/index.rst
 
