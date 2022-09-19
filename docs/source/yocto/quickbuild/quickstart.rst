@@ -60,7 +60,7 @@ openEuler Embedded所需构建工具
 
  | 在22.09我们提供了ct-ng作为工具生成的工具链，已集成于22.09分支的镜像构建容器中，用户也可自行构建，构建方法见：
  
- - `22.09及master支持基于ct-ng 构建编译器构建使用方法 <https://gitee.com/beilingxie/yocto-embedded-tools/blob/master/cross_tools/README.md>`_
+ - `22.09及master支持基于ct-ng构建编译器的使用方法 <https://gitee.com/openeuler/yocto-embedded-tools/blob/master/cross_tools/README.md>`_
 
 已安装好工具的构建容器
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
