@@ -6,6 +6,9 @@ PV = "21.3.1"
 # add patch search path
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
+# remove makedepend from DEPENDS since it is rarely used now
+DEPENDS_remove = "makedepend-native"
+
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
         https://mesa.freedesktop.org/archive/mesa-${PV}.tar.xz \
