@@ -18,13 +18,13 @@ SRC_URI = " \
         file://yocto-embedded-tools/dsoftbus/build/build-OpenHarmony-v3.0.2-LTS.zip \
         file://yocto-embedded-tools/dsoftbus/build_tools/gn-linux-x86-1717.tar.gz \
         file://yocto-embedded-tools/dsoftbus/build_tools/ninja-linux-x86-1.10.1.tar.gz \
-        file://yocto-embedded-tools/dsoftbus/third_party/cJSON/third_party_cJSON-OpenHarmony-v3.0.2-LTS.zip \
-        file://yocto-embedded-tools/dsoftbus/third_party/jinja2/third_party_jinja2-OpenHarmony-v3.0.2-LTS.zip \
-        file://yocto-embedded-tools/dsoftbus/third_party/libcoap/third_party_libcoap-OpenHarmony-v3.0.2-LTS.zip \
-        file://yocto-embedded-tools/dsoftbus/third_party/markupsafe/third_party_markupsafe-OpenHarmony-v3.0.2-LTS.zip \
+        file://yocto-embedded-tools/dsoftbus/third_party/cJSON/third_party_cJSON-OpenHarmony-v3.1.2-Release.zip \
+        file://yocto-embedded-tools/dsoftbus/third_party/jinja2/third_party_jinja2-OpenHarmony-v3.1.2-Release.zip \
+        file://yocto-embedded-tools/dsoftbus/third_party/libcoap/third_party_libcoap-OpenHarmony-v3.1.2-Release.zip \
+        file://yocto-embedded-tools/dsoftbus/third_party/markupsafe/third_party_markupsafe-OpenHarmony-v3.1.2-Release.zip \
         file://yocto-embedded-tools/dsoftbus/third_party/mbedtls/third_party_mbedtls-OpenHarmony-v3.1.2-Release.zip \
         file://yocto-embedded-tools/dsoftbus/third_party/openssl/third_party_openssl-OpenHarmony-v3.1.2-Release.zip \
-        file://yocto-embedded-tools/dsoftbus/utils/utils_native-OpenHarmony-v3.0.2-LTS.zip \
+        file://yocto-embedded-tools/dsoftbus/utils/commonlibrary_c_utils-OpenHarmony-v3.1.2-Release.zip \
         file://yocto-embedded-tools/dsoftbus/hichain/huks/security_huks-OpenHarmony-v3.1.2-Release.zip \
         file://yocto-embedded-tools/dsoftbus/hichain/deviceauth/security_device_auth-OpenHarmony-v3.1.2-Release.zip \
         file://yocto-embedded-tools/dsoftbus/depend;unpack=true \
@@ -74,16 +74,16 @@ do_copy_dsoftbus_source() {
     cp -rfp ${WORKDIR}/build-OpenHarmony-v3.0.2-LTS/* ${S}/build/
     cp -rfp ${WORKDIR}/gn ${dsoftbus-buildtools}/
     cp -rfp ${WORKDIR}/ninja ${dsoftbus-buildtools}/
-    cp -rfp ${WORKDIR}/third_party_cJSON-OpenHarmony-v3.0.2-LTS/* ${dsoftbus-thirdparty}/cJSON/
-    cp -rfp ${WORKDIR}/third_party_jinja2-OpenHarmony-v3.0.2-LTS/* ${dsoftbus-thirdparty}/jinja2/
-    cp -rfp ${WORKDIR}/third_party_libcoap-OpenHarmony-v3.0.2-LTS/* ${dsoftbus-thirdparty}/libcoap/
-    cp -rfp ${WORKDIR}/third_party_markupsafe-OpenHarmony-v3.0.2-LTS/* ${dsoftbus-thirdparty}/markupsafe/
+    cp -rfp ${WORKDIR}/third_party_cJSON-OpenHarmony-v3.1.2-Release/* ${dsoftbus-thirdparty}/cJSON/
+    cp -rfp ${WORKDIR}/third_party_jinja2-OpenHarmony-v3.1.2-Release/* ${dsoftbus-thirdparty}/jinja2/
+    cp -rfp ${WORKDIR}/third_party_libcoap-OpenHarmony-v3.1.2-Release/* ${dsoftbus-thirdparty}/libcoap/
+    cp -rfp ${WORKDIR}/third_party_markupsafe-OpenHarmony-v3.1.2-Release/* ${dsoftbus-thirdparty}/markupsafe/
     cp -rfp ${WORKDIR}/third_party_mbedtls-OpenHarmony-v3.1.2-Release/* ${dsoftbus-thirdparty}/mbedtls/
     cp -rfp ${WORKDIR}/third_party_openssl-OpenHarmony-v3.1.2-Release/* ${dsoftbus-thirdparty}/openssl/
     cp -rfp ${WORKDIR}/security_huks-OpenHarmony-v3.1.2-Release/* ${dsoftbus-hichain}/huks/
     cp -rfp ${WORKDIR}/security_device_auth-OpenHarmony-v3.1.2-Release/* ${dsoftbus-hichain}/deviceauth/
     cp -rfp ${WORKDIR}/libboundscheck-v1.1.11/* ${dsoftbus-thirdparty}/bounds_checking_function/
-    cp -rfp ${WORKDIR}/utils_native-OpenHarmony-v3.0.2-LTS/* ${dsoftbus-utils}/native/
+    cp -rfp ${WORKDIR}/commonlibrary_c_utils-OpenHarmony-v3.1.2-Release/* ${dsoftbus-utils}/native/
 
     #init gn root
     ln -s ${S}/build/build_scripts/build.sh ${S}/build.sh

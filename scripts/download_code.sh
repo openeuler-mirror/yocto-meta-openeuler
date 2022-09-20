@@ -115,7 +115,7 @@ download_code()
     update_code_repo openeuler/kernel ${KERNEL_BRANCH} kernel-5.10
     update_code_repo src-openeuler/kernel ${SRC_BRANCH} src-kernel-5.10
     update_code_repo src-openeuler/busybox ${SRC_BRANCH}
-    update_code_repo openeuler/dsoftbus_standard ${SRC_BRANCH}
+    update_code_repo openeuler/dsoftbus_standard v3.1
     update_code_repo src-openeuler/libboundscheck ${SRC_BRANCH}
     update_code_repo openeuler/yocto-embedded-tools master
     update_code_repo openeuler/embedded-ipc master
