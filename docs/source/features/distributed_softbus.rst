@@ -128,7 +128,7 @@ softbus客户端API头文件在嵌入式版本提供的sdk中对外开放，可�
 
 客户端提供动态链接库：libsoftbus_client.z.so
 
-用户使用软总线时，需要作为客户端程序显示链接该动态库，即可通过函数调用使用软总线提供的API。
+用户使用软总线时，需要作为客户端程序显式链接该动态库，即可通过函数调用使用软总线提供的API。
 
 .. code-block:: console
 
@@ -368,7 +368,7 @@ hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，�
 
 客户端提供动态链接库：libdeviceauth_sdk.z.so
 
-用户使用hichain创建群组和添加可信设备时，需要作为客户端程序显示链接该动态库，即可通过函数调用使用hichain提供的API。
+用户使用hichain创建群组和添加可信设备时，需要作为客户端程序显式链接该动态库，即可通过函数调用使用hichain提供的API。
 
 .. code-block:: console
 
@@ -377,7 +377,7 @@ hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，�
 
 **使用范例**
 
-1.按照hichain的点对点pin码认证方式，需要一台设备创建群组（host），另一个台设备请求添加成员到改群组（target），实例代码如下：
+1.按照hichain的点对点pin码认证方式，需要一台设备创建群组（host），另一个台设备请求添加成员到该群组（target），实例代码如下：
 
 .. code-block:: console
 
