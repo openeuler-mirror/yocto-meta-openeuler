@@ -3,7 +3,7 @@
 PV = "4.9"
 
 # get extra config files from openeuler
-FILESEXTRAPATHS_append := "${THISDIR}/files/:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
 
 SRC_URI = "file://${BP}.tar.xz \
            ${@bb.utils.contains('PACKAGECONFIG', 'pam', '${PAM_SRC_URI}', '', d)} \
@@ -105,4 +105,7 @@ do_install_append () {
     # * for other difference between poky's shadow login.defs, see diff_login_defs.txt
 
     install -m 0644 ${WORKDIR}/login.defs ${D}${sysconfdir}/login.defs
+
+    # use /bin/bash as default SHELL
+    sed -i 's:/bin/sh:/bin/bash:g' ${D}${sysconfdir}/default/useradd
 }
