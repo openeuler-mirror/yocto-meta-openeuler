@@ -181,7 +181,7 @@ softbus客户端API头文件在嵌入式版本提供的sdk中对外开放，可�
 
         project(dsoftbus_hello C)
         add_executable(dsoftbus_hello main.c)
-        target_link_libraries(dsoftbus_hello dsoftbus_bus_center_service_sdk.z)
+        target_link_libraries(dsoftbus_hello softbus_client.z) # 2203版本其名称为dsoftbus_bus_center_service_sdk.z
 
     编译客户端
 
