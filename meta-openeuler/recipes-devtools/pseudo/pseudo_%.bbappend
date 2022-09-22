@@ -14,11 +14,6 @@ SRC_URI_prepend_class-native = "file://${BP}.tar.gz \
 PV_class-native = "df1d1321fb093283485c387e3c933d2d264e509c"
 S_class-native = "${WORKDIR}/${BP}"
 
-# set root home directory to /root, not default /home/root
-do_configure_prepend_class-native() {
-        sed -i "1s/\/home//" ${WORKDIR}/fallback-passwd
-}
-
 #set --with-sqlite to native sdk path
 do_compile_class-native () {
         if [ "${SITEINFO_BITS}" = "64" ]; then
