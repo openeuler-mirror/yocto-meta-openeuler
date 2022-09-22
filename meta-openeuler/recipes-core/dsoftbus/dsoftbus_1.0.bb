@@ -128,5 +128,6 @@ do_install() {
         ${S}/base/security/deviceauth/interfaces/innerkits/*.h \
         ${S}/third_party/cJSON/*.h \
         ${S}/third_party/bounds_checking_function/include/*.h \
+        ${S}/depend/syspara/include/*.h \
             ${D}${includedir}/dsoftbus/
 }
