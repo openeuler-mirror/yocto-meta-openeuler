@@ -106,7 +106,6 @@ do_compile() {
 do_install() {
     install -d ${D}${libdir}/
     install -d ${D}${bindir}/
-    install -d ${D}/${includedir}/dsoftbus/
     install -d ${D}/data/data/deviceauth/
 
     # prepare so
@@ -129,5 +128,5 @@ do_install() {
         ${S}/third_party/cJSON/*.h \
         ${S}/third_party/bounds_checking_function/include/*.h \
         ${S}/depend/syspara/include/*.h \
-            ${D}${includedir}/dsoftbus/
+            ${D}${includedir}/
 }
