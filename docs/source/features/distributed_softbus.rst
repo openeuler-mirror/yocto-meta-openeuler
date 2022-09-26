@@ -68,9 +68,13 @@ OpenHarmony主要面向强交互等需求的智能终端、物联网终端和工
 
 3.日志模块可通过重定向接管，有条件者还可通过实现和替换软总线依赖的hilog模块，进行更细致的日志管理。
 
+4.服务端依赖于系统参数模块syspara，以获取设备唯一的UDID。openEuler Embedded预留了/etc/SN的文件接口，作为生成UDID的参数。（SN号可为64字节长度内的任意字符串）
+
 .. attention::
 
-    用户请参考部署模型，保证单设备节点上有且仅有唯一的softbus_server_main进程。
+    * 用户请参考部署模型，保证单设备节点上有且仅有唯一的softbus_server_main进程。
+
+    * 用户需要在启动softbus_server_main前配置/etc/SN，并保证多设备下SN号的唯一性
 
 
 **客户端API**
@@ -623,20 +627,20 @@ hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，�
 +----------------------------+--------------------------------------------------------------------+
 | regCallback                | 注册群组创建和请求回调函数                                         |
 +----------------------------+--------------------------------------------------------------------+
+| unRegCallback              | 解注册群组回调函                                                   |
++----------------------------+--------------------------------------------------------------------+
 | createGroup                | 创建新的群组                                                       |
 +----------------------------+--------------------------------------------------------------------+
 | getGroupInfo               | 查询本地群组信息                                                   |
 +----------------------------+--------------------------------------------------------------------+
+| destroyInfo                | 释放通过getGroupInfo申请的内存                                     |
++----------------------------+--------------------------------------------------------------------+
 | addMemberToGroup           | 请求添加成员到群组                                                 |
 +----------------------------+--------------------------------------------------------------------+
-| unRegCallback              | 解注册群组回调函                                                   |
-+----------------------------+--------------------------------------------------------------------+
-| deleteGroup                | 删除群组                                                           |
-+----------------------------+--------------------------------------------------------------------+
-| deleteMemberFromGroup      | 从群组内删除成员                                                   |
+| isDeviceInGroup            | 查询某个设备是否在群组中                                           |
 +----------------------------+--------------------------------------------------------------------+
 
-更详细的接口说明，请参考hichain模块代码实现。
+更详细的接口说明，请参考社区hichain模块代码实现。
 
 **客户端编译**
 
@@ -646,210 +650,369 @@ hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，�
 
 .. code-block:: console
 
-    #: $(CROSS_COMPILE)-ld -ldeviceauth_sdk.z
+    #: ${CROSS_COMPILE}ld -ldeviceauth_sdk.z
 
 
 **使用范例**
 
-1.按照hichain的点对点pin码认证方式，需要一台设备创建群组（host），另一个台设备请求添加成员到该群组（target），实例代码如下：
+1.按照hichain的点对点pin码认证方式，需要通过设备创建群组（host），另一个台设备请求添加成员到该群组（target），实例代码如下：
 
 .. code-block:: console
 
-    #include "bus_center_adapter.h"
-    #define DEFAULT_GROUP_ID "54E8637468D7518EF4AACA71A958313A5FAACFC899DD1207AAB60568B20FF876"
-    #define APP_ID "test"
-    #define DEFAULT_REQ_ID 1000000000
+    #include <stdio.h>
+    #include <cJSON.h>
+    #include <securec.h>
+    #include <softbus_common.h>
+    #include <device_auth.h>
+    #include <parameter.h>
+    
+    #define APP_ID "hichain_test"
+    #define DEFAULT_GROUP_NAME "dsoftbus"
     #define DEFAULT_PIN_CODE "123456"
-    #define MAX_LEN 65
-
-    static char DEFAULT_UDID_NAME[MAX_LEN];
-    static int DEFAULT_PORT;
-    static DeviceAuthCallback g_GroupManagerCallback;
-
-    void HichainGetGroupID(const char *param, bool isArray)
+    #define MAX_UDID_LEN 65
+    #define MAX_GROUP_LEN 65
+    
+    #define FIELD_ETH_IP "ETH_IP"
+    #define FIELD_ETH_PORT "ETH_PORT"
+    #define FIELD_WLAN_IP "WLAN_IP"
+    #define FIELD_WLAN_PORT "WLAN_PORT"
+    
+    static const DeviceGroupManager *g_hichainGmInstance = NULL;
+    static char g_udid[MAX_UDID_LEN];
+    static char g_groupId[MAX_GROUP_LEN];
+    static int64_t g_requestId = 1;
+    
+    static const char *GetStringFromJson(const cJSON *obj, const char *key)
     {
-        char groupID[MAX_LEN];
-        cJSON *msg = cJSON_Parse(param);
-        if (isArray) {
-             cJSON *Item = cJSON_GetArrayItem(msg, 0);
-             GetJsonObjectStringItem(Item, FIELD_GROUP_ID, groupID, MAX_LEN);
-        } else {
-             GetJsonObjectStringItem(msg, FIELD_GROUP_ID, groupID, MAX_LEN);
-        }
-        cJSON_Delete(msg);
-        SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_INFO, "HichainSaveGroupID:groupID=%s", groupID);
+    	cJSON *item;
+    
+    	if (obj == NULL || key == NULL)
+    		return NULL;
+    
+    	item = cJSON_GetObjectItemCaseSensitive(obj, key);
+    	if (item != NULL && cJSON_IsString(item)) {
+    		return cJSON_GetStringValue(item);
+    	} else {
+    		int len = cJSON_GetArraySize(obj);
+    		for (int i = 0; i < len; i++) {
+    			item = cJSON_GetArrayItem(obj, i);
+    			if (cJSON_IsObject(item)) {
+    				const char *value = GetStringFromJson(item, key);
+    				if (value != NULL)
+    					return value;
+    			}
+    		}
+    	}
+    	return NULL;
     }
-
-    void HiChainGmOnFinish(int64_t requestId, int operationCode, const char *returnData)
+    
+    static int HichainSaveGroupID(const char *param)
     {
-        if (requestId == DEFAULT_REQ_ID && operationCode == GROUP_CREATE && returnData != NULL) {
-            SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_INFO, "HiChainGmOnFinish returnData=%s", returnData);
-            HichainGetGroupID(returnData, false);
-        }
+    	cJSON *msg = cJSON_Parse(param);
+    	const char *value = NULL;
+    
+    	if (msg == NULL) {
+    		printf("HichainSaveGroupID: cJSON_Parse fail\n");
+    		return -1;
+    	}
+    
+    	value = GetStringFromJson(msg, FIELD_GROUP_ID);
+    	if (value == NULL) {
+    		printf("HichainSaveGroupID:GetStringFromJson fail\n");
+    		cJSON_Delete(msg);
+    		return -1;
+    	}
+    
+    	memcpy_s(g_groupId, MAX_GROUP_LEN, value, strlen(value));
+    	printf("HichainSaveGroupID:groupID=%s\n", g_groupId);
+    
+    	cJSON_Delete(msg);
+    	return 0;
     }
-
-    void HiChainGmOnError(int64_t requestId, int operationCode, int errorCode, const char *errorReturn)
+    
+    static void HiChainGmOnFinish(int64_t requestId, int operationCode, const char *returnData)
     {
-        SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_INFO, "HiChainGmOnError:requestId=%ld, operationCode=%d, errorCode=%d, errorReturn=%s", requestId, operationCode, errorCode, errorReturn);
+    	if (operationCode == GROUP_CREATE && returnData != NULL) {
+    		printf("create new group finish:requestId=%lld, returnData=%s\n", requestId, returnData);
+    		HichainSaveGroupID(returnData);
+    	} else if (operationCode == MEMBER_JOIN) {
+    		printf("member join finish:requestId=%lld, returnData=%s\n", requestId, returnData);
+    
+    	} else {
+    		printf("<HiChainGmOnFinish>CB:requestId=%lld, operationCode=%d, returnData=%s\n", requestId, operationCode, returnData);
+    	}
     }
-
-    char *HiChainGmOnRuest(int64_t requestId, int operationCode, const char *reqParams)
+    
+    static void HiChainGmOnError(int64_t requestId, int operationCode, int errorCode, const char *errorReturn)
     {
-        cJSON *msg = cJSON_CreateObject();
-
-        SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_INFO, "HiChainGmOnRuest:requestId=%ld, operationCode=%d, reqParams=%s", requestId, operationCode, reqParams);
-
-        AddNumberToJsonObject(msg, FIELD_CONFIRMATION, REQUEST_ACCEPTED);
-        AddStringToJsonObject(msg, FIELD_PIN_CODE, DEFAULT_PIN_CODE);
-        AddStringToJsonObject(msg, FIELD_DEVICE_ID, DEFAULT_UDID_NAME);
-        char *param = cJSON_PrintUnformatted(msg);
-        char *buf = strdup(param);
-        cJSON_free(param);
-        cJSON_Delete(msg);
-        return buf;
+    	printf("<HiChainGmOnError>CB:requestId=%lld, operationCode=%d, errorCode=%d, errorReturn=%s\n", requestId, operationCode, errorCode, errorReturn);
     }
-
-    static int32_t HichainGmRegCallback(void)
+    
+    static char *HiChainGmOnRuest(int64_t requestId, int operationCode, const char *reqParams)
     {
-        int32_t ret;
-
-        g_GroupManagerCallback.onRequest = HiChainGmOnRuest;
-        g_GroupManagerCallback.onError = HiChainGmOnError;
-        g_GroupManagerCallback.onFinish = HiChainGmOnFinish;
-        ret = g_hichainGmInstance->regCallback(APP_ID, &g_GroupManagerCallback);
-        return ret;
+    	cJSON *msg = cJSON_CreateObject();
+    	char *param = NULL;
+    
+    	printf("<HiChainGmOnRuest>CB:requestId=%lld, operationCode=%d, reqParams=%s", requestId, operationCode, reqParams);
+    
+    	if (operationCode != MEMBER_JOIN) {
+    		return NULL;
+    	}
+    
+    	if (msg == NULL) {
+    		printf("HiChainGmOnRuest: cJSON_CreateObject fail\n");
+    	}
+    
+    	if (cJSON_AddNumberToObject(msg, FIELD_CONFIRMATION, REQUEST_ACCEPTED) == NULL ||
+    		cJSON_AddStringToObject(msg, FIELD_PIN_CODE, DEFAULT_PIN_CODE) == NULL ||
+    		cJSON_AddStringToObject(msg, FIELD_DEVICE_ID, g_udid) == NULL) {
+    		printf("HiChainGmOnRuest: cJSON_AddToObject fail\n");
+    		cJSON_Delete(msg);
+    		return NULL;
+    	}
+    
+    	param = cJSON_PrintUnformatted(msg);
+    	cJSON_Delete(msg);
+    	return param;
     }
-
-    int32_t HichainGmAddMemberToGroup(void)
+    
+    static const DeviceAuthCallback g_groupManagerCallback = {
+    	.onRequest = HiChainGmOnRuest,
+    	.onError = HiChainGmOnError,
+    	.onFinish = HiChainGmOnFinish,
+    };
+    
+    int HichainGmRegCallback(void)
     {
-        cJSON *msg = cJSON_CreateObject();
-        cJSON *addr = cJSON_CreateObject();
-        char *param = NULL;
-        int32_t ret;
-
-        AddStringToJsonObject(msg, FIELD_GROUP_ID, DEFAULT_GROUP_ID);
-        AddNumberToJsonObject(msg, FIELD_GROUP_TYPE, PEER_TO_PEER_GROUP);
-        AddStringToJsonObject(msg, FIELD_PIN_CODE, DEFAULT_PIN_CODE);
-        cJSON_AddBoolToObject(msg, FIELD_IS_ADMIN, false);
-        AddStringToJsonObject(msg, FIELD_DEVICE_ID, DEFAULT_UDID_NAME);
-        AddStringToJsonObject(msg, FIELD_GROUP_NAME, "dsoftbus");
-        AddNumberToJsonObject(msg, FIELD_IS_ADMIN, false);
-
-        AddStringToJsonObject(addr, "ETH_IP", "192.168.1.3");
-        AddNumberToJsonObject(addr, "ETH_PORT", DEFAULT_PORT);
-        param = cJSON_PrintUnformatted(addr);
-        AddStringToJsonObject(msg, FIELD_CONNECT_PARAMS, param);
-        printf("addr string:%s\n", param);
-        cJSON_free(param);
-
-        param = cJSON_PrintUnformatted(msg);
-        printf("member string:%s\n", param);
-
-        ret = g_hichainGmInstance->addMemberToGroup(ANY_OS_ACCOUNT, DEFAULT_REQ_ID, APP_ID, param);
-
-        cJSON_free(param);
-        cJSON_Delete(msg);
-        return ret ;
+    	return g_hichainGmInstance->regCallback(APP_ID, &g_groupManagerCallback);
     }
-
-    int32_t HichainGmCreatGroup(void)
+    
+    void HichainGmUnRegCallback(void)
     {
-        cJSON *msg = cJSON_CreateObject();
-        char *param = NULL;
-        int32_t ret;
-
-        AddNumberToJsonObject(msg, FIELD_GROUP_TYPE, PEER_TO_PEER_GROUP);
-        AddStringToJsonObject(msg, FIELD_DEVICE_ID, DEFAULT_UDID_NAME);
-        AddStringToJsonObject(msg, FIELD_GROUP_NAME, "dsoftbus");
-        AddNumberToJsonObject(msg, FIELD_USER_TYPE, 0);
-        AddNumberToJsonObject(msg, FIELD_GROUP_VISIBILITY, GROUP_VISIBILITY_PUBLIC);
-        AddNumberToJsonObject(msg, FIELD_EXPIRE_TIME, EXPIRE_TIME_MAX);
-        param = cJSON_PrintUnformatted(msg);
-
-        ret = g_hichainGmInstance->createGroup(ANY_OS_ACCOUNT, DEFAULT_REQ_ID, APP_ID, param);
-
-        cJSON_free(param);
-        cJSON_Delete(msg);
-        return ret;
+    	g_hichainGmInstance->unRegCallback(APP_ID);
     }
-
-    static int32_t HichainGmGetGroupInfo(uint32_t *num)
+    
+    int HichainGmGetGroupInfo(char **groupVec, uint32_t *num)
     {
-        cJSON *msg = cJSON_CreateObject();
-        char *param = NULL;
-        char *groupVec = NULL;
-        int32_t ret;
-
-        AddNumberToJsonObject(msg, FIELD_GROUP_TYPE, PEER_TO_PEER_GROUP);
-        AddStringToJsonObject(msg, FIELD_GROUP_NAME, "dsoftbus");
-        AddNumberToJsonObject(msg, FIELD_GROUP_VISIBILITY, GROUP_VISIBILITY_PUBLIC);
-        param = cJSON_PrintUnformatted(msg);
-
-        ret = g_hichainGmInstance->getGroupInfo(ANY_OS_ACCOUNT, APP_ID, param, &groupVec, num);
-        if (*num) {
-            SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_INFO, "HichainGmGetGroupInfo:groupVec=%s", groupVec);
-            HichainGetGroupID(groupVec, true);
-        }
-
-        cJSON_free(param);
-        cJSON_Delete(msg);
-        return ret;
+    	cJSON *msg = cJSON_CreateObject();
+    	char *param = NULL;
+    	int ret = -1;
+    
+    	if (msg == NULL) {
+    		printf("HichainGmGetGroupInfo: cJSON_CreateObject fail\n");
+    		return -1;
+    	}
+    
+    	if (cJSON_AddNumberToObject(msg, FIELD_GROUP_TYPE, PEER_TO_PEER_GROUP) == NULL ||
+    		cJSON_AddStringToObject(msg, FIELD_GROUP_NAME, DEFAULT_GROUP_NAME) == NULL ||
+    		cJSON_AddNumberToObject(msg, FIELD_GROUP_VISIBILITY, GROUP_VISIBILITY_PUBLIC) == NULL) {
+    		printf("HichainGmGetGroupInfo: cJSON_AddToObject fail\n");
+    		goto err_cJSON_Delete;
+    	}
+    	param = cJSON_PrintUnformatted(msg);
+    	if (param == NULL) {
+    		printf("HichainGmGetGroupInfo: cJSON_PrintUnformatted fail\n");
+    		goto err_cJSON_Delete;
+    	}
+    
+    	ret = g_hichainGmInstance->getGroupInfo(ANY_OS_ACCOUNT, APP_ID, param, groupVec, num);
+    	if (ret != 0) {
+    		printf("getGroupInfo fail:%d", ret);
+    		goto err_getGroupInfo;
+    	}
+    
+    err_getGroupInfo:
+    	cJSON_free(param);
+    err_cJSON_Delete:
+    	cJSON_Delete(msg);
+    	return ret;
     }
-
-    int32_t HichainGmInit(void)
+    
+    void HichainGmDestroyGroupInfo(char **groupVec)
     {
-        uint32_t num = 0;
-        int32_t ret;
-
-        ret = GetCommonDevInfo(COMM_DEVICE_KEY_UDID, DEFAULT_UDID_NAME, MAX_LEN);
-        printf("ret=%d, UDID=%s\n", ret, DEFAULT_UDID_NAME);
-
-        ret = HichainGmRegCallback();
-        if (ret != SOFTBUS_OK) {
-            SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_ERROR, "HichainGmregCallback failed\n");
-            goto err_HichainGmRegCallback;
-        }
-
-        ret = HichainGmGetGroupInfo(&num);
-        if (ret != SOFTBUS_OK) {
-            SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_ERROR, "HichainGmGetGroupInfo failed\n");
-            goto err_HichainGmGetGroupInfo;
-        }
-
-    #if host
-        if (num == 0) {
-            ret = HichainGmCreatGroup();
-            if (ret) {
-                SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_ERROR, "HichainGmCreatGroup failed\n");
-                return ret;
-            }
-        }
-    #else
-        ret = scanf("%d", &DEFAULT_PORT);
-        if (ret < 0) {
-             printf("scanf error\n");
-        }
-        printf("port is:%d\n", DEFAULT_PORT);
-        ret = HichainGmAddMemberToGroup();
-        if (ret) {
-            SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_ERROR, "HichainGmAddMemberToGroup failed\n");
-            return ret;
-        }
-    #endif
-        return ret;
-
+    	g_hichainGmInstance->destroyInfo(groupVec);
+    }
+    
+    int HichainGmCreatGroup(void)
+    {
+    	cJSON *msg = cJSON_CreateObject();
+    	char *param = NULL;
+    	int ret;
+    
+    	if (msg == NULL)
+    		return -1;
+    
+    	if (cJSON_AddNumberToObject(msg, FIELD_GROUP_TYPE, PEER_TO_PEER_GROUP) == NULL ||
+    		cJSON_AddStringToObject(msg, FIELD_DEVICE_ID, g_udid) == NULL ||
+    		cJSON_AddStringToObject(msg, FIELD_GROUP_NAME, DEFAULT_GROUP_NAME) == NULL ||
+    		cJSON_AddNumberToObject(msg, FIELD_USER_TYPE, 0) == NULL ||
+    		cJSON_AddNumberToObject(msg, FIELD_GROUP_VISIBILITY, GROUP_VISIBILITY_PUBLIC) == NULL ||
+    		cJSON_AddNumberToObject(msg, FIELD_EXPIRE_TIME, EXPIRE_TIME_MAX) == NULL) {
+    		printf("HichainGmCreatGroup: cJSON_AddToObject fail\n");
+    		cJSON_Delete(msg);
+    		return -1;
+    	}
+    	param = cJSON_PrintUnformatted(msg);
+    	if (param == NULL) {
+    		printf("HichainGmCreatGroup: cJSON_PrintUnformatted fail\n");
+    		cJSON_Delete(msg);
+    		return -1;
+    	}
+    
+    	ret = g_hichainGmInstance->createGroup(ANY_OS_ACCOUNT, g_requestId++, APP_ID, param);
+    
+    	cJSON_free(param);
+    	cJSON_Delete(msg);
+    	return ret;
+    }
+    
+    bool HichainIsDeviceInGroup(const char *groupId, const char *devId)
+    {
+    	return g_hichainGmInstance->isDeviceInGroup(ANY_OS_ACCOUNT, APP_ID, groupId, devId);
+    }
+    
+    int HichainGmAddMemberToGroup(const DeviceInfo *device, const char *groupId)
+    {
+    	cJSON *msg = cJSON_CreateObject();
+    	cJSON *addr = NULL;
+    	char *param = NULL;
+    	int ret = -1;
+    
+    	if (msg == NULL) {
+    		printf("HichainGmAddMemberToGroup: cJSON_CreateObject1 fail\n");
+    		return -1;
+    	}
+    
+    	addr = cJSON_CreateObject();
+    	if (addr == NULL) {
+    		printf("HichainGmAddMemberToGroup: cJSON_CreateObject2 fail\n");
+    		goto err_cJSON_CreateObject;
+    	}
+    
+    	for (unsigned int i = 0; i < device->addrNum; i++) {
+    		if (device->addr[i].type == CONNECTION_ADDR_ETH) {
+    			if (cJSON_AddStringToObject(addr, FIELD_ETH_IP, device->addr[i].info.ip.ip) == NULL ||
+    					cJSON_AddNumberToObject(addr, FIELD_ETH_PORT, device->addr[i].info.ip.port) == NULL) {
+    				printf("HichainGmAddMemberToGroup: cJSON_AddToObject1 fail\n");
+    				goto err_cJSON_AddToObject;
+    			}
+    		} else if (device->addr[i].type == CONNECTION_ADDR_WLAN) {
+    			if (cJSON_AddStringToObject(addr, FIELD_WLAN_IP, device->addr[i].info.ip.ip) == NULL ||
+    					cJSON_AddNumberToObject(addr, FIELD_WLAN_PORT, device->addr[i].info.ip.port) == NULL) {
+    				printf("HichainGmAddMemberToGroup: cJSON_AddToObject2 fail\n");
+    				goto err_cJSON_AddToObject;
+    			}
+    		} else {
+    			printf("unsupport connection type:%d\n", device->addr[i].type);
+    			goto err_cJSON_AddToObject;
+    		}
+    	}
+    
+    	param = cJSON_PrintUnformatted(addr);
+    	if (param == NULL) {
+    		printf("HichainGmAddMemberToGroup: cJSON_PrintUnformatted1 fail\n");
+    		goto err_cJSON_AddToObject;
+    	}
+    
+    	if (cJSON_AddStringToObject(msg, FIELD_GROUP_ID, groupId) == NULL ||
+    		cJSON_AddNumberToObject(msg, FIELD_GROUP_TYPE, PEER_TO_PEER_GROUP) == NULL ||
+    		cJSON_AddStringToObject(msg, FIELD_PIN_CODE, DEFAULT_PIN_CODE) == NULL ||
+    		cJSON_AddStringToObject(msg, FIELD_DEVICE_ID, g_udid) == NULL ||
+    		cJSON_AddStringToObject(msg, FIELD_GROUP_NAME, DEFAULT_GROUP_NAME) == NULL ||
+    		cJSON_AddBoolToObject(msg, FIELD_IS_ADMIN, false) == NULL ||
+    		cJSON_AddStringToObject(msg, FIELD_CONNECT_PARAMS, param) == NULL) {
+    		printf("HichainGmAddMemberToGroup: cJSON_AddToObject4 fail\n");
+    		goto err_cJSON_AddToObject1;
+    	}
+    
+    	cJSON_free(param);
+    	param = cJSON_PrintUnformatted(msg);
+    	if (param == NULL) {
+    		printf("HichainGmAddMemberToGroup: cJSON_PrintUnformatted fail\n");
+    		goto err_cJSON_CreateObject;
+    	}
+    
+    	ret = g_hichainGmInstance->addMemberToGroup(ANY_OS_ACCOUNT, g_requestId++, APP_ID, param);
+    	if (ret != 0) {
+    		printf("addMemberToGroup fail:%d\n", ret);
+    	}
+    
+    err_cJSON_AddToObject1:
+    	cJSON_free(param);
+    err_cJSON_AddToObject:
+    	cJSON_Delete(addr);
+    err_cJSON_CreateObject:
+    	cJSON_Delete(msg);
+    	return ret;
+    }
+    
+    int HichainInit(void)
+    {
+    	char *groupVec = NULL;
+    	uint32_t num;
+    	int ret;
+    
+    	ret = GetDevUdid(g_udid, MAX_UDID_LEN);
+    	if (ret) {
+    		printf("GetDevUdid fail:%d\n", ret);
+    		return ret;
+    	}
+    
+    	ret = InitDeviceAuthService();
+    	if (ret != 0) {
+    		printf("InitDeviceAuthService fail:%d\n", ret);
+    		return ret;
+    	}
+    
+    	g_hichainGmInstance = GetGmInstance();
+    	if (g_hichainGmInstance == NULL) {
+    		printf("GetGmInstance fail\n");
+    		ret = -1;
+    		goto err_GetGmInstance;
+    	}
+    
+    	ret = HichainGmRegCallback();
+    	if (ret != 0) {
+    		printf("HichainGmregCallback fail.:%d\n", ret);
+    		goto err_HichainGmRegCallback;
+    	}
+    
+    	ret = HichainGmGetGroupInfo(&groupVec, &num);
+    	if (ret != 0) {
+    		printf("HichainGmGetGroupInfo fail:%d\n", ret);
+    		goto err_HichainGmGetGroupInfo;
+    	}
+    
+    	if (num == 0) {
+    		ret = HichainGmCreatGroup();
+    		if (ret) {
+    			printf("HichainGmCreatGroup fail:%d\n", ret);
+    			goto err_HichainGmCreatGroup;
+    		}
+    	} else {
+    		printf("HichainGmGetGroupInfo:num=%u\n", num);
+    		HichainSaveGroupID(groupVec);
+    		HichainGmDestroyGroupInfo(&groupVec);
+    	}
+    
+    	return 0;
+    
+    err_HichainGmCreatGroup:
     err_HichainGmGetGroupInfo:
+    	HichainGmUnRegCallback();
     err_HichainGmRegCallback:
-        return ret;
+    err_GetGmInstance:
+    	DestroyDeviceAuthService();
+    	return ret;
     }
 
 .. note::
 
-    * 通过host宏定义区分host和target设备：在host上创建群组，target上申请添加成员。
+    * 在HichainInit完成后，可以在任意一端调用HichainGmAddMemberToGroup申请将本端设备添加到对端的群组中。
 
-    * 认证中使用的pin码，可由用户随机生成并传入。
+    * 认证中使用的pin码，分别在两端设备中通过addMemberToGroup函数和HiChainGmOnRuest回调函数接口传入，实际应用中可由用户随机生成。
 
-    * 认证过程中需要交互部分对端信息，如groupID等，实际应用中需要借助软总线的发现能力和认证通道进行数据交互。
+    * HichainGmAddMemberToGroup认证过程中需要交互的对端信息，如deviceInfo，groupID等，实际应用中可通过软总线的发现能力和认证通道进行数据交互。
 
 2.与OpenHarmony互联时，可通过上述方式创建双方信任的可信群组和成员，也可使用分布式硬件中的device manger模块进行更便捷的可信群组创建，该模块兼容OpenHarmony的pin码弹窗等功能，但需要openEuler额外支持。
 
