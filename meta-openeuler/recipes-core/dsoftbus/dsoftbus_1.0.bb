@@ -106,6 +106,7 @@ do_compile() {
 do_install() {
     install -d ${D}${libdir}/
     install -d ${D}${bindir}/
+    install -d ${D}/${includedir}/
     install -d ${D}/data/data/deviceauth/
 
     # prepare so
