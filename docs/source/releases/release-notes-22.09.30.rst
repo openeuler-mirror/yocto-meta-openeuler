@@ -8,7 +8,7 @@ openEuler Embedded 22.09
 openEuler Embedded 22.09是openEuler Embedded第二个创新版本，包含的内容大概如下：
 
 * 内核
-   - 内核升级到 5.10.0-106.8.0
+   - 内核升级到 5.10.0-106.18.0
    - 内核支持Preempt-RT补丁
    - 内核支持树莓派4B相关补丁
 * 软件包
