@@ -16,11 +16,11 @@ S = "${WORKDIR}/iSulad-v${PV}"
 inherit cmake
 OECMAKE_GENERATOR = "Unix Makefiles"
 
-DEPENDS = "yajl zlib libarchive http-parser curl lcr libevent libevhtp openssl libwebsockets"
+DEPENDS = "yajl zlib libarchive http-parser curl lcr libevent libevhtp openssl libwebsockets lvm2"
 
 EXTRA_OECMAKE = "-DENABLE_GRPC=OFF -DENABLE_SYSTEMD_NOTIFY=OFF -DENABLE_SELINUX=OFF \
 		-DENABLE_SHIM_V2=OFF -DENABLE_OPENSSL_VERIFY=OFF \
-	 	-DGRPC_CONNECTOR=OFF -DDISABLE_OCI=ON \
+		-DGRPC_CONNECTOR=OFF -DENABLE_OCI_IMAGE=ON \
 		"
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
