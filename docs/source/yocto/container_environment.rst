@@ -53,9 +53,22 @@ buildtools-tarball.bb、buildtools-extended-tarball.bb 文件存在于 **poky/me
 
 执行步骤：
 
+a. 安装与适配 sdk 工具
+
 .. code-block::
 
-    $ sh x86_64-buildtools-extended-nativesdk-standalone-3.3.6.sh -y -d /opt/buildtools/nativesdk
+    # sh x86_64-buildtools-extended-nativesdk-standalone-3.3.6.sh -y -d /opt/buildtools/nativesdk
+    # mv /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/meson /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/meson.bak
+    # mv /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/meson.real /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/meson
+    # ln -s /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/python3 /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/python
+    # ln -s /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/x86_64-pokysdk-linux-libtool /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/libtool
+    # sed -i 's|/../lib/rpm|/../../lib/rpm|g' /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/lib/rpm/rpmdeps
+
+b. 初始化 openEuler Embedded 构建环境
+
+.. code-block::
+
+    # su openeuler
     $ source /opt/buildtools/nativesdk/environment-setup-x86_64-pokysdk-linux
 
 Yocto 构建时可能会依赖 native 包提供的文件，但每次构建 native 包都会占用构建时间，buildtools 构建支持将 nativesdk 包配置到环境中，在 buidltools 中加入该 native 包对应的 nativesdk 包，然后在构建时去除构建该 native 包，从而使用 buildtools 的包，这样便可以减少 Yocto 构建的时间；开发者可修改 buildtools-tarball.bb 或者 buildtools-extended-tarball.bb 中 **TOOLCHAIN_HOST_TASK** 字节加入需要的 nativesdk 包。
