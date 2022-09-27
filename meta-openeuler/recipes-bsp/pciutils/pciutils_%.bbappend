@@ -4,6 +4,10 @@ SRC_URI = " \
     file://pciutils-${PV}.tar.gz \
     file://0000-pciutils-2.2.1-idpath.patch \
     file://0001-pciutils-dir-d.patch \
+    file://0002-lspci-Adjust-PCI_EXP_DEV2_-to-PCI_EXP_DEVCTL2_-macro.patch \
+    file://0003-lspci-Decode-10-Bit-Tag-Requester-Enable.patch \
+    file://0004-lspci-Decode-VF-10-Bit-Tag-Requester.patch \
+    file://0005-lspci-Update-tests-files-with-VF-10-Bit-Tag-Requeste.patch \
 "
 
 # apply patches from poky, to fix configure error

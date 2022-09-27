@@ -16,6 +16,15 @@ SRC_URI += " \
         file://bugfix-rsyslog-7.4.7-add-configuration-to-avoid-memory-leak.patch \
         file://rsyslog-8.37.0-initialize-variables-and-check-return-value.patch \
         file://bugfix-CVE-2022-24903.patch \
+        file://backport-testbench-skip-omfwd_fast_imuxsock.sh-if-liblogging-stdlog-is-not-available.patch \
+        file://backport-Fixes-4395-by-correctly-checking-for-EPIPE.patch \
+        file://backport-rsyslogd-adjust-the-order-of-doHUP-and-processImInte.patch \
+        file://backport-gnutls-bugfix-Fix-error-handling-in-gtlsRecordRecv.patch \
+        file://backport-Fix-non-null-terminated-string-used-with-strlen.patch \
+        file://backport-tcpsrv-do-not-decrease-number-of-to-be-processed-fds.patch \
+        file://backport-imptcp-bugfix-worker-thread-starvation-on-extreme-tr.patch \
+        file://backport-Fix-memory-leak-when-globally-de-initialize-GnuTLS.patch \
+        file://backport-Fix-memory-leak-when-free-action-worker-data-table.patch  \
 "
 
 SRC_URI[tarball.md5sum] = "2d2b9d4a70a6e2fd4a7e806a5782c56b"

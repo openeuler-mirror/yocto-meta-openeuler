@@ -1,0 +1,46 @@
+From e2d129880b6830bf7d26ab46d957b944f73f96e1 Mon Sep 17 00:00:00 2001
+From: Yun Zhou <yun.zhou@windriver.com>
+Date: Thu, 24 Mar 2022 16:34:09 +0800
+Subject: [PATCH] rsyslogd: adjust the order of doHUP() and processImInternal()
+
+After call doHUP(), probably there is a internal log in the list. However, it
+will not be wrote out immediately, because the mainloop will be blocked at
+pselect in wait_timeout() until a long timeout or next message occur.
+More deadly, the log may be lost if the deamon exits unexpectedly.
+
+We might as well put processImInternal() after doHUP(), so that the message
+will be flushed out immediately.
+
+Fixes: 723f6fdfa6(rsyslogd: Fix race between signals and main loop timeout)
+Signed-off-by: Yun Zhou <yun.zhou@windriver.com>
+Conflict:NA
+Reference:https://github.com/rsyslog/rsyslog/commit/857f77906f95681aa15c7ba3f88cbda8952f7e5f
+---
+ tools/rsyslogd.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/tools/rsyslogd.c b/tools/rsyslogd.c
+index 9a126dd..8410d44 100644
+--- a/tools/rsyslogd.c
++++ b/tools/rsyslogd.c
+@@ -1966,8 +1966,6 @@ mainloop(void)
+ 	sigaddset(&sigblockset, SIGHUP);
+ 
+ 	do {
+-		processImInternal();
+-
+ 		pthread_sigmask(SIG_BLOCK, &sigblockset, &origmask);
+ 		if(bChildDied) {
+ 			reapChild();
+@@ -1988,6 +1986,8 @@ mainloop(void)
+ 			bHadHUP = 0;
+ 		}
+ 
++                processImInternal();
++
+ 		if(bFinished)
+ 			break;	/* exit as quickly as possible */
+ 
+-- 
+2.33.0
+
