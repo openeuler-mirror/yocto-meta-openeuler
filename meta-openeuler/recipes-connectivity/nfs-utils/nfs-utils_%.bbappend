@@ -6,6 +6,8 @@ SRC_URI_prepend = "file://0000-systemd-idmapd-require-rpc-pipefs.patch \
            file://0002-nfs-utils-set-use-gss-proxy-1-to-enable-gss-proxy-by.patch \
            file://0003-idmapd-Fix-error-status-when-nfs-idmapd-exits.patch \
            file://0004-fix-coredump-in-bl_add_disk.patch \
+           file://0005-Fix-format-overflow-warning.patch \
+           file://0006-nfs-blkmaped-Fix-the-error-status-when-nfs_blkmapd-s.patch \
 "
 
 # not support tcp-wrappers currently

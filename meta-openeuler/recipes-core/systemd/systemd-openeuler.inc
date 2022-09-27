@@ -48,6 +48,7 @@ SRC_URI =+ " \
         file://print-the-real-reason-for-link-update.patch \
         file://core-skip-change-device-to-dead-in-manager_catchup-d.patch \
         file://revert-rpm-restart-services-in-posttrans.patch \
+        file://Don-t-set-AlternativeNamesPolicy-by-default.patch \
         file://backport-core-fix-free-undefined-pointer-when-strdup-failed-i.patch \
         file://backport-fix-ConditionDirectoryNotEmpty-when-it-comes-to-a-No.patch \
         file://backport-fix-ConditionPathIsReadWrite-when-path-does-not-exis.patch \
@@ -79,4 +80,7 @@ SRC_URI =+ " \
         file://backport-meson.build-change-operator-combining-bools-from-to-.patch \
         file://backport-Avoid-tmp-being-mounted-as-tmpfs-without-the-user-s-.patch \
         file://backport-core-replace-slice-dependencies-as-they-get-added.patch \
+        file://backport-journal-Only-move-to-objects-when-necessary.patch \
+        file://backport-scsi_id-retry-inquiry-ioctl-if-host_byte-is-DID_TRAN.patch \
+        file://backport-revert-units-add-ProtectClock-yes.patch \
 "

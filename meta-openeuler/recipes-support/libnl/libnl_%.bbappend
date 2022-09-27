@@ -9,4 +9,6 @@ SRC_URI += " \
     file://solve-redefinition-of-struct-ipv6_mreq.patch \
     file://add-a-test-test-add-route.patch \
     file://add-some-tests-about-addr-class-rule-neigh-qdisc.patch \
+    file://backport-fix-setting-ce_mask-when-parsing-VF-stat-counter.patch \
+    file://backport-allow-constructing-all-zero-addresses.patch \
 "

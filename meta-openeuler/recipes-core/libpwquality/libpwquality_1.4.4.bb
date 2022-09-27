@@ -7,9 +7,10 @@ PARALLEL_MAKE = "-j 1"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bd2f1386df813a459a0c34fde676fc2"
 
-SRC_URI = "file://libpwquality/${BP}.tar.bz2 \
-           file://libpwquality/modify-pwquality_conf.patch \
-           file://libpwquality/fix-password-similarity.patch \
+SRC_URI = "file://${BP}.tar.bz2 \
+           file://modify-pwquality_conf.patch \
+           file://fix-password-similarity.patch \
+           file://fix-doc-about-difok.patch \
 "
 
 DEPENDS = "cracklib"

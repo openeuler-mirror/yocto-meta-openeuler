@@ -8,5 +8,11 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=679b5c9bdc79a2b93ee574e193e7a7bc"
 # add not-win32.patch to fix libdir error
 SRC_URI = " \
     file://${BPN}-${PV}.tar.gz \
-           file://not-win32.patch \
+        file://not-win32.patch \
+"
+
+#patches from openeuler
+SRC_URI += " \
+        file://backport-x86-64-Always-double-jump-table-slot-size-for-CET-71.patch \
+        file://backport-Fix-check-for-invalid-varargs-arguments-707.patch \
 "

@@ -7,6 +7,9 @@ SRC_URI = " \
         file://tzcode${PV}.tar.gz;name=tzcode \
         file://tzdata${PV}.tar.gz;name=tzdata \
         file://backport-Iran-will-stop-DST-in-2023.patch \
+        file://backport-Chile-s-DST-is-delayed-by-a-week-in-September-2022.patch \
+        file://backport-Palestine-transitions-are-now-Saturdays-at-02-00.patch \
+        file://backport-Tweak-expression-of-Palestine-transition.patch \
         file://bugfix-0001-add-Beijing-timezone.patch \
         file://remove-country-selection-from-tzselect-steps.patch \
         file://remove-ROC-timezone.patch \
