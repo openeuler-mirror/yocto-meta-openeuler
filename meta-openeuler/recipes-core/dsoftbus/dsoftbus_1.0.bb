@@ -39,6 +39,7 @@ SRC_URI = " \
         file://yocto-embedded-tools/dsoftbus/third_party/mbedtls/0001-Adaptation-for-dsoftbus-v3.1.2.patch;patchdir=${dsoftbus-thirdparty}/mbedtls \
         file://yocto-embedded-tools/dsoftbus/third_party/mbedtls/0002-fix-CVE-2021-43666.patch;patchdir=${dsoftbus-thirdparty}/mbedtls \
         file://yocto-embedded-tools/dsoftbus/third_party/mbedtls/0003-fix-CVE-2021-45451.patch;patchdir=${dsoftbus-thirdparty}/mbedtls \
+        file://yocto-embedded-tools/dsoftbus/third_party/mbedtls/0004-CVE-2020-36477.patch;patchdir=${dsoftbus-thirdparty}/mbedtls \
         file://yocto-embedded-tools/dsoftbus/third_party/openssl/0001-support-openssl-for-dsoftbus.patch;patchdir=${dsoftbus-thirdparty}/openssl \
         file://yocto-embedded-tools/dsoftbus/hichain/huks/0001-support-huks-for-openeuler.patch;patchdir=${dsoftbus-hichain}/huks \
         file://yocto-embedded-tools/dsoftbus/hichain/deviceauth/0001-support-deviceauth-for-openeuler.patch;patchdir=${dsoftbus-hichain}/deviceauth \
