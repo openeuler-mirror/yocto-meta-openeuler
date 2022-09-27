@@ -2,8 +2,11 @@ PV = "0.187"
 
 # add patches from openeuler
 SRC_URI += " \
-    file://Fix-segfault-in-eu-ar-m.patch \
     file://elfutils-${PV}.tar.bz2 \
+    file://Fix-segfault-in-eu-ar-m.patch \
+    file://Fix-error-of-parsing-object-file-perms.patch \
+    file://Fix-issue-of-moving-files-by-ar-or-br.patch \
+    file://Get-instance-correctly-for-eu-ar-N-option.patch \
 "
 
 SRC_URI[sha256sum] = "e70b0dfbe610f90c4d1fe0d71af142a4e25c3c4ef9ebab8d2d72b65159d454c8"

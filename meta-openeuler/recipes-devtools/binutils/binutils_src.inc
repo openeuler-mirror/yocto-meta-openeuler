@@ -46,6 +46,8 @@ SRC_URI = " \
     file://0027-x86-reduce-AVX512-FP16-set-of-insns-decoded-through-.patch \
     file://0028-x86-reduce-AVX512-FP-set-of-insns-decoded-through-ve.patch \
     file://0029-x86-consistently-use-scalar_mode-for-AVX512-FP16-sca.patch \
+    file://backport-CVE-2022-38126.patch \
+    file://backport-0001-texi2pod.pl-add-no-op-no-split-option-support-PR2814.patch \
 "
 
 # apply used patches from poky

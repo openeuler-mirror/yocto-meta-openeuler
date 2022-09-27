@@ -39,6 +39,7 @@ SRC_URI += " \
         file://backport-CVE-2022-32207.patch \
         file://backport-CVE-2022-32208.patch \
         file://backport-fix-configure-disable-http-auth-build-error.patch \
+        file://backport-CVE-2022-35252-cookie-reject-cookies-with-control-bytes.patch \
 "
 
 SRC_URI[tarball.md5sum] = "74d3c4ca8aaa6c0619806d6e246e65fb"
