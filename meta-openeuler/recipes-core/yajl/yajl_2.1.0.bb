@@ -12,9 +12,9 @@ SRC_URI = " \
         file://0005-yajl-2.1.0-fix-memory-leak.patch \
         file://0006-fix-memory-leak-of-ctx-root.patch \
         file://0007-add-cmake-option-for-test-and-binary.patch \
-	  "
-
-S = "${WORKDIR}/${BPN}-${PV}"
+        file://backport-CVE-2022-24795.patch \
+        file://yajl-assert-error-when-memory-allocation-failed.patch \
+	"
 
 inherit cmake
 
@@ -22,7 +22,7 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 INSANE_SKIP_${PN} += "already-stripped"
 INSANE_SKIP_${PN} += "dev-so"
 
-FILES_${PN} += "${libdir}/libyajl.so* "
+FILES_${PN} += "${libdir}/libyajl.so*"
 FILES_SOLIBSDEV = ""
 
 do_install_append() {

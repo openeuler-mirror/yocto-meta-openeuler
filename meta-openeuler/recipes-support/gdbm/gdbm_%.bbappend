@@ -19,6 +19,7 @@ SRC_URI += " \
         file://Fix-coredump-in-gdbmtool-history-command.patch \
         file://Fix-semantics-of-gdbm_load-r.patch \
         file://Improve-handling-of-u-in-gdbm_load.patch \
+        file://Fix-allocated-memory-not-released.patch \
         "
 
 SRC_URI[tarball.md5sum] = "0bbd38f12656e4728e2f7c4708aec014"

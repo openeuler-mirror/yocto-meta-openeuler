@@ -18,6 +18,8 @@ SRC_URI = "file://v${PV}.tar.gz \
            file://0001-feat-Add-json-spec-for-rest-resize-api.patch \
            file://0002-add-HAVE_ISULAD-definition-for-lxc-header.patch \
            file://0003-fix-cpu-quota-out-of-range-when-update-to-1.patch \
+           file://0004-remove-unused-daemon-config-args.patch \
+           file://0005-refactor-handle-warnings.patch \
 "
 
 S = "${WORKDIR}/${BPN}-v${PV}"

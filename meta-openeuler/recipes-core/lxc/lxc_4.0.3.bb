@@ -5,7 +5,7 @@ LICENSE = "BSD-2-Clause"
 
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
-SRC_URI = "file://lxc-4.0.3.tar.gz \
+SRC_URI = "file://${BP}.tar.gz \
            file://0001-huawei-adapt-to-huawei-4.0.3.patch \
            file://0002-add-mount-label-for-rootfs.patch \
            file://0003-format-code-and-verify-mount-mode.patch \
@@ -49,6 +49,10 @@ SRC_URI = "file://lxc-4.0.3.tar.gz \
            file://0042-add-x-permission-when-create-directory.patch \
            file://0043-do-not-operate-playload-and-attach-cgroup-if-no-cont.patch \
            file://0044-fix-HOME-env-unset-error.patch \
+           file://0045-only-set-user-or-image-set-non-empty-HOME.patch \
+           file://0046-return-fail-if-no-args-or-no-rootfs-path-found.patch \
+           file://0047-fix-tools-with-option-give-error-message.patch \
+           file://0048-fix-do-mask-paths-after-parent-mounted.patch \
 "
 
 SRC_URI_append = " \
@@ -58,8 +62,6 @@ SRC_URI_append = " \
 "
 
 DEPENDS = "yajl libseccomp libcap"
-
-S = "${WORKDIR}/${BPN}-${PV}"
 
 EXTRA_OECONF = "--disable-static --disable-openssl --with-rootfs-path=/var/lib/lxc/rootfs --with-distro=openeuler"
 

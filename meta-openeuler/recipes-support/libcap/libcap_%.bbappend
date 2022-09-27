@@ -7,6 +7,7 @@ SRC_URI[sha256sum] = "4897da3617ab7a0364a82da7c8c5aa49be8129d84018df92f0982d1363
 SRC_URI = " \
     file://${BPN}-${PV}.tar.gz \
     file://libcap-buildflags.patch \
+    file://Fix-syntax-error-in-DEBUG-protected-setcap.c-code.patch \
 "
 # patches from poky
 SRC_URI += " \
