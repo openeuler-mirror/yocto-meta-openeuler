@@ -68,9 +68,13 @@ OpenHarmony主要面向强交互等需求的智能终端、物联网终端和工
 
 3.日志模块可通过重定向接管，有条件者还可通过实现和替换软总线依赖的hilog模块，进行更细致的日志管理。
 
+4.服务端依赖于系统参数模块syspara，以获取设备唯一的UDID。openEuler Embedded预留了/etc/SN的文件接口，作为生成UDID的参数。（SN号可为64字节长度内的任意字符串）
+
 .. attention::
 
-    用户请参考部署模型，保证单设备节点上有且仅有唯一的softbus_server_main进程。
+    * 用户请参考部署模型，保证单设备节点上有且仅有唯一的softbus_server_main进程。
+
+    * 用户需要在启动softbus_server_main前配置/etc/SN，并保证多设备下SN号的唯一性
 
 
 **客户端API**
@@ -107,6 +111,8 @@ softbus客户端API头文件在嵌入式版本提供的sdk中对外开放，可�
 +----------------------------+--------------------------------------------------------------------+
 | GetAllNodeDeviceInfo       | 获取当前组网内所有节点信息                                         |
 +----------------------------+--------------------------------------------------------------------+
+| FreeNodeInfo               | 释放GetAllNodeDeviceInfo返回的节点信息内存                         |
++----------------------------+--------------------------------------------------------------------+
 
 3.session.h：连接/传输模块头文件，支持创建session和数据传输API如下：
 
@@ -119,20 +125,30 @@ softbus客户端API头文件在嵌入式版本提供的sdk中对外开放，可�
 +----------------------------+--------------------------------------------------------------------+
 | CloseSession               | 断开传输连接                                                       |
 +----------------------------+--------------------------------------------------------------------+
-| SendBytes                  | 根据建好的连接ID，进行数据传输。                                   |
+| SendBytes                  | 根据建好的连接ID，进行字节流数据传输                               |
++----------------------------+--------------------------------------------------------------------+
+| SendMessage                | 根据建好的连接ID，进行消息数据传输                                 |
 +----------------------------+--------------------------------------------------------------------+
 
 各API参数详见头文件描述。
 
-**客户端编译**
+**客户端使用**
 
-客户端提供动态链接库：libsoftbus_client.z.so
+客户端提供动态链接库：
+	* libsoftbus_client.z.so，
 
-用户使用软总线时，需要作为客户端程序显示链接该动态库，即可通过函数调用使用软总线提供的API。
+以及对应的头文件:
 
-.. code-block:: console
+	* 发现：discovery_service.h
 
-    #: $(CROSS_COMPILE)-ld -lsoftbus_client.z
+	* 组网：softbus_bus_center.h
+
+	* 连接/组网：session.h
+
+用户使用软总线时，需要作为客户端程序显式链接libsoftbus_client.z.so动态库，即可通过函数调用使用软总线提供的API。
+
+链接动态库方式参见下一章节（应用示例）
+
 
 **应用示例**
 
@@ -142,58 +158,317 @@ softbus客户端API头文件在嵌入式版本提供的sdk中对外开放，可�
 
     编写客户端程序依托于embedded版本发布的SDK，请参考 :ref:`getting_started` 章节进行SDK环境使用准备
 
-    创建一个 :file:`main.c` 文件，源码如下：
+    该示例代码中同时实现了两个设备间的发现和消息收发功能。用户可以作为API调用参考，并根据应用场景进行裁减和扩展。
+
+    创建一个 :file:`softbus_client_main.c` 文件，源码如下：
 
     .. code-block:: c
 
-        #include "dsoftbus/softbus_bus_center.h"
         #include <stdio.h>
-        #include <stdlib.h>
-        int main(void)
+        #include <unistd.h>
+        #include <string.h>
+        #include "securec.h"
+        #include "discovery_service.h"
+        #include "softbus_bus_center.h"
+        #include "session.h"
+        
+        #define PACKAGE_NAME "softbus_sample"
+        #define LOCAL_SESSION_NAME "session_test"
+        #define TARGET_SESSION_NAME "session_test"
+        #define DEFAULT_CAPABILITY "osdCapability"
+        #define DEFAULT_SESSION_GROUP "group_test"
+        #define DEFAULT_PUBLISH_ID 123
+        
+        static int g_sessionId;
+        
+        static void PublishSuccess(int publishId)
         {
-            int32_t infoNum = 10;
-            NodeBasicInfo **testInfo = malloc(sizeof(NodeBasicInfo *) * infoNum);
-            int ret = GetAllNodeDeviceInfo("testClient", testInfo, &infoNum);
-            if (ret != 0) {
-                printf("Get node device info fail.\n");
-                return 0;
-            }
-            printf("Get node num: %d\n", infoNum);
-            for (int i = 0; i < infoNum; i++) {
-                printf("\t networkId: %s, deviceName: %s, deviceTypeId: %d\n",
-                testInfo[i]->networkId,
-                testInfo[i]->deviceName,
-                testInfo[i]->deviceTypeId);
-            }
-            for (int i = 0; i < infoNum; i++) {
-                FreeNodeInfo(testInfo[i]);
-            }
-            free(testInfo);
-            testInfo = NULL;
-
-            return 0;
+        	printf("<PublishSuccess>CB: publish %d done\n", publishId);
+        }
+        
+        static void PublishFailed(int publishId, PublishFailReason reason)
+        {
+        	printf("<PublishFailed>CB: publish %d failed, reason=%d\n", publishId, (int)reason);
+        }
+        
+        static int PublishServiceInterface()
+        {
+        	PublishInfo info = {
+        		.publishId = DEFAULT_PUBLISH_ID,
+        		.mode = DISCOVER_MODE_PASSIVE,
+        		.medium = COAP,
+        		.freq = LOW,
+        		.capability = DEFAULT_CAPABILITY,
+        		.capabilityData = NULL,
+        		.dataLen = 0,
+        	};
+        	IPublishCallback cb = {
+        		.OnPublishSuccess = PublishSuccess,
+        		.OnPublishFail = PublishFailed,
+        	};
+        	return PublishService(PACKAGE_NAME, &info, &cb);
+        }
+        
+        static void UnPublishServiceInterface(void)
+        {
+        	int ret = UnPublishService(PACKAGE_NAME, DEFAULT_PUBLISH_ID);
+        	if (ret != 0) {
+        		printf("UnPublishService fail:%d\n", ret);
+        	}
+        }
+        
+        static void DeviceFound(const DeviceInfo *device)
+        {
+        	unsigned int i;
+        	printf("<DeviceFound>CB: Device has found\n");
+        	printf("\tdevId=%s\n", device->devId);
+        	printf("\tdevName=%s\n", device->devName);
+        	printf("\tdevType=%d\n", device->devType);
+        	printf("\taddrNum=%d\n", device->addrNum);
+        	for (i = 0; i < device->addrNum; i++) {
+        		printf("\t\taddr%d:type=%d,", i + 1, device->addr[i].type);
+        		switch (device->addr[i].type) { 
+        		case CONNECTION_ADDR_WLAN:
+        		case CONNECTION_ADDR_ETH:
+        			printf("ip=%s,port=%d,", device->addr[i].info.ip.ip, device->addr[i].info.ip.port);
+        			break;
+        		default:
+        			break;
+        		}
+        		printf("peerUid=%s\n", device->addr[i].peerUid);
+        	}
+        	printf("\tcapabilityBitmapNum=%d\n", device->capabilityBitmapNum);
+        	for (i = 0; i < device->addrNum; i++) {
+        		printf("\t\tcapabilityBitmap[%d]=0x%x\n", i + 1, device->capabilityBitmap[i]);
+        	}
+        	printf("\tcustData=%s\n", device->custData);
+        }
+        
+        static void DiscoverySuccess(int subscribeId)
+        {
+        	printf("<DiscoverySuccess>CB: discover subscribeId=%d\n", subscribeId);
+        }
+        
+        static void DiscoveryFailed(int subscribeId, DiscoveryFailReason reason)
+        {
+        	printf("<DiscoveryFailed>CB: discover subscribeId=%d failed, reason=%d\n", subscribeId, (int)reason);
+        }
+        
+        static int DiscoveryInterface(void)
+        {
+        	SubscribeInfo info = {
+        		.subscribeId = DEFAULT_PUBLISH_ID,
+        		.mode = DISCOVER_MODE_ACTIVE,
+        		.medium = COAP,
+        		.freq = LOW,
+        		.isSameAccount = false,
+        		.isWakeRemote = false,
+        		.capability = DEFAULT_CAPABILITY,
+        		.capabilityData = NULL,
+        		.dataLen = 0,
+        	};
+        	IDiscoveryCallback cb = {
+        		.OnDeviceFound = DeviceFound,
+        		.OnDiscoverFailed = DiscoveryFailed,
+        		.OnDiscoverySuccess = DiscoverySuccess,
+        	};
+        	return StartDiscovery(PACKAGE_NAME, &info, &cb);
+        }
+        
+        static void StopDiscoveryInterface(void)
+        {
+        	int ret = StopDiscovery(PACKAGE_NAME, DEFAULT_PUBLISH_ID);
+        	if (ret) {
+        		printf("StopDiscovery fail:%d\n", ret);
+        	}
+        }
+        
+        static int SessionOpened(int sessionId, int result)
+        {
+        	printf("<SessionOpened>CB: session %d open fail:%d\n", sessionId, result);
+        	if (result == 0) {
+        		g_sessionId = sessionId;
+        	}
+        
+        	return result;
+        }
+        
+        static void SessionClosed(int sessionId)
+        {
+        	printf("<SessionClosed>CB: session %d closed\n", sessionId);
+        }
+        
+        static void ByteRecived(int sessionId, const void *data, unsigned int dataLen)
+        {
+        	printf("<ByteRecived>CB: session %d received %u bytes data=%s\n", sessionId, dataLen, (const char *)data);
+        }
+        
+        static void MessageReceived(int sessionId, const void *data, unsigned int dataLen)
+        {
+        	printf("<MessageReceived>CB: session %d received %u bytes message=%s\n", sessionId, dataLen, (const char *)data);
+        }
+        
+        static int CreateSessionServerInterface(void)
+        {
+        	const ISessionListener sessionCB = {
+        		.OnSessionOpened = SessionOpened,
+        		.OnSessionClosed = SessionClosed,
+        		.OnBytesReceived = ByteRecived,
+        		.OnMessageReceived = MessageReceived,
+        	};
+        
+        	return CreateSessionServer(PACKAGE_NAME, LOCAL_SESSION_NAME, &sessionCB);
+        }
+        
+        static void RemoveSessionServerInterface(void)
+        {
+        	int ret = RemoveSessionServer(PACKAGE_NAME, LOCAL_SESSION_NAME);
+        	if (ret) {
+        		printf("RemoveSessionServer fail:%d\n", ret);
+        	}
+        }
+        
+        static int OpenSessionInterface(const char *peerNetworkId)
+        {
+        	SessionAttribute attr = {
+        		.dataType = TYPE_BYTES,
+        		.linkTypeNum = 1,
+        		.linkType[0] = LINK_TYPE_WIFI_WLAN_2G,
+        		.attr = {RAW_STREAM},
+        	};
+        
+        	return OpenSession(LOCAL_SESSION_NAME, TARGET_SESSION_NAME, peerNetworkId, DEFAULT_SESSION_GROUP, &attr);
+        }
+        
+        static void CloseSessionInterface(int sessionId)
+        {
+        	CloseSession(sessionId);
+        }
+        
+        static int GetAllNodeDeviceInfoInterface(NodeBasicInfo **dev)
+        {
+        	int ret, num;
+        
+        	ret = GetAllNodeDeviceInfo(PACKAGE_NAME, dev, &num);
+        	if (ret) {
+        		printf("GetAllNodeDeviceInfo fail:%d\n", ret);
+        		return -1;
+        	}
+        
+        	printf("<GetAllNodeDeviceInfo>return %d Node\n", num);
+        	for (int i = 0; i < num; i++) {
+        		printf("<num %d>deviceName=%s\n", i + 1, dev[i]->deviceName);
+        		printf("\tnetworkId=%s\n", dev[i]->networkId);
+        		printf("\tType=%d\n", dev[i]->deviceTypeId);
+        	}
+        
+        	return num;
+        }
+        
+        static void FreeNodeInfoInterface(NodeBasicInfo *dev)
+        {
+        	FreeNodeInfo(dev);
+        }
+        
+        static void commnunicate(void)
+        {
+        	NodeBasicInfo *dev = NULL;
+        	char cData[] = "hello world test";
+        	int dev_num, sessionId, input, ret;
+        	int timeout = 5;
+        
+        	dev_num = GetAllNodeDeviceInfoInterface(&dev);
+        	if (dev_num <= 0) {
+        		return;
+        	}
+        
+        	printf("\nInput Node num to commnunication:");
+        	scanf_s("%d", &input);
+        	if (input <= 0 || input > dev_num) {
+        		printf("error input num\n");
+        		goto err_input;
+        	}
+        
+        	g_sessionId = -1;
+        	sessionId = OpenSessionInterface(dev[input - 1].networkId);
+        	if (sessionId < 0) {
+        		printf("OpenSessionInterface fail, ret=%d\n", sessionId);
+        		goto err_OpenSessionInterface;
+        	}
+        
+        	while (timeout) {
+        		if (g_sessionId == sessionId) {
+        			ret = SendBytes(sessionId, cData, strlen(cData) + 1);
+        			if (ret) {
+        				printf("SendBytes fail:%d\n", ret);
+        			}
+        			break;
+        		}
+        		timeout--;
+        		sleep(1);
+        	}
+        
+        	CloseSessionInterface(sessionId);
+        err_OpenSessionInterface:
+        err_input:
+        	FreeNodeInfoInterface(dev);
+        }
+        
+        int main(int argc, char **argv)
+        {
+        	bool loop = true;
+        	int ret;
+        
+        	ret = CreateSessionServerInterface();
+        	if (ret) {
+        		printf("CreateSessionServer fail, ret=%d\n", ret);
+        		return ret;
+        	}
+        
+        	ret = PublishServiceInterface();
+        	if (ret) {
+        		printf("PublishService fail, ret=%d\n", ret);
+        		goto err_PublishServiceInterface;
+        	}
+        
+        	ret = DiscoveryInterface();
+        	if (ret) {
+        		printf("DiscoveryInterface fail, ret=%d\n", ret);
+        		goto err_DiscoveryInterface;
+        	}
+        
+        	while (loop) {
+        		printf("\nInput c to commnuication, Input s to stop:");
+        		char op = getchar();
+        		switch(op) {
+        		case 'c':
+        			commnunicate();
+        			continue;
+        		case 's':
+        			loop = false;
+        			break;
+        		case '\n':
+        			break;
+        		default:
+        			continue;
+        		}
+        	}
+        
+        	StopDiscoveryInterface();
+        err_DiscoveryInterface:
+        	UnPublishServiceInterface();
+        err_PublishServiceInterface:
+        	RemoveSessionServerInterface();
+        	return 0;
         }
 
-
-    创建一个 :file:`CMakeLists.txt` 文件，源码如下：
-
-    .. code-block:: cmake
-
-        project(dsoftbus_hello C)
-        add_executable(dsoftbus_hello main.c)
-        target_link_libraries(dsoftbus_hello dsoftbus_bus_center_service_sdk.z)
-
-    编译客户端
+    在配置好SDK环境 编译客户端主程序如下：
 
     .. code-block:: console
 
-        mkdir build
-        cd build
-        cmake ..
-        make
+	${CC} -lsoftbus_client.z -lsec_shared.z softbus_client_main.c -o softbus_client_main
 
-
-    编译完成后会得到dsoftbus_hello
+    编译完成后会得到dsoftbus_client_main程序
 
 2. 构建qemu组网环境
 
@@ -268,43 +543,46 @@ softbus客户端API头文件在嵌入式版本提供的sdk中对外开放，可�
 
     .. code-block:: console
 
-        scp dsoftbus_hello root@192.168.10.2:/
-        scp dsoftbus_hello root@192.168.10.3:/
+        scp softbus_client_main root@192.168.10.2:/
+        scp softbus_client_main root@192.168.10.3:/
 
-    分别在qemu1和qemu2的根目录下运行dsoftbus_hello，将得到如下输出
-
-    qemu1
+    分别在qemu1和qemu2的根目录下运行softbus_client_main，双方均会发现对端设备并输出设备信息：
 
     .. code-block:: console
 
-        [LNN]NodeStateCbCount is 10
-        [LNN]BusCenterClientInit init OK!
-        [DISC]Init success
-        [TRAN]init tcp direct channel success.
-        [TRAN]init succ
-        [COMM]softbus server register service success!
+	<DeviceFound>CB: Device has found
+	devId=6B86B273FF34FCE19D6B804EFF5A3F5747ADA4EAA22F1D49C01E52DDB7875B4B
+	devName=openEuler
+	devType=175
+	addrNum=1
+		addr1:type=3,ip=192.168.10.3,port=44749,peerUid=
+	capabilityBitmapNum=1
+		capabilityBitmap[1]=0xc0
+	custData=
 
-        [COMM]softbus sdk frame init success.
-        Get node num: 1
-                networkId: 714373d691265f9a736442c01459ba39236642c743a71750bb63eb73cde24f5f, deviceName: UNKNOWN, deviceTypeId: 0
-
-    qemu2
+    将一端作为发送方，输出字符'c'后，会显示在同一个本地神经网络中的其他设备信息
 
     .. code-block:: console
 
-        [LNN]NodeStateCbCount is 10
-        [LNN]BusCenterClientInit init OK!
-        [DISC]Init success
-        [TRAN]init tcp direct channel success.
-        [TRAN]init succ
-        [COMM]softbus server register service success!
+        Input c to commnuication, Input s to stop:c
+        <GetAllNodeDeviceInfo>return 1 Node
+        <num 1>deviceName=openEuler
+        	networkId=15a5e255f24073630c04a52f83679677b817df008fc11a22711cb3038de9d9b1
+        	Type=0
 
-        [COMM]softbus sdk frame init success.
-        Get node num: 1
-                networkId: eaf591f64bab3c20304ed3d3ff4fe1d878a0fd60bf8c85c96e8a8430d81e4076, deviceName: UNKNOWN, deviceTypeId: 0
+    继续输入节点序号后，将尝试创建与对应节点的连接并传输测试数据
 
-    qemu1和qemu2分别输出了发现的对方设备的基础信息。
+    .. code-block:: console
 
+        Input Node num to commnunication:1
+
+    若传输成功，则在对端设备上会显示传输数据的结果
+
+    .. code-block:: console
+
+        <ByteRecived>CB: session 2 received 17 bytes data=hello world test
+
+    测试结束后，输入字符's'退出双端程序
 
 可信设备添加
 **************
@@ -349,233 +627,392 @@ hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，�
 +----------------------------+--------------------------------------------------------------------+
 | regCallback                | 注册群组创建和请求回调函数                                         |
 +----------------------------+--------------------------------------------------------------------+
+| unRegCallback              | 解注册群组回调函                                                   |
++----------------------------+--------------------------------------------------------------------+
 | createGroup                | 创建新的群组                                                       |
 +----------------------------+--------------------------------------------------------------------+
 | getGroupInfo               | 查询本地群组信息                                                   |
 +----------------------------+--------------------------------------------------------------------+
+| destroyInfo                | 释放通过getGroupInfo申请的内存                                     |
++----------------------------+--------------------------------------------------------------------+
 | addMemberToGroup           | 请求添加成员到群组                                                 |
 +----------------------------+--------------------------------------------------------------------+
-| unRegCallback              | 解注册群组回调函                                                   |
-+----------------------------+--------------------------------------------------------------------+
-| deleteGroup                | 删除群组                                                           |
-+----------------------------+--------------------------------------------------------------------+
-| deleteMemberFromGroup      | 从群组内删除成员                                                   |
+| isDeviceInGroup            | 查询某个设备是否在群组中                                           |
 +----------------------------+--------------------------------------------------------------------+
 
-更详细的接口说明，请参考hichain模块代码实现。
+更详细的接口说明，请参考社区hichain模块代码实现。
 
 **客户端编译**
 
 客户端提供动态链接库：libdeviceauth_sdk.z.so
 
-用户使用hichain创建群组和添加可信设备时，需要作为客户端程序显示链接该动态库，即可通过函数调用使用hichain提供的API。
+用户使用hichain创建群组和添加可信设备时，需要作为客户端程序显式链接该动态库，即可通过函数调用使用hichain提供的API。
 
 .. code-block:: console
 
-    #: $(CROSS_COMPILE)-ld -ldeviceauth_sdk.z
+    #: ${CROSS_COMPILE}ld -ldeviceauth_sdk.z
 
 
 **使用范例**
 
-1.按照hichain的点对点pin码认证方式，需要一台设备创建群组（host），另一个台设备请求添加成员到改群组（target），实例代码如下：
+1.按照hichain的点对点pin码认证方式，需要通过设备创建群组（host），另一个台设备请求添加成员到该群组（target），实例代码如下：
 
 .. code-block:: console
 
-    #include "bus_center_adapter.h"
-    #define DEFAULT_GROUP_ID "54E8637468D7518EF4AACA71A958313A5FAACFC899DD1207AAB60568B20FF876"
-    #define APP_ID "test"
-    #define DEFAULT_REQ_ID 1000000000
+    #include <stdio.h>
+    #include <cJSON.h>
+    #include <securec.h>
+    #include <softbus_common.h>
+    #include <device_auth.h>
+    #include <parameter.h>
+    
+    #define APP_ID "hichain_test"
+    #define DEFAULT_GROUP_NAME "dsoftbus"
     #define DEFAULT_PIN_CODE "123456"
-    #define MAX_LEN 65
-
-    static char DEFAULT_UDID_NAME[MAX_LEN];
-    static int DEFAULT_PORT;
-    static DeviceAuthCallback g_GroupManagerCallback;
-
-    void HichainGetGroupID(const char *param, bool isArray)
+    #define MAX_UDID_LEN 65
+    #define MAX_GROUP_LEN 65
+    
+    #define FIELD_ETH_IP "ETH_IP"
+    #define FIELD_ETH_PORT "ETH_PORT"
+    #define FIELD_WLAN_IP "WLAN_IP"
+    #define FIELD_WLAN_PORT "WLAN_PORT"
+    
+    static const DeviceGroupManager *g_hichainGmInstance = NULL;
+    static char g_udid[MAX_UDID_LEN];
+    static char g_groupId[MAX_GROUP_LEN];
+    static int64_t g_requestId = 1;
+    
+    static const char *GetStringFromJson(const cJSON *obj, const char *key)
     {
-        char groupID[MAX_LEN];
-        cJSON *msg = cJSON_Parse(param);
-        if (isArray) {
-             cJSON *Item = cJSON_GetArrayItem(msg, 0);
-             GetJsonObjectStringItem(Item, FIELD_GROUP_ID, groupID, MAX_LEN);
-        } else {
-             GetJsonObjectStringItem(msg, FIELD_GROUP_ID, groupID, MAX_LEN);
-        }
-        cJSON_Delete(msg);
-        SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_INFO, "HichainSaveGroupID:groupID=%s", groupID);
+    	cJSON *item;
+    
+    	if (obj == NULL || key == NULL)
+    		return NULL;
+    
+    	item = cJSON_GetObjectItemCaseSensitive(obj, key);
+    	if (item != NULL && cJSON_IsString(item)) {
+    		return cJSON_GetStringValue(item);
+    	} else {
+    		int len = cJSON_GetArraySize(obj);
+    		for (int i = 0; i < len; i++) {
+    			item = cJSON_GetArrayItem(obj, i);
+    			if (cJSON_IsObject(item)) {
+    				const char *value = GetStringFromJson(item, key);
+    				if (value != NULL)
+    					return value;
+    			}
+    		}
+    	}
+    	return NULL;
     }
-
-    void HiChainGmOnFinish(int64_t requestId, int operationCode, const char *returnData)
+    
+    static int HichainSaveGroupID(const char *param)
     {
-        if (requestId == DEFAULT_REQ_ID && operationCode == GROUP_CREATE && returnData != NULL) {
-            SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_INFO, "HiChainGmOnFinish returnData=%s", returnData);
-            HichainGetGroupID(returnData, false);
-        }
+    	cJSON *msg = cJSON_Parse(param);
+    	const char *value = NULL;
+    
+    	if (msg == NULL) {
+    		printf("HichainSaveGroupID: cJSON_Parse fail\n");
+    		return -1;
+    	}
+    
+    	value = GetStringFromJson(msg, FIELD_GROUP_ID);
+    	if (value == NULL) {
+    		printf("HichainSaveGroupID:GetStringFromJson fail\n");
+    		cJSON_Delete(msg);
+    		return -1;
+    	}
+    
+    	memcpy_s(g_groupId, MAX_GROUP_LEN, value, strlen(value));
+    	printf("HichainSaveGroupID:groupID=%s\n", g_groupId);
+    
+    	cJSON_Delete(msg);
+    	return 0;
     }
-
-    void HiChainGmOnError(int64_t requestId, int operationCode, int errorCode, const char *errorReturn)
+    
+    static void HiChainGmOnFinish(int64_t requestId, int operationCode, const char *returnData)
     {
-        SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_INFO, "HiChainGmOnError:requestId=%ld, operationCode=%d, errorCode=%d, errorReturn=%s", requestId, operationCode, errorCode, errorReturn);
+    	if (operationCode == GROUP_CREATE && returnData != NULL) {
+    		printf("create new group finish:requestId=%lld, returnData=%s\n", requestId, returnData);
+    		HichainSaveGroupID(returnData);
+    	} else if (operationCode == MEMBER_JOIN) {
+    		printf("member join finish:requestId=%lld, returnData=%s\n", requestId, returnData);
+    
+    	} else {
+    		printf("<HiChainGmOnFinish>CB:requestId=%lld, operationCode=%d, returnData=%s\n", requestId, operationCode, returnData);
+    	}
     }
-
-    char *HiChainGmOnRuest(int64_t requestId, int operationCode, const char *reqParams)
+    
+    static void HiChainGmOnError(int64_t requestId, int operationCode, int errorCode, const char *errorReturn)
     {
-        cJSON *msg = cJSON_CreateObject();
-
-        SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_INFO, "HiChainGmOnRuest:requestId=%ld, operationCode=%d, reqParams=%s", requestId, operationCode, reqParams);
-
-        AddNumberToJsonObject(msg, FIELD_CONFIRMATION, REQUEST_ACCEPTED);
-        AddStringToJsonObject(msg, FIELD_PIN_CODE, DEFAULT_PIN_CODE);
-        AddStringToJsonObject(msg, FIELD_DEVICE_ID, DEFAULT_UDID_NAME);
-        char *param = cJSON_PrintUnformatted(msg);
-        char *buf = strdup(param);
-        cJSON_free(param);
-        cJSON_Delete(msg);
-        return buf;
+    	printf("<HiChainGmOnError>CB:requestId=%lld, operationCode=%d, errorCode=%d, errorReturn=%s\n", requestId, operationCode, errorCode, errorReturn);
     }
-
-    static int32_t HichainGmRegCallback(void)
+    
+    static char *HiChainGmOnRuest(int64_t requestId, int operationCode, const char *reqParams)
     {
-        int32_t ret;
-
-        g_GroupManagerCallback.onRequest = HiChainGmOnRuest;
-        g_GroupManagerCallback.onError = HiChainGmOnError;
-        g_GroupManagerCallback.onFinish = HiChainGmOnFinish;
-        ret = g_hichainGmInstance->regCallback(APP_ID, &g_GroupManagerCallback);
-        return ret;
+    	cJSON *msg = cJSON_CreateObject();
+    	char *param = NULL;
+    
+    	printf("<HiChainGmOnRuest>CB:requestId=%lld, operationCode=%d, reqParams=%s", requestId, operationCode, reqParams);
+    
+    	if (operationCode != MEMBER_JOIN) {
+    		return NULL;
+    	}
+    
+    	if (msg == NULL) {
+    		printf("HiChainGmOnRuest: cJSON_CreateObject fail\n");
+    	}
+    
+    	if (cJSON_AddNumberToObject(msg, FIELD_CONFIRMATION, REQUEST_ACCEPTED) == NULL ||
+    		cJSON_AddStringToObject(msg, FIELD_PIN_CODE, DEFAULT_PIN_CODE) == NULL ||
+    		cJSON_AddStringToObject(msg, FIELD_DEVICE_ID, g_udid) == NULL) {
+    		printf("HiChainGmOnRuest: cJSON_AddToObject fail\n");
+    		cJSON_Delete(msg);
+    		return NULL;
+    	}
+    
+    	param = cJSON_PrintUnformatted(msg);
+    	cJSON_Delete(msg);
+    	return param;
     }
-
-    int32_t HichainGmAddMemberToGroup(void)
+    
+    static const DeviceAuthCallback g_groupManagerCallback = {
+    	.onRequest = HiChainGmOnRuest,
+    	.onError = HiChainGmOnError,
+    	.onFinish = HiChainGmOnFinish,
+    };
+    
+    int HichainGmRegCallback(void)
     {
-        cJSON *msg = cJSON_CreateObject();
-        cJSON *addr = cJSON_CreateObject();
-        char *param = NULL;
-        int32_t ret;
-
-        AddStringToJsonObject(msg, FIELD_GROUP_ID, DEFAULT_GROUP_ID);
-        AddNumberToJsonObject(msg, FIELD_GROUP_TYPE, PEER_TO_PEER_GROUP);
-        AddStringToJsonObject(msg, FIELD_PIN_CODE, DEFAULT_PIN_CODE);
-        cJSON_AddBoolToObject(msg, FIELD_IS_ADMIN, false);
-        AddStringToJsonObject(msg, FIELD_DEVICE_ID, DEFAULT_UDID_NAME);
-        AddStringToJsonObject(msg, FIELD_GROUP_NAME, "dsoftbus");
-        AddNumberToJsonObject(msg, FIELD_IS_ADMIN, false);
-
-        AddStringToJsonObject(addr, "ETH_IP", "192.168.1.3");
-        AddNumberToJsonObject(addr, "ETH_PORT", DEFAULT_PORT);
-        param = cJSON_PrintUnformatted(addr);
-        AddStringToJsonObject(msg, FIELD_CONNECT_PARAMS, param);
-        printf("addr string:%s\n", param);
-        cJSON_free(param);
-
-        param = cJSON_PrintUnformatted(msg);
-        printf("member string:%s\n", param);
-
-        ret = g_hichainGmInstance->addMemberToGroup(ANY_OS_ACCOUNT, DEFAULT_REQ_ID, APP_ID, param);
-
-        cJSON_free(param);
-        cJSON_Delete(msg);
-        return ret ;
+    	return g_hichainGmInstance->regCallback(APP_ID, &g_groupManagerCallback);
     }
-
-    int32_t HichainGmCreatGroup(void)
+    
+    void HichainGmUnRegCallback(void)
     {
-        cJSON *msg = cJSON_CreateObject();
-        char *param = NULL;
-        int32_t ret;
-
-        AddNumberToJsonObject(msg, FIELD_GROUP_TYPE, PEER_TO_PEER_GROUP);
-        AddStringToJsonObject(msg, FIELD_DEVICE_ID, DEFAULT_UDID_NAME);
-        AddStringToJsonObject(msg, FIELD_GROUP_NAME, "dsoftbus");
-        AddNumberToJsonObject(msg, FIELD_USER_TYPE, 0);
-        AddNumberToJsonObject(msg, FIELD_GROUP_VISIBILITY, GROUP_VISIBILITY_PUBLIC);
-        AddNumberToJsonObject(msg, FIELD_EXPIRE_TIME, EXPIRE_TIME_MAX);
-        param = cJSON_PrintUnformatted(msg);
-
-        ret = g_hichainGmInstance->createGroup(ANY_OS_ACCOUNT, DEFAULT_REQ_ID, APP_ID, param);
-
-        cJSON_free(param);
-        cJSON_Delete(msg);
-        return ret;
+    	g_hichainGmInstance->unRegCallback(APP_ID);
     }
-
-    static int32_t HichainGmGetGroupInfo(uint32_t *num)
+    
+    int HichainGmGetGroupInfo(char **groupVec, uint32_t *num)
     {
-        cJSON *msg = cJSON_CreateObject();
-        char *param = NULL;
-        char *groupVec = NULL;
-        int32_t ret;
-
-        AddNumberToJsonObject(msg, FIELD_GROUP_TYPE, PEER_TO_PEER_GROUP);
-        AddStringToJsonObject(msg, FIELD_GROUP_NAME, "dsoftbus");
-        AddNumberToJsonObject(msg, FIELD_GROUP_VISIBILITY, GROUP_VISIBILITY_PUBLIC);
-        param = cJSON_PrintUnformatted(msg);
-
-        ret = g_hichainGmInstance->getGroupInfo(ANY_OS_ACCOUNT, APP_ID, param, &groupVec, num);
-        if (*num) {
-            SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_INFO, "HichainGmGetGroupInfo:groupVec=%s", groupVec);
-            HichainGetGroupID(groupVec, true);
-        }
-
-        cJSON_free(param);
-        cJSON_Delete(msg);
-        return ret;
+    	cJSON *msg = cJSON_CreateObject();
+    	char *param = NULL;
+    	int ret = -1;
+    
+    	if (msg == NULL) {
+    		printf("HichainGmGetGroupInfo: cJSON_CreateObject fail\n");
+    		return -1;
+    	}
+    
+    	if (cJSON_AddNumberToObject(msg, FIELD_GROUP_TYPE, PEER_TO_PEER_GROUP) == NULL ||
+    		cJSON_AddStringToObject(msg, FIELD_GROUP_NAME, DEFAULT_GROUP_NAME) == NULL ||
+    		cJSON_AddNumberToObject(msg, FIELD_GROUP_VISIBILITY, GROUP_VISIBILITY_PUBLIC) == NULL) {
+    		printf("HichainGmGetGroupInfo: cJSON_AddToObject fail\n");
+    		goto err_cJSON_Delete;
+    	}
+    	param = cJSON_PrintUnformatted(msg);
+    	if (param == NULL) {
+    		printf("HichainGmGetGroupInfo: cJSON_PrintUnformatted fail\n");
+    		goto err_cJSON_Delete;
+    	}
+    
+    	ret = g_hichainGmInstance->getGroupInfo(ANY_OS_ACCOUNT, APP_ID, param, groupVec, num);
+    	if (ret != 0) {
+    		printf("getGroupInfo fail:%d", ret);
+    		goto err_getGroupInfo;
+    	}
+    
+    err_getGroupInfo:
+    	cJSON_free(param);
+    err_cJSON_Delete:
+    	cJSON_Delete(msg);
+    	return ret;
     }
-
-    int32_t HichainGmInit(void)
+    
+    void HichainGmDestroyGroupInfo(char **groupVec)
     {
-        uint32_t num = 0;
-        int32_t ret;
-
-        ret = GetCommonDevInfo(COMM_DEVICE_KEY_UDID, DEFAULT_UDID_NAME, MAX_LEN);
-        printf("ret=%d, UDID=%s\n", ret, DEFAULT_UDID_NAME);
-
-        ret = HichainGmRegCallback();
-        if (ret != SOFTBUS_OK) {
-            SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_ERROR, "HichainGmregCallback failed\n");
-            goto err_HichainGmRegCallback;
-        }
-
-        ret = HichainGmGetGroupInfo(&num);
-        if (ret != SOFTBUS_OK) {
-            SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_ERROR, "HichainGmGetGroupInfo failed\n");
-            goto err_HichainGmGetGroupInfo;
-        }
-
-    #if host
-        if (num == 0) {
-            ret = HichainGmCreatGroup();
-            if (ret) {
-                SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_ERROR, "HichainGmCreatGroup failed\n");
-                return ret;
-            }
-        }
-    #else
-        ret = scanf("%d", &DEFAULT_PORT);
-        if (ret < 0) {
-             printf("scanf error\n");
-        }
-        printf("port is:%d\n", DEFAULT_PORT);
-        ret = HichainGmAddMemberToGroup();
-        if (ret) {
-            SoftBusLog(SOFTBUS_LOG_AUTH, SOFTBUS_LOG_ERROR, "HichainGmAddMemberToGroup failed\n");
-            return ret;
-        }
-    #endif
-        return ret;
-
+    	g_hichainGmInstance->destroyInfo(groupVec);
+    }
+    
+    int HichainGmCreatGroup(void)
+    {
+    	cJSON *msg = cJSON_CreateObject();
+    	char *param = NULL;
+    	int ret;
+    
+    	if (msg == NULL)
+    		return -1;
+    
+    	if (cJSON_AddNumberToObject(msg, FIELD_GROUP_TYPE, PEER_TO_PEER_GROUP) == NULL ||
+    		cJSON_AddStringToObject(msg, FIELD_DEVICE_ID, g_udid) == NULL ||
+    		cJSON_AddStringToObject(msg, FIELD_GROUP_NAME, DEFAULT_GROUP_NAME) == NULL ||
+    		cJSON_AddNumberToObject(msg, FIELD_USER_TYPE, 0) == NULL ||
+    		cJSON_AddNumberToObject(msg, FIELD_GROUP_VISIBILITY, GROUP_VISIBILITY_PUBLIC) == NULL ||
+    		cJSON_AddNumberToObject(msg, FIELD_EXPIRE_TIME, EXPIRE_TIME_MAX) == NULL) {
+    		printf("HichainGmCreatGroup: cJSON_AddToObject fail\n");
+    		cJSON_Delete(msg);
+    		return -1;
+    	}
+    	param = cJSON_PrintUnformatted(msg);
+    	if (param == NULL) {
+    		printf("HichainGmCreatGroup: cJSON_PrintUnformatted fail\n");
+    		cJSON_Delete(msg);
+    		return -1;
+    	}
+    
+    	ret = g_hichainGmInstance->createGroup(ANY_OS_ACCOUNT, g_requestId++, APP_ID, param);
+    
+    	cJSON_free(param);
+    	cJSON_Delete(msg);
+    	return ret;
+    }
+    
+    bool HichainIsDeviceInGroup(const char *groupId, const char *devId)
+    {
+    	return g_hichainGmInstance->isDeviceInGroup(ANY_OS_ACCOUNT, APP_ID, groupId, devId);
+    }
+    
+    int HichainGmAddMemberToGroup(const DeviceInfo *device, const char *groupId)
+    {
+    	cJSON *msg = cJSON_CreateObject();
+    	cJSON *addr = NULL;
+    	char *param = NULL;
+    	int ret = -1;
+    
+    	if (msg == NULL) {
+    		printf("HichainGmAddMemberToGroup: cJSON_CreateObject1 fail\n");
+    		return -1;
+    	}
+    
+    	addr = cJSON_CreateObject();
+    	if (addr == NULL) {
+    		printf("HichainGmAddMemberToGroup: cJSON_CreateObject2 fail\n");
+    		goto err_cJSON_CreateObject;
+    	}
+    
+    	for (unsigned int i = 0; i < device->addrNum; i++) {
+    		if (device->addr[i].type == CONNECTION_ADDR_ETH) {
+    			if (cJSON_AddStringToObject(addr, FIELD_ETH_IP, device->addr[i].info.ip.ip) == NULL ||
+    					cJSON_AddNumberToObject(addr, FIELD_ETH_PORT, device->addr[i].info.ip.port) == NULL) {
+    				printf("HichainGmAddMemberToGroup: cJSON_AddToObject1 fail\n");
+    				goto err_cJSON_AddToObject;
+    			}
+    		} else if (device->addr[i].type == CONNECTION_ADDR_WLAN) {
+    			if (cJSON_AddStringToObject(addr, FIELD_WLAN_IP, device->addr[i].info.ip.ip) == NULL ||
+    					cJSON_AddNumberToObject(addr, FIELD_WLAN_PORT, device->addr[i].info.ip.port) == NULL) {
+    				printf("HichainGmAddMemberToGroup: cJSON_AddToObject2 fail\n");
+    				goto err_cJSON_AddToObject;
+    			}
+    		} else {
+    			printf("unsupport connection type:%d\n", device->addr[i].type);
+    			goto err_cJSON_AddToObject;
+    		}
+    	}
+    
+    	param = cJSON_PrintUnformatted(addr);
+    	if (param == NULL) {
+    		printf("HichainGmAddMemberToGroup: cJSON_PrintUnformatted1 fail\n");
+    		goto err_cJSON_AddToObject;
+    	}
+    
+    	if (cJSON_AddStringToObject(msg, FIELD_GROUP_ID, groupId) == NULL ||
+    		cJSON_AddNumberToObject(msg, FIELD_GROUP_TYPE, PEER_TO_PEER_GROUP) == NULL ||
+    		cJSON_AddStringToObject(msg, FIELD_PIN_CODE, DEFAULT_PIN_CODE) == NULL ||
+    		cJSON_AddStringToObject(msg, FIELD_DEVICE_ID, g_udid) == NULL ||
+    		cJSON_AddStringToObject(msg, FIELD_GROUP_NAME, DEFAULT_GROUP_NAME) == NULL ||
+    		cJSON_AddBoolToObject(msg, FIELD_IS_ADMIN, false) == NULL ||
+    		cJSON_AddStringToObject(msg, FIELD_CONNECT_PARAMS, param) == NULL) {
+    		printf("HichainGmAddMemberToGroup: cJSON_AddToObject4 fail\n");
+    		goto err_cJSON_AddToObject1;
+    	}
+    
+    	cJSON_free(param);
+    	param = cJSON_PrintUnformatted(msg);
+    	if (param == NULL) {
+    		printf("HichainGmAddMemberToGroup: cJSON_PrintUnformatted fail\n");
+    		goto err_cJSON_CreateObject;
+    	}
+    
+    	ret = g_hichainGmInstance->addMemberToGroup(ANY_OS_ACCOUNT, g_requestId++, APP_ID, param);
+    	if (ret != 0) {
+    		printf("addMemberToGroup fail:%d\n", ret);
+    	}
+    
+    err_cJSON_AddToObject1:
+    	cJSON_free(param);
+    err_cJSON_AddToObject:
+    	cJSON_Delete(addr);
+    err_cJSON_CreateObject:
+    	cJSON_Delete(msg);
+    	return ret;
+    }
+    
+    int HichainInit(void)
+    {
+    	char *groupVec = NULL;
+    	uint32_t num;
+    	int ret;
+    
+    	ret = GetDevUdid(g_udid, MAX_UDID_LEN);
+    	if (ret) {
+    		printf("GetDevUdid fail:%d\n", ret);
+    		return ret;
+    	}
+    
+    	ret = InitDeviceAuthService();
+    	if (ret != 0) {
+    		printf("InitDeviceAuthService fail:%d\n", ret);
+    		return ret;
+    	}
+    
+    	g_hichainGmInstance = GetGmInstance();
+    	if (g_hichainGmInstance == NULL) {
+    		printf("GetGmInstance fail\n");
+    		ret = -1;
+    		goto err_GetGmInstance;
+    	}
+    
+    	ret = HichainGmRegCallback();
+    	if (ret != 0) {
+    		printf("HichainGmregCallback fail.:%d\n", ret);
+    		goto err_HichainGmRegCallback;
+    	}
+    
+    	ret = HichainGmGetGroupInfo(&groupVec, &num);
+    	if (ret != 0) {
+    		printf("HichainGmGetGroupInfo fail:%d\n", ret);
+    		goto err_HichainGmGetGroupInfo;
+    	}
+    
+    	if (num == 0) {
+    		ret = HichainGmCreatGroup();
+    		if (ret) {
+    			printf("HichainGmCreatGroup fail:%d\n", ret);
+    			goto err_HichainGmCreatGroup;
+    		}
+    	} else {
+    		printf("HichainGmGetGroupInfo:num=%u\n", num);
+    		HichainSaveGroupID(groupVec);
+    		HichainGmDestroyGroupInfo(&groupVec);
+    	}
+    
+    	return 0;
+    
+    err_HichainGmCreatGroup:
     err_HichainGmGetGroupInfo:
+    	HichainGmUnRegCallback();
     err_HichainGmRegCallback:
-        return ret;
+    err_GetGmInstance:
+    	DestroyDeviceAuthService();
+    	return ret;
     }
 
 .. note::
 
-    * 通过host宏定义区分host和target设备：在host上创建群组，target上申请添加成员。
+    * 在HichainInit完成后，可以在任意一端调用HichainGmAddMemberToGroup申请将本端设备添加到对端的群组中。
 
-    * 认证中使用的pin码，可由用户随机生成并传入。
+    * 认证中使用的pin码，分别在两端设备中通过addMemberToGroup函数和HiChainGmOnRuest回调函数接口传入，实际应用中可由用户随机生成。
 
-    * 认证过程中需要交互部分对端信息，如groupID等，实际应用中需要借助软总线的发现能力和认证通道进行数据交互。
+    * HichainGmAddMemberToGroup认证过程中需要交互的对端信息，如deviceInfo，groupID等，实际应用中可通过软总线的发现能力和认证通道进行数据交互。
 
 2.与OpenHarmony互联时，可通过上述方式创建双方信任的可信群组和成员，也可使用分布式硬件中的device manger模块进行更便捷的可信群组创建，该模块兼容OpenHarmony的pin码弹窗等功能，但需要openEuler额外支持。
 

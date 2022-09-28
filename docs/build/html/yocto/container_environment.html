@@ -134,7 +134,21 @@ $ bitbake buildtools-tarball or bitbake buildtools-extended-tarball
 </div>
 <p>buildtools-tarball.bb、buildtools-extended-tarball.bb 文件存在于 <strong>poky/meta/recipes-core/meta/</strong> 目录， 原理是将 nativesdk 构建的包生成一个 sdk 工具（位于 <strong>build/tmp/deploy/sdk</strong> 目录），开发者可通过将 sdk 工具安装到指定目录或者移动到另一个相同的主机环境中安装使用，然后执行目录中的环境配置脚本配置环境，这时就配置好了相应的环境。</p>
 <p>执行步骤：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sh x86_64-buildtools-extended-nativesdk-standalone-3.3.6.sh -y -d /opt/buildtools/nativesdk
+<ol class="loweralpha simple">
+<li><p>安装与适配 sdk 工具</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># sh x86_64-buildtools-extended-nativesdk-standalone-3.3.6.sh -y -d /opt/buildtools/nativesdk</span>
+<span class="c1"># mv /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/meson /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/meson.bak</span>
+<span class="c1"># mv /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/meson.real /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/meson</span>
+<span class="c1"># ln -s /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/python3 /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/python</span>
+<span class="c1"># ln -s /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/x86_64-pokysdk-linux-libtool /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/libtool</span>
+<span class="c1"># sed -i &#39;s|/../lib/rpm|/../../lib/rpm|g&#39; /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/lib/rpm/rpmdeps</span>
+</pre></div>
+</div>
+<ol class="loweralpha simple" start="2">
+<li><p>初始化 openEuler Embedded 构建环境</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># su openeuler
 $ source /opt/buildtools/nativesdk/environment-setup-x86_64-pokysdk-linux
 </pre></div>
 </div>

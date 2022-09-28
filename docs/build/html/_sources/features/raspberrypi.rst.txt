@@ -180,9 +180,9 @@ b.使用HDMI登录：
 
 **分区扩容**
 
-以下内容引用: `树莓派使用：启用树莓派：分区扩容 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E6%A0%91%E8%8E%93%E6%B4%BE%E4%BD%BF%E7%94%A8.md#%E5%88%86%E5%8C%BA%E6%89%A9%E5%AE%B9>`_
+默认根目录分区空间比较小，在使用之前，需要对分区进行扩容（在22.09及其之后的版本中，已实现自动扩容，首次烧录镜像启动会自动执行扩容并提示重启）
 
-默认根目录分区空间比较小，在使用之前，需要对分区进行扩容。
+以下为手动扩容方法，内容引用: `树莓派使用：启用树莓派：分区扩容 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E6%A0%91%E8%8E%93%E6%B4%BE%E4%BD%BF%E7%94%A8.md#%E5%88%86%E5%8C%BA%E6%89%A9%E5%AE%B9>`_
 
 1.查看磁盘分区信息
 
@@ -240,6 +240,7 @@ SD 卡对应盘符为 /dev/mmcblk0，包括 2 个分区，分别为
 .. code-block:: console
 
    resize2fs /dev/mmcblk0p2
+   #需重启生效
 
 树莓派镜像特性介绍
 **************************
