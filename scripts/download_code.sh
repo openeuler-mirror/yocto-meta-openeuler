@@ -244,6 +244,7 @@ download_code()
     update_code_repo src-openeuler/pcre2 ${SRC_BRANCH}
     update_code_repo src-openeuler/mosquitto ${SRC_BRANCH}
     update_code_repo src-openeuler/uthash ${SRC_BRANCH}
+    update_code_repo src-openeuler/check ${SRC_BRANCH}
     update_code_repo src-openeuler/ppp ${SRC_BRANCH}
     update_code_repo src-openeuler/freetype ${SRC_BRANCH}
     update_code_repo src-openeuler/mesa ${SRC_BRANCH}
