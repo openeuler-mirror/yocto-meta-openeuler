@@ -674,8 +674,8 @@ hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，�
     
     #define FIELD_ETH_IP "ETH_IP"
     #define FIELD_ETH_PORT "ETH_PORT"
-    #define FIELD_WLAN_IP "WLAN_IP"
-    #define FIELD_WLAN_PORT "WLAN_PORT"
+    #define FIELD_WLAN_IP "WIFI_IP"
+    #define FIELD_WLAN_PORT "WIFI_PORT"
     
     static const DeviceGroupManager *g_hichainGmInstance = NULL;
     static char g_udid[MAX_UDID_LEN];
