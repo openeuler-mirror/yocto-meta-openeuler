@@ -65,6 +65,7 @@ ncurses-libpanel \
 ncurses-terminfo \
 ncurses-terminfo-base \
 pciutils \
+perf \
 policycoreutils \
 policycoreutils-fixfiles \
 policycoreutils-hll \
