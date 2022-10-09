@@ -28,6 +28,7 @@ curl \
 dosfstools \
 e2fsprogs \
 e2fsprogs-tune2fs \
+ethercat \
 ethtool \
 expat \
 grep \
