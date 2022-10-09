@@ -65,6 +65,7 @@ ncurses-libmenu \
 ncurses-libpanel \
 ncurses-terminfo \
 ncurses-terminfo-base \
+nlopt \
 pciutils \
 perf \
 policycoreutils \
