@@ -9,16 +9,7 @@ LIC_FILES_CHKSUM = "file://LICENSES/LICENSE;md5=1acb172ffd3d252285dd1b8b8459941e
 
 OPENEULER_REPO_NAME = "iSulad"
 
-SRC_URI = " \
-        file://v${PV}.tar.gz \
-        file://iSulad/0001-fix-memleak.patch \
-        file://iSulad/0002-cleancode-about-rest-register-container.patch \
-        file://iSulad/0003-adapt-to-openssl-3.0.patch \
-        file://iSulad/0004-remove-redundant-header-files.patch \
-        file://iSulad/0005-add-isulad-args.patch \
-        file://iSulad/0006-invalid-free-default-runtime-and-cri-runtime-after-f.patch \
-        file://iSulad/0007-calculate-timezone-by-tm_gmtoff.patch \
-        "
+SRC_URI = "file://v${PV}.tar.gz"
 
 S = "${WORKDIR}/iSulad-v${PV}"
 
