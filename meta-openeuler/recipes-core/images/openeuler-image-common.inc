@@ -39,7 +39,7 @@ set_permissions_from_rootfs() {
    pushd "${IMAGE_ROOTFS}"
    # set file permissions for secure
    chmod 750 ./etc/init.d
-
+   popd
 }
 
 DISTRO_FEATURES += "glibc"
