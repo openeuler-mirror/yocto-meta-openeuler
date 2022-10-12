@@ -7,6 +7,8 @@ S = "${WORKDIR}/${BPN}-${PV}"
 
 FILESEXTRAPATHS_append := "${THISDIR}/procps/:"
 
+OPENEULER_REPO_NAME = "procps-ng"
+
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
             git://gitlab.com/procps-ng/procps.git;protocol=https \

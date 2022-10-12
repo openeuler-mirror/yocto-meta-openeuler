@@ -28,6 +28,34 @@ python () {
         raise bb.parse.SkipRecipe("Set PREFERRED_PROVIDER_virtual/kernel to %s to enable it" % (d.getVar("PN")))
 }
 
+python do_fetch_prepend() {
+    import subprocess
+
+    repoList = [{
+        "repo_name": "yocto-embedded-tools",
+        "git_space": "openeuler",
+        "branch": "master"
+    }]
+
+    d.setVar("PKG_REPO_LIST", repoList)
+
+    bb.build.exec_func("do_openeuler_fetchs", d)
+
+    srcDir = d.getVar("OPENEULER_SP_DIR")
+    kernelDir = os.path.join(srcDir, "kernel-5.10")
+    srcKernelDir = os.path.join(srcDir, "src-kernel-5.10")
+    kernelBranch = d.getVar("OPENEULER_KERNEL_BRANCH")
+
+    gitCommand = '''
+git config --global http.sslverify false
+git clone https://gitee.com/openeuler/kernel.git -v {} -b {} --depth 1
+git clone https://gitee.com/src-openeuler/kernel.git -v {} -b {} --depth 1
+'''.format(kernelDir, kernelBranch, srcKernelDir, d.getVar("OPENEULER_BRANCH"))
+
+    gitCommandPopen  = subprocess.Popen(gitCommand, shell=True, )
+    gitCommandPopen.communicate()
+}
+
 KERNEL_CC_append_aarch64 = " ${TOOLCHAIN_OPTIONS}"
 KERNEL_LD_append_aarch64 = " ${TOOLCHAIN_OPTIONS}"
 

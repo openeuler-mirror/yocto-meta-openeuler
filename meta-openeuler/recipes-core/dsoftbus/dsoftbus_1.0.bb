@@ -52,6 +52,30 @@ FILES_${PN} = "${libdir} ${bindir} /data/"
 INSANE_SKIP_${PN} += "already-stripped"
 ALLOW_EMPTY_${PN} = "1"
 
+python do_fetch_prepend() {
+    repoList = [{
+        "repo_name": "yocto-embedded-tools",
+        "git_space": "openeuler",
+        "branch": "master"
+    },{
+        "repo_name": "libboundscheck",
+        "git_space": "src-openeuler",
+        "branch": "openEuler-22.09"
+    },{
+        "repo_name": "dsoftbus_standard",
+        "git_space": "openeuler",
+        "branch": "v3.1"
+    },{
+        "repo_name": "embedded-ipc",
+        "git_space": "openeuler",
+        "branch": "master"
+    }]
+
+    d.setVar("PKG_REPO_LIST", repoList)
+
+    bb.build.exec_func("do_openeuler_fetchs", d)
+}
+
 do_unpack_append() {
     bb.build.exec_func('do_copy_dsoftbus_source', d)
 }

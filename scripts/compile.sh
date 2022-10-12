@@ -134,10 +134,33 @@ set_env()
         DATETIME="$(date +%Y%m%d%H%M%S)"
     fi
     grep -q "DATETIME" conf/local.conf || echo "DATETIME = \"${DATETIME}\"" >> conf/local.conf
+
+    # set OPENEULER_BRANCH,OPENEULER_GIT_PRE,OPENEULER_GIT_SPACE in conf/local.conf
+    # you can download upstream source package with them
+    grep -q "OPENEULER_BRANCH = \"${SRC_BRANCH}\"" conf/local.conf || echo "OPENEULER_BRANCH = \"${SRC_BRANCH}\"" >> conf/local.conf
+    grep -q "OPENEULER_GIT_PRE = \"${GIT_PRE}\"" conf/local.conf || echo "OPENEULER_GIT_PRE = \"${GIT_PRE}\"" >> conf/local.conf
+    grep -q "OPENEULER_GIT_SPACE = \"${GIT_SPACE}\"" conf/local.conf || echo "OPENEULER_GIT_SPACE = \"${GIT_SPACE}\"" >> conf/local.conf
+    grep -q "OPENEULER_KERNEL_BRANCH = \"${KERNEL_BRANCH}\"" conf/local.conf || echo "OPENEULER_KERNEL_BRANCH = \"${KERNEL_BRANCH}\"" >> conf/local.conf
+}
+
+download_pre_repo()
+{
+    if [ -z "${SRC_DIR}" ];then
+        SRC_DIR="$(cd $(dirname $0)/../../;pwd)"
+    fi
+    SRC_DIR="$(realpath ${SRC_DIR})"
+
+    POKY_DIR=${SRC_DIR}/yocto-poky
+    test -d ${POKY_DIR} || git clone https://gitee.com/openeuler/yocto-poky.git -v ${POKY_DIR} -b ${SRC_BRANCH} --depth 1
 }
 
 main()
 {
+    KERNEL_BRANCH="5.10.0-106.18.0"
+    SRC_BRANCH="openEuler-22.09"
+    GIT_PRE="https://gitee.com"
+    GIT_SPACE="src-openeuler"
+    download_pre_repo
     get_build_info "$@" || return 1
     set_env
     echo -e "Tip: You can now run 'bitbake ${BITBAKE_OPT}'.\n"

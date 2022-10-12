@@ -8,6 +8,8 @@ SRC_URI_remove += " \
            file://0001-Makefile-fix-Issue36464-parallel-build-race-problem.patch \
 "
 
+OPENEULER_BRANCH = "openEuler-22.03-LTS"
+
 SRC_URI =+ " \
     file://00001-rpath.patch \
     file://00111-no-static-lib.patch \

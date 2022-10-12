@@ -6,6 +6,7 @@ SRC_URI_remove = "git://git.infradead.org/mtd-utils.git;branch=master"
 
 SRC_URI_prepend = "file://${BP}.tar.bz2 \
                    "
+OPENEULER_BRANCH = "openEuler-22.03-LTS"
 
 S = "${WORKDIR}/${BP}"
 

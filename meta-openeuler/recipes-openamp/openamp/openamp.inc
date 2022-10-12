@@ -10,6 +10,8 @@ BUGTRACKER = "https://gitee.com/openeuler/yocto-meta-openeuler"
 ### Package manager metadata: SECTION, PRIOIRTY(only for deb, opkg)
 SECTION = "libs"
 
+OPENEULER_REPO_NAME = "OpenAMP"
+
 ### License metadata
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://LICENSE.md;md5=a8d8cf662ef6bf9936a1e1413585ecbf"
@@ -18,7 +20,7 @@ LIC_FILES_CHKSUM = "file://LICENSE.md;md5=a8d8cf662ef6bf9936a1e1413585ecbf"
 inherit cmake
 
 ### Build metadata: SRC_URI, SRCDATA, S, B, FILESEXTRAPATHS....
-SRC_URI = "file://OpenAMP/${BPN}-${PV}.tar.gz"
+SRC_URI = "file://${BPN}-${PV}.tar.gz"
 
 S = "${WORKDIR}/${BPN}-${PV}"
 

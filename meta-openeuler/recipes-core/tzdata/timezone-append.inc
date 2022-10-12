@@ -2,6 +2,8 @@ PV = "2022a"
 
 DL_DIR = "${OPENEULER_SP_DIR}/tzdata"
 
+OPENEULER_REPO_NAME = "tzdata"
+
 # files, patches that come from openeuler
 SRC_URI = " \
         file://tzcode${PV}.tar.gz;name=tzcode \
