@@ -33,10 +33,19 @@ add_sysroot_link() {
     popd
 }
 
+add_include_link() {
+    # users may use aarch64-openeuler-linux-g++ to compile files without --include
+    # add include link to the real usr/include dir for using convenient.
+    pushd ${SDK_OUTPUT}/${SDKPATHNATIVE}/usr/${EXTERNAL_TARGET_SYS}
+    # must relative path, otherwise will not found after decompression
+    ln -s ../../../${REAL_MULTIMACH_TARGET_SYS}/usr/include include
+    popd
+}
+
 #functions added to last after sdk has been created
 SDK_POSTPROCESS_COMMAND += "copy_opeueuler_sdk;"
 #functions prepend to the front before sdk has been packaged
-SDK_POSTPROCESS_COMMAND =+ "delete_bin_from_sdk; add_sysroot_link;"
+SDK_POSTPROCESS_COMMAND =+ "delete_bin_from_sdk; add_sysroot_link; add_include_link;"
 
 # host nativesdk packages added to sdk
 TOOLCHAIN_HOST_TASK = " \
