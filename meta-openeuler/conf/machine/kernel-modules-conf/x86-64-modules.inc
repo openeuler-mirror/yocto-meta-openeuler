@@ -14,7 +14,6 @@ kernel-module-fuse \
 kernel-module-sr-mod \
 kernel-module-ata-generic \
 kernel-module-igb \
-kernel-module-ahci \
 kernel-module-chipreg \
 kernel-module-mtdblock \
 kernel-module-nfsd \
@@ -28,9 +27,4 @@ kernel-module-virtio-net \
 kernel-module-virtio-balloon \
 kernel-module-virtio-console \
 kernel-module-virtio-gpu \
-kernel-module-bochs-drm \
-kernel-module-qxl \
-kernel-module-cirrus \
-kernel-module-nvme \
-kernel-module-i915 \
 "
