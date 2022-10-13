@@ -102,10 +102,6 @@ RDEPENDS_packagegroup-base_append_aarch64-std = " \
 dsoftbus \
 "
 
-RDEPENDS_packagegroup-base_append_raspberrypi4-64 = " \
-dsoftbus \
-"
-
 RDEPENDS_packagegroup-base_remove_riscv64 += " \
 libhugetlbfs \
 "
