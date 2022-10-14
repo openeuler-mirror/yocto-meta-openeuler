@@ -356,12 +356,6 @@ softbus客户端API头文件在嵌入式版本提供的sdk中对外开放，可�
         	}
         
         	printf("<GetAllNodeDeviceInfo>return %d Node\n", num);
-        	for (int i = 0; i < num; i++) {
-        		printf("<num %d>deviceName=%s\n", i + 1, dev[i]->deviceName);
-        		printf("\tnetworkId=%s\n", dev[i]->networkId);
-        		printf("\tType=%d\n", dev[i]->deviceTypeId);
-        	}
-        
         	return num;
         }
         
@@ -380,6 +374,12 @@ softbus客户端API头文件在嵌入式版本提供的sdk中对外开放，可�
         	dev_num = GetAllNodeDeviceInfoInterface(&dev);
         	if (dev_num <= 0) {
         		return;
+        	}
+        
+        	for (int i = 0; i < dev_num; i++) {
+        		printf("<num %d>deviceName=%s\n", i + 1, dev[i].deviceName);
+        		printf("\tnetworkId=%s\n", dev[i].networkId);
+        		printf("\tType=%d\n", dev[i].deviceTypeId);
         	}
         
         	printf("\nInput Node num to commnunication:");
