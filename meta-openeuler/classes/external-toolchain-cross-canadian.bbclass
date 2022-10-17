@@ -24,8 +24,8 @@ FILES_MIRRORS += "\
 # Align with more typical toolchain layout. Everything is already isolated by
 # EXTERNAL_TARGET_SYS, we don't need cross-canadian.bbclass to do it for us.
 bindir = "${exec_prefix}/bin"
-libdir = "${exec_prefix}/lib"
-libdir_aarch64 = "${exec_prefix}/lib64"
+libdir_arm = "${exec_prefix}/lib"
+libdir = "${exec_prefix}/lib64"
 libexecdir = "${exec_prefix}/libexec"
 
 # We're relying on a compatible host libc, not one from a nativesdk build
