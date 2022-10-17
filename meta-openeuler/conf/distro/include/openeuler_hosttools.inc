@@ -79,8 +79,7 @@ ASSUME_PROVIDED += "qemu-native rsync-native nativesdk-qemuwrapper-cross"
 ASSUME_PROVIDED += "dwarfsrcfiles-native"
 
 # used by libpam
-#ASSUME_PROVIDED += "libxml2-native attr-native"
-ASSUME_PROVIDED += "attr-native"
+ASSUME_PROVIDED += "libxml2-native attr-native"
 # used by make-mod-scripts
 ASSUME_PROVIDED += "gmp-native"
 # used by cracklib
@@ -99,3 +98,9 @@ ASSUME_PROVIDED += "gperf-native perl-native \
                       \
                     gtk-doc-native \
                     "
+
+HOSTTOOLS_NONFATAL += "dtc"
+ASSUME_PROVIDED += "dtc-native intltool-native"
+
+# used by wayland
+ASSUME_PROVIDED += "xorgproto-native python3-mako-native expat-native"
