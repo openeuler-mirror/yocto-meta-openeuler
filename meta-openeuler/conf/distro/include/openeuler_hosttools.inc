@@ -104,3 +104,11 @@ ASSUME_PROVIDED += "dtc-native intltool-native"
 
 # used by wayland
 ASSUME_PROVIDED += "xorgproto-native python3-mako-native expat-native"
+
+# used by tcl
+ASSUME_PROVIDED += "tcl-native"
+
+# used by python3
+ASSUME_PROVIDED += "bzip2-replacement-native libffi-native openssl-native sqlite3-native zlib-native \
+        xz-native libtirpc-native libnsl2-native autoconf-archive-native \
+        gdbm-native readline-native"

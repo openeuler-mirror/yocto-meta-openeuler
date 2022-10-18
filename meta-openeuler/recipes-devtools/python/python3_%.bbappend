@@ -24,3 +24,13 @@ SRC_URI =+ " \
     file://backport-bpo-42146-Unify-cleanup-in-subprocess_fork_exec-GH-2.patch \
     file://add-the-sm3-method-for-obtaining-the-salt-value.patch \
 "
+
+# meta-openeuler layer does not need to build python3-native dependency packages,
+# but gets them directly from the nativesdk tool
+# Find header from nativesdk
+CPPFLAGS_append_class-native = " -I${OPENEULER_NATIVESDK_SYSROOT}/usr/include \
+    -I${OPENEULER_NATIVESDK_SYSROOT}/usr/include/ncursesw -I${OPENEULER_NATIVESDK_SYSROOT}/usr/include/uuid \
+"
+
+# Find library from nativesdk
+LDFLAGS_append_class-native = " -L${OPENEULER_NATIVESDK_SYSROOT}/usr/lib"
