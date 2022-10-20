@@ -8,9 +8,13 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=c678957b0c8e964aa6c70fd77641a71e \
 SECTION = "console/utils"
 
 SRC_URI = "file://sed/sed-${PV}.tar.xz \
-           file://sed/backport-sed-c-flag.patch \
            file://sed/backport-sed-handle-very-long-execution-lines-tiny-change.patch \
            file://sed/backport-sed-handle-very-long-input-lines-with-R-tiny-change.patch \
+           file://sed/backport-maint-avoid-new-warning-about-deprecated-security_co.patch \
+           file://sed/backport-maint-update-obsolete-constructs-in-configure.ac.patch \
+           file://sed/backport-sed-avoid-potential-double-fclose.patch \
+           file://sed/backport-sed-fix-temp-file-cleanup.patch \
+           file://sed/backport-sed-c-flag.patch \
            file://run-ptest \
 "
 
