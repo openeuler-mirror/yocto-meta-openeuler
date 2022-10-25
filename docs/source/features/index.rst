@@ -13,3 +13,5 @@
    distributed_softbus.rst
    raspberrypi.rst
    preempt_rt.rst
+   rust.rst
+   
