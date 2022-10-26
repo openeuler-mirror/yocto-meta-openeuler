@@ -317,6 +317,7 @@ download_code()
     update_code_repo src-openeuler/zstd master
     update_code_repo src-openeuler/libsolv master
     update_code_repo src-openeuler/rpm master
+    update_code_repo src-openeuler/tcpdump ${SRC_BRANCH}
 }
 
 # download iSulad related packages
