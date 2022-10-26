@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="zh-CN" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>qemu使用和调试 &mdash; openEuler Embedded在线文档 1.0.0 文档</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <title>qemu使用和调试 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
@@ -35,7 +38,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">内容</span></p>
+              <p class="caption" role="heading"><span class="caption-text">内容</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">总体介绍</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
@@ -94,13 +97,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="qemu">
+  <section id="qemu">
 <span id="qemu-start-debug"></span><h1>qemu使用和调试<a class="headerlink" href="#qemu" title="永久链接至标题">¶</a></h1>
 <p>本文档主要用于介绍如何获得qemu的二进制，qemu的运行，以及如何基于qemu进行一些简单的调试。</p>
-<div class="section" id="id1">
+<section id="id1">
 <h2>qemu使用<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
 <p>下面介绍如何在自己的机器上编译并运行一个linux镜像。</p>
-<div class="section" id="id2">
+<section id="id2">
 <h3>获取二进制<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h3>
 <p>获取qemu的二进制可以通过如下方式:</p>
 <ul>
@@ -131,12 +134,12 @@
 <p>configure时可以通过不同的参数来enable/disable一些qemu的特性或编译选项，如示例中增加的–disable-werror可以允许编译warning；如想要体验openEuler Embedded共享文件系统场景，需要在configure时增加–enable-virtfs来使能对应功能。</p>
 </div>
 </div></blockquote>
-</div>
-<div class="section" id="openeuler-embedded">
+</section>
+<section id="openeuler-embedded">
 <h3>openEuler Embedded镜像<a class="headerlink" href="#openeuler-embedded" title="永久链接至标题">¶</a></h3>
 <p>参照 <a class="reference internal" href="../getting_started/index.html#getting-started"><span class="std std-ref">快速上手</span></a> 部分。</p>
-</div>
-<div class="section" id="id4">
+</section>
+<section id="id4">
 <h3>qemu运行<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h3>
 <p>一个简单的qemu执行命令如下：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd initrd</span>
@@ -161,18 +164,18 @@
 <li><p><strong>-s -S</strong>: 可选，调试参数。 <code class="docutils literal notranslate"><span class="pre">-S</span></code> 可以让qemu加载OS的zImage、initrd到指定位置后停止运行，等待gdb连接； <code class="docutils literal notranslate"><span class="pre">-s</span></code> 等价于 <code class="docutils literal notranslate"><span class="pre">--gdb</span> <span class="pre">tcp::1234</span></code> ，启动gdb server并默认监听1234端口</p></li>
 <li><p><strong>-serial</strong>: 可选，用于串口重定向。不指定时默认为 <code class="docutils literal notranslate"><span class="pre">-serial</span> <span class="pre">stdio</span></code> ，即打印到标准输入输出。也可以重定向到tcp: <code class="docutils literal notranslate"><span class="pre">-serial</span> <span class="pre">tcp::1111,server,nowait</span></code> ，通过 <code class="docutils literal notranslate"><span class="pre">telnet</span> <span class="pre">localhost</span> <span class="pre">1111</span></code> 连接</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="id5">
+</section>
+</section>
+<section id="id5">
 <h2>内核调试<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
 <p>qemu的另一大优势便是可以使用gdb来对内核进行调试，这对于嵌入式开发者来说能极大的提高开发效率。
 在原有的开发环境中，如果想调试内核，只能在出问题的代码附近加上printk打印，重编内核，将镜像烧到开发板上查看打印信息，如果出问题的阶段非常早，无法调用printk，还需要手动实现往串口物理地址打印的代码。</p>
 <p>而有了gdb之后，可以直接在内核需要调试的位置下断点，查看对应的寄存器和变量的值。</p>
-<div class="section" id="id6">
+<section id="id6">
 <h3>调试准备<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h3>
 <p>除了上面使用部分需要的东西之外，我们还需要一个vmlinux文件，一般在编译linux内核后在内核的根目录下就能找到。可以自行从openEuler社区下载linux的源码并编译生成。另外请确保vmlinux和zImage是由同一份内核源码和同一份内核config生成。</p>
-</div>
-<div class="section" id="id7">
+</section>
+<section id="id7">
 <h3>实例<a class="headerlink" href="#id7" title="永久链接至标题">¶</a></h3>
 <p>以aarch64为例，介绍如何使用qemu进行内核调试。</p>
 <div class="admonition note">
@@ -207,9 +210,9 @@
 <li><p><strong>bt</strong>: 查看调用栈</p></li>
 <li><p><strong>b [addr] [if condition]</strong>: 断点，某些场景下可能需要条件断点来过滤部分（如想查看某个中断是否上报可以在中断入口处增加调试断点，减少非预期的停止）</p></li>
 </ul>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
            </div>
