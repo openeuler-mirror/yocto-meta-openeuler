@@ -18,7 +18,6 @@ kernel-module-chipreg \
 kernel-module-mtdblock \
 kernel-module-nfsd \
 kernel-module-xhci-plat-hcd \
-kernel-module-xhci-pci \
 kernel-module-usb-storage \
 kernel-module-vfat \
 kernel-module-quota-v1 \
@@ -27,4 +26,7 @@ kernel-module-virtio-net \
 kernel-module-virtio-balloon \
 kernel-module-virtio-console \
 kernel-module-virtio-gpu \
+kernel-module-ixgbe \
+kernel-module-i40e \
+kernel-module-e1000e \
 "
