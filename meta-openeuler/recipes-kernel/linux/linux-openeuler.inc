@@ -80,6 +80,12 @@ do_install_append(){
     fi
 }
 
+do_deploy_append() {
+    if [ -e ${KERNEL_OUTPUT_DIR}/Image ]; then
+        install -m 0644 ${KERNEL_OUTPUT_DIR}/Image $deployDir/Image-${KERNEL_VERSION}
+    fi
+}
+
 #not found depmodwrapper, not run postinst now
 pkg_postinst_${KERNEL_PACKAGE_NAME}-base () {
     :
