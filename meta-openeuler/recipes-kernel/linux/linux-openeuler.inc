@@ -28,17 +28,17 @@ python () {
         raise bb.parse.SkipRecipe("Set PREFERRED_PROVIDER_virtual/kernel to %s to enable it" % (d.getVar("PN")))
 }
 
-python do_fetch_prepend() {
+python do_fetch() {
     import subprocess
+    import git
+    import os
 
     repoList = [{
         "repo_name": "yocto-embedded-tools",
         "git_space": "openeuler",
         "branch": "master"
     }]
-
     d.setVar("PKG_REPO_LIST", repoList)
-
     bb.build.exec_func("do_openeuler_fetchs", d)
 
     srcDir = d.getVar("OPENEULER_SP_DIR")
@@ -46,14 +46,25 @@ python do_fetch_prepend() {
     srcKernelDir = os.path.join(srcDir, "src-kernel-5.10")
     kernelBranch = d.getVar("OPENEULER_KERNEL_BRANCH")
 
-    gitCommand = '''
-git config --global http.sslverify false
-git clone https://gitee.com/openeuler/kernel.git -v {} -b {} --depth 1
-git clone https://gitee.com/src-openeuler/kernel.git -v {} -b {} --depth 1
-'''.format(kernelDir, kernelBranch, srcKernelDir, d.getVar("OPENEULER_BRANCH"))
-
-    gitCommandPopen  = subprocess.Popen(gitCommand, shell=True, )
-    gitCommandPopen.communicate()
+    def check_repo(repo_dir, branch):
+        repo = git.Repo(repo_dir)
+        with repo.config_writer() as wr:
+            wr.set_value('http', 'sslverify', 'false').release()
+        # repo directory may be not on any branch so that could not run 'git pull'
+        if len(os.listdir(repo_dir)) > 1 and len(repo.branches) > 0:
+            repo.remote().pull()
+        repo.git.checkout(branch)
+    try:
+        check_repo(kernelDir, kernelBranch)
+        check_repo(srcKernelDir, d.getVar("OPENEULER_BRANCH"))
+    except Exception as e:
+        gitCommand = '''
+    git config --global http.sslverify false
+    git clone https://gitee.com/openeuler/kernel.git -v {} -b {} --depth 1
+    git clone https://gitee.com/src-openeuler/kernel.git -v {} -b {} --depth 1
+    '''.format(kernelDir, kernelBranch, srcKernelDir, d.getVar("OPENEULER_BRANCH"))
+        gitCommandPopen  = subprocess.Popen(gitCommand, shell=True, )
+        gitCommandPopen.communicate()
 }
 
 KERNEL_CC_append_aarch64 = " ${TOOLCHAIN_OPTIONS}"
