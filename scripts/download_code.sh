@@ -113,7 +113,7 @@ download_code()
     # add new package here if required
     rm -f "${SRC_DIR}"/code.list
     update_code_repo openeuler/kernel ${KERNEL_BRANCH} kernel-5.10
-    update_code_repo src-openeuler/kernel ${SRC_BRANCH} src-kernel-5.10
+    update_code_repo src-openeuler/kernel openEuler-22.09 src-kernel-5.10
     update_code_repo src-openeuler/busybox ${SRC_BRANCH}
     update_code_repo openeuler/dsoftbus_standard v3.1
     update_code_repo src-openeuler/libboundscheck ${SRC_BRANCH}
@@ -317,7 +317,7 @@ main()
 
     if [ -z "${SRC_BRANCH}" ];then
         # the latest release branch
-        SRC_BRANCH="openEuler-22.09"
+        SRC_BRANCH="openEuler-22.03-LTS-Next"
     fi
     [ -z "${KERNEL_BRANCH}" ] && KERNEL_BRANCH="${SRC_BRANCH}"
 
