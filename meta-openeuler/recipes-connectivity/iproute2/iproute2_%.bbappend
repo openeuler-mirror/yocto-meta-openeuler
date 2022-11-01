@@ -16,6 +16,11 @@ SRC_URI += " \
     file://backport-tc-flower-Fix-buffer-overflow-on-large-labels.patch \
     file://backport-tc_util-Fix-parsing-action-control-with-space-and-sl.patch \
     file://backport-tipc-fix-keylen-check.patch \
+    file://backport-bridge-Fix-memory-leak-when-doing-fdb-get.patch \
+    file://backport-ip-address-Fix-memory-leak-when-specifying-device.patch \
+    file://backport-ip-neigh-Fix-memory-leak-when-doing-get.patch \
+    file://backport-mptcp-Fix-memory-leak-when-doing-endpoint-show.patch \
+    file://backport-mptcp-Fix-memory-leak-when-getting-limits.patch \
 "
 
 SRC_URI[sha256sum] = "56d7dcb05b564c94cf6e4549cec2f93f2dc58085355c08dcb2a8f8249c946080"

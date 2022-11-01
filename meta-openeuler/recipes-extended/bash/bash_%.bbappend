@@ -22,6 +22,7 @@ SRC_URI_append += " \
            file://bash/bugfix-Forbidden-non-root-user-to-clear-history.patch \
            file://bash/enable-dot-logout-and-source-bashrc-through-ssh.patch \
            file://bash/cd-alias.patch \
+           file://bash/bash-5.1-sw.patch \
 "
 
 SRC_URI[tarball.sha256sum] = "0cfb5c9bb1a29f800a97bd242d19511c997a1013815b805e0fdd32214113d6be"

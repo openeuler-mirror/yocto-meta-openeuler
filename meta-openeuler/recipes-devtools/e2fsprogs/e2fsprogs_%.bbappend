@@ -29,4 +29,7 @@ SRC_URI += " \
     file://0016-e2fsprogs-add-sw64.patch \
     file://0017-tune2fs-do-not-change-j_tail_sequence-in-journal-sup.patch \
     file://0018-debugfs-teach-logdump-the-n-num_trans-option.patch \
+    file://0019-tune2fs-fix-tune2fs-segfault-when-ext2fs_run_ext3_jo.patch \
+    file://0020-tune2fs-tune2fs_main-should-return-rc-when-some-erro.patch \
+    file://0021-tune2fs-exit-directly-when-fs-freed-in-ext2fs_run_ext3_journal.patch \
 "
