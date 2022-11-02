@@ -99,7 +99,6 @@ SRC_URI += " \
         file://gdb-rhbz2022177-dprintf-1.patch \
         file://gdb-rhbz2022177-dprintf-2.patch \
         file://0001-Make-c-exp.y-work-with-Bison-3.8.patch \
-        file://0002-set-entry-point-when-text-segment-is-missing.patch \
         "
 # These patches can't apply from openEuler
 # It may depend on the feature poky not enable, such as --with-rpm, texinfo, etc.

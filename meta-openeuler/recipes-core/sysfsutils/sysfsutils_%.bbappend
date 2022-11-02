@@ -9,6 +9,7 @@ SRC_URI_remove = "${SOURCEFORGE_MIRROR}/linux-diag/sysfsutils-${PV}.tar.gz \
 "
 
 SRC_URI_prepend += "file://sysfsutils/v${PV}.tar.gz \
+	file://0001-lib-Fixed-a-memory-leak-in-lib-sysfs_driver.patch \
 "
 
 # checksum changed in this version

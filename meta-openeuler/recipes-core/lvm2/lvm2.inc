@@ -23,7 +23,6 @@ SRC_URI = "file://lvm2/LVM2.${PV}.tgz \
            file://lvm2/0012-13-dm-disk.rules-check-DM_NAME-before-create-symlink.patch \
            file://lvm2/0013-dev_name-determine-whether-the-dev-aliases-linked-li.patch \
            file://lvm2/0014-lvm-code-reduce-cyclomatic-complexity.patch \
-           file://lvm2/0015-_vg_read_raw_area-fix-segfault-caused-by-using-null-.patch \
 "
 
 SRC_URI[sha256sum] = "4a63bc8a084a8ae3c7bc5e6530cac264139d218575c64416c8b99e3fe039a05c"
