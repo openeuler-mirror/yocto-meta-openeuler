@@ -1,10 +1,11 @@
 # main bbfile: yocto-poky/meta/recipes-extended/parted/parted_3.4.bb
 
 # version in openEuler
-PV = "3.4"
+PV = "3.5"
 
 # Use the source packages from openEuler
 SRC_URI_remove = " \
+            file://check-vfat.patch \
             ${GNU_MIRROR}/parted/parted-${PV}.tar.xz \
             "
 SRC_URI += "file://parted-${PV}.tar.xz \
@@ -19,7 +20,7 @@ SRC_URI += "file://parted-${PV}.tar.xz \
             file://0009-fat_clobber-set-boot_sector-NULL-and-free-boot_secto.patch \
             "
 
-SRC_URI[md5sum] = "357d19387c6e7bc4a8a90fe2d015fe80"
-SRC_URI[sha256sum] = "e1298022472da5589b7f2be1d5ee3c1b66ec3d96dfbad03dc642afd009da5342"
+SRC_URI[md5sum] = "336fde60786d5855b3876ee49ef1e6b2"
+SRC_URI[sha256sum] = "4938dd5c1c125f6c78b1f4b3e297526f18ee74aa43d45c248578b1d2470c05a2"
 
 S = "${WORKDIR}/${BP}"

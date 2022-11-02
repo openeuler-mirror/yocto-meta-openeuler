@@ -24,6 +24,7 @@ SRC_URI_append = " \
         file://backport-0024-build-sys-install-pppoatm-plugin-files-with-standard.patch \
         file://backport-ppp-2.4.8-pppd-install-pppd-binary-using-standard-perms-755.patch \
         file://backport-ppp-2.4.9-configure-cflags-allow-commas.patch \
+        file://backport-pppd-Negotiate-IP-address-when-only-peer-addresses-are-provided.patch \
 "
 SRC_URI_append_riscv64 += " \
         file://backport-ppp-2.4.9-configure-cflags-allow-commas.patch \

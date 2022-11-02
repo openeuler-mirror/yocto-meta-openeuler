@@ -2,6 +2,7 @@
 
 # files, patches that come from openeuler
 SRC_URI += " \
-        file://0001-findutils-leaf-opt.patch \
-        file://0001-findutils-xautofs.patch \
+        file://backport-findutils-leaf-opt.patch \
+        file://backport-findutils-xautofs.patch \
+        file://backport-maint-fix-typo-in-comments-in-parser.c.patch \
 "

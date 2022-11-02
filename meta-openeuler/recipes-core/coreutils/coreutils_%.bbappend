@@ -33,12 +33,11 @@ SRC_URI_prepend = " \
         file://skip-the-tests-that-require-selinux-if-selinux-is-di.patch \
         file://backport-chmod-fix-exit-status-when-ignoring-symlinks.patch \
         file://backport-timeout-ensure-foreground-k-exits-with-status-137.patch \
-        file://backport-dd-improve-integer-overflow-checking.patch \
-        file://backport-dd-do-not-access-uninitialized.patch \
-        file://backport-df-fix-memory-leak.patch \
-        file://backport-ls-avoid-triggering-automounts.patch \
-        file://backport-stat-only-automount-with-cached-never.patch \
         file://backport-config-color-alias-for-ls.patch \
+        file://backport-coreutils-i18n.patch \
+        file://backport-sort-fix-sort-g-infloop-again.patch \
+        file://backport-tests-sort-NaN-infloop-augment-testing-for-recent-fi.patch \
+        file://coreutils-9.0-sw.patch \
 "
 
 SRC_URI[tarball.md5sum] = "0d79ae8a6124546e3b94171375e5e5d0"
