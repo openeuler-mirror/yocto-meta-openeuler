@@ -45,6 +45,7 @@ SRC_URI = "file://${BP}.tar.gz \
            file://0037-fix-always-print-and-temp-len.patch \
            file://0038-just-print-error-when-new-lock-failed.patch \
            file://0039-fix-bug-of-memory-free.patch \
+           file://0040-refactor-the-way-to-convert-selinux-label-to-shared.patch \
            file://0041-do-not-free-the-pointer-returned-by-dirname.patch \
            file://0042-add-x-permission-when-create-directory.patch \
            file://0043-do-not-operate-playload-and-attach-cgroup-if-no-cont.patch \
@@ -53,6 +54,7 @@ SRC_URI = "file://${BP}.tar.gz \
            file://0046-return-fail-if-no-args-or-no-rootfs-path-found.patch \
            file://0047-fix-tools-with-option-give-error-message.patch \
            file://0048-fix-do-mask-paths-after-parent-mounted.patch \
+           file://0049-skip-kill-cgroup-processes-if-no-hierarchies.patch \
 "
 
 SRC_URI_append = " \
@@ -63,7 +65,7 @@ SRC_URI_append = " \
 
 DEPENDS = "yajl libseccomp libcap"
 
-EXTRA_OECONF = "--disable-static --disable-openssl --with-rootfs-path=/var/lib/lxc/rootfs --with-distro=openeuler"
+EXTRA_OECONF = "--disable-static --disable-openssl --with-rootfs-path=/var/lib/lxc/rootfs --with-distro=${DISTRO}"
 
 inherit autotools
 

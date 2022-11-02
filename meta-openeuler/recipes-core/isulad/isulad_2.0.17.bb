@@ -9,7 +9,14 @@ LIC_FILES_CHKSUM = "file://LICENSES/LICENSE;md5=1acb172ffd3d252285dd1b8b8459941e
 
 OPENEULER_REPO_NAME = "iSulad"
 
-SRC_URI = "file://v${PV}.tar.gz"
+SRC_URI = "file://v${PV}.tar.gz \
+           file://0001-use-epoll-instead-of-select-for-wait_exit_fifo.patch \
+           file://0002-add-namespace-util-UT.patch \
+           file://0003-refactor-build-system-of-cutils-ut.patch \
+           file://0004-run-storage-layers-ut-with-non-root.patch \
+           file://0005-add-extern-C-for-mainloop-header.patch \
+           file://0006-add-UT-for-mainloop-and-network.patch \
+           "
 
 S = "${WORKDIR}/iSulad-v${PV}"
 

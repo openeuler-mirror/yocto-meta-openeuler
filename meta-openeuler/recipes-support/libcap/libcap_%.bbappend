@@ -8,6 +8,8 @@ SRC_URI = " \
     file://${BPN}-${PV}.tar.gz \
     file://libcap-buildflags.patch \
     file://Fix-syntax-error-in-DEBUG-protected-setcap.c-code.patch \
+    file://backport-psx-free-allocated-memory-at-exit.patch \
+    file://backport-Avoid-a-deadlock-in-forked-psx-thread-exit.patch \
 "
 # patches from poky
 SRC_URI += " \

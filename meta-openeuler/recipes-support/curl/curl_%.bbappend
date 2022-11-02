@@ -24,7 +24,7 @@ SRC_URI_remove = " \
 # files, patches that come from openeuler
 # do not apply backport-0101-curl-7.32.0-multilib.patch due to failure "libcurl.pc failed sanity test" when doing QA staging "pkg-config libcurl" in this patch
 SRC_URI += " \
-        file://curl/${BP}.tar.xz;name=tarball \
+        file://${BP}.tar.xz;name=tarball \
         file://backport-CVE-2022-22576.patch \
         file://backport-CVE-2022-27775.patch \
         file://backport-CVE-2022-27776.patch \
@@ -40,6 +40,9 @@ SRC_URI += " \
         file://backport-CVE-2022-32208.patch \
         file://backport-fix-configure-disable-http-auth-build-error.patch \
         file://backport-CVE-2022-35252-cookie-reject-cookies-with-control-bytes.patch \
+        file://backport-CVE-2022-32221.patch \
+        file://backport-CVE-2022-42916.patch \
+        file://backport-CVE-2022-42915.patch \
 "
 
 SRC_URI[tarball.md5sum] = "74d3c4ca8aaa6c0619806d6e246e65fb"

@@ -23,7 +23,6 @@ SRC_URI_append_aarch64 += " \
         file://0002-Porting-optimized-longest_match.patch \
         file://0003-arm64-specific-build-patch.patch \
         file://zlib-1.2.11-SIMD.patch \
-        file://0005-Accelerate-Adler32-using-arm64-SVE-instructions.patch \
         "
 
 SRC_URI[tarball.md5sum] = "85adef240c5f370b308da8c938951a68"
