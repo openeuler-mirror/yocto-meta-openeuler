@@ -48,6 +48,12 @@ SRC_URI = " \
     file://0029-x86-consistently-use-scalar_mode-for-AVX512-FP16-sca.patch \
     file://backport-CVE-2022-38126.patch \
     file://backport-0001-texi2pod.pl-add-no-op-no-split-option-support-PR2814.patch \
+    file://backport-AArch64-Add-support-for-AArch64-EFI-efi-aarch64.patch \
+    file://backport-Add-support-for-AArch64-EFI-efi-aarch64.patch \
+    file://backport-don-t-over-align-file-positions-of-PE-executable-sec.patch \
+    file://backport-PR28186-SEGV-elf.c-7991-30-in-_bfd_elf_fixup_group_sections.patch \
+    file://backport-PR28422-build_id-use-after-free.patch \
+    file://backport-PR28540-segmentation-fault-on-NULL-byte_get.patch \
 "
 
 # apply used patches from poky

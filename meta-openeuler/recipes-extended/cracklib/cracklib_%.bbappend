@@ -1,4 +1,4 @@
-PV = "2.9.7"
+PV = "2.9.8"
 
 # get new 0001-packlib.c-support-dictionary-byte-order-dependent.patch from higher poky
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
@@ -16,5 +16,5 @@ SRC_URI =+ " \
            file://fix-truncating-dict-file-without-input-data.patch \
 "
 
-SRC_URI[md5sum] = "48a0c8810ec4780b99c0a4f9931c21c6"
-SRC_URI[sha256sum] = "8b6fd202f3f1d8fa395d3b7a5d821227cfd8bb4a9a584a7ae30cf62cea6287dd"
+SRC_URI[md5sum] = "95af362be51495fd6d5dc593e4a5e187"
+SRC_URI[sha256sum] = "268733f8c5f045a08bf1be2950225efeb3d971e31eb543c002269d1a3d98652d"
