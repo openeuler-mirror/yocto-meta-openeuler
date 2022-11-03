@@ -117,7 +117,7 @@ download_code()
     update_code_repo src-openeuler/busybox ${SRC_BRANCH}
     update_code_repo openeuler/dsoftbus_standard v3.1
     update_code_repo src-openeuler/libboundscheck ${SRC_BRANCH}
-    update_code_repo openeuler/yocto-embedded-tools master
+    update_code_repo openeuler/yocto-embedded-tools ${SRC_BRANCH}
     update_code_repo openeuler/embedded-ipc master
     update_code_repo openeuler/yocto-poky ${SRC_BRANCH}
     update_code_repo src-openeuler/yocto-pseudo ${SRC_BRANCH}
@@ -174,7 +174,7 @@ download_code()
     update_code_repo src-openeuler/iptables ${SRC_BRANCH}
     update_code_repo src-openeuler/dhcp ${SRC_BRANCH}
     update_code_repo src-openeuler/libhugetlbfs ${SRC_BRANCH}
-    update_code_repo src-openeuler/libnl3 ${SRC_BRANCH}
+    update_code_repo src-openeuler/libnl3 openEuler-22.09
     update_code_repo src-openeuler/libpcap ${SRC_BRANCH} 
     update_code_repo src-openeuler/nfs-utils ${SRC_BRANCH}
     update_code_repo src-openeuler/rpcbind ${SRC_BRANCH}
@@ -191,8 +191,8 @@ download_code()
     update_code_repo src-openeuler/raspberrypi-firmware ${SRC_BRANCH}
     update_code_repo src-openeuler/gmp ${SRC_BRANCH}
     update_code_repo src-openeuler/gdb ${SRC_BRANCH}
-    update_code_repo src-openeuler/libmetal master
-    update_code_repo src-openeuler/OpenAMP master
+    update_code_repo src-openeuler/libmetal ${SRC_BRANCH}
+    update_code_repo src-openeuler/OpenAMP ${SRC_BRANCH}
     update_code_repo src-openeuler/sysfsutils ${SRC_BRANCH}
     update_code_repo src-openeuler/tcl ${SRC_BRANCH}
     update_code_repo src-openeuler/expect ${SRC_BRANCH}
@@ -203,8 +203,7 @@ download_code()
     update_code_repo src-openeuler/libidn2 ${SRC_BRANCH}
     update_code_repo src-openeuler/libunistring ${SRC_BRANCH}
     update_code_repo src-openeuler/gnutls ${SRC_BRANCH}
-    # openeuler nettle in 22.03 is newer than 22.09, use 22.03
-    update_code_repo src-openeuler/nettle openEuler-22.03-LTS
+    update_code_repo src-openeuler/nettle ${SRC_BRANCH}
     update_code_repo src-openeuler/rng-tools ${SRC_BRANCH}
     update_code_repo src-openeuler/bash-completion ${SRC_BRANCH}
     update_code_repo src-openeuler/coreutils ${SRC_BRANCH}
@@ -224,8 +223,7 @@ download_code()
     update_code_repo src-openeuler/syslinux ${SRC_BRANCH}
     update_code_repo src-openeuler/cdrkit ${SRC_BRANCH}
     update_code_repo src-openeuler/yocto-opkg-utils ${SRC_BRANCH}
-    # version of openeuler 3.10.2 for 22.09 is hard to support as our poky version(Hardknott), use 22.03
-    update_code_repo src-openeuler/python3 openEuler-22.03-LTS
+    update_code_repo src-openeuler/python3 ${SRC_BRANCH}
     update_code_repo src-openeuler/libgpg-error ${SRC_BRANCH}
     update_code_repo src-openeuler/libgcrypt ${SRC_BRANCH}
     update_code_repo src-openeuler/kbd ${SRC_BRANCH}
@@ -250,7 +248,7 @@ download_code()
     update_code_repo src-openeuler/libdrm ${SRC_BRANCH}
     update_code_repo src-openeuler/xorg-x11-proto-devel ${SRC_BRANCH}
     update_code_repo src-openeuler/tslib ${SRC_BRANCH}
-    update_code_repo src-openeuler/mtd-utils openEuler-22.03-LTS
+    update_code_repo src-openeuler/mtd-utils ${SRC_BRANCH}
     update_code_repo src-openeuler/dtc ${SRC_BRANCH}
 }
 
