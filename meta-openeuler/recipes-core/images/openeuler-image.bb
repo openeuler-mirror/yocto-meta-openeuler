@@ -2,8 +2,6 @@
 IMAGE_FSTYPES = "cpio.gz"
 IMAGE_FSTYPES_DEBUGFS = "cpio.gz"
 INITRAMFS_MAXSIZE = "262144"
-#delete depends to cpio-native, use nativesdk's cpio
-do_image_cpio[depends] = ""
 
 # build an iso image, the live-os uses openeuler-image-live, it must be the same as itself(openeuler-image)
 # when LIVE_ROOTFS_TYPE defined, bug may come out in poky, so just use default value ext4 in image-live.bbclass.

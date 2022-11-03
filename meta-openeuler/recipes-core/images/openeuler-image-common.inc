@@ -8,7 +8,6 @@ LICENSE = "MIT"
 IMAGE_FSTYPES ?= "cpio.gz"
 IMAGE_FSTYPES_DEBUGFS ?= "cpio.gz"
 INITRAMFS_MAXSIZE ?= "262144"
-do_image_cpio[depends] ?= ""
 
 inherit core-image
 

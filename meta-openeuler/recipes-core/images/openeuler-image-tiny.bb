@@ -7,8 +7,6 @@ SUMMARY = "A small image just capable of allowing a device to boot."
 IMAGE_FSTYPES = "cpio.gz"
 IMAGE_FSTYPES_DEBUGFS = "cpio.gz"
 INITRAMFS_MAXSIZE = "262144"
-#delete depends to cpio-native, use nativesdk's cpio
-do_image_cpio[depends] = ""
 
 require recipes-core/images/${MACHINE}.inc
 require openeuler-image-common.inc

@@ -24,7 +24,6 @@ export IMAGE_BASENAME = "openeuler-image-live"
 IMAGE_FSTYPES = "cpio.gz"
 IMAGE_FSTYPES_DEBUGFS = "cpio.gz"
 INITRAMFS_MAXSIZE = "262144"
-do_image_cpio[depends] ?= ""
 
 # make install or nologin when using busybox-inittab
 set_permissions_from_rootfs_append() {
