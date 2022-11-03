@@ -1,0 +1,32 @@
+From 76bcd1d6d26ebe0424e2c5edc7f5a31a82ae3a7c Mon Sep 17 00:00:00 2001
+From: Yu Watanabe <watanabe.yu+github@gmail.com>
+Date: Fri, 28 Jan 2022 11:53:49 +0900
+Subject: [PATCH] sd-dhcp-server: refuse too large packet to send
+
+Fixes https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=44134.
+
+(cherry picked from commit 71df50a9734f7006bc1ac8be59ca81c797b39c35)
+(cherry picked from commit 530a18d49361ade6d3f09abb78f8f901753a4cda)
+
+Conflict:NA
+Reference:https://github.com/systemd/systemd/commit/76bcd1d6d26ebe0424e2c5edc7f5a31a82ae3a7c
+---
+ src/libsystemd-network/sd-dhcp-server.c         |   3 +++
+
+diff --git a/src/libsystemd-network/sd-dhcp-server.c b/src/libsystemd-network/sd-dhcp-server.c
+index 3f4af8440e..0b3904c02a 100644
+--- a/src/libsystemd-network/sd-dhcp-server.c
++++ b/src/libsystemd-network/sd-dhcp-server.c
+@@ -296,6 +296,9 @@ static int dhcp_server_send_unicast_raw(sd_dhcp_server *server,
+ 
+         memcpy(&link.ll.sll_addr, &packet->dhcp.chaddr, ETH_ALEN);
+ 
++        if (len > UINT16_MAX)
++                return -EOVERFLOW;
++
+         dhcp_packet_append_ip_headers(packet, server->address, DHCP_PORT_SERVER,
+                                       packet->dhcp.yiaddr,
+                                       DHCP_PORT_CLIENT, len, -1);
+-- 
+2.33.0
+
