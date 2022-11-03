@@ -1,4 +1,3 @@
-inherit populate_sdk
 #set IMAGE_LOCALES_ARCHIVE to 0 and unset SDKIMAGE_LINGUAS, to avoid run generate_locale_archive()
 IMAGE_LOCALES_ARCHIVE = "0"
 # currently we don't install language configurations
