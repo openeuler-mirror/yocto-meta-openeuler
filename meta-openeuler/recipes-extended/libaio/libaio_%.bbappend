@@ -11,14 +11,6 @@ SRC_URI = " \
     file://0005-Fix-compile-error-that-exec-checking-need-super-priv.patch \
 "
 
-SRC_URI_remove_arm = " \
-        file://0002-libaio-makefile-cflags.patch \
-"
-
-SRC_URI_remove_riscv64 = " \
-        file://0002-libaio-makefile-cflags.patch \
-"
-
 SRC_URI[sha256sum] = "ab0462f2c9d546683e5147b1ce9c195fe95d07fac5bf362f6c01637955c3b492"
 
 S = "${WORKDIR}/${BPN}-${PV}"
