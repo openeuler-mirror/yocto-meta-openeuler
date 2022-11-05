@@ -13,6 +13,8 @@ python set_rpmdeps() {
 addhandler set_rpmdeps
 set_rpmdeps[eventmask] = "bb.event.RecipePreFinalise"
 
+# qemu.bbclass; fix build error: the kernel is too old
+QEMU_OPTIONS_remove = "-r ${OLDEST_KERNEL}"
 
 # fetch multi repos in one recipe bb file, an example is
 # dsoftbus_1.0.bb where multi repos required by dsoftbus are
