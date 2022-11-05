@@ -121,6 +121,8 @@ download_code()
     update_code_repo openeuler/embedded-ipc master
     update_code_repo openeuler/yocto-poky ${SRC_BRANCH}
     update_code_repo src-openeuler/yocto-pseudo ${SRC_BRANCH}
+    update_code_repo openeuler/yocto-meta-openembedded dev_hardknott
+    update_code_repo openeuler/yocto-meta-ros dev_hardknott
     update_code_repo src-openeuler/audit ${SRC_BRANCH}
     update_code_repo src-openeuler/cracklib ${SRC_BRANCH}
     update_code_repo src-openeuler/libcap-ng ${SRC_BRANCH}
