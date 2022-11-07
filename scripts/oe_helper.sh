@@ -34,6 +34,7 @@ compile mode: source $script [-C] [-p PLATFORM] [-o BUILD_DIR] <-t TOOLCHAIN_DIR
                         busybox (defaut)
                         systemd
   --enable-rt       Enable PREEMPT_RT kernel
+  --enable-qt       Build qt5
 EOF
 }
 
@@ -71,6 +72,9 @@ while getopts "hDCSd:b:m:p:o:t:i:-:" opt; do
             case "${OPTARG}" in
                 enable-rt) ENABLE_PREEMPT_RT=1
                            echo "Note: enable PREEMPT_RT."
+                           ;;
+                enable-qt) ENABLE_QT=1
+                           echo "Note: enable QT."
                            ;;
                 *)  usage
                     return 1
@@ -136,6 +140,11 @@ if [ $compile_mode == 1 ]; then
     source ${script_dir}/compile.sh ${PLATFORM} ${BUILD_DIR} ${TOOLCHAIN_DIR}
     if [ $ENABLE_PREEMPT_RT == 1 ]; then
         sed -i "s|^PREFERRED_PROVIDER_virtual/kernel .*|PREFERRED_PROVIDER_virtual/kernel = \"linux-openeuler-rt\"|g" conf/local.conf
+    fi
+    if [ $ENABLE_QT == 1 ]; then
+        grep "meta-oe" conf/bblayers.conf |grep -qv "^[[:space:]]*#" || sed -i "/\/meta-openeuler /a \  "${SRC_DIR}"/yocto-meta-openembedded/meta-oe \\\\" conf/bblayers.conf
+        grep "meta-qt5" conf/bblayers.conf |grep -qv "^[[:space:]]*#" || sed -i "/\/meta-openeuler /a \  "${SRC_DIR}"/yocto-meta-qt5 \\\\" conf/bblayers.conf
+        echo 'DISTRO_FEATURES_append = " opengl wayland"' >> conf/local.conf
     fi
     case $INIT_MANAGER in
     "busybox")
