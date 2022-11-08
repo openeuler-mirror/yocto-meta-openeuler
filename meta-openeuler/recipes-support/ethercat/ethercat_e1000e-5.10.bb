@@ -29,9 +29,6 @@ EXTRA_OECONF += "--with-linux-dir=${STAGING_KERNEL_BUILDDIR}"
 EXTRA_OECONF += "--with-module-dir=kernel/ethercat"
 
 do_configure_prepend() {
-	# Do distclean before configure to fix the error in the second compilation:
-	# | error: .libs/libethercat_la-common.o: No such file or directory
-	oe_runmake distclean
 	# Fixes configure error
 	# | Makefile.am: error: required file './ChangeLog' not found"
 	touch ChangeLog
@@ -43,6 +40,9 @@ do_compile_append() {
 
 do_install_append() {
 	oe_runmake MODLIB=${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION} modules_install
+	# Do distclean after installation to fix the error in the second compilation:
+	# | error: .libs/libethercat_la-common.o: No such file or directory
+	oe_runmake distclean
 }
 
 FILES_${PN} += "${nonarch_base_libdir}/modules/${KERNEL_VERSION}"
