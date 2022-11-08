@@ -81,10 +81,10 @@ while true; do
     if [ -n "$TARGET_CDROM_NAME" ]; then
         break
     fi
-done                                                                            
+done
 
 mkdir -p /run/media/${TARGET_CDROM_NAME}/
-mount -t iso9660 /dev/${TARGET_CDROM_NAME} /run/media/${TARGET_CDROM_NAME}/
+mount /dev/${TARGET_CDROM_NAME} /run/media/${TARGET_CDROM_NAME}/
 if [ ! -e /run/media/${TARGET_CDROM_NAME}/${rootfs_name} ]; then
     echo "Can't find ${rootfs_name} in root of ${TARGET_CDROM_NAME}, mountpoints: /run/media/${TARGET_CDROM_NAME}/"
     echo "Mounted info:"
@@ -332,7 +332,7 @@ cp /run/media/${TARGET_CDROM_NAME}/EFI/BOOT/*.efi $EFIDIR
 if [ -f /run/media/${TARGET_CDROM_NAME}/EFI/BOOT/grub.cfg ]; then
     GRUBCFG_TMP=/tmp/grub.cfg.local
     cp /run/media/${TARGET_CDROM_NAME}/EFI/BOOT/grub.cfg $GRUBCFG_TMP
-    
+
     root_part_uuid=$(blkid -o value -s PARTUUID ${rootfs})
     GRUBCFG="$EFIDIR/grub.cfg"
     # Update grub config for the installed image
@@ -375,7 +375,7 @@ fi
 # Copy kernel artifacts. To add more artifacts just add to types
 # For now just support kernel types already being used by something in OE-core
 for types in bzImage zImage vmlinux vmlinuz fitImage; do
-    for kernel in `find /run/media/${TARGET_CDROM_NAME}/ -name $types*`; do
+    for kernel in `find /run/media/${TARGET_CDROM_NAME}/ -iname $types*`; do
         cp $kernel /boot
     done
 done
