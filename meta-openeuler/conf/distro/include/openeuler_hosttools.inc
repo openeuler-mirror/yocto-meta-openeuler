@@ -112,3 +112,8 @@ ASSUME_PROVIDED += "tcl-native"
 ASSUME_PROVIDED += "bzip2-replacement-native libffi-native openssl-native sqlite3-native zlib-native \
         xz-native libtirpc-native libnsl2-native autoconf-archive-native \
         gdbm-native readline-native"
+
+# used by gobject-introspection
+HOSTTOOLS_NONFATAL += "qemu-aarch64"
+# used by harfbuzz
+HOSTTOOLS_NONFATAL += "glib-mkenums"
