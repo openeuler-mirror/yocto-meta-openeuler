@@ -184,7 +184,8 @@ python do_openeuler_fetch() {
 # if success,  other part of base_do_fetch will skip download as
 # files are already downloaded by do_openeuler_fetch
 python base_do_fetch_prepend() {
-    bb.build.exec_func("do_openeuler_fetch", d)
+    if not d.getVar('OPENEULER_FETCH') or d.getVar('OPENEULER_FETCH') == "enable":
+        bb.build.exec_func("do_openeuler_fetch", d)
 }
 
 python do_openeuler_clean() {
