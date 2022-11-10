@@ -1,3 +1,5 @@
+OPENEULER_REPO_NAME = "wpa_supplicant"
+
 # version in openEuler
 PV = "2.10"
 
@@ -13,7 +15,7 @@ file://CVE-2021-27803.patch \
 file://CVE-2021-30004.patch \
 "
 
-SRC_URI_prepend = "file://wpa_supplicant/wpa_supplicant-${PV}.tar.gz \
+SRC_URI_prepend = "file://wpa_supplicant-${PV}.tar.gz \
 "
 
 # checksum changed

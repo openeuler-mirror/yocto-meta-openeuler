@@ -1,5 +1,8 @@
 # main bb file: yocto-poky/meta/recipes-gnome/gobject-introspection/gobject-introspection_1.66.1.bb
 
+# source from openEuler-22.09 branch requires meson >= 0.58, but the current meson version is 0.57.1
+OPENEULER_BRANCH = "openEuler-22.03-LTS"
+
 PV = "1.70.0"
 
 # this patch has been merged into this version

@@ -1,8 +1,13 @@
 # apply openeuler source package
-SRC_URI = "file://raspberrypi-firmware/raspberrypi-firmware-20220316.tar.gz \
+
+OPENEULER_REPO_NAME = "raspberrypi-firmware"
+
+PV = "20220316"
+
+SRC_URI = "file://raspberrypi-firmware-${PV}.tar.gz \
 "
 
-S = "${WORKDIR}/raspberrypi-firmware-20220316"
+S = "${WORKDIR}/raspberrypi-firmware-${PV}"
 
 LICENSE = "\
     Firmware-broadcom_bcm43xx-rpidistro \
