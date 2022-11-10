@@ -65,6 +65,7 @@ download_mode=0
 ENABLE_PREEMPT_RT=0
 INIT_MANAGER="busybox"
 OPTIND=1
+ENABLE_QT=0
 
 while getopts "hDCSd:b:m:p:o:t:i:-:" opt; do
     case $opt in
