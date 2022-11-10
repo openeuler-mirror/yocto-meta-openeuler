@@ -1,7 +1,8 @@
 # package and patches from openeuler
+PV = "23.5"
+
 SRC_URI = " \
     file://psmisc-${PV}.tar.xz \
-    file://backport-patch-fix-checking-truncated-process-names.patch \
 "
 
 # patches from poky
