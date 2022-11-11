@@ -293,6 +293,7 @@ download_code()
     update_code_repo src-openeuler/python-setuptools_scm master
     update_code_repo src-openeuler/python-toml master
     update_code_repo src-openeuler/python-zipp master
+    update_code_repo src-openeuler/meson master
 }
 
 # download iSulad related packages
