@@ -18,8 +18,8 @@ TOOLCHAIN_TARGET_TASK_remove += "${@multilib_pkg_extend(d, 'packagegroup-core-st
 #not depends to native tools like, update-alternatives, update-rc.d as they are provided by nativesdk
 do_rootfs[depends] = ""
 
-#no depends on some native tools: qemu-wrapper, etc
-DEPENDS_remove += "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])} qemuwrapper-cross depmodwrapper-cross cross-localedef-native"
+#no depends on some native tools: cross-localdef-native
+DEPENDS_remove += "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])} cross-localedef-native"
 SDK_DEPENDS_remove += "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])}"
 RPMROOTFSDEPENDS = ""
 
