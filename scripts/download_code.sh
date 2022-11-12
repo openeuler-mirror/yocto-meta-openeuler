@@ -262,6 +262,37 @@ download_code()
     update_code_repo src-openeuler/libunwind ${SRC_BRANCH}
     update_code_repo src-openeuler/libatomic_ops ${SRC_BRANCH}
     update_code_repo src-openeuler/libmodbus master
+    update_code_repo src-openeuler/python-argcomplete master
+    update_code_repo src-openeuler/python-asn1crypto master
+    update_code_repo src-openeuler/python-cmd2 master
+    update_code_repo src-openeuler/python-cython master
+    update_code_repo src-openeuler/python-dateutil master
+    update_code_repo src-openeuler/python-docutils master
+    update_code_repo src-openeuler/python-idna master
+    update_code_repo src-openeuler/python-importlib-metadata master
+    update_code_repo src-openeuler/python-lxml master
+    update_code_repo src-openeuler/python-mccabe master
+    update_code_repo src-openeuler/python-mock master
+    update_code_repo src-openeuler/python-more-itertools master
+    update_code_repo src-openeuler/python-netifaces master
+    update_code_repo src-openeuler/numpy master
+    update_code_repo src-openeuler/python-packaging master
+    update_code_repo src-openeuler/python-pathlib2 master
+    update_code_repo src-openeuler/python-pep8 master
+    update_code_repo src-openeuler/python-pip master
+    update_code_repo src-openeuler/python-ply master
+    update_code_repo src-openeuler/python-prettytable master
+    update_code_repo src-openeuler/pybind11 master
+    update_code_repo src-openeuler/pyflakes master
+    update_code_repo src-openeuler/pyparsing master
+    update_code_repo src-openeuler/python-pyperclip master
+    update_code_repo src-openeuler/pytest master
+    # PyYAML current we have trouble with higher verion for uncompatible with setuptools:_sysconfigdate
+    update_code_repo src-openeuler/PyYAML openEuler-20.03-LTS
+    update_code_repo src-openeuler/python-setuptools openEuler-22.03-LTS-Next
+    update_code_repo src-openeuler/python-setuptools-scm master
+    update_code_repo src-openeuler/python-toml master
+    update_code_repo src-openeuler/python-zipp master
 }
 
 # download iSulad related packages
