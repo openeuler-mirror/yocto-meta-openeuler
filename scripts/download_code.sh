@@ -294,6 +294,29 @@ download_code()
     update_code_repo src-openeuler/python-toml master
     update_code_repo src-openeuler/python-zipp master
     update_code_repo src-openeuler/meson master
+    update_code_repo src-openeuler/gnupg2 master
+    update_code_repo src-openeuler/gobject-introspection master
+    update_code_repo src-openeuler/libassuan master
+    update_code_repo src-openeuler/gpgme master
+    update_code_repo src-openeuler/gtk-doc master
+    update_code_repo src-openeuler/libdnf master
+    update_code_repo src-openeuler/libksba master
+    update_code_repo src-openeuler/libmodulemd master
+    update_code_repo src-openeuler/libyaml master
+    update_code_repo src-openeuler/lua master
+    update_code_repo src-openeuler/npth master
+    update_code_repo src-openeuler/pinentry master
+    update_code_repo src-openeuler/python-six master
+    update_code_repo src-openeuler/python-iniparse master
+    update_code_repo src-openeuler/python-setuptools master
+    update_code_repo src-openeuler/swig master
+    update_code_repo src-openeuler/dnf master
+    update_code_repo src-openeuler/file master
+    update_code_repo src-openeuler/libcomps master
+    update_code_repo src-openeuler/librepo master
+    update_code_repo src-openeuler/zstd master
+    update_code_repo src-openeuler/libsolv master
+    update_code_repo src-openeuler/rpm master
 }
 
 # download iSulad related packages
