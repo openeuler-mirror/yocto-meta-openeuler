@@ -1,16 +1,20 @@
-# main bb file: yocto-poky/meta/recipes-gnome/gobject-introspection/gobject-introspection_1.66.1.bb
+PV = "1.72.0"
 
-# source from openEuler-22.09 branch requires meson >= 0.58, but the current meson version is 0.57.1
-OPENEULER_BRANCH = "openEuler-22.03-LTS"
+DEPENDS_remove_class-target = "prelink-native"
 
-PV = "1.70.0"
+# apply new patch for 1.72.0 from poky
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+SRC_URI = "${GNOME_MIRROR}/${BPN}/${@oe.utils.trim_version("${PV}", 2)}/${BPN}-${PV}.tar.xz \
+           file://0001-g-ir-tool-template.in-fix-girdir-path.patch \
+           "
 
-# this patch has been merged into this version
-SRC_URI_remove = "file://0001-meson.build-exclude-girepo_dep-if-introspection-data.patch \
-"
+SRC_URI[sha256sum] = "02fe8e590861d88f83060dd39cda5ccaa60b2da1d21d0f95499301b186beaabc"
 
-SRC_URI[md5sum] = "940ea2d6b92efabc457b9c54ce2ff398"
-SRC_URI[sha256sum] = "902b4906e3102d17aa2fcb6dad1c19971c70f2a82a159ddc4a94df73a3cafc4a"
+do_configure_append_class-target() {
+        # delete prelink-rtld
+        cat > ${B}/g-ir-scanner-lddwrapper << EOF
+#!/bin/sh
+\$OBJDUMP -p "\$@"
+EOF
+}
 
-# use nativesdk's python3
-RDEPENDS_${PN}_remove_class-native = "python3-pickle python3-xml"
