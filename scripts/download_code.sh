@@ -265,7 +265,7 @@ download_code()
     update_code_repo src-openeuler/python-argcomplete master
     update_code_repo src-openeuler/python-asn1crypto master
     update_code_repo src-openeuler/python-cmd2 master
-    update_code_repo src-openeuler/python-cython master
+    update_code_repo src-openeuler/python-Cython master
     update_code_repo src-openeuler/python-dateutil master
     update_code_repo src-openeuler/python-docutils master
     update_code_repo src-openeuler/python-idna master
@@ -290,7 +290,7 @@ download_code()
     # PyYAML current we have trouble with higher verion for uncompatible with setuptools:_sysconfigdate
     update_code_repo src-openeuler/PyYAML openEuler-20.03-LTS
     update_code_repo src-openeuler/python-setuptools openEuler-22.03-LTS-Next
-    update_code_repo src-openeuler/python-setuptools-scm master
+    update_code_repo src-openeuler/python-setuptools_scm master
     update_code_repo src-openeuler/python-toml master
     update_code_repo src-openeuler/python-zipp master
 }
