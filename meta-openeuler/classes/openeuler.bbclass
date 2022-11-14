@@ -24,8 +24,10 @@ python do_openeuler_fetchs() {
 
     # Stage the variables related to the original package
     repoName = d.getVar("OPENEULER_REPO_NAME")
+    localName = d.getVar("OPENEULER_LOCAL_NAME")
     gitSpace = d.getVar("OPENEULER_GIT_SPACE")
     branch = d.getVar("OPENEULER_BRANCH")
+    gitPre = d.getVar('OPENEULER_GIT_PRE')
 
     repoList = d.getVar("PKG_REPO_LIST")
     for item in repoList:
@@ -34,13 +36,19 @@ python do_openeuler_fetchs() {
             d.setVar("OPENEULER_GIT_SPACE", item["git_space"])
         if "branch" in item:
             d.setVar("OPENEULER_BRANCH", item["branch"])
+        if "local" in item:
+            d.setVar("OPENEULER_LOCAL_NAME", item["local"])
+        else:
+            d.setVar("OPENEULER_LOCAL_NAME", item["repo_name"])
 
         bb.build.exec_func("do_openeuler_fetch", d)
 
     # Restore the variables related to the original package
     d.setVar("OPENEULER_REPO_NAME", repoName)
+    d.setVar("OPENEULER_LOCAL_NAME", localName)
     d.setVar("OPENEULER_GIT_SPACE", gitSpace)
     d.setVar("OPENEULER_BRANCH", branch)
+    d.setVar('OPENEULER_GIT_PRE', gitPre)
 }
 
 # fetch software package from openeuler's repos first,
@@ -99,6 +107,7 @@ python do_openeuler_fetch() {
     # get source directory where to download
     srcDir = d.getVar('OPENEULER_SP_DIR')
     repoName = d.getVar('OPENEULER_REPO_NAME')
+    localName = d.getVar('OPENEULER_LOCAL_NAME') if d.getVar('OPENEULER_LOCAL_NAME')  else repoName
     gitPre = d.getVar('OPENEULER_GIT_PRE')
     gitSpace = d.getVar('OPENEULER_GIT_SPACE')
     repoBranch = d.getVar('OPENEULER_BRANCH')
@@ -112,7 +121,7 @@ python do_openeuler_fetch() {
 
     isLock = False
     try:
-        repoDir = os.path.join(srcDir, repoName)
+        repoDir = os.path.join(srcDir, localName)
         lockFile = os.path.join(repoDir, "file.lock")
         # checkout repo code
         repoUrl = os.path.join(gitPre, gitSpace, repoName + ".git")
@@ -170,6 +179,7 @@ python do_openeuler_fetch() {
         bb.plain("===============")
         bb.plain("OPENEULER_SP_DIR: {}".format(srcDir))
         bb.plain("OPENEULER_REPO_NAME: {}".format(repoName))
+        bb.plain("OPENEULER_LOCAL_NAME: {}".format(localName))
         bb.plain("OPENEULER_GIT_PRE: {}".format(gitPre))
         bb.plain("OPENEULER_GIT_SPACE: {}".format(gitSpace))
         bb.plain("OPENEULER_BRANCH: {}".format(repoBranch))
