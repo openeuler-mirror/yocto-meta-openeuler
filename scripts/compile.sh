@@ -145,6 +145,7 @@ set_env()
         sed -i '$a\crypt = "musl"' conf/local.conf
         sed -i '$a\TCMODE-LIBC = "musl"' conf/local.conf
         sed -i 's/aarch64-openeuler-linux-gnu/aarch64-openeuler-linux-musl/g' conf/local.conf
+        echo "MACHINE_ESSENTIAL_EXTRA_RDEPENDS = \"musl\"" >> conf/local.conf
     else
         sed -i '$a\LIBC = "glibc"' conf/local.conf
         sed -i '$a\TCMODE-LIBC = "glibc-external"' conf/local.conf
