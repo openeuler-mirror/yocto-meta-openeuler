@@ -7,4 +7,3 @@ OPENEULER_BRANCH = "openEuler-22.03-LTS-Next"
 SRC_URI += " \
         file://bugfix-eliminate-random-order-in-metadata.patch \
 "
-

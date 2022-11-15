@@ -24,4 +24,3 @@ SRC_URI_append += " \
         file://backport-CVE-2021-41495.patch \
         file://backport-CVE-2021-34141.patch \
         "
-

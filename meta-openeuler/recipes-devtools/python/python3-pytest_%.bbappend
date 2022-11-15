@@ -9,4 +9,3 @@ OPENEULER_REPO_NAME = "${PYPI_PACKAGE}"
 SRC_URI_remove += "file://0001-setup.py-remove-the-setup_requires-for-setuptools-scm.patch "
 
 DEPENDS += "python3-pip-native"
-

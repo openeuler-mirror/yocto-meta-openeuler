@@ -10,8 +10,8 @@ WKS_FILE_DEPENDS = ""
 
 SDIMG_KERNELIMAGE = "Image"
 
-# we need more space for boot: see defination in sdcard_image-rpi.bbclass
-BOOT_SPACE = "196608" 
+# we need more space for boot: see definition in sdcard_image-rpi.bbclass
+BOOT_SPACE = "196608"
 
 require recipes-core/images/${MACHINE}.inc
 require recipes-core/images/openeuler-image-common.inc
@@ -52,7 +52,7 @@ set_permissions_from_rootfs_append() {
 
 change_bootfiles_to_enable_uefi() {
     CONFIGFILE=${DEPLOY_DIR_IMAGE}/${BOOTFILES_DIR_NAME}/config.txt
-    
+
     # change configs to use uefi and load mcs dtoverlay
     eficfg=`cat ${CONFIGFILE}  | grep RPI_EFI || true`
     if [ -z "$eficfg" ]; then

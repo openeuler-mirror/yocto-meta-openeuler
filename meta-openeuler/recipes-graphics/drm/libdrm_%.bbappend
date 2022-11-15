@@ -2,7 +2,7 @@
 
 PV = "2.4.109"
 
-DEPENDS_remove =  " python3-native libpthread-stubs"
+DEPENDS_remove = " python3-native libpthread-stubs"
 PACKAGECONFIG_remove = "intel"
 
 SRC_URI_prepend += "file://libdrm-${PV}.tar.xz \

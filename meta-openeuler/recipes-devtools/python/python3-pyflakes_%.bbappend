@@ -8,4 +8,3 @@ OPENEULER_REPO_NAME = "pyflakes"
 SRC_URI_append += " \
         file://fix-syntax-error-offsets-for-python-3.10-635.patch \
 "
-

@@ -13,4 +13,3 @@ SRC_URI_prepend = "file://dont-forward-keycode-0.patch \
 
 SRC_URI[md5sum] = "a9a24be62503d5e34df6b28204956a7b"
 SRC_URI[sha256sum] = "1cfa35e37aaabbe4792e9bb690468efefbfbf6b147d9c69d6f90d13c3092ea6c"
-

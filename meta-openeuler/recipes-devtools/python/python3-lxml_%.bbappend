@@ -7,4 +7,3 @@ require pypi-src-openeuler.inc
 SRC_URI_append += " \
         file://backport-Work-around-libxml2-bug-in-affected-versions.patch \
         "
-

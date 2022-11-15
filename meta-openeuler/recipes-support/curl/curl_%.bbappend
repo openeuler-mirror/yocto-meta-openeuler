@@ -55,4 +55,3 @@ EXTRA_OECONF_remove += " \
         --with-ca-bundle=${sysconfdir}/ssl/certs/ca-certificates.crt \
 "
 RRECOMMENDS_lib${BPN}_remove += "ca-certificates"
-

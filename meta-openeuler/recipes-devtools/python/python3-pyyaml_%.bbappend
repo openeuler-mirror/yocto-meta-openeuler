@@ -7,4 +7,3 @@ OPENEULER_BRANCH = "openEuler-20.03-LTS"
 SRC_URI_remove += "${PYPI_SRC_URI} "
 SRC_URI_prepend += "file://${PV}.tar.gz "
 S = "${WORKDIR}/pyyaml-${PV}"
-

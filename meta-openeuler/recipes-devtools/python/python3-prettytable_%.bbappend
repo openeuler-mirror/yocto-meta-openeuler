@@ -12,4 +12,3 @@ OPENEULER_BRANCH = "master"
 SRC_URI_prepend += "file://prettytable-${PV}.tar.gz "
 
 DEPENDS += "python3-pip-native"
-

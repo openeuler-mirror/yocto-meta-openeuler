@@ -69,4 +69,3 @@ do_install_append () {
     chrpath --delete ${D}${libdir}/libgobject-2.0.so
     chrpath --delete ${D}${libdir}/libgmodule-2.0.so
 }
-

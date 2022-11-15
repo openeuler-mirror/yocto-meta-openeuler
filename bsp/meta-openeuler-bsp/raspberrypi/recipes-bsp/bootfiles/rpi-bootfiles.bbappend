@@ -10,7 +10,7 @@ do_deploy[depends] += " \
     rpi-uefi:do_deploy \
 "
 
-# add mcs reseved memory dtoverlay package
+# add mcs reserved memory dtoverlay package
 do_deploy[depends] += " \
     mcs-memreserve-overlay:do_deploy \
 "

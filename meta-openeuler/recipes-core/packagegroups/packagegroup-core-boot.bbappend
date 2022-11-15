@@ -14,7 +14,7 @@ RDEPENDS_${PN}_remove_x86-64 += "kernel-img"
 
 # * netbase's configuration files are included in os-base
 #   to avoid extra download
-#   we don't neet grub-efi in non-live iamge
+#   we don't need grub-efi in non-live image
 RDEPENDS_${PN}_remove =  " \
     netbase \
     ${@bb.utils.contains("MACHINE_FEATURES", "efi", "${EFI_PROVIDER} kernel", "", d)} \

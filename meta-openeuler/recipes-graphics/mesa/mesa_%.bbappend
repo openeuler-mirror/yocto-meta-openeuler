@@ -26,4 +26,3 @@ SRC_URI += " \
 SRC_URI[tarball.md5sum] = "17a4ea65de7a9ab42437f3131e616a7f"
 SRC_URI[tarball.sha256sum] = "646e6c5a9a185faa4cea796d378a1ba8e1148dbb197ca6605f95986a25af2752"
 LIC_FILES_CHKSUM = "file://docs/license.rst;md5=17a4ea65de7a9ab42437f3131e616a7f"
-

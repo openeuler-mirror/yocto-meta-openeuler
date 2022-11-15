@@ -9,4 +9,3 @@ RDEPENDS_${PN}_remove = "initramfs-framework-base"
 do_install_append() {
     install -m 0755 ${WORKDIR}/init-install-efi-openeuler.sh ${D}/init.d/install-efi.sh
 }
-

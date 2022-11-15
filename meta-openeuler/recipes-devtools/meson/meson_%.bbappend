@@ -2,7 +2,7 @@ PV = "0.61.5"
 
 SRC_URI[sha256sum] = "182c53d906ced00b903a3ba5b4c4fac86f739c6d2d588d505596962c6ab68f67"
 
-# add patchs from new poky under meta-openeluer
+# add patches from new poky under meta-openeluer
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 SRC_URI = "https://github.com/mesonbuild/meson/releases/download/${PV}/meson-${PV}.tar.gz \
            file://meson-setup.py \

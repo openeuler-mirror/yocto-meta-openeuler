@@ -17,4 +17,3 @@ SRC_URI_append +=" \
         file://remove-existing-dist-only-if-path-conflicts.patch \
         file://dummy-certifi.patch \
 "
-

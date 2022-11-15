@@ -5,4 +5,3 @@ SRC_URI[sha256sum] = "637245b8bab2b6502fcbc752cc4b7a6f6243bb02b31c5c26156ad103d3
 require pypi-src-openeuler.inc
 OPENEULER_REPO_NAME = "python-importlib-metadata"
 SRC_URI_append += "file://0001-add-setup.py.patch "
-

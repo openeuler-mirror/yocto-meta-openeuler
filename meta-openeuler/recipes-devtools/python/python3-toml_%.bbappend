@@ -7,4 +7,3 @@ SRC_URI_remove += "${PYPI_SRC_URI} "
 OPENEULER_REPO_NAME = "python-${PYPI_PACKAGE}"
 OPENEULER_BRANCH = "master"
 SRC_URI_prepend += "file://${PV}.tar.gz "
-
