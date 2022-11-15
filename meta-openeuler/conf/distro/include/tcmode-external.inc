@@ -25,11 +25,11 @@ PREFERRED_PROVIDER_gcc-sanitizers ?= "gcc-sanitizers-external"
 PREFERRED_PROVIDER_libgcc-initial = "libgcc-external"
 PREFERRED_PROVIDER_libtirpc = "libtirpc-external"
 PREFERRED_PROVIDER_libgfortran = "libgfortran-external"
-PREFERRED_PROVIDER_glibc ?= "glibc-external"
-PREFERRED_PROVIDER_virtual/libc ?= "glibc-external"
-PREFERRED_PROVIDER_virtual/libintl ?= "glibc-external"
-PREFERRED_PROVIDER_virtual/libiconv ?= "glibc-external"
-PREFERRED_PROVIDER_virtual/crypt ?= "libxcrypt-external"
+PREFERRED_PROVIDER_glibc ?= "${TCMODE-LIBC}"
+PREFERRED_PROVIDER_virtual/libc ?= "${TCMODE-LIBC}"
+PREFERRED_PROVIDER_virtual/libintl ?= "${TCMODE-LIBC}"
+PREFERRED_PROVIDER_virtual/libiconv ?= "${TCMODE-LIBC}"
+PREFERRED_PROVIDER_virtual/crypt ?= "${crypt}"
 PREFERRED_PROVIDER_gdb-cross-${TARGET_ARCH} ?= "gdb-external-cross-${TARGET_ARCH}"
 PREFERRED_PROVIDER_oprofile ??= "oprofile"
 # Work around bug where the implicitly created mlprefix preference isn't being
@@ -38,7 +38,7 @@ PREFERRED_PROVIDER_${MLPREFIX}gdbserver ?= "${MLPREFIX}gdb"
 
 # This is defined in default-providers.inc, which is parsed before the tcmode,
 # so we can't use ?=
-PREFERRED_PROVIDER_linux-libc-headers = "glibc-external"
+PREFERRED_PROVIDER_linux-libc-headers = "${TCMODE-LIBC}"
 PNBLACKLIST[linux-libc-headers] = "not building with an external toolchain"
 PNBLACKLIST[linux-libc-headers-yocto] = "not building with an external toolchain"
 

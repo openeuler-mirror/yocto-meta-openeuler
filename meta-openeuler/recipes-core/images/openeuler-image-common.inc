@@ -41,4 +41,4 @@ set_permissions_from_rootfs() {
    popd
 }
 
-DISTRO_FEATURES += "glibc"
+DISTRO_FEATURES += "${LIBC}"
