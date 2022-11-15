@@ -134,7 +134,23 @@ set_env()
         DATETIME="$(date +%Y%m%d%H%M%S)"
     fi
     grep -q "DATETIME" conf/local.conf || echo "DATETIME = \"${DATETIME}\"" >> conf/local.conf
-
+    
+    if grep -q -wi "$LIBC" conf/local.conf ; then
+      sed -i '/LIBC/d' conf/local.conf
+      sed -i '/TCMODE-LIBC/d' conf/local.conf
+      sed -i '/crypt/d' conf/local.conf
+    fi
+    if [[ $TOOLCHAIN_DIR == *"musl"* ]];then
+        sed -i '$a\LIBC = "musl"' conf/local.conf
+        sed -i '$a\crypt = "musl"' conf/local.conf
+        sed -i '$a\TCMODE-LIBC = "musl"' conf/local.conf
+        sed -i 's/aarch64-openeuler-linux-gnu/aarch64-openeuler-linux-musl/g' conf/local.conf
+    else
+        sed -i '$a\LIBC = "glibc"' conf/local.conf
+        sed -i '$a\TCMODE-LIBC = "glibc-external"' conf/local.conf
+        sed -i '$a\crypt = "libxcrypt-external"' conf/local.conf
+        sed -i 's/aarch64-openeuler-linux-musl/aarch64-openeuler-linux-gnu/g' conf/local.conf
+    fi
     # set OPENEULER_BRANCH,OPENEULER_GIT_PRE,OPENEULER_GIT_SPACE in conf/local.conf
     # you can download upstream source package with them
     grep -q "OPENEULER_BRANCH = \"${SRC_BRANCH}\"" conf/local.conf || echo "OPENEULER_BRANCH = \"${SRC_BRANCH}\"" >> conf/local.conf
