@@ -14,4 +14,4 @@
    raspberrypi.rst
    preempt_rt.rst
    rust.rst
-   
+   qt5_wayland.rst
