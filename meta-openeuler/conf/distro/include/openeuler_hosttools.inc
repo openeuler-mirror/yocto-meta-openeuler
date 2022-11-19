@@ -26,7 +26,7 @@ ASSUME_PROVIDED += "automake-native autoconf-native libtool-native m4-native"
 
 # source file build tools
 HOSTTOOLS_NONFATAL += "cmake ninja meson"
-ASSUME_PROVIDED += "cmake-native ninja-native make-native"
+ASSUME_PROVIDED += "cmake-native ninja-native make-native meson-native"
 
 # used by cracklib, built from cracklib-native
 HOSTTOOLS_NONFATAL += "create-cracklib-dict cracklib-format cracklib-packer cracklib-unpacker"
