@@ -1,0 +1,47 @@
+From 06bf8d258bd41daa6efb56c4cb62cc105674a96f Mon Sep 17 00:00:00 2001
+From: wtsnyder <28737065+wtsnyder@users.noreply.github.com>
+Date: Mon, 18 Nov 2019 10:48:26 -0500
+Subject: [PATCH 4/5] Fix cmake crosscompiling (#60)
+
+Allow the nodesize_dbg tool to be built when crosscompiling.  Link it statically to avoid anoying library search paths then use the crosscompiling emulator to run it to generate container_node_sizes_impl during the build.
+
+Fixes #61.
+---
+ src/CMakeLists.txt  | 4 ++--
+ tool/CMakeLists.txt | 4 ++++
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index f7cedb6..963c85d 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -77,9 +77,9 @@ set(src
+ configure_file("config.hpp.in" "${CMAKE_CURRENT_BINARY_DIR}/config_impl.hpp")
+ 
+ # generate container_node_sizes.hpp
+-if(FOONATHAN_MEMORY_BUILD_TOOLS AND (NOT CMAKE_CROSSCOMPILING))
++if(FOONATHAN_MEMORY_BUILD_TOOLS)
+     add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/container_node_sizes_impl.hpp
+-            COMMAND foonathan_memory_node_size_debugger --code --alignof "FOONATHAN_ALIGNOF(T)" ${CMAKE_CURRENT_BINARY_DIR}/container_node_sizes_impl.hpp
++            COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:foonathan_memory_node_size_debugger> --code --alignof "FOONATHAN_ALIGNOF(T)" ${CMAKE_CURRENT_BINARY_DIR}/container_node_sizes_impl.hpp
+             DEPENDS foonathan_memory_node_size_debugger
+             VERBATIM)
+ else()
+diff --git a/tool/CMakeLists.txt b/tool/CMakeLists.txt
+index 6254e3e..e126976 100644
+--- a/tool/CMakeLists.txt
++++ b/tool/CMakeLists.txt
+@@ -5,6 +5,10 @@
+ # builds tools
+ 
+ add_executable(foonathan_memory_node_size_debugger test_types.hpp node_size_debugger.hpp node_size_debugger.cpp)
++if (CMAKE_CROSSCOMPILING)
++    # statically link when cross compiling so emulator doesn't need library paths
++    set_target_properties(foonathan_memory_node_size_debugger PROPERTIES LINK_FLAGS "-static")
++endif()
+ _foonathan_use_comp(foonathan_memory_node_size_debugger)
+ comp_target_features(foonathan_memory_node_size_debugger PUBLIC CPP11)
+ if (MSVC)
+-- 
+2.34.1
+
