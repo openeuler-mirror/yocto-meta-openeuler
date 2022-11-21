@@ -194,6 +194,20 @@ python do_openeuler_fetch() {
 # if success,  other part of base_do_fetch will skip download as
 # files are already downloaded by do_openeuler_fetch
 python base_do_fetch_prepend() {
+    # add OPENEULER_SRC_URI_REMOVE to remove some url that start with
+    # some string we set, because we maybe does not need to download it 
+    if d.getVar('OPENEULER_SRC_URI_REMOVE'):
+        REMOVELIST = d.getVar('OPENEULER_SRC_URI_REMOVE').split(' ')
+        URI = []
+        for line in d.getVar('SRC_URI').split(' '):
+            URI.append(line)
+            for removeItem in REMOVELIST:
+                if line.strip().startswith(removeItem.strip()):
+                    URI.pop()
+                    break
+        URI = ' '.join(URI)
+        d.setVar('SRC_URI', URI)
+    
     if not d.getVar('OPENEULER_FETCH') or d.getVar('OPENEULER_FETCH') == "enable":
         bb.build.exec_func("do_openeuler_fetch", d)
 }
