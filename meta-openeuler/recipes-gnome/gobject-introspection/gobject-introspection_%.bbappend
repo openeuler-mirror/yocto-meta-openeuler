@@ -18,3 +18,4 @@ do_configure_append_class-target() {
 EOF
 }
 
+RDEPENDS_${PN}_remove_class-native = "python3-pickle python3-xml"
