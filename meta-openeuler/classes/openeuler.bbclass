@@ -13,6 +13,25 @@ python set_rpmdeps() {
 addhandler set_rpmdeps
 set_rpmdeps[eventmask] = "bb.event.RecipePreFinalise"
 
+# src_uri_set is used to remove some url with variable OPENEULER_SRC_URI_REMOVE
+# that we set some head strings in, because we maybe does not need to download it 
+python src_uri_set() {
+    if d.getVar('OPENEULER_SRC_URI_REMOVE'):
+        REMOVELIST = d.getVar('OPENEULER_SRC_URI_REMOVE').split(' ')
+        URI = []
+        for line in d.getVar('SRC_URI').split(' '):
+            URI.append(line)
+            for removeItem in REMOVELIST:
+                if line.strip().startswith(removeItem.strip()):
+                    URI.pop()
+                    break
+        URI = ' '.join(URI)
+        d.setVar('SRC_URI', URI)
+}
+
+addhandler src_uri_set
+src_uri_set[eventmask] = "bb.event.RecipePreFinalise"
+
 # qemu.bbclass; fix build error: the kernel is too old
 QEMU_OPTIONS_remove = "-r ${OLDEST_KERNEL}"
 
@@ -193,21 +212,7 @@ python do_openeuler_fetch() {
 # from openeuler's gitee repo.
 # if success,  other part of base_do_fetch will skip download as
 # files are already downloaded by do_openeuler_fetch
-python base_do_fetch_prepend() {
-    # add OPENEULER_SRC_URI_REMOVE to remove some url that start with
-    # some string we set, because we maybe does not need to download it 
-    if d.getVar('OPENEULER_SRC_URI_REMOVE'):
-        REMOVELIST = d.getVar('OPENEULER_SRC_URI_REMOVE').split(' ')
-        URI = []
-        for line in d.getVar('SRC_URI').split(' '):
-            URI.append(line)
-            for removeItem in REMOVELIST:
-                if line.strip().startswith(removeItem.strip()):
-                    URI.pop()
-                    break
-        URI = ' '.join(URI)
-        d.setVar('SRC_URI', URI)
-    
+python base_do_fetch_prepend() {    
     if not d.getVar('OPENEULER_FETCH') or d.getVar('OPENEULER_FETCH') == "enable":
         bb.build.exec_func("do_openeuler_fetch", d)
 }
