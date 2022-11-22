@@ -1,4 +1,4 @@
-PV = "4.10.0"
+PV = "4.14.0"
 
 OPENEULER_BRANCH = "master"
 
@@ -17,8 +17,6 @@ SRC_URI_prepend = " \
         file://add-rpm-transaction-debuginfo.patch \
         file://adapt-test-another-process.patch \
         file://fix-dnf-history-undo-error-when-history-sqlite-missing.patch \
-        file://backport-fix-dnf-mark-error-when-history-sqlite-missing.patch \
-        file://backport-Fix-Python-dnf-API-does-not-respect-cacheonly-RhBug1862970.patch \
         file://dnf-4.10.0-sw.patch \
 "
 
@@ -29,7 +27,7 @@ SRC_URI += " \
 
 S = "${WORKDIR}/${BP}"
 
-SRC_URI[sha256sum] = "7c8d18b61cfe18104d066abbdd5a420067313ba93734120666f89695a113eba8"
+SRC_URI[sha256sum] = "7de4eb8e85c4d9a74db6f1f827d2dd3348e265631f8678a1dbf7e3346beaad53"
 
 FILES_${PN} += " \
     /etc/yum.repos.d/openEuler.repo \
