@@ -132,53 +132,25 @@
 <p>openEuler Embedded 为了减少构建主机包的时间，将尽可能多的 native 包都配置到了环境中，这是为了做到构建时不去构建所依赖的 native 包，而是直接从环境中获取，这样可以大幅减少构建时间，配置环境参考第二节 buildtools 的构建方式。</p>
 <p>openEuler Embedded buildtools 构建方法：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone -b nativesdk-3.3.6 https://gitee.com/openeuler/yocto-poky.git
+$ cd yocto-poky
 $ source oe-init-build-env
 $ bitbake buildtools-tarball or bitbake buildtools-extended-tarball
 </pre></div>
 </div>
-<p>buildtools-tarball.bb、buildtools-extended-tarball.bb 文件存在于 <strong>poky/meta/recipes-core/meta/</strong> 目录， 原理是将 nativesdk 构建的包生成一个 sdk 工具（位于 <strong>build/tmp/deploy/sdk</strong> 目录），开发者可通过将 sdk 工具安装到指定目录或者移动到另一个相同的主机环境中安装使用，然后执行目录中的环境配置脚本配置环境，这时就配置好了相应的环境。</p>
+<p>buildtools-tarball.bb、buildtools-extended-tarball.bb 文件存在于 <strong>poky/meta/recipes-core/meta/</strong> 目录， 原理是将 nativesdk 构建的包生成一个 sdk 工具（位于 <strong>build/tmp/deploy/sdk</strong> 目录），开发者可通过将 nativesdk 工具安装到指定目录或者移动到另一个相同的主机环境中安装使用，然后执行目录中的环境配置脚本配置环境，这时就配置好了相应的环境。</p>
 <p>执行步骤：</p>
 <ol class="loweralpha simple">
-<li><p>安装与适配 sdk 工具</p></li>
+<li><p>安装 nativesdk 工具</p></li>
 </ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># sh x86_64-buildtools-extended-nativesdk-standalone-3.3.6.sh -y -d /opt/buildtools/nativesdk</span>
-<span class="c1"># mv /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/meson /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/meson.bak</span>
-<span class="c1"># mv /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/meson.real /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/meson</span>
-<span class="c1"># ln -s /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/python3 /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/python</span>
-<span class="c1"># ln -s /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/x86_64-pokysdk-linux-libtool /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/libtool</span>
-<span class="c1"># sed -i &#39;s|/../lib/rpm|/../../lib/rpm|g&#39; /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/lib/rpm/rpmdeps</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ sh x86_64-buildtools-extended-nativesdk-standalone-3.3.6.sh -y -d /opt/buildtools/nativesdk
 </pre></div>
 </div>
 <ol class="loweralpha simple" start="2">
 <li><p>初始化 openEuler Embedded 构建环境</p></li>
 </ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># su openeuler
-$ source /opt/buildtools/nativesdk/environment-setup-x86_64-pokysdk-linux
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ source /opt/buildtools/nativesdk/environment-setup-x86_64-pokysdk-linux
 </pre></div>
 </div>
-<p>Yocto 构建时可能会依赖 native 包提供的文件，但每次构建 native 包都会占用构建时间，buildtools 构建支持将 nativesdk 包配置到环境中，在 buidltools 中加入该 native 包对应的 nativesdk 包，然后在构建时去除构建该 native 包，从而使用 buildtools 的包，这样便可以减少 Yocto 构建的时间；开发者可修改 buildtools-tarball.bb 或者 buildtools-extended-tarball.bb 中 <strong>TOOLCHAIN_HOST_TASK</strong> 字节加入需要的 nativesdk 包。</p>
-<p>例如，修改 poky/meta/recipes-core/meta/buildtools-extended-tarball.bb 文件，在 sdk 中加入 glib-2.0-dev 包：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TOOLCHAIN_HOST_TASK</span> <span class="o">+=</span> <span class="s2">&quot;nativesdk-glib-2.0-dev&quot;</span>
-</pre></div>
-</div>
-<p>理论上所有的 native 包都可以部署到环境，但是有些包涉及到 Yocto 的底层配置（如pseudo-native），也有一些包不支持 nativesdk 构建，即便这些包没有加入到环境中，也可以减少大量的构建时间。</p>
-<p>相关字节：</p>
-<ul class="simple">
-<li><p>ASSUME_PROVIDED：该字节字面意思是“假定提供”，作用是将对应的包不加入构建队列，即使依赖也不会构建该包；</p></li>
-<li><p>HOSTTOOLS：该字节表示使用环境中的二进制命令。</p></li>
-</ul>
-<p>例如，修改 meta-openeuler/conf/distro/include/openeuler_hosttools.inc 中 ASSUME_PROVIDED 与 HOSTTOOLS 变量，取消 bison-native 编译，直接使用环境中 bison 命令：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ASSUME_PROVIDED</span> <span class="o">+=</span> <span class="s2">&quot;bison-native&quot;</span>
-<span class="n">HOSTTOOLS</span> <span class="o">+=</span> <span class="s2">&quot;bison&quot;</span>
-</pre></div>
-</div>
-<p>只是这样并不能完全消除 native 的依赖，只能做到构建时使用的对应命令不会报错，meta-openeuler 层对 autotools 类进行了适配，有兴趣钻研者可查看 meta-openeuler 层的 autotools.bbclass 文件；此外在容器中对 sdk 工具还进行了一些简单的适配。</p>
-<div class="line-block">
-<div class="line"><strong>q</strong>：既然 native 包是主机环境构建的，是不是可以直接使用主机上的包呢？如主机环境中有 grep 包和 rpm 包。</div>
-<div class="line"><strong>a</strong>：直接使用主机上的包可能会有问题：一是软件包版本不一致，存在差异；二是 poky 构建 native 包时可能会加入一些定制补丁或者其它的配置，以适配 Yocto 的构建；测试发现 grep 命令使用没有问题，rpm 命令在构建文件系统时有问题，因此除非是一些功能特别简单的包，否则不推荐直接使用主机包。</div>
-</div>
-<p><strong>注意</strong>：当主机环境中c库版本与 poky 中c库版本有差异时，构建 buildtools-tarball 可能会失败；着重体现在当主机环境为 glibc-2.34，而 poky 中 glibc 版本低于 2.34 时，构建会出错。</p>
-<p>在研的解决方式：poky 的 uninative 机制。</p>
 </section>
 </section>
 

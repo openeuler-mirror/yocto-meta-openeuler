@@ -13,5 +13,6 @@
    distributed_softbus.rst
    raspberrypi.rst
    preempt_rt.rst
+   nativesdk.rst
    rust.rst
-   
+   qt5_wayland.rst
