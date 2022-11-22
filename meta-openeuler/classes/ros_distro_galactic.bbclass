@@ -1,6 +1,7 @@
 ROS_DISTRO = "galactic"
 
 inherit ${ROS_DISTRO_TYPE}_distro
+inherit openeuler_ros_source
 
 # make ros libs compatible with lib64
 do_configure:prepend:class-target() { 
