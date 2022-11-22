@@ -35,9 +35,16 @@ do_compile () {
 
 do_install() {
     install -m 0755 -d ${D}/
-    install -m 0755 -d ${D}/${base_libdir}
-    install -m 0755 -d ${D}/${libdir}
-    cp -pPR ${EXTERNAL_TOOLCHAIN}/aarch64-openeuler-linux-musl/sysroot/* ${D}/
+    cp -rdpRP ${EXTERNAL_TOOLCHAIN}/aarch64-openeuler-linux-musl/sysroot/* ${D}/
+    rm -rf ${D}/lib64
+    rm -rf ${D}/usr/lib64
+    mkdir ${D}/lib64
+    cp -pPR ${D}/lib/* ${D}/lib64
+    mkdir ${D}/usr/lib64
+    cp -pPR ${D}/usr/lib/* ${D}/usr/lib64
+    rm -rf ${D}/lib64/ld-musl-aarch64.so.1
+    cp ${D}/usr/lib64/libc.so ${D}/lib64/
+    mv ${D}/lib64/libc.so ${D}/lib64/ld-musl-aarch64.so.1
     chmod -R 755 ${D}/${base_libdir}
     chmod -R 755 ${D}/${libdir}
     rm -rf ${D}/etc/rpc
