@@ -1,7 +1,6 @@
-PV = "2.06"
-S = "${WORKDIR}/grub-${PV}"
+OPENEULER_REPO_NAME = "grub2"
 
-#these patch can't apply for
+PV = "2.06"
 
 SRC_URI_remove = " \
     https://alpha.gnu.org/gnu/grub/grub-${REALPV}.tar.xz \
@@ -13,7 +12,8 @@ SRC_URI_prepend = " \
 
 # Notice: openeuler's patches have much confict to patch, drop it.
 
-OPENEULER_REPO_NAME = "grub2"
 SRC_URI[sha256sum] = "b79ea44af91b93d17cd3fe80bdae6ed43770678a9a5ae192ccea803ebb657ee1"
+
+S = "${WORKDIR}/grub-${PV}"
 
 CVE_CHECK_WHITELIST = ""

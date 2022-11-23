@@ -174,7 +174,7 @@ download_code()
     update_code_repo src-openeuler/iptables ${SRC_BRANCH}
     update_code_repo src-openeuler/dhcp ${SRC_BRANCH}
     update_code_repo src-openeuler/libhugetlbfs ${SRC_BRANCH}
-    update_code_repo src-openeuler/libnl3 openEuler-22.09
+    update_code_repo src-openeuler/libnl3 ${SRC_BRANCH}
     update_code_repo src-openeuler/libpcap ${SRC_BRANCH}
     update_code_repo src-openeuler/nfs-utils ${SRC_BRANCH}
     update_code_repo src-openeuler/rpcbind ${SRC_BRANCH}
@@ -191,15 +191,15 @@ download_code()
     update_code_repo src-openeuler/raspberrypi-firmware ${SRC_BRANCH}
     update_code_repo src-openeuler/gmp ${SRC_BRANCH}
     update_code_repo src-openeuler/gdb ${SRC_BRANCH}
-    update_code_repo src-openeuler/libmetal ${SRC_BRANCH}
-    update_code_repo src-openeuler/OpenAMP ${SRC_BRANCH}
+    update_code_repo src-openeuler/libmetal openEuler-22.03-LTS-Next
+    update_code_repo src-openeuler/OpenAMP openEuler-22.03-LTS-Next
     update_code_repo src-openeuler/sysfsutils ${SRC_BRANCH}
     update_code_repo src-openeuler/tcl ${SRC_BRANCH}
     update_code_repo src-openeuler/expect ${SRC_BRANCH}
     update_code_repo src-openeuler/jitterentropy-library ${SRC_BRANCH}
     update_code_repo src-openeuler/m4 ${SRC_BRANCH}
     update_code_repo src-openeuler/gdbm ${SRC_BRANCH}
-    update_code_repo src-openeuler/libtool openEuler-22.09
+    update_code_repo src-openeuler/libtool ${SRC_BRANCH} 
     update_code_repo src-openeuler/libidn2 ${SRC_BRANCH}
     update_code_repo src-openeuler/libunistring ${SRC_BRANCH}
     update_code_repo src-openeuler/gnutls ${SRC_BRANCH}
@@ -315,7 +315,7 @@ main()
 
     if [ -z "${SRC_BRANCH}" ];then
         # the latest release branch
-        SRC_BRANCH="openEuler-22.03-LTS-Next"
+        SRC_BRANCH="openEuler-22.03-LTS-SP1"
     fi
     [ -z "${KERNEL_BRANCH}" ] && KERNEL_BRANCH="${SRC_BRANCH}"
 

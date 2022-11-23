@@ -10,6 +10,7 @@ SRC_URI = " \
     file://Fix-syntax-error-in-DEBUG-protected-setcap.c-code.patch \
     file://backport-psx-free-allocated-memory-at-exit.patch \
     file://backport-Avoid-a-deadlock-in-forked-psx-thread-exit.patch \
+    file://backport-getpcaps-catch-PID-parsing-errors.patch \
 "
 # patches from poky
 SRC_URI += " \

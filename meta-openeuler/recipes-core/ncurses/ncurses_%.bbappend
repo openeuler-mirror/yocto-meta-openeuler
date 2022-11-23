@@ -10,14 +10,15 @@ SRC_URI_remove += " \
             file://CVE-2021-39537.patch \
 "
 
-S = "${WORKDIR}/${BPN}-${PV}"
 # files, patches that come from openeuler
-SRC_URI += "file://ncurses/${BP}.tar.gz \
-           file://ncurses/ncurses-config.patch \
-           file://ncurses/ncurses-libs.patch \
-           file://ncurses/ncurses-urxvt.patch \
-           file://ncurses/ncurses-kbs.patch \
+SRC_URI_prepend += "file://${BP}.tar.gz \
+           file://ncurses-config.patch \
+           file://ncurses-libs.patch \
+           file://ncurses-urxvt.patch \
+           file://ncurses-kbs.patch \
            file://backport-CVE-2022-29458.patch \
 "
 
-SRC_URI[md5sum] = "a2736befde5fee7d2b7eb45eb281cdbe"
+SRC_URI[sha256sum] = "97fc51ac2b085d4cde31ef4d2c3122c21abc217e9090a43a30fc5ec21684e059"
+
+S = "${WORKDIR}/${BP}"

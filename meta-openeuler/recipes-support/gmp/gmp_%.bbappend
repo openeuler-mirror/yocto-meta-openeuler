@@ -4,4 +4,3 @@ SRC_URI_remove += " \
 
 SRC_URI += "file://${BPN}-${PV}.tar.bz2 \
 "
-

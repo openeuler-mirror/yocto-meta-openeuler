@@ -11,7 +11,8 @@ SRC_URI = "file://${PV}.tar.gz \
            file://0003-close-open-ssl.-we-do-NOT-use-it-in-lcrd.patch \
            file://0004-Use-shared-library-instead-static-one.patch \
            file://0005-libevhtp-add-securce-compile-options.patch \
-	  "
+           file://0006-libevhtp-add-gcov-compile-options.patch \
+	   "
 
 DEPENDS = "libevent"
 

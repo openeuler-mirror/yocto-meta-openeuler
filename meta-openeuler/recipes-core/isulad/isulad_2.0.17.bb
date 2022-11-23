@@ -16,6 +16,45 @@ SRC_URI = "file://v${PV}.tar.gz \
            file://0004-run-storage-layers-ut-with-non-root.patch \
            file://0005-add-extern-C-for-mainloop-header.patch \
            file://0006-add-UT-for-mainloop-and-network.patch \
+           file://0007-add-check-for-aes-apis.patch \
+           file://0008-add-ut-for-cutils-aes.patch \
+           file://0009-add-ut-for-cutils-error.patch \
+           file://0010-ensure-argument-is-not-null.patch \
+           file://0011-add-ut-for-utils_fs.patch \
+           file://0012-Add-adaptation-code-for-filters.patch \
+           file://0013-Add-parameter-check-to-path.patch \
+           file://0014-Add-ut-for-utils_convert.patch \
+           file://0015-Add-ut-for-path.patch \
+           file://0016-Add-ut-for-filters.patch \
+           file://0017-add-static-for-unexport-function.patch \
+           file://0018-add-ut-for-cutils-timestamp.patch \
+           file://0019-fix-timestamp-ut-error.patch \
+           file://0020-improve-code-in-utils_mount_spec.patch \
+           file://0021-Add-ut-for-utils_mount_spec.patch \
+           file://0022-Add-ut-for-utils_regex.patch \
+           file://0023-improve-code-in-utils.c.patch \
+           file://0024-add-ut-for-cutils-utils.patch \
+           file://0025-make-sure-kill-pid-not-negative.patch \
+           file://0026-add-UT-for-atomic-and-map.patch \
+           file://0027-remove-unnecessary-goto-and-add-parameter-check-for-.patch \
+           file://0028-Add-ut-for-verify.patch \
+           file://0029-fix-error-in-utils_verify_ut.patch \
+           file://0030-add-more-test-for-string-and-map.patch \
+           file://0031-remove-mnt-point-if-add-device-mapper-device-failed.patch \
+           file://0032-dec-device-info-ref-in-grow-device-fs.patch \
+           file://0033-device-mapper-bugfix.patch \
+           file://0034-delete-syncCloseSem-when-close-all-wssession.patch \
+           file://0035-improve-debug-information-for-console-io.patch \
+           file://0036-add-ut-for-file.patch \
+           file://0037-Add-extend-C-for-header-files.patch \
+           file://0038-add-isula-create-rm-option.patch \
+           file://0039-feat-add-container-cleanup-module.patch \
+           file://0040-bugfix-for-websocket-receive-data-too-long.patch \
+           file://0041-fix-call-bim_put-in-im_get_rootfs_dir.patch \
+           file://0042-isula-usage-consistency-optimization.patch \
+           file://0043-fix-do-container_unref-in-oci_rootfs_clean.patch \
+           file://0044-fix-can-not-install-isulad-rpm-because-of-spec.patch \
+           file://0045-remove-unknown-option-wno-maybe-uninitialized.patch \
            "
 
 S = "${WORKDIR}/iSulad-v${PV}"

@@ -18,8 +18,8 @@ SRC_URI_remove = " \
 
 # files, patches that come from openeuler
 SRC_URI += " \
-        file://${BP}.tar.xz;name=tarball \
+        file://${BP}.tar.xz \
 "
 
-SRC_URI[tarball.md5sum] = "88752c7859212f9c7a0f6cbf7a273535"
-SRC_URI[tarball.sha256sum] = "5bab55b49f75d77ed26b257997e919b693f29fd4a1bc22e0e6e024c246c72741"
+SRC_URI[md5sum] = "88752c7859212f9c7a0f6cbf7a273535"
+SRC_URI[sha256sum] = "5bab55b49f75d77ed26b257997e919b693f29fd4a1bc22e0e6e024c246c72741"

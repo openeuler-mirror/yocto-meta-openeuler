@@ -16,13 +16,14 @@ SRC_URI_remove = " \
             file://0001-w.c-correct-musl-builds.patch \
             file://0002-proc-escape.c-add-missing-include.patch \
             "
+
 # files, patches that come from openeuler
-SRC_URI += " \
-        file://procps-ng-${PV}.tar.xz \
-        file://0001-add-M-and-N-options-for-top.patch \
-        file://0002-top-exit-with-error-when-pid-overflow.patch \
-        file://0003-top-eliminate-a-potential-abend-when-exiting-A-mode.patch \
-        "
+SRC_URI_prepend= " \
+           file://${BPN}-ng-${PV}.tar.xz \
+           file://0001-add-M-and-N-options-for-top.patch \
+           file://0002-top-exit-with-error-when-pid-overflow.patch \
+           file://0003-top-eliminate-a-potential-abend-when-exiting-A-mode.patch \
+           "
 
 do_configure_prepend() {
     # cannot run po/update-potfiles in new version
@@ -32,5 +33,5 @@ do_configure_prepend() {
     fi
 }
 
-SRC_URI[tarball.md5sum] = "eedf93f2f6083afb7abf72188018e1e5"
-SRC_URI[tarball.sha256sum] = "0f4d92794edb7a1c95bb3b8c1f823de62be5d0043459c2155fd07fa859c16513"
+SRC_URI[md5sum] = "eedf93f2f6083afb7abf72188018e1e5"
+SRC_URI[sha256sum] = "0f4d92794edb7a1c95bb3b8c1f823de62be5d0043459c2155fd07fa859c16513"

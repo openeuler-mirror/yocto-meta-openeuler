@@ -30,6 +30,7 @@ SRC_URI_prepend = "file://${BP}.tar.gz \
            file://cdrkit-1.1.11-devname.patch \
            file://cdrkit-1.1.11-sysmacros.patch \
            file://cdrkit-1.1.11-gcc10.patch \
+           file://cdrkit-1.1.11-sw.patch \
 "
 
 SRC_URI[md5sum] = "efe08e2f3ca478486037b053acd512e9"

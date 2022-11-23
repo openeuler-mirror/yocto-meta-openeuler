@@ -8,21 +8,21 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=12713b4d9386533feeb07d6e4831765a \
                     file://COPYING.BSD;md5=d7e19e89ea9f54c1af1aa83c7b7122e7 \		    
 "
 
-SRC_URI = "file://lvm2/LVM2.${PV}.tgz \
-           file://lvm2/0001-lvm2-set-default-preferred_names.patch \
-           file://lvm2/0002-lvm2-default-allow-changes-with-duplicate-pvs.patch \
-           file://lvm2/0003-devs-check-for-no-dev-when-dropping-aliases.patch \
-           file://lvm2/0004-bugfix-lvm2-add-SSD.patch \
-           file://lvm2/0005-bugfix-add-timeout-when-fail-to-wait-udev.patch \
-           file://lvm2/0006-bugfix-fix-the-code-maybe-lead-to-buffer-over-bound-access.patch \
-           file://lvm2/0007-enhancement-modify-default-log-level-to-error-level.patch \
-           file://lvm2/0008-enhancement-add-dfx-log.patch \
-           file://lvm2/0009-enhancement-syslog-more-when-use-libdevmapper-so.patch \
-           file://lvm2/0010-enhancement-log-it-when-disk-slow.patch \
-           file://lvm2/0011-bugfix-lvm2-fix-the-reuse-of-va_list.patch \
-           file://lvm2/0012-13-dm-disk.rules-check-DM_NAME-before-create-symlink.patch \
-           file://lvm2/0013-dev_name-determine-whether-the-dev-aliases-linked-li.patch \
-           file://lvm2/0014-lvm-code-reduce-cyclomatic-complexity.patch \
+SRC_URI = "file://LVM2.${PV}.tgz \
+           file://0001-lvm2-set-default-preferred_names.patch \
+           file://0002-lvm2-default-allow-changes-with-duplicate-pvs.patch \
+           file://0003-devs-check-for-no-dev-when-dropping-aliases.patch \
+           file://0004-bugfix-lvm2-add-SSD.patch \
+           file://0005-bugfix-add-timeout-when-fail-to-wait-udev.patch \
+           file://0006-bugfix-fix-the-code-maybe-lead-to-buffer-over-bound-access.patch \
+           file://0007-enhancement-modify-default-log-level-to-error-level.patch \
+           file://0008-enhancement-add-dfx-log.patch \
+           file://0009-enhancement-syslog-more-when-use-libdevmapper-so.patch \
+           file://0010-enhancement-log-it-when-disk-slow.patch \
+           file://0011-bugfix-lvm2-fix-the-reuse-of-va_list.patch \
+           file://0012-13-dm-disk.rules-check-DM_NAME-before-create-symlink.patch \
+           file://0013-dev_name-determine-whether-the-dev-aliases-linked-li.patch \
+           file://0014-lvm-code-reduce-cyclomatic-complexity.patch \
 "
 
 SRC_URI[sha256sum] = "4a63bc8a084a8ae3c7bc5e6530cac264139d218575c64416c8b99e3fe039a05c"

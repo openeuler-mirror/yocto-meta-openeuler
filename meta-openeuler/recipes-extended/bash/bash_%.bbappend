@@ -13,16 +13,18 @@ SRC_URI_remove += " \
 
 # patches in openeuler
 SRC_URI_append += " \
-           file://bash/bash-2.05a-interpreter.patch \
-           file://bash/bash-2.05b-pgrp_sync.patch \
-           file://bash/bash-4.0-nobits.patch \
-           file://bash/bash-4.2-coverity.patch \
-           file://bash/bash-4.3-noecho.patch \
-           file://bash/bash-4.3-memleak-lc_all.patch \
-           file://bash/bugfix-Forbidden-non-root-user-to-clear-history.patch \
-           file://bash/enable-dot-logout-and-source-bashrc-through-ssh.patch \
-           file://bash/cd-alias.patch \
-           file://bash/bash-5.1-sw.patch \
+           file://bash-2.05a-interpreter.patch \
+           file://bash-2.05b-pgrp_sync.patch \
+           file://bash-4.0-nobits.patch \
+           file://bash-4.2-coverity.patch \
+           file://bash-4.3-noecho.patch \
+           file://bash-4.3-memleak-lc_all.patch \
+           file://bugfix-Forbidden-non-root-user-to-clear-history.patch \
+           file://enable-dot-logout-and-source-bashrc-through-ssh.patch \
+           file://cd-alias.patch \
+           file://bash-5.1-sw.patch \
+           file://backport-fix-crash-in-readline-when-started-with-an-invalid.patch \
+           file://backport-fix-CVE-2022-3715.patch \
 "
 
 SRC_URI[tarball.sha256sum] = "0cfb5c9bb1a29f800a97bd242d19511c997a1013815b805e0fdd32214113d6be"
