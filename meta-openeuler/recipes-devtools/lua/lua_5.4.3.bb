@@ -75,10 +75,10 @@ do_install_ptest () {
 BBCLASSEXTEND = "native nativesdk"
 
 do_prepare_before_patch() {
-    pushd ${S}
+    cd ${S}
     # openeuler has change its name, and patch it
     cp -f src/luaconf.h src/luaconf.h.template.in
-    popd
+    cd -
 }
 
 addtask do_prepare_before_patch before do_patch after do_unpack

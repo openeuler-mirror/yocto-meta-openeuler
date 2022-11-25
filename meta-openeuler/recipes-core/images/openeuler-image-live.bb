@@ -27,11 +27,11 @@ INITRAMFS_MAXSIZE = "262144"
 
 # make install or nologin when using busybox-inittab
 set_permissions_from_rootfs_append() {
-    pushd "${IMAGE_ROOTFS}"
+    cd "${IMAGE_ROOTFS}"
     if [ -e ./etc/inittab ];then
         sed -i "s#respawn:/sbin/getty.*#respawn:-/bin/sh /init.d/install-efi.sh#g" ./etc/inittab
     fi
-    popd
+    cd -
 }
 
 require recipes-core/images/${MACHINE}.inc

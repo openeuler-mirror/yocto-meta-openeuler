@@ -15,30 +15,30 @@ copy_opeueuler_sdk() {
 
 delete_bin_from_sdk() {
     #delete binary from sdk to ignore command function error, we need command at host
-    pushd ${SDK_OUTPUT}/${SDKTARGETSYSROOT}/
+    cd ${SDK_OUTPUT}/${SDKTARGETSYSROOT}/
     for d in ./bin ./usr/bin/ ./usr/sbin/ ./sbin/
     do
         test -d "$d" && rm -r "$d"
     done
-    popd
+    cd -
 }
 
 add_sysroot_link() {
     # users may use aarch64-openeuler-linux-gcc to compile files without --sysroot
     # add sysroot link to the real sysroot dir for using convenient.
-    pushd ${SDK_OUTPUT}/${SDKPATHNATIVE}/usr/${EXTERNAL_TARGET_SYS}/
+    cd ${SDK_OUTPUT}/${SDKPATHNATIVE}/usr/${EXTERNAL_TARGET_SYS}/
     # must relative path, otherwise will not found after decompression.
     ln -s ../../../${REAL_MULTIMACH_TARGET_SYS} sysroot
-    popd
+    cd -
 }
 
 add_include_link() {
     # users may use aarch64-openeuler-linux-g++ to compile files without --include
     # add include link to the real usr/inlucde dir for using convenient.
-    pushd ${SDK_OUTPUT}/${SDKPATHNATIVE}/usr/${EXTERNAL_TARGET_SYS}/
+    cd ${SDK_OUTPUT}/${SDKPATHNATIVE}/usr/${EXTERNAL_TARGET_SYS}/
     # must relative path, otherwise will not found after decompression.
     ln -s ../../../${REAL_MULTIMACH_TARGET_SYS}/usr/include include
-    popd
+    cd -
 }
 
 #functions added to last after sdk has been created

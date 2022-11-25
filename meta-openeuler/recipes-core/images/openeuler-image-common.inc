@@ -35,10 +35,10 @@ USE_DEPMOD = "0"
 IMAGE_PREPROCESS_COMMAND += "set_permissions_from_rootfs;"
 
 set_permissions_from_rootfs() {
-   pushd "${IMAGE_ROOTFS}"
+   cd "${IMAGE_ROOTFS}"
    # set file permissions for secure
    chmod 750 ./etc/init.d
-   popd
+   cd -
 }
 
 DISTRO_FEATURES += "${LIBC}"
