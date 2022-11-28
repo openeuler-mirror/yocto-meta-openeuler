@@ -13,6 +13,14 @@ python set_rpmdeps() {
 addhandler set_rpmdeps
 set_rpmdeps[eventmask] = "bb.event.RecipePreFinalise"
 
+# set BUILD_LDFLAGS for use nativesdk lib
+BUILD_LDFLAGS_append = " -L${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
+                         -L${OPENEULER_NATIVESDK_SYSROOT}/lib \
+                         -Wl,-rpath-link,${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
+                         -Wl,-rpath-link,${OPENEULER_NATIVESDK_SYSROOT}/lib \
+                         -Wl,-rpath,${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
+                         -Wl,-rpath,${OPENEULER_NATIVESDK_SYSROOT}/lib"
+
 # src_uri_set is used to remove some url with variable OPENEULER_SRC_URI_REMOVE
 # that we set some head strings in, because we maybe does not need to download it 
 python src_uri_set() {
