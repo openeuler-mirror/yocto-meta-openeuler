@@ -3,11 +3,35 @@ ROS_DISTRO = "galactic"
 inherit ${ROS_DISTRO_TYPE}_distro
 inherit openeuler_ros_source
 
-# make ros libs compatible with lib64
-do_configure:prepend:class-target() { 
-    if [ -f ${S}/CMakeLists.txt ] && [[ "${libdir}" =~ "lib64" ]]; then
-        cat ${S}/CMakeLists.txt | grep "DESTINATION lib\${LIB_SUFFIX}" || sed -i 's:DESTINATION lib:DESTINATION lib\${LIB_SUFFIX}:g' ${S}/CMakeLists.txt
-        cat ${S}/CMakeLists.txt | grep "LIB_INSTALL_DIR lib\${LIB_SUFFIX}" || sed -i 's:LIB_INSTALL_DIR lib:LIB_INSTALL_DIR lib\${LIB_SUFFIX}:g' ${S}/CMakeLists.txt
-    fi
+# There are a large number of non-standard configurations with the fixed libdir directory as lib in the ROS upstream software package. 
+# At present, we can't find a suitable conventional method to adapt our libdir. 
+# As a workaround, we use lib as the library directory for the ROS package. 
+# we may need to consider the situation that riscv64 customized libdir is lp64d in the future.
+python ros_libdir_set() {
+    d.setVar('oldroslibdir', d.getVar('libdir'))
+    pn = e.data.getVar("PN")      
+    if pn.endswith("-native"):
+        return
+    d.setVar('libdir', d.getVar('libdir').replace('64', ''))
+    d.setVar('baselib', d.getVar('baselib').replace('64', ''))
+}
+
+addhandler ros_libdir_set
+ros_libdir_set[eventmask] = "bb.event.RecipePreFinalise"
+
+# some depend pkgs may not inherit this class, it may under lib64 of oldroslibdir.
+PKG_CONFIG_PATH:append:class-target += ":${PKG_CONFIG_SYSROOT_DIR}/${oldroslibdir}/pkgconfig"
+
+# fix _sysconfigdata not found error, after inherit setuptools3, see yocto-poky/meta/classes/python3targetconfig.bbclass
+do_install:remove:class-target() {
+        export _PYTHON_SYSCONFIGDATA_NAME="_sysconfigdata"
+}
+
+do_compile:remove:class-target() {
+        export _PYTHON_SYSCONFIGDATA_NAME="_sysconfigdata"
+}
+
+do_configure:remove:class-target() {
+        export _PYTHON_SYSCONFIGDATA_NAME="_sysconfigdata"
 }
 
