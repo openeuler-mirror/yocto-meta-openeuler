@@ -1,19 +1,10 @@
 # main bbfile: yocto-poky/meta/recipes-kernel/kern-tools/kern-tools-native_git.bb
 
-# source from from yocto-embedded-tools
-SRC_URI = "file://yocto-embedded-tools/build_tools/yocto-kernel-tools"
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+
+# avoid parse filespath error after adding FILESEXTRAPATHS
 PV = "0.2"
 
-S = "${WORKDIR}/yocto-embedded-tools/build_tools/yocto-kernel-tools"
+SRC_URI = "file://yocto-kernel-tools.tar.gz"
 
-python do_fetch() {
-    repoList = [{
-        "repo_name": "yocto-embedded-tools",
-        "git_space": "openeuler",
-        "branch": "master"
-    }]
-
-    d.setVar("PKG_REPO_LIST", repoList)
-
-    bb.build.exec_func("do_openeuler_fetchs", d)
-}
+SRC_URI[sha256sum] = "740f0b7479264fa47b03f2b8094139785a64682ac7218698d0774c47c4d1d4ea"

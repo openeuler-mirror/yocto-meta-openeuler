@@ -1,18 +1,14 @@
 # main bbfile: yocto-poky/meta/recipes-core/update-rc.d/update-rc.d_0.8.bb
 
-# source from from yocto-embedded-tools
-SRC_URI = "file://yocto-embedded-tools/build_tools/update-rc.d"
+# update-rc.d does not require code download, to avoid the conflict of update-rc.d folder
+# (set by DL_DIR ?= "${OPENEULER_SP_DIR}/${BPN}" )
+# and update-rc.d script file (with update-rc.d_0.8.bb ),
+OPENEULER_REPO_NAME = "update-rc.d_dummy"
 
-S = "${WORKDIR}/yocto-embedded-tools/build_tools/update-rc.d"
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-python do_fetch() {
-    repoList = [{
-        "repo_name": "yocto-embedded-tools",
-        "git_space": "openeuler",
-        "branch": "master"
-    }]
+SRC_URI = "file://update-rc.d"
 
-    d.setVar("PKG_REPO_LIST", repoList)
+SRC_URI[sha256sum] = "5426fe8d447719957b51bdce842fb857816a6d5cd5053f7586ffbf66b48111d2"
 
-    bb.build.exec_func("do_openeuler_fetchs", d)
-}
+S = "${WORKDIR}"
