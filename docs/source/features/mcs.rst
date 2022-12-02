@@ -62,15 +62,9 @@ openEuler Embedded中多OS混合部署框架的架构图如下所示，引入了
 在上述架构中，libmetal提供屏蔽了不同系统实现的细节提供了统一的抽象，virtio queue相当于网络协议中的MAC层提供高效的底层通信机制，rpmsg相当于网络协议中的
 传输层提供了基于端点(endpoint)与通道(channel)抽象的通信机制, remoteproc提供生命周期管理功能包括初始化、启动、暂停、结束等。
 
-在openEuler Embedded 22.03中，集成了OpenAMP相关支持并与openEuler的 `SIG Zephyr <https://gitee.com/openeuler/community/tree/master/sig/sig-Zephyr>`_ 合作
-实现了openEuler Embedded与实时操作系统 `Zephyr <https://www.zephyrproject.org/>`_ 在QEMU平台上的混合部署，具体可以参考
+openEuler Embedded集成了OpenAMP相关支持，并与openEuler的 `SIG Zephyr <https://gitee.com/openeuler/community/tree/master/sig/sig-Zephyr>`_ 合作，基于qemu、树莓派实现了openEuler Embedded与实时操作系统 `Zephyr <https://www.zephyrproject.org/>`_ 的混合部署，支持通过Linux shell命令行访问Client OS的功能，具体可参考：
 
-`22.03 多OS混合部署Demo <https://gitee.com/openeuler/yocto-embedded-tools/tree/openEuler-22.03-LTS/mcs>`_
-
-在openEuler Embedded 22.09中，新增串口服务demo，实现通过Linux shell命令行访问Client OS的功能，样例支持多用户多线程场景。
-在openEuler Embedded 22.09中，混合部署demo支持运行在树莓派4B上。
-
-`22.09 多OS混合部署Demo和串口服务Demo <https://gitee.com/openeuler/yocto-embedded-tools/tree/master/mcs>`_
+`多OS混合部署Demo和串口服务Demo <https://gitee.com/openeuler/yocto-embedded-tools/tree/openEuler-22.03-LTS-SP1/mcs>`_
 
     .. figure:: ../../image/mcs/rpmsg-pty-shell.png
         :align: center

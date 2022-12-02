@@ -11,7 +11,7 @@
 
 1.构建环境推荐：master, openEuler-22.03-LTS
 
-2.构建指导: `参考容器构建指导 <https://openeuler.gitee.io/yocto-meta-openeuler/yocto/quickbuild/container-build.html>`_
+2.构建指导: :ref:`参考容器环境下的快速构建指导 <container_build>`
 
 - 构建命令示例：
 
@@ -142,9 +142,13 @@
 
 硬件版本要求：树莓派4B
 
-默认用户名：root，密码：第一次启动没有默认密码，需重新配置，且密码强度有相应要求， 需要数字、字母、特殊字符组合最少8位，例如openEuler@2021。
+默认用户名：root，密码：第一次启动没有默认密码，需重新配置，且密码强度有相应要求， 需要数字、字母、特殊字符组合最少8位，例如openEuler@2022。
 
 将刷写镜像后的SD卡插入树莓派，通电启用。
+
+**分区扩容**
+
+在完成烧录镜像后，首次启动树莓派会自动进行分区扩容，将根目录分区扩展到SD卡的大小。
 
 **树莓派登录方式**
 
@@ -177,70 +181,6 @@ b.使用HDMI登录：
 .. code-block:: console
 
    ssh root@x.x.x.x
-
-**分区扩容**
-
-默认根目录分区空间比较小，在使用之前，需要对分区进行扩容（在22.09及其之后的版本中，已实现自动扩容，首次烧录镜像启动会自动执行扩容并提示重启）
-
-以下为手动扩容方法，内容引用: `树莓派使用：启用树莓派：分区扩容 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E6%A0%91%E8%8E%93%E6%B4%BE%E4%BD%BF%E7%94%A8.md#%E5%88%86%E5%8C%BA%E6%89%A9%E5%AE%B9>`_
-
-1.查看磁盘分区信息
-
-执行 fdisk -l 命令查看磁盘分区信息。回显如下：
-
-.. code-block:: console
-
-  Device        Boot StartCHS   EndCHS        StartLBA  EndBLA  Sectors size Id  Type
-
-  /dev/mmcblk0p1 *   64,0,1     831,3,32      8192      106495  98304   48.0M c  Win95 FAT32(LBA)
-
-  /dev/mmcblk0p2     832,0,1    1023,3,32     106496    360447  253952  124M  83 Linux
-
-SD 卡对应盘符为 /dev/mmcblk0，包括 2 个分区，分别为
-
-.. code-block:: console
-
-  /dev/mmcblk0p1：引导分区
-
-  /dev/mmcblk0p2：根目录分区
-
-这里我们需要将根目录分区 /dev/mmcblk0p2 进行扩容。
-
-2.分区扩容
-
-- 对根目录/dev/mmcblk0p2进行扩容
-
-  1.执行 fdisk /dev/mmcblk0 命令进入到交互式命令行界面，按照以下步骤扩展分区，如下图所示。
-
-  2.输入 p，查看分区信息。
-
-  3.记录分区 /dev/mmcblk0p2 的起始扇区号，即 /dev/mmcblk0p2 分区信息中 Start 列的值，示例中为 106496。
-
-  4.输入 d，删除分区。
-
-  5.输入 2 或直接按 Enter，删除序号为 2 的分区，即 /dev/mmcblk0p2 分区。
-
-  6.输入 n，创建新的分区。
-
-  7.输入 p 或直接按 Enter，创建 Primary 类型的分区。
-
-  8.输入 2 或直接按 Enter，创建序号为 2 的分区，即 /dev/mmcblk0p2 分区。
-
-  9.输入新分区的起始扇区号，即第 1 步中记录的起始扇区号，示例中为 106496。
-
-  须知：
-  请勿直接按“Enter”或使用默认参数，否则会擦损磁盘数据。
-  
-  10.按 Enter，使用默认的最后一个扇区号作为新分区的终止扇区号。
-  
-  11.输入 w，保存分区设置并退出交互式命令行界面。
-
-- 增大未加载的文件系统大小
-
-.. code-block:: console
-
-   resize2fs /dev/mmcblk0p2
-   #需重启生效
 
 树莓派镜像特性介绍
 **************************

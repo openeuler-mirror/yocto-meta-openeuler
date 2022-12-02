@@ -195,6 +195,8 @@ openEuler Embedded传输文件。
 
       如需openEuler Embedded借助宿主机访问互联网，则需要在宿主机上建立网桥，此处不详述，如有需要，请自行查阅相关资料。
 
+.. _install-openeuler-embedded-sdk:
+
 基于SDK的应用开发
 ********************************************
 
