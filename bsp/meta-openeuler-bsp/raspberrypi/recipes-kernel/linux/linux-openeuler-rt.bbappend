@@ -1,13 +1,13 @@
 # For the Raspberry Pi, we don't need to apply the aarch64 patches
 SRC_URI_remove_raspberrypi4 += " \
-    file://src-kernel-5.10/0000-kernel-rt62.patch \
-    file://src-kernel-5.10/0001-kernel-rt62-modify-defconfig.patch \
+    file://src-kernel-5.10/0001-apply-preempt-RT-patch.patch \
+    file://src-kernel-5.10/0001-modify-openeuler_defconfig-for-rt62.patch \
 "
 
 SRC_URI += "\
     file://src-kernel-5.10/0000-raspberrypi-kernel.patch \
-    file://src-kernel-5.10/0001-raspberrypi-kernel-rt62.patch \
-    file://src-kernel-5.10/0002-raspberrypi-kernel-rt62-modify-defconfig.patch \
+    file://src-kernel-5.10/0001-apply-preempt-RT-patch.patch
+    file://src-kernel-5.10/0002-modify-bcm2711_defconfig-for-rt-rpi-kernel.patch
 "
 
 COMPATIBLE_MACHINE = "raspberrypi4-64"

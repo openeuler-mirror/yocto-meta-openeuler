@@ -8,13 +8,6 @@ SRC_URI_append_aarch64 += " \
     file://yocto-embedded-tools/patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch \
 "
 
-# add patches for OPENEULER_PLATFROM such as aarch64-pro
-SRC_URI_append_aarch64-pro += " \
-    file://src-kernel-5.10/0000-raspberrypi-kernel.patch \
-    file://src-kernel-5.10/0001-add-preemptRT-patch.patch \
-    file://src-kernel-5.10/0002-modifty-bcm2711_defconfig-for-rt-rpi-kernel.patch \
-"
-
 LINUX_VERSION_EXTENSION_append = "-openeuler"
 #delete v8 in kernel module name, such as kernel-module-xxx-5.10.0-v8
 KERNEL_MODULE_PACKAGE_SUFFIX = ""
