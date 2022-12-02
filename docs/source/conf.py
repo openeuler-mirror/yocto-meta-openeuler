@@ -22,6 +22,7 @@ copyright = '2022, openEuler Embedded'
 author = 'openEuler Embedded'
 
 # The full version, including alpha/beta/rc tags
+version = "openEuler-22.03-LTS-SP1"
 release = '1.0.0'
 
 

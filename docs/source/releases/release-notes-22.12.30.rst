@@ -1,18 +1,18 @@
 :orphan:
 
-.. _openeuler_embedded_22_09_30:
+.. _openeuler_embedded_22_12_30:
 
-openEuler Embedded 22.09
-###########################
+openEuler Embedded 22.03 SP1
+#############################
 
-openEuler Embedded 22.09是openEuler Embedded第二个创新版本，包含的内容大概如下：
+openEuler Embedded 22.03 SP1是openEuler Embedded第二个正式版本，包含的内容大概如下：
 
 * 内核
-   - 内核升级到 5.10.0-106.18.0
+   - 内核升级到 5.10.0-129.0.0
    - 内核支持Preempt-RT补丁
    - 内核支持树莓派4B相关补丁
 * 软件包
-   - 支持140+软件包，详见 :ref:`software_packages_list`
+   - 支持80+软件包，详见 :ref:`software_packages_list`
 * 亮点特性
    - 多OS混合部署能力增强，新增树莓派4B混合部署实例，新增支持服务化混合部署功能，可通过Linux shell命令行访问zephyr，详见 :ref:`mixed_critical_system`
    - 分布式软总线能力增强，新增支持基于分布式软总线的openEuler和openHarmony设备认证和互通互联，增加南向wifi传输介质支持，详见 :ref:`distributed_softbus`

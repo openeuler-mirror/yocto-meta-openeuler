@@ -49,6 +49,7 @@ reStructuredText的语法无需专门记忆，需要用到时再去查询即可�
     .. code-block:: bash
 
         git clone https://gitee.com/openeuler/yocto-meta-openeuler.git
+        # 注意切换到你要贡献的资料分支，资料也在此仓库中亦按分支区分
 
 * 环境准备
 
@@ -83,7 +84,7 @@ reStructuredText的语法无需专门记忆，需要用到时再去查询即可�
 
         make html
 
-    编译成功之后，可以切换到gitee_pages分支，打开 :file:`docs/build/html/*.html` 查看最终生成的网页形式的文档。
+    编译成功之后，可打开 :file:`docs/build/html/*.html` 查看最终生成的网页形式的文档。
 
 * 提交修改
 
@@ -104,6 +105,7 @@ reStructuredText的语法无需专门记忆，需要用到时再去查询即可�
     .. code-block:: bash
 
         git clone https://gitee.com/openeuler/yocto-meta-openeuler.git
+        # 注意切换到你要贡献的资料分支，资料也在此仓库中亦按分支区分
 
 * 环境准备
 
