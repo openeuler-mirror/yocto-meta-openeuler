@@ -12,8 +12,6 @@ SRC_URI = "file://${BP}.tar.xz \
         file://shadow-4.8-long-entry.patch \
         file://usermod-unlock.patch \
         file://useradd-create-directories-after-the-SELinux-user.patch \
-        file://shadow-4.1.5.1-var-lock.patch \
-        file://shadow-utils-fix-lock-file-residue.patch \
         file://Makefile-include-libeconf-dependency-in-new-idmap.patch \
         file://usermod-allow-all-group-types-with-G-option.patch \
         file://useradd-avoid-generating-an-empty-subid-range.patch \
