@@ -44,8 +44,12 @@ EXTRA_OECMAKE = " \
 ### Package metadata
 FILES_${PN} = " \
     ${libdir}/*.so* \
+"
+
+FILES_${PN}-dev += " \
     ${bindir}/test-* \
 "
+
 ### Tasks for package
 
 do_install_append () {
