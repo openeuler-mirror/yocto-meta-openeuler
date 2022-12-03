@@ -19,9 +19,10 @@ require recipes-core/images/openeuler-image-common.inc
 IMAGE_INSTALL += " \
 packagegroup-core-boot \
 packagegroup-openssh \
-sysfsutils \
-libmetal \
-openamp \
+mcs-linux \
+mcs-km \
+screen \
+libgcc-external \
 "
 
 # Notice: we need our sdcard_image-rpi.bbclass in meta-openeuler-bsp to work.
@@ -34,8 +35,8 @@ uefi_configuration() {
     # here we use efi and grub to boot
     mmd -i ${WORKDIR}/boot.img EFI
     mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/EFI/* ::EFI/ || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/EFI/* into boot.img"
-    # here we want a reseved memory for mcs features.
-    mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/mcs-memreserve.dtbo ::overlays/mcs-memreserve.dtbo || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/mcs-memreserve.dtbo into boot.img"
+    # here we want reserved resources for mcs features.
+    mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/mcs-resources.dtbo ::overlays/mcs-resources.dtbo || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/mcs-resources.dtbo into boot.img"
 }
 
 # make no login and standard PATH
@@ -67,9 +68,9 @@ change_bootfiles_to_enable_uefi() {
     fi
 
     # add mcs dtoverlay config
-    dtcfg=`cat ${CONFIGFILE}  | grep mcs-memreserve || true`
+    dtcfg=`cat ${CONFIGFILE}  | grep mcs-resources || true`
     if [ -z "$dtcfg" ]; then
-        echo "dtoverlay=mcs-memreserve" >> ${CONFIGFILE}
+        echo "dtoverlay=mcs-resources" >> ${CONFIGFILE}
     fi
 
     #change grub.cfg to use Image.gz to launch

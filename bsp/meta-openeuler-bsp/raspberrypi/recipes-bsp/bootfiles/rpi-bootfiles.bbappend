@@ -10,12 +10,7 @@ do_deploy[depends] += " \
     rpi-uefi:do_deploy \
 "
 
-# add mcs reserved memory dtoverlay package
-do_deploy[depends] += " \
-    mcs-memreserve-overlay:do_deploy \
-"
-
-# fix runtime error: Could not find DRM device! 
+# fix runtime error: Could not find DRM device!
 # instead of bcm2711-rpi-4-b.dtb from kernel_devicetree
 do_deploy_append() {
     cp ${S}/bcm2711-rpi-4-b.dtb ${DEPLOYDIR}/${BOOTFILES_DIR_NAME}
