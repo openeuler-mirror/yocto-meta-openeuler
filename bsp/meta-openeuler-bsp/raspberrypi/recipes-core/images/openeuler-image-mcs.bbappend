@@ -1,8 +1,3 @@
-# no host package for image-tiny
-TOOLCHAIN_HOST_TASK = ""
-
-SUMMARY = "A small image embedded with uefi and mcs configurations for rpi 4"
-
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 # fix mkfs.ext4 running error, add -E no_copy_xattrs to mkfs.ext4
 WKS_FILE = "sdimage-rpi.wks"
@@ -12,18 +7,6 @@ SDIMG_KERNELIMAGE = "Image"
 
 # we need more space for boot: see definition in sdcard_image-rpi.bbclass
 BOOT_SPACE = "196608"
-
-require recipes-core/images/${MACHINE}.inc
-require recipes-core/images/openeuler-image-common.inc
-
-IMAGE_INSTALL += " \
-packagegroup-core-boot \
-packagegroup-openssh \
-mcs-linux \
-mcs-km \
-screen \
-libgcc-external \
-"
 
 # Notice: we need our sdcard_image-rpi.bbclass in meta-openeuler-bsp to work.
 uefi_configuration() {
