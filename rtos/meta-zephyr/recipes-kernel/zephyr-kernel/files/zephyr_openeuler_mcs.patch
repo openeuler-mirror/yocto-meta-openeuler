@@ -1,0 +1,1753 @@
+diff --git a/arch/arm64/core/Kconfig b/arch/arm64/core/Kconfig
+index 968454634f..2e23271ad3 100644
+--- a/arch/arm64/core/Kconfig
++++ b/arch/arm64/core/Kconfig
+@@ -257,6 +257,9 @@ config ARM64_PA_BITS_40
+ config ARM64_PA_BITS_42
+ 	bool "42-bit"
+ 
++config ARM64_PA_BITS_44
++	bool "44-bit"
++
+ config ARM64_PA_BITS_48
+ 	bool "48-bit"
+ endchoice
+@@ -267,6 +270,7 @@ config ARM64_PA_BITS
+ 	default 36 if ARM64_PA_BITS_36
+ 	default 40 if ARM64_PA_BITS_40
+ 	default 42 if ARM64_PA_BITS_42
++	default 44 if ARM64_PA_BITS_44
+ 	default 48 if ARM64_PA_BITS_48
+ 
+ config MAX_XLAT_TABLES
+diff --git a/boards/arm64/qemu_cortex_a53/Kconfig.defconfig b/boards/arm64/qemu_cortex_a53/Kconfig.defconfig
+index cbe833f42f..0c43eb2eac 100644
+--- a/boards/arm64/qemu_cortex_a53/Kconfig.defconfig
++++ b/boards/arm64/qemu_cortex_a53/Kconfig.defconfig
+@@ -9,4 +9,11 @@ config BUILD_OUTPUT_BIN
+ config BOARD
+ 	default "qemu_cortex_a53"
+ 
++if IPM
++
++config IPM_GIC_SGI
++	default y
++
++endif # IPM
++
+ endif # BOARD_QEMU_CORTEX_A53
+diff --git a/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote.dts b/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote.dts
+new file mode 100644
+index 0000000000..d9088ec7dc
+--- /dev/null
++++ b/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote.dts
+@@ -0,0 +1,73 @@
++/*
++ * Copyright (c) 2019 Carlo Caione <ccaione@baylibre.com>
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ *
++ */
++
++/dts-v1/;
++#include <arm64/qemu/qemu-virt-a53.dtsi>
++
++/ {
++	model = "QEMU Cortex-A53";
++	compatible = "qemu,arm-cortex-a53";
++
++	psci {
++		compatible = "arm,psci-0.2";
++		method = "hvc";
++		label = "PSCI";
++	};
++
++	chosen {
++		zephyr,sram = &sram1;
++		zephyr,console = &uart_rpmsg;
++		zephyr,shell-uart = &uart_rpmsg;
++		zephyr,flash = &flash0;
++		/*
++		 * shared memory reserved for the inter-processor communication
++		 */
++		 zephyr,ipc_shm = &ipc_shm0;
++		 zephyr,ipc = &ipm_gic_sgi0;
++	};
++
++	ipm_gic_sgi0: ipm{
++		compatible = "arm,gic-sgi";
++		label = "gic_sgi0";
++	};
++
++
++	soc {
++
++		ipc_shm0: memory@70000000 {
++			compatible = "mmio-sram";
++			reg = <0 0x70000000 0 0x30000>;
++		};
++
++		sram1: memory@7a000000 {
++			compatible = "mmio-sram";
++			reg = <0x0 0x7a000000 0x0 DT_SIZE_M(10)>;
++		};
++
++		uart_rpmsg: uart {
++			status = "okay";
++			compatible = "zephyr,rpmsg-uart";
++			label = "UART_RPMSG";
++		/* Dummy current-speed entry to comply with serial
++		 * DTS binding
++		 */
++			current-speed = <0>;
++		};
++
++		uart1: uart@9001000 {
++			compatible = "arm,pl011";
++			reg = <0x00 0x9001000 0x00 0x1000>;
++			status = "disabled";
++			interrupts = <GIC_SPI 4 IRQ_TYPE_LEVEL 0>;
++			interrupt-names = "irq_1";
++			clocks = <&uartclk>;
++			label = "UART_1";
++		};
++
++	};
++};
++
+diff --git a/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote_defconfig b/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote_defconfig
+new file mode 100644
+index 0000000000..c923b43c6e
+--- /dev/null
++++ b/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote_defconfig
+@@ -0,0 +1,36 @@
++CONFIG_SOC_QEMU_CORTEX_A53=y
++CONFIG_BOARD_QEMU_CORTEX_A53=y
++CONFIG_ARM_ARCH_TIMER=y
++CONFIG_QEMU_ICOUNT=n
++
++# Cache management
++CONFIG_CACHE_MANAGEMENT=y
++
++# Enable UART driver
++CONFIG_SERIAL=y
++
++# Enable console
++CONFIG_CONSOLE=y
++# no early console, because uart_rpmsg is used
++CONFIG_BOOT_BANNER=n
++CONFIG_EARLY_CONSOLE=n
++CONFIG_UART_CONSOLE=y
++
++# to use remote, must be in Non-Secure world
++CONFIG_ARMV8_A_NS=y
++
++# Enable RPMSG based serial port
++CONFIG_UART_RPMSG=y
++CONFIG_UART_INTERRUPT_DRIVEN=y
++
++# support psci ops
++CONFIG_PM_CPU_OPS=y
++CONFIG_OPENAMP=y
++CONFIG_IPM=y
++CONFIG_RPMSG_SERVICE_MODE_REMOTE=y
++CONFIG_OPENAMP_MASTER=n
++CONFIG_HEAP_MEM_POOL_SIZE=4096
++# shell must be initialized after uart_rpmsg
++CONFIG_SHELL_BACKEND_SERIAL_INIT_PRIORITY=60
++# the tx ring buffer size is the same of bufffer of rpmsg_virtio buffer
++CONFIG_SHELL_BACKEND_SERIAL_TX_RING_BUFFER_SIZE=512
+diff --git a/boards/arm64/rpi4_cortex_a72/Kconfig.board b/boards/arm64/rpi4_cortex_a72/Kconfig.board
+new file mode 100644
+index 0000000000..cb4c7b7e89
+--- /dev/null
++++ b/boards/arm64/rpi4_cortex_a72/Kconfig.board
+@@ -0,0 +1,7 @@
++# Copyright (c) 2022 openEuler Embedded
++# SPDX-License-Identifier: Apache-2.0
++
++config BOARD_RPI4_CORTEX_A72
++	bool "Raspberry Pi 4B"
++	depends on SOC_RPI4_CORTEX_A72
++	select ARM64
+diff --git a/boards/arm64/rpi4_cortex_a72/Kconfig.defconfig b/boards/arm64/rpi4_cortex_a72/Kconfig.defconfig
+new file mode 100644
+index 0000000000..7b426d0162
+--- /dev/null
++++ b/boards/arm64/rpi4_cortex_a72/Kconfig.defconfig
+@@ -0,0 +1,19 @@
++# Copyright (c) 2022 openEuler Embedded
++# SPDX-License-Identifier: Apache-2.0
++
++if BOARD_RPI4_CORTEX_A72
++
++config BUILD_OUTPUT_BIN
++	default y
++
++config BOARD
++	default "rpi4_cortex_a72"
++
++if IPM
++
++config IPM_GIC_SGI
++	default y
++
++endif # IPM
++
++endif # BOARD_RPI4_CORTEX_A72
+diff --git a/boards/arm64/rpi4_cortex_a72/board.cmake b/boards/arm64/rpi4_cortex_a72/board.cmake
+new file mode 100644
+index 0000000000..5471723b68
+--- /dev/null
++++ b/boards/arm64/rpi4_cortex_a72/board.cmake
+@@ -0,0 +1,5 @@
++# Copyright (c) 2022 openEuler Embedded
++# SPDX-License-Identifier: Apache-2.0
++
++board_runner_args(openocd "--use-elf" "--config=${BOARD_DIR}/support/rpi4_cortex_a72.cfg")
++include(${ZEPHYR_BASE}/boards/common/openocd.board.cmake)
+diff --git a/boards/arm64/rpi4_cortex_a72/rpi4_cortex_a72.dts b/boards/arm64/rpi4_cortex_a72/rpi4_cortex_a72.dts
+new file mode 100644
+index 0000000000..f5ab89e8ff
+--- /dev/null
++++ b/boards/arm64/rpi4_cortex_a72/rpi4_cortex_a72.dts
+@@ -0,0 +1,60 @@
++/*
++ * Copyright (c) 2022 openEuler Embedded
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ *
++ */
++
++/dts-v1/;
++#include <arm64/broadcom/rpi4-a72.dtsi>
++
++/ {
++	model = "Raspberry Pi4 B Cortex A72";
++	compatible = "rpi4,arm-cortex-a72";
++
++	psci {
++		compatible = "arm,psci-0.2";
++		method = "smc";
++		label = "PSCI";
++	};
++
++	chosen {
++		zephyr,sram = &sram1;
++		zephyr,console = &uart_rpmsg;
++		zephyr,shell-uart = &uart_rpmsg;
++		/*
++		 * shared memory reserved for the inter-processor communication
++		 */
++		 zephyr,ipc_shm = &ipc_shm0;
++		 zephyr,ipc = &ipm_gic_sgi0;
++	};
++
++	ipm_gic_sgi0: ipm{
++		compatible = "arm,gic-sgi";
++		label = "gic_sgi0";
++	};
++
++	soc {
++
++		ipc_shm0: memory@70000000 {
++			compatible = "mmio-sram";
++			reg = <0 0x70000000 0 0x30000>;
++		};
++
++		sram1: memory@7a000000 {
++			compatible = "mmio-sram";
++			reg = <0x0 0x7a000000 0x0 DT_SIZE_M(10)>;
++		};
++
++		uart_rpmsg: uart {
++			status = "okay";
++			compatible = "zephyr,rpmsg-uart";
++			label = "UART_RPMSG";
++			/* Dummy current-speed entry to comply with serial
++			 * DTS binding
++			 */
++			current-speed = <0>;
++		};
++
++	};
++};
+diff --git a/boards/arm64/rpi4_cortex_a72/rpi4_cortex_a72_defconfig b/boards/arm64/rpi4_cortex_a72/rpi4_cortex_a72_defconfig
+new file mode 100644
+index 0000000000..a1517f6a02
+--- /dev/null
++++ b/boards/arm64/rpi4_cortex_a72/rpi4_cortex_a72_defconfig
+@@ -0,0 +1,39 @@
++CONFIG_SOC_RPI4_CORTEX_A72=y
++CONFIG_BOARD_RPI4_CORTEX_A72=y
++CONFIG_ARM64_VA_BITS_48=y
++CONFIG_ARM64_PA_BITS_44=y
++CONFIG_ARM_ARCH_TIMER=y
++CONFIG_QEMU_ICOUNT=n
++
++# Cache management
++CONFIG_CACHE_MANAGEMENT=y
++
++# Enable UART driver
++CONFIG_SERIAL=y
++CONFIG_PRINTK=y
++
++# Enable console
++CONFIG_CONSOLE=y
++CONFIG_UART_CONSOLE=y
++
++# no boot banner
++CONFIG_BOOT_BANNER=n
++
++# to use remote, must be in Non-Secure world
++CONFIG_ARMV8_A_NS=y
++
++# Enable RPMSG based serial port
++CONFIG_UART_RPMSG=y
++CONFIG_UART_INTERRUPT_DRIVEN=y
++
++# support psci ops
++CONFIG_PM_CPU_OPS=y
++CONFIG_OPENAMP=y
++CONFIG_IPM=y
++CONFIG_RPMSG_SERVICE_MODE_REMOTE=y
++CONFIG_OPENAMP_MASTER=n
++CONFIG_HEAP_MEM_POOL_SIZE=4096
++# shell must be initialized after uart_rpmsg
++CONFIG_SHELL_BACKEND_SERIAL_INIT_PRIORITY=60
++# the tx ring buffer size is the same of bufffer of rpmsg_virtio buffer
++CONFIG_SHELL_BACKEND_SERIAL_TX_RING_BUFFER_SIZE=512
+diff --git a/boards/arm64/rpi4_cortex_a72/support/rpi4_cortex_a72.cfg b/boards/arm64/rpi4_cortex_a72/support/rpi4_cortex_a72.cfg
+new file mode 100644
+index 0000000000..aca8d9643e
+--- /dev/null
++++ b/boards/arm64/rpi4_cortex_a72/support/rpi4_cortex_a72.cfg
+@@ -0,0 +1,44 @@
++source [find interface/jlink.cfg]
++
++set _CHIPNAME bcm2711
++set _DAP_TAPID 0x4ba00477
++
++adapter_khz 1000
++
++transport select jtag
++reset_config trst_and_srst
++
++telnet_port 4444
++
++# create tap
++jtag newtap auto0 tap -irlen 4 -expected-id $_DAP_TAPID
++
++# create dap
++dap create auto0.dap -chain-position auto0.tap
++
++set CTIBASE {0x80420000 0x80520000 0x80620000 0x80720000}
++set DBGBASE {0x80410000 0x80510000 0x80610000 0x80710000}
++
++set _cores 4
++
++set _TARGETNAME $_CHIPNAME.a72
++set _CTINAME $_CHIPNAME.cti
++set _smp_command ""
++
++for {set _core 0} {$_core < $_cores} { incr _core} {
++    cti create $_CTINAME.$_core -dap auto0.dap -ap-num 0 -ctibase [lindex $CTIBASE $_core]
++
++    set _command "target create ${_TARGETNAME}.$_core aarch64 \
++                    -dap auto0.dap  -dbgbase [lindex $DBGBASE $_core] \
++                    -coreid $_core -cti $_CTINAME.$_core"
++    if {$_core != 0} {
++        set _smp_command "$_smp_command $_TARGETNAME.$_core"
++    } else {
++        set _smp_command "target smp $_TARGETNAME.$_core"
++    }
++
++    eval $_command
++}
++
++# eval $_smp_command
++targets $_TARGETNAME.0
+diff --git a/drivers/interrupt_controller/intc_gic.c b/drivers/interrupt_controller/intc_gic.c
+index 129b395c55..81b7643401 100644
+--- a/drivers/interrupt_controller/intc_gic.c
++++ b/drivers/interrupt_controller/intc_gic.c
+@@ -230,7 +230,10 @@ int arm_gic_init(const struct device *unused)
+ 	ARG_UNUSED(unused);
+ 
+ 	/* Init of Distributor interface registers */
+-	gic_dist_init();
++	/* openamp client does not init the global part of GIC */
++	if (!IS_ENABLED(CONFIG_OPENAMP_SLAVE)) {
++		gic_dist_init();
++	}
+ 
+ 	/* Init CPU interface registers */
+ 	gic_cpu_init();
+diff --git a/drivers/interrupt_controller/intc_gicv3.c b/drivers/interrupt_controller/intc_gicv3.c
+index e19d409abb..363a7fa9ee 100644
+--- a/drivers/interrupt_controller/intc_gicv3.c
++++ b/drivers/interrupt_controller/intc_gicv3.c
+@@ -553,7 +553,10 @@ int arm_gic_init(const struct device *unused)
+ {
+ 	ARG_UNUSED(unused);
+ 
+-	gicv3_dist_init();
++/* openamp client does not init the global part of GIC */
++	if (!IS_ENABLED(CONFIG_OPENAMP_SLAVE)) {
++		gicv3_dist_init();
++	}
+ 
+ 	__arm_gic_init();
+ 
+diff --git a/drivers/ipm/CMakeLists.txt b/drivers/ipm/CMakeLists.txt
+index cee766242d..9bf300c88f 100644
+--- a/drivers/ipm/CMakeLists.txt
++++ b/drivers/ipm/CMakeLists.txt
+@@ -12,4 +12,6 @@ zephyr_library_sources_ifdef(CONFIG_IPM_CAVS_IDC ipm_cavs_idc.c)
+ zephyr_library_sources_ifdef(CONFIG_IPM_STM32_HSEM ipm_stm32_hsem.c)
+ zephyr_library_sources_ifdef(CONFIG_IPM_CAVS_HOST ipm_cavs_host.c)
+ zephyr_library_sources_ifdef(CONFIG_ESP32_SOFT_IPM ipm_esp32.c)
++zephyr_library_sources_ifdef(CONFIG_IPM_GIC_SGI ipm_gic_sgi.c)
++
+ zephyr_library_sources_ifdef(CONFIG_USERSPACE   ipm_handlers.c)
+diff --git a/drivers/ipm/Kconfig b/drivers/ipm/Kconfig
+index 13e99323b1..13831f31c8 100644
+--- a/drivers/ipm/Kconfig
++++ b/drivers/ipm/Kconfig
+@@ -39,6 +39,24 @@ source "drivers/ipm/Kconfig.imx"
+ source "drivers/ipm/Kconfig.stm32"
+ source "drivers/ipm/Kconfig.intel_adsp"
+ 
++config IPM_GIC_SGI
++	bool "ARM GIC SGI driver"
++	depends on GIC
++	help
++	  use ARM GIC SGI interrupt as IPM
++
++if IPM_GIC_SGI
++
++config IPM_GIC_SGI_INTNO
++	int "Intno of SGI used for IPM"
++	range 6 7
++	default 7
++	help
++	  The intno of SGI used for IPM. For arm64, SGI can be used to
++	  work as IPM
++
++endif # IPM_GIC_SGI
++
+ module = IPM
+ module-str = ipm
+ source "subsys/logging/Kconfig.template.log_config"
+diff --git a/drivers/ipm/ipm_gic_sgi.c b/drivers/ipm/ipm_gic_sgi.c
+new file mode 100644
+index 0000000000..71abbb0147
+--- /dev/null
++++ b/drivers/ipm/ipm_gic_sgi.c
+@@ -0,0 +1,134 @@
++/*
++ * Copyright (c) 2022 openEuler
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ */
++
++#define DT_DRV_COMPAT arm_gic_sgi
++
++#include <errno.h>
++#include <zephyr/device.h>
++#include <zephyr/kernel.h>
++#include <zephyr/drivers/ipm.h>
++#include <zephyr/drivers/interrupt_controller/gic.h>
++
++
++/* Device config structure */
++struct ipm_gic_sgi_device_config {
++	void (*irq_config_func)(const struct device *d);
++	int intno;
++};
++
++/* Device data structure */
++struct ipm_gic_sgi_data {
++	ipm_callback_t callback;
++	void *user_data;
++};
++
++
++static int gic_sgi_send(const struct device *d, int wait, uint32_t id,
++			  const void *data, int size)
++{
++	/* use SGI x to send ipi */
++	const uint64_t mpidr = GET_MPIDR();
++	const struct ipm_gic_sgi_device_config *config = d->config;
++	/*
++	 * Send SGI to all cores except itself
++	 * Note: Assume only one Cluster now.
++	 */
++	gic_raise_sgi(config->intno, mpidr, SGIR_TGT_MASK & ~(1 << MPIDR_TO_CORE(mpidr)));
++
++	return 0;
++}
++
++static uint32_t gic_sgi_max_id_val_get(const struct device *d)
++{
++	ARG_UNUSED(d);
++
++	return 0;
++}
++
++static int gic_sgi_init(const struct device *d)
++{
++	const struct ipm_gic_sgi_device_config *config = d->config;
++
++	/* just register sgi into, no special init */
++	config->irq_config_func(d);
++
++	return 0;
++}
++
++static void gic_sgi_isr(const struct device *d)
++{
++	struct ipm_gic_sgi_data *driver_data = d->data;
++
++	if (driver_data->callback) {
++		driver_data->callback(d, driver_data->user_data, 0, 0);
++	}
++}
++
++static int gic_sgi_set_enabled(const struct device *d, int enable)
++{
++	ARG_UNUSED(d);
++	ARG_UNUSED(enable);
++
++	/* already enabled in gic_sgi_config_func */
++	return 0;
++}
++
++static int gic_sgi_max_data_size_get(const struct device *d)
++{
++	ARG_UNUSED(d);
++
++	/* sgi is just IPI, no data can be sent */
++	return 0;
++}
++
++static void gic_sgi_register_cb(const struct device *d,
++				ipm_callback_t cb,
++				void *user_data)
++{
++	struct ipm_gic_sgi_data *driver_data = d->data;
++
++	driver_data->callback = cb;
++	driver_data->user_data = user_data;
++}
++
++static const struct ipm_driver_api gic_sgi_driver_api = {
++	.send = gic_sgi_send,
++	.register_callback = gic_sgi_register_cb,
++	.max_data_size_get = gic_sgi_max_data_size_get,
++	.max_id_val_get = gic_sgi_max_id_val_get,
++	.set_enabled = gic_sgi_set_enabled,
++};
++
++static void gic_sgi_irq_config_func_0(const struct device *d);
++
++static const struct ipm_gic_sgi_device_config gic_sgi_cfg_0 = {
++	.irq_config_func = gic_sgi_irq_config_func_0,
++	.intno = CONFIG_IPM_GIC_SGI_INTNO,
++};
++
++static struct ipm_gic_sgi_data gic_sgi_data_0 = {
++	.callback = NULL,
++	.user_data = NULL,
++};
++
++DEVICE_DT_INST_DEFINE(0,
++			&gic_sgi_init,
++			NULL,
++			&gic_sgi_data_0,
++			&gic_sgi_cfg_0, PRE_KERNEL_1,
++			CONFIG_KERNEL_INIT_PRIORITY_DEVICE,
++			&gic_sgi_driver_api);
++
++static void gic_sgi_irq_config_func_0(const struct device *d)
++{
++	ARG_UNUSED(d);
++	IRQ_CONNECT(CONFIG_IPM_GIC_SGI_INTNO,
++			IRQ_DEFAULT_PRIORITY,
++			gic_sgi_isr,
++			DEVICE_DT_INST_GET(0),
++			0);
++	irq_enable(CONFIG_IPM_GIC_SGI_INTNO);
++}
+diff --git a/drivers/serial/CMakeLists.txt b/drivers/serial/CMakeLists.txt
+index 8fac82f7a8..874902e89f 100644
+--- a/drivers/serial/CMakeLists.txt
++++ b/drivers/serial/CMakeLists.txt
+@@ -50,6 +50,7 @@ zephyr_library_sources_ifdef(CONFIG_UART_XEN_HVC uart_hvc_xen.c)
+ zephyr_library_sources_ifdef(CONFIG_UART_XEN_HVC_CONSOLEIO uart_hvc_xen_consoleio.c)
+ zephyr_library_sources_ifdef(CONFIG_UART_PIPE uart_pipe.c)
+ zephyr_library_sources_ifdef(CONFIG_UART_SMARTBOND uart_smartbond.c)
++zephyr_library_sources_ifdef(CONFIG_UART_RPMSG uart_rpmsg.c)
+ 
+ zephyr_library_sources_ifdef(CONFIG_USERSPACE   uart_handlers.c)
+ 
+diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
+index 5cb2d10f0c..9ef5c1349b 100644
+--- a/drivers/serial/Kconfig
++++ b/drivers/serial/Kconfig
+@@ -201,5 +201,6 @@ source "drivers/serial/Kconfig.neorv32"
+ source "drivers/serial/Kconfig.xen"
+ 
+ source "drivers/serial/Kconfig.smartbond"
++source "drivers/serial/Kconfig.rpmsg_uart"
+ 
+ endif # SERIAL
+diff --git a/drivers/serial/Kconfig.rpmsg_uart b/drivers/serial/Kconfig.rpmsg_uart
+new file mode 100644
+index 0000000000..a1e4535146
+--- /dev/null
++++ b/drivers/serial/Kconfig.rpmsg_uart
+@@ -0,0 +1,30 @@
++# Rpmsg service based UART
++#
++# Copyright (c) 2022 openEuler Embedded
++# SPDX-License-Identifier: Apache-2.0
++
++config UART_RPMSG
++	bool "RPMSG service based UART driver"
++	select SERIAL_HAS_DRIVER
++	select SERIAL_SUPPORT_INTERRUPT
++	select RPMSG_SERVICE
++	select RING_BUFFER
++	help
++		Enable RPMSG service based uart driver. Zephyr runs as
++		a remote OS
++
++if UART_RPMSG
++
++config UART_RPMSG_RING_BUF_SIZE
++	int "RPMSG UART receive ring buf size"
++	default 512
++	help
++	  Set the size of ring buffer used for rpmsg uart receive
++
++config UART_RPMSG_LINE_BUF_SIZE
++	int "RPMSG UART poll line buf size"
++	default 32
++	help
++	  Set the size of line buffer used for rpmsg uart poll out
++
++endif # UART_RPMSG
+diff --git a/drivers/serial/uart_rpmsg.c b/drivers/serial/uart_rpmsg.c
+new file mode 100644
+index 0000000000..b50ca95b39
+--- /dev/null
++++ b/drivers/serial/uart_rpmsg.c
+@@ -0,0 +1,298 @@
++/*
++ * Copyright (c) 2022 openEuler Embedded
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ */
++
++#include <zephyr/device.h>
++#include <zephyr/init.h>
++#include <zephyr/kernel.h>
++#include <zephyr/sys/ring_buffer.h>
++#include <zephyr/drivers/uart.h>
++#include <zephyr/ipc/rpmsg_service.h>
++
++#include <zephyr/logging/log.h>
++LOG_MODULE_REGISTER(uart_rpmsg, CONFIG_UART_LOG_LEVEL);
++
++
++struct uart_rpmsg_data {
++	const struct device *dev;
++
++	int ep_id; /* endpoint id */
++
++	/** Ring buffer for received bytes from rpmsg */
++	struct ring_buf rb;
++	uint8_t ring_buf_data[CONFIG_UART_RPMSG_RING_BUF_SIZE];
++	uint8_t line_buf_data[CONFIG_UART_RPMSG_LINE_BUF_SIZE];
++	size_t line_len;
++
++#if defined(CONFIG_UART_INTERRUPT_DRIVEN)
++	uart_irq_callback_user_data_t irq_cb;
++	void *irq_cb_data;
++	int tx_busy;
++#endif /* CONFIG_UART_INTERRUPT_DRIVEN */
++};
++
++static struct uart_rpmsg_data uart_data;
++
++#if defined(CONFIG_UART_INTERRUPT_DRIVEN)
++static void uart_rpmsg_cb(struct uart_rpmsg_data *data)
++{
++	if (data->irq_cb) {
++		/* use data->tx_busy to simulate the tx empty interrupt
++		 * uart_tx_enable will call uart_rpmsg_cb, and set tx_busy to 1
++		 * uart_tx_disable will set tx_buys to 0, so uart_tx_disable
++		 * must be called if nothing to send and the loop will end
++		 */
++		do {
++			data->irq_cb(data->dev, data->irq_cb_data);
++		} while (data->tx_busy);
++	}
++}
++#endif
++
++/* called in thread context */
++static int uart_rpmsg_endpoint_cb(struct rpmsg_endpoint *ept, void *data,
++		size_t len, uint32_t src, void *priv)
++{
++	struct uart_rpmsg_data *uart_data = (struct uart_rpmsg_data *)priv;
++	int wrote;
++
++	if (rpmsg_service_endpoint_is_bound(uart_data->ep_id) == false) {
++		rpmsg_service_endpoint_bound(uart_data->ep_id);
++	}
++
++	/* direct return for empty msg which is used for sync up between
++	 * two sides.
++	 */
++	if (len == 0) {
++		return RPMSG_SUCCESS;
++	}
++
++	/* put the received data into ring buf */
++	wrote = ring_buf_put(&uart_data->rb, data, len);
++
++	if (wrote < len) {
++		LOG_INF("ring buf is full, data overrun\n");
++		/* ring buf is full, disable rx? */
++	}
++
++#if defined(CONFIG_UART_INTERRUPT_DRIVEN)
++	uart_rpmsg_cb(priv);
++#endif
++
++	return RPMSG_SUCCESS;
++}
++
++static int uart_rpmsg_poll_in(const struct device *dev,
++			unsigned char *c)
++{
++	struct uart_rpmsg_data *data = (struct uart_rpmsg_data *)dev->data;
++	int ret = 0;
++	char temp;
++
++	/* wait until ring buffer is not empty */
++	while (ring_buf_is_empty(&data->rb)) {
++		k_msleep(1);
++	}
++
++	ret = ring_buf_get(&data->rb, &temp, sizeof(temp));
++
++	if (ret != 1) {
++		/* char was not received correctly */
++		return -1;
++	}
++
++	*c = temp;
++
++	return 0;
++}
++
++static void uart_rpmsg_poll_out(const struct device *dev, unsigned char c)
++{
++	struct uart_rpmsg_data *uart_data = (struct uart_rpmsg_data *)dev->data;
++	int ret;
++
++	/* should wait until uart_rpmsg's endpoint is bound ?
++	 * if not bound, rpmsg_service_send will fail
++	 * in thread context, we can sleep to wait
++	 * in no-thread context, we should fail and lose msg
++	 */
++
++	while (rpmsg_service_endpoint_is_bound(uart_data->ep_id) == false) {
++		k_msleep(10);
++	}
++
++	if (uart_data->line_len < CONFIG_UART_RPMSG_LINE_BUF_SIZE) {
++		uart_data->line_buf_data[uart_data->line_len++] = c;
++		if (c != '\n') {
++			return;
++		}
++	}
++
++	ret = rpmsg_service_send(uart_data->ep_id, uart_data->line_buf_data,
++							uart_data->line_len);
++
++	if (ret < 0) {
++		LOG_ERR("Error uart_rpmsg poll out over rpmsg_service ret:%d", ret);
++	}
++
++	uart_data->line_len = 0;
++
++	uart_data->line_buf_data[uart_data->line_len++] = c;
++}
++
++#if defined(CONFIG_UART_INTERRUPT_DRIVEN)
++
++static int uart_rpmsg_fifo_fill(const struct device *dev, const uint8_t *tx_data,
++			 int len)
++{
++	struct uart_rpmsg_data *data = (struct uart_rpmsg_data *)dev->data;
++	int ret = 0, sent = 0;
++
++	data->tx_busy = 1;
++	while (len) {
++		sent = rpmsg_service_send(data->ep_id, tx_data, len);
++		/* < 0, send error */
++		if (sent < 0) {
++			ret = sent;
++			break;
++		}
++		ret += sent;
++		tx_data += sent;
++		len -= sent;
++	}
++
++	return ret;
++}
++
++static int uart_rpmsg_fifo_read(const struct device *dev, uint8_t *rx_data,
++			 const int size)
++{
++	struct uart_rpmsg_data *data = (struct uart_rpmsg_data *)dev->data;
++
++	return ring_buf_get(&data->rb, rx_data, size);
++}
++
++static void uart_rpmsg_irq_tx_enable(const struct device *dev)
++{
++/* explicitly call UART callback to simulate Tx interrupt */
++	struct uart_rpmsg_data *data = (struct uart_rpmsg_data *)dev->data;
++
++	/* should wait until uart_rpmsg's endpoint is bound ?
++	 * if not bound, rpmsg_service_send will fail
++	 * in thread context, we can sleep to wait
++	 * in no-thread context, we should fail and lose msg
++	 */
++
++	if (rpmsg_service_endpoint_is_bound(data->ep_id)) {
++		uart_rpmsg_cb(data);
++	}
++}
++
++static void uart_rpmsg_irq_tx_disable(const struct device *dev)
++{
++	struct uart_rpmsg_data *data = (struct uart_rpmsg_data *)dev->data;
++
++	data->tx_busy = 0;
++}
++
++
++static int uart_rpmsg_irq_tx_ready(const struct device *dev)
++{
++	/* always ready to tx */
++	return 1;
++}
++
++static void uart_rpmsg_irq_rx_enable(const struct device *dev)
++{
++	/* always rx enable */
++}
++
++static int uart_rpmsg_irq_tx_complete(const struct device *dev)
++{
++	/*
++	 * after send, it's always complete
++	 */
++	return 1;
++}
++
++static int uart_rpmsg_irq_rx_ready(const struct device *dev)
++{
++	/* if ring buf is not empty, then ready to rx */
++	struct uart_rpmsg_data *data = (struct uart_rpmsg_data *)dev->data;
++
++	return  !ring_buf_is_empty(&data->rb);
++}
++
++static int uart_rpmsg_irq_is_pending(const struct device *dev)
++{
++	return uart_rpmsg_irq_rx_ready(dev);
++}
++
++static int uart_rpmsg_irq_update(const struct device *dev)
++{
++	/* Nothing needs to be updated */
++	return 1;
++}
++
++static void uart_rpmsg_irq_callback_set(const struct device *dev,
++		 uart_irq_callback_user_data_t cb, void *user_data)
++{
++	struct uart_rpmsg_data *data = (struct uart_rpmsg_data *)dev->data;
++
++	data->irq_cb = cb;
++	data->irq_cb_data = user_data;
++}
++#endif /* CONFIG_UART_INTERRUPT_DRIVEN */
++
++static const struct uart_driver_api uart_rpmsg_api = {
++	.poll_in = uart_rpmsg_poll_in,
++	.poll_out = uart_rpmsg_poll_out,
++#if defined(CONFIG_UART_INTERRUPT_DRIVEN)
++	.fifo_fill = uart_rpmsg_fifo_fill,
++	.fifo_read = uart_rpmsg_fifo_read,
++	.irq_tx_enable = uart_rpmsg_irq_tx_enable,
++	.irq_tx_disable = uart_rpmsg_irq_tx_disable,
++	.irq_tx_ready = uart_rpmsg_irq_tx_ready,
++	.irq_rx_enable = uart_rpmsg_irq_rx_enable,
++	.irq_tx_complete = uart_rpmsg_irq_tx_complete,
++	.irq_rx_ready = uart_rpmsg_irq_rx_ready,
++	.irq_is_pending = uart_rpmsg_irq_is_pending,
++	.irq_update = uart_rpmsg_irq_update,
++	.irq_callback_set = uart_rpmsg_irq_callback_set,
++#endif /* CONFIG_UART_INTERRUPT_DRIVEN */
++};
++
++int uart_rpmsg_init(const struct device *dev)
++{
++	struct uart_rpmsg_data *data = dev->data;
++	int status;
++
++	status = rpmsg_service_register_endpoint("uart", uart_rpmsg_endpoint_cb,
++									NULL, data);
++
++	if (status < 0) {
++		LOG_INF("RPMSG UART initialized error\n");
++		return status;
++	}
++
++	data->dev = dev;
++	data->ep_id = status;
++	ring_buf_init(&data->rb, CONFIG_UART_RPMSG_RING_BUF_SIZE, data->ring_buf_data);
++
++	data->line_len = 0;
++#if defined(CONFIG_UART_INTERRUPT_DRIVEN)
++
++	data->tx_busy = 0;
++
++#endif
++
++	LOG_INF("IPC UART initialized successfully\n");
++
++	return 0;
++}
++
++DEVICE_DT_DEFINE(DT_NODELABEL(uart_rpmsg), uart_rpmsg_init, NULL, &uart_data,
++		NULL, POST_KERNEL, CONFIG_RPMSG_SERVICE_EP_REG_PRIORITY,
++		&uart_rpmsg_api);
+diff --git a/dts/arm64/broadcom/rpi4-a72.dtsi b/dts/arm64/broadcom/rpi4-a72.dtsi
+new file mode 100644
+index 0000000000..e336f9ea74
+--- /dev/null
++++ b/dts/arm64/broadcom/rpi4-a72.dtsi
+@@ -0,0 +1,55 @@
++/*
++ * Copyright (c) 2022 openEule Embedded
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ */
++
++ #include <mem.h>
++ #include <arm64/armv8-a.dtsi>
++ #include <zephyr/dt-bindings/interrupt-controller/arm-gic.h>
++
++ / {
++	#address-cells = <2>;
++	#size-cells = <2>;
++
++    cpus {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++        cpu@0 {
++			device_type = "cpu";
++			compatible = "arm,cortex-a72";
++			reg = <0>;
++		};
++     };
++
++    timer {
++        compatible = "arm,armv8-timer";
++        interrupt-parent = <&gic>;
++        interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL
++                	IRQ_DEFAULT_PRIORITY>,
++                <GIC_PPI 14 IRQ_TYPE_LEVEL
++                	IRQ_DEFAULT_PRIORITY>,
++                <GIC_PPI 11 IRQ_TYPE_LEVEL
++                	IRQ_DEFAULT_PRIORITY>,
++                <GIC_PPI 10 IRQ_TYPE_LEVEL
++            		IRQ_DEFAULT_PRIORITY>;
++     };
++
++     soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++        ranges;
++
++        interrupt-parent = <&gic>;
++
++        gic: interrupt-controller@ff841000 {
++            compatible = "arm,gic";
++            reg = <0x00 0xFF841000 0x00 0x1000>,
++				<0x00 0xFF842000 0x00 0x2000>;
++            interrupt-controller;
++            #interrupt-cells = <4>;
++            status = "okay";
++        };
++    };
++ };
+diff --git a/dts/bindings/ipm/arm,gic-sgi.yaml b/dts/bindings/ipm/arm,gic-sgi.yaml
+new file mode 100644
+index 0000000000..282a4207d4
+--- /dev/null
++++ b/dts/bindings/ipm/arm,gic-sgi.yaml
+@@ -0,0 +1,9 @@
++# Copyright (c) 2022 openEuler
++# SPDX-License-Identifier: Apache-2.0
++
++description: ARM SGI (IPM by software generated int)
++
++compatible: "arm,gic-sgi"
++
++include: base.yaml
++
+diff --git a/dts/bindings/serial/zephy,rpmsg-uart.yaml b/dts/bindings/serial/zephy,rpmsg-uart.yaml
+new file mode 100644
+index 0000000000..48f0eef4c2
+--- /dev/null
++++ b/dts/bindings/serial/zephy,rpmsg-uart.yaml
+@@ -0,0 +1,8 @@
++# Copyright (c) 2022, openEuler Embedded
++# SPDX-License-Identifier: Apache-2.0
++
++description: RPMSG service based UART
++
++compatible: "zephyr,rpmsg-uart"
++
++include: uart-controller.yaml
+diff --git a/include/zephyr/ipc/rpmsg_service.h b/include/zephyr/ipc/rpmsg_service.h
+index e599c8deac..b1047d3cab 100644
+--- a/include/zephyr/ipc/rpmsg_service.h
++++ b/include/zephyr/ipc/rpmsg_service.h
+@@ -32,13 +32,18 @@ extern "C" {
+  *             for master and slave
+  * @param cb Callback executed when data are available on given endpoint
+  *
++ * @param unbind_cb Callback executed when given endpoint is unbound
++ *
++ * @param priv endpoint private data, transferred to cb when cb is called
++ *
+  * @retval >=0 id of registered endpoint on success;
+  * @retval -EINPROGRESS when requested to register an endpoint after endpoints
+  *         creation procedure has started;
+  * @retval -ENOMEM when there is not enough slots to register the endpoint;
+  * @retval <0 an other negative errno code, reported by rpmsg.
+  */
+-int rpmsg_service_register_endpoint(const char *name, rpmsg_ept_cb cb);
++int rpmsg_service_register_endpoint(const char *name, rpmsg_ept_cb cb,
++				rpmsg_ns_unbind_cb unbind_cb, void *priv);
+ 
+ /**
+  * @brief Send data using given IPC endpoint
+@@ -67,6 +72,8 @@ int rpmsg_service_send(int endpoint_id, const void *data, size_t len);
+  */
+ bool rpmsg_service_endpoint_is_bound(int endpoint_id);
+ 
++void rpmsg_service_endpoint_bound(int endpoint_id);
++
+ /**
+  * @}
+  */
+diff --git a/samples/subsys/ipc/openamp/CMakeLists.txt b/samples/subsys/ipc/openamp/CMakeLists.txt
+index daf99d8abe..8380389027 100644
+--- a/samples/subsys/ipc/openamp/CMakeLists.txt
++++ b/samples/subsys/ipc/openamp/CMakeLists.txt
+@@ -16,6 +16,9 @@ elseif("${BOARD}" STREQUAL "mps2_an521")
+   set(BOARD_REMOTE "mps2_an521_remote")
+ elseif("${BOARD}" STREQUAL "v2m_musca_b1")
+   set(BOARD_REMOTE "v2m_musca_b1_ns")
++elseif("${BOARD}" STREQUAL "qemu_cortex_a53")
++  set(QEMU_EXTRA_FLAGS "-m;1G;-serial;pty;-smp;2;-device;loader,file=${REMOTE_ZEPHYR_DIR}/zephyr.elf,cpu-num=1")
++  set(BOARD_REMOTE "qemu_cortex_a53")
+ else()
+   message(FATAL_ERROR "${BOARD} was not supported for this sample")
+ endif()
+diff --git a/samples/subsys/ipc/openamp/README.rst b/samples/subsys/ipc/openamp/README.rst
+index 429d47bc8d..830023cddc 100644
+--- a/samples/subsys/ipc/openamp/README.rst
++++ b/samples/subsys/ipc/openamp/README.rst
+@@ -42,6 +42,14 @@ Building the application for v2m_musca_b1
+    :board: v2m_musca_b1
+    :goals: debug
+ 
++Building the application for qemu_cortex_a53
++***********************************************
++
++.. zephyr-app-commands::
++   :zephyr-app: samples/subsys/ipc/openamp
++   :board: qemu_cortex_a53
++   :goals: run
++
+ Open a serial terminal (minicom, putty, etc.) and connect the board with the
+ following settings:
+ 
+diff --git a/samples/subsys/ipc/openamp/boards/qemu_cortex_a53.conf b/samples/subsys/ipc/openamp/boards/qemu_cortex_a53.conf
+new file mode 100644
+index 0000000000..3aa80f31f4
+--- /dev/null
++++ b/samples/subsys/ipc/openamp/boards/qemu_cortex_a53.conf
+@@ -0,0 +1,2 @@
++CONFIG_PM_CPU_OPS=y
++CONFIG_ARMV8_A_NS=y
+diff --git a/samples/subsys/ipc/openamp/boards/qemu_cortex_a53.overlay b/samples/subsys/ipc/openamp/boards/qemu_cortex_a53.overlay
+new file mode 100644
+index 0000000000..ff1f5c7dfb
+--- /dev/null
++++ b/samples/subsys/ipc/openamp/boards/qemu_cortex_a53.overlay
+@@ -0,0 +1,6 @@
++/*
++ * Copyright (c) 2022 openEuler Embedded
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ */
++#include "qemu_cortex_a53_overlay.dtsi"
+diff --git a/samples/subsys/ipc/openamp/boards/qemu_cortex_a53_overlay.dtsi b/samples/subsys/ipc/openamp/boards/qemu_cortex_a53_overlay.dtsi
+new file mode 100644
+index 0000000000..85e1b47198
+--- /dev/null
++++ b/samples/subsys/ipc/openamp/boards/qemu_cortex_a53_overlay.dtsi
+@@ -0,0 +1,32 @@
++/*
++ * Copyright (c) 2022 openEuler Embedded
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ */
++
++/ {
++	chosen {
++		/*
++		 * shared memory reserved for the inter-processor communication
++		 */
++		zephyr,ipc_shm = &ipc_shm0;
++		zephyr,ipc = &ipm_gic_sgi0;
++	};
++
++	ipm_gic_sgi0: ipm{
++		compatible = "arm,gic-sgi";
++	};
++
++	soc {
++		/* reserve 3 MB for inter-processor communication */
++		ipc_shm0: memory@70000000 {
++			compatible = "mmio-sram";
++			reg = <0 0x70000000 0 0x30000>;
++		};
++		/* memory used by openamp client */
++		sram1: memory@7a000000 {
++			compatible = "mmio-sram";
++			reg = <0x0 0x7a000000 0x0 DT_SIZE_M(10)>;
++		};
++	};
++};
+diff --git a/samples/subsys/ipc/openamp/remote/CMakeLists.txt b/samples/subsys/ipc/openamp/remote/CMakeLists.txt
+index b5cc53b48f..ee29ffa2cb 100644
+--- a/samples/subsys/ipc/openamp/remote/CMakeLists.txt
++++ b/samples/subsys/ipc/openamp/remote/CMakeLists.txt
+@@ -8,12 +8,18 @@ cmake_minimum_required(VERSION 3.20.0)
+ if(("${BOARD}" STREQUAL "lpcxpresso54114_m0")
+ 	OR "${BOARD}" STREQUAL "lpcxpresso55s69_cpu1"
+ 	OR "${BOARD}" STREQUAL "mps2_an521_remote"
+-	OR "${BOARD}" STREQUAL "v2m_musca_b1_ns")
++	OR "${BOARD}" STREQUAL "v2m_musca_b1_ns"
++	OR "${BOARD}" STREQUAL "qemu_cortex_a53")
+ 	message(STATUS "${BOARD} compiles as remote in this sample")
+ else()
+ 	message(FATAL_ERROR "${BOARD} was not supported for this sample")
+ endif()
+ 
++if("${BOARD}" STREQUAL "qemu_cortex_a53")
++	set(CONF_FILE "prj_qemu_cortex_a53.conf")
++	set(DTC_OVERLAY_FILE CACHE STRING "boards/qemu_cortex_a53.overlay" FORCE)
++endif()
++
+ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
+ project(openamp_remote)
+ 
+diff --git a/samples/subsys/ipc/openamp/remote/boards/qemu_cortex_a53.overlay b/samples/subsys/ipc/openamp/remote/boards/qemu_cortex_a53.overlay
+new file mode 100644
+index 0000000000..47e6d47f58
+--- /dev/null
++++ b/samples/subsys/ipc/openamp/remote/boards/qemu_cortex_a53.overlay
+@@ -0,0 +1,18 @@
++/*
++ * Copyright (c) 2022 openEuler Embedded
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ */
++
++#include "../../boards/qemu_cortex_a53_overlay.dtsi"
++
++/ {
++	chosen {
++		zephyr,sram = &sram1;
++	};
++
++};
++
++&uart0 {
++	status = "disabled";
++};
+diff --git a/samples/subsys/ipc/openamp/remote/prj_qemu_cortex_a53.conf b/samples/subsys/ipc/openamp/remote/prj_qemu_cortex_a53.conf
+new file mode 100644
+index 0000000000..895e31280b
+--- /dev/null
++++ b/samples/subsys/ipc/openamp/remote/prj_qemu_cortex_a53.conf
+@@ -0,0 +1,18 @@
++CONFIG_BOOT_BANNER=n
++CONFIG_STDOUT_CONSOLE=n
++CONFIG_PRINTK=n
++CONFIG_IPM=y
++CONFIG_HEAP_MEM_POOL_SIZE=4096
++CONFIG_OPENAMP=y
++CONFIG_OPENAMP_MASTER=n
++CONFIG_ARMV8_A_NS=y
++# Disable UART driver
++CONFIG_SERIAL=n
++
++# Disable console
++CONFIG_CONSOLE=n
++CONFIG_UART_CONSOLE=n
++
++# Disable serial port
++CONFIG_UART_PL011=n
++CONFIG_UART_INTERRUPT_DRIVEN=n
+diff --git a/samples/subsys/ipc/openamp/remote/src/main.c b/samples/subsys/ipc/openamp/remote/src/main.c
+index 06124069f4..06ed2bd894 100644
+--- a/samples/subsys/ipc/openamp/remote/src/main.c
++++ b/samples/subsys/ipc/openamp/remote/src/main.c
+@@ -19,6 +19,13 @@
+ 
+ #include "common.h"
+ 
++/*
++ * 32 bit: -1 == 0xffffffff
++ * 64 bit: -1 == 0xffffffffffffffff
++ */
++#define DEFAULT_PAGE_SHIFT (-1UL)
++#define DEFAULT_PAGE_MASK  (-1UL)
++
+ #define APP_TASK_STACK_SIZE (1024)
+ K_THREAD_STACK_DEFINE(thread_stack, APP_TASK_STACK_SIZE);
+ static struct k_thread thread_data;
+@@ -36,8 +43,8 @@ static struct metal_device shm_device = {
+ 			.virt       = (void *) SHM_START_ADDR,
+ 			.physmap    = shm_physmap,
+ 			.size       = SHM_SIZE,
+-			.page_shift = 0xffffffff,
+-			.page_mask  = 0xffffffff,
++			.page_shift = DEFAULT_PAGE_SHIFT,
++			.page_mask  = DEFAULT_PAGE_MASK,
+ 			.mem_flags  = 0,
+ 			.ops        = { NULL },
+ 		},
+diff --git a/samples/subsys/ipc/openamp/sample.yaml b/samples/subsys/ipc/openamp/sample.yaml
+index df871bca0d..0921aa2b7f 100644
+--- a/samples/subsys/ipc/openamp/sample.yaml
++++ b/samples/subsys/ipc/openamp/sample.yaml
+@@ -4,7 +4,7 @@ sample:
+     name: OpenAMP example integration
+ tests:
+     sample.ipc.openamp:
+-        platform_allow: lpcxpresso54114_m4 lpcxpresso55s69_cpu0 mps2_an521 v2m_musca_b1
++        platform_allow: lpcxpresso54114_m4 lpcxpresso55s69_cpu0 mps2_an521 v2m_musca_b1 qemu_cortex_a53
+         tags: ipm
+         harness: console
+         harness_config:
+diff --git a/samples/subsys/ipc/openamp/src/main.c b/samples/subsys/ipc/openamp/src/main.c
+index bdbfc17bb4..181d2b151f 100644
+--- a/samples/subsys/ipc/openamp/src/main.c
++++ b/samples/subsys/ipc/openamp/src/main.c
+@@ -20,6 +20,17 @@
+ 
+ #include "common.h"
+ 
++#if defined(CONFIG_SOC_QEMU_CORTEX_A53)
++#include <zephyr/drivers/pm_cpu_ops.h>
++#endif
++
++/*
++ * 32 bit: -1 == 0xffffffff
++ * 64 bit: -1 == 0xffffffffffffffff
++ */
++#define DEFAULT_PAGE_SHIFT (-1UL)
++#define DEFAULT_PAGE_MASK  (-1UL)
++
+ #define APP_TASK_STACK_SIZE (1024)
+ K_THREAD_STACK_DEFINE(thread_stack, APP_TASK_STACK_SIZE);
+ static struct k_thread thread_data;
+@@ -37,8 +48,8 @@ static struct metal_device shm_device = {
+ 			.virt       = (void *) SHM_START_ADDR,
+ 			.physmap    = shm_physmap,
+ 			.size       = SHM_SIZE,
+-			.page_shift = 0xffffffff,
+-			.page_mask  = 0xffffffff,
++			.page_shift = DEFAULT_PAGE_SHIFT,
++			.page_mask  = DEFAULT_PAGE_MASK,
+ 			.mem_flags  = 0,
+ 			.ops        = { NULL },
+ 		},
+@@ -292,6 +303,12 @@ void main(void)
+ 	defined(CONFIG_SOC_V2M_MUSCA_B1)
+ 	wakeup_cpu1();
+ 	k_msleep(500);
++#elif defined(CONFIG_SOC_QEMU_CORTEX_A53)
++	/* start the secondary cpu by psci in qemu*/
++	if (pm_cpu_on(1, DT_REG_ADDR(DT_NODELABEL(sram1)))) {
++		printk("Failed to boot secondary CPU core\n");
++		return;
++	}
+ #endif /* #if defined(CONFIG_SOC_MPS2_AN521) */
+ }
+ 
+diff --git a/soc/arm64/qemu_cortex_a53/mmu_regions.c b/soc/arm64/qemu_cortex_a53/mmu_regions.c
+index b5d1205775..3d162c3e73 100644
+--- a/soc/arm64/qemu_cortex_a53/mmu_regions.c
++++ b/soc/arm64/qemu_cortex_a53/mmu_regions.c
+@@ -19,6 +19,13 @@ static const struct arm_mmu_region mmu_regions[] = {
+ 			      DT_REG_ADDR_BY_IDX(DT_INST(0, arm_gic), 1),
+ 			      DT_REG_SIZE_BY_IDX(DT_INST(0, arm_gic), 1),
+ 			      MT_DEVICE_nGnRnE | MT_P_RW_U_NA | MT_DEFAULT_SECURE_STATE),
++
++#if defined(CONFIG_OPENAMP)
++	MMU_REGION_FLAT_ENTRY("IPC_SHM",
++			      DT_REG_ADDR(DT_NODELABEL(ipc_shm0)),
++			      DT_REG_SIZE(DT_NODELABEL(ipc_shm0)),
++			      MT_NORMAL | MT_P_RW_U_NA | MT_DEFAULT_SECURE_STATE),
++#endif
+ };
+ 
+ const struct arm_mmu_config mmu_config = {
+diff --git a/soc/arm64/rpi4_cortex_a72/CMakeLists.txt b/soc/arm64/rpi4_cortex_a72/CMakeLists.txt
+new file mode 100644
+index 0000000000..42356c2508
+--- /dev/null
++++ b/soc/arm64/rpi4_cortex_a72/CMakeLists.txt
+@@ -0,0 +1,4 @@
++# Copyright (c) 2022 openEuler Embedded
++# SPDX-License-Identifier: Apache-2.0
++
++zephyr_library_sources_ifdef(CONFIG_ARM_MMU mmu_regions.c)
+diff --git a/soc/arm64/rpi4_cortex_a72/Kconfig.defconfig b/soc/arm64/rpi4_cortex_a72/Kconfig.defconfig
+new file mode 100644
+index 0000000000..e27f454829
+--- /dev/null
++++ b/soc/arm64/rpi4_cortex_a72/Kconfig.defconfig
+@@ -0,0 +1,17 @@
++# Copyright (c) 2022 openEuler Embedded
++# SPDX-License-Identifier: Apache-2.0
++
++if SOC_RPI4_CORTEX_A72
++
++config SOC
++	default "rpi4_cortex_a72"
++
++config NUM_IRQS
++	# must be >= the highest interrupt number used
++	# - include the UART interrupts
++	default 100
++
++config SYS_CLOCK_HW_CYCLES_PER_SEC
++	default 54000000
++
++endif # SOC_RPI4_CORTEX_A72
+diff --git a/soc/arm64/rpi4_cortex_a72/Kconfig.soc b/soc/arm64/rpi4_cortex_a72/Kconfig.soc
+new file mode 100644
+index 0000000000..6ce979d3b8
+--- /dev/null
++++ b/soc/arm64/rpi4_cortex_a72/Kconfig.soc
+@@ -0,0 +1,8 @@
++# Copyright (c) 2022 openEuler Embedded
++# SPDX-License-Identifier: Apache-2.0
++
++config SOC_RPI4_CORTEX_A72
++	bool "Raspberry Pi 4 (cortex-a72)"
++	select ARM64
++	select CPU_CORTEX_A72
++	select GIC_V2
+diff --git a/soc/arm64/rpi4_cortex_a72/linker.ld b/soc/arm64/rpi4_cortex_a72/linker.ld
+new file mode 100644
+index 0000000000..499492ed89
+--- /dev/null
++++ b/soc/arm64/rpi4_cortex_a72/linker.ld
+@@ -0,0 +1,8 @@
++/*
++ * Copyright (c) 2022 openEuler Embedded
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ *
++ */
++
++#include <zephyr/arch/arm64/scripts/linker.ld>
+diff --git a/soc/arm64/rpi4_cortex_a72/mmu_regions.c b/soc/arm64/rpi4_cortex_a72/mmu_regions.c
+new file mode 100644
+index 0000000000..25ec334558
+--- /dev/null
++++ b/soc/arm64/rpi4_cortex_a72/mmu_regions.c
+@@ -0,0 +1,33 @@
++/*
++ * Copyright (c) 2022 openEuler Embedded
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ */
++#include <zephyr/arch/arm64/arm_mmu.h>
++#include <zephyr/devicetree.h>
++#include <zephyr/sys/util.h>
++
++static const struct arm_mmu_region mmu_regions[] = {
++
++	MMU_REGION_FLAT_ENTRY("GIC",
++			      DT_REG_ADDR_BY_IDX(DT_INST(0, arm_gic), 0),
++			      DT_REG_SIZE_BY_IDX(DT_INST(0, arm_gic), 0),
++			      MT_DEVICE_nGnRnE | MT_P_RW_U_NA | MT_DEFAULT_SECURE_STATE),
++
++	MMU_REGION_FLAT_ENTRY("GIC",
++			      DT_REG_ADDR_BY_IDX(DT_INST(0, arm_gic), 1),
++			      DT_REG_SIZE_BY_IDX(DT_INST(0, arm_gic), 1),
++			      MT_DEVICE_nGnRnE | MT_P_RW_U_NA | MT_DEFAULT_SECURE_STATE),
++
++#if defined(CONFIG_OPENAMP)
++	MMU_REGION_FLAT_ENTRY("IPC_SHM",
++			      DT_REG_ADDR(DT_NODELABEL(ipc_shm0)),
++			      DT_REG_SIZE(DT_NODELABEL(ipc_shm0)),
++			      MT_DEVICE_nGnRnE | MT_P_RW_U_NA | MT_DEFAULT_SECURE_STATE),
++#endif
++};
++
++const struct arm_mmu_config mmu_config = {
++	.num_regions = ARRAY_SIZE(mmu_regions),
++	.mmu_regions = mmu_regions,
++};
+diff --git a/subsys/ipc/rpmsg_service/CMakeLists.txt b/subsys/ipc/rpmsg_service/CMakeLists.txt
+index 357a2bc6c3..cde10cdd23 100644
+--- a/subsys/ipc/rpmsg_service/CMakeLists.txt
++++ b/subsys/ipc/rpmsg_service/CMakeLists.txt
+@@ -2,3 +2,4 @@
+ 
+ zephyr_sources(rpmsg_backend.c)
+ zephyr_sources(rpmsg_service.c)
++zephyr_sources(rpmsg_rpc_service.c)
+diff --git a/subsys/ipc/rpmsg_service/rpmsg_backend.c b/subsys/ipc/rpmsg_service/rpmsg_backend.c
+index 431fd093be..c3d6efd82a 100644
+--- a/subsys/ipc/rpmsg_service/rpmsg_backend.c
++++ b/subsys/ipc/rpmsg_service/rpmsg_backend.c
+@@ -59,6 +59,13 @@ static const struct device *const ipm_handle =
+ 	DEVICE_DT_GET(DT_CHOSEN(zephyr_ipc));
+ #endif
+ 
++/*
++ * 32 bit: -1 == 0xffffffff
++ * 64 bit: -1 == 0xffffffffffffffff
++ */
++#define DEFAULT_PAGE_SHIFT (-1UL)
++#define DEFAULT_PAGE_MASK  (-1UL)
++
+ static metal_phys_addr_t shm_physmap[] = { SHM_START_ADDR };
+ static struct metal_device shm_device = {
+ 	.name = SHM_DEVICE_NAME,
+@@ -69,8 +76,8 @@ static struct metal_device shm_device = {
+ 			.virt       = (void *) SHM_START_ADDR,
+ 			.physmap    = shm_physmap,
+ 			.size       = SHM_SIZE,
+-			.page_shift = 0xffffffff,
+-			.page_mask  = 0xffffffff,
++			.page_shift = DEFAULT_PAGE_SHIFT,
++			.page_mask  = DEFAULT_PAGE_MASK,
+ 			.mem_flags  = 0,
+ 			.ops        = { NULL },
+ 		},
+diff --git a/subsys/ipc/rpmsg_service/rpmsg_backend.h b/subsys/ipc/rpmsg_service/rpmsg_backend.h
+index a74e46b852..643e47d89d 100644
+--- a/subsys/ipc/rpmsg_service/rpmsg_backend.h
++++ b/subsys/ipc/rpmsg_service/rpmsg_backend.h
+@@ -17,7 +17,7 @@ extern "C" {
+ #define VDEV_SIZE		DT_REG_SIZE(DT_CHOSEN(zephyr_ipc_shm))
+ 
+ #define VDEV_STATUS_ADDR	VDEV_START_ADDR
+-#define VDEV_STATUS_SIZE	0x400
++#define VDEV_STATUS_SIZE	0x4000
+ 
+ #define SHM_START_ADDR		(VDEV_START_ADDR + VDEV_STATUS_SIZE)
+ #define SHM_SIZE		    (VDEV_SIZE - VDEV_STATUS_SIZE)
+diff --git a/subsys/ipc/rpmsg_service/rpmsg_rpc_service.c b/subsys/ipc/rpmsg_service/rpmsg_rpc_service.c
+new file mode 100644
+index 0000000000..ee38440f41
+--- /dev/null
++++ b/subsys/ipc/rpmsg_service/rpmsg_rpc_service.c
+@@ -0,0 +1,141 @@
++/*
++ * Copyright (c) 2022, openEuler Embedded
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ */
++
++#include "rpmsg_rpc_service.h"
++
++#include <zephyr/types.h>
++#include <zephyr/kernel.h>
++#include <zephyr/device.h>
++#include <zephyr/ipc/rpmsg_service.h>
++#include <zephyr/drivers/pm_cpu_ops.h>
++#include <zephyr/logging/log.h>
++
++#define LOG_MODULE_NAME rpmsg_rpc_service
++LOG_MODULE_REGISTER(LOG_MODULE_NAME, CONFIG_RPMSG_SERVICE_LOG_LEVEL);
++
++static const struct rpmsg_rpc_service *find_rpc_service(struct rpmsg_rpc_instance *inst,
++					unsigned int id)
++{
++	const struct rpmsg_rpc_service *service;
++
++	for (unsigned int i = 0; i < inst->n_services; i++) {
++		service = &inst->services[i];
++
++		if (service->id == id) {
++			return service;
++		}
++	}
++
++	return NULL;
++}
++
++static int endpoint_cb_rpmsg_rpc(struct rpmsg_endpoint *ept, void *data,
++					size_t len, uint32_t src, void *priv)
++{
++	uint32_t id;
++
++	struct rpmsg_rpc_instance *inst;
++	const struct rpmsg_rpc_service *service;
++
++	if (len < RPC_ID_LEN) {
++		return 0;
++	}
++
++	inst = (struct rpmsg_rpc_instance *)priv;
++
++	/* skip rpc id */
++	id = *(uint32_t *)data;
++	data = (char *)data + RPC_ID_LEN;
++	len -= RPC_ID_LEN;
++
++	service = find_rpc_service(inst, id);
++
++	if (service) {
++		if (service->cb_function(data, len) < 0) {
++			LOG_ERR("call back %d error\n", id);
++		}
++	} else {
++		LOG_ERR("no service found\n");
++	}
++
++	return 0;
++}
++
++int rpmsg_rpc_service_init(struct rpmsg_rpc_instance *inst,
++					const struct rpmsg_rpc_service *services,
++					unsigned int n_services)
++{
++	int ret;
++
++	/* parameter check */
++	if (inst == NULL || services == NULL || n_services == 0) {
++		return -1;
++	}
++
++	inst->services = services;
++	inst->n_services = n_services;
++
++	ret = rpmsg_service_register_endpoint(RPMSG_RPC_SERVICE_NAME,
++							endpoint_cb_rpmsg_rpc, NULL, inst);
++
++	if (ret >= 0) {
++		inst->ep_id = ret;
++		return 0;
++	} else {
++		return ret;
++	}
++}
++
++int rpmsg_rpc_send(struct rpmsg_rpc_instance *inst, uint32_t rpc_id, void *params, size_t len)
++{
++	int ret;
++	struct rpmsg_rpc_data data;
++
++	if (inst == NULL || params == NULL || len == 0) {
++		return -1;
++	}
++
++	data.id = rpc_id;
++	memcpy(data.params, params, len);
++
++	ret = rpmsg_service_send(inst->ep_id, &data, RPC_ID_LEN + len);
++
++	if (ret > 0) {
++		ret -= RPC_ID_LEN;
++	}
++
++	return ret;
++}
++
++/* this call back is called when the response of
++ * sys_service_power_off arrives (in fact maybe never arrives)
++ */
++static int sys_service_power_off_cb(void *params, size_t len)
++{
++	pm_cpu_off();
++
++	return 0;
++}
++
++static struct rpmsg_rpc_instance sys_service_inst;
++static struct rpmsg_rpc_service sys_service_table[] = {
++	{RPMSG_SYS_SERVICE_POWER_OFF, sys_service_power_off_cb}
++};
++
++static int rpmsg_sys_service_init(const struct device *dev)
++{
++	(void)dev;
++
++	unsigned int n_services = sizeof(sys_service_table) / sizeof(struct rpmsg_rpc_service);
++
++	LOG_INF("number of services: %d\n", n_services);
++
++	rpmsg_rpc_service_init(&sys_service_inst, sys_service_table, n_services);
++
++	return 0;
++}
++
++SYS_INIT(rpmsg_sys_service_init, POST_KERNEL,  CONFIG_RPMSG_SERVICE_EP_REG_PRIORITY);
+diff --git a/subsys/ipc/rpmsg_service/rpmsg_rpc_service.h b/subsys/ipc/rpmsg_service/rpmsg_rpc_service.h
+new file mode 100644
+index 0000000000..e6c4b0a105
+--- /dev/null
++++ b/subsys/ipc/rpmsg_service/rpmsg_rpc_service.h
+@@ -0,0 +1,60 @@
++/*
++ * Copyright (c) 2022, openEuler Embedded
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ */
++
++#ifndef ZEPHYR_SUBSYS_IPC_RPMSG_RPC_SERVICE_H
++#define ZEPHYR_SUBSYS_IPC_RPMSG_RPC_SERVICE_H
++
++#include <zephyr/toolchain.h>
++#include <zephyr/types.h>
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++#define RPMSG_SYS_SERVICE_POWER_OFF 1
++
++#define RPMSG_RPC_SERVICE_NAME "rpmsg-rpc"
++
++/* RPMSG_BUFFER_SIZE = 512
++ * sizeof(struct rpmsg_hdr) = 16
++ * RPMSG_BUFFER_SIZE - sizeof(struct rpmsg_hdr) - 4 = 492
++ * Aligning to 64 bits -> 488UL
++ */
++#define MAX_BUF_LEN	488UL
++#define RPC_ID_LEN sizeof(uint32_t)
++/*
++ * rpc service call back
++ */
++typedef int (*rpmsg_rpc_cb_t)(void *params, size_t len);
++
++struct rpmsg_rpc_service {
++	uint32_t id;
++	rpmsg_rpc_cb_t cb_function;
++};
++
++struct rpmsg_rpc_data {
++	uint32_t id;    /* rpc id */
++	unsigned char params[MAX_BUF_LEN];
++} __packed;
++
++struct rpmsg_rpc_instance {
++	unsigned int ep_id; /* endpoint id */
++	const struct rpmsg_rpc_service *services; /* service table */
++	unsigned int n_services; /* number of services */
++};
++
++int rpmsg_rpc_service_init(struct rpmsg_rpc_instance *inst,
++					const struct rpmsg_rpc_service *services,
++					unsigned int n_services);
++
++int rpmsg_rpc_send(struct rpmsg_rpc_instance *inst, uint32_t rpc_id, void *params, size_t len);
++
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif /* ZEPHYR_SUBSYS_IPC_RPMSG_RPC_SERVICE_H */
+diff --git a/subsys/ipc/rpmsg_service/rpmsg_service.c b/subsys/ipc/rpmsg_service/rpmsg_service.c
+index e82c7a6be7..3c1e090786 100644
+--- a/subsys/ipc/rpmsg_service/rpmsg_service.c
++++ b/subsys/ipc/rpmsg_service/rpmsg_service.c
+@@ -32,6 +32,7 @@ static struct rpmsg_virtio_shm_pool shpool;
+ static struct {
+ 	const char *name;
+ 	rpmsg_ept_cb cb;
++	rpmsg_ns_unbind_cb unbind_cb;
+ 	struct rpmsg_endpoint ep;
+ 	volatile bool bound;
+ } endpoints[CONFIG_RPMSG_SERVICE_NUM_ENDPOINTS];
+@@ -57,7 +58,7 @@ static void ns_bind_cb(struct rpmsg_device *rdev,
+ 						   RPMSG_ADDR_ANY,
+ 						   dest,
+ 						   endpoints[i].cb,
+-						   rpmsg_service_unbind);
++						   endpoints[i].unbind_cb,);
+ 
+ 			if (err != 0) {
+ 				LOG_ERR("Creating remote endpoint %s"
+@@ -131,7 +132,8 @@ static int rpmsg_service_init(const struct device *dev)
+ 	return 0;
+ }
+ 
+-int rpmsg_service_register_endpoint(const char *name, rpmsg_ept_cb cb)
++int rpmsg_service_register_endpoint(const char *name, rpmsg_ept_cb cb,
++							rpmsg_ns_unbind_cb unbind_cb, void *priv)
+ {
+ 	if (ep_crt_started) {
+ 		return -EINPROGRESS;
+@@ -141,7 +143,8 @@ int rpmsg_service_register_endpoint(const char *name, rpmsg_ept_cb cb)
+ 		if (!endpoints[i].name) {
+ 			endpoints[i].name = name;
+ 			endpoints[i].cb = cb;
+-
++			endpoints[i].unbind_cb = unbind_cb ? unbind_cb : rpmsg_service_unbind;
++			endpoints[i].ep.priv = priv;
+ 			return i;
+ 		}
+ 	}
+@@ -156,6 +159,11 @@ bool rpmsg_service_endpoint_is_bound(int endpoint_id)
+ 	return endpoints[endpoint_id].bound;
+ }
+ 
++void rpmsg_service_endpoint_bound(int endpoint_id)
++{
++	endpoints[endpoint_id].bound = true;
++}
++
+ int rpmsg_service_send(int endpoint_id, const void *data, size_t len)
+ {
+ 	return rpmsg_send(&endpoints[endpoint_id].ep, data, len);
