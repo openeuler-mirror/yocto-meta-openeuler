@@ -3,7 +3,7 @@
 新增软件包指导
 ###############################
 
-配方（bb文件）是 Yocto 项目中的基本组件。Yocto 构建系统构建的每个软件组件都需要一个配方来定义组件；bbappend 文件是 bb 文件的补充，在最后解析。
+配方（bb文件）是 Yocto 项目中的基本组件。Yocto 构建系统构建的每个软件组件都需要一个配方来定义组件；bbappend 文件是 bb 文件的补充，在 bb 文件之后解析。
 
 新增软件包到镜像中需要软件包的源码和对应的 bb 文件。
 
@@ -40,7 +40,7 @@
 | bbappend 文件作为 bb 文件的补充，开发者可以通过在 bbappend 文件中增加内容来对 bb 文件进行覆盖更改，而不用直接对 bb 文件进行更改。
 | 开发者首先在 meta-openeuler 层 bb 文件对应的目录下创建 bbappend 文件，文件命名为 <package>_%.bbappend，Yocto 中 "%" 为通配符，这样命名能匹配任何一个找到的 bb 文件版本；下一步根据构建需求编写 bbappend 内容，并做好相应注释说明，大多数情况下编写的内容如下：
 
-- OPENEULER_REPO_NAME: src-openEuler存储仓名称；
+- OPENEULER_REPO_NAME: src-openEuler 存储仓名称；
 - PV: 版本；
 - SRC_URI: 源码来源；
 - SRC_URI[md5sum/sha256sum]: 源码校验码；

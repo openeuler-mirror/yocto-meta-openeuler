@@ -1,9 +1,9 @@
 .. _yocto_meta_openeuler:
 
-openeuler层结构及演进策略
+openeuler 层结构及演进策略
 =========================================
 
-以下是一个openeuler新增层的主要目录结构样例(例如添加了meta-raspberrypi和meta-intel层):
+以下是一个 openeuler 新增层的主要目录结构样例(例如添加了 meta-raspberrypi 和 meta-intel 层):
 
 ::
 
@@ -46,5 +46,4 @@ openeuler层结构及演进策略
  ├── recipes-kernel/ 内核相关配方
  │   └── linux/
  │       └── linux-openeuler.bb
- ├── recipes-labtools/ 实验室工具配方
  └── recipes-support/ 其它配方依赖的配方，不打包到image
