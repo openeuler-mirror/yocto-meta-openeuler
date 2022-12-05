@@ -3,10 +3,6 @@ TOOLCHAIN_HOST_TASK = ""
 
 SUMMARY = "A small image just capable of allowing a device to boot."
 
-# Note IMAGE_FSTYPES definition should be before openeuler-image-common.inc(before inherit core-image/image.bbclass)
-IMAGE_FSTYPES = "cpio.gz"
-IMAGE_FSTYPES_DEBUGFS = "cpio.gz"
-INITRAMFS_MAXSIZE = "262144"
 
 require recipes-core/images/${MACHINE}.inc
 require openeuler-image-common.inc

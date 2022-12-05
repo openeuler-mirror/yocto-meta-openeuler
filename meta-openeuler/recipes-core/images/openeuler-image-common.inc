@@ -5,10 +5,6 @@ IMAGE_LINGUAS = ""
 
 LICENSE = "MIT"
 
-IMAGE_FSTYPES ?= "cpio.gz"
-IMAGE_FSTYPES_DEBUGFS ?= "cpio.gz"
-INITRAMFS_MAXSIZE ?= "262144"
-
 inherit core-image
 
 #delete useless sdk depends

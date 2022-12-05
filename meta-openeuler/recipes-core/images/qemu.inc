@@ -1,3 +1,9 @@
+
+# common image fs type for qemu targets
+IMAGE_FSTYPES = "cpio.gz"
+IMAGE_FSTYPES_DEBUGFS = "cpio.gz"
+INITRAMFS_MAXSIZE = "262144"
+
 delete_unneeded_from_rootfs() {
     set -x
     test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"

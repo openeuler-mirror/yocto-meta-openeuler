@@ -1,8 +1,3 @@
-# Note IMAGE_FSTYPES definition should be before openeuler-image-common.inc(before inherit core-iamge/image.bbclass)
-IMAGE_FSTYPES = "cpio.gz"
-IMAGE_FSTYPES_DEBUGFS = "cpio.gz"
-INITRAMFS_MAXSIZE = "262144"
-
 # build an iso image, the live-os uses openeuler-image-live, it must be the same as itself(openeuler-image)
 # when LIVE_ROOTFS_TYPE defined, bug may come out in poky, so just use default value ext4 in image-live.bbclass.
 # notice we need MACHINE_FEATURES += "efi" in machine conf
