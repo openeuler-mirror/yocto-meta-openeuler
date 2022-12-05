@@ -10,6 +10,15 @@ SRC_URI_prepend = "file://0000-systemd-idmapd-require-rpc-pipefs.patch \
            file://0006-nfs-blkmaped-Fix-the-error-status-when-nfs_blkmapd-s.patch \
 "
 
+# fix nativesdk lib use error: /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/lib/libresolv.so:
+# file not recognized: file format not recognized
+BUILD_LDFLAGS_remove = " -L${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
+                         -L${OPENEULER_NATIVESDK_SYSROOT}/lib \
+                         -Wl,-rpath-link,${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
+                         -Wl,-rpath-link,${OPENEULER_NATIVESDK_SYSROOT}/lib \
+                         -Wl,-rpath,${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
+                         -Wl,-rpath,${OPENEULER_NATIVESDK_SYSROOT}/lib"
+
 # not support tcp-wrappers currently
 PACKAGECONFIG_remove = "tcp-wrappers"
 
