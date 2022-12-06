@@ -1,0 +1,1826 @@
+From cdf2d060b3d66ed1a8c86ee22a3d019a8ce6056e Mon Sep 17 00:00:00 2001
+From: songzhezhe <songzhezhe@huawei.com>
+Date: Wed, 15 Sep 2021 18:59:45 +0800
+Subject: [PATCH] arm64: add zImage support for arm64
+
+This patch allows using a kernel zImage compressed with LZMA/GZIP/LZ4/LZ0/XZ(default),
+and extracting the zImage itself to Image. It might be useful on machines
+with a very limited amount of storage, as the size benefit is quite significant
+
+Signed-off-by: songzhezhe <songzhezhe@huawei.com>
+---
+ arch/arm64/Kconfig                       |   2 +
+ arch/arm64/Makefile                      |  12 +-
+ arch/arm64/boot/Makefile                 |  13 +
+ arch/arm64/boot/compressed/Kconfig       |  48 ++
+ arch/arm64/boot/compressed/Makefile      | 121 +++++
+ arch/arm64/boot/compressed/decompress.c  |  55 +++
+ arch/arm64/boot/compressed/head.S        | 815 +++++++++++++++++++++++++++++++
+ arch/arm64/boot/compressed/hyp-stub.S    |  91 ++++
+ arch/arm64/boot/compressed/image.h       |  69 +++
+ arch/arm64/boot/compressed/misc.c        |  49 ++
+ arch/arm64/boot/compressed/misc.h        |  13 +
+ arch/arm64/boot/compressed/piggy.S       |   6 +
+ arch/arm64/boot/compressed/string.c      | 177 +++++++
+ arch/arm64/boot/compressed/vmlinux.lds   |  53 ++
+ arch/arm64/boot/compressed/vmlinux.lds.S |  87 ++++
+ arch/arm64/include/asm/assembler.h       |  14 +-
+ arch/arm64/include/asm/virt.h            |   8 +
+ 17 files changed, 1627 insertions(+), 8 deletions(-)
+ create mode 100644 arch/arm64/boot/compressed/Kconfig
+ create mode 100644 arch/arm64/boot/compressed/Makefile
+ create mode 100644 arch/arm64/boot/compressed/decompress.c
+ create mode 100644 arch/arm64/boot/compressed/head.S
+ create mode 100644 arch/arm64/boot/compressed/hyp-stub.S
+ create mode 100644 arch/arm64/boot/compressed/image.h
+ create mode 100644 arch/arm64/boot/compressed/misc.c
+ create mode 100644 arch/arm64/boot/compressed/misc.h
+ create mode 100644 arch/arm64/boot/compressed/piggy.S
+ create mode 100644 arch/arm64/boot/compressed/string.c
+ create mode 100644 arch/arm64/boot/compressed/vmlinux.lds
+ create mode 100644 arch/arm64/boot/compressed/vmlinux.lds.S
+
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index a2380374ef59..c0ae423d9024 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -2090,3 +2090,5 @@ source "arch/arm64/kvm/Kconfig"
+ if CRYPTO
+ source "arch/arm64/crypto/Kconfig"
+ endif
++
++source "arch/arm64/boot/compressed/Kconfig"
+diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
+index 4a42de35a898..20a28d48d937 100644
+--- a/arch/arm64/Makefile
++++ b/arch/arm64/Makefile
+@@ -11,6 +11,7 @@
+ # Copyright (C) 1995-2001 by Russell King
+ 
+ LDFLAGS_vmlinux	:=--no-undefined -X
++OBJCOPYFLAGS    :=-O binary -R .note -R .note.gnu.build-id -R .comment -S
+ 
+ ifeq ($(CONFIG_RELOCATABLE), y)
+ # Pass --no-apply-dynamic-relocs to restore pre-binutils-2.27 behaviour
+@@ -150,12 +151,15 @@ libs-$(CONFIG_EFI_STUB) += $(objtree)/drivers/firmware/efi/libstub/lib.a
+ 
+ # Default target when executing plain make
+ boot		:= arch/arm64/boot
+-KBUILD_IMAGE	:= $(boot)/Image.gz
+-
+-all:	Image.gz
++ifeq ($(CONFIG_SELFDECOMPRESS_ZIMAGE), y)
++KBUILD_IMAGE	:= zImage Image
++else
++KBUILD_IMAGE	:= Image
++endif
+ 
++all:	$(KBUILD_IMAGE)
+ 
+-Image: vmlinux
++Image zImage: vmlinux
+ 	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
+ 
+ Image.%: Image
+diff --git a/arch/arm64/boot/Makefile b/arch/arm64/boot/Makefile
+index cd3414898d10..c8dfa05c81c5 100644
+--- a/arch/arm64/boot/Makefile
++++ b/arch/arm64/boot/Makefile
+@@ -16,7 +16,11 @@
+ 
+ OBJCOPYFLAGS_Image :=-O binary -R .note -R .note.gnu.build-id -R .comment -S
+ 
++ifeq ($(CONFIG_SELFDECOMPRESS_ZIMAGE), y)
++targets := zImage Image Image.bz2 Image.gz Image.lz4 Image.lzma Image.lzo
++else
+ targets := Image Image.bz2 Image.gz Image.lz4 Image.lzma Image.lzo
++endif
+ 
+ $(obj)/Image: vmlinux FORCE
+ 	$(call if_changed,objcopy)
+@@ -36,6 +40,15 @@ $(obj)/Image.lzma: $(obj)/Image FORCE
+ $(obj)/Image.lzo: $(obj)/Image FORCE
+ 	$(call if_changed,lzo)
+ 
++ifeq ($(CONFIG_SELFDECOMPRESS_ZIMAGE), y)
++$(obj)/compressed/vmlinux: $(obj)/Image FORCE
++	$(Q)$(MAKE) $(build)=$(obj)/compressed $@
++
++$(obj)/zImage:  $(obj)/compressed/vmlinux FORCE
++	$(call if_changed,objcopy)\
++
++endif
++
+ install:
+ 	$(CONFIG_SHELL) $(srctree)/$(src)/install.sh $(KERNELRELEASE) \
+ 	$(obj)/Image System.map "$(INSTALL_PATH)"
+diff --git a/arch/arm64/boot/compressed/Kconfig b/arch/arm64/boot/compressed/Kconfig
+new file mode 100644
+index 000000000000..65c37a369820
+--- /dev/null
++++ b/arch/arm64/boot/compressed/Kconfig
+@@ -0,0 +1,48 @@
++# add zImage selfdecompres config
++
++config SELFDECOMPRESS_ZIMAGE
++	bool "zImage support decompress itself to Image"
++	default y
++	help
++	  This option allow selfdecompress zImage to Image.
++
++menu "zImage support selfdecompre features"
++    depends on SELFDECOMPRESS_ZIMAGE
++
++choice
++    prompt "compress algorithm for zImage"
++    default SELFDECOMPRESS_ZIMAGE_XZ
++config SELFDECOMPRESS_ZIMAGE_GZIP
++    bool "use gzip algorithm for zImage"
++
++config SELFDECOMPRESS_ZIMAGE_XZ
++    bool "use xz algorithm for zImage"
++
++config SELFDECOMPRESS_ZIMAGE_LZ4
++    bool "use lz4 algorithm for zImage"
++
++config SELFDECOMPRESS_ZIMAGE_LZMA
++    bool "use lzma algorithm for zImage"
++
++config SELFDECOMPRESS_ZIMAGE_LZO
++    bool "use lzo algorithm for zImage"
++
++endchoice
++
++config ZIMAGE_2M_TEXT_OFFSET
++	bool "Support 2M_TEXT_OFFSET"
++	default n
++	help
++	  This option support to add 2M offset on the entry
++	  of the second kernel.
++
++	  On kernel 5.10, it gets rid of the 0x80000 TEXT_OFFSET.
++	  Some of boards will upload dtb between KERNEL_PHYS_START
++	  and KERNEL_PHYS_START + TEXT_OFFSET and dtb will be
++	  destroyed after self-decompress.
++
++	  The address of dtb will not be changed. Thus, we can place
++	  the KERNEL_PHYS_START further. KERNEL_PHYS_START need to
++	  be 2M aligned, so we add 2M TEXT_OFFSET.
++
++endmenu
+diff --git a/arch/arm64/boot/compressed/Makefile b/arch/arm64/boot/compressed/Makefile
+new file mode 100644
+index 000000000000..6ab779cbe685
+--- /dev/null
++++ b/arch/arm64/boot/compressed/Makefile
+@@ -0,0 +1,121 @@
++#
++# linux/arch/arm/boot/compressed/Makefile
++#
++# create a compressed vmlinuz image from the original vmlinux
++#
++
++HEAD	= head.o
++OBJS	+= misc.o decompress.o
++
++# string library code (-Os is enforced to keep it much smaller)
++OBJS		+= string.o
++CFLAGS_string.o	:= -Os
++
++OBJS		+= hyp-stub.o
++
++GCOV_PROFILE		:= n
++KASAN_SANITIZE		:= n
++UBSAN_SANITIZE		:= n
++KCOV_INSTRUMENT		:= n
++#
++# We now have a PIC decompressor implementation.  Decompressors running
++# from RAM should not define ZTEXTADDR.  Decompressors running directly
++# from ROM or Flash must define ZTEXTADDR (preferably via the config)
++# FIXME: Previous assignment to ztextaddr-y is lost here. See SHARK
++ifeq ($(CONFIG_ZBOOT_ROM),y)
++ZTEXTADDR	:= $(CONFIG_ZBOOT_ROM_TEXT)
++ZBSSADDR	:= $(CONFIG_ZBOOT_ROM_BSS)
++else
++ZTEXTADDR	:= 0
++ZBSSADDR	:= ALIGN(8)
++endif
++
++CPPFLAGS_vmlinux.lds := -DTEXT_START="$(ZTEXTADDR)" -DBSS_START="$(ZBSSADDR)"
++
++compress-$(CONFIG_SELFDECOMPRESS_ZIMAGE_GZIP) = gzip
++compress-$(CONFIG_SELFDECOMPRESS_ZIMAGE_LZO)  = lzo
++compress-$(CONFIG_SELFDECOMPRESS_ZIMAGE_LZMA) = lzma
++compress-$(CONFIG_SELFDECOMPRESS_ZIMAGE_XZ)   = xzkern
++compress-$(CONFIG_SELFDECOMPRESS_ZIMAGE_LZ4)  = lz4
++
++targets       := vmlinux vmlinux.lds piggy_data piggy.o \
++		 head.o misc.o $(OBJS)
++
++clean-files += piggy_data  vmlinux
++
++# Make sure files are removed during clean
++extra-y       += hyp-stub.S
++
++ifeq ($(CONFIG_FUNCTION_TRACER),y)
++ORIG_CFLAGS := $(KBUILD_CFLAGS)
++KBUILD_CFLAGS = $(subst -pg, , $(ORIG_CFLAGS))
++endif
++
++ccflags-y := -fpic  -fno-builtin -I$(obj)
++asflags-y := -DZIMAGE
++
++# Supply kernel BSS size to the decompressor via a linker symbol.
++KBSS_SZ = $(shell $(CROSS_COMPILE)size $(obj)/../../../../vmlinux | \
++		awk 'END{print $$3}')
++# Supply ZRELADDR to the decompressor via a linker symbol.
++LDFLAGS_vmlinux = --defsym _kernel_bss_size=$(KBSS_SZ)
++ifneq ($(CONFIG_AUTO_ZRELADDR),y)
++LDFLAGS_vmlinux += --defsym zreladdr=0x80000
++endif
++ifeq ($(CONFIG_CPU_ENDIAN_BE8),y)
++LDFLAGS_vmlinux += --be8
++endif
++# ?
++LDFLAGS_vmlinux += -p
++# Report unresolved symbol references
++LDFLAGS_vmlinux += --no-undefined
++# Delete all temporary local symbols
++LDFLAGS_vmlinux += -X
++# Next argument is a linker script
++LDFLAGS_vmlinux += -T
++
++# For __aeabi_uidivmod
++
++
++# For __aeabi_llsl
++
++
++# For __bswapsi2, __bswapdi2
++
++$(obj)/bswapsdi2.S: $(srctree)/arch/$(SRCARCH)/lib/bswapsdi2.S
++
++# We need to prevent any GOTOFF relocs being used with references
++# to symbols in the .bss section since we cannot relocate them
++# independently from the rest at run time.  This can be achieved by
++# ensuring that no private .bss symbols exist, as global symbols
++# always have a GOT entry which is what we need.
++# The .data section is already discarded by the linker script so no need
++# to bother about it here.
++check_for_bad_syms = \
++bad_syms=$$($(CROSS_COMPILE)nm $@ | sed -n 's/^.\{8\} [bc] \(.*\)/\1/p') && \
++[ -z "$$bad_syms" ] || \
++  ( echo "following symbols must have non local/private scope:" >&2; \
++    echo "$$bad_syms" >&2; rm -f $@; false )
++
++check_for_multiple_zreladdr = \
++if [ $(words $(ZRELADDR)) -gt 1 -a "$(CONFIG_AUTO_ZRELADDR)" = "" ]; then \
++	echo 'multiple zreladdrs: $(ZRELADDR)'; \
++	echo 'This needs CONFIG_AUTO_ZRELADDR to be set'; \
++	false; \
++fi
++$(obj)/vmlinux: $(obj)/vmlinux.lds $(obj)/$(HEAD) $(obj)/piggy.o \
++		$(addprefix $(obj)/, $(OBJS)) $(lib1funcs) $(ashldi3) \
++		$(bswapsdi2) FORCE
++	@$(check_for_multiple_zreladdr)
++	$(call if_changed,ld)
++	@$(check_for_bad_syms)
++
++$(obj)/piggy_data: $(obj)/../Image FORCE
++	$(call if_changed,$(compress-y))
++
++$(obj)/piggy.o:  $(obj)/piggy_data
++
++CFLAGS_font.o := -Dstatic=
++
++$(obj)/font.c: $(FONTC)
++	$(call cmd,shipped)
+diff --git a/arch/arm64/boot/compressed/decompress.c b/arch/arm64/boot/compressed/decompress.c
+new file mode 100644
+index 000000000000..1d479ca02697
+--- /dev/null
++++ b/arch/arm64/boot/compressed/decompress.c
+@@ -0,0 +1,55 @@
++#define _LINUX_STRING_H_
++
++#include <linux/compiler.h>	/* for inline */
++#include <linux/types.h>	/* for size_t */
++#include <linux/stddef.h>	/* for NULL */
++#include <linux/linkage.h>
++#include <asm/string.h>
++#include "misc.h"
++
++#define STATIC static
++#define STATIC_RW_DATA	/* non-static please */
++
++/* Diagnostic functions */
++#ifdef DEBUG
++#  define Assert(cond, msg) {if (!(cond)) error(msg); }
++#  define Trace(x) (fprintf x)
++#  define Tracev(x) {if (verbose) fprintf x ; }
++#  define Tracevv(x) {if (verbose > 1) fprintf x ; }
++#  define Tracec(c, x) {if (verbose && (c)) fprintf x ; }
++#  define Tracecv(c, x) {if (verbose > 1 && (c)) fprintf x ; }
++#else
++#  define Assert(cond, msg)
++#  define Trace(x)
++#  define Tracev(x)
++#  define Tracevv(x)
++#  define Tracec(c, x)
++#  define Tracecv(c, x)
++#endif
++
++#ifdef CONFIG_SELFDECOMPRESS_ZIMAGE_GZIP
++#include "../../../../lib/decompress_inflate.c"
++#endif
++
++#ifdef CONFIG_SELFDECOMPRESS_ZIMAGE_LZO
++#include "../../../../lib/decompress_unlzo.c"
++#endif
++
++#ifdef CONFIG_SELFDECOMPRESS_ZIMAGE_LZMA
++#include "../../../../lib/decompress_unlzma.c"
++#endif
++
++#ifdef CONFIG_SELFDECOMPRESS_ZIMAGE_XZ
++#define memmove memmove
++#define memcpy memcpy
++#include "../../../../lib/decompress_unxz.c"
++#endif
++
++#ifdef CONFIG_SELFDECOMPRESS_ZIMAGE_LZ4
++#include "../../../../lib/decompress_unlz4.c"
++#endif
++
++int do_decompress(u8 *input, int len, u8 *output, void (*error)(char *x))
++{
++	return __decompress(input, len, NULL, NULL, output, 0, NULL, error);
++}
+diff --git a/arch/arm64/boot/compressed/head.S b/arch/arm64/boot/compressed/head.S
+new file mode 100644
+index 000000000..b527c0237
+--- /dev/null
++++ b/arch/arm64/boot/compressed/head.S
+@@ -0,0 +1,815 @@
++/*
++ *  linux/arch/arm/boot/compressed/head.S
++ *
++ *  Copyright (C) 1996-2002 Russell King
++ *  Copyright (C) 2004 Hyok S. Choi (MPU support)
++ */
++
++#include <linux/linkage.h>
++#include <linux/init.h>
++#include <linux/irqchip/arm-gic-v3.h>
++#include <asm/assembler.h>
++#include <asm/ptrace.h>
++#include <asm/asm-offsets.h>
++#include <asm/cache.h>
++#include <asm/cputype.h>
++#include <asm/memory.h>
++#include <asm/thread_info.h>
++#include <asm/pgtable-hwdef.h>
++#include <asm/pgtable.h>
++#include <asm/page.h>
++#include <asm/virt.h>
++
++/*
++ * read_ctr - read CTR_EL0.
++ */
++        .purgem read_ctr
++        .macro  read_ctr, reg
++        mrs     \reg, ctr_el0                   // read CTR
++        nop
++        .endm
++
++
++        .macro	swap tmp
++        CPU_BE(rev	\tmp, \tmp)
++        .endm
++
++        .macro	print
++        swap     w22
++        str       w22, [x23]
++        .endm
++
++#define MAIR(attr, mt)  ((attr) << ((mt) * 8))
++
++#ifdef CONFIG_ARM64_64K_PAGES
++#define TCR_TG_FLAGS    TCR_TG0_64K | TCR_TG1_64K
++#else
++#define TCR_TG_FLAGS    TCR_TG0_4K | TCR_TG1_4K
++#endif
++
++#ifdef CONFIG_SMP
++#define TCR_SMP_FLAGS   TCR_SHARED
++#else
++#define TCR_SMP_FLAGS   0
++#endif
++
++/* PTWs cacheable, inner/outer WBWA */
++#define TCR_CACHE_FLAGS TCR_IRGN_WBWA | TCR_ORGN_WBWA
++
++
++#ifdef CONFIG_ARM64_64K_PAGES
++#define BLOCK_SHIFT     PAGE_SHIFT
++#define BLOCK_SIZE      PAGE_SIZE
++#define TABLE_SHIFT     PMD_SHIFT
++#else
++#define BLOCK_SHIFT     SECTION_SHIFT
++#define BLOCK_SIZE      SECTION_SIZE
++#define TABLE_SHIFT     PUD_SHIFT
++#endif
++
++
++/*
++ * Initial memory map attributes.
++ */
++#ifndef CONFIG_SMP
++#define PTE_FLAGS       PTE_TYPE_PAGE | PTE_AF
++#define PMD_FLAGS       PMD_TYPE_SECT | PMD_SECT_AF
++#else
++#define PTE_FLAGS       PTE_TYPE_PAGE | PTE_AF | PTE_SHARED
++#define PMD_FLAGS       PMD_TYPE_SECT | PMD_SECT_AF | PMD_SECT_S
++#endif
++
++#ifdef CONFIG_ARM64_64K_PAGES
++#define MM_MMUFLAGS     PTE_ATTRINDX(MT_NORMAL) | PTE_FLAGS
++#define DEV_MMUFLAGS	PTE_ATTRINDX(MT_DEVICE_nGnRE) | PTE_FLAGS
++#else
++#define MM_MMUFLAGS     PMD_ATTRINDX(MT_NORMAL) | PMD_FLAGS
++#define DEV_MMUFLAGS    PMD_ATTRINDX(MT_DEVICE_nGnRE) | PMD_FLAGS
++#endif
++
++	.macro push_regs
++        sub     sp, sp, #16
++        stp     x0, x1, [sp], #-16
++        stp     x2, x3, [sp], #-16
++        stp     x4, x5, [sp], #-16
++        stp     x6, x7, [sp], #-16
++        stp     x8, x9, [sp], #-16
++        stp     x10, x11, [sp], #-16
++        stp     x12, x13, [sp]
++	.endm
++
++	.macro pop_regs
++        ldp     x12, x13, [sp], #16
++        ldp     x10, x11, [sp], #16
++        ldp     x8, x9, [sp], #16
++        ldp     x6, x7, [sp], #16
++        ldp     x4, x5, [sp], #16
++        ldp     x2, x3, [sp], #16
++        ldp     x0, x1, [sp], #16
++	.endm
++
++#define printN(xxx)	\
++	push_regs	;\
++	mov	x0, xxx;\
++	bl	printNum ;\
++	pop_regs
++
++	.type	wont_overwrite, #function
++	.type	restart, #function
++	.type	not_relocated, #function
++
++start:
++        .rept   8
++        mov     x0, x0
++        .endr
++        mov	x10, x0
++        mov	x11, x1
++        mov	x12, x2
++        mov	x13, x3
++        bl	el2_setup
++        bl	save_boot_mode
++        bl 	save_args
++        adr_l	sp, .L_user_stack_end, x0
++        mov	x0, sp
++        adr     x4, start
++        lsr	x4, x4, #21
++        lsl	x4, x4, #21
++	/*
++	 * Add 2M offset to start address of second kernel.
++	 * Avoid destroying dtb of some boards after getting
++	 * rid of TEXT_OFFSET on kernel 5.8.
++	 */
++	add	x4, x4, #0x200000
++	mov	x25, x4
++restart:
++        adr	x0, LC0
++        ldp	x1, x2, [x0]
++        ldp     x3, x6, [x0, #16]
++        ldp     x10, x11, [x0, #32]
++        ldp	x12, x13, [x0, #48]
++
++        sub	x0, x0, x1
++        add	x6, x6, x0
++        add	x10, x10, x0
++        add	sp, x13, x0
++
++        mov	x9, #0
++        ldrb    w9, [x10, #0]
++        ldrb    w14, [x10, #1]
++        orr     w9, w9, w14, lsl #8
++        ldrb    w14, [x10, #2]
++        ldrb    w10, [x10, #3]
++        orr     w9, w9, w14, lsl #16
++        orr     w9, w9, w10, lsl #24
++        add     x10, sp, #0x10000
++        mov	x5, #0
++
++/*
++ *   r0  = delta
++ *   x2  = BSS start
++ *   x3  = BSS end
++ *   x4  = final kernel address (possibly with LSB set)
++ *   x5  = appended dtb size (still unknown)
++ *   x6  = _edata
++ *   x7  = architecture ID
++ *   x8  = atags/device tree pointer
++ *   x9  = size of decompressed image
++ *   x10 = end of this image, including  bss/stack/malloc space if non XIP
++ *   x11 = GOT start
++ *   x12 = GOT end
++ *   sp  = stack pointer
++ *
++ * if there are device trees (dtb) appended to zImage, advance r10 so that the
++ * dtb data will get relocated along with the kernel if necessary.
++ */
++
++
++/*
++ * Check to see if we will overwrite ourselves.
++ *   x4  = final kernel address (possibly with LSB set)
++ *   x9  = size of decompressed image
++ *   x10 = end of this image, including  bss/stack/malloc space if non XIP
++ * We basically want:
++ *   x4 - 16k page directory >= r10 -> OK
++ *   x4 + image length <= address of wont_overwrite -> OK
++ * Note: the possible LSB in r4 is harmless here.
++ */
++
++        add     x10, x10, #0x10000
++        cmp     x4, x10
++        bhs     wont_overwrite
++        add     x10, x4, x9
++        adr     x9, wont_overwrite
++        cmp     x10, x9
++        bls     wont_overwrite
++/*
++ * Relocate ourselves past the end of the decompressed kernel.
++ *   x6  = _edata
++ *   x10 = end of the decompressed kernel
++ * Because we always copy ahead, we need to do it from the end and go
++ * backward in case the source and destination overlap.
++ */
++        /*
++         * Bump to the next page with the size of
++         * the relocation code added. This avoids overwriting
++         * ourself when the offset is small.
++         */
++        add     x10, x10, #((reloc_code_end - restart + 0x1000) & ~0xFFF)
++        bic	x10, x10, #0xFFF
++
++        /* Get start of code we want to copy and align it down. */
++        adr     x5, restart
++        bic     x5, x5, #0xFFF
++
++        sub	x9, x6, x5
++        add	x9, x9, #0xFFF
++        bic	x9, x9, #0xFFF
++        add	x6, x9, x5
++        add	x9, x9, x10
++        add	x26, x9, 0x300000
++        bic	x26, x26, #0x1ffff
++        bl	__create_page_tables
++1:
++        //copy 256 BYTE per loop
++        sub	x6, x6, #256
++        sub	x9, x9, #256
++        ldp	x13, x14, [x6]
++        stp	x13, x14, [x9]
++        ldp     x13, x14, [x6, #1 * 16]
++        stp     x13, x14, [x9, #1 * 16]
++        ldp     x13, x14, [x6, #2 * 16]
++        stp     x13, x14, [x9, #2 * 16]
++        ldp     x13, x14, [x6, #3 * 16]
++        stp     x13, x14, [x9, #3 * 16]
++        ldp     x13, x14, [x6, #4 * 16]
++        stp     x13, x14, [x9, #4 * 16]
++        ldp     x13, x14, [x6, #5 * 16]
++        stp     x13, x14, [x9, #5 * 16]
++        ldp     x13, x14, [x6, #6 * 16]
++        stp     x13, x14, [x9, #6 * 16]
++        ldp     x13, x14, [x6, #7 * 16]
++        stp     x13, x14, [x9, #7 * 16]
++        ldp     x13, x14, [x6, #8 * 16]
++        stp     x13, x14, [x9, #8 * 16]
++        ldp     x13, x14, [x6, #9 * 16]
++        stp     x13, x14, [x9, #9 * 16]
++        ldp     x13, x14, [x6, #10 * 16]
++        stp     x13, x14, [x9, #10 * 16]
++        ldp     x13, x14, [x6, #11 * 16]
++        stp     x13, x14, [x9, #11 * 16]
++        ldp     x13, x14, [x6, #12 * 16]
++        stp     x13, x14, [x9, #12 * 16]
++        ldp     x13, x14, [x6, #13 * 16]
++        stp     x13, x14, [x9, #13 * 16]
++        ldp     x13, x14, [x6, #14 * 16]
++        stp     x13, x14, [x9, #14 * 16]
++        ldp     x13, x14, [x6, #15 * 16]
++        stp     x13, x14, [x9, #15 * 16]
++        cmp	x6, x5
++        bne	1b
++        /* Preserve offset to relocated code. */
++        sub     x6, x9, x6
++        mov	x0, x5
++        mov	x1, #0x2000000
++        push_regs
++        bl	__dma_flush_area
++        pop_regs
++        adr	x0, restart
++        add	x0, x0, x6
++        adr	x20, boot_mode
++        ldr	x20, [x20]
++        cmp	w20, #BOOT_CPU_MODE_EL2
++        b.ne	no_set_vector
++        add	x22, x22, x6
++        hvc	#HVC_SET_VECTORS
++no_set_vector:
++        ldr	x1, [x0]
++        ldr	x1, [x0]
++        br	x0
++
++wont_overwrite:
++/*
++ * If delta is zero, we are running at the address we were linked at.
++ *   x0  = delta
++ *   x2  = BSS start
++ *   x3  = BSS end
++ *   x4  = kernel execution address (possibly with LSB set)
++ *   x5  = appended dtb size (0 if not present)
++ *   x7  = architecture ID
++ *   x8  = atags pointer
++ *   x11 = GOT start
++ *   x12 = GOT end
++ *   sp  = stack pointer
++ */
++        orr     x1, x0, x5
++        cbz     x1, not_relocated
++
++        add     x11, x11, x0
++        add     x12, x12, x0
++
++        /*
++         * If we're running fully PIC === CONFIG_ZBOOT_ROM = n,
++         * we need to fix up pointers into the BSS region.
++         * Note that the stack pointer has already been fixed up.
++         */
++        add     x2, x2, x0
++        add     x3, x3, x0
++
++        /*
++         * Relocate all entries in the GOT table.
++         * Bump bss entries to _edata + dtb size
++         */
++
++1:      ldr     x1, [x11, #0]
++        add     x1, x1, x0
++        cmp     x1, x2
++        blo	2f
++        cmp     x1, x3
++        bhs	2f
++        add   x1, x1, x5
++2:
++        str     x1, [x11], #8
++        cmp     x11, x12
++        blo     1b
++
++        /* relocate the bss section from the tail of zImage to the tail of zImage-dtb */
++        add     x2, x2, x5
++        add     x3, x3, x5
++
++not_relocated:
++        mov     x0, #0
++1:      stp     x0, x0, [x2], #16
++        cmp     x2, x3
++        blo     1b
++
++        mov	x0, x4
++        mov     x1, sp
++        add     x2, sp, #0x10000
++        bl	decompress_kernel
++
++        isb
++        dsb	sy
++        mov	x0, x25
++        add	x1, sp, #0x10000
++        sub	x1, x1, x0
++        bl      __flush_dcache_area
++
++        isb
++        dsb	sy
++        mrs	x0, sctlr_el1
++        mov	x1, #0x005
++        bic	x0, x0, x1
++        isb
++        msr	sctlr_el1, x0
++        isb
++        ic	iallu
++        dsb	nsh
++        isb
++        .rept	8
++        mov	x0, x0
++        .endr
++        bl	restore_args
++        adr	x20, boot_mode
++        ldr	x20, [x20]
++        cmp	w20, #BOOT_CPU_MODE_EL1
++        b.ne	boot_from_el2
++        br	x25
++        b	fail_boot
++boot_from_el2:
++	hvc	#HVC_BOOT_KERNEL
++fail_boot:
++
++SYM_FUNC_START(el2_setup)
++        mrs     x0, CurrentEL
++        cmp     x0, #CurrentEL_EL2
++        b.ne    1f
++        mrs     x0, sctlr_el2
++CPU_BE( orr     x0, x0, #(1 << 25)      )       // Set the EE bit for EL2
++CPU_LE( bic     x0, x0, #(1 << 25)      )       // Clear the EE bit for EL2
++        msr     sctlr_el2, x0
++        b       2f
++1:      mrs     x0, sctlr_el1
++CPU_BE( orr     x0, x0, #(3 << 24)      )       // Set the EE and E0E bits for EL1
++CPU_LE( bic     x0, x0, #(3 << 24)      )       // Clear the EE and E0E bits for EL1
++        msr     sctlr_el1, x0
++        mov     w20, #BOOT_CPU_MODE_EL1         // This cpu booted in EL1
++        isb
++        ret
++
++        /* Hyp configuration. */
++2:      mov     x0, #(1 << 31)                  // 64-bit EL1
++        msr     hcr_el2, x0
++
++        /* Generic timers. */
++        mrs     x0, cnthctl_el2
++        orr     x0, x0, #3                      // Enable EL1 physical timers
++        msr     cnthctl_el2, x0
++        msr     cntvoff_el2, xzr                // Clear virtual offset
++
++#ifdef CONFIG_ARM_GIC_V3
++        /* GICv3 system register access */
++        mrs     x0, id_aa64pfr0_el1
++        ubfx    x0, x0, #24, #4
++        cmp     x0, #1
++        b.ne    3f
++
++        mrs_s   x0, SYS_ICC_SRE_EL2
++        orr     x0, x0, #ICC_SRE_EL2_SRE        // Set ICC_SRE_EL2.SRE==1
++        orr     x0, x0, #ICC_SRE_EL2_ENABLE     // Set ICC_SRE_EL2.Enable==1
++        msr_s   SYS_ICC_SRE_EL2, x0
++        isb                                     // Make sure SRE is now set
++        msr_s   SYS_ICH_HCR_EL2, xzr            // Reset ICC_HCR_EL2 to defaults
++
++3:
++#endif
++        /* Populate ID registers. */
++        mrs     x0, midr_el1
++        mrs     x1, mpidr_el1
++        msr     vpidr_el2, x0
++        msr     vmpidr_el2, x1
++
++        /* sctlr_el1 */
++        mov     x0, #0x0800                     // Set/clear RES{1,0} bits
++CPU_BE( movk    x0, #0x33d0, lsl #16    )       // Set EE and E0E on BE systems
++CPU_LE( movk    x0, #0x30d0, lsl #16    )       // Clear EE and E0E on LE systems
++        msr     sctlr_el1, x0
++
++        /* Coprocessor traps. */
++        mov     x0, #0x33ff
++        msr     cptr_el2, x0                    // Disable copro. traps to EL2
++
++#ifdef CONFIG_COMPAT
++        msr     hstr_el2, xzr                   // Disable CP15 traps to EL2
++#endif
++
++        /* Stage-2 translation */
++        msr     vttbr_el2, xzr
++
++        /* Hypervisor stub */
++        adrp	x0, __hyp_stub_vectors
++        add	x0, x0, #:lo12:__hyp_stub_vectors
++        mov	x22,x0
++        msr	vbar_el2, x0
++
++        /* spsr */
++        mov     x0, #(PSR_F_BIT | PSR_I_BIT | PSR_A_BIT | PSR_D_BIT |\
++                PSR_MODE_EL1h)
++        msr     spsr_el2, x0
++        msr     elr_el2, lr
++        mov     w20, #BOOT_CPU_MODE_EL2         // This CPU booted in EL2
++        eret
++SYM_FUNC_END(el2_setup)
++
++SYM_FUNC_START(save_args)
++        adr	x21, boot_args
++        stp	x10, x11, [x21]
++        stp	x12, x13, [x21, #16]
++        adr	x21, dtb_addr
++        str	x10, [x21]
++        ret
++SYM_FUNC_END(save_args)
++
++SYM_FUNC_START(restore_args)
++        mov	x26, lr
++        adr	x21, boot_args
++        ldp	x0, x1, [x21]
++        ldp     x2, x3, [x21, #16]
++        ret	x26
++SYM_FUNC_END(restore_args)
++
++SYM_FUNC_START(save_boot_mode)
++        mov	x21, 0
++        mov	w21, w20
++        mov	x20, x21
++        adr	x21, boot_mode
++        str	x20, [x21]
++        dmb	sy
++        dc	ivac, x21			// Invalidate potentially stale cache line
++        ret
++SYM_FUNC_END(save_boot_mode)
++
++#include "../../mm/cache.S"
++
++/*
++ * Macro to create a table entry to the next page.
++ *
++ *      tbl:    page table address
++ *      virt:   virtual address
++ *      shift:  #imm page table shift
++ *      ptrs:   #imm pointers per table page
++ *
++ * Preserves:   virt
++ * Corrupts:    tmp1, tmp2
++ * Returns:     tbl -> next level table page address
++ */
++        .macro  create_table_entry, tbl, virt, shift, ptrs, tmp1, tmp2
++        lsr     \tmp1, \virt, #\shift
++        and     \tmp1, \tmp1, #\ptrs - 1        // table index
++        mov	\tmp2, #PAGE_SIZE
++        madd	\tmp2, \tmp1, \tmp2, \tmp2
++        add     \tmp2, \tbl, \tmp2
++        orr     \tmp2, \tmp2, #PMD_TYPE_TABLE   // address of next table and entry type
++        str     \tmp2, [\tbl, \tmp1, lsl #3]
++        bic	\tbl, \tmp2, #PMD_TYPE_TABLE
++        .endm
++
++/*
++ * Macro to populate the PGD (and possibily PUD) for the corresponding
++ * block entry in the next level (tbl) for the given virtual address.
++ *
++ * Preserves:   tbl, next, virt
++ * Corrupts:    tmp1, tmp2
++ */
++        .macro  create_pgd_entry, tbl, virt, tmp1, tmp2
++        create_table_entry \tbl, \virt, PGDIR_SHIFT, PTRS_PER_PGD, \tmp1, \tmp2
++#if SWAPPER_PGTABLE_LEVELS == 3
++        create_table_entry \tbl, \virt, TABLE_SHIFT, PTRS_PER_PTE, \tmp1, \tmp2
++#endif
++        .endm
++
++/*
++ * Macro to populate block entries in the page table for the start..end
++ * virtual range (inclusive).
++ *
++ * Preserves:   tbl, flags
++ * Corrupts:    phys, start, end, pstate
++ */
++        .macro  create_block_map, tbl, flags, phys, start, end
++        lsr     \phys, \phys, #BLOCK_SHIFT
++        lsr     \start, \start, #BLOCK_SHIFT
++        and     \start, \start, #PTRS_PER_PTE - 1       // table index
++        orr     \phys, \flags, \phys, lsl #BLOCK_SHIFT  // table entry
++        sub	\end, \end, #1
++        lsr     \end, \end, #BLOCK_SHIFT
++        and     \end, \end, #PTRS_PER_PTE - 1           // table end index
++9999:   str     \phys, [\tbl, \start, lsl #3]           // store the entry
++        add     \start, \start, #1                      // next entry
++        add     \phys, \phys, #BLOCK_SIZE               // next block
++        cmp     \start, \end
++        b.ls    9999b
++        .endm
++
++SYM_FUNC_START(__create_page_tables)
++        push_regs
++	mov     x27, lr
++        /*
++         * Invalidate the idmap and swapper page tables to avoid potential
++         * dirty cache lines being evicted.
++         */
++        mov     x0, x26
++        mov     x1, #0x5000
++        bl      __dma_inv_area
++
++        /*
++         * Clear the idmap and swapper page tables.
++         */
++        mov     x0, x26
++        add     x6, x26, #0x5000
++1:      stp     xzr, xzr, [x0], #16
++        stp     xzr, xzr, [x0], #16
++        stp     xzr, xzr, [x0], #16
++        stp     xzr, xzr, [x0], #16
++        cmp     x0, x6
++        b.lo    1b
++
++        /*
++         * Create the identity mapping for all 4G addr.
++         */
++        mov	x4, #0x40000000
++        mov	x7, #DEV_MMUFLAGS
++        mov     x0, x26
++        mov     x3, #0
++        create_pgd_entry x0, x3, x5, x6
++        mov     x5, x3
++        add     x6, x5, x4
++        create_block_map x0, x7, x3, x5, x6
++
++        mov     x7, #DEV_MMUFLAGS
++        mov	x0, x26
++        mov	x3, #0x40000000
++        create_pgd_entry x0, x3, x5, x6
++        mov	x5, x3
++        add	x6, x5, x4
++        create_block_map x0, x7, x3, x5, x6
++
++        mov     x7, #DEV_MMUFLAGS
++        mov     x0, x26
++        mov     x3, #0x80000000
++        create_pgd_entry x0, x3, x5, x6
++        mov     x5, x3
++        add     x6, x5, x4
++        create_block_map x0, x7, x3, x5, x6
++
++        mov     x7, #DEV_MMUFLAGS
++        mov     x0, x26
++        mov     x3, #0xc0000000
++        create_pgd_entry x0, x3, x5, x6
++        mov     x5, x3
++        add     x6, x5, x4
++        create_block_map x0, x7, x3, x5, x6
++
++        /*
++         * Create the identity mapping for all ddr we used.
++         */
++        mov     x7, #MM_MMUFLAGS
++        mov     x0, x26
++        mov     x3, x25
++        create_pgd_entry x0, x3, x5, x6
++        mov     x5, x3
++        add     x6, x9, #0x100000
++        create_block_map x0, x7, x3, x5, x6
++
++        mov     x7, #MM_MMUFLAGS
++        mov     x0, x26
++        ldr     x3, dtb_addr
++        create_pgd_entry x0, x3, x5, x6
++        mov     x5, x3
++        add     x6, x5, #0x10000
++        create_block_map x0, x7, x3, x5, x6
++
++        dmb     sy
++        bl	__cpu_setup
++        pop_regs
++        ret	x27
++SYM_FUNC_END(__create_page_tables)
++
++SYM_FUNC_START(__cpu_setup)
++        tlbi    vmalle1is
++        dsb     ish
++
++        str	lr, [sp, #-0x10]!
++
++        mov     x0, #3 << 20
++        msr     cpacr_el1, x0
++        msr     mdscr_el1, xzr
++        /*
++        * Memory region attributes for LPAE:
++        *
++        *   n = AttrIndx[2:0]
++        *                      n       MAIR
++        *   DEVICE_nGnRnE      000     00000000
++        *   DEVICE_nGnRE       001     00000100
++        *   DEVICE_GRE         010     00001100
++        *   NORMAL_NC          011     01000100
++        *   NORMAL             100     11111111
++        *   NORMAL_WT          101     10111011
++        */
++        adr     x5, MAIR
++        ldr	x5, [x5]
++        msr     mair_el1, x5
++        /*
++                * Prepare SCTLR
++                */
++        adr     x5, crval
++        ldp     w5, w6, [x5]
++        mrs     x0, sctlr_el1
++        bic     x0, x0, x5
++        orr     x0, x0, x6
++        /*
++         * Set/prepare TCR and TTBR. We use 512GB (39-bit) address range for
++         * both user and kernel.
++         */
++        adr	x10, TCR
++        ldr	x10, [x10]
++
++        adr	x9, idmap_t0sz
++        ldr	x9, [x9]
++
++        bfi     x10, x9, #TCR_T0SZ_OFFSET, #TCR_TxSZ_WIDTH
++
++        /*
++         * Read the PARange bits from ID_AA64MMFR0_EL1 and set the IPS bits in
++         * TCR_EL1.
++         */
++        mrs     x9, ID_AA64MMFR0_EL1
++        bfi     x10, x9, #32, #3
++        orr     x10, x10, #1<<23
++        msr     tcr_el1, x10
++
++        b	__enable_mmu
++SYM_FUNC_END(__cpu_setup)
++
++SYM_FUNC_START(__enable_mmu)
++        msr     ttbr0_el1, x26
++        isb
++        msr     sctlr_el1, x0
++        isb
++        /*
++         * Invalidate the local I-cache so that any instructions fetched
++         * speculatively from the PoC are discarded, since they may have
++         * been dynamically patched at the PoU.
++         */
++        ic      iallu
++        dsb     nsh
++        isb
++        .rept	8
++        mov     x0, x0
++        .endr
++        ldr     lr, [sp]
++        ldr	w0, [lr]
++
++        ldr     lr, [sp], #0x10
++        ret
++SYM_FUNC_END(__enable_mmu)
++
++
++SYM_FUNC_START(add_peripheral_page_tables)
++        ldr   x3, uart_addr
++        mov     x0, x26
++        mov     x7, #DEV_MMUFLAGS
++        create_pgd_entry x0, x3, x5, x6
++        mov     x5, x3
++        add     x6, x5, #0x1000
++        create_block_map x0, x7, x3, x5, x6
++
++        ldr   x3, sysctl_addr
++        mov     x0, x26
++        mov     x7, #DEV_MMUFLAGS
++        create_pgd_entry x0, x3, x5, x6
++        mov     x5, x3
++        add     x6, x5, #0x10000
++        create_block_map x0, x7, x3, x5, x6
++
++        ldr  x3, sysctl_addr_b
++        cmp x3, #0
++        beq 11111f
++        mov  x0,x26
++        mov  x7, #DEV_MMUFLAGS
++        create_pgd_entry x0, x3, x5, x6
++        mov     x5, x3
++        add     x6, x5, #0x10000
++        create_block_map x0, x7, x3, x5, x6
++
++11111:	tlbi    vmalle1is
++	ret
++SYM_FUNC_END(add_peripheral_page_tables)
++
++        .align  3
++        .global uart_addr
++uart_addr:
++        .quad  	0x80300000
++
++        .global sysctl_addr
++sysctl_addr:
++        .quad   0x0
++
++	.global sysctl_addr_b
++sysctl_addr_b:
++	.quad	0x0
++
++        .global dtb_addr
++dtb_addr:
++        .quad   0
++
++	.global llc_type
++llc_type:
++	.quad   0
++
++	.type   boot_mode, #object
++boot_mode:
++	.quad	0
++
++	.type   boot_args, #object
++boot_args:
++	.quad	0
++	.quad	0
++	.quad	0
++	.quad	0
++	.quad	0
++
++	.type   LC0, #object
++LC0:	.quad   LC0                     // x1
++	.quad   __bss_start             // x2
++	.quad   _end                    // x3
++	.quad   _edata                  // x6
++	.quad   input_data_end - 4      // x10 (inflated size location)
++	.quad   _got_start              // x11
++	.quad   _got_end                // x12
++	.quad   .L_user_stack_end       // sp
++	.size   LC0, . - LC0
++
++idmap_t0sz:
++	.quad  TCR_T0SZ(VA_BITS)
++
++TCR:
++	.quad	TCR_TxSZ(VA_BITS) | TCR_CACHE_FLAGS | \
++        TCR_SMP_FLAGS | TCR_TG_FLAGS | TCR_ASID16 | TCR_TBI0
++MAIR:
++	.quad	MAIR(0x00, MT_DEVICE_nGnRnE) | \
++                     MAIR(0x04, MT_DEVICE_nGnRE) | \
++                     MAIR(0x0c, MT_DEVICE_GRE) | \
++                     MAIR(0x44, MT_NORMAL_NC) | \
++                     MAIR(0xff, MT_NORMAL) | \
++                     MAIR(0xbb, MT_NORMAL_WT)
++
++        .type   crval, #object
++crval:
++        .word   0xfcffffff
++        .word   0x34d5d91d
++
++reloc_code_end:
++
++        .section ".stack", "aw", %nobits
++        .align  12
++.L_user_stack:  .space  4096
++.L_user_stack_end:
+diff --git a/arch/arm64/boot/compressed/hyp-stub.S b/arch/arm64/boot/compressed/hyp-stub.S
+new file mode 100644
+index 000000000000..23188463c4b4
+--- /dev/null
++++ b/arch/arm64/boot/compressed/hyp-stub.S
+@@ -0,0 +1,91 @@
++/*
++ * Hypervisor stub
++ *
++ * Copyright (C) 2012 ARM Ltd.
++ * Author:	Marc Zyngier <marc.zyngier@arm.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <linux/init.h>
++#include <linux/linkage.h>
++#include <linux/irqchip/arm-gic-v3.h>
++
++#include <asm/assembler.h>
++#include <asm/kvm_arm.h>
++#include <asm/ptrace.h>
++#include <asm/virt.h>
++
++	.text
++	.align 11
++
++SYM_FUNC_START(__hyp_stub_vectors)
++	ventry	el2_sync_invalid		// Synchronous EL2t
++	ventry	el2_irq_invalid			// IRQ EL2t
++	ventry	el2_fiq_invalid			// FIQ EL2t
++	ventry	el2_error_invalid		// Error EL2t
++
++	ventry	el2_sync_invalid		// Synchronous EL2h
++	ventry	el2_irq_invalid			// IRQ EL2h
++	ventry	el2_fiq_invalid			// FIQ EL2h
++	ventry	el2_error_invalid		// Error EL2h
++
++	ventry	el1_sync			// Synchronous 64-bit EL1
++	ventry	el1_irq_invalid			// IRQ 64-bit EL1
++	ventry	el1_fiq_invalid			// FIQ 64-bit EL1
++	ventry	el1_error_invalid		// Error 64-bit EL1
++
++	ventry	el1_sync_invalid		// Synchronous 32-bit EL1
++	ventry	el1_irq_invalid			// IRQ 32-bit EL1
++	ventry	el1_fiq_invalid			// FIQ 32-bit EL1
++	ventry	el1_error_invalid		// Error 32-bit EL1
++SYM_FUNC_END(__hyp_stub_vectors)
++
++	.align 11
++
++el1_sync:
++	mrs	x27, esr_el2
++	lsr	x26, x27, #ESR_ELx_EC_SHIFT
++	and	x27, x27, #ESR_ELx_ISS_MASK
++
++	cmp     x26, #ESR_ELx_EC_HVC64
++	b.ne    2f				// Not an HVC trap
++
++	cmp	x27, #HVC_SET_VECTORS
++	b.ne	1f
++	msr	vbar_el2,x22
++	b	2f
++
++1:	cmp     x27, #HVC_BOOT_KERNEL
++	b.ne    2f
++
++	br x25
++
++
++2:	eret
++SYM_FUNC_END(el1_sync)
++
++.macro invalid_vector	label
++\label:
++	b \label
++SYM_FUNC_END(\label)
++.endm
++
++	invalid_vector	el2_sync_invalid
++	invalid_vector	el2_irq_invalid
++	invalid_vector	el2_fiq_invalid
++	invalid_vector	el2_error_invalid
++	invalid_vector	el1_sync_invalid
++	invalid_vector	el1_irq_invalid
++	invalid_vector	el1_fiq_invalid
++	invalid_vector	el1_error_invalid
+diff --git a/arch/arm64/boot/compressed/image.h b/arch/arm64/boot/compressed/image.h
+new file mode 100644
+index 000000000000..92cf985e0a07
+--- /dev/null
++++ b/arch/arm64/boot/compressed/image.h
+@@ -0,0 +1,69 @@
++/*
++ * Linker script macros to generate Image header fields.
++ *
++ * Copyright (C) 2014 ARM Ltd.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
++ */
++
++
++#ifndef __ASM_IMAGE_H
++#define __ASM_IMAGE_H
++
++#ifndef LINKER_SCRIPT
++#error This file should only be included in vmlinux.lds.S
++#endif
++
++/*
++ * There aren't any ELF relocations we can use to endian-swap values known only
++ * at link time (e.g. the subtraction of two symbol addresses), so we must get
++ * the linker to endian-swap certain values before emitting them.
++ *
++ * Note that, in order for this to work when building the ELF64 PIE executable
++ * (for KASLR), these values should not be referenced via R_AARCH64_ABS64
++ * relocations, since these are fixed up at runtime rather than at build time
++ * when PIE is in effect. So we need to split them up in 32-bit high and low
++ * words.
++ */
++#ifdef CONFIG_CPU_BIG_ENDIAN
++#define DATA_LE32(data)				\
++	((((data) & 0x000000ff) << 24) |	\
++	 (((data) & 0x0000ff00) << 8)  |	\
++	 (((data) & 0x00ff0000) >> 8)  |	\
++	 (((data) & 0xff000000) >> 24))
++#else
++#define DATA_LE32(data) ((data) & 0xffffffff)
++#endif
++#ifdef CONFIG_CPU_BIG_ENDIAN
++#define __HEAD_FLAG_BE		1
++#else
++#define __HEAD_FLAG_BE		0
++#endif
++
++#define __HEAD_FLAG_PAGE_SIZE	((PAGE_SHIFT - 10) / 2)
++
++#define __HEAD_FLAG_PHYS_BASE	1
++
++#define __HEAD_FLAGS		((__HEAD_FLAG_BE << 0) |	\
++				 (__HEAD_FLAG_PAGE_SIZE << 1) |	\
++				 (__HEAD_FLAG_PHYS_BASE << 3))
++
++/*
++ * These will output as part of the Image header, which should be little-endian
++ * regardless of the endianness of the kernel. While constant values could be
++ * endian swapped in head.S, all are done here for consistency.
++ */
++
++kernel_img_size = _end - _text;
++
++#endif /* __ASM_IMAGE_H */
+diff --git a/arch/arm64/boot/compressed/misc.c b/arch/arm64/boot/compressed/misc.c
+new file mode 100644
+index 000000000000..7fe61e939ff5
+--- /dev/null
++++ b/arch/arm64/boot/compressed/misc.c
+@@ -0,0 +1,49 @@
++#include <linux/compiler.h>
++#include <linux/types.h>
++#include <linux/linkage.h>
++#include <linux/string.h>
++#include "misc.h"
++
++unsigned char *output_data;
++unsigned long free_mem_ptr;
++unsigned long free_mem_end_ptr;
++
++#ifndef arch_error
++#define arch_error(x)
++#endif
++
++void error(char *x)
++{
++	arch_error(x);
++	while(1);	/* Halt */
++}
++
++const unsigned long __stack_chk_guard = 0x000a0dff;
++
++void __stack_chk_fail(void)
++{
++	error("stack-protector: Kernel stack is corrupted\n");
++}
++
++void
++decompress_kernel(unsigned long output_start, unsigned long free_mem_ptr_p,
++		unsigned long free_mem_ptr_end_p,
++		int arch_id)
++{
++	int ret;
++
++	output_data		= (unsigned char *)output_start;
++	free_mem_ptr		= free_mem_ptr_p;
++	free_mem_end_ptr	= free_mem_ptr_end_p;
++
++	ret = do_decompress(input_data, input_data_end - input_data,
++			    output_data, error);
++
++	if (ret)
++		error("decompressor returned an error");
++}
++
++void fortify_panic(const char *name)
++{
++	error("detected buffer overflow");
++}
+diff --git a/arch/arm64/boot/compressed/misc.h b/arch/arm64/boot/compressed/misc.h
+new file mode 100644
+index 000000000000..9aa136d48709
+--- /dev/null
++++ b/arch/arm64/boot/compressed/misc.h
+@@ -0,0 +1,13 @@
++#ifndef ARM64_MISC_H
++#define ARM64_MISC_H
++
++extern unsigned char *output_data;
++extern void error(char *) __noreturn;
++extern unsigned long free_mem_ptr;
++extern unsigned long free_mem_end_ptr;
++
++/* Not needed, but used in some headers pulled in by decompressors */
++extern char input_data[];
++extern char input_data_end[];
++extern int do_decompress(u8 *input, int len, u8 *output, void (*error)(char *x));
++#endif
+diff --git a/arch/arm64/boot/compressed/piggy.S b/arch/arm64/boot/compressed/piggy.S
+new file mode 100644
+index 000000000000..14e232da242f
+--- /dev/null
++++ b/arch/arm64/boot/compressed/piggy.S
+@@ -0,0 +1,6 @@
++	.section .piggydata,#alloc
++	.globl	input_data
++input_data:
++	.incbin	"arch/arm64/boot/compressed/piggy_data"
++	.globl	input_data_end
++input_data_end:
+diff --git a/arch/arm64/boot/compressed/string.c b/arch/arm64/boot/compressed/string.c
+new file mode 100644
+index 000000000000..bef2a070453c
+--- /dev/null
++++ b/arch/arm64/boot/compressed/string.c
+@@ -0,0 +1,177 @@
++/*
++ * arch/arm/boot/compressed/string.c
++ *
++ * Small subset of simple string routines
++ */
++
++#include <linux/string.h>
++
++/**
++ * strrchr - Find the last occurrence of a character in a string
++ * @s: The string to be searched
++ * @c: The character to search for
++ */
++char *strrchr(const char *s, int c)
++{
++	const char *last = NULL;
++
++	do {
++		if (*s == (char)c)
++			last = s;
++	} while (*s++);
++	return (char *)last;
++}
++
++/**
++ * strnlen - Find the length of a length-limited string
++ * @s: The string to be sized
++ * @count: The maximum number of bytes to search
++ */
++size_t strnlen(const char *s, size_t count)
++{
++	const char *sc;
++
++	for (sc = s; count-- && *sc != '\0'; ++sc)
++		/* nothing */;
++	return sc - s;
++}
++
++#ifdef CONFIG_RTOS_KASAN
++/*
++ * The decompressor is built without KASan but uses the same redirects as the
++ * rest of the kernel when CONFIG_KASAN is enabled, defining e.g. memcpy()
++ * to __memcpy() but since we are not linking with the main kernel string
++ * library in the decompressor, that will lead to link failures.
++ *
++ * Undefine KASan's versions, define the wrapped functions and alias them to
++ * the right names so that when e.g. __memcpy() appear in the code, it will
++ * still be linked to this local version of memcpy().
++ */
++#undef memcpy
++#undef memmove
++#undef memset
++void *__memcpy(void *__dest, __const void *__src, size_t __n) __alias(memcpy);
++void *__memmove(void *__dest, __const void *__src, size_t count) __alias(memmove);
++void *__memset(void *s, int c, size_t count) __alias(memset);
++#endif
++
++void *memcpy(void *__dest, __const void *__src, size_t __n)
++{
++	int i = 0;
++	unsigned char *d = (unsigned char *)__dest, *s = (unsigned char *)__src;
++
++	for (i = __n >> 3; i > 0; i--) {
++		*d++ = *s++;
++		*d++ = *s++;
++		*d++ = *s++;
++		*d++ = *s++;
++		*d++ = *s++;
++		*d++ = *s++;
++		*d++ = *s++;
++		*d++ = *s++;
++	}
++
++	if (__n & 1 << 2) {
++		*d++ = *s++;
++		*d++ = *s++;
++		*d++ = *s++;
++		*d++ = *s++;
++	}
++
++	if (__n & 1 << 1) {
++		*d++ = *s++;
++		*d++ = *s++;
++	}
++
++	if (__n & 1)
++		*d++ = *s++;
++
++	return __dest;
++}
++
++void *memmove(void *__dest, __const void *__src, size_t count)
++{
++	unsigned char *d = __dest;
++	const unsigned char *s = __src;
++
++	if (__dest == __src)
++		return __dest;
++
++	if (__dest < __src)
++		return memcpy(__dest, __src, count);
++
++	while (count--)
++		d[count] = s[count];
++	return __dest;
++}
++
++size_t strlen(const char *s)
++{
++	const char *sc = s;
++
++	while (*sc != '\0')
++		sc++;
++	return sc - s;
++}
++
++int memcmp(const void *cs, const void *ct, size_t count)
++{
++	const unsigned char *su1 = cs, *su2 = ct, *end = su1 + count;
++	int res = 0;
++
++	while (su1 < end) {
++		res = *su1++ - *su2++;
++		if (res)
++			break;
++	}
++	return res;
++}
++
++int strcmp(const char *cs, const char *ct)
++{
++	unsigned char c1, c2;
++	int res = 0;
++
++	do {
++		c1 = *cs++;
++		c2 = *ct++;
++		res = c1 - c2;
++		if (res)
++			break;
++	} while (c1);
++	return res;
++}
++
++void *memchr(const void *s, int c, size_t count)
++{
++	const unsigned char *p = s;
++
++	while (count--)
++		if ((unsigned char)c == *p++)
++			return (void *)(p - 1);
++	return NULL;
++}
++
++char *strchr(const char *s, int c)
++{
++	while (*s != (char)c)
++		if (*s++ == '\0')
++			return NULL;
++	return (char *)s;
++}
++
++#undef memset
++
++void *memset(void *s, int c, size_t count)
++{
++	char *xs = s;
++
++	while (count--)
++		*xs++ = c;
++	return s;
++}
++
++void __memzero(void *s, size_t count)
++{
++	memset(s, 0, count);
++}
+diff --git a/arch/arm64/boot/compressed/vmlinux.lds b/arch/arm64/boot/compressed/vmlinux.lds
+new file mode 100644
+index 000000000000..6bcd3b49236e
+--- /dev/null
++++ b/arch/arm64/boot/compressed/vmlinux.lds
+@@ -0,0 +1,53 @@
++OUTPUT_ARCH(aarch64)
++ENTRY(_start)
++SECTIONS
++{
++  /DISCARD/ : {
++    *(.ARM.exidx*)
++    *(.ARM.extab*)
++    *(.data)
++  }
++  . = 0;
++  _text = .;
++  .text : {
++    _start = .;
++    *(.start)
++    *(.text)
++    *(.text.*)
++    *(.fixup)
++    *(.gnu.warning)
++    *(.glue_7t)
++    *(.glue_7)
++  }
++  .rodata : {
++    *(.rodata)
++    *(.rodata.*)
++  }
++  .piggydata : {
++    *(.piggydata)
++  }
++  . = ALIGN(4);
++  _etext = .;
++  .got.plt : { *(.got.plt) }
++  _got_start = .;
++  .got : { *(.got) }
++  _got_end = .;
++  .pad : { BYTE(0); . = ALIGN(8); }
++  _edata = .;
++  _magic_sig = (0x016f2818);
++  _magic_start = 0x016f2818;
++  _magic_end = (_edata);
++  . = ALIGN(8);
++  __bss_start = .;
++  .bss : { *(.bss) }
++  _end = .;
++  . = ALIGN(8);
++  .stack : { *(.stack) }
++  .stab 0 : { *(.stab) }
++  .stabstr 0 : { *(.stabstr) }
++  .stab.excl 0 : { *(.stab.excl) }
++  .stab.exclstr 0 : { *(.stab.exclstr) }
++  .stab.index 0 : { *(.stab.index) }
++  .stab.indexstr 0 : { *(.stab.indexstr) }
++  .comment 0 : { *(.comment) }
++}
+diff --git a/arch/arm64/boot/compressed/vmlinux.lds.S b/arch/arm64/boot/compressed/vmlinux.lds.S
+new file mode 100644
+index 000000000000..e4d073e1d58f
+--- /dev/null
++++ b/arch/arm64/boot/compressed/vmlinux.lds.S
+@@ -0,0 +1,87 @@
++/*
++ *  Copyright (C) 2000 Russell King
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++#include <asm/memory.h>
++
++#ifdef CONFIG_CPU_ENDIAN_BE8
++#define ZIMAGE_MAGIC(x) ( (((x) >> 24) & 0x000000ff) | \
++			  (((x) >>  8) & 0x0000ff00) | \
++			  (((x) <<  8) & 0x00ff0000) | \
++			  (((x) << 24) & 0xff000000) )
++#else
++#define ZIMAGE_MAGIC(x) (x)
++#endif
++
++OUTPUT_ARCH(aarch64)
++ENTRY(_start)
++
++SECTIONS
++{
++  /DISCARD/ : {
++    *(.ARM.exidx*)
++    *(.ARM.extab*)
++    /*
++     * Discard any r/w data - this produces a link error if we have any,
++     * which is required for PIC decompression.  Local data generates
++     * GOTOFF relocations, which prevents it being relocated independently
++     * of the text/got segments.
++     */
++    *(.data)
++  }
++  . = TEXT_START;
++  _text = .;
++  .text : {
++    _start = .;
++    *(.start)
++    *(.text)
++    *(.text.*)
++    *(.fixup)
++    *(.gnu.warning)
++    *(.glue_7t)
++    *(.glue_7)
++  }
++  .rodata : {
++    *(.rodata)
++    *(.rodata.*)
++  }
++  .piggydata : {
++    *(.piggydata)
++  }
++
++  . = ALIGN(4);
++  _etext = .;
++
++  .got.plt		: { *(.got.plt) }
++  _got_start = .;
++  .got			: { *(.got) }
++  _got_end = .;
++
++  /* ensure the zImage file size is always a multiple of 64 bits */
++  /* (without a dummy byte, ld just ignores the empty section) */
++  .pad			: { BYTE(0); . = ALIGN(8); }
++  _edata = .;
++
++  _magic_sig = ZIMAGE_MAGIC(0x016f2818);
++  _magic_start = 0x016f2818;
++  _magic_end = ZIMAGE_MAGIC(_edata);
++
++  . = BSS_START;
++  __bss_start = .;
++  .bss			: { *(.bss) }
++  _end = .;
++
++  . = ALIGN(8);		/* the stack must be 64-bit aligned */
++  .stack		: { *(.stack) }
++
++  .stab 0		: { *(.stab) }
++  .stabstr 0		: { *(.stabstr) }
++  .stab.excl 0		: { *(.stab.excl) }
++  .stab.exclstr 0	: { *(.stab.exclstr) }
++  .stab.index 0		: { *(.stab.index) }
++  .stab.indexstr 0	: { *(.stab.indexstr) }
++  .comment 0		: { *(.comment) }
++}
+diff --git a/arch/arm64/include/asm/assembler.h b/arch/arm64/include/asm/assembler.h
+index ddbe6bf00e33..d581941074ba 100644
+--- a/arch/arm64/include/asm/assembler.h
++++ b/arch/arm64/include/asm/assembler.h
+@@ -185,9 +185,15 @@ lr	.req	x30		// link register
+ 	 * @dst: destination register (64 bit wide)
+ 	 * @sym: name of the symbol
+ 	 */
+-	.macro	adr_l, dst, sym
+-	adrp	\dst, \sym
+-	add	\dst, \dst, :lo12:\sym
++
++	.macro  adr_l, dst, sym, tmp
++	.ifb    \tmp
++	adrp    \dst, \sym
++	add     \dst, \dst, :lo12:\sym
++	.else
++	adrp    \tmp, \sym
++	add     \dst, \tmp, :lo12:\sym
++	.endif
+ 	.endm
+ 
+ 	/*
+@@ -197,7 +203,7 @@ lr	.req	x30		// link register
+ 	 *       32-bit wide register, in which case it cannot be used to hold
+ 	 *       the address
+ 	 */
+-	.macro	ldr_l, dst, sym, tmp=
++	.macro	ldr_l, dst, sym, tmp
+ 	.ifb	\tmp
+ 	adrp	\dst, \sym
+ 	ldr	\dst, [\dst, :lo12:\sym]
+diff --git a/arch/arm64/include/asm/virt.h b/arch/arm64/include/asm/virt.h
+index 412b9ac95396..cd702765153d 100644
+--- a/arch/arm64/include/asm/virt.h
++++ b/arch/arm64/include/asm/virt.h
+@@ -38,6 +38,14 @@
+ /* Max number of HYP stub hypercalls */
+ #define HVC_STUB_HCALL_NR 3
+ 
++#ifdef CONFIG_SELFDECOMPRESS_ZIMAGE
++/*
++ * keep HVC_SET_VECTORS as 2 and HVC_BOOT_KERNEL as 6 to not break compress
++ * feature from RTOS
++ */
++#define HVC_BOOT_KERNEL 6
++#endif
++
+ /* Error returned when an invalid stub number is passed into x0 */
+ #define HVC_STUB_ERR	0xbadca11
+ 
+-- 
+2.12.3
+

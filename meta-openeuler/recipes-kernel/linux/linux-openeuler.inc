@@ -1,22 +1,33 @@
 SUMMARY = "Linux kernel"
 SECTION = "kernel"
+LICENSE = "GPLv2"
+LIC_FILES_CHKSUM ?= "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 inherit kernel
 
+SRC_URI = "file://kernel-5.10 \
+    file://config/${ARCH}/defconfig-kernel \
+"
+
+S = "${WORKDIR}/kernel-5.10"
+
+LINUX_VERSION ?= "5.10"
+PV = "${LINUX_VERSION}"
+
 # add patches only for aarch64
-SRC_URI_append_aarch64 += " \
-    file://yocto-embedded-tools/patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch \
+SRC_URI_append_aarch64 = " \
+    file://patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch \
 "
 
 # add patches for OPENEULER_PLATFROM such as aarch64-pro
-SRC_URI_append_aarch64-pro += " \
+SRC_URI_append_aarch64-pro = " \
     file://src-kernel-5.10/0000-raspberrypi-kernel.patch \
     file://src-kernel-5.10/0001-add-preemptRT-patch.patch \
     file://src-kernel-5.10/0002-modifty-bcm2711_defconfig-for-rt-rpi-kernel.patch \
 "
 
 LINUX_VERSION_EXTENSION_append = "-openeuler"
-#delete v8 in kernel module name, such as kernel-module-xxx-5.10.0-v8
+# delete v8 in kernel module name, such as kernel-module-xxx-5.10.0-v8
 KERNEL_MODULE_PACKAGE_SUFFIX = ""
 
 # Skip processing of this recipe if it is not explicitly specified as the
@@ -32,14 +43,6 @@ python do_fetch() {
     import subprocess
     import git
     import os
-
-    repoList = [{
-        "repo_name": "yocto-embedded-tools",
-        "git_space": "openeuler",
-        "branch": "master"
-    }]
-    d.setVar("PKG_REPO_LIST", repoList)
-    bb.build.exec_func("do_openeuler_fetchs", d)
 
     srcDir = d.getVar("OPENEULER_SP_DIR")
     kernelDir = os.path.join(srcDir, "kernel-5.10")
@@ -73,7 +76,7 @@ KERNEL_LD_append_aarch64 = " ${TOOLCHAIN_OPTIONS}"
 KERNEL_CC_append_riscv64 = " ${TOOLCHAIN_OPTIONS}"
 KERNEL_LD_append_riscv64 = " ${TOOLCHAIN_OPTIONS}"
 
-OPENEULER_KERNEL_CONFIG = "../yocto-embedded-tools/config/${ARCH}/defconfig-kernel"
+OPENEULER_KERNEL_CONFIG = "../config/${ARCH}/defconfig-kernel"
 OPENEULER_KERNEL_CONFIG_aarch64-pro = "${S}/arch/${ARCH}/configs/bcm2711_defconfig"
 do_configure_prepend() {
     if [[ ${OPENEULER_PLATFORM} == "aarch64-pro" ]]; then
