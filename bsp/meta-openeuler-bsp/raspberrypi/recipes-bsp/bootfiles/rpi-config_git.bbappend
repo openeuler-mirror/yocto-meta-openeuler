@@ -1,3 +1,5 @@
-SRC_URI = "file://yocto-embedded-tools/config/${MACHINE}/config.txt \
+FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
+
+SRC_URI = "file://config.txt \
 "
-S = "${WORKDIR}/yocto-embedded-tools/config/${MACHINE}"
+S = "${WORKDIR}"
