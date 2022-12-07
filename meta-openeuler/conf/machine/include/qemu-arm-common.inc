@@ -1,11 +1,11 @@
 # Description: Machine description for little-endian arm32
 
 MACHINEOVERRIDES =. "march32:"
-require conf/machine/qemu-common.inc
+require conf/machine/include/qemu-common.inc
 require conf/machine/include/arm/arch-armv7a.inc
 
 #kernel modules to install and autoload
-require conf/machine/kernel-modules-conf/common.inc
+require conf/machine/include/kernel-modules-conf/common.inc
 INSTALLMODULES += " \
 kernel-module-unix \
 "
