@@ -34,5 +34,4 @@ set_permissions_from_rootfs_append() {
     cd -
 }
 
-require recipes-core/images/${MACHINE}.inc
 require openeuler-image-common.inc

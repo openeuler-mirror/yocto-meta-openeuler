@@ -1,2 +1,2 @@
-#image configuration for riscv64
+# image configuration for riscv64
 require qemu.inc

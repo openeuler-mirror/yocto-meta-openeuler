@@ -1,3 +1,4 @@
+require recipes-core/images/${MACHINE}.inc
 IMAGE_INSTALL = ""
 
 # no extra language settings

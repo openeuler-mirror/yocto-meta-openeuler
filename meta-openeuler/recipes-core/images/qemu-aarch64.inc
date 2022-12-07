@@ -1,2 +1,2 @@
-#image configuration for aarch64
+# image configuration for aarch64
 require qemu.inc

@@ -1,2 +1,2 @@
-#image configuration for arm
+# image configuration for arm
 require qemu.inc

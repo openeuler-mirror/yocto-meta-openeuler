@@ -3,8 +3,6 @@ TOOLCHAIN_HOST_TASK = ""
 
 SUMMARY = "A small image just capable of allowing a device to boot."
 
-
-require recipes-core/images/${MACHINE}.inc
 require openeuler-image-common.inc
 
 IMAGE_INSTALL += " \
