@@ -19,6 +19,6 @@ openEuler Embedded 22.03 SP1是openEuler Embedded第二个正式版本，包含�
    - 安全加固指导，详见 :ref:`security_hardening`
    - 基于Preempt-RT的软实时，详见 :ref:`preempt_rt`
 * 构建系统
-   - 优化后的openEuler Embedded构建体系, 详见 :ref:`yocto_quick_build`
+   - 优化后的openEuler Embedded构建体系, 详见 :ref:`quickbuild`
    - 容器化构建，增加构建专用NativeSDK，详见 :ref:`container_build`
 
