@@ -8,9 +8,10 @@ LICENSE = "BSD-2-Clause"
 LIC_FILES_CHKSUM = "file://${THISDIR}/files/LICENCE.edk2;md5=2b415520383f7964e96700ae12b4570a"
 
 
-SRC_URI = " \
-        file://yocto-embedded-tools/firmware/rasp-uefi/RPi4_UEFI_Firmware_v1.33.zip \
+SRC_URI = "file://RPi4_UEFI_Firmware_v1.33.zip \
         "
+
+SRC_URI[sha256sum] = "1de14df6caaeb61fd15065eee23fb1bae864a1ea15eba8ee066a94073660f8be"
 
 inherit deploy nopackages
 
