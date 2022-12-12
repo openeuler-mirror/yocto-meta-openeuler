@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>qemu使用和调试 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="QEMU控制台" href="qemu_monitor.html" />
+    <link rel="prev" title="QEMU仿真器的使用" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+              <div class="version">
+                openEuler-22.03-LTS-SP1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">内容</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/index.html">关键特性</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../yocto/index.html">构建系统</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">QEMU仿真器的使用</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">qemu使用和调试</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">qemu使用</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">获取二进制</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#openeuler-embedded">openEuler Embedded镜像</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">qemu运行</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">内核调试</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id6">调试准备</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">实例</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="qemu_monitor.html">QEMU控制台</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../commit_msg/index.html">commit提交规范</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute_doc.html">如何撰写并贡献文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../security_hardening/index.html">安全加固说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docker_list/index.html">openEuler Embedded 容器介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bsp/index.html">周边设备和硬件底层软件适配</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../network/index.html">网络配置</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../republish/index.html">商业发行版发行说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test_project/index.html">测试工程</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">QEMU仿真器的使用</a> &raquo;</li>
+      <li>qemu使用和调试</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="qemu">
+<span id="qemu-start-debug"></span><h1>qemu使用和调试<a class="headerlink" href="#qemu" title="永久链接至标题">¶</a></h1>
+<p>本文档主要用于介绍如何获得qemu的二进制，qemu的运行，以及如何基于qemu进行一些简单的调试。</p>
+<section id="id1">
+<h2>qemu使用<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<p>下面介绍如何在自己的机器上编译并运行一个linux镜像。</p>
+<section id="id2">
+<h3>获取二进制<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h3>
+<p>获取qemu的二进制可以通过如下方式:</p>
+<ul>
+<li><p>基于openEuler社区 <a class="reference external" href="https://gitee.com/openeuler/qemu/tree/stable-5.0/">qemu</a> 代码自行编译:</p>
+<ul class="simple">
+<li><p>首先下载对应的代码并切换到stable-5.0分支:</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">git clone https://gitee.com/openeuler/qemu.git qemu</span>
+<span class="go">cd qemu</span>
+<span class="go">git checkout -b stable-5.0 remotes/origin/stable-5.0</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>编译生成对应的二进制:</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">./configure --target-list=arm-softmmu,aarch64-softmmu --disable-werror</span>
+<span class="go">make -j 8</span>
+<span class="go">make install #调试不需要</span>
+</pre></div>
+</div>
+<p>编译完成后会生成arm-softmmu/qemu-system-arm、aarch64-softmmu/qemu-system-aarch64两个文件。</p>
+</li>
+</ul>
+<blockquote>
+<div><div class="admonition note">
+<p class="admonition-title">注解</p>
+<p>configure执行过程中，可能会有诸如”glib-2.48 gthread-2.0 is required to compile QEMU“的失败打印，请按照提示自行安装升级对应的软件包。</p>
+<p>configure时可以通过不同的参数来enable/disable一些qemu的特性或编译选项，如示例中增加的–disable-werror可以允许编译warning；如想要体验openEuler Embedded共享文件系统场景，需要在configure时增加–enable-virtfs来使能对应功能。</p>
+</div>
+</div></blockquote>
+</section>
+<section id="openeuler-embedded">
+<h3>openEuler Embedded镜像<a class="headerlink" href="#openeuler-embedded" title="永久链接至标题">¶</a></h3>
+<p>参照 <a class="reference internal" href="../getting_started/index.html#getting-started"><span class="std std-ref">快速上手</span></a> 部分。</p>
+</section>
+<section id="id4">
+<h3>qemu运行<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h3>
+<p>一个简单的qemu执行命令如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd initrd</span>
+</pre></div>
+</div>
+<p>执行之后等待OS加载完成，很快就能看到登陆提示：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Authorized uses only. All activity may be monitored and reported.</span>
+<span class="go">openeuler login:</span>
+</pre></div>
+</div>
+<p>这也意味你已经成功在机器上启动了openEuler Embedded的系统。</p>
+<p>这里也介绍一些常用的qemu启动参数：</p>
+<ul class="simple">
+<li><p><strong>-M virt</strong>: 指定需要使用的machine类型，virt是qemu提供的一个通用machine，可以同时支持arm32和arm64（部分cortex不支持）， <code class="docutils literal notranslate"><span class="pre">-M</span> <span class="pre">help</span></code> 可以列出所有支持的machine列表</p></li>
+<li><p><strong>-m 1G</strong>: 可选，可以通过修改此参数来增大OS的可用内存</p></li>
+<li><p><strong>-cpu cortex-a57</strong>: 指定模拟的cpu类型，指定 <code class="docutils literal notranslate"><span class="pre">-M</span></code> 的情况下可以使用 <code class="docutils literal notranslate"><span class="pre">-cpu</span> <span class="pre">help</span></code> 查看当前machine支持的cpu类型</p></li>
+<li><p><strong>-smp 2</strong>: 可选，可以修改OS的cpu数量，默认为1</p></li>
+<li><p><strong>-append</strong>: 可选，指定内核的启动参数(cmdline)</p></li>
+<li><p><strong>-kernel</strong>、<strong>-initrd</strong>: 分别用于指定OS的内核和文件系统</p></li>
+<li><p><strong>-dtb</strong>: 可选，用于指定dtb(device tree)文件</p></li>
+<li><p><strong>-d in_asm -D qemu.log</strong>: 可选，输出qemu在tcg模式下的”指令流”。 <code class="docutils literal notranslate"><span class="pre">-d</span></code> 选择指令流类型，可以用 <code class="docutils literal notranslate"><span class="pre">-d</span> <span class="pre">help</span></code> 查看支持的选项列表； <code class="docutils literal notranslate"><span class="pre">-D</span></code> 指定输出的文件名</p></li>
+<li><p><strong>-s -S</strong>: 可选，调试参数。 <code class="docutils literal notranslate"><span class="pre">-S</span></code> 可以让qemu加载OS的zImage、initrd到指定位置后停止运行，等待gdb连接； <code class="docutils literal notranslate"><span class="pre">-s</span></code> 等价于 <code class="docutils literal notranslate"><span class="pre">--gdb</span> <span class="pre">tcp::1234</span></code> ，启动gdb server并默认监听1234端口</p></li>
+<li><p><strong>-serial</strong>: 可选，用于串口重定向。不指定时默认为 <code class="docutils literal notranslate"><span class="pre">-serial</span> <span class="pre">stdio</span></code> ，即打印到标准输入输出。也可以重定向到tcp: <code class="docutils literal notranslate"><span class="pre">-serial</span> <span class="pre">tcp::1111,server,nowait</span></code> ，通过 <code class="docutils literal notranslate"><span class="pre">telnet</span> <span class="pre">localhost</span> <span class="pre">1111</span></code> 连接</p></li>
+</ul>
+</section>
+</section>
+<section id="id5">
+<h2>内核调试<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
+<p>qemu的另一大优势便是可以使用gdb来对内核进行调试，这对于嵌入式开发者来说能极大的提高开发效率。
+在原有的开发环境中，如果想调试内核，只能在出问题的代码附近加上printk打印，重编内核，将镜像烧到开发板上查看打印信息，如果出问题的阶段非常早，无法调用printk，还需要手动实现往串口物理地址打印的代码。</p>
+<p>而有了gdb之后，可以直接在内核需要调试的位置下断点，查看对应的寄存器和变量的值。</p>
+<section id="id6">
+<h3>调试准备<a class="headerlink" href="#id6" title="永久链接至标题">¶</a></h3>
+<p>除了上面使用部分需要的东西之外，我们还需要一个vmlinux文件，一般在编译linux内核后在内核的根目录下就能找到。可以自行从openEuler社区下载linux的源码并编译生成。另外请确保vmlinux和zImage是由同一份内核源码和同一份内核config生成。</p>
+</section>
+<section id="id7">
+<h3>实例<a class="headerlink" href="#id7" title="永久链接至标题">¶</a></h3>
+<p>以aarch64为例，介绍如何使用qemu进行内核调试。</p>
+<div class="admonition note">
+<p class="admonition-title">注解</p>
+<p>调试自解压部分时，需要使用arch/arm64/boot/compressed/vmlinux，并在gdb加载vmlinux时，使用</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp gp-VirtualEnv">(gdb)</span> <span class="go">add-symbol-file vmlinux 0x40080000</span>
+</pre></div>
+</div>
+<p>的方式来加载符号信息，0x40080000对应的地址实际上就是qemu加载zImage的位置，可以在qemu的控制台通过 <code class="docutils literal notranslate"><span class="pre">info</span> <span class="pre">roms</span></code> 查看</p>
+</div>
+<p>在终端执行如下命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd initrd &quot;-S -s&quot;</span>
+</pre></div>
+</div>
+<p>可以发现此时命令行不再继续往下执行，我们另外打开一个窗口，启动gdb并连接qemu：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">gdb</span>
+<span class="gp gp-VirtualEnv">(gdb)</span> <span class="go">file vmlinux</span>
+<span class="gp gp-VirtualEnv">(gdb)</span> <span class="go">target remote :1234</span>
+<span class="gp gp-VirtualEnv">(gdb)</span> <span class="go">b start_kernel</span>
+<span class="gp gp-VirtualEnv">(gdb)</span> <span class="go">c</span>
+</pre></div>
+</div>
+<p>上面的 <code class="docutils literal notranslate"><span class="pre">target</span> <span class="pre">remote</span> <span class="pre">:1234</span></code> 用于连接qemu启动的gdb server； <code class="docutils literal notranslate"><span class="pre">file</span> <span class="pre">vmlinux</span></code> 用于加载符号信息。
+在执行完 <code class="docutils literal notranslate"><span class="pre">c</span></code> 之后，内核会开始运行，遇到我们在start_kernel下的断点后会再次停止，此时可以通过 <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">/</span> <span class="pre">bt</span></code> 等方式查看变量或调用栈。</p>
+<p>一些调试内核时常用的gdb命令：</p>
+<ul class="simple">
+<li><p><strong>p</strong>: 打印通用寄存器或者变量。 <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">$x1</span></code> 或者 <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">command_line</span></code></p></li>
+<li><p><strong>x/32wx addr</strong>: 以16进制，按word(32位)为单位，打印从addr开始的32个值</p></li>
+<li><p><strong>disas [addr]</strong>: 反汇编，可以结合qemu.log和objdump后的vmlinux一起查看</p></li>
+<li><p><strong>n, s / ni, si</strong>: 单步执行，ni,si 针对汇编</p></li>
+<li><p><strong>info registers</strong>: 打印寄存器</p></li>
+<li><p><strong>bt</strong>: 查看调用栈</p></li>
+<li><p><strong>b [addr] [if condition]</strong>: 断点，某些场景下可能需要条件断点来过滤部分（如想查看某个中断是否上报可以在中断入口处增加调试断点，减少非预期的停止）</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="QEMU仿真器的使用" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="qemu_monitor.html" class="btn btn-neutral float-right" title="QEMU控制台" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2022, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-22.03-LTS-Next
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../master/qemu/qemu_start.html">master</a></dd>
+      <dd><a href="../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS/qemu/qemu_start.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="qemu_start.html">openEuler-22.03-LTS-Next</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP1/qemu/qemu_start.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../openEuler-22.09/qemu/qemu_start.html">openEuler-22.09</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

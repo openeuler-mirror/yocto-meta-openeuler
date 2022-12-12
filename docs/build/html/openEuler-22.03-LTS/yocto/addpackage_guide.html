@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>新增软件包指导 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="QEMU仿真器的使用" href="../qemu/index.html" />
+    <link rel="prev" title="Yocto开发" href="development.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">内容</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/index.html">关键特性</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">构建系统</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="quickbuild/index.html">快速构建</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html">Yocto介绍</a></li>
+<li class="toctree-l2"><a class="reference internal" href="meta-openeuler.html">openeuler层结构及演进策略</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exploration.html">深入Yocto</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html">Yocto开发</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">新增软件包指导</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">主要过程</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../qemu/index.html">QEMU仿真器的使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute_doc.html">如何撰写并贡献文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../security_hardening/index.html">安全加固说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">构建系统</a> &raquo;</li>
+      <li>新增软件包指导</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="yocto-add-software-package">
+<span id="id1"></span><h1>新增软件包指导<a class="headerlink" href="#yocto-add-software-package" title="永久链接至标题">¶</a></h1>
+<p>配方（.bb 文件）是 Yocto 项目环境中的基本组件。 OpenEmbedded 构建系统构建的每个软件组件都需要一个配方来定义组件；</p>
+<p>新增软件包到镜像中需要有软件包的源码，对应的bb文件。</p>
+<section id="id2">
+<h2>主要过程<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<ol class="arabic simple">
+<li><p><strong>源码获取/下载</strong></p></li>
+</ol>
+<p>软件包源码放在src（yocto-meta-openeuler同级目录）下。</p>
+<ol class="arabic simple" start="2">
+<li><p><strong>获取配方（.bb文件）</strong>、</p></li>
+</ol>
+<p>从yocto-poky仓库寻找相应软件包的bb文件；</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">find yocto-poky -name package*.bb</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="http://layers.openembedded.org/layerindex/branch/master/recipes/">OpenEmbedded Layer</a> 可直接搜索相应软件包的bb文件。</p>
+<ol class="arabic simple" start="3">
+<li><p><strong>适配配方</strong></p></li>
+</ol>
+<p>在上一步中如果未找到相应版本的bb文件，可基于相近版本修改;</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mv package_version1.bb package_version2.bb //修改bb文件名为所需版本</span>
+</pre></div>
+</div>
+<p>修改bb文件适配openEuler yocto工程，主要需要修改如下字段；</p>
+<p>SRC_URI：表示软件包来源，修改源码包来源为本地，如果源码是从src-openEuler下载到本地，src-openEuler上该软件包有额外补丁也需要加上。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">SRC_URI = &quot;file://package//${BP}.tar.*&quot;   //BP变量表示软件名-版本号，*需改为相应的后缀。</span>
+</pre></div>
+</div>
+<p>依赖相关字段，如inherit、DEPENDS、RDEPENDS；</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake &lt;package&gt; -g  //此命令可查看软件依赖</span>
+<span class="go">cat pn-buildlist</span>
+</pre></div>
+</div>
+<p>发现未支持依赖需优先编译依赖软件或者视情况解耦掉依赖软件。删除不支持的依赖，如inherit texinfo update-alternatives python3，这些class需要引入软件包，暂时没有支持起来。</p>
+<ol class="arabic" start="4">
+<li><p><strong>单包编译</strong></p>
+<blockquote>
+<div><p>bitbake &lt;package&gt;</p>
+</div></blockquote>
+</li>
+<li><p><strong>加入镜像</strong></p></li>
+</ol>
+<p>bb文件适配完成并验证ok后，将所需子包追加到layer配置文件RDEPNDNS变量中（ 当前配置文件位于yocto-meta-openeuler工程meta-openeuler /recipes-core/packagegroups/packagegroup-xxx.bb ）。</p>
+<p>如果在加入镜像中与已有子包文件发生冲突的话需选择需要的子包，将另一个包从RDEPENDS变量值去除，但这个操作可能会引起一些麻烦，由于被删除子包中可能会包含其它必要的文件。</p>
+<ol class="arabic simple" start="6">
+<li><p><strong>编译镜像</strong></p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake openeuler-image</span>
+</pre></div>
+</div>
+<p>这时产生的镜像中已经包含了你所需的软件包功能。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="development.html" class="btn btn-neutral float-left" title="Yocto开发" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../qemu/index.html" class="btn btn-neutral float-right" title="QEMU仿真器的使用" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2022, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-22.03-LTS
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../master/yocto/addpackage_guide.html">master</a></dd>
+      <dd><a href="../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="addpackage_guide.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-Next/yocto/addpackage_guide.html">openEuler-22.03-LTS-Next</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP1/yocto/addpackage_guide.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../openEuler-22.09/yocto/addpackage_guide.html">openEuler-22.09</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

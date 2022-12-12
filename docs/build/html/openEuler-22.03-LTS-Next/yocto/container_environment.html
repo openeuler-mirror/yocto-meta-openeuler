@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>openEuler Embedded 容器环境介绍 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="QEMU仿真器的使用" href="../qemu/index.html" />
+    <link rel="prev" title="新增软件包指导" href="addpackage_guide.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+              <div class="version">
+                openEuler-22.03-LTS-SP1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">内容</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/index.html">关键特性</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">构建系统</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="quickbuild/index.html">快速构建</a></li>
+<li class="toctree-l2"><a class="reference internal" href="overview.html">Yocto介绍</a></li>
+<li class="toctree-l2"><a class="reference internal" href="meta-openeuler.html">openeuler 层结构及演进策略</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exploration.html">深入Yocto</a></li>
+<li class="toctree-l2"><a class="reference internal" href="development.html">Yocto开发</a></li>
+<li class="toctree-l2"><a class="reference internal" href="addpackage_guide.html">新增软件包指导</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">openEuler Embedded 容器环境介绍</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#yocto">1. Yocto 构建对主机环境有要求</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">2. 配置适合 Yocto 构建的主机环境</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">3. Yocto 构建方式</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#openeuler-image">4. 配置一个适合 openeuler-image 构建的环境</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../qemu/index.html">QEMU仿真器的使用</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../commit_msg/index.html">commit提交规范</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../contribute_doc.html">如何撰写并贡献文档</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../security_hardening/index.html">安全加固说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../docker_list/index.html">openEuler Embedded 容器介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bsp/index.html">周边设备和硬件底层软件适配</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../network/index.html">网络配置</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../republish/index.html">商业发行版发行说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test_project/index.html">测试工程</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">构建系统</a> &raquo;</li>
+      <li>openEuler Embedded 容器环境介绍</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="openeuler-embedded">
+<h1>openEuler Embedded 容器环境介绍<a class="headerlink" href="#openeuler-embedded" title="永久链接至标题">¶</a></h1>
+<p>相比较22.03版本，22.03 SP1版本执行构建前多了一个步骤：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ source /opt/buildtools/nativesdk/environment-setup-x86_64-pokysdk-linux
+</pre></div>
+</div>
+<p>此步骤会修改环境配置，生成一个适合 openeuler-image 构建的环境，可通过 env 命令对比执行前后的环境配置；此外，/opt/buildtools/nativesdk 的生成与 Yocto 密不可分，接下来介绍为什么需要这个步骤。</p>
+<section id="yocto">
+<h2>1. Yocto 构建对主机环境有要求<a class="headerlink" href="#yocto" title="永久链接至标题">¶</a></h2>
+<p>为了 Yocto 能够正常的构建，主机上需要存在一些工具包，如 git，tar，python 等，Yocto 对这些工具的版本有一定的要求，如果主机环境并不满足要求，那么构建可能会报错。</p>
+</section>
+<section id="id1">
+<h2>2. 配置适合 Yocto 构建的主机环境<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<p>Yocto 官网指明了三种方式可以方便地配置主机环境：第一种是使用 poky 自带的 install-buildtools 脚本安装；第二种是从官网下载 buildtools 压缩文件，该压缩文件同时是一个 shell 脚本，执行脚本就可以安装 sdk 工具到指定的位置；第三种是开发者提前构建 buildtools 压缩文件。</p>
+<p>参考：<a class="reference external" href="https://docs.yoctoproject.org/current/ref-manual/system-requirements.html#required-git-tar-python-and-gcc-versions">yocto 官方文档1.3节</a></p>
+</section>
+<section id="id2">
+<h2>3. Yocto 构建方式<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<p>Yocto 针对一个包文件通常会有三种构建方式：target、native、nativesdk。</p>
+<ul class="simple">
+<li><p><strong>target</strong> 即目标构建，一般以 bitbake package 实现，使用交叉编译工具链去编译包，如 x86 环境中构建 arm32 的包；</p></li>
+<li><p><strong>native</strong> 即主机构建，一般以 bitbake package-native 实现，使用主机上的编译器来编译包，不会打包成 rpm 包或者其他类型包，如 x86 环境下构建 x86 的包；</p></li>
+<li><p><strong>nativesdk</strong> 构建，一般以 bitbake nativesdk-package 实现，相比较 native 构建多了打包等步骤，将编译出的产物拆分到一个个包中供使用。</p></li>
+</ul>
+<div class="line-block">
+<div class="line">若 bb 文件中存在如下语句：</div>
+<div class="line"><strong>BBCLASSEXTEND = “native nativesdk”</strong>：表示该包支持三种构建方式；</div>
+<div class="line"><strong>BBCLASSEXTEND = “native”</strong>：表示支持 target 及 native 构建方式；</div>
+<div class="line"><strong>inherit native</strong> or <strong>inherit nativesdk</strong>：表示该 bb 只是一个 native 或者 nativesdk 包，只支持一种构建方式。</div>
+</div>
+</section>
+<section id="openeuler-image">
+<h2>4. 配置一个适合 openeuler-image 构建的环境<a class="headerlink" href="#openeuler-image" title="永久链接至标题">¶</a></h2>
+<p>openEuler Embedded 为了减少构建主机包的时间，将尽可能多的 native 包都配置到了环境中，这是为了做到构建时不去构建所依赖的 native 包，而是直接从环境中获取，这样可以大幅减少构建时间，配置环境参考第二节 buildtools 的构建方式。</p>
+<p>openEuler Embedded buildtools 构建方法：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone -b nativesdk-3.3.6 https://gitee.com/openeuler/yocto-poky.git
+$ source oe-init-build-env
+$ bitbake buildtools-tarball or bitbake buildtools-extended-tarball
+</pre></div>
+</div>
+<p>buildtools-tarball.bb、buildtools-extended-tarball.bb 文件存在于 <strong>poky/meta/recipes-core/meta/</strong> 目录， 原理是将 nativesdk 构建的包生成一个 sdk 工具（位于 <strong>build/tmp/deploy/sdk</strong> 目录），开发者可通过将 sdk 工具安装到指定目录或者移动到另一个相同的主机环境中安装使用，然后执行目录中的环境配置脚本配置环境，这时就配置好了相应的环境。</p>
+<p>执行步骤：</p>
+<ol class="loweralpha simple">
+<li><p>安装与适配 sdk 工具</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># sh x86_64-buildtools-extended-nativesdk-standalone-3.3.6.sh -y -d /opt/buildtools/nativesdk</span>
+<span class="c1"># mv /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/meson /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/meson.bak</span>
+<span class="c1"># mv /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/meson.real /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/meson</span>
+<span class="c1"># ln -s /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/python3 /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/python</span>
+<span class="c1"># ln -s /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/x86_64-pokysdk-linux-libtool /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin/libtool</span>
+<span class="c1"># sed -i &#39;s|/../lib/rpm|/../../lib/rpm|g&#39; /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/lib/rpm/rpmdeps</span>
+</pre></div>
+</div>
+<ol class="loweralpha simple" start="2">
+<li><p>初始化 openEuler Embedded 构建环境</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># su openeuler
+$ source /opt/buildtools/nativesdk/environment-setup-x86_64-pokysdk-linux
+</pre></div>
+</div>
+<p>Yocto 构建时可能会依赖 native 包提供的文件，但每次构建 native 包都会占用构建时间，buildtools 构建支持将 nativesdk 包配置到环境中，在 buidltools 中加入该 native 包对应的 nativesdk 包，然后在构建时去除构建该 native 包，从而使用 buildtools 的包，这样便可以减少 Yocto 构建的时间；开发者可修改 buildtools-tarball.bb 或者 buildtools-extended-tarball.bb 中 <strong>TOOLCHAIN_HOST_TASK</strong> 字节加入需要的 nativesdk 包。</p>
+<p>例如，修改 poky/meta/recipes-core/meta/buildtools-extended-tarball.bb 文件，在 sdk 中加入 glib-2.0-dev 包：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TOOLCHAIN_HOST_TASK</span> <span class="o">+=</span> <span class="s2">&quot;nativesdk-glib-2.0-dev&quot;</span>
+</pre></div>
+</div>
+<p>理论上所有的 native 包都可以部署到环境，但是有些包涉及到 Yocto 的底层配置（如pseudo-native），也有一些包不支持 nativesdk 构建，即便这些包没有加入到环境中，也可以减少大量的构建时间。</p>
+<p>相关字节：</p>
+<ul class="simple">
+<li><p>ASSUME_PROVIDED：该字节字面意思是“假定提供”，作用是将对应的包不加入构建队列，即使依赖也不会构建该包；</p></li>
+<li><p>HOSTTOOLS：该字节表示使用环境中的二进制命令。</p></li>
+</ul>
+<p>例如，修改 meta-openeuler/conf/distro/include/openeuler_hosttools.inc 中 ASSUME_PROVIDED 与 HOSTTOOLS 变量，取消 bison-native 编译，直接使用环境中 bison 命令：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ASSUME_PROVIDED</span> <span class="o">+=</span> <span class="s2">&quot;bison-native&quot;</span>
+<span class="n">HOSTTOOLS</span> <span class="o">+=</span> <span class="s2">&quot;bison&quot;</span>
+</pre></div>
+</div>
+<p>只是这样并不能完全消除 native 的依赖，只能做到构建时使用的对应命令不会报错，meta-openeuler 层对 autotools 类进行了适配，有兴趣钻研者可查看 meta-openeuler 层的 autotools.bbclass 文件；此外在容器中对 sdk 工具还进行了一些简单的适配。</p>
+<div class="line-block">
+<div class="line"><strong>q</strong>：既然 native 包是主机环境构建的，是不是可以直接使用主机上的包呢？如主机环境中有 grep 包和 rpm 包。</div>
+<div class="line"><strong>a</strong>：直接使用主机上的包可能会有问题：一是软件包版本不一致，存在差异；二是 poky 构建 native 包时可能会加入一些定制补丁或者其它的配置，以适配 Yocto 的构建；测试发现 grep 命令使用没有问题，rpm 命令在构建文件系统时有问题，因此除非是一些功能特别简单的包，否则不推荐直接使用主机包。</div>
+</div>
+<p><strong>注意</strong>：当主机环境中c库版本与 poky 中c库版本有差异时，构建 buildtools-tarball 可能会失败；着重体现在当主机环境为 glibc-2.34，而 poky 中 glibc 版本低于 2.34 时，构建会出错。</p>
+<p>在研的解决方式：poky 的 uninative 机制。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="addpackage_guide.html" class="btn btn-neutral float-left" title="新增软件包指导" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../qemu/index.html" class="btn btn-neutral float-right" title="QEMU仿真器的使用" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2022, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-22.03-LTS-Next
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../master/yocto/container_environment.html">master</a></dd>
+      <dd><a href="../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="container_environment.html">openEuler-22.03-LTS-Next</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP1/yocto/container_environment.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../openEuler-22.09/yocto/container_environment.html">openEuler-22.09</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
