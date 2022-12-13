@@ -9,3 +9,4 @@
    :maxdepth: 1
 
    rasp_uefi.rst
+   add_new_bsp_layer.rst
