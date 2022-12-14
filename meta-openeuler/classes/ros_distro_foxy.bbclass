@@ -1,4 +1,4 @@
-ROS_DISTRO = "galactic"
+ROS_DISTRO = "foxy"
 
 inherit ${ROS_DISTRO_TYPE}_distro
 inherit openeuler_ros_source
