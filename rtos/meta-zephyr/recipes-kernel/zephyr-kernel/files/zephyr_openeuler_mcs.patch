@@ -20,6 +20,23 @@ index 968454634f..2e23271ad3 100644
  	default 48 if ARM64_PA_BITS_48
  
  config MAX_XLAT_TABLES
+diff --git a/arch/arm64/core/cache.c b/arch/arm64/core/cache.c
+index d5aefaf3a9..19d905cc3e 100644
+--- a/arch/arm64/core/cache.c
++++ b/arch/arm64/core/cache.c
+@@ -214,5 +214,11 @@ int arch_icache_range(void *addr, size_t size, int op)
+ 
+ int arch_icache_all(int op)
+ {
+-	return -ENOTSUP;
++	/* invalidate all instruction cache */
++	__asm__ volatile ("ic iallu" ::: "memory");
++
++	dsb();
++	isb();
++
++	return 0;
+ }
 diff --git a/boards/arm64/qemu_cortex_a53/Kconfig.defconfig b/boards/arm64/qemu_cortex_a53/Kconfig.defconfig
 index cbe833f42f..0c43eb2eac 100644
 --- a/boards/arm64/qemu_cortex_a53/Kconfig.defconfig
@@ -38,10 +55,10 @@ index cbe833f42f..0c43eb2eac 100644
  endif # BOARD_QEMU_CORTEX_A53
 diff --git a/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote.dts b/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote.dts
 new file mode 100644
-index 0000000000..d9088ec7dc
+index 0000000000..3a44df1c26
 --- /dev/null
 +++ b/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote.dts
-@@ -0,0 +1,73 @@
+@@ -0,0 +1,74 @@
 +/*
 + * Copyright (c) 2019 Carlo Caione <ccaione@baylibre.com>
 + *
@@ -64,8 +81,8 @@ index 0000000000..d9088ec7dc
 +
 +	chosen {
 +		zephyr,sram = &sram1;
-+		zephyr,console = &uart_rpmsg;
-+		zephyr,shell-uart = &uart_rpmsg;
++		zephyr,console = &uart_rpmsg0;
++		zephyr,shell-uart = &uart_rpmsg1;
 +		zephyr,flash = &flash0;
 +		/*
 +		 * shared memory reserved for the inter-processor communication
@@ -79,6 +96,17 @@ index 0000000000..d9088ec7dc
 +		label = "gic_sgi0";
 +	};
 +
++	uart_rpmsg0: ep0 {
++		status = "okay";
++		compatible = "zephyr,rpmsg-uart";
++		ep-name = "console";
++	};
++
++	uart_rpmsg1: ep1 {
++		status = "okay";
++		compatible = "zephyr,rpmsg-uart";
++		ep-name = "uart";
++	};
 +
 +	soc {
 +
@@ -90,16 +118,6 @@ index 0000000000..d9088ec7dc
 +		sram1: memory@7a000000 {
 +			compatible = "mmio-sram";
 +			reg = <0x0 0x7a000000 0x0 DT_SIZE_M(10)>;
-+		};
-+
-+		uart_rpmsg: uart {
-+			status = "okay";
-+			compatible = "zephyr,rpmsg-uart";
-+			label = "UART_RPMSG";
-+		/* Dummy current-speed entry to comply with serial
-+		 * DTS binding
-+		 */
-+			current-speed = <0>;
 +		};
 +
 +		uart1: uart@9001000 {
@@ -208,10 +226,10 @@ index 0000000000..5471723b68
 +include(${ZEPHYR_BASE}/boards/common/openocd.board.cmake)
 diff --git a/boards/arm64/rpi4_cortex_a72/rpi4_cortex_a72.dts b/boards/arm64/rpi4_cortex_a72/rpi4_cortex_a72.dts
 new file mode 100644
-index 0000000000..f5ab89e8ff
+index 0000000000..11bcee24dc
 --- /dev/null
 +++ b/boards/arm64/rpi4_cortex_a72/rpi4_cortex_a72.dts
-@@ -0,0 +1,60 @@
+@@ -0,0 +1,62 @@
 +/*
 + * Copyright (c) 2022 openEuler Embedded
 + *
@@ -234,8 +252,8 @@ index 0000000000..f5ab89e8ff
 +
 +	chosen {
 +		zephyr,sram = &sram1;
-+		zephyr,console = &uart_rpmsg;
-+		zephyr,shell-uart = &uart_rpmsg;
++		zephyr,console = &uart_rpmsg0;
++		zephyr,shell-uart = &uart_rpmsg1;
 +		/*
 +		 * shared memory reserved for the inter-processor communication
 +		 */
@@ -248,6 +266,18 @@ index 0000000000..f5ab89e8ff
 +		label = "gic_sgi0";
 +	};
 +
++	uart_rpmsg0: ep0 {
++		status = "okay";
++		compatible = "zephyr,rpmsg-uart";
++		ep-name = "console";
++	};
++
++	uart_rpmsg1: ep1 {
++		status = "okay";
++		compatible = "zephyr,rpmsg-uart";
++		ep-name = "uart";
++	};
++
 +	soc {
 +
 +		ipc_shm0: memory@70000000 {
@@ -258,16 +288,6 @@ index 0000000000..f5ab89e8ff
 +		sram1: memory@7a000000 {
 +			compatible = "mmio-sram";
 +			reg = <0x0 0x7a000000 0x0 DT_SIZE_M(10)>;
-+		};
-+
-+		uart_rpmsg: uart {
-+			status = "okay";
-+			compatible = "zephyr,rpmsg-uart";
-+			label = "UART_RPMSG";
-+			/* Dummy current-speed entry to comply with serial
-+			 * DTS binding
-+			 */
-+			current-speed = <0>;
 +		};
 +
 +	};
@@ -441,10 +461,10 @@ index 13e99323b1..13831f31c8 100644
  source "subsys/logging/Kconfig.template.log_config"
 diff --git a/drivers/ipm/ipm_gic_sgi.c b/drivers/ipm/ipm_gic_sgi.c
 new file mode 100644
-index 0000000000..71abbb0147
+index 0000000000..67dc4fa2f6
 --- /dev/null
 +++ b/drivers/ipm/ipm_gic_sgi.c
-@@ -0,0 +1,134 @@
+@@ -0,0 +1,143 @@
 +/*
 + * Copyright (c) 2022 openEuler
 + *
@@ -479,11 +499,20 @@ index 0000000000..71abbb0147
 +	/* use SGI x to send ipi */
 +	const uint64_t mpidr = GET_MPIDR();
 +	const struct ipm_gic_sgi_device_config *config = d->config;
-+	/*
-+	 * Send SGI to all cores except itself
-+	 * Note: Assume only one Cluster now.
-+	 */
-+	gic_raise_sgi(config->intno, mpidr, SGIR_TGT_MASK & ~(1 << MPIDR_TO_CORE(mpidr)));
++
++	if (!IS_ENABLED(CONFIG_OPENAMP_SLAVE)) {
++		/*
++		 * Send SGI to all cores except itself, this is for test as host does not know
++		 * which core the client side is in
++		 * Note: Assume only one Cluster now.
++		 */
++		gic_raise_sgi(config->intno, mpidr, SGIR_TGT_MASK & ~(1 << MPIDR_TO_CORE(mpidr)));
++	} else {
++		/* Send SGI only to core 0 (master core) for client side to
++		 * avoid uncessary ipi interrupts
++		 */
++		gic_raise_sgi(config->intno, mpidr, 0x1);
++	}
 +
 +	return 0;
 +}
@@ -640,15 +669,17 @@ index 0000000000..a1e4535146
 +endif # UART_RPMSG
 diff --git a/drivers/serial/uart_rpmsg.c b/drivers/serial/uart_rpmsg.c
 new file mode 100644
-index 0000000000..b50ca95b39
+index 0000000000..6e2f278f3d
 --- /dev/null
 +++ b/drivers/serial/uart_rpmsg.c
-@@ -0,0 +1,298 @@
+@@ -0,0 +1,310 @@
 +/*
 + * Copyright (c) 2022 openEuler Embedded
 + *
 + * SPDX-License-Identifier: Apache-2.0
 + */
++
++#define DT_DRV_COMPAT zephyr_rpmsg_uart
 +
 +#include <zephyr/device.h>
 +#include <zephyr/init.h>
@@ -663,6 +694,7 @@ index 0000000000..b50ca95b39
 +
 +struct uart_rpmsg_data {
 +	const struct device *dev;
++	char *name;
 +
 +	int ep_id; /* endpoint id */
 +
@@ -678,8 +710,6 @@ index 0000000000..b50ca95b39
 +	int tx_busy;
 +#endif /* CONFIG_UART_INTERRUPT_DRIVEN */
 +};
-+
-+static struct uart_rpmsg_data uart_data;
 +
 +#if defined(CONFIG_UART_INTERRUPT_DRIVEN)
 +static void uart_rpmsg_cb(struct uart_rpmsg_data *data)
@@ -915,7 +945,7 @@ index 0000000000..b50ca95b39
 +	struct uart_rpmsg_data *data = dev->data;
 +	int status;
 +
-+	status = rpmsg_service_register_endpoint("uart", uart_rpmsg_endpoint_cb,
++	status = rpmsg_service_register_endpoint(data->name, uart_rpmsg_endpoint_cb,
 +									NULL, data);
 +
 +	if (status < 0) {
@@ -939,9 +969,20 @@ index 0000000000..b50ca95b39
 +	return 0;
 +}
 +
-+DEVICE_DT_DEFINE(DT_NODELABEL(uart_rpmsg), uart_rpmsg_init, NULL, &uart_data,
-+		NULL, POST_KERNEL, CONFIG_RPMSG_SERVICE_EP_REG_PRIORITY,
++#define RPMSG_DEV(idx) DT_NODELABEL(uart_rpmsg ## idx)
++
++#define UART_RPMSG_INIT(n)		\
++	static struct uart_rpmsg_data uart_data_##n = {	\
++		.name = DT_PROP(RPMSG_DEV(n), ep_name),	\
++	};											\
++												\
++	DEVICE_DT_DEFINE(RPMSG_DEV(n), uart_rpmsg_init, NULL, \
++		&uart_data_##n,	\
++		NULL, POST_KERNEL, \
++		CONFIG_RPMSG_SERVICE_EP_REG_PRIORITY, \
 +		&uart_rpmsg_api);
++
++DT_INST_FOREACH_STATUS_OKAY(UART_RPMSG_INIT)
 diff --git a/dts/arm64/broadcom/rpi4-a72.dtsi b/dts/arm64/broadcom/rpi4-a72.dtsi
 new file mode 100644
 index 0000000000..e336f9ea74
@@ -1020,10 +1061,10 @@ index 0000000000..282a4207d4
 +
 diff --git a/dts/bindings/serial/zephy,rpmsg-uart.yaml b/dts/bindings/serial/zephy,rpmsg-uart.yaml
 new file mode 100644
-index 0000000000..48f0eef4c2
+index 0000000000..a961661887
 --- /dev/null
 +++ b/dts/bindings/serial/zephy,rpmsg-uart.yaml
-@@ -0,0 +1,8 @@
+@@ -0,0 +1,14 @@
 +# Copyright (c) 2022, openEuler Embedded
 +# SPDX-License-Identifier: Apache-2.0
 +
@@ -1031,7 +1072,13 @@ index 0000000000..48f0eef4c2
 +
 +compatible: "zephyr,rpmsg-uart"
 +
-+include: uart-controller.yaml
++include: base.yaml
++
++properties:
++    ep-name:
++        type: string
++        required: true
++        description: the endpoint name of uart-rpmsg device
 diff --git a/include/zephyr/ipc/rpmsg_service.h b/include/zephyr/ipc/rpmsg_service.h
 index e599c8deac..b1047d3cab 100644
 --- a/include/zephyr/ipc/rpmsg_service.h
@@ -1443,6 +1490,19 @@ index 357a2bc6c3..cde10cdd23 100644
  zephyr_sources(rpmsg_backend.c)
  zephyr_sources(rpmsg_service.c)
 +zephyr_sources(rpmsg_rpc_service.c)
+diff --git a/subsys/ipc/rpmsg_service/Kconfig b/subsys/ipc/rpmsg_service/Kconfig
+index 17d75b3745..ecfc8ea0a0 100644
+--- a/subsys/ipc/rpmsg_service/Kconfig
++++ b/subsys/ipc/rpmsg_service/Kconfig
+@@ -46,7 +46,7 @@ endchoice
+ 
+ config RPMSG_SERVICE_NUM_ENDPOINTS
+ 	int "Max number of registered endpoints"
+-	default 2
++	default 5
+ 	help
+ 	  Maximal number of endpoints that can be registered for given
+ 	  RPMsg service.
 diff --git a/subsys/ipc/rpmsg_service/rpmsg_backend.c b/subsys/ipc/rpmsg_service/rpmsg_backend.c
 index 431fd093be..c3d6efd82a 100644
 --- a/subsys/ipc/rpmsg_service/rpmsg_backend.c
@@ -1487,10 +1547,10 @@ index a74e46b852..643e47d89d 100644
  #define SHM_SIZE		    (VDEV_SIZE - VDEV_STATUS_SIZE)
 diff --git a/subsys/ipc/rpmsg_service/rpmsg_rpc_service.c b/subsys/ipc/rpmsg_service/rpmsg_rpc_service.c
 new file mode 100644
-index 0000000000..ee38440f41
+index 0000000000..c4e7769f17
 --- /dev/null
 +++ b/subsys/ipc/rpmsg_service/rpmsg_rpc_service.c
-@@ -0,0 +1,141 @@
+@@ -0,0 +1,150 @@
 +/*
 + * Copyright (c) 2022, openEuler Embedded
 + *
@@ -1504,6 +1564,7 @@ index 0000000000..ee38440f41
 +#include <zephyr/device.h>
 +#include <zephyr/ipc/rpmsg_service.h>
 +#include <zephyr/drivers/pm_cpu_ops.h>
++#include <zephyr/drivers/cache.h>
 +#include <zephyr/logging/log.h>
 +
 +#define LOG_MODULE_NAME rpmsg_rpc_service
@@ -1608,6 +1669,14 @@ index 0000000000..ee38440f41
 + */
 +static int sys_service_power_off_cb(void *params, size_t len)
 +{
++	/* before cpu_off, some clean ops need to be done:
++	 * - turn off tasks, device, etc.
++	 * - clear cache, memory etc.
++	 */
++	cache_data_all(K_CACHE_WB_INVD);
++	cache_instr_all(K_CACHE_INVD);
++
++	/* from arm64 supporting psci, call pm_cpu_off to turn off */
 +	pm_cpu_off();
 +
 +	return 0;
@@ -1699,27 +1768,43 @@ index 0000000000..e6c4b0a105
 +
 +#endif /* ZEPHYR_SUBSYS_IPC_RPMSG_RPC_SERVICE_H */
 diff --git a/subsys/ipc/rpmsg_service/rpmsg_service.c b/subsys/ipc/rpmsg_service/rpmsg_service.c
-index e82c7a6be7..3c1e090786 100644
+index e82c7a6be7..e0e4302821 100644
 --- a/subsys/ipc/rpmsg_service/rpmsg_service.c
 +++ b/subsys/ipc/rpmsg_service/rpmsg_service.c
-@@ -32,6 +32,7 @@ static struct rpmsg_virtio_shm_pool shpool;
- static struct {
+@@ -29,16 +29,30 @@ static bool ep_crt_started;
+ static struct rpmsg_virtio_shm_pool shpool;
+ #endif
+ 
+-static struct {
++struct service_endpoint {
  	const char *name;
  	rpmsg_ept_cb cb;
 +	rpmsg_ns_unbind_cb unbind_cb;
  	struct rpmsg_endpoint ep;
  	volatile bool bound;
- } endpoints[CONFIG_RPMSG_SERVICE_NUM_ENDPOINTS];
-@@ -57,7 +58,7 @@ static void ns_bind_cb(struct rpmsg_device *rdev,
- 						   RPMSG_ADDR_ANY,
- 						   dest,
- 						   endpoints[i].cb,
--						   rpmsg_service_unbind);
-+						   endpoints[i].unbind_cb,);
+-} endpoints[CONFIG_RPMSG_SERVICE_NUM_ENDPOINTS];
++};
++
++static struct service_endpoint endpoints[CONFIG_RPMSG_SERVICE_NUM_ENDPOINTS];
  
- 			if (err != 0) {
- 				LOG_ERR("Creating remote endpoint %s"
-@@ -131,7 +132,8 @@ static int rpmsg_service_init(const struct device *dev)
+ static void rpmsg_service_unbind(struct rpmsg_endpoint *ep)
+ {
++	struct service_endpoint *endpoint =
++			CONTAINER_OF(ep, struct service_endpoint, ep);
++
++	if (endpoint->unbind_cb) {
++		endpoint->unbind_cb(ep);
++	}
++
++	/* get unbind reg from host, adjust name to avoid sending ns msg back */
++	ep->name[0] = 0;
+ 	rpmsg_destroy_ept(ep);
++
++	memset(endpoint, 0, sizeof(struct service_endpoint));
+ }
+ 
+ #if MASTER
+@@ -131,7 +145,8 @@ static int rpmsg_service_init(const struct device *dev)
  	return 0;
  }
  
@@ -1729,17 +1814,17 @@ index e82c7a6be7..3c1e090786 100644
  {
  	if (ep_crt_started) {
  		return -EINPROGRESS;
-@@ -141,7 +143,8 @@ int rpmsg_service_register_endpoint(const char *name, rpmsg_ept_cb cb)
+@@ -141,7 +156,8 @@ int rpmsg_service_register_endpoint(const char *name, rpmsg_ept_cb cb)
  		if (!endpoints[i].name) {
  			endpoints[i].name = name;
  			endpoints[i].cb = cb;
 -
-+			endpoints[i].unbind_cb = unbind_cb ? unbind_cb : rpmsg_service_unbind;
++			endpoints[i].unbind_cb = unbind_cb;
 +			endpoints[i].ep.priv = priv;
  			return i;
  		}
  	}
-@@ -156,6 +159,11 @@ bool rpmsg_service_endpoint_is_bound(int endpoint_id)
+@@ -156,6 +172,11 @@ bool rpmsg_service_endpoint_is_bound(int endpoint_id)
  	return endpoints[endpoint_id].bound;
  }
  
