@@ -70,7 +70,7 @@ openEuler Embedded中多OS混合部署框架的架构图如下所示，引入了
 在openEuler Embedded 22.09中，新增串口服务demo，实现通过Linux shell命令行访问Client OS的功能，样例支持多用户多线程场景。
 在openEuler Embedded 22.09中，混合部署demo支持运行在树莓派4B上。
 
-`22.09 多OS混合部署Demo和串口服务Demo <https://gitee.com/openeuler/yocto-embedded-tools/tree/master/mcs>`_
+`22.09 多OS混合部署Demo和串口服务Demo <https://gitee.com/openeuler/yocto-embedded-tools/tree/openEuler-22.09/mcs>`_
 
     .. figure:: ../../image/mcs/rpmsg-pty-shell.png
         :align: center
