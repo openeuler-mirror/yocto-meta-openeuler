@@ -10,6 +10,7 @@ SRC_URI += "file://tar-${PV}.tar.xz \
         file://tar-1.29-wildcards.patch \
         file://tar-1.28-atime-rofs.patch \
         file://tar-1.28-document-exclude-mistakes.patch \
+        file://tar-Add-sw64-architecture.patch \
 "
 
 SRC_URI[md5sum] = "aa1621ec7013a19abab52a8aff04fe5b"

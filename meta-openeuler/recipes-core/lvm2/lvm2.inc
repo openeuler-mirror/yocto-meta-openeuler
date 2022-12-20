@@ -23,6 +23,14 @@ SRC_URI = "file://LVM2.${PV}.tgz \
            file://0012-13-dm-disk.rules-check-DM_NAME-before-create-symlink.patch \
            file://0013-dev_name-determine-whether-the-dev-aliases-linked-li.patch \
            file://0014-lvm-code-reduce-cyclomatic-complexity.patch \
+           file://0015-devices-file-move-clean-up-after-command-is-run.patch \
+           file://0016-toollib-fix-segfault-when-handling-selection-with-hi.patch \
+           file://0017-Move-nolocking-warning-to-man-page.patch \
+           file://0018-fix-args-entry-for-nolocking.patch \
+           file://0019-dmsetup-check-also-for-ouf-of-range-value.patch \
+           file://0020-toollib-do-not-process-just-created-historical-LV.patch \
+           file://0021-pvscan-match-device-arg-to-filter-symlink.patch \
+           file://0022-pvscan-fix-filter-symlink-checks.patch \
 "
 
 SRC_URI[sha256sum] = "4a63bc8a084a8ae3c7bc5e6530cac264139d218575c64416c8b99e3fe039a05c"

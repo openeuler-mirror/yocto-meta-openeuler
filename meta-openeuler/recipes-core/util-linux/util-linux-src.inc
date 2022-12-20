@@ -45,6 +45,12 @@ SRC_URI_prepend = "file://2.36-login-lastlog-create.patch \
            file://backport-Maybe-there-is-a-little-mistake-in-do_taskset-functi.patch \
            file://backport-lsblk-fix-endless-loop-if-device-specified-more-than-once.patch \
            file://backport-libblkid-avoid-buffer-overflow-in-ocfs-superblock-parsing.patch \
+           file://backport-fsck-Processes-may-kill-other-processes.patch \
+           file://backport-fdisk-fix-output-option-parsing.patch \
+           file://backport-libblkid-exfat-fix-divide-by-zero-coverity-scan.patch \
+           file://backport-llib-pty-session-split-PTY-and-signalfd-setup.patch \
+           file://backport-script-fix-use-of-utempter.patch \
+           file://backport-logger-always-update-header-when-read-from-stdin.patch \
            file://Add-check-to-resolve-uname26-version-test-failed.patch \
            file://SKIPPED-no-root-permissions-test.patch \
            file://util-linux-Add-sw64-architecture.patch \

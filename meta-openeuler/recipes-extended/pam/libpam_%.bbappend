@@ -15,6 +15,7 @@ SRC_URI += " \
            file://pam/change-ndbm-to-gdbm.patch \
            file://pam/0001-bugfix-cannot-open-database-file.patch \
            file://pam/add-sm3-crypt-support.patch \
+           file://pam/1003-Change-chinese-translation.patch \
 "
 SRC_URI[sha256sum] = "e4ec7131a91da44512574268f493c6d8ca105c87091691b8e9b56ca685d4f94d"
 

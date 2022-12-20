@@ -20,6 +20,10 @@ SRC_URI_remove = " \
 
 # files, patches that come from openeuler
 # Systemd-Add-sw64-architecture.patch is for sw64 we don't want it.
+# These patches are for loongarch64 we don't want it:
+#     0029-Add-support-for-the-LoongArch-architecture.patch
+#     0030-Add-LoongArch-dmi-virt-detection-and-testcase.patch
+#     add-loongarch-for-missing_syscall_def.patch
 SRC_URI_prepend = "file://systemd-${PV}.tar.gz \
            file://backport-hostnamed-correct-variable-with-errno-in-fallback_ch.patch \
            file://backport-docs-improve-wording-when-mentioning-the-acronym-ESP.patch \
@@ -417,4 +421,6 @@ SRC_URI_prepend = "file://systemd-${PV}.tar.gz \
            file://Don-t-set-AlternativeNamesPolicy-by-default.patch \
            file://change-NTP-server-to-x.pool.ntp.org.patch \
            file://keep-weight-consistent-with-the-set-value.patch \
+           file://core-update-arg_default_rlimit-in-bump_rlimit.patch \
+           file://set-forwardtowall-no-to-avoid-emerg-log-shown-on-she.patch \
 "

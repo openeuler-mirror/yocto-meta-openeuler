@@ -4,7 +4,8 @@ SRC_URI_remove = "git://pagure.io/libaio.git;protocol=https;branch=master \
 "
 
 # apply package and patches from openeuler
-SRC_URI_prepend = " \
+# 0007-libaio-Add-sw64-architecture.patch is for sw64 we don't want current.
+SRC_URI_append += " \
            file://libaio-${PV}.tar.gz \
            file://0000-libaio-install-to-destdir-slash-usr.patch \
            file://0001-libaio-arm64-ilp32.patch \

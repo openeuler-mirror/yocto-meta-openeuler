@@ -9,8 +9,16 @@ SRC_URI = " \
         file://backport-Iran-will-stop-DST-in-2023.patch \
         file://backport-Chile-s-DST-is-delayed-by-a-week-in-September-2022.patch \
         file://backport-Palestine-transitions-are-now-Saturdays-at-02-00.patch \
-      	file://backport-Syria-to-switch-from-02-03-with-DST-to-plain-03.patch \
         file://backport-Tweak-expression-of-Palestine-transition.patch \
+        file://backport-Syria-to-switch-from-02-03-with-DST-to-plain-03.patch \
+        file://backport-Jordan-to-switch-from-02-03-with-DST-to-plain-03.patch \
+        file://backport-Fiji-no-longer-observes-DST.patch \
+        file://backport-Most-of-Mexico-will-no-longer-observe-DST.patch \
+        file://backport-Most-of-Greenland-stops-clock-changing-after-March.patch \
+        file://backport-Treat-1931-changes-in-Mexico-as-DST.patch \
+        file://backport-Greenland-change-should-affect-only-America-Nuuk.patch \
+        file://backport-The-northern-edge-of-Chihuahua-changes-to-US-rules.patch \
+        file://backport-Much-of-Greenland-still-uses-DST-from-2024-on.patch \
         file://bugfix-0001-add-Beijing-timezone.patch \
         file://remove-country-selection-from-tzselect-steps.patch \
         file://remove-ROC-timezone.patch \
@@ -18,7 +26,6 @@ SRC_URI = " \
         file://remove-El_Aaiun-timezone.patch \
         file://remove-Israel-timezone.patch \
         file://skip-check_web-testcase.patch \
-	file://backport-Jordan-to-switch-from-02-03-with-DST-to-plain-03.patch \
         "
 
 SRC_URI[tzcode.sha256sum] = "f8575e7e33be9ee265df2081092526b81c80abac3f4a04399ae9d4d91cdadac7"

@@ -55,6 +55,10 @@ SRC_URI = "file://${BP}.tar.gz \
            file://0047-fix-tools-with-option-give-error-message.patch \
            file://0048-fix-do-mask-paths-after-parent-mounted.patch \
            file://0049-skip-kill-cgroup-processes-if-no-hierarchies.patch \
+           file://0050-lxc-Add-sw64-architecture.patch \
+           file://0051-add-macro-to-adapt-musl-libc.patch \
+           file://0052-add-lxc-attach-add-gids-option.patch \
+           file://0053-change-the-suffi-parameter-in-lxc-attach-help-output.patch \
 "
 
 SRC_URI_append = " \

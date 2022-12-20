@@ -3,12 +3,14 @@ HOMEPAGE = "https://github.com/libhugetlbfs/libhugetlbfs"
 LICENSE = "LGPL-2.1"
 LIC_FILES_CHKSUM = "file://LGPL-2.1;md5=2d5025d4aa3495befef8f17206a5b0a1"
 
+# add-loongarch-support.patch we current don't want.
 SRC_URI = "file://libhugetlbfs/${BP}.tar.gz \
            file://libhugetlbfs/0000-build_flags.patch \
            file://libhugetlbfs/Disable-hugepage-backed-malloc-if-__morecore-is-not-.patch \
            file://libhugetlbfs/libhugetlbfs-2.23-sw.patch \
            file://libhugetlbfs/libhugetlbfs-make-cflags.patch \
 "
+
 SRC_URI[sha256sum] = "b70672f1e807c61b7eb3adf41c1903b42917951f2e7f8aef6821841700c04479"
 
 COMPATIBLE_HOST = "(i.86|x86_64|powerpc|powerpc64|aarch64|arm).*-linux*"

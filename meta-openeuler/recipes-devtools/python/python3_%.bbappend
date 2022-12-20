@@ -4,6 +4,7 @@ FILESEXTRAPATHS_append := "${THISDIR}/files/:"
 
 SRC_URI_remove += " \
            file://0001-Makefile-fix-Issue36464-parallel-build-race-problem.patch \
+           file://0001-bpo-36852-proper-detection-of-mips-architecture-for-.patch \
 "
 
 SRC_URI_prepend = " \
@@ -22,7 +23,10 @@ SRC_URI_prepend = " \
            file://backport-bpo-42146-Unify-cleanup-in-subprocess_fork_exec-GH-2.patch \
            file://backport-CVE-2022-42919.patch \
            file://backport-CVE-2022-45061.patch \
+           file://backport-CVE-2022-37454.patch \ 
            file://add-the-sm3-method-for-obtaining-the-salt-value.patch \
+           file://python3-Add-sw64-architecture.patch \
+           file://Add-loongarch-support.patch \
 "
 
 SRC_URI[sha256sum] = "06828c04a573c073a4e51c4292a27c1be4ae26621c3edc7cf9318418ce3b6d27"

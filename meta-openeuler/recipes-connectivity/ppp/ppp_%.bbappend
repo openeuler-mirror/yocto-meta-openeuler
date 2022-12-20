@@ -27,7 +27,7 @@ SRC_URI_append = " \
         file://backport-pppd-Negotiate-IP-address-when-only-peer-addresses-are-provided.patch \
 "
 SRC_URI_append_riscv64 += " \
-        file://backport-ppp-2.4.9-configure-cflags-allow-commas.patch \
+        file://0027-Set-LIBDIR-for-RISCV.patch \
 "
 
 SRC_URI[sha256sum] = "f938b35eccde533ea800b15a7445b2f1137da7f88e32a16898d02dee8adc058d"

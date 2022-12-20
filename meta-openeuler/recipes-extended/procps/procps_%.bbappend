@@ -23,6 +23,7 @@ SRC_URI_prepend= " \
            file://0001-add-M-and-N-options-for-top.patch \
            file://0002-top-exit-with-error-when-pid-overflow.patch \
            file://0003-top-eliminate-a-potential-abend-when-exiting-A-mode.patch \
+           file://0004-skill-Restore-the-p-flag-functionality.patch \
            "
 
 do_configure_prepend() {
