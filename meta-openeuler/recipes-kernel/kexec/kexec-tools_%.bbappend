@@ -7,6 +7,8 @@ PV = "2.0.23"
 SRC_URI_remove = "${KERNELORG_MIRROR}/linux/utils/kernel/kexec/kexec-tools-${PV}.tar.gz \
                   file://0001-arm64-kexec-disabled-check-if-kaslr-seed-dtb-propert.patch \
                   "
+# don't patch fix-add-64-bit-loongArch-support-1.patch and sw_64.patch
+# fix-add-64-bit-loongArch-support-2.patch and makedumpfile-1.7.0-sw.patch are for makedumpfile
 SRC_URI_prepend = "file://kexec-tools-${PV}.tar.xz \
                 file://arm64-support-more-than-one-crash-kernel-regions.patch \
                 file://kexec-Add-quick-kexec-support.patch \

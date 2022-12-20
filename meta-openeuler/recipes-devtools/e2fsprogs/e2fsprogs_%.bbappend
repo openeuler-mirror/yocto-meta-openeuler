@@ -1,7 +1,7 @@
 PV = "1.46.4"
 S = "${WORKDIR}/${BPN}-${PV}"
 # delete package from poky
-SRC_URI_remove += "git://git.kernel.org/pub/scm/fs/ext2/e2fsprogs.git \
+SRC_URI_remove = "git://git.kernel.org/pub/scm/fs/ext2/e2fsprogs.git \
                 git://git.kernel.org/pub/scm/fs/ext2/e2fsprogs.git;branch=master \
                 file://0001-e2fsck-fix-last-mount-write-time-when-e2fsck-is-forc.patch \
                 "
@@ -9,7 +9,7 @@ SRC_URI_remove += "git://git.kernel.org/pub/scm/fs/ext2/e2fsprogs.git \
 SRC_URI[sha256sum] = "b11042533c1b1dcf17512f0da48e05b0c573dada1dd8b762864d10f4dc399713"
 
 # add openeuler patches
-SRC_URI += " \
+SRC_URI =+ " \
     file://e2fsprogs-${PV}.tar.xz \
     file://0001-e2fsprogs-set-hugefile-from-4T-to-1T-in-hugefile-tes.patch \
     file://0002-libss-add-newer-libreadline.so.8-to-dlopen-path.patch \
@@ -32,4 +32,5 @@ SRC_URI += " \
     file://0019-tune2fs-fix-tune2fs-segfault-when-ext2fs_run_ext3_jo.patch \
     file://0020-tune2fs-tune2fs_main-should-return-rc-when-some-erro.patch \
     file://0021-tune2fs-exit-directly-when-fs-freed-in-ext2fs_run_ext3_journal.patch \
+    file://0022-unix_io.c-fix-deadlock-problem-in-unix_write_blk64.patch \
 "

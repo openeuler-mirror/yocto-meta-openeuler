@@ -9,7 +9,7 @@ SRC_URI_remove = " \
 "
 
 # files, patches that come from openeuler
-SRC_URI += " \
+SRC_URI =+ " \
         file://${BP}.tar.xz \
         file://fix-ipv6-handshake-failed.patch \
         file://backport-CVE-2022-2509.patch \

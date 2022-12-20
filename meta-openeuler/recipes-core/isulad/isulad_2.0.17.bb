@@ -55,6 +55,27 @@ SRC_URI = "file://v${PV}.tar.gz \
            file://0043-fix-do-container_unref-in-oci_rootfs_clean.patch \
            file://0044-fix-can-not-install-isulad-rpm-because-of-spec.patch \
            file://0045-remove-unknown-option-wno-maybe-uninitialized.patch \
+           file://0046-fix-storage-layer-and-driver-ut-failed-in-container.patch \
+           file://0047-handle-security-warning-for-cleanup-module.patch \
+           file://0048-add-unit-test-for-util-sha256.patch \
+           file://0049-add-primary-group-to-additional-groups.patch \
+           file://0050-add-unit-test-for-buffer.patch \
+           file://0051-remove-chmod-751-permission-for-dirs-by-engine-when-.patch \
+           file://0052-add-console-ut.patch \
+           file://0053-fix-additional-gids-for-exec-user.patch \
+           file://0054-add-CI-for-additional-gid.patch \
+           file://0055-retry-call-runtime-ops.patch \
+           file://0056-add-ut-test-for-retry-macro.patch \
+           file://0057-1749-set-inspect_container-timeout.patch \
+           file://0058-1757-add-adaption-code-for-musl.patch \
+           file://0059-deleting-broken-rootfs.patch \
+           file://0060-1761-fix-leftover-devicemapper-mnt-dir.patch \
+           file://0061-check-file-system-ro-before-merge-network-for-syscon.patch \
+           file://0062-isulad-shim-wait-for-all-child-process.patch \
+           file://0063-When-run-options-rm-is-set-delete-the-stoped-contain.patch \
+           file://0064-recheck-kill-command-exit-status.patch \
+           file://0065-start-sandbox-before-setup-network-by-default.patch \
+           file://0066-compatibility-for-manage-pods-which-created-by-old-i.patch \
            "
 
 S = "${WORKDIR}/iSulad-v${PV}"

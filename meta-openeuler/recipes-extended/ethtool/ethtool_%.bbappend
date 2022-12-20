@@ -7,6 +7,7 @@ SRC_URI = "file://${BP}.tar.xz \
         file://0002-tunables-add-support-to-get-set-tx-copybreak-buf-siz.patch \
         file://0003-update-UAPI-header-copies.patch \
         file://0004-ethtool-add-support-to-get-set-tx-push-by-ethtool-G-.patch \
-	  "
+        file://0005-ethtool-add-suppport-specifications-for-vxlan-by-eth.patch \
+	"
 
 SRC_URI[sha256sum] = "686fd6110389d49c2a120f00c3cd5dfe43debada8e021e4270d74bbe452a116d"

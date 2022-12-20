@@ -12,10 +12,11 @@ SRC_URI_remove = " \
             file://0002-man-fix-segfault-in-man-1.patch \
             "
 
-#we always want busybox with mdev\init packages to support multi init manager
-SRC_URI_append = " \
+# we always want busybox with mdev\init packages to support multi init manager
+SRC_URI_prepend = " \
         file://backport-CVE-2022-28391.patch \
         file://backport-CVE-2022-30065.patch \
+        file://backport-fix-use-after-free-in-bc-module.patch \
         file://init.cfg \
         file://rcS.default \
         file://mdev.cfg \

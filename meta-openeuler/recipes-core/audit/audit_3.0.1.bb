@@ -35,6 +35,7 @@ SRC_URI = "file://${BP}.tar.gz \
            file://backport-auditd.service-Restart-on-failure-ignoring-some-exit.patch \
            file://backport-0001-In-auditd-close-the-logging-file-descriptor-when-log.patch \
            file://backport-0002-In-auditd-close-the-logging-file-descriptor-when-log.patch \
+           file://audit-Add-sw64-architecture.patch \
            file://auditd.conf \
            file://audit.rules \
 "

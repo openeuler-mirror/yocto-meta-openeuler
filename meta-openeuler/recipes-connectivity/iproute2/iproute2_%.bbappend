@@ -23,6 +23,7 @@ SRC_URI_prepend = " \
            file://backport-mptcp-Fix-memory-leak-when-doing-endpoint-show.patch \
            file://backport-mptcp-Fix-memory-leak-when-getting-limits.patch \
            file://feature-iproute-add-support-for-ipvlan-l2e-mode.patch \
+           file://bugfix-iproute2-cancel-some-test-cases.patch \
 "
 
 SRC_URI[sha256sum] = "56d7dcb05b564c94cf6e4549cec2f93f2dc58085355c08dcb2a8f8249c946080"
