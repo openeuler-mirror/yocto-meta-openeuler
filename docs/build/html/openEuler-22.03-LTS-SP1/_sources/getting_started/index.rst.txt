@@ -225,23 +225,22 @@ openEuler Embedded传输文件。
 
     sh openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-*.sh
 
-  根据提示输入工具链的安装路径，默认路径是 :file:`/opt/openeuler/<openeuler version>/`;
+  根据提示输入工具链的安装路径，默认路径是 :file:`/usr/local/oecore-x86_64/`;
   若不设置，则按默认路径安装；也可以配置相对路径或绝对路径。
-  其中“*”根据分支不同生成字符不同，如22.03、22.09。
 
-  一个例子如下（22.03例子，22.09等版本类似）：
+  一个例子如下：
 
   .. code-block:: console
 
     sh openeuler-glibc-x86_64-openeuler-image-armv7a-qemu-arm-toolchain-22.03.sh
     openEuler embedded(openEuler Embedded Reference Distro) SDK installer version 22.03
     ================================================================
-    Enter target directory for SDK (default: /opt/openeuler/22.03): sdk
-    You are about to install the SDK to "/usr1/openeuler/sdk". Proceed [Y/n]? y
+    Enter target directory for SDK (default: /usr/local/oecore-x86_64): sdk
+    You are about to install the SDK to "/usr/local/oecore-x86_64/sdk". Proceed [Y/n]? y
     Extracting SDK...............................................done
     Setting it up...SDK has been successfully set up and is ready to be used.
     Each time you wish to use the SDK in a new shell session, you need to source the environment setup script e.g.
-    $ . /usr1/openeuler/sdk/environment-setup-armv7a-openeuler-linux-gnueabi
+    $ . /usr/local/oecore-x86_64/sdk/environment-setup-armv7a-openeuler-linux-gnueabi
 
 3. **设置SDK环境变量**
 
@@ -249,7 +248,7 @@ openEuler Embedded传输文件。
 
   .. code-block:: console
 
-    . /usr1/openeuler/myfiles/sdk/environment-setup-armv7a-openeuler-linux-gnueabi
+    . /usr/local/oecore-x86_64/sdk/environment-setup-armv7a-openeuler-linux-gnueabi
 
 3. **查看是否安装成功**
 
