@@ -1,0 +1,1 @@
+inherit openeuler_ros_source
