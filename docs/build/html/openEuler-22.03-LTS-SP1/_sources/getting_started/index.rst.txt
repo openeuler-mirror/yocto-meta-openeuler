@@ -14,10 +14,10 @@ openEuler Embedded是基于openEuler社区面向嵌入式场景的Linux版本。
 获取镜像
 ***********
 
-当前发布的已构建好的镜像示例中，只支持arm和aarch64两种架构，且只支持qemu中ARM virt-4.0平台，您可以通过如下链接获得相应的镜像（以22.03为例）：
+当前发布的已构建好的镜像示例中，只支持arm和aarch64两种架构，且只支持qemu中ARM virt-4.0平台，您可以通过如下链接获得相应的镜像：
 
-- `qemu_arm <https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm32/arm-std>`_：32位arm架构, ARM Cortex A15处理器
-- `qemu_aarch64 <https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm64/aarch64-std>`_：64位aarch64架构 ARM Cortex A57处理器
+- `qemu_arm <https://repo.openeuler.org/openEuler-22.03-LTS-SP1/embedded_img/arm32/arm-std>`_：32位arm架构, ARM Cortex A15处理器
+- `qemu_aarch64 <https://repo.openeuler.org/openEuler-22.03-LTS-SP1/embedded_img/arm64/aarch64-std>`_：64位aarch64架构 ARM Cortex A57处理器
 
 只要相应环境支持QEMU仿真器（版本5.0以上），您可以将提供的openEuler Embedded镜像部署在物理裸机、云环境、容器或虚拟机上。
 
@@ -26,11 +26,11 @@ openEuler Embedded是基于openEuler社区面向嵌入式场景的Linux版本。
 
 所下载的镜像，由以下几部分组成：
 
-- 内核镜像 :file:`zImage` : 基于openEuler社区Linux 5.10代码构建得到。相应的内核配置可通过如下链接获取（以openEuler-22.03-LTS为例，其他分支修改分支名跳转即可）：
+- 内核镜像 :file:`zImage` : 基于openEuler社区Linux 5.10代码构建得到。相应的内核配置可通过如下链接获取：
 
-  - `arm(cortex a15) <https://gitee.com/openeuler/yocto-embedded-tools/blob/openEuler-22.03-LTS/config/arm/defconfig-kernel>`_
-  - `arm(cortex a57) <https://gitee.com/openeuler/yocto-embedded-tools/blob/openEuler-22.03-LTS/config/arm64/defconfig-kernel>`_,
-    针对aarch64架构，额外增加了镜像自解压功能，可以参见相应的 `patch <https://gitee.com/openeuler/yocto-embedded-tools/blob/openEuler-22.03-LTS/patches/arm64/0001-arm64-add-zImage-support-for-arm64.patch>`_
+  - `arm(cortex a15) <https://gitee.com/openeuler/yocto-embedded-tools/blob/openEuler-22.03-LTS-SP1/config/arm/defconfig-kernel>`_
+  - `arm(cortex a57) <https://gitee.com/openeuler/yocto-embedded-tools/blob/openEuler-22.03-LTS-SP1/config/arm64/defconfig-kernel>`_,
+    针对aarch64架构，额外增加了镜像自解压功能，可以参见相应的 `patch <https://gitee.com/openeuler/yocto-embedded-tools/blob/openEuler-22.03-LTS-SP1/patches/arm64/0001-arm64-add-zImage-support-for-arm64.patch>`_
 
 - 根文件系统镜像
 
