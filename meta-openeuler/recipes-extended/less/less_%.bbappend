@@ -6,6 +6,8 @@ PV = "590"
 # Use the source packages and patches from openEuler
 # less-475-fsync.patch can't apply: cannot run test program while cross compiling
 SRC_URI += "file://less-394-time.patch \
+            file://backport-Fix-memory-leak-when-using-corrupt-lesshst-file.patch \
+            file://backport-Fix-crash-when-enter-invaid-pattern-in-command.patch \
             "
 
 SRC_URI[md5sum] = "f029087448357812fba450091a1172ab"

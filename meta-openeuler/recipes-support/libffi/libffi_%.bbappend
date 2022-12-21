@@ -13,4 +13,5 @@ SRC_URI = " \
 SRC_URI += " \
         file://backport-x86-64-Always-double-jump-table-slot-size-for-CET-71.patch \
         file://backport-Fix-check-for-invalid-varargs-arguments-707.patch \
+        file://libffi-Add-sw64-architecture.patch \
 "
