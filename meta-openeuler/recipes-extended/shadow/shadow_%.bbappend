@@ -37,6 +37,8 @@ SRC_URI = "file://${BP}.tar.xz \
         file://backport-Remove-redeclared-variable.patch \
         file://backport-libmisc-add-check-fopen-return-value-in-read_random_.patch \
         file://backport-passwd-erase-password-copy-on-all-error-branches.patch \
+        file://backport-chpasswd-add-get_salt-for-generating-salt-value.patch \
+        file://backport-chpasswd-fix-function-problem-with-R-parameter.patch \
         file://useradd \
 "
 

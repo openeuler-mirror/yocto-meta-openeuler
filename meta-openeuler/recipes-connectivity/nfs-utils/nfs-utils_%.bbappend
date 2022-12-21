@@ -8,6 +8,7 @@ SRC_URI_prepend = "file://0000-systemd-idmapd-require-rpc-pipefs.patch \
            file://0004-fix-coredump-in-bl_add_disk.patch \
            file://0005-Fix-format-overflow-warning.patch \
            file://0006-nfs-blkmaped-Fix-the-error-status-when-nfs_blkmapd-s.patch \
+           file://0007-nfs-blkmapd-PID-file-read-by-systemd-failed.patch \
 "
 
 # fix nativesdk lib use error: /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/lib/libresolv.so:
