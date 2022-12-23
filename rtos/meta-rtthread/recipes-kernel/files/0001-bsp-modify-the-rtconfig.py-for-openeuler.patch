@@ -1,25 +1,12 @@
-From 9a2252f77d2beadc68ba6cdc03b3019f48db8220 Mon Sep 17 00:00:00 2001
-From: Wayne Ren <renwei41@huawei.com>
-Date: Fri, 18 Feb 2022 21:32:59 +0800
-Subject: [PATCH] bsp: modify the rtconfig.py for openeuler
-
-- change toolchain prefix
-- openeuler supports cortex-a57
-
-Signed-off-by: Wayne Ren <renwei41@huawei.com>
----
- bsp/qemu-virt64-aarch64/rtconfig.py | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
-
 diff --git a/bsp/qemu-virt64-aarch64/rtconfig.py b/bsp/qemu-virt64-aarch64/rtconfig.py
-index e46a4374a..ebcc4b03e 100644
+index 7204079e6..ebcc4b03e 100644
 --- a/bsp/qemu-virt64-aarch64/rtconfig.py
 +++ b/bsp/qemu-virt64-aarch64/rtconfig.py
 @@ -27,7 +27,13 @@ BUILD = 'debug'
  
  if PLATFORM == 'gcc':
      # toolchains
--    PREFIX = 'aarch64-elf-'
+-    PREFIX = 'aarch64-none-elf-'
 +    if os.getenv('OPENEULER_RTT_GCC_PREFIX'):
 +        PREFIX = os.getenv('OPENEULER_RTT_GCC_PREFIX')
 +        TARGET_TUNE = ' -g -march=armv8-a -mtune=cortex-a57'
@@ -39,6 +26,3 @@ index e46a4374a..ebcc4b03e 100644
      CFLAGS = DEVICE + ' -Wall'
      AFLAGS = ' -c' + ' -x assembler-with-cpp -D__ASSEMBLY__'
      LFLAGS  = DEVICE + ' -nostartfiles -Wl,--gc-sections,-Map=rtthread.map,-cref,-u,system_vectors -T link.lds'
--- 
-2.30.2
-

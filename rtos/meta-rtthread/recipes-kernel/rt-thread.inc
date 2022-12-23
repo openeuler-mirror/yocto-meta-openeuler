@@ -13,13 +13,15 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=86d3f3a95c324c9479bd8986968f4327"
 
 ### Inheritance and includes if needed
 ## rtthread is built by scons, so we need to inherit scons.bbclass
-#inherit scons
+inherit scons
+# linux glibc toolchain can not be used to compile rt-thread now
+INHIBIT_DEFAULT_DEPS = "1"
 
 ### Build metadata: SRC_URI, SRCDATA, S, B, FILESEXTRAPATHS....
-SRC_URI = "file://rtthread/rtthread-${PV}.tar.gz \
-           file://0001-bsp-modify-the-rtconfig.py-for-openeuler.patch"
+SRC_URI = "file://rt-thread/${BPN}-v${PV}.tar.gz "
+SRC_URI_append_qemu-aarch64 = "file://0001-bsp-modify-the-rtconfig.py-for-openeuler.patch"
 
-S = "${WORKDIR}/${BPN}-${PV}"
+S = "${WORKDIR}/${BPN}-v${PV}"
 
 # the software packages required in build
 # rtthread needs to be built with gcc toolchain with newlibc
@@ -28,6 +30,7 @@ S = "${WORKDIR}/${BPN}-${PV}"
 
 # according to yocto's parameters, e.g., MACHINE, ARCH, to get
 # rtthread's parameters
+
 
 export RTT_EXEC_PATH = "${OPENEULER_RTOS_TOOLCHAIN_DIR}"
 export RTT_CC = "gcc"
@@ -54,13 +57,10 @@ RTTHREAD_BSPDIR = "${@get_rtthread_bsp(d)}"
 PROVIDES += "rtthread"
 
 ### Runtime metadata
-#HOSTOOLS += "scons"
 PACKAGES = "${PN}"
 ### Package metadata
 FILES_${PN} = " \
-    ${libdir}/rtthread/rtthread.elf \
-    ${libdir}/rtthread/rtthread.bin \
-    ${libdir}/rtthread/rtthread.map \
+    /firmware \
 "
 ### Tasks for package
 python () {
@@ -87,12 +87,13 @@ do_configure() {
 #call host's scons to compile rtt. You need to install the
 #host tools required by rtt
 do_compile() {
-    pushd ${S}/${RTTHREAD_BSPDIR}
-    scons
-    popd
+    cd ${S}/${RTTHREAD_BSPDIR}
+    ${STAGING_BINDIR_NATIVE}/scons ${PARALLEL_MAKE} || \
+	die "scons build execution failed."
+    cd -
 }
 
 do_install() {
-    install -d ${D}${libdir}/rtthread
-    install -m 644 -D ${S}/${RTTHREAD_BSPDIR}/rtthread.* ${D}${libdir}/rtthread/
+    install -d ${D}/firmware
+    install -m 644 -D ${S}/${RTTHREAD_BSPDIR}/rtthread.* ${D}/firmware
 }
