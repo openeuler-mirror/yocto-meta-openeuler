@@ -15,7 +15,7 @@ openEuler Embedded是基于openEuler社区面向嵌入式场景的Linux版本，
 - **以Linux为中心**
 
 openEuler Embedded的中心是Linux，采用了与openEuler其他场景相同的Linux 5.10内核，该版本内核最长支持周期为6年。
-在软件包层面也与内核一样和所有场景共代码、共演进，当前已经支持80+嵌入式场景核心软件包，远期目标是支持openEuler社区所有
+在软件包层面也与内核一样和所有场景共代码、共演进，当前已经支持140+嵌入式场景核心软件包，远期目标是支持openEuler社区所有
 软件包。
 
 同时针对嵌入式场景的需求，openEuler Embedded会在内核特性、系统配置、软件包组合、镜像裁剪、安全加固、轻量化等方面
