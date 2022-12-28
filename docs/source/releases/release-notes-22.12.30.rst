@@ -8,7 +8,7 @@ openEuler Embedded 22.03 SP1
 openEuler Embedded 22.03 SP1是openEuler Embedded第二个正式版本，包含的内容大概如下：
 
 * 内核
-   - 内核升级到 5.10.0-136.12.0
+   - 内核升级到 5.10.0-136.12.2
    - 内核支持Preempt-RT补丁
    - 内核支持树莓派4B相关补丁
 * 软件包
