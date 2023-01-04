@@ -1,7 +1,9 @@
-SUMMARY = "Protocol Buffers - structured data serialization mechanism"
-DESCRIPTION = "Yet Another JSON Library - A Portable JSON parsing and serialization library in ANSI C"
-SECTION = "console/tools"
-LICENSE = "BSD-2-Clause"
+SUMMARY = "lxc aims to use these new functionnalities to provide an userspace container object"
+DESCRIPTION = "lxc is a well-known Linux container runtime that consists of tools, templates, \
+            and library and language bindings. It's pretty low level, very flexible and covers \
+            just about every containment feature supported by the upstream kernel"
+SECTION = "console/utils"
+LICENSE = "LGPL-2.1-only & GPL-2.0-only"
 
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
