@@ -1,0 +1,72 @@
+diff -urN lxc-4.0.3.orig/src/lxc/json/defs.c lxc-4.0.3/src/lxc/json/defs.c
+--- lxc-4.0.3.orig/src/lxc/json/defs.c	2022-09-07 17:05:55.714508559 +0800
++++ lxc-4.0.3/src/lxc/json/defs.c	2022-09-07 17:05:55.711508533 +0800
+@@ -83,8 +83,8 @@
+                 strcmp(tree->u.object.keys[i], "args") &&
+                 strcmp(tree->u.object.keys[i], "env") &&
+                 strcmp(tree->u.object.keys[i], "timeout")) {
+-                if (ctx->stderr > 0)
+-                    fprintf(ctx->stderr, "WARNING: unknown key found: %s\n", tree->u.object.keys[i]);
++                if (ctx->stderr1 > 0)
++                    fprintf(ctx->stderr1, "WARNING: unknown key found: %s\n", tree->u.object.keys[i]);
+             }
+         }
+     return ret;
+diff -urN lxc-4.0.3.orig/src/lxc/json/json_common.h lxc-4.0.3/src/lxc/json/json_common.h
+--- lxc-4.0.3.orig/src/lxc/json/json_common.h	2022-09-07 17:05:55.714508559 +0800
++++ lxc-4.0.3/src/lxc/json/json_common.h	2022-09-07 17:05:55.711508533 +0800
+@@ -39,7 +39,7 @@
+ 
+ struct parser_context {
+     unsigned int options;
+-    FILE *stderr;
++    FILE *stderr1;
+ };
+ 
+ yajl_gen_status reformat_number(void *ctx, const char *str, size_t len);
+@@ -182,4 +182,4 @@
+ }
+ #endif
+ 
+-#endif
+\ No newline at end of file
++#endif
+diff -urN lxc-4.0.3.orig/src/lxc/json/logger_json_file.c lxc-4.0.3/src/lxc/json/logger_json_file.c
+--- lxc-4.0.3.orig/src/lxc/json/logger_json_file.c	2022-09-07 17:05:55.714508559 +0800
++++ lxc-4.0.3/src/lxc/json/logger_json_file.c	2022-09-07 17:05:55.711508533 +0800
+@@ -50,8 +50,8 @@
+ 			                strcmp(tree->u.object.keys[i], "stream") &&
+ 			                strcmp(tree->u.object.keys[i], "time") &&
+ 			                strcmp(tree->u.object.keys[i], "attrs")) {
+-				if (ctx->stderr > 0)
+-					fprintf(ctx->stderr, "WARNING: unknown key found: %s\n", tree->u.object.keys[i]);
++				if (ctx->stderr1 > 0)
++					fprintf(ctx->stderr1, "WARNING: unknown key found: %s\n", tree->u.object.keys[i]);
+ 			}
+ 	}
+ 	return ret;
+diff -urN lxc-4.0.3.orig/src/lxc/json/oci_runtime_spec.c lxc-4.0.3/src/lxc/json/oci_runtime_spec.c
+--- lxc-4.0.3.orig/src/lxc/json/oci_runtime_spec.c	2022-09-07 17:05:55.714508559 +0800
++++ lxc-4.0.3/src/lxc/json/oci_runtime_spec.c	2022-09-07 17:05:55.711508533 +0800
+@@ -67,8 +67,8 @@
+             if (strcmp(tree->u.object.keys[i], "prestart") &&
+                 strcmp(tree->u.object.keys[i], "poststart") &&
+                 strcmp(tree->u.object.keys[i], "poststop")) {
+-                if (ctx->stderr > 0)
+-                    fprintf(ctx->stderr, "WARNING: unknown key found: %s\n", tree->u.object.keys[i]);
++                if (ctx->stderr1 > 0)
++                    fprintf(ctx->stderr1, "WARNING: unknown key found: %s\n", tree->u.object.keys[i]);
+             }
+         }
+     return ret;
+
+--- lxc-4.0.3/src/lxc/utils.c.org       2022-12-05 02:38:47.733328396 +0000
++++ lxc-4.0.3/src/lxc/utils.c   2022-12-05 02:39:22.387590381 +0000
+@@ -29,6 +29,7 @@
+ #include <unistd.h>
+ #include <sys/sysmacros.h>
+ #include <pwd.h>
++#include <pwd_utils.h>
+
+ #include "config.h"
+ #include "log.h"
