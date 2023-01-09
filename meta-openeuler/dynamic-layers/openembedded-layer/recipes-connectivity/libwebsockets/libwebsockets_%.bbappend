@@ -4,7 +4,7 @@ PV = "4.3.0"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=382bfdf329e774859fd401eaf850d29b"
 
-SRC_URI_remove = "git://github.com/warmcat/libwebsockets.git;protocol=https;branch=v4.1-stable"
+OPENEULER_SRC_URI_REMOVE = "git"
 
 # apply openeuler source and patch
 SRC_URI_prepend = "file://${BP}.tar.gz \
