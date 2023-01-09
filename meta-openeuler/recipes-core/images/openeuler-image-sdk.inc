@@ -58,6 +58,6 @@ gcc-external-cross-canadian-${TRANSLATED_TARGET_ARCH} \
 TOOLCHAIN_TARGET_TASK += " \
 libgcc \
 kernel-devsrc \
-glibc-external-staticdev \
+${TCMODE-LIBC}-staticdev \
 libstdc++-dev \
 "

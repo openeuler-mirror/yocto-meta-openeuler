@@ -146,6 +146,7 @@ set_env()
         sed -i '$a\TCMODE-LIBC = "musl"' conf/local.conf
         sed -i 's/aarch64-openeuler-linux-gnu/aarch64-openeuler-linux-musl/g' conf/local.conf
         echo "MACHINE_ESSENTIAL_EXTRA_RDEPENDS = \"musl\"" >> conf/local.conf
+        grep "meta-musl" conf/bblayers.conf |grep -qv "^[[:space:]]*#" || sed -i "/\/meta-openeuler /a \  "${SRC_DIR}"/yocto-meta-openeuler/meta-musl \\\\" conf/bblayers.conf
     else
         sed -i '$a\LIBC = "glibc"' conf/local.conf
         sed -i '$a\TCMODE-LIBC = "glibc-external"' conf/local.conf
