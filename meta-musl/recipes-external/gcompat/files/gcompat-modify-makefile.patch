@@ -1,0 +1,53 @@
+--- gcompat-1.1.0/Makefile.org	2022-10-21 08:13:10.000000000 +0000
++++ gcompat-1.1.0/Makefile	2022-12-02 07:06:46.958388096 +0000
+@@ -37,9 +37,12 @@ LIBGCOMPAT_SRC = \
+ 	libgcompat/version.c		\
+ 	libgcompat/wchar.c
+ LIBGCOMPAT_OBJ = ${LIBGCOMPAT_SRC:.c=.o}
++LIBGCOMPAT_STATIC_OBJ = ${LIBGCOMPAT_SRC:.c=.lo}
+ LIBGCOMPAT_SOVERSION = 0
+ LIBGCOMPAT_NAME = libgcompat.so.${LIBGCOMPAT_SOVERSION}
+-LIBGCOMPAT_PATH = /lib/${LIBGCOMPAT_NAME}
++LIBGCOMPAT_PATH = /lib64/${LIBGCOMPAT_NAME}
++LIBGCOMPAT_STATIC_NAME = libgcompat.a
++LIBGCOMPAT_STATIC_PATH = /usr/lib64/${LIBGCOMPAT_STATIC_NAME}
+ 
+ LOADER_SRC = \
+ 	loader/loader.c
+@@ -66,7 +69,7 @@ OBSTACK_CFLAGS = $(shell ${PKG_CONFIG} -
+ OBSTACK_LIBS   = $(shell ${PKG_CONFIG} --libs ${WITH_OBSTACK})
+ endif
+ 
+-all: ${LIBGCOMPAT_NAME} ${LOADER_NAME}
++all: ${LIBGCOMPAT_NAME} ${LIBGCOMPAT_STATIC_NAME}
+ 
+ ${LIBGCOMPAT_NAME}: ${LIBGCOMPAT_OBJ}
+ 	${CC} ${CFLAGS} ${LDFLAGS} -shared -Wl,-soname,${LIBGCOMPAT_NAME} \
+@@ -86,14 +89,25 @@ ${LOADER_NAME}: ${LOADER_OBJ}
+ 		-Wall -Wextra -Wno-frame-address -Wno-unused-parameter \
+ 		${LIBUCONTEXT_CFLAGS} ${OBSTACK_CFLAGS} -o $@ $<
+ 
++${LIBGCOMPAT_STATIC_NAME}: ${LIBGCOMPAT_STATIC_OBJ}
++	${AR} rcs ${LIBGCOMPAT_STATIC_NAME} ${LIBGCOMPAT_STATIC_OBJ}
++${LIBGCOMPAT_STATIC_OBJ}: ${LIBGCOMPAT_INCLUDE}
++%.lo:%.c
++	${CC} ${CPPFLAGS} ${CFLAGS} -c -D_BSD_SOURCE \
++                -DLIBGCOMPAT='"${LIBGCOMPAT_PATH}"' \
++                -DLINKER='"${LINKER_PATH}"' -DLOADER='"${LOADER_NAME}"' \
++                -Ilibgcompat -std=c99 \
++                -Wall -Wextra -Wno-unused-parameter \
++                ${LIBUCONTEXT_CFLAGS} ${OBSTACK_CFLAGS} -o $@ $<
++
+ clean:
+-	rm -f libgcompat/*.o loader/*.o ${LIBGCOMPAT_NAME} ${LOADER_NAME}
++	rm -f libgcompat/*.o loader/*.o libgcompat/*.lo ${LIBGCOMPAT_NAME} ${LOADER_NAME} ${LIBGCOMPAT_STATIC_NAME}
+ 
+ format:
+ 	clang-format -i ${LIBGCOMPAT_INCLUDE} ${LIBGCOMPAT_SRC} ${LOADER_SRC}
+ 
+ install: all
+ 	install -D -m755 ${LIBGCOMPAT_NAME} ${DESTDIR}/${LIBGCOMPAT_PATH}
+-	install -D -m755 ${LOADER_NAME} ${DESTDIR}/${LOADER_PATH}
++	install -D -m755 ${LIBGCOMPAT_STATIC_NAME} ${DESTDIR}/${LIBGCOMPAT_STATIC_PATH}
+ 
+ .PHONY: all clean format install

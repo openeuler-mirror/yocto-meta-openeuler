@@ -1,0 +1,131 @@
+diff -uprN gcompat-1.1.0-org/libgcompat/pwd_utils.h gcompat-1.1.0/libgcompat/pwd_utils.h
+--- gcompat-1.1.0-org/libgcompat/pwd_utils.h	1970-01-01 00:00:00.000000000 +0000
++++ gcompat-1.1.0/libgcompat/pwd_utils.h	2022-12-05 02:16:59.119490849 +0000
+@@ -0,0 +1,14 @@
++#ifndef PWD_UTILS_H
++#define PWD_UTILS_H
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++#include <pwd.h>
++int fgetpwent_r(FILE *, struct passwd *, char *, size_t , struct passwd **);
++
++#ifdef __cplusplus
++}
++#endif
++#endif
+diff -uprN gcompat-1.1.0-org/libgcompat/malloc_utils.h gcompat-1.1.0/libgcompat/malloc_utils.h
+--- gcompat-1.1.0-org/libgcompat/malloc_utils.h	1970-01-01 00:00:00.000000000 +0000
++++ gcompat-1.1.0/libgcompat/malloc_utils.h	2022-12-05 06:15:46.226443423 +0000
+@@ -0,0 +1,38 @@
++#ifndef MALLOC_UTILS_H
++#define MALLOC_UTILS_H
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++struct mallinfo {
++        int arena;    /* Non-mmapped space allocated (bytes) */
++        int ordblks;  /* Number of free chunks */
++        int smblks;   /* Number of free fastbin blocks */
++        int hblks;    /* Number of mmapped regions */
++        int hblkhd;   /* Space allocated in mmapped regions (bytes) */
++        int usmblks;  /* Maximum total allocated space (bytes) */
++        int fsmblks;  /* Space in freed fastbin blocks (bytes) */
++        int uordblks; /* Total allocated space (bytes) */
++        int fordblks; /* Total free space (bytes) */
++        int keepcost; /* Top-most, releasable space (bytes) */
++};
++
++struct mallinfo mallinfo(void);
++
++#define M_TRIM_THRESHOLD    -1
++#define M_TOP_PAD           -2
++#define M_MMAP_THRESHOLD    -3
++#define M_ARENA_TEST        -7
++
++#define __NEED_size_t
++
++#include <bits/alltypes.h>
++
++int mallopt(int param, int value);
++int malloc_trim(size_t pad);
++
++#ifdef __cplusplus
++}
++#endif
++#endif
+diff -uprN gcompat-1.1.0-org/libgcompat/grp_utils.h gcompat-1.1.0/libgcompat/grp_utils.h
+--- gcompat-1.1.0-org/libgcompat/grp_utils.h	1970-01-01 00:00:00.000000000 +0000
++++ gcompat-1.1.0/libgcompat/grp_utils.h	2022-12-05 06:51:54.723830738 +0000
+@@ -0,0 +1,14 @@
++#ifndef GRP_UTILS_H
++#define GRP_UTILS_H
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++#include <grp.h>
++int fgetgrent_r(FILE *, struct group *, char *, size_t, struct group **);
++
++#ifdef __cplusplus
++}
++#endif
++#endif
+--- gcompat-1.1.0/libgcompat/malloc.c.org	2022-12-07 03:26:38.767933984 +0000
++++ gcompat-1.1.0/libgcompat/malloc.c	2022-12-07 03:28:23.965783566 +0000
+@@ -31,18 +31,7 @@
+ 
+ #include "alias.h" /* alias */
+ 
+-struct mallinfo {
+-	int arena;    /* Non-mmapped space allocated (bytes) */
+-	int ordblks;  /* Number of free chunks */
+-	int smblks;   /* Number of free fastbin blocks */
+-	int hblks;    /* Number of mmapped regions */
+-	int hblkhd;   /* Space allocated in mmapped regions (bytes) */
+-	int usmblks;  /* Maximum total allocated space (bytes) */
+-	int fsmblks;  /* Space in freed fastbin blocks (bytes) */
+-	int uordblks; /* Total allocated space (bytes) */
+-	int fordblks; /* Total free space (bytes) */
+-	int keepcost; /* Top-most, releasable space (bytes) */
+-};
++#include "malloc_utils.h"
+ 
+ void *__libc_calloc(size_t nmemb, size_t size)
+ {
+@@ -95,6 +84,12 @@ int malloc_trim(size_t pad)
+ 	return 0;
+ }
+ 
++int mallopt(int param_number, int value)
++{
++    /* This concept doesn't really map to musl's malloc */
++    return 0;
++}
++
+ void mtrace(void)
+ {
+ 	/* Not implemented on purpose. */
+diff -uprN gcompat-1.1.0-org/libgcompat/execinfo.h gcompat-1.1.0/libgcompat/execinfo.h
+--- gcompat-1.1.0-org/libgcompat/execinfo.h	1970-01-01 00:00:00.000000000 +0000
++++ gcompat-1.1.0/libgcompat/execinfo.h	2022-12-07 07:33:33.891081524 +0000
+@@ -0,0 +1,14 @@
++#ifndef EXECINFO_H
++#define EXECINFO_H
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++int     backtrace(void **, int);
++char ** backtrace_symbols(void *const *, int);
++void    backtrace_symbols_fd(void *const *, int, int);
++#ifdef __cplusplus
++}
++#endif
++
++#endif /* EXECINFO_H */
