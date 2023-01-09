@@ -1,4 +1,4 @@
-# no bbfile in poky, refer to meta-oe bbfile: http://cgit.openembedded.org/meta-openembedded/tree/meta-oe/recipes-multimedia/cdrkit/cdrkit_1.1.11.bb?h=hardknott
+# main bbfile: meta-oe/recipes-multimedia/cdrkit/cdrkit_1.1.11.bb
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 # patches apply fail: 0001-genisoimage-Add-missing-extern-definition.patch
@@ -36,7 +36,6 @@ SRC_URI[md5sum] = "efe08e2f3ca478486037b053acd512e9"
 SRC_URI[sha256sum] = "d1c030756ecc182defee9fe885638c1785d35a2c2a297b4604c0e0dcc78e47da"
 
 # fix problem "do_populate_sysroot: sstate found an absolute path symlink"
-# refer to http://cgit.openembedded.org/meta-openembedded/tree/meta-oe/recipes-multimedia/cdrkit/cdrkit_1.1.11.bb?h=honister
 do_install_append() {
     rm -f ${D}${bindir}/mkisofs
     ln -sf --relative ${D}${bindir}/genisoimage ${D}${bindir}/mkisofs
