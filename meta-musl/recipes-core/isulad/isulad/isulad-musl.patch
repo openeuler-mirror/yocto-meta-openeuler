@@ -1,0 +1,576 @@
+--- iSulad-v2.0.17/src/client/connect/protocol_type.h   2022-09-19 09:11:13.599835541 +0800
++++ iSulad-v2.0.17/src/client/connect/protocol_type.h   2022-09-19 09:14:51.844509875 +0800
+@@ -54,11 +54,11 @@ struct isula_create_response {
+
+ struct isula_start_request {
+     char *name;
+-    char *stdin;
++    char *stdin1;
+     bool attach_stdin;
+-    char *stdout;
++    char *stdout1;
+     bool attach_stdout;
+-    char *stderr;
++    char *stderr1;
+     bool attach_stderr;
+ };
+
+@@ -323,9 +323,9 @@ struct isula_exec_request {
+     bool attach_stdin;
+     bool attach_stdout;
+     bool attach_stderr;
+-    char *stdin;
+-    char *stdout;
+-    char *stderr;
++    char *stdin1;
++    char *stdout1;
++    char *stderr1;
+     int argc;
+     char **argv;
+     size_t env_len;
+@@ -344,9 +344,9 @@ struct isula_exec_response {
+
+ struct isula_attach_request {
+     char *name;
+-    char *stdin;
+-    char *stdout;
+-    char *stderr;
++    char *stdin1;
++    char *stdout1;
++    char *stderr1;
+     bool attach_stdin;
+     bool attach_stdout;
+     bool attach_stderr;
+
+--- iSulad-v2.0.17/src/client/connect/protocol_type.c   2022-09-19 09:21:57.492775372 +0800
++++ iSulad-v2.0.17/src/client/connect/protocol_type.c   2022-09-19 09:23:54.711674661 +0800
+@@ -280,14 +280,14 @@ void isula_start_request_free(struct isu
+     free(request->name);
+     request->name = NULL;
+
+-    free(request->stdin);
+-    request->stdin = NULL;
++    free(request->stdin1);
++    request->stdin1 = NULL;
+
+-    free(request->stdout);
+-    request->stdout = NULL;
++    free(request->stdout1);
++    request->stdout1 = NULL;
+
+-    free(request->stderr);
+-    request->stderr = NULL;
++    free(request->stderr1);
++    request->stderr1 = NULL;
+
+     free(request);
+ }
+@@ -513,14 +513,14 @@ void isula_exec_request_free(struct isul
+     free(request->suffix);
+     request->suffix = NULL;
+
+-    free(request->stdout);
+-    request->stdout = NULL;
++    free(request->stdout1);
++    request->stdout1 = NULL;
+
+-    free(request->stdin);
+-    request->stdin = NULL;
++    free(request->stdin1);
++    request->stdin1 = NULL;
+
+-    free(request->stderr);
+-    request->stderr = NULL;
++    free(request->stderr1);
++    request->stderr1 = NULL;
+
+     free(request->user);
+     request->user = NULL;
+@@ -562,14 +562,14 @@ void isula_attach_request_free(struct is
+     free(request->name);
+     request->name = NULL;
+
+-    free(request->stderr);
+-    request->stderr = NULL;
++    free(request->stderr1);
++    request->stderr1 = NULL;
+
+-    free(request->stdout);
+-    request->stdout = NULL;
++    free(request->stdout1);
++    request->stdout1 = NULL;
+
+-    free(request->stdin);
+-    request->stdin = NULL;
++    free(request->stdin1);
++    request->stdin1 = NULL;
+
+     free(request);
+ }
+
+--- iSulad-v2.0.17/src/client/connect/rest/rest_containers_client.c     2022-09-19 09:27:58.672546293 +0800
++++ iSulad-v2.0.17/src/client/connect/rest/rest_containers_client.c     2022-09-19 09:38:59.355614190 +0800
+@@ -87,14 +87,14 @@ static int start_request_to_rest(const s
+     if (ls_request->name != NULL) {
+         crequest->id = util_strdup_s(ls_request->name);
+     }
+-    if (ls_request->stdout != NULL) {
+-        crequest->stdout = util_strdup_s(ls_request->stdout);
++    if (ls_request->stdout1 != NULL) {
++        crequest->stdout1 = util_strdup_s(ls_request->stdout1);
+     }
+-    if (ls_request->stdin != NULL) {
+-        crequest->stdin = util_strdup_s(ls_request->stdin);
++    if (ls_request->stdin1 != NULL) {
++        crequest->stdin1 = util_strdup_s(ls_request->stdin1);
+     }
+-    if (ls_request->stderr != NULL) {
+-        crequest->stderr = util_strdup_s(ls_request->stderr);
++    if (ls_request->stderr1 != NULL) {
++        crequest->stderr1 = util_strdup_s(ls_request->stderr1);
+     }
+     crequest->attach_stdin = ls_request->attach_stdin;
+     crequest->attach_stdout = ls_request->attach_stdout;
+@@ -207,14 +207,14 @@ static int attach_request_to_rest(const
+     if (la_request->name != NULL) {
+         crequest->container_id = util_strdup_s(la_request->name);
+     }
+-    if (la_request->stdout != NULL) {
+-        crequest->stdout = util_strdup_s(la_request->stdout);
++    if (la_request->stdout1 != NULL) {
++        crequest->stdout1 = util_strdup_s(la_request->stdout1);
+     }
+-    if (la_request->stdin != NULL) {
+-        crequest->stdin = util_strdup_s(la_request->stdin);
++    if (la_request->stdin1 != NULL) {
++        crequest->stdin1 = util_strdup_s(la_request->stdin1);
+     }
+-    if (la_request->stderr != NULL) {
+-        crequest->stderr = util_strdup_s(la_request->stderr);
++    if (la_request->stderr1 != NULL) {
++        crequest->stderr1 = util_strdup_s(la_request->stderr1);
+     }
+     crequest->attach_stdin = la_request->attach_stdin;
+     crequest->attach_stdout = la_request->attach_stdout;
+@@ -1611,14 +1611,14 @@ static int exec_request_to_rest(const st
+     if (le_request->name != NULL) {
+         crequest->container_id = util_strdup_s(le_request->name);
+     }
+-    if (le_request->stdout != NULL) {
+-        crequest->stdout = util_strdup_s(le_request->stdout);
++    if (le_request->stdout1 != NULL) {
++        crequest->stdout1 = util_strdup_s(le_request->stdout1);
+     }
+-    if (le_request->stdin != NULL) {
+-        crequest->stdin = util_strdup_s(le_request->stdin);
++    if (le_request->stdin1 != NULL) {
++        crequest->stdin1 = util_strdup_s(le_request->stdin1);
+     }
+-    if (le_request->stderr != NULL) {
+-        crequest->stderr = util_strdup_s(le_request->stderr);
++    if (le_request->stderr1 != NULL) {
++        crequest->stderr1 = util_strdup_s(le_request->stderr1);
+     }
+     if (le_request->suffix != NULL) {
+         crequest->suffix = util_strdup_s(le_request->suffix);
+
+--- iSulad-v2.0.17/src/daemon/modules/runtime/engines/lcr/lcr_rt_ops.c  2022-09-19 09:43:42.136783044 +0800
++++ iSulad-v2.0.17/src/daemon/modules/runtime/engines/lcr/lcr_rt_ops.c  2022-09-19 09:42:58.598449116 +0800
+@@ -487,8 +487,8 @@ int rt_lcr_attach(const char *name, cons
+         goto out;
+     }
+
+-    if (!engine_ops->engine_console_op(name, params->rootpath, (char *)params->stdin, (char *)params->stdout,
+-                                       (char *)params->stderr)) {
++    if (!engine_ops->engine_console_op(name, params->rootpath, (char *)params->stdin1, (char *)params->stdout1,
++                                       (char *)params->stderr1)) {
+         ERROR("attach failed");
+         const char *tmpmsg = NULL;
+         if (engine_ops->engine_get_errmsg_op != NULL) {
+
+--- iSulad-v2.0.17/src/daemon/modules/runtime/isula/isula_rt_ops.c      2022-09-19 09:46:39.902146450 +0800
++++ iSulad-v2.0.17/src/daemon/modules/runtime/isula/isula_rt_ops.c      2022-09-19 09:47:47.711666534 +0800
+@@ -834,9 +834,9 @@ int rt_isula_create(const char *id, cons
+     p.exit_fifo = (char *)params->exit_fifo;
+     p.open_tty = params->tty;
+     p.open_stdin = params->open_stdin;
+-    p.isulad_stdin = (char *)params->stdin;
+-    p.isulad_stdout = (char *)params->stdout;
+-    p.isulad_stderr = (char *)params->stderr;
++    p.isulad_stdin = (char *)params->stdin1;
++    p.isulad_stdout = (char *)params->stdout1;
++    p.isulad_stderr = (char *)params->stderr1;
+     p.runtime_args = (char **)runtime_args;
+     p.runtime_args_len = runtime_args_len;
+     copy_process(&p, config->process);
+@@ -1343,4 +1343,4 @@ int rt_isula_kill(const char *id, const
+     }
+
+     return 0;
+-}
+\ No newline at end of file
++}
+
+--- iSulad-v2.0.17/src/daemon/executor/container_cb/execution.c 2022-09-19 09:49:53.940634672 +0800
++++ iSulad-v2.0.17/src/daemon/executor/container_cb/execution.c 2022-09-19 09:50:50.743070321 +0800
+@@ -270,7 +270,7 @@ static int prepare_start_io(container_t
+             goto out;
+         }
+
+-        if (ready_copy_io_data(*sync_fd, false, request->stdin, request->stdout, request->stderr, stdinfd,
++        if (ready_copy_io_data(*sync_fd, false, request->stdin1, request->stdout1, request->stderr1, stdinfd,
+                                stdout_handler, stderr_handler, (const char **)fifos, thread_id)) {
+             ret = -1;
+             goto out;
+
+--- iSulad-v2.0.17/src/daemon/executor/container_cb/execution_stream.c  2022-09-19 09:52:35.190871412 +0800
++++ iSulad-v2.0.17/src/daemon/executor/container_cb/execution_stream.c  2022-09-19 09:54:16.304646931 +0800
+@@ -266,7 +266,7 @@ static int attach_prepare_console(const
+             goto out;
+         }
+
+-        if (ready_copy_io_data(*sync_fd, false, request->stdin, request->stdout, request->stderr, stdinfd,
++        if (ready_copy_io_data(*sync_fd, false, request->stdin1, request->stdout1, request->stderr1, stdinfd,
+                                stdout_handler, stderr_handler, (const char **)fifos, tid)) {
+             ret = -1;
+             goto out;
+@@ -342,9 +342,9 @@ static int container_attach_cb(const con
+     }
+
+     params.rootpath = cont->root_path;
+-    params.stdin = fifos[0];
+-    params.stdout = fifos[1];
+-    params.stderr = fifos[2];
++    params.stdin1 = fifos[0];
++    params.stdout1 = fifos[1];
++    params.stderr1 = fifos[2];
+
+     (void)isulad_monitor_send_container_event(id, ATTACH, -1, 0, NULL, NULL);
+
+--- iSulad-v2.0.17/src/daemon/modules/api/runtime_api.h 2022-09-19 10:21:19.315094981 +0800
++++ iSulad-v2.0.17/src/daemon/modules/api/runtime_api.h 2022-09-19 10:23:19.310015312 +0800
+@@ -70,9 +70,9 @@ typedef struct _rt_create_params_t {
+     const char *state;
+     void *oci_config_data;
+     bool terminal;
+-    const char *stdin;
+-    const char *stdout;
+-    const char *stderr;
++    const char *stdin1;
++    const char *stdout1;
++    const char *stderr1;
+     const char *exit_fifo;
+     bool tty;
+     bool open_stdin;
+@@ -156,9 +156,9 @@ typedef struct _rt_resume_params_t {
+
+ typedef struct _rt_attach_params_t {
+     const char *rootpath;
+-    const char *stdin;
+-    const char *stdout;
+-    const char *stderr;
++    const char *stdin1;
++    const char *stdout1;
++    const char *stderr1;
+ } rt_attach_params_t;
+
+ typedef struct _rt_update_params_t {
+
+--- iSulad-v2.0.17/src/daemon/modules/service/service_container.c       2022-09-19 10:45:35.318254990 +0800
++++ iSulad-v2.0.17/src/daemon/modules/service/service_container.c       2022-09-19 10:47:35.547173581 +0800
+@@ -825,9 +825,9 @@ static int do_start_container(container_
+     create_params.state = cont->state_path;
+     create_params.oci_config_data = oci_spec;
+     create_params.terminal = tty;
+-    create_params.stdin = console_fifos[0];
+-    create_params.stdout = console_fifos[1];
+-    create_params.stderr = console_fifos[2];
++    create_params.stdin1 = console_fifos[0];
++    create_params.stdout1 = console_fifos[1];
++    create_params.stderr1 = console_fifos[2];
+     create_params.exit_fifo = exit_fifo;
+     create_params.tty = tty;
+     create_params.open_stdin = open_stdin;
+@@ -1886,7 +1886,7 @@ static int exec_prepare_console(const co
+             ret = -1;
+             goto out;
+         }
+-        if (ready_copy_io_data(*sync_fd, false, request->stdin, request->stdout, request->stderr, stdinfd,
++        if (ready_copy_io_data(*sync_fd, false, request->stdin1, request->stdout1, request->stderr1, stdinfd,
+                                stdout_handler, stderr_handler, (const char **)fifos, thread_id)) {
+             ret = -1;
+             goto out;
+
+--- iSulad-v2.0.17/src/cmd/isula/base/start.c   2022-09-19 11:16:14.838156121 +0800
++++ iSulad-v2.0.17/src/cmd/isula/base/start.c   2022-09-19 11:18:12.374049157 +0800
+@@ -124,9 +124,9 @@ static int do_client_start(const struct
+
+     request.name = args->name;
+     if (console_fifos != NULL && *console_fifos != NULL) {
+-        request.stdin = (*console_fifos)->stdin_name;
+-        request.stdout = (*console_fifos)->stdout_name;
+-        request.stderr = (*console_fifos)->stderr_name;
++        request.stdin1 = (*console_fifos)->stdin_name;
++        request.stdout1 = (*console_fifos)->stdout_name;
++        request.stderr1 = (*console_fifos)->stderr_name;
+     }
+     request.attach_stdin = args->custom_conf.attach_stdin;
+     request.attach_stdout = args->custom_conf.attach_stdout;
+
+--- iSulad-v2.0.17/src/cmd/isula/stream/exec.c  2022-09-19 11:22:01.760792010 +0800
++++ iSulad-v2.0.17/src/cmd/isula/stream/exec.c  2022-09-19 11:22:29.969006333 +0800
+@@ -60,9 +60,9 @@ static int fill_exec_request(const struc
+     request->attach_stdout = args->custom_conf.attach_stdout;
+     request->attach_stderr = args->custom_conf.attach_stderr;
+     if (fifos != NULL) {
+-        request->stdin = util_strdup_s(fifos->stdin_name);
+-        request->stdout = util_strdup_s(fifos->stdout_name);
+-        request->stderr = util_strdup_s(fifos->stderr_name);
++        request->stdin1 = util_strdup_s(fifos->stdin_name);
++        request->stdout1 = util_strdup_s(fifos->stdout_name);
++        request->stderr1 = util_strdup_s(fifos->stderr_name);
+     }
+
+     request->user = util_strdup_s(args->custom_conf.user);
+
+--- iSulad-v2.0.17/src/cmd/isula/stream/attach.c        2022-09-19 11:23:59.246684654 +0800
++++ iSulad-v2.0.17/src/cmd/isula/stream/attach.c        2022-09-19 11:24:48.674060200 +0800
+@@ -398,9 +398,9 @@ static int client_attach(struct client_a
+         ret = ECOMMON;
+         goto out;
+     }
+-    request.stdin = util_strdup_s(attach_fifos->stdin_name);
+-    request.stdout = util_strdup_s(attach_fifos->stdout_name);
+-    request.stderr = util_strdup_s(attach_fifos->stderr_name);
++    request.stdin1 = util_strdup_s(attach_fifos->stdin_name);
++    request.stdout1 = util_strdup_s(attach_fifos->stdout_name);
++    request.stderr1 = util_strdup_s(attach_fifos->stderr_name);
+ #endif
+
+     config = get_connect_config(args);
+
+--- iSulad-v2.0.17/src/CMakeLists.txt   2022-09-19 14:44:22.526007835 +0800
++++ iSulad-v2.0.17/src/CMakeLists.txt   2022-09-19 14:43:07.452410938 +0800
+@@ -49,6 +49,7 @@ target_include_directories(libisulad_too
+ )
+ set_target_properties(libisulad_tools PROPERTIES PREFIX "")
+ target_link_libraries(libisulad_tools ${ZLIB_LIBRARY} ${ISULA_LIBUTILS_LIBRARY} ${CRYPTO_LIBRARY})
++target_link_libraries(libisulad_tools -lgcompat)
+
+ if (ENABLE_OCI_IMAGE)
+     target_link_libraries(libisulad_tools ${LIBARCHIVE_LIBRARY})
+
+--- iSulad-v2.0.17/src/daemon/modules/image/image_rootfs_handler.c      2022-09-26 09:24:19.359973622 +0800
++++ iSulad-v2.0.17/src/daemon/modules/image/image_rootfs_handler.c      2022-09-26 09:44:38.957115144 +0800
+@@ -26,6 +26,8 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <grp_utils.h>
++#include <pwd_utils.h>
+
+ #include "isula_libutils/log.h"
+ #include "err_msg.h"
+--- iSulad-v2.0.17/src/daemon/executor/image_cb/image_cb.c.org	2022-12-05 07:17:02.493242658 +0000
++++ iSulad-v2.0.17/src/daemon/executor/image_cb/image_cb.c	2022-12-05 07:17:26.830427286 +0000
+@@ -42,6 +42,7 @@
+ #include <stdint.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <malloc_utils.h>
+ 
+ #include "utils.h"
+ #include "error.h"
+--- iSulad-v2.0.17/src/daemon/executor/container_cb/execution.c.org	2022-12-05 07:19:20.833292153 +0000
++++ iSulad-v2.0.17/src/daemon/executor/container_cb/execution.c	2022-12-05 07:19:40.318439978 +0000
+@@ -38,6 +38,7 @@
+ #include <stdint.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <malloc_utils.h>
+ 
+ #include "isula_libutils/log.h"
+ #include "container_api.h"
+--- iSulad-v2.0.17/src/daemon/executor/container_cb/execution_create.c.org	2022-12-05 07:20:52.222985471 +0000
++++ iSulad-v2.0.17/src/daemon/executor/container_cb/execution_create.c	2022-12-05 07:21:14.617155365 +0000
+@@ -34,6 +34,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <libgen.h>
++#include <malloc_utils.h>
+ 
+ #include "isula_libutils/log.h"
+ #include "isulad_config.h"
+--- iSulad-v2.0.17/src/daemon/executor/container_cb/execution_information.c.org	2022-12-05 07:21:56.320471735 +0000
++++ iSulad-v2.0.17/src/daemon/executor/container_cb/execution_information.c	2022-12-05 07:22:14.580610266 +0000
+@@ -44,6 +44,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <sys/utsname.h>
++#include <malloc_utils.h>
+ 
+ #include "isula_libutils/log.h"
+ #include "isulad_config.h"
+--- iSulad-v2.0.17/src/daemon/modules/events/monitord.c.org	2022-12-05 07:22:48.094864515 +0000
++++ iSulad-v2.0.17/src/daemon/modules/events/monitord.c	2022-12-05 07:23:12.501049668 +0000
+@@ -24,6 +24,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <sys/prctl.h>
++#include <malloc_utils.h>
+ 
+ #include "isula_libutils/log.h"
+ #include "mainloop.h"
+--- iSulad-v2.0.17/src/daemon/modules/image/oci/storage/layer_store/layer_store.c       2022-10-18 08:58:45.194015191 +0000
++++ iSulad-v2.0.17/src/daemon/modules/image/oci/storage/layer_store/layer_store.c       2022-10-18 08:50:36.870156051 +0000
+@@ -31,7 +31,7 @@
+ #include <string.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+-#include <sys/unistd.h>
++#include <unistd.h>
+
+ #include <archive.h>
+ #include <archive_entry.h>
+--- iSulad-v2.0.17/src/cmd/isulad/main.c        2022-10-14 14:04:50.303324243 +0800
++++ iSulad-v2.0.17/src/cmd/isulad/main.c        2022-10-14 14:06:08.262895032 +0800
+@@ -40,6 +40,7 @@
+ #include <string.h>
+ #include <strings.h>
+ #include <sys/time.h>
++#include <malloc_utils.h>
+ #ifdef ENABLE_SUP_GROUPS
+ #include <grp.h>
+ #endif
+--- iSulad-v2.0.17/src/daemon/executor/container_cb/execution.c.org	2022-12-07 01:25:01.400738816 +0000
++++ iSulad-v2.0.17/src/daemon/executor/container_cb/execution.c	2022-12-07 02:20:22.825812021 +0000
+@@ -321,9 +321,9 @@ static int container_start_prepare(conta
+ static void handle_start_io_thread_by_cc(uint32_t cc, int sync_fd, pthread_t thread_id)
+ {
+     if (cc == ISULAD_SUCCESS) {
+-        if (thread_id > 0) {
++        if (thread_id != NULL) {
+             if (pthread_detach(thread_id) != 0) {
+-                SYSERROR("Failed to detach 0x%lx", thread_id);
++                SYSERROR("Failed to detach");
+             }
+         }
+         if (sync_fd >= 0) {
+@@ -335,9 +335,9 @@ static void handle_start_io_thread_by_cc
+                 ERROR("Failed to write eventfd: %s", strerror(errno));
+             }
+         }
+-        if (thread_id > 0) {
++        if (thread_id != NULL) {
+             if (pthread_join(thread_id, NULL) != 0) {
+-                ERROR("Failed to join thread: 0x%lx", thread_id);
++                ERROR("Failed to join thread");
+             }
+         }
+         if (sync_fd >= 0) {
+@@ -355,7 +355,7 @@ static int container_start_cb(const cont
+     char *fifopath = NULL;
+     container_t *cont = NULL;
+     int sync_fd = -1;
+-    pthread_t thread_id = 0;
++    pthread_t thread_id = NULL;
+ 
+     DAEMON_CLEAR_ERRMSG();
+ 
+--- iSulad-v2.0.17/src/cmd/isula/client_console.c.org	2022-12-07 02:06:17.452077052 +0000
++++ iSulad-v2.0.17/src/cmd/isula/client_console.c	2022-12-07 02:26:21.167714118 +0000
+@@ -137,8 +137,7 @@ int create_console_fifos(bool attach_std
+         return -1;
+     }
+ 
+-    ret = snprintf(subpath, sizeof(subpath), "%s/%s-%u-%u", name, type, (unsigned int)getpid(),
+-                   (unsigned int)pthread_self());
++    ret = snprintf(subpath, sizeof(subpath), "%s/%s-%u", name, type, (unsigned int)getpid());
+     if (ret < 0 || (size_t)ret >= sizeof(subpath)) {
+         ERROR("Path is too long");
+         goto cleanup;
+--- iSulad-v2.0.17/src/daemon/executor/container_cb/execution_stream.c.org	2022-12-07 02:27:35.135313158 +0000
++++ iSulad-v2.0.17/src/daemon/executor/container_cb/execution_stream.c	2022-12-07 02:30:44.758848855 +0000
+@@ -280,9 +280,9 @@ out:
+ static void handle_attach_io_thread_by_cc(uint32_t cc, int sync_fd, pthread_t thread_id)
+ {
+     if (cc == ISULAD_SUCCESS) {
+-        if (thread_id > 0) {
++        if (thread_id != NULL) {
+             if (pthread_detach(thread_id) != 0) {
+-                SYSERROR("Failed to detach 0x%lx", thread_id);
++                SYSERROR("Failed to detach");
+             }
+         }
+         if (sync_fd >= 0) {
+@@ -294,9 +294,9 @@ static void handle_attach_io_thread_by_c
+                 ERROR("Failed to write eventfd: %s", strerror(errno));
+             }
+         }
+-        if (thread_id > 0) {
++        if (thread_id != NULL) {
+             if (pthread_join(thread_id, NULL) != 0) {
+-                ERROR("Failed to join thread: 0x%lx", thread_id);
++                ERROR("Failed to join thread");
+             }
+         }
+         if (sync_fd >= 0) {
+@@ -314,7 +314,7 @@ static int container_attach_cb(const con
+     char *fifos[3] = { NULL, NULL, NULL };
+     char *fifopath = NULL;
+     int syncfd = -1;
+-    pthread_t tid = 0;
++    pthread_t tid = NULL;
+     container_t *cont = NULL;
+     rt_attach_params_t params = { 0 };
+ 
+--- iSulad-v2.0.17/src/daemon/modules/service/service_container.c.org	2022-12-07 02:40:35.645634260 +0000
++++ iSulad-v2.0.17/src/daemon/modules/service/service_container.c	2022-12-07 02:42:19.363474236 +0000
+@@ -1912,9 +1912,9 @@ static void exec_container_end(container
+             ERROR("Failed to write eventfd: %s", strerror(errno));
+         }
+     }
+-    if (thread_id > 0) {
++    if (thread_id != NULL) {
+         if (pthread_join(thread_id, NULL) != 0) {
+-            ERROR("Failed to join thread: 0x%lx", thread_id);
++            ERROR("Failed to join thread");
+         }
+     }
+     if (sync_fd >= 0) {
+@@ -1985,7 +1985,7 @@ int exec_container(const container_t *co
+     char *id = NULL;
+     char *fifos[3] = { NULL, NULL, NULL };
+     char *fifopath = NULL;
+-    pthread_t thread_id = 0;
++    pthread_t thread_id = NULL;
+     defs_process_user *puser = NULL;
+     char exec_command[EVENT_ARGS_MAX] = { 0x00 };
+ 
+--- iSulad-v2.0.17/src/daemon/modules/service/io_handler.c.org	2022-12-07 02:49:11.852812776 +0000
++++ iSulad-v2.0.17/src/daemon/modules/service/io_handler.c	2022-12-07 02:51:19.900843677 +0000
+@@ -116,7 +116,6 @@ int create_daemon_fifos(const char *id,
+     char subpath[PATH_MAX] = { 0 };
+     char fifodir[PATH_MAX] = { 0 };
+     struct timespec now;
+-    pthread_t tid;
+ 
+     nret = clock_gettime(CLOCK_REALTIME, &now);
+     if (nret != 0) {
+@@ -124,15 +123,13 @@ int create_daemon_fifos(const char *id,
+         goto cleanup;
+     }
+ 
+-    tid = pthread_self();
+-
+     statepath = conf_get_routine_statedir(runtime);
+     if (statepath == NULL) {
+         ERROR("State path is NULL");
+         goto cleanup;
+     }
+ 
+-    nret = snprintf(subpath, PATH_MAX, "%s/%s/%u_%u_%u", id, operation, (unsigned int)tid, (unsigned int)now.tv_sec,
++    nret = snprintf(subpath, PATH_MAX, "%s/%s/%u_%u", id, operation, (unsigned int)now.tv_sec,
+                     (unsigned int)(now.tv_nsec));
+     if (nret >= PATH_MAX || nret < 0) {
+         ERROR("Failed to print string");
