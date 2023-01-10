@@ -42,7 +42,7 @@ ASSUME_PROVIDED += " pigz-native gzip-native"
 
 # gettext amd documentation related tools
 HOSTTOOLS_NONFATAL += "msgfmt msgmerge makeinfo xgettext"
-ASSUME_PROVIDED += "gettext-native texinfo-dummy-native"
+ASSUME_PROVIDED += "texinfo-dummy-native"
 
 # openssl tools
 HOSTTOOLS_NONFATAL += "openssl"
@@ -118,3 +118,6 @@ ASSUME_PROVIDED += "bzip2-replacement-native libffi-native openssl-native sqlite
 
 # used by harfbuzz
 HOSTTOOLS_NONFATAL += "glib-mkenums"
+
+# used by gstreamer1.0
+HOSTTOOLS_NONFATAL += "xgettext"
