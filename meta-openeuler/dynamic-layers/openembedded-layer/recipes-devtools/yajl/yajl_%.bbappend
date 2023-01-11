@@ -1,9 +1,8 @@
-DESCRIPTION = "Yet Another JSON Library - A Portable JSON parsing and serialization library in ANSI C"
-LICENSE = "MIT"
+# meta-oe/recipes-devtools/yajl/yajl_2.1.0.bb?h=hardknott
 
-LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
+OPENEULER_SRC_URI_REMOVE = "git"
 
-SRC_URI = " \
+SRC_URI_prepend = " \
         file://${PV}.tar.gz \
         file://0001-yajl-2.1.0-pkgconfig-location.patch \
         file://0002-yajl-2.1.0-pkgconfig-includedir.patch \
@@ -16,15 +15,4 @@ SRC_URI = " \
         file://yajl-assert-error-when-memory-allocation-failed.patch \
 	"
 
-inherit cmake
-
-INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
-INSANE_SKIP_${PN} += "already-stripped"
-INSANE_SKIP_${PN} += "dev-so"
-
-FILES_${PN} += "${libdir}/libyajl.so*"
-FILES_SOLIBSDEV = ""
-
-do_install_append() {
-        ${STRIP} ${D}/${libdir}/*.so*
-}
+S = "${WORKDIR}/${BP}"
