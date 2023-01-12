@@ -1,0 +1,1 @@
+require suitesparse-openeuler.inc
