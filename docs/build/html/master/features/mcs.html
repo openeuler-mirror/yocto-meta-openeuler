@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>多OS混合部署框架 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
+  <title>混合关键性系统 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -44,9 +44,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">关键特性</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="software_package_description.html">当前所支持的软件包</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">多OS混合部署框架</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">背景：混合关键性系统</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">多OS混合部署框架</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">混合关键性系统</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">混合关键性系统特性介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#os">多OS混合部署框架</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">构建指南</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">使用方法</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="distributed_softbus.html">分布式软总线</a></li>
@@ -84,7 +86,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="index.html">关键特性</a> &raquo;</li>
-      <li>多OS混合部署框架</li>
+      <li>混合关键性系统</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -93,10 +95,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="os">
-<span id="mixed-critical-system"></span><h1>多OS混合部署框架<a class="headerlink" href="#os" title="永久链接至标题">¶</a></h1>
-<section id="id1">
-<h2>背景：混合关键性系统<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+  <section id="mixed-critical-system">
+<span id="id1"></span><h1>混合关键性系统<a class="headerlink" href="#mixed-critical-system" title="永久链接至标题">¶</a></h1>
+<section id="id2">
+<h2>混合关键性系统特性介绍<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
 <p>在嵌入式场景中，虽然Linux已经得到了广泛应用，但并不能覆盖所有需求，例如高实时、高可靠、高安全的场合。这些场合往往是实时操作系统
 的用武之地。有些应用场景既需要Linux的管理能力、丰富的生态又需要实时操作系统的高实时、高可靠、高安全，那么一种典型的设计是采用一颗性能较
 强的处理器运行Linux负责富功能，一颗微控制器/DSP/实时处理器运行实时操作系统负责实时控制或者信号处理，两者之间通过I/O、网络或片外
@@ -110,10 +112,10 @@
 <p>面对上述硬件和应用的变化，结合自身原有的特点，嵌入式系统未来演进的方向之一就是 <strong>混合关键性系统(MCS, Mixed Criticality System)</strong>, 这可以从典型的
 嵌入式系统-汽车电子的最近发展趋势略见一斑。</p>
 <blockquote>
-<div><figure class="align-center" id="id3">
+<div><figure class="align-center" id="id5">
 <img alt="../_images/mcs_architecture.png" src="../_images/mcs_architecture.png" />
 <figcaption>
-<p><span class="caption-text">图 1 openEuler Embedded中的混合关键性系统大致架构</span><a class="headerlink" href="#id3" title="永久链接至图片">¶</a></p>
+<p><span class="caption-text">图 1 openEuler Embedded中的混合关键性系统大致架构</span><a class="headerlink" href="#id5" title="永久链接至图片">¶</a></p>
 </figcaption>
 </figure>
 </div></blockquote>
@@ -132,46 +134,150 @@ Linux负责系统管理与服务、1个实时操作系统负责实时控制、1�
 混合关键性调度提升资源利用率， 具体可以映射到 <strong>混合部署框架</strong> 和 <strong>嵌入式虚拟化</strong>。 混合部署框架解决 <strong>高效地混合部署问题</strong> 和 <strong>高效地通信与协作问题</strong>，
 嵌入式虚拟化解决 <strong>高效地隔离与保护问题</strong> 和 <strong>高效地资源共享与调度问题</strong>。</p>
 </section>
-<section id="id2">
-<h2>多OS混合部署框架<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<section id="os">
+<h2>多OS混合部署框架<a class="headerlink" href="#os" title="永久链接至标题">¶</a></h2>
 <p>openEuler Embedded中多OS混合部署框架的架构图如下所示，引入了开源框架 <a class="reference external" href="https://www.openampproject.org/">OpenAMP</a> 作为基础， 并结合自身需要
 进一步创新。</p>
 <blockquote>
-<div><figure class="align-center" id="id4">
+<div><figure class="align-center" id="id6">
 <img alt="../_images/openamp_architecture.png" src="../_images/openamp_architecture.png" />
 <figcaption>
-<p><span class="caption-text">图 2 多OS混合部署框架的基础架构</span><a class="headerlink" href="#id4" title="永久链接至图片">¶</a></p>
+<p><span class="caption-text">图 2 多OS混合部署框架的基础架构</span><a class="headerlink" href="#id6" title="永久链接至图片">¶</a></p>
 </figcaption>
 </figure>
 </div></blockquote>
 <p>在上述架构中，libmetal提供屏蔽了不同系统实现的细节提供了统一的抽象，virtio queue相当于网络协议中的MAC层提供高效的底层通信机制，rpmsg相当于网络协议中的
 传输层提供了基于端点(endpoint)与通道(channel)抽象的通信机制, remoteproc提供生命周期管理功能包括初始化、启动、暂停、结束等。</p>
-<p>在openEuler Embedded 22.03中，集成了OpenAMP相关支持并与openEuler的 <a class="reference external" href="https://gitee.com/openeuler/community/tree/master/sig/sig-Zephyr">SIG Zephyr</a> 合作
-实现了openEuler Embedded与实时操作系统 <a class="reference external" href="https://www.zephyrproject.org/">Zephyr</a> 在QEMU平台上的混合部署，具体可以参考</p>
-<p><a class="reference external" href="https://gitee.com/openeuler/yocto-embedded-tools/tree/openEuler-22.03-LTS/mcs">22.03 多OS混合部署Demo</a></p>
-<p>在openEuler Embedded 22.09中，新增串口服务demo，实现通过Linux shell命令行访问Client OS的功能，样例支持多用户多线程场景。
-在openEuler Embedded 22.09中，混合部署demo支持运行在树莓派4B上。</p>
-<p><a class="reference external" href="https://gitee.com/openeuler/yocto-embedded-tools/tree/openEuler-22.09/mcs">22.09 多OS混合部署Demo和串口服务Demo</a></p>
-<blockquote>
-<div><figure class="align-center" id="id5">
-<img alt="../_images/rpmsg-pty-shell.png" src="../_images/rpmsg-pty-shell.png" />
-<figcaption>
-<p><span class="caption-text">图 3 串口服务demo</span><a class="headerlink" href="#id5" title="永久链接至图片">¶</a></p>
-</figcaption>
-</figure>
-</div></blockquote>
-<p>在此基础上，openEuler Embedded的混合部署框架还会继续演进，包括对接更多的实时操作系统，如国产开源实时操作系统 <a class="reference external" href="https://www.rt-thread.org/">RT-Thread</a>，实现如下图所示的
+<p>目前，混合部署框架不仅能在qemu上进行仿真验证，还支持在树莓派实际硬件上部署运行。未来，openEuler Embedded的混合部署框架还会继续演进，包括对接更多的实时操作系统，如国产开源实时操作系统 <a class="reference external" href="https://www.rt-thread.org/">RT-Thread</a>，实现如下图所示的
 多OS服务化部署并适时引入基于虚拟化技术的嵌入式弹性底座。</p>
 <blockquote>
-<div><figure class="align-center" id="id6">
+<div><figure class="align-center" id="id7">
 <img alt="../_images/os_services.png" src="../_images/os_services.png" />
 <figcaption>
-<p><span class="caption-text">图 4 多OS服务化部署架构</span><a class="headerlink" href="#id6" title="永久链接至图片">¶</a></p>
+<p><span class="caption-text">图 3 多OS服务化部署架构</span><a class="headerlink" href="#id7" title="永久链接至图片">¶</a></p>
 </figcaption>
 </figure>
 </div></blockquote>
 <p>在上述多OS服务化部署架构中，openEuler Embedded是中心，主要对其他OS提供管理、网络、文件系统等通用服务，其他OS可以专注于其所擅长的领域提诸如实时控制、监控等服务，并通过shell、log和debug
 等通道与Linux丰富而强大维测体对接从而简化开发工作。</p>
+</section>
+<section id="id3">
+<h2>构建指南<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<p>openEuler Embedded 不仅支持混合关键性系统特性的单独构建，还实现了集成构建，能够使用同一套工具链一键式构建出包含linux, zephyr的部署镜像。</p>
+<div class="admonition note">
+<p class="admonition-title">注解</p>
+<p>单独构建混合关键系统特性的方法请参考 <a class="reference external" href="https://gitee.com/openeuler/mcs#%E6%9E%84%E5%BB%BA%E5%AE%89%E8%A3%85%E6%8C%87%E5%AF%BC">mcs 构建安装指导</a></p>
+</div>
+<p><strong>集成构建指导</strong></p>
+<p>1.根据 <a class="reference internal" href="../yocto/quickbuild/container-build.html#container-build"><span class="std std-ref">容器环境下的快速构建指导</span></a> ，准备master分支的构建容器；</p>
+<p>2.进入构建容器，安装必要的软件包:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>因为zephyr要求CMAKE版本大于3.20，而yocto中的CMAKE版本为3.19，因此需要使用外部的CMAKE
+<span class="gp">$ </span>yum install cmake
+
+<span class="gp"># </span>配置ZEPHYR_CMAKE_PATH来指定CMAKE所在路径
+<span class="gp">$ </span>vi /usr1/openeuler/src/yocto-meta-openeuler/rtos/meta-zephyr/recipes-kernel/zephyr-kernel/zephyr-image.inc
+
+<span class="gp"># </span>将ZEPHYR_CMAKE_PATH改为：ZEPHYR_CMAKE_PATH ?<span class="o">=</span> <span class="s2">&quot;/opt/cmake/bin:/usr/bin:&quot;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>3.zephyr 的构建包含核心部分和外部 zephyr modules 部分，由于全部代码较大，需要从 <a class="reference external" href="https://gitee.com/src-openeuler/zephyr">src-openEuler/zephyr</a> 中的百度网盘路径下载 zephyr_project_v3.2.0.tar.gz，并放在构建代码目录下的 zephyrproject 子目录中（对应容器的/usr1/openeuler/src/zephyrproject）：</p>
+<p>4.python3-pykwalify 在 openeuler 社区尚无相应的源码包，需要从上游下载 <a class="reference external" href="https://pypi.org/project/pykwalify/1.8.0/#files">Download pykwalify-1.8.0.tar.gz</a> ，并放在构建代码目录下的 python3-pykwalify 子目录中（对应容器的/usr1/openeuler/src/python3-pykwalify）</p>
+<p>5.构建包含 zephyr 和混合关键系统特性的最小镜像：</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>su openeuler
+<span class="gp">$ </span>. /opt/buildtools/nativesdk/environment-setup-x86_64-pokysdk-linux
+
+<span class="gp"># </span>选择构建qemu镜像：
+<span class="gp">$ </span><span class="nb">source</span> /usr1/openeuler/src/yocto-meta-openeuler/scripts/compile.sh aarch64-std /usr1/build-mcs-qemu/
+
+<span class="gp"># </span>或者选择构建树莓派镜像：
+<span class="gp">$ </span><span class="nb">source</span> /usr1/openeuler/src/yocto-meta-openeuler/scripts/compile.sh raspberrypi4-64 /usr1/build-mcs-rapi/
+
+<span class="gp"># </span>在bblayers.conf中添加相应的元构建层：
+<span class="gp">$ </span>vi /usr1/build-mcs-qemu/conf/bblayers.conf
+
+<span class="go">  BBLAYERS ?= &quot;\</span>
+<span class="go">    ......</span>
+<span class="go">    /usr1/openeuler/src/yocto-poky/../yocto-meta-openeuler/rtos/meta-openeuler-rtos \</span>
+<span class="go">    /usr1/openeuler/src/yocto-poky/../yocto-meta-openeuler/rtos/meta-zephyr \</span>
+<span class="go">  &quot;</span>
+
+<span class="gp"># </span>构建镜像：
+<span class="gp">$ </span>bitbake openeuler-image-mcs
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="id4">
+<h2>使用方法<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<p>目前混合关键性系统(mcs)支持在qemu-aarch64和树莓派上部署运行，部署mcs需要预留出必要的内存、CPU资源，并且还需要bios提供psci支持。</p>
+<dl>
+<dt>1.镜像启动</dt><dd><ul>
+<li><p><strong>对于树莓派:</strong></p>
+<p>集成构建出来的 openeuler-image-mcs 已经通过 dt-overlay 等方式预留了相关资源，并且默认使用了支持psci的uefi引导固件。因此只需要根据 <a class="reference internal" href="../bsp/rasp_uefi.html#raspberrypi4-uefi-guide"><span class="std std-ref">openeuler-image-uefi启动使用指导</span></a> 进行镜像启动，再部署mcs即可。</p>
+</li>
+<li><p><strong>对于qemu:</strong></p>
+<p>需要准备一份dtb文件，dtb文件的制作可参考 <a class="reference external" href="https://gitee.com/openeuler/mcs#%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E">配置dts预留出mcs_mem</a> ，并通过以下命令启动qemu：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>qemu-system-aarch64 -M virt,gic-version<span class="o">=</span><span class="m">3</span> -m 1G -cpu cortex-a57 -nographic -append <span class="s1">&#39;maxcpus=3&#39;</span> -smp <span class="m">4</span> -kernel zImage -initrd *.rootfs.cpio.gz -dtb qemu_mcs.dtb
+</pre></div>
+</div>
+</li>
+</ul>
+</dd>
+<dt>2.部署mcs</dt><dd><ul>
+<li><p><strong>step1: 调整内核打印等级并插入内核模块</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>为了不影响shell的使用，先屏蔽内核打印：
+<span class="gp">$ </span><span class="nb">echo</span> <span class="s2">&quot;1 4 1 7&quot;</span> &gt; /proc/sys/kernel/printk
+
+<span class="gp"># </span>插入内核模块
+<span class="gp">$ </span>modprobe mcs_km.ko
+</pre></div>
+</div>
+<p>插入内核模块后，可以通过 <cite>cat /proc/iomem</cite> 查看预留出来的 mcs_mem，如：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-aarch64 ~ # cat /proc/iomem</span>
+<span class="go">...</span>
+<span class="go">70000000-7fffffff : reserved</span>
+<span class="go">  70000000-7fffffff : mcs_mem</span>
+<span class="go">...</span>
+</pre></div>
+</div>
+<p>若mcs_km.ko插入失败，可以通过dmesg看到对应的失败日志，可能的原因有：1.使用的交叉工具链与内核版本不匹配；2.未预留内存资源；3.使用的bios不支持psci</p>
+</li>
+<li><p><strong>step2: 运行rpmsg_main程序，启动client os</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>rpmsg_main -c <span class="o">[</span>cpu_id<span class="o">]</span> -t <span class="o">[</span>target_binfile<span class="o">]</span> -a <span class="o">[</span>target_binaddress<span class="o">]</span>
+<span class="go">eg:</span>
+<span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /firmware/zephyr-image.bin -a 0x7a000000
+</pre></div>
+</div>
+<p>若rpmsg_main成功运行，会有如下打印：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-aarch64 ~ # rpmsg_main -c 3 -t /firmware/zephyr-image.bin -a 0x7a000000</span>
+<span class="go">...</span>
+<span class="go">start client os</span>
+<span class="go">...</span>
+<span class="go">pls open /dev/pts/1 to talk with client OS</span>
+<span class="go">pty_thread for uart is runnning</span>
+<span class="go">...</span>
+</pre></div>
+</div>
+<p>此时， <strong>按ctrl-c可以通知client os下线并退出rpmsg_main</strong> ，下线后支持重复拉起。
+也可以根据打印提示，通过 /dev/pts/1 与 client os 进行 shell 交互，例如：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>新建一个terminal，登录到运行环境
+<span class="gp">$ </span>ssh user@ip
+
+<span class="gp"># </span>连接pts设备
+<span class="gp">$ </span>screen /dev/pts/1
+
+<span class="gp"># </span>敲回车后，可以打开client os的shell，对client os下发命令，例如
+<span class="gp">uart:~$ </span><span class="nb">help</span>
+<span class="gp">uart:~$ </span>kernel version
+</pre></div>
+</div>
+</li>
+</ul>
+</dd>
+</dl>
 </section>
 </section>
 
