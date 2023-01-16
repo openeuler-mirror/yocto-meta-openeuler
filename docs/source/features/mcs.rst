@@ -1,11 +1,11 @@
 .. _mixed_critical_system:
 
-多OS混合部署框架
-###################
+混合关键性系统
+##############
 
 
-背景：混合关键性系统
-=====================
+混合关键性系统特性介绍
+======================
 
 在嵌入式场景中，虽然Linux已经得到了广泛应用，但并不能覆盖所有需求，例如高实时、高可靠、高安全的场合。这些场合往往是实时操作系统
 的用武之地。有些应用场景既需要Linux的管理能力、丰富的生态又需要实时操作系统的高实时、高可靠、高安全，那么一种典型的设计是采用一颗性能较
@@ -62,28 +62,143 @@ openEuler Embedded中多OS混合部署框架的架构图如下所示，引入了
 在上述架构中，libmetal提供屏蔽了不同系统实现的细节提供了统一的抽象，virtio queue相当于网络协议中的MAC层提供高效的底层通信机制，rpmsg相当于网络协议中的
 传输层提供了基于端点(endpoint)与通道(channel)抽象的通信机制, remoteproc提供生命周期管理功能包括初始化、启动、暂停、结束等。
 
-在openEuler Embedded 22.03中，集成了OpenAMP相关支持并与openEuler的 `SIG Zephyr <https://gitee.com/openeuler/community/tree/master/sig/sig-Zephyr>`_ 合作
-实现了openEuler Embedded与实时操作系统 `Zephyr <https://www.zephyrproject.org/>`_ 在QEMU平台上的混合部署，具体可以参考
-
-`22.03 多OS混合部署Demo <https://gitee.com/openeuler/yocto-embedded-tools/tree/openEuler-22.03-LTS/mcs>`_
-
-在openEuler Embedded 22.09中，新增串口服务demo，实现通过Linux shell命令行访问Client OS的功能，样例支持多用户多线程场景。
-在openEuler Embedded 22.09中，混合部署demo支持运行在树莓派4B上。
-
-`22.09 多OS混合部署Demo和串口服务Demo <https://gitee.com/openeuler/yocto-embedded-tools/tree/openEuler-22.09/mcs>`_
-
-    .. figure:: ../../image/mcs/rpmsg-pty-shell.png
-        :align: center
-
-        图 3 串口服务demo
-
-在此基础上，openEuler Embedded的混合部署框架还会继续演进，包括对接更多的实时操作系统，如国产开源实时操作系统 `RT-Thread <https://www.rt-thread.org/>`_，实现如下图所示的
+目前，混合部署框架不仅能在qemu上进行仿真验证，还支持在树莓派实际硬件上部署运行。未来，openEuler Embedded的混合部署框架还会继续演进，包括对接更多的实时操作系统，如国产开源实时操作系统 `RT-Thread <https://www.rt-thread.org/>`_，实现如下图所示的
 多OS服务化部署并适时引入基于虚拟化技术的嵌入式弹性底座。
 
     .. figure:: ../../image/mcs/os_services.png
         :align: center
 
-        图 4 多OS服务化部署架构
+        图 3 多OS服务化部署架构
 
 在上述多OS服务化部署架构中，openEuler Embedded是中心，主要对其他OS提供管理、网络、文件系统等通用服务，其他OS可以专注于其所擅长的领域提诸如实时控制、监控等服务，并通过shell、log和debug
 等通道与Linux丰富而强大维测体对接从而简化开发工作。
+
+构建指南
+========
+
+openEuler Embedded 不仅支持混合关键性系统特性的单独构建，还实现了集成构建，能够使用同一套工具链一键式构建出包含linux, zephyr的部署镜像。
+
+.. note:: 单独构建混合关键系统特性的方法请参考 `mcs 构建安装指导 <https://gitee.com/openeuler/mcs#%E6%9E%84%E5%BB%BA%E5%AE%89%E8%A3%85%E6%8C%87%E5%AF%BC>`_
+
+**集成构建指导**
+
+1.根据 :ref:`容器环境下的快速构建指导 <container_build>` ，准备master分支的构建容器；
+
+2.进入构建容器，安装必要的软件包:
+
+  .. code-block:: console
+
+    # 因为zephyr要求CMAKE版本大于3.20，而yocto中的CMAKE版本为3.19，因此需要使用外部的CMAKE
+    $ yum install cmake
+
+    # 配置ZEPHYR_CMAKE_PATH来指定CMAKE所在路径
+    $ vi /usr1/openeuler/src/yocto-meta-openeuler/rtos/meta-zephyr/recipes-kernel/zephyr-kernel/zephyr-image.inc
+
+    # 将ZEPHYR_CMAKE_PATH改为：ZEPHYR_CMAKE_PATH ?= "/opt/cmake/bin:/usr/bin:"
+
+
+3.zephyr 的构建包含核心部分和外部 zephyr modules 部分，由于全部代码较大，需要从 `src-openEuler/zephyr <https://gitee.com/src-openeuler/zephyr>`_ 中的百度网盘路径下载 zephyr_project_v3.2.0.tar.gz，并放在构建代码目录下的 zephyrproject 子目录中（对应容器的/usr1/openeuler/src/zephyrproject）：
+
+4.python3-pykwalify 在 openeuler 社区尚无相应的源码包，需要从上游下载 `Download pykwalify-1.8.0.tar.gz <https://pypi.org/project/pykwalify/1.8.0/#files>`_ ，并放在构建代码目录下的 python3-pykwalify 子目录中（对应容器的/usr1/openeuler/src/python3-pykwalify）
+
+5.构建包含 zephyr 和混合关键系统特性的最小镜像：
+
+  .. code-block:: console
+
+    $ su openeuler
+    $ . /opt/buildtools/nativesdk/environment-setup-x86_64-pokysdk-linux
+
+    # 选择构建qemu镜像：
+    $ source /usr1/openeuler/src/yocto-meta-openeuler/scripts/compile.sh aarch64-std /usr1/build-mcs-qemu/
+
+    # 或者选择构建树莓派镜像：
+    $ source /usr1/openeuler/src/yocto-meta-openeuler/scripts/compile.sh raspberrypi4-64 /usr1/build-mcs-rapi/
+
+    # 在bblayers.conf中添加相应的元构建层：
+    $ vi /usr1/build-mcs-qemu/conf/bblayers.conf
+
+      BBLAYERS ?= "\
+        ......
+        /usr1/openeuler/src/yocto-poky/../yocto-meta-openeuler/rtos/meta-openeuler-rtos \
+        /usr1/openeuler/src/yocto-poky/../yocto-meta-openeuler/rtos/meta-zephyr \
+      "
+
+    # 构建镜像：
+    $ bitbake openeuler-image-mcs
+
+
+使用方法
+========
+
+目前混合关键性系统(mcs)支持在qemu-aarch64和树莓派上部署运行，部署mcs需要预留出必要的内存、CPU资源，并且还需要bios提供psci支持。
+
+1.镜像启动
+  - **对于树莓派:**
+
+    集成构建出来的 openeuler-image-mcs 已经通过 dt-overlay 等方式预留了相关资源，并且默认使用了支持psci的uefi引导固件。因此只需要根据 :ref:`openeuler-image-uefi启动使用指导 <raspberrypi4-uefi-guide>` 进行镜像启动，再部署mcs即可。
+  - **对于qemu:**
+
+    需要准备一份dtb文件，dtb文件的制作可参考 `配置dts预留出mcs_mem <https://gitee.com/openeuler/mcs#%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E>`_ ，并通过以下命令启动qemu：
+
+    .. code-block:: console
+
+      $ qemu-system-aarch64 -M virt,gic-version=3 -m 1G -cpu cortex-a57 -nographic -append 'maxcpus=3' -smp 4 -kernel zImage -initrd *.rootfs.cpio.gz -dtb qemu_mcs.dtb
+
+2.部署mcs
+  - **step1: 调整内核打印等级并插入内核模块**
+
+    .. code-block:: console
+
+      # 为了不影响shell的使用，先屏蔽内核打印：
+      $ echo "1 4 1 7" > /proc/sys/kernel/printk
+
+      # 插入内核模块
+      $ modprobe mcs_km.ko
+
+    插入内核模块后，可以通过 `cat /proc/iomem` 查看预留出来的 mcs_mem，如：
+
+    .. code-block:: console
+
+      qemu-aarch64 ~ # cat /proc/iomem
+      ...
+      70000000-7fffffff : reserved
+        70000000-7fffffff : mcs_mem
+      ...
+
+    若mcs_km.ko插入失败，可以通过dmesg看到对应的失败日志，可能的原因有：1.使用的交叉工具链与内核版本不匹配；2.未预留内存资源；3.使用的bios不支持psci
+
+  - **step2: 运行rpmsg_main程序，启动client os**
+
+    .. code-block:: console
+
+      $ rpmsg_main -c [cpu_id] -t [target_binfile] -a [target_binaddress]
+      eg:
+      $ rpmsg_main -c 3 -t /firmware/zephyr-image.bin -a 0x7a000000
+
+    若rpmsg_main成功运行，会有如下打印：
+
+    .. code-block:: console
+
+      qemu-aarch64 ~ # rpmsg_main -c 3 -t /firmware/zephyr-image.bin -a 0x7a000000
+      ...
+      start client os
+      ...
+      pls open /dev/pts/1 to talk with client OS
+      pty_thread for uart is runnning
+      ...
+
+    此时， **按ctrl-c可以通知client os下线并退出rpmsg_main** ，下线后支持重复拉起。
+    也可以根据打印提示，通过 /dev/pts/1 与 client os 进行 shell 交互，例如：
+
+    .. code-block:: console
+
+      # 新建一个terminal，登录到运行环境
+      $ ssh user@ip
+
+      # 连接pts设备
+      $ screen /dev/pts/1
+
+      # 敲回车后，可以打开client os的shell，对client os下发命令，例如
+      uart:~$ help
+      uart:~$ kernel version
+

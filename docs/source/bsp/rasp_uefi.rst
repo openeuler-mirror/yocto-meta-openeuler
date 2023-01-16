@@ -35,6 +35,8 @@ openEuler Embedded 的UEFI树莓派镜像集成了基于树梅派4B的混合部�
 
 - 将构建生成的rpi-sdimg烧录到SD卡 :ref:`关键特性/树莓派4B的支持/树莓派镜像构建指导/镜像使用方法/镜像烧录 <raspberrypi>`
 
+.. _raspberrypi4-uefi-guide:
+
 openeuler-image-uefi启动使用指导
 ================================================
 
