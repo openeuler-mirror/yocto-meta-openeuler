@@ -1,0 +1,113 @@
+From 66c77cad6191947a08a742e845d5cfa417123c1f Mon Sep 17 00:00:00 2001
+From: zhanyiaini <zhanyiaita@sina.cn>
+Date: Tue, 1 Nov 2022 19:00:02 +0800
+Subject: [PATCH 4/5] =?UTF-8?q?=E4=BF=AE=E6=94=B9S2-Pro=E9=87=87=E6=A0=B7?=
+ =?UTF-8?q?=E7=8E=87=E9=97=AE=E9=A2=98?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ core/common/DriverInterface.h |  1 +
+ core/common/ydlidar_help.h    | 12 ++++++++----
+ samples/tri_test.cpp          | 14 +++++++-------
+ 3 files changed, 16 insertions(+), 11 deletions(-)
+
+diff --git a/core/common/DriverInterface.h b/core/common/DriverInterface.h
+index e1e1e31..09879c6 100644
+--- a/core/common/DriverInterface.h
++++ b/core/common/DriverInterface.h
+@@ -454,6 +454,7 @@ class DriverInterface {
+     YDLIDAR_T1      = 2,/**< T1 LiDAR Model. */
+     YDLIDAR_F2      = 3,/**< F2 LiDAR Model. */
+     YDLIDAR_S4      = 4,/**< S4 LiDAR Model. */
++    YDLIDAR_S2PRO   = YDLIDAR_S4,/**< S2PRO LiDAR Model. */
+     YDLIDAR_G4      = 5,/**< G4 LiDAR Model. */
+     YDLIDAR_X4      = 6,/**< X4 LiDAR Model. */
+     YDLIDAR_G4PRO   = 7,/**< G4PRO LiDAR Model. */
+diff --git a/core/common/ydlidar_help.h b/core/common/ydlidar_help.h
+index 35ac3ee..b80021e 100644
+--- a/core/common/ydlidar_help.h
++++ b/core/common/ydlidar_help.h
+@@ -81,9 +81,9 @@ inline std::string lidarModelToString(int model) {
+ 
+       break;
+ 
+-    case DriverInterface::YDLIDAR_S4:
+-      name = "S4";
+-
++    // case DriverInterface::YDLIDAR_S4:
++    case DriverInterface::YDLIDAR_S2PRO:
++      name = "S2PRO";
+       break;
+ 
+     case DriverInterface::YDLIDAR_G4:
+@@ -223,7 +223,11 @@ inline std::vector<int> getDefaultSampleRate(int model)
+     case DriverInterface::YDLIDAR_F4:
+     case DriverInterface::YDLIDAR_T1:
+     case DriverInterface::YDLIDAR_F2:
+-    case DriverInterface::YDLIDAR_S4:
++      srs.push_back(4);
++      break;
++    // case DriverInterface::YDLIDAR_S4:
++    case DriverInterface::YDLIDAR_S2PRO:
++      srs.push_back(3);
+       srs.push_back(4);
+       break;
+     case DriverInterface::YDLIDAR_G4:
+diff --git a/samples/tri_test.cpp b/samples/tri_test.cpp
+index 4e5f80c..c19b2cf 100644
+--- a/samples/tri_test.cpp
++++ b/samples/tri_test.cpp
+@@ -181,7 +181,7 @@ int main(int argc, char *argv[])
+ 
+   std::string input_frequency;
+ 
+-  float frequency = 8.0;
++  float frequency = 5.0;
+ 
+   while (ydlidar::os_isOk() && !isSingleChannel)
+   {
+@@ -229,12 +229,12 @@ int main(int argc, char *argv[])
+   optval = 4;
+   laser.setlidaropt(LidarPropAbnormalCheckCount, &optval, sizeof(int));
+   /// Intenstiy bit count
+-  optval = 8;
++  optval = 10;
+   laser.setlidaropt(LidarPropIntenstiyBit, &optval, sizeof(int));
+ 
+   //////////////////////bool property/////////////////
+   /// fixed angle resolution
+-  bool b_optvalue = false;
++  bool b_optvalue = true;
+   laser.setlidaropt(LidarPropFixedResolution, &b_optvalue, sizeof(bool));
+   /// rotate 180
+   laser.setlidaropt(LidarPropReversion, &b_optvalue, sizeof(bool));
+@@ -245,10 +245,10 @@ int main(int argc, char *argv[])
+   /// one-way communication
+   laser.setlidaropt(LidarPropSingleChannel, &isSingleChannel, sizeof(bool));
+   /// intensity
+-  b_optvalue = false;
++  b_optvalue = true;
+   laser.setlidaropt(LidarPropIntenstiy, &b_optvalue, sizeof(bool));
+   /// Motor DTR
+-  b_optvalue = true;
++  b_optvalue = false;
+   laser.setlidaropt(LidarPropSupportMotorDtrCtrl, &b_optvalue, sizeof(bool));
+   /// HeartBeat
+   b_optvalue = false;
+@@ -303,9 +303,9 @@ int main(int argc, char *argv[])
+   {
+     if (laser.doProcessSimple(scan))
+     {
+-      printf("Scan received [%u] points stamp [0x%016lX]\n",
++      printf("Scan received [%u] points inc [%f]\n",
+              (unsigned int)scan.points.size(),
+-             scan.stamp);
++             scan.config.angle_increment);
+       // for (size_t i = 0; i < scan.points.size(); ++i)
+       // {
+       //   const LaserPoint &p = scan.points.at(i);
+-- 
+2.34.1
+

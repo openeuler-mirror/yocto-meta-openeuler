@@ -1,0 +1,1496 @@
+From 2b7e756c2823f00ba8b80911852c4127b93213cc Mon Sep 17 00:00:00 2001
+From: zhanyiaini <zhanyiaita@sina.cn>
+Date: Tue, 13 Dec 2022 18:13:16 +0800
+Subject: [PATCH 5/5] =?UTF-8?q?=E4=BF=AE=E6=94=B9GS2=E5=92=8CS2=E7=B3=BB?=
+ =?UTF-8?q?=E5=88=97=E5=90=8C=E6=97=B6=E4=BD=BF=E7=94=A8=E6=97=B6=E7=BA=BF?=
+ =?UTF-8?q?=E7=A8=8B=E5=BC=82=E5=B8=B8=E9=97=AE=E9=A2=98?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ CMakeLists.txt              |   2 +-
+ core/base/thread.h          |   6 +-
+ samples/gs_test.cpp         |   2 +-
+ samples/tri_and_gs_test.cpp | 237 +++++++++++++++++++++++++
+ src/CYdLidar.cpp            |   6 +-
+ src/GS2LidarDriver.cpp      | 141 +++++++--------
+ src/GS2LidarDriver.h        |  30 ++--
+ src/YDlidarDriver.cpp       | 343 ++++++++++++++++++++----------------
+ 8 files changed, 519 insertions(+), 248 deletions(-)
+ create mode 100644 samples/tri_and_gs_test.cpp
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0adc747..05ad037 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -5,7 +5,7 @@ project(ydlidar_sdk C CXX)
+ # version
+ set(YDLIDAR_SDK_VERSION_MAJOR 1)
+ set(YDLIDAR_SDK_VERSION_MINOR 1)
+-set(YDLIDAR_SDK_VERSION_PATCH 2)
++set(YDLIDAR_SDK_VERSION_PATCH 3)
+ set(YDLIDAR_SDK_VERSION ${YDLIDAR_SDK_VERSION_MAJOR}.${YDLIDAR_SDK_VERSION_MINOR}.${YDLIDAR_SDK_VERSION_PATCH})
+ 
+ ##########################################################
+diff --git a/core/base/thread.h b/core/base/thread.h
+index a952933..c13e04b 100644
+--- a/core/base/thread.h
++++ b/core/base/thread.h
+@@ -107,19 +107,17 @@ class Thread {
+     void *res;
+     int s = -1;
+     s = pthread_cancel((pthread_t)(this->_handle));
+-
+     if (s != 0) {
+     }
+ 
+     s = pthread_join((pthread_t)(this->_handle), &res);
+-
+     if (s != 0) {
+     }
+ 
+     if (res == PTHREAD_CANCELED) {
+-      printf("%lu thread has been canceled\n", this->_handle);
+-      this->_handle = 0;
++      printf("0x%X thread has been canceled\n", this->_handle);
+     }
++    this->_handle = 0; //强制置空线程句柄，以免再次调用该函数时出现异常
+ 
+ #endif
+     return 0;
+diff --git a/samples/gs_test.cpp b/samples/gs_test.cpp
+index 2bb7671..cea13f8 100644
+--- a/samples/gs_test.cpp
++++ b/samples/gs_test.cpp
+@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
+     int id = 0;
+ 
+     for (it = ports.begin(); it != ports.end(); it++) {
+-      printf("%d. %s\n", id, it->first.c_str());
++      printf("[%d] %s %s\n", id, it->first.c_str(), it->second.c_str());
+       id++;
+     }
+ 
+diff --git a/samples/tri_and_gs_test.cpp b/samples/tri_and_gs_test.cpp
+new file mode 100644
+index 0000000..3c28b43
+--- /dev/null
++++ b/samples/tri_and_gs_test.cpp
+@@ -0,0 +1,237 @@
++﻿#include "CYdLidar.h"
++#include <iostream>
++#include <string>
++#include <algorithm>
++#include <cctype>
++#include "core/base/timer.h"
++
++using namespace std;
++using namespace ydlidar;
++
++#if defined(_MSC_VER)
++#pragma comment(lib, "ydlidar_sdk.lib")
++#endif
++
++int main(int argc, char *argv[])
++{
++  printf("__   ______  _     ___ ____    _    ____  \n");
++  printf("\\ \\ / /  _ \\| |   |_ _|  _ \\  / \\  |  _ \\ \n");
++  printf(" \\ V /| | | | |    | || | | |/ _ \\ | |_) | \n");
++  printf("  | | | |_| | |___ | || |_| / ___ \\|  _ <  \n");
++  printf("  |_| |____/|_____|___|____/_/   \\_\\_| \\_\\ \n");
++  printf("\n");
++  fflush(stdout);
++
++  ydlidar::os_init();
++
++  bool ret = false;
++  CYdLidar lidarGs; //GS2雷达
++  {
++    bool isSingleChannel = false;
++    float frequency = 8.0;
++    std::string port = "/dev/ttyUSB0";
++    int baudrate = 921600;
++    //////////////////////string property/////////////////
++    /// lidar port
++    lidarGs.setlidaropt(LidarPropSerialPort, port.c_str(), port.size());
++    /// lidar baudrate
++    lidarGs.setlidaropt(LidarPropSerialBaudrate, &baudrate, sizeof(int));
++    /// gs lidar
++    int optval = TYPE_GS;
++    lidarGs.setlidaropt(LidarPropLidarType, &optval, sizeof(int));
++    /// device type
++    optval = YDLIDAR_TYPE_SERIAL;
++    lidarGs.setlidaropt(LidarPropDeviceType, &optval, sizeof(int));
++    /// sample rate
++    optval = 4;
++    lidarGs.setlidaropt(LidarPropSampleRate, &optval, sizeof(int));
++    /// abnormal count
++    optval = 4;
++    lidarGs.setlidaropt(LidarPropAbnormalCheckCount, &optval, sizeof(int));
++    /// Intenstiy bit count
++    optval = 8;
++    lidarGs.setlidaropt(LidarPropIntenstiyBit, &optval, sizeof(int));
++    //////////////////////bool property/////////////////
++    /// fixed angle resolution
++    bool b_optvalue = false;
++    lidarGs.setlidaropt(LidarPropFixedResolution, &b_optvalue, sizeof(bool));
++    /// rotate 180
++    lidarGs.setlidaropt(LidarPropReversion, &b_optvalue, sizeof(bool));
++    /// Counterclockwise
++    lidarGs.setlidaropt(LidarPropInverted, &b_optvalue, sizeof(bool));
++    b_optvalue = true;
++    lidarGs.setlidaropt(LidarPropAutoReconnect, &b_optvalue, sizeof(bool));
++    /// one-way communication
++    lidarGs.setlidaropt(LidarPropSingleChannel, &isSingleChannel, sizeof(bool));
++    /// intensity
++    b_optvalue = true;
++    lidarGs.setlidaropt(LidarPropIntenstiy, &b_optvalue, sizeof(bool));
++    /// Motor DTR
++    b_optvalue = true;
++    lidarGs.setlidaropt(LidarPropSupportMotorDtrCtrl, &b_optvalue, sizeof(bool));
++    /// HeartBeat
++    b_optvalue = false;
++    lidarGs.setlidaropt(LidarPropSupportHeartBeat, &b_optvalue, sizeof(bool));
++    //////////////////////float property/////////////////
++    /// unit: °
++    float f_optvalue = 180.0f;
++    lidarGs.setlidaropt(LidarPropMaxAngle, &f_optvalue, sizeof(float));
++    f_optvalue = -180.0f;
++    lidarGs.setlidaropt(LidarPropMinAngle, &f_optvalue, sizeof(float));
++    /// unit: m
++    f_optvalue = 1.f;
++    lidarGs.setlidaropt(LidarPropMaxRange, &f_optvalue, sizeof(float));
++    f_optvalue = 0.025f;
++    lidarGs.setlidaropt(LidarPropMinRange, &f_optvalue, sizeof(float));
++    /// unit: Hz
++    lidarGs.setlidaropt(LidarPropScanFrequency, &frequency, sizeof(float));
++
++    //雷达初始化
++    ret = lidarGs.initialize();
++    if (!ret)
++    {
++      fprintf(stderr, "Fail to initialize %s\n", lidarGs.DescribeError());
++      fflush(stderr);
++      return -1;
++    }
++  }
++
++  CYdLidar lidarS2; //S2雷达
++  {
++    bool isSingleChannel = false;
++    float frequency = 8.0;
++    std::string port = "/dev/ttyUSB1";
++    int baudrate = 115200;
++    //////////////////////string property/////////////////
++    /// lidar port
++    lidarS2.setlidaropt(LidarPropSerialPort, port.c_str(), port.size());
++    //////////////////////int property/////////////////
++    /// lidar baudrate
++    lidarS2.setlidaropt(LidarPropSerialBaudrate, &baudrate, sizeof(int));
++    /// tof lidar
++    int optval = TYPE_TRIANGLE;
++    lidarS2.setlidaropt(LidarPropLidarType, &optval, sizeof(int));
++    /// device type
++    optval = YDLIDAR_TYPE_SERIAL;
++    lidarS2.setlidaropt(LidarPropDeviceType, &optval, sizeof(int));
++    /// sample rate
++    optval = isSingleChannel ? 3 : 4;
++    lidarS2.setlidaropt(LidarPropSampleRate, &optval, sizeof(int));
++    /// abnormal count
++    optval = 4;
++    lidarS2.setlidaropt(LidarPropAbnormalCheckCount, &optval, sizeof(int));
++    /// Intenstiy bit count
++    optval = 10;
++    lidarS2.setlidaropt(LidarPropIntenstiyBit, &optval, sizeof(int));
++    //////////////////////bool property/////////////////
++    /// fixed angle resolution
++    bool b_optvalue = true;
++    lidarS2.setlidaropt(LidarPropFixedResolution, &b_optvalue, sizeof(bool));
++    b_optvalue = false;
++    /// rotate 180
++    lidarS2.setlidaropt(LidarPropReversion, &b_optvalue, sizeof(bool));
++    /// Counterclockwise
++    lidarS2.setlidaropt(LidarPropInverted, &b_optvalue, sizeof(bool));
++    b_optvalue = true;
++    lidarS2.setlidaropt(LidarPropAutoReconnect, &b_optvalue, sizeof(bool));
++    /// one-way communication
++    lidarS2.setlidaropt(LidarPropSingleChannel, &isSingleChannel, sizeof(bool));
++    /// intensity
++    b_optvalue = true;
++    lidarS2.setlidaropt(LidarPropIntenstiy, &b_optvalue, sizeof(bool));
++    /// Motor DTR
++    b_optvalue = false;
++    lidarS2.setlidaropt(LidarPropSupportMotorDtrCtrl, &b_optvalue, sizeof(bool));
++    /// HeartBeat
++    b_optvalue = false;
++    lidarS2.setlidaropt(LidarPropSupportHeartBeat, &b_optvalue, sizeof(bool));
++    //////////////////////float property/////////////////
++    /// unit: °
++    float f_optvalue = 180.0f;
++    lidarS2.setlidaropt(LidarPropMaxAngle, &f_optvalue, sizeof(float));
++    f_optvalue = -180.0f;
++    lidarS2.setlidaropt(LidarPropMinAngle, &f_optvalue, sizeof(float));
++    /// unit: m
++    f_optvalue = 64.f;
++    lidarS2.setlidaropt(LidarPropMaxRange, &f_optvalue, sizeof(float));
++    f_optvalue = 0.05f;
++    lidarS2.setlidaropt(LidarPropMinRange, &f_optvalue, sizeof(float));
++    /// unit: Hz
++    lidarS2.setlidaropt(LidarPropScanFrequency, &frequency, sizeof(float));
++    ret = lidarS2.initialize();
++    if (!ret)
++    {
++      fprintf(stderr, "Fail to initialize %s\n", lidarS2.DescribeError());
++      fflush(stderr);
++      return -1;
++    }
++  }
++
++  LaserScan scanGs; //GS2点云数据
++  LaserScan scanS2; //S2雷达点云数据
++  while (ydlidar::os_isOk())
++  {
++    //启动S2
++    ret = lidarS2.turnOn();
++    if (!ret)
++    {
++      fprintf(stderr, "Fail to turn on S2 %s\n", lidarS2.DescribeError());
++      fflush(stderr);
++      return -1;
++    }
++    //启动GS2
++    ret = lidarGs.turnOn();
++    if (!ret)
++    {
++      fprintf(stderr, "Fail to turn on GS2 %s\n", lidarGs.DescribeError());
++      fflush(stderr);
++      return -1;
++    }
++    //启动后运行5秒然后停止扫描
++    uint64_t t = getms();
++    while (getms() - t < 5000)
++    {
++      //获取GS2点云数据
++      if (lidarGs.doProcessSimple(scanGs))
++      {
++        printf("[%lu] points in [0x%016lX] module num [%d] env flag [0x%04X]\n",
++               scanGs.points.size(),
++               scanGs.stamp,
++               scanGs.moduleNum,
++               scanGs.envFlag);
++        fflush(stdout);
++      }
++      else
++      {
++        fprintf(stderr, "Failed to get Lidar GS2 Data\n");
++        fflush(stderr);
++      }
++      //获取S2点云数据
++      if (lidarS2.doProcessSimple(scanS2))
++      {
++        printf("[%u] points inc [%f]\n",
++               (unsigned int)scanS2.points.size(),
++               scanS2.config.angle_increment);
++        fflush(stdout);
++      }
++      else
++      {
++        fprintf(stderr, "Failed to get Lidar S2 Data\n");
++        fflush(stderr);
++        static int s_errorCount = 0;
++        if (s_errorCount++ > 10)
++          return -1;
++      }
++    }
++
++    //停止S2
++    lidarS2.turnOff();
++    //停止GS2
++    lidarGs.turnOff();
++  }
++
++  lidarGs.turnOff();
++  lidarGs.disconnecting();
++
++  return 0;
++}
+diff --git a/src/CYdLidar.cpp b/src/CYdLidar.cpp
+index 668e24f..54e1687 100644
+--- a/src/CYdLidar.cpp
++++ b/src/CYdLidar.cpp
+@@ -1088,6 +1088,7 @@ bool CYdLidar::checkLidarAbnormal()
+       }
+     }
+ 
++    //单通雷达，计算采样率、固定分辨率时的一圈点数
+     if (IS_OK(op_result) && lidarPtr->getSingleChannel())
+     {
+       data.push_back(count);
+@@ -1115,7 +1116,7 @@ bool CYdLidar::checkLidarAbnormal()
+           scan_time = 1.0 * static_cast<int64_t>(end_time - start_time) / 1e9;
+           bool ret = CalculateSampleRate(count, scan_time);
+ 
+-          if (scan_time > 0.05 && scan_time < 0.5 && lidarPtr->getSingleChannel())
++          if (scan_time > 0.05 && scan_time < 0.5)
+           {
+             if (!ret)
+             {
+@@ -1717,7 +1718,8 @@ bool CYdLidar::checkScanFrequency()
+ 
+   m_ScanFrequency -= frequencyOffset;
+   m_FixedSize = m_SampleRate * 1000 / (m_ScanFrequency - 0.1);
+-  printf("[YDLIDAR INFO] Current Scan Frequency: %fHz\n", m_ScanFrequency);
++  printf("[YDLIDAR] Current Scan Frequency: %fHz\n", m_ScanFrequency);
++  printf("[YDLIDAR] Fixed size: %d\n", m_FixedSize);
+   return true;
+ }
+ 
+diff --git a/src/GS2LidarDriver.cpp b/src/GS2LidarDriver.cpp
+index d6193fc..8fc3708 100644
+--- a/src/GS2LidarDriver.cpp
++++ b/src/GS2LidarDriver.cpp
+@@ -99,19 +99,16 @@ GS2LidarDriver::GS2LidarDriver():
+ GS2LidarDriver::~GS2LidarDriver() 
+ {
+     m_isScanning = false;
+-
+     isAutoReconnect = false;
+     _thread.join();
+ 
+-    ScopedLocker lk(_serial_lock);
+-
++    ScopedLocker l(_cmd_lock);
+     if (_serial) {
+         if (_serial->isOpen()) {
+             _serial->flush();
+             _serial->closePort();
+         }
+     }
+-
+     if (_serial) {
+         delete _serial;
+         _serial = NULL;
+@@ -121,7 +118,6 @@ GS2LidarDriver::~GS2LidarDriver()
+         delete[] globalRecvBuffer;
+         globalRecvBuffer = NULL;
+     }
+-
+     if (scan_node_buf) {
+         delete[] scan_node_buf;
+         scan_node_buf = NULL;
+@@ -130,19 +126,17 @@ GS2LidarDriver::~GS2LidarDriver()
+ 
+ result_t GS2LidarDriver::connect(const char *port_path, uint32_t baudrate) 
+ {
+-    ScopedLocker lk(_serial_lock);
+     m_baudrate = baudrate;
+     serial_port = string(port_path);
+-
+-    if (!_serial) {
+-        _serial = new serial::Serial(port_path, m_baudrate,
+-                                     serial::Timeout::simpleTimeout(DEFAULT_TIMEOUT));
+-    }
+-
+     {
+-        ScopedLocker l(_lock);
+-
+-        if (!_serial->open()) {
++        ScopedLocker l(_cmd_lock);
++        if (!_serial)
++        {
++            _serial = new serial::Serial(port_path, m_baudrate,
++                                         serial::Timeout::simpleTimeout(DEFAULT_TIMEOUT));
++        }
++        if (!_serial->open())
++        {
+             return RESULT_FAIL;
+         }
+ 
+@@ -200,7 +194,7 @@ void GS2LidarDriver::disconnect() {
+ 
+     stop();
+     delay(10);
+-    ScopedLocker l(_serial_lock);
++    ScopedLocker l(_cmd_lock);
+ 
+     if (_serial) {
+         if (_serial->isOpen()) {
+@@ -212,12 +206,11 @@ void GS2LidarDriver::disconnect() {
+ }
+ 
+ 
+-void GS2LidarDriver::disableDataGrabbing() {
+-    {
+-        if (m_isScanning) {
+-            m_isScanning = false;
+-            _dataEvent.set();
+-        }
++void GS2LidarDriver::disableDataGrabbing() 
++{
++    if (m_isScanning) {
++        m_isScanning = false;
++        _dataEvent.set();
+     }
+     _thread.join();
+ }
+@@ -539,7 +532,7 @@ result_t GS2LidarDriver::checkAutoConnecting() {
+ 
+     while (isAutoReconnect && isAutoconnting) {
+         {
+-            ScopedLocker l(_serial_lock);
++            ScopedLocker l(_cmd_lock);
+ 
+             if (_serial) {
+                 if (_serial->isOpen() || m_isConnected) {
+@@ -578,7 +571,7 @@ result_t GS2LidarDriver::checkAutoConnecting() {
+         if (isconnected()) {
+             delay(100);
+             {
+-                ScopedLocker l(_serial_lock);
++                ScopedLocker l(_cmd_lock);
+                 ans = startAutoScan();
+ 
+                 if (!IS_OK(ans)) {
+@@ -597,20 +590,18 @@ result_t GS2LidarDriver::checkAutoConnecting() {
+ 
+ }
+ 
+-int GS2LidarDriver::cacheScanData() {
++int GS2LidarDriver::cacheScanData()
++{
+     node_info      local_buf[200];
+     size_t         count = 200;
+-    node_info      local_scan[MAX_SCAN_NODES];
+     size_t         scan_count = 0;
+     result_t       ans = RESULT_FAIL;
+-    memset(local_scan, 0, sizeof(local_scan));
+ 
+-    flushSerial();
+-    waitScanData(local_buf, count);
+-
+-    int timeout_count   = 0;
++    int timeout_count = 0;
+     retryCount = 0;
+ 
++    m_isScanning = true;
++
+     while (m_isScanning)
+     {
+         count = 160;
+@@ -630,7 +621,6 @@ int GS2LidarDriver::cacheScanData() {
+ 
+                     if (IS_OK(ans)) {
+                         timeout_count = 0;
+-                        local_scan[0].sync_flag = Node_NotSync;
+                     } else {
+                         m_isScanning = false;
+                         return RESULT_FAIL;
+@@ -638,7 +628,6 @@ int GS2LidarDriver::cacheScanData() {
+                 }
+             } else {
+                 timeout_count++;
+-                local_scan[0].sync_flag = Node_NotSync;
+                 fprintf(stderr, "timeout count: %d\n", timeout_count);
+                 fflush(stderr);
+             }
+@@ -647,9 +636,6 @@ int GS2LidarDriver::cacheScanData() {
+             retryCount = 0;
+         }
+ 
+-        // printf("sync:%d,index:%d,moduleNum:%d\n",package_type,frameNum,moduleNum);
+-        // fflush(stdout);
+-
+         if (!isPrepareToSend) {
+             continue;
+         }
+@@ -663,17 +649,17 @@ int GS2LidarDriver::cacheScanData() {
+             }
+         }
+ 
+-        _lock.lock(); //timeout lock, wait resource copys
+-        scan_node_buf[0].stamp = local_buf[0].stamp;
+-        scan_node_buf[0].scan_frequence = local_buf[0].scan_frequence;
+-        scan_node_buf[0].index = 0x03 & (moduleNum >> 1); //gs2:  1, 2, 4
+-        scan_node_count = 160; //一个包固定160个数据
+-        // printf("count [%d] stamp [0x%016lX]\n", count, local_buf[count - 1].stamp);
+-        // fflush(stdout);
+-        _dataEvent.set();
+-        _lock.unlock();
+-        scan_count = 0;
+-        isPrepareToSend = false;
++        {
++            // printf("[YDLIDAR] GS2 points Stored in buffer %lu\n", count);
++            ScopedLocker l(_lock);
++            scan_node_buf[0].stamp = local_buf[0].stamp;
++            scan_node_buf[0].scan_frequence = local_buf[0].scan_frequence;
++            scan_node_buf[0].index = 0x03 & (moduleNum >> 1); // gs2:  1, 2, 4
++            scan_node_count = 160;                            // 一个包固定160个数据
++            _dataEvent.set();
++            scan_count = 0;
++            isPrepareToSend = false;
++        }
+     }
+ 
+     m_isScanning = false;
+@@ -811,7 +797,7 @@ result_t GS2LidarDriver::waitPackage(node_info *node, uint32_t timeout)
+             else
+             {
+                 recvPos = 0;
+-                printf("invalid gs2 data\n");
++                // printf("invalid gs2 data\n");
+                 continue;
+             }
+         }
+@@ -1132,25 +1118,20 @@ result_t GS2LidarDriver::grabScanData(node_info *nodebuffer, size_t &count,
+         count = 0;
+         return RESULT_TIMEOUT;
+ 
+-    case Event::EVENT_OK: {
+-        if (scan_node_count == 0) {
+-            return RESULT_FAIL;
+-        }
+-
++    case Event::EVENT_OK: 
++    {
+         ScopedLocker l(_lock);
+         size_t size_to_copy = min(count, scan_node_count);
+         memcpy(nodebuffer, scan_node_buf, size_to_copy * sizeof(node_info));
+         count = size_to_copy;
+         scan_node_count = 0;
+     }
+-
+         return RESULT_OK;
+ 
+     default:
+         count = 0;
+         return RESULT_FAIL;
+     }
+-
+ }
+ 
+ 
+@@ -1275,13 +1256,12 @@ result_t GS2LidarDriver::getDevicePara(gs_device_para &info, uint32_t timeout) {
+   disableDataGrabbing();
+   flushSerial();
+   {
+-    ScopedLocker l(_lock);
+-
++    ScopedLocker l(_cmd_lock);
+     if ((ans = sendCommand(GS_LIDAR_CMD_GET_PARAMETER)) != RESULT_OK) {
+       return ans;
+     }
+     gs_lidar_ans_header response_header;
+-    for(int i = 0; i < PackageMaxModuleNums; i++)
++    for (int i = 0; i < PackageMaxModuleNums && i < moduleCount; i++)
+     {
+         if ((ans = waitResponseHeader(&response_header, timeout)) != RESULT_OK) {
+           return ans;
+@@ -1344,7 +1324,7 @@ result_t GS2LidarDriver::setDeviceAddress(uint32_t timeout)
+     disableDataGrabbing();
+     flushSerial();
+     {
+-        ScopedLocker l(_lock);
++        ScopedLocker l(_cmd_lock);
+ 
+         if ((ans = sendCommand(GS_LIDAR_CMD_GET_ADDRESS)) != RESULT_OK) {
+             return ans;
+@@ -1354,12 +1334,12 @@ result_t GS2LidarDriver::setDeviceAddress(uint32_t timeout)
+         if ((ans = waitResponseHeader(&response_header, timeout)) != RESULT_OK) {
+             return ans;
+         }
+-
+         if (response_header.type != GS_LIDAR_CMD_GET_ADDRESS) {
+             return RESULT_FAIL;
+         }
+ 
+-        printf("[YDLIDAR] Lidar module count %d", (response_header.address << 1) + 1);
++        moduleCount = (response_header.address >> 1) + 1;
++        printf("[YDLIDAR] GS Lidar count %u\n", moduleCount);
+     }
+ 
+     return RESULT_OK;
+@@ -1427,13 +1407,12 @@ result_t GS2LidarDriver::startScan(bool force, uint32_t timeout) {
+ 
+     //获取GS2参数
+     gs_device_para gs2_info;
+-//    delay(30);
+-    getDevicePara(gs2_info, 300);  
+-//    delay(30);
++    ans = getDevicePara(gs2_info, 300);
++    if (IS_OK(ans))
+     {
+         flushSerial();
+ 
+-        ScopedLocker l(_lock);
++        ScopedLocker l(_cmd_lock);
+         if ((ans = sendCommand(force ? LIDAR_CMD_FORCE_SCAN : GS_LIDAR_CMD_SCAN)) !=
+                 RESULT_OK) {
+             return ans;
+@@ -1446,7 +1425,6 @@ result_t GS2LidarDriver::startScan(bool force, uint32_t timeout) {
+             if ((ans = waitResponseHeader(&response_header, timeout)) != RESULT_OK) {
+                 return ans;
+             }
+-
+             if (response_header.type != GS_LIDAR_ANS_SCAN) {
+                 printf("[CYdLidar] Response to start scan type error!\n");
+                 return RESULT_FAIL;
+@@ -1468,7 +1446,7 @@ result_t GS2LidarDriver::stopScan(uint32_t timeout) {
+         return RESULT_FAIL;
+     }
+ 
+-    ScopedLocker l(_lock);
++    ScopedLocker l(_cmd_lock);
+     
+     if ((ans = sendCommand(GS_LIDAR_CMD_STOP)) != RESULT_OK) {
+       return ans;
+@@ -1485,19 +1463,26 @@ result_t GS2LidarDriver::stopScan(uint32_t timeout) {
+     return RESULT_OK;
+ }
+ 
+-result_t GS2LidarDriver::createThread() {
++result_t GS2LidarDriver::createThread()
++{
++    // 如果线程已启动，则先退出线程
++    if (_thread.getHandle())
++    {
++        m_isScanning = false;
++        _thread.join();
++    }
+     _thread = CLASS_THREAD(GS2LidarDriver, cacheScanData);
+ 
+-    if (_thread.getHandle() == 0) {
+-        m_isScanning = false;
++    if (!_thread.getHandle()) {
+         return RESULT_FAIL;
+     }
+ 
+-    m_isScanning = true;
++    printf("[GS2Lidar] Create GS2 thread 0x%X\n", _thread.getHandle());
++    fflush(stdout);
++
+     return RESULT_OK;
+ }
+ 
+-
+ result_t GS2LidarDriver::startAutoScan(bool force, uint32_t timeout) {
+     result_t ans;
+ 
+@@ -1509,7 +1494,7 @@ result_t GS2LidarDriver::startAutoScan(bool force, uint32_t timeout) {
+     delay(10);
+     {
+ 
+-        ScopedLocker l(_lock);
++        ScopedLocker l(_cmd_lock);
+ 
+         if ((ans = sendCommand(force ? LIDAR_CMD_FORCE_SCAN : GS_LIDAR_CMD_SCAN)) !=
+                 RESULT_OK) {
+@@ -1536,10 +1521,10 @@ result_t GS2LidarDriver::startAutoScan(bool force, uint32_t timeout) {
+ /************************************************************************/
+ /*   stop scan                                                   */
+ /************************************************************************/
+-result_t GS2LidarDriver::stop() {
++result_t GS2LidarDriver::stop() 
++{
+     if (isAutoconnting) {
+         isAutoReconnect = false;
+-        m_isScanning = false;
+     }
+ 
+     disableDataGrabbing();
+@@ -1559,7 +1544,7 @@ result_t GS2LidarDriver::reset(uint8_t addr, uint32_t timeout) {
+         return RESULT_FAIL;
+     }
+ 
+-    ScopedLocker l(_lock);
++    ScopedLocker l(_cmd_lock);
+ 
+     if ((ans = sendCommand(addr, GS_LIDAR_CMD_RESET)) != RESULT_OK) {
+         return ans;
+@@ -1608,7 +1593,7 @@ result_t GS2LidarDriver::getDeviceInfo(device_info &info, uint32_t timeout)
+     disableDataGrabbing();
+ //    flushSerial();
+     {
+-        ScopedLocker l(_lock);
++        ScopedLocker l(_cmd_lock);
+ 
+         if ((ret = sendCommand(GS_LIDAR_CMD_GET_VERSION)) != RESULT_OK) {
+             return ret;
+@@ -1662,7 +1647,7 @@ result_t GS2LidarDriver::setWorkMode(int mode, uint8_t addr)
+     flushSerial();
+ 
+     {
+-        ScopedLocker l(_lock);
++        ScopedLocker l(_cmd_lock);
+         uint8_t m = uint8_t(mode);
+         if ((ans = sendCommand(addr, GS_LIDAR_CMD_SET_MODE, &m, 1)) != RESULT_OK) {
+             return ans;
+diff --git a/src/GS2LidarDriver.h b/src/GS2LidarDriver.h
+index 12cfdb9..17e1eef 100644
+--- a/src/GS2LidarDriver.h
++++ b/src/GS2LidarDriver.h
+@@ -511,18 +511,18 @@ public:
+     DEFAULT_TIMEOUT_COUNT = 1,
+   };
+ 
+-  node_info      *scan_node_buf;    ///< 激光点信息
+-  size_t         scan_node_count;   ///< 激光点数
+-  Event          _dataEvent;        ///< 数据同步事件
+-  Locker         _lock;				///< 线程锁
+-  Locker         _serial_lock;		///< 串口锁
+-  Thread 	     _thread;		   ///< 线程id
++  // node_info      *scan_node_buf;    ///< 激光点信息
++  // size_t         scan_node_count;   ///< 激光点数
++  // Event          _dataEvent;        ///< 数据同步事件
++  // Locker         _lock;				///< 线程锁
++  // Locker         _cmd_lock;		///< 串口锁
++  // Thread 	     _thread;		   ///< 线程id
+ 
+  private:
+   int PackageSampleBytes;            ///< 一个包包含的激光点数
+   serial::Serial *_serial;			///< 串口
+-  bool m_intensities;				///< 信号质量状体
+-  uint32_t m_baudrate;				///< 波特率
++  // bool m_intensities;				///< 信号质量状体
++  // uint32_t m_baudrate;				///< 波特率
+   bool isSupportMotorDtrCtrl;	    ///< 是否支持电机控制
+   uint32_t trans_delay;				///< 串口传输一个byte时间
+   int m_sampling_rate;              ///< 采样频率
+@@ -531,7 +531,7 @@ public:
+ 
+   gs2_node_package package;             ///< 带信号质量协议包
+ 
+-  uint16_t package_Sample_Index;    ///< 包采样点索引
++  // uint16_t package_Sample_Index;    ///< 包采样点索引
+   float IntervalSampleAngle;
+   float IntervalSampleAngle_LastPackage;
+   uint8_t CheckSum;                ///< 校验和
+@@ -543,9 +543,9 @@ public:
+   bool CheckSumResult;
+   uint16_t Valu8Tou16;
+ 
+-  std::string serial_port;///< 雷达端口
++  // std::string serial_port;///< 雷达端口
+   uint8_t *globalRecvBuffer;
+-  int retryCount;
++  // int retryCount;
+   bool has_device_header;
+   uint8_t last_device_byte;
+   int         asyncRecvPos;
+@@ -577,10 +577,10 @@ public:
+   bool isValidPoint;
+   uint8_t  package_Sample_Num;
+ 
+-  uint8_t   frameNum;  //帧序号
+-  uint8_t   moduleNum;  //模块编号
+-  bool      isPrepareToSend; //是否准备好发送
+-
++  uint8_t frameNum = 0;  //帧序号
++  uint8_t moduleNum = 0;  //模块编号
++  bool isPrepareToSend = false; //是否准备好发送
++  uint8_t moduleCount = 1; //当前模组数量
+   std::vector<GS2_Multi_Package>  multi_package;
+ };
+ 
+diff --git a/src/YDlidarDriver.cpp b/src/YDlidarDriver.cpp
+index d64e9ad..d811620 100644
+--- a/src/YDlidarDriver.cpp
++++ b/src/YDlidarDriver.cpp
+@@ -92,67 +92,74 @@ YDlidarDriver::YDlidarDriver(uint8_t type):
+   m_BlockRevSize = 0;
+ }
+ 
+-YDlidarDriver::~YDlidarDriver() {
+-  {
+-    m_isScanning = false;
+-  }
+-
++YDlidarDriver::~YDlidarDriver() 
++{
++  m_isScanning = false;
+   isAutoReconnect = false;
+   _thread.join();
+   delay(200);
+ 
+-  ScopedLocker lck(_cmd_lock);
+-
+-  if (_serial) {
+-    if (_serial->isOpen()) {
+-      _serial->flush();
+-      _serial->closePort();
++  {
++    ScopedLocker l(_cmd_lock);
++    if (_serial)
++    {
++      if (_serial->isOpen())
++      {
++        _serial->flush();
++        _serial->closePort();
++      }
++    }
++    if (_serial)
++    {
++      delete _serial;
++      _serial = NULL;
+     }
+   }
+ 
+-  if (_serial) {
+-    delete _serial;
+-    _serial = NULL;
+-  }
+-
+-  if (globalRecvBuffer) {
+-    delete[] globalRecvBuffer;
+-    globalRecvBuffer = NULL;
+-  }
++  {
++    ScopedLocker l(_lock);
++    if (globalRecvBuffer)
++    {
++      delete[] globalRecvBuffer;
++      globalRecvBuffer = NULL;
++    }
+ 
+-  if (scan_node_buf) {
+-    delete[] scan_node_buf;
+-    scan_node_buf = NULL;
++    if (scan_node_buf)
++    {
++      delete[] scan_node_buf;
++      scan_node_buf = NULL;
++    }
+   }
+ }
+ 
+-
+-result_t YDlidarDriver::connect(const char *port_path, uint32_t baudrate) {
+-  ScopedLocker lck(_cmd_lock);
++result_t YDlidarDriver::connect(const char *port_path, uint32_t baudrate) 
++{
+   m_baudrate = baudrate;
+   serial_port = string(port_path);
+ 
+-  if (!_serial) {
+-    if (m_TranformerType == YDLIDAR_TYPE_TCP) {
+-      _serial = new CActiveSocket();
+-    } else {
+-      _serial = new serial::Serial(port_path, m_baudrate,
+-                                   serial::Timeout::simpleTimeout(DEFAULT_TIMEOUT));
+-    }
+-
+-    _serial->bindport(port_path, baudrate);
+-  }
+-
+   {
+-    ScopedLocker l(_lock);
++    ScopedLocker l(_cmd_lock);
++    if (!_serial)
++    {
++      if (m_TranformerType == YDLIDAR_TYPE_TCP)
++      {
++        _serial = new CActiveSocket();
++      }
++      else
++      {
++        _serial = new serial::Serial(port_path, m_baudrate,
++                                     serial::Timeout::simpleTimeout(DEFAULT_TIMEOUT));
++      }
++      _serial->bindport(port_path, baudrate);
++    }
+ 
+-    if (!_serial->open()) {
++    if (!_serial->open())
++    {
+       setDriverError(NotOpenError);
+       return RESULT_FAIL;
+     }
+ 
+     m_isConnected = true;
+-
+   }
+ 
+   stopScan();
+@@ -217,8 +224,8 @@ void YDlidarDriver::disconnect() {
+ 
+   stop();
+   delay(10);
+-  ScopedLocker l(_cmd_lock);
+ 
++  ScopedLocker l(_cmd_lock);
+   if (_serial) {
+     if (_serial->isOpen()) {
+       _serial->closePort();
+@@ -226,7 +233,6 @@ void YDlidarDriver::disconnect() {
+   }
+ 
+   m_isConnected = false;
+-
+ }
+ 
+ 
+@@ -416,64 +422,81 @@ result_t YDlidarDriver::waitForData(size_t data_count, uint32_t timeout,
+   return (result_t)_serial->waitfordata(data_count, timeout, returned_size);
+ }
+ 
+-result_t YDlidarDriver::checkAutoConnecting(bool serialError) {
++result_t YDlidarDriver::checkAutoConnecting(bool serialError)
++{
+   result_t ans = RESULT_FAIL;
+   isAutoconnting = true;
+   m_InvalidNodeCount = 0;
+ 
+-  if (m_driverErrno != BlockError) {
++  if (m_driverErrno != BlockError)
++  {
+     setDriverError(TimeoutError);
+   }
+ 
+-
+-  while (isAutoReconnect && isAutoconnting) {
++  while (isAutoReconnect && isAutoconnting)
++  {
+     {
+       ScopedLocker l(_cmd_lock);
++      if (_serial)
++      {
++        if (_serial->isOpen() || m_isConnected)
++        {
++            size_t buffer_size = _serial->available();
++            m_BufferSize += buffer_size;
+ 
+-      if (_serial) {
+-        if (_serial->isOpen() || m_isConnected) {
+-          size_t buffer_size = _serial->available();
+-          m_BufferSize += buffer_size;
+-
+-          if (m_BufferSize && m_BufferSize % 7 == 0) {
+-            setDriverError(BlockError);
+-          } else {
+-            if (buffer_size > 0 || m_BufferSize > 0) {
+-              if (m_driverErrno != BlockError) {
+-                setDriverError(TrembleError);
++            if (m_BufferSize && m_BufferSize % 7 == 0)
++            {
++              setDriverError(BlockError);
++            }
++            else
++            {
++              if (buffer_size > 0 || m_BufferSize > 0)
++              {
++                if (m_driverErrno != BlockError)
++                {
++                  setDriverError(TrembleError);
++                }
++              }
++              else
++              {
++                setDriverError(NotBufferError);
+               }
+-            } else {
+-              setDriverError(NotBufferError);
+             }
+-          }
+ 
+-          if ((retryCount % 2 == 1) || serialError) {
+-            m_isConnected = false;
+-            _serial->closePort();
+-            delete _serial;
+-            _serial = NULL;
+-          } else {
+-            m_BufferSize -= buffer_size;
+-          }
++            if ((retryCount % 2 == 1) || serialError)
++            {
++              m_isConnected = false;
++              _serial->closePort();
++              delete _serial;
++              _serial = NULL;
++            }
++            else
++            {
++              m_BufferSize -= buffer_size;
++            }
+         }
+       }
+     }
+ 
+-    if (!m_isConnected && ((retryCount % 2 == 1) || serialError)) {
+-      if (!IS_OK(connect(serial_port.c_str(), m_baudrate))) {
++    if (!m_isConnected && ((retryCount % 2 == 1) || serialError))
++    {
++      if (!IS_OK(connect(serial_port.c_str(), m_baudrate)))
++      {
+         setDriverError(NotOpenError);
+       }
+     }
+ 
+     retryCount++;
+ 
+-    if (retryCount > 50) {
++    if (retryCount > 50)
++    {
+       retryCount = 50;
+     }
+ 
+     int tempCount = 0;
+ 
+-    while (isAutoReconnect && isscanning() && tempCount < retryCount) {
++    while (isAutoReconnect && isscanning() && tempCount < retryCount)
++    {
+       delay(200);
+       tempCount++;
+     }
+@@ -482,64 +505,76 @@ result_t YDlidarDriver::checkAutoConnecting(bool serialError) {
+     int retryConnect = 0;
+ 
+     while (isAutoReconnect &&
+-           connect(serial_port.c_str(), m_baudrate) != RESULT_OK) {
++           connect(serial_port.c_str(), m_baudrate) != RESULT_OK)
++    {
+       retryConnect++;
+ 
+-      if (retryConnect > 25) {
++      if (retryConnect > 25)
++      {
+         retryConnect = 25;
+       }
+ 
+       tempCount = 0;
+       setDriverError(NotOpenError);
+ 
+-      while (isAutoReconnect && isscanning() && tempCount < retryConnect) {
++      while (isAutoReconnect && isscanning() && tempCount < retryConnect)
++      {
+         delay(200);
+         tempCount++;
+       }
+     }
+ 
+-    if (!isAutoReconnect) {
++    if (!isAutoReconnect)
++    {
+       m_isScanning = false;
+       isAutoconnting = false;
+       return RESULT_FAIL;
+     }
+ 
+-    if (isconnected()) {
++    if (isconnected())
++    {
+       delay(50);
+ 
+-      if (!m_SingleChannel && m_driverErrno != BlockError) {
++      if (!m_SingleChannel && m_driverErrno != BlockError)
++      {
+         device_info devinfo;
+         ans = getDeviceInfo(devinfo);
+ 
+-        if (!IS_OK(ans)) {
+-          stopScan();
+-          ans = getDeviceInfo(devinfo);
++        if (!IS_OK(ans))
++        {
++            stopScan();
++            ans = getDeviceInfo(devinfo);
+         }
+ 
+-        if (!IS_OK(ans)) {
+-          setDriverError(DeviceNotFoundError);
+-          continue;
++        if (!IS_OK(ans))
++        {
++            setDriverError(DeviceNotFoundError);
++            continue;
+         }
+       }
+ 
+       {
+-        ScopedLocker l(_cmd_lock);
+         ans = startAutoScan();
+ 
+-        if (!IS_OK(ans)) {
+-          ans = startAutoScan();
++        if (!IS_OK(ans))
++        {
++            ans = startAutoScan();
+         }
+       }
+ 
+-      if (IS_OK(ans)) {
++      if (IS_OK(ans))
++      {
+         isAutoconnting = false;
+ 
+-        if (getDriverError() == DeviceNotFoundError) {
+-          setDriverError(NoError);
++        if (getDriverError() == DeviceNotFoundError)
++        {
++            setDriverError(NoError);
+         }
+ 
+         return ans;
+-      } else {
++      }
++      else
++      {
+         setDriverError(DeviceNotFoundError);
+       }
+     }
+@@ -547,7 +582,6 @@ result_t YDlidarDriver::checkAutoConnecting(bool serialError) {
+ 
+   isAutoconnting = false;
+   return RESULT_FAIL;
+-
+ }
+ 
+ result_t YDlidarDriver::autoHeartBeat() {
+@@ -555,7 +589,7 @@ result_t YDlidarDriver::autoHeartBeat() {
+     return RESULT_FAIL;
+   }
+ 
+-  ScopedLocker lock(_lock);
++  ScopedLocker l(_cmd_lock);
+   result_t ans = sendCommand(LIDAR_CMD_SCAN);
+   return ans;
+ }
+@@ -599,21 +633,23 @@ int YDlidarDriver::cacheScanData()
+         waitDevicePackage(1000);
+     }
+ 
+-    flushSerial();
+-    waitScanData(local_buf, count);
++    // flushSerial();
++    // waitScanData(local_buf, count);
+ 
+-    int timeout_count   = 0;
++    int timeout_count = 0;
+     retryCount = 0;
+     m_BufferSize = 0;
+     m_heartbeat_ts = getms();
+     bool m_last_frame_valid = false;
+ 
++    m_isScanning = true;
++
+     while (m_isScanning)
+     {
+         count = 128;
+         ans = waitScanData(local_buf, count, DEFAULT_TIMEOUT / 2);
+ 
+-        // printf("count %llu\n", count);
++        // printf("count %lu ret %d\n", count, ans);
+         // fflush(stdout);
+ 
+         if (!IS_OK(ans)) {
+@@ -668,9 +704,10 @@ int YDlidarDriver::cacheScanData()
+         {
+             if (local_buf[pos].sync_flag & LIDAR_RESP_MEASUREMENT_SYNCBIT)
+             {
++                // printf("[YDLIDAR] S2 points Stored in buffer start %lu\n", scan_count);
+                 if (local_scan[0].sync_flag & LIDAR_RESP_MEASUREMENT_SYNCBIT)
+                 {
+-                    _lock.lock();//timeout lock, wait resource copy
++                    ScopedLocker l(_lock);
+                     //将下一圈的第一个点的采集时间作为当前圈数据的采集时间
+ //                    local_scan[0].stamp = local_buf[pos].stamp;
+ //                    if (local_scan[0].stamp == 0) {
+@@ -681,7 +718,7 @@ int YDlidarDriver::cacheScanData()
+                     memcpy(scan_node_buf, local_scan, scan_count * sizeof(node_info));
+                     scan_node_count = scan_count;
+                     _dataEvent.set();
+-                    _lock.unlock();
++                    // printf("[YDLIDAR] S2 points Stored in buffer end %lu\n", scan_count);
+                 }
+ 
+                 scan_count = 0;
+@@ -928,14 +965,15 @@ result_t YDlidarDriver::parseResponseHeader(
+     size_t remainSize = PackagePaidBytes - recvPos;
+     size_t recvSize = 0;
+     ans = waitForData(remainSize, timeout - waitTime, &recvSize);
+-
+     if (!IS_OK(ans))
++    {
+       return ans;
++    }
+ 
+     if (recvSize > remainSize)
+       recvSize = remainSize;
+ 
+-    getData(globalRecvBuffer, recvSize);
++    ans = getData(globalRecvBuffer, recvSize);
+     // printf("recv: ");
+     // printHex(globalRecvBuffer, recvSize);
+ 
+@@ -1273,6 +1311,7 @@ void YDlidarDriver::calcutePackageCT() {
+     package_CT = packages.package_CT;
+     nowPackageNum = packages.nowPackageNum;
+   }
++  // printf("[YDLIDAR] S2 pack points %u\n", nowPackageNum);
+ }
+ 
+ void YDlidarDriver::parseNodeDebugFromBuffer(node_info *node)
+@@ -1414,7 +1453,8 @@ void YDlidarDriver::parseNodeFromeBuffer(node_info *node)
+ 
+     package_Sample_Index ++;
+ 
+-    if (package_Sample_Index >= nowPackageNum) {
++    if (package_Sample_Index >= nowPackageNum) 
++    {
+         package_Sample_Index = 0;
+         CheckSumResult = false;
+     }
+@@ -1485,36 +1525,37 @@ result_t YDlidarDriver::waitScanData(
+     return RESULT_FAIL;
+ }
+ 
+-
+-result_t YDlidarDriver::grabScanData(node_info *nodebuffer, size_t &count,
+-                                     uint32_t timeout) {
+-  switch (_dataEvent.wait(timeout)) {
++result_t YDlidarDriver::grabScanData(node_info *nodebuffer,
++                                     size_t &count,
++                                     uint32_t timeout)
++{
++    switch (_dataEvent.wait(timeout))
++    {
+     case Event::EVENT_TIMEOUT:
+-      count = 0;
+-      return RESULT_TIMEOUT;
++        count = 0;
++        return RESULT_TIMEOUT;
+ 
+-    case Event::EVENT_OK: {
+-      if (scan_node_count == 0) {
+-        return RESULT_FAIL;
+-      }
++    case Event::EVENT_OK:
++    {
++        ScopedLocker l(_lock);
++        // if (scan_node_count == 0)
++        // {
++        //     return RESULT_FAIL;
++        // }
+ 
+-      ScopedLocker l(_lock);
+-      size_t size_to_copy = min(count, scan_node_count);
+-      memcpy(nodebuffer, scan_node_buf, size_to_copy * sizeof(node_info));
+-      count = size_to_copy;
+-      scan_node_count = 0;
++        size_t size_to_copy = min(count, scan_node_count);
++        memcpy(nodebuffer, scan_node_buf, size_to_copy * sizeof(node_info));
++        count = size_to_copy;
++        scan_node_count = 0;
+     }
+-
+-    return RESULT_OK;
++        return RESULT_OK;
+ 
+     default:
+-      count = 0;
+-      return RESULT_FAIL;
+-  }
+-
++        count = 0;
++        return RESULT_FAIL;
++    }
+ }
+ 
+-
+ result_t YDlidarDriver::ascendScanData(node_info *nodebuffer, size_t count) {
+   float inc_origin_angle = (float)360.0 / count;
+   int i = 0;
+@@ -1645,7 +1686,7 @@ result_t YDlidarDriver::getHealth(device_health &health, uint32_t timeout) {
+   disableDataGrabbing();
+   flushSerial();
+   {
+-    ScopedLocker l(_lock);
++    ScopedLocker l(_cmd_lock);
+ 
+     if ((ans = sendCommand(LIDAR_CMD_GET_DEVICE_HEALTH)) != RESULT_OK) {
+       return ans;
+@@ -1702,7 +1743,7 @@ result_t YDlidarDriver::getDeviceInfo(device_info &info, uint32_t timeout) {
+ //  disableDataGrabbing();
+   flushSerial();
+   {
+-    ScopedLocker l(_lock);
++    ScopedLocker l(_cmd_lock);
+ 
+     if ((ans = sendCommand(LIDAR_CMD_GET_DEVICE_INFO)) != RESULT_OK) {
+       return ans;
+@@ -1843,8 +1884,7 @@ result_t YDlidarDriver::startScan(bool force, uint32_t timeout)
+   flushSerial();
+   delay(30);
+   {
+-    ScopedLocker l(_lock);
+-
++    ScopedLocker l(_cmd_lock);
+     if ((ans = sendCommand(force ? LIDAR_CMD_FORCE_SCAN : LIDAR_CMD_SCAN)) !=
+         RESULT_OK)
+     {
+@@ -1890,7 +1930,7 @@ result_t YDlidarDriver::stopScan(uint32_t timeout) {
+     return RESULT_FAIL;
+   }
+ 
+-  ScopedLocker l(_lock);
++  ScopedLocker l(_cmd_lock);
+   sendCommand(LIDAR_CMD_FORCE_STOP);
+   delay(5);
+   sendCommand(LIDAR_CMD_STOP);
+@@ -1898,15 +1938,24 @@ result_t YDlidarDriver::stopScan(uint32_t timeout) {
+   return RESULT_OK;
+ }
+ 
+-result_t YDlidarDriver::createThread() {
++result_t YDlidarDriver::createThread() 
++{
++  //如果线程已启动，则先退出线程
++  if (_thread.getHandle())
++  {
++    m_isScanning = false;
++    _thread.join();
++  }
++
+   _thread = CLASS_THREAD(YDlidarDriver, cacheScanData);
+ 
+-  if (_thread.getHandle() == 0) {
+-    m_isScanning = false;
++  if (!_thread.getHandle()) {
+     return RESULT_FAIL;
+   }
+ 
+-  m_isScanning = true;
++  printf("[YDlidar] Create thread 0x%X\n", _thread.getHandle());
++  fflush(stdout);
++
+   return RESULT_OK;
+ }
+ 
+@@ -1922,7 +1971,7 @@ result_t YDlidarDriver::startAutoScan(bool force, uint32_t timeout) {
+   delay(10);
+   {
+ 
+-    ScopedLocker l(_lock);
++    ScopedLocker l(_cmd_lock);
+ 
+     if ((ans = sendCommand(force ? LIDAR_CMD_FORCE_SCAN : LIDAR_CMD_SCAN)) !=
+         RESULT_OK) {
+@@ -1984,7 +2033,7 @@ result_t YDlidarDriver::reset(uint32_t timeout) {
+     return RESULT_FAIL;
+   }
+ 
+-  ScopedLocker l(_lock);
++  ScopedLocker l(_cmd_lock);
+ 
+   if ((ans = sendCommand(LIDAR_CMD_RESET)) != RESULT_OK) {
+     return ans;
+@@ -1997,7 +2046,7 @@ result_t YDlidarDriver::reset(uint32_t timeout) {
+ /*  startMotor                                                          */
+ /************************************************************************/
+ result_t YDlidarDriver::startMotor() {
+-  ScopedLocker l(_lock);
++  ScopedLocker l(_cmd_lock);
+ 
+   if (m_SupportMotorDtrCtrl) {
+     setDTR();
+@@ -2014,7 +2063,7 @@ result_t YDlidarDriver::startMotor() {
+ /*  stopMotor                                                           */
+ /************************************************************************/
+ result_t YDlidarDriver::stopMotor() {
+-  ScopedLocker l(_lock);
++  ScopedLocker l(_cmd_lock);
+ 
+   if (m_SupportMotorDtrCtrl) {
+     clearDTR();
+@@ -2041,7 +2090,7 @@ result_t YDlidarDriver::getScanFrequency(scan_frequency &frequency,
+   disableDataGrabbing();
+   flushSerial();
+   {
+-    ScopedLocker l(_lock);
++    ScopedLocker l(_cmd_lock);
+ 
+     if ((ans = sendCommand(LIDAR_CMD_GET_AIMSPEED)) != RESULT_OK) {
+       return ans;
+@@ -2084,7 +2133,7 @@ result_t YDlidarDriver::setScanFrequencyAdd(scan_frequency &frequency,
+   disableDataGrabbing();
+   flushSerial();
+   {
+-    ScopedLocker l(_lock);
++    ScopedLocker l(_cmd_lock);
+ 
+     if ((ans = sendCommand(LIDAR_CMD_SET_AIMSPEED_ADD)) != RESULT_OK) {
+       return ans;
+@@ -2127,7 +2176,7 @@ result_t YDlidarDriver::setScanFrequencyDis(scan_frequency &frequency,
+   disableDataGrabbing();
+   flushSerial();
+   {
+-    ScopedLocker l(_lock);
++    ScopedLocker l(_cmd_lock);
+ 
+     if ((ans = sendCommand(LIDAR_CMD_SET_AIMSPEED_DIS)) != RESULT_OK) {
+       return ans;
+@@ -2170,7 +2219,7 @@ result_t YDlidarDriver::setScanFrequencyAddMic(scan_frequency &frequency,
+   disableDataGrabbing();
+   flushSerial();
+   {
+-    ScopedLocker l(_lock);
++    ScopedLocker l(_cmd_lock);
+ 
+     if ((ans = sendCommand(LIDAR_CMD_SET_AIMSPEED_ADDMIC)) != RESULT_OK) {
+       return ans;
+@@ -2213,7 +2262,7 @@ result_t YDlidarDriver::setScanFrequencyDisMic(scan_frequency &frequency,
+   disableDataGrabbing();
+   flushSerial();
+   {
+-    ScopedLocker l(_lock);
++    ScopedLocker l(_cmd_lock);
+ 
+     if ((ans = sendCommand(LIDAR_CMD_SET_AIMSPEED_DISMIC)) != RESULT_OK) {
+       return ans;
+@@ -2255,7 +2304,7 @@ result_t YDlidarDriver::getSamplingRate(sampling_rate &rate, uint32_t timeout) {
+   disableDataGrabbing();
+   flushSerial();
+   {
+-    ScopedLocker l(_lock);
++    ScopedLocker l(_cmd_lock);
+ 
+     if ((ans = sendCommand(LIDAR_CMD_GET_SAMPLING_RATE)) != RESULT_OK) {
+       return ans;
+@@ -2298,7 +2347,7 @@ result_t YDlidarDriver::setSamplingRate(sampling_rate &rate, uint32_t timeout) {
+   disableDataGrabbing();
+   flushSerial();
+   {
+-    ScopedLocker l(_lock);
++    ScopedLocker l(_cmd_lock);
+ 
+     if ((ans = sendCommand(LIDAR_CMD_SET_SAMPLING_RATE)) != RESULT_OK) {
+       return ans;
+@@ -2341,7 +2390,7 @@ result_t YDlidarDriver::getZeroOffsetAngle(offset_angle &angle,
+   disableDataGrabbing();
+   flushSerial();
+   {
+-    ScopedLocker l(_lock);
++    ScopedLocker l(_cmd_lock);
+ 
+     if ((ans = sendCommand(LIDAR_CMD_GET_OFFSET_ANGLE)) != RESULT_OK) {
+       return ans;
+@@ -2384,7 +2433,7 @@ result_t YDlidarDriver::setScanHeartbeat(scan_heart_beat &beat,
+   disableDataGrabbing();
+   flushSerial();
+   {
+-    ScopedLocker l(_lock);
++    ScopedLocker l(_cmd_lock);
+ 
+     if ((ans = sendCommand(LIDAR_CMD_SET_HEART_BEAT)) != RESULT_OK) {
+       return ans;
+@@ -2426,7 +2475,7 @@ result_t YDlidarDriver::getAutoZeroOffsetAngle(offset_angle &angle,
+ 
+   flushSerial();
+   {
+-    ScopedLocker l(_lock);
++    ScopedLocker l(_cmd_lock);
+ 
+     if ((ans = sendCommand(LIDAR_CMD_GET_OFFSET_ANGLE)) != RESULT_OK) {
+       return ans;
+-- 
+2.34.1
+

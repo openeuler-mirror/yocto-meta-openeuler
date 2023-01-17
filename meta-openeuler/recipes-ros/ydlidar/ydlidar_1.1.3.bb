@@ -1,0 +1,40 @@
+DESCRIPTION = "ydlidar driver"                         
+SECTION = "devel"
+LICENSE = "MIT"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=4e320231d59c825e45dbfda066af29c9"
+
+inherit cmake
+PV="1.1.3"
+
+OPENEULER_REPO_NAME = "yocto-embedded-tools"
+OPENEULER_LOCAL_NAME = "ros-dev-tools"
+OPENEULER_BRANCH = "dev_ros"
+OPENEULER_GIT_SPACE = "openeuler"
+
+SRC_URI = "file://${OPENEULER_LOCAL_NAME}/ros_depends/${BPN}/V${PV}.tar.gz \
+        file://0001-GS2.patch \
+        file://0002-windows.patch \
+        file://0003-GS1.patch \
+        file://0004-S2-Pro.patch \
+        file://0005-GS2-S2.patch \
+        "
+ 
+S = "${WORKDIR}/YDLidar-SDK-${PV}"
+ 
+SRC_URI[md5sum] = "10d97fd77d76f1f754ef40b90a36ba17"
+SRC_URI[sha256sum] = "88284d8fe5e567120d73d6967b840538f3f1975182db0ef0eb8233ac69023d1b"
+
+DEPENDS = "swig-native python3"
+
+
+FILES_${PN}-dev += "/usr/share /usr/lib/cmake"
+FILES_${PN}-staticdev += "/usr/lib/libydlidar_sdk.a"
+FILES_${PN} += "/usr/startup /usr/lib/python*"
+
+# fix pkgconfig installdir conflict
+do_configure_prepend_class-target() {
+    if [ -f ${S}/cmake/install_package.cmake ]; then
+        cat ${S}/cmake/install_package.cmake | grep "share/pkgconfig" || sed -i 's:lib/pkgconfig:share/pkgconfig:g' ${S}/cmake/install_package.cmake
+    fi
+}
+

@@ -1,0 +1,117 @@
+From 0440c9fc2b88d89b3e082346e915ade384d51dc3 Mon Sep 17 00:00:00 2001
+From: zhanyiaini <zhanyiaita@sina.cn>
+Date: Mon, 29 Aug 2022 10:53:18 +0800
+Subject: [PATCH 1/5] =?UTF-8?q?=E4=BF=AE=E6=94=B9GS2=E6=97=A0=E6=97=B6?=
+ =?UTF-8?q?=E9=97=B4=E6=88=B3=E9=97=AE=E9=A2=98?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ samples/gs_test.cpp    |  3 ++-
+ src/CYdLidar.cpp       |  2 +-
+ src/GS2LidarDriver.cpp | 30 ++++++++++++++++++------------
+ 3 files changed, 21 insertions(+), 14 deletions(-)
+
+diff --git a/samples/gs_test.cpp b/samples/gs_test.cpp
+index b560f6b..3143666 100644
+--- a/samples/gs_test.cpp
++++ b/samples/gs_test.cpp
+@@ -237,8 +237,9 @@ int main(int argc, char *argv[])
+   {
+     if (laser.doProcessSimple(scan))
+     {
+-      printf("[%lu] points module num [%d] env flag [0x%04X]\n",
++      printf("[%lu] points in [0x%016lX] module num [%d] env flag [0x%04X]\n",
+              scan.points.size(),
++             scan.stamp,
+              scan.moduleNum,
+              scan.envFlag);
+ 
+diff --git a/src/CYdLidar.cpp b/src/CYdLidar.cpp
+index 1f11b0c..ec89bbf 100644
+--- a/src/CYdLidar.cpp
++++ b/src/CYdLidar.cpp
+@@ -647,7 +647,7 @@ bool CYdLidar::doProcessSimple(LaserScan &outscan)
+     }
+ 
+     outscan.config.angle_increment = math::from_degrees(m_field_of_view) /
+-                                     (all_node_count - 1);
++      (all_node_count - 1);
+ 
+     float range = 0.0;
+     float intensity = 0.0;
+diff --git a/src/GS2LidarDriver.cpp b/src/GS2LidarDriver.cpp
+index 17ce6f2..d6193fc 100644
+--- a/src/GS2LidarDriver.cpp
++++ b/src/GS2LidarDriver.cpp
+@@ -650,24 +650,25 @@ int GS2LidarDriver::cacheScanData() {
+         // printf("sync:%d,index:%d,moduleNum:%d\n",package_type,frameNum,moduleNum);
+         // fflush(stdout);
+ 
+-        if(!isPrepareToSend){
++        if (!isPrepareToSend) {
+             continue;
+         }
+ 
+         size_t size = multi_package.size();
+-        for(size_t i = 0;i < size; i++){
+-            if(multi_package[i].frameNum == frameNum && multi_package[i].moduleNum == moduleNum){
+-                memcpy(scan_node_buf,multi_package[i].all_points,sizeof (node_info) * 160);
++        for (size_t i = 0;i < size; i++) {
++            if (multi_package[i].frameNum == frameNum && 
++                multi_package[i].moduleNum == moduleNum) {
++                memcpy(scan_node_buf, multi_package[i].all_points, sizeof(node_info) * 160);
+                 break;
+             }
+         }
+ 
+-        _lock.lock();//timeout lock, wait resource copys
+-        scan_node_buf[0].stamp = local_buf[count - 1].stamp;
+-        scan_node_buf[0].scan_frequence = local_buf[count - 1].scan_frequence;
+-        scan_node_buf[0].index = 0x03 & (moduleNum >> 1);//gs2:  1, 2, 4
++        _lock.lock(); //timeout lock, wait resource copys
++        scan_node_buf[0].stamp = local_buf[0].stamp;
++        scan_node_buf[0].scan_frequence = local_buf[0].scan_frequence;
++        scan_node_buf[0].index = 0x03 & (moduleNum >> 1); //gs2:  1, 2, 4
+         scan_node_count = 160; //一个包固定160个数据
+-        // printf("send frameNum: %d,moduleNum: %d\n",frameNum,moduleNum);
++        // printf("count [%d] stamp [0x%016lX]\n", count, local_buf[count - 1].stamp);
+         // fflush(stdout);
+         _dataEvent.set();
+         _lock.unlock();
+@@ -754,6 +755,11 @@ result_t GS2LidarDriver::waitPackage(node_info *node, uint32_t timeout)
+                     break;
+ 
+                 case 4:
++                    if (currentByte == LIDAR_ANS_SYNC_BYTE1) //如果出现超过4个包头标识的情况
++                    {
++                        recvPos = 4;
++                        continue;
++                    }
+                     moduleNum = currentByte;
+                     CheckSumCal = currentByte;
+                     break;
+@@ -871,7 +877,7 @@ result_t GS2LidarDriver::waitPackage(node_info *node, uint32_t timeout)
+         }
+     }
+ 
+-    (*node).stamp = 0;
++    (*node).stamp = getTime();
+ 
+     if (CheckSumResult)
+     {
+@@ -1103,8 +1109,8 @@ result_t GS2LidarDriver::waitScanData(
+             }
+             addPointsToVec(nodebuffer, recvNodeCount);
+ 
+-            nodebuffer[recvNodeCount - 1].stamp = size * trans_delay + delayTime;
+-            nodebuffer[recvNodeCount - 1].scan_frequence = node.scan_frequence;
++            // nodebuffer[recvNodeCount - 1].stamp = size * trans_delay + delayTime;
++            // nodebuffer[recvNodeCount - 1].scan_frequence = node.scan_frequence;
+             count = recvNodeCount;
+             return RESULT_OK;
+         }
+-- 
+2.34.1
+
