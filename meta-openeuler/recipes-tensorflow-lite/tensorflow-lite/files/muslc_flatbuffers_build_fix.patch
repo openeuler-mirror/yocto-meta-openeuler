@@ -1,0 +1,1474 @@
+diff -urpN a/tensorflow/lite/tools/cmake/modules/CMakeLists.txt b/tensorflow/lite/tools/cmake/modules/CMakeLists.txt
+--- a/tensorflow/lite/tools/cmake/modules/CMakeLists.txt	1970-01-01 00:00:00.000000000 +0000
++++ b/tensorflow/lite/tools/cmake/modules/CMakeLists.txt	2022-12-20 04:19:29.398028620 +0000
+@@ -0,0 +1,759 @@
++# This is the legacy minimum version flatbuffers supported for a while.
++cmake_minimum_required(VERSION 2.8.12)
++
++# CMake version 3.16 is the 'de-facto' minimum version for flatbuffers. If the
++# current cmake is older than this, warn the user and include the legacy file to
++# provide some level of support.
++if(CMAKE_VERSION VERSION_LESS 3.16)
++  message(WARNING "Using cmake version ${CMAKE_VERSION} which is older than "
++  "our target version of 3.16. This will use the legacy CMakeLists.txt that "
++  "supports version 2.8.12 and higher, but not actively maintained. Consider "
++  "upgrading cmake to a newer version, as this may become a fatal error in the "
++  "future.")
++  # Use the legacy version of CMakeLists.txt
++  include(CMake/CMakeLists_legacy.cmake.in)
++  return()
++endif()
++
++if (POLICY CMP0048)
++  cmake_policy(SET CMP0048 NEW)
++  project(FlatBuffers
++        DESCRIPTION "Flatbuffers serialization library"
++        VERSION 2.0.0
++        LANGUAGES CXX)
++else()
++  project(FlatBuffers)
++endif (POLICY CMP0048)
++
++include(CMake/Version.cmake)
++
++# generate compile_commands.json
++set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
++
++# NOTE: Code coverage only works on Linux & OSX.
++option(FLATBUFFERS_CODE_COVERAGE "Enable the code coverage build option." OFF)
++option(FLATBUFFERS_BUILD_TESTS "Enable the build of tests and samples." ON)
++option(FLATBUFFERS_INSTALL "Enable the installation of targets." ON)
++option(FLATBUFFERS_BUILD_FLATLIB "Enable the build of the flatbuffers library"
++       ON)
++option(FLATBUFFERS_BUILD_FLATC "Enable the build of the flatbuffers compiler"
++       ON)
++option(FLATBUFFERS_STATIC_FLATC "Build flatbuffers compiler with -static flag"
++       OFF)
++option(FLATBUFFERS_BUILD_FLATHASH "Enable the build of flathash" ON)
++option(FLATBUFFERS_BUILD_BENCHMARKS "Enable the build of flatbenchmark. \"
++       Requires C++11."
++       OFF)
++option(FLATBUFFERS_BUILD_GRPCTEST "Enable the build of grpctest" OFF)
++option(FLATBUFFERS_BUILD_SHAREDLIB
++       "Enable the build of the flatbuffers shared library"
++       OFF)
++option(FLATBUFFERS_LIBCXX_WITH_CLANG "Force libc++ when using Clang" ON)
++# NOTE: Sanitizer check only works on Linux & OSX (gcc & llvm).
++option(FLATBUFFERS_CODE_SANITIZE
++      "Add '-fsanitize' flags to 'flattests' and 'flatc' targets."
++      OFF)
++option(FLATBUFFERS_PACKAGE_REDHAT
++       "Build an rpm using the 'package' target."
++       OFF)
++option(FLATBUFFERS_PACKAGE_DEBIAN
++       "Build an deb using the 'package' target."
++       OFF)
++option(FLATBUFFERS_BUILD_CPP17
++       "Enable the build of c++17 test target. \"
++       Requirements: Clang6, GCC7, MSVC2017 (_MSC_VER >= 1914)  or higher."
++       OFF)
++option(FLATBUFFERS_BUILD_LEGACY
++       "Run C++ code generator with '--cpp-std c++0x' switch."
++       OFF)
++option(FLATBUFFERS_ENABLE_PCH
++       "Enable precompile headers support for 'flatbuffers' and 'flatc'. \"
++        Only work if CMake supports 'target_precompile_headers'. \"
++        This can speed up compilation time."
++       OFF)
++option(FLATBUFFERS_SKIP_MONSTER_EXTRA 
++      "Skip generating monster_extra.fbs that contains non-supported numerical\"
++      types." OFF)
++option(FLATBUFFERS_OSX_BUILD_UNIVERSAL
++      "Enable the build for multiple architectures on OS X (arm64, x86_64)."
++      ON)
++
++if(NOT FLATBUFFERS_BUILD_FLATC AND FLATBUFFERS_BUILD_TESTS)
++    message(WARNING
++    "Cannot build tests without building the compiler. Tests will be disabled.")
++    set(FLATBUFFERS_BUILD_TESTS OFF)
++endif()
++
++if(DEFINED FLATBUFFERS_MAX_PARSING_DEPTH)
++  # Override the default recursion depth limit.
++  add_definitions(-DFLATBUFFERS_MAX_PARSING_DEPTH=${FLATBUFFERS_MAX_PARSING_DEPTH})
++  message(STATUS "FLATBUFFERS_MAX_PARSING_DEPTH: ${FLATBUFFERS_MAX_PARSING_DEPTH}")
++endif()
++
++# Auto-detect locale-narrow 'strtod_l' and  'strtoull_l' functions.
++if(NOT DEFINED FLATBUFFERS_LOCALE_INDEPENDENT)
++  include(CheckCXXSymbolExists)
++
++  set(FLATBUFFERS_LOCALE_INDEPENDENT 1)
++  if(MSVC)
++    check_cxx_symbol_exists(_strtof_l stdlib.h FLATBUFFERS_HAS_STRTOF_L)
++    check_cxx_symbol_exists(_strtoui64_l stdlib.h FLATBUFFERS_HAS_STRTOULL_L)
++  else()
++    check_cxx_symbol_exists(strtof_l stdlib.h FLATBUFFERS_HAS_STRTOF_L)
++    check_cxx_symbol_exists(strtoull_l stdlib.h FLATBUFFERS_HAS_STRTOULL_L)
++  endif()
++  if(FLATBUFFERS_HAS_STRTOF_L AND FLATBUFFERS_HAS_STRTOULL_L)
++    set(FLATBUFFERS_LOCALE_INDEPENDENT 1)
++  endif()
++endif()
++add_definitions(-DFLATBUFFERS_LOCALE_INDEPENDENT=$<BOOL:${FLATBUFFERS_LOCALE_INDEPENDENT}>)
++
++set(FlatBuffers_Library_SRCS
++  include/flatbuffers/allocator.h
++  include/flatbuffers/array.h
++  include/flatbuffers/base.h
++  include/flatbuffers/bfbs_generator.h
++  include/flatbuffers/buffer.h
++  include/flatbuffers/buffer_ref.h
++  include/flatbuffers/default_allocator.h
++  include/flatbuffers/detached_buffer.h
++  include/flatbuffers/flatbuffer_builder.h
++  include/flatbuffers/flatbuffers.h
++  include/flatbuffers/flexbuffers.h
++  include/flatbuffers/hash.h
++  include/flatbuffers/idl.h
++  include/flatbuffers/minireflect.h
++  include/flatbuffers/reflection.h
++  include/flatbuffers/reflection_generated.h
++  include/flatbuffers/registry.h
++  include/flatbuffers/stl_emulation.h
++  include/flatbuffers/string.h
++  include/flatbuffers/struct.h
++  include/flatbuffers/table.h
++  include/flatbuffers/util.h
++  include/flatbuffers/vector.h
++  include/flatbuffers/vector_downward.h
++  include/flatbuffers/verifier.h
++  src/idl_parser.cpp
++  src/idl_gen_text.cpp
++  src/reflection.cpp
++  src/util.cpp
++)
++
++set(FlatBuffers_Compiler_SRCS
++  ${FlatBuffers_Library_SRCS}
++  src/idl_gen_cpp.cpp
++  src/idl_gen_csharp.cpp
++  src/idl_gen_dart.cpp
++  src/idl_gen_kotlin.cpp
++  src/idl_gen_go.cpp
++  src/idl_gen_java.cpp
++  src/idl_gen_ts.cpp
++  src/idl_gen_php.cpp
++  src/idl_gen_python.cpp
++  src/idl_gen_lobster.cpp
++  src/idl_gen_lua.cpp
++  src/idl_gen_rust.cpp
++  src/idl_gen_fbs.cpp
++  src/idl_gen_grpc.cpp
++  src/idl_gen_json_schema.cpp
++  src/idl_gen_swift.cpp
++  src/flatc.cpp
++  src/flatc_main.cpp
++  src/bfbs_gen.h
++  src/bfbs_gen_lua.h
++  include/flatbuffers/code_generators.h
++  src/bfbs_gen_lua.cpp
++  src/code_generators.cpp
++  grpc/src/compiler/schema_interface.h
++  grpc/src/compiler/cpp_generator.h
++  grpc/src/compiler/cpp_generator.cc
++  grpc/src/compiler/go_generator.h
++  grpc/src/compiler/go_generator.cc
++  grpc/src/compiler/java_generator.h
++  grpc/src/compiler/java_generator.cc
++  grpc/src/compiler/python_generator.h
++  grpc/src/compiler/python_generator.cc
++  grpc/src/compiler/swift_generator.h
++  grpc/src/compiler/swift_generator.cc
++  grpc/src/compiler/ts_generator.h
++  grpc/src/compiler/ts_generator.cc
++)
++
++set(FlatHash_SRCS
++  include/flatbuffers/hash.h
++  src/flathash.cpp
++)
++
++set(FlatBuffers_Tests_SRCS
++  ${FlatBuffers_Library_SRCS}
++  src/idl_gen_fbs.cpp
++  tests/test.cpp
++  tests/test_assert.h
++  tests/test_assert.cpp
++  tests/test_builder.h
++  tests/test_builder.cpp
++  tests/native_type_test_impl.h
++  tests/native_type_test_impl.cpp
++  include/flatbuffers/code_generators.h
++  src/code_generators.cpp
++  # file generate by running compiler on tests/monster_test.fbs
++  ${CMAKE_CURRENT_BINARY_DIR}/tests/monster_test_generated.h
++  # file generate by running compiler on namespace_test/namespace_test1.fbs
++  ${CMAKE_CURRENT_BINARY_DIR}/tests/namespace_test/namespace_test1_generated.h
++  ${CMAKE_CURRENT_BINARY_DIR}/tests/namespace_test/namespace_test2_generated.h
++  # file generate by running compiler on union_vector/union_vector.fbs
++  ${CMAKE_CURRENT_BINARY_DIR}/tests/union_vector/union_vector_generated.h
++  # file generate by running compiler on tests/arrays_test.fbs
++  ${CMAKE_CURRENT_BINARY_DIR}/tests/arrays_test_generated.h
++  # file generate by running compiler on tests/native_type_test.fbs
++  ${CMAKE_CURRENT_BINARY_DIR}/tests/native_type_test_generated.h
++  # file generate by running compiler on tests/monster_extra.fbs
++  ${CMAKE_CURRENT_BINARY_DIR}/tests/monster_extra_generated.h
++  # file generate by running compiler on tests/monster_test.fbs
++  ${CMAKE_CURRENT_BINARY_DIR}/tests/monster_test_bfbs_generated.h
++  # file generate by running compiler on tests/optional_scalars.fbs
++  ${CMAKE_CURRENT_BINARY_DIR}/tests/optional_scalars_generated.h
++)
++
++set(FlatBuffers_Tests_CPP17_SRCS
++  ${FlatBuffers_Library_SRCS}
++  tests/test_assert.h
++  tests/test_assert.cpp
++  tests/cpp17/test_cpp17.cpp
++  # file generate by running compiler on tests/monster_test.fbs
++  ${CMAKE_CURRENT_BINARY_DIR}/tests/cpp17/generated_cpp17/monster_test_generated.h
++  ${CMAKE_CURRENT_BINARY_DIR}/tests/monster_test_generated.h
++  ${CMAKE_CURRENT_BINARY_DIR}/tests/cpp17/generated_cpp17/optional_scalars_generated.h
++  ${CMAKE_CURRENT_BINARY_DIR}/tests/optional_scalars_generated.h
++)
++
++set(FlatBuffers_Sample_Binary_SRCS
++  include/flatbuffers/flatbuffers.h
++  samples/sample_binary.cpp
++  # file generated by running compiler on samples/monster.fbs
++  ${CMAKE_CURRENT_BINARY_DIR}/samples/monster_generated.h
++)
++
++set(FlatBuffers_Sample_Text_SRCS
++  ${FlatBuffers_Library_SRCS}
++  samples/sample_text.cpp
++  # file generated by running compiler on samples/monster.fbs
++  ${CMAKE_CURRENT_BINARY_DIR}/samples/monster_generated.h
++)
++
++set(FlatBuffers_Sample_BFBS_SRCS
++  ${FlatBuffers_Library_SRCS}
++  samples/sample_bfbs.cpp
++  # file generated by running compiler on samples/monster.fbs
++  ${CMAKE_CURRENT_BINARY_DIR}/samples/monster_generated.h
++)
++
++set(FlatBuffers_GRPCTest_SRCS
++  include/flatbuffers/flatbuffers.h
++  include/flatbuffers/grpc.h
++  include/flatbuffers/util.h
++  src/util.cpp
++  tests/monster_test.grpc.fb.h
++  tests/test_assert.h
++  tests/test_builder.h
++  tests/monster_test.grpc.fb.cc
++  tests/test_assert.cpp
++  tests/test_builder.cpp
++  grpc/tests/grpctest.cpp
++  grpc/tests/message_builder_test.cpp
++  # file generate by running compiler on tests/monster_test.fbs
++  ${CMAKE_CURRENT_BINARY_DIR}/tests/monster_test_generated.h
++)
++
++# source_group(Compiler FILES ${FlatBuffers_Compiler_SRCS})
++# source_group(Tests FILES ${FlatBuffers_Tests_SRCS})
++
++if(EXISTS "${CMAKE_TOOLCHAIN_FILE}")
++  # do not apply any global settings if the toolchain
++  # is being configured externally
++  message(STATUS "Using toolchain file: ${CMAKE_TOOLCHAIN_FILE}.")
++elseif(CMAKE_COMPILER_IS_GNUCXX)
++  if(CYGWIN)
++    set(CMAKE_CXX_FLAGS
++      "${CMAKE_CXX_FLAGS} -std=gnu++11")
++  else(CYGWIN)
++    set(CMAKE_CXX_FLAGS
++      "${CMAKE_CXX_FLAGS} -std=c++0x")
++  endif(CYGWIN)
++  set(CMAKE_CXX_FLAGS
++    "${CMAKE_CXX_FLAGS} -Wall -pedantic -Werror -Wextra -Werror=shadow")
++  set(FLATBUFFERS_PRIVATE_CXX_FLAGS "-Wold-style-cast")
++  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 4.4)
++    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 7.0)
++      set(CMAKE_CXX_FLAGS
++        "${CMAKE_CXX_FLAGS} -faligned-new -Werror=implicit-fallthrough=2")
++    endif()
++    set(CMAKE_CXX_FLAGS
++      "${CMAKE_CXX_FLAGS} -Wno-unused-result -Wno-error=unused-result -Wno-unused-parameter -Wno-error=unused-parameter")
++  endif()
++
++  # Certain platforms such as ARM do not use signed chars by default
++  # which causes issues with certain bounds checks.
++  set(CMAKE_CXX_FLAGS
++    "${CMAKE_CXX_FLAGS} -fsigned-char")
++
++# MSVC **MUST** come before the Clang check, as clang-cl is flagged by CMake as "MSVC", but it still textually 
++# matches as Clang in its Compiler Id :)
++# Note: in CMake >= 3.14 we can check CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "GNU" or "MSVC" to differentiate...
++elseif(MSVC)
++  # Visual Studio pedantic build settings
++  # warning C4512: assignment operator could not be generated
++  # warning C4316: object allocated on the heap may not be aligned
++  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4 /WX /wd4512 /wd4316")
++
++  if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
++    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_CRT_SECURE_NO_WARNINGS")
++  endif()
++
++elseif(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
++  if(APPLE)
++    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
++
++    if(FLATBUFFERS_OSX_BUILD_UNIVERSAL)
++      set(CMAKE_OSX_ARCHITECTURES "arm64;x86_64")
++    endif()
++  else()
++    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
++  endif()
++
++  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Werror -Wextra -Wno-unused-parameter")
++  set(FLATBUFFERS_PRIVATE_CXX_FLAGS "-Wold-style-cast")
++  if(NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.8)
++    list(APPEND FLATBUFFERS_PRIVATE_CXX_FLAGS "-Wimplicit-fallthrough" "-Wextra-semi" "-Werror=unused-private-field") # enable warning
++  endif()
++  if(FLATBUFFERS_LIBCXX_WITH_CLANG)
++    if(NOT "${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
++      set(CMAKE_CXX_FLAGS
++          "${CMAKE_CXX_FLAGS} -stdlib=libc++")
++    endif()
++    if(NOT ("${CMAKE_SYSTEM_NAME}" MATCHES "FreeBSD" OR
++            "${CMAKE_SYSTEM_NAME}" MATCHES "Linux"))
++      set(CMAKE_EXE_LINKER_FLAGS
++          "${CMAKE_EXE_LINKER_FLAGS} -lc++abi")
++    endif()
++  endif()
++
++  # Certain platforms such as ARM do not use signed chars by default
++  # which causes issues with certain bounds checks.
++  set(CMAKE_CXX_FLAGS
++    "${CMAKE_CXX_FLAGS} -fsigned-char")
++
++endif()
++
++# Append FLATBUFFERS_CXX_FLAGS to CMAKE_CXX_FLAGS.
++if(DEFINED FLATBUFFERS_CXX_FLAGS AND NOT EXISTS "${CMAKE_TOOLCHAIN_FILE}")
++  message(STATUS "extend CXX_FLAGS with ${FLATBUFFERS_CXX_FLAGS}")
++  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLATBUFFERS_CXX_FLAGS}")
++endif()
++message(STATUS "CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
++
++if(FLATBUFFERS_CODE_COVERAGE)
++  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fprofile-arcs -ftest-coverage")
++  set(CMAKE_EXE_LINKER_FLAGS
++      "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage")
++endif()
++
++function(add_fsanitize_to_target _target _sanitizer)
++  if(WIN32)
++    target_compile_definitions(${_target} PRIVATE FLATBUFFERS_MEMORY_LEAK_TRACKING)
++    message(STATUS "Sanitizer MSVC::_CrtDumpMemoryLeaks added to ${_target}")
++  else()
++    # FLATBUFFERS_CODE_SANITIZE: boolean {ON,OFF,YES,NO} or string with list of sanitizer.
++    # List of sanitizer is string starts with '=': "=address,undefined,thread,memory".
++    if((${CMAKE_CXX_COMPILER_ID} MATCHES "Clang") OR
++      ((${CMAKE_CXX_COMPILER_ID} MATCHES "GNU") AND NOT (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.9"))
++    )
++      set(_sanitizer_flags "=address,undefined")
++      if(_sanitizer MATCHES "=.*")
++        # override default by user-defined sanitizer list
++        set(_sanitizer_flags ${_sanitizer})
++      endif()
++      target_compile_options(${_target} PRIVATE
++        -g -fsigned-char -fno-omit-frame-pointer
++        "-fsanitize${_sanitizer_flags}")
++      target_link_libraries(${_target} PRIVATE
++        "-fsanitize${_sanitizer_flags}")
++      set_property(TARGET ${_target} PROPERTY POSITION_INDEPENDENT_CODE ON)
++      message(STATUS "Sanitizer ${_sanitizer_flags} added to ${_target}")
++    endif()
++  endif()
++endfunction()
++
++function(add_pch_to_target _target _pch_header)
++  if(COMMAND target_precompile_headers)
++    target_precompile_headers(${_target} PRIVATE ${_pch_header})
++    if(NOT MSVC)
++      set_source_files_properties(src/util.cpp PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
++    endif()
++  endif()
++endfunction()
++
++include_directories(include)
++include_directories(grpc)
++
++if(FLATBUFFERS_BUILD_FLATLIB)
++  add_library(flatbuffers STATIC ${FlatBuffers_Library_SRCS})
++  # Attach header directory for when build via add_subdirectory().
++  target_include_directories(flatbuffers INTERFACE
++    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
++  target_compile_options(flatbuffers PRIVATE "${FLATBUFFERS_PRIVATE_CXX_FLAGS}")
++  if(FLATBUFFERS_ENABLE_PCH)
++    add_pch_to_target(flatbuffers include/flatbuffers/pch/pch.h)
++  endif()
++endif()
++
++if(FLATBUFFERS_BUILD_FLATC)
++  add_executable(flatc ${FlatBuffers_Compiler_SRCS})
++  if(FLATBUFFERS_ENABLE_PCH)
++    add_pch_to_target(flatc include/flatbuffers/pch/flatc_pch.h)
++  endif()
++  target_compile_options(flatc PRIVATE "${FLATBUFFERS_PRIVATE_CXX_FLAGS}")
++  if(FLATBUFFERS_CODE_SANITIZE AND NOT WIN32)
++    add_fsanitize_to_target(flatc ${FLATBUFFERS_CODE_SANITIZE})
++  endif()
++  if(NOT FLATBUFFERS_FLATC_EXECUTABLE)
++    set(FLATBUFFERS_FLATC_EXECUTABLE $<TARGET_FILE:flatc>)
++  endif()
++  if(MSVC)
++    # Make flatc.exe not depend on runtime dlls for easy distribution.
++    target_compile_options(flatc PUBLIC $<$<CONFIG:Release>:/MT>)
++  endif()
++  if(FLATBUFFERS_STATIC_FLATC AND NOT MSVC)
++    target_link_libraries(flatc PRIVATE -static)
++  endif()
++endif()
++
++if(FLATBUFFERS_BUILD_FLATHASH)
++  add_executable(flathash ${FlatHash_SRCS})
++endif()
++
++if(FLATBUFFERS_BUILD_SHAREDLIB)
++  add_library(flatbuffers_shared SHARED ${FlatBuffers_Library_SRCS})
++
++  # Shared object version: "major.minor.micro"
++  # - micro updated every release when there is no API/ABI changes
++  # - minor updated when there are additions in API/ABI
++  # - major (ABI number) updated when there are changes in ABI (or removals)
++  set(FlatBuffers_Library_SONAME_MAJOR ${VERSION_MAJOR})
++  set(FlatBuffers_Library_SONAME_FULL "${FlatBuffers_Library_SONAME_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
++  set_target_properties(flatbuffers_shared PROPERTIES OUTPUT_NAME flatbuffers
++                        SOVERSION "${FlatBuffers_Library_SONAME_MAJOR}"
++                        VERSION "${FlatBuffers_Library_SONAME_FULL}")
++  if(FLATBUFFERS_ENABLE_PCH)
++    add_pch_to_target(flatbuffers_shared include/flatbuffers/pch/pch.h)
++  endif()
++endif()
++
++# Global list of generated files.
++# Use the global property to be independent of PARENT_SCOPE.
++set_property(GLOBAL PROPERTY FBS_GENERATED_OUTPUTS)
++
++function(get_generated_output generated_files)
++  get_property(tmp GLOBAL PROPERTY FBS_GENERATED_OUTPUTS)
++  set(${generated_files} ${tmp} PARENT_SCOPE)
++endfunction(get_generated_output)
++
++function(register_generated_output file_name)
++  get_property(tmp GLOBAL PROPERTY FBS_GENERATED_OUTPUTS)
++  list(APPEND tmp ${file_name})
++  set_property(GLOBAL PROPERTY FBS_GENERATED_OUTPUTS ${tmp})
++endfunction(register_generated_output)
++
++function(compile_flatbuffers_schema_to_cpp_opt SRC_FBS OPT)
++  if(FLATBUFFERS_BUILD_LEGACY)
++    set(OPT ${OPT};--cpp-std c++0x)
++  else()
++    # --cpp-std is defined by flatc default settings.
++  endif()
++  message(STATUS "`${SRC_FBS}`: add generation of C++ code with '${OPT}'")
++  get_filename_component(SRC_FBS_DIR ${SRC_FBS} PATH)
++  string(REGEX REPLACE "\\.fbs$" "_generated.h" GEN_HEADER ${SRC_FBS})
++  add_custom_command(
++    OUTPUT ${GEN_HEADER}
++    COMMAND "${FLATBUFFERS_FLATC_EXECUTABLE}"
++            --cpp --gen-mutable --gen-object-api --reflect-names
++            --cpp-ptr-type flatbuffers::unique_ptr # Used to test with C++98 STLs
++            ${OPT}
++            -I "${CMAKE_CURRENT_SOURCE_DIR}/tests/include_test"
++            -o "${SRC_FBS_DIR}"
++            "${CMAKE_CURRENT_SOURCE_DIR}/${SRC_FBS}"
++    DEPENDS flatc
++    COMMENT "Run generation: '${GEN_HEADER}'")
++  register_generated_output(${GEN_HEADER})
++endfunction()
++
++function(compile_flatbuffers_schema_to_cpp SRC_FBS)
++  compile_flatbuffers_schema_to_cpp_opt(${SRC_FBS} "--no-includes;--gen-compare")
++endfunction()
++
++function(compile_flatbuffers_schema_to_binary SRC_FBS)
++  message(STATUS "`${SRC_FBS}`: add generation of binary (.bfbs) schema")
++  get_filename_component(SRC_FBS_DIR ${SRC_FBS} PATH)
++  string(REGEX REPLACE "\\.fbs$" ".bfbs" GEN_BINARY_SCHEMA ${SRC_FBS})
++  # For details about flags see generate_code.py
++  add_custom_command(
++    OUTPUT ${GEN_BINARY_SCHEMA}
++    COMMAND "${FLATBUFFERS_FLATC_EXECUTABLE}"
++            -b --schema --bfbs-comments --bfbs-builtins
++            --bfbs-filenames ${SRC_FBS_DIR}
++            -I "${CMAKE_CURRENT_SOURCE_DIR}/tests/include_test"
++            -o "${SRC_FBS_DIR}"
++            "${CMAKE_CURRENT_SOURCE_DIR}/${SRC_FBS}"
++    DEPENDS flatc
++    COMMENT "Run generation: '${GEN_BINARY_SCHEMA}'")
++  register_generated_output(${GEN_BINARY_SCHEMA})
++endfunction()
++
++function(compile_flatbuffers_schema_to_embedded_binary SRC_FBS OPT)
++  if(FLATBUFFERS_BUILD_LEGACY)
++    set(OPT ${OPT};--cpp-std c++0x)
++  else()
++    # --cpp-std is defined by flatc default settings.
++  endif()
++  message(STATUS "`${SRC_FBS}`: add generation of C++ embedded binary schema code with '${OPT}'")
++  get_filename_component(SRC_FBS_DIR ${SRC_FBS} PATH)
++  string(REGEX REPLACE "\\.fbs$" "_bfbs_generated.h" GEN_BFBS_HEADER ${SRC_FBS})
++  # For details about flags see generate_code.py
++  add_custom_command(
++          OUTPUT ${GEN_BFBS_HEADER}
++          COMMAND "${FLATBUFFERS_FLATC_EXECUTABLE}"
++          --cpp --gen-mutable --gen-object-api --reflect-names
++          --cpp-ptr-type flatbuffers::unique_ptr # Used to test with C++98 STLs
++          ${OPT}
++          --bfbs-comments --bfbs-builtins --bfbs-gen-embed
++          --bfbs-filenames ${SRC_FBS_DIR}
++          -I "${CMAKE_CURRENT_SOURCE_DIR}/tests/include_test"
++          -o "${SRC_FBS_DIR}"
++          "${CMAKE_CURRENT_SOURCE_DIR}/${SRC_FBS}"
++          DEPENDS flatc
++          COMMENT "Run generation: '${GEN_BFBS_HEADER}'")
++  register_generated_output(${GEN_BFBS_HEADER})
++endfunction()
++
++# Look if we have python 3.5 installed so that we can run the generate code
++# python script after flatc is built.
++find_package(Python3 3.5 COMPONENTS Interpreter)
++
++if(Python3_Interpreter_FOUND)
++  set(GENERATION_OPTS --flatc "${FLATBUFFERS_FLATC_EXECUTABLE}")
++  if(FLATBUFFERS_BUILD_LEGACY)
++    # Need to set --cpp-std c++-0x options
++    set(GENERATION_OPTS ${GENERATION_OPTS}--cpp-0x)
++  endif()
++  if(FLATBUFFERS_SKIP_MONSTER_EXTRA)
++    set(GENERATION_OPTS ${GENERATION_OPTS} --skip-monster-extra)
++  endif()
++  add_custom_command(
++    TARGET flatc
++    POST_BUILD
++    COMMAND ${Python3_EXECUTABLE} scripts/generate_code.py ${GENERATION_OPTS} --skip-gen-reflection
++    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
++    COMMENT "Running scripts/generate_code.py..."
++    VERBATIM)
++else()
++  message("No Python3 interpreter found! Unable to generate files automatically.")
++endif()
++
++if(FLATBUFFERS_BUILD_TESTS)
++  file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/tests" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
++  file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/samples" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
++
++  # TODO Add (monster_test.fbs monsterdata_test.json)->monsterdata_test.mon
++  compile_flatbuffers_schema_to_cpp(tests/monster_test.fbs)
++  compile_flatbuffers_schema_to_binary(tests/monster_test.fbs)
++  compile_flatbuffers_schema_to_cpp_opt(tests/namespace_test/namespace_test1.fbs "--no-includes;--gen-compare;--gen-name-strings")
++  compile_flatbuffers_schema_to_cpp_opt(tests/namespace_test/namespace_test2.fbs "--no-includes;--gen-compare;--gen-name-strings")
++  compile_flatbuffers_schema_to_cpp_opt(tests/union_vector/union_vector.fbs "--no-includes;--gen-compare;--gen-name-strings")
++  compile_flatbuffers_schema_to_cpp(tests/optional_scalars.fbs)
++  compile_flatbuffers_schema_to_cpp_opt(tests/native_type_test.fbs "")
++  compile_flatbuffers_schema_to_cpp_opt(tests/arrays_test.fbs "--scoped-enums;--gen-compare")
++  compile_flatbuffers_schema_to_binary(tests/arrays_test.fbs)
++  compile_flatbuffers_schema_to_embedded_binary(tests/monster_test.fbs "--no-includes;--gen-compare")
++  if(NOT (MSVC AND (MSVC_VERSION LESS 1900)))
++    compile_flatbuffers_schema_to_cpp(tests/monster_extra.fbs) # Test floating-point NAN/INF.
++  endif()
++  include_directories(${CMAKE_CURRENT_BINARY_DIR}/tests)
++  add_executable(flattests ${FlatBuffers_Tests_SRCS})
++  add_dependencies(flattests generated_code)
++  set_property(TARGET flattests
++    PROPERTY COMPILE_DEFINITIONS FLATBUFFERS_TRACK_VERIFIER_BUFFER_SIZE
++    FLATBUFFERS_DEBUG_VERIFICATION_FAILURE=1)
++  if(FLATBUFFERS_CODE_SANITIZE)
++    add_fsanitize_to_target(flattests ${FLATBUFFERS_CODE_SANITIZE})
++  endif()
++
++  compile_flatbuffers_schema_to_cpp(samples/monster.fbs)
++  compile_flatbuffers_schema_to_binary(samples/monster.fbs)
++  include_directories(${CMAKE_CURRENT_BINARY_DIR}/samples)
++  add_executable(flatsamplebinary ${FlatBuffers_Sample_Binary_SRCS})
++  add_dependencies(flatsamplebinary generated_code)
++  add_executable(flatsampletext ${FlatBuffers_Sample_Text_SRCS})
++  add_dependencies(flatsampletext generated_code)
++  add_executable(flatsamplebfbs ${FlatBuffers_Sample_BFBS_SRCS})
++  add_dependencies(flatsamplebfbs generated_code)
++
++  if(FLATBUFFERS_BUILD_CPP17)
++    # Don't generate header for flattests_cpp17 target.
++    # This target uses "generated_cpp17/monster_test_generated.h"
++    # produced by direct call of generate_code.py script.
++    add_executable(flattests_cpp17 ${FlatBuffers_Tests_CPP17_SRCS})
++    add_dependencies(flattests_cpp17 generated_code)
++    target_compile_features(flattests_cpp17 PRIVATE cxx_std_17)
++    target_compile_definitions(flattests_cpp17 PRIVATE
++      FLATBUFFERS_TRACK_VERIFIER_BUFFER_SIZE
++      FLATBUFFERS_DEBUG_VERIFICATION_FAILURE=1
++    )
++    if(FLATBUFFERS_CODE_SANITIZE)
++      add_fsanitize_to_target(flattests_cpp17 ${FLATBUFFERS_CODE_SANITIZE})
++    endif()
++  endif(FLATBUFFERS_BUILD_CPP17)
++endif()
++
++if(FLATBUFFERS_BUILD_GRPCTEST)
++  if(CMAKE_COMPILER_IS_GNUCXX)
++    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-parameter -Wno-shadow")
++  endif()
++  if(NOT GRPC_INSTALL_PATH)
++    message(SEND_ERROR "GRPC_INSTALL_PATH variable is not defined. See grpc/README.md")
++  endif()
++  if(NOT PROTOBUF_DOWNLOAD_PATH)
++    message(SEND_ERROR "PROTOBUF_DOWNLOAD_PATH variable is not defined. See grpc/README.md")
++  endif()
++  INCLUDE_DIRECTORIES(${GRPC_INSTALL_PATH}/include)
++  INCLUDE_DIRECTORIES(${PROTOBUF_DOWNLOAD_PATH}/src)
++  find_package(Threads REQUIRED)
++  list(APPEND CMAKE_PREFIX_PATH ${GRPC_INSTALL_PATH})
++  find_package(absl CONFIG REQUIRED)
++  find_package(protobuf CONFIG REQUIRED)
++  find_package(gRPC CONFIG REQUIRED)
++  add_executable(grpctest ${FlatBuffers_GRPCTest_SRCS})
++  add_dependencies(grpctest generated_code)
++  target_link_libraries(grpctest PRIVATE gRPC::grpc++_unsecure gRPC::grpc_unsecure gRPC::gpr pthread dl)
++  if(FLATBUFFERS_CODE_SANITIZE AND NOT WIN32)
++    # GRPC test has problems with alignment and will fail under ASAN/UBSAN.
++    # add_fsanitize_to_target(grpctest ${FLATBUFFERS_CODE_SANITIZE})
++  endif()
++endif()
++
++
++if(FLATBUFFERS_INSTALL)
++  include(GNUInstallDirs)
++
++  install(DIRECTORY include/flatbuffers DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
++
++  set(FB_CMAKE_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/flatbuffers")
++
++  configure_file(CMake/FlatbuffersConfigVersion.cmake.in FlatbuffersConfigVersion.cmake @ONLY)
++  install(
++      FILES "CMake/FlatbuffersConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/FlatbuffersConfigVersion.cmake"
++      DESTINATION ${FB_CMAKE_DIR}
++  )
++
++  if(FLATBUFFERS_BUILD_FLATLIB)
++    install(
++      TARGETS flatbuffers EXPORT FlatbuffersTargets
++      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
++      INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
++    )
++
++    install(EXPORT FlatbuffersTargets
++      FILE FlatbuffersTargets.cmake
++      NAMESPACE flatbuffers::
++      DESTINATION ${FB_CMAKE_DIR}
++    )
++  endif()
++
++  if(FLATBUFFERS_BUILD_FLATC)
++    install(
++      TARGETS flatc EXPORT FlatcTargets
++      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
++    )
++
++    install(
++      EXPORT FlatcTargets
++      FILE FlatcTargets.cmake
++      NAMESPACE flatbuffers::
++      DESTINATION ${FB_CMAKE_DIR}
++    )
++  endif()
++
++  if(FLATBUFFERS_BUILD_SHAREDLIB)
++    install(
++      TARGETS flatbuffers_shared EXPORT FlatbuffersSharedTargets
++      ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
++      RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR}
++      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
++      INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
++    )
++
++    install(
++      EXPORT FlatbuffersSharedTargets
++      FILE FlatbuffersSharedTargets.cmake
++      NAMESPACE flatbuffers::
++      DESTINATION ${FB_CMAKE_DIR}
++    )
++  endif()
++
++  if(FLATBUFFERS_BUILD_SHAREDLIB OR FLATBUFFERS_BUILD_FLATLIB)
++      configure_file(CMake/flatbuffers.pc.in flatbuffers.pc @ONLY)
++      install(
++        FILES "${CMAKE_CURRENT_BINARY_DIR}/flatbuffers.pc"
++        DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
++      )
++  endif()
++endif()
++
++if(FLATBUFFERS_BUILD_TESTS)
++  enable_testing()
++
++  add_test(NAME flattests COMMAND flattests)
++  if(FLATBUFFERS_BUILD_CPP17)
++    add_test(NAME flattests_cpp17 COMMAND flattests_cpp17)
++  endif()
++  if(FLATBUFFERS_BUILD_GRPCTEST)
++    add_test(NAME grpctest COMMAND grpctest)
++  endif()
++endif()
++
++# This target is sync-barrier.
++# Other generate-dependent targets can depend on 'generated_code' only.
++get_generated_output(fbs_generated)
++if(fbs_generated)
++  # message(STATUS "Add generated_code target with files:${fbs_generated}")
++  add_custom_target(generated_code
++    DEPENDS ${fbs_generated}
++    COMMENT "All generated files were updated.")
++endif()
++
++include(CMake/BuildFlatBuffers.cmake)
++
++if(UNIX)
++    # Use of CPack only supported on Linux systems.
++    if(FLATBUFFERS_PACKAGE_DEBIAN)
++        include(CMake/PackageDebian.cmake)
++        include(CPack)
++    endif()
++    if (FLATBUFFERS_PACKAGE_REDHAT)
++        include(CMake/PackageRedhat.cmake)
++        include(CPack)
++    endif()
++endif()
++
++# Include for running Google Benchmarks.
++if(FLATBUFFERS_BUILD_BENCHMARKS)
++  add_subdirectory(benchmarks)
++endif()
++
++# Add FlatBuffers::FlatBuffers interface, needed for FetchContent_Declare
++add_library(FlatBuffers INTERFACE)
++add_library(FlatBuffers::FlatBuffers ALIAS FlatBuffers)
++target_include_directories(
++  FlatBuffers
++  INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
++            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/include>)
+diff -urpN a/tensorflow/lite/tools/cmake/modules/flatbuffers.cmake b/tensorflow/lite/tools/cmake/modules/flatbuffers.cmake
+--- a/tensorflow/lite/tools/cmake/modules/flatbuffers.cmake	2022-12-20 04:18:48.307640627 +0000
++++ b/tensorflow/lite/tools/cmake/modules/flatbuffers.cmake	2022-12-20 04:20:00.481322112 +0000
+@@ -34,6 +34,13 @@ if(NOT flatbuffers_POPULATED)
+   OverridableFetchContent_Populate(flatbuffers)
+ endif()
+ 
++execute_process(
++   COMMAND cp ${CMAKE_CURRENT_LIST_DIR}/util.h ${CMAKE_BINARY_DIR}/flatbuffers/include/flatbuffers/util.h
++   COMMAND cp ${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt ${CMAKE_BINARY_DIR}/flatbuffers/CMakeLists.txt
++   WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
++)
++
++
+ option(FLATBUFFERS_BUILD_TESTS OFF)
+ # Required for Windows, since it has macros called min & max which
+ # clashes with std::min
+diff -urpN a/tensorflow/lite/tools/cmake/modules/util.h b/tensorflow/lite/tools/cmake/modules/util.h
+--- a/tensorflow/lite/tools/cmake/modules/util.h	1970-01-01 00:00:00.000000000 +0000
++++ b/tensorflow/lite/tools/cmake/modules/util.h	2022-12-20 04:19:24.444981851 +0000
+@@ -0,0 +1,690 @@
++/*
++ * Copyright 2014 Google Inc. All rights reserved.
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License");
++ * you may not use this file except in compliance with the License.
++ * You may obtain a copy of the License at
++ *
++ *     http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software
++ * distributed under the License is distributed on an "AS IS" BASIS,
++ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++ * See the License for the specific language governing permissions and
++ * limitations under the License.
++ */
++
++#ifndef FLATBUFFERS_UTIL_H_
++#define FLATBUFFERS_UTIL_H_
++
++#include <ctype.h>
++#include <errno.h>
++
++#include "flatbuffers/base.h"
++#include "flatbuffers/stl_emulation.h"
++
++#ifndef FLATBUFFERS_PREFER_PRINTF
++#  include <iomanip>
++#  include <sstream>
++#else  // FLATBUFFERS_PREFER_PRINTF
++#  include <float.h>
++#  include <stdio.h>
++#endif  // FLATBUFFERS_PREFER_PRINTF
++
++#include <string>
++
++namespace flatbuffers {
++
++// @locale-independent functions for ASCII characters set.
++
++// Fast checking that character lies in closed range: [a <= x <= b]
++// using one compare (conditional branch) operator.
++inline bool check_ascii_range(char x, char a, char b) {
++  FLATBUFFERS_ASSERT(a <= b);
++  // (Hacker's Delight): `a <= x <= b` <=> `(x-a) <={u} (b-a)`.
++  // The x, a, b will be promoted to int and subtracted without overflow.
++  return static_cast<unsigned int>(x - a) <= static_cast<unsigned int>(b - a);
++}
++
++// Case-insensitive isalpha
++inline bool is_alpha(char c) {
++  // ASCII only: alpha to upper case => reset bit 0x20 (~0x20 = 0xDF).
++  return check_ascii_range(c & 0xDF, 'a' & 0xDF, 'z' & 0xDF);
++}
++
++// Check for uppercase alpha
++inline bool is_alpha_upper(char c) { return check_ascii_range(c, 'A', 'Z'); }
++
++// Check (case-insensitive) that `c` is equal to alpha.
++inline bool is_alpha_char(char c, char alpha) {
++  FLATBUFFERS_ASSERT(is_alpha(alpha));
++  // ASCII only: alpha to upper case => reset bit 0x20 (~0x20 = 0xDF).
++  return ((c & 0xDF) == (alpha & 0xDF));
++}
++
++// https://en.cppreference.com/w/cpp/string/byte/isxdigit
++// isdigit and isxdigit are the only standard narrow character classification
++// functions that are not affected by the currently installed C locale. although
++// some implementations (e.g. Microsoft in 1252 codepage) may classify
++// additional single-byte characters as digits.
++inline bool is_digit(char c) { return check_ascii_range(c, '0', '9'); }
++
++inline bool is_xdigit(char c) {
++  // Replace by look-up table.
++  return is_digit(c) || check_ascii_range(c & 0xDF, 'a' & 0xDF, 'f' & 0xDF);
++}
++
++// Case-insensitive isalnum
++inline bool is_alnum(char c) { return is_alpha(c) || is_digit(c); }
++
++inline char CharToUpper(char c) {
++  return static_cast<char>(::toupper(static_cast<unsigned char>(c)));
++}
++
++inline char CharToLower(char c) {
++  return static_cast<char>(::tolower(static_cast<unsigned char>(c)));
++}
++
++// @end-locale-independent functions for ASCII character set
++
++#ifdef FLATBUFFERS_PREFER_PRINTF
++template<typename T> size_t IntToDigitCount(T t) {
++  size_t digit_count = 0;
++  // Count the sign for negative numbers
++  if (t < 0) digit_count++;
++  // Count a single 0 left of the dot for fractional numbers
++  if (-1 < t && t < 1) digit_count++;
++  // Count digits until fractional part
++  T eps = std::numeric_limits<T>::epsilon();
++  while (t <= (-1 + eps) || (1 - eps) <= t) {
++    t /= 10;
++    digit_count++;
++  }
++  return digit_count;
++}
++
++template<typename T> size_t NumToStringWidth(T t, int precision = 0) {
++  size_t string_width = IntToDigitCount(t);
++  // Count the dot for floating point numbers
++  if (precision) string_width += (precision + 1);
++  return string_width;
++}
++
++template<typename T>
++std::string NumToStringImplWrapper(T t, const char *fmt, int precision = 0) {
++  size_t string_width = NumToStringWidth(t, precision);
++  std::string s(string_width, 0x00);
++  // Allow snprintf to use std::string trailing null to detect buffer overflow
++  snprintf(const_cast<char *>(s.data()), (s.size() + 1), fmt, string_width, t);
++  return s;
++}
++#endif  // FLATBUFFERS_PREFER_PRINTF
++
++// Convert an integer or floating point value to a string.
++// In contrast to std::stringstream, "char" values are
++// converted to a string of digits, and we don't use scientific notation.
++template<typename T> std::string NumToString(T t) {
++  // clang-format off
++
++  #ifndef FLATBUFFERS_PREFER_PRINTF
++    std::stringstream ss;
++    ss << t;
++    return ss.str();
++  #else // FLATBUFFERS_PREFER_PRINTF
++    auto v = static_cast<long long>(t);
++    return NumToStringImplWrapper(v, "%.*lld");
++  #endif // FLATBUFFERS_PREFER_PRINTF
++  // clang-format on
++}
++// Avoid char types used as character data.
++template<> inline std::string NumToString<signed char>(signed char t) {
++  return NumToString(static_cast<int>(t));
++}
++template<> inline std::string NumToString<unsigned char>(unsigned char t) {
++  return NumToString(static_cast<int>(t));
++}
++template<> inline std::string NumToString<char>(char t) {
++  return NumToString(static_cast<int>(t));
++}
++
++// Special versions for floats/doubles.
++template<typename T> std::string FloatToString(T t, int precision) {
++  // clang-format off
++
++  #ifndef FLATBUFFERS_PREFER_PRINTF
++    // to_string() prints different numbers of digits for floats depending on
++    // platform and isn't available on Android, so we use stringstream
++    std::stringstream ss;
++    // Use std::fixed to suppress scientific notation.
++    ss << std::fixed;
++    // Default precision is 6, we want that to be higher for doubles.
++    ss << std::setprecision(precision);
++    ss << t;
++    auto s = ss.str();
++  #else // FLATBUFFERS_PREFER_PRINTF
++    auto v = static_cast<double>(t);
++    auto s = NumToStringImplWrapper(v, "%0.*f", precision);
++  #endif // FLATBUFFERS_PREFER_PRINTF
++  // clang-format on
++  // Sadly, std::fixed turns "1" into "1.00000", so here we undo that.
++  auto p = s.find_last_not_of('0');
++  if (p != std::string::npos) {
++    // Strip trailing zeroes. If it is a whole number, keep one zero.
++    s.resize(p + (s[p] == '.' ? 2 : 1));
++  }
++  return s;
++}
++
++template<> inline std::string NumToString<double>(double t) {
++  return FloatToString(t, 12);
++}
++template<> inline std::string NumToString<float>(float t) {
++  return FloatToString(t, 6);
++}
++
++// Convert an integer value to a hexadecimal string.
++// The returned string length is always xdigits long, prefixed by 0 digits.
++// For example, IntToStringHex(0x23, 8) returns the string "00000023".
++inline std::string IntToStringHex(int i, int xdigits) {
++  FLATBUFFERS_ASSERT(i >= 0);
++  // clang-format off
++
++  #ifndef FLATBUFFERS_PREFER_PRINTF
++    std::stringstream ss;
++    ss << std::setw(xdigits) << std::setfill('0') << std::hex << std::uppercase
++       << i;
++    return ss.str();
++  #else // FLATBUFFERS_PREFER_PRINTF
++    return NumToStringImplWrapper(i, "%.*X", xdigits);
++  #endif // FLATBUFFERS_PREFER_PRINTF
++  // clang-format on
++}
++
++// clang-format off
++// Use locale independent functions {strtod_l, strtof_l, strtoll_l, strtoull_l}.
++#if defined(FLATBUFFERS_LOCALE_INDEPENDENT) && (FLATBUFFERS_LOCALE_INDEPENDENT > 0)
++  class ClassicLocale {
++    #ifdef _MSC_VER
++      typedef _locale_t locale_type;
++    #else
++      typedef locale_t locale_type;  // POSIX.1-2008 locale_t type
++    #endif
++    ClassicLocale();
++    ~ClassicLocale();
++    locale_type locale_;
++    static ClassicLocale instance_;
++  public:
++    static locale_type Get() { return instance_.locale_; }
++  };
++
++  #ifdef _MSC_VER
++  //  #define __strtoull_impl(s, pe, b) _strtoui64_l(s, pe, b, ClassicLocale::Get())
++   // #define __strtoll_impl(s, pe, b) _strtoi64_l(s, pe, b, ClassicLocale::Get())
++    #define __strtod_impl(s, pe) _strtod_l(s, pe, ClassicLocale::Get())
++    #define __strtof_impl(s, pe) _strtof_l(s, pe, ClassicLocale::Get())
++  #else
++    //#define __strtoull_impl(s, pe, b) strtoull_l(s, pe, b, ClassicLocale::Get())
++    //#define __strtoll_impl(s, pe, b) strtoll_l(s, pe, b, ClassicLocale::Get())
++    #define __strtod_impl(s, pe) strtod_l(s, pe, ClassicLocale::Get())
++    #define __strtof_impl(s, pe) strtof_l(s, pe, ClassicLocale::Get())
++  #endif
++#else
++  #define __strtod_impl(s, pe) strtod(s, pe)
++  #define __strtof_impl(s, pe) static_cast<float>(strtod(s, pe))
++  #ifdef _MSC_VER
++    //#define __strtoull_impl(s, pe, b) _strtoui64(s, pe, b)
++    //#define __strtoll_impl(s, pe, b) _strtoi64(s, pe, b)
++  #else
++    //#define __strtoull_impl(s, pe, b) strtoull(s, pe, b)
++    //#define __strtoll_impl(s, pe, b) strtoll(s, pe, b)
++  #endif
++#endif
++
++inline void strtoval_impl(int64_t *val, const char *str, char **endptr,
++                                 int base) {
++    //*val = __strtoll_impl(str, endptr, base);
++}
++
++inline void strtoval_impl(uint64_t *val, const char *str, char **endptr,
++                                 int base) {
++  //*val = __strtoull_impl(str, endptr, base);
++}
++
++inline void strtoval_impl(double *val, const char *str, char **endptr) {
++  *val = __strtod_impl(str, endptr);
++}
++
++// UBSAN: double to float is safe if numeric_limits<float>::is_iec559 is true.
++__supress_ubsan__("float-cast-overflow")
++inline void strtoval_impl(float *val, const char *str, char **endptr) {
++  *val = __strtof_impl(str, endptr);
++}
++//#undef __strtoull_impl
++//#undef __strtoll_impl
++#undef __strtod_impl
++#undef __strtof_impl
++// clang-format on
++
++// Adaptor for strtoull()/strtoll().
++// Flatbuffers accepts numbers with any count of leading zeros (-009 is -9),
++// while strtoll with base=0 interprets first leading zero as octal prefix.
++// In future, it is possible to add prefixed 0b0101.
++// 1) Checks errno code for overflow condition (out of range).
++// 2) If base <= 0, function try to detect base of number by prefix.
++//
++// Return value (like strtoull and strtoll, but reject partial result):
++// - If successful, an integer value corresponding to the str is returned.
++// - If full string conversion can't be performed, 0 is returned.
++// - If the converted value falls out of range of corresponding return type, a
++// range error occurs. In this case value MAX(T)/MIN(T) is returned.
++template<typename T>
++inline bool StringToIntegerImpl(T *val, const char *const str,
++                                const int base = 0,
++                                const bool check_errno = true) {
++  // T is int64_t or uint64_T
++  FLATBUFFERS_ASSERT(str);
++  if (base <= 0) {
++    auto s = str;
++    while (*s && !is_digit(*s)) s++;
++    if (s[0] == '0' && is_alpha_char(s[1], 'X'))
++      return StringToIntegerImpl(val, str, 16, check_errno);
++    // if a prefix not match, try base=10
++    return StringToIntegerImpl(val, str, 10, check_errno);
++  } else {
++    if (check_errno) errno = 0;  // clear thread-local errno
++    auto endptr = str;
++    strtoval_impl(val, str, const_cast<char **>(&endptr), base);
++    if ((*endptr != '\0') || (endptr == str)) {
++      *val = 0;      // erase partial result
++      return false;  // invalid string
++    }
++    // errno is out-of-range, return MAX/MIN
++    if (check_errno && errno) return false;
++    return true;
++  }
++}
++
++template<typename T>
++inline bool StringToFloatImpl(T *val, const char *const str) {
++  // Type T must be either float or double.
++  FLATBUFFERS_ASSERT(str && val);
++  auto end = str;
++  strtoval_impl(val, str, const_cast<char **>(&end));
++  auto done = (end != str) && (*end == '\0');
++  if (!done) *val = 0;  // erase partial result
++  return done;
++}
++
++// Convert a string to an instance of T.
++// Return value (matched with StringToInteger64Impl and strtod):
++// - If successful, a numeric value corresponding to the str is returned.
++// - If full string conversion can't be performed, 0 is returned.
++// - If the converted value falls out of range of corresponding return type, a
++// range error occurs. In this case value MAX(T)/MIN(T) is returned.
++template<typename T> inline bool StringToNumber(const char *s, T *val) {
++  // Assert on `unsigned long` and `signed long` on LP64.
++  // If it is necessary, it could be solved with flatbuffers::enable_if<B,T>.
++  static_assert(sizeof(T) < sizeof(int64_t), "unexpected type T");
++  FLATBUFFERS_ASSERT(s && val);
++  int64_t i64;
++  // The errno check isn't needed, will return MAX/MIN on overflow.
++  if (StringToIntegerImpl(&i64, s, 0, false)) {
++    const int64_t max = (flatbuffers::numeric_limits<T>::max)();
++    const int64_t min = flatbuffers::numeric_limits<T>::lowest();
++    if (i64 > max) {
++      *val = static_cast<T>(max);
++      return false;
++    }
++    if (i64 < min) {
++      // For unsigned types return max to distinguish from
++      // "no conversion can be performed" when 0 is returned.
++      *val = static_cast<T>(flatbuffers::is_unsigned<T>::value ? max : min);
++      return false;
++    }
++    *val = static_cast<T>(i64);
++    return true;
++  }
++  *val = 0;
++  return false;
++}
++
++template<> inline bool StringToNumber<int64_t>(const char *str, int64_t *val) {
++  return StringToIntegerImpl(val, str);
++}
++
++template<>
++inline bool StringToNumber<uint64_t>(const char *str, uint64_t *val) {
++  if (!StringToIntegerImpl(val, str)) return false;
++  // The strtoull accepts negative numbers:
++  // If the minus sign was part of the input sequence, the numeric value
++  // calculated from the sequence of digits is negated as if by unary minus
++  // in the result type, which applies unsigned integer wraparound rules.
++  // Fix this behaviour (except -0).
++  if (*val) {
++    auto s = str;
++    while (*s && !is_digit(*s)) s++;
++    s = (s > str) ? (s - 1) : s;  // step back to one symbol
++    if (*s == '-') {
++      // For unsigned types return the max to distinguish from
++      // "no conversion can be performed".
++      *val = (flatbuffers::numeric_limits<uint64_t>::max)();
++      return false;
++    }
++  }
++  return true;
++}
++
++template<> inline bool StringToNumber(const char *s, float *val) {
++  return StringToFloatImpl(val, s);
++}
++
++template<> inline bool StringToNumber(const char *s, double *val) {
++  return StringToFloatImpl(val, s);
++}
++
++inline int64_t StringToInt(const char *s, int base = 10) {
++  int64_t val;
++  return StringToIntegerImpl(&val, s, base) ? val : 0;
++}
++
++inline uint64_t StringToUInt(const char *s, int base = 10) {
++  uint64_t val;
++  return StringToIntegerImpl(&val, s, base) ? val : 0;
++}
++
++typedef bool (*LoadFileFunction)(const char *filename, bool binary,
++                                 std::string *dest);
++typedef bool (*FileExistsFunction)(const char *filename);
++
++LoadFileFunction SetLoadFileFunction(LoadFileFunction load_file_function);
++
++FileExistsFunction SetFileExistsFunction(
++    FileExistsFunction file_exists_function);
++
++// Check if file "name" exists.
++bool FileExists(const char *name);
++
++// Check if "name" exists and it is also a directory.
++bool DirExists(const char *name);
++
++// Load file "name" into "buf" returning true if successful
++// false otherwise.  If "binary" is false data is read
++// using ifstream's text mode, otherwise data is read with
++// no transcoding.
++bool LoadFile(const char *name, bool binary, std::string *buf);
++
++// Save data "buf" of length "len" bytes into a file
++// "name" returning true if successful, false otherwise.
++// If "binary" is false data is written using ifstream's
++// text mode, otherwise data is written with no
++// transcoding.
++bool SaveFile(const char *name, const char *buf, size_t len, bool binary);
++
++// Save data "buf" into file "name" returning true if
++// successful, false otherwise.  If "binary" is false
++// data is written using ifstream's text mode, otherwise
++// data is written with no transcoding.
++inline bool SaveFile(const char *name, const std::string &buf, bool binary) {
++  return SaveFile(name, buf.c_str(), buf.size(), binary);
++}
++
++// Functionality for minimalistic portable path handling.
++
++// The functions below behave correctly regardless of whether posix ('/') or
++// Windows ('/' or '\\') separators are used.
++
++// Any new separators inserted are always posix.
++FLATBUFFERS_CONSTEXPR char kPathSeparator = '/';
++
++// Returns the path with the extension, if any, removed.
++std::string StripExtension(const std::string &filepath);
++
++// Returns the extension, if any.
++std::string GetExtension(const std::string &filepath);
++
++// Return the last component of the path, after the last separator.
++std::string StripPath(const std::string &filepath);
++
++// Strip the last component of the path + separator.
++std::string StripFileName(const std::string &filepath);
++
++// Concatenates a path with a filename, regardless of whether the path
++// ends in a separator or not.
++std::string ConCatPathFileName(const std::string &path,
++                               const std::string &filename);
++
++// Replaces any '\\' separators with '/'
++std::string PosixPath(const char *path);
++std::string PosixPath(const std::string &path);
++
++// This function ensure a directory exists, by recursively
++// creating dirs for any parts of the path that don't exist yet.
++void EnsureDirExists(const std::string &filepath);
++
++// Obtains the absolute path from any other path.
++// Returns the input path if the absolute path couldn't be resolved.
++std::string AbsolutePath(const std::string &filepath);
++
++// Returns files relative to the --project_root path, prefixed with `//`.
++std::string RelativeToRootPath(const std::string &project,
++                               const std::string &filepath);
++
++// To and from UTF-8 unicode conversion functions
++
++// Convert a unicode code point into a UTF-8 representation by appending it
++// to a string. Returns the number of bytes generated.
++inline int ToUTF8(uint32_t ucc, std::string *out) {
++  FLATBUFFERS_ASSERT(!(ucc & 0x80000000));  // Top bit can't be set.
++  // 6 possible encodings: http://en.wikipedia.org/wiki/UTF-8
++  for (int i = 0; i < 6; i++) {
++    // Max bits this encoding can represent.
++    uint32_t max_bits = 6 + i * 5 + static_cast<int>(!i);
++    if (ucc < (1u << max_bits)) {  // does it fit?
++      // Remaining bits not encoded in the first byte, store 6 bits each
++      uint32_t remain_bits = i * 6;
++      // Store first byte:
++      (*out) += static_cast<char>((0xFE << (max_bits - remain_bits)) |
++                                  (ucc >> remain_bits));
++      // Store remaining bytes:
++      for (int j = i - 1; j >= 0; j--) {
++        (*out) += static_cast<char>(((ucc >> (j * 6)) & 0x3F) | 0x80);
++      }
++      return i + 1;  // Return the number of bytes added.
++    }
++  }
++  FLATBUFFERS_ASSERT(0);  // Impossible to arrive here.
++  return -1;
++}
++
++// Converts whatever prefix of the incoming string corresponds to a valid
++// UTF-8 sequence into a unicode code. The incoming pointer will have been
++// advanced past all bytes parsed.
++// returns -1 upon corrupt UTF-8 encoding (ignore the incoming pointer in
++// this case).
++inline int FromUTF8(const char **in) {
++  int len = 0;
++  // Count leading 1 bits.
++  for (int mask = 0x80; mask >= 0x04; mask >>= 1) {
++    if (**in & mask) {
++      len++;
++    } else {
++      break;
++    }
++  }
++  if ((static_cast<unsigned char>(**in) << len) & 0x80)
++    return -1;  // Bit after leading 1's must be 0.
++  if (!len) return *(*in)++;
++  // UTF-8 encoded values with a length are between 2 and 4 bytes.
++  if (len < 2 || len > 4) { return -1; }
++  // Grab initial bits of the code.
++  int ucc = *(*in)++ & ((1 << (7 - len)) - 1);
++  for (int i = 0; i < len - 1; i++) {
++    if ((**in & 0xC0) != 0x80) return -1;  // Upper bits must 1 0.
++    ucc <<= 6;
++    ucc |= *(*in)++ & 0x3F;  // Grab 6 more bits of the code.
++  }
++  // UTF-8 cannot encode values between 0xD800 and 0xDFFF (reserved for
++  // UTF-16 surrogate pairs).
++  if (ucc >= 0xD800 && ucc <= 0xDFFF) { return -1; }
++  // UTF-8 must represent code points in their shortest possible encoding.
++  switch (len) {
++    case 2:
++      // Two bytes of UTF-8 can represent code points from U+0080 to U+07FF.
++      if (ucc < 0x0080 || ucc > 0x07FF) { return -1; }
++      break;
++    case 3:
++      // Three bytes of UTF-8 can represent code points from U+0800 to U+FFFF.
++      if (ucc < 0x0800 || ucc > 0xFFFF) { return -1; }
++      break;
++    case 4:
++      // Four bytes of UTF-8 can represent code points from U+10000 to U+10FFFF.
++      if (ucc < 0x10000 || ucc > 0x10FFFF) { return -1; }
++      break;
++  }
++  return ucc;
++}
++
++#ifndef FLATBUFFERS_PREFER_PRINTF
++// Wraps a string to a maximum length, inserting new lines where necessary. Any
++// existing whitespace will be collapsed down to a single space. A prefix or
++// suffix can be provided, which will be inserted before or after a wrapped
++// line, respectively.
++inline std::string WordWrap(const std::string in, size_t max_length,
++                            const std::string wrapped_line_prefix,
++                            const std::string wrapped_line_suffix) {
++  std::istringstream in_stream(in);
++  std::string wrapped, line, word;
++
++  in_stream >> word;
++  line = word;
++
++  while (in_stream >> word) {
++    if ((line.length() + 1 + word.length() + wrapped_line_suffix.length()) <
++        max_length) {
++      line += " " + word;
++    } else {
++      wrapped += line + wrapped_line_suffix + "\n";
++      line = wrapped_line_prefix + word;
++    }
++  }
++  wrapped += line;
++
++  return wrapped;
++}
++#endif  // !FLATBUFFERS_PREFER_PRINTF
++
++inline bool EscapeString(const char *s, size_t length, std::string *_text,
++                         bool allow_non_utf8, bool natural_utf8) {
++  std::string &text = *_text;
++  text += "\"";
++  for (uoffset_t i = 0; i < length; i++) {
++    char c = s[i];
++    switch (c) {
++      case '\n': text += "\\n"; break;
++      case '\t': text += "\\t"; break;
++      case '\r': text += "\\r"; break;
++      case '\b': text += "\\b"; break;
++      case '\f': text += "\\f"; break;
++      case '\"': text += "\\\""; break;
++      case '\\': text += "\\\\"; break;
++      default:
++        if (c >= ' ' && c <= '~') {
++          text += c;
++        } else {
++          // Not printable ASCII data. Let's see if it's valid UTF-8 first:
++          const char *utf8 = s + i;
++          int ucc = FromUTF8(&utf8);
++          if (ucc < 0) {
++            if (allow_non_utf8) {
++              text += "\\x";
++              text += IntToStringHex(static_cast<uint8_t>(c), 2);
++            } else {
++              // There are two cases here:
++              //
++              // 1) We reached here by parsing an IDL file. In that case,
++              // we previously checked for non-UTF-8, so we shouldn't reach
++              // here.
++              //
++              // 2) We reached here by someone calling GenerateText()
++              // on a previously-serialized flatbuffer. The data might have
++              // non-UTF-8 Strings, or might be corrupt.
++              //
++              // In both cases, we have to give up and inform the caller
++              // they have no JSON.
++              return false;
++            }
++          } else {
++            if (natural_utf8) {
++              // utf8 points to past all utf-8 bytes parsed
++              text.append(s + i, static_cast<size_t>(utf8 - s - i));
++            } else if (ucc <= 0xFFFF) {
++              // Parses as Unicode within JSON's \uXXXX range, so use that.
++              text += "\\u";
++              text += IntToStringHex(ucc, 4);
++            } else if (ucc <= 0x10FFFF) {
++              // Encode Unicode SMP values to a surrogate pair using two \u
++              // escapes.
++              uint32_t base = ucc - 0x10000;
++              auto high_surrogate = (base >> 10) + 0xD800;
++              auto low_surrogate = (base & 0x03FF) + 0xDC00;
++              text += "\\u";
++              text += IntToStringHex(high_surrogate, 4);
++              text += "\\u";
++              text += IntToStringHex(low_surrogate, 4);
++            }
++            // Skip past characters recognized.
++            i = static_cast<uoffset_t>(utf8 - s - 1);
++          }
++        }
++        break;
++    }
++  }
++  text += "\"";
++  return true;
++}
++
++inline std::string BufferToHexText(const void *buffer, size_t buffer_size,
++                                   size_t max_length,
++                                   const std::string &wrapped_line_prefix,
++                                   const std::string &wrapped_line_suffix) {
++  std::string text = wrapped_line_prefix;
++  size_t start_offset = 0;
++  const char *s = reinterpret_cast<const char *>(buffer);
++  for (size_t i = 0; s && i < buffer_size; i++) {
++    // Last iteration or do we have more?
++    bool have_more = i + 1 < buffer_size;
++    text += "0x";
++    text += IntToStringHex(static_cast<uint8_t>(s[i]), 2);
++    if (have_more) { text += ','; }
++    // If we have more to process and we reached max_length
++    if (have_more &&
++        text.size() + wrapped_line_suffix.size() >= start_offset + max_length) {
++      text += wrapped_line_suffix;
++      text += '\n';
++      start_offset = text.size();
++      text += wrapped_line_prefix;
++    }
++  }
++  text += wrapped_line_suffix;
++  return text;
++}
++
++// Remove paired quotes in a string: "text"|'text' -> text.
++std::string RemoveStringQuotes(const std::string &s);
++
++// Change th global C-locale to locale with name <locale_name>.
++// Returns an actual locale name in <_value>, useful if locale_name is "" or
++// null.
++bool SetGlobalTestLocale(const char *locale_name,
++                         std::string *_value = nullptr);
++
++// Read (or test) a value of environment variable.
++bool ReadEnvironmentVariable(const char *var_name,
++                             std::string *_value = nullptr);
++
++// MSVC specific: Send all assert reports to STDOUT to prevent CI hangs.
++void SetupDefaultCRTReportMode();
++
++}  // namespace flatbuffers
++
++#endif  // FLATBUFFERS_UTIL_H_
