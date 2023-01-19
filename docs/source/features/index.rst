@@ -10,6 +10,7 @@
 
    software_package_description.rst
    mcs.rst
+   muslc.rst
    distributed_softbus.rst
    raspberrypi.rst
    preempt_rt.rst
