@@ -153,12 +153,10 @@ set_env()
         sed -i '$a\crypt = "libxcrypt-external"' conf/local.conf
         sed -i 's/aarch64-openeuler-linux-musl/aarch64-openeuler-linux-gnu/g' conf/local.conf
     fi
-    # set OPENEULER_BRANCH,OPENEULER_GIT_PRE,OPENEULER_GIT_SPACE in conf/local.conf
+    # set OPENEULER_BRANCH,OPENEULER_GIT_URL in conf/local.conf
     # you can download upstream source package with them
     grep -q "OPENEULER_BRANCH = \"${SRC_BRANCH}\"" conf/local.conf || echo "OPENEULER_BRANCH = \"${SRC_BRANCH}\"" >> conf/local.conf
-    grep -q "OPENEULER_GIT_PRE = \"${GIT_PRE}\"" conf/local.conf || echo "OPENEULER_GIT_PRE = \"${GIT_PRE}\"" >> conf/local.conf
-    grep -q "OPENEULER_GIT_SPACE = \"${GIT_SPACE}\"" conf/local.conf || echo "OPENEULER_GIT_SPACE = \"${GIT_SPACE}\"" >> conf/local.conf
-    grep -q "OPENEULER_KERNEL_BRANCH = \"${KERNEL_BRANCH}\"" conf/local.conf || echo "OPENEULER_KERNEL_BRANCH = \"${KERNEL_BRANCH}\"" >> conf/local.conf
+    grep -q "OPENEULER_GIT_URL = \"${GIT_URL}\"" conf/local.conf || echo "OPENEULER_GIT_URL = \"${GIT_URL}\"" >> conf/local.conf
 }
 
 download_pre_repo()
@@ -174,10 +172,8 @@ download_pre_repo()
 
 main()
 {
-    KERNEL_BRANCH="5.10.0-106.18.0"
     SRC_BRANCH="openEuler-22.09"
-    GIT_PRE="https://gitee.com"
-    GIT_SPACE="src-openeuler"
+    GIT_URL="https://gitee.com/src-openeuler"
     download_pre_repo
     get_build_info "$@" || return 1
     set_env

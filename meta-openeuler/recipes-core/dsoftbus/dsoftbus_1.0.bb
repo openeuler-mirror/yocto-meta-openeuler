@@ -59,19 +59,19 @@ ALLOW_EMPTY_${PN} = "1"
 python do_fetch_prepend() {
     repoList = [{
         "repo_name": "yocto-embedded-tools",
-        "git_space": "openeuler",
+        "git_url": "https://gitee.com/openeuler",
         "branch": "master"
     },{
         "repo_name": "dsoftbus_standard",
-        "git_space": "openeuler",
+        "git_url": "https://gitee.com/openeuler",
         "branch": "dev"
     },{
         "repo_name": "embedded-ipc",
-        "git_space": "openeuler",
+        "git_url": "https://gitee.com/openeuler",
         "branch": "master"
     },{
         "repo_name": "dsoftbus",
-        "git_space": "src-openeuler",
+        "git_url": "https://gitee.com/src-openeuler",
         "branch": "master"
     }]
 

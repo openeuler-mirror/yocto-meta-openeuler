@@ -6,7 +6,7 @@ inherit ros_distro_foxy
 OPENEULER_REPO_NAME = "yocto-embedded-tools"
 OPENEULER_LOCAL_NAME = "ros-dev-tools"
 OPENEULER_BRANCH = "dev_ros"
-OPENEULER_GIT_SPACE = "openeuler"
+OPENEULER_GIT_URL = "https://gitee.com/openeuler"
 OPENEULER_SRC_URI_REMOVE = "git https http"
 
 # files, patches that come from openeuler

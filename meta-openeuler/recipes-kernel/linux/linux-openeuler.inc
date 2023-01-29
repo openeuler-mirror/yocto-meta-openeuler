@@ -47,7 +47,7 @@ python do_fetch() {
     srcDir = d.getVar("OPENEULER_SP_DIR")
     kernelDir = os.path.join(srcDir, "kernel-5.10")
     srcKernelDir = os.path.join(srcDir, "src-kernel-5.10")
-    kernelBranch = d.getVar("OPENEULER_KERNEL_BRANCH")
+    kernelBranch = "5.10.0-106.18.0"
 
     def check_repo(repo_dir, branch):
         repo = git.Repo(repo_dir)

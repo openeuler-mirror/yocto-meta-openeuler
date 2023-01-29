@@ -3,7 +3,7 @@
 OPENEULER_REPO_NAME = "yocto-embedded-tools"
 OPENEULER_LOCAL_NAME = "ros-dev-tools"
 OPENEULER_BRANCH = "dev_ros"
-OPENEULER_GIT_SPACE = "openeuler"
+OPENEULER_GIT_URL = "https://gitee.com/openeuler"
 
 # version in openEuler
 PV = "1.10.0"

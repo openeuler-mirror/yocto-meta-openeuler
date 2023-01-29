@@ -9,7 +9,7 @@ PV="1.1.3"
 OPENEULER_REPO_NAME = "yocto-embedded-tools"
 OPENEULER_LOCAL_NAME = "ros-dev-tools"
 OPENEULER_BRANCH = "dev_ros"
-OPENEULER_GIT_SPACE = "openeuler"
+OPENEULER_GIT_URL = "https://gitee.com/openeuler"
 
 SRC_URI = "file://${OPENEULER_LOCAL_NAME}/ros_depends/${BPN}/V${PV}.tar.gz \
         file://0001-GS2.patch \
