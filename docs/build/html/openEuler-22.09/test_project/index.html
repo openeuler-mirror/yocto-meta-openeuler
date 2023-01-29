@@ -62,6 +62,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#tiny">tiny镜像测试套</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#os">OS基础测试套</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id6">嵌入式安全配置测试套</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">嵌入式基础开发测试套</a></li>
 </ul>
 </li>
 </ul>
@@ -103,7 +104,7 @@
 </section>
 <section id="id4">
 <h3>典型的测试执行流程<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h3>
-<p>典型的测试执行包含了框架下载、依赖准备、启动qemu环境、测试用例执行和qemu环境的清理。</p>
+<p>典型的测试执行包含了框架下载、依赖准备、启动qemu环境、编译测试用例、测试用例执行和qemu环境的清理。</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>git下载mugen测试框架
 <span class="go">git clone https://gitee.com/openeuler/mugen.git</span>
 
@@ -127,6 +128,10 @@
 <span class="gp">#    </span>--put_all 执行测试套时一次拷贝所有测试套用例至远端
 <span class="gp">#    </span>--run_remote 配置该配置远端环境为执行用例环境
 <span class="gp"># </span>bash mugen.sh -c --ip <span class="nv">$ip</span> --password <span class="nv">$passwd</span> --user <span class="nv">$user</span> --port <span class="nv">$port</span> --put_all --run_remote
+
+<span class="gp"># </span>如果测试套中包含需要编译的用例，则先编译测试用例，目前仅支持测试套整体编译
+<span class="gp"># </span>在执行测试用例编译前需要先执行sdk配置
+<span class="go">bash mugen.sh -b &lt;测试套名&gt;</span>
 
 <span class="gp"># </span>执行对应的测试套
 <span class="gp">#    </span>-f 执行测试套名称
@@ -207,6 +212,32 @@
 
 <span class="gp"># </span>执行对应的测试套
 <span class="go">bash mugen.sh -f embedded_security_config_test -s</span>
+
+<span class="gp"># </span>停止QEMU
+<span class="go">sh qemu_ctl.sh stop</span>
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h3>嵌入式基础开发测试套<a class="headerlink" href="#id8" title="永久链接至标题">¶</a></h3>
+<p>嵌入式基础开发测试套，主要对SDK编译出的C、C++用户态程序以及内核模块进行基础测试</p>
+<p>嵌入式基础开发测试套同样需要标准镜像支持，需要提前启动qemu。</p>
+<p>执行脚本如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>git下载mugen测试框架
+<span class="go">git clone https://gitee.com/openeuler/mugen.git</span>
+
+<span class="go">cd mugen</span>
+<span class="gp"># </span>安装依赖包
+<span class="go">sh dep_install.sh -e</span>
+
+<span class="gp"># </span>启动QEMU，如果需要测试arm标准镜像，则需要增加 --qemu_type arm
+<span class="go">sh qemu_ctl.sh start --put_all --kernal_img_path &lt;aarch64-std的zImage本地路径&gt; --initrd_path &lt;aarch64-std的rootfs本地路径&gt;</span>
+
+<span class="gp"># </span>执行编译测试套
+<span class="go">bash mugen.sh -b embedded_application_develop_tests</span>
+
+<span class="gp"># </span>执行对应的测试套
+<span class="go">bash mugen.sh -f embedded_application_develop_tests -s</span>
 
 <span class="gp"># </span>停止QEMU
 <span class="go">sh qemu_ctl.sh stop</span>
