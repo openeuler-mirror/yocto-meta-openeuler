@@ -26,15 +26,18 @@ SRC_URI[sha256sum] = "88284d8fe5e567120d73d6967b840538f3f1975182db0ef0eb8233ac69
 
 DEPENDS = "swig-native python3"
 
+SYSROOT_DIRS += "/usr/lib"
 
-FILES_${PN}-dev += "/usr/share /usr/lib/cmake"
 FILES_${PN}-staticdev += "/usr/lib/libydlidar_sdk.a"
-FILES_${PN} += "/usr/startup /usr/lib/python*"
+FILES_${PN} += "/usr/share /usr/startup /usr/lib/python*"
 
 # fix pkgconfig installdir conflict
 do_configure_prepend_class-target() {
     if [ -f ${S}/cmake/install_package.cmake ]; then
-        cat ${S}/cmake/install_package.cmake | grep "share/pkgconfig" || sed -i 's:lib/pkgconfig:share/pkgconfig:g' ${S}/cmake/install_package.cmake
+        cat ${S}/cmake/install_package.cmake | grep "\${CMAKE_INSTALL_DATAROOTDIR}\/pkgconfig" || sed -i 's:${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig:g' ${S}/cmake/install_package.cmake
+        cat ${S}/cmake/install_package.cmake | grep "\${CMAKE_INSTALL_DATAROOTDIR}\/cmake" || sed -i 's:lib/cmake:${CMAKE_INSTALL_DATAROOTDIR}/cmake:g' ${S}/cmake/install_package.cmake
     fi
 }
 
+
+BBCLASSEXTEND = "native nativesdk"
