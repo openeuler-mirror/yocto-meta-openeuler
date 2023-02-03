@@ -35,6 +35,7 @@ compile mode: source $script [-C] [-p PLATFORM] [-o BUILD_DIR] <-t TOOLCHAIN_DIR
                         systemd
   --enable-rt       Enable PREEMPT_RT kernel
   --enable-qt       Build qt5
+  --enable-clang    Build with clang compiler
 EOF
 }
 
@@ -66,6 +67,7 @@ ENABLE_PREEMPT_RT=0
 INIT_MANAGER="busybox"
 OPTIND=1
 ENABLE_QT=0
+ENABLE_CLANG=0
 
 while getopts "hDCSd:b:m:p:o:t:i:-:" opt; do
     case $opt in
@@ -76,6 +78,9 @@ while getopts "hDCSd:b:m:p:o:t:i:-:" opt; do
                            ;;
                 enable-qt) ENABLE_QT=1
                            echo "Note: enable QT."
+                           ;;
+                enable-clang) ENABLE_CLANG=1
+                           echo "Note: enable CLANG."
                            ;;
                 *)  usage
                     return 1
@@ -146,6 +151,12 @@ if [ $compile_mode == 1 ]; then
         grep "meta-oe" conf/bblayers.conf |grep -qv "^[[:space:]]*#" || sed -i "/\/meta-openeuler /a \  "${SRC_DIR}"/yocto-meta-openembedded/meta-oe \\\\" conf/bblayers.conf
         grep "meta-qt5" conf/bblayers.conf |grep -qv "^[[:space:]]*#" || sed -i "/\/meta-openeuler /a \  "${SRC_DIR}"/yocto-meta-qt5 \\\\" conf/bblayers.conf
         echo 'DISTRO_FEATURES_append = " opengl wayland"' >> conf/local.conf
+    fi
+    if [ $ENABLE_CLANG == 1 ]; then
+        grep "meta-clang" conf/bblayers.conf |grep -qv "^[[:space:]]*#" || sed -i "/\/meta-openeuler /a \  "${SRC_DIR}"/yocto-meta-openeuler/meta-clang \\\\" conf/bblayers.conf
+        echo 'DISTRO_FEATURES_append = " clang "' >> conf/local.conf
+        echo 'DISTRO_FEATURES_NATIVE_append = " clang "' >> conf/local.conf
+        echo 'EXTERNAL_TOOLCHAIN_CLANG_BIN = "'${TOOLCHAIN_DIR}'/bin/"' >> conf/local.conf
     fi
     case $INIT_MANAGER in
     "busybox")
