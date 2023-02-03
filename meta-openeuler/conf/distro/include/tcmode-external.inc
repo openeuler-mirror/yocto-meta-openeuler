@@ -133,3 +133,6 @@ REMOVE_MACRO_PREFIX_MAP = "-fmacro-prefix-map=${WORKDIR}=/usr/src/debug/${PN}/${
 DEBUG_PREFIX_MAP_remove_class-target = "${@'${REMOVE_MACRO_PREFIX_MAP}' if '${GCC_VERSION}' not in ['', 'UNKNOWN'] and [int(v) for v in '${GCC_VERSION}'.split('.')] < [8,0] else ''}"
 
 BUILDCFG_VARS += "EXTERNAL_TOOLCHAIN EXTERNAL_TARGET_SYS GCC_VERSION"
+
+# llvm configuration below
+require ${@bb.utils.contains("DISTRO_FEATURES", "clang", "conf/distro/include/tcmode-external-clang.inc", "", d)}
