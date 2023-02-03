@@ -19,11 +19,22 @@ INSANE_SKIP_${PN} += "build-deps file-rdeps"
 # on the target, moreover linker won't be able to find them there (see original libgcc.bb recipe).
 BINV = "${GCC_VERSION}"
 FILES_${PN} = "${base_libdir}/libgcc_s.so.*"
-LIBROOT_RELATIVE_RESOLVED = "${@os.path.relpath(os.path.realpath('${EXTERNAL_TOOLCHAIN_LIBROOT}'), os.path.realpath('${EXTERNAL_TOOLCHAIN_SYSROOT}'))}"
-LIBROOT_RELATIVE = "${@os.path.relpath('${EXTERNAL_TOOLCHAIN_LIBROOT}', '${EXTERNAL_TOOLCHAIN_SYSROOT}')}"
+
+# TODO: these crt*.o and libgcc* no need for target, and sdk will contains these files not through package-libgcc.
+# So i think libgcc packages could not contain these files. Just remove its.
+
+# BUGFIX:
+# if gives ${EXTERNAL_TOOLCHAIN_SYSROOT}, ${LIBROOT_RELATIVE} will be a path with ../../ prefix.
+# these files will not be install in ${D}, but in ${D}/../../. Which not be include in packages.
+# ${EXTERNAL_TOOLCHAIN}/gcc/${TARGET_PREFIX}/{BINV}/plugin contains some .so files for arch host, which
+# makes a error when do_packages. so we just need crt*.o and libgcc* files.
+LIBROOT_RELATIVE_RESOLVED = "${@os.path.relpath(os.path.realpath('${EXTERNAL_TOOLCHAIN_LIBROOT}'), os.path.realpath('${EXTERNAL_TOOLCHAIN}'))}"
+LIBROOT_RELATIVE = "${@os.path.relpath('${EXTERNAL_TOOLCHAIN_LIBROOT}', '${EXTERNAL_TOOLCHAIN}')}"
 FILES_${PN}-dev = "${base_libdir}/libgcc_s.so \
-             /${LIBROOT_RELATIVE_RESOLVED} \
-             /${LIBROOT_RELATIVE} \
+             /${LIBROOT_RELATIVE_RESOLVED}/crt*.o \
+             /${LIBROOT_RELATIVE_RESOLVED}/libgcc* \
+             /${LIBROOT_RELATIVE}/crt*.o \
+             /${LIBROOT_RELATIVE}/libgcc* \
 "
 INSANE_SKIP_${PN}-dev += "staticdev"
 FILES_${PN}-dbg += "${base_libdir}/.debug/libgcc_s.so.*.debug"
