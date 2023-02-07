@@ -19,7 +19,7 @@ openEuler Embedded 22.03是openEuler Embedded第一次正式发布，包含的�
    - 安全加固指导，详见 :ref:`security_hardening`
    - 基于Preempt-RT的软实时，详见 :ref:`preempt_rt`
 * 南向生态
-   - 新增树莓派4B支持，详见 :ref:`raspberrypi`
+   - 新增树莓派4B支持，详见 :ref:`board_raspberrypi4_build`
 * 构建系统
    - 初步的openEuler Embedded构建体系, 详见 :ref:`yocto_quick_build`
    - 容器化构建，详见 :ref:`container_build`
