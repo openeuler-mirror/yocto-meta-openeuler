@@ -1,5 +1,5 @@
 PV = "22.3.1"
-LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=c4fa2b50f55649f43060fa04b0919b9b"
+LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=63ec52baf95163b597008bb46db68030"
 SRC_URI[md5sum] = "996f58a94fe0b8b82b6795c42bd171ba"
 SRC_URI[sha256sum] = "65fd48317359f3af8e593943e6ae1506b66325085ea64b706a998c6e83eeaf38"
 require pypi-src-openeuler.inc
