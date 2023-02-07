@@ -10,11 +10,11 @@ yocto-meta-openeuler 仓 bsp 目录层次说明
 
 bsp 目录下当前共有两个目录: ``meta-openeuler-bsp`` ``meta-raspberrypi``
 
--  ``meta-raspberrypi`` 
+-  ``meta-raspberrypi``
 
   该层提供树莓派开发板在硬件上的 recipes 和 conf 文件，例如一些基本固件，只要是跟开发板硬件强相关的 recipes 都可以放在该层中。一般该层由上游社区提供，例如 ``meta-raspberrypi`` 层在 openeuler 中仅仅只是引入，未对其中的 recipes 和 conf 文件作侵入式的修改，这便于后续升级和维护。
 
--  ``meta-openeuler-bsp`` 
+-  ``meta-openeuler-bsp``
 
   单独的 bsp 层无法独立在 openeuler 层中很好的工作，作为 bsp 层与 openeuler 层之间的桥梁， ``meta-openeuler-bsp`` 层提供统一的对bsp层的修改，层中对 recipes 的修改基于yocto工程中 ``bbappend`` 形式来实现。
 
@@ -27,7 +27,7 @@ bsp 目录下当前共有两个目录: ``meta-openeuler-bsp`` ``meta-raspberrypi
   上一节提到过，该层主要是提供与硬件强相关的 recipes 和 conf 文件，如果有上游社区提供完整的层，可以像引入 ``meta-raspberrypi`` 层一样直接引入。但是如果没有上游社区提供完整的层，就需要从零开始新建该层了，这里提供一种仅仅适配 ``openeuler`` 层的新建方式，而不是标准 ``yocto`` 形式的完整的层。
 
   1.缩减 ``meta-raspberrypi`` 层
-  
+
   .. code-block:: console
 
     tree -L 2 -d .
@@ -124,7 +124,7 @@ bsp 目录下当前共有两个目录: ``meta-openeuler-bsp`` ``meta-raspberrypi
 
    template:${LAYERDIR}/template/*/*/*.bb \
    template:${LAYERDIR}/template/*/*/*.bbappend \
-    
+
    BBPATH_append =. ":${LAYERDIR}/template"
 
   2. 新增 ``template`` 目录

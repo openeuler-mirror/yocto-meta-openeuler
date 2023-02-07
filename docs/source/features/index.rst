@@ -12,7 +12,6 @@
    mcs.rst
    muslc.rst
    distributed_softbus.rst
-   raspberrypi.rst
    preempt_rt.rst
    nativesdk.rst
    rust.rst

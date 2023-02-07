@@ -11,3 +11,4 @@
    commit.rst
    contribute_doc.rst
    openeuler_fetch.rst
+   republish.rst

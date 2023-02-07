@@ -59,7 +59,7 @@ ArmNN软件兼容 yocto-meta-openeuler 上做了很多准备工作，如 tensorf
   .. image:: ../../image/armnn/libs.jpg
 
   可通过单元测试程序 UnitTests 验证ArmNN库的可用性：
-  
+
   .. code-block:: console
 
      cd /usr/bin/
@@ -102,6 +102,3 @@ AI推理性能验证结果
   .. note::
 
       glibc-ref是指基于GlibC的Openeuler Embedded且不做任何加速，musl-acc是指基于MuslC的Openeuler Embedded且使能ArmNN的指令加速和优化。
-
-
-

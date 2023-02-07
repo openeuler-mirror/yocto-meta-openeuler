@@ -1,4 +1,4 @@
-.. _rasp_uefi:
+.. _board_raspberrypi4_uefi:
 
 树莓派的UEFI支持和网络启动
 ##############################
@@ -17,7 +17,7 @@ openEuler Embedded 的UEFI树莓派镜像集成了基于树梅派4B的混合部�
 
 分支支持要求：openEuler-22.09及之后的主线master分支。
 
-环境准备流程参照 :ref:`关键特性/树梅派4B的支持/树梅派构建指导 <raspberrypi>` 构建指导部分。
+环境准备流程参照 :ref:`关键特性/树梅派4B的支持/树梅派构建指导 <board_raspberrypi4_build>` 构建指导部分。
 
 - 构建命令示例：
 
@@ -33,7 +33,7 @@ openEuler Embedded 的UEFI树莓派镜像集成了基于树梅派4B的混合部�
 
       openeuler-image-uefi-raspberrypi4-64-*.rootfs.rpi-sdimg
 
-- 将构建生成的rpi-sdimg烧录到SD卡 :ref:`关键特性/树莓派4B的支持/树莓派镜像构建指导/镜像使用方法/镜像烧录 <raspberrypi>`
+- 将构建生成的rpi-sdimg烧录到SD卡 :ref:`关键特性/树莓派4B的支持/树莓派镜像构建指导/镜像使用方法/镜像烧录 <board_raspberrypi4_build>`
 
 .. _raspberrypi4-uefi-guide:
 
@@ -42,38 +42,38 @@ openeuler-image-uefi启动使用指导
 
 **1 烧录后首次启动需修改UEFI配置，启动阶段按ESC进入UEFI，按下图操作解锁3G内存限制并关闭ACPI选用DEVICETREE，保存重启后再操作步骤2**
 
-    .. figure:: ../../image/bsp/launch_step1.png
+    .. figure:: launch_step1.png
         :align: center
 
-    .. figure:: ../../image/bsp/launch_step2.png
+    .. figure:: launch_step2.png
         :align: center
 
-    .. figure:: ../../image/bsp/launch_step3.png
+    .. figure:: launch_step3.png
         :align: center
 
-    .. figure:: ../../image/bsp/launch_step4.png
+    .. figure:: launch_step4.png
         :align: center
 
-    .. figure:: ../../image/bsp/launch_step5.png
+    .. figure:: launch_step5.png
         :align: center
 
 **2 更改boot order或手动选择SD卡启动，如下，最后选择Commit Changes and Exit**
 
-    .. figure:: ../../image/bsp/boot_order1.png
+    .. figure:: boot_order1.png
         :align: center
 
-    .. figure:: ../../image/bsp/boot_order2.png
+    .. figure:: boot_order2.png
         :align: center
 
-    .. figure:: ../../image/bsp/boot_order3.png
+    .. figure:: boot_order3.png
         :align: center
 
-    .. figure:: ../../image/bsp/boot_order4.png
+    .. figure:: boot_order4.png
         :align: center
 
 **启动截图**
 
-    .. figure:: ../../image/bsp/boot.png
+    .. figure:: boot.png
         :align: center
 
  .. attention::
@@ -100,7 +100,7 @@ openEuler Embedded标准镜像 + UEFI固件下载和刷新方法
 
 - `openEuler烧录参考 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E5%88%B7%E5%86%99%E9%95%9C%E5%83%8F.md#%E5%88%B7%E5%86%99-sd-%E5%8D%A1>`_
 
-  - 如何获得openEuler Embedded树莓派镜像，参照 :ref:`关键特性/树莓派4B的支持/树莓派镜像构建指导 <raspberrypi>` 部分
+  - 如何获得openEuler Embedded树莓派镜像，参照 :ref:`关键特性/树莓派4B的支持/树莓派镜像构建指导 <board_raspberrypi4_build>` 部分
 
   .. code-block:: console
 
@@ -371,6 +371,6 @@ d. 进入grub引导程序，根据grub.cfg配置，从对应tftp目录下载文�
 
 其中，使用的ACPI资源表/DTB是UEFI固件初始化好的（引导内核前已放在对应内存），不过cmdline/bootargs可通过grub.cfg进行配置，在加载内核时，grub会传递给UEFI并上报给系统。
 
-    .. figure:: ../../image/bsp/rasp_uefi.png
+    .. figure:: rasp_uefi.png
         :align: center
 

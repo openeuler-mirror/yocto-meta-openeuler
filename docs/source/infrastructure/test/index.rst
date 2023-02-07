@@ -11,7 +11,7 @@ mugen框架介绍
 mugen框架执行流程
 ---------------------
 
-.. image:: ../../image/test_project/mugen_run_info.png
+.. image:: ../../../image/test_project/mugen_run_info.png
 
 
 openEuler Embedded使用mugen框架时，由于嵌入式镜像中缺少mugen框架运行的必要依赖软件，嵌入式测试采用QEMU远程执行测试用例的方式，对系统进行测试。

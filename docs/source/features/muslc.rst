@@ -1,4 +1,4 @@
-.. _musl libc的支持:
+.. _musl_libc:
 
 musl libc的支持
 ################################
@@ -40,7 +40,7 @@ meta-musl层介绍
 
 构建环境推荐：master, openEuler-22.09
 
-构建环境指导：详见 :ref:`container_build` 
+构建环境指导：详见 :ref:`container_build`
 
 编译器构建指导：musl交叉工具链的生成可 `参考编译器构建指导 <https://gitee.com/openeuler/yocto-embedded-tools/tree/master/cross_tools>`_
 
@@ -49,7 +49,7 @@ qemu镜像的构建
 1.构建命令示例
 
 .. code-block:: console
-        
+
         su openeuler
 
         source /usr1/openeuler/src/yocto-meta-openeuler/scripts/compile.sh aarch64-std /usr1/build /usr1/openeuler/gcc/aarch64-openeuler-linux-musl
@@ -61,10 +61,10 @@ qemu镜像的构建
 结果件默认生成在构建目录下的output目录下：
 
 .. code-block:: console
-   
-        /usr1/build/ouput 
 
-镜像运行 `参考运行指导 <https://openeuler.gitee.io/yocto-meta-openeuler/master/getting_started/index.html#id4>`_
+        /usr1/build/ouput
+
+镜像运行 `QEMU参考运行指导 <https://openeuler.gitee.io/yocto-meta-openeuler/master/getting_started/index.html#id4>`_
 
 
 树莓派镜像的构建
@@ -72,7 +72,7 @@ qemu镜像的构建
 1.构建命令示例
 
 .. code-block:: console
-        
+
         su openeuler
 
         source /usr1/openeuler/src/yocto-meta-openeuler/scripts/compile.sh raspberrypi4-64 /usr1/build /usr1/openeuler/gcc/aarch64-openeuler-linux-musl
@@ -84,10 +84,10 @@ qemu镜像的构建
 结果件默认生成在构建目录下的output目录下：
 
 .. code-block:: console
-   
+
         /usr1/build/ouput 
 
-镜像运行 `参考运行指导 <https://openeuler.gitee.io/yocto-meta-openeuler/master/features/raspberrypi.html>`_
+镜像运行 `树莓派参考运行指导 <https://openeuler.gitee.io/yocto-meta-openeuler/master/features/raspberrypi.html>`_
 
 musl与glibc性能对比测试
 ----------------------------------------
@@ -174,8 +174,8 @@ b_pthread_createjoin_minimal2	             41120	                        16	    
 
 - 物理内存占用测试
 
-============================= =================================== =================================== =====================================                                                                
-测试项                                      glibc(KB)                           musl(KB)                            glibc_res/musl_res            
+============================= =================================== =================================== =====================================
+测试项                                      glibc(KB)                           musl(KB)                            glibc_res/musl_res
 ============================= =================================== =================================== =====================================
 b_malloc_sparse	                             38980	                        8480	                             4.60
 b_malloc_bubble	                             39240	                        92	                             426.52
@@ -208,8 +208,8 @@ b_pthread_createjoin_minimal2	             76	                                16
 
 - 系统可回收内存测试
 
-============================= =================================== =================================== =====================================                                                                
-测试项                                      glibc(KB)                          musl(KB)                      glibc_dirty/musl_dirty            
+============================= =================================== =================================== =====================================
+测试项                                      glibc(KB)                          musl(KB)                      glibc_dirty/musl_dirty
 ============================= =================================== =================================== =====================================
 b_malloc_sparse	                             38976	                        8480	                             4.60
 b_malloc_bubble	                             39236	                        92	                             426.48
@@ -256,7 +256,7 @@ coremark性能测试
    Iterations       : 40000
    Compiler version : GCC10.3.1
    Compiler flags   : -O2 -DPERFORMANCE_RUN=1  -lrt
-   Memory location  : Please put data memory location here                        
+   Memory location  : Please put data memory location here
                  (e.g. code in flash, data on heap etc)
    seedcrc          : 0xe9f5
    [0]crclist       : 0xe714
@@ -278,7 +278,7 @@ coremark性能测试
    Iterations       : 40000
    Compiler version : GCC10.3.1
    Compiler flags   : -O2 -DPERFORMANCE_RUN=1  -lrt
-   Memory location  : Please put data memory location here   
+   Memory location  : Please put data memory location here
                  (e.g. code in flash, data on heap etc)
    seedcrc          : 0xe9f5
    [0]crclist       : 0xe714
@@ -296,7 +296,7 @@ coremark性能测试
 - glibc测试结果
 
 .. code-block:: console
-   
+
    2K performance run parameters for coremark.
    CoreMark Size    : 666
    Total ticks      : 12284
@@ -306,7 +306,7 @@ coremark性能测试
    Compiler version : GCC10.3.1
    Compiler flags   : -O2 -DMULTITHREAD=4 -DUSE_PTHREAD -DPERFORMANCE_RUN=1  -lrt
    Parallel PThreads : 4
-   Memory location  : Please put data memory location here                        
+   Memory location  : Please put data memory location here
                  (e.g. code in flash, data on heap etc)
    seedcrc          : 0xe9f5
    [0]crclist       : 0xe714
@@ -341,7 +341,7 @@ coremark性能测试
    Compiler version : GCC10.3.1
    Compiler flags   : -O2 -DMULTITHREAD=4 -DUSE_PTHREAD -DPERFORMANCE_RUN=1  -lrt
    Parallel PThreads : 4
-   Memory location  : Please put data memory location here   
+   Memory location  : Please put data memory location here
                  (e.g. code in flash, data on heap etc)
    seedcrc          : 0xe9f5
    [0]crclist       : 0xe714

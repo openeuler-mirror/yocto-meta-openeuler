@@ -1,6 +1,6 @@
-.. _raspberrypi:
+.. _board_raspberrypi4_build:
 
-树莓派4B的支持
+树莓派4B镜像构建与使用
 ######################################
 
 本章主要介绍openEuler Embedded中树莓派4B的构建，使用和特性介绍。
@@ -45,7 +45,7 @@
 - linux
 
 .. code-block:: console
-    
+
   dd if=openeuler-image-raspberrypi4-64-*.rootfs.rpi-sdimg of=/dev/xxxx
 
 **if** : 指定编译好的树莓派镜像文件
@@ -73,7 +73,7 @@
 .. code-block:: console
 
   kpartx -va /dev/loop0
-    
+
 得到结果是 /dev/loop0 的两个分区设备
 
 .. code-block:: console
@@ -156,11 +156,11 @@ a.使用串口登录：
 
 示例：使用ttyusb转接器，将树莓派串口通过USB连接到putty：
 
-.. image:: ../../image/raspberrypi/rasp-ttyusb-connect.png
+.. image:: rasp-ttyusb-connect.png
 
 putty配置参考： Serial line:ttyUSB0 speed:115200 Connection type:Serial
 
-.. image:: ../../image/raspberrypi/putty_config.png
+.. image:: putty_config.png
 
 b.使用HDMI登录：
 

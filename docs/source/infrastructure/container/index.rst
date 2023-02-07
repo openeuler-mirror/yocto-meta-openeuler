@@ -1,6 +1,6 @@
-.. _docker_list:
+.. _container:
 
-openEuler Embedded 容器介绍
+容器介绍
 ######################################
 
 该文档介绍openEuler Embedded相关的容器、版本、Dockerfile、容器作用等内容，供想要了解openEuler Embedded项目，参与openEuler Embedded项目的开发人员作容器方向的指导。
@@ -12,7 +12,7 @@ openEuler Embedded 容器介绍
 `容器环境下的快速构建指导 <https://openeuler.gitee.io/yocto-meta-openeuler/yocto/quickbuild/container-build.html#id9>`__
 
 22.03-lts之后版本容器运行机制如下图：
-    .. figure:: ../../image/docker_list/docker_detail.png
+    .. figure:: ../../../image/docker_list/docker_detail.png
         :align: center
 
         图 1 22.03-lts之后版本容器运行机制

@@ -10,7 +10,7 @@ openEuler Embedded网络配置
 
 设备：建议树莓派4B的出厂配置，包括树莓派4B基础套件和SD卡
 
-编译openEuler Embedded版本的树莓派镜像, 并烧录进SD卡中, 参考 :ref:`关键特性/树莓派4B支持/树莓派镜像构建指导<raspberrypi>`
+编译openEuler Embedded版本的树莓派镜像, 并烧录进SD卡中, 参考 :ref:`关键特性/树莓派4B支持/树莓派镜像构建指导<board_raspberrypi4_build>`
 
 
 有线网络配置
