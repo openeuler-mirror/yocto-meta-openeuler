@@ -34,6 +34,12 @@ python () {
     d.setVar('do_install_appended', adjusted)
 }
 
+# Because the replace function is called in above anonymous function, 
+# resulting in that the checksum of do_install_appended will change with the change
+# of the build directory and cannot be ignored through do_install_appended[vardepsexclude] += "D"
+# Ignore how do_install_appended is computed as a workaround 
+do_install[vardepsexclude] += "do_install_appended"
+
 link_if_no_dest () {
     if ! [ -e "$2" ] && ! [ -L "$2" ]; then
         ln -s "$1" "$2"

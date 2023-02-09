@@ -25,6 +25,8 @@ OUTPUTTIME = "${DATETIME}"
 # Ignore how DATETIME is computed
 OUTPUTTIME[vardepsexclude] = "DATETIME"
 OUTPUT_DIR = "${TOPDIR}/output/${OUTPUTTIME}"
+# Ignore how TOPDIR is computed
+OUTPUT_DIR[vardepsexclude] = "TOPDIR"
 
 # do not use depmod
 USE_DEPMOD = "0"
