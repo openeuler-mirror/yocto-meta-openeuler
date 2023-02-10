@@ -15,4 +15,6 @@ originbot-base \
 originbot-teleop \
 send-goal \
 ydlidar-ros2-driver \
+cartographer-ros \
+nav2-bringup \
 "
