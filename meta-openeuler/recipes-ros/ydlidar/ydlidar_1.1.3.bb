@@ -31,13 +31,17 @@ SYSROOT_DIRS += "/usr/lib"
 FILES_${PN}-staticdev += "/usr/lib/libydlidar_sdk.a"
 FILES_${PN} += "/usr/share /usr/startup /usr/lib/python*"
 
-# fix pkgconfig installdir conflict
+# fix pkgconfig installdir conflict and driver compile warnings (which fix buffer overflow)
 do_configure_prepend_class-target() {
     if [ -f ${S}/cmake/install_package.cmake ]; then
         cat ${S}/cmake/install_package.cmake | grep "\${CMAKE_INSTALL_DATAROOTDIR}\/pkgconfig" || sed -i 's:${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig:g' ${S}/cmake/install_package.cmake
         cat ${S}/cmake/install_package.cmake | grep "\${CMAKE_INSTALL_DATAROOTDIR}\/cmake" || sed -i 's:lib/cmake:${CMAKE_INSTALL_DATAROOTDIR}/cmake:g' ${S}/cmake/install_package.cmake
     fi
+    sed -i 's:0x\%X thread has been canceled:0x\%lX thread has been canceled:g' ${S}/core/base/thread.h
+    sed -i 's:Create thread 0x\%X:Create thread 0x\%lX:g' ${S}/src/YDlidarDriver.cpp
+    sed -i 's:serialnum\[16\]:serialnum\[40\]:g' ${S}/core/common/ydlidar_protocol.h
 }
 
 
 BBCLASSEXTEND = "native nativesdk"
+
