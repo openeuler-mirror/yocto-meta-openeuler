@@ -5,6 +5,7 @@ require openeuler-image-sdk.inc
 
 IMAGE_INSTALL += " \
 packagegroup-core-boot \
+packagegroup-kernel-modules \
 mcs-linux \
 mcs-km \
 screen \
