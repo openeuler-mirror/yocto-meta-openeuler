@@ -33,7 +33,7 @@ sstate 缓存复用机制
 
 缓存指sstate-cache目录下的*.tgz文件，构建时存在对应的tgz文件且校验和不变时则执行对应的task_setsecne任务；sstate-cache目录下还存在*.siginfo文件，目前测试来看该文件只是提供了一种检测校验和的手段，即使不存在也不会使缓存不能使用；每个执行任务都存在一个siginfo文件。
 
-..noite::
+.. note::
 
     do_build任务不存在siginfo文件。
 
@@ -111,7 +111,7 @@ sstate 使用方法
     # 服务器链接地址
     SSTATE_MIRRORS ?= "file://.* http://someserver.tld/share/sstate/PATH;downloadfilename=PATH"
 
-3、开发者下载缓存当本地路径；缺点是当开发者只需要某一部分缓存时也会把全部的缓存下载下来，造成资源浪费；需在local.conf脚本添加如下内容：
+3、开发者下载缓存到本地路径；缺点是当开发者只需要某一部分缓存时也会把全部的缓存下载下来，造成资源浪费；需在local.conf脚本添加如下内容：
 
 .. code-block::
     

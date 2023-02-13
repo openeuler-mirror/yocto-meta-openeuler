@@ -117,9 +117,9 @@ vardepsexclude与vardeps标志：使字节或任务计算校验和时不依赖�
 <section id="id1">
 <h2>sstate 缓存复用机制<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
 <p>缓存指sstate-cache目录下的*.tgz文件，构建时存在对应的tgz文件且校验和不变时则执行对应的task_setsecne任务；sstate-cache目录下还存在*.siginfo文件，目前测试来看该文件只是提供了一种检测校验和的手段，即使不存在也不会使缓存不能使用；每个执行任务都存在一个siginfo文件。</p>
-<p>..noite:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>do_build任务不存在siginfo文件。
-</pre></div>
+<div class="admonition note">
+<p class="admonition-title">注解</p>
+<p>do_build任务不存在siginfo文件。</p>
 </div>
 <p>构建linux-openeuler(arm-std)，总共执行了59个任务。通过查看日志信息，只执行了54个任务；查看SSTATE_DIR目录，存在54份siginfo文件；其余5个任务应该是每个依赖包的do_build任务，不存在相应的siginfo文件。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ bitbake linux-openeuler -g  //生成linux-openeuler依赖信息
@@ -177,7 +177,7 @@ $ bitbake package_name  //构建所需包
 SSTATE_MIRRORS ?= &quot;file://.* http://someserver.tld/share/sstate/PATH;downloadfilename=PATH&quot;
 </pre></div>
 </div>
-<p>3、开发者下载缓存当本地路径；缺点是当开发者只需要某一部分缓存时也会把全部的缓存下载下来，造成资源浪费；需在local.conf脚本添加如下内容：</p>
+<p>3、开发者下载缓存到本地路径；缺点是当开发者只需要某一部分缓存时也会把全部的缓存下载下来，造成资源浪费；需在local.conf脚本添加如下内容：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span># 本地绝对路径
 SSTATE_MIRRORS ?= &quot;file://.* file:///some/local/dir/sstate/PATH&quot;
 </pre></div>
