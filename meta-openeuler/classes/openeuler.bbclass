@@ -81,53 +81,33 @@ python do_openeuler_fetchs() {
 # base.bbclass
 python do_openeuler_fetch() {
     import os
-    import git
-    import random
     import shutil
+    import fcntl
+    
+    import git
     from git import GitError
 
     # init repo in the repo_dir
-    def init_repo(repoDir, repoPath, branch):
+    def init_repo(repo_dir, repo_url, repo_branch):
         try:
             # if repo has finished git init and then do git pull
-            repo = git.Repo(repoDir)
+            repo = git.Repo(repo_dir)
             with repo.config_writer() as wr:
                 wr.set_value('http', 'sslverify', 'false').release()
             repo.remote().pull()
-            repo.git.checkout(branch)
+            repo.git.checkout(repo_branch)
             return
         except Exception as e:
             # do git init action in empty directory
-            repo = git.Repo.init(repoDir)
-            git.Remote.add(repo = repo, name = "origin", url = repoPath)
+            repo = git.Repo.init(repo_dir)
+            git.Remote.add(repo = repo, name = "origin", url = repo_url)
             with repo.config_writer() as wr:
                 wr.set_value('http', 'sslverify', 'false').release()
             repo.remote().fetch()
-            if repo.active_branch.name == branch:
+            if repo.active_branch.name == repo_branch:
                 repo.active_branch.checkout()
             else:
-                repo.git.checkout(branch)
-
-    # add a file lock in the dir for compete
-    def add_lock(dir):
-            lock_file = os.path.join(dir, "file.lock")
-            try:
-                os.mknod(lock_file)
-                return True
-            except FileExistsError:
-                return True
-            except:
-                return False
-
-    def remove_lock(dir):
-        lock_file = os.path.join(dir, "file.lock")
-        try:
-            os.remove(lock_file)
-            return True
-        except FileNotFoundError:
-            return True
-        except:
-            return False
+                repo.git.checkout(repo_branch)
 
     # get source directory where to download
     srcDir = d.getVar('OPENEULER_SP_DIR')
@@ -143,72 +123,44 @@ python do_openeuler_fetch() {
     if len(src_uri) == 0:
         return
 
-    isLock = False
-    try:
-        repoDir = os.path.join(srcDir, localName)
-        lockFile = os.path.join(repoDir, "file.lock")
-        # checkout repo code
-        repoUrl = os.path.join(gitUrl, repoName + ".git")
+    repo_dir = os.path.join(srcDir, localName)
+    repo_url = os.path.join(gitUrl, repoName + ".git")
+    lock_file = os.path.join(repo_dir, "file.lock")
+    except_str = None
+    with open(lock_file, 'a', closefd=True) as f:
+        fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+        try:
+            init_repo(repo_dir = repo_dir, repo_url = repo_url, repo_branch = repoBranch)
+        except GitError:
+            # can't use bb.fatal here, because there are the following cases:
+            # case1:
+            #      gitee repo exists, but git clone failed, then do_openeuler_fetch
+            #      should re-run, so bb.fatal is required
+            # case2:
+            #      gitee repo does not exist, then try the original fetch, i.e.
+            #      bb.fetch2.Fetch, so bb.fatal cannot be used
+            # case3:
+            #     all SRC_URI are in local, no need to do git clone, do_openeuler_fetch
+            #     should bypass,the original fetch
+            bb.note("could not find gitee repository {}".format(repoName))
+        except Exception as e:
+            bb.plain("===============")
+            bb.plain("OPENEULER_SP_DIR: {}".format(srcDir))
+            bb.plain("OPENEULER_REPO_NAME: {}".format(repoName))
+            bb.plain("OPENEULER_LOCAL_NAME: {}".format(localName))
+            bb.plain("OPENEULER_GIT_URL: {}".format(gitUrl))
+            bb.plain("OPENEULER_BRANCH: {}".format(repoBranch))
+            bb.plain("===============")
+            except_str = str(e)
 
-        if not os.path.exists(repoDir):
-            os.mkdir(repoDir)
+    if os.path.exists(lock_file):
+        try:
+            os.remove(lock_file)
+        except:
+            pass
 
-            # create file.lock for other component compete
-            add_lock(repoDir)
-            isLock=True
-
-            init_repo(repoDir, repoUrl, repoBranch)
-
-            # delete lock file
-            remove_lock(repoDir)
-        else:
-            while True:
-                if os.path.exists(lockFile):
-                # wait repo pull finished
-                    time.sleep(random.randint(0,3))
-                    continue
-                else:
-                    # create file.lock for other component compete
-                    add_lock(repoDir)
-                    isLock=True
-
-                    # checkout repo code
-                    init_repo(repoDir, repoUrl, repoBranch)
-
-                    # delete lock file
-                    remove_lock(repoDir)
-                    break
-    except GitError as gitError:
-        if isLock:
-            # shutil.rmtree(repoDir)
-            remove_lock(repoDir)
-
-        # can't use bb.fatal here, because there are the following cases:
-        # case1:
-        #      gitee repo exists, but git clone failed, then do_openeuler_fetch
-        #      should re-run, so bb.fatal is required
-        # case2:
-        #      gitee repo does not exist, then try the original fetch, i.e.
-        #      bb.fetch2.Fetch, so bb.fatal cannot be used
-        # case3:
-        #     all SRC_URI are in local, no need to do git clone, do_openeuler_fetch
-        #     should bypass,the original fetch
-        bb.note("could not find gitee repository {}".format(repoName))
-        return
-    except Exception as e:
-        if isLock:
-            # shutil.rmtree(repoDir)
-            remove_lock(repoDir)
-
-        bb.plain("===============")
-        bb.plain("OPENEULER_SP_DIR: {}".format(srcDir))
-        bb.plain("OPENEULER_REPO_NAME: {}".format(repoName))
-        bb.plain("OPENEULER_LOCAL_NAME: {}".format(localName))
-        bb.plain("OPENEULER_GIT_URL: {}".format(gitUrl))
-        bb.plain("OPENEULER_BRANCH: {}".format(repoBranch))
-        bb.plain("===============")
-
-        bb.fatal(str(e))
+    if except_str != None:
+        bb.fatal(except_str)
 }
 
 # do openeuler fetch at the beginning of do_fetch,
