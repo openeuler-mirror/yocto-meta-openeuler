@@ -10,6 +10,7 @@ INITRD_IMAGE_LIVE = "openeuler-image-live"
 require recipes-core/images/openeuler-image-common.inc
 # package sdk
 require recipes-core/images/openeuler-image-sdk.inc
+require clang-sdk.inc
 
 # packages added to rootfs and target sdk
 # put packages allowing a device to boot into "packagegroup-core-boot"
