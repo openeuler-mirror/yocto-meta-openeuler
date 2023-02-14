@@ -76,6 +76,9 @@ FILES_MIRRORS = "\
 
 EXTERNAL_CC ?= "${EXTERNAL_TARGET_SYS}-gcc"
 
+# LAYERDIR_openeuler should never be included when generating the signatures
+external_run[vardepsexclude] += "LAYERDIR_openeuler"
+
 def external_run(d, *args):
     """Convenience wrapper"""
     if (not d.getVar('TCMODE', True).startswith('external') or
