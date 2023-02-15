@@ -1,7 +1,7 @@
 #main bbfile: yocto-poky/meta/recipes-extended/procps/procps_3.3.17.bb
 
 #version in openEuler
-PV = "4.0.0"
+PV = "4.0.2"
 
 S = "${WORKDIR}/${BPN}-ng-${PV}"
 
@@ -20,10 +20,9 @@ SRC_URI_remove = " \
 # files, patches that come from openeuler
 SRC_URI_prepend= " \
            file://${BPN}-ng-${PV}.tar.xz \
-           file://0001-add-M-and-N-options-for-top.patch \
-           file://0002-top-exit-with-error-when-pid-overflow.patch \
-           file://0003-top-eliminate-a-potential-abend-when-exiting-A-mode.patch \
-           file://0004-skill-Restore-the-p-flag-functionality.patch \
+           file://openeuler-add-M-and-N-options-for-top.patch \
+           file://openeuler-top-exit-with-error-when-pid-overflow.patch \
+           file://skill-Restore-the-p-flag-functionality.patch \
            "
 
 do_configure_prepend() {
