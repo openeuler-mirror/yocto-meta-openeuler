@@ -97,6 +97,8 @@ python do_openeuler_fetch() {
             # If the repository only does fetch, it does not need to perform a pull
             if len(repo.branches) != 0:
                 repo.remote().pull()
+            else:
+                repo.remote().fetch()
             repo.git.checkout(repo_branch)
             return
         except Exception as e:
@@ -126,6 +128,8 @@ python do_openeuler_fetch() {
         return
 
     repo_dir = os.path.join(srcDir, localName)
+    if not os.path.exists(repo_dir):
+        os.mkdir(repo_dir)
     repo_url = os.path.join(gitUrl, repoName + ".git")
     lock_file = os.path.join(repo_dir, "file.lock")
     except_str = None
