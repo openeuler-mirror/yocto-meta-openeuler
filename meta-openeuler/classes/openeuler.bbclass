@@ -94,7 +94,9 @@ python do_openeuler_fetch() {
             repo = git.Repo(repo_dir)
             with repo.config_writer() as wr:
                 wr.set_value('http', 'sslverify', 'false').release()
-            repo.remote().pull()
+            # If the repository only does fetch, it does not need to perform a pull
+            if len(repo.branches) != 0:
+                repo.remote().pull()
             repo.git.checkout(repo_branch)
             return
         except Exception as e:
