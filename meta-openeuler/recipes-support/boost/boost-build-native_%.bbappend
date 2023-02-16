@@ -1,16 +1,18 @@
-# main bb src: openembedded-core/recipes-support/boost/boost-1.80.0*
+# main bbfile: meta/recipes-support/boost/boost-build-native_4.3.0.bb
 
-PV = "1.80.0"
+OPENEULER_BRANCH = "master"
+OPENEULER_REPO_NAME = "boost"
+
+PV = "1.81.0"
 
 SRC_URI_remove = " \
         git://github.com/boostorg/build;protocol=https;branch=master \
 "
 
 SRC_URI_prepend = " \
-        file://boost_1_80_0.tar.gz \
+        file://boost_1_81_0.tar.gz \
 "
 
-S = "${WORKDIR}/boost_1_80_0/tools/build"
+SRC_URI[sha256sum] = "205666dea9f6a7cfed87c7a6dfbeb52a2c1b9de55712c9c1a87735d7181452b6"
 
-OPENEULER_BRANCH = "master"
-OPENEULER_REPO_NAME = "boost"
+S = "${WORKDIR}/boost_1_81_0/tools/build"
