@@ -12,6 +12,7 @@ usage()
     echo "                       arm-std"
     echo "                       x86-64-std"
     echo "                       raspberrypi4-64"
+    echo "                       ok3568"
     echo "           Build dir: <above dir of yocto-meta-openeuler >/build (defaut)"
     echo "           External toolchain dir(absoulte path):"
     echo "                       /usr1/openeuler/gcc/openeuler_gcc_arm64le (default)"
@@ -77,6 +78,10 @@ get_build_info()
         MACHINE="qemu-riscv64"
         BITBAKE_OPT="openeuler-image openeuler-image-tiny"
         ;;
+    "ok3568")
+        MACHINE="ok3568"
+        BITBAKE_OPT="openeuler-image openeuler-image-tiny"
+        ;;
    *)
         echo "unknown platform, use aarch64-std as default"
         PLATFORM="aarch64-std"
@@ -85,7 +90,7 @@ get_build_info()
 
     # set toolchain path
     case $MACHINE in
-    "qemu-aarch64" | "raspberrypi4-64")
+    "qemu-aarch64" | "raspberrypi4-64" | "ok3568")
         EXTERNAL_TOOLCHAIN_DIR="EXTERNAL_TOOLCHAIN_aarch64";;
     "qemu-arm")
         EXTERNAL_TOOLCHAIN_DIR="EXTERNAL_TOOLCHAIN_arm";;
@@ -125,6 +130,11 @@ set_env()
     # if raspberrypi is selected, add the layer of meta-raspberry pi
     if echo "$MACHINE" | grep -q "^raspberrypi";then
         grep "meta-raspberrypi" conf/bblayers.conf |grep -qv "^[[:space:]]*#" || sed -i "/\/meta-openeuler /a \  "${SRC_DIR}"/yocto-meta-openeuler/bsp/meta-raspberrypi \\\\" conf/bblayers.conf
+    fi
+
+    # if ok3568 is selected, add the layer of meta-raspberry pi
+    if echo "$MACHINE" | grep -q "^ok3568";then
+        grep "meta-rockchip" conf/bblayers.conf |grep -qv "^[[:space:]]*#" || sed -i "/\/meta-openeuler /a \  "${SRC_DIR}"/yocto-meta-openeuler/bsp/meta-rockchip \\\\" conf/bblayers.conf
     fi
 
     # set DATETIME in conf/local.conf
