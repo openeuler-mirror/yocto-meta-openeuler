@@ -1,0 +1,83 @@
+From 03ae4a2fb5ee3854d8784391aefdc1abac4297ae Mon Sep 17 00:00:00 2001
+From: liangqifeng <liangqifeng@ncti-gba.cn>
+Date: Wed, 15 Feb 2023 13:57:51 +0000
+Subject: [PATCH] fix fiq_debugger
+
+---
+ arch/arm64/kernel/fpsimd.c                          | 4 ++--
+ drivers/staging/android/fiq_debugger/fiq_debugger.c | 7 +++----
+ include/linux/printk.h                              | 2 +-
+ kernel/printk/printk.c                              | 2 +-
+ 4 files changed, 7 insertions(+), 8 deletions(-)
+
+diff --git a/arch/arm64/kernel/fpsimd.c b/arch/arm64/kernel/fpsimd.c
+index dbe196f38..da2413218 100644
+--- a/arch/arm64/kernel/fpsimd.c
++++ b/arch/arm64/kernel/fpsimd.c
+@@ -244,7 +244,7 @@ static void *sve_free_atomic(struct task_struct *task)
+  */
+ static void get_cpu_fpsimd_context(void)
+ {
+-	local_bh_disable();
++	preempt_disable();
+ 	__get_cpu_fpsimd_context();
+ }
+ 
+@@ -265,7 +265,7 @@ static void __put_cpu_fpsimd_context(void)
+ static void put_cpu_fpsimd_context(void)
+ {
+ 	__put_cpu_fpsimd_context();
+-	local_bh_enable();
++	preempt_enable();
+ }
+ 
+ static bool have_cpu_fpsimd_context(void)
+diff --git a/drivers/staging/android/fiq_debugger/fiq_debugger.c b/drivers/staging/android/fiq_debugger/fiq_debugger.c
+index 59bd0a841..c1b352982 100755
+--- a/drivers/staging/android/fiq_debugger/fiq_debugger.c
++++ b/drivers/staging/android/fiq_debugger/fiq_debugger.c
+@@ -263,12 +263,11 @@ static void fiq_debugger_dump_kernel_log(struct fiq_debugger_state *state)
+ {
+ 	char buf[512];
+ 	size_t len;
+-	struct kmsg_dumper dumper = { .active = true };
++        struct kmsg_dumper_iter iter = { .active = 1 };
+ 
+ 
+-	kmsg_dump_rewind_nolock(&dumper);
+-	while (kmsg_dump_get_line_nolock(&dumper, true, buf,
+-					 sizeof(buf) - 1, &len)) {
++        kmsg_dump_rewind(&iter);
++        while (kmsg_dump_get_line(&iter, false, buf, sizeof(buf), &len)) {
+ 		buf[len] = 0;
+ 		fiq_debugger_puts(state, buf);
+ 	}
+diff --git a/include/linux/printk.h b/include/linux/printk.h
+index 9331b131b..23946f482 100644
+--- a/include/linux/printk.h
++++ b/include/linux/printk.h
+@@ -241,7 +241,7 @@ __printf(1, 2) void dump_stack_set_arch_desc(const char *fmt, ...);
+ void dump_stack_print_info(const char *log_lvl);
+ void show_regs_print_info(const char *log_lvl);
+ extern asmlinkage void dump_stack(void) __cold;
+-#if defined(CONFIG_X86) || defined(CONFIG_ARM64_PSEUDO_NMI)
++#if (defined(CONFIG_X86) || defined(CONFIG_ARM64_PSEUDO_NMI)) && !defined(CONFIG_PREEMPT_RT)
+ extern void zap_locks(void);
+ #else
+ static inline void zap_locks(void) { }
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 7859f42a6..d1a472283 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -1813,7 +1813,7 @@ static void print_sync_until(struct console *con, u64 seq)
+ 	console_atomic_unlock(flags);
+ }
+ 
+-#if defined(CONFIG_X86) || defined(CONFIG_ARM64_PSEUDO_NMI)
++#if (defined(CONFIG_X86) || defined(CONFIG_ARM64_PSEUDO_NMI)) && !defined(CONFIG_PREEMPT_RT)
+ void zap_locks(void)
+ {
+ 	if (raw_spin_is_locked(&logbuf_lock)) {
+-- 
+2.33.0
+
