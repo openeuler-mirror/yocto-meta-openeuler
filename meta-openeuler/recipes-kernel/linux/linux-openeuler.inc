@@ -40,34 +40,44 @@ python () {
 }
 
 python do_fetch() {
-    import subprocess
-    import git
     import os
+    import fcntl
 
-    srcDir = d.getVar("OPENEULER_SP_DIR")
-    kernelDir = os.path.join(srcDir, "kernel-5.10")
-    srcKernelDir = os.path.join(srcDir, "src-kernel-5.10")
-    kernelBranch = "5.10.0-106.18.0"
+    import git
+    from git import GitError
 
-    def check_repo(repo_dir, branch):
-        repo = git.Repo(repo_dir)
+    d.setVar("OPENEULER_REPO_NAME", "kernel")
+    d.setVar("OPENEULER_LOCAL_NAME", 'src-kernel-5.10')
+    d.setVar("OPENEULER_GIT_URL", "https://gitee.com/src-openeuler")
+    bb.build.exec_func("do_openeuler_fetch", d)
+
+    src_dir = d.getVar("OPENEULER_SP_DIR")
+    kernel_dir = os.path.join(src_dir, "kernel-5.10")
+    if not os.path.exists(kernel_dir):
+        os.mkdir(kernel_dir)
+    file_lock = os.path.join(kernel_dir, "file.lock")
+    # if change kernel version, just reset `kernel_branch` param and then do not anything anymore
+    kernel_branch = "5.10.0-106.18.0"
+    with open(file_lock, 'a') as f:
+        fcntl.flock(f.fileno(), fcntl.LOCK_EX)
+
+        repo = git.Repo.init(kernel_dir)
         with repo.config_writer() as wr:
             wr.set_value('http', 'sslverify', 'false').release()
-        # repo directory may be not on any branch so that could not run 'git pull'
-        if len(os.listdir(repo_dir)) > 1 and len(repo.branches) > 0:
-            repo.remote().pull()
-        repo.git.checkout(branch)
-    try:
-        check_repo(kernelDir, kernelBranch)
-        check_repo(srcKernelDir, d.getVar("OPENEULER_BRANCH"))
-    except Exception as e:
-        gitCommand = '''
-    git config --global http.sslverify false
-    git clone https://gitee.com/openeuler/kernel.git -v {} -b {} --depth 1
-    git clone https://gitee.com/src-openeuler/kernel.git -v {} -b {} --depth 1
-    '''.format(kernelDir, kernelBranch, srcKernelDir, d.getVar("OPENEULER_BRANCH"))
-        gitCommandPopen  = subprocess.Popen(gitCommand, shell=True, )
-        gitCommandPopen.communicate()
+        repo_url = 'https://gitee.com/openeuler/kernel.git'
+        try:
+            if not repo.remote().exists():
+                git.Remote.add(repo = repo, name = "origin", url = repo_url)
+        except:
+            repo.create_remote('origin', repo_url)
+        repo.remote().fetch(refspec=f"+refs/tags/{kernel_branch}:refs/tags/{kernel_branch}", depth=1)
+        repo.git.checkout(kernel_branch)
+
+    if os.path.exists(file_lock):
+        try:
+            os.remove(file_lock)
+        except:
+            pass
 }
 
 KERNEL_CC_append_aarch64 = " ${TOOLCHAIN_OPTIONS}"
