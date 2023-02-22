@@ -39,7 +39,7 @@ addhandler src_uri_set
 src_uri_set[eventmask] = "bb.event.RecipePreFinalise"
 
 # qemu.bbclass; fix build error: the kernel is too old
-QEMU_OPTIONS_remove = "-r ${OLDEST_KERNEL}"
+OLDEST_KERNEL_forcevariable = "5.10"
 
 # fetch multi repos in one recipe bb file, an example is
 # dsoftbus_1.0.bb where multi repos required by dsoftbus are
