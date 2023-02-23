@@ -1,0 +1,48 @@
+/dts-v1/;
+
+/ {
+        compatible = "system-device-tree-v1";
+        lops {
+                // Extract a serial(serial@7e201a00) from rpi4 device tree
+                // and output it to zephyr-rpi4.dts
+                lop_1: lop_1 {
+                        compatible = "system-device-tree-v1,lop,select-v1";
+                        // clear any old selections
+                        select_1;
+                        select_2 = "/:compatible:raspberrypi,4-model-b\0brcm,bcm2711";
+                };
+                lop_1_1: lop_1_1 {
+                        compatible = "system-device-tree-v1,lop,code-v1";
+                        code = "
+                                tree.process = False
+                                if __selected__:
+                                        print( 'Compatible dts (rpi4) found: %s' % node )
+                                        tree.process = True
+
+                                if __selected__:
+                                        return True
+                                else:
+                                        return False
+                                ";
+
+                        lop_1_1_1 {
+                                compatible = "system-device-tree-v1,lop,tree";
+                                cond = <&lop_1>;
+                                tree = "zephyr-tree";
+                                nodes = "serial@7e201a00";
+                        };
+                        lop_1_1_2 {
+                                compatible = "system-device-tree-v1,lop,output";
+                                cond = <&lop_1>;
+                                tree = "zephyr-tree";
+                                outfile = "zephyr-rpi4.dts";
+                                nodes = "*";
+                        };
+                        lop_1_1_3 {
+                                compatible = "system-device-tree-v1,lop,modify";
+                                cond = <&lop_1>;
+                                modify = "/soc/serial@7e201a00/::";
+                        };
+                };
+        };
+};

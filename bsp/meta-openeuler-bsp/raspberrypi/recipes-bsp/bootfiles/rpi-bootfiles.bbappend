@@ -16,3 +16,8 @@ do_deploy[depends] += " \
 do_deploy_append() {
     cp ${S}/bcm2711-rpi-4-b.dtb ${DEPLOYDIR}/${BOOTFILES_DIR_NAME}
 }
+
+inherit ${@bb.utils.contains('MCS_FEATURES', 'lopper-devicetree', 'lopper-devicetree', '', d)}
+
+INPUT_DT = "${S}/bcm2711-rpi-4-b.dtb"
+OUTPUT_DT = "${S}/bcm2711-rpi-4-b.dtb"
