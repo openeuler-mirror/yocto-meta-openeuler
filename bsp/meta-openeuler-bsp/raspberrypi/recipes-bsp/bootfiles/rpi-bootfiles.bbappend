@@ -1,4 +1,5 @@
-SRC_URI = "file://raspberrypi-firmware/firmware-1.20220308.tar.gz \
+OPENEULER_REPO_NAME = "raspberrypi-firmware"
+SRC_URI = "file://firmware-1.20220308.tar.gz \
 "
 
 S = "${WORKDIR}/firmware-1.20220308/boot"
