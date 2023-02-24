@@ -15,7 +15,14 @@ SRC_URI[sha256sum] = "1de14df6caaeb61fd15065eee23fb1bae864a1ea15eba8ee066a940736
 
 inherit deploy nopackages
 
+DEPENDS += "rpi-tf-a"
+
 do_deploy() {
+    # Use the bl31.bin we compiled to make a RPI_EFI.fd
+    # bl31.bin is placed into the first 128KB of RPI_EFI.fd, filled up with 0xFF
+    tr '\000' '\377' < /dev/zero | dd conv=notrunc bs=1K seek=0 count=128 of=${WORKDIR}/RPI_EFI.fd
+    dd if=${WORKDIR}/recipe-sysroot/${datadir}/bl31.bin of=${WORKDIR}/RPI_EFI.fd conv=notrunc
+
     install -m 0644 ${WORKDIR}/RPI_EFI.fd ${DEPLOYDIR}
 }
 
