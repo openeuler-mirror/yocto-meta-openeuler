@@ -11,4 +11,11 @@ OPENEULER_REPO_NAME = "python-prettytable"
 OPENEULER_BRANCH = "master"
 SRC_URI_prepend += "file://prettytable-${PV}.tar.gz "
 
-DEPENDS += "python3-pip-native"
+# remove the setup_requires for setuptools-scm(same as python3-pytest):
+# The setup_requires argument forces the download of the egg file for setuptools-scm
+# during the do_compile phase.  This download is incompatible with the typical fetch
+# and mirror structure.  The only usage of scm is the generation of the _version.py
+# file and in the release tarball it is already correctly created
+FILESEXTRAPATHS:prepend := "${THISDIR}/python3-prettytable/:"
+SRC_URI_append += "file://0001-setup.py-remove-the-setup_requires-for-setuptools-scm.patch"
+
