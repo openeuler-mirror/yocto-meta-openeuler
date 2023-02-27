@@ -26,16 +26,34 @@ S = "${WORKDIR}/${BPN}-v${PV}"
 # the software packages required in build
 # rtthread needs to be built with gcc toolchain with newlibc
 # it's better to use pre-built toolchain, e.g. aarch64-elf-xxx
-# DEPENDS =
+INHIBIT_DEFAULT_DEPS = "1"
+
+def get_depends(d):
+    # use the default toolchain
+    # just need the compiler, no need of glibc and runtime libraries which are for linux
+    if d.getVar("OPENEULER_RTOS_TOOLCHAIN_DIR", True) == d.getVar("STAGING_BINDIR_TOOLCHAIN", True):
+        return "newlib " + "virtual/" + d.getVar("TARGET_PREFIX", True) + "gcc"
+    else:
+        return ""
+
+DEPENDS += "${@get_depends(d)}"
 
 # according to yocto's parameters, e.g., MACHINE, ARCH, to get
 # rtthread's parameters
-
 
 export RTT_EXEC_PATH = "${OPENEULER_RTOS_TOOLCHAIN_DIR}"
 export RTT_CC = "gcc"
 export OPENEULER_RTT_GCC_PREFIX = "${OPENEULER_RTOS_TOOLCHAIN_PREFIX}"
 
+def get_flags(d):
+    # use the default toolchain's sysroot to provide newlib header files
+    if d.getVar("OPENEULER_RTOS_TOOLCHAIN_DIR", True) == d.getVar("STAGING_BINDIR_TOOLCHAIN", True):
+        return " --sysroot=" + d.getVar("STAGING_DIR_TARGET", True)
+    else:
+        return ""
+
+# OPENEULER_RTT_GCC_FLAGS are extra flags for RTT
+export OPENEULER_RTT_GCC_FLAGS = "${@get_flags(d)}"
 
 def get_rtthread_bsp(d):
 
