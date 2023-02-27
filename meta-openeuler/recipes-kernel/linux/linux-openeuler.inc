@@ -19,13 +19,6 @@ SRC_URI_append_aarch64 = " \
     file://patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch \
 "
 
-# add patches for OPENEULER_PLATFROM such as aarch64-pro
-SRC_URI_append_aarch64-pro = " \
-    file://src-kernel-5.10/0000-raspberrypi-kernel.patch \
-    file://src-kernel-5.10/0001-add-preemptRT-patch.patch \
-    file://src-kernel-5.10/0002-modifty-bcm2711_defconfig-for-rt-rpi-kernel.patch \
-"
-
 LINUX_VERSION_EXTENSION_append = "-openeuler"
 # delete v8 in kernel module name, such as kernel-module-xxx-5.10.0-v8
 KERNEL_MODULE_PACKAGE_SUFFIX = ""
@@ -48,6 +41,7 @@ python do_fetch() {
 
     d.setVar("OPENEULER_REPO_NAME", "kernel")
     d.setVar("OPENEULER_LOCAL_NAME", 'src-kernel-5.10')
+    d.setVar("OPENEULER_BRANCH", 'openEuler-22.03-LTS-SP1')
     d.setVar("OPENEULER_GIT_URL", "https://gitee.com/src-openeuler")
     bb.build.exec_func("do_openeuler_fetch", d)
 
@@ -57,7 +51,7 @@ python do_fetch() {
         os.mkdir(kernel_dir)
     file_lock = os.path.join(kernel_dir, "file.lock")
     # if change kernel version, just reset `kernel_branch` param and then do not anything anymore
-    kernel_branch = "5.10.0-106.18.0"
+    kernel_branch = "5.10.0-136.20.0"
     with open(file_lock, 'a') as f:
         fcntl.flock(f.fileno(), fcntl.LOCK_EX)
 
