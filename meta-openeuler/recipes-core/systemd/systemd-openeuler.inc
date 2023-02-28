@@ -293,7 +293,6 @@ SRC_URI_prepend = "file://systemd-${PV}.tar.gz \
            file://backport-execute-line-break-comments-a-bit-less-aggressively.patch \
            file://backport-execute-document-that-the-env-param-is-input-and-out.patch \
            file://backport-sd-dhcp-lease-fix-memleak.patch \
-           file://backport-core-mount-fail-early-if-directory-cannot-be-created.patch \
            file://backport-util-another-set-of-CVE-2021-4034-assert-s.patch \
            file://backport-resolve-fix-potential-memleak-and-use-after-free.patch \
            file://backport-resolve-fix-possible-memleak.patch \
