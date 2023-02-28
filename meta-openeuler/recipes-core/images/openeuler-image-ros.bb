@@ -28,8 +28,9 @@ packagegroup-base-extended \
 packagegroup-openssh \
 packagegroup-kernel-modules \
 packagegroup-isulad \
-packagegroup-rosslam \
+packagegroup-roscore \
 "
+# current qemu can't support ros slam demo
 
 # You can add extra user here, suck like:
 # inherit extrausers
