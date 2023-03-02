@@ -1,8 +1,17 @@
 # main bbfile: yocto-poky/meta/recipes-extended/sed/sed_4.8.bb
 
+OPENEULER_BRANCH = "openEuler-23.03"
+
+PV = "4.9"
+
+LIC_FILES_CHKSUM = "file://COPYING;md5=1ebbd3e34237af26da5dc08a4e440464 \
+                    file://sed/sed.h;beginline=1;endline=15;md5=4e8e0f77bc4c1c2c02c2b90d3d24c670 \
+"
+
+SRC_URI:remove += " ${GNU_MIRROR}/sed/sed-${PV}.tar.xz "
+
 # patches in openeuler
 SRC_URI += " \
-           file://sed/backport-sed-c-flag.patch \
-           file://sed/backport-sed-handle-very-long-execution-lines-tiny-change.patch \
-           file://sed/backport-sed-handle-very-long-input-lines-with-R-tiny-change.patch \
+    file://sed-${PV}.tar.xz \
+    file://sed/backport-sed-c-flag.patch \
 "

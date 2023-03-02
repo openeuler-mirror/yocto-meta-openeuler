@@ -1,6 +1,14 @@
-#apply package and patches from openeuler
+
+OPENEULER_SRC_URI_REMOVE = "https git http"
+OPENEULER_BRANCH = "openEuler-23.03"
+
+PV = "0.3.113"
+
+# apply package and patches from openeuler
+# 0006-libaio-Add-sw64-architecture.patch is conlict, 
+# not apply it as we not support sw64 current
 SRC_URI = " \
-    file://libaio-0.3.112.tar.gz \
+    file://libaio-${PV}.tar.gz \
     file://0000-libaio-install-to-destdir-slash-usr.patch \
     file://0001-libaio-arm64-ilp32.patch \
     file://0002-libaio-makefile-cflags.patch \

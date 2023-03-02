@@ -1,4 +1,5 @@
 PV = "1.34.1"
+OPENEULER_BRANCH = "openEuler-23.03"
 
 # use openEuler defconfig
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
@@ -16,6 +17,8 @@ SRC_URI_remove = " \
 SRC_URI_append = " \
         file://backport-CVE-2022-28391.patch \
         file://backport-CVE-2022-30065.patch \
+        file://backport-fix-use-after-free-in-bc-module.patch \
+        file://backport-generalize-const-trick.patch \
         file://init.cfg \
         file://rcS.default \
         file://mdev.cfg \

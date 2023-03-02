@@ -3,9 +3,16 @@
 
 SRC_URI_remove = "file://add-missing-python-include-dir-for-cross.patch \
 "
-SRC_URI =+ "file://modify-pwquality_conf.patch \
-           file://fix-password-similarity.patch \
-           file://fix-doc-about-difok.patch \
+
+OPENEULER_SRC_URI_REMOVE = "https git"
+OPENEULER_BRANCH = "openEuler-23.03"
+PV = "1.4.5"
+
+SRC_URI =+ " \
+    file://libpwquality-1.4.5.tar.bz2 \
+    file://modify-pwquality_conf.patch \
+    file://fix-password-similarity.patch \
+    file://fix-doc-about-difok.patch \
 "
 
 # do not enable python bindings, as well as not use gettext to translate

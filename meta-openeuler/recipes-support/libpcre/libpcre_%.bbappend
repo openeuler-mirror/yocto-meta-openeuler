@@ -1,4 +1,7 @@
 # main bbfile: yocto-poky/meta/recipes-support/libpcre/libpcre_8.44.bb
+#
+OPENEULER_SRC_URI_REMOVE = "https git http"
+OPENEULER_BRANCH = "openEuler-23.03"
 
 # libpcre version in openeuler
 PV = "8.45"
@@ -10,7 +13,6 @@ LIC_FILES_CHKSUM = "file://LICENCE;md5=b5d5d1a69a24ea2718263f1ff85a1c58"
 
 # remove conflict files from poky
 SRC_URI_remove = " \
-        https://ftp.pcre.org/pub/pcre/pcre-${PV}.tar.bz2 \
         ${SOURCEFORGE_MIRROR}/pcre/pcre-${PV}.tar.bz2 \
 "
 
