@@ -27,7 +27,6 @@ packagegroup-base \
 packagegroup-base-extended \
 packagegroup-openssh \
 packagegroup-kernel-modules \
-packagegroup-isulad \
 "
 
 # You can add extra user here, suck like:
