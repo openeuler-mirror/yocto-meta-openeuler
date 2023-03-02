@@ -1,5 +1,8 @@
 # main bbfile: yocto-poky/meta/recipes-extended/gzip/gzip_1.10.bb
 
+OPENEULER_SRC_URI_REMOVE = "https git http"
+OPENEULER_BRANCH = "openEuler-23.03"
+
 # gzip version in openEuler
 PV = "1.12"
 
@@ -7,6 +10,8 @@ PV = "1.12"
 SRC_URI_remove = "${GNU_MIRROR}/gzip/${BP}.tar.gz"
 SRC_URI_prepend += "file://${BP}.tar.xz \
                     file://fix-verbose-disable.patch \
+                    file://backport-gzip-detect-invalid-input.patch \
+                    file://backport-gzip-test-invalid-input-bug.patch \
                     "
 
 # remove poky's conflicting patch
