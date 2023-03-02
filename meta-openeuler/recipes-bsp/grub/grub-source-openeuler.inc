@@ -1,15 +1,6 @@
+OPENEULER_BRANCH = "openEuler-23.03"
+REALPV = "2.06"
 PV = "2.06"
-S = "${WORKDIR}/grub-${PV}"
-
-#these patch can't apply for
-
-SRC_URI_remove = " \
-    https://alpha.gnu.org/gnu/grub/grub-${REALPV}.tar.xz \
-"
-
-SRC_URI_prepend = " \
-    file://grub-${PV}.tar.xz \
-"
 
 # Notice: openeuler's patches have many conflicts to patch, drop them.
 
