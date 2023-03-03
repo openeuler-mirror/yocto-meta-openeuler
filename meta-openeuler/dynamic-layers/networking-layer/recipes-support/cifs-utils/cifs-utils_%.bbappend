@@ -1,11 +1,11 @@
-PV = "6.14"
+PV = "6.15"
+OPENEULER_BRANCH = "openEuler-23.03"
 
-SRC_URI_remove = "git://git.samba.org/cifs-utils.git;branch=master"
-
+OPENEULER_SRC_URI_REMOVE = "https git http"
 SRC_URI_prepend = "file://${BP}.tar.bz2 \
            "
 
-SRC_URI[sha256sum] = "6609e8074b5421295ff012a31f02ccd9a058415c619c81362ebb788dbf0756b8"
+SRC_URI[sha256sum] = "a7b6940e93250c1676a6fa66b6ead91b78cd43a5fee99cc462459c8b9cf1e6f4"
 
 S = "${WORKDIR}/${BP}"
 

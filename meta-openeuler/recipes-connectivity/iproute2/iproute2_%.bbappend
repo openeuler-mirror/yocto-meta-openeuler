@@ -1,21 +1,15 @@
-PV = "5.15.0"
+PV = "6.1.0"
 OPENEULER_REPO_NAME = "iproute"
+OPENEULER_BRANCH = "openEuler-23.03"
 
+OPENEULER_SRC_URI_REMOVE = "https git http"
 SRC_URI += " \
-    file://bugfix-iproute2-3.10.0-fix-maddr-show.patch \
-    file://bugfix-iproute2-change-proc-to-ipnetnsproc-which-is-private.patch \
-    file://backport-devlink-fix-devlink-health-dump-command-without-arg.patch \
-    file://backport-ip-Fix-size_columns-for-very-large-values.patch \
-    file://backport-ip-Fix-size_columns-invocation-that-passes-a-32-bit-.patch \
-    file://backport-l2tp-fix-typo-in-AF_INET6-checksum-JSON-print.patch \
-    file://backport-libnetlink-fix-socket-leak-in-rtnl_open_byproto.patch \
-    file://backport-lnstat-fix-buffer-overflow-in-header-output.patch \
-    file://backport-lnstat-fix-strdup-leak-in-w-argument-parsing.patch \
-    file://backport-q_cake-allow-changing-to-diffserv3.patch \
-    file://backport-tc-em_u32-fix-offset-parsing.patch \
-    file://backport-tc-flower-Fix-buffer-overflow-on-large-labels.patch \
-    file://backport-tc_util-Fix-parsing-action-control-with-space-and-sl.patch \
-    file://backport-tipc-fix-keylen-check.patch \
+        file://${BPN}-${PV}.tar.xz \
+        file://bugfix-iproute2-3.10.0-fix-maddr-show.patch \
+        file://bugfix-iproute2-change-proc-to-ipnetnsproc-which-is-private.patch \
+        file://backport-testsuite-fix-testsuite-build-failure-when-iproute-b.patch \
+        file://feature-iproute-add-support-for-ipvlan-l2e-mode.patch \
+        file://bugfix-iproute2-cancel-some-test-cases.patch \
 "
 
-SRC_URI[sha256sum] = "56d7dcb05b564c94cf6e4549cec2f93f2dc58085355c08dcb2a8f8249c946080"
+SRC_URI[sha256sum] = "5ce12a0fec6b212725ef218735941b2dab76244db7e72646a76021b0537b43ab"

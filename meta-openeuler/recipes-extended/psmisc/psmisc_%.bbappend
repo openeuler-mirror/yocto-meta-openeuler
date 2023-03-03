@@ -1,4 +1,7 @@
 # package and patches from openeuler
+PV = "23.6"
+OPENEULER_BRANCH = "openEuler-23.03"
+
 SRC_URI = " \
     file://psmisc-${PV}.tar.xz \
 "
@@ -17,3 +20,6 @@ do_configure_prepend() {
         chmod +x ${S}/po/update-potfiles
     fi
 }
+
+SRC_URI[md5sum] = "9cbcf82bcf3ab2aab3edef361f171bb9"
+SRC_URI[sha256sum] = "2c960f2949a606653a8a05701224587f56856ab7c66b6f376a589144ce248657"

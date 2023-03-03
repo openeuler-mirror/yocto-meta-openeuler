@@ -1,11 +1,12 @@
 # main bb file: yocto-poky/meta/recipes-connectivity/libpcap/libpcap_1.10.0.bb
 
 # version in openEuler
-PV = "1.10.1"
+PV = "1.10.3"
+OPENEULER_BRANCH = "openEuler-23.03"
 
 SRC_URI_prepend = "file://0003-pcap-linux-apparently-ctc-interfaces-on-s390-has-eth.patch \
            file://pcap-config-mitigate-multilib-conflict.patch \
            "
 
-SRC_URI[md5sum] = "28e17495004036567c2cc884b51eba45"
-SRC_URI[sha256sum] = "ed285f4accaf05344f90975757b3dbfe772ba41d1c401c2648b7fa45b711bdd4"
+SRC_URI[md5sum] = "c42fde2eb75a5075f19116f8c9768573"
+SRC_URI[sha256sum] = "2a8885c403516cf7b0933ed4b14d6caa30e02052489ebd414dc75ac52e7559e6"

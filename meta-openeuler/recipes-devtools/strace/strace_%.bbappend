@@ -1,7 +1,8 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/strace/strace_5.11.bb
 
-# strace version in openEuler
+# strace version in openEuler, this version needs to match the kernel
 PV = "5.14"
+OPENEULER_BRANCH = "openEuler-22.03-LTS-SP1"
 
 # remove conflict patch
 SRC_URI_remove += "file://Makefile-ptest.patch"
