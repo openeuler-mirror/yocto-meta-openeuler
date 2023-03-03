@@ -1,6 +1,8 @@
 # version in openEuler
 PV = "2.9.14"
 
+OPENEULER_BRANCH = "openEuler-23.03"
+
 # remove patches can't apply
 # fix-execution-of-ptests.patch, patch-fuzz warning
 SRC_URI_remove = "http://www.xmlsoft.org/sources/libxml2-${PV}.tar.gz;name=libtar \
@@ -29,9 +31,18 @@ SRC_URI_prepend = "file://${BP}.tar.xz \
 # add patches in openEuler
 SRC_URI += " \
         file://libxml2-multilib.patch \
+        file://backport-Rework-validation-context-flags.patch \
+        file://backport-Remove-unneeded-code-in-xmlreader.c.patch \
+        file://backport-Don-t-add-IDs-containing-unexpanded-entity-reference.patch \
+        file://backport-Only-warn-on-invalid-redeclarations-of-predefined-en.patch \
+        file://backport-Add-XML_DEPRECATED-macro.patch \
         file://Fix-memleaks-in-xmlXIncludeProcessFlags.patch \
         file://Fix-memory-leaks-for-xmlACatalogAdd.patch \
         file://Fix-memory-leaks-in-xmlACatalogAdd-when-xmlHashAddEntry-failed.patch \
+        file://backport-CVE-2022-40303-Fix-integer-overflows-with-XML_PARSE_.patch \
+        file://backport-CVE-2022-40304-Fix-dict-corruption-caused-by-entity-.patch \
+        file://backport-schemas-Fix-null-pointer-deref-in-xmlSchemaCheckCOSS.patch \
+        file://backport-parser-Fix-potential-memory-leak-in-xmlParseAttValue.patch \
 "
 
 # checksum changed
