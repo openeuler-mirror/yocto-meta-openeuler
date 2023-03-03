@@ -11,7 +11,9 @@ python set_rpmdeps() {
 addhandler set_rpmdeps
 set_rpmdeps[eventmask] = "bb.event.RecipePreFinalise"
 
-# set BUILD_LDFLAGS for use nativesdk lib
+# set BUILD_LDFLAGS for native recipes buildings, nativesdk can be
+# a star point for the necessary build-required recipes, no need to do
+# everything from the scratch
 BUILD_LDFLAGS_append = " -L${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
                          -L${OPENEULER_NATIVESDK_SYSROOT}/lib \
                          -Wl,-rpath-link,${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
@@ -19,8 +21,9 @@ BUILD_LDFLAGS_append = " -L${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
                          -Wl,-rpath,${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
                          -Wl,-rpath,${OPENEULER_NATIVESDK_SYSROOT}/lib"
 
-# src_uri_set is used to remove some url with variable OPENEULER_SRC_URI_REMOVE
-# that we set some head strings in, because we maybe does not need to download it 
+# src_uri_set is used to remove some URLs from SRC_URI through
+# OPENEULER_SRC_URI_REMOVE, because we don't want to download from
+# these URLs
 python src_uri_set() {
     if d.getVar('OPENEULER_SRC_URI_REMOVE'):
         REMOVELIST = d.getVar('OPENEULER_SRC_URI_REMOVE').split(' ')
@@ -81,7 +84,7 @@ python do_openeuler_fetch() {
     import os
     import shutil
     import fcntl
-    
+
     import git
     from git import GitError
 
@@ -172,7 +175,7 @@ python do_openeuler_fetch() {
 # from openeuler's gitee repo.
 # if success,  other part of base_do_fetch will skip download as
 # files are already downloaded by do_openeuler_fetch
-python base_do_fetch_prepend() {    
+python base_do_fetch_prepend() {
     if not d.getVar('OPENEULER_FETCH') or d.getVar('OPENEULER_FETCH') == "enable":
         bb.build.exec_func("do_openeuler_fetch", d)
 }
