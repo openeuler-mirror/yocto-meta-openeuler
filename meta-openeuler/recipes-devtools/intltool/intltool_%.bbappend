@@ -1,16 +1,14 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/intltool/intltool_0.51.0.bb
+OPENEULER_BRANCH = "openEuler-23.03"
 
 PV = "0.51.0"
 
-# remove tar.gz files and code patches from poky
-SRC_URI_remove = " \
-        http://launchpad.net/${BPN}/trunk/${PV}/+download/${BP}.tar.gz \
+# conflict with intltool-perl5.26-regex-fixes.patch
+SRC_URI_remove = "file://perl-522-deprecations.patch \
 "
 
-# append files and patches from openeuler
-# failed patches of openeuler: intltool-perl5.26-regex-fixes.patch
-SRC_URI_append = " \
-    file://intltool-${PV}.tar.gz \
-    file://intltool-merge-Create-cache-file-atomically.patch \
-    file://intltool_distcheck-fix.patch \
+# apply openeuler patches
+SRC_URI_prepend = "file://intltool-perl5.26-regex-fixes.patch \
+           file://intltool-merge-Create-cache-file-atomically.patch \
+           file://intltool_distcheck-fix.patch \
 "

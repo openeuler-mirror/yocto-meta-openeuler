@@ -1,20 +1,25 @@
 # main bbfile: yocto-poky/meta/recipes-extended/gawk/gawk_5.1.0.bb
+OPENEULER_BRANCH = "openEuler-23.03"
 
 # version in openEuler
-PV = "5.1.1"
+PV = "5.2.0"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI_remove = " \
-        ${GNU_MIRROR}/gawk/gawk-${PV}.tar.gz \
+SRC_URI_remove = "${GNU_MIRROR}/gawk/gawk-${PV}.tar.gz \
 "
 
 # files, patches that come from openeuler
-# Reorder-statements-in-iolint-to-try-to-eliminate-a-r.patch fails to apply
-SRC_URI += " \
-        file://${BP}.tar.xz;name=tarball \
-        file://Disable-racy-test-in-test-iolint.awk.patch \
-        file://Restore-removed-test-in-test-iolint.awk.patch \
-"
+SRC_URI_prepend = " \
+           file://${BP}.tar.xz \
+           file://pma.patch \
+           file://Disable-pma-test.awk.patch \
+           file://backport-Fix-a-bug-with-Node_elem_new.patch \
+           file://backport-Additional-fix-for-Node_elem_new.patch \
+           file://backport-Yet-another-fix-and-test-for-Node_elem_new.patch \
+           file://backport-Fix-a-memory-leak.patch \
+           file://backport-Code-simplification-in-interpret.h.patch \
+           file://backport-Fix-negative-NaN-issue-on-RiscV.patch \
+           "
 
-SRC_URI[tarball.md5sum] = "83650aa943ff2fd519b2abedf8506ace"
-SRC_URI[tarball.sha256sum] = "d87629386e894bbea11a5e00515fc909dc9b7249529dad9e6a3a2c77085f7ea2"
+SRC_URI[md5sum] = "2f724d925873fc82f5e7b1d605ba9a42"
+SRC_URI[sha256sum] = "e4ddbad1c2ef10e8e815ca80208d0162d4c983e6cca16f925e8418632d639018"

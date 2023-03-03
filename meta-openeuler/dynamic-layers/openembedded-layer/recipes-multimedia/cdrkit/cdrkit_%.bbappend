@@ -1,4 +1,5 @@
 # main bbfile: meta-oe/recipes-multimedia/cdrkit/cdrkit_1.1.11.bb
+OPENEULER_BRANCH = "openEuler-23.03"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 # patches apply fail: 0001-genisoimage-Add-missing-extern-definition.patch
@@ -30,6 +31,7 @@ SRC_URI_prepend = "file://${BP}.tar.gz \
            file://cdrkit-1.1.11-devname.patch \
            file://cdrkit-1.1.11-sysmacros.patch \
            file://cdrkit-1.1.11-gcc10.patch \
+           file://cdrkit-1.1.11-sw.patch \
 "
 
 SRC_URI[md5sum] = "efe08e2f3ca478486037b053acd512e9"
