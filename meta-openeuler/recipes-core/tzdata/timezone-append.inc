@@ -1,6 +1,8 @@
-PV = "2022a"
+PV = "2022g"
 
 DL_DIR = "${OPENEULER_SP_DIR}/tzdata"
+
+OPENEULER_BRANCH = "openEuler-23.03"
 
 OPENEULER_REPO_NAME = "tzdata"
 
@@ -8,12 +10,8 @@ OPENEULER_REPO_NAME = "tzdata"
 SRC_URI = " \
         file://tzcode${PV}.tar.gz;name=tzcode \
         file://tzdata${PV}.tar.gz;name=tzdata \
-        file://backport-Iran-will-stop-DST-in-2023.patch \
-        file://backport-Chile-s-DST-is-delayed-by-a-week-in-September-2022.patch \
-        file://backport-Palestine-transitions-are-now-Saturdays-at-02-00.patch \
-        file://backport-Tweak-expression-of-Palestine-transition.patch \
+        file://backport-Much-of-Greenland-still-uses-DST-from-2024-on.patch \
         file://bugfix-0001-add-Beijing-timezone.patch \
-        file://remove-country-selection-from-tzselect-steps.patch \
         file://remove-ROC-timezone.patch \
         file://rename-Macau-to-Macao.patch \
         file://remove-El_Aaiun-timezone.patch \
@@ -21,5 +19,5 @@ SRC_URI = " \
         file://skip-check_web-testcase.patch \
         "
 
-SRC_URI[tzcode.sha256sum] = "f8575e7e33be9ee265df2081092526b81c80abac3f4a04399ae9d4d91cdadac7"
-SRC_URI[tzdata.sha256sum] = "ef7fffd9f4f50f4f58328b35022a32a5a056b245c5cb3d6791dddb342f871664"
+SRC_URI[tzcode.sha256sum] = "9610bb0b9656ff404c361a41f3286da53064b5469d84f00c9cb2314c8614da74"
+SRC_URI[tzdata.sha256sum] = "4491db8281ae94a84d939e427bdd83dc389f26764d27d9a5c52d782c16764478"
