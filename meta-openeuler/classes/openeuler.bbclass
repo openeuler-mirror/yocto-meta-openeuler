@@ -83,8 +83,6 @@ python do_openeuler_fetchs() {
 python do_openeuler_fetch() {
     import os
     import shutil
-    import fcntl
-
     import git
     from git import GitError
 
@@ -134,37 +132,34 @@ python do_openeuler_fetch() {
     repo_url = os.path.join(gitUrl, repoName + ".git")
     lock_file = os.path.join(repo_dir, "file.lock")
     except_str = None
-    with open(lock_file, 'a', closefd=True) as f:
-        fcntl.flock(f.fileno(), fcntl.LOCK_EX)
-        try:
-            init_repo(repo_dir = repo_dir, repo_url = repo_url, repo_branch = repoBranch)
-        except GitError:
-            # can't use bb.fatal here, because there are the following cases:
-            # case1:
-            #      gitee repo exists, but git clone failed, then do_openeuler_fetch
-            #      should re-run, so bb.fatal is required
-            # case2:
-            #      gitee repo does not exist, then try the original fetch, i.e.
-            #      bb.fetch2.Fetch, so bb.fatal cannot be used
-            # case3:
-            #     all SRC_URI are in local, no need to do git clone, do_openeuler_fetch
-            #     should bypass,the original fetch
-            bb.note("could not find gitee repository {}".format(repoName))
-        except Exception as e:
-            bb.plain("===============")
-            bb.plain("OPENEULER_SP_DIR: {}".format(srcDir))
-            bb.plain("OPENEULER_REPO_NAME: {}".format(repoName))
-            bb.plain("OPENEULER_LOCAL_NAME: {}".format(localName))
-            bb.plain("OPENEULER_GIT_URL: {}".format(gitUrl))
-            bb.plain("OPENEULER_BRANCH: {}".format(repoBranch))
-            bb.plain("===============")
-            except_str = str(e)
 
-    if os.path.exists(lock_file):
-        try:
-            os.remove(lock_file)
-        except:
-            pass
+    lf = bb.utils.lockfile(lock_file, block=True)
+
+    try:
+        init_repo(repo_dir = repo_dir, repo_url = repo_url, repo_branch = repoBranch)
+    except GitError:
+        # can't use bb.fatal here, because there are the following cases:
+        # case1:
+        #      gitee repo exists, but git clone failed, then do_openeuler_fetch
+        #      should re-run, so bb.fatal is required
+        # case2:
+        #      gitee repo does not exist, then try the original fetch, i.e.
+        #      bb.fetch2.Fetch, so bb.fatal cannot be used
+        # case3:
+        #     all SRC_URI are in local, no need to do git clone, do_openeuler_fetch
+        #     should bypass,the original fetch
+        bb.note("could not find or init gitee repository {}".format(repoName))
+    except Exception as e:
+        bb.plain("===============")
+        bb.plain("OPENEULER_SP_DIR: {}".format(srcDir))
+        bb.plain("OPENEULER_REPO_NAME: {}".format(repoName))
+        bb.plain("OPENEULER_LOCAL_NAME: {}".format(localName))
+        bb.plain("OPENEULER_GIT_URL: {}".format(gitUrl))
+        bb.plain("OPENEULER_BRANCH: {}".format(repoBranch))
+        bb.plain("===============")
+        except_str = str(e)
+
+    bb.utils.unlockfile(lf)
 
     if except_str != None:
         bb.fatal(except_str)
