@@ -1,6 +1,8 @@
 # version in openEuler
 PV = "2.1.1"
 
+OPENEULER_BRANCH = "openEuler-23.03"
+
 # remove patches that can't apply in poky
 SRC_URI_remove = "${SOURCEFORGE_MIRROR}/linux-diag/sysfsutils-${PV}.tar.gz \
                   file://sysfsutils-2.0.0-class-dup.patch \
@@ -9,6 +11,9 @@ SRC_URI_remove = "${SOURCEFORGE_MIRROR}/linux-diag/sysfsutils-${PV}.tar.gz \
 "
 
 SRC_URI_prepend += "file://sysfsutils/v${PV}.tar.gz \
+"
+
+SRC_URI += "file://0001-lib-Fixed-a-memory-leak-in-lib-sysfs_driver.patch \
 "
 
 # checksum changed in this version
