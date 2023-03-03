@@ -1,9 +1,11 @@
 #main bbfile: yocto-poky/meta/recipes-extended/procps/procps_3.3.17.bb
 
 #version in openEuler
-PV = "3.3.17"
+PV = "4.0.2"
 
-S = "${WORKDIR}/${BPN}-${PV}"
+OPENEULER_BRANCH = "openEuler-23.03"
+
+S = "${WORKDIR}/procps-ng-${PV}"
 
 FILESEXTRAPATHS_append := "${THISDIR}/procps/:"
 
@@ -13,17 +15,21 @@ OPENEULER_REPO_NAME = "procps-ng"
 SRC_URI_remove = " \
             git://gitlab.com/procps-ng/procps.git;protocol=https \
             git://gitlab.com/procps-ng/procps.git;protocol=https;branch=master \
+            file://0001-w.c-correct-musl-builds.patch \
+            file://0002-proc-escape.c-add-missing-include.patch \
             "
 # files, patches that come from openeuler
 SRC_URI += " \
         file://procps-ng/procps-ng-${PV}.tar.xz \
-        file://procps-ng/0001-top-fix-two-potential-alternate-display-mode-abends.patch \
-        file://procps-ng/0002-top-In-the-bye_bye-function-replace-fputs-with-the-w.patch \
-        file://procps-ng/0003-add-options-M-and-N-for-top.patch \
-        file://procps-ng/0004-top-exit-with-error-when-pid-overflow.patch \
-        file://procps-ng/0005-fix-a-fix-for-the-bye_bye-function.patch \
-        "
+"
 
+LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
+                    file://COPYING.LIB;md5=4cf66a4984120007c9881cc871cf49db \
+                    "
+
+# file://procps-ng/openeuler-add-M-and-N-options-for-top.patch
+# file://procps-ng/openeuler-top-exit-with-error-when-pid-overflow.patch
+# file://procps-ng/skill-Restore-the-p-flag-functionality.patch
 do_configure_prepend() {
     # cannot run po/update-potfiles in new version
     if [ ! -f ${S}/po/update-potfiles ]; then
@@ -32,5 +38,4 @@ do_configure_prepend() {
     fi
 }
 
-SRC_URI[tarball.md5sum] = "d60613e88c2f442ebd462b5a75313d56"
-SRC_URI[tarball.sha256sum] = "4518b3e7aafd34ec07d0063d250fd474999b20b200218c3ae56f5d2113f141b4"
+SRC_URI[sha256sum] = "ee3fcd2ea6ff94aa43a81ba5cc7912b7c9615acd2911c7a3d3ea081287fdf47a"
