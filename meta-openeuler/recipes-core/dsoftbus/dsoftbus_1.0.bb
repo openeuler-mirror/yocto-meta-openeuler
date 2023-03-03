@@ -40,6 +40,7 @@ SRC_URI = " \
         file://dsoftbus/security-device-auth-0003-simplify-dependency-on-third-party-packages.patch;patchdir=${dsoftbus-hichain}/deviceauth \
         file://dsoftbus/security-huks-0001-support-huks-for-openeuler.patch;patchdir=${dsoftbus-hichain}/huks \
         file://dsoftbus/security-huks-0002-simplify-dependency-on-third-party-packages.patch;patchdir=${dsoftbus-hichain}/huks \
+        file://dsoftbus/security-huks-0003-fix-discarded-qualifiers-error.patch;patchdir=${dsoftbus-hichain}/huks \
         file://dsoftbus/commonlibrary-c-utils-0001-Adaptation-for-dsoftbus.patch;patchdir=${dsoftbus-utils}/native \
         file://dsoftbus/libboundscheck-0001-Adaptation-for-dsoftbus.patch;patchdir=${dsoftbus-thirdparty}/bounds_checking_function \
         file://dsoftbus/third-party-cjson-0001-adapter-cjson-in-openEuler-for-softbus.patch;patchdir=${dsoftbus-thirdparty}/cJSON \
