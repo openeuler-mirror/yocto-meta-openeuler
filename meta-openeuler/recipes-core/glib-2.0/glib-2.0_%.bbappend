@@ -1,5 +1,7 @@
-PV = "2.72.2"
+PV = "2.74.4"
 OPENEULER_REPO_NAME = "glib2"
+
+OPENEULER_BRANCH = "openEuler-23.03"
 
 # use new relocate-modules.patch to fix build error of glib-2.0-native
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
@@ -7,25 +9,19 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
 # no such file, add dependency on libpcre
 LIC_FILES_CHKSUM_remove = " file://glib/pcre/pcre.h;beginline=8;endline=36;md5=3e2977dae4ad05217f58c446237298fc \
 "
-DEPENDS += "libpcre"
+
+LIC_FILES_CHKSUM = "file://COPYING;md5=41890f71f740302b785c27661123bff5"
+
+DEPENDS += "libpcre2"
 
 # source version differs greatly from poky, use SRC_URI of a later version 
 # from http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-core/glib-2.0/glib-2.0_2.72.3.bb
 # mingw32 patch: 0001-Set-host_machine-correctly-when-building-with-mingw3.patch
-SRC_URI = "${GNOME_MIRROR}/glib/${SHRT_VER}/glib-${PV}.tar.xz \
-           file://run-ptest \
-           file://0001-Fix-DATADIRNAME-on-uclibc-Linux.patch \
-           file://Enable-more-tests-while-cross-compiling.patch \
-           file://0001-Remove-the-warning-about-deprecated-paths-in-schemas.patch \
-           file://0001-Install-gio-querymodules-as-libexec_PROGRAM.patch \
-           file://0001-Do-not-ignore-return-value-of-write.patch \
-           file://0010-Do-not-hardcode-python-path-into-various-tools.patch \
-           file://0001-Do-not-write-bindir-into-pkg-config-files.patch \
-           file://0001-meson-Run-atomics-test-on-clang-as-well.patch \
-           file://0001-gio-tests-resources.c-comment-out-a-build-host-only-.patch \
+SRC_URI = "file://glib-${PV}.tar.xz \
            "
+EXTRA_OEMESON_remove = "-Dfam=false"
 
-SRC_URI[sha256sum] = "78d599a133dba7fe2036dfa8db8fb6131ab9642783fc9578b07a20995252d2de"
+SRC_URI[sha256sum] = "0e82da5ea129b4444227c7e4a9e598f7288d1994bf63f129c44b90cfd2432172"
 
 # delete depends to shared-mime-info
 SHAREDMIMEDEP_remove += "shared-mime-info"
@@ -55,6 +51,12 @@ PACKAGECONFIG[system-pcre] = ""
 # In future, if we figure out the related stuff of gio-querymodules, we can remove the
 # following codes
 GIO_MODULE_PACKAGES = ""
+
+# for ERROR: glib-2.0-1_2.74.4-r0 do_package: 
+# QA Issue: glib-2.0: Files/directories were installed but not shipped in any package:
+#  /usr/libexec
+#  /usr/libexec/gio-launch-desktop
+FILES_${PN} += " ${libexecdir}/*gio-launch-desktop \"
 
 # rpath may generate by meson and may not auto delete rpath, it is no secure, so let we do it as a workaround
 do_install_append () {
