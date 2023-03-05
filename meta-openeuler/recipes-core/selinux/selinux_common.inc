@@ -1,21 +1,12 @@
 HOMEPAGE = "https://github.com/SELinuxProject"
 
-# EXTRA_OEMAKE is typically: -e MAKEFLAGS=
-# "MAKEFLAGS= " causes problems as ENV variables will not pass to subdirs, so
-# we redefine EXTRA_OEMAKE here
-EXTRA_OEMAKE = "-e"
+SRC_URI = "git://github.com/SELinuxProject/selinux.git;branch=master;protocol=https"
+SRCREV = "0a8c177dacdc1df96ea11bb8aa75e16c4fa82285"
 
-# Releases are now from the base of the full tree, necessitating our skipping
-# through an extra level of directories.
-S = "${WORKDIR}/${BPN}-${PV}"
-
-SELINUX_NAME = "selinux"
-
-COMPONENT = "selinux"
+UPSTREAM_CHECK_GITTAGREGEX = "(?P<pver>\d+(\.\d+)+)"
 
 do_compile() {
-    oe_runmake all \
-        LIBDIR="${libdir}"
+    oe_runmake all
 }
 
 do_install() {
@@ -24,7 +15,5 @@ do_install() {
         PREFIX="${prefix}" \
         INCLUDEDIR="${includedir}" \
         LIBDIR="${libdir}" \
-        SHLIBDIR="${base_libdir}" \
-        INITDIR="/etc/init.d"
-    rm -rf ${D}${libdir}/golang
+        SHLIBDIR="${base_libdir}"
 }

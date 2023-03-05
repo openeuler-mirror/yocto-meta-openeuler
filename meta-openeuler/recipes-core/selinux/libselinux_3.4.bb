@@ -4,19 +4,25 @@ process and file security contexts and to obtain security policy \
 decisions.  Required for any applications that use the SELinux API."
 SECTION = "base"
 LICENSE = "PD"
+LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=84b4d2c6ef954a2d4081e775a270d0d0"
 
-inherit lib_package
+require selinux_common.inc
 
-DEPENDS += "libsepol libpcre"
+inherit lib_package pkgconfig
+
+DEPENDS = "libsepol libpcre2"
+DEPENDS:append:libc-musl = " fts"
+
+S = "${WORKDIR}/git/libselinux"
 
 def get_policyconfigarch(d):
     import re
-    target = d.getVar('TARGET_ARCH', True)
+    target = d.getVar('TARGET_ARCH')
     p = re.compile('i.86')
     target = p.sub('i386',target)
     return "ARCH=%s" % (target)
-EXTRA_OEMAKE += "${@get_policyconfigarch(d)}"
 
-EXTRA_OEMAKE += "LDFLAGS='${LDFLAGS} -lpcre ' CFLAGS=' ${CFLAGS} -DNO_ANDROID_BACKEND'"
+EXTRA_OEMAKE = "${@get_policyconfigarch(d)}"
+EXTRA_OEMAKE:append:libc-musl = " FTS_LDLIBS=-lfts"
 
 BBCLASSEXTEND = "native"
