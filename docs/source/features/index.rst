@@ -10,6 +10,7 @@
 
    software_package_description.rst
    mcs.rst
+   ros.rst
    muslc.rst
    distributed_softbus.rst
    preempt_rt.rst
