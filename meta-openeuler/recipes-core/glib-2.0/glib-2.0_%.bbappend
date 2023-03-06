@@ -18,6 +18,7 @@ DEPENDS += "libpcre2"
 # from http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-core/glib-2.0/glib-2.0_2.72.3.bb
 # mingw32 patch: 0001-Set-host_machine-correctly-when-building-with-mingw3.patch
 SRC_URI = "file://glib-${PV}.tar.xz \
+           file://0001-fix-compile-error-for-arm32.patch \
            "
 EXTRA_OEMESON_remove = "-Dfam=false"
 
