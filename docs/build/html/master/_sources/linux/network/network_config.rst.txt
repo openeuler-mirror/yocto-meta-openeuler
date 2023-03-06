@@ -89,6 +89,9 @@ openEuler Embedded网络配置
           collisions:0 txqueuelen:1000
           RX bytes:140 (140.0 B)  TX bytes:140 (140.0 B)
 
+.. _network_config_wifi:
+
+
 Wi-Fi网络配置
 ================================================
 
