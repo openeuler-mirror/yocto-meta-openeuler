@@ -4,15 +4,6 @@ inherit deploy
 
 OECMAKE_SOURCEPATH = "${ZEPHYR_SRC_DIR}"
 
-# need prepend host cmake (> 3.20)'s path
-# zephyr needs cmake version > 3.20 which is higher than yocto provided.
-# A workaround is to compile or install cmake separately, and add it into
-# the path.
-# When cmake >3.20 is provided, this workaround can be removed
-ZEPHYR_CMAKE_PATH ?= "/opt/cmake/bin:"
-PATH_prepend = "${ZEPHYR_CMAKE_PATH}"
-
-
 do_install() {
     install -d ${D}/firmware
 
