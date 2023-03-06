@@ -6,6 +6,7 @@ LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=b076ad374a7d311ba3126a22b2d52596"
 SRC_URI[md5sum] = "b3c4477a027d5b6fba5e1065064fd076"
 SRC_URI[sha256sum] = "e6c76a87633aa3fa16614b61ccedfae45b91df2767cf097aa9c933932a7ed1e0"
 OPENEULER_REPO_NAME = "numpy"
+OPENEULER_BRANCH = "openEuler-23.03"
 SRC_URI_prepend += "file://numpy-${PV}.zip "
 S = "${WORKDIR}/numpy-${PV}"
 

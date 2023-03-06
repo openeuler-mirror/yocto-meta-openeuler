@@ -8,7 +8,7 @@ SRC_URI_remove += " \
         "
 
 OPENEULER_REPO_NAME = "python-prettytable"
-OPENEULER_BRANCH = "master"
+OPENEULER_BRANCH = "openEuler-23.03"
 SRC_URI_prepend += "file://prettytable-${PV}.tar.gz "
 
 # remove the setup_requires for setuptools-scm(same as python3-pytest):

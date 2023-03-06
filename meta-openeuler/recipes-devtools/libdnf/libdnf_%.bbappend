@@ -1,14 +1,15 @@
-PV = "0.65.0"
+PV = "0.69.0"
+OPENEULER_BRANCH = "openEuler-23.03"
 #export CONFIG_SHELL="/bin/bash"
 
 # fix rpm install error, depends to /bin/bash
 RDEPENDS_${PN} += "busybox"
 
+# add new patches from openeuler
 SRC_URI = " \
-        https://github.com/rpm-software-management/libdnf/archive/${PV}/${BPN}-${PV}.tar.gz                     \
-        file://add-unittest-for-setting-up-repo-with-empty-keyfile.patch \
-        file://gracefully-handle-failure-to-open-repo-primary-file.patch \
-        file://Fix-listing-a-repository-without-cpeid.patch \
+        file://${BPN}-${PV}.tar.gz                     \
+        file://backport-query-py-ensure-reldep-is-from-the-same-sack.patch \
+        file://0001-libdnf-0.65.0-add-loongarch-support.patch \
 "
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
@@ -16,8 +17,6 @@ SRC_URI += " \
            file://0001-FindGtkDoc.cmake-drop-the-requirement-for-GTKDOC_SCA.patch \
            file://0004-Set-libsolv-variables-with-pkg-config-cmake-s-own-mo.patch \
            file://0001-Get-parameters-for-both-libsolv-and-libsolvext-libdn.patch \
-           file://0001-Add-WITH_TESTS-option.patch \
-           file://0001-Look-fo-sphinx-only-if-documentation-is-actually-ena.patch \
            file://enable_test_data_dir_set.patch \
            file://0001-drop-FindPythonInstDir.cmake.patch \
            file://0001-libdnf-dnf-context.cpp-do-not-try-to-access-BDB-data.patch \
