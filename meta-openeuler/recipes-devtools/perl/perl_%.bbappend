@@ -2,6 +2,8 @@
 # add perlcross-native dependency according to http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-devtools/perl/perl_5.34.0.bb?h=honister
 PV = "5.34.0"
 
+OPENEULER_BRANCH = "openEuler-23.03"
+
 #patches from openeuler
 #perl-5.34.0-Destroy-GDBM-NDBM-ODBM-SDBM-_File-objects-only-from-.patch fail
 SRC_URI_prepend =+ " \
@@ -13,6 +15,7 @@ SRC_URI_prepend =+ " \
     file://perl-5.35.1-Raise-version-number-in-ext-GDBM_File-GDBM_File.pm.patch \
     file://change-lib-to-lib64.patch \
     file://disable-rpath-by-default.patch \
+    file://backport-fix-zlib-test-failed.patch \
     file://backport-CVE-2021-36770.patch \
 "
 

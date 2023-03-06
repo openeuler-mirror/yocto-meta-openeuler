@@ -3,6 +3,8 @@
 # version in openEuler
 PV = "9.0"
 
+OPENEULER_BRANCH = "openEuler-23.03"
+
 # solve lic check failed
 LIC_FILES_CHKSUM_remove = " \
         file://src/ls.c;beginline=1;endline=15;md5=b7d80abf5b279320fb0e4b1007ed108b \
@@ -23,7 +25,7 @@ SRC_URI_remove = " \
 
 # files, patches that come from openeuler
 SRC_URI_prepend = " \
-        file://${BP}.tar.xz;name=tarball \
+        file://${BP}.tar.xz \
         file://0001-disable-test-of-rwlock.patch \
         file://coreutils-8.2-uname-processortype.patch \
         file://coreutils-getgrouplist.patch \
@@ -39,7 +41,9 @@ SRC_URI_prepend = " \
         file://backport-ls-avoid-triggering-automounts.patch \
         file://backport-stat-only-automount-with-cached-never.patch \
         file://backport-config-color-alias-for-ls.patch \
-"
+        file://backport-coreutils-i18n.patch \
+        file://backport-sort-fix-sort-g-infloop-again.patch \
+        file://backport-tests-sort-NaN-infloop-augment-testing-for-recent-fi.patch \
+"  
 
-SRC_URI[tarball.md5sum] = "0d79ae8a6124546e3b94171375e5e5d0"
-SRC_URI[tarball.sha256sum] = "ce30acdf4a41bc5bb30dd955e9eaa75fa216b4e3deb08889ed32433c7b3b97ce"
+SRC_URI[sha256sum] = "ce30acdf4a41bc5bb30dd955e9eaa75fa216b4e3deb08889ed32433c7b3b97ce"
