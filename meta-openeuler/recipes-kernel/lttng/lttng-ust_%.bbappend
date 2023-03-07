@@ -5,6 +5,9 @@ FILESEXTRAPATHS_append := "${THISDIR}/${BPN}/:"
 # version in openEuler
 PV = "2.10.1"
 
+# used openEuler-22.09 because arm build will be error
+OPENEULER_BRANCH = "openEuler-22.09"
+
 # apply openEuler patches
 SRC_URI_prepend = "file://Fix-namespace-our-gettid-wrapper.patch \
            file://lttng-gen-tp-shebang.patch \

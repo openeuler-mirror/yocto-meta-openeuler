@@ -1,1 +1,0 @@
-require openamp.inc
