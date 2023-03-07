@@ -1,5 +1,4 @@
 # main bbfile: yocto-poky/meta/recipes-extended/screen/screen_4.8.0.bb
-OPENEULER_BRANCH = "openEuler-23.03"
 
 PV = "4.9.0"
 

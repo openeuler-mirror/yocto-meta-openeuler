@@ -1,4 +1,4 @@
-OPENEULER_BRANCH = "openEuler-23.03"
+
 PV="1.22.1"
 
 # update license checksum

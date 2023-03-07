@@ -1,6 +1,5 @@
 # main bb: yocto-poky/meta/recipes-support/libcap-ng/libcap-ng_0.8.2.bb
 OPENEULER_SRC_URI_REMOVE = "https git"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 PV = "0.8.3"
 

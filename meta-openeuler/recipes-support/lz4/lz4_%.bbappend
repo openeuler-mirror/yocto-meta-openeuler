@@ -1,7 +1,6 @@
 # main bbfile: yocto-poky/meta/recipes-support/lz4/lz4_1.9.3.bb
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # ref: http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-support/lz4/lz4_1.9.4.bb
 LICENSE = "BSD-2-Clause | GPL-2.0-only"

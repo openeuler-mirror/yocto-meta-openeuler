@@ -1,5 +1,4 @@
 # main bb file: yocto-poky/meta/recipes-core/kbd/kbd_2.4.0.bb
-OPENEULER_BRANCH = "openEuler-23.03"
 
 PV = "2.5.1"
 

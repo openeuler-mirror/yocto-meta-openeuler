@@ -1,7 +1,6 @@
 # main bbfile: yocto-poky/meta/recipes-extended/xz/xz_5.2.5.bb
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # Use the source packages from openEuler
 SRC_URI_remove = " \

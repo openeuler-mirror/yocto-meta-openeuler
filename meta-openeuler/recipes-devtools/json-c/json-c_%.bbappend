@@ -1,7 +1,6 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/json-c/json-c_0.15.bb
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # json-c version in openEuler
 PV = "0.16-20220414"

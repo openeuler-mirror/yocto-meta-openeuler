@@ -1,4 +1,3 @@
-OPENEULER_BRANCH = "openEuler-23.03"
 PV = "1.1.37"
 
 SRC_URI_prepend = "file://CVE-2015-9019.patch \

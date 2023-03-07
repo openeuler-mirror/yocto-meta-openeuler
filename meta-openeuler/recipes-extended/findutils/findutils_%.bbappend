@@ -2,8 +2,6 @@
 
 PV = "4.9.0"
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 # files, patches that come from openeuler
 SRC_URI += " \
         file://0001-findutils-xautofs.patch \

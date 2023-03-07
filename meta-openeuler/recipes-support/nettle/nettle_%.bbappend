@@ -8,8 +8,6 @@ SRC_URI_remove = " \
         ${GNU_MIRROR}/${BPN}/${BP}.tar.gz \
 "
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 # files, patches that come from openeuler
 # don't apply 0000-nettle-3.3-remove-ecc-testsuite.patch due to failure: "No known curve with name secp192r1"
 SRC_URI += " \

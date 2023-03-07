@@ -1,5 +1,4 @@
 PV = "3.4.4"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=32c0d09a0641daf4903e5d61cc8f23a8"
 

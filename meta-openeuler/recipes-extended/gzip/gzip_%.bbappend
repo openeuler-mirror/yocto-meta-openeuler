@@ -1,7 +1,6 @@
 # main bbfile: yocto-poky/meta/recipes-extended/gzip/gzip_1.10.bb
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # gzip version in openEuler
 PV = "1.12"

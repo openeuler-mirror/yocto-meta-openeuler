@@ -1,6 +1,5 @@
 PV = "2.5.5"
 
-OPENEULER_BRANCH = "openEuler-23.03"
 SRC_URI = "\
         https://gnupg.org/ftp/gcrypt/libassuan/libassuan-${PV}.tar.bz2 \
         file://backport-libassuan-2.5.2-multilib.patch \

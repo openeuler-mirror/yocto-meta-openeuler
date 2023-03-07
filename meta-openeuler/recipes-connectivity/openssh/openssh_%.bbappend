@@ -2,7 +2,6 @@
 # http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-connectivity/openssh/openssh_9.1p1.bb?id=c80a3a7a4a9dc40cbb675777a1ba1481532ecb05
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # version in openEuler
 PV = "9.1p1"

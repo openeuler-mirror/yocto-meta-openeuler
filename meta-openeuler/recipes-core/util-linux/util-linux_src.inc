@@ -1,5 +1,4 @@
 PV = "2.37.2"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 # ptest.patch, patch-fuzz warning

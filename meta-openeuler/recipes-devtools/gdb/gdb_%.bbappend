@@ -2,7 +2,6 @@
 # ref: http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-devtools/gdb/gdb_12.1.bb?id=8d42315c074a97
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 #version in openEuler
 PV = "12.1"

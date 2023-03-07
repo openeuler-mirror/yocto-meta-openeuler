@@ -1,5 +1,5 @@
 # version in src-openEuler
-OPENEULER_BRANCH = "openEuler-23.03"
+
 PV = "2.12.1"
 
 # apply src-openEuler patches

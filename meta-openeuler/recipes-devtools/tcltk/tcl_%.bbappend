@@ -2,8 +2,6 @@
 
 PV = "8.6.13"
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 # modify fix_non_native_build_issue.patch for version 8.6.12
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
 

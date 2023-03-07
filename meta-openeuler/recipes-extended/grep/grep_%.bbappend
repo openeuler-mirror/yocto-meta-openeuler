@@ -1,5 +1,4 @@
 OPENEULER_SRC_URI_REMOVE = "https git http"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 PV = "3.8"
 

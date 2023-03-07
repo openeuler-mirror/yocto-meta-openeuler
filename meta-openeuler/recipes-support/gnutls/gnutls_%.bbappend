@@ -3,8 +3,6 @@
 # version in openEuler
 PV = "3.7.8"
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
         https://www.gnupg.org/ftp/gcrypt/gnutls/v${SHRT_VER}/gnutls-${PV}.tar.xz \

@@ -1,7 +1,5 @@
 PV = "1.46.5"
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 S = "${WORKDIR}/${BPN}-${PV}"
 # delete package from poky
 SRC_URI_remove += "git://git.kernel.org/pub/scm/fs/ext2/e2fsprogs.git \

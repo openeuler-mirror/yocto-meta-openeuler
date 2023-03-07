@@ -1,5 +1,5 @@
 OPENEULER_SRC_URI_REMOVE = "https git http"
-OPENEULER_BRANCH = "openEuler-23.03"
+
 PV = "6.4"
 
 # files, patches can't be applied in openeuler or conflict with openeuler

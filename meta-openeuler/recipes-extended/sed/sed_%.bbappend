@@ -1,7 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-extended/sed/sed_4.8.bb
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 PV = "4.9"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=1ebbd3e34237af26da5dc08a4e440464 \

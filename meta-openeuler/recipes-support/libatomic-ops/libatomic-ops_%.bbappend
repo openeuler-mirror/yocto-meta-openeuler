@@ -2,7 +2,6 @@
 
 PV = "7.6.14"
 OPENEULER_REPO_NAME = "libatomic_ops"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # apply src and patch from openEuler
 SRC_URI = "file://libatomic_ops-${PV}.tar.gz \

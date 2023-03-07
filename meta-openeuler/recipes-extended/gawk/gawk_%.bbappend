@@ -1,5 +1,4 @@
 # main bbfile: yocto-poky/meta/recipes-extended/gawk/gawk_5.1.0.bb
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # version in openEuler
 PV = "5.2.0"

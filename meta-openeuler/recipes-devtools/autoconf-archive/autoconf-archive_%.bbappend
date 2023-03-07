@@ -1,4 +1,3 @@
-OPENEULER_BRANCH = "openEuler-23.03"
 PV = "2023.02.20"
 
 SRC_URI[md5sum] = "1a9ee97d3503d134e16c87c4fa1119cf"

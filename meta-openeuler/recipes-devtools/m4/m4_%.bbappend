@@ -1,7 +1,5 @@
 PV = "1.4.19"
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 # AN_GNU_GETTEXT is used, need to inherit gettext
 inherit gettext
 

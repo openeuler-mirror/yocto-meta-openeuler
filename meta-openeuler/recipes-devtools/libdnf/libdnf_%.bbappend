@@ -1,5 +1,4 @@
 PV = "0.69.0"
-OPENEULER_BRANCH = "openEuler-23.03"
 #export CONFIG_SHELL="/bin/bash"
 
 # fix rpm install error, depends to /bin/bash

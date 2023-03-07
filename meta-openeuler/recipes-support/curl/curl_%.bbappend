@@ -3,8 +3,6 @@
 # version in openEuler
 PV = "7.86.0"
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
         https://curl.haxx.se/download/curl-${PV}.tar.bz2 \

@@ -1,5 +1,4 @@
 # main bbfile: yocto-poky/meta/recipes-connectivity/ppp/ppp_2.4.9.bb
-OPENEULER_BRANCH = "openEuler-23.03"
 PV = "2.4.9"
 
 # source and patches from openeuler

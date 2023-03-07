@@ -1,8 +1,6 @@
 # version in openEuler
 PV = "2.9.14"
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 # remove patches can't apply
 # fix-execution-of-ptests.patch, patch-fuzz warning
 SRC_URI_remove = "http://www.xmlsoft.org/sources/libxml2-${PV}.tar.gz;name=libtar \

@@ -1,6 +1,5 @@
 # main bb file: yocto-poky/meta/recipes-graphics/xorg-proto/xorgproto_2020.1.bb
 OPENEULER_REPO_NAME = "xorg-x11-proto-devel"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 PV = "2021.5"
 

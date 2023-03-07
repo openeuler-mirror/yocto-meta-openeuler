@@ -1,4 +1,4 @@
-OPENEULER_BRANCH = "openEuler-23.03"
+
 PV = "1.21.0"
 
 # modify 0002-meson.build-find-the-native-wayland-scanner-directly.patch

@@ -1,7 +1,6 @@
 # main bbfile: yocto-poky/meta/recipes-support/lzo/lzo_2.10.bb
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # attr version in openEuler
 PV = "2.10"

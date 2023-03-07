@@ -2,7 +2,6 @@
 
 # version in openEuler
 PV = "4.5.1"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 FILESEXTRAPATHS_append := "${THISDIR}/files/:"
 

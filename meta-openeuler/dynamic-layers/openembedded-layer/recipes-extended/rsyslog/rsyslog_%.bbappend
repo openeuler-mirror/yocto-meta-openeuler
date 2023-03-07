@@ -4,7 +4,6 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
 
 # version in openEuler
 PV = "8.2210.0"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # files, patches that come from openeuler
 SRC_URI =+ " \

@@ -3,8 +3,6 @@
 # version in openEuler
 PV = "1.23"
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 # files, patches can't be applied in openeuler or conflict with openeuler
 # ptest.patch, patch-fuzz warning
 SRC_URI_remove = " \

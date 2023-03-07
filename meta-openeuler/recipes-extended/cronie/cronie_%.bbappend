@@ -1,5 +1,4 @@
 PV = "1.6.1"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 SRC_URI += " \
     file://bugfix-cronie-systemd-alias.patch \

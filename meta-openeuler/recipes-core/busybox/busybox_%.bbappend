@@ -1,5 +1,4 @@
 PV = "1.34.1"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # use openEuler defconfig
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"

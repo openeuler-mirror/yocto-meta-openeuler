@@ -2,7 +2,6 @@
 # http://cgit.openembedded.org/meta-openembedded/tree/meta-oe/recipes-security/audit/audit_3.0.9.bb
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 

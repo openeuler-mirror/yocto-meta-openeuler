@@ -1,7 +1,6 @@
 # main bbfile: yocto-poky/meta/recipes-extended/bzip2/bzip2_1.0.8.bb
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 PV = "1.0.8"
 

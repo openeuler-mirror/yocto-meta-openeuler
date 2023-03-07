@@ -1,7 +1,6 @@
 # main bbfile: yocto-poky/meta/recipes-support/libunwind/libunwind_1.5.0.bb
 
 PV = "1.6.2"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # do not apply poky's conflict patch
 SRC_URI = "file://${BP}.tar.gz \

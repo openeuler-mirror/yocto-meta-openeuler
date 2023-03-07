@@ -1,7 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-support/libunistring/libunistring_0.9.10.bb
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 PV = "1.1"
 
 # files, patches can't be applied in openeuler or conflict with openeuler

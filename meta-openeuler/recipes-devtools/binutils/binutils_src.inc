@@ -1,5 +1,4 @@
 PV = "2.37"
-OPENEULER_BRANCH = "openEuler-23.03"
 S = "${WORKDIR}/${BPN}-${PV}"
 
 # apply package source and patches from openeuler

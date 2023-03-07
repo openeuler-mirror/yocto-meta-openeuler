@@ -2,7 +2,6 @@
 
 #version in openEuler
 PV = "4.06"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 S = "${WORKDIR}/${BPN}-${PV}"
 

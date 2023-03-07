@@ -1,7 +1,5 @@
 PV = "2.66"
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 LIC_FILES_CHKSUM = "file://License;md5=e2370ba375efe9e1a095c26d37e483b8"
 SRC_URI[sha256sum] = "5f65dc5b2e9f63a0748ea1b05be7965a38548db1cbfd53b30271ff02186b3a4a"
 

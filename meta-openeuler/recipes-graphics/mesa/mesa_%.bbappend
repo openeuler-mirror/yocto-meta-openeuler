@@ -1,5 +1,4 @@
 # main bbfile: yocto-poky/meta/recipes-graphics/mesa/mesa_21.0.3.bb
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # version in openEuler
 PV = "21.3.1"

@@ -3,7 +3,6 @@
 # 0004-Fix-out-of-tree-builds.patch,
 # 0007-Add-configure-argument-to-make-the-libxml2-dependenc.patch,
 # 0013-fixup_use_libbind.patch
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # version in openEuler
 PV = "4.4.3"

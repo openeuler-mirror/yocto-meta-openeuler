@@ -2,7 +2,6 @@ PV = "1.5.2"
 
 # get files from pam, not libpam
 OPENEULER_REPO_NAME = "pam"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # delete useless patch from old version in poky bb
 SRC_URI_remove += " \

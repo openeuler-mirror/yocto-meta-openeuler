@@ -1,4 +1,3 @@
-OPENEULER_BRANCH = "openEuler-23.03"
 REALPV = "2.06"
 PV = "2.06"
 

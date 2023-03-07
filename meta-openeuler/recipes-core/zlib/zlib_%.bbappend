@@ -3,7 +3,6 @@
 #version in openEuler
 PV = "1.2.13"
 
-OPENEULER_BRANCH = "openEuler-23.03"
 OPENEULER_SRC_URI_REMOVE = "https git http"
 
 # files, patches can't be applied in openeuler or conflict with openeuler

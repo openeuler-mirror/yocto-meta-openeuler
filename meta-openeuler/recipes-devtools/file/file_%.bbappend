@@ -1,4 +1,3 @@
-OPENEULER_BRANCH = "openEuler-23.03"
 PV = "5.44"
 
 S = "${WORKDIR}/${BP}"

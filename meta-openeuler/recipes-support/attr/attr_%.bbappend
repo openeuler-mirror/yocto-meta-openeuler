@@ -1,7 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-support/attr/attr_2.5.1.bb
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 # attr version in openEuler
 PV = "2.5.1"
 

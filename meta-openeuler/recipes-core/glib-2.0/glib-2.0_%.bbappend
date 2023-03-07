@@ -1,8 +1,6 @@
 PV = "2.74.4"
 OPENEULER_REPO_NAME = "glib2"
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 # use new relocate-modules.patch to fix build error of glib-2.0-native
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
 

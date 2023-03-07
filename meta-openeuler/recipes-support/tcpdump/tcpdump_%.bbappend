@@ -3,8 +3,6 @@
 # version in openEuler
 PV = "4.99.3"
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
     http://www.tcpdump.org/release/${BP}.tar.gz \

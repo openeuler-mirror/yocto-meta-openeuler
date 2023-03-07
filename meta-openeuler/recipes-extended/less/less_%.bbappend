@@ -2,7 +2,6 @@
 
 # less version in openEuler
 PV = "608"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=1ebbd3e34237af26da5dc08a4e440464 \
                     file://LICENSE;md5=38fc26d78ca8d284a2a5a4bbc263d29b \

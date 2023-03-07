@@ -1,5 +1,4 @@
 PV = "2.6.2"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # apply patches in openeuler
 SRC_URI_prepend = "file://0000-systemd-idmapd-require-rpc-pipefs.patch \

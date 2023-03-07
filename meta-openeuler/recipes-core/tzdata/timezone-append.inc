@@ -2,8 +2,6 @@ PV = "2022g"
 
 DL_DIR = "${OPENEULER_SP_DIR}/tzdata"
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 OPENEULER_REPO_NAME = "tzdata"
 
 # files, patches that come from openeuler

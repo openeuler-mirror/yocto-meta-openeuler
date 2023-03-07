@@ -1,7 +1,5 @@
 PV = "2.14.0"
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 SRC_URI = " \
     https://github.com/fedora-modularity/libmodulemd/releases/download/libmodulemd-${PV}/modulemd-${PV}.tar.xz \
 "

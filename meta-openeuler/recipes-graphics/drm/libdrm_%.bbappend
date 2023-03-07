@@ -1,5 +1,4 @@
 # main bb file: yocto-poky/meta/recipes-graphics/drm/libdrm_2.4.104.bb
-OPENEULER_BRANCH = "openEuler-23.03"
 
 PV = "2.4.109"
 

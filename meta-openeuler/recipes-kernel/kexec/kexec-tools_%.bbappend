@@ -2,7 +2,6 @@
 
 # kexec-tools version in openEuler
 PV = "2.0.26"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # Use the source packages from openEuler and remove conflicting patches
 SRC_URI_remove = "${KERNELORG_MIRROR}/linux/utils/kernel/kexec/kexec-tools-${PV}.tar.gz \

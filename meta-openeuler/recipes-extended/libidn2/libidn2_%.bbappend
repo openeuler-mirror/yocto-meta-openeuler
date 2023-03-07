@@ -3,8 +3,6 @@
 # version in openEuler
 PV = "2.3.3"
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 # solve lic check failed
 LIC_FILES_CHKSUM_remove = " \
         file://src/idn2.c;endline=16;md5=426b74d6deb620ab6d39c8a6efd4c13a \

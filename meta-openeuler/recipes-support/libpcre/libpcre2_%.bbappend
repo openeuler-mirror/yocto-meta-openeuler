@@ -1,5 +1,4 @@
 # main bbfile: yocto-poky/meta/recipes-support/libpcre/libpcre2_10.36.bb
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # version in openeuler
 PV = "10.40"

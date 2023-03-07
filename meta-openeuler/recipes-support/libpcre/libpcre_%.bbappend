@@ -1,7 +1,6 @@
 # main bbfile: yocto-poky/meta/recipes-support/libpcre/libpcre_8.44.bb
 #
 OPENEULER_SRC_URI_REMOVE = "https git http"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # libpcre version in openeuler
 PV = "8.45"

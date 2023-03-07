@@ -3,8 +3,6 @@ PV = "5.4.4"
 PV_testsuites = "5.4.3"
 MINOR_VERSION = "5.4"
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 # remove patches out of date
 SRC_URI_remove = "file://0001-Allow-building-lua-without-readline-on-Linux.patch  \
            file://CVE-2020-15888.patch \

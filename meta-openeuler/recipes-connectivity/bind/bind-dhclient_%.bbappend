@@ -1,6 +1,5 @@
 # source bb: meta-overc/recipes-connectivity/bind/bind-dhclient_9.11.22.bb
 OPENEULER_REPO_NAME = "dhcp"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # version in openeuler/dhcp
 PV = "9.11.36"

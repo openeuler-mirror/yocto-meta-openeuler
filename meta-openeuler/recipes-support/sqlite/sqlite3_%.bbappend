@@ -1,7 +1,6 @@
 # main bb file: yocto-poky/meta/recipes-support/sqlite/sqlite3_3.35.0.bb
 # openEuler repo name
 OPENEULER_REPO_NAME = "sqlite"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # version in openEuler
 PV = "3.37.2"

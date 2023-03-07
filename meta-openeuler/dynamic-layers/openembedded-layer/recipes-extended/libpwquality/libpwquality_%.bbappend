@@ -5,7 +5,7 @@ SRC_URI_remove = "file://add-missing-python-include-dir-for-cross.patch \
 "
 
 OPENEULER_SRC_URI_REMOVE = "https git"
-OPENEULER_BRANCH = "openEuler-23.03"
+
 PV = "1.4.5"
 
 SRC_URI =+ " \

@@ -1,4 +1,3 @@
-OPENEULER_BRANCH = "openEuler-23.03"
 PV = "3.9.0"
 
 # update configure.patch of poky

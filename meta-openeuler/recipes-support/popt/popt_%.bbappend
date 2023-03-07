@@ -1,7 +1,6 @@
 # main bbfile: yocto-poky/meta/recipes-support/popt/popt_1.18.bb
 
 PV = "1.19"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # files, patches that come from openeuler
 OPENEULER_SRC_URI_REMOVE = "https git http"

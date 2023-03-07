@@ -1,5 +1,4 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/intltool/intltool_0.51.0.bb
-OPENEULER_BRANCH = "openEuler-23.03"
 
 PV = "0.51.0"
 

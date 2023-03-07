@@ -1,7 +1,6 @@
 # main bb file: yocto-poky/meta/recipes-core/readline/readline_8.1.bb
 #
 OPENEULER_SRC_URI_REMOVE = "https git http"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 PV = "8.2"
 

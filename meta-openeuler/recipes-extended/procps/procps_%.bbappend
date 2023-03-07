@@ -3,8 +3,6 @@
 #version in openEuler
 PV = "4.0.2"
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 S = "${WORKDIR}/procps-ng-${PV}"
 
 FILESEXTRAPATHS_append := "${THISDIR}/procps/:"

@@ -1,4 +1,3 @@
-OPENEULER_BRANCH = "openEuler-23.03"
 # version in openEuler
 PV = "1.14.0"
 

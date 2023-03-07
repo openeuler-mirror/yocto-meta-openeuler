@@ -1,7 +1,5 @@
 PV = "1.5.2"
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 SRC_URI = " \
         file://${BPN}-${PV}.tar.gz \
         file://add-test-c-result-print.patch \

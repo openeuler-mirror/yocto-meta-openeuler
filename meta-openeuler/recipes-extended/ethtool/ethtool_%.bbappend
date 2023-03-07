@@ -1,5 +1,3 @@
-OPENEULER_BRANCH = "openEuler-23.03"
-
 PV = "5.19"
 
 SRC_URI:remove += " ${KERNELORG_MIRROR}/software/network/ethtool/ethtool-${PV}.tar.gz "

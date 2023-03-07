@@ -1,5 +1,4 @@
 PV = "1.8.9"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
 SRC_URI += "file://${BPN}-${PV}.tar.xz \

@@ -1,6 +1,4 @@
 # main bbfile: yocto-poky/meta/recipes-extended/tar/tar_1.34.bb
-OPENEULER_BRANCH = "openEuler-23.03"
-
 PV="1.34"
 
 # Use the source packages from openEuler

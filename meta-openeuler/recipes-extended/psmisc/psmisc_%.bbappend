@@ -1,6 +1,5 @@
 # package and patches from openeuler
 PV = "23.6"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 SRC_URI = " \
     file://psmisc-${PV}.tar.xz \

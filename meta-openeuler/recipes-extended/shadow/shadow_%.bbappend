@@ -2,7 +2,6 @@
 #ref: https://git.yoctoproject.org/poky/tree/meta/recipes-extended/shadow/shadow_4.13.bb
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 PV = "4.13"
 

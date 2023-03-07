@@ -1,5 +1,4 @@
 # main bbfile: meta-oe/recipes-multimedia/cdrkit/cdrkit_1.1.11.bb
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 # patches apply fail: 0001-genisoimage-Add-missing-extern-definition.patch

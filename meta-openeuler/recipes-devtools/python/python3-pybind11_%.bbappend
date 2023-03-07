@@ -11,6 +11,5 @@ SRC_URI_remove += " \
 
 S = "${WORKDIR}/pybind11-${PV}"
 OPENEULER_REPO_NAME = "pybind11"
-OPENEULER_BRANCH = "openEuler-23.03"
-SRC_URI_prepend += "file://v${PV}.tar.gz "
 
+SRC_URI_prepend += "file://v${PV}.tar.gz "

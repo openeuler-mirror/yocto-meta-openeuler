@@ -5,8 +5,6 @@ LICENSE = "BSD-3-Clause"
 
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 SRC_URI = "file://libevhtp/1.2.18.tar.gz \
 	   file://libevhtp/0001-decrease-numbers-of-fd-for-shared-pipe-mode.patch \
 	   file://libevhtp/0002-evhtp-enable-dynamic-thread-pool.patch \

@@ -1,7 +1,7 @@
 #main bbfile: yocto-poky/meta/recipes-extended/libnsl/libnsl2_git.bb
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
-OPENEULER_BRANCH = "openEuler-23.03"
+
 #version in openEuler
 PV = "2.0.0"
 

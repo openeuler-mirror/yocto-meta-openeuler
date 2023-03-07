@@ -1,7 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-extended/bash/bash_5.1.bb
 
-OPENEULER_BRANCH = "openEuler-23.03"
-
 # bash version in openeuler
 PV = "5.1.8"
 

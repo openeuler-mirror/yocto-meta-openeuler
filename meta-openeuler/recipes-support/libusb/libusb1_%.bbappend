@@ -1,6 +1,5 @@
 PV = "1.0.26"
 OPENEULER_REPO_NAME = "libusbx"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 # no uedev in openeuler
 PACKAGECONFIG_class-target_remove += "udev"

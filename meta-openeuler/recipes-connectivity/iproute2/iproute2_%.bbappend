@@ -1,6 +1,5 @@
 PV = "6.1.0"
 OPENEULER_REPO_NAME = "iproute"
-OPENEULER_BRANCH = "openEuler-23.03"
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
 SRC_URI += " \
