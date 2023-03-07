@@ -1,11 +1,11 @@
-# yocto-meta-embedded
+# yocto-meta-openeuler
 
 ## 介绍
 
-yocto-meta-embedded是用于构建openEuler Embedded所需要的一系列工具、构建配方的集合，
+yocto-meta-openeuler是用于构建openEuler Embedded所需要的一系列工具、构建配方的集合，
 以及当前openEuler Embedded开发使用文档的承载仓库。
 
-yocto-meta-embedded核心是构建Yocto Poky之上，但针对openEuler Embedded的需求做了大
+yocto-meta-openeuler核心是构建Yocto Poky之上，但针对openEuler Embedded的需求做了大
 量的定制化的修改，包括但不限于:
 
 * 与openEuler其他场景的Linux, 共享软件包，共演进
@@ -59,7 +59,7 @@ yocto-meta-embedded核心是构建Yocto Poky之上，但针对openEuler Embedded
 
 6. 由于openEuler Embedded采取了**尽可能不构建主机工具**的策略，因此在构建主机上需要事先准备好相应的工具，具体所需要的工具可以从**src/yocto-meta-openeuler/meta-openeuler/conf/local.conf.sample**中的**HOSTTOOLS_XXX**相关变量中获得，另一种推荐的方法是采用容器构建，具体如下：
 
-    [**openEuler Embedded容器构建**](https://openeuler.gitee.io/yocto-meta-openeuler/yocto/quickbuild/container-build.html)
+    [**openEuler Embedded容器构建**](https://openeuler.gitee.io/yocto-meta-openeuler/master/yocto/quickbuild/container-build.html)
 
 ## 参与贡献
 
