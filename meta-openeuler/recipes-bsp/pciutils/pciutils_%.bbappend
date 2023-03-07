@@ -1,19 +1,31 @@
-SRC_URI[sha256sum] = "2432e7a2e12000502d36cf769ab6e5a0cf4931e5050ccaf8b02984b2d3cb0948"
+OPENEULER_BRANCH = "openEuler-23.03"
+PV = "3.9.0"
 
-SRC_URI = " \
+# update configure.patch of poky
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+
+OPENEULER_SRC_URI_REMOVE = "https http git"
+
+SRC_URI_prepend = " \
     file://pciutils-${PV}.tar.gz \
     file://0000-pciutils-2.2.1-idpath.patch \
     file://0001-pciutils-dir-d.patch \
-    file://0002-lspci-Adjust-PCI_EXP_DEV2_-to-PCI_EXP_DEVCTL2_-macro.patch \
-    file://0003-lspci-Decode-10-Bit-Tag-Requester-Enable.patch \
-    file://0004-lspci-Decode-VF-10-Bit-Tag-Requester.patch \
-    file://0005-lspci-Update-tests-files-with-VF-10-Bit-Tag-Requeste.patch \
 "
 
-# apply patches from poky, to fix configure error
-SRC_URI += " \
-    file://configure.patch \
-"
+SRC_URI[sha256sum] = "01f5b9ee8eff577e9953a43bafb3ead76e0654a7288dc26d79627074956fb1e0"
+
+# use newer do_install
+do_install () {
+	oe_runmake DESTDIR=${D} install install-lib
+	install -d ${D}${bindir}
+	oe_multilib_header pci/config.h
+}
+
+# avoid lspci conflict with busybox
+inherit update-alternatives
+
+ALTERNATIVE:${PN} = "lspci"
+ALTERNATIVE_PRIORITY = "100"
 
 # file of ids package is /usr/share/hwdata/pci.ids.gz, but datadir is /usr/share/
 # update it from FILES_${PN}-ids = "${datadir}/pci.ids*" in poky bb.

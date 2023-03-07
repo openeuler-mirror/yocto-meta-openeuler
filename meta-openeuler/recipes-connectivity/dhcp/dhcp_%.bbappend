@@ -1,9 +1,17 @@
 # source bb: meta-overc/recipes-connectivity/dhcp/dhcp_4.4.2-P1.bb
+# update patches: 
+# 0004-Fix-out-of-tree-builds.patch,
+# 0007-Add-configure-argument-to-make-the-libxml2-dependenc.patch,
+# 0013-fixup_use_libbind.patch
+OPENEULER_BRANCH = "openEuler-23.03"
 
 # version in openEuler
-PV = "4.4.2"
+PV = "4.4.3"
+
+LIC_FILES_CHKSUM = "file://LICENSE;beginline=4;md5=613211e713c4ffc489ec370e1caceabb"
 
 # apply patches in openEuler
+# backport-0025-bind-Detect-system-time-changes.patch, backport-Fix-CVE-2021-25220.patch for bind
 SRC_URI_prepend = "file://backport-0001-change-bug-url.patch \
            file://backport-0002-additional-dhclient-options.patch \
            file://backport-0003-Handle-releasing-interfaces-requested-by-sbin-ifup.patch \
@@ -36,17 +44,16 @@ SRC_URI_prepend = "file://backport-0001-change-bug-url.patch \
            file://dhcpd-coredump-infiniband.patch \
            file://bugfix-dhclient-check-if-pid-was-held.patch \
            file://bugfix-dhcp-64-bit-lease-parse.patch \
-           file://backport-CVE-2021-25217.patch \
-           file://fix-multiple-definition-with-gcc-10-1.patch \
-           file://fix-multiple-definition-with-gcc-10-2.patch \
            file://fix-coredump-when-client-active-is-NULL.patch \
-           file://bugfix-error-message-display.patch \
            file://feature-lease-time-config-ipv6.patch \
            file://add-a-test-case-to-parse-code93-in-option_unittest.patch \
+           file://bugfix-error-message-display.patch \
+           file://backport-Fix-CVE-2022-2928.patch \
+           file://backport-Fix-CVE-2022-2929.patch \
 "
 
-SRC_URI[sha256sum] = "1a7ccd64a16e5e68f7b5e0f527fd07240a2892ea53fe245620f4f5f607004521"
-SRC_URI[md5sum] = "2afdaf8498dc1edaf3012efdd589b3e1"
+SRC_URI[md5sum] = "9076af4cc1293dde5a7c6cae7de6ab45"
+SRC_URI[sha256sum] = "0e3ec6b4c2a05ec0148874bcd999a66d05518378d77421f607fb0bc9d0135818"
 
 # it will make a error when using dhclient
 # because backport-0007-Change-paths-to-conform-to-our-standards.patch
