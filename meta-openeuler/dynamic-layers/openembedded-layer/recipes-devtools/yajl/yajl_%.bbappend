@@ -1,5 +1,7 @@
 # meta-oe/recipes-devtools/yajl/yajl_2.1.0.bb?h=hardknott
 
+OPENEULER_BRANCH = "openEuler-23.03"
+
 OPENEULER_SRC_URI_REMOVE = "git"
 
 SRC_URI_prepend = " \

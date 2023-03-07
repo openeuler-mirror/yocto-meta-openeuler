@@ -1,5 +1,9 @@
-PV = "1.6.2"
+PV = "1.6.3"
 
-OPENEULER_BRANCH = "master"
+OPENEULER_BRANCH = "openEuler-23.03"
 
-SRC_URI[sha256sum] = "fce01ccac59812bddadffacff017dac2e4762bdb6ebc6ffe06f6ed4f6192c971"
+SRC_URI[sha256sum] = "3f72c68db30971ebbf14367527719423f0a4d5f8103fc9f4a1c01a9fa440de5c"
+
+# the patch ksba-add-pkgconfig-support.patch will result in error
+SRC_URI_remove = "file://ksba-add-pkgconfig-support.patch \
+"

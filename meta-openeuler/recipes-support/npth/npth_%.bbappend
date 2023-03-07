@@ -1,3 +1,5 @@
+OPENEULER_BRANCH = "openEuler-23.03"
+
 SRC_URI = " \
         ${GNUPG_MIRROR}/npth/npth-${PV}.tar.bz2 \
         file://backport-0001-w32-Use-cast-by-uintptr_t-for-thread-ID.patch \

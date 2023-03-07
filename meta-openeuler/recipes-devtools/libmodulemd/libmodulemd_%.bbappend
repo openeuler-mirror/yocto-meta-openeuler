@@ -1,4 +1,6 @@
-PV = "2.13.0"
+PV = "2.14.0"
+
+OPENEULER_BRANCH = "openEuler-23.03"
 
 SRC_URI = " \
     https://github.com/fedora-modularity/libmodulemd/releases/download/libmodulemd-${PV}/modulemd-${PV}.tar.xz \
@@ -6,7 +8,7 @@ SRC_URI = " \
 
 S = "${WORKDIR}/modulemd-${PV}"
 
-SRC_URI[sha256sum] = "cc72ce5ff48ce9a4f6c9b6606ccf5a0e75c59c35449668cfe985722ef28f9cbc"
+SRC_URI[sha256sum] = "8087942cc290c0df486931233446fb4bce786cd9ff92eb72384731cd4d36f6ef"
 
 # delete depends to prelink from gobject-introspection.bbclass
 DEPENDS_remove_class-target = " prelink-native"
