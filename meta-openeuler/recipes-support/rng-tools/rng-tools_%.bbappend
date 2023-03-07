@@ -1,14 +1,17 @@
+#main bb: ref openembedded-core rng-tools 6.16
+#
+OPENEULER_SRC_URI_REMOVE = "https git http"
+OPENEULER_BRANCH = "openEuler-23.03"
+
 # version in openEuler
-PV = "6.14"
+PV = "6.16"
 
 # remove git protocol
 SRC_URI_remove = "\
-    git://github.com/nhorman/rng-tools.git \
-    git://github.com/nhorman/rng-tools.git;branch=master;protocol=https \
 "
 
 SRC_URI_prepend = "\
-    file://rng-tools/v${PV}.tar.gz \
+    file://v${PV}.tar.gz \
 "
 
 # change source directory
