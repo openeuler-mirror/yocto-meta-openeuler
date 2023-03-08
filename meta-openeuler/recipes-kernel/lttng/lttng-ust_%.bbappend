@@ -3,26 +3,16 @@
 FILESEXTRAPATHS_append := "${THISDIR}/${BPN}/:"
 
 # version in openEuler
-PV = "2.10.1"
+PV = "2.13.5"
 
-# used openEuler-22.09 because arm build will be error
-OPENEULER_BRANCH = "openEuler-22.09"
+# update LICENSE checksums
+LIC_FILES_CHKSUM = "file://LICENSE;md5=a46577a38ad0c36ff6ff43ccf40c480f"
 
-# apply openEuler patches
-SRC_URI_prepend = "file://Fix-namespace-our-gettid-wrapper.patch \
-           file://lttng-gen-tp-shebang.patch \
-           file://fix-build-with-fno-common.patch \
-           file://0001-Adapt-lttng-ust-to-use-multiflavor-symbols-form-liburcu-0.11.patch \
-"
+# apply new poky patches
+SRC_URI_append = " \
+           file://0001-lttng-ust-common-link-with-liburcu-explicitly.patch \
+           file://0001-Makefile.am-update-rpath-link.patch \
+           "
 
-# apply openembedded-core patch;branch=warrior
-SRC_URI_append = "file://lttng-ust-doc-examples-disable.patch \
-"
-
-# this version does not have this option
-EXTRA_OECONF_remove = "--disable-numa"
-
-PACKAGECONFIG[examples] = ",,,"
-
-SRC_URI[md5sum] = "4863cc2f9f0a070b42438bb646bbba06"
-SRC_URI[sha256sum] = "07cc3c0b71e7b77f1913d5b7f340a78a9af414440e4662712aef2d635b88ee9d"
+SRC_URI[md5sum] = "9fdf788f88b3eb4fb4ced817fa0ed6c5"
+SRC_URI[sha256sum] = "dfafea313b99ab94be72b23a749ce82cb3b7e60b09cf84e2370f0eebd88f4c98"
