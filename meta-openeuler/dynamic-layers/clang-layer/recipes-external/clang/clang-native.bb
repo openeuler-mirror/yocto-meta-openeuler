@@ -1,17 +1,13 @@
 inherit common-license native
 LICENSE = "CLOSED"
 
-nativesdk_incdir = "${OPENEULER_NATIVESDK_SYSROOT}/usr/include"
-nativesdk_libdir = "${OPENEULER_NATIVESDK_SYSROOT}/usr/lib"
-nativesdk_libgccdir = "${OPENEULER_NATIVESDK_SYSROOT}/usr/lib/x86_64-pokysdk-linux/10.3.0"
-nativesdk_ldso = "${OPENEULER_NATIVESDK_SYSROOT}/lib/ld-linux-x86-64.so.2"
-
 PV = "${CLANG_VERSION}"
 wrap_bin () {
     bin="$1"
     shift
     script="${D}${bindir}/${bin}"
-    execcmd="exec ${EXTERNAL_TOOLCHAIN_CLANG_BIN}/${bin} -isystem ${nativesdk_incdir} -B ${nativesdk_libdir} -B ${nativesdk_libgccdir} -L ${nativesdk_libgccdir} -Wl,--dynamic-linker,${nativesdk_ldso}  \"\$@\""
+    # compiler is support nativesdk now
+    execcmd="exec ${EXTERNAL_TOOLCHAIN_CLANG_BIN}/${bin} --target=x86_64-pokysdk-linux \"\$@\""
     printf '#!/bin/sh\n' >$script
     for arg in "$@"; do
         printf '%s\n' "$arg"
