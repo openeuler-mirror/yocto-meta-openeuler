@@ -2,7 +2,6 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
 
 # fix segmentfault error when compiling with clang
 SRC_URI:append = " \
-        file://0001-generalize-const-trick.patch \
         file://0001-Make-const-ptr-assign-as-function-call-in-clang.patch \
 "
 
