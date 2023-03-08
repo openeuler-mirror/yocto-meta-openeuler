@@ -5,11 +5,10 @@ SRC_URI = "file://firmware-1.20220308.tar.gz \
 S = "${WORKDIR}/firmware-1.20220308/boot"
 
 # add uefi grub package
-do_deploy[depends] += " \
-    grub-efi:do_deploy \
-    grub-bootconf:do_deploy \
-    rpi-uefi:do_deploy \
-"
+# rpi-tf-a package don't support clang compile
+# and standard image don't use uefi and grub.
+# so using MCS_FEATURES to distinguish standard image and mcs image.
+do_deploy[depends] += "${@bb.utils.contains('MCS_FEATURES', 'rpi4', 'grub-efi:do_deploy grub-bootconf:do_deploy rpi-uefi:do_deploy', '', d)}"
 
 # fix runtime error: Could not find DRM device!
 # instead of bcm2711-rpi-4-b.dtb from kernel_devicetree
