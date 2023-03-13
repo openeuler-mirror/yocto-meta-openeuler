@@ -35,3 +35,6 @@ do_configure:remove:class-target() {
         export _PYTHON_SYSCONFIGDATA_NAME="_sysconfigdata"
 }
 
+# Fix set(CMAKE_CXX_STANDARD 14) invalid with cmake version 3.22
+EXTRA_OECMAKE += " -DCMAKE_CXX_STANDARD_REQUIRED=ON "
+
