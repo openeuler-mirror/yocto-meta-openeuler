@@ -39,6 +39,7 @@ FILES:auditd += " ${libdir} "
 # use openeuler's config and rules
 do_install:append() {
 	cp ${WORKDIR}/audit.rules ${D}/etc/audit/rules.d/audit.rules
+	cp ${WORKDIR}/audit.rules ${D}/etc/audit/audit.rules
 	cp ${WORKDIR}/auditd.conf ${D}/etc/audit/auditd.conf
 	rm -rf ${D}/${libdir}/pkgconfig
 }
