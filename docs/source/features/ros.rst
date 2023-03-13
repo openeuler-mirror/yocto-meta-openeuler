@@ -43,16 +43,23 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
 **构建指导**
 
-1.根据 :ref:`容器环境下的快速构建指导 <container_build>` ，准备master分支的构建容器并准备对应架构（如aarch64-std或raspberrypi4-64）的bitbake构建环境；
-
-
-2.构建相关组件或镜像：
+使用oebuild进行构建即可，具体使用方式参照oebuild指导，构建qemu-ros参照如下命令:
 
   .. code-block:: console
 
-    # 构建ros-core组件或构建ros镜像（以下命令按需选择）：
-    $ bitbake ros-core
+    $ oebuild generate -p aarch64-std -f openeuler-ros -d aarch64-qemu-ros
+    $ oebuild bitbake
     $ bitbake openeuler-image-ros
+
+
+构建树莓派参照如下命令
+
+  .. code-block:: console
+
+    $ oebuild generate -p raspberrypi4-64 -f openeuler-ros -d raspberrypi4-64-ros
+    $ oebuild bitbake
+    $ bitbake openeuler-image-ros
+
 
 .. note:: 当前openeuler-image-ros镜像默认集成ros-core核心功能
 
@@ -60,6 +67,14 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
     （相关导航和制图典型场景功能正在完善中，欢迎试用和加入贡献）
 
     另外按照嵌入式运行时原则，将尽量不在target集成编译类、观测类、仿真类等工具
+
+    | 注意：
+    | pcl点云库比较耗编译主机的内存资源，对该库进行了线程限制（-j 2），可参见对应pcl的bbappend配方
+    | 另外，虽已限制在(-j 2)，其编译所需的主机内存要求需大于等于14G（加上swap空间）
+    | 若您的编译主机配置足够，可解开（-j 2）限制
+    | 参考：
+    | 在16线程32GB内存的机器解除限制后无法成功编译
+    | 在24线程64GB内存的机器上测试可解除线程限制成功编译
 
 
 镜像使用示例

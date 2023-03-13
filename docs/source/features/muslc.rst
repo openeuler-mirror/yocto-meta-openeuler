@@ -38,9 +38,9 @@ meta-musl层介绍
 构建环境
 ----------------------------------------
 
-构建环境推荐：master, openEuler-22.09
+构建环境推荐：master
 
-构建环境指导：详见 :ref:`container_build`
+构建环境指导：详见 :ref:`openeuler_embedded_oebuild`
 
 编译器构建指导：musl交叉工具链的生成可 `参考编译器构建指导 <https://gitee.com/openeuler/yocto-embedded-tools/tree/master/cross_tools>`_
 
