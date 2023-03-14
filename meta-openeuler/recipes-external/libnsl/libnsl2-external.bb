@@ -10,6 +10,13 @@ SECTION = "libs"
 
 inherit external-toolchain
 
+# although external toolchain may provide libnsl2, it just includes .so only,
+# no dev related files, e.g., .a, .h. So better to use the libnsl2_git.bb which
+# provides more details. To avoid the note warning msg "multi providers of libnsl2"
+# change PN = libnsl2-openeuler-external. If possible, use the libnsl2 in the prebuilt
+# toolchain after necessary optimization.
+PN = "libnsl2-openeuler-external"
+
 FILES_${PN} = "${libdir}/libnsl*.so.* ${libdir}/libnsl-*.so"
 FILES_${PN}-dev = "${libdir}/libnsl.so ${includedir}/rpcsvc/nis*.h ${includedir}/rpcsvc/yp*.h"
 FILES_${PN}-staticdev = "${libdir}/libnsl.a"
