@@ -51,6 +51,17 @@ SRC_URI = " \
         file://dsoftbus/depend-0002-add-depend-for-openeuler.patch;patchdir=${dsoftbus-depend} \
         "
 
+# fix libboundscheck.so not found
+RDEPENDS_${PN} = "libboundscheck"
+
+# bluetooth only support for raspberrypi, qemu don't compile it
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
+DEPENDS:append:raspberrypi4-64 = " bluez5 "
+SRC_URI:append:raspberrypi4-64 = " \
+        file://add-bluez-adapter-for-dsoftbus.patch;patchdir=${dsoftbus-depend} \
+        file://apply-ble-discovery-support.patch;patchdir=${dsoftbus-src}/dsoftbus \
+"
+
 FILES_${PN}-dev = "${includedir}"
 FILES_${PN} = "${libdir} ${bindir} /data/"
 
