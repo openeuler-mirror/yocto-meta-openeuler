@@ -82,7 +82,12 @@ openEuler Embedded 不仅支持混合关键性系统特性的单独构建，还�
 
 **集成构建指导**
 
-1.根据 :ref:`容器环境下的快速构建指导 <container_build>` ，准备master分支的构建容器；
+1.先根据链接`swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest`准备master分支的构建容器；
+下载指令：
+
+  .. code-block:: console
+
+    $ docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
 
 2.进入构建容器，安装必要的软件包:
 

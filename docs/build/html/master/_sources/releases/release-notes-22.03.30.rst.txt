@@ -21,8 +21,7 @@ openEuler Embedded 22.03是openEuler Embedded第一次正式发布，包含的�
 * 南向生态
    - 新增树莓派4B支持，详见 :ref:`board_raspberrypi4_build`
 * 构建系统
-   - 初步的openEuler Embedded构建体系, 详见 :ref:`yocto_quick_build`
-   - 容器化构建，详见 :ref:`container_build`
+   - 初步的openEuler Embedded构建体系, 详见 openEuler-22.03-LTS版本->构建系统->快速构建->容器环境下的快速构建指导
 * 其他
    - 基于Sphinx的文档体系，详见 :ref:`contribute_doc`
 
