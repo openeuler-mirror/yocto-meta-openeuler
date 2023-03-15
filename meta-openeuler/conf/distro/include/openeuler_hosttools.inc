@@ -42,7 +42,7 @@ ASSUME_PROVIDED += " pigz-native gzip-native"
 
 # gettext amd documentation related tools
 HOSTTOOLS_NONFATAL += "msgfmt msgmerge makeinfo xgettext"
-ASSUME_PROVIDED += "texinfo-dummy-native"
+ASSUME_PROVIDED += "texinfo-dummy-native gettext-native"
 
 # openssl tools
 HOSTTOOLS_NONFATAL += "openssl"
