@@ -107,6 +107,7 @@ dsoftbus \
 
 RDEPENDS_packagegroup-base_remove_riscv64 += " \
 libhugetlbfs \
+ethercat \
 "
 
 RDEPENDS_packagegroup-base-extended_remove_riscv64 += " \
