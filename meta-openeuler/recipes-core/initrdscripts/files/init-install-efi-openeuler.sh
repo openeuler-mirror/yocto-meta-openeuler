@@ -8,6 +8,9 @@
 
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
+# wait for the kernel module to finish
+sleep 5
+
 #just when LABEL=install-efi, we start this install, see grub.cfg
 cmdstr=`cat /proc/cmdline | awk -F 'LABEL=' '{print $2}' | awk '{print $1}'`
 if [ "$cmdstr" != "install-efi" ]; then
