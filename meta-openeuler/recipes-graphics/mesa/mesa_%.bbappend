@@ -24,4 +24,4 @@ SRC_URI_prepend = " \
         file://mesa-21.3.1-meson.build-make-TLS-ELF-optional.patch \
 "
 
-SRC_URI[sha256sum] = "646e6c5a9a185faa4cea796d378a1ba8e1148dbb197ca6605f95986a25af2752"
+SRC_URI[sha256sum] = "2b0dc2540cb192525741d00f706dbc4586349185dafc65729c7fda0800cc474d"
