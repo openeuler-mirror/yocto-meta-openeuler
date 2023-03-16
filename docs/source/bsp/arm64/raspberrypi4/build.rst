@@ -7,28 +7,26 @@
 
 树莓派镜像构建指导
 ***********************************
-**构建环境**
+**构建指导**
 
-1.构建环境推荐：master, openEuler-22.03-LTS
 
-2.构建指导: `参考容器构建指导 <https://openeuler.gitee.io/yocto-meta-openeuler/yocto/quickbuild/container-build.html>`_
+- 参照 :ref:`openeuler_embedded_oebuild` 完成oebuild安装，并详细了解构建过程
 
-- 构建命令示例：
+- 依次执行以下命令完成构建
 
-.. code-block:: console
+  .. code-block:: console
 
-  su openeuler
+    # 生成raspberrypi4-64配置文件
+    oebuild generate -p raspberrypi4-64
 
-  source /usr1/openeuler/src/yocto-meta-openeuler/scripts/compile.sh raspberrypi4-64 /usr1/openeuler/src/build/build-raspberrypi4-64/
+    # 进入构建交互终端
+    oebuild bitbake
 
-  bitbake openeuler-image
+    # 构建镜像
+    bitbake openeuler-image
 
-- 构建镜像生成目录示例：
-
-.. code-block:: console
-
-  /usr1/openeuler/src/build/build-raspberrypi4-64/output
-
+    # 构建sdk
+    bitbake openeuler-image -c do_populate_sdk
 
 - 二进制介绍：
 
