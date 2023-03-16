@@ -1,6 +1,6 @@
 require recipes-kernel/linux/linux-rockchip.inc
 
-SRC_URI_append_ok3568 = " \
+SRC_URI_append_rk3568 = " \
     file://patches/0002-fix-fiq_debugger.patch \
 "
 #define and use defconfig
@@ -10,4 +10,4 @@ do_configure_prepend() {
 }
 
 #add COMPATIBLE_MACHINE
-COMPATIBLE_MACHINE = "ok3568"
+COMPATIBLE_MACHINE = "ok3568|ryd-3568"
