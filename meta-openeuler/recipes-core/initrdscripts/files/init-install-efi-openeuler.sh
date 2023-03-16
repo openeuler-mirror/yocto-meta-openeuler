@@ -328,6 +328,8 @@ mount $bootfs /boot
 echo "Preparing boot partition..."
 
 EFIDIR="/boot/EFI/BOOT"
+# remove old EFI
+rm -rf /boot/EFI
 mkdir -p $EFIDIR
 # Copy the efi loader
 cp /run/media/${TARGET_CDROM_NAME}/EFI/BOOT/*.efi $EFIDIR
