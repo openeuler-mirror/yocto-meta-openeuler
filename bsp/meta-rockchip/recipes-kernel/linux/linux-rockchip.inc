@@ -3,13 +3,13 @@ FILESEXTRAPATHS_append := "${THISDIR}/files/:"
 # add patch prebuild tools and logo
 SRC_URI_append = " \
     file://config/OK3568-C-linux_defconfig \
-    file://patches/0000-ok3568-kernel.patch.gz;name=ok3568-kernel-patch \
+    file://patches/0000-rk3568-kernel.patch.gz;name=rk3568-kernel-patch \
     file://tools \
     file://logo \
 "
 
 # more support of device is comming. so we documented this patch md5sum.
-SRC_URI[ok3568-kernel-patch.md5sum] = "f6599687190dbf8381a0029980973b46"
+SRC_URI[rk3568-kernel-patch.md5sum] = "b4c156e59411c8e86098e03de67a84ca"
 
 # add patch tool to solve patch apply
 PATCHTOOL = "git"
