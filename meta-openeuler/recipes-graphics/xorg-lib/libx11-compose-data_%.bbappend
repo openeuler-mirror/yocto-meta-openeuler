@@ -1,15 +1,19 @@
 # main bb file: yocto-poky/meta/recipes-graphics/xorg-lib/libx11-compose-data_1.6.8.bb
 
 OPENEULER_REPO_NAME = "libX11"
+OPENEULER_SRC_URI_REMOVE = "https http git"
 
 # update 0001-Drop-x11-dependencies.patch to libX11-1.7.2
 FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
 
-PV = "1.7.2"
+PV = "1.8.1"
 
-SRC_URI_prepend = "file://dont-forward-keycode-0.patch \
-                   file://backport-makekeys-handle-the-new-EVDEVK-xorgproto-symbols.patch \
-                   "
+# update LICENSE checksum
+LIC_FILES_CHKSUM = "file://COPYING;md5=172255dee66bb0151435b2d5d709fcf7"
 
-SRC_URI[md5sum] = "a9a24be62503d5e34df6b28204956a7b"
-SRC_URI[sha256sum] = "1cfa35e37aaabbe4792e9bb690468efefbfbf6b147d9c69d6f90d13c3092ea6c"
+SRC_URI_prepend = "file://libX11-1.8.1.tar.xz \
+           file://dont-forward-keycode-0.patch \
+           file://backport-CVE-2022-3554.patch \
+           "
+
+SRC_URI[sha256sum] = "1bc41aa1bbe01401f330d76dfa19f386b79c51881c7bbfee9eb4e27f22f2d9f7"
