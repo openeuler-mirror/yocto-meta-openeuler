@@ -11,4 +11,5 @@
    :caption: 分类列表
 
    network/index.rst
+   bluetooth/index.rst
    security/index.rst
