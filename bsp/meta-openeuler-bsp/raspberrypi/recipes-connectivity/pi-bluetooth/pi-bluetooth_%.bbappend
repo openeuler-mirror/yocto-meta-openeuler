@@ -1,7 +1,7 @@
 # apply openeuler source package
 OPENEULER_REPO_NAME = "raspberrypi-bluetooth"
 
-PV = "23af66cff597c80523bf9581d7f75d387227f183"
+PV = "87248a382d1a81b80a62730975135d87fffd7ef1"
 
 SRC_URI = "\
     file://${BP}.tar.gz \
