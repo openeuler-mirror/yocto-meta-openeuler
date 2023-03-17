@@ -18,3 +18,4 @@
    rust.rst
    qt5_wayland.rst
    armnn.rst
+   clang_llvm.rst
