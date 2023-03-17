@@ -9,12 +9,12 @@ SRC_URI = " \
 "
 
 SRC_URI_append_aarch64 += " \
-    file://src-kernel-5.10/0000-kernel-5.10.0-136.8.0-rt62.patch \
+    file://src-kernel-5.10/0001-apply-preempt-RT-patch.patch \
     file://src-kernel-5.10/0001-modify-openeuler_defconfig-for-rt62.patch \
 "
 
 SRC_URI_append_x86-64 += " \
-    file://src-kernel-5.10/0000-kernel-5.10.0-136.8.0-rt62.patch \
+    file://src-kernel-5.10/0001-apply-preempt-RT-patch.patch \
     file://src-kernel-5.10/0001-modify-openeuler_defconfig-for-rt62.patch \
 "
 
