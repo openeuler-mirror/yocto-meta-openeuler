@@ -472,6 +472,6 @@ SRC_URI =+ " \
            file://delete-journal-files-except-system.journal-when-jour.patch \
            "
 
-# fix error: redefinition of 'struct statx_timestamp' with glibc-2.35
+# fix error: redefinition of 'struct statx_timestamp' with glibc-2.36
 # refer to: https://github.com/systemd/systemd/commit/21c03ad5e9d8d0350e30dae92a5e15da318a1539
-SRC_URI += "file://fix-glibc-2.35-redefinition-error.patch"
+SRC_URI += "file://fix-glibc-2.36-redefinition-error.patch"
