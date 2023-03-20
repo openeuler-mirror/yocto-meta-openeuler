@@ -10,6 +10,7 @@
 
    software_package_description.rst
    mcs.rst
+   lopper_devicetree.rst
    ros.rst
    muslc.rst
    distributed_softbus.rst
