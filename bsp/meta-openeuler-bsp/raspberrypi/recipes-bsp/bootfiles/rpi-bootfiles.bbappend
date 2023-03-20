@@ -1,8 +1,9 @@
 OPENEULER_REPO_NAME = "raspberrypi-firmware"
-SRC_URI = "file://firmware-1.20220308.tar.gz \
+PV = "2c9ca22c4aedd1a8a6bc14698be5861525f2bfdf"
+SRC_URI = "file://firmware-${PV}.tar.gz \
 "
 
-S = "${WORKDIR}/firmware-1.20220308/boot"
+S = "${WORKDIR}/firmware-${PV}/boot"
 
 # add uefi grub package
 # rpi-tf-a package don't support clang compile
