@@ -73,6 +73,9 @@ openEuler Embedded中多OS混合部署框架的架构图如下所示，引入了
 在上述多OS服务化部署架构中，openEuler Embedded是中心，主要对其他OS提供管理、网络、文件系统等通用服务，其他OS可以专注于其所擅长的领域提诸如实时控制、监控等服务，并通过shell、log和debug
 等通道与Linux丰富而强大维测体对接从而简化开发工作。
 
+
+.. _mcs_build:
+
 构建指南
 ========
 
