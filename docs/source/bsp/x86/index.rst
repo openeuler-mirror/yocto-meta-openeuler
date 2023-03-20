@@ -6,9 +6,10 @@ x86硬件
 
 所支持的x86硬件如下：
 
-
 .. toctree::
    :maxdepth: 1
    :glob:
 
-   */index
+   HVAEIPC-M10/m10.rst
+   qemu/qemu.rst
+   appendix/index.rst
