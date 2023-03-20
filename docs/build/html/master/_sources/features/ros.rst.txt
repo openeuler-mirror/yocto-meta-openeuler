@@ -153,8 +153,8 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
       # ROS环境变量初始化
       $ source /etc/profile.d/ros/setup.bash
 
-      # demo消息发布
-      $ ros2 run demo_nodes_cpp talker
+      # demo消息订阅
+      $ ros2 run demo_nodes_cpp listener
 
     qemu2执行
 
@@ -163,8 +163,8 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
       # ROS环境变量初始化
       $ source /etc/profile.d/ros/setup.bash
 
-      # demo消息订阅
-      $ ros2 run demo_nodes_cpp listener
+      # demo消息发布
+      $ ros2 run demo_nodes_cpp talker
 
   .. note:: 单机通信同理，在同一台设备上通过多个终端分别执行demo_nodes_cpp发布和订阅即可，属于ROS常规用法，不再详述。
 
