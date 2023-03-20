@@ -82,55 +82,27 @@ openEuler Embedded 不仅支持混合关键性系统特性的单独构建，还�
 
 **集成构建指导**
 
-1.先根据链接`swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest`准备master分支的构建容器；
-下载指令：
+1.使用oebuild进行构建即可，具体使用方式参照 :ref:`openeuler_embedded_oebuild`
+
+2.zephyr 的构建包含核心部分和外部 zephyr modules 部分，由于全部代码较大，需要从 `src-openEuler/zephyr <https://gitee.com/src-openeuler/zephyr>`_ 中的百度网盘路径下载 zephyr_project_v3.2.0.tar.gz，并放在构建代码目录下的 zephyrproject 子目录中（对应oebuild工作目录的<workspace>/src/zephyrproject）：
+
+3.python3-pykwalify 在 openeuler 社区尚无相应的源码包，需要从上游下载 `Download pykwalify-1.8.0.tar.gz <https://pypi.org/project/pykwalify/1.8.0/#files>`_ ，并放在构建代码目录下的 python3-pykwalify 子目录中（对应oebuild工作目录的<workspace>/src/python3-pykwalify）
+
+4.执行以下指令
 
   .. code-block:: console
 
-    $ docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
+    # 构建qemu使用如下指令
+    $ oebuild generate -p aarch64 -f openeuler-mcs -d qemu-mcs
 
-2.进入构建容器，安装必要的软件包:
+    # 构建raspberrypi4使用如下指令
+    $ oebuild generate -p raspberrypi4 -f openeuler-mcs -d raspberrypi4-mcs
 
-  .. code-block:: console
+    # 进入构建交互终端
+    $ oebuild bitbake
 
-    # 因为zephyr要求CMAKE版本大于3.20，而yocto中的CMAKE版本为3.19，因此需要使用外部的CMAKE
-    $ yum install cmake
-
-    # 配置ZEPHYR_CMAKE_PATH来指定CMAKE所在路径
-    $ vi /usr1/openeuler/src/yocto-meta-openeuler/rtos/meta-zephyr/recipes-kernel/zephyr-kernel/zephyr-image.inc
-
-    # 将ZEPHYR_CMAKE_PATH改为：ZEPHYR_CMAKE_PATH ?= "/opt/cmake/bin:/usr/bin:"
-
-
-3.zephyr 的构建包含核心部分和外部 zephyr modules 部分，由于全部代码较大，需要从 `src-openEuler/zephyr <https://gitee.com/src-openeuler/zephyr>`_ 中的百度网盘路径下载 zephyr_project_v3.2.0.tar.gz，并放在构建代码目录下的 zephyrproject 子目录中（对应容器的/usr1/openeuler/src/zephyrproject）：
-
-4.python3-pykwalify 在 openeuler 社区尚无相应的源码包，需要从上游下载 `Download pykwalify-1.8.0.tar.gz <https://pypi.org/project/pykwalify/1.8.0/#files>`_ ，并放在构建代码目录下的 python3-pykwalify 子目录中（对应容器的/usr1/openeuler/src/python3-pykwalify）
-
-5.构建包含 zephyr 和混合关键系统特性的最小镜像：
-
-  .. code-block:: console
-
-    $ su openeuler
-    $ . /opt/buildtools/nativesdk/environment-setup-x86_64-pokysdk-linux
-
-    # 选择构建qemu镜像：
-    $ source /usr1/openeuler/src/yocto-meta-openeuler/scripts/compile.sh aarch64-std /usr1/build-mcs-qemu/
-
-    # 或者选择构建树莓派镜像：
-    $ source /usr1/openeuler/src/yocto-meta-openeuler/scripts/compile.sh raspberrypi4-64 /usr1/build-mcs-rapi/
-
-    # 在bblayers.conf中添加相应的元构建层：
-    $ vi /usr1/build-mcs-qemu/conf/bblayers.conf
-
-      BBLAYERS ?= "\
-        ......
-        /usr1/openeuler/src/yocto-poky/../yocto-meta-openeuler/rtos/meta-openeuler-rtos \
-        /usr1/openeuler/src/yocto-poky/../yocto-meta-openeuler/rtos/meta-zephyr \
-      "
-
-    # 构建镜像：
+    # 执行构建命令
     $ bitbake openeuler-image-mcs
-
 
 使用方法
 ========

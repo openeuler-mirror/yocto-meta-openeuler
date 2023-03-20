@@ -168,48 +168,21 @@ Linux负责系统管理与服务、1个实时操作系统负责实时控制、1�
 <p>单独构建混合关键系统特性的方法请参考 <a class="reference external" href="https://gitee.com/openeuler/mcs#%E6%9E%84%E5%BB%BA%E5%AE%89%E8%A3%85%E6%8C%87%E5%AF%BC">mcs 构建安装指导</a></p>
 </div>
 <p><strong>集成构建指导</strong></p>
-<p>1.先根据链接`swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest`准备master分支的构建容器；
-下载指令：</p>
+<p>1.使用oebuild进行构建即可，具体使用方式参照 <a class="reference internal" href="../yocto/oebuild.html#openeuler-embedded-oebuild"><span class="std std-ref">基于 oebuild 快速构建</span></a></p>
+<p>2.zephyr 的构建包含核心部分和外部 zephyr modules 部分，由于全部代码较大，需要从 <a class="reference external" href="https://gitee.com/src-openeuler/zephyr">src-openEuler/zephyr</a> 中的百度网盘路径下载 zephyr_project_v3.2.0.tar.gz，并放在构建代码目录下的 zephyrproject 子目录中（对应oebuild工作目录的&lt;workspace&gt;/src/zephyrproject）：</p>
+<p>3.python3-pykwalify 在 openeuler 社区尚无相应的源码包，需要从上游下载 <a class="reference external" href="https://pypi.org/project/pykwalify/1.8.0/#files">Download pykwalify-1.8.0.tar.gz</a> ，并放在构建代码目录下的 python3-pykwalify 子目录中（对应oebuild工作目录的&lt;workspace&gt;/src/python3-pykwalify）</p>
+<p>4.执行以下指令</p>
 <blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
-</pre></div>
-</div>
-</div></blockquote>
-<p>2.进入构建容器，安装必要的软件包:</p>
-<blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>因为zephyr要求CMAKE版本大于3.20，而yocto中的CMAKE版本为3.19，因此需要使用外部的CMAKE
-<span class="gp">$ </span>yum install cmake
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>构建qemu使用如下指令
+<span class="gp">$ </span>oebuild generate -p aarch64 -f openeuler-mcs -d qemu-mcs
 
-<span class="gp"># </span>配置ZEPHYR_CMAKE_PATH来指定CMAKE所在路径
-<span class="gp">$ </span>vi /usr1/openeuler/src/yocto-meta-openeuler/rtos/meta-zephyr/recipes-kernel/zephyr-kernel/zephyr-image.inc
+<span class="gp"># </span>构建raspberrypi4使用如下指令
+<span class="gp">$ </span>oebuild generate -p raspberrypi4 -f openeuler-mcs -d raspberrypi4-mcs
 
-<span class="gp"># </span>将ZEPHYR_CMAKE_PATH改为：ZEPHYR_CMAKE_PATH ?<span class="o">=</span> <span class="s2">&quot;/opt/cmake/bin:/usr/bin:&quot;</span>
-</pre></div>
-</div>
-</div></blockquote>
-<p>3.zephyr 的构建包含核心部分和外部 zephyr modules 部分，由于全部代码较大，需要从 <a class="reference external" href="https://gitee.com/src-openeuler/zephyr">src-openEuler/zephyr</a> 中的百度网盘路径下载 zephyr_project_v3.2.0.tar.gz，并放在构建代码目录下的 zephyrproject 子目录中（对应容器的/usr1/openeuler/src/zephyrproject）：</p>
-<p>4.python3-pykwalify 在 openeuler 社区尚无相应的源码包，需要从上游下载 <a class="reference external" href="https://pypi.org/project/pykwalify/1.8.0/#files">Download pykwalify-1.8.0.tar.gz</a> ，并放在构建代码目录下的 python3-pykwalify 子目录中（对应容器的/usr1/openeuler/src/python3-pykwalify）</p>
-<p>5.构建包含 zephyr 和混合关键系统特性的最小镜像：</p>
-<blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>su openeuler
-<span class="gp">$ </span>. /opt/buildtools/nativesdk/environment-setup-x86_64-pokysdk-linux
+<span class="gp"># </span>进入构建交互终端
+<span class="gp">$ </span>oebuild bitbake
 
-<span class="gp"># </span>选择构建qemu镜像：
-<span class="gp">$ </span><span class="nb">source</span> /usr1/openeuler/src/yocto-meta-openeuler/scripts/compile.sh aarch64-std /usr1/build-mcs-qemu/
-
-<span class="gp"># </span>或者选择构建树莓派镜像：
-<span class="gp">$ </span><span class="nb">source</span> /usr1/openeuler/src/yocto-meta-openeuler/scripts/compile.sh raspberrypi4-64 /usr1/build-mcs-rapi/
-
-<span class="gp"># </span>在bblayers.conf中添加相应的元构建层：
-<span class="gp">$ </span>vi /usr1/build-mcs-qemu/conf/bblayers.conf
-
-<span class="go">  BBLAYERS ?= &quot;\</span>
-<span class="go">    ......</span>
-<span class="go">    /usr1/openeuler/src/yocto-poky/../yocto-meta-openeuler/rtos/meta-openeuler-rtos \</span>
-<span class="go">    /usr1/openeuler/src/yocto-poky/../yocto-meta-openeuler/rtos/meta-zephyr \</span>
-<span class="go">  &quot;</span>
-
-<span class="gp"># </span>构建镜像：
+<span class="gp"># </span>执行构建命令
 <span class="gp">$ </span>bitbake openeuler-image-mcs
 </pre></div>
 </div>
