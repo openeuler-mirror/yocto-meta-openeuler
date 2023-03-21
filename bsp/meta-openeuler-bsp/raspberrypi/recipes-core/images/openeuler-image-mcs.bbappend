@@ -8,6 +8,10 @@ SDIMG_KERNELIMAGE = "Image"
 # we need more space for boot: see definition in sdcard_image-rpi.bbclass
 BOOT_SPACE = "196608"
 
+RDEPENDS += " \
+${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'jailhouse-overlay', '', d)} \
+"
+
 # Notice: we need our sdcard_image-rpi.bbclass in meta-openeuler-bsp to work.
 uefi_configuration() {
     # we use Image.gz for grub.cfg here
@@ -20,6 +24,10 @@ uefi_configuration() {
     mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/EFI/* ::EFI/ || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/EFI/* into boot.img"
     # here we want reserved resources for mcs features.
     mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/mcs-resources.dtbo ::overlays/mcs-resources.dtbo || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/mcs-resources.dtbo into boot.img"
+    # add jailhouse-overlay
+    if ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'true', 'false', d)}; then
+        mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/jailhouse-overlay.dtbo ::overlays/jailhouse-overlay.dtbo || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/jailhouse-overlay.dtbo into boot.img"
+    fi
 }
 
 # make no login and standard PATH
@@ -54,6 +62,11 @@ change_bootfiles_to_enable_uefi() {
     dtcfg=`cat ${CONFIGFILE}  | grep mcs-resources || true`
     if [ -z "$dtcfg" ]; then
         echo "dtoverlay=mcs-resources" >> ${CONFIGFILE}
+    fi
+
+    # add jailhouse-overlay
+    if ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'true', 'false', d)}; then
+        echo "dtoverlay=jailhouse-overlay" >> ${CONFIGFILE}
     fi
 
     #change grub.cfg to use Image.gz to launch

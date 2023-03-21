@@ -1,0 +1,28 @@
+/dts-v1/;
+/plugin/;
+/ {
+	compatible = "brcm,bcm2835";
+
+	fragment@0 {
+		target-path = "/";
+		__overlay__ {
+			reserved-memory {
+				#address-cells = <2>;
+				#size-cells = <1>;
+				ranges;
+
+				jailhouse@10000000 {
+					reg = <0 0x10000000 0x10000000>;
+					no-map;
+				};
+			};
+		};
+	};
+
+	fragment@1 {
+		target-path = "/scb/pcie@7d500000";
+		__overlay__ {
+			linux,pci-domain = <0x00000000>;
+		};
+	};
+};
