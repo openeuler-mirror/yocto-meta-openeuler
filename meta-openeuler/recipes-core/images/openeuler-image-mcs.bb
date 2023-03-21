@@ -11,6 +11,7 @@ mcs-km \
 screen \
 libgcc-external \
 zephyr-image \
+${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'jailhouse', '', d)} \
 "
 
 # make no login

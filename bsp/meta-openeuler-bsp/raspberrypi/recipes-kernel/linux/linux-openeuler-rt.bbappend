@@ -8,6 +8,8 @@ SRC_URI += "\
     file://src-kernel-5.10/0002-modify-bcm2711_defconfig-for-rt-rpi-kernel.patch \
 "
 
+require linux-openeuler-rpi.inc
+
 COMPATIBLE_MACHINE = "raspberrypi4-64"
 
 OPENEULER_KERNEL_CONFIG = "${S}/arch/${ARCH}/configs/bcm2711_defconfig"

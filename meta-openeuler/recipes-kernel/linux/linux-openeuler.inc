@@ -19,6 +19,9 @@ SRC_URI_append_aarch64 = " \
     file://patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch \
 "
 
+# export symbol for jailhouse
+SRC_URI_append = " ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'file://Jailhouse/jailhouse_export_symbol.patch', '', d)}"
+
 LINUX_VERSION_EXTENSION_append = "-openeuler"
 # delete v8 in kernel module name, such as kernel-module-xxx-5.10.0-v8
 KERNEL_MODULE_PACKAGE_SUFFIX = ""
