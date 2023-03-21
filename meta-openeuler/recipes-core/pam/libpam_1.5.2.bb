@@ -15,7 +15,6 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=7eb5c1bf854e8881005d673599ee74d3 \
 SRC_URI = "file://pam/Linux-PAM-${PV}.tar.xz \
            file://pam/bugfix-pam-1.1.8-faillock-systemtime.patch \
            file://pam/change-ndbm-to-gdbm.patch \
-           file://pam/0001-bugfix-cannot-open-database-file.patch \
            file://pam/add-sm3-crypt-support.patch \
            file://99_pam \
            file://pam.d/common-account \
