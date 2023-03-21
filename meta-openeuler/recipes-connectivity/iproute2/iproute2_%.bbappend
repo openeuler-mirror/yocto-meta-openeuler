@@ -7,7 +7,6 @@ SRC_URI += " \
         file://bugfix-iproute2-3.10.0-fix-maddr-show.patch \
         file://bugfix-iproute2-change-proc-to-ipnetnsproc-which-is-private.patch \
         file://backport-testsuite-fix-testsuite-build-failure-when-iproute-b.patch \
-        file://feature-iproute-add-support-for-ipvlan-l2e-mode.patch \
         file://bugfix-iproute2-cancel-some-test-cases.patch \
 "
 
