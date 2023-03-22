@@ -11,7 +11,12 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ad
 
 PACKAGES = "${PN} ${PN}-dev ${PN}-staticdev"
 
-PROVIDES += "virtual/libc virtual/libiconv virtual/libintl virtual/crypt"
+PROVIDES += "virtual/libc \
+             virtual/libiconv \
+             virtual/libintl \
+             virtual/crypt \
+             linux-libc-headers \
+             linux-libc-headers-dev"
 
 DEPENDS = "bsd-headers \
           libssp-nonshared \
