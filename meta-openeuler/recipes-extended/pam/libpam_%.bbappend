@@ -13,7 +13,6 @@ SRC_URI_remove += " \
 SRC_URI += " \
            file://pam/bugfix-pam-1.1.8-faillock-systemtime.patch \
            file://pam/change-ndbm-to-gdbm.patch \
-           file://pam/0001-bugfix-cannot-open-database-file.patch \
            file://pam/add-sm3-crypt-support.patch \
            file://pam/1003-Change-chinese-translation.patch \
 "
