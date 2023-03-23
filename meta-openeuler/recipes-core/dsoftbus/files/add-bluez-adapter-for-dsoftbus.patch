@@ -1,4 +1,4 @@
-From 14ebb40b3a542a19d339ac2b93c5ebccd8a5a00e Mon Sep 17 00:00:00 2001
+From 2466e9e7ec34ac29d4768cefed349ae1c6a6c3df Mon Sep 17 00:00:00 2001
 From: hmilylmk <liumingkai@huawei.com>
 Date: Tue, 14 Mar 2023 19:36:08 +0800
 Subject: [PATCH] add bluez adapter for dsoftbus
@@ -6,11 +6,11 @@ Subject: [PATCH] add bluez adapter for dsoftbus
 Signed-off-by: hmilylmk <liumingkai@huawei.com>
 ---
  BUILD.gn                             |  20 ++
- bluez_adapter/bluez_adapter.c        | 434 +++++++++++++++++++++++++++
+ bluez_adapter/bluez_adapter.c        | 442 +++++++++++++++++++++++++++
  bluez_adapter/include/ohos_bt_def.h  |  26 ++
  bluez_adapter/include/ohos_bt_gap.h  |  44 +++
  bluez_adapter/include/ohos_bt_gatt.h | 153 ++++++++++
- 5 files changed, 677 insertions(+)
+ 5 files changed, 685 insertions(+)
  create mode 100644 bluez_adapter/bluez_adapter.c
  create mode 100644 bluez_adapter/include/ohos_bt_def.h
  create mode 100644 bluez_adapter/include/ohos_bt_gap.h
@@ -46,10 +46,10 @@ index 14a5b0e..e155dfa 100644
 +}
 diff --git a/bluez_adapter/bluez_adapter.c b/bluez_adapter/bluez_adapter.c
 new file mode 100644
-index 0000000..5273139
+index 0000000..274c70b
 --- /dev/null
 +++ b/bluez_adapter/bluez_adapter.c
-@@ -0,0 +1,434 @@
+@@ -0,0 +1,442 @@
 +#include <errno.h>
 +#include <pthread.h>
 +#include <stdbool.h>
@@ -83,9 +83,9 @@ index 0000000..5273139
 +
 +static bool g_isRandomAddr = false;
 +
-+static int g_scan_dd = 0;
++static int g_scan_dd = -1;
 +
-+static int g_adv_dd = 0;
++static int g_adv_dd = -1;
 +
 +static pthread_t g_scan_id = -1;
 +
@@ -110,7 +110,7 @@ index 0000000..5273139
 +        printf("Could not set socket options\n");
 +    }
 +
-+    while (g_isScanning) {
++    while (1) {
 +        evt_le_meta_event *meta;
 +        le_advertising_info *info;
 +
@@ -143,47 +143,43 @@ index 0000000..5273139
 +        scanResult.advLen = info->length;
 +        if (g_resultCallback != NULL)
 +            g_resultCallback(&scanResult);
-+    }
 +done:
-+    setsockopt(g_scan_dd, SOL_HCI, HCI_FILTER, &of, sizeof(of));
-+    hci_close_dev(g_scan_dd);
++        ;
++    }
 +}
 +
 +int BleStartScan(void) {
-+    int err;
++    int dd, err;
 +    uint8_t own_type = LE_PUBLIC_ADDRESS;
 +    uint8_t scan_type = OHOS_BLE_SCAN_TYPE_ACTIVE;
 +    uint8_t filter_policy = OHOS_BLE_ADV_FILTER_ALLOW_SCAN_ANY_CON_ANY;
 +    uint16_t interval = htobs(SCAN_INTERVAL);
 +    uint16_t window = htobs(SCAN_WINDOW);
 +    uint8_t filter_dup = 0x01;
-+    g_scan_dd = hci_open_dev(g_dev_id);
-+    if (g_scan_dd < 0) {
-+        perror("Could not open device");
-+        return -1;
++    if (g_scan_dd == -1) {
++        g_scan_dd = hci_open_dev(g_dev_id);
++        if (g_scan_dd < 0) {
++            perror("Could not open device");
++            return -1;
++        }
 +    }
 +
-+    err = hci_le_set_scan_parameters(g_scan_dd, scan_type, interval, window,
-+                                     own_type, filter_policy, 10000);
-+    if (err < 0) {
-+        perror("Set scan parameters failed");
-+        hci_close_dev(g_scan_dd);
-+        return -1;
++    dd = hci_open_dev(g_dev_id);
++    if (!g_isScanning) {
++        hci_le_set_scan_parameters(dd, scan_type, interval, window,
++                                        own_type, filter_policy, 10000);
++        hci_le_set_scan_enable(dd, 0x01, filter_dup, 10000);
++        g_isScanning = true;
 +    }
++    hci_close_dev(dd);
 +
-+    err = hci_le_set_scan_enable(g_scan_dd, 0x01, filter_dup, 10000);
-+    if (err < 0) {
-+        perror("Enable scan failed");
-+        hci_close_dev(g_scan_dd);
-+        return -1;
-+    }
-+
-+    g_isScanning = true;
-+    err = pthread_create(&g_scan_id, NULL, (void *)&scanResultFunc, NULL);
-+    if (err < 0) {
-+        perror("pthread_create failed");
-+        hci_close_dev(g_scan_dd);
-+        return -1;
++    if (g_scan_id == -1) {
++        err = pthread_create(&g_scan_id, NULL, (void *)&scanResultFunc, NULL);
++        if (err < 0) {
++            perror("pthread_create failed");
++            hci_close_dev(g_scan_dd);
++            return -1;
++        }
 +    }
 +    return 0;
 +}
@@ -309,16 +305,26 @@ index 0000000..5273139
 +}
 +
 +void advFunc(void *arg) {
-+    while (g_isAdvertising) {
-+        for (int i = 0; i < INSTANCE_MAX; ++i) {
-+            if (g_instance_arr[i] == 1) {
-+                hci_le_set_adv_data(g_adv_dd, g_advData[i].advData,
-+                                    g_advData[i].advDataLen, 10000);
-+                hci_le_set_adv_rsp_data(g_adv_dd, g_advData[i].rspData,
-+                                        g_advData[i].rspDataLen, 10000);
-+                hci_le_set_random_addr(g_adv_dd, g_bdaddr[i], 10000);
++    while (1) {
++        while (g_isAdvertising && g_isScanning) {
++            for (int i = 0; i < INSTANCE_MAX; ++i) {
++                if (g_instance_arr[i] == 1) {
++                    int dd = hci_open_dev(g_dev_id);
++                    hci_le_set_scan_enable(dd, 0x00, 0x01, 10000);
++                    hci_le_set_advertise_enable(dd, 0x00, 10000);
++                    
++                    hci_le_set_adv_data(dd, g_advData[i].advData,
++                                        g_advData[i].advDataLen, 10000);
++                    hci_le_set_adv_rsp_data(dd, g_advData[i].rspData,
++                                            g_advData[i].rspDataLen, 10000);
++                    hci_le_set_random_addr(dd, g_bdaddr[i], 10000);
++
++                    hci_le_set_advertise_enable(dd, 0x01, 10000);
++                    hci_le_set_scan_enable(dd, 0x01, 0x01, 10000);
++                    hci_close_dev(dd);
++                }
++                sleep(2);
 +            }
-+            sleep(1);
 +        }
 +    }
 +}
@@ -338,10 +344,12 @@ index 0000000..5273139
 +                  BleAdvParams advParam) {
 +    int err, instance;
 +
-+    g_adv_dd = hci_open_dev(g_dev_id);
-+    if (g_adv_dd < 0) {
-+        perror("Could not open device");
-+        return -1;
++    if (g_adv_dd == -1) {
++        g_adv_dd = hci_open_dev(g_dev_id);
++        if (g_adv_dd < 0) {
++            perror("Could not open device");
++            return -1;
++        }
 +    }
 +
 +    if (!g_isAdvertising) {
