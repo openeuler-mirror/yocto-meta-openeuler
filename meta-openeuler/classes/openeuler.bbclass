@@ -88,29 +88,17 @@ python do_openeuler_fetch() {
 
     # init repo in the repo_dir
     def init_repo(repo_dir, repo_url, repo_branch):
+        repo = git.Repo.init(repo_dir)
+        with repo.config_writer() as wr:
+            wr.set_value('http', 'sslverify', 'false').release()
         try:
             # if repo has finished git init and then do git pull
-            repo = git.Repo(repo_dir)
-            with repo.config_writer() as wr:
-                wr.set_value('http', 'sslverify', 'false').release()
-            # If the repository only does fetch, it does not need to perform a pull
-            if len(repo.branches) != 0:
-                repo.remote().pull()
-            else:
-                repo.remote().fetch()
-            repo.git.checkout(repo_branch)
-            return
-        except Exception as e:
-            # do git init action in empty directory
-            repo = git.Repo.init(repo_dir)
+            if repo.remote().url != repo_url:
+                repo.remote().set_url(repo_dir)
+        except ValueError:
             git.Remote.add(repo = repo, name = "origin", url = repo_url)
-            with repo.config_writer() as wr:
-                wr.set_value('http', 'sslverify', 'false').release()
-            repo.remote().fetch()
-            if repo.active_branch.name == repo_branch:
-                repo.active_branch.checkout()
-            else:
-                repo.git.checkout(repo_branch)
+        repo.remote().fetch()
+        repo.git.checkout(repo_branch)
 
     # get source directory where to download
     srcDir = d.getVar('OPENEULER_SP_DIR')
@@ -134,7 +122,6 @@ python do_openeuler_fetch() {
     except_str = None
 
     lf = bb.utils.lockfile(lock_file, block=True)
-
     try:
         init_repo(repo_dir = repo_dir, repo_url = repo_url, repo_branch = repoBranch)
     except GitError:
