@@ -20,7 +20,7 @@ inherit cmake
 PV = "0.0.1"
 OPENEULER_REPO_NAME = "mcs"
 OPENEULER_GIT_URL = "https://gitee.com/openeuler"
-OPENEULER_BRANCH = "master"
+OPENEULER_BRANCH = "v0.0.1"
 SRC_URI += "file://mcs"
 S = "${WORKDIR}/mcs"
 
