@@ -658,7 +658,7 @@ hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，�
 
 .. code-block:: console
 
-    #: ${CROSS_COMPILE}ld -ldeviceauth_sdk.z
+    #: ${CROSS_COMPILE}ld -ldeviceauth_sdk.z -lcjson
 
 
 **使用范例**
@@ -668,7 +668,7 @@ hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，�
 .. code-block:: console
 
     #include <stdio.h>
-    #include <cJSON.h>
+    #include <cjson/cJSON.h>
     #include <securec.h>
     #include <softbus_common.h>
     #include <device_auth.h>
