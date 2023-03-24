@@ -4,5 +4,9 @@ SRC_URI_append = " file://0001-rpmsg_main-set-phy_shared_mem-to-0x90000000.patch
 
 # install uniproton in /firmware/
 do_install_append (){
-    cp ${B}/rpmsg_pty_demo/Uniproton_hi3093.bin ${D}/firmware/
+    install -d ${D}/firmware
+
+    install -D ${S}/rpmsg_pty_demo/Uniproton_hi3093.bin ${D}/firmware/
 }
+
+FILES_${PN} += "/firmware"
