@@ -85,27 +85,39 @@ openEuler Embedded 不仅支持混合关键性系统特性的单独构建，还�
 
 **集成构建指导**
 
-1.使用oebuild进行构建即可，具体使用方式参照 :ref:`openeuler_embedded_oebuild`
+1. 根据 :ref:`oebuild快速构建 <openeuler_embedded_oebuild>` ，初始化oebuild工作目录；
 
-2.zephyr 的构建包含核心部分和外部 zephyr modules 部分，由于全部代码较大，需要从 `src-openEuler/zephyr <https://gitee.com/src-openeuler/zephyr>`_ 中的百度网盘路径下载 zephyr_project_v3.2.0.tar.gz，并放在构建代码目录下的 zephyrproject 子目录中（对应oebuild工作目录的<workspace>/src/zephyrproject）：
+   .. code-block:: shell
 
-3.python3-pykwalify 在 openeuler 社区尚无相应的源码包，需要从上游下载 `Download pykwalify-1.8.0.tar.gz <https://pypi.org/project/pykwalify/1.8.0/#files>`_ ，并放在构建代码目录下的 python3-pykwalify 子目录中（对应oebuild工作目录的<workspace>/src/python3-pykwalify）
+      oebuild init <directory>
+      cd <directory>
+      oebuild update
 
-4.执行以下指令
+2. 下载依赖代码：
 
-  .. code-block:: console
+   zephyr 的构建包含核心部分和外部 zephyr modules 部分，由于全部代码较大，需要从 `src-openEuler/zephyr <https://gitee.com/src-openeuler/zephyr>`_ 中的百度网盘路径下载 zephyr_project_v3.2.0.tar.gz，并放在构建代码目录下的 zephyrproject 子目录中（对应oebuild工作目录的<workspace>/src/zephyrproject）：
 
-    # 构建qemu使用如下指令
-    $ oebuild generate -p aarch64 -f openeuler-mcs -d qemu-mcs
+   python3-pykwalify 在 openeuler 社区尚无相应的源码包，需要从上游下载 `Download pykwalify-1.8.0.tar.gz <https://pypi.org/project/pykwalify/1.8.0/#files>`_ ，并放在构建代码目录下的 python3-pykwalify 子目录中（对应oebuild工作目录的<workspace>/src/python3-pykwalify）
 
-    # 构建raspberrypi4使用如下指令
-    $ oebuild generate -p raspberrypi4 -f openeuler-mcs -d raspberrypi4-mcs
+3. 进入oebuild工作目录，创建对应的编译配置文件，**mcs镜像需要添加** ``-f openeuler-mcs``：
 
-    # 进入构建交互终端
-    $ oebuild bitbake
+   .. code-block:: shell
 
-    # 执行构建命令
-    $ bitbake openeuler-image-mcs
+      # qemu-arm64
+      oebuild generate -p aarch64-std -f openeuler-mcs -d <build_arm64_mcs>
+
+      # RPI4
+      oebuild generate -p raspberrypi4-64 -f openeuler-mcs -d <build_rpi_mcs>
+
+4. 进入 ``<build>`` 目录，编译 ``openeuler-image-mcs`` ：
+
+   .. code-block:: shell
+
+      oebuild bitbake openeuler-image-mcs
+
+.. note::
+
+   **注意**：构建 openeuler-image-mcs 需要在 oebuild 初始化时添加 ``-f openeuler-mcs``。
 
 使用方法
 ========
