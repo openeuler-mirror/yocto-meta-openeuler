@@ -1,0 +1,35 @@
+From 3d44c63e1d442b2766d62b710f5af6fd46ae98ef Mon Sep 17 00:00:00 2001
+From: hanzongcheng <hanzongcheng@huawei.com>
+Date: Sat, 25 Mar 2023 12:11:51 +0800
+Subject: [PATCH] mcs_km: adapted for hi3093
+
+* The parameter that actually needs to be passed to start the slave core is
+  cpu mpidr, which we haven't perfected yet. According to the cpu reg config
+  in dts, manually shift the cpu id left by eight bits to get mpidr
+  (e.g. 0x3 --> 0x300).
+
+Signed-off-by: hanzongcheng <hanzongcheng@huawei.com>
+
+diff --git a/mcs_km.c b/mcs_km.c
+index 14773dd..aabb696 100644
+--- a/mcs_km.c
++++ b/mcs_km.c
+@@ -141,6 +141,7 @@ static long mcs_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+ 
+ 			pr_info("start booting clientos on cpu(%d) addr(0x%lx)\n", cpu_id, cpu_boot_addr);
+ 
++			cpu_id = cpu_id << 8;
+ 			ret = invoke_psci_fn(CPU_ON_FUNCID, cpu_id, cpu_boot_addr, 0);
+ 			if (ret) {
+ 				pr_err("boot clientos failed(%ld)\n", ret);
+@@ -149,6 +150,7 @@ static long mcs_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+ 			break;
+ 
+ 		case IOC_AFFINITY_INFO:
++			cpu_id = cpu_id << 8;
+ 			ret = invoke_psci_fn(AFFINITY_INFO_FUNCID, cpu_id, 0, 0);
+ 			if (copy_to_user((unsigned long __user *)arg, &ret, sizeof(unsigned long)))
+ 				return -EFAULT;
+-- 
+2.34.1
+

@@ -17,9 +17,9 @@ do_compile_append_hi1711(){
 # add uImage to $D
 do_install_append(){
     cp uImage ${D}/boot
-    cp ../dtbs/hi3093.dtb ${D}/boot
+    cp ../dtbs/hi3093*.dtb ${D}/boot
 }
 PACKAGES += "bootfile"
 FILES_bootfile="/boot/uImage \
-/boot/hi3093.dtb \
+${@bb.utils.contains('MCS_FEATURES', 'hi3093', '/boot/hi3093-mcs.dtb', '/boot/hi3093.dtb', d)} \
 "
