@@ -25,3 +25,4 @@ IMAGE_INSTALL_append = " kernel-modules"
 
 # auto load module during startup
 KERNEL_MODULE_AUTOLOAD = ""
+USE_VT ?= "0"
