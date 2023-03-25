@@ -1,0 +1,4 @@
+devmem 0x08768C00 w 0x1acce551
+devmem 0x08768C00
+devmem 0x08768008 w 0
+devmem 0x08768008
