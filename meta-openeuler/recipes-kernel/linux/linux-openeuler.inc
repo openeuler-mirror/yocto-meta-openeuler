@@ -41,6 +41,10 @@ python do_fetch() {
     import git
     from git import GitError
 
+    # the do_fetch will not execute if OPENEULER_FETCH is seted to disable
+    if d.getVar('OPENEULER_FETCH') == "disable":
+        return
+
     # download src-openeuler/kernel repo for patches
     d.setVar("OPENEULER_REPO_NAME", "kernel")
     d.setVar("OPENEULER_LOCAL_NAME", 'src-kernel-5.10')
