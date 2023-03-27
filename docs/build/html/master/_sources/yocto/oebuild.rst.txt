@@ -365,6 +365,61 @@ oebuild bitbake
 
    <toolchain_dir>：/usr1/openeuler/native_gcc
 
+oebuild manifest
+'''''''''''''''''
+
+manifest相关指令，该指令需要在oebuild工作目录下运行，通过该指令我们可以生成当前src目录下的软件仓清单列表，包含远程仓地址以及版本，也可以通过清单文件将相应的软件仓还原到指定的版本，该指令需要oebuild版本在0.0.11及以上。该命令帮助信息如下：
+
+::
+
+   usage: 
+
+   oebuild manifest [-c CREATE] [-r recover] [-m_dir MANIFEST_DIR]
+
+   manifest provides the manifest function of generating dependent
+   source repositories in the build working directory, and can restore
+   relevant source repositories based on the manifest file
+
+   options:
+   -h, --help           show this help message and exit
+   -c, --create         create manifest from oebuild workspace src directory
+   -r, --recover        restore repo version to oebuild workspace src directory from a manifest
+   -m_dir MANIFEST_DIR  specify a manifest path to perform the create or restore operation
+
+- -c<create>：创建manifest文件标识参数
+- -r<restore>：依据manifest文件将软件仓还原到指定的版本
+- -m_dir<manifest_dir>：指定manifest路径
+
+我们在完成镜像构建所有任务后，在oebuild工作目录下运行：
+
+::
+
+   oebuild manifest -c -m_dir source_list/manifest.yaml
+
+这样，我们就生成当下src目录的软件清单列表，存放路径为<oebuild_workspace>/source_list/manifest.yaml
+
+如果我们需要通过manifest.yaml来复原一个镜像版本，那么按如下步骤进行：
+
+1. 通过manifest命令还原软件仓版本，运行如下命令：
+
+::
+
+   oebuild manifest -r -m_dir <manifest_dir>
+
+2. 运行generate命令附带-df<disable_openeuler_fetch>参数，生成配置文件，这样就会关闭OPENEULER_FETCH功能：
+
+::
+
+   oebuild generate -df ...  # 其他参数按需添加
+
+3. 修改compile.yaml文件，在build_in字段下添加如下内容，屏蔽layer层更新：
+
+::
+
+   not_use_repos: true
+
+4. 执行bitbake指令，进入交互模式，然后执行\ ``bitbake openeuler-image``\ 进行构建
+
 配置文件介绍
 ^^^^^^^^^^^^
 
