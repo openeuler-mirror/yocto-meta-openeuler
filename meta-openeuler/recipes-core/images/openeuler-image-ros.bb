@@ -27,6 +27,7 @@ packagegroup-base \
 packagegroup-base-extended \
 packagegroup-openssh \
 packagegroup-kernel-modules \
+packagegroup-isulad \
 packagegroup-roscore \
 "
 # current qemu can't support ros slam demo

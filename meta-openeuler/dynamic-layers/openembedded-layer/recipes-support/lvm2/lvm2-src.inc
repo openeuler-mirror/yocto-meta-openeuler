@@ -5,6 +5,8 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 OPENEULER_REPO_NAME = "lvm2"
 
+DEPENDS += "libaio"
+
 PV = "2.03.18"
 
 OPENEULER_SRC_URI_REMOVE = "git"

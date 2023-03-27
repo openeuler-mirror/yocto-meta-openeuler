@@ -8,59 +8,37 @@ LICENSE = "LGPL-2.1-only & GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
 SRC_URI = "file://${BP}.tar.gz \
-           file://0001-huawei-adapt-to-huawei-4.0.3.patch \
-           file://0002-add-mount-label-for-rootfs.patch \
-           file://0003-format-code-and-verify-mount-mode.patch \
-           file://0004-Removes-the-definition-of-the-thread-attributes-obje.patch \
-           file://0005-solve-coredump-bug-caused-by-fstype-being-NULL-durin.patch \
-           file://0006-SIGTERM-do-not-catch-signal-SIGTERM-in-lxc-monitor.patch \
-           file://0007-Using-string-type-instead-of-security_context_t-beca.patch \
-           file://0008-hook-pass-correct-mount-dir-as-root-to-hook.patch \
-           file://0009-cgroup-refact-cgroup-manager-to-single-file.patch \
-           file://0010-cgfsng-adjust-log-level-from-error-to-warn.patch \
-           file://0011-rootfs-add-make-private-for-root.path-parent.patch \
-           file://0012-mount-make-possible-to-bind-mount-proc-and-sys-fs.patch \
-           file://0013-use-path-based-unix-domain-sockets-instead-of-abstra.patch \
-           file://0014-api-add-get-container-metrics-api.patch \
-           file://0015-Streaming-IO-solution-optimization-and-enhancement.patch \
-           file://0016-avoid-using-void-pointers-in-caclulation.patch \
-           file://0017-fix-compilation-errors-without-libcap.patch \
-           file://0018-IO-fix-io-data-miss-when-exec-with-pipes.patch \
-           file://0019-metrics-add-total_inactive_file-metric-for-memory.patch \
-           file://0020-support-cgroup-v2.patch \
-           file://0021-support-isula-exec-workdir.patch \
-           file://0022-print-error-message-if-process-workdir-failed.patch \
-           file://0023-log-support-long-syslog-tag.patch \
-           file://0024-log-adjust-log-level-from-error-to-warn.patch \
-           file://0025-get-cgroup-data-len-first-and-malloc-read-buff-by-le.patch \
-           file://0026-coredump-fix-coredump-when-cgroup-get-return-error.patch \
-           file://0027-add-help-for-new-arguments.patch \
-           file://0028-seccomp-init-and-destroy-notifier.cookie.patch \
-           file://0029-just-use-origin-loop-if-do-not-have-io.patch \
-           file://0030-conf-fix-a-memory-leak.patch \
-           file://0031-fix-lsm_se_mount_context-memory-leak.patch \
-           file://0032-disable-lxc_keep-with-oci-image.patch \
-           file://0033-conf-ensure-that-the-idmap-pointer-itself-is-freed.patch \
-           file://0034-cgfsng-fix-cgroup-attach-cgroup-creation.patch \
-           file://0035-adapt-upstream-compiler-settings.patch \
-           file://0036-compile-in-android-env.patch \
-           file://0037-fix-always-print-and-temp-len.patch \
-           file://0038-just-print-error-when-new-lock-failed.patch \
-           file://0039-fix-bug-of-memory-free.patch \
-           file://0041-do-not-free-the-pointer-returned-by-dirname.patch \
-           file://0042-add-x-permission-when-create-directory.patch \
-           file://0043-do-not-operate-playload-and-attach-cgroup-if-no-cont.patch \
-           file://0044-fix-HOME-env-unset-error.patch \
-           file://0045-only-set-user-or-image-set-non-empty-HOME.patch \
-           file://0046-return-fail-if-no-args-or-no-rootfs-path-found.patch \
-           file://0047-fix-tools-with-option-give-error-message.patch \
-           file://0048-fix-do-mask-paths-after-parent-mounted.patch \
+           file://0001-refactor-patch-code-of-utils-commands-and-so-on.patch  \
+           file://0002-refactor-patch-code-of-isulad-for-conf-exec-attach.patch  \
+           file://0003-refactor-patch-code-of-isulad-for-selinux-attach.patch  \
+           file://0004-refactor-patch-code-of-lxccontianer-and-so-on.patch  \
+           file://0005-refactor-patch-code-of-attach-and-seccomp.patch  \
+           file://0006-refactor-patch-about-namespace-log-terminal.patch  \
+           file://0007-refactor-patches-on-terminal.c-start.c-and-so-on.patch  \
+           file://0008-refactor-patch-code-of-json.patch  \
+           file://0009-fix-HOME-env-of-container-unset-error.patch  \
+           file://0010-check-yajl-only-when-have-isulad.patch  \
+           file://0011-drop-security_context_t.patch  \
+           file://0012-only-set-user-or-image-set-non-empty-HOME.patch  \
+           file://0013-return-fail-if-no-args-or-no-rootfs-path-found.patch  \
+           file://0014-fix-tools-using-option-give-error-message.patch  \
+           file://0015-fix-do-mask-pathes-after-parent-mounted.patch  \
+           file://0016-skip-kill-cgroup-processes-if-no-hierarchies.patch  \
+           file://0017-lxc-Add-sw64-architecture.patch  \
+           file://0018-add-macro-to-adapt-musl-libc.patch  \
+           file://0019-add-lxc-attach-add-gids-option.patch  \
+           file://0020-add-sscanf-adapation-code-for-musl.patch  \
+           file://0021-change-the-suffi-parameter-in-lxc-attach-help-output.patch  \
+           file://0022-fix-cve-CVE-2022-47952-log-leaks-root-information.patch  \
+           file://0023-fix-lxc-write-error-message.patch  \
+           file://0024-remove-process-inheritable-capability.patch  \
+           file://0025-fix-ops-hierarchies-cause-coredump.patch  \
+           file://0026-meminfo-cri-1.25.patch  \
 "
 
 SRC_URI_append = " \
 		   file://check_only_rootfs_as_filesystem_type.patch \
-		   file://support_arm32.patch \
-		   file://0036-add-riscv-support.patch \
+                   file://0027-fix-redeclaration.patch \
 "
 
 DEPENDS = "yajl libseccomp libcap"

@@ -1,0 +1,79 @@
+diff --git a/src/client/connect/protocol_type.c b/src/client/connect/protocol_type.c
+index d77e088..79b699b 100644
+--- a/src/client/connect/protocol_type.c
++++ b/src/client/connect/protocol_type.c
+@@ -72,7 +72,7 @@ int isula_filters_last_parse_args(size_t last_n, struct isula_filters **flt)
+         goto cleanup;
+     }
+ 
+-    ret = snprintf(value, VALUE_SIZE, "%ld", last_n);
++    ret = snprintf(value, VALUE_SIZE, "%zu", last_n);
+     if (ret < 0 || ret >= VALUE_SIZE) {
+         ret = -1;
+         ERROR("Sprintf lastest n containers args failed");
+diff --git a/src/daemon/modules/service/service_network.c b/src/daemon/modules/service/service_network.c
+index 2e7fa28..9bacdd8 100644
+--- a/src/daemon/modules/service/service_network.c
++++ b/src/daemon/modules/service/service_network.c
+@@ -698,7 +698,7 @@ static int update_container_networks_info(const network_api_result_list *result,
+     }
+ 
+     if (result->len != networks->len) {
+-        ERROR("result len %lu doesn't match networks len %lu", result->len, networks->len);
++        ERROR("result len %zu doesn't match networks len %zu", result->len, networks->len);
+         return -1;
+     }
+ 
+diff --git a/src/utils/cutils/utils_port.c b/src/utils/cutils/utils_port.c
+index 583a350..236c433 100644
+--- a/src/utils/cutils/utils_port.c
++++ b/src/utils/cutils/utils_port.c
+@@ -18,6 +18,9 @@
+ #include <netinet/in.h>
+ #include <sys/socket.h>
+ #include <unistd.h>
++#include <inttypes.h>
++
++#define __STDC_FORMAT_MACROS
+ 
+ #include <isula_libutils/log.h>
+ 
+@@ -192,7 +195,7 @@ char *util_pack_port_proto(uint64_t port, const char *proto)
+         return NULL;
+     }
+ 
+-    ret = snprintf(port_proto, MAX_BUFFER_SIZE, "%lu/%s", port, proto);
++    ret = snprintf(port_proto, MAX_BUFFER_SIZE, "%" PRIu64 "/%s", port, proto);
+     if (ret < 0 || (size_t)ret >= MAX_BUFFER_SIZE) {
+         return NULL;
+     }
+@@ -279,7 +282,7 @@ static int process_range_to_range(ports_t port_data, const char *raw_ip, struct
+         char format_host_port[MAX_BUFFER_SIZE] = { 0 };
+         int nret = 0;
+ 
+-        nret = snprintf(format_host_port, MAX_BUFFER_SIZE, "%lu", port_data.start_hport + i);
++        nret = snprintf(format_host_port, MAX_BUFFER_SIZE, "%" PRIu64, port_data.start_hport + i);
+         if (nret < 0 || (size_t)nret >= MAX_BUFFER_SIZE) {
+             ERROR("Format print host port err");
+             ret = -1;
+@@ -826,7 +829,7 @@ out:
+ static bool valid_port(uint64_t port)
+ {
+     if (port < 1 || port > 65535) {
+-        ERROR("Port numbers must be between 1 and 65535 (inclusive), got %lu", port);
++        ERROR("Port numbers must be between 1 and 65535 (inclusive), got %" PRIu64, port);
+         return false;
+     }
+ 
+@@ -926,9 +929,9 @@ bool util_new_network_port(const char *proto, const char *port, struct network_p
+     }
+ 
+     if (work->start == work->end) {
+-        ret = sprintf(buff, "%zu/%s", work->start, proto) > 0;
++        ret = sprintf(buff, "%" PRIu64 "/%s", work->start, proto) > 0;
+     } else {
+-        ret = sprintf(buff, "%zu-%zu/%s", work->start, work->end, proto) > 0;
++        ret = sprintf(buff, "%" PRIu64 "-%" PRIu64 "/%s", work->start, work->end, proto) > 0;
+     }
+     if (!ret) {
+         ERROR("format port failed");

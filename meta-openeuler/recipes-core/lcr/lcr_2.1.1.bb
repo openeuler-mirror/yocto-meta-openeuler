@@ -15,11 +15,14 @@ inherit cmake
 
 ### Build metadata
 SRC_URI = "file://v${PV}.tar.gz \
-           file://0001-feat-Add-json-spec-for-rest-resize-api.patch \
-           file://0002-add-HAVE_ISULAD-definition-for-lxc-header.patch \
-           file://0003-fix-cpu-quota-out-of-range-when-update-to-1.patch \
-           file://0004-remove-unused-daemon-config-args.patch \
-           file://0005-refactor-handle-warnings.patch \
+           file://0001-add-libisula.pc.patch \
+           file://0002-add-unified-and-memory_swap_limit_in_bytes-into-host.patch \
+           file://0003-fix-update-cpu-rt-period-failed.patch \
+           file://0004-fix-writing-config-line-with-wrong-length.patch \
+           file://0005-Add-memory-related-fields.patch \
+           file://0006-mod-headers.patch \
+           file://0007-add-cgroup-resources-json-schema-for-isula-update.patch \
+           file://0008-add-field-for-isulad-daemon-configs.patch \
 "
 
 S = "${WORKDIR}/${BPN}-v${PV}"
