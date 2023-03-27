@@ -68,7 +68,6 @@ ncurses-terminfo \
 ncurses-terminfo-base \
 nlopt \
 pciutils \
-perf \
 policycoreutils \
 policycoreutils-fixfiles \
 policycoreutils-hll \
