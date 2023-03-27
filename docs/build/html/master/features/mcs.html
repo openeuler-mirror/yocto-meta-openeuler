@@ -61,6 +61,7 @@
 <li class="toctree-l2"><a class="reference internal" href="qt5_wayland.html">嵌入式图形支持</a></li>
 <li class="toctree-l2"><a class="reference internal" href="armnn.html">ArmNN的支持</a></li>
 <li class="toctree-l2"><a class="reference internal" href="clang_llvm.html">clang/llvm 编译工具链支持</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jailhouse.html">轻量级虚拟化工具 Jailhouse</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../linux/index.html">使用与配置</a></li>
@@ -169,25 +170,37 @@ Linux负责系统管理与服务、1个实时操作系统负责实时控制、1�
 <p>单独构建混合关键系统特性的方法请参考 <a class="reference external" href="https://gitee.com/openeuler/mcs#%E6%9E%84%E5%BB%BA%E5%AE%89%E8%A3%85%E6%8C%87%E5%AF%BC">mcs 构建安装指导</a></p>
 </div>
 <p><strong>集成构建指导</strong></p>
-<p>1.使用oebuild进行构建即可，具体使用方式参照 <a class="reference internal" href="../yocto/oebuild.html#openeuler-embedded-oebuild"><span class="std std-ref">基于 oebuild 快速构建</span></a></p>
-<p>2.zephyr 的构建包含核心部分和外部 zephyr modules 部分，由于全部代码较大，需要从 <a class="reference external" href="https://gitee.com/src-openeuler/zephyr">src-openEuler/zephyr</a> 中的百度网盘路径下载 zephyr_project_v3.2.0.tar.gz，并放在构建代码目录下的 zephyrproject 子目录中（对应oebuild工作目录的&lt;workspace&gt;/src/zephyrproject）：</p>
-<p>3.python3-pykwalify 在 openeuler 社区尚无相应的源码包，需要从上游下载 <a class="reference external" href="https://pypi.org/project/pykwalify/1.8.0/#files">Download pykwalify-1.8.0.tar.gz</a> ，并放在构建代码目录下的 python3-pykwalify 子目录中（对应oebuild工作目录的&lt;workspace&gt;/src/python3-pykwalify）</p>
-<p>4.执行以下指令</p>
-<blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>构建qemu使用如下指令
-<span class="gp">$ </span>oebuild generate -p aarch64 -f openeuler-mcs -d qemu-mcs
-
-<span class="gp"># </span>构建raspberrypi4使用如下指令
-<span class="gp">$ </span>oebuild generate -p raspberrypi4 -f openeuler-mcs -d raspberrypi4-mcs
-
-<span class="gp"># </span>进入构建交互终端
-<span class="gp">$ </span>oebuild bitbake
-
-<span class="gp"># </span>执行构建命令
-<span class="gp">$ </span>bitbake openeuler-image-mcs
+<ol class="arabic">
+<li><p>根据 <a class="reference internal" href="../yocto/oebuild.html#openeuler-embedded-oebuild"><span class="std std-ref">oebuild快速构建</span></a> ，初始化oebuild工作目录；</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>oebuild init &lt;directory&gt;
+<span class="nb">cd</span> &lt;directory&gt;
+oebuild update
 </pre></div>
 </div>
-</div></blockquote>
+</li>
+<li><p>下载依赖代码：</p>
+<p>zephyr 的构建包含核心部分和外部 zephyr modules 部分，由于全部代码较大，需要从 <a class="reference external" href="https://gitee.com/src-openeuler/zephyr">src-openEuler/zephyr</a> 中的百度网盘路径下载 zephyr_project_v3.2.0.tar.gz，并放在构建代码目录下的 zephyrproject 子目录中（对应oebuild工作目录的&lt;workspace&gt;/src/zephyrproject）：</p>
+<p>python3-pykwalify 在 openeuler 社区尚无相应的源码包，需要从上游下载 <a class="reference external" href="https://pypi.org/project/pykwalify/1.8.0/#files">Download pykwalify-1.8.0.tar.gz</a> ，并放在构建代码目录下的 python3-pykwalify 子目录中（对应oebuild工作目录的&lt;workspace&gt;/src/python3-pykwalify）</p>
+</li>
+<li><p>进入oebuild工作目录，创建对应的编译配置文件，<strong>mcs镜像需要添加</strong> <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">openeuler-mcs</span></code>：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># qemu-arm64</span>
+oebuild generate -p aarch64-std -f openeuler-mcs -d &lt;build_arm64_mcs&gt;
+
+<span class="c1"># RPI4</span>
+oebuild generate -p raspberrypi4-64 -f openeuler-mcs -d &lt;build_rpi_mcs&gt;
+</pre></div>
+</div>
+</li>
+<li><p>进入 <code class="docutils literal notranslate"><span class="pre">&lt;build&gt;</span></code> 目录，编译 <code class="docutils literal notranslate"><span class="pre">openeuler-image-mcs</span></code> ：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>oebuild bitbake openeuler-image-mcs
+</pre></div>
+</div>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">注解</p>
+<p><strong>注意</strong>：构建 openeuler-image-mcs 需要在 oebuild 初始化时添加 <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">openeuler-mcs</span></code>。</p>
+</div>
 </section>
 <section id="id4">
 <h2>使用方法<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
