@@ -25,3 +25,18 @@ pkg_postinst_${PN}_append () {
         rm -f "/etc/openeuler-volatile.cache"
     fi
 }
+
+
+# GPL2.patch will create COPYING file, but if S dir is not a clean
+# dir, i.e., COPYING file is already there because of last build,
+# do patch will fail. So we use prepend to fix this case.
+# A better solution is not using GPL2.patch.
+# This fix can be removed if the upstream poky fix this
+do_patch_prepend () {
+    import os
+
+    copyfile = os.path.join(d.getVar('S'),"COPYING")
+    if os.path.exists(copyfile):
+        os.remove(copyfile)
+
+}
