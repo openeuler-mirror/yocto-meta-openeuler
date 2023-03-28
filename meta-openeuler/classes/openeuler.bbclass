@@ -99,6 +99,7 @@ python do_openeuler_fetch() {
             git.Remote.add(repo = repo, name = "origin", url = repo_url)
         repo.remote().fetch()
         repo.git.checkout(repo_branch)
+        repo.git.merge()
 
     # get source directory where to download
     srcDir = d.getVar('OPENEULER_SP_DIR')
