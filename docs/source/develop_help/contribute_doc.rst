@@ -72,7 +72,11 @@ reStructuredText的语法无需专门记忆，需要用到时再去查询即可�
         "introduction", "openEuler Embedded总揽与简介"
         "getting_started", "openEuler Embedded快速使用入门"
         "features", "openEuler Embedded主要特性介绍"
-        "yocto", "openeuler Embedded的Yocto构建系统"
+        "linux", "openEuler Embedded运行相关的内容说明"
+        "infrastructure", "openEuler Embedded基础设施相关内容"
+        "yocto", "openEuler Embedded的Yocto构建系统"
+        "develop_help", "涉及openEuler Embedded开发过程中的一些帮助指导"
+        "bsp", "openEuler Embedded南向支持方面的内容"
         "release", "openEuler Embedded的发布说明"
 
 *  编译文档
@@ -218,7 +222,11 @@ easy_install可以自动下载并安装sphinx以及它所依赖的其他模块�
         "introduction", "openEuler Embedded总揽与简介"
         "getting_started", "openEuler Embedded快速使用入门"
         "features", "openEuler Embedded主要特性介绍"
-        "yocto", "openeuler Embedded的Yocto构建系统"
+        "linux", "openEuler Embedded运行相关的内容说明"
+        "infrastructure", "openEuler Embedded基础设施相关内容"
+        "yocto", "openEuler Embedded的Yocto构建系统"
+        "develop_help", "涉及openEuler Embedded开发过程中的一些帮助指导"
+        "bsp", "openEuler Embedded南向支持方面的内容"
         "release", "openEuler Embedded的发布说明"
 
 

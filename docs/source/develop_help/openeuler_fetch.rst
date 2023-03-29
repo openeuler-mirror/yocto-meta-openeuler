@@ -19,13 +19,9 @@ openeuler_fetch运行逻辑
 
 openeuler_fetch通过以下相关控制变量来完成相关包下载：
 
- - OPENEULER_GIT_PRE:  远程仓库前缀，默认为https://gitee.com，该值在compile.sh中的main函数通过设置GIT_PRE变量完成默认设置
+ - OPENEULER_GIT_URL:  远程仓库前缀，默认为https://gitee.com/src-openeuler，该值在.oebuild/local.conf.sample中设置，全局生效，也可以在bb或bbappend文件中设置使之局部生效
 
- - OPENEULER_GIT_SPACE: 远程仓库空间名，默认为src-openeuler，该值在compile.sh中的main函数通过设置GIT_SPACE变量来完成默认设置
-
- - OPENEULER_BRANCH: 软件包分支，在下载软件包时会通过该值指定分支名称，该值在compile.sh中的main函数通过设置SRC_BRANCH来完成默认设置
-
- - OPENEULER_KERNEL_BRANCH: 内核分支，由于openEuler Embedded在构建时需要依赖两个kernel包，一个是https://gitee.com/src-openeuler/kernel.git，本地路径为src-kernel；另一个为https://gitee.com/openeuler/kernel.git，本地路径为kernel，src-kernel版本分支跟随OPENEULER_BRANCH下载，kernerl则跟随OPENEULER_KERNEL_BRANCH下载
+ - OPENEULER_BRANCH: 软件包分支，在下载软件包时会通过该值指定分支名称，该值在.oebuild/local.conf.sample中设置，全局生效，也可以在bb或bbappend文件中设置使之局部生效
 
  - OPENEULER_REPO_NAME: 软件包名，该名一般和构建包名一致，但在特殊情况下需要改动，例如构建libtool-cross时，构建包名为libtool-cross，因此默认OPENEULER_REPO_NAME为libtool-cross，但是依赖包路径是libtool，则需要将OPENEULER_REPO_NAME改为libtool
 
@@ -35,7 +31,7 @@ openeuler_fetch通过以下相关控制变量来完成相关包下载：
 
 整体openeuler_fetch下载就是依靠以上相关变量完成，由以上变量最终组成git下载参数：
 
- - remote: 默认为https://gitee.com/src-openeuler/xxx，由OPENEULER_GIT_PRE/OPENEULER_GIT_SPACE/OPENEULER_REPO_NAME组成
+ - remote: 默认为https://gitee.com/src-openeuler/xxx，由OPENEULER_GIT_URL/OPENEULER_REPO_NAME组成
  
  - branch: 默认为OPENEULER_BRANCH
 
@@ -54,9 +50,9 @@ repo_init 运行原理图如下：
 
 - 如果想要某一个版本的busybox参与构建：在busybox的bbappend文件中设定OPENEULER_BRANCH值为相关版本即可
 
-- 如果想要使用自有仓库busybox参与构建：在busybox的bbappend文件中设定OPENEULER_GIT_SPACE为自有空间即可，注意：如果busybox已经下载在本地，则需要手动删除，然后再执行构建
+- 如果想要使用自有仓库busybox参与构建：在busybox的bbappend文件中设定OPENEULER_GIT_URL为自有空间即可，注意：如果busybox已经下载在本地，则需要手动删除，然后再执行构建
 
-- 如果需要其他代码仓的busybox参与构建，则修改OPENEULER_GIT_PRE为其他平台仓域名即可，例如https://github.com
+- 如果需要其他代码仓的busybox参与构建，则修改OPENEULER_GIT_URL为其他平台仓域名即可，例如https://github.com/xxx
 
 - 另外，当构建busybox时需要的依赖并不会是某一款特定包，即不能直接通过depends添加依赖，而仅仅是需要某个路径下的文件，此时需要在bbappend中添加do_fetch_prepend，在该函数中添加需要依赖的包，例如：
 
@@ -66,19 +62,19 @@ repo_init 运行原理图如下：
     python do_fetch_prepend() {
         repoList = [{
             "repo_name": "yocto-embedded-tools",
-            "git_space": "openeuler",
+            "git_url": "https://gitee.com/openeuler",
             "branch": "master"
         },{
             "repo_name": "libboundscheck",
-            "git_space": "src-openeuler",
+            "git_url": "https://gitee.com/openeuler",
             "branch": "openEuler-22.09"
         },{
             "repo_name": "dsoftbus_standard",
-            "git_space": "openeuler",
+            "git_url": "https://gitee.com/openeuler",
             "branch": "v3.1"
         },{
             "repo_name": "embedded-ipc",
-            "git_space": "openeuler",
+            "git_url": "https://gitee.com/openeuler",
             "branch": "master"
         }]
 
@@ -96,4 +92,10 @@ repo_init 运行原理图如下：
 如何关闭openeuler_fetch功能
 ***************************
 
-在meta-openeuler/conf/layer.conf中有一个全局变量OPENEULER_FETCH，该值默认设置为enable，即openeuler_fetch是开启状态，如果想要关闭openeuler_fetch则设置该值为disable，另外在layer.conf中该值的作用域是全局的，我们在开发中可能会针对某一些或某几个包不需要运行openeuler_fetch，则可以在相关包的bb或bbappend中设定该值为disable
+OPENEULER_FETCH有两种关闭方式：
+
+1. 在meta-openeuler/conf/layer.conf中有一个全局变量OPENEULER_FETCH，该值默认设置为enable，即openeuler_fetch是开启状态，如果想要关闭openeuler_fetch则设置该值为disable，
+
+2. 在oebuild执行generate指令是将参数-df带上，也可以关闭openeuelr_fetch功能
+
+另外 ``OPENEULER_FETCH`` 该值的作用域是全局的，我们在开发中可能会针对某一些或某几个包不需要运行openeuler_fetch，则可以在相关包的bb或bbappend中设定该值为disable

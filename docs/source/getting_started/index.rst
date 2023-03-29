@@ -351,7 +351,7 @@ openEuler Embedded传输文件。
 
   ::
 
-   KERNELDIR := ${KERNEL_SRC_DIR}
+   KERNELDIR := ${KERNEL_SRC}
    CURRENT_PATH := $(shell pwd)
 
    target := hello
@@ -364,7 +364,7 @@ openEuler Embedded传输文件。
    clean:
    	 $(MAKE) -C $(KERNELDIR) M=$(CURRENT_PATH) clean
 
-  :file:`KERNEL_SRC_DIR` 为SDK中内核源码树的目录，该变量在安装SDK后会被自动设置。
+  :file:`KERNEL_SRC` 为SDK中内核源码树的目录，该变量在安装SDK后会被自动设置。
 
 3. **编译生成内核模块**
 
