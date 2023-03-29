@@ -13,10 +13,17 @@ SRC_URI_prepend = "file://${BP}.tar.gz \
 "
 
 do_install_append(){
+    rm ${D}/${libdir}/libhugetlbfs.a
+    rm ${D}/${libdir}/../bin/hugeadm
+    rm ${D}/${libdir}/../bin/hugectl
     rm ${D}/${libdir}/../bin/hugeedit
+    rm ${D}/${libdir}/../bin/pagesize
+    rm -rf ${D}/${libdir}/../share/libhugetlbfs
+    rm -rf ${D}/usr/bin
+    rm -rf ${D}/${libdir}/libhugetlbfs
+    rm -rf ${D}/usr/share
+    rm -rf ${D}/usr/include 
 }
-
-FILES_${PN}-dbg += "${libdir}/libhugetlbfs/tests/obj32/.debug ${libdir}/libhugetlbfs/tests/obj64/.debug"
 
 S = "${WORKDIR}/${BP}"
 
