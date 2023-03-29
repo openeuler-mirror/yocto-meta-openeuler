@@ -46,18 +46,34 @@ meta-musl层介绍
 
 qemu镜像的构建
 ----------------------------------------
-1.构建命令示例
+1.构建环境示例
+  
+参考 :ref:`openeuler_embedded_oebuild` 初始化容器环境，生成配置文件时使用如下命令
 
 .. code-block:: console
 
-        su openeuler
+   oebuild generate -p aarch64-std -t /path/to/clang-llvm-15.0.3 -f musl
 
-        source /usr1/openeuler/src/yocto-meta-openeuler/scripts/compile.sh aarch64-std /usr1/build /usr1/openeuler/gcc/aarch64-openeuler-linux-musl
+键入 ``oebuild bitbake`` 进入容器环境后，拷贝musl-arm64架构GCC库至编译器目录
 
-        bitbake openeuler-image
+``/usr1/openeuler/native_gcc/`` 为oebuild默认挂载的编译器目录
 
-2.构建镜像生成目录示例
-========================
+.. code-block:: console
+
+   sudo cp /path/aarch64-openeuler-linux-musl/* /usr1/openeuler/native_gcc/
+
+.. attention::
+
+   当前在容器里是没有musl-arm64的工具链，需要按照上面工具链的生成指导生成
+
+2.构建命令
+
+.. code-block:: console
+
+   bitbake openeuler-image
+
+3.构建镜像生成目录示例
+
 结果件默认生成在构建目录下的output目录下：
 
 .. code-block:: console
@@ -73,14 +89,14 @@ qemu镜像的构建
 
 .. code-block:: console
 
-        su openeuler
+   oebuild generate -p raspberrypi4-64 -t /path/to/clang-llvm-15.0.3 -f musl
 
-        source /usr1/openeuler/src/yocto-meta-openeuler/scripts/compile.sh raspberrypi4-64 /usr1/build /usr1/openeuler/gcc/aarch64-openeuler-linux-musl
+   sudo cp /path/aarch64-openeuler-linux-musl/* /usr1/openeuler/native_gcc/
 
-        bitbake openeuler-image
+   bitbake openeuler-image
 
 2.构建镜像生成目录
-========================
+
 结果件默认生成在构建目录下的output目录下：
 
 .. code-block:: console
