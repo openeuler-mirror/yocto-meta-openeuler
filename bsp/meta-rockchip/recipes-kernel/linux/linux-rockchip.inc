@@ -13,6 +13,10 @@ SRC_URI_append_ryd-3568 = " \
     file://patches/0001-rk3568-8897-dts.patch \
     file://patches/0002-ryd-gpio-control.patch \
     "
+# mcs patch for ok3568 devicetree
+SRC_URI_append = " \
+    file://patches/${@bb.utils.contains('MCS_FEATURES', 'ok3568', '0003-ok3568-support-mcs.patch', '', d)} \
+"
 
 # more support of device is comming. so we documented this patch md5sum.
 SRC_URI[rk3568-kernel-patch.md5sum] = "b4c156e59411c8e86098e03de67a84ca"
