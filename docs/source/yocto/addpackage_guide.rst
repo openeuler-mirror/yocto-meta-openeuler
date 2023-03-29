@@ -12,26 +12,15 @@
 
 1. **源码获取**
 
-源码通常在 `src-openEuler <https://gitee.com/organizations/src-openeuler/projects>`_ 上获取，在 download_code.sh 脚本中增加下载相关代码的命令；如果 src-openEuler 上不存在对应源码，可以从官网获取后放在 SRC_DIR 目录（yocto-meta-openeuler同级目录）下。
-
-例如，在 download_code.sh 脚本中增加下载 audit 源码：
-
-.. code-block:: console
-    
-    ...
-    download_code()
-    {
-        ...
-        update_code_repo src-openeuler/audit ${SRC_BRANCH}  //SRC_BRANCH为分支名
-    }
+源码通常在 `src-openEuler <https://gitee.com/organizations/src-openeuler/projects>`_ 上获取，如果 src-openEuler 上不存在对应源码，则会从 bb 文件指定上游获取源码。
 
 2. **获取配方（bb文件）**
 
-先确认 yocto-poky 仓是否存在相应软件包的 bb 文件：
+先确认已有的 yocto 仓库中是否存在需要软件包的 bb 文件：
 
 .. code-block:: console
 
-    $ find yocto-poky -name <package>*.bb
+    $ find yocto-* -name <package>*.bb
 
 如果没有找到则可以在 `OpenEmbedded Layer <http://layers.openembedded.org/layerindex/branch/master/recipes/>`_ 搜索，然后拷贝需要的文件（bb、补丁等）到 meta-openeuler 层。
 
@@ -41,6 +30,7 @@
 | 开发者首先在 meta-openeuler 层 bb 文件对应的目录下创建 bbappend 文件，文件命名为 <package>_%.bbappend，Yocto 中 "%" 为通配符，这样命名能匹配任何一个找到的 bb 文件版本；下一步根据构建需求编写 bbappend 内容，并做好相应注释说明，大多数情况下编写的内容如下：
 
 - OPENEULER_REPO_NAME: src-openEuler存储仓名称；
+- OPENEULER_BRANCH: src-openEuler源码仓库分支；
 - PV: 版本；
 - SRC_URI: 源码来源；
 - SRC_URI[md5sum/sha256sum]: 源码校验码；

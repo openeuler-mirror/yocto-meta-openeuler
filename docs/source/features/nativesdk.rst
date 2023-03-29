@@ -53,4 +53,4 @@ openEuler 开发者在 nativesdk 工具兼容 yocto-meta-openeuler 上做了很�
 存在的问题
 ##################
 
-目前来说，nativesdk 的使用有一些不完善之处，一方面是构建时采用的包源码直接来自于上游而非 openEuler，这一点开发者正在进行改进；另一方面是兼容性问题，当前由于 poky/hardknott 分支使用的 glibc 版本是 2.33，使得嵌入式的 nativesdk 工具只能在主机C库版本低于 2.34 的版本使用，否则会有问题，这一点开发者正在进行攻克，一个方向是 Yocto 的 uninative 机制，但目前开发者对此的研究还不深入。
+目前来说，nativesdk 的使用有一些不完善之处，构建 nativesdk 时采用的包源码直接来自于上游而非 openEuler，这一点开发者正在进行改进。
