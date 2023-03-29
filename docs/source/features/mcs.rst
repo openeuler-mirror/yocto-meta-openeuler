@@ -109,6 +109,12 @@ openEuler Embedded 不仅支持混合关键性系统特性的单独构建，还�
       # RPI4
       oebuild generate -p raspberrypi4-64 -f openeuler-mcs -d <build_rpi_mcs>
 
+      # ok3568
+      oebuild generate -p ok3568 -f openeuler-mcs -d <build_ok3568_mcs>
+
+      # hi3093
+      oebuild generate -p hi3093 -f openeuler-mcs -d <build_hi3093_mcs>
+
 4. 进入 ``<build>`` 目录，编译 ``openeuler-image-mcs`` ：
 
    .. code-block:: shell
@@ -135,6 +141,12 @@ openEuler Embedded 不仅支持混合关键性系统特性的单独构建，还�
     .. code-block:: console
 
       $ qemu-system-aarch64 -M virt,gic-version=3 -m 1G -cpu cortex-a57 -nographic -append 'maxcpus=3' -smp 4 -kernel zImage -initrd *.rootfs.cpio.gz -dtb qemu_mcs.dtb
+  - **对于ok3568:**
+
+    已经通过条件判断的形式把预留内存加入了设备树，构建出来即可使用。
+  - **对于hi3093:**
+
+    已经通过条件判断的形式把预留内存加入了设备树，构建出来即可使用。
 
 2.部署mcs
   - **step1: 调整内核打印等级并插入内核模块**
@@ -146,6 +158,8 @@ openEuler Embedded 不仅支持混合关键性系统特性的单独构建，还�
 
       # 插入内核模块
       $ modprobe mcs_km.ko
+
+      #备注：ok3568与hi3093已经实现了开机自动加载内核模块，无需重复此步骤
 
     插入内核模块后，可以通过 `cat /proc/iomem` 查看预留出来的 mcs_mem，如：
 
@@ -163,9 +177,16 @@ openEuler Embedded 不仅支持混合关键性系统特性的单独构建，还�
 
     .. code-block:: console
 
+      #在树莓派4B/qemu上拉起zephyr
       $ rpmsg_main -c [cpu_id] -t [target_binfile] -a [target_binaddress]
       eg:
       $ rpmsg_main -c 3 -t /firmware/zephyr-image.bin -a 0x7a000000
+
+      #在ok3568上拉起rt-thread
+      $ rpmsg_main -c 3 -t /firmware/rtthread-ok3568.bin -a 0x7a000000
+
+      #在hi3093上拉起uniproton
+      $ rpmsg_main -c 3 -t /firmware/Uniproton_hi3093.bin -a 0x93000000
 
     若rpmsg_main成功运行，会有如下打印：
 
@@ -182,6 +203,7 @@ openEuler Embedded 不仅支持混合关键性系统特性的单独构建，还�
     此时， **按ctrl-c可以通知client os下线并退出rpmsg_main** ，下线后支持重复拉起。
     也可以根据打印提示，通过 /dev/pts/1 与 client os 进行 shell 交互，例如：
 
+    树莓派4B/qemu：
     .. code-block:: console
 
       # 新建一个terminal，登录到运行环境
@@ -193,4 +215,27 @@ openEuler Embedded 不仅支持混合关键性系统特性的单独构建，还�
       # 敲回车后，可以打开client os的shell，对client os下发命令，例如
       uart:~$ help
       uart:~$ kernel version
+    
+    ok3568：
+    .. code-block:: console
+
+      # 新建一个terminal，登录到运行环境
+      $ ssh user@ip
+
+      # 连接pts设备
+      $ screen /dev/pts/1
+
+      # 敲回车后，可以打开client os的shell，对client os下发命令，例如
+      msh /$ 
+
+    hi3093暂不支持rtos下线。
+    .. code-block:: console
+
+      # 新建一个terminal，登录到运行环境
+      $ ssh user@ip
+
+      # 连接pts设备
+      $ screen /dev/pts/2
+
+      # 敲回车后，可以打开client os的shell，回车查看uniproton输出信息
 
