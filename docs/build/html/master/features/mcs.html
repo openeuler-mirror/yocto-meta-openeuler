@@ -188,6 +188,12 @@ oebuild generate -p aarch64-std -f openeuler-mcs -d &lt;build_arm64_mcs&gt;
 
 <span class="c1"># RPI4</span>
 oebuild generate -p raspberrypi4-64 -f openeuler-mcs -d &lt;build_rpi_mcs&gt;
+
+<span class="c1"># ok3568</span>
+oebuild generate -p ok3568 -f openeuler-mcs -d &lt;build_ok3568_mcs&gt;
+
+<span class="c1"># hi3093</span>
+oebuild generate -p hi3093 -f openeuler-mcs -d &lt;build_hi3093_mcs&gt;
 </pre></div>
 </div>
 </li>
@@ -216,6 +222,12 @@ oebuild generate -p raspberrypi4-64 -f openeuler-mcs -d &lt;build_rpi_mcs&gt;
 </pre></div>
 </div>
 </li>
+<li><p><strong>对于ok3568:</strong></p>
+<p>已经通过条件判断的形式把预留内存加入了设备树，构建出来即可使用。</p>
+</li>
+<li><p><strong>对于hi3093:</strong></p>
+<p>已经通过条件判断的形式把预留内存加入了设备树，构建出来即可使用。</p>
+</li>
 </ul>
 </dd>
 <dt>2.部署mcs</dt><dd><ul>
@@ -225,6 +237,8 @@ oebuild generate -p raspberrypi4-64 -f openeuler-mcs -d &lt;build_rpi_mcs&gt;
 
 <span class="gp"># </span>插入内核模块
 <span class="gp">$ </span>modprobe mcs_km.ko
+
+<span class="gp">#</span>备注：ok3568与hi3093已经实现了开机自动加载内核模块，无需重复此步骤
 </pre></div>
 </div>
 <p>插入内核模块后，可以通过 <cite>cat /proc/iomem</cite> 查看预留出来的 mcs_mem，如：</p>
@@ -238,9 +252,16 @@ oebuild generate -p raspberrypi4-64 -f openeuler-mcs -d &lt;build_rpi_mcs&gt;
 <p>若mcs_km.ko插入失败，可以通过dmesg看到对应的失败日志，可能的原因有：1.使用的交叉工具链与内核版本不匹配；2.未预留内存资源；3.使用的bios不支持psci</p>
 </li>
 <li><p><strong>step2: 运行rpmsg_main程序，启动client os</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>rpmsg_main -c <span class="o">[</span>cpu_id<span class="o">]</span> -t <span class="o">[</span>target_binfile<span class="o">]</span> -a <span class="o">[</span>target_binaddress<span class="o">]</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>在树莓派4B/qemu上拉起zephyr
+<span class="gp">$ </span>rpmsg_main -c <span class="o">[</span>cpu_id<span class="o">]</span> -t <span class="o">[</span>target_binfile<span class="o">]</span> -a <span class="o">[</span>target_binaddress<span class="o">]</span>
 <span class="go">eg:</span>
 <span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /firmware/zephyr-image.bin -a 0x7a000000
+
+<span class="gp">#</span>在ok3568上拉起rt-thread
+<span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /firmware/rtthread-ok3568.bin -a 0x7a000000
+
+<span class="gp">#</span>在hi3093上拉起uniproton
+<span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /firmware/Uniproton_hi3093.bin -a 0x93000000
 </pre></div>
 </div>
 <p>若rpmsg_main成功运行，会有如下打印：</p>
@@ -255,17 +276,36 @@ oebuild generate -p raspberrypi4-64 -f openeuler-mcs -d &lt;build_rpi_mcs&gt;
 </div>
 <p>此时， <strong>按ctrl-c可以通知client os下线并退出rpmsg_main</strong> ，下线后支持重复拉起。
 也可以根据打印提示，通过 /dev/pts/1 与 client os 进行 shell 交互，例如：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>新建一个terminal，登录到运行环境
-<span class="gp">$ </span>ssh user@ip
-
-<span class="gp"># </span>连接pts设备
-<span class="gp">$ </span>screen /dev/pts/1
-
-<span class="gp"># </span>敲回车后，可以打开client os的shell，对client os下发命令，例如
-<span class="gp">uart:~$ </span><span class="nb">help</span>
-<span class="gp">uart:~$ </span>kernel version
-</pre></div>
-</div>
+<p>树莓派4B/qemu：
+.. code-block:: console</p>
+<blockquote>
+<div><p># 新建一个terminal，登录到运行环境
+$ ssh <a class="reference external" href="mailto:user&#37;&#52;&#48;ip">user<span>&#64;</span>ip</a></p>
+<p># 连接pts设备
+$ screen /dev/pts/1</p>
+<p># 敲回车后，可以打开client os的shell，对client os下发命令，例如
+uart:~$ help
+uart:~$ kernel version</p>
+</div></blockquote>
+<p>ok3568：
+.. code-block:: console</p>
+<blockquote>
+<div><p># 新建一个terminal，登录到运行环境
+$ ssh <a class="reference external" href="mailto:user&#37;&#52;&#48;ip">user<span>&#64;</span>ip</a></p>
+<p># 连接pts设备
+$ screen /dev/pts/1</p>
+<p># 敲回车后，可以打开client os的shell，对client os下发命令，例如
+msh /$</p>
+</div></blockquote>
+<p>hi3093暂不支持rtos下线。
+.. code-block:: console</p>
+<blockquote>
+<div><p># 新建一个terminal，登录到运行环境
+$ ssh <a class="reference external" href="mailto:user&#37;&#52;&#48;ip">user<span>&#64;</span>ip</a></p>
+<p># 连接pts设备
+$ screen /dev/pts/2</p>
+<p># 敲回车后，可以打开client os的shell，回车查看uniproton输出信息</p>
+</div></blockquote>
 </li>
 </ul>
 </dd>
