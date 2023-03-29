@@ -11,5 +11,4 @@
    :caption: 基础设施列表
 
    test/index.rst
-   container/index.rst
    qemu/index.rst
