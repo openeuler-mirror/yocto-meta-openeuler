@@ -300,7 +300,7 @@ oebuild generate
 
 ::
 
-   usage:
+   usage: 
 
    oebuild generate [-p platform] [-f features] [-t toolchain_dir] [-d build_directory] [-l list] [-b_in build_in]
 
@@ -311,12 +311,15 @@ oebuild generate
    -l {platform,feature}
                            with platform will list support archs, with feature will list support features
    -p PLATFORM           this param is for arch, for example aarch4-std, aarch64-pro and so on
-   -s SSTATE_CACHE       this param is for sstate_cache directory
+   -s SSTATE_CACHE       this param is for SSTATE_MIRRORS
+   -s_dir SSTATE_DIR     this param is for SSTATE_DIR
    -m TMP_DIR            this param is for tmp directory, the build result will be stored in
    -f FEATURES           this param is feature, it's a reuse command
    -d DIRECTORY          this param is build directory, the default is same to platform
    -t TOOLCHAIN_DIR      this param is for external toolchain dir, if you want use your own toolchain
    -n NATIVESDK_DIR      this param is for external nativesdk dir, the param will be useful when you want to build in host
+   -dt, --datetime       this param is add DATETIME to local.conf, the value is getting current time
+   -df, --disable_fetch  this param is set openeuler_fetch in local.conf, the default value is enable, if set -df, the OPENEULER_FETCH will set to 'disable'
    -b_in {docker,host}   This parameter marks the mode at build time, and is built in the container by docker
 
 - -l<list>：list参数，有两个可选范围，platform和feature，platform则会列出支持的platform列表，feature则会列出支持的feature列表
@@ -324,6 +327,8 @@ oebuild generate
 - -p<platform>：全称platform，生成配置文件需要的一个参数，默认为aarch64-std
 
 - -s<sstate_cache>：指定外部sstate_cache目录，该目录在构建时会使用
+
+- -s_dir<sstate_dir>：指定sstate_cache目录，该目录在构建时会使用
 
 - -m<tmp_dir>：执行tmp目录，yocto在要求tmp目录不可以存放在nfs系统文件结构下，如果有相关环境可以单独指定该存放目录
 
@@ -334,6 +339,10 @@ oebuild generate
 - -t<toolchain_dir>：外部编译链参数，全称toolchain_dir，生成配置文件需要的一个参数，没有默认值，该值表示如果我们不需要系统提供的交叉编译链而选择自己的交叉编译链，则可以选择该参数。
 
 - -n<nativesdk_dir>：外部nativesdk目录参数，可以指定外部nativesdk目录，当构建方式为主机构建时该配置才有效
+
+- -dt<datetime>：在local.conf中设定DATATIME变量，该变量旨在设定构建时间戳
+
+- -df<disable_fetch>：在local.conf中设定 ``OPENEULER_FETCH`` 变量为 ``disable`` ，这样构建时将禁用OPENEULER_FETCH功能 
 
 - -b_in<build in>：构建方式，目前构建方式有docker与host两种，默认与推荐使用docker构建方式
 
