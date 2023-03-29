@@ -47,7 +47,6 @@ libcap-ng \
 libcap-ng-bin \
 libdw \
 libffi \
-libhugetlbfs \
 libmodbus \
 libnl \
 libnl-cli \
