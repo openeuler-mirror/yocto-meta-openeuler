@@ -7,6 +7,14 @@ SRC_URI += " \
         file://openeuler-safety-volatiles \
         "
 
+# GPLv2.patch will create COPYING file, but if S dir is not a clean
+# dir, i.e., COPYING file is already there because of last build,
+# do patch may fail.
+# A better solution is not using GPL2.patch.
+# This fix can be removed if the upstream poky fix this
+SRC_URI_remove = "file://GPLv2.patch"
+LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
+
 do_install_append() {
     install -d ${D}${sysconfdir}/default/openeuler-volatiles
     install -m 0644    ${WORKDIR}/openeuler-safety-volatiles     ${D}${sysconfdir}/default/openeuler-volatiles/00_core
@@ -24,19 +32,4 @@ pkg_postinst_${PN}_append () {
     if [ -z "$D" ]; then
         rm -f "/etc/openeuler-volatile.cache"
     fi
-}
-
-
-# GPL2.patch will create COPYING file, but if S dir is not a clean
-# dir, i.e., COPYING file is already there because of last build,
-# do patch will fail. So we use prepend to fix this case.
-# A better solution is not using GPL2.patch.
-# This fix can be removed if the upstream poky fix this
-do_patch_prepend () {
-    import os
-
-    copyfile = os.path.join(d.getVar('S'),"COPYING")
-    if os.path.exists(copyfile):
-        os.remove(copyfile)
-
 }
