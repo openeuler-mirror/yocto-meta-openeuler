@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>yocto-meta-openeuler 新增 bsp 层 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/translations.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../genindex.html" />
+    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="next" title="ARM32硬件" href="arm32/index.html" />
+    <link rel="prev" title="南向支持" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">内容</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../features/index.html">关键特性</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../linux/index.html">使用与配置</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure/index.html">基础设施</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../yocto/index.html">构建系统</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../develop_help/index.html">开发帮助</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">南向支持</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">yocto-meta-openeuler 新增 bsp 层</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">yocto-meta-openeuler 仓 bsp 目录层次说明</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bsp">新增 bsp 层举例说明</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="arm32/index.html">ARM32硬件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="arm64/index.html">ARM64硬件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="riscv/index.html">RISC-V硬件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="x86/index.html">x86硬件</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">南向支持</a> &raquo;</li>
+      <li>yocto-meta-openeuler 新增 bsp 层</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="yocto-meta-openeuler-bsp">
+<span id="add-new-bsp-layer"></span><h1>yocto-meta-openeuler 新增 bsp 层<a class="headerlink" href="#yocto-meta-openeuler-bsp" title="永久链接至标题">¶</a></h1>
+<p>本文档介绍如何在 <code class="docutils literal notranslate"><span class="pre">yocto-meta-openeuler</span></code> 仓库中新增 bsp 适配层</p>
+<section id="id1">
+<h2>yocto-meta-openeuler 仓 bsp 目录层次说明<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<p>bsp 目录下当前共有两个目录: <code class="docutils literal notranslate"><span class="pre">meta-openeuler-bsp</span></code> <code class="docutils literal notranslate"><span class="pre">meta-raspberrypi</span></code></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">meta-raspberrypi</span></code></p></li>
+</ul>
+<blockquote>
+<div><p>该层提供树莓派开发板在硬件上的 recipes 和 conf 文件，例如一些基本固件，只要是跟开发板硬件强相关的 recipes 都可以放在该层中。一般该层由上游社区提供，例如 <code class="docutils literal notranslate"><span class="pre">meta-raspberrypi</span></code> 层在 openeuler 中仅仅只是引入，未对其中的 recipes 和 conf 文件作侵入式的修改，这便于后续升级和维护。</p>
+</div></blockquote>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">meta-openeuler-bsp</span></code></p></li>
+</ul>
+<blockquote>
+<div><p>单独的 bsp 层无法独立在 openeuler 层中很好的工作，作为 bsp 层与 openeuler 层之间的桥梁， <code class="docutils literal notranslate"><span class="pre">meta-openeuler-bsp</span></code> 层提供统一的对bsp层的修改，层中对 recipes 的修改基于yocto工程中 <code class="docutils literal notranslate"><span class="pre">bbappend</span></code> 形式来实现。</p>
+</div></blockquote>
+</section>
+<section id="bsp">
+<h2>新增 bsp 层举例说明<a class="headerlink" href="#bsp" title="永久链接至标题">¶</a></h2>
+<ul class="simple">
+<li><p>新增 <code class="docutils literal notranslate"><span class="pre">meta-template</span></code> 层</p></li>
+</ul>
+<blockquote>
+<div><p>上一节提到过，该层主要是提供与硬件强相关的 recipes 和 conf 文件，如果有上游社区提供完整的层，可以像引入 <code class="docutils literal notranslate"><span class="pre">meta-raspberrypi</span></code> 层一样直接引入。但是如果没有上游社区提供完整的层，就需要从零开始新建该层了，这里提供一种仅仅适配 <code class="docutils literal notranslate"><span class="pre">openeuler</span></code> 层的新建方式，而不是标准 <code class="docutils literal notranslate"><span class="pre">yocto</span></code> 形式的完整的层。</p>
+<p>1.缩减 <code class="docutils literal notranslate"><span class="pre">meta-raspberrypi</span></code> 层</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">tree -L 2 -d .</span>
+<span class="go">.</span>
+<span class="go">├── classes</span>
+<span class="go">├── conf</span>
+<span class="go">│   └── machine</span>
+<span class="go">├── files</span>
+<span class="go">│   └── custom-licenses</span>
+<span class="go">├── recipes-bsp</span>
+<span class="go">│   ├── bootfiles</span>
+<span class="go">│   └── common</span>
+<span class="go">├── recipes-kernel</span>
+<span class="go">│   ├── bluez-firmware-rpidistro</span>
+<span class="go">│   └── linux-firmware-rpidistro</span>
+<span class="go">└── wic</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">classes</span></code>: 存放类文件目录</p>
+<p><code class="docutils literal notranslate"><span class="pre">conf</span></code>: 存放配置文件目录</p>
+<p><code class="docutils literal notranslate"><span class="pre">recipes-bsp</span></code>: 存放启动相关固件的recipes目录</p>
+<p><code class="docutils literal notranslate"><span class="pre">recipes-kernel</span></code>: 存放与内核相关固件recipes目录</p>
+<p><code class="docutils literal notranslate"><span class="pre">wic</span></code>: 暂时不考虑</p>
+<p>缩减完的 <code class="docutils literal notranslate"><span class="pre">meta-raspberrypi</span></code> 层同样可以支撑编译生成树莓派sd卡镜像，这就说明这是 <code class="docutils literal notranslate"><span class="pre">meta-raspberrypi</span></code> 层的最小集合，因此可以仿照这个最小集合来新增 bsp 层。</p>
+<p>2.最小集合分析</p>
+<p><code class="docutils literal notranslate"><span class="pre">classes</span></code> 和 <code class="docutils literal notranslate"><span class="pre">recipes-bsp</span></code> 目录</p>
+<p>首先，树莓派主要启动方式是通过把镜像烧录到sd卡中来启动，这就需要在 yocto 工程中生成可供烧录至sd卡的镜像， <code class="docutils literal notranslate"><span class="pre">meta-raspberrypi</span></code> 层中提供了 <code class="docutils literal notranslate"><span class="pre">classes/sdcard_image-rpi.bbclass</span></code> 这样一个类文件来实现(也可以看作是一个制作脚本)。脚本中的实现也不复杂，主要是构建 boot.img 文件并写入/boot分区，把 rootfs 文件写入/root分区，其中 boot.img 中会包含dtb，cmdline，config，kernel，启动固件等内容，这些内容怎么获取，最终是什么样的形式，是由 <code class="docutils literal notranslate"><span class="pre">recipes-bsp/bootfiles/</span></code> 目录中对应的 recipes 来决定的， <code class="docutils literal notranslate"><span class="pre">sdcard_image-rpi.bbclass</span></code> 只负责将最终产物搬移至 boot.img 中。这也就是 <code class="docutils literal notranslate"><span class="pre">classes</span></code> 和 <code class="docutils literal notranslate"><span class="pre">recipes-bsp</span></code> 中主要组成部分，逻辑是 <code class="docutils literal notranslate"><span class="pre">classes/sdcard_image-rpi.bbclass</span></code> 镜像生成脚本依赖 <code class="docutils literal notranslate"><span class="pre">recipes-bsp/bootfiles/</span></code> 中启动相关recipes的产物。</p>
+<div class="admonition attention">
+<p class="admonition-title">注意</p>
+<p>具体怎么组织文件内容，以及最终镜像的产物由开发板对应的启动方式来确定，这里只以树莓派为例。</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">conf</span></code> 目录</p>
+<p>关于层的一些配置 <code class="docutils literal notranslate"><span class="pre">layer.conf</span></code> 是必须的，里面定义了层配置。 <code class="docutils literal notranslate"><span class="pre">machine/xxxxx.conf</span></code> 也是必须的，可以参考章节 <a class="reference internal" href="../yocto/development.html#yocto-development"><span class="std std-ref">构建系统/yocto开发/如何定制添加layer</span></a></p>
+<p><code class="docutils literal notranslate"><span class="pre">recipes-kernel</span></code> 目录</p>
+<p>与 kernel 相关的固件 recipes，以树莓派的WI-FI驱动加载为例，内核驱动 brcmfmac.ko 在加载时需要先加载对应的固件，这些固件怎么编译/获取需要在该目录下的 recipes 中定义。</p>
+<p>3.最终极简情况下的 <code class="docutils literal notranslate"><span class="pre">meta-template</span></code> 层结构如下</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">.</span>
+<span class="go">└── conf</span>
+<span class="go">    ├── layer.conf</span>
+<span class="go">    └── machine</span>
+<span class="go">        └── template.conf</span>
+</pre></div>
+</div>
+<p>** layer.conf 文件内容示例 **</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>We have a conf and classes directory, append to BBPATH
+<span class="go">BBPATH .= &quot;:${LAYERDIR}&quot;</span>
+
+<span class="gp"># </span>We have a recipes directory containing .bb and .bbappend files, add to BBFILES
+<span class="go">BBFILES += &quot;${LAYERDIR}/recipes*/*/*.bb \</span>
+<span class="gp">            $</span><span class="o">{</span>LAYERDIR<span class="o">}</span>/recipes*/*/*.bbappend<span class="s2">&quot;</span>
+
+<span class="go">BBFILE_COLLECTIONS += &quot;template&quot;</span>
+<span class="go">BBFILE_PATTERN_template := &quot;^${LAYERDIR}/&quot;</span>
+<span class="go">BBFILE_PRIORITY_template = &quot;10&quot;</span>
+
+<span class="go">LAYERSERIES_COMPAT_template = &quot;hardknott honister&quot;</span>
+</pre></div>
+</div>
+<p>** template.conf 文件内容示例 **</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>must needed, using which file depends on which arch
+<span class="gp"># </span>poky privides some predefined files on different archs
+<span class="gp"># </span>you can look through these files <span class="k">in</span> yocto-poky/meta/conf/machine
+<span class="gp"># </span>or using files privided by meta-openeuler like:
+<span class="gp"># </span>require conf/machine/xxxx.inc
+<span class="go">require conf/machine/include/tune-cortexa72.inc</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">recipes-*</span></code> 的内容是可选的，如果涉及到二次打包镜像，建议像树莓派那样，提供定制化脚本，放在classes目录中，在 <code class="docutils literal notranslate"><span class="pre">conf/machine/template.conf</span></code> 中增加 <code class="docutils literal notranslate"><span class="pre">IMAGE_CLASSES</span> <span class="pre">+=</span> <span class="pre">&quot;xxxxx&quot;</span></code> 使其生效，并增加相应依赖的启动固件的 recipes；如果涉及到其他固件，也可以添加相应的 recipes。</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>修改 <code class="docutils literal notranslate"><span class="pre">meta-openeuler-bsp</span></code> 层</p></li>
+</ul>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>新增了 <code class="docutils literal notranslate"><span class="pre">meta-template</span></code> 层后，需要在 <code class="docutils literal notranslate"><span class="pre">meta-openeuler-bsp</span></code> 层中使其生效。修改 <code class="docutils literal notranslate"><span class="pre">meta-openeuler-bsp/conf/layer.conf</span></code> 文件即可：</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">template:${LAYERDIR}/template/*/*/*.bb \</span>
+<span class="go">template:${LAYERDIR}/template/*/*/*.bbappend \</span>
+
+<span class="go">BBPATH_append =. &quot;:${LAYERDIR}/template&quot;</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>新增 <code class="docutils literal notranslate"><span class="pre">template</span></code> 目录</p></li>
+</ol>
+<p>目录的最小结构如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">.</span>
+<span class="go">├── recipes-core</span>
+<span class="go">│   └── images</span>
+<span class="go">│       └── template.inc</span>
+<span class="go">└── recipes-kernel</span>
+<span class="go">    └── linux</span>
+<span class="go">        └── linux-openeuler.bbappend</span>
+</pre></div>
+</div>
+<p>该目录主要是提供针对 openeuler 层的适配操作，比如新增 bsp 所开启/关闭的内核选项与默认的不一样，就可以通过 <code class="docutils literal notranslate"><span class="pre">linux-openeuler.bbappend</span></code> 来修改。 <code class="docutils literal notranslate"><span class="pre">template.inc</span></code>  文件是必须存在的，可以为空，也可以做一些与 images 相关的适配操作。其他对 yocto 工程中任何 recipes 和 task 的修改，都可以通过该目录下来实现。</p>
+<div class="admonition attention">
+<p class="admonition-title">注意</p>
+<p>新增其他 recipes 可以在 <code class="docutils literal notranslate"><span class="pre">packagegroup-*.bbappend</span></code> 添加使其生效</p>
+</div>
+</div></blockquote>
+<ul class="simple">
+<li><p>修改 <code class="docutils literal notranslate"><span class="pre">compile.sh</span></code> 脚本</p></li>
+</ul>
+<blockquote>
+<div><p>在 <code class="docutils literal notranslate"><span class="pre">get_build_info</span></code> 函数中使能新增bsp的machine支持</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;template&quot;</span><span class="p">)</span>
+    <span class="n">MACHINE</span><span class="o">=</span><span class="s2">&quot;template&quot;</span>
+    <span class="p">;;</span>
+</pre></div>
+</div>
+<p>并设置toolchain的路径(这里以arrch64为例，也可以在compile.sh的参数解析中新增)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;qemu-aarch64&quot;</span> <span class="o">|</span> <span class="s2">&quot;raspberrypi4-64&quot;</span> <span class="o">|</span> <span class="s2">&quot;template&quot;</span><span class="p">)</span>
+<span class="n">EXTERNAL_TOOLCHAIN_DIR</span><span class="o">=</span><span class="s2">&quot;EXTERNAL_TOOLCHAIN_aarch64&quot;</span><span class="p">;;</span>
+</pre></div>
+</div>
+<p>在 <code class="docutils literal notranslate"><span class="pre">set_env</span></code> 函数中新增 <code class="docutils literal notranslate"><span class="pre">meta-template</span></code> 层</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>if echo &quot;$MACHINE&quot; | grep -q &quot;template&quot;;then
+    grep &quot;meta-bsp-template&quot; conf/bblayers.conf |grep -qv &quot;^[[:space:]]*#&quot; || sed -i &quot;/\/meta-openeuler /a \  &quot;${SRC_DIR}&quot;/yocto-meta-openeuler/bsp/meta-bsp-template \\\\&quot; conf/bblayers.conf
+fi
+</pre></div>
+</div>
+<p>至此，可以通过 <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">compile.sh</span> <span class="pre">template</span> <span class="pre">/path/to/build/dir</span></code> 初始化 yocto 工程，使用 <code class="docutils literal notranslate"><span class="pre">bitbake</span> <span class="pre">openeuler-image</span></code> 生成镜像了。</p>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="南向支持" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="arm32/index.html" class="btn btn-neutral float-right" title="ARM32硬件" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2022, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-23.03
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../master/bsp/add_new_bsp_layer.html">master</a></dd>
+      <dd><a href="../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="add_new_bsp_layer.html">openEuler-23.03</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
