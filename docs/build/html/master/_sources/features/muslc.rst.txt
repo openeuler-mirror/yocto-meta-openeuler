@@ -52,21 +52,15 @@ qemu镜像的构建
 
 .. code-block:: console
 
-   oebuild generate -p aarch64-std -t /path/to/clang-llvm-15.0.3 -f musl
-
-键入 ``oebuild bitbake`` 进入容器环境后，拷贝musl-arm64架构GCC库至编译器目录
-
-``/usr1/openeuler/native_gcc/`` 为oebuild默认挂载的编译器目录
-
-.. code-block:: console
-
-   sudo cp /path/aarch64-openeuler-linux-musl/* /usr1/openeuler/native_gcc/
+   oebuild generate -p aarch64-std -t /path/to/aarch64-openeuler-linux-musl -f musl
 
 .. attention::
 
    当前在容器里是没有musl-arm64的工具链，需要按照上面工具链的生成指导生成
 
 2.构建命令
+
+键入 ``oebuild bitbake`` 进入容器环境后，执行下面命令即可编译镜像
 
 .. code-block:: console
 
@@ -89,9 +83,9 @@ qemu镜像的构建
 
 .. code-block:: console
 
-   oebuild generate -p raspberrypi4-64 -t /path/to/clang-llvm-15.0.3 -f musl
+   oebuild generate -p raspberrypi4-64 -t /path/to/aarch64-openeuler-linux-musl -f musl
 
-   sudo cp /path/aarch64-openeuler-linux-musl/* /usr1/openeuler/native_gcc/
+   oebuild bitbake 
 
    bitbake openeuler-image
 
