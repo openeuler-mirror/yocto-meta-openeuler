@@ -214,58 +214,68 @@ oebuild generate -p hi3093 -f openeuler-mcs -d &lt;build_hi3093_mcs&gt;
 <dl>
 <dt>1.镜像启动</dt><dd><ul>
 <li><p><strong>对于树莓派:</strong></p>
-<p>集成构建出来的 openeuler-image-mcs 已经通过 dt-overlay 等方式预留了相关资源，并且默认使用了支持psci的uefi引导固件。因此只需要根据 <a class="reference internal" href="../bsp/arm64/raspberrypi4/uefi.html#raspberrypi4-uefi-guide"><span class="std std-ref">openeuler-image-uefi启动使用指导</span></a> 进行镜像启动，再部署mcs即可。</p>
+<blockquote>
+<div><p>集成构建出来的 openeuler-image-mcs 已经通过 dt-overlay 等方式预留了相关资源，并且默认使用了支持psci的uefi引导固件。因此只需要根据 <a class="reference internal" href="../bsp/arm64/raspberrypi4/uefi.html#raspberrypi4-uefi-guide"><span class="std std-ref">openeuler-image-uefi启动使用指导</span></a> 进行镜像启动，再部署mcs即可。</p>
+</div></blockquote>
 </li>
 <li><p><strong>对于qemu:</strong></p>
-<p>需要准备一份dtb文件，dtb文件的制作可参考 <a class="reference external" href="https://gitee.com/openeuler/mcs#%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E">配置dts预留出mcs_mem</a> ，并通过以下命令启动qemu：</p>
+<blockquote>
+<div><p>需要准备一份dtb文件，dtb文件的制作可参考 <a class="reference external" href="https://gitee.com/openeuler/mcs#%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E">配置dts预留出mcs_mem</a> ，并通过以下命令启动qemu：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>qemu-system-aarch64 -M virt,gic-version<span class="o">=</span><span class="m">3</span> -m 1G -cpu cortex-a57 -nographic -append <span class="s1">&#39;maxcpus=3&#39;</span> -smp <span class="m">4</span> -kernel zImage -initrd *.rootfs.cpio.gz -dtb qemu_mcs.dtb
 </pre></div>
 </div>
+</div></blockquote>
 </li>
 <li><p><strong>对于ok3568:</strong></p>
-<p>已经通过条件判断的形式把预留内存加入了设备树，构建出来即可使用。</p>
+<blockquote>
+<div><p>已经通过条件判断的形式把预留内存加入了设备树，构建出来即可使用。</p>
+</div></blockquote>
 </li>
 <li><p><strong>对于hi3093:</strong></p>
-<p>已经通过条件判断的形式把预留内存加入了设备树，构建出来即可使用。</p>
+<blockquote>
+<div><p>hi3093需要在boot以后限制maxcpus=3预留出一个cpu跑uniproton</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>使用在ctrl+b进入uboot，并限制启动的cpu数量
+<span class="go">setenv bootargs &quot;${bootargs} maxcpus=3&quot;</span>
+</pre></div>
+</div>
+</div></blockquote>
 </li>
 </ul>
 </dd>
 <dt>2.部署mcs</dt><dd><ul>
 <li><p><strong>step1: 调整内核打印等级并插入内核模块</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>为了不影响shell的使用，先屏蔽内核打印：
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>为了不影响shell的使用，先屏蔽内核打印：
 <span class="gp">$ </span><span class="nb">echo</span> <span class="s2">&quot;1 4 1 7&quot;</span> &gt; /proc/sys/kernel/printk
 
 <span class="gp"># </span>插入内核模块
 <span class="gp">$ </span>modprobe mcs_km.ko
 
-<span class="gp">#</span>备注：ok3568与hi3093已经实现了开机自动加载内核模块，无需重复此步骤
+<span class="gp"># </span>备注：ok3568与hi3093已经实现了开机自动加载内核模块，无需重复此步骤
 </pre></div>
 </div>
 <p>插入内核模块后，可以通过 <cite>cat /proc/iomem</cite> 查看预留出来的 mcs_mem，如：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-aarch64 ~ # cat /proc/iomem</span>
 <span class="go">...</span>
 <span class="go">70000000-7fffffff : reserved</span>
-<span class="go">  70000000-7fffffff : mcs_mem</span>
+<span class="go">70000000-7fffffff : mcs_mem</span>
 <span class="go">...</span>
 </pre></div>
 </div>
 <p>若mcs_km.ko插入失败，可以通过dmesg看到对应的失败日志，可能的原因有：1.使用的交叉工具链与内核版本不匹配；2.未预留内存资源；3.使用的bios不支持psci</p>
+</div></blockquote>
 </li>
 <li><p><strong>step2: 运行rpmsg_main程序，启动client os</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>在树莓派4B/qemu上拉起zephyr
-<span class="gp">$ </span>rpmsg_main -c <span class="o">[</span>cpu_id<span class="o">]</span> -t <span class="o">[</span>target_binfile<span class="o">]</span> -a <span class="o">[</span>target_binaddress<span class="o">]</span>
+<blockquote>
+<div><ul>
+<li><p><strong>qemu-arm64 和 RPI4：</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>rpmsg_main -c <span class="o">[</span>cpu_id<span class="o">]</span> -t <span class="o">[</span>target_binfile<span class="o">]</span> -a <span class="o">[</span>target_binaddress<span class="o">]</span>
 <span class="go">eg:</span>
 <span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /firmware/zephyr-image.bin -a 0x7a000000
-
-<span class="gp">#</span>在ok3568上拉起rt-thread
-<span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /firmware/rtthread-ok3568.bin -a 0x7a000000
-
-<span class="gp">#</span>在hi3093上拉起uniproton
-<span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /firmware/Uniproton_hi3093.bin -a 0x93000000
 </pre></div>
 </div>
 <p>若rpmsg_main成功运行，会有如下打印：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-aarch64 ~ # rpmsg_main -c 3 -t /firmware/zephyr-image.bin -a 0x7a000000</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>rpmsg_main -c <span class="m">3</span> -t /firmware/zephyr-image.bin -a 0x7a000000
 <span class="go">...</span>
 <span class="go">start client os</span>
 <span class="go">...</span>
@@ -275,36 +285,74 @@ oebuild generate -p hi3093 -f openeuler-mcs -d &lt;build_hi3093_mcs&gt;
 </pre></div>
 </div>
 <p>此时， <strong>按ctrl-c可以通知client os下线并退出rpmsg_main</strong> ，下线后支持重复拉起。
-也可以根据打印提示，通过 /dev/pts/1 与 client os 进行 shell 交互，例如：</p>
-<p>树莓派4B/qemu：
-.. code-block:: console</p>
-<blockquote>
-<div><p># 新建一个terminal，登录到运行环境
-$ ssh <a class="reference external" href="mailto:user&#37;&#52;&#48;ip">user<span>&#64;</span>ip</a></p>
-<p># 连接pts设备
-$ screen /dev/pts/1</p>
-<p># 敲回车后，可以打开client os的shell，对client os下发命令，例如
-uart:~$ help
-uart:~$ kernel version</p>
-</div></blockquote>
-<p>ok3568：
-.. code-block:: console</p>
-<blockquote>
-<div><p># 新建一个terminal，登录到运行环境
-$ ssh <a class="reference external" href="mailto:user&#37;&#52;&#48;ip">user<span>&#64;</span>ip</a></p>
-<p># 连接pts设备
-$ screen /dev/pts/1</p>
-<p># 敲回车后，可以打开client os的shell，对client os下发命令，例如
-msh /$</p>
-</div></blockquote>
-<p>hi3093暂不支持rtos下线。
-.. code-block:: console</p>
-<blockquote>
-<div><p># 新建一个terminal，登录到运行环境
-$ ssh <a class="reference external" href="mailto:user&#37;&#52;&#48;ip">user<span>&#64;</span>ip</a></p>
-<p># 连接pts设备
-$ screen /dev/pts/2</p>
-<p># 敲回车后，可以打开client os的shell，回车查看uniproton输出信息</p>
+也可以根据打印提示（ <code class="docutils literal notranslate"><span class="pre">pls</span> <span class="pre">open</span> <span class="pre">/dev/pts/1</span> <span class="pre">to</span> <span class="pre">talk</span> <span class="pre">with</span> <span class="pre">client</span> <span class="pre">OS</span></code> ），
+通过 /dev/pts/1 与 client os 进行 shell 交互，例如：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>新建一个terminal，登录到运行环境
+<span class="gp">$ </span>ssh user@ip
+
+<span class="gp"># </span>连接pts设备
+<span class="gp">$ </span>screen /dev/pts/1
+
+<span class="gp"># </span>敲回车后，可以打开client os的shell，对client os下发命令，例如
+<span class="gp">uart:~$ </span><span class="nb">help</span>
+<span class="gp">uart:~$ </span>kernel version
+
+<span class="gp">#</span>在ok3568上拉起rt-thread
+<span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /firmware/rtthread-ok3568.bin -a 0x7a000000
+
+<span class="gp">#</span>在hi3093上拉起uniproton
+<span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /firmware/Uniproton_hi3093.bin -a 0x93000000
+</pre></div>
+</div>
+</li>
+<li><p><strong>ok3568 开发板：</strong></p>
+<p>ok3568支持通过mcs拉起 RT-Thread，步骤如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>拉起RTT；
+<span class="go">ok3568 ~ # ./rpmsg_main -c 3 -t /firmware/rtthread-ok3568.bin -a 0x7a000000</span>
+<span class="go">...</span>
+<span class="go">start client os</span>
+<span class="go">...</span>
+</pre></div>
+</div>
+<p>ok3568支持通过输入功能编号进行交互、下线、重新拉起:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>输入h查看用法
+<span class="go">h</span>
+<span class="go">please input number:&lt;1-8&gt;</span>
+<span class="go">1. test echo</span>
+<span class="go">2. send matrix</span>
+<span class="go">3. start pty</span>
+<span class="go">4. close pty</span>
+<span class="go">5. shutdown clientOS</span>
+<span class="go">6. start clientOS</span>
+<span class="go">7. test ping</span>
+<span class="go">8. test flood-ping</span>
+<span class="go">9. exit</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>hi3093 开发板：</strong></p>
+<p>hi3093目前支持 uniproton 的拉起，查看串口输出。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>拉起 uniproton
+<span class="gp">$ </span>./rpmsg_main -c <span class="m">3</span> -t /firmware/hi3093_ut.bin -a 0x93000000 <span class="p">&amp;</span>
+
+<span class="go">...</span>
+<span class="go">start client os</span>
+<span class="go">...</span>
+<span class="go">pls open /dev/pts/1 to talk with client OS</span>
+<span class="go">pty_thread for console is runnning</span>
+<span class="go">...</span>
+</pre></div>
+</div>
+<p>此时， 根据打印提示（ <code class="docutils literal notranslate"><span class="pre">pls</span> <span class="pre">open</span> <span class="pre">/dev/pts/1</span> <span class="pre">to</span> <span class="pre">talk</span> <span class="pre">with</span> <span class="pre">client</span> <span class="pre">OS</span></code> ），
+通过 /dev/pts/1 可以与 uniproton 进行交互，例如：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>连接pts设备
+<span class="gp">$ </span>screen /dev/pts/1
+
+<span class="gp"># </span>敲回车后，可以查看uniproton输出信息
+</pre></div>
+</div>
+</li>
+</ul>
 </div></blockquote>
 </li>
 </ul>

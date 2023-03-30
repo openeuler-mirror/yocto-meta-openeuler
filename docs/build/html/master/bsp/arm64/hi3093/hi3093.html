@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HI3093板卡镜像构建与使用 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/translations.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" />
+    <link rel="next" title="QEMU Virt Cortex-A57" href="../qemu_virt_cortex_a57/index.html" />
+    <link rel="prev" title="hi3093" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">内容</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../features/index.html">关键特性</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../linux/index.html">使用与配置</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../infrastructure/index.html">基础设施</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../yocto/index.html">构建系统</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../develop_help/index.html">开发帮助</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">南向支持</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../add_new_bsp_layer.html">yocto-meta-openeuler 新增 bsp 层</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../arm32/index.html">ARM32硬件</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">ARM64硬件</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">hi3093</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">HI3093板卡镜像构建与使用</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../qemu_virt_cortex_a57/index.html">QEMU Virt Cortex-A57</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../raspberrypi4/index.html">树莓派4B</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rk3568/index.html">RK3568</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../riscv/index.html">RISC-V硬件</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../x86/index.html">x86硬件</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">南向支持</a> &raquo;</li>
+          <li><a href="../index.html">ARM64硬件</a> &raquo;</li>
+          <li><a href="index.html">hi3093</a> &raquo;</li>
+      <li>HI3093板卡镜像构建与使用</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="hi3093">
+<span id="board-hi3093-build"></span><h1>HI3093板卡镜像构建与使用<a class="headerlink" href="#hi3093" title="永久链接至标题">¶</a></h1>
+<p>本章主要介绍openEuler Embedded中HI3093系列板卡的构建，使用和特性介绍。</p>
+<section id="id1">
+<h2>HI3093镜像构建指导<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<ul>
+<li><p>参照 <a class="reference internal" href="../../../yocto/oebuild.html#openeuler-embedded-oebuild"><span class="std std-ref">基于 oebuild 快速构建</span></a> 完成oebuild安装，并详细了解构建过程</p></li>
+<li><p>依次执行以下命令完成构建</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>生成hi3093配置文件
+<span class="go">oebuild generate -p hi3093 -d hi3093</span>
+
+<span class="gp"># </span>进入构建交互终端
+<span class="go">oebuild bitbake</span>
+
+<span class="gp"># </span>构建镜像
+<span class="go">bitbake openeuler-image</span>
+
+<span class="gp"># </span>构建sdk
+<span class="go">bitbake openeuler-image -c populate_sdk</span>
+</pre></div>
+</div>
+</li>
+<li><p>二进制介绍：</p>
+<ol class="arabic simple">
+<li><p>Image: HI3093内核镜像</p></li>
+<li><p>openeuler-glibc-x86_64-openeuler-image-aarch64-hi3093-toolchain-23.03*.sh: SDK工具链</p></li>
+<li><p>uImage: openEuler Embedded 适用HI3093内核镜像</p></li>
+<li><p>openeuler-image-hi3093-*.rootfs.gpio.gz: 适用HI3093根文件系统</p></li>
+</ol>
+</li>
+</ul>
+</section>
+<section id="id2">
+<h2>镜像使用方法<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<blockquote>
+<div><p>烧写前镜像使用</p>
+<ol class="lowerroman simple">
+<li><p>创建挂载目录</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mkdir ${WORKDIR}/rootfs</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="lowerroman simple" start="2">
+<li><p>解压rootfs</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>将根文件系统复制到<span class="si">${</span><span class="nv">WORKDIR</span><span class="si">}</span>/rootfs下
+<span class="go">cp openeuler-image-hi3093-\*.rootfs.cpio.gz ${WORKDIR}/rootfs</span>
+
+<span class="gp"># </span>解压cpio.gz
+<span class="go">gunzip openeuler-image-hi3093-\*.rootfs.cpio.gz</span>
+<span class="go">cpio -idmv &lt; openeuler-image-hi3093-\*.rootfs.cpio</span>
+</pre></div>
+</div>
+<p>解压完成后，可以查看hi3093根文件系统的文件或者自行添加内容。</p>
+</div></blockquote>
+<ol class="lowerroman simple" start="3">
+<li><p>重新打包备用</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>将根文件系统文件打包为cpio
+<span class="go">find ./* | grep -v openeuler-image-hi3093-\*.rootfs.cpio | cpio -H tar -o &gt; openeuler-image-hi3093.rootfs.cpio</span>
+
+<span class="gp"># </span>压缩为目标格式cpio.gz
+<span class="go">gz openeuler-image-hi3093.rootfs.cpio</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="id3">
+<h2>内核镜像和文件系统烧写方法<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<p>目前文件系统烧录升级仅支持在原有核心板系统上进行。</p>
+<ol class="arabic">
+<li><p>通过网线连接核心板，修改对应的以太网卡地址为192.168.0.10</p></li>
+<li><p>通过rj45转usb使用rs232协议连接核心板，上电启动至uboot阶段，键盘输入ctrl+b，进入uboot命令行</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>往寄存器 0x8740148 写入1，然后核心板会进入重启
+<span class="go">=&gt; reg_wr 0x8740148 1</span>
+</pre></div>
+</div>
+</li>
+<li><p>开机后执行ctrl+b 跳过自启动，进入L1 FW串口，根据0839寄存器前两位的值,例如前两位为6和4，输入
+.. code-block:: console</p>
+<blockquote>
+<div><p># 打开固件更新
+fw_upgrade 2 6 4</p>
+<p># 继续在 L1FW 执行重启
+reboot 0 3</p>
+</div></blockquote>
+</li>
+<li><p>重启以后进入原生系统，输入账户及密码并配置网络：
+.. code-block:: console</p>
+<blockquote>
+<div><p># 系统初始化
+sh /hi1711_init.sh</p>
+<p># 配置网络
+ifconfig eth2 192.168.0.11</p>
+</div></blockquote>
+</li>
+<li><p>从host连接到核心板并把uImage、openeuler-image-hi3093.rootfs.cpio.gz、hi3093.dtb拷贝到核心板 /tmp目录下</p></li>
+<li><p>关闭writeProtect
+.. code-block:: console</p>
+<blockquote>
+<div><p># 进入bmcdfx
+bmcdfx</p>
+<p># 关闭456分区写保护
+emmc disable writeProtect 4
+emmc disable writeProtect 5
+emmc disable writeProtect 6</p>
+<p># 输入q退出
+q</p>
+</div></blockquote>
+</li>
+<li><p>替换升级固件
+.. code-block:: console</p>
+<blockquote>
+<div><p># 重新挂载
+mount -o remount rw /</p>
+<p># 替换boot下固件
+rm /boot/* ;cd /boot/ ;cp /tmp/* ./ ;chmod 777 *</p>
+<p># 强制写入硬盘并重启
+sync ;reboot</p>
+</div></blockquote>
+</li>
+<li><p>重启后看到hi3093 命令行即成功升级固件。</p></li>
+</ol>
+<blockquote>
+<div><p><strong>目前看门狗、网卡等驱动均未开源，需要请联系海思厂家</strong></p>
+</div></blockquote>
+</section>
+<section id="id4">
+<h2>hi3093镜像特性介绍<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>hi3093硬件特性，参考: <a class="reference external" href="https://www.hisilicon.com/cn/products/Kunpeng/BMC/Hi1711">HI1711 介绍</a></p></li>
+</ol>
+<p>目前已使能串口设备，可以访问uart，其他硬件特性目前支持:GPU、TF卡、以太网卡、USB Host、SPI、VGA、看门狗等驱动均未开源，需要请联系厂家。</p>
+<ol class="arabic simple" start="2">
+<li><p>支持百级嵌入式软件包，见软件包功能列表。</p></li>
+<li><p>支持部署rt实时内核。</p></li>
+<li><p>支持Uniproton混合部署功能。</p></li>
+</ol>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="hi3093" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../qemu_virt_cortex_a57/index.html" class="btn btn-neutral float-right" title="QEMU Virt Cortex-A57" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2022, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="hi3093.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
