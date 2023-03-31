@@ -6,6 +6,7 @@ import os
 import argparse
 import hashlib
 import tarfile
+from werkzeug import secure_filename
 
 current_path = os.path.dirname(__file__)
 src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
@@ -66,7 +67,7 @@ def search_specfile(spec):
 
 def search_package(spec_dir):
     repo_path = os.path.dirname(spec_dir)
-    f = open(spec_dir)
+    f = open(secure_filename(repo_path))
     count = -1
     for count, line in enumerate(f.readlines()):
         count += 1
@@ -136,7 +137,7 @@ def notes_bb_dir(bb_dir):
 
 
 def read_name(spec_dir):
-    f = open(spec_dir)
+    f = open(secure_filename(spec_dir))
     count = -1
     for count, line in enumerate(f.readlines()):
         count += 1
@@ -153,7 +154,7 @@ def read_repo_name(spec_dir):
 
 
 def read_packageversion(spec_dir,package_dir):
-    f = open(spec_dir)
+    f = open(secure_filename(spec_dir))
     count = -1
     for count, line in enumerate(f.readlines()):
         count += 1
@@ -171,6 +172,7 @@ def read_packageversion(spec_dir,package_dir):
 
 def read_oldPV(pv,bb_dir):
     if pv == "git":
+        bb_dir = secure_filename(bb_dir)
         f = open(bb_dir)
         count = -1
         for count, line in enumerate(f.readlines()):
@@ -185,7 +187,7 @@ def update_PV(packageversion,bbversion):
 
 
 def read_patch(spec_dir):
-    file = open(spec_dir)
+    file = open(secure_filename(spec_dir))
     lines = file.readlines()
     result = []
     for i in lines:
@@ -210,7 +212,7 @@ def read_patch(spec_dir):
 def read_original_source(bb_dir):
     global remote_url
     remote_url = None
-    f = open(bb_dir)
+    f = open(secure_filename(bb_dir))
     count = -1
     for count, line in enumerate(f.readlines()):
         count += 1
@@ -231,7 +233,7 @@ def read_local_source(package_dir):
 
     
 def encrypt(fpath: str, algorithm: str) -> str:
-    with open(fpath, 'rb') as f:
+    with open(secure_filename(fpath), 'rb') as f:
         hash = hashlib.new(algorithm)
         for chunk in iter(lambda: f.read(2**20), b''):
             hash.update(chunk)
@@ -239,7 +241,7 @@ def encrypt(fpath: str, algorithm: str) -> str:
 
 
 def delete_None_rows(filename):
-    with open(filename,'r') as r:
+    with open(secure_filename(filename),'r') as r:
         lines=r.readlines()
     with open(filename,'w') as w:
         for l in lines:
@@ -248,10 +250,10 @@ def delete_None_rows(filename):
 
 
 def clearBlankLine(filename):
-    with open(filename,'r') as r:
+    with open(secure_filename(filename),'r') as r:
         lines=r.readlines()
         filecount = len(lines)
-    with open(filename,'w') as w:
+    with open(secure_filename(filename),'w') as w:
         for count, l in enumerate(lines):
             if count+1 == filecount:
                 break
@@ -384,7 +386,7 @@ class BuildData:
         if not os.path.exists(bbappend_path):os.makedirs(bbappend_path)
         filePath = bbappend_path+'/'+bpn+'_%.bbappend'
         filePath = inspect_existing_files(filePath)
-        class_file = open(filePath, 'w')
+        class_file = open(secure_filename(filePath), 'w')
         class_file.writelines(mycode)
         class_file.close()
         delete_None_rows(filePath)
