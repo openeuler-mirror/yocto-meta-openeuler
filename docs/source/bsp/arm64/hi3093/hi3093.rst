@@ -1,91 +1,85 @@
-.. _board_HI3093_build:
+Hi3093 镜像构建与使用
+#####################
 
-========================================
-HI3093板卡镜像构建与使用
-========================================
+本章主要介绍openEuler Embedded中HI3093系列板卡的镜像构建，使用和特性介绍。
 
-本章主要介绍openEuler Embedded中HI3093系列板卡的构建，使用和特性介绍。
 
 HI3093镜像构建指导
-=====================
+==================
 
-- 参照 :ref:`openeuler_embedded_oebuild` 完成oebuild安装，并详细了解构建过程
+1. 参照 :ref:`openeuler_embedded_oebuild` 完成oebuild安装，并详细了解构建过程
 
-- 依次执行以下命令完成构建
-
-  .. code-block:: console
-
-    # 生成hi3093配置文件
-    oebuild generate -p hi3093 -d hi3093
-
-    # 进入构建交互终端
-    oebuild bitbake
-
-    # 构建镜像
-    bitbake openeuler-image
-
-    # 构建sdk
-    bitbake openeuler-image -c populate_sdk
-
-- 二进制介绍：
-
-  1. Image: HI3093内核镜像
-
-  2. openeuler-glibc-x86_64-openeuler-image-aarch64-hi3093-toolchain-23.03\*.sh: SDK工具链
-
-  3. uImage: openEuler Embedded 适用HI3093内核镜像
-
-  4. openeuler-image-hi3093-\*.rootfs.gpio.gz: 适用HI3093根文件系统
-
-镜像使用方法
-=====================
-
-  烧写前镜像使用
-
-  i. 创建挂载目录
+2. 依次执行以下命令完成构建
 
    .. code-block:: console
 
-     mkdir ${WORKDIR}/rootfs
+      # 生成hi3093配置文件
+      oebuild generate -p hi3093 -d hi3093
 
-  ii. 解压rootfs
+      # 进入构建交互终端
+      oebuild bitbake
 
-   .. code-block:: console
+      # 构建镜像
+      bitbake openeuler-image
 
-     # 将根文件系统复制到${WORKDIR}/rootfs下
-     cp openeuler-image-hi3093-\*.rootfs.cpio.gz ${WORKDIR}/rootfs
+      # 构建sdk
+      bitbake openeuler-image -c populate_sdk
 
-     # 解压cpio.gz
-     gunzip openeuler-image-hi3093-\*.rootfs.cpio.gz
-     cpio -idmv < openeuler-image-hi3093-\*.rootfs.cpio
+   二进制介绍：
 
-   解压完成后，可以查看hi3093根文件系统的文件或者自行添加内容。
+   - ``openeuler-glibc-x86_64-openeuler-image-aarch64-hi3093-toolchain-23.03*.sh``: SDK工具链
 
-  iii. 重新打包备用
+   - ``uImage``: 适用于 HI3093 的 openEuler 内核镜像
 
-   .. code-block:: console
+   - ``openeuler-image-hi3093-*.rootfs.gpio.gz``: 适用HI3093的根文件系统
+
+.. note::
+   构建软实时镜像，混合部署镜像请参考对应特性章节，在oebuild初始化时通过 ``-f features`` 添加对应的 feature。
+
+____
+
+根文件系统解压方法
+==================
+
+若希望对根文件系统进行修改，例如添加新开发的驱动或软件，可以通过以下步骤解开文件系统，进行修改后重新打包：
+
+1. 解压 rootfs
+
+   .. code-block:: shell
+
+      # 将根文件系统解压到 rootfs 中
+      $ mkdir ${WORKDIR}/rootfs
+      $ cd ${WORKDIR}/rootfs
+      $ zcat <...>/openeuler-image-hi3093-*.rootfs.cpio.gz | cpio -dim
+
+   解压完成后，可以在 rootfs 目录下查看hi3093根文件系统的文件或者自行添加内容。
+
+2. 重新打包
+
+   .. code-block:: shell
 
      # 将根文件系统文件打包为cpio
-     find ./* | grep -v openeuler-image-hi3093-\*.rootfs.cpio | cpio -H tar -o > openeuler-image-hi3093.rootfs.cpio
+     $ cd ${WORKDIR}/rootfs
+     $ find . | cpio -H newc -o --quiet | gzip -c --quiet > ../openeuler-image-hi3093.cpio.gz
 
-     # 压缩为目标格式cpio.gz
-     gz openeuler-image-hi3093.rootfs.cpio
+____
 
-内核镜像和文件系统烧写方法
-===========================
+Hi3093 镜像烧写方法
+====================
 
 目前文件系统烧录升级仅支持在原有核心板系统上进行。
 
-1. 通过网线连接核心板，修改对应的以太网卡地址为192.168.0.10
+1. 通过网线连接核心板，修改对应的以太网卡地址为 ``192.168.0.10``
 
-2. 通过rj45转usb使用rs232协议连接核心板，上电启动至uboot阶段，键盘输入ctrl+b，进入uboot命令行
+2. 通过rj45转usb线连接核心板，上电启动至uboot阶段，键盘输入 ``<ctrl> + b`` ，进入uboot命令行
 
    .. code-block:: console
 
      # 往寄存器 0x8740148 写入1，然后核心板会进入重启
      => reg_wr 0x8740148 1
 
-3. 开机后执行ctrl+b 跳过自启动，进入L1 FW串口，根据0839寄存器前两位的值,例如前两位为6和4，输入
+3. 开机后执行 ``ctrl+b`` ，进入L1 FW串口，根据0839寄存器前两位的值,例如前两位为6和4，输入
+
    .. code-block:: console
 
      # 打开固件更新
@@ -95,6 +89,7 @@ HI3093镜像构建指导
      reboot 0 3
 
 4. 重启以后进入原生系统，输入账户及密码并配置网络：
+
    .. code-block:: console
 
      # 系统初始化
@@ -103,44 +98,53 @@ HI3093镜像构建指导
      # 配置网络
      ifconfig eth2 192.168.0.11
 
-5. 从host连接到核心板并把uImage、openeuler-image-hi3093.rootfs.cpio.gz、hi3093.dtb拷贝到核心板 /tmp目录下
+5. 从host连接到核心板并把部署件上传到核心板/tmp目录下：
 
-6. 关闭writeProtect
    .. code-block:: console
 
-     # 进入bmcdfx
-     bmcdfx
+      scp uImage openeuler-image-hi3093.rootfs.cpio.gz hi3093.dtb root@192.168.0.11:/tmp/
 
-     # 关闭456分区写保护
-     emmc disable writeProtect 4
-     emmc disable writeProtect 5
-     emmc disable writeProtect 6
+6. 关闭 writeProtect
 
-     # 输入q退出
-     q
+   .. code-block:: console
 
-7. 替换升级固件
+      # 进入bmcdfx
+      bmcdfx
+
+      # 关闭456分区写保护
+      emmc disable writeProtect 4
+      emmc disable writeProtect 5
+      emmc disable writeProtect 6
+
+      # 输入q退出
+      q
+
+7. 替换升级镜像
+
    .. code-block:: console
 
      # 重新挂载
      mount -o remount rw /
 
-     # 替换boot下固件
+     # 替换boot下的部署件
      rm /boot/* ;cd /boot/ ;cp /tmp/* ./ ;chmod 777 *
 
      # 强制写入硬盘并重启
      sync ;reboot
 
-8. 重启后看到hi3093 命令行即成功升级固件。
+8. 重启后看到 hi3093 命令行即成功升级固件。
 
-  **目前看门狗、网卡等驱动均未开源，需要请联系海思厂家**
+.. note::
+   目前看门狗、网卡等驱动均未开源，需要请联系海思厂家。
+
+____
 
 hi3093镜像特性介绍
-==========================
+====================
 
    1. hi3093硬件特性，参考: `HI1711 介绍 <https://www.hisilicon.com/cn/products/Kunpeng/BMC/Hi1711>`_
 
-   目前已使能串口设备，可以访问uart，其他硬件特性目前支持:GPU、TF卡、以太网卡、USB Host、SPI、VGA、看门狗等驱动均未开源，需要请联系厂家。
+      目前已使能串口设备，可以访问uart，其他硬件特性目前支持:GPU、TF卡、以太网卡、USB Host、SPI、VGA、看门狗等驱动均未开源，需要请联系厂家。
 
    2. 支持百级嵌入式软件包，见软件包功能列表。
 
