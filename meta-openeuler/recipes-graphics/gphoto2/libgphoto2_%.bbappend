@@ -24,3 +24,9 @@ do_configure:prepend() {
         cp -f ${OPENEULER_NATIVESDK_SYSROOT}/usr/share/gettext/po/Makefile.in.in ${STAGING_DATADIR_NATIVE}/gettext/po
     fi
 }
+
+# Delete old m4 macros, so autoreconf can repopulate it.
+do_configure:prepend() {
+    rm -rf ${S}/libgphoto2_port/auto-m4/*
+    rm -rf ${S}/auto-m4/*
+}
