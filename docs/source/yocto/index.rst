@@ -12,6 +12,7 @@ openEuler Embeddedd的核心构建系统是基于Yocto，但又根据自身的�
 .. toctree::
    :maxdepth: 1
 
+   getting_started.rst
    oebuild.rst
    overview.rst
    meta-openeuler.rst
