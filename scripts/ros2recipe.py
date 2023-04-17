@@ -3,6 +3,7 @@
 import sys
 import hashlib
 import xml.etree.ElementTree as ET
+from defusedxml.ElementTree import parse
 
 try:
     xml_path = sys.argv[1]
@@ -78,7 +79,7 @@ def generate_multiline_variable(var, container, sort=True, key=None):
             [item + ' \\' for item in container]) + '\n"\n'
     return assignment + expression
 
-tree = ET.parse(xml_path)
+tree = parse(xml_path)
 package_root = tree.getroot()
 
 for info in package_root.findall('name'):
