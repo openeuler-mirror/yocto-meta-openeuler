@@ -88,15 +88,14 @@ python do_openeuler_fetch() {
 
     # init repo in the repo_dir
     def init_repo(repo_dir, repo_url, repo_branch):
-        repo = git.Repo.init(repo_dir)
-        with repo.config_writer() as wr:
-            wr.set_value('http', 'sslverify', 'false').release()
+        repo = init_repo_dir(repo_dir)
         try:
             # if repo has finished git init and then do git pull
             if repo.remote().url != repo_url:
                 repo.remote().set_url(repo_dir)
         except ValueError:
             git.Remote.add(repo = repo, name = "origin", url = repo_url)
+
         repo.remote().fetch()
         repo.git.checkout(repo_branch)
         repo.git.merge()
@@ -124,7 +123,15 @@ python do_openeuler_fetch() {
 
     lf = bb.utils.lockfile(lock_file, block=True)
     try:
-        init_repo(repo_dir = repo_dir, repo_url = repo_url, repo_branch = repoBranch)
+        is_manifest = False
+        if os.path.exists(d.getVar("MANIFEST_DIR")):
+            manifest_list = get_manifest(d.getVar("MANIFEST_DIR"))
+            if localName in manifest_list:
+                repo_item = manifest_list[localName]
+                init_manifest_repo(repo_dir = repo_dir, remote_url = repo_item['remote_url'], version = repo_item['version'])
+                is_manifest = True
+        if not is_manifest:
+            init_repo(repo_dir = repo_dir, repo_url = repo_url, repo_branch = repoBranch)
     except GitError:
         # can't use bb.fatal here, because there are the following cases:
         # case1:
@@ -153,6 +160,40 @@ python do_openeuler_fetch() {
         bb.fatal(except_str)
 }
 
+def init_repo_dir(repo_dir):
+    import git
+
+    repo = git.Repo.init(repo_dir)
+    with repo.config_writer() as wr:
+        wr.set_value('http', 'sslverify', 'false').release()
+    return repo
+
+# init repo in repo_dir from manifest file
+def init_manifest_repo(repo_dir, remote_url, version):
+    import git
+    from git import GitCommandError
+
+    repo = init_repo_dir(repo_dir)
+    remote = None
+    for item in repo.remotes:
+        if remote_url == item.url:
+            remote = item
+        else:
+            continue
+    if remote is None:
+        remote_name = "manifest"
+        remote = git.Remote.add(repo = repo, name = remote_name, url = remote_url)
+    try:
+        repo.git.checkout(version)
+    except GitCommandError:
+        remote.fetch(version, depth = 1)
+        repo.git.checkout(version)
+
+def get_manifest(manifest_dir):
+    import yaml
+
+    with open(manifest_dir, 'r' ,encoding="utf-8") as r_f:
+        return yaml.load(r_f.read(), yaml.Loader)['manifest_list']
 # do openeuler fetch at the beginning of do_fetch,
 # it will fetch software packages and its patches and other files
 # from openeuler's gitee repo.
