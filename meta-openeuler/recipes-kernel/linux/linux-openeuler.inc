@@ -39,7 +39,6 @@ python do_fetch() {
     import os
 
     import git
-    from git import GitError
 
     # the do_fetch will not execute if OPENEULER_FETCH is seted to disable
     if d.getVar('OPENEULER_FETCH') == "disable":
@@ -54,7 +53,8 @@ python do_fetch() {
 
     # download openeuler/kernel repo for linux kernel src files
     src_dir = d.getVar("OPENEULER_SP_DIR")
-    kernel_dir = os.path.join(src_dir, "kernel-5.10")
+    kernel_name = "kernel-5.10"
+    kernel_dir = os.path.join(src_dir, kernel_name)
     if not os.path.exists(kernel_dir):
         os.mkdir(kernel_dir)
     lock_file = os.path.join(kernel_dir, "file.lock")
@@ -62,18 +62,20 @@ python do_fetch() {
     kernel_branch = "5.10.0-136.28.0"
 
     lf = bb.utils.lockfile(lock_file, block=True)
-
-    repo = git.Repo.init(kernel_dir)
-    with repo.config_writer() as wr:
-        wr.set_value('http', 'sslverify', 'false').release()
-    repo_url = 'https://gitee.com/openeuler/kernel.git'
-    try:
-        if not repo.remote().exists():
-            git.Remote.add(repo = repo, name = "origin", url = repo_url)
-    except:
-        repo.create_remote('origin', repo_url)
-    repo.remote().fetch(refspec=f"+refs/tags/{kernel_branch}:refs/tags/{kernel_branch}", depth=1)
-    repo.git.checkout(kernel_branch)
+    
+    if os.path.exists(d.getVar("MANIFEST_DIR")):
+        repo = init_repo_dir(kernel_dir)
+        repo_url = 'https://gitee.com/openeuler/kernel.git'
+        try:
+            if not repo.remote().exists():
+                git.Remote.add(repo = repo, name = "origin", url = repo_url)
+        except:
+            repo.create_remote('origin', repo_url)
+        repo.remote().fetch(refspec=f"+refs/tags/{kernel_branch}:refs/tags/{kernel_branch}", depth=1)
+        repo.git.checkout(kernel_branch)
+    else:
+        repo_item = get_manifest(d.getVar("MANIFEST_DIR"))[kernel_name]
+        init_manifest_repo(repo_dir = kernel_dir, remote_url = repo_item['remote_url'], version = repo_item['version'])
 
     bb.utils.unlockfile(lf)
 }
