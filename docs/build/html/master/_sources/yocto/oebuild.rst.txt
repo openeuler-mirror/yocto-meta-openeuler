@@ -421,11 +421,15 @@ manifest相关指令，该指令需要在oebuild工作目录下运行，通过�
 
    oebuild generate -df ...  # 其他参数按需添加
 
-3. 修改compile.yaml文件，在build_in字段下添加如下内容，屏蔽layer层更新：
+3. 修改compile.yaml文件，在build_in字段下添加 ``not_use_repos: true`` ，屏蔽layer层更新，范例如下：
 
 ::
 
-   not_use_repos: true
+   build_in: docker
+   not_use_repos: true  // 添加该内容
+   platform: xxx
+   ...
+
 
 4. 执行bitbake指令，进入交互模式，然后执行\ ``bitbake openeuler-image``\ 进行构建
 
