@@ -6,4 +6,5 @@ WKS_FILE_DEPENDS = ""
 # add ros slam demo for rpi4
 IMAGE_INSTALL += " \
 packagegroup-rosslam \
+packagegroup-roscamera \
 "
