@@ -21,6 +21,10 @@ do_unpack_extra() {
 
 S = "${WORKDIR}/opencv-4.5.2"
 
+# no support of ade package in src-openeuler currently,
+# so remove it from pkgconfig
+PACKAGECONFIG:remove += "gapi"
+
 # ippicv is not enable in src-openuler, so sync the config to our recipes
 EXTRA_OECMAKE:append += " \
     -DWITH_IPP=OFF \
