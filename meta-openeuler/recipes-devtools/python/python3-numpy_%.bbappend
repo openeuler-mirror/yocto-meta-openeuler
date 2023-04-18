@@ -25,3 +25,13 @@ SRC_URI_append += " \
         file://backport-CVE-2021-41495.patch \
         file://backport-CVE-2021-34141.patch \
         "
+
+# It's a workaround:
+# Due to updates to the compiler and C library, we have found that some for loops 
+#   have been optimized with logical issues, resulting in segmentation faults. 
+# Therefore, we are implementing a contingency plan by changing the default 
+#   optimization configuration from O2 to O1
+CXXFLAGS_prepend_class-target = " -O1 "
+CFLAGS_prepend_class-target = " -O1 "
+CXXFLAGS_remove_class-target = "-O2"
+CFLAGS_remove_class-target = "-O2"
