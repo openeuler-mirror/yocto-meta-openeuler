@@ -1,4 +1,4 @@
-.. _bitbake_getting_started:
+.. _yocto_getting_started:
 
 ===================
 Yocto 入门文档
@@ -265,5 +265,5 @@ yocto项目依托于bitbake工具，存在了比较完善的元数据文件，�
 参考文献
 ==================
 
-| bitbake/doc/bitbake-user-manual/bitbake-user-manual-hello.rst
-| bitbake/doc/bitbake-user-manual/bitbake-user-manual-ref-variables.rst
+| poky/bitbake/doc/bitbake-user-manual/bitbake-user-manual-hello.rst
+| poky/bitbake/doc/bitbake-user-manual/bitbake-user-manual-ref-variables.rst
