@@ -124,7 +124,8 @@ python do_openeuler_fetch() {
     lf = bb.utils.lockfile(lock_file, block=True)
     try:
         is_manifest = False
-        if os.path.exists(d.getVar("MANIFEST_DIR")):
+        # determine whether the variable MANIFEST_DIR is None
+        if d.getVar("MANIFEST_DIR") is not None and os.path.exists(d.getVar("MANIFEST_DIR")):
             manifest_list = get_manifest(d.getVar("MANIFEST_DIR"))
             if localName in manifest_list:
                 repo_item = manifest_list[localName]

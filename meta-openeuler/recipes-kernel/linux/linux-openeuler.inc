@@ -63,7 +63,11 @@ python do_fetch() {
 
     lf = bb.utils.lockfile(lock_file, block=True)
     
-    if os.path.exists(d.getVar("MANIFEST_DIR")):
+    # determine whether the variable MANIFEST_DIR is None
+    if d.getVar("MANIFEST_DIR") is not None and os.path.exists(d.getVar("MANIFEST_DIR")):
+        repo_item = get_manifest(d.getVar("MANIFEST_DIR"))[kernel_name]
+        init_manifest_repo(repo_dir = kernel_dir, remote_url = repo_item['remote_url'], version = repo_item['version'])
+    else:
         repo = init_repo_dir(kernel_dir)
         repo_url = 'https://gitee.com/openeuler/kernel.git'
         try:
@@ -73,9 +77,6 @@ python do_fetch() {
             repo.create_remote('origin', repo_url)
         repo.remote().fetch(refspec=f"+refs/tags/{kernel_branch}:refs/tags/{kernel_branch}", depth=1)
         repo.git.checkout(kernel_branch)
-    else:
-        repo_item = get_manifest(d.getVar("MANIFEST_DIR"))[kernel_name]
-        init_manifest_repo(repo_dir = kernel_dir, remote_url = repo_item['remote_url'], version = repo_item['version'])
 
     bb.utils.unlockfile(lf)
 }
