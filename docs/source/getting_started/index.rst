@@ -277,7 +277,7 @@ openEuler Embedded传输文件。
           printf("hello world\n");
       }
 
-  编写CMakelists.txt，和hello.c文件放在同一个目录。
+  编写CMakeLists.txt，和hello.c文件放在同一个目录。
 
   ::
 
