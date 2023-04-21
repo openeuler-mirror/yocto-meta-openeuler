@@ -12,3 +12,4 @@
 
    test/index.rst
    qemu/index.rst
+   manifest/index.rst
