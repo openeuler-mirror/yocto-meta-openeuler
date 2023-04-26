@@ -11,7 +11,7 @@
 
 随着ROS1开始广泛融入各领域无人系统的研发，陆续暴露了系统的诸多问题。为了适应新时代机器人研发的和操作系统生态发展的需要，ROS2应运而生。
 
-为使能ROS2在高度定制化的嵌入式Linux运行，支持通过yocto构建的meta-ROS（原LG维护）layer层成为嵌入式ROS支持的关键途径。然而,当前原生meta-ros应用门槛较高且未充分考虑嵌入式运行时的关键场景要素。
+为使能ROS2在高度定制化的嵌入式Linux运行，支持通过yocto构建的meta-ROS（原LG维护）layer层成为嵌入式ROS支持的关键途径。然而，当前原生meta-ros应用门槛较高且未充分考虑嵌入式运行时的关键场景要素。
 
 openEuler Embedded的嵌入式ROS运行时支持意在提高易用性、解决高门槛问题的同时，构建嵌入式运行时竞争力（如实时、小型化等）。
 
@@ -96,7 +96,11 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
     .. code-block:: console
 
-        qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz> -device virtio-net-device,netdev=tap0,mac=52:54:00:12:34:56 -netdev bridge,id=tap0
+        qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic \
+        -kernel zImage \
+        -initrd <openeuler-image-qemu-xxx.cpio.gz> \
+        -device virtio-net-device,netdev=tap0,mac=52:54:00:12:34:56 \
+        -netdev bridge,id=tap0
 
     .. attention::
 
@@ -117,7 +121,11 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
     .. code-block:: console
 
-        qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd openeuler-image-qemu-aarch64-2023xxx.rootfs.cpio.gz  -device virtio-net-device,netdev=tap1,mac=52:54:00:12:34:78 -netdev bridge,id=tap1
+        qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic \
+        -kernel zImage \
+        -initrd openeuler-image-qemu-aarch64-2023xxx.rootfs.cpio.gz \
+        -device virtio-net-device,netdev=tap1,mac=52:54:00:12:34:78 \
+        -netdev bridge,id=tap1
 
     .. attention::
 
