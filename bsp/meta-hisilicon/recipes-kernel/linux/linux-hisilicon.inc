@@ -21,5 +21,5 @@ do_install_append(){
 }
 PACKAGES += "bootfile"
 FILES_bootfile="/boot/uImage \
-${@bb.utils.contains('MCS_FEATURES', 'hi3093', '/boot/hi3093-mcs.dtb', '/boot/hi3093.dtb', d)} \
+${@bb.utils.contains('MCS_FEATURES', 'openamp', '/boot/hi3093-mcs.dtb', '/boot/hi3093.dtb', d)} \
 "
