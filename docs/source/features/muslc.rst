@@ -99,6 +99,41 @@ qemu镜像的构建
 
 镜像运行 `树莓派参考运行指导 <https://openeuler.gitee.io/yocto-meta-openeuler/master/features/raspberrypi.html>`_
 
+clang+llvm构建镜像
+----------------------------------------
+
+1. 构建环境
+
+   .. attention::
+
+      当前在容器中没有集成musl相关的工具链，所以需要先把基于musl编译的arm64架构GCC库拷贝至编译器目录
+
+   .. code-block:: console
+
+      sudo cp /path/to/aarch64-openeuler-linux-musl/* /path/to/clang-llvm-15.0.3
+
+   参考 :ref:`openeuler_embedded_oebuild` 初始化容器环境，生成配置文件时使用如下命令
+
+   .. code-block:: console
+
+      oebuild generate -p platform -d build_direction -t /path/to/clang-llvm-15.0.3 -f clang -f musl
+
+   .. attention::
+
+      当前只支持arm64架构，支持的平台：aarch64-std、raspberrypi4-64
+
+2. 构建命令
+
+   .. code-block:: console
+
+      bitbake openeuler-image-llvm
+
+3. SDK生成
+
+   .. code-block:: console
+
+      bitbake openeuler-image-llvm -c populate_sdk
+
 musl与glibc性能对比测试
 ----------------------------------------
 性能测试平台采用了主频为600Mhz的树莓派4B，测试集采用了libc-bench、coremark、lmbench、unixbench，以下为测试集简介：
