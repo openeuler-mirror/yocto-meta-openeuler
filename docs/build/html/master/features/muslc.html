@@ -53,6 +53,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#id3">构建环境</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#qemu">qemu镜像的构建</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id6">树莓派镜像的构建</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clang-llvm">clang+llvm构建镜像</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#muslglibc">musl与glibc性能对比测试</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#libc-bench">libc-bench性能测试</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#coremark">coremark性能测试</a></li>
@@ -176,6 +177,38 @@
 </pre></div>
 </div>
 <p>镜像运行 <a class="reference external" href="https://openeuler.gitee.io/yocto-meta-openeuler/master/features/raspberrypi.html">树莓派参考运行指导</a></p>
+</section>
+<section id="clang-llvm">
+<h2>clang+llvm构建镜像<a class="headerlink" href="#clang-llvm" title="永久链接至标题">¶</a></h2>
+<ol class="arabic">
+<li><p>构建环境</p>
+<div class="admonition attention">
+<p class="admonition-title">注意</p>
+<p>当前在容器中没有集成musl相关的工具链，所以需要先把基于musl编译的arm64架构GCC库拷贝至编译器目录</p>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo cp /path/to/aarch64-openeuler-linux-musl/* /path/to/clang-llvm-15.0.3</span>
+</pre></div>
+</div>
+<p>参考 <a class="reference internal" href="../yocto/oebuild.html#openeuler-embedded-oebuild"><span class="std std-ref">基于 oebuild 快速构建</span></a> 初始化容器环境，生成配置文件时使用如下命令</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild generate -p platform -d build_direction -t /path/to/clang-llvm-15.0.3 -f clang -f musl</span>
+</pre></div>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">注意</p>
+<p>当前只支持arm64架构，支持的平台：aarch64-std、raspberrypi4-64</p>
+</div>
+</li>
+<li><p>构建命令</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake openeuler-image-llvm</span>
+</pre></div>
+</div>
+</li>
+<li><p>SDK生成</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake openeuler-image-llvm -c populate_sdk</span>
+</pre></div>
+</div>
+</li>
+</ol>
 </section>
 <section id="muslglibc">
 <h2>musl与glibc性能对比测试<a class="headerlink" href="#muslglibc" title="永久链接至标题">¶</a></h2>
