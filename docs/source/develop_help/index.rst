@@ -8,7 +8,7 @@
 .. toctree::
    :maxdepth: 1
 
+   qemu/index.rst
    commit.rst
    contribute_doc.rst
-   openeuler_fetch.rst
    republish.rst

@@ -38,10 +38,10 @@ openeuler_fetch通过以下控制变量来完成相关包下载：
 依据remote和branch，openeuler_fetch完成下载
 
 openeuler_fetch 运行原理图如下：
-    .. image:: ../../image/develop_help/openeuler_fetch_process.png
+    .. image:: ../../../image/infrastructure/openeuler_fetch_process.png
 
 repo_init 运行原理图如下：
-    .. image:: ../../image/develop_help/openeuler_fetch_repo_init.png
+    .. image:: ../../../image/infrastructure/openeuler_fetch_repo_init.png
 
 如何适配其他软件包
 ***************************
