@@ -19,7 +19,7 @@ SRC_URI_append = " \
 "
 
 # more support of device is comming. so we documented this patch md5sum.
-SRC_URI[rk3568-kernel-patch.md5sum] = "b4c156e59411c8e86098e03de67a84ca"
+SRC_URI[rk3568-kernel-patch.md5sum] = "7643792b2483b3156dbc349d6fd41ef9"
 
 # add patch tool to solve patch apply
 PATCHTOOL = "git"
