@@ -14,6 +14,7 @@ openEuler Embeddedd的核心构建系统是基于Yocto，但又根据自身的�
 
    getting_started.rst
    getting_started2.rst
+   getting_started3.rst
    oebuild.rst
    overview.rst
    meta-openeuler.rst

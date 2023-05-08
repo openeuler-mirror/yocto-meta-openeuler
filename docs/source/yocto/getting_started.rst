@@ -204,6 +204,7 @@ Hello World 例子
 
   错误提示找不到bb文件，显然我们并没有对构建路径（hello/）与所加层的路径（meta-mylayer/）添加关联。
 
+
 10.  **创建conf/bblayers.conf：** bitbake使用 :file:`conf/bblayers.conf` 文件去定位工程构建时所用到的层。
 
   编写 :file:`conf/bblayers.conf` 文件，添加内容如下： ::
@@ -212,6 +213,7 @@ Hello World 例子
       BBLAYERS ?= " \
           /path/to/meta-mylayer \
       "
+
 
 11.  **再次运行bitbake构建目标：** 
 
@@ -244,8 +246,8 @@ Hello World 例子
           ├── bblayers.conf
           └── bitbake.conf
 
-      $ tree mylayer/
-      mylayer/
+      $ tree meta-mylayer/
+      meta-mylayer/
       ├── conf
       │   └── layer.conf
       └── recipes-hello
