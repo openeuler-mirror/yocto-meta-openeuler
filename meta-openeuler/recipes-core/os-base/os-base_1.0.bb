@@ -9,7 +9,7 @@ INHIBIT_DEFAULT_DEPS = "1"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-# we need updat-rc.d to set up links between init.d and rcX.d
+# we need update-rc.d to set up links between init.d and rcX.d
 DEPENDS_append = " update-rc.d-native"
 
 SRC_URI = " \
@@ -24,7 +24,7 @@ SRC_URI = " \
 do_install() {
 ## the contents of configuration should be changed according features, user configuration etc.
 
-## add config files in /etc folder
+## create /etc folder
 	install -d ${D}${sysconfdir}
 
 # all init scripts should be in /etc/init.d, currently openeuler embedded specific init functions are mainly
