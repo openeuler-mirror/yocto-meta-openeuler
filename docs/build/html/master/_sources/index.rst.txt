@@ -10,23 +10,22 @@ openEuler Embedded在内核版本、软件包版本等代码层面会与openEule
 
 本手册包含了openEuler Embedded如何使用、如何构建、如何开发的相关内容。
 
-
-章节
-*****
-
 .. toctree::
    :maxdepth: 1
-   :caption: 内容
+   :caption: 介绍与概述
 
    introduction/index.rst
    getting_started/index.rst
-   features/index.rst
+   develop_help/index.rst
+   releases/index.rst
+   faq/index.rst
+
+.. toctree::
+   :maxdepth: 1
+   :caption: 说明书
+
    linux/index.rst
    infrastructure/index.rst
-   yocto/index.rst
-   develop_help/index.rst
+   features/index.rst
    bsp/index.rst
-   releases/index.rst
-
-索引与表格
-***********
+   yocto/index.rst
