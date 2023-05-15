@@ -72,13 +72,17 @@ QEMU的下载与安装可以参考 `QEMU官方网站 <https://www.qemu.org/downl
 
   .. code-block:: console
 
-      qemu-system-arm -M virt-4.0 -m 1G -cpu cortex-a15 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz>
+      qemu-system-arm -M virt-4.0 -m 1G -cpu cortex-a15 -nographic \
+      -kernel zImage \
+      -initrd <openeuler-image-qemu-xxx.cpio.gz>
 
   针对aarch64(ARM Cortex A57)，运行如下命令：
 
   .. code-block:: console
 
-      qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz>
+      qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic \
+      -kernel zImage \
+      -initrd <openeuler-image-qemu-xxx.cpio.gz>
 
 
   .. note::
@@ -103,13 +107,21 @@ QEMU的下载与安装可以参考 `QEMU官方网站 <https://www.qemu.org/downl
 
   .. code-block:: console
 
-      qemu-system-arm -M virt-4.0 -m 1G -cpu cortex-a15 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz>  -device virtio-9p-device,fsdev=fs1,mount_tag=host -fsdev local,security_model=passthrough,id=fs1,path=/tmp
+      qemu-system-arm -M virt-4.0 -m 1G -cpu cortex-a15 -nographic \ 
+      -kernel zImage \
+      -initrd <openeuler-image-qemu-xxx.cpio.gz> \
+      -device virtio-9p-device,fsdev=fs1,mount_tag=host \
+      -fsdev local,security_model=passthrough,id=fs1,path=/tmp
 
   针对aarch64(ARM Cortex A57)，运行如下命令：
 
   .. code-block:: console
 
-      qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz> -device virtio-9p-device,fsdev=fs1,mount_tag=host -fsdev local,security_model=passthrough,id=fs1,path=/tmp
+      qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic 
+      -kernel zImage \
+      -initrd <openeuler-image-qemu-xxx.cpio.gz> \
+      -device virtio-9p-device,fsdev=fs1,mount_tag=host \
+      -fsdev local,security_model=passthrough,id=fs1,path=/tmp
 
 
 2. **映射文件系统**
@@ -138,8 +150,7 @@ QEMU的下载与安装可以参考 `QEMU官方网站 <https://www.qemu.org/downl
 使能网络场景
 ===============
 
-通过QEMU的virtio-net和宿主机上的虚拟网卡，可以实现宿主机和openEuler Embedded之间的网络通信。除了通过virtio-fs实现文件共享外，还可以通过网络的方式，例如 **scp** 命令，实现宿主机和
-openEuler Embedded传输文件。
+通过QEMU的virtio-net和宿主机上的虚拟网卡，可以实现宿主机和openEuler Embedded之间的网络通信。除了通过virtio-fs实现文件共享外，还可以通过网络的方式，例如 **scp** 命令，实现宿主机和openEuler Embedded传输文件。
 
 1. **启动QEMU**
 
@@ -147,13 +158,21 @@ openEuler Embedded传输文件。
 
   .. code-block:: console
 
-      qemu-system-arm -M virt-4.0 -m 1G -cpu cortex-a15 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz> -device virtio-net-device,netdev=tap0 -netdev tap,id=tap0,script=/etc/qemu-ifup
+      qemu-system-arm -M virt-4.0 -m 1G -cpu cortex-a15 -nographic \
+      -kernel zImage \
+      -initrd <openeuler-image-qemu-xxx.cpio.gz> \
+      -device virtio-net-device,netdev=tap0 \
+      -netdev tap,id=tap0,script=/etc/qemu-ifup
 
   针对aarch64(ARM Cortex A57)，运行如下命令：
 
   .. code-block:: console
 
-      qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic -kernel zImage -initrd <openeuler-image-qemu-xxx.cpio.gz> -device virtio-net-device,netdev=tap0 -netdev tap,id=tap0,script=/etc/qemu-ifup
+      qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic \
+      -kernel zImage \
+      -initrd <openeuler-image-qemu-xxx.cpio.gz> \
+      -device virtio-net-device,netdev=tap0 \
+      -netdev tap,id=tap0,script=/etc/qemu-ifup
 
 2. **宿主上建立虚拟网卡**
 
@@ -277,7 +296,7 @@ openEuler Embedded传输文件。
           printf("hello world\n");
       }
 
-  编写CMakelists.txt，和hello.c文件放在同一个目录。
+  编写CMakeLists.txt，和hello.c文件放在同一个目录。
 
   ::
 
