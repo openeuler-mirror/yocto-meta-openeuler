@@ -1,5 +1,15 @@
 require recipes-core/images/${MACHINE}.inc
-IMAGE_INSTALL = ""
+IMAGE_INSTALL = " \
+packagegroup-core-boot \
+packagegroup-core-base-utils \
+packagegroup-core-tools-debug \
+packagegroup-base \
+packagegroup-openssh \
+packagegroup-network \
+packagegroup-kernel-modules \
+packagegroup-isulad \
+packagegroup-dsoftbus \
+"
 
 # no extra language settings
 IMAGE_LINGUAS = ""

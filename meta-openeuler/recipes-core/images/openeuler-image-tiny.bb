@@ -5,7 +5,8 @@ SUMMARY = "A small image just capable of allowing a device to boot."
 
 require openeuler-image-common.inc
 
-IMAGE_INSTALL += " \
+# tiny image overwrite this variable, or IMAGE_INSTALL was standard packages in openeuler-image-common.inc file
+IMAGE_INSTALL = " \
 packagegroup-core-boot \
 "
 
