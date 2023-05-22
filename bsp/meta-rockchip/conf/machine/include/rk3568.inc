@@ -26,3 +26,9 @@ IMAGE_INSTALL_append = " kernel-modules"
 
 # auto load module during startup
 KERNEL_MODULE_AUTOLOAD = "mlan moal "
+
+# set MCS_FEATURES
+# rk3568 only supports the "openamp" mechanism,
+# and client os only supports uniproton, rtt
+MCS_FEATURES = "openamp"
+MCS_FEATURES := "${@bb.utils.contains('DISTRO_FEATURES', 'mcs', '${MCS_FEATURES}', '', d)}"

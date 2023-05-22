@@ -15,7 +15,7 @@ SRC_URI_append_ryd-3568 = " \
     "
 # mcs patch for ok3568 devicetree
 SRC_URI_append = " \
-    file://patches/${@bb.utils.contains('MCS_FEATURES', 'openamp', '0003-ok3568-support-mcs.patch', '', d)} \
+    ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'file://patches/0003-ok3568-support-mcs.patch', '', d)} \
 "
 
 # more support of device is comming. so we documented this patch md5sum.
