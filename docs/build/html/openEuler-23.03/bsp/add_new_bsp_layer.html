@@ -1,24 +1,23 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="zh-CN" >
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>新增 BSP 层指南 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
+  <title>新增 BSP 层指南 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/translations.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
-    <link rel="index" title="索引" href="../genindex.html" />
-    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="ARM32硬件" href="arm32/index.html" />
     <link rel="prev" title="南向支持" href="index.html" /> 
 </head>
@@ -92,10 +91,10 @@
            <div itemprop="articleBody">
              
   <section id="bsp">
-<span id="add-new-bsp-layer"></span><h1>新增 BSP 层指南<a class="headerlink" href="#bsp" title="永久链接至标题">¶</a></h1>
+<span id="add-new-bsp-layer"></span><h1>新增 BSP 层指南<a class="headerlink" href="#bsp" title="Permalink to this heading">¶</a></h1>
 <p>本篇章介绍如何新增BSP层。</p>
 <section id="id1">
-<h2>BSP 层介绍<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<h2>BSP 层介绍<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
 <p>板级支持包（BSP）是定义如何支持特定硬件设备、设备集或硬件平台的信息集合。BSP包括有关设备上存在的硬件功能的信息、内核配置信息以及所需的任何其他硬件驱动程序；BSP还列出了除了用于基本和可选平台功能的通用Linux软件堆栈之外所需的任何其他软件组件，例如”u-boot”和”grub”。</p>
 <p>因此，BSP层也需要提供如上的功能。BSP层与其他yocto层定义在技术上并没有区别，BSP层也是一个yocto层，只是提供的功能与普通层会有稍许差异。BSP层的核心是 <code class="file docutils literal notranslate"><span class="pre">conf/machine/*.conf</span></code> 文件，其中定义了硬件依赖的信息。BSP层的目录层级一般分布如下：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>conf：存放一或多个bsp_root_name.conf文件；
@@ -107,7 +106,7 @@ recipes-*：其他的一些recipes目录，通常采用bbappend对源bb进行适
 </div>
 </section>
 <section id="bsp-root-name-conf">
-<h2>编写 bsp_root_name.conf 常用的变量<a class="headerlink" href="#bsp-root-name-conf" title="永久链接至标题">¶</a></h2>
+<h2>编写 bsp_root_name.conf 常用的变量<a class="headerlink" href="#bsp-root-name-conf" title="Permalink to this heading">¶</a></h2>
 <p>编写 <code class="file docutils literal notranslate"><span class="pre">conf/machine/bsp_root_name.conf</span></code> 需要了解一些yocto已支持的与硬件有关的变量。</p>
 <ul class="simple">
 <li><p>PREFERRED_PROVIDER_virtual/kernel：定义内核的源bb；openEuler已默认设置为linux-openeuler；</p></li>
@@ -139,7 +138,7 @@ recipes-*：其他的一些recipes目录，通常采用bbappend对源bb进行适
 <li><p>PACKAGE_EXTRA_ARCHS：指定与设备CPU兼容的架构列表。当您为使用不同处理器（如XScale和ARM926-EJS）的多个不同设备构建时，此变量非常有用。</p></li>
 </ul>
 <div class="admonition note">
-<p class="admonition-title">注解</p>
+<p class="admonition-title">Note</p>
 <ul class="simple">
 <li><p>ENABLE_UART：树梅派层独有变量，为1则使能UART功能；</p></li>
 <li><p>CMDLINE：树梅派层独有变量，用于生成cmdline.txt；</p></li>
@@ -148,12 +147,8 @@ recipes-*：其他的一些recipes目录，通常采用bbappend对源bb进行适
 </div>
 </section>
 <section id="id2">
-<h2>bsp_root_name.conf 变量使用示例<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<h2>bsp_root_name.conf 变量使用示例<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 26%" />
-<col style="width: 74%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>变量</p></th>
 <th class="head"><p>使用示例</p></th>
@@ -233,7 +228,7 @@ recipes-*：其他的一些recipes目录，通常采用bbappend对源bb进行适
 </table>
 </section>
 <section id="bsp-root-name-conf-from-poky">
-<h2>bsp_root_name.conf 文件示例（from Poky）<a class="headerlink" href="#bsp-root-name-conf-from-poky" title="永久链接至标题">¶</a></h2>
+<h2>bsp_root_name.conf 文件示例（from Poky）<a class="headerlink" href="#bsp-root-name-conf-from-poky" title="Permalink to this heading">¶</a></h2>
 <blockquote>
 <div><p><code class="file docutils literal notranslate"><span class="pre">meta-yocto-bsp/conf/machine/genericx86-64.conf</span></code>：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#@TYPE: Machine
@@ -282,7 +277,7 @@ do_image_wic[recrdeptask] += &quot;do_bootimg&quot;
 </div></blockquote>
 </section>
 <section id="yocto-meta-openeuler-bsp">
-<h2>yocto-meta-openeuler 仓 bsp 目录层次介绍<a class="headerlink" href="#yocto-meta-openeuler-bsp" title="永久链接至标题">¶</a></h2>
+<h2>yocto-meta-openeuler 仓 bsp 目录层次介绍<a class="headerlink" href="#yocto-meta-openeuler-bsp" title="Permalink to this heading">¶</a></h2>
 <p>bsp目录下存放openeuler当前支持的bsp层，开发者新增的bsp层放在此目录下；其中meta-openeuler-bsp层通常是对上游层的一些适配与自研，类似于meta-openeuler层与meta层的关系。以下对目录下各bsp层作简要介绍：</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">meta-openeuler-bsp</span></code></p></li>
@@ -304,16 +299,16 @@ do_image_wic[recrdeptask] += &quot;do_bootimg&quot;
 </div></blockquote>
 </section>
 <section id="meta-raspberrypi">
-<h2>meta-raspberrypi 分析<a class="headerlink" href="#meta-raspberrypi" title="永久链接至标题">¶</a></h2>
+<h2>meta-raspberrypi 分析<a class="headerlink" href="#meta-raspberrypi" title="Permalink to this heading">¶</a></h2>
 <p><strong>meta-raspberrypi实现树梅派镜像构建的原理：</strong></p>
 <p>首先，树莓派主要启动方式是通过把镜像烧录到sd卡中来启动，这就需要在yocto工程中生成可供烧录至sd卡的镜像， <code class="docutils literal notranslate"><span class="pre">meta-raspberrypi</span></code> 层中提供了 <code class="docutils literal notranslate"><span class="pre">classes/sdcard_image-rpi.bbclass</span></code> 这样一个类文件来实现(也可以看作是一个制作脚本)。脚本中的实现也不复杂，主要是构建 boot.img 文件并写入/boot分区，把 rootfs 文件写入/root分区，其中 boot.img 中会包含dtb、cmdline、config、kernel、启动固件等内容，这些内容怎么获取，最终是什么样的形式，是由 <code class="docutils literal notranslate"><span class="pre">recipes-bsp/bootfiles/</span></code> 目录中对应的 recipes 来决定的， <code class="docutils literal notranslate"><span class="pre">sdcard_image-rpi.bbclass</span></code> 只负责将最终产物搬移至 boot.img 中。这也就是 <code class="docutils literal notranslate"><span class="pre">classes</span></code> 和 <code class="docutils literal notranslate"><span class="pre">recipes-bsp</span></code> 中主要组成部分，逻辑是 <code class="docutils literal notranslate"><span class="pre">classes/sdcard_image-rpi.bbclass</span></code> 镜像生成脚本依赖 <code class="docutils literal notranslate"><span class="pre">recipes-bsp/bootfiles/</span></code> 中启动相关recipes的产物。</p>
 <div class="admonition note">
-<p class="admonition-title">注解</p>
+<p class="admonition-title">Note</p>
 <p>具体怎么组织文件内容，以及最终镜像的产物由开发板对应的启动方式来确定。</p>
 </div>
 </section>
 <section id="id3">
-<h2>添加自定义的BSP层<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<h2>添加自定义的BSP层<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
 <ol class="arabic simple">
 <li><p>初始化yocto构建环境；</p></li>
 <li><p>增加一个普通的层；</p></li>
@@ -332,7 +327,7 @@ $ bitbake-layers add-layer /path/to/yocto-meta-openeuler/bsp/meta-bsp_name
 <li><p>构建镜像。</p></li>
 </ol>
 <div class="admonition note">
-<p class="admonition-title">注解</p>
+<p class="admonition-title">Note</p>
 <p>如果涉及到二次打包镜像，建议像树莓派那样，提供定制化脚本，放在classes目录中，在 <code class="docutils literal notranslate"><span class="pre">conf/machine/bsp_root_name.conf</span></code> 中增加 <code class="docutils literal notranslate"><span class="pre">IMAGE_CLASSES</span> <span class="pre">+=</span> <span class="pre">&quot;xxxxx&quot;</span></code> 使其生效，并增加相应依赖的启动固件的 recipes；如果涉及到其他固件，也可以添加相应的 recipes。</p>
 </div>
 </section>
@@ -349,7 +344,7 @@ $ bitbake-layers add-layer /path/to/yocto-meta-openeuler/bsp/meta-bsp_name
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; 版权所有 2022, openEuler Embedded.</p>
+    <p>&#169; Copyright 2022, openEuler Embedded.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -378,7 +373,6 @@ $ bitbake-layers add-layer /path/to/yocto-meta-openeuler/bsp/meta-bsp_name
       <dd><a href="../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
       <dd><a href="../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
       <dd><a href="add_new_bsp_layer.html">openEuler-23.03</a></dd>
-      <dd><a href="../../sdk_master/bsp/add_new_bsp_layer.html">sdk_master</a></dd>
     </dl>
   </div>
 </div>

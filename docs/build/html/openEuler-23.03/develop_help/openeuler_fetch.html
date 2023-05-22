@@ -1,24 +1,23 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="zh-CN" >
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>通过openeuler_fetch使用openEuler软件包 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
+  <title>通过openeuler_fetch使用openEuler软件包 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/translations.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
-    <link rel="index" title="索引" href="../genindex.html" />
-    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="商业发行版发行说明" href="republish.html" />
     <link rel="prev" title="如何撰写并贡献文档" href="contribute_doc.html" /> 
 </head>
@@ -89,17 +88,17 @@
            <div itemprop="articleBody">
              
   <section id="openeuler-fetchopeneuler">
-<span id="openeuler-fetch"></span><h1>通过openeuler_fetch使用openEuler软件包<a class="headerlink" href="#openeuler-fetchopeneuler" title="永久链接至标题">¶</a></h1>
+<span id="openeuler-fetch"></span><h1>通过openeuler_fetch使用openEuler软件包<a class="headerlink" href="#openeuler-fetchopeneuler" title="Permalink to this heading">¶</a></h1>
 <section id="id1">
-<h2>特性介绍<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<h2>特性介绍<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
 <p>openeuler_fetch是匹配openEuler Embedded构建镜像时按需从上游源码包自动下载软件包的功能函数，该功能省去了在构建openeuler-image镜像时需要提前下载所有软件包的步骤，因为openEuler Embedded由上百个软件包构成，完全下载耗时耗力，例如，如果你只想编译busybox这一个软件包，你其实是不需要将其他软件包全部下载，你关注的只是构建busybox的依赖软件包下载即可,而openeuler_fetch即可实现按需下载，你只需要初始化完环境即可进入编译环节。</p>
 </section>
 <section id="id2">
-<h2>openeuler_fetch运行机制<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<h2>openeuler_fetch运行机制<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
 <p>openeuler_fetch在classes/openeuler.bbclass中实现，函数名为do_openeuler_fetch，该函数在base_do_fetch_prepend中通过bb.build.exec_func()函数调用，即openeuler_fetch运行完还会继续执行do_fetch，这样做的原因是不管openeuler_fetch运行成功与否都可以让fetch继续补充，例如有一款软件包在gitee中不存在，或在配置中配置错误，或者源码目录有相关的改动导致openeuler_fetch运行失败，则do_fetch可以继续完成文件的查找。</p>
 </section>
 <section id="id3">
-<h2>openeuler_fetch运行逻辑<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<h2>openeuler_fetch运行逻辑<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
 <p>openeuler_fetch通过以下相关控制变量来完成相关包下载：</p>
 <blockquote>
 <div><ul class="simple">
@@ -126,7 +125,7 @@
 </dl>
 </section>
 <section id="id4">
-<h2>如何适配其他软件包<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<h2>如何适配其他软件包<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
 <p>在构建openEuler Embedded时经常会引入其他相关包或修改非指定包版本，那么此时该如何做呢？从上文中已经得知openeuler_fetch依赖5个变量来进行下载，内核是例外，因此我们只需要关注其他五个变量即可，接下来我们以busybox为例进行讲解：</p>
 <ul class="simple">
 <li><p>如果想要某一个版本的busybox参与构建：在busybox的bbappend文件中设定OPENEULER_BRANCH值为相关版本即可</p></li>
@@ -166,7 +165,7 @@
 </ul>
 </section>
 <section id="id5">
-<h2>如何关闭openeuler_fetch功能<a class="headerlink" href="#id5" title="永久链接至标题">¶</a></h2>
+<h2>如何关闭openeuler_fetch功能<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h2>
 <p>OPENEULER_FETCH有两种关闭方式：</p>
 <ol class="arabic simple">
 <li><p>在meta-openeuler/conf/layer.conf中有一个全局变量OPENEULER_FETCH，该值默认设置为enable，即openeuler_fetch是开启状态，如果想要关闭openeuler_fetch则设置该值为disable，</p></li>
@@ -187,7 +186,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; 版权所有 2022, openEuler Embedded.</p>
+    <p>&#169; Copyright 2022, openEuler Embedded.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -210,13 +209,12 @@
   <div class="rst-other-versions">
     <dl>
       <dt>Branches</dt>
-      <dd><a href="../../master/develop_help/openeuler_fetch.html">master</a></dd>
+      <dd><a href="../../master/index.html">master</a></dd>
       <dd><a href="../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
       <dd><a href="../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
       <dd><a href="../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
       <dd><a href="../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
       <dd><a href="openeuler_fetch.html">openEuler-23.03</a></dd>
-      <dd><a href="../../sdk_master/develop_help/openeuler_fetch.html">sdk_master</a></dd>
     </dl>
   </div>
 </div>

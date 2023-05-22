@@ -1,24 +1,23 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="zh-CN" >
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Yocto 入门文档二 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
+  <title>Yocto 入门文档二 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/translations.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
-    <link rel="index" title="索引" href="../genindex.html" />
-    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Yocto 入门文档三" href="getting_started3.html" />
     <link rel="prev" title="Yocto 入门文档" href="getting_started.html" /> 
 </head>
@@ -42,14 +41,11 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">总体介绍</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../develop_help/index.html">开发帮助</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../faq/index.html">常见问题</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">说明书</span></p>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../linux/index.html">使用与配置</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../infrastructure/index.html">基础设施</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../features/index.html">关键特性</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bsp/index.html">南向支持</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">构建系统</a><ul class="current">
@@ -75,6 +71,9 @@
 <li class="toctree-l2"><a class="reference internal" href="devshell.html">Yocto 实现终端应用</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../develop_help/index.html">开发帮助</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../linux/index.html">使用与配置</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure/index.html">基础设施</a></li>
 </ul>
 
         </div>
@@ -102,22 +101,18 @@
            <div itemprop="articleBody">
              
   <section id="yocto">
-<span id="yocto-getting-started2"></span><h1>Yocto 入门文档二<a class="headerlink" href="#yocto" title="永久链接至标题">¶</a></h1>
+<span id="yocto-getting-started2"></span><h1>Yocto 入门文档二<a class="headerlink" href="#yocto" title="Permalink to this heading">¶</a></h1>
 <p>上一章已经安装了Poky，但面对Poky中多如繁花的文件，新用户也是脑袋一晕，不知该如何下手。其实，结合上一篇文章，开发者应该已经对元数据文件有了基本的了解，bitbake运行最基础的文件只有bitbake.conf与base.bbclass，一个配置公共变量，一个配置公共任务，开发者可以在base.bbclass中配置变量，但是不能在bitbake.conf文件配置任务，另外还有层管理的两个配置文件。</p>
 <p>如果把所有的功能都放在以上几个文件中，那么会导致这些文件过于庞大，为此，Yocto制定了一套规范将不同的功能拆分到不同的文件中。那么其他的文件是怎么使用的呢？该问题将在这一篇章中得到解答。</p>
 <div class="admonition note">
-<p class="admonition-title">注解</p>
+<p class="admonition-title">Note</p>
 <p>Yocto制定的规范在日常开发时并不强制遵循，因此开发时有很高的自由度，但如果想要使用已存在的功能，那么最好还是遵循规范！</p>
 </div>
 <section id="id1">
-<h2>共享功能<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<h2>共享功能<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
 <p>Bitbake允许通过 <code class="docutils literal notranslate"><span class="pre">.inc</span></code> 和 <code class="docutils literal notranslate"><span class="pre">.bbclass</span></code> 文件共享元数据。例如，假设您定义了一个任务，提供了一个公共功能，需要在多个bb之间共享。在这种情况下，创建一个包含通用功能的 <code class="docutils literal notranslate"><span class="pre">.bbclass</span></code> 文件，然后在bb中使用 <code class="docutils literal notranslate"><span class="pre">inherit</span></code> 指令来继承该类，这是共享任务的常见方式。</p>
 <p>首先，开发者需要了解几个指令使用。</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 22%" />
-<col style="width: 78%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>指令</p></th>
 <th class="head"><p>介绍</p></th>
@@ -205,7 +200,7 @@ DEBUG: Shell function do_print_hello finished
 <p>最终输出了 <code class="docutils literal notranslate"><span class="pre">hello</span> <span class="pre">universe!</span></code> ，说明bb文件中的变量定义覆盖了类中的定义，反之如果移动 <code class="docutils literal notranslate"><span class="pre">inherit</span> <span class="pre">abc</span></code> 的顺序到最后呢？</p>
 <p>至此，了解了这些指令的使用，这时你就可以去探索 <code class="file docutils literal notranslate"><span class="pre">bitbake.conf</span></code> 和 <code class="file docutils literal notranslate"><span class="pre">base.bbclass</span></code> 调用了哪些文件，进行进一步的了解巩固；对了，别忘了扩展的这些文件中也需要搜索上述四个指令，通过以上两文件扩展出的所有文件就是全局使用的配置文件和类文件，也就是构建任何一个包之前都会解析的公共文件；bb文件中定义的以及扩展的其它文件则是此构建独有的配置。</p>
 <div class="admonition note">
-<p class="admonition-title">注解</p>
+<p class="admonition-title">Note</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">.conf</span></code> 文件也可以使用 <code class="docutils literal notranslate"><span class="pre">include</span></code> 、 <code class="docutils literal notranslate"><span class="pre">require</span></code> 指令调用，使用方式同 <code class="docutils literal notranslate"><span class="pre">.inc</span></code> 文件；</p></li>
 <li><p>根据解析顺序的先后，可以在解析靠后的文件（如bb文件）实现对解析靠前的文件定义（如conf、bbclass）的部分变量以及任务的覆盖。</p></li>
@@ -213,7 +208,7 @@ DEBUG: Shell function do_print_hello finished
 </div>
 </section>
 <section id="poky">
-<h2>Poky结构<a class="headerlink" href="#poky" title="永久链接至标题">¶</a></h2>
+<h2>Poky结构<a class="headerlink" href="#poky" title="Permalink to this heading">¶</a></h2>
 <p>Poky目录结构如下：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd yocto-poky
 $ ls
@@ -227,10 +222,6 @@ LICENSE.MIT           meta-selftest   README.OE-Core.md
 </div>
 <p>需要关注的目录文档有 <code class="file docutils literal notranslate"><span class="pre">bitbake、documentation、meta*、oe-init-build-env、scripts</span></code> ，下述表格作简要介绍。</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 23%" />
-<col style="width: 77%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>目录/文件</p></th>
 <th class="head"><p>介绍</p></th>
@@ -256,7 +247,7 @@ LICENSE.MIT           meta-selftest   README.OE-Core.md
 </table>
 </section>
 <section id="id2">
-<h2>Poky 简单使用<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<h2>Poky 简单使用<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
 <p>Poky实现meta-poky、meta-yocto-bsp层，增加了发行版的配置。开发者可以通过 <code class="file docutils literal notranslate"><span class="pre">oe-init-build-env</span></code> 脚本实现Yocto构建环境的初始化，初始化过程主要包括配置环境变量（BBPATH、PYTHONPATH等）、生成bblayers.conf与local.conf配置文件等。执行步骤如下:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd yocto-poky
 # 在oe-init-build-env目录执行，初始化构建环境
@@ -266,16 +257,16 @@ $ bitbake recipe_name
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="admonition-title">注解</p>
+<p class="admonition-title">Note</p>
 <p>初始化环境后用户可以自定义local.conf以及bblayers.conf脚本加入自己的层配置。</p>
 </div>
 </section>
 <section id="id3">
-<h2>总结<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<h2>总结<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
 <p>本章节主要介绍四个指令的作用以及Poky的简单使用，介绍了yocto的共享功能。</p>
 </section>
 <section id="id4">
-<h2>参考文献<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<h2>参考文献<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
 <div class="line-block">
 <div class="line">poky/documentation/ref-manual/structure.rst</div>
 <div class="line">poky/bitbake/doc/bitbake-user-manual/bitbake-user-manual-metadata.rst</div>
@@ -294,7 +285,7 @@ $ bitbake recipe_name
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; 版权所有 2022, openEuler Embedded.</p>
+    <p>&#169; Copyright 2022, openEuler Embedded.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -323,7 +314,6 @@ $ bitbake recipe_name
       <dd><a href="../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
       <dd><a href="../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
       <dd><a href="../../openEuler-23.03/yocto/getting_started2.html">openEuler-23.03</a></dd>
-      <dd><a href="../../sdk_master/yocto/getting_started2.html">sdk_master</a></dd>
     </dl>
   </div>
 </div>

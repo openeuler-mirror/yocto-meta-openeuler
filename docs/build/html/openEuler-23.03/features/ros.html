@@ -1,24 +1,23 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="zh-CN" >
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>嵌入式ROS运行时支持 &mdash; openEuler Embedded在线文档 1.0.0 文档</title>
+  <title>嵌入式ROS运行时支持 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/translations.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
-    <link rel="index" title="索引" href="../genindex.html" />
-    <link rel="search" title="搜索" href="../search.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="musl libc的支持" href="muslc.html" />
     <link rel="prev" title="外设分区管理" href="lopper_devicetree.html" /> 
 </head>
@@ -98,22 +97,22 @@
            <div itemprop="articleBody">
              
   <section id="ros">
-<span id="ros-runtime-embedded"></span><h1>嵌入式ROS运行时支持<a class="headerlink" href="#ros" title="永久链接至标题">¶</a></h1>
+<span id="ros-runtime-embedded"></span><h1>嵌入式ROS运行时支持<a class="headerlink" href="#ros" title="Permalink to this heading">¶</a></h1>
 <section id="id1">
-<h2>总体介绍<a class="headerlink" href="#id1" title="永久链接至标题">¶</a></h2>
+<h2>总体介绍<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
 <p>机器人尤其服务机器人领域近年来发展迅速，ROS是一个适用于机器人的开源的元操作系统，已在众多领域被广泛应用，常规ROS存在较多平台约束，大多与ubuntu等desktop版本强依赖。</p>
 <p>随着ROS1开始广泛融入各领域无人系统的研发，陆续暴露了系统的诸多问题。为了适应新时代机器人研发的和操作系统生态发展的需要，ROS2应运而生。</p>
 <p>为使能ROS2在高度定制化的嵌入式Linux运行，支持通过yocto构建的meta-ROS（原LG维护）layer层成为嵌入式ROS支持的关键途径。然而，当前原生meta-ros应用门槛较高且未充分考虑嵌入式运行时的关键场景要素。</p>
 <p>openEuler Embedded的嵌入式ROS运行时支持意在提高易用性、解决高门槛问题的同时，构建嵌入式运行时竞争力（如实时、小型化等）。</p>
 </section>
 <section id="id2">
-<h2>框架<a class="headerlink" href="#id2" title="永久链接至标题">¶</a></h2>
+<h2>框架<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
 <p>openEuler Embedded中ROS运行时整体架构图如下所示，分为运行视图和构建视图，构建视图总体基于开源meta-ros layer <a class="reference external" href="https://github.com/ros/meta-ros/">meta-ros</a> 作为基础。</p>
 <blockquote>
 <div><figure class="align-center" id="id10">
 <img alt="../_images/plan_ros_architecture.png" src="../_images/plan_ros_architecture.png" />
 <figcaption>
-<p><span class="caption-text">图 1 openEuler Embedded中ROS运行时支持基础架构</span><a class="headerlink" href="#id10" title="永久链接至图片">¶</a></p>
+<p><span class="caption-text">图 1 openEuler Embedded中ROS运行时支持基础架构</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </div></blockquote>
@@ -124,27 +123,27 @@
 <p><strong>运行时优化模块</strong> 联通OS侧特性，链接混合关键部署等RTOS实时及总线能力，最终提供复杂系统的实时和通信解决方案。</p>
 </section>
 <section id="id3">
-<h2>镜像构建指南<a class="headerlink" href="#id3" title="永久链接至标题">¶</a></h2>
+<h2>镜像构建指南<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
 <p>openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成构建案例。</p>
 <p><strong>构建指导</strong></p>
 <p>使用oebuild进行构建即可，具体使用方式参照oebuild指导，构建qemu-ros参照如下命令:</p>
 <blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>oebuild generate -p aarch64-std -f openeuler-ros -d aarch64-qemu-ros
-<span class="gp">$ </span>oebuild bitbake
-<span class="gp">$ </span>bitbake openeuler-image-ros
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"> </span>aarch64-std<span class="w"> </span>-f<span class="w"> </span>openeuler-ros<span class="w"> </span>-d<span class="w"> </span>aarch64-qemu-ros
+<span class="gp">$ </span>oebuild<span class="w"> </span>bitbake
+<span class="gp">$ </span>bitbake<span class="w"> </span>openeuler-image-ros
 </pre></div>
 </div>
 </div></blockquote>
 <p>构建树莓派参照如下命令</p>
 <blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>oebuild generate -p raspberrypi4-64 -f openeuler-ros -d raspberrypi4-64-ros
-<span class="gp">$ </span>oebuild bitbake
-<span class="gp">$ </span>bitbake openeuler-image-ros
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"> </span>raspberrypi4-64<span class="w"> </span>-f<span class="w"> </span>openeuler-ros<span class="w"> </span>-d<span class="w"> </span>raspberrypi4-64-ros
+<span class="gp">$ </span>oebuild<span class="w"> </span>bitbake
+<span class="gp">$ </span>bitbake<span class="w"> </span>openeuler-image-ros
 </pre></div>
 </div>
 </div></blockquote>
 <div class="admonition note">
-<p class="admonition-title">注解</p>
+<p class="admonition-title">Note</p>
 <p>当前openeuler-image-ros镜像默认集成ros-core核心功能</p>
 <p>基于树莓派的openeuler-image-ros镜像还加入了SLAM典型功能
 （相关导航和制图典型场景功能正在完善中，欢迎试用和加入贡献）</p>
@@ -161,7 +160,7 @@
 </div>
 </section>
 <section id="id4">
-<h2>镜像使用示例<a class="headerlink" href="#id4" title="永久链接至标题">¶</a></h2>
+<h2>镜像使用示例<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
 <p>以qemu-aarch64和originbot小车（树莓派作为主控板）为例:</p>
 <p><strong>1.QEMU多机部署和demo_nodes_cpp示例</strong></p>
 <blockquote>
@@ -180,7 +179,7 @@
 </pre></div>
 </div>
 <div class="admonition attention">
-<p class="admonition-title">注意</p>
+<p class="admonition-title">Attention</p>
 <p>首次运行如果出现如下错误提示，</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">failed to parse default acl file `/usr/local/libexec/../etc/qemu/bridge.conf&#39;</span>
 <span class="go">qemu-system-aarch64: bridge helper failed</span>
@@ -200,7 +199,7 @@
 </pre></div>
 </div>
 <div class="admonition attention">
-<p class="admonition-title">注意</p>
+<p class="admonition-title">Attention</p>
 <p>qemu1与qemu2的mac地址需要配置为不同的值</p>
 </div>
 <p>配置IP</p>
@@ -220,24 +219,24 @@
 <li><p><strong>step2: 分别在两个QEMU机器中运行demo_nodes_cpp发布和订阅</strong></p>
 <p>qemu1执行</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>ROS环境变量初始化
-<span class="gp">$ </span><span class="nb">source</span> /etc/profile.d/ros/setup.bash
+<span class="gp">$ </span><span class="nb">source</span><span class="w"> </span>/etc/profile.d/ros/setup.bash
 
 <span class="gp"># </span>demo消息订阅
-<span class="gp">$ </span>ros2 run demo_nodes_cpp listener
+<span class="gp">$ </span>ros2<span class="w"> </span>run<span class="w"> </span>demo_nodes_cpp<span class="w"> </span>listener
 </pre></div>
 </div>
 <p>qemu2执行</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>ROS环境变量初始化
-<span class="gp">$ </span><span class="nb">source</span> /etc/profile.d/ros/setup.bash
+<span class="gp">$ </span><span class="nb">source</span><span class="w"> </span>/etc/profile.d/ros/setup.bash
 
 <span class="gp"># </span>demo消息发布
-<span class="gp">$ </span>ros2 run demo_nodes_cpp talker
+<span class="gp">$ </span>ros2<span class="w"> </span>run<span class="w"> </span>demo_nodes_cpp<span class="w"> </span>talker
 </pre></div>
 </div>
 </li>
 </ul>
 <div class="admonition note">
-<p class="admonition-title">注解</p>
+<p class="admonition-title">Note</p>
 <p>单机通信同理，在同一台设备上通过多个终端分别执行demo_nodes_cpp发布和订阅即可，属于ROS常规用法，不再详述。</p>
 </div>
 </div></blockquote>
@@ -247,7 +246,7 @@
 <li><p><strong>step1: originbot小车雷达USB、底盘驱动板串口完成连接</strong></p>
 <p>以树莓派作为主控板为例，假如雷达使用USB串口且对应设备为ttyUSB0、底盘串口使用GPIO 14/15且对应ttyS0</p>
 <div class="admonition note">
-<p class="admonition-title">注解</p>
+<p class="admonition-title">Note</p>
 <p>以上串口设备为示例配置，雷达串口号和originbot底盘串口号用户可自行修改配置，配置文件位置例（直接修改即生效）：</p>
 <p>/usr/share/originbot_base/launch/robot.launch.py</p>
 <p>/usr/share/originbot_bringup/param/ydlidar.yaml</p>
@@ -257,7 +256,7 @@
 <p>以树莓派作为主控板通过无线网络连接为例（可使用无线路由器或无线热点，需要小车和观测PC处于同一个网段）</p>
 <p>openEuler Embedded树莓派使能无线连接参见 <a class="reference internal" href="../linux/network/network_config.html#network-config-wifi"><span class="std std-ref">openEuler Embedded网络配置-Wi-Fi网络配置</span></a></p>
 <div class="admonition note">
-<p class="admonition-title">注解</p>
+<p class="admonition-title">Note</p>
 <p>观测PC可为ubuntu，需要安装ROS和oringbot观测端，参见：</p>
 <p><a class="reference external" href="http://originbot.org/guide/pc_config/#2-ros2">PC端ubuntu ros安装</a></p>
 <p><a class="reference external" href="http://originbot.org/guide/pc_config/#3-pc">PC端ubuntu oringbot安装</a></p>
@@ -269,16 +268,16 @@
 <p><a class="reference external" href="http://originbot.org/application/slam/#2-slam">originbot 启动SLAM</a></p>
 <p>首先，ssh登录originbot小车终端1，执行如下命令</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>ROS环境变量初始化
-<span class="gp">$ </span><span class="nb">source</span> /etc/profile.d/ros/setup.bash
+<span class="gp">$ </span><span class="nb">source</span><span class="w"> </span>/etc/profile.d/ros/setup.bash
 <span class="gp"># </span>启动机器人底盘和激光雷达：
-<span class="gp">$ </span>ros2 launch originbot_bringup originbot.launch.py use_lidar:<span class="o">=</span><span class="nb">true</span>
+<span class="gp">$ </span>ros2<span class="w"> </span>launch<span class="w"> </span>originbot_bringup<span class="w"> </span>originbot.launch.py<span class="w"> </span>use_lidar:<span class="o">=</span><span class="nb">true</span>
 </pre></div>
 </div>
 <p>然后，ssh登录originbot小车终端2，执行如下命令</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>ROS环境变量初始化
-<span class="gp">$ </span><span class="nb">source</span> /etc/profile.d/ros/setup.bash
+<span class="gp">$ </span><span class="nb">source</span><span class="w"> </span>/etc/profile.d/ros/setup.bash
 <span class="gp"># </span>启动cartographer建图算法：
-<span class="gp">$ </span>ros2 launch originbot_navigation cartographer.launch.py
+<span class="gp">$ </span>ros2<span class="w"> </span>launch<span class="w"> </span>originbot_navigation<span class="w"> </span>cartographer.launch.py
 </pre></div>
 </div>
 </li>
@@ -287,11 +286,11 @@
 <p><a class="reference external" href="http://originbot.org/application/slam/#3">originbot 上位机可视化显示</a></p>
 <p><a class="reference external" href="http://originbot.org/application/slam/#4">originbot 上位机键盘控制小车建图</a></p>
 <p>首先，观测端PC开启一个终端，进入ROS环境后启动rviz观测软件</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ros2 launch originbot_viz display_slam.launch.py
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ros2<span class="w"> </span>launch<span class="w"> </span>originbot_viz<span class="w"> </span>display_slam.launch.py
 </pre></div>
 </div>
 <p>然后，观测端PC开启另一个终端，进入ROS环境后启动键盘控制节点用于控制小车，并按照提示控制小车完成建图</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ros2 run teleop_twist_keyboard teleop_twist_keyboard
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ros2<span class="w"> </span>run<span class="w"> </span>teleop_twist_keyboard<span class="w"> </span>teleop_twist_keyboard
 </pre></div>
 </div>
 </li>
@@ -300,9 +299,9 @@
 <p><a class="reference external" href="http://originbot.org/application/slam/#5">originbot 保存地图</a></p>
 <p>不要关闭之前步骤的端口，ssh登录originbot小车终端3，执行如下命令</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>ROS环境变量初始化
-<span class="gp">$ </span><span class="nb">source</span> /etc/profile.d/ros/setup.bash
+<span class="gp">$ </span><span class="nb">source</span><span class="w"> </span>/etc/profile.d/ros/setup.bash
 <span class="gp"># </span>保存地图：
-<span class="gp">$ </span>ros2 run nav2_map_server map_saver_cli -f my_map --ros-args -p save_map_timeout:<span class="o">=</span><span class="m">10000</span>
+<span class="gp">$ </span>ros2<span class="w"> </span>run<span class="w"> </span>nav2_map_server<span class="w"> </span>map_saver_cli<span class="w"> </span>-f<span class="w"> </span>my_map<span class="w"> </span>--ros-args<span class="w"> </span>-p<span class="w"> </span>save_map_timeout:<span class="o">=</span><span class="m">10000</span>
 </pre></div>
 </div>
 </li>
@@ -313,18 +312,18 @@
 <figure class="align-center" id="id11">
 <img alt="../_images/slam_demo2.png" src="../_images/slam_demo2.png" />
 <figcaption>
-<p><span class="caption-text">图 2 openEuler Embedded中ROS SLAM DEMO示例</span><a class="headerlink" href="#id11" title="永久链接至图片">¶</a></p>
+<p><span class="caption-text">图 2 openEuler Embedded中ROS SLAM DEMO示例</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <div class="admonition note">
-<p class="admonition-title">注解</p>
+<p class="admonition-title">Note</p>
 <p>其他应用如导航类似，请直接参考orinbot官方资料。如</p>
 <p>自主导航，将建好的地图至于对应包位置即可，参见 <a class="reference external" href="http://originbot.org/application/navigation/">originbot 自主导航</a></p>
 </div>
 </div></blockquote>
 </section>
 <section id="id9">
-<h2>如何开发和贡献<a class="headerlink" href="#id9" title="永久链接至标题">¶</a></h2>
+<h2>如何开发和贡献<a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h2>
 <blockquote>
 <div><ul>
 <li><p><strong>1、关于ROS源码</strong></p>
@@ -349,7 +348,7 @@
 <p><strong>第二列</strong> 为该包在yocto中定义的工作目录，比如通常SRC_URI若为git链接，则需使用git。单包多压缩包目录可表示多行，可参见foonathan-memory</p>
 <p><strong>第三列</strong> 为该包的上游获取地址，若为标准ROS包，开发者可从meta-ros对应distro的bb文件中通过”matches with”关键字获取到。</p>
 <div class="admonition note">
-<p class="admonition-title">注解</p>
+<p class="admonition-title">Note</p>
 <p>第一列和第二列的包名在yocto构建时将自动引用</p>
 <p>整个yocto-embedded-tool的dev_ros分支，在构建时会以新本地名字ros-dev-tools作为构建源码输入存在</p>
 <p>实现参见: openeuler_ros_source.bbclass</p>
@@ -371,7 +370,7 @@ superfores能够实现以一个ROS版本生成全量官方ROS组件包，需要�
 </pre></div>
 </div>
 <div class="admonition note">
-<p class="admonition-title">注解</p>
+<p class="admonition-title">Note</p>
 <p>其中相对目录的使用原理，请参考并理解“关于ROS源码”</p>
 </div>
 </div></blockquote>
@@ -395,7 +394,7 @@ superfores能够实现以一个ROS版本生成全量官方ROS组件包，需要�
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; 版权所有 2022, openEuler Embedded.</p>
+    <p>&#169; Copyright 2022, openEuler Embedded.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
@@ -424,7 +423,6 @@ superfores能够实现以一个ROS版本生成全量官方ROS组件包，需要�
       <dd><a href="../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
       <dd><a href="../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
       <dd><a href="ros.html">openEuler-23.03</a></dd>
-      <dd><a href="../../sdk_master/features/ros.html">sdk_master</a></dd>
     </dl>
   </div>
 </div>

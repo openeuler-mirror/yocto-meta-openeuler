@@ -11,5 +11,5 @@
    :caption: 基础设施列表
 
    test/index.rst
-   qemu/index.rst
+   openeuler_fetch/index.rst
    manifest/index.rst
