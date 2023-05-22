@@ -27,6 +27,9 @@ S = "${WORKDIR}/mcs"
 # the software packages required in build
 DEPENDS = "openamp libmetal"
 
+# libgcc_s.so must be installed for pthread_cancel to work in rpmsg_main
+RDEPENDS:${PN} = "libgcc-external"
+
 # extra cmake options
 EXTRA_OECMAKE = " \
 	-DDEMO_TARGET=rpmsg_pty_demo \

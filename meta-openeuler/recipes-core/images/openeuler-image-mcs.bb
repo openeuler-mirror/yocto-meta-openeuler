@@ -8,20 +8,8 @@ IMAGE_INSTALL += " \
 packagegroup-core-boot \
 packagegroup-kernel-modules \
 packagegroup-openssh \
-screen \
-libgcc-external \
+packagegroup-mcs \
 "
-
-## MCS_FEATURES = "<openamp|jailhouse>  [client os]  [other properties] "
-## no machine info in MCS_FEATURES
-## select the implementation of bottom foundation
-# if openamp is used, mcs-linux and mcs-km will be included
-IMAGE_INSTALL += " ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'mcs-linux mcs-km', '', d)} "
-# if jailhouse is used, jailhouse will be included
-IMAGE_INSTALL += " ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'jailhouse', '', d)} "
-
-## select client os
-IMAGE_INSTALL += " ${@bb.utils.contains('MCS_FEATURES', 'zephyr', 'zephyr-image', '', d)} "
 
 # make no login
 set_permissions_from_rootfs_append() {
