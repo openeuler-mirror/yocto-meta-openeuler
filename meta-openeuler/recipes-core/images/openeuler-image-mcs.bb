@@ -3,6 +3,9 @@ SUMMARY = "A small image just capable of openEuler Embedded's mcs feature"
 require openeuler-image-common.inc
 require openeuler-image-sdk.inc
 
+inherit features_check
+REQUIRED_DISTRO_FEATURES = "mcs"
+
 # basic packages required, e.g., boot, ssh ,debug
 IMAGE_INSTALL += " \
 packagegroup-core-boot \
