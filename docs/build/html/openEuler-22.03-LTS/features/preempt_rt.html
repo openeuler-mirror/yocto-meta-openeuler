@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>软实时系统介绍 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
@@ -13,8 +13,9 @@
   <![endif]-->
   
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -87,10 +88,10 @@
            <div itemprop="articleBody">
              
   <section id="preempt-rt">
-<span id="id1"></span><h1>软实时系统介绍<a class="headerlink" href="#preempt-rt" title="Permalink to this heading">¶</a></h1>
+<span id="id1"></span><h1>软实时系统介绍<a class="headerlink" href="#preempt-rt" title="Permalink to this headline">¶</a></h1>
 <p>本章主要介绍openEuler Embedded软实时系统的特性说明，构建方式和性能测试。</p>
 <section id="id2">
-<h2>软实时特性介绍<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
+<h2>软实时特性介绍<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p><strong>实时性简介</strong></p>
 <p>实时的诉求通常是事件的响应时间不能超过规定的期限，一个事件的最大响应时间应该是确定的、可以预测的。</p>
 <p><strong>PREEMPT_RT补丁简介</strong></p>
@@ -124,7 +125,7 @@
 </ol>
 </section>
 <section id="id3">
-<h2>软实时镜像构建指导<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
+<h2>软实时镜像构建指导<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <p>具体下载源码和编译流程建议参考：<a class="reference external" href="https://openeuler.gitee.io/yocto-meta-openeuler/yocto/quickbuild/container-build.html">容器环境下的快速构建指导</a></p>
 <p><strong>qemu RT镜像构建方式</strong></p>
 <ul class="simple">
@@ -147,14 +148,14 @@
 <span class="go">--- a/meta-openeuler/recipes-kernel/linux/linux-openeuler.bb</span>
 <span class="go">+++ b/meta-openeuler/recipes-kernel/linux/linux-openeuler.bb</span>
 <span class="go">@@ -11,6 +11,8 @@ SRC_URI = &quot;file://kernel-5.10 \</span>
-<span class="gp"> # </span>add<span class="w"> </span>patches<span class="w"> </span>only<span class="w"> </span><span class="k">for</span><span class="w"> </span>aarch64
+<span class="gp"> # </span>add patches only <span class="k">for</span> aarch64
 <span class="go"> SRC_URI_append_aarch64 += &quot; \</span>
 <span class="go">     file://yocto-embedded-tools/patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch \</span>
 <span class="go">+    file://src-kernel-5.10/patch-5.10.0-60.10.0-rt62.patch \</span>
 <span class="go">+    file://src-kernel-5.10/patch-5.10.0-60.10.0-rt62_openeuler_defconfig.patch \</span>
 <span class="go"> &quot;</span>
 
-<span class="gp"> # </span>add<span class="w"> </span>patches<span class="w"> </span><span class="k">for</span><span class="w"> </span>OPENEULER_PLATFROM<span class="w"> </span>such<span class="w"> </span>as<span class="w"> </span>aarch64-pro
+<span class="gp"> # </span>add patches <span class="k">for</span> OPENEULER_PLATFROM such as aarch64-pro
 </pre></div>
 </div>
 <ul class="simple">
@@ -172,8 +173,8 @@
 <span class="go">+++ b/config/arm64/defconfig-kernel</span>
 <span class="go">@@ -80,7 +80,7 @@ CONFIG_HIGH_RES_TIMERS=y</span>
 
-<span class="gp"> # </span>CONFIG_PREEMPT_NONE<span class="w"> </span>is<span class="w"> </span>not<span class="w"> </span><span class="nb">set</span>
-<span class="gp"> # </span>CONFIG_PREEMPT_VOLUNTARY<span class="w"> </span>is<span class="w"> </span>not<span class="w"> </span><span class="nb">set</span>
+<span class="gp"> # </span>CONFIG_PREEMPT_NONE is not <span class="nb">set</span>
+<span class="gp"> # </span>CONFIG_PREEMPT_VOLUNTARY is not <span class="nb">set</span>
 <span class="go">-CONFIG_PREEMPT=y</span>
 <span class="go">+CONFIG_PREEMPT_RT=y</span>
 <span class="go"> CONFIG_PREEMPT_COUNT=y</span>
@@ -265,7 +266,7 @@
 </div>
 </section>
 <section id="id5">
-<h2>验证环境的软实时是否使能<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h2>
+<h2>验证环境的软实时是否使能<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>查看系统是否有PREEMPT_RT字样：</p></li>
 </ul>
@@ -279,7 +280,7 @@
 </div>
 </section>
 <section id="id6">
-<h2>软实时性能测试<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h2>
+<h2>软实时性能测试<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p><strong>软实时相关测试</strong></p>
 <p>参考 <a class="reference external" href="https://wiki.linuxfoundation.org/realtime/documentation/howto/tools/rt-tests">RT-Tests 指导</a> 进行软实时相关测试，用例包括但不限于：</p>
 <ol class="arabic simple">
@@ -323,7 +324,7 @@
 </pre></div>
 </div>
 <p>输出示例：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>/dev/cpu_dma_latency<span class="w"> </span><span class="nb">set</span><span class="w"> </span>to<span class="w"> </span>0us
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>/dev/cpu_dma_latency <span class="nb">set</span> to 0us
 <span class="go">policy: fifo: loadavg: 2.32 1.99 1.58 1/95 311</span>
 
 <span class="go">T: 0 (  311) P:90 I:100 C:10000000 Min:      7 Act:    9 Avg:    8 Max:      16</span>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>QEMU使用 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
@@ -13,8 +13,9 @@
   <![endif]-->
   
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
         <script src="../../_static/tabs.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -100,10 +101,10 @@
            <div itemprop="articleBody">
              
   <section id="qemu">
-<span id="qemu-start"></span><h1>QEMU使用<a class="headerlink" href="#qemu" title="Permalink to this heading">¶</a></h1>
+<span id="qemu-start"></span><h1>QEMU使用<a class="headerlink" href="#qemu" title="Permalink to this headline">¶</a></h1>
 <p>本文档主要介绍如何通过qemu运行openEuler Embedded，以及如何使能网络，如何共享宿主机的文件。下面以arm64为例，其它架构与之类似。</p>
 <section id="id1">
-<h2>1. 安装QEMU<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<h2>1. 安装QEMU<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>方法一：通过以下命令安装QEMU</p>
 <blockquote>
@@ -117,17 +118,17 @@
 <div><ol class="arabic simple">
 <li><p>首先下载对应的代码并切换到stable-5.0分支：</p></li>
 </ol>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git<span class="w"> </span>clone<span class="w"> </span>https://gitee.com/openeuler/qemu.git<span class="w"> </span>qemu
-<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>qemu
-<span class="gp">$ </span>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>stable-5.0<span class="w"> </span>remotes/origin/stable-5.0
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>git clone https://gitee.com/openeuler/qemu.git qemu
+<span class="gp">$ </span><span class="nb">cd</span> qemu
+<span class="gp">$ </span>git checkout -b stable-5.0 remotes/origin/stable-5.0
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
 <li><p>编译生成对应的二进制：</p></li>
 </ol>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./configure<span class="w"> </span>--target-list<span class="o">=</span>arm-softmmu,aarch64-softmmu<span class="w"> </span>--disable-werror
-<span class="gp">$ </span>make<span class="w"> </span>-j<span class="w"> </span><span class="m">8</span>
-<span class="gp">$ </span>make<span class="w"> </span>install<span class="w"> </span><span class="c1">#调试不需要</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>./configure --target-list<span class="o">=</span>arm-softmmu,aarch64-softmmu --disable-werror
+<span class="gp">$ </span>make -j <span class="m">8</span>
+<span class="gp">$ </span>make install <span class="c1">#调试不需要</span>
 </pre></div>
 </div>
 <p>编译完成后会生成 <code class="docutils literal notranslate"><span class="pre">arm-softmmu/qemu-system-arm</span></code>、<code class="docutils literal notranslate"><span class="pre">aarch64-softmmu/qemu-system-aarch64</span></code> 两个文件。</p>
@@ -149,18 +150,18 @@
 </div></blockquote>
 </section>
 <section id="openeuler-embedded">
-<h2>2. 获取openEuler Embedded镜像<a class="headerlink" href="#openeuler-embedded" title="Permalink to this heading">¶</a></h2>
+<h2>2. 获取openEuler Embedded镜像<a class="headerlink" href="#openeuler-embedded" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>参照 <a class="reference internal" href="../../getting_started/index.html#getting-started"><span class="std std-ref">快速上手</span></a> 部分，使用 <a class="reference external" href="https://gitee.com/openeuler/yocto-meta-openeuler">yocto-meta-openeuler</a> 项目构建 ARM64 QEMU 镜像，或者在 <a class="reference external" href="http://121.36.84.172/dailybuild/openEuler-Mainline/">dailybuild</a> 下载镜像。</p>
 </div></blockquote>
 </section>
 <section id="id3">
-<h2>3. 使用QEMU运行镜像<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
+<h2>3. 使用QEMU运行镜像<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>一个简单的qemu执行命令如下：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>qemu-system-aarch64<span class="w"> </span>-M<span class="w"> </span>virt-4.0<span class="w"> </span>-m<span class="w"> </span>1G<span class="w"> </span>-cpu<span class="w"> </span>cortex-a57<span class="w"> </span>-nographic<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-kernel<span class="w"> </span>zImage<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-initrd<span class="w"> </span>openeuler-image-qemu-aarch64-*.rootfs.cpio.gz
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic <span class="se">\</span>
+    -kernel zImage <span class="se">\</span>
+    -initrd openeuler-image-qemu-aarch64-*.rootfs.cpio.gz
 </pre></div>
 </div>
 <p>执行之后等待OS加载完成，很快就能看到登陆提示：</p>
@@ -172,7 +173,7 @@
 </div></blockquote>
 </section>
 <section id="id4">
-<h2>4. 使能网络场景<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
+<h2>4. 使能网络场景<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>通过 QEMU 的 <code class="docutils literal notranslate"><span class="pre">virtio-net</span></code> 和宿主机上的虚拟网卡，可以实现宿主机和 openEuler Embedded 之间的网络通信，之后可以通过 <code class="docutils literal notranslate"><span class="pre">scp</span></code> 实现宿主机和 openEuler Embedded 传输文件。</p>
 <div class="admonition note">
@@ -187,7 +188,7 @@
 </pre></div>
 </div>
 <p>其执行需要root权限：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>chmod<span class="w"> </span>a+x<span class="w"> </span>/etc/qemu-ifup
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>chmod a+x /etc/qemu-ifup
 </pre></div>
 </div>
 <p>通过 <code class="file docutils literal notranslate"><span class="pre">qemu-ifup</span></code> 脚本，宿主机上将创建名为tap0的虚拟网卡，地址为 <code class="docutils literal notranslate"><span class="pre">192.168.10.1</span></code>。</p>
@@ -195,11 +196,11 @@
 <p><strong>Step2：启动QEMU时添加netdev</strong></p>
 <blockquote>
 <div><p>针对aarch64(ARM Cortex A57)，运行如下命令：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>qemu-system-aarch64<span class="w"> </span>-M<span class="w"> </span>virt-4.0<span class="w"> </span>-m<span class="w"> </span>1G<span class="w"> </span>-cpu<span class="w"> </span>cortex-a57<span class="w"> </span>-nographic<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-kernel<span class="w"> </span>zImage<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-initrd<span class="w"> </span>openeuler-image-qemu-aarch64-*.rootfs.cpio.gz<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-device<span class="w"> </span>virtio-net-device,netdev<span class="o">=</span>tap0<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-netdev<span class="w"> </span>tap,id<span class="o">=</span>tap0,script<span class="o">=</span>/etc/qemu-ifup
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic <span class="se">\</span>
+    -kernel zImage <span class="se">\</span>
+    -initrd openeuler-image-qemu-aarch64-*.rootfs.cpio.gz <span class="se">\</span>
+    -device virtio-net-device,netdev<span class="o">=</span>tap0 <span class="se">\</span>
+    -netdev tap,id<span class="o">=</span>tap0,script<span class="o">=</span>/etc/qemu-ifup
 </pre></div>
 </div>
 </div></blockquote>
@@ -212,14 +213,14 @@
 </pre></div>
 </div>
 <p>也可以通过 <code class="docutils literal notranslate"><span class="pre">ifconfig</span></code> 手动配置新的地址，如：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ifconfig<span class="w"> </span>eth0<span class="w"> </span><span class="m">192</span>.168.10.2
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ifconfig eth0 <span class="m">192</span>.168.10.2
 </pre></div>
 </div>
 </div></blockquote>
 <p><strong>Step4：确认网络连通</strong></p>
 <blockquote>
 <div><p>在openEuler Embedded中，执行如下命令：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ping<span class="w"> </span><span class="m">192</span>.168.10.1
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ping <span class="m">192</span>.168.10.1
 </pre></div>
 </div>
 <p>如能ping通，则宿主机和openEuler Embedded之间的网络是连通的。</p>
@@ -227,27 +228,27 @@
 </div></blockquote>
 </section>
 <section id="id5">
-<h2>5. 使能共享文件系统场景<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h2>
+<h2>5. 使能共享文件系统场景<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>通过共享文件系统，可以使得运行 QEMU 仿真器的宿主机和 openEuler Embedded 共享文件，这样在宿主机上交叉编译的程序，拷贝到共享目录中，即可在 openEuler Embedded 上运行。注意 QEMU 必须支持 virtfs，即配置了 <code class="docutils literal notranslate"><span class="pre">--enable-virtfs</span></code>。</p>
 <p>假设将宿主机的 <code class="docutils literal notranslate"><span class="pre">/tmp</span></code> 目录作为共享目录，并事先在其中创建了名为 <code class="file docutils literal notranslate"><span class="pre">hello_openeuler.txt</span></code> 的文件，使能共享文件系统功能的操作指导如下：</p>
 <p><strong>Step1：启动QEMU时添加fsdev</strong></p>
 <blockquote>
 <div><p>针对aarch64(ARM Cortex A57)，运行如下命令：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>qemu-system-aarch64<span class="w"> </span>-M<span class="w"> </span>virt-4.0<span class="w"> </span>-m<span class="w"> </span>1G<span class="w"> </span>-cpu<span class="w"> </span>cortex-a57<span class="w"> </span>-nographic<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-kernel<span class="w"> </span>zImage<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-initrd<span class="w"> </span>openeuler-image-qemu-aarch64-*.rootfs.cpio.gz<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-device<span class="w"> </span>virtio-9p-device,fsdev<span class="o">=</span>fs1,mount_tag<span class="o">=</span>host<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>-fsdev<span class="w"> </span>local,security_model<span class="o">=</span>passthrough,id<span class="o">=</span>fs1,path<span class="o">=</span>/tmp
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic <span class="se">\</span>
+    -kernel zImage <span class="se">\</span>
+    -initrd openeuler-image-qemu-aarch64-*.rootfs.cpio.gz <span class="se">\</span>
+    -device virtio-9p-device,fsdev<span class="o">=</span>fs1,mount_tag<span class="o">=</span>host <span class="se">\</span>
+    -fsdev local,security_model<span class="o">=</span>passthrough,id<span class="o">=</span>fs1,path<span class="o">=</span>/tmp
 </pre></div>
 </div>
 </div></blockquote>
 <p><strong>Step2：映射文件系统</strong></p>
 <blockquote>
 <div><p>在 openEuler Embedded 启动并登录之后，需要运行如下命令，映射(mount)共享文件系统：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>/tmp
-<span class="gp">$ </span>mkdir<span class="w"> </span>host
-<span class="gp">$ </span>mount<span class="w"> </span>-t<span class="w"> </span>9p<span class="w"> </span>-o<span class="w"> </span><span class="nv">trans</span><span class="o">=</span>virtio,version<span class="o">=</span>9p2000.L<span class="w"> </span>host<span class="w"> </span>/tmp/host
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span> /tmp
+<span class="gp">$ </span>mkdir host
+<span class="gp">$ </span>mount -t 9p -o <span class="nv">trans</span><span class="o">=</span>virtio,version<span class="o">=</span>9p2000.L host /tmp/host
 </pre></div>
 </div>
 <p>即把共享文件系统映射到 openEuler Embedded 的 <code class="docutils literal notranslate"><span class="pre">/tmp/host</span></code> 目录下。</p>
@@ -255,7 +256,7 @@
 <p><strong>Step3：检查共享是否成功</strong></p>
 <blockquote>
 <div><p>在openEuler Embedded中，执行如下命令：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls<span class="w"> </span>/tmp/host
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ls /tmp/host
 </pre></div>
 </div>
 <p>如能发现hello_openeuler.txt，则共享成功。</p>
@@ -263,7 +264,7 @@
 </div></blockquote>
 </section>
 <section id="id6">
-<h2>附录：QEMU常用的启动参数<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h2>
+<h2>附录：QEMU常用的启动参数<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>以下是一些常用的QEMU启动参数：</p>
 <ul class="simple">

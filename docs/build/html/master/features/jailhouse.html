@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>轻量级虚拟化工具 Jailhouse &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
@@ -13,8 +13,9 @@
   <![endif]-->
   
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -100,9 +101,9 @@
            <div itemprop="articleBody">
              
   <section id="jailhouse">
-<h1>轻量级虚拟化工具 Jailhouse<a class="headerlink" href="#jailhouse" title="Permalink to this heading">¶</a></h1>
+<h1>轻量级虚拟化工具 Jailhouse<a class="headerlink" href="#jailhouse" title="Permalink to this headline">¶</a></h1>
 <section id="id1">
-<h2>总体介绍<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<h2>总体介绍<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Jailhouse 是一种轻量级虚拟化工具，与传统的全功能虚拟化解决方案（如 KVM 和 Xen）不同，它不提供完整的虚拟机管理和抽象功能，
 而是一种基于Linux的静态分区虚拟化方案。Jailhouse 不支持任何设备模拟，不同客户虚拟机之间也不共享任何 CPU，所以也没有调度器。</p>
@@ -114,14 +115,14 @@ Jailhouse 的第一个 cell 叫 Root Cell，这是一个特权Cell，内部运�
 </section>
 <hr class="docutils" />
 <section id="id2">
-<h2>Jailhouse 构建指导<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
+<h2>Jailhouse 构建指导<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>openEuler Embedded 目前支持在 qemu-arm64 和 RPI4 上运行 Jailhouse，默认集成到了 openeuler-image-mcs 镜像，构建方法可参考 <a class="reference internal" href="mcs.html#mcs-build"><span class="std std-ref">mcs镜像构建指导</span></a>。</p>
 </div></blockquote>
 </section>
 <hr class="docutils" />
 <section id="id3">
-<h2>Jailhouse 使用指导<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
+<h2>Jailhouse 使用指导<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>Jailhouse 构建完成后，生成文件分为三部分：</p>
 <ul class="simple">
@@ -179,21 +180,21 @@ Jailhouse 的第一个 cell 叫 Root Cell，这是一个特权Cell，内部运�
 </section>
 <hr class="docutils" />
 <section id="jailhouse-freertos">
-<h2>使用 Jailhouse 运行 FreeRTOS<a class="headerlink" href="#jailhouse-freertos" title="Permalink to this heading">¶</a></h2>
+<h2>使用 Jailhouse 运行 FreeRTOS<a class="headerlink" href="#jailhouse-freertos" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>目前仅支持在 qemu-arm64 上通过 Jailhouse 运行 FreeRTOS。</p>
 <ol class="arabic">
 <li><p>添加 FreeRTOS 的构建</p>
 <p>根据 <a class="reference internal" href="mcs.html#mcs-build"><span class="std std-ref">mcs镜像构建指导</span></a>，使用 oebuild 初始化编译环境。</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># qemu-arm64</span>
-oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"> </span>aarch64-std<span class="w"> </span>-f<span class="w"> </span>openeuler-mcs<span class="w"> </span>-d<span class="w"> </span>&lt;build_arm64_mcs&gt;
+oebuild generate -p aarch64-std -f openeuler-mcs -d &lt;build_arm64_mcs&gt;
 </pre></div>
 </div>
 <p>进入 <code class="docutils literal notranslate"><span class="pre">&lt;build&gt;</span></code> 目录，添加 <code class="docutils literal notranslate"><span class="pre">meta-freertos</span></code></p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># BBLAYERS 中添加 meta-freertos</span>
-vi<span class="w"> </span>conf/bblayers.conf
+vi conf/bblayers.conf
 
-BBLAYERS<span class="w"> </span>?<span class="o">=</span><span class="w"> </span><span class="s2">&quot; \</span>
+BBLAYERS ?<span class="o">=</span> <span class="s2">&quot; \</span>
 <span class="s2">  ... ...</span>
 <span class="s2">/usr1/openeuler/src/yocto-poky/../yocto-meta-openeuler/rtos/meta-freertos \</span>
 <span class="s2">&quot;</span>
@@ -201,18 +202,18 @@ BBLAYERS<span class="w"> </span>?<span class="o">=</span><span class="w"> </span
 </div>
 </li>
 <li><p>构建 jailhouse-freertos</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>oebuild<span class="w"> </span>bitbake<span class="w"> </span>jailhouse-freertos
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>oebuild bitbake jailhouse-freertos
 </pre></div>
 </div>
 </li>
 <li><p>加载 FreeRTOS</p>
 <p>构建完成后，oebuild 构建目录下可以获取 <code class="docutils literal notranslate"><span class="pre">FreeRTOS.bin</span></code>，放到 qemu 上通过 Jailhouse 加载运行：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 获取 FreeRTOS.bin</span>
-find<span class="w"> </span>.<span class="w"> </span>-name<span class="w"> </span>FreeRTOS.bin
+find . -name FreeRTOS.bin
 
 <span class="c1"># 放到 qemu 上，通过 Jailhouse 加载运行</span>
-jailhouse<span class="w"> </span>cell<span class="w"> </span>load<span class="w"> </span><span class="m">1</span><span class="w"> </span>FreeRTOS.bin
-jailhouse<span class="w"> </span>cell<span class="w"> </span>start<span class="w"> </span><span class="m">1</span>
+jailhouse cell load <span class="m">1</span> FreeRTOS.bin
+jailhouse cell start <span class="m">1</span>
 </pre></div>
 </div>
 </li>

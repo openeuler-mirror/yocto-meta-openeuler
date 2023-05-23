@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>软实时系统介绍 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
@@ -13,8 +13,9 @@
   <![endif]-->
   
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -95,10 +96,10 @@
            <div itemprop="articleBody">
              
   <section id="preempt-rt">
-<span id="id1"></span><h1>软实时系统介绍<a class="headerlink" href="#preempt-rt" title="Permalink to this heading">¶</a></h1>
+<span id="id1"></span><h1>软实时系统介绍<a class="headerlink" href="#preempt-rt" title="Permalink to this headline">¶</a></h1>
 <p>本章主要介绍openEuler Embedded软实时系统的特性说明，构建方式和性能测试。</p>
 <section id="id2">
-<h2>软实时特性介绍<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
+<h2>软实时特性介绍<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p><strong>实时性简介</strong></p>
 <blockquote>
 <div><p>实时的诉求通常是事件的响应时间不能超过规定的期限，一个事件的最大响应时间应该是确定的、可以预测的。</p>
@@ -118,15 +119,15 @@
 </div></blockquote>
 </section>
 <section id="id3">
-<h2>软实时镜像构建指导<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
+<h2>软实时镜像构建指导<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <p>具体下载源码和编译流程建议参考：<a class="reference internal" href="../yocto/quickbuild/container-build.html#container-build"><span class="std std-ref">容器环境下的快速构建指导</span></a></p>
 <blockquote>
 <div><p>构建RT镜像可以使用 <code class="file docutils literal notranslate"><span class="pre">oe_helper.sh</span></code> ，示例如下：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>进入构建脚本所在路径
-<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>/usr1/openeuler/src/yocto-meta-openeuler/scripts/
+<span class="gp">$ </span><span class="nb">cd</span> /usr1/openeuler/src/yocto-meta-openeuler/scripts/
 
-<span class="gp"># </span>通过<span class="w"> </span>oe_helper.sh<span class="w"> </span>进行构建
-<span class="gp">$ </span><span class="nb">source</span><span class="w"> </span>oe_helper.sh
+<span class="gp"># </span>通过 oe_helper.sh 进行构建
+<span class="gp">$ </span><span class="nb">source</span> oe_helper.sh
 <span class="go">Invalid input.</span>
 <span class="go">Usage:</span>
 <span class="go">download mode: source oe_helper.sh [-D] [-d DOWNLOAD_DIR] &lt;-b BRANCH&gt; &lt;-m MANIFEST_FILE&gt;</span>
@@ -157,12 +158,12 @@
 <span class="go">                        systemd</span>
 <span class="go">  --enable-rt       Enable PREEMPT_RT kernel</span>
 
-<span class="gp"># </span>根据提示，-p<span class="w"> </span>指定编译的目标镜像，并开启<span class="w"> </span>--enable-rt<span class="w"> </span>选项：
+<span class="gp"># </span>根据提示，-p 指定编译的目标镜像，并开启 --enable-rt 选项：
 <span class="gp"># </span>构建树莓派的RT镜像：
-<span class="gp">$ </span><span class="nb">source</span><span class="w"> </span>oe_helper.sh<span class="w"> </span>-C<span class="w"> </span>-p<span class="w"> </span>raspberrypi4-64<span class="w"> </span>-o<span class="w"> </span>/usr1/build<span class="w"> </span>--enable-rt
+<span class="gp">$ </span><span class="nb">source</span> oe_helper.sh -C -p raspberrypi4-64 -o /usr1/build --enable-rt
 
-<span class="gp"># </span>构建qemu<span class="w"> </span>RT镜像：
-<span class="gp">$ </span><span class="nb">source</span><span class="w"> </span>oe_helper.sh<span class="w"> </span>-C<span class="w"> </span>-p<span class="w"> </span>aarch64-std<span class="w"> </span>-o<span class="w"> </span>/usr1/build<span class="w"> </span>--enable-rt
+<span class="gp"># </span>构建qemu RT镜像：
+<span class="gp">$ </span><span class="nb">source</span> oe_helper.sh -C -p aarch64-std -o /usr1/build --enable-rt
 </pre></div>
 </div>
 </div></blockquote>
@@ -174,7 +175,7 @@
 </div>
 </section>
 <section id="id4">
-<h2>验证环境的软实时是否使能<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
+<h2>验证环境的软实时是否使能<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p>查看系统是否有PREEMPT_RT字样：</p>
 <p>输入示例：</p>
@@ -189,7 +190,7 @@
 </ul>
 </section>
 <section id="id5">
-<h2>软实时性能测试<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h2>
+<h2>软实时性能测试<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <p><strong>软实时相关测试</strong></p>
 <p>参考 <a class="reference external" href="https://wiki.linuxfoundation.org/realtime/documentation/howto/tools/rt-tests">RT-Tests 指导</a> 进行软实时相关测试，用例包括但不限于：</p>
 <ol class="arabic simple">
@@ -233,7 +234,7 @@
 </pre></div>
 </div>
 <p>输出示例：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>/dev/cpu_dma_latency<span class="w"> </span><span class="nb">set</span><span class="w"> </span>to<span class="w"> </span>0us
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>/dev/cpu_dma_latency <span class="nb">set</span> to 0us
 <span class="go">policy: fifo: loadavg: 2.32 1.99 1.58 1/95 311</span>
 
 <span class="go">T: 0 (  311) P:90 I:100 C:10000000 Min:      7 Act:    9 Avg:    8 Max:      16</span>

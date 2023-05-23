@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Yocto 入门文档三 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
@@ -13,8 +13,9 @@
   <![endif]-->
   
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -117,10 +118,10 @@
            <div itemprop="articleBody">
              
   <section id="yocto">
-<span id="yocto-getting-started3"></span><h1>Yocto 入门文档三<a class="headerlink" href="#yocto" title="Permalink to this heading">¶</a></h1>
+<span id="yocto-getting-started3"></span><h1>Yocto 入门文档三<a class="headerlink" href="#yocto" title="Permalink to this headline">¶</a></h1>
 <p>任务是BitBake的执行单元，变量可能会对任务产生影响。本篇章介绍常用的变量与任务。</p>
 <section id="id1">
-<h2>基本变量<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<h2>基本变量<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>此章节仅介绍一些最基本的变量，开发者如果有不理解的变量，可以在 <code class="file docutils literal notranslate"><span class="pre">poky/documentation/ref-manual/variables.rst</span></code> 文档查找介绍。此外，这些变量通常在bitbake.conf文件存在定义。本节提供了在OpenEmbedded（Yocto）构建系统中定义的变量的参考。</p>
 <ul class="simple">
 <li><p><strong>MACHINE：</strong> 指定使用的硬件配置文件，通常在local.conf文件定义；</p></li>
@@ -180,17 +181,17 @@
 </div>
 </section>
 <section id="id2">
-<h2>基本任务<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
+<h2>基本任务<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>配方（.bb文件）使用任务来完成软件的配置、编译和打包等。本节提供了在OpenEmbedded（Yocto）构建系统中定义的任务的参考。</p>
 <p>Yocto支持的主要任务如下：</p>
 <img alt="../_images/yocto_tasks.png" src="../_images/yocto_tasks.png" />
 <p>每个包实际的任务执行顺序可以在工作目录查看，具体是 <code class="file docutils literal notranslate"><span class="pre">$</span><em><span class="pre">WORKDIR</span></em><span class="pre">/temp/log.task_order</span></code> 文件。</p>
 <section id="do-build">
-<h3><code class="docutils literal notranslate"><span class="pre">do_build</span></code><a class="headerlink" href="#do-build" title="Permalink to this heading">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">do_build</span></code><a class="headerlink" href="#do-build" title="Permalink to this headline">¶</a></h3>
 <p>配方的默认任务，依赖于构建一个配方的所有其他正常构建任务。因为Yocto默认在 <code class="file docutils literal notranslate"><span class="pre">meta/classes/base.bbclass</span></code> 中设置了 <code class="docutils literal notranslate"><span class="pre">do_build[noexec]</span> <span class="pre">=</span> <span class="pre">&quot;1&quot;</span></code> ，因此此任务并不会真的执行，只是一个虚拟任务，用于串连起各个模块的任务流。构建时，temp目录下不会存在其执行执行脚本及执行日志文件。</p>
 </section>
 <section id="do-fetch-do-unpack">
-<h3><code class="docutils literal notranslate"><span class="pre">do_fetch/do_unpack</span></code><a class="headerlink" href="#do-fetch-do-unpack" title="Permalink to this heading">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">do_fetch/do_unpack</span></code><a class="headerlink" href="#do-fetch-do-unpack" title="Permalink to this headline">¶</a></h3>
 <p>配方必须做的第一件事是指定如何获取源文件，获取源码通过SRC_URI变量进行控制。</p>
 <p><code class="docutils literal notranslate"><span class="pre">do_fetch</span></code> 任务获取源文件， <code class="docutils literal notranslate"><span class="pre">do_unpack</span></code> 任务将源文件解压到工作目录（${WORKDIR}）下。默认情况下，一切都在工作目录中完成，该目录具有已定义的结构。在下图中，存在两个示例层次结构：一个基于包架构（即PACKAGE_ARCH）和一个基于机器（即MACHINE）。底层结构是相同的，区别在于OpenEmbedded构建系统使用什么作为构建目标（例如通用架构、构建主机、SDK或特定机器）。</p>
 <img alt="../_images/tasks_do_fetch.png" src="../_images/tasks_do_fetch.png" />
@@ -203,7 +204,7 @@
 <p>详见 <code class="file docutils literal notranslate"><span class="pre">meta/classes/base.bbclass</span></code> 。</p>
 </section>
 <section id="do-patch">
-<h3><code class="docutils literal notranslate"><span class="pre">do_patch</span></code><a class="headerlink" href="#do-patch" title="Permalink to this heading">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">do_patch</span></code><a class="headerlink" href="#do-patch" title="Permalink to this headline">¶</a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">do_patch</span></code> 任务在获取、解压源码后打入补丁到源码目录（${S}），根据SRC_URI变量中补丁文件写入的顺序打入补丁。</p>
 <ul class="simple">
 <li><p>SRC_URI中提到的任何名称以 <code class="docutils literal notranslate"><span class="pre">.patch</span></code> 或 <code class="docutils literal notranslate"><span class="pre">.diff</span></code> 结尾的文件或这些后缀的压缩版本（例如 <code class="docutils literal notranslate"><span class="pre">diff.gz</span></code> 被视为补丁）;</p></li>
@@ -224,24 +225,24 @@
 <p>详见 <code class="file docutils literal notranslate"><span class="pre">meta/classes/patch.bbclass</span></code> 。</p>
 </section>
 <section id="do-prepare-recipe-sysroot">
-<h3><code class="docutils literal notranslate"><span class="pre">do_prepare_recipe_sysroot</span></code><a class="headerlink" href="#do-prepare-recipe-sysroot" title="Permalink to this heading">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">do_prepare_recipe_sysroot</span></code><a class="headerlink" href="#do-prepare-recipe-sysroot" title="Permalink to this headline">¶</a></h3>
 <p>配方通常需要使用构建主机上其他配方提供的文件。例如，配方构建时需要访问依赖库及关联的头文件，完成这种访问的方式是用文件填充sysroot。每个配方在其工作目录中有两个sysroot，一个用于目标文件 (recipe-sysroot)，另一个用于构建主机的本地文件(recipe-sysroot-native)。</p>
 <p>根据DEPENDS指定的依赖关系，将依赖包执行 <code class="docutils literal notranslate"><span class="pre">do_populate_sysroot</span></code> 任务放到sysroot的文件安装到当前配方特定的sysroot中（${RECIPE_SYSROOT}与${RECIPE_SYSROOT_NATIVE}）。</p>
 <p>详见 <code class="file docutils literal notranslate"><span class="pre">meta/classes/staging.bbclass</span></code> 。</p>
 </section>
 <section id="do-configure">
-<h3><code class="docutils literal notranslate"><span class="pre">do_configure</span></code><a class="headerlink" href="#do-configure" title="Permalink to this heading">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">do_configure</span></code><a class="headerlink" href="#do-configure" title="Permalink to this headline">¶</a></h3>
 <p>通过启用和禁用正在构建软件的任何构建时和配置选项来配置源码，此任务在当前工作目录设置为${B}的情况下运行。如果找到makefile（Makefile、makefile或GNUmakefile）并且CLEANBROKEN未设置为”1”，则此任务的默认行为是运行 <code class="docutils literal notranslate"><span class="pre">oe_runmake</span> <span class="pre">clean</span></code> ；如果未找到此类文件或CLEANBROKEN变量设置为”1”，则 <code class="docutils literal notranslate"><span class="pre">do_configure</span></code> 任务不执行任何操作。</p>
 <p>配置选项可以来自配方本身，也可以来自继承的类。此外，软件本身可能会根据为其构建的目标进行自我配置。如果使用的是autotools类，则可以使用EXTRA_OECONF或PACKAGECONFIG_CONFARGS变量添加其他配置选项；对于继承cmake类，可通过使用EXTRA_OECMAKE变量添加配置选项。</p>
 <p>详见 <code class="file docutils literal notranslate"><span class="pre">base.bbclass、autotools.bbclass、cmake.bbclass、meson.bbclass</span></code> 等，以下 <code class="docutils literal notranslate"><span class="pre">do_compile、do_install</span></code> 任务同。</p>
 </section>
 <section id="do-compile">
-<h3><code class="docutils literal notranslate"><span class="pre">do_compile</span></code><a class="headerlink" href="#do-compile" title="Permalink to this heading">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">do_compile</span></code><a class="headerlink" href="#do-compile" title="Permalink to this headline">¶</a></h3>
 <p>编译源代码，此任务在当前工作目录设置为${B}的情况下运行。如果找到构建文件（Makefile、makefile或GNUmakefile），则此任务的默认行为是运行 <code class="docutils literal notranslate"><span class="pre">oe_runmake</span></code> 函数。如果没有找到这样的文件， <code class="docutils literal notranslate"><span class="pre">do_compile</span></code> 任务什么也不做。</p>
 <img alt="../_images/tasks_do_compile.png" src="../_images/tasks_do_compile.png" />
 </section>
 <section id="do-install">
-<h3><code class="docutils literal notranslate"><span class="pre">do_install</span></code><a class="headerlink" href="#do-install" title="Permalink to this heading">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">do_install</span></code><a class="headerlink" href="#do-install" title="Permalink to this headline">¶</a></h3>
 <p>复制要打包文件到保留区（${D}），此任务在当前工作目录设置为${B}的情况下运行。 <code class="docutils literal notranslate"><span class="pre">do_install</span></code> 任务，以及直接或间接依赖于已安装文件的其他任务（例如 <code class="docutils literal notranslate"><span class="pre">do_package、do_package_write_*、do_rootfs</span></code>）都在fakeroot下运行。</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -255,13 +256,13 @@
 </div>
 </section>
 <section id="do-populate-sysroot">
-<h3><code class="docutils literal notranslate"><span class="pre">do_populate_sysroot</span></code><a class="headerlink" href="#do-populate-sysroot" title="Permalink to this heading">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">do_populate_sysroot</span></code><a class="headerlink" href="#do-populate-sysroot" title="Permalink to this headline">¶</a></h3>
 <p>此任务用于将 <code class="docutils literal notranslate"><span class="pre">do_install</span></code> 任务安装的文件子集（$D目录的文件）复制到（SYSROOT_DESTDIR目录），默认会对里面的文件进行 <code class="docutils literal notranslate"><span class="pre">strip</span></code> ，之后将SYSROOT_DESTDIR目录下的文件拷贝到”${COMPONENTS_DIR}/${PACKAGE_ARCH}/${PN}”，可以通过修改SYSROOT_DIRS适配填充SYSROOT_DESTDIR的目录列表。有关如何从其他配方访问这些文件的信息，见STAGING_DIR*变量。默认情况下不会复制其他配方在构建时通常不需要的目录（例如 /etc）。</p>
 <p>配方永远不应该直接填充SYSROOT_DESTDIR（即将文件写入SYSROOT_DESTDIR），应该在 <code class="docutils literal notranslate"><span class="pre">do_install</span></code> 任务期间安装到标准位置（${D}）。这种限制的原因是几乎所有填充sysroot的文件都在清单中编目，以确保在修改或删除配方时可以删除这些文件。因此，sysroot能够保持不受陈旧文件的影响。</p>
 <p>详见 <code class="file docutils literal notranslate"><span class="pre">meta/classes/staging.bbclass</span></code> 。</p>
 </section>
 <section id="do-package">
-<h3><code class="docutils literal notranslate"><span class="pre">do_package</span></code><a class="headerlink" href="#do-package" title="Permalink to this heading">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">do_package</span></code><a class="headerlink" href="#do-package" title="Permalink to this headline">¶</a></h3>
 <p>根据PACKAGES和FILES_xxx变量，分析在${D}目录中找到的文件，并根据可用的包和文件将它们拆分为子集。</p>
 <ul class="simple">
 <li><p>此任务会通过PACKAGES并使用每个包对应的FILES变量将文件分配给包。如果一个文件与PACKAGES中多个包的FILES变量匹配，它将被分配到最早（最左边）的包。</p></li>
@@ -273,11 +274,11 @@
 <p>详见 <code class="file docutils literal notranslate"><span class="pre">meta/classes/package.bbclass</span></code> 。</p>
 </section>
 <section id="do-packagedata">
-<h3><code class="docutils literal notranslate"><span class="pre">do_packagedata</span></code><a class="headerlink" href="#do-packagedata" title="Permalink to this heading">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">do_packagedata</span></code><a class="headerlink" href="#do-packagedata" title="Permalink to this headline">¶</a></h3>
 <p>将 <code class="docutils literal notranslate"><span class="pre">do_package</span></code> 任务生成的包元数据保存在PKGDATA_DIR目录中，以使其全局可用，以便构建系统可以生成最终包。</p>
 </section>
 <section id="do-package-write">
-<h3><code class="docutils literal notranslate"><span class="pre">do_package_write_*</span></code><a class="headerlink" href="#do-package-write" title="Permalink to this heading">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">do_package_write_*</span></code><a class="headerlink" href="#do-package-write" title="Permalink to this headline">¶</a></h3>
 <dl class="simple">
 <dt><strong>do_package_write_rpm：</strong></dt><dd><p>创建 RPM 包（即*.rpm文件）并将它们放在包源（package feeds）区域${DEPLOY_DIR_RPM} 目录中。</p>
 </dd>
@@ -291,13 +292,13 @@
 <p>详见对应的 <code class="file docutils literal notranslate"><span class="pre">meta/classes/package_*.bbclass</span></code> 。</p>
 </section>
 <section id="do-package-qa">
-<h3><code class="docutils literal notranslate"><span class="pre">do_package_qa</span></code><a class="headerlink" href="#do-package-qa" title="Permalink to this heading">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">do_package_qa</span></code><a class="headerlink" href="#do-package-qa" title="Permalink to this headline">¶</a></h3>
 <p>对打包文件运行QA检查。在构建配方时，OpenEmbedded构建系统会对输出执行各种QA检查，以确保检测和报告常见问题。有时，当你创建一个新配方来构建新软件时，它会顺利构建。如果情况并非如此，或者当你在构建任何软件时遇到QA问题，则可能需要一些时间来解决这些问题。</p>
 <p>虽然忽略QA消息甚至禁用QA检查很诱人，但最好尝试解决任何报告的QA问题。QA消息列表和可能遇到的问题说明可参考 <code class="file docutils literal notranslate"><span class="pre">poky/documentation/ref-manual/qa-checks.rst</span></code>。</p>
 <p>具体检查见 <code class="file docutils literal notranslate"><span class="pre">meta/classes/insane.bbclass</span></code> 。</p>
 </section>
 <section id="do-deploy">
-<h3><code class="docutils literal notranslate"><span class="pre">do_deploy</span></code><a class="headerlink" href="#do-deploy" title="Permalink to this heading">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">do_deploy</span></code><a class="headerlink" href="#do-deploy" title="Permalink to this headline">¶</a></h3>
 <p>将要部署的输出文件写入${DEPLOY_DIR_IMAGE}，任务在当前工作目录设置为${B}的情况下运行。</p>
 <p>实现此任务的配方应继承deploy类，并应将输出写入${DEPLOYDIR}，不要将其与${DEPLOY_DIR}混淆。deploy类将 <code class="docutils literal notranslate"><span class="pre">do_deploy</span></code> 设置为共享状态（sstate）任务，该任务可以通过使用sstate来加速。sstate机制负责将输出从${DEPLOYDIR}复制到${DEPLOY_DIR_IMAGE}。</p>
 <div class="admonition note">
@@ -307,24 +308,24 @@
 <p>详见 <code class="file docutils literal notranslate"><span class="pre">meta/classes/deploy.bbclass</span></code> 。</p>
 </section>
 <section id="do-rootfs">
-<h3><code class="docutils literal notranslate"><span class="pre">do_rootfs</span></code><a class="headerlink" href="#do-rootfs" title="Permalink to this heading">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">do_rootfs</span></code><a class="headerlink" href="#do-rootfs" title="Permalink to this headline">¶</a></h3>
 <p>为镜像创建根文件系统（文件和目录结构）。</p>
 <p>详见 <code class="file docutils literal notranslate"><span class="pre">meta/classes/image.bbclass</span></code> 。</p>
 </section>
 <section id="do-image">
-<h3><code class="docutils literal notranslate"><span class="pre">do_image</span></code><a class="headerlink" href="#do-image" title="Permalink to this heading">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">do_image</span></code><a class="headerlink" href="#do-image" title="Permalink to this headline">¶</a></h3>
 <p>启动镜像生成过程，此任务通过 <code class="docutils literal notranslate"><span class="pre">IMAGE_PREPROCESS_COMMAND</span></code> 对image进行预处理，并通过动态生成的 <code class="docutils literal notranslate"><span class="pre">do_image_xxx</span></code> （镜像格式决定）任务构建图像。</p>
 <img alt="../_images/tasks_do_image.png" src="../_images/tasks_do_image.png" />
 <p>详见 <code class="file docutils literal notranslate"><span class="pre">meta/classes/image.bbclass</span></code> 。</p>
 </section>
 <section id="do-image-complete">
-<h3><code class="docutils literal notranslate"><span class="pre">do_image_complete</span></code><a class="headerlink" href="#do-image-complete" title="Permalink to this heading">¶</a></h3>
+<h3><code class="docutils literal notranslate"><span class="pre">do_image_complete</span></code><a class="headerlink" href="#do-image-complete" title="Permalink to this headline">¶</a></h3>
 <p>完成图像生成过程，此任务通过POSTPROCESS_COMMAND对图像执行后处理。</p>
 <p>详见 <code class="file docutils literal notranslate"><span class="pre">meta/classes/image.bbclass</span></code> 。</p>
 </section>
 </section>
 <section id="id3">
-<h2>全局与局部配置关系<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
+<h2>全局与局部配置关系<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <p>上一篇章我们了解了全局配置与局部配置的关系，简要来说全局配置文件与全局类文件定义的是全局配置（变量、任务等），bb文件中定义的是局部配置。</p>
 <ul class="simple">
 <li><p>全局配置：通过bblayers.conf、layer.conf、bitbake.conf与base.bbclass以及引申出的其他配置文件和类文件定义的变量与任务都可视为全局配置，参与指令有 <code class="docutils literal notranslate"><span class="pre">include</span></code>、 <code class="docutils literal notranslate"><span class="pre">require</span></code> 、 <code class="docutils literal notranslate"><span class="pre">inherit</span></code> 、 <code class="docutils literal notranslate"><span class="pre">INHERIT</span></code> ；</p></li>

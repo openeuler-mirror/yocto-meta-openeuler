@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>混合关键性系统 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
@@ -13,8 +13,9 @@
   <![endif]-->
   
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -96,9 +97,9 @@
            <div itemprop="articleBody">
              
   <section id="mixed-critical-system">
-<span id="id1"></span><h1>混合关键性系统<a class="headerlink" href="#mixed-critical-system" title="Permalink to this heading">¶</a></h1>
+<span id="id1"></span><h1>混合关键性系统<a class="headerlink" href="#mixed-critical-system" title="Permalink to this headline">¶</a></h1>
 <section id="id2">
-<h2>混合关键性系统特性介绍<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
+<h2>混合关键性系统特性介绍<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>在嵌入式场景中，虽然Linux已经得到了广泛应用，但并不能覆盖所有需求，例如高实时、高可靠、高安全的场合。这些场合往往是实时操作系统的用武之地。有些应用场景既需要Linux的管理能力、丰富的生态又需要实时操作系统的高实时、高可靠、高安全，那么一种典型的设计是采用一颗性能较强的处理器运行Linux负责富功能，一颗微控制器/DSP/实时处理器运行实时操作系统负责实时控制或者信号处理，两者之间通过I/O、网络或片外总线的形式通信。这种方式存在的问题是，硬件上需要两套系统、集成度不高，通信受限与片外物理机制的限制如速度、时延等、软件上Linux和实时操作系统两者之间是割裂的，在灵活性上、可维护性上存在改进空间。</p>
 <p>受益于硬件技术的快速发展，嵌入式系统的硬件能力越来越强大，如单核能力不断提升、单核到多核、异构多核乃至众核的演进，虚拟化技术和可信执行环境(TEE)技术的发展和应用，未来先进封装技术会带来更高的集成度等等，使得在一个片上系统中（SoC）部署多个OS具备了坚实的物理基础。</p>
 <p>同时，受应用需求的推动，如物联网化、智能化、功能安全与信息安全等等，整个嵌入式软件系统也越发复杂，全部由单一OS承载所有功能所面临的挑战越来越大。解决方式之一就是不同系统负责所各自所擅长的功能，如Windows的UI、Linux的网络通信与管理、实时操作系统的高实时与高可靠等，而且还要易于开发、部署、扩展，实现的形式可以是容器、虚拟化等。</p>
@@ -122,7 +123,7 @@
 <p>对于上述问题，openEuler Embedded的当前思路是 <strong>混合关键性系统 = 部署 + 隔离 + 调度</strong> ，即首先实现多OS的混合部署，再实现多OS之间的隔离与保护，最后通过混合关键性调度提升资源利用率， 具体可以映射到 <strong>混合部署框架</strong> 和 <strong>嵌入式虚拟化</strong>。混合部署框架解决 <strong>高效地混合部署问题</strong> 和 <strong>高效地通信与协作问题</strong>，嵌入式虚拟化解决 <strong>高效地隔离与保护问题</strong> 和 <strong>高效地资源共享与调度问题</strong>。</p>
 </section>
 <section id="os">
-<h2>多OS混合部署框架<a class="headerlink" href="#os" title="Permalink to this heading">¶</a></h2>
+<h2>多OS混合部署框架<a class="headerlink" href="#os" title="Permalink to this headline">¶</a></h2>
 <p>openEuler Embedded中多OS混合部署框架的架构图如下所示，引入了开源框架 <a class="reference external" href="https://www.openampproject.org/">OpenAMP</a> 作为基础， 并结合自身需要
 进一步创新。</p>
 <blockquote>
@@ -146,7 +147,7 @@
 <p>在上述多OS服务化部署架构中，openEuler Embedded是中心，主要对其他OS提供管理、网络、文件系统等通用服务，其他OS可以专注于其所擅长的领域提供诸如实时控制、监控等服务，并通过shell、log和debug等通道与Linux丰富而强大维测体对接从而简化开发工作。</p>
 </section>
 <section id="mcs-build">
-<span id="id3"></span><h2>构建指南<a class="headerlink" href="#mcs-build" title="Permalink to this heading">¶</a></h2>
+<span id="id3"></span><h2>构建指南<a class="headerlink" href="#mcs-build" title="Permalink to this headline">¶</a></h2>
 <p>openEuler Embedded 不仅支持混合关键性系统特性的单独构建，还实现了集成构建，能够使用同一套工具链一键式构建出包含linux, zephyr的部署镜像。</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -155,9 +156,9 @@
 <p><strong>集成构建指导</strong></p>
 <ol class="arabic">
 <li><p>根据 <a class="reference internal" href="../yocto/oebuild.html#openeuler-embedded-oebuild"><span class="std std-ref">oebuild快速构建</span></a> ，初始化oebuild工作目录；</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>oebuild<span class="w"> </span>init<span class="w"> </span>&lt;directory&gt;
-<span class="nb">cd</span><span class="w"> </span>&lt;directory&gt;
-oebuild<span class="w"> </span>update
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>oebuild init &lt;directory&gt;
+<span class="nb">cd</span> &lt;directory&gt;
+oebuild update
 </pre></div>
 </div>
 </li>
@@ -167,21 +168,21 @@ oebuild<span class="w"> </span>update
 </li>
 <li><p>进入oebuild工作目录，创建对应的编译配置文件，<strong>mcs镜像需要添加</strong> <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">openeuler-mcs</span></code>：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># qemu-arm64</span>
-oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"> </span>aarch64-std<span class="w"> </span>-f<span class="w"> </span>openeuler-mcs<span class="w"> </span>-d<span class="w"> </span>&lt;build_arm64_mcs&gt;
+oebuild generate -p aarch64-std -f openeuler-mcs -d &lt;build_arm64_mcs&gt;
 
 <span class="c1"># RPI4</span>
-oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"> </span>raspberrypi4-64<span class="w"> </span>-f<span class="w"> </span>openeuler-mcs<span class="w"> </span>-d<span class="w"> </span>&lt;build_rpi_mcs&gt;
+oebuild generate -p raspberrypi4-64 -f openeuler-mcs -d &lt;build_rpi_mcs&gt;
 
 <span class="c1"># ok3568</span>
-oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"> </span>ok3568<span class="w"> </span>-f<span class="w"> </span>openeuler-mcs<span class="w"> </span>-d<span class="w"> </span>&lt;build_ok3568_mcs&gt;
+oebuild generate -p ok3568 -f openeuler-mcs -d &lt;build_ok3568_mcs&gt;
 
 <span class="c1"># hi3093</span>
-oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"> </span>hi3093<span class="w"> </span>-f<span class="w"> </span>openeuler-mcs<span class="w"> </span>-d<span class="w"> </span>&lt;build_hi3093_mcs&gt;
+oebuild generate -p hi3093 -f openeuler-mcs -d &lt;build_hi3093_mcs&gt;
 </pre></div>
 </div>
 </li>
 <li><p>进入 <code class="docutils literal notranslate"><span class="pre">&lt;build&gt;</span></code> 目录，编译 <code class="docutils literal notranslate"><span class="pre">openeuler-image-mcs</span></code> ：</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>oebuild<span class="w"> </span>bitbake<span class="w"> </span>openeuler-image-mcs
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>oebuild bitbake openeuler-image-mcs
 </pre></div>
 </div>
 </li>
@@ -192,7 +193,7 @@ oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"
 </div>
 </section>
 <section id="id4">
-<h2>使用方法<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
+<h2>使用方法<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <p>目前混合关键性系统（mcs）支持在qemu-aarch64和树莓派上部署运行，部署mcs需要预留出必要的内存、CPU资源，并且还需要bios提供psci支持。</p>
 <dl>
 <dt>1.镜像启动</dt><dd><ul>
@@ -204,11 +205,11 @@ oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"
 <li><p><strong>对于qemu:</strong></p>
 <blockquote>
 <div><p>需要准备一份dtb文件，dtb文件的制作可参考 <a class="reference external" href="https://gitee.com/openeuler/mcs#%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E">配置dts预留出mcs_mem</a> ，并通过以下命令启动qemu：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>qemu-system-aarch64<span class="w"> </span>-M<span class="w"> </span>virt,gic-version<span class="o">=</span><span class="m">3</span><span class="w"> </span>-m<span class="w"> </span>1G<span class="w"> </span>-cpu<span class="w"> </span>cortex-a57<span class="w"> </span>-nographic<span class="w"> </span><span class="se">\</span>
--append<span class="w"> </span><span class="s1">&#39;maxcpus=3&#39;</span><span class="w"> </span>-smp<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="se">\</span>
--kernel<span class="w"> </span>zImage<span class="w"> </span><span class="se">\</span>
--initrd<span class="w"> </span>*.rootfs.cpio.gz<span class="w"> </span><span class="se">\</span>
--dtb<span class="w"> </span>qemu_mcs.dtb
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>qemu-system-aarch64 -M virt,gic-version<span class="o">=</span><span class="m">3</span> -m 1G -cpu cortex-a57 -nographic <span class="se">\</span>
+-append <span class="s1">&#39;maxcpus=3&#39;</span> -smp <span class="m">4</span> <span class="se">\</span>
+-kernel zImage <span class="se">\</span>
+-initrd *.rootfs.cpio.gz <span class="se">\</span>
+-dtb qemu_mcs.dtb
 </pre></div>
 </div>
 </div></blockquote>
@@ -233,10 +234,10 @@ oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"
 <li><p><strong>step1: 调整内核打印等级并插入内核模块</strong></p>
 <blockquote>
 <div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>为了不影响shell的使用，先屏蔽内核打印：
-<span class="gp">$ </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;1 4 1 7&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>/proc/sys/kernel/printk
+<span class="gp">$ </span><span class="nb">echo</span> <span class="s2">&quot;1 4 1 7&quot;</span> &gt; /proc/sys/kernel/printk
 
 <span class="gp"># </span>插入内核模块
-<span class="gp">$ </span>modprobe<span class="w"> </span>mcs_km.ko
+<span class="gp">$ </span>modprobe mcs_km.ko
 
 <span class="gp"># </span>备注：ok3568与hi3093已经实现了开机自动加载内核模块，无需重复此步骤
 </pre></div>
@@ -256,13 +257,13 @@ oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"
 <blockquote>
 <div><ul>
 <li><p><strong>qemu-arm64 和 RPI4：</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>rpmsg_main<span class="w"> </span>-c<span class="w"> </span><span class="o">[</span>cpu_id<span class="o">]</span><span class="w"> </span>-t<span class="w"> </span><span class="o">[</span>target_binfile<span class="o">]</span><span class="w"> </span>-a<span class="w"> </span><span class="o">[</span>target_binaddress<span class="o">]</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>rpmsg_main -c <span class="o">[</span>cpu_id<span class="o">]</span> -t <span class="o">[</span>target_binfile<span class="o">]</span> -a <span class="o">[</span>target_binaddress<span class="o">]</span>
 <span class="go">eg:</span>
-<span class="gp">$ </span>rpmsg_main<span class="w"> </span>-c<span class="w"> </span><span class="m">3</span><span class="w"> </span>-t<span class="w"> </span>/firmware/zephyr-image.bin<span class="w"> </span>-a<span class="w"> </span>0x7a000000
+<span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /firmware/zephyr-image.bin -a 0x7a000000
 </pre></div>
 </div>
 <p>若rpmsg_main成功运行，会有如下打印：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>rpmsg_main<span class="w"> </span>-c<span class="w"> </span><span class="m">3</span><span class="w"> </span>-t<span class="w"> </span>/firmware/zephyr-image.bin<span class="w"> </span>-a<span class="w"> </span>0x7a000000
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>rpmsg_main -c <span class="m">3</span> -t /firmware/zephyr-image.bin -a 0x7a000000
 <span class="go">...</span>
 <span class="go">start client os</span>
 <span class="go">...</span>
@@ -275,20 +276,20 @@ oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"
 也可以根据打印提示（ <code class="docutils literal notranslate"><span class="pre">pls</span> <span class="pre">open</span> <span class="pre">/dev/pts/1</span> <span class="pre">to</span> <span class="pre">talk</span> <span class="pre">with</span> <span class="pre">client</span> <span class="pre">OS</span></code> ），
 通过 /dev/pts/1 与 client os 进行 shell 交互，例如：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>新建一个terminal，登录到运行环境
-<span class="gp">$ </span>ssh<span class="w"> </span>user@ip
+<span class="gp">$ </span>ssh user@ip
 
 <span class="gp"># </span>连接pts设备
-<span class="gp">$ </span>screen<span class="w"> </span>/dev/pts/1
+<span class="gp">$ </span>screen /dev/pts/1
 
-<span class="gp"># </span>敲回车后，可以打开client<span class="w"> </span>os的shell，对client<span class="w"> </span>os下发命令，例如
+<span class="gp"># </span>敲回车后，可以打开client os的shell，对client os下发命令，例如
 <span class="gp">uart:~$ </span><span class="nb">help</span>
-<span class="gp">uart:~$ </span>kernel<span class="w"> </span>version
+<span class="gp">uart:~$ </span>kernel version
 
 <span class="gp">#</span>在ok3568上拉起rt-thread
-<span class="gp">$ </span>rpmsg_main<span class="w"> </span>-c<span class="w"> </span><span class="m">3</span><span class="w"> </span>-t<span class="w"> </span>/firmware/rtthread-ok3568.bin<span class="w"> </span>-a<span class="w"> </span>0x7a000000
+<span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /firmware/rtthread-ok3568.bin -a 0x7a000000
 
 <span class="gp">#</span>在hi3093上拉起uniproton
-<span class="gp">$ </span>rpmsg_main<span class="w"> </span>-c<span class="w"> </span><span class="m">3</span><span class="w"> </span>-t<span class="w"> </span>/firmware/Uniproton_hi3093.bin<span class="w"> </span>-a<span class="w"> </span>0x93000000
+<span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /firmware/Uniproton_hi3093.bin -a 0x93000000
 </pre></div>
 </div>
 </li>
@@ -319,8 +320,8 @@ oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"
 </li>
 <li><p><strong>hi3093 开发板：</strong></p>
 <p>hi3093目前支持 uniproton 的拉起，查看串口输出。</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>拉起<span class="w"> </span>uniproton
-<span class="gp">$ </span>./rpmsg_main<span class="w"> </span>-c<span class="w"> </span><span class="m">3</span><span class="w"> </span>-t<span class="w"> </span>/firmware/hi3093_ut.bin<span class="w"> </span>-a<span class="w"> </span>0x93000000<span class="w"> </span><span class="p">&amp;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>拉起 uniproton
+<span class="gp">$ </span>./rpmsg_main -c <span class="m">3</span> -t /firmware/hi3093_ut.bin -a 0x93000000 <span class="p">&amp;</span>
 
 <span class="go">...</span>
 <span class="go">start client os</span>
@@ -333,7 +334,7 @@ oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"
 <p>此时， 根据打印提示（ <code class="docutils literal notranslate"><span class="pre">pls</span> <span class="pre">open</span> <span class="pre">/dev/pts/1</span> <span class="pre">to</span> <span class="pre">talk</span> <span class="pre">with</span> <span class="pre">client</span> <span class="pre">OS</span></code> ），
 通过 /dev/pts/1 可以与 uniproton 进行交互，例如：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>连接pts设备
-<span class="gp">$ </span>screen<span class="w"> </span>/dev/pts/1
+<span class="gp">$ </span>screen /dev/pts/1
 
 <span class="gp"># </span>敲回车后，可以查看uniproton输出信息
 </pre></div>

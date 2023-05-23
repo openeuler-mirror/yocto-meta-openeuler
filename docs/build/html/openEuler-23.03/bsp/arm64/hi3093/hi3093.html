@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hi3093 镜像构建与使用 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
@@ -13,8 +13,9 @@
   <![endif]-->
   
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -93,10 +94,10 @@
            <div itemprop="articleBody">
              
   <section id="hi3093">
-<h1>Hi3093 镜像构建与使用<a class="headerlink" href="#hi3093" title="Permalink to this heading">¶</a></h1>
+<h1>Hi3093 镜像构建与使用<a class="headerlink" href="#hi3093" title="Permalink to this headline">¶</a></h1>
 <p>本章主要介绍openEuler Embedded中HI3093系列板卡的镜像构建，使用和特性介绍。</p>
 <section id="id1">
-<h2>HI3093镜像构建指导<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<h2>HI3093镜像构建指导<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic">
 <li><p>参照 <a class="reference internal" href="../../../yocto/oebuild.html#openeuler-embedded-oebuild"><span class="std std-ref">基于 oebuild 快速构建</span></a> 完成oebuild安装，并详细了解构建过程</p></li>
 <li><p>依次执行以下命令完成构建</p>
@@ -128,22 +129,22 @@
 </section>
 <hr class="docutils" />
 <section id="id2">
-<h2>根文件系统解压方法<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
+<h2>根文件系统解压方法<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>若希望对根文件系统进行修改，例如添加新开发的驱动或软件，可以通过以下步骤解开文件系统，进行修改后重新打包：</p>
 <ol class="arabic">
 <li><p>解压 rootfs</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 将根文件系统解压到 rootfs 中</span>
-$<span class="w"> </span>mkdir<span class="w"> </span><span class="si">${</span><span class="nv">WORKDIR</span><span class="si">}</span>/rootfs
-$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span><span class="si">${</span><span class="nv">WORKDIR</span><span class="si">}</span>/rootfs
-$<span class="w"> </span>zcat<span class="w"> </span>&lt;...&gt;/openeuler-image-hi3093-*.rootfs.cpio.gz<span class="w"> </span><span class="p">|</span><span class="w"> </span>cpio<span class="w"> </span>-dim
+$ mkdir <span class="si">${</span><span class="nv">WORKDIR</span><span class="si">}</span>/rootfs
+$ <span class="nb">cd</span> <span class="si">${</span><span class="nv">WORKDIR</span><span class="si">}</span>/rootfs
+$ zcat &lt;...&gt;/openeuler-image-hi3093-*.rootfs.cpio.gz <span class="p">|</span> cpio -dim
 </pre></div>
 </div>
 <p>解压完成后，可以在 rootfs 目录下查看hi3093根文件系统的文件或者自行添加内容。</p>
 </li>
 <li><p>重新打包</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 将根文件系统文件打包为cpio</span>
-$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span><span class="si">${</span><span class="nv">WORKDIR</span><span class="si">}</span>/rootfs
-$<span class="w"> </span>find<span class="w"> </span>.<span class="w"> </span><span class="p">|</span><span class="w"> </span>cpio<span class="w"> </span>-H<span class="w"> </span>newc<span class="w"> </span>-o<span class="w"> </span>--quiet<span class="w"> </span><span class="p">|</span><span class="w"> </span>gzip<span class="w"> </span>-c<span class="w"> </span>--quiet<span class="w"> </span>&gt;<span class="w"> </span>../openeuler-image-hi3093.cpio.gz
+$ <span class="nb">cd</span> <span class="si">${</span><span class="nv">WORKDIR</span><span class="si">}</span>/rootfs
+$ find . <span class="p">|</span> cpio -H newc -o --quiet <span class="p">|</span> gzip -c --quiet &gt; ../openeuler-image-hi3093.cpio.gz
 </pre></div>
 </div>
 </li>
@@ -151,12 +152,12 @@ $<span class="w"> </span>find<span class="w"> </span>.<span class="w"> </span><s
 </section>
 <hr class="docutils" />
 <section id="id3">
-<h2>Hi3093 镜像烧写方法<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
+<h2>Hi3093 镜像烧写方法<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <p>目前文件系统烧录升级仅支持在原有核心板系统上进行。</p>
 <ol class="arabic">
 <li><p>通过网线连接核心板，修改对应的以太网卡地址为 <code class="docutils literal notranslate"><span class="pre">192.168.0.10</span></code></p></li>
 <li><p>通过rj45转usb线连接核心板，上电启动至uboot阶段，键盘输入 <code class="docutils literal notranslate"><span class="pre">&lt;ctrl&gt;</span> <span class="pre">+</span> <span class="pre">b</span></code> ，进入uboot命令行</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>往寄存器<span class="w"> </span>0x8740148<span class="w"> </span>写入1，然后核心板会进入重启
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>往寄存器 0x8740148 写入1，然后核心板会进入重启
 <span class="go">=&gt; reg_wr 0x8740148 1</span>
 </pre></div>
 </div>
@@ -165,7 +166,7 @@ $<span class="w"> </span>find<span class="w"> </span>.<span class="w"> </span><s
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>打开固件更新
 <span class="go">fw_upgrade 2 6 4</span>
 
-<span class="gp"># </span>继续在<span class="w"> </span>L1FW<span class="w"> </span>执行重启
+<span class="gp"># </span>继续在 L1FW 执行重启
 <span class="go">reboot 0 3</span>
 </pre></div>
 </div>
@@ -219,7 +220,7 @@ $<span class="w"> </span>find<span class="w"> </span>.<span class="w"> </span><s
 </section>
 <hr class="docutils" />
 <section id="id4">
-<h2>hi3093镜像特性介绍<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
+<h2>hi3093镜像特性介绍<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ol class="arabic">
 <li><p>hi3093硬件特性，参考: <a class="reference external" href="https://www.hisilicon.com/cn/products/Kunpeng/BMC/Hi1711">HI1711 介绍</a></p>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>容器环境下的快速构建指导 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
@@ -13,8 +13,9 @@
   <![endif]-->
   
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -94,12 +95,12 @@
            <div itemprop="articleBody">
              
   <section id="container-build">
-<span id="id1"></span><h1>容器环境下的快速构建指导<a class="headerlink" href="#container-build" title="Permalink to this heading">¶</a></h1>
+<span id="id1"></span><h1>容器环境下的快速构建指导<a class="headerlink" href="#container-build" title="Permalink to this headline">¶</a></h1>
 <p>由于openEuler Embedded构建过程需要基于openEuler操作系统，且需要安装较多系统工具和构建工具。
 为方便开发人员快速搭建构建环境，我们将构建过程所依赖的操作系统和工具封装到一个容器中，
 这就使得开发人员可以快速搭建一个构建环境，进而投入到代码开发中去，避免在准备环境阶段消耗大量时间。</p>
 <section id="id2">
-<h2>1. 环境准备<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
+<h2>1. 环境准备<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>需要使用docker创建容器环境，为了确保docker成功安装，需满足以下软件硬件要求</p>
 <ul class="simple">
 <li><p>操作系统: 推荐使用Ubuntu、Debian和RHEL（Centos、Fedora等）</p></li>
@@ -109,16 +110,16 @@
 </ul>
 </section>
 <section id="docker">
-<h2>2. 安装docker<a class="headerlink" href="#docker" title="Permalink to this heading">¶</a></h2>
+<h2>2. 安装docker<a class="headerlink" href="#docker" title="Permalink to this headline">¶</a></h2>
 <section id="id3">
-<h3>1) 检查当前环境是否已安装docker工具<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
+<h3>1) 检查当前环境是否已安装docker工具<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>运行如下命令，可以看到当前docker版本信息，则说明当前环境已安装docker，无需再次安装</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker version</span>
 </pre></div>
 </div>
 </section>
 <section id="id4">
-<h3>2) 如果没有安装，可参考官方链接安装<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
+<h3>2) 如果没有安装，可参考官方链接安装<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>官网地址: <a class="reference external" href="http://www.dockerinfo.net/document">http://www.dockerinfo.net/document</a></p>
 <p>openEuler环境可参考Centos安装Docker</p>
 <p>例: openEuler环境docker安装命令如下</p>
@@ -128,18 +129,18 @@
 </section>
 </section>
 <section id="id5">
-<h2>3. 获取容器镜像<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h2>
+<h2>3. 获取容器镜像<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <section id="docker-pull">
-<h3>通过docker pull命令拉取华为云中的镜像到宿主机。命令如下:<a class="headerlink" href="#docker-pull" title="Permalink to this heading">¶</a></h3>
+<h3>通过docker pull命令拉取华为云中的镜像到宿主机。命令如下:<a class="headerlink" href="#docker-pull" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:22.03-lts</span>
 </pre></div>
 </div>
 </section>
 </section>
 <section id="id6">
-<h2>4. 准备容器构建环境<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h2>
+<h2>4. 准备容器构建环境<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <section id="id7">
-<h3>1) 启动容器<a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
+<h3>1) 启动容器<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <p>可通过docker run命令启动容器，为了保证容器启动后可以在后台运行，且可以正常访问网络，建议使用如下命令启动:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker run -idt --network host swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:22.03-lts bash</span>
 </pre></div>
@@ -155,13 +156,13 @@
 </ul>
 </section>
 <section id="id">
-<h3>2) 查看已启动的容器id<a class="headerlink" href="#id" title="Permalink to this heading">¶</a></h3>
+<h3>2) 查看已启动的容器id<a class="headerlink" href="#id" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker ps</span>
 </pre></div>
 </div>
 </section>
 <section id="id8">
-<h3>3) 进入容器<a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h3>
+<h3>3) 进入容器<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker exec -it 容器id bash</span>
 </pre></div>
 </div>
@@ -169,9 +170,9 @@
 </section>
 </section>
 <section id="id9">
-<h2>5. 开始构建<a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h2>
+<h2>5. 开始构建<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <section id="id10">
-<h3>1) 下载源码<a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h3>
+<h3>1) 下载源码<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>获取源码下载脚本</p></li>
 </ul>
@@ -187,7 +188,7 @@
 </div>
 </section>
 <section id="id11">
-<h3>2) 编译构建<a class="headerlink" href="#id11" title="Permalink to this heading">¶</a></h3>
+<h3>2) 编译构建<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>编译架构: aarch64-std、aarch64-pro、arm-std、raspberrypi4-64</p></li>
 <li><p>构建目录: /usr1/build</p></li>
@@ -218,9 +219,13 @@ arm-std使用openeuler_gcc_arm32le编译器，下面以以aarch64-std目标架�
 </div>
 </section>
 <section id="id12">
-<h3>3) 构建结果说明<a class="headerlink" href="#id12" title="Permalink to this heading">¶</a></h3>
+<h3>3) 构建结果说明<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
 <p>结果件默认生成在构建目录下的output目录下，例如上面aarch64-std的构建结果件生成在/usr1/build/output</p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 42%" />
+<col style="width: 58%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>filename</p></th>
 <th class="head"><p>description</p></th>

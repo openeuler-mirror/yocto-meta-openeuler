@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>通过openeuler_fetch使用openEuler软件包 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
@@ -13,8 +13,9 @@
   <![endif]-->
   
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -91,17 +92,17 @@
            <div itemprop="articleBody">
              
   <section id="openeuler-fetchopeneuler">
-<span id="openeuler-fetch"></span><h1>通过openeuler_fetch使用openEuler软件包<a class="headerlink" href="#openeuler-fetchopeneuler" title="Permalink to this heading">¶</a></h1>
+<span id="openeuler-fetch"></span><h1>通过openeuler_fetch使用openEuler软件包<a class="headerlink" href="#openeuler-fetchopeneuler" title="Permalink to this headline">¶</a></h1>
 <section id="id1">
-<h2>特性介绍<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<h2>特性介绍<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>在openEuler Embedded构建镜像时，需要提前下载所有软件包，而openEuler Embedded由上百个软件包构成，完全下载耗时耗力。功能函数openeuler_fetch解决了该问题，它可以在openEuler Embedded构建镜像时，按需从上游源码包自动下载软件包。例如当你只想编译busybox这一个软件包，而不需要将其他软件包全部下载的时候，使用openeuler_fetch即可实现，你只需要初始化完环境即可进入编译环节。</p>
 </section>
 <section id="id2">
-<h2>openeuler_fetch运行机制<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
+<h2>openeuler_fetch运行机制<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>openeuler_fetch在classes/openeuler.bbclass中实现，函数名为do_openeuler_fetch，该函数在base_do_fetch_prepend中通过bb.build.exec_func()函数调用，即openeuler_fetch运行完还会继续执行do_fetch，这样做的原因是不管openeuler_fetch运行成功与否都可以让fetch继续补充，例如有一款软件包在gitee中不存在，或在配置中配置错误，或者源码目录有相关的改动导致openeuler_fetch运行失败，不用担心，do_fetch可以继续完成文件的查找。</p>
 </section>
 <section id="id3">
-<h2>openeuler_fetch运行逻辑<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
+<h2>openeuler_fetch运行逻辑<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <p>openeuler_fetch通过以下控制变量来完成相关包下载：</p>
 <blockquote>
 <div><ul class="simple">
@@ -128,7 +129,7 @@
 </dl>
 </section>
 <section id="id4">
-<h2>如何适配其他软件包<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
+<h2>如何适配其他软件包<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <p>在构建openEuler Embedded时经常会引入其他相关包或修改非指定包版本，那么此时该如何做呢？从上文中已经得知openeuler_fetch依赖5个变量来进行下载，内核是例外，因此我们只需要关注这五个变量即可，接下来我们以busybox为例进行讲解：</p>
 <ul class="simple">
 <li><p>如果想要某一个版本的busybox参与构建：在busybox的bbappend文件中设定OPENEULER_BRANCH值为相关版本即可</p></li>
@@ -168,7 +169,7 @@
 </ul>
 </section>
 <section id="id5">
-<h2>如何关闭openeuler_fetch功能<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h2>
+<h2>如何关闭openeuler_fetch功能<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <p>OPENEULER_FETCH有两种关闭方式：</p>
 <ol class="arabic simple">
 <li><p>在meta-openeuler/conf/layer.conf中有一个全局变量OPENEULER_FETCH，该值默认为enable，即openeuler_fetch是开启状态，如果想要关闭openeuler_fetch，设置该值为disable即可。</p></li>
