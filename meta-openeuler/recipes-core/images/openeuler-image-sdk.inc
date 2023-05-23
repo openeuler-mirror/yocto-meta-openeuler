@@ -16,10 +16,28 @@ copy_opeueuler_sdk() {
 delete_bin_from_sdk() {
     #delete binary from sdk to ignore command function error, we need command at host
     cd ${SDK_OUTPUT}/${SDKTARGETSYSROOT}/
+    whitelist="./usr/bin/fast-discovery-server-1.0.0 ./usr/bin/nodesize_dbg"
+    backup_dir="./backup_tmp_bin"
+    mkdir -p $backup_dir
+    for file in $whitelist
+    do
+        if [ -e "$file" ]; then
+            cp -pr "$file" "$backup_dir/$(basename "$file")_$(dirname "$file" | tr / _)" || true
+        fi
+    done
     for d in ./bin ./usr/bin/ ./usr/sbin/ ./sbin/
     do
         test -d "$d" && rm -r "$d"
     done
+    for file in $whitelist
+    do
+        backup_file="$backup_dir/$(basename "$file")_$(dirname "$file" | tr / _)"
+        if [ -e "$backup_file" ]; then
+            mkdir -p "$(dirname "$file")"
+            cp -pr "$backup_file" "$file" || true
+        fi
+    done
+    rm -rf $backup_dir || true
     cd -
 }
 
