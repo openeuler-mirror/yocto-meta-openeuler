@@ -9,7 +9,7 @@ INPUT_DT = ""
 OUTPUT_DT = ""
 
 # Output the device-trees (determined in lopper operation) to OUT_DIR
-# These device-trees will be installed to SYSROOT_DIR/INSTALL_PATH
+# These device-trees will be installed to SYSROOT_DIRS/INSTALL_PATH
 OUT_DIR = "${B}/lop_dts"
 INSTALL_PATH = "/lop_dts"
 
@@ -45,10 +45,10 @@ do_mkdts() {
 }
 addtask mkdts before do_install after do_compile
 
-SYSROOT_DIR += "${INSTALL_PATH}"
+SYSROOT_DIRS += "${INSTALL_PATH}"
 FILES_${PN} = "${INSTALL_PATH}/*.dts"
 
-# install the processed device tree to SYSROOT_DIR
+# install the processed device tree to SYSROOT_DIRS
 # other recipes can get it in "${WORKDIR}/recipe-sysroot/lop_dts"
 do_install_lop_dts() {
     install -d ${D}${INSTALL_PATH}
