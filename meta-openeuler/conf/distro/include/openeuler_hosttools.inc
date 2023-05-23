@@ -16,7 +16,7 @@ HOSTTOOLS_NONFATAL += "rpm rpmbuild createrepo_c dnf unzip"
 ASSUME_PROVIDED += "rpm-native createrepo-c-native unzip-native"
 
 # commands used by kernel build
-HOSTTOOLS_NONFATAL += "flex bison bc"
+HOSTTOOLS_NONFATAL += "flex bison bc kmod depmod insmod"
 ASSUME_PROVIDED += "bc-native bison-native flex-native kmod-native"
 
 # autotools related tools

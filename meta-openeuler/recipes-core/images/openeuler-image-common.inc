@@ -29,9 +29,6 @@ OUTPUT_DIR = "${TOPDIR}/output/${OUTPUTTIME}"
 # Ignore how TOPDIR is computed
 OUTPUT_DIR[vardepsexclude] = "TOPDIR"
 
-# do not use depmod
-USE_DEPMOD = "0"
-
 IMAGE_PREPROCESS_COMMAND += "set_permissions_from_rootfs;"
 
 set_permissions_from_rootfs() {
