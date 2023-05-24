@@ -29,7 +29,7 @@ PREFERRED_PROVIDER_glibc ?= "${TCMODE-LIBC}"
 PREFERRED_PROVIDER_virtual/libc ?= "${TCMODE-LIBC}"
 PREFERRED_PROVIDER_virtual/libintl ?= "${TCMODE-LIBC}"
 PREFERRED_PROVIDER_virtual/libiconv ?= "${TCMODE-LIBC}"
-PREFERRED_PROVIDER_virtual/crypt ?= "${crypt}"
+PREFERRED_PROVIDER_virtual/crypt ?= "${TCMODE-CRYPT}"
 PREFERRED_PROVIDER_gdb-cross-${TARGET_ARCH} ?= "gdb-external-cross-${TARGET_ARCH}"
 PREFERRED_PROVIDER_oprofile ??= "oprofile"
 # Work around bug where the implicitly created mlprefix preference isn't being
