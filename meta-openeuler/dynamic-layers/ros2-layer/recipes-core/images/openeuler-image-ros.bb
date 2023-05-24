@@ -15,18 +15,9 @@ require recipes-core/images/openeuler-image-sdk.inc
 # put packages allowing a device to boot into "packagegroup-core-boot"
 # put standard base packages to "packagegroup-core-base-utils"
 # put extra base packages to "packagegroup-base"
-# put extended packages to "packagegroup-base-extended"
 # put other class of packages to "packagegroup-xxx"
 # Notice: IMAGE_INSTALL should define after openeuler-image-common.inc(after core-image\image.bbclass)
 IMAGE_INSTALL += " \
-packagegroup-core-boot \
-packagegroup-core-base-utils \
-packagegroup-core-tools-debug \
-packagegroup-base \
-packagegroup-base-extended \
-packagegroup-openssh \
-packagegroup-kernel-modules \
-packagegroup-isulad \
 packagegroup-roscore \
 "
 # current qemu can't support ros slam demo
