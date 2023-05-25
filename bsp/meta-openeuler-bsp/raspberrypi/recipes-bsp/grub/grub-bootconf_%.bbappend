@@ -6,6 +6,9 @@ APPEND = "coherent_pool=1M 8250.nr_uarts=1 snd_bcm2835.enable_compat_alsa=0 snd_
 APPEND += "${@oe.utils.conditional("AUTO-EXPAND-FS", "1", "init=/usr/lib/init_resize.sh", "", d)}"
 GRUB_ROOT := "root=/dev/mmcblk0p2 rootfstype=ext4 rootwait"
 
+#set maxcpus=3, reserve cpu3 for clientos
+APPEND += "${@bb.utils.contains("MCS_FEATURES", "openamp", "maxcpus=3", "", d)}"
+
 inherit deploy
 
 do_deploy() {

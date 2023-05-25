@@ -17,11 +17,25 @@ uefi_configuration() {
     # here we use efi and grub to boot
     mmd -i ${WORKDIR}/boot.img EFI
     mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/EFI/* ::EFI/ || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/EFI/* into boot.img"
-    # here we want reserved resources for mcs features.
-    mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/mcs-resources.dtbo ::overlays/mcs-resources.dtbo || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/mcs-resources.dtbo into boot.img"
+
+    # Install mcs overlays via uefi hook
+    install_mcs_overlays
+}
+
+install_mcs_overlays() {
+    CONFIGFILE=${DEPLOY_DIR_IMAGE}/${BOOTFILES_DIR_NAME}/config.txt
+    # here we want reserved resources for mcs features
+    if ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'true', 'false', d)}; then
+        mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/mcs-resources.dtbo ::overlays/mcs-resources.dtbo || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/mcs-resources.dtbo into boot.img"
+
+        # When repeatedly making rpi image, the CONFIGFILE may not be cleaned up.
+        # For this reason, first check to see if the CONFIGFILE is configured with dtoverlay. If it is already configured, skip it.
+        grep -wq "mcs-resources" ${CONFIGFILE} || echo "dtoverlay=mcs-resources" >> ${CONFIGFILE}
+    fi
     # add jailhouse-overlay
     if ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'true', 'false', d)}; then
         mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/jailhouse-overlay.dtbo ::overlays/jailhouse-overlay.dtbo || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/jailhouse-overlay.dtbo into boot.img"
+        grep -wq "jailhouse-overlay" ${CONFIGFILE} || echo "dtoverlay=jailhouse-overlay" >> ${CONFIGFILE}
     fi
 }
 
@@ -53,21 +67,8 @@ change_bootfiles_to_enable_uefi() {
         echo "device_tree_end=0x200000" >> ${CONFIGFILE}
     fi
 
-    # add mcs dtoverlay config
-    dtcfg=`cat ${CONFIGFILE}  | grep mcs-resources || true`
-    if [ -z "$dtcfg" ]; then
-        echo "dtoverlay=mcs-resources" >> ${CONFIGFILE}
-    fi
-
-    # add jailhouse-overlay
-    if ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'true', 'false', d)}; then
-        echo "dtoverlay=jailhouse-overlay" >> ${CONFIGFILE}
-    fi
-
     #change grub.cfg to use Image.gz to launch
     sed -i 's/linux \/Image /linux \/Image.gz /' ${DEPLOY_DIR_IMAGE}/EFI/BOOT/grub.cfg
-    #set maxcpus=3, reserve cpu3 for clientos
-    sed -i 's/linux \/Image.gz/& maxcpus=3 /' ${DEPLOY_DIR_IMAGE}/EFI/BOOT/grub.cfg
 }
 
 IMAGE_PREPROCESS_COMMAND_append += "change_bootfiles_to_enable_uefi"

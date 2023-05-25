@@ -7,9 +7,8 @@ S = "${WORKDIR}/firmware-${PV}/boot"
 
 # add uefi grub package
 # rpi-tf-a package don't support clang compile
-# and standard image don't use uefi and grub.
-# so using MCS_FEATURES to distinguish standard image and mcs image.
-do_deploy[depends] += "${@bb.utils.contains('MCS_FEATURES', 'openamp', 'grub-efi:do_deploy grub-bootconf:do_deploy rpi-uefi:do_deploy', '', d)}"
+# and only the mcs feature depends on uefi and grub.
+do_deploy[depends] += "${@bb.utils.contains('DISTRO_FEATURES', 'mcs', 'grub-efi:do_deploy grub-bootconf:do_deploy rpi-uefi:do_deploy', '', d)}"
 
 # fix runtime error: Could not find DRM device!
 # instead of bcm2711-rpi-4-b.dtb from kernel_devicetree
