@@ -56,7 +56,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#id2">框架</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id3">镜像构建指南</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id4">镜像使用示例</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id9">如何开发和贡献</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sdk">快速开发SDK</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">关于ROS源码</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ros2recipe">快速镜像集成(ros2recipe)</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="muslc.html">musl libc的支持</a></li>
@@ -327,11 +329,95 @@
 </div>
 </div></blockquote>
 </section>
-<section id="id9">
-<h2>如何开发和贡献<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<section id="sdk">
+<h2>快速开发SDK<a class="headerlink" href="#sdk" title="Permalink to this headline">¶</a></h2>
+<p><strong>使用说明</strong></p>
+<p>版本新增支持快速开发SDK，目前支持在oebuild初始化的容器中，通过安装构建生成的SDK，对ROS包进行快速交叉编译。目前支持colcon编译工具，和基础colcon用法一致。</p>
+<p><strong>使用约束</strong></p>
+<p>和常规colcon一样，我们支持了colcon交叉编译基本框架，不过由于ROS2软件包的语言和依赖库多种多样，目前仅支持C/C++/PYTHON三种常用语言的软件包，而类似RUST等依赖cargo的软件包还不支持。欢迎开发者持续贡献openEuler Embedded社区。</p>
+<p><strong>使用方法</strong></p>
+<p>以树莓派ROS2镜像为例</p>
+<p><strong>1. 在构建完成镜像后，通过populate_sdk生成SDK</strong></p>
 <blockquote>
-<div><ul>
-<li><p><strong>1、关于ROS源码</strong></p>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>oebuild generate -p raspberrypi4-64 -f openeuler-ros -d raspberrypi4-64-ros
+<span class="gp">$ </span>oebuild bitbake
+<span class="gp">$ </span>bitbake openeuler-image-ros
+<span class="gp">$ </span>bitbake openeuler-image-ros -c populate_sdk
+</pre></div>
+</div>
+<p>随后在“output/[时间搓]/”目录下即可找到对应SDK安装文件，例如</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">openeuler-glibc-x86_64-openeuler-image-ros-cortexa72-raspberrypi4-64-toolchain-23.03.sh</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p><strong>2. SDK的安装和初始化</strong></p>
+<blockquote>
+<div><p>目前可用oebuild初始化的构建容器作为开发容器（后续会推出专用SDK的一站式oebuild功能，敬请期待）</p>
+<p>(1). 进入容器环境</p>
+<p>有两种方式可进入容器，任选其一即可</p>
+<p>方式1，通过oebuild bitbake进入容器</p>
+<p>此方式同时会进入bitbake，和SDK环境暂不冲突，且能够自动初始化容器的主机端工具环境</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>oebuild bitbake
+</pre></div>
+</div>
+<p>方式2，通过docker命令进入纯容器环境</p>
+<p>容器id可通过查看oebuild初始化的构建目录的.env文件，其short_id就是容器id，例子假设为“18bb5d58da3e”</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>docker <span class="nb">exec</span> -it 18bb5d58da3e bash
+<span class="gp">$ </span>su openeuler
+<span class="gp">$ </span><span class="nb">source</span> /opt/buildtools/nativesdk/environment-setup-x86_64-pokysdk-linux <span class="c1">#初始化nativesdk（在oebuild bitbake中会自动初始化）</span>
+</pre></div>
+</div>
+<p>(2). 安装1中生成的SDK的sh安装脚本</p>
+<p>假设SDK脚本位于目录“/home/openeuler/build/raspberrypi4-64/output/20230523023324”</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span> /home/openeuler/build/raspberrypi4-64/output/20230523023324
+<span class="gp">$ </span>./openeuler-glibc-x86_64-openeuler-image-ros-cortexa72-raspberrypi4-64-toolchain-23.03.sh
+<span class="gp"># </span>输入安装目录，假设为“/home/openeuler/build/raspberrypi4-64/output/20230523023324/sdk”，目录请事先创建好，按“y”确认
+<span class="gp">$ </span>/home/openeuler/build/raspberrypi4-64/output/20230523023324/sdk
+<span class="gp">$ </span>y
+</pre></div>
+</div>
+<p>(3). 根据提示执行SDK初始化</p>
+<p>后续再次进入容器环境后，只需要初始化即可，不需要（2）安装步骤，用法和我们常规SDK的使用无区别</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>. /home/openeuler/build/raspberrypi4-64/output/20230523023324/sdk/environment-setup-cortexa72-openeuler-linux
+</pre></div>
+</div>
+<p>可以看到，此步骤将自动初始化交叉编译的依赖，如colcon等工具。</p>
+</div></blockquote>
+<p><strong>3. 通过colcon交叉编译ROS包</strong></p>
+<blockquote>
+<div><p>您只需要进入到ros包工程或colcon工程的工作路径，执行colcon进行编译即可，将自动进行交叉编译。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span> your_rospkg_workspace
+<span class="gp">$ </span>colcon build --merge-install --cmake-force-configure --cmake-args -DBUILD_TESTING<span class="o">=</span>False
+</pre></div>
+</div>
+<p>完成后，和colcon用法一样，在工作目录将生成install文件夹，即交叉编译的目标产物</p>
+</div></blockquote>
+<p><strong>4. 部署和运行</strong></p>
+<blockquote>
+<div><p>在3中，colcon生成的install可以直接拷贝到目标机器上进行部署运行，但由于colcon固定了工作目录，拷贝到新目录后，需要替换一下colcon指定的工作目录。</p>
+<p>假设原colcon工作目录为“home/openeuler/build/raspberrypi4-64/your_colcon_workspace/install”，需编辑全部setup.sh文件，将如下内容进行修改</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">_colcon_prefix_chain_sh_COLCON_CURRENT_PREFIX=/home/openeuler/build/raspberrypi4-64/your_colcon_workspace/install</span>
+</pre></div>
+</div>
+<p>部署到目标环境后，假设新工作目录为“/ros_runtime/install”，则需将setup.sh文件的对应行修改为如下内容</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">_colcon_prefix_chain_sh_COLCON_CURRENT_PREFIX=/ros_runtime/install</span>
+</pre></div>
+</div>
+<p>您可执行如下命令进行批量修改</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span> /ros_runtime/install
+<span class="gp">$ </span>find ./ -type f -exec sed -i <span class="s1">&#39;s@/home/openeuler/build/raspberrypi4-64/your_colcon_workspace/install@/ros_runtime/install@g&#39;</span> <span class="o">{}</span> +
+</pre></div>
+</div>
+<p>最后通过如下命令进行工作目录的初始化</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span> /ros_runtime/install
+<span class="gp">$ </span><span class="nb">source</span> /etc/profile.d/ros/setup.bash <span class="c1"># 初始化ROS工作目录</span>
+<span class="gp">$ </span><span class="nb">source</span> setup.sh <span class="c1"># 将当前目录，加入到ROS的额外工作目录</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="id9">
+<h2>关于ROS源码<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <p>上游ROS发布的源码存放于github，对中国用户下载较慢，且src-openEuler社区针对ROS全量分包源码还在完善，</p>
 <p>为加构建过程，嵌入式版本统一将ROS涉及的ROS软件包临时存放于yocto-embedded-tools仓库的dev_ros分支中，并遵循一定的源码存放规则，后续src-openeuler针对ROS分包支持后将对此部分进行优化。</p>
 <p><strong>源码存放规则（暂行）</strong></p>
@@ -360,8 +446,9 @@
 </div>
 </div></blockquote>
 </div></blockquote>
-</li>
-<li><p><strong>2、关于ros2recipe</strong></p>
+</section>
+<section id="ros2recipe">
+<h2>快速镜像集成(ros2recipe)<a class="headerlink" href="#ros2recipe" title="Permalink to this headline">¶</a></h2>
 <p><strong>现状:</strong>
 ros2recipe当前还处于前期开发阶段，在依赖解析部分还存在较多工作，其原理类似meta-ros的生成工具superflore。</p>
 <p><strong>例子:</strong>
@@ -378,12 +465,6 @@ superfores能够实现以一个ROS版本生成全量官方ROS组件包，需要�
 <p class="admonition-title">Note</p>
 <p>其中相对目录的使用原理，请参考并理解“关于ROS源码”</p>
 </div>
-</div></blockquote>
-</li>
-<li><p><strong>3、关于快速开发SDK</strong></p>
-<p>暂未发布，敬请期待，同时欢迎您的参与</p>
-</li>
-</ul>
 </div></blockquote>
 </section>
 </section>
