@@ -72,7 +72,7 @@ meta-clang层中主要起作用的是clang.bbclass文件，该文件用来控制
 
    - 预编译发布
 
-     直接从预编译发布网站获取 `LLVM <http://139.9.4.7/llvm/clang-llvm-15.0.3.tar.bz2>`_
+     直接从预编译发布网站获取 `LLVM <http://43.136.114.130/llvm/>`_
 
 2. 构建环境
 
