@@ -1,5 +1,7 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-support/glog/glog_0.4.0.bb
 
+FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
+
 OPENEULER_SRC_URI_REMOVE = "https git"
 OPENEULER_REPO_NAME = "glog"
 
@@ -9,7 +11,6 @@ S = "${WORKDIR}/glog-${PV}"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
-        file://0001-Find-Libunwind-during-configure.patch \
         file://libexecinfo.patch \
 "
 
