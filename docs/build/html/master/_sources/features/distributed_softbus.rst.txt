@@ -1045,3 +1045,51 @@ hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，�
 **************
 
 1.支持wifi和有限的标准以太局域网下的coap设备发现和传输。蓝牙目前仅支持ble发现，ble发现需要开启蓝牙，参照 :ref:`bluetooth_config` ，br连接和通信功能在后续版本中持续支持。
+
+FAQ
+****
+
+1. 执行softbus_client程序输入c后没有可传输的node节点？
+
+  1）确认两个设备网络是否连通
+    如果没有DeviceFound的回调，说明此时无法发现设备，设备之间网络不通。
+    如果使用qemu来测试，同时HOST机器上安装了docker，此时启动两个两个设备并用bridge来连接时会导致两个qemu设备之间网络不通，原因应该是docker改了默认的bridge防火墙转发配置导致的，可用如下命令解决:
+
+    .. code-block:: console
+
+      echo 0 | sudo tee /proc/sys/net/bridge/bridge-nf-call-iptables
+
+    如果不是qemu，其他设备请务必保证设备之间网络连通。
+
+  2）确保已经完成设备认证
+    如果设备之间网络已经连通，并且有DeviceFound的回调，那么有可能是未完成设备认证，出于安全考虑，22.09之后版本均需要完成设备认证后，才能组网成功和传输，因此执行softbus_client程序前应该先做设备认证，设备认证demo可参考 `hichain_main.c <https://gitee.com/liheavy/softbus_client_app/blob/master/hichain_sample/hichain_main.c>`_ 。
+
+2. 设备认证过程中失败？
+
+  hichain_main认证的流程中有两步，第一步创建群组，第二步将设备加入群组。并且这两步操作均是异步的，即hichain_main(hichain客户端)中直接调用接口成功并不代表hichain服务端也调用处理成功，需要等待hichain服务端的回调成功，才能保证操作是成功的。
+
+  因此在使用hichain_main的过程中务必保证先创建群组操作成功后再进行设备加入群组操作，如未按流程操作导致认证过程失败，可将 ``/data/data`` 目录下数据清空后，重启分布式软总线服务，再次尝试设备认证流程。
+
+3. 分布式软总线服务端日志出现 ``GetNetworkIfIp ifName:eth0 fail``
+
+  当前分布式软总线通过 ``eth0`` 这个有线网卡名来获取网卡绑定的ip及其他信息，如果当前系统的网卡没有 ``eth0`` 的网卡，则会获取ip失败，导致整个分布式软总线不可用，无线网卡名称同理，默认使用的是 ``wlan0`` 。
+  解决方案：
+  1）修改分布式软总线源码，将使用 ``eth0`` 和 ``wlan0`` 的部分代码替换为系统中实际可用的网卡名称。
+  2）修改系统的网卡名称为 ``eth0`` 或者 ``wlan0`` 。
+
+4. 当系统中同时存在有线网卡和无线网卡时，优先级问题
+
+  当前分布式软总线对有线网卡和无线网卡同时支持时，采用的是有线网卡优先级会大于无线网卡。
+  可以通过修改 ``BindToDevice`` 函数中以下代码片段来进行调整：
+
+  .. code-block:: c
+
+    /* strategy: ethernet have higher priority */
+    if (memcmp(buf[i].ifr_name, ETH_DEV_NAME_PRE, ethNameLen) == 0) {
+        ifBinding = &buf[i];
+        break;
+    } else if (memcmp(buf[i].ifr_name, WLAN_DEV_NAME_PRE, wlanNameLen) == 0) {
+        ifBinding = &buf[i];
+    }
+
+如果以上没有解决你的问题，可以记录下分布式软总线的服务端日志和客户端日志，在 `分布式软总官方仓库 <https://gitee.com/openeuler/dsoftbus_standard>`_ 提相关的issue，请尽量详细描述清楚你的操作步骤，包括自己所做的一些尝试。
