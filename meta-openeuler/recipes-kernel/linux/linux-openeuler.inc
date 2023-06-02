@@ -71,11 +71,11 @@ python do_fetch() {
         repo = init_repo_dir(kernel_dir)
         repo_url = 'https://gitee.com/openeuler/kernel.git'
         try:
-            if not repo.remote().exists():
-                git.Remote.add(repo = repo, name = "origin", url = repo_url)
+            if not repo.remote("upstream").exists():
+                git.Remote.add(repo = repo, name = "upstream", url = repo_url)
         except:
-            repo.create_remote('origin', repo_url)
-        repo.remote().fetch(refspec=f"+refs/tags/{kernel_branch}:refs/tags/{kernel_branch}", depth=1)
+            repo.create_remote('upstream', repo_url)
+        repo.remote("upstream").fetch(refspec=f"+refs/tags/{kernel_branch}:refs/tags/{kernel_branch}", depth=1)
         repo.git.checkout(kernel_branch)
 
     bb.utils.unlockfile(lf)
