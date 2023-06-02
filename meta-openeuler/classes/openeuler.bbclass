@@ -91,12 +91,12 @@ python do_openeuler_fetch() {
         repo = init_repo_dir(repo_dir)
         try:
             # if repo has finished git init and then do git pull
-            if repo.remote().url != repo_url:
-                repo.remote().set_url(repo_dir)
+            if repo.remote("upstream").url != repo_url:
+                repo.remote("upstream").set_url(repo_dir)
         except ValueError:
-            git.Remote.add(repo = repo, name = "origin", url = repo_url)
+            git.Remote.add(repo = repo, name = "upstream", url = repo_url)
 
-        repo.remote().fetch()
+        repo.remote("upstream").fetch()
         repo.git.checkout(repo_branch)
         repo.git.merge()
 
@@ -182,7 +182,7 @@ def init_manifest_repo(repo_dir, remote_url, version):
         else:
             continue
     if remote is None:
-        remote_name = "manifest"
+        remote_name = "upstream"
         remote = git.Remote.add(repo = repo, name = remote_name, url = remote_url)
     try:
         repo.git.checkout(version)
