@@ -13,7 +13,6 @@ SRC_URI_prepend =+ " \
     file://perl-5.35.1-Raise-version-number-in-ext-GDBM_File-GDBM_File.pm.patch \
     file://change-lib-to-lib64.patch \
     file://disable-rpath-by-default.patch \
-    file://backport-fix-zlib-test-failed.patch \
     file://backport-CVE-2021-36770.patch \
 "
 

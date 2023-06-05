@@ -1,4 +1,4 @@
-PV = "3.9.0"
+PV = "3.8.0"
 
 # update configure.patch of poky
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
@@ -11,7 +11,7 @@ SRC_URI_prepend = " \
     file://0001-pciutils-dir-d.patch \
 "
 
-SRC_URI[sha256sum] = "01f5b9ee8eff577e9953a43bafb3ead76e0654a7288dc26d79627074956fb1e0"
+SRC_URI[sha256sum] = "f79fadc7fc88750877e4474c22e4b2d627e3d97d9445d1a04a88ca1d701f070f"
 
 # use newer do_install
 do_install () {

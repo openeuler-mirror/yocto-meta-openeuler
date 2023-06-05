@@ -1,7 +1,7 @@
-PV = "7.0.1"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=bd27e41b6550fe0fc45356d1d81ee37c"
-SRC_URI[md5sum] = "995d64fe44bbe717d03bd703d5c48ec6"
-SRC_URI[sha256sum] = "e30905a0c131d3d94b89624a1cc5afec3e0ba2fbdb151867d8e0ebd49850f171"
+PV = "6.2.2"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=81eb9f71d006c6b268cf4388e3c98f7b"
+SRC_URI[md5sum] = "828d15f426ce9740627a9b07e47a318a"
+SRC_URI[sha256sum] = "9d1edf9e7d0b84d72ea3dbcdfd22b35fb543a5e8f2a60092dd578936bf63d7f9"
 require pypi-src-openeuler.inc
 OPENEULER_REPO_NAME = "${PYPI_PACKAGE}"
 

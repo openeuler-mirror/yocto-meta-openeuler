@@ -1,5 +1,5 @@
 # package and patches from openeuler
-PV = "23.6"
+PV = "23.5"
 
 SRC_URI = " \
     file://psmisc-${PV}.tar.xz \
@@ -20,5 +20,5 @@ do_configure_prepend() {
     fi
 }
 
-SRC_URI[md5sum] = "9cbcf82bcf3ab2aab3edef361f171bb9"
-SRC_URI[sha256sum] = "2c960f2949a606653a8a05701224587f56856ab7c66b6f376a589144ce248657"
+SRC_URI[md5sum] = "fd08c7f1290926d063cab4a8c99af2f9"
+SRC_URI[sha256sum] = "3c276873deec008b1c442810ad638a5bc871e80bc562a59c49ffc21d4ec0d074"

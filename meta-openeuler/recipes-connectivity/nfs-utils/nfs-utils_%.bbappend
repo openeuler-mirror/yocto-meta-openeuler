@@ -1,12 +1,18 @@
-PV = "2.6.2"
+PV = "2.5.4"
 
 # apply patches in openeuler
 SRC_URI_prepend = "file://0000-systemd-idmapd-require-rpc-pipefs.patch \
-        file://0001-correct-the-statd-path-in-man.patch \
-        file://0002-nfs-utils-set-use-gss-proxy-1-to-enable-gss-proxy-by.patch \
-        file://0003-fix-coredump-in-bl_add_disk.patch \
-        file://0004-nfs-blkmaped-Fix-the-error-status-when-nfs_blkmapd-s.patch \
-        file://0005-nfs-blkmapd-PID-file-read-by-systemd-failed.patch \
+           file://0001-correct-the-statd-path-in-man.patch \
+           file://0002-nfs-utils-set-use-gss-proxy-1-to-enable-gss-proxy-by.patch \
+           file://0003-idmapd-Fix-error-status-when-nfs-idmapd-exits.patch \
+           file://0004-fix-coredump-in-bl_add_disk.patch \
+           file://0005-Fix-format-overflow-warning.patch \
+           file://0006-nfs-blkmaped-Fix-the-error-status-when-nfs_blkmapd-s.patch \
+           file://0007-nfs-blkmapd-PID-file-read-by-systemd-failed.patch \
+           file://0008-svcgssd-Fix-use-after-free-bug-config-variables.patch \
+           file://0009-rpc-pipefs-generator-allocate-enough-space-for-pipef.patch \
+           file://0010-nfs-utils-Don-t-allow-junction-tests-to-trigger-auto.patch \
+           file://0011-Covscan-Scan-Wrong-Check-of-Return-Value.patch \
 "
 
 # fix nativesdk lib use error: /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/lib/libresolv.so: 
@@ -21,10 +27,7 @@ BUILD_LDFLAGS_remove = " -L${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
 # not support tcp-wrappers currently
 PACKAGECONFIG_remove = "tcp-wrappers"
 
-SRC_URI[sha256sum] = "5200873e81c4d610e2462fc262fe18135f2dbe78b7979f95accd159ae64d5011"
-
-# For nfs-utils-2.6.2, the following files need to be added to FILES_${PN}
-FILES_${PN} += "${nonarch_libdir}/modprobe.d"
+SRC_URI[sha256sum] = "51997d94e4c8bcef5456dd36a9ccc38e231207c4e9b6a9a2c108841e6aebe3dd"
 
 # nfs-utils-stats has a collection of python scripts
 # remove the dependency of python3-core to simplify the build
