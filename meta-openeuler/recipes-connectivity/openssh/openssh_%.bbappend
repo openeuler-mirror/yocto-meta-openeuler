@@ -1,22 +1,18 @@
-# mian bb ref:
-# http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-connectivity/openssh/openssh_9.1p1.bb?id=c80a3a7a4a9dc40cbb675777a1ba1481532ecb05
-
 OPENEULER_SRC_URI_REMOVE = "https git http"
 
 # version in openEuler
-PV = "9.1p1"
+PV = "8.8p1"
 
-# notice files in openssh is all from higher version of oe
-# ref: http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-connectivity/openssh/openssh?id=c80a3a7a4a9dc40cbb675777a1ba1481532ecb05
 FILESEXTRAPATHS_prepend := "${THISDIR}/openeuler-config/:"
 
-# confilct: other openeuler patches can't apply
-SRC_URI += " \
-        file://openssh-9.1p1.tar.gz \
-        file://backport-upstream-CVE-2023-25136-fix-double-free-caused.patch \
-        "
-
 # poky patches conflict with openeuler
-SRC_URI_remove += " \
+SRC_URI_remove = " \
+        file://CVE-2021-41617.patch \
         "
 
+SRC_URI_prepend = " \
+        file://openssh-${PV}.tar.gz \
+        "
+
+# checksum changed
+SRC_URI[sha256sum] = "4590890ea9bb9ace4f71ae331785a3a5823232435161960ed5fc86588f331fe9"
