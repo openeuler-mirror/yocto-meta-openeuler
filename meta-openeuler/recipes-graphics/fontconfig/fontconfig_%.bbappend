@@ -1,7 +1,7 @@
 # main bbfile: yocto-poky/meta/recipes-graphics/fontconfig/fontconfig_2.13.1.bb
 
 # version in src-openEuler
-PV = "2.14.2"
+PV = "2.13.94"
 
 # license files changed, update LIC_FILES_CHKSUM value
 LICENSE = "MIT & MIT & PD"

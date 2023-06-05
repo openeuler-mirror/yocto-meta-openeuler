@@ -1,14 +1,23 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/gdb/gdb_10.1.bb
-# ref: http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-devtools/gdb/gdb_12.1.bb?id=8d42315c074a97
-
-OPENEULER_SRC_URI_REMOVE = "https git http"
 
 #version in openEuler
-PV = "12.1"
+PV = "11.1"
+
+DEPENDS_append += "gmp"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
             ${GNU_MIRROR}/gdb/gdb-${PV}.tar.xz \
+            file://0001-make-man-install-relative-to-DESTDIR.patch \
+            file://0002-mips-linux-nat-Define-_ABIO32-if-not-defined.patch \
+            file://0003-ppc-ptrace-Define-pt_regs-uapi_pt_regs-on-GLIBC-syst.patch \
+            file://0004-Add-support-for-Renesas-SH-sh4-architecture.patch \
+            file://0005-Dont-disable-libreadline.a-when-using-disable-static.patch \
+            file://0006-use-asm-sgidefs.h.patch \
+            file://0008-Change-order-of-CFLAGS.patch \
+            file://0009-resolve-restrict-keyword-conflict.patch \
+            file://0010-Fix-invalid-sigprocmask-call.patch \
+            file://0011-gdbserver-ctrl-c-handling.patch \
             "
 
 # files, patches that come from openeuler
@@ -16,8 +25,10 @@ SRC_URI += " \
         file://gdb-${PV}.tar.xz \
         file://gdb-6.3-rh-testversion-20041202.patch \
         file://gdb-6.3-gstack-20050411.patch \
+        file://gdb-6.3-test-dtorfix-20050121.patch \
         file://gdb-6.3-test-movedir-20050125.patch \
         file://gdb-6.3-threaded-watchpoints2-20050225.patch \
+        file://gdb-6.3-inferior-notification-20050721.patch \
         file://gdb-6.3-inheritancetest-20050726.patch \
         file://gdb-6.5-bz185337-resolve-tls-without-debuginfo-v2.patch \
         file://gdb-6.5-sharedlibrary-path.patch \
@@ -66,6 +77,7 @@ SRC_URI += " \
         file://gdb-rhbz-818343-set-solib-absolute-prefix-testcase.patch \
         file://gdb-rhbz947564-findvar-assertion-frame-failed-testcase.patch \
         file://gdb-rhbz1007614-memleak-infpy_read_memory-test.patch \
+        file://gdb-6.6-buildid-locate-misleading-warning-missing-debuginfo-rhbz981154.patch \
         file://gdb-fortran-frame-string.patch \
         file://gdb-rhbz1156192-recursive-dlopen-test.patch \
         file://gdb-rhbz1149205-catch-syscall-after-fork-test.patch \
@@ -81,9 +93,12 @@ SRC_URI += " \
         file://gdb-libexec-add-index.patch \
         file://gdb-rhbz1398387-tab-crash-test.patch \
         file://gdb-rhbz1553104-s390x-arch12-test.patch \
-        file://gdb-sw22395-constify-target_desc.patch \
-        file://0002-set-entry-point-when-text-segment-is-missing.patch \
-        file://0003-Add-support-for-readline-8.2.patch \
+        file://gdb-rhbz1976887-field-location-kind.patch \
+        file://gdb-test-for-rhbz1976887.patch \
+        file://gdb-rhbz2012976-paper-over-fortran-lex-problems.patch \
+        file://gdb-rhbz2022177-dprintf-1.patch \
+        file://gdb-rhbz2022177-dprintf-2.patch \
+        file://0001-Make-c-exp.y-work-with-Bison-3.8.patch \
         "
 # These patches can't apply from openEuler
 # It may depend on the feature poky not enable, such as --with-rpm, texinfo, etc.
@@ -92,5 +107,10 @@ SRC_URI += " \
 #gdb-6.6-buildid-locate-rpm.patch
 #gdb-6.6-buildid-locate-rpm-librpm-workaround.patch
 #gdb-6.6-buildid-locate-rpm-scl.patch
+#gdb-rhbz-853071-update-manpages.patch
+
+EXTRA_OECONF_append += " \
+        --with-libgmp-prefix=${STAGING_EXECPREFIXDIR} \
+        "
 
 FILES_${PN}-dev_riscv64 += "/usr/lib64"

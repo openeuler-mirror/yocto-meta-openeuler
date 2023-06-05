@@ -1,7 +1,7 @@
 # main bbfile: yocto-poky/meta/recipes-support/gnutls/gnutls_3.7.1.bb
 
 # version in openEuler
-PV = "3.7.8"
+PV = "3.7.2"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
@@ -12,6 +12,8 @@ SRC_URI_remove = " \
 SRC_URI += " \
         file://${BP}.tar.xz \
         file://fix-ipv6-handshake-failed.patch \
+        file://backport-CVE-2022-2509.patch \
+        file://backport-CVE-2021-4209.patch \
         file://backport-01-CVE-2023-0361.patch \
         file://backport-02-CVE-2023-0361.patch \
 "

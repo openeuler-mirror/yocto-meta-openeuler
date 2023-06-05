@@ -1,7 +1,7 @@
 # main bbfile: yocto-poky/meta/recipes-support/gdbm/gdbm_1.19.bb
 
 # version in openEuler
-PV = "1.23"
+PV = "1.22"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 # ptest.patch, patch-fuzz warning
@@ -12,6 +12,7 @@ SRC_URI_remove = " \
 
 SRC_URI += " \
         file://${BPN}-${PV}.tar.gz \
+        file://Fix-gdbmtool-import-command.patch \
         file://Fix-binary-dump-format-for-key-and-or-data-of-zero-s.patch \
         file://gdbm_dump-fix-command-line-error-detection.patch \
         file://Fix-location-tracking-in-gdbmtool.-Fix-the-recover-c.patch \
@@ -19,7 +20,7 @@ SRC_URI += " \
         file://Fix-semantics-of-gdbm_load-r.patch \
         file://Improve-handling-of-u-in-gdbm_load.patch \
         file://Fix-allocated-memory-not-released.patch \
-        file://Restore-accidentally-removed-parameter-and-New-macro.patch \
+        file://Minor-fix-in-the-compatibility-library.patch \
         "
 
 SRC_URI[tarball.md5sum] = "0bbd38f12656e4728e2f7c4708aec014"
