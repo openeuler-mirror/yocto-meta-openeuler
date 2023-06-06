@@ -275,9 +275,13 @@ oebuild update
 - 构建需要的容器
 - 主构建仓（yocto-meta-openeuler）
 
-所以更新命令主要以这两部分展开
+所以更新命令主要以这两部分展开。
 
-另外，如果我们有自己的oebuild适配仓，可以在\ ``config``\ 配置文件中修改（该文件在\ ``<workspace>/.oebuild``\ 目录下），如果已经先执行过更新操作，然后再次执行\ ``oebuild update``\ 会将原有的\ ``yocto-meta-openeuler``\ 做备份，将在工作空间根目录下创建yocto-bak备份目录，然后将备份后的\ ``yocto-meta-openeuler``\ 移动到该目录。更改基础仓在config中的如下字段修改：
+另外，如果我们的主构建仓\ ``yocto-meta-openeuler``\不希望使用默认的远端代码，可以在\ ``config``\
+配置文件中修改（该文件在\ ``<workspace>/.oebuild``\ 目录下），如果已经先执行过更新操作，然后再次执行\
+``oebuild update``\ 会将原有的主构建仓\ ``yocto-meta-openeuler``\
+做备份，将在工作空间根目录下创建yocto-bak备份目录，然后将备份后的\
+``yocto-meta-openeuler``\ 移动到该目录。具体需要在config中修改的内容如下：
 
 ::
 
@@ -287,7 +291,8 @@ oebuild update
        remote_url: https://gitee.com/openeuler/yocto-meta-openeuler.git
        branch: master
 
-basic_repo与yocto-meta-openeuler是两个key键，不可以更改，remote_url与branch可以更改成自己已经适配的\ ``yocto-meta-openeuler``\ 仓的参数
+basic_repo与yocto-meta-openeuler是两个key键，不可以更改，remote_url与branch可以更改成自己已经适配的\
+ ``yocto-meta-openeuler``\ 仓的参数。
 
 .. note::
 
