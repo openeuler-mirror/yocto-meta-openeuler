@@ -15,6 +15,8 @@ SRC_URI_prepend = "file://backport-libgcrypt-1.8.5-use-fipscheck.patch \
            file://backport-libgcrypt-1.8.3-md-fips-enforce.patch \
            file://backport-libgcrypt-1.8.5-intel-cet.patch \
            file://backport-libgcrypt-1.8.5-fips-module.patch \
+           file://backport-Fix-the-behavior-for-child-process.patch \
+           file://backport-Clear-AESWRAP-scratch-area-immediately-after-use.patch \
 "
 
 # checksum changed

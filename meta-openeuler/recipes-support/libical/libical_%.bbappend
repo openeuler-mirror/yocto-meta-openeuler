@@ -4,7 +4,7 @@
 # improve the BB file later
 
 # apply openeuler source package
-PV = "3.0.16"
+PV = "3.0.11"
 
 SRC_URI = "\
     file://${BP}.tar.gz \

@@ -6,10 +6,10 @@ SRC_URI_remove = "file://add-missing-python-include-dir-for-cross.patch \
 
 OPENEULER_SRC_URI_REMOVE = "https git"
 
-PV = "1.4.5"
+PV = "1.4.4"
 
 SRC_URI =+ " \
-    file://libpwquality-1.4.5.tar.bz2 \
+    file://libpwquality-${PV}.tar.bz2 \
     file://modify-pwquality_conf.patch \
     file://fix-password-similarity.patch \
     file://fix-doc-about-difok.patch \
