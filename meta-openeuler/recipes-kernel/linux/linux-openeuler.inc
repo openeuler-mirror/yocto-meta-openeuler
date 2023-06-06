@@ -47,7 +47,7 @@ python do_fetch() {
     # download src-openeuler/kernel repo for patches
     d.setVar("OPENEULER_REPO_NAME", "kernel")
     d.setVar("OPENEULER_LOCAL_NAME", 'src-kernel-5.10')
-    d.setVar("OPENEULER_BRANCH", 'openEuler-22.03-LTS-SP1')
+    d.setVar("OPENEULER_BRANCH", 'openEuler-22.03-LTS-SP2')
     d.setVar("OPENEULER_GIT_URL", "https://gitee.com/src-openeuler")
     bb.build.exec_func("do_openeuler_fetch", d)
 
@@ -59,7 +59,7 @@ python do_fetch() {
         os.mkdir(kernel_dir)
     lock_file = os.path.join(kernel_dir, "file.lock")
     # if change kernel version, just change `kernel_branch` param
-    kernel_branch = "5.10.0-136.28.0"
+    kernel_branch = "5.10.0-153.1.0"
 
     lf = bb.utils.lockfile(lock_file, block=True)
     

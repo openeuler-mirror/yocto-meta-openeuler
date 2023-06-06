@@ -11,6 +11,7 @@ SRC_URI += " \
         file://backport-Add-test-to-check-for-the-memory-leak-mentioned-in-issue-781.patch \
         file://backport-Fix-memory-leak-with-emtpy-strings-in-json_object_set_string.patch \
         file://backport-json_object_from_fd_ex-fail-if-file-is-too-large.patch \
+        file://backport-Explicitly-check-for-integer-overflow-when-parsing.patch \
         "
 
 SRC_URI[md5sum] = "4f3288a5f14e0e6abe914213f41234e0"

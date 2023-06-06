@@ -19,4 +19,5 @@ SRC_URI_prepend = "file://tell-the-truth-about-private-api.patch \
            file://0001-modify-kwin_5.18-complier-error.patch \
            file://CVE-2021-38593.patch \
            file://CVE-2022-25255.patch \
+           file://CVE-2023-24607.patch \
            "

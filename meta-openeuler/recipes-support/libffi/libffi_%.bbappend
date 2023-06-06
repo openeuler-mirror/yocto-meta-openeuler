@@ -1,16 +1,27 @@
-PV = "3.4.4"
+# main bb yocto-poky/meta/recipes-support/libffi/libffi_3.3.bb
 
-LIC_FILES_CHKSUM = "file://LICENSE;md5=32c0d09a0641daf4903e5d61cc8f23a8"
+PV = "3.4.2"
 
-# add not-win32.patch to fix libdir error
+LIC_FILES_CHKSUM = "file://LICENSE;md5=679b5c9bdc79a2b93ee574e193e7a7bc"
+
+FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
+
 SRC_URI = " \
     file://${BPN}-${PV}.tar.gz \
-    file://not-win32.patch \
+    file://backport-x86-64-Always-double-jump-table-slot-size-for-CET-71.patch \
+    file://backport-Fix-check-for-invalid-varargs-arguments-707.patch \
+    file://libffi-Add-sw64-architecture.patch \
+    file://backport-Fix-signed-vs-unsigned-comparison.patch \
+    file://riscv-extend-return-types-smaller-than-ffi_arg-680.patch \
+    file://fix-AARCH64EB-support.patch \
 "
 
-#patches from openeuler
-SRC_URI += " \
+# add patch from poky with 3.4.2 version
+SRC_URI_append = " \
+    file://0001-arm-sysv-reverted-clang-VFP-mitigation.patch \
 "
 
-SRC_URI[md5sum] = "0da1a5ed7786ac12dcbaf0d499d8a049"
-SRC_URI[sha256sum] = "d66c56ad259a82cf2a9dfc408b32bf5da52371500b84745f7fb8b645712df676"
+SRC_URI[md5sum] = "294b921e6cf9ab0fbaea4b639f8fdbe8"
+SRC_URI[sha256sum] = "540fb721619a6aba3bdeef7d940d8e9e0e6d2c193595bc243241b77ff9e93620"
+
+EXTRA_OECONF += "--disable-builddir --disable-exec-static-tramp"

@@ -1,10 +1,10 @@
 # main bbfile: yocto-poky/meta/recipes-extended/less/less_563.bb
 
 # less version in openEuler
-PV = "608"
+PV = "590"
 
-LIC_FILES_CHKSUM = "file://COPYING;md5=1ebbd3e34237af26da5dc08a4e440464 \
-                    file://LICENSE;md5=38fc26d78ca8d284a2a5a4bbc263d29b \
+LIC_FILES_CHKSUM = "file://COPYING;md5=d32239bcb673463ab874e80d47fae504 \
+                    file://LICENSE;md5=ba01d0cab7f62f7f2204c7780ff6a87d \
                     "
 
 # Use the source packages and patches from openEuler
@@ -12,9 +12,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=1ebbd3e34237af26da5dc08a4e440464 \
 SRC_URI_remove = "file://less-475-fsync.patch"
 
 SRC_URI_prepend = "file://less-394-time.patch \
-            file://less-475-fsync.patch \
+            file://backport-Fix-memory-leak-when-using-corrupt-lesshst-file.patch \
+            file://backport-Fix-crash-when-enter-invaid-pattern-in-command.patch \
             file://backport-End-OSC8-hyperlink-on-invalid-embedded-escape-sequen.patch \
             "
 
-SRC_URI[md5sum] = "1cdec714569d830a68f4cff11203cdba"
-SRC_URI[sha256sum] = "a69abe2e0a126777e021d3b73aa3222e1b261f10e64624d41ec079685a6ac209"
+SRC_URI[md5sum] = "f029087448357812fba450091a1172ab"
+SRC_URI[sha256sum] = "6aadf54be8bf57d0e2999a3c5d67b1de63808bb90deb8f77b028eafae3a08e10"
