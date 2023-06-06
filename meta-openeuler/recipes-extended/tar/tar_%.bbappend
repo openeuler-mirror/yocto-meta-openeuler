@@ -1,5 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-extended/tar/tar_1.34.bb
-PV="1.34"
+PV = "1.34"
 
 # Use the source packages from openEuler
 SRC_URI_remove = "${GNU_MIRROR}/tar/tar-${PV}.tar.bz2"

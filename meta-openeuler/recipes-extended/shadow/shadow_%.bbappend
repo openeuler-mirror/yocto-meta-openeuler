@@ -1,23 +1,54 @@
-#main bbfile: yocto-poky/meta/recipes-extended/shadow/shadow_4.8.1.bb
-#ref: https://git.yoctoproject.org/poky/tree/meta/recipes-extended/shadow/shadow_4.13.bb
+# main bbfile: yocto-poky/meta/recipes-extended/shadow/shadow_4.8.1.bb
 
-OPENEULER_SRC_URI_REMOVE = "https git http"
-
-PV = "4.13"
-
-LIC_FILES_CHKSUM = "file://COPYING;md5=c9a450b7be84eac23e6353efecb60b5b \
-                    file://src/passwd.c;beginline=2;endline=30;md5=758c26751513b6795395275969dd3be1 \
-                    "
+PV = "4.9"
 
 # get extra config files from openeuler
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
 
 SRC_URI = "file://${BP}.tar.xz \
            ${@bb.utils.contains('PACKAGECONFIG', 'pam', '${PAM_SRC_URI}', '', d)} \
-           file://usermod-unlock.patch \
-           file://backport-useradd-check-if-subid-range-exists-for-user.patch \
-           file://shadow-add-sm3-crypt-support.patch \
            file://useradd \
+           "
+
+# use openeuler patches
+SRC_URI_append = " \
+           file://shadow-4.8-goodname.patch \
+           file://shadow-4.9-null-tm.patch \
+           file://shadow-4.8-long-entry.patch \
+           file://usermod-unlock.patch \
+           file://useradd-create-directories-after-the-SELinux-user.patch \
+           file://Makefile-include-libeconf-dependency-in-new-idmap.patch \
+           file://usermod-allow-all-group-types-with-G-option.patch \
+           file://useradd-avoid-generating-an-empty-subid-range.patch \
+           file://libmisc-fix-default-value-in-SHA_get_salt_rounds.patch \
+           file://semanage-close-the-selabel-handle.patch \
+           file://Revert-useradd.c-fix-memleaks-of-grp.patch \
+           file://useradd-change-SELinux-labels-for-home-files.patch \
+           file://libsubid-link-to-PAM-libraries.patch \
+           file://Fix-out-of-tree-builds-with-respect-to-libsubid-incl.patch \
+           file://Respect-enable-static-no-in-libsubid.patch \
+           file://Fixes-the-linking-issues-when-libsubid-is-static-and.patch \
+           file://pwck-fix-segfault-when-calling-fprintf.patch \
+           file://newgrp-fix-segmentation-fault.patch \
+           file://groupdel-fix-SIGSEGV-when-passwd-does-not-exist.patch \
+           file://shadow-add-sm3-crypt-support.patch \
+           file://backport-useradd-modify-check-ID-range-for-system-users.patch \
+           file://backport-Add-header-guards.patch \
+           file://backport-Change-to-strncat.patch \
+           file://backport-Do-not-return-garbage-in-run_parts.patch \
+           file://backport-Handle-ERANGE-error-correctly.patch \
+           file://backport-Initialize-local-variables.patch \
+           file://backport-Remove-commented-out-code-and-FIXMEs.patch \
+           file://backport-Remove-redeclared-variable.patch \
+           file://backport-libmisc-add-check-fopen-return-value-in-read_random_.patch \
+           file://backport-passwd-erase-password-copy-on-all-error-branches.patch \
+           file://backport-chpasswd-add-get_salt-for-generating-salt-value.patch \
+           file://backport-chpasswd-fix-function-problem-with-R-parameter.patch \
+           file://backport-Fix-off-by-one-mistakes.patch \
+           file://backport-Fix-typos-in-length-calculations.patch \
+           file://backport-Correctly-handle-illegal-system-file-in-tz.patch \
+           file://backport-Explicitly-override-only-newlines.patch \
+           file://backport-Prevent-out-of-boundary-access.patch \
 "
 
 # add extra pam files for openeuler
@@ -34,14 +65,15 @@ SRC_URI_remove_class-native = " \
            file://commonio.c-fix-unexpected-open-failure-in-chroot-env.patch \
 "
 
-# apply 4.13 specific patches, remove these when poky's shadow upgrade to 4.13
+# apply 4.9 specific patches, remove these when poky's shadow upgrade to 4.9
 SRC_URI_append_class-native = " \
-           file://413-0001-Disable-use-of-syslog-for-sysroot.patch \
-           file://413-commonio.c-fix-unexpected-open-failure-in-chroot-env.patch \
+           file://49-0001-Disable-use-of-syslog-for-sysroot.patch \
+           file://49-commonio.c-fix-unexpected-open-failure-in-chroot-env.patch \
            file://login.defs \
 "
 
-SRC_URI[sha256sum] = "813057047499c7fe81108adcf0cffa3ad4ec75e19a80151f9cbaa458ff2e86cd"
+SRC_URI[md5sum] = "3d97f11e66bfb0b14702b115fa8be480"
+SRC_URI[sha256sum] = "3ee3081fbbcbcfea5c8916419e46bc724807bab271072104f23e7a29e9668f3a"
 
 # no ${mandir} installed in openeuler
 ALTERNATIVE_${PN}-doc = ""

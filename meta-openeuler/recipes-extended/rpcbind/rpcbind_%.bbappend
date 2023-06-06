@@ -1,6 +1,6 @@
-#main bbfile: yocto-poky/meta/recipes-extended/rpcbind/rpcbind_1.2.5.bb
+# main bbfile: yocto-poky/meta/recipes-extended/rpcbind/rpcbind_1.2.5.bb
 
-#version in openEuler
+# version in openEuler
 PV = "1.2.6"
 
 S = "${WORKDIR}/${BPN}-${PV}"
@@ -14,7 +14,7 @@ SRC_URI_remove = " \
 # files, patches that come from openeuler
 # all openeuler systemd patches can't apply, include rpcbind-0.2.4-runstatdir.patch
 # backport-debian-enable-rmt-calls-with-r.patch is conflict
-SRC_URI_append += " \
+SRC_URI_append = " \
         file://${BPN}-${PV}.tar.bz2 \
         file://bugfix-rpcbind-GETADDR-return-client-ip.patch \
         file://fix-CVE-2017-8779.patch \

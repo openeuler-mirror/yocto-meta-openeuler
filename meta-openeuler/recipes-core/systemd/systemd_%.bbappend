@@ -1,19 +1,16 @@
-#main bbfile: yocto-poky/meta/recipes-core/systemd/systemd_247.6.bb
+# main bbfile: yocto-poky/meta/recipes-core/systemd/systemd_247.6.bb
 
-#version in openEuler
+# version in openEuler
 PV = "249"
 S = "${WORKDIR}/${BP}"
 
 require systemd-openeuler.inc
 
-OPENEULER_REPO_NAME = "systemd"
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
-
 # feature sync with systemd_249.7.bb from poky honister
 # see https://git.yoctoproject.org/poky/tree/meta/recipes-core/systemd/systemd_249.7.bb?h=honister
-PACKAGECONFIG_append += "wheel-group"
+PACKAGECONFIG_append = " wheel-group"
 # we don't wan zstd PACKAGECONFIG += "zstd"
-PACKAGECONFIG_remove += "xz"
+PACKAGECONFIG_remove = "xz"
 PACKAGECONFIG[tpm2] = "-Dtpm2=true,-Dtpm2=false,tpm2-tss,tpm2-tss libtss2 libtss2-tcti-device"
 PACKAGECONFIG[repart] = "-Drepart=true,-Drepart=false"
 PACKAGECONFIG[homed] = "-Dhomed=true,-Dhomed=false"
@@ -47,8 +44,8 @@ FILES_udev += " \
 
 # depmodwrapper is not valid to do depmod in buildtime, add a service to do it in runtime as a workaround.
 # as modutils.sh is not run under systemd
-PACKAGE_BEFORE_PN_append = "${PN}-depmod "
-SRC_URI_append += "file://systemd-depmod.service"
+PACKAGE_BEFORE_PN_append = " ${PN}-depmod"
+SRC_URI_append = " file://systemd-depmod.service"
 FILES_${PN}-depmod = "${systemd_unitdir}/system/systemd-depmod.service"
 SYSTEMD_SERVICE_${PN}-depmod = "systemd-depmod.service"
 do_install_append () {

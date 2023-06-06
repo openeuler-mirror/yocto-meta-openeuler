@@ -8,11 +8,11 @@ SRC_URI_remove = "${SOURCEFORGE_MIRROR}/linux-diag/sysfsutils-${PV}.tar.gz \
                   file://separatebuild.patch \
 "
 
-SRC_URI_prepend += "file://sysfsutils/v${PV}.tar.gz \
-"
-
-SRC_URI += "file://0001-lib-Fixed-a-memory-leak-in-lib-sysfs_driver.patch \
-"
+SRC_URI_prepend = "file://v${PV}.tar.gz \
+           file://0001-lib-Fixed-a-memory-leak-in-lib-sysfs_driver.patch \
+           file://0002-lib-Fixed-memory-leaks-in-lib-sysfs_device.c.patch \
+           file://0003-lib-Fixed-memory-leaks-in-lib-sysfs_attr.c.patch \
+           "
 
 # checksum changed in this version
 LIC_FILES_CHKSUM = "file://COPYING;md5=dcc19fa9307a50017fca61423a7d9754 \

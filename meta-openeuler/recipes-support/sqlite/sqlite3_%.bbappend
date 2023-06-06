@@ -1,4 +1,5 @@
 # main bb file: yocto-poky/meta/recipes-support/sqlite/sqlite3_3.35.0.bb
+
 # openEuler repo name
 OPENEULER_REPO_NAME = "sqlite"
 
@@ -6,6 +7,8 @@ OPENEULER_REPO_NAME = "sqlite"
 PV = "3.37.2"
 
 # patches in src-openEuler are ready for sqlite-src
+
+# this CVE had been fixed in 3.37.2 version
 SRC_URI_remove = "file://CVE-2021-36690.patch \
 "
 

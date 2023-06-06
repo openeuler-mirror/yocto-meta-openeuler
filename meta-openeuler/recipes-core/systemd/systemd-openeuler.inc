@@ -1,3 +1,5 @@
+FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
+
 LIC_FILES_CHKSUM = "file://${WORKDIR}/systemd-${PV}/LICENSE.GPL2;md5=751419260aa954499f7abaabaa882bbe \
                     file://${WORKDIR}/systemd-${PV}/LICENSE.LGPL2.1;md5=4fbd65380cdd255951079008b364516c"
 
@@ -414,7 +416,51 @@ SRC_URI =+ " \
            file://backport-analyze-add-forgotten-return-statement.patch \
            file://backport-shared-condition-avoid-nss-lookup-in-PID1.patch \
            file://backport-logind-fix-getting-property-OnExternalPower-via-D-Bu.patch \
+           file://backport-mount-setup-don-t-need-to-mount-sys-fs-pstore-if-the.patch \
+           file://backport-swap-tell-swapon-to-reinitialize-swap-if-needed.patch \
+           file://backport-sd-event-never-pass-negative-errnos-as-signalfd-to.patch \
+           file://backport-sd-event-don-t-mistake-USEC_INFINITY-passed-in-for.patch \
+           file://backport-tmpfiles-avoid-null-free-for-acl-attributes.patch \
+           file://backport-nspawn-guard-acl_free-with-a-NULL-check.patch \
+           file://backport-core-mount-namespaces-Remove-auxiliary-bind-mounts.patch \
            file://backport-udev-support-by-path-devlink-for-multipath-nvme-bloc.patch \
+           file://backport-argv-util-also-update-program_invocation_short_name.patch \
+           file://backport-pid1-fix-segv-triggered-by-status-query.patch \
+           file://backport-main-log-which-process-send-SIGNAL-to-PID1.patch \
+           file://backport-main-drop-get_process_cmdline-from-crash-handler.patch \
+           file://backport-core-unit-drop-dependency-to-the-unit-being-merged.patch \
+           file://backport-core-unit-fix-logic-of-dropping-self-referencing-dep.patch \
+           file://backport-core-unit-merge-two-loops-into-one.patch \
+           file://backport-core-unit-merge-unit-names-after-merging-deps.patch \
+           file://backport-core-unit-fix-log-message.patch \
+           file://backport-test-add-test-case-for-sysv-generator-and-invalid-de.patch \
+           file://backport-udev-also-rename-struct-udev_ctrl-UdevCtrl.patch \
+           file://backport-udev-move-several-functions.patch \
+           file://backport-udev-update-log-message-to-clarify-that-the-error-is-ignored.patch \
+           file://backport-udev-make-event_free-return-NULL.patch \
+           file://backport-udev-make-event_queue_start-return-negative-errno-on-error.patch \
+           file://backport-udev-add-usec_add-at-one-more-place.patch \
+           file://backport-udev-propagate-error-on-spawning-a-worker.patch \
+           file://backport-udev-do-not-try-to-process-events-if-there-is-no-free-worker.patch \
+           file://backport-udev-rename-is_device_busy-event_is_blocked.patch \
+           file://backport-list-introduce-LIST_FOREACH_BACKWARDS-macro-and-drop.patch \
+           file://backport-udev-do-not-try-to-find-blocker-again-when-no-blocker-found.patch \
+           file://backport-udev-skip-event-when-its-dependency-cannot-be-checked.patch \
+           file://backport-event-util-introduce-event_reset_time_relative.patch \
+           file://backport-udev-update-comment-and-log-messages.patch \
+           file://backport-udev-remove-run-udev-queue-in-on_post.patch \
+           file://backport-errno-util-add-ERRNO_IS_DEVICE_ABSENT-macro.patch \
+           file://backport-udev-only-ignore-ENOENT-or-friends-which-suggest-the-block.patch \
+           file://backport-udev-assume-there-is-no-blocker-when-failed-to-check-event.patch \
+           file://backport-udev-drop-unnecessary-clone-of-received-sd-device-object.patch \
+           file://backport-udev-introduce-device_broadcast_helper_function.patch \
+           file://backport-udev-store-action-in-struct-Event.patch \
+           file://backport-udev-requeue-event-when-the-corresponding-block-device-is.patch \
+           file://backport-udev-split-worker_lock_block_device-into-two.patch \
+           file://backport-udev-assume-block-device-is-not-locked-when-a-new-event-is-queued.patch \
+           file://backport-udev-fix-inversed-inequality-for-timeout-of-retrying-event.patch \
+           file://backport-udev-certainly-restart-event-for-previously-locked-device.patch \
+           file://backport-udev-drop-unnecessary-calls-of-event_queue_start.patch \
            file://update-rtc-with-system-clock-when-shutdown.patch \
            file://udev-add-actions-while-rename-netif-failed.patch \
            file://fix-two-VF-virtual-machines-have-same-mac-address.patch \
