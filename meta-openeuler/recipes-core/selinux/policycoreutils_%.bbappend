@@ -24,3 +24,6 @@ SRC_URI[sha256sum] = "7dc28e398afab9e917f02ce23dc93aff817f79171550e88bc743e31cde
 S = "${WORKDIR}/selinux-${BP}/${BPN}"
 
 RDEPENDS:${PN}:remove:class-target = "selinux-python"
+
+# remove libcgroup which is not mandatory in the build.
+EXTRA_DEPENDS_remove += "libcgroup"

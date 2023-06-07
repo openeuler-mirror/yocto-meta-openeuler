@@ -1,4 +1,4 @@
-PV = "3.4"
+PV = "3.3"
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
 SRC_URI_prepend = "file://${BP}.tar.gz \

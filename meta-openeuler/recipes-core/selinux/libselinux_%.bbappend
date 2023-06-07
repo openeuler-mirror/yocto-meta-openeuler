@@ -1,7 +1,11 @@
-PV = "3.4"
+PV = "3.3"
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
 SRC_URI_prepend = "file://${BP}.tar.gz \
+        file://backport-libselinux-Close-leaked-FILEs.patch \
+        file://backport-libselinux-free-memory-on-selabel_open-3-failure.patch \
+        file://backport-libselinux-restorecon-misc-tweaks.patch \
+        file://backport-libselinux-free-memory-in-error-branch.patch \
         file://backport-libselinux-restorecon-avoid-printing-NULL-pointer.patch \
         file://do-malloc-trim-after-load-policy.patch \
         "

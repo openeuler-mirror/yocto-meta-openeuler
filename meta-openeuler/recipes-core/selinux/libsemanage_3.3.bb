@@ -16,23 +16,22 @@ SRC_URI += "file://libsemanage-Fix-execve-segfaults-on-Ubuntu.patch \
             file://libsemanage-disable-expand-check-on-policy-load.patch \
            "
 
-DEPENDS = "libsepol libselinux python3 bison-native swig-native"
-
+DEPENDS += "libsepol libselinux bzip2 python3 bison-native flex-native swig-native"
 DEPENDS:append:class-target = " audit"
 
 S = "${WORKDIR}/git/libsemanage"
 
-EXTRA_OEMAKE:class-native = "DISABLE_AUDIT=y"
-
 PACKAGES =+ "${PN}-python"
 
 # For /usr/libexec/selinux/semanage_migrate_store
-RDEPENDS:${PN}-python = "python3-core"
+RDEPENDS:${PN}-python += "python3-core"
 
 FILES:${PN}-python = "${libdir}/python${PYTHON_BASEVERSION}/site-packages/* \
                       ${libexecdir}/selinux/semanage_migrate_store"
 FILES:${PN}-dbg += "${libdir}/python${PYTHON_BASEVERSION}/site-packages/.debug/*"
 FILES:${PN} += "${libexecdir}"
+
+EXTRA_OEMAKE:class-native += "DISABLE_AUDIT=y"
 
 do_compile:append() {
     oe_runmake pywrap \

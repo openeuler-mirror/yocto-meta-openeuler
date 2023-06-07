@@ -18,47 +18,48 @@ PAM_SRC_URI = "file://pam.d/newrole \
                file://pam.d/run_init \
               "
 
-DEPENDS = "libsepol libselinux libsemanage gettext-native"
-DEPENDS:append:class-target = " libcap-ng"
+DEPENDS += "libsepol libselinux libsemanage libcap gettext-native"
+EXTRA_DEPENDS = "libcap-ng libcgroup"
+DEPENDS += "${@['', '${EXTRA_DEPENDS}']['${PN}' != '${BPN}-native']}"
 
 S = "${WORKDIR}/git/policycoreutils"
 
 inherit selinux python3native
 
-RDEPENDS:${PN}-fixfiles = "\
-    ${PN}-setfiles \
+RDEPENDS:${BPN}-fixfiles += "\
+    ${BPN}-setfiles \
     grep \
     findutils \
 "
-RDEPENDS:${PN}-genhomedircon = "\
-    ${PN}-semodule \
+RDEPENDS:${BPN}-genhomedircon += "\
+    ${BPN}-semodule \
 "
-RDEPENDS:${PN}-loadpolicy = "\
+RDEPENDS:${BPN}-loadpolicy += "\
     libselinux \
     libsepol \
 "
-RDEPENDS:${PN}-newrole = "\
+RDEPENDS:${BPN}-newrole += "\
     libcap-ng \
     libselinux \
 "
-RDEPENDS:${PN}-runinit = "libselinux"
-RDEPENDS:${PN}-secon = "libselinux"
-RDEPENDS:${PN}-semodule = "\
+RDEPENDS:${BPN}-runinit += "libselinux"
+RDEPENDS:${BPN}-secon += "libselinux"
+RDEPENDS:${BPN}-semodule += "\
     libsepol \
     libselinux \
     libsemanage \
 "
-RDEPENDS:${PN}-sestatus = "libselinux"
-RDEPENDS:${PN}-setfiles = "\
+RDEPENDS:${BPN}-sestatus += "libselinux"
+RDEPENDS:${BPN}-setfiles += "\
     libselinux \
     libsepol \
 "
-RDEPENDS:${PN}-setsebool = "\
+RDEPENDS:${BPN}-setsebool += "\
     libsepol \
     libselinux \
     libsemanage \
 "
-RDEPENDS:${PN}:class-target = "selinux-python"
+RDEPENDS:${BPN} += "selinux-python"
 
 PACKAGES =+ "\
     ${PN}-fixfiles \
@@ -73,34 +74,34 @@ PACKAGES =+ "\
     ${PN}-setfiles \
     ${PN}-setsebool \
 "
-FILES:${PN}-fixfiles = "${base_sbindir}/fixfiles"
-FILES:${PN}-genhomedircon = "${base_sbindir}/genhomedircon"
-FILES:${PN}-loadpolicy = "\
+FILES:${PN}-fixfiles += "${base_sbindir}/fixfiles"
+FILES:${PN}-genhomedircon += "${base_sbindir}/genhomedircon"
+FILES:${PN}-loadpolicy += "\
     ${base_sbindir}/load_policy \
 "
-FILES:${PN}-newrole = "\
+FILES:${PN}-newrole += "\
     ${bindir}/newrole \
     ${@bb.utils.contains('DISTRO_FEATURES', 'pam', '${sysconfdir}/pam.d/newrole', '', d)} \
 "
-FILES:${PN}-runinit = "\
+FILES:${PN}-runinit += "\
     ${base_sbindir}/run_init \
     ${base_sbindir}/open_init_pty \
     ${@bb.utils.contains('DISTRO_FEATURES', 'pam', '${sysconfdir}/pam.d/run_init', '', d)} \
 "
 FILES:${PN}-dbg += "${prefix}/libexec/selinux/hll/.debug"
-FILES:${PN}-secon = "${bindir}/secon"
-FILES:${PN}-semodule = "${base_sbindir}/semodule"
-FILES:${PN}-hll = "${prefix}/libexec/selinux/hll/*"
-FILES:${PN}-sestatus = "\
+FILES:${PN}-secon += "${bindir}/secon"
+FILES:${PN}-semodule += "${base_sbindir}/semodule"
+FILES:${PN}-hll += "${prefix}/libexec/selinux/hll/*"
+FILES:${PN}-sestatus += "\
     ${base_sbindir}/sestatus \
     ${sysconfdir}/sestatus.conf \
 "
-FILES:${PN}-setfiles = "\
+FILES:${PN}-setfiles += "\
     ${base_sbindir}/restorecon \
     ${base_sbindir}/restorecon_xattr \
     ${base_sbindir}/setfiles \
 "
-FILES:${PN}-setsebool = "\
+FILES:${PN}-setsebool += "\
     ${base_sbindir}/setsebool \
     ${datadir}/bash-completion/completions/setsebool \
 "
@@ -114,12 +115,11 @@ PACKAGECONFIG:class-target ?= "\
         ${@bb.utils.contains('DISTRO_FEATURES', 'pam', 'libpam', '', d)} \
         audit \
 "
-PACKAGECONFIG:class-native ?= ""
 
 PACKAGECONFIG[libpam] = ",,libpam,"
 PACKAGECONFIG[audit] = ",,audit,"
 
-EXTRA_OEMAKE = "\
+EXTRA_OEMAKE += "\
         ${@bb.utils.contains('PACKAGECONFIG', 'libpam', 'PAMH=y', 'PAMH=', d)} \
         ${@bb.utils.contains('PACKAGECONFIG', 'audit', 'AUDITH=y', 'AUDITH=', d)} \
         INOTIFYH=n \
@@ -131,14 +131,6 @@ BBCLASSEXTEND = "native"
 
 PCU_NATIVE_CMDS = "setfiles semodule hll"
 
-do_compile:prepend() {
-    export PYTHON=python3
-    export PYLIBVER='python${PYTHON_BASEVERSION}'
-    export PYTHON_CPPFLAGS="-I${STAGING_INCDIR}/${PYLIBVER}"
-    export PYTHON_LDFLAGS="${STAGING_LIBDIR}/lib${PYLIBVER}.so"
-    export PYTHON_SITE_PKG="${libdir}/${PYLIBVER}/site-packages"
-}
-
 do_compile:class-native() {
     for PCU_CMD in ${PCU_NATIVE_CMDS} ; do
         oe_runmake -C $PCU_CMD \
@@ -149,6 +141,14 @@ do_compile:class-native() {
 
 sysroot_stage_dirs:append:class-native() {
     cp -R $from/${prefix}/libexec $to/${prefix}/libexec
+}
+
+do_compile:prepend() {
+    export PYTHON=python3
+    export PYLIBVER='python${PYTHON_BASEVERSION}'
+    export PYTHON_CPPFLAGS="-I${STAGING_INCDIR}/${PYLIBVER}"
+    export PYTHON_LDFLAGS="${STAGING_LIBDIR}/lib${PYLIBVER}.so"
+    export PYTHON_SITE_PKG="${libdir}/${PYLIBVER}/site-packages"
 }
 
 do_install:prepend() {
