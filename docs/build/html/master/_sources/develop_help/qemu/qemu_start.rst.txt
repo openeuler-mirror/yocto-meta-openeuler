@@ -105,10 +105,14 @@ QEMU使用
      .. code-block:: console
 
         $ qemu-system-aarch64 -M virt-4.0 -m 1G -cpu cortex-a57 -nographic \
-            -kernel zImage \
-            -initrd openeuler-image-qemu-aarch64-*.rootfs.cpio.gz \
-            -device virtio-net-device,netdev=tap0 \
-            -netdev tap,id=tap0,script=/etc/qemu-ifup
+           -kernel zImage \
+           -initrd openeuler-image-qemu-aarch64-*.rootfs.cpio.gz \
+           -device virtio-net-device,netdev=tap0 \
+           -netdev tap,id=tap0,script=/etc/qemu-ifup
+      
+     .. note::
+        如果宿主机是Ubuntu，则运行上述命令可能会出现could not configure /dev/net/tun: Operation not permitted\
+        的错误。此时，用户需要sudo权限执行上述命令，才能正常运行。
 
    **Step3：配置openEuler Embedded网卡**
 

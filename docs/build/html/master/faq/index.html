@@ -56,6 +56,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#oebuildyocto">Oebuild和Yocto之间的关系</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id4">Oebuild为什么使用容器进行构建？</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id5">Oebuild构建时如何避免受到上游社区的影响？</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oebuild-update">为什么我运行了oebuild update以后，重新构建相同特性和架构的镜像却会失败？</a></li>
 </ul>
 </li>
 </ul>
@@ -155,6 +156,11 @@
 <h3>Oebuild构建时如何避免受到上游社区的影响？<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <p>openEuler Embedded在构建时有许多软件包依赖上游社区，我们无法控制软件包的更新时间节点，抑或是更新内容。有时，不兼容更新确实会导致OS镜像构建失败。Oebuild引入“基线”功能，解决了这一问题。在构建镜像的时候，我们可以依照“基线”中定义的版本拉取相应的软件包和补丁，即使上游社区的软件包更新，也不会改变我们生成的镜像中的软件包版本。</p>
 <p>“基线”的现实载体是manifest.yaml，里面的字段commit会指定某软件包相应的版本。在上游仓库中拉取软件包源码的时候，我们会根据相应的commit ID拉取相应的源码，保证构建的稳定性。</p>
+</section>
+<section id="oebuild-update">
+<h3>为什么我运行了oebuild update以后，重新构建相同特性和架构的镜像却会失败？<a class="headerlink" href="#oebuild-update" title="Permalink to this headline">¶</a></h3>
+<p>首先，oebuild目前的容器镜像是以目录为单位的，而目录又是以特性和架构为参考。如果构建相同特性和架构的镜像，构建目录会与以前的目录相同，所以使用的构建容器也与以前相同。那么，上次构建遗留下来的临时文件，也会存在于之前的容器中。</p>
+<p>由于oebuild在运行时依赖于自己生成的某些缓存文件，而<code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">update</span></code>命令并不会更新相关的缓存文件，而是只更新仓库和容器。所以此时再进行构建，则部分旧缓存会影响构建进程导致误报。比较好的解决办法是，在重新构建时运行命令<code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">bitbake</span> <span class="pre">[the</span> <span class="pre">image</span> <span class="pre">name]</span> <span class="pre">-c</span> <span class="pre">cleanall</span></code>。这条命令会在执行bitbake之前执行<code class="docutils literal notranslate"><span class="pre">-c</span></code>指定的命令，将所有缓存清除后再进行构建，这样就可以避免此问题。</p>
 </section>
 </section>
 </section>
