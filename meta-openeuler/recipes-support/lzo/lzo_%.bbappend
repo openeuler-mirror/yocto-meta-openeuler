@@ -11,6 +11,7 @@ SRC_URI_remove = " \
 
 SRC_URI += " \
         file://${BPN}-${PV}.tar.gz \
+        file://lzo-Add-sw64-architecture.patch \
         "
 
 SRC_URI[tarball.md5sum] = "39d3f3f9c55c87b1e5d6888e1420f4b5"

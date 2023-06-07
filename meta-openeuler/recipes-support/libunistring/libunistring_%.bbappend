@@ -1,6 +1,6 @@
 # main bbfile: yocto-poky/meta/recipes-support/libunistring/libunistring_0.9.10.bb
 
-PV = "1.1"
+PV = "1.0"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
