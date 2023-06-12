@@ -9,6 +9,7 @@
    :maxdepth: 1
 
    qemu/index.rst
+   debug.rst
    commit.rst
    contribute_doc.rst
    republish.rst
