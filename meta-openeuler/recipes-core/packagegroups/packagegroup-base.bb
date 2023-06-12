@@ -57,6 +57,7 @@ util-linux-libfdisk \
 xz \
 expect \
 sysfsutils \
+elfutils \
 "
 
 RDEPENDS_packagegroup-base-libs = " \
