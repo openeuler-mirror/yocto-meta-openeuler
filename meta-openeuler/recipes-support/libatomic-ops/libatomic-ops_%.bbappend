@@ -1,6 +1,6 @@
 # main bbfile: yocto-poky/meta/recipes-support/libatomic-ops/libatomic-ops_7.6.10.bb
 
-PV = "7.6.14"
+PV = "7.6.12"
 OPENEULER_REPO_NAME = "libatomic_ops"
 
 # apply src and patch from openEuler
@@ -13,5 +13,5 @@ SRC_URI[sha256sum] = "f0ab566e25fce08b560e1feab6a3db01db4a38e5bc687804334ef3920c
 
 # license checksum changed
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
-                    file://doc/LICENSING.txt;md5=dfc50c7cea7b66935844587a0f7389e7 \
+                    file://doc/LICENSING.txt;md5=e00dd5c8ac03a14c5ae5225a4525fa2d \
                     "

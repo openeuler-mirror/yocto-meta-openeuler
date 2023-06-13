@@ -59,7 +59,7 @@ python do_fetch() {
         os.mkdir(kernel_dir)
     lock_file = os.path.join(kernel_dir, "file.lock")
     # if change kernel version, just change `kernel_branch` param
-    kernel_branch = "5.10.0-153.1.0"
+    kernel_branch = "5.10.0-153.4.0"
 
     lf = bb.utils.lockfile(lock_file, block=True)
     

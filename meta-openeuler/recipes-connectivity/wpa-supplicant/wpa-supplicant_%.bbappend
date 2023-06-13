@@ -5,6 +5,7 @@ PV = "2.6"
 
 # apply source package in openeuler
 SRC_URI_remove = "http://w1.fi/releases/wpa_supplicant-${PV}.tar.gz  \
+file://key-replay-cve-multiple.patch \
 "
 
 SRC_URI_prepend = "file://wpa_supplicant-${PV}.tar.gz \
