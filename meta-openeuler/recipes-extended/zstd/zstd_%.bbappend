@@ -1,8 +1,9 @@
-PV = "1.5.2"
+PV = "1.5.0"
 
 SRC_URI = " \
         file://${BPN}-${PV}.tar.gz \
-        file://add-test-c-result-print.patch \
+        file://backport-0001-CVE-2022-4899.patch \
+        file://backport-0002-CVE-2022-4899.patch \
            "
 
 S = "${WORKDIR}/${BP}"
