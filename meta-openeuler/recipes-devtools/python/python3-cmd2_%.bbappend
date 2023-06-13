@@ -1,7 +1,7 @@
-PV = "2.4.2"
+PV = "2.4.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=209e288518b0668115f58c3929af9ff1"
-SRC_URI[md5sum] = "9c54a6eb188f6673e32be3e22941ba39"
-SRC_URI[sha256sum] = "f328ed33d70a32267f141c5c310f61ed7fcce049094223db2ea2247d62e72c10"
+SRC_URI[md5sum] = "538c02f7e78c7cfbdeafa3acea362c61"
+SRC_URI[sha256sum] = "090909ab6c8ecee40813cec759e61dd6e70c8227a1a8e96082f5f2b0d394bc77"
 require pypi-src-openeuler.inc
 
 # remove the setup_requires for setuptools-scm(same as python3-pytest):
