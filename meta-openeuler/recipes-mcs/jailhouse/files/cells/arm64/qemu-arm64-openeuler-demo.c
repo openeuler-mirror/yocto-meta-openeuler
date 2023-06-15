@@ -10,7 +10,7 @@
 struct {
     struct jailhouse_system header;
     __u64 cpus[1];
-    struct jailhouse_memory mem_regions[16];
+    struct jailhouse_memory mem_regions[17];
     struct jailhouse_irqchip irqchips[1];
     struct jailhouse_pci_device pci_devices[1];
 } __attribute__((packed)) config = {
@@ -30,12 +30,6 @@ struct {
             .flags = JAILHOUSE_CON_ACCESS_MMIO | JAILHOUSE_CON_REGDIST_4,
         },
         .platform_info = {
-            /* TODO PCI配置空间地址, 当前写死, 后面需要根据平台修改 */
-            // %if system['cpu_name'] == 'ft2000plus':
-            // .pci_machine_mmconfig_base = 0x80040000000,
-            // %else:
-            // .pci_machine_mmconfig_base = 0x30000000,
-            // %endif
             .pci_mmconfig_base = 0x10000000,
             .pci_mmconfig_end_bus = 0x0,
             .pci_is_virtual = 1,
@@ -141,11 +135,11 @@ struct {
             .size       = 0x1000, // 4.0 KB
             .flags = JAILHOUSE_MEM_READ | JAILHOUSE_MEM_WRITE | JAILHOUSE_MEM_IO,
         },
-        /* pci_ecam */
+        /* pci */
         {
-            .phys_start = 0x3f000000,
-            .virt_start = 0x3f000000,
-            .size       = 0x1000000, // 16384.0 KB
+            .phys_start = 0x10000000,
+            .virt_start = 0x10000000,
+            .size       = 0x30000000,
             .flags = JAILHOUSE_MEM_READ | JAILHOUSE_MEM_WRITE | JAILHOUSE_MEM_IO,
         },
 
@@ -163,7 +157,7 @@ struct {
         {
             .phys_start = 0xa000000,
             .virt_start = 0xa000000,
-            .size       = 0x1000, // 4.0 KB
+            .size       = 0x10000,
             .flags = JAILHOUSE_MEM_READ | JAILHOUSE_MEM_WRITE | JAILHOUSE_MEM_IO,
         },
         /* pci_mmio */
@@ -178,6 +172,13 @@ struct {
             .phys_start = 0x3ef0000,
             .virt_start = 0x3ef0000,
             .size       = 0x10000, // 64.0 KB
+            .flags = JAILHOUSE_MEM_READ | JAILHOUSE_MEM_WRITE | JAILHOUSE_MEM_IO,
+        },
+        /* pci ecam */
+        {
+            .phys_start = 0x4010000000,
+            .virt_start = 0x4010000000,
+            .size       = 0x10000000,
             .flags = JAILHOUSE_MEM_READ | JAILHOUSE_MEM_WRITE | JAILHOUSE_MEM_IO,
         },
         /* pci_mem64 */
