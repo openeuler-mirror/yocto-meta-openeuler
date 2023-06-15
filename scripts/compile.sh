@@ -12,6 +12,7 @@ usage()
     echo "                       arm-std"
     echo "                       x86-64-std"
     echo "                       raspberrypi4-64"
+    echo "                       riscv64-std"
     echo "           Build dir: <above dir of yocto-meta-openeuler >/build (defaut)"
     echo "           External toolchain dir(absoulte path):"
     echo "                       /usr1/openeuler/gcc/openeuler_gcc_arm64le (default)"
