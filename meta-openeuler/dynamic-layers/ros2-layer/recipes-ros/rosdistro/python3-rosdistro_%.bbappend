@@ -1,1 +1,1 @@
-inherit openeuler_ros_source
+inherit openeuler_source

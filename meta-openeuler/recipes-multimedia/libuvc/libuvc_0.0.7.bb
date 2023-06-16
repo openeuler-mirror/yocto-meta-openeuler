@@ -9,10 +9,9 @@ LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=2f1963e0bb88c93463af750daf9ba0c2"
 DEPENDS = "libusb jpeg"
 
-inherit openeuler_ros_source
-
-PV = "0.0.7"
+inherit openeuler_source
 
 S = "${WORKDIR}/git"
 
 inherit cmake
+

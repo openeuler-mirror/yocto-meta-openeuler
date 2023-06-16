@@ -22,7 +22,7 @@ author = ''
 build_type = ''
 distributor = "openeuler"
 maintainer = ""
-rosdistro = "foxy"
+rosdistro = "humble"
 homepage = ''
 
 deps = set()
@@ -33,7 +33,7 @@ test_deps = set()
 buildtool_native_deps = set()
 
 src_uri = set()
-src_uri.add('file://${OPENEULER_LOCAL_NAME}/ros_depends/' + tarball_path)
+src_uri.add('file://${OPENEULER_LOCAL_NAME}/ros_depends_humble/' + tarball_path)
 
 def get_top_inherit_line():
     ret = 'inherit ros_distro_{0}\n'.format(rosdistro)

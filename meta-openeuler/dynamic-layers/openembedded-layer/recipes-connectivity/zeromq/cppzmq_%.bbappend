@@ -1,4 +1,4 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-connectivity/zeromq/cppzmq_git.bb
 
-inherit openeuler_ros_source
+inherit openeuler_source
 

@@ -7,7 +7,7 @@ if [ "$output_path" == "" ]; then
     echo "tips:"
     echo "./ros2recipe.sh root_path tarball_path output_path"
     echo "example: ./ros2recipe.sh ./originbot originbot/v1.0.2.tar.gz ./bbout "
-    echo "note!!!: '../' is not support, tarball_path is the relative path under yocto-embedded-tools/ros_depends(dev-ros branch)"
+    echo "note!!!: '../' is not support, tarball_path is the relative path under yocto-embedded-tools/ros_depends_humble(dev-ros branch)"
 else
     xmls=`find $root_path -name package.xml`
     for xml in $xmls
