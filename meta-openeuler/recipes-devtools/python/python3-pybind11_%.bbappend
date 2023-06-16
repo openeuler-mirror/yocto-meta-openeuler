@@ -1,6 +1,6 @@
-PV = "2.10.0"
-SRC_URI[md5sum] = "da561ebf81594930d368a9f9aae0d035"
-SRC_URI[sha256sum] = "eacf582fa8f696227988d08cfc46121770823839fe9e301a20fbce67e7cd70ec"
+PV = "2.8.1"
+SRC_URI[md5sum] = "06d173fb97f1d2d804d318e47f924892"
+SRC_URI[sha256sum] = "f1bcc07caa568eb312411dde5308b1e250bd0e1bc020fae855bf9f43209940cc"
 
 # remove meta-python conflict src
 SRC_URI_remove += " \

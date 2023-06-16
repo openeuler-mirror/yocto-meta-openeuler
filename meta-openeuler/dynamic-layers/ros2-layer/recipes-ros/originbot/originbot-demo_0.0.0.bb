@@ -4,7 +4,7 @@
 #
 # Copyright openeuler
 
-inherit ros_distro_foxy
+inherit ros_distro_humble
 inherit ros_superflore_generated
 
 DESCRIPTION = "OriginBot Demo"
@@ -52,7 +52,7 @@ OPENEULER_BRANCH = "dev_ros"
 OPENEULER_GIT_SPACE = "openeuler"
 
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/ros_depends/originbot/v1.0.2.tar.gz \
+    file://${OPENEULER_LOCAL_NAME}/ros_depends_humble/originbot/v1.0.2.tar.gz \
 "
 
 S = "${WORKDIR}/originbot-v1.0.2/originbot_demo"

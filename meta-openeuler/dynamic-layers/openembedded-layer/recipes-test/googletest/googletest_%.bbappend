@@ -1,17 +1,18 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-test/googletest/googletest_git.bb
 
-OPENEULER_REPO_NAME = "yocto-embedded-tools"
-OPENEULER_LOCAL_NAME = "ros-dev-tools"
-OPENEULER_BRANCH = "dev_ros"
-OPENEULER_GIT_URL = "https://gitee.com/openeuler"
+OPENEULER_SRC_URI_REMOVE = "https git http"
+OPENEULER_LOCAL_NAME = "gtest"
 
 # version in openEuler
-PV = "1.10.0"
+PV = "1.8.1"
 
 S = "${WORKDIR}/googletest-release-${PV}"
-SRC_URI_remove = " \
-            git://github.com/google/googletest.git;branch=main;protocol=https \
-            "
-
-SRC_URI += "file://${OPENEULER_LOCAL_NAME}/ros_depends/googletest/release-${PV}.tar.gz "
+SRC_URI += " \
+        file://${OPENEULER_LOCAL_NAME}/release-${PV}.tar.gz \
+        file://${OPENEULER_LOCAL_NAME}/gtest-1.8.1-null-pointer.patch \
+        file://${OPENEULER_LOCAL_NAME}/gtest-PR1839-Fix-Python3-support.patch \
+        file://${OPENEULER_LOCAL_NAME}/gtest-1.8.1-libversion.patch \
+        file://${OPENEULER_LOCAL_NAME}/gtest-1.8.1-add-missing-pkgconfig-requires.patch \
+        file://${OPENEULER_LOCAL_NAME}/0001-Googletest-export.patch \
+        "
 

@@ -1,7 +1,7 @@
-ROS_DISTRO = "foxy"
+ROS_DISTRO = "humble"
 
 inherit ${ROS_DISTRO_TYPE}_distro
-inherit openeuler_ros_source
+inherit openeuler_source
 
 # There are a large number of non-standard configurations with the fixed libdir directory as lib in the ROS upstream software package. 
 # At present, we can't find a suitable conventional method to adapt our libdir. 

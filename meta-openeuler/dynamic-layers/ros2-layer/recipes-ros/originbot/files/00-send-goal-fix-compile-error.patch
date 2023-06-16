@@ -1,0 +1,43 @@
+diff -Naur send_goal_org/src/send_goal_node.cpp send_goal/src/send_goal_node.cpp
+--- send_goal_org/src/send_goal_node.cpp	2023-05-28 15:36:09.352895131 +0800
++++ send_goal/src/send_goal_node.cpp	2023-05-28 15:35:23.335612021 +0800
+@@ -60,9 +60,9 @@
+         RCLCPP_INFO(this->get_logger(), "Sending goal");
+ 
+         auto send_goal_options = rclcpp_action::Client<NavigateToPose>::SendGoalOptions();
+-        send_goal_options.goal_response_callback = std::bind(&GoalCoordinate::goal_response_callback, this, _1);
+-        send_goal_options.feedback_callback = std::bind(&GoalCoordinate::feedback_callback, this, _1, _2);
+-        send_goal_options.result_callback = std::bind(&GoalCoordinate::result_callback, this, _1);
++        send_goal_options.goal_response_callback = std::bind(&GoalCoordinate::goal_response_callback, this, std::placeholders::_1);
++        send_goal_options.feedback_callback = std::bind(&GoalCoordinate::feedback_callback, this, std::placeholders::_1, std::placeholders::_2);
++        send_goal_options.result_callback = std::bind(&GoalCoordinate::result_callback, this, std::placeholders::_1);
+ 
+         this->client_ptr_->async_send_goal(goal_msg, send_goal_options);
+     }
+@@ -71,9 +71,8 @@
+     rclcpp_action::Client<NavigateToPose>::SharedPtr client_ptr_;
+     rclcpp::TimerBase::SharedPtr timer_;
+ 
+-    void goal_response_callback(std::shared_future<GoalHandleFibonacci::SharedPtr> future)
++    void goal_response_callback(GoalHandleFibonacci::SharedPtr goal_handle)
+     {
+-        auto goal_handle = future.get();
+         if (!goal_handle)
+         {
+             RCLCPP_ERROR(this->get_logger(), "Goal was rejected by server");
+@@ -89,7 +88,7 @@
+     {
+         auto distance_feedback_msg = std_msgs::msg::String();
+         distance_feedback_msg.data = "Remaining Distance from Destination: " + std::to_string(feedback->distance_remaining);
+-        RCLCPP_INFO(this->get_logger(), distance_feedback_msg.data);
++        RCLCPP_INFO(this->get_logger(), "%s", distance_feedback_msg.data.c_str());
+     }
+ 
+     void result_callback(const GoalHandleFibonacci::WrappedResult &result)
+@@ -112,4 +111,4 @@
+     }
+ };
+ 
+-RCLCPP_COMPONENTS_REGISTER_NODE(GoalCoordinate)
+\ No newline at end of file
++RCLCPP_COMPONENTS_REGISTER_NODE(GoalCoordinate)
