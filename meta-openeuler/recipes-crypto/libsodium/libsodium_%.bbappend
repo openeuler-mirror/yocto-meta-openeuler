@@ -1,6 +1,5 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-crypto/libsodium/libsodium_1.0.18.bb
 
-OPENEULER_BRANCH = "master"
 OPENEULER_SRC_URI_REMOVE = "git https http"
 
 PV = "1.0.18"

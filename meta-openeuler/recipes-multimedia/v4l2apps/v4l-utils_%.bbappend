@@ -1,7 +1,6 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-multimedia/v4l2apps/v4l-utils_1.20.0.bb
 
 OPENEULER_REPO_NAME = "v4l-utils"
-OPENEULER_BRANCH = "master"
 OPENEULER_SRC_URI_REMOVE = "https http git"
 
 PV = "1.14.2"

@@ -2,7 +2,6 @@
 
 OPENEULER_SRC_URI_REMOVE = "https git"
 OPENEULER_REPO_NAME = "protobuf"
-OPENEULER_BRANCH = "master"
 
 # version in openEuler
 PV = "3.14.0"
