@@ -123,3 +123,5 @@ HOSTTOOLS_NONFATAL += "glib-mkenums"
 
 # used by gstreamer1.0
 HOSTTOOLS_NONFATAL += "xgettext"
+
+HOSTTOOLS_NONFATAL += "xmlcatalog glib-genmarshal glib-compile-resources gdbus-codegen glib-compile-schemas"
