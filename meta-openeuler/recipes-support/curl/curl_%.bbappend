@@ -1,7 +1,7 @@
 # main bbfile: yocto-poky/meta/recipes-support/curl/curl_7.75.0.bb
 
 # version in openEuler
-PV = "7.86.0"
+PV = "7.79.1"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove = " \
@@ -24,23 +24,58 @@ SRC_URI_remove = " \
 # files, patches that come from openeuler
 # do not apply backport-0101-curl-7.32.0-multilib.patch due to failure "libcurl.pc failed sanity test" when doing QA staging "pkg-config libcurl" in this patch
 SRC_URI += " \
-        file://${BP}.tar.xz \
-        file://backport-curl-7.84.0-test3026.patch \
-        file://backport-CVE-2022-43551-http-use-the-IDN-decoded-name-in-HSTS-checks.patch \
-        file://backport-CVE-2022-43552-smb-telnet-do-not-free-the-protocol-struct-in-_done.patch \
-        file://backport-0001-CVE-2023-23914-CVE-2023-23915.patch \
-        file://backport-0002-CVE-2023-23914-CVE-2023-23915.patch \
-        file://backport-0003-CVE-2023-23914-CVE-2023-23915.patch \
-        file://backport-0004-CVE-2023-23914-CVE-2023-23915.patch \
-        file://backport-0005-CVE-2023-23914-CVE-2023-23915.patch \
-        file://backport-0006-CVE-2023-23914-CVE-2023-23915.patch \
-        file://backport-CVE-2023-23916.patch \
+	file://${BP}.tar.xz \
+	file://backport-CVE-2022-22576.patch \
+	file://backport-CVE-2022-27775.patch \
+	file://backport-CVE-2022-27776.patch \
+	file://backport-pre-CVE-2022-27774.patch \
+	file://backport-001-CVE-2022-27774.patch \
+	file://backport-002-CVE-2022-27774.patch \
+	file://backport-CVE-2022-27781.patch \
+	file://backport-pre-CVE-2022-27782.patch \
+	file://backport-CVE-2022-27782.patch \
+	file://backport-CVE-2022-32205.patch \
+	file://backport-CVE-2022-32206.patch \
+	file://backport-CVE-2022-32207.patch \
+	file://backport-CVE-2022-32208.patch \
+	file://backport-fix-configure-disable-http-auth-build-error.patch \
+	file://backport-CVE-2022-35252-cookie-reject-cookies-with-control-bytes.patch \
+	file://backport-CVE-2022-32221.patch \
+	file://backport-CVE-2022-42916.patch \
+	file://backport-CVE-2022-42915.patch \
+	file://backport-CVE-2022-43551-http-use-the-IDN-decoded-name-in-HSTS-checks.patch \
+	file://backport-CVE-2022-43552-smb-telnet-do-not-free-the-protocol-struct-in-_done.patch \
+	file://backport-0001-CVE-2023-23914-CVE-2023-23915.patch \
+	file://backport-0002-CVE-2023-23914-CVE-2023-23915.patch \
+	file://backport-0003-CVE-2023-23914-CVE-2023-23915.patch \
+	file://backport-0004-CVE-2023-23914-CVE-2023-23915.patch \
+	file://backport-0005-CVE-2023-23914-CVE-2023-23915.patch \
+	file://backport-0001-CVE-2023-23916.patch \
+	file://backport-0002-CVE-2023-23916.patch \
+	file://backport-CVE-2023-27533.patch \
+	file://backport-CVE-2023-27534-pre1.patch \
+	file://backport-CVE-2023-27534.patch \
+	file://backport-CVE-2023-27538.patch \
+	file://backport-CVE-2023-27535-pre1.patch \
+	file://backport-CVE-2023-27536.patch \
+	file://backport-CVE-2023-27535.patch \
+	file://backport-after-CVE-2022-32207-to-fix-build-error-when-user-don-t-use-glibc.patch \
+	file://backport-CVE-2023-28321.patch \
+	file://backport-CVE-2023-28322.patch \
+	file://backport-0001-CVE-2023-28320.patch \
+	file://backport-0002-CVE-2023-28320.patch \
+	file://backport-0003-CVE-2023-28320.patch \
+	file://backport-curl-tool-erase-some-more-sensitive-command-line-arg.patch \
+	file://backport-tool_getparam-repair-cleanarg.patch \
+	file://backport-tool_getparam-fix-cleanarg-for-unicode-builds.patch \
+	file://backport-getparam-correctly-clean-args.patch \
+	file://backport-tool_getparam-fix-hiding-of-command-line-secrets.patch \
 "      
 
-SRC_URI[md5sum] = "19a2165f37941a6f412afc924e750568"
-SRC_URI[sha256sum] = "2d61116e5f485581f6d59865377df4463f2e788677ac43222b496d4e49fb627b"
+SRC_URI[md5sum] = "74d3c4ca8aaa6c0619806d6e246e65fb"
+SRC_URI[sha256sum] = "0606f74b1182ab732a17c11613cbbaf7084f2e6cca432642d0e3ad7c224c3689"
 
-LIC_FILES_CHKSUM = "file://COPYING;md5=190c514872597083303371684954f238"
+LIC_FILES_CHKSUM = "file://COPYING;md5=425f6fdc767cc067518eef9bbdf4ab7b"
 
 # the version 7.86.0 in install function add a sed command
 do_install_append_class-target() {
