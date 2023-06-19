@@ -30,12 +30,19 @@ install_mcs_overlays() {
 
         # When repeatedly making rpi image, the CONFIGFILE may not be cleaned up.
         # For this reason, first check to see if the CONFIGFILE is configured with dtoverlay. If it is already configured, skip it.
-        grep -wq "mcs-resources" ${CONFIGFILE} || echo "dtoverlay=mcs-resources" >> ${CONFIGFILE}
+        if ! grep -wq "mcs-resources" ${CONFIGFILE}; then
+            echo "dtoverlay=mcs-resources" >> ${CONFIGFILE}
+            # overwrite the config.txt
+            mcopy -o -v -i ${WORKDIR}/boot.img -s ${CONFIGFILE} ::config.txt || bbfatal "mcopy cannot copy config.txt into boot.img"
+        fi
     fi
     # add jailhouse-overlay
     if ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'true', 'false', d)}; then
         mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/jailhouse-overlay.dtbo ::overlays/jailhouse-overlay.dtbo || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/jailhouse-overlay.dtbo into boot.img"
-        grep -wq "jailhouse-overlay" ${CONFIGFILE} || echo "dtoverlay=jailhouse-overlay" >> ${CONFIGFILE}
+        if ! grep -wq "jailhouse-overlay" ${CONFIGFILE}; then
+            echo "dtoverlay=jailhouse-overlay" >> ${CONFIGFILE}
+            mcopy -o -v -i ${WORKDIR}/boot.img -s ${CONFIGFILE} ::config.txt || bbfatal "mcopy cannot copy config.txt into boot.img"
+        fi
     fi
 }
 
