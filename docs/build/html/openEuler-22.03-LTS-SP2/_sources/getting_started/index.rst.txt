@@ -157,11 +157,11 @@ openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发�
 
        .. tab:: openEuler
 
-          $ sudo yum install make gcc g++ flex bison gmp-devel libmpc-devel openssl-devel
+          $ sudo yum install make gcc g++ flex bison gmp-devel libmpc-devel openssl-devel elfutils-libelf-devel
 
        .. tab:: Ubuntu
 
-          $ sudo apt-get install make gcc g++ flex bison libgmp3-dev libmpc-dev libssl-dev
+          $ sudo apt-get install make gcc g++ flex bison libgmp3-dev libmpc-dev libssl-dev libelf-dev
 
   - **执行SDK自解压安装脚本**
 
