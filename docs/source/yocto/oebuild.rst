@@ -240,28 +240,20 @@ oebuild update
 
 ::
 
-   usage:
-   oebuild update [-t docker_tag] [-l list] [-i ignore] [-e enable]
+   usage: 
+   oebuild update [yocto docker layer] [-tag]
 
-   Update the base environment required at build time, such as
+
+   Update the base environment required at build time, such as 
    updating the necessary docker images and yocto-meta-openeuler repositories
 
-   options:
-   -h, --help        show this help message and exit
-   -t DOCKER_TAG     specifying the -t parameter will update the corresponding docker image
-   -l {docker}       specifying the -l parameter lists the specified modules
-   -i {docker,meta}  specify the -i parameter to ignore the corresponding setting when updating, when the -e parameter is used at the same time, the -i parameter no longer takes
-                     effect
-   -e {docker,meta}  specify the -e parameter to enable the corresponding setting when updating, when the -e parameter is used at the same time, the -i parameter no longer takes
-                     effect
 
-- -t<docker_tag>：指更新哪个tag的容器
+   optional arguments:
+   -tag TAG          with platform will list support archs, with feature will list support features
+                     The name of the directory that will be initialized
+   -h, --help        get help for oebuild or a command
 
-- -l<list>：表示列出可选资源列表，目前只有docker这一项
-
-- -i<ignore>：表示在更新时忽略哪一项，可选的有docker与meta，docker代表容器镜像，meta代表yocto-meta-openeuler仓
-
-- -e<enable>：表示在更新时使能哪一项，可选范围与解释同上
+- -tag<docker_tag>：指更新哪个tag的容器
 
 
 执行更新操作如下命令：
@@ -294,9 +286,7 @@ oebuild update
 basic_repo与yocto-meta-openeuler是两个key键，不可以更改，remote_url与branch可以更改成自己已经适配的\
  ``yocto-meta-openeuler``\ 仓的参数。
 
-.. note::
-
-      注：如果我们不输入任何参数，即直接执行\ ``oebuild update``\ ，则默认更新容器镜像和基础仓
+update命令会涉及到三个范围：主构建仓，layer层和构建容器镜像，这三个可以单独进行更新，也可以全部进行更新，对于layer层和构建镜像的更新有一定的规则，layer层的更新会根据主构建仓来进行，如果当下目录在oebuild工作目录下，但是不在构建目录下，则layer层的更新会根据主构建仓下的`.oebuild/common.yaml`来进行更新，如果当下的目录在构建目录下，则会根据compile.yaml中的repos信息进行更新。容器的更新规则如下：如果指定了-tag参数，并且指定的tag在有效的范围内，则更新该tag的容器，否则通过oebuild工作目录下的`.oebuild/config`来获取映射关系，该映射关系即为docker->tag_map字段指向的值，如果`yocto-meta-openeuler/.oebuild/env.yaml`中的docker_tag有指定的值则默认用该值，否则查看yocot-meta-openeuler的分支名，如果和映射关系有关联，则更新对应的构建容器镜像，否则给出提示。
 
 oebuild generate
 ''''''''''''''''
@@ -311,21 +301,28 @@ oebuild generate
 
    compile.yaml is generated according to different command parameters by generate
 
-   options:
-   -h, --help            show this help message and exit
-   -l {platform,feature}
-                           with platform will list support archs, with feature will list support features
-   -p PLATFORM           this param is for arch, for example aarch4-std, aarch64-pro and so on
-   -s SSTATE_CACHE       this param is for SSTATE_MIRRORS
-   -s_dir SSTATE_DIR     this param is for SSTATE_DIR
-   -m TMP_DIR            this param is for tmp directory, the build result will be stored in
-   -f FEATURES           this param is feature, it's a reuse command
-   -d DIRECTORY          this param is build directory, the default is same to platform
-   -t TOOLCHAIN_DIR      this param is for external toolchain dir, if you want use your own toolchain
-   -n NATIVESDK_DIR      this param is for external nativesdk dir, the param will be useful when you want to build in host
-   -dt, --datetime       this param is add DATETIME to local.conf, the value is getting current time
-   -df, --disable_fetch  this param is set openeuler_fetch in local.conf, the default value is enable, if set -df, the OPENEULER_FETCH will set to 'disable'
-   -b_in {docker,host}   This parameter marks the mode at build time, and is built in the container by docker
+
+   optional arguments:
+   -l L              with platform will list support archs, with feature will list support features
+   -p P              this param is for arch, for example aarch4-std, aarch64-pro and so on
+   -s S              this param is for SSTATE_MIRRORS
+   -s_dir S_DIR      this param is for SSTATE_DIR
+   -m M              this param is for tmp directory, the build result will be stored in
+   -f                this param is feature, it's a reuse command
+   -c COMPILE_DIR, --compile_dir COMPILE_DIR
+                     this param is for compile.yaml directory
+   -d D              this param is build directory, the default is same to platform
+   -t T              this param is for external toolchain dir, if you want use your own toolchain
+   -n N              this param is for external nativesdk dir, the param will be useful when you want
+                     to build in host
+   -tag TAG          when build in docker, the param can be point docker image
+   -dt, --datetime   this param is add DATETIME to local.conf, the value is getting current time
+   -df, --disable_fetch
+                     this param is set openeuler_fetch in local.conf, the default value is enable, if
+                     set -df, the OPENEULER_FETCH will set to 'disable'
+   -b_in B_IN        This parameter marks the mode at build time, and is built in the container by
+                     docker
+   -h, --help        get help for oebuild or a command
 
 - -l<list>：list参数，有两个可选范围，platform和feature，platform则会列出支持的platform列表，feature则会列出支持的feature列表
 
@@ -338,6 +335,8 @@ oebuild generate
 - -m<tmp_dir>：执行tmp目录，yocto在要求tmp目录不可以存放在nfs系统文件结构下，如果有相关环境可以单独指定该存放目录
 
 - -f<feature>：特性参数，全称feature，生成配置文件需要的一个参数，没有默认值
+
+- -c<compile_dir>：指定构建配置文件，这里用户可以跳过繁杂的命令参数，直接对构建配置文件进行直观的定制
 
 - -d<directory：初始化的编译目录，如果不设置该参数，则初始化的编译目录和-p参数保持一致
 
