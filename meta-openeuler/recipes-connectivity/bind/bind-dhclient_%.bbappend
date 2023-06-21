@@ -19,7 +19,7 @@ SRC_URI_prepend = "file://dhcp-${DHCP_PV}.tar.gz;name=dhcp.tarball \
            file://backport-Fix-CVE-2021-25220.patch;striplevel=3 \
 "
 
-SRC_URI[dhcp.tarball.sha256sum] = "1a7ccd64a16e5e68f7b5e0f527fd07240a2892ea53fe245620f4f5f607004521"
+SRC_URI[dhcp.tarball.sha256sum] = "0e3ec6b4c2a05ec0148874bcd999a66d05518378d77421f607fb0bc9d0135818"
 
 # bind users do not need shell/login access for secure
 USERADD_PARAM_${PN} = "--system --home ${localstatedir}/cache/bind --no-create-home \
