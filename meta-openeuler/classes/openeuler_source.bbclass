@@ -68,12 +68,14 @@ def make_tarball_workspace(func, d):
     import tarfile
     import zipfile
     import re
+    import os
+
     workdirbase = d.getVar("WORKDIR")
     localname = d.getVar("OPENEULER_LOCAL_NAME")
     srcdir = d.getVar("OPENEULER_SP_DIR")
     workspace_tarball_list = openeuler_get_item(d, 'workspace_tarball', "")
     for workspace_tarball in workspace_tarball_list:
-        tarname = srcdir + localname + "/" + workspace_tarball.split()[-1]
+        tarname = srcdir + "/" + localname + "/" + workspace_tarball.split()[-1]
         targetdir = workdirbase + "/" + workspace_tarball.split()[0]
         res = ""
         if os.path.isfile(tarname):
