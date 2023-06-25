@@ -22,7 +22,11 @@ if [ ${PYTHONPKGPATH#/opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux} !=
             # Install host python tools
             python3 -m pip install -r $OECORE_NATIVE_SYSROOT/environment-setup.d/requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
             export CMAKE_TOOLCHAIN_FILE="$OECORE_NATIVE_SYSROOT/environment-setup.d/toolchain.cmake"
+            # avoid pythonpath err in colcon
+            sed -i 's%python_path.exists():%python_path.exists() and not (\"\%s\" \% python_path).startswith("/opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/lib"):%' /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/lib/python3.*/site-packages/colcon_core/environment/pythonpath.py
         fi
+        # add find_path cross compile support for numpy path
+        sed -i '/_NumPy_PATH/{n; s%NO_DEFAULT_PATH)%NO_DEFAULT_PATH CMAKE_FIND_ROOT_PATH_BOTH)%}' /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/share/cmake-*/Modules/FindPython/Support.cmake
     fi
 fi
 
