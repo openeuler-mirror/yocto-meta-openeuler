@@ -51,6 +51,7 @@ ament-cmake-ros \
 ament-cmake-target-dependencies \
 ament-cmake-test \
 ament-cmake-version \
+ament-cmake-gen-version-h \
 ament-package \
 python3-numpy \
 python3-numpy-staticdev \
