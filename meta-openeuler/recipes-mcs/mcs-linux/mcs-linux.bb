@@ -15,14 +15,20 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/MulanPSL-2.0;m
 ### Inheritance and includes if needed
 inherit cmake
 
-
 ### Build metadata: SRC_URI, SRCDATA, S, B, FILESEXTRAPATHS....
-PV = "0.0.1"
 OPENEULER_REPO_NAME = "mcs"
-OPENEULER_GIT_URL = "https://gitee.com/openeuler"
-OPENEULER_BRANCH = "v0.0.1"
-SRC_URI += "file://mcs"
+PV = "0.0.1"
+SRC_URI_append_aarch64 = " \
+    file://mcs \
+    "
 S = "${WORKDIR}/mcs"
+
+# for x86
+OPENEULER_LOCAL_NAME_x86-64 = "mcs-x86"
+SRC_URI_append_x86-64 = " \
+    file://mcs-x86 \
+    "
+S_x86-64 = "${WORKDIR}/mcs-x86"
 
 # the software packages required in build
 DEPENDS = "openamp libmetal"

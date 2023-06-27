@@ -19,6 +19,12 @@ SRC_URI_append_aarch64 = " \
     file://patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch \
 "
 
+# add openamp support for x86 mcs
+# todo: jailhouse support
+SRC_URI_append_x86-64 = " \
+    ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'file://patches/${ARCH}/0001-x86-irq-add-a-vector-define-for-mcs.patch', '', d)} \
+"
+
 # export symbol for jailhouse
 SRC_URI_append = " ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'file://Jailhouse/jailhouse_export_symbol.patch', '', d)}"
 

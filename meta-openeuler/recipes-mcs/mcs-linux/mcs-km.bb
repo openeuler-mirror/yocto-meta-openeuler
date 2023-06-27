@@ -17,11 +17,19 @@ require mcs-resources-overlay.inc
 
 ### Build metadata: SRC_URI, SRCDATA, S, B, FILESEXTRAPATHS....
 PV = "0.0.1"
-OPENEULER_FETCH = "disable"
-SRC_URI += " \
+OPENEULER_REPO_NAME = "mcs"
+
+SRC_URI_append_aarch64 = " \
     file://mcs/mcs_km \
     "
 S = "${WORKDIR}/mcs/mcs_km"
+
+# for x86
+OPENEULER_LOCAL_NAME_x86-64 = "mcs-x86"
+SRC_URI_append_x86-64 = " \
+    file://mcs-x86/mcs_km \
+    "
+S_x86-64 = "${WORKDIR}/mcs-x86/mcs_km"
 
 do_fetch[depends] += "mcs-linux:do_fetch"
 

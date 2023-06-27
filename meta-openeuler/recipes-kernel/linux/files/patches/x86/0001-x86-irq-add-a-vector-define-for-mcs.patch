@@ -1,0 +1,133 @@
+From 2b8b7730a3146953a0004687e6b6430f7760d783 Mon Sep 17 00:00:00 2001
+From: hanzongcheng <hanzongcheng@huawei.com>
+Date: Tue, 27 Jun 2023 05:50:39 +0800
+Subject: [PATCH] x86/irq: add a vector define for mcs
+
+* Add a vector define and corresponding handler for MCS-IPI.
+  And, set_mcs_ipi_handler() is exported to register/remove
+  the interrupt handler in the mcs driver.
+
+Signed-off-by: hanzongcheng <hanzongcheng@huawei.com>
+
+diff --git a/arch/x86/include/asm/hardirq.h b/arch/x86/include/asm/hardirq.h
+index 275e7fd20..068dc44ea 100644
+--- a/arch/x86/include/asm/hardirq.h
++++ b/arch/x86/include/asm/hardirq.h
+@@ -14,6 +14,7 @@ typedef struct {
+ 	unsigned int apic_timer_irqs;	/* arch dependent */
+ 	unsigned int irq_spurious_count;
+ 	unsigned int icr_read_retry_count;
++	unsigned int mcs_ipis;
+ #endif
+ #ifdef CONFIG_HAVE_KVM
+ 	unsigned int kvm_posted_intr_ipis;
+diff --git a/arch/x86/include/asm/idtentry.h b/arch/x86/include/asm/idtentry.h
+index dc2a8b165..618041bc9 100644
+--- a/arch/x86/include/asm/idtentry.h
++++ b/arch/x86/include/asm/idtentry.h
+@@ -634,6 +634,7 @@ DECLARE_IDTENTRY_SYSVEC(ERROR_APIC_VECTOR,		sysvec_error_interrupt);
+ DECLARE_IDTENTRY_SYSVEC(SPURIOUS_APIC_VECTOR,		sysvec_spurious_apic_interrupt);
+ DECLARE_IDTENTRY_SYSVEC(LOCAL_TIMER_VECTOR,		sysvec_apic_timer_interrupt);
+ DECLARE_IDTENTRY_SYSVEC(X86_PLATFORM_IPI_VECTOR,	sysvec_x86_platform_ipi);
++DECLARE_IDTENTRY_SYSVEC(X86_MCS_IPI_VECTOR,		sysvec_x86_mcs_ipi);
+ #endif
+ 
+ #ifdef CONFIG_SMP
+diff --git a/arch/x86/include/asm/irq.h b/arch/x86/include/asm/irq.h
+index b7668e0ad..9b346b5c2 100644
+--- a/arch/x86/include/asm/irq.h
++++ b/arch/x86/include/asm/irq.h
+@@ -29,6 +29,8 @@ extern int irq_init_percpu_irqstack(unsigned int cpu);
+ 
+ struct irq_desc;
+ 
++extern int set_mcs_ipi_handler(void (*handler)(void));
++
+ extern void fixup_irqs(void);
+ 
+ #ifdef CONFIG_HAVE_KVM
+diff --git a/arch/x86/include/asm/irq_vectors.h b/arch/x86/include/asm/irq_vectors.h
+index 889f8b1b5..85d8a5115 100644
+--- a/arch/x86/include/asm/irq_vectors.h
++++ b/arch/x86/include/asm/irq_vectors.h
+@@ -106,6 +106,8 @@
+ 
+ #define LOCAL_TIMER_VECTOR		0xec
+ 
++#define X86_MCS_IPI_VECTOR		0xeb
++
+ #define NR_VECTORS			 256
+ 
+ #ifdef CONFIG_X86_LOCAL_APIC
+diff --git a/arch/x86/kernel/idt.c b/arch/x86/kernel/idt.c
+index ee1a283f8..a685ec41f 100644
+--- a/arch/x86/kernel/idt.c
++++ b/arch/x86/kernel/idt.c
+@@ -134,6 +134,7 @@ static const __initconst struct idt_data apic_idts[] = {
+ #ifdef CONFIG_X86_LOCAL_APIC
+ 	INTG(LOCAL_TIMER_VECTOR,		asm_sysvec_apic_timer_interrupt),
+ 	INTG(X86_PLATFORM_IPI_VECTOR,		asm_sysvec_x86_platform_ipi),
++	INTG(X86_MCS_IPI_VECTOR,		asm_sysvec_x86_mcs_ipi),
+ # ifdef CONFIG_HAVE_KVM
+ 	INTG(POSTED_INTR_VECTOR,		asm_sysvec_kvm_posted_intr_ipi),
+ 	INTG(POSTED_INTR_WAKEUP_VECTOR,		asm_sysvec_kvm_posted_intr_wakeup_ipi),
+diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
+index cb23373bf..d6db31bc4 100644
+--- a/arch/x86/kernel/irq.c
++++ b/arch/x86/kernel/irq.c
+@@ -31,6 +31,9 @@ EXPORT_PER_CPU_SYMBOL(irq_stat);
+ 
+ atomic_t irq_err_count;
+ 
++/* mcs ipi handler */
++static void (*mcs_ipi_handler)(void) = NULL;
++
+ /*
+  * 'what should we do if we get a hw irq event on an illegal vector'.
+  * each architecture has to answer this themselves.
+@@ -92,6 +95,13 @@ int arch_show_interrupts(struct seq_file *p, int prec)
+ 			seq_printf(p, "%10u ", irq_stats(j)->x86_platform_ipis);
+ 		seq_puts(p, "  Platform interrupts\n");
+ 	}
++
++	if (mcs_ipi_handler) {
++		seq_printf(p, "%*s: ", prec, "MCS");
++		for_each_online_cpu(j)
++			seq_printf(p, "%10u ", irq_stats(j)->mcs_ipis);
++		seq_puts(p, "  MCS interrupts\n");
++	}
+ #endif
+ #ifdef CONFIG_SMP
+ 	seq_printf(p, "%*s: ", prec, "RES");
+@@ -281,6 +291,28 @@ DEFINE_IDTENTRY_SYSVEC(sysvec_x86_platform_ipi)
+ 	trace_x86_platform_ipi_exit(X86_PLATFORM_IPI_VECTOR);
+ 	set_irq_regs(old_regs);
+ }
++
++int set_mcs_ipi_handler(void (*handler)(void))
++{
++	if (!handler)
++		mcs_ipi_handler = NULL;
++
++	if (mcs_ipi_handler)
++		return -EBUSY;
++	else
++		mcs_ipi_handler = handler;
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(set_mcs_ipi_handler);
++
++DEFINE_IDTENTRY_SYSVEC(sysvec_x86_mcs_ipi)
++{
++	ack_APIC_irq();
++	inc_irq_stat(mcs_ipis);
++	if (mcs_ipi_handler)
++		mcs_ipi_handler();
++}
+ #endif
+ 
+ #ifdef CONFIG_HAVE_KVM
+-- 
+2.34.1
+
