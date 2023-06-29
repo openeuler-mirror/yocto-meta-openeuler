@@ -12,5 +12,7 @@ camera-info-manager \
 v4l2-camera \
 image-transport \
 cv-bridge \
+image-geometry \
+vision-opencv \
 image-transport-plugins \
 "

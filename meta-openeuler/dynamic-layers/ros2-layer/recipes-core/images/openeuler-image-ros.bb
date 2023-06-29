@@ -57,6 +57,7 @@ python3-numpy \
 python3-numpy-staticdev \
 ceres-solver-staticdev \
 foonathan-memory-staticdev \
+libflann-staticdev \
 libyaml-staticdev \
 googletest \
 "
