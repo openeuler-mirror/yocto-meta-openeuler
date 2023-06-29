@@ -307,7 +307,7 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
   .. code-block:: console
     
-    openeuler-glibc-x86_64-openeuler-image-ros-cortexa72-raspberrypi4-64-toolchain-23.03.sh
+    openeuler-glibc-x86_64-openeuler-image-ros-cortexa72-raspberrypi4-64-toolchain-22.03-LTS-SP2.sh
 
 
 **2. SDK的安装和初始化**
@@ -338,14 +338,14 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
   (2). 安装1中生成的SDK的sh安装脚本
 
-  假设SDK脚本位于目录“/home/openeuler/build/raspberrypi4-64/output/20230523023324”
+  假设SDK脚本位于目录“/home/openeuler/build/raspberrypi4-64/output/20230627031514”
 
   .. code-block:: console
 
-    $ cd /home/openeuler/build/raspberrypi4-64/output/20230523023324
-    $ ./openeuler-glibc-x86_64-openeuler-image-ros-cortexa72-raspberrypi4-64-toolchain-23.03.sh
-    # 输入安装目录，假设为“/home/openeuler/build/raspberrypi4-64/output/20230523023324/sdk”，目录请事先创建好，按“y”确认
-    $ /home/openeuler/build/raspberrypi4-64/output/20230523023324/sdk
+    $ cd /home/openeuler/build/raspberrypi4-64/output/20230627031514
+    $ ./openeuler-glibc-x86_64-openeuler-image-ros-cortexa72-raspberrypi4-64-toolchain-22.03-LTS-SP2.sh
+    # 输入安装目录，假设为“/home/openeuler/build/raspberrypi4-64/output/20230627031514/sdk”，目录请事先创建好，按“y”确认
+    $ /home/openeuler/build/raspberrypi4-64/output/20230627031514/sdk
     $ y
 
   (3). 根据提示执行SDK初始化
@@ -354,7 +354,7 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
   
   .. code-block:: console
 
-    $ . /home/openeuler/build/raspberrypi4-64/output/20230523023324/sdk/environment-setup-cortexa72-openeuler-linux
+    $ . /home/openeuler/build/raspberrypi4-64/output/20230627031514/sdk/environment-setup-cortexa72-openeuler-linux
 
   可以看到，此步骤将自动初始化交叉编译的依赖，如colcon等工具。
 
@@ -406,42 +406,9 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 关于ROS源码
 =================
 
-上游ROS发布的源码存放于github，对中国用户下载较慢，且src-openEuler社区针对ROS全量分包源码还在完善，
+当前使用的ROS2源码已完全使用src-openeuler，版本和仓库映射情况见.oebuild/maplist.yaml中相关ROS的描述
 
-为加构建过程，嵌入式版本统一将ROS涉及的ROS软件包临时存放于yocto-embedded-tools仓库的dev_ros分支中，并遵循一定的源码存放规则，后续src-openeuler针对ROS分包支持后将对此部分进行优化。
-
-**源码存放规则（暂行）**
-
-  **仓库**：https://gitee.com/openeuler/yocto-embedded-tools.git
-
-  **分支**：dev_ros
-
-  **相对目录**：ros_depends
-
-  **要求**：
-
-  按照yocto的包名作为文件夹名，单独存放tarball压缩包，例如ros_depends/tf2/0.13.12-1.tar.gz，并按要求填充src.txt配置文件，tarball的下载建议使用src_helper.sh脚本。
-
-  **src_helper.sh脚本说明**
-
-    当前目录中提供了src_helper.sh脚本，脚本会根据src.txt描述文件进行对应包名目录的创建并通过wget下载对应的包，
-    该脚本用于开发者添加新源码包到该仓库时使用。
-
-  **src.txt说明**
-
-    若需要引入新的ROS标准包，开发者可追加ros.txt内容，并按如下规则：
-
-    **第一列** 为yocto中包名
-
-    **第二列** 为该包在yocto中定义的工作目录，比如通常SRC_URI若为git链接，则需使用git。单包多压缩包目录可表示多行，可参见foonathan-memory
-
-    **第三列** 为该包的上游获取地址，若为标准ROS包，开发者可从meta-ros对应distro的bb文件中通过"matches with"关键字获取到。
-
-    .. note:: 第一列和第二列的包名在yocto构建时将自动引用
-
-        整个yocto-embedded-tool的dev_ros分支，在构建时会以新本地名字ros-dev-tools作为构建源码输入存在
-        
-        实现参见: openeuler_ros_source.bbclass
+.oebuild/maplist.yaml的映射原理可参见openeuler_source.bbclass实现
 
 
 快速镜像集成(ros2recipe)
