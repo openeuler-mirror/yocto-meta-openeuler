@@ -14,6 +14,7 @@ kernel-module-fuse \
 kernel-module-sr-mod \
 kernel-module-ata-generic \
 kernel-module-igb \
+kernel-module-igc \
 kernel-module-chipreg \
 kernel-module-mtdblock \
 kernel-module-nfsd \
