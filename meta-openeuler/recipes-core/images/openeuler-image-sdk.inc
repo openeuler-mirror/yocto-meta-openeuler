@@ -79,3 +79,10 @@ kernel-devsrc \
 ${TCMODE-LIBC}-staticdev \
 libstdc++-dev \
 "
+
+# add openamp dev to sdk
+TOOLCHAIN_TARGET_TASK += " \
+openamp-dev \
+libmetal-dev \
+sysfsutils-dev \
+"
