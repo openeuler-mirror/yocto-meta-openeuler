@@ -346,7 +346,7 @@
 </pre></div>
 </div>
 <p>随后在“output/[时间搓]/”目录下即可找到对应SDK安装文件，例如</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">openeuler-glibc-x86_64-openeuler-image-ros-cortexa72-raspberrypi4-64-toolchain-23.03.sh</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">openeuler-glibc-x86_64-openeuler-image-ros-cortexa72-raspberrypi4-64-toolchain-22.03-LTS-SP2.sh</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -368,17 +368,17 @@
 </pre></div>
 </div>
 <p>(2). 安装1中生成的SDK的sh安装脚本</p>
-<p>假设SDK脚本位于目录“/home/openeuler/build/raspberrypi4-64/output/20230523023324”</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span> /home/openeuler/build/raspberrypi4-64/output/20230523023324
-<span class="gp">$ </span>./openeuler-glibc-x86_64-openeuler-image-ros-cortexa72-raspberrypi4-64-toolchain-23.03.sh
-<span class="gp"># </span>输入安装目录，假设为“/home/openeuler/build/raspberrypi4-64/output/20230523023324/sdk”，目录请事先创建好，按“y”确认
-<span class="gp">$ </span>/home/openeuler/build/raspberrypi4-64/output/20230523023324/sdk
+<p>假设SDK脚本位于目录“/home/openeuler/build/raspberrypi4-64/output/20230627031514”</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span> /home/openeuler/build/raspberrypi4-64/output/20230627031514
+<span class="gp">$ </span>./openeuler-glibc-x86_64-openeuler-image-ros-cortexa72-raspberrypi4-64-toolchain-22.03-LTS-SP2.sh
+<span class="gp"># </span>输入安装目录，假设为“/home/openeuler/build/raspberrypi4-64/output/20230627031514/sdk”，目录请事先创建好，按“y”确认
+<span class="gp">$ </span>/home/openeuler/build/raspberrypi4-64/output/20230627031514/sdk
 <span class="gp">$ </span>y
 </pre></div>
 </div>
 <p>(3). 根据提示执行SDK初始化</p>
 <p>后续再次进入容器环境后，只需要初始化即可，不需要（2）安装步骤，用法和我们常规SDK的使用无区别</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>. /home/openeuler/build/raspberrypi4-64/output/20230523023324/sdk/environment-setup-cortexa72-openeuler-linux
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>. /home/openeuler/build/raspberrypi4-64/output/20230627031514/sdk/environment-setup-cortexa72-openeuler-linux
 </pre></div>
 </div>
 <p>可以看到，此步骤将自动初始化交叉编译的依赖，如colcon等工具。</p>
@@ -418,34 +418,8 @@
 </section>
 <section id="id9">
 <h2>关于ROS源码<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
-<p>上游ROS发布的源码存放于github，对中国用户下载较慢，且src-openEuler社区针对ROS全量分包源码还在完善，</p>
-<p>为加构建过程，嵌入式版本统一将ROS涉及的ROS软件包临时存放于yocto-embedded-tools仓库的dev_ros分支中，并遵循一定的源码存放规则，后续src-openeuler针对ROS分包支持后将对此部分进行优化。</p>
-<p><strong>源码存放规则（暂行）</strong></p>
-<blockquote>
-<div><p><strong>仓库</strong>：<a class="reference external" href="https://gitee.com/openeuler/yocto-embedded-tools.git">https://gitee.com/openeuler/yocto-embedded-tools.git</a></p>
-<p><strong>分支</strong>：dev_ros</p>
-<p><strong>相对目录</strong>：ros_depends</p>
-<p><strong>要求</strong>：</p>
-<p>按照yocto的包名作为文件夹名，单独存放tarball压缩包，例如ros_depends/tf2/0.13.12-1.tar.gz，并按要求填充src.txt配置文件，tarball的下载建议使用src_helper.sh脚本。</p>
-<p><strong>src_helper.sh脚本说明</strong></p>
-<blockquote>
-<div><p>当前目录中提供了src_helper.sh脚本，脚本会根据src.txt描述文件进行对应包名目录的创建并通过wget下载对应的包，
-该脚本用于开发者添加新源码包到该仓库时使用。</p>
-</div></blockquote>
-<p><strong>src.txt说明</strong></p>
-<blockquote>
-<div><p>若需要引入新的ROS标准包，开发者可追加ros.txt内容，并按如下规则：</p>
-<p><strong>第一列</strong> 为yocto中包名</p>
-<p><strong>第二列</strong> 为该包在yocto中定义的工作目录，比如通常SRC_URI若为git链接，则需使用git。单包多压缩包目录可表示多行，可参见foonathan-memory</p>
-<p><strong>第三列</strong> 为该包的上游获取地址，若为标准ROS包，开发者可从meta-ros对应distro的bb文件中通过”matches with”关键字获取到。</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>第一列和第二列的包名在yocto构建时将自动引用</p>
-<p>整个yocto-embedded-tool的dev_ros分支，在构建时会以新本地名字ros-dev-tools作为构建源码输入存在</p>
-<p>实现参见: openeuler_ros_source.bbclass</p>
-</div>
-</div></blockquote>
-</div></blockquote>
+<p>当前使用的ROS2源码已完全使用src-openeuler，版本和仓库映射情况见.oebuild/maplist.yaml中相关ROS的描述</p>
+<p>.oebuild/maplist.yaml的映射原理可参见openeuler_source.bbclass实现</p>
 </section>
 <section id="ros2recipe">
 <h2>快速镜像集成(ros2recipe)<a class="headerlink" href="#ros2recipe" title="Permalink to this headline">¶</a></h2>
