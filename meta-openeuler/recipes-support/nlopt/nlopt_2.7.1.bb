@@ -17,7 +17,7 @@ SRC_URI = "file://nlopt-${PV}.tar.gz"
 SRC_URI[md5sum] = "ed1a3000a1c8c248d51df126dfcfaa78"
 SRC_URI[sha256sum] = "db88232fa5cef0ff6e39943fc63ab6074208831dc0031cf1545f6ecd31ae2a1a"
 
-RPROVIDES_${PN} = "nlopt"
+RPROVIDES:${PN} = "nlopt"
 
 inherit cmake
 EXTRA_OECMAKE += "-DCMAKE_SKIP_RPATH=TRUE"

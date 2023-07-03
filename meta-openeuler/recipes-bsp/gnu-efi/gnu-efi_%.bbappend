@@ -3,7 +3,7 @@
 PV = "3.0.8"
 
 # remove tar.gz files and code patches from poky
-SRC_URI_remove = " \
+SRC_URI:remove = " \
         ${SOURCEFORGE_MIRROR}/${BPN}/files/${BP}.tar.bz2 \
 "
 

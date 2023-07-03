@@ -4,7 +4,7 @@ PV = "1.5.2"
 OPENEULER_REPO_NAME = "pam"
 
 # delete useless patch from old version in poky bb
-SRC_URI_remove += " \
+SRC_URI:remove = " \
     file://0001-modules-pam_namespace-Makefile.am-correctly-install-.patch \
     file://0001-Makefile.am-support-usrmage.patch \
 "
@@ -18,24 +18,24 @@ SRC_URI += " \
 "
 SRC_URI[sha256sum] = "e4ec7131a91da44512574268f493c6d8ca105c87091691b8e9b56ca685d4f94d"
 
-DEPENDS_remove += "flex"
+DEPENDS:remove = "flex"
 
 # no coreutils in openeuler
-RDEPENDS_${PN}-xtests_remove += " \
+RDEPENDS:${PN}-xtests:remove = " \
     coreutils \
 "
 
 PACKAGES += "${PN}-pkgconfig ${PN}-service"
-FILES_${PN}-pkgconfig = "${base_libdir}/pkgconfig"
-FILES_${PN}-service = "/usr/lib/systemd/system"
+FILES:${PN}-pkgconfig = "${base_libdir}/pkgconfig"
+FILES:${PN}-service = "/usr/lib/systemd/system"
 
-RDEPENDS_${PN}-runtime += " \
+RDEPENDS:${PN}-runtime += " \
     libpwquality \
     ${MLPREFIX}pam-plugin-faillock-${libpam_suffix} \
     ${MLPREFIX}pam-plugin-pwhistory-${libpam_suffix} \
     "
 
-do_install_append() {
+do_install:append() {
     sed -i -e '0,/^$/s//\
 # lock out any user after three unsuccessful attempts and unlock that user after 5 minutes\
 auth	required			pam_faillock.so preauth audit deny=3 even_deny_root unlock_time=300\

@@ -1,16 +1,16 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
-DEPENDS_append ="\
+DEPENDS:append ="\
   gcompat \
 "
 
-SRC_URI_append = " \
+SRC_URI:append = " \
           file://lxc-for-musl.patch \
 "
-CFLAGS_append = " -Wno-error=address   -Wno-error=array-bounds -Wno-array-bounds "
-CFLAGS_append_toolchain-clang = " -Wno-error=cast-align " 
-LDFLAGS_append = " -lgcompat"
-do_compile_prepend() {
+CFLAGS:append = " -Wno-error=address   -Wno-error=array-bounds -Wno-array-bounds "
+CFLAGS:append:toolchain-clang = " -Wno-error=cast-align " 
+LDFLAGS:append = " -lgcompat"
+do_compile:prepend() {
        sed -i "s/init_lxc_static_LDFLAGS = -all-static -pthread/init_lxc_static_LDFLAGS = -pthread/" ${S}/src/lxc/Makefile.am
 }
 

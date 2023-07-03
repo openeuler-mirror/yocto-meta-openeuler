@@ -16543,8 +16543,8 @@ diff -urN a/include/flatbuffers/flatbuffers.h b/include/flatbuffers/flatbuffers.
 -    memset(make_space(zero_pad_bytes), 0, zero_pad_bytes);
 -  }
 -
--  void pop(size_t bytes_to_remove) { cur_ += bytes_to_remove; }
--  void scratch_pop(size_t bytes_to_remove) { scratch_ -= bytes_to_remove; }
+-  void pop(size_t bytes_to:remove) { cur_ += bytes_to:remove; }
+-  void scratch_pop(size_t bytes_to:remove) { scratch_ -= bytes_to:remove; }
 -
 -  void swap(vector_downward &other) {
 -    using std::swap;
@@ -20465,7 +20465,7 @@ diff -urN a/include/flatbuffers/stl_emulation.h b/include/flatbuffers/stl_emulat
 +    // TODO: upgrade to std::random_access_iterator_tag.
 +    using iterator_category = std::forward_iterator_tag;
 +    using difference_type  = std::ptrdiff_t;
-+    using value_type = typename std::remove_cv<T>::type;
++    using value_type = typename std::remove:cv<T>::type;
 +    using reference = T&;
 +    using pointer   = T*;
 +
@@ -21605,12 +21605,12 @@ diff -urN a/include/flatbuffers/vector_downward.h b/include/flatbuffers/vector_d
 +    memset(make_space(zero_pad_bytes), 0, zero_pad_bytes);
 +  }
 +
-+  void pop(size_t bytes_to_remove) {
-+    cur_ += bytes_to_remove;
-+    size_ -= static_cast<uoffset_t>(bytes_to_remove);
++  void pop(size_t bytes_to:remove) {
++    cur_ += bytes_to:remove;
++    size_ -= static_cast<uoffset_t>(bytes_to:remove);
 +  }
 +
-+  void scratch_pop(size_t bytes_to_remove) { scratch_ -= bytes_to_remove; }
++  void scratch_pop(size_t bytes_to:remove) { scratch_ -= bytes_to:remove; }
 +
 +  void swap(vector_downward &other) {
 +    using std::swap;
@@ -24924,8 +24924,8 @@ diff -urN a/samples/monster_generated.h b/samples/monster_generated.h
 -#ifndef FLATBUFFERS_CPP98_STL
    template <typename T>
    void Set(T&& val) {
--    using RT = typename std::remove_reference<T>::type;
-+    typedef typename std::remove_reference<T>::type RT;
+-    using RT = typename std::remove:reference<T>::type;
++    typedef typename std::remove:reference<T>::type RT;
      Reset();
 -    type = EquipmentTraits<typename RT::TableType>::enum_value;
 +    type = EquipmentUnionTraits<RT>::enum_value;
@@ -29952,8 +29952,8 @@ diff -urN a/src/idl_gen_cpp.cpp b/src/idl_gen_cpp.cpp
 -        code_ += "#ifndef FLATBUFFERS_CPP98_STL";
          code_ += "  template <typename T>";
          code_ += "  void Set(T&& val) {";
--        code_ += "    using RT = typename std::remove_reference<T>::type;";
-+        code_ += "    typedef typename std::remove_reference<T>::type RT;";
+-        code_ += "    using RT = typename std::remove:reference<T>::type;";
++        code_ += "    typedef typename std::remove:reference<T>::type RT;";
          code_ += "    Reset();";
 -        code_ +=
 -            "    type = {{NAME}}Traits<typename RT::TableType>::enum_value;";

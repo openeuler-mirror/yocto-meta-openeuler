@@ -1,11 +1,14 @@
 SUMMARY = "packages for iSulad"
+
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 inherit packagegroup
 
 PR = "r1"
 
 PACKAGES = "${PN}"
 
-RDEPENDS_${PN} = "\
+RDEPENDS:${PN} = "\
 libseccomp \
 libwebsockets \
 yajl \

@@ -7,7 +7,7 @@ OPENEULER_LOCAL_NAME = "gtest"
 PV = "1.8.1"
 
 S = "${WORKDIR}/googletest-release-${PV}"
-SRC_URI += " \
+SRC_URI:append = " \
         file://${OPENEULER_LOCAL_NAME}/release-${PV}.tar.gz \
         file://${OPENEULER_LOCAL_NAME}/gtest-1.8.1-null-pointer.patch \
         file://${OPENEULER_LOCAL_NAME}/gtest-PR1839-Fix-Python3-support.patch \
@@ -16,3 +16,5 @@ SRC_URI += " \
         file://${OPENEULER_LOCAL_NAME}/0001-Googletest-export.patch \
         "
 
+SRC_URI:remove = "file://0001-work-around-GCC-6-11-ADL-bug.patch \
+"

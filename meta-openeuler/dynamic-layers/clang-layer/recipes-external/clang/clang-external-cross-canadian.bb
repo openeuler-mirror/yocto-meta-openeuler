@@ -7,21 +7,21 @@ PV = "${CLANG_VERSION}"
 clanglibdir = "${exec_prefix}/lib"
 clangincdir = "${exec_prefix}/include"
 
-RDEPENDS_${PN} = "binutils-external-cross-canadian-${TRANSLATED_TARGET_ARCH}"
-FILES_${PN} = "\
+RDEPENDS:${PN} = "binutils-external-cross-canadian-${TRANSLATED_TARGET_ARCH}"
+FILES:${PN} = "\
     ${bindir}/clang* \
     ${clanglibdir}/* \
     ${clangincdir}/* \
 "
 
 # no debug package
-FILES_${PN}-dbg = ""
+FILES:${PN}-dbg = ""
 # no need do autolibname(handle the dependency of .so libs)
 # auto_libname in debian.bbclass will call ${TARGET_PREFIX}objdump to get shlibs2 related info
 # for gcc-external-cross-canadian, can't find ${TARGET_PREFIX}objdump
 AUTO_LIBNAME_PKGS = ""
 
 
-INSANE_SKIP_${PN} += "dev-so staticdev"
+INSANE_SKIP:${PN} += "dev-so staticdev"
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_SYSROOT_STRIP = "1"

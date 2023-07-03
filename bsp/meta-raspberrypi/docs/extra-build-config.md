@@ -29,7 +29,7 @@ Accommodate the values above to your own needs (ex: ext3 / ext4).
 * `GPU_MEM_1024`: GPU memory in megabyte for the 1024MB Raspberry Pi. Ignored by
   the 256MB/512MB RP. Overrides gpu_mem. Max 944. Default not set.
 
-See: <https://www.raspberrypi.org/documentation/configuration/config-txt/memory.md>
+See: <https://www.raspberrypi.com/documentation/computers/config_txt.html#memory-options>
 
 ## VC4
 
@@ -47,7 +47,7 @@ You can supply more licenses separated by comma. Example:
 
     KEY_DECODE_WVC1 = "0x12345678,0xabcdabcd,0x87654321"
 
-See: <https://www.raspberrypi.org/documentation/configuration/config-txt/codeclicence.md>
+See: <https://www.raspberrypi.com/documentation/computers/config_txt.html#licence-key-and-codec-options>
 
 ## Disable overscan
 
@@ -89,7 +89,7 @@ Example official settings for Turbo Mode in Raspberry Pi 2:
     SDRAM_FREQ = "500"
     OVER_VOLTAGE = "6"
 
-See: <https://www.raspberrypi.org/documentation/configuration/config-txt/overclocking.md>
+See: <https://www.raspberrypi.com/documentation/computers/config_txt.html#overclocking-options>
 
 ## HDMI and composite video options
 
@@ -99,14 +99,14 @@ selected according to the connected monitor's EDID information and the composite
 mode is defaulted to NTSC using a 4:3 aspect ratio. Check the config.txt for a
 detailed description of options and modes. The following variables are supported in
 local.conf: `HDMI_FORCE_HOTPLUG`, `HDMI_DRIVE`, `HDMI_GROUP`, `HDMI_MODE`,
-`CONFIG_HDMI_BOOST`, `SDTV_MODE`, `SDTV_ASPECT` and `DISPLAY_ROTATE`.
+`HDMI_CVT`, `CONFIG_HDMI_BOOST`, `SDTV_MODE`, `SDTV_ASPECT` and `DISPLAY_ROTATE`.
 
 Example to force HDMI output to 720p in CEA mode:
 
     HDMI_GROUP = "1"
     HDMI_MODE = "4"
 
-See: <https://www.raspberrypi.org/documentation/configuration/config-txt/video.md>
+See: <https://www.raspberrypi.com/documentation/computers/configuration.html#hdmi-configuration>
 
 ## Video camera support with V4L2 drivers
 
@@ -159,7 +159,7 @@ command (eg. bootz) to be used.
 
 To build an initramfs image:
 
-* Set this 3 kernel variables (in kernel's do_configure_prepend in linux-raspberrypi.inc after the line kernel_configure_variable LOCALVERSION "\"\""
+* Set this 3 kernel variables (in kernel's do_configure:prepend in linux-raspberrypi.inc after the line kernel_configure_variable LOCALVERSION "\"\""
 )
   - kernel_configure_variable BLK_DEV_INITRD y
   - kernel_configure_variable INITRAMFS_SOURCE ""
@@ -195,7 +195,7 @@ by tasks that image building task must depend upon, to ensure that the
 files are available when they are needed, so these component deploy
 tasks must be added to: RPI_SDIMG_EXTRA_DEPENDS.
 
-    RPI_SDIMG_EXTRA_DEPENDS_append = " example:do_deploy"
+    RPI_SDIMG_EXTRA_DEPENDS:append = " example:do_deploy"
 
 ## Enable SPI bus
 
@@ -211,7 +211,7 @@ When using device tree kernels, set this variable to enable I2C:
 
 Furthermore, to auto-load I2C kernel modules set:
 
-    KERNEL_MODULE_AUTOLOAD_rpi += "i2c-dev i2c-bcm2708"
+    KERNEL_MODULE_AUTOLOAD:rpi += "i2c-dev i2c-bcm2708"
 
 ## Enable PiTFT support
 
@@ -278,6 +278,18 @@ the header extension should set the following in local.conf:
 
     ENABLE_DWC2_HOST = "1"
 
+## Set CPUs to be isolated from the standard Linux scheduler
+
+By default Linux will use all available CPUs for scheduling tasks. For real time
+purposes there can be an advantage to isolating one or more CPUs from the
+standard scheduler. It should be noted that CPU 0 is special, it is the only CPU
+available during the early stages of the boot process and cannot be isolated.
+
+The string assigned to this variable may be a single CPU number, a comma
+separated list ("1,2"), a range("1-3"), or a mixture of these ("1,3-5")
+
+    ISOLATED_CPUS = "1-2"
+
 ## Enable Openlabs 802.15.4 radio module
 
 When using device tree kernels, set this variable to enable the 802.15.4 hat:
@@ -290,13 +302,13 @@ See: <https://openlabs.co/OSHW/Raspberry-Pi-802.15.4-radio>
 
 In order to use CAN with an MCP2515-based module, set the following variables:
 
-	ENABLE_SPI_BUS = "1"
-	ENABLE_CAN = "1"
+    ENABLE_SPI_BUS = "1"
+    ENABLE_CAN = "1"
 
 In case of dual CAN module (e.g. PiCAN2 Duo), set following variables instead:
 
     ENABLE_SPI_BUS = "1"
-	ENABLE_DUAL_CAN = "1"
+    ENABLE_DUAL_CAN = "1"
 
 Some modules may require setting the frequency of the crystal oscillator used on the particular board. The frequency is usually marked on the package of the crystal. By default, it is set to 16 MHz. To change that to 8 MHz, the following variable also has to be set:
 
@@ -319,6 +331,24 @@ This will add device tree overlays gpio-ir and gpio-ir-tx to config.txt.
 Appropriate kernel modules will be also included in the image. By default the
 GPIO pin for gpio-ir is set to 18 and the pin for gpio-ir-tx is 17. Both pins
 can be easily changed by modifying variables `GPIO_IR` and `GPIO_IR_TX`.
+
+## Enable gpio-shutdown
+
+When using device tree kernels, set this variable to enable gpio-shutdown:
+
+    ENABLE_GPIO_SHUTDOWN = "1"
+
+This will add the corresponding device tree overlay to config.txt and include
+the gpio-keys kernel module in the image. If System V init is used, additional
+mapping is applied to bind the button event to shutdown command. Systemd init
+should handle the event out of the box.
+
+By default the feature uses gpio pin 3 (except RPi 1 Model B rev 1 enumerates
+the pin as gpio 1). This conflicts with the I2C bus. If you set `ENABLE_I2C`
+to `1` or enabled `PiTFT` support, or otherwise want to use another pin, use
+`GPIO_SHUTDOWN_PIN` to assign another pin. Example using gpio pin 25:
+
+     GPIO_SHUTDOWN_PIN = "25"
 
 ## Manual additions to config.txt
 
@@ -349,3 +379,44 @@ Also, this will enable adding Contiguous Memory Allocation value in the cmdline.
 Ref.:
 * <https://github.com/raspberrypi/documentation/blob/master/linux/software/libcamera/README.md>
 * <https://www.raspberrypi.org/blog/an-open-source-camera-stack-for-raspberry-pi-using-libcamera/>
+
+## WM8960 soundcard support
+
+Support for WM8960 based sound cards such as the WM8960 Hi-Fi Sound Card HAT for Raspberry Pi from Waveshare, and ReSpeaker 2 / 4 / 6 Mics Pi HAT from Seeed Studio, can be enabled in `local.conf`
+
+    ```conf
+    MACHINE_FEATURES += "wm8960"
+    ```
+
+You may need to adjust volume and toggle switches that are off by default
+
+    ```bash
+    amixer -c1 sset 'Headphone',0 80%,80%
+    amixer -c1 sset 'Speaker',0 80%,80%
+    amixer -c1 sset 'Left Input Mixer Boost' toggle
+    amixer -c1 sset 'Left Output Mixer PCM' toggle
+    amixer -c1 sset 'Right Input Mixer Boost' toggle
+    amixer -c1 sset 'Right Output Mixer PCM' toggle
+    ```
+
+Audio capture on ReSpeaker 2 / 4 / 6 Mics Pi HAT from Seeed Studio is very noisy.
+
+## Support for RTC devices
+
+The RaspberryPi boards don't feature an RTC module and the machine
+configurations provided in this BSP layer have this assumption (until, if at
+all, some later boards will come with one).
+
+`rtc` is handled as a `MACHINE_FEATURES` in the context of the build system
+which means that if an attached device is provided for which support is needed,
+the recommended way forward is to write a new machine configuration based on an
+existing one. Check the documentation for
+`MACHINE_FEATURES_BACKFILL_CONSIDERED` for how this is disabled for the
+relevant machines.
+
+Even when `MACHINE_FEATURES` is tweaked to include the needed `rtc` string,
+make sure that your kernel configuration is supporting the attached device and
+the device tree is properly tweaked. Also, mind the runtime components that
+take advantage of your RTC device. You can do that by checking what is
+included/configured in the build system based on the inclusion of `rtc` in
+`MACHINE_FEATURES`.

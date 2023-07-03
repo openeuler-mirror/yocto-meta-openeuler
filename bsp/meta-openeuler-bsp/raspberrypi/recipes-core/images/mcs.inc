@@ -47,7 +47,7 @@ install_mcs_overlays() {
 }
 
 # make no login and standard PATH
-set_permissions_from_rootfs_append() {
+set_permissions_from_rootfs:append() {
     cd "${IMAGE_ROOTFS}"
     if [ -f ./etc/inittab ]; then
         sed -i "s#respawn:/sbin/getty.*#respawn:-/bin/sh#g" ./etc/inittab
@@ -78,4 +78,4 @@ change_bootfiles_to_enable_uefi() {
     sed -i 's/linux \/Image /linux \/Image.gz /' ${DEPLOY_DIR_IMAGE}/EFI/BOOT/grub.cfg
 }
 
-IMAGE_PREPROCESS_COMMAND_append += "change_bootfiles_to_enable_uefi"
+IMAGE_PREPROCESS_COMMAND:append = "change_bootfiles_to_enable_uefi"

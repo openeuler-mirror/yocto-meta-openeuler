@@ -4,7 +4,7 @@ SECTION = "base"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
-RDEPENDS_${PN} = "parted util-linux-findmnt e2fsprogs-resize2fs"
+RDEPENDS:${PN} = "parted util-linux-findmnt e2fsprogs-resize2fs"
 
 # As the recipe doesn't inherit systemd.bbclass, we need to set this variable
 # manually to avoid unnecessary postinst/preinst generated.
@@ -27,7 +27,7 @@ INITSCRIPT_PARAMS = "defaults"
 
 S = "${WORKDIR}"
 
-FILES_${PN} = "/usr/lib/init_resize.sh ${sysconfdir}/init.d/resize2fs_once"
+FILES:${PN} = "/usr/lib/init_resize.sh ${sysconfdir}/init.d/resize2fs_once"
 
 do_install () {
 	install -d ${D}${sysconfdir}/init.d/
@@ -36,4 +36,4 @@ do_install () {
 	install -m 0755 ${WORKDIR}/init_resize.sh ${D}/usr/lib/
 }
 
-ALLOW_EMPTY_${PN} = "1"
+ALLOW_EMPTY:${PN} = "1"

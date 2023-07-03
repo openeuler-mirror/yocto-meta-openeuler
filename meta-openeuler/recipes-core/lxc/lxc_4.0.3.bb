@@ -36,7 +36,7 @@ SRC_URI = "file://${BP}.tar.gz \
            file://0026-meminfo-cri-1.25.patch  \
 "
 
-SRC_URI_append = " \
+SRC_URI:append = " \
 		   file://check_only_rootfs_as_filesystem_type.patch \
                    file://0027-fix-redeclaration.patch \
 "
@@ -49,4 +49,4 @@ inherit autotools
 
 BBCLASSEXTEND = "native nativesdk"
 
-CFLAGS_append = "-Wno-error=stringop-overflow -Wno-error=strict-prototypes -Wno-error=old-style-definition"
+CFLAGS:append = "-Wno-error=stringop-overflow -Wno-error=strict-prototypes -Wno-error=old-style-definition"

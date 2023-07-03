@@ -1,15 +1,9 @@
-# main bbfile: yocto-poky/meta/recipes-support/libunistring/libunistring_0.9.10.bb
+# main bbfile: yocto-poky/meta/recipes-support/libunistring/libunistring_1.0.bb
 
 PV = "1.1"
 
-# files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI_remove = " \
-        ${GNU_MIRROR}/libunistring/libunistring-${PV}.tar.gz \
-        file://0001-Unset-need_charset_alias-when-building-for-musl.patch \
-"
-
 # files, patches that come from openeuler
-SRC_URI += " \
+SRC_URI = " \
         file://${BP}.tar.xz;name=tarball \
 "
 

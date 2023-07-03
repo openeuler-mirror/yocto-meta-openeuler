@@ -1,5 +1,5 @@
 # we add bootfile
-RDEPENDS_${PN} += " \
+RDEPENDS:${PN} += " \
     bootfile \
     3093-watchdog \
 "

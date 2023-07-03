@@ -108,12 +108,12 @@ python add_openeuler_source_uri() {
     d.setVar('SRC_URI', '%s %s' % (' '.join(tarballs), d.getVar("SRC_URI")))
 }
 
-base_do_unpack_prepend() {
+base_do_unpack:prepend() {
     if check_source_list(d):
         bb.build.exec_func("clean_tarball_workspace", d)
 }
 
-do_unpack_append() {
+do_unpack:append() {
     if check_source_list(d):
         bb.build.exec_func("prepare_tarball_workspace", d)
 }

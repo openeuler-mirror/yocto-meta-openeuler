@@ -22,15 +22,15 @@ EXTRA_OECMAKE = "-DEVHTP_BUILD_SHARED=on -DEVHTP_DISABLE_SSL=on  "
 
 inherit cmake
 
-FILES_${PN}-dev = "${includedir}/* ${libdir}/pkgconfig/*"
-#FILES_${PN}-compiler = "${bindir}"
-FILES_${PN} = "${libdir}/*"
+FILES:${PN}-dev = "${includedir}/* ${libdir}/pkgconfig/*"
+#FILES:${PN}-compiler = "${bindir}"
+FILES:${PN} = "${libdir}/*"
 
 do_package_qa() {
 	:
 }
 
-do_install_append () {
+do_install:append () {
         [[ "${libdir}" != "/usr/lib" ]] || return 0
         if test -d ${D}/usr/lib ; then
                 install -d ${D}/${libdir}

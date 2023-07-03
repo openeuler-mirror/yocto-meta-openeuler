@@ -11,7 +11,7 @@ SRC_URI = "file://close_wdog.sh \
 #INITSCRIPT_NAME = "close_wdog.sh"
 #INITSCRIPT_PARAMS = "start 16 5 ."
 
-FILES_${PN} = "${sysconfdir}"
+FILES:${PN} = "${sysconfdir}"
 
 do_install () {
 	install -d ${D}${sysconfdir}/init.d

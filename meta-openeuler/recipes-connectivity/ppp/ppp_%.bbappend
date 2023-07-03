@@ -5,7 +5,7 @@ PV = "2.4.9"
 # can't apply: backport-ppp-2.4.9-config.patch, no support new feature(pam,cbcp) here
 # this patch backport-0011-build-sys-don-t-put-connect-errors-log-to-etc-ppp.patch make a new path and will conflict with other package, not apply
 # failed to apply the patch： backport-0027-Set-LIBDIR-for-RISCV.patch (for riscv64)
-SRC_URI_prepend = " \
+SRC_URI:prepend = " \
         file://backport-0004-doc-add-configuration-samples.patch \
         file://backport-ppp-2.4.9-build-sys-don-t-hardcode-LIBDIR-but-set-it-according.patch \
         file://backport-0006-scritps-use-change_resolv_conf-function.patch \

@@ -28,7 +28,7 @@ SRC_URI = " \
     git://salsa.debian.org/android-tools-team/android-platform-external-libunwind.git;protocol=https;name=libunwind;nobranch=1;destsuffix=git/external/libunwind \
     file://adb_mk_change_out_dir.patch \
     file://libadb_mk_change_out_dir.patch \
-    file://fastboot_compile_remove_gtest.patch \
+    file://fastboot_compile:remove:gtest.patch \
     file://fastboot_mk_change_out_dir.patch \
     file://fastboot_dont_use_sparse_file_import_auto_in_load_buf_fd.patch \
     file://libbase_mk_change_out_dir.patch \

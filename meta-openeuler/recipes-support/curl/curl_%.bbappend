@@ -4,22 +4,44 @@
 PV = "7.86.0"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI_remove = " \
-        https://curl.haxx.se/download/curl-${PV}.tar.bz2 \
-        file://0001-vtls-add-isproxy-argument-to-Curl_ssl_get-addsession.patch \
-        file://0002-transfer-strip-credentials-from-the-auto-referer-hea.patch \
-        file://vtls-fix-addsessionid.patch \
-        file://vtls-fix-warning.patch \
-        file://CVE-2021-22898.patch \
-        file://CVE-2021-22897.patch \
-        file://CVE-2021-22925.patch \
-        file://CVE-2021-22901.patch \
-        file://CVE-2021-22924.patch \
-        file://CVE-2021-22926.patch \
-        file://CVE-2021-22945.patch \
-        file://CVE-2021-22946.patch \
-        file://CVE-2021-22947.patch \
-"
+SRC_URI:remove = " \
+           https://curl.se/download/${BP}.tar.xz \
+           file://CVE-2022-22576.patch \
+           file://CVE-2022-27775.patch \
+           file://CVE-2022-27776.patch \
+           file://CVE-2022-27774-1.patch \
+           file://CVE-2022-27774-2.patch \
+           file://CVE-2022-27774-3.patch \
+           file://CVE-2022-27774-4.patch \
+           file://CVE-2022-30115.patch \
+           file://CVE-2022-27780.patch \
+           file://CVE-2022-27781.patch \
+           file://CVE-2022-27779.patch \
+           file://CVE-2022-27782-1.patch \
+           file://CVE-2022-27782-2.patch \
+           file://0001-openssl-fix-CN-check-error-code.patch \
+           file://CVE-2022-32205.patch \
+           file://CVE-2022-32206.patch \
+           file://CVE-2022-32207.patch \
+           file://CVE-2022-32208.patch \
+           file://CVE-2022-35252.patch \
+           file://CVE-2022-32221.patch \
+           file://CVE-2022-42916.patch \
+           file://CVE-2022-42915.patch \
+           file://CVE-2022-43551.patch \
+           file://CVE-2022-43552.patch \
+           file://CVE-2023-23914_5-1.patch \
+           file://CVE-2023-23914_5-2.patch \
+           file://CVE-2023-23914_5-3.patch \
+           file://CVE-2023-23914_5-4.patch \
+           file://CVE-2023-23914_5-5.patch \
+           file://CVE-2023-23916.patch \
+           file://CVE-2023-27533.patch \
+           file://CVE-2023-27534.patch \
+           file://CVE-2023-27535-pre1.patch \
+           file://CVE-2023-27535_and_CVE-2023-27538.patch \
+           file://CVE-2023-27536.patch \
+           "
 
 # files, patches that come from openeuler
 # do not apply backport-0101-curl-7.32.0-multilib.patch due to failure "libcurl.pc failed sanity test" when doing QA staging "pkg-config libcurl" in this patch
@@ -43,7 +65,7 @@ SRC_URI[sha256sum] = "2d61116e5f485581f6d59865377df4463f2e788677ac43222b496d4e49
 LIC_FILES_CHKSUM = "file://COPYING;md5=190c514872597083303371684954f238"
 
 # the version 7.86.0 in install function add a sed command
-do_install_append_class-target() {
+do_install:append:class-target() {
 	# cleanup buildpaths from curl-config
 	sed -i \
 	    -e 's|${@" ".join(d.getVar("DEBUG_PREFIX_MAP").split())}||g' \
@@ -51,7 +73,7 @@ do_install_append_class-target() {
 }
 
 # configure.ac in openEuler can't handle --without-libmetalink variable
-EXTRA_OECONF_remove = " \
+EXTRA_OECONF:remove = " \
         --without-libmetalink \
 "
 
@@ -61,13 +83,13 @@ PACKAGECONFIG[openssl] = "--with-openssl,--without-openssl,openssl"
 PACKAGECONFIG[ssl] = ""
 PACKAGECONFIG[zstd] = "--with-zstd,--without-zstd,zstd"
 
-EXTRA_OECONF_append = " \
+EXTRA_OECONF:append = " \
     ${@'--without-ssl' if (bb.utils.filter('PACKAGECONFIG', 'gnutls mbedtls nss openssl', d) == '') else ''} \
 "
 
 # It is not safe to pack crt files in rootfs by default, if you sure what you want, comment these lines:
-EXTRA_OECONF_remove += " \
+EXTRA_OECONF:remove = " \
         --with-ca-bundle=${sysconfdir}/ssl/certs/ca-certificates.crt \
         --without-libmetalink \
 "
-RRECOMMENDS_lib${BPN}_remove += "ca-certificates"
+RRECOMMENDS_lib${BPN}:remove = "ca-certificates"

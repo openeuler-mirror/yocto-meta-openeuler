@@ -6,7 +6,7 @@ require pypi-src-openeuler.inc
 OPENEULER_REPO_NAME = "${PYPI_PACKAGE}"
 
 # remove poky conflict patch, we have fit by 0002-patch
-SRC_URI_remove += "file://0001-setup.py-remove-the-setup_requires-for-setuptools-scm.patch "
+SRC_URI:remove = "file://0001-setup.py-remove-the-setup_requires-for-setuptools-scm.patch "
 FILESEXTRAPATHS:prepend := "${THISDIR}/python3-pytest/:"
-SRC_URI_append += "file://0002-setup.py-remove-the-setup_requires-for-setuptools-scm.patch"
+SRC_URI:append = "file://0002-setup.py-remove-the-setup_requires-for-setuptools-scm.patch"
 

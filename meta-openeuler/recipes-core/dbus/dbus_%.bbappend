@@ -6,12 +6,12 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=10dded3b58148f3f1fd804b26354af3e \
 
 
 # apply openEuler source package
-SRC_URI_remove = "https://dbus.freedesktop.org/releases/dbus/dbus-${PV}.tar.gz \
+SRC_URI:remove = "https://dbus.freedesktop.org/releases/dbus/dbus-${PV}.tar.gz \
            file://clear-guid_from_server-if-send_negotiate_unix_f.patch \
 "
 
 # apply src and patches from openEuler
-SRC_URI_prepend = "file://dbus-${PV}.tar.xz \
+SRC_URI:prepend = "file://dbus-${PV}.tar.xz \
            file://bugfix-let-systemd-restart-dbus-when-the-it-enters-failed.patch \
            file://print-load-average-when-activate-service-timeout.patch \
            file://backport-tools-Use-Python3-for-GetAllMatchRules.patch \

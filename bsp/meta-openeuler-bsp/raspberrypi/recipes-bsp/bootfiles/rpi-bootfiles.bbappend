@@ -12,7 +12,7 @@ do_deploy[depends] += "${@bb.utils.contains('DISTRO_FEATURES', 'mcs', 'grub-efi:
 
 # fix runtime error: Could not find DRM device!
 # instead of bcm2711-rpi-4-b.dtb from kernel_devicetree
-do_deploy_append() {
+do_deploy:append() {
     cp ${S}/bcm2711-rpi-4-b.dtb ${DEPLOYDIR}/${BOOTFILES_DIR_NAME}
 }
 

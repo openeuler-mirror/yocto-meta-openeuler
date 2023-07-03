@@ -2,10 +2,10 @@
 # we create this file as a layer to use openeuler's configs files
 # config files use openeuler's, see base-files under this dir
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/base-files/:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/base-files/:"
 
 # add secure option for banner use
-do_install_basefilesissue_append () {
+do_install_basefilesissue:append () {
     BANNERSTR="Authorized uses only. All activity may be monitored and reported."
     echo "${BANNERSTR}"  >> ${D}${sysconfdir}/issue.net
     echo >> ${D}${sysconfdir}/issue.net
@@ -13,7 +13,7 @@ do_install_basefilesissue_append () {
     echo >> ${D}${sysconfdir}/issue
 }
 
-do_install_append () {
+do_install:append () {
     BANNERSTR="Authorized uses only. All activity may be monitored and reported."
     echo "${BANNERSTR}"  >> ${D}${sysconfdir}/motd
     echo >> ${D}${sysconfdir}/motd

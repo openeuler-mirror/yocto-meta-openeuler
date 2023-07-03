@@ -1,4 +1,4 @@
 # we add bootfile
-RDEPENDS_${PN} += " \
+RDEPENDS:${PN} += " \
     bootfile \
 "

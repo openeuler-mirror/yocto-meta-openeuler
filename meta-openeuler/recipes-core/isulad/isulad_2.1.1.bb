@@ -3,7 +3,7 @@ DESCRIPTION = "iSulad is a lightweight container runtime daemon which is designe
                 Cloud infrastructure.iSulad has the characteristics of light, fast and not limited \
                 by hardware specifications and architecture, and can be applied more widely"
 HOMEPAGE = "https://gitee.com/openeuler/iSulad"
-LICENSE = "MulanPSLv2"
+LICENSE = "MulanPSL-2.0"
 
 LIC_FILES_CHKSUM = "file://LICENSES/LICENSE;md5=1acb172ffd3d252285dd1b8b8459941e"
 
@@ -55,7 +55,7 @@ SRC_URI = "file://v${PV}.tar.gz \
            file://0043-bugfix-can-t-delete-layers-under-dir-overlay-layers.patch \
 "
 
-SRC_URI_append = "file://compile-error-fix.patch"
+SRC_URI:append = "file://compile-error-fix.patch"
 
 S = "${WORKDIR}/iSulad-v${PV}"
 
@@ -71,17 +71,17 @@ EXTRA_OECMAKE = "-DENABLE_GRPC=OFF -DENABLE_SYSTEMD_NOTIFY=OFF -DENABLE_SELINUX=
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
-FILES_${PN} += "${libdir}/* "
+FILES:${PN} += "${libdir}/* "
 #remove so from ${PN}-dev
 FILES_SOLIBSDEV = ""
 
-do_configure_prepend() {
+do_configure:prepend() {
         grep -q CMAKE_SYSROOT ${WORKDIR}/toolchain.cmake || cat >> ${WORKDIR}/toolchain.cmake <<EOF
         set( CMAKE_SYSROOT ${STAGING_DIR_HOST} )
 EOF
 }
 
-do_install_append () {
+do_install:append () {
         [[ "${libdir}" != "/usr/lib" ]] || return 0
         if test -d ${D}/usr/lib ; then
                 install -d ${D}/${libdir}

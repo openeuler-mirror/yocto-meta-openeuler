@@ -4,7 +4,7 @@ OPENEULER_REPO_NAME = "wpa_supplicant"
 PV = "2.10"
 
 # apply source package in openeuler
-SRC_URI_remove = "http://w1.fi/releases/wpa_supplicant-${PV}.tar.gz  \
+SRC_URI:remove = "http://w1.fi/releases/wpa_supplicant-${PV}.tar.gz  \
 file://0001-replace-systemd-install-Alias-with-WantedBy.patch \
 file://0001-AP-Silently-ignore-management-frame-from-unexpected-.patch \
 file://0001-WPS-UPnP-Do-not-allow-event-subscriptions-with-URLs-.patch \
@@ -15,7 +15,7 @@ file://CVE-2021-27803.patch \
 file://CVE-2021-30004.patch \
 "
 
-SRC_URI_prepend = "file://wpa_supplicant-${PV}.tar.gz \
+SRC_URI:prepend = "file://wpa_supplicant-${PV}.tar.gz \
 "
 
 # checksum changed

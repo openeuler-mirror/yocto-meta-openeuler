@@ -4,7 +4,7 @@
 PV = "3.5"
 
 # Use the source packages from openEuler
-SRC_URI_remove = " \
+SRC_URI:remove = " \
             ${GNU_MIRROR}/parted/parted-${PV}.tar.xz \
             "
 SRC_URI += "file://parted-${PV}.tar.xz \
@@ -20,7 +20,7 @@ SRC_URI += "file://parted-${PV}.tar.xz \
             "
 
 # the patch check-vfat.patch will result in error
-SRC_URI_remove = "file://check-vfat.patch \
+SRC_URI:remove = "file://check-vfat.patch \
 "
 
 SRC_URI[md5sum] = "336fde60786d5855b3876ee49ef1e6b2"

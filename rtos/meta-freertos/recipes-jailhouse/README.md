@@ -19,7 +19,7 @@ layers:
 vim src/yocto-meta-openeuler/meta-openeuler/recipes-core/packagegroups/packagegroup-mcs.bb
 
 # 在jailhouse后面追加 jailhouse-freertos，如下：
-RDEPENDS_${PN} = " \
+RDEPENDS:${PN} = " \
 ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'jailhouse jailhouse-freertos', '', d)} \
 "
 ```

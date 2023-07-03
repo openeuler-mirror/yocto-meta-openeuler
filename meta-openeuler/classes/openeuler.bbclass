@@ -14,7 +14,7 @@ set_rpmdeps[eventmask] = "bb.event.RecipePreFinalise"
 # set BUILD_LDFLAGS for native recipes buildings, nativesdk can be
 # a star point for the necessary build-required recipes, no need to do
 # everything from the scratch
-BUILD_LDFLAGS_append = " -L${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
+BUILD_LDFLAGS:append = " -L${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
                          -L${OPENEULER_NATIVESDK_SYSROOT}/lib \
                          -Wl,-rpath-link,${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
                          -Wl,-rpath-link,${OPENEULER_NATIVESDK_SYSROOT}/lib \
@@ -42,7 +42,7 @@ addhandler src_uri_set
 src_uri_set[eventmask] = "bb.event.RecipePreFinalise"
 
 # qemu.bbclass; fix build error: the kernel is too old
-OLDEST_KERNEL_forcevariable = "5.10"
+OLDEST_KERNEL:forcevariable = "5.10"
 
 # fetch multi repos in one recipe bb file, an example is
 # dsoftbus_1.0.bb where multi repos required by dsoftbus are
@@ -200,7 +200,7 @@ def get_manifest(manifest_dir):
 # from openeuler's gitee repo.
 # if success,  other part of base_do_fetch will skip download as
 # files are already downloaded by do_openeuler_fetch
-python base_do_fetch_prepend() {
+python base_do_fetch:prepend() {
     if not d.getVar('OPENEULER_FETCH') or d.getVar('OPENEULER_FETCH') == "enable":
         bb.build.exec_func("do_openeuler_fetch", d)
 }

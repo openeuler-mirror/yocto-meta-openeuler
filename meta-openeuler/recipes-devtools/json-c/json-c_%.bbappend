@@ -1,12 +1,10 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/json-c/json-c_0.15.bb
 
-OPENEULER_SRC_URI_REMOVE = "https git http"
-
 # json-c version in openEuler
 PV = "0.16-20220414"
 
 # apply patch
-SRC_URI += " \
+SRC_URI = " \
         file://json-c-${PV}.tar.gz \
         file://backport-Add-test-to-check-for-the-memory-leak-mentioned-in-issue-781.patch \
         file://backport-Fix-memory-leak-with-emtpy-strings-in-json_object_set_string.patch \

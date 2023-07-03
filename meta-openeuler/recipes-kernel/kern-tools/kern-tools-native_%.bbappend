@@ -1,6 +1,6 @@
 # main bbfile: yocto-poky/meta/recipes-kernel/kern-tools/kern-tools-native_git.bb
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 # avoid parse filespath error after adding FILESEXTRAPATHS
 PV = "0.2"

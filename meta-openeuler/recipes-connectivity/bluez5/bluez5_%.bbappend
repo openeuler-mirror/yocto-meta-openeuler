@@ -5,13 +5,13 @@ PV = "5.54"
 
 # these two patches fix CVE-2021-0129 and CVE-2021-3658, which isn't suitable version 5.54
 # openeuler package has another patches to fix these cves.
-SRC_URI_remove = "\
+SRC_URI:remove = "\
     ${KERNELORG_MIRROR}/linux/bluetooth/bluez-${PV}.tar.xz \
     file://0001-adapter-Fix-storing-discoverable-setting.patch \
     file://0001-shared-gatt-server-Fix-not-properly-checking-for-sec.patch \
 "
 
-SRC_URI_prepend = "\
+SRC_URI:prepend = "\
     file://bluez-${PV}.tar.xz \
     file://0001-obex-Use-GLib-helper-function-to-manipulate-paths.patch \
     file://0001-build-Always-define-confdir-and-statedir.patch \
@@ -38,10 +38,10 @@ SRC_URI_prepend = "\
 
 # openeuler do not has udev package, which is not necessary for bluez
 # so remove it.
-PACKAGECONFIG_remove = "udev"
+PACKAGECONFIG:remove = "udev"
 
 # testtools depends python3-core python3-dbus python3-pygobject, we do not need these
-RDEPENDS_${PN}-testtools = ""
+RDEPENDS:${PN}-testtools = ""
 
 # adapte md5 checksum
 LIC_FILES_CHKSUM = "file://COPYING;md5=12f884d2ae1ff87c09e5b7ccc2c4ca7e \

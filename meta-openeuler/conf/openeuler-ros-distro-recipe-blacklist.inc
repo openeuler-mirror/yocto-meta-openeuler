@@ -1,7 +1,7 @@
 # remove from blacklist for runtime decouple
-PNBLACKLIST[navigation2] = ""
-PNBLACKLIST[nav2-bringup] = ""
-PNBLACKLIST[slam-toolbox] = ""
+SKIP_RECIPE[navigation2] = ""
+SKIP_RECIPE[nav2-bringup] = ""
+SKIP_RECIPE[slam-toolbox] = ""
 
 # current oe's tbb version is too new for ros-foxy
 PREFERRED_VERSION_tbb = "2020.3"

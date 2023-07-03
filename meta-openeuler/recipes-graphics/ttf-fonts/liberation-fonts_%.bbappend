@@ -1,10 +1,12 @@
-# main bb file: yocto-poky/meta/recipes-graphics/ttf-fonts/liberation-fonts_2.00.1.bb
+# main bb file: yocto-poky/meta/recipes-graphics/ttf-fonts/liberation-fonts_2.1.5.bb
 
-# avoid download online
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+PV = "2.1.5"
 
-SRC_URI_remove = "https://releases.pagure.org/liberation-fonts/liberation-fonts-ttf-${PV}.tar.gz \
+# avoid download online, no source on openeuler
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+
+SRC_URI:remove = "https://github.com/liberationfonts/liberation-fonts/files/7261482/liberation-fonts-ttf-${PV}.tar.gz \
 "
 
-SRC_URI_prepend = "file://liberation-fonts-ttf-${PV}.tar.gz \
+SRC_URI:prepend = "file://liberation-fonts-ttf-${PV}.tar.gz \
 "

@@ -1,4 +1,4 @@
-# main bbfile: yocto-poky/meta/recipes-support/libjitterentropy_3.0.1.bb
+# main bbfile: yocto-poky/meta/recipes-support/libjitterentropy_3.4.0.bb
 
 OPENEULER_REPO_NAME = "jitterentropy-library"
 

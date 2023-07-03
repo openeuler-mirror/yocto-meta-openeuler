@@ -9,7 +9,7 @@ inherit packagegroup
 
 PACKAGES = "${PN}"
 
-RDEPENDS_${PN} = "\
+RDEPENDS:${PN} = "\
 audit \
 auditd \
 audispd-plugins \

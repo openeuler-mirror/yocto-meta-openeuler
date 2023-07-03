@@ -1,5 +1,5 @@
 IMAGE_FSTYPES = "cpio.gz"
-IMAGE_FSTYPES_remove = "iso"
+IMAGE_FSTYPES:remove = "iso"
 IMAGE_FSTYPES_DEBUGFS = "cpio.gz"
 INITRAMFS_MAXSIZE = "476591"
 

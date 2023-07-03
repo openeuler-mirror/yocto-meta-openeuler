@@ -4,4 +4,4 @@ SRC_URI:prepend = " \
         file://00-originbot-base-fix-error.patch \
         "
 
-FILES_${PN} += "/usr/share /usr/lib"
+FILES:${PN} += "/usr/share /usr/lib"

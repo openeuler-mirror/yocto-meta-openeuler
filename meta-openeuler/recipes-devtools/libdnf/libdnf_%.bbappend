@@ -2,7 +2,7 @@ PV = "0.69.0"
 #export CONFIG_SHELL="/bin/bash"
 
 # fix rpm install error, depends to /bin/bash
-RDEPENDS_${PN} += "busybox"
+RDEPENDS:${PN} += "busybox"
 
 # add new patches from openeuler
 SRC_URI = " \
@@ -11,7 +11,7 @@ SRC_URI = " \
         file://0001-libdnf-0.65.0-add-loongarch-support.patch \
 "
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += " \
            file://0001-FindGtkDoc.cmake-drop-the-requirement-for-GTKDOC_SCA.patch \
            file://0004-Set-libsolv-variables-with-pkg-config-cmake-s-own-mo.patch \
@@ -28,4 +28,4 @@ SRC_URI[sha256sum] = "b615a6f7e1d1d82c928d2c79b36242a29d04cd28e267a5e8a6996435d9
 S = "${WORKDIR}/${BP}"
 
 # delete depends to prelink from gobject-introspection.bbclass
-DEPENDS_remove_class-target = " prelink-native"
+DEPENDS:remove:class-target = " prelink-native"

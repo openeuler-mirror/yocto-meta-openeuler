@@ -4,7 +4,7 @@
 PV = "5.1.8"
 
 # These patches have been merged in this version
-SRC_URI_remove += " \
+SRC_URI:remove = " file://CVE-2022-3715.patch \
            ${GNU_MIRROR}/bash/bash-${PV}-patches/bash51-001;apply=yes;striplevel=0;name=patch001 \
            ${GNU_MIRROR}/bash/bash-${PV}-patches/bash51-002;apply=yes;striplevel=0;name=patch002 \
            ${GNU_MIRROR}/bash/bash-${PV}-patches/bash51-003;apply=yes;striplevel=0;name=patch003 \
@@ -12,7 +12,7 @@ SRC_URI_remove += " \
            "
 
 # patches in openeuler
-SRC_URI_append += " \
+SRC_URI:prepend = " \
            file://bash-2.05a-interpreter.patch \
            file://bash-2.05b-pgrp_sync.patch \
            file://bash-4.0-nobits.patch \
@@ -35,4 +35,4 @@ SRC_URI[tarball.sha256sum] = "0cfb5c9bb1a29f800a97bd242d19511c997a1013815b805e0f
 
 # When testing the performance of the shell using UnixBench, we found that the sh of busybox(ash)
 # outperformed bash, so we still make sh link to busybox instead of bash.
-ALTERNATIVE_${PN}_remove += "sh"
+ALTERNATIVE:${PN}:remove = "sh"

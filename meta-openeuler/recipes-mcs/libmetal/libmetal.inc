@@ -12,7 +12,7 @@ BUGTRACKER = "https://gitee.com/openeuler/yocto-meta-openeuler"
 SECTION = "libs"
 
 ### License metadata
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE.md;md5=fe0b8a4beea8f0813b606d15a3df3d3c"
 
 ### Inheritance and includes if needed
@@ -25,7 +25,7 @@ S = "${WORKDIR}/${BPN}-${PV}"
 
 # the software packages required in build
 # if user want to enable hugetlbfs support, please
-# add "DEPENDS_append_pn-libmetal = " libhugetlbfs "" to your local.conf
+# add "DEPENDS:append:pn-libmetal = " libhugetlbfs "" to your local.conf
 # udev/mdev(provided by busybox) is required, may need to add it into DEPENDS
 DEPENDS = "sysfsutils"
 
@@ -39,20 +39,20 @@ EXTRA_OECMAKE = " \
 	"
 
 ### Runtime metadata
-#RDEPENDS_${PN} += "libudev"
+#RDEPENDS:${PN} += "libudev"
 
 ### Package metadata
-FILES_${PN} = " \
+FILES:${PN} = " \
     ${libdir}/*.so* \
 "
 
-FILES_${PN}-dev += " \
+FILES:${PN}-dev += " \
     ${bindir}/test-* \
 "
 
 ### Tasks for package
 
-do_install_append () {
+do_install:append () {
 	# Only install the shared lib binaries
 	rm -rf ${D}/${bindir}/*-static
 

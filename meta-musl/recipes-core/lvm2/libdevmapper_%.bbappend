@@ -1,10 +1,10 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
-DEPENDS_append ="\
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
+DEPENDS:append ="\
   gcompat \
 "
-LDFLAGS_append = " -lgcompat"
+LDFLAGS:append = " -lgcompat"
 # add patch to support musl
-SRC_URI_append =" \
+SRC_URI:append =" \
     file://add_header.patch \
     file://use_lgcompat.patch \
 "

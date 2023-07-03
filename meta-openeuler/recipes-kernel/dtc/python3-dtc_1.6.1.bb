@@ -19,7 +19,7 @@ inherit distutils3
 
 DISTUTILS_SETUP_PATH = "${S}/pylibfdt"
 
-do_configure_prepend() {
+do_configure:prepend() {
     oe_runmake -C "${S}" version_gen.h
     mv "${S}/version_gen.h" "${DISTUTILS_SETUP_PATH}/"
 }

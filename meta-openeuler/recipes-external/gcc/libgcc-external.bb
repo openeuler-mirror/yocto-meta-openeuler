@@ -12,13 +12,13 @@ LICENSE = "GPL-3.0-with-GCC-exception"
 # libgcc needs libc, but glibc's utilities need libgcc, so short-circuit the
 # interdependency here by manually specifying it rather than depending on the
 # libc packagedata.
-RDEPENDS_${PN} += "${@'${PREFERRED_PROVIDER_virtual/libc}' if '${PREFERRED_PROVIDER_virtual/libc}' else '${TCLIBC}'}"
-INSANE_SKIP_${PN} += "build-deps file-rdeps"
+RDEPENDS:${PN} += "${@'${PREFERRED_PROVIDER_virtual/libc}' if '${PREFERRED_PROVIDER_virtual/libc}' else '${TCLIBC}'}"
+INSANE_SKIP:${PN} += "build-deps file-rdeps"
 
 # The dynamically loadable files belong to libgcc, since we really don't need the static files
 # on the target, moreover linker won't be able to find them there (see original libgcc.bb recipe).
 BINV = "${GCC_VERSION}"
-FILES_${PN} = "${base_libdir}/libgcc_s.so.*"
+FILES:${PN} = "${base_libdir}/libgcc_s.so.*"
 
 # TODO: these crt*.o and libgcc* no need for target, and sdk will contains these files not through package-libgcc.
 # So i think libgcc packages could not contain these files. Just remove its.
@@ -30,14 +30,14 @@ FILES_${PN} = "${base_libdir}/libgcc_s.so.*"
 # makes a error when do_packages. so we just need crt*.o and libgcc* files.
 LIBROOT_RELATIVE_RESOLVED = "${@os.path.relpath(os.path.realpath('${EXTERNAL_TOOLCHAIN_LIBROOT}'), os.path.realpath('${EXTERNAL_TOOLCHAIN}'))}"
 LIBROOT_RELATIVE = "${@os.path.relpath('${EXTERNAL_TOOLCHAIN_LIBROOT}', '${EXTERNAL_TOOLCHAIN}')}"
-FILES_${PN}-dev = "${base_libdir}/libgcc_s.so \
+FILES:${PN}-dev = "${base_libdir}/libgcc_s.so \
              /${LIBROOT_RELATIVE_RESOLVED}/crt*.o \
              /${LIBROOT_RELATIVE_RESOLVED}/libgcc* \
              /${LIBROOT_RELATIVE}/crt*.o \
              /${LIBROOT_RELATIVE}/libgcc* \
 "
-INSANE_SKIP_${PN}-dev += "staticdev"
-FILES_${PN}-dbg += "${base_libdir}/.debug/libgcc_s.so.*.debug"
+INSANE_SKIP:${PN}-dev += "staticdev"
+FILES:${PN}-dbg += "${base_libdir}/.debug/libgcc_s.so.*.debug"
 
 # Follow any symlinks in the libroot (multilib build) to the main
 # libroot and include any symlinks there that link to our libroot.
@@ -64,7 +64,7 @@ python add_ml_symlink_tcmode-external () {
                     other = other_child.parent.resolve() / other_child.name
                     relpath = other.relative_to(sysroot)
                     d.appendVar('SYSROOT_DIRS', ' /' + str(relpath.parent))
-                    d.appendVar('FILES_${PN}-dev', ' /' + str(relpath))
+                    d.appendVar('FILES:${PN}-dev', ' /' + str(relpath))
 }
 add_ml_symlink[eventmask] = "bb.event.RecipePreFinalise"
 addhandler add_ml_symlink
@@ -87,5 +87,5 @@ python add_sys_symlink () {
     target_sys = pathlib.Path(d.expand('${D}${libdir}/${TARGET_SYS}'))
     if target_sys.exists():
         pn = d.getVar('PN')
-        d.appendVar('FILES_%s-dev' % pn, ' ${libdir}/${TARGET_SYS}')
+        d.appendVar('FILES:%s-dev' % pn, ' ${libdir}/${TARGET_SYS}')
 }

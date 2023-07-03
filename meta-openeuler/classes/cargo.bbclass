@@ -15,7 +15,7 @@ RUST_BASE_URI := "https://static.rust-lang.org"
 
 # Many crates rely on pkg-config to find native versions of their libraries for
 # linking - do the simple thing and make it generally available.
-DEPENDS_append = "\
+DEPENDS:append = "\
     cargo-bin-cross-${TARGET_ARCH} \
     pkgconfig-native \
 "
@@ -53,8 +53,8 @@ WRAPPER_DIR = "${WORKDIR}/wrappers"
 # Set the Cargo manifest path to the typical location
 CARGO_MANIFEST_PATH ?= "${S}/Cargo.toml"
 
-FILES_${PN}-dev += "${libdir}/*.rlib"
-FILES_${PN}-dev += "${libdir}/*.rlib.*"
+FILES:${PN}-dev += "${libdir}/*.rlib"
+FILES:${PN}-dev += "${libdir}/*.rlib.*"
 
 CARGO_BUILD_FLAGS = "\
     --verbose \
@@ -316,5 +316,5 @@ rust_target[vardepsexclude] += "rust_target[vardeps]"
 EXPORT_FUNCTIONS do_configure do_compile do_install
 
 # skip riscv as they are not well supported by rust now
-COMPATIBLE_HOST_riscv64 = "null"
-COMPATIBLE_HOST_riscv32 = "null"
+COMPATIBLE_HOST:riscv64 = "null"
+COMPATIBLE_HOST:riscv32 = "null"

@@ -1,7 +1,7 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 # add gcompat DEPENDS to support musl
-DEPENDS_append = " gcompat "
+DEPENDS:append = " gcompat "
 
-SRC_URI_append = " \
+SRC_URI:append = " \
         file://isulad-musl.patch \
 "

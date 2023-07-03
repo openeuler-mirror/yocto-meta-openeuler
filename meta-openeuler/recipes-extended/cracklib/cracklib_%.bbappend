@@ -5,10 +5,10 @@ PV = "2.9.8"
 S = "${WORKDIR}/cracklib-${PV}"
 
 # get new 0001-packlib.c-support-dictionary-byte-order-dependent.patch from higher poky
-FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
 # delete lower version patch from poky
-SRC_URI_remove += " \
+SRC_URI:remove = " \
     file://0001-Apply-patch-to-fix-CVE-2016-6318.patch \
 "
 

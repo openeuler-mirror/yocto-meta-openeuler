@@ -26,7 +26,7 @@ INHIBIT_DEFAULT_DEPS = "1"
 PR = "r1"
 
 INHIBIT_SYSROOT_STRIP = "1"
-INSANE_SKIP_${PN} += "already-stripped"
+INSANE_SKIP:${PN} += "already-stripped"
 
 PSEUDO_DISABLED = "1"
 
@@ -66,7 +66,7 @@ do_package_qa[noexec] = "1"
 EXCLUDE_FROM_SHLIBS = "1"
 
 # In case of conflict 
-FILES_${PN} = " \
+FILES:${PN} = " \
     ${base_libdir}/*.so \
     ${base_libdir}/*.so.* \
     ${base_sbindir}/ldconfig \
@@ -75,13 +75,13 @@ FILES_${PN} = " \
     /usr/lib/* \
     ${sysconfdir}/ld-musl-aarch64.path \
 "
-FILES_${PN}-staticdev = " \
-    ${base_libdir}/*.a \
+FILES:${PN}-staticdev = " \
+${base_libdir}/*.a 
 "
 # Add depend package
-RDEPENDS_${PN} += " bsd-headers gcompat gcompat-dev"
+RDEPENDS:${PN} += " bsd-headers gcompat gcompat-dev"
 
-INSANE_SKIP_${PN} += "installed-vs-shipped"
+INSANE_SKIP:${PN} += "installed-vs-shipped"
 INSANE_SKIP += "dev-elf dev-so"
 
 

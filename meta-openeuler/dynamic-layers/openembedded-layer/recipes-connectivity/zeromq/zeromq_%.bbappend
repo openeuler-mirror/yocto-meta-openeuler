@@ -1,11 +1,10 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-connectivity/zeromq/zeromq_4.3.4.bb
 
-OPENEULER_BRANCH = "master"
 OPENEULER_SRC_URI_REMOVE = "git https http"
 
 PV = "4.3.4"
 
-SRC_URI_append = " \
+SRC_URI:append = " \
         file://libzmq-${PV}.tar.gz \
         file://fix-test_inproc_connect-occasionally-fails-on-slow-archs.patch \
 "

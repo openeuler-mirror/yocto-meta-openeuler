@@ -5,7 +5,7 @@ inherit packagegroup
 
 PACKAGES = "${PN}"
 
-RDEPENDS_${PN} = " \
+RDEPENDS:${PN} = " \
 ros-core \
 demo-nodes-cpp \
 "

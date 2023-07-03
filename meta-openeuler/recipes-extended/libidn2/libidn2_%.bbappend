@@ -1,24 +1,23 @@
-# main bbfile: yocto-poky/meta/recipes-extended/libidn/libidn2_2.3.0.bb
+# main bbfile: yocto-poky/meta/recipes-extended/libidn/libidn2_2.3.2.bb
 
 # version in openEuler
 PV = "2.3.3"
 
 # solve lic check failed
-LIC_FILES_CHKSUM_remove = " \
-        file://src/idn2.c;endline=16;md5=426b74d6deb620ab6d39c8a6efd4c13a \
-        file://lib/idn2.h.in;endline=27;md5=c2cd28d3f87260f157f022eabb83714f \
+LIC_FILES_CHKSUM:remove = " \
+        file://src/idn2.c;endline=16;md5=e4b6d628a84a55f1fd8ae4c76c5f6509 \
+        file://lib/idn2.h.in;endline=27;md5=d0fc8ec628be130a1d5b889107e92477 \
 "
 
 # files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI_remove = " \
+SRC_URI:remove = " \
         ${GNU_MIRROR}/libidn/${BPN}-${PV}.tar.gz \
 "
 
 # files, patches that come from openeuler
-SRC_URI += " \
-        file://${BP}.tar.gz;name=tarball \
+SRC_URI:append = " \
+        file://${BP}.tar.gz \
         file://bugfix-libidn2-change-rpath.patch \
 "
 
-SRC_URI[tarball.md5sum] = "fb54962eb68cf22d47a4ae61f0aba993"
-SRC_URI[tarball.sha256sum] = "76940cd4e778e8093579a9d195b25fff5e936e9dc6242068528b437a76764f91"
+SRC_URI[sha256sum] = "f3ac987522c00d33d44b323cae424e2cffcb4c63c6aa6cd1376edacbf1c36eb0"

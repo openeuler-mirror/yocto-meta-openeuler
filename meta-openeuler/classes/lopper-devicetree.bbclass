@@ -46,7 +46,7 @@ do_mkdts() {
 addtask mkdts before do_install after do_compile
 
 SYSROOT_DIRS += "${INSTALL_PATH}"
-FILES_${PN} = "${INSTALL_PATH}/*.dts"
+FILES:${PN} = "${INSTALL_PATH}/*.dts"
 
 # install the processed device tree to SYSROOT_DIRS
 # other recipes can get it in "${WORKDIR}/recipe-sysroot/lop_dts"

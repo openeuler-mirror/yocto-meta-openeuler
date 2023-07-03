@@ -11,7 +11,7 @@ PV = "3.0.9"
 S = "${WORKDIR}/audit-${PV}"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI_remove = " \
+SRC_URI:remove = " \
         "
 
 # files, patches that come from openeuler
@@ -29,11 +29,11 @@ SRC_URI += " \
         "
 
 # we don't want audit python3 runtime tool
-DEPENDS:remove += " python3 "
-EXTRA_OECONF:remove += " --with-python3=yes "
+DEPENDS:remove = " python3 "
+EXTRA_OECONF:remove = " --with-python3=yes "
 EXTRA_OECONF += " --with-python3=no "
-PACKAGES:remove += " ${PN}-python "
-FILES:${PN}-python:remove += " ${libdir}/python${PYTHON_BASEVERSION} "
+PACKAGES:remove = " ${PN}-python "
+FILES:${PN}-python:remove = " ${libdir}/python${PYTHON_BASEVERSION} "
 FILES:auditd += " ${libdir} "
 
 # use openeuler's config and rules

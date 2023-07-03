@@ -1,8 +1,8 @@
+# the main bb file: yocto-poky/meta/recipes-multimedia/libtheora/libtheora_1.1.1.bb
+
 OPENEULER_SRC_URI_REMOVE = "https git http"
 
-PV = "1.1.1"
-
-SRC_URI_prepend = "file://${BP}.tar.xz \
+SRC_URI:prepend = "file://${BP}.tar.xz \
            file://Fix-pp_sharp_mod-calculation.patch \
            file://examples-fix-underlinking.patch \
            file://examples-png_sizeof-no-longer-available-since-libpng.patch \

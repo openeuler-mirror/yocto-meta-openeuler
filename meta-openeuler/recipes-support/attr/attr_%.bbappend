@@ -4,7 +4,7 @@
 PV = "2.5.1"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI_remove = " \
+SRC_URI:remove = " \
             ${SAVANNAH_GNU_MIRROR}/attr/${BP}.tar.gz \
             "
 

@@ -6,7 +6,7 @@ inherit packagegroup
 
 # live should use this VIRTUAL-RUNTIME as we don't want systemd:
 # Notice: we need busybox-inittab to setup in RDEPENDS
-DISTRO_FEATURES_BACKFILL_CONSIDERED_append := " systemd"
+DISTRO_FEATURES_BACKFILL_CONSIDERED:append := " systemd"
 VIRTUAL-RUNTIME_dev_manager := "busybox-mdev"
 VIRTUAL-RUNTIME_init_manager := "busybox"
 VIRTUAL-RUNTIME_initscripts := "initscripts"
@@ -21,7 +21,7 @@ SYSVINIT_SCRIPTS = "${@bb.utils.contains('MACHINE_FEATURES', 'rtc', '${VIRTUAL-R
                     ${VIRTUAL-RUNTIME_initscripts} \
                    "
 
-RDEPENDS_${PN} = "\
+RDEPENDS:${PN} = "\
     base-files \
     base-passwd \
     ${VIRTUAL-RUNTIME_base-utils} \
@@ -42,8 +42,8 @@ RDEPENDS_${PN} = "\
     "
 
 # No rule to make target "Image" for x86-64, remove it
-RDEPENDS_${PN}_remove_x86-64 += "kernel-img"
+RDEPENDS:${PN}:remove:x86-64 = "kernel-img"
 
-RRECOMMENDS_${PN} = "\
+RRECOMMENDS:${PN} = "\
     ${VIRTUAL-RUNTIME_base-utils-syslog} \
     ${MACHINE_ESSENTIAL_EXTRA_RRECOMMENDS}"

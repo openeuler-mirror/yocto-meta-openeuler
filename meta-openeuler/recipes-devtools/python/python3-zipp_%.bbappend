@@ -1,4 +1,4 @@
-PV = "3.7.0"
-SRC_URI[md5sum] = "5a1fc692b57b348d1e259484b405ddf6"
-SRC_URI[sha256sum] = "9f50f446828eb9d45b267433fd3e9da8d801f614129124863f9c51ebceafb87d"
+PV = "3.11.0"
+SRC_URI[md5sum] = "1fbff3bca7294a3a7f09fa3f0652c3da"
+SRC_URI[sha256sum] = "a7a22e05929290a67401440b39690ae6563279bced5f314609d9d03798f56766"
 require pypi-src-openeuler.inc

@@ -1,7 +1,10 @@
 PV = "3.4"
 
-OPENEULER_SRC_URI_REMOVE = "https git http"
-SRC_URI_prepend = "file://${BP}.tar.gz \
+SRC_URI:remove = "git://github.com/SELinuxProject/selinux.git;branch=master;protocol=https \
+        file://libsemanage-allow-to-disable-audit-support.patch \
+"
+
+SRC_URI:prepend = "file://${BP}.tar.gz \
         file://fix-test-failure-with-secilc.patch \
         "
 

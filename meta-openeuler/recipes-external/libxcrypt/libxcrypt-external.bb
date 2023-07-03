@@ -10,14 +10,14 @@ inherit external-toolchain
 EXTERNAL_PROVIDE_PATTERN = "${libdir}/libcrypt*.so.*"
 
 libc_rdep = "${@'${PREFERRED_PROVIDER_virtual/libc}' if '${PREFERRED_PROVIDER_virtual/libc}' else '${TCLIBC}'}"
-RDEPENDS_${PN} += "${libc_rdep}"
+RDEPENDS:${PN} += "${libc_rdep}"
 
-FILES_${PN} = "${base_libdir}/libcrypt*.so.* \
+FILES:${PN} = "${base_libdir}/libcrypt*.so.* \
                ${libdir}/libcrypt-*.so \
                ${libdir}/libowcrypt*.so.* \
                ${libdir}/libowcrypt-*.so \
 "
-FILES_${PN}-dev = "\
+FILES:${PN}-dev = "\
     ${libdir}/libcrypt.so \
     ${libdir}/libowcrypt.so \
     ${includedir}/crypt.h \

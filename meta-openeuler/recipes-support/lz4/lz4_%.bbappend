@@ -15,7 +15,7 @@ PV = "1.9.4"
 S = "${WORKDIR}/${BPN}-${PV}"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI_remove = " \
+SRC_URI:remove = " \
             file://CVE-2021-3520.patch \
             "
 

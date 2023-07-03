@@ -19,12 +19,12 @@ yocto默认继承了sstate类，sstate机制将SSTATETASKS定义的任务指定�
     SSTATE_DIR：指向共享缓存所在目录，默认为"${TOPDIR}/sstate-cache"；
     SSTATE_MIRRORS：共享缓存镜像机制，可以从镜像指定位置实时获取缓存；
     BB_HASHEXCLUDE_COMMON：一些不被计算到hash值的公共变量，参与组成其他字节；
-    BB_HASHBASE_WHITELIST：列出从校验和和相关性数据中排除的变量；由BB_HASHEXCLUDE_COMMON和其他值组成；
+    BB_BASEHASH_IGNORE_VARS：列出从校验和和相关性数据中排除的变量；由BB_HASHEXCLUDE_COMMON和其他值组成；
     BB_HASHCONFIG_WHITELIST：列出从基本配置校验和中排除的变量；由BB_HASHEXCLUDE_COMMON和其他值组成；
     BB_SIGNATURE_EXCLUDE_FLAGS：一些不被计算到hash值的公共变量标志，如果是任务标志，则 prefuncs、postfuncs、exports 等会对hash值有影响；具体要分析底层python脚本。
     vardepsexclude与vardeps标志：使字节或任务计算校验和时不依赖或依赖对应变量。
 
-BB_HASHEXCLUDE_COMMON是BB_HASHBASE_WHITELIST和BB_HASHCONFIG_WHITELIST的公共组成部分，因此可以修改BB_HASHEXCLUDE_COMMON对两者同时产生影响。
+BB_HASHEXCLUDE_COMMON是BB_BASEHASH_IGNORE_VARS和BB_HASHCONFIG_WHITELIST的公共组成部分，因此可以修改BB_HASHEXCLUDE_COMMON对两者同时产生影响。
 
 
 
@@ -157,8 +157,8 @@ sstate 使用效果
 sstate应用过程中解决的疑难问题
 #################################
 
-在初步复用sstate的过程中，总是频繁触发重新构建，最初定位是工具链缓存复用的问题，通过使用bitbake-diffsigs工具具体定位到是工具链gcc-runtime-external包构建时的do_install任务在postfuncs标志下的do_install_appended任务的校验和会随着构建目录改变而改变。
-根因是gcc-runtime-external的一个匿名函数使用replace函数修改了do_install_appended的内容导致校验和会随构建目录改变而改变，当前只能让do_install任务的校验和不受do_install_appended影响以复用缓存。
+在初步复用sstate的过程中，总是频繁触发重新构建，最初定位是工具链缓存复用的问题，通过使用bitbake-diffsigs工具具体定位到是工具链gcc-runtime-external包构建时的do_install任务在postfuncs标志下的do_install:appended任务的校验和会随着构建目录改变而改变。
+根因是gcc-runtime-external的一个匿名函数使用replace函数修改了do_install:appended的内容导致校验和会随构建目录改变而改变，当前只能让do_install任务的校验和不受do_install:appended影响以复用缓存。
 
 
 

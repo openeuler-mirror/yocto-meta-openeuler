@@ -1,2 +1,2 @@
-FILES_${PN} += "/usr/share /usr/lib"
+FILES:${PN} += "/usr/share /usr/lib"
 

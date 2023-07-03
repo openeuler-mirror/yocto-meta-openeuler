@@ -1,3 +1,3 @@
-RDEPENDS_packagegroup-base_append += " \
+RDEPENDS:packagegroup-base:append = " \
 e2fsprogs-resize2fs \
 "

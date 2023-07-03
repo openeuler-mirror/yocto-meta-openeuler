@@ -23,4 +23,4 @@ do_prepare_lrelease() {
 
 do_prepare_recipe_sysroot[postfuncs] += "do_prepare_lrelease"
 
-FILES_${PN} += "/usr/local/*"
+FILES:${PN} += "/usr/local/*"

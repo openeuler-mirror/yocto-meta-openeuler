@@ -5,11 +5,11 @@ PV = "4.06"
 
 S = "${WORKDIR}/${BPN}-${PV}"
 
-DEPENDS_remove += "dbus"
-PACKAGECONFIG_remove += "tcp-wrappers"
+DEPENDS:remove = "dbus"
+PACKAGECONFIG:remove = "tcp-wrappers"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI_remove = " \
+SRC_URI:remove = " \
             ${SOURCEFORGE_MIRROR}/project/linuxquota/quota-tools/${PV}/quota-${PV}.tar.gz \
             "
 # files, patches that come from openeuler

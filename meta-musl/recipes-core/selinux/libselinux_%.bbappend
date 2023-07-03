@@ -1,7 +1,7 @@
-DEPENDS_append = " gcompat "
+DEPENDS:append = " gcompat "
 DEPENDS += "${@bb.utils.contains('LIBC', 'musl', 'fts', '', d)}"
 
-do_configure_prepend () {
+do_configure:prepend () {
     if  ! grep -q "-lfts" ${S}/src/Makefile ; then  sed -i 's/FTS_LDLIBS ?=/FTS_LDLIBS ?= -lfts/' ${S}/src/Makefile; fi
 
     if  ! grep -q "MU_LDLIBS" ${S}/src/Makefile; then

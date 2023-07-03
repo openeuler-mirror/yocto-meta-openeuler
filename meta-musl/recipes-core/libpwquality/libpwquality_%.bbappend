@@ -1,10 +1,12 @@
-DEPENDS_append ="\
+# main bb file: yocto-meta-openembedded/meta-oe/recipes-extended/libpwquality/libpwquality_1.4.4.bb
+
+DEPENDS:append ="\
   gcompat \
 "
-LDFLAGS_append = " -lgcompat"
+LDFLAGS:append = " -lgcompat"
 
 #add patch to support musl
-FILESEXTRAPATHS_prepend := "${THISDIR}/libpwquality/:"
-SRC_URI_append = " \
+FILESEXTRAPATHS:prepend := "${THISDIR}/libpwquality/:"
+SRC_URI:append = " \
           file://libpwquality-musl.patch \
 "

@@ -1,14 +1,15 @@
-# main bbfile: yocto-poky/meta/recipes-multimedia/libpng/libpng_1.6.37.bb
+# main bbfile: yocto-poky/meta/recipes-multimedia/libpng/libpng_1.6.39.bb
 
 # source change to openEuler
-SRC_URI_remove = "${SOURCEFORGE_MIRROR}/${BPN}/${BPN}${LIBV}/${BP}.tar.xz"
+SRC_URI:remove = "${SOURCEFORGE_MIRROR}/${BPN}/${BPN}${LIBV}/${BP}.tar.xz"
 
 PV = "1.6.38"
+
 LIC_FILES_CHKSUM = "file://LICENSE;md5=5c900cc124ba35a274073b5de7639b13"
 
 # patch in openEuler
 # build error: libpng-fix-arm-neon.patch
-SRC_URI_prepend = "file://${BP}.tar.gz \
+SRC_URI:prepend = "file://${BP}.tar.gz \
            file://libpng-multilib.patch \
            file://CVE-2019-6129.patch \
 "

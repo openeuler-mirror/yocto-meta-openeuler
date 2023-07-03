@@ -1,6 +1,6 @@
 # main bbfile: meta-oe/recipes-extended/rsyslog/rsyslog_8.2102.0.bb?h=hardknott
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
 # version in openEuler
 PV = "8.2210.0"
@@ -19,5 +19,5 @@ SRC_URI[md5sum] = "23239f609af189b0814f8adc95ad9c02"
 SRC_URI[sha256sum] = "643ee279139d694a07c9ff3ff10dc5213bdf874983d27d373525e95e05fa094d"
 
 # according to openEuler, no need to use liblogging libgcrypt
-DEPENDS_remove = "liblogging"
-PACKAGECONFIG_remove = "libgcrypt"
+DEPENDS:remove = "liblogging"
+PACKAGECONFIG:remove = "libgcrypt"

@@ -2,7 +2,7 @@ SUMMARY = "extra basic configuration files of openEuler Embedded"
 DESCRIPTION = "extra basic configuration files as a supplement of poky's base-files bb"
 SECTION = "base"
 PR = "r1"
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
 INHIBIT_DEFAULT_DEPS = "1"
@@ -10,7 +10,7 @@ INHIBIT_DEFAULT_DEPS = "1"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 # we need update-rc.d to set up links between init.d and rcX.d
-DEPENDS_append = " update-rc.d-native"
+DEPENDS:append = " update-rc.d-native"
 
 SRC_URI = " \
 	file://rc.functions \
@@ -45,4 +45,4 @@ do_install() {
 	install -m 0644 ${WORKDIR}/ethertypes ${D}${sysconfdir}/ethertypes
 }
 
-FILES_${PN} = "/"
+FILES:${PN} = "/"

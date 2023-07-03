@@ -27,19 +27,19 @@ FEATURE_PACKAGES_tools-debug = ""
 # remove debug-tweaks and tool_debug from IMAGE_FEATURES
 # FEATURE_PACKAGES_tools-debug in image.bbclass may do similar work, but her override it to
 # meet openeuler embedded's need.
-IMAGE_INSTALL_append = "${@bb.utils.contains_any("IMAGE_FEATURES", [ 'debug-tweaks', 'tools_debug' ], "packagegroup-core-tools-debug", "",d)}"
+IMAGE_INSTALL:append = " ${@bb.utils.contains_any("IMAGE_FEATURES", [ 'debug-tweaks', 'tools_debug' ], "packagegroup-core-tools-debug", "",d)}"
 
 # delete useless sdk depends
-FEATURE_PACKAGES_tools-sdk_remove = " packagegroup-core-sdk packagegroup-core-standalone-sdk-target"
-TOOLCHAIN_TARGET_TASK_remove = "${@multilib_pkg_extend(d, 'packagegroup-core-standalone-sdk-target')}"
+FEATURE_PACKAGES:tools-sdk:remove = " packagegroup-core-sdk packagegroup-core-standalone-sdk-target"
+TOOLCHAIN_TARGET_TASK:remove = "${@multilib_pkg_extend(d, 'packagegroup-core-standalone-sdk-target')}"
 
 # do_rootfs not depends to ldconfig-native as nativesdk has provided it
 # learn more about LDCONFIGDEPEND in image.bbclass
 LDCONFIGDEPEND = ""
 
 # no depends on some native tools: cross-localdef-native
-DEPENDS_remove = "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])} cross-localedef-native"
-SDK_DEPENDS_remove = "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])}"
+DEPENDS:remove = "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])} cross-localedef-native"
+SDK_DEPENDS:remove = "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])}"
 RPMROOTFSDEPENDS = ""
 
 

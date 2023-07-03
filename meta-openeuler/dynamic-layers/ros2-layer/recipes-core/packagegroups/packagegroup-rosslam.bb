@@ -5,7 +5,7 @@ inherit packagegroup
 
 PACKAGES = "${PN}"
 
-RDEPENDS_${PN} = " \
+RDEPENDS:${PN} = " \
 ros-core \
 demo-nodes-cpp \
 originbot-navigation \
@@ -16,5 +16,6 @@ originbot-teleop \
 send-goal \
 ydlidar-ros2-driver \
 cartographer-ros \
-nav2-bringup \
 "
+# now the upstream ros layer bas not bb file in humble, so remove it from packagegroup as a workaround
+# nav2-bringup

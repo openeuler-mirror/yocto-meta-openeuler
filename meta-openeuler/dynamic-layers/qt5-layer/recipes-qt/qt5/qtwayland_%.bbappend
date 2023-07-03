@@ -1,6 +1,6 @@
 require qt5-src.inc
 
-SRC_URI_prepend = "file://0005-Scanner-Avoid-accessing-dangling-pointers-in-destroy.patch \
+SRC_URI:prepend = "file://0005-Scanner-Avoid-accessing-dangling-pointers-in-destroy.patch \
            file://0006-Make-setting-QT_SCALE_FACTOR-work-on-Wayland.patch \
            file://0007-Do-not-try-to-eglMakeCurrent-for-unintended-case.patch \
            file://0008-Make-setting-QT_SCALE_FACTOR-work-on-Wayland.patch \

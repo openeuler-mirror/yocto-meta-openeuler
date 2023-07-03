@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=1ebbd3e34237af26da5dc08a4e440464\
 
 
 # remove tar.gz files and code patches from poky
-SRC_URI_remove = " \
+SRC_URI:remove = " \
     ${GNU_MIRROR}/m4/m4-${PV}.tar.gz \
     file://ac_config_links.patch \
     file://m4-1.4.18-glibc-change-work-around.patch \
@@ -22,7 +22,7 @@ SRC_URI_remove = " \
 "
 
 # append files and patches from openeuler
-SRC_URI_append = " \
-    file://m4/m4-${PV}.tar.xz \
+SRC_URI:append = " \
+    file://m4-${PV}.tar.xz \
     file://0001-Delete-test-execute_sh.patch \
 "

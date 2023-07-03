@@ -17,12 +17,12 @@ inherit external-toolchain
 # toolchain after necessary optimization.
 PN = "libnsl2-openeuler-external"
 
-FILES_${PN} = "${libdir}/libnsl*.so.* ${libdir}/libnsl-*.so"
-FILES_${PN}-dev = "${libdir}/libnsl.so ${includedir}/rpcsvc/nis*.h ${includedir}/rpcsvc/yp*.h"
-FILES_${PN}-staticdev = "${libdir}/libnsl.a"
+FILES:${PN} = "${libdir}/libnsl*.so.* ${libdir}/libnsl-*.so"
+FILES:${PN}-dev = "${libdir}/libnsl.so ${includedir}/rpcsvc/nis*.h ${includedir}/rpcsvc/yp*.h"
+FILES:${PN}-staticdev = "${libdir}/libnsl.a"
 
 libc_rdep = "${@'${PREFERRED_PROVIDER_virtual/libc}' if d.getVar('PREFERRED_PROVIDER_virtual/libc') else '${TCLIBC}'}"
-RDEPENDS_${PN} += "${libc_rdep}"
+RDEPENDS:${PN} += "${libc_rdep}"
 
 do_install_extra () {
     # Depending on whether this comes from the standalone libnsl2 or glibc, the

@@ -18,13 +18,13 @@ export LDFLAGS=""
 EXTRA_OEMAKE="CROSS_COMPILE=${TARGET_PREFIX} "
 export LDFLAGS=""
 
-do_compile_append() {
+do_compile:append() {
     oe_runmake PLAT=rpi4 RPI3_PRELOADED_DTB_BASE=0x1F0000 PRELOADED_BL33_BASE=0x20000 SUPPORT_VFP=1 SMC_PCI_SUPPORT=1 DEBUG=0 all
 }
 
-do_install_append() {
+do_install:append() {
     install -d ${D}${datadir}
     install ${B}/build/rpi4/release/bl31.bin ${D}${datadir}
 }
 
-FILES_${PN} += "${datadir}/bl31.bin"
+FILES:${PN} += "${datadir}/bl31.bin"

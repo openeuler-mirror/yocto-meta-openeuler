@@ -1,7 +1,7 @@
 # openeuler's autotools.bbclass is almost the same as poky's autotools.bbclass except STAGING_DATADIR_NATIVE
 # is replaced with NATIVESDK_DATADIR. In the future, if the problem of NATIVE and NATIVESDK is fixed,
 # openeuler's autotools.bbclass can be removed
-def autotools_dep_prepend(d):
+def get_autotools_dep(d):
     if d.getVar('INHIBIT_AUTOTOOLS_DEPS'):
         return ''
 
@@ -22,7 +22,7 @@ def autotools_dep_prepend(d):
 
     return deps
 
-DEPENDS_prepend = "${@autotools_dep_prepend(d)} "
+DEPENDS:prepend = "${@get_autotools_dep(d)} "
 
 NATIVESDK_DATADIR = "${OPENEULER_NATIVESDK_SYSROOT}/usr/share"
 
@@ -136,7 +136,7 @@ autotools_postconfigure(){
 
 EXTRACONFFUNCS ??= ""
 
-EXTRA_OECONF_append = " ${PACKAGECONFIG_CONFARGS}"
+EXTRA_OECONF:append = " ${PACKAGECONFIG_CONFARGS}"
 
 do_configure[prefuncs] += "autotools_preconfigure autotools_aclocals ${EXTRACONFFUNCS}"
 do_compile[prefuncs] += "autotools_aclocals"
@@ -145,12 +145,15 @@ do_configure[postfuncs] += "autotools_postconfigure"
 
 ACLOCALDIR = "${STAGING_DATADIR}/aclocal"
 ACLOCALEXTRAPATH = "-I ${NATIVESDK_DATADIR}/aclocal/"
-ACLOCALEXTRAPATH_class-target = " -I ${NATIVESDK_DATADIR}/aclocal/"
-ACLOCALEXTRAPATH_class-nativesdk = " -I ${NATIVESDK_DATADIR}/aclocal/"
+ACLOCALEXTRAPATH:class-target = " -I ${NATIVESDK_DATADIR}/aclocal/"
+ACLOCALEXTRAPATH:class-nativesdk = " -I ${NATIVESDK_DATADIR}/aclocal/"
 
 python autotools_aclocals () {
-    d.setVar("CONFIG_SITE", siteinfo_get_files(d, sysrootcache=True))
+    sitefiles, searched = siteinfo_get_files(d, sysrootcache=True)
+    d.setVar("CONFIG_SITE", " ".join(sitefiles))
 }
+
+do_configure[file-checksums] += "${@' '.join(siteinfo_get_files(d, sysrootcache=False)[1])}"
 
 CONFIGURE_FILES = "${S}/configure.in ${S}/configure.ac ${S}/config.h.in ${S}/acinclude.m4 Makefile.am"
 

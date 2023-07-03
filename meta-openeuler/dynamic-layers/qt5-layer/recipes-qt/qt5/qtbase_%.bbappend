@@ -1,7 +1,7 @@
 # main bbfile: meta-qt5/recipes-qt/qt5/qtbase_git.bb
 require qt5-src.inc
 
-SRC_URI_prepend = "file://tell-the-truth-about-private-api.patch \
+SRC_URI:prepend = "file://tell-the-truth-about-private-api.patch \
            file://qtbase-opensource-src-5.8.0-QT_VERSION_CHECK.patch \
            file://qtbase-opensource-src-5.7.1-moc_macros.patch \
            file://qtbase-everywhere-src-5.12.1-qt5gui_cmake_isystem_includes.patch \

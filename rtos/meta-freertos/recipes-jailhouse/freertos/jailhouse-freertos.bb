@@ -21,4 +21,4 @@ do_install() {
 	cp ${S}/FreeRTOS.bin ${D}/Jailhouse_FreeRTOS_demo/
 }
 
-FILES_${PN} = "Jailhouse_FreeRTOS_demo"
+FILES:${PN} = "Jailhouse_FreeRTOS_demo"

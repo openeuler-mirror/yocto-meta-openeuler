@@ -19,7 +19,7 @@ INHIBIT_DEFAULT_DEPS = "1"
 
 ### Build metadata: SRC_URI, SRCDATA, S, B, FILESEXTRAPATHS....
 SRC_URI = "file://rt-thread/${BPN}-v${PV}.tar.gz "
-SRC_URI_append_qemu-aarch64 = "file://0001-bsp-modify-the-rtconfig.py-for-openeuler.patch"
+SRC_URI:append:qemu-aarch64 = "file://0001-bsp-modify-the-rtconfig.py-for-openeuler.patch"
 
 S = "${WORKDIR}/${BPN}-v${PV}"
 
@@ -77,7 +77,7 @@ PROVIDES += "rtthread"
 ### Runtime metadata
 PACKAGES = "${PN}"
 ### Package metadata
-FILES_${PN} = " \
+FILES:${PN} = " \
     /firmware \
 "
 ### Tasks for package

@@ -23,26 +23,26 @@ do_configure[depends] += "virtual/kernel:do_shared_workdir"
 inherit autotools-brokensep pkgconfig module-base
 
 # disable the textrel check
-INSANE_SKIP_${PN} = "textrel"
+INSANE_SKIP:${PN} = "textrel"
 
 EXTRA_OECONF += "--with-linux-dir=${STAGING_KERNEL_BUILDDIR}"
 EXTRA_OECONF += "--with-module-dir=kernel/ethercat"
 
-do_configure_prepend() {
+do_configure:prepend() {
 	# Fixes configure error
 	# | Makefile.am: error: required file './ChangeLog' not found"
 	touch ChangeLog
 }
 
-do_compile_append() {
+do_compile:append() {
 	oe_runmake modules
 }
 
-do_install_append() {
+do_install:append() {
 	oe_runmake MODLIB=${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION} modules_install
 	# Do distclean after installation to fix the error in the second compilation:
 	# | error: .libs/libethercat_la-common.o: No such file or directory
 	oe_runmake distclean
 }
 
-FILES_${PN} += "${nonarch_base_libdir}/modules/${KERNEL_VERSION}"
+FILES:${PN} += "${nonarch_base_libdir}/modules/${KERNEL_VERSION}"

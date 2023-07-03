@@ -64,7 +64,7 @@ cmake_do_configure() {
           -Wno-dev
 }
 
-SRC_URI_remove = " \
+SRC_URI:remove = " \
     git://github.com/ARM-software/armnn.git;name=armnn;branch=${BRANCH_ARMNN} \
     file://0001-stdlib-issue-work-around.patch \
     file://0002-enable-use-of-boost-shared-library.patch \
@@ -82,7 +82,7 @@ SRC_URI += " \
 "
 S = "${WORKDIR}/${BP}"
 
-DEPENDS_remove = "\
+DEPENDS:remove = "\
     armnn-tensorflow-lite \
     stb \
 "
@@ -90,9 +90,9 @@ DEPENDS += " \
     tensorflow-lite \
 "
 
-do_configure_remove() {
+do_configure:remove() {
     install -m 0555 ${WORKDIR}/TfLiteMobilenetQuantized_0_25-Armnn.cpp ${S}/tests/TfLiteMobilenetQuantized-Armnn
     install -m 0555 ${WORKDIR}/TfLiteMobilenetQuantized_1_0-Armnn.cpp ${S}/tests/TfLiteMobilenetQuantized-Armnn
 }
 
-FILES_${PN} += "${libdir}/*"
+FILES:${PN} += "${libdir}/*"

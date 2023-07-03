@@ -2,7 +2,7 @@
 # use as many as possible prebuilt nativesdk/host tools to replace native tools.
 # this file has related HOSTTOOLS and ASSUME_PROVIDED settings.
 
-HOSTTOOLS_remove += "chrpath cpp rpcgen"
+HOSTTOOLS:remove = "chrpath cpp rpcgen"
 HOSTTOOLS_NONFATAL += "chrpath cpp rpcgen"
 # basic tools
 HOSTTOOLS += "python3 python pod2man pkg-config"
@@ -25,8 +25,8 @@ HOSTTOOLS_NONFATAL += "automake autoreconf aclocal libtoolize m4 autoconf autohe
 ASSUME_PROVIDED += "automake-native autoconf-native libtool-native m4-native"
 
 # source file build tools
-HOSTTOOLS_NONFATAL += "cmake ninja meson"
-ASSUME_PROVIDED += "cmake-native ninja-native make-native meson-native"
+HOSTTOOLS_NONFATAL += "cmake ninja"
+ASSUME_PROVIDED += "cmake-native ninja-native make-native"
 
 # used by cracklib, built from cracklib-native
 HOSTTOOLS_NONFATAL += "create-cracklib-dict cracklib-format cracklib-packer cracklib-unpacker"
@@ -60,10 +60,10 @@ ASSUME_PROVIDED +=  "pixman-native mesa-native virglrenderer-native libsdl2-nati
 ASSUME_PROVIDED += "alsa-lib-native"
 
 #some commands added in poky by default do not used now, make it optional
-HOSTTOOLS_remove += "diffstat lz4c pzstd"
+HOSTTOOLS:remove = "diffstat lz4c pzstd"
 HOSTTOOLS_NONFATAL += "diffstat lz4c pzstd"
 
-SANITY_REQUIRED_UTILITIES_remove += "diffstat chrpath"
+SANITY_REQUIRED_UTILITIES:remove = "diffstat chrpath"
 CONNECTIVITY_CHECK_URIS = ""
 
 # Misc. assume provided software package
@@ -106,7 +106,7 @@ HOSTTOOLS_NONFATAL += "dtc"
 ASSUME_PROVIDED += "dtc-native intltool-native"
 
 # used by wayland
-ASSUME_PROVIDED += "xorgproto-native python3-mako-native expat-native"
+ASSUME_PROVIDED += "xorgproto-native expat-native"
 
 # used by tcl
 ASSUME_PROVIDED += "tcl-native"

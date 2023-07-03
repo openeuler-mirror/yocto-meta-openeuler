@@ -5,7 +5,7 @@ OPENEULER_SRC_URI_REMOVE = "https git http"
 PV = "1.0.8"
 
 # remove conflict files from poky
-SRC_URI_remove = " \
+SRC_URI:remove = " \
 "
 
 LIC_FILES_CHKSUM = "file://LICENSE;beginline=4;endline=37;md5=600af43c50f1fcb82e32f19b32df4664 \
@@ -13,7 +13,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;beginline=4;endline=37;md5=600af43c50f1fcb82e
 "
 
 # patches in openeuler
-SRC_URI_append = " \
+SRC_URI:append = " \
     file://bzip2-${PV}.tar.gz \
     file://0001-add-compile-option.patch \
     file://0002-CVE-2019-12900.patch \

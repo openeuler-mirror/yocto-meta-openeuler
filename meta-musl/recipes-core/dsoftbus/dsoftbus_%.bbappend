@@ -1,11 +1,11 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 # add patch to support musl
-SRC_URI_append = " \
+SRC_URI:append = " \
            file://change-musl-toolchain.patch;patchdir=${S}/build \
 "
-SRC_URI_append_toolchain-clang = " \
+SRC_URI:append:toolchain-clang = " \
            file://musl-clang.patch;patchdir=${S}/build \
 "
-SRC_URI_remove_toolchain-clang = " \
+SRC_URI:remove:toolchain-clang = " \
            file://0001-change-toolchain-for-clang-build.patch;patchdir=${S}/build \
 "

@@ -39,18 +39,18 @@ DEPENDS += " \
     stb \
 "
 
-RDEPENDS_${PN} = " arm-compute-library "
+RDEPENDS:${PN} = " arm-compute-library "
 
 TESTVECS_INSTALL_DIR = "${datadir}/arm/armnn"
 
 EXTRA_OEMAKE += "'LIBS=${LIBS}' 'CXX=${CXX}' 'CC=${CC}' 'AR=${AR}' 'CXXFLAGS=${CXXFLAGS}' 'CFLAGS=${CFLAGS}'"
 
-do_configure_prepend() {
+do_configure:prepend() {
     install -m 0555 ${WORKDIR}/TfLiteMobilenetQuantized_0_25-Armnn.cpp ${S}/tests/TfLiteMobilenetQuantized-Armnn
     install -m 0555 ${WORKDIR}/TfLiteMobilenetQuantized_1_0-Armnn.cpp ${S}/tests/TfLiteMobilenetQuantized-Armnn
 }
 
-do_install_append() {
+do_install:append() {
     CP_ARGS="-Prf --preserve=mode,timestamps --no-preserve=ownership"
     install -d ${D}${bindir}
     find ${WORKDIR}/build/tests -maxdepth 1 -type f -executable -exec cp $CP_ARGS {} ${D}${bindir} \;
@@ -59,5 +59,5 @@ do_install_append() {
     chrpath -d ${D}${bindir}/*
 }
 
-FILES_${PN}-dev += "{libdir}/cmake/*"
-INSANE_SKIP_${PN}-dev = "dev-elf"
+FILES:${PN}-dev += "{libdir}/cmake/*"
+INSANE_SKIP:${PN}-dev = "dev-elf"

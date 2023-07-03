@@ -5,12 +5,12 @@ PV = "4.0.2"
 
 S = "${WORKDIR}/procps-ng-${PV}"
 
-FILESEXTRAPATHS_append := "${THISDIR}/procps/:"
+FILESEXTRAPATHS:append := "${THISDIR}/procps/:"
 
 OPENEULER_REPO_NAME = "procps-ng"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI_remove = " \
+SRC_URI:remove = " \
             git://gitlab.com/procps-ng/procps.git;protocol=https \
             git://gitlab.com/procps-ng/procps.git;protocol=https;branch=master \
             file://0001-w.c-correct-musl-builds.patch \
@@ -28,7 +28,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
 # file://procps-ng/openeuler-add-M-and-N-options-for-top.patch
 # file://procps-ng/openeuler-top-exit-with-error-when-pid-overflow.patch
 # file://procps-ng/skill-Restore-the-p-flag-functionality.patch
-do_configure_prepend() {
+do_configure:prepend() {
     # cannot run po/update-potfiles in new version
     if [ ! -f ${S}/po/update-potfiles ]; then
         touch ${S}/po/update-potfiles

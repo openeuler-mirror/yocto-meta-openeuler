@@ -36,7 +36,7 @@ DTS_DIR ?= "${JH_DATADIR}/cells/dts"
 JH_CELLS_raspberrypi4-64 = "rpi4"
 JH_CELLS_qemu-aarch64 = "qemu-arm64"
 
-do_configure_prepend() {
+do_configure:prepend() {
 	if ls ${WORKDIR}/cells/${ARCH}/${JH_CELLS}*.c 1>/dev/null 2>&1; then
 		cp -f ${WORKDIR}/cells/${ARCH}/${JH_CELLS}*.c ${S}/configs/${ARCH}/
 	fi
@@ -74,5 +74,5 @@ do_install() {
 }
 
 PACKAGE_BEFORE_PN = "kernel-module-jailhouse pyjailhouse ${PN}-tools ${PN}-demos"
-FILES_${PN} += "${nonarch_base_libdir}/firmware ${libexecdir} ${sbindir} ${JH_DATADIR}"
+FILES:${PN} += "${nonarch_base_libdir}/firmware ${libexecdir} ${sbindir} ${JH_DATADIR}"
 KERNEL_MODULE_AUTOLOAD += "jailhouse"

@@ -69,7 +69,7 @@ def gather_pkg_files(d):
     import itertools
     files = []
     for pkg in d.getVar('PACKAGES').split():
-        files = itertools.chain(files, (d.getVar('EXTERNAL_FILES_{}'.format(pkg)) or d.getVar('FILES_{}'.format(pkg)) or '').split())
+        files = itertools.chain(files, (d.getVar('EXTERNAL_FILES_{}'.format(pkg)) or d.getVar('FILES:{}'.format(pkg)) or '').split())
     files = itertools.chain(files, d.getVar('EXTERNAL_EXTRA_FILES').split())
     return files
 

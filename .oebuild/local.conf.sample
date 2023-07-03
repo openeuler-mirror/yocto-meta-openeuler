@@ -2,9 +2,10 @@
 # This file is your local configuration file and is where all local user settings
 # are placed. The comments in this file give some guide to the options a new user
 # to the system might want to change but pretty much any configuration option can
-# be set in this file. More adventurous users can look at local.conf.extended
-# which contains other examples of configuration which can be placed in this file
-# but new users likely won't need any of them initially.
+# be set in this file. More adventurous users can look at
+# local.conf.sample.extended which contains other examples of configuration which
+# can be placed in this file but new users likely won't need any of them
+# initially.
 #
 # Lines starting with the '#' character are commented out and in some cases the
 # default values are provided as comments to show people example syntax. Enabling
@@ -184,7 +185,7 @@ PATCHRESOLVE = "noop"
 #
 # Monitor the disk space during the build. If there is less that 1GB of space or less
 # than 100K inodes in any key build location (TMPDIR, DL_DIR, SSTATE_DIR), gracefully
-# shutdown the build. If there is less than 100MB or 1K inodes, perform a hard abort
+# shutdown the build. If there is less than 100MB or 1K inodes, perform a hard halt
 # of the build. The reason for this is that running completely out of space can corrupt
 # files and damages the build in ways which may not be easily recoverable.
 # It's necessary to monitor /tmp, if there is no space left the build will fail
@@ -194,10 +195,10 @@ BB_DISKMON_DIRS ??= "\
     STOPTASKS,${DL_DIR},1G,100K \
     STOPTASKS,${SSTATE_DIR},1G,100K \
     STOPTASKS,/tmp,100M,100K \
-    ABORT,${TMPDIR},100M,1K \
-    ABORT,${DL_DIR},100M,1K \
-    ABORT,${SSTATE_DIR},100M,1K \
-    ABORT,/tmp,10M,1K"
+    HALT,${TMPDIR},100M,1K \
+    HALT,${DL_DIR},100M,1K \
+    HALT,${SSTATE_DIR},100M,1K \
+    HALT,/tmp,10M,1K"
 
 #
 # Shared-state files from other locations
@@ -206,7 +207,7 @@ BB_DISKMON_DIRS ??= "\
 # used to accelerate build time. This variable can be used to configure the system
 # to search other mirror locations for these objects before it builds the data itself.
 #
-# This can be a filesystem directory, or a remote url such as http or ftp. These
+# This can be a filesystem directory, or a remote url such as https or ftp. These
 # would contain the sstate-cache results from previous builds (possibly from other
 # machines). This variable works like fetcher MIRRORS/PREMIRRORS and points to the
 # cache locations to check for the shared objects.
@@ -214,34 +215,36 @@ BB_DISKMON_DIRS ??= "\
 # at the end as shown in the examples below. This will be substituted with the
 # correct path within the directory structure.
 #SSTATE_MIRRORS ?= "\
-#file://.* http://someserver.tld/share/sstate/PATH;downloadfilename=PATH \n \
+#file://.* https://someserver.tld/share/sstate/PATH;downloadfilename=PATH \
 #file://.* file:///some/local/dir/sstate/PATH"
 
 #
 # Yocto Project SState Mirror
 #
 # The Yocto Project has prebuilt artefacts available for its releases, you can enable
-# use of these by uncommenting the following line. This will mean the build uses
+# use of these by uncommenting the following lines. This will mean the build uses
 # the network to check for artefacts at the start of builds, which does slow it down
 # equally, it will also speed up the builds by not having to build things if they are
 # present in the cache. It assumes you can download something faster than you can build it
 # which will depend on your network.
+# Note: For this to work you also need hash-equivalence passthrough to the matching server
 #
-#SSTATE_MIRRORS ?= "file://.* http://sstate.yoctoproject.org/2.5/PATH;downloadfilename=PATH"
+#BB_HASHSERVE_UPSTREAM = "hashserv.yocto.io:8687"
+#SSTATE_MIRRORS ?= "file://.* http://sstate.yoctoproject.org/all/PATH;downloadfilename=PATH"
 
 #
 # Qemu configuration
 #
 # By default native qemu will build with a builtin VNC server where graphical output can be
 # seen. The line below enables the SDL UI frontend too.
-#PACKAGECONFIG_append:pn-qemu-system-native = " sdl"
+#PACKAGECONFIG:append:pn-qemu-system-native = " sdl"
 # By default libsdl2-native will be built, if you want to use your host's libSDL instead of
 # the minimal libsdl built by libsdl2-native then uncomment the ASSUME_PROVIDED line below.
 #ASSUME_PROVIDED += "libsdl2-native"
 
 # You can also enable the Gtk UI frontend, which takes somewhat longer to build, but adds
 # a handy set of menus for controlling the emulator.
-#PACKAGECONFIG_append:pn-qemu-system-native = " gtk+"
+#PACKAGECONFIG:append:pn-qemu-system-native = " gtk+"
 
 #
 # Hash Equivalence
@@ -276,8 +279,8 @@ require conf/distro/include/openeuler_hosttools.inc
 
 PATCHTOOL = "patch"
 TCMODE = "external-openeuler"
-INHERIT_remove = "uninative"
-PATCHDEPENDENCY_remove = "patch-replacement-native:do_populate_sysroot"
+INHERIT:remove = "uninative"
+PATCHDEPENDENCY:remove = "patch-replacement-native:do_populate_sysroot"
 
 # openEuler software package dir
 # all openeEuler software packages will be downloaded by specific tool
@@ -301,14 +304,14 @@ OPENEULER_NATIVESDK_SYSROOT = "/opt/buildtools/nativesdk/sysroots/x86_64-pokysdk
 # <EXTERNAL_TOOLCHAIN>
 #   openeuler_gcc_arm64le  <the toolchain of aarch64 provided by openEuler>
 #   openeuler_gcc_arm32le" <the toolchain of arm32 provided by openEuler>
-EXTERNAL_TOOLCHAIN_arm = "/usr1/openeuler/gcc/openeuler_gcc_arm32le"
-EXTERNAL_TOOLCHAIN_aarch64 = "/usr1/openeuler/gcc/openeuler_gcc_arm64le"
-EXTERNAL_TOOLCHAIN_x86-64 = "/usr1/openeuler/gcc/openeuler_gcc_x86_64"
-EXTERNAL_TOOLCHAIN_riscv64 = "/usr1/openeuler/gcc/openeuler_gcc_riscv64"
-EXTERNAL_TARGET_SYS_arm = "arm-openeuler-linux-gnueabi"
-EXTERNAL_TARGET_SYS_aarch64 = "aarch64-openeuler-linux-gnu"
-EXTERNAL_TARGET_SYS_x86-64 = "x86_64-openeuler-linux-gnu"
-EXTERNAL_TARGET_SYS_riscv64 = "riscv64-openeuler-linux-gnu"
+EXTERNAL_TOOLCHAIN:arm = "/usr1/openeuler/gcc/openeuler_gcc_arm32le"
+EXTERNAL_TOOLCHAIN:aarch64 = "/usr1/openeuler/gcc/openeuler_gcc_arm64le"
+EXTERNAL_TOOLCHAIN:x86-64 = "/usr1/openeuler/gcc/openeuler_gcc_x86_64"
+EXTERNAL_TOOLCHAIN:riscv64 = "/usr1/openeuler/gcc/openeuler_gcc_riscv64"
+EXTERNAL_TARGET_SYS:arm = "arm-openeuler-linux-gnueabi"
+EXTERNAL_TARGET_SYS:aarch64 = "aarch64-openeuler-linux-gnu"
+EXTERNAL_TARGET_SYS:x86-64 = "x86_64-openeuler-linux-gnu"
+EXTERNAL_TARGET_SYS:riscv64 = "riscv64-openeuler-linux-gnu"
 
 # default openeuler platform
 OPENEULER_PLATFORM = "aarch64-std"

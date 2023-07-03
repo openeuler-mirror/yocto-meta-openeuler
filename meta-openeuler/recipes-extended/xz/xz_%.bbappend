@@ -3,7 +3,7 @@
 OPENEULER_SRC_URI_REMOVE = "https git http"
 
 # Use the source packages from openEuler
-SRC_URI_remove = " \
+SRC_URI:remove = " \
         "
 
 PV = "5.2.10"

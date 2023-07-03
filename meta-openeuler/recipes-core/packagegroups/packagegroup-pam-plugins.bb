@@ -3,7 +3,7 @@ PR = "r1"
 
 inherit packagegroup
 
-RDEPENDS_${PN} = "\
+RDEPENDS:${PN} = "\
 pam-plugin-access \
 pam-plugin-debug \
 pam-plugin-deny \

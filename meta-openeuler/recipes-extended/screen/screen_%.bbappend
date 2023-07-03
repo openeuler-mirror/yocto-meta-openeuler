@@ -2,11 +2,11 @@
 
 PV = "4.9.0"
 
-SRC_URI_remove = "file://CVE-2021-26937.patch \
+SRC_URI:remove = "file://CVE-2021-26937.patch \
 "
 
 # files, patches that come from openeuler
-SRC_URI_prepend = "file://screen-4.3.1-screenrc.patch \
+SRC_URI:prepend = "file://screen-4.3.1-screenrc.patch \
            file://screen-E3.patch \
            file://screen-4.3.1-suppress_remap.patch \
            file://screen-4.3.1-crypt.patch \

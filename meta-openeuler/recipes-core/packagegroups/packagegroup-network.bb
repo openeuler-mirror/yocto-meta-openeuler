@@ -5,17 +5,17 @@ inherit packagegroup
 
 PACKAGES = "${PN} packagegroup-network-nfs packagegroup-network-dhcp"
 
-RDEPENDS_${PN} = " \
+RDEPENDS:${PN} = " \
 packagegroup-network-nfs \
 packagegroup-network-dhcp \
 "
 
-RDEPENDS_${PN}-nfs = " \
+RDEPENDS:${PN}-nfs = " \
 nfs-utils \
 nfs-utils-client \
 "
 
-RDEPENDS_${PN}-dhcp = " \
+RDEPENDS:${PN}-dhcp = " \
 bind-dhclient \
 bind-dhclient-utils \
 dhcp-client \
@@ -25,10 +25,10 @@ dhcp-omshell \
 dhcp-relay \
 "
 
-RDEPENDS_${PN}-wifi = " \
+RDEPENDS:${PN}-wifi = " \
 wpa-supplicant \
 "
 
-RDEPENDS_${PN}-bluetooth = " \
+RDEPENDS:${PN}-bluetooth = " \
 bluez5 \
 "

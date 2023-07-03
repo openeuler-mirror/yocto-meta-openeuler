@@ -1,9 +1,9 @@
 # source bb: meta-networking/recipes-support/http-parser/http-parser_2.9.4.bb;branch=master
 
-SRC_URI_remove = "git://github.com/nodejs/http-parser.git;branch=master;protocol=https"
+SRC_URI:remove = "git://github.com/nodejs/http-parser.git;branch=master;protocol=https"
 
 # apply openeuler source and patch
-SRC_URI_prepend = "file://${BP}.tar.gz \
+SRC_URI:prepend = "file://${BP}.tar.gz \
 		   file://backport-url-treat-empty-port-as-default.patch \
 "
 

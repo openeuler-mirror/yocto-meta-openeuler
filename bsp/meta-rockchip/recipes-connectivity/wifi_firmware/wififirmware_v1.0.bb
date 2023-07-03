@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda
 PR = "r0"
 SRC_URI = "file://firmware/nxp"
 
-FILES_${PN} += "/lib/firmware/nxp"
+FILES:${PN} += "/lib/firmware/nxp"
 inherit allarch
 
 do_install() {

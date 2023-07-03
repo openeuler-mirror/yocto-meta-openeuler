@@ -1,11 +1,13 @@
+# the main bb file: yocto-poky/meta/recipes-bsp/pciutils/pciutils_3.7.0.bb
+
 PV = "3.9.0"
 
 # update configure.patch of poky
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 OPENEULER_SRC_URI_REMOVE = "https http git"
 
-SRC_URI_prepend = " \
+SRC_URI:prepend = " \
     file://pciutils-${PV}.tar.gz \
     file://0000-pciutils-2.2.1-idpath.patch \
     file://0001-pciutils-dir-d.patch \
@@ -27,5 +29,5 @@ ALTERNATIVE:${PN} = "lspci"
 ALTERNATIVE_PRIORITY = "100"
 
 # file of ids package is /usr/share/hwdata/pci.ids.gz, but datadir is /usr/share/
-# update it from FILES_${PN}-ids = "${datadir}/pci.ids*" in poky bb.
-FILES_${PN}-ids = "${datadir}/*/pci.ids*"
+# update it from FILES:${PN}-ids = "${datadir}/pci.ids*" in poky bb.
+FILES:${PN}-ids = "${datadir}/*/pci.ids*"

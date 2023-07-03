@@ -1,3 +1,5 @@
+# the main bb file: yocto-poky/meta/recipes-extended/psmisc/psmisc_23.4.bb
+
 # package and patches from openeuler
 PV = "23.6"
 
@@ -12,7 +14,7 @@ SRC_URI += " \
 
 S = "${WORKDIR}/${BPN}-${PV}"
 
-do_configure_prepend() {
+do_configure:prepend() {
     # cannot run po/update-potfiles in new version
     if [ ! -f ${S}/po/update-potfiles ]; then
         touch ${S}/po/update-potfiles

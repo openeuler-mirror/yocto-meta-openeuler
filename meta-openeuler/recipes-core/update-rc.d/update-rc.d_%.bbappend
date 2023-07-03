@@ -5,7 +5,7 @@
 # and update-rc.d script file (with update-rc.d_0.8.bb ),
 OPENEULER_REPO_NAME = "update-rc.d_dummy"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI = "file://update-rc.d"
 

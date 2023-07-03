@@ -5,13 +5,13 @@ SRC_URI[sha256sum] = "65fd48317359f3af8e593943e6ae1506b66325085ea64b706a998c6e83
 require pypi-src-openeuler.inc
 
 # remove poky conflict patches
-SRC_URI_remove += " \
+SRC_URI:remove = " \
         file://0001-change-shebang-to-python3.patch \
         file://0001-Don-t-split-git-references-on-unicode-separators.patch \
         "
 
 # apply openeuler patches
-SRC_URI_append +=" \
+SRC_URI:append =" \
         file://remove-existing-dist-only-if-path-conflicts.patch \
         file://dummy-certifi.patch \
 "

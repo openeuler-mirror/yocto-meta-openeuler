@@ -6,7 +6,7 @@ PV = "2.5.1"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 # use patches from src-openEuler
-SRC_URI_prepend = "file://kbd-1.15-keycodes-man.patch \
+SRC_URI:prepend = "file://kbd-1.15-keycodes-man.patch \
            file://kbd-1.15-sparc.patch \
            file://kbd-1.15-unicode_start.patch \
            file://kbd-1.15.5-sg-decimal-separator.patch \

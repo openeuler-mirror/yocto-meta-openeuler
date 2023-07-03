@@ -33,7 +33,7 @@ ____
 
       $ cat lopper-ops.bbappend
       # Use the operation files from current layer
-      FILESEXTRAPATHS_prepend := "${THISDIR}/:"
+      FILESEXTRAPATHS:prepend := "${THISDIR}/:"
 
    ``lops`` 用于放置用户自定义的配置文件，这些配置文件统一用device-tree格式描述，但是有单独的语法，
    用于描述关于输入设备树的操作，包括：修改（删除）某个设备节点；添加自定义节点；提取部分节点并生成新的设备树等。
@@ -79,7 +79,7 @@ ____
       DEPENDS += "foo-A"
 
       # get the serial-for-zephyr.dts
-      do_configure_append() {
+      do_configure:append() {
           cp ${WORKDIR}/recipe-sysroot/lop_dts/serial-for-zephyr.dts ${B}/
       }
 

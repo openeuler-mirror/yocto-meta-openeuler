@@ -1,11 +1,11 @@
 # version in src-openEuler
 PV = "1.17.4"
 
-SRC_URI_remove = "file://CVE-2018-19876.patch \
+SRC_URI:remove = "file://CVE-2018-19876.patch \
            file://CVE-2020-35492.patch \
 "
 
-SRC_URI_prepend = "file://0001-Set-default-LCD-filter-to-FreeType-s-default.patch \
+SRC_URI:prepend = "file://0001-Set-default-LCD-filter-to-FreeType-s-default.patch \
            file://backport-CVE-2020-35492.patch \
 "
 

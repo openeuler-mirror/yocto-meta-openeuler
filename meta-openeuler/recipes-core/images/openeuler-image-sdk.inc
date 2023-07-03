@@ -6,7 +6,7 @@ SDK_RELOCATE_AFTER_INSTALL = "0"
 
 export SDK_OS = "linux"
 
-SDK_DEPENDS_remove += "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])}"
+SDK_DEPENDS:remove = "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])}"
 
 copy_opeueuler_sdk() {
    test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"

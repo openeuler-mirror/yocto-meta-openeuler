@@ -20,7 +20,7 @@ SECTION = "devel"
 inherit cross cargo
 
 # prevent loop dependency
-DEPENDS_remove = "cargo-bin-cross-${TARGET_ARCH}"
+DEPENDS:remove = "cargo-bin-cross-${TARGET_ARCH}"
 
 # Required to link binaries
 DEPENDS += "gcc-cross-${TARGET_ARCH}"
@@ -42,7 +42,7 @@ S = "${WORKDIR}/rustc-${PV}-${RUST_BUILD_TARGET}"
 S[vardepsexclude] += "WORKDIR"
 
 SYSROOT_DIRS_NATIVE += "${prefix}"
-SYSROOT_DIRS_BLACKLIST += "\
+SYSROOT_DIRS_IGNORE += "\
     ${prefix}/share \
     ${prefix}/etc \
 "

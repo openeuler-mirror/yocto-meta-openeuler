@@ -9,13 +9,13 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 inherit packagegroup
 
 # PACKAGES is "${PN}" by default
-# if you want to add new groups by RDEPENDS_xx, you show add new group to PACKAGES
+# if you want to add new groups by RDEPENDS:xx, you show add new group to PACKAGES
 # split packagegroup-base to packagegroup-base-utils and packagegroup-base-libs
 # packagegroup-base-utils means which package contains binary file for user using.
 # packagegroup-base-libs means which package contains library and conf files only.
 PACKAGES = "${PN} ${PN}-utils ${PN}-libs"
 
-RDEPENDS_packagegroup-base-utils = " \
+RDEPENDS:packagegroup-base-utils = " \
 acl \
 attr \
 cifs-utils \
@@ -60,7 +60,7 @@ sysfsutils \
 elfutils \
 "
 
-RDEPENDS_packagegroup-base-libs = " \
+RDEPENDS:packagegroup-base-libs = " \
 initscripts \
 json-c \
 libcap-bin \
@@ -84,11 +84,11 @@ glib-2.0 \
 libbfd \
 "
 
-RDEPENDS_packagegroup-base = " \
+RDEPENDS:packagegroup-base = " \
 packagegroup-base-utils \
 packagegroup-base-libs \
 "
 
-RDEPENDS_packagegroup-base-utils_remove_riscv64 += " \
+RDEPENDS:packagegroup-base-utils:remove:riscv64 = " \
 ethercat \
 "

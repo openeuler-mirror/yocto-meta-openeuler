@@ -2,11 +2,11 @@ OPENEULER_REPO_NAME = "libusb"
 OPENEULER_SRC_URI_REMOVE = "https http git"
 
 # modify 0001-usb.h-Include-sys-types.h.patch
-FILESEXTRAPATHS_prepend := "${THISDIR}/${BPN}/:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}/:"
 
 PV = "0.1.5"
 
-SRC_URI_prepend = "file://${BP}.tar.bz2 \
+SRC_URI:prepend = "file://${BP}.tar.bz2 \
            file://0000-Link-with-znodelete-to-disallow-unloading.patch \
            file://0001-Revert-use-atexit-to-call-libusb_exit.patch \
 "

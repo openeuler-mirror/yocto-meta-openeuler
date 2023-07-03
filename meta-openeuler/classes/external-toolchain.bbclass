@@ -21,7 +21,7 @@ S = "${WORKDIR}"
 INHIBIT_DEFAULT_DEPS = "1"
 
 # Missing build deps don't matter when we don't build anything
-INSANE_SKIP_${PN} += "build-deps"
+INSANE_SKIP:${PN} += "build-deps"
 
 EXTERNAL_PN ?= "${@PN.replace('-external', '')}"
 PROVIDES += "${EXTERNAL_PN}"
@@ -36,14 +36,14 @@ do_compile[noexec] = "1"
 
 EXTERNAL_PV_PREFIX ?= ""
 EXTERNAL_PV_SUFFIX ?= ""
-PV_prepend = "${@'${EXTERNAL_PV_PREFIX}' if '${EXTERNAL_PV_PREFIX}' else ''}"
-PV_append = "${@'${EXTERNAL_PV_SUFFIX}' if '${EXTERNAL_PV_SUFFIX}' else ''}"
+PV:prepend = "${@'${EXTERNAL_PV_PREFIX}' if '${EXTERNAL_PV_PREFIX}' else ''}"
+PV:append = "${@'${EXTERNAL_PV_SUFFIX}' if '${EXTERNAL_PV_SUFFIX}' else ''}"
 
 EXTERNAL_EXTRA_FILES ?= ""
 
 # Skip this recipe if we don't have files in the external toolchain
 EXTERNAL_AUTO_PROVIDE ?= "0"
-EXTERNAL_AUTO_PROVIDE_class-target ?= "1"
+EXTERNAL_AUTO_PROVIDE:class-target ?= "1"
 
 # We don't care if this path references other variables
 EXTERNAL_TOOLCHAIN[vardepvalue] = "${EXTERNAL_TOOLCHAIN}"
@@ -81,7 +81,7 @@ python () {
     else:
         files = oe.external.gather_pkg_files(d)
         search_patterns.extend(filter(lambda f: '.debug' not in f, files))
-
+    
     expanded = oe.external.expand_paths(search_patterns, mirrors, premirrors)
     paths = oe.external.search_sysroots(expanded, sysroots)
     if not any(f for p, f in paths):
@@ -125,13 +125,13 @@ python external_toolchain_do_install () {
         bb.build.exec_func('do_install_extra', d)
     external_toolchain_propagate_mode(d, installdest)
 }
-external_toolchain_do_install[vardeps] += "${@' '.join('FILES_%s' % pkg for pkg in '${PACKAGES}'.split())}"
+external_toolchain_do_install[vardeps] += "${@' '.join('FILES:%s' % pkg for pkg in '${PACKAGES}'.split())}"
 
 # Change do_install's CWD to EXTERNAL_TOOLCHAIN for convenience
 do_install[dirs] = "${D} ${EXTERNAL_TOOLCHAIN}"
 
 python () {
-    # Deal with any do_install_append
+    # Deal with any do_install:append
     install = d.getVar('do_install', False)
     try:
         base, appended = install.split('# Sentinel', 1)
@@ -140,31 +140,31 @@ python () {
     else:
         d.setVar('do_install', base)
         if appended.strip():
-            d.setVar('do_install_appended', appended)
-            d.setVarFlag('do_install_appended', 'func', '1')
-            d.appendVarFlag('do_install', 'postfuncs', ' do_install_appended')
+            d.setVar('do_install_added', appended)
+            d.setVarFlag('do_install_added', 'func', '1')
+            d.appendVarFlag('do_install', 'postfuncs', ' do_install_added')
 }
 
 # Toolchain shipped binaries weren't necessarily built ideally
-WARN_QA_remove = "ldflags textrel"
-ERROR_QA_remove = "ldflags textrel"
+WARN_QA:remove = "ldflags textrel"
+ERROR_QA:remove = "ldflags textrel"
 
 # Debug files may well have already been split out, or stripped out
-INSANE_SKIP_${PN} += "already-stripped"
+INSANE_SKIP:${PN} += "already-stripped"
 
-RPROVIDES_${PN} += "${EXTERNAL_PN}"
-RPROVIDES_${PN}-dev += "${EXTERNAL_PN}-dev"
-RPROVIDES_${PN}-staticdev += "${EXTERNAL_PN}-staticdev"
-RPROVIDES_${PN}-dbg += "${EXTERNAL_PN}-dbg"
-RPROVIDES_${PN}-doc += "${EXTERNAL_PN}-doc"
-RPROVIDES_${PN}-locale += "${EXTERNAL_PN}-locale"
+RPROVIDES:${PN} += "${EXTERNAL_PN}"
+RPROVIDES:${PN}-dev += "${EXTERNAL_PN}-dev"
+RPROVIDES:${PN}-staticdev += "${EXTERNAL_PN}-staticdev"
+RPROVIDES:${PN}-dbg += "${EXTERNAL_PN}-dbg"
+RPROVIDES:${PN}-doc += "${EXTERNAL_PN}-doc"
+RPROVIDES:${PN}-locale += "${EXTERNAL_PN}-locale"
 LOCALEBASEPN = "${EXTERNAL_PN}"
 
-FILES_${PN} = ""
-FILES_${PN}-dev = ""
-FILES_${PN}-staticdev = ""
-FILES_${PN}-doc = ""
-FILES_${PN}-locale = ""
+FILES:${PN} = ""
+FILES:${PN}-dev = ""
+FILES:${PN}-staticdev = ""
+FILES:${PN}-doc = ""
+FILES:${PN}-locale = ""
 
 def debug_paths(d):
     l = d.createCopy()
@@ -177,7 +177,7 @@ def debug_paths(d):
     for p in l.getVar('PACKAGES', True).split():
         if p.endswith('-dbg'):
             continue
-        for f in (l.getVar('FILES_%s' % p, True) or '').split():
+        for f in (l.getVar('FILES:%s' % p, True) or '').split():
             if any((f == x or f.startswith(x + '/')) for x in exclude):
                 continue
             d = os.path.dirname(f)
@@ -187,4 +187,4 @@ def debug_paths(d):
             paths.append('{0}/.debug/{1}.debug'.format(d, b))
     return set(paths)
 
-FILES_${PN}-dbg = "${@' '.join(debug_paths(d))}"
+FILES:${PN}-dbg = "${@' '.join(debug_paths(d))}"

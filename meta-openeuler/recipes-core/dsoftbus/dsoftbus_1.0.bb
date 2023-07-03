@@ -52,23 +52,22 @@ SRC_URI = " \
         "
 
 # fix libboundscheck.so not found
-RDEPENDS_${PN} = "libboundscheck"
+RDEPENDS:${PN} = "libboundscheck"
 
 # bluetooth only support for raspberrypi, qemu don't compile it
-FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
-DEPENDS:append:raspberrypi4-64 = " bluez5 "
+DEPENDS:append:raspberrypi4-64 = " bluez5"
 SRC_URI:append:raspberrypi4-64 = " \
         file://add-bluez-adapter-for-dsoftbus.patch;patchdir=${dsoftbus-depend} \
         file://apply-ble-discovery-support.patch;patchdir=${dsoftbus-src}/dsoftbus \
 "
 
-FILES_${PN}-dev = "${includedir}"
-FILES_${PN} = "${libdir} ${bindir} /data/"
+FILES:${PN}-dev = "${includedir}"
+FILES:${PN} = "${libdir} ${bindir} /data/"
 
-INSANE_SKIP_${PN} += "already-stripped"
-ALLOW_EMPTY_${PN} = "1"
+INSANE_SKIP:${PN} += "already-stripped"
+ALLOW_EMPTY:${PN} = "1"
 
-python do_fetch_prepend() {
+python do_fetch:prepend() {
     repoList = [{
         "repo_name": "yocto-embedded-tools",
         "git_url": "https://gitee.com/openeuler",
@@ -92,7 +91,7 @@ python do_fetch_prepend() {
     bb.build.exec_func("do_openeuler_fetchs", d)
 }
 
-do_unpack_append() {
+do_unpack:append() {
     bb.build.exec_func('do_copy_dsoftbus_source', d)
 }
 

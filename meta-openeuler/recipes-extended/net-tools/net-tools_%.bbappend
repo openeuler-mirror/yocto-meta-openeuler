@@ -4,8 +4,8 @@ PV = "2.10"
 
 S = "${WORKDIR}/${BPN}-${PV}"
 
-SRC_URI_remove = "git://git.code.sf.net/p/net-tools/code;protocol=https;branch=master \"
-SRC_URI_prepend = "file://${BPN}-${PV}.tar.xz \
+SRC_URI:remove = "git://git.code.sf.net/p/net-tools/code;protocol=https;branch=master \"
+SRC_URI:prepend = "file://${BPN}-${PV}.tar.xz \
         file://backport-net-tools-cycle.patch \
         file://backport-net-tools-man.patch \
         "

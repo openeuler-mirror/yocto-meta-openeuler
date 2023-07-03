@@ -6,7 +6,7 @@ PROVIDES += "virtual/${TARGET_PREFIX}binutils"
 
 EXTERNAL_CROSS_BINARIES = "${binutils_binaries}"
 
-do_install_append () {
+do_install:append () {
     if [ ! -e ${D}${bindir}/${TARGET_PREFIX}ld.bfd ]; then
         ln -s ${TARGET_PREFIX}ld ${D}${bindir}/${TARGET_PREFIX}ld.bfd
     fi

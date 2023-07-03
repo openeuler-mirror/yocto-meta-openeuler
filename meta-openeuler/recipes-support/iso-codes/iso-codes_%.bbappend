@@ -1,8 +1,9 @@
+# the main bb file: yocto-poky/meta/recipes-support/iso-codes/iso-codes_4.13.0.bb
 OPENEULER_SRC_URI_REMOVE = "https git http"
 
 PV = "4.7.0"
 
-SRC_URI_prepend = "file://${BPN}-${BP}.tar.gz \
+SRC_URI = "file://${BPN}-${BP}.tar.gz \
 "
 
 S = "${WORKDIR}/${BPN}-${BP}"

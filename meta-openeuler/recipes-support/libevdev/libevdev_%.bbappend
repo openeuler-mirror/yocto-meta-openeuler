@@ -1,3 +1,5 @@
+# main bb file: yocto-poky/meta/recipes-support/libevdev/libevdev_1.12.1.bb
+
 PV  = "1.13.0"
 
 SRC_URI = "file://libevdev-${PV}.tar.xz"

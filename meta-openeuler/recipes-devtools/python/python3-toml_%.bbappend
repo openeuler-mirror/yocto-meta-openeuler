@@ -3,7 +3,7 @@ SRC_URI[md5sum] = "165f8d31000174760118dc9893ed9bb9"
 SRC_URI[sha256sum] = "71d4039bbdec91e3e7591ec5d6c943c58f9a2d17e5f6783acdc378f743fcdd2a"
 
 # use openeuler's pkg src
-SRC_URI_remove += "${PYPI_SRC_URI} "
+SRC_URI:remove = "${PYPI_SRC_URI} "
 OPENEULER_REPO_NAME = "python-${PYPI_PACKAGE}"
 OPENEULER_BRANCH = "master"
-SRC_URI_prepend += "file://${PV}.tar.gz "
+SRC_URI:prepend = "file://${PV}.tar.gz "

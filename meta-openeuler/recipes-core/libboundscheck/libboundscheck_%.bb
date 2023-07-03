@@ -7,9 +7,9 @@ PV = "v1.1.11"
 
 SRC_URI="file://${BP}.tar.gz"
 
-INSANE_SKIP_${PN} += "already-stripped"
-FILES_${PN}-dev = "${includedir}"
-FILES_${PN} = "${libdir}"
+INSANE_SKIP:${PN} += "already-stripped"
+FILES:${PN}-dev = "${includedir}"
+FILES:${PN} = "${libdir}"
 
 do_install () {
     install -d ${D}${libdir}/

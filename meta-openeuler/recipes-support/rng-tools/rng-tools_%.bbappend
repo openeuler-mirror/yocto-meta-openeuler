@@ -6,10 +6,10 @@ OPENEULER_SRC_URI_REMOVE = "https git http"
 PV = "6.16"
 
 # remove git protocol
-SRC_URI_remove = "\
+SRC_URI:remove = "\
 "
 
-SRC_URI_prepend = "\
+SRC_URI:prepend = "\
     file://v${PV}.tar.gz \
 "
 

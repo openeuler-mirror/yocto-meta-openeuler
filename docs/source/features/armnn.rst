@@ -35,11 +35,11 @@ ArmNN软件兼容 yocto-meta-openeuler 上做了很多准备工作，如 tensorf
 
 **步骤1**
 
-  修改meta-openeuler/recipes-core/packagegroups/packagegroup-base.bb 文件，在 RDEPENDS_packagegroup-base 中加入 armnn 包：
+  修改meta-openeuler/recipes-core/packagegroups/packagegroup-base.bb 文件，在 RDEPENDS:packagegroup-base 中加入 armnn 包：
 
   .. code-block:: console
 
-      RDEPENDS_packagegroup-base = " \
+      RDEPENDS:packagegroup-base = " \
       acl \
       armnn \
       attr \

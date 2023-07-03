@@ -1,16 +1,16 @@
-# main bb file: yocto-poky/meta/recipes-core/readline/readline_8.1.bb
+# main bb file: yocto-poky/meta/recipes-core/readline/readline_8.1.2.bb
 #
 OPENEULER_SRC_URI_REMOVE = "https git http"
 
 PV = "8.2"
 
 # the patch is out of date, use openeuler patch
-SRC_URI_remove = " \
+SRC_URI:remove = " \
         file://configure-fix.patch \
         file://norpath.patch \
         "
 
-SRC_URI_prepend = " \
+SRC_URI:prepend = " \
         file://readline-${PV}.tar.gz \
         file://readline-8.0-shlib.patch \
 "

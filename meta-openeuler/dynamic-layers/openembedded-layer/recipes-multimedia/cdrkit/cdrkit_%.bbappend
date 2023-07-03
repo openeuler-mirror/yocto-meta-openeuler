@@ -2,7 +2,7 @@
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 # patches apply fail: 0001-genisoimage-Add-missing-extern-definition.patch
-SRC_URI_remove = " \
+SRC_URI:remove = " \
         ${DEBIAN_MIRROR}/main/c/${BPN}/${BPN}_${PV}.orig.tar.gz \
         file://0001-genisoimage-Add-missing-extern-definition.patch \
 "
@@ -10,7 +10,7 @@ SRC_URI_remove = " \
 # files, patches that come from openeuler
 # CDDA cdparanoia is an audio CDs tool, thus don't apply cdrkit-1.1.11-paranoiacdda.patch
 # cdrkit-1.1.11-cmakewarn.patch requires that the minimum version of cmake is 2.8, current is 3.19.5
-SRC_URI_prepend = "file://${BP}.tar.gz \
+SRC_URI:prepend = "file://${BP}.tar.gz \
            file://cdrkit-1.1.8-werror.patch \
            file://cdrkit-1.1.9-efi-boot.patch \
            file://cdrkit-1.1.9-no_mp3.patch \
@@ -37,7 +37,7 @@ SRC_URI[md5sum] = "efe08e2f3ca478486037b053acd512e9"
 SRC_URI[sha256sum] = "d1c030756ecc182defee9fe885638c1785d35a2c2a297b4604c0e0dcc78e47da"
 
 # fix problem "do_populate_sysroot: sstate found an absolute path symlink"
-do_install_append() {
+do_install:append() {
     rm -f ${D}${bindir}/mkisofs
     ln -sf --relative ${D}${bindir}/genisoimage ${D}${bindir}/mkisofs
 }

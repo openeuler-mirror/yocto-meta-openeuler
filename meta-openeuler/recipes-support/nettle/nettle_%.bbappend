@@ -4,7 +4,7 @@
 PV = "3.8.1"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI_remove = " \
+SRC_URI:remove = " \
         ${GNU_MIRROR}/${BPN}/${BP}.tar.gz \
 "
 

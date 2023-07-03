@@ -1,11 +1,11 @@
 PACKAGES = "${PN}"
 
 # add patch to support musl
-FILESEXTRAPATHS_prepend := "${THISDIR}/bsd-headers/:"
-SRC_URI_append = " \
+FILESEXTRAPATHS:prepend := "${THISDIR}/bsd-headers/:"
+SRC_URI:append = " \
            file://sys-cdefs-musl.patch \
 "
 
-FILES_${PN} = " \
+FILES:${PN} = " \
     /usr/* \
 "

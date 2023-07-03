@@ -11,8 +11,8 @@ kernel-module-unix \
 "
 KERNEL_MODULE_AUTOLOAD = "${INSTALLMODULES}"
 
-TUNE_FEATURES_append += " cortexa9"
-TUNE_FEATURES_remove += " vfp"
+TUNE_FEATURES:append = " cortexa9"
+TUNE_FEATURES:remove = " vfp"
 
 TUNE_CCARGS .= " -mno-unaligned-access"
 

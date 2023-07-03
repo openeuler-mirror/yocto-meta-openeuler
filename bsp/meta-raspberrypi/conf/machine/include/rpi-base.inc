@@ -22,6 +22,8 @@ RPI_KERNEL_DEVICETREE_OVERLAYS ?= " \
     overlays/gpio-ir.dtbo \
     overlays/gpio-ir-tx.dtbo \
     overlays/gpio-key.dtbo \
+    overlays/gpio-poweroff.dtbo \
+    overlays/gpio-shutdown.dtbo \
     overlays/hifiberry-amp.dtbo \
     overlays/hifiberry-dac.dtbo \
     overlays/hifiberry-dacplus.dtbo \
@@ -29,6 +31,7 @@ RPI_KERNEL_DEVICETREE_OVERLAYS ?= " \
     overlays/justboom-both.dtbo \
     overlays/justboom-dac.dtbo \
     overlays/justboom-digi.dtbo \
+    overlays/i2c-gpio.dtbo \
     overlays/i2c-rtc.dtbo \
     overlays/imx219.dtbo \
     overlays/imx477.dtbo \
@@ -36,6 +39,7 @@ RPI_KERNEL_DEVICETREE_OVERLAYS ?= " \
     overlays/iqaudio-dacplus.dtbo \
     overlays/mcp2515-can0.dtbo \
     overlays/mcp2515-can1.dtbo \
+    overlays/mcp3008.dtbo \
     overlays/miniuart-bt.dtbo \
     overlays/pitft22.dtbo \
     overlays/pitft28-capacitive.dtbo \
@@ -45,11 +49,13 @@ RPI_KERNEL_DEVICETREE_OVERLAYS ?= " \
     overlays/rpi-ft5406.dtbo \
     overlays/rpi-poe.dtbo \
     overlays/vc4-fkms-v3d.dtbo \
+    overlays/vc4-fkms-v3d-pi4.dtbo \
     overlays/vc4-kms-v3d.dtbo \
     overlays/vc4-kms-v3d-pi4.dtbo \
     overlays/vc4-kms-dsi-7inch.dtbo \
     overlays/w1-gpio.dtbo \
     overlays/w1-gpio-pullup.dtbo \
+    overlays/wm8960-soundcard.dtbo \
     "
 
 RPI_KERNEL_DEVICETREE ?= " \
@@ -95,6 +101,7 @@ MACHINE_FEATURES_BACKFILL_CONSIDERED = "rtc"
 MACHINE_EXTRA_RRECOMMENDS += "kernel-modules udev-rules-rpi"
 MACHINE_ESSENTIAL_EXTRA_RRECOMMENDS += "${@oe.utils.conditional('ENABLE_I2C', '1', 'kernel-module-i2c-dev kernel-module-i2c-bcm2708', '', d)}"
 MACHINE_ESSENTIAL_EXTRA_RRECOMMENDS += "${@oe.utils.conditional('ENABLE_IR', '1', 'kernel-module-gpio-ir kernel-module-gpio-ir-tx', '', d)}"
+MACHINE_ESSENTIAL_EXTRA_RRECOMMENDS += "${@oe.utils.conditional('ENABLE_GPIO_SHUTDOWN', '1', 'gpio-shutdown kernel-module-gpio-keys', '', d)}"
 
 SERIAL_CONSOLES_CHECK ??= "${SERIAL_CONSOLES}"
 
@@ -109,7 +116,6 @@ def make_dtb_boot_files(d):
     # Generate IMAGE_BOOT_FILES entries for device tree files listed in
     # KERNEL_DEVICETREE.
     alldtbs = d.getVar('KERNEL_DEVICETREE')
-    imgtyp = d.getVar('KERNEL_IMAGETYPE')
 
     def transform(dtb):
         base = os.path.basename(dtb)
@@ -143,4 +149,4 @@ do_image_wic[recrdeps] = "do_build"
 
 # The kernel image is installed into the FAT32 boot partition and does not need
 # to also be installed into the rootfs.
-RDEPENDS_${KERNEL_PACKAGE_NAME}-base = ""
+RDEPENDS:${KERNEL_PACKAGE_NAME}-base = ""

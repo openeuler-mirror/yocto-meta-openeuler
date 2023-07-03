@@ -4,7 +4,7 @@
 # to avoid network download.
 PV = "debian-1.64"
 
-FILESEXTRAPATHS_append := "${THISDIR}/files/:"
+FILESEXTRAPATHS:append := "${THISDIR}/files/:"
 
 LIC_FILES_CHKSUM = "file://debian/copyright;md5=c4ec20aa158fa9de26ee1accf78dcaae"
 

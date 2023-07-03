@@ -3,13 +3,13 @@
 PV = "1.6.1"
 
 # Use the source packages from openEuler, remove patch conflict with openeuler
-SRC_URI_remove = " \
+SRC_URI:remove = " \
         git://git.kernel.org/pub/scm/utils/dtc/dtc.git;branch=master \
         file://0001-fdtdump-Fix-gcc11-warning.patch \
         "
 
 # openEuler-add-secure-compile-option-in-Makefile.patch can't apply
-SRC_URI_append = " \
+SRC_URI:append = " \
                 file://${BP}.tar.xz \
         "
 

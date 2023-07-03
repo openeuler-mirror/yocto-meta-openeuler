@@ -1,6 +1,6 @@
 inherit ros_distro_humble
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI += " \
         file://pcl-1.12.0-metslib.patch \

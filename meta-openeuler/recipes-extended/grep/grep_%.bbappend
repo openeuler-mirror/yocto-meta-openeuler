@@ -3,11 +3,14 @@ OPENEULER_SRC_URI_REMOVE = "https git http"
 PV = "3.8"
 
 # sync openeuler's grep to use pcre2
-PACKAGECONFIG_append += "pcre2"
-PACKAGECONFIG_remove += "pcre"
+PACKAGECONFIG:append = " pcre2"
+PACKAGECONFIG:remove = "pcre"
 PACKAGECONFIG[pcre2] = "--enable-perl-regexp,--disable-perl-regexp,libpcre2"
 
-SRC_URI += " \
+# remove outdated patch
+SRC_URI:remove = "file://0001-mcontext-is-not-a-standard-layout-so-glibc-and-musl-.patch"
+
+SRC_URI:prepend = " \
     file://grep-${PV}.tar.xz \
     file://backport-grep-bug-backref-in-last-of-multiple-patter.patch \
 "

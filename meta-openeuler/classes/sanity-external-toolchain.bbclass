@@ -47,7 +47,7 @@ def check_toolchain_sanity(d, generate_events=False):
         l = d.createCopy()
         l.setVar('TOOLCHAIN_OPTIONS', '')
         l.setVar('TARGET_PREFIX', '${EXTERNAL_TARGET_SYS}-')
-        l.setVar('HOST_CC_ARCH_remove', '--no-sysroot-suffix')
+        l.setVar('HOST_CC_ARCH:remove', '--no-sysroot-suffix')
         cmd = l.expand('${EXTERNAL_TOOLCHAIN_BIN}/${EXTERNAL_CC} ${HOST_CC_ARCH} ${CFLAGS} ${LDFLAGS} test.c -o test')
         exttc_sanity_run(shlex.split(cmd), d, generate_events, tmpdir)
 

@@ -120,12 +120,12 @@ def search_bb_file(repo_name):
     return bb_dir
 
 
-def generate_bbappend_path(bb_dir):
+def generate_bbappend:path(bb_dir):
     (bbfile_path, name) = os.path.split(bb_dir)
     (bbfilefolder_path, bbfilefolder_name) = os.path.split(bbfile_path)
     (recipes_xxx_path, recipes_xxx_name) = os.path.split(bbfilefolder_path)
-    bbappend_path = yocto_meta_openeuler_meta_openeuler_path+'/'+recipes_xxx_name+'/'+bbfilefolder_name
-    return bbappend_path
+    bbappend:path = yocto_meta_openeuler_meta_openeuler_path+'/'+recipes_xxx_name+'/'+bbfilefolder_name
+    return bbappend:path
 
 
 def notes_bb_dir(bb_dir):
@@ -349,7 +349,7 @@ class BuildData:
         spec_dir = search_specfile(args.spec)
         package_dir = search_package(spec_dir)
         bb_dir = search_bb_file(read_name(spec_dir))
-        bbappend_path = generate_bbappend_path(bb_dir)
+        bbappend:path = generate_bbappend:path(bb_dir)
         pn = vars_from_file(bb_dir,bb_dir)[0]
         global pv
         pv = read_oldPV(vars_from_file(bb_dir,bb_dir)[1],bb_dir)
@@ -383,8 +383,8 @@ class BuildData:
             ))
  
         # Write code to file
-        if not os.path.exists(bbappend_path):os.makedirs(bbappend_path)
-        filePath = bbappend_path+'/'+bpn+'_%.bbappend'
+        if not os.path.exists(bbappend:path):os.makedirs(bbappend:path)
+        filePath = bbappend:path+'/'+bpn+'_%.bbappend'
         filePath = inspect_existing_files(filePath)
         class_file = open(secure_filename(filePath), 'w')
         class_file.writelines(mycode)

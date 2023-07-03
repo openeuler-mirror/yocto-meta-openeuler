@@ -1,3 +1,5 @@
+# the main bb file: yocto-poky/meta/recipes-multimedia/libogg/libogg_1.3.5.bb
+
 PV = "1.3.5"
 
 SRC_URI[md5sum] = "3178c98341559657a15b185bf5d700a5"

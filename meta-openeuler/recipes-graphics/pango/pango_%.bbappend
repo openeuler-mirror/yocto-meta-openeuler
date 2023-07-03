@@ -1,3 +1,8 @@
-PV = "1.50.7"
+# the main bb file: yocto-poky/meta/recipes-graphics/pango/pango_1.50.4.bb
 
-SRC_URI[archive.sha256sum] = "0477f369a3d4c695df7299a6989dc004756a7f4de27eecac405c6790b7e3ad33"
+PV = "1.50.12"
+
+SRC_URI:prepend = "file://${BP}.tar.xz;name=archive \
+"
+
+SRC_URI[archive.sha256sum] = "caef96d27bbe792a6be92727c73468d832b13da57c8071ef79b9df69ee058fe3"

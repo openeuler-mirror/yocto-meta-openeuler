@@ -1,7 +1,7 @@
 # use src-openEuler package
 
 # adapt 0005-do-not-build-manual.patch for 2.03.14 version
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 OPENEULER_REPO_NAME = "lvm2"
 
@@ -12,11 +12,11 @@ PV = "2.03.18"
 OPENEULER_SRC_URI_REMOVE = "git"
 
 # remove open_embedded patch that not use
-SRC_URI_remove = "file://0002-Guard-use-of-mallinfo-with-__GLIBC__.patch \
+SRC_URI:remove = "file://0002-Guard-use-of-mallinfo-with-__GLIBC__.patch \
             file://0006-start-lvm2-monitor.service-after-tmp.mount.patch \
 "
 
-SRC_URI_prepend = "file://LVM2.${PV}.tgz \
+SRC_URI:prepend = "file://LVM2.${PV}.tgz \
             file://0001-lvm2-set-default-preferred_names.patch \
             file://0002-lvm2-default-allow-changes-with-duplicate-pvs.patch \
             file://0003-bugfix-lvm2-add-SSD.patch \

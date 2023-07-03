@@ -2,22 +2,18 @@
 
 Yocto BSP layer for the Raspberry Pi boards - <http://www.raspberrypi.org/>.
 
-[![Build Status](https://yocto-ci.resin.io/job/meta-raspberrypi1/badge/icon)](https://yocto-ci.resin.io/job/meta-raspberrypi1)
-[![Build Status](https://yocto-ci.resin.io/job/meta-raspberrypi2/badge/icon)](https://yocto-ci.resin.io/job/meta-raspberrypi2)
-[![Build Status](https://yocto-ci.resin.io/job/meta-raspberrypi3/badge/icon)](https://yocto-ci.resin.io/job/meta-raspberrypi3)
-[![Build Status](https://yocto-ci.resin.io/job/meta-raspberrypi4/badge/icon)](https://yocto-ci.resin.io/job/meta-raspberrypi4)
 [![Documentation Status](https://readthedocs.org/projects/meta-raspberrypi/badge/?version=latest)](https://meta-raspberrypi.readthedocs.io/en/latest/?badge=latest)
-[![Matrix](https://img.shields.io/matrix/meta-raspberrypi:cub.icu.svg?server_fqdn=matrix.cub.icu)](https://matrix.to/#/#meta-raspberrypi:cub.icu)
+[![Matrix](https://img.shields.io/badge/chat-meta--raspberrypi-brightgreen)](https://matrix.to/#/#meta-raspberrypi:matrix.org)
 
-|                           |                                                           |
-|:-:                        | :-:                                                       |
-| Build server sponsored by | [![balena.io](./img/balena.png)](https://www.balena.io/). |
+|                           |                                        |
+|:-:                        | :-:                                    |
+| Build server sponsored by | [balena.io](https://www.balena.io/) |
 
 ## Quick links
 
 * Git repository web frontend:
   <https://github.com/agherzan/meta-raspberrypi>
-* Mailing list (yocto mailing list): <yocto@yoctoproject.org>
+* Mailing list (yocto mailing list): <yocto@lists.yoctoproject.org>
 * Issues management (Github Issues):
   <https://github.com/agherzan/meta-raspberrypi/issues>
 * Documentation: <http://meta-raspberrypi.readthedocs.io/en/latest/>
@@ -40,11 +36,6 @@ OpenEmbedded/Yocto distributions and layer stacks, such as:
 This layer depends on:
 
 * URI: git://git.yoctoproject.org/poky
-  * branch: master
-  * revision: HEAD
-
-* URI: git://git.openembedded.org/meta-openembedded
-  * layers: meta-oe, meta-multimedia, meta-networking, meta-python
   * branch: master
   * revision: HEAD
 
@@ -77,8 +68,15 @@ local_conf_header:
 To configure the machine, you have to update the `machine` variable.
 And the same for the `distro`.
 
-For further information, you can read more at <https://kas.readthedocs.io/en/1.0/index.html>
+For further information, you can read more at <https://kas.readthedocs.io/en/latest/index.html>
+
+## Contributing
+
+You can send patches using the GitHub pull request process or/and through the
+Yocto mailing list. Refer to the
+[documentation](https://meta-raspberrypi.readthedocs.io/en/latest/contributing.html)
+for more information.
 
 ## Maintainers
 
-* Andrei Gherzan `<andrei at gherzan.ro>`
+* Andrei Gherzan `<andrei at gherzan.com>`

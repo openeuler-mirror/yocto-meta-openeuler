@@ -9,4 +9,4 @@ do_install () {
     install -m 0644 -o root -g root "${WORKDIR}/external.sh" "${D}/environment-setup.d/"
 }
 
-FILES_${PN} += "/environment-setup.d/*"
+FILES:${PN} += "/environment-setup.d/*"

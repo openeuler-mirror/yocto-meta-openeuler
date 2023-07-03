@@ -6,7 +6,7 @@ OPENEULER_SRC_URI_REMOVE = "https git http"
 PV = "2.10"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI_remove = " \
+SRC_URI:remove = " \
             "
 
 SRC_URI += " \

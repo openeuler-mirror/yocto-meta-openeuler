@@ -5,13 +5,13 @@ PV = "4.0.2"
 
 S = "${WORKDIR}/procps-ng-${PV}"
 
-FILESEXTRAPATHS_append := "${THISDIR}/procps/:"
+FILESEXTRAPATHS:append := "${THISDIR}/procps/:"
 
 OPENEULER_REPO_NAME = "procps-ng"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 # files, patches that come from openeuler
-SRC_URI_append = " \
+SRC_URI:append = " \
         file://procps-musl.patch \
 "
 

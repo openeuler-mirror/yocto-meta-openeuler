@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;beginline=4;md5=613211e713c4ffc489ec370e1cace
 
 # apply patches in openEuler
 # backport-0025-bind-Detect-system-time-changes.patch, backport-Fix-CVE-2021-25220.patch for bind
-SRC_URI_prepend = "file://backport-0001-change-bug-url.patch \
+SRC_URI:prepend = "file://backport-0001-change-bug-url.patch \
            file://backport-0002-additional-dhclient-options.patch \
            file://backport-0003-Handle-releasing-interfaces-requested-by-sbin-ifup.patch \
            file://backport-0004-Support-unicast-BOOTP-for-IBM-pSeries-systems-and-ma.patch \
@@ -58,11 +58,11 @@ SRC_URI[sha256sum] = "0e3ec6b4c2a05ec0148874bcd999a66d05518378d77421f607fb0bc9d0
 # because backport-0007-Change-paths-to-conform-to-our-standards.patch
 # changed the path /sbin/dhclient-script to /usr/sbin/dhclient-script for dhclient finding dhclient-script
 # so re-install the dhclient-script to fix it.
-do_install_append() {
+do_install:append() {
         rm -f ${D}${base_sbindir}/dhclient-script
         install -m 0755 ${S}/client/scripts/linux ${D}${sbindir}/dhclient-script
 }
 
-FILES_${PN}-client += "${sbindir}/dhclient-script "
+FILES:${PN}-client += "${sbindir}/dhclient-script "
 
-FILES_${PN}-client_remove = "${base_sbindir}/dhclient-script"
+FILES:${PN}-client:remove = "${base_sbindir}/dhclient-script"

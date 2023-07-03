@@ -7,7 +7,7 @@ LIC_FILES_CHKSUM = "file://LICENCE;md5=41bfb977e4933c506588724ce69bf5d2"
 OPENEULER_REPO_NAME = "pcre2"
 
 # use openeuler source
-SRC_URI_prepend = "file://backport-pcre2-10.10-Fix-multilib.patch \
+SRC_URI:prepend = "file://backport-pcre2-10.10-Fix-multilib.patch \
            file://backport-doc-avoid-nonexistent-PCRE2_ERROR_MEMORY-error-107.patch \
            file://backport-Update-HTML-docs.patch \
            file://backport-Fixed-race-condition-that-occurs-when-initializing-t.patch \

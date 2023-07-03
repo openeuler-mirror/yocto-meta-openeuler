@@ -30,6 +30,12 @@ GPIO_IR_TX ?= "17"
 
 CAN_OSCILLATOR ?= "16000000"
 
+ENABLE_UART ??= ""
+
+WM8960="${@bb.utils.contains("MACHINE_FEATURES", "wm8960", "1", "0", d)}"
+
+GPIO_SHUTDOWN_PIN ??= ""
+
 inherit deploy nopackages
 
 do_deploy() {
@@ -103,6 +109,9 @@ do_deploy() {
     if [ -n "${HDMI_MODE}" ]; then
         sed -i '/#hdmi_mode=/ c\hdmi_mode=${HDMI_MODE}' $CONFIG
     fi
+    if [ -n "${HDMI_CVT}" ]; then
+        echo 'hdmi_cvt=${HDMI_CVT}' >> $CONFIG
+    fi
     if [ -n "${CONFIG_HDMI_BOOST}" ]; then
         sed -i '/#config_hdmi_boost=/ c\config_hdmi_boost=${CONFIG_HDMI_BOOST}' $CONFIG
     fi
@@ -169,9 +178,11 @@ do_deploy() {
     fi
 
     # UART support
-    if [ "${ENABLE_UART}" = "1" ]; then
+    if [ "${ENABLE_UART}" = "1" ] || [ "${ENABLE_UART}" = "0" ] ; then
         echo "# Enable UART" >>$CONFIG
-        echo "enable_uart=1" >>$CONFIG
+        echo "enable_uart=${ENABLE_UART}" >>$CONFIG
+    elif [ -n "${ENABLE_UART}" ]; then
+        bbfatal "Invalid value for ENABLE_UART [${ENABLE_UART}]. The value for ENABLE_UART can be 0 or 1."
     fi
 
     # Infrared support
@@ -210,7 +221,7 @@ do_deploy() {
     fi
 
     # DWC2 USB peripheral support
-    if [ "${ENABLE_DWC2_PERIPHERAL}" = "1" ]; then
+    if ([ "${ENABLE_DWC2_PERIPHERAL}" = "1" ] && [ "${ENABLE_DWC2_OTG}" != "1" ]); then
         echo "# Enable USB peripheral mode" >> $CONFIG
         echo "dtoverlay=dwc2,dr_mode=peripheral" >> $CONFIG
     fi
@@ -219,6 +230,12 @@ do_deploy() {
     if [ "${ENABLE_DWC2_HOST}" = "1" ]; then
         echo "# Enable USB host mode" >> $CONFIG
         echo "dtoverlay=dwc2,dr_mode=host" >> $CONFIG
+    fi
+    
+    # DWC2 USB OTG support
+    if ([ "${ENABLE_DWC2_OTG}" = "1" ] && [ "${ENABLE_DWC2_PERIPHERAL}" != "1" ]); then
+        echo "# Enable USB OTG mode" >> $CONFIG
+        echo "dtoverlay=dwc2,dr_mode=otg" >> $CONFIG
     fi
 
     # AT86RF23X support
@@ -238,6 +255,22 @@ do_deploy() {
         echo "dtoverlay=mcp2515-can0,oscillator=${CAN_OSCILLATOR},interrupt=25" >>$CONFIG
     fi
 
+
+    if [ "${ENABLE_GPIO_SHUTDOWN}" = "1" ]; then
+        if ([ "${ENABLE_I2C}" = "1" ] || [ "${PITFT}" = "1" ]) && [ -z "${GPIO_SHUTDOWN_PIN}" ]; then
+            # By default GPIO shutdown uses the same pin as the (master) I2C SCL.
+            # If I2C is configured and an alternative pin is not configured for
+            # gpio-shutdown, there is a configuration conflict.
+            bbfatal "I2C and gpio-shutdown are both enabled and using the same pins!"
+        fi
+        echo "# Enable gpio-shutdown" >> $CONFIG
+        if [ -z "${GPIO_SHUTDOWN_PIN}" ]; then
+            echo "dtoverlay=gpio-shutdown" >> $CONFIG
+        else
+            echo "dtoverlay=gpio-shutdown,gpio_pin=${GPIO_SHUTDOWN_PIN}" >> $CONFIG
+        fi
+    fi
+
     # Append extra config if the user has provided any
     printf "${RPI_EXTRA_CONFIG}\n" >> $CONFIG
 
@@ -251,14 +284,26 @@ do_deploy() {
                 ;;
         esac
     fi
+
+    # WM8960 support
+    if [ "${WM8960}" = "1" ]; then
+        echo "# Enable WM8960" >> $CONFIG
+        echo "dtoverlay=wm8960-soundcard" >> $CONFIG
+    fi
 }
 
-do_deploy_append_raspberrypi3-64() {
+do_deploy:append:raspberrypi3-64() {
     echo "# have a properly sized image" >> $CONFIG
     echo "disable_overscan=1" >> $CONFIG
 
     echo "# Enable audio (loads snd_bcm2835)" >> $CONFIG
     echo "dtparam=audio=on" >> $CONFIG
+}
+
+do_deploy:append() {
+    if grep -q -E '^.{80}.$' ${DEPLOYDIR}/${BOOTFILES_DIR_NAME}/config.txt; then
+        bbwarn "config.txt contains lines longer than 80 characters, this is not supported"
+    fi
 }
 
 addtask deploy before do_build after do_install

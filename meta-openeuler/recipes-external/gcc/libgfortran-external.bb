@@ -12,8 +12,8 @@ LICENSE = "GPL-3.0-with-GCC-exception"
 BINV = "${GCC_VERSION}"
 LIBROOT_RELATIVE = "${@os.path.relpath('${EXTERNAL_TOOLCHAIN_LIBROOT}', '${EXTERNAL_TOOLCHAIN}')}"
 
-FILES_${PN} = "${base_libdir}/libgfortran.so.*"
-FILES_${PN}-dev = "\
+FILES:${PN} = "${base_libdir}/libgfortran.so.*"
+FILES:${PN}-dev = "\
     ${base_libdir}/libgfortran*.so \
     ${base_libdir}/libgfortran.spec \
     ${base_libdir}/libgfortran.la \
@@ -22,5 +22,5 @@ FILES_${PN}-dev = "\
     ${LIBROOT_RELATIVE}/finclude/ \
     ${LIBROOT_RELATIVE}/include/ \
 "
-INSANE_SKIP_${PN}-dev += "staticdev"
-FILES_${PN}-staticdev = "${libdir}/libgfortran.a"
+INSANE_SKIP:${PN}-dev += "staticdev"
+FILES:${PN}-staticdev = "${libdir}/libgfortran.a"

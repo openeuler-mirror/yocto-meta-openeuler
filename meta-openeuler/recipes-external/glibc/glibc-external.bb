@@ -37,11 +37,12 @@ def get_external_libc_license(d):
    License as published by the Free Software Foundation; either
    version 2.1 of the License, or (at your option) any later version."""
                 if lictext in text:
-                    return 'LGPL-2.1+'
+                    return 'LGPL-2.1-or-later'
 
     return 'UNKNOWN'
 
-LICENSE_tcmode-external := "${@get_external_libc_license(d)}"
+LICENSE:tcmode-external := "${@get_external_libc_license(d)}"
+COMMON_LIC_CHKSUM_LGPL-2.1-or-later = "file://${COREBASE}/meta/files/common-licenses/LGPL-2.1-or-later;md5=2a4f4fd2128ea2f65047ee63fbca9f68"
 
 require recipes-external/glibc/glibc-sysroot-setup.inc
 require recipes-external/glibc/glibc-package-adjusted.inc
@@ -137,7 +138,7 @@ glibc_external_do_install_extra () {
     fi
 }
 
-bberror_task-install () {
+bberror:task-install () {
     # Silence any errors from oe_multilib_header, as we don't care about
     # missing multilib headers, as the oe-core glibc version isn't necessarily
     # the same as our own.
@@ -153,12 +154,12 @@ EXTERNAL_EXTRA_FILES += "\
 
 # These files are picked up out of the sysroot by glibc-locale, so we don't
 # need to keep them around ourselves.
-do_install_locale_append() {
+do_install_locale:append() {
 	rm -rf ${D}${localedir}
 }
 
 python () {
-    # Undo the do_install_append which joined shell to python
+    # Undo the do_install:append which joined shell to python
     install = d.getVar('do_install', False)
     python, shell = install.split('# sentinel', 1)
     d.setVar('do_install_glibc', shell)
@@ -174,7 +175,7 @@ python () {
 }
 
 # Default pattern is too greedy
-FILES_${PN}-utils = "\
+FILES:${PN}-utils = "\
     ${bindir}/gencat \
     ${bindir}/getconf \
     ${bindir}/getent \
@@ -187,10 +188,10 @@ FILES_${PN}-utils = "\
     ${bindir}/pldd \
     ${bindir}/sprof \
 "
-FILES_${PN}-doc += "${infodir}/libc.info*"
+FILES:${PN}-doc += "${infodir}/libc.info*"
 
 # Extract for use by do_install_locale
-FILES_${PN} += "\
+FILES:${PN} += "\
     ${bindir}/localedef \
     ${libdir}/gconv \
     ${libdir}/locale \
@@ -199,25 +200,25 @@ FILES_${PN} += "\
 "
 
 #For riscv64
-FILES_${PN} += "\
+FILES:${PN} += "\
     ${libdir}/lp64d \
     ${base_libdir}/lp64d \
 "
 
 
-FILES_${PN}-dev_remove := "${datadir}/aclocal"
+FILES:${PN}-dev:remove := "${datadir}/aclocal"
 
 # use base_libdir to replace /lib
-FILES_${PN}-dev_remove = "${base_libdir}/*.o"
-FILES_${PN}-dev += "${libdir}/*crt*.o"
+FILES:${PN}-dev:remove = "${base_libdir}/*.o"
+FILES:${PN}-dev += "${libdir}/*crt*.o"
 # currently no dbg fils for glibc-external
-FILES_${PN}-dbg = ""
+FILES:${PN}-dbg = ""
 # no strip .o files used for startup, as user space app may need symbol information
 # here INHIBIT_PACKAGE_STRIP is no need to set to 1, 
 # because poky package.bbclass will not strip the file with no executable permission except .so or .node
 
 linux_include_subdirs = "asm asm-generic bits drm linux mtd rdma sound sys video"
-FILES_${PN}-dev += "${@' '.join('${includedir}/%s' % d for d in '${linux_include_subdirs}'.split())}"
+FILES:${PN}-dev += "${@' '.join('${includedir}/%s' % d for d in '${linux_include_subdirs}'.split())}"
 
 # Already multilib headers for oe sdks
 libc_baselibs_dev += "\
@@ -225,27 +226,27 @@ libc_baselibs_dev += "\
     ${includedir}/ieee754-*.h \
 "
 libc_baselibs_dev += "${@' '.join('${libdir}/' + os.path.basename(l.replace('${SOLIBS}', '${SOLIBSDEV}')) for l in '${libc_baselibs}'.replace('${base_libdir}/ld*${SOLIBS}', '').split() if l.endswith('${SOLIBS}'))}"
-FILES_${PN}-staticdev = "\
+FILES:${PN}-staticdev = "\
     ${@'${libc_baselibs_dev}'.replace('${SOLIBSDEV}', '.a')} \
     ${libdir}/libg.a \
     ${libdir}/libieee.a \
     ${libdir}/libmcheck.a \
 "
 
-FILES_${PN}-dev += "\
+FILES:${PN}-dev += "\
     ${libc_baselibs_dev} \
     ${libdir}/libcidn${SOLIBSDEV} \
     ${libdir}/libthread_db${SOLIBSDEV} \
     ${libdir}/libpthread${SOLIBSDEV} \
 "
 libc_headers_file = "${@bb.utils.which('${FILESPATH}', 'libc.headers')}"
-FILES_${PN}-dev += "\
+FILES:${PN}-dev += "\
     ${@' '.join('${includedir}/' + f.rstrip() for f in oe.utils.read_file('${libc_headers_file}').splitlines())} \
     ${includedir}/fpu_control.h \
     ${includedir}/stdc-predef.h \
     ${includedir}/uchar.h \
 "
-FILES_${PN}-dev[file-checksums] += "${libc_headers_file}:True"
+FILES:${PN}-dev[file-checksums] += "${libc_headers_file}:True"
 
 # glibc's utils need libgcc
 do_package[depends] += "${MLPREFIX}libgcc:do_packagedata"
@@ -258,7 +259,7 @@ do_packagedata[depends] += "gcc-runtime:do_packagedata"
 
 # We don't need linux-libc-headers
 LINUX_LIBC_RDEP_REMOVE ?= "linux-libc-headers-dev"
-RDEPENDS_${PN}-dev_remove = "${LINUX_LIBC_RDEP_REMOVE}"
+RDEPENDS:${PN}-dev:remove = "${LINUX_LIBC_RDEP_REMOVE}"
 
-FILES_${PN}-dev_remove = "${base_libdir}/*_nonshared.a ${libdir}/*_nonshared.a"
-FILES_${PN}-dev += "${libdir}/libc_nonshared.a ${libdir}/libpthread_nonshared.a ${libdir}/libmvec_nonshared.a"
+FILES:${PN}-dev:remove = "${base_libdir}/*_nonshared.a ${libdir}/*_nonshared.a"
+FILES:${PN}-dev += "${libdir}/libc_nonshared.a ${libdir}/libpthread_nonshared.a ${libdir}/libmvec_nonshared.a"

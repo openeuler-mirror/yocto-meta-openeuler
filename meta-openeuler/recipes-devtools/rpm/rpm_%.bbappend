@@ -1,10 +1,10 @@
 PV = "4.17.0"
 S = "${WORKDIR}/${BP}"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 # delete useless patches form rpm_4.16.1.3.bb
-SRC_URI_remove = " \
+SRC_URI:remove = " \
     git://github.com/rpm-software-management/rpm;branch=rpm-4.16.x;protocol=https \
             file://0001-Fix-build-with-musl-C-library.patch \
             file://0011-Do-not-require-that-ELF-binaries-are-executable-to-b.patch \
@@ -14,12 +14,12 @@ SRC_URI_remove = " \
            file://0003-CVE-2021-3521.patch \
 "
 
-SRC_URI_append = " \
+SRC_URI:append = " \
             file://0001-docs-do-not-build-manpages-requires-pandoc.patch \
 "
 
 # files, patches that come from openeuler
-SRC_URI_prepend = " \
+SRC_URI:prepend = " \
         http://ftp.rpm.org/releases/rpm-4.17.x/${BPN}-${PV}.tar.bz2 \
         file://Unbundle-config-site-and-add-RPM-LD-FLAGS-macro.patch \
         file://rpm-4.12.0-rpm2cpio-hack.patch \
@@ -96,17 +96,17 @@ SRC_URI_prepend = " \
 SRC_URI[sha256sum] = "2e0d220b24749b17810ed181ac1ed005a56bbb6bc8ac429c21f314068dc65e6a"
 
 ##openeuler rpm not support --without-lua
-EXTRA_OECONF_remove = " --without-lua"
+EXTRA_OECONF:remove = " --without-lua"
 DEPENDS += "lua"
-DEPENDS_remove = "db"
+DEPENDS:remove = "db"
 
-PACKAGECONFIG_append = "sqlite zstd ndb"
+PACKAGECONFIG:append = "sqlite zstd ndb"
 PACKAGECONFIG[sqlite] = "--enable-sqlite=yes,--enable-sqlite=no,sqlite3"
 PACKAGECONFIG[ndb] = "--enable-ndb,--disable-ndb"
 PACKAGECONFIG[bdb-ro] = "--enable-bdb-ro,--disable-bdb-ro"
 PACKAGECONFIG[zstd] = "--enable-zstd=yes,--enable-zstd=no,zstd"
 
-RRECOMMENDS_${PN}_remove = " rpm-build"
+RRECOMMENDS:${PN}:remove = " rpm-build"
 SSTATE_HASHEQUIV_FILEMAP = " \
     populate_sysroot:*/rpm/macros:${TMPDIR} \
     populate_sysroot:*/rpm/macros:${COREBASE} \
@@ -114,11 +114,11 @@ SSTATE_HASHEQUIV_FILEMAP = " \
 
 
 # remove the following actios for pythondistdeps.py after upgrade to new poky
-do_install_prepend() {
+do_install:prepend() {
     # no file in new rpm version, touch one before use
     mkdir -p ${D}${libdir}/rpm/
     touch ${D}${libdir}/rpm/pythondistdeps.py
 }
-do_install_append() {
+do_install:append() {
     rm -f ${D}${libdir}/rpm/pythondistdeps.py
 }

@@ -1,4 +1,4 @@
-include conf/machine/include/tune-cortexa55.inc
+require conf/machine/include/arm/armv8-2a/tune-cortexa55.inc
 MACHINE_FEATURES += "efi pci vc4graphics"
 MACHINEOVERRIDES =. "hi1711:march64le:"
 DEFAULTTUNE = "aarch64"
@@ -21,7 +21,7 @@ SERIAL_CONSOLES = "115200;ttyS0"
 # arm and arm64 both support -mlittle-endian so no
 # need to consider compat32.
 TUNE_CCARGS .= " -mlittle-endian"
-IMAGE_INSTALL_append = " kernel-modules"
+IMAGE_INSTALL:append = " kernel-modules"
 
 # auto load module during startup
 KERNEL_MODULE_AUTOLOAD = ""

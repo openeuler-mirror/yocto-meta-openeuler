@@ -5,7 +5,7 @@ PV = "1.23"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 # ptest.patch, patch-fuzz warning
-SRC_URI_remove = " \
+SRC_URI:remove = " \
             ${GNU_MIRROR}/gdbm/gdbm-${PV}.tar.gz \
             file://ptest.patch \
             "

@@ -1,7 +1,10 @@
-# main bb file: yocto-poky/meta/recipes-graphics/xorg-proto/xorgproto_2020.1.bb
+# main bb file: yocto-poky/meta/recipes-graphics/xorg-proto/xorgproto_2021.5.bb
 OPENEULER_REPO_NAME = "xorg-x11-proto-devel"
 
 PV = "2021.5"
+
+SRC_URI = "file://${BP}.tar.bz2 \
+"
 
 LIC_FILES_CHKSUM = "file://COPYING-x11proto;md5=dfc4bd2b0568b31725b85b0604e69b56"
 

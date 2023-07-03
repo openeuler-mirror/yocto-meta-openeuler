@@ -28,9 +28,8 @@ do_bootimg[depends] += "dosfstools-native:do_populate_sysroot \
                         mtools-native:do_populate_sysroot \
                         cdrkit-native:do_populate_sysroot \
                         virtual/kernel:do_deploy \
-                        ${@bb.utils.contains("MACHINE_FEATURES", "isohybrid", "syslinux-native:do_populate_sysroot", "", d)} \
-                        ${@'%s:do_image_%s' % (d.getVar('PN'), d.getVar('LIVE_ROOTFS_TYPE').replace('-', '_')) if d.getVar('ROOTFS') else ''} \
-                        "
+                        ${@bb.utils.contains("MACHINE_FEATURES", "isohybrid", "syslinux-native:do_populate_sysroot", "", d)} "
+#                        ${@'%s:do_image_%s' % (d.getVar('PN'), d.getVar('LIVE_ROOTFS_TYPE').replace('-', '_')) if d.getVar('ROOTFS') else ''} 
 
 LABELS_LIVE ?= "boot install"
 ROOT_LIVE ?= "root=/dev/ram0"
@@ -40,9 +39,9 @@ INITRD_LIVE ?= "${DEPLOY_DIR_IMAGE}/${INITRD_IMAGE_LIVE}-${MACHINE}.${INITRAMFS_
 LIVE_ROOTFS_TYPE ?= "ext4"
 ROOTFS ?= "${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.${LIVE_ROOTFS_TYPE}"
 
-IMAGE_TYPEDEP_live = "${LIVE_ROOTFS_TYPE}"
-IMAGE_TYPEDEP_iso = "${LIVE_ROOTFS_TYPE}"
-IMAGE_TYPEDEP_hddimg = "${LIVE_ROOTFS_TYPE}"
+IMAGE_TYPEDEP:live = "${LIVE_ROOTFS_TYPE}"
+IMAGE_TYPEDEP:iso = "${LIVE_ROOTFS_TYPE}"
+IMAGE_TYPEDEP:hddimg = "${LIVE_ROOTFS_TYPE}"
 IMAGE_TYPES_MASKED += "live hddimg iso"
 
 python() {

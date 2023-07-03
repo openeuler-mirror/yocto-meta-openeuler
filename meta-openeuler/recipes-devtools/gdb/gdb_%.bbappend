@@ -7,7 +7,7 @@ OPENEULER_SRC_URI_REMOVE = "https git http"
 PV = "12.1"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI_remove = " \
+SRC_URI:remove = " \
             ${GNU_MIRROR}/gdb/gdb-${PV}.tar.xz \
             "
 
@@ -93,4 +93,4 @@ SRC_URI += " \
 #gdb-6.6-buildid-locate-rpm-librpm-workaround.patch
 #gdb-6.6-buildid-locate-rpm-scl.patch
 
-FILES_${PN}-dev_riscv64 += "/usr/lib64"
+FILES:${PN}-dev:riscv64 += "/usr/lib64"

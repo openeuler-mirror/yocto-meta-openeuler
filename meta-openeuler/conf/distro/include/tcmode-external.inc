@@ -39,8 +39,8 @@ PREFERRED_PROVIDER_${MLPREFIX}gdbserver ?= "${MLPREFIX}gdb"
 # This is defined in default-providers.inc, which is parsed before the tcmode,
 # so we can't use ?=
 PREFERRED_PROVIDER_linux-libc-headers = "${TCMODE-LIBC}"
-PNBLACKLIST[linux-libc-headers] = "not building with an external toolchain"
-PNBLACKLIST[linux-libc-headers-yocto] = "not building with an external toolchain"
+SKIP_RECIPE[linux-libc-headers] = "not building with an external toolchain"
+SKIP_RECIPE[linux-libc-headers-yocto] = "not building with an external toolchain"
 
 PREFERRED_PROVIDER_gcc-cross-canadian-${TRANSLATED_TARGET_ARCH} ??= "gcc-external-cross-canadian-${TRANSLATED_TARGET_ARCH}"
 PREFERRED_PROVIDER_binutils-cross-canadian-${TRANSLATED_TARGET_ARCH} ??= "binutils-external-cross-canadian-${TRANSLATED_TARGET_ARCH}"
@@ -51,24 +51,24 @@ PREFERRED_PROVIDER_gdb-cross-canadian-${TRANSLATED_TARGET_ARCH} ??= "gdb-externa
 PREFERRED_PROVIDER_libgcc = "libgcc-external"
 
 # Pass --no-sysroot-suffix when using an external toolchain with the SDK
-TOOLCHAIN_TARGET_TASK_append = " sdk-env-external-toolchain"
+TOOLCHAIN_TARGET_TASK:append = " sdk-env-external-toolchain"
 
 # Sanity check the toolchain configuration and toolchain
 INHERIT += "sanity-external-toolchain"
 
 # Ensure that we don't pull in any internal toolchain recipes
-INHERIT += "blacklist blacklist_dynamic"
-PNBLACKLIST[uclibc] = "not building with an external toolchain"
-PNBLACKLIST[glibc] = "not building with an external toolchain"
-PNBLACKLIST[glibc-intermediate] = "not building with an external toolchain"
-PNBLACKLIST[gcc-runtime] = "not building with an external toolchain"
-PNBLACKLIST[gcc-sanitizers] = "not building with an external toolchain"
-PNBLACKLIST[gcc-source] = "not building with an external toolchain"
-PNBLACKLIST[libgcc-initial] = "not building with an external toolchain"
-PNBLACKLIST[libgcc] = "not building with an external toolchain"
-PNBLACKLIST[libgfortran] = "not building with an external toolchain"
+INHERIT += "skip_recipe_dynamic"
+SKIP_RECIPE[uclibc] = "not building with an external toolchain"
+SKIP_RECIPE[glibc] = "not building with an external toolchain"
+SKIP_RECIPE[glibc-intermediate] = "not building with an external toolchain"
+SKIP_RECIPE[gcc-runtime] = "not building with an external toolchain"
+SKIP_RECIPE[gcc-sanitizers] = "not building with an external toolchain"
+SKIP_RECIPE[gcc-source] = "not building with an external toolchain"
+SKIP_RECIPE[libgcc-initial] = "not building with an external toolchain"
+SKIP_RECIPE[libgcc] = "not building with an external toolchain"
+SKIP_RECIPE[libgfortran] = "not building with an external toolchain"
 
-PNBLACKLIST_DYNAMIC += "\
+SKIP_RECIPE_DYNAMIC += "\
     ${MLPREFIX}gcc-cross-${TARGET_ARCH} \
     \
     binutils-cross-canadian-${TRANSLATED_TARGET_ARCH} \
@@ -80,7 +80,7 @@ PNBLACKLIST_DYNAMIC += "\
 
 # We need our -cross recipes to rebuild when the external toolchain changes,
 # to recreate the links / wrapper scripts
-BB_HASHBASE_WHITELIST_remove = "EXTERNAL_TOOLCHAIN"
+BB_BASEHASH_IGNORE_VARS:remove = "EXTERNAL_TOOLCHAIN"
 
 # For a toolchain built with multilibs, we don't want any suffix implicitly
 # added to the oe sysroot path, as those dirs will not exist.
@@ -125,14 +125,14 @@ addhandler toolchain_metadata_setup
 
 GCCVERSION ?= "${@'.'.join('${GCC_VERSION}'.split('.')[:2])}%"
 GCC_VERSION = "${@external_run(d, d.getVar('EXTERNAL_CC'), '-dumpversion').rstrip()}"
-GCC_VERSION_allarch = ""
+GCC_VERSION:allarch = ""
 GCC_VERSION[vardepvalue] = "${GCC_VERSION}"
 
 # macro-prefix-map was introduced in gcc 8
 # As openEuler Embedded's default compiler starts since 10.3.1, no need to do the following check
 # If gcc < 8 is used, pls remove the following comments
 ## REMOVE_MACRO_PREFIX_MAP = "-fmacro-prefix-map=${WORKDIR}=/usr/src/debug/${PN}/${EXTENDPE}${PV}-${PR}"
-## DEBUG_PREFIX_MAP_remove_class-target = "${@'${REMOVE_MACRO_PREFIX_MAP}' if '${GCC_VERSION}' not in ['', 'UNKNOWN'] and [int(v) for v in '${GCC_VERSION}'.split('.')] < [8,0] else ''}"
+## DEBUG_PREFIX_MAP:remove:class-target = "${@'${REMOVE_MACRO_PREFIX_MAP}' if '${GCC_VERSION}' not in ['', 'UNKNOWN'] and [int(v) for v in '${GCC_VERSION}'.split('.')] < [8,0] else ''}"
 
 BUILDCFG_VARS += "EXTERNAL_TOOLCHAIN EXTERNAL_TARGET_SYS GCC_VERSION"
 

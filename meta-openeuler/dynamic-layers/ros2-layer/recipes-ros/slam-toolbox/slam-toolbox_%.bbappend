@@ -14,7 +14,7 @@ ROS_EXEC_DEPENDS:remove = "ceres-solver"
 
 FILES:${PN}-dev += "${datadir}/karto_sdk ${datadir}/solver_plugins.xml"
 
-ROS_EXEC_DEPENDS:remove += " \
+ROS_EXEC_DEPENDS:remove = " \
         qtbase \
         rviz-common \
         rviz-ogre-vendor \
@@ -22,7 +22,7 @@ ROS_EXEC_DEPENDS:remove += " \
         rviz-rendering \
 "
 
-ROS_BUILD_DEPENDS:remove += " \
+ROS_BUILD_DEPENDS:remove = " \
         qtbase \
         rviz-common \
         rviz-ogre-vendor \
@@ -30,7 +30,7 @@ ROS_BUILD_DEPENDS:remove += " \
         rviz-rendering \
 "
 
-ROS_EXPORT_DEPENDS:remove += " \
+ROS_EXPORT_DEPENDS:remove = " \
         rviz-common \
         rviz-ogre-vendor \
         rviz-default-plugins \

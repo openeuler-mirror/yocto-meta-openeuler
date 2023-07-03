@@ -1,20 +1,12 @@
-LIC_FILES_CHKSUM = "file://${WORKDIR}/systemd-${PV}/LICENSE.GPL2;md5=751419260aa954499f7abaabaa882bbe \
-                    file://${WORKDIR}/systemd-${PV}/LICENSE.LGPL2.1;md5=4fbd65380cdd255951079008b364516c"
-
 # files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI_remove = " \
+SRC_URI:remove = " \
             git://github.com/systemd/systemd-stable.git;protocol=https;branch=${SRCBRANCH} \
             file://0001-binfmt-Don-t-install-dependency-links-at-install-tim.patch \
-            file://0003-implment-systemd-sysv-install-for-OE.patch \
-            file://0001-systemd.pc.in-use-ROOTPREFIX-without-suffixed-slash.patch \
-            file://0001-logind-Restore-chvt-as-non-root-user-without-polkit.patch \
-            file://0027-proc-dont-trigger-mount-error-with-invalid-options-o.patch \
-            file://0001-analyze-resolve-executable-path-if-it-is-relative.patch \
-            file://0001-sd-dhcp-client-check-error-earlier-and-reduce-indent.patch \
-            file://0002-sd-dhcp-client-shorten-code-a-bit.patch \
-            file://0003-sd-dhcp-client-logs-when-dhcp-client-unexpectedly-ga.patch \
-            file://0004-sd-dhcp-client-tentatively-ignore-FORCERENEW-command.patch \
-            file://0001-basic-unit-name-do-not-use-strdupa-on-a-path.patch \
+            file://0001-resolve-Use-sockaddr-pointer-type-for-bind.patch \
+            file://CVE-2022-3821.patch \
+            file://CVE-2022-45873.patch \
+            file://CVE-2022-4415-1.patch \
+            file://CVE-2022-4415-2.patch \
             "
 
 # files, patches that come from openeuler
@@ -415,6 +407,16 @@ SRC_URI =+ " \
            file://backport-shared-condition-avoid-nss-lookup-in-PID1.patch \
            file://backport-logind-fix-getting-property-OnExternalPower-via-D-Bu.patch \
            file://backport-udev-support-by-path-devlink-for-multipath-nvme-bloc.patch \
+           file://backport-argv-util-also-update-program_invocation_short_name.patch \
+           file://backport-pid1-fix-segv-triggered-by-status-query.patch \
+           file://backport-main-log-which-process-send-SIGNAL-to-PID1.patch \
+           file://backport-main-drop-get_process_cmdline-from-crash-handler.patch \
+           file://backport-core-unit-drop-dependency-to-the-unit-being-merged.patch \
+           file://backport-core-unit-fix-logic-of-dropping-self-referencing-dep.patch \
+           file://backport-core-unit-merge-two-loops-into-one.patch \
+           file://backport-core-unit-merge-unit-names-after-merging-deps.patch \
+           file://backport-core-unit-fix-log-message.patch \
+           file://backport-test-add-test-case-for-sysv-generator-and-invalid-de.patch \
            file://update-rtc-with-system-clock-when-shutdown.patch \
            file://udev-add-actions-while-rename-netif-failed.patch \
            file://fix-two-VF-virtual-machines-have-same-mac-address.patch \
@@ -470,6 +472,7 @@ SRC_URI =+ " \
            file://fix-mount-failed-while-daemon-reexec.patch \
            file://bugfix-for-cgroup-Swap-cgroup-v1-deletion-and-migration.patch \
            file://delete-journal-files-except-system.journal-when-jour.patch \
+           file://set-the-cpuset.cpus-mems-of-machine.slice-to-all-by-.patch \
            "
 
 # fix error: redefinition of 'struct statx_timestamp' with glibc-2.36

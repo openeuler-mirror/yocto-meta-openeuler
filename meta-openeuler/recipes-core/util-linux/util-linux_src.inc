@@ -3,7 +3,7 @@ PV = "2.37.2"
 # files, patches can't be applied in openeuler or conflict with openeuler
 # ptest.patch, patch-fuzz warning
 OPENEULER_SRC_URI_REMOVE = "https git http"
-SRC_URI_remove += " \
+SRC_URI:remove = " \
         file://ptest.patch \
         file://avoid_parallel_tests.patch \
         file://Automake-use-EXTRA_LTLIBRARIES-instead-of-noinst_LTL.patch \
@@ -11,7 +11,7 @@ SRC_URI_remove += " \
 "
 
 # files, patches that come from openeuler
-SRC_URI_prepend += " \
+SRC_URI:prepend = " \
         file://util-linux-${PV}.tar.xz \
         file://2.36-login-lastlog-create.patch \
         file://backport-CVE-2021-3995.patch \

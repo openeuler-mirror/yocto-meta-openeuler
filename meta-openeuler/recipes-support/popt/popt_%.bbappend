@@ -2,14 +2,15 @@
 
 PV = "1.19"
 
-# files, patches that come from openeuler
-OPENEULER_SRC_URI_REMOVE = "https git http"
-SRC_URI += " \
-        file://${BPN}-${PV}.tar.gz \
-	file://fix-obscure-iconv-mis-call-error-path-could-lead-to-.patch \
-	file://fix-handle-newly-added-asset-.-call-like-elsewhere.patch \
-	file://fix-permit-reading-aliases-remove-left-over-goto-exi.patch \
-	file://fix-coverity-CID-1057440-Unused-pointer-value-UNUSED.patch \
+SRC_URI:remove = "http://ftp.rpm.org/popt/releases/popt-1.x/${BP}.tar.gz \
+		file://0001-popt-test-output-format-for-ptest.patch \
+"
+
+SRC_URI:prepend = "file://${BPN}-${PV}.tar.gz \
+		file://fix-obscure-iconv-mis-call-error-path-could-lead-to-.patch \
+		file://fix-handle-newly-added-asset-.-call-like-elsewhere.patch \
+		file://fix-permit-reading-aliases-remove-left-over-goto-exi.patch \
+		file://fix-coverity-CID-1057440-Unused-pointer-value-UNUSED.patch \
         file://revert-fix-memory-leak-regressions-in-popt.patch \
 "
 

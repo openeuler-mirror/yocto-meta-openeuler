@@ -14,6 +14,8 @@ python () {
     d.setVarFlag('do_populate_lic', 'depends', lic_deps.replace('gcc-source-${PV}:do_unpack', ''))
     cfg_deps = d.getVarFlag('do_configure', 'depends', False)
     d.setVarFlag('do_configure', 'depends', cfg_deps.replace('gcc-source-${PV}:do_preconfigure', ''))
+    epoch_deps = d.getVarFlag('do_deploy_source_date_epoch', 'depends', False)
+    d.setVarFlag('do_deploy_source_date_epoch', 'depends', epoch_deps.replace('gcc-source-${PV}:do_deploy_source_date_epoch', ''))
 }
 
 target_libdir = "${libdir}"
@@ -26,19 +28,19 @@ FILES_MIRRORS =. "\
     ${includedir}/c\+\+/${GCC_VERSION}/${TARGET_SYS}/|${includedir}/c++/${GCC_VERSION}/${EXTERNAL_TARGET_SYS}/\n \
 "
 
-# The do_install_append in gcc-runtime.inc doesn't do well if the links
+# The do_install_added in gcc-runtime.inc doesn't do well if the links
 # already exist, as it causes a recursion that breaks traversal.
 python () {
-    adjusted = d.getVar('do_install_appended').replace('ln -s', 'link_if_no_dest')
+    adjusted = d.getVar('do_install_added').replace('ln -s', 'link_if_no_dest')
     adjusted = adjusted.replace('mkdir', 'mkdir_if_no_dest')
-    d.setVar('do_install_appended', adjusted)
+    d.setVar('do_install_added', adjusted)
 }
 
 # Because the replace function is called in above anonymous function, 
-# resulting in that the checksum of do_install_appended will change with the change
-# of the build directory and cannot be ignored through do_install_appended[vardepsexclude] += "D"
-# Ignore how do_install_appended is computed as a workaround 
-do_install[vardepsexclude] += "do_install_appended"
+# resulting in that the checksum of do_install_added will change with the change
+# of the build directory and cannot be ignored through do_install_added[vardepsexclude] += "D"
+# Ignore how do_install_added is computed as a workaround 
+do_install[vardepsexclude] += "do_install_added"
 
 link_if_no_dest () {
     if ! [ -e "$2" ] && ! [ -L "$2" ]; then
@@ -75,14 +77,14 @@ do_install_extra () {
     fi
 }
 
-FILES_${PN}-dbg += "${datadir}/gdb/python/libstdcxx"
-FILES_libstdc++-dev = "\
+FILES:${PN}-dbg += "${datadir}/gdb/python/libstdcxx"
+FILES:libstdc++-dev = "\
     ${includedir}/c++ \
     ${libdir}/libstdc++.so \
     ${libdir}/libstdc++.la \
     ${libdir}/libsupc++.la \
 "
-FILES_libgomp-dev += "\
+FILES:libgomp-dev += "\
     ${libdir}/gcc/${TARGET_SYS}/${BINV}/include/openacc.h \
 "
 BBCLASSEXTEND = ""
@@ -91,13 +93,23 @@ BBCLASSEXTEND = ""
 # short-circuit the interdependency here by manually specifying it rather than
 # depending on the libc packagedata.
 libc_rdep = "${@'${PREFERRED_PROVIDER_virtual/libc}' if '${PREFERRED_PROVIDER_virtual/libc}' else '${TCLIBC}'}"
-RDEPENDS_libgomp += "${libc_rdep}"
-RDEPENDS_libssp += "${libc_rdep}"
-RDEPENDS_libstdc++ += "${libc_rdep}"
-RDEPENDS_libatomic += "${libc_rdep}"
-RDEPENDS_libquadmath += "${libc_rdep}"
-RDEPENDS_libmpx += "${libc_rdep}"
+RDEPENDS:libgomp += "${libc_rdep}"
+RDEPENDS:libssp += "${libc_rdep}"
+RDEPENDS:libstdc++ += "${libc_rdep}"
+RDEPENDS:libatomic += "${libc_rdep}"
+RDEPENDS:libquadmath += "${libc_rdep}"
+RDEPENDS:libmpx += "${libc_rdep}"
 
 do_package_write_ipk[depends] += "virtual/${MLPREFIX}libc:do_packagedata"
 do_package_write_deb[depends] += "virtual/${MLPREFIX}libc:do_packagedata"
 do_package_write_rpm[depends] += "virtual/${MLPREFIX}libc:do_packagedata"
+
+do_deploy_source_date_epoch () {
+    mkdir -p ${SDE_DEPLOYDIR}
+    if [ -e ${SDE_FILE} ]; then
+        echo "Deploying SDE from ${SDE_FILE} -> ${SDE_DEPLOYDIR}."
+        cp -p ${SDE_FILE} ${SDE_DEPLOYDIR}/__source_date_epoch.txt
+    else
+        echo "${SDE_FILE} not found!"
+    fi
+}

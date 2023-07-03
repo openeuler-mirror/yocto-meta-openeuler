@@ -24,10 +24,10 @@ require conf/machine/include/arm/arch-armv8a.inc
 TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexa9', ' -mtune=cortex-a9', '', d)}"
 MACHINEOVERRIDES =. "${@bb.utils.contains('TUNE_FEATURES', 'cortexa9', 'armv7a:', '' ,d)}"
 
-MACHINEOVERRIDES_remove_virtclass-multilib-lib32 =. "march64:"
-MACHINEOVERRIDES_append_virtclass-multilib-lib32 =. "march32:"
-TUNE_FEATURES_append_virtclass-multilib-lib32 += " cortexa9"
-TUNE_FEATURES_remove_virtclass-multilib-lib32 += " vfp"
+MACHINEOVERRIDES:remove:virtclass-multilib-lib32 = "march64:"
+MACHINEOVERRIDES:append:virtclass-multilib-lib32 = "march32:"
+TUNE_FEATURES:append:virtclass-multilib-lib32 = " cortexa9"
+TUNE_FEATURES:remove:virtclass-multilib-lib32 = " vfp"
 
 # simplest serial console setting, no VT
 SERIAL_CONSOLES ?= "115200;ttyAMA0"

@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_append := "${THISDIR}/files/:"
+FILESEXTRAPATHS:append := "${THISDIR}/files/:"
 SRC_URI = " \
         file://openeuler_target_env.sh \
         file://toolchain.cmake \
@@ -9,7 +9,7 @@ LICENSE = "CLOSED"
 addtask do_fetch before do_install
 addtask do_unpack before do_install
 
-do_install_append() {
+do_install:append() {
     #add openeuler env to sdk
     local openeuler_env_path="${D}/${SDKPATHNATIVE}/environment-setup.d"
     install -d ${openeuler_env_path}/

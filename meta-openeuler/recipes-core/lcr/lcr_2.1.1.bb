@@ -35,17 +35,17 @@ DEPENDS = "yajl lxc"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 #remove so from ${PN}-dev
 FILES_SOLIBSDEV = ""
-FILES_${PN} += "${libdir}/* "
-FILES_${PN}-staticdev_riscv64 += "${libdir}/*.a"
+FILES:${PN} += "${libdir}/* "
+FILES:${PN}-staticdev_riscv64 += "${libdir}/*.a"
 
 ### Tasks for package
-do_configure_prepend() {
+do_configure:prepend() {
         grep -q CMAKE_SYSROOT ${WORKDIR}/toolchain.cmake || cat >> ${WORKDIR}/toolchain.cmake <<EOF
         set( CMAKE_SYSROOT ${STAGING_DIR_HOST} )
 EOF
 }
 
-do_install_append() {
+do_install:append() {
 	[[ "${libdir}" != "/usr/lib" ]] || return 0
 	if test -d ${D}/usr/lib; then
         install -d ${D}/${libdir}

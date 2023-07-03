@@ -5,7 +5,7 @@ inherit packagegroup
 
 PACKAGES = "${PN}"
 
-RDEPENDS_${PN} = " \
+RDEPENDS:${PN} = " \
 packagegroup-roscore \
 ${@bb.utils.contains("DISTRO_FEATURES", "ros-camera", "packagegroup-roscamera", "", d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "ros-slam", "packagegroup-rosslam", "", d)} \

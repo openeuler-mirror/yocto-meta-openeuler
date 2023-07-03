@@ -1,2 +1,2 @@
-PACKAGECONFIG_append_rpi = " hls libmms \
-                   ${@bb.utils.contains('LICENSE_FLAGS_WHITELIST', 'commercial', 'faad', '', d)}"
+PACKAGECONFIG:append:rpi = " hls \
+                   ${@bb.utils.contains('LICENSE_FLAGS_ACCEPTED', 'commercial', 'gpl faad', '', d)}"

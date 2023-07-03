@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 ROS_BUILD_DEPENDS += " \
     std-msgs \
@@ -14,4 +14,4 @@ ROS_EXEC_DEPENDS = " \
     std-msgs \
 "
 
-FILES_${PN} += "/usr/share"
+FILES:${PN} += "/usr/share"

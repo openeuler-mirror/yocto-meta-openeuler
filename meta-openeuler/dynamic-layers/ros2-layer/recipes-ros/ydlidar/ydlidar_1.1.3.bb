@@ -23,11 +23,11 @@ DEPENDS = "swig-native python3"
 
 SYSROOT_DIRS += "/usr/lib"
 
-FILES_${PN}-staticdev += "/usr/lib/libydlidar_sdk.a"
-FILES_${PN} += "/usr/share /usr/startup /usr/lib/python*"
+FILES:${PN}-staticdev += "/usr/lib/libydlidar_sdk.a"
+FILES:${PN} += "/usr/share /usr/startup /usr/lib/python*"
 
 # fix pkgconfig installdir conflict and driver compile warnings (which fix buffer overflow)
-do_configure_prepend_class-target() {
+do_configure:prepend:class-target() {
     if [ -f ${S}/cmake/install_package.cmake ]; then
         cat ${S}/cmake/install_package.cmake | grep "\${CMAKE_INSTALL_DATAROOTDIR}\/pkgconfig" || sed -i 's:${CMAKE_INSTALL_PREFIX}/lib/pkgconfig:${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig:g' ${S}/cmake/install_package.cmake
         cat ${S}/cmake/install_package.cmake | grep "\${CMAKE_INSTALL_DATAROOTDIR}\/cmake" || sed -i 's:lib/cmake:${CMAKE_INSTALL_DATAROOTDIR}/cmake:g' ${S}/cmake/install_package.cmake

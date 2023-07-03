@@ -8,8 +8,8 @@ BUGTRACKER = "https://gitee.com/openeuler/yocto-meta-openeuler"
 SECTION = "libs"
 
 ### License metadata
-LICENSE = "MulanPSLv2"
-LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/MulanPSL-2.0;md5=74b1b7a7ee537a16390ed514498bf23c"
+LICENSE = "MulanPSL-2.0"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=74b1b7a7ee537a16390ed514498bf23c"
 
 
 ### Inheritance and includes if needed
@@ -18,14 +18,14 @@ inherit cmake
 ### Build metadata: SRC_URI, SRCDATA, S, B, FILESEXTRAPATHS....
 OPENEULER_REPO_NAME = "mcs"
 PV = "0.0.1"
-SRC_URI_append_aarch64 = " \
+SRC_URI:append:aarch64 = " \
     file://mcs \
     "
 S = "${WORKDIR}/mcs"
 
 # for x86
 OPENEULER_LOCAL_NAME_x86-64 = "mcs-x86"
-SRC_URI_append_x86-64 = " \
+SRC_URI:append:x86-64 = " \
     file://mcs-x86 \
     "
 S_x86-64 = "${WORKDIR}/mcs-x86"
@@ -41,6 +41,6 @@ EXTRA_OECMAKE = " \
 	-DDEMO_TARGET=rpmsg_pty_demo \
 	"
 
-FILES_${PN} = " \
+FILES:${PN} = " \
      ${bindir}/rpmsg_main \
 "

@@ -1,9 +1,22 @@
-PV = "59.4.0"
-SRC_URI[md5sum] = "1cfee8bed453d447851114c0deca6ba1"
-SRC_URI[sha256sum] = "b4c634615a0cf5b02cf83c7bedffc8da0ca439f00e79452699454da6fbd4153d"
-require pypi-src-openeuler.inc
-OPENEULER_BRANCH = "openEuler-22.03-LTS-Next"
+PV = "68.0.0"
+SRC_URI[md5sum] = "c5e4ff6557d99204464aa300c0bad7d4"
+SRC_URI[sha256sum] = "baf1fdb41c6da4cd2eae722e135500da913332ab3f2f5c7d33af9b492acb5235"
 
-SRC_URI += " \
-        file://bugfix-eliminate-random-order-in-metadata.patch \
+LIC_FILES_CHKSUM = "file://LICENSE;md5=141643e11c48898150daa83802dbc65f"
+
+FILESEXTRAPATHS:prepend := "${THISDIR}/python3-setuptools/:"
+
+require pypi-src-openeuler.inc
+
+SRC_URI:remove = " \
+        file://0001-change-shebang-to-python3.patch \
+        file://0001-_distutils-sysconfig-append-STAGING_LIBDIR-python-sy.patch \
+        file://0001-Limit-the-amount-of-whitespace-to-search-backtrack.-.patch \
 "
+
+# the upstream patch
+# SRC_URI:append:class-native = " file://0001-conditionally-do-not-fetch-code-by-easy_install.patch"
+SRC_URI:append = " file://0001-_distutils-sysconfig.py-make-it-possible-to-substite.patch"
+
+# the openeuler patch
+SRC_URI:append = " file://bugfix-eliminate-random-order-in-metadata.patch"

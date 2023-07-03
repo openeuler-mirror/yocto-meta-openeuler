@@ -2,9 +2,9 @@ SUMMARY = "packagegroup of dsoftbus"
 PR = "r1"
 inherit packagegroup
 
-RDEPENDS_packagegroup-dsoftbus = " \
+RDEPENDS:packagegroup-dsoftbus = " \
 "
 
-RDEPENDS_packagegroup-dsoftbus_append_aarch64 = " \
+RDEPENDS:packagegroup-dsoftbus:append:aarch64 = " \
 dsoftbus \
 "

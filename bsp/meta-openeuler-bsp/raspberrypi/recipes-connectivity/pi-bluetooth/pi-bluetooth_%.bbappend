@@ -9,7 +9,7 @@ SRC_URI = "\
 
 S = "${WORKDIR}/${BP}"
 
-do_install_append() {
+do_install:append() {
     # we do not use udev package, so pass /dev/ttyAMA0 directly.
     sed -i "s/\/dev\/serial1/\/dev\/ttyAMA0/g" ${D}${bindir}/btuart
 }

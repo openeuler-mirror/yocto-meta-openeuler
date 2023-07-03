@@ -5,4 +5,4 @@ SRC_URI:prepend = " \
         file://01-originbot-navigation-fix-amcl-load-error.patch \
         "
 
-FILES_${PN} += "/usr/share /usr/lib"
+FILES:${PN} += "/usr/share /usr/lib"

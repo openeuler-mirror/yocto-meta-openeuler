@@ -1,6 +1,6 @@
 require qt5-src.inc
 
-SRC_URI_prepend = "file://0005-QQuickView-docs-show-correct-usage-of-setInitialProp.patch \
+SRC_URI:prepend = "file://0005-QQuickView-docs-show-correct-usage-of-setInitialProp.patch \
            file://0006-QQuickWindow-Check-if-QQuickItem-was-not-deleted.patch \
            file://0007-Avoid-GHS-linker-to-optimize-away-QML-type-registrat.patch \
            file://0008-QML-Text-doesn-t-reset-lineCount-when-text-is-empty.patch \

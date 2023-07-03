@@ -2,8 +2,8 @@
 PV="1.34"
 
 # Use the source packages from openEuler
-SRC_URI_remove = "${GNU_MIRROR}/tar/tar-${PV}.tar.bz2"
-SRC_URI_prepend = "file://tar-${PV}.tar.xz \
+SRC_URI:remove = "${GNU_MIRROR}/tar/tar-${PV}.tar.bz2"
+SRC_URI:prepend = "file://tar-${PV}.tar.xz \
         file://backport-CVE-2022-48303.patch \
         file://tar-1.28-loneZeroWarning.patch \
         file://tar-1.28-vfatTruncate.patch \

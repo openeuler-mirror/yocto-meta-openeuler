@@ -6,7 +6,7 @@ SRC_URI = " \
         "
 
 # patches from poky
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += " \
            file://pkgconfig.patch \
            file://0001-Revert-Fix-problem-with-regression-tests-on-recent-g.patch \

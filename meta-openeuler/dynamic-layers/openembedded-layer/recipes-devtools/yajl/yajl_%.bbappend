@@ -2,7 +2,7 @@
 
 OPENEULER_SRC_URI_REMOVE = "git"
 
-SRC_URI_prepend = " \
+SRC_URI:prepend = " \
         file://${PV}.tar.gz \
         file://0001-yajl-2.1.0-pkgconfig-location.patch \
         file://0002-yajl-2.1.0-pkgconfig-includedir.patch \

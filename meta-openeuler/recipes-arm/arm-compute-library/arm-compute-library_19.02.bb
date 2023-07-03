@@ -35,10 +35,10 @@ do_install() {
     cp $CP_ARGS ${S}/support ${D}${datadir}/${BPN}/.
 }
 
-INSANE_SKIP_${PN} = "ldflags"
-INSANE_SKIP_${PN}-dev = "dev-elf ldflags"
+INSANE_SKIP:${PN} = "ldflags"
+INSANE_SKIP:${PN}-dev = "dev-elf ldflags"
 
-FILES_${PN}-source = "${datadir}/${BPN}"
-INSANE_SKIP_${PN}-source = "ldflags libdir staticdev"
+FILES:${PN}-source = "${datadir}/${BPN}"
+INSANE_SKIP:${PN}-source = "ldflags libdir staticdev"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 

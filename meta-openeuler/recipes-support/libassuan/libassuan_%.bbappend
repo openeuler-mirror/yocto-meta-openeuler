@@ -7,7 +7,7 @@ SRC_URI = "\
 "
 
 # add patch from poky to fix gpgme configure error: cannot find libassuan
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += " \
            file://libassuan-add-pkgconfig-support.patch \
           "

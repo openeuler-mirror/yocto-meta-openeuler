@@ -8,20 +8,10 @@ SRC_URI = " \
     file://${BPN}-${PV}.tar.gz \
     file://libcap-buildflags.patch \
 "
-# patches from poky
-SRC_URI += " \
-    file://0001-ensure-the-XATTR_NAME_CAPS-is-defined-when-it-is-use.patch \
-"
-
-# BUILD_GPERF is now reserved, please use USE_GPERF=yes or no instead.
-EXTRA_OEMAKE_remove = "BUILD_GPERF=yes \
-"
-EXTRA_OEMAKE_append = "USE_GPERF=yes \
-"
 
 # use cross compile objcopy
 # set lib dir, not use ldd to find, maybe fail
-EXTRA_OEMAKE_class-target = " \
+EXTRA_OEMAKE:class-target = " \
     OBJCOPY="${OBJCOPY}" \ 
     lib="${base_libdir}" \
 "
