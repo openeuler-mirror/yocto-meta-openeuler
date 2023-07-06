@@ -40,8 +40,8 @@
 
     OPENEULER_REPO_NAME = "仓库具体命名"
     PV = "版本号"
-    SRC_URI_remove = "原源码链接"
-    SRC_URI_prepend = "file://源码包 \
+    SRC_URI:remove = "原源码链接"
+    SRC_URI:prepend = "file://源码包 \
     "
     SRC_URI[sha256sum] = "校验码" //执行 sha256sum 源码包
     S = "${WORKDIR}/${BP}" //BP变量表示软件名-版本号，如果不符合则需要修改
@@ -67,7 +67,7 @@
 
 .. code-block:: console
 
-    RDEPENDS_${PN} += "audit"
+    RDEPENDS:${PN} += "audit"
 
 6. **构建镜像**
 

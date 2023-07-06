@@ -446,7 +446,7 @@ do_packagedata任务基于分析创建包元数据，包元数据保存在 PKGDA
 
 **FILES_xx** :
 
-  变量的默认值也在bitbake.conf中。也可以自定义，例如： FILES_${PN} += "${bindir}/mydir1 ${bindir}/mydir2/myfile"。FILES中指定文件或路径时，可以
+  变量的默认值也在bitbake.conf中。也可以自定义，例如： FILES:${PN} += "${bindir}/mydir1 ${bindir}/mydir2/myfile"。FILES中指定文件或路径时，可以
   使用Python的glob语法进行模式匹配。将路径指定为FILES变量的一部分时，最好使用适当的路径变量（meta/conf/bitbake.conf中查找）。例如，使用${sysconfdir}而
   不是/etc，或${bindir}而不是 /usr/bin。
 
@@ -518,12 +518,12 @@ do_install任务安装的文件子集由SYSROOT_DIRS变量定义的do_populate_s
          ${datadir} \
      "
 
-**SYSROOT_DIRS_BLACKLIST** ：
+**SYSROOT_DIRS_IGNORE** ：
   不通过 do_populate_sysroot 任务暂存到 sysroot 中的目录。可以使用此变量从暂存中排除 SYSROOT_DIRS 中列出的目录的某些子目录。默认情况下，以下目录不会暂存：
 
 ::
 
-     SYSROOT_DIRS_BLACKLIST = " \
+     SYSROOT_DIRS_IGNORE = " \
          ${mandir} \
          ${docdir} \
          ${infodir} \
@@ -675,10 +675,10 @@ image创建涉及的最后一个任务是do_image_complete任务。此任务通�
 
 * do_deploy
 
-* do_pkg_postinst_${PN}
+* do_pkg_postinst:${PN}
 
 pkg_postinst脚本在构建只读rootfs时执行。但是,必须确保在脚本中调用的命令在构建主机中可用,否则脚本的执行将失败,并且将推迟到设备上的首次启动。
-pkg_postinst脚本在目标上安装软件包后立即运行，或者在image中包含软件包时在image创建期间运行。要将pkg_postinst脚本添加到包中，请将pkg_postinst_${PN}()
+pkg_postinst脚本在目标上安装软件包后立即运行，或者在image中包含软件包时在image创建期间运行。要将pkg_postinst脚本添加到包中，请将pkg_postinst:${PN}()
 函数添加到配方文件(.bb) 并将 ${PN}替换为要附加到postinst脚本的包的名称。
 
 在创建根文件系统时调用在pkg_postinst函数中定义的脚本。如果脚本成功，则包被标记为已安装。在目标上运行的任何RPM安装后脚本都应返回0退出代码。
@@ -732,21 +732,21 @@ Yocto的任务实际就是一个shell或者python函数。
 
 ::
 
- do_install_prepend() {
+ do_install:prepend() {
  }
 
 修改do_install任务, 在do_install任务最后增加操作:
 
 ::
 
- do_install_append() {
+ do_install:append() {
  }
 
 修改do_install任务,在arm架构的do_install任务最后增加操作:
 
 ::
 
- do_install_append_arm() {
+ do_install:append:arm() {
  }
 
 删除编译任务，编译任务不存在，也不会执行:
@@ -878,12 +878,12 @@ Yocto的任务实际就是一个shell或者python函数。
      BAR += "bar 2"
 
 FOO以值“foo 2”结束，BAR 以值“bar 1 bar 2”结束。就像在第二个片段中一样，为匿名函数中的变量设置的值对任务可用，这些任务总是在解析后运行。
-在匿名函数运行之前应用覆盖和覆盖样式的运算符，例如“_append”。在以下示例中，FOO 以“来自匿名的 foo”的值结束：
+在匿名函数运行之前应用覆盖和覆盖样式的运算符，例如“:append”。在以下示例中，FOO 以“来自匿名的 foo”的值结束：
 
 ::
 
      FOO = "foo"
-     FOO_append = " from outside"
+     FOO:append = " from outside"
 
      python () {
          d.setVar("FOO", "foo from anonymous")
@@ -1023,7 +1023,7 @@ layer.conf中要配置成不一样的值。最简单的方法是将现有的层�
 
 "当”:”前的层openembedded-layer可用时，则meta-A层的dynamic-layers/openembedded-layer/下的 bb或者bbappend生效，否则默认不生效。这类bb的目录结构必须不在BBFILES指定的目录结构下，否则默认就会被引入，无法达到效果。
 
-LAYERDEPENDS_security += "${@bb.utils.contains("DISTRO_FEATURES", "x11", "gnome-layer xfce-layer", "", d)}"
+LAYERDEPENDS:security += "${@bb.utils.contains("DISTRO_FEATURES", "x11", "gnome-layer xfce-layer", "", d)}"
 
 conf/distro/${DISTRO}.conf
 

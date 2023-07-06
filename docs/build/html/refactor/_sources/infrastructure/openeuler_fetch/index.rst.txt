@@ -12,7 +12,7 @@
 openeuler_fetch运行机制
 ***************************
 
-openeuler_fetch在classes/openeuler.bbclass中实现，函数名为do_openeuler_fetch，该函数在base_do_fetch_prepend中通过bb.build.exec_func()函数调用，即openeuler_fetch运行完还会继续执行do_fetch，这样做的原因是不管openeuler_fetch运行成功与否都可以让fetch继续补充，例如有一款软件包在gitee中不存在，或在配置中配置错误，或者源码目录有相关的改动导致openeuler_fetch运行失败，不用担心，do_fetch可以继续完成文件的查找。
+openeuler_fetch在classes/openeuler.bbclass中实现，函数名为do_openeuler_fetch，该函数在base_do_fetch:prepend中通过bb.build.exec_func()函数调用，即openeuler_fetch运行完还会继续执行do_fetch，这样做的原因是不管openeuler_fetch运行成功与否都可以让fetch继续补充，例如有一款软件包在gitee中不存在，或在配置中配置错误，或者源码目录有相关的改动导致openeuler_fetch运行失败，不用担心，do_fetch可以继续完成文件的查找。
 
 openeuler_fetch运行逻辑
 ***************************
@@ -54,12 +54,12 @@ repo_init 运行原理图如下：
 
 - 如果需要其他代码仓的busybox参与构建，则修改OPENEULER_GIT_URL为其他平台仓域名即可，例如https://github.com/xxx
 
-- 另外，当构建busybox时需要的依赖并不会是某一款特定包，即不能直接通过depends添加依赖，而仅仅是需要某个路径下的文件，此时需要在bbappend中添加do_fetch_prepend，在该函数中添加需要依赖的包，例如：
+- 另外，当构建busybox时需要的依赖并不会是某一款特定包，即不能直接通过depends添加依赖，而仅仅是需要某个路径下的文件，此时需要在bbappend中添加do_fetch:prepend，在该函数中添加需要依赖的包，例如：
 
 ::
 
 
-    python do_fetch_prepend() {
+    python do_fetch:prepend() {
         repoList = [{
             "repo_name": "yocto-embedded-tools",
             "git_url": "https://gitee.com/openeuler",

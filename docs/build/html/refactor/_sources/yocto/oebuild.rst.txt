@@ -514,7 +514,7 @@ compile.yaml
 
    platform: aarch64-std
    machine: qemu-aarch64
-   toolchain_type: EXTERNAL_TOOLCHAIN_aarch64
+   toolchain_type: EXTERNAL_TOOLCHAIN:aarch64
    sdk_dir:
    toolchain_dir:
    repos:
