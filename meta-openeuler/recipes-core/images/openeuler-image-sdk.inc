@@ -86,3 +86,9 @@ openamp-dev \
 libmetal-dev \
 sysfsutils-dev \
 "
+# no support for riscv
+TOOLCHAIN_TARGET_TASK:remove:riscv64 = " \
+openamp-dev \
+libmetal-dev \
+sysfsutils-dev \
+"
