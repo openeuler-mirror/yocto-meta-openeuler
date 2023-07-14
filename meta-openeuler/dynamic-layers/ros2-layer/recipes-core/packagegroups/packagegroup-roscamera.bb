@@ -14,5 +14,6 @@ image-transport \
 cv-bridge \
 image-geometry \
 vision-opencv \
+image-publisher \
 image-transport-plugins \
 "
