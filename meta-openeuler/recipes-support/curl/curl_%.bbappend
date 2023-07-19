@@ -42,6 +42,20 @@ SRC_URI += " \
         file://backport-CVE-2022-35252-cookie-reject-cookies-with-control-bytes.patch \
         file://backport-CVE-2022-32221.patch \
         file://backport-CVE-2022-42916.patch \
+        file://backport-0001-CVE-2023-23914-CVE-2023-23915.patch \
+        file://backport-0002-CVE-2023-23914-CVE-2023-23915.patch \
+        file://backport-0003-CVE-2023-23914-CVE-2023-23915.patch \
+        file://backport-0004-CVE-2023-23914-CVE-2023-23915.patch \
+        file://backport-0005-CVE-2023-23914-CVE-2023-23915.patch \
+        file://backport-0001-CVE-2023-23916.patch \
+        file://backport-0002-CVE-2023-23916.patch \
+        file://backport-multi-shut-down-CONNECT-in-Curl_detach_connnection.patch \
+        file://backport-curl_easy_cleanup.3-remove-from-multi-handle-first.patch \
+        file://backport-http_proxy-make-Curl_connect_done-work-for-proxy-dis.patch \
+        file://backport-Curl_connect_done-handle-being-called-twice.patch \
+        file://backport-tftp-mark-protocol-as-not-possible-to-do-over-CONNEC.patch \
+        file://backport-test1939-require-proxy-support-to-run.patch \
+        file://backport-lib1939-make-it-endure-torture-tests.patch \
         file://backport-CVE-2022-42915.patch \
 "
 
