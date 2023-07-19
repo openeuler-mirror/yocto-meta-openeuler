@@ -89,8 +89,11 @@ do_install_append () {
     #   ULIMIT                  comment                     comment
     #   ENVIRON_FILE            comment                     comment
     # * for other difference between poky's shadow login.defs, see diff_login_defs.txt
-
-    install -m 0644 ${WORKDIR}/login.defs ${D}${sysconfdir}/login.defs
+    #  ${WORKDIR}/login.defs is in PAM_SRC_URI which is controlled by PACKAGECONFIG, 
+    #  so it may not exist. Here we install it when it is there
+    if [ -f "${WORKDIR}/login.defs" ]; then
+        install -m 0644 ${WORKDIR}/login.defs ${D}${sysconfdir}/login.defs
+    fi
 
     # use /bin/bash as default SHELL
     sed -i 's:/bin/sh:/bin/bash:g' ${D}${sysconfdir}/default/useradd
