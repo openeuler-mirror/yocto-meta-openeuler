@@ -129,8 +129,10 @@ GCC_VERSION_allarch = ""
 GCC_VERSION[vardepvalue] = "${GCC_VERSION}"
 
 # macro-prefix-map was introduced in gcc 8
-REMOVE_MACRO_PREFIX_MAP = "-fmacro-prefix-map=${WORKDIR}=/usr/src/debug/${PN}/${EXTENDPE}${PV}-${PR}"
-DEBUG_PREFIX_MAP_remove_class-target = "${@'${REMOVE_MACRO_PREFIX_MAP}' if '${GCC_VERSION}' not in ['', 'UNKNOWN'] and [int(v) for v in '${GCC_VERSION}'.split('.')] < [8,0] else ''}"
+# As openEuler Embedded's default compiler starts since 10.3.1, no need to do the following check
+# If gcc < 8 is used, pls remove the following comments
+## REMOVE_MACRO_PREFIX_MAP = "-fmacro-prefix-map=${WORKDIR}=/usr/src/debug/${PN}/${EXTENDPE}${PV}-${PR}"
+## DEBUG_PREFIX_MAP_remove_class-target = "${@'${REMOVE_MACRO_PREFIX_MAP}' if '${GCC_VERSION}' not in ['', 'UNKNOWN'] and [int(v) for v in '${GCC_VERSION}'.split('.')] < [8,0] else ''}"
 
 BUILDCFG_VARS += "EXTERNAL_TOOLCHAIN EXTERNAL_TARGET_SYS GCC_VERSION"
 
