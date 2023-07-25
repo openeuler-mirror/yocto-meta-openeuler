@@ -10,6 +10,8 @@
 # possible, but leave them commented.  Uncommented options override the
 # default value.
 
+# some configurations follows openEuler security configuration:
+
 #Port 22
 #AddressFamily any
 #ListenAddress 0.0.0.0
@@ -23,18 +25,18 @@
 #RekeyLimit default none
 
 # Logging
-#SyslogFacility AUTH
-#LogLevel INFO
+SyslogFacility AUTH
+LogLevel VERBOSE
 
 # Authentication:
 
-#LoginGraceTime 2m
-#PermitRootLogin prohibit-password
-#StrictModes yes
-#MaxAuthTries 6
+LoginGraceTime 2m
+PermitRootLogin no
+StrictModes yes
+MaxAuthTries 3
 #MaxSessions 10
 
-#PubkeyAuthentication yes
+PubkeyAuthentication yes
 
 # The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
 # but this is overridden so installations will only check .ssh/authorized_keys
@@ -46,16 +48,16 @@ AuthorizedKeysFile	.ssh/authorized_keys
 #AuthorizedKeysCommandUser nobody
 
 # For this to work you will also need host keys in /etc/ssh/ssh_known_hosts
-#HostbasedAuthentication no
+HostbasedAuthentication no
 # Change to yes if you don't trust ~/.ssh/known_hosts for
 # HostbasedAuthentication
-#IgnoreUserKnownHosts no
+IgnoreUserKnownHosts yes
 # Don't read the user's ~/.rhosts and ~/.shosts files
-#IgnoreRhosts yes
+IgnoreRhosts yes
 
 # To disable tunneled clear text passwords, change to no here!
-#PasswordAuthentication yes
-#PermitEmptyPasswords no
+PasswordAuthentication no
+PermitEmptyPasswords no
 
 # Change to no to disable s/key passwords
 #ChallengeResponseAuthentication yes
@@ -81,29 +83,29 @@ AuthorizedKeysFile	.ssh/authorized_keys
 # and ChallengeResponseAuthentication to 'no'.
 #UsePAM no
 
-#AllowAgentForwarding yes
-#AllowTcpForwarding yes
+AllowAgentForwarding no
+AllowTcpForwarding no
 #GatewayPorts no
 #X11Forwarding no
 #X11DisplayOffset 10
 #X11UseLocalhost yes
 #PermitTTY yes
 #PrintMotd yes
-#PrintLastLog yes
+PrintLastLog yes
 #TCPKeepAlive yes
-#PermitUserEnvironment no
+PermitUserEnvironment no
 #Compression no
-#ClientAliveInterval 15
-#ClientAliveCountMax 4
+ClientAliveInterval 300
+ClientAliveCountMax 0
 #UseDNS no
 #PidFile /var/run/sshd.pid
-#MaxStartups 10:30:100
+MaxStartups 10:30:100
 #PermitTunnel no
 #ChrootDirectory none
 #VersionAddendum none
 
-# no default banner path
-#Banner none
+# default banner path
+Banner /etc/issue.net
 
 # override default of no subsystems
 Subsystem sftp internal-sftp -l INFO
@@ -115,28 +117,7 @@ Subsystem sftp internal-sftp -l INFO
 #	PermitTTY no
 #	ForceCommand cvs server
 
-# openEuler safety configuration add here:
-UsePAM yes
-PermitUserEnvironment no
-ClientAliveInterval 300
-ClientAliveCountMax 0
-LoginGraceTime 120
-MaxAuthTries 3
+# use ssh version2
 Protocol 2
-PubkeyAuthentication yes
-IgnoreRhosts yes
-StrictModes yes
-Banner /etc/issue.net
-SyslogFacility AUTH
-LogLevel VERBOSE
-PermitEmptyPasswords no
-X11Forwarding no
-PrintLastLog yes
-HostbasedAuthentication no
-MaxStartups     10:30:100
-PasswordAuthentication no
-AllowTcpForwarding no
-AllowAgentForwarding no
-IgnoreUserKnownHosts yes
-PermitRootLogin no
+# supported MAC algorithm
 MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com
