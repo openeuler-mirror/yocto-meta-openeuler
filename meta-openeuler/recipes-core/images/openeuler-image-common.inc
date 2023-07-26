@@ -18,6 +18,17 @@ LICENSE = "MIT"
 
 inherit core-image
 
+# override the value in core-image.bbclass
+FEATURE_PACKAGES_tools-debug = ""
+
+# when debug-tweaks or tools_debug is in IMAGE_FEATURES, it means the image is used for debug
+# so packagegroup-core-tools-debug(gdb and gdbserver) will be included.
+# For image which is used for deployment, and debug related functions are not required, pls
+# remove debug-tweaks and tool_debug from IMAGE_FEATURES
+# FEATURE_PACKAGES_tools-debug in image.bbclass may do similar work, but her override it to
+# meet openeuler embedded's need.
+IMAGE_INSTALL_append = "${@bb.utils.contains_any("IMAGE_FEATURES", [ 'debug-tweaks', 'tools_debug' ], "packagegroup-core-tools-debug", "",d)}"
+
 # delete useless sdk depends
 FEATURE_PACKAGES_tools-sdk_remove = " packagegroup-core-sdk packagegroup-core-standalone-sdk-target"
 TOOLCHAIN_TARGET_TASK_remove = "${@multilib_pkg_extend(d, 'packagegroup-core-standalone-sdk-target')}"
