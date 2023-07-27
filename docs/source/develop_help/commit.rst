@@ -4,7 +4,7 @@ git commit提交规范
 ######################################
 
 开发人员通过git commit和gitee pr的形式向openEuler Embedded进行贡献，其中git commit msg需遵循相应的规范。
-openEuler Embedded部署了基于gitlint的机制来检查git commit是否符合规划，具体的规则位于 :file:`.gitlint` 文件中。
+openEuler Embedded部署了基于 `gitlint <https://jorisroovers.com/gitlint/latest>`_ 的机制来检查git commit是否符合规划，具体的规则位于 :file:`.gitlint` 文件中。
 
 - **commit msg规范**
 
@@ -23,6 +23,8 @@ git在提交时自动生成。
 
     Signed-off-by: xxx <xxx@yy.com>
 
+.. _commit_msg_template:
+
 - **范例**
 
 以下是一个提交范例
@@ -32,6 +34,31 @@ git在提交时自动生成。
     support compile xxx, this module is new and deal some archs now not supporting
 
     Signed-off-by: xxx <xxx@xxx.com>
+
+- **本地检查commit msg**
+
+1.安装gitlint工具：
+
+.. code-block:: shell
+
+  $ pip install gitlint
+
+2. `设置Commit-msg hook <https://jorisroovers.com/gitlint/latest/commit_hooks/>`_ ，使得在每次提交时可按照代码仓根目录下的 :file:`.gitlint` 配置的规则，来自动检查您的提交消息。在代码仓下的任意目录中执行如下命令即可：
+
+.. code-block:: shell
+
+  $ gitlint install-hook
+
+- **配置提交模板**
+    
+1.在本地任意位置创建一个模板文件template.txt， 内容如 :ref:`范例 <commit_msg_template>` 所示。
+
+2.执行如下命令之一,选择进行全局配置或者当前代码仓配置，配置git的提交模板:
+
+.. code-block:: shell
+
+  $ git config --local commit.template /path/to/template.txt   //需在对应代码仓的文件夹下执行，只为该代码仓提交时配置模板
+  $ git config --global commit.template /path/to/template.txt  //全局配置该模板
 
 - **.gitlint文件内容**
   
