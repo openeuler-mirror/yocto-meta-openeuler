@@ -1,10 +1,6 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-devtools/xerces-c/xerces-c_3.1.4.bb
 
 OPENEULER_SRC_URI_REMOVE = "http https git"
-OPENEULER_REPO_NAME = "xerces-c"
-# Until 2023.04.27 only the master branch in openEuler includes
-# 3.2.4 version of xerces-c
-OPENEULER_BRANCH = "master"
 
 # version in openEuler
 # We have to use 3.2.4+ version because in 3.2.4 version it
