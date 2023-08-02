@@ -37,3 +37,4 @@ do_fetch[depends] += "mcs-linux:do_fetch"
 # "kernel-module-" prefix as required by the oe-core build environment.
 
 RPROVIDES_${PN} += "kernel-module-mcs-km"
+RPROVIDES_${PN} += "kernel-module-mcs-remoteproc"
