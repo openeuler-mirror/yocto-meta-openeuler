@@ -25,6 +25,12 @@ SRC_URI_append_x86-64 = " \
     ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'file://patches/${ARCH}/0001-x86-irq-add-a-vector-define-for-mcs.patch', '', d)} \
 "
 
+# add rpmsg tty driver for mcs
+SRC_URI_append = " \
+    file://patches/0001-rpmsg-core-add-API-to-get-MTU.patch \
+    file://patches/0002-tty-add-rpmsg-driver.patch \
+"
+
 # export symbol for jailhouse
 SRC_URI_append = " ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'file://Jailhouse/jailhouse_export_symbol.patch', '', d)}"
 
