@@ -65,6 +65,9 @@ openEuler Embedded采用yocto构建，但通过 `oebuild <https://gitee.com/open
       # <work_dir> 为要创建的工作目录
       $ oebuild init <work_dir>
 
+      # 切换到工作目录
+      $ cd <work_dir>
+
       # 拉取构建容器、yocto-meta-openeuler 项目代码
       $ oebuild update
 
@@ -78,8 +81,11 @@ openEuler Embedded采用yocto构建，但通过 `oebuild <https://gitee.com/open
       # 所有的构建工作都需要在 oebuild 工作目录下进行
       $ cd <work_dir>
 
-      # 为 openeuler-image-qemu-arm64 镜像创建配置文件
+      # 为 openeuler-image-qemu-arm64 镜像创建配置文件 compile.yaml
       $ oebuild generate -p aarch64-std -d build_arm64
+
+      # 切换到包含 compile.yaml 的编译空间目录，如 build/build_arm64/
+      $ cd build/build_arm64/
 
       # 根据提示进入 build_arm64 构建目录，并开始构建
       $ oebuild bitbake openeuler-image
