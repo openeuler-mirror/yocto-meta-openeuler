@@ -55,10 +55,10 @@ index cbe833f42f..0c43eb2eac 100644
  endif # BOARD_QEMU_CORTEX_A53
 diff --git a/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote.dts b/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote.dts
 new file mode 100644
-index 0000000000..3a44df1c26
+index 0000000000..b73939dd43
 --- /dev/null
 +++ b/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote.dts
-@@ -0,0 +1,74 @@
+@@ -0,0 +1,65 @@
 +/*
 + * Copyright (c) 2019 Carlo Caione <ccaione@baylibre.com>
 + *
@@ -81,8 +81,9 @@ index 0000000000..3a44df1c26
 +
 +	chosen {
 +		zephyr,sram = &sram1;
++		/* uart0 is used for debug, which also may be used by Linux */
 +		zephyr,console = &uart_rpmsg0;
-+		zephyr,shell-uart = &uart_rpmsg1;
++		zephyr,shell-uart = &uart_rpmsg0;
 +		zephyr,flash = &flash0;
 +		/*
 +		 * shared memory reserved for the inter-processor communication
@@ -99,13 +100,14 @@ index 0000000000..3a44df1c26
 +	uart_rpmsg0: ep0 {
 +		status = "okay";
 +		compatible = "zephyr,rpmsg-uart";
-+		ep-name = "console";
++		/* the rpmsg-tty driver requires ep-name should be rpmsg-tty* */
++		ep-name = "rpmsg-tty";
 +	};
 +
 +	uart_rpmsg1: ep1 {
 +		status = "okay";
 +		compatible = "zephyr,rpmsg-uart";
-+		ep-name = "uart";
++		ep-name = "rpmsg-tty1";
 +	};
 +
 +	soc {
@@ -120,25 +122,14 @@ index 0000000000..3a44df1c26
 +			reg = <0x0 0x7a000000 0x0 DT_SIZE_M(10)>;
 +		};
 +
-+		uart1: uart@9001000 {
-+			compatible = "arm,pl011";
-+			reg = <0x00 0x9001000 0x00 0x1000>;
-+			status = "disabled";
-+			interrupts = <GIC_SPI 4 IRQ_TYPE_LEVEL 0>;
-+			interrupt-names = "irq_1";
-+			clocks = <&uartclk>;
-+			label = "UART_1";
-+		};
-+
 +	};
 +};
-+
 diff --git a/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote_defconfig b/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote_defconfig
 new file mode 100644
-index 0000000000..c923b43c6e
+index 0000000000..1f42894d44
 --- /dev/null
 +++ b/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote_defconfig
-@@ -0,0 +1,36 @@
+@@ -0,0 +1,39 @@
 +CONFIG_SOC_QEMU_CORTEX_A53=y
 +CONFIG_BOARD_QEMU_CORTEX_A53=y
 +CONFIG_ARM_ARCH_TIMER=y
@@ -156,6 +147,7 @@ index 0000000000..c923b43c6e
 +CONFIG_BOOT_BANNER=n
 +CONFIG_EARLY_CONSOLE=n
 +CONFIG_UART_CONSOLE=y
++CONFIG_PRINTK=n
 +
 +# to use remote, must be in Non-Secure world
 +CONFIG_ARMV8_A_NS=y
@@ -170,6 +162,8 @@ index 0000000000..c923b43c6e
 +CONFIG_IPM=y
 +CONFIG_RPMSG_SERVICE_MODE_REMOTE=y
 +CONFIG_OPENAMP_MASTER=n
++CONFIG_OPENAMP_RSC_TABLE_NUM_RPMSG_BUFF=8
++CONFIG_OPENAMP_RSC_TABLE=y
 +CONFIG_HEAP_MEM_POOL_SIZE=4096
 +# shell must be initialized after uart_rpmsg
 +CONFIG_SHELL_BACKEND_SERIAL_INIT_PRIORITY=60
@@ -1363,6 +1357,38 @@ index bdbfc17bb4..181d2b151f 100644
  #endif /* #if defined(CONFIG_SOC_MPS2_AN521) */
  }
  
+diff --git a/soc/arm64/qemu_cortex_a53/CMakeLists.txt b/soc/arm64/qemu_cortex_a53/CMakeLists.txt
+index fd39809a83..52eba76c8f 100644
+--- a/soc/arm64/qemu_cortex_a53/CMakeLists.txt
++++ b/soc/arm64/qemu_cortex_a53/CMakeLists.txt
+@@ -2,3 +2,8 @@
+ # SPDX-License-Identifier: Apache-2.0
+ 
+ zephyr_library_sources_ifdef(CONFIG_ARM_MMU mmu_regions.c)
++
++if(CONFIG_OPENAMP_RSC_TABLE)
++  zephyr_linker_section(NAME .resource_table GROUP ROM_REGION NOINPUT)
++  zephyr_linker_section_configure(SECTION .resource_table KEEP INPUT ".resource_table*")
++endif()
+diff --git a/soc/arm64/qemu_cortex_a53/linker.ld b/soc/arm64/qemu_cortex_a53/linker.ld
+index 9b7be757e1..9ea9975f75 100644
+--- a/soc/arm64/qemu_cortex_a53/linker.ld
++++ b/soc/arm64/qemu_cortex_a53/linker.ld
+@@ -6,3 +6,14 @@
+  */
+ 
+ #include <zephyr/arch/arm64/scripts/linker.ld>
++
++
++SECTIONS
++     {
++#ifdef CONFIG_OPENAMP_RSC_TABLE
++        SECTION_PROLOGUE(.resource_table,, SUBALIGN(4))
++        {
++            KEEP(*(.resource_table*))
++        } GROUP_LINK_IN(ROMABLE_REGION)
++#endif
++     }
 diff --git a/soc/arm64/qemu_cortex_a53/mmu_regions.c b/soc/arm64/qemu_cortex_a53/mmu_regions.c
 index b5d1205775..3d162c3e73 100644
 --- a/soc/arm64/qemu_cortex_a53/mmu_regions.c
@@ -1482,12 +1508,22 @@ index 0000000000..25ec334558
 +	.mmu_regions = mmu_regions,
 +};
 diff --git a/subsys/ipc/rpmsg_service/CMakeLists.txt b/subsys/ipc/rpmsg_service/CMakeLists.txt
-index 357a2bc6c3..cde10cdd23 100644
+index 357a2bc6c3..cbfdd5f5e1 100644
 --- a/subsys/ipc/rpmsg_service/CMakeLists.txt
 +++ b/subsys/ipc/rpmsg_service/CMakeLists.txt
-@@ -2,3 +2,4 @@
+@@ -1,4 +1,14 @@
+ # SPDX-License-Identifier: Apache-2.0
  
++if(CONFIG_OPENAMP_RSC_TABLE)
++# METAL_MAX_DEVICE_REGIONS is used to give the number of memory regions shared
++# between processors. By default only one region is defined for the vrings
++# and rpmsg buffers. The METAL_MAX_DEVICE_REGIONS has to be redefined to add a
++# second region for the resource table.
++zephyr_compile_definitions(METAL_MAX_DEVICE_REGIONS=2)
++zephyr_sources(rpmsg_backend_rsc_table.c)
++else()
  zephyr_sources(rpmsg_backend.c)
++endif()
  zephyr_sources(rpmsg_service.c)
 +zephyr_sources(rpmsg_rpc_service.c)
 diff --git a/subsys/ipc/rpmsg_service/Kconfig b/subsys/ipc/rpmsg_service/Kconfig
@@ -1533,10 +1569,20 @@ index 431fd093be..c3d6efd82a 100644
  			.ops        = { NULL },
  		},
 diff --git a/subsys/ipc/rpmsg_service/rpmsg_backend.h b/subsys/ipc/rpmsg_service/rpmsg_backend.h
-index a74e46b852..643e47d89d 100644
+index a74e46b852..1851178902 100644
 --- a/subsys/ipc/rpmsg_service/rpmsg_backend.h
 +++ b/subsys/ipc/rpmsg_service/rpmsg_backend.h
-@@ -17,7 +17,7 @@ extern "C" {
+@@ -13,15 +13,22 @@
+ extern "C" {
+ #endif
+ 
++#if defined(CONFIG_OPENAMP_RSC_TABLE)
++#define SHM_DEVICE_NAME	"shm"
++#define SHM_NODE		DT_CHOSEN(zephyr_ipc_shm)
++#define SHM_START_ADDR	DT_REG_ADDR(SHM_NODE)
++#define SHM_SIZE		DT_REG_SIZE(SHM_NODE)
++#else
+ #define VDEV_START_ADDR		DT_REG_ADDR(DT_CHOSEN(zephyr_ipc_shm))
  #define VDEV_SIZE		DT_REG_SIZE(DT_CHOSEN(zephyr_ipc_shm))
  
  #define VDEV_STATUS_ADDR	VDEV_START_ADDR
@@ -1545,6 +1591,266 @@ index a74e46b852..643e47d89d 100644
  
  #define SHM_START_ADDR		(VDEV_START_ADDR + VDEV_STATUS_SIZE)
  #define SHM_SIZE		    (VDEV_SIZE - VDEV_STATUS_SIZE)
+ #define SHM_DEVICE_NAME		"sramx.shm"
++#endif
+ 
+ /*
+  * @brief Initialize RPMsg backend
+@@ -35,7 +42,11 @@ extern "C" {
+  * @retval 0 Initialization successful
+  * @retval <0 Initialization error reported by OpenAMP
+  */
++#if defined(CONFIG_OPENAMP_RSC_TABLE)
++int rpmsg_backend_init(struct metal_io_region **io, struct virtio_device **vdev);
++#else
+ int rpmsg_backend_init(struct metal_io_region **io, struct virtio_device *vdev);
++#endif
+ 
+ #ifdef __cplusplus
+ }
+diff --git a/subsys/ipc/rpmsg_service/rpmsg_backend_rsc_table.c b/subsys/ipc/rpmsg_service/rpmsg_backend_rsc_table.c
+new file mode 100644
+index 0000000000..26f97a5c57
+--- /dev/null
++++ b/subsys/ipc/rpmsg_service/rpmsg_backend_rsc_table.c
+@@ -0,0 +1,236 @@
++/*
++ * Copyright (c) 2023, openEuler Embedded
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ */
++
++#include "rpmsg_backend.h"
++
++#include <zephyr/kernel.h>
++#include <zephyr/drivers/ipm.h>
++#include <zephyr/device.h>
++#include <zephyr/logging/log.h>
++
++#include <openamp/open_amp.h>
++#include <metal/device.h>
++#include <resource_table.h>
++
++#define LOG_MODULE_NAME rpmsg_backend
++LOG_MODULE_REGISTER(LOG_MODULE_NAME, CONFIG_RPMSG_SERVICE_LOG_LEVEL);
++
++/* Configuration defines */
++#if !DT_HAS_CHOSEN(zephyr_ipc_shm)
++#error "Module requires definition of shared memory for rpmsg"
++#endif
++
++#define MASTER IS_ENABLED(CONFIG_RPMSG_SERVICE_MODE_MASTER)
++
++#if	IS_ENABLED(CONFIG_RPMSG_SERVICE_MODE_MASTER)
++#error "resource table implementation is only for device"
++#endif
++
++
++#define IPM_WORK_QUEUE_STACK_SIZE CONFIG_RPMSG_SERVICE_WORK_QUEUE_STACK_SIZE
++#define IPM_WORK_QUEUE_PRIORITY   K_HIGHEST_APPLICATION_THREAD_PRIO
++
++K_THREAD_STACK_DEFINE(ipm_stack_area, IPM_WORK_QUEUE_STACK_SIZE);
++
++struct k_work_q ipm_work_q;
++
++/* End of configuration defines */
++
++static const struct device *const ipm_handle =
++	DEVICE_DT_GET(DT_CHOSEN(zephyr_ipc));
++
++static metal_phys_addr_t shm_physmap = SHM_START_ADDR;
++static struct metal_device shm_device = {
++	.name = SHM_DEVICE_NAME,
++	.num_regions = 2,
++	.regions = {
++	/* shared memory io, only the addr in [share mem start + share mem size]
++	 * can be accessed and guaranteed by metal_io_read/write
++	 */
++		{.virt = NULL},
++	/* resource table io, only the addr in [resource table start + table size]
++	 * can be accessed and guaranteed by metal_io_read/write
++	 */
++		{.virt = NULL},
++	},
++	.node = { NULL },
++	.irq_num = 0,
++	.irq_info = NULL
++};
++
++static struct virtio_device *cur_vdev;
++static struct k_work ipm_work;
++
++static int virtio_notify(void *priv, uint32_t id)
++{
++	ARG_UNUSED(priv);
++	int status;
++
++	status = ipm_send(ipm_handle, 0, id, NULL, 0);
++
++	if (status != 0) {
++		LOG_ERR("ipm_send failed to notify: %d", status);
++		return status;
++	}
++
++	return status;
++}
++
++
++static void ipm_callback_process(struct k_work *work)
++{
++	/* as remote device, VRING1_ID is for RX (from host to devive)*/
++	rproc_virtio_notified(cur_vdev, VRING1_ID);
++}
++
++static void ipm_callback(const struct device *dev,
++						void *context, uint32_t id,
++						volatile void *data)
++{
++	(void)dev;
++
++	LOG_DBG("Got callback of id %u", id);
++	/* TODO: Separate workqueue is needed only
++	 * for serialization master (app core)
++	 *
++	 * Use sysworkq to optimize memory footprint
++	 * for serialization slave (net core)
++	 */
++	k_work_submit_to_queue(&ipm_work_q, &ipm_work);
++}
++
++struct virtio_device *
++platform_create_vdev(void *rsc_table, struct metal_io_region *rsc_io)
++{
++	struct fw_rsc_vdev_vring *vring_rsc;
++	struct virtio_device *vdev;
++	int ret;
++
++	vdev = rproc_virtio_create_vdev(VIRTIO_DEV_DEVICE, VDEV_ID,
++					rsc_table_to_vdev(rsc_table),
++					rsc_io, NULL, virtio_notify, NULL);
++
++	if (!vdev) {
++		LOG_ERR("failed to create vdev");
++		return NULL;
++	}
++
++	/* wait master rpmsg init completion */
++	rproc_virtio_wait_remote_ready(vdev);
++
++
++	vring_rsc = rsc_table_get_vring0(rsc_table);
++	ret = rproc_virtio_init_vring(vdev, 0, vring_rsc->notifyid,
++				      (void *)(uintptr_t)vring_rsc->da, rsc_io,
++				      vring_rsc->num, vring_rsc->align);
++	if (ret) {
++		LOG_ERR("failed to init vring 0");
++		goto failed;
++	}
++
++	vring_rsc = rsc_table_get_vring1(rsc_table);
++	ret = rproc_virtio_init_vring(vdev, 1, vring_rsc->notifyid,
++				      (void *)(uintptr_t)vring_rsc->da, rsc_io,
++				      vring_rsc->num, vring_rsc->align);
++	if (ret) {
++		LOG_ERR("failed to init vring 1");
++		goto failed;
++	}
++
++	cur_vdev = vdev;
++	return vdev;
++
++failed:
++	rproc_virtio_remove_vdev(vdev);
++
++	return NULL;
++}
++
++int rpmsg_backend_init(struct metal_io_region **io, struct virtio_device **vdev)
++{
++	void *rsc_table;
++	struct fw_resource_table *rsc;
++	struct metal_io_region *rsc_io;
++	int rsc_size;
++	int32_t                  err;
++	struct metal_init_params metal_params = METAL_INIT_DEFAULTS;
++	struct metal_device     *device;
++	
++
++
++	/* IPM setup */
++
++	/* Start IPM workqueue */
++	k_work_queue_start(&ipm_work_q, ipm_stack_area,
++			   K_THREAD_STACK_SIZEOF(ipm_stack_area),
++			   IPM_WORK_QUEUE_PRIORITY, NULL);
++	k_thread_name_set(&ipm_work_q.thread, "ipm_work_q");
++
++	/* Setup IPM workqueue item */
++	k_work_init(&ipm_work, ipm_callback_process);
++
++	if (!device_is_ready(ipm_handle)) {
++		LOG_ERR("IPM device is not ready");
++		return -ENODEV;
++	}
++
++	ipm_register_callback(ipm_handle, ipm_callback, NULL);
++
++	err = ipm_set_enabled(ipm_handle, 1);
++	if (err != 0) {
++		LOG_ERR("Could not enable IPM interrupts and callbacks");
++		return err;
++	}
++
++	/* Libmetal setup */
++	err = metal_init(&metal_params);
++	if (err) {
++		LOG_ERR("metal_init: failed - error code %d", err);
++		return err;
++	}
++
++	err = metal_register_generic_device(&shm_device);
++	if (err) {
++		LOG_ERR("Couldn't register shared memory device: %d", err);
++		return err;
++	}
++
++	err = metal_device_open("generic", SHM_DEVICE_NAME, &device);
++	if (err) {
++		LOG_ERR("metal_device_open failed: %d", err);
++		return err;
++	}
++
++	metal_io_init(&device->regions[0], (void *)SHM_START_ADDR, &shm_physmap,
++		      SHM_SIZE, -1, 0, NULL);
++
++	/* shared mem io should be return to the caller */
++	*io = metal_device_io_region(device, 0);
++	if (!*io) {
++		LOG_ERR("metal_device_io_region failed to get region");
++		return err;
++	}
++
++	rsc_table_get(&rsc_table, &rsc_size);
++	rsc = (struct fw_resource_table *)rsc_table;
++
++	metal_io_init(&device->regions[1], rsc_table,
++		      (metal_phys_addr_t *)rsc_table, rsc_size, -1, 0, NULL);
++	rsc_io = metal_device_io_region(device, 1);
++	if (!rsc_io) {
++		LOG_ERR("Failed to get rsc_io region");
++		return -1;
++	}
++
++	/* virtio device setup */
++	*vdev = platform_create_vdev(rsc_table, rsc_io);
++
++	if (*vdev == NULL) {
++		return -1;
++	}
++
++	return 0;
++}
+\ No newline at end of file
 diff --git a/subsys/ipc/rpmsg_service/rpmsg_rpc_service.c b/subsys/ipc/rpmsg_service/rpmsg_rpc_service.c
 new file mode 100644
 index 0000000000..c4e7769f17
@@ -1768,10 +2074,22 @@ index 0000000000..e6c4b0a105
 +
 +#endif /* ZEPHYR_SUBSYS_IPC_RPMSG_RPC_SERVICE_H */
 diff --git a/subsys/ipc/rpmsg_service/rpmsg_service.c b/subsys/ipc/rpmsg_service/rpmsg_service.c
-index e82c7a6be7..e0e4302821 100644
+index e82c7a6be7..da51f70e96 100644
 --- a/subsys/ipc/rpmsg_service/rpmsg_service.c
 +++ b/subsys/ipc/rpmsg_service/rpmsg_service.c
-@@ -29,16 +29,30 @@ static bool ep_crt_started;
+@@ -20,7 +20,11 @@ LOG_MODULE_REGISTER(LOG_MODULE_NAME, CONFIG_RPMSG_SERVICE_LOG_LEVEL);
+ 
+ #define MASTER IS_ENABLED(CONFIG_RPMSG_SERVICE_MODE_MASTER)
+ 
++#if defined(CONFIG_OPENAMP_RSC_TABLE)
++static struct virtio_device *vdev;
++#else
+ static struct virtio_device vdev;
++#endif
+ static struct rpmsg_virtio_device rvdev;
+ static struct metal_io_region *io;
+ static bool ep_crt_started;
+@@ -29,16 +33,30 @@ static bool ep_crt_started;
  static struct rpmsg_virtio_shm_pool shpool;
  #endif
  
@@ -1804,7 +2122,24 @@ index e82c7a6be7..e0e4302821 100644
  }
  
  #if MASTER
-@@ -131,7 +145,8 @@ static int rpmsg_service_init(const struct device *dev)
+@@ -88,12 +106,15 @@ static int rpmsg_service_init(const struct device *dev)
+ 		LOG_ERR("RPMsg backend init failed with error %d", err);
+ 		return err;
+ 	}
+-
++#if defined(CONFIG_OPENAMP_RSC_TABLE)
++	err = rpmsg_init_vdev(&rvdev, vdev, NULL, io, NULL);
++#else
+ #if MASTER
+ 	rpmsg_virtio_init_shm_pool(&shpool, (void *)SHM_START_ADDR, SHM_SIZE);
+ 	err = rpmsg_init_vdev(&rvdev, &vdev, ns_bind_cb, io, &shpool);
+ #else
+ 	err = rpmsg_init_vdev(&rvdev, &vdev, NULL, io, NULL);
++#endif
+ #endif
+ 
+ 	if (err) {
+@@ -131,7 +152,8 @@ static int rpmsg_service_init(const struct device *dev)
  	return 0;
  }
  
@@ -1814,7 +2149,7 @@ index e82c7a6be7..e0e4302821 100644
  {
  	if (ep_crt_started) {
  		return -EINPROGRESS;
-@@ -141,7 +156,8 @@ int rpmsg_service_register_endpoint(const char *name, rpmsg_ept_cb cb)
+@@ -141,7 +163,8 @@ int rpmsg_service_register_endpoint(const char *name, rpmsg_ept_cb cb)
  		if (!endpoints[i].name) {
  			endpoints[i].name = name;
  			endpoints[i].cb = cb;
@@ -1824,7 +2159,7 @@ index e82c7a6be7..e0e4302821 100644
  			return i;
  		}
  	}
-@@ -156,6 +172,11 @@ bool rpmsg_service_endpoint_is_bound(int endpoint_id)
+@@ -156,6 +179,11 @@ bool rpmsg_service_endpoint_is_bound(int endpoint_id)
  	return endpoints[endpoint_id].bound;
  }
  
@@ -1836,3 +2171,20 @@ index e82c7a6be7..e0e4302821 100644
  int rpmsg_service_send(int endpoint_id, const void *data, size_t len)
  {
  	return rpmsg_send(&endpoints[endpoint_id].ep, data, len);
+diff --git a/west.yml b/west.yml
+index e006f43aa9..cdcef2cea5 100644
+--- a/west.yml
++++ b/west.yml
+@@ -133,12 +133,6 @@ manifest:
+       path: modules/hal/stm32
+       groups:
+         - hal
+-    - name: hal_telink
+-      revision: 38573af589173259801ae6c2b34b7d4c9e626746
+-      path: modules/hal/telink
+-      submodules: true
+-      groups:
+-        - hal
+     - name: hal_ti
+       revision: 000b944a788b6005d7776198e1348f5c8a657259
+       path: modules/hal/ti
