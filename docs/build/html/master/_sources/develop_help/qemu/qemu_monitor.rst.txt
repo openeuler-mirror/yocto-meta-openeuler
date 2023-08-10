@@ -15,7 +15,7 @@ QEMU控制台，即QEMU monitor，是在QEMU模拟器运行时为其提供各种
 
    acl_add aclname match allow|deny [index] -- add a match rule to the access control list
    acl_policy aclname allow|deny -- set default access control list policy
-   acl_remove aclname match -- remove a match rule from the access control list
+   acl:remove aclname match -- remove a match rule from the access control list
    acl_reset aclname -- reset the access control list
    acl_show aclname -- list rules in the access control list
    announce_self [interfaces] [id] -- Trigger GARP/RARP announcements

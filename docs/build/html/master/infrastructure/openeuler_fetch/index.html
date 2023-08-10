@@ -100,7 +100,7 @@
 </section>
 <section id="id2">
 <h2>openeuler_fetch运行机制<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>openeuler_fetch在classes/openeuler.bbclass中实现，函数名为do_openeuler_fetch，该函数在base_do_fetch_prepend中通过bb.build.exec_func()函数调用，即openeuler_fetch运行完还会继续执行do_fetch，这样做的原因是不管openeuler_fetch运行成功与否都可以让fetch继续补充，例如有一款软件包在gitee中不存在，或在配置中配置错误，或者源码目录有相关的改动导致openeuler_fetch运行失败，不用担心，do_fetch可以继续完成文件的查找。</p>
+<p>openeuler_fetch在classes/openeuler.bbclass中实现，函数名为do_openeuler_fetch，该函数在base_do_fetch:prepend中通过bb.build.exec_func()函数调用，即openeuler_fetch运行完还会继续执行do_fetch，这样做的原因是不管openeuler_fetch运行成功与否都可以让fetch继续补充，例如有一款软件包在gitee中不存在，或在配置中配置错误，或者源码目录有相关的改动导致openeuler_fetch运行失败，不用担心，do_fetch可以继续完成文件的查找。</p>
 </section>
 <section id="id3">
 <h2>openeuler_fetch运行逻辑<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
@@ -136,9 +136,9 @@
 <li><p>如果想要某一个版本的busybox参与构建：在busybox的bbappend文件中设定OPENEULER_BRANCH值为相关版本即可</p></li>
 <li><p>如果想要使用自有仓库的busybox参与构建：在busybox的bbappend文件中设定OPENEULER_GIT_URL为自有空间即可，注意：如果busybox已经下载在本地，则需要手动删除，然后再执行构建</p></li>
 <li><p>如果需要其他代码仓的busybox参与构建，则修改OPENEULER_GIT_URL为其他平台仓域名即可，例如https://github.com/xxx</p></li>
-<li><p>另外，当构建busybox时需要的依赖并不会是某一款特定包，即不能直接通过depends添加依赖，而仅仅是需要某个路径下的文件，此时需要在bbappend中添加do_fetch_prepend，在该函数中添加需要依赖的包，例如：</p></li>
+<li><p>另外，当构建busybox时需要的依赖并不会是某一款特定包，即不能直接通过depends添加依赖，而仅仅是需要某个路径下的文件，此时需要在bbappend中添加do_fetch:prepend，在该函数中添加需要依赖的包，例如：</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">do_fetch_prepend</span><span class="p">()</span> <span class="p">{</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">do_fetch</span><span class="p">:</span><span class="n">prepend</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">repoList</span> <span class="o">=</span> <span class="p">[{</span>
         <span class="s2">&quot;repo_name&quot;</span><span class="p">:</span> <span class="s2">&quot;yocto-embedded-tools&quot;</span><span class="p">,</span>
         <span class="s2">&quot;git_url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://gitee.com/openeuler&quot;</span><span class="p">,</span>
