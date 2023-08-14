@@ -1,4 +1,4 @@
-.. _mixed_critical_system:
+.. _mixed_criticality_system:
 
 混合关键性系统
 ##############
@@ -15,7 +15,7 @@
 
 面对上述硬件和应用的变化，结合自身原有的特点，嵌入式系统未来演进的方向之一就是 **混合关键性系统(MCS, Mixed Criticality System)**, 这可以从典型的嵌入式系统-汽车电子的最近发展趋势略见一斑。
 
-    .. figure:: ../../image/mcs/mcs_architecture.png
+    .. figure:: ../../../image/mcs/mcs_architecture.png
         :align: center
 
         图 1 openEuler Embedded中的混合关键性系统大致架构
@@ -41,7 +41,7 @@
 openEuler Embedded中多OS混合部署框架的架构图如下所示，引入了开源框架 `OpenAMP <https://www.openampproject.org/>`_ 作为基础， 并结合自身需要
 进一步创新。
 
-    .. figure:: ../../image/mcs/openamp_architecture.png
+    .. figure:: ../../../image/mcs/openamp_architecture.png
         :align: center
 
         图 2 多OS混合部署框架的基础架构
@@ -50,7 +50,7 @@ openEuler Embedded中多OS混合部署框架的架构图如下所示，引入了
 
 目前，混合部署框架不仅能在qemu上进行仿真验证，还支持在树莓派实际硬件上部署运行。未来，openEuler Embedded的混合部署框架还会继续演进，包括对接更多的实时操作系统，如国产开源实时操作系统 `RT-Thread <https://www.rt-thread.org/>`_，实现如下图所示的多OS服务化部署并适时引入基于虚拟化技术的嵌入式弹性底座。
 
-    .. figure:: ../../image/mcs/os_services.png
+    .. figure:: ../../../image/mcs/os_services.png
         :align: center
 
         图 3 多OS服务化部署架构

@@ -9,7 +9,8 @@
    :caption: 内容
 
    software_package_description.rst
-   mcs.rst
+   mica/mcs.rst
+   mica/_mica_linux_kernel.rst
    lopper_devicetree.rst
    ros.rst
    muslc.rst
