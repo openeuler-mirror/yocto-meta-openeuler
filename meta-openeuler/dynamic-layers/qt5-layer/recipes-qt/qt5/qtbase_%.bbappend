@@ -20,3 +20,19 @@ SRC_URI:prepend = "file://tell-the-truth-about-private-api.patch \
            file://CVE-2021-38593.patch \
            file://CVE-2022-25255.patch \
            "
+
+# openeuler configuration: 
+# ref: meta-raspberrypi/dynamic-layers/qt5-layer/recipes-qt/qt5/qtbase_%.bbappend
+PACKAGECONFIG_GL = "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'eglfs gles2', '', d)}"
+PACKAGECONFIG_GL:append = " kms gbm"
+PACKAGECONFIG_FONTS = "fontconfig"
+PACKAGECONFIG:append = " libinput examples tslib xkbcommon"
+
+OE_QTBASE_EGLFS_DEVICE_INTEGRATION = ""
+
+do_configure:prepend() {
+    # Add the appropriate EGLFS_DEVICE_INTEGRATION
+    if [ "${@d.getVar('OE_QTBASE_EGLFS_DEVICE_INTEGRATION')}" != "" ]; then
+        echo "EGLFS_DEVICE_INTEGRATION = ${OE_QTBASE_EGLFS_DEVICE_INTEGRATION}" >> ${S}/mkspecs/oe-device-extra.pri
+    fi
+}

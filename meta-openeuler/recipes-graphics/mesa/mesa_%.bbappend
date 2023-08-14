@@ -3,6 +3,8 @@
 # version in openEuler
 PV = "21.3.1"
 
+require mesa-${PV}.inc
+
 LIC_FILES_CHKSUM = "file://docs/license.rst;md5=17a4ea65de7a9ab42437f3131e616a7f"
 
 # add patch search path
@@ -26,3 +28,11 @@ SRC_URI:prepend = " \
 "
 
 SRC_URI[sha256sum] = "2b0dc2540cb192525741d00f706dbc4586349185dafc65729c7fda0800cc474d"
+
+# ref: mesa_21.3.1.bb
+DRIDRIVERS ??= ""
+DRIDRIVERS:append:x86-64:class-target = ",r100,r200,nouveau,i965"
+
+# kmsro: Open source graphics driver, based on gallium
+# virgl: Virtual 3D Graphics Acceleration Protocol
+PACKAGECONFIG:append = " kmsro virgl"
