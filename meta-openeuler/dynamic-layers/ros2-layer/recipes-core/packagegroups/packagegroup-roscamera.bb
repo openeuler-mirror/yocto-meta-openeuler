@@ -1,6 +1,8 @@
 SUMMARY = "ros2 pkgs of ros camera demo"
 PR = "r1"
 
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 inherit packagegroup
 
 PACKAGES = "${PN}"
