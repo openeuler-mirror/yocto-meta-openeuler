@@ -7,7 +7,7 @@ DESCRIPTION = "NLopt is a library for nonlinear local and global optimization, \
 	       several free/open-source nonlinear optimization libraries."
 HOMEPAGE = "https://nlopt.readthedocs.io/en/latest/"
 SECTION = "libs"
-LICENSE = "LGPLv2.1+"
+LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=7036bf07f719818948a837064b1af213"
 
 PV = "2.7.1"

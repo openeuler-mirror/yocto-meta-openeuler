@@ -2,7 +2,7 @@ SUMMARY = "Extended cryptographic library (from glibc)"
 DESCRIPTION = "Forked code from glibc libary to extract only crypto part."
 HOMEPAGE = "https://github.com/besser82/libxcrypt"
 SECTION = "libs"
-LICENSE = "LGPLv2.1"
+LICENSE = "LGPL-2.1-only"
 PROVIDES = "virtual/crypt"
 
 inherit external-toolchain

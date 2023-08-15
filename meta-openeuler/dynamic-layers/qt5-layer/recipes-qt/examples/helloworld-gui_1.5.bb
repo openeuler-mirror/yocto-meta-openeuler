@@ -2,7 +2,7 @@ SUMMARY = "Qt5 Hello World Test Application"
 DESCRIPTION = "This application is used to test GUI rendering \
 in a simple QWindow, plus displaying message box."
 HOMEPAGE = "https://github.com/enjoysoftware/helloworld-gui"
-LICENSE = "GPLv3"
+LICENSE = "GPL-3.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE.md;md5=86da1ce4d01bf33d04fb4d4b88fefe03"
 
 DEPENDS = "qtbase qttools-native"

@@ -7,7 +7,7 @@ HOMEPAGE = "http://git.yoctoproject.org/cgit.cgi/prelink-cross/about/"
 DESCRIPTION = "The prelink package contains a utility which modifies ELF shared libraries \
 and executables, so that far fewer relocations need to be resolved at \
 runtime and thus programs come up faster."
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=c93c0550bd3173f4504b2cbd8991e50b"
 SRCREV = "f9975537dbfd9ade0fc813bd5cf5fcbe41753a37"
 PV = "1.0+git${SRCPV}"

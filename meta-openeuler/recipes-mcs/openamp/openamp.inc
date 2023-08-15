@@ -13,7 +13,7 @@ SECTION = "libs"
 OPENEULER_REPO_NAME = "OpenAMP"
 
 ### License metadata
-LICENSE = "BSD-2-Clause & BSD-3-Clause & GPL-2.0 & Apache-2.0"
+LICENSE = "BSD-2-Clause & BSD-3-Clause & GPL-2.0-only & Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE.md;md5=a8d8cf662ef6bf9936a1e1413585ecbf"
 
 ### Inheritance and includes if needed
