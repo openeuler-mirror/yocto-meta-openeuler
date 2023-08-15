@@ -1,5 +1,5 @@
 # For the Raspberry Pi, we don't need to apply the aarch64 patches
-SRC_URI:remove:raspberrypi4 += " \
+SRC_URI:remove:raspberrypi4 = " \
     file://src-kernel-5.10/0001-modify-openeuler_defconfig-for-rt62.patch \
 "
 
