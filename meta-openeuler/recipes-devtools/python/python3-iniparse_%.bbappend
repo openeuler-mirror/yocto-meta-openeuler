@@ -9,7 +9,3 @@ SRC_URI:remove = "file://0001-Add-python-3-compatibility.patch "
 
 # fix ModuleNotFoundError: No module named 'setuptools'
 inherit setuptools3
-# fix _sysconfigdata not found error, after inherit setuptools3
-do_install:remove:class-target() {
-        export _PYTHON_SYSCONFIGDATA_NAME="_sysconfigdata"
-}

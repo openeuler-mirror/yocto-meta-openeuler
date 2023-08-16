@@ -1,23 +1,20 @@
-PV = "4.14.0"
+PV = "4.16.2"
 
 OPENEULER_BRANCH = "master"
+OPENEULER_SRC_URI_REMOVE = "https http git"
 
 # find patches under openeuler at firse
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
-# delete useless codes from poky
-SRC_URI:remove = "git://github.com/rpm-software-management/dnf.git;branch=master;protocol=https \
-"
-
 # apply patches from openeuler before poky
+# these patches not apply for unsupport arch:
+#  dnf-4.10.0-sw.patch 
+#  0001-Add-loongarch-architecture-support.patch
 SRC_URI:prepend = " \
-        https://github.com/rpm-software-management/dnf/archive/${PV}/${BPN}-${PV}.tar.gz \
-        file://unlock-pidfile-if-current-proccess-is-NOT-dnf.patch \
-        file://fix-pid-file-residue.patch \
+        file://${BPN}-${PV}.tar.gz \
         file://add-rpm-transaction-debuginfo.patch \
-        file://adapt-test-another-process.patch \
         file://fix-dnf-history-undo-error-when-history-sqlite-missing.patch \
-        file://dnf-4.10.0-sw.patch \
+        file://get-lockfile-exists-before-unlick.patch \
 "
 
 # add default repo
