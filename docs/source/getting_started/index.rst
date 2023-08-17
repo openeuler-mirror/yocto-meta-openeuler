@@ -178,16 +178,16 @@ openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发�
        $ sh openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-*.sh
 
     根据提示输入工具链的安装路径，默认路径是 :file:`/opt/openeuler/<openeuler version>`，若不设置，则按默认路径安装；也可以配置相对路径或绝对路径。
-    其中 "*" 根据分支不同生成字符不同，如23.03、22.03。
+    其中 "*" 代表不同的版本。
 
     一个例子如下：
 
     .. code-block:: console
 
-       $ sh openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-23.03.sh
-       openEuler embedded(openEuler Embedded Reference Distro) SDK installer version 23.03
+       $ sh openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-*.sh
+       openEuler embedded(openEuler Embedded Reference Distro) SDK installer version *
        ================================================================
-       Enter target directory for SDK (default: /opt/openeuler/23.03): sdk
+       Enter target directory for SDK (default: /opt/openeuler/<openeuler version>): sdk
        You are about to install the SDK to "/usr1/openeuler/sdk". Proceed [Y/n]? y
        Extracting SDK...............................................done
        Setting it up...SDK has been successfully set up and is ready to be used.
