@@ -448,8 +448,8 @@ oebuild在外围环境的配置文件,该配置文件存放在oebuild项目根�
    docker:
      repo_url: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container
      tag_map:
-       openEuler-22.09: '22.09'
-       openEuler-22.03-lts-sp1: 22.03-lts-sp1
+       openEuler-22.03: "23.03"
+       openEuler-22.03-lts-sp2: 22.03-lts-sp2
        master: latest
    basic_repo:
      yocto_meta_openeuler:
@@ -462,7 +462,7 @@ oebuild在外围环境的配置文件,该配置文件存放在oebuild项目根�
 
 - repo_url：表示openEuler Embedded的docker远程仓地址
 
-- tag_map：表示每个openEuler Embedded版本对用的docker构建容器tag
+- tag_map：表示每个openEuler Embedded版本对应的docker构建容器tag
 
 **basic_repo**:表示基础的repo仓，顾名思义，表示在构建之前是作为底座的角色存在的，在执行\ ``oebuild update``\ 时会解析config配置文件，然后下载相应的构建代码仓
 
@@ -517,7 +517,7 @@ compile.yaml
      yocto-poky:
        url: https://gitee.com/openeuler/yocto-poky.git
        path: yocto-poky
-       refspec: openEuler-22.09
+       refspec: v3.3.6
 
      yocto-meta-openembedded:
        url: https://gitee.com/openeuler/yocto-meta-openembedded.git
