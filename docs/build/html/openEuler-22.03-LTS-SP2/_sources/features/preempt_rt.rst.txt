@@ -69,7 +69,7 @@ ____
    .. code-block:: shell
 
       $ uname -a
-      Linux openeuler 5.10.0-rt62-v8 #1 SMP PREEMPT_RT Fri Mar 25 03:58:22 UTC 2022 aarch64 GNU/Linux
+      Linux openeuler ... SMP PREEMPT_RT Fri Mar 25 03:58:22 UTC 2022 aarch64 GNU/Linux
 
 ____
 
