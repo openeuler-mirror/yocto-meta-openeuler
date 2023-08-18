@@ -16,4 +16,5 @@
    :glob:
    :caption: 所支持的硬件
 
-   */index
+   arm64/index
+   x86/index
