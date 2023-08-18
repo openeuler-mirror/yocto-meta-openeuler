@@ -28,8 +28,9 @@ do_bootimg[depends] += "dosfstools-native:do_populate_sysroot \
                         mtools-native:do_populate_sysroot \
                         cdrkit-native:do_populate_sysroot \
                         virtual/kernel:do_deploy \
-                        ${@bb.utils.contains("MACHINE_FEATURES", "isohybrid", "syslinux-native:do_populate_sysroot", "", d)} "
-#                        ${@'%s:do_image_%s' % (d.getVar('PN'), d.getVar('LIVE_ROOTFS_TYPE').replace('-', '_')) if d.getVar('ROOTFS') else ''} 
+                        ${@bb.utils.contains("MACHINE_FEATURES", "isohybrid", "syslinux-native:do_populate_sysroot", "", d)} \
+                        ${@'%s:do_image_%s' % (d.getVar('PN'), d.getVar('LIVE_ROOTFS_TYPE').replace('-', '_')) if d.getVar('ROOTFS') else ''} \
+                        "
 
 LABELS_LIVE ?= "boot install"
 ROOT_LIVE ?= "root=/dev/ram0"
