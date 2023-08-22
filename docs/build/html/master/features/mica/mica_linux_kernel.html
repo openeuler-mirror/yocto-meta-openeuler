@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>基于Linux kernel的混合部署实现 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq/index.html">常见问题</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">关键特性</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bsp/index.html">南向支持</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../yocto/index.html">构建系统</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../develop_help/index.html">开发帮助</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../linux/index.html">使用与配置</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../infrastructure/index.html">基础设施</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">oebuild指导</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../oebuild/install/index.html">安装介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../oebuild/command/index.html">oebuild命令介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../oebuild/directory/index.html">目录介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../oebuild/configure/index.html">配置文件介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../oebuild/develop/index.html">开发者介绍</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>基于Linux kernel的混合部署实现</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="linux-kernel">
+<span id="mica-linux-kernel"></span><h1>基于Linux kernel的混合部署实现<a class="headerlink" href="#linux-kernel" title="Permalink to this headline">¶</a></h1>
+<section id="id1">
+<h2>使用方法<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>目前暂时仅支持在QEMU中的aarch64架构下实现与zephyr的混合部署。我们可以通过OeBuild生成支持混合部署的Linux内核和zephyr镜像。</p>
+<ol class="arabic simple">
+<li><p>生成kernel和rootfs</p></li>
+</ol>
+<blockquote>
+<div><p>首先，在OeBuild目录下，输入命令<code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">generate</span> <span class="pre">-f</span> <span class="pre">openeuler-mcs</span> <span class="pre">-d</span> <span class="pre">[directory-name]</span></code> 。
+生成了构建目录以后，接着运行<code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">bitbake</span></code> ，OeBuild会启动一个构建容器。进入容器中，运行<code class="docutils literal notranslate"><span class="pre">bitbake</span> <span class="pre">openeuler-image-mcs</span></code> 生成Linux内核镜像和rootfs。</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>制作一份设备树文件</p></li>
+</ol>
+<blockquote>
+<div><p>首先，我们需要生成一份基于QEMU支持的硬件架构的设备树，输入如下命令，可以获得基于GICv3，1G RAM，4核Cortex-A57的硬件架构的设备树：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">qemu</span><span class="o">-</span><span class="n">system</span><span class="o">-</span><span class="n">aarch64</span> <span class="o">-</span><span class="n">M</span> <span class="n">virt</span><span class="p">,</span><span class="n">gic</span><span class="o">-</span><span class="n">version</span><span class="o">=</span><span class="mi">3</span> <span class="o">-</span><span class="n">m</span> <span class="mi">1</span><span class="n">G</span> <span class="o">-</span><span class="n">cpu</span> <span class="n">cortex</span><span class="o">-</span><span class="n">a57</span> <span class="o">-</span><span class="n">nographic</span> <span class="o">-</span><span class="n">smp</span> <span class="mi">4</span> <span class="o">-</span><span class="n">M</span> <span class="n">dumpdtb</span><span class="o">=</span><span class="n">qemu</span><span class="o">.</span><span class="n">dtb</span>
+</pre></div>
+</div>
+<p>dtb是设备树的二进制文件，我们需要将其转换为可读的源代码文件：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dtc</span> <span class="o">-</span><span class="n">I</span> <span class="n">dtb</span> <span class="o">-</span><span class="n">O</span> <span class="n">dts</span> <span class="o">-</span><span class="n">o</span> <span class="n">qemu</span><span class="o">.</span><span class="n">dts</span> <span class="n">qemu</span><span class="o">.</span><span class="n">dtb</span>
+</pre></div>
+</div>
+<p>接下来，在已有的设备树文件中的一层结构下添加保留内存节点和remoteproc实例的节点：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">reserved</span><span class="o">-</span><span class="n">memory</span> <span class="p">{</span>
+  <span class="c1">#address-cells = &lt;0x02&gt;;</span>
+  <span class="c1">#size-cells = &lt;0x02&gt;;</span>
+  <span class="n">ranges</span><span class="p">;</span>
+
+  <span class="o">//</span> <span class="n">可执行文件存放的内存区域</span>
+  <span class="n">zephyr_reserved</span><span class="p">:</span> <span class="n">zephyr_reserved</span><span class="o">@</span><span class="mi">7</span><span class="n">a000000</span> <span class="p">{</span>
+    <span class="n">compatible</span> <span class="o">=</span> <span class="s2">&quot;mcs_mem&quot;</span><span class="p">;</span>
+    <span class="n">reg</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mh">0x00</span> <span class="mh">0x7a000000</span> <span class="mh">0x00</span> <span class="mh">0x4000000</span><span class="o">&gt;</span><span class="p">;</span>
+    <span class="n">no</span><span class="o">-</span><span class="nb">map</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="o">//</span> <span class="n">共享内存区域</span>
+  <span class="n">zephyr_dma_memory_region</span><span class="p">:</span> <span class="n">zephyr</span><span class="o">-</span><span class="n">dma</span><span class="o">-</span><span class="n">memory</span><span class="o">@</span><span class="mi">70000000</span> <span class="p">{</span>
+    <span class="n">compatible</span> <span class="o">=</span> <span class="s2">&quot;shared-dma-pool&quot;</span><span class="p">;</span>
+    <span class="n">reg</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mh">0x00</span> <span class="mh">0x70000000</span> <span class="mh">0x00</span> <span class="mh">0x100000</span><span class="o">&gt;</span><span class="p">;</span>
+    <span class="n">no</span><span class="o">-</span><span class="nb">map</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">};</span>
+
+<span class="n">rproc_demo</span> <span class="p">{</span>
+  <span class="n">compatible</span> <span class="o">=</span> <span class="s2">&quot;oe,mcs_remoteproc&quot;</span><span class="p">;</span>
+  <span class="n">memory</span><span class="o">-</span><span class="n">region</span> <span class="o">=</span> <span class="o">&lt;&amp;</span><span class="n">zephyr_dma_memory_region</span><span class="o">&gt;</span><span class="p">,</span>
+  <span class="o">&lt;&amp;</span><span class="n">zephyr_reserved</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>将修改后的dts文件重新生成dtb文件：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dtc</span> <span class="o">-</span><span class="n">I</span> <span class="n">dts</span> <span class="o">-</span><span class="n">O</span> <span class="n">dtb</span> <span class="o">-</span><span class="n">o</span> <span class="n">qemu</span><span class="o">.</span><span class="n">dtb</span> <span class="n">qemu</span><span class="o">.</span><span class="n">dts</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>使用QEMU启动系统</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">qemu</span><span class="o">-</span><span class="n">system</span><span class="o">-</span><span class="n">aarch64</span> <span class="o">-</span><span class="n">M</span> <span class="n">virt</span><span class="p">,</span><span class="n">gic</span><span class="o">-</span><span class="n">version</span><span class="o">=</span><span class="mi">3</span> <span class="o">-</span><span class="n">m</span> <span class="mi">1</span><span class="n">G</span> <span class="o">-</span><span class="n">cpu</span> <span class="n">cortex</span><span class="o">-</span><span class="n">a57</span> <span class="o">-</span><span class="n">nographic</span> \
+<span class="o">-</span><span class="n">append</span> <span class="s1">&#39;maxcpus=3&#39;</span> <span class="o">-</span><span class="n">smp</span> <span class="mi">4</span> <span class="o">-</span><span class="n">kernel</span> <span class="n">zImage</span> <span class="o">-</span><span class="n">initrd</span> <span class="n">openeuler</span><span class="o">-</span><span class="n">image</span><span class="o">.</span><span class="n">cpio</span><span class="o">.</span><span class="n">gz</span> <span class="o">-</span><span class="n">dtb</span> <span class="n">qemu_mcs</span><span class="o">.</span><span class="n">dtb</span> \
+<span class="o">-</span><span class="n">device</span> <span class="n">virtio</span><span class="o">-</span><span class="n">net</span><span class="o">-</span><span class="n">device</span><span class="p">,</span><span class="n">netdev</span><span class="o">=</span><span class="n">tap0</span> <span class="o">-</span><span class="n">netdev</span> <span class="n">tap</span><span class="p">,</span><span class="nb">id</span><span class="o">=</span><span class="n">tap0</span><span class="p">,</span><span class="n">script</span><span class="o">=./</span><span class="n">qemu</span><span class="o">-</span><span class="n">ifup</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic" start="4">
+<li><p>安装内核驱动</p>
+<p>进入QEMU中的Linux，通过命令行输入<code class="docutils literal notranslate"><span class="pre">modprobe</span> <span class="pre">mcs_remoteproc</span></code> 命令安装内核驱动mcs_remoteproc.ko。</p>
+</li>
+<li><p>配置remoteproc实例</p></li>
+</ol>
+<blockquote>
+<div><p>此时，我们已经有了一个remoteproc实例，并且它的char device的接口位于
+<code class="docutils literal notranslate"><span class="pre">/sys/class/remoteproc/</span></code> 目录下面，名称为 <code class="docutils literal notranslate"><span class="pre">remoteproc[X]</span></code> ，X是数字。
+此时，我们需要指定remoteproc实例运行的固件名称，
+然后remoteproc框架会默认从<code class="docutils literal notranslate"><span class="pre">/lib/firmware/</span></code> 目录下寻找指定名称的固件。
+指定firmware名称的命令是：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="p">[</span><span class="n">firmware</span> <span class="n">name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">class</span><span class="o">/</span><span class="n">remoteproc</span><span class="o">/</span><span class="n">remoteproc</span><span class="p">[</span><span class="n">X</span><span class="p">]</span><span class="o">/</span><span class="n">firmware</span>
+<span class="c1"># the following bash command is an example</span>
+<span class="n">echo</span> <span class="n">zephyr</span><span class="o">-</span><span class="n">image</span><span class="o">.</span><span class="n">elf</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">class</span><span class="o">/</span><span class="n">remoteproc</span><span class="o">/</span><span class="n">remoteproc0</span><span class="o">/</span><span class="n">firmware</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>当前框架下要求client OS的可执行文件必须为elf格式的文件。</p>
+</div>
+<p>当然，我们也可以指定存放firmware的路径（不包括firmware自己的文件名），
+如下命令可以增加一个查找固件的路径：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="p">[</span><span class="n">firmware</span> <span class="n">path</span><span class="p">]</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">module</span><span class="o">/</span><span class="n">firmware_class</span><span class="o">/</span><span class="n">parameters</span><span class="o">/</span><span class="n">path</span>
+<span class="c1"># the following bash command is an example, /firmware is a directory</span>
+<span class="c1"># holding OS firmware</span>
+<span class="n">echo</span> <span class="o">/</span><span class="n">firmware</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">module</span><span class="o">/</span><span class="n">firmware_class</span><span class="o">/</span><span class="n">parameters</span><span class="o">/</span><span class="n">path</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="6">
+<li><p>现在，一切都准备就绪了，我们可以启动这个remoteproc实例：</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="n">start</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">class</span><span class="o">/</span><span class="n">remoteproc</span><span class="o">/</span><span class="n">remoteproc</span><span class="p">[</span><span class="n">X</span><span class="p">]</span><span class="o">/</span><span class="n">state</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="7">
+<li><p>当remoteproc实例启动后，Linux中的<code class="docutils literal notranslate"><span class="pre">\dev</span></code> 目录下会出现名为<code class="docutils literal notranslate"><span class="pre">ttyRPMsg[X]</span></code> 的RPMsg设备的tty接口，X是数字。
+我们只需要使用screen命令打开这个设备就可以与client OS通过命令行进行交互：</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">screen</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">ttyRPMsg</span><span class="p">[</span><span class="n">X</span><span class="p">]</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="8">
+<li><p>如果我们想停止remoteproc实例，可以使用如下命令：</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="n">stop</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">class</span><span class="o">/</span><span class="n">remoteproc</span><span class="o">/</span><span class="n">remoteproc</span><span class="p">[</span><span class="n">X</span><span class="p">]</span><span class="o">/</span><span class="n">state</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="client-os">
+<h2>client OS端的配置<a class="headerlink" href="#client-os" title="Permalink to this headline">¶</a></h2>
+<p>要想实现混合部署，我们需要依赖于Linux的remoteproc框架和RPMsg协议。remoteproc框架实现了对远程处理器的生命周期控制，
+而RPMsg协议则是一个用于使能CPU之间通信的传输层协议。</p>
+<p>remoteproc框架中的每一个实例除了对应了物理CPU，还有这个CPU上运行的固件（firmware）。这个固件的格式必须是elf，
+并且必须包含通过一个名为<code class="docutils literal notranslate"><span class="pre">.resource_table</span></code> 的特殊section。资源表的数据结构的定义存在于内核头文件：
+/include/linux/remoteproc.h。定义如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// 资源表的数据结构
+struct resource_table {
+  u32 ver; // 版本号
+  u32 num; // 资源的数量
+  u32 reserved[2]; // 保留字段，默认为0
+  u32 offset[]; // 资源条目的入口在资源表中的偏移量，以及资源的数据内容
+} __packed;
+
+// 每个资源条目的数据结构，跟在资源表的offset后面
+struct fw_rsc_hdr {
+      u32 type; // 资源的种类
+      u8 data[0]; // 数据内容，每个资源都有自定义的数据内容的结构
+} __packed;
+
+// 当前资源表支持的所有资源种类
+enum fw_resource_type {
+      RSC_CARVEOUT            = 0, // 请求分配的连续内存空间
+      RSC_DEVMEM              = 1, // 请求在iommmu中进行映射的设备地址和物理地址
+      RSC_TRACE               = 2, // trace buffer，用于写入log信息
+      RSC_VDEV                = 3, // 请求创建的virtio device
+      RSC_LAST                = 4, // 标识符，表示标准资源列表的结束
+      RSC_VENDOR_START        = 128, // 标识符，表示自定义资源列表的开始
+      RSC_VENDOR_END          = 512, // 标识符，表示自定义资源列表的结束
+};
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>resource table并不是一个单向传递信息的数据结构。由于资源是需要master，也就是Linux侧进行分配，
+所以一开始resource table中填入的只有资源数量，而资源地址的信息需要Linux分配后再填入。</p>
+</div>
+<p>由于我们需要使能RPMsg，但是RPMsg只是一个传输层协议，底层需要有链路层和物理层的支持。物理层就是我们的共享内存，
+而链路层则是virtio。我们必须在资源表中填入底层支持的virtio device的资源信息，
+然后由Linux端分配virtio device。下面的代码是资源表中virtio device相关的数据结构：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>// virtio device的资源信息
+struct fw_rsc_vdev {
+  u32 id; // virtio设备类型，参见Linux头文件virtio_ids.h
+  u32 notifyid; // 当提醒远端处理器的时候，使用这个告知对端这个设备发生了变化（整个rproc实例唯一）
+  u32 dfeatures; // virtio设备支持的特性
+  u32 gfeatures; // host写入的协商后的双方都支持的特性
+  u32 config_len; // 配置空间的长度。配置空间也存在于资源表中，在这个virtio设备后面
+  u8 status; // host会将设备初始化进程利用这个变量进行同步
+  u8 num_of_vrings; // 设备包含的vring总数
+  u8 reserved[2];
+  struct fw_rsc_vdev_vring vring[];
+} __packed;
+
+// virtio device的每个vring的资源信息，紧跟在virtio device资源信息之后
+struct fw_rsc_vdev_vring {
+  u32 da; // 设备（虚拟）地址
+  u32 align; // 内存对齐方式
+  u32 num; // buffer的数量
+  u32 notifyid; // notifyid也就是vring的id
+  u32 pa; // 物理地址
+} __packed;
+</pre></div>
+</div>
+<p>Linux侧根据资源表中的信息分配好相关资源后，会将资源地址写入resource table中。因此，
+client OS端的程序还需要支持从elf文件中的<code class="docutils literal notranslate"><span class="pre">.resource_table</span></code> section读取相应的信息，
+比如vring的地址。</p>
+<p>下面的代码定义了一个只包含virtio device的资源表：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>static struct fw_resource_table __resource resource_table = {
+  .ver = 1,
+  .num = 1,
+  .offset = {
+    offsetof(struct fw_resource_table, vdev),
+  },
+  /* Virtio device entry */
+  .vdev = {
+    RSC_VDEV, // 资源描述符，表示这是一个virtio device
+    VIRTIO_ID_RPMSG, // 表明这个virtio设备用于RPMsg通信
+    0,
+    RPMSG_IPU_C0_FEATURES, 0, 0, 0,
+    VRING_COUNT, {0, 0},
+  },
+
+  /* Vring rsc entry - part of vdev rsc entry */
+  .vring0 = {-1, // remoteproc框架中的FW_RSC_ADDR_ANY，表示由Linux进行资源分配
+      -1, // 表明对齐也由硬件指定
+      8, // 8个buffer
+      0, // vring0的id就是0
+      0 // 物理地址
+  },
+  .vring1 = {-1, -1, 8, 1, 0},
+};
+</pre></div>
+</div>
+<p>定义好了数据结构以后，还需要将这部分内容编译链接到client OS的ELF可执行文件中。
+此外，client OS需要有读取ELF中资源表的相关函数，
+从而能从virtio设备的status字段中获取host配置的进度，以及从资源表中获取资源的地址。</p>
+<p>配置好了virtio device后，client OS还需要配置核间中断，用于RPMsg的通信。之后，
+再添加一些与RPMsg相关的代码就可以正常通信了。
+新MICA框架对于client OS来说的不同之处主要在于需要使用资源表配置底层的virtio
+device，其他的上层应用不需要有太多的变化。</p>
+</section>
+<section id="linux">
+<h2>Linux端驱动的工作内容<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h2>
+<section id="probe">
+<h3>内核驱动的probe函数<a class="headerlink" href="#probe" title="Permalink to this headline">¶</a></h3>
+<p>为了更好的理解驱动（Driver）的工作内容，我们从一个驱动最开始执行的代码开始：probe函数。原本最开始执行的函数是初始化函数，
+当我们插入这个驱动的时候，Linux会通过带有<code class="docutils literal notranslate"><span class="pre">MODULE_INIT</span></code> 字段的函数执行初始化流程，主要用于做一些特殊的配置，
+然后调用<code class="docutils literal notranslate"><span class="pre">platform_driver_register</span></code> 函数注册驱动。由于目前我们的驱动并不需要在初始化的时候做特别的事情，
+所以我们并没有init函数。<code class="docutils literal notranslate"><span class="pre">MODULE_PLATFORM_DRIVER</span></code> 这个宏定义会调用<code class="docutils literal notranslate"><span class="pre">platform_driver_register</span></code> 函数注册驱动，
+之后系统的总线会遍历注册到总线上的设备（Device），查看是否有和本驱动匹配的设备。
+如果有，则将本驱动和设备绑定在一起，并执行驱动的probe函数，检查硬件资源是否符合要求，并进行相应的配置和准备工作。
+而probe函数的执行由于已经发现了设备，此时的工作内容主要是初始化设备，分配硬件和软件资源，以及将设备注册到kernel中。
+接下来是probe函数的主要工作内容：</p>
+<ol class="arabic simple">
+<li><p>创建remoteproc实例</p></li>
+</ol>
+<blockquote>
+<div><p>remoteproc框架对于远端处理器的管理，从某种程度上来说，是面向对象的。当需要在一个或一组远端处理器上运行一个固件（firmware），
+我们需要创建一个remoteproc实例，之后的生命周期管理都是通过与这个实例进行交互的方式进行的。
+所以，首先我们需要先通过<code class="docutils literal notranslate"><span class="pre">devm_rproc_alloc</span></code> 这一API分配一个remoteproc实例。此时，这个实例还没有被注册到
+remoteproc框架，因为我们还有一些其他的信息需要配置。</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>配置电源管理</p></li>
+</ol>
+<blockquote>
+<div><p>由于我们需要启动CPU，需要用到ARM提供的电源管理接口（Power State Coordination Interface）。在ARMv8架构下，
+非安全世界的特权等级一共分为4层。位于EL2的虚拟机和EL3的安全监视器都可以对硬件资源进行直接的控制，根据启动方式的不同，
+最终控制硬件资源的特权等级也不同。比如，如果混合部署系统运行在QEMU上，由于底层是虚拟机，对于QEMU中的Linux来说是EL2层。
+如果Linux希望启动CPU，则需要依赖EL2层的固件执行电源管理相关指令，所以需要生成EL2层的exception，
+使得系统下陷（trap）到EL2层，由EL2的固件调用PSCI接口启动CPU。而如果在某个支持TrustZone的机器上运行混合部署系统，
+由于需要经过ATF（ARM Trusted Firmware）对硬件进行配置，这是一个运行在EL3的固件，
+所以我们在配置电源管理的时候就需要生成能让系统下陷到EL3层的指令，由EL3的固件启动CPU。
+目前我们通过设备树指定支持的psci接口版本和直接调用psci接口的方式（hvc或smc），
+这样我们在驱动中就可以解析设备树来配置相关的电源管理方法。</p>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>初始化内存</p></li>
+</ol>
+<blockquote>
+<div><p>在当前的内核驱动实现中，client OS运行的时候可执行文件存放的内存（名为zephyr_reserved），
+以及Linux和client OS通信的物理层也就是共享内存（名为zephyr_dma_memory_region）
+都在设备树中进行了定义。然后，在remoteproc实例对应的设备rproc_demo中将这两段内存区间加入到
+<code class="docutils literal notranslate"><span class="pre">memory-region</span></code> 字段中。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">reserved</span><span class="o">-</span><span class="n">memory</span> <span class="p">{</span>
+  <span class="c1">#address-cells = &lt;0x02&gt;;</span>
+  <span class="c1">#size-cells = &lt;0x02&gt;;</span>
+  <span class="n">ranges</span><span class="p">;</span>
+
+  <span class="o">//</span> <span class="n">可执行文件存放的内存区域</span>
+  <span class="n">zephyr_reserved</span><span class="p">:</span> <span class="n">zephyr_reserved</span><span class="o">@</span><span class="mi">7</span><span class="n">a000000</span> <span class="p">{</span>
+    <span class="n">compatible</span> <span class="o">=</span> <span class="s2">&quot;mcs_mem&quot;</span><span class="p">;</span>
+    <span class="n">reg</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mh">0x00</span> <span class="mh">0x7a000000</span> <span class="mh">0x00</span> <span class="mh">0x4000000</span><span class="o">&gt;</span><span class="p">;</span>
+    <span class="n">no</span><span class="o">-</span><span class="nb">map</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="o">//</span> <span class="n">共享内存区域</span>
+  <span class="n">zephyr_dma_memory_region</span><span class="p">:</span> <span class="n">zephyr</span><span class="o">-</span><span class="n">dma</span><span class="o">-</span><span class="n">memory</span><span class="o">@</span><span class="mi">70000000</span> <span class="p">{</span>
+    <span class="n">compatible</span> <span class="o">=</span> <span class="s2">&quot;shared-dma-pool&quot;</span><span class="p">;</span>
+    <span class="n">reg</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mh">0x00</span> <span class="mh">0x70000000</span> <span class="mh">0x00</span> <span class="mh">0x100000</span><span class="o">&gt;</span><span class="p">;</span>
+    <span class="n">no</span><span class="o">-</span><span class="nb">map</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">};</span>
+
+<span class="n">rproc_demo</span> <span class="p">{</span>
+  <span class="n">compatible</span> <span class="o">=</span> <span class="s2">&quot;oe,mcs_remoteproc&quot;</span><span class="p">;</span>
+  <span class="n">memory</span><span class="o">-</span><span class="n">region</span> <span class="o">=</span> <span class="o">&lt;&amp;</span><span class="n">zephyr_dma_memory_region</span><span class="o">&gt;</span><span class="p">,</span>
+  <span class="o">&lt;&amp;</span><span class="n">zephyr_reserved</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>由于我们目前使用的zephyr可执行文件是位置相关的二进制文件（Position Dependent Code），
+其中的相关变量和函数地址都是固定地址，
+所以必须得加载到zephyr指定的地址运行，否则程序无法正常执行。
+因此，我们需要通过设备树预留zephyr指定的内存作为其加载地址。
+此外，remoteproc框架和Linux kernel中对于RPMsg协议的实现中，
+都是使用DMA API为virtio device分配vring和vring buffer的，
+而<code class="docutils literal notranslate"><span class="pre">dma_alloc_coherent</span></code> 这一API的底层实现方式为，如果device本身有保留内存，
+则优先从保留内存的区域中分配一段内存；如果没有保留内存，则直接从系统内存中分配一段内存。
+由于我们必须将vring和vring buffer分配到共享内存中，我们通过
+<code class="docutils literal notranslate"><span class="pre">of_reserved_mem_device_init_by_idx</span></code> API将设备树中compatible字段为 <code class="docutils literal notranslate"><span class="pre">shared-dma-pool</span></code> 的共享内存添加到device的保留内存中，
+这样系统在分配内存的时候就会从指定的共享内存中分配内存，
+zephyr和Linux都可以直接访问到vring和vring buffer。</p>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li><p>将remoteproc实例注册到remoteproc框架</p></li>
+</ol>
+<blockquote>
+<div><p>调用<code class="docutils literal notranslate"><span class="pre">devm_rproc_add</span></code> API将remoteproc实例注册到remoteproc框架。首先会先通过<code class="docutils literal notranslate"><span class="pre">device_add</span></code> 将device添加到kobject层级结构中，
+然后添加到驱动模型中其他的子系统。然后，添加debugfs的入口，并且为这个remoteproc实例添加相应的char device。
+char device会被用来进行后续的对此实例的操作，比如指定固件的名称，发送启动和停止命令等。</p>
+</div></blockquote>
+</section>
+<section id="remoteproc">
+<h3>remoteproc实例的钩子函数<a class="headerlink" href="#remoteproc" title="Permalink to this headline">¶</a></h3>
+<p>此外，还有一些比较重要的remoteproc框架中的钩子函数，会影响到框架的正常使用：</p>
+<ol class="arabic simple">
+<li><p>start</p></li>
+</ol>
+<blockquote>
+<div><p>当用户通过命令行输入启动命令时，remoteproc框架会将可执行文件拷贝到预设的启动地址，并调用这个函数。
+当前内核驱动实现的start函数主要做的事情，一方面初始化核间中断，并配置相关的中断处理函数。
+一方面通过电源管理启动CPU。</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>da_to_va</p></li>
+</ol>
+<blockquote>
+<div><p>这个函数主要做的事情，是将resource table中的地址，也称为device (virtual) address，
+转换为Linux中CPU的virtual address。如果用户实现了相关的钩子函数，则调用用户的钩子函数。
+如果用户没有实现相关函数，它则遍历resource
+table中的carveout，找到已经做了映射的合适区间的内存区域，将它的CPU virtual address返回。</p>
+<p>目前我们没有使用carveout这一resource table的选项，
+因为我们不希望Linux随机为我们分配一块内存，而是希望使用指定的内存区间。因此，
+我们将elf文件加载的内存区域在设备树中进行指定，
+并且在内核驱动的初始化内存的函数中进行了内存映射，
+将映射后的CPU虚拟地址放在我们自己创建的私有数据结构 <code class="docutils literal notranslate"><span class="pre">struct</span> <span class="pre">mcs_rproc_pdata</span></code> 中。
+所以，我们需要编写自己的da_to_va函数，在解析da的时候遍历私有数据结构中的内存映射，
+并将相应CPU virtual address返回。</p>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>kick</p></li>
+</ol>
+<blockquote>
+<div><p>kick函数主要作用就是提供一种提醒远端处理器的方法。目前我们配置的方法是核间中断。这个方法在发送RPMsg信息的时候被调用，
+通知远端处理器获取vring中的信息。</p>
+</div></blockquote>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="mica_linux_kernel.html">master</a></dd>
+      <dd><a href="../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
