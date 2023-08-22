@@ -24,11 +24,11 @@ SRC_URI:append:aarch64 = " \
 S = "${WORKDIR}/mcs"
 
 # for x86
-OPENEULER_LOCAL_NAME_x86-64 = "mcs-x86"
+OPENEULER_LOCAL_NAME:x86-64 = "mcs-x86"
 SRC_URI:append:x86-64 = " \
     file://mcs-x86 \
     "
-S_x86-64 = "${WORKDIR}/mcs-x86"
+S:x86-64 = "${WORKDIR}/mcs-x86"
 
 # the software packages required in build
 DEPENDS = "openamp libmetal"
