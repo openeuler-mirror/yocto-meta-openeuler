@@ -8,7 +8,7 @@ PR = "r1"
 
 PACKAGES = "${PN}"
 
-RDEPENDS:${PN} = "\
+RDEPENDS:${PN} = " \
 libseccomp \
 libwebsockets \
 yajl \
@@ -18,4 +18,5 @@ libevhtp \
 libarchive \
 libevent \
 isulad \
-    "
+${@bb.utils.contains('INIT_MANAGER', 'systemd', 'lxcfs', '', d)} \
+"
