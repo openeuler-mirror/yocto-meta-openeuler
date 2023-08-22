@@ -33,8 +33,8 @@ CELL_DIR ?= "${JH_DATADIR}/cells"
 INMATES_DIR ?= "${JH_DATADIR}/inmates"
 DTS_DIR ?= "${JH_DATADIR}/cells/dts"
 
-JH_CELLS_raspberrypi4-64 = "rpi4"
-JH_CELLS_qemu-aarch64 = "qemu-arm64"
+JH_CELLS:raspberrypi4-64 = "rpi4"
+JH_CELLS:qemu-aarch64 = "qemu-arm64"
 
 do_configure:prepend() {
 	if ls ${WORKDIR}/cells/${ARCH}/${JH_CELLS}*.c 1>/dev/null 2>&1; then
@@ -50,9 +50,6 @@ do_compile() {
 }
 
 do_install() {
-	# Install pyjailhouse python modules needed by the tools
-	distutils3_do_install
-
 	# We want to install the python tools, but we do not want to use pip...
 	# At least with v0.10, we can work around this with
 	# 'PIP=":" PYTHON_PIP_USEABLE=yes'
