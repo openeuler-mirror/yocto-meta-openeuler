@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>基于Linux kernel的混合部署实现 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
+  <title>基于Linux remoteproc &amp; RPMsg框架的混合部署实现 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
@@ -19,7 +19,9 @@
         <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="外设分区管理" href="../lopper_devicetree.html" />
+    <link rel="prev" title="基于openAMP的混合部署实现" href="mica_openamp.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,8 +47,33 @@
 <li class="toctree-l1"><a class="reference internal" href="../../faq/index.html">常见问题</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../index.html">关键特性</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">关键特性</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../software_package_description.html">当前所支持的软件包</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">混合关键性系统部署</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mica.html">混合关键性系统简介</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mica_openamp.html">基于openAMP的混合部署实现</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">基于Linux remoteproc &amp; RPMsg框架的混合部署实现</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">使用方法</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#client-os">client OS端的配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#linux">Linux端驱动的工作内容</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../lopper_devicetree.html">外设分区管理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../muslc.html">musl libc的支持</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../distributed_softbus.html">分布式软总线</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../preempt_rt.html">软实时系统介绍</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../nativesdk.html">nativesdk 特性</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rust.html">支持Rust工具链</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../qt5_wayland.html">嵌入式图形支持</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../armnn.html">ArmNN的支持</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../clang_llvm.html">clang/llvm 编译工具链支持</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../jailhouse.html">轻量级虚拟化工具 Jailhouse</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../../bsp/index.html">南向支持</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../yocto/index.html">构建系统</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../develop_help/index.html">开发帮助</a></li>
@@ -76,7 +103,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>基于Linux kernel的混合部署实现</li>
+          <li><a href="../index.html">关键特性</a> &raquo;</li>
+          <li><a href="index.html">混合关键性系统部署</a> &raquo;</li>
+      <li>基于Linux remoteproc &amp; RPMsg框架的混合部署实现</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -85,17 +114,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="linux-kernel">
-<span id="mica-linux-kernel"></span><h1>基于Linux kernel的混合部署实现<a class="headerlink" href="#linux-kernel" title="Permalink to this headline">¶</a></h1>
+  <section id="linux-remoteproc-rpmsg">
+<span id="mica-linux-kernel"></span><h1>基于Linux remoteproc &amp; RPMsg框架的混合部署实现<a class="headerlink" href="#linux-remoteproc-rpmsg" title="Permalink to this headline">¶</a></h1>
 <section id="id1">
 <h2>使用方法<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>目前暂时仅支持在QEMU中的aarch64架构下实现与zephyr的混合部署。我们可以通过OeBuild生成支持混合部署的Linux内核和zephyr镜像。</p>
+<p>目前暂时仅支持在QEMU中的aarch64架构下实现与client OS的混合部署。我们可以通过oebuild生成支持混合部署的Linux内核和client OS镜像。</p>
 <ol class="arabic simple">
 <li><p>生成kernel和rootfs</p></li>
 </ol>
 <blockquote>
-<div><p>首先，在OeBuild目录下，输入命令<code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">generate</span> <span class="pre">-f</span> <span class="pre">openeuler-mcs</span> <span class="pre">-d</span> <span class="pre">[directory-name]</span></code> 。
-生成了构建目录以后，接着运行<code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">bitbake</span></code> ，OeBuild会启动一个构建容器。进入容器中，运行<code class="docutils literal notranslate"><span class="pre">bitbake</span> <span class="pre">openeuler-image-mcs</span></code> 生成Linux内核镜像和rootfs。</p>
+<div><p>首先，在oebuild目录下，输入命令<code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">generate</span> <span class="pre">-f</span> <span class="pre">openeuler-mcs</span> <span class="pre">-d</span> <span class="pre">[directory-name]</span></code> 。
+生成了构建目录以后，接着运行<code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">bitbake</span></code> ，oebuild会启动一个构建容器。进入容器中，运行<code class="docutils literal notranslate"><span class="pre">bitbake</span> <span class="pre">openeuler-image-mcs</span></code> 生成Linux内核镜像和rootfs。</p>
 </div></blockquote>
 <ol class="arabic simple" start="2">
 <li><p>制作一份设备树文件</p></li>
@@ -116,14 +145,14 @@
   <span class="n">ranges</span><span class="p">;</span>
 
   <span class="o">//</span> <span class="n">可执行文件存放的内存区域</span>
-  <span class="n">zephyr_reserved</span><span class="p">:</span> <span class="n">zephyr_reserved</span><span class="o">@</span><span class="mi">7</span><span class="n">a000000</span> <span class="p">{</span>
+  <span class="n">client_os_reserved</span><span class="p">:</span> <span class="n">client_os_reserved</span><span class="o">@</span><span class="mi">7</span><span class="n">a000000</span> <span class="p">{</span>
     <span class="n">compatible</span> <span class="o">=</span> <span class="s2">&quot;mcs_mem&quot;</span><span class="p">;</span>
     <span class="n">reg</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mh">0x00</span> <span class="mh">0x7a000000</span> <span class="mh">0x00</span> <span class="mh">0x4000000</span><span class="o">&gt;</span><span class="p">;</span>
     <span class="n">no</span><span class="o">-</span><span class="nb">map</span><span class="p">;</span>
   <span class="p">};</span>
 
   <span class="o">//</span> <span class="n">共享内存区域</span>
-  <span class="n">zephyr_dma_memory_region</span><span class="p">:</span> <span class="n">zephyr</span><span class="o">-</span><span class="n">dma</span><span class="o">-</span><span class="n">memory</span><span class="o">@</span><span class="mi">70000000</span> <span class="p">{</span>
+  <span class="n">client_os_dma_memory_region</span><span class="p">:</span> <span class="n">client_os</span><span class="o">-</span><span class="n">dma</span><span class="o">-</span><span class="n">memory</span><span class="o">@</span><span class="mi">70000000</span> <span class="p">{</span>
     <span class="n">compatible</span> <span class="o">=</span> <span class="s2">&quot;shared-dma-pool&quot;</span><span class="p">;</span>
     <span class="n">reg</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mh">0x00</span> <span class="mh">0x70000000</span> <span class="mh">0x00</span> <span class="mh">0x100000</span><span class="o">&gt;</span><span class="p">;</span>
     <span class="n">no</span><span class="o">-</span><span class="nb">map</span><span class="p">;</span>
@@ -132,8 +161,8 @@
 
 <span class="n">rproc_demo</span> <span class="p">{</span>
   <span class="n">compatible</span> <span class="o">=</span> <span class="s2">&quot;oe,mcs_remoteproc&quot;</span><span class="p">;</span>
-  <span class="n">memory</span><span class="o">-</span><span class="n">region</span> <span class="o">=</span> <span class="o">&lt;&amp;</span><span class="n">zephyr_dma_memory_region</span><span class="o">&gt;</span><span class="p">,</span>
-  <span class="o">&lt;&amp;</span><span class="n">zephyr_reserved</span><span class="o">&gt;</span><span class="p">;</span>
+  <span class="n">memory</span><span class="o">-</span><span class="n">region</span> <span class="o">=</span> <span class="o">&lt;&amp;</span><span class="n">client_os_dma_memory_region</span><span class="o">&gt;</span><span class="p">,</span>
+  <span class="o">&lt;&amp;</span><span class="n">client_os_reserved</span><span class="o">&gt;</span><span class="p">;</span>
 <span class="p">};</span>
 </pre></div>
 </div>
@@ -166,7 +195,7 @@
 指定firmware名称的命令是：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="p">[</span><span class="n">firmware</span> <span class="n">name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">class</span><span class="o">/</span><span class="n">remoteproc</span><span class="o">/</span><span class="n">remoteproc</span><span class="p">[</span><span class="n">X</span><span class="p">]</span><span class="o">/</span><span class="n">firmware</span>
 <span class="c1"># the following bash command is an example</span>
-<span class="n">echo</span> <span class="n">zephyr</span><span class="o">-</span><span class="n">image</span><span class="o">.</span><span class="n">elf</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">class</span><span class="o">/</span><span class="n">remoteproc</span><span class="o">/</span><span class="n">remoteproc0</span><span class="o">/</span><span class="n">firmware</span>
+<span class="n">echo</span> <span class="n">client_os</span><span class="o">-</span><span class="n">image</span><span class="o">.</span><span class="n">elf</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">class</span><span class="o">/</span><span class="n">remoteproc</span><span class="o">/</span><span class="n">remoteproc0</span><span class="o">/</span><span class="n">firmware</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -349,8 +378,8 @@ remoteproc框架，因为我们还有一些其他的信息需要配置。</p>
 <li><p>初始化内存</p></li>
 </ol>
 <blockquote>
-<div><p>在当前的内核驱动实现中，client OS运行的时候可执行文件存放的内存（名为zephyr_reserved），
-以及Linux和client OS通信的物理层也就是共享内存（名为zephyr_dma_memory_region）
+<div><p>在当前的内核驱动实现中，client OS运行的时候可执行文件存放的内存（名为client_os_reserved），
+以及Linux和client OS通信的物理层也就是共享内存（名为client_os_dma_memory_region）
 都在设备树中进行了定义。然后，在remoteproc实例对应的设备rproc_demo中将这两段内存区间加入到
 <code class="docutils literal notranslate"><span class="pre">memory-region</span></code> 字段中。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">reserved</span><span class="o">-</span><span class="n">memory</span> <span class="p">{</span>
@@ -359,14 +388,14 @@ remoteproc框架，因为我们还有一些其他的信息需要配置。</p>
   <span class="n">ranges</span><span class="p">;</span>
 
   <span class="o">//</span> <span class="n">可执行文件存放的内存区域</span>
-  <span class="n">zephyr_reserved</span><span class="p">:</span> <span class="n">zephyr_reserved</span><span class="o">@</span><span class="mi">7</span><span class="n">a000000</span> <span class="p">{</span>
+  <span class="n">client_os_reserved</span><span class="p">:</span> <span class="n">client_os_reserved</span><span class="o">@</span><span class="mi">7</span><span class="n">a000000</span> <span class="p">{</span>
     <span class="n">compatible</span> <span class="o">=</span> <span class="s2">&quot;mcs_mem&quot;</span><span class="p">;</span>
     <span class="n">reg</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mh">0x00</span> <span class="mh">0x7a000000</span> <span class="mh">0x00</span> <span class="mh">0x4000000</span><span class="o">&gt;</span><span class="p">;</span>
     <span class="n">no</span><span class="o">-</span><span class="nb">map</span><span class="p">;</span>
   <span class="p">};</span>
 
   <span class="o">//</span> <span class="n">共享内存区域</span>
-  <span class="n">zephyr_dma_memory_region</span><span class="p">:</span> <span class="n">zephyr</span><span class="o">-</span><span class="n">dma</span><span class="o">-</span><span class="n">memory</span><span class="o">@</span><span class="mi">70000000</span> <span class="p">{</span>
+  <span class="n">client_os_dma_memory_region</span><span class="p">:</span> <span class="n">client_os</span><span class="o">-</span><span class="n">dma</span><span class="o">-</span><span class="n">memory</span><span class="o">@</span><span class="mi">70000000</span> <span class="p">{</span>
     <span class="n">compatible</span> <span class="o">=</span> <span class="s2">&quot;shared-dma-pool&quot;</span><span class="p">;</span>
     <span class="n">reg</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mh">0x00</span> <span class="mh">0x70000000</span> <span class="mh">0x00</span> <span class="mh">0x100000</span><span class="o">&gt;</span><span class="p">;</span>
     <span class="n">no</span><span class="o">-</span><span class="nb">map</span><span class="p">;</span>
@@ -375,15 +404,15 @@ remoteproc框架，因为我们还有一些其他的信息需要配置。</p>
 
 <span class="n">rproc_demo</span> <span class="p">{</span>
   <span class="n">compatible</span> <span class="o">=</span> <span class="s2">&quot;oe,mcs_remoteproc&quot;</span><span class="p">;</span>
-  <span class="n">memory</span><span class="o">-</span><span class="n">region</span> <span class="o">=</span> <span class="o">&lt;&amp;</span><span class="n">zephyr_dma_memory_region</span><span class="o">&gt;</span><span class="p">,</span>
-  <span class="o">&lt;&amp;</span><span class="n">zephyr_reserved</span><span class="o">&gt;</span><span class="p">;</span>
+  <span class="n">memory</span><span class="o">-</span><span class="n">region</span> <span class="o">=</span> <span class="o">&lt;&amp;</span><span class="n">client_os_dma_memory_region</span><span class="o">&gt;</span><span class="p">,</span>
+  <span class="o">&lt;&amp;</span><span class="n">client_os_reserved</span><span class="o">&gt;</span><span class="p">;</span>
 <span class="p">};</span>
 </pre></div>
 </div>
-<p>由于我们目前使用的zephyr可执行文件是位置相关的二进制文件（Position Dependent Code），
+<p>由于我们目前使用的client OS可执行文件是位置相关的二进制文件（Position Dependent Code），
 其中的相关变量和函数地址都是固定地址，
-所以必须得加载到zephyr指定的地址运行，否则程序无法正常执行。
-因此，我们需要通过设备树预留zephyr指定的内存作为其加载地址。
+所以必须得加载到client OS指定的地址运行，否则程序无法正常执行。
+因此，我们需要通过设备树预留client OS指定的内存作为其加载地址。
 此外，remoteproc框架和Linux kernel中对于RPMsg协议的实现中，
 都是使用DMA API为virtio device分配vring和vring buffer的，
 而<code class="docutils literal notranslate"><span class="pre">dma_alloc_coherent</span></code> 这一API的底层实现方式为，如果device本身有保留内存，
@@ -391,7 +420,7 @@ remoteproc框架，因为我们还有一些其他的信息需要配置。</p>
 由于我们必须将vring和vring buffer分配到共享内存中，我们通过
 <code class="docutils literal notranslate"><span class="pre">of_reserved_mem_device_init_by_idx</span></code> API将设备树中compatible字段为 <code class="docutils literal notranslate"><span class="pre">shared-dma-pool</span></code> 的共享内存添加到device的保留内存中，
 这样系统在分配内存的时候就会从指定的共享内存中分配内存，
-zephyr和Linux都可以直接访问到vring和vring buffer。</p>
+client OS和Linux都可以直接访问到vring和vring buffer。</p>
 </div></blockquote>
 <ol class="arabic simple" start="4">
 <li><p>将remoteproc实例注册到remoteproc框架</p></li>
@@ -443,7 +472,10 @@ table中的carveout，找到已经做了映射的合适区间的内存区域，�
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mica_openamp.html" class="btn btn-neutral float-left" title="基于openAMP的混合部署实现" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../lopper_devicetree.html" class="btn btn-neutral float-right" title="外设分区管理" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
