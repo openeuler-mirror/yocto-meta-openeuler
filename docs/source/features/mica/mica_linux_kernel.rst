@@ -1,17 +1,17 @@
 .. _mica_linux_kernel:
 
-基于Linux kernel的混合部署实现
-###################################
+基于Linux remoteproc & RPMsg框架的混合部署实现
+##############################################
 
 使用方法
 ====================================
 
-目前暂时仅支持在QEMU中的aarch64架构下实现与zephyr的混合部署。我们可以通过OeBuild生成支持混合部署的Linux内核和zephyr镜像。
+目前暂时仅支持在QEMU中的aarch64架构下实现与client OS的混合部署。我们可以通过oebuild生成支持混合部署的Linux内核和client OS镜像。
 
 1. 生成kernel和rootfs 
   
-  首先，在OeBuild目录下，输入命令\ ``oebuild generate -f openeuler-mcs -d [directory-name]`` \。
-  生成了构建目录以后，接着运行\ ``oebuild bitbake`` \，OeBuild会启动一个构建容器。进入容器中，运行\ ``bitbake openeuler-image-mcs`` \
+  首先，在oebuild目录下，输入命令\ ``oebuild generate -f openeuler-mcs -d [directory-name]`` \。
+  生成了构建目录以后，接着运行\ ``oebuild bitbake`` \，oebuild会启动一个构建容器。进入容器中，运行\ ``bitbake openeuler-image-mcs`` \
   生成Linux内核镜像和rootfs。
 
 2. 制作一份设备树文件
@@ -38,14 +38,14 @@
       ranges;
 
       // 可执行文件存放的内存区域
-      zephyr_reserved: zephyr_reserved@7a000000 {
+      client_os_reserved: client_os_reserved@7a000000 {
         compatible = "mcs_mem"; 
         reg = <0x00 0x7a000000 0x00 0x4000000>;
         no-map;
       };
 
       // 共享内存区域
-      zephyr_dma_memory_region: zephyr-dma-memory@70000000 {
+      client_os_dma_memory_region: client_os-dma-memory@70000000 {
         compatible = "shared-dma-pool";
         reg = <0x00 0x70000000 0x00 0x100000>;
         no-map;
@@ -54,8 +54,8 @@
 
     rproc_demo {
       compatible = "oe,mcs_remoteproc";
-      memory-region = <&zephyr_dma_memory_region>,
-      <&zephyr_reserved>;
+      memory-region = <&client_os_dma_memory_region>,
+      <&client_os_reserved>;
     };
 
   将修改后的dts文件重新生成dtb文件：
@@ -88,7 +88,7 @@
       
     echo [firmware name] > /sys/class/remoteproc/remoteproc[X]/firmware
     # the following bash command is an example
-    echo zephyr-image.elf > /sys/class/remoteproc/remoteproc0/firmware
+    echo client_os-image.elf > /sys/class/remoteproc/remoteproc0/firmware
 
   .. note:: 
 
@@ -272,8 +272,8 @@ Linux端驱动的工作内容
 
 3. 初始化内存
 
-  在当前的内核驱动实现中，client OS运行的时候可执行文件存放的内存（名为zephyr_reserved），
-  以及Linux和client OS通信的物理层也就是共享内存（名为zephyr_dma_memory_region）
+  在当前的内核驱动实现中，client OS运行的时候可执行文件存放的内存（名为client_os_reserved），
+  以及Linux和client OS通信的物理层也就是共享内存（名为client_os_dma_memory_region）
   都在设备树中进行了定义。然后，在remoteproc实例对应的设备rproc_demo中将这两段内存区间加入到
   ``memory-region`` 字段中。
 
@@ -285,14 +285,14 @@ Linux端驱动的工作内容
       ranges;
 
       // 可执行文件存放的内存区域
-      zephyr_reserved: zephyr_reserved@7a000000 {
+      client_os_reserved: client_os_reserved@7a000000 {
         compatible = "mcs_mem"; 
         reg = <0x00 0x7a000000 0x00 0x4000000>;
         no-map;
       };
 
       // 共享内存区域
-      zephyr_dma_memory_region: zephyr-dma-memory@70000000 {
+      client_os_dma_memory_region: client_os-dma-memory@70000000 {
         compatible = "shared-dma-pool";
         reg = <0x00 0x70000000 0x00 0x100000>;
         no-map;
@@ -301,14 +301,14 @@ Linux端驱动的工作内容
 
     rproc_demo {
       compatible = "oe,mcs_remoteproc";
-      memory-region = <&zephyr_dma_memory_region>,
-      <&zephyr_reserved>;
+      memory-region = <&client_os_dma_memory_region>,
+      <&client_os_reserved>;
     };
 
-  由于我们目前使用的zephyr可执行文件是位置相关的二进制文件（Position Dependent Code），
+  由于我们目前使用的client OS可执行文件是位置相关的二进制文件（Position Dependent Code），
   其中的相关变量和函数地址都是固定地址，
-  所以必须得加载到zephyr指定的地址运行，否则程序无法正常执行。
-  因此，我们需要通过设备树预留zephyr指定的内存作为其加载地址。
+  所以必须得加载到client OS指定的地址运行，否则程序无法正常执行。
+  因此，我们需要通过设备树预留client OS指定的内存作为其加载地址。
   此外，remoteproc框架和Linux kernel中对于RPMsg协议的实现中，
   都是使用DMA API为virtio device分配vring和vring buffer的，
   而\ ``dma_alloc_coherent`` \这一API的底层实现方式为，如果device本身有保留内存，
@@ -317,7 +317,7 @@ Linux端驱动的工作内容
   \ ``of_reserved_mem_device_init_by_idx`` \
   API将设备树中compatible字段为 ``shared-dma-pool`` 的共享内存添加到device的保留内存中，
   这样系统在分配内存的时候就会从指定的共享内存中分配内存，
-  zephyr和Linux都可以直接访问到vring和vring buffer。
+  client OS和Linux都可以直接访问到vring和vring buffer。
 
 4. 将remoteproc实例注册到remoteproc框架
    
