@@ -84,7 +84,7 @@ HOSTTOOLS_NONFATAL += "qemu-aarch64 qemu-arm qemu-i386 qemu-ppc qemu-ppc64 qemu-
 ASSUME_PROVIDED += "dwarfsrcfiles-native"
 
 # used by libpam
-ASSUME_PROVIDED += "libxml2-native attr-native"
+ASSUME_PROVIDED += "attr-native"
 # used by make-mod-scripts
 ASSUME_PROVIDED += "gmp-native"
 # used by cracklib
