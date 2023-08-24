@@ -8,6 +8,7 @@ require pypi-src-openeuler.inc
 SRC_URI:remove = " \
         file://0001-change-shebang-to-python3.patch \
         file://0001-Don-t-split-git-references-on-unicode-separators.patch \
+        file://reproducible.patch \
         "
 
 # apply openeuler patches
