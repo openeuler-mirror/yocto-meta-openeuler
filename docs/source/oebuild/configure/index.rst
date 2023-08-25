@@ -3,7 +3,7 @@
 配置文件介绍
 ########################
 
-这一章节将会对openEuler Embedded所有涉及到的配置文件进行详细的讲解说明，这些说明包括每个参数的意义，以及该参数的影响范围
+这一章节将会对openEuler Embedded所有涉及到的配置文件进行详细的讲解说明，这些说明包括每个参数的意义，以及该参数的影响范围。
 
 config：全局配置文件
 --------------------
@@ -24,12 +24,12 @@ config：全局配置文件
             remote_url: https://gitee.com/openeuler/yocto-meta-openeuler.git
             branch: master
 
-从内容上看，全局配置文件主要分为两大类，一类是跟docker相关的，一类是跟基本repo相关的，下面将对这两类做详细的说明
+从内容上看，全局配置文件主要分为两大类，一类是跟docker相关的，一类是跟basic_repo相关的，下面将对这两类做详细的说明。
 
 docker
 >>>>>>
 
-docker下主要记录openEuler Embedded构建容器的镜像相关数据，这些数据可以用来进行对需要使用的容器是否合规提供判断的参考，repo_url表示容器远程下载地址，tag_map是openEuler Embedded的版本与构建容器镜像的版本的映射关系，而oebuild在使用容器端进行构建时会通过该tag_map信息识别出该启用哪个构建容器
+docker下主要记录openEuler Embedded构建容器的镜像相关数据，这些数据可以用来进行对需要使用的容器是否合规提供判断的参考，repo_url表示容器远程下载地址，tag_map是openEuler Embedded的版本与构建容器镜像的版本的映射关系，而oebuild在使用容器端进行构建时会通过该tag_map信息识别出该启用哪个构建容器。
 
 .. note:: 在使用oebuild初始化工作目录后，该配置文件也同样会被创建出来，如果有openEuler Embedded新的版本，那么tag_map则不会有任何的更新，需要手动进行更新，直接将openEuler Embedded对应的版本与docker tag对应关系按照现有的规范以yaml格式追加到tag_map下面即可。
 
@@ -38,7 +38,7 @@ basic_repo
 
 basic_repo主要记录的是构建openEuler Embedded的根仓，所谓的根仓就是构建openEuler Embedded一切源码的最初来源，通过该仓可以将所有相关的依赖都解析出来，在这里openEuler Embedded的根仓也就是源码仓就是yocto-meta-openeuler，使用的是git模式下的相关信息，path表示在src目录下的目录命名，remote_url表示上游地址，branch表示分支名。在oebuild执行 `update yocto` 操作时会根据该basic_repo信息来进行更新。
 
-.. note:: 需要注意的是，如果现有的yocto-meta-openeuler分支版本与basic_repo下记录的不一致，在更新时将会将现有yocto-meta-openeuler进行备份，备份目录为oebuild根目录下的bak目录
+.. note:: 需要注意的是，如果现有的yocto-meta-openeuler分支版本与basic_repo下记录的不一致，在更新时将会将现有yocto-meta-openeuler进行备份，备份目录为oebuild根目录下的bak目录。
 
 compile.yaml.sample：构建配置模板文件
 -------------------------------------
@@ -248,7 +248,7 @@ machine
 toolchain_type
 >>>>>>>>>>>>>>
 
-外部编译链名称，通过该值可以获取默认设定好的编译链地址，这个在yocto构建过程中需要指定交叉编译链二进制地址时需要指定的，目前已适配的CPU架构有四个：aarch64，arm32，x86_64和riscv64。设置方式如下：
+外部编译链名称，通过该值可以获取默认设定好的编译链地址，这是在yocto构建过程中指定交叉编译链二进制地址时需要指定的，目前已适配的CPU架构有四个：aarch64、arm32、x86_64和riscv64。设置方式如下：
 
 .. code-block:: console
 
@@ -257,7 +257,7 @@ toolchain_type
     # openEuler Embedded-22.03-LTS-SP2之后版本
     toolchain_type: EXTERNAL_TOOLCHAIN:aarch64
 
-.. note:: 设置的方式不一致原因是选定的poky版本不同导致的，在openEuler-22.03-LTS-SP2及其之前选用的poky版本为3.3，而在其之后选用的poky版本为4.0，3.3版本与4.0版本对于变量集的命名语法不同，因此toolchain_type的设置方式有所区别
+.. note:: 设置的方式不一致原因是选定的poky版本不同导致的，在openEuler-22.03-LTS-SP2及其之前选用的poky版本为3.3，而在其之后选用的poky版本为4.0，3.3版本与4.0版本对于变量集的命名语法不同，因此toolchain_type的设置方式有所区别。
 
 toolchain_dir
 >>>>>>>>>>>>>
@@ -277,12 +277,12 @@ nativesdk_dir
 
     nativesdk_dir: /host/nativesdk
 
-.. note:: 需要注意的是，该参数的设定只有在主机端构建模式下才有效，如果是容器端构建因为容器端已经有内置的nativesdk_dir，则不会做任何操作
+.. note:: 需要注意的是，该参数的设定只有在主机端构建模式下才有效，如果是容器端构建因为容器端已经有内置的nativesdk_dir，则不会做任何操作。
 
 not_use_repos
 >>>>>>>>>>>>>
 
-是否更新layer仓选项，该参数影响范围较小，openEuler Embedded的构建依赖的源码包版本是从基线文件manifest.yaml中获取到的，如果想要在构建时不再选用稳定上游软件包版本而直接使用选定分支最新代码，则可以通过将manifest移除来实现，那么在下载上游源码包时会从openeuler默认指定的版本来下载，但是layer层并不属于上游软件包，因此会直接通过compile.yaml中的repos下的信息来进行更新，然而面对用户不需要layer层的更新则可以设置该字段实现，默认该参数为false。设置方式如下：
+是否更新layer仓选项，该参数影响范围较小，openEuler Embedded的构建依赖的源码包版本是从基线文件manifest.yaml中获取到的，如果想要在构建时不再选用稳定上游软件包版本而直接使用选定分支最新代码，则可以通过将manifest移除来实现，那么在下载上游源码包时会从openeuler默认指定的版本来下载，但是layer层并不属于上游软件包，因此会直接通过compile.yaml中的repos下的信息来进行更新，然而在用户不需要layer层的更新时则可以设置该字段实现，默认该参数为false。设置方式如下：
 
 .. code-block:: console
 
@@ -332,12 +332,12 @@ repos
             path: xxx
             refspec: xxx
 
-abc表示包名，url表示远程仓地址，path表示下载到本地的文件目录名，refspec表示版本信息
+abc表示包名，url表示远程仓地址，path表示下载到本地的文件目录名，refspec表示版本信息。
 
 local_conf
 >>>>>>>>>>
 
-local.conf文件补充内容。在yocto构建当中，会有两个必须的配置文件，其中一个就是local.conf，local.conf文件中的选项可以覆盖yocto默认的配置选项。这些选项包括构建目标，构建工具链，构建方式，构建环境变量，构建输出路径等。通过修改local.conf文件，可以定制化构建系统，以满足特定的需求。例如，可以通过设置MACHAINE选项来指定目标硬件平台，通过设置DISTRO选项来选择使用哪个Linux发行版作为基础系统，通过设置PACKAGE_CLASSES选项来选择使用哪种软件包格式等等。local_conf是对默认local.conf的内容补充，如果有特定的设置，则可以在该参数下添加。该参数设置方式如下：
+local.conf文件补充内容。在yocto构建当中，会有两个必须的配置文件，其中一个就是local.conf，local.conf文件中的选项可以覆盖yocto默认的配置选项。这些选项包括构建目标、构建工具链、构建方式、构建环境变量、构建输出路径等。通过修改local.conf文件，可以定制化构建系统，以满足特定的需求。例如，可以通过设置MACHAINE选项来指定目标硬件平台，通过设置DISTRO选项来选择使用哪个Linux发行版作为基础系统，通过设置PACKAGE_CLASSES选项来选择使用哪种软件包格式等等。local_conf是对默认local.conf的内容补充，如果有特定的设置，则可以在该参数下添加。该参数设置方式如下：
 
 .. code-block:: console
 
@@ -348,9 +348,11 @@ local.conf文件补充内容。在yocto构建当中，会有两个必须的配�
 layers
 >>>>>>
 
-bblayers.conf文件补充内容。在yocto构建当中，会有两个必须的配置文件，其中一个就是bblayers.conf，bblayers.conf文件用于指定yocto构建系统中使用的层（layers）的位置和顺序。每个层都包含了一些元数据，例如：软件包，配置文件，脚本等等。bblayers.conf文件告诉yocto构建系统在哪里可以找到这些层，以及他们的顺序。具体来说，bblayers.conf文件包含以下信息：BBLAYERS变量，定义了一个层的列表，每个层都是一个目录的路径。这些层的顺序非常重要，因为它们会影响构建系统中软件包的优先级和覆盖顺序。BBPATH变量，该变量定义了构建系统中所有层的路径，它是BBLAYERS变量中的层路径组成的，以冒号分隔。而layers的设置是对BBLAYERS内容的补充。该参数设置方式如下：
+bblayers.conf文件补充内容。在yocto构建当中，会有两个必须的配置文件，其中一个就是bblayers.conf，bblayers.conf文件用于指定yocto构建系统中使用的层（layers）的位置和顺序。每个层都包含了一些元数据，例如：软件包、配置文件、脚本等等。bblayers.conf文件告诉yocto构建系统在哪里可以找到这些层，以及他们的顺序。具体来说，bblayers.conf文件包含以下信息：
+ - BBLAYERS变量，定义了一个层的列表，每个层都是一个目录的路径。这些层的顺序非常重要，因为它们会影响构建系统中软件包的优先级和覆盖顺序。
+ - BBPATH变量，该变量定义了构建系统中所有层的路径，它是BBLAYERS变量中的层路径组成的，以冒号分隔。而layers的设置是对BBLAYERS内容的补充。该参数设置方式如下：
 
-.. code-block:: console
+  .. code-block:: console
 
     layers: xxxx
 
@@ -372,24 +374,24 @@ bblayers.conf文件补充内容。在yocto构建当中，会有两个必须的�
 container
 >>>>>>>>>
 
-容器相关运行时参数，在oebuild使用容器端构建时会将启动的容器相关参数记录下来
+容器运行时相关参数，在oebuild使用容器端构建时会将启动的容器相关参数记录下来。
 
 remote
 ::::::
 
-当前yocto-meta-openeuler仓的远程地址
+当前yocto-meta-openeuler仓的远程地址。
 
 branch
 ::::::
 
-当前yocto-meta-openeuler仓的远程仓分支名
+当前yocto-meta-openeuler仓的远程仓分支名。
 
 short_id
 ::::::::
 
-本次构建启动的容器ID
+本次构建启动的容器ID。
 
 volumns
 :::::::
 
-容器启动后的挂载目录列表
+容器启动后的挂载目录列表。
