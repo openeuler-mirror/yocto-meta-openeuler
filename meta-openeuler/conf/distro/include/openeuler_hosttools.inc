@@ -104,7 +104,7 @@ ASSUME_PROVIDED += "gperf-native perl-native \
                     "
 
 HOSTTOOLS_NONFATAL += "dtc"
-ASSUME_PROVIDED += "dtc-native intltool-native"
+ASSUME_PROVIDED += "intltool-native"
 
 # used by wayland
 ASSUME_PROVIDED += "xorgproto-native expat-native"
