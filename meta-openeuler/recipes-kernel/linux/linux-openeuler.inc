@@ -4,35 +4,45 @@ LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM ?= "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 inherit kernel
+# inherit kernel-yocto.bbclass for using kernel meta data mechanism
+# i.e, .scc files can be applied
+inherit kernel-yocto
+
+# enable kconf audit to output some message
+KCONF_BSP_AUDIT_LEVEL = "2"
+# as openeuler has defconfig, so here use all alldefconfig, all configs
+# are set to default value
+KCONFIG_MODE ?= "alldefconfig"
+
+# default kernel config is in config/${ARCH}/defconfig
+# users can override it in .bbappend or .conf
+OPENEULER_KERNEL_CONFIG ?= "file://config/${ARCH}/defconfig"
 
 SRC_URI = "file://kernel-5.10 \
-    file://config/${ARCH}/defconfig-kernel \
+    ${OPENEULER_KERNEL_CONFIG} \
+    file://meta-data;type=kmeta;destsuffix=meta-data \
 "
+
+# add common patches only for aarch64
+SRC_URI:append:aarch64 = " \
+    file://patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch \
+"
+
+## mcs related patches and configs 
+KERNEL_FEATURES:append = " ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'features/mcs/mcs_openamp.scc', '', d)} "
+# add openamp support for x86 mcs
+KERNEL_FEATURES:append:x86-64 = " \
+    ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'features/mcs/0001-x86-irq-add-a-vector-define-for-mcs.patch', '', d)} \
+"
+# export symbol for jailhouse, its patch is in jailhouse src folder
+SRC_URI:append = " ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'file://Jailhouse/jailhouse_export_symbol.patch', '', d)}"
+
 
 S = "${WORKDIR}/kernel-5.10"
 
 LINUX_VERSION ?= "5.10"
 PV = "${LINUX_VERSION}"
 
-# add patches only for aarch64
-SRC_URI:append:aarch64 = " \
-    file://patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch \
-"
-
-# add openamp support for x86 mcs
-# todo: jailhouse support
-SRC_URI:append:x86-64 = " \
-    ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'file://patches/${ARCH}/0001-x86-irq-add-a-vector-define-for-mcs.patch', '', d)} \
-"
-
-# add rpmsg tty driver for mcs
-SRC_URI:append = " \
-    file://patches/0001-rpmsg-core-add-API-to-get-MTU.patch \
-    file://patches/0002-tty-add-rpmsg-driver.patch \
-"
-
-# export symbol for jailhouse
-SRC_URI:append = " ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'file://Jailhouse/jailhouse_export_symbol.patch', '', d)}"
 
 LINUX_VERSION_EXTENSION:append = "-openeuler"
 # delete v8 in kernel module name, such as kernel-module-xxx-5.10.0-v8
@@ -99,14 +109,11 @@ KERNEL_LD:append:aarch64 = " ${TOOLCHAIN_OPTIONS}"
 KERNEL_CC:append:riscv64 = " ${TOOLCHAIN_OPTIONS}"
 KERNEL_LD:append:riscv64 = " ${TOOLCHAIN_OPTIONS}"
 
-OPENEULER_KERNEL_CONFIG = "../config/${ARCH}/defconfig-kernel"
-do_configure:prepend() {
-    cp -f "${OPENEULER_KERNEL_CONFIG}" .config
-}
-
 # Even if the KERNEL_IMAGETYPE is zImage, we will install Image, so add it into PACKAGES
 PACKAGES += "${KERNEL_PACKAGE_NAME}-img"
 FILES:${KERNEL_PACKAGE_NAME}-img = "/boot/Image-${KERNEL_VERSION}"
+
+
 do_install:append(){
     if [ -e ${KERNEL_OUTPUT_DIR}/Image ]; then
         install -m 0644 ${KERNEL_OUTPUT_DIR}/Image ${D}/${KERNEL_IMAGEDEST}/Image-${KERNEL_VERSION}

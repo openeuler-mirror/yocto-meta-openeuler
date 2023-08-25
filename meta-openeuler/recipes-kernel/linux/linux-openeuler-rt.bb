@@ -13,6 +13,5 @@ SRC_URI:append:x86-64 = " \
 COMPATIBLE_MACHINE = "qemu-aarch64|generic-x86-64"
 
 do_configure:prepend() {
-    sed -i 's/CONFIG_PREEMPT=y/CONFIG_PREEMPT_RT=y/g' ${OPENEULER_KERNEL_CONFIG}
-    cp -f "${OPENEULER_KERNEL_CONFIG}" .config
+    sed -i 's/CONFIG_PREEMPT=y/CONFIG_PREEMPT_RT=y/g' .config
 }
