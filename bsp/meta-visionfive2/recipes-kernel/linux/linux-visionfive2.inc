@@ -7,4 +7,4 @@ SRC_URI:append = " \
 
 INITRAMFS_IMAGE = "openeuler-image-live"
 
-OPENEULER_KERNEL_CONFIG = "../config/visionfive2-jh7110_defconfig"
+OPENEULER_KERNEL_CONFIG = "file://config/visionfive2-jh7110_defconfig"

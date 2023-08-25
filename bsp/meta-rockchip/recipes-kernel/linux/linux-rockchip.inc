@@ -24,7 +24,7 @@ SRC_URI[rk3568-kernel-patch.md5sum] = "7643792b2483b3156dbc349d6fd41ef9"
 # add patch tool to solve patch apply
 PATCHTOOL = "git"
 
-OPENEULER_KERNEL_CONFIG = "../config/${MACHINE}/defconfig-kernel"
+OPENEULER_KERNEL_CONFIG = "file://config/${MACHINE}/defconfig"
 
 # add method to do_compile task to produce bootable Image
 do_compile:append:rk3568(){
