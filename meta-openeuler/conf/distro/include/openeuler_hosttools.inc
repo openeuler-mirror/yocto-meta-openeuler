@@ -97,8 +97,7 @@ ASSUME_PROVIDED += "gnu-config-native"
 
 ASSUME_PROVIDED += "gperf-native perl-native \
                     init-system-helpers \
-                    cross-localedef-native nativesdk-glibc-locale \
-                      \
+                    nativesdk-glibc-locale \
                     gtk-doc-native \
                     "
 
