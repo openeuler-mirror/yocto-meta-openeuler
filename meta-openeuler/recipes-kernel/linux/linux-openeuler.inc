@@ -58,49 +58,15 @@ python () {
 }
 
 python do_fetch() {
-    import os
-
-    import git
-
-    # the do_fetch will not execute if OPENEULER_FETCH is seted to disable
-    if d.getVar('OPENEULER_FETCH') == "disable":
-        return
-
     # download src-openeuler/kernel repo for patches
     d.setVar("OPENEULER_REPO_NAME", "kernel")
     d.setVar("OPENEULER_LOCAL_NAME", 'src-kernel-5.10')
-    d.setVar("OPENEULER_BRANCH", 'openEuler-22.03-LTS-SP1')
-    d.setVar("OPENEULER_GIT_URL", "https://gitee.com/src-openeuler")
     bb.build.exec_func("do_openeuler_fetch", d)
 
-    # download openeuler/kernel repo for linux kernel src files
-    src_dir = d.getVar("OPENEULER_SP_DIR")
-    kernel_name = "kernel-5.10"
-    kernel_dir = os.path.join(src_dir, kernel_name)
-    if not os.path.exists(kernel_dir):
-        os.mkdir(kernel_dir)
-    lock_file = os.path.join(kernel_dir, "file.lock")
-    # if change kernel version, just change `kernel_branch` param
-    kernel_branch = "5.10.0-136.28.0"
-
-    lf = bb.utils.lockfile(lock_file, block=True)
-    
-    # determine whether the variable MANIFEST_DIR is None
-    if d.getVar("MANIFEST_DIR") is not None and os.path.exists(d.getVar("MANIFEST_DIR")):
-        repo_item = get_manifest(d.getVar("MANIFEST_DIR"))[kernel_name]
-        init_manifest_repo(repo_dir = kernel_dir, remote_url = repo_item['remote_url'], version = repo_item['version'])
-    else:
-        repo = init_repo_dir(kernel_dir)
-        repo_url = 'https://gitee.com/openeuler/kernel.git'
-        try:
-            if not repo.remote("upstream").exists():
-                git.Remote.add(repo = repo, name = "upstream", url = repo_url)
-        except:
-            repo.create_remote('upstream', repo_url)
-        repo.remote("upstream").fetch(refspec=f"+refs/tags/{kernel_branch}:refs/tags/{kernel_branch}", depth=1)
-        repo.git.checkout(kernel_branch)
-
-    bb.utils.unlockfile(lf)
+    # download openeuler/kernel-5.10 repo for linux kernel src files
+    d.setVar("OPENEULER_REPO_NAME", "kernel-5.10")
+    d.setVar("OPENEULER_LOCAL_NAME", 'kernel-5.10')
+    bb.build.exec_func("do_openeuler_fetch", d)
 }
 
 KERNEL_CC:append:aarch64 = " ${TOOLCHAIN_OPTIONS}"

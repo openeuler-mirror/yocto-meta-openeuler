@@ -86,20 +86,6 @@ python do_openeuler_fetch() {
     import git
     from git import GitError
 
-    # init repo in the repo_dir
-    def init_repo(repo_dir, repo_url, repo_branch):
-        repo = init_repo_dir(repo_dir)
-        try:
-            # if repo has finished git init and then do git pull
-            if repo.remote("upstream").url != repo_url:
-                repo.remote("upstream").set_url(repo_dir)
-        except ValueError:
-            git.Remote.add(repo = repo, name = "upstream", url = repo_url)
-
-        repo.remote("upstream").fetch()
-        repo.git.checkout(repo_branch)
-        repo.git.merge()
-
     # get source directory where to download
     srcDir = d.getVar('OPENEULER_SP_DIR')
     repoName = d.getVar('OPENEULER_REPO_NAME')
@@ -117,22 +103,18 @@ python do_openeuler_fetch() {
     repo_dir = os.path.join(srcDir, localName)
     if not os.path.exists(repo_dir):
         os.mkdir(repo_dir)
-    repo_url = os.path.join(gitUrl, repoName + ".git")
-    lock_file = os.path.join(repo_dir, "file.lock")
+    repo_url = os.path.join(gitUrl, repoName)
     except_str = None
 
-    lf = bb.utils.lockfile(lock_file, block=True)
     try:
-        is_manifest = False
         # determine whether the variable MANIFEST_DIR is None
         if d.getVar("MANIFEST_DIR") is not None and os.path.exists(d.getVar("MANIFEST_DIR")):
             manifest_list = get_manifest(d.getVar("MANIFEST_DIR"))
             if localName in manifest_list:
                 repo_item = manifest_list[localName]
-                init_manifest_repo(repo_dir = repo_dir, remote_url = repo_item['remote_url'], version = repo_item['version'])
-                is_manifest = True
-        if not is_manifest:
-            init_repo(repo_dir = repo_dir, repo_url = repo_url, repo_branch = repoBranch)
+                download_repo(repo_dir = repo_dir, repo_url = repo_item['remote_url'], version = repo_item['version'])
+        else:
+            bb.fatal("openEuler Embedded build need manifest.yaml")
     except GitError:
         # can't use bb.fatal here, because there are the following cases:
         # case1:
@@ -155,8 +137,6 @@ python do_openeuler_fetch() {
         bb.plain("===============")
         except_str = str(e)
 
-    bb.utils.unlockfile(lf)
-
     if except_str != None:
         bb.fatal(except_str)
 }
@@ -170,25 +150,31 @@ def init_repo_dir(repo_dir):
     return repo
 
 # init repo in repo_dir from manifest file
-def init_manifest_repo(repo_dir, remote_url, version):
+def download_repo(repo_dir, repo_url ,version = None):
     import git
     from git import GitCommandError
+
+    lock_file = os.path.join(repo_dir, "file.lock")
+    lf = bb.utils.lockfile(lock_file, block=True)
 
     repo = init_repo_dir(repo_dir)
     remote = None
     for item in repo.remotes:
-        if remote_url == item.url:
+        if repo_url == item.url:
             remote = item
         else:
             continue
     if remote is None:
         remote_name = "upstream"
-        remote = git.Remote.add(repo = repo, name = remote_name, url = remote_url)
-    try:
-        repo.git.checkout(version)
-    except GitCommandError:
-        remote.fetch(version, depth = 1)
-        repo.git.checkout(version)
+        remote = git.Remote.add(repo = repo, name = remote_name, url = repo_url)
+    
+    remote.fetch(version, depth=1)
+    # if repo is modified, restore it
+    if repo.is_dirty():
+        repo.git.checkout(".")
+    repo.git.checkout(version)
+
+    bb.utils.unlockfile(lf)
 
 def get_manifest(manifest_dir):
     import yaml
