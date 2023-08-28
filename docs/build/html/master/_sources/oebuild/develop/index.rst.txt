@@ -4,7 +4,8 @@
 ########################
 
 该章节用于介绍开发者如何在oebuild上进行开发命令插件。整个oebuild的设计模式采用了对象创建型模式，主体框架已经开发完毕，因此开发者仅需要实现命令插件即可。
-oebuild的开发语言是用python3开发的，因此在做开发工作前请先安装好python3相关的语言环境，并安装好pip3命令。在这里对python3与pip3的安装不再做详细说明，请自行实现。
+
+oebuild是用python3开发的，因此在做开发工作前请先安装好python3相关的语言环境，并安装好pip3命令。在这里对python3与pip3的安装不再做详细说明，请自行实现。
 
 新命令插件的开发仅需要实现以下几步即可（以下以hello命令为范例进行讲解）：
 
@@ -121,10 +122,10 @@ oebuild的开发语言是用python3开发的，因此在做开发工作前请先
             print("hello world")
 
 
-.. note:: oebuild中对于二级参数使用了argparse命令解析类，对于二级命令参数的添加请详细了解 `https://docs.python.org/zh-cn/3.10/howto/argparse.html` 
+.. note:: oebuild中对于二级参数使用了argparse命令解析类，对于二级命令参数的添加请详细了解 `https://docs.python.org/zh-cn/3.10/howto/argparse.html` 。
 
 
-6. 将hello命令加入命令插件文件，将如下hello插件参数添加到 `src/oebuild/app/conf/plugins.yaml` 
+6. 将hello命令加入命令插件文件，将如下hello插件参数添加到 `src/oebuild/app/conf/plugins.yaml` ：
 
 ::
 
@@ -149,10 +150,10 @@ oebuild的开发语言是用python3开发的，因此在做开发工作前请先
 
 .. image:: ../../_static/images/develop/oebuild_help.png
 
-可以看到，oebuild已经出现了hello命令
+可以看到，oebuild已经出现了hello命令。
 
 在执行 `oebuild hello` 命令后如下图所示：
 
 .. image:: ../../_static/images/develop/hello.png
 
-在这里真实要实现的功能代码在do_run函数中
+在这里真实要实现的功能代码在do_run函数中。

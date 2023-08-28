@@ -8,7 +8,7 @@
 如何安装
 ========
 
-oebuild是用python语言编写，并且适配的python版本为python3，目前oebuild已经在PyPi平台发布。因此可以通过pip3命令进行安装或升级oebuild。由于openEuler Embedded的构建目前仅适配常用的x86架构，因此对于其他架构的底层硬件，并不适用，同时对于x86架构的上层系统，仅支持linux和macOS。
+oebuild是用python语言编写，并且适配的python版本为python3，目前oebuild已经在PyPi平台发布。因此可以通过pip3命令进行安装或升级oebuild。由于openEuler Embedded的构建目前仅适配常用的x86架构，因此对于其他架构的底层硬件，并不适用，同时对于x86架构的上层系统，仅支持Linux和macOS。
 
 On Linux:
 
@@ -24,13 +24,13 @@ On macOS:
 
 在安装oebuild后，就可以使用oebuild来下载openEuler Embedded相关源码了。
 
-.. note:: 目前oebuild支持的最低的python3版本为python3.8
+.. note:: 目前oebuild支持的最低的python3版本为python3.8。
 
 
 环境依赖安装
 ============
 
-oebuild的构建有两种方式：分别是主机端构建和容器端构建
+oebuild的构建有两种方式，分别是主机端构建和容器端构建。
 
 **何为主机端构建**：
 
@@ -42,9 +42,9 @@ oebuild的构建有两种方式：分别是主机端构建和容器端构建
 
 **如何安装docker依赖**：
 
-Docker容器对linux内核新功能的要求比较高，所以使用Ubuntu作为Docker容器的宿主机更加友好一点。而且很多项目Docker在配置的时候也仅仅支持了针对Ubuntu的dockerfile配置，所以容器化方面Ubuntu比较有优势。因此这里建议使用ubuntu作为开发平台。
+docker容器对Linux内核新功能的要求比较高，所以使用Ubuntu作为docker容器的宿主机更加友好一点。而且很多项目docker在配置的时候也仅仅支持了针对Ubuntu的dockerfile配置，所以容器化方面Ubuntu比较有优势。因此这里建议使用Ubuntu作为开发平台。
 
-ubuntu安装Docker命令如下：
+Ubuntu安装docker命令如下：
 
 .. code-block:: console
 
@@ -52,19 +52,19 @@ ubuntu安装Docker命令如下：
 
 在安装好docker后，由于oebuild在调用docker时会以当前用户来进行调用，因此需要将当前用户添加docker执行权限，按如下方法完成给当前用户添加docker执行权限：
 
-- 添加docker用户组
+1. 添加docker用户组
 
 .. code-block:: console
     
     sudo groupadd docker
 
-- 将当前用户添加到docker用户组
+2. 将当前用户添加到docker用户组
 
 .. code-block:: console
 
     sudo usermod -a -G docker <user>
 
-- 重新启动docker服务
+3. 重新启动docker服务
 
 .. code-block:: console
 
@@ -72,7 +72,7 @@ ubuntu安装Docker命令如下：
 
     sudo systemctl restart docker
 
-- 向docker套接字添加读写权限
+4. 向docker套接字添加读写权限
 
 .. code-block:: console
 
