@@ -1,7 +1,7 @@
-# This refers the .gitlint of Zephyr Project
 # All these sections are optional, edit this file as you like.
+
 [general]
-ignore=title-trailing-punctuation, T3, title-max-length, T1, body-hard-tab, B3, B1
+ignore=T1, T2, T3, T8, B1, B2, B4, B6
 # verbosity should be a value between 1 and 3, the commandline -v flags take precedence over this
 verbosity = 3
 # By default gitlint will ignore merge commits. Set to 'false' to disable.
@@ -16,40 +16,40 @@ debug = false
 # See http://jorisroovers.github.io/gitlint/user_defined_rules for details
 extra-path=scripts/gitlint
 
-[title-max-length-no-revert]
-line-length=75
-
-[body-min-line-count]
-min-line-count=1
-
-[body-max-line-count]
-max-line-count=200
+#################### Title #####################
+[title-length]
+line-max-length-no-revert = 80
+line-max-length-revert = 102
 
 [title-must-not-contain-word]
 # Comma-separated list of words that should not occur in the title. Matching is case
 # insensitive. It's fine if the keyword occurs as part of a larger word (so "WIPING"
 # will not cause a violation, but "WIP: my title" will.
-words=wip
+# words=wip
 
 [title-match-regex]
 # python like regex (https://docs.python.org/2/library/re.html) that the
 # commit-msg title must be matched to.
 # Note that the regex can contradict with other rules if not used correctly
 # (e.g. title-must-not-contain-word).
-#regex=^US[0-9]*
+#regex=^\S.*(:\s)[A-Z]+.*[^.,?!]$
 
-[max-line-length-with-exceptions]
-# B1 = body-max-line-length
-# use 120 to replace to old 75 as no need to follow the limit 50/72
-line-length=120
+#################### Body And Footer#####################
+[body-and-footer-max-line-count]
+max-line-count-in-body = 100
+max-line-count-in-footer = 20
 
 [body-min-length]
-min-length=3
+min-length = 15
 
-[body-is-missing]
-# Whether to ignore this rule on merge commits (which typically only have a title)
-# default = True
-ignore-merge-commits=true
+[body-or-footer-line-length]
+max-line-length-no-url-in-body = 100
+max-line-length-no-url-in-footer = 100
+
+[link-in-footer-check]
+#Turn off this check by setting option: 
+#prefix-for-closes-tag = disabled
+prefix-for-closes-tag = https://gitee.com/openeuler/
 
 [body-changed-file-mention]
 # List of files that need to be explicitly mentioned in the body when they are changed
@@ -57,3 +57,9 @@ ignore-merge-commits=true
 # By specifying this rule, developers can only change the file when they explicitly reference
 # it in the commit message.
 #files=gitlint/rules.py,README.md
+
+[body-match-regex]
+# Ensure the body ends with Reviewed-By: <some value>
+# regex=Reviewed-By:(.*)$
+# Ensure body contains the word "Foo" somewhere
+# regex=(*.)Foo(.*)
