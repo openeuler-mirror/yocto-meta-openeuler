@@ -62,20 +62,24 @@ S = "${WORKDIR}/iSulad-v${PV}"
 inherit cmake
 OECMAKE_GENERATOR = "Unix Makefiles"
 
+USE_PREBUILD_SHIM_V2 = "1"
+
 
 DEPENDS += " \
         yajl zlib libarchive http-parser curl lcr libevent libevhtp openssl libwebsockets libdevmapper \
         protobuf libseccomp libcap libselinux \
         ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '', d)} \
-        grpc grpc-native protobuf-native lib-shim-v2 \
+        grpc grpc-native protobuf-native \
+        ${@bb.utils.contains('USE_PREBUILD_SHIM_V2', '1', 'lib-shim-v2-bin', 'lib-shim-v2', d)} \
 "
 
 RDEPENDS:${PN} += " \
         yajl zlib libarchive http-parser curl lcr libevent libevhtp openssl libwebsockets libdevmapper \
         protobuf libseccomp libcap libselinux \
         ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '', d)} \
-        grpc lib-shim-v2 \
+        grpc \
         glibc-binary-localedata-en-us \
+        ${@bb.utils.contains('USE_PREBUILD_SHIM_V2', '1', 'lib-shim-v2-bin', 'lib-shim-v2', d)} \
 "
 
 EXTRA_OECMAKE = "-DENABLE_GRPC=ON \
@@ -85,10 +89,11 @@ EXTRA_OECMAKE = "-DENABLE_GRPC=ON \
 		"
 
 # lib-shim-v2 depends on rust which is not well supported for arm32
-DEPENDS:remove:arm = " lib-shim-v2 "
-RDEPENDS:${PN}:remove:arm = " lib-shim-v2 "
+DEPENDS:remove:arm = " lib-shim-v2 lib-shim-v2-bin "
+RDEPENDS:${PN}:remove:arm = " lib-shim-v2 lib-shim-v2-bin "
 EXTRA_OECMAKE:remove:arm = " -DENABLE_SHIM_V2=ON "
 EXTRA_OECMAKE:append:arm = " -DENABLE_SHIM_V2=OFF "
+
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 

@@ -12,7 +12,7 @@ HOSTTOOLS_NONFATAL += "cc"
 ASSUME_PROVIDED += "util-linux-native pkgconfig-native chrpath-replacement-native"
 
 # package management tools
-HOSTTOOLS_NONFATAL += "rpm rpmbuild createrepo_c dnf unzip"
+HOSTTOOLS_NONFATAL += "rpm rpmbuild createrepo_c dnf unzip rpm2cpio"
 ASSUME_PROVIDED += "rpm-native createrepo-c-native unzip-native"
 
 # commands used by kernel build
