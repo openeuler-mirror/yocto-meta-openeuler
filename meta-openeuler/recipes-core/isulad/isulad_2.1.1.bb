@@ -84,6 +84,11 @@ EXTRA_OECMAKE = "-DENABLE_GRPC=ON \
 		-DGRPC_CONNECTOR=ON \
 		"
 
+# lib-shim-v2 depends on rust which is not well supported for arm32
+DEPENDS:remove:arm = " lib-shim-v2 "
+RDEPENDS:${PN}:remove:arm = " lib-shim-v2 "
+EXTRA_OECMAKE:remove:arm = " -DENABLE_SHIM_V2=ON "
+EXTRA_OECMAKE:append:arm = " -DENABLE_SHIM_V2=OFF "
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
