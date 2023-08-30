@@ -62,20 +62,24 @@ S = "${WORKDIR}/iSulad-v${PV}"
 inherit cmake
 OECMAKE_GENERATOR = "Unix Makefiles"
 
+USE_PREBUILD_SHIM_V2 = "1"
+
 
 DEPENDS += " \
         yajl zlib libarchive http-parser curl lcr libevent libevhtp openssl libwebsockets libdevmapper \
         protobuf libseccomp libcap libselinux \
         ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '', d)} \
-        grpc grpc-native protobuf-native lib-shim-v2 \
+        grpc grpc-native protobuf-native \
+        ${@bb.utils.contains('USE_PREBUILD_SHIM_V2', '1', 'lib-shim-v2-bin', 'lib-shim-v2', d)} \
 "
 
 RDEPENDS_${PN} += " \
         yajl zlib libarchive http-parser curl lcr libevent libevhtp openssl libwebsockets libdevmapper \
         protobuf libseccomp libcap libselinux \
         ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '', d)} \
-        grpc lib-shim-v2 \
+        grpc \
         glibc-binary-localedata-en-us \
+        ${@bb.utils.contains('USE_PREBUILD_SHIM_V2', '1', 'lib-shim-v2-bin', 'lib-shim-v2', d)} \
 "
 
 EXTRA_OECMAKE = "-DENABLE_GRPC=ON \
@@ -85,15 +89,15 @@ EXTRA_OECMAKE = "-DENABLE_GRPC=ON \
 		"
 
 # there are issues with building grpc on arm32 and riscv platforms.
-DEPENDS:remove:arm = " lib-shim-v2 grpc grpc-native "
-RDEPENDS:${PN}:remove:arm = " lib-shim-v2 grpc "
-EXTRA_OECMAKE:remove:arm = " -DENABLE_SHIM_V2=ON -DENABLE_GRPC=ON -DGRPC_CONNECTOR=ON "
-EXTRA_OECMAKE:append:arm = " -DENABLE_SHIM_V2=OFF -DENABLE_GRPC=OFF -DGRPC_CONNECTOR=OFF "
+DEPENDS_remove_arm = " lib-shim-v2 lib-shim-v2-bin grpc grpc-native "
+RDEPENDS_${PN}_remove_arm = " lib-shim-v2 lib-shim-v2-bin grpc "
+EXTRA_OECMAKE_remove_arm = " -DENABLE_SHIM_V2=ON -DENABLE_GRPC=ON -DGRPC_CONNECTOR=ON "
+EXTRA_OECMAKE_append_arm = " -DENABLE_SHIM_V2=OFF -DENABLE_GRPC=OFF -DGRPC_CONNECTOR=OFF "
 
-DEPENDS:remove:riscv64 = " lib-shim-v2 grpc grpc-native "
-RDEPENDS:${PN}:remove:riscv64 = " lib-shim-v2 grpc "
-EXTRA_OECMAKE:remove:riscv64 = " -DENABLE_SHIM_V2=ON -DENABLE_GRPC=ON -DGRPC_CONNECTOR=ON "
-EXTRA_OECMAKE:append:riscv64 = " -DENABLE_SHIM_V2=OFF -DENABLE_GRPC=OFF -DGRPC_CONNECTOR=OFF "
+DEPENDS_remove_riscv64 = " lib-shim-v2 lib-shim-v2-bin grpc grpc-native "
+RDEPENDS_${PN}_remove_riscv64 = " lib-shim-v2 lib-shim-v2-bin grpc "
+EXTRA_OECMAKE_remove_riscv64 = " -DENABLE_SHIM_V2=ON -DENABLE_GRPC=ON -DGRPC_CONNECTOR=ON "
+EXTRA_OECMAKE_append_riscv64 = " -DENABLE_SHIM_V2=OFF -DENABLE_GRPC=OFF -DGRPC_CONNECTOR=OFF "
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
