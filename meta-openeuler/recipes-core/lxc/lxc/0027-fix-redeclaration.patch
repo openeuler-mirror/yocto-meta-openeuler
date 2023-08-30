@@ -1,6 +1,6 @@
--- a/src/lxc/macro.h
+--- a/src/lxc/macro.h
 +++ b/src/lxc/macro.h
-@@ -8,6 +8,7 @@
+@@ -10,6 +10,7 @@
  #include <asm/types.h>
  #include <limits.h>
  #include <linux/if_link.h>
@@ -8,9 +8,7 @@
  #include <linux/loop.h>
  #include <linux/netlink.h>
  #include <linux/rtnetlink.h>
-@@ -812,4 +813,16 @@ static inline bool is_set(__u32 bit, __u
-
- #define BIT(nr) (1UL << (nr))
+@@ -492,2 +493,14 @@ static inline bool is_set(__u32 bit, __u
 
 +#ifndef FS_IOC_GETFLAGS
 +#define FS_IOC_GETFLAGS _IOR('f', 1, long)
@@ -36,15 +34,15 @@
  #include <sys/param.h>
  #include <sys/prctl.h>
  #include <sys/stat.h>
-@@ -238,7 +237,7 @@ int mkdir_p(const char *dir, mode_t mode)
-        return 0;
+@@ -257,7 +255,7 @@ int mkdir_p(const char *dir, mode_t mode)
+	return 0;
  }
  
 -char *get_rundir()
 +char *get_rundir(void)
  {
-        char *rundir;
-        size_t len;
+	char *rundir;
+	size_t len;
 --- a/src/lxc/conf.c
 +++ b/src/lxc/conf.c
 @@ -3657,7 +3657,9 @@ static bool verify_start_hooks(struct lxc_conf *conf)
@@ -60,7 +58,7 @@
 
 --- a/src/lxc/json/json_common.c
 +++ b/src/lxc/json/json_common.c
-@@ -765,7 +765,11 @@ int append:json_map_int_string(json_map_int_string *map, int key, const char *va
+@@ -765,7 +765,11 @@ int append_json_map_int_string(json_map_int_string *map, int key, const char *va
          return -1;
      }
  
@@ -73,7 +71,7 @@
          return -1;
      }
  
-@@ -887,7 +891,11 @@ int append:json_map_string_int(json_map_string_int *map, const char *key, int va
+@@ -887,7 +891,11 @@ int append_json_map_string_int(json_map_string_int *map, const char *key, int va
          return -1;
      }
  
@@ -85,4 +83,5 @@
 +    if ((SIZE_MAX / sizeof(int) - 1) < map->len) {
          return -1;
      }
-  
+ 
+
