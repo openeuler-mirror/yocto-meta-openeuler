@@ -6,7 +6,7 @@ LICENSE = "MulanPSL-2.0"
 LIC_FILES_CHKSUM = "file://LIC_NOTE;md5=c7799ac4c617e21866647792dfe9dc8b"
 
 REMOTE_RPM_NAME:aarch64 = "lib-shim-v2-0.0.1-6.oe2203sp2.aarch64.rpm"
-REMOTE_RPM_NAME:x86-64 = "lib-shim-v2-0.0.1-6.oe2203sp2.aarch64.rpm"
+REMOTE_RPM_NAME:x86-64 = "lib-shim-v2-0.0.1-6.oe2203sp2.x86_64.rpm"
 REMOTE_HEADER_RPM_NAME = "lib-shim-v2-devel-0.0.1-6.oe2203sp2.aarch64.rpm"
 
 SRC_URI[arm64.md5sum] = "55cd6d77172138ed96c06db89408531b"
