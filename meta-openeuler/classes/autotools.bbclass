@@ -144,9 +144,9 @@ do_install[prefuncs] += "autotools_aclocals"
 do_configure[postfuncs] += "autotools_postconfigure"
 
 ACLOCALDIR = "${STAGING_DATADIR}/aclocal"
-ACLOCALEXTRAPATH = "-I ${NATIVESDK_DATADIR}/aclocal/"
-ACLOCALEXTRAPATH:class-target = " -I ${NATIVESDK_DATADIR}/aclocal/"
-ACLOCALEXTRAPATH:class-nativesdk = " -I ${NATIVESDK_DATADIR}/aclocal/"
+ACLOCALEXTRAPATH = " -I ${NATIVESDK_DATADIR}/aclocal/"
+ACLOCALEXTRAPATH:class-target = " -I ${STAGING_DATADIR_NATIVE}/aclocal -I ${NATIVESDK_DATADIR}/aclocal/"
+ACLOCALEXTRAPATH:class-nativesdk = " -I ${STAGING_DATADIR_NATIVE}/aclocal -I ${NATIVESDK_DATADIR}/aclocal/"
 
 python autotools_aclocals () {
     sitefiles, searched = siteinfo_get_files(d, sysrootcache=True)
@@ -227,6 +227,11 @@ autotools_do_configure() {
 		for i in $PRUNE_M4; do
 			find ${S} -ignore_readdir_race -name $i -delete
 		done
+
+		# when ${STAGING_DATADIR_NATIVE}/aclocal does not exist, there will be an error
+		if [ ! -d ${STAGING_DATADIR_NATIVE}/aclocal ]; then
+			install -d ${STAGING_DATADIR_NATIVE}/aclocal
+		fi
 
 		bbnote Executing ACLOCAL=\"$ACLOCAL\" autoreconf -Wcross --verbose --install --force ${EXTRA_AUTORECONF} $acpaths
 		ACLOCAL="$ACLOCAL" autoreconf -Wcross -Wno-obsolete --verbose --install --force ${EXTRA_AUTORECONF} $acpaths || die "autoreconf execution failed."
