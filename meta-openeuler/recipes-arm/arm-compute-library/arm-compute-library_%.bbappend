@@ -16,6 +16,18 @@ S = "${WORKDIR}/ComputeLibrary-${PV}"
 
 EXTRA_OESCONS = "arch=arm64-v8a extra_cxx_flags="-fPIC -Wno-unused-but-set-variable -Wno-ignored-qualifiers -Wno-noexcept" benchmark_tests=1 validation_tests=0 set_soname=1"
 EXTRA_OESCONS += "neon=1 opencl=0 embed_kernels=1"
+EXTRA_OESCONS:remove = "MAXLINELENGTH=2097152"
+
+do_configure() {
+        if [ -n "${CONFIGURESTAMPFILE}" -a "${S}" = "${B}" ]; then
+                if [ -e "${CONFIGURESTAMPFILE}" -a "`cat ${CONFIGURESTAMPFILE}`" != "${BB_TASKHASH}" -a "${CLEANBROKEN}" != "1" ]; then
+                        ${STAGING_BINDIR_NATIVE}/scons --directory=${S} --clean ${EXTRA_OESCONS}
+                fi
+
+                mkdir -p `dirname ${CONFIGURESTAMPFILE}`
+                echo ${BB_TASKHASH} > ${CONFIGURESTAMPFILE}
+        fi
+}
 
 scons_do_compile() {
         ${STAGING_BINDIR_NATIVE}/scons ${PARALLEL_MAKE}  ${EXTRA_OESCONS} || \
