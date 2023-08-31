@@ -14,7 +14,5 @@ SRC_URI:remove = " \
 SRC_URI:prepend = " \
         file://${BPN}/${BP}.tar.xz;name=tarball \
         file://${BPN}/0001-logrotate-3.20.1-lock-state-msg.patch \
+        file://${BPN}/backport-do-not-rotate-old-logs-on-prerotate-failure.patch \
 "
-
-SRC_URI[tarball.md5sum] = "24704642e1e6c7889edbe2b639636caf"
-SRC_URI[tarball.sha256sum] = "742f6d6e18eceffa49a4bacd933686d3e42931cfccfb694d7f6369b704e5d094"
