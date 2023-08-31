@@ -60,3 +60,8 @@ set_permissions_from_rootfs() {
 }
 
 DISTRO_FEATURES += "${TCLIBC}"
+
+# rootfs_rpm.bbclass line 14
+# as we use dnf in hosttools, we don't need python3-native
+# directly use python3 in hosttools
+EXTRANATIVEPATH:remove = "python3-native"
