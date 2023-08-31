@@ -23,7 +23,10 @@ SRC_URI:prepend = "file://tell-the-truth-about-private-api.patch \
 
 # openeuler configuration: 
 # ref: meta-raspberrypi/dynamic-layers/qt5-layer/recipes-qt/qt5/qtbase_%.bbappend
-PACKAGECONFIG_GL = "${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'eglfs gles2', '', d)}"
+PACKAGECONFIG_GL = "${@bb.utils.contains('DISTRO_FEATURES', 'x11 opengl', 'gl', \
+                        bb.utils.contains('DISTRO_FEATURES',     'opengl', 'eglfs gles2', \
+                                                                       '', d), d)}"
+
 PACKAGECONFIG_GL:append = " kms gbm"
 PACKAGECONFIG_FONTS = "fontconfig"
 PACKAGECONFIG:append = " libinput examples tslib xkbcommon"

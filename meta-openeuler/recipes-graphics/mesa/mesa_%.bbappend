@@ -36,3 +36,7 @@ DRIDRIVERS:append:x86-64:class-target = ",r100,r200,nouveau,i965"
 # kmsro: Open source graphics driver, based on gallium
 # virgl: Virtual 3D Graphics Acceleration Protocol
 PACKAGECONFIG:append = " kmsro virgl"
+
+# ref: meta-raspberrypi/recipes-graphics/mesa/mesa_%.bbappend
+PACKAGECONFIG:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'x11 opengl', 'x11 dri3', '', d)} \
+        ${@bb.utils.contains('DISTRO_FEATURES', 'vulkan', 'vulkan broadcom', '', d)"
