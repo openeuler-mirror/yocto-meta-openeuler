@@ -16,8 +16,8 @@ SRC_URI:remove = " \
 SRC_URI = " \
     file://tensorflow-${PV}.tar.gz \
     file://modify-deps-on-libclang-gcsfs-gast.patch \
-    file://muslc_flatbuffers_build_fix.patch \
 "
+
 
 S = "${WORKDIR}/tensorflow-${PV}"
 
