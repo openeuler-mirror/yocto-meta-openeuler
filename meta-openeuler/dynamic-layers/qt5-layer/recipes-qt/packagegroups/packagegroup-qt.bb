@@ -1,6 +1,8 @@
 SUMMARY = "qt pkgs"
 PR = "r1"
 
+PACKAGE_ARCH = "${MACHINE_ARCH}"
+
 inherit packagegroup
 
 PACKAGES = "${PN}"
@@ -10,6 +12,6 @@ weston \
 qtwayland \
 qtbase \
 kmscube \
-qt5-opengles2-test \
+${@bb.utils.contains('DISTRO_FEATURES', 'x11 opengl', 'gtk+3 wxwidgets', 'qt5-opengles2-test', d)} \
 helloworld-gui \
 "
