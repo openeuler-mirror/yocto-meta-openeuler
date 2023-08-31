@@ -1,8 +1,6 @@
 # the main bb file: yocto-poky/meta/recipes-multimedia/webp/libwebp_1.2.4.bb
 
-PV = "1.3.0"
-
-FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+PV = "1.3.1"
 
 SRC_URI:remove = " \
     http://downloads.webmproject.org/releases/webp/${BP}.tar.gz \
