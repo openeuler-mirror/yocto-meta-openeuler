@@ -54,7 +54,10 @@ def divide_body_and_footer(body: List[str]):
     if first_footer_index != -1:
         real_body = body[:first_footer_index]
         #use len(body)-1 because the last line in body is always blankline
-        real_footer = body[first_footer_index:len(body)-1]
+        if len(body[-1].strip()) == 0:
+            real_footer = body[first_footer_index:len(body)-1]
+        else:
+            real_footer = body[first_footer_index:len(body)]
     else:
         real_body = body
         real_footer = []
@@ -142,8 +145,8 @@ class TitleForm(LineRule):
         else:
             if subject[0] != ' ' or (subject[0] == ' ' and subject[1] == ' '):
                 result.append(RuleViolation(self.id, self.message + "There is only one space after the colon", line))
-            if subject.strip()[0].islower() and not area.startswith("revert"):
-                result.append(RuleViolation(self.id, "The first letter of subject must be capitalized", line))
+            #if subject.strip()[0].islower() and not area.startswith("revert"):
+            #    result.append(RuleViolation(self.id, "The first letter of subject must be capitalized", line))
             if not re.match('.*[^?:!.,;]$', subject.strip()) :
                 result.append(RuleViolation(self.id, "Title has trailing punctuation", line))
             if area.startswith("revert"):
