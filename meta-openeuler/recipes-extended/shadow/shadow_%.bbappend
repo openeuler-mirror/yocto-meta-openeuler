@@ -26,7 +26,18 @@ SRC_URI:prepend = "file://${BP}.tar.xz \
            file://backport-Correctly-handle-illegal-system-file-in-tz.patch \
            file://backport-Explicitly-override-only-newlines.patch \
            file://backport-Prevent-out-of-boundary-access.patch \
+           file://backport-Added-control-character-check.patch \
+           file://backport-Overhaul-valid_field.patch \
+           file://backport-Read-whole-line-in-yes_or_no.patch \
+           file://backport-commonio-free-removed-database-entries.patch \
+           file://backport-semanage-disconnect-to-free-libsemanage-internals.patch \
+           file://backport-run_parts-for-groupadd-and-groupdel.patch \
            "
+# remove patches with the same functionality in src-openeuler from poky:
+SRC_URI:remove = " \
+    file://CVE-2023-29383.patch \
+    file://0001-Overhaul-valid_field.patch \
+"
 
 # add extra pam files for openeuler
 # poky shadow.inc have added: chfn chpasswd chsh login newusers passwd su

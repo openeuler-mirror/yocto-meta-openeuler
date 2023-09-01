@@ -13,6 +13,12 @@ SRC_URI =+ " \
         file://rsyslog-8.37.0-initialize-variables-and-check-return-value.patch \
         file://backport-core-bugfix-local-hostname-invalid-if-no-global-config-object-given.patch  \
         file://backport-imtcp-bugfix-legacy-config-directives-did-no-longer-work.patch  \
+        file://backport-core-bugfix-template-system-may-generate-invalid-json.patch \
+        file://backport-omprog-bugfix-invalid-status-handling-at-called-prog.patch \
+        file://backport-imjournal-add-second-fallback-to-_COMM.patch \
+        file://backport-bugfix-prevent-pot.-segfault-when-switchung.patch \
+        file://backport-core-bugfix-using-uuid-msg-prop-can-deadloc.patch \
+        file://backport-GNUTls-Driver-Fix-memory-leaks-in-gtlsInitC.patch \
 "
 
 SRC_URI[md5sum] = "23239f609af189b0814f8adc95ad9c02"

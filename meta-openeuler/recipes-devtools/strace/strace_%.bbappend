@@ -1,6 +1,7 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/strace/strace_5.16.bb
 
 # strace version in openEuler, this version needs to match the kernel
+# do not use 6.x, not match 5.10 kernel
 PV = "5.14"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=318cfc887fc8723f4e9d4709b55e065b"

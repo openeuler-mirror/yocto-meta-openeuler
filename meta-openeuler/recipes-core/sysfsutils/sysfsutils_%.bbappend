@@ -12,6 +12,8 @@ SRC_URI:prepend = "file://sysfsutils/v${PV}.tar.gz \
 "
 
 SRC_URI += "file://0001-lib-Fixed-a-memory-leak-in-lib-sysfs_driver.patch \
+        file://0002-lib-Fixed-memory-leaks-in-lib-sysfs_device.c.patch \
+        file://0003-lib-Fixed-memory-leaks-in-lib-sysfs_attr.c.patch \
 "
 
 # checksum changed in this version

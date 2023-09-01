@@ -1,8 +1,12 @@
 # main bbfile: yocto-poky/meta/recipes-extended/tar/tar_1.34.bb
-PV="1.34"
+PV="1.35"
+
+LIC_FILES_CHKSUM = "file://COPYING;md5=1ebbd3e34237af26da5dc08a4e440464"
 
 # Use the source packages from openEuler
-SRC_URI:remove = "${GNU_MIRROR}/tar/tar-${PV}.tar.bz2"
+SRC_URI:remove = "${GNU_MIRROR}/tar/tar-${PV}.tar.bz2 \
+        file://CVE-2022-48303.patch \
+        "
 SRC_URI:prepend = "file://tar-${PV}.tar.xz \
         file://backport-CVE-2022-48303.patch \
         file://tar-1.28-loneZeroWarning.patch \
@@ -10,6 +14,9 @@ SRC_URI:prepend = "file://tar-${PV}.tar.xz \
         file://tar-1.29-wildcards.patch \
         file://tar-1.28-atime-rofs.patch \
         file://tar-1.28-document-exclude-mistakes.patch \
+        file://tar-1.33-fix-capabilities-test.patch \
+        file://tar-1.35-add-forgotten-tests-from-upstream.patch \
+        file://tar-1.35-revert-fix-savannah-bug-633567.patch \
         file://tar-Add-sw64-architecture.patch \
 "
 
