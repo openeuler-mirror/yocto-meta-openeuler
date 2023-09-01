@@ -1,12 +1,13 @@
-PV = "1.5.2"
+PV = "1.5.3"
 
 # get files from pam, not libpam
 OPENEULER_REPO_NAME = "pam"
 
-# delete useless patch from old version in poky bb
+# remove rejected patch
 SRC_URI:remove = " \
-    file://0001-modules-pam_namespace-Makefile.am-correctly-install-.patch \
-    file://0001-Makefile.am-support-usrmage.patch \
+        file://0001-run-xtests.sh-check-whether-files-exist.patch \
+        file://CVE-2022-28321-0002.patch \
+        file://0001-pam_motd-do-not-rely-on-all-filesystems-providing-a-.patch \
 "
 
 # patch from openeuler
@@ -14,9 +15,8 @@ SRC_URI += " \
            file://bugfix-pam-1.1.8-faillock-systemtime.patch \
            file://change-ndbm-to-gdbm.patch \
            file://add-sm3-crypt-support.patch \
-           file://1003-Change-chinese-translation.patch \
 "
-SRC_URI[sha256sum] = "e4ec7131a91da44512574268f493c6d8ca105c87091691b8e9b56ca685d4f94d"
+SRC_URI[sha256sum] = "7ac4b50feee004a9fa88f1dfd2d2fa738a82896763050cd773b3c54b0a818283"
 
 DEPENDS:remove = "flex"
 

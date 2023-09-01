@@ -6,7 +6,7 @@ to switch roles, and run_init to run /etc/init.d scripts in the proper \
 context."
 SECTION = "base"
 LICENSE = "GPL-2.0-or-later"
-LIC_FILES_CHKSUM = "file://${S}/COPYING;md5=393a5ca445f6965873eca0259a17f833"
+LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=393a5ca445f6965873eca0259a17f833"
 
 require selinux_common.inc
 
@@ -136,7 +136,7 @@ do_compile:prepend() {
     export PYLIBVER='python${PYTHON_BASEVERSION}'
     export PYTHON_CPPFLAGS="-I${STAGING_INCDIR}/${PYLIBVER}"
     export PYTHON_LDFLAGS="${STAGING_LIBDIR}/lib${PYLIBVER}.so"
-    export PYTHON_SITE_PKG="${libdir}/${PYLIBVER}/site-packages"
+    export PYTHON_SITE_PKG="${PYTHON_SITEPACKAGES_DIR}"
 }
 
 do_compile:class-native() {

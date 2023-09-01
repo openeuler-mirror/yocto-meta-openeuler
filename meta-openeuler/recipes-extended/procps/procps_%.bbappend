@@ -19,6 +19,19 @@ SRC_URI:remove = " \
 # files, patches that come from openeuler
 SRC_URI += " \
         file://procps-ng/procps-ng-${PV}.tar.xz \
+        file://openeuler-add-M-and-N-options-for-top.patch \
+        file://openeuler-top-exit-with-error-when-pid-overflow.patch \
+        file://skill-Restore-the-p-flag-functionality.patch \
+        file://backport-top-address-the-missing-guest-tics-for-summary-area.patch \
+        file://backport-0001-ps-address-missing-or-corrupted-fields-with-m-option.patch \
+        file://backport-0002-ps-trade-previous-fix-for-final-solution-to-m-option.patch \
+        file://backport-top-lessen-summary-cpu-distortions-with-first-displa.patch \
+        file://backport-pmap-Increase-memory-allocation-failure-judgment.patch \
+        file://backport-top-added-guest-tics-when-multiple-cpus-were-merged.patch \
+        file://backport-library-restore-the-proper-main-thread-tics-valuation.patch \
+        file://backport-vmstat-Update-memory-statistics.patch \
+        file://backport-vmstat-Print-guest-time.patch \
+        file://backport-ps-Fix-possible-buffer-overflow-in-C-option.patch \
 "
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
