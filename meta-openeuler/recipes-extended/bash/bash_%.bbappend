@@ -1,10 +1,14 @@
-# main bbfile: yocto-poky/meta/recipes-extended/bash/bash_5.1.bb
+# main bbfile: yocto-poky/meta/recipes-extended/bash/bash_5.1.16.bb
 
 # bash version in openeuler
-PV = "5.1.8"
+PV = "5.2.15"
 
 # These patches have been merged in this version
 SRC_URI:remove = " file://CVE-2022-3715.patch \
+           file://execute_cmd.patch \
+           file://use_aclocal.patch \
+           file://makerace.patch \
+           file://makerace2.patch \
            ${GNU_MIRROR}/bash/bash-${PV}-patches/bash51-001;apply=yes;striplevel=0;name=patch001 \
            ${GNU_MIRROR}/bash/bash-${PV}-patches/bash51-002;apply=yes;striplevel=0;name=patch002 \
            ${GNU_MIRROR}/bash/bash-${PV}-patches/bash51-003;apply=yes;striplevel=0;name=patch003 \
@@ -22,16 +26,9 @@ SRC_URI:prepend = " \
            file://bugfix-Forbidden-non-root-user-to-clear-history.patch \
            file://enable-dot-logout-and-source-bashrc-through-ssh.patch \
            file://cd-alias.patch \
-           file://backport-fix-crash-in-readline-when-started-with-an-invalid.patch \
-           file://backport-fix-CVE-2022-3715.patch \
-           file://backport-Bash-5.1-patch-10-fix-for-wait-n-being-interrupted-b.patch \
-           file://backport-Bash-5.1-patch-11-save-and-restore-alias-parsing-whe.patch \
-           file://backport-Bash-5.1-patch-12-fix-race-condition-with-child-proc.patch \
-           file://backport-Bash-5.1-patch-15-fix-readline-display-of-some-chara.patch \
-           file://backport-Bash-5.1-patch-16-fix-interpretation-of-multiple-ins.patch \
 "
 
-SRC_URI[tarball.sha256sum] = "0cfb5c9bb1a29f800a97bd242d19511c997a1013815b805e0fdd32214113d6be"
+SRC_URI[tarball.sha256sum] = "13720965b5f4fc3a0d4b61dd37e7565c741da9a5be24edc2ae00182fc1b3588c"
 
 # When testing the performance of the shell using UnixBench, we found that the sh of busybox(ash)
 # outperformed bash, so we still make sh link to busybox instead of bash.
