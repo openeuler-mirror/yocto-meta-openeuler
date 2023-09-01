@@ -1,4 +1,8 @@
-PV = "21.3"
-SRC_URI[md5sum] = "e713c1939f294fd729af4a7be40dd141"
-SRC_URI[sha256sum] = "dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb"
+PV = "23.1"
 require pypi-src-openeuler.inc
+
+# We don't have support for python_flit_core.bbclass, so replace the do_compile
+do_compile:class-native () {
+    cd ${PEP517_SOURCE_PATH}
+    nativepython3 -m flit_core.wheel --outdir ${PEP517_WHEEL_PATH} .
+}

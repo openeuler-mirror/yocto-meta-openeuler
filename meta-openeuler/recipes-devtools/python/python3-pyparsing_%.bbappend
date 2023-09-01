@@ -1,5 +1,3 @@
-PV = "3.0.7"
-SRC_URI[md5sum] = "9d38774991175444e21a3dfa865876cc"
-SRC_URI[sha256sum] = "18ee9022775d270c55187733956460083db60b37d0d0fb357445f3094eed3eea"
+PV = "3.0.9"
 require pypi-src-openeuler.inc
 OPENEULER_REPO_NAME = "${PYPI_PACKAGE}"

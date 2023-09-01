@@ -1,6 +1,4 @@
 PV = "68.0.0"
-SRC_URI[md5sum] = "c5e4ff6557d99204464aa300c0bad7d4"
-SRC_URI[sha256sum] = "baf1fdb41c6da4cd2eae722e135500da913332ab3f2f5c7d33af9b492acb5235"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=141643e11c48898150daa83802dbc65f"
 
