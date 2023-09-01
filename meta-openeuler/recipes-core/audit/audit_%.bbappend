@@ -6,7 +6,7 @@ OPENEULER_SRC_URI_REMOVE = "https git http"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
 #version in openEuler
-PV = "3.0.9"
+PV = "3.1.1"
 
 S = "${WORKDIR}/audit-${PV}"
 
@@ -26,6 +26,7 @@ SRC_URI += " \
         file://audit-Add-sw64-architecture.patch \
         file://auditd.conf \
         file://audit.rules \
+        file://backport-auditswig.i-avoid-setter-generation-for-audit_rule_d.patch \
         "
 
 # we don't want audit python3 runtime tool
