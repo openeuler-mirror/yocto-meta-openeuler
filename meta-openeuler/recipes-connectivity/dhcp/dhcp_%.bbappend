@@ -49,6 +49,7 @@ SRC_URI:prepend = "file://backport-0001-change-bug-url.patch \
            file://bugfix-error-message-display.patch \
            file://backport-Fix-CVE-2022-2928.patch \
            file://backport-Fix-CVE-2022-2929.patch \
+           file://Revert-correcting-the-logic-in-dhclient.patch \
 "
 
 SRC_URI[md5sum] = "9076af4cc1293dde5a7c6cae7de6ab45"
