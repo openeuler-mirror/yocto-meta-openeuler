@@ -2,6 +2,7 @@ PV = "1.6.1"
 
 SRC_URI += " \
     file://bugfix-cronie-systemd-alias.patch \
+    file://backport-Support-reloading-with-SIGURG-in-addition-to-SIGHUP.patch \
 "
 
 SRC_URI[md5sum] = "de07b7229520bc859d987c721bab87c5"
