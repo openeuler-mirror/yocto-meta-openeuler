@@ -1,4 +1,4 @@
-PV = "1.34.1"
+PV = "1.36.1"
 
 # use openEuler defconfig
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
@@ -17,14 +17,13 @@ SRC_URI:remove = " \
             file://0001-awk-fix-CVEs.patch \
             file://0002-man-fix-segfault-in-man-1.patch \
             file://fail_on_no_media.patch \
+            file://recognize_connmand.patch \
             "
 
 #we always want busybox with mdev\init packages to support multi init manager
 SRC_URI:append = " \
         file://backport-CVE-2022-28391.patch \
-        file://backport-CVE-2022-30065.patch \
-        file://backport-fix-use-after-free-in-bc-module.patch \
-        file://backport-generalize-const-trick.patch \
+        file://backport-CVE-2022-48174.patch \
         file://init.cfg \
         file://rcS.default \
         file://mdev.cfg \
@@ -56,4 +55,4 @@ do_install:append () {
     fi
 }
 
-SRC_URI[tarball.sha256sum] = "415fbd89e5344c96acf449d94a6f956dbed62e18e835fc83e064db33a34bd549"
+SRC_URI[tarball.sha256sum] = "b8cc24c9574d809e7279c3be349795c5d5ceb6fdf19ca709f80cde50e47de314"
