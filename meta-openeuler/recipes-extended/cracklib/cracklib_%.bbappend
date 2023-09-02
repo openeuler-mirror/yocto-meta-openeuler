@@ -1,6 +1,6 @@
 OPENEULER_SRC_URI_REMOVE = "https git http"
 
-PV = "2.9.8"
+PV = "2.9.11"
 
 S = "${WORKDIR}/cracklib-${PV}"
 
@@ -10,6 +10,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 # delete lower version patch from poky
 SRC_URI:remove = " \
     file://0001-Apply-patch-to-fix-CVE-2016-6318.patch \
+    file://0002-craklib-fix-testnum-and-teststr-failed.patch \
 "
 
 # add openeuler patches
@@ -17,9 +18,7 @@ SRC_URI:remove = " \
 SRC_URI =+ " \
     file://cracklib-${PV}.tar.gz \
     file://fix-problem-of-error-message-about-simplistic-passwo.patch \
-    file://backport-cracklib-2.9.6-lookup.patch \
     file://fix-error-length-about-simplistic-password.patch \
-    file://fix-truncating-dict-file-without-input-data.patch \
 "
 
 # ref: http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-extended/cracklib/cracklib_2.9.8.bb
