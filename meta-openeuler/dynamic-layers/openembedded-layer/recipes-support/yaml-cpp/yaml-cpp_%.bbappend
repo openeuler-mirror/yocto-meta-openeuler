@@ -1,11 +1,8 @@
-# main bbfile: yocto-meta-openembedded/meta-oe/recipes-support/yaml-cpp/yaml-cpp_0.6.3.bb
-
-OPENEULER_SRC_URI_REMOVE = "https git"
-OPENEULER_REPO_NAME = "yaml-cpp"
-OPENEULER_BRANCH = "master"
+# main bbfile: yocto-meta-openembedded/meta-oe/recipes-support/yaml-cpp/yaml-cpp_0.7.0.bb
+OPENEULER_SRC_URI_REMOVE = "https git http"
 
 # version in openEuler
-PV = "0.6.3"
+PV = "0.7.0"
 S = "${WORKDIR}/yaml-cpp-yaml-cpp-${PV}"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
@@ -14,10 +11,8 @@ SRC_URI:remove = " \
 # files, patches that come from openeuler
 SRC_URI:prepend = " \
     file://yaml-cpp-${PV}.tar.gz \
-    file://CVE-2017-5950.patch \
+    file://yaml-cpp-cmake.patch \
 "
-SRC_URI[md5sum] = "b45bf1089a382e81f6b661062c10d0c2"
-SRC_URI[sha256sum] = "77ea1b90b3718aa0c324207cb29418f5bced2354c2e483a9523d98c3460af1ed"
 
 # add -fPIC to solve:
 #   dangerous relocation: unsupported relocation

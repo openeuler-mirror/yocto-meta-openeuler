@@ -17,6 +17,8 @@ SRC_URI += "file://${BP}.tar.gz \
            file://ncurses-libs.patch \
            file://ncurses-urxvt.patch \
            file://ncurses-kbs.patch \
+           file://backport-0001-CVE-2023-29491-fix-configure-root-args-option.patch \
+           file://backport-0002-CVE-2023-29491-env-access.patch \
+           file://backport-fix-for-out-of-memory-condition.patch \
+           file://backport-fix-coredump-when-use-Memmove.patch \
 "
-
-SRC_URI[md5sum] = "a2736befde5fee7d2b7eb45eb281cdbe"
