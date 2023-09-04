@@ -1,7 +1,8 @@
-# source bb: meta/recipes-devtools/expect/expect_5.45.4.bb
+# the main bb file: yocto-poky/meta/recipes-devtools/expect/expect_5.45.4.bb
 
 # expect-5.43.0-pkgpath.patch: build error, delete it from openeuler
-SRC_URI:prepend = "file://expect-5.43.0-log_file.patch \
+SRC_URI:prepend = "file://expect${PV}.tar.gz \
+           file://expect-5.43.0-log_file.patch \
            file://expect-5.45-man-page.patch \
            file://expect-5.45-match-gt-numchars-segfault.patch \
            file://expect-5.45-re-memleak.patch \

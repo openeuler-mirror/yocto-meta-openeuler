@@ -1,7 +1,9 @@
 # the main bb file: yocto-poky/meta/recipes-graphics/freetype/freetype_2.11.1.bb
 # version in src-openEuler
 
-PV = "2.12.1"
+PV = "2.13.1"
+
+LICENSE = "(FTL | GPL-2.0-or-later) & MIT"
 
 SRC_URI:remove = " \
     ${SAVANNAH_GNU_MIRROR}/${BPN}/${BP}.tar.xz \
@@ -22,11 +24,11 @@ SRC_URI:prepend = " \
     file://backport-freetype-2.10.1-debughook.patch \
 "
 
-LIC_FILES_CHKSUM = "file://LICENSE.TXT;md5=a5927784d823d443c6cae55701d01553 \
+LIC_FILES_CHKSUM = "file://LICENSE.TXT;md5=843b6efc16f6b1652ec97f89d5a516c0 \
 "
 
 # new checksum
-SRC_URI[sha256sum] = "ce729d97f166a919a6a3037c949af01d5d6e1783614024d72683153f0bc5ef05"
+SRC_URI[sha256sum] = "ea67e3b019b1104d1667aa274f5dc307d8cbd606b399bc32df308a77f1a564bf"
 
 # when running compile task, it will put libtool can not be find, but we can find libtool with arch
 # so make a software link from arch libtool to libtool

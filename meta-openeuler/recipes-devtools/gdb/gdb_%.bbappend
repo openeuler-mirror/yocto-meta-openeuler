@@ -1,15 +1,30 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/gdb/gdb_10.1.bb
 # ref: http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-devtools/gdb/gdb_12.1.bb?id=8d42315c074a97
 
-OPENEULER_SRC_URI_REMOVE = "https git http"
-
 #version in openEuler
 PV = "12.1"
+
+FILESEXTRAPATHS:prepend := "${THISDIR}/gdb:"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI:remove = " \
             ${GNU_MIRROR}/gdb/gdb-${PV}.tar.xz \
+           file://0005-Dont-disable-libreadline.a-when-using-disable-static.patch \
+           file://0006-use-asm-sgidefs.h.patch \
+           file://0007-Change-order-of-CFLAGS.patch \
+           file://0008-resolve-restrict-keyword-conflict.patch \
+           file://0009-Fix-invalid-sigprocmask-call.patch \
+           file://0010-gdbserver-ctrl-c-handling.patch \
             "
+
+SRC_URI:append = " \
+           file://0004-Dont-disable-libreadline.a-when-using-disable-static.patch \
+           file://0005-use-asm-sgidefs.h.patch \
+           file://0006-Change-order-of-CFLAGS.patch \
+           file://0007-resolve-restrict-keyword-conflict.patch \
+           file://0008-Fix-invalid-sigprocmask-call.patch \
+           file://0009-gdbserver-ctrl-c-handling.patch \
+"
 
 # files, patches that come from openeuler
 SRC_URI += " \
@@ -82,9 +97,19 @@ SRC_URI += " \
         file://gdb-rhbz1398387-tab-crash-test.patch \
         file://gdb-rhbz1553104-s390x-arch12-test.patch \
         file://gdb-sw22395-constify-target_desc.patch \
-        file://0002-set-entry-point-when-text-segment-is-missing.patch \
-        file://0003-Add-support-for-readline-8.2.patch \
+        file://0001-set-entry-point-when-text-segment-is-missing.patch \
+        file://0002-Add-support-for-readline-8.2.patch \
+        file://gdb-initialize-the-data_head-variable-to-eliminate-c.patch \
+        file://gdb-Use-bool-for-evregpy_no_listeners_p.patch \
+        file://gdb-libctf-update-regexp-to-allow-makeinfo-to-build-docu.patch \
+        file://backport-CVE-2023-39128.patch \
         "
+
+# the patch list apply faild
+# file://gdb-python-remove-Python-2-support.patch
+# file://gdb-Make-import-gdb.events-work.patch
+# file://gdb-Handle-Python-3.11-deprecation-of-PySys_SetPath-and-.patch
+
 # These patches can't apply from openEuler
 # It may depend on the feature poky not enable, such as --with-rpm, texinfo, etc.
 #gdb-6.6-buildid-locate.patch

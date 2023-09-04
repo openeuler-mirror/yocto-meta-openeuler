@@ -4,8 +4,6 @@ LICENSE = "GPL-2.0-or-later"
 
 PV = "1.8.9"
 
-OPENEULER_SRC_URI_REMOVE = "https git http"
-
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI:remove = " \
@@ -23,8 +21,12 @@ SRC_URI:append = " \
     file://format-security.patch \
 "
 
+# the openeuler patch 0001-extensions-NAT-Fix-for-Werror-format-security.patch apply failed
+
 SRC_URI:append = " \
     file://${BPN}-${PV}.tar.xz \
+    file://enabled-makecheck-in-extensions.patch \
+    file://bugfix-add-check-fw-in-entry.patch \
 "
 # the openeuler patch apply failed
 # file://0001-extensions-NAT-Fix-for-Werror-format-security.patch

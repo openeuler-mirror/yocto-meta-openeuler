@@ -1,6 +1,6 @@
 # the main bb file: yocto-poky/meta/recipes-devtools/elfutils/elfutils_0.186.bb
 
-PV = "0.187"
+PV = "0.189"
 
 # the path removed in 0.187
 SRC_URI:remove = " \
@@ -15,7 +15,7 @@ SRC_URI:append = " \
     file://Fix-segfault-in-eu-ar-m.patch \
     file://Fix-error-of-parsing-object-file-perms.patch \
     file://Fix-issue-of-moving-files-by-ar-or-br.patch \
-    file://Get-instance-correctly-for-eu-ar-N-option.patch \
+    file://backport-elfcompress-Don-t-compress-if-section-already-compre.patch \
 "
 
 SRC_URI[sha256sum] = "e70b0dfbe610f90c4d1fe0d71af142a4e25c3c4ef9ebab8d2d72b65159d454c8"

@@ -1,7 +1,11 @@
 # main bbfile: yocto-poky/meta/recipes-support/gnutls/gnutls_3.7.4.bb
 
 # version in openEuler
-PV = "3.7.8"
+PV = "3.8.0"
+
+LIC_FILES_CHKSUM = "file://LICENSE;md5=71391c8e0c1cfe68077e7fce3b586283 \
+                    file://doc/COPYING;md5=1ebbd3e34237af26da5dc08a4e440464 \
+                    file://doc/COPYING.LESSER;md5=4fbd65380cdd255951079008b364516c"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
@@ -20,16 +24,32 @@ SRC_URI:append = " \
 SRC_URI:append = " \
         file://${BP}.tar.xz \
         file://fix-ipv6-handshake-failed.patch \
-        file://backport-01-CVE-2023-0361.patch \
-        file://backport-02-CVE-2023-0361.patch \
 "
 
-EXTRA_OECONF:remove = "--enable-local-libopts"
+EXTRA_OECONF:remove = "--disable-libdane \
+                        --disable-guile \
+"
 
-SRC_URI[sha256sum] = "646e6c5a9a185faa4cea796d378a1ba8e1148dbb197ca6605f95986a25af2752"
+do_compile_ptest() {
+    oe_runmake -C tests buildtest-TESTS
+}
+
+do_install:append:class-target() {
+        if ${@bb.utils.contains('PACKAGECONFIG', 'fips', 'true', 'false', d)}; then
+          install -d ${D}${bindir}/bin
+          install -m 0755 ${B}/lib/.libs/fipshmac ${D}/${bindir}/
+        fi
+}
+
+DEPENDS:remove:libc-musl = "argp-standalone"
+
+SRC_URI[sha256sum] = "0ea0d11a1660a1e63f960f157b197abe6d0c8cb3255be24e1fb3815930b9bdc5"
 
 PACKAGECONFIG[fips] = "--enable-fips140-mode --with-libdl-prefix=${STAGING_BASELIBDIR}"
-PACKAGES:append = " ${PN}-fips"
+PACKAGES:append = " ${PN}-fips ${PN}-dane"
+
+FILES:${PN}-dane = "${libdir}/libgnutls-dane.so.*"
+FILES:${PN}-fips = "${bindir}/fipshmac"
 
 pkg_postinst_ontarget:${PN}-fips () {
     if test -x ${bindir}/fipshmac

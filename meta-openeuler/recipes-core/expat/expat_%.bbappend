@@ -1,5 +1,4 @@
-# ref:
-# http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-core/expat/expat_2.5.0.bb
+# the main bb file: yocto-poky/meta/recipes-core/expat/expat_2.5.0.bb
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
 

@@ -1,17 +1,14 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/json-c/json-c_0.15.bb
 
 # json-c version in openEuler
-PV = "0.16-20220414"
+PV = "0.17-20230812"
 
 # apply patch
 SRC_URI = " \
         file://json-c-${PV}.tar.gz \
-        file://backport-Add-test-to-check-for-the-memory-leak-mentioned-in-issue-781.patch \
-        file://backport-Fix-memory-leak-with-emtpy-strings-in-json_object_set_string.patch \
-        file://backport-json_object_from_fd_ex-fail-if-file-is-too-large.patch \
         "
 
-SRC_URI[md5sum] = "4f3288a5f14e0e6abe914213f41234e0"
-SRC_URI[sha256sum] = "3ecaeedffd99a60b1262819f9e60d7d983844073abc74e495cb822b251904185"
+SRC_URI[md5sum] = "6d724389b0a08c519d9dd6e2fac7efb8"
+SRC_URI[sha256sum] = "024d302a3aadcbf9f78735320a6d5aedf8b77876c8ac8bbb95081ca55054c7eb"
 
-S = "${WORKDIR}/json-c-json-c-0.16-20220414"
+S = "${WORKDIR}/json-c-json-c-${PV}"
