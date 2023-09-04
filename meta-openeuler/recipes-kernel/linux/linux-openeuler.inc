@@ -8,6 +8,36 @@ inherit kernel
 # i.e, .scc files can be applied
 inherit kernel-yocto
 
+# the original get_dirs_with_fragments will include OPENEULER_SP_DIR
+# so that all the files under OPENEULER_SP_DIR will be in the file-checksums
+# of do_kernel_metadata, which it not necessary
+def get_dirs_with_metadata(d):
+    extrapaths = []
+    extrafiles = []
+    extrapathsvalue = (d.getVar("FILESEXTRAPATHS") or "")
+
+    # Remove global openeuler src dir
+    openeuler_src_dir = d.getVar("OPENEULER_SP_DIR")
+    extrapathsvalue = extrapathsvalue.replace(openeuler_src_dir, "")
+
+    # Remove default flag which was used for checking
+    extrapathsvalue = extrapathsvalue.replace("__default:", "")
+    extrapaths = extrapathsvalue.split(":")
+
+    # add scc files
+    extrapaths += find_sccs(d)
+   
+    # add patches
+    extrapaths += find_patches(d, '')
+    for path in extrapaths:
+        if path and path + ":True" not in extrafiles:
+            extrafiles.append(path + ":" + str(os.path.exists(path)))
+
+    return " ".join(extrafiles)
+
+# override the original get_dirs_with_fragments in kernel-yocto.bbclass
+do_kernel_metadata[file-checksums] = "${@get_dirs_with_metadata(d)}"
+
 # enable kconf audit to output some message
 KCONF_BSP_AUDIT_LEVEL = "2"
 # as openeuler has defconfig, so here use all alldefconfig, all configs
