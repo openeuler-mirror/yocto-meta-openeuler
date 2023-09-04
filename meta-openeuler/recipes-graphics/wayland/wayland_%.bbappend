@@ -1,17 +1,15 @@
+OPENEULER_SRC_URI_REMOVE = "http git"
 
-PV = "1.21.0"
+PV = "1.22.0"
 
-# modify 0002-meson.build-find-the-native-wayland-scanner-directly.patch
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
-# 0001-build-Fix-strndup-detection-on-MinGW.patch cannot be applied
-SRC_URI:remove = "https://wayland.freedesktop.org/releases/${BPN}-${PV}.tar.xz \
-                  file://0001-build-Fix-strndup-detection-on-MinGW.patch \
-                  file://CVE-2021-3782.patch \
-"
-SRC_URI:prepend = "file://wayland-${PV}.tar.gz \
-                file://0002-meson.build-find-the-native-wayland-scanner-directly.patch \
+SRC_URI:remove = "file://0002-Do-not-hardcode-the-path-to-wayland-scanner.patch \
+           file://CVE-2021-3782.patch \
 "
 
-# fix ERROR: Problem encountered: -Dtests=true requires -Dlibraries=true
-EXTRA_OEMESON:remove:class-native = "-Dlibraries=false"
+# 0002-meson.build-find-the-native-wayland-scanner-directly.patch
+# fix error: pkgconfig can't find wayland-scanner
+SRC_URI:prepend = "file://wayland-${PV}.tar.xz \
+           file://0002-meson.build-find-the-native-wayland-scanner-directly.patch \
+"

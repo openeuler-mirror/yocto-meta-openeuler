@@ -1,16 +1,23 @@
-PV = "3.6.1"
+OPENEULER_SRC_URI_REMOVE = "http git"
 
-SRC_URI[sha256sum] = "c676146577d989189940f1959d9e3980d28513d74eedfbc6b7f15ea45fe54ee2"
+PV = "3.7.1"
 
-# add patches from openeuler
-SRC_URI += " \
-    file://0001-Drop-rmd160-from-OpenSSL.patch \
-    file://libarchive-uninitialized-value.patch \
-"
+# openeuler src
+SRC_URI:prepend = "file://${BP}.tar.gz \
+           "
 
-#${STAGING_INCDIR_NATIVE}/ext2fs not exist when not building e2fsprogs-native
-python() {
-    openeuler_sysroot = d.getVar('OPENEULER_NATIVESDK_SYSROOT')
-    if openeuler_sysroot:
-       d.setVar('STAGING_INCDIR_NATIVE', "%s/usr/include" % openeuler_sysroot)
+FILESEXTRAPATHS:append := "${THISDIR}/${BPN}/:"
+
+# keep same as upstream
+SRC_URI += "file://configurehack.patch"
+
+PACKAGECONFIG:remove = "lzo"
+
+# openeuler adapt
+# ${STAGING_INCDIR_NATIVE}/ext2fs not exist when not building e2fsprogs-native
+do_configure:prepend() {
+    if [ ! -d "${STAGING_INCDIR_NATIVE}/usr/include/ext2fs" ]; then
+        install -d ${STAGING_INCDIR_NATIVE}/usr/include/ext2fs
+	    cp -R ${OPENEULER_NATIVESDK_SYSROOT}/usr/include/ext2fs/ ${STAGING_INCDIR_NATIVE}/
+    fi
 }
