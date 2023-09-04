@@ -1,15 +1,10 @@
 # main bbfile: meta-qt5/recipes-qt/qt5/${BPN}_git.bb
 
-OPENEULER_REPO_NAME = "qt5-${BPN}"
+PV = "5.15.10"
 
-PV = "5.15.2"
+OPENEULER_SRC_URI_REMOVE = "http git"
 
-SRC_URI:prepend = "file://${BPN}-everywhere-src-${PV}.tar.xz \
-"
-
-# Use the source packages from src-openEuler, remove patch conflict with openeuler
-SRC_URI:remove = " \
-        ${QT_GIT}/${QT_MODULE}.git;name=${QT_MODULE};${QT_MODULE_BRANCH_PARAM};protocol=${QT_GIT_PROTOCOL} \
+SRC_URI:prepend = "file://${BPN}-everywhere-opensource-src-${PV}.tar.xz \
 "
 
 # yocto-poky specifies 'S = "${WORKDIR}/git', but since we are using the src-openEuler source package,
