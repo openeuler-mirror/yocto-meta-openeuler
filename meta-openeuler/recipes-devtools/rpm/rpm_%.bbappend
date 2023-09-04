@@ -34,6 +34,7 @@ SRC_URI:prepend = " \
         file://backport-Actually-return-an-error-in-parseScript-if-parsing-f.patch \
         file://Add-digest-list-plugin.patch \
         file://Add-IMA-digest-list-support.patch \
+        file://backport-Check-inside-root-when-querying-for-files.patch \
 "
 
 SRC_URI[sha256sum] = "2e0d220b24749b17810ed181ac1ed005a56bbb6bc8ac429c21f314068dc65e6a"
