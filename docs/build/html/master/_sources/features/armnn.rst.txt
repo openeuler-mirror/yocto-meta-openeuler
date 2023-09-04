@@ -65,6 +65,8 @@ ArmNN软件兼容 yocto-meta-openeuler 上做了很多准备工作，如 tensorf
      cd /usr/bin/
      UnitTests
 
+  注：部分测试用例需用到armnn的编译输出文件“./armnn/22.11-r0/build/src/”，将“src”放置系统"/usr/bin"下再执行“UnitTests”，否则测试用例部分不通过。
+
   如下图所示，则表示测试用例都通过，ArmNN库可用。
 
   .. image:: ../../image/armnn/UnitTests.jpg
