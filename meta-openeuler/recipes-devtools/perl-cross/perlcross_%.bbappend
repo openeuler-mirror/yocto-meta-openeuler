@@ -1,10 +1,15 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/perl-cross/perlcross_1.3.7.bb
 
+PV = "1.5"
+
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-SRC_URI:remove = "https://github.com/arsv/perl-cross/releases/download/${PV}/perl-cross-${PV}.tar.gz;name=perl-cross"
+SRC_URI:remove = " \
+            https://github.com/arsv/perl-cross/releases/download/${PV}/perl-cross-${PV}.tar.gz;name=perl-cross \
+            file://0001-Makefile-check-the-file-if-patched-or-not.patch \
+"
 
 # get tarball locally
 SRC_URI += "file://perl-cross-${PV}.tar.gz;name=perl-cross"
 
-SRC_URI[sha256sum] = "77f13ca84a63025053852331b72d4046c1f90ded98bd45ccedea738621907335"
+SRC_URI[sha256sum] = "d744a390939e2ebb9a12f6725b4d9c19255a141d90031eff90ea183fdfcbf211"
