@@ -25,13 +25,4 @@ IMAGE_FSTYPES = "cpio.gz"
 IMAGE_FSTYPES_DEBUGFS = "cpio.gz"
 INITRAMFS_MAXSIZE = "262144"
 
-# make install or nologin when using busybox-inittab
-set_permissions_from_rootfs:append() {
-    cd "${IMAGE_ROOTFS}"
-    if [ -e ./etc/inittab ];then
-        sed -i "s#respawn:/sbin/getty.*#respawn:-/bin/sh /init.d/install-efi.sh#g" ./etc/inittab
-    fi
-    cd -
-}
-
 require openeuler-image-common.inc

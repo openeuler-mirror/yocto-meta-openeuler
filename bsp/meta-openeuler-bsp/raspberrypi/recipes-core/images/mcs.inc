@@ -46,18 +46,6 @@ install_mcs_overlays() {
     fi
 }
 
-# make no login and standard PATH
-set_permissions_from_rootfs:append() {
-    cd "${IMAGE_ROOTFS}"
-    if [ -f ./etc/inittab ]; then
-        sed -i "s#respawn:/sbin/getty.*#respawn:-/bin/sh#g" ./etc/inittab
-    fi
-    if [ -f ./etc/profile ]; then
-        sed -i "s#^PATH=.*#PATH=\"/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin\"#g" ./etc/profile
-    fi
-    cd -
-}
-
 change_bootfiles_to_enable_uefi() {
     CONFIGFILE=${DEPLOY_DIR_IMAGE}/${BOOTFILES_DIR_NAME}/config.txt
 

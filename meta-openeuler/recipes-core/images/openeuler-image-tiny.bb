@@ -12,12 +12,3 @@ require openeuler-image-common.inc
 IMAGE_INSTALL = " \
 packagegroup-core-boot \
 "
-
-# make no login
-set_permissions_from_rootfs:append() {
-    cd "${IMAGE_ROOTFS}"
-    if [ -f ./etc/inittab ]; then
-        sed -i "s#respawn:/sbin/getty.*#respawn:-/bin/sh#g" ./etc/inittab
-    fi
-    cd -
-}
