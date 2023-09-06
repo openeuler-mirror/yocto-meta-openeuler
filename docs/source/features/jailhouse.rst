@@ -93,7 +93,7 @@ ____
       .. code-block:: shell
 
          # qemu-arm64
-         oebuild generate -p aarch64-std -f openeuler-mcs -d <build_arm64_mcs>
+         oebuild generate -p qemu-aarch64 -f openeuler-mcs -d <build_arm64_mcs>
 
       进入 ``<build>`` 目录，添加 ``meta-freertos``
 

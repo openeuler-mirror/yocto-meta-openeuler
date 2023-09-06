@@ -41,13 +41,13 @@ ____
    .. code-block:: shell
 
       # arm64
-      oebuild generate -p aarch64-std -f openeuler-rt -d <build_arm64_rt>
+      oebuild generate -p qemu-aarch64 -f openeuler-rt -d <build_arm64_rt>
 
       # RPI4
       oebuild generate -p raspberrypi4-64 -f openeuler-rt -d <build_rpi_rt>
 
       # x86
-      oebuild generate -p x86-64-std -f openeuler-rt -d <build_x86_rt>
+      oebuild generate -p x86-64 -f openeuler-rt -d <build_x86_rt>
 
 3. 进入 ``<build>`` 目录，编译openeuler-image：
 

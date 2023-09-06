@@ -364,8 +364,6 @@ bblayers.conf文件补充内容。在yocto构建当中，会有两个必须的�
 :: 
 
     container:
-        remote: https://gitee.com/alichinese/yocto-meta-openeuler.git
-        branch: refactor
         short_id: 6ce6bd486f1e
         volumns:
         - /home/huawei/桌面/demo/src:/usr1/openeuler/src
@@ -375,16 +373,6 @@ container
 >>>>>>>>>
 
 容器运行时相关参数，在oebuild使用容器端构建时会将启动的容器相关参数记录下来。
-
-remote
-::::::
-
-当前yocto-meta-openeuler仓的远程地址。
-
-branch
-::::::
-
-当前yocto-meta-openeuler仓的远程仓分支名。
 
 short_id
 ::::::::

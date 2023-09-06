@@ -17,12 +17,12 @@ openEuler Embedded x86-64镜像构建
 
    .. code-block:: shell
 
-      oebuild generate -p x86-64-std -d <build_x86>
+      oebuild generate -p x86-64 -d <build_x86>
 
    .. note::
 
       | x86-64的软实时镜像通过以下命令进行编译配置：
-      | ``oebuild generate -p x86-64-std -f openeuler-rt -d <build_x86_rt>``
+      | ``oebuild generate -p x86-64 -f openeuler-rt -d <build_x86_rt>``
       | 更多用法请参考oebuild章节。
 
 3. 进入 ``<build_x86>`` 目录，编译openeuler-image：

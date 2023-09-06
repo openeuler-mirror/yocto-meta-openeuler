@@ -38,19 +38,13 @@
 -l: list
 --------
 
-该参数用于列出当前openEuler Embedded版本支持的单板以及特性，用于在生成构建配置文件时对单板名称以及特性并不熟悉的情况下，通过该命令参数获取相关的单板与特性名称，该命令有两个可选参数值，分别是platform与feature，前者代表单板，后者代表特性，而oebuild对于openEuler Embedded的单板列表与特性列表的识别是从yocto-meta-openeuler的oebuild配置目录下识别出来的，在 `yocto-meta-openeuler/.oebuild/platform` 目录下存放着openEuler Embedded支持的单板配置文件，配置文件的命名以该单板名称为准，因此oebuild列出的单板列表就是该目录下的内容。同样，对于特性列表来说，在 `yocto-meta-openeuler/.oebuild/feature` 目录下也存放着openEuler Embedded支持的特性配置文件，配置文件的命名以该特性名称为准，使用范例如下：
+该参数用于列出当前openEuler Embedded版本支持的单板以及特性，用于在生成构建配置文件时对单板名称以及特性并不熟悉的情况下，通过该命令参数获取相关的单板与特性名称，而oebuild对于openEuler Embedded的单板列表与特性列表的识别是从yocto-meta-openeuler的oebuild配置目录下识别出来的，在 `yocto-meta-openeuler/.oebuild/platform` 目录下存放着openEuler Embedded支持的单板配置文件，配置文件的命名以该单板名称为准，因此oebuild列出的单板列表就是该目录下的内容。同样，对于特性列表来说，在 `yocto-meta-openeuler/.oebuild/feature` 目录下也存放着openEuler Embedded支持的特性配置文件，配置文件的命名以该特性名称为准，使用范例如下：
 
-列出openEuler Embedded支持的单板列表：
-
-.. code-block:: console
-
-    oebuild generate -l platform
-
-列出openEuler Embedded支持的特性列表：
+列出openEuler Embedded支持的单板与特性列表：
 
 .. code-block:: console
 
-    oebuild generate -l feature
+    oebuild generate -l
 
 值得注意的是，特性的列出会显示每个特性支持的单板，用suport arch来表示，用|来进行分割
 
