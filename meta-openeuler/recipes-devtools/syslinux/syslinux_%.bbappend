@@ -12,13 +12,14 @@ SRC_URI:remove = " \
 
 # files, patches that come from openeuler
 SRC_URI:prepend = " \
-        file://${BP}.tar.xz;name=tarball \
-	file://0001-Add-install-all-target-to-top-side-of-HAVE_FIRMWARE.patch \
-	file://0002-ext4-64bit-feature.patch \
-	file://0003-include-sysmacros-h.patch \
-	file://backport-add-RPMOPTFLAGS-to-CFLAGS-for-some-stuff.patch \
-	file://backport-replace-builtin-strlen-that-appears-to-get-optimized.patch \
-	file://backport-tweak-for-gcc-10.patch \
+    file://${BP}.tar.xz;name=tarball \
+    file://0001-Add-install-all-target-to-top-side-of-HAVE_FIRMWARE.patch \
+    file://0002-ext4-64bit-feature.patch \
+    file://0003-include-sysmacros-h.patch \
+    file://backport-replace-builtin-strlen-that-appears-to-get-optimized.patch \
+    file://backport-add-RPMOPTFLAGS-to-CFLAGS-for-some-stuff.patch \
+    file://backport-tweak-for-gcc-10.patch \
+    file://backport-zlib-update.patch \
 "
 
 SRC_URI[tarball.md5sum] = "f9c956fde0de29be297402ecbc8ff4d0"
