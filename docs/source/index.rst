@@ -39,3 +39,4 @@ openEuler Embedded在内核版本、软件包版本等代码层面会与openEule
    oebuild/directory/index.rst
    oebuild/configure/index.rst
    oebuild/develop/index.rst
+   oebuild/release/index.rst
