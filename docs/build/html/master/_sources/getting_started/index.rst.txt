@@ -82,7 +82,7 @@ openEuler Embedded采用yocto构建，但通过 `oebuild <https://gitee.com/open
       $ cd <work_dir>
 
       # 为 openeuler-image-qemu-arm64 镜像创建配置文件 compile.yaml
-      $ oebuild generate -p aarch64-std -d build_arm64
+      $ oebuild generate -p qemu-aarch64 -d build_arm64
 
       # 切换到包含 compile.yaml 的编译空间目录，如 build/build_arm64/
       $ cd build/build_arm64/

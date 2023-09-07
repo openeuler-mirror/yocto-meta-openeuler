@@ -52,7 +52,7 @@ qemu镜像的构建
 
 .. code-block:: console
 
-   oebuild generate -p aarch64-std -t /path/to/aarch64-openeuler-linux-musl -f musl
+   oebuild generate -p qemu-aarch64 -t /path/to/aarch64-openeuler-linux-musl -f musl
 
 .. attention::
 
