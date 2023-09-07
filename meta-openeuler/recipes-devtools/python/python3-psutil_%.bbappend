@@ -1,13 +1,13 @@
-PV = "5.9.0"
-require pypi-src-openeuler.inc
+OPENEULER_SRC_URI_REMOVE = "http https git"
+OPENEULER_REPO_NAME = "python-psutil"
+PV = "5.9.5"
+
+LIC_FILES_CHKSUM = "file://LICENSE;md5=a9c72113a843d0d732a0ac1c200d81b1"
 
 S = "${WORKDIR}/${PYPI_PACKAGE}-release-${PV}"
 
-SRC_URI[md5sum] = "080d75a78be3ef1ce72c39a9b001197d"
-SRC_URI[sha256sum] = "ea4f431c10100079f46a494894582edb43e395324f200bd82ecf60b60b46a929"
+SRC_URI:remove = "file://0001-fix-failure-test-cases.patch"
 
-# add RDEPENDS for 5.9
-RDEPENDS:${PN} += " \
-    ${PYTHON_PN}-ctypes \
-    ${PYTHON_PN}-resource \
-"
+SRC_URI:prepend = "file://psutil-${PV}.tar.gz "
+
+BBCLASSEXTEND = "native"
