@@ -18,7 +18,9 @@ inherit qmake5
 
 # fix error: xxx/recipe-sysroot/usr/bin/lrelease: No such file or directory
 do_prepare_lrelease() {
-    ln -s ${STAGING_BINDIR_NATIVE}/lrelease ${STAGING_BINDIR}/lrelease
+    if [ ! -e ${STAGING_BINDIR}/lrelease ]; then
+        ln -s ${STAGING_BINDIR_NATIVE}/lrelease ${STAGING_BINDIR}/lrelease
+    fi
 }
 
 do_prepare_recipe_sysroot[postfuncs] += "do_prepare_lrelease"
