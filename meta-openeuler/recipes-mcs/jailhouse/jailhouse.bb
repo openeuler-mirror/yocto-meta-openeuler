@@ -10,6 +10,7 @@ PV = "0.12"
 SRC_URI = " \
 	file://${BP}.tar.gz \
 	file://cells/ \
+	file://0001-driver-Add-support-for-remote-proc.patch \
 	"
 
 DEPENDS = " \
