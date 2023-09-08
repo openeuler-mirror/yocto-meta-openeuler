@@ -1,5 +1,3 @@
-OPENEULER_REPO_NAME = "mesa-libGLU"
-
 OPENEULER_SRC_URI_REMOVE = "https"
 
 PV = "9.0.2"

@@ -1,5 +1,4 @@
 # openeuler version is too old
-OPENEULER_REPO_NAME = "wxGTK3"
 OPENEULER_SRC_URI_REMOVE = "git"
 PV = "3.1.5"
 
