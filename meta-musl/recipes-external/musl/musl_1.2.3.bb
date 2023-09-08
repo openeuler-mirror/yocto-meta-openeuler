@@ -76,7 +76,7 @@ FILES:${PN} = " \
     ${sysconfdir}/ld-musl-aarch64.path \
 "
 FILES:${PN}-staticdev = " \
-${base_libdir}/*.a 
+     ${base_libdir}/*.a \
 "
 # Add depend package
 RDEPENDS:${PN} += " bsd-headers gcompat gcompat-dev"

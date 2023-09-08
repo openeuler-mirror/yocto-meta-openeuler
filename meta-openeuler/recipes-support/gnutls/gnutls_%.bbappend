@@ -42,6 +42,7 @@ do_install:append:class-target() {
 }
 
 DEPENDS:remove:libc-musl = "argp-standalone"
+LDFLAGS:remove:libc-musl = " -largp"
 
 SRC_URI[sha256sum] = "0ea0d11a1660a1e63f960f157b197abe6d0c8cb3255be24e1fb3815930b9bdc5"
 
