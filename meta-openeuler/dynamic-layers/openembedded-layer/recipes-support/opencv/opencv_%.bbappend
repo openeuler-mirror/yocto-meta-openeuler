@@ -3,17 +3,24 @@
 PV = "4.5.2"
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
-OPENEULER_BRANCH = "master"
-OPENEULER_REPO_NAME = "opencv"
+
+FILESEXTRAPATHS:prepend := "${THISDIR}/opencv:"
 
 # use src-openeuler's source
-SRC_URI = " \
+SRC_URI:prepend = " \
         file://opencv-${PV}.tar.gz \
         file://Fix-OpenCV-build-with-OpenEXR-before-2.2.0.patch \
         file://Fix_compilation_of_copy_assignment_operators_with_GCC.patch \
         file://Repair_clang_abi.patch \
         file://CVE-2022-0561_and_CVE-2022-0562.patch \
         file://CVE-2022-0908.patch \
+        file://0001-Use-the-one-argument-version-of-SetTotalBytesLimit.patch \
+        "
+
+# remove openembedded conflict patches
+SRC_URI:remove = " \
+        file://CVE-2023-2617.patch;patchdir=../contrib \
+        file://download.patch \
         "
 
 do_unpack_extra() {
@@ -35,4 +42,6 @@ EXTRA_OECMAKE:remove = " \
     -DIPPROOT=${WORKDIR}/ippicv_lnx \
     -DOPENCV_DOWNLOAD_PATH=${OPENCV_DLDIR} \
 "
+
+PACKAGECONFIG += " dnn "
 
