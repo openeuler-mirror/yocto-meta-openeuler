@@ -58,15 +58,19 @@ SRC_URI:append:aarch64 = " \
     file://patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch \
 "
 
-## mcs related patches and configs 
-KERNEL_FEATURES:append = " ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'features/mcs/mcs_openamp.scc', '', d)} "
+## mcs related patches and configs
+## mcs_rpmsg.scc: Add basic functionality, including rpmsg, remoteproc
+## mcs_jailhouse: Add jailhouse support
+KERNEL_FEATURES:append = " \
+        ${@bb.utils.contains('DISTRO_FEATURES', 'mcs', 'features/mcs/mcs_rpmsg.scc', '', d)} \
+        ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'features/mcs/mcs_jailhouse.scc', '', d)} \
+        "
 # add openamp support for x86 mcs
 KERNEL_FEATURES:append:x86-64 = " \
     ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'features/mcs/0001-x86-irq-add-a-vector-define-for-mcs.patch', '', d)} \
 "
 # export symbol for jailhouse, its patch is in jailhouse src folder
 SRC_URI:append = " ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'file://Jailhouse/jailhouse_export_symbol.patch', '', d)}"
-
 
 S = "${WORKDIR}/kernel-5.10"
 

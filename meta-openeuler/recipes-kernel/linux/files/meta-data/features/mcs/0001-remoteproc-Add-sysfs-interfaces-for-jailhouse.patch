@@ -1,0 +1,165 @@
+From 2902c37d6be886c576e82208352deb2b263366d7 Mon Sep 17 00:00:00 2001
+From: hanzongcheng <hanzongcheng@huawei.com>
+Date: Sat, 9 Sep 2023 10:45:41 +0800
+Subject: [PATCH] remoteproc: Add sysfs interfaces for jailhouse
+
+This patch adds some sysfs interface to rproc allowing the
+jailhouse cell to be created, loaded and destroyed dynamically.
+
+The 'jh_cell' file is used to set the jailhouse inmate cell.
+The 'jh_inmate' file is used to specify the elf image that
+will be loaded into this cell (similar to 'firmware').
+
+Signed-off-by: hanzongcheng <hanzongcheng@huawei.com>
+
+diff --git a/drivers/remoteproc/remoteproc_sysfs.c b/drivers/remoteproc/remoteproc_sysfs.c
+index d1cf7bf277c4..99f0561303ac 100644
+--- a/drivers/remoteproc/remoteproc_sysfs.c
++++ b/drivers/remoteproc/remoteproc_sysfs.c
+@@ -191,6 +191,121 @@ static ssize_t firmware_store(struct device *dev,
+ }
+ static DEVICE_ATTR_RW(firmware);
+ 
++
++/* Expose the loaded / running cell name via sysfs */
++static ssize_t jh_cell_show(struct device *dev, struct device_attribute *attr,
++			  char *buf)
++{
++	struct rproc *rproc = to_rproc(dev);
++	const char *jh_cell = rproc->jh_cell;
++
++	if (rproc->autonomous)
++		jh_cell = "unknown";
++
++	return sprintf(buf, "%s\n", jh_cell);
++}
++
++/* Change cell name via sysfs */
++static ssize_t jh_cell_store(struct device *dev,
++			      struct device_attribute *attr,
++			      const char *buf, size_t count)
++{
++	struct rproc *rproc = to_rproc(dev);
++	char *p;
++	int err, len = count;
++
++	err = mutex_lock_interruptible(&rproc->lock);
++	if (err) {
++		dev_err(dev, "can't lock rproc %s: %d\n", rproc->name, err);
++		return -EINVAL;
++	}
++
++	len = strcspn(buf, "\n");
++	if (!len) {
++		dev_err(dev, "can't provide a NULL firmware\n");
++		err = -EINVAL;
++		goto out;
++	}
++
++	p = kstrndup(buf, len, GFP_KERNEL);
++	if (!p) {
++		err = -ENOMEM;
++		goto out;
++	}
++
++	kfree(rproc->jh_cell);
++	rproc->jh_cell = p;
++
++	err = rproc_prepare_device(rproc);
++	if (err) {
++		dev_err(dev, "can't create cell %s, ret %d\n", rproc->jh_cell, err);
++		kfree(rproc->jh_cell);
++		rproc->jh_cell = NULL;
++	}
++out:
++	mutex_unlock(&rproc->lock);
++
++	return err ? err : count;
++}
++static DEVICE_ATTR_RW(jh_cell);
++
++/* Expose the loaded / running inmate name via sysfs */
++static ssize_t jh_inmate_show(struct device *dev, struct device_attribute *attr,
++			  char *buf)
++{
++	struct rproc *rproc = to_rproc(dev);
++	const char *jh_inmate = rproc->jh_inmate;
++
++	if (rproc->autonomous)
++		jh_inmate = "unknown";
++
++	return sprintf(buf, "%s\n", jh_inmate);
++}
++
++/* Change inmate name via sysfs */
++static ssize_t jh_inmate_store(struct device *dev,
++			      struct device_attribute *attr,
++			      const char *buf, size_t count)
++{
++	struct rproc *rproc = to_rproc(dev);
++	char *p;
++	int err, len = count;
++
++	err = mutex_lock_interruptible(&rproc->lock);
++	if (err) {
++		dev_err(dev, "can't lock rproc %s: %d\n", rproc->name, err);
++		return -EINVAL;
++	}
++
++	len = strcspn(buf, "\n");
++	if (!len) {
++		dev_err(dev, "can't provide a NULL firmware\n");
++		err = -EINVAL;
++		goto out;
++	}
++
++	p = kstrndup(buf, len, GFP_KERNEL);
++	if (!p) {
++		err = -ENOMEM;
++		goto out;
++	}
++
++	kfree(rproc->jh_inmate);
++	rproc->jh_inmate = p;
++
++	err = rproc_prepare_device(rproc);
++	if (err) {
++		dev_err(dev, "can't load inmate %s, ret %d\n", rproc->jh_inmate, err);
++		kfree(rproc->jh_inmate);
++		rproc->jh_inmate = NULL;
++	}
++out:
++	mutex_unlock(&rproc->lock);
++
++	return err ? err : count;
++}
++static DEVICE_ATTR_RW(jh_inmate);
++
+ /*
+  * A state-to-string lookup table, for exposing a human readable state
+  * via sysfs. Always keep in sync with enum rproc_state
+@@ -260,6 +375,8 @@ static struct attribute *rproc_attrs[] = {
+ 	&dev_attr_firmware.attr,
+ 	&dev_attr_state.attr,
+ 	&dev_attr_name.attr,
++	&dev_attr_jh_inmate.attr,
++	&dev_attr_jh_cell.attr,
+ 	NULL
+ };
+ 
+diff --git a/include/linux/remoteproc.h b/include/linux/remoteproc.h
+index 3fa3ba6498e8..8c1a4af9e5f3 100644
+--- a/include/linux/remoteproc.h
++++ b/include/linux/remoteproc.h
+@@ -518,6 +518,8 @@ struct rproc {
+ 	struct iommu_domain *domain;
+ 	const char *name;
+ 	const char *firmware;
++	const char *jh_cell;
++	const char *jh_inmate;
+ 	void *priv;
+ 	struct rproc_ops *ops;
+ 	struct device dev;
+-- 
+2.34.1
+
