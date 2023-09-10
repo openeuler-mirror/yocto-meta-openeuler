@@ -1,5 +1,15 @@
 # this class contains global method and variables for openeuler embedded
 
+## openeuler.bbclass is inherited after base.bbclass,
+## some definitions in it can be overridden here
+
+# for openeuler embedded no need to create DL_DIR, here is
+# ${OPENEULER_SP_DIR}/${OPENEULER_REPO_NAME}, OPENEULER_SP_DIR
+# is already created, and OPENEULER_REPO_NAME will be created
+# in openeuler fetch or fetch
+# overrides the definition in base.bbclass
+do_fetch[dirs] = "${OPENEULER_SP_DIR}"
+
 # set_rpmdpes is used to set RPMDEPS which comes from nativesdk/host
 python set_rpmdeps() {
     import subprocess
@@ -120,8 +130,6 @@ python do_openeuler_fetch() {
         return
 
     repo_dir = os.path.join(srcDir, localName)
-    if not os.path.exists(repo_dir):
-        os.mkdir(repo_dir)
     repo_url = os.path.join(gitUrl, repoName)
     except_str = None
 
