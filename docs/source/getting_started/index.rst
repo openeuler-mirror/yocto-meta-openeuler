@@ -55,6 +55,24 @@ openEuler Embedded采用yocto构建，但通过 `oebuild <https://gitee.com/open
          $ sudo systemctl daemon-reload && sudo systemctl restart docker
          $ sudo chmod o+rw /var/run/docker.sock
 
+      .. code-tab:: shell SUSELeap15.4
+
+         #安装必要的软件包
+         $ sudo zypper install python311 python311-pip docker
+         $ pip3 install oebuild
+
+         #配置docker环境
+         $ sudo usermod -a -G docker $(whoami)
+         $ sudo systemctl restart docker
+         $ sudo chmod o+rw /var/run/docker.sock
+         $ sudo systemctl enable docker
+
+         #配置最新版python
+         $ cd /usr/bin
+         $ sudo rm python python3
+         $ sudo ln -s python3.11 python
+         $ sudo ln -s python3.11 python3
+
 2. 初始化oebuild构建环境
 ------------------------
 
@@ -112,6 +130,10 @@ openEuler Embedded采用yocto构建，但通过 `oebuild <https://gitee.com/open
 
          $ sudo apt-get install qemu-system-arm
 
+      .. tab:: SUSELeap15.4
+
+         $ sudo zypper install qemu-arm
+
    之后，通过以下命令启动镜像：
 
    .. code-block:: console
@@ -168,6 +190,10 @@ openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发�
        .. tab:: Ubuntu
 
           $ sudo apt-get install make gcc g++ flex bison libgmp3-dev libmpc-dev libssl-dev
+
+       .. tab:: SUSELeap15.4
+
+          $ sudo zypper in gcc gcc-c++ make bison gmp-devel libmpc3 openssl cmake flex
 
   - **执行SDK自解压安装脚本**
 
