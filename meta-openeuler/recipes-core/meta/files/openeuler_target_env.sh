@@ -2,7 +2,8 @@ export KERNEL_SRC="${SDKTARGETSYSROOT}/usr/src/kernel"
 OPENEULER_NATIVESDK_SYSROOT=/opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux
 # prepare SDK
 PYTHONBIN=`which python3`
-PYTHONPKGPATH="${PYTHONBIN%/*}/../lib/python3.9/site-packages/"
+PYTHONVERSION=`python3 --version | awk -F "." '{print $2}'`
+PYTHONPKGPATH="${PYTHONBIN%/*}/../lib/python3.${PYTHONVERSION}/site-packages/"
 if [ ${PYTHONPKGPATH#${OPENEULER_NATIVESDK_SYSROOT}} != "$PYTHONPKGPATH" ]; then
     # prepare context for kernel module development when using nativesdk
     pushd "${SDKTARGETSYSROOT}/usr/src/kernel"
@@ -21,7 +22,7 @@ if [ ${PYTHONPKGPATH#${OPENEULER_NATIVESDK_SYSROOT}} != "$PYTHONPKGPATH" ]; then
             # Here, we have a symbolic link for the Python package that is used by the ROS package
             # in the lib directory of our sysroot environment, instead of lib64.
             find . -type l -delete
-            for file in ${SDKTARGETSYSROOT}/usr/lib/python3.9/site-packages/*
+            for file in ${SDKTARGETSYSROOT}/usr/lib/python3.*/site-packages/*
             do
                 ln -sfnT "$file" "$(basename "$file")"
             done
