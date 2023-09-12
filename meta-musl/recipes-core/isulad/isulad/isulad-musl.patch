@@ -10,202 +10,6 @@ index 8de1808..f209340 100644
  
  if (ENABLE_OCI_IMAGE)
      target_link_libraries(libisulad_tools ${LIBARCHIVE_LIBRARY})
-diff --git a/src/client/connect/protocol_type.c b/src/client/connect/protocol_type.c
-index 79b699b..337e1a0 100644
---- a/src/client/connect/protocol_type.c
-+++ b/src/client/connect/protocol_type.c
-@@ -329,14 +329,14 @@ void isula_start_request_free(struct isula_start_request *request)
-     free(request->name);
-     request->name = NULL;
- 
--    free(request->stdin);
--    request->stdin = NULL;
-+    free(request->stdin1);
-+    request->stdin1 = NULL;
- 
--    free(request->stdout);
--    request->stdout = NULL;
-+    free(request->stdout1);
-+    request->stdout1 = NULL;
- 
--    free(request->stderr);
--    request->stderr = NULL;
-+    free(request->stderr1);
-+    request->stderr1 = NULL;
- 
-     free(request);
- }
-@@ -565,14 +565,14 @@ void isula_exec_request_free(struct isula_exec_request *request)
-     free(request->suffix);
-     request->suffix = NULL;
- 
--    free(request->stdout);
--    request->stdout = NULL;
-+    free(request->stdout1);
-+    request->stdout1 = NULL;
- 
--    free(request->stdin);
--    request->stdin = NULL;
-+    free(request->stdin1);
-+    request->stdin1 = NULL;
- 
--    free(request->stderr);
--    request->stderr = NULL;
-+    free(request->stderr1);
-+    request->stderr1 = NULL;
- 
-     free(request->user);
-     request->user = NULL;
-@@ -614,14 +614,14 @@ void isula_attach_request_free(struct isula_attach_request *request)
-     free(request->name);
-     request->name = NULL;
- 
--    free(request->stderr);
--    request->stderr = NULL;
-+    free(request->stderr1);
-+    request->stderr1 = NULL;
- 
--    free(request->stdout);
--    request->stdout = NULL;
-+    free(request->stdout1);
-+    request->stdout1 = NULL;
- 
--    free(request->stdin);
--    request->stdin = NULL;
-+    free(request->stdin1);
-+    request->stdin1 = NULL;
- 
-     free(request);
- }
-diff --git a/src/client/connect/protocol_type.h b/src/client/connect/protocol_type.h
-index a2d474a..25fbe96 100644
---- a/src/client/connect/protocol_type.h
-+++ b/src/client/connect/protocol_type.h
-@@ -54,11 +54,11 @@ struct isula_create_response {
- 
- struct isula_start_request {
-     char *name;
--    char *stdin;
-+    char *stdin1;
-     bool attach_stdin;
--    char *stdout;
-+    char *stdout1;
-     bool attach_stdout;
--    char *stderr;
-+    char *stderr1;
-     bool attach_stderr;
- };
- 
-@@ -330,9 +330,9 @@ struct isula_exec_request {
-     bool attach_stdin;
-     bool attach_stdout;
-     bool attach_stderr;
--    char *stdin;
--    char *stdout;
--    char *stderr;
-+    char *stdin1;
-+    char *stdout1;
-+    char *stderr1;
-     int argc;
-     char **argv;
-     size_t env_len;
-@@ -351,9 +351,9 @@ struct isula_exec_response {
- 
- struct isula_attach_request {
-     char *name;
--    char *stdin;
--    char *stdout;
--    char *stderr;
-+    char *stdin1;
-+    char *stdout1;
-+    char *stderr1;
-     bool attach_stdin;
-     bool attach_stdout;
-     bool attach_stderr;
-diff --git a/src/client/connect/rest/rest_containers_client.c b/src/client/connect/rest/rest_containers_client.c
-index 0ae9a4f..706b9d7 100644
---- a/src/client/connect/rest/rest_containers_client.c
-+++ b/src/client/connect/rest/rest_containers_client.c
-@@ -87,14 +87,14 @@ static int start_request_to_rest(const struct isula_start_request *ls_request, c
-     if (ls_request->name != NULL) {
-         crequest->id = util_strdup_s(ls_request->name);
-     }
--    if (ls_request->stdout != NULL) {
--        crequest->stdout = util_strdup_s(ls_request->stdout);
-+    if (ls_request->stdout1 != NULL) {
-+        crequest->stdout1 = util_strdup_s(ls_request->stdout1);
-     }
--    if (ls_request->stdin != NULL) {
--        crequest->stdin = util_strdup_s(ls_request->stdin);
-+    if (ls_request->stdin1 != NULL) {
-+        crequest->stdin1 = util_strdup_s(ls_request->stdin1);
-     }
--    if (ls_request->stderr != NULL) {
--        crequest->stderr = util_strdup_s(ls_request->stderr);
-+    if (ls_request->stderr1 != NULL) {
-+        crequest->stderr1 = util_strdup_s(ls_request->stderr1);
-     }
-     crequest->attach_stdin = ls_request->attach_stdin;
-     crequest->attach_stdout = ls_request->attach_stdout;
-@@ -207,14 +207,14 @@ static int attach_request_to_rest(const struct isula_attach_request *la_request,
-     if (la_request->name != NULL) {
-         crequest->container_id = util_strdup_s(la_request->name);
-     }
--    if (la_request->stdout != NULL) {
--        crequest->stdout = util_strdup_s(la_request->stdout);
-+    if (la_request->stdout1 != NULL) {
-+        crequest->stdout1 = util_strdup_s(la_request->stdout1);
-     }
--    if (la_request->stdin != NULL) {
--        crequest->stdin = util_strdup_s(la_request->stdin);
-+    if (la_request->stdin1 != NULL) {
-+        crequest->stdin1 = util_strdup_s(la_request->stdin1);
-     }
--    if (la_request->stderr != NULL) {
--        crequest->stderr = util_strdup_s(la_request->stderr);
-+    if (la_request->stderr1 != NULL) {
-+        crequest->stderr1 = util_strdup_s(la_request->stderr1);
-     }
-     crequest->attach_stdin = la_request->attach_stdin;
-     crequest->attach_stdout = la_request->attach_stdout;
-@@ -1619,14 +1619,14 @@ static int exec_request_to_rest(const struct isula_exec_request *le_request, cha
-     if (le_request->name != NULL) {
-         crequest->container_id = util_strdup_s(le_request->name);
-     }
--    if (le_request->stdout != NULL) {
--        crequest->stdout = util_strdup_s(le_request->stdout);
-+    if (le_request->stdout1 != NULL) {
-+        crequest->stdout1 = util_strdup_s(le_request->stdout1);
-     }
--    if (le_request->stdin != NULL) {
--        crequest->stdin = util_strdup_s(le_request->stdin);
-+    if (le_request->stdin1 != NULL) {
-+        crequest->stdin1 = util_strdup_s(le_request->stdin1);
-     }
--    if (le_request->stderr != NULL) {
--        crequest->stderr = util_strdup_s(le_request->stderr);
-+    if (le_request->stderr1 != NULL) {
-+        crequest->stderr1 = util_strdup_s(le_request->stderr1);
-     }
-     if (le_request->suffix != NULL) {
-         crequest->suffix = util_strdup_s(le_request->suffix);
-diff --git a/src/cmd/isula/base/start.c b/src/cmd/isula/base/start.c
-index ca3634e..8703068 100644
---- a/src/cmd/isula/base/start.c
-+++ b/src/cmd/isula/base/start.c
-@@ -126,9 +126,9 @@ static int do_client_start(const struct client_arguments *args, struct command_f
- 
-     request.name = args->name;
-     if (console_fifos != NULL && *console_fifos != NULL) {
--        request.stdin = (*console_fifos)->stdin_name;
--        request.stdout = (*console_fifos)->stdout_name;
--        request.stderr = (*console_fifos)->stderr_name;
-+        request.stdin1 = (*console_fifos)->stdin_name;
-+        request.stdout1 = (*console_fifos)->stdout_name;
-+        request.stderr1 = (*console_fifos)->stderr_name;
-     }
-     request.attach_stdin = args->custom_conf.attach_stdin;
-     request.attach_stdout = args->custom_conf.attach_stdout;
 diff --git a/src/cmd/isula/client_console.c b/src/cmd/isula/client_console.c
 index 555f59b..1eb54e1 100644
 --- a/src/cmd/isula/client_console.c
@@ -220,40 +24,6 @@ index 555f59b..1eb54e1 100644
      if (ret < 0 || (size_t)ret >= sizeof(subpath)) {
          ERROR("Path is too long");
          goto cleanup;
-diff --git a/src/cmd/isula/stream/attach.c b/src/cmd/isula/stream/attach.c
-index 02c67e3..052ddf5 100644
---- a/src/cmd/isula/stream/attach.c
-+++ b/src/cmd/isula/stream/attach.c
-@@ -347,9 +347,9 @@ static int client_attach(struct client_arguments *args, uint32_t *exit_code)
-         ret = ECOMMON;
-         goto out;
-     }
--    request.stdin = util_strdup_s(attach_fifos->stdin_name);
--    request.stdout = util_strdup_s(attach_fifos->stdout_name);
--    request.stderr = util_strdup_s(attach_fifos->stderr_name);
-+    request.stdin1 = util_strdup_s(attach_fifos->stdin_name);
-+    request.stdout1 = util_strdup_s(attach_fifos->stdout_name);
-+    request.stderr1 = util_strdup_s(attach_fifos->stderr_name);
- #endif
- 
-     config = get_connect_config(args);
-diff --git a/src/cmd/isula/stream/exec.c b/src/cmd/isula/stream/exec.c
-index bd8bd49..572f754 100644
---- a/src/cmd/isula/stream/exec.c
-+++ b/src/cmd/isula/stream/exec.c
-@@ -62,9 +62,9 @@ static int fill_exec_request(const struct client_arguments *args, const struct c
-     request->attach_stdout = args->custom_conf.attach_stdout;
-     request->attach_stderr = args->custom_conf.attach_stderr;
-     if (fifos != NULL) {
--        request->stdin = util_strdup_s(fifos->stdin_name);
--        request->stdout = util_strdup_s(fifos->stdout_name);
--        request->stderr = util_strdup_s(fifos->stderr_name);
-+        request->stdin1 = util_strdup_s(fifos->stdin_name);
-+        request->stdout1 = util_strdup_s(fifos->stdout_name);
-+        request->stderr1 = util_strdup_s(fifos->stderr_name);
-     }
- 
-     request->user = util_strdup_s(args->custom_conf.user);
 diff --git a/src/cmd/isulad/main.c b/src/cmd/isulad/main.c
 index 0cdbfb5..1a87af7 100644
 --- a/src/cmd/isulad/main.c
@@ -267,7 +37,7 @@ index 0cdbfb5..1a87af7 100644
  #include <grp.h>
  #endif
 diff --git a/src/daemon/executor/container_cb/execution.c b/src/daemon/executor/container_cb/execution.c
-index c2a0bdb..3db2572 100644
+index c2a0bdb..7cc59aa 100644
 --- a/src/daemon/executor/container_cb/execution.c
 +++ b/src/daemon/executor/container_cb/execution.c
 @@ -23,6 +23,7 @@
@@ -278,15 +48,6 @@ index c2a0bdb..3db2572 100644
  
  #include <isula_libutils/container_config.h>
  #include <isula_libutils/container_config_v2.h>
-@@ -282,7 +283,7 @@ static int prepare_start_io(container_t *cont, const container_start_request *re
-             goto out;
-         }
- 
--        if (ready_copy_io_data(*sync_fd, false, request->stdin, request->stdout, request->stderr, stdinfd,
-+        if (ready_copy_io_data(*sync_fd, false, request->stdin1, request->stdout1, request->stderr1, stdinfd,
-                                stdout_handler, stderr_handler, (const char **)fifos, thread_id)) {
-             ret = -1;
-             goto out;
 @@ -474,9 +475,9 @@ static int container_start_prepare(container_t *cont, const container_start_requ
  static void handle_start_io_thread_by_cc(uint32_t cc, int sync_fd, pthread_t thread_id)
  {
@@ -345,43 +106,46 @@ index 2848022..caca444 100644
  #include "isula_libutils/log.h"
  #include "isulad_config.h"
 diff --git a/src/daemon/executor/container_cb/execution_stream.c b/src/daemon/executor/container_cb/execution_stream.c
-index 7e928cf..7bd53aa 100644
+index 7e928cf..e29321b 100644
 --- a/src/daemon/executor/container_cb/execution_stream.c
 +++ b/src/daemon/executor/container_cb/execution_stream.c
-@@ -269,7 +269,7 @@ static int attach_prepare_console(const container_t *cont, const container_attac
-             goto out;
-         }
+@@ -63,7 +63,10 @@
+ #include "utils_file.h"
+ #include "utils_verify.h"
  
--        if (ready_copy_io_data(*sync_fd, false, request->stdin, request->stdout, request->stderr, stdinfd,
-+        if (ready_copy_io_data(*sync_fd, false, request->stdin1, request->stdout1, request->stderr1, stdinfd,
-                                stdout_handler, stderr_handler, (const char **)fifos, tid)) {
-             ret = -1;
-             goto out;
-@@ -283,9 +283,9 @@ out:
+-#if defined (__ANDROID__) || defined(__MUSL__)
++#if defined (__ANDROID__)
++#undef SIG_CANCEL_SIGNAL
++#undef PTHREAD_CANCEL_ENABLE
++#undef PTHREAD_CANCEL_DISABLE
+ #define SIG_CANCEL_SIGNAL     SIGUSR1
+ #define PTHREAD_CANCEL_ENABLE    1
+ #define PTHREAD_CANCEL_DISABLE    0
+@@ -283,9 +286,9 @@ out:
  static void handle_attach_io_thread_by_cc(uint32_t cc, int sync_fd, pthread_t thread_id)
  {
      if (cc == ISULAD_SUCCESS) {
 -        if (thread_id > 0) {
-+        if (thread_id !=NULL) {
++        if (thread_id != NULL) {
              if (pthread_detach(thread_id) != 0) {
 -                SYSERROR("Failed to detach 0x%lx", thread_id);
 +                SYSERROR("Failed to detach");
              }
          }
          if (sync_fd >= 0) {
-@@ -297,9 +297,9 @@ static void handle_attach_io_thread_by_cc(uint32_t cc, int sync_fd, pthread_t th
+@@ -297,9 +300,9 @@ static void handle_attach_io_thread_by_cc(uint32_t cc, int sync_fd, pthread_t th
                  ERROR("Failed to write eventfd: %s", strerror(errno));
              }
          }
 -        if (thread_id > 0) {
-+        if (thread_id !=NULL) {
++        if (thread_id != NULL) {
              if (pthread_join(thread_id, NULL) != 0) {
 -                ERROR("Failed to join thread: 0x%lx", thread_id);
 +                ERROR("Failed to join thread");
              }
          }
          if (sync_fd >= 0) {
-@@ -317,7 +317,7 @@ static int container_attach_cb(const container_attach_request *request, containe
+@@ -317,7 +320,7 @@ static int container_attach_cb(const container_attach_request *request, containe
      char *fifos[3] = { NULL, NULL, NULL };
      char *fifopath = NULL;
      int syncfd = -1;
@@ -389,19 +153,6 @@ index 7e928cf..7bd53aa 100644
 +    pthread_t tid = NULL;
      container_t *cont = NULL;
      rt_attach_params_t params = { 0 };
- 
-@@ -345,9 +345,9 @@ static int container_attach_cb(const container_attach_request *request, containe
-     }
- 
-     params.rootpath = cont->root_path;
--    params.stdin = fifos[0];
--    params.stdout = fifos[1];
--    params.stderr = fifos[2];
-+    params.stdin1 = fifos[0];
-+    params.stdout1 = fifos[1];
-+    params.stderr1 = fifos[2];
- 
-     (void)isulad_monitor_send_container_event(id, ATTACH, -1, 0, NULL, NULL);
  
 diff --git a/src/daemon/executor/image_cb/image_cb.c b/src/daemon/executor/image_cb/image_cb.c
 index 124feb2..ae00721 100644
@@ -422,36 +173,6 @@ index 124feb2..ae00721 100644
 -}
 \ No newline at end of file
 +}
-diff --git a/src/daemon/modules/api/runtime_api.h b/src/daemon/modules/api/runtime_api.h
-index 199c9f4..55346c9 100644
---- a/src/daemon/modules/api/runtime_api.h
-+++ b/src/daemon/modules/api/runtime_api.h
-@@ -75,9 +75,9 @@ typedef struct _rt_create_params_t {
-     const char *state;
-     void *oci_config_data;
-     bool terminal;
--    const char *stdin;
--    const char *stdout;
--    const char *stderr;
-+    const char *stdin1;
-+    const char *stdout1;
-+    const char *stderr1;
-     const char *exit_fifo;
-     bool tty;
-     bool open_stdin;
-@@ -161,9 +161,9 @@ typedef struct _rt_resume_params_t {
- 
- typedef struct _rt_attach_params_t {
-     const char *rootpath;
--    const char *stdin;
--    const char *stdout;
--    const char *stderr;
-+    const char *stdin1;
-+    const char *stdout1;
-+    const char *stderr1;
- } rt_attach_params_t;
- 
- typedef struct _rt_update_params_t {
 diff --git a/src/daemon/modules/events/monitord.c b/src/daemon/modules/events/monitord.c
 index 775fb9a..b9d6eee 100644
 --- a/src/daemon/modules/events/monitord.c
@@ -465,14 +186,13 @@ index 775fb9a..b9d6eee 100644
  #include "isula_libutils/log.h"
  #include "mainloop.h"
 diff --git a/src/daemon/modules/image/image_rootfs_handler.c b/src/daemon/modules/image/image_rootfs_handler.c
-index 1275658..258172d 100644
+index 1275658..e6a6392 100644
 --- a/src/daemon/modules/image/image_rootfs_handler.c
 +++ b/src/daemon/modules/image/image_rootfs_handler.c
-@@ -26,6 +26,8 @@
+@@ -26,6 +26,7 @@
  #include <stdio.h>
  #include <stdlib.h>
  #include <string.h>
-+#include <grp_utils.h>
 +#include <pwd_utils.h>
  
  #include "isula_libutils/log.h"
@@ -489,40 +209,8 @@ index 4edd0ca..a284145 100644
  
  #include "storage.h"
  #include "layer.h"
-diff --git a/src/daemon/modules/runtime/engines/lcr/lcr_rt_ops.c b/src/daemon/modules/runtime/engines/lcr/lcr_rt_ops.c
-index f2eec6d..4d7e71d 100644
---- a/src/daemon/modules/runtime/engines/lcr/lcr_rt_ops.c
-+++ b/src/daemon/modules/runtime/engines/lcr/lcr_rt_ops.c
-@@ -558,8 +558,8 @@ int rt_lcr_attach(const char *name, const char *runtime, const rt_attach_params_
-         goto out;
-     }
- 
--    if (!engine_ops->engine_console_op(name, params->rootpath, (char *)params->stdin, (char *)params->stdout,
--                                       (char *)params->stderr)) {
-+    if (!engine_ops->engine_console_op(name, params->rootpath, (char *)params->stdin1, (char *)params->stdout1,
-+                                       (char *)params->stderr1)) {
-         ERROR("attach failed");
-         const char *tmpmsg = NULL;
-         if (engine_ops->engine_get_errmsg_op != NULL) {
-diff --git a/src/daemon/modules/runtime/isula/isula_rt_ops.c b/src/daemon/modules/runtime/isula/isula_rt_ops.c
-index 5ec0e63..f15c8ff 100644
---- a/src/daemon/modules/runtime/isula/isula_rt_ops.c
-+++ b/src/daemon/modules/runtime/isula/isula_rt_ops.c
-@@ -917,9 +917,9 @@ int rt_isula_create(const char *id, const char *runtime, const rt_create_params_
-     p.exit_fifo = (char *)params->exit_fifo;
-     p.open_tty = params->tty;
-     p.open_stdin = params->open_stdin;
--    p.isulad_stdin = (char *)params->stdin;
--    p.isulad_stdout = (char *)params->stdout;
--    p.isulad_stderr = (char *)params->stderr;
-+    p.isulad_stdin = (char *)params->stdin1;
-+    p.isulad_stdout = (char *)params->stdout1;
-+    p.isulad_stderr = (char *)params->stderr1;
-     p.runtime_args = (char **)runtime_args;
-     p.runtime_args_len = runtime_args_len;
-     copy_process(&p, config->process);
 diff --git a/src/daemon/modules/service/io_handler.c b/src/daemon/modules/service/io_handler.c
-index 98c763a..3af9aa7 100644
+index 98c763a..e02279c 100644
 --- a/src/daemon/modules/service/io_handler.c
 +++ b/src/daemon/modules/service/io_handler.c
 @@ -116,7 +116,6 @@ int create_daemon_fifos(const char *id, const char *runtime, bool attach_stdin,
@@ -546,36 +234,14 @@ index 98c763a..3af9aa7 100644
      }
  
 -    nret = snprintf(subpath, PATH_MAX, "%s/%s/%u_%u_%u", id, operation, (unsigned int)tid, (unsigned int)now.tv_sec,
-+    nret = snprintf(subpath, PATH_MAX, "%s/%s/%u_%u", id, operation, (unsigned int)now.tv_sec,
++    nret = snprintf(subpath, PATH_MAX, "%s/%s/%u_%u", id, operation,  (unsigned int)now.tv_sec,
                      (unsigned int)(now.tv_nsec));
      if (nret >= PATH_MAX || nret < 0) {
          ERROR("Failed to print string");
 diff --git a/src/daemon/modules/service/service_container.c b/src/daemon/modules/service/service_container.c
-index d69ee75..ec92634 100644
+index d69ee75..1110269 100644
 --- a/src/daemon/modules/service/service_container.c
 +++ b/src/daemon/modules/service/service_container.c
-@@ -808,9 +808,9 @@ static int do_start_container(container_t *cont, const char *console_fifos[], bo
-     create_params.state = cont->state_path;
-     create_params.oci_config_data = oci_spec;
-     create_params.terminal = tty;
--    create_params.stdin = console_fifos[0];
--    create_params.stdout = console_fifos[1];
--    create_params.stderr = console_fifos[2];
-+    create_params.stdin1 = console_fifos[0];
-+    create_params.stdout1 = console_fifos[1];
-+    create_params.stderr1 = console_fifos[2];
-     create_params.exit_fifo = exit_fifo;
-     create_params.tty = tty;
-     create_params.open_stdin = open_stdin;
-@@ -2038,7 +2038,7 @@ static int exec_prepare_console(const container_t *cont, const container_exec_re
-             ret = -1;
-             goto out;
-         }
--        if (ready_copy_io_data(*sync_fd, false, request->stdin, request->stdout, request->stderr, stdinfd,
-+        if (ready_copy_io_data(*sync_fd, false, request->stdin1, request->stdout1, request->stderr1, stdinfd,
-                                stdout_handler, stderr_handler, (const char **)fifos, thread_id)) {
-             ret = -1;
-             goto out;
 @@ -2064,9 +2064,9 @@ static void exec_container_end(container_exec_response *response, uint32_t cc, i
              ERROR("Failed to write eventfd: %s", strerror(errno));
          }

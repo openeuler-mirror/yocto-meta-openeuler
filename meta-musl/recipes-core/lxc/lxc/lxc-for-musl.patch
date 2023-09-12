@@ -1,91 +1,12 @@
 diff --git a/src/lxc/isulad_utils.c b/src/lxc/isulad_utils.c
-index ee39302..0f1d60c 100644
+index ee39302..d81bc39 100644
 --- a/src/lxc/isulad_utils.c
 +++ b/src/lxc/isulad_utils.c
-@@ -21,6 +21,8 @@
+@@ -21,6 +21,7 @@
  #include <unistd.h>
  #include <errno.h>
  #include <stdio_ext.h>
 +#include <pwd_utils.h>
-+#include <pwd.h>
  
  #include "isulad_utils.h"
  #include "log.h"
-diff --git a/src/lxc/json/defs.c b/src/lxc/json/defs.c
-index 4bf569a..6baa2bd 100644
---- a/src/lxc/json/defs.c
-+++ b/src/lxc/json/defs.c
-@@ -83,8 +83,8 @@ defs_hook *make_defs_hook(yajl_val tree, struct parser_context *ctx, parser_erro
-                 strcmp(tree->u.object.keys[i], "args") &&
-                 strcmp(tree->u.object.keys[i], "env") &&
-                 strcmp(tree->u.object.keys[i], "timeout")) {
--                if (ctx->stderr > 0)
--                    fprintf(ctx->stderr, "WARNING: unknown key found: %s\n", tree->u.object.keys[i]);
-+                if (ctx->stderr1 > 0)
-+                    fprintf(ctx->stderr1, "WARNING: unknown key found: %s\n", tree->u.object.keys[i]);
-             }
-         }
-     return ret;
-diff --git a/src/lxc/json/json_common.h b/src/lxc/json/json_common.h
-index 67c2df8..17fa272 100755
---- a/src/lxc/json/json_common.h
-+++ b/src/lxc/json/json_common.h
-@@ -48,7 +48,7 @@ typedef char *parser_error;
- 
- struct parser_context {
-     unsigned int options;
--    FILE *stderr;
-+    FILE *stderr1;
- };
- 
- yajl_gen_status reformat_number(void *ctx, const char *str, size_t len);
-@@ -191,4 +191,4 @@ int append:json_map_string_string(json_map_string_string *map, const char *key,
- }
- #endif
- 
--#endif
-\ No newline at end of file
-+#endif
-diff --git a/src/lxc/json/logger_json_file.c b/src/lxc/json/logger_json_file.c
-index 6abeef4..5294288 100644
---- a/src/lxc/json/logger_json_file.c
-+++ b/src/lxc/json/logger_json_file.c
-@@ -50,8 +50,8 @@ logger_json_file *make_logger_json_file(yajl_val tree, struct parser_context *ct
- 			                strcmp(tree->u.object.keys[i], "stream") &&
- 			                strcmp(tree->u.object.keys[i], "time") &&
- 			                strcmp(tree->u.object.keys[i], "attrs")) {
--				if (ctx->stderr > 0)
--					fprintf(ctx->stderr, "WARNING: unknown key found: %s\n", tree->u.object.keys[i]);
-+				if (ctx->stderr1 > 0)
-+					fprintf(ctx->stderr1, "WARNING: unknown key found: %s\n", tree->u.object.keys[i]);
- 			}
- 	}
- 	return ret;
-diff --git a/src/lxc/json/oci_runtime_spec.c b/src/lxc/json/oci_runtime_spec.c
-index fd342de..fbb4cb5 100644
---- a/src/lxc/json/oci_runtime_spec.c
-+++ b/src/lxc/json/oci_runtime_spec.c
-@@ -67,8 +67,8 @@ oci_runtime_spec_hooks *make_oci_runtime_spec_hooks(yajl_val tree, struct parser
-             if (strcmp(tree->u.object.keys[i], "prestart") &&
-                 strcmp(tree->u.object.keys[i], "poststart") &&
-                 strcmp(tree->u.object.keys[i], "poststop")) {
--                if (ctx->stderr > 0)
--                    fprintf(ctx->stderr, "WARNING: unknown key found: %s\n", tree->u.object.keys[i]);
-+                if (ctx->stderr1 > 0)
-+                    fprintf(ctx->stderr1, "WARNING: unknown key found: %s\n", tree->u.object.keys[i]);
-             }
-         }
-     return ret;
-diff --git a/src/lxc/utils.c b/src/lxc/utils.c
-index 8715d8e..6b9e18c 100644
---- a/src/lxc/utils.c
-+++ b/src/lxc/utils.c
-@@ -29,6 +29,8 @@
- #include <sys/sysmacros.h>
- #endif
- 
-+#include <pwd.h>
-+#include <pwd_utils.h>
- #include "config.h"
- #include "log.h"
- #include "lsm/lsm.h"

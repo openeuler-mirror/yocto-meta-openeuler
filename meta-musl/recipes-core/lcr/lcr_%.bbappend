@@ -1,5 +1,3 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
-# add patch to support musl
-SRC_URI:append = " \
-           file://lcr-for-musl.patch \
-"
+# add MARCO to support musl
+EXTRA_OECMAKE:append = " -DMUSL=1"

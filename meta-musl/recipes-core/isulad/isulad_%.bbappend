@@ -8,6 +8,7 @@ SRC_URI:append = " \
 RDEPENDS:${PN}:remove = " \
         glibc-binary-localedata-en-us \
 "
+EXTRA_OECMAKE:append = " -DMUSL=1"
 EXTRA_OECMAKE = "-DENABLE_GRPC=OFF -DENABLE_SYSTEMD_NOTIFY=OFF -DENABLE_SELINUX=OFF \
                 -DENABLE_SHIM_V2=OFF -DENABLE_OPENSSL_VERIFY=OFF \
                 -DGRPC_CONNECTOR=OFF -DDISABLE_OCI=ON \

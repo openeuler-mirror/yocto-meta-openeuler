@@ -7,6 +7,7 @@ SECTION = "net"
 PV = "e1000e-5.10"
 SRC_URI = "file://ethercat-${PV}.tar.gz \
 	   file://0001-ethercat-Fix-ethercat-tool-compilation.patch \
+           file://0002-avoid-ssize_t.patch \
 	   "
 
 PACKAGECONFIG ??= "e1000e"
