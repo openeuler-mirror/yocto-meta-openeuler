@@ -20,6 +20,10 @@ QEMU使用
 
            $ sudo apt-get install qemu-system-arm
 
+        .. tab:: SUSELeap15.4
+
+           $ sudo zepper install qemu-arm
+
    方法二：基于openEuler社区 `QEMU <https://gitee.com/openeuler/qemu/tree/stable-5.0/>`_ 代码自行编译
 
      1. 首先下载对应的代码并切换到stable-5.0分支：
@@ -85,10 +89,19 @@ QEMU使用
 
      在宿主机上需要建立名为tap0的虚拟网卡，可以借助脚本实现，创建 :file:`/etc/qemu-ifup` 脚本，具体内容如下：
 
-     .. code-block:: console
+     .. tabs::
 
-        #!/bin/bash
-        ifconfig $1 192.168.10.1 up
+        .. code-tab:: shell Ubuntu
+
+           #!/bin/bash
+           ifconfig $1 192.168.10.1 up
+
+        .. code-tab:: shell SUSELeap15.4
+
+           #!/bin/bash
+           ip tuntap add dev "$1" mode tap
+           ip link set dev "$1" up
+           ip addr add 192.168.10.1/24 dev "$1"
 
      其执行需要root权限：
 
@@ -180,6 +193,118 @@ QEMU使用
         $ ls /tmp/host
 
      如能发现hello_openeuler.txt，则共享成功。
+
+6. 使能运行虚拟磁盘场景
+=======================
+
+   **Step1：创建虚拟磁盘**
+
+      要实现在openEuler Embedded中共享文件，使用共享文件系统是一个不错的方法。然而，qemu启动命令是将系统加载到内存，在某些应用场景下需要频繁启动openEuler Embedded，每次都需要重新设置共享文件夹，这样操作就显得繁琐。为了解决这个问题，可以考虑构建虚拟磁盘，以实现之前的设置永久保留。下面以SUSE Leap 15.4为例，介绍构建虚拟磁盘的过程：
+
+      .. code-block:: shell
+
+         # 创建1G虚拟磁盘
+         $ dd if=/dev/zero of=virtual_disk.img bs=1M count=1024
+
+         # 利用fdisk分区
+         $ sudo fdisk virtual_disk.img
+
+         # 将虚拟磁盘挂载
+         $ sudo losetup -Pf --show virtual_disk.img
+
+         # 格式化文件系统，可以通过ls /dev查看虚拟磁盘具体挂载在哪
+         $ sudo mkfs.ext4 /dev/loop0p1
+
+         # 挂载虚拟磁盘
+         $ sudo mkdir /mnt/my_mount_point
+         $ sudo mount /dev/loop0p1 /mnt/my_mount_point
+
+   **Step2：复制根文件系统**
+
+      将 ``openeuler-image-qemu-aarch64-*.rootfs.cpio.gz`` 解压，随后拷贝到 ``/mnt/my_mount_point`` 目录下：
+
+      .. code-block:: shell
+
+         # 在openeuler-image-qemu-aarch64-*.rootfs.cpio.gz所在目录下创建temp目录并复制
+         $ mkdir temp
+         $ cp openeuler-image-qemu-aarch64-*.rootfs.cpio.gz temp && cd temp
+
+         # 解压根文件系统压缩包
+         $ gunzip -c openeuler-image-qemu-aarch64-*.rootfs.cpio.gz | cpio -idmv
+         $ sudo cp -r * /mnt/my_mount_point
+
+      现在，已成功创建一个包含openEuler Embedded系统的虚拟磁盘。通过qemu你可以运行这个虚拟磁盘中的系统，并且不需要每次登录时都重新设置密码，设置的共享文件夹也会被保留。
+
+   **Step3：启动虚拟磁盘**
+
+      以下是用于启动虚拟磁盘的qemu命令。为了避免每次都输入冗长的命令，你可以在 ``bashrc`` 文件中设置一个alias命令来实现快速启动。
+
+      .. code-block:: console
+
+         $ sudo qemu-system-aarch64 -M virt,gic-version=3 -m 1G -cpu cortex-a57 \
+            -append 'maxcpus=3 root=/dev/vda1 rootfstype=ext4 rw' \
+            -smp 4 -kernel zImage -dtb qemu_mcs.dtb -device virtio-net-device,netdev=tap0 \
+            -netdev tap,id=tap0,script=/etc/qemu-ifup \
+            -drive file=virtual_disk.img,format=raw -nographic"
+
+      | 其中启动虚拟盘的关键参数如下：
+      | ``root=/dev/vda1`` ：指定了根文件系统的位置在挂载的虚拟磁盘的第一块分区上
+      | ``-drive file=virtual_disk.img,format=raw`` ：添加一个虚拟磁盘作为虚拟机的存储，虚拟磁盘文件为virtual_disk.img。
+      | ``-netdev tap,id=tap0,script=/etc/qemu-ifup`` ： 配置网络设备tap0，并指定用于管理该设备的脚本为/etc/qemu-ifup。
+
+   **Step4：设置SSH密钥**
+
+      尽管虚拟磁盘保存了密码，避免了每次登录时的密码设置，但在实际的调试过程中，通常需要频繁使用scp传输文件或者打开多个终端进行SSH连接。这时，为了简化操作，可以通过配置SSH密钥的方式实现无需输入密码的登录：
+
+      .. code-block:: shell
+
+         # 生成密钥对
+         $ ssh-keygen
+
+         # 选择一个文件保存公钥位置，回车默认保存在/home/<user>/.ssh目录下
+         $ Enter file in which to save the key (/home/<user>/.ssh/id_rsa):
+
+         # 设置密钥短语，用于保护私钥，回车即可
+         $ Enter passphrase (empty for no passphrase):
+
+         # 再次输入密钥短语，回车即可
+         $ Enter same passphrase again:
+
+      如果你看到类似以下的输出，表示SSH密钥已成功生成并配置完毕：
+
+      .. code-block:: console
+
+         Your identification has been saved in /home/<user>/.ssh/id_rsa
+         Your public key has been saved in /home/<user>/.ssh/id_rsa.pub
+         The key fingerprint is:
+         SHA256:rOt1tPXpLY9nPiI4ASV/DLHV+5LG/9JBb96jhQu9fPU <user>@localhost.localdomain
+         The key's randomart image is:
+         +---[RSA 3072]----+
+         |         ....    |
+         |       . oo  .   |
+         |        +.o   .  |
+         |       o . o . . |
+         |        S o o + .|
+         |       . o o.*.++|
+         |      . . =..o===|
+         |       o + .oo*BE|
+         |     .o   . .=*BO|
+         +----[SHA256]-----+
+
+      现在，你只需将 ``/home/<user>/.ssh/id_rsa.pub`` 文件的内容追加到虚拟磁盘中的 ``/root/.ssh/authorized_keys`` 文件中即可完成配置。这样，你的SSH密钥将被添加到虚拟机的授权密钥列表中，从而实现免密码的SSH登录。
+
+      .. code-block:: shell
+
+         #将宿主机中的公钥输出，并复制
+         $ cat ~/.ssh/id_rsa.pub
+
+         #在qemu中创建目录，并复制内容
+         $ mkdir /root/.ssh
+
+         # 粘贴内容保存退出
+         $ vi authorized_keys
+
+   设置完成之后，宿主机和openEuler Embedded即可免密通信。
 
 附录：QEMU常用的启动参数
 ========================
