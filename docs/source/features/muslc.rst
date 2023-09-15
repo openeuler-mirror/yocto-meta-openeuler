@@ -120,7 +120,7 @@ clang+llvm构建镜像
 
    .. attention::
 
-      当前只支持arm64架构，支持的平台：aarch64-std、raspberrypi4-64
+      当前只支持arm64架构，支持的平台：qemu-aarch64、raspberrypi4-64
 
 2. 构建命令
 

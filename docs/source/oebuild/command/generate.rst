@@ -51,11 +51,11 @@
 -p: platform
 ------------
 
-该参数用于指定构建的单板名称，每个定制的镜像必须指定单板名称，也可以不指定，不指定时该参数默认为aarch64-std，使用范例如下：
+该参数用于指定构建的单板名称，每个定制的镜像必须指定单板名称，也可以不指定，不指定时该参数默认为qemu-aarch64，使用范例如下：
 
 .. code-block:: console
 
-    oebuild generate -p aarch64-std
+    oebuild generate -p qemu-aarch64
     oebuild generate -p ok3568
     ...
 
@@ -166,11 +166,11 @@
 
     oebuild generate -d build_dir
 
-构建目录如果不指定时oebuild会默认使用platform来命名，例如如下的命令在执行后会自动创建aarch-std构建目录：
+构建目录如果不指定时oebuild会默认使用platform来命名，例如如下的命令在执行后会自动创建qemu-aarch64构建目录：
 
 .. code-block:: console
 
-    oebuild generate -p aarch64-std
+    oebuild generate -p qemu-aarch64
 
 .. note::
 

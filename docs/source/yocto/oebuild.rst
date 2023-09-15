@@ -326,7 +326,7 @@ oebuild generate
 
 - -l<list>：list参数，有两个可选范围，platform和feature，platform则会列出支持的platform列表，feature则会列出支持的feature列表
 
-- -p<platform>：全称platform，生成配置文件需要的一个参数，默认为aarch64-std
+- -p<platform>：全称platform，生成配置文件需要的一个参数，默认为qemu-aarch64
 
 - -s<sstate_cache>：指定外部sstate_cache目录，该目录在构建时会使用
 
@@ -354,7 +354,7 @@ oebuild在构建时依赖compile.yaml配置文件来完成构建操作，创建�
 
 ::
 
-   oebuild generate -p aarch64-std -f systemd -f openeuler-qt
+   oebuild generate -p qemu-aarch64 -f systemd -f openeuler-qt
 
 则生成的构建配置文件会涵盖\ ``systemd openeuler-qt``\ 两者的特性
 
@@ -512,7 +512,7 @@ compile.yaml
 
 ::
 
-   platform: aarch64-std
+   platform: qemu-aarch64
    machine: qemu-aarch64
    toolchain_type: EXTERNAL_TOOLCHAIN:aarch64
    sdk_dir:

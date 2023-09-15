@@ -79,15 +79,15 @@ compile.yaml.sample：构建配置模板文件
     # executing `oebuild generate -l platform`, this command will list 
     # all supported boards for openEuler Embedded
     #
-    platform: aarch64-std
+    platform: qemu-aarch64
 
 
-    # mechine replaces the mechine parameter in local.conf, 
+    # machine replaces the machine parameter in local.conf,
     # in general, platform lists a list in the 
     # `yocto-meta-openeuler/.oebuild/platform` directory, and the 
     # mechine value is specified in the specific platform
     #
-    mechine: qemu-aarch64
+    machine: qemu-aarch64
 
 
     # toolchain_type specifies the identity of the external toolchain, 
@@ -234,7 +234,7 @@ platform
 
 .. code-block:: console
 
-    platform: aarch64-std
+    platform: qemu-aarch64
 
 machine
 >>>>>>>
