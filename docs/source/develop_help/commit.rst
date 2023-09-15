@@ -91,7 +91,7 @@ commit msg详细说明
 
     - ``area`` 非空，一般为配方名称，或要更改的文件的简短路径，若同时修改多个配方，也可使用更抽象的属类，比如config, 层的名字，docs等。
 
-    - ``subject`` 非空，应包含对更改的简介描述。必须使用祈使句和现在时态，即不可使用'changed'或'changes',而是使用'change'（具体解释可见 `此 <https://365git.tumblr.com/post/3308646748/writing-git-commit-messages>`_ ）。第一个字母必须大写，不能在末尾加标点符号，不能包含表情符号，至少包含3个单词。
+    - ``subject`` 非空，应包含对更改的简介描述。必须使用祈使句和现在时态，即不可使用'changed'或'changes',而是使用'change'（具体解释可见 `此 <https://365git.tumblr.com/post/3308646748/writing-git-commit-messages>`_ ）。不能在末尾加标点符号，不能包含表情符号，至少包含3个单词。
 
     - revert类型提交请看 :ref:`第7点 <第7点>` 。 
 
