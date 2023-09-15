@@ -89,15 +89,16 @@ EXTRA_OECMAKE = "-DENABLE_GRPC=ON \
 		"
 
 # lib-shim-v2 depends on rust which is not well supported for arm32 and riscv64
-DEPENDS:remove:arm = " lib-shim-v2 lib-shim-v2-bin "
-RDEPENDS:${PN}:remove:arm = " lib-shim-v2 lib-shim-v2-bin "
-EXTRA_OECMAKE:remove:arm = " -DENABLE_SHIM_V2=ON "
-EXTRA_OECMAKE:append:arm = " -DENABLE_SHIM_V2=OFF "
+# there are issues with building grpc on arm32 and riscv platforms.
+DEPENDS:remove:arm = " lib-shim-v2 lib-shim-v2-bin grpc grpc-native "
+RDEPENDS:${PN}:remove:arm = " lib-shim-v2 lib-shim-v2-bin grpc "
+EXTRA_OECMAKE:remove:arm = " -DENABLE_SHIM_V2=ON -DENABLE_GRPC=ON -DGRPC_CONNECTOR=ON "
+EXTRA_OECMAKE:append:arm = " -DENABLE_SHIM_V2=OFF -DENABLE_GRPC=OFF -DGRPC_CONNECTOR=OFF "
 
-DEPENDS:remove:riscv64 = " lib-shim-v2 lib-shim-v2-bin "
-RDEPENDS:${PN}:remove:riscv64 = " lib-shim-v2 lib-shim-v2-bin "
-EXTRA_OECMAKE:remove:riscv64 = " -DENABLE_SHIM_V2=ON "
-EXTRA_OECMAKE:append:riscv64 = " -DENABLE_SHIM_V2=OFF "
+DEPENDS:remove:riscv64 = " lib-shim-v2 lib-shim-v2-bin grpc grpc-native "
+RDEPENDS:${PN}:remove:riscv64 = " lib-shim-v2 lib-shim-v2-bin grpc "
+EXTRA_OECMAKE:remove:riscv64 = " -DENABLE_SHIM_V2=ON -DENABLE_GRPC=ON -DGRPC_CONNECTOR=ON "
+EXTRA_OECMAKE:append:riscv64 = " -DENABLE_SHIM_V2=OFF -DENABLE_GRPC=OFF -DGRPC_CONNECTOR=OFF "
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
