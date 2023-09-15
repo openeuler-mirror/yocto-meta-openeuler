@@ -91,6 +91,7 @@ RDEPENDS_libstdc++ += "${libc_rdep}"
 RDEPENDS_libatomic += "${libc_rdep}"
 RDEPENDS_libquadmath += "${libc_rdep}"
 RDEPENDS_libmpx += "${libc_rdep}"
+RDEPENDS_libitm += "${libc_rdep}"
 
 do_package_write_ipk[depends] += "virtual/${MLPREFIX}libc:do_packagedata"
 do_package_write_deb[depends] += "virtual/${MLPREFIX}libc:do_packagedata"
