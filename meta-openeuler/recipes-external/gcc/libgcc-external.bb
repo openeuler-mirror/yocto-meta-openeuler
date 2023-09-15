@@ -44,7 +44,7 @@ FILES:${PN}-dbg += "${base_libdir}/.debug/libgcc_s.so.*.debug"
 python add_ml_symlink () {
     pass
 }
-python add_ml_symlink_tcmode-external () {
+python add_ml_symlink:tcmode-external () {
     import pathlib
 
     def get_links(p):

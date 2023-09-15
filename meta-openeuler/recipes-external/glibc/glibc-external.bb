@@ -217,6 +217,26 @@ FILES:${PN}-dbg = ""
 # here INHIBIT_PACKAGE_STRIP is no need to set to 1, 
 # because poky package.bbclass will not strip the file with no executable permission except .so or .node
 
+# To ensure that essential .o format files for compilation are not stripped:
+INHIBIT_PACKAGE_STRIP_FILES += "\
+    ${PKGD}${libdir}/rcrt1.o \
+    ${PKGD}${libdir}/Mcrt1.o \
+    ${PKGD}${libdir}/gcrt1.o \
+    ${PKGD}${libdir}/crtn.o \
+    ${PKGD}${libdir}/grcrt1.o \
+    ${PKGD}${libdir}/crti.o \
+    ${PKGD}${libdir}/Scrt1.o \
+    ${PKGD}${libdir}/crt1.o \
+    ${PKGD}${libdir}/lp64d/rcrt1.o \
+    ${PKGD}${libdir}/lp64d/Mcrt1.o \
+    ${PKGD}${libdir}/lp64d/gcrt1.o \
+    ${PKGD}${libdir}/lp64d/crtn.o \
+    ${PKGD}${libdir}/lp64d/grcrt1.o \
+    ${PKGD}${libdir}/lp64d/crti.o \
+    ${PKGD}${libdir}/lp64d/Scrt1.o \
+    ${PKGD}${libdir}/lp64d/crt1.o \
+"
+
 linux_include_subdirs = "asm asm-generic bits drm linux mtd rdma sound sys video"
 FILES:${PN}-dev += "${@' '.join('${includedir}/%s' % d for d in '${linux_include_subdirs}'.split())}"
 
