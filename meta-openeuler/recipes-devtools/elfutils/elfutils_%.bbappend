@@ -5,7 +5,7 @@ SRC_URI =+ " \
     file://elfutils-${PV}.tar.bz2 \
     file://backport-elfclassify-Fix-no-stdin-flag.patch \
     file://Fix-segfault-in-eu-ar-m.patch \
-    file://Fix-error-of-parsing-object-file-perms.patch \
+    file://backport-libelf-Correctly-decode-ar_mode-as-octal-string.patch \
     file://Fix-issue-of-moving-files-by-ar-or-br.patch \
     file://Get-instance-correctly-for-eu-ar-N-option.patch \
     file://backport-readelf-Handle-DW_LLE_GNU_view_pair.patch \
