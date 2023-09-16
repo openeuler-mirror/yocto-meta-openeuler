@@ -14,6 +14,6 @@ PACKAGES = "${PN}"
 RDEPENDS:${PN} = " \
 screen \
 ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'mcs-linux mcs-km', '', d)} \
-${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'jailhouse', '', d)} \
+${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'mcs-km jailhouse', '', d)} \
 ${@bb.utils.contains('MCS_FEATURES', 'zephyr', 'zephyr-image', '', d)} \
 "

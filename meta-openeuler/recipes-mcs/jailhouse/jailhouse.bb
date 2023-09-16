@@ -71,6 +71,12 @@ do_install() {
 	fi
 }
 
+# export symbol for mcs
+SYSROOT_PREPROCESS_FUNCS += "additional_populate_sysroot"
+additional_populate_sysroot() {
+    install ${B}/Module.symvers ${SYSROOT_DESTDIR}
+}
+
 PACKAGE_BEFORE_PN = "kernel-module-jailhouse pyjailhouse ${PN}-tools ${PN}-demos"
 FILES:${PN} += "${nonarch_base_libdir}/firmware ${libexecdir} ${sbindir} ${JH_DATADIR}"
 KERNEL_MODULE_AUTOLOAD += "jailhouse"
