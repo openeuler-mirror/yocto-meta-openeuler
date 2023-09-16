@@ -11,7 +11,7 @@ delete_unneeded_from_rootfs() {
 }
 IMAGE_PREPROCESS_COMMAND += "delete_unneeded_from_rootfs;"
 
-copy_rk3568_distro() {
+copy_rockchip_distro() {
     set -x
     for IMAGETYPE in ${IMAGE_FSTYPES}
     do
@@ -20,10 +20,16 @@ copy_rk3568_distro() {
     done
     set +x
 }
-IMAGE_POSTPROCESS_COMMAND += "copy_rk3568_distro;"
+IMAGE_POSTPROCESS_COMMAND += "copy_rockchip_distro;"
 
+# make no login
+set_permissions_from_rootfs:append() {
+    cd "${IMAGE_ROOTFS}"
+    if [ -f ./etc/inittab ]; then
+        sed -i "s#respawn:/sbin/getty.*#respawn:-/bin/sh#g" ./etc/inittab
+    fi
+    cd -
+}
 
-#IMAGE_FEATURES += "splash"
-IMAGE_FSTYPES = "ext4"
-IMAGE_FSTYPES:remove = "iso"
+IMAGE_FSTYPES:remove = "iso wic tar.gz"
 IMAGE_FSTYPES_DEBUGFS = "ext4"
