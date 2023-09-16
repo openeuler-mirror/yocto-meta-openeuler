@@ -17,18 +17,21 @@ openEuler Embedded蓝牙配置
 
 使用如下命令开启蓝牙：
 
-- 加载蓝牙固件
-
-  .. code-block:: console
-
-    btuart
-
 - 开启蓝牙
 
   .. code-block:: console
-
+    # 默认系统启动的时候bluetooth进程已经启动
+    # 如果没有启动，可以使用如下命令启动
     /etc/init.d/bluetooth start
+    # 启动蓝牙设备，必须执行
     hciconfig hci0 up
+  如果开启成功，则可以使用hciconfig命令查看蓝牙设备信息,表示设备已经启动：
+  .. code-block:: console
+    hciconfig
+    hci0:	Type: Primary  Bus: UART
+    BD Address: xx:xx:xx:xx:xx:xx  ACL MTU: 1021:8  SCO MTU: 64:1
+    UP RUNNING
+    ...
 
 - 扫描设备
 
@@ -36,14 +39,24 @@ openEuler Embedded蓝牙配置
     
     bluetoothctl scan on
 
+  扫描到的设备会显示在终端上，如下所示：
+  .. code-block:: console
+    [NEW] Device xx:xx:xx:xx:xx:xx xx:xx:xx:xx:xx:xx
+    [CHG] Device xx:xx:xx:xx:xx:xx RSSI: -79
+    ...
+
 - 开启被发现
 
   .. code-block:: console
 
     bluetoothctl discoverable on
 
-  开启后可以被其他设备发现
+  开启后可以被其他设备发现。正常的输出如下：
+  .. code-block:: console
+    Changing discoverable on succeeded
 
+  并且，利用其他设备，打开蓝牙搜索选项，可以看到名为“BlueZ [current version number]”的设备。
+  
 .. attention::
 
    1. 当前openEuler Embedded版本蓝牙暂不支持配对和链接，在后续版本提供支持
