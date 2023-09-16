@@ -1,0 +1,220 @@
+diff --git a/arch/arm64/kernel/fpsimd.c b/arch/arm64/kernel/fpsimd.c
+index 84520f11667d..af75fe83a8fa 100755
+--- a/arch/arm64/kernel/fpsimd.c
++++ b/arch/arm64/kernel/fpsimd.c
+@@ -177,10 +177,12 @@ static void __get_cpu_fpsimd_context(void)
+  *
+  * The double-underscore version must only be called if you know the task
+  * can't be preempted.
++ * 
++ * Disabling preemption prevents nesting via fpsimd_thread_switch().
+  */
+ static void get_cpu_fpsimd_context(void)
+ {
+-	local_bh_disable();
++	preempt_disable_bh();
+ 	__get_cpu_fpsimd_context();
+ }
+ 
+@@ -201,7 +203,7 @@ static void __put_cpu_fpsimd_context(void)
+ static void put_cpu_fpsimd_context(void)
+ {
+ 	__put_cpu_fpsimd_context();
+-	local_bh_enable();
++	preempt_enable_bh();
+ }
+ 
+ static bool have_cpu_fpsimd_context(void)
+diff --git a/include/linux/bottom_half.h b/include/linux/bottom_half.h
+index eed86eb0a1de..b6fc88042bc3 100755
+--- a/include/linux/bottom_half.h
++++ b/include/linux/bottom_half.h
+@@ -19,6 +19,24 @@ static inline void local_bh_disable(void)
+ 	__local_bh_disable_ip(_THIS_IP_, SOFTIRQ_DISABLE_OFFSET);
+ }
+ 
++/*
++* local_bh_disable() protects against both preemption and soft interrupts
++* on !RT kernels.
++*
++* On RT kernels local_bh_disable() is not sufficient because it only
++* serializes soft interrupt related sections via a local lock, but stays
++* preemptible. Disabling preemption is the right choice here as bottom
++* half processing is always in thread context on RT kernels so it
++* implicitly prevents bottom half processing as well.
++*/
++static inline void preempt_disable_bh(void)
++{
++	if (IS_ENABLED(CONFIG_PREEMPT_RT))
++		preempt_disable();
++	else
++		local_bh_disable();
++}
++
+ extern void _local_bh_enable(void);
+ extern void __local_bh_enable_ip(unsigned long ip, unsigned int cnt);
+ 
+@@ -32,6 +50,14 @@ static inline void local_bh_enable(void)
+ 	__local_bh_enable_ip(_THIS_IP_, SOFTIRQ_DISABLE_OFFSET);
+ }
+ 
++static inline void preempt_enable_bh(void)
++{
++	if (IS_ENABLED(CONFIG_PREEMPT_RT))
++		preempt_enable();
++	else
++		local_bh_enable();
++}
++
+ #ifdef CONFIG_PREEMPT_RT
+ extern bool local_bh_blocked(void);
+ #else
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+old mode 100644
+new mode 100755
+index a24e8d547cee..f341b0d36fa0
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -4519,15 +4519,20 @@ static void do_balance_callbacks(struct rq *rq, struct callback_head *head)
+ 	}
+ }
+ 
++static void balance_push(struct rq *rq);
++
++struct callback_head balance_push_callback = {
++	.next = NULL,
++	.func = (void (*)(struct callback_head *))balance_push,
++};
++
+ static inline struct callback_head *splice_balance_callbacks(struct rq *rq)
+ {
+ 	struct callback_head *head = rq->balance_callback;
+ 
+ 	lockdep_assert_held(&rq->__lock);
+-	if (head) {
++	if (head) 
+ 		rq->balance_callback = NULL;
+-		rq->balance_flags &= ~BALANCE_WORK;
+-	}
+ 
+ 	return head;
+ }
+@@ -4548,21 +4553,6 @@ static inline void balance_callbacks(struct rq *rq, struct callback_head *head)
+ 	}
+ }
+ 
+-static void balance_push(struct rq *rq);
+-
+-static inline void balance_switch(struct rq *rq)
+-{
+-	if (likely(!rq->balance_flags))
+-		return;
+-
+-	if (rq->balance_flags & BALANCE_PUSH) {
+-		balance_push(rq);
+-		return;
+-	}
+-
+-	__balance_callbacks(rq);
+-}
+-
+ #else
+  
+ static inline void __balance_callbacks(struct rq *rq)
+@@ -4578,10 +4568,6 @@ static inline void balance_callbacks(struct rq *rq, struct callback_head *head)
+ {
+ }
+ 
+-static inline void balance_switch(struct rq *rq)
+-{
+-}
+-
+ #endif
+ 
+ static inline void
+@@ -4609,6 +4595,7 @@ static inline void finish_lock_switch(struct rq *rq)
+ 	 * prev into current:
+ 	 */
+ 	spin_acquire(&__rq_lockp(rq)->dep_map, 0, 0, _THIS_IP_);
++	__balance_callbacks(rq);
+ 	raw_spin_rq_unlock_irq(rq);
+ }
+ 
+@@ -8504,7 +8491,7 @@ static void balance_push(struct rq *rq)
+ 
+ 	lockdep_assert_held(&rq->__lock);
+ 	SCHED_WARN_ON(rq->cpu != smp_processor_id());
+-
++	rq->balance_callback = &balance_push_callback;
+ 	/*
+ 	 * Both the cpu-hotplug and stop task are in this case and are
+ 	 * required to complete the hotplug process.
+@@ -8553,9 +8540,9 @@ static void balance_push_set(int cpu, bool on)
+ 
+ 	rq_lock_irqsave(rq, &rf);
+ 	if (on)
+-		rq->balance_flags |= BALANCE_PUSH;
++		rq->balance_callback = &balance_push_callback;
+ 	else
+-		rq->balance_flags &= ~BALANCE_PUSH;
++		rq->balance_callback = NULL;
+ 	rq_unlock_irqrestore(rq, &rf);
+ }
+ 
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+old mode 100644
+new mode 100755
+index 66188873de5c..0cf533637e3c
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -1038,7 +1038,6 @@ struct rq {
+ 	unsigned long		cpu_capacity_orig;
+ 
+ 	struct callback_head	*balance_callback;
+-	unsigned char		balance_flags;
+ 
+ 	unsigned char		nohz_idle_balance;
+ 	unsigned char		idle_balance;
+@@ -1588,6 +1587,8 @@ struct rq_flags {
+ #endif
+ };
+ 
++extern struct callback_head balance_push_callback;
++
+ /*
+  * Lockdep annotation that avoids accidental unlocks; it's like a
+  * sticky/continuous lockdep_assert_held().
+@@ -1607,7 +1608,7 @@ static inline void rq_pin_lock(struct rq *rq, struct rq_flags *rf)
+ 	rf->clock_update_flags = 0;
+ #endif
+ #ifdef CONFIG_SMP
+-	SCHED_WARN_ON(rq->balance_callback);
++	SCHED_WARN_ON(rq->balance_callback && rq->balance_callback != &balance_push_callback);
+ #endif
+ }
+ 
+@@ -1780,9 +1781,6 @@ init_numa_balancing(unsigned long clone_flags, struct task_struct *p)
+ 
+ #ifdef CONFIG_SMP
+ 
+-#define BALANCE_WORK	0x01
+-#define BALANCE_PUSH	0x02
+-
+ static inline void
+ queue_balance_callback(struct rq *rq,
+ 		       struct callback_head *head,
+@@ -1790,13 +1788,12 @@ queue_balance_callback(struct rq *rq,
+ {
+ 	lockdep_assert_rq_held(rq);
+ 
+-	if (unlikely(head->next || (rq->balance_flags & BALANCE_PUSH)))
++if (unlikely(head->next || rq->balance_callback == &balance_push_callback))
+ 		return;
+ 
+ 	head->func = (void (*)(struct callback_head *))func;
+ 	head->next = rq->balance_callback;
+ 	rq->balance_callback = head;
+-	rq->balance_flags |= BALANCE_WORK;
+ }
+ 
+ #define rcu_dereference_check_sched_domain(p) \

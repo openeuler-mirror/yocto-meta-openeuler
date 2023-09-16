@@ -1,32 +1,19 @@
-From f33929fd617112ced8beb8a0e851f185e3f4a43a Mon Sep 17 00:00:00 2001
-From: zhuhai <zhuhai@ncti-gba.cn>
-Date: Thu, 23 Mar 2023 08:37:07 +0000
-Subject: [PATCH] fix-fiq_debugger
-
----
- drivers/staging/android/fiq_debugger/fiq_debugger.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
-
 diff --git a/drivers/staging/android/fiq_debugger/fiq_debugger.c b/drivers/staging/android/fiq_debugger/fiq_debugger.c
-index 59bd0a8410e8..c1b35298246c 100755
+index 59bd0a8410e8..b5fd8565ba45 100755
 --- a/drivers/staging/android/fiq_debugger/fiq_debugger.c
 +++ b/drivers/staging/android/fiq_debugger/fiq_debugger.c
-@@ -263,12 +263,11 @@ static void fiq_debugger_dump_kernel_log(struct fiq_debugger_state *state)
+@@ -263,11 +263,11 @@ static void fiq_debugger_dump_kernel_log(struct fiq_debugger_state *state)
  {
  	char buf[512];
  	size_t len;
 -	struct kmsg_dumper dumper = { .active = true };
-+        struct kmsg_dumper_iter iter = { .active = 1 };
++	struct kmsg_dumper_iter dumper = { .active = true };
  
  
 -	kmsg_dump_rewind_nolock(&dumper);
 -	while (kmsg_dump_get_line_nolock(&dumper, true, buf,
--					 sizeof(buf) - 1, &len)) {
-+        kmsg_dump_rewind(&iter);
-+        while (kmsg_dump_get_line(&iter, false, buf, sizeof(buf), &len)) {
++	kmsg_dump_rewind(&dumper);
++	while (kmsg_dump_get_line(&dumper, true, buf,
+ 					 sizeof(buf) - 1, &len)) {
  		buf[len] = 0;
  		fiq_debugger_puts(state, buf);
- 	}
--- 
-2.36.1
-
