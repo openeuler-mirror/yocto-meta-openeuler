@@ -16,6 +16,7 @@ KBUILD_DEFCONFIG = "bcm2711_defconfig"
 
 do_configure:prepend() {
     sed -i '$a CONFIG_ACPI=y' .config
+	sed -i '$a CONFIG_NET_CLS_TCINDEX=y' .config
 }
 
 COMPATIBLE_MACHINE = "raspberrypi4-64"
