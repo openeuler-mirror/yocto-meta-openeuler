@@ -5,11 +5,11 @@
 HOSTTOOLS:remove = "chrpath cpp rpcgen"
 HOSTTOOLS_NONFATAL += "chrpath cpp rpcgen"
 # basic tools
-HOSTTOOLS += "python3 python pod2man pkg-config"
+HOSTTOOLS += "python3 python pod2man pkg-config sgdisk"
 HOSTTOOLS_NONFATAL += "gnu-configize"
 # used by perl-native
 HOSTTOOLS_NONFATAL += "cc"
-ASSUME_PROVIDED += "util-linux-native pkgconfig-native chrpath-replacement-native"
+ASSUME_PROVIDED += "util-linux-native pkgconfig-native chrpath-replacement-native sgdisk"
 
 # package management tools
 HOSTTOOLS_NONFATAL += "rpm rpmbuild createrepo_c dnf unzip rpm2cpio"
