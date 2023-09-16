@@ -32,3 +32,10 @@ wpa-supplicant \
 RDEPENDS:${PN}-bluetooth = " \
 bluez5 \
 "
+
+# The bluez used by image running on raspberrypi should use the 
+# raspberrypi distro.
+python () {
+    if d.getVar('MACHINE') == 'raspberrypi4-64':
+        d.appendVar("RDEPENDS:"+d.getVar('PN')+"-bluetooth", " bluez-firmware-rpidistro")
+}
