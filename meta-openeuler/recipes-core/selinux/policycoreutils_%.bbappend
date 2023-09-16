@@ -10,3 +10,5 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
 S = "${WORKDIR}/selinux-${BP}/${BPN}"
 
 RDEPENDS:${PN}:remove:class-target = "selinux-python"
+
+FILEEXTRAPATHS:prepend := "${THISDIR}/${PN}:${THISDIR}/${PN}/pam.d"
