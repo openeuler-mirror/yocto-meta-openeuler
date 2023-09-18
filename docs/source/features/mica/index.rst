@@ -1,8 +1,8 @@
 .. _mixed_criticality_system:
 
 
-混合关键性系统部署
-################################
+混合关键性系统(MICA)
+#####################
 
 .. toctree::
    :maxdepth: 1
@@ -11,4 +11,5 @@
    mica.rst
    mica_openamp.rst
    mica_linux_kernel.rst
-
+   mica_jailhouse.rst
+   mica_build.rst

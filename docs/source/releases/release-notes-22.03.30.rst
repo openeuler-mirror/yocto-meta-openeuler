@@ -14,7 +14,7 @@ openEuler Embedded 22.03是openEuler Embedded第一次正式发布，包含的�
 * 软件包
    - 支持80+软件包，详见 :ref:`software_packages_list`
 * 亮点特性
-   - 多OS混合部署框架的初步实现，支持openEuler Embedded和Zephyr的混合部署，详见 :ref:`mixed_critical_system`
+   - 多OS混合部署框架的初步实现，支持openEuler Embedded和Zephyr的混合部署，详见 :ref:`mixed_criticality_system`
    - 分布式软总线的初步集成，详见 :ref:`distributed_softbus`
    - 安全加固指导，详见 :ref:`security_hardening`
    - 基于Preempt-RT的软实时，详见 :ref:`preempt_rt`

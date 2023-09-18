@@ -1,210 +1,229 @@
-.. _mica_openamp:
-
-基于openAMP的混合部署实现
-#############################
+基于 OpenAMP 的混合部署实现
+###########################
 
 构建指南
 ========
 
-openEuler Embedded 不仅支持混合关键性系统特性的单独构建，还实现了集成构建，能够使用同一套工具链一键式构建出包含linux, zephyr的部署镜像。
+   .. seealso::
 
-.. note:: 单独构建混合关键系统特性的方法请参考 `mcs 构建安装指导 <https://gitee.com/openeuler/mcs#%E6%9E%84%E5%BB%BA%E5%AE%89%E8%A3%85%E6%8C%87%E5%AF%BC>`_
+      目前支持 qemu-arm64, 树莓派4B, Hi3093, ok3568, x86工控机。推荐使用 oebuild 快速构建包含混合部署功能的 MCS 镜像，参考 :ref:`openEuler Embedded MCS镜像构建指导 <mcs_build>`。
 
-**集成构建指导**
+      若需要单独构建混合部署的组件，请参考 `mcs 构建安装指导 <https://gitee.com/openeuler/mcs#%E6%9E%84%E5%BB%BA%E5%AE%89%E8%A3%85%E6%8C%87%E5%AF%BC>`_ 。
+      注意，x86仅支持 UniProton，需要切换到 `uniproton_dev 分支 <https://gitee.com/openeuler/mcs/tree/uniproton_dev/>`_ 。
 
-1. 根据 :ref:`oebuild快速构建 <oebuild_install>` ，初始化oebuild工作目录；
+____
 
-   .. code-block:: shell
+在ARM64 QEMU上运行
+==================
 
-      oebuild init <directory>
-      cd <directory>
-      oebuild update
+1. 制作 dtb
 
-2. 下载依赖代码：
+  部署 Client OS 需要在 Linux 的设备树中添加 ``mcs-remoteproc`` 设备节点，为 Client OS 预留出必要的保留内存。
+  当前，可以通过 mcs 仓库提供的 `create_dtb.sh <https://gitee.com/openeuler/mcs/blob/master/tools/create_dtb.sh>`_ 脚本生成对应的 dtb：
 
-   zephyr 的构建包含核心部分和外部 zephyr modules 部分，由于全部代码较大，需要从 `src-openEuler/zephyr <https://gitee.com/src-openeuler/zephyr>`_ 中的百度网盘路径下载 zephyr_project_v3.2.0.tar.gz，并放在构建代码目录下的 zephyrproject 子目录中（对应oebuild工作目录的<workspace>/src/zephyrproject）
+  .. code-block:: console
 
-   python3-pykwalify 在 openeuler 社区尚无相应的源码包，需要从上游下载 `Download pykwalify-1.8.0.tar.gz <https://pypi.org/project/pykwalify/1.8.0/#files>`_ ，并放在构建代码目录下的 python3-pykwalify 子目录中（对应oebuild工作目录的<workspace>/src/python3-pykwalify）
+     # create a dtb for qemu_cortex_a53
+     $ ./create_dtb.sh qemu-a53
 
-3. 进入oebuild工作目录，创建对应的编译配置文件，**mcs镜像需要添加** ``-f openeuler-mcs``：
+  成功执行后，会在当前目录下生成 ``qemu.dtb`` 文件，对应 QEMU 配置为：`2G RAM, 4 cores`。
 
-   .. code-block:: shell
+2. 启动 QEMU
 
-      # qemu-arm64
-      oebuild generate -p qemu-aarch64 -f openeuler-mcs -d <build_arm64_mcs>
+  .. note::
 
-      # RPI4
-      oebuild generate -p raspberrypi4-64 -f openeuler-mcs -d <build_rpi_mcs>
+     下文的QEMU启动命令默认使能 ``virtio-net``，请先阅读 :ref:`QEMU 使用指导 <qemu_enable_net>` 了解如何开启网络。
 
-      # ok3568
-      oebuild generate -p ok3568 -f openeuler-mcs -d <build_ok3568_mcs>
+  使用生成出来的 ``qemu.dtb``，按照以下命令启动 QEMU，注意，需要指定 `maxcpus=3` 为 Client OS 预留出 core 3，
+  并且 `-m` 和 `-smp` 要与 dtb 的配置(2G RAM, 4 cores)保持一致，否则会启动失败：
 
-      # hi3093
-      oebuild generate -p hi3093 -f openeuler-mcs -d <build_hi3093_mcs>
+  .. code-block:: console
 
-4. 进入 ``<build>`` 目录，编译 ``openeuler-image-mcs`` ：
+     $ sudo qemu-system-aarch64 -M virt,gic-version=3 -cpu cortex-a53 -nographic \
+         -device virtio-net-device,netdev=tap0 \
+         -netdev tap,id=tap0,script=/etc/qemu-ifup \
+         -m 2G -smp 4 \
+         -append 'maxcpus=3' \
+         -kernel zImage \
+         -initrd openeuler-image-*.cpio.gz \
+         -dtb qemu.dtb
 
-   .. code-block:: shell
+3. 部署 Client OS
 
-      oebuild bitbake openeuler-image-mcs
+  调整内核打印等级并插入内核模块：
 
-.. note::
+  .. code-block:: console
 
-   **注意**：构建 openeuler-image-mcs 需要在 oebuild 初始化时添加 ``-f openeuler-mcs``。
+     # 为了不影响shell的使用，先屏蔽内核打印：
+     $ echo "1 4 1 7" > /proc/sys/kernel/printk
 
-使用方法
-========
+     # 插入内核模块
+     $ modprobe mcs_km
 
-目前混合关键性系统（mcs）支持在qemu-aarch64和树莓派上部署运行，部署mcs需要预留出必要的内存、CPU资源，并且还需要bios提供psci支持。
+  插入内核模块后，可以通过 `cat /proc/iomem` 查看预留出来的 mcs_mem。
+  若 mcs_km.ko 插入失败，可以通过 dmesg 看到对应的失败日志，可能的原因有：1.使用的交叉工具链与内核版本不匹配；2.未预留内存资源
 
-1.镜像启动
-  - **对于树莓派:**
+  运行rpmsg_main程序，启动 client os：
 
-     集成构建出来的 openeuler-image-mcs 已经通过 dt-overlay 等方式预留了相关资源，并且默认使用了支持psci的uefi引导固件。因此只需要根据 :ref:`openeuler-image-uefi启动使用指导 <raspberrypi4-uefi-guide>` 进行镜像启动，再部署mcs即可。
-  - **对于qemu:**
+  .. code-block:: console
 
-     需要准备一份dtb文件，dtb文件的制作可参考 `配置dts预留出mcs_mem <https://gitee.com/openeuler/mcs#%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E>`_ ，并通过以下命令启动qemu：
+     $ rpmsg_main -c [cpu_id] -t [target_binfile] -a [target_binaddress]
+     eg:
+     $ rpmsg_main -c 3 -t /lib/firmware/qemu-zephyr-image.bin -a 0x7a000000
 
-     .. code-block:: console
+  若rpmsg_main成功运行，会有如下打印：
 
-       $ qemu-system-aarch64 -M virt,gic-version=3 -m 1G -cpu cortex-a57 -nographic \
-       -append 'maxcpus=3' -smp 4 \
-       -kernel zImage \
-       -initrd *.rootfs.cpio.gz \
-       -dtb qemu_mcs.dtb
-  - **对于ok3568:**
+  .. code-block:: console
 
-     已经通过条件判断的形式把预留内存加入了设备树，构建出来即可使用。
-  - **对于hi3093:**
+     $ rpmsg_main -c 3 -t /lib/firmware/qemu-zephyr-image.bin -a 0x7a000000
+     ...
+     start client os
+     ...
+     pls open /dev/pts/0 to talk with client OS
+     pty_thread for uart is runnning
+     ...
 
-     hi3093需要在boot以后限制maxcpus=3预留出一个cpu跑uniproton
+  此时， **按ctrl-c可以通知client os下线并退出rpmsg_main** ，下线后支持重复拉起。
+  也可以根据打印提示（ ``pls open /dev/pts/0 to talk with client OS`` ），
+  通过 /dev/pts/0 与 client os 进行 shell 交互，例如：
 
-     .. code-block:: console
+  .. code-block:: console
 
-       # 使用在ctrl+b进入uboot，并限制启动的cpu数量
-       setenv bootargs "${bootargs} maxcpus=3"
+     # 通过 SSH 登录 QEMU
+     $ ssh root@192.168.10.8
 
-2.部署mcs
-  - **step1: 调整内核打印等级并插入内核模块**
+     ... ...
 
-     .. code-block:: console
+     # 打开 Client OS 的 shell
+     qemu-aarch64:~$ screen /dev/pts/0
 
-        # 为了不影响shell的使用，先屏蔽内核打印：
-        $ echo "1 4 1 7" > /proc/sys/kernel/printk
+     ... ...
 
-        # 插入内核模块
-        $ modprobe mcs_km.ko
+     uart:~$ kernel version
+     Zephyr version 3.2.0
 
-        # 备注：ok3568与hi3093已经实现了开机自动加载内核模块，无需重复此步骤
+  可以通过 ``Ctrl-a k`` 或 ``Ctrl-a Ctrl-k`` 组合键退出shell，参考 `screen(1) — Linux manual page <https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS>`_ 。
 
-     插入内核模块后，可以通过 `cat /proc/iomem` 查看预留出来的 mcs_mem，如：
+____
 
-     .. code-block:: console
+在树莓派4B上运行
+================
 
-        qemu-aarch64 ~ # cat /proc/iomem
-        ...
-        70000000-7fffffff : reserved
-        70000000-7fffffff : mcs_mem
-        ...
+  oebuild 构建出来的 MCS 镜像已经通过 dt-overlay 等方式预留了相关资源，并且默认使用了支持 psci 的 uefi 引导固件。
+  因此只需要根据 :ref:`openeuler-image-uefi启动使用指导 <raspberrypi4-uefi-guide>` 进行镜像启动，再部署mcs即可，步骤跟QEMU类似：
 
-     若mcs_km.ko插入失败，可以通过dmesg看到对应的失败日志，可能的原因有：1.使用的交叉工具链与内核版本不匹配；2.未预留内存资源；3.使用的bios不支持psci
+  .. code-block:: console
 
-  - **step2: 运行rpmsg_main程序，启动client os**
+     # 调整内核打印等级
+     $ echo "1 4 1 7" > /proc/sys/kernel/printk
 
-     - **qemu-arm64 和 RPI4：**
+     # 插入内核模块
+     $ modprobe mcs_km
 
-       .. code-block:: console
+     # 运行rpmsg_main程序，启动 client os：
+     $ rpmsg_main -c 3 -t /lib/firmware/rpi4-zephyr-image.bin -a 0x7a000000
 
-          $ rpmsg_main -c [cpu_id] -t [target_binfile] -a [target_binaddress]
-          eg:
-          $ rpmsg_main -c 3 -t /firmware/zephyr-image.bin -a 0x7a000000
+     # 若rpmsg_main成功运行，会有如下打印：
+     ...
+     start client os
+     ...
+     pls open /dev/pts/0 to talk with client OS
+     pty_thread for uart is runnning
+     ...
 
-       若rpmsg_main成功运行，会有如下打印：
+     # 此时， **按ctrl-c可以通知client os下线并退出rpmsg_main** ，下线后支持重复拉起。
+     # 也可以根据打印提示（ ``pls open /dev/pts/0 to talk with client OS`` ），
+     # 通过 /dev/pts/0 与 client os 进行 shell 交互，例如：
 
-       .. code-block:: console
+     # 通过 SSH 登录树莓派
+     $ ssh root@192.168.10.8
 
-          # rpmsg_main -c 3 -t /firmware/zephyr-image.bin -a 0x7a000000
-          ...
-          start client os
-          ...
-          pls open /dev/pts/1 to talk with client OS
-          pty_thread for uart is runnning
-          ...
+     ... ...
 
-       此时， **按ctrl-c可以通知client os下线并退出rpmsg_main** ，下线后支持重复拉起。
-       也可以根据打印提示（ ``pls open /dev/pts/1 to talk with client OS`` ），
-       通过 /dev/pts/1 与 client os 进行 shell 交互，例如：
+     # 打开 Client OS 的 shell
+     qemu-aarch64:~$ screen /dev/pts/0
 
-       .. code-block:: console
+     ... ...
 
-          # 新建一个terminal，登录到运行环境
-          $ ssh user@ip
+     uart:~$ kernel version
+     Zephyr version 3.2.0
 
-          # 连接pts设备
-          $ screen /dev/pts/1
+     # 可以通过 <Ctrl-a k> 或 <Ctrl-a Ctrl-k> 组合键退出shell，具体请参考 screen 的 manual page
 
-          # 敲回车后，可以打开client os的shell，对client os下发命令，例如
-          uart:~$ help
-          uart:~$ kernel version
+____
 
-          #在ok3568上拉起rt-thread
-          $ rpmsg_main -c 3 -t /firmware/rtthread-ok3568.bin -a 0x7a000000
+在Hi3093上运行
+==============
 
-          #在hi3093上拉起uniproton
-          $ rpmsg_main -c 3 -t /firmware/Uniproton_hi3093.bin -a 0x93000000
+  Hi3093 需要在 uboot 中添加启动参数 ``maxcpus=3`` 预留出一个 cpu 跑 UniProton：
 
-     - **ok3568 开发板：**
+  .. code-block:: console
 
-       ok3568支持通过mcs拉起 RT-Thread，步骤如下：
+     # 使用在ctrl+b进入uboot，限制启动的cpu数量
+     setenv bootargs "${bootargs} maxcpus=3"
 
-       .. code-block:: console
+  部署mcs的步骤跟QEMU类似，UniProton作为Client OS：
 
-          # 拉起RTT；
-          ok3568 ~ # ./rpmsg_main -c 3 -t /firmware/rtthread-ok3568.bin -a 0x7a000000
-          ...
-          start client os
-          ...
+  .. code-block:: console
 
-       ok3568支持通过输入功能编号进行交互、下线、重新拉起:
+     # 调整内核打印等级
+     $ echo "1 4 1 7" > /proc/sys/kernel/printk
 
-       .. code-block:: console
+     # 插入内核模块
+     $ modprobe mcs_km
 
-          # 输入h查看用法
-          h
-          please input number:<1-8>
-          1. test echo
-          2. send matrix
-          3. start pty
-          4. close pty
-          5. shutdown clientOS
-          6. start clientOS
-          7. test ping
-          8. test flood-ping
-          9. exit
+     # 运行rpmsg_main程序，启动 client os：
+     $ rpmsg_main -c 3 -t /firmware/hi3093_ut.bin -a 0x93000000 &
 
-     - **hi3093 开发板：**
+     # 若rpmsg_main成功运行，会有如下打印：
+     ...
+     start client os
+     ...
+     pls open /dev/pts/1 to talk with client OS
+     pty_thread for console is runnning
+     ...
 
-       hi3093目前支持 uniproton 的拉起，查看串口输出。
+     # 根据打印提示（ ``pls open /dev/pts/0 to talk with client OS`` ），
+     # 通过 /dev/pts/1 查看 UniProton 的串口输出，例如：
+     qemu-aarch64:~$ screen /dev/pts/1
 
-       .. code-block:: console
+     # 敲回车后，可以查看uniproton输出信息
+     # 可以通过 <Ctrl-a k> 或 <Ctrl-a Ctrl-k> 组合键退出console，具体请参考 screen 的 manual page
 
-          # 拉起 uniproton
-          $ ./rpmsg_main -c 3 -t /firmware/hi3093_ut.bin -a 0x93000000 &
+____
 
-          ...
-          start client os
-          ...
-          pls open /dev/pts/1 to talk with client OS
-          pty_thread for console is runnning
-          ...
+在ok3568上运行
+==============
 
-       此时， 根据打印提示（ ``pls open /dev/pts/1 to talk with client OS`` ），
-       通过 /dev/pts/1 可以与 uniproton 进行交互，例如：
+  ok3568支持通过mcs拉起 RT-Thread，步骤如下：
 
-       .. code-block:: console
+  .. code-block:: console
 
-          # 连接pts设备
-          $ screen /dev/pts/1
+     # 调整内核打印等级
+     $ echo "1 4 1 7" > /proc/sys/kernel/printk
 
-          # 敲回车后，可以查看uniproton输出信息
+     # 插入内核模块
+     $ modprobe mcs_km
+
+     # 运行rpmsg_main程序，启动 client os：
+     $ rpmsg_main -c 3 -t /firmware/rtthread-ok3568.bin -a 0x7a000000
+
+     # 若rpmsg_main成功运行，会有如下打印：
+     ...
+     start client os
+     ...
+
+     # ok3568支持通过输入功能编号进行交互、下线、重新拉起:
+     # 输入h查看用法
+       h
+       please input number:<1-8>
+       1. test echo
+       2. send matrix
+       3. start pty
+       4. close pty
+       5. shutdown clientOS
+       6. start clientOS
+       7. test ping
+       8. test flood-ping
+       9. exit
 
