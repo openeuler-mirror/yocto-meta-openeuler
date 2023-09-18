@@ -23,10 +23,17 @@ STRIP = "echo"
 # The pre-built tools have different link loader, don't change them.
 UNINATIVE_LOADER := ""
 
+python do_fetch() {
+    # download openeuler/rk-binary-native repo for linux kernel src files
+    d.setVar("OPENEULER_REPO_NAME", "rk-binary-native")
+    d.setVar("OPENEULER_LOCAL_NAME", 'rk-binary-native')
+    bb.build.exec_func("do_openeuler_fetch", d)
+}
+
 do_install () {
 	install -d ${D}/${bindir}
 
-	cd ${S}/tools
+	cd ${S}/rk-binary-native/tools
 
 	install -m 0755 boot_merger ${D}/${bindir}
 	install -m 0755 trust_merger ${D}/${bindir}
@@ -40,7 +47,7 @@ do_install () {
 
 	install -m 0755 upgrade_tool ${D}/${bindir}
 
-	cd ${S}/linux/Linux_Pack_Firmware/rockdev
+	cd ${S}/rk-binary-native/linux/Linux_Pack_Firmware/rockdev
 
 	install -m 0755 afptool ${D}/${bindir}
 	install -m 0755 rkImageMaker ${D}/${bindir}
