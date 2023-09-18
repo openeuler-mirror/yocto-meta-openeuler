@@ -6,8 +6,7 @@ LIC_FILES_CHKSUM = "file://${RKBASE}/licenses/LICENSE.rockchip;md5=d63890e209bf0
 inherit deploy native
 
 SRC_URI = " \
-	file://rkbin.tar.gz;name=rkbin \
-	file://tools.tar.gz;name=tools;destsuffix=git/extra \
+	file://rk-binary-native \
 "
 
 S = "${WORKDIR}/"
