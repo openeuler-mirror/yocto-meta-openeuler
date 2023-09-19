@@ -50,12 +50,10 @@ reStructuredText的语法无需专门记忆，需要用到时再去查询即可�
 
 * 环境准备
 
-    如果你只进行文档开发的话，那么你需要准备好python3， 然后通过pip3按照如下命令安装对应python软件包，包括sphinx、文
-    档主题等：
+    如果你只进行文档开发的话，那么你需要准备好python3， 然后通过pip3按照如下命令安装对应python软件包，包括sphinx、文档主题等：
 
     .. code-block:: bash
 
-        pip3 install sphinx
         pip3 install --user -r yocto-meta-openeuler/scripts/requirements-doc.txt
 
 * 编辑文档
