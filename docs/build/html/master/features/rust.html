@@ -148,17 +148,14 @@
 </div>
 <p>首先最重要的是recipe需要继承cargo类 <code class="docutils literal notranslate"><span class="pre">inherit</span> <span class="pre">cargo</span></code> 这样项目就可以使用Rust工具链去构建安装。之后可以设置yocto常用的变量。</p>
 <p>Rust项目应该通过cargo工具进行管理，源代码目录应该遵循以下目录结构：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">demo-src</span>
+<span class="go">        ├── Cargo.toml</span>
+
+<span class="go">        └── src</span>
+
+<span class="go">                └── main.rs</span>
 </pre></div>
 </div>
-<dl>
-<dt>demo-src</dt><dd><p>├── Cargo.toml</p>
-<dl class="simple">
-<dt>└── src</dt><dd><p>└── main.rs</p>
-</dd>
-</dl>
-</dd>
-</dl>
 <p>需要将项目的源文件目录 <code class="docutils literal notranslate"><span class="pre">S</span></code> 设置在Rust项目 <code class="docutils literal notranslate"><span class="pre">Cargo.toml</span></code> 所在目录，否则会报告无法找到 <code class="docutils literal notranslate"><span class="pre">Cargo.toml</span></code> 的错误。需要注意：本例通过 <code class="docutils literal notranslate"><span class="pre">file</span></code> 的方式进行fetch，所以将 <code class="docutils literal notranslate"><span class="pre">S</span></code> 变量设置为fetch后的文件夹目录。如果你使用git方式去fetch源文件，则需要修改 <code class="docutils literal notranslate"><span class="pre">S</span></code> 为 <code class="docutils literal notranslate"><span class="pre">${WORKDIR}/git</span></code> （fetch参数默认时）。</p>
 <p>如果Rust项目需要通过 <code class="docutils literal notranslate"><span class="pre">crate-io</span></code> 拉取依赖项， <code class="docutils literal notranslate"><span class="pre">CARGO_CRATES_SOURCE</span></code> 变量提供了一个配置crates替换源的方法，需要设该变量为一个非空值，通过配置该变量的flag进行镜像源的配置，具体可以参考 <a class="reference external" href="https://doc.rust-lang.org/cargo/reference/source-replacement.html">Cargo源配置</a>。下面是使用 <a class="reference external" href="https://mirrors.tuna.tsinghua.edu.cn/help/crates.io-index.git/">TUNA镜像</a> 需要增加的配置：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">CARGO_CRATES_SOURCE = &quot;tuna&quot;</span>

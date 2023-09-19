@@ -41,11 +41,12 @@ Rust项目应该通过cargo工具进行管理，源代码目录应该遵循以�
 
 .. code-block:: console
 
-demo-src
-    ├── Cargo.toml
-	
-    └── src
-        └── main.rs
+	demo-src
+		├── Cargo.toml
+
+		└── src
+
+			└── main.rs
 
 需要将项目的源文件目录 ``S`` 设置在Rust项目 ``Cargo.toml`` 所在目录，否则会报告无法找到 ``Cargo.toml`` 的错误。需要注意：本例通过 ``file`` 的方式进行fetch，所以将 ``S`` 变量设置为fetch后的文件夹目录。如果你使用git方式去fetch源文件，则需要修改 ``S`` 为 ``${WORKDIR}/git`` （fetch参数默认时）。
 

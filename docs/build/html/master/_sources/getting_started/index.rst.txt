@@ -6,12 +6,11 @@
 简介
 ====
 
-openEuler Embedded是基于openEuler社区面向嵌入式场景的Linux版本。由于嵌入式系统应用受到多个因素的约束，如资源、功耗、多样性等，
-使得面向服务器领域的Linux及相应的构建系统很难满足嵌入式场景的要求，因此业界广泛采用 `Yocto <https://www.yoctoproject.org/>`_
+openEuler Embedded是基于openEuler社区面向嵌入式场景的Linux版本。由于嵌入式系统应用受到如资源、功耗、多样性等因素的约束，面向服务器领域的Linux及相应的构建系统很难满足嵌入式场景的要求，因此业界广泛采用 `Yocto <https://www.yoctoproject.org/>`_
 来定制化构建嵌入式Linux。
 
-openEuler Embedded当前也采用的Yocto构建，但实现了与openEuler其他版本代码同源，本章节将介绍如何使用 `yocto-meta-openeuler <https://gitee.com/openeuler/yocto-meta-openeuler>`_
-项目构建 ARM64 QEMU 镜像，以及如何基于镜像完成基本的嵌入式Linux应用开发。建议按照指导步骤完成镜像构建和运行，以熟悉 `yocto-meta-openeuler` 的开发流程，树莓派等其它镜像的构建开发流程类似，具体可参阅 :ref:`南向支持 <bsp>` 章节。
+openEuler Embedded当前也采用了yocto构建，但实现了与openEuler其他版本代码同源。本章节将介绍如何使用 `yocto-meta-openeuler <https://gitee.com/openeuler/yocto-meta-openeuler>`_
+项目构建 ARM64 QEMU 镜像，以及如何基于镜像完成基本的嵌入式Linux应用开发。建议按照指导步骤完成镜像构建和运行，以熟悉 `yocto-meta-openeuler` 的开发流程。树莓派等其它平台镜像的构建开发流程也类似，具体可参阅 :ref:`南向支持 <bsp>` 章节。
 
 ____
 
@@ -22,9 +21,9 @@ openEuler Embedded采用yocto构建，但通过 `oebuild <https://gitee.com/open
 
 .. note::
 
-   - | 当前 **仅支持在x86_64位的Linux环境** 下使用 oebuild 进行构建，并且要在 **普通用户** 下进行 oebuild 的安装运行。更多关于 oebuild 的介绍请参阅 :ref:`oebuild 介绍 <openeuler_embedded_oebuild>` 章节。
+   - | 当前 **仅支持在x86_64位的Linux环境** 下使用 oebuild 进行构建，且需在 **普通用户** 下进行 oebuild 的安装运行。更多关于 oebuild 的介绍请参阅 :ref:`oebuild 介绍 <openeuler_embedded_oebuild>` 章节。
 
-   - openEuler Embedded 的 CI 会归档最新的构建镜像，若希望快速获取可用的镜像，请访问 `dailybuild <http://121.36.84.172/dailybuild/openEuler-Mainline/>`_ ，在 ``dailybuild/openEuler-Mainline/openeuler-xxxx-xx-xx/embedded_img`` 中可以下载镜像。
+   - openEuler Embedded 的 CI 会归档最新的构建镜像。若希望快速获取可用的镜像，请访问 `dailybuild <http://121.36.84.172/dailybuild/openEuler-Mainline/>`_ ，在 ``dailybuild/openEuler-Mainline/openeuler-xxxx-xx-xx/embedded_img`` 中可以下载镜像。
 
 1. 安装必要的主机包
 -------------------
@@ -155,9 +154,9 @@ ____
 基于SDK的应用开发
 =================
 
-嵌入式往往面临资源受限的问题，包括处理器性能、内存容量、存储空间等。因此，需要使用交叉编译器在构建主机上编译目标代码，以在嵌入式系统上运行。
+嵌入式系统往往面临资源受限的问题，包括处理器性能、内存容量、存储空间等方面。因此，需要使用交叉编译器在构建主机上编译目标代码，以在嵌入式系统上运行。
 
-openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发所依赖的交叉编译器、库、头文件，下面将介绍如何构建ARM64的SDK，以及如何使用SDK进行用户态程序、内核模块的开发。
+openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发所依赖的交叉编译器、库、头文件。下面将介绍如何构建ARM64的SDK，以及如何使用SDK进行用户态程序和内核模块的开发。
 
 1. 构建SDK
 ----------
@@ -168,9 +167,9 @@ openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发�
 
       oebuild bitbake openeuler-image -c do_populate_sdk
 
-   构建完成后，在 ``output`` 目录下可以看到SDK安装包：
+   构建完成后，在 ``output`` 目录下新生成的文件夹(文件夹名通过当前时间生成)内，可以看到SDK安装包：
 
-   - ``openeuler-glibc-x86_64-xxxxx-toolchain-xxxx.sh``: openEuler Embedded SDK自解压安装包，SDK包含了进行开发（用户态程序、内核模块等)所必需的工具、库和头文件等。
+   - ``openeuler-glibc-x86_64-xxxxx-toolchain-xxxx.sh``: openEuler Embedded SDK自解压安装包，SDK包含了开发（用户态程序、内核模块等）所必需的工具、库和头文件等。
 
 .. _install-openeuler-embedded-sdk:
 
@@ -197,7 +196,7 @@ openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发�
 
   - **执行SDK自解压安装脚本**
 
-    运行如下命令：
+    首先找到上一步生成的.sh文件所在的目录（在`build_arm64/output/<文件夹名>/`路径下，一个例子是``build_arm64/output/20230904145457/``。如有多个数字命名的文件夹，则可根据文件夹名找出最新输出的sh文件目录），之后运行如下命令：
 
     .. code-block:: console
 
@@ -222,7 +221,9 @@ openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发�
 
   - **设置SDK环境变量**
 
-    前一步执行结束最后已打印source命令，运行即可。
+    执行上一步结束末尾打印出的source命令即可。实际命令中的路径可能与上方不同，请以实际为准。
+    
+    如果提示权限不够，可用`sudo -s`提升权限再运行。
 
     .. code-block:: console
 
@@ -230,11 +231,17 @@ openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发�
 
   - **查看是否安装成功**
 
-    运行如下命令，查看是否安装成功、环境设置成功。
+    运行如下命令，查看是否安装成功、环境设置是否成功。相关指令及成功示例如下：
 
     .. code-block:: console
 
        $ aarch64-openeuler-linux-gcc -v
+       Using built-in specs.
+            COLLECT_GCC=aarch64-openeuler-linux-gcc
+       COLLECT_LTO_WRAPPER=/opt/openeuler/oecore-x86_64/sysroots/ x86_64-openeulersdk-linux/...(较长省略)
+       Thread model: posix
+       Supported LTO compression algorithms: zlib
+       gcc version 10.3.1 (crosstool-NG 1.25.0) 
 
 3. 使用SDK编译hello world样例
 -----------------------------
@@ -262,7 +269,7 @@ openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发�
 
         add_executable(hello hello.c)
 
-  2. **编译生成二进制**
+  2. **编译生成二进制文件**
 
      进入 :file:`hello.c` 文件所在目录，使用工具链编译, 命令如下：
 
@@ -313,7 +320,7 @@ openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发�
 
         MODULE_LICENSE("GPL");
 
-     编写Makefile，和hello.c文件放在同一个目录：
+     编写Makefile，和`hello.c`文件放在同一个目录：
 
      .. code-block:: Makefile
 
@@ -357,8 +364,8 @@ ____
 了解更多
 ========
 
-   相信根据上述指导完成了QEMU镜像的构建、运行后，您对 openEuler Embedded 的开发构建流程已经有所熟悉，但也许您也会有一些疑惑：
-   openEuler Embedded还能用来做些什么？如何理解学习yocto？如何更深入地参与项目的讨论建设？
+   相信根据上述指导完成了QEMU镜像的构建、运行后，您对 openEuler Embedded 的开发构建流程已经有所熟悉，但您也许会有一些疑惑：
+   openEuler Embedded还能用来做些什么？如何理解和学习yocto？如何更深入地参与项目的讨论建设？
 
    您可以阅读文档相关的介绍，或参与SIG组例会，更深入地了解openEuler Embedded：
 

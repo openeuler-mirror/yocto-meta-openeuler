@@ -131,7 +131,7 @@
 <li><p>制作一份设备树文件</p></li>
 </ol>
 <blockquote>
-<div><p>首先，我们需要生成一份基于QEMU支持的硬件架构的设备树，输入如下命令，可以获得基于GICv3，1G RAM，4核Cortex-A57的硬件架构的设备树：</p>
+<div><p>首先，我们需要生成一份基于QEMU支持的硬件架构的设备树，输入如下命令，可以获得基于GICv3、1G RAM、4核Cortex-A57的硬件架构的设备树：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">qemu</span><span class="o">-</span><span class="n">system</span><span class="o">-</span><span class="n">aarch64</span> <span class="o">-</span><span class="n">M</span> <span class="n">virt</span><span class="p">,</span><span class="n">gic</span><span class="o">-</span><span class="n">version</span><span class="o">=</span><span class="mi">3</span> <span class="o">-</span><span class="n">m</span> <span class="mi">1</span><span class="n">G</span> <span class="o">-</span><span class="n">cpu</span> <span class="n">cortex</span><span class="o">-</span><span class="n">a57</span> <span class="o">-</span><span class="n">nographic</span> <span class="o">-</span><span class="n">smp</span> <span class="mi">4</span> <span class="o">-</span><span class="n">M</span> <span class="n">dumpdtb</span><span class="o">=</span><span class="n">qemu</span><span class="o">.</span><span class="n">dtb</span>
 </pre></div>
 </div>
@@ -344,11 +344,11 @@ device，其他的上层应用不需要有太多的变化。</p>
 <h2>Linux端驱动的工作内容<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h2>
 <section id="probe">
 <h3>内核驱动的probe函数<a class="headerlink" href="#probe" title="Permalink to this headline">¶</a></h3>
-<p>为了更好的理解驱动（Driver）的工作内容，我们从一个驱动最开始执行的代码开始：probe函数。原本最开始执行的函数是初始化函数，
-当我们插入这个驱动的时候，Linux会通过带有<code class="docutils literal notranslate"><span class="pre">MODULE_INIT</span></code> 字段的函数执行初始化流程，主要用于做一些特殊的配置，
-然后调用<code class="docutils literal notranslate"><span class="pre">platform_driver_register</span></code> 函数注册驱动。由于目前我们的驱动并不需要在初始化的时候做特别的事情，
+<p>为了更好的理解驱动（driver）的工作内容，我们从一个驱动最开始执行的代码开始：probe函数。原本最开始执行的函数是初始化函数，
+当我们插入该驱动时，Linux会通过带有<code class="docutils literal notranslate"><span class="pre">MODULE_INIT</span></code> 字段的函数执行初始化流程，主要用于做一些特殊的配置，
+然后调用<code class="docutils literal notranslate"><span class="pre">platform_driver_register</span></code> 函数注册驱动。由于目前我们的驱动并不需要在初始化时做特别的事情，
 所以我们并没有init函数。<code class="docutils literal notranslate"><span class="pre">MODULE_PLATFORM_DRIVER</span></code> 这个宏定义会调用<code class="docutils literal notranslate"><span class="pre">platform_driver_register</span></code> 函数注册驱动，
-之后系统的总线会遍历注册到总线上的设备（Device），查看是否有和本驱动匹配的设备。
+之后系统的总线会遍历注册到总线上的设备（device），查看是否有和本驱动匹配的设备。
 如果有，则将本驱动和设备绑定在一起，并执行驱动的probe函数，检查硬件资源是否符合要求，并进行相应的配置和准备工作。
 而probe函数的执行由于已经发现了设备，此时的工作内容主要是初始化设备，分配硬件和软件资源，以及将设备注册到kernel中。
 接下来是probe函数的主要工作内容：</p>
