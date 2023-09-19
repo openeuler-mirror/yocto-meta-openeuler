@@ -13,7 +13,7 @@ DEPENDS_append_libc-musl = " argp-standalone fts musl-obstack "
 SRC_URI = "file://elfutils/${BP}.tar.bz2 \
            file://elfutils/backport-elfclassify-Fix-no-stdin-flag.patch \
            file://elfutils/Fix-segfault-in-eu-ar-m.patch \
-           file://elfutils/Fix-error-of-parsing-object-file-perms.patch \
+           file://elfutils/backport-libelf-Correctly-decode-ar_mode-as-octal-string.patch \
            file://elfutils/Fix-issue-of-moving-files-by-ar-or-br.patch \
            file://elfutils/Get-instance-correctly-for-eu-ar-N-option.patch \
            file://run-ptest \
