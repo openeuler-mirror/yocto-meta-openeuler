@@ -44,6 +44,16 @@ meta-musl层介绍
 
 编译器构建指导：musl交叉工具链的生成可 `参考编译器构建指导 <https://gitee.com/openeuler/yocto-embedded-tools/tree/master/cross_tools>`_
 
+特定环境配置：由于poky升级到4.0.x后，meson的编译规则改变，会导致一些包产生中间产物--检查交叉编译环境配置的可执行程序，但是目前docker中没有musl的链接器：ld-musl-aarch64.so.1，所以需要执行下边命令把musl的链接器拷贝到docker中：
+
+.. code-block:: console
+
+   sudo docker cp /path/aarch64-openeuler-linux-musl/xx/ld-musl-aarch64.so.1  dockerid:/usr/lib64
+
+.. attention::
+
+   ld-musl-aarch64.so.1要修改成实体的，不要拷贝软连接！
+
 qemu镜像的构建
 ----------------------------------------
 1.构建环境示例
