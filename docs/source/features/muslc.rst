@@ -58,7 +58,7 @@ qemu镜像的构建
 ----------------------------------------
 1.构建环境示例
   
-参考 :ref:`openeuler_embedded_oebuild` 初始化容器环境，生成配置文件时使用如下命令
+参考 :ref:`openeuler_embedded_oebuild` 初始化容器环境，生成配置文件时使用如下命令：
 
 .. code-block:: console
 
@@ -66,11 +66,11 @@ qemu镜像的构建
 
 .. attention::
 
-   当前在容器里是没有musl-arm64的工具链，需要按照上面工具链的生成指导生成
+   当前在容器里是没有musl-arm64的工具链，需要按照上面工具链的生成指导生成。
 
 2.构建命令
 
-键入 ``oebuild bitbake`` 进入容器环境后，执行下面命令即可编译镜像
+键入 ``oebuild bitbake`` 进入容器环境后，执行下面命令即可编译镜像：
 
 .. code-block:: console
 
@@ -116,13 +116,13 @@ clang+llvm构建镜像
 
    .. attention::
 
-      当前在容器中没有集成musl相关的工具链，所以需要先把基于musl编译的arm64架构GCC库拷贝至编译器目录
+      当前在容器中没有集成musl相关的工具链，所以需要先把基于musl编译的arm64架构GCC库拷贝至编译器目录：
 
    .. code-block:: console
 
       sudo cp /path/to/aarch64-openeuler-linux-musl/* /path/to/clang-llvm-15.0.3
 
-   参考 :ref:`openeuler_embedded_oebuild` 初始化容器环境，生成配置文件时使用如下命令
+   参考 :ref:`openeuler_embedded_oebuild` 初始化容器环境，生成配置文件时使用如下命令：
 
    .. code-block:: console
 
@@ -130,7 +130,7 @@ clang+llvm构建镜像
 
    .. attention::
 
-      当前只支持arm64架构，支持的平台：qemu-aarch64、raspberrypi4-64
+      当前只支持arm64架构，支持的平台：qemu-aarch64、raspberrypi4-64。
 
 2. 构建命令
 

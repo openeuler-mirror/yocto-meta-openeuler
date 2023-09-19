@@ -9,7 +9,7 @@
 
 机器人尤其服务机器人领域近年来发展迅速，ROS是一个适用于机器人的开源的元操作系统，已在众多领域被广泛应用，常规ROS存在较多平台约束，大多与ubuntu等desktop版本强依赖。
 
-随着ROS1开始广泛融入各领域无人系统的研发，陆续暴露了系统的诸多问题。为了适应新时代机器人研发的和操作系统生态发展的需要，ROS2应运而生。
+随着ROS1开始广泛融入各领域无人系统的研发，系统的诸多问题陆续暴露出来。为了适应新时代机器人研发的和操作系统生态发展的需要，ROS2应运而生。
 
 为使能ROS2在高度定制化的嵌入式Linux运行，支持通过yocto构建的meta-ROS（原LG维护）layer层成为嵌入式ROS支持的关键途径。然而，当前原生meta-ros应用门槛较高且未充分考虑嵌入式运行时的关键场景要素。
 
@@ -69,12 +69,12 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
     另外按照嵌入式运行时原则，将尽量不在target集成编译类、观测类、仿真类等工具
 
     | 注意：
-    | pcl点云库比较耗编译主机的内存资源，对该库进行了线程限制（-j 2），可参见对应pcl的bbappend配方
-    | 另外，虽已限制在(-j 2)，其编译所需的主机内存要求需大于等于14G（加上swap空间）
-    | 若您的编译主机配置足够，可解开（-j 2）限制
+    | pcl点云库比较耗编译主机的内存资源，对该库进行了线程限制（-j 2），可参见对应pcl的bbappend配方。
+    | 另外，虽已限制在(-j 2)，其编译所需的主机内存要求需大于等于14G（加上swap空间）。
+    | 若您的编译主机配置足够，可解开（-j 2）限制。
     | 参考：
-    | 在16线程32GB内存的机器解除限制后无法成功编译
-    | 在24线程64GB内存的机器上测试可解除线程限制成功编译
+    | 在16线程32GB内存的机器解除限制后无法成功编译；
+    | 在24线程64GB内存的机器上测试可解除线程限制成功编译。
 
 
 镜像使用示例
@@ -104,14 +104,14 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
     .. attention::
 
-        首次运行如果出现如下错误提示，
+        首次运行如果出现如下错误提示
 
         .. code-block:: console
 
             failed to parse default acl file `/usr/local/libexec/../etc/qemu/bridge.conf'
             qemu-system-aarch64: bridge helper failed
 
-        则需要向指示的文件添加"allow br0"
+        则需要向指示的文件添加"allow br0"：
 
         .. code-block:: console
 
@@ -129,7 +129,7 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
     .. attention::
 
-        qemu1与qemu2的mac地址需要配置为不同的值
+        qemu1与qemu2的mac地址需要配置为不同的值。
 
 
     配置IP
@@ -212,7 +212,7 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
     `originbot 启动SLAM <http://originbot.org/application/slam/#2-slam>`_
 
-    首先，ssh登录originbot小车终端1，执行如下命令
+    首先，ssh登录originbot小车终端1，执行如下命令：
 
     .. code-block:: console
 
@@ -221,7 +221,7 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
         # 启动机器人底盘和激光雷达：
         $ ros2 launch originbot_bringup originbot.launch.py use_lidar:=true
 
-    然后，ssh登录originbot小车终端2，执行如下命令
+    然后，ssh登录originbot小车终端2，执行如下命令：
 
     .. code-block:: console
 
@@ -288,11 +288,11 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
 **使用约束**
 
-和常规colcon一样，我们支持了colcon交叉编译基本框架，不过由于ROS2软件包的语言和依赖库多种多样，目前仅支持C/C++/PYTHON三种常用语言的软件包，而类似RUST等依赖cargo的软件包还不支持。欢迎开发者持续贡献openEuler Embedded社区。
+和常规colcon一样，我们支持了colcon交叉编译基本框架，不过由于ROS2软件包的语言和依赖库多种多样，目前仅支持C/C++/Python三种常用语言的软件包，而类似RUST等依赖cargo的软件包还不支持。欢迎开发者持续贡献openEuler Embedded社区。
 
 **使用方法**
 
-以树莓派ROS2镜像为例
+以树莓派ROS2镜像为例：
 
 **1. 在构建完成镜像后，通过populate_sdk生成SDK**
 
@@ -303,7 +303,7 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
     $ bitbake openeuler-image-ros
     $ bitbake openeuler-image-ros -c populate_sdk
 
-  随后在“output/[时间搓]/”目录下即可找到对应SDK安装文件，例如
+  随后在“output/[时间戳]/”目录下即可找到对应SDK安装文件，例如
 
   .. code-block:: console
     
@@ -312,23 +312,23 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
 **2. SDK的安装和初始化**
 
-  目前可用oebuild初始化的构建容器作为开发容器（后续会推出专用SDK的一站式oebuild功能，敬请期待）
+  目前可用oebuild初始化的构建容器作为开发容器（后续会推出专用SDK的一站式oebuild功能，敬请期待）。
 
   (1). 进入容器环境
 
-  有两种方式可进入容器，任选其一即可
+  有两种方式可进入容器，任选其一即可：
 
-  方式1，通过oebuild bitbake进入容器
+  方式1：通过oebuild bitbake进入容器
 
-  此方式同时会进入bitbake，和SDK环境暂不冲突，且能够自动初始化容器的主机端工具环境
+  此方式同时会进入bitbake，和SDK环境暂不冲突，且能够自动初始化容器的主机端工具环境。
 
   .. code-block:: console
 
     $ oebuild bitbake
 
-  方式2，通过docker命令进入纯容器环境
+  方式2：通过docker命令进入纯容器环境
 
-  容器id可通过查看oebuild初始化的构建目录的.env文件，其short_id就是容器id，例子假设为“18bb5d58da3e”
+  容器id可通过查看oebuild初始化的构建目录的.env文件，其short_id就是容器id。以“18bb5d58da3e”为例：
 
   .. code-block:: console
 
@@ -350,7 +350,7 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
   (3). 根据提示执行SDK初始化
 
-  后续再次进入容器环境后，只需要初始化即可，不需要（2）安装步骤，用法和我们常规SDK的使用无区别
+  后续再次进入容器环境后，只需要初始化即可，不需要（2）安装步骤，用法和我们常规SDK的使用无区别。
   
   .. code-block:: console
 
@@ -368,33 +368,33 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
     $ cd your_rospkg_workspace
     $ colcon build --merge-install --cmake-force-configure --cmake-args -DBUILD_TESTING=False
     
-  完成后，和colcon用法一样，在工作目录将生成install文件夹，即交叉编译的目标产物
+  完成后，和colcon用法一样，在工作目录将生成install文件夹，即交叉编译的目标产物。
 
 
 **4. 部署和运行**
 
   在3中，colcon生成的install可以直接拷贝到目标机器上进行部署运行，但由于colcon固定了工作目录，拷贝到新目录后，需要替换一下colcon指定的工作目录。
 
-  假设原colcon工作目录为“home/openeuler/build/raspberrypi4-64/your_colcon_workspace/install”，需编辑全部setup.sh文件，将如下内容进行修改
+  假设原colcon工作目录为“home/openeuler/build/raspberrypi4-64/your_colcon_workspace/install”，需编辑全部setup.sh文件，将如下内容进行修改：
 
   .. code-block:: console
 
     _colcon_prefix_chain_sh_COLCON_CURRENT_PREFIX=/home/openeuler/build/raspberrypi4-64/your_colcon_workspace/install
 
-  部署到目标环境后，假设新工作目录为“/ros_runtime/install”，则需将setup.sh文件的对应行修改为如下内容
+  部署到目标环境后，假设新工作目录为“/ros_runtime/install”，则需将setup.sh文件的对应行修改为如下内容：
 
   .. code-block:: console
 
     _colcon_prefix_chain_sh_COLCON_CURRENT_PREFIX=/ros_runtime/install
 
-  您可执行如下命令进行批量修改
+  您可执行如下命令进行批量修改：
 
   .. code-block:: console
 
     $ cd /ros_runtime/install
     $ find ./ -type f -exec sed -i 's@/home/openeuler/build/raspberrypi4-64/your_colcon_workspace/install@/ros_runtime/install@g' {} +
 
-  最后通过如下命令进行工作目录的初始化
+  最后通过如下命令进行工作目录的初始化：
 
   .. code-block:: console
 
@@ -406,7 +406,7 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 关于ROS源码
 =================
 
-上游ROS发布的源码存放于github，对中国用户下载较慢，且src-openEuler社区针对ROS全量分包源码还在完善，
+上游ROS发布的源码存放于github，中国用户下载较慢，且src-openEuler社区针对ROS全量分包源码还在完善。
 
 为加构建过程，嵌入式版本统一将ROS涉及的ROS软件包临时存放于yocto-embedded-tools仓库的dev_ros分支中，并遵循一定的源码存放规则，后续src-openeuler针对ROS分包支持后将对此部分进行优化。
 
@@ -420,7 +420,7 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
   **要求**：
 
-  按照yocto的包名作为文件夹名，单独存放tarball压缩包，例如ros_depends/tf2/0.13.12-1.tar.gz，并按要求填充src.txt配置文件，tarball的下载建议使用src_helper.sh脚本。
+  以yocto的包名作为文件夹名，单独存放tarball压缩包，例如ros_depends/tf2/0.13.12-1.tar.gz，并按要求填充src.txt配置文件。tarball的下载建议使用src_helper.sh脚本。
 
   **src_helper.sh脚本说明**
 
@@ -431,15 +431,15 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
     若需要引入新的ROS标准包，开发者可追加ros.txt内容，并按如下规则：
 
-    **第一列** 为yocto中包名
+    **第一列** 为yocto中包名。
 
-    **第二列** 为该包在yocto中定义的工作目录，比如通常SRC_URI若为git链接，则需使用git。单包多压缩包目录可表示多行，可参见foonathan-memory
+    **第二列** 为该包在yocto中定义的工作目录，比如通常SRC_URI若为git链接，则需使用git。单包多压缩包目录可表示多行，可参见foonathan-memory。
 
     **第三列** 为该包的上游获取地址，若为标准ROS包，开发者可从meta-ros对应distro的bb文件中通过"matches with"关键字获取到。
 
-    .. note:: 第一列和第二列的包名在yocto构建时将自动引用
+    .. note:: 第一列和第二列的包名在yocto构建时将自动引用。
 
-        整个yocto-embedded-tool的dev_ros分支，在构建时会以新本地名字ros-dev-tools作为构建源码输入存在
+        整个yocto-embedded-tool的dev_ros分支，在构建时会以新本地名字ros-dev-tools作为构建源码输入存在。
         
         实现参见: openeuler_ros_source.bbclass
 
@@ -454,9 +454,9 @@ ros2recipe当前还处于前期开发阶段，在依赖解析部分还存在较�
 我们在yocto工程中集成了originbot ros第三方包，其基础bb配方是通过ros2recipe工具转化，但目前还需要增加bbappend文件来适配部分依赖。
 
 **其他说明:**
-superfores能够实现以一个ROS版本生成全量官方ROS组件包，需要对整体ROS和oe层进行了复杂的依赖关联，但不支持将独立的第三方包转换为yocto配方。
+superfores能够实现以一个ROS版本生成全量官方ROS组件包，对整体ROS和oe层进行了复杂的依赖关联，但不支持将独立的第三方包转换为yocto配方。
 
-针对该场景，ros2recipe如何能够更好更快的补全依赖关系和减少手工bbappend的适配，是一个很有挑战工作，我们会逐步完善，在此也期待您的贡献。
+针对该场景，ros2recipe如何能够更好更快的补全依赖关系、减少手工bbappend的适配，是一个很有挑战性的工作。我们会逐步完善，在此也期待您的贡献。
 
 **使用方法**
 
@@ -464,6 +464,6 @@ superfores能够实现以一个ROS版本生成全量官方ROS组件包，需要�
 
         yocto-meta-openeuler/scripts/ros2recipe.sh
 
-    .. note:: 其中相对目录的使用原理，请参考并理解“关于ROS源码”
+    .. note:: 其中相对目录的使用原理，请参考并理解“关于ROS源码”。
 
 

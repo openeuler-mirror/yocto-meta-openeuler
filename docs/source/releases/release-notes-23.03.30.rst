@@ -23,7 +23,7 @@ openEuler Embedded 23.03是openEuler Embedded第三个创新版本，从本次�
 
   - 更完善的CI/CD，使能sstate cache，大幅缩短门禁构建时间
 
-* linux框架
+* Linux框架
 
   - 内核与社区紧密在5.10.x内核上保持同步
 
@@ -53,7 +53,7 @@ openEuler Embedded 23.03是openEuler Embedded第三个创新版本，从本次�
 
   - 分布式软总线
 
-    - 改善WI-FI传输的性能
+    - 改善Wi-Fi传输的性能
 
     - 蓝牙的初步支持
 

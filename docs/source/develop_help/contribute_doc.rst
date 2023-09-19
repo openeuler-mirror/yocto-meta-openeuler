@@ -3,7 +3,7 @@
 如何撰写并贡献文档
 ##################
 
-openEuler Embedded采用Sphinx来构建文档，生成html静态面，并最终托管在gitee pages上。
+openEuler Embedded采用Sphinx来构建文档，生成html静态页面，并最终托管在gitee pages上。
 本章主要简述如何通过Sphinx向openEuler Embedded贡献文档。
 
 关于Sphinx
@@ -34,10 +34,10 @@ openEuler Embedded采用Sphinx来构建文档，生成html静态面，并最终�
     reStructuredText（RST、ReST或reST）是一种用于文本数据的文件格式，主要用于 Python 编程语言社区的技术文档。
     它是Python Doc-SIG（Documentation Special Interest Group）的Docutils项目的一部分，旨在为Python创建
     一组类似于 Java 的 Javadoc 或 Perl 的 Plain Old Documentation（pod）的工具。Docutils可以从Python程序
-    中提取注释和信息，并将它们格式化为各种形式的程序文档
+    中提取注释和信息，并将它们格式化为各种形式的程序文档。
 
 reStructuredText的语法与Markdown十分类似，但能以更加结构化的方式撰写专业文档，vscode中也有相应的插件提供辅助。
-reStructuredText的语法无需专门记忆，需要用到时再去查询即可，具体可参考 [#rst_tutorial]_ 。
+reStructuredText的语法无需专门记忆，用时查询即可，具体可参考 [#rst_tutorial]_ 。
 
 如何贡献文档（Linux环境）
 ==============================
@@ -50,7 +50,7 @@ reStructuredText的语法无需专门记忆，需要用到时再去查询即可�
 
 * 环境准备
 
-    如果你只进行文档开发的话，那么你需要准备好python3， 然后通过pip3按照如下命令安装对应python软件包，包括sphinx、文档主题等：
+    如果只进行文档开发，那么需要准备好python3， 然后通过pip3按照如下命令安装对应python软件包，包括sphinx、文档主题等：
 
     .. code-block:: bash
 
@@ -58,7 +58,7 @@ reStructuredText的语法无需专门记忆，需要用到时再去查询即可�
 
 * 编辑文档
 
-    相关文档源码位于 :file:`docs/source` 目录，根据你的需要修改或新增相应的文档，新增文档命名需按照Linux命名规则命名为xxx_yyy_zzz.rst，请按照如下目录规则布局文档:
+    相关文档源码位于 :file:`docs/source` 目录，根据需要修改或新增相应文档，新增文档命名需按照Linux命名规则命名为xxx_yyy_zzz.rst。请按照如下目录规则布局文档:
 
     .. csv-table:: 文档目录布局
         :header: "文件/目录名", "用途"
@@ -77,7 +77,7 @@ reStructuredText的语法无需专门记忆，需要用到时再去查询即可�
 
 *  编译文档
 
-   在 :file:`docs` 目录下编译文档
+   在 :file:`docs` 目录下编译文档：
 
     .. code-block:: bash
 
@@ -87,7 +87,7 @@ reStructuredText的语法无需专门记忆，需要用到时再去查询即可�
 
 * 提交修改
 
-  就像提交代码一样，把所有修改通过commit的形式提交，然后在gitee上创建PR提交到openEuler Embedded对应的仓库, 经过审查后，
+  和提交代码类似，将所有修改通过commit的形式提交，然后在gitee上创建PR提交到openEuler Embedded对应的仓库，经过审查后，
   修改就会被CI自动编译并发布。
 
   .. attention::
@@ -111,13 +111,13 @@ sphinx依赖于python，所以要先安装python环境，并安装pip工具和sp
 
 1.下载并安装python3 for windows：https://www.python.org/downloads/windows/
 
-- 下载python3.10.3安装包
+- 下载python3安装包
 
 - 安装python3，默认安装或自定义安装路径如 :file:`D:/python3`
 
 - 添加到系统路径，如python3安装到 :file:`D:/python3` 下，则将 :file:`D:/Python3` 和 :file:`D:/Python3/Scripts` 添加到系统环境变量Path中，后面那个路径一般是easy_install，pip等扩展工具安装的目录。
 
-- 安装pip3，默认pip3已经在 :file:`Scripts` 目录中（安装python3时会携带），固无需额外安装；如果没有，则下载并安装：
+- 安装pip3，默认pip3已经在 :file:`Scripts` 目录中（安装python3时自带），故无需额外安装。如果没有，则下载并安装：
 
   - 下载 :file:`get-pip.py` 脚本到 :file:`Scripts` 目录，地址： https://bootstrap.pypa.io/get-pip.py
 
@@ -133,7 +133,7 @@ sphinx依赖于python，所以要先安装python环境，并安装pip工具和sp
 
         pip3 install sphinx
 
-3.在python的 :file:`Scripts` 目录下，找到easy_install，在控制台下执行该命令，在命令行输入
+3.在python的 :file:`Scripts` 目录下，找到easy_install（如没有则需额外安装），在命令行输入
 
     .. code-block:: bash
 
@@ -141,9 +141,9 @@ sphinx依赖于python，所以要先安装python环境，并安装pip工具和sp
 
 easy_install可以自动下载并安装sphinx以及它所依赖的其他模块。
 
-4.安装完成后，命令行会提示Finished Processing dependencies for shinx
+4.安装完成后，命令行会提示`Finished Processing dependencies for sphinx`。
 
-5.在命令行输入sphinx-build，如果在安装python时，没有设置环境变量，可能会弹出sphinx-build不是内部或者外部命令。
+5.在命令行输入sphinx-build以查看安装结果。如果安装python时没有设置环境变量，可能会提示“sphinx-build不是内部或者外部命令”。
 
 6.通过pip3按照如下命令安装相应的python软件包，包括sphinx、文档主题等：
 
@@ -163,7 +163,7 @@ easy_install可以自动下载并安装sphinx以及它所依赖的其他模块�
 
 或直接在 :file:`D:/Learn/python` 目录下，按住Shift，点击鼠标右键选择在此处打开Powershell窗口(S)。
 
-2.执行下面过程，创建编写Python文档的工程，其实设置工程名、作者名、版本号，其他默认就行。我们这里把source和build两个目录分开，因为这样比较方便。
+2.执行下面过程，创建编写Python文档的工程，只需设置工程名、作者名、版本号，其他默认即可。方便起见，此处将source和build两个目录分开。
 
     .. code-block:: bash
 
@@ -208,7 +208,7 @@ easy_install可以自动下载并安装sphinx以及它所依赖的其他模块�
 
 * 编辑文档
 
-相关文档源码位于 :file:`docs/source` 目录，根据你的需要修改或新增相应的文档，新增文档命名要按照Linux命名方法命名为xxx_yyy_zzz.rst，请按照如下目录规则布局文档:
+相关文档源码位于 :file:`docs/source` 目录，根据需要修改或新增相应的文档，新增文档需按照Linux命名方法命名为xxx_yyy_zzz.rst，请按照如下目录规则布局文档:
 
     .. csv-table:: 文档目录布局
         :header: "文件/目录名", "用途"
@@ -228,7 +228,7 @@ easy_install可以自动下载并安装sphinx以及它所依赖的其他模块�
 
 *  编译文档
 
-将 :file:`docs` 下的 :file:`image` 和 :file:`source` 目录内新增和修改的文件全部复制替换到工程（:file:`D:/Learn/python`）对应目录内，在该目录下编译文档
+将 :file:`docs` 下的 :file:`image` 和 :file:`source` 目录内新增和修改的文件全部复制替换到工程（:file:`D:/Learn/python`）对应目录内，在该目录下编译文档：
 
     .. code-block:: bash
 
@@ -238,7 +238,7 @@ easy_install可以自动下载并安装sphinx以及它所依赖的其他模块�
 
 * 提交修改
 
-像提交代码一样，把所有修改通过commit的形式提交，然后在gitee上创建PR提交到openEuler Embedded对应的仓库, 经过审查后，修改就会被CI自动编译并发布。
+像提交代码一样，将所有修改通过commit的形式提交，然后在gitee上创建PR提交到openEuler Embedded对应的仓库, 经过审查后，修改就会被CI自动编译并发布。
 
   .. attention::
 

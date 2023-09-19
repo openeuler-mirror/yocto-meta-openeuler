@@ -35,7 +35,7 @@ ____
       # Use the operation files from current layer
       FILESEXTRAPATHS:prepend := "${THISDIR}/:"
 
-   ``lops`` 用于放置用户自定义的配置文件，这些配置文件统一用device-tree格式描述，但是有单独的语法，
+   ``lops`` 用于存放用户自定义的配置文件，这些配置文件统一用device-tree格式描述，但是有单独的语法，
    用于描述关于输入设备树的操作，包括：修改（删除）某个设备节点；添加自定义节点；提取部分节点并生成新的设备树等。
    具体如何编写 ``lop-user-config.dts`` ，请参考下一小节。
 
@@ -175,7 +175,7 @@ ____
 
 2. **node add**
 
-   添加节点，例如，添加 ``mcs@70000000`` 到 /reserved-memory/ 中：
+   添加节点，例如添加 ``mcs@70000000`` 到 /reserved-memory/ 中：
 
    .. code-block:: shell
 

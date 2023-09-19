@@ -42,27 +42,27 @@ meta-clang层中主要起作用的是clang.bbclass文件，该文件用来控制
 
    - 源码构建
 
-     获取编译容器
+     1. 获取编译容器
 
      .. code-block:: console
 
        docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/cross-compile-bisheng:v0.1
 
-     进入容器
+     2. 进入容器
 
      .. code-block:: console
 
        docker run -idt --network host --name clang_compile swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/cross-compile-bisheng:v0.1 bash
        docker exec -it clang_compile bash
 
-     下载llvm-project
+     3. 下载llvm-project
 
      .. code-block:: console
 
        cd ~
        git clone https://gitee.com/openeuler/llvm-project.git -b dev_15x
 
-     初始化环境并编译
+     4. 初始化环境并编译
 
      .. code-block:: console
 
@@ -76,15 +76,15 @@ meta-clang层中主要起作用的是clang.bbclass文件，该文件用来控制
 
 2. 构建环境
 
-   参考 :ref:`openeuler_embedded_oebuild` 初始化容器环境，生成配置文件时使用如下命令
+   参考 :ref:`openeuler_embedded_oebuild` 初始化容器环境，生成配置文件时使用如下命令：
    
    .. code-block:: console
 
       oebuild generate -p platform -d build_direction -t /path/to/clang-llvm-15.0.3 -f clang
 
-   键入 ``oebuild bitbake`` 进入容器环境后，拷贝arm64架构GCC库至编译器目录
+   键入 ``oebuild bitbake`` 进入容器环境后，拷贝arm64架构GCC库至编译器目录，
 
-   ``/usr1/openeuler/native_gcc/`` 为oebuild默认挂载的编译器目录
+   ``/usr1/openeuler/native_gcc/`` 为oebuild默认挂载的编译器目录：
 
    .. code-block:: console
 
@@ -92,7 +92,7 @@ meta-clang层中主要起作用的是clang.bbclass文件，该文件用来控制
 
    .. attention::
       
-      当前只支持arm64架构
+      当前只支持arm64架构。
 
 3. 构建命令
 
