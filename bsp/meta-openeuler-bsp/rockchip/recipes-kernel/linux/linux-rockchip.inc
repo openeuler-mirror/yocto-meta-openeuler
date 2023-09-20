@@ -28,7 +28,7 @@ PATCHTOOL = "git"
 OPENEULER_KERNEL_CONFIG = "file://config/${MACHINE}/${MACHINE}_defconfig"
 
 # add method to do_compile task to produce bootable Image
-do_compile:append:rockchip(){
+do_compile:append:rk3568(){
     cp ../logo/* ./
     scripts/mkkrnlimg ${KERNEL_OUTPUT_DIR}/Image kernel.img
     ../tools/mkimg --dtb ${ROCKCHIP_KERNEL_DTB_NAME}
@@ -36,6 +36,23 @@ do_compile:append:rockchip(){
         ${WORKDIR}/tools/its_config > .tmp_its_config
     ../tools/mkimage -f .tmp_its_config -E -p 0x800 boot.img
     rm -rf .tmp_its_config
+}
+
+do_compile:append:rk3588(){
+    cp ../logo/* ./
+    scripts/mkkrnlimg ${KERNEL_OUTPUT_DIR}/Image kernel.img
+    ../tools/mkimg --dtb ${ROCKCHIP_KERNEL_DTB_NAME}
+    sed -e "s:path_to_kernel:${WORKDIR}\/build:g" -e "s:dtb_name:${ROCKCHIP_KERNEL_DTB_NAME}:g" \
+        ${WORKDIR}/tools/its_config > .tmp_its_config
+    ../tools/mkimage -f .tmp_its_config -E -p 0x800 boot.img
+    rm -rf .tmp_its_config
+}
+
+do_compile:append:ok3399(){
+    cp ../logo/* ./
+    scripts/mkkrnlimg ${KERNEL_OUTPUT_DIR}/Image kernel.img
+    ../tools/mkimg --dtb ${ROCKCHIP_KERNEL_DTB_NAME}
+    scripts/mkbootimg --kernel ${KERNEL_OUTPUT_DIR}/Image --second resource.img -o boot.img &&
 }
 
 # add boot.img to $D
