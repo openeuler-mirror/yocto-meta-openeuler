@@ -3,29 +3,38 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
 # remove nobash.patch, because we use /bin/bash as default SHELL
 SRC_URI:remove = "https://launchpad.net/debian/+archive/primary/+files/${BPN}_${PV}.tar.gz \
-           file://nobash.patch \
-           file://disable-shell.patch \
 "
 
 # as it's small, base-passwd's tar.gz is integrated in openEuler Embedded
 # to avoid network download
-SRC_URI:append = "file://${BPN}_${PV}.tar.gz \
-           "
+SRC_URI:prepend = " file://${BPN}_${PV}.tar.gz "
 
-# the follow patch apply failed
-# file://openeuler_secure_nologin.patch
-
-# a workaround to fix the error ”useradd: /var/run/passwd: No such file or directory“
-# it's caused by shadow-native where the patch "0002-Allow-for-setting-password-in-clear-text"
-# cannot be applied， because openeuler's shadow version is 4.9, and the patch is suitable for
-# 4.8.1. In future, this issue can be fixed through upgrade of poky(3.3.2)
-
-# do_install:append() {
-#     install -d -m 755 ${D}${localstatedir}/run
-# }
+SRC_URI:append = " file://revert_nobash.patch "
 
 SYSROOT_DIRS += "${localstatedir}"
 
 PACKAGES =+ "${PN}-var"
 
-# FILES:${PN}-var = "/run ${localstatedir}/run"
+# This is the baseline of openEuler Embedded, modified according to the security configuration. 
+# Currently, except for the rollback of the nobash patch configuration, the configuration is 
+# consistent with poky 4.
+# --------------------------------------------------------------------------------------------
+#  root::0:0:root:/root:/bin/bash
+#  daemon:*:1:1:daemon:/usr/sbin:/sbin/nologin
+#  bin:*:2:2:bin:/bin:/sbin/nologin
+#  sys:*:3:3:sys:/dev:/sbin/nologin
+#  sync:*:4:65534:sync:/bin:/bin/sync
+#  games:*:5:60:games:/usr/games:/sbin/nologin
+#  man:*:6:12:man:/var/cache/man:/sbin/nologin
+#  lp:*:7:7:lp:/var/spool/lpd:/sbin/nologin
+#  mail:*:8:8:mail:/var/mail:/sbin/nologin
+#  news:*:9:9:news:/var/spool/news:/sbin/nologin
+#  uucp:*:10:10:uucp:/var/spool/uucp:/sbin/nologin
+#  proxy:*:13:13:proxy:/bin:/sbin/nologin
+#  www-data:*:33:33:www-data:/var/www:/sbin/nologin
+#  backup:*:34:34:backup:/var/backups:/sbin/nologin
+#  list:*:38:38:Mailing List Manager:/var/list:/sbin/nologin
+#  irc:*:39:39:ircd:/var/run/ircd:/sbin/nologin
+#  gnats:*:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/sbin/nologin
+#  nobody:*:65534:65534:nobody:/nonexistent:/sbin/nologin
+
