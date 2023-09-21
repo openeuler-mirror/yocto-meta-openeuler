@@ -34,4 +34,6 @@ set_permissions_from_rootfs:append() {
     cd -
 }
 
+IMAGE_FEATURES:append = " empty-root-password"
+
 require openeuler-image-common.inc

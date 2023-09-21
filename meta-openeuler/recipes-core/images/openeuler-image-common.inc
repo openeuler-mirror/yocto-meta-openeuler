@@ -16,10 +16,19 @@ IMAGE_LINGUAS = ""
 
 LICENSE = "MIT"
 
-inherit core-image
+DEPENDS:append = " openssl-native"
+
+inherit core-image extrausers
 
 # override the value in core-image.bbclass
-FEATURE_PACKAGES_tools-debug = ""
+# FEATURE_PACKAGES_tools-debug = ""
+
+ALTER_PWD = " \
+    usermod -p '`openssl passwd -6 ${ROOT_PWD}`' root; \
+    passwd-expire root; \
+                    "
+# IMAGE_FEATURES:append = " debug-tweaks"
+EXTRA_USERS_PARAMS = '${@bb.utils.contains_any("IMAGE_FEATURES", [ 'debug-tweaks', 'empty-root-password' ], "", "${ALTER_PWD}; ",d)}'
 
 # when debug-tweaks or tools_debug is in IMAGE_FEATURES, it means the image is used for debug
 # so packagegroup-core-tools-debug(gdb and gdbserver) will be included.

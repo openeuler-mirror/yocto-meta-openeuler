@@ -4,7 +4,7 @@ TOOLCHAIN_HOST_TASK = ""
 SUMMARY = "A small image just capable of allowing a device to boot."
 
 # no any image features to get minimum rootfs
-IMAGE_FEATURES = ""
+IMAGE_FEATURES = "empty-root-password"
 
 require openeuler-image-common.inc
 
