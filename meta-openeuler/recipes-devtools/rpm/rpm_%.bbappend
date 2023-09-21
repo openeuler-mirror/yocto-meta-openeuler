@@ -44,7 +44,7 @@ EXTRA_OECONF:remove = " --without-lua"
 DEPENDS += "lua"
 DEPENDS:remove = "db"
 
-PACKAGECONFIG:append = "sqlite zstd ndb"
+PACKAGECONFIG:append = " sqlite zstd ndb"
 PACKAGECONFIG[sqlite] = "--enable-sqlite=yes,--enable-sqlite=no,sqlite3"
 PACKAGECONFIG[ndb] = "--enable-ndb,--disable-ndb"
 PACKAGECONFIG[bdb-ro] = "--enable-bdb-ro,--disable-bdb-ro"
