@@ -12,3 +12,13 @@ require openeuler-image-common.inc
 IMAGE_INSTALL = " \
 packagegroup-core-boot \
 "
+
+# make install or nologin when using busybox-inittab
+set_permissions_from_rootfs:append() {
+    cd "${IMAGE_ROOTFS}"
+    if [ -e ./etc/inittab ];then
+        sed -i "s#respawn:/sbin/getty.*#respawn:-/bin/sh#g" ./etc/inittab
+    fi
+    cd -
+}
+
