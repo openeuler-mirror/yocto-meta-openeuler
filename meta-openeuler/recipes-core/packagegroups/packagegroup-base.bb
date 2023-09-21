@@ -87,6 +87,7 @@ libbfd \
 RDEPENDS:packagegroup-base = " \
 packagegroup-base-utils \
 packagegroup-base-libs \
+packagegroup-entropy-daemon \
 "
 
 RDEPENDS:packagegroup-base-utils:remove:riscv64 = " \

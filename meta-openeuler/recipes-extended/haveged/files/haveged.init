@@ -1,0 +1,33 @@
+#!/bin/sh                                                                                                          
+ 
+haveged=@SBINDIR@/haveged
+PIDFile=/run/haveged.pid
+
+start() {
+    echo -n "Starting random number generator daemon(haveged)"
+    start-stop-daemon --start --quiet --pidfile ${PIDFile} --background --exec ${haveged} -- -w 1024 -v 1
+    echo "."
+}
+stop() {
+    echo -n "Stopping random number generator daemon(haveged)"
+    start-stop-daemon --stop --quiet --pidfile ${PIDFile}
+    echo "."
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  restart|reload)
+    stop
+    start
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop|restart}"
+    exit 1
+esac
+
+exit 0
