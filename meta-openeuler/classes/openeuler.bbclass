@@ -24,7 +24,7 @@ BUILD_LDFLAGS_append = " -L${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
 # src_uri_set is used to remove some URLs from SRC_URI through
 # OPENEULER_SRC_URI_REMOVE, because we don't want to download from
 # these URLs
-python () {
+python src_uri_set() {
     if d.getVar('OPENEULER_SRC_URI_REMOVE'):
         REMOVELIST = d.getVar('OPENEULER_SRC_URI_REMOVE').split(' ')
         URI = []
@@ -37,6 +37,9 @@ python () {
         URI = ' '.join(URI)
         d.setVar('SRC_URI', URI)
 }
+
+addhandler src_uri_set
+src_uri_set[eventmask] = "bb.event.RecipePreFinalise"
 
 # qemu.bbclass; fix build error: the kernel is too old
 OLDEST_KERNEL_forcevariable = "5.10"
