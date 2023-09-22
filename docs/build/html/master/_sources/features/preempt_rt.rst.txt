@@ -28,7 +28,7 @@ ____
 软实时镜像构建指导
 ******************
 
-1. 根据 :ref:`oebuild快速构建 <openeuler_embedded_oebuild>` ，初始化oebuild工作目录；
+1. 根据 :ref:`oebuild快速构建 <oebuild_install>` ，初始化oebuild工作目录；
 
    .. code-block:: shell
 

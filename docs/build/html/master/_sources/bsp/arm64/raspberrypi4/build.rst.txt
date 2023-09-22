@@ -10,7 +10,7 @@
 **构建指导**
 
 
-- 参照 :ref:`openeuler_embedded_oebuild` 完成oebuild安装，并详细了解构建过程
+- 参照 :ref:`oebuild_install` 完成oebuild安装，并详细了解构建过程
 
 - 依次执行以下命令完成构建
 
