@@ -16,19 +16,26 @@ IMAGE_LINGUAS = ""
 
 LICENSE = "MIT"
 
-DEPENDS:append = " openssl-native"
-
 inherit core-image extrausers
 
 # override the value in core-image.bbclass
 # FEATURE_PACKAGES_tools-debug = ""
 
-ALTER_PWD = " \
-    usermod -p '`openssl passwd -6 ${ROOT_PWD}`' root; \
+# by default user should reset root password at first login
+# although the default password is empty, the password policy
+# will require reset password immediately
+OPENEUELR_IMAGE_USERS ?= " \
+    usermod -p '' root; \
     passwd-expire root; \
                     "
-# IMAGE_FEATURES:append = " debug-tweaks"
-EXTRA_USERS_PARAMS = '${@bb.utils.contains_any("IMAGE_FEATURES", [ 'debug-tweaks', 'empty-root-password' ], "", "${ALTER_PWD}; ",d)}'
+# by default, allow root login and empty password from ssh
+# because of the configuration of OPENEUELR_IMAGE_USERS
+# root password will be required reset at first login
+OPENEULER_IMAGE_FEATURES ?= "allow-root-login allow-empty-password"
+IMAGE_FEATURES:append = " ${OPENEULER_IMAGE_FEATURES}"
+
+# image-level user and user group configuration
+EXTRA_USERS_PARAMS = '${@bb.utils.contains_any("IMAGE_FEATURES", [ 'debug-tweaks', 'empty-root-password' ], "", "${OPENEUELR_IMAGE_USERS}; ",d)}'
 
 # when debug-tweaks or tools_debug is in IMAGE_FEATURES, it means the image is used for debug
 # so packagegroup-core-tools-debug(gdb and gdbserver) will be included.
