@@ -40,7 +40,7 @@ meta-musl层介绍
 
 构建环境推荐：master
 
-构建环境指导：详见 :ref:`openeuler_embedded_oebuild`
+构建环境指导：详见 :ref:`oebuild_install`
 
 编译器构建指导：musl交叉工具链的生成可 `参考编译器构建指导 <https://gitee.com/openeuler/yocto-embedded-tools/tree/master/cross_tools>`_
 
@@ -58,7 +58,7 @@ qemu镜像的构建
 ----------------------------------------
 1.构建环境示例
   
-参考 :ref:`openeuler_embedded_oebuild` 初始化容器环境，生成配置文件时使用如下命令：
+参考 :ref:`oebuild_install` 初始化容器环境，生成配置文件时使用如下命令：
 
 .. code-block:: console
 
@@ -122,7 +122,7 @@ clang+llvm构建镜像
 
       sudo cp /path/to/aarch64-openeuler-linux-musl/* /path/to/clang-llvm-15.0.3
 
-   参考 :ref:`openeuler_embedded_oebuild` 初始化容器环境，生成配置文件时使用如下命令：
+   参考 :ref:`oebuild_install` 初始化容器环境，生成配置文件时使用如下命令：
 
    .. code-block:: console
 

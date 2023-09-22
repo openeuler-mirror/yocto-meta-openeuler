@@ -1,4 +1,4 @@
-.. _install_index:
+.. _oebuild_install:
 
 安装介绍
 ########################

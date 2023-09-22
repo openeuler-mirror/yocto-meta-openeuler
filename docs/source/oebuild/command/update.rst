@@ -55,7 +55,7 @@ docker更新
 
     oebuild update docker -tag <tag>
 
-对docker的更新会先对docker环境进行检测，如果docker环境不满足，则会报异常，具体docker环境的安装请参考 :ref:`安装介绍<install_index>` 进行安装，这里说的对docker的更新其实是指对openEuler Embedded构建镜像的更新，因为openEuler Embedded的版本与构建镜像是一一对应的，并不是一个容器可以实现所有openEuler Embedded版本的构建，这其中的原因是各个版本的内核不同，有可能引出的c库版本不一致，因此编译链也会不同，同时构建工具也会因各个版本的构建而有所不同，因此对于openEuler Embedded的构建容器会与版本一一对应。
+对docker的更新会先对docker环境进行检测，如果docker环境不满足，则会报异常，具体docker环境的安装请参考 :ref:`安装介绍<oebuild_install>` 进行安装，这里说的对docker的更新其实是指对openEuler Embedded构建镜像的更新，因为openEuler Embedded的版本与构建镜像是一一对应的，并不是一个容器可以实现所有openEuler Embedded版本的构建，这其中的原因是各个版本的内核不同，有可能引出的c库版本不一致，因此编译链也会不同，同时构建工具也会因各个版本的构建而有所不同，因此对于openEuler Embedded的构建容器会与版本一一对应。
 
 对构建容器镜像的更新按以下逻辑规则进行：
 

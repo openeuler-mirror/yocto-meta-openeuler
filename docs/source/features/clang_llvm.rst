@@ -76,7 +76,7 @@ meta-clang层中主要起作用的是clang.bbclass文件，该文件用来控制
 
 2. 构建环境
 
-   参考 :ref:`openeuler_embedded_oebuild` 初始化容器环境，生成配置文件时使用如下命令：
+   参考 :ref:`oebuild_install` 初始化容器环境，生成配置文件时使用如下命令：
    
    .. code-block:: console
 

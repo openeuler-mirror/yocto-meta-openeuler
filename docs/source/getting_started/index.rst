@@ -21,7 +21,7 @@ openEuler Embedded采用yocto构建，但通过 `oebuild <https://gitee.com/open
 
 .. note::
 
-   - | 当前 **仅支持在x86_64位的Linux环境** 下使用 oebuild 进行构建，且需在 **普通用户** 下进行 oebuild 的安装运行。更多关于 oebuild 的介绍请参阅 :ref:`oebuild 介绍 <openeuler_embedded_oebuild>` 章节。
+   - | 当前 **仅支持在x86_64位的Linux环境** 下使用 oebuild 进行构建，且需在 **普通用户** 下进行 oebuild 的安装运行。更多关于 oebuild 的介绍请参阅 :ref:`oebuild 介绍 <oebuild_install>` 章节。
 
    - openEuler Embedded 的 CI 会归档最新的构建镜像。若希望快速获取可用的镜像，请访问 `dailybuild <http://121.36.84.172/dailybuild/openEuler-Mainline/>`_ ，在 ``dailybuild/openEuler-Mainline/openeuler-xxxx-xx-xx/embedded_img`` 中可以下载镜像。
 

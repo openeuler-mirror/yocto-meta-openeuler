@@ -102,7 +102,7 @@ MANIFEST_DIR设置位置
 ''''''''''''''''''
 
 封闭式环境下进行基于基线构建相对比较复杂，openEuler
-Embedded的构建以构建工具oebuild为主，封闭式环境的构建需要事先准备源码，而oebuild工具有一个命令manifest，该命令可以以某个manifest.yaml为基准将依赖的代码仓还原到相应的版本，然后在执行 ``oebuild bitbake`` 之前屏蔽layer层更新就可以在封闭环境下进行构建了，详情请参照 :ref:`openeuler_embedded_oebuild` 中manifest命令说明。
+Embedded的构建以构建工具oebuild为主，封闭式环境的构建需要事先准备源码，而oebuild工具有一个命令manifest，该命令可以以某个manifest.yaml为基准将依赖的代码仓还原到相应的版本，然后在执行 ``oebuild bitbake`` 之前屏蔽layer层更新就可以在封闭环境下进行构建了，详情请参照 :ref:`oebuild_install` 中manifest命令说明。
 
 ``oebuild manifest`` 还原源码教程：
 

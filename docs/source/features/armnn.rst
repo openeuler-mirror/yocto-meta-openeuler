@@ -45,7 +45,7 @@ ArmNN软件兼容 yocto-meta-openeuler 上做了很多准备工作，如 tensorf
       attr \
       ...
 
-  接下来按照官方 :ref:`openeuler_embedded_oebuild` 指导构建使用即可。
+  接下来按照官方 :ref:`oebuild_install` 指导构建使用即可。
 
 **步骤2**
 

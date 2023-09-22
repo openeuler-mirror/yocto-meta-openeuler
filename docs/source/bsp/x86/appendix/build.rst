@@ -5,7 +5,7 @@ openEuler Embedded x86-64镜像构建
 
 本章主要介绍openEuler Embedded中x86-64镜像的构建、安装及启动方法。
 
-1. 根据 :ref:`oebuild快速构建 <openeuler_embedded_oebuild>` ，初始化oebuild工作目录；
+1. 根据 :ref:`oebuild快速构建 <oebuild_install>` ，初始化oebuild工作目录；
 
    .. code-block:: shell
 
