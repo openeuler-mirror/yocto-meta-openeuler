@@ -95,7 +95,7 @@ class TitleLength(LineRule):
     '''
     The maximum length of the title should not exceed 80 characters when not revert.
     The maximum length of the title should not exceed 102 characters when revert.
-    Subject contains at least 3 words.
+    Subject contains at least 2 words.
     '''
     name = "title-length"
     id = "UT1"
@@ -117,8 +117,8 @@ class TitleLength(LineRule):
         #The subject contains at least 3 words.
         if line.find(": ") != -1:
             subject = line[line.find(": ") + 2 : ].strip()
-            if len(subject) != 0 and len(subject.split()) < 3:
-                result.append(RuleViolation(self.id, "Subject contains at least 3 words.", line))
+            if len(subject) != 0 and len(subject.split()) < 2:
+                result.append(RuleViolation(self.id, "Subject contains at least 2 words.", line))
         return result
 
 class TitleForm(LineRule):
@@ -150,7 +150,7 @@ class TitleForm(LineRule):
             if not re.match('.*[^?:!.,;]$', subject.strip()) :
                 result.append(RuleViolation(self.id, "Title has trailing punctuation", line))
             if area.startswith("revert"):
-                if not re.search(r'[a-z0-9]{12}\(\S.*(:\s)[A-Z]+.*[^?:!.,;]\)$', subject.strip()):
+                if not re.search(r'[a-z0-9]{12}\(\S.*(:\s)[A-Za-z0-9]+.*[^?:!.,;]\)$', subject.strip()):
                     message = '''The from of title in revert commit is ====> revert: A(B)||A is the first 12 characters of SHA-1 in the fixed commit||B is the title in the fixed commit.'''
                     result.append(RuleViolation(self.id, message, line))
         return result
