@@ -1036,6 +1036,114 @@ hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，�
 
 编译过程和结果遵循yocto构建策略，日志和生成物参考yocto bb文件和默认工作目录。
 
+新版本软总线使用指导
+**************
+在新版本软总线中，使用了binder作为IPC底层驱动。在树莓派静默无业务场景下，资源占用由原来的CPU单核80%降低到1%，并且为支持上层的分布式数据模块的拓展打下了基础。此次在嵌入式23.09版本中，利用了新支持的isula特性，制作了预装软总线容器镜像，可以在嵌入式环境中通过几行命令就完成软总线的以及其复杂依赖的安装部署，并与嵌入式、服务器设备通信测试。
+
+.. note::
+
+    * 由于底层通信机制不同，只支持新版本之间的软总线相互通信，暂不支持跨版本通信。
+
+    * 本次使用的容器基于openEuler-22.03-LTS-SP2边缘服务器版本镜像制作。
+
+    * 当前版本中只支持使用树莓派设备
+
+**宿主机环境准备**
+
+以下操作均在宿主机执行
+
+1.使用对isula支持较完善的systemd嵌入式树莓派镜像烧录
+
+.. code-block:: console
+
+  http://121.36.84.172/dailybuild/EBS-openEuler-23.09/openeuler-2023-09-21-14-42-10/embedded_img/aarch64/raspberrypi4-64-systemd/openeuler-image-raspberrypi4-64-20230921165629.rootfs.rpi-sdimg
+
+参考:
+
+ `嵌入式设备网络配置 <https://openeuler.gitee.io/yocto-meta-openeuler/master/linux/network/network_config.html>`_
+
+ `树莓派SD卡烧录指导 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E5%88%B7%E5%86%99%E9%95%9C%E5%83%8F.md#%E5%88%B7%E5%86%99-sd-%E5%8D%A1>`_
+
+
+2.挂载树莓派嵌入式镜像自带的binder驱动
+
+.. code-block:: console
+
+  mkdir /dev/binderfs
+  mount -t binder binder /dev/binderfs
+
+
+3.由于需要使用binder能力，关闭selinux
+
+.. code-block:: console
+
+  setenforce 0
+
+4.启动isulad服务后台运行
+
+.. code-block:: console
+
+  isulad &
+
+5.下载软总线镜像
+
+.. code-block:: console
+
+  cd /home; wget http://121.36.84.172/dailybuild/EBS-openEuler-23.09/openeuler-2023-09-22-11-46-02/embedded_img/dsoftbus_isula_image/softbus.xz
+
+6.使用isula加载软总线镜像
+
+.. code-block:: console
+
+  isula import /home/softbus.xz softbus
+
+7.查看加载的镜像ID
+
+.. code-block:: console
+
+  isula images
+
+8.参考查询到的IMAGE ID，以host网络、特权模式启动并进入软总线容器，映射binder路径及软总线端口
+
+.. code-block:: console
+
+  isula run  -it  --privileged --net=host --name=softbus  -v /dev/binderfs/binder:/dev/binder  -p 5684:5684/udp 2edfcbc18543  bash
+
+**容器中启动并测试软总线**
+
+以下操作均在宿主机执行
+
+1.在容器中写SN号，注意此SN号是该设备标识，需要与其他设备不一致，建议使用本机IP
+
+.. code-block:: console
+
+  echo  192.168.8.115  > /etc/SN
+
+2.启动软总线
+
+.. code-block:: console
+
+  /system/bin/start_services.sh all
+
+3.启动容器内预制的客户端demo用于测试，客户端也可以参考本文应用示例编写
+
+.. code-block:: console
+
+  /system/bin/softbus_client
+
+4.client启动成功打开所有session连接
+
+.. code-block:: console
+
+  openA
+
+5.发送消息给所有session
+
+.. code-block:: console
+
+  sendA "hello world"
+
+6.在另一台设备中重复以上操作，若在看到对端client收到了hello world字符串，便说明设备间软总线通信OK
 
 限制约束
 **************
