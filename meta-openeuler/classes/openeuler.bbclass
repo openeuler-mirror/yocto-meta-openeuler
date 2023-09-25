@@ -200,6 +200,7 @@ def init_repo_dir(repo_dir):
     import git
 
     repo = git.Repo.init(repo_dir)
+
     with repo.config_writer() as wr:
         wr.set_value('http', 'sslverify', 'false').release()
     return repo
@@ -222,8 +223,13 @@ def download_repo(repo_dir, repo_url ,version = None):
     if remote is None:
         remote_name = "upstream"
         remote = git.Remote.add(repo = repo, name = remote_name, url = repo_url)
-    
-    remote.fetch(version, depth=1)
+
+    try:
+        repo.commit(version)
+    except:
+        bb.debug(1, 'commit does not exist, shallow fetch: ' + version)
+        remote.fetch(version, depth=1)
+
     # if repo is modified, restore it
     if repo.is_dirty():
         repo.git.checkout(".")
