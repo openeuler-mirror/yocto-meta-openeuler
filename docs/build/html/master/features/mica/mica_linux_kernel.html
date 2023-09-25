@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>基于Linux remoteproc &amp; RPMsg框架的混合部署实现 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
+  <title>基于 RemoteProc &amp; RPMsg 框架的混合部署实现 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
@@ -20,8 +20,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="外设分区管理" href="../lopper_devicetree.html" />
-    <link rel="prev" title="基于openAMP的混合部署实现" href="mica_openamp.html" /> 
+    <link rel="next" title="基于 Jailhouse 的混合部署实现" href="mica_jailhouse.html" />
+    <link rel="prev" title="基于 OpenAMP 的混合部署实现" href="mica_openamp.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,15 +50,18 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">关键特性</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../software_package_description.html">当前所支持的软件包</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html">混合关键性系统部署</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">混合关键性系统(MICA)</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="mica.html">混合关键性系统简介</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mica_openamp.html">基于openAMP的混合部署实现</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">基于Linux remoteproc &amp; RPMsg框架的混合部署实现</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id1">使用方法</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mica_openamp.html">基于 OpenAMP 的混合部署实现</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">基于 RemoteProc &amp; RPMsg 框架的混合部署实现</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">构建说明</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arm64-qemu">如何在ARM64 QEMU上运行</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#client-os">client OS端的配置</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#linux">Linux端驱动的工作内容</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="mica_jailhouse.html">基于 Jailhouse 的混合部署实现</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mica_build.html">MCS 镜像构建指导</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../lopper_devicetree.html">外设分区管理</a></li>
@@ -105,8 +108,8 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../index.html">关键特性</a> &raquo;</li>
-          <li><a href="index.html">混合关键性系统部署</a> &raquo;</li>
-      <li>基于Linux remoteproc &amp; RPMsg框架的混合部署实现</li>
+          <li><a href="index.html">混合关键性系统(MICA)</a> &raquo;</li>
+      <li>基于 RemoteProc &amp; RPMsg 框架的混合部署实现</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -115,129 +118,89 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="linux-remoteproc-rpmsg">
-<span id="mica-linux-kernel"></span><h1>基于Linux remoteproc &amp; RPMsg框架的混合部署实现<a class="headerlink" href="#linux-remoteproc-rpmsg" title="Permalink to this headline">¶</a></h1>
+  <section id="remoteproc-rpmsg">
+<h1>基于 RemoteProc &amp; RPMsg 框架的混合部署实现<a class="headerlink" href="#remoteproc-rpmsg" title="Permalink to this headline">¶</a></h1>
+<p>openEuler Embedded 当前支持通过 Linux 的 RemoteProc 和 RPMsg 框架实现混合部署，能够在 Linux 上启动 Client OS，允许两端相互通信。</p>
+<hr class="docutils" />
 <section id="id1">
-<h2>使用方法<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>目前暂时仅支持在QEMU中的aarch64架构下实现与client OS的混合部署。我们可以通过oebuild生成支持混合部署的Linux内核和client OS镜像。</p>
+<h2>构建说明<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>目前仅支持 <code class="docutils literal notranslate"><span class="pre">arm64(aarch64)</span> <span class="pre">qemu</span></code>，参考 <a class="reference internal" href="mica_build.html#mcs-build"><span class="std std-ref">openEuler Embedded MCS镜像构建指导</span></a>。</p>
+</div>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="arm64-qemu">
+<h2>如何在ARM64 QEMU上运行<a class="headerlink" href="#arm64-qemu" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li><p>生成kernel和rootfs</p></li>
+<li><p>制作 dtb</p></li>
 </ol>
 <blockquote>
-<div><p>首先，在oebuild目录下，输入命令<code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">generate</span> <span class="pre">-f</span> <span class="pre">openeuler-mcs</span> <span class="pre">-d</span> <span class="pre">[directory-name]</span></code> 。
-生成了构建目录以后，接着运行<code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">bitbake</span></code> ，oebuild会启动一个构建容器。进入容器中，运行<code class="docutils literal notranslate"><span class="pre">bitbake</span> <span class="pre">openeuler-image-mcs</span></code> 生成Linux内核镜像和rootfs。</p>
+<div><p>部署 Client OS 需要在 Linux 的设备树中添加 <code class="docutils literal notranslate"><span class="pre">mcs-remoteproc</span></code> 设备节点，为 Client OS 预留出必要的保留内存。具体的节点配置在下文 <strong>Linux端驱动的工作内容</strong> 会进行详细介绍。
+当前，可以通过 mcs 仓库提供的 <a class="reference external" href="https://gitee.com/openeuler/mcs/blob/master/tools/create_dtb.sh">create_dtb.sh</a> 脚本生成对应的 dtb：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>create a dtb <span class="k">for</span> qemu_cortex_a53
+<span class="gp">$ </span>./create_dtb.sh qemu-a53
+</pre></div>
+</div>
+<p>成功执行后，会在当前目录下生成 <code class="docutils literal notranslate"><span class="pre">qemu.dtb</span></code> 文件，对应 QEMU 配置为：<cite>2G RAM, 4 cores</cite>。</p>
 </div></blockquote>
 <ol class="arabic simple" start="2">
-<li><p>制作一份设备树文件</p></li>
+<li><p>启动 QEMU</p></li>
 </ol>
 <blockquote>
-<div><p>首先，我们需要生成一份基于QEMU支持的硬件架构的设备树，输入如下命令，可以获得基于GICv3、1G RAM、4核Cortex-A57的硬件架构的设备树：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">qemu</span><span class="o">-</span><span class="n">system</span><span class="o">-</span><span class="n">aarch64</span> <span class="o">-</span><span class="n">M</span> <span class="n">virt</span><span class="p">,</span><span class="n">gic</span><span class="o">-</span><span class="n">version</span><span class="o">=</span><span class="mi">3</span> <span class="o">-</span><span class="n">m</span> <span class="mi">1</span><span class="n">G</span> <span class="o">-</span><span class="n">cpu</span> <span class="n">cortex</span><span class="o">-</span><span class="n">a57</span> <span class="o">-</span><span class="n">nographic</span> <span class="o">-</span><span class="n">smp</span> <span class="mi">4</span> <span class="o">-</span><span class="n">M</span> <span class="n">dumpdtb</span><span class="o">=</span><span class="n">qemu</span><span class="o">.</span><span class="n">dtb</span>
-</pre></div>
+<div><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>下文的QEMU启动命令默认使能 <code class="docutils literal notranslate"><span class="pre">virtio-net</span></code>，请先阅读 <a class="reference internal" href="../../develop_help/qemu/qemu_start.html#qemu-enable-net"><span class="std std-ref">QEMU 使用指导</span></a> 了解如何开启网络。</p>
 </div>
-<p>dtb是设备树的二进制文件，我们需要将其转换为可读的源代码文件：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dtc</span> <span class="o">-</span><span class="n">I</span> <span class="n">dtb</span> <span class="o">-</span><span class="n">O</span> <span class="n">dts</span> <span class="o">-</span><span class="n">o</span> <span class="n">qemu</span><span class="o">.</span><span class="n">dts</span> <span class="n">qemu</span><span class="o">.</span><span class="n">dtb</span>
-</pre></div>
-</div>
-<p>接下来，在已有的设备树文件中的一层结构下添加保留内存节点和remoteproc实例的节点：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">reserved</span><span class="o">-</span><span class="n">memory</span> <span class="p">{</span>
-  <span class="c1">#address-cells = &lt;0x02&gt;;</span>
-  <span class="c1">#size-cells = &lt;0x02&gt;;</span>
-  <span class="n">ranges</span><span class="p">;</span>
-
-  <span class="o">//</span> <span class="n">可执行文件存放的内存区域</span>
-  <span class="n">client_os_reserved</span><span class="p">:</span> <span class="n">client_os_reserved</span><span class="o">@</span><span class="mi">7</span><span class="n">a000000</span> <span class="p">{</span>
-    <span class="n">compatible</span> <span class="o">=</span> <span class="s2">&quot;mcs_mem&quot;</span><span class="p">;</span>
-    <span class="n">reg</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mh">0x00</span> <span class="mh">0x7a000000</span> <span class="mh">0x00</span> <span class="mh">0x4000000</span><span class="o">&gt;</span><span class="p">;</span>
-    <span class="n">no</span><span class="o">-</span><span class="nb">map</span><span class="p">;</span>
-  <span class="p">};</span>
-
-  <span class="o">//</span> <span class="n">共享内存区域</span>
-  <span class="n">client_os_dma_memory_region</span><span class="p">:</span> <span class="n">client_os</span><span class="o">-</span><span class="n">dma</span><span class="o">-</span><span class="n">memory</span><span class="o">@</span><span class="mi">70000000</span> <span class="p">{</span>
-    <span class="n">compatible</span> <span class="o">=</span> <span class="s2">&quot;shared-dma-pool&quot;</span><span class="p">;</span>
-    <span class="n">reg</span> <span class="o">=</span> <span class="o">&lt;</span><span class="mh">0x00</span> <span class="mh">0x70000000</span> <span class="mh">0x00</span> <span class="mh">0x100000</span><span class="o">&gt;</span><span class="p">;</span>
-    <span class="n">no</span><span class="o">-</span><span class="nb">map</span><span class="p">;</span>
-  <span class="p">};</span>
-<span class="p">};</span>
-
-<span class="n">rproc_demo</span> <span class="p">{</span>
-  <span class="n">compatible</span> <span class="o">=</span> <span class="s2">&quot;oe,mcs_remoteproc&quot;</span><span class="p">;</span>
-  <span class="n">memory</span><span class="o">-</span><span class="n">region</span> <span class="o">=</span> <span class="o">&lt;&amp;</span><span class="n">client_os_dma_memory_region</span><span class="o">&gt;</span><span class="p">,</span>
-  <span class="o">&lt;&amp;</span><span class="n">client_os_reserved</span><span class="o">&gt;</span><span class="p">;</span>
-<span class="p">};</span>
-</pre></div>
-</div>
-<p>将修改后的dts文件重新生成dtb文件：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dtc</span> <span class="o">-</span><span class="n">I</span> <span class="n">dts</span> <span class="o">-</span><span class="n">O</span> <span class="n">dtb</span> <span class="o">-</span><span class="n">o</span> <span class="n">qemu</span><span class="o">.</span><span class="n">dtb</span> <span class="n">qemu</span><span class="o">.</span><span class="n">dts</span>
+<p>使用生成出来的 <code class="docutils literal notranslate"><span class="pre">qemu.dtb</span></code>，按照以下命令启动 QEMU，注意 <cite>-m</cite> 和 <cite>-smp</cite> 要与 dtb 的配置(2G RAM, 4 cores)保持一致，否则会启动失败：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo qemu-system-aarch64 -M virt,gic-version<span class="o">=</span><span class="m">3</span> -cpu cortex-a53 -nographic <span class="se">\</span>
+    -device virtio-net-device,netdev<span class="o">=</span>tap0 <span class="se">\</span>
+    -netdev tap,id<span class="o">=</span>tap0,script<span class="o">=</span>/etc/qemu-ifup <span class="se">\</span>
+    -m 2G -smp <span class="m">4</span> <span class="se">\</span>
+    -kernel zImage <span class="se">\</span>
+    -initrd openeuler-image-*.cpio.gz <span class="se">\</span>
+    -dtb qemu.dtb
 </pre></div>
 </div>
 </div></blockquote>
 <ol class="arabic simple" start="3">
-<li><p>使用QEMU启动系统</p></li>
+<li><p>部署 Client OS</p></li>
 </ol>
 <blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sudo</span> <span class="n">qemu</span><span class="o">-</span><span class="n">system</span><span class="o">-</span><span class="n">aarch64</span> <span class="o">-</span><span class="n">M</span> <span class="n">virt</span><span class="p">,</span><span class="n">gic</span><span class="o">-</span><span class="n">version</span><span class="o">=</span><span class="mi">3</span> <span class="o">-</span><span class="n">m</span> <span class="mi">1</span><span class="n">G</span> <span class="o">-</span><span class="n">cpu</span> <span class="n">cortex</span><span class="o">-</span><span class="n">a57</span> <span class="o">-</span><span class="n">nographic</span> \
-<span class="o">-</span><span class="n">append</span> <span class="s1">&#39;maxcpus=3&#39;</span> <span class="o">-</span><span class="n">smp</span> <span class="mi">4</span> <span class="o">-</span><span class="n">kernel</span> <span class="n">zImage</span> <span class="o">-</span><span class="n">initrd</span> <span class="n">openeuler</span><span class="o">-</span><span class="n">image</span><span class="o">.</span><span class="n">cpio</span><span class="o">.</span><span class="n">gz</span> <span class="o">-</span><span class="n">dtb</span> <span class="n">qemu_mcs</span><span class="o">.</span><span class="n">dtb</span> \
-<span class="o">-</span><span class="n">device</span> <span class="n">virtio</span><span class="o">-</span><span class="n">net</span><span class="o">-</span><span class="n">device</span><span class="p">,</span><span class="n">netdev</span><span class="o">=</span><span class="n">tap0</span> <span class="o">-</span><span class="n">netdev</span> <span class="n">tap</span><span class="p">,</span><span class="nb">id</span><span class="o">=</span><span class="n">tap0</span><span class="p">,</span><span class="n">script</span><span class="o">=./</span><span class="n">qemu</span><span class="o">-</span><span class="n">ifup</span>
+<div><p>使用 <code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">start</span> <span class="pre">{</span> <span class="pre">CLIENT</span> <span class="pre">}</span></code> 启动 Client OS，目前在 MCS 镜像中安装了可用的 <code class="docutils literal notranslate"><span class="pre">qemu-zephyr-rproc.elf</span></code>：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica start qemu-zephyr-rproc.elf
+<span class="go">Starting qemu-zephyr-rproc.elf on CPU3</span>
+<span class="go">Please open /dev/ttyRPMSG0 to talk with client OS</span>
 </pre></div>
 </div>
 </div></blockquote>
-<ol class="arabic" start="4">
-<li><p>安装内核驱动</p>
-<p>进入QEMU中的Linux，通过命令行输入<code class="docutils literal notranslate"><span class="pre">modprobe</span> <span class="pre">mcs_remoteproc</span></code> 命令安装内核驱动mcs_remoteproc.ko。</p>
-</li>
-<li><p>配置remoteproc实例</p></li>
+<ol class="arabic simple" start="4">
+<li><p>打开 Client OS 的 shell</p></li>
 </ol>
 <blockquote>
-<div><p>此时，我们已经有了一个remoteproc实例，并且它的char device的接口位于
-<code class="docutils literal notranslate"><span class="pre">/sys/class/remoteproc/</span></code> 目录下面，名称为 <code class="docutils literal notranslate"><span class="pre">remoteproc[X]</span></code> ，X是数字。
-此时，我们需要指定remoteproc实例运行的固件名称，
-然后remoteproc框架会默认从<code class="docutils literal notranslate"><span class="pre">/lib/firmware/</span></code> 目录下寻找指定名称的固件。
-指定firmware名称的命令是：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="p">[</span><span class="n">firmware</span> <span class="n">name</span><span class="p">]</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">class</span><span class="o">/</span><span class="n">remoteproc</span><span class="o">/</span><span class="n">remoteproc</span><span class="p">[</span><span class="n">X</span><span class="p">]</span><span class="o">/</span><span class="n">firmware</span>
-<span class="c1"># the following bash command is an example</span>
-<span class="n">echo</span> <span class="n">client_os</span><span class="o">-</span><span class="n">image</span><span class="o">.</span><span class="n">elf</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">class</span><span class="o">/</span><span class="n">remoteproc</span><span class="o">/</span><span class="n">remoteproc0</span><span class="o">/</span><span class="n">firmware</span>
+<div><p>Linux 侧可以通过 screen 可以接入 Client OS 的 shell：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>通过 SSH 登录 QEMU
+<span class="gp">$ </span>ssh root@192.168.10.8
+
+<span class="go">... ...</span>
+
+<span class="gp"># </span>打开 Client OS 的 shell
+<span class="gp">qemu-aarch64:~$ </span>screen /dev/ttyRPMSG0
+
+<span class="go">... ...</span>
+
+<span class="gp">uart:~$ </span>kernel uptime
+<span class="go">Uptime: 8963940 ms</span>
+<span class="gp">uart:~$ </span>kernel version
+<span class="go">Zephyr version 3.2.0</span>
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>当前框架下要求client OS的可执行文件必须为elf格式的文件。</p>
-</div>
-<p>当然，我们也可以指定存放firmware的路径（不包括firmware自己的文件名），
-如下命令可以增加一个查找固件的路径：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="p">[</span><span class="n">firmware</span> <span class="n">path</span><span class="p">]</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">module</span><span class="o">/</span><span class="n">firmware_class</span><span class="o">/</span><span class="n">parameters</span><span class="o">/</span><span class="n">path</span>
-<span class="c1"># the following bash command is an example, /firmware is a directory</span>
-<span class="c1"># holding OS firmware</span>
-<span class="n">echo</span> <span class="o">/</span><span class="n">firmware</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">module</span><span class="o">/</span><span class="n">firmware_class</span><span class="o">/</span><span class="n">parameters</span><span class="o">/</span><span class="n">path</span>
-</pre></div>
-</div>
-</div></blockquote>
-<ol class="arabic simple" start="6">
-<li><p>现在，一切都准备就绪了，我们可以启动这个remoteproc实例：</p></li>
-</ol>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="n">start</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">class</span><span class="o">/</span><span class="n">remoteproc</span><span class="o">/</span><span class="n">remoteproc</span><span class="p">[</span><span class="n">X</span><span class="p">]</span><span class="o">/</span><span class="n">state</span>
-</pre></div>
-</div>
-</div></blockquote>
-<ol class="arabic simple" start="7">
-<li><p>当remoteproc实例启动后，Linux中的<code class="docutils literal notranslate"><span class="pre">\dev</span></code> 目录下会出现名为<code class="docutils literal notranslate"><span class="pre">ttyRPMsg[X]</span></code> 的RPMsg设备的tty接口，X是数字。
-我们只需要使用screen命令打开这个设备就可以与client OS通过命令行进行交互：</p></li>
-</ol>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">screen</span> <span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">ttyRPMsg</span><span class="p">[</span><span class="n">X</span><span class="p">]</span>
-</pre></div>
-</div>
-</div></blockquote>
-<ol class="arabic simple" start="8">
-<li><p>如果我们想停止remoteproc实例，可以使用如下命令：</p></li>
-</ol>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">echo</span> <span class="n">stop</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">sys</span><span class="o">/</span><span class="n">class</span><span class="o">/</span><span class="n">remoteproc</span><span class="o">/</span><span class="n">remoteproc</span><span class="p">[</span><span class="n">X</span><span class="p">]</span><span class="o">/</span><span class="n">state</span>
-</pre></div>
-</div>
+<p>可以通过 <code class="docutils literal notranslate"><span class="pre">Ctrl-a</span> <span class="pre">k</span></code> 或 <code class="docutils literal notranslate"><span class="pre">Ctrl-a</span> <span class="pre">Ctrl-k</span></code> 组合键退出shell，参考 <a class="reference external" href="https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS">screen(1) — Linux manual page</a> 。</p>
 </div></blockquote>
 </section>
+<hr class="docutils" />
 <section id="client-os">
 <h2>client OS端的配置<a class="headerlink" href="#client-os" title="Permalink to this headline">¶</a></h2>
 <p>要想实现混合部署，我们需要依赖于Linux的remoteproc框架和RPMsg协议。remoteproc框架实现了对远程处理器的生命周期控制，
@@ -474,8 +437,8 @@ table中的carveout，找到已经做了映射的合适区间的内存区域，�
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="mica_openamp.html" class="btn btn-neutral float-left" title="基于openAMP的混合部署实现" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../lopper_devicetree.html" class="btn btn-neutral float-right" title="外设分区管理" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="mica_openamp.html" class="btn btn-neutral float-left" title="基于 OpenAMP 的混合部署实现" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mica_jailhouse.html" class="btn btn-neutral float-right" title="基于 Jailhouse 的混合部署实现" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

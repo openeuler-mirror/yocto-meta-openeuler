@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>基于openAMP的混合部署实现 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
+  <title>基于 OpenAMP 的混合部署实现 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
@@ -20,7 +20,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="基于Linux remoteproc &amp; RPMsg框架的混合部署实现" href="mica_linux_kernel.html" />
+    <link rel="next" title="基于 RemoteProc &amp; RPMsg 框架的混合部署实现" href="mica_linux_kernel.html" />
     <link rel="prev" title="混合关键性系统简介" href="mica.html" /> 
 </head>
 
@@ -50,14 +50,19 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">关键特性</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../software_package_description.html">当前所支持的软件包</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html">混合关键性系统部署</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">混合关键性系统(MICA)</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="mica.html">混合关键性系统简介</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">基于openAMP的混合部署实现</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">基于 OpenAMP 的混合部署实现</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id1">构建指南</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id2">使用方法</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#arm64-qemu">在ARM64 QEMU上运行</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#b">在树莓派4B上运行</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#hi3093">在Hi3093上运行</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ok3568">在ok3568上运行</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="mica_linux_kernel.html">基于Linux remoteproc &amp; RPMsg框架的混合部署实现</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mica_linux_kernel.html">基于 RemoteProc &amp; RPMsg 框架的混合部署实现</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mica_jailhouse.html">基于 Jailhouse 的混合部署实现</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mica_build.html">MCS 镜像构建指导</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../lopper_devicetree.html">外设分区管理</a></li>
@@ -104,8 +109,8 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../index.html">关键特性</a> &raquo;</li>
-          <li><a href="index.html">混合关键性系统部署</a> &raquo;</li>
-      <li>基于openAMP的混合部署实现</li>
+          <li><a href="index.html">混合关键性系统(MICA)</a> &raquo;</li>
+      <li>基于 OpenAMP 的混合部署实现</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -115,207 +120,221 @@
            <div itemprop="articleBody">
              
   <section id="openamp">
-<span id="mica-openamp"></span><h1>基于openAMP的混合部署实现<a class="headerlink" href="#openamp" title="Permalink to this headline">¶</a></h1>
+<h1>基于 OpenAMP 的混合部署实现<a class="headerlink" href="#openamp" title="Permalink to this headline">¶</a></h1>
 <section id="id1">
 <h2>构建指南<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>openEuler Embedded 不仅支持混合关键性系统特性的单独构建，还实现了集成构建，能够使用同一套工具链一键式构建出包含linux, zephyr的部署镜像。</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>单独构建混合关键系统特性的方法请参考 <a class="reference external" href="https://gitee.com/openeuler/mcs#%E6%9E%84%E5%BB%BA%E5%AE%89%E8%A3%85%E6%8C%87%E5%AF%BC">mcs 构建安装指导</a></p>
+<blockquote>
+<div><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>目前支持 qemu-arm64, 树莓派4B, Hi3093, ok3568, x86工控机。推荐使用 oebuild 快速构建包含混合部署功能的 MCS 镜像，参考 <a class="reference internal" href="mica_build.html#mcs-build"><span class="std std-ref">openEuler Embedded MCS镜像构建指导</span></a>。</p>
+<p>若需要单独构建混合部署的组件，请参考 <a class="reference external" href="https://gitee.com/openeuler/mcs#%E6%9E%84%E5%BB%BA%E5%AE%89%E8%A3%85%E6%8C%87%E5%AF%BC">mcs 构建安装指导</a> 。
+注意，x86仅支持 UniProton，需要切换到 <a class="reference external" href="https://gitee.com/openeuler/mcs/tree/uniproton_dev/">uniproton_dev 分支</a> 。</p>
 </div>
-<p><strong>集成构建指导</strong></p>
-<ol class="arabic">
-<li><p>根据 <a class="reference internal" href="../../oebuild/install/index.html#oebuild-install"><span class="std std-ref">oebuild快速构建</span></a> ，初始化oebuild工作目录；</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>oebuild init &lt;directory&gt;
-<span class="nb">cd</span> &lt;directory&gt;
-oebuild update
-</pre></div>
-</div>
-</li>
-<li><p>下载依赖代码：</p>
-<p>zephyr 的构建包含核心部分和外部 zephyr modules 部分，由于全部代码较大，需要从 <a class="reference external" href="https://gitee.com/src-openeuler/zephyr">src-openEuler/zephyr</a> 中的百度网盘路径下载 zephyr_project_v3.2.0.tar.gz，并放在构建代码目录下的 zephyrproject 子目录中（对应oebuild工作目录的&lt;workspace&gt;/src/zephyrproject）</p>
-<p>python3-pykwalify 在 openeuler 社区尚无相应的源码包，需要从上游下载 <a class="reference external" href="https://pypi.org/project/pykwalify/1.8.0/#files">Download pykwalify-1.8.0.tar.gz</a> ，并放在构建代码目录下的 python3-pykwalify 子目录中（对应oebuild工作目录的&lt;workspace&gt;/src/python3-pykwalify）</p>
-</li>
-<li><p>进入oebuild工作目录，创建对应的编译配置文件，<strong>mcs镜像需要添加</strong> <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">openeuler-mcs</span></code>：</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># qemu-arm64</span>
-oebuild generate -p qemu-aarch64 -f openeuler-mcs -d &lt;build_arm64_mcs&gt;
-
-<span class="c1"># RPI4</span>
-oebuild generate -p raspberrypi4-64 -f openeuler-mcs -d &lt;build_rpi_mcs&gt;
-
-<span class="c1"># ok3568</span>
-oebuild generate -p ok3568 -f openeuler-mcs -d &lt;build_ok3568_mcs&gt;
-
-<span class="c1"># hi3093</span>
-oebuild generate -p hi3093 -f openeuler-mcs -d &lt;build_hi3093_mcs&gt;
-</pre></div>
-</div>
-</li>
-<li><p>进入 <code class="docutils literal notranslate"><span class="pre">&lt;build&gt;</span></code> 目录，编译 <code class="docutils literal notranslate"><span class="pre">openeuler-image-mcs</span></code> ：</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>oebuild bitbake openeuler-image-mcs
-</pre></div>
-</div>
-</li>
-</ol>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><strong>注意</strong>：构建 openeuler-image-mcs 需要在 oebuild 初始化时添加 <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">openeuler-mcs</span></code>。</p>
-</div>
+</div></blockquote>
 </section>
-<section id="id2">
-<h2>使用方法<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>目前混合关键性系统（mcs）支持在qemu-aarch64和树莓派上部署运行，部署mcs需要预留出必要的内存、CPU资源，并且还需要bios提供psci支持。</p>
-<dl>
-<dt>1.镜像启动</dt><dd><ul>
-<li><p><strong>对于树莓派:</strong></p>
+<hr class="docutils" />
+<section id="arm64-qemu">
+<h2>在ARM64 QEMU上运行<a class="headerlink" href="#arm64-qemu" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>制作 dtb</p></li>
+</ol>
 <blockquote>
-<div><p>集成构建出来的 openeuler-image-mcs 已经通过 dt-overlay 等方式预留了相关资源，并且默认使用了支持psci的uefi引导固件。因此只需要根据 <a class="reference internal" href="../../bsp/arm64/raspberrypi4/uefi.html#raspberrypi4-uefi-guide"><span class="std std-ref">openeuler-image-uefi启动使用指导</span></a> 进行镜像启动，再部署mcs即可。</p>
+<div><p>部署 Client OS 需要在 Linux 的设备树中添加 <code class="docutils literal notranslate"><span class="pre">mcs-remoteproc</span></code> 设备节点，为 Client OS 预留出必要的保留内存。
+当前，可以通过 mcs 仓库提供的 <a class="reference external" href="https://gitee.com/openeuler/mcs/blob/master/tools/create_dtb.sh">create_dtb.sh</a> 脚本生成对应的 dtb：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>create a dtb <span class="k">for</span> qemu_cortex_a53
+<span class="gp">$ </span>./create_dtb.sh qemu-a53
+</pre></div>
+</div>
+<p>成功执行后，会在当前目录下生成 <code class="docutils literal notranslate"><span class="pre">qemu.dtb</span></code> 文件，对应 QEMU 配置为：<cite>2G RAM, 4 cores</cite>。</p>
 </div></blockquote>
-</li>
-<li><p><strong>对于qemu:</strong></p>
+<ol class="arabic simple" start="2">
+<li><p>启动 QEMU</p></li>
+</ol>
 <blockquote>
-<div><p>需要准备一份dtb文件，dtb文件的制作可参考 <a class="reference external" href="https://gitee.com/openeuler/mcs#%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E">配置dts预留出mcs_mem</a> ，并通过以下命令启动qemu：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>qemu-system-aarch64 -M virt,gic-version<span class="o">=</span><span class="m">3</span> -m 1G -cpu cortex-a57 -nographic <span class="se">\</span>
--append <span class="s1">&#39;maxcpus=3&#39;</span> -smp <span class="m">4</span> <span class="se">\</span>
--kernel zImage <span class="se">\</span>
--initrd *.rootfs.cpio.gz <span class="se">\</span>
--dtb qemu_mcs.dtb
+<div><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>下文的QEMU启动命令默认使能 <code class="docutils literal notranslate"><span class="pre">virtio-net</span></code>，请先阅读 <a class="reference internal" href="../../develop_help/qemu/qemu_start.html#qemu-enable-net"><span class="std std-ref">QEMU 使用指导</span></a> 了解如何开启网络。</p>
+</div>
+<p>使用生成出来的 <code class="docutils literal notranslate"><span class="pre">qemu.dtb</span></code>，按照以下命令启动 QEMU，注意，需要指定 <cite>maxcpus=3</cite> 为 Client OS 预留出 core 3，
+并且 <cite>-m</cite> 和 <cite>-smp</cite> 要与 dtb 的配置(2G RAM, 4 cores)保持一致，否则会启动失败：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo qemu-system-aarch64 -M virt,gic-version<span class="o">=</span><span class="m">3</span> -cpu cortex-a53 -nographic <span class="se">\</span>
+    -device virtio-net-device,netdev<span class="o">=</span>tap0 <span class="se">\</span>
+    -netdev tap,id<span class="o">=</span>tap0,script<span class="o">=</span>/etc/qemu-ifup <span class="se">\</span>
+    -m 2G -smp <span class="m">4</span> <span class="se">\</span>
+    -append <span class="s1">&#39;maxcpus=3&#39;</span> <span class="se">\</span>
+    -kernel zImage <span class="se">\</span>
+    -initrd openeuler-image-*.cpio.gz <span class="se">\</span>
+    -dtb qemu.dtb
 </pre></div>
 </div>
 </div></blockquote>
-</li>
-<li><p><strong>对于ok3568:</strong></p>
+<ol class="arabic simple" start="3">
+<li><p>部署 Client OS</p></li>
+</ol>
 <blockquote>
-<div><p>已经通过条件判断的形式把预留内存加入了设备树，构建出来即可使用。</p>
-</div></blockquote>
-</li>
-<li><p><strong>对于hi3093:</strong></p>
-<blockquote>
-<div><p>hi3093需要在boot以后限制maxcpus=3预留出一个cpu跑uniproton</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>使用在ctrl+b进入uboot，并限制启动的cpu数量
-<span class="go">setenv bootargs &quot;${bootargs} maxcpus=3&quot;</span>
-</pre></div>
-</div>
-</div></blockquote>
-</li>
-</ul>
-</dd>
-<dt>2.部署mcs</dt><dd><ul>
-<li><p><strong>step1: 调整内核打印等级并插入内核模块</strong></p>
-<blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>为了不影响shell的使用，先屏蔽内核打印：
+<div><p>调整内核打印等级并插入内核模块：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>为了不影响shell的使用，先屏蔽内核打印：
 <span class="gp">$ </span><span class="nb">echo</span> <span class="s2">&quot;1 4 1 7&quot;</span> &gt; /proc/sys/kernel/printk
 
 <span class="gp"># </span>插入内核模块
-<span class="gp">$ </span>modprobe mcs_km.ko
-
-<span class="gp"># </span>备注：ok3568与hi3093已经实现了开机自动加载内核模块，无需重复此步骤
+<span class="gp">$ </span>modprobe mcs_km
 </pre></div>
 </div>
-<p>插入内核模块后，可以通过 <cite>cat /proc/iomem</cite> 查看预留出来的 mcs_mem，如：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-aarch64 ~ # cat /proc/iomem</span>
-<span class="go">...</span>
-<span class="go">70000000-7fffffff : reserved</span>
-<span class="go">70000000-7fffffff : mcs_mem</span>
-<span class="go">...</span>
-</pre></div>
-</div>
-<p>若mcs_km.ko插入失败，可以通过dmesg看到对应的失败日志，可能的原因有：1.使用的交叉工具链与内核版本不匹配；2.未预留内存资源；3.使用的bios不支持psci</p>
-</div></blockquote>
-</li>
-<li><p><strong>step2: 运行rpmsg_main程序，启动client os</strong></p>
-<blockquote>
-<div><ul>
-<li><p><strong>qemu-arm64 和 RPI4：</strong></p>
+<p>插入内核模块后，可以通过 <cite>cat /proc/iomem</cite> 查看预留出来的 mcs_mem。
+若 mcs_km.ko 插入失败，可以通过 dmesg 看到对应的失败日志，可能的原因有：1.使用的交叉工具链与内核版本不匹配；2.未预留内存资源</p>
+<p>运行rpmsg_main程序，启动 client os：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>rpmsg_main -c <span class="o">[</span>cpu_id<span class="o">]</span> -t <span class="o">[</span>target_binfile<span class="o">]</span> -a <span class="o">[</span>target_binaddress<span class="o">]</span>
 <span class="go">eg:</span>
-<span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /firmware/zephyr-image.bin -a 0x7a000000
+<span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /lib/firmware/qemu-zephyr-image.bin -a 0x7a000000
 </pre></div>
 </div>
 <p>若rpmsg_main成功运行，会有如下打印：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>rpmsg_main -c <span class="m">3</span> -t /firmware/zephyr-image.bin -a 0x7a000000
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /lib/firmware/qemu-zephyr-image.bin -a 0x7a000000
 <span class="go">...</span>
 <span class="go">start client os</span>
 <span class="go">...</span>
-<span class="go">pls open /dev/pts/1 to talk with client OS</span>
+<span class="go">pls open /dev/pts/0 to talk with client OS</span>
 <span class="go">pty_thread for uart is runnning</span>
 <span class="go">...</span>
 </pre></div>
 </div>
 <p>此时， <strong>按ctrl-c可以通知client os下线并退出rpmsg_main</strong> ，下线后支持重复拉起。
-也可以根据打印提示（ <code class="docutils literal notranslate"><span class="pre">pls</span> <span class="pre">open</span> <span class="pre">/dev/pts/1</span> <span class="pre">to</span> <span class="pre">talk</span> <span class="pre">with</span> <span class="pre">client</span> <span class="pre">OS</span></code> ），
-通过 /dev/pts/1 与 client os 进行 shell 交互，例如：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>新建一个terminal，登录到运行环境
-<span class="gp">$ </span>ssh user@ip
+也可以根据打印提示（ <code class="docutils literal notranslate"><span class="pre">pls</span> <span class="pre">open</span> <span class="pre">/dev/pts/0</span> <span class="pre">to</span> <span class="pre">talk</span> <span class="pre">with</span> <span class="pre">client</span> <span class="pre">OS</span></code> ），
+通过 /dev/pts/0 与 client os 进行 shell 交互，例如：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>通过 SSH 登录 QEMU
+<span class="gp">$ </span>ssh root@192.168.10.8
 
-<span class="gp"># </span>连接pts设备
-<span class="gp">$ </span>screen /dev/pts/1
+<span class="go">... ...</span>
 
-<span class="gp"># </span>敲回车后，可以打开client os的shell，对client os下发命令，例如
-<span class="gp">uart:~$ </span><span class="nb">help</span>
+<span class="gp"># </span>打开 Client OS 的 shell
+<span class="gp">qemu-aarch64:~$ </span>screen /dev/pts/0
+
+<span class="go">... ...</span>
+
 <span class="gp">uart:~$ </span>kernel version
-
-<span class="gp">#</span>在ok3568上拉起rt-thread
-<span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /firmware/rtthread-ok3568.bin -a 0x7a000000
-
-<span class="gp">#</span>在hi3093上拉起uniproton
-<span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /firmware/Uniproton_hi3093.bin -a 0x93000000
+<span class="go">Zephyr version 3.2.0</span>
 </pre></div>
 </div>
-</li>
-<li><p><strong>ok3568 开发板：</strong></p>
-<p>ok3568支持通过mcs拉起 RT-Thread，步骤如下：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>拉起RTT；
-<span class="go">ok3568 ~ # ./rpmsg_main -c 3 -t /firmware/rtthread-ok3568.bin -a 0x7a000000</span>
+<p>可以通过 <code class="docutils literal notranslate"><span class="pre">Ctrl-a</span> <span class="pre">k</span></code> 或 <code class="docutils literal notranslate"><span class="pre">Ctrl-a</span> <span class="pre">Ctrl-k</span></code> 组合键退出shell，参考 <a class="reference external" href="https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS">screen(1) — Linux manual page</a> 。</p>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="b">
+<h2>在树莓派4B上运行<a class="headerlink" href="#b" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>oebuild 构建出来的 MCS 镜像已经通过 dt-overlay 等方式预留了相关资源，并且默认使用了支持 psci 的 uefi 引导固件。
+因此只需要根据 <a class="reference internal" href="../../bsp/arm64/raspberrypi4/uefi.html#raspberrypi4-uefi-guide"><span class="std std-ref">openeuler-image-uefi启动使用指导</span></a> 进行镜像启动，再部署mcs即可，步骤跟QEMU类似：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>调整内核打印等级
+<span class="gp">$ </span><span class="nb">echo</span> <span class="s2">&quot;1 4 1 7&quot;</span> &gt; /proc/sys/kernel/printk
+
+<span class="gp"># </span>插入内核模块
+<span class="gp">$ </span>modprobe mcs_km
+
+<span class="gp"># </span>运行rpmsg_main程序，启动 client os：
+<span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /lib/firmware/rpi4-zephyr-image.bin -a 0x7a000000
+
+<span class="gp"># </span>若rpmsg_main成功运行，会有如下打印：
 <span class="go">...</span>
 <span class="go">start client os</span>
 <span class="go">...</span>
-</pre></div>
-</div>
-<p>ok3568支持通过输入功能编号进行交互、下线、重新拉起:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>输入h查看用法
-<span class="go">h</span>
-<span class="go">please input number:&lt;1-8&gt;</span>
-<span class="go">1. test echo</span>
-<span class="go">2. send matrix</span>
-<span class="go">3. start pty</span>
-<span class="go">4. close pty</span>
-<span class="go">5. shutdown clientOS</span>
-<span class="go">6. start clientOS</span>
-<span class="go">7. test ping</span>
-<span class="go">8. test flood-ping</span>
-<span class="go">9. exit</span>
-</pre></div>
-</div>
-</li>
-<li><p><strong>hi3093 开发板：</strong></p>
-<p>hi3093目前支持 uniproton 的拉起，查看串口输出。</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>拉起 uniproton
-<span class="gp">$ </span>./rpmsg_main -c <span class="m">3</span> -t /firmware/hi3093_ut.bin -a 0x93000000 <span class="p">&amp;</span>
+<span class="go">pls open /dev/pts/0 to talk with client OS</span>
+<span class="go">pty_thread for uart is runnning</span>
+<span class="go">...</span>
 
+<span class="gp"># </span>此时， **按ctrl-c可以通知client os下线并退出rpmsg_main** ，下线后支持重复拉起。
+<span class="gp"># </span>也可以根据打印提示（ <span class="sb">``</span>pls open /dev/pts/0 to talk with client OS<span class="sb">``</span> ），
+<span class="gp"># </span>通过 /dev/pts/0 与 client os 进行 shell 交互，例如：
+
+<span class="gp"># </span>通过 SSH 登录树莓派
+<span class="gp">$ </span>ssh root@192.168.10.8
+
+<span class="go">... ...</span>
+
+<span class="gp"># </span>打开 Client OS 的 shell
+<span class="gp">qemu-aarch64:~$ </span>screen /dev/pts/0
+
+<span class="go">... ...</span>
+
+<span class="gp">uart:~$ </span>kernel version
+<span class="go">Zephyr version 3.2.0</span>
+
+<span class="gp"># </span>可以通过 &lt;Ctrl-a k&gt; 或 &lt;Ctrl-a Ctrl-k&gt; 组合键退出shell，具体请参考 screen 的 manual page
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="hi3093">
+<h2>在Hi3093上运行<a class="headerlink" href="#hi3093" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Hi3093 需要在 uboot 中添加启动参数 <code class="docutils literal notranslate"><span class="pre">maxcpus=3</span></code> 预留出一个 cpu 跑 UniProton：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>使用在ctrl+b进入uboot，限制启动的cpu数量
+<span class="go">setenv bootargs &quot;${bootargs} maxcpus=3&quot;</span>
+</pre></div>
+</div>
+<p>部署mcs的步骤跟QEMU类似，UniProton作为Client OS：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>调整内核打印等级
+<span class="gp">$ </span><span class="nb">echo</span> <span class="s2">&quot;1 4 1 7&quot;</span> &gt; /proc/sys/kernel/printk
+
+<span class="gp"># </span>插入内核模块
+<span class="gp">$ </span>modprobe mcs_km
+
+<span class="gp"># </span>运行rpmsg_main程序，启动 client os：
+<span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /firmware/hi3093_ut.bin -a 0x93000000 <span class="p">&amp;</span>
+
+<span class="gp"># </span>若rpmsg_main成功运行，会有如下打印：
 <span class="go">...</span>
 <span class="go">start client os</span>
 <span class="go">...</span>
 <span class="go">pls open /dev/pts/1 to talk with client OS</span>
 <span class="go">pty_thread for console is runnning</span>
 <span class="go">...</span>
-</pre></div>
-</div>
-<p>此时， 根据打印提示（ <code class="docutils literal notranslate"><span class="pre">pls</span> <span class="pre">open</span> <span class="pre">/dev/pts/1</span> <span class="pre">to</span> <span class="pre">talk</span> <span class="pre">with</span> <span class="pre">client</span> <span class="pre">OS</span></code> ），
-通过 /dev/pts/1 可以与 uniproton 进行交互，例如：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>连接pts设备
-<span class="gp">$ </span>screen /dev/pts/1
+
+<span class="gp"># </span>根据打印提示（ <span class="sb">``</span>pls open /dev/pts/0 to talk with client OS<span class="sb">``</span> ），
+<span class="gp"># </span>通过 /dev/pts/1 查看 UniProton 的串口输出，例如：
+<span class="gp">qemu-aarch64:~$ </span>screen /dev/pts/1
 
 <span class="gp"># </span>敲回车后，可以查看uniproton输出信息
+<span class="gp"># </span>可以通过 &lt;Ctrl-a k&gt; 或 &lt;Ctrl-a Ctrl-k&gt; 组合键退出console，具体请参考 screen 的 manual page
 </pre></div>
 </div>
-</li>
-</ul>
 </div></blockquote>
-</li>
-</ul>
-</dd>
-</dl>
+</section>
+<hr class="docutils" />
+<section id="ok3568">
+<h2>在ok3568上运行<a class="headerlink" href="#ok3568" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>ok3568支持通过mcs拉起 RT-Thread，步骤如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>调整内核打印等级
+<span class="gp">$ </span><span class="nb">echo</span> <span class="s2">&quot;1 4 1 7&quot;</span> &gt; /proc/sys/kernel/printk
+
+<span class="gp"># </span>插入内核模块
+<span class="gp">$ </span>modprobe mcs_km
+
+<span class="gp"># </span>运行rpmsg_main程序，启动 client os：
+<span class="gp">$ </span>rpmsg_main -c <span class="m">3</span> -t /firmware/rtthread-ok3568.bin -a 0x7a000000
+
+<span class="gp"># </span>若rpmsg_main成功运行，会有如下打印：
+<span class="go">...</span>
+<span class="go">start client os</span>
+<span class="go">...</span>
+
+<span class="gp"># </span>ok3568支持通过输入功能编号进行交互、下线、重新拉起:
+<span class="gp"># </span>输入h查看用法
+<span class="go">  h</span>
+<span class="go">  please input number:&lt;1-8&gt;</span>
+<span class="go">  1. test echo</span>
+<span class="go">  2. send matrix</span>
+<span class="go">  3. start pty</span>
+<span class="go">  4. close pty</span>
+<span class="go">  5. shutdown clientOS</span>
+<span class="go">  6. start clientOS</span>
+<span class="go">  7. test ping</span>
+<span class="go">  8. test flood-ping</span>
+<span class="go">  9. exit</span>
+</pre></div>
+</div>
+</div></blockquote>
 </section>
 </section>
 
@@ -324,7 +343,7 @@ oebuild generate -p hi3093 -f openeuler-mcs -d &lt;build_hi3093_mcs&gt;
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="mica.html" class="btn btn-neutral float-left" title="混合关键性系统简介" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="mica_linux_kernel.html" class="btn btn-neutral float-right" title="基于Linux remoteproc &amp; RPMsg框架的混合部署实现" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="mica_linux_kernel.html" class="btn btn-neutral float-right" title="基于 RemoteProc &amp; RPMsg 框架的混合部署实现" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

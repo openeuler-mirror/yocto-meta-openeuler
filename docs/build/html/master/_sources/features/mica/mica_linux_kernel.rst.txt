@@ -1,131 +1,89 @@
-.. _mica_linux_kernel:
+基于 RemoteProc & RPMsg 框架的混合部署实现
+******************************************
 
-基于Linux remoteproc & RPMsg框架的混合部署实现
-##############################################
+openEuler Embedded 当前支持通过 Linux 的 RemoteProc 和 RPMsg 框架实现混合部署，能够在 Linux 上启动 Client OS，允许两端相互通信。
 
-使用方法
-====================================
+____
 
-目前暂时仅支持在QEMU中的aarch64架构下实现与client OS的混合部署。我们可以通过oebuild生成支持混合部署的Linux内核和client OS镜像。
+构建说明
+========
 
-1. 生成kernel和rootfs 
-  
-  首先，在oebuild目录下，输入命令\ ``oebuild generate -f openeuler-mcs -d [directory-name]`` \。
-  生成了构建目录以后，接着运行\ ``oebuild bitbake`` \，oebuild会启动一个构建容器。进入容器中，运行\ ``bitbake openeuler-image-mcs`` \
-  生成Linux内核镜像和rootfs。
+   .. seealso::
 
-2. 制作一份设备树文件
-   
-  首先，我们需要生成一份基于QEMU支持的硬件架构的设备树，输入如下命令，可以获得基于GICv3、1G RAM、4核Cortex-A57的硬件架构的设备树：
+      目前仅支持 ``arm64(aarch64) qemu``，参考 :ref:`openEuler Embedded MCS镜像构建指导 <mcs_build>`。
 
-  .. code-block:: 
+____
 
-    qemu-system-aarch64 -M virt,gic-version=3 -m 1G -cpu cortex-a57 -nographic -smp 4 -M dumpdtb=qemu.dtb
-  
-  dtb是设备树的二进制文件，我们需要将其转换为可读的源代码文件：
+如何在ARM64 QEMU上运行
+======================
 
-  .. code-block:: 
+1. 制作 dtb
 
-    dtc -I dtb -O dts -o qemu.dts qemu.dtb
-  
-  接下来，在已有的设备树文件中的一层结构下添加保留内存节点和remoteproc实例的节点：
+  部署 Client OS 需要在 Linux 的设备树中添加 ``mcs-remoteproc`` 设备节点，为 Client OS 预留出必要的保留内存。具体的节点配置在下文 **Linux端驱动的工作内容** 会进行详细介绍。
+  当前，可以通过 mcs 仓库提供的 `create_dtb.sh <https://gitee.com/openeuler/mcs/blob/master/tools/create_dtb.sh>`_ 脚本生成对应的 dtb：
 
-  .. code-block:: 
+  .. code-block:: console
 
-    reserved-memory {
-      #address-cells = <0x02>;
-      #size-cells = <0x02>;
-      ranges;
+     # create a dtb for qemu_cortex_a53
+     $ ./create_dtb.sh qemu-a53
 
-      // 可执行文件存放的内存区域
-      client_os_reserved: client_os_reserved@7a000000 {
-        compatible = "mcs_mem"; 
-        reg = <0x00 0x7a000000 0x00 0x4000000>;
-        no-map;
-      };
+  成功执行后，会在当前目录下生成 ``qemu.dtb`` 文件，对应 QEMU 配置为：`2G RAM, 4 cores`。
 
-      // 共享内存区域
-      client_os_dma_memory_region: client_os-dma-memory@70000000 {
-        compatible = "shared-dma-pool";
-        reg = <0x00 0x70000000 0x00 0x100000>;
-        no-map;
-      };
-    };
+2. 启动 QEMU
 
-    rproc_demo {
-      compatible = "oe,mcs_remoteproc";
-      memory-region = <&client_os_dma_memory_region>,
-      <&client_os_reserved>;
-    };
+  .. note::
 
-  将修改后的dts文件重新生成dtb文件：
+     下文的QEMU启动命令默认使能 ``virtio-net``，请先阅读 :ref:`QEMU 使用指导 <qemu_enable_net>` 了解如何开启网络。
 
-  .. code-block:: 
+  使用生成出来的 ``qemu.dtb``，按照以下命令启动 QEMU，注意 `-m` 和 `-smp` 要与 dtb 的配置(2G RAM, 4 cores)保持一致，否则会启动失败：
 
-    dtc -I dts -O dtb -o qemu.dtb qemu.dts
+  .. code-block:: console
 
-3. 使用QEMU启动系统
+     $ sudo qemu-system-aarch64 -M virt,gic-version=3 -cpu cortex-a53 -nographic \
+         -device virtio-net-device,netdev=tap0 \
+         -netdev tap,id=tap0,script=/etc/qemu-ifup \
+         -m 2G -smp 4 \
+         -kernel zImage \
+         -initrd openeuler-image-*.cpio.gz \
+         -dtb qemu.dtb
 
-  .. code-block:: 
+3. 部署 Client OS
 
-      sudo qemu-system-aarch64 -M virt,gic-version=3 -m 1G -cpu cortex-a57 -nographic \
-      -append 'maxcpus=3' -smp 4 -kernel zImage -initrd openeuler-image.cpio.gz -dtb qemu_mcs.dtb \
-      -device virtio-net-device,netdev=tap0 -netdev tap,id=tap0,script=./qemu-ifup
+  使用 ``mica start { CLIENT }`` 启动 Client OS，目前在 MCS 镜像中安装了可用的 ``qemu-zephyr-rproc.elf``：
 
-4. 安装内核驱动
+  .. code-block:: console
 
-   进入QEMU中的Linux，通过命令行输入\ ``modprobe mcs_remoteproc`` \命令安装内核驱动mcs_remoteproc.ko。
+     qemu-aarch64:~$ mica start qemu-zephyr-rproc.elf
+     Starting qemu-zephyr-rproc.elf on CPU3
+     Please open /dev/ttyRPMSG0 to talk with client OS
 
-5. 配置remoteproc实例
+4. 打开 Client OS 的 shell
 
-  此时，我们已经有了一个remoteproc实例，并且它的char device的接口位于
-  ``/sys/class/remoteproc/`` 目录下面，名称为 ``remoteproc[X]`` ，X是数字。
-  此时，我们需要指定remoteproc实例运行的固件名称，
-  然后remoteproc框架会默认从\ ``/lib/firmware/`` \目录下寻找指定名称的固件。
-  指定firmware名称的命令是：
+  Linux 侧可以通过 screen 可以接入 Client OS 的 shell：
 
-  .. code-block:: 
-      
-    echo [firmware name] > /sys/class/remoteproc/remoteproc[X]/firmware
-    # the following bash command is an example
-    echo client_os-image.elf > /sys/class/remoteproc/remoteproc0/firmware
+  .. code-block:: console
 
-  .. note:: 
+     # 通过 SSH 登录 QEMU
+     $ ssh root@192.168.10.8
 
-    当前框架下要求client OS的可执行文件必须为elf格式的文件。
-  
-  当然，我们也可以指定存放firmware的路径（不包括firmware自己的文件名），
-  如下命令可以增加一个查找固件的路径：
+     ... ...
 
-  .. code-block:: 
-      
-      echo [firmware path] > /sys/module/firmware_class/parameters/path
-      # the following bash command is an example, /firmware is a directory
-      # holding OS firmware
-      echo /firmware > /sys/module/firmware_class/parameters/path
+     # 打开 Client OS 的 shell
+     qemu-aarch64:~$ screen /dev/ttyRPMSG0
 
+     ... ...
 
-6. 现在，一切都准备就绪了，我们可以启动这个remoteproc实例：
+     uart:~$ kernel uptime
+     Uptime: 8963940 ms
+     uart:~$ kernel version
+     Zephyr version 3.2.0
 
-  .. code-block:: 
-      
-      echo start > /sys/class/remoteproc/remoteproc[X]/state
+  可以通过 ``Ctrl-a k`` 或 ``Ctrl-a Ctrl-k`` 组合键退出shell，参考 `screen(1) — Linux manual page <https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS>`_ 。
 
-7. 当remoteproc实例启动后，Linux中的\ ``\dev`` \目录下会出现名为\ ``ttyRPMsg[X]`` \的RPMsg设备的tty接口，X是数字。
-   我们只需要使用screen命令打开这个设备就可以与client OS通过命令行进行交互：
-
-  .. code-block:: 
-      
-      screen /dev/ttyRPMsg[X]
-
-8. 如果我们想停止remoteproc实例，可以使用如下命令：
-
-  .. code-block:: 
-      
-      echo stop > /sys/class/remoteproc/remoteproc[X]/state
+____
 
 client OS端的配置
-====================================
+=================
 
 要想实现混合部署，我们需要依赖于Linux的remoteproc框架和RPMsg协议。remoteproc框架实现了对远程处理器的生命周期控制，
 而RPMsg协议则是一个用于使能CPU之间通信的传输层协议。
