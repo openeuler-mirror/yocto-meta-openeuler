@@ -49,3 +49,29 @@ set_permissions_from_rootfs() {
 }
 
 DISTRO_FEATURES += "${TCLIBC}"
+
+# rootfs_rpm.bbclass line 14
+# as we use dnf in hosttools, we don't need python3-native
+# directly use python3 in hosttools
+EXTRANATIVEPATH:remove = "python3-native"
+
+
+# by default user should reset root password at first login
+# although the default password is empty, the password policy
+# will require reset password immediately
+OPENEUELR_IMAGE_USERS ?= " \
+    usermod -p '' root; \
+    passwd-expire root; \
+"
+
+# by default, allow root login and empty password from ssh
+# because of the configuration of OPENEUELR_IMAGE_USERS
+# root password will be required reset at first login
+OPENEULER_IMAGE_FEATURES ?= "allow-root-login allow-empty-password"
+IMAGE_FEATURES_append = " ${OPENEULER_IMAGE_FEATURES}"
+
+# image-level user and user group configuration
+# if the image contains debug-tweaks or empty-root-password feature
+# the default user will be root and the password will be empty
+# therefore, users can login without password
+EXTRA_USERS_PARAMS = '${@bb.utils.contains_any("IMAGE_FEATURES", [ 'debug-tweaks', 'empty-root-password' ], "", "${OPENEUELR_IMAGE_USERS}; ",d)}'

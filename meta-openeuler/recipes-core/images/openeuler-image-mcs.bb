@@ -15,11 +15,6 @@ packagegroup-openssh \
 packagegroup-mcs \
 "
 
-# make no login
-set_permissions_from_rootfs_append() {
-    cd "${IMAGE_ROOTFS}"
-    if [ -f ./etc/inittab ]; then
-        sed -i "s#respawn:/sbin/getty.*#respawn:-/bin/sh#g" ./etc/inittab
-    fi
-    cd -
-}
+# openeuler-image-mcs is used for mcs development,
+# so enable debug-tweaks
+OPENEULER_IMAGE_FEATURES = "debug-tweaks"
