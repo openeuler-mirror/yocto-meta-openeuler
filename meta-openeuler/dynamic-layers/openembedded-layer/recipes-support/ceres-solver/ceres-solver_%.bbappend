@@ -2,7 +2,6 @@
 
 OPENEULER_SRC_URI_REMOVE = "https git"
 OPENEULER_REPO_NAME = "ceres-solver"
-OPENEULER_BRANCH = "master"
 
 # version in openEuler
 PV = "2.0.0"

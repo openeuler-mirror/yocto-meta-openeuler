@@ -1,7 +1,5 @@
 # main bb file: yocto-poky/meta/recipes-graphics/wayland/weston_10.0.2.bb
 
-OPENEULER_BRANCH = "master"
-
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
 PV = "8.0.0"

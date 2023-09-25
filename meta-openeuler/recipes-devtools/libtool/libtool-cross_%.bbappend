@@ -1,7 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/libtool/libtool-cross_2.4.6.bb
 
-OPENEULER_BRANCH = "master"
-
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 PV = "2.4.7"

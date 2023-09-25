@@ -5,7 +5,6 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
-OPENEULER_BRANCH = "master"
 
 # version in openEuler
 PV = "2020.3"

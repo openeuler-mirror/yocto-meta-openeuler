@@ -2,7 +2,6 @@
 
 PV = "2.10.0"
 
-OPENEULER_BRANCH = "master"
 OPENEULER_REPO_NAME = "tensorflow"
 
 DEPENDS:remove = "libgfortran"

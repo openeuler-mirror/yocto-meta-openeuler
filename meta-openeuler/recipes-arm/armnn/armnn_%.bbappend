@@ -1,8 +1,6 @@
 #main bb file: yocto-meta-openeuler/meta-openeuler/recipes-arm/arm-compute-library/armnn_22.11.bb
 PV = "22.11"
 
-OPENEULER_BRANCH = "master"
-
 SRCREV = "d95bb5364783c89ea9594550233055590db31094"
 
 CXXFLAGS += "-fopenmp -O3 -DNDEBUG"

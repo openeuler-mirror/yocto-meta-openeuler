@@ -1,6 +1,5 @@
 # main bbfile: meta/recipes-support/boost/boost_1.75.0.bb
 
-OPENEULER_BRANCH = "master"
 OPENEULER_REPO_NAME = "boost"
 
 PV = "1.81.0"

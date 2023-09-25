@@ -1,6 +1,5 @@
 PV = "4.16.2"
 
-OPENEULER_BRANCH = "master"
 OPENEULER_SRC_URI_REMOVE = "https http git"
 
 # find patches under openeuler at firse

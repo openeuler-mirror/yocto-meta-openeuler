@@ -194,7 +194,6 @@ ret += 'RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"' + '\n\n'
 # SRC_URI
 ret += 'OPENEULER_REPO_NAME = "yocto-embedded-tools"\n'
 ret += 'OPENEULER_LOCAL_NAME = "ros-dev-tools"\n'
-ret += 'OPENEULER_BRANCH = "dev_ros"\n'
 ret += 'OPENEULER_GIT_SPACE = "openeuler"\n\n'
 
 ret += generate_multiline_variable(
@@ -204,5 +203,3 @@ ret += 'ROS_BUILD_TYPE = "' + build_type + '"\n'
 # Inherits
 ret += '\n' + get_bottom_inherit_line()
 print(ret)
-
-

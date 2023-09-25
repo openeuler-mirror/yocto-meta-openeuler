@@ -2,7 +2,6 @@
 
 OPENEULER_SRC_URI_REMOVE = "https git"
 OPENEULER_REPO_NAME = "gflags"
-OPENEULER_BRANCH = "master"
 
 # version in openEuler
 PV = "2.2.2"

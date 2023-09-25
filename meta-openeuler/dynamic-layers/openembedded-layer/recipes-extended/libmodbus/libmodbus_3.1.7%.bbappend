@@ -4,7 +4,6 @@
 # us openeuler version better, the bbappend name set to "libmodbus_3.1%.bbappend"
 
 PV = "3.1.6"
-OPENEULER_BRANCH = "master"
 
 SRC_URI:append = " \
     file://0000-libmodbus-Heap-based-Buffer-Overflow-in-modbus_reply.patch"

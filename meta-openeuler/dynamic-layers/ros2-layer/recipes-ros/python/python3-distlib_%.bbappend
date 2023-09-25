@@ -1,7 +1,6 @@
 PV = "0.3.6"
 
 OPENEULER_REPO_NAME = "python-${PYPI_PACKAGE}"
-OPENEULER_BRANCH = "master"
 
 # use openeuler's pkg src
 SRC_URI:remove = "${PYPI_SRC_URI} "

@@ -1,7 +1,6 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-graphics/gphoto2/libgphoto2_2.5.27.bb
 
 OPENEULER_REPO_NAME = "libgphoto2"
-OPENEULER_BRANCH = "master"
 OPENEULER_SRC_URI_REMOVE = "https http git"
 
 PV = "2.5.18"

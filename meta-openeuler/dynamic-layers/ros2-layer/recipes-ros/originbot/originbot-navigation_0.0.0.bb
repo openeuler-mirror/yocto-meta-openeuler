@@ -46,7 +46,6 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
 OPENEULER_REPO_NAME = "yocto-embedded-tools"
 OPENEULER_LOCAL_NAME = "ros-dev-tools"
-OPENEULER_BRANCH = "dev_ros"
 OPENEULER_GIT_SPACE = "openeuler"
 
 SRC_URI = " \

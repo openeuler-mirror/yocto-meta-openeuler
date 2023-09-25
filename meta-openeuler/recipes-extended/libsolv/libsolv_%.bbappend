@@ -2,7 +2,6 @@ PV = "0.7.22"
 
 S = "${WORKDIR}/${BP}"
 
-OPENEULER_BRANCH = "master"
 SRC_URI[sha256sum] = "968aef452b5493751fa0168cd58745a77c755e202a43fe8d549d791eb16034d5"
 
 SRC_URI = " \

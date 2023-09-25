@@ -1,7 +1,5 @@
 PV = "23.5.26"
 
-OPENEULER_BRANCH = "master"
-
 LIC_FILES_CHKSUM = "file://LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57"
 
 # find patches under openeuler at firse

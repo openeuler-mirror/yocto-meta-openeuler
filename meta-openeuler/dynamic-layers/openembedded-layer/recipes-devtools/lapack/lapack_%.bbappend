@@ -2,7 +2,6 @@
 
 OPENEULER_SRC_URI_REMOVE = "https git"
 OPENEULER_REPO_NAME = "lapack"
-OPENEULER_BRANCH = "master"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=39902829ba0c2cbac1b0debfb75a416b"
 
