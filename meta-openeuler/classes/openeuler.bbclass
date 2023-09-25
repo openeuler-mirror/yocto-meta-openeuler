@@ -11,6 +11,26 @@ python set_rpmdeps() {
 addhandler set_rpmdeps
 set_rpmdeps[eventmask] = "bb.event.RecipePreFinalise"
 
+# use the the latest commit time output from git log of (yocto-meta-openeuler)
+def get_openeuler_epoch(d):
+    import subprocess
+    import time
+
+    # get the .git dir of yocto-meta-openeuler
+    gitpath = d.getVar("LAYERDIR_openeuler") + "/../.git"
+
+    # run git -c log.showSignature=false --git-dir <path-to-yocto-meta-openeuler-git> log -1 --pretty=%ct
+    p = subprocess.run(['git', '-c', 'log.showSignature=false', '--git-dir', gitpath, 'log', '-1', '--pretty=%ct'],
+                       check=True, stdout=subprocess.PIPE)
+
+    if p.returncode != 0:
+    # if failed return current time
+        bb.warn(1, "%s does not have a valid date: %s" % (gitpath, p.stdout.decode('utf-8')))
+        return int(time.time())
+
+    return int(p.stdout.decode('utf-8'))
+
+
 # set BUILD_LDFLAGS for native recipes buildings, nativesdk can be
 # a star point for the necessary build-required recipes, no need to do
 # everything from the scratch
