@@ -1,8 +1,8 @@
 .. _mixed_criticality_system:
 
 
-混合关键性系统(MICA)
-#####################
+混合关键性系统框架 (MICA)
+#############################
 
 .. toctree::
    :maxdepth: 1
