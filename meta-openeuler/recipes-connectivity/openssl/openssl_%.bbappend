@@ -29,3 +29,7 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
         file://Backport-SM4-AESE-optimization-for-ARMv8.patch \
         file://Backport-Fix-SM4-XTS-build-failure-on-Mac-mini-M1.patch \
 "
+do_install:append () {
+        #Remove the empty directory that conflict with ca-certificates.
+        rm -rf ${D}${sysconfdir}/ssl/certs
+}
