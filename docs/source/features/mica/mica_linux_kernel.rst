@@ -1,4 +1,4 @@
-基于 RemoteProc & RPMsg 框架的混合部署实现
+基于 RemoteProc & RPMsg 框架的混合部署框架
 ******************************************
 
 openEuler Embedded 当前支持通过 Linux 的 RemoteProc 和 RPMsg 框架实现混合部署，能够在 Linux 上启动 Client OS，允许两端相互通信。

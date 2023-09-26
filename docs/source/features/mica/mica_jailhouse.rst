@@ -1,4 +1,4 @@
-基于 Jailhouse 的混合部署实现
+基于 Jailhouse 的混合部署框架
 *****************************
 
 当前 openEuler Embedded 支持 Jailhouse 上的混合部署，可以通过 Root-cell (Linux) 拉起 Non-root-cell (RTOS)，并允许两端通过 RPMSG 相互通信。
