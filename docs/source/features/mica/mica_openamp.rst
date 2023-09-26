@@ -63,19 +63,19 @@ ____
   插入内核模块后，可以通过 `cat /proc/iomem` 查看预留出来的 mcs_mem。
   若 mcs_km.ko 插入失败，可以通过 dmesg 看到对应的失败日志，可能的原因有：1.使用的交叉工具链与内核版本不匹配；2.未预留内存资源
 
-  运行rpmsg_main程序，启动 client os：
+  运行mica_main程序，启动 client os：
 
   .. code-block:: console
 
-     $ rpmsg_main -c [cpu_id] -t [target_binfile] -a [target_binaddress]
+     $ mica_main -c [cpu_id] -t [target_binfile] -a [target_binaddress]
      eg:
-     $ rpmsg_main -c 3 -t /lib/firmware/qemu-zephyr-image.bin -a 0x7a000000
+     $ mica_main -c 3 -t /lib/firmware/qemu-zephyr-image.bin -a 0x7a000000
 
-  若rpmsg_main成功运行，会有如下打印：
+  若mica_main成功运行，会有如下打印：
 
   .. code-block:: console
 
-     $ rpmsg_main -c 3 -t /lib/firmware/qemu-zephyr-image.bin -a 0x7a000000
+     $ mica_main -c 3 -t /lib/firmware/qemu-zephyr-image.bin -a 0x7a000000
      ...
      start client os
      ...
@@ -83,7 +83,7 @@ ____
      pty_thread for uart is runnning
      ...
 
-  此时， **按ctrl-c可以通知client os下线并退出rpmsg_main** ，下线后支持重复拉起。
+  此时， **按ctrl-c可以通知client os下线并退出mica_main** ，下线后支持重复拉起。
   也可以根据打印提示（ ``pls open /dev/pts/0 to talk with client OS`` ），
   通过 /dev/pts/0 与 client os 进行 shell 交互，例如：
 
@@ -120,10 +120,10 @@ ____
      # 插入内核模块
      $ modprobe mcs_km
 
-     # 运行rpmsg_main程序，启动 client os：
-     $ rpmsg_main -c 3 -t /lib/firmware/rpi4-zephyr-image.bin -a 0x7a000000
+     # 运行mica_main程序，启动 client os：
+     $ mica_main -c 3 -t /lib/firmware/rpi4-zephyr-image.bin -a 0x7a000000
 
-     # 若rpmsg_main成功运行，会有如下打印：
+     # 若mica_main成功运行，会有如下打印：
      ...
      start client os
      ...
@@ -131,7 +131,7 @@ ____
      pty_thread for uart is runnning
      ...
 
-     # 此时， **按ctrl-c可以通知client os下线并退出rpmsg_main** ，下线后支持重复拉起。
+     # 此时， **按ctrl-c可以通知client os下线并退出mica_main** ，下线后支持重复拉起。
      # 也可以根据打印提示（ ``pls open /dev/pts/0 to talk with client OS`` ），
      # 通过 /dev/pts/0 与 client os 进行 shell 交互，例如：
 
@@ -172,10 +172,10 @@ ____
      # 插入内核模块
      $ modprobe mcs_km
 
-     # 运行rpmsg_main程序，启动 client os：
-     $ rpmsg_main -c 3 -t /firmware/hi3093_ut.bin -a 0x93000000 &
+     # 运行mica_main程序，启动 client os：
+     $ mica_main -c 3 -t /firmware/hi3093_ut.bin -a 0x93000000 &
 
-     # 若rpmsg_main成功运行，会有如下打印：
+     # 若mica_main成功运行，会有如下打印：
      ...
      start client os
      ...
@@ -205,10 +205,10 @@ ____
      # 插入内核模块
      $ modprobe mcs_km
 
-     # 运行rpmsg_main程序，启动 client os：
-     $ rpmsg_main -c 3 -t /firmware/rtthread-ok3568.bin -a 0x7a000000
+     # 运行mica_main程序，启动 client os：
+     $ mica_main -c 3 -t /firmware/rtthread-ok3568.bin -a 0x7a000000
 
-     # 若rpmsg_main成功运行，会有如下打印：
+     # 若mica_main成功运行，会有如下打印：
      ...
      start client os
      ...
@@ -227,3 +227,95 @@ ____
        8. test flood-ping
        9. exit
 
+----------
+
+在HVAEIPC-M10 (x86工控机) 上运行
+=================================
+
+  当前x86工控机只支持运行UniProton。
+  首先，我们需要先构建运行在x86工控机上的openEuler Embedded，参考 :ref:`openEuler Embedded x86工控机镜像构建和安装指导 <hvaepic-m10>`。
+  
+  之后，我们还需要编译Uniproton以及x86环境下需要的额外启动程序ap_boot，
+  参考 `openEuler Embedded & Uniproton x86 MICA环境安装指导 <https://gitee.com/openeuler/UniProton/blob/master/doc/demoUsageGuide/x86_64_demo_usage_guide.md>`_ 。
+  
+  我们需要单独构建mica_main以及mcs_km.ko，
+  参考 `mcs 构建安装指导 <https://gitee.com/openeuler/mcs#%E6%9E%84%E5%BB%BA%E5%AE%89%E8%A3%85%E6%8C%87%E5%AF%BC>`_ 。
+  或者，也可以使用oebuild，参考 :ref:`openEuler Embedded MCS镜像构建指导 <mcs_build>` ，
+  只是在构建的时候只单独构建mica_main以及mcs_km.ko，而非包含这两者的openEuler Embedded镜像：
+
+  .. code-block:: console
+   
+    # 启动构建容器
+    $ oebuild bitbake
+    # 构建mica_main
+    $ bitbake mcs-linux
+    # 构建mcs_km.ko
+    $ bitbake mcs-km
+
+  这种方式构建出来的二进制文件在当前构建目录的 ``tmp/work`` 目录下。
+  mica_main的路径在 ``tmp/work/x86_64-openeuler-linux/mcs-linux/1.0-r0/image/usr/bin/mica_main`` 。
+  mcs_km.ko的路径在 ``tmp/work/generic_x86_64-openeuler-linux/mcs-km/0.0.1-r0/image/lib/modules/5.10.0-openeuler/extra/mcs_km.ko`` 。
+
+  在启动openEuler Embedded前，通过修改启动盘的启动分区的grub.cfg文件，
+  为Client OS预留出一个CPU以及内存资源。
+  将镜像启动分区挂载到 /mnt 目录下，然后修改 /mnt/efi/boot/grub.cfg 文件，
+  在 ``menuentry 'boot'`` 中添加 ``maxcpus=3`` 和 ``mem=12G`` 参数。
+
+  .. code-block:: console
+
+    $ sudo mount /dev/sda1 /mnt
+    $ sudo vim /mnt/efi/boot/grub.cfg
+    $ sudo umount /mnt
+  
+  x86工控机是4核心CPU，我们希望预留1个CPU用来运行Uniproton。
+  当我们成功在x86工控机上启动openEuler Embedded以后，
+  可以通过以下命令查看当前CPU和内存的使用情况：
+
+  .. code-block:: console
+
+    # 查看CPU核心数
+    $ nproc
+    3
+    # 查看内存使用情况
+    $ free -h
+                  total        used        free      shared  buff/cache   available
+      Mem:        9.9Gi       158Mi        9.8Gi       728Ki       45Mi        9.7Gi
+
+  这说明当前系统正在使用3个CPU，已经预留出了一个CPU。系统总共可用的内存容量为9.9Gi，可以说明我们已经限制了Linux使用的内存容量。
+  这里之所以不是12Gi是因为其他的一些内存使用比如内核预留的一些空间并不会展示在这里。
+
+  接下来，我们通过在openEuler Embedded上运行如下命令启动MICA：
+
+  .. code-block:: console
+
+     # 调整内核打印等级
+     $ echo "1 4 1 7" > /proc/sys/kernel/printk
+
+     # 此demo使用标准openEuler Embedded镜像，所以我们单独编译了一个mcs_km.ko
+     # 使用insmod而非modprobe命令插入
+     # 8GB内存环境：
+     $ insmod /path/to/mcs_km.ko load_addr=0x1c0000000
+     # 16GB内存环境：
+     $ insmod /path/to/mcs_km.ko load_addr=0x400000000
+
+     # 运行mica_main程序，启动 client os (8GB内存环境)：
+     $ mica_main -c 3 -t /path/to/uniproton-x86.bin -a 0x1c0000000 -b /path/to/ap_boot
+     # 16GB内存环境：
+     $ mica_main -c 3 -t /path/to/uniproton-x86.bin -a 0x400000000
+
+     ...
+     start client os
+     ...
+     pls open /dev/pts/1 to talk with client OS
+     pty_thread for console is runnning
+     ...
+     found matched endpoint, creating console with id:2 in host os
+
+     # 根据打印提示（ ``found matched endpoint, creating console with id:2 in host os`` ），
+     # 说明成功创建了console，可以通过 /dev/pts/1 查看 UniProton 的串口输出，例如：
+     $ screen /dev/pts/1
+
+     # 敲回车后，可以查看uniproton输出信息
+     # 可以通过 <Ctrl-a k> 或 <Ctrl-a Ctrl-k> 组合键退出console，具体请参考 screen 的 manual page
+
+     
