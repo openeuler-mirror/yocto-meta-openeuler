@@ -13,3 +13,4 @@
    mica_linux_kernel.rst
    mica_jailhouse.rst
    mica_build.rst
+   benchmark.rst
