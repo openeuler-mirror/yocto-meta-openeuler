@@ -1,6 +1,6 @@
 # adapted for hi1711
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
-SRC_URI:append = " file://0001-rpmsg_main-set-phy_shared_mem-to-0x90000000.patch"
+SRC_URI:append = " file://0001-mica_main-set-phy_shared_mem-to-0x90000000.patch"
 
 # install uniproton in /firmware/
 do_install:append (){
