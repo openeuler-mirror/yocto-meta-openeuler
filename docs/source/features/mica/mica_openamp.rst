@@ -237,28 +237,12 @@ ok3568支持通过mcs拉起 RT-Thread，步骤如下：
 =================================
 
 当前x86工控机只支持运行UniProton。
-首先，我们需要先构建运行在x86工控机上的openEuler Embedded，参考 :ref:`openEuler Embedded x86工控机镜像构建和安装指导 <hvaepic-m10>`。
+首先，我们需要先构建运行在x86工控机上的openEuler Embedded，参考 :ref:`基于OpenAMP的MICA镜像构建指南 <build_openamp_mica>`。
+在x86工控机上启动openEuler Embedded还需要制作启动盘，
+参考 :ref:`openEuler Embedded x86工控机镜像安装指导 <create_start_up_image>`。
 
 之后，我们还需要编译Uniproton以及x86环境下需要的额外启动程序ap_boot，
 参考 `openEuler Embedded & Uniproton x86 MICA环境安装指导 <https://gitee.com/openeuler/UniProton/blob/master/doc/demoUsageGuide/x86_64_demo_usage_guide.md>`_ 。
-
-我们需要单独构建mica_main以及mcs_km.ko，
-参考 `mcs 构建安装指导 <https://gitee.com/openeuler/mcs#%E6%9E%84%E5%BB%BA%E5%AE%89%E8%A3%85%E6%8C%87%E5%AF%BC>`_ 。
-或者，也可以使用oebuild，参考 :ref:`openEuler Embedded MCS镜像构建指导 <mcs_build>` ，
-只是在构建的时候只单独构建mica_main以及mcs_km.ko，而非包含这两者的openEuler Embedded镜像：
-
-.. code-block:: console
-
-   # 启动构建容器
-   $ oebuild bitbake
-   # 构建mica_main
-   $ bitbake mcs-linux
-   # 构建mcs_km.ko
-   $ bitbake mcs-km
-
-这种方式构建出来的二进制文件在当前构建目录的 ``tmp/work`` 目录下。
-mica_main的路径在 ``tmp/work/x86_64-openeuler-linux/mcs-linux/1.0-r0/image/usr/bin/mica_main`` 。
-mcs_km.ko的路径在 ``tmp/work/generic_x86_64-openeuler-linux/mcs-km/0.0.1-r0/image/lib/modules/5.10.0-openeuler/extra/mcs_km.ko`` 。
 
 在启动openEuler Embedded前，通过修改启动盘的启动分区的grub.cfg文件，
 为Client OS预留出一个CPU以及内存资源。
@@ -298,9 +282,9 @@ x86工控机是4核心CPU，我们希望预留1个CPU用来运行Uniproton。
    # 此demo使用标准openEuler Embedded镜像，所以我们单独编译了一个mcs_km.ko
    # 使用insmod而非modprobe命令插入
    # 8GB内存环境：
-   $ insmod /path/to/mcs_km.ko load_addr=0x1c0000000
+   $ modprobe mcs_km load_addr=0x1c0000000
    # 16GB内存环境：
-   $ insmod /path/to/mcs_km.ko load_addr=0x400000000
+   $ modprobe mcs_km load_addr=0x400000000
 
    # 运行mica_main程序，启动 client os (8GB内存环境)：
    $ mica_main -c 3 -t /path/to/uniproton-x86.bin -a 0x1c0000000 -b /path/to/ap_boot
@@ -353,7 +337,7 @@ ring buffer 的定义在 ``library/include/mcs/ring_buffer.h`` 文件中。
 使用方法
 ----------
 
-首先，得在指定的环境中启动含有MICA的openEuler Embedded镜像，请参考 :ref:`基于OpenAMP的MICA镜像构建指南 <build_openamp_mica>` 。
+首先，得在指定的环境中含有MICA的openEuler Embedded镜像，请参考 :ref:`基于OpenAMP的MICA镜像构建指南 <build_openamp_mica>` 。
 
 然后，得生成适配了GDB stub 的 Uniproton，参考 `UniProton GDB stub 构建指南 <https://gitee.com/openeuler/UniProton/blob/stub_dev/src/component/gdbstub/readme.txt>`_ 。
 

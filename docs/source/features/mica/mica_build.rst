@@ -5,6 +5,9 @@
 
 本章主要介绍 openEuler Embedded 中 MCS 镜像的构建方法。
 
+构建包含 MCS 的 openEuler Embedded 镜像
+============================================
+
 MCS 特性目前支持在 `qemu-arm64, 树莓派4B, Hi3093, ok3568, x86工控机` 等多个平台上运行。
 构建 MCS 镜像，需要在执行 ``oebuild generate`` 时，添加 ``-f openeuler-mcs``。具体的步骤如下：
 
@@ -66,3 +69,27 @@ ____
           ├── vmlinux-5.10.0-openeuler
           └── zImage-5.10.0-openeuler
 
+单独构建mica_main以及mcs_km.ko
+=========================================
+
+如果我们希望不使用oebuild进行构建，
+参考 `mcs 构建安装指导 <https://gitee.com/openeuler/mcs#%E6%9E%84%E5%BB%BA%E5%AE%89%E8%A3%85%E6%8C%87%E5%AF%BC>`_ 。
+
+如果使用oebuild，则操作如下：
+
+.. code-block:: console
+
+   # 启动构建容器
+   $ oebuild bitbake
+
+   # 构建mica_main
+   $ bitbake mcs-linux
+
+   # 构建mcs_km.ko
+   $ bitbake mcs-km
+
+这种方式构建出来的二进制文件在当前构建目录的 ``tmp/work`` 目录下。
+
+mica_main的路径在 ``tmp/work/x86_64-openeuler-linux/mcs-linux/1.0-r0/image/usr/bin/mica_main`` 。
+
+mcs_km.ko的路径在 ``tmp/work/generic_x86_64-openeuler-linux/mcs-km/0.0.1-r0/image/lib/modules/5.10.0-openeuler/extra/mcs_km.ko`` 。
