@@ -17,3 +17,8 @@ SRC_URI[sha256sum] = "f89199be8b23ca45fc7cb9f1d8d3ee67312318286ad030f5316aca6462
 
 # if PACKAGECONFIG variant has perl, add perl RDEPENDS
 RDEPENDS_${PN}-misc = "${@bb.utils.contains('PACKAGECONFIG', 'perl', 'perl', '', d)}"
+
+do_install_append () {
+        #Remove the empty directory that conflict with ca-certificates.
+        rm -rf ${D}${sysconfdir}/ssl/certs
+}
