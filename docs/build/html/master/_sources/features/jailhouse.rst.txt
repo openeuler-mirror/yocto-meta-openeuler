@@ -17,7 +17,64 @@ ____
 Jailhouse 构建指导
 ==================
 
+方法一：使用 oebuild 构建
+-------------------------
+
    openEuler Embedded 目前支持在 qemu-arm64 和 RPI4 上运行 Jailhouse，默认集成到了 openeuler-image-mcs 镜像，构建方法可参考 :ref:`mcs镜像构建指导 <mcs_build>`。
+
+   请注意，需要修改 oebuild 的编译配置文件 compile.yaml，把 MCS_FEATURES 中的 openamp 改成 jailhouse。
+
+
+方法二：使用 MCS 镜像的 SDK 构建
+--------------------------------
+
+  按照 :ref:`mcs镜像构建指导 <mcs_build>` 构建出 MCS 镜像的SDK后，可以使用 SDK 交叉编译 Jailhouse，提升开发效率。步骤如下：
+
+  1. 准备 Jailhouse 源码：
+
+     .. code-block:: console
+
+        # 下载 Jailhouse 源码：
+        $ git clone https://gitee.com/src-openeuler/Jailhouse.git
+        $ cd Jailhouse; tar -xzf jailhouse-0.12.tar.gz
+
+        # 打入 openEuler Embedded 的增强补丁：
+        $ curl -OL https://gitee.com/openeuler/yocto-meta-openeuler/raw/master/meta-openeuler/recipes-mcs/jailhouse/files/0001-driver-Add-support-for-remote-proc.patch
+        $ cd jailhouse-0.12; patch -p1 < ../0001-driver-Add-support-for-remote-proc.patch
+
+    执行以上步骤后，代码目录为：jailhouse-0.12，即我们的构建目录。
+
+  2. 安装MCS镜像的SDK：
+
+     .. code-block:: console
+
+        $ sh openeuler-glibc-x86_64-openeuler-image-mcs-aarch64-qemu-aarch64-toolchain-*.sh
+        openEuler Embedded(openEuler Embedded Reference Distro) SDK installer version *
+        ===================================================================================
+        Enter target directory for SDK (default: /opt/openeuler/oecore-x86_64): ./sdk
+        You are about to install the SDK to "/usr1/openeuler/sdk". Proceed [Y/n]? y
+        Extracting SDK...................done
+        Setting it up...SDK has been successfully set up and is ready to be used.
+        Each time you wish to use the SDK in a new shell session, you need to source the environment setup script e.g.
+        $ . /usr1/openeuler/sdk/environment-setup-aarch64-openeuler-linux
+
+     若 SDK 安装失败，请参考 :ref:`安装SDK <install-openeuler-embedded-sdk>` 章节，排查是否缺少依赖软件包。
+
+     完成 SDK 安装后，按照提示，在 jailhouse-0.12 目录下，执行：
+
+     .. code-block:: console
+
+        $ . /usr1/openeuler/sdk/environment-setup-aarch64-openeuler-linux
+
+        # 需要自定义新增的cell文件，可以直接放在 configs/${ARCH} 目录中，然后执行编译：
+        $ make KDIR=${KERNEL_SRC} -j$(nproc)
+
+     编译完成后，构建产物如下：
+
+     - cell文件：`configs/${ARCH}` 目录下；
+     - Jailhouse 固件 jailhouse.bin ：在 `hypervisor` 目录下，需要拷贝到单板的 `/lib/firmware` 目录；
+     - Jailhouse 驱动 jailhouse.ko ：在 `driver` 目录下；
+     - 用户态工具 jailhouse ：在 `tools` 目录。
 
 ____
 

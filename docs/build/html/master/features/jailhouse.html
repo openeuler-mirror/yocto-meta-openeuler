@@ -63,7 +63,11 @@
 <li class="toctree-l2"><a class="reference internal" href="clang_llvm.html">clang/llvm 编译工具链支持</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">轻量级虚拟化工具 Jailhouse</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#id1">总体介绍</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">Jailhouse 构建指导</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Jailhouse 构建指导</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#oebuild">方法一：使用 oebuild 构建</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#mcs-sdk">方法二：使用 MCS 镜像的 SDK 构建</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#id3">Jailhouse 使用指导</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#jailhouse-freertos">使用 Jailhouse 运行 FreeRTOS</a></li>
 </ul>
@@ -126,9 +130,65 @@ Jailhouse 的第一个 cell 叫 Root Cell，这是一个特权Cell，内部运�
 <hr class="docutils" />
 <section id="id2">
 <h2>Jailhouse 构建指导<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<section id="oebuild">
+<h3>方法一：使用 oebuild 构建<a class="headerlink" href="#oebuild" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p>openEuler Embedded 目前支持在 qemu-arm64 和 RPI4 上运行 Jailhouse，默认集成到了 openeuler-image-mcs 镜像，构建方法可参考 <a class="reference internal" href="mica/mica_build.html#mcs-build"><span class="std std-ref">mcs镜像构建指导</span></a>。</p>
+<p>请注意，需要修改 oebuild 的编译配置文件 compile.yaml，把 MCS_FEATURES 中的 openamp 改成 jailhouse。</p>
 </div></blockquote>
+</section>
+<section id="mcs-sdk">
+<h3>方法二：使用 MCS 镜像的 SDK 构建<a class="headerlink" href="#mcs-sdk" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>按照 <a class="reference internal" href="mica/mica_build.html#mcs-build"><span class="std std-ref">mcs镜像构建指导</span></a> 构建出 MCS 镜像的SDK后，可以使用 SDK 交叉编译 Jailhouse，提升开发效率。步骤如下：</p>
+<ol class="arabic">
+<li><p>准备 Jailhouse 源码：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>下载 Jailhouse 源码：
+<span class="gp">$ </span>git clone https://gitee.com/src-openeuler/Jailhouse.git
+<span class="gp">$ </span><span class="nb">cd</span> Jailhouse<span class="p">;</span> tar -xzf jailhouse-0.12.tar.gz
+
+<span class="gp"># </span>打入 openEuler Embedded 的增强补丁：
+<span class="gp">$ </span>curl -OL https://gitee.com/openeuler/yocto-meta-openeuler/raw/master/meta-openeuler/recipes-mcs/jailhouse/files/0001-driver-Add-support-for-remote-proc.patch
+<span class="gp">$ </span><span class="nb">cd</span> jailhouse-0.12<span class="p">;</span> patch -p1 &lt; ../0001-driver-Add-support-for-remote-proc.patch
+</pre></div>
+</div>
+</li>
+</ol>
+<blockquote>
+<div><p>执行以上步骤后，代码目录为：jailhouse-0.12，即我们的构建目录。</p>
+</div></blockquote>
+<ol class="arabic" start="2">
+<li><p>安装MCS镜像的SDK：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sh openeuler-glibc-x86_64-openeuler-image-mcs-aarch64-qemu-aarch64-toolchain-*.sh
+<span class="go">openEuler Embedded(openEuler Embedded Reference Distro) SDK installer version *</span>
+<span class="go">===================================================================================</span>
+<span class="go">Enter target directory for SDK (default: /opt/openeuler/oecore-x86_64): ./sdk</span>
+<span class="go">You are about to install the SDK to &quot;/usr1/openeuler/sdk&quot;. Proceed [Y/n]? y</span>
+<span class="go">Extracting SDK...................done</span>
+<span class="go">Setting it up...SDK has been successfully set up and is ready to be used.</span>
+<span class="go">Each time you wish to use the SDK in a new shell session, you need to source the environment setup script e.g.</span>
+<span class="gp">$ </span>. /usr1/openeuler/sdk/environment-setup-aarch64-openeuler-linux
+</pre></div>
+</div>
+<p>若 SDK 安装失败，请参考 <a class="reference internal" href="../getting_started/index.html#install-openeuler-embedded-sdk"><span class="std std-ref">安装SDK</span></a> 章节，排查是否缺少依赖软件包。</p>
+<p>完成 SDK 安装后，按照提示，在 jailhouse-0.12 目录下，执行：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>. /usr1/openeuler/sdk/environment-setup-aarch64-openeuler-linux
+
+<span class="gp"># </span>需要自定义新增的cell文件，可以直接放在 configs/<span class="si">${</span><span class="nv">ARCH</span><span class="si">}</span> 目录中，然后执行编译：
+<span class="gp">$ </span>make <span class="nv">KDIR</span><span class="o">=</span><span class="si">${</span><span class="nv">KERNEL_SRC</span><span class="si">}</span> -j<span class="k">$(</span>nproc<span class="k">)</span>
+</pre></div>
+</div>
+<p>编译完成后，构建产物如下：</p>
+<ul class="simple">
+<li><p>cell文件：<cite>configs/${ARCH}</cite> 目录下；</p></li>
+<li><p>Jailhouse 固件 jailhouse.bin ：在 <cite>hypervisor</cite> 目录下，需要拷贝到单板的 <cite>/lib/firmware</cite> 目录；</p></li>
+<li><p>Jailhouse 驱动 jailhouse.ko ：在 <cite>driver</cite> 目录下；</p></li>
+<li><p>用户态工具 jailhouse ：在 <cite>tools</cite> 目录。</p></li>
+</ul>
+</li>
+</ol>
+</div></blockquote>
+</section>
 </section>
 <hr class="docutils" />
 <section id="id3">

@@ -1028,7 +1028,7 @@ hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，�
 
 当用户有需求自定义修改软总线功能模块时，可使用全量编译方式构建软总线的各个子模块。
 
-嵌入式版本提供的dsoftbus代码已集成于yocto构建系统，作为一个package存在，编译参照 :ref:`openeuler_embedded_oebuild` 章节。
+嵌入式版本提供的dsoftbus代码已集成于yocto构建系统，作为一个package存在，编译参照 :ref:`oebuild_install` 章节。
 
 用户也可按照镜像编译指导完成环境准备后按如下命令单独进行编译（和单独编译package方法一致）
 
@@ -1117,7 +1117,7 @@ hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，�
   isula run  -it  --privileged --net=host --name=softbus  -v /dev/binderfs/binder:/dev/binder  -p 5684:5684/udp 2edfcbc18543  bash
 
 容器中启动并测试软总线
----------------------
+----------------------
 
 以下操作均在宿主机执行
 
