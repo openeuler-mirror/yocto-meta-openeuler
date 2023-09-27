@@ -1,0 +1,86 @@
+.. _hvaepic-m10:
+
+工控机HVAEIPC-M10
+#################
+
+基本介绍
+========
+
+HVAEPIC-M10是一台通过国家3C认证的无风扇工控机，采用Intel i7-10510U处理器，详细参数配置如下：
+
+.. image:: images/m10_configuration.png
+   :width: 450px
+
+目前openEuler Embedded已经支持M10工控机的镜像构建、安装及运行。
+
+____
+
+构建说明
+========
+
+.. seealso::
+
+   参考 :ref:`openEuler Embedded x86-64镜像构建 <board_x86_build>`.
+
+____
+
+.. _create_start_up_image:
+
+安装说明
+========
+
+.. warning::
+   进行openEuler Embedded镜像安装，会擦除安装磁盘中原有的数据。
+
+1. 使用构建出来的iso镜像制作U盘启动盘，例如使用Rufus制作：
+
+   .. image:: images/install-step1.png
+      :scale: 50
+
+2. 在工控机上插入U盘，启动后按 ``Del`` 进入BIOS，并在 ``BOOT`` 选项卡中调整 ``Boot Option #1`` 为U盘启动。保存重启后，进入grub界面：
+
+   .. image:: images/grub-option.png
+
+   选择 ``boot`` 可以进入live os，一般用于debug；选择 ``install`` 进入系统安装流程。
+
+3. 选择 ``install`` 后，进行系统安装，依次输入U盘和安装盘：
+
+   .. image:: images/install-step3.jpg
+
+   之后稍作等待，完成系统安装后，会提示： ``Installation successful. Remove your installation media and press ENTER to reboot.`` 此时可以拔出U盘，按enter重启。
+
+4. 启动后按 ``Del`` 进入BIOS，调整 ``Boot Option #1`` ：
+
+   .. image:: images/install-step4.png
+
+____
+
+实时性能测试
+============
+
+实时性优化请参考 :ref:`软实时性能优化 <realtime_tuning>` 章节，进行优化后，实时性能有大幅提升，以下为相关测试对比数据：
+
+.. list-table::
+   :widths: 30 15 10 10
+   :header-rows: 1
+
+   * - OS
+     - Real-Time
+     - Min(us)
+     - Max(us)
+   * - openEuler-Embedded (PREEMPT-RT)
+     - Y
+     - 2
+     - 12
+   * - openEuler-Embedded (PREEMPT)
+     - N
+     - 2
+     - 55
+
+.. note::
+   | **环境**：M10工控机
+   | **CPU-Info**: Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz
+   | **操作系统**：openEuler-Embedded
+   | **测试命令**： ``cyclictest -p 90 -m -i 1000 -n -h 1000 -l 5000000 -a --histfile=test.log``
+   |
+   | 由于M10工控机的HDMI驱动对实时性影响较大，因此需要拔出HDMI，通过ssh登录进行测试。
