@@ -244,19 +244,26 @@ ok3568支持通过mcs拉起 RT-Thread，步骤如下：
 之后，我们还需要编译Uniproton以及x86环境下需要的额外启动程序ap_boot，
 参考 `openEuler Embedded & Uniproton x86 MICA环境安装指导 <https://gitee.com/openeuler/UniProton/blob/master/doc/demoUsageGuide/x86_64_demo_usage_guide.md>`_ 。
 
-在启动openEuler Embedded前，通过修改启动盘的启动分区的grub.cfg文件，
+启动openEuler Embedded后，通过修改启动盘的启动分区的grub.cfg文件，
 为Client OS预留出一个CPU以及内存资源。
 将镜像启动分区挂载到 /mnt 目录下，然后修改 /mnt/efi/boot/grub.cfg 文件，
-在 ``menuentry 'boot'`` 中添加 ``maxcpus=3`` 和 ``mem=12G`` 参数。
+在 ``menuentry 'boot'`` 中添加 ``maxcpus=3`` 和 ``memmap=512M\$16128M`` 参数，
+限制openEuler Embedded只使用3个核心，以及预留出物理地址从15.75G到16.25G的内存资源（16GB内存的x86工控机）。
+如果是8GB内存的x86工控机，需要将 ``memmap`` 改为 ``memmap=512M\$6912M`` 。
 
 .. code-block:: console
 
+   $ sudo fdisk -l
+   Disk /dev/sda: 14.91 GiB, 16013942784 bytes, 31277232 sectors
+   ...
+   Number   Start (sector)    End (sector)  Size   Name
+   1       2048              1050623       512M    boot
+   ...
    $ sudo mount /dev/sda1 /mnt
-   $ sudo vim /mnt/efi/boot/grub.cfg
+   $ sudo vi /mnt/efi/boot/grub.cfg
    $ sudo umount /mnt
 
-x86工控机是4核心CPU，我们希望预留1个CPU用来运行Uniproton。
-当我们成功在x86工控机上启动openEuler Embedded以后，
+当我们成功在修改启动参数并且重启以后，
 可以通过以下命令查看当前CPU和内存的使用情况：
 
 .. code-block:: console
@@ -265,18 +272,20 @@ x86工控机是4核心CPU，我们希望预留1个CPU用来运行Uniproton。
    $ nproc
    3
    # 查看内存使用情况
-   $ free -h
-               total        used        free      shared  buff/cache   available
-   Mem:        9.9Gi       158Mi        9.8Gi       728Ki       45Mi        9.7Gi
+   $ cat /proc/iomem
+   ...
+   3f0000000-40fffffff : Reserved
+   ...
+               
 
-这说明当前系统正在使用3个CPU，已经预留出了一个CPU。系统总共可用的内存容量为9.9Gi，可以说明我们已经限制了Linux使用的内存容量。
-这里之所以不是12Gi是因为其他的一些内存使用比如内核预留的一些空间并不会展示在这里。
+这说明当前系统正在使用3个CPU，已经预留出了一个CPU。
+内存方面，系统已经预留出了从15.75G到16.25G的内存资源。（16GB内存的x86工控机）
 
 接下来，我们通过在openEuler Embedded上运行如下命令启动MICA：
 
 .. code-block:: console
 
-   # 调整内核打印等级
+   # 调整内核打印等级(可选择不执行)
    $ echo "1 4 1 7" > /proc/sys/kernel/printk
 
    # 此demo使用标准openEuler Embedded镜像，所以我们单独编译了一个mcs_km.ko
@@ -289,7 +298,7 @@ x86工控机是4核心CPU，我们希望预留1个CPU用来运行Uniproton。
    # 运行mica_main程序，启动 client os (8GB内存环境)：
    $ mica_main -c 3 -t /path/to/uniproton-x86.bin -a 0x1c0000000 -b /path/to/ap_boot
    # 16GB内存环境：
-   $ mica_main -c 3 -t /path/to/uniproton-x86.bin -a 0x400000000
+   $ mica_main -c 3 -t /path/to/uniproton-x86.bin -a 0x400000000 -b /path/to/ap_boot
 
    ...
    start client os
@@ -324,13 +333,16 @@ ring buffer的地址和大小在MCS仓库中 ``library/include/mcs/mica_debug_ri
 
 .. code-block:: c
 
-   // x86 ring buffer address and size
-   #define MICA_DEBUG_RING_BUFFER_ADDR 0x400000000 - 0x4000
-   #define MICA_DEBUG_RING_BUFFER_SIZE 0x1000
+   // x86 ring buffer base address offset and size
+   #define RING_BUFFER_SHIFT 0x4000
+   #define RING_BUFFER_SIZE 0x1000
 
    // aarch64 ring buffer address and size
-   #define MICA_DEBUG_RING_BUFFER_ADDR 0x70040000
-   #define MICA_DEBUG_RING_BUFFER_SIZE 0x1000
+   #define RING_BUFFER_ADDR 0x70040000
+   #define RING_BUFFER_SIZE 0x1000
+
+x86架构下由于ring buffer存在的物理空间的首地址始终相对于Uniproton的入口地址是固定的，
+在做内存映射的时候我们ring buffer的首地址可以通过Uniproton的入口地址减去 ``RING_BUFFER_SHIFT`` 得到。
 
 ring buffer 的定义在 ``library/include/mcs/ring_buffer.h`` 文件中。
 
@@ -339,7 +351,7 @@ ring buffer 的定义在 ``library/include/mcs/ring_buffer.h`` 文件中。
 
 首先，得在指定的环境中含有MICA的openEuler Embedded镜像，请参考 :ref:`基于OpenAMP的MICA镜像构建指南 <build_openamp_mica>` 。
 
-然后，得生成适配了GDB stub 的 Uniproton，参考 `UniProton GDB stub 构建指南 <https://gitee.com/openeuler/UniProton/blob/stub_dev/src/component/gdbstub/readme.txt>`_ 。
+然后，得生成适配了GDB stub 的 Uniproton，参考 `UniProton GDB stub 构建指南 <https://gitee.com/zuyiwen/UniProton/blob/stub_dev/src/component/gdbstub/readme.txt>`_ 。
 
 如果希望调试Client OS，需要在启动MICA时加上 ``-d`` 参数，指定GDB stub的elf文件路径。
 以下是以内存16GB的x86工控机为例，启动MICA调试模式：
@@ -369,5 +381,5 @@ ring buffer 的定义在 ``library/include/mcs/ring_buffer.h`` 文件中。
 如果用户想要退出程序，必须在GDB命令行输入 ``quit`` 命令。
 
 .. note:: 
-   当前Uniproton的GDB stub仅支持 ``break``， ``continue``， ``print``， ``step`` 和 ``quit`` 五个命令。
+   当前Uniproton的GDB stub仅支持 ``break``， ``continue``， ``print`` 和 ``quit`` 五个命令。
    并不支持 ``ctrl-c``，所以按下后虽然会返回GDB命令行，但是Uniproton仍然在运行。
