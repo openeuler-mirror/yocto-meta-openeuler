@@ -24,3 +24,6 @@ file://File-not-found-should-be-ignored-silently.patch \
 "
 
 SRC_URI[sha256sum] = "c61f0d6699e2bc7691f119b41963aaa8dc980f23532c4e937739832a5f4a6642"
+
+# *.c files, e.g., ${libdir}/tcl8.6/tclAppInit.c should be in ${PN}-dev package
+FILES:${PN}-dev += "${libdir}/tcl8.6/*.c"
