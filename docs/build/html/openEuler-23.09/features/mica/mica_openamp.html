@@ -340,31 +340,39 @@
 参考 <a class="reference internal" href="../../bsp/x86/HVAEIPC-M10/m10.html#create-start-up-image"><span class="std std-ref">openEuler Embedded x86工控机镜像安装指导</span></a>。</p>
 <p>之后，我们还需要编译Uniproton以及x86环境下需要的额外启动程序ap_boot，
 参考 <a class="reference external" href="https://gitee.com/openeuler/UniProton/blob/master/doc/demoUsageGuide/x86_64_demo_usage_guide.md">openEuler Embedded &amp; Uniproton x86 MICA环境安装指导</a> 。</p>
-<p>在启动openEuler Embedded前，通过修改启动盘的启动分区的grub.cfg文件，
+<p>启动openEuler Embedded后，通过修改启动盘的启动分区的grub.cfg文件，
 为Client OS预留出一个CPU以及内存资源。
 将镜像启动分区挂载到 /mnt 目录下，然后修改 /mnt/efi/boot/grub.cfg 文件，
-在 <code class="docutils literal notranslate"><span class="pre">menuentry</span> <span class="pre">'boot'</span></code> 中添加 <code class="docutils literal notranslate"><span class="pre">maxcpus=3</span></code> 和 <code class="docutils literal notranslate"><span class="pre">mem=12G</span></code> 参数。</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo mount /dev/sda1 /mnt
-<span class="gp">$ </span>sudo vim /mnt/efi/boot/grub.cfg
+在 <code class="docutils literal notranslate"><span class="pre">menuentry</span> <span class="pre">'boot'</span></code> 中添加 <code class="docutils literal notranslate"><span class="pre">maxcpus=3</span></code> 和 <code class="docutils literal notranslate"><span class="pre">memmap=512M\$16128M</span></code> 参数，
+限制openEuler Embedded只使用3个核心，以及预留出物理地址从15.75G到16.25G的内存资源（16GB内存的x86工控机）。
+如果是8GB内存的x86工控机，需要将 <code class="docutils literal notranslate"><span class="pre">memmap</span></code> 改为 <code class="docutils literal notranslate"><span class="pre">memmap=512M\$6912M</span></code> 。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo fdisk -l
+<span class="go">Disk /dev/sda: 14.91 GiB, 16013942784 bytes, 31277232 sectors</span>
+<span class="go">...</span>
+<span class="go">Number   Start (sector)    End (sector)  Size   Name</span>
+<span class="go">1       2048              1050623       512M    boot</span>
+<span class="go">...</span>
+<span class="gp">$ </span>sudo mount /dev/sda1 /mnt
+<span class="gp">$ </span>sudo vi /mnt/efi/boot/grub.cfg
 <span class="gp">$ </span>sudo umount /mnt
 </pre></div>
 </div>
-<p>x86工控机是4核心CPU，我们希望预留1个CPU用来运行Uniproton。
-当我们成功在x86工控机上启动openEuler Embedded以后，
+<p>当我们成功在修改启动参数并且重启以后，
 可以通过以下命令查看当前CPU和内存的使用情况：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>查看CPU核心数
 <span class="gp">$ </span>nproc
 <span class="go">3</span>
 <span class="gp"># </span>查看内存使用情况
-<span class="gp">$ </span>free -h
-<span class="go">            total        used        free      shared  buff/cache   available</span>
-<span class="go">Mem:        9.9Gi       158Mi        9.8Gi       728Ki       45Mi        9.7Gi</span>
+<span class="gp">$ </span>cat /proc/iomem
+<span class="go">...</span>
+<span class="go">3f0000000-40fffffff : Reserved</span>
+<span class="go">...</span>
 </pre></div>
 </div>
-<p>这说明当前系统正在使用3个CPU，已经预留出了一个CPU。系统总共可用的内存容量为9.9Gi，可以说明我们已经限制了Linux使用的内存容量。
-这里之所以不是12Gi是因为其他的一些内存使用比如内核预留的一些空间并不会展示在这里。</p>
+<p>这说明当前系统正在使用3个CPU，已经预留出了一个CPU。
+内存方面，系统已经预留出了从15.75G到16.25G的内存资源。（16GB内存的x86工控机）</p>
 <p>接下来，我们通过在openEuler Embedded上运行如下命令启动MICA：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>调整内核打印等级
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>调整内核打印等级<span class="o">(</span>可选择不执行<span class="o">)</span>
 <span class="gp">$ </span><span class="nb">echo</span> <span class="s2">&quot;1 4 1 7&quot;</span> &gt; /proc/sys/kernel/printk
 
 <span class="gp"># </span>此demo使用标准openEuler Embedded镜像，所以我们单独编译了一个mcs_km.ko
@@ -377,7 +385,7 @@
 <span class="gp"># </span>运行mica_main程序，启动 client os <span class="o">(</span>8GB内存环境<span class="o">)</span>：
 <span class="gp">$ </span>mica_main -c <span class="m">3</span> -t /path/to/uniproton-x86.bin -a 0x1c0000000 -b /path/to/ap_boot
 <span class="gp"># </span>16GB内存环境：
-<span class="gp">$ </span>mica_main -c <span class="m">3</span> -t /path/to/uniproton-x86.bin -a 0x400000000
+<span class="gp">$ </span>mica_main -c <span class="m">3</span> -t /path/to/uniproton-x86.bin -a 0x400000000 -b /path/to/ap_boot
 
 <span class="go">...</span>
 <span class="go">start client os</span>
@@ -405,21 +413,23 @@
 <p>首先，对于Client OS而言，需要支持GDB stub。
 当前MICA框架仅支持基于简单ring buffer通信的方式进行GDB stub信息的交互，
 ring buffer的地址和大小在MCS仓库中 <code class="docutils literal notranslate"><span class="pre">library/include/mcs/mica_debug_ring_buffer.h</span></code> 中定义：</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="c1">// x86 ring buffer address and size</span>
-<span class="cp">#define MICA_DEBUG_RING_BUFFER_ADDR 0x400000000 - 0x4000</span>
-<span class="cp">#define MICA_DEBUG_RING_BUFFER_SIZE 0x1000</span>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="c1">// x86 ring buffer base address offset and size</span>
+<span class="cp">#define RING_BUFFER_SHIFT 0x4000</span>
+<span class="cp">#define RING_BUFFER_SIZE 0x1000</span>
 
 <span class="c1">// aarch64 ring buffer address and size</span>
-<span class="cp">#define MICA_DEBUG_RING_BUFFER_ADDR 0x70040000</span>
-<span class="cp">#define MICA_DEBUG_RING_BUFFER_SIZE 0x1000</span>
+<span class="cp">#define RING_BUFFER_ADDR 0x70040000</span>
+<span class="cp">#define RING_BUFFER_SIZE 0x1000</span>
 </pre></div>
 </div>
+<p>x86架构下由于ring buffer存在的物理空间的首地址始终相对于Uniproton的入口地址是固定的，
+在做内存映射的时候我们ring buffer的首地址可以通过Uniproton的入口地址减去 <code class="docutils literal notranslate"><span class="pre">RING_BUFFER_SHIFT</span></code> 得到。</p>
 <p>ring buffer 的定义在 <code class="docutils literal notranslate"><span class="pre">library/include/mcs/ring_buffer.h</span></code> 文件中。</p>
 </section>
 <section id="id3">
 <h3>使用方法<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <p>首先，得在指定的环境中含有MICA的openEuler Embedded镜像，请参考 <a class="reference internal" href="#build-openamp-mica"><span class="std std-ref">基于OpenAMP的MICA镜像构建指南</span></a> 。</p>
-<p>然后，得生成适配了GDB stub 的 Uniproton，参考 <a class="reference external" href="https://gitee.com/openeuler/UniProton/blob/stub_dev/src/component/gdbstub/readme.txt">UniProton GDB stub 构建指南</a> 。</p>
+<p>然后，得生成适配了GDB stub 的 Uniproton，参考 <a class="reference external" href="https://gitee.com/zuyiwen/UniProton/blob/stub_dev/src/component/gdbstub/readme.txt">UniProton GDB stub 构建指南</a> 。</p>
 <p>如果希望调试Client OS，需要在启动MICA时加上 <code class="docutils literal notranslate"><span class="pre">-d</span></code> 参数，指定GDB stub的elf文件路径。
 以下是以内存16GB的x86工控机为例，启动MICA调试模式：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>modprobe mcs_km <span class="nv">load_addr</span><span class="o">=</span>0x400000000
@@ -446,7 +456,7 @@ ring buffer的地址和大小在MCS仓库中 <code class="docutils literal notra
 如果用户想要退出程序，必须在GDB命令行输入 <code class="docutils literal notranslate"><span class="pre">quit</span></code> 命令。</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>当前Uniproton的GDB stub仅支持 <code class="docutils literal notranslate"><span class="pre">break</span></code>， <code class="docutils literal notranslate"><span class="pre">continue</span></code>， <code class="docutils literal notranslate"><span class="pre">print</span></code>， <code class="docutils literal notranslate"><span class="pre">step</span></code> 和 <code class="docutils literal notranslate"><span class="pre">quit</span></code> 五个命令。
+<p>当前Uniproton的GDB stub仅支持 <code class="docutils literal notranslate"><span class="pre">break</span></code>， <code class="docutils literal notranslate"><span class="pre">continue</span></code>， <code class="docutils literal notranslate"><span class="pre">print</span></code> 和 <code class="docutils literal notranslate"><span class="pre">quit</span></code> 五个命令。
 并不支持 <code class="docutils literal notranslate"><span class="pre">ctrl-c</span></code>，所以按下后虽然会返回GDB命令行，但是Uniproton仍然在运行。</p>
 </div>
 </section>
