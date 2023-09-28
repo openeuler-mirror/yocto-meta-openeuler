@@ -4,8 +4,12 @@ PV = "2.1.4"
 
 SRC_URI:remove = "git://git.infradead.org/mtd-utils.git;branch=master"
 
-SRC_URI:prepend = "file://${BP}.tar.bz2 \
-                   "
+SRC_URI:prepend = " \
+    file://${BP}.tar.bz2 \
+    file://0001-tests-Remove-unused-linux-fs.h-header-from-includes.patch \
+"
+
+SRC_URI[sha256sum] = "2c6711d15d282c47cb3867b6857340597e26d332c238465134c602e5eef71b99"
 
 S = "${WORKDIR}/${BP}"
 
