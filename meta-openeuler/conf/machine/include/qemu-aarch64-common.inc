@@ -1,9 +1,7 @@
 # Description: Config for arm64 machine
 
-MACHINEOVERRIDES =. "march64:"
 KERNEL_IMAGETYPE =. "zImage"
 KERNEL_IMAGETYPE_FOR_MAKE =. "zImage Image"
-require conf/machine/include/qemu-common.inc
 
 #kernel modules to install and autoload
 require conf/machine/include/kernel-modules-conf/common.inc
@@ -24,8 +22,6 @@ require conf/machine/include/arm/arch-armv8a.inc
 TUNE_CCARGS .= "${@bb.utils.contains('TUNE_FEATURES', 'cortexa9', ' -mtune=cortex-a9', '', d)}"
 MACHINEOVERRIDES =. "${@bb.utils.contains('TUNE_FEATURES', 'cortexa9', 'armv7a:', '' ,d)}"
 
-MACHINEOVERRIDES:remove:virtclass-multilib-lib32 = "march64:"
-MACHINEOVERRIDES:append:virtclass-multilib-lib32 = "march32:"
 TUNE_FEATURES:append:virtclass-multilib-lib32 = " cortexa9"
 TUNE_FEATURES:remove:virtclass-multilib-lib32 = " vfp"
 

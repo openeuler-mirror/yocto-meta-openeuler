@@ -1,3 +1,0 @@
-MACHINEOVERRIDES =. "eulermachine:"
-KERNEL_IMAGETYPE ?= "zImage"
-KERNEL_IMAGETYPE_FOR_MAKE ?= "zImage"

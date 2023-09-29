@@ -1,7 +1,8 @@
 # Description: Machine description for little-endian arm32
 
-MACHINEOVERRIDES =. "march32:"
-require conf/machine/include/qemu-common.inc
+KERNEL_IMAGETYPE = "zImage"
+KERNEL_IMAGETYPE_FOR_MAKE = "zImage"
+
 require conf/machine/include/arm/arch-armv7a.inc
 
 #kernel modules to install and autoload
