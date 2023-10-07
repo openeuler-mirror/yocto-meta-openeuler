@@ -19,7 +19,7 @@ SRC_URI:append = " \
     ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'file://patches/0003-ok3568-support-mcs.patch', '', d)} \
 "
 
-# more support of device is comming. so we documented this patch md5sum.
+# more support of device is coming. so we documented this patch md5sum.
 SRC_URI[rockchip-kernel-patch.md5sum] = "f16b44a335ad487d95764af1adddc3dc"
 
 # add patch tool to solve patch apply
@@ -27,7 +27,7 @@ PATCHTOOL = "git"
 
 OPENEULER_KERNEL_CONFIG = "file://config/${MACHINE}/${MACHINE}_defconfig"
 
-# add method to do_compile task to produce bootable Image
+# add method to do_compile task to produce Rockchip specific bootable Image
 do_compile:append:rk3568(){
     cp ../logo/* ./
     scripts/mkkrnlimg ${KERNEL_OUTPUT_DIR}/Image kernel.img
@@ -48,7 +48,7 @@ do_compile:append:rk3588(){
     rm -rf .tmp_its_config
 }
 
-do_compile:append:ok3399(){
+do_compile:append:rk3399(){
     cp ../logo/* ./
     scripts/mkkrnlimg ${KERNEL_OUTPUT_DIR}/Image kernel.img
     ../tools/mkimg --dtb ${ROCKCHIP_KERNEL_DTB_NAME}

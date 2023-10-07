@@ -9,7 +9,7 @@ SRC_URI = " \
 	file://rk-binary-native \
 "
 
-S = "${WORKDIR}/"
+S = "${WORKDIR}"
 
 SRCREV_rkbin = ""
 SRCREV_tools = ""
