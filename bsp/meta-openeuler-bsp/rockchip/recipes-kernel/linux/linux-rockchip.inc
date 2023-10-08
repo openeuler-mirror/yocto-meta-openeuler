@@ -52,7 +52,7 @@ do_compile:append:ok3399(){
     cp ../logo/* ./
     scripts/mkkrnlimg ${KERNEL_OUTPUT_DIR}/Image kernel.img
     ../tools/mkimg --dtb ${ROCKCHIP_KERNEL_DTB_NAME}
-    scripts/mkbootimg --kernel ${KERNEL_OUTPUT_DIR}/Image --second resource.img -o boot.img
+    ../tools/mkbootimg --kernel ${KERNEL_OUTPUT_DIR}/Image --second resource.img -o boot.img
 }
 
 # add boot.img to $D
