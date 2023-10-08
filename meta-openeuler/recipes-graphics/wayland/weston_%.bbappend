@@ -14,6 +14,8 @@ SRC_URI[sha256sum] = "7518b49b2eaa1c3091f24671bdcc124fd49fc8f1af51161927afa4329c
 # keep as 8.0.0
 EXTRA_OEMESON += "-Dbackend-default=auto"
 
+PACKAGECONFIG:append = " launch fbdev"
+
 PACKAGECONFIG[fbdev] = "-Dbackend-fbdev=true,-Dbackend-fbdev=false,udev mtdev"
 
 PACKAGECONFIG[launch] = "-Dweston-launch=true,-Dweston-launch=false,drm"
@@ -22,7 +24,6 @@ PACKAGECONFIG[launcher-libseat] = ""
 
 
 # openeuler customization
-DEPENDS:remove = "gdk-pixbuf"
 
 SRC_URI:append = "file://openeuler.png \
 "
