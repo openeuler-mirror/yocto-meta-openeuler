@@ -14,9 +14,9 @@ SRC_URI[x86.md5sum] = "fb1cdaba15faae97c94f9595b09ff945"
 SRC_URI[header.md5sum] = "97c8e9fff736e0f96c36dac0e5426aa2"
 
 SRC_URI = " \
-        http://repo.openeuler.org/openEuler-22.03-LTS-SP2/OS/aarch64/Packages/lib-shim-v2-0.0.1-6.oe2203sp2.aarch64.rpm;name=arm64 \
-        http://repo.openeuler.org/openEuler-22.03-LTS-SP2/OS/x86_64/Packages/lib-shim-v2-0.0.1-6.oe2203sp2.x86_64.rpm;name=x86 \
-        http://repo.openeuler.org/openEuler-22.03-LTS-SP2/everything/aarch64/Packages/lib-shim-v2-devel-0.0.1-6.oe2203sp2.aarch64.rpm;name=header \
+        http://repo.openeuler.openatom.cn/openEuler-22.03-LTS-SP2/OS/aarch64/Packages/lib-shim-v2-0.0.1-6.oe2203sp2.aarch64.rpm;name=arm64 \
+        http://repo.openeuler.openatom.cn/openEuler-22.03-LTS-SP2/OS/x86_64/Packages/lib-shim-v2-0.0.1-6.oe2203sp2.x86_64.rpm;name=x86 \
+        http://repo.openeuler.openatom.cn/openEuler-22.03-LTS-SP2/everything/aarch64/Packages/lib-shim-v2-devel-0.0.1-6.oe2203sp2.aarch64.rpm;name=header \
 "
 
 S = "${WORKDIR}/repack"
@@ -54,4 +54,3 @@ FILES:${PN}-dev = " \
 "
 
 INSANE_SKIP:${PN} += "already-stripped"
-
