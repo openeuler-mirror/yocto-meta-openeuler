@@ -27,6 +27,7 @@ SRC_URI:append = " \
         file://init.cfg \
         file://rcS.default \
         file://mdev.cfg \
+        ${@bb.utils.contains('IMAGE_FEATURES', 'debug-tweaks', 'file://devmem.cfg', '', d)} \
         "
 
 # support NFS, which depends on libtirpc

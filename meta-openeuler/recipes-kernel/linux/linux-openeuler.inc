@@ -58,6 +58,11 @@ SRC_URI:append:aarch64 = " \
     file://patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch \
 "
 
+## DEBUG FEATURES
+KERNEL_FEATURES:append = " \
+    ${@bb.utils.contains('IMAGE_FEATURES', 'debug-tweaks', 'features/debug/devmem.scc', '', d)} \
+"
+
 ## mcs related patches and configs
 ## mcs_rpmsg.scc: Add basic functionality, including rpmsg, remoteproc
 ## mcs_jailhouse: Add jailhouse support
@@ -112,7 +117,6 @@ KERNEL_LD:append:riscv64 = " ${TOOLCHAIN_OPTIONS}"
 # Even if the KERNEL_IMAGETYPE is zImage, we will install Image, so add it into PACKAGES
 PACKAGES += "${KERNEL_PACKAGE_NAME}-img"
 FILES:${KERNEL_PACKAGE_NAME}-img = "/boot/Image-${KERNEL_VERSION}"
-
 
 do_install:append(){
     if [ -e ${KERNEL_OUTPUT_DIR}/Image ]; then
