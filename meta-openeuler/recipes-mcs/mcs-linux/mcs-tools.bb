@@ -28,6 +28,11 @@ do_install:aarch64 () {
 	cp ${S}/rtos/arm64/* ${D}/lib/firmware/
 }
 
+do_install:x86-64 () {
+	install -d ${D}/usr/bin
+	install -m 0755 ${S}/tools/mica ${D}/usr/bin/
+}
+
 FILES:${PN} += "/usr/bin/mica"
 FILES:${PN} += "/lib/firmware"
 INSANE_SKIP:${PN} += "already-stripped"
