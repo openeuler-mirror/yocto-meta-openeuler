@@ -1043,7 +1043,7 @@ hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，�
 基于isula的软总线应用指南
 *************************
 
-在嵌入式23.09版本中，利用isula，制作了预装3.2版本软总线容器镜像，可以在嵌入式环境中通过几行命令就可以完成软总线复杂依赖的安装部署，以及与嵌入式、服务器设备的通信测试。此版本软总线使用binder作为IPC底层驱动，在树莓派静默无业务场景下，资源占用由原来的CPU单核80%降低到1%，并且为支持上层的分布式数据模块的拓展打下了基础。
+嵌入式23.09版本中，利用isula，制作了预装3.2版本软总线容器镜像。在嵌入式环境中通过几行命令就可以安装软总线及其复杂依赖，并完成设备间通信测试。此版本软总线使用binder作为IPC底层驱动，在树莓派静默无业务场景下，资源占用由原来的CPU单核80%降低到1%，并且为支持上层的分布式数据模块的拓展打下了基础。
 
 .. note::
 
@@ -1064,7 +1064,7 @@ hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，�
 
 .. code-block:: console
 
-  http://repo.openeuler.org/openEuler-23.09/embedded_img/aarch64/raspberrypi4-64-systemd/openeuler-image-raspberrypi4-64-20230921165629.rootfs.rpi-sdimg
+  https://repo.openeuler.org/openEuler-23.09/embedded_img/aarch64/raspberrypi4-64-systemd/openeuler-image-raspberrypi4-64-20230927180859.rootfs.rpi-sdimg
 
 参考:
 
@@ -1097,13 +1097,13 @@ hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，�
 
 .. code-block:: console
 
-  cd /home; wget http://repo.openeuler.org/openEuler-23.09/embedded_img/dsoftbus_isula_image/softbus.xz
+  cd /home; wget https://repo.openeuler.org/openEuler-23.09/embedded_img/isula_img/openEuler-23.09-isula-softbus.aarch64.xz
 
 6.使用isula加载软总线镜像
 
 .. code-block:: console
 
-  isula import /home/softbus.xz softbus
+  isula import /home/openEuler-23.09-isula-softbus.aarch64.xz softbus
 
 7.查看加载的镜像ID
 
@@ -1120,7 +1120,7 @@ hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，�
 容器中启动并测试软总线
 ----------------------
 
-以下操作均在宿主机执行
+以下操作均在容器中执行
 
 1.在容器中写SN号，注意此SN号是本设备标识，需要与其他设备不一致，建议使用本机IP
 
