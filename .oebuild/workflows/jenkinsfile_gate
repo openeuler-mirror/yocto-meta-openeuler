@@ -1,0 +1,457 @@
+def downloadEmbeddedCI(){
+    sh 'rm -rf embedded-ci'
+    sh "git clone ${embeddedRemote} -b ${embeddedBranch} -v embedded-ci --depth=1"
+}
+
+def downloadYoctoWithPr(String workspace, String namespace, String repo, Integer prnum, Integer deepth){
+    sh """
+        python3 main.py clone_repo \
+        -w ${workspace} \
+        -r https://gitee.com/${namespace}/${repo} \
+        -p ${repo} \
+        -pr ${prnum} \
+        -dp ${deepth}
+    """
+}
+
+def formatRes(String name, String action, String check_res, String log_path){
+    return sh (script: """
+        python3 main.py serial \
+            -c name=$name \
+            -c action=$action \
+            -c result=$check_res \
+            -c log_path=$log_path
+    """, returnStdout: true).trim()
+}
+
+def getRandomStr(){
+    return sh(script: """
+        cat /proc/sys/kernel/random/uuid
+    """, returnStdout: true).trim()
+}
+
+def mkdirOpeneulerLog(){
+    def logdir = "openeuler/log"
+    sh "mkdir -p $logdir"
+    return logdir
+}
+
+def STAGES_RES = []
+
+pipeline {
+    agent { node "${node}" }
+    environment {
+        PATH = "/home/jenkins/.local/bin:${env.PATH}"
+    }
+    stages {
+        stage("clone embedded-ci"){
+            steps{
+                dir('/home/jenkins/agent'){
+                    script{
+                        downloadEmbeddedCI()
+                    }
+                }
+            }
+        }
+        stage("pre") {
+            steps {
+                dir('/home/jenkins/agent/embedded-ci'){
+                    script{
+                        withCredentials([
+                            string(credentialsId: "${giteeId}", variable: 'GITEETOKEN'),
+                            usernamePassword(credentialsId: "${jenkinsId}", usernameVariable: 'JUSER',passwordVariable: 'JPASSWD')]){
+                                // 执行pre
+                                sh """
+                                    python3 main.py pre \
+                                        -s /home/jenkins/ccache/openeuler_embedded \
+                                        -o $giteeTargetNamespace \
+                                        -p $giteeRepoName \
+                                        -pr $giteePullRequestid \
+                                        -juser $JUSER \
+                                        -jpwd $JPASSWD \
+                                        -gt $GITEETOKEN
+                                """
+                                // 执行pr_check
+                                env.pr_check_result = sh (script: """
+                                    python3 main.py pr_check \
+                                        -o $giteeTargetNamespace \
+                                        -p $giteeRepoName \
+                                        -pr $giteePullRequestid \
+                                        -gt $GITEETOKEN
+                                """, returnStdout: true).trim()
+                            }
+                    }
+                }
+            }
+        }
+        stage("check task"){
+            parallel {
+                stage("check commit"){
+                    agent { node "${node}" }
+                    steps {
+                        dir('/home/jenkins/agent'){
+                            script{
+                                downloadEmbeddedCI()
+                            }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            script{
+                                // 下载yocto源码
+                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), Integer.parseInt(commitCount))
+                                def randomStr = getRandomStr()
+                                def logDir = mkdirOpeneulerLog()
+                                // 执行commit检查
+                                def task_res_code = sh (script: """
+                                    python3 main.py codecheck \
+                                    -c /home/jenkins/agent/yocto-meta-openeuler \
+                                    -target commit_msg \
+                                    -o $giteeTargetNamespace \
+                                    -p $giteeRepoName \
+                                    -pr $giteePullRequestid > ${logDir}/${randomStr}.log
+                                """, returnStatus: true)
+                                def check_res = ""
+                                if (task_res_code == 0){
+                                    check_res = "success"
+                                }else{
+                                    check_res = "failed"
+                                }
+                                // 对检查赋值
+                                // env.task_check_commit = formatRes("check", "commit_check", check_res, "xxx")
+                                archiveArtifacts "${logDir}/*.log"
+                                STAGES_RES.push(formatRes("check", "commit_check", check_res, "artifact/${logDir}/${randomStr}.log"))
+                            }
+                        }
+                    }
+                }
+                stage("check scope"){
+                    agent { node "${node}" }
+                    steps {
+                        dir('/home/jenkins/agent'){
+                            script{
+                                downloadEmbeddedCI()
+                            }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            script{
+                                // 执行scope检查
+                                // 下载yocto源码
+                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
+                                def randomStr = getRandomStr()
+                                def logDir = mkdirOpeneulerLog()
+                                // 执行commit检查
+                                def task_res_code = sh (script: """
+                                    python3 main.py codecheck \
+                                    -c /home/jenkins/agent/yocto-meta-openeuler \
+                                    -target commit_scope \
+                                    -o $giteeTargetNamespace \
+                                    -p $giteeRepoName \
+                                    -pr $giteePullRequestid > ${logDir}/${randomStr}.log
+                                """, returnStatus: true)
+                                def check_res = ""
+                                if (task_res_code == 0){
+                                    check_res = "success"
+                                }else{
+                                    check_res = "failed"
+                                }
+                                // 对检查赋值
+                                // env.task_check_scope = formatRes("check", "scope_check", check_res, "xxx")
+                                archiveArtifacts "${logDir}/*.log"
+                                STAGES_RES.push(formatRes("check", "scope_check", check_res, "artifact/${logDir}/${randomStr}.log"))
+                            }
+                        }
+                    }
+                }
+                stage("docs"){
+                    agent { node "${node}" }
+                    when {
+                        expression {
+                            return env.pr_check_result.contains("docs")
+                        }
+                    }
+                    steps{
+                        dir('/home/jenkins/agent'){
+                            script{
+                                downloadEmbeddedCI()
+                            }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            script{
+                                // 执行docs编译
+                                // 下载yocto源码
+                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
+                                def randomStr = getRandomStr()
+                                def logDir = mkdirOpeneulerLog()
+                                // 执行文档编译检查
+                                def task_res_code = sh (script: """
+                                    python3 main.py build \
+                                    -c /home/jenkins/agent/yocto-meta-openeuler \
+                                    -target openeuler_doc > ${logDir}/${randomStr}.log
+                                """, returnStatus: true)
+                                def check_res = ""
+                                if (task_res_code == 0){
+                                    check_res = "success"
+                                }else{
+                                    check_res = "failed"
+                                }
+                                // 对检查赋值
+                                // env.task_build_docs = formatRes("docs", "build", check_res, "xxx")
+                                archiveArtifacts "${logDir}/*.log"
+                                STAGES_RES.push(formatRes("docs", "build", check_res, "artifact/${logDir}/${randomStr}.log"))
+                            }
+                        }
+                    }
+                }
+                stage("qemu_aarch64"){
+                    agent { node "${node}" }
+                    when {
+                        expression {
+                            return env.pr_check_result.contains("code")
+                        }
+                    }
+                    steps {
+                        dir('/home/jenkins/agent'){
+                            script{
+                                downloadEmbeddedCI()
+                            }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            script{
+                                // 执行qemu_aarch64编译
+                                // 下载yocto源码
+                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
+                                def randomStr = getRandomStr()
+                                def logDir = mkdirOpeneulerLog()
+                                // 执行镜像编译检查
+                                def task_res_code = sh (script: """
+                                    python3 main.py build \
+                                    -c /home/jenkins/agent/yocto-meta-openeuler \
+                                    -target openeuler_image \
+                                    -a aarch64 \
+                                    -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
+                                    -p qemu-aarch64 \
+                                    -i openeuler-image \
+                                    -d qemu-aarch64 > ${logDir}/${randomStr}.log
+                                """, returnStatus: true)
+                                
+                                def check_res = ""
+                                if (task_res_code == 0){
+                                    check_res = "success"
+                                }else{
+                                    check_res = "failed"
+                                }
+                                // 对检查赋值
+                                archiveArtifacts "${logDir}/*.log"
+                                STAGES_RES.push(formatRes("qemu_aarch64", "build", check_res, "artifact/${logDir}/${randomStr}.log"))
+                            }
+                        }
+                    }
+                }
+                stage("qemu_aarch64_tiny"){
+                    agent { node "${node}" }
+                    when {
+                        expression {
+                            return env.pr_check_result.contains("code")
+                        }
+                    }
+                    steps {
+                        dir('/home/jenkins/agent'){
+                            script{
+                                downloadEmbeddedCI()
+                            }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            script{
+                                // 执行qemu_aarch64编译
+                                // 下载yocto源码
+                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
+                                def randomStr = getRandomStr()
+                                def logDir = mkdirOpeneulerLog()
+                                // 执行镜像编译检查
+                                def task_res_code = sh (script: """
+                                    python3 main.py build \
+                                    -c /home/jenkins/agent/yocto-meta-openeuler \
+                                    -target openeuler_image \
+                                    -a aarch64 \
+                                    -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
+                                    -p qemu-aarch64 \
+                                    -i openeuler-image-tiny \
+                                    -d qemu-aarch64-tiny > ${logDir}/${randomStr}.log
+                                """, returnStatus: true)
+                                
+                                def check_res = ""
+                                if (task_res_code == 0){
+                                    check_res = "success"
+                                }else{
+                                    check_res = "failed"
+                                }
+                                // 对检查赋值
+                                archiveArtifacts "${logDir}/*.log"
+                                STAGES_RES.push(formatRes("qemu_aarch64_tiny", "build", check_res, "artifact/${logDir}/${randomStr}.log"))
+                            }
+                        }
+                    }
+                }
+                stage("qemu_arm"){
+                    agent { node "${node}" }
+                    when {
+                        expression {
+                            return env.pr_check_result.contains("code")
+                        }
+                    }
+                    steps {
+                        dir('/home/jenkins/agent'){
+                            script{
+                                downloadEmbeddedCI()
+                            }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            script{
+                                // 执行qemu_arm编译
+                                // 下载yocto源码
+                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
+                                def randomStr = getRandomStr()
+                                def logDir = mkdirOpeneulerLog()
+                                // 执行镜像编译检查
+                                def task_res_code = sh (script: """
+                                    python3 main.py build \
+                                    -c /home/jenkins/agent/yocto-meta-openeuler \
+                                    -target openeuler_image \
+                                    -a arm \
+                                    -t /usr1/openeuler/gcc/openeuler_gcc_arm32le \
+                                    -p qemu-arm \
+                                    -i openeuler-image \
+                                    -d qemu-arm > ${logDir}/${randomStr}.log
+                                """, returnStatus: true)
+                                
+                                def check_res = ""
+                                if (task_res_code == 0){
+                                    check_res = "success"
+                                }else{
+                                    check_res = "failed"
+                                }
+                                // 对检查赋值
+                                archiveArtifacts "${logDir}/*.log"
+                                STAGES_RES.push(formatRes("qemu_arm", "build", check_res, "artifact/${logDir}/${randomStr}.log"))
+                            }
+                        }
+                    }
+                }
+                stage("qemu_x86"){
+                    agent { node "${node}" }
+                    when {
+                        expression {
+                            return env.pr_check_result.contains("code")
+                        }
+                    }
+                    steps {
+                        dir('/home/jenkins/agent'){
+                            script{
+                                downloadEmbeddedCI()
+                            }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            script{
+                                // 执行qemu_arm编译
+                                // 下载yocto源码
+                                def randomStr = getRandomStr()
+                                def logDir = mkdirOpeneulerLog()
+                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
+                                // 执行镜像编译检查
+                                def task_res_code = sh (script: """
+                                    python3 main.py build \
+                                    -c /home/jenkins/agent/yocto-meta-openeuler \
+                                    -target openeuler_image \
+                                    -a x86_64 \
+                                    -t /usr1/openeuler/gcc/openeuler_gcc_x86_64 \
+                                    -p x86-64 \
+                                    -i openeuler-image \
+                                    -d qemu-x86-64 > ${logDir}/${randomStr}.log
+                                """, returnStatus: true)
+                                
+                                def check_res = ""
+                                if (task_res_code == 0){
+                                    check_res = "success"
+                                }else{
+                                    check_res = "failed"
+                                }
+                                // 对检查赋值
+                                archiveArtifacts "${logDir}/*.log"
+                                STAGES_RES.push(formatRes("qemu_x86", "build", check_res, "artifact/${logDir}/${randomStr}.log"))
+                            }
+                        }
+                    }
+                }
+                stage("qemu_riscv64"){
+                    agent { node "${node}" }
+                    when {
+                        expression {
+                            return env.pr_check_result.contains("code")
+                        }
+                    }
+                    steps {
+                        dir('/home/jenkins/agent'){
+                            script{
+                                downloadEmbeddedCI()
+                            }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            script{
+                                // 执行qemu_arm编译
+                                // 下载yocto源码
+                                def randomStr = getRandomStr()
+                                def logDir = mkdirOpeneulerLog()
+                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
+                                // 执行镜像编译检查
+                                def task_res_code = sh (script: """
+                                    python3 main.py build \
+                                    -c /home/jenkins/agent/yocto-meta-openeuler \
+                                    -target openeuler_image \
+                                    -a riscv64 \
+                                    -t /usr1/openeuler/gcc/openeuler_gcc_riscv64 \
+                                    -p qemu-riscv64 \
+                                    -i openeuler-image \
+                                    -d qemu-riscv64 > ${logDir}/${randomStr}.log
+                                """, returnStatus: true)
+                                
+                                def check_res = ""
+                                if (task_res_code == 0){
+                                    check_res = "success"
+                                }else{
+                                    check_res = "failed"
+                                }
+                                // 对检查赋值
+                                archiveArtifacts "${logDir}/*.log"
+                                STAGES_RES.push(formatRes("qemu_riscv64", "build", check_res, "artifact/${logDir}/${randomStr}.log"))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            dir('/home/jenkins/agent/embedded-ci'){
+                script{
+                    withCredentials([
+                        string(credentialsId: "${giteeId}", variable: 'GITEETOKEN'),
+                        usernamePassword(credentialsId: "${jenkinsId}", usernameVariable: 'JUSER',passwordVariable: 'JPASSWD')]){
+                            def chks = ""
+                            for (int i = 0; i < STAGES_RES.size(); ++i) {
+                                chks = "${chks} -chk ${STAGES_RES[i]}"
+                            }
+                            sh """
+                            python3 main.py comment \
+                                 -m gate \
+                                 -o $giteeTargetNamespace \
+                                 -p $giteeRepoName \
+                                 -pr $giteePullRequestid \
+                                 -gt $GITEETOKEN \
+                                 $chks
+                            """
+                        }
+                }
+            }
+        }
+    }
+}
