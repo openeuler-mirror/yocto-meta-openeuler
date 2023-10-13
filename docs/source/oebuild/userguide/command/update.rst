@@ -5,7 +5,7 @@
 
 该命令用于对oebuild的构建环境做初始化准备工作，主要是对必要的启动代码和执行容器做更新操作。openEuler Embedded的构建框架采用的是yocto构建框架，yocto构建的一个特点就是分层模型，这也意味着对于特性组件可进行插拔式选用，openEuler Embedded的代码主要分为三层，如下图所示：
 
-.. image:: ../../_static/images/command/update_yocto_layer.png
+.. image:: ../../../_static/images/command/update_yocto_layer.png
 
 最上层是主构建层，即为openEuler Embedded的源码，决定着openEuler Embedded的特性配置，第二层为构建特性相关的layer层，这里需要额外说明的是poky，poky在yocto中是主干，yocto的构建离不开poky，其他层是特性层，例如添加图形特性，那么就需要添加图形层，想要添加ros特性，那么就需要添加ros层等。第三层是openEuler Embedded依赖的包列表，主构建仓决定着依赖的其他层的版本，也决定着依赖的软件包。
 
