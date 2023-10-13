@@ -1,7 +1,7 @@
-.. _command_index:
+.. _oebuild_command:
 
-oebuild命令介绍
-########################
+oebuild 命令手册
+################
 
 该文档讲解oebuild所有相关的命令以及各命令详细的使用方法。
 
