@@ -32,11 +32,9 @@ openEuler Embedded在内核版本、软件包版本等代码层面会与openEule
 
 .. toctree::
    :maxdepth: 1
-   :caption: oebuild指导
+   :caption: oebuild 指导
 
-   oebuild/install/index.rst
-   oebuild/command/index.rst
-   oebuild/directory/index.rst
-   oebuild/configure/index.rst
+   oebuild/intro.rst
+   oebuild/userguide/index.rst
    oebuild/develop/index.rst
    oebuild/release/index.rst
