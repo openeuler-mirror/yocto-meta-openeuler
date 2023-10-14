@@ -110,28 +110,15 @@ python do_openeuler_fetchs() {
     # Stage the variables related to the original package
     repoName = d.getVar("OPENEULER_REPO_NAME")
     localName = d.getVar("OPENEULER_LOCAL_NAME")
-    gitUrl = d.getVar("OPENEULER_GIT_URL")
-    branch = d.getVar("OPENEULER_BRANCH")
 
     repoList = d.getVar("PKG_REPO_LIST")
-    for item in repoList:
-        d.setVar("OPENEULER_REPO_NAME", item["repo_name"])
-        if "git_url" in item:
-            d.setVar("OPENEULER_GIT_URL", item["git_url"])
-        if "branch" in item:
-            d.setVar("OPENEULER_BRANCH", item["branch"])
-        if "local" in item:
-            d.setVar("OPENEULER_LOCAL_NAME", item["local"])
-        else:
-            d.setVar("OPENEULER_LOCAL_NAME", item["repo_name"])
-
+    for item_name in repoList:
+        d.setVar("OPENEULER_REPO_NAME", item_name)
         bb.build.exec_func("do_openeuler_fetch", d)
 
     # Restore the variables related to the original package
     d.setVar("OPENEULER_REPO_NAME", repoName)
     d.setVar("OPENEULER_LOCAL_NAME", localName)
-    d.setVar("OPENEULER_GIT_URL", gitUrl)
-    d.setVar("OPENEULER_BRANCH", branch)
 }
 
 # fetch software package from openeuler's repos first,
@@ -147,8 +134,6 @@ python do_openeuler_fetch() {
     srcDir = d.getVar('OPENEULER_SP_DIR')
     repoName = d.getVar('OPENEULER_REPO_NAME')
     localName = d.getVar('OPENEULER_LOCAL_NAME') if d.getVar('OPENEULER_LOCAL_NAME')  else repoName
-    gitUrl = d.getVar('OPENEULER_GIT_URL')
-    repoBranch = d.getVar('OPENEULER_BRANCH')
 
     urls = d.getVar("SRC_URI").split()
 
@@ -158,7 +143,6 @@ python do_openeuler_fetch() {
         return
 
     repo_dir = os.path.join(srcDir, localName)
-    repo_url = os.path.join(gitUrl, repoName)
     except_str = None
 
     try:
@@ -185,10 +169,7 @@ python do_openeuler_fetch() {
     except Exception as e:
         bb.plain("===============")
         bb.plain("OPENEULER_SP_DIR: {}".format(srcDir))
-        bb.plain("OPENEULER_REPO_NAME: {}".format(repoName))
         bb.plain("OPENEULER_LOCAL_NAME: {}".format(localName))
-        bb.plain("OPENEULER_GIT_URL: {}".format(gitUrl))
-        bb.plain("OPENEULER_BRANCH: {}".format(repoBranch))
         bb.plain("===============")
         except_str = str(e)
 
@@ -200,6 +181,7 @@ def init_repo_dir(repo_dir):
     import git
 
     repo = git.Repo.init(repo_dir)
+
     with repo.config_writer() as wr:
         wr.set_value('http', 'sslverify', 'false').release()
     return repo
@@ -222,8 +204,13 @@ def download_repo(repo_dir, repo_url ,version = None):
     if remote is None:
         remote_name = "upstream"
         remote = git.Remote.add(repo = repo, name = remote_name, url = repo_url)
-    
-    remote.fetch(version, depth=1)
+
+    try:
+        repo.commit(version)
+    except:
+        bb.debug(1, 'commit does not exist, shallow fetch: ' + version)
+        remote.fetch(version, depth=1)
+
     # if repo is modified, restore it
     if repo.is_dirty():
         repo.git.checkout(".")

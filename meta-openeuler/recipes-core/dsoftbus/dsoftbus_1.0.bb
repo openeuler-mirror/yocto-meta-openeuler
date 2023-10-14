@@ -68,23 +68,12 @@ INSANE_SKIP:${PN} += "already-stripped"
 ALLOW_EMPTY:${PN} = "1"
 
 python do_fetch:prepend() {
-    repoList = [{
-        "repo_name": "yocto-embedded-tools",
-        "git_url": "https://gitee.com/openeuler",
-        "branch": "master"
-    },{
-        "repo_name": "dsoftbus_standard",
-        "git_url": "https://gitee.com/openeuler",
-        "branch": "dev"
-    },{
-        "repo_name": "embedded-ipc",
-        "git_url": "https://gitee.com/openeuler",
-        "branch": "master"
-    },{
-        "repo_name": "dsoftbus",
-        "git_url": "https://gitee.com/src-openeuler",
-        "branch": "master"
-    }]
+    repoList = [
+        "yocto-embedded-tools",
+        "dsoftbus_standard",
+        "embedded-ipc",
+        "dsoftbus"
+    ]
 
     d.setVar("PKG_REPO_LIST", repoList)
 
