@@ -5,8 +5,10 @@ def openeuler_set_version(d):
     if new_pv:
         d.setVar('PV', '%s'%new_pv)
 
-def openeuler_get_localname(d):
-    return openeuler_get_item(d, 'localname', "")
+def openeuler_set_localname(d):
+    new_localname = openeuler_get_item(d, 'localname', "")
+    if new_localname:
+        d.setVar('OPENEULER_LOCAL_NAME', '%s' % new_localname)
 
 def openeuler_get_item(d, key, default_value):
     pkg_name = d.getVar('BPN')
@@ -27,7 +29,7 @@ def get_localname_list(maplist_dir):
 
 python set_openeuler_variable() {
     openeuler_set_version(d)
-    d.setVar('OPENEULER_LOCAL_NAME', '${@openeuler_get_localname(d)}')
+    openeuler_set_localname(d)
     if check_source_list(d):
         bb.build.exec_func("add_openeuler_source_uri", d)
 }
