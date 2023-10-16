@@ -12,10 +12,17 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=74b1b7a7ee537a16390ed514498bf23c"
 ### Build metadata: SRC_URI, SRCDATA, S, B, FILESEXTRAPATHS....
 OPENEULER_REPO_NAME = "mcs"
 
-SRC_URI = " \
+SRC_URI:append:aarch64 = " \
     file://mcs \
     "
 S = "${WORKDIR}/mcs"
+
+# for x86
+OPENEULER_LOCAL_NAME:x86-64 = "mcs-x86"
+SRC_URI:append:x86-64 = " \
+    file://mcs-x86 \
+    "
+S:x86-64 = "${WORKDIR}/mcs-x86"
 
 do_fetch[depends] += "mcs-linux:do_fetch"
 
