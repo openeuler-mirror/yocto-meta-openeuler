@@ -84,83 +84,71 @@ pipeline {
                 }
             }
         }
+        stage("code check"){
+            steps {
+                dir('/home/jenkins/agent/embedded-ci'){
+                    script{
+                        // 下载yocto源码
+                        downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), Integer.parseInt(commitCount))
+                        def randomStr = getRandomStr()
+                        def logDir = mkdirOpeneulerLog()
+                        // 执行commit检查
+                        def task_res_code = sh (script: """
+                            python3 main.py codecheck \
+                            -c /home/jenkins/agent/yocto-meta-openeuler \
+                            -target commit_msg \
+                            -o $giteeTargetNamespace \
+                            -p $giteeRepoName \
+                            -pr $giteePullRequestid > ${logDir}/${randomStr}.log
+                        """, returnStatus: true)
+                        def check_res = ""
+                        if (task_res_code == 0){
+                            check_res = "success"
+                        }else{
+                            check_res = "failed"
+                            env.code_check_result = "failed"
+                        }
+                        // 对检查赋值
+                        // env.task_check_commit = formatRes("check", "commit_check", check_res, "xxx")
+                        archiveArtifacts "${logDir}/*.log"
+                        STAGES_RES.push(formatRes("check", "commit_check", check_res, "artifact/${logDir}/${randomStr}.log"))
+                    }
+                }
+                dir('/home/jenkins/agent/embedded-ci'){
+                    script{
+                        // 执行scope检查
+                        def randomStr = getRandomStr()
+                        def logDir = mkdirOpeneulerLog()
+                        // 执行commit检查
+                        def task_res_code = sh (script: """
+                            python3 main.py codecheck \
+                            -target commit_scope \
+                            -o $giteeTargetNamespace \
+                            -p $giteeRepoName \
+                            -pr $giteePullRequestid > ${logDir}/${randomStr}.log
+                        """, returnStatus: true)
+                        def check_res = ""
+                        if (task_res_code == 0){
+                            check_res = "success"
+                        }else{
+                            check_res = "failed"
+                            env.code_check_result = "failed"
+                        }
+                        // 对检查赋值
+                        // env.task_check_scope = formatRes("check", "scope_check", check_res, "xxx")
+                        archiveArtifacts "${logDir}/*.log"
+                        STAGES_RES.push(formatRes("check", "scope_check", check_res, "artifact/${logDir}/${randomStr}.log"))
+                    }
+                }
+            }
+        }
         stage("check task"){
+            when {
+                expression {
+                    return env.code_check_result != "failed"
+                }
+            }
             parallel {
-                stage("check commit"){
-                    agent { node "${node}" }
-                    steps {
-                        dir('/home/jenkins/agent'){
-                            script{
-                                downloadEmbeddedCI()
-                            }
-                        }
-                        dir('/home/jenkins/agent/embedded-ci'){
-                            script{
-                                // 下载yocto源码
-                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), Integer.parseInt(commitCount))
-                                def randomStr = getRandomStr()
-                                def logDir = mkdirOpeneulerLog()
-                                // 执行commit检查
-                                def task_res_code = sh (script: """
-                                    python3 main.py codecheck \
-                                    -c /home/jenkins/agent/yocto-meta-openeuler \
-                                    -target commit_msg \
-                                    -o $giteeTargetNamespace \
-                                    -p $giteeRepoName \
-                                    -pr $giteePullRequestid > ${logDir}/${randomStr}.log
-                                """, returnStatus: true)
-                                def check_res = ""
-                                if (task_res_code == 0){
-                                    check_res = "success"
-                                }else{
-                                    check_res = "failed"
-                                }
-                                // 对检查赋值
-                                // env.task_check_commit = formatRes("check", "commit_check", check_res, "xxx")
-                                archiveArtifacts "${logDir}/*.log"
-                                STAGES_RES.push(formatRes("check", "commit_check", check_res, "artifact/${logDir}/${randomStr}.log"))
-                            }
-                        }
-                    }
-                }
-                stage("check scope"){
-                    agent { node "${node}" }
-                    steps {
-                        dir('/home/jenkins/agent'){
-                            script{
-                                downloadEmbeddedCI()
-                            }
-                        }
-                        dir('/home/jenkins/agent/embedded-ci'){
-                            script{
-                                // 执行scope检查
-                                // 下载yocto源码
-                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
-                                def randomStr = getRandomStr()
-                                def logDir = mkdirOpeneulerLog()
-                                // 执行commit检查
-                                def task_res_code = sh (script: """
-                                    python3 main.py codecheck \
-                                    -c /home/jenkins/agent/yocto-meta-openeuler \
-                                    -target commit_scope \
-                                    -o $giteeTargetNamespace \
-                                    -p $giteeRepoName \
-                                    -pr $giteePullRequestid > ${logDir}/${randomStr}.log
-                                """, returnStatus: true)
-                                def check_res = ""
-                                if (task_res_code == 0){
-                                    check_res = "success"
-                                }else{
-                                    check_res = "failed"
-                                }
-                                // 对检查赋值
-                                // env.task_check_scope = formatRes("check", "scope_check", check_res, "xxx")
-                                archiveArtifacts "${logDir}/*.log"
-                                STAGES_RES.push(formatRes("check", "scope_check", check_res, "artifact/${logDir}/${randomStr}.log"))
-                            }
-                        }
-                    }
-                }
                 stage("docs"){
                     agent { node "${node}" }
                     when {
@@ -377,51 +365,6 @@ pipeline {
                                 // 对检查赋值
                                 archiveArtifacts "${logDir}/*.log"
                                 STAGES_RES.push(formatRes("qemu_x86", "build", check_res, "artifact/${logDir}/${randomStr}.log"))
-                            }
-                        }
-                    }
-                }
-                stage("qemu_riscv64"){
-                    agent { node "${node}" }
-                    when {
-                        expression {
-                            return env.pr_check_result.contains("code")
-                        }
-                    }
-                    steps {
-                        dir('/home/jenkins/agent'){
-                            script{
-                                downloadEmbeddedCI()
-                            }
-                        }
-                        dir('/home/jenkins/agent/embedded-ci'){
-                            script{
-                                // 执行qemu_arm编译
-                                // 下载yocto源码
-                                def randomStr = getRandomStr()
-                                def logDir = mkdirOpeneulerLog()
-                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
-                                // 执行镜像编译检查
-                                def task_res_code = sh (script: """
-                                    python3 main.py build \
-                                    -c /home/jenkins/agent/yocto-meta-openeuler \
-                                    -target openeuler_image \
-                                    -a riscv64 \
-                                    -t /usr1/openeuler/gcc/openeuler_gcc_riscv64 \
-                                    -p qemu-riscv64 \
-                                    -i openeuler-image \
-                                    -d qemu-riscv64 > ${logDir}/${randomStr}.log
-                                """, returnStatus: true)
-                                
-                                def check_res = ""
-                                if (task_res_code == 0){
-                                    check_res = "success"
-                                }else{
-                                    check_res = "failed"
-                                }
-                                // 对检查赋值
-                                archiveArtifacts "${logDir}/*.log"
-                                STAGES_RES.push(formatRes("qemu_riscv64", "build", check_res, "artifact/${logDir}/${randomStr}.log"))
                             }
                         }
                     }
