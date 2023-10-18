@@ -3,7 +3,6 @@
 
 OPENEULER_SRC_URI_REMOVE = "https http git"
 
-# find patches under openeuler at firse
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
 PV = "0.1.1"
