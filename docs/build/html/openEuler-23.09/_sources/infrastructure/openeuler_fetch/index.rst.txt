@@ -19,40 +19,26 @@ openeuler_fetch运行逻辑
 
 openeuler_fetch通过以下控制变量来完成相关包下载：
 
- - OPENEULER_GIT_URL:  远程仓库前缀，默认值为https://gitee.com/src-openeuler，该变量在.oebuild/local.conf.sample中设置，全局生效，也可以在bb或bbappend文件中设置使之局部生效
-
- - OPENEULER_BRANCH: 软件包分支，在下载软件包时会通过该变量指定分支名称，该变量在.oebuild/local.conf.sample中设置，全局生效，也可以在bb或bbappend文件中设置使之局部生效
-
  - OPENEULER_REPO_NAME: 软件包名，该名一般和构建包名一致，但在特殊情况下需要改动，例如构建libtool-cross时，构建包名为libtool-cross，因此默认OPENEULER_REPO_NAME为libtool-cross，但是依赖包路径是libtool，则需要将OPENEULER_REPO_NAME改为libtool
 
  - OPENEULER_LOCAL_NAME: 软件包本地名称，即软件包在本地路径名称，一般该变量如果不设置则在系统处理时默认和OPENEULER_REPO_NAME一样，该变量意在解决软件包名和本地存储路径不一致问题
 
- - OPENEULER_SRC_URI_REMOVE: SRC_URI过滤变量，设置该变量可以在bitbake执行fetch之前移除设定的相关uri文件路径，该变量通过前缀进行匹配，例如设定OPENEULER_SRC_URI_REMOVE="https git"，则openeuler_fetch在处理时遇到以https和git开头的uri则会去除
+整体openeuler_fetch下载就是依靠以上相关变量确定下载的包信息，而获取下载包的信息是在openEuler Embedded的基线文件中记录的，该文件目录为.oebuild/manifest.yaml，如果在基线文件中能命中该包信息，则会进行下载，否则不做任何操作。基线文件中的包信息包含该包的version，因此在命中该包后会根据version来确定该包的版本，并且为了更快的完成下载任务，我们尽可能的减少下载的代码量，因此openeuler_fetch在下载代码时其深度设定为1。在对该包的匹配过程中，如果本地可以检出该包的version，则直接切换包版本，否则进行fetch操作，然后再进行包版本检出。
 
-整体openeuler_fetch下载就是依靠以上相关变量完成，由以上变量最终组成git下载参数：
+另外openeuler_fetch对于OPENEULER_REPO_NAME与OPENEULER_LOCAL_NAME的处理为如果设定了OPENEULER_LOCAL_NAME则选用OPENEULER_LOCAL_NAME作为reponame，用reponame来查找manifest.yaml中的相关包信息，否则选用OPENEULER_REPO_NAME作为reponame，因此对于同一个仓，由于不同的应用场景需要选用不同的分支，那么则需要设定不同的OPENEULER_LOCAL_NAME。
 
- - remote: 默认为https://gitee.com/src-openeuler/xxx，由OPENEULER_GIT_URL/OPENEULER_REPO_NAME组成
- 
- - branch: 默认为OPENEULER_BRANCH
-
-依据remote和branch，openeuler_fetch完成下载
-
-openeuler_fetch 运行原理图如下：
-    .. image:: ../../../image/infrastructure/openeuler_fetch_process.png
-
-repo_init 运行原理图如下：
-    .. image:: ../../../image/infrastructure/openeuler_fetch_repo_init.png
+例如特性M与N，都依赖a仓，但是版本分支不同，因此对于M来说，其所设定的a仓的OPENEULER_LOCAL_NAME为a-1，对于N来说，其所设定的a仓的OPENEULER_LOCAL_NAME为a-2，而manifest.yaml中需要各自记录a-1与a-2的版本信息。
 
 如何适配其他软件包
 ***************************
 
-在构建openEuler Embedded时经常会引入其他相关包或修改非指定包版本，那么此时该如何做呢？从上文中已经得知openeuler_fetch依赖5个变量来进行下载，内核是例外，因此我们只需要关注这五个变量即可，接下来我们以busybox为例进行讲解：
+在构建openEuler Embedded时经常会引入其他相关包或修改非指定包版本，那么此时该如何做呢？直接修改基线文件即可，内核是例外，接下来我们以busybox为例进行讲解：
 
-- 如果想要某一个版本的busybox参与构建：在busybox的bbappend文件中设定OPENEULER_BRANCH值为相关版本即可
+- 如果想要某一个版本的busybox参与构建：在manifest.yaml中将busybox的version进行修改即可
 
-- 如果想要使用自有仓库的busybox参与构建：在busybox的bbappend文件中设定OPENEULER_GIT_URL为自有空间即可，注意：如果busybox已经下载在本地，则需要手动删除，然后再执行构建
+- 如果想要使用自有仓库的busybox参与构建：在manifest.yaml中将remote_url修改为自有仓库的链接即可
 
-- 如果需要其他代码仓的busybox参与构建，则修改OPENEULER_GIT_URL为其他平台仓域名即可，例如https://github.com/xxx
+- 如果需要其他代码仓的busybox参与构建：同理，直接在manifest.yaml中修改对应的busybox中remote_url即可
 
 - 另外，当构建busybox时需要的依赖并不会是某一款特定包，即不能直接通过depends添加依赖，而仅仅是需要某个路径下的文件，此时需要在bbappend中添加do_fetch:prepend，在该函数中添加需要依赖的包，例如：
 
@@ -60,34 +46,19 @@ repo_init 运行原理图如下：
 
 
     python do_fetch:prepend() {
-        repoList = [{
-            "repo_name": "yocto-embedded-tools",
-            "git_url": "https://gitee.com/openeuler",
-            "branch": "master"
-        },{
-            "repo_name": "libboundscheck",
-            "git_url": "https://gitee.com/openeuler",
-            "branch": "openEuler-22.09"
-        },{
-            "repo_name": "dsoftbus_standard",
-            "git_url": "https://gitee.com/openeuler",
-            "branch": "v3.1"
-        },{
-            "repo_name": "embedded-ipc",
-            "git_url": "https://gitee.com/openeuler",
-            "branch": "master"
-        }]
+        repoList = [
+            "yocto-embedded-tools",
+            "libboundscheck",
+            "dsoftbus_standard",
+            "embedded-ipc"
+            ]
 
         d.setVar("PKG_REPO_LIST", repoList)
 
         dd.build.exec_func("do_openeuler_fetchs", d)
     }
 
-通过repoList设置好需要依赖的包，包结构格式不可更改，PKG_REPO_LIST变量的设定是为在do_openeuler_fetchs中获取依赖的包列表，do_openeuler_fetchs将依次解析PKG_REPO_LIST，并调用do_openeuler_fetch完成相关包的下载。
-
-- 如果想要下载的busybox包在本地用其他路径，比如busyboyy，则在busybox的bb文件或bbappend文件设定OPENEULER_LOCAL_NAME="busyboyy"，当clone busybox时本地路径会变成busyboyy。注意,如果本地已经有busybox，但是依然设置了OPENEULER_LOCAL_NAME，那么原本地仓将不会做任何操作，openeuler_fetch将直接新建一个busyboyy
-
-- 如果在编译busybox中所依赖的某些文件不想要，想统一去除，则可以在bb文件或bbappend文件中设定OPENEULER_SRC_URI_REMOVE变量，比如busybox的SRC_URI中有https或git开头的文件路径，但是我们想自己下载而不需要系统默认设定的，则可以设置OPENEULER_SRC_URI_REMOVE="https git"，这样openeuler_fetch在处理时就会去除以https和git开头的文件
+通过repoList设置好需要依赖的包，同时列表中的包需要在manifest.yaml中有相关信息的记录，以以上的列表为例，我们需要在manifest.yaml中有关于yocto-embedded-tools的包信息，否则不会有任何下载功能，PKG_REPO_LIST变量的设定是为在do_openeuler_fetchs中获取依赖的包列表，do_openeuler_fetchs将依次解析PKG_REPO_LIST，并调用do_openeuler_fetch完成相关包的下载。
 
 如何关闭openeuler_fetch功能
 ***************************
