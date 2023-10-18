@@ -117,7 +117,7 @@ download_code()
     update_code_repo src-openeuler/busybox ${SRC_BRANCH}
     update_code_repo openeuler/dsoftbus_standard v3.1
     update_code_repo src-openeuler/libboundscheck ${SRC_BRANCH}
-    update_code_repo openeuler/yocto-embedded-tools v1.0-release
+    update_code_repo openeuler/yocto-embedded-tools ${SRC_BRANCH}
     update_code_repo openeuler/embedded-ipc v1.0-release
     update_code_repo openeuler/yocto-poky v3.3.6
     update_code_repo src-openeuler/yocto-pseudo ${SRC_BRANCH}
