@@ -1,0 +1,180 @@
+From 282c3c77015f1e95ef52312b970f8aed8c2a81ee Mon Sep 17 00:00:00 2001
+From: Pengfei Deng <1652695505@qq.com>
+Date: Thu, 19 Oct 2023 18:29:22 +0800
+Subject: [PATCH] zehpyr: add dependencies required by benchmark
+
+add relevant code to adapt benchmark related tests.
+
+Signed-off-by: dengpengfei <1652695505@qq.com>
+
+diff --git a/subsys/ipc/rpmsg_service/CMakeLists.txt b/subsys/ipc/rpmsg_service/CMakeLists.txt
+index cde10cdd..09d8442e 100644
+--- a/subsys/ipc/rpmsg_service/CMakeLists.txt
++++ b/subsys/ipc/rpmsg_service/CMakeLists.txt
+@@ -3,3 +3,4 @@
+ zephyr_sources(rpmsg_backend.c)
+ zephyr_sources(rpmsg_service.c)
+ zephyr_sources(rpmsg_rpc_service.c)
++zephyr_sources(rpmsg_test_service.c)
+\ No newline at end of file
+diff --git a/subsys/ipc/rpmsg_service/rpmsg_test_service.c b/subsys/ipc/rpmsg_service/rpmsg_test_service.c
+new file mode 100644
+index 00000000..e4210185
+--- /dev/null
++++ b/subsys/ipc/rpmsg_service/rpmsg_test_service.c
+@@ -0,0 +1,86 @@
++#include "rpmsg_test_service.h"
++#include <zephyr/device.h>
++#include <zephyr/drivers/cache.h>
++#include <zephyr/drivers/pm_cpu_ops.h>
++#include <zephyr/ipc/rpmsg_service.h>
++#include <zephyr/kernel.h>
++#include <zephyr/logging/log.h>
++#include <zephyr/types.h>
++
++#define LOG_MODULE_NAME rpmsg_rpc_service
++LOG_MODULE_REGISTER(LOG_MODULE_NAME, CONFIG_RPMSG_SERVICE_LOG_LEVEL);
++
++static int pty_ping_ep_id, rpc_ping_id, rpc_long_ping_id;
++
++static int benchmark_rpc_ping_cb(struct rpmsg_endpoint *ept, void *data, size_t len,
++                                 uint32_t src, void *priv)
++{
++    int ret;
++    struct _payload *msg = (struct _payload *)data;
++
++    for (int i = 0; i < 4; i++)
++        if (msg->data[i] != 2023)
++            return 1;
++    ret = rpmsg_service_send(rpc_ping_id, data, len);
++
++    return 0;
++}
++
++static int benchmark_rpc_long_ping_cb(struct rpmsg_endpoint *ept, void *data, size_t len,
++                                      uint32_t src, void *priv)
++{
++    int ret;
++    struct _large_msg *msg = (struct _large_msg *)data;
++
++    for (int i = 0; i < 59; i++)
++        if (msg->data[i] != 2023)
++            return 1;
++    ret = rpmsg_service_send(rpc_long_ping_id, data, len);
++    return 0;
++}
++
++static int pty_ping_cb(struct rpmsg_endpoint *ept, void *data, size_t len,
++                       uint32_t src, void *priv)
++{
++    int ret;
++    ret = rpmsg_service_send(pty_ping_ep_id, (char *)data, len);
++    if (ret < 0) {
++        LOG_ERR("rpmsh send error\n");
++    }
++    return 0;
++}
++
++int benchmark_rpc_service_init()
++{
++    int ret;
++
++    ret = rpmsg_service_register_endpoint(BENCHMARK_RPC_PING, benchmark_rpc_ping_cb, NULL, &rpc_ping_id);
++    if (ret >= 0) {
++        rpc_ping_id = ret;
++    } else {
++        return ret;
++    }
++
++    ret = rpmsg_service_register_endpoint(BENCHMARK_RPC_LONG_PING, benchmark_rpc_long_ping_cb, NULL, &rpc_long_ping_id);
++    if (ret >= 0) {
++        rpc_long_ping_id = ret;
++        return 0;
++    } else {
++        return ret;
++    }
++}
++
++int pty_ping_service_init()
++{
++    int ret;
++    ret = rpmsg_service_register_endpoint(BENCHMARK_PTY_PING, pty_ping_cb, NULL,
++                                          &pty_ping_ep_id);
++    if (ret >= 0) {
++        pty_ping_ep_id = ret;
++        return 0;
++    } else {
++        return ret;
++    }
++}
++SYS_INIT(benchmark_rpc_service_init, POST_KERNEL, CONFIG_RPMSG_SERVICE_EP_REG_PRIORITY);
++SYS_INIT(pty_ping_service_init, POST_KERNEL, CONFIG_RPMSG_SERVICE_EP_REG_PRIORITY);
+\ No newline at end of file
+diff --git a/subsys/ipc/rpmsg_service/rpmsg_test_service.h b/subsys/ipc/rpmsg_service/rpmsg_test_service.h
+new file mode 100644
+index 00000000..3c17b40e
+--- /dev/null
++++ b/subsys/ipc/rpmsg_service/rpmsg_test_service.h
+@@ -0,0 +1,59 @@
++#ifndef ZEPHYR_SUBSYS_IPC_RPMSG_TEST_SERVICE_H
++#define ZEPHYR_SUBSYS_IPC_RPMSG_TEST_SERVICE_H
++
++#include <zephyr/toolchain.h>
++#include <zephyr/types.h>
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++#define BENCHMARK_RPC_PING "rpc-ping"
++#define BENCHMARK_RPC_LONG_PING "rpc-long-ping"
++#define BENCHMARK_PTY_PING "pty-ping"
++
++/* RPMSG_BUFFER_SIZE = 512
++ * sizeof(struct rpmsg_hdr) = 16
++ * RPMSG_BUFFER_SIZE - sizeof(struct rpmsg_hdr) - 4 = 492
++ * Aligning to 64 bits -> 488UL
++ */
++#define MAX_BUF_LEN	488UL
++#define RPC_ID_LEN sizeof(uint32_t)
++/*
++ * rpc service call back
++ */
++typedef int (*rpmsg_rpc_cb_t)(void *params, size_t len);
++
++struct rpmsg_rpc_service {
++	uint32_t id;
++	rpmsg_rpc_cb_t cb_function;
++};
++
++struct _large_msg
++{
++    unsigned long flag;
++    unsigned long data[];
++};
++
++struct _payload{
++    unsigned long num;
++    unsigned long size;
++    unsigned long data[];
++};
++
++struct rpmsg_rpc_data {
++	uint32_t id;    /* rpc id */
++	unsigned char params[MAX_BUF_LEN];
++} __packed;
++
++struct rpmsg_rpc_instance {
++	unsigned int ep_id; /* endpoint id */
++	const struct rpmsg_rpc_service *services; /* service table */
++	unsigned int n_services; /* number of services */
++};
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif /* ZEPHYR_SUBSYS_IPC_RPMSG_RPC_SERVICE_H */
+--
+2.35.3
+
