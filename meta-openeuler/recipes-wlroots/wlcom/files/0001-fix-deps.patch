@@ -1,0 +1,68 @@
+--- a/data/meson.build
++++ b/data/meson.build
+@@ -1,5 +1,5 @@
+ udev_backlight = files('udev-rules/90-backlight.rules')
+-install_data(udev_backlight, install_dir: '/usr/lib/udev/rules.d')
++install_data(udev_backlight, install_dir: '@0@/udev/rules.d'.format(get_option('libdir')))
+ 
+ session = files('kylin-wlcom.desktop')
+ install_data(session, install_dir: '/usr/share/wayland-sessions')
+--- a/meson.build
++++ b/meson.build
+@@ -70,7 +70,7 @@ rsvg  = dependency('librsvg-2.0', versio
+ 
+ plugindir = get_option('plugin_directory')
+ if plugindir == ''
+-  plugindir = '@0@/lib/kylin-wlcom/plugins'.format(get_option('prefix'))
++  plugindir = '@0@/kylin-wlcom/plugins'.format(get_option('libdir'))
+ endif
+ add_project_arguments('-DPLUGIN_DIR="@0@"'.format(plugindir), language: 'c')
+ 
+--- a/src/scene/kycom/effect/meson.build
++++ b/src/scene/kycom/effect/meson.build
+@@ -11,11 +11,21 @@ effects_ld_args = ['-Wl,--version-script
+ 
+ effects_link_depends = files('effects.sym')
+ 
++pixman = dependency('pixman-1',       
++    version: '>=0.42.0',
++    fallback: 'pixman',
++    default_options: ['werror=false'],
++)
++
++wldeps = [
++    pixman,
++]
++
+ shared_module(
+     'kywc_round_corner_effect',
+     ['round_corner.c'],
+-    include_directories : [wlcom_inc,
+-                         '/usr/include/pixman-1',
++    dependencies: wldeps,
++    include_directories : [wlcom_inc
+                          ],
+     c_args: '-fvisibility=default',
+     link_args : effects_ld_args,
+@@ -27,8 +37,8 @@ shared_module(
+ shared_module(
+     'kywc_blur_effect',
+     ['blur.c'],
+-    include_directories : [wlcom_inc,
+-                         '/usr/include/pixman-1',
++    dependencies: wldeps,
++    include_directories : [wlcom_inc
+                          ],
+     c_args: '-fvisibility=default',
+     link_args : effects_ld_args,
+@@ -40,8 +50,8 @@ shared_module(
+ shared_module(
+      'kywc_scale_effect',
+      ['scale.c'],
+-    include_directories : [wlcom_inc,
+-                          '/usr/include/pixman-1',
++    dependencies: wldeps,
++    include_directories : [wlcom_inc
+                           ],
+      c_args: '-fvisibility=default',
+      link_args : effects_ld_args,
