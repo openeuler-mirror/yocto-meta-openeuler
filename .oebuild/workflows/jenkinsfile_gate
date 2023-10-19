@@ -379,20 +379,25 @@ pipeline {
                     withCredentials([
                         string(credentialsId: "${giteeId}", variable: 'GITEETOKEN'),
                         usernamePassword(credentialsId: "${jenkinsId}", usernameVariable: 'JUSER',passwordVariable: 'JPASSWD')]){
-                            def chks = ""
-                            for (int i = 0; i < STAGES_RES.size(); ++i) {
-                                chks = "${chks} -chk ${STAGES_RES[i]}"
+                            if (currentBuild.result != 'ABORTED') {
+                                def chks = ""
+                                for (int i = 0; i < STAGES_RES.size(); ++i) {
+                                    chks = "${chks} -chk ${STAGES_RES[i]}"
+                                }
+
+                                def duration_time = System.currentTimeMillis() - currentBuild.startTimeInMillis
+                                sh """
+                                python3 main.py comment \
+                                     -m gate \
+                                     -o $giteeTargetNamespace \
+                                     -p $giteeRepoName \
+                                     -pr $giteePullRequestid \
+                                     -gt $GITEETOKEN \
+                                     -dt $duration_time \
+                                     $chks
+                                """
                             }
-                            sh """
-                            python3 main.py comment \
-                                 -m gate \
-                                 -o $giteeTargetNamespace \
-                                 -p $giteeRepoName \
-                                 -pr $giteePullRequestid \
-                                 -gt $GITEETOKEN \
-                                 $chks
-                            """
-                        }
+                    }
                 }
             }
         }
