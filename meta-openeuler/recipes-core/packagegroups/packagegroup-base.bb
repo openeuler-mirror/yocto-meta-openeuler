@@ -89,7 +89,8 @@ packagegroup-base-libs \
 packagegroup-entropy-daemon \
 "
 
-# for x86-64 arch, add ethercat-igh
+# for x86-64 arch, add ethercat-igh intel-cmt-cat
 RDEPENDS:packagegroup-base-utils:x86-64:append = " \
     ethercat-igh \
+    intel-cmt-cat \
 "
