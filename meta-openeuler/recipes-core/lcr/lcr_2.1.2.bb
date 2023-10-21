@@ -14,15 +14,16 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;m
 inherit cmake
 
 ### Build metadata
-SRC_URI = "file://v${PV}.tar.gz \
-           file://0001-add-libisula.pc.patch \
-           file://0002-add-unified-and-memory_swap_limit_in_bytes-into-host.patch \
-           file://0003-fix-update-cpu-rt-period-failed.patch \
-           file://0004-fix-writing-config-line-with-wrong-length.patch \
-           file://0005-Add-memory-related-fields.patch \
-           file://0006-mod-headers.patch \
-           file://0007-add-cgroup-resources-json-schema-for-isula-update.patch \
-           file://0008-add-field-for-isulad-daemon-configs.patch \
+SRC_URI = " \
+        file://v${PV}.tar.gz \
+        file://0001-support-check-symbols-and-compile-code-in-cmake.patch \
+        file://0002-remove-unnecessary-strerror.patch \
+        file://0003-improve-code-of-function-in-log.patch \
+        file://0004-support-visibility-of-compiler.patch \
+        file://0005-refactor-util-buffer-and-add-ut.patch \
+        file://0006-264-Support-both-C-11-and-C-17.patch \
+        file://0007-262-Fix-empty-pointer-and-overflow.patch \
+        file://0008-266-set-env-to-avoid-invoke-lxc-binary-directly.patch \
 "
 
 S = "${WORKDIR}/${BPN}-v${PV}"
