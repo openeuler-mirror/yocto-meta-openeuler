@@ -1,35 +1,16 @@
-
-OPENEULER_SRC_URI_REMOVE = "https http"
+OPENEULER_SRC_URI_REMOVE = "http"
 
 OPENEULER_REPO_NAME = "glib2"
-
-PV = "2.74.4"
-
-# license update
-LIC_FILES_CHKSUM = "file://COPYING;md5=41890f71f740302b785c27661123bff5 \
-                    file://glib/glib.h;beginline=4;endline=17;md5=72f7cc2847407f65d8981ef112e4e630 \
-                    file://LICENSES/LGPL-2.1-or-later.txt;md5=41890f71f740302b785c27661123bff5 \
-                    file://gmodule/gmodule.h;beginline=4;endline=17;md5=72f7cc2847407f65d8981ef112e4e630 \
-                    file://docs/reference/COPYING;md5=f51a5100c17af6bae00735cd791e1fcc"
-
-# use new relocate-modules.patch to fix build error of glib-2.0-native
-FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
-
-# remove conflicting patches
-SRC_URI:remove = "file://Enable-more-tests-while-cross-compiling.patch \
-           file://0001-Do-not-ignore-return-value-of-write.patch \
-           "
 
 # openeuler patch
 SRC_URI:prepend = " \
         file://glib-${PV}.tar.xz \
-        file://backport-gdbusinterfaceskeleton-Fix-a-use-after-free-of-a-GDBusMethodInvocation.patch \
 "
 
 # fix arm build error: 'errno' undeclared (first use in this function)
-SRC_URI:append = " file://0001-fix-compile-error-for-arm32.patch"
+SRC_URI:append:arm = " file://0001-fix-compile-error-for-arm32.patch"
 
-SRC_URI[sha256sum] = "0e82da5ea129b4444227c7e4a9e598f7288d1994bf63f129c44b90cfd2432172"
+PV = "2.76.4"
 
 # delete depends to shared-mime-info
 SHAREDMIMEDEP:remove = "${@['', 'shared-mime-info']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
@@ -72,27 +53,3 @@ do_install:append () {
     fi
 }
 
-
-# keep same as later version bb below
-do_install:append:class-target () {
-        # https://gitlab.gnome.org/GNOME/glib/-/issues/2810
-        rm -f ${D}${datadir}/installed-tests/glib/thread-pool-slow.test
-}
-
-DEPENDS:remove = "libpcre"
-DEPENDS:append = " libpcre2"
-
-EXTRA_OEMESON:remove = "-Dfam=false"
-
-RDEPENDS:${PN}-ptest += "desktop-file-utils"
-
-# for ERROR: glib-2.0-1_2.74.4-r0 do_package: 
-# QA Issue: glib-2.0: Files/directories were installed but not shipped in any package:
-#  /usr/libexec
-#  /usr/libexec/gio-launch-desktop
-FILES:${PN} += "${libexecdir}/*gio-launch-desktop"
-
-# this is a workaround: the use of qemu is immature now
-# when using qemu-usermode in MACHINE_FEATURES, there will be a error:
-# xxx-objcopy: Unable to recognise the format of the input file `gio/tests/test_resources.o'
-MACHINE_FEATURES:remove = "qemu-usermode"
