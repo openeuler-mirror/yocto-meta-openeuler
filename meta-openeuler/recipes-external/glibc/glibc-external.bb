@@ -255,9 +255,9 @@ FILES:${PN}-staticdev = "\
     ${libdir}/libmcheck.a \
 "
 
-# In the x86 toolchain, `libm.a` is a link script pointing to `libm-*.a`.
+# For glibc-2.38, `libm.a` is a link script pointing to `libm-*.a`.
 # to avoid calling `libm.a` failure, we need add `libm-*.a`
-FILES:${PN}-staticdev:append:x86-64 = " ${libdir}/libm-*.a"
+FILES:${PN}-staticdev:append = " ${libdir}/libm-*.a"
 
 FILES:${PN}-dev += "\
     ${libc_baselibs_dev} \
