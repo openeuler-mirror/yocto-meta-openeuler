@@ -247,9 +247,8 @@ ok3568支持通过mcs拉起 RT-Thread，步骤如下：
 启动openEuler Embedded后，通过修改启动盘的启动分区的grub.cfg文件，
 为Client OS预留出一个CPU以及内存资源。
 将镜像启动分区挂载到 /mnt 目录下，然后修改 /mnt/efi/boot/grub.cfg 文件，
-在 ``menuentry 'boot'`` 中添加 ``maxcpus=3`` 和 ``memmap=512M\$16128M`` 参数，
-限制openEuler Embedded只使用3个核心，以及预留出物理地址从15.75G到16.25G的内存资源（16GB内存的x86工控机）。
-如果是8GB内存的x86工控机，需要将 ``memmap`` 改为 ``memmap=512M\$6912M`` 。
+在 ``menuentry 'boot'`` 中添加 ``maxcpus=3`` 和 ``memmap=256M\$0x110000000`` 参数，
+限制openEuler Embedded只使用3个核心，以及预留出物理地址从0x110000000到0x11fffffff的内存资源。
 
 .. code-block:: console
 
@@ -274,12 +273,12 @@ ok3568支持通过mcs拉起 RT-Thread，步骤如下：
    # 查看内存使用情况
    $ cat /proc/iomem
    ...
-   3f0000000-40fffffff : Reserved
+   110000000-11fffffff : Reserved
    ...
                
 
 这说明当前系统正在使用3个CPU，已经预留出了一个CPU。
-内存方面，系统已经预留出了从15.75G到16.25G的内存资源。（16GB内存的x86工控机）
+内存方面，系统已经预留出了从0x110000000到0x11fffffff的内存资源。
 
 接下来，我们通过在openEuler Embedded上运行如下命令启动MICA：
 
@@ -288,18 +287,16 @@ ok3568支持通过mcs拉起 RT-Thread，步骤如下：
    # 调整内核打印等级(可选择不执行)
    $ echo "1 4 1 7" > /proc/sys/kernel/printk
 
-   # 此demo使用标准openEuler Embedded镜像，所以我们单独编译了一个mcs_km.ko
-   # 使用insmod而非modprobe命令插入
-   # 8GB内存环境：
-   $ modprobe mcs_km load_addr=0x1c0000000
-   # 16GB内存环境：
-   $ modprobe mcs_km load_addr=0x400000000
+   # 此demo使用标准openEuler Embedded镜像，其中包含mica脚本
+   # mica脚本位于 /usr/bin/mica
+   # mica脚本的使用方法可以通过 mica -h 查看
+   $ mica start /path/to/executable
 
-   # 运行mica_main程序，启动 client os (8GB内存环境)：
-   $ mica_main -c 3 -t /path/to/uniproton-x86.bin -a 0x1c0000000 -b /path/to/ap_boot
-   # 16GB内存环境：
-   $ mica_main -c 3 -t /path/to/uniproton-x86.bin -a 0x400000000 -b /path/to/ap_boot
+   # 若没有使用标准镜像，没有mica脚本，可以通过以下命令启动MICA：
+   $ insmod /path/to/mcs_km.ko rmem_base=0x110000000 rmem_size=0x10000000
+   $ /path/to/mica_main -c 3 -t /path/to/executable -a 0x118000000 -b /path/to/ap_boot
 
+   # 若mica_main成功运行，会有如下打印：
    ...
    start client os
    ...
@@ -314,6 +311,12 @@ ok3568支持通过mcs拉起 RT-Thread，步骤如下：
 
    # 敲回车后，可以查看uniproton输出信息
    # 可以通过 <Ctrl-a k> 或 <Ctrl-a Ctrl-k> 组合键退出console，具体请参考 screen 的 manual page
+
+如果想停止当前的Client OS，可以通过以下命令：
+
+.. code-block:: console
+
+   $ mica stop
 
 ----------------
 
@@ -349,18 +352,28 @@ ring buffer 的定义在 ``library/include/mcs/ring_buffer.h`` 文件中。
 使用方法
 ----------
 
-首先，得在指定的环境中含有MICA的openEuler Embedded镜像，请参考 :ref:`基于OpenAMP的MICA镜像构建指南 <build_openamp_mica>` 。
+首先，需要构建含有MICA的openEuler Embedded镜像，请参考 :ref:`基于OpenAMP的MICA镜像构建指南 <build_openamp_mica>` 。
 
-然后，得生成适配了GDB stub 的 Uniproton，参考 `UniProton GDB stub 构建指南 <https://gitee.com/zuyiwen/UniProton/blob/stub_dev/src/component/gdbstub/readme.txt>`_ 。
+然后，需要生成适配了GDB stub 的 Uniproton，参考 `UniProton GDB stub 构建指南 <https://gitee.com/zuyiwen/UniProton/blob/stub_dev/src/component/gdbstub/readme.txt>`_ 。
 
-如果希望调试Client OS，需要在启动MICA时加上 ``-d`` 参数，指定GDB stub的elf文件路径。
-以下是以内存16GB的x86工控机为例，启动MICA调试模式：
+在运行命令时，需要在启动MICA时加上 ``-d`` 参数。
+并且，由于需要对可执行文件进行调试， ``-t`` 参数需要指定包含符号表的可执行文件的路径。
+一般来说，plain binary format的可执行文件并没有相关调试信息，
+所以我们只能使用elf格式的可执行文件进行调试。
+当然，如果 ``-t`` 参数指定的是格式为plain binary format的可执行文件的路径，
+调试模式仍然可以正常启动，但是在启动GDB client的时候无法正确读取符号表，
+需要用 ``file`` 命令额外指定包含符号表的可执行文件的路径。
+
+以下是启动MICA调试模式的命令：
 
 .. code-block:: console
 
-   $ modprobe mcs_km load_addr=0x400000000
-   # 以16GB x86工控机为例，启动MICA调试模式：
-   $ mica_main -c 3 -t /path/to/uniproton_gdb_stub.bin -a 0x400000000 -b /path/to/ap_boot -d /path/to/uniproton_gdb_stub.elf
+   # 若使用的是标准镜像，则使用mica脚本启动MICA：
+   $ mica start /path/to/executable -d
+   # 若没有mica脚本，则使用如下命令启动MICA：
+   $ insmod /path/to/mcs_km.ko rmem_base=0x118000000 rmem_size=0x10000000
+   # 启动MICA调试模式：
+   $ /path/to/mica_main -c 3 -t /path/to/executable -a 0x118000000 -b /path/to/ap_boot -d
    ...
    MICA gdb proxy server: starting...
    GNU gdb (GDB) 12.1
@@ -375,11 +388,13 @@ ring buffer 的定义在 ``library/include/mcs/ring_buffer.h`` 文件中。
    (gdb) 
 
 此时，用户可以直接通过GDB命令行输入命令与Client OS进行交互。
-如果用户想要退出调试模式，可以直接不设置断点，输入命令 ``continue`` 。
-按下 ``ctrl-c`` 的效果和平时使用GDB时效果一致，即暂停被调试程序的运行，
-并返回GDB命令行，此时用户可以输入GDB命令与Client OS进行交互。
-如果用户想要退出程序，必须在GDB命令行输入 ``quit`` 命令。
+如果用户想要通过GDB命令行像正常情况一样运行client OS，可以直接不设置断点，输入命令 ``continue`` 。
+
+按下 ``ctrl-c`` 之后会返回GDB命令行，此时用户可以输入GDB命令与Client OS进行交互。
+如果用户想要退出调试模式，必须在GDB命令行输入 ``quit`` 命令。之后，
+MICA会退出与调试相关的模块，并保留pty application模块，以保持和Client OS通过pty交互的能力。
+Uniproton会清除所有断点，并进入正常的运行状态。
 
 .. note:: 
-   当前Uniproton的GDB stub仅支持 ``break``， ``continue``， ``print`` 和 ``quit`` 五个命令。
+   当前Uniproton的GDB stub仅支持 ``break``， ``continue``， ``print`` 和 ``quit`` 四个命令。
    并不支持 ``ctrl-c``，所以按下后虽然会返回GDB命令行，但是Uniproton仍然在运行。
