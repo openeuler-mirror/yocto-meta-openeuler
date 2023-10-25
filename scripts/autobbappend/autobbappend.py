@@ -37,8 +37,8 @@ def search_files(rootDir,filepathmsg,filetype):
                         if j in apathname:
                             filepathresult.append(apath)
     for i in sorted(filepathresult):
-                if not i.endswith(tuple(filetype)):
-                    filepathresult.remove(i)
+        if not i.endswith(tuple(filetype)):
+            filepathresult.remove(i)
     if len(filepathresult) == 0:
         dir = None   
     if len(filepathresult) == 1:
@@ -80,6 +80,7 @@ def search_package(spec_dir):
             if package.find("%{name}") != -1: package = package.replace("%{name}", name)
             if package.find("%{reldate}") != -1: package = package.replace("%{reldate}", reldate)
             package_dir = os.path.abspath(repo_path+"/"+package)
+    f.close()
     if os.path.exists(package_dir) == False:
         print("The following packages were found:")
         package_dir = search_files(repo_path,[name,version],[".tar",".gz",".bz2",".xz"])
@@ -142,6 +143,7 @@ def read_name(spec_dir):
     for count, line in enumerate(f.readlines()):
         count += 1
         if line.find('Name:') != -1: name = line.split(":")[1].strip()
+    f.close()
     return name
 
 
@@ -159,6 +161,7 @@ def read_packageversion(spec_dir,package_dir):
     for count, line in enumerate(f.readlines()):
         count += 1
         if line.find('Version:') != -1: version = line.split(":")[1].strip()
+    f.close()
     package = os.path.splitext(os.path.basename(package_dir))
     package = package[0].split('.tar')[0]
     parts = package.split('-')
@@ -178,6 +181,7 @@ def read_oldPV(pv,bb_dir):
         for count, line in enumerate(f.readlines()):
             count += 1
             if line.find('PV = ') != -1: pv = line.split('"')[1].strip()
+        f.close()
     return pv
 
 
@@ -190,6 +194,7 @@ def read_patch(spec_dir):
     file = open(secure_filename(spec_dir))
     lines = file.readlines()
     result = []
+    file.close()
     for i in lines:
         if re.search('^Patch[0-9]', i):
             result.append(i)
@@ -220,6 +225,7 @@ def read_original_source(bb_dir):
             remote_url = line.strip('SRC_URI = "')
             remote_url = remote_url.split('"')[0].strip()#Delete the '"' at the end
             remote_url = remote_url.split("\\")[0].strip()#Delete the ' \' at the end
+    f.close()
     return remote_url
 
 
@@ -381,7 +387,7 @@ class BuildData:
             BP = '${BP}',
             BPN = '${BPN}',
             ))
- 
+        template_file.close()
         # Write code to file
         if not os.path.exists(bbappend:path):os.makedirs(bbappend:path)
         filePath = bbappend:path+'/'+bpn+'_%.bbappend'
