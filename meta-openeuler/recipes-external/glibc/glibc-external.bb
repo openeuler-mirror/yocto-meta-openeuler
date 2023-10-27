@@ -1,3 +1,5 @@
+# ref: https://git.yoctoproject.org/meta-external-toolchain/
+
 SRC_URI = "\
     file://SUPPORTED \
     file://makedbs.sh \
@@ -252,6 +254,10 @@ FILES:${PN}-staticdev = "\
     ${libdir}/libieee.a \
     ${libdir}/libmcheck.a \
 "
+
+# In the x86 toolchain, `libm.a` is a link script pointing to `libm-*.a`.
+# to avoid calling `libm.a` failure, we need add `libm-*.a`
+FILES:${PN}-staticdev:append:x86-64 = " ${libdir}/libm-*.a"
 
 FILES:${PN}-dev += "\
     ${libc_baselibs_dev} \
