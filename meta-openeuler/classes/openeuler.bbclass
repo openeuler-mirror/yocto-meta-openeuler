@@ -140,6 +140,11 @@ python do_openeuler_fetch() {
     import git
     from git import GitError
 
+    # if we set OPENEULER_FETCH to disable in local.conf or bb file,
+    # we will do nothing
+    if d.getVar('OPENEULER_FETCH') == "disable":
+        return
+
     # get source directory where to download
     srcDir = d.getVar('OPENEULER_SP_DIR')
     repoName = d.getVar('OPENEULER_REPO_NAME')
@@ -245,8 +250,7 @@ def get_manifest(manifest_dir):
 # if success,  other part of base_do_fetch will skip download as
 # files are already downloaded by do_openeuler_fetch
 python base_do_fetch:prepend() {
-    if not d.getVar('OPENEULER_FETCH') or d.getVar('OPENEULER_FETCH') == "enable":
-        bb.build.exec_func("do_openeuler_fetch", d)
+    bb.build.exec_func("do_openeuler_fetch", d)
 }
 
 python do_openeuler_clean() {
