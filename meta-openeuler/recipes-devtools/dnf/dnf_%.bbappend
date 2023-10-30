@@ -17,7 +17,7 @@ SRC_URI:prepend = " \
 "
 
 # add default repo
-SRC_URI += " \
+SRC_URI:append:class-target = " \
     file://openEuler.repo \
 "
 
@@ -25,11 +25,11 @@ S = "${WORKDIR}/${BP}"
 
 SRC_URI[sha256sum] = "7de4eb8e85c4d9a74db6f1f827d2dd3348e265631f8678a1dbf7e3346beaad53"
 
-FILES:${PN} += " \
+FILES:${PN}:append:class-target = " \
     /etc/yum.repos.d/openEuler.repo \
     "
 
-do_install:append() {
+do_install:append:class-target() {
     mkdir -p ${D}/etc/yum.repos.d/ || echo ""
     local version_dir="openEuler-${DISTRO_VERSION}"
     sed -i "s/OPENEULER_VER/${version_dir}/g" ${WORKDIR}/openEuler.repo
