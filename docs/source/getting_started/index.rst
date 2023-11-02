@@ -143,6 +143,14 @@ openEuler Embedded采用yocto构建，但通过 `oebuild <https://gitee.com/open
 
    QEMU运行成功并登录后，将会呈现openEuler Embedded的Shell。
 
+   如果想关闭当前镜像，可以使用'<Ctrl-A>+X'直接退出，或者在初始用户登录完成后，通过以下命令关闭:
+
+   .. code-block:: console
+
+      $ poweroff
+
+   QEMU就会退出并回到启动时的目录。
+
    .. note::
 
       - 由于标准根文件系统镜像进行了安全加固，因此第一次启动时，需要为登录用户名root设置密码，且密码强度有相应要求，需要 **数字、字母、特殊字符组合最少8位**，例如openEuler@2023
