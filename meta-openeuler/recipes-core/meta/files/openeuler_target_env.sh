@@ -4,6 +4,8 @@ OPENEULER_NATIVESDK_SYSROOT=/opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-li
 PYTHONBIN=`which python3`
 PYTHONVERSION=`python3 --version | awk -F "." '{print $2}'`
 PYTHONPKGPATH="${PYTHONBIN%/*}/../lib/python3.${PYTHONVERSION}/site-packages/"
+# auto add COLCON_WORK_PATH for toolchain.cmake, make colcon find pkg install from this path when build
+alias colcon='export COLCON_WORK_PATH=`pwd`  && colcon'
 if [ ${PYTHONPKGPATH#${OPENEULER_NATIVESDK_SYSROOT}} != "$PYTHONPKGPATH" ]; then
     # prepare context for kernel module development when using nativesdk
     pushd "${SDKTARGETSYSROOT}/usr/src/kernel"
