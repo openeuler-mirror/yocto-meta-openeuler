@@ -88,56 +88,62 @@ pipeline {
             steps {
                 dir('/home/jenkins/agent/embedded-ci'){
                     script{
-                        // 下载yocto源码
-                        downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), Integer.parseInt(commitCount))
-                        def randomStr = getRandomStr()
-                        def logDir = mkdirOpeneulerLog()
-                        // 执行commit检查
-                        def task_res_code = sh (script: """
-                            python3 main.py codecheck \
-                            -c /home/jenkins/agent/yocto-meta-openeuler \
-                            -target commit_msg \
-                            -o $giteeTargetNamespace \
-                            -p $giteeRepoName \
-                            -pr $giteePullRequestid > ${logDir}/${randomStr}.log
-                        """, returnStatus: true)
-                        def check_res = ""
-                        if (task_res_code == 0){
-                            check_res = "success"
-                        }else{
-                            check_res = "failed"
-                            env.code_check_result = "failed"
-                        }
-                        // 对检查赋值
-                        // env.task_check_commit = formatRes("check", "commit_check", check_res, "xxx")
-                        archiveArtifacts "${logDir}/*.log"
-                        STAGES_RES.push(formatRes("check", "commit_check", check_res, "artifact/${logDir}/${randomStr}.log"))
+                        withCredentials([string(credentialsId: "${giteeId}", variable: 'GITEETOKEN')]){
+                                // 下载yocto源码
+                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), Integer.parseInt(commitCount))
+                                def randomStr = getRandomStr()
+                                def logDir = mkdirOpeneulerLog()
+                                // 执行commit检查
+                                def task_res_code = sh (script: """
+                                    python3 main.py codecheck \
+                                    -c /home/jenkins/agent/yocto-meta-openeuler \
+                                    -target commit_msg \
+                                    -o $giteeTargetNamespace \
+                                    -p $giteeRepoName \
+                                    -gt $GITEETOKEN \
+                                    -pr $giteePullRequestid > ${logDir}/${randomStr}.log
+                                """, returnStatus: true)
+                                def check_res = ""
+                                if (task_res_code == 0){
+                                    check_res = "success"
+                                }else{
+                                    check_res = "failed"
+                                    env.code_check_result = "failed"
+                                }
+                                // 对检查赋值
+                                // env.task_check_commit = formatRes("check", "commit_check", check_res, "xxx")
+                                archiveArtifacts "${logDir}/*.log"
+                                STAGES_RES.push(formatRes("check", "commit_check", check_res, "artifact/${logDir}/${randomStr}.log"))
+                            }
                     }
                 }
                 dir('/home/jenkins/agent/embedded-ci'){
                     script{
-                        // 执行scope检查
-                        def randomStr = getRandomStr()
-                        def logDir = mkdirOpeneulerLog()
-                        // 执行commit检查
-                        def task_res_code = sh (script: """
-                            python3 main.py codecheck \
-                            -target commit_scope \
-                            -o $giteeTargetNamespace \
-                            -p $giteeRepoName \
-                            -pr $giteePullRequestid > ${logDir}/${randomStr}.log
-                        """, returnStatus: true)
-                        def check_res = ""
-                        if (task_res_code == 0){
-                            check_res = "success"
-                        }else{
-                            check_res = "failed"
-                            env.code_check_result = "failed"
+                        withCredentials([string(credentialsId: "${giteeId}", variable: 'GITEETOKEN')]){
+                                // 执行scope检查
+                                def randomStr = getRandomStr()
+                                def logDir = mkdirOpeneulerLog()
+                                // 执行commit检查
+                                def task_res_code = sh (script: """
+                                    python3 main.py codecheck \
+                                    -target commit_scope \
+                                    -o $giteeTargetNamespace \
+                                    -p $giteeRepoName \
+                                    -gt $GITEETOKEN \
+                                    -pr $giteePullRequestid > ${logDir}/${randomStr}.log
+                                """, returnStatus: true)
+                                def check_res = ""
+                                if (task_res_code == 0){
+                                    check_res = "success"
+                                }else{
+                                    check_res = "failed"
+                                    env.code_check_result = "failed"
+                                }
+                                // 对检查赋值
+                                // env.task_check_scope = formatRes("check", "scope_check", check_res, "xxx")
+                                archiveArtifacts "${logDir}/*.log"
+                                STAGES_RES.push(formatRes("check", "scope_check", check_res, "artifact/${logDir}/${randomStr}.log"))
                         }
-                        // 对检查赋值
-                        // env.task_check_scope = formatRes("check", "scope_check", check_res, "xxx")
-                        archiveArtifacts "${logDir}/*.log"
-                        STAGES_RES.push(formatRes("check", "scope_check", check_res, "artifact/${logDir}/${randomStr}.log"))
                     }
                 }
             }
@@ -218,6 +224,7 @@ pipeline {
                                     -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
                                     -p qemu-aarch64 \
                                     -i openeuler-image \
+                                    -s_in "/home/jenkins/ccache/openeuler_embedded/master/sstate-cache/qemu-aarch64" \
                                     -d qemu-aarch64 > ${logDir}/${randomStr}.log
                                 """, returnStatus: true)
                                 
@@ -263,6 +270,7 @@ pipeline {
                                     -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
                                     -p qemu-aarch64 \
                                     -i openeuler-image-tiny \
+                                    -s_in "/home/jenkins/ccache/openeuler_embedded/master/sstate-cache/qemu-aarch64" \
                                     -d qemu-aarch64-tiny > ${logDir}/${randomStr}.log
                                 """, returnStatus: true)
                                 
@@ -308,7 +316,8 @@ pipeline {
                                     -t /usr1/openeuler/gcc/openeuler_gcc_arm32le \
                                     -p qemu-arm \
                                     -i openeuler-image \
-                                    -d qemu-arm > ${logDir}/${randomStr}.log
+                                    -s_in "/home/jenkins/ccache/openeuler_embedded/master/sstate-cache/qemu-arm32" \
+                                    -d qemu-arm32 > ${logDir}/${randomStr}.log
                                 """, returnStatus: true)
                                 
                                 def check_res = ""
@@ -353,6 +362,7 @@ pipeline {
                                     -t /usr1/openeuler/gcc/openeuler_gcc_x86_64 \
                                     -p x86-64 \
                                     -i openeuler-image \
+                                    -s_in "/home/jenkins/ccache/openeuler_embedded/master/sstate-cache/x86-64" \
                                     -d qemu-x86-64 > ${logDir}/${randomStr}.log
                                 """, returnStatus: true)
                                 
