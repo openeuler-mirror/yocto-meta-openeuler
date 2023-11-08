@@ -1,11 +1,11 @@
-.. _board_rk3568:
+.. _board_rockchip:
 
 
-RK3568
+Rockchip
 #################################
 
 
 .. toctree::
    :maxdepth: 1
 
-   rk3568.rst
+   rockchip.rst
