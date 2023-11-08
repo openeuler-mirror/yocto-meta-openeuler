@@ -1,4 +1,4 @@
-PV = "2.14.0"
+PV = "2.15.0"
 
 SRC_URI = " \
     https://github.com/fedora-modularity/libmodulemd/releases/download/libmodulemd-${PV}/modulemd-${PV}.tar.xz \
@@ -6,7 +6,5 @@ SRC_URI = " \
 
 S = "${WORKDIR}/modulemd-${PV}"
 
-SRC_URI[sha256sum] = "8087942cc290c0df486931233446fb4bce786cd9ff92eb72384731cd4d36f6ef"
+SRC_URI[sha256sum] = "15458323d1d1f614f9e706f623794f95d23e59f4c37deeaa16877463aee34af5"
 
-# delete depends to prelink from gobject-introspection.bbclass
-DEPENDS:remove:class-target = " prelink-native"

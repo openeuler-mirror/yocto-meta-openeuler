@@ -1,4 +1,4 @@
-# main bbfile: yocto-poky/meta/recipes-support/gdbm/gdbm_1.19.bb
+# main bbfile: yocto-poky/meta/recipes-support/gdbm/gdbm_1.23.bb
 
 # version in openEuler
 PV = "1.23"
@@ -23,5 +23,7 @@ SRC_URI += " \
         file://Minor-fix-in-the-compatibility-library.patch \
         "
 
-SRC_URI[tarball.md5sum] = "0bbd38f12656e4728e2f7c4708aec014"
-SRC_URI[tarball.sha256sum] = "f366c823a6724af313b6bbe975b2809f9a157e5f6a43612a72949138d161d762"
+SRC_URI[sha256sum] = "f366c823a6724af313b6bbe975b2809f9a157e5f6a43612a72949138d161d762"
+
+# openeuler patch need bison binary
+DEPENDS += "bison-native"

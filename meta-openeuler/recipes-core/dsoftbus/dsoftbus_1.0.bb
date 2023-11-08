@@ -35,6 +35,7 @@ SRC_URI = " \
         file://dsoftbus/build-0001-add-dsoftbus-build-support-for-embedded-env.patch;patchdir=${S}/build \
         file://dsoftbus/build-0002-support-hichian-for-openeuler.patch;patchdir=${S}/build \
         file://dsoftbus/build-0003-add-deviceauth-ipc-sdk-compile.patch;patchdir=${S}/build \
+        file://dsoftbus/dsoftbus-standard-0002-fix-mutex-build-error-for-dsoftbus-standard.patch;patchdir=${dsoftbus-src}/dsoftbus \
         file://dsoftbus/security-device-auth-0001-deviceauth-for-openeuler.patch;patchdir=${dsoftbus-hichain}/deviceauth \
         file://dsoftbus/security-device-auth-0002-deviceauth-ipc-service.patch;patchdir=${dsoftbus-hichain}/deviceauth \
         file://dsoftbus/security-device-auth-0003-simplify-dependency-on-third-party-packages.patch;patchdir=${dsoftbus-hichain}/deviceauth \
@@ -47,6 +48,7 @@ SRC_URI = " \
         file://dsoftbus/third-party-mbedtls-0001-Adaptation-for-dsoftbus.patch;patchdir=${dsoftbus-thirdparty}/mbedtls \
         file://dsoftbus/third-party-mbedtls-0002-fix-CVE-2021-43666.patch;patchdir=${dsoftbus-thirdparty}/mbedtls \
         file://dsoftbus/third-party-mbedtls-0002-fix-CVE-2021-45451.patch;patchdir=${dsoftbus-thirdparty}/mbedtls \
+        file://dsoftbus/third-party-libcoap-0003-fix-CVE-2023-30364.patch;patchdir=${dsoftbus-thirdparty}/libcoap \
         file://dsoftbus/depend-0001-add-productdefine-for-openeuler.patch;patchdir=${dsoftbus-productdefine}/ \
         file://dsoftbus/depend-0002-add-depend-for-openeuler.patch;patchdir=${dsoftbus-depend} \
         "

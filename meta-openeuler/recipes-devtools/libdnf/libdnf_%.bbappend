@@ -1,8 +1,8 @@
 PV = "0.69.0"
-#export CONFIG_SHELL="/bin/bash"
+# export CONFIG_SHELL="/bin/bash"
 
 # fix rpm install error, depends to /bin/bash
-RDEPENDS:${PN} += "busybox"
+RDEPENDS:${PN}:append:class-target = " busybox"
 
 # add new patches from openeuler
 SRC_URI = " \
@@ -21,11 +21,7 @@ SRC_URI += " \
            file://0001-libdnf-dnf-context.cpp-do-not-try-to-access-BDB-data.patch \
            "
 
-
-
 SRC_URI[sha256sum] = "b615a6f7e1d1d82c928d2c79b36242a29d04cd28e267a5e8a6996435d9f97997"
 
 S = "${WORKDIR}/${BP}"
 
-# delete depends to prelink from gobject-introspection.bbclass
-DEPENDS:remove:class-target = " prelink-native"

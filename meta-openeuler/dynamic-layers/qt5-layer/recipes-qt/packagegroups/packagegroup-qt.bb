@@ -9,9 +9,10 @@ PACKAGES = "${PN}"
 
 RDEPENDS:${PN} = " \
 weston \
+weston-examples \
 qtwayland \
 qtbase \
 kmscube \
-${@bb.utils.contains('DISTRO_FEATURES', 'x11 opengl', 'gtk+3 wxwidgets', 'qt5-opengles2-test', d)} \
 helloworld-gui \
+${@bb.utils.contains('DISTRO_FEATURES', 'x11 opengl', 'weston-xwayland gtk+3 gtk+3-demo wxwidgets', 'qt5-opengles2-test', d)} \
 "

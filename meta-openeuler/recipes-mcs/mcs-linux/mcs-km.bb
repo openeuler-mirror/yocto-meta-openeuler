@@ -44,7 +44,7 @@ do_compile() {
 
 # The inherit of module.bbclass will automatically name module packages with
 # "kernel-module-" prefix as required by the oe-core build environment.
-
 RPROVIDES:${PN} += "kernel-module-mcs-km"
+RPROVIDES:${PN}:x86-64 += "kernel-module-eth-i210"
 RPROVIDES:${PN} += "kernel-module-mcs-remoteproc"
 RPROVIDES:${PN} += "${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'kernel-module-mcs-ivshmem', '', d)}"

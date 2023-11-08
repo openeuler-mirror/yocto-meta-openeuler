@@ -16,6 +16,3 @@ PACKAGECONFIG[cups] = ",,cups,cups"
 PACKAGECONFIG[cloudproviders] = "-Dcloudproviders=true,-Dcloudproviders=false,libcloudproviders"
 PACKAGECONFIG[tracker3] = "-Dtracker3=true,-Dtracker3=false,tracker,tracker-miners"
 
-
-# Missing or unbuildable dependency chain was: ['gtk+3', 'adwaita-icon-theme-symbolic', 'librsvg-native', 'cargo-native', 'cargo-bin-native-x86_64']
-GTKBASE_RRECOMMENDS:remove =  "adwaita-icon-theme-symbolic"

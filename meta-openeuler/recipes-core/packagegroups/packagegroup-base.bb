@@ -24,7 +24,6 @@ curl \
 dosfstools \
 e2fsprogs \
 e2fsprogs-tune2fs \
-ethercat \
 ethtool \
 expat \
 grep \
@@ -90,6 +89,8 @@ packagegroup-base-libs \
 packagegroup-entropy-daemon \
 "
 
-RDEPENDS:packagegroup-base-utils:remove:riscv64 = " \
-ethercat \
+# for x86-64 arch, add ethercat-igh intel-cmt-cat
+RDEPENDS:packagegroup-base-utils:x86-64:append = " \
+    ethercat-igh \
+    intel-cmt-cat \
 "

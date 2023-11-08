@@ -12,7 +12,7 @@ HOSTTOOLS_NONFATAL += "cc"
 ASSUME_PROVIDED += "util-linux-native pkgconfig-native chrpath-replacement-native sgdisk"
 
 # package management tools
-HOSTTOOLS_NONFATAL += "rpm rpmbuild createrepo_c dnf unzip rpm2cpio"
+HOSTTOOLS_NONFATAL += "rpm rpmbuild createrepo_c dnf unzip rpm2cpio xzcat"
 ASSUME_PROVIDED += "rpm-native createrepo-c-native unzip-native"
 
 # commands used by kernel build
@@ -41,7 +41,7 @@ ASSUME_PROVIDED += " pigz-native gzip-native"
 
 
 # gettext amd documentation related tools
-HOSTTOOLS_NONFATAL += "msgfmt msgmerge makeinfo xgettext"
+HOSTTOOLS_NONFATAL += "msgfmt msgmerge msgconv makeinfo xgettext envsubst gettext.sh msgattrib msgcat msgcmp msgcomm msgen msgexec msgfilter msggrep msginit msgunfmt msguniq ngettext recode-sr-latin glib-gettextize "
 ASSUME_PROVIDED += "texinfo-dummy-native gettext-native"
 
 # openssl tools 
@@ -93,18 +93,22 @@ ASSUME_PROVIDED += "cracklib-native"
 ASSUME_PROVIDED += "glib-2.0-native"
 # used by libarchive
 ASSUME_PROVIDED += "e2fsprogs-native"
-ASSUME_PROVIDED += "file-native"
+
 # used by binutils
 ASSUME_PROVIDED += "gnu-config-native"
 
+# need perl-XML-Parser install in host
 ASSUME_PROVIDED += "gperf-native perl-native \
                     init-system-helpers \
                     nativesdk-glibc-locale \
                     gtk-doc-native \
                     "
 
+HOSTTOOLS_NONFATAL += "perl"
+
 HOSTTOOLS_NONFATAL += "dtc"
 ASSUME_PROVIDED += "intltool-native"
+HOSTTOOLS_NONFATAL += "intltool-extract intltool-merge intltool-prepare intltool-update intltoolize"
 
 # used by wayland
 ASSUME_PROVIDED += "xorgproto-native expat-native"
