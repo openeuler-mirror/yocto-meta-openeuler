@@ -16,3 +16,6 @@ SRC_URI:prepend = " \
 do_configure:prepend() {
     mkdir -p ${S}/.git/hooks/
 }
+
+PACKAGECONFIG[suitesparse] = "-DSUITESPARSE=ON,-DSUITESPARSE=OFF,suitesparse"
+PACKAGECONFIG[cxsparse] = "-DCXSPARSE=ON,-DCXSPARSE=OFF,suitesparse"

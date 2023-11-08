@@ -1,5 +1,11 @@
 OPENEULER_SRC_URI_REMOVE = "git https http"
 
+def check_class_valid(d):
+    is_diable = d.getVar('DISABLE_OPENEULER_SOURCE_MAP')
+    if is_diable is None or is_diable == "False" or is_diable == "false" or is_diable == "0":
+        return True
+    return False
+
 def openeuler_set_version(d):
     new_pv = openeuler_get_item(d, 'PV', "")
     if new_pv:
@@ -28,10 +34,11 @@ def get_localname_list(maplist_dir):
 
 
 python set_openeuler_variable() {
-    openeuler_set_version(d)
-    openeuler_set_localname(d)
-    if check_source_list(d):
-        bb.build.exec_func("add_openeuler_source_uri", d)
+    if check_class_valid(d):
+        openeuler_set_version(d)
+        openeuler_set_localname(d)
+        if check_source_list(d):
+            bb.build.exec_func("add_openeuler_source_uri", d)
 }
 
 addhandler set_openeuler_variable
@@ -111,12 +118,14 @@ python add_openeuler_source_uri() {
 }
 
 base_do_unpack:prepend() {
-    if check_source_list(d):
-        bb.build.exec_func("clean_tarball_workspace", d)
+    if check_class_valid(d):
+        if check_source_list(d):
+            bb.build.exec_func("clean_tarball_workspace", d)
 }
 
 do_unpack:append() {
-    if check_source_list(d):
-        bb.build.exec_func("prepare_tarball_workspace", d)
+    if check_class_valid(d):
+        if check_source_list(d):
+            bb.build.exec_func("prepare_tarball_workspace", d)
 }
 
