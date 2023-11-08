@@ -7,7 +7,7 @@ from defusedxml.ElementTree import parse
 
 try:
     xml_path = sys.argv[1]
-    tarball_path = sys.argv[2]
+    local_name = sys.argv[2]
 except Exception as e:
     print("Input Error:",e)
 
@@ -33,7 +33,7 @@ test_deps = set()
 buildtool_native_deps = set()
 
 src_uri = set()
-src_uri.add('file://${OPENEULER_LOCAL_NAME}/ros_depends_humble/' + tarball_path)
+src_uri.add('file://' + workdir)
 
 def get_top_inherit_line():
     ret = 'inherit ros_distro_{0}\n'.format(rosdistro)
@@ -172,12 +172,12 @@ ret += generate_multiline_variable(
 ret += generate_multiline_variable(
     'ROS_BUILDTOOL_DEPENDS', buildtool_native_deps) + '\n'
 ret += generate_multiline_variable(
-    'ROS_EXPORT_DEPENDS', export_deps) + '\n'
+    'ROS_EXPORT_DEPENDS', export_deps.union(deps)) + '\n'
 ret += generate_multiline_variable(
     'ROS_BUILDTOOL_EXPORT_DEPENDS',
     buildtool_export_native_deps) + '\n'
 ret += generate_multiline_variable(
-    'ROS_EXEC_DEPENDS', exec_deps) + '\n'
+    'ROS_EXEC_DEPENDS', exec_deps.union(deps)) + '\n'
 ret += '# Currently informational only -- see '
 ret += 'http://www.ros.org/reps/rep-0149.html#dependency-tags.\n'
 ret += generate_multiline_variable(
@@ -192,13 +192,13 @@ ret += 'DEPENDS += "${ROS_EXPORT_DEPENDS} '
 ret += '${ROS_BUILDTOOL_EXPORT_DEPENDS}"\n\n'
 ret += 'RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"' + '\n\n'
 # SRC_URI
-ret += 'OPENEULER_REPO_NAME = "yocto-embedded-tools"\n'
-ret += 'OPENEULER_LOCAL_NAME = "ros-dev-tools"\n'
-ret += 'OPENEULER_GIT_SPACE = "openeuler"\n\n'
+ret += 'OPENEULER_LOCAL_NAME = "' + local_name + '"\n'
 
 ret += generate_multiline_variable(
     'SRC_URI', src_uri) + '\n'
 ret += 'S = "${WORKDIR}/' + workdir + '"\n'
+ret += 'FILES:${PN} += "${datadir} ${libdir}"\n'
+ret += 'DISABLE_OPENEULER_SOURCE_MAP = "1"\n'
 ret += 'ROS_BUILD_TYPE = "' + build_type + '"\n'
 # Inherits
 ret += '\n' + get_bottom_inherit_line()

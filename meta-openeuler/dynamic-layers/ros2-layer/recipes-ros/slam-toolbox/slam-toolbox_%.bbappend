@@ -37,4 +37,21 @@ ROS_EXPORT_DEPENDS:remove = " \
         rviz-rendering \
 "
 
+ROS_BUILD_DEPENDS:remove = " \
+        suitesparse-cholmod \
+        suitesparse-cxsparse \
+"
+
+ROS_EXEC_DEPENDS:remove = " \
+        suitesparse-cholmod \
+        suitesparse-cxsparse \
+"
+
+ROS_BUILD_DEPENDS:append = " \
+        suitesparse \
+"
+
+ROS_EXEC_DEPENDS:append = " \
+        suitesparse \
+"
 
