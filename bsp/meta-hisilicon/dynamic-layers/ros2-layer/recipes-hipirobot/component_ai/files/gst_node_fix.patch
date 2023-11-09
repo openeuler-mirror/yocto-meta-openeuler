@@ -1,0 +1,40 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -11,17 +11,16 @@ find_package(ament_cmake REQUIRED)
+ find_package(rclcpp REQUIRED)
+ find_package(mipi_camera REQUIRED)
+ find_package(camera REQUIRED)
++find_package(std_msgs REQUIRED)
+ # uncomment the following section in order to fill in
+ # further dependencies manually.
+ # find_package(<dependency> REQUIRED)
+ 
+ set(AI_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../../../)
+-set(SDK_ROOT ${AI_ROOT}/../../3rdparty/platform/ss928/org/smp/a55_linux/)
+ set(GST_ROOT ${AI_ROOT}/component/gesture_detection/)
+ 
+ link_directories(
+-	${SDK_ROOT}/mpp/out/lib
+-	${SDK_ROOT}/mpp/out/lib/npu/stub
++    ${CMAKE_SYSROOT}/usr/lib/npu/stub
+ 	${GST_ROOT}/lib
+ 	${AI_ROOT}/sample/camera/src/ffmpeglib/lib
+ )
+@@ -33,7 +32,6 @@ add_executable(gst_node
+ 	${CMAKE_CURRENT_SOURCE_DIR}/../../../common/ivp_draw.cpp)
+         
+ target_include_directories(gst_node PUBLIC
+-	$<BUILD_INTERFACE:${SDK_ROOT}/mpp/out/include>
+ 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../../common>
+ 	$<BUILD_INTERFACE:${GST_ROOT}/include>
+ 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../../>
+--- a/package.xml
++++ b/package.xml
+@@ -12,6 +12,7 @@
+   <test_depend>ament_lint_auto</test_depend>
+   <test_depend>ament_lint_common</test_depend>
+   <depend>mipi_camera</depend>
++  <depend>std_msgs</depend>
+   <depend>camera</depend>
+   <export>
+     <build_type>ament_cmake</build_type>

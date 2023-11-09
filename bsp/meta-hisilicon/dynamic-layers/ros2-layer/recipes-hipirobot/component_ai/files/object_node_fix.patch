@@ -1,0 +1,54 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -10,13 +10,13 @@ find_package(ament_cmake REQUIRED)
+ find_package(rclcpp REQUIRED)
+ find_package(mipi_camera REQUIRED)
+ find_package(zxing REQUIRED)
++find_package(std_msgs REQUIRED)
+ 
+ # uncomment the following section in order to fill in
+ # further dependencies manually.
+ # find_package(<dependency> REQUIRED)
+ 
+ set(AI_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
+-set(SDK_ROOT ${AI_ROOT}/../../3rdparty/platform/ss928/org/smp/a55_linux/)
+ set(PDFD_ROOT ${AI_ROOT}/component/body_detection/)
+ set(GST_ROOT ${AI_ROOT}/component/gesture_detection/)
+ set(ZXING_ROOT ${AI_ROOT}/sample/zxing/src/zxing-cpp-1.4.0/core/src/)
+@@ -24,9 +24,8 @@ set(COMMON_ROOT ${AI_ROOT}/component/common/)
+ set(BARCODE_ROOT ${AI_ROOT}/component/barcode_detection/)
+ 
+ link_directories(
+-	${SDK_ROOT}/mpp/out/lib
+-	${SDK_ROOT}/mpp/out/lib/svp_npu
+-  ${SDK_ROOT}/mpp/out/lib/npu/stub
++	${CMAKE_SYSROOT}/usr/lib/svp_npu
++  ${CMAKE_SYSROOT}/usr/lib/npu/stub
+ 	${AI_ROOT}/sample/mipi_camera/src/ffmpeglib/lib
+   ${PDFD_ROOT}/lib
+   ${GST_ROOT}/lib
+@@ -49,7 +48,6 @@ add_executable(object_node
+   ${AI_ROOT}/sample/barcode_detection/sample_barcode.cpp)
+         
+ target_include_directories(object_node PUBLIC
+-  $<BUILD_INTERFACE:${SDK_ROOT}/mpp/out/include>
+ 	$<BUILD_INTERFACE:${AI_ROOT}/sample/mipi_camera/include>
+   $<BUILD_INTERFACE:${AI_ROOT}/sample/body_detection>
+   $<BUILD_INTERFACE:${AI_ROOT}/sample/gesture_detection>
+@@ -109,4 +107,4 @@ if(BUILD_TESTING)
+   set(ament_cmake_cpplint_FOUND TRUE)
+   ament_lint_auto_find_test_dependencies()
+ endif()
+-ament_package()
+\ No newline at end of file
++ament_package()
+--- a/package.xml
++++ b/package.xml
+@@ -10,6 +10,7 @@
+   <buildtool_depend>ament_cmake</buildtool_depend>
+   <depend>mipi_camera</depend>
+   <depend>zxing</depend>
++  <depend>std_msgs</depend>
+   <test_depend>ament_lint_auto</test_depend>
+   <test_depend>ament_lint_common</test_depend>
+ 
