@@ -31,3 +31,5 @@ copy_openeuler_distro() {
 
 IMAGE_PREPROCESS_COMMAND += "delete_unneeded_from_rootfs;"
 IMAGE_POSTPROCESS_COMMAND += "copy_openeuler_distro;"
+
+IMAGE_CLASSES += "qemuboot"
