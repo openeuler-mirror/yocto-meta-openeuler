@@ -1,0 +1,40 @@
+From 62bd5528ccb54ecaa7abf9c1804161e477b815c6 Mon Sep 17 00:00:00 2001
+From: hanzongcheng <hanzongcheng@huawei.com>
+Date: Wed, 17 May 2023 01:43:14 +0800
+Subject: [PATCH] add $(LDFLAGS) to fix compilation errors
+
+When compiling host tools with native sdk, the shared libraries can not
+linked correctly. So configure the search path by passing LDFLAGS to fix
+this.
+
+Signed-off-by: hanzongcheng <hanzongcheng@huawei.com>
+
+diff --git a/tools/cert_create/Makefile b/tools/cert_create/Makefile
+index c03629a..9fe901f 100644
+--- a/tools/cert_create/Makefile
++++ b/tools/cert_create/Makefile
+@@ -76,7 +76,7 @@ ${BINARY}: ${OBJECTS} Makefile
+ 	@echo 'const char build_msg[] = "Built : "__TIME__", "__DATE__; \
+                 const char platform_msg[] = "${PLAT_MSG}";' | \
+                 ${HOSTCC} -c ${HOSTCCFLAGS} -xc - -o src/build_msg.o
+-	${Q}${HOSTCC} src/build_msg.o ${OBJECTS} ${LIB_DIR} ${LIB} -o $@
++	${Q}${HOSTCC} src/build_msg.o ${OBJECTS} ${LIB_DIR} ${LIB} ${BUILD_LDFLAGS} -o $@
+ 
+ %.o: %.c
+ 	@echo "  HOSTCC  $<"
+diff --git a/tools/fiptool/Makefile b/tools/fiptool/Makefile
+index ef35014..386e06e 100644
+--- a/tools/fiptool/Makefile
++++ b/tools/fiptool/Makefile
+@@ -37,7 +37,7 @@ all: ${PROJECT}
+ 
+ ${PROJECT}: ${OBJECTS} Makefile
+ 	@echo "  HOSTLD  $@"
+-	${Q}${HOSTCC} ${OBJECTS} -o $@ ${LDLIBS}
++	${Q}${HOSTCC} ${OBJECTS} -o $@ ${LDLIBS} ${BUILD_LDFLAGS}
+ 	@${ECHO_BLANK_LINE}
+ 	@echo "Built $@ successfully"
+ 	@${ECHO_BLANK_LINE}
+-- 
+2.34.1
+
