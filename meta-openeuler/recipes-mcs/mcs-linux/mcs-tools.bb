@@ -26,6 +26,8 @@ S:x86-64 = "${WORKDIR}/mcs-x86"
 
 do_fetch[depends] += "mcs-linux:do_fetch"
 
+RDEPENDS:${PN} = "procps"
+
 do_install:aarch64 () {
 	install -d ${D}/usr/bin
 	install -m 0755 ${S}/tools/mica ${D}/usr/bin/
