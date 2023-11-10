@@ -20,7 +20,7 @@ SRC_URI:append = " \
 "
 
 # more support of device is coming. so we documented this patch md5sum.
-SRC_URI[rockchip-kernel-patch.md5sum] = "18f74037b216305a48f9b69d7f9ccddc"
+SRC_URI[rockchip-kernel-patch.md5sum] = "8ee3af4d73b122ca17f536788e87cef6"
 
 # add patch tool to solve patch apply
 PATCHTOOL = "git"
