@@ -11,13 +11,20 @@ mugen框架介绍
 mugen框架执行流程
 ---------------------
 
+openEuler Embedded使用mugen框架时，由于嵌入式镜像中缺少mugen框架运行的必要依赖软件，嵌入式测试采用远程执行测试用例的方式，对系统进行测试。
+
+.. image:: ../../../image/test_project/mugen_run_in_embedded.png
+
+
+mugen框架可支撑自动创建QEMU执行嵌入式系统测试，也可以支持远程设备的嵌入式系统测试
+
 .. image:: ../../../image/test_project/mugen_run_info.png
 
 
-openEuler Embedded使用mugen框架时，由于嵌入式镜像中缺少mugen框架运行的必要依赖软件，嵌入式测试采用QEMU远程执行测试用例的方式，对系统进行测试。
-
 典型的测试执行流程
 ---------------------
+
+1.  **典型的测试执行过程**
 
 典型的测试执行包含了框架下载、依赖准备、启动qemu环境、编译测试用例、测试用例执行和qemu环境的清理。
 
@@ -58,6 +65,101 @@ openEuler Embedded使用mugen框架时，由于嵌入式镜像中缺少mugen框�
 
     # 停止QEMU
     sh qemu_ctl.sh stop
+
+
+2.  **组合测试**
+
+组合测试是mugen框架推出的可自定义组合测试场景的功能，在嵌入式系统测试中组合测试可以用来定义不同的测试场景。
+
+组合测试定义如下:
+
+.. code-block:: JavaScript
+
+    {
+        "export": {
+            "FIND_TINY_DIR":"/home/openeuler/tmp_image/tiny"
+        },
+        "env": [
+            {
+                "type": "host",
+                "name": "device_basic",
+                "ip": "<设备ip>",
+                "password": "<设备root密码>",
+                "port": "22",
+                "user": "root",
+                "run_remote": true,
+                "sdk_path":"/opt/openeuler/oecore-x86_64/",
+                "put_all":true
+            }
+        ],
+        "combination": [
+            {
+                "name": "basic_test_for_device",
+                "testcases": [
+                    {
+                        "testsuite": "embedded_os_basic_test"
+                    },
+                    {
+                        "testsuite": "embedded_os_basic_extra_test"
+                    },
+                    {
+                        "testsuite": "embedded_security_config_test"
+                    },
+                    {
+                        "testsuite": "embedded_application_develop_tests"
+                    },
+                    {
+                        "testsuite": "smoke-basic-os",
+                        "add": "oe_test_acl_001"
+                    }
+                ]
+            },
+            {
+                "name": "posix",
+                "testcases": [
+                    {
+                        "testsuite": "embedded_version_basic_tests",
+                        "add": "oe_test_version_posix_suite_test_001"
+                    }
+                ]
+            }
+        ],
+        "execute":[
+            {
+                "env":["device_basic"],
+                "combination":"basic_test_for_device"
+            },
+            {
+                "env":["device_basic"],
+                "combination":"posix"
+            }
+        ]
+    }
+
+- export: 定义构建时所用的额外的环境变量
+- env: 定义执行测试的环境信息
+- combination: 定义测试套的组合
+- execute: 定义用于测试执行的测试环境和测试组合的组合
+
+组合测试的使用：
+
+.. code-block:: console
+
+    # git下载mugen测试框架
+    git clone https://gitee.com/openeuler/mugen.git
+
+    cd mugen
+    # 安装依赖包
+    sh dep_install.sh -e
+
+    # 定义组合测试配置
+    vi ../combination/embedded_ci_test
+
+    # 执行组合测试
+    sh combination.sh -r embedded_ci_test
+
+    # 组合测试结果输出
+    sh combination.sh -p
 
 其他mugen框架的具体介绍和使用详见 `mugen <https://gitee.com/openeuler/mugen>`_ 项目的介绍
 
