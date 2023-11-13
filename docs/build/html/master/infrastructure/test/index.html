@@ -114,11 +114,16 @@
 <h2>mugen框架介绍<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <section id="id3">
 <h3>mugen框架执行流程<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>openEuler Embedded使用mugen框架时，由于嵌入式镜像中缺少mugen框架运行的必要依赖软件，嵌入式测试采用远程执行测试用例的方式，对系统进行测试。</p>
+<img alt="../../_images/mugen_run_in_embedded.png" src="../../_images/mugen_run_in_embedded.png" />
+<p>mugen框架可支撑自动创建QEMU执行嵌入式系统测试，也可以支持远程设备的嵌入式系统测试</p>
 <img alt="../../_images/mugen_run_info.png" src="../../_images/mugen_run_info.png" />
-<p>openEuler Embedded使用mugen框架时，由于嵌入式镜像中缺少mugen框架运行的必要依赖软件，嵌入式测试采用QEMU远程执行测试用例的方式，对系统进行测试。</p>
 </section>
 <section id="id4">
 <h3>典型的测试执行流程<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p><strong>典型的测试执行过程</strong></p></li>
+</ol>
 <p>典型的测试执行包含了框架下载、依赖准备、启动qemu环境、编译测试用例、测试用例执行和qemu环境的清理。</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>git下载mugen测试框架
 <span class="go">git clone https://gitee.com/openeuler/mugen.git</span>
@@ -155,6 +160,97 @@
 
 <span class="gp"># </span>停止QEMU
 <span class="go">sh qemu_ctl.sh stop</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p><strong>组合测试</strong></p></li>
+</ol>
+<p>组合测试是mugen框架推出的可自定义组合测试场景的功能，在嵌入式系统测试中组合测试可以用来定义不同的测试场景。</p>
+<p>组合测试定义如下:</p>
+<div class="highlight-JavaScript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;export&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;FIND_TINY_DIR&quot;</span><span class="o">:</span><span class="s2">&quot;/home/openeuler/tmp_image/tiny&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;env&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;host&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;device_basic&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ip&quot;</span><span class="o">:</span> <span class="s2">&quot;&lt;设备ip&gt;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;password&quot;</span><span class="o">:</span> <span class="s2">&quot;&lt;设备root密码&gt;&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;port&quot;</span><span class="o">:</span> <span class="s2">&quot;22&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;user&quot;</span><span class="o">:</span> <span class="s2">&quot;root&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;run_remote&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+            <span class="s2">&quot;sdk_path&quot;</span><span class="o">:</span><span class="s2">&quot;/opt/openeuler/oecore-x86_64/&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;put_all&quot;</span><span class="o">:</span><span class="kc">true</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;combination&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;basic_test_for_device&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;testcases&quot;</span><span class="o">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;testsuite&quot;</span><span class="o">:</span> <span class="s2">&quot;embedded_os_basic_test&quot;</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;testsuite&quot;</span><span class="o">:</span> <span class="s2">&quot;embedded_os_basic_extra_test&quot;</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;testsuite&quot;</span><span class="o">:</span> <span class="s2">&quot;embedded_security_config_test&quot;</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;testsuite&quot;</span><span class="o">:</span> <span class="s2">&quot;embedded_application_develop_tests&quot;</span>
+                <span class="p">},</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;testsuite&quot;</span><span class="o">:</span> <span class="s2">&quot;smoke-basic-os&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;add&quot;</span><span class="o">:</span> <span class="s2">&quot;oe_test_acl_001&quot;</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="o">:</span> <span class="s2">&quot;posix&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;testcases&quot;</span><span class="o">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;testsuite&quot;</span><span class="o">:</span> <span class="s2">&quot;embedded_version_basic_tests&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;add&quot;</span><span class="o">:</span> <span class="s2">&quot;oe_test_version_posix_suite_test_001&quot;</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;execute&quot;</span><span class="o">:</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;env&quot;</span><span class="o">:</span><span class="p">[</span><span class="s2">&quot;device_basic&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;combination&quot;</span><span class="o">:</span><span class="s2">&quot;basic_test_for_device&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;env&quot;</span><span class="o">:</span><span class="p">[</span><span class="s2">&quot;device_basic&quot;</span><span class="p">],</span>
+            <span class="s2">&quot;combination&quot;</span><span class="o">:</span><span class="s2">&quot;posix&quot;</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>export: 定义构建时所用的额外的环境变量</p></li>
+<li><p>env: 定义执行测试的环境信息</p></li>
+<li><p>combination: 定义测试套的组合</p></li>
+<li><p>execute: 定义用于测试执行的测试环境和测试组合的组合</p></li>
+</ul>
+<p>组合测试的使用：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>git下载mugen测试框架
+<span class="go">git clone https://gitee.com/openeuler/mugen.git</span>
+
+<span class="go">cd mugen</span>
+<span class="gp"># </span>安装依赖包
+<span class="go">sh dep_install.sh -e</span>
+
+<span class="gp"># </span>定义组合测试配置
+<span class="go">vi ../combination/embedded_ci_test</span>
+
+<span class="gp"># </span>执行组合测试
+<span class="go">sh combination.sh -r embedded_ci_test</span>
+
+<span class="gp"># </span>组合测试结果输出
+<span class="go">sh combination.sh -p</span>
 </pre></div>
 </div>
 <p>其他mugen框架的具体介绍和使用详见 <a class="reference external" href="https://gitee.com/openeuler/mugen">mugen</a> 项目的介绍</p>
