@@ -10,6 +10,7 @@
    :maxdepth: 1
    :caption: 基础设施列表
 
+   gate_ci/index.rst
    test/index.rst
    openeuler_fetch/index.rst
    manifest/index.rst
