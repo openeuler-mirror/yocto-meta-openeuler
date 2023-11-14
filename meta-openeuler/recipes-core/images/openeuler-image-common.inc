@@ -1,4 +1,4 @@
-require recipes-core/images/${MACHINE}.inc
+include recipes-core/images/${MACHINE}.inc
 IMAGE_INSTALL = " \
 packagegroup-core-boot \
 packagegroup-core-base-utils \
