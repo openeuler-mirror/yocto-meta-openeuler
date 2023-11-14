@@ -16,4 +16,4 @@ oebuild目前主要有以下7个主要的使用命令：
     bitbake.rst
     manifest.rst
     clear.rst
-    deploy.rst
+    runqemu.rst
