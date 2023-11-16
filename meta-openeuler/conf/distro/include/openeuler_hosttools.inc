@@ -79,6 +79,7 @@ ASSUME_PROVIDED += "unifdef-native rsync-native"
 ## prebuilt qemu is used (gobject-introspection), so no qemu-native and nativesdk-qemuwrapper-cross
 ASSUME_PROVIDED += "qemu-native rsync-native nativesdk-qemuwrapper-cross"
 HOSTTOOLS_NONFATAL += "qemu-aarch64 qemu-arm qemu-i386 qemu-ppc qemu-ppc64 qemu-pr-helper qemu-riscv32 qemu-riscv64 generic-x86_64 qemu-x86_64"
+HOSTTOOLS_NONFATAL += "${QB_SYSTEM_NAME}"
 ## dwarfsrcfiles-native is used in package.bbclass, it needs elfutil
 ## \todo remove dwarfsrcfiles-native after elfutil is added into nativesdk
 ASSUME_PROVIDED += "dwarfsrcfiles-native"

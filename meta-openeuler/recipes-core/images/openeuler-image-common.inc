@@ -30,7 +30,7 @@ OPENEUELR_IMAGE_USERS ?= " \
                     "
 # by default, allow root login and empty password from ssh
 # because of the configuration of OPENEUELR_IMAGE_USERS
-# root password will be required reset at first login
+# root password will be required to reset at first login
 OPENEULER_IMAGE_FEATURES ?= "allow-root-login allow-empty-password"
 IMAGE_FEATURES:append = " ${OPENEULER_IMAGE_FEATURES}"
 
@@ -70,7 +70,7 @@ IMAGE_PREPROCESS_COMMAND += "set_permissions_from_rootfs;"
 
 set_permissions_from_rootfs() {
    cd "${IMAGE_ROOTFS}"
-   # set file permissions for secure
+   # set file permission for secure configuration
    chmod 750 ./etc/init.d
    cd -
 }
@@ -79,5 +79,5 @@ DISTRO_FEATURES += "${TCLIBC}"
 
 # rootfs_rpm.bbclass line 14
 # as we use dnf in hosttools, we don't need python3-native
-# directly use python3 in hosttools
+# directly use python3 in prebuilt hosttools
 EXTRANATIVEPATH:remove = "python3-native"

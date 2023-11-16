@@ -1,4 +1,4 @@
-SUMMARY = "packages for mcs"
+SUMMARY = "packages for mcs feature of openEuler Embedded"
 inherit packagegroup
 
 PR = "r1"
@@ -9,6 +9,7 @@ PACKAGES = "${PN}"
 # no machine info in MCS_FEATURES
 #
 # According to MCS_FEATURES, select the implementation of bottom foundation and client os:
+#  - screen is used to connect the tty device provided by client OS
 #  - if openamp is used, mcs-linux and mcs-km will be included
 #  - if jailhouse is used, jailhouse will be included
 RDEPENDS:${PN} = " \

@@ -7,7 +7,8 @@ OPENEULER_IMAGE_FEATURES = "debug-tweaks"
 require openeuler-image-common.inc
 require openeuler-image-sdk.inc
 
-inherit features_check
+# by default, mcs image needs a modified device tree for reserved resources
+inherit features_check qemuboot-mcs-dtb
 REQUIRED_DISTRO_FEATURES = "mcs"
 
 # basic packages required, e.g., boot, ssh ,debug
@@ -19,3 +20,9 @@ packagegroup-openssh \
 packagegroup-mcs \
 "
 
+QB_MEM = "-m 2G"
+QB_MACHINE:aarch64 = "-machine virt,gic-version=3"
+QB_SMP = "-smp 4"
+QB_KERNEL_CMDLINE_APPEND = "maxcpus=3"
+QB_DTB = "${IMAGE_NAME}.qemuboot.dtb"
+QB_DTB_LINK = "${IMAGE_LINK_NAME}.qemuboot.dtb"
