@@ -4,6 +4,12 @@ IMAGE_FSTYPES = "cpio.gz"
 IMAGE_FSTYPES_DEBUGFS = "cpio.gz"
 INITRAMFS_MAXSIZE = "262144"
 
+# the qemu rootfs type should be cpio.gz, however IMAGE_FSTYPS add append operation with "iso", so when parse
+# IMAGE_FSTYPES finally, it can be set "cpio.gz iso", in order to drop "iso" from IMAGE_FSTYPES we add remove 
+# operation with "iso"
+IMAGE_FSTYPES:remove = "iso"
+IMAGE_FSTYPES_DEBUGFS:remove = "iso"
+
 delete_unneeded_from_rootfs() {
     set -x
     test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
