@@ -4,8 +4,10 @@ LICENSE = "NCSA"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=802b1aed7330d90086be4de63a3188e3"
 SECTION = "libs"
 
+OPENEULER_LOCAL_NAME = "oee_archive"
+
 PV = "1.1.0"
-SRC_URI = "file://gcompat-${PV}.tar.gz \
+SRC_URI = "file://${OPENEULER_LOCAL_NAME}/${BPN}/gcompat-${PV}.tar.gz \
            file://gcompat-modify-makefile.patch \
            file://libgcompat_musl.patch \
           "

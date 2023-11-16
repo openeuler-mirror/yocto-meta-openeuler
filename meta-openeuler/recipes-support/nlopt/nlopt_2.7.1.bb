@@ -10,9 +10,11 @@ SECTION = "libs"
 LICENSE = "LGPL-2.1-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=7036bf07f719818948a837064b1af213"
 
+OPENEULER_LOCAL_NAME = "oee_archive"
+
 PV = "2.7.1"
 # matches with: https://github.com/stevengj/nlopt/releases/tag/v2.7.1
-SRC_URI = "file://nlopt-${PV}.tar.gz"
+SRC_URI = "file://${OPENEULER_LOCAL_NAME}/${BPN}/nlopt-${PV}.tar.gz"
 
 SRC_URI[md5sum] = "ed1a3000a1c8c248d51df126dfcfaa78"
 SRC_URI[sha256sum] = "db88232fa5cef0ff6e39943fc63ab6074208831dc0031cf1545f6ecd31ae2a1a"

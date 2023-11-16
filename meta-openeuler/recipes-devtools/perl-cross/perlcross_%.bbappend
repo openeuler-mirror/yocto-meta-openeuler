@@ -2,7 +2,7 @@
 
 PV = "1.5"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+OPENEULER_LOCAL_NAME = "oee_archive"
 
 SRC_URI:remove = " \
             https://github.com/arsv/perl-cross/releases/download/${PV}/perl-cross-${PV}.tar.gz;name=perl-cross \
@@ -10,6 +10,6 @@ SRC_URI:remove = " \
 "
 
 # get tarball locally
-SRC_URI += "file://perl-cross-${PV}.tar.gz;name=perl-cross"
+SRC_URI += "file://${OPENEULER_LOCAL_NAME}/${BPN}/perl-cross-${PV}.tar.gz;name=perl-cross"
 
 SRC_URI[sha256sum] = "d744a390939e2ebb9a12f6725b4d9c19255a141d90031eff90ea183fdfcbf211"

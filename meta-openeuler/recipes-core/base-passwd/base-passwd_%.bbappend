@@ -7,7 +7,9 @@ SRC_URI:remove = "https://launchpad.net/debian/+archive/primary/+files/${BPN}_${
 
 # as it's small, base-passwd's tar.gz is integrated in openEuler Embedded
 # to avoid network download
-SRC_URI:prepend = " file://${BPN}_${PV}.tar.gz "
+OPENEULER_LOCAL_NAME = "oee_archive"
+
+SRC_URI:prepend = " file://${OPENEULER_LOCAL_NAME}/${BPN}/${BPN}_${PV}.tar.gz "
 
 SRC_URI:append = " file://revert_nobash.patch "
 
