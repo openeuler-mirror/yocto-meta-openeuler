@@ -51,6 +51,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#pokyyocto">Poky与Yocto的关系是什么？</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#yocto-meta-openeuler-yoctopoky">为什么我们主要修改yocto-meta-openeuler目录？它属于Yocto或者Poky的一部分吗？</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id3">基于Yocto的项目的工作流程是什么样的？</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#openeuler-embedded">openEuler Embedded是否支持软件包安装以及如何新增软件包？</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#oebuild">Oebuild</a><ul>
@@ -146,6 +147,32 @@
 <li><p>整个构建过程会进行不同的质量保证和健全性测试。</p></li>
 <li><p>当二进制文件生成后，构建系统会生成一个二进制数据包用于创建最终的根文件系统。</p></li>
 <li><p>构建系统在生成根文件系统的同时，也会生成一个定制化的可扩展的SDK用于基于生成的定制化Linux的应用程序开发。</p></li>
+</ol>
+</section>
+<section id="openeuler-embedded">
+<h3>openEuler Embedded是否支持软件包安装以及如何新增软件包？<a class="headerlink" href="#openeuler-embedded" title="Permalink to this headline">¶</a></h3>
+<p>openEuler Embedded当前是基于Yocto构建的，而Yocto是支持软件包的，但其支持方式并不是像服务器系统或者桌面系统那样，可以默认通过dnf或者apt命令来安装软件包。
+由于openEuler Embedded一般面对的场景是没有显示，没有输入，且软件的成分运行过程中基本不会发生变化，例如路由器、工业控制器、机器人控制器等，所以默认生成的镜像
+中不带有软件包管理器，因此无法运行dnf或apt命令来安装新的软件包。</p>
+<p>Yocto其实在构建过程中本来就是按照软件包的形式来构建的，构建的成果按照软件包的形式打包（rpm或者deb或者ipk），然后按照软件包安装的方式的构建出根文件系统rootfs，然后
+再把根文件系统其与其他部件打包成可以烧录或者安装的系统镜像。软件包管理器也是个软件包，因此也可以集成到镜像中，从而用户可以通过dnf或apt命令来安装软件包。但需要注意的是，
+一方面使能软件包管理器需要更多的存储资源，例如一个几十MB大小的系统镜像基本上就无法容纳软件包管理器；另一方面，就算有了软件包管理器，也无法使用服务器系统或者桌面系统的软件包
+源来安装软件包，这是因为嵌入式系统与服务器系统、桌面系统的由于构建方式的不同，导致在软件包数据库的元数据上有着巨大的差异，例如软件包的组成、软件包拆包的规则、具体版本等等。
+嵌入式系统需要使用构建过程中产生的软件包元数据作为基准。</p>
+<p>Yocto当前支持的软件包格式有rpm、deb和ipk，但openEuler Embedded为了与openEuler其他场景保持一致，目前只支持rpm格式和dnf软件包管理器。</p>
+<p>在openEuler Embedded实现新增软件包有如下方式：</p>
+<ol class="arabic">
+<li><p>查询openeuler Embedded的软件包manifest文件，确认所需要的软件包是否以集成到openEuler Embedded中：</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>如有则把相应的软件包加入到镜像的配方文件中，重新生成镜像，并更新镜像。或者通过其他方式如使用dnf配合专门的软件包源实现增量更新。</p></li>
+<li><p>如manifest文件中没有，则需要适配新的配方，这些配方可以参考yocto-poky、yocto-meta-openeuler乃至其他yocto生态，再结合openEuler的软件包仓库，具体可以参考
+openEuler Embedded已集成的软件包实现，如busybox, core-utils等。</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>如实在需要在openEuler Embedded中安装服务器或者桌面系统的软件包，则可以在openEuler Embedded中通过轻量级容器运行时isulad运行一个服务器或者桌面系统的容器镜像，在里面
+通过dnf或者apt来安装所需要的软件包，从而实现兼容服务器或者桌面系统生态。此时openEuler Embedded为一个支持容器的Host OS。</p></li>
 </ol>
 </section>
 </section>
