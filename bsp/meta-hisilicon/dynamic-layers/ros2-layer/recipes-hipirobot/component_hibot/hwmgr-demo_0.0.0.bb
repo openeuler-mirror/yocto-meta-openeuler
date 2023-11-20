@@ -50,10 +50,18 @@ DEPENDS = "${ROS_BUILD_DEPENDS} ${ROS_BUILDTOOL_DEPENDS}"
 DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
+RDEPENDS:${PN} += " hwmgr-driver "
 
 OPENEULER_LOCAL_NAME = "component_hibot"
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/sample/hwmgr_demo/src \
+    file://${OPENEULER_LOCAL_NAME}/sample/hwmgr_demo/src/CMakeLists.txt \
+    file://${OPENEULER_LOCAL_NAME}/sample/hwmgr_demo/src/config \
+    file://${OPENEULER_LOCAL_NAME}/sample/hwmgr_demo/src/depends \
+    file://${OPENEULER_LOCAL_NAME}/sample/hwmgr_demo/src/include/HWMGR.hpp \
+    file://${OPENEULER_LOCAL_NAME}/sample/hwmgr_demo/src/include/HiBot \
+    file://${OPENEULER_LOCAL_NAME}/sample/hwmgr_demo/src/launch \
+    file://${OPENEULER_LOCAL_NAME}/sample/hwmgr_demo/src/package.xml \
+    file://${OPENEULER_LOCAL_NAME}/sample/hwmgr_demo/src/src \
     file://hwmgr_demo_fix.patch \
 "
 

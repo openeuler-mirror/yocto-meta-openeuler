@@ -21,6 +21,9 @@ do_install:append() {
     install -d ${D}/usr/include
     cp -rf -P ${S}/lib/* ${D}${libdir}
     cp -rf -P ${S}/include/* ${D}/usr/include/
+    cd ${D}${libdir}
+    ln -s libsecurec.so libboundscheck.so
+    cd -
     sed \
     -e s#@VERSION@#${PV}# \
     -e s#@prefix@#${prefix}# \

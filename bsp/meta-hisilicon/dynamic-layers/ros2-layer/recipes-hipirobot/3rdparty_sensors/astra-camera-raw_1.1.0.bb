@@ -119,6 +119,13 @@ SRC_URI = " \
 FILES:${PN} += "${datadir} ${libdir}/astra_camera_raw/* ${libdir}/OpenNI2/Drivers/*"
 INSANE_SKIP:${PN}-dev += "staticdev arch dev-elf"
 
+# astra_camera is included in other pkg
+do_install:append(){
+    if [ -d ${D}${includedir}/astra_camera ]; then
+        rm -rf ${D}${includedir}/astra_camera
+    fi
+}
+
 S = "${WORKDIR}/3rdparty_sensors/3d_camera/astra_camera/ros2_astra_camera/astra_camera_raw"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 ROS_BUILD_TYPE = "ament_cmake"
