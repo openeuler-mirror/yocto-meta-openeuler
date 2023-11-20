@@ -15,10 +15,12 @@ SRC_URI[md5sum] = "2622f7077e30436b2310bea0232c7cec"
 SRC_URI[sha256sum] = "3905a6d6affa84fb629d1565a4e4bdc82812bba49a457b8249ab445eeb28011b"
 
 # overide LDFLAGS to allow rpi4 TF-A to build without: "aarch64-openeuler-linux-gnu-ld.bfd: unrecognized option '-Wl,-O1'"
-export LDFLAGS=""
+# add "--no-warn-rwx-segments" to fix: "bl2.elf has a LOAD segment with RWX permissions"
+export LDFLAGS="--no-warn-rwx-segments"
 
 EXTRA_OEMAKE="CROSS_COMPILE=${TARGET_PREFIX} "
-export LDFLAGS=""
+
+CFLAGS += "-Wno-error=array-bounds"
 
 do_compile:append() {
     oe_runmake PLAT=rpi4 RPI3_PRELOADED_DTB_BASE=0x1F0000 PRELOADED_BL33_BASE=0x20000 SUPPORT_VFP=1 SMC_PCI_SUPPORT=1 DEBUG=0 all
