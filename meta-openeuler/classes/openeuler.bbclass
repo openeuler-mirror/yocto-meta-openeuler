@@ -71,12 +71,10 @@ def get_openeuler_epoch(d):
 # set BUILD_LDFLAGS for native recipes buildings, nativesdk can be
 # a star point for the necessary build-required recipes, no need to do
 # everything from the scratch
-BUILD_LDFLAGS:append = " -L${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
-                         -L${OPENEULER_NATIVESDK_SYSROOT}/lib \
-                         -Wl,-rpath-link,${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
-                         -Wl,-rpath-link,${OPENEULER_NATIVESDK_SYSROOT}/lib \
-                         -Wl,-rpath,${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
-                         -Wl,-rpath,${OPENEULER_NATIVESDK_SYSROOT}/lib"
+
+OPENEULER_NATIVESDK_LOADER ?= "${OPENEULER_NATIVESDK_SYSROOT}/lib/ld-linux-x86-64.so.2"
+
+BUILD_LDFLAGS:append = " -Wl,--allow-shlib-undefined -Wl,--dynamic-linker=${OPENEULER_NATIVESDK_LOADER} "
 
 # src_uri_set is used to remove some URLs from SRC_URI through
 # OPENEULER_SRC_URI_REMOVE, because we don't want to download from

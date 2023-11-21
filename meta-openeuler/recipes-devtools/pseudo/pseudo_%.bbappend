@@ -19,15 +19,6 @@ SRC_URI:prepend:class-native = "file://${BP}.tar.gz \
 PV:class-native = "df1d1321fb093283485c387e3c933d2d264e509c"
 S:class-native = "${WORKDIR}/${BP}"
 
-# fix nativesdk lib use error: Failed to spawn fakeroot worker to run xxx/yocto-meta-openeuler/
-# meta-openeuler/recipes-external/glibc/glibc-external.bb:do_install: [Errno 32] Broken pipe
-BUILD_LDFLAGS:remove = " -L${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
-                         -L${OPENEULER_NATIVESDK_SYSROOT}/lib \
-                         -Wl,-rpath-link,${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
-                         -Wl,-rpath-link,${OPENEULER_NATIVESDK_SYSROOT}/lib \
-                         -Wl,-rpath,${OPENEULER_NATIVESDK_SYSROOT}/usr/lib \
-                         -Wl,-rpath,${OPENEULER_NATIVESDK_SYSROOT}/lib"
-
 # set --with-sqlite to native sdk path
 do_compile:class-native () {
         if [ "${SITEINFO_BITS}" = "64" ]; then
