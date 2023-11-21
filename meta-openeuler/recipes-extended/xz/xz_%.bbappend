@@ -17,12 +17,3 @@ PV = "5.4.4"
 
 SRC_URI += "file://xz-${PV}.tar.xz \
             "
-#xz-native cannot dependes to xz-native
-python() {
-    all_depends = d.getVarFlag("do_unpack", "depends")
-    for dep in ['xz']:
-        all_depends = all_depends.replace('%s-native:do_populate_sysroot' % dep, "")
-    new_depends = all_depends
-    if d.getVar("PN") == "xz-native":
-        d.setVarFlag("do_unpack", "depends", new_depends)
-}

@@ -41,6 +41,10 @@ do_fetch[file-checksums] += "${@openeuler_get_checksum_file_list(d)}"
 # set_rpmdpes is used to set RPMDEPS which comes from nativesdk/host
 python set_rpmdeps() {
     import subprocess
+
+    if d.getVar('OPENEULER_PREBUILD_TOOLS_ENABLE') != 'yes':
+        return
+
     rpmdeps  = subprocess.Popen('rpm --eval="%{_rpmconfigdir}"', shell=True, stdout=subprocess.PIPE)
     stdout, stderr = rpmdeps.communicate()
     d.setVar('RPMDEPS', os.path.join(str(stdout, "utf-8").strip(), "rpmdeps --alldeps --define '__font_provides %{nil}'"))
@@ -48,6 +52,16 @@ python set_rpmdeps() {
 
 addhandler set_rpmdeps
 set_rpmdeps[eventmask] = "bb.event.RecipePreFinalise"
+
+# do_unpack does not depends to xz-native， avoid dependency loops
+python() {
+    all_depends = d.getVarFlag("do_unpack", "depends") or ''
+    for dep in ['xz']:
+        all_depends = all_depends.replace('%s-native:do_populate_sysroot' % dep, "")
+    new_depends = all_depends
+    d.setVarFlag("do_unpack", "depends", new_depends)
+}
+
 
 # use the the latest commit time output from git log of (yocto-meta-openeuler)
 def get_openeuler_epoch(d):
@@ -74,7 +88,7 @@ def get_openeuler_epoch(d):
 
 OPENEULER_NATIVESDK_LOADER ?= "${OPENEULER_NATIVESDK_SYSROOT}/lib/ld-linux-x86-64.so.2"
 
-BUILD_LDFLAGS:append = " -Wl,--allow-shlib-undefined -Wl,--dynamic-linker=${OPENEULER_NATIVESDK_LOADER} "
+BUILD_LDFLAGS:append = " ${@['', '-Wl,--allow-shlib-undefined -Wl,--dynamic-linker=${OPENEULER_NATIVESDK_LOADER}']['${OPENEULER_PREBUILD_TOOLS_ENABLE}' == 'yes']}"
 
 # src_uri_set is used to remove some URLs from SRC_URI through
 # OPENEULER_SRC_URI_REMOVE, because we don't want to download from
