@@ -4,8 +4,6 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://license.txt;md5=473b63a963910267fc231e5a65bf1a2d \
                     "
 
-FILEEXTRAPATHS:prepend := "${THISDIR}/files:"
-
 SRC_URI = "git://github.com/FreeRTOS/FreeRTOS-Kernel.git;branch=main;protocol=https \
            file://Jailhouse_FreeRTOS_demo.tar.gz   \
 "

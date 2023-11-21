@@ -1,11 +1,12 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/perl-cross/perlcross_1.3.7.bb
 
+OPENEULER_SRC_URI_REMOVE = "https"
+
 PV = "1.5"
 
 OPENEULER_LOCAL_NAME = "oee_archive"
 
 SRC_URI:remove = " \
-            https://github.com/arsv/perl-cross/releases/download/${PV}/perl-cross-${PV}.tar.gz;name=perl-cross \
             file://0001-Makefile-check-the-file-if-patched-or-not.patch \
 "
 
