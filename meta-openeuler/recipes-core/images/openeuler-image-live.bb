@@ -25,6 +25,9 @@ IMAGE_FSTYPES = "cpio.gz"
 IMAGE_FSTYPES_DEBUGFS = "cpio.gz"
 INITRAMFS_MAXSIZE = "262144"
 
+# INITRD_IMAGE_LIVE cannot use image live, hddimg or iso.
+IMAGE_FSTYPES:remove = "live hddimg iso"
+
 # make install or nologin when using busybox-inittab
 set_permissions_from_rootfs:append() {
     cd "${IMAGE_ROOTFS}"
