@@ -20,6 +20,7 @@ SRC_URI += "file://${BPN}-${PV}.tar.bz2 \
             file://backport-iptables-Plug-memleaks-in-print_firewall.patch \
             file://backport-ebtables-translate-Print-flush-command-after-parsing-is-finished.patch \
             file://backport-xtables-eb-fix-crash-when-opts-isn-t-reallocated.patch \
+            file://backport-iptables-Fix-handling-of-non-existent-chains.patch \
             "      
 
 SRC_URI[sha256sum] = "ef6639a43be8325a4f8ea68123ffac236cb696e8c78501b64e8106afb008c87f"

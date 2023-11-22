@@ -1,25 +1,30 @@
+# main bbfile: yocto-poky/meta/recipes-support/libcap/libcap_2.48.bb
+
+OPENEULER_SRC_URI_REMOVE = "git https http"
+
 PV = "2.61"
 
 LIC_FILES_CHKSUM = "file://License;md5=e2370ba375efe9e1a095c26d37e483b8"
-SRC_URI[sha256sum] = "4897da3617ab7a0364a82da7c8c5aa49be8129d84018df92f0982d1363a53758"
 
-# openeuler package and patches
-SRC_URI = " \
+# files, patches can't be applied in openeuler or conflict with openeuler
+SRC_URI_remove = " \
+    ${KERNELORG_MIRROR}/linux/libs/security/linux-privs/${BPN}2/${BPN}-${PV}.tar.xz \
+    file://0001-ensure-the-XATTR_NAME_CAPS-is-defined-when-it-is-use.patch \
+    file://0001-tests-do-not-statically-link-a-test.patch \
+    file://0002-tests-do-not-run-target-executables.patch \
+"
+# files, patches that come from openeuler
+SRC_URI_prepend = " \
     file://${BPN}-${PV}.tar.gz \
     file://libcap-buildflags.patch \
     file://Fix-syntax-error-in-DEBUG-protected-setcap.c-code.patch \
     file://backport-psx-free-allocated-memory-at-exit.patch \
     file://backport-Avoid-a-deadlock-in-forked-psx-thread-exit.patch \
     file://backport-getpcaps-catch-PID-parsing-errors.patch \
-"
-# patches from poky
-SRC_URI += " \
-    file://0001-ensure-the-XATTR_NAME_CAPS-is-defined-when-it-is-use.patch \
-"
-
-# the version 2.61 add the follow patchs
-SRC_URI_append_class-nativesdk = " \
-    file://0001-nativesdk-libcap-Raise-the-size-of-arrays-containing.patch \
+    file://backport-Correct-the-check-of-pthread_create-s-return-value.patch \
+    file://backport-Large-strings-can-confuse-libcap-s-internal-strdup-c.patch \
+    file://backport-There-was-a-small-memory-leak-in-pam_cap.so-when-lib.patch \
+    file://backport-libcap-Ensure-the-XATTR_NAME_CAPS-is-define.patch \
 "
 
 # BUILD_GPERF is now reserved, please use USE_GPERF=yes or no instead.

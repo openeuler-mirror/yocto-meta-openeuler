@@ -8,7 +8,7 @@ SRC_URI = "file://${BP}.tar.xz \
     file://0003-update-UAPI-header-copies.patch \
     file://0004-ethtool-add-support-to-get-set-tx-push-by-ethtool-G-.patch \
     file://0005-ethtool-add-suppport-specifications-for-vxlan-by-eth.patch \
+    file://0006-hns3-add-support-dump-registers-for-hns3-driver.patch \
 "
 
 SRC_URI[sha256sum] = "3b752a3329827907ac3812f2831dfecf51c8c41c55d2d69cfb9c53ca06449fc6"
-

@@ -17,6 +17,8 @@ SRC_URI_prepend = "file://${BP}.tar.xz \
         file://backport-libkmod-error-out-on-unknown-hash-algorithm.patch \
         file://backport-libkmod-Set-builtin-to-no-when-module-is-created-fro.patch \
         file://backport-modprobe-fix-the-NULL-termination-of-new_argv.patch \
+        file://backport-shared-avoid-passing-NULL-0-array-to-bsearch.patch \
+        file://backport-libkmod-fix-possible-out-of-bounds-memory-access.patch \
         "
 
 SRC_URI[md5sum] = "e81e63acd80697d001c8d85c1acb38a0"

@@ -11,6 +11,5 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=69333daa044cb77e486cc36129f7a770 \
 SRC_URI_prepend = "file://gstreamer-${PV}.tar.xz \
             file://gstreamer-inspect-rpm-format.patch \
             file://0001-gstreamer-1.19.3-add-loongarch64-support.patch \
+            file://0002-gstreamer-1.19.3-add-sw_64-support.patch \
            "
-
-SRC_URI[sha256sum] = "906d7d4bf92f941586c0cbce717d9cad6aac36994e16fa6f2f153e07e3221bca"

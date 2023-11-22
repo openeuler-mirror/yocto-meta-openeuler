@@ -16,6 +16,7 @@ SRC_URI += " \
         file://backport-CVE-2021-4209.patch \
         file://backport-01-CVE-2023-0361.patch \
         file://backport-02-CVE-2023-0361.patch \
+        file://gnutls-3.7.2-sw.patch \
 "
 
 EXTRA_OECONF_remove = "--enable-local-libopts"

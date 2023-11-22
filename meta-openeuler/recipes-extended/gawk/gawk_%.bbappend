@@ -13,7 +13,5 @@ SRC_URI_prepend = " \
            file://Disable-racy-test-in-test-iolint.awk.patch \
            file://Restore-removed-test-in-test-iolint.awk.patch \
            file://Reorder-statements-in-iolint-to-try-to-eliminate-a-r.patch \
+           file://backport-CVE-2023-4156.patch \
            "
-
-SRC_URI[md5sum] = "2f724d925873fc82f5e7b1d605ba9a42"
-SRC_URI[sha256sum] = "e4ddbad1c2ef10e8e815ca80208d0162d4c983e6cca16f925e8418632d639018"
