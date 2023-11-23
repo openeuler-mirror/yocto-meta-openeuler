@@ -2,7 +2,6 @@ PV = "1.3.2"
 
 OPENEULER_SRC_URI_REMOVE = "https git http"
 
-SRC_URI_remove = "${SOURCEFORGE_MIRROR}/${BPN}/${BP}.tar.bz2"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
 SRC_URI += " \

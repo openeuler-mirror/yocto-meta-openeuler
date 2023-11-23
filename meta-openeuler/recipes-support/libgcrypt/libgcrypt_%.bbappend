@@ -1,23 +1,26 @@
+OPENEULER_SRC_URI_REMOVE = "https"
+
+LIC_FILES_CHKSUM = "file://COPYING;md5=94d55d512a9ba36caa9b7df079bae19f \
+                    file://COPYING.LIB;md5=bbb461211a33b134d42ed5ee802b37ff \
+                    file://LICENSES;md5=ef545b6cc717747072616519a1256d69 \
+                    "
+
 # version in openEuler
-PV = "1.9.4"
+PV = "1.10.2"
+
+SRC_URI_remove = "file://0003-tests-bench-slope.c-workaround-ICE-failure-on-mips-w.patch \
+        file://0001-Makefile.am-add-a-missing-space.patch \
+"
+
+FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
 
 # patches in openEuler
-SRC_URI_prepend = "file://backport-libgcrypt-1.8.5-use-fipscheck.patch \
-           file://backport-libgcrypt-1.8.4-fips-keygen.patch \
-           file://backport-libgcrypt-1.8.4-tests-fipsmode.patch \
-           file://backport-libgcrypt-1.7.3-fips-cavs.patch \
-           file://backport-libgcrypt-1.8.4-use-poll.patch \
-           file://backport-libgcrypt-1.6.1-mpicoder-gccopt.patch \
-           file://backport-libgcrypt-1.7.3-ecc-test-fix.patch \
-           file://backport-libgcrypt-1.8.3-fips-ctor.patch \
-           file://backport-libgcrypt-1.8.5-getrandom.patch \
-           file://backport-libgcrypt-1.8.3-fips-enttest.patch \
-           file://backport-libgcrypt-1.8.3-md-fips-enforce.patch \
-           file://backport-libgcrypt-1.8.5-intel-cet.patch \
-           file://backport-libgcrypt-1.8.5-fips-module.patch \
-           file://backport-Fix-the-behavior-for-child-process.patch \
-           file://backport-Clear-AESWRAP-scratch-area-immediately-after-use.patch \
+SRC_URI_prepend = "\
+    file://${BP}.tar.bz2 \
+    file://no-native-gpg-error.patch \
+    file://no-bench-slope.patch \
+    file://Use-the-compiler-switch-O0-for-compiling-jitterentro.patch \
 "
 
 # checksum changed
-SRC_URI[sha256sum] = "ea849c83a72454e3ed4267697e8ca03390aee972ab421e7df69dfe42b65caaf7"
+SRC_URI[sha256sum] = "3b9c02a004b68c256add99701de00b383accccf37177e0d6c58289664cce0c03"

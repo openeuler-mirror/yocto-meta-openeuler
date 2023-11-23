@@ -1,13 +1,12 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/libtool/libtool-cross_2.4.6.bb
 
-OPENEULER_BRANCH = "master"
+OPENEULER_SRC_URI_REMOVE = "https"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 PV = "2.4.7"
 
-SRC_URI_remove = "${GNU_MIRROR}/libtool/libtool-${PV}.tar.gz \
-           file://unwind-opt-parsing.patch \
+SRC_URI_remove = "file://unwind-opt-parsing.patch \
 "
 
 # apply openeuler source package and patches

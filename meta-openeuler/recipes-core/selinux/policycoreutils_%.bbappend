@@ -16,6 +16,8 @@ SRC_URI_prepend = "file://${BP}.tar.gz \
         file://backport-policycoreutils-fix-potential-NULL-reference-in-load_checks.patch;patchdir=.. \
         file://backport-python-sepolicy-add-missing-booleans-to-man-pages.patch;patchdir=.. \
         file://backport-python-sepolicy-Cache-conditional-rule-queries.patch;patchdir=.. \
+        file://backport-restorecond-add-check-for-strdup-in-strings_list_add.patch;patchdir=.. \
+        file://backport-python-Use-isinstance-instead-of-type.patch;patchdir=.. \
         "
 
 SRC_URI[md5sum] = "f2d555505dfcf13a89144306d4bc5bdc"
@@ -23,7 +25,7 @@ SRC_URI[sha256sum] = "7dc28e398afab9e917f02ce23dc93aff817f79171550e88bc743e31cde
 
 S = "${WORKDIR}/selinux-${BP}/${BPN}"
 
-RDEPENDS:${PN}:remove:class-target = "selinux-python"
+RDEPENDS_${PN}_remove_class-target = "selinux-python"
 
 # remove libcgroup which is not mandatory in the build.
 EXTRA_DEPENDS_remove += "libcgroup"
