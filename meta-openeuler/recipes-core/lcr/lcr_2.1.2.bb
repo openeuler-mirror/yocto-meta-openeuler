@@ -11,7 +11,7 @@ LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
 ### Inheritance and includes if needed
-inherit cmake
+inherit cmake pkgconfig
 
 ### Build metadata
 SRC_URI = " \

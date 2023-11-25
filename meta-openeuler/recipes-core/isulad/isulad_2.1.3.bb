@@ -49,7 +49,7 @@ SRC_URI = " \
 
 S = "${WORKDIR}/iSulad-v${PV}"
 
-inherit cmake
+inherit cmake pkgconfig
 OECMAKE_GENERATOR = "Unix Makefiles"
 
 USE_PREBUILD_SHIM_V2 = "1"
