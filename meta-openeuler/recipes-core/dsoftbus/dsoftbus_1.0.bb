@@ -4,7 +4,17 @@ PR = "r1"
 LICENSE = "CLOSED"
 
 # gn\ninja has self contained by this project, no need here
-DEPENDS = "python3-native ninja-native openssl libboundscheck cjson"
+inherit python3native
+DEPENDS = "ninja-native openssl libboundscheck cjson"
+
+# avoid error: which: no python in xxx
+do_prepare_python() {
+    if [ ! -e ${STAGING_BINDIR_NATIVE}/python3-native/python ]; then
+        ln -s ${STAGING_BINDIR_NATIVE}/python3-native/python3 ${STAGING_BINDIR_NATIVE}/python3-native/python
+    fi
+}
+
+do_prepare_recipe_sysroot[postfuncs] += "do_prepare_python"
 
 S = "${WORKDIR}/dsoftbus-build"
 pkg-build="build-OpenHarmony-v3.0.2-LTS"
