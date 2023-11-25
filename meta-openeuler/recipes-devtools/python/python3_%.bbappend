@@ -31,7 +31,7 @@ SRC_URI =+ " \
         file://python3-Add-sw64-architecture.patch \
         file://Add-loongarch-support.patch \
         file://avoid-usage-of-md5-in-multiprocessing.patch \
-        file://fix-CVE-2023-24329.patch \
+        file://backport-CVE-2023-24329.patch \
 "
 
 # meta-openeuler layer does not need to build python3-native dependency packages,

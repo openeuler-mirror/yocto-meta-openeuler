@@ -99,6 +99,15 @@ SRC_URI_prepend += " \
         file://backport-wrap-return-in-else-directive-to-avoid-dead-code.patch \
         file://backport-sulogin-ignore-none-existing-console-devices.patch \
         file://backport-sulogin-fix-KDGKBMODE-ifdef.patch \
+        file://backport-unshare-Move-implementation-of-keep-caps-option-to-l.patch \
+        file://backport-lib-caputils-fix-integer-handling-issues-coverity-sc.patch \
+        file://backport-libblkid-jfs-avoid-undefined-shift.patch \
+        file://backport-cfdisk-add-hint-about-labels-for-bootable-flag.patch \
+        file://backport-logger-initialize-socket-credentials-contol-union.patch \
+        file://backport-column-fix-buffer-overflow-when-l-specified.patch \
+        file://backport-column-fix-greedy-mode-on-l.patch \
+        file://backport-column-fix-memory-leak.patch \
+        file://backport-column-fix-l.patch \
         file://Add-check-to-resolve-uname26-version-test-failed.patch \
         file://SKIPPED-no-root-permissions-test.patch \
 "

@@ -23,12 +23,18 @@ SRC_URI_append += " \
            file://enable-dot-logout-and-source-bashrc-through-ssh.patch \
            file://cd-alias.patch \
            file://backport-fix-crash-in-readline-when-started-with-an-invalid.patch \
-           file://backport-fix-CVE-2022-3715.patch \
            file://backport-Bash-5.1-patch-10-fix-for-wait-n-being-interrupted-b.patch \
-           file://backport-Bash-5.1-patch-11-save-and-restore-alias-parsing-whe.patch \
+           file://backport-Bash-5.1-patch-11-save-and-restore-alias-parsing-whe.patch \ 
            file://backport-Bash-5.1-patch-12-fix-race-condition-with-child-proc.patch \
+           file://backport-Bash-5.1-patch-13-fix-tilde-expansion-after-unquoted.patch \
+           file://backport-Bash-5.1-patch-14-fix-off-by-one-error-when-reading-.patch \
            file://backport-Bash-5.1-patch-15-fix-readline-display-of-some-chara.patch \
            file://backport-Bash-5.1-patch-16-fix-interpretation-of-multiple-ins.patch \
+           file://backport-changes-to-documentation-to-reduce-gender-specific-l.patch \
+           file://backport-fixes-for-array-subscripts-and-values-containing-0x0.patch \
+           file://backport-fix-for-nofork-comsub-command-printing-fix-for-crash.patch \
+           file://backport-fix-small-memleak-in-globbing.patch \
+           file://backport-fix-for-leak-when-completing-command-word-with-glob-.patch \
 "
 
 SRC_URI[tarball.sha256sum] = "0cfb5c9bb1a29f800a97bd242d19511c997a1013815b805e0fdd32214113d6be"

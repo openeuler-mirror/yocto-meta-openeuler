@@ -1,7 +1,9 @@
 # main bbfile: yocto-poky/meta/recipes-graphics/xorg-lib/xkeyboard-config_2.32.bb
 
 # version in src-openEuler
-PV = "2.33"
+PV = "2.38"
+
+SRC_URI = "file://${BP}.tar.xz"
 
 # use nativesdk's python3 tool
 DEPENDS_remove = "python3-native"

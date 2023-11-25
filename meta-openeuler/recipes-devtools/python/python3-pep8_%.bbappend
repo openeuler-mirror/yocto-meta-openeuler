@@ -1,7 +1,7 @@
 require pypi-src-openeuler.inc
 
-OPENEULER_BRANCH = "master"
-PV = "1.7.1"
-LIC_FILES_CHKSUM = "file://README.rst;md5=d8ebbbe831259ce010179d2f310b0f3e"
-SRC_URI[md5sum] = "603821d06db945c71d811b5a8d78423c"
-SRC_URI[sha256sum] = "fe249b52e20498e59e0b5c5256aa52ee99fc295b26ec9eaa85776ffdb9fe6374"
+# latest commit of branch Multi-Version_OpenStack-Train_openEuler-22.03-LTS-SP3
+PV = "1.5.7"
+LIC_FILES_CHKSUM = "file://README.rst;md5=7c91dbdbf7e4eb3603e9b6c94bf2aa7f"
+SRC_URI[md5sum] = "f6adbdd69365ecca20513c709f9b7c93"
+SRC_URI[sha256sum] = "15b42131b25f376165d195fe4e17b0a28311182aaf9330d5eb575bbeda5a6989"

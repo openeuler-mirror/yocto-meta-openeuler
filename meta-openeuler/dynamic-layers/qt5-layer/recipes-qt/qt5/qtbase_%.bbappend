@@ -20,4 +20,11 @@ SRC_URI_prepend = "file://tell-the-truth-about-private-api.patch \
            file://CVE-2021-38593.patch \
            file://CVE-2022-25255.patch \
            file://CVE-2023-24607.patch \
+           file://CVE-2023-32762.patch \
+           file://CVE-2023-32763.patch \
+           file://CVE-2023-37369-pre.patch \
+           file://CVE-2023-37369.patch \
+           file://CVE-2023-33285.patch \
+           file://1000-add-loongarch64-support-for-syscall_fork.patch \
+           file://1001-add-sw_64-support-for-syscall_fork.patch \
            "

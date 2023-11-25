@@ -54,6 +54,14 @@ SRC_URI = " \
     file://backport-PR28186-SEGV-elf.c-7991-30-in-_bfd_elf_fixup_group_sections.patch \
     file://backport-PR28422-build_id-use-after-free.patch \
     file://backport-PR28540-segmentation-fault-on-NULL-byte_get.patch \
+    file://Fix-gold-relocation-offset-and-adrp-signed-shife.patch \
+    file://CVE-2022-47008.patch \
+    file://backport-CVE-2022-47011.patch \
+    file://backport-CVE-2022-47696.patch \
+    file://backport-CVE-2021-46174.patch \
+    file://backport-CVE-2023-1972.patch \
+    file://backport-CVE-2022-48064.patch \
+    file://backport-CVE-2022-4285.patch \
 "
 
 # apply used patches from poky

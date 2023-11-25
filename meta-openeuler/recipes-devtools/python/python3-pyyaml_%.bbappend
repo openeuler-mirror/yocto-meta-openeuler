@@ -1,9 +1,8 @@
-PV = "5.3.1"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=7bbd28caa69f81f5cd5f48647236663d"
-SRC_URI[md5sum] = "1d19c798f25e58e3e582f0f8c977dbb8"
-SRC_URI[sha256sum] = "68fb519c14306fec9720a2a5b45bc9f0c8d1b9c72adf45c37baedfcd949c35a2"
+# the latest commit of PyYAML in branch openEuler-22.03-LTS-SP3 has version 6.0
+# however, after comparing to the bb files in upstream community, we can find that
+# compiling PyYAML 6.0 requires Yocto 4.0+ version.
+# the latest version Yocto 3.3.x can support is PyYAML 5.4.1.
+PV = "5.4.1"
 OPENEULER_REPO_NAME = "${PYPI_PACKAGE}"
-OPENEULER_BRANCH = "openEuler-20.03-LTS"
 SRC_URI_remove += "${PYPI_SRC_URI} "
-SRC_URI_prepend += "file://${PV}.tar.gz "
-S = "${WORKDIR}/pyyaml-${PV}"
+SRC_URI_prepend += "file://PyYAML-${PV}.tar.gz "

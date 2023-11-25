@@ -5,7 +5,7 @@ OPENEULER_REPO_NAME = "GraphicsMagick"
 LIC_FILES_CHKSUM = "file://Copyright.txt;md5=d46c64029c86acbab3a4deffc237d406"
 
 # version in openEuler
-PV = "1.3.38"
+PV = "1.3.41"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI_remove += " \
@@ -15,7 +15,6 @@ SRC_URI_remove += " \
 # files, patches that come from openeuler
 SRC_URI_prepend = " \
     file://GraphicsMagick-${PV}.tar.xz \
-    file://GraphicsMagick-1.3.16-multilib.patch \
     file://GraphicsMagick-1.3.31-perl_linkage.patch \
 "
 

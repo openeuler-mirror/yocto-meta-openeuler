@@ -20,7 +20,7 @@ SRC_URI_remove = " \
             "
 
 # files, patches that come from openeuler
-# git binary error: backport-sd-dhcp-server-refuse-too-large-packet-to-send.patch 
+# git binary error: backport-sd-dhcp-server-refuse-too-large-packet-to-send.patch
 # backport-sd-bus-fix-buffer-overflow.patch
 SRC_URI =+ " \
            file://systemd-${PV}.tar.gz \
@@ -461,6 +461,107 @@ SRC_URI =+ " \
            file://backport-udev-fix-inversed-inequality-for-timeout-of-retrying-event.patch \
            file://backport-udev-certainly-restart-event-for-previously-locked-device.patch \
            file://backport-udev-drop-unnecessary-calls-of-event_queue_start.patch \
+           file://backport-timedatectl-fix-a-memory-leak.patch \
+           file://backport-core-slice-make-slice_freezer_action-return-0-if-fre.patch \
+           file://backport-core-unit-fix-use-after-free.patch \
+           file://backport-shared-json-fix-memory-leak-on-failed-normalization.patch \
+           file://backport-core-timer-fix-memleak.patch \
+           file://backport-core-timer-fix-potential-use-after-free.patch \
+           file://backport-units-remove-the-restart-limit-on-the-modprobe-.serv.patch \
+           file://backport-udev-cdrom_id-check-last-track-info.patch \
+           file://backport-manager-reformat-boolean-expression-in-unit_is_prist.patch \
+           file://backport-manager-allow-transient-units-to-have-drop-ins.patch \
+           file://backport-TEST-15-also-test-hierarchical-drop-ins-for-slices.patch \
+           file://backport-TEST-15-add-test-for-transient-units-with-drop-ins.patch \
+           file://backport-TEST-15-add-one-more-test-for-drop-in-precedence.patch \
+           file://backport-sd-event-always-initialize-sd_event.perturb.patch \
+           file://backport-sd-event-fix-error-handling.patch \
+           file://backport-core-refuse-dbus-activation-if-dbus-is-not-running.patch \
+           file://backport-core-only-refuse-Type-dbus-service-enqueuing-if-dbus.patch \
+           file://backport-core-device-drop-unnecessary-condition.patch \
+           file://backport-core-device-ignore-DEVICE_FOUND_UDEV-bit-on-switchin.patch \
+           file://backport-test-cover-initrd-sysroot-transition-in-TEST-24.patch \
+           file://backport-test-generate-a-custom-initrd-for-TEST-24-if-INITRD-.patch \
+           file://backport-test-store-the-key-on-a-separate-device.patch \
+           file://backport-core-device-device_coldplug-don-t-set-DEVICE_DEAD.patch \
+           file://backport-core-device-do-not-downgrade-device-state-if-it-is-a.patch \
+           file://backport-core-introduce-MANAGER_IS_SWITCHING_ROOT-helper-func.patch \
+           file://backport-core-replace-m-honor_device_enumeration-with-MANAGER.patch \
+           file://backport-core-device-update-comment.patch \
+           file://backport-core-device-also-serialize-deserialize-device-syspat.patch \
+           file://backport-core-device-verify-device-syspath-on-switching-root.patch \
+           file://backport-sd-lldp-use-memcpy_safe-as-the-buffer-size-may-be-ze.patch \
+           file://backport-shared-bootspec-avoid-crashing-on-config-without-a-v.patch \
+           file://backport-sysext-refuse-empty-release-ID-to-avoid-triggering-a.patch \
+           file://backport-core-Check-unit-start-rate-limiting-earlier.patch \
+           file://backport-core-Move-r-variable-declaration-to-start-of-unit_st.patch \
+           file://backport-core-Delay-start-rate-limit-check-when-starting-a-un.patch \
+           file://backport-core-Add-trigger-limit-for-path-units.patch \
+           file://backport-sd-event-introduce-callback-invoked-when-event-sourc.patch \
+           file://backport-core-rename-generalize-UNIT-u-test_start_limit-hook.patch \
+           file://backport-mount-make-mount-units-start-jobs-not-runnable-if-p-.patch \
+           file://backport-mount-retrigger-run-queue-after-ratelimit-expired-to.patch \
+           file://backport-pid1-add-a-manager_trigger_run_queue-helper.patch \
+           file://backport-unit-add-jobs-that-were-skipped-because-of-ratelimit.patch \
+           file://backport-unit-check-for-mount-rate-limiting-before-checking-a.patch \
+           file://backport-nspawn-fix-UID-map-string.patch \
+           file://backport-core-Fix-memory-leaks.patch \
+           file://backport-sysusers-properly-process-user-entries-with-an-expli.patch \
+           file://backport-network-bridge-fix-UseBPDU-and-AllowPortToBeRoot.patch \
+           file://backport-core-fix-memleak-in-GetUnitFileLinks-method.patch \
+           file://backport-sd-bus-Use-goto-finish-instead-of-return-in-bus_add_.patch \
+           file://backport-cgtop-Do-not-rewrite-P-or-k-options.patch \
+           file://backport-sd-netlink-fix-segfault.patch \
+           file://backport-escape-fix-wrong-octescape-of-bad-character.patch \
+           file://backport-test-add-basic-tests-for-octescape.patch \
+           file://backport-journald-prevent-segfault-on-empty-attr-current.patch \
+           file://backport-hexdecoct-add-missing-NULL-check.patch \
+           file://backport-hexdecoct-fix-NULL-pointer-dereferences-in-hexmem.patch \
+           file://backport-sd-device-fix-double-free.patch \
+           file://backport-sd-device-add-helper-to-read-a-unsigned-int-attribut.patch \
+           file://backport-test-name_assign_type-sysattr-never-exists-for-enume.patch \
+           file://backport-udev-match-device-tags-in-rules-using-current-device.patch \
+           file://backport-sd-dhcp-server-allow-to-send-header-only-message.patch \
+           file://backport-core-allow-list-char-rtc-with-ProtectClock-yes-only-.patch \
+           file://backport-socket-util-fix-socket_get_family.patch \
+           file://backport-network-ipv4acd-update-MAC-address-on-change-26753.patch \
+           file://backport-core-transaction-make-merge_unit_ids-always-return-N.patch \
+           file://backport-core-transaction-make-merge_unit_ids-return-non-NULL.patch \
+           file://backport-shared-exec-util-null_or_empty_path-does-not-return-.patch \
+           file://backport-rm-rf-fix-errno-handling.patch \
+           file://backport-localed-fix-invalid-free-after-shifting-pointers-usi.patch \
+           file://backport-pid1-fix-coredump_filter-setting.patch \
+           file://backport-scope-do-not-disable-timer-event-source-when-state-i.patch \
+           file://backport-test-add-some-tests-for-RuntimeMaxSec.patch \
+           file://backport-list-fix-double-evaluation.patch \
+           file://backport-coredump-filter-fix-stack-overflow-with-all.patch \
+           file://backport-coredump-filter-add-mask-for-all-using-UINT32_MAX-no.patch \
+           file://backport-journal-Don-t-try-to-write-garbage-if-journal-entry-.patch \
+           file://backport-sd-journal-tighten-variable-scope.patch \
+           file://backport-sd-journal-copy-boot-ID.patch \
+           file://backport-sd-journal-make-journal_file_copy_entry-return-earli.patch \
+           file://backport-shared-reject-empty-attachment-path.patch \
+           file://backport-shared-refuse-fd-INT_MAX.patch \
+           file://backport-sd-bus-bus_message_type_from_string-is-not-pure.patch \
+           file://backport-pid1-when-taking-possession-of-passed-fds-check-O_CL.patch \
+           file://backport-test-test-O_CLOEXEC-filtering-of-fdset-fill-logic.patch \
+           file://backport-machine-fix-a-memory-leak-when-showing-multiple-imag.patch \
+           file://backport-machine-fix-a-memory-leak-when-showing-multiple-mach.patch \
+           file://backport-nspawn-call-json_dispatch-with-a-correct-pointer.patch \
+           file://backport-nspawn-fix-inverted-condition.patch \
+           file://backport-nspawn-fix-a-global-buffer-overflow.patch \
+           file://backport-sd-bus-sd-event-allow-querying-of-description-even-a.patch \
+           file://backport-json-correctly-handle-magic-strings-when-parsing-var.patch \
+           file://backport-sd-journal-avoid-double-free.patch \
+           file://backport-udev-do-not-set-ID_PATH-and-by-path-symlink-for-nvmf.patch \
+           file://backport-specifier-avoid-leaking-memory-on-allocation-error.patch \
+           file://backport-dbus-util-let-s-take-it-down-a-notch-when-converting.patch \
+           file://backport-socket-avoid-memory-leak-on-incomplete-SocketPort-ob.patch \
+           file://backport-journal-avoid-infinite-recursion-when-closing-bad-jo.patch \
+           file://backport-core-Return-1-from-unit_add_dependency-on-success.patch \
+           file://backport-core-unit-fix-notification-about-unit-dependency-cha.patch \
+           file://backport-core-unit-make-JoinsNamespaceOf-implies-the-inverse-.patch \
+           file://backport-core-unit-update-bidirectional-dependency-simultaneo.patch \
            file://update-rtc-with-system-clock-when-shutdown.patch \
            file://udev-add-actions-while-rename-netif-failed.patch \
            file://fix-two-VF-virtual-machines-have-same-mac-address.patch \
@@ -516,6 +617,13 @@ SRC_URI =+ " \
            file://fix-mount-failed-while-daemon-reexec.patch \
            file://bugfix-for-cgroup-Swap-cgroup-v1-deletion-and-migration.patch \
            file://delete-journal-files-except-system.journal-when-jour.patch \
+           file://set-the-cpuset.cpus-mems-of-machine.slice-to-all-by-.patch \
+           file://add-a-new-switch-to-control-whether-udev-complies-wi.patch \
+           file://embedded-sysuesrs_dir-sysctl_dir-binfmt_dir-modules_.patch \
+           file://embedded-modify-dns-server-address-to-avoid-security.patch \
+           file://add-support-to-relabel-systemd-process-for-embedded.patch \
+           file://embedded-add-noexec-mount-option-to-strenthen-tmp-pa.patch \
+           file://embedded-use-yocto-configs.patch \
            "
 
 # fix error: redefinition of 'struct statx_timestamp' with glibc-2.36
