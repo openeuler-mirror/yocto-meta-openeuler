@@ -4,10 +4,6 @@ OPENEULER_SRC_URI_REMOVE = "https git http"
 
 PV = "1.0.8"
 
-# remove conflict files from poky
-SRC_URI_remove = " \
-"
-
 LIC_FILES_CHKSUM = "file://LICENSE;beginline=4;endline=37;md5=600af43c50f1fcb82e32f19b32df4664 \
                     file://${S}/LICENSE;md5=1e5cffe65fc786f83a11a4b225495c0b \
 "

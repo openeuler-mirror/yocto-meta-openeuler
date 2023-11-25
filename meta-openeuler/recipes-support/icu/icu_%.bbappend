@@ -9,5 +9,6 @@ SRC_URI_prepend = "file://${BPN}4c-${ICU_PV}-src.tgz \
            file://gennorm2-man.patch;striplevel=2 \
            file://icuinfo-man.patch;striplevel=2 \
            file://backport-remove-TestJitterbug6175.patch;striplevel=2 \
-           file://delete-taboo-words.patch \
            "
+
+SRC_URI[sha256sum] = "a2d2d38217092a7ed56635e34467f92f976b370e20182ad325edea6681a71d68"

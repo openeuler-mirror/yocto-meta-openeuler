@@ -1,15 +1,11 @@
 # main bbfile: yocto-poky/meta/recipes-support/ca-certificates/ca-certificates_20210119.bb
 
-# don't donwload ca-certificates by network
-SRC_URI_remove = " \
-        git://salsa.debian.org/debian/ca-certificates.git;protocol=https \
-        git://salsa.debian.org/debian/ca-certificates.git;protocol=https;branch=master \
-"
+OPENEULER_SRC_URI_REMOVE = "git"
 
 # get extra tarball locally, because ca-certificates src repository doesn't have ca-certificates.crt or tarball
 FILESEXTRAPATHS_append := "${THISDIR}/files/:"
-SRC_URI =+ " \
-        file://${BP}.tar.gz \
+
+SRC_URI_prepend = "file://${BP}.tar.gz \
 "
 
 SRC_URI[md5sum] = "94e83fc89f8e793dcb20939816c2011d"

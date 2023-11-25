@@ -1,9 +1,9 @@
-# main bbfile: meta-oe/recipes-multimedia/cdrkit/cdrkit_1.1.11.bb
+# main bbfile: yocto-meta-openembedded/meta-oe/recipes-multimedia/cdrkit/cdrkit_1.1.11.bb
+OPENEULER_SRC_URI_REMOVE = "https"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 # patches apply fail: 0001-genisoimage-Add-missing-extern-definition.patch
 SRC_URI_remove = " \
-        ${DEBIAN_MIRROR}/main/c/${BPN}/${BPN}_${PV}.orig.tar.gz \
         file://0001-genisoimage-Add-missing-extern-definition.patch \
 "
 

@@ -1,3 +1,6 @@
+# bbfile: yoct--poky/recipes-connectivity/bluez5/bluez5_5.56.bb
+
+OPENEULER_SRC_URI_REMOVE = "https"
 # apply openeuler source package
 OPENEULER_REPO_NAME = "bluez"
 
@@ -11,8 +14,7 @@ SRC_URI_remove = "\
     file://0001-shared-gatt-server-Fix-not-properly-checking-for-sec.patch \
 "
 
-SRC_URI_prepend = "\
-    file://bluez-${PV}.tar.xz \
+SRC_URI_prepend = "file://bluez-${PV}.tar.xz \
     file://0001-obex-Use-GLib-helper-function-to-manipulate-paths.patch \
     file://0001-build-Always-define-confdir-and-statedir.patch \
     file://0002-systemd-Add-PrivateTmp-and-NoNewPrivileges-options.patch \
@@ -34,6 +36,7 @@ SRC_URI_prepend = "\
     file://backport-CVE-2022-39176.patch \
     file://backport-0001-CVE-2022-39177.patch \
     file://backport-0002-CVE-2022-39177.patch \
+    file://backport-CVE-2023-27349.patch \
 "
 
 # openeuler do not has udev package, which is not necessary for bluez

@@ -1,3 +1,7 @@
+# bbfile: yocto-poky/meta/recipes-core/busybox/busybox_1.33.2.bb
+
+OPENEULER_SRC_URI_REMOVE = "https"
+
 PV = "1.34.1"
 
 # use openEuler defconfig
@@ -13,11 +17,10 @@ SRC_URI_remove = " \
             "
 
 #we always want busybox with mdev\init packages to support multi init manager
-SRC_URI_append = " \
+SRC_URI_prepend = "file://${BP}.tar.bz2 \
         file://backport-CVE-2022-28391.patch \
         file://backport-CVE-2022-30065.patch \
         file://backport-fix-use-after-free-in-bc-module.patch \
-        file://backport-generalize-const-trick.patch \
         file://init.cfg \
         file://rcS.default \
         file://mdev.cfg \
