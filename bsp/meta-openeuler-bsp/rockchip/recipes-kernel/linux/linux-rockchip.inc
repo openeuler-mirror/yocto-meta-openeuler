@@ -1,5 +1,6 @@
 # add recipes-kernel path to find patch and defconfig
 FILESEXTRAPATHS:append := "${THISDIR}/files/:"
+
 # add patch prebuild tools and logo
 SRC_URI:remove = "file://patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch"
 
@@ -9,11 +10,14 @@ SRC_URI:append = " \
     file://logo \
 "
 
+INHIBIT_PACKAGE_STRIP = "1"
+
 # patches for ryd-3568
 SRC_URI:append:ryd-3568 = " \
     file://patches/0001-rk3568-8897-dts.patch \
     file://patches/0002-ryd-gpio-control.patch \
-    "
+"
+
 # mcs patch for ok3568 devicetree
 SRC_URI:append = " \
     ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'file://patches/0003-ok3568-support-mcs.patch', '', d)} \
@@ -55,9 +59,6 @@ do_compile:append:rk3399(){
     ../tools/mkbootimg --kernel ${KERNEL_OUTPUT_DIR}/Image --second resource.img -o boot.img
 }
 
-# add boot.img to $D
-do_install:append(){
-    cp ${B}/boot.img ${D}/boot
+do_deploy:append(){
+    install ${B}/boot.img "${DEPLOYDIR}/boot.img"
 }
-PACKAGES += "bootfile"
-FILES:bootfile="/boot/boot.img"

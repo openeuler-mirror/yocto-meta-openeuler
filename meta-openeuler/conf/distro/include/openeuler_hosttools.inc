@@ -130,3 +130,6 @@ HOSTTOOLS_NONFATAL += "glib-mkenums"
 HOSTTOOLS_NONFATAL += "xgettext"
 
 HOSTTOOLS_NONFATAL += "xmlcatalog glib-genmarshal glib-compile-resources gdbus-codegen glib-compile-schemas"
+
+HOSTTOOLS_NONFATAL += "hexdump rev"
+ASSUME_PROVIDED += "hexdump rev"
