@@ -1,0 +1,41 @@
+From 0b6b573eb8b5275fa7d523d5f571a1b7fc9b2aab Mon Sep 17 00:00:00 2001
+From: Wayne Ren <renwei41@huawei.com>
+Date: Wed, 22 Nov 2023 03:58:58 +0000
+Subject: [PATCH] opneuler: kernel version workaround for openeuler linux
+
+the SUBLEVEL of openeuler linux is fixed, e.g. 5.10.0 because of
+its kernel does not exactly follow the upstream.
+
+But its kernel content is more similar to >linux 5.10.138.
+
+So add a workaround for openeuler linux
+
+Signed-off-by: Wayne Ren <renwei41@huawei.com>
+---
+ include/generated/patches.h    | 0
+ include/lttng/kernel-version.h | 8 ++++++++
+ 2 files changed, 8 insertions(+)
+ create mode 100644 include/generated/patches.h
+
+diff --git a/include/generated/patches.h b/include/generated/patches.h
+new file mode 100644
+index 0000000..e69de29
+diff --git a/include/lttng/kernel-version.h b/include/lttng/kernel-version.h
+index d292c08..3a300f8 100644
+--- a/include/lttng/kernel-version.h
++++ b/include/lttng/kernel-version.h
+@@ -55,6 +55,14 @@
+ 
+ #else
+ 
++/* workaround for openeuler as its version is fixed to 330240 (5.10)
++ * although its kernel is > 5.10.138
++ */
++#if LINUX_VERSION_CODE == 330240
++#undef LINUX_VERSION_CODE
++#define LINUX_VERSION_CODE 330378
++#endif
++
+ #define LTTNG_KERNEL_VERSION(a, b, c) (KERNEL_VERSION(a, b, c) * 1ULL)
+ #define LTTNG_LINUX_VERSION_CODE (LINUX_VERSION_CODE * 1ULL)
+ 
