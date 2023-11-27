@@ -30,18 +30,26 @@ SRC_URI_prepend = " \
         file://bugfix-remove-usr-local-lib-from-m4.patch \
         file://bugfix-dummy_help2man.patch \
         file://bugfix-selinux-flask.patch \
-        file://skip-the-tests-that-require-selinux-if-selinux-is-di.patch \
+        file://skip-the-tests-that-require-selinux-if-selinux-is-di.patch  \
         file://backport-chmod-fix-exit-status-when-ignoring-symlinks.patch \
         file://backport-timeout-ensure-foreground-k-exits-with-status-137.patch \
-        file://backport-dd-improve-integer-overflow-checking.patch \
-        file://backport-dd-do-not-access-uninitialized.patch \
-        file://backport-df-fix-memory-leak.patch \
-        file://backport-ls-avoid-triggering-automounts.patch \
-        file://backport-stat-only-automount-with-cached-never.patch \
         file://backport-config-color-alias-for-ls.patch \
         file://backport-coreutils-i18n.patch \
         file://backport-sort-fix-sort-g-infloop-again.patch \
         file://backport-tests-sort-NaN-infloop-augment-testing-for-recent-fi.patch \
+        file://backport-comm-fix-NUL-output-delimiter-with-total.patch \
+        file://backport-stty-validate-ispeed-and-ospeed-arguments.patch \
+        file://backport-fts-fix-race-mishandling-of-fstatat-failure.patch \
+        file://backport-stty-fix-off-by-one-column-wrapping-on-output.patch \
+        file://backport-copy-copy_file_range-handle-ENOENT-for-CIFS.patch \
+        file://backport-tail-fix-support-for-F-with-non-seekable-files.patch \
+        file://backport-fts-fail-gracefully-when-out-of-memory.patch \
+        file://backport-pr-fix-infinite-loop-when-double-spacing.patch \
+        file://backport-wc-ensure-we-update-file-offset.patch \
+        file://backport-who-fix-only-theoretical-overflow.patch \
+        file://backport-tac-handle-short-reads-on-input.patch \
+        file://backport-setenv-Don-t-crash-if-malloc-returns-NULL.patch \
+        file://backport-who-don-t-crash-if-clock-gyrates.patch \
+        file://backport-doc-od-strings-clarify-operation.patch \
+        file://backport-wc-port-to-kernels-that-disable-XSAVE-YMM.patch \
 "  
-
-SRC_URI[sha256sum] = "ce30acdf4a41bc5bb30dd955e9eaa75fa216b4e3deb08889ed32433c7b3b97ce"

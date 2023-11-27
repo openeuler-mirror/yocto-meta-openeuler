@@ -9,9 +9,15 @@ PV = "4.4.3"
 
 LIC_FILES_CHKSUM = "file://LICENSE;beginline=4;md5=613211e713c4ffc489ec370e1caceabb"
 
+SRC_URI_remove = "\
+    http://ftp.isc.org/isc/dhcp/${PV}/dhcp-${PV}.tar.gz \
+"
+
 # apply patches in openEuler
 # backport-0025-bind-Detect-system-time-changes.patch, backport-Fix-CVE-2021-25220.patch for bind
-SRC_URI_prepend = "file://backport-0001-change-bug-url.patch \
+SRC_URI_prepend = " \
+           file://dhcp-${PV}.tar.gz \
+           file://backport-0001-change-bug-url.patch \
            file://backport-0002-additional-dhclient-options.patch \
            file://backport-0003-Handle-releasing-interfaces-requested-by-sbin-ifup.patch \
            file://backport-0004-Support-unicast-BOOTP-for-IBM-pSeries-systems-and-ma.patch \
@@ -49,6 +55,7 @@ SRC_URI_prepend = "file://backport-0001-change-bug-url.patch \
            file://bugfix-error-message-display.patch \
            file://backport-Fix-CVE-2022-2928.patch \
            file://backport-Fix-CVE-2022-2929.patch \
+           file://Revert-correcting-the-logic-in-dhclient.patch \
 "
 
 SRC_URI[md5sum] = "9076af4cc1293dde5a7c6cae7de6ab45"

@@ -1,13 +1,13 @@
+#from yocto-poky/meta/recipes-devtools/e2fsprogs/e2fsprogs_1.46.1.bb
+OPENEULER_SRC_URI_REMOVE = "https git http"
+
 PV = "1.46.4"
 
 S = "${WORKDIR}/${BPN}-${PV}"
 # delete package from poky
-SRC_URI_remove += "git://git.kernel.org/pub/scm/fs/ext2/e2fsprogs.git \
-                git://git.kernel.org/pub/scm/fs/ext2/e2fsprogs.git;branch=master \
+SRC_URI_remove += " \
                 file://0001-e2fsck-fix-last-mount-write-time-when-e2fsck-is-forc.patch \
                 "
-
-SRC_URI[sha256sum] = "b11042533c1b1dcf17512f0da48e05b0c573dada1dd8b762864d10f4dc399713"
 
 # add openeuler patches
 SRC_URI += " \
@@ -38,4 +38,18 @@ SRC_URI += " \
     file://0024-tune2fs-check-return-value-of-ext2fs_mmp_update2-in-.patch \
     file://0025-mmp-fix-wrong-comparison-in-ext2fs_mmp_stop.patch \
     file://0026-misc-fsck.c-Processes-may-kill-other-processes.patch \
+    file://0027-dumpe2fs-resize2fs-avoid-memory-leak-on-error-path.patch \
+    file://0028-libext2fs-fix-memory-leak-in-error-path-while-openin.patch \
+    file://0029-e2fsck-avoid-theoretical-null-dereference-in-end_pro.patch \
+    file://0030-e2fsck-fix-potential-out-of-bounds-read-in-inc_ea_in.patch \
+    file://0031-e2fsck-avoid-out-of-bounds-write-for-very-deep-exten.patch \
+    file://0032-e2fsck-fix-potential-fencepost-error-in-e2fsck_shoul.patch \
+    file://0033-libext2fs-fix-potential-integer-overflow-in-bitmap-a.patch \
+    file://0034-tune2fs-fix-an-error-message.patch \
+    file://0035-e2fsck-don-t-allow-journal-inode-to-have-encrypt-fla.patch \
+    file://0036-lib-ext2fs-fix-unbalanced-mutex-unlock-for-BOUNCE_MT.patch \
+    file://0037-libext2fs-fix-ext2fs_compare_generic_bmap-logic.patch \
+    file://0038-Quiet-unused-variable-warnings.patch \
+    file://0039-ext2fs-Use-64bit-lseek-when-_FILE_OFFSET_BITS-is-64.patch \
+    file://0040-e2fsck-fix-bad-htree-checksums-in-preen-mode.patch \
 "

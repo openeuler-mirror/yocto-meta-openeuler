@@ -2,10 +2,6 @@
 
 OPENEULER_SRC_URI_REMOVE = "git https http"
 
-# files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI_remove = " \
-    https://github.com/libevent/libevent/releases/download/release-${PV}-stable/${BP}-stable.tar.gz \
-"
 # files, patches that come from openeuler
 SRC_URI_prepend = " \
     file://libevent-${PV}-stable.tar.gz \
