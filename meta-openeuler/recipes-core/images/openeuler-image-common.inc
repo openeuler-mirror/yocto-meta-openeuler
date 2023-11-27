@@ -49,16 +49,26 @@ IMAGE_INSTALL:append = " ${@bb.utils.contains_any("IMAGE_FEATURES", [ 'debug-twe
 FEATURE_PACKAGES:tools-sdk:remove = " packagegroup-core-sdk packagegroup-core-standalone-sdk-target"
 TOOLCHAIN_TARGET_TASK:remove = "${@multilib_pkg_extend(d, 'packagegroup-core-standalone-sdk-target')}"
 
+
+### prebuild tools use
 # do_rootfs not depends to ldconfig-native as nativesdk has provided it
 # learn more about LDCONFIGDEPEND in image.bbclass
-LDCONFIGDEPEND = ""
+LDCONFIGDEPEND:openeuler-prebuilt = ""
 
 # no depends on some native tools: cross-localdef-native
-DEPENDS:remove = "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])} cross-localedef-native"
-SDK_DEPENDS:remove = "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])}"
-RPMROOTFSDEPENDS = ""
+DEPENDS:remove = "${@['', 'cross-localedef-native']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
+SDK_DEPENDS:remove = "${@['', '${SDK_ARCHIVE_DEPENDS} cross-localedef-native']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
+
+# rpm depends
+RPMROOTFSDEPENDS:openeuler-prebuilt = ""
+
+# rootfs_rpm.bbclass line 14
+# as we use dnf in hosttools, we don't need python3-native
+# directly use python3 in prebuilt hosttools
+EXTRANATIVEPATH:remove = "${@['', 'python3-native']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
 
 
+### OUTPUT_DIR point to image installation directory
 OUTPUTTIME = "${DATETIME}"
 # Ignore how DATETIME is computed
 OUTPUTTIME[vardepsexclude] = "DATETIME"
@@ -76,8 +86,3 @@ set_permissions_from_rootfs() {
 }
 
 DISTRO_FEATURES += "${TCLIBC}"
-
-# rootfs_rpm.bbclass line 14
-# as we use dnf in hosttools, we don't need python3-native
-# directly use python3 in prebuilt hosttools
-EXTRANATIVEPATH:remove = "python3-native"
