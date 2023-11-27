@@ -27,16 +27,16 @@ SRC_URI:append = " file://0001-fix-compile-error-for-arm32.patch"
 SRC_URI[sha256sum] = "0e82da5ea129b4444227c7e4a9e598f7288d1994bf63f129c44b90cfd2432172"
 
 # delete depends to shared-mime-info
-SHAREDMIMEDEP:remove = "shared-mime-info"
+SHAREDMIMEDEP:remove = "${@['', 'shared-mime-info']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
 
 # glib2-codegn is a collection of python scripts.
 # here, remove the runtime depends of python3, to simplify build
 # when python3 support becomes mature, remove the following codes
-RDEPENDS:${PN}-codegen = ""
+RDEPENDS:${PN}-codegen:openeuler-prebuilt = ""
 
 # glib needs meson, meson needs python3-native
 # here use nativesdk's meson-native and python3-native
-DEPENDS:remove = "python3-native"
+DEPENDS:remove = "${@['', 'python3-native']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
 
 # glib-2.0 will inherit gio-module-cache.bbclass to update
 # gio module after glib-2.0 is installed.
@@ -49,20 +49,22 @@ DEPENDS:remove = "python3-native"
 # gio-module-cache.bbclass
 # In future, if we figure out the related stuff of gio-querymodules, we can remove the
 # following codes
-GIO_MODULE_PACKAGES = ""
+GIO_MODULE_PACKAGES:openeuler-prebuilt = ""
 
 # rpath may generate by meson and may not auto delete rpath, it is no secure, so let we do it as a workaround
 do_install:append () {
-    if [ -f ${D}${libexecdir}/gio-querymodules${EXEEXT} ]; then
-        chrpath --delete ${D}${libexecdir}/gio-querymodules${EXEEXT}
+    if [ "${OPENEULER_PREBUILT_TOOLS_ENABLE}" = "yes" ];then
+        if [ -f ${D}${libexecdir}/gio-querymodules${EXEEXT} ]; then
+            chrpath --delete ${D}${libexecdir}/gio-querymodules${EXEEXT}
+        fi
+        if [ -f ${D}${libexecdir}/${MLPREFIX}gio-querymodules${EXEEXT} ]; then
+            chrpath --delete ${D}${libexecdir}/${MLPREFIX}gio-querymodules${EXEEXT}
+        fi
+        chrpath --delete ${D}${libdir}/libgio-2.0.so
+        chrpath --delete ${D}${libdir}/libgthread-2.0.so
+        chrpath --delete ${D}${libdir}/libgobject-2.0.so
+        chrpath --delete ${D}${libdir}/libgmodule-2.0.so
     fi
-    if [ -f ${D}${libexecdir}/${MLPREFIX}gio-querymodules${EXEEXT} ]; then
-        chrpath --delete ${D}${libexecdir}/${MLPREFIX}gio-querymodules${EXEEXT}
-    fi
-    chrpath --delete ${D}${libdir}/libgio-2.0.so
-    chrpath --delete ${D}${libdir}/libgthread-2.0.so
-    chrpath --delete ${D}${libdir}/libgobject-2.0.so
-    chrpath --delete ${D}${libdir}/libgmodule-2.0.so
 }
 
 

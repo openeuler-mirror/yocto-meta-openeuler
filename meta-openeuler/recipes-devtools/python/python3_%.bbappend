@@ -28,9 +28,13 @@ SRC_URI:append:class-native = " \
 # meta-openeuler layer does not need to build python3-native dependency packages,
 # but gets them directly from the nativesdk tool
 # Find header from nativesdk
-CPPFLAGS:append:class-native = " -I${OPENEULER_NATIVESDK_SYSROOT}/usr/include \
-    -I${OPENEULER_NATIVESDK_SYSROOT}/usr/include/ncursesw -I${OPENEULER_NATIVESDK_SYSROOT}/usr/include/uuid \
+CPPFLAGS:append:class-native = " ${@oe.utils.vartrue('OPENEULER_PREBUILT_TOOLS_ENABLE', \
+    '-I${OPENEULER_NATIVESDK_SYSROOT}/usr/include \
+     -I${OPENEULER_NATIVESDK_SYSROOT}/usr/include/ncursesw \
+     -I${OPENEULER_NATIVESDK_SYSROOT}/usr/include/uuid', \
+    '', d)} \
 "
 
 # Find library from nativesdk
-LDFLAGS:append:class-native = " -L${OPENEULER_NATIVESDK_SYSROOT}/usr/lib"
+LDFLAGS:append:class-native = " ${@oe.utils.vartrue('OPENEULER_PREBUILT_TOOLS_ENABLE', \
+    '-L${OPENEULER_NATIVESDK_SYSROOT}/usr/lib', '', d)}"
