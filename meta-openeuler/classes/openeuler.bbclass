@@ -42,7 +42,7 @@ do_fetch[file-checksums] += "${@openeuler_get_checksum_file_list(d)}"
 python set_rpmdeps() {
     import subprocess
 
-    if d.getVar('OPENEULER_PREBUILD_TOOLS_ENABLE') != 'yes':
+    if d.getVar('OPENEULER_PREBUILT_TOOLS_ENABLE') != 'yes':
         return
 
     rpmdeps  = subprocess.Popen('rpm --eval="%{_rpmconfigdir}"', shell=True, stdout=subprocess.PIPE)
@@ -88,7 +88,7 @@ def get_openeuler_epoch(d):
 
 OPENEULER_NATIVESDK_LOADER ?= "${OPENEULER_NATIVESDK_SYSROOT}/lib/ld-linux-x86-64.so.2"
 
-BUILD_LDFLAGS:append = " ${@['', '-Wl,--allow-shlib-undefined -Wl,--dynamic-linker=${OPENEULER_NATIVESDK_LOADER}']['${OPENEULER_PREBUILD_TOOLS_ENABLE}' == 'yes']}"
+BUILD_LDFLAGS:append = " ${@['', '-Wl,--allow-shlib-undefined -Wl,--dynamic-linker=${OPENEULER_NATIVESDK_LOADER}']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
 
 # src_uri_set is used to remove some URLs from SRC_URI through
 # OPENEULER_SRC_URI_REMOVE, because we don't want to download from

@@ -9,7 +9,7 @@ require ${COREBASE}/meta/classes/meson.bbclass
 # use nativesdk's pkg-config command instead of pkg-config-native
 # method: pkgconfig = 'pkg-config-native' -> pkgconfig = 'pkg-config'
 do_write_config:append() {
-    if [ "${OPENEULER_PREBUILD_TOOLS_ENABLE}" = "yes" ];then
+    if [ "${OPENEULER_PREBUILT_TOOLS_ENABLE}" = "yes" ];then
         sed -i "s/pkgconfig = 'pkg-config-native'/pkgconfig = 'pkg-config'/g" ${WORKDIR}/meson.native
     fi
 }

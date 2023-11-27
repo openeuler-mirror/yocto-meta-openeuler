@@ -6,4 +6,4 @@ require ${COREBASE}/meta/classes/native.bbclass
 
 # add nativesdk's pkgconfig search paths
 OPENEULER_PREBUILD_PKGCONFIG_PATH = ":${OPENEULER_NATIVESDK_SYSROOT}/usr/lib/pkgconfig:${OPENEULER_NATIVESDK_SYSROOT}/usr/share/pkgconfig"
-EXTRA_NATIVE_PKGCONFIG_PATH:append = "${@['', '${OPENEULER_PREBUILD_PKGCONFIG_PATH}']['${OPENEULER_PREBUILD_TOOLS_ENABLE}' == 'yes']}"
+EXTRA_NATIVE_PKGCONFIG_PATH:append = "${@['', '${OPENEULER_PREBUILD_PKGCONFIG_PATH}']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
