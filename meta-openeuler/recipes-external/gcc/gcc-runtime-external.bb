@@ -99,6 +99,9 @@ RDEPENDS:libstdc++ += "${libc_rdep}"
 RDEPENDS:libatomic += "${libc_rdep}"
 RDEPENDS:libquadmath += "${libc_rdep}"
 RDEPENDS:libmpx += "${libc_rdep}"
+# fix error: gcc-runtime-external-10.3.1-10.3.1-r0 do_package_qa: 
+# QA Issue: /usr/lib64/libitm.so.1.0.0 contained in package libitm requires libc.so.6(GLIBC_2.34)(64bit), but no providers found in RDEPENDS:libitm? [file-rdeps]
+RDEPENDS:libitm += "${libc_rdep}"
 
 do_package_write_ipk[depends] += "virtual/${MLPREFIX}libc:do_packagedata"
 do_package_write_deb[depends] += "virtual/${MLPREFIX}libc:do_packagedata"
