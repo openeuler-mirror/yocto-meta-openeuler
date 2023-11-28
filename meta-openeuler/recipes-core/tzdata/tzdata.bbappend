@@ -16,9 +16,9 @@ SRC_URI:remove = "file://backport-Much-of-Greenland-still-uses-DST-from-2024-on.
 
 # no need to depends on tzcode-native, as nativesdk-tzcode is included
 # zic is in HOSTTOOLS_NOFATAL
-DEPENDS = ""
+DEPENDS:openeuler-prebuilt = ""
 
-do_compile () {
+do_compile:openeuler-prebuilt () {
         for zone in ${TZONES}; do \
             zic -d ${WORKDIR}${datadir}/zoneinfo -L /dev/null \
                 ${S}/${zone} ; \
@@ -29,7 +29,7 @@ do_compile () {
         done
 }
 
-do_install() {
+do_install:openeuler-prebuilt() {
 	install -d ${D}${datadir}/zoneinfo
 # the init code is "cp -pPR ${B}/zoneinfo/* ${D}${datadir}/zoneinfo", but build directory
 # is empty and zoneinfo is in "usr/share", so replace ${B}/zoneinfo to ${WORKDIR}/usr/share/zoneinfo
