@@ -15,4 +15,4 @@ SRC_URI:prepend = "file://dont-forward-keycode-0.patch \
            "
 
 # fix error: not found keysymdef.h
-EXTRA_OECONF:class-native += "--with-keysymdefdir=${OPENEULER_NATIVESDK_SYSROOT}/usr/include/X11/"
+EXTRA_OECONF:append:class-native = " ${@['', '--with-keysymdefdir=${OPENEULER_NATIVESDK_SYSROOT}/usr/include/X11/']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"

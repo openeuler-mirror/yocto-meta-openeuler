@@ -22,14 +22,8 @@ SRC_URI[libgphoto2.sha256sum] = "5b17b89d7ca0ec35c72c94ac3701e87d49e52371f9509b8
 
 # for native sdk of gettext, its a workaround to avoid STAGING_DATADIR_NATIVE gettext files not exist
 do_configure:prepend() {
-    mkdir -p ${STAGING_DATADIR_NATIVE}/gettext/po
-    if [ ! -e  ${STAGING_DATADIR_NATIVE}/gettext/po/Makefile.in.in ]; then
+    if [ "${OPENEULER_PREBUILT_TOOLS_ENABLE}" = "yes" ] && [ ! -e  ${STAGING_DATADIR_NATIVE}/gettext/po/Makefile.in.in ];then
+        mkdir -p ${STAGING_DATADIR_NATIVE}/gettext/po
         cp -f ${OPENEULER_NATIVESDK_SYSROOT}/usr/share/gettext/po/Makefile.in.in ${STAGING_DATADIR_NATIVE}/gettext/po
     fi
-}
-
-# Delete old m4 macros, so autoreconf can repopulate it.
-do_configure:prepend() {
-    rm -rf ${S}/libgphoto2_port/auto-m4/*
-    rm -rf ${S}/auto-m4/*
 }

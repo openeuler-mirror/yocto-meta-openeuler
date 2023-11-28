@@ -5,8 +5,6 @@ S = "${WORKDIR}/${BPN}-${PV}"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
-SRC_URI:remove:class-nativesdk =  " file://0003-binutils-nativesdk-Search-for-alternative-ld.so.conf.patch "
-
 # apply package source and patches from openeuler
 SRC_URI = " \
     file://${BPN}-${PV}.tar.xz \
@@ -41,8 +39,7 @@ EXTRA_OECONF:append = " \
 do_configure:prepend:class-target () {
     # fix Can't locate Autom4te/ChannelDefs.pm in @INC (you may need to install the Autom4te::ChannelDefs module) (@INC contains: /build/tmp/work/*/binutils/2.37-r0/recipe-sysroot-native/usr/share/autoconf ...
     # autoconf is installed at buildtool-bar, not build autoconf-native, so need to set autom4te_perllibdir or modify default value in gnu-config
-    if [ ! -z "${OPENEULER_NATIVESDK_SYSROOT}" ];then
+    if [ "${OPENEULER_PREBUILT_TOOLS_ENABLE}" = "yes" ] && [ ! -z "${OPENEULER_NATIVESDK_SYSROOT}" ];then
         export autom4te_perllibdir="${OPENEULER_NATIVESDK_SYSROOT}/usr/share/autoconf"
     fi
 }
-
