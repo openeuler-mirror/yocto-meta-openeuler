@@ -15,22 +15,32 @@ that fits your needs.
 For specific details, please refer to: https://jorisroovers.com/gitlint/0.19.x/rules/
 """
 
+import re
+import copy
 from typing import List
 from gitlint.rules import CommitRule, RuleViolation, CommitMessageTitle, LineRule, CommitMessageBody
 from gitlint.options import IntOption, StrOption
-import re
 
 openeuler_footers = ['Signed-off-by', 'Closes', 'Fixes', 'Co-developed-by', 'Link']
 
-def divide_body_and_footer(body: List[str]):
+def divide_body_and_footer(message_body: List[str]):
     '''
     In gitlint, commit msg consist of title and body.
     But In openEuler embedded, commit msg consist of title, body and footer.
     Correspondingly,  body add footer in openEuler embedded is equal to the body in gitlint.
     '''
+    body = copy.deepcopy(message_body)
+    #When the last item is blankline, remove it
+    if len(body) >= 1 and len(body[-1].strip()) == 0:
+        del body[-1]
+
     if len(body) == 0:
         return ([], [])
-    
+
+    #If contains cherry-pich comment in last line, remove it, another method will test it
+    if re.match(r"^\x20*\(.*\)\x20*$", body[-1]):
+        del body[-1]
+
     flags = re.UNICODE
     flags |= re.IGNORECASE
     #value of -1 indicates that there are no tags matching in the openeuler_footers
@@ -43,7 +53,7 @@ def divide_body_and_footer(body: List[str]):
         is_match = False
         for openeuler_footer in openeuler_footers:
             pattern = "(^)" + openeuler_footer + ":(.*)"
-            if re.search(pattern, body_line, flags=flags):
+            if re.match(pattern, body_line, flags=flags):
                 is_match = True
                 if first_footer_index == -1:
                     first_footer_index = body_line_num
@@ -53,11 +63,7 @@ def divide_body_and_footer(body: List[str]):
     #return to the body list and footer list
     if first_footer_index != -1:
         real_body = body[:first_footer_index]
-        #use len(body)-1 because the last line in body is always blankline
-        if len(body[-1].strip()) == 0:
-            real_footer = body[first_footer_index:len(body)-1]
-        else:
-            real_footer = body[first_footer_index:len(body)]
+        real_footer = body[first_footer_index:len(body)]
     else:
         real_body = body
         real_footer = []
@@ -150,7 +156,7 @@ class TitleForm(LineRule):
             if not re.match('.*[^?:!.,;]$', subject.strip()) :
                 result.append(RuleViolation(self.id, "Title has trailing punctuation", line))
             if area.startswith("revert"):
-                if not re.search(r'[a-z0-9]{12}\(\S.*(:\s)[A-Za-z0-9]+.*[^?:!.,;]\)$', subject.strip()):
+                if not re.match(r'[a-z0-9]{12}\(\S.*(:\s)[A-Za-z0-9]+.*[^?:!.,;]\)$', subject.strip()):
                     message = '''The from of title in revert commit is ====> revert: A(B)||A is the first 12 characters of SHA-1 in the fixed commit||B is the title in the fixed commit.'''
                     result.append(RuleViolation(self.id, message, line))
         return result
@@ -279,13 +285,13 @@ class TagsCheck(CommitRule):
             #5.check form of tag-context in Signed-off-by tag
             if line.lower().startswith("Signed-off-by".lower()):
                 signed_off_by_index.append(index)
-                if not re.search(r'(\S+)(\s<)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.>', line[(line.find(":")+1):].strip()):
+                if not re.match(r'(\S+)(\s<)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.>', line[(line.find(":")+1):].strip()):
                     message = "The from of Signed-off-by tag is: Signed-off-by: contributor-name <contributor-email>. Please pay attention to the spaces"
                     result.append(RuleViolation(self.id, message, line, line_count))
             
             #6.check form of tag-context in Fixes tag
             if line.lower().startswith("Fixes".lower()):
-                if not re.search(r'[a-z0-9]{12}\(\S.*(:\s)[A-Z]+.*[^?:!.,;]\)$', line[(line.find(":")+1):].strip()):
+                if not re.match(r'[a-z0-9]{12}\(\S.*(:\s)[A-Z]+.*[^?:!.,;]\)$', line[(line.find(":")+1):].strip()):
                     message = "The from of Fixes tag is Fixes: A(B) .A is the first 12 characters of SHA-1 in the fixed commit, B is the title in the fixed commit."
                     result.append(RuleViolation(self.id, message, line, line_count))
 
@@ -308,10 +314,43 @@ class LinkInClosesCheck(CommitRule):
     options_spec = [StrOption('prefix-for-closes-tag', "https://gitee.com/openeuler/", "The prefix of URLs.")]
 
     def validate(self, commit):
-        real_body, real_footer = divide_body_and_footer(commit.message.body)
         prefix = self.options['prefix-for-closes-tag'].value
         if prefix == 'disabled':
             return
+
+        real_body, real_footer = divide_body_and_footer(commit.message.body)
+        line_count = len(real_body) + 1
         for line in real_footer:
-            if line.lower().startswith("Closes".lower()) and not re.search(prefix + ".*", line[(line.find(":")+1):].strip()):
-                return [RuleViolation(self.id, "Issue Link in Closes tag don't match prefix:" + prefix, line)]
+            line_count = line_count + 1
+            if line.lower().startswith("Closes".lower()) and not re.match(prefix + ".*", line[(line.find(":")+1):].strip()):
+                message = "Issue Link in Closes tag don't match prefix:" + '"'+ prefix + '"'
+                return [RuleViolation(self.id, message, line, line_count)]
+
+class CherryPickCheck(CommitRule):
+    '''
+    Cherry-pick format check
+    If need to indicate the source of the cherry pick, 
+    place it on the last line(After tag of Signed-off-by tag)
+    '''
+    name = 'cherry-pick-check'
+    id = 'UC2'
+
+    def validate(self, commit):
+        body = copy.deepcopy(commit.message.body)
+        #When the last item is blankline, remove it
+        msg_body_length = len(body)
+        if len(body) >= 1 and len(body[-1].strip()) == 0:
+            del body[-1]
+            msg_body_length = msg_body_length - 1
+
+        if len(body) == 0:
+            return
+
+        if len(body) > 0 and re.match(r"^\x20*\(.*\)\x20*$", body[-1]):
+            if not re.match(r"^\(cherry picked from commit .*\)\x20*$", body[-1]):
+                message = "Correct format of cherry-pick is: (cherry picked from commit commit-id, commit-id)\n"
+                message += "   Use command(git cherry-pick -x commit-id), you can get correct format automatically."
+                return [RuleViolation(self.id, message, body[-1], msg_body_length+1)]
+            if len(body) > 1 and len(str(body[-2]).strip()) == 0:
+                message = "There can't be blanklines between Signed-off-by tag and cherry-pick info."
+                return [RuleViolation(self.id, message, body[-2], msg_body_length)]
