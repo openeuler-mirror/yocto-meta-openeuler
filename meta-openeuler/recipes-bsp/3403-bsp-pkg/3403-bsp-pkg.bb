@@ -3,12 +3,14 @@ SECTION = "base"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
-DEPENDS = "update-rc.d-native"
+# dep linux-sd3403 to make 3rdparty_openeuler download first
+DEPENDS = "update-rc.d-native linux-sd3403"
 
 OPENEULER_LOCAL_NAME = "3rdparty_ss928v100_v2.0.2.2"
 
+# old: 3rdparty_ss928v100_v2.0.2.2/org/smp/a55_linux/mpp/out/ko
 SRC_URI = " \
-        file://3rdparty_ss928v100_v2.0.2.2/org/smp/a55_linux/mpp/out/ko \
+        file://3rdparty_openeuler/drivers/ko.tar.gz \
         file://3rdparty_ss928v100_v2.0.2.2/patch/sdt/btools \
         file://S90autorun \
 "
@@ -31,7 +33,7 @@ do_install () {
         ln -s /usr/bin/btools ${D}/usr/bin/i2c_read
         ln -s /usr/bin/btools ${D}/usr/bin/i2c_write
 
-        cp -r ${S}/ko ${D}/
+        cp -r ${WORKDIR}/ko ${D}/
 
         install -m 0755 ${WORKDIR}/S90autorun ${D}${sysconfdir}/init.d/
         update-rc.d -r ${D} S90autorun start 90 5 .

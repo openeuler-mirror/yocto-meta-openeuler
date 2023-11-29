@@ -55,4 +55,4 @@ FILES:${PN}-staticdev += " \
 "
  
 EXCLUDE_FROM_SHLIBS = "1"
-INSANE_SKIP:${PN} += "already-stripped"
+INSANE_SKIP:${PN} += "already-stripped dev-so"
