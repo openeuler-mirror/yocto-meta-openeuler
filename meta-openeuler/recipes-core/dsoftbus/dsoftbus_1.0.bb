@@ -7,30 +7,21 @@ LICENSE = "CLOSED"
 inherit python3native
 DEPENDS = "ninja-native openssl libboundscheck cjson"
 
-# avoid error: which: no python in xxx
-do_prepare_python() {
-    if [ ! -e ${STAGING_BINDIR_NATIVE}/python3-native/python ]; then
-        ln -s ${STAGING_BINDIR_NATIVE}/python3-native/python3 ${STAGING_BINDIR_NATIVE}/python3-native/python
-    fi
-}
-
-do_prepare_recipe_sysroot[postfuncs] += "do_prepare_python"
-
 S = "${WORKDIR}/dsoftbus-build"
-pkg-build="build-OpenHarmony-v3.0.2-LTS"
-pkg-deviceauth="security_device_auth-OpenHarmony-v3.1.2-Release"
-pkg-huks="security_huks-OpenHarmony-v3.1.2-Release"
-pkg-utils="commonlibrary_c_utils-OpenHarmony-v3.1.2-Release"
-pkg-mebedtls="third_party_mbedtls-OpenHarmony-v3.1.2-Release"
-pkg-libcoap="third_party_libcoap-OpenHarmony-v3.1.2-Release"
+pkg-build = "build-OpenHarmony-v3.0.2-LTS"
+pkg-deviceauth = "security_device_auth-OpenHarmony-v3.1.2-Release"
+pkg-huks = "security_huks-OpenHarmony-v3.1.2-Release"
+pkg-utils = "commonlibrary_c_utils-OpenHarmony-v3.1.2-Release"
+pkg-mebedtls = "third_party_mbedtls-OpenHarmony-v3.1.2-Release"
+pkg-libcoap = "third_party_libcoap-OpenHarmony-v3.1.2-Release"
 
-dsoftbus-buildtools="${S}/prebuilts/build-tools/linux-x86/bin"
-dsoftbus-thirdparty="${S}/third_party"
-dsoftbus-utils="${S}/utils"
-dsoftbus-src="${S}/foundation/communication"
-dsoftbus-hichain="${S}/base/security"
-dsoftbus-productdefine="${S}/productdefine"
-dsoftbus-depend="${S}/depend"
+dsoftbus-buildtools = "${S}/prebuilts/build-tools/linux-x86/bin"
+dsoftbus-thirdparty = "${S}/third_party"
+dsoftbus-utils = "${S}/utils"
+dsoftbus-src = "${S}/foundation/communication"
+dsoftbus-hichain = "${S}/base/security"
+dsoftbus-productdefine = "${S}/productdefine"
+dsoftbus-depend = "${S}/depend"
 
 SRC_URI = " \
         file://yocto-embedded-tools/dsoftbus/build_tools/gn-linux-x86-1717.tar.gz \
@@ -117,14 +108,28 @@ do_copy_dsoftbus_source() {
     mv ${WORKDIR}/dsoftbus_standard ${dsoftbus-src}/dsoftbus
     mv ${WORKDIR}/embedded-ipc ${dsoftbus-depend}/ipc
 
-    ln -s `which ninja` ${dsoftbus-buildtools}/ninja
-
     #init gn root
     ln -s ${S}/build/build_scripts/build.sh ${S}/build.sh
     ln -s ${S}/build/core/gn/dotfile.gn ${S}/.gn
 
-    #link toolchain
-    ln -s ${EXTERNAL_TOOLCHAIN} ${S}/toolchain
+}
+
+# ready for build env
+do_configure:prepend() {
+    # link python
+    if [ ! -e ${STAGING_BINDIR_NATIVE}/python3-native/python ]; then
+        ln -s ${STAGING_BINDIR_NATIVE}/python3-native/python3 ${STAGING_BINDIR_NATIVE}/python3-native/python
+    fi
+
+    # link ninja
+    if [ ! -e ${dsoftbus-buildtools}/ninja ]; then
+        ln -s `which ninja` ${dsoftbus-buildtools}/ninja
+    fi
+
+    # link toolchain
+    if [ ! -e ${S}/toolchain ]; then
+        ln -s ${EXTERNAL_TOOLCHAIN} ${S}/toolchain
+    fi
 }
 
 do_compile() {
