@@ -11,6 +11,7 @@ wpa-supplicant \
 
 # all 3403 app
 IMAGE_INSTALL += " \
+v4l-utils \
 ${@bb.utils.contains("DISTRO_FEATURES", "ros", " \
 astra-camera-msgs \
 astra-camera-raw \
