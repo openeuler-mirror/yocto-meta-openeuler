@@ -92,3 +92,6 @@ openamp-dev \
 libmetal-dev \
 sysfsutils-dev \
 "
+
+# do not need nativesdk-glibc-locale in external toolchain build
+SDK_DEPENDS:remove = "nativesdk-glibc-locale"

@@ -101,7 +101,6 @@ ASSUME_PROVIDED += "gnu-config-native"
 # need perl-XML-Parser install in host
 ASSUME_PROVIDED += "gperf-native perl-native \
                     init-system-helpers \
-                    nativesdk-glibc-locale \
                     gtk-doc-native \
                     "
 
