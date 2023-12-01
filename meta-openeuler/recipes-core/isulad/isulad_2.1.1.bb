@@ -62,12 +62,38 @@ S = "${WORKDIR}/iSulad-v${PV}"
 inherit cmake
 OECMAKE_GENERATOR = "Unix Makefiles"
 
-DEPENDS = "yajl zlib libarchive http-parser curl lcr libevent libevhtp openssl libwebsockets libdevmapper"
 
-EXTRA_OECMAKE = "-DENABLE_GRPC=OFF -DENABLE_SYSTEMD_NOTIFY=OFF -DENABLE_SELINUX=OFF \
-		-DENABLE_SHIM_V2=OFF -DENABLE_OPENSSL_VERIFY=OFF \
-		-DGRPC_CONNECTOR=OFF -DDISABLE_OCI=ON \
+DEPENDS += " \
+        yajl zlib libarchive http-parser curl lcr libevent libevhtp openssl libwebsockets libdevmapper \
+        protobuf libseccomp libcap libselinux \
+        ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '', d)} \
+        grpc grpc-native protobuf-native lib-shim-v2 \
+"
+
+RDEPENDS_${PN} += " \
+        yajl zlib libarchive http-parser curl lcr libevent libevhtp openssl libwebsockets libdevmapper \
+        protobuf libseccomp libcap libselinux \
+        ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '', d)} \
+        grpc lib-shim-v2 \
+        glibc-binary-localedata-en-us \
+"
+
+EXTRA_OECMAKE = "-DENABLE_GRPC=ON \
+        ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '-DENABLE_SYSTEMD_NOTIFY=ON', '-DENABLE_SYSTEMD_NOTIFY=OFF', d)} \
+		-DENABLE_SHIM_V2=ON -DENABLE_OPENSSL_VERIFY=ON \
+		-DGRPC_CONNECTOR=ON \
 		"
+
+# there are issues with building grpc on arm32 and riscv platforms.
+DEPENDS:remove:arm = " lib-shim-v2 grpc grpc-native "
+RDEPENDS:${PN}:remove:arm = " lib-shim-v2 grpc "
+EXTRA_OECMAKE:remove:arm = " -DENABLE_SHIM_V2=ON -DENABLE_GRPC=ON -DGRPC_CONNECTOR=ON "
+EXTRA_OECMAKE:append:arm = " -DENABLE_SHIM_V2=OFF -DENABLE_GRPC=OFF -DGRPC_CONNECTOR=OFF "
+
+DEPENDS:remove:riscv64 = " lib-shim-v2 grpc grpc-native "
+RDEPENDS:${PN}:remove:riscv64 = " lib-shim-v2 grpc "
+EXTRA_OECMAKE:remove:riscv64 = " -DENABLE_SHIM_V2=ON -DENABLE_GRPC=ON -DGRPC_CONNECTOR=ON "
+EXTRA_OECMAKE:append:riscv64 = " -DENABLE_SHIM_V2=OFF -DENABLE_GRPC=OFF -DGRPC_CONNECTOR=OFF "
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 

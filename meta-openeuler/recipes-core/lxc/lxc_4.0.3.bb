@@ -41,9 +41,24 @@ SRC_URI_append = " \
                    file://0027-fix-redeclaration.patch \
 "
 
-DEPENDS = "yajl libseccomp libcap"
+DEPENDS = " \
+        yajl libseccomp libcap \
+        libselinux \
+        ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '', d)} \
+"
 
-EXTRA_OECONF = "--disable-static --disable-openssl --with-rootfs-path=/var/lib/lxc/rootfs --with-distro=openeuler"
+EXTRA_OECONF = " \
+        --disable-static --with-rootfs-path=/var/lib/lxc/rootfs --with-distro=openeuler \
+        ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '--with-init-script=systemd', '', d)} \
+        --enable-seccomp \
+        --enable-selinux \
+        --enable-isulad \
+"
+
+FILES_${PN} += " \
+        /usr/share \
+        /lib/systemd/system \
+"
 
 inherit autotools
 
