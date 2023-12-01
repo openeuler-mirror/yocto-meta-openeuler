@@ -216,20 +216,12 @@ def download_repo(repo_dir, repo_url ,version = None):
     lf = bb.utils.lockfile(lock_file, block=True)
 
     repo = init_repo_dir(repo_dir)
-    remote = None
-    for item in repo.remotes:
-        if repo_url == item.url:
-            remote = item
-        else:
-            continue
-    if remote is None:
-        remote_name = "upstream"
-        remote = git.Remote.add(repo = repo, name = remote_name, url = repo_url)
 
     try:
         repo.commit(version)
     except:
         bb.debug(1, 'commit does not exist, shallow fetch: ' + version)
+        remote = get_remote(repo, repo_url)
         remote.fetch(version, depth=1)
 
     # if repo is modified, restore it
@@ -238,6 +230,26 @@ def download_repo(repo_dir, repo_url ,version = None):
     repo.git.checkout(version)
 
     bb.utils.unlockfile(lf)
+
+def get_remote(repo, repo_url):
+    import git
+
+    remote = None
+    for item in repo.remotes:
+        if repo_url == item.url:
+            remote = item
+            break
+    if remote is None:
+        remote_name = "upstream"
+        if remote_name in [origin.name for origin in repo.remotes]:
+            remote_name = get_remote_name(repo_url)
+        remote = git.Remote.add(repo = repo, name = remote_name, url = repo_url)
+    return remote
+
+def get_remote_name(repo_url):
+    parsed_url = repo_url.replace("https://", "").replace("http://", "").split("/")
+    remote_name = '/'.join(parsed_url[:-1])
+    return remote_name
 
 def get_manifest(manifest_dir):
     import yaml
