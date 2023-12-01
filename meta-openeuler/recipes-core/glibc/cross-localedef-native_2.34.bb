@@ -1,7 +1,7 @@
 SUMMARY = "Cross locale generation tool for glibc"
 HOMEPAGE = "http://www.gnu.org/software/libc/libc.html"
 SECTION = "libs"
-LICENSE = "LGPL-2.1-only"
+LICENSE = "LGPL-2.1"
 
 LIC_FILES_CHKSUM = "file://LICENSES;md5=1541fd8f5e8f1579512bf05f533371ba \
       file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
@@ -25,14 +25,14 @@ SRC_URI = "${GLIBC_GIT_URI};branch=${SRCBRANCH};name=glibc \
            file://0001-localedef-Add-hardlink-resolver-from-util-linux.patch \
            file://0002-localedef-fix-ups-hardlink-to-make-it-compile.patch \
            \
-           file://0010-eglibc-Cross-building-and-testing-instructions.patch \
-           file://0011-eglibc-Help-bootstrap-cross-toolchain.patch \
-           file://0012-eglibc-Resolve-__fpscr_values-on-SH4.patch \
-           file://0013-eglibc-Forward-port-cross-locale-generation-support.patch \
-           file://0014-localedef-add-to-archive-uses-a-hard-coded-locale-pa.patch \
-           file://0017-Replace-echo-with-printf-builtin-in-nscd-init-script.patch \
-           file://0019-timezone-Make-shell-interpreter-overridable-in-tzsel.patch \
-           "
+           file://0017-timezone-re-written-tzselect-as-posix-sh.patch \
+           file://0018-Remove-bash-dependency-for-nscd-init-script.patch \
+           file://0019-eglibc-Cross-building-and-testing-instructions.patch \
+           file://0020-eglibc-Help-bootstrap-cross-toolchain.patch \
+           file://0021-eglibc-Resolve-__fpscr_values-on-SH4.patch \
+           file://0022-eglibc-Forward-port-cross-locale-generation-support.patch \
+           file://0024-localedef-add-to-archive-uses-a-hard-coded-locale-pa.patch \
+"
 # Makes for a rather long rev (22 characters), but...
 #
 SRCREV_FORMAT = "glibc_localedef"
@@ -40,11 +40,6 @@ SRCREV_FORMAT = "glibc_localedef"
 S = "${WORKDIR}/git"
 
 EXTRA_OECONF = "--with-glibc=${S}"
-
-# We do not need bash to run tzselect script, the default is to use
-# bash but it can be configured by setting KSHELL Makefile variable
-EXTRA_OEMAKE += "KSHELL=/bin/sh"
-
 CFLAGS += "-fgnu89-inline -std=gnu99 -DIS_IN\(x\)='0'"
 
 do_install() {
