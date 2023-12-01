@@ -27,3 +27,6 @@ FILES_MIRRORS =. "${libdir}/gcc/${EXTERNAL_TARGET_SYS}/${BINV}/|${external_libro
 INSANE_SKIP:${PN} += "dev-so staticdev"
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_SYSROOT_STRIP = "1"
+
+# skipping dependency and providing detection for compilation toolchain files
+SKIP_FILEDEPS = "1"

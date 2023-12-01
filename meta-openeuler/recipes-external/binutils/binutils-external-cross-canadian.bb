@@ -14,3 +14,6 @@ do_install:append () {
         ln -s ${EXTERNAL_TARGET_SYS}-ld ${D}${bindir}/${EXTERNAL_TARGET_SYS}-ld.bfd
     fi
 }
+
+# skipping dependency and providing detection for compilation toolchain files
+SKIP_FILEDEPS = "1"
