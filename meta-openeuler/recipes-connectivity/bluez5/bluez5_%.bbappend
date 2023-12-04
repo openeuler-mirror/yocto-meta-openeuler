@@ -42,7 +42,7 @@ SRC_URI:prepend = "\
 PACKAGECONFIG:remove = "udev"
 
 # testtools depends python3-core python3-dbus python3-pygobject, we do not need these
-RDEPENDS:${PN}-testtools = ""
+RDEPENDS:${PN}-testtools:openeuler-prebuilt = ""
 
 # adapte md5 checksum
 LIC_FILES_CHKSUM = "file://COPYING;md5=12f884d2ae1ff87c09e5b7ccc2c4ca7e \
