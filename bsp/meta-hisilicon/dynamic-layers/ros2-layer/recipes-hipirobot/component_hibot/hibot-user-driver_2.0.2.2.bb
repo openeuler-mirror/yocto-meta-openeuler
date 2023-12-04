@@ -1,26 +1,26 @@
 SUMMARY = "hirobot user driver bin package"
 DESCRIPTION = "user lib and headers repack from SS928V100_SDK"
-HOMEPAGE = "hipirobot/3rdparty_ss928v100_v2.0.2.2.git"
+HOMEPAGE = "hipirobot/3rdparty_openeuler"
 LICENSE = "CLOSED"
 
 inherit pkgconfig
 inherit ros_distro_humble
 
-OPENEULER_LOCAL_NAME = "3rdparty_ss928v100_v2.0.2.2"
+OPENEULER_LOCAL_NAME = "3rdparty_openeuler"
 
 SRC_URI = " \
-        file://3rdparty_ss928v100_v2.0.2.2/org/smp/a55_linux/mpp/out/lib \
-        file://3rdparty_ss928v100_v2.0.2.2/org/smp/a55_linux/mpp/out/include \
+        file://3rdparty_openeuler/drivers/lib.tar.gz \
+        file://3rdparty_openeuler/drivers/include.tar.gz \
         file://hibot-user-driver.pc.in \
 "
 
-S = "${WORKDIR}/3rdparty_ss928v100_v2.0.2.2/org/smp/a55_linux/mpp/out"
+S = "${WORKDIR}"
 
 do_install:append() {
     install -d ${D}${libdir}
     install -d ${D}/usr/include
-    cp -rf -P ${S}/lib/* ${D}${libdir}
-    cp -rf -P ${S}/include/* ${D}/usr/include/
+    cp -rf -P ${WORKDIR}/lib/* ${D}${libdir}
+    cp -rf -P ${WORKDIR}/include/* ${D}/usr/include/
     cd ${D}${libdir}
     ln -s libsecurec.so libboundscheck.so
     cd -
@@ -42,6 +42,7 @@ FILES:${PN} += " \
     ${libdir}/npu/*so* \
     ${libdir}/svp_npu/*so* \
     ${libdir}/npu/stub/*so* \
+    ${libdir}/stub/*so* \
 "
 
 FILES:${PN}-dev = " \

@@ -3,16 +3,17 @@ IMAGE_INSTALL += " \
 wpa-supplicant \
 "
 
-# error ld pkg:
-# gst-node
+# error compile pkg:
 # object-node
-# pose-srv-node
-# robot-det-node
 
 # all 3403 app
 IMAGE_INSTALL += " \
 v4l-utils \
+hostapd \
 ${@bb.utils.contains("DISTRO_FEATURES", "ros", " \
+gst-node \
+pose-srv-node \
+robot-det-node \
 astra-camera-msgs \
 astra-camera-raw \
 depth-image \
