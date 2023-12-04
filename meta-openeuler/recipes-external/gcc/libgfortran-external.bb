@@ -23,4 +23,9 @@ FILES:${PN}-dev = "\
     ${LIBROOT_RELATIVE}/include/ \
 "
 INSANE_SKIP:${PN}-dev += "staticdev"
+
+# avoiding libc.so.6(GLIBC_2.38)(64bit), libgcc_s.so.1(GCC_3.0)(64bit), etc. no providers found
+libc_rdep = "${@'${PREFERRED_PROVIDER_virtual/libc}' if '${PREFERRED_PROVIDER_virtual/libc}' else '${TCLIBC}'}"
+RDEPENDS:${PN} += "${libc_rdep} libgcc-external"
+
 FILES:${PN}-staticdev = "${libdir}/libgfortran.a"
