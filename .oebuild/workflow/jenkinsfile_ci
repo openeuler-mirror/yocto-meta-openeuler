@@ -68,16 +68,39 @@ def putSStateCacheToDst(String local_dir, String dst_dir){
 
 def handleAfterBuildImage(String stageName, String arch, Integer build_res_code, String logDir, String randomStr, String IMAGE_DATE, List<String> STAGES_RES){
     def build_res = "failed"
+    def test_res = "failed"
+    def test_res_code = 1
     if (build_res_code == 0){
         build_res = "success"
         //将镜像推送到公网服务器
         def remote_dir = remoteDir+"/${arch}/${stageName}"
         def local_dir = "~/oebuild_workspace/build/${stageName}/output/${IMAGE_DATE}/"
         uploadImageWithKey(remoteIP, remote_dir, remoteUname, remoteKey, local_dir)
+        //将sstate-cache推送到共享磁盘
+        def sstate_local_dir = "~/oebuild_workspace/build/${stageName}/sstate-cache"
+        def sstate_dst_dir = "/home/jenkins/ccache/openeuler_embedded/${ciBranch}/sstate-cache/${stageName}"
+        putSStateCacheToDst(sstate_local_dir, sstate_dst_dir)
+        // 测试qemu镜像和x86镜像的构建产物
+        if(stageName.contains("qemu")){
+            test_res_code = sh (script: """
+                python3 main.py utest \
+                -target openeuler_image \
+                -a ${arch} \
+                -td /home/jenkins/oebuild_workspace/build/${stageName} \
+                -tm ${mugenRemote} \
+                -tb ${mugenBranch} > ${logDir}/Test-${stageName}-${randomStr}.log
+            """, returnStatus: true)
+            if (test_res_code == 0){
+                test_res = "success"
+            }
+        }
     }
     // 对检查赋值
     archiveArtifacts "${logDir}/*.log"
     STAGES_RES.push(formatRes(stageName, "build", build_res, "artifact/${logDir}/Build-${stageName}-${randomStr}.log"))
+    if (build_res_code == 0 && (stageName.contains("qemu"))){
+        STAGES_RES.push(formatRes(stageName, "test", test_res, "artifact/${logDir}/Test-${stageName}-${randomStr}.log"))
+    }
 }
 
 def STAGES_RES = []
@@ -102,7 +125,7 @@ pipeline {
         }
         stage("build task"){
             parallel {
-                stage("aarch64-qemu"){
+                stage("qemu-aarch64 and qemu-riscv64"){
                     agent { node "${node}" }
                     steps {
                         dir('/home/jenkins/agent'){
@@ -115,32 +138,48 @@ pipeline {
                                 withCredentials([
                                     file(credentialsId: remoteID, variable: 'remoteKey')
                                 ]){
-                                    def stageName = "aarch64-qemu"
-                                    def arch = "aarch64"
-                                    // 下载yocto源码
+                                    //下载yocto-meta-openeuler代码
                                     downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
                                     def randomStr = getRandomStr()
                                     def logDir = mkdirOpeneulerLog()
-                                    // 执行镜像编译检查
+
+                                    // 执行qemu-aarch64镜像编译检查
+                                    def stageName = "qemu-aarch64"
+                                    def arch = "aarch64"
                                     def task_res_code = sh (script: """
                                         python3 main.py build \
                                         -c /home/jenkins/agent/yocto-meta-openeuler \
                                         -target openeuler_image \
                                         -a $arch \
                                         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-                                        -p aarch64-std \
+                                        -p qemu-aarch64 \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
+                                    handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
 
+                                    // 执行qemu-riscv64镜像编译检查
+                                    stageName = "qemu-riscv64"
+                                    arch = "riscv64"
+                                    task_res_code = sh (script: """
+                                        python3 main.py build \
+                                        -c /home/jenkins/agent/yocto-meta-openeuler \
+                                        -target openeuler_image \
+                                        -a $arch \
+                                        -t /usr1/openeuler/gcc/openeuler_gcc_riscv64 \
+                                        -p qemu-riscv64 \
+                                        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
+                                        -dt $IMAGE_DATE \
+                                        -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
+                                    """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
                                 }
                             }
                         }
                     }
                 }
-                stage("aarch64-qemu-ros"){
+                stage("qemu-aarch64-ros"){
                     agent { node "${node}" }
                     steps {
                         dir('/home/jenkins/agent'){
@@ -153,33 +192,33 @@ pipeline {
                                 withCredentials([
                                     file(credentialsId: remoteID, variable: 'remoteKey')
                                 ]){
-                                    def stageName = "aarch64-qemu-ros"
-                                    def arch = "aarch64"
-                                    // 下载yocto源码
+                                    //下载yocto-meta-openeuler代码
                                     downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
                                     def randomStr = getRandomStr()
                                     def logDir = mkdirOpeneulerLog()
-                                    // 执行镜像编译检查
+
+                                    // 执行qemu-aarch64-ros镜像编译检查
+                                    def stageName = "qemu-aarch64-ros"
+                                    def arch = "aarch64"
                                     def task_res_code = sh (script: """
                                         python3 main.py build \
                                         -c /home/jenkins/agent/yocto-meta-openeuler \
                                         -target openeuler_image \
                                         -a $arch \
                                         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-                                        -p aarch64-std \
+                                        -p qemu-aarch64 \
                                         -f openeuler-ros \
                                         -i "openeuler-image-ros;openeuler-image-ros -c do_populate_sdk" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
-
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
                                 }
                             }
                         }
                     }
                 }
-                stage("raspberrypi4-64"){
+                stage("raspberrypi4-64-rt and qemu-aarch64-mcs"){
                     agent { node "${node}" }
                     steps {
                         dir('/home/jenkins/agent'){
@@ -192,51 +231,14 @@ pipeline {
                                 withCredentials([
                                     file(credentialsId: remoteID, variable: 'remoteKey')
                                 ]){
-                                    def stageName = "raspberrypi4-64"
-                                    def arch = "aarch64"
-                                    // 下载yocto源码
+                                    //下载yocto-meta-openeuler代码
                                     downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
                                     def randomStr = getRandomStr()
                                     def logDir = mkdirOpeneulerLog()
-                                    // 执行镜像编译检查
-                                    def task_res_code = sh (script: """
-                                        python3 main.py build \
-                                        -c /home/jenkins/agent/yocto-meta-openeuler \
-                                        -target openeuler_image \
-                                        -a $arch \
-                                        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-                                        -p raspberrypi4-64 \
-                                        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -dt $IMAGE_DATE \
-                                        -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
-                                    """, returnStatus: true)
 
-                                    handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
-                                }
-                            }
-                        }
-                    }
-                }
-                stage("raspberrypi4-64-rt"){
-                    agent { node "${node}" }
-                    steps {
-                        dir('/home/jenkins/agent'){
-                            script{
-                                downloadEmbeddedCI(embeddedRemote, embeddedBranch)
-                            }
-                        }
-                        dir('/home/jenkins/agent/embedded-ci'){
-                            script{
-                                withCredentials([
-                                    file(credentialsId: remoteID, variable: 'remoteKey')
-                                ]){
+                                    // 执行raspberrypi4-64-rt镜像编译检查
                                     def stageName = "raspberrypi4-64-rt"
                                     def arch = "aarch64"
-                                    // 下载yocto源码
-                                    downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
-                                    def randomStr = getRandomStr()
-                                    def logDir = mkdirOpeneulerLog()
-                                    // 执行镜像编译检查
                                     def task_res_code = sh (script: """
                                         python3 main.py build \
                                         -c /home/jenkins/agent/yocto-meta-openeuler \
@@ -249,7 +251,23 @@ pipeline {
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
+                                    handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
 
+                                    // 执行qemu-aarch64-mcs镜像编译检查
+                                    stageName = "qemu-aarch64-mcs"
+                                    arch = "aarch64"
+                                    task_res_code = sh (script: """
+                                        python3 main.py build \
+                                        -c /home/jenkins/agent/yocto-meta-openeuler \
+                                        -target openeuler_image \
+                                        -a $arch \
+                                        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
+                                        -p qemu-aarch64 \
+                                        -f openeuler-mcs \
+                                        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
+                                        -dt $IMAGE_DATE \
+                                        -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
+                                    """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
                                 }
                             }
@@ -269,13 +287,14 @@ pipeline {
                                 withCredentials([
                                     file(credentialsId: remoteID, variable: 'remoteKey')
                                 ]){
-                                    def stageName = "raspberrypi4-64-ros"
-                                    def arch = "aarch64"
-                                    // 下载yocto源码
+                                    //下载yocto-meta-openeuler代码
                                     downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
                                     def randomStr = getRandomStr()
                                     def logDir = mkdirOpeneulerLog()
-                                    // 执行镜像编译检查
+
+                                    // 执行raspberrypi4-64-ros镜像编译检查
+                                    def stageName = "raspberrypi4-64-ros"
+                                    def arch = "aarch64"
                                     def task_res_code = sh (script: """
                                         python3 main.py build \
                                         -c /home/jenkins/agent/yocto-meta-openeuler \
@@ -288,14 +307,13 @@ pipeline {
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
-
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
                                 }
                             }
                         }
                     }
                 }
-                stage("arm32-qemu"){
+                stage("raspberrypi4-64-qt and x86-64-mcs"){
                     agent { node "${node}" }
                     steps {
                         dir('/home/jenkins/agent'){
@@ -308,70 +326,104 @@ pipeline {
                                 withCredentials([
                                     file(credentialsId: remoteID, variable: 'remoteKey')
                                 ]){
-                                    def stageName = "arm32-qemu"
-                                    def arch = "arm32"
-                                    // 下载yocto源码
+                                    //下载yocto-meta-openeuler代码
                                     downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
                                     def randomStr = getRandomStr()
                                     def logDir = mkdirOpeneulerLog()
-                                    // 执行镜像编译检查
+
+                                    // 执行raspberrypi4-64-qt镜像编译检查
+                                    def stageName = "raspberrypi4-64-qt"
+                                    def arch = "aarch64"
+                                    def task_res_code = sh (script: """
+                                        python3 main.py build \
+                                        -c /home/jenkins/agent/yocto-meta-openeuler \
+                                        -target openeuler_image \
+                                        -a $arch \
+                                        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
+                                        -p raspberrypi4-64 \
+                                        -f "openeuler-qt;systemd" \
+                                        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
+                                        -dt $IMAGE_DATE \
+                                        -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
+                                    """, returnStatus: true)
+                                    handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
+
+                                    // 执行x86-64-mcs镜像编译检查
+                                    stageName = "x86-64-mcs"
+                                    arch = "x86-64"
+                                    task_res_code = sh (script: """
+                                        python3 main.py build \
+                                        -c /home/jenkins/agent/yocto-meta-openeuler \
+                                        -target openeuler_image \
+                                        -a $arch \
+                                        -t /usr1/openeuler/gcc/openeuler_gcc_x86_64 \
+                                        -p x86-64 \
+                                        -f "systemd;openeuler-mcs" \
+                                        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
+                                        -dt $IMAGE_DATE \
+                                        -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
+                                    """, returnStatus: true)
+                                    handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
+                                }
+                            }
+                        }
+                    }
+                }
+                stage("qemu-arm32 and raspberrypi4-64"){
+                    agent { node "${node}" }
+                    steps {
+                        dir('/home/jenkins/agent'){
+                            script{
+                                downloadEmbeddedCI(embeddedRemote, embeddedBranch)
+                            }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            script{
+                                withCredentials([
+                                    file(credentialsId: remoteID, variable: 'remoteKey')
+                                ]){
+                                    //下载yocto-meta-openeuler代码
+                                    downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
+                                    def randomStr = getRandomStr()
+                                    def logDir = mkdirOpeneulerLog()
+
+                                    // 执行qemu-arm32镜像编译检查
+                                    def stageName = "qemu-arm32"
+                                    def arch = "arm32"
                                     def task_res_code = sh (script: """
                                         python3 main.py build \
                                         -c /home/jenkins/agent/yocto-meta-openeuler \
                                         -target openeuler_image \
                                         -a $arch \
                                         -t /usr1/openeuler/gcc/openeuler_gcc_arm32le \
-                                        -p arm-std \
+                                        -p qemu-arm \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
-                                    
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
-                                }
-                            }
-                        }
-                    }
-                }
-                stage("x86-64-qemu"){
-                    agent { node "${node}" }
-                    steps {
-                        dir('/home/jenkins/agent'){
-                            script{
-                                downloadEmbeddedCI(embeddedRemote, embeddedBranch)
-                            }
-                        }
-                        dir('/home/jenkins/agent/embedded-ci'){
-                            script{
-                                withCredentials([
-                                    file(credentialsId: remoteID, variable: 'remoteKey')
-                                ]){
-                                    def stageName = "x86-64-qemu"
-                                    def arch = "x86-64"
-                                    // 下载yocto源码
-                                    downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
-                                    def randomStr = getRandomStr()
-                                    def logDir = mkdirOpeneulerLog()
-                                    // 执行镜像编译检查
-                                    def task_res_code = sh (script: """
-                                        python3 main.py build \
-                                        -c /home/jenkins/agent/yocto-meta-openeuler \
-                                        -target openeuler_image \
-                                        -a $arch \
-                                        -t /usr1/openeuler/gcc/openeuler_gcc_x86_64 \
-                                        -p x86-64-std \
-                                        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -dt $IMAGE_DATE \
-                                        -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
-                                    """, returnStatus: true)
 
+                                    // 执行raspberrypi4-64镜像编译检查
+                                    stageName = "raspberrypi4-64"
+                                    arch = "aarch64"
+                                    task_res_code = sh (script: """
+                                        python3 main.py build \
+                                        -c /home/jenkins/agent/yocto-meta-openeuler \
+                                        -target openeuler_image \
+                                        -a $arch \
+                                        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
+                                        -p raspberrypi4-64 \
+                                        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
+                                        -dt $IMAGE_DATE \
+                                        -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
+                                    """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
                                 }
                             }
                         }
                     }
                 }
-                stage("x86-64-rt"){
+                stage("qemu-x86-64 and x86-64-rt"){
                     agent { node "${node}" }
                     steps {
                         dir('/home/jenkins/agent'){
@@ -384,26 +436,42 @@ pipeline {
                                 withCredentials([
                                     file(credentialsId: remoteID, variable: 'remoteKey')
                                 ]){
-                                    def stageName = "x86-64-rt"
-                                    def arch = "x86-64"
-                                    // 下载yocto源码
+                                    //下载yocto-meta-openeuler代码
                                     downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
                                     def randomStr = getRandomStr()
                                     def logDir = mkdirOpeneulerLog()
-                                    // 执行镜像编译检查
+
+                                    // 执行qemu-x86-64镜像编译检查
+                                    def stageName = "qemu-x86-64"
+                                    def arch = "x86-64"
                                     def task_res_code = sh (script: """
                                         python3 main.py build \
                                         -c /home/jenkins/agent/yocto-meta-openeuler \
                                         -target openeuler_image \
                                         -a $arch \
                                         -t /usr1/openeuler/gcc/openeuler_gcc_x86_64 \
-                                        -p x86-64-std \
+                                        -p x86-64 \
+                                        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
+                                        -dt $IMAGE_DATE \
+                                        -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
+                                    """, returnStatus: true)
+                                    handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
+
+                                    // 执行x86-64-rt镜像编译检查
+                                    stageName = "x86-64-rt"
+                                    arch = "x86-64"
+                                    task_res_code = sh (script: """
+                                        python3 main.py build \
+                                        -c /home/jenkins/agent/yocto-meta-openeuler \
+                                        -target openeuler_image \
+                                        -a $arch \
+                                        -t /usr1/openeuler/gcc/openeuler_gcc_x86_64 \
+                                        -p x86-64 \
                                         -f openeuler-rt \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
-                                    
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
                                 }
                             }
@@ -412,13 +480,6 @@ pipeline {
                 }
             }
         }
-        stage('del files') {
-			steps {
-				script{
-					build job: "archive_file_2203_lts_sp2", parameters: []
-				}
-			}
-		}
     }
     post {
         always {
