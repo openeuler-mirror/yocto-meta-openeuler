@@ -247,4 +247,4 @@ ____
             linux /bzImage  root=PARTUUID=eaecae14-7021-4551-9183-29b0d210222f rw quiet
         }
 
-     如果没有``/run/media/sda1/efi/boot/grub.cfg``可以使用``fdisk -l``查看磁盘情况，使用``mount``自行挂载。
+     如果没有 ``/run/media/sda1/efi/boot/grub.cfg`` 可以使用 ``fdisk -l`` 查看磁盘分区，使用 ``mount`` 自行挂载 boot 分区。

@@ -52,6 +52,7 @@ ____
          -device virtio-net-device,netdev=tap0 \
          -netdev tap,id=tap0,script=/etc/qemu-ifup \
          -m 2G -smp 4 \
+         -append 'mem=780M'
          -kernel zImage \
          -initrd openeuler-image-*.cpio.gz \
          -dtb qemu-jailhouse.dtb
