@@ -20,6 +20,9 @@ SRC_URI[md5sum] = "10d97fd77d76f1f754ef40b90a36ba17"
 SRC_URI[sha256sum] = "88284d8fe5e567120d73d6967b840538f3f1975182db0ef0eb8233ac69023d1b"
 
 DEPENDS = "swig-native python3"
+# fix do_package_qa: QA Issue:
+# /usr/startup/initenv.sh contained in package ydlidar requires /bin/bash, but no providers found in RDEPENDS:ydlidar? [file-rdeps]
+RDEPENDS:${PN} = "bash"
 
 SYSROOT_DIRS += "/usr/lib"
 
