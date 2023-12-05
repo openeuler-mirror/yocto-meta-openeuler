@@ -5,6 +5,9 @@ SRC_URI:prepend = " \
         file://0-slam-toolbox-fix-can-not-find-tbb.patch \
         file://1-remove-rviz.patch \
         "
+
+inherit pkgconfig
+
 # this fix: rosidl_write_generator_arguments() must be invoked with at least one of the xxx
 ROS_BUILD_DEPENDS:append = " rosidl-typesupport-fastrtps-cpp rosidl-typesupport-fastrtps-c"
 ROS_BUILDTOOL_DEPENDS:append = " rosidl-default-generators-native rosidl-typesupport-fastrtps-cpp-native rosidl-typesupport-fastrtps-c-native"

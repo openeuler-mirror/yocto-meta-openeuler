@@ -1,4 +1,4 @@
-inherit openeuler_source
+inherit openeuler_source pkgconfig
 
 EXTRA_OECMAKE += " -DBUILD_MATLAB_BINDINGS=OFF -DBUILD_PYTHON_BINDINGS=ON -DBUILD_TESTS=OFF"
 
