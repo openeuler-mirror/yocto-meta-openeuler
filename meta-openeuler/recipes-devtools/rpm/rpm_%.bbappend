@@ -39,30 +39,6 @@ SRC_URI:prepend = " \
 
 SRC_URI[sha256sum] = "2e0d220b24749b17810ed181ac1ed005a56bbb6bc8ac429c21f314068dc65e6a"
 
-##openeuler rpm not support --without-lua
-EXTRA_OECONF:remove = " --without-lua"
-DEPENDS += "lua"
-DEPENDS:remove = "db"
 
-PACKAGECONFIG:append = " sqlite zstd ndb"
-PACKAGECONFIG[sqlite] = "--enable-sqlite=yes,--enable-sqlite=no,sqlite3"
-PACKAGECONFIG[ndb] = "--enable-ndb,--disable-ndb"
-PACKAGECONFIG[bdb-ro] = "--enable-bdb-ro,--disable-bdb-ro"
-PACKAGECONFIG[zstd] = "--enable-zstd=yes,--enable-zstd=no,zstd"
-
-RRECOMMENDS:${PN}:remove = " rpm-build"
-SSTATE_HASHEQUIV_FILEMAP = " \
-    populate_sysroot:*/rpm/macros:${TMPDIR} \
-    populate_sysroot:*/rpm/macros:${COREBASE} \
-    "
-
-
-# remove the following actios for pythondistdeps.py after upgrade to new poky
-do_install:prepend() {
-    # no file in new rpm version, touch one before use
-    mkdir -p ${D}${libdir}/rpm/
-    touch ${D}${libdir}/rpm/pythondistdeps.py
-}
-do_install:append() {
-    rm -f ${D}${libdir}/rpm/pythondistdeps.py
-}
+# openeuler configuration
+PACKAGECONFIG:append = " ndb"
