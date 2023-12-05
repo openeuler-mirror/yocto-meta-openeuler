@@ -31,6 +31,9 @@ PATCHTOOL = "git"
 
 OPENEULER_KERNEL_CONFIG = "file://config/${MACHINE}/${MACHINE}_defconfig"
 
+# mkimg need use dtc command
+DEPENDS += "dtc-native"
+
 # add method to do_compile task to produce Rockchip specific bootable Image
 do_compile:append:rk3568(){
     cp ../logo/* ./
