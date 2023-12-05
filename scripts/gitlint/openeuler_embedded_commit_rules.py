@@ -285,10 +285,10 @@ class TagsCheck(CommitRule):
             #5.check form of tag-context in Signed-off-by tag
             if line.lower().startswith("Signed-off-by".lower()):
                 signed_off_by_index.append(index)
-                if not re.match(r'(\S+)(\s<)[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.>', line[(line.find(":")+1):].strip()):
+                if not re.match(r'(\S+\s)+<[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.>', line[(line.find(":")+1):].strip()):
                     message = "The from of Signed-off-by tag is: Signed-off-by: contributor-name <contributor-email>. Please pay attention to the spaces"
                     result.append(RuleViolation(self.id, message, line, line_count))
-            
+
             #6.check form of tag-context in Fixes tag
             if line.lower().startswith("Fixes".lower()):
                 if not re.match(r'[a-z0-9]{12}\(\S.*(:\s)[A-Z]+.*[^?:!.,;]\)$', line[(line.find(":")+1):].strip()):
