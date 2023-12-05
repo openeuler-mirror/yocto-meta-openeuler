@@ -66,7 +66,7 @@
      * - master
        - latest
      * - openEuler-23.09
-       - 0.0.30
+       - 0.0.32
      * - openEuler-22.03-LTS-SP2
        - 0.0.27
 
