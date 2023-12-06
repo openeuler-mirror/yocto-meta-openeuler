@@ -14,6 +14,8 @@ ${@bb.utils.contains("DISTRO_FEATURES", "ros", " \
 gst-node \
 pose-srv-node \
 robot-det-node \
+robot-localization \
+joint-state-publisher \
 astra-camera-msgs \
 astra-camera-raw \
 depth-image \
