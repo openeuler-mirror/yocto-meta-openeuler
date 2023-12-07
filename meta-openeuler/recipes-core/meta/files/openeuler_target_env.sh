@@ -27,6 +27,13 @@ if [ ${PYTHONPKGPATH#${OPENEULER_NATIVESDK_SYSROOT}} != "$PYTHONPKGPATH" ]; then
             for file in ${SDKTARGETSYSROOT}/usr/lib/python3.*/site-packages/*
             do
                 ln -sfnT "$file" "$(basename "$file")"
+                if [ ! $? == 0 ];then
+                    dirowner=`ls -al $PYTHONPKGPATH | sed -n '2p' | awk '{print $3}'`
+                    if [ ! "$dirowner" == "openeuler" ];then
+                        echo "The directory permissions do not match the current user. Try:"
+                        echo "sudo chown openeuler:openeuler $PYTHONPKGPATH"
+                    fi
+                fi
             done
             popd
 
@@ -44,5 +51,7 @@ else
     pushd "${SDKTARGETSYSROOT}/usr/src/kernel"
     make modules_prepare PKG_CONFIG_SYSROOT_DIR= PKG_CONFIG_PATH=
     popd
+    echo "No environment configuration detected for ROS SDK."
+    echo "If you need to use ROS SDK, please make sure to use ROS image and use 'oebuild bitbake' to enter the docker environment"
 fi
 
