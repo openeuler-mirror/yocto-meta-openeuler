@@ -30,6 +30,7 @@ QEMU的一大优势是可以使用 gdb 来对内核进行调试，这对于嵌�
           -S -s
 
    可以发现此时命令行不再继续往下执行，我们另外打开一个窗口，启动gdb并连接qemu：
+   (如果使用的是arm64内核，需要gdb-multiarch进行调试)
 
    .. code-block:: console
 
