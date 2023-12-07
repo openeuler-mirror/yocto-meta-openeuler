@@ -20,6 +20,7 @@ commit msg样式与示例
     body
     <blank line>
     footer
+    (cherry-pick info) #可选，若此commit通过cherry-pick获得，应注明来源commit id
 
 .. _完整示例1:
 
@@ -79,6 +80,7 @@ commit msg样式与示例
 
     Link: https://docs.yoctoproject.org/migration-guides/migration-4.0.html
     Signed-off-by: wangermazi <wangermazi@163.com>
+    (cherry picked from commit h84b88e9e49483aeec884am02ef98056622f6eb8)    #从其他分支cherry-pick过来的commit id信息
 
 .. _详细说明:
 
@@ -93,7 +95,7 @@ commit msg详细说明
 
     - ``subject`` 非空，应包含对更改的简介描述。必须使用祈使句和现在时态，即不可使用'changed'或'changes',而是使用'change'（具体解释可见 `此 <https://365git.tumblr.com/post/3308646748/writing-git-commit-messages>`_ ）。不能在末尾加标点符号，不能包含表情符号，至少包含3个单词。
 
-    - revert类型提交请看 :ref:`第7点 <第7点>` 。 
+    - revert类型提交请看 :ref:`第6点 <第6点>` 。 
 
   3. ``body`` 为提交的详细描述，非空。不能包含表情符号，并使用祈使句和现在时态。对于不包含URL链接的行，要求每行不超过100个字符，若包含URL链接，字符没有限制，不过建议将URL链接单独成一行，提高可读性。
 
@@ -144,11 +146,9 @@ commit msg详细说明
 
   5. 若提交的代码包含了重大变更（如poky版本升级、重要接口参数减少、接口删除、迁移等），需在 ``header`` 行中的冒号前加一个 ``！`` ，并且在 ``body`` 中完整描述重大变更信息（包括更改内容、原因及迁移位置等信息）。在 :ref:`完整示例3 <完整示例3>` 就使用了此方法。
 
-  6. 一次合并请求不能超过10次提交。
+.. _第6点:
 
-.. _第7点:
-
-  7. 如果是进行以往提交的回退，则 ``area`` 填写为revert， ``subject`` 为被回退提交的 commit id 和header信息，在 ``body`` 中应写回退的原因。比如要回退以上 :ref:`完整示例1 <完整示例1>` （假设其commit id前12位为：54a4f0239f2e），则commit msg为：
+  6. 如果是进行以往提交的回退，则 ``area`` 填写为revert， ``subject`` 为被回退提交的 commit id 和header信息，在 ``body`` 中应写回退的原因。比如要回退以上 :ref:`完整示例1 <完整示例1>` （假设其commit id前12位为：54a4f0239f2e），则commit msg为：
 
     .. code-block:: shell
     
@@ -157,6 +157,17 @@ commit msg详细说明
       some reasons for revert.
 
       Signed-off-by: developer <random@developer.example.org>
+
+  7. 如果commit是通过 ``git cherry-pick`` 获得，建议使用 ``-x`` 选项（这样在cherry-pick时，git会自动生成来源说明），备注好源分支的commit id信息，便于后续追溯查看使用。正确格式为（也可见于 :ref:`完整示例3 <完整示例3>` ）：
+
+    .. code-block:: shell
+
+      #注意，该行必须位于Signed-off-by标签后，两者之间不留空行
+      #其中 6024a1fca1455a6e3dc84082f60bh2b481dc5f9e 指来源分支上的commit id
+      #使用”git cherry-pick -x“可以自动生成
+      (cherry picked from commit 6024a1fca1455a6e3dc84082f60bh2b481dc5f9e)
+
+  8. 建议每次合并请求（Pull Request）不要超过10次提交。
 
 本地检查commit msg
 ===========================
