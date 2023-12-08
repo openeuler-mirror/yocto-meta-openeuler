@@ -154,11 +154,13 @@
 <p class="admonition-title">Note</p>
 <p>下文的QEMU启动命令默认使能 <code class="docutils literal notranslate"><span class="pre">virtio-net</span></code>，请先阅读 <a class="reference internal" href="../../develop_help/qemu/qemu_start.html#qemu-enable-net"><span class="std std-ref">QEMU 使用指导</span></a> 了解如何开启网络。</p>
 </div>
-<p>使用生成出来的 <code class="docutils literal notranslate"><span class="pre">qemu.dtb</span></code>，按照以下命令启动 QEMU，注意 <cite>-m</cite> 和 <cite>-smp</cite> 要与 dtb 的配置(2G RAM, 4 cores)保持一致，否则会启动失败：</p>
+<p>使用生成出来的 <code class="docutils literal notranslate"><span class="pre">qemu.dtb</span></code>，按照以下命令启动 QEMU，注意，需要指定 <cite>maxcpus=3</cite> 为 Client OS 预留出 core 3，
+并且’-m` 和 <cite>-smp</cite> 要与 dtb 的配置(2G RAM, 4 cores)保持一致，否则会启动失败：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo qemu-system-aarch64 -M virt,gic-version<span class="o">=</span><span class="m">3</span> -cpu cortex-a53 -nographic <span class="se">\</span>
     -device virtio-net-device,netdev<span class="o">=</span>tap0 <span class="se">\</span>
     -netdev tap,id<span class="o">=</span>tap0,script<span class="o">=</span>/etc/qemu-ifup <span class="se">\</span>
     -m 2G -smp <span class="m">4</span> <span class="se">\</span>
+    -append <span class="s1">&#39;maxcpus=3&#39;</span> <span class="se">\</span>
     -kernel zImage <span class="se">\</span>
     -initrd openeuler-image-*.cpio.gz <span class="se">\</span>
     -dtb qemu.dtb

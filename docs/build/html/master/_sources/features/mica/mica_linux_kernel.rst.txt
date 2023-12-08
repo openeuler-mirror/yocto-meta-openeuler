@@ -35,7 +35,8 @@ ____
 
      下文的QEMU启动命令默认使能 ``virtio-net``，请先阅读 :ref:`QEMU 使用指导 <qemu_enable_net>` 了解如何开启网络。
 
-  使用生成出来的 ``qemu.dtb``，按照以下命令启动 QEMU，注意 `-m` 和 `-smp` 要与 dtb 的配置(2G RAM, 4 cores)保持一致，否则会启动失败：
+  使用生成出来的 ``qemu.dtb``，按照以下命令启动 QEMU，注意，需要指定 `maxcpus=3` 为 Client OS 预留出 core 3，
+  并且'-m` 和 `-smp` 要与 dtb 的配置(2G RAM, 4 cores)保持一致，否则会启动失败：
 
   .. code-block:: console
 
@@ -43,6 +44,7 @@ ____
          -device virtio-net-device,netdev=tap0 \
          -netdev tap,id=tap0,script=/etc/qemu-ifup \
          -m 2G -smp 4 \
+         -append 'maxcpus=3' \
          -kernel zImage \
          -initrd openeuler-image-*.cpio.gz \
          -dtb qemu.dtb
