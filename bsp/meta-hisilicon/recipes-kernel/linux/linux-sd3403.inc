@@ -59,8 +59,8 @@ do_configure:prepend() {
 # add method to do_compile task to produce bootable Image
 do_compile:append(){
     ../tools/mkimage -A arm64 -O linux -T kernel -C none -a 0x080000 -e 0x080000 -n "Linux-5.10.0" -d ${KERNEL_OUTPUT_DIR}/Image uImage-tmp
-    dtc -I dts -O dtb ${S}/arch/${ARCH}/boot/dts/vendor/ss928v100-demb-emmc.dts -o ${WORKDIR}/ss928v100-demb-emmc.dtb
-    cat uImage-tmp ${WORKDIR}/ss928v100-demb-emmc.dtb > ${KERNEL_OUTPUT_DIR}/uImage
+    oe_runmake dtbs
+    cat uImage-tmp arch/arm64/boot/dts/vendor/ss928v100-demo.dtb > ${KERNEL_OUTPUT_DIR}/uImage
 }
 
 # uImage as bl33, we need to use it to build the fip.bin. So add uImage to SYSROOT_DIR
