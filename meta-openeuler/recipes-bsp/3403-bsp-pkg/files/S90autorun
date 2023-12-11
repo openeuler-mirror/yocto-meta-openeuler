@@ -35,6 +35,7 @@ echo 1 > /sys/class/gpio/gpio47/value
 #echo out >/sys/class/gpio/gpio72/direction
 #echo 0 > /sys/class/gpio/gpio72/value
 
+
 bspmm 0x0102F00F0  0x1201  #GPIO9_5
 bspmm 0x0102F0110  0x1201  #GPIO10_5
 
@@ -90,6 +91,27 @@ bspmm 0x0102f0138 0x00001201
 
 #RTC 生成1秒脉冲
 i2c_write 0 0x64 0xd 0x44
+
+#mipi GPIO config 
+bspmm 0x102f0150 0x1100
+bspmm 0x102f0160 0x1100
+
+echo 97 > /sys/class/gpio/export
+echo out > /sys/class/gpio/gpio97/direction
+echo 1 > /sys/class/gpio/gpio97/value
+
+echo 101 > /sys/class/gpio/export
+echo out > /sys/class/gpio/gpio101/direction
+echo 1 > /sys/class/gpio/gpio101/value
+
+#wait for chip to start and complete 
+sleep 1
+res=`i2c_read 4 0xd0 0xa9 0xa9 1 1 |grep error`
+if [ -z "$res" ]; then
+    echo "start config rohm"
+    bash /etc/init.d/rohm_400M.sh > /dev/null
+    echo "config rohm success"
+fi
 
 echo 46 > /sys/class/gpio/export 
 echo out >/sys/class/gpio/gpio46/direction 
