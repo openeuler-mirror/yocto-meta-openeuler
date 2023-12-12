@@ -15,3 +15,11 @@ SRC_URI = " \
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=db8448a1e43eb2125f7740fc397db1f6"
 
+EXTRA_OECONF:remove = " \
+        --with-ca-bundle=${sysconfdir}/ssl/certs/ca-certificates.crt \
+"
+
+# in the ca-certificates package, there is no ca-certificates.crt file, so use ca-bundle.crt instead
+EXTRA_OECONF:append = " \
+    --with-ca-bundle=${sysconfdir}/ssl/certs/ca-bundle.crt \
+"
