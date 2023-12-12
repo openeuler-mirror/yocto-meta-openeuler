@@ -1,12 +1,14 @@
 # main bb file: yocto-poky/meta/recipes-core/kbd/kbd_2.4.0.bb
 
+OPENEULER_SRC_URI_REMOVE = "https http"
+
 PV = "2.6.1"
 
 # license update
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 # use patches from src-openEuler
-SRC_URI = "file://kbd-${PV}.tar.xz \
+SRC_URI:prepend = "file://kbd-${PV}.tar.xz \
            file://kbd-1.15-keycodes-man.patch \
            file://kbd-1.15-sparc.patch \
            file://kbd-1.15-unicode_start.patch \

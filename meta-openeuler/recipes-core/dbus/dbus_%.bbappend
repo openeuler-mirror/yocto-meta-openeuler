@@ -1,4 +1,7 @@
 # version in openEuler
+
+OPENEULER_SRC_URI_REMOVE = "https"
+
 PV = "1.14.8"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=6423dcd74d7be9715b0db247fd889da3 \
@@ -6,7 +9,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6423dcd74d7be9715b0db247fd889da3 \
 
 
 # apply openEuler source package
-SRC_URI:remove = "https://dbus.freedesktop.org/releases/dbus/dbus-${PV}.tar.gz \
+SRC_URI:remove = " \
            file://clear-guid_from_server-if-send_negotiate_unix_f.patch \
 "
 

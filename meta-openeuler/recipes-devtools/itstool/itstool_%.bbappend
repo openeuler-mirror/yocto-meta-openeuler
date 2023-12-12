@@ -1,1 +1,5 @@
-PV = "2.0.7"
+OPENEULER_SRC_URI_REMOVE = "https http"
+
+SRC_URI:prepend = " \
+            file://${BPN}-${PV}.tar.bz2 \
+           "

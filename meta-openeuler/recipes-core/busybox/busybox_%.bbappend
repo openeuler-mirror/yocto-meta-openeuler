@@ -1,5 +1,7 @@
 PV = "1.36.1"
 
+OPENEULER_SRC_URI_REMOVE = "https git http"
+
 # use openEuler defconfig
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
@@ -22,6 +24,7 @@ SRC_URI:remove = " \
 
 #we always want busybox with mdev\init packages to support multi init manager
 SRC_URI:append = " \
+        file://busybox-${PV}.tar.bz2 \
         file://backport-CVE-2022-28391.patch \
         file://backport-CVE-2022-48174.patch \
         file://init.cfg \

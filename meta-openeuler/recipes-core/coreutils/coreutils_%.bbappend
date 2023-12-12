@@ -1,5 +1,7 @@
 # main bbfile: yocto-poky/meta/recipes-core/coreutils/coreutils_8.32.bb
 
+OPENEULER_SRC_URI_REMOVE = "https git http"
+
 # version in openEuler
 PV = "9.3"
 
@@ -13,7 +15,6 @@ LIC_FILES_CHKSUM += " \
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI:remove = " \
-        ${GNU_MIRROR}/coreutils/${BP}.tar.xz \
         file://remove-usr-local-lib-from-m4.patch \
         file://fix-selinux-flask.patch \
         file://0001-uname-report-processor-and-hardware-correctly.patch \

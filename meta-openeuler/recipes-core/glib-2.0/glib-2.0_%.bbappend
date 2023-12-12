@@ -1,3 +1,6 @@
+
+OPENEULER_SRC_URI_REMOVE = "https http"
+
 OPENEULER_REPO_NAME = "glib2"
 
 PV = "2.74.4"
@@ -18,7 +21,9 @@ SRC_URI:remove = "file://Enable-more-tests-while-cross-compiling.patch \
            "
 
 # openeuler patch
-SRC_URI:prepend = "file://backport-gdbusinterfaceskeleton-Fix-a-use-after-free-of-a-GDBusMethodInvocation.patch \
+SRC_URI:prepend = " \
+        file://glib-${PV}.tar.xz \
+        file://backport-gdbusinterfaceskeleton-Fix-a-use-after-free-of-a-GDBusMethodInvocation.patch \
 "
 
 # fix arm build error: 'errno' undeclared (first use in this function)

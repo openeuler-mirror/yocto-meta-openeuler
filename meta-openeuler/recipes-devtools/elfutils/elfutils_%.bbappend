@@ -1,10 +1,9 @@
 # the main bb file: yocto-poky/meta/recipes-devtools/elfutils/elfutils_0.186.bb
-
+OPENEULER_SRC_URI_REMOVE = "https"
 PV = "0.189"
 
 # the path removed in 0.187
 SRC_URI:remove = " \
-    https://sourceware.org/elfutils/ftp/${PV}/${BP}.tar.bz2 \
     file://0001-debuginfod-fix-compilation-on-platforms-without-erro.patch \
     file://0001-debuginfod-debuginfod-client.c-use-long-for-cache-ti.patch \
 "

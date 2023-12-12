@@ -1,8 +1,7 @@
 # main bb file: yocto-poky/meta/recipes-devtools/flex/flex_2.6.4.bb
+OPENEULER_SRC_URI_REMOVE = "https http"
 
 PV = "2.6.4"
-
-SRC_URI:remove = "https://github.com/westes/flex/releases/download/v${PV}/flex-${PV}.tar.gz"
 
 # apply patches in openEuler
 # 0001-build-AC_USE_SYSTEM_EXTENSIONS-in-configure.ac.patch exists in poky
