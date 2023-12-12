@@ -1,6 +1,6 @@
 ## in openEuler Embedded, newlib is not an alternative of glibc, it's used by RTOS
 ## or baremetal in the case of multi-os mixed  deployment.
-## Because of this, .bbappend is not use but independent bb file
+## Because of this, .bbappend is not used but independent bb file
 SUMMARY = "Newlib is a C library intended for use on embedded systems"
 HOMEPAGE = "https://sourceware.org/newlib/"
 DESCRIPTION = "C library intended for use on embedded systems. It is a conglomeration of several library parts, all under free software licenses that make them easily usable on embedded products."
@@ -24,7 +24,10 @@ LIC_FILES_CHKSUM = " \
 		file://newlib/libc/sys/linux/linuxthreads/LICENSE;md5=73640207fbc79b198c7ffd4ad4d97aa0 \
 		"
 
-SRC_URI = "https://sourceware.org/pub/newlib/newlib-${PV}.tar.gz"
+SRC_URI = " \
+		file://newlib-${PV}.tar.gz \
+		file://Modify-neon-instruction.patch \
+		"
 SRC_URI[sha256sum] = "58dd9e3eaedf519360d92d84205c3deef0b3fc286685d1c562e245914ef72c66"
 
 # disable pie security flags by default
