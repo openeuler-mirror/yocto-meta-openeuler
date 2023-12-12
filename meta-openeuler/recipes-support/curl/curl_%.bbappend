@@ -104,7 +104,13 @@ do_install_append_class-target() {
 
 # configure.ac in openEuler can't handle --without-libmetalink variable
 EXTRA_OECONF_remove = " \
+        --with-ca-bundle=${sysconfdir}/ssl/certs/ca-certificates.crt \
         --without-libmetalink \
+"
+
+# in the ca-certificates package, there is no ca-certificates.crt file, so use ca-bundle.crt instead
+EXTRA_OECONF_append = " \
+    --with-ca-bundle=${sysconfdir}/ssl/certs/ca-bundle.crt \
 "
 
 # the version 7.86.0 packageconfig add libgsasl, openssl, zstd param and remove ssl param
@@ -117,9 +123,5 @@ EXTRA_OECONF_append = " \
     ${@'--without-ssl' if (bb.utils.filter('PACKAGECONFIG', 'gnutls mbedtls nss openssl', d) == '') else ''} \
 "
 
-# It is not safe to pack crt files in rootfs by default, if you sure what you want, comment these lines:
-EXTRA_OECONF_remove += " \
-        --with-ca-bundle=${sysconfdir}/ssl/certs/ca-certificates.crt \
-        --without-libmetalink \
-"
-RRECOMMENDS_lib${BPN}_remove += "ca-certificates"
+# use openssl as default ssl library
+PACKAGECONFIG_append = " openssl "
