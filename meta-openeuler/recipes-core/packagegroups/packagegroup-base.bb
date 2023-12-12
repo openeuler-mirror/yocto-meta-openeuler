@@ -28,6 +28,7 @@ ethtool \
 expat \
 grep \
 gzip \
+bzip2 \
 iproute2-ip \
 iptables \
 kmod \
