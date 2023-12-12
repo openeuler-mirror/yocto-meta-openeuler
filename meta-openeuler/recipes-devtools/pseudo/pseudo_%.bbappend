@@ -6,7 +6,7 @@ SRC_URI:remove = " \
 "
 
 SRC_URI:prepend = "file://${BP}.tar.gz \
-           https://gitee.com/openeuler/oee_archive/raw/master/pseudo/pseudo-prebuilt-2.33.tar.xz;subdir=git/prebuilt;name=prebuilt \
+           https://gitee.com/openeuler/oee_archive/raw/master/pseudo/pseudo-prebuilt-2.33.tar.xz;subdir=${BP}/prebuilt;name=prebuilt \
            "
 
 PV = "df1d1321fb093283485c387e3c933d2d264e509c"
