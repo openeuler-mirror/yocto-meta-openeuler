@@ -1,5 +1,6 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/gdb/gdb_10.1.bb
 # ref: http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-devtools/gdb/gdb_12.1.bb?id=8d42315c074a97
+OPENEULER_SRC_URI_REMOVE = "https http"
 
 #version in openEuler
 PV = "12.1"
@@ -8,7 +9,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/gdb:"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI:remove = " \
-            ${GNU_MIRROR}/gdb/gdb-${PV}.tar.xz \
            file://0005-Dont-disable-libreadline.a-when-using-disable-static.patch \
            file://0006-use-asm-sgidefs.h.patch \
            file://0007-Change-order-of-CFLAGS.patch \

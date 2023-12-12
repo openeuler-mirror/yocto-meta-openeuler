@@ -1,3 +1,5 @@
+OPENEULER_SRC_URI_REMOVE = "https http"
+
 PV = "1.1.1"
 
 # add patches from new poky under meta-openeluer

@@ -1,11 +1,11 @@
 # the main bb file: yocto-poky/meta/recipes-devtools/e2fsprogs/e2fprogs_1.46.5.bb
+OPENEULER_SRC_URI_REMOVE = "git"
 
 PV = "1.47.0"
 
 S = "${WORKDIR}/${BPN}-${PV}"
 # delete package from poky
-SRC_URI:remove = "git://git.kernel.org/pub/scm/fs/ext2/e2fsprogs.git \
-                git://git.kernel.org/pub/scm/fs/ext2/e2fsprogs.git;branch=master \
+SRC_URI:remove = " \
                 file://0001-e2fsck-fix-last-mount-write-time-when-e2fsck-is-forc.patch \
                 file://0010-libext2fs-add-sanity-check-to-extent-manipulation.patch \
                 file://extents.patch \

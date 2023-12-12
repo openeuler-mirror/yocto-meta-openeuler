@@ -1,10 +1,11 @@
 # the main bb file: yocto-poky/meta/recipes-core/libcgroup/libcgroup_2.0.2.bb
 
+OPENEULER_SRC_URI_REMOVE = "https"
+
 PV = "2.0.3"
 
-SRC_URI:remove = "https://github.com/${BPN}/${BPN}/releases/download/v${PV}/${BP}.tar.gz"
-
-SRC_URI:prepend = "file://${BP}.tar.gz \
+SRC_URI:prepend = " \
+            file://${BP}.tar.gz \
             file://config.patch \
 "
 

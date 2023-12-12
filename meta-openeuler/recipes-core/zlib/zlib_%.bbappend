@@ -1,11 +1,12 @@
 #main bbfile: yocto-poky/meta/recipes-core/zlib/zlib_1.2.11.bb
 
+OPENEULER_SRC_URI_REMOVE = "https git http"
+
 #version in openEuler
 PV = "1.2.13"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI:remove = " \
-        ${SOURCEFORGE_MIRROR}/libpng/${BPN}/${PV}/${BPN}-${PV}.tar.xz \
         file://CVE-2018-25032.patch \
         file://ldflags-tests.patch \
         file://CVE-2022-37434.patch \

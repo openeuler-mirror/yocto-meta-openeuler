@@ -1,8 +1,10 @@
 # version in openEuler
 PV = "2.1.1"
 
+OPENEULER_SRC_URI_REMOVE = "https http"
+
 # remove patches that can't apply in poky
-SRC_URI:remove = "${SOURCEFORGE_MIRROR}/linux-diag/sysfsutils-${PV}.tar.gz \
+SRC_URI:remove = " \
                   file://sysfsutils-2.0.0-class-dup.patch \
                   file://obsolete_automake_macros.patch \
                   file://separatebuild.patch \

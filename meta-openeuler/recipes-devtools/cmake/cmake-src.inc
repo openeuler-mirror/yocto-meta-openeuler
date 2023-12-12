@@ -1,3 +1,5 @@
+OPENEULER_SRC_URI_REMOVE = "https http"
+
 PV = "3.22.0"
 
 SRC_URI:remove = " \
@@ -5,6 +7,7 @@ SRC_URI:remove = " \
 
 # apply openeuler source package and patches
 SRC_URI:prepend = " \
+           file://cmake-${PV}.tar.gz \
            file://cmake-findruby.patch \
            file://cmake-fedora-flag_release.patch \
            file://cmake-mingw-dl.patch \

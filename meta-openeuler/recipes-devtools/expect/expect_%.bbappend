@@ -1,4 +1,5 @@
 # the main bb file: yocto-poky/meta/recipes-devtools/expect/expect_5.45.4.bb
+OPENEULER_SRC_URI_REMOVE = "https http"
 
 # expect-5.43.0-pkgpath.patch: build error, delete it from openeuler
 SRC_URI:prepend = "file://expect${PV}.tar.gz \
