@@ -12,7 +12,5 @@ PACKAGECONFIG:append:class-target = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'udev', '', d)} \
 "
 
-RDEPENDS:${PN}:openeuler-prebuilt = ""
-
 # from poky lvm2_2.03.16.bb
 RDEPENDS:${PN} = "bash"
