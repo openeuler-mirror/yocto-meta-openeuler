@@ -158,68 +158,6 @@ do_install () {
         ${D}/${sysconfdir}/pki/java/cacerts
 }
 
-pgk_preinst:${PN}:class-target () {
-    if [ $1 -gt 1 ] ; then
-        # Upgrade or Downgrade.
-        # If the classic filename is a regular file, then we are upgrading
-        # from an old package and we will move it to an .rpmsave backup file.
-        # If the filename is a symbolic link, then we are good already.
-        # If the system will later be downgraded to an old package with regular 
-        # files, and afterwards updated again to a newer package with symlinks,
-        # and the old .rpmsave backup file didn't get cleaned up,
-        # then we don't backup again. We keep the older backup file.
-        # In other words, if an .rpmsave file already exists, we don't overwrite it.
-        #
-        if ! test -e ${sysconfdir}/pki/java/cacerts.rpmsave; then
-            # no backup yet
-            if test -e ${sysconfdir}/pki/java/cacerts; then
-                # a file exists
-                if ! test -L ${sysconfdir}/pki/java/cacerts; then
-                    # it's an old regular file, not a link
-                    mv -f ${sysconfdir}/pki/java/cacerts ${sysconfdir}/pki/java/cacerts.rpmsave
-                fi
-            fi
-        fi
-
-        if ! test -e ${sysconfdir}/pki/tls/certs/ca-bundle.crt.rpmsave; then
-            # no backup yet
-            if test -e ${sysconfdir}/pki/tls/certs/ca-bundle.crt; then
-                # a file exists
-                if ! test -L ${sysconfdir}/pki/tls/certs/ca-bundle.crt; then
-                    # it's an old regular file, not a link
-                    mv -f ${sysconfdir}/pki/tls/certs/ca-bundle.crt ${sysconfdir}/pki/tls/certs/ca-bundle.crt.rpmsave
-                fi
-            fi
-        fi
-
-        if ! test -e ${sysconfdir}/pki/tls/certs/ca-bundle.trust.crt.rpmsave; then
-            # no backup yet
-            if test -e ${sysconfdir}/pki/tls/certs/ca-bundle.trust.crt; then
-                # a file exists
-                if ! test -L ${sysconfdir}/pki/tls/certs/ca-bundle.trust.crt; then
-                    # it's an old regular file, not a link
-                    mv -f ${sysconfdir}/pki/tls/certs/ca-bundle.trust.crt ${sysconfdir}/pki/tls/certs/ca-bundle.trust.crt.rpmsave
-                fi
-            fi
-        fi
-    fi
-}
-
-pgk_postinst:${PN}:class-target () {
-    #if [ $1 -gt 1 ] ; then
-    #  # when upgrading or downgrading
-    #fi
-    # When coreutils is installing with ca-certificates
-    # we need to wait until coreutils install to
-    # run our update since update requires ln to complete.
-    if [ -x ${bindir}/ln ]; then
-        ${bindir}/ca-legacy install
-        ${bindir}/update-ca-trust
-    fi
-
-    ${bindir}/ca-legacy install
-    ${bindir}/update-ca-trust
-}
 
 FILES:${PN} = " \
 ${sysconfdir}/pki/tls \
@@ -275,3 +213,16 @@ ${sysconfdir}/pki/ca-trust/extracted/openssl/ca-bundle.trust.crt \
 ${sysconfdir}/pki/ca-trust/extracted/java/cacerts \
 ${sysconfdir}/pki/ca-trust/extracted/edk2/cacerts.bin \
 "
+
+
+# run the following code at startup
+pkg_postinst_ontarget:${PN} () {
+    ${bindir}/ca-legacy install
+    ${bindir}/update-ca-trust
+}
+
+RDEPENDS:${PN} += "p11-kit"
+
+# support native and nativesdk
+BBCLASSEXTEND = "native nativesdk"
+
