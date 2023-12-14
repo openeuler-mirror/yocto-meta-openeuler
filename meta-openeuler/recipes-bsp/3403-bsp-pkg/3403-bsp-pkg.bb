@@ -12,6 +12,7 @@ OPENEULER_LOCAL_NAME = "3rdparty_ss928v100_v2.0.2.2"
 SRC_URI = " \
         file://3rdparty_openeuler/drivers/ko.tar.gz \
         file://3rdparty_openeuler/drivers/ko-extra.tar.gz \
+        file://3rdparty_openeuler/drivers/wifi-1102a-tools.tar.gz \
         file://3rdparty_ss928v100_v2.0.2.2/patch/sdt/btools \
         file://S90autorun \
         file://rohm_400M.sh \
@@ -23,7 +24,7 @@ S = "${WORKDIR}/3rdparty_ss928v100_v2.0.2.2/org/smp/a55_linux/mpp/out"
 #INITSCRIPT_PARAMS = "start 16 5 ."
 
 INSANE_SKIP:${PN} += "already-stripped"
-FILES:${PN} = "${sysconfdir} /usr/bin /ko"
+FILES:${PN} = "${sysconfdir} /usr/bin /ko /vendor"
 
 do_install () {
         install -d ${D}/usr/bin
@@ -38,8 +39,16 @@ do_install () {
 
         cp -r ${WORKDIR}/ko ${D}/
         cp -f ${WORKDIR}/ko-extra/ch343.ko ${D}/ko
+
         #for mipi, use load_ss928v100 from ko-extra
         cp -f ${WORKDIR}/ko-extra/load_ss928v100 ${D}/ko
+
+        # install wifi-1102a firmware
+        cp -f ${WORKDIR}/wifi-1102a-tools/plat.ko ${D}/ko
+        cp -f ${WORKDIR}/wifi-1102a-tools/wifi.ko ${D}/ko
+        install -m 0755 ${WORKDIR}/wifi-1102a-tools/start_wifi ${D}/usr/bin/
+        install -d ${D}/vendor
+        cp -rf ${WORKDIR}/wifi-1102a-tools/vendor/* ${D}/vendor
 
         install -m 0755 ${WORKDIR}/S90autorun ${D}${sysconfdir}/init.d/
         install -m 0755 ${WORKDIR}/rohm_400M.sh ${D}${sysconfdir}/init.d/

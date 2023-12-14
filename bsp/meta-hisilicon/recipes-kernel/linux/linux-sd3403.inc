@@ -8,6 +8,7 @@ inherit kernel
 SRC_URI = "file://kernel-5.10-tag928 \
     file://3rdparty_openeuler/linux/5.10.0-153.28.0.patch \
     file://tools \
+    file://dtbs/ss928-pi.dts \
 "
 
 # add BL31
@@ -60,7 +61,9 @@ do_configure:prepend() {
 do_compile:append(){
     ../tools/mkimage -A arm64 -O linux -T kernel -C none -a 0x080000 -e 0x080000 -n "Linux-5.10.0" -d ${KERNEL_OUTPUT_DIR}/Image uImage-tmp
     oe_runmake dtbs
-    cat uImage-tmp arch/arm64/boot/dts/vendor/ss928v100-demo.dtb > ${KERNEL_OUTPUT_DIR}/uImage
+    dtc -I dts -O dtb ${WORKDIR}/dtbs/ss928-pi.dts -o ${WORKDIR}/ss928-pi.dtb
+    cat uImage-tmp arch/arm64/boot/dts/vendor/ss928v100-demo.dtb > ${KERNEL_OUTPUT_DIR}/uImage-demo
+    cat uImage-tmp ${WORKDIR}/ss928-pi.dtb > ${KERNEL_OUTPUT_DIR}/uImage-pi
 }
 
 # uImage as bl33, we need to use it to build the fip.bin. So add uImage to SYSROOT_DIR
@@ -70,7 +73,8 @@ SYSROOT_DIRS += "/linux-img"
 FILES:${KERNEL_PACKAGE_NAME} += "/linux-img"
 do_install:append() {
         install -d ${D}/linux-img
-        install -m 0644 ${KERNEL_OUTPUT_DIR}/uImage ${D}/linux-img/uImage
+        install -m 0644 ${KERNEL_OUTPUT_DIR}/uImage-demo ${D}/linux-img/uImage-demo
+        install -m 0644 ${KERNEL_OUTPUT_DIR}/uImage-pi ${D}/linux-img/uImage-pi
 }
 
 SYSROOT_PREPROCESS_FUNCS += "additional_populate_sysroot"
@@ -80,22 +84,16 @@ additional_populate_sysroot() {
 
 # Even if the KERNEL_IMAGETYPE is zImage, we will install Image, so add it into PACKAGES
 PACKAGES += "${KERNEL_PACKAGE_NAME}-img"
-FILES:${KERNEL_PACKAGE_NAME}-img = "/boot/Image-${KERNEL_VERSION} /boot/uImage-${KERNEL_VERSION} "
+FILES:${KERNEL_PACKAGE_NAME}-img = "/boot/Image-${KERNEL_VERSION}"
 do_install:append(){
     if [ -e ${KERNEL_OUTPUT_DIR}/Image ]; then
         install -m 0644 ${KERNEL_OUTPUT_DIR}/Image ${D}/${KERNEL_IMAGEDEST}/Image-${KERNEL_VERSION}
-    fi
-    if [ -e ${KERNEL_OUTPUT_DIR}/uImage ]; then
-        install -m 0644 ${KERNEL_OUTPUT_DIR}/uImage ${D}/${KERNEL_IMAGEDEST}/uImage-${KERNEL_VERSION}
     fi
 }
 
 do_deploy:append() {
     if [ -e ${KERNEL_OUTPUT_DIR}/Image ]; then
         install -m 0644 ${KERNEL_OUTPUT_DIR}/Image $deployDir/Image-${KERNEL_VERSION}
-    fi
-    if [ -e ${KERNEL_OUTPUT_DIR}/uImage ]; then
-        install -m 0644 ${KERNEL_OUTPUT_DIR}/uImage $deployDir/uImage-${KERNEL_VERSION}
     fi
 }
 

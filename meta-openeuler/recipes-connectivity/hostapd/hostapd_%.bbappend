@@ -5,9 +5,13 @@ OPENEULER_LOCAL_NAME = "oee_archive"
 
 PV = "2.10"
 
+S = "${WORKDIR}/hostapd-${PV}"
+
 SRC_URI += " \
         file://${OPENEULER_LOCAL_NAME}/hostapd/hostapd-${PV}.tar.gz \
 "
 
-S = "${WORKDIR}/hostapd-${PV}"
+do_configure:append() {
+    echo 'CONFIG_ACS=y' >> ${S}/hostapd/.config
+}
 

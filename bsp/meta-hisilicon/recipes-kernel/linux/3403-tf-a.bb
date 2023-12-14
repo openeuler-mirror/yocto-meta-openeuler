@@ -24,12 +24,16 @@ DEPENDS += "virtual/kernel"
 EXTRA_OEMAKE="CROSS_COMPILE=${TARGET_PREFIX} "
 
 do_compile:append() {
-    oe_runmake PLAT=ss928v100 SPD=none BL33=${WORKDIR}/recipe-sysroot/linux-img/uImage CCI_UP=0 DEBUG=0 BL33_SEC=0 fip
+    oe_runmake PLAT=ss928v100 SPD=none BL33=${WORKDIR}/recipe-sysroot/linux-img/uImage-demo CCI_UP=0 DEBUG=0 BL33_SEC=0 fip
+    cp ${B}/build/ss928v100/release/fip.bin ${B}/build/ss928v100/release/fip-demo.bin
+    oe_runmake PLAT=ss928v100 SPD=none BL33=${WORKDIR}/recipe-sysroot/linux-img/uImage-pi CCI_UP=0 DEBUG=0 BL33_SEC=0 fip
+    cp ${B}/build/ss928v100/release/fip.bin ${B}/build/ss928v100/release/fip-pi.bin
 }
 
 do_install:append() {
     install -d ${D}/boot/
-    install ${B}/build/ss928v100/release/fip.bin ${D}/boot/kernel
+    install ${B}/build/ss928v100/release/fip-demo.bin ${D}/boot/kernel-demo
+    install ${B}/build/ss928v100/release/fip-pi.bin ${D}/boot/kernel-pi
 }
 
-FILES:${PN} += "/boot/kernel"
+FILES:${PN} += " /boot/kernel-demo /boot/kernel-pi "

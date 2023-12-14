@@ -3,14 +3,15 @@ IMAGE_INSTALL += " \
 wpa-supplicant \
 "
 
-# error compile pkg:
-# object-node
-
 # all 3403 app
 IMAGE_INSTALL += " \
+i2c-soft \
 v4l-utils \
 hostapd \
 ${@bb.utils.contains("DISTRO_FEATURES", "ros", " \
+ai-demolib \
+mipi-ffmpeglib \
+object-node \
 gst-node \
 pose-srv-node \
 robot-det-node \
