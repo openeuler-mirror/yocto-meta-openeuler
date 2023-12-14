@@ -16,7 +16,7 @@ IMAGE_LINGUAS = ""
 
 LICENSE = "MIT"
 
-inherit core-image
+inherit core-image extrausers
 
 # delete useless sdk depends
 FEATURE_PACKAGES_tools-sdk_remove = " packagegroup-core-sdk packagegroup-core-standalone-sdk-target"
