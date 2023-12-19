@@ -1,13 +1,13 @@
+PV = "1.6"
+
 SRC_URI = " \
-        ${GNUPG_MIRROR}/npth/npth-${PV}.tar.bz2 \
+        file://npth-${PV}.tar.bz2 \
         file://backport-0001-w32-Use-cast-by-uintptr_t-for-thread-ID.patch \
-        file://add-test-cases.patch \
-        file://backport-0002-posix-Add-npth_poll-npth_ppoll.patch \
         "
 
 # patches from poky
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
-SRC_URI += " \
+SRC_URI_append = " \
            file://pkgconfig.patch \
            file://0001-Revert-Fix-problem-with-regression-tests-on-recent-g.patch \
           "

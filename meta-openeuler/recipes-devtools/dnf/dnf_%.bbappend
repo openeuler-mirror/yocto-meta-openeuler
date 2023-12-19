@@ -1,27 +1,28 @@
 PV = "4.14.0"
 
-OPENEULER_BRANCH = "master"
-
 # find patches under openeuler at firse
 FILESEXTRAPATHS_prepend := "${THISDIR}/files/:"
 
 # delete useless codes from poky
-SRC_URI_remove = "git://github.com/rpm-software-management/dnf.git;branch=master;protocol=https \
+SRC_URI_remove = " \
+    git://github.com/rpm-software-management/dnf.git;branch=master;protocol=https \
 "
 
 # apply patches from openeuler before poky
-SRC_URI_prepend = " \
-        https://github.com/rpm-software-management/dnf/archive/${PV}/${BPN}-${PV}.tar.gz \
-        file://unlock-pidfile-if-current-proccess-is-NOT-dnf.patch \
-        file://fix-pid-file-residue.patch \
-        file://add-rpm-transaction-debuginfo.patch \
-        file://adapt-test-another-process.patch \
-        file://fix-dnf-history-undo-error-when-history-sqlite-missing.patch \
-        file://dnf-4.10.0-sw.patch \
+SRC_URI_append = " \
+    file://${BP}.tar.gz \
+    file://add-rpm-transaction-debuginfo.patch \
+    file://fix-dnf-history-undo-error-when-history-sqlite-missing.patch \
+    file://backport-fix-plugins-unit-tests-unload-plugins-upon-their-deletion.patch \
+    file://backport-pass-whole-url-in-relativeUrl-to-packageTarget-for-rpm-url-download.patch \
+    file://backport-add-support-for-rollback-of-group-upgrade-rollback.patch \
+    file://backport-ignore-processing-variable-files-with-unsupported-encoding.patch \
+    file://backport-fix-AttributeError-when-IO-busy-and-press-ctrl-c.patch \
+    file://backport-Add-provide-exception-handling.patch \
 "
 
 # add default repo
-SRC_URI += " \
+SRC_URI_append = " \
     file://openEuler.repo \
 "
 
