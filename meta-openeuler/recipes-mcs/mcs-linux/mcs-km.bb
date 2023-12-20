@@ -5,9 +5,8 @@ AUTHOR = ""
 HOMEPAGE = "https://gitee.com/openeuler/mcs"
 BUGTRACKER = "https://gitee.com/openeuler/yocto-meta-openeuler"
 
-
 ### License metadata
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 
 
@@ -17,13 +16,12 @@ require mcs-resources-overlay.inc
 
 ### Build metadata: SRC_URI, SRCDATA, S, B, FILESEXTRAPATHS....
 PV = "0.0.1"
-OPENEULER_FETCH = "disable"
-SRC_URI += " \
+OPENEULER_REPO_NAME = "mcs"
+
+SRC_URI_append_aarch64 = " \
     file://mcs/mcs_km \
     "
 S = "${WORKDIR}/mcs/mcs_km"
-
-do_fetch[depends] += "mcs-linux:do_fetch"
 
 # The inherit of module.bbclass will automatically name module packages with
 # "kernel-module-" prefix as required by the oe-core build environment.
