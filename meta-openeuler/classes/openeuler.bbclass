@@ -40,14 +40,24 @@ do_fetch[file-checksums] += "${@openeuler_get_checksum_file_list(d)}"
 
 # set_rpmdpes is used to set RPMDEPS which comes from nativesdk/host
 python set_rpmdeps() {
-    import subprocess
+    import subprocess, os
 
     if d.getVar('OPENEULER_PREBUILT_TOOLS_ENABLE') != 'yes':
         return
 
-    rpmdeps  = subprocess.Popen('rpm --eval="%{_rpmconfigdir}"', shell=True, stdout=subprocess.PIPE)
+    # when version of rpm is 4.18.0+, we need add RPM_CONFIGDIR to env
+    rpm_configdir = oe.path.join(d.getVar('OPENEULER_NATIVESDK_SYSROOT'), '/usr/lib/rpm')
+
+    env = os.environ.copy()
+    env["RPM_CONFIGDIR"] = rpm_configdir
+
+    rpmdeps  = subprocess.Popen('rpm --eval="%{_rpmconfigdir}"', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
     stdout, stderr = rpmdeps.communicate()
     d.setVar('RPMDEPS', os.path.join(str(stdout, "utf-8").strip(), "rpmdeps --alldeps --define '__font_provides %{nil}'"))
+
+    # export RPM_CONFIGDIR
+    d.setVar('RPM_CONFIGDIR', rpm_configdir)
+    d.setVarFlag('RPM_CONFIGDIR', 'export', '1')
 }
 
 addhandler set_rpmdeps
