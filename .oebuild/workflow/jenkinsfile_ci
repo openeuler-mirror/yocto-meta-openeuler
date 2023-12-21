@@ -61,8 +61,7 @@ def putSStateCacheToDst(String local_dir, String dst_dir){
         python3 main.py put_to_dst \
         -t 1 \
         -dd $dst_dir \
-        -ld $local_dir \
-        -d
+        -ld $local_dir
     """
 }
 
@@ -74,6 +73,17 @@ def handleAfterBuildImage(String stageName, String arch, Integer build_res_code,
         def remote_dir = remoteDir+"/${arch}/${stageName}"
         def local_dir = "~/oebuild_workspace/build/${stageName}/output/${IMAGE_DATE}/"
         uploadImageWithKey(remoteIP, remote_dir, remoteUname, remoteKey, local_dir)
+        //将sstate-cache推送到共享磁盘
+        //由于当前构建得sstate-cache中包含指向 sstate_origin_dir 中文件的软连接，故先复制为temp（复制时，遇到软连接默认复制软连接指向的真实文件），再删除源文件夹，最后mv操作
+        def sstate_local_dir = "~/oebuild_workspace/build/${stageName}/sstate-cache"
+        def sstate_dst_dir = "/home/jenkins/ccache/openeuler_embedded/${ciBranch}/sstate-cache/${stageName}-temp"
+        putSStateCacheToDst(sstate_local_dir, sstate_dst_dir)
+        def sstate_origin_dir = "/home/jenkins/ccache/openeuler_embedded/${ciBranch}/sstate-cache/${stageName}"
+        sh (script: """
+            rm -rf ${sstate_origin_dir}
+            mv ${sstate_dst_dir} ${sstate_origin_dir}
+        """
+        )
     }
     // 对检查赋值
     archiveArtifacts "${logDir}/*.log"
@@ -130,6 +140,7 @@ pipeline {
                                         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
                                         -p aarch64-std \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
+                                        -s_in "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -169,6 +180,7 @@ pipeline {
                                         -p aarch64-std \
                                         -f openeuler-ros \
                                         -i "openeuler-image-ros;openeuler-image-ros -c do_populate_sdk" \
+                                        -s_in "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -207,6 +219,7 @@ pipeline {
                                         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
                                         -p raspberrypi4-64 \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
+                                        -s_in "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -246,6 +259,7 @@ pipeline {
                                         -p raspberrypi4-64 \
                                         -f openeuler-rt \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
+                                        -s_in "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -285,6 +299,7 @@ pipeline {
                                         -p raspberrypi4-64 \
                                         -f openeuler-ros \
                                         -i "openeuler-image-ros;openeuler-image-ros -c do_populate_sdk" \
+                                        -s_in "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -323,6 +338,7 @@ pipeline {
                                         -t /usr1/openeuler/gcc/openeuler_gcc_arm32le \
                                         -p arm-std \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
+                                        -s_in "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -361,6 +377,7 @@ pipeline {
                                         -t /usr1/openeuler/gcc/openeuler_gcc_x86_64 \
                                         -p x86-64-std \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
+                                        -s_in "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -400,6 +417,7 @@ pipeline {
                                         -p x86-64-std \
                                         -f openeuler-rt \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
+                                        -s_in "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
