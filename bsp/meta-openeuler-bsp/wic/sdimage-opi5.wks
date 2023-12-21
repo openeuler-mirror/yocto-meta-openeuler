@@ -1,0 +1,20 @@
+# Disk layout
+# reference: https://opensource.rock-chips.com/wiki_Partitions
+# Note that the reference documentation refers to 512 byte disk sectors,
+# but wic uses 1KB blocks
+#
+#   Partition   Start Sector    Number of Sectors
+#   loader1     64              8000
+#   reserved1   8064            128
+#   reserved2   8192            8192
+#   loader2     16384           8192
+#   atf         24576           8192
+#   boot        32768           229376
+#   root        262144          -           (suggested)
+
+part loader1  --offset 32     --fixed-size 4000K         --no-table    --source rawcopy   --sourceparams="file=idblock.img"
+part loader2  --offset 8192   --fixed-size 4096K         --no-table    --source rawcopy   --sourceparams="file=uboot.img"
+part /boot    --offset 16384  --source bootimg-partition --fstype=vfat --label boot       --sourceparams="loader=u-boot" --ondisk mmcblk1 --active
+part /                        --source rootfs            --fstype ext4 --part-name rootfs --ondisk mmcblk1
+
+bootloader --ptable gpt --configfile="opi5-extlinux.conf"
