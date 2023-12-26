@@ -310,7 +310,7 @@ ____
 
 **文件系统例子**
 
-   若使用网络启动，可使用openEuler Embedded构建的标准树梅派镜像构建过程中的rootfs并手动打包，也可使用openEuler Embedded发布的qemu-aarch64参考 `文件系统 <https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm64/aarch64-std/openeuler-image-qemu-aarch64-20220331025547.rootfs.cpio.gz>`_ 
+   若使用网络启动，可使用openEuler Embedded构建的标准树梅派镜像构建过程中的rootfs并手动打包，也可使用openEuler Embedded发布的qemu-aarch64参考 `文件系统 <https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm64/qemu-aarch64/openeuler-image-qemu-aarch64-20220331025547.rootfs.cpio.gz>`_ 
 
    手动打包rootfs例子（预先需准备openEuler Embedded树梅派已构建完成的环境）:
 

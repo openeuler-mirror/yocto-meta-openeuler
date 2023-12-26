@@ -35,7 +35,7 @@ openEuler Embedded使用mugen框架时，由于嵌入式镜像中缺少mugen框�
     #    --put_all 配置执行测试套时一次拷贝所有测试套用例至qemu
     #    --kernal_img_path openEuler Embedded kernel镜像zImage
     #    --initrd_path openEuler Embedded rootfs镜像openeuler-image-qemu-*.rootfs.cpio.gz
-    sh qemu_ctl.sh start --put_all --kernal_img_path <aarch64-std的zImage本地路径> --initrd_path <aarch64-std的rootfs本地路径>
+    sh qemu_ctl.sh start --put_all --kernal_img_path <qemu-aarch64的zImage本地路径> --initrd_path <qemu-aarch64的rootfs本地路径>
 
     # 如果在远端设备执行测试，则不需要执行QEMU启动，但需要进行测试套环境变量配置
     #    -c 配置测试套环境
@@ -111,7 +111,7 @@ OS基础测试套需要标准镜像支持，主要对OS的基础能力进行测�
     sh dep_install.sh -e
 
     # 启动QEMU，如果需要测试arm标准镜像，则需要增加 --qemu_type arm
-    sh qemu_ctl.sh start --put_all --kernal_img_path <aarch64-std的zImage本地路径> --initrd_path <aarch64-std的rootfs本地路径>
+    sh qemu_ctl.sh start --put_all --kernal_img_path <qemu-aarch64的zImage本地路径> --initrd_path <qemu-aarch64的rootfs本地路径>
 
     # 执行对应的测试套
     bash mugen.sh -f embedded_os_basic_test -s
@@ -139,7 +139,7 @@ OS基础测试套需要标准镜像支持，主要对OS的基础能力进行测�
     sh dep_install.sh -e
 
     # 启动QEMU，如果需要测试arm标准镜像，则需要增加 --qemu_type arm
-    sh qemu_ctl.sh start --put_all --kernal_img_path <aarch64-std的zImage本地路径> --initrd_path <aarch64-std的rootfs本地路径>
+    sh qemu_ctl.sh start --put_all --kernal_img_path <qemu-aarch64的zImage本地路径> --initrd_path <qemu-aarch64的rootfs本地路径>
 
     # 执行对应的测试套
     bash mugen.sh -f embedded_security_config_test -s
@@ -166,7 +166,7 @@ OS基础测试套需要标准镜像支持，主要对OS的基础能力进行测�
     sh dep_install.sh -e
 
     # 启动QEMU，如果需要测试arm标准镜像，则需要增加 --qemu_type arm
-    sh qemu_ctl.sh start --put_all --kernal_img_path <aarch64-std的zImage本地路径> --initrd_path <aarch64-std的rootfs本地路径>
+    sh qemu_ctl.sh start --put_all --kernal_img_path <qemu-aarch64的zImage本地路径> --initrd_path <qemu-aarch64的rootfs本地路径>
 
     # 执行编译测试套
     bash mugen.sh -b embedded_application_develop_tests

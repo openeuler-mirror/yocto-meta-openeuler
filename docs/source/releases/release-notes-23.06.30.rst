@@ -3,7 +3,7 @@
 .. _openeuler_embedded_23_06_30:
 
 openEuler Embedded 22.03-LTS-sp2
-###########################
+#################################
 
 openEuler Embedded 22.03-LTS-sp2是基于openEuler Embedded 22.03-LTS-sp1的维护更新版本。本次发布版本包含内容大概如下：
 

@@ -47,7 +47,7 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
   .. code-block:: console
 
-    $ oebuild generate -p aarch64-std -f openeuler-ros -d aarch64-qemu-ros
+    $ oebuild generate -p qemu-aarch64 -f openeuler-ros -d aarch64-qemu-ros
     $ oebuild bitbake
     $ bitbake openeuler-image-ros
 
