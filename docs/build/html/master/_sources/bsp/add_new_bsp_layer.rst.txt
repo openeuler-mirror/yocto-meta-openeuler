@@ -150,14 +150,13 @@ bsp目录下存放openeuler当前支持的bsp层，开发者新增的bsp层放�
 
   上游的bsp层无法独立在openeuler层中很好的工作，该层作为上游层与openeuler层之间的桥梁， ``meta-openeuler-bsp`` 层提供统一的对bsp层的修改，层中对recipes的修改基于yocto工程中 ``bbappend`` 形式来实现。
 
--  ``meta-raspberrypi``
-
-  此层提供树莓派开发板在硬件上的元数据文件，例如一些基本固件，与开发板硬件强相关的recipes都放在该层中。该层由上游社区提供，在openeuler中仅仅只是引入，未对其中的元数据文件作侵入式的修改，这便于后续升级和维护。
-
 -  ``meta-xxx``
   
   其它支持的bsp层，如meta-rockchip与meta-hisilicon。
 
+.. note:: 
+
+    原来该目录下存在原生的meta-raspberrypi层，但是由于openEuler Embedded代码结构的管理，该层被移到openeuler/meta-raspberrypi，该仓库的链接地址为：https://gitee.com/openeuler/yocto-meta-raspberrypi.git，在构建树莓派镜像时，我们需要树莓派的platform配置文件，该文件就是raspberrypi6-64.yaml，在该文件中引入了树莓派层，同时添加了repo下载信息，在repo中添加yocto-meta-raspberrypi是因为oebuild会在启用bitbake编译环境前下载该仓，而我们需要bitbake在解析菜谱前将所有需要的layer准备好。
 
 meta-raspberrypi 分析
 =============================
