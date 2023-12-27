@@ -1,4 +1,4 @@
-#image configuration for orangepi5
+#image configuration for orangepi4-lts
 delete_unneeded_from_rootfs() {
     set -x
     test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
