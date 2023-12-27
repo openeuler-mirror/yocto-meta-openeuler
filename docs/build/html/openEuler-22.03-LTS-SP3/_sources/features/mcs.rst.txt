@@ -88,7 +88,7 @@ openEuler Embedded 不仅支持混合关键性系统特性的单独构建，还�
    .. code-block:: shell
 
       # qemu-arm64
-      oebuild generate -p aarch64-std -f openeuler-mcs -d <build_arm64_mcs>
+      oebuild generate -p qemu-aarch64 -f openeuler-mcs -d <build_arm64_mcs>
 
       # RPI4
       oebuild generate -p raspberrypi4-64 -f openeuler-mcs -d <build_rpi_mcs>

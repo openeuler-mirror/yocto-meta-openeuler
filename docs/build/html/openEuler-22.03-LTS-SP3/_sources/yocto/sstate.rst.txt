@@ -37,14 +37,14 @@ sstate 缓存复用机制
 
     do_build任务不存在siginfo文件。
 
-构建linux-openeuler(arm-std)，总共执行了59个任务。通过查看日志信息，只执行了54个任务；查看SSTATE_DIR目录，存在54份siginfo文件；其余5个任务应该是每个依赖包的do_build任务，不存在相应的siginfo文件。
+构建linux-openeuler(qemu-arm)，总共执行了59个任务。通过查看日志信息，只执行了54个任务；查看SSTATE_DIR目录，存在54份siginfo文件；其余5个任务应该是每个依赖包的do_build任务，不存在相应的siginfo文件。
 
 .. code-block::
 
     $ bitbake linux-openeuler -g  //生成linux-openeuler依赖信息
     $ cat pn-buildlist //查看依赖的包
 
-以下是linux-openeuler（arm-std）及其所有依赖包的任务数与siginfo文件数：
+以下是linux-openeuler（qemu-arm）及其所有依赖包的任务数与siginfo文件数：
 
 .. code-block::
 
