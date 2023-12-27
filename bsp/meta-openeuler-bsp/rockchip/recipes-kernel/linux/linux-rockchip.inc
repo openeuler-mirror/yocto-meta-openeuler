@@ -18,6 +18,11 @@ SRC_URI:append:ryd-3568 = " \
     file://patches/0002-ryd-gpio-control.patch \
 "
 
+# patches for orangepi4-lts
+SRC_URI:append:orangepi4-lts = " \
+    file://patches/0001-add-dtb-for-rk3399-orangepi-4-lts.patch \
+"
+
 # mcs patch for ok3568 devicetree
 SRC_URI:append = " \
     ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'file://patches/0003-ok3568-support-mcs.patch', '', d)} \
