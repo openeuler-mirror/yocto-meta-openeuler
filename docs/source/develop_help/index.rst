@@ -13,3 +13,4 @@
    commit.rst
    contribute_doc.rst
    republish.rst
+   big_software.rst
