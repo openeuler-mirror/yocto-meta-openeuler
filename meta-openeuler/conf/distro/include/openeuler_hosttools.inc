@@ -107,7 +107,7 @@ HOSTTOOLS_NONFATAL += "dtc"
 ASSUME_PROVIDED += "dtc-native intltool-native"
 
 # used by wayland
-ASSUME_PROVIDED += "xorgproto-native python3-mako-native expat-native"
+ASSUME_PROVIDED += "xorgproto-native python3-mako-native expat-native python3-jinja2-native "
 
 # used by tcl
 ASSUME_PROVIDED += "tcl-native"
@@ -123,3 +123,5 @@ HOSTTOOLS_NONFATAL += "glib-mkenums"
 
 # used by gstreamer1.0
 HOSTTOOLS_NONFATAL += "xgettext"
+
+HOSTTOOLS_NONFATAL += "glib-compile-resources glib-genmarshal xmlcatalog fdtget sgdisk hexdump rev"
