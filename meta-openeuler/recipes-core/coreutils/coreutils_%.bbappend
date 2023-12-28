@@ -53,3 +53,5 @@ SRC_URI_prepend = " \
         file://backport-doc-od-strings-clarify-operation.patch \
         file://backport-wc-port-to-kernels-that-disable-XSAVE-YMM.patch \
 "  
+
+EXTRA_OECONF_remove_class-native = "--without-gmp"
