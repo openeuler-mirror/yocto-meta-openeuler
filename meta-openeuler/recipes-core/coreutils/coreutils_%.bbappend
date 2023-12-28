@@ -14,13 +14,12 @@ LIC_FILES_CHKSUM += " \
 "
 
 # files, patches can't be applied in openeuler or conflict with openeuler
+# remove-usr-local-lib-from-m4.patch same as bugfix-remove-usr-local-lib-from-m4.patch
 SRC_URI:remove = " \
         file://remove-usr-local-lib-from-m4.patch \
         file://fix-selinux-flask.patch \
         file://0001-uname-report-processor-and-hardware-correctly.patch \
-        file://disable-ls-output-quoting.patch \
         file://e8b56ebd536e82b15542a00c888109471936bfda.patch \
-        file://0001-ls-restore-8.31-behavior-on-removed-directories.patch \
 "
 
 # files, patches that come from openeuler
@@ -36,5 +35,11 @@ SRC_URI:prepend = " \
         file://backport-coreutils-i18n.patch \
         file://backport-pr-fix-infinite-loop-when-double-spacing.patch \
 "  
+
+# patch from coreutils-9.3
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}/:"
+SRC_URI:append = " \
+           file://stdlib-mb-cur-max.patch \
+           "
 
 SRC_URI[sha256sum] = "ce30acdf4a41bc5bb30dd955e9eaa75fa216b4e3deb08889ed32433c7b3b97ce"
