@@ -29,6 +29,10 @@ SRC_URI_remove += "\
             file://determinism.patch \
 "
 
+SRC_URI_remove_class-native = " \
+           file://perl-configpm-switch.patch \
+"
+
 SRC_URI[perl.sha256sum] = "551efc818b968b05216024fb0b727ef2ad4c100f8cb6b43fab615fa78ae5be9a"
 
 # get cross compile script from perlcross-native, and before configure
