@@ -3,8 +3,10 @@ OPENEULER_SRC_URI_REMOVE = "https"
 
 PV = "1.79.1"
 
+OPENEULER_LOCAL_NAME = "oee_archive"
+
 # upstream src and patches
-SRC_URI:append = " file://oee_archive/docbook-xsl/docbook-xsl-${PV}.tar.bz2 \
+SRC_URI:append = " file://${OPENEULER_LOCAL_NAME}/${BPN}/docbook-xsl-${PV}.tar.bz2 \
            "
 
 # 1.79.2 has conflict with shared-mime-info, no this version in openeuler
