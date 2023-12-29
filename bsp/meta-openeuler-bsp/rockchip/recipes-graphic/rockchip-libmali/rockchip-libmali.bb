@@ -18,8 +18,8 @@ python do_fetch() {
     bb.build.exec_func("do_openeuler_fetch", d)
 
     # download rockchip EGL lib repo for rockchip EGL support
-    d.setVar("OPENEULER_REPO_NAME", 'mali-{MALI_GPU}-{MALI_VERSION}')
-    d.setVar("OPENEULER_LOCAL_NAME", 'mali-{MALI_GPU}-{MALI_VERSION}')
+    d.setVar("OPENEULER_REPO_NAME", 'mali-{MALI_GPU}-{MALI_VERSION}'.format(MALI_GPU=d.getVar('MALI_GPU'), MALI_VERSION=d.getVar('MALI_VERSION')))
+    d.setVar("OPENEULER_LOCAL_NAME", 'mali-{MALI_GPU}-{MALI_VERSION}'.format(MALI_GPU=d.getVar('MALI_GPU'), MALI_VERSION=d.getVar('MALI_VERSION')))
     bb.build.exec_func("do_openeuler_fetch", d)
 }
 
@@ -28,7 +28,7 @@ do_unpack_append() {
 }
 
 do_copy_elglib_source() {
-	cp -r mali-${MALI_GPU}-${MALI_VERSION}/* mali-common/
+    cp -r mali-${MALI_GPU}-${MALI_VERSION}/* mali-common/
 }
 
 S = "${WORKDIR}/mali-common"
