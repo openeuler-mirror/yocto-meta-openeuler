@@ -56,15 +56,15 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "3rdparty_teb"
+OPENEULER_LOCAL_NAME = "oee_archive"
 
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/src/costmap_converter/costmap_converter_msgs \
+    file://${OPENEULER_LOCAL_NAME}/costmap_converter/costmap_converter-9565858.tar.gz \
 "
 
-S = "${WORKDIR}/${OPENEULER_LOCAL_NAME}/src/costmap_converter/costmap_converter_msgs"
+S = "${WORKDIR}/costmap_converter/costmap_converter_msgs"
 
 FILES:${PN} += "${datadir}"
 

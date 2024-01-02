@@ -5,10 +5,10 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ad
 BPN = "trusted-firmware-a"
 PV = "2.2"
 
-OPENEULER_LOCAL_NAME = "3rdparty_openeuler"
+OPENEULER_LOCAL_NAME = "HiEuler-driver"
 
-SRC_URI = "file://3rdparty_openeuler/firmware/${BP}.tar.gz \
-           file://3rdparty_openeuler/firmware/${BP}.patch \
+SRC_URI = "file://HiEuler-driver/firmware/${BP}.tar.gz \
+           file://HiEuler-driver/firmware/${BP}.patch \
            file://tf-a/0001-add-LDFLAGS-to-fix-compilation-errors.patch \
         "
 

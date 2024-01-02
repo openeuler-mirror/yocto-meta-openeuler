@@ -6,13 +6,13 @@ LIC_FILES_CHKSUM ?= "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 inherit kernel
 
 SRC_URI = "file://kernel-5.10-tag928 \
-    file://3rdparty_openeuler/linux/5.10.0-153.28.0.patch \
+    file://HiEuler-driver/linux/5.10.0-153.28.0.patch \
     file://tools \
     file://dtbs/ss928-pi.dts \
 "
 
 # add BL31
-SRC_URI:append = " file://3rdparty_openeuler/firmware/trusted-firmware-a-2.2.tar.gz "
+SRC_URI:append = " file://HiEuler-driver/firmware/trusted-firmware-a-2.2.tar.gz "
 
 S = "${WORKDIR}/kernel-5.10-tag928"
 
@@ -33,9 +33,9 @@ python () {
 }
 
 python do_fetch() {
-    # download 3rdparty_openeuler repo for patches
-    d.setVar("OPENEULER_REPO_NAME", "3rdparty_openeuler")
-    d.setVar("OPENEULER_LOCAL_NAME", '3rdparty_openeuler')
+    # download HiEuler repo for patches
+    d.setVar("OPENEULER_REPO_NAME", "HiEuler-driver")
+    d.setVar("OPENEULER_LOCAL_NAME", 'HiEuler-driver')
     bb.build.exec_func("do_openeuler_fetch", d)
 
     # download src-openeuler/kernel repo for patches

@@ -3,25 +3,19 @@ SECTION = "base"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
-# dep linux-sd3403 to make 3rdparty_openeuler download first
-DEPENDS = "update-rc.d-native linux-sd3403"
+DEPENDS = "update-rc.d-native"
 
-OPENEULER_LOCAL_NAME = "3rdparty_ss928v100_v2.0.2.2"
+OPENEULER_LOCAL_NAME = "HiEuler-driver"
 
-# old: 3rdparty_ss928v100_v2.0.2.2/org/smp/a55_linux/mpp/out/ko
 SRC_URI = " \
-        file://3rdparty_openeuler/drivers/ko.tar.gz \
-        file://3rdparty_openeuler/drivers/ko-extra.tar.gz \
-        file://3rdparty_openeuler/drivers/wifi-1102a-tools.tar.gz \
-        file://3rdparty_ss928v100_v2.0.2.2/patch/sdt/btools \
-        file://S90autorun \
-        file://rohm_400M.sh \
+        file://HiEuler-driver/drivers/ko.tar.gz \
+        file://HiEuler-driver/drivers/ko-extra.tar.gz \
+        file://HiEuler-driver/drivers/btools \
+        file://HiEuler-driver/drivers/S90AutoRun \
+        file://HiEuler-driver/drivers/pinmux.sh \
 "
 
-S = "${WORKDIR}/3rdparty_ss928v100_v2.0.2.2/org/smp/a55_linux/mpp/out"
-
-#INITSCRIPT_NAME = "close_wdog.sh"
-#INITSCRIPT_PARAMS = "start 16 5 ."
+S = "${WORKDIR}/HiEuler-driver/drivers"
 
 INSANE_SKIP:${PN} += "already-stripped"
 FILES:${PN} = "${sysconfdir} /usr/bin /ko /vendor"
@@ -31,7 +25,7 @@ do_install () {
         install -d ${D}${sysconfdir}/init.d
         install -d ${D}${sysconfdir}/rc5.d
 
-        install -m 0755 ${WORKDIR}/3rdparty_ss928v100_v2.0.2.2/patch/sdt/btools ${D}/usr/bin/
+        install -m 0755 ${WORKDIR}/HiEuler-driver/drivers/btools ${D}/usr/bin/
         ln -s /usr/bin/btools ${D}/usr/bin/bspmm
         ln -s /usr/bin/btools ${D}/usr/bin/i2c_read
         ln -s /usr/bin/btools ${D}/usr/bin/i2c_write
@@ -44,15 +38,16 @@ do_install () {
         cp -f ${WORKDIR}/ko-extra/load_ss928v100 ${D}/ko
 
         # install wifi-1102a firmware
-        cp -f ${WORKDIR}/wifi-1102a-tools/plat.ko ${D}/ko
-        cp -f ${WORKDIR}/wifi-1102a-tools/wifi.ko ${D}/ko
-        install -m 0755 ${WORKDIR}/wifi-1102a-tools/start_wifi ${D}/usr/bin/
-        install -d ${D}/vendor
-        cp -rf ${WORKDIR}/wifi-1102a-tools/vendor/* ${D}/vendor
+        # cp -f ${WORKDIR}/wifi-1102a-tools/plat.ko ${D}/ko
+        # cp -f ${WORKDIR}/wifi-1102a-tools/wifi.ko ${D}/ko
+        # install -m 0755 ${WORKDIR}/wifi-1102a-tools/start_wifi ${D}/usr/bin/
+        # install -d ${D}/vendor
+        # cp -rf ${WORKDIR}/wifi-1102a-tools/vendor/* ${D}/vendor
 
-        install -m 0755 ${WORKDIR}/S90autorun ${D}${sysconfdir}/init.d/
-        install -m 0755 ${WORKDIR}/rohm_400M.sh ${D}${sysconfdir}/init.d/
-        update-rc.d -r ${D} S90autorun start 90 5 .
+        install -m 0755 ${S}/S90AutoRun ${D}${sysconfdir}/init.d/
+        install -m 0755 ${S}/pinmux.sh ${D}${sysconfdir}/init.d/
+        update-rc.d -r ${D} S90AutoRun start 90 5 .
+        update-rc.d -r ${D} pinmux.sh start 90 5 .
 }
 
 INHIBIT_PACKAGE_STRIP = "1"

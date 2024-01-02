@@ -1,16 +1,16 @@
 SUMMARY = "hirobot user driver bin package"
 DESCRIPTION = "user lib and headers repack from SS928V100_SDK"
-HOMEPAGE = "hipirobot/3rdparty_openeuler"
+HOMEPAGE = "https://gitee.com/HiEuler/hardware_driver"
 LICENSE = "CLOSED"
 
 inherit pkgconfig
 inherit ros_distro_humble
 
-OPENEULER_LOCAL_NAME = "3rdparty_openeuler"
+OPENEULER_LOCAL_NAME = "HiEuler-driver"
 
 SRC_URI = " \
-        file://3rdparty_openeuler/drivers/lib.tar.gz \
-        file://3rdparty_openeuler/drivers/include.tar.gz \
+        file://HiEuler-driver/drivers/lib.tar.gz \
+        file://HiEuler-driver/drivers/include.tar.gz \
         file://hibot-user-driver.pc.in \
 "
 
