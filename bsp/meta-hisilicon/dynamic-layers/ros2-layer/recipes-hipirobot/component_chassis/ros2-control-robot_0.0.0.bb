@@ -6,23 +6,31 @@
 inherit ros_distro_humble
 inherit ros_superflore_generated
 
-DESCRIPTION = "A ROS 2 package to process depth images and convert them into point clouds using HiBot hardware acceleration"
-AUTHOR = "Your Name"
+DESCRIPTION = "ROS2 ros2_control_robot for control_robot"
+AUTHOR = "control"
 SECTION = "devel"
-LICENSE = "Apache-License-2.0"
-LIC_FILES_CHKSUM = "file://package.xml;beginline=7;endline=7;md5=9ed539f6175b7e00bfd99b36cfbcbd73"
+LICENSE = "None"
+LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=782925c2d55d09052e1842a0b4886802"
 
 ROS_CN = ""
-PV = "0.0.1"
-ROS_BPN = "hw-calc-demo"
+PV = "0.0.0"
+ROS_BPN = "ros2-control-robot"
 
 ROS_BUILD_DEPENDS = " \
-    hibot-user-driver \
-    libhibot \
-    image-geometry \
-    image-transport \
+    geometry-msgs \
+    nav-msgs \
+    nav2-msgs \
     rclcpp \
+    rclcpp-action \
+    rclpy \
+    rosidl-default-runtime \
     sensor-msgs \
+    serial \
+    std-msgs \
+    std-srvs \
+    tf2 \
+    tf2-geometry-msgs \
+    tf2-ros \
 "
 
 ROS_BUILDTOOL_DEPENDS = " \
@@ -33,27 +41,46 @@ ROS_BUILDTOOL_DEPENDS = " \
 "
 
 ROS_EXPORT_DEPENDS = " \
-    image-geometry \
-    image-transport \
+    geometry-msgs \
+    nav-msgs \
+    nav2-msgs \
     rclcpp \
+    rclcpp-action \
+    rclpy \
+    rosidl-default-runtime \
     sensor-msgs \
+    serial \
+    std-msgs \
+    std-srvs \
+    tf2 \
+    tf2-geometry-msgs \
+    tf2-ros \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
 ROS_EXEC_DEPENDS = " \
-    image-geometry \
-    image-transport \
+    geometry-msgs \
+    nav-msgs \
+    nav2-msgs \
     rclcpp \
+    rclcpp-action \
+    rclpy \
+    rosidl-default-runtime \
     sensor-msgs \
+    serial \
+    std-msgs \
+    std-srvs \
+    tf2 \
+    tf2-geometry-msgs \
+    tf2-ros \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
 ROS_TEST_DEPENDS = " \
-    hibot-user-driver \
-    libhibot \
     ament-lint-auto \
     ament-lint-common \
+    boost \
 "
 
 DEPENDS = "${ROS_BUILD_DEPENDS} ${ROS_BUILDTOOL_DEPENDS}"
@@ -63,25 +90,14 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "component_hibot"
+OPENEULER_LOCAL_NAME = "hirobot_component_chassis"
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/sample/hw_calc_demo \
-    file://hw_calc_demo_fix.patch \
+    file://${OPENEULER_LOCAL_NAME}/uart/ola/control_robot \
 "
 
-# libhibot.so provides by libhibot, remove it here
-do_install:append(){
-    if [ -e ${D}${libdir}/libhibot.so ]; then
-        rm -f ${D}${libdir}/libhibot.so
-    fi
-    if [ -e ${D}${libdir}/hw_calc_demo/libhibot.so ]; then
-        rm -f ${D}${libdir}/hw_calc_demo/libhibot.so
-    fi
-}
-
-S = "${WORKDIR}/component_hibot/sample/hw_calc_demo"
-FILES:${PN} += "${datadir} ${libdir}/hw_calc_demo/*"
+S = "${WORKDIR}/hirobot_component_chassis/uart/ola/control_robot"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
+FILES:${PN} += "${datadir} ${libdir}/ros2_control_robot/*"
 ROS_BUILD_TYPE = "ament_cmake"
 
 inherit ros_${ROS_BUILD_TYPE}

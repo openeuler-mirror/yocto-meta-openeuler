@@ -6,20 +6,21 @@
 inherit ros_distro_humble
 inherit ros_superflore_generated
 
-DESCRIPTION = "ROS2 robot_bringup for robot_control"
-AUTHOR = "wheeltec"
+DESCRIPTION = "TODO: Package description"
+AUTHOR = "caps"
 SECTION = "devel"
 LICENSE = "None"
 LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=782925c2d55d09052e1842a0b4886802"
 
 ROS_CN = ""
 PV = "0.0.0"
-ROS_BPN = "robot-bringup"
+ROS_BPN = "serial-protocol-v1"
 
+# to ensure hieuler_3rdparty_sensors repo fetch first, add serial-imu as a workaround
 ROS_BUILD_DEPENDS = " \
-    ros2-control-robot \
-    ros2-wheeltec-robot \
-    turn-on-wheeltec-robot \
+    serial \
+    serial-imu \
+    rclcpp \
 "
 
 ROS_BUILDTOOL_DEPENDS = " \
@@ -27,25 +28,19 @@ ROS_BUILDTOOL_DEPENDS = " \
 "
 
 ROS_EXPORT_DEPENDS = " \
-    ros2-control-robot \
-    ros2-wheeltec-robot \
-    turn-on-wheeltec-robot \
+    serial \
+    rclcpp \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
 ROS_EXEC_DEPENDS = " \
-    ros2-control-robot \
-    ros2-wheeltec-robot \
-    turn-on-wheeltec-robot \
+    serial \
+    rclcpp \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
-    ament-lint-auto \
-    ament-lint-common \
-    boost \
-"
+ROS_TEST_DEPENDS = ""
 
 DEPENDS = "${ROS_BUILD_DEPENDS} ${ROS_BUILDTOOL_DEPENDS}"
 # Bitbake doesn't support the "export" concept, so build them as if we needed them to build this package (even though we actually
@@ -54,14 +49,29 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "component_sensors"
+OPENEULER_LOCAL_NAME = "hirobot_component_chassis"
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/uart/robot_bringup \
+    file://${OPENEULER_LOCAL_NAME}/uart/self_robot/mybot/hibot/serial_protocol_v1 \
+    file://hieuler_3rdparty_sensors/self_robot_serial \
 "
 
-S = "${WORKDIR}/component_sensors/uart/robot_bringup"
-FILES:${PN} += "${datadir}"
+do_configure:prepend() {
+    mkdir -p ${S}/src/serial
+    mkdir -p ${S}/include/serial
+    cp -rf ${WORKDIR}/hieuler_3rdparty_sensors/self_robot_serial/src/serial/* ${S}/src/serial
+    cp -rf ${WORKDIR}/hieuler_3rdparty_sensors/self_robot_serial/include/serial/* ${S}/include/serial
+}
+
+# remove serial pkg src and include
+do_install:append(){
+    if [ -e ${D}/usr/include/serial ]; then
+        rm -rf ${D}/usr/include/serial
+    fi
+}
+
+S = "${WORKDIR}/hirobot_component_chassis/uart/self_robot/mybot/hibot/serial_protocol_v1"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
+FILES:${PN} += "${datadir}"
 ROS_BUILD_TYPE = "ament_cmake"
 
 inherit ros_${ROS_BUILD_TYPE}

@@ -6,85 +6,69 @@
 inherit ros_distro_humble
 inherit ros_superflore_generated
 
-DESCRIPTION = "ROS2 turn_on_wheeltec_robot for robot_control"
-AUTHOR = "wheeltec"
+DESCRIPTION = "TODO: Package description"
+AUTHOR = "caps"
 SECTION = "devel"
 LICENSE = "None"
 LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=782925c2d55d09052e1842a0b4886802"
 
 ROS_CN = ""
 PV = "0.0.0"
-ROS_BPN = "turn-on-wheeltec-robot"
+ROS_BPN = "diff-driver"
 
 ROS_BUILD_DEPENDS = " \
-    ackermann-msgs \
     geometry-msgs \
+    message-filters \
     nav-msgs \
-    nav2-msgs \
     rclcpp \
-    rclcpp-action \
-    rclpy \
-    rosidl-default-runtime \
+    rcutils \
     sensor-msgs \
-    serial \
+    serial-protocol-v1 \
     std-msgs \
     std-srvs \
     tf2 \
     tf2-ros \
-    tf2-geometry-msgs \
 "
 
 ROS_BUILDTOOL_DEPENDS = " \
     ament-cmake-native \
-    rosidl-default-generators-native \
+    rosidl-default-generators-native \          
     rosidl-typesupport-fastrtps-cpp-native \
     rosidl-typesupport-fastrtps-c-native \
 "
 
 ROS_EXPORT_DEPENDS = " \
-    ackermann-msgs \
     geometry-msgs \
+    message-filters \
     nav-msgs \
-    nav2-msgs \
     rclcpp \
-    rclcpp-action \
-    rclpy \
-    rosidl-default-runtime \
+    rcutils \
     sensor-msgs \
-    serial \
+    serial-protocol-v1 \
     std-msgs \
     std-srvs \
     tf2 \
     tf2-ros \
-    tf2-geometry-msgs \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
 ROS_EXEC_DEPENDS = " \
-    ackermann-msgs \
     geometry-msgs \
+    message-filters \
     nav-msgs \
-    nav2-msgs \
     rclcpp \
-    rclcpp-action \
-    rclpy \
-    rosidl-default-runtime \
+    rcutils \
     sensor-msgs \
-    serial \
+    serial-protocol-v1 \
     std-msgs \
     std-srvs \
     tf2 \
     tf2-ros \
-    tf2-geometry-msgs \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
-    ament-lint-auto \
-    ament-lint-common \
-    boost \
-"
+ROS_TEST_DEPENDS = ""
 
 DEPENDS = "${ROS_BUILD_DEPENDS} ${ROS_BUILDTOOL_DEPENDS}"
 # Bitbake doesn't support the "export" concept, so build them as if we needed them to build this package (even though we actually
@@ -93,14 +77,14 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "component_sensors"
+OPENEULER_LOCAL_NAME = "hirobot_component_chassis"
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/uart/dadao \
+    file://${OPENEULER_LOCAL_NAME}/uart/self_robot/mybot/hibot/diff_driver \
 "
 
-S = "${WORKDIR}/component_sensors/uart/dadao"
+S = "${WORKDIR}/hirobot_component_chassis/uart/self_robot/mybot/hibot/diff_driver"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
-FILES:${PN} += "${datadir} ${libdir}/turn_on_wheeltec_robot/*"
+FILES:${PN} += "${datadir} ${libdir}/diff_driver/*"
 ROS_BUILD_TYPE = "ament_cmake"
 
 inherit ros_${ROS_BUILD_TYPE}

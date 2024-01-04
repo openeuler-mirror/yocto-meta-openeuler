@@ -7,21 +7,18 @@ inherit ros_distro_humble
 inherit ros_superflore_generated
 
 DESCRIPTION = "TODO: Package description"
-AUTHOR = "root"
+AUTHOR = "caps"
 SECTION = "devel"
-LICENSE = "CLOSED"
+LICENSE = "None"
 LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=782925c2d55d09052e1842a0b4886802"
 
 ROS_CN = ""
 PV = "0.0.0"
-ROS_BPN = "hwmgr"
+ROS_BPN = "bot-bringup"
 
 ROS_BUILD_DEPENDS = " \
-    python3 \
-    hibot-user-driver \
-    libhibot \
-    rclcpp \
-    yaml-cpp \
+    diff-driver \
+    robot-state-publisher \
 "
 
 ROS_BUILDTOOL_DEPENDS = " \
@@ -29,16 +26,15 @@ ROS_BUILDTOOL_DEPENDS = " \
 "
 
 ROS_EXPORT_DEPENDS = " \
-    rclcpp \
+    diff-driver \
+    robot-state-publisher \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
 ROS_EXEC_DEPENDS = " \
-    hibot-user-driver \
-    libhibot \
-    rclcpp \
-    yaml-cpp \
+    diff-driver \
+    robot-state-publisher \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
@@ -50,23 +46,15 @@ DEPENDS = "${ROS_BUILD_DEPENDS} ${ROS_BUILDTOOL_DEPENDS}"
 DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
-RDEPENDS:${PN} += " hwmgr-driver "
 
-OPENEULER_LOCAL_NAME = "component_hibot"
+OPENEULER_LOCAL_NAME = "hirobot_component_chassis"
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/sample/hwmgr_demo/src/CMakeLists.txt \
-    file://${OPENEULER_LOCAL_NAME}/sample/hwmgr_demo/src/config \
-    file://${OPENEULER_LOCAL_NAME}/sample/hwmgr_demo/src/depends \
-    file://${OPENEULER_LOCAL_NAME}/sample/hwmgr_demo/src/include/HWMGR.hpp \
-    file://${OPENEULER_LOCAL_NAME}/sample/hwmgr_demo/src/include/HiBot \
-    file://${OPENEULER_LOCAL_NAME}/sample/hwmgr_demo/src/launch \
-    file://${OPENEULER_LOCAL_NAME}/sample/hwmgr_demo/src/package.xml \
-    file://${OPENEULER_LOCAL_NAME}/sample/hwmgr_demo/src/src \
-    file://hwmgr_demo_fix.patch \
+    file://${OPENEULER_LOCAL_NAME}/uart/self_robot/mybot/hibot/bot_bringup \
 "
 
-S = "${WORKDIR}/component_hibot/sample/hwmgr_demo/src"
+S = "${WORKDIR}/hirobot_component_chassis/uart/self_robot/mybot/hibot/bot_bringup"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
+FILES:${PN} += "${datadir}"
 ROS_BUILD_TYPE = "ament_cmake"
 
 inherit ros_${ROS_BUILD_TYPE}

@@ -59,13 +59,13 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "component_navigation"
+OPENEULER_LOCAL_NAME = "hirobot_component_navigation"
 SRC_URI = " \
     file://${OPENEULER_LOCAL_NAME}/depth_mini_seg \
     file://depth_mini_seg_fix.patch \
 "
 
-S = "${WORKDIR}/component_navigation/depth_mini_seg"
+S = "${WORKDIR}/hirobot_component_navigation/depth_mini_seg"
 FILES:${PN} += "${datadir} ${libdir}/depth_mini_seg/*"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 ROS_BUILD_TYPE = "ament_cmake"

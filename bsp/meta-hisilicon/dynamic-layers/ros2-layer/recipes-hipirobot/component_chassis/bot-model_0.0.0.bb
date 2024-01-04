@@ -6,63 +6,38 @@
 inherit ros_distro_humble
 inherit ros_superflore_generated
 
-DESCRIPTION = "ROS2 ros2_control_robot for control_robot"
-AUTHOR = "control"
+DESCRIPTION = "TODO: Package description"
+AUTHOR = "caps"
 SECTION = "devel"
 LICENSE = "None"
 LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=782925c2d55d09052e1842a0b4886802"
 
 ROS_CN = ""
 PV = "0.0.0"
-ROS_BPN = "ultra"
+ROS_BPN = "bot-model"
 
 ROS_BUILD_DEPENDS = " \
-    rclcpp \
-    rclcpp-action \
-    rclpy \
-    rosidl-default-runtime \
-    sensor-msgs \
-    serial \
-    std-msgs \
-    std-srvs \
+    urdf \
 "
 
 ROS_BUILDTOOL_DEPENDS = " \
     ament-cmake-native \
-    rosidl-default-generators-native \
-    rosidl-typesupport-fastrtps-cpp-native \
-    rosidl-typesupport-fastrtps-c-native \
 "
 
 ROS_EXPORT_DEPENDS = " \
-    rclcpp \
-    rclcpp-action \
-    rclpy \
-    rosidl-default-runtime \
-    sensor-msgs \
-    serial \
-    std-msgs \
-    std-srvs \
+    urdf \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
 ROS_EXEC_DEPENDS = " \
-    rclcpp \
-    rclcpp-action \
-    rclpy \
-    rosidl-default-runtime \
-    sensor-msgs \
-    serial \
-    std-msgs \
-    std-srvs \
+    urdf \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
 ROS_TEST_DEPENDS = " \
     ament-lint-auto \
     ament-lint-common \
-    boost \
 "
 
 DEPENDS = "${ROS_BUILD_DEPENDS} ${ROS_BUILDTOOL_DEPENDS}"
@@ -72,13 +47,14 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "component_sensors"
+OPENEULER_LOCAL_NAME = "hirobot_component_chassis"
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/ultra/src/ultra_analyse \
+    file://${OPENEULER_LOCAL_NAME}/uart/self_robot/mybot/hibot/bot_model \
 "
 
-S = "${WORKDIR}/component_sensors/ultra/src/ultra_analyse"
+S = "${WORKDIR}/hirobot_component_chassis/uart/self_robot/mybot/hibot/bot_model"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
+FILES:${PN} += "${datadir}"
 ROS_BUILD_TYPE = "ament_cmake"
 
 inherit ros_${ROS_BUILD_TYPE}

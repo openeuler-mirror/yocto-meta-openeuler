@@ -6,21 +6,20 @@
 inherit ros_distro_humble
 inherit ros_superflore_generated
 
-DESCRIPTION = "TODO: Package description"
-AUTHOR = "root"
+DESCRIPTION = "ROS2 robot_bringup for robot_control"
+AUTHOR = "wheeltec"
 SECTION = "devel"
-LICENSE = "CLOSED"
+LICENSE = "None"
 LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=782925c2d55d09052e1842a0b4886802"
 
 ROS_CN = ""
 PV = "0.0.0"
-ROS_BPN = "test-recv"
+ROS_BPN = "robot-bringup"
 
 ROS_BUILD_DEPENDS = " \
-    hibot-user-driver \
-    libhibot \
-    rclcpp \
-    shm-meta-info \
+    ros2-control-robot \
+    ros2-wheeltec-robot \
+    turn-on-wheeltec-robot \
 "
 
 ROS_BUILDTOOL_DEPENDS = " \
@@ -28,21 +27,25 @@ ROS_BUILDTOOL_DEPENDS = " \
 "
 
 ROS_EXPORT_DEPENDS = " \
-    rclcpp \
-    shm-meta-info \
+    ros2-control-robot \
+    ros2-wheeltec-robot \
+    turn-on-wheeltec-robot \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
 ROS_EXEC_DEPENDS = " \
-    hibot-user-driver \
-    libhibot \
-    rclcpp \
-    shm-meta-info \
+    ros2-control-robot \
+    ros2-wheeltec-robot \
+    turn-on-wheeltec-robot \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = ""
+ROS_TEST_DEPENDS = " \
+    ament-lint-auto \
+    ament-lint-common \
+    boost \
+"
 
 DEPENDS = "${ROS_BUILD_DEPENDS} ${ROS_BUILDTOOL_DEPENDS}"
 # Bitbake doesn't support the "export" concept, so build them as if we needed them to build this package (even though we actually
@@ -51,22 +54,13 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "component_hibot"
+OPENEULER_LOCAL_NAME = "hirobot_component_chassis"
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/sample/shm_demo/src/test_recv \
-    file://${OPENEULER_LOCAL_NAME}/sample/shm_demo/src/SHMBufferRosPkg \
-    file://test_recv_fix.patch \
+    file://${OPENEULER_LOCAL_NAME}/uart/robot_bringup \
 "
 
-# libhibot.so provides by libhibot, remove it here
-do_install:append(){
-    if [ -e ${D}${libdir}/libhibot.so ]; then
-        rm -f ${D}${libdir}/libhibot.so
-    fi
-}
-
-S = "${WORKDIR}/component_hibot/sample/shm_demo/src/test_recv"
-FILES:${PN} += "${datadir} ${libdir}/test_recv/*"
+S = "${WORKDIR}/hirobot_component_chassis/uart/robot_bringup"
+FILES:${PN} += "${datadir}"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 ROS_BUILD_TYPE = "ament_cmake"
 

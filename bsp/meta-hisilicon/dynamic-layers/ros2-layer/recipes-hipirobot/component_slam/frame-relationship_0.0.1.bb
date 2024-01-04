@@ -53,12 +53,12 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "component_slam"
+OPENEULER_LOCAL_NAME = "hirobot_component_slam"
 SRC_URI = " \
     file://${OPENEULER_LOCAL_NAME}/frame_relationship \
 "
 
-S = "${WORKDIR}/component_slam/frame_relationship"
+S = "${WORKDIR}/hirobot_component_slam/frame_relationship"
 FILES:${PN} += "${datadir} ${libdir}/frame_relationship/*"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 ROS_BUILD_TYPE = "ament_cmake"

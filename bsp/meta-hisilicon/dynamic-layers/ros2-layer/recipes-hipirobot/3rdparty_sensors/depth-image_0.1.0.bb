@@ -74,12 +74,12 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "3rdparty_sensors"
+OPENEULER_LOCAL_NAME = "hieuler_3rdparty_sensors"
 SRC_URI = " \
     file://${OPENEULER_LOCAL_NAME}/2d_tof/ol_tof \
 "
 
-S = "${WORKDIR}/3rdparty_sensors/2d_tof/ol_tof"
+S = "${WORKDIR}/hieuler_3rdparty_sensors/2d_tof/ol_tof"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 FILES:${PN} += "${datadir} ${libdir}/depth_image/depth"
 ROS_BUILD_TYPE = "ament_cmake"

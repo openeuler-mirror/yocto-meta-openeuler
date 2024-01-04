@@ -110,7 +110,7 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "3rdparty_sensors"
+OPENEULER_LOCAL_NAME = "hieuler_3rdparty_sensors"
 SRC_URI = " \
     file://${OPENEULER_LOCAL_NAME}/3d_camera/astra_camera/ros2_astra_camera/astra_camera_raw \
     file://astra_camera_raw_fix.patch \
@@ -126,7 +126,7 @@ do_install:append(){
     fi
 }
 
-S = "${WORKDIR}/3rdparty_sensors/3d_camera/astra_camera/ros2_astra_camera/astra_camera_raw"
+S = "${WORKDIR}/hieuler_3rdparty_sensors/3d_camera/astra_camera/ros2_astra_camera/astra_camera_raw"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 ROS_BUILD_TYPE = "ament_cmake"
 

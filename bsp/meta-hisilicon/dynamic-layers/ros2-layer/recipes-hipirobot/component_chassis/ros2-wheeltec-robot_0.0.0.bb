@@ -14,9 +14,10 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=782925c2d55d090
 
 ROS_CN = ""
 PV = "0.0.0"
-ROS_BPN = "ros2-control-robot"
+ROS_BPN = "ros2-wheeltec-robot"
 
 ROS_BUILD_DEPENDS = " \
+    ament-index-cpp \
     geometry-msgs \
     nav-msgs \
     nav2-msgs \
@@ -41,6 +42,7 @@ ROS_BUILDTOOL_DEPENDS = " \
 "
 
 ROS_EXPORT_DEPENDS = " \
+    ament-index-cpp \
     geometry-msgs \
     nav-msgs \
     nav2-msgs \
@@ -60,6 +62,7 @@ ROS_EXPORT_DEPENDS = " \
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
 ROS_EXEC_DEPENDS = " \
+    ament-index-cpp \
     geometry-msgs \
     nav-msgs \
     nav2-msgs \
@@ -90,14 +93,14 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "component_sensors"
+OPENEULER_LOCAL_NAME = "hirobot_component_chassis"
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/uart/ola/control_robot \
+    file://${OPENEULER_LOCAL_NAME}/uart/wheeltec \
 "
 
-S = "${WORKDIR}/component_sensors/uart/ola/control_robot"
+S = "${WORKDIR}/hirobot_component_chassis/uart/wheeltec"
+FILES:${PN} += "${datadir} ${libdir}/ros2_wheeltec_robot/*"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
-FILES:${PN} += "${datadir} ${libdir}/ros2_control_robot/*"
 ROS_BUILD_TYPE = "ament_cmake"
 
 inherit ros_${ROS_BUILD_TYPE}

@@ -53,12 +53,12 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "component_navigation"
+OPENEULER_LOCAL_NAME = "hirobot_component_navigation"
 SRC_URI = " \
-    file://component_navigation/hirobot_bringup \
+    file://hirobot_component_navigation/hirobot_bringup \
 "
 
-S = "${WORKDIR}/component_navigation/hirobot_bringup"
+S = "${WORKDIR}/hirobot_component_navigation/hirobot_bringup"
 FILES:${PN} += "${datadir} ${libdir}"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 ROS_BUILD_TYPE = "ament_cmake"

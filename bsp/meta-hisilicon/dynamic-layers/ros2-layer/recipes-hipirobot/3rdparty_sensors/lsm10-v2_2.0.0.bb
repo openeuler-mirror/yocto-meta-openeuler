@@ -72,12 +72,12 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "3rdparty_sensors"
+OPENEULER_LOCAL_NAME = "hieuler_3rdparty_sensors"
 SRC_URI = " \
     file://${OPENEULER_LOCAL_NAME}/lidar/ls_lidar \
 "
 
-S = "${WORKDIR}/3rdparty_sensors/lidar/ls_lidar"
+S = "${WORKDIR}/hieuler_3rdparty_sensors/lidar/ls_lidar"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 FILES:${PN} += "${datadir} ${libdir}/lsm10_v2/*"
 ROS_BUILD_TYPE = "ament_cmake"

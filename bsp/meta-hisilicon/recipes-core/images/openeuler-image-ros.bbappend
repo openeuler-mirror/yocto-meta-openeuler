@@ -41,13 +41,6 @@ camera \
 mipi-camera \
 zxing \
 hibot-user-driver \
-hw-calc-demo \
-hwmgr-demo \
-hwmgr-driver \
-libhibot \
-shm-meta-info \
-test-recv \
-test-send \
 astra-camera \
 dsp-bin \
 depth-mini-seg \

@@ -50,12 +50,12 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "3rdparty_sensors"
+OPENEULER_LOCAL_NAME = "hieuler_3rdparty_sensors"
 SRC_URI = " \
     file://${OPENEULER_LOCAL_NAME}/lidar/slamtec_lidar \
 "
 
-S = "${WORKDIR}/3rdparty_sensors/lidar/slamtec_lidar"
+S = "${WORKDIR}/hieuler_3rdparty_sensors/lidar/slamtec_lidar"
 FILES:${PN} += "${datadir} ${libdir}/sllidar_ros2/*"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 ROS_BUILD_TYPE = "ament_cmake"
