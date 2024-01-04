@@ -2,7 +2,6 @@
 
 # apply openEuler package
 OPENEULER_REPO_NAME = "opensbi"
-OPENEULER_BRANCH    = "master"
 OPENEULER_SRC_URI_REMOVE = "https git http"
 
 PV = "0.9"
