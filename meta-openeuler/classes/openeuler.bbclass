@@ -82,13 +82,6 @@ def get_openeuler_epoch(d):
 
     return int(p.stdout.decode('utf-8'))
 
-# set BUILD_LDFLAGS for native recipes buildings, nativesdk can be
-# a star point for the necessary build-required recipes, no need to do
-# everything from the scratch
-
-OPENEULER_NATIVESDK_LOADER ?= "${OPENEULER_NATIVESDK_SYSROOT}/lib/ld-linux-x86-64.so.2"
-
-BUILD_LDFLAGS:append = " ${@['', '-Wl,--allow-shlib-undefined -Wl,--dynamic-linker=${OPENEULER_NATIVESDK_LOADER}']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
 
 # src_uri_set is used to remove some URLs from SRC_URI through
 # OPENEULER_SRC_URI_REMOVE, because we don't want to download from
@@ -106,9 +99,6 @@ python () {
         URI = ' '.join(URI)
         d.setVar('SRC_URI', URI)
 }
-
-# qemu.bbclass; fix build error: the kernel is too old
-OLDEST_KERNEL:forcevariable = "5.10"
 
 # fetch multi repos in one recipe bb file, an example is
 # dsoftbus_1.0.bb where multi repos required by dsoftbus are
