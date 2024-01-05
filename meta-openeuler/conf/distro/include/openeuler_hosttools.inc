@@ -66,7 +66,6 @@ HOSTTOOLS:remove = "diffstat lz4c pzstd"
 HOSTTOOLS_NONFATAL += "diffstat lz4c pzstd"
 
 SANITY_REQUIRED_UTILITIES:remove = "diffstat chrpath"
-CONNECTIVITY_CHECK_URIS = ""
 
 # Misc. assume provided software package
 # tic used by ncurses-native
