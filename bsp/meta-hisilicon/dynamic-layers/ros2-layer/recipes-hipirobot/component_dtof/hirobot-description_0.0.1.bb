@@ -6,54 +6,36 @@
 inherit ros_distro_humble
 inherit ros_superflore_generated
 
-DESCRIPTION = "python3 version of ipa"
-AUTHOR = "luo"
+DESCRIPTION = "     3D models of the HiRobot for simulation and visualization   "
+AUTHOR = "HiRobot"
 SECTION = "devel"
 LICENSE = "Apache-2.0"
-LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=82f0323c08605e5b6f343b05213cf7cc"
+LIC_FILES_CHKSUM = "file://package.xml;beginline=10;endline=10;md5=3dce4ba60d7e51ec64f3c3dc18672dd3"
 
 ROS_CN = ""
-PV = "1.1.2"
-ROS_BPN = "nav2-ipa"
+PV = "0.0.1"
+ROS_BPN = "hirobot-description"
 
 ROS_BUILD_DEPENDS = " \
-    action-msgs \
-    geometry-msgs \
-    lifecycle-msgs \
-    nav2-msgs \
-    rclpy \
+    urdf \
 "
 
 ROS_BUILDTOOL_DEPENDS = " \
     ament-cmake-native \
-    rosidl-default-generators-native \
 "
 
 ROS_EXPORT_DEPENDS = " \
-    action-msgs \
-    geometry-msgs \
-    lifecycle-msgs \
-    nav2-msgs \
-    rclpy \
+    urdf \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
 ROS_EXEC_DEPENDS = " \
-    action-msgs \
-    geometry-msgs \
-    lifecycle-msgs \
-    nav2-msgs \
-    rclpy \
+    urdf \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
-ROS_TEST_DEPENDS = " \
-    ament-copyright \
-    ament-flake8 \
-    ament-pep257 \
-    python3-pytest \
-"
+ROS_TEST_DEPENDS = ""
 
 DEPENDS = "${ROS_BUILD_DEPENDS} ${ROS_BUILDTOOL_DEPENDS}"
 # Bitbake doesn't support the "export" concept, so build them as if we needed them to build this package (even though we actually
@@ -62,15 +44,15 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "hirobot_component_navigation"
+OPENEULER_LOCAL_NAME = "hirobot_component_dtof"
 SRC_URI = " \
-    file://hirobot_component_navigation/hirobot_nav2_ipa/nav2_ipa \
+    file://hirobot_component_dtof/dtof_ros_demo/src/hirobot_description \
 "
 
-S = "${WORKDIR}/hirobot_component_navigation/hirobot_nav2_ipa/nav2_ipa"
+S = "${WORKDIR}/hirobot_component_dtof/dtof_ros_demo/src/hirobot_description"
 FILES:${PN} += "${datadir} ${libdir}"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
-ROS_BUILD_TYPE = "ament_python"
+ROS_BUILD_TYPE = "ament_cmake"
 
 inherit ros_${ROS_BUILD_TYPE}
 

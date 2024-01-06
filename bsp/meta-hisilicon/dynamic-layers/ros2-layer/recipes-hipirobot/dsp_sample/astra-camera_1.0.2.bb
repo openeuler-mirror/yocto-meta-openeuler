@@ -114,7 +114,7 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "hirobot_component_hw_accelerate"
+OPENEULER_LOCAL_NAME = "hieuler_dsp_sample"
 SRC_URI = " \
     file://${OPENEULER_LOCAL_NAME}/dsp/application/depth_to_laser_without_ground/ros2_astra_camera/astra_camera \
     file://astra_camera_fix.patch \
@@ -132,7 +132,7 @@ do_install:append(){
     fi
 }
 
-S = "${WORKDIR}/hirobot_component_hw_accelerate/dsp/application/depth_to_laser_without_ground/ros2_astra_camera/astra_camera"
+S = "${WORKDIR}/hieuler_dsp_sample/dsp/application/depth_to_laser_without_ground/ros2_astra_camera/astra_camera"
 FILES:${PN} += "${datadir} ${libdir}/astra_camera/*"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 ROS_BUILD_TYPE = "ament_cmake"

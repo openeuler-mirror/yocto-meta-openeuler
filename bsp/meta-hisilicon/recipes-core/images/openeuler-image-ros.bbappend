@@ -20,8 +20,6 @@ joint-state-publisher \
 astra-camera-msgs \
 astra-camera-raw \
 depth-image \
-depth-image-proc \
-depthimage-to-laserscan \
 fitxxx \
 imu-calib \
 lsm10-v2 \
@@ -54,7 +52,6 @@ hirobot-goal-process \
 hirobot-msgs \
 hirobot-navigation2-teb \
 hirobot-tof-plane-seg \
-nav2-ipa \
 person-position-ack \
 robot-charge-control \
 robot-init-pose \
@@ -69,6 +66,11 @@ serial-protocol-v1 \
 tf2-tools \
 turn-on-wheeltec-robot \
 ultra \
+depth-image-proc \
+depthimage-to-laserscan \
+dtof-client-node \
+dtof-node \
+hirobot-description \
 ", "", d)}"
 
 TOOLCHAIN_TARGET_TASK += " ${@bb.utils.contains("DISTRO_FEATURES", "ros", " \
