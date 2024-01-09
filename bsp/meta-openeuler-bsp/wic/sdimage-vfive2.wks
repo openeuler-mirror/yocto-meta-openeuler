@@ -1,0 +1,13 @@
+# Create VisionFive2 SD card image
+
+# the u-boot will read vf2_uEnv.txt from mmc 1:3
+# just reserve the first two partitions
+part --ondisk mmcblk1 --align 4096 --label empty1 --size 1
+part --ondisk mmcblk1 --align 4096 --label empty2 --size 1
+# this partition contains kernel, dtb, vf2_uEnv.txt and extlinux.conf
+part /boot --source bootimg-partition --ondisk mmcblk1 --label boot --fstype=vfat --sourceparams="loader=u-boot" --active --align 4096
+# this part is purely the rootfs partition
+part / --source rootfs --ondisk mmcblk1 --fstype=ext4 --label root --align 4096
+
+# the default extlinux file is predefined
+bootloader --ptable gpt --configfile="${DEPLOY_DIR_IMAGE}/visionfive-v2-extlinux.conf"
