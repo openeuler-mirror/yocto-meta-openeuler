@@ -1,21 +1,21 @@
 SUMMARY = "lib depneds from mipi app"
 DESCRIPTION = "user lib for mipi"
-HOMEPAGE = "hipirobot/hirobot_component_ai"
+HOMEPAGE = "hipirobot/hieuler_component_ai"
 LICENSE = "CLOSED"
 
 inherit ros_distro_humble
 
-OPENEULER_LOCAL_NAME = "hirobot_component_ai"
+OPENEULER_LOCAL_NAME = "hieuler_component_ai"
 
 SRC_URI = " \
-        file://hirobot_component_ai/sample/camera/src/ffmpeglib/lib \
+        file://hieuler_component_ai/sample/camera/src/ffmpeglib/lib \
 "
 
-S = "${WORKDIR}/hirobot_component_ai/sample/camera/src/ffmpeglib/lib"
+S = "${WORKDIR}/hieuler_component_ai/sample/camera/src/ffmpeglib/lib"
 
 do_install:append() {
     install -d ${D}${libdir}
-    cp -rf -P ${WORKDIR}/hirobot_component_ai/sample/camera/src/ffmpeglib/lib/* ${D}${libdir}
+    cp -rf -P ${WORKDIR}/hieuler_component_ai/sample/camera/src/ffmpeglib/lib/* ${D}${libdir}
 }
 
 FILES:${PN} += " \

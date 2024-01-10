@@ -1,17 +1,15 @@
 SUMMARY = "dsp_bin"
 DESCRIPTION = "dsp_bin from hipirobot hieuler_dsp_sample"
 HOMEPAGE = "hipirobot/hieuler_dsp_sample.git"
-LICENSE = "None"
-
-LIC_FILES_CHKSUM = "file://readme.md;md5=c123bba26da35145e5f695f4b38ed2dc"
+LICENSE = "CLOSED"
 
 OPENEULER_LOCAL_NAME = "hieuler_dsp_sample"
 
 SRC_URI = " \
-        file://hieuler_dsp_sample/dsp \
+        file://hieuler_dsp_sample/depth_to_laser_without_ground \
 "
 
-S = "${WORKDIR}/hieuler_dsp_sample/dsp"
+S = "${WORKDIR}/hieuler_dsp_sample/depth_to_laser_without_ground"
 
 do_install:append() {
     install -d ${D}/root/

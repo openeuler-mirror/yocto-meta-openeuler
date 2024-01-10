@@ -116,7 +116,7 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
 OPENEULER_LOCAL_NAME = "hieuler_dsp_sample"
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/dsp/application/depth_to_laser_without_ground/ros2_astra_camera/astra_camera \
+    file://${OPENEULER_LOCAL_NAME}/depth_to_laser_without_ground/arm_code/ros2_astra_camera/astra_camera \
     file://astra_camera_fix.patch \
 "
 # openni is included in other pkg
@@ -132,7 +132,7 @@ do_install:append(){
     fi
 }
 
-S = "${WORKDIR}/hieuler_dsp_sample/dsp/application/depth_to_laser_without_ground/ros2_astra_camera/astra_camera"
+S = "${WORKDIR}/hieuler_dsp_sample/depth_to_laser_without_ground/arm_code/ros2_astra_camera/astra_camera"
 FILES:${PN} += "${datadir} ${libdir}/astra_camera/*"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 ROS_BUILD_TYPE = "ament_cmake"
