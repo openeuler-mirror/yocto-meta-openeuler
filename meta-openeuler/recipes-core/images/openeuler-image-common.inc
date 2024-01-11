@@ -45,13 +45,16 @@ EXTRA_USERS_PARAMS = '${@bb.utils.contains_any("IMAGE_FEATURES", [ 'debug-tweaks
 # meet openeuler embedded's need.
 IMAGE_INSTALL:append = " ${@bb.utils.contains_any("IMAGE_FEATURES", [ 'debug-tweaks', 'tools_debug' ], "packagegroup-core-tools-debug", "",d)}"
 
-# delete useless sdk depends
-FEATURE_PACKAGES:tools-sdk:remove = " packagegroup-core-sdk packagegroup-core-standalone-sdk-target"
-TOOLCHAIN_TARGET_TASK:remove = "${@multilib_pkg_extend(d, 'packagegroup-core-standalone-sdk-target')}"
+# as prebuilt external toolchain (including glibc) is the default toolchain, so need to remove
+# the packagegroup-core-standalone-sdk-target which is designed for native toolchain
+# the recipe of external toolchain will set TOOLCHAIN_TARGET_TASK specifically.
+# note: packagegroup-core-standalone-sdk-target and packagegroup-core-sdk needs to be handled in tcmode-external
+FEATURE_PACKAGES_tools-sdk:tcmode-external = " "
+TOOLCHAIN_TARGET_TASK:remove:tcmode-external = "${@multilib_pkg_extend(d, 'packagegroup-core-standalone-sdk-target')}"
 
 
-### prebuild tools use
-# do_rootfs not depends to ldconfig-native as nativesdk has provided it
+### prebuilt tools use
+# do_rootfs not depends to ldconfig-native as prebuilt tools provided it
 # learn more about LDCONFIGDEPEND in image.bbclass
 LDCONFIGDEPEND:openeuler-prebuilt = ""
 
