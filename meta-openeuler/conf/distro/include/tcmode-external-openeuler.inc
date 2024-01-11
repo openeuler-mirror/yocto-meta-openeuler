@@ -1,7 +1,5 @@
 require conf/distro/include/tcmode-external.inc
 
-TCMODEOVERRIDES .= ":tcmode-external-openeuler"
-
 # Use tuning-defined baselib to align with multilib and external toolchain
 baselib = "${@d.getVar('BASE_LIB:tune-' + (d.getVar('DEFAULTTUNE') or 'INVALID')) or d.getVar('BASELIB')}"
 
