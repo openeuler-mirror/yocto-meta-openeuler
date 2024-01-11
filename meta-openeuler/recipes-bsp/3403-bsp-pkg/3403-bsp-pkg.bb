@@ -13,6 +13,7 @@ SRC_URI = " \
         file://HiEuler-driver/drivers/btools \
         file://HiEuler-driver/drivers/S90AutoRun \
         file://HiEuler-driver/drivers/pinmux.sh \
+        file://HiEuler-driver/drivers/env.tar.gz \
 "
 
 S = "${WORKDIR}/HiEuler-driver/drivers"
@@ -48,6 +49,10 @@ do_install () {
         install -m 0755 ${S}/pinmux.sh ${D}${sysconfdir}/init.d/
         update-rc.d -r ${D} S90AutoRun start 90 5 .
         update-rc.d -r ${D} pinmux.sh start 90 5 .
+
+	install -m 0755 ${WORKDIR}/env/fw_env.config ${D}/etc/
+	install -m 0755 ${WORKDIR}/env/fw_printenv ${D}/usr/bin/
+	install -m 0755 ${WORKDIR}/env/fw_setenv ${D}/usr/bin/
 }
 
 INHIBIT_PACKAGE_STRIP = "1"

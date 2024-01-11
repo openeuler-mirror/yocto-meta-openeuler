@@ -21,3 +21,5 @@ do_install() {
 }
 
 FILES:${PN} = " /ko/i2c_soft.ko "
+
+INHIBIT_PACKAGE_STRIP = "1"
