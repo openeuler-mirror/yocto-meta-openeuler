@@ -18,3 +18,4 @@ oebuild目前主要有以下7个主要的使用命令：
     clear.rst
     runqemu.rst
     menv.rst
+    mplugin.rst
