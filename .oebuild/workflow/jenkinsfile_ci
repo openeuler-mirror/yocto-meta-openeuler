@@ -187,7 +187,7 @@ pipeline {
                         }
                     }
                 }
-                stage("qemu-aarch64-ros"){
+                stage("qemu-aarch64-ros and ok3588"){
                     agent { node "${node}" }
                     steps {
                         dir('/home/jenkins/agent'){
@@ -217,6 +217,23 @@ pipeline {
                                         -p qemu-aarch64 \
                                         -f openeuler-ros \
                                         -i "openeuler-image-ros;openeuler-image-ros -c do_populate_sdk" \
+                                        -s_in "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -dt $IMAGE_DATE \
+                                        -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
+                                    """, returnStatus: true)
+                                    handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
+
+                                    // 执行ok3588镜像编译检查
+                                    stageName = "ok3588"
+                                    arch = "aarch64"
+                                    task_res_code = sh (script: """
+                                        python3 main.py build \
+                                        -c /home/jenkins/agent/yocto-meta-openeuler \
+                                        -target openeuler_image \
+                                        -a $arch \
+                                        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
+                                        -p ok3588 \
+                                        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
                                         -s_in "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
