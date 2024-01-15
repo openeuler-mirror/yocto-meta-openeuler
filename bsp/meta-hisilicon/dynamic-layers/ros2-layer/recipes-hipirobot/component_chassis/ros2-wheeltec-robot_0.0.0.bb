@@ -93,12 +93,12 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "hirobot_component_chassis"
+OPENEULER_LOCAL_NAME = "hieuler_component_chassis"
 SRC_URI = " \
     file://${OPENEULER_LOCAL_NAME}/uart/wheeltec \
 "
 
-S = "${WORKDIR}/hirobot_component_chassis/uart/wheeltec"
+S = "${WORKDIR}/hieuler_component_chassis/uart/wheeltec"
 FILES:${PN} += "${datadir} ${libdir}/ros2_wheeltec_robot/*"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 ROS_BUILD_TYPE = "ament_cmake"

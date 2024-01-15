@@ -20,11 +20,11 @@ ROS_EXEC_DEPENDS = " \
     rosidl-default-runtime \
 "
 
-OPENEULER_LOCAL_NAME = "hirobot_component_chassis"
+OPENEULER_LOCAL_NAME = "hieuler_component_chassis"
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/uart/ola/depend/serial_ros2 \
+    file://${OPENEULER_LOCAL_NAME}/uart/serial_ros2 \
 "
 
-S = "${WORKDIR}/hirobot_component_chassis/uart/ola/depend/serial_ros2"
+S = "${WORKDIR}/hieuler_component_chassis/uart/serial_ros2"
 
 DISABLE_OPENEULER_SOURCE_MAP = "1"

@@ -17,9 +17,7 @@ PV = "0.0.0"
 ROS_BPN = "robot-bringup"
 
 ROS_BUILD_DEPENDS = " \
-    ros2-control-robot \
     ros2-wheeltec-robot \
-    turn-on-wheeltec-robot \
 "
 
 ROS_BUILDTOOL_DEPENDS = " \
@@ -27,17 +25,13 @@ ROS_BUILDTOOL_DEPENDS = " \
 "
 
 ROS_EXPORT_DEPENDS = " \
-    ros2-control-robot \
     ros2-wheeltec-robot \
-    turn-on-wheeltec-robot \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
 ROS_EXEC_DEPENDS = " \
-    ros2-control-robot \
     ros2-wheeltec-robot \
-    turn-on-wheeltec-robot \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
@@ -54,12 +48,12 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "hirobot_component_chassis"
+OPENEULER_LOCAL_NAME = "hieuler_component_chassis"
 SRC_URI = " \
     file://${OPENEULER_LOCAL_NAME}/uart/robot_bringup \
 "
 
-S = "${WORKDIR}/hirobot_component_chassis/uart/robot_bringup"
+S = "${WORKDIR}/hieuler_component_chassis/uart/robot_bringup"
 FILES:${PN} += "${datadir}"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 ROS_BUILD_TYPE = "ament_cmake"

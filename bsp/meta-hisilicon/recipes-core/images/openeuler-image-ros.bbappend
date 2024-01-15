@@ -59,12 +59,9 @@ bot-bringup \
 bot-model \
 diff-driver \
 robot-bringup \
-ros2-control-robot \
 ros2-wheeltec-robot \
 serial \
 serial-protocol-v1 \
-tf2-tools \
-turn-on-wheeltec-robot \
 ultra \
 depth-image-proc \
 depthimage-to-laserscan \
