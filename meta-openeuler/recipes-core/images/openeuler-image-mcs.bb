@@ -1,9 +1,5 @@
 SUMMARY = "A small image just capable of openEuler Embedded's mcs feature"
 
-# openeuler-image-mcs is used for mcs development,
-# so enable debug-tweaks
-OPENEULER_IMAGE_FEATURES = "debug-tweaks"
-
 require openeuler-image-common.inc
 require openeuler-image-sdk.inc
 
