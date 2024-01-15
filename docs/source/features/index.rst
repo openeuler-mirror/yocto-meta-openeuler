@@ -15,7 +15,7 @@
    muslc.rst
    distributed_softbus.rst
    preempt_rt.rst
-   nativesdk.rst
+   prebuilt_tool.rst
    rust.rst
    qt5_wayland.rst
    armnn.rst
