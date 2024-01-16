@@ -40,7 +40,7 @@ list: 查看插件
 .. image:: ../../../_static/images/mplugin/oebuild-mplugins-list.png
 
 enable/disable: 使能/屏蔽插件
-------------------
+-----------------------------
 此命令可以使能/屏蔽对应名称的插件。
 
 .. code-block:: console
@@ -69,7 +69,7 @@ remove: 删除插件
 
 
 oebuild插件编写规范
-------------------
+--------------------
 为了增强oebuild的可扩展性，我们引入了用户自定义插件的功能。为了让用户能够迅速编写出符合oebuild规范的代码，我们制定了一系列插件编写规范。
 
 1. 在开始编写插件时，您可以从oebuild源文件中复制 oebuild/src/oebuild/app/plugins/demo/demo.py 作为您的第一个插件文件。示例文件中的
