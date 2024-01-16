@@ -360,7 +360,7 @@ pipeline {
                         }
                     }
                 }
-                stage("arm32-qemu and raspberrypi4-64-ros"){
+                stage("raspberrypi4-64-ros"){
                     agent { node "${node}" }
                     steps {
                         dir('/home/jenkins/agent'){
@@ -378,27 +378,10 @@ pipeline {
                                     def randomStr = getRandomStr()
                                     def logDir = mkdirOpeneulerLog()
 
-                                    // 执行arm32-qemu镜像编译检查
-                                    def stageName = "arm32-qemu"
-                                    def arch = "arm32"
-                                    def task_res_code = sh (script: """
-                                        python3 main.py build \
-                                        -c /home/jenkins/agent/yocto-meta-openeuler \
-                                        -target openeuler_image \
-                                        -a $arch \
-                                        -t /usr1/openeuler/gcc/openeuler_gcc_arm32le \
-                                        -p qemu-arm \
-                                        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_in "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
-                                        -dt $IMAGE_DATE \
-                                        -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
-                                    """, returnStatus: true)
-                                    handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
-
                                     // 执行raspberrypi4-64-ros镜像编译检查
-                                    stageName = "raspberrypi4-64-ros"
-                                    arch = "aarch64"
-                                    task_res_code = sh (script: """
+                                    def stageName = "raspberrypi4-64-ros"
+                                    def arch = "aarch64"
+                                    def task_res_code = sh (script: """
                                         python3 main.py build \
                                         -c /home/jenkins/agent/yocto-meta-openeuler \
                                         -target openeuler_image \
@@ -417,7 +400,7 @@ pipeline {
                         }
                     }
                 }
-                stage("ok3588 and x86-64-rt"){
+                stage("ok3588 and x86-64-rt and arm32-qemu"){
                     agent { node "${node}" }
                     steps {
                         dir('/home/jenkins/agent'){
@@ -463,6 +446,23 @@ pipeline {
                                         -t /usr1/openeuler/gcc/openeuler_gcc_x86_64 \
                                         -p x86-64 \
                                         -f openeuler-rt \
+                                        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
+                                        -s_in "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -dt $IMAGE_DATE \
+                                        -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
+                                    """, returnStatus: true)
+                                    handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
+
+                                    // 执行arm32-qemu镜像编译检查
+                                    stageName = "arm32-qemu"
+                                    arch = "arm32"
+                                    task_res_code = sh (script: """
+                                        python3 main.py build \
+                                        -c /home/jenkins/agent/yocto-meta-openeuler \
+                                        -target openeuler_image \
+                                        -a $arch \
+                                        -t /usr1/openeuler/gcc/openeuler_gcc_arm32le \
+                                        -p qemu-arm \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
                                         -s_in "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
                                         -dt $IMAGE_DATE \
