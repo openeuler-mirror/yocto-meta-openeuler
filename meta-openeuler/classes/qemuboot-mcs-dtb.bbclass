@@ -64,7 +64,7 @@ generate_mcs_qemuboot_dtb() {
     cd "${B}"
 
     dtc -I dtb -O dts -o ${B}/${TMP_DTS} ${B}/qemu-dumped.dtb
-    
+
     write_mcs_section "${B}/${TMP_DTS}"
 
     QEMUBOOT_DTB="${IMGDEPLOYDIR}/${QB_DTB}"
@@ -81,6 +81,12 @@ generate_mcs_qemuboot_dtb() {
 }
 
 do_write_mcs_qemuboot_dtb() {
+    # We may not need to do this for some machines.
+    # For example, generic-x86 doesn't need it.
+    bbdebug 2 "ignore do_write_mcs_qemuboot_dtb"
+}
+
+do_write_mcs_qemuboot_dtb:qemu-aarch64() {
     # Not all architectures qemuboot with a device tree binary, so check
     # to see if one is needed. This allows this bbclass file to be used
     # in the same image recipe for multiple architectures.
