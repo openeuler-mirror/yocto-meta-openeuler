@@ -28,3 +28,4 @@ openEuler Embeddedd的核心构建系统是基于Yocto，但又根据自身的�
    devshell.rst
    partitioned_image.rst
    openeuler_src_uri_remove.rst
+   add_package_src.rst
