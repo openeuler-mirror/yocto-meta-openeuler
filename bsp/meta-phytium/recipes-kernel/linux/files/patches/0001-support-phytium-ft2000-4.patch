@@ -1,0 +1,2360 @@
+diff --git a/arch/arm64/include/asm/acpi.h b/arch/arm64/include/asm/acpi.h
+index 8f67d367e..ba0b36604 100644
+--- a/arch/arm64/include/asm/acpi.h
++++ b/arch/arm64/include/asm/acpi.h
+@@ -49,8 +49,26 @@
+ #ifdef	CONFIG_ACPI
+ pgprot_t __acpi_get_mem_attribute(phys_addr_t addr);
+ 
++#ifdef CONFIG_PHYTIUM_ACPI_NO_KERNEL_PROTECT
++static inline void __iomem *acpi_os_ioremap(acpi_physical_address phys,
++					    acpi_size size)
++{
++	/* For normal memory we already have a cacheable mapping. */
++	if (memblock_is_map_memory(phys))
++		return (void __iomem *)__phys_to_virt(phys);
++
++	/*
++		* We should still honor the memory's attribute here because
++		* crash dump kernel possibly excludes some ACPI (reclaim)
++		* regions from memblock list.
++		*/
++	return __ioremap(phys, size, __acpi_get_mem_attribute(phys));
++}
++#else
+ /* ACPI table mapping after acpi_permanent_mmap is set */
+ void __iomem *acpi_os_ioremap(acpi_physical_address phys, acpi_size size);
++#endif
++
+ #define acpi_os_ioremap acpi_os_ioremap
+ 
+ typedef u64 phys_cpuid_t;
+@@ -103,10 +121,13 @@ static inline u32 get_acpi_id_for_cpu(unsigned int cpu)
+ static inline void arch_fix_phys_package_id(int num, u32 slot) { }
+ void __init acpi_init_cpus(void);
+ int apei_claim_sea(struct pt_regs *regs);
++
++#ifndef CONFIG_PHYTIUM_ACPI_NO_KERNEL_PROTECT
+ void acpi_pptt_find_min_physid_cpu_node(struct acpi_table_header *table_hdr,
+ 			struct acpi_pptt_processor *cpu_node,
+ 			phys_cpuid_t *min_physid,
+ 			struct acpi_pptt_processor **min_cpu_node);
++#endif
+ 
+ #else
+ static inline void acpi_init_cpus(void) { }
+diff --git a/arch/arm64/kernel/acpi.c b/arch/arm64/kernel/acpi.c
+index a81105cfe..66f2d7868 100644
+--- a/arch/arm64/kernel/acpi.c
++++ b/arch/arm64/kernel/acpi.c
+@@ -27,13 +27,18 @@
+ #include <linux/pgtable.h>
+ 
+ #include <acpi/ghes.h>
+-#include <acpi/processor.h>
++
+ #include <asm/cputype.h>
+ #include <asm/cpu_ops.h>
+ #include <asm/daifflags.h>
+-#include <asm/numa.h>
++
+ #include <asm/smp_plat.h>
+ 
++#ifndef CONFIG_PHYTIUM_ACPI_NO_KERNEL_PROTECT
++#include <acpi/processor.h>
++#include <asm/numa.h>
++#endif
++
+ int acpi_noirq = 1;		/* skip ACPI IRQ initialization */
+ int acpi_disabled = 1;
+ EXPORT_SYMBOL(acpi_disabled);
+@@ -263,6 +268,7 @@ pgprot_t __acpi_get_mem_attribute(phys_addr_t addr)
+ 	return __pgprot(PROT_DEVICE_nGnRnE);
+ }
+ 
++#ifndef CONFIG_PHYTIUM_ACPI_NO_KERNEL_PROTECT
+ void __iomem *acpi_os_ioremap(acpi_physical_address phys, acpi_size size)
+ {
+ 	efi_memory_desc_t *md, *region = NULL;
+@@ -350,6 +356,7 @@ void __iomem *acpi_os_ioremap(acpi_physical_address phys, acpi_size size)
+ 	}
+ 	return __ioremap(phys, size, prot);
+ }
++#endif
+ 
+ /*
+  * Claim Synchronous External Aborts as a firmware first notification.
+@@ -404,6 +411,7 @@ int apei_claim_sea(struct pt_regs *regs)
+ 	return err;
+ }
+ 
++#ifndef CONFIG_PHYTIUM_ACPI_NO_KERNEL_PROTECT
+ int acpi_map_cpu(acpi_handle handle, phys_cpuid_t physid, u32 acpi_id,
+ 		 int *pcpu)
+ {
+@@ -435,8 +443,11 @@ int acpi_unmap_cpu(int cpu)
+ 	return 0;
+ }
+ EXPORT_SYMBOL(acpi_unmap_cpu);
++#endif
+ 
+ void arch_reserve_mem_area(acpi_physical_address addr, size_t size)
+ {
++#ifndef CONFIG_PHYTIUM_ACPI_NO_KERNEL_PROTECT
+ 	memblock_mark_nomap(addr, size);
++#endif
+ }
+diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
+index 435525c7a..124e66ef8 100644
+--- a/drivers/acpi/Kconfig
++++ b/drivers/acpi/Kconfig
+@@ -519,6 +519,13 @@ config ACPI_PPTT
+ 	bool
+ endif
+ 
++config PHYTIUM_ACPI_NO_KERNEL_PROTECT
++	bool "PHYTIUM_ACPI_NO_KERNEL_PROTECT"
++	default n
++	depends on ARCH_PHYTIUM
++	help
++	  Use old MCFG momory map rules ignore "requested region covers kernel memory"  (before 5.8) 
++
+ source "drivers/acpi/pmic/Kconfig"
+ 
+ endif	# ACPI
+diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
+index c94018404..63f9fd129 100644
+--- a/drivers/gpio/Kconfig
++++ b/drivers/gpio/Kconfig
+@@ -108,6 +108,10 @@ config GPIO_REGMAP
+ config GPIO_MAX730X
+ 	tristate
+ 
++# This symbol is selected by both MMIO and PCI expanders
++config GPIO_PHYTIUM_CORE
++	tristate
++
+ menu "Memory mapped GPIO drivers"
+ 	depends on HAS_IOMEM
+ 
+@@ -760,6 +764,18 @@ config GPIO_AMD_FCH
+ 	  Note: This driver doesn't registers itself automatically, as it
+ 	  needs to be provided with platform specific configuration.
+ 	  (See eg. CONFIG_PCENGINES_APU2.)
++
++config GPIO_PHYTIUM_PLAT
++	tristate "Phytium GPIO Platform support"
++	default y if ARCH_PHYTIUM
++	depends on ARM64
++	select GPIO_PHYTIUM_CORE
++	select IRQ_DOMAIN
++	select GENERIC_IRQ_CHIP
++	select GPIOLIB_IRQCHIP
++	help
++	  Say yes here to enable GPIO support for Phytium SoCs.
++
+ endmenu
+ 
+ menu "Port-mapped I/O GPIO drivers"
+diff --git a/drivers/gpio/Makefile b/drivers/gpio/Makefile
+index 1af147d8a..98dcdbe1e 100644
+--- a/drivers/gpio/Makefile
++++ b/drivers/gpio/Makefile
+@@ -182,3 +182,6 @@ obj-$(CONFIG_GPIO_ZEVIO)		+= gpio-zevio.o
+ obj-$(CONFIG_GPIO_ZX)			+= gpio-zx.o
+ obj-$(CONFIG_GPIO_ZYNQ)			+= gpio-zynq.o
+ obj-$(CONFIG_GPIO_SUNWAY)		+= gpio-sunway.o
++
++obj-$(CONFIG_GPIO_PHYTIUM_CORE) += gpio-phytium-core.o
++obj-$(CONFIG_GPIO_PHYTIUM_PLAT)	+= gpio-phytium-platform.o
+\ No newline at end of file
+diff --git a/drivers/gpio/gpio-phytium-core.c b/drivers/gpio/gpio-phytium-core.c
+new file mode 100644
+index 000000000..648e564df
+--- /dev/null
++++ b/drivers/gpio/gpio-phytium-core.c
+@@ -0,0 +1,363 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2019-2023 Phytium Technology Co., Ltd.
++ */
++
++#include <linux/err.h>
++#include <linux/io.h>
++#include <linux/irq.h>
++#include <linux/module.h>
++#include <linux/bitops.h>
++
++#include "gpio-phytium-core.h"
++
++static int get_pin_location(struct phytium_gpio *gpio, unsigned int offset,
++		     struct pin_loc *pl)
++{
++	int ret;
++
++	if (offset < gpio->ngpio[0]) {
++		pl->port = 0;
++		pl->offset = offset;
++		ret = 0;
++	} else if (offset < (gpio->ngpio[0] + gpio->ngpio[1])) {
++		pl->port = 1;
++		pl->offset = offset - gpio->ngpio[0];
++		ret = 0;
++	} else {
++		ret = -EINVAL;
++	}
++
++	return ret;
++}
++
++static void phytium_gpio_toggle_trigger(struct phytium_gpio *gpio,
++				 unsigned int offset)
++{
++	struct gpio_chip *gc;
++	u32 pol;
++	int val;
++
++	/* Only port A can provide interrupt source */
++	if (offset >= gpio->ngpio[0])
++		return;
++
++	gc = &gpio->gc;
++
++	pol = readl(gpio->regs + GPIO_INT_POLARITY);
++	/* Just read the current value right out of the data register */
++	val = gc->get(gc, offset);
++	if (val)
++		pol &= ~BIT(offset);
++	else
++		pol |= BIT(offset);
++
++	writel(pol, gpio->regs + GPIO_INT_POLARITY);
++}
++
++int phytium_gpio_get(struct gpio_chip *gc, unsigned int offset)
++{
++	struct phytium_gpio *gpio = gpiochip_get_data(gc);
++	struct pin_loc loc;
++	void __iomem *dat;
++
++	if (get_pin_location(gpio, offset, &loc))
++		return -EINVAL;
++
++	dat = gpio->regs + GPIO_EXT_PORTA + (loc.port * GPIO_PORT_STRIDE);
++
++	return !!(readl(dat) & BIT(loc.offset));
++}
++EXPORT_SYMBOL_GPL(phytium_gpio_get);
++
++void phytium_gpio_set(struct gpio_chip *gc, unsigned int offset, int value)
++{
++	struct phytium_gpio *gpio = gpiochip_get_data(gc);
++	struct pin_loc loc;
++	void __iomem *dr;
++	unsigned long flags;
++	u32 mask;
++
++	if (get_pin_location(gpio, offset, &loc))
++		return;
++	dr = gpio->regs + GPIO_SWPORTA_DR + (loc.port * GPIO_PORT_STRIDE);
++
++	raw_spin_lock_irqsave(&gpio->lock, flags);
++
++	if (value)
++		mask = readl(dr) | BIT(loc.offset);
++	else
++		mask = readl(dr) & ~BIT(loc.offset);
++
++	writel(mask, dr);
++
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
++}
++EXPORT_SYMBOL_GPL(phytium_gpio_set);
++
++int phytium_gpio_direction_input(struct gpio_chip *gc, unsigned int offset)
++{
++	struct phytium_gpio *gpio = gpiochip_get_data(gc);
++	struct pin_loc loc;
++	unsigned long flags;
++	void __iomem *ddr;
++
++	if (get_pin_location(gpio, offset, &loc))
++		return -EINVAL;
++	ddr = gpio->regs + GPIO_SWPORTA_DDR + (loc.port * GPIO_PORT_STRIDE);
++
++	raw_spin_lock_irqsave(&gpio->lock, flags);
++
++	writel(readl(ddr) & ~(BIT(loc.offset)), ddr);
++
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(phytium_gpio_direction_input);
++
++int phytium_gpio_direction_output(struct gpio_chip *gc, unsigned int offset,
++				  int value)
++{
++	struct phytium_gpio *gpio = gpiochip_get_data(gc);
++	struct pin_loc loc;
++	unsigned long flags;
++	void __iomem *ddr;
++
++	if (get_pin_location(gpio, offset, &loc))
++		return -EINVAL;
++	ddr = gpio->regs + GPIO_SWPORTA_DDR + (loc.port * GPIO_PORT_STRIDE);
++
++	raw_spin_lock_irqsave(&gpio->lock, flags);
++
++	writel(readl(ddr) | BIT(loc.offset), ddr);
++
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
++
++	phytium_gpio_set(gc, offset, value);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(phytium_gpio_direction_output);
++
++void phytium_gpio_irq_ack(struct irq_data *d)
++{
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
++	struct phytium_gpio *gpio = gpiochip_get_data(gc);
++	u32 val = BIT(irqd_to_hwirq(d));
++
++	raw_spin_lock(&gpio->lock);
++
++	writel(val, gpio->regs + GPIO_PORTA_EOI);
++
++	raw_spin_unlock(&gpio->lock);
++}
++EXPORT_SYMBOL_GPL(phytium_gpio_irq_ack);
++
++void phytium_gpio_irq_mask(struct irq_data *d)
++{
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
++	struct phytium_gpio *gpio = gpiochip_get_data(gc);
++	u32 val;
++
++	/* Only port A can provide interrupt source */
++	if (irqd_to_hwirq(d) >= gpio->ngpio[0])
++		return;
++
++	raw_spin_lock(&gpio->lock);
++
++	val = readl(gpio->regs + GPIO_INTMASK);
++	val |= BIT(irqd_to_hwirq(d));
++	writel(val, gpio->regs + GPIO_INTMASK);
++
++	raw_spin_unlock(&gpio->lock);
++}
++EXPORT_SYMBOL_GPL(phytium_gpio_irq_mask);
++
++void phytium_gpio_irq_unmask(struct irq_data *d)
++{
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
++	struct phytium_gpio *gpio = gpiochip_get_data(gc);
++	u32 val;
++
++	/* Only port A can provide interrupt source */
++	if (irqd_to_hwirq(d) >= gpio->ngpio[0])
++		return;
++
++	raw_spin_lock(&gpio->lock);
++
++	val = readl(gpio->regs + GPIO_INTMASK);
++	val &= ~BIT(irqd_to_hwirq(d));
++	writel(val, gpio->regs + GPIO_INTMASK);
++
++	raw_spin_unlock(&gpio->lock);
++}
++EXPORT_SYMBOL_GPL(phytium_gpio_irq_unmask);
++
++int phytium_gpio_irq_set_type(struct irq_data *d, unsigned int flow_type)
++{
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
++	struct phytium_gpio *gpio = gpiochip_get_data(gc);
++	int hwirq = irqd_to_hwirq(d);
++	unsigned long flags, lvl, pol;
++
++	if (hwirq < 0 || hwirq >= gpio->ngpio[0])
++		return -EINVAL;
++
++	if ((flow_type & (IRQ_TYPE_LEVEL_HIGH | IRQ_TYPE_LEVEL_LOW)) &&
++	    (flow_type & (IRQ_TYPE_EDGE_RISING | IRQ_TYPE_EDGE_FALLING))) {
++		dev_err(gc->parent,
++			"trying to configure line %d for both level and edge detection, choose one!\n",
++			hwirq);
++		return -EINVAL;
++	}
++
++	raw_spin_lock_irqsave(&gpio->lock, flags);
++
++	lvl = readl(gpio->regs + GPIO_INTTYPE_LEVEL);
++	pol = readl(gpio->regs + GPIO_INT_POLARITY);
++
++	switch (flow_type) {
++	case IRQ_TYPE_EDGE_BOTH:
++		lvl |= BIT(hwirq);
++		phytium_gpio_toggle_trigger(gpio, hwirq);
++		irq_set_handler_locked(d, handle_edge_irq);
++		dev_dbg(gc->parent, "line %d: IRQ on both edges\n", hwirq);
++		break;
++	case IRQ_TYPE_EDGE_RISING:
++		lvl |= BIT(hwirq);
++		pol |= BIT(hwirq);
++		irq_set_handler_locked(d, handle_edge_irq);
++		dev_dbg(gc->parent, "line %d: IRQ on RISING edge\n", hwirq);
++		break;
++	case IRQ_TYPE_EDGE_FALLING:
++		lvl |= BIT(hwirq);
++		pol &= ~BIT(hwirq);
++		irq_set_handler_locked(d, handle_edge_irq);
++		dev_dbg(gc->parent, "line %d: IRQ on FALLING edge\n", hwirq);
++		break;
++	case IRQ_TYPE_LEVEL_HIGH:
++		lvl &= ~BIT(hwirq);
++		pol |= BIT(hwirq);
++		irq_set_handler_locked(d, handle_level_irq);
++		dev_dbg(gc->parent, "line %d: IRQ on HIGH level\n", hwirq);
++		break;
++	case IRQ_TYPE_LEVEL_LOW:
++		lvl &= ~BIT(hwirq);
++		pol &= ~BIT(hwirq);
++		irq_set_handler_locked(d, handle_level_irq);
++		dev_dbg(gc->parent, "line %d: IRQ on LOW level\n", hwirq);
++		break;
++	}
++
++	writel(lvl, gpio->regs + GPIO_INTTYPE_LEVEL);
++	if (flow_type != IRQ_TYPE_EDGE_BOTH)
++		writel(pol, gpio->regs + GPIO_INT_POLARITY);
++
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(phytium_gpio_irq_set_type);
++
++void phytium_gpio_irq_enable(struct irq_data *d)
++{
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
++	struct phytium_gpio *gpio = gpiochip_get_data(gc);
++	unsigned long flags;
++	u32 val;
++
++	/* Only port A can provide interrupt source */
++	if (irqd_to_hwirq(d) >= gpio->ngpio[0])
++		return;
++
++	raw_spin_lock_irqsave(&gpio->lock, flags);
++
++	val = readl(gpio->regs + GPIO_INTEN);
++	val |= BIT(irqd_to_hwirq(d));
++	writel(val, gpio->regs + GPIO_INTEN);
++
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
++}
++EXPORT_SYMBOL_GPL(phytium_gpio_irq_enable);
++
++void phytium_gpio_irq_disable(struct irq_data *d)
++{
++	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
++	struct phytium_gpio *gpio = gpiochip_get_data(gc);
++	unsigned long flags;
++	u32 val;
++
++	/* Only port A can provide interrupt source */
++	if (irqd_to_hwirq(d) >= gpio->ngpio[0])
++		return;
++
++	raw_spin_lock_irqsave(&gpio->lock, flags);
++
++	val = readl(gpio->regs + GPIO_INTEN);
++	val &= ~BIT(irqd_to_hwirq(d));
++	writel(val, gpio->regs + GPIO_INTEN);
++
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
++}
++EXPORT_SYMBOL_GPL(phytium_gpio_irq_disable);
++
++void phytium_gpio_irq_handler(struct irq_desc *desc)
++{
++	struct gpio_chip *gc = irq_desc_get_handler_data(desc);
++	struct phytium_gpio *gpio = gpiochip_get_data(gc);
++	struct irq_chip *irqchip = irq_desc_get_chip(desc);
++	unsigned long pending;
++	int offset;
++
++	chained_irq_enter(irqchip, desc);
++
++	pending = readl(gpio->regs + GPIO_INTSTATUS);
++	if (pending) {
++		for_each_set_bit(offset, &pending, gpio->ngpio[0]) {
++			int gpio_irq = irq_find_mapping(gc->irq.domain,
++							offset);
++			generic_handle_irq(gpio_irq);
++
++			if ((irq_get_trigger_type(gpio_irq) &
++			    IRQ_TYPE_SENSE_MASK) == IRQ_TYPE_EDGE_BOTH)
++				phytium_gpio_toggle_trigger(gpio, offset);
++		}
++	}
++
++	chained_irq_exit(irqchip, desc);
++}
++EXPORT_SYMBOL_GPL(phytium_gpio_irq_handler);
++
++int phytium_gpio_get_direction(struct gpio_chip *gc, unsigned int offset)
++{
++	struct phytium_gpio *gpio = gpiochip_get_data(gc);
++	struct pin_loc loc;
++	void __iomem *ddr;
++
++	if (get_pin_location(gpio, offset, &loc))
++		return -EINVAL;
++	ddr = gpio->regs + GPIO_SWPORTA_DDR + (loc.port * GPIO_PORT_STRIDE);
++
++	return !(readl(ddr) & BIT(loc.offset));
++}
++EXPORT_SYMBOL_GPL(phytium_gpio_get_direction);
++
++#if CONFIG_SMP
++int
++phytium_gpio_irq_set_affinity(struct irq_data *d, const struct cpumask *mask_val, bool force)
++{
++	struct gpio_chip *chip_data = irq_data_get_irq_chip_data(d);
++	struct irq_chip *chip = irq_get_chip(*(chip_data->irq.parents));
++	struct irq_data *data = irq_get_irq_data(*(chip_data->irq.parents));
++
++	if (chip && chip->irq_set_affinity)
++		return chip->irq_set_affinity(data, mask_val, force);
++
++	return -EINVAL;
++}
++EXPORT_SYMBOL_GPL(phytium_gpio_irq_set_affinity);
++#endif
++
++MODULE_LICENSE("GPL v2");
++MODULE_DESCRIPTION("Phytium GPIO Controller core");
+diff --git a/drivers/gpio/gpio-phytium-core.h b/drivers/gpio/gpio-phytium-core.h
+new file mode 100644
+index 000000000..cafca7807
+--- /dev/null
++++ b/drivers/gpio/gpio-phytium-core.h
+@@ -0,0 +1,87 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (c) 2021-2023 Phytium Technology Co., Ltd.
++ */
++
++#ifndef _GPIO_PHYTIUM_H
++#define _GPIO_PHYTIUM_H
++
++#include <linux/gpio/driver.h>
++#include <linux/spinlock.h>
++
++#include "gpiolib.h"
++
++#define GPIO_SWPORTA_DR		0x00 /* WR Port A Output Data Register */
++#define GPIO_SWPORTA_DDR	0x04 /* WR Port A Data Direction Register */
++#define GPIO_EXT_PORTA		0x08 /* RO Port A Input Data Register */
++#define GPIO_SWPORTB_DR		0x0c /* WR Port B Output Data Register */
++#define GPIO_SWPORTB_DDR	0x10 /* WR Port B Data Direction Register */
++#define GPIO_EXT_PORTB		0x14 /* RO Port B Input Data Register */
++
++#define GPIO_INTEN		0x18 /* WR Port A Interrput Enable Register */
++#define GPIO_INTMASK		0x1c /* WR Port A Interrupt Mask Register */
++#define GPIO_INTTYPE_LEVEL	0x20 /* WR Port A Interrupt Level Register */
++#define GPIO_INT_POLARITY	0x24 /* WR Port A Interrupt Polarity Register */
++#define GPIO_INTSTATUS		0x28 /* RO Port A Interrupt Status Register */
++#define GPIO_RAW_INTSTATUS	0x2c /* RO Port A Raw Interrupt Status Register */
++#define GPIO_LS_SYNC		0x30 /* WR Level-sensitive Synchronization Enable Register */
++#define GPIO_DEBOUNCE		0x34 /* WR Debounce Enable Register */
++#define GPIO_PORTA_EOI		0x38 /* WO Port A Clear Interrupt Register */
++
++#define MAX_NPORTS		2
++#define NGPIO_DEFAULT		8
++#define NGPIO_MAX		32
++#define GPIO_PORT_STRIDE	(GPIO_EXT_PORTB - GPIO_EXT_PORTA)
++
++struct pin_loc {
++	unsigned int port;
++	unsigned int offset;
++};
++
++#ifdef CONFIG_PM_SLEEP
++struct phytium_gpio_ctx {
++	u32 swporta_dr;
++	u32 swporta_ddr;
++	u32 ext_porta;
++	u32 swportb_dr;
++	u32 swportb_ddr;
++	u32 ext_portb;
++	u32 inten;
++	u32 intmask;
++	u32 inttype_level;
++	u32 int_polarity;
++	u32 intstatus;
++	u32 raw_intstatus;
++	u32 ls_sync;
++	u32 debounce;
++};
++#endif
++
++struct phytium_gpio {
++	raw_spinlock_t		lock;
++	void __iomem		*regs;
++	struct gpio_chip	gc;
++	struct irq_chip		irq_chip;
++	unsigned int		ngpio[2];
++	int			irq[32];
++#ifdef CONFIG_PM_SLEEP
++	struct phytium_gpio_ctx	ctx;
++#endif
++};
++
++int phytium_gpio_get(struct gpio_chip *gc, unsigned int offset);
++void phytium_gpio_set(struct gpio_chip *gc, unsigned int offset, int value);
++
++int phytium_gpio_get_direction(struct gpio_chip *gc, unsigned int offset);
++int phytium_gpio_direction_input(struct gpio_chip *gc, unsigned int offset);
++int phytium_gpio_direction_output(struct gpio_chip *gc, unsigned int offset, int value);
++
++void phytium_gpio_irq_ack(struct irq_data *d);
++void phytium_gpio_irq_mask(struct irq_data *d);
++void phytium_gpio_irq_unmask(struct irq_data *d);
++int phytium_gpio_irq_set_type(struct irq_data *d, unsigned int flow_type);
++void phytium_gpio_irq_enable(struct irq_data *d);
++void phytium_gpio_irq_disable(struct irq_data *d);
++void phytium_gpio_irq_handler(struct irq_desc *desc);
++int phytium_gpio_irq_set_affinity(struct irq_data *d, const struct cpumask *mask_val, bool force);
++#endif
+diff --git a/drivers/gpio/gpio-phytium-platform.c b/drivers/gpio/gpio-phytium-platform.c
+new file mode 100644
+index 000000000..0d77eb885
+--- /dev/null
++++ b/drivers/gpio/gpio-phytium-platform.c
+@@ -0,0 +1,204 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Support functions for Phytium GPIO
++ *
++ * Copyright (c) 2019-2023 Phytium Technology Co., Ltd.
++ *
++ * Derived from drivers/gpio/gpio-pl061.c
++ *   Copyright (C) 2008, 2009 Provigent Ltd.
++ */
++
++#include <linux/acpi.h>
++#include <linux/err.h>
++#include <linux/interrupt.h>
++#include <linux/io.h>
++#include <linux/irq.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/property.h>
++
++#include "gpio-phytium-core.h"
++
++static const struct of_device_id phytium_gpio_of_match[] = {
++	{ .compatible = "phytium,gpio", },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, phytium_gpio_of_match);
++
++static const struct acpi_device_id phytium_gpio_acpi_match[] = {
++	{ "PHYT0001", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(acpi, phytium_gpio_acpi_match);
++
++static int phytium_gpio_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct resource *res;
++	struct phytium_gpio *gpio;
++	struct gpio_irq_chip *girq;
++	struct fwnode_handle *fwnode;
++	int err, irq_count;
++
++	gpio = devm_kzalloc(&pdev->dev, sizeof(*gpio), GFP_KERNEL);
++	if (!gpio)
++		return -ENOMEM;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	gpio->regs = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(gpio->regs))
++		return PTR_ERR(gpio->regs);
++
++	if (!device_get_child_node_count(dev))
++		return -ENODEV;
++
++	device_for_each_child_node(dev, fwnode) {
++		int idx;
++
++		if (fwnode_property_read_u32(fwnode, "reg", &idx) ||
++		    idx >= MAX_NPORTS) {
++			dev_err(dev, "missing/invalid port index\n");
++			fwnode_handle_put(fwnode);
++			return -EINVAL;
++		}
++
++		if (fwnode_property_read_u32(fwnode, "ngpios", &gpio->ngpio[idx]) &&
++			fwnode_property_read_u32(fwnode, "nr-gpios", &gpio->ngpio[idx])) {
++			dev_info(dev,
++				 "failed to get number of gpios for Port%c\n",
++				 idx ? 'B' : 'A');
++			gpio->ngpio[idx] = NGPIO_DEFAULT;
++		}
++	}
++
++	/* irq_chip support */
++	gpio->irq_chip.name = dev_name(dev);
++	gpio->irq_chip.irq_ack = phytium_gpio_irq_ack;
++	gpio->irq_chip.irq_mask = phytium_gpio_irq_mask;
++	gpio->irq_chip.irq_unmask = phytium_gpio_irq_unmask;
++	gpio->irq_chip.irq_set_type = phytium_gpio_irq_set_type;
++	gpio->irq_chip.irq_enable = phytium_gpio_irq_enable;
++	gpio->irq_chip.irq_disable = phytium_gpio_irq_disable;
++#ifdef CONFIG_SMP
++	/* TODO: use irq_chip_set_affinity_parent instead? */
++	gpio->irq_chip.irq_set_affinity = phytium_gpio_irq_set_affinity;
++#endif
++	raw_spin_lock_init(&gpio->lock);
++
++	gpio->gc.base = -1;
++	gpio->gc.get_direction = phytium_gpio_get_direction;
++	gpio->gc.direction_input = phytium_gpio_direction_input;
++	gpio->gc.direction_output = phytium_gpio_direction_output;
++	gpio->gc.get = phytium_gpio_get;
++	gpio->gc.set = phytium_gpio_set;
++	gpio->gc.ngpio = gpio->ngpio[0] + gpio->ngpio[1];
++	gpio->gc.label = dev_name(dev);
++	gpio->gc.parent = dev;
++	gpio->gc.owner = THIS_MODULE;
++
++	girq = &gpio->gc.irq;
++	girq->handler = handle_bad_irq;
++	girq->default_type = IRQ_TYPE_NONE;
++
++	for (irq_count = 0; irq_count < platform_irq_count(pdev); irq_count++) {
++		gpio->irq[irq_count] = -ENXIO;
++		gpio->irq[irq_count] = platform_get_irq(pdev, irq_count);
++		if (gpio->irq[irq_count] < 0) {
++			//dev_warn(dev, "no irq is found.\n");
++			break;
++		}
++	};
++
++	girq->num_parents = irq_count;
++	girq->parents = gpio->irq;
++	girq->parent_handler = phytium_gpio_irq_handler;
++
++	girq->chip = &gpio->irq_chip;
++
++	err = devm_gpiochip_add_data(dev, &gpio->gc, gpio);
++	if (err)
++		return err;
++
++	platform_set_drvdata(pdev, gpio);
++	dev_info(dev, "Phytium GPIO controller @%pa registered\n",
++		&res->start);
++
++	return 0;
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int phytium_gpio_suspend(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct phytium_gpio *gpio = platform_get_drvdata(pdev);
++	unsigned long flags;
++
++	raw_spin_lock_irqsave(&gpio->lock, flags);
++
++	gpio->ctx.swporta_dr = readl(gpio->regs + GPIO_SWPORTA_DR);
++	gpio->ctx.swporta_ddr = readl(gpio->regs + GPIO_SWPORTA_DDR);
++	gpio->ctx.ext_porta = readl(gpio->regs + GPIO_EXT_PORTA);
++	gpio->ctx.swportb_dr = readl(gpio->regs + GPIO_SWPORTB_DR);
++	gpio->ctx.swportb_ddr = readl(gpio->regs + GPIO_SWPORTB_DDR);
++	gpio->ctx.ext_portb = readl(gpio->regs + GPIO_EXT_PORTB);
++
++	gpio->ctx.inten = readl(gpio->regs + GPIO_INTEN);
++	gpio->ctx.intmask = readl(gpio->regs + GPIO_INTMASK);
++	gpio->ctx.inttype_level = readl(gpio->regs + GPIO_INTTYPE_LEVEL);
++	gpio->ctx.int_polarity = readl(gpio->regs + GPIO_INT_POLARITY);
++	gpio->ctx.debounce = readl(gpio->regs + GPIO_DEBOUNCE);
++
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
++
++	return 0;
++}
++
++static int phytium_gpio_resume(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct phytium_gpio *gpio = platform_get_drvdata(pdev);
++	unsigned long flags;
++
++	raw_spin_lock_irqsave(&gpio->lock, flags);
++
++	writel(gpio->ctx.swporta_dr, gpio->regs + GPIO_SWPORTA_DR);
++	writel(gpio->ctx.swporta_ddr, gpio->regs + GPIO_SWPORTA_DDR);
++	writel(gpio->ctx.ext_porta, gpio->regs + GPIO_EXT_PORTA);
++	writel(gpio->ctx.swportb_dr, gpio->regs + GPIO_SWPORTB_DR);
++	writel(gpio->ctx.swportb_ddr, gpio->regs + GPIO_SWPORTB_DDR);
++	writel(gpio->ctx.ext_portb, gpio->regs + GPIO_EXT_PORTB);
++
++	writel(gpio->ctx.inten, gpio->regs + GPIO_INTEN);
++	writel(gpio->ctx.intmask, gpio->regs + GPIO_INTMASK);
++	writel(gpio->ctx.inttype_level, gpio->regs + GPIO_INTTYPE_LEVEL);
++	writel(gpio->ctx.int_polarity, gpio->regs + GPIO_INT_POLARITY);
++	writel(gpio->ctx.debounce, gpio->regs + GPIO_DEBOUNCE);
++
++	writel(0xffffffff, gpio->regs + GPIO_PORTA_EOI);
++
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
++
++	return 0;
++}
++#endif
++
++static SIMPLE_DEV_PM_OPS(phytium_gpio_pm_ops, phytium_gpio_suspend,
++			 phytium_gpio_resume);
++
++static struct platform_driver phytium_gpio_driver = {
++	.driver		= {
++		.name	= "gpio-phytium-platform",
++		.pm	= &phytium_gpio_pm_ops,
++		.of_match_table = of_match_ptr(phytium_gpio_of_match),
++		.acpi_match_table = ACPI_PTR(phytium_gpio_acpi_match),
++	},
++	.probe		= phytium_gpio_probe,
++};
++
++module_platform_driver(phytium_gpio_driver);
++
++MODULE_LICENSE("GPL v2");
++MODULE_AUTHOR("Chen Baozi <chenbaozi@phytium.com.cn>");
++MODULE_DESCRIPTION("Phytium GPIO driver");
+diff --git a/drivers/mailbox/Kconfig b/drivers/mailbox/Kconfig
+index 6e3ef446b..6c179341f 100644
+--- a/drivers/mailbox/Kconfig
++++ b/drivers/mailbox/Kconfig
+@@ -254,4 +254,13 @@ config QCOM_IPCC
+ 	  acts as an interrupt controller for receiving interrupts from clients.
+ 	  Say Y here if you want to build this driver.
+ 
++config PHYTIUM_MBOX
++	tristate "Phytium SoC Mailbox Support"
++	depends on ARCH_PHYTIUM || COMPILE_TEST
++	help
++	  Mailbox driver implementation for the Phytium platform. It is used
++	  to send message between application processors and on-chip management
++	  firmware. Say Y here if you want to build this mailbox controller
++	  driver.
++
+ endif
+diff --git a/drivers/mailbox/Makefile b/drivers/mailbox/Makefile
+index 2e06e02b2..f9aec5158 100644
+--- a/drivers/mailbox/Makefile
++++ b/drivers/mailbox/Makefile
+@@ -54,3 +54,5 @@ obj-$(CONFIG_SUN6I_MSGBOX)	+= sun6i-msgbox.o
+ obj-$(CONFIG_SPRD_MBOX)		+= sprd-mailbox.o
+ 
+ obj-$(CONFIG_QCOM_IPCC)		+= qcom-ipcc.o
++
++obj-$(CONFIG_PHYTIUM_MBOX)	+= phytium-mailbox.o
+\ No newline at end of file
+diff --git a/drivers/mailbox/phytium-mailbox.c b/drivers/mailbox/phytium-mailbox.c
+new file mode 100644
+index 000000000..21549e25b
+--- /dev/null
++++ b/drivers/mailbox/phytium-mailbox.c
+@@ -0,0 +1,214 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Phytium SoC mailbox driver
++ *
++ * Copyright (c) 2020-2023 Phytium Technology Co., Ltd.
++ */
++
++#include <linux/acpi.h>
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/interrupt.h>
++#include <linux/io.h>
++#include <linux/mailbox_controller.h>
++#include <linux/module.h>
++#include <linux/of_device.h>
++#include <linux/platform_device.h>
++
++#define INTR_STAT	0x0
++#define INTR_SET	0x8
++#define INTR_CLR	0x10
++
++#define TX_REG		0x100
++
++#define NR_CHANS	1
++
++static spinlock_t lock;
++
++struct phytium_mbox_link {
++	unsigned int irq;
++	void __iomem *tx_reg;
++	void __iomem *rx_reg;
++};
++
++struct phytium_mbox {
++	void __iomem *base;
++	struct phytium_mbox_link mlink;
++	struct mbox_chan chan;
++	struct mbox_controller mbox;
++};
++
++static irqreturn_t phytium_mbox_rx_irq(int irq, void *ch)
++{
++	struct mbox_chan *chan = ch;
++	struct phytium_mbox_link *mlink = chan->con_priv;
++	u32 val;
++	unsigned long flags = 0;
++
++	spin_lock_irqsave(&lock, flags);
++	val = readl_relaxed(mlink->rx_reg + INTR_STAT);
++	spin_unlock_irqrestore(&lock, flags);
++	if (!val)
++		return IRQ_NONE;
++
++	mbox_chan_received_data(chan, (void *)&val);
++
++	spin_lock_irqsave(&lock, flags);
++	writel_relaxed(val, mlink->rx_reg + INTR_CLR);
++	spin_unlock_irqrestore(&lock, flags);
++
++	return IRQ_HANDLED;
++}
++
++static int phytium_mbox_send_data(struct mbox_chan *chan, void *data)
++{
++	struct phytium_mbox_link *mlink = chan->con_priv;
++	u32 *arg = data;
++	unsigned long flags = 0;
++
++	spin_lock_irqsave(&lock, flags);
++	writel_relaxed(*arg, mlink->tx_reg + INTR_SET);
++	spin_unlock_irqrestore(&lock, flags);
++
++	return 0;
++}
++
++static int phytium_mbox_startup(struct mbox_chan *chan)
++{
++	struct phytium_mbox_link *mlink = chan->con_priv;
++	u32 val;
++	int ret;
++	unsigned long flags = 0;
++
++	spin_lock_irqsave(&lock, flags);
++	val = readl_relaxed(mlink->tx_reg + INTR_STAT);
++	writel_relaxed(val, mlink->tx_reg + INTR_CLR);
++	spin_unlock_irqrestore(&lock, flags);
++
++	ret = request_irq(mlink->irq, phytium_mbox_rx_irq,
++			  IRQF_SHARED, "phytium_mbox_link", chan);
++	if (ret) {
++		dev_err(chan->mbox->dev,
++			"Unable to acquire IRQ %d\n", mlink->irq);
++	}
++
++	return ret;
++}
++
++static void phytium_mbox_shutdown(struct mbox_chan *chan)
++{
++	struct phytium_mbox_link *mlink = chan->con_priv;
++
++	free_irq(mlink->irq, chan);
++}
++
++static bool phytium_mbox_last_tx_done(struct mbox_chan *chan)
++{
++	unsigned long flags;
++	struct phytium_mbox_link *mlink = chan->con_priv;
++	u32 val;
++
++	spin_lock_irqsave(&lock, flags);
++	val = readl_relaxed(mlink->tx_reg + INTR_STAT);
++	spin_unlock_irqrestore(&lock, flags);
++
++	return (val == (u32)(1U << 31));
++}
++
++static const struct mbox_chan_ops phytium_mbox_ops = {
++	.send_data = phytium_mbox_send_data,
++	.startup = phytium_mbox_startup,
++	.shutdown = phytium_mbox_shutdown,
++	.last_tx_done = phytium_mbox_last_tx_done,
++};
++
++#ifdef CONFIG_ACPI
++static const struct acpi_device_id phytium_mbox_acpi_match[] = {
++	{ "PHYT0009", 0 },
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, phytium_mbox_acpi_match);
++#endif
++
++static const struct of_device_id phytium_mbox_of_match[] = {
++	{ .compatible = "phytium,mbox", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, phytium_mbox_of_match);
++
++static int phytium_mbox_probe(struct platform_device *pdev)
++{
++	struct phytium_mbox *mbox;
++	struct resource *res;
++	int err, irq;
++
++	spin_lock_init(&lock);
++
++	/* Allocate memory for device */
++	mbox = devm_kzalloc(&pdev->dev, sizeof(*mbox), GFP_KERNEL);
++	if (!mbox)
++		return -ENOMEM;
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	mbox->base = devm_ioremap_resource(&pdev->dev, res);
++	if (IS_ERR(mbox->base)) {
++		dev_err(&pdev->dev, "ioremap base failed\n");
++		return PTR_ERR(mbox->base);
++	}
++
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		dev_err(&pdev->dev, "cannot obtain irq\n");
++		return irq;
++	}
++
++	mbox->chan.con_priv = &mbox->mlink;
++	mbox->mlink.irq = irq;
++	mbox->mlink.rx_reg = mbox->base;
++	mbox->mlink.tx_reg = mbox->mlink.rx_reg + TX_REG;
++
++	mbox->mbox.dev = &pdev->dev;
++	mbox->mbox.chans = &mbox->chan;
++	mbox->mbox.num_chans = NR_CHANS;
++	mbox->mbox.ops = &phytium_mbox_ops;
++	mbox->mbox.txdone_irq = false;
++	mbox->mbox.txdone_poll = true;
++	mbox->mbox.txpoll_period = 1;
++
++	platform_set_drvdata(pdev, mbox);
++
++	err = mbox_controller_register(&mbox->mbox);
++	if (err) {
++		dev_err(&pdev->dev, "Failed to register mailboxes %d\n", err);
++		goto fail;
++	}
++
++	dev_info(&pdev->dev, "Phytium SoC Mailbox registered\n");
++fail:
++	return err;
++}
++
++static int phytium_mbox_remove(struct platform_device *pdev)
++{
++	struct phytium_mbox *mbox = platform_get_drvdata(pdev);
++
++	mbox_controller_unregister(&mbox->mbox);
++
++	return 0;
++}
++
++static struct platform_driver phytium_mbox_driver = {
++	.probe = phytium_mbox_probe,
++	.remove = phytium_mbox_remove,
++	.driver = {
++		.name = "phytium-mbox",
++		.of_match_table = of_match_ptr(phytium_mbox_of_match),
++		.acpi_match_table = ACPI_PTR(phytium_mbox_acpi_match),
++	},
++};
++
++module_platform_driver(phytium_mbox_driver);
++
++MODULE_LICENSE("GPL v2");
++MODULE_DESCRIPTION("Phytium SoC Mailbox Driver");
++MODULE_AUTHOR("Chen Baozi <chenbaozi@phytium.com.cn>");
+diff --git a/drivers/net/ethernet/stmicro/stmmac/Kconfig b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+index 13eda0c37..c4bae69c2 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/Kconfig
++++ b/drivers/net/ethernet/stmicro/stmmac/Kconfig
+@@ -117,6 +117,16 @@ config DWMAC_OXNAS
+ 	  This selects the Oxford Semiconductor OXNASSoC glue layer support for
+ 	  the stmmac device driver. This driver is used for OX820.
+ 
++config DWMAC_PHYTIUM
++	tristate "Phytium dwmac support"
++	default ARCH_PHYTIUM
++	depends on (OF || ACPI) && (ARCH_PHYTIUM || COMPILE_TEST)
++	help
++	  Support for GMAC controller on Phytium SoCs.
++
++	  This selects the Phytium GMAC glue layer support for the
++	  stmmac device driver.
++
+ config DWMAC_QCOM_ETHQOS
+ 	tristate "Qualcomm ETHQOS support"
+ 	default ARCH_QCOM
+diff --git a/drivers/net/ethernet/stmicro/stmmac/Makefile b/drivers/net/ethernet/stmicro/stmmac/Makefile
+index 11ea4569c..540236c5d 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/Makefile
++++ b/drivers/net/ethernet/stmicro/stmmac/Makefile
+@@ -18,6 +18,7 @@ obj-$(CONFIG_DWMAC_LPC18XX)	+= dwmac-lpc18xx.o
+ obj-$(CONFIG_DWMAC_MEDIATEK)	+= dwmac-mediatek.o
+ obj-$(CONFIG_DWMAC_MESON)	+= dwmac-meson.o dwmac-meson8b.o
+ obj-$(CONFIG_DWMAC_OXNAS)	+= dwmac-oxnas.o
++obj-$(CONFIG_DWMAC_PHYTIUM)	+= dwmac-phytium.o
+ obj-$(CONFIG_DWMAC_QCOM_ETHQOS)	+= dwmac-qcom-ethqos.o
+ obj-$(CONFIG_DWMAC_ROCKCHIP)	+= dwmac-rk.o
+ obj-$(CONFIG_DWMAC_SOCFPGA)	+= dwmac-altr-socfpga.o
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-phytium.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-phytium.c
+new file mode 100644
+index 000000000..0dbf6eef7
+--- /dev/null
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-phytium.c
+@@ -0,0 +1,221 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Phytium SWMAC specific glue layer
++ *
++ * Copyright (c) 2022-2023, Phytium Technology Co., Ltd.
++ */
++
++#include <linux/acpi.h>
++#include <linux/clk-provider.h>
++#include <linux/clkdev.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++
++#include "stmmac.h"
++#include "stmmac_platform.h"
++
++static int phytium_get_mac_mode(struct fwnode_handle *fwnode)
++{
++	const char *pm;
++	int err, i;
++
++	err = fwnode_property_read_string(fwnode, "mac-mode", &pm);
++	if (err < 0)
++		return err;
++
++	for (i = 0; i < PHY_INTERFACE_MODE_MAX; i++) {
++		if (!strcasecmp(pm, phy_modes(i)))
++			return i;
++	}
++
++	return -ENODEV;
++}
++
++static int phytium_dwmac_acpi_phy(struct plat_stmmacenet_data *plat,
++		struct fwnode_handle *np, struct device *dev)
++{
++	plat->mdio_bus_data = devm_kzalloc(dev,
++			sizeof(struct stmmac_mdio_bus_data),
++			GFP_KERNEL);
++
++	if (!plat->mdio_bus_data)
++		return -ENOMEM;
++
++	return 0;
++}
++
++static int phytium_dwmac_probe(struct platform_device *pdev)
++{
++	struct fwnode_handle *fwnode = dev_fwnode(&pdev->dev);
++	struct plat_stmmacenet_data *plat;
++	struct stmmac_resources stmmac_res;
++	struct device_node *np = pdev->dev.of_node;
++	u64 clk_freq;
++	char clk_name[20];
++	int ret;
++
++	plat = devm_kzalloc(&pdev->dev, sizeof(*plat), GFP_KERNEL);
++	if (!plat)
++		return -ENOMEM;
++
++	plat->dma_cfg = devm_kzalloc(&pdev->dev, sizeof(*plat->dma_cfg), GFP_KERNEL);
++	if (!plat->dma_cfg)
++		return -ENOMEM;
++
++	plat->axi = devm_kzalloc(&pdev->dev, sizeof(*plat->axi), GFP_KERNEL);
++	if (!plat->axi)
++		return -ENOMEM;
++
++	plat->phy_interface = device_get_phy_mode(&pdev->dev);
++	if (plat->phy_interface < 0)
++		return plat->phy_interface;
++
++	plat->interface = phytium_get_mac_mode(fwnode);
++	if (plat->interface < 0)
++		plat->interface = plat->phy_interface;
++
++	/* Configure PHY if using device-tree */
++	if (pdev->dev.of_node) {
++		plat->phy_node = of_parse_phandle(np, "phy-handle", 0);
++		plat->phylink_node = np;
++	}
++
++	if (pdev->dev.of_node) {
++		plat->bus_id = of_alias_get_id(np, "ethernet");
++		if (plat->bus_id < 0)
++			plat->bus_id = 0;
++	} else if (fwnode_property_read_u32(fwnode, "bus_id", &plat->bus_id)) {
++		plat->bus_id = 2;
++	}
++
++	plat->phy_addr = -1;
++	plat->clk_csr = -1;
++	plat->has_gmac = 1;
++	plat->enh_desc = 1;
++	plat->bugged_jumbo = 1;
++	plat->pmt = 1;
++	plat->force_sf_dma_mode = 1;
++
++	if (fwnode_property_read_u32(fwnode, "max-speed", &plat->max_speed))
++		plat->max_speed = -1;
++
++	if (fwnode_property_read_u32(fwnode, "max-frame-size", &plat->maxmtu))
++		plat->maxmtu = JUMBO_LEN;
++
++	if (fwnode_property_read_u32(fwnode, "snps,multicast-filter-bins",
++				     &plat->multicast_filter_bins))
++		plat->multicast_filter_bins = HASH_TABLE_SIZE;
++
++	if (fwnode_property_read_u32(fwnode, "snps,perfect-filter-entries",
++				     &plat->unicast_filter_entries))
++		plat->unicast_filter_entries = 1;
++
++	if (fwnode_property_read_u32(fwnode, "tx-fifo-depth", &plat->tx_fifo_size))
++		plat->tx_fifo_size = 0x1000;
++
++	if (fwnode_property_read_u32(fwnode, "rx-fifo-depth", &plat->rx_fifo_size))
++		plat->rx_fifo_size = 0x1000;
++
++	if (phytium_dwmac_acpi_phy(plat, fwnode, &pdev->dev))
++		return -ENODEV;
++
++	plat->rx_queues_to_use = 1;
++	plat->tx_queues_to_use = 1;
++	plat->rx_queues_cfg[0].mode_to_use = MTL_QUEUE_DCB;
++	plat->tx_queues_cfg[0].mode_to_use = MTL_QUEUE_DCB;
++
++	if (fwnode_property_read_u64(fwnode, "clock-frequency", &clk_freq))
++		clk_freq = 125000000;
++
++	/* Set system clock */
++	snprintf(clk_name, sizeof(clk_name), "%s-%d", "stmmaceth", plat->bus_id);
++
++	plat->stmmac_clk = clk_register_fixed_rate(&pdev->dev, clk_name, NULL, 0, clk_freq);
++	if (IS_ERR(plat->stmmac_clk)) {
++		dev_warn(&pdev->dev, "Fail to register stmmac-clk\n");
++		plat->stmmac_clk = NULL;
++	}
++
++	ret = clk_prepare_enable(plat->stmmac_clk);
++	if (ret) {
++		clk_unregister_fixed_rate(plat->stmmac_clk);
++		return ret;
++	}
++
++	plat->clk_ptp_rate = clk_get_rate(plat->stmmac_clk);
++	plat->clk_ptp_ref = NULL;
++
++	if (fwnode_property_read_u32(fwnode, "snps,pbl", &plat->dma_cfg->pbl))
++		plat->dma_cfg->pbl = 16;
++
++	fwnode_property_read_u32(fwnode, "snps,txpbl", &plat->dma_cfg->txpbl);
++	fwnode_property_read_u32(fwnode, "snps,rxpbl", &plat->dma_cfg->rxpbl);
++
++	plat->dma_cfg->pblx8 = !fwnode_property_read_bool(fwnode, "snps,no-pbl-x8");
++	plat->dma_cfg->aal = fwnode_property_read_bool(fwnode, "snps,aal");
++	plat->dma_cfg->fixed_burst = fwnode_property_read_bool(fwnode, "snps,fixed-burst");
++	plat->dma_cfg->mixed_burst = fwnode_property_read_bool(fwnode, "snps,mixed-burst");
++
++	plat->axi->axi_lpi_en = false;
++	plat->axi->axi_xit_frm = false;
++	plat->axi->axi_wr_osr_lmt = 7;
++	plat->axi->axi_rd_osr_lmt = 7;
++	plat->axi->axi_blen[0] = 16;
++
++	memset(&stmmac_res, 0, sizeof(stmmac_res));
++	stmmac_res.addr = devm_platform_ioremap_resource(pdev, 0);
++	stmmac_res.irq = platform_get_irq(pdev, 0);
++	if (stmmac_res.irq < 0) {
++		dev_err(&pdev->dev, "IRQ not found.\n");
++		return -ENXIO;
++	}
++	stmmac_res.wol_irq = stmmac_res.irq;
++	stmmac_res.lpi_irq = -1;
++
++	return  stmmac_dvr_probe(&pdev->dev, plat, &stmmac_res);
++}
++
++int phytium_dwmac_remove(struct platform_device *pdev)
++{
++	int ret;
++	struct net_device *ndev = platform_get_drvdata(pdev);
++	struct stmmac_priv *priv = netdev_priv(ndev);
++	struct plat_stmmacenet_data *plat = priv->plat;
++
++	ret = stmmac_pltfr_remove(pdev);
++	clk_unregister_fixed_rate(plat->stmmac_clk);
++	return ret;
++}
++
++#ifdef CONFIG_OF
++static const struct of_device_id phytium_dwmac_of_match[] = {
++	{ .compatible = "phytium,gmac" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, phytium_dwmac_of_match);
++#endif
++
++#ifdef CONFIG_ACPI
++static const struct acpi_device_id phytium_dwmac_acpi_ids[] = {
++	{ .id = "PHYT0004" },
++	{}
++};
++MODULE_DEVICE_TABLE(acpi, phytium_dwmac_acpi_ids);
++#endif
++
++static struct platform_driver phytium_dwmac_driver = {
++	.probe = phytium_dwmac_probe,
++	.remove = phytium_dwmac_remove,
++	.driver = {
++		.name		= "phytium-dwmac",
++		.pm		= &stmmac_pltfr_pm_ops,
++		.of_match_table	= of_match_ptr(phytium_dwmac_of_match),
++		.acpi_match_table = ACPI_PTR(phytium_dwmac_acpi_ids),
++	},
++};
++module_platform_driver(phytium_dwmac_driver);
++
++MODULE_AUTHOR("Chen Baozi <chenbaozi@phytium.com.cn>");
++MODULE_DESCRIPTION("Phytium DWMAC specific glue layer");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 4fc517689..21c432c67 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -4978,6 +4978,8 @@ static const struct pci_dev_acs_enabled {
+ 	{ 0x10b5, PCI_ANY_ID, pci_quirk_xgene_acs },
+ 	/* because rootcomplex Vendor id is 0x17cd on phytium cpu */
+ 	{ 0x17cd, PCI_ANY_ID, pci_quirk_xgene_acs },
++
++	{ 0x1db7, PCI_ANY_ID, pci_quirk_xgene_acs },
+ #endif
+ 	{ PCI_VENDOR_ID_TRUSTNETIC, PCI_ANY_ID, pci_quirk_mf_endpoint_acs },
+ 	{ 0 }
+@@ -5362,6 +5364,7 @@ DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_SERVERWORKS, 0x0142, quirk_no_ext_tags);
+ DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_SERVERWORKS, 0x0144, quirk_no_ext_tags);
+ DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_SERVERWORKS, 0x0420, quirk_no_ext_tags);
+ DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_SERVERWORKS, 0x0422, quirk_no_ext_tags);
++DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_PHYTIUM, 0xdc3a, quirk_no_ext_tags);
+ 
+ #ifdef CONFIG_PCI_ATS
+ /*
+diff --git a/drivers/tty/serial/Kconfig b/drivers/tty/serial/Kconfig
+index f66710bd4..055703976 100644
+--- a/drivers/tty/serial/Kconfig
++++ b/drivers/tty/serial/Kconfig
+@@ -73,6 +73,17 @@ config SERIAL_AMBA_PL011_CONSOLE
+ 	  your boot loader (lilo or loadlin) about how to pass options to the
+ 	  kernel at boot time.)
+ 
++config SERIAL_PHYTIUM_PCI
++        tristate "Phytium PCI serial port support"
++        depends on PCI
++        select SERIAL_CORE
++        help
++          This driver supports the Phytium UART controller on PCI/PCIe adapters.
++          If you want to compile this driver into the kernel, say Y here.  To
++          compile this driver as a module, choose M here.
++
++          If unsure, say N.
++
+ if ASCEND_FEATURES
+ 
+ config SERIAL_ATTACHED_MBIGEN
+diff --git a/drivers/tty/serial/Makefile b/drivers/tty/serial/Makefile
+index caf167f0c..2fdb242c1 100644
+--- a/drivers/tty/serial/Makefile
++++ b/drivers/tty/serial/Makefile
+@@ -90,6 +90,7 @@ obj-$(CONFIG_SERIAL_OWL)	+= owl-uart.o
+ obj-$(CONFIG_SERIAL_RDA)	+= rda-uart.o
+ obj-$(CONFIG_SERIAL_MILBEAUT_USIO) += milbeaut_usio.o
+ obj-$(CONFIG_SERIAL_SIFIVE)	+= sifive.o
++obj-$(CONFIG_SERIAL_PHYTIUM_PCI) += phytium-uart.o
+ 
+ # GPIOLIB helpers for modem control lines
+ obj-$(CONFIG_SERIAL_MCTRL_GPIO)	+= serial_mctrl_gpio.o
+diff --git a/drivers/tty/serial/phytium-uart.c b/drivers/tty/serial/phytium-uart.c
+new file mode 100644
+index 000000000..084bf9e1f
+--- /dev/null
++++ b/drivers/tty/serial/phytium-uart.c
+@@ -0,0 +1,922 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Driver for Phytium PCI UART controller
++ *
++ * Copyright (c) 2021-2023 Phytium Technology Co., Ltd.
++ */
++
++#include <linux/console.h>
++#include <linux/delay.h>
++#include <linux/init.h>
++#include <linux/io.h>
++#include <linux/ioport.h>
++#include <linux/module.h>
++#include <linux/pci.h>
++#include <linux/serial.h>
++#include <linux/serial_core.h>
++#include <linux/tty.h>
++#include <linux/tty_flip.h>
++
++#define DRV_NAME		"phytium_uart"
++
++#define REG_DR			0x00
++#define REG_FR			0x18
++#define REG_IBRD		0x24
++#define REG_FBRD		0x28
++#define REG_LCRH_RX		0x2c
++#define REG_LCRH_TX		0x2c
++#define REG_CR			0x30
++#define REG_IFLS		0x34
++#define REG_IMSC		0x38
++#define REG_RIS			0x3c
++#define REG_MIS			0x40
++#define REG_ICR			0x44
++
++#define REG_DR_OE		(1 << 11)
++#define REG_DR_BE		(1 << 10)
++#define REG_DR_PE		(1 << 9)
++#define REG_DR_FE		(1 << 8)
++
++#define REG_LCRH_SPS		0x80
++#define REG_LCRH_WLEN_8		0x60
++#define REG_LCRH_WLEN_7		0x40
++#define REG_LCRH_WLEN_6		0x20
++#define REG_LCRH_WLEN_5		0x00
++#define REG_LCRH_FEN		0x10
++#define REG_LCRH_STP2		0x08
++#define REG_LCRH_EPS		0x04
++#define REG_LCRH_PEN		0x02
++#define REG_LCRH_BRK		0x01
++
++#define REG_FR_RI		0x100
++#define REG_FR_TXFE		0x080
++#define REG_FR_RXFF		0x040
++#define REG_FR_TXFF		0x020
++#define REG_FR_RXFE		0x010
++#define REG_FR_BUSY		0x008
++#define REG_FR_DCD		0x004
++#define REG_FR_DSR		0x002
++#define REG_FR_CTS		0x001
++#define REG_FR_TMSK		(REG_FR_TXFF + REG_FR_BUSY)
++
++#define REG_CR_CTSEN		0x8000		/* CTS hardware flow control */
++#define REG_CR_RTSEN		0x4000		/* RTS hardware flow control */
++#define REG_CR_OUT2		0x2000		/* OUT2 */
++#define REG_CR_OUT1		0x1000		/* OUT1 */
++#define REG_CR_RTS		0x0800		/* RTS */
++#define REG_CR_DTR		0x0400		/* DTR */
++#define REG_CR_RXE		0x0200		/* receive enable */
++#define REG_CR_TXE		0x0100		/* transmit enable */
++#define REG_CR_LBE		0x0080		/* loopback enable */
++#define REG_CR_RTIE		0x0040
++#define REG_CR_TIE		0x0020
++#define REG_CR_RIE		0x0010
++#define REG_CR_MSIE		0x0008
++#define REG_CR_IIRLP		0x0004		/* SIR low power mode */
++#define REG_CR_SIREN		0x0002		/* SIR enable */
++#define REG_CR_UARTEN		0x0001		/* UART enable */
++
++#define REG_IFLS_RX1_8		(0 << 3)
++#define REG_IFLS_RX2_8		(1 << 3)
++#define REG_IFLS_RX4_8		(2 << 3)
++#define REG_IFLS_RX6_8		(3 << 3)
++#define REG_IFLS_RX7_8		(4 << 3)
++#define REG_IFLS_TX1_8		(0 << 0)
++#define REG_IFLS_TX2_8		(1 << 0)
++#define REG_IFLS_TX4_8		(2 << 0)
++#define REG_IFLS_TX6_8		(3 << 0)
++
++#define REG_IMSC_OEIM		(1 << 10)	/* overrun error interrupt mask */
++#define REG_IMSC_BEIM		(1 << 9)	/* break error interrupt mask */
++#define REG_IMSC_PEIM		(1 << 8)	/* parity error interrupt mask */
++#define REG_IMSC_FEIM		(1 << 7)	/* framing error interrupt mask */
++#define REG_IMSC_RTIM		(1 << 6)	/* receive timeout interrupt mask */
++#define REG_IMSC_TXIM		(1 << 5)	/* transmit interrupt mask */
++#define REG_IMSC_RXIM		(1 << 4)	/* receive interrupt mask */
++#define REG_IMSC_DSRMIM		(1 << 3)	/* DSR interrupt mask */
++#define REG_IMSC_DCDMIM		(1 << 2)	/* DCD interrupt mask */
++#define REG_IMSC_CTSMIM		(1 << 1)	/* CTS interrupt mask */
++#define REG_IMSC_RIMIM		(1 << 0)	/* RI interrupt mask */
++
++#define REG_ICR_OEIS		(1 << 10)	/* overrun error interrupt status */
++#define REG_ICR_BEIS		(1 << 9)	/* break error interrupt status */
++#define REG_ICR_PEIS		(1 << 8)	/* parity error interrupt status */
++#define REG_ICR_FEIS		(1 << 7)	/* framing error interrupt status */
++#define REG_ICR_RTIS		(1 << 6)	/* receive timeout interrupt status */
++#define REG_ICR_TXIS		(1 << 5)	/* transmit interrupt status */
++#define REG_ICR_RXIS		(1 << 4)	/* receive interrupt status */
++#define REG_ICR_DSRMIS		(1 << 3)	/* DSR interrupt status */
++#define REG_ICR_DCDMIS		(1 << 2)	/* DCD interrupt status */
++#define REG_ICR_CTSMIS		(1 << 1)	/* CTS interrupt status */
++#define REG_ICR_RIMIS		(1 << 0)	/* RI interrupt status */
++
++#define UART_NR			12
++
++#define UART_DR_ERROR		(REG_DR_OE|REG_DR_BE|REG_DR_PE|REG_DR_FE)
++#define UART_DUMMY_DR_RX	(1 << 16)
++
++#define DEFAULT_UARTCLK		48000000	/* 48 MHz */
++
++/*
++ * We wrap our port structure around the generic uart_port.
++ */
++struct phytium_uart_port {
++	struct uart_port	port;
++	unsigned int		im;		/* interrupt mask */
++	unsigned int		old_status;
++	unsigned int		old_cr;		/* state during shutdown */
++	char			type[12];
++};
++
++static unsigned int phytium_uart_read(const struct phytium_uart_port *pup,
++	unsigned int reg)
++{
++	void __iomem *addr = pup->port.membase + reg;
++
++	return readl_relaxed(addr);
++}
++
++static void phytium_uart_write(unsigned int val, const struct phytium_uart_port *pup,
++	unsigned int reg)
++{
++	void __iomem *addr = pup->port.membase + reg;
++
++	writel_relaxed(val, addr);
++}
++
++static int phytium_fifo_to_tty(struct phytium_uart_port *pup)
++{
++	u16 status;
++	unsigned int ch, flag, fifotaken;
++
++	for (fifotaken = 0; fifotaken < 256; fifotaken++) {
++		status = phytium_uart_read(pup, REG_FR);
++		if (status & REG_FR_RXFE)
++			break;
++
++		/* Take chars from the FIFO and update status */
++		ch = phytium_uart_read(pup, REG_DR) | UART_DUMMY_DR_RX;
++		flag = TTY_NORMAL;
++		pup->port.icount.rx++;
++
++		if (unlikely(ch & UART_DR_ERROR)) {
++			if (ch & REG_DR_BE) {
++				ch &= ~(REG_DR_FE | REG_DR_PE);
++				pup->port.icount.brk++;
++				if (uart_handle_break(&pup->port))
++					continue;
++			} else if (ch & REG_DR_PE)
++				pup->port.icount.parity++;
++			else if (ch & REG_DR_FE)
++				pup->port.icount.frame++;
++			if (ch & REG_DR_OE)
++				pup->port.icount.overrun++;
++
++			ch &= pup->port.read_status_mask;
++
++			if (ch & REG_DR_BE)
++				flag = TTY_BREAK;
++			else if (ch & REG_DR_PE)
++				flag = TTY_PARITY;
++			else if (ch & REG_DR_FE)
++				flag = TTY_FRAME;
++		}
++
++		if (uart_handle_sysrq_char(&pup->port, ch & 255))
++			continue;
++
++		uart_insert_char(&pup->port, ch, REG_DR_OE, ch, flag);
++	}
++
++	return fifotaken;
++}
++
++static void phytium_rx_chars(struct phytium_uart_port *pup)
++__releases(&pup->port.lock)
++__acquires(&pup->port.lock)
++{
++	phytium_fifo_to_tty(pup);
++
++	spin_unlock(&pup->port.lock);
++	tty_flip_buffer_push(&pup->port.state->port);
++	spin_lock(&pup->port.lock);
++}
++
++static void phytium_stop_tx(struct uart_port *port)
++{
++	struct phytium_uart_port *pup =
++	    container_of(port, struct phytium_uart_port, port);
++
++	pup->im &= ~REG_IMSC_TXIM;
++	phytium_uart_write(pup->im, pup, REG_IMSC);
++}
++
++static bool phytium_tx_char(struct phytium_uart_port *pup, unsigned char c,
++			    bool from_irq)
++{
++
++	if (unlikely(!from_irq) &&
++	    phytium_uart_read(pup, REG_FR) & REG_FR_TXFF)
++		return false; /* unable to transmit character */
++
++	phytium_uart_write(c, pup, REG_DR);
++	pup->port.icount.tx++;
++
++	return true;
++}
++
++static bool phytium_tx_chars(struct phytium_uart_port *pup, bool from_irq)
++{
++	struct circ_buf *xmit = &pup->port.state->xmit;
++	int count = pup->port.fifosize >> 1;
++
++	if (pup->port.x_char) {
++		if (!phytium_tx_char(pup, pup->port.x_char, from_irq))
++			return true;
++		pup->port.x_char = 0;
++		--count;
++	}
++	if (uart_circ_empty(xmit) || uart_tx_stopped(&pup->port)) {
++		phytium_stop_tx(&pup->port);
++		return false;
++	}
++
++	do {
++		if (likely(from_irq) && count-- == 0)
++			break;
++
++		if (!phytium_tx_char(pup, xmit->buf[xmit->tail], from_irq))
++			break;
++
++		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
++	} while (!uart_circ_empty(xmit));
++
++	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
++		uart_write_wakeup(&pup->port);
++
++	if (uart_circ_empty(xmit)) {
++		phytium_stop_tx(&pup->port);
++		return false;
++	}
++	return true;
++}
++
++static void phytium_modem_status(struct phytium_uart_port *pup)
++{
++	unsigned int status, delta;
++
++	status = phytium_uart_read(pup, REG_FR) & (REG_FR_DCD|REG_FR_DSR|REG_FR_CTS);
++
++	delta = status ^ pup->old_status;
++	pup->old_status = status;
++
++	if (!delta)
++		return;
++
++	if (delta & REG_FR_DCD)
++		uart_handle_dcd_change(&pup->port, status & REG_FR_DCD);
++
++	if (delta & REG_FR_DSR)
++		pup->port.icount.dsr++;
++
++	if (delta & REG_FR_CTS)
++		uart_handle_cts_change(&pup->port, status & REG_FR_CTS);
++
++	wake_up_interruptible(&pup->port.state->port.delta_msr_wait);
++}
++
++static irqreturn_t phytium_uart_interrupt(int irq, void *dev_id)
++{
++	struct phytium_uart_port *pup = dev_id;
++	unsigned long flags;
++	unsigned int status, pass_counter = 256;
++	int handled = 0;
++
++	spin_lock_irqsave(&pup->port.lock, flags);
++	status = phytium_uart_read(pup, REG_RIS) & pup->im;
++	if (status) {
++		do {
++			phytium_uart_write(status & ~(REG_ICR_TXIS|REG_ICR_RTIS|REG_ICR_RXIS),
++					   pup, REG_ICR);
++
++			if (status & (REG_ICR_RTIS|REG_ICR_RXIS))
++				phytium_rx_chars(pup);
++
++			if (status & (REG_ICR_DSRMIS|REG_ICR_DCDMIS|
++				      REG_ICR_CTSMIS|REG_ICR_RIMIS))
++				phytium_modem_status(pup);
++			if (status & REG_ICR_TXIS)
++				phytium_tx_chars(pup, true);
++
++			if (pass_counter-- == 0)
++				break;
++
++			status = phytium_uart_read(pup, REG_RIS) & pup->im;
++		} while (status != 0);
++		handled = 1;
++	}
++	spin_unlock_irqrestore(&pup->port.lock, flags);
++
++	return IRQ_RETVAL(handled);
++}
++
++static unsigned int phytium_tx_empty(struct uart_port *port)
++{
++	unsigned int status;
++	struct phytium_uart_port *pup =
++		container_of(port, struct phytium_uart_port, port);
++
++	status = phytium_uart_read(pup, REG_FR) & (REG_FR_BUSY | REG_FR_TXFF);
++
++	return status ? 0 : TIOCSER_TEMT;
++}
++
++static void phytium_set_mctrl(struct uart_port *port, unsigned int mctrl)
++{
++	struct phytium_uart_port *pup =
++		container_of(port, struct phytium_uart_port, port);
++	unsigned int cr;
++
++	cr = phytium_uart_read(pup, REG_CR);
++
++#define TIOCMBIT(tiocmbit, uartbit)	\
++	do {				\
++		if (mctrl & tiocmbit)	\
++			cr |= uartbit;	\
++		else			\
++			cr &= ~uartbit;	\
++	} while (0)
++
++	TIOCMBIT(TIOCM_RTS, REG_CR_RTS);
++	TIOCMBIT(TIOCM_DTR, REG_CR_DTR);
++	TIOCMBIT(TIOCM_OUT1, REG_CR_OUT1);
++	TIOCMBIT(TIOCM_OUT2, REG_CR_OUT2);
++	TIOCMBIT(TIOCM_LOOP, REG_CR_LBE);
++
++	if (port->status & UPSTAT_AUTORTS) {
++		/* We need to disable auto-RTS if we want to turn RTS off */
++		TIOCMBIT(TIOCM_RTS, REG_CR_RTSEN);
++	}
++#undef TIOCMBIT
++
++	phytium_uart_write(cr, pup, REG_CR);
++}
++
++static unsigned int phytium_get_mctrl(struct uart_port *port)
++{
++	struct phytium_uart_port *pup =
++	    container_of(port, struct phytium_uart_port, port);
++	unsigned int cr = 0;
++	unsigned int status = phytium_uart_read(pup, REG_FR);
++
++#define TIOCMBIT(uartbit, tiocmbit)	\
++	do {				\
++		if (status & uartbit)	\
++			cr |= tiocmbit;	\
++	} while (0)
++
++	TIOCMBIT(REG_FR_DCD, TIOCM_CAR);
++	TIOCMBIT(REG_FR_DSR, TIOCM_DSR);
++	TIOCMBIT(REG_FR_CTS, TIOCM_CTS);
++	TIOCMBIT(REG_FR_RI, TIOCM_RNG);
++#undef TIOCMBIT
++	return cr;
++}
++
++static void phytium_start_tx(struct uart_port *port)
++{
++	struct phytium_uart_port *pup =
++		container_of(port, struct phytium_uart_port, port);
++
++	if (phytium_tx_chars(pup, false)) {
++		pup->im |= REG_IMSC_TXIM;
++		phytium_uart_write(pup->im, pup, REG_IMSC);
++	}
++}
++
++static void phytium_stop_rx(struct uart_port *port)
++{
++	struct phytium_uart_port *pup =
++		container_of(port, struct phytium_uart_port, port);
++
++	pup->im &= ~(REG_IMSC_RXIM|REG_IMSC_RTIM|REG_IMSC_FEIM|
++		      REG_IMSC_PEIM|REG_IMSC_BEIM|REG_IMSC_OEIM);
++	phytium_uart_write(pup->im, pup, REG_IMSC);
++}
++
++static void phytium_enable_ms(struct uart_port *port)
++{
++	struct phytium_uart_port *pup =
++		container_of(port, struct phytium_uart_port, port);
++
++	pup->im |= REG_IMSC_RIMIM|REG_IMSC_CTSMIM|REG_IMSC_DCDMIM|REG_IMSC_DSRMIM;
++	phytium_uart_write(pup->im, pup, REG_IMSC);
++}
++
++static void phytium_break_ctl(struct uart_port *port, int break_state)
++{
++	struct phytium_uart_port *pup =
++		container_of(port, struct phytium_uart_port, port);
++	unsigned long flags;
++	unsigned int lcr_h;
++
++	spin_lock_irqsave(&pup->port.lock, flags);
++	lcr_h = phytium_uart_read(pup, REG_LCRH_TX);
++	if (break_state == -1)
++		lcr_h |= REG_LCRH_BRK;
++	else
++		lcr_h &= ~REG_LCRH_BRK;
++	phytium_uart_write(lcr_h, pup, REG_LCRH_TX);
++	spin_unlock_irqrestore(&pup->port.lock, flags);
++}
++
++static int phytium_hwinit(struct uart_port *port)
++{
++	struct phytium_uart_port *pup =
++		container_of(port, struct phytium_uart_port, port);
++
++	/* XXX: more configurable setup method in future */
++	pup->port.uartclk = DEFAULT_UARTCLK;
++
++	/* Clear pending error and receive interrupts */
++	phytium_uart_write(REG_ICR_OEIS | REG_ICR_BEIS | REG_ICR_PEIS |
++			   REG_ICR_FEIS | REG_ICR_RTIS | REG_ICR_RXIS,
++			   pup,  REG_ICR);
++
++	/*
++	 * Save interrupts enable mask, and enable RX interrupts in case if
++	 * the interrupt is used for NMI entry.
++	 */
++	pup->im = phytium_uart_read(pup, REG_IMSC);
++	phytium_uart_write(REG_IMSC_RTIM | REG_IMSC_RXIM, pup, REG_IMSC);
++
++	return 0;
++}
++
++static int phytium_uart_allocate_irq(struct phytium_uart_port *pup)
++{
++	phytium_uart_write(pup->im, pup, REG_IMSC);
++
++	return request_irq(pup->port.irq, phytium_uart_interrupt, IRQF_SHARED, DRV_NAME, pup);
++}
++
++static void phytium_enable_interrtups(struct phytium_uart_port *pup)
++{
++	unsigned int i;
++
++	spin_lock_irq(&pup->port.lock);
++
++	/* Clear out any spuriously appearing RX interrupts */
++	phytium_uart_write(REG_ICR_RTIS | REG_ICR_RXIS, pup, REG_ICR);
++
++	/*
++	 * RXIS is asserted only when the RX FIFO transitions from below
++	 * to above the trigger threshold. If the RX FIFO is already
++	 * full to the threashold this can't happen and RXIS will now be
++	 * stuck off. Drain the RX FIFO explicitly to fix this:
++	 */
++	for (i = 0; i < pup->port.fifosize * 2; i++) {
++		if (phytium_uart_read(pup, REG_FR) & REG_FR_RXFE)
++			break;
++
++		phytium_uart_read(pup, REG_DR);
++	}
++
++	pup->im = REG_IMSC_RTIM | REG_IMSC_RXIM;
++	phytium_uart_write(pup->im, pup, REG_IMSC);
++	spin_unlock_irq(&pup->port.lock);
++}
++
++static int phytium_startup(struct uart_port *port)
++{
++	struct phytium_uart_port *pup =
++		container_of(port, struct phytium_uart_port, port);
++	unsigned int cr;
++	int ret = 0;
++
++	ret = phytium_hwinit(port);
++	if (ret)
++		goto out;
++
++	ret = phytium_uart_allocate_irq(pup);
++	if (ret)
++		goto out;
++
++	phytium_uart_write(REG_IFLS_RX4_8|REG_IFLS_TX4_8, pup, REG_IFLS);
++
++	spin_lock_irq(&pup->port.lock);
++
++	/* restore RTS and DTR */
++	cr = pup->old_cr & (REG_CR_RTS | REG_CR_DTR);
++	cr |= REG_CR_UARTEN | REG_CR_RXE | REG_CR_TXE;
++	phytium_uart_write(cr, pup, REG_CR);
++
++	spin_unlock_irq(&pup->port.lock);
++
++	/* initialise the old status of the modem signals */
++	pup->old_status = phytium_uart_read(pup, REG_FR) & (REG_FR_DCD|REG_FR_DSR|REG_FR_CTS);
++
++	phytium_enable_interrtups(pup);
++
++out:
++	return ret;
++}
++
++static void phytium_shutdown_channel(struct phytium_uart_port *pup,
++				     unsigned int lcrh)
++{
++	unsigned long val;
++
++	val = phytium_uart_read(pup, lcrh);
++	val &= ~(REG_LCRH_BRK | REG_LCRH_FEN);
++	phytium_uart_write(val, pup, lcrh);
++}
++
++static void phytium_disable_uart(struct phytium_uart_port *pup)
++{
++	unsigned int cr;
++
++	pup->port.status &= ~(UPSTAT_AUTOCTS | UPSTAT_AUTORTS);
++	spin_lock_irq(&pup->port.lock);
++	cr = phytium_uart_read(pup, REG_CR);
++	pup->old_cr = cr;
++	cr &= REG_CR_RTS | REG_CR_DTR;
++	cr |= REG_CR_UARTEN | REG_CR_TXE;
++	phytium_uart_write(cr, pup, REG_CR);
++	spin_unlock_irq(&pup->port.lock);
++
++	/*
++	 * disable break condition and fifos
++	 */
++	phytium_shutdown_channel(pup, REG_LCRH_RX);
++}
++
++static void phytium_disable_interrupts(struct phytium_uart_port *pup)
++{
++	spin_lock_irq(&pup->port.lock);
++
++	/* mask all interrupts and clear all pending ones */
++	pup->im = 0;
++	phytium_uart_write(pup->im, pup, REG_IMSC);
++	phytium_uart_write(0xffff, pup, REG_ICR);
++
++	spin_unlock_irq(&pup->port.lock);
++}
++
++static void phytium_shutdown(struct uart_port *port)
++{
++	struct phytium_uart_port *pup =
++		container_of(port, struct phytium_uart_port, port);
++
++	phytium_disable_interrupts(pup);
++
++	free_irq(pup->port.irq, pup);
++
++	phytium_disable_uart(pup);
++
++	if (pup->port.ops->flush_buffer)
++		pup->port.ops->flush_buffer(port);
++}
++
++static void
++phytium_setup_status_masks(struct uart_port *port, struct ktermios *termios)
++{
++	port->read_status_mask = REG_DR_OE | 255;
++	if (termios->c_iflag & INPCK)
++		port->read_status_mask |= REG_DR_FE | REG_DR_PE;
++	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
++		port->read_status_mask |= REG_DR_BE;
++
++	/*
++	 * Characters to ignore
++	 */
++	port->ignore_status_mask = 0;
++	if (termios->c_iflag & IGNPAR)
++		port->ignore_status_mask |= REG_DR_FE | REG_DR_PE;
++	if (termios->c_iflag & IGNBRK) {
++		port->ignore_status_mask |= REG_DR_BE;
++		/*
++		 * If we're ignoring parity and break indicators,
++		 * ignore overruns too (for real raw support).
++		 */
++		if (termios->c_iflag & IGNPAR)
++			port->ignore_status_mask |= REG_DR_OE;
++	}
++
++	/*
++	 * Ignore all characters if CREAD is not set.
++	 */
++	if ((termios->c_cflag & CREAD) == 0)
++		port->ignore_status_mask |= UART_DUMMY_DR_RX;
++}
++
++static void
++phytium_set_termios(struct uart_port *port, struct ktermios *termios, struct ktermios *old)
++{
++	struct phytium_uart_port *pup =
++		container_of(port, struct phytium_uart_port, port);
++	unsigned int lcr_h, old_cr;
++	unsigned long flags;
++	unsigned int baud, quot;
++
++	/* Ask the core to calculate the divisor for us. */
++	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16);
++
++	if (baud > port->uartclk/16)
++		quot = DIV_ROUND_CLOSEST(port->uartclk * 8, baud);
++	else
++		quot = DIV_ROUND_CLOSEST(port->uartclk * 4, baud);
++
++	switch (termios->c_cflag & CSIZE) {
++	case CS5:
++		lcr_h = REG_LCRH_WLEN_5;
++		break;
++	case CS6:
++		lcr_h = REG_LCRH_WLEN_6;
++		break;
++	case CS7:
++		lcr_h = REG_LCRH_WLEN_7;
++		break;
++	default: /* CS8 */
++		lcr_h = REG_LCRH_WLEN_8;
++		break;
++	}
++	if (termios->c_cflag & CSTOPB)
++		lcr_h |= REG_LCRH_STP2;
++	if (termios->c_cflag & PARENB) {
++		lcr_h |= REG_LCRH_PEN;
++		if (!(termios->c_cflag & PARODD))
++			lcr_h |= REG_LCRH_EPS;
++		if (termios->c_cflag & CMSPAR)
++			lcr_h |= REG_LCRH_SPS;
++	}
++	if (pup->port.fifosize > 1)
++		lcr_h |= REG_LCRH_FEN;
++
++	spin_lock_irqsave(&port->lock, flags);
++
++	/*
++	 * Update the per-port timeout.
++	 */
++	uart_update_timeout(port, termios->c_cflag, baud);
++
++	phytium_setup_status_masks(port, termios);
++
++	if (UART_ENABLE_MS(port, termios->c_cflag))
++		phytium_enable_ms(port);
++
++	/* first, disable everything */
++	old_cr = phytium_uart_read(pup, REG_CR);
++	phytium_uart_write(0, pup, REG_CR);
++
++	if (termios->c_cflag & CRTSCTS) {
++		if (old_cr & REG_CR_RTS)
++			old_cr |= REG_CR_RTSEN;
++
++		old_cr |= REG_CR_CTSEN;
++		port->status |= UPSTAT_AUTOCTS | UPSTAT_AUTORTS;
++	} else {
++		old_cr &= ~(REG_CR_CTSEN | REG_CR_RTSEN);
++		port->status &= ~(UPSTAT_AUTOCTS | UPSTAT_AUTORTS);
++	}
++
++	/* Set baud rate */
++	phytium_uart_write(quot & 0x3f, pup, REG_FBRD);
++	phytium_uart_write(quot >> 6, pup, REG_IBRD);
++
++	phytium_uart_write(lcr_h, pup, REG_LCRH_RX);
++	phytium_uart_write(old_cr, pup, REG_CR);
++
++	spin_unlock_irqrestore(&port->lock, flags);
++}
++
++static const char *phytium_type(struct uart_port *port)
++{
++	struct phytium_uart_port *pup =
++		container_of(port, struct phytium_uart_port, port);
++	return pup->port.type == PORT_PHYTIUM ? pup->type : NULL;
++}
++
++static void phytium_release_port(struct uart_port *port)
++{
++	/* Nothing to release ... */
++}
++
++static int phytium_request_port(struct uart_port *port)
++{
++	/* UARTs always present */
++	return 0;
++}
++
++static void phytium_config_port(struct uart_port *port, int flags)
++{
++	if (flags & UART_CONFIG_TYPE) {
++		port->type = PORT_PHYTIUM;
++		phytium_request_port(port);
++	}
++}
++
++static int phytium_verify_port(struct uart_port *port, struct serial_struct *ser)
++{
++	int ret = 0;
++
++	if (ser->type != PORT_UNKNOWN && ser->type != PORT_PHYTIUM)
++		ret = -EINVAL;
++	if (ser->irq < 0 || ser->irq >= nr_irqs)
++		ret = -EINVAL;
++	if (ser->baud_base < 9600)
++		ret = -EINVAL;
++
++	return ret;
++}
++
++static const struct uart_ops phytium_uart_ops = {
++	.tx_empty	= phytium_tx_empty,
++	.set_mctrl	= phytium_set_mctrl,
++	.get_mctrl	= phytium_get_mctrl,
++	.stop_tx	= phytium_stop_tx,
++	.start_tx	= phytium_start_tx,
++	.stop_rx	= phytium_stop_rx,
++	.enable_ms	= phytium_enable_ms,
++	.break_ctl	= phytium_break_ctl,
++	.startup	= phytium_startup,
++	.shutdown	= phytium_shutdown,
++	.set_termios	= phytium_set_termios,
++	.type		= phytium_type,
++	.release_port	= phytium_release_port,
++	.request_port	= phytium_request_port,
++	.config_port	= phytium_config_port,
++	.verify_port	= phytium_verify_port,
++};
++
++static struct phytium_uart_port *uart_ports[UART_NR];
++
++static struct uart_driver phytium_uart = {
++	.owner		= THIS_MODULE,
++	.driver_name	= DRV_NAME,
++	.dev_name	= "ttyFTX",
++	.nr		= UART_NR,
++};
++
++void phytium_unregister_port(struct phytium_uart_port *pup)
++{
++	int i;
++	bool busy = false;
++
++	for (i = 0; i < ARRAY_SIZE(uart_ports); i++) {
++		if (uart_ports[i] == pup)
++			uart_ports[i] = NULL;
++		else if (uart_ports[i])
++			busy = true;
++	}
++
++	if (!busy)
++		uart_unregister_driver(&phytium_uart);
++}
++
++static int phytium_find_free_port(void)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(uart_ports); i++)
++		if (uart_ports[i] == NULL)
++			return i;
++
++	return -EBUSY;
++}
++
++static int phytium_register_port(struct phytium_uart_port *pup)
++{
++	int rc;
++
++	/* Ensure interrupts from this UART are masked and cleared */
++	phytium_uart_write(0, pup, REG_IMSC);
++	phytium_uart_write(0xffff, pup, REG_ICR);
++
++	if (!phytium_uart.state) {
++		rc = uart_register_driver(&phytium_uart);
++		if (rc < 0) {
++			dev_err(pup->port.dev,
++				"Failed to register Phytium PCI UART driver\n");
++			return rc;
++		}
++	}
++
++	rc = uart_add_one_port(&phytium_uart, &pup->port);
++	if (rc)
++		phytium_unregister_port(pup);
++
++	return rc;
++}
++
++static int phytium_uart_probe(struct pci_dev *pdev,
++			      const struct pci_device_id *id)
++{
++	struct phytium_uart_port *pup;
++	int portnr, rc;
++
++	portnr = phytium_find_free_port();
++	if (portnr < 0)
++		return portnr;
++
++	pup = devm_kzalloc(&pdev->dev, sizeof(struct phytium_uart_port),
++			   GFP_KERNEL);
++	if (!pup)
++		return -ENOMEM;
++
++	rc = pcim_enable_device(pdev);
++	if (rc)
++		return rc;
++
++	rc = pcim_iomap_regions_request_all(pdev, 0x01, pci_name(pdev));
++	if (rc)
++		return rc;
++
++	pup->port.iotype = UPIO_MEM32;
++	pup->port.irq = pdev->irq;
++	pup->port.mapbase = pci_resource_start(pdev, 0);
++	pup->port.membase = pcim_iomap_table(pdev)[0];
++	pup->port.ops = &phytium_uart_ops;
++	pup->port.dev = &pdev->dev;
++	pup->port.fifosize = 32;
++	pup->port.flags = UPF_BOOT_AUTOCONF;
++	pup->port.line = portnr;
++
++	uart_ports[portnr] = pup;
++
++	pup->old_cr = 0;
++	snprintf(pup->type, sizeof(pup->type), "pci-uart");
++
++	pci_set_drvdata(pdev, pup);
++
++	return phytium_register_port(pup);
++}
++
++static void phytium_uart_remove(struct pci_dev *pdev)
++{
++	struct phytium_uart_port *pup = pci_get_drvdata(pdev);
++
++	uart_remove_one_port(&phytium_uart, &pup->port);
++	phytium_unregister_port(pup);
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int phytium_uart_suspend(struct device *dev)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++	struct phytium_uart_port *pup = pci_get_drvdata(pdev);
++
++	if (pup)
++		uart_suspend_port(&phytium_uart, &pup->port);
++
++	return 0;
++}
++
++static int phytium_uart_resume(struct device *dev)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++	struct phytium_uart_port *pup = pci_get_drvdata(pdev);
++
++	if (pup)
++		uart_resume_port(&phytium_uart, &pup->port);
++
++	return 0;
++}
++#endif
++
++static SIMPLE_DEV_PM_OPS(phytium_dev_pm_ops, phytium_uart_suspend, phytium_uart_resume);
++
++static const struct pci_device_id pci_ids[] = {
++	{ PCI_VDEVICE(PHYTIUM, 0xdc2e) },
++	{ 0 }
++};
++MODULE_DEVICE_TABLE(pci, pci_ids);
++
++static struct pci_driver phytium_uart_pci_driver = {
++	.name		= DRV_NAME,
++	.probe		= phytium_uart_probe,
++	.remove		= phytium_uart_remove,
++	.driver	= {
++		.pm	= &phytium_dev_pm_ops,
++	},
++	.id_table	= pci_ids,
++};
++
++static int __init phytium_uart_init(void)
++{
++	pr_info("Serial: Phytium PCI UART driver\n");
++
++	return pci_register_driver(&phytium_uart_pci_driver);
++}
++
++static void __exit phytium_uart_exit(void)
++{
++	pci_unregister_driver(&phytium_uart_pci_driver);
++}
++
++module_init(phytium_uart_init);
++module_exit(phytium_uart_exit);
++
++MODULE_AUTHOR("Chen Baozi <chenbaozi@phytium.com.cn>");
++MODULE_DESCRIPTION("Phytium PCI serial port driver");
++MODULE_LICENSE("GPL");
+diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+index ea90e0301..ade16088b 100644
+--- a/include/linux/pci_ids.h
++++ b/include/linux/pci_ids.h
+@@ -3147,4 +3147,6 @@
+ 
+ #define PCI_VENDOR_ID_TRUSTNETIC        0x8088
+ 
++#define PCI_VENDOR_ID_PHYTIUM		0x1db7
++
+ #endif /* _LINUX_PCI_IDS_H */
+diff --git a/include/uapi/linux/serial_core.h b/include/uapi/linux/serial_core.h
+index 851b982f8..c1233a365 100644
+--- a/include/uapi/linux/serial_core.h
++++ b/include/uapi/linux/serial_core.h
+@@ -279,4 +279,10 @@
+ /* Freescale LINFlexD UART */
+ #define PORT_LINFLEXUART	122
+ 
++/* Phytium PCI UART
++ * use bigger value to aviod code confilct
++ * when update in the future.
++ */
++#define PORT_PHYTIUM   200
++
+ #endif /* _UAPILINUX_SERIAL_CORE_H */
