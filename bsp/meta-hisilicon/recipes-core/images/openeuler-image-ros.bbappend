@@ -63,7 +63,7 @@ ros2-wheeltec-robot \
 serial \
 serial-protocol-v1 \
 ultra \
-device_sample \
+device-sample \
 depth-image-proc \
 depthimage-to-laserscan \
 dtof-client-node \
