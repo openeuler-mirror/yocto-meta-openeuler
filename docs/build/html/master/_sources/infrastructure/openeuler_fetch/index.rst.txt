@@ -32,7 +32,17 @@ openeuler_fetch通过以下控制变量来完成相关包下载：
 如何适配其他软件包
 ***************************
 
-在构建openEuler Embedded时经常会引入其他相关包或修改非指定包版本，那么此时该如何做呢？直接修改基线文件即可，内核是例外，接下来我们以busybox为例进行讲解：
+在构建openEuler Embedded时经常会引入其他相关包或修改非指定包版本，那么此时该如何做呢？直接修改基线文件即可，内核是例外，接下来我们分以下几种情况进行讲解。
+
+**情形一：配方名和仓库名一致，我们以busybox为例进行讲解**
+
+我们查看manifest.yaml中busybox的信息
+
+.. code:: 
+
+    busybox:
+        remote_url: https://gitee.com/src-openeuler/busybox.git
+        version: aa2fc58263cf357d0c2f4f30118f3b4614fa25f6
 
 - 如果想要某一个版本的busybox参与构建：在manifest.yaml中将busybox的version进行修改即可
 
@@ -40,10 +50,36 @@ openeuler_fetch通过以下控制变量来完成相关包下载：
 
 - 如果需要其他代码仓的busybox参与构建：同理，直接在manifest.yaml中修改对应的busybox中remote_url即可
 
-- 另外，当构建busybox时需要的依赖并不会是某一款特定包，即不能直接通过depends添加依赖，而仅仅是需要某个路径下的文件，此时需要在bbappend中添加do_fetch:prepend，在该函数中添加需要依赖的包，例如：
+**情形二：配方名和仓库名不一致，我们以libpcre2为例进行讲解**
 
-::
+我们查看manifest.yaml中libpcre2的git信息
 
+.. code:: 
+
+    pcre2:
+        remote_url: https://gitee.com/src-openeuler/pcre2.git
+        version: 82f14dfaf634ca8ae076aef7a19c65136c4e4a3d
+
+可以看到其key键是pcre2，那么这种情况是因为其bbappend文件中设置了OPENEULER_REPO_NAME或OPENEULER_LOCAL_NAME，关于这两个变量的使用请参考上文“openeuler_fetch运行机制”，这里不再详述，下面附上其代码范例：
+
+.. code:: 
+
+    # main bbfile: yocto-poky/meta/recipes-support/libpcre/libpcre2_10.36.bb
+
+    # version in openeuler
+    PV = "10.42"
+    LIC_FILES_CHKSUM = "file://LICENCE;md5=41bfb977e4933c506588724ce69bf5d2"
+
+    OPENEULER_REPO_NAME = "pcre2"
+
+
+前文提到，如果设置了OPENEULER_REPO_NAME或OPENEULER_LOCAL_NAME则会以这两个变量内容为准进行仓库信息查找。
+
+**情形三：构建依赖不通过depends指定，而是通过SRC_URI指定**
+
+构建一个软件包时可能会从多个仓下获取源码，即不能直接通过depends添加依赖，此时需要在bbappend中添加do_fetch:prepend，在该函数中添加需要依赖的包，例如：
+
+.. code::
 
     python do_fetch:prepend() {
         repoList = [
