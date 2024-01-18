@@ -55,14 +55,9 @@ hirobot-tof-plane-seg \
 person-position-ack \
 robot-charge-control \
 robot-init-pose \
-bot-bringup \
-bot-model \
-diff-driver \
 robot-bringup \
 ros2-wheeltec-robot \
 serial \
-serial-protocol-v1 \
-ultra \
 device_sample \
 depth-image-proc \
 depthimage-to-laserscan \
