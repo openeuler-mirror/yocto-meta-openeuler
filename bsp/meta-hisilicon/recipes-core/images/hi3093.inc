@@ -1,1 +1,1 @@
-require hi1711.inc
+# ref:   openeuler-image-common.inc   require recipes-core/images/${MACHINE}.inc
