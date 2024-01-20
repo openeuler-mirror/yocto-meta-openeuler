@@ -22,6 +22,7 @@ openEuler Embeddedd的核心构建系统是基于Yocto，但又根据自身的�
    development.rst
    poky4.0.rst
    addpackage_guide.rst
+   image_develop.rst
    container_environment.rst
    priority.rst
    sstate.rst
