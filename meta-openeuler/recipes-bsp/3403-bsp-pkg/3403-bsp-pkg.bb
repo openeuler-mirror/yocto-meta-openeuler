@@ -14,15 +14,19 @@ SRC_URI = " \
         file://HiEuler-driver/drivers/S90AutoRun \
         file://HiEuler-driver/drivers/pinmux.sh \
         file://HiEuler-driver/drivers/env.tar.gz \
+        file://HiEuler-driver/drivers/can-tools.tar.gz \
+        file://HiEuler-driver/mcu \
 "
 
 S = "${WORKDIR}/HiEuler-driver/drivers"
 
 INSANE_SKIP:${PN} += "already-stripped"
-FILES:${PN} = "${sysconfdir} /usr/bin /ko /vendor"
+FILES:${PN} = "${sysconfdir} /usr/bin /ko /vendor /usr/sbin /firmware ${libdir}"
 
 do_install () {
         install -d ${D}/usr/bin
+	install -d ${D}${libdir}
+	install -d ${D}/firmware
         install -d ${D}${sysconfdir}/init.d
         install -d ${D}${sysconfdir}/rc5.d
 
@@ -53,6 +57,14 @@ do_install () {
 	install -m 0755 ${WORKDIR}/env/fw_env.config ${D}/etc/
 	install -m 0755 ${WORKDIR}/env/fw_printenv ${D}/usr/bin/
 	install -m 0755 ${WORKDIR}/env/fw_setenv ${D}/usr/bin/
+
+	cp -r ${WORKDIR}/can-tools/canutils/sbin ${D}/usr/
+	cp -r ${WORKDIR}/can-tools/canutils/bin/* ${D}/usr/bin/
+	cp -r ${WORKDIR}/can-tools/libsocketcan/lib/* ${D}${libdir}
+
+	install -m 0755 ${WORKDIR}/HiEuler-driver/mcu/load_riscv ${D}/usr/sbin
+	install -m 0755 ${WORKDIR}/HiEuler-driver/mcu/virt-tty ${D}/usr/sbin
+	install -m 0755 ${WORKDIR}/HiEuler-driver/mcu/LiteOS.bin ${D}/firmware
 }
 
 INHIBIT_PACKAGE_STRIP = "1"
