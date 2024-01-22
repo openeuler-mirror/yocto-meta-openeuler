@@ -28,3 +28,7 @@ do_prepare_lrelease() {
 do_prepare_recipe_sysroot[postfuncs] += "do_prepare_lrelease"
 
 FILES:${PN} += "/usr/local/*"
+
+RDEPENDS:${PN} += " \
+    liberation-fonts \
+    "
