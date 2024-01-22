@@ -39,8 +39,6 @@ RDEPENDS:${PN} = "libgcc-external"
 # extra cmake options
 EXTRA_OECMAKE = " \
 	-DDEMO_TARGET=mica_demo \
-    -DCONFIG_RING_BUFFER=y \
-    -DMICA_DEBUG_LOG=y \
 	"
 
 FILES:${PN} = " \
