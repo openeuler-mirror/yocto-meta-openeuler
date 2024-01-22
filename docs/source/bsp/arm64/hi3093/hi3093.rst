@@ -1,153 +1,145 @@
-Hi3093 镜像构建与使用
+Hi3093 镜像构建与说明                                                              
 #####################
+ 
+本章主要介绍openEuler Embedded中Hi3093系列板卡的镜像构建，使用和特性介绍。
+ 
+当前版本支持官方mpu_solution BSP源码的构建集成，并生成可用于Hi3093 EMMC烧录的镜像部署件。
 
-本章主要介绍openEuler Embedded中HI3093系列板卡的镜像构建，使用和特性介绍。
 
-
-HI3093镜像构建指导
+Hi3093硬件介绍
 ==================
 
-1. 参照 :ref:`openeuler_embedded_oebuild` 完成oebuild安装，并详细了解构建过程
+   参考: `HI3093 介绍 <https://www.hisilicon.com/cn/products/MCU/A2MPU/Hi3093>`_
 
-2. 依次执行以下命令完成构建
+
+镜像构建与使用
+=================
+
+1. 构建机器和oebuild工具准备：
+
+ （1）准备一个ubuntu x86构建主机环境（建议22.04，依赖Python>=3.8，配置建议预留200G存储）
+
+ （2）安装oebuild（具体oebuild用法可参见 :ref:`openeuler_embedded_oebuild` ），注意以普通用户安装：
 
    .. code-block:: console
 
-      # 生成hi3093配置文件
-      oebuild generate -p hi3093 -d hi3093
+      apt-get install python3 python3-pip
+      pip install oebuild==0.0.27
 
-      # 进入构建交互终端
+
+ （3）准备oebuild的工具依赖（docker）：
+
+   .. code-block:: console
+
+      sudo apt install docker docker.io -y
+      sudo groupadd docker
+      sudo usermod -a -G docker $(whoami)
+      sudo systemctl-reload && systemctl restart docker
+      sudo chmod o+rw /var/run/docker.sock
+
+
+2. oebuild构建代码准备：
+
+ （1）初始化构建分支代码（请不要以root及sudo权限执行）：
+
+   .. code-block:: console
+
+      oebuild init sp3-buildwork -b openEuler-22.03-LTS-SP3
+      # 说明：
+      #   * sp3-buildwork为存放目录，
+      #   * openEuler-22.03-LTS-SP3为当前支持本构建的源码分支，
+      # 假设执行路径位于/home/user/，执行后根据提示进入对应目录
+
+      cd /home/user/sp3-buildwork
+      oebuild update
+      #执行完成后，将在 /home/user/sp3-buildwork/src/ 目录下载好主构建源码，并初始化构建虚拟环境。
+
+
+ （2）准备mpu_solution源码：
+
+   获取Hi3093的mpu_solution源码授权，解压并将对应mpu_solution文件夹拷贝到src目录，如
+
+   .. code-block:: console
+
+      /home/user/sp3-buildwork/src/mpu_solution
+
+ （3）初始化Hi3093构建源码及配置：
+
+   .. code-block:: console
+
+      cd /home/user/sp3-buildwork
+      oebuild generate -p hi3093 -d build_hi3093
+      # 以上命令可追加-f参数，通过oebuild generate -l查看支持的配置，比如-f openeuler-rt开启软实时
+
+
+3. 镜像构建和部署
+
+ （1）进入构建目录并构建：
+
+   .. code-block:: console
+
+      cd /home/user/sp3-buildwork/build_hi3093
       oebuild bitbake
-
-      # 构建镜像
+      # oebuild bitbake执行后将进入构建虚拟环境
       bitbake openeuler-image
 
-      # 构建sdk
-      bitbake openeuler-image -c populate_sdk
 
-   二进制介绍：
-
-   - ``openeuler-glibc-x86_64-openeuler-image-aarch64-hi3093-toolchain-*.sh``: SDK工具链
-
-   - ``uImage``: 适用于 HI3093 的 openEuler 内核镜像
-
-   - ``openeuler-image-hi3093-*.rootfs.gpio.gz``: 适用HI3093的根文件系统
-
-.. note::
-   构建软实时镜像，混合部署镜像请参考对应特性章节，在oebuild初始化时通过 ``-f features`` 添加对应的 feature。
-
-____
-
-根文件系统解压方法
-==================
-
-若希望对根文件系统进行修改，例如添加新开发的驱动或软件，可以通过以下步骤解开文件系统，进行修改后重新打包：
-
-1. 解压 rootfs
-
-   .. code-block:: shell
-
-      # 将根文件系统解压到 rootfs 中
-      $ mkdir ${WORKDIR}/rootfs
-      $ cd ${WORKDIR}/rootfs
-      $ zcat <...>/openeuler-image-hi3093-*.rootfs.cpio.gz | cpio -dim
-
-   解压完成后，可以在 rootfs 目录下查看hi3093根文件系统的文件或者自行添加内容。
-
-2. 重新打包
-
-   .. code-block:: shell
-
-     # 将根文件系统文件打包为cpio
-     $ cd ${WORKDIR}/rootfs
-     $ find . | cpio -H newc -o --quiet | gzip -c --quiet > ../openeuler-image-hi3093.cpio.gz
-
-____
-
-Hi3093 镜像烧写方法
-====================
-
-目前文件系统烧录升级仅支持在原有核心板系统上进行。
-
-1. 通过网线连接核心板，修改对应的以太网卡地址为 ``192.168.0.10``
-
-2. 通过rj45转usb线连接核心板，上电启动至uboot阶段，键盘输入 ``<ctrl> + b`` ，进入uboot命令行
+ （2）构建完成后，输出件见/home/user/sp3-buildwork/build_hi3093/output/[时间搓]，内容如下
 
    .. code-block:: console
 
-     # 往寄存器 0x8740148 写入1，然后核心板会进入重启
-     => reg_wr 0x8740148 1
+      ├── Hi3093_ext4fs.img
+      ├── Hi3093_ext4fs_cms.bin
+      ├── u-boot_rsa_4096.bin
+      ├── openeuler-image-hi3093-xxx.rootfs.cpio.gz
+      └── zImage
 
-3. 开机后执行 ``ctrl+b`` ，进入L1 FW串口，根据0839寄存器前两位的值,例如前两位为6和4，输入
+   .. note::
 
-   .. code-block:: console
+      目录中的Hi3093_ext4fs.img、Hi3093_ext4fs_cms.bin、u-boot_rsa_4096.bin是emmc烧录使用的部署件
 
-     # 打开固件更新
-     fw_upgrade 2 6 4
+      烧录时请配合官方提供的l0fw_rsa_4096.bin和l1fw_rsa_4096.bin共同使用（烧录5件套）。
 
-     # 继续在 L1FW 执行重启
-     reboot 0 3
+      openeuler-image-hi3093-xxx.rootfs.cpio.gz为cpio.gz格式的可解压文件系统，作为调试备用。
 
-4. 重启以后进入原生系统，输入账户及密码并配置网络：
+      zImage为未加工的原始内核压缩文件。
 
-   .. code-block:: console
+ （3）emmc镜像烧录：
 
-     # 系统初始化
-     sh /hi1711_init.sh
-
-     # 配置网络
-     ifconfig eth2 192.168.0.11
-
-5. 从host连接到核心板并把部署件上传到核心板/tmp目录下：
+   按照Hi3093 mpu_solution烧录指导，将如下烧录5件套放置于单板/tmp目录
 
    .. code-block:: console
 
-      scp uImage openeuler-image-hi3093.rootfs.cpio.gz hi3093.dtb root@192.168.0.11:/tmp/
+      # 烧录5件套:
+      Hi3093_ext4fs.img
+      Hi3093_ext4fs_cms.bin
+      u-boot_rsa_4096.bin
+      l0fw_rsa_4096.bin
+      l1fw_rsa_4096.bin
 
-6. 关闭 writeProtect
+   .. note::
+        
+      如果使用本镜像烧录过，可通过网络进行传输
+
+      本镜像生成Hi3093 bsp对应驱动位于/lib/modules/hi3093目录，请先插入对应网卡驱动模块并配置网络，如
+
+      .. code-block:: console
+      
+         insmod /lib/modules/hi3093/gmac_drv.ko
+         ifconfig eth0 192.168.0.11
+
+
+   执行如下命令进行烧录并重启
 
    .. code-block:: console
 
-      # 进入bmcdfx
-      bmcdfx
+      cd /tmp
+      sh /hi3093_upgrade.sh 4096
+      reboot
 
-      # 关闭456分区写保护
-      emmc disable writeProtect 4
-      emmc disable writeProtect 5
-      emmc disable writeProtect 6
 
-      # 输入q退出
-      q
+   .. note::
 
-7. 替换升级镜像
+      注意选择emmc模式烧录，如使用标准Hi3093的mpu_solution，可参见Hi3093 mpu_solution文档拨码开关配置（1000）
 
-   .. code-block:: console
 
-     # 重新挂载
-     mount -o remount rw /
-
-     # 替换boot下的部署件
-     rm /boot/* ;cd /boot/ ;cp /tmp/* ./ ;chmod 777 *
-
-     # 强制写入硬盘并重启
-     sync ;reboot
-
-8. 重启后看到 hi3093 命令行即成功升级固件。
-
-.. note::
-   目前看门狗、网卡等驱动均未开源，需要请联系海思厂家。
-
-____
-
-hi3093镜像特性介绍
-====================
-
-   1. hi3093硬件特性，参考: `HI1711 介绍 <https://www.hisilicon.com/cn/products/Kunpeng/BMC/Hi1711>`_
-
-      目前已使能串口设备，可以访问uart，其他硬件特性目前支持:GPU、TF卡、以太网卡、USB Host、SPI、VGA、看门狗等驱动均未开源，需要请联系厂家。
-
-   2. 支持百级嵌入式软件包，见软件包功能列表。
-
-   3. 支持部署rt实时内核。
-
-   4. 支持Uniproton混合部署功能。
