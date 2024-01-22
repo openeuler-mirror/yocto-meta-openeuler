@@ -9,7 +9,7 @@ Rockchip板卡镜像构建与使用
 Rockchip镜像构建指导
 =====================
 
-- 参照 :ref: `oebuild_install` 完成oebuild安装，并详细了解构建过程
+- 参照 :ref:`oebuild安装步骤<oebuild_install>` 完成oebuild安装，并详细了解构建过程
 
 - 定制化设备：
 

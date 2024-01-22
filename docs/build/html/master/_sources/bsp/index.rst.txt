@@ -18,3 +18,4 @@
 
    arm64/index
    x86/index
+   riscv/index
