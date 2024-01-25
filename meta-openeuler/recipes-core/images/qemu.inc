@@ -1,8 +1,3 @@
-# common image fs type for qemu targets
-IMAGE_FSTYPES = "cpio.gz"
-IMAGE_FSTYPES_DEBUGFS = "cpio.gz"
-INITRAMFS_MAXSIZE = "524288"
-
 delete_unneeded_from_rootfs() {
     set -x
     test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
@@ -32,5 +27,3 @@ copy_openeuler_distro() {
 
 IMAGE_PREPROCESS_COMMAND += "delete_unneeded_from_rootfs;"
 IMAGE_POSTPROCESS_COMMAND += "copy_openeuler_distro;"
-
-IMAGE_CLASSES += "qemuboot"
