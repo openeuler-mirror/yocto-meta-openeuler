@@ -119,7 +119,7 @@ python do_openeuler_fetch() {
             manifest_list = get_manifest(d.getVar("MANIFEST_DIR"))
             if localName in manifest_list:
                 repo_item = manifest_list[localName]
-                download_repo(repo_dir = repo_dir, repo_url = repo_item['remote_url'], version = repo_item['version'])
+                download_repo(d = d, repo_dir = repo_dir, repo_url = repo_item['remote_url'], version = repo_item['version'])
         else:
             bb.fatal("openEuler Embedded build need manifest.yaml")
     except GitError:
@@ -155,9 +155,10 @@ def init_repo_dir(repo_dir):
     return repo
 
 # init repo in repo_dir from manifest file
-def download_repo(repo_dir, repo_url ,version = None):
+def download_repo(d, repo_dir, repo_url ,version = None):
     import git
     from git import GitCommandError
+    import subprocess
 
     lock_file = os.path.join(repo_dir, "file.lock")
     lf = bb.utils.lockfile(lock_file, block=True)
@@ -172,6 +173,25 @@ def download_repo(repo_dir, repo_url ,version = None):
     if remote is None:
         remote_name = "upstream"
         remote = git.Remote.add(repo = repo, name = remote_name, url = repo_url)
+
+    # This download function is only used for downloading oee_archive which placed tar package, it can
+    # achieve to download what you want, just you need, no more others. In order to do this, we use git 
+    # sparse-checkout, the simply description about it is that Reduce your working tree to a subset of
+    # tracked files, alse you can see more detail by visiting https://git-scm.com/docs/git-sparse-checkout
+    def oee_archive_download(oee_archive_dir:str, subdir: str):      
+        res = subprocess.run("git sparse-checkout init", shell=True, stderr=subprocess.PIPE, text=True, cwd=oee_archive_dir)
+        if res.returncode != 0:
+            bb.error(res.stderr)
+            bb.fatal("in oee_archive run git sparse-checkout init faild")
+        res = subprocess.run(f"git sparse-checkout list | grep {subdir}", shell=True, cwd=oee_archive_dir)
+        if res.returncode == 0:
+            return
+        res = subprocess.run(f"git sparse-checkout add {subdir}", shell=True, cwd=oee_archive_dir)
+        if res.returncode != 0:
+            bb.fatal(f"in oee_archive run git sparse-checkout add {subdir} faild")
+
+    if "oee_archive" in repo_url:
+        oee_archive_download(oee_archive_dir = repo_dir, subdir = d.getVar("BPN"))
 
     try:
         repo.commit(version)
