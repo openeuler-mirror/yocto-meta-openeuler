@@ -19,3 +19,6 @@ DEPENDS_remove = "gdk-pixbuf"
 do_install_append() {
     install -m 644 ${WORKDIR}/openeuler.png ${D}${datadir}/weston/
 }
+
+DEPENDS:append = " libxml2 "
+

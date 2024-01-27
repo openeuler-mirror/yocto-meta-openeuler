@@ -59,6 +59,7 @@ SRC_URI[tarball.sha256sum] = "174091ce5f2c02123f76d546622b14078097af105870086d18
 # glib needs meson, meson needs python3-native
 # here use nativesdk's meson-native and python3-native
 DEPENDS_remove += "python3-native"
+DEPENDS:append = " python3-jinja2-native "
 
 pkg_postinst_udev-hwdb () {
     # current we don't support qemuwrapper to pre build the config for rootfs
