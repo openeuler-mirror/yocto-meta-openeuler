@@ -2,14 +2,10 @@
 # when LIVE_ROOTFS_TYPE defined, bug may come out in poky, so just use default value ext4 in image-live.bbclass.
 # notice we need MACHINE_FEATURES += "efi" in machine conf
 IMAGE_FSTYPES:append:aarch64 = " iso"
-IMAGE_FSTYPES:append:x86-64 = " iso"
 IMAGE_FSTYPES:remove:raspberrypi4 = "iso"
-INITRD_IMAGE_LIVE = "openeuler-image-live"
 
 # notice: IMAGE_FEATURE configs such as IMAGE_FSTYPES should be defined before openeuler-image-common.inc(before core-image and image.bbclass)
 require recipes-core/images/openeuler-image-common.inc
-# package sdk
-require recipes-core/images/openeuler-image-sdk.inc
 require clang-sdk.inc
 
 # packages added to rootfs and target sdk

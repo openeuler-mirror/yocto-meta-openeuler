@@ -1,7 +1,5 @@
 # notice: IMAGE_FEATURE configs such as IMAGE_FSTYPES should be defined before openeuler-image-common.inc(before core-image and image.bbclass)
 require openeuler-image-common.inc
-# package sdk
-require openeuler-image-sdk.inc
 
 # packages added to rootfs and target sdk
 # put packages allowing a device to boot into "packagegroup-core-boot"

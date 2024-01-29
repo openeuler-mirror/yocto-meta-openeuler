@@ -1,4 +1,4 @@
-#set IMAGE_LOCALES_ARCHIVE to 0 and unset SDKIMAGE_LINGUAS, to avoid run generate_locale_archive()
+# set IMAGE_LOCALES_ARCHIVE to 0 and unset SDKIMAGE_LINGUAS, to avoid run generate_locale_archive()
 IMAGE_LOCALES_ARCHIVE = "0"
 # currently we don't install language configurations
 SDKIMAGE_LINGUAS = ""
@@ -6,7 +6,14 @@ SDK_RELOCATE_AFTER_INSTALL = "0"
 
 export SDK_OS = "linux"
 
-SDK_DEPENDS:remove = "${@' '.join(["%s-qemuwrapper-cross" % m for m in d.getVar("MULTILIB_VARIANTS").split()])}"
+# no need generate host packages, we directly use them in docker env, default in populate_sdk_base.bbclass
+TOOLCHAIN_HOST_TASK:remove = "nativesdk-packagegroup-sdk-host"
+
+# use prebuilt tools build
+SDK_DEPENDS:remove = "${@['', '${SDK_ARCHIVE_DEPENDS} cross-localedef-native']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
+
+# do not need nativesdk-glibc-locale in external toolchain build
+SDK_DEPENDS:remove:tcmode-external = "nativesdk-glibc-locale"
 
 copy_opeueuler_sdk() {
    test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
@@ -59,16 +66,10 @@ add_include_link() {
     cd -
 }
 
-#functions added to last after sdk has been created
+# functions added to last after sdk has been created
 SDK_POSTPROCESS_COMMAND += "copy_opeueuler_sdk;"
-#functions prepend to the front before sdk has been packaged
+# functions prepend to the front before sdk has been packaged
 SDK_POSTPROCESS_COMMAND =+ "delete_bin_from_sdk; add_sysroot_link; add_include_link;"
-
-# host nativesdk packages added to sdk
-TOOLCHAIN_HOST_TASK = " \
-meta-environment-${MACHINE} \
-gcc-external-cross-canadian-${TRANSLATED_TARGET_ARCH} \
-"
 
 
 # extra target packages added to sdk
@@ -92,6 +93,3 @@ openamp-dev \
 libmetal-dev \
 sysfsutils-dev \
 "
-
-# do not need nativesdk-glibc-locale in external toolchain build
-SDK_DEPENDS:remove = "nativesdk-glibc-locale"

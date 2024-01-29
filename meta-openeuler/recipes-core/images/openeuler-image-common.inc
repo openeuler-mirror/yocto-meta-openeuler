@@ -1,4 +1,6 @@
-include recipes-core/images/${MACHINE}.inc
+require recipes-core/images/openeuler-image-sdk.inc
+
+# openeuler standard image packages
 IMAGE_INSTALL = " \
 packagegroup-core-boot \
 packagegroup-core-base-utils \
@@ -18,16 +20,13 @@ LICENSE = "MIT"
 
 inherit core-image extrausers
 
-# override the value in core-image.bbclass
-# FEATURE_PACKAGES_tools-debug = ""
-
 # by default user should reset root password at first login
 # although the default password is empty, the password policy
 # will require reset password immediately
 OPENEUELR_IMAGE_USERS ?= " \
     usermod -p '' root; \
     passwd-expire root; \
-                    "
+    "
 # by default, allow root login and empty password from ssh
 # because of the configuration of OPENEUELR_IMAGE_USERS
 # root password will be required to reset at first login
@@ -41,9 +40,8 @@ EXTRA_USERS_PARAMS = '${@bb.utils.contains_any("IMAGE_FEATURES", [ 'debug-tweaks
 # so packagegroup-core-tools-debug(gdb and gdbserver) will be included.
 # For image which is used for deployment, and debug related functions are not required, pls
 # remove debug-tweaks and tool_debug from IMAGE_FEATURES
-# FEATURE_PACKAGES_tools-debug in image.bbclass may do similar work, but her override it to
-# meet openeuler embedded's need.
-IMAGE_INSTALL:append = " ${@bb.utils.contains_any("IMAGE_FEATURES", [ 'debug-tweaks', 'tools_debug' ], "packagegroup-core-tools-debug", "",d)}"
+FEATURE_PACKAGES_debug-tweaks = "packagegroup-core-tools-debug"
+
 
 # as prebuilt external toolchain (including glibc) is the default toolchain, so need to remove
 # the packagegroup-core-standalone-sdk-target which is designed for native toolchain
@@ -54,15 +52,14 @@ TOOLCHAIN_TARGET_TASK:remove:tcmode-external = "${@multilib_pkg_extend(d, 'packa
 
 
 ### prebuilt tools use
+# no depends on some native tools: cross-localdef-native
+DEPENDS:remove = "${@['', 'cross-localedef-native']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
+
 # do_rootfs not depends to ldconfig-native as prebuilt tools provided it
 # learn more about LDCONFIGDEPEND in image.bbclass
 LDCONFIGDEPEND:openeuler-prebuilt = ""
 
-# no depends on some native tools: cross-localdef-native
-DEPENDS:remove = "${@['', 'cross-localedef-native']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
-SDK_DEPENDS:remove = "${@['', '${SDK_ARCHIVE_DEPENDS} cross-localedef-native']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
-
-# rpm depends
+# rpm depends in rootfs_rpm.bbclass
 RPMROOTFSDEPENDS:openeuler-prebuilt = ""
 
 # rootfs_rpm.bbclass line 14
@@ -79,13 +76,15 @@ OUTPUT_DIR = "${TOPDIR}/output/${OUTPUTTIME}"
 # Ignore how TOPDIR is computed
 OUTPUT_DIR[vardepsexclude] = "TOPDIR"
 
-IMAGE_PREPROCESS_COMMAND += "set_permissions_from_rootfs;"
 
+# set file permission for secure configuration
 set_permissions_from_rootfs() {
    cd "${IMAGE_ROOTFS}"
-   # set file permission for secure configuration
    chmod 750 ./etc/init.d
    cd -
 }
 
-DISTRO_FEATURES += "${TCLIBC}"
+IMAGE_PREPROCESS_COMMAND += "set_permissions_from_rootfs;"
+
+# specific machine configuration
+include recipes-core/images/${MACHINE}.inc

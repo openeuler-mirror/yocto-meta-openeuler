@@ -1,7 +1,6 @@
 SUMMARY = "A small image just capable of openEuler Embedded's mcs feature"
 
 require openeuler-image-common.inc
-require openeuler-image-sdk.inc
 
 # by default, mcs image needs a modified device tree for reserved resources
 inherit features_check qemuboot-mcs-dtb
