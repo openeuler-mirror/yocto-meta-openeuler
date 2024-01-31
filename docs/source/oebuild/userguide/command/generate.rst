@@ -210,3 +210,13 @@
 .. code-block:: console
 
     oebuild generate -df
+
+当不输入任何参数时，会进入命令行菜单选择界面。
+
+.. code-block:: console
+
+    oebuild generate
+
+具体界面如下图所示:
+
+.. image:: ../../../_static/images/generate/oebuild-generate-select.png

@@ -82,6 +82,16 @@ meta-clang层中主要起作用的是clang.bbclass文件，该文件用来控制
 
       oebuild generate -p platform -d build_direction -t /path/to/clang-llvm-15.0.3 -f clang
 
+   除了使用上述命令进行配置文件生成，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，效果跟上述命令相同。
+
+   .. code-block:: console
+
+       oebuild generate
+
+   具体界面如下图所示:
+
+   .. image:: ../_static/images/generate/oebuild-generate-select.png
+
    键入 ``oebuild bitbake`` 进入容器环境后，拷贝arm64架构GCC库至编译器目录，
 
    ``/usr1/openeuler/native_gcc/`` 为oebuild默认挂载的编译器目录：
