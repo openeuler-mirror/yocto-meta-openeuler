@@ -103,3 +103,11 @@ SRC_URI += " \
 SRC_URI:append = " \
            file://0008-Define-alignof-using-_Alignof-when-using-C11-or-newe.patch \
            "
+
+# fix bug: in OEE, the basic library path for riscv64 is lib64/lp64d.
+# During building gdb, this directory will be deleted, but the empty
+# lib64/ directory is not deleted, resulting in packaging issues.
+# So, here remove it.
+do_install:append:riscv64() {
+	rm -rf ${D}/usr/lib64
+}
