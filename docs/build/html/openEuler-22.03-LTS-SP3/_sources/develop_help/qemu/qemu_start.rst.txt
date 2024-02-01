@@ -75,11 +75,12 @@ QEMU使用
 4. 使能网络场景
 ===============
 
+.. _qemu_local_network:
+
+使能本地网络
+----------------
+
    通过 QEMU 的 ``virtio-net`` 和宿主机上的虚拟网卡，可以实现宿主机和 openEuler Embedded 之间的网络通信，之后可以通过 ``scp`` 实现宿主机和 openEuler Embedded 传输文件。
-
-   .. note::
-
-      如需openEuler Embedded借助宿主机访问互联网，则需要在宿主机上建立网桥，此处不详述，如有需要，请自行查阅相关资料。
 
    **Step1：宿主上建立虚拟网卡**
 
@@ -135,6 +136,100 @@ QEMU使用
         $ ping 192.168.10.1
 
      如能ping通，则宿主机和openEuler Embedded之间的网络是连通的。
+
+.. _qemu_internet_nat:
+
+使能互联网
+--------------
+
+如果宿主机可以与互联网连接，则可以通过NAT模式，与互联网连接。
+   
+   **Step1：在宿主机添加新的网桥**
+
+   NAT模式的网络包转发的流程如下：
+
+   .. code-block:: console
+
+      # 出栈
+      虚拟机网卡（eth0）-> 虚拟机网卡（vnet0）->网桥（br）---- iptable forward -----宿主机网卡（enp1s0）->发出
+      # 入栈
+      虚拟机网卡（eth0）<- 虚拟机网卡（vnet0）<-网桥（br）---- iptable forward -----宿主机网卡（enp1s0）<-收到
+   
+   因此，首先需要在宿主机上添加一个新的网桥，如下：
+
+   .. code-block:: console
+
+      # 新增一个网桥
+      $ brctl addbr br_qemu
+      # 网桥作为QEMU中openEuler Embedded的网关，需要配置IP地址
+      $ ifconfig br_qemu 192.168.122.1/24
+      # 启动网桥
+      $ ifconfig br_qemu up
+      # 将ip forward功能打开
+      $ echo 1 >> /proc/sys/net/ipv4/ip_forward 
+
+   其中，网桥名称 ``br_qemu`` 可以被更改，IP地址可以更换为任意的未被占用的局域网地址。
+   
+   **Step2：配置iptables**
+
+   在宿主机中，执行如下命令：
+
+   .. code-block:: console
+
+      $ iptables -A FORWARD -i br_qemu -o enp1s0 -j ACCEPT
+      $ iptables -A FORWARD -o br_qemu -i enp1s0 -j ACCEPT
+      $ iptables -t nat -A POSTROUTING -s 192.168.122.0/24 -j MASQUERADE # NAT地址转换
+
+   其中，enp1s0为宿主机的网卡名称，需要根据实际情况进行修改。
+
+   **Step3：启动QEMU时添加netdev**
+
+   以aarch64(ARM Cortex A53)为例，运行如下命令：
+
+   .. code-block:: console
+
+      $ sudo qemu-system-aarch64 -M virt,gic-version=3 -m 1G -cpu cortex-a53 \
+         -nographic -smp 4 -kernel zImage -dtb qemu_mcs.dtb \
+         -netdev bridge,br=br_qemu,id=net0 -device virtio-net-pci,netdev=net0 \
+         -initrd rootfs.cpio.gz -nographic 
+
+   其中， ``-netdev`` 选项中 ``br`` 参数为宿主机上新建的网桥名称。
+   ``-device`` 选项中 ``netdev`` 参数为 ``-netdev`` 指定的 ``id``，
+   指定了设备应该连接到的后端。
+
+   **Step4：配置openEuler Embedded网卡**
+
+   openEuler Embedded登陆后，用 ``ifconfig`` 查看网卡名称，如 ``eth0`` 。
+   执行如下命令配置网卡的IP地址和ip route的默认网关：
+
+   .. code-block:: console
+
+      $ ifconfig enp0s1 192.168.122.11 netmask 255.255.255.0
+      $ ip route add default via 192.168.122.1 dev enp0s1
+   
+   其中，192.168.122.11可以更改为任意的未被占用的局域网地址。但是，需要保证与宿主机的网桥在同一个网段。
+   ``ip route`` 添加默认网关的作用是，当openEuler Embedded需要访问互联网时，将数据包转发到宿主机的网桥上，再由宿主机的网桥转发到互联网。
+
+   **Step5：配置DNS**
+
+   在openEuler Embedded中，执行如下命令：
+
+   .. code-block:: console
+
+      # 修改DNS配置文件
+      $ vi /etc/resolv.conf
+      # 添加DNS服务器地址
+      $ nameserver 1.2.3.4
+
+   **Step6：确认网络连通**
+
+   在openEuler Embedded中，执行如下命令：
+
+   .. code-block:: console
+
+      $ ping www.baidu.com
+   
+   如能ping通，则说明openEuler Embedded可以访问互联网。
 
 5. 使能共享文件系统场景
 =======================

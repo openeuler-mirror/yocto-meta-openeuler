@@ -59,8 +59,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#openeuler-embedded">2. 获取openEuler Embedded镜像</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id3">3. 使用QEMU运行镜像</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id4">4. 使能网络场景</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id5">5. 使能共享文件系统场景</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id6">附录：QEMU常用的启动参数</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">5. 使能共享文件系统场景</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">附录：QEMU常用的启动参数</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="qemu_debug.html">QEMU调试</a></li>
@@ -175,12 +175,10 @@
 </section>
 <section id="id4">
 <h2>4. 使能网络场景<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<section id="qemu-local-network">
+<span id="id5"></span><h3>使能本地网络<a class="headerlink" href="#qemu-local-network" title="Permalink to this headline">¶</a></h3>
 <blockquote>
 <div><p>通过 QEMU 的 <code class="docutils literal notranslate"><span class="pre">virtio-net</span></code> 和宿主机上的虚拟网卡，可以实现宿主机和 openEuler Embedded 之间的网络通信，之后可以通过 <code class="docutils literal notranslate"><span class="pre">scp</span></code> 实现宿主机和 openEuler Embedded 传输文件。</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>如需openEuler Embedded借助宿主机访问互联网，则需要在宿主机上建立网桥，此处不详述，如有需要，请自行查阅相关资料。</p>
-</div>
 <p><strong>Step1：宿主上建立虚拟网卡</strong></p>
 <blockquote>
 <div><p>在宿主机上需要建立名为tap0的虚拟网卡，可以借助脚本实现，创建 <code class="file docutils literal notranslate"><span class="pre">/etc/qemu-ifup</span></code> 脚本，具体内容如下：</p>
@@ -228,8 +226,77 @@
 </div></blockquote>
 </div></blockquote>
 </section>
-<section id="id5">
-<h2>5. 使能共享文件系统场景<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<section id="qemu-internet-nat">
+<span id="id6"></span><h3>使能互联网<a class="headerlink" href="#qemu-internet-nat" title="Permalink to this headline">¶</a></h3>
+<p>如果宿主机可以与互联网连接，则可以通过NAT模式，与互联网连接。</p>
+<blockquote>
+<div><p><strong>Step1：在宿主机添加新的网桥</strong></p>
+<p>NAT模式的网络包转发的流程如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>出栈
+<span class="go">虚拟机网卡（eth0）-&gt; 虚拟机网卡（vnet0）-&gt;网桥（br）---- iptable forward -----宿主机网卡（enp1s0）-&gt;发出</span>
+<span class="gp"># </span>入栈
+<span class="go">虚拟机网卡（eth0）&lt;- 虚拟机网卡（vnet0）&lt;-网桥（br）---- iptable forward -----宿主机网卡（enp1s0）&lt;-收到</span>
+</pre></div>
+</div>
+<p>因此，首先需要在宿主机上添加一个新的网桥，如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>新增一个网桥
+<span class="gp">$ </span>brctl addbr br_qemu
+<span class="gp"># </span>网桥作为QEMU中openEuler Embedded的网关，需要配置IP地址
+<span class="gp">$ </span>ifconfig br_qemu <span class="m">192</span>.168.122.1/24
+<span class="gp"># </span>启动网桥
+<span class="gp">$ </span>ifconfig br_qemu up
+<span class="gp"># </span>将ip forward功能打开
+<span class="gp">$ </span><span class="nb">echo</span> <span class="m">1</span> &gt;&gt; /proc/sys/net/ipv4/ip_forward
+</pre></div>
+</div>
+<p>其中，网桥名称 <code class="docutils literal notranslate"><span class="pre">br_qemu</span></code> 可以被更改，IP地址可以更换为任意的未被占用的局域网地址。</p>
+<p><strong>Step2：配置iptables</strong></p>
+<p>在宿主机中，执行如下命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>iptables -A FORWARD -i br_qemu -o enp1s0 -j ACCEPT
+<span class="gp">$ </span>iptables -A FORWARD -o br_qemu -i enp1s0 -j ACCEPT
+<span class="gp">$ </span>iptables -t nat -A POSTROUTING -s <span class="m">192</span>.168.122.0/24 -j MASQUERADE <span class="c1"># NAT地址转换</span>
+</pre></div>
+</div>
+<p>其中，enp1s0为宿主机的网卡名称，需要根据实际情况进行修改。</p>
+<p><strong>Step3：启动QEMU时添加netdev</strong></p>
+<p>以aarch64(ARM Cortex A53)为例，运行如下命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo qemu-system-aarch64 -M virt,gic-version<span class="o">=</span><span class="m">3</span> -m 1G -cpu cortex-a53 <span class="se">\</span>
+   -nographic -smp <span class="m">4</span> -kernel zImage -dtb qemu_mcs.dtb <span class="se">\</span>
+   -netdev bridge,br<span class="o">=</span>br_qemu,id<span class="o">=</span>net0 -device virtio-net-pci,netdev<span class="o">=</span>net0 <span class="se">\</span>
+   -initrd rootfs.cpio.gz -nographic
+</pre></div>
+</div>
+<p>其中， <code class="docutils literal notranslate"><span class="pre">-netdev</span></code> 选项中 <code class="docutils literal notranslate"><span class="pre">br</span></code> 参数为宿主机上新建的网桥名称。
+<code class="docutils literal notranslate"><span class="pre">-device</span></code> 选项中 <code class="docutils literal notranslate"><span class="pre">netdev</span></code> 参数为 <code class="docutils literal notranslate"><span class="pre">-netdev</span></code> 指定的 <code class="docutils literal notranslate"><span class="pre">id</span></code>，
+指定了设备应该连接到的后端。</p>
+<p><strong>Step4：配置openEuler Embedded网卡</strong></p>
+<p>openEuler Embedded登陆后，用 <code class="docutils literal notranslate"><span class="pre">ifconfig</span></code> 查看网卡名称，如 <code class="docutils literal notranslate"><span class="pre">eth0</span></code> 。
+执行如下命令配置网卡的IP地址和ip route的默认网关：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ifconfig enp0s1 <span class="m">192</span>.168.122.11 netmask <span class="m">255</span>.255.255.0
+<span class="gp">$ </span>ip route add default via <span class="m">192</span>.168.122.1 dev enp0s1
+</pre></div>
+</div>
+<p>其中，192.168.122.11可以更改为任意的未被占用的局域网地址。但是，需要保证与宿主机的网桥在同一个网段。
+<code class="docutils literal notranslate"><span class="pre">ip</span> <span class="pre">route</span></code> 添加默认网关的作用是，当openEuler Embedded需要访问互联网时，将数据包转发到宿主机的网桥上，再由宿主机的网桥转发到互联网。</p>
+<p><strong>Step5：配置DNS</strong></p>
+<p>在openEuler Embedded中，执行如下命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>修改DNS配置文件
+<span class="gp">$ </span>vi /etc/resolv.conf
+<span class="gp"># </span>添加DNS服务器地址
+<span class="gp">$ </span>nameserver <span class="m">1</span>.2.3.4
+</pre></div>
+</div>
+<p><strong>Step6：确认网络连通</strong></p>
+<p>在openEuler Embedded中，执行如下命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ping www.baidu.com
+</pre></div>
+</div>
+<p>如能ping通，则说明openEuler Embedded可以访问互联网。</p>
+</div></blockquote>
+</section>
+</section>
+<section id="id7">
+<h2>5. 使能共享文件系统场景<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>通过共享文件系统，可以使得运行 QEMU 仿真器的宿主机和 openEuler Embedded 共享文件，这样在宿主机上交叉编译的程序，拷贝到共享目录中，即可在 openEuler Embedded 上运行。注意 QEMU 必须支持 virtfs，即配置了 <code class="docutils literal notranslate"><span class="pre">--enable-virtfs</span></code>。</p>
 <p>假设将宿主机的 <code class="docutils literal notranslate"><span class="pre">/tmp</span></code> 目录作为共享目录，并事先在其中创建了名为 <code class="file docutils literal notranslate"><span class="pre">hello_openeuler.txt</span></code> 的文件，使能共享文件系统功能的操作指导如下：</p>
@@ -264,8 +331,8 @@
 </div></blockquote>
 </div></blockquote>
 </section>
-<section id="id6">
-<h2>附录：QEMU常用的启动参数<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<section id="id8">
+<h2>附录：QEMU常用的启动参数<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><p>以下是一些常用的QEMU启动参数：</p>
 <ul class="simple">

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>iSula容器引擎使用方法 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="南向支持" href="../bsp/index.html" />
+    <link rel="prev" title="轻量级虚拟化工具 Jailhouse" href="jailhouse.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">常见问题</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">关键特性</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="software_package_description.html">当前所支持的软件包</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mcs.html">混合关键性系统</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lopper_devicetree.html">外设分区管理</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l2"><a class="reference internal" href="muslc.html">musl libc的支持</a></li>
+<li class="toctree-l2"><a class="reference internal" href="distributed_softbus.html">分布式软总线</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preempt_rt.html">软实时系统介绍</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nativesdk.html">nativesdk 特性</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rust.html">支持Rust工具链</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qt5_wayland.html">嵌入式图形支持</a></li>
+<li class="toctree-l2"><a class="reference internal" href="armnn.html">ArmNN的支持</a></li>
+<li class="toctree-l2"><a class="reference internal" href="clang_llvm.html">clang/llvm 编译工具链支持</a></li>
+<li class="toctree-l2"><a class="reference internal" href="jailhouse.html">轻量级虚拟化工具 Jailhouse</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">iSula容器引擎使用方法</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#isulaopeneuler-embedded">构建带有iSula的openEuler Embedded镜像</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#openeuler">使用openEuler服务器版本镜像</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../bsp/index.html">南向支持</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../yocto/index.html">构建系统</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../develop_help/index.html">开发帮助</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../linux/index.html">使用与配置</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../infrastructure/index.html">基础设施</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">关键特性</a> &raquo;</li>
+      <li>iSula容器引擎使用方法</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="isula">
+<span id="isula-intro"></span><h1>iSula容器引擎使用方法<a class="headerlink" href="#isula" title="Permalink to this headline">¶</a></h1>
+<p>iSula是openEuler社区开发的容器引擎，它是一个轻量级的容器引擎，支持容器的创建、启动、停止、删除、暂停、恢复、查看、导入、导出、镜像管理等功能。</p>
+<p>openEuler Embedded在构建时集成了iSula容器引擎，用户可以通过iSula容器引擎来管理容器。
+当前iSula容器引擎的默认容器运行时为lcr，也支持runc和kata-runtime。
+支持的容器镜像格式为OCI和external rootfs。</p>
+<p>iSula有两种容器管理操作接口：CLI和CRI。
+CLI采用命令行方式，是标准的C/S架构模式，将iSulad作为daemon服务端，iSula作为独立的客户端命令，供用户使用。
+CRI是由K8S对外提供的容器和镜像服务接口，供容器引擎接入K8S使用。</p>
+<p>当前，openEuler Embedded支持iSula容器引擎的CLI接口。接下来会讲解具体的构建流程，以及如何使用iSula容器引擎。</p>
+<section id="isulaopeneuler-embedded">
+<h2>构建带有iSula的openEuler Embedded镜像<a class="headerlink" href="#isulaopeneuler-embedded" title="Permalink to this headline">¶</a></h2>
+<p>当前openEuler Embedded标准镜像中已经集成了iSula容器引擎。
+但是，如果在使用oebuild生成构建目录的时候没有加上 <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">systemd</span></code>，则无法正常运行容器，
+因为iSula需要依赖cgroup的配置信息。
+解决方法是，用户需要在启动的时候，手动挂载cgroup的配置信息。
+具体的命令如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>mount -t tmpfs tmpfs /sys/fs/cgroup/
+<span class="gp">$ </span>mkdir -p /sys/fs/cgroup/cpu
+<span class="gp">$ </span>mount -t cgroup -o cpu cpu /sys/fs/cgroup/cpu
+<span class="gp">$ </span>mkdir -p /sys/fs/cgroup/devices
+<span class="gp">$ </span>mount -t cgroup -o devices devices /sys/fs/cgroup/devices
+<span class="gp">$ </span>mkdir -p /sys/fs/cgroup/freezer
+<span class="gp">$ </span>mount -t cgroup -o freezer freezer /sys/fs/cgroup/freezer
+<span class="gp">$ </span>mkdir -p /sys/fs/cgroup/cpuset
+<span class="gp">$ </span>mount -t cgroup -o cpuset cpuset /sys/fs/cgroup/cpuset
+<span class="gp">$ </span>mkdir -p /sys/fs/cgroup/memory
+<span class="gp">$ </span>mount -t cgroup -o memory memory /sys/fs/cgroup/memory
+<span class="gp">$ </span><span class="nb">echo</span> <span class="m">1</span> &gt; /sys/fs/cgroup/memory/memory.use_hierarchy
+<span class="gp">$ </span>mkdir -p /sys/fs/cgroup/hugetlb
+<span class="gp">$ </span>mount -t cgroup -o hugetlb hugetlb /sys/fs/cgroup/hugetlb
+<span class="gp">$ </span>mkdir -p /sys/fs/cgroup/blkio
+<span class="gp">$ </span>mount -t cgroup -o blkio blkio /sys/fs/cgroup/blkio
+</pre></div>
+</div>
+<p>其他的构建过程，参见 <a class="reference internal" href="../yocto/oebuild.html#openeuler-embedded-oebuild"><span class="std std-ref">基于 oebuild 快速构建</span></a>。</p>
+<p>当我们已经有了一个openEuler Embedded镜像后，就可以使用iSula容器引擎了。
+以qemu-aarch64为例，我们可以使用如下命令启动openEuler Embedded镜像：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo qemu-system-aarch64 -M virt,gic-version<span class="o">=</span><span class="m">3</span> -m 1G -cpu cortex-a53 <span class="se">\</span>
+-nographic -smp <span class="m">4</span> -kernel zImage -dtb qemu.dtb <span class="se">\</span>
+-netdev bridge,br<span class="o">=</span>br_qemu,id<span class="o">=</span>net0 -device virtio-net-pci,netdev<span class="o">=</span>net0 <span class="se">\</span>
+-initrd rootfs.cpio.gz
+</pre></div>
+</div>
+<p>上述命令中，使用了 <code class="docutils literal notranslate"><span class="pre">-netdev</span></code> 和 <code class="docutils literal notranslate"><span class="pre">-device</span></code> 参数，
+将openEuler Embedded镜像中的网卡设备连接到了宿主机的网桥上。
+这样，openEuler Embedded镜像就可以通过宿主机的网桥访问外网了。
+<code class="docutils literal notranslate"><span class="pre">-dtb</span></code> 参数指定了openEuler Embedded镜像中的设备树文件，具体dtb可以通过 <code class="docutils literal notranslate"><span class="pre">-machine</span> <span class="pre">dumpdtb=qemu.dtb</span></code> 命令获取。
+如果用户有其他额外的硬件需求，可以使用如下命令将dtb文件转换为可编辑的dts文件：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>dtc -I dtb -O dts qemu.dtb -o qemu.dts
+</pre></div>
+</div>
+<p>之后，可以根据自己的需求修改qemu.dts文件，最后再通过如下命令将其转换为dtb文件后使用：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>dtc -I dts -O dtb qemu.dts -o qemu.dtb
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">-nographic</span></code> 参数表示不使用图形界面，而是使用串口终端。
+<code class="docutils literal notranslate"><span class="pre">-smp</span></code> 参数指定了openEuler Embedded镜像中的CPU个数。
+<code class="docutils literal notranslate"><span class="pre">-m</span></code> 参数指定了openEuler Embedded镜像中的内存大小
+<code class="docutils literal notranslate"><span class="pre">-initrd</span></code> 参数指定了openEuler Embedded镜像中的根文件系统。
+<code class="docutils literal notranslate"><span class="pre">-kernel</span></code> 参数指定了openEuler Embedded镜像中的内核文件。
+具体的QEMU NAT模式配置，参见 <a class="reference internal" href="../develop_help/qemu/qemu_start.html#qemu-internet-nat"><span class="std std-ref">使能互联网</span></a>。</p>
+<p>进入openEuler Embedded镜像后，首先我们需要为iSula daemon服务端配置镜像源。
+打开 <code class="docutils literal notranslate"><span class="pre">/etc/isulad/daemon.json</span></code> 文件，并在 <code class="docutils literal notranslate"><span class="pre">registry-mirrors</span></code> 字段中添加镜像源地址。
+我们可以添加 <code class="docutils literal notranslate"><span class="pre">&quot;docker.io&quot;</span></code>。</p>
+<p>之后，运行如下命令启动iSula daemon服务端：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>将isula daemon服务端作为后台进程启动
+<span class="gp">$ </span>isulad <span class="p">&amp;</span>
+<span class="go">isulad 20240131074734.534 - iSulad successfully booted in 0.120 s</span>
+</pre></div>
+</div>
+<p>如果启动成功，会有相应的日志信息输出到串口终端上。</p>
+<p>接下来，我们就可以使用iSula容器引擎了。首先，我们需要拉取一个镜像。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>拉取一个镜像
+<span class="gp">$ </span>isula pull busybox
+</pre></div>
+</div>
+<p>拉取成功后，我们可以查看镜像列表。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>查看镜像列表
+<span class="gp">$ </span>isula images
+<span class="go">REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE</span>
+<span class="go">busybox             latest              59788edf1f3e        2 weeks ago         1.22MB</span>
+</pre></div>
+</div>
+<p>接下来，我们可以运行一个容器。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>运行一个容器
+<span class="gp">$ </span>isula run -it busybox sh
+<span class="go">/ #</span>
+</pre></div>
+</div>
+<p>成功运行后，我们可以通过命令行与容器进行交互。</p>
+<p>如果想要退出容器，可以在命令行输入 <code class="docutils literal notranslate"><span class="pre">exit</span></code> 命令。</p>
+</section>
+<section id="openeuler">
+<h2>使用openEuler服务器版本镜像<a class="headerlink" href="#openeuler" title="Permalink to this headline">¶</a></h2>
+<p>执行如下命令，拉取openEuler服务器版本镜像：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>拉取openEuler <span class="m">23</span>.09版本镜像
+<span class="gp">$ </span>isula pull openeuler/openeuler:23.09
+<span class="gp"># </span>-net<span class="o">=</span>host 表示使用宿主机的网络
+<span class="gp">$ </span>isula run -it -net<span class="o">=</span>host openeuler/openeuler:23.09 sh
+</pre></div>
+</div>
+<p>此时，我们已经运行一个容器镜像，并能通过命令行与之交互。
+服务器版本镜像默认含有dnf包管理工具，我们可以通过dnf安装一些软件包。
+比如，我们可以通过如下命令安装ping命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">sh-5.2# </span>dnf install iputils
+<span class="gp">sh-5.2# </span>ping www.baidu.com
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="jailhouse.html" class="btn btn-neutral float-left" title="轻量级虚拟化工具 Jailhouse" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../bsp/index.html" class="btn btn-neutral float-right" title="南向支持" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-22.03-LTS-SP3
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../master/index.html">master</a></dd>
+      <dd><a href="../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="isula.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
