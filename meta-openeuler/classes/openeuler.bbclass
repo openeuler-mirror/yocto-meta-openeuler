@@ -3,14 +3,15 @@
 ## openeuler.bbclass is inherited after base.bbclass,
 ## some definitions in it can be overridden here
 
-# for openeuler embedded no need to create DL_DIR, here is
-# ${OPENEULER_SP_DIR}/${OPENEULER_REPO_NAME}, OPENEULER_SP_DIR
+# for openeuler embedded it is no need to create DL_DIR, here we use
+# ${OPENEULER_SP_DIR}/${OPENEULER_REPO_NAME} to represent download
+# directory for each software package. OPENEULER_SP_DIR
 # is already created, and OPENEULER_REPO_NAME will be created
-# in openeuler fetch or fetch
-# overrides the definition in base.bbclass
+# in openeuler_fetch or fetch
+# Thus, overrides the definition in base.bbclass
 do_fetch[dirs] = "${OPENEULER_SP_DIR}"
 
-# we can't user poky's original get_checksum_file_list in base.bbclass
+# we can't use poky's original get_checksum_file_list in base.bbclass
 # because of the src repo organization and special handling of DL_DIR
 # here we override it with openeuler's implementation.
 def openeuler_get_checksum_file_list(d):
@@ -45,7 +46,7 @@ python set_rpmdeps() {
     if d.getVar('OPENEULER_PREBUILT_TOOLS_ENABLE') != 'yes':
         return
 
-    # when version of rpm is 4.18.0+, we need add RPM_CONFIGDIR to env
+    # when the version of rpm is 4.18.0+, we need add RPM_CONFIGDIR to env
     rpm_configdir = oe.path.join(d.getVar('OPENEULER_NATIVESDK_SYSROOT'), '/usr/lib/rpm')
 
     env = os.environ.copy()
@@ -63,7 +64,7 @@ python set_rpmdeps() {
 addhandler set_rpmdeps
 set_rpmdeps[eventmask] = "bb.event.RecipePreFinalise"
 
-# do_unpack does not depends to xz-native， avoid dependency loops
+# do_unpack does not depends on xz-native， avoid dependency loops
 python() {
     all_depends = d.getVarFlag("do_unpack", "depends") or ''
     for dep in ['xz']:
@@ -86,7 +87,7 @@ def get_openeuler_epoch(d):
                        check=True, stdout=subprocess.PIPE)
 
     if p.returncode != 0:
-    # if failed return current time
+    # if failed, return current time
         bb.warn(1, "%s does not have a valid date: %s" % (gitpath, p.stdout.decode('utf-8')))
         return int(time.time())
 
@@ -113,7 +114,7 @@ python () {
 # fetch multi repos in one recipe bb file, an example is
 # dsoftbus_1.0.bb where multi repos required by dsoftbus are
 # fetched by re-implementation of do_fetch, and it will call
-# do_openeuler_fetches
+# do_openeuler_fetchs
 python do_openeuler_fetchs() {
 
     # Stage the variables related to the original package
@@ -130,7 +131,7 @@ python do_openeuler_fetchs() {
     d.setVar("OPENEULER_LOCAL_NAME", localName)
 }
 
-# fetch software package from openeuler's repos first,
+# fetch software packages from openeuler's repos first,
 # if failed, go to the original do_fetch defined in
 # base.bbclass
 python do_openeuler_fetch() {
@@ -220,10 +221,10 @@ def download_repo(d, repo_dir, repo_url ,version = None):
         remote_name = "upstream"
         remote = git.Remote.add(repo = repo, name = remote_name, url = repo_url)
 
-    # This download function is only used for downloading oee_archive which placed tar package, it can
-    # achieve to download what you want, just you need, no more others. In order to do this, we use git 
-    # sparse-checkout, the simply description about it is that Reduce your working tree to a subset of
-    # tracked files, alse you can see more detail by visiting https://git-scm.com/docs/git-sparse-checkout
+    # This download function is only used for downloading oee_archive which holds tar packages, it can
+    # download what you want, and only what you need, no more others. In order to do this, we use git 
+    # sparse-checkout, which reduces your working tree to a subset of
+    # tracked files. You can see more detail by visiting https://git-scm.com/docs/git-sparse-checkout
     def oee_archive_download(oee_archive_dir:str, subdir: str):      
         res = subprocess.run("git sparse-checkout init", shell=True, stderr=subprocess.PIPE, text=True, cwd=oee_archive_dir)
         if res.returncode != 0:
@@ -257,8 +258,9 @@ def get_manifest(manifest_dir):
 
     with open(manifest_dir, 'r' ,encoding="utf-8") as r_f:
         return yaml.load(r_f.read(), yaml.Loader)['manifest_list']
-# do openeuler fetch at the beginning of do_fetch,
-# it will fetch software packages and its patches and other files
+
+# call "do_openeuler_fetch" at the beginning of do_fetch,
+# it will fetch software packages, the related patches and other files
 # from openeuler's gitee repo.
 # if success,  other part of base_do_fetch will skip download as
 # files are already downloaded by do_openeuler_fetch
