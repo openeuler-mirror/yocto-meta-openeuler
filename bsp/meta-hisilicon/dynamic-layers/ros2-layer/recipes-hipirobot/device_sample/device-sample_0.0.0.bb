@@ -24,27 +24,13 @@ do_compile:prepend () {
 
 do_compile () {
     pushd externed_device_sample
-    pwd
-    oe_runmake
-    popd
-    pushd externed_device_sample/mpp/sample/audio
-    oe_runmake
-    popd
-    pushd externed_device_sample/mpp/sample/hdmi
     oe_runmake
     popd
 }
 
 do_install () {
     install -d ${D}/root/
-    mkdir -p ${D}/root/device_sample/source_file
-
-    install -m 0755 externed_device_sample/test ${D}/root/device_sample/test
-    install -m 0755 externed_device_sample/mpp/sample/audio/sample_audio ${D}/root/device_sample/sample_audio
-    cp -rf externed_device_sample/mpp/sample/audio/source_file/* ${D}/root/device_sample/source_file/
-    install -m 0755 externed_device_sample/mpp/sample/hdmi/sample_hdmi ${D}/root/device_sample/sample_hdmi
-    cp -rf externed_device_sample/mpp/sample/hdmi/source_file/* ${D}/root/device_sample/source_file/
-
+    cp -r externed_device_sample/output ${D}/root/device_sample
 }
 
 FILES:${PN} = " \
