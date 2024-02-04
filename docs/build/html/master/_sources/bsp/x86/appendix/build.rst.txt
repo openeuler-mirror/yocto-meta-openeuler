@@ -19,6 +19,16 @@ openEuler Embedded x86-64镜像构建
 
       oebuild generate -p x86-64 -d <build_x86>
 
+   除了使用上述命令进行配置文件生成，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，效果跟上述命令相同。
+
+    .. code-block:: console
+
+        oebuild generate
+
+    具体界面如下图所示:
+
+    .. image:: ../../../_static/images/generate/oebuild-generate-select.png
+
    .. note::
 
       | x86-64的软实时镜像通过以下命令进行编译配置：

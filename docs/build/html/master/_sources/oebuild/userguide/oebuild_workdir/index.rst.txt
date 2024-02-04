@@ -30,7 +30,7 @@ oebuild全局配置文件存放目录，该目录是隐藏目录。
 
   **compile.yaml.sample**
 
-    构建配置范例文件，在oebuild对构建配置文件的处理中，可以通过generate命令输入各种参数来生成compile.yaml，也可以通过-c命令直接指定compile.yaml，而compile.yaml.sample是compile.yaml的全参数的范例文件，里面有对所有涉及到的参数的详细说明，由于对compile.yaml的定制命令行参数较多，并不直观，而对配置文件直接进行文本编辑会直观很多，对于该范例文件的使用方法比较简单，直接将该文件拷贝到某个地方，然后重命名为compile.yaml，通过编辑器打开compile.yaml，对该文件做定制化修改，然后直接在generate命令下用-c参数指定即可。关于该文件的详细介绍请参考 :ref:`compile.yaml.sample<configure_index>`。
+    构建配置范例文件，在oebuild对构建配置文件的处理中，可以通过generate命令输入各种参数来生成compile.yaml，也可以什么参数都不输入直接进入到菜单选择界面进行对应参数的选择，效果跟直接输入命令一样，compile.yaml.sample是compile.yaml的全参数的范例文件，里面有对所有涉及到的参数的详细说明，由于对compile.yaml的定制命令行参数较多，并不直观，而对配置文件直接进行文本编辑会直观很多，对于该范例文件的使用方法比较简单，直接将该文件拷贝到某个地方，然后重命名为compile.yaml，通过编辑器打开compile.yaml，对该文件做定制化修改，然后直接在generate命令下用-c参数指定即可。关于该文件的详细介绍请参考 :ref:`compile.yaml.sample<configure_index>`。
 
   **config**
 

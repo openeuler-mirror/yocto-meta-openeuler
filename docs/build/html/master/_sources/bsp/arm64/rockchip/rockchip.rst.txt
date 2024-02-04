@@ -37,6 +37,16 @@ Rockchip镜像构建指导
     # 构建sdk
     bitbake openeuler-image -c populate_sdk
 
+- 除了使用上述命令oebuild generate -p ok3568 -d ok3568进行配置文件生成之外，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，效果跟上述命令相同。
+
+    .. code-block:: console
+
+        oebuild generate
+
+    具体界面如下图所示:
+
+    .. image:: ../../../_static/images/generate/oebuild-generate-select.png
+
 - 二进制介绍：
 
   1. boot.img: openEuler Embedded 适用rk3568内核镜像。

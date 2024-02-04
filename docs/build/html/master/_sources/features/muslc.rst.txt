@@ -64,6 +64,16 @@ qemu镜像的构建
 
    oebuild generate -p qemu-aarch64 -t /path/to/aarch64-openeuler-linux-musl -f musl
 
+除了使用上述命令进行配置文件生成，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，效果跟上述命令相同。
+
+.. code-block:: console
+
+    oebuild generate
+
+具体界面如下图所示:
+
+.. image:: ../_static/images/generate/oebuild-generate-select.png
+
 .. attention::
 
    当前在容器里是没有musl-arm64的工具链，需要按照上面工具链的生成指导生成。

@@ -22,6 +22,16 @@ visionfive-v2 sd卡镜像构建与使用
     # 容器内部构建os镜像
     bitbake openeuler-image
 
+除了使用上述命令oebuild generate -p visionfive2 -d <build_dir>进行配置文件生成之外，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，效果跟上述命令相同。
+
+    .. code-block:: console
+
+        oebuild generate
+
+    具体界面如下图所示:
+
+    .. image:: ../../../_static/images/generate/oebuild-generate-select.png
+
 3. 构建生成的镜像在 ``<oebuild_dir>/build/<build_dir>/output/<generation_date>`` 目录下。
    是一个以wic.bz2结尾的文件。
 4. 将此文件传输到能烧写sd卡的机器上，并解压为wic文件。

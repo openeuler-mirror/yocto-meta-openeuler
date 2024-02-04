@@ -49,6 +49,16 @@ ____
       # x86
       oebuild generate -p x86-64 -f openeuler-rt -d <build_x86_rt>
 
+   除了使用上述命令进行配置文件生成之外，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，此菜单选项可以替代上述命令中的oebuild generate，选择保存之后继续执行上述命令中的bitbake及后续命令即可。
+
+   .. code-block:: console
+
+       oebuild generate
+
+   具体界面如下图所示:
+
+   .. image:: ../_static/images/generate/oebuild-generate-select.png
+
 3. 进入 ``<build>`` 目录，编译openeuler-image：
 
    .. code-block:: shell

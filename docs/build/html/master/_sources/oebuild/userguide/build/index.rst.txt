@@ -67,6 +67,15 @@ ____
   * ``-p <PLATFORM>``：选择需要构建的目标机器类型。
   * ``-f <FEATURES>``：选择需要打开的特性，可多次指定 -f 打开多个特性。
   * ``-d <DIRECTORY>``：构建目录，用于存放构建产物，同一构建目录支持多次重复构建。
+  * 当不输入任何参数时，会进入命令行菜单选择界面。
+
+    .. code-block:: console
+
+        oebuild generate
+
+    具体界面如下图所示:
+
+    .. image:: ../../../_static/images/generate/oebuild-generate-select.png
 
   .. code-block:: console
 

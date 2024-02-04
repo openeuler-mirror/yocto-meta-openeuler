@@ -32,6 +32,16 @@ openEuler 开发者在 yocto-meta-openeuler 中进行了多项准备工作，以
     ### 修改 OPENEULER_PREBUILT_TOOLS_ENABLE = "no"
     $ bitbake buildtools-extended-tarball
 
+除了使用上述命令进行配置文件生成之外，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，此菜单选项可以替代上述命令中的oebuild generate，选择保存之后继续执行上述命令中的bitbake及后续命令即可。
+
+.. code-block:: console
+
+ oebuild generate
+
+具体界面如下图所示:
+
+.. image:: ../_static/images/generate/oebuild-generate-select.png
+
 目前，oebuild 尚未实现自动配置预构建工具的配置文件。因此，需要按照上述步骤手动进行配置。
 
 构建完成的预构建工具产物位于 :file:`tmp/deploy/sdk` 目录。
