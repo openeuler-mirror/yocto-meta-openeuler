@@ -72,6 +72,11 @@ TOOLCHAIN_HOST_TASK += " \
     nativesdk-python3-wheel \
 "
 
+# linux-libc-headers need rsync command
+TOOLCHAIN_HOST_TASK += " \
+    nativesdk-rsync \
+"
+
 # this a workaround: Currently, in the CI environment,
 # there is a bug in the make operation, which the `realpath xxx_path` in the makefile cannot be executed correctly
 # So remove nativesdk-make from the prebuilt tool
