@@ -80,35 +80,45 @@ def get_openeuler_epoch(d):
     import time
 
     # get the .git dir of yocto-meta-openeuler
-    gitpath = d.getVar("LAYERDIR_openeuler") + "/../.git"
+    gitpath = d.getVar("LAYERDIR_openeuler")
+    if gitpath is not None:
+        gitpath += "/../.git"
+    else:
+        # Handle the case when LAYERDIR_openeuler is not defined
+        raise ValueError("LAYERDIR_openeuler is not defined")
 
-    # run git -c log.showSignature=false --git-dir <path-to-yocto-meta-openeuler-git> log -1 --pretty=%ct
-    p = subprocess.run(['git', '-c', 'log.showSignature=false', '--git-dir', gitpath, 'log', '-1', '--pretty=%ct'],
-                       check=True, stdout=subprocess.PIPE)
+    try:
+        # run git -c log.showSignature=false --git-dir <path-to-yocto-meta-openeuler-git> log -1 --pretty=%ct
+        p = subprocess.run(['git', '-c', 'log.showSignature=false', '--git-dir', gitpath, 'log', '-1', '--pretty=%ct'],
+                           check=True, stdout=subprocess.PIPE)
 
-    if p.returncode != 0:
-    # if failed, return current time
-        bb.warn(1, "%s does not have a valid date: %s" % (gitpath, p.stdout.decode('utf-8')))
+        return int(p.stdout.decode('utf-8'))
+
+    except subprocess.CalledProcessError as e:
+        # Log the error and fallback to current time
+        bb.warn("Error running git command: %s" % str(e))
         return int(time.time())
 
-    return int(p.stdout.decode('utf-8'))
-
+    except Exception as e:
+        # Handle other exceptions
+        bb.warn("An unexpected error occurred: %s" % str(e))
+        return int(time.time())
 
 # src_uri_set is used to remove some URLs from SRC_URI through
 # OPENEULER_SRC_URI_REMOVE, because we don't want to download from
 # these URLs
 python () {
-    if d.getVar('OPENEULER_SRC_URI_REMOVE'):
-        REMOVELIST = d.getVar('OPENEULER_SRC_URI_REMOVE').split(' ')
-        URI = []
-        for line in d.getVar('SRC_URI').split(' '):
-            URI.append(line)
-            for removeItem in REMOVELIST:
-                if line.strip().startswith(removeItem.strip()):
-                    URI.pop()
-                    break
-        URI = ' '.join(URI)
-        d.setVar('SRC_URI', URI)
+    src_uri = d.getVar('SRC_URI')
+    remove_list = d.getVar('OPENEULER_SRC_URI_REMOVE')
+
+    if src_uri and remove_list:
+        uri_list = src_uri.split()
+        remove_list = remove_list.split()
+
+        updated_uri_list = [uri for uri in uri_list if not any(uri.strip().startswith(remove_item.strip()) for remove_item in remove_list)]
+        updated_src_uri = ' '.join(updated_uri_list)
+
+        d.setVar('SRC_URI', updated_src_uri)
 }
 
 # fetch multi repos in one recipe bb file, an example is
@@ -118,17 +128,17 @@ python () {
 python do_openeuler_fetchs() {
 
     # Stage the variables related to the original package
-    repoName = d.getVar("OPENEULER_REPO_NAME")
-    localName = d.getVar("OPENEULER_LOCAL_NAME")
+    repo_name = d.getVar("OPENEULER_REPO_NAME")
+    local_name = d.getVar("OPENEULER_LOCAL_NAME")
 
-    repoList = d.getVar("PKG_REPO_LIST")
-    for item_name in repoList:
+    repo_list = d.getVar("PKG_REPO_LIST")
+    for item_name in repo_list:
         d.setVar("OPENEULER_REPO_NAME", item_name)
         bb.build.exec_func("do_openeuler_fetch", d)
 
     # Restore the variables related to the original package
-    d.setVar("OPENEULER_REPO_NAME", repoName)
-    d.setVar("OPENEULER_LOCAL_NAME", localName)
+    d.setVar("OPENEULER_REPO_NAME", repo_name)
+    d.setVar("OPENEULER_LOCAL_NAME", local_name)
 }
 
 # fetch software packages from openeuler's repos first,
@@ -146,9 +156,9 @@ python do_openeuler_fetch() {
         return
 
     # get source directory where to download
-    srcDir = d.getVar('OPENEULER_SP_DIR')
-    repoName = d.getVar('OPENEULER_REPO_NAME')
-    localName = d.getVar('OPENEULER_LOCAL_NAME') if d.getVar('OPENEULER_LOCAL_NAME')  else repoName
+    src_dir = d.getVar('OPENEULER_SP_DIR')
+    repo_name = d.getVar('OPENEULER_REPO_NAME')
+    local_name = d.getVar('OPENEULER_LOCAL_NAME') if d.getVar('OPENEULER_LOCAL_NAME')  else repo_name
 
     urls = d.getVar("SRC_URI").split()
 
@@ -157,39 +167,21 @@ python do_openeuler_fetch() {
     if len(src_uri) == 0:
         return
 
-    repo_dir = os.path.join(srcDir, localName)
-    except_str = None
+    repo_dir = os.path.join(src_dir, local_name)
 
     try:
         # determine whether the variable MANIFEST_DIR is None
         if d.getVar("MANIFEST_DIR") is not None and os.path.exists(d.getVar("MANIFEST_DIR")):
             manifest_list = get_manifest(d.getVar("MANIFEST_DIR"))
-            if localName in manifest_list:
-                repo_item = manifest_list[localName]
-                download_repo(d = d, repo_dir = repo_dir, repo_url = repo_item['remote_url'], version = repo_item['version'])
+            if local_name in manifest_list:
+                repo_item = manifest_list[local_name]
+                download_repo(d, repo_dir, repo_item['remote_url'], repo_item['version'])
         else:
             bb.fatal("openEuler Embedded build need manifest.yaml")
-    except GitError:
-        # can't use bb.fatal here, because there are the following cases:
-        # case1:
-        #      gitee repo exists, but git clone failed, then do_openeuler_fetch
-        #      should re-run, so bb.fatal is required
-        # case2:
-        #      gitee repo does not exist, then try the original fetch, i.e.
-        #      bb.fetch2.Fetch, so bb.fatal cannot be used
-        # case3:
-        #     all SRC_URI are in local, no need to do git clone, do_openeuler_fetch
-        #     should bypass,the original fetch
-        bb.note("could not find or init gitee repository {}".format(repoName))
+    except GitError as e:
+        bb.fatal("could not find or init gitee repository %s because %s" % (repo_name, str(e)))
     except Exception as e:
-        bb.plain("===============")
-        bb.plain("OPENEULER_SP_DIR: {}".format(srcDir))
-        bb.plain("OPENEULER_LOCAL_NAME: {}".format(localName))
-        bb.plain("===============")
-        except_str = str(e)
-
-    if except_str != None:
-        bb.fatal(except_str)
+        bb.fatal("do_openeuler_fetch failed: OPENEULER_SP_DIR %s OPENEULER_LOCAL_NAME %s exception %s" % (src_dir, local_name, str(e)))
 }
 
 def init_repo_dir(repo_dir):
@@ -281,17 +273,17 @@ python do_openeuler_clean() {
         except:
             return False
 
-    srcDir = d.getVar('OPENEULER_SP_DIR')
+    src_dir = d.getVar('OPENEULER_SP_DIR')
 
-    repoList = d.getVar('PKG_REPO_LIST')
-    if repoList != None:
-        for item in repoList:
-            repoDir = os.path.join(srcDir, item["repo_name"])
-            remove_lock(repoDir)
+    repo_list = d.getVar('PKG_REPO_LIST')
+    if repo_list != None:
+        for item in repo_list:
+            repo_dir = os.path.join(src_dir, item["repo_name"])
+            remove_lock(repo_dir)
     else:
-        repoName = d.getVar("OPENEULER_REPO_NAME")
-        repoDir = os.path.join(srcDir, repoName)
-        remove_lock(repoDir)
+        repo_name = d.getVar("OPENEULER_REPO_NAME")
+        repo_dir = os.path.join(src_dir, repo_name)
+        remove_lock(repo_dir)
 }
 
 addtask do_openeuler_clean before do_clean
