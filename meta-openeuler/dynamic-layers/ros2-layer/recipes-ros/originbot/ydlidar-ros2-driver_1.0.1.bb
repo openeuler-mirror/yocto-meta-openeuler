@@ -55,12 +55,10 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_REPO_NAME = "yocto-embedded-tools"
-OPENEULER_LOCAL_NAME = "ros-dev-tools"
-OPENEULER_GIT_SPACE = "openeuler"
+OPENEULER_LOCAL_NAME = "originbot-v1.0.2"
 
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/ros_depends_humble/originbot/v1.0.2.tar.gz \
+    file://${OPENEULER_LOCAL_NAME} \
 "
 
 S = "${WORKDIR}/originbot-v1.0.2/originbot_driver/ydlidar_ros2_driver"

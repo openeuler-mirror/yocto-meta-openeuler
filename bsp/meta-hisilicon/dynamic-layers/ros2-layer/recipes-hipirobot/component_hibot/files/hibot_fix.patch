@@ -1,0 +1,94 @@
+diff --git a/src/encoder_decoder/CMakeLists.txt b/src/encoder_decoder/CMakeLists.txt
+index be0923e..2293cfe 100644
+--- a/src/encoder_decoder/CMakeLists.txt
++++ b/src/encoder_decoder/CMakeLists.txt
+@@ -21,19 +21,17 @@ target_include_directories(encoder_decoder_object
+     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/encoder_decoder/decoder
+     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/encoder_decoder/decoder/hal
+     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/encoder_decoder/hibot_comm
+-    $ENV{SDK_PATH}/smp/a55_linux/mpp/out/include
+ )
+ 
+ # Add the library directories for hw_calc
+ target_link_directories(encoder_decoder_object
+   PUBLIC
+-  $ENV{SDK_PATH}/smp/a55_linux/mpp/out/lib
+ )
+ 
+ # Link the hw_calc library to the external library
+ target_link_libraries(encoder_decoder_object
+   PUBLIC
+-  $ENV{SDK_PATH}/smp/a55_linux/mpp/out/lib/libss_mpi.so
++  ss_mpi
+ )
+ 
+ add_library(encoder_decoder STATIC $<TARGET_OBJECTS:encoder_decoder_object>)
+diff --git a/src/hw_calc/CMakeLists.txt b/src/hw_calc/CMakeLists.txt
+index a3ea96b..7f757f4 100755
+--- a/src/hw_calc/CMakeLists.txt
++++ b/src/hw_calc/CMakeLists.txt
+@@ -21,13 +21,11 @@ target_include_directories(hw_calc_object
+   PUBLIC
+     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/hw_calc
+     ${CMAKE_CURRENT_SOURCE_DIR}/../../include/hw_calc/hal
+-    $ENV{SDK_PATH}/smp/a55_linux/mpp/out/include
+ )
+ 
+ # Add the library directories for hw_calc
+ target_link_directories(hw_calc_object
+   PUBLIC
+-  $ENV{SDK_PATH}/smp/a55_linux/mpp/out/lib
+ )
+ 
+ 
+diff --git a/src/hwmgr/CMakeLists.txt b/src/hwmgr/CMakeLists.txt
+index 3238b5c..568c0a8 100644
+--- a/src/hwmgr/CMakeLists.txt
++++ b/src/hwmgr/CMakeLists.txt
+@@ -3,8 +3,7 @@ project(hwmgr)
+ 
+ set(HWMGR_SRC ${CMAKE_CURRENT_SOURCE_DIR}/deamon/shm_mgr.c)
+ 
+-set(HWMGR_INC $ENV{SDK_PATH}/smp/a55_linux/mpp/out/include
+-              ${CMAKE_CURRENT_SOURCE_DIR}/../shm/include
++set(HWMGR_INC ${CMAKE_CURRENT_SOURCE_DIR}/../shm/include
+               ${CMAKE_CURRENT_SOURCE_DIR}/../../include/shm/shmbuffer
+               ${CMAKE_CURRENT_SOURCE_DIR}/../../include/shm/mgrbuffer
+ 		          ${CMAKE_CURRENT_SOURCE_DIR}/../../include/hwmgr/deamon)
+@@ -15,7 +14,6 @@ add_library(hwmgr_obj OBJECT ${HWMGR_SRC})
+ target_include_directories(hwmgr_obj PUBLIC ${HWMGR_INC})
+ 
+ target_link_libraries(hwmgr_obj
+-  -L$ENV{SDK_PATH}/smp/a55_linux/mpp/out/lib
+   -L${CMAKE_CURRENT_SOURCE_DIR}/../shm
+   ss_mpi
+   securec
+@@ -31,4 +29,4 @@ add_library(hwmgr STATIC $<TARGET_OBJECTS:hwmgr_obj>)
+ # Use parameter to decide whether to compile the driver
+ if (${BUILD_DRIVER})
+   add_subdirectory(driver)
+-endif()
+\ No newline at end of file
++endif()
+diff --git a/src/shm/CMakeLists.txt b/src/shm/CMakeLists.txt
+index e634408..c8113d7 100644
+--- a/src/shm/CMakeLists.txt
++++ b/src/shm/CMakeLists.txt
+@@ -5,8 +5,7 @@ set(SHM_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/hal/shm_buffer_hal.c
+             ${CMAKE_CURRENT_SOURCE_DIR}/src/shmbuffer/shm_buffer.c
+             ${CMAKE_CURRENT_SOURCE_DIR}/src/mgrbuffer/mgr_buffer.c)
+ 
+-set(SHM_INC $ENV{SDK_PATH}/smp/a55_linux/mpp/out/include
+-            ${CMAKE_CURRENT_SOURCE_DIR}/include
++set(SHM_INC ${CMAKE_CURRENT_SOURCE_DIR}/include
+             ${CMAKE_CURRENT_SOURCE_DIR}/../../include/shm/shmbuffer
+             ${CMAKE_CURRENT_SOURCE_DIR}/../../include/shm/mgrbuffer)
+ 
+@@ -14,7 +13,6 @@ set(SHM_INC $ENV{SDK_PATH}/smp/a55_linux/mpp/out/include
+ add_library(shm_obj OBJECT ${SHM_SRC})
+ target_include_directories(shm_obj PUBLIC ${SHM_INC})
+ target_link_libraries(shm_obj
+-  -L$ENV{SDK_PATH}/smp/a55_linux/mpp/out/lib
+   ss_mpi
+   securec
+   ss_dnvqe

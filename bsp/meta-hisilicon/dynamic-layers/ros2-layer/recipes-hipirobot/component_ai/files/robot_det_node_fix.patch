@@ -1,0 +1,37 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -24,7 +24,6 @@ find_package(tf2 REQUIRED)
+ # find_package(<dependency> REQUIRED)
+ 
+ set(AI_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
+-set(SDK_ROOT ${AI_ROOT}/../../3rdparty/platform/ss928/org/smp/a55_linux/)
+ set(PDFD_ROOT ${AI_ROOT}/component/body_detection/)
+ set(GST_ROOT ${AI_ROOT}/component/gesture_detection/)
+ set(ZXING_ROOT ${AI_ROOT}/sample/zxing/src/zxing-cpp-1.4.0/core/src/)
+@@ -32,9 +31,8 @@ set(COMMON_ROOT ${AI_ROOT}/component/common/)
+ set(BARCODE_ROOT ${AI_ROOT}/component/barcode_detection/)
+ 
+ link_directories(
+-	${SDK_ROOT}/mpp/out/lib
+-	${SDK_ROOT}/mpp/out/lib/svp_npu
+-  ${SDK_ROOT}/mpp/out/lib/npu/stub
++	${CMAKE_SYSROOT}/usr/lib/svp_npu
++  ${CMAKE_SYSROOT}//usr/lib/npu/stub
+ 	${AI_ROOT}/sample/mipi_camera/src/ffmpeglib/lib
+   ${PDFD_ROOT}/lib
+   ${GST_ROOT}/lib
+@@ -57,7 +55,6 @@ add_executable(robot_det_node
+     ${AI_ROOT}/sample/barcode_detection/sample_barcode.cpp)
+ 
+ target_include_directories(robot_det_node PUBLIC
+-    $<BUILD_INTERFACE:${SDK_ROOT}/mpp/out/include>
+     $<BUILD_INTERFACE:${AI_ROOT}/sample/mipi_camera/include>
+     $<BUILD_INTERFACE:${AI_ROOT}/sample/body_detection>
+     $<BUILD_INTERFACE:${AI_ROOT}/sample/gesture_detection>
+@@ -122,4 +119,4 @@ if(BUILD_TESTING)
+   set(ament_cmake_cpplint_FOUND TRUE)
+   ament_lint_auto_find_test_dependencies()
+ endif()
+-ament_package()
+\ No newline at end of file
++ament_package()
