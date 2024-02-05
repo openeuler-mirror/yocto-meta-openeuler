@@ -1,5 +1,3 @@
-require recipes-core/images/openeuler-image-sdk.inc
-
 # openeuler standard image packages
 IMAGE_INSTALL = " \
 packagegroup-core-boot \
@@ -85,6 +83,9 @@ set_permissions_from_rootfs() {
 }
 
 IMAGE_PREPROCESS_COMMAND += "set_permissions_from_rootfs;"
+
+# sdk configuration
+require recipes-core/images/openeuler-image-sdk.inc
 
 # specific machine configuration
 include recipes-core/images/${MACHINE}.inc
