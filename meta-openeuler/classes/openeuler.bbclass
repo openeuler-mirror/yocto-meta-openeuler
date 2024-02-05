@@ -238,7 +238,7 @@ def download_repo(d, repo_dir, repo_url ,version = None):
             bb.fatal(f"in oee_archive run git sparse-checkout add {subdir} faild")
 
     if "oee_archive" in repo_url:
-        oee_archive_download(oee_archive_dir = repo_dir, subdir = d.getVar("BPN"))
+        oee_archive_download(oee_archive_dir = repo_dir, subdir = d.getVar("OEE_ARCHIVE_SUBDIR"))
 
     try:
         repo.commit(version)
