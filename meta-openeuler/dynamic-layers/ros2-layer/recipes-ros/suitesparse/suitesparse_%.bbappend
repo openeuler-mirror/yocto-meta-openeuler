@@ -16,9 +16,7 @@ SRC_URI:remove = "git://github.com/DrTimothyAldenDavis/SuiteSparse;protocol=http
 SRC_URI:prepend = "file://SuiteSparse-${PV}.tar.gz \
 "
 
-FILES:${PN} += "${libdir}/libmetis.so"
-FILES:${PN}-dev = " \
-${includedir} \
+FILES:${PN} += "${libdir}/libmetis.so \
 ${libdir}/libamd.so \
 ${libdir}/libamd.so.2 \
 ${libdir}/libbtf.so \
@@ -52,3 +50,9 @@ ${libdir}/libsuitesparseconfig.so.5 \
 ${libdir}/libumfpack.so \
 ${libdir}/libumfpack.so.5 \
 "
+
+FILES:${PN}-dev = " \
+${includedir} \
+"
+
+INSANE_SKIP:${PN} += "dev-so"
