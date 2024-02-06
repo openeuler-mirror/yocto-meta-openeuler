@@ -48,3 +48,7 @@ RPROVIDES:${PN} += "kernel-module-mcs-km"
 RPROVIDES:${PN}:x86-64 += "kernel-module-eth-i210"
 RPROVIDES:${PN} += "kernel-module-mcs-remoteproc"
 RPROVIDES:${PN} += "${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'kernel-module-mcs-ivshmem', '', d)}"
+
+# We may not use the Linux kernel's RemoteProc framework in the future,
+# so even though we provide mcs_remoteproc, we still default to load mcs_km.
+KERNEL_MODULE_AUTOLOAD += "${@bb.utils.contains('MCS_FEATURES', 'openamp', 'mcs_km', '', d)}"

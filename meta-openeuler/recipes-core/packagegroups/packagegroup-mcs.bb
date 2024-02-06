@@ -14,9 +14,12 @@ PACKAGES = "${PN}"
 #  - if jailhouse is used, jailhouse will be included
 RDEPENDS:${PN} = " \
 screen \
-mcs-km \
 mcs-tools \
-${@bb.utils.contains('MCS_FEATURES', 'openamp', 'mcs-linux', '', d)} \
-${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'jailhouse', '', d)} \
+${@bb.utils.contains('MCS_FEATURES', 'openamp', 'mcs-linux kernel-module-mcs-km', '', d)} \
+${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'jailhouse kernel-module-mcs-ivshmem', '', d)} \
 ${@bb.utils.contains('MCS_FEATURES', 'zephyr', 'zephyr-image', '', d)} \
+"
+
+RDEPENDS:${PN}:append:aarch64 = "\
+mcsctl \
 "

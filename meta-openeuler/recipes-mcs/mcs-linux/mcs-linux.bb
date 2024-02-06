@@ -31,16 +31,27 @@ SRC_URI:append:x86-64 = " \
 S:x86-64 = "${WORKDIR}/mcs-x86"
 
 # the software packages required in build
-DEPENDS = "openamp libmetal"
+DEPENDS = "openamp libmetal update-rc.d-native"
 
 # libgcc_s.so must be installed for pthread_cancel to work in rpmsg_main
 RDEPENDS:${PN} = "libgcc-external"
 
-# extra cmake options
-EXTRA_OECMAKE = " \
-	-DDEMO_TARGET=mica_demo \
-	"
+do_install:append:aarch64 () {
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
+        install -d ${D}${systemd_system_unitdir}
+        install -m 0644 ${S}/mica/micad/init/micad.service ${D}${systemd_system_unitdir}
+    fi
+
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'sysvinit', 'true', 'false', d)}; then
+        install -d ${D}${sysconfdir}/init.d
+        install -d ${D}${sysconfdir}/rc5.d
+        install -m 0755 ${S}/mica/micad/init/micad.init ${D}${sysconfdir}/init.d
+	update-rc.d -r ${D} micad.init start 90 5 .
+    fi
+}
 
 FILES:${PN} = " \
      ${bindir}/* \
+     ${systemd_system_unitdir} \
+     ${sysconfdir} \
 "
