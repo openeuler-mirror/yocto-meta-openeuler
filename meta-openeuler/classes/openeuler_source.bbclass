@@ -95,10 +95,13 @@ def make_tarball_workspace(func, d):
                 with zipfile.ZipFile(tarname, 'r') as zf:
                     res = zf.namelist()[0]
         if len(res) != 0:
+            # some archive may not have root/base dir
+            res = res.split("/")[0]
             fromdir = workdirbase + "/" + res
             source = os.path.abspath(fromdir)
             target = os.path.abspath(targetdir)
-            func(source, target)
+            if source != target:
+                func(source, target)
 
 python clean_tarball_workspace() {
     make_tarball_workspace(rm_files, d)
