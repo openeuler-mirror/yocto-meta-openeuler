@@ -1,7 +1,7 @@
 # libboundscheck provided by hibot-user-driver with libsecurec
 
-RDEPENDS:${PN}:remove = "libboundscheck"
-DEPENDS:remove = "libboundscheck"
+RDEPENDS:${PN}:remove:sd3403 = "libboundscheck"
+DEPENDS:remove:sd3403 = "libboundscheck"
 
-RDEPENDS:${PN}:append = " hibot-user-driver "
-DEPENDS:append = " hibot-user-driver "
+RDEPENDS:${PN}:append:sd3403 = " hibot-user-driver "
+DEPENDS:append:sd3403 = " hibot-user-driver "

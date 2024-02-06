@@ -52,7 +52,7 @@ ASSUME_PROVIDED += "texinfo-dummy-native gettext-native"
 HOSTTOOLS_NONFATAL += "gtkdocize gtkdoc-scan gtkdoc-scangobj gtkdoc-mkdb gtkdoc-mkhtml gtkdoc-fixxref"
 
 # commands used by iso and wic
-HOSTTOOLS_NONFATAL += "cpio mkdosfs mcopy mkfs.ext4 debugfs fsck.ext4 dumpe2fs parted mkfs.vfat mmd"
+HOSTTOOLS_NONFATAL += "cpio mkdosfs mcopy mkfs.ext4 debugfs fsck.ext4 dumpe2fs parted mkfs.vfat mmd hexdump xxd"
 ASSUME_PROVIDED += "cpio-native parted-native dosfstools-native  mtools-native bmap-tools-native gptfdisk-native"
 
 # graphics related
