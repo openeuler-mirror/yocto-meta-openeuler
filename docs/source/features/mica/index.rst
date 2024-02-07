@@ -1,7 +1,7 @@
 .. _mixed_criticality_system:
 
 
-混合关键性系统框架 (MICA)
+多OS混合关键性部署框架 (MICA)
 #############################
 
 .. toctree::
@@ -9,8 +9,8 @@
    :caption: 内容
 
    mica.rst
-   mica_openamp.rst
-   mica_linux_kernel.rst
-   mica_jailhouse.rst
    mica_build.rst
+   mica_openamp.rst
+   mica_ctl.rst
+   mica_jailhouse.rst
    benchmark.rst
