@@ -54,7 +54,7 @@ Embedded项目健康运行的一个催化剂，目前oebuild主要实现了主�
 
 ::
 
-   pip install oebuild==0.0.27
+   pip install oebuild==0.0.38
 
 oebuild会依赖一些第三方库辅助运行，因此相关的第三方库也会直接被安装，如果在安装过程中显示错误，或报第三方库安装请求失败等，请再次重新运行安装oebuild的命令即可。
 
