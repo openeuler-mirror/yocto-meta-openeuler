@@ -106,16 +106,84 @@ FILES_${PN} += "${libdir}/* "
 FILES_SOLIBSDEV = ""
 
 do_configure_prepend() {
-        grep -q CMAKE_SYSROOT ${WORKDIR}/toolchain.cmake || cat >> ${WORKDIR}/toolchain.cmake <<EOF
-        set( CMAKE_SYSROOT ${STAGING_DIR_HOST} )
+	grep -q CMAKE_SYSROOT ${WORKDIR}/toolchain.cmake || cat >> ${WORKDIR}/toolchain.cmake <<EOF
+	set( CMAKE_SYSROOT ${STAGING_DIR_HOST} )
 EOF
 }
 
 do_install_append () {
-        [[ "${libdir}" != "/usr/lib" ]] || return 0
-        if test -d ${D}/usr/lib ; then
-                install -d ${D}/${libdir}
-                mv ${D}/usr/lib/* ${D}/${libdir}
-                rm -rf ${D}/usr/lib/
-        fi
+	[[ "${libdir}" != "/usr/lib" ]] || return 0
+	if test -d ${D}/usr/lib ; then
+		install -d ${D}/${libdir}
+		mv ${D}/usr/lib/* ${D}/${libdir}
+		rm -rf ${D}/usr/lib/
+	fi
+
+    has_systemd="${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'True', 'False', d)}"
+	# if the system uses systemd, manage isulad with it
+	# the indentation of the word "EOF" is important, do not change it
+	if [ $has_systemd = "True" ]; then
+		install -d ${D}${sysconfdir}/systemd/system
+		# create isulad.service file so systemd can manage isulad based on it
+		if [ ! -e ${D}${sysconfdir}/systemd/system/isulad.service ]; then
+			cat <<-'EOF' >> ${D}${sysconfdir}/systemd/system/isulad.service
+			[Unit]
+			Description=isulad container daemon
+			After=network.target
+
+			[Service]
+			ExecStart=/usr/bin/isulad
+
+			[Install]
+			WantedBy=multi-user.target
+EOF
+		fi
+	fi
+
+    # if the os does not contain systemd, install init script configuring cgroups
+    # because isulad needs cgroups to control resources
+    if [ $has_systemd = "False" ]; then
+        install -d ${D}${sysconfdir}/init.d
+        cat <<-'EOF' >> ${D}${sysconfdir}/init.d/config_cgroup
+        #!/bin/sh
+        ### BEGIN INIT INFO
+        # Provides:          config_cgroup
+        # Required-Start:    
+        # Required-Stop:
+        # Default-Start:     S
+        # Default-Stop:
+        ### END INIT INFO
+        mount -t tmpfs tmpfs /sys/fs/cgroup/
+        mkdir -p /sys/fs/cgroup/cpu
+        mount -t cgroup -o cpu cpu /sys/fs/cgroup/cpu
+        mkdir -p /sys/fs/cgroup/devices
+        mount -t cgroup -o devices devices /sys/fs/cgroup/devices
+        mkdir -p /sys/fs/cgroup/freezer
+        mount -t cgroup -o freezer freezer /sys/fs/cgroup/freezer
+        mkdir -p /sys/fs/cgroup/cpuset
+        mount -t cgroup -o cpuset cpuset /sys/fs/cgroup/cpuset
+        mkdir -p /sys/fs/cgroup/memory
+        mount -t cgroup -o memory memory /sys/fs/cgroup/memory
+        echo 1 > /sys/fs/cgroup/memory/memory.use_hierarchy
+        mkdir -p /sys/fs/cgroup/hugetlb
+        mount -t cgroup -o hugetlb hugetlb /sys/fs/cgroup/hugetlb
+        mkdir -p /sys/fs/cgroup/blkio
+        mount -t cgroup -o blkio blkio /sys/fs/cgroup/blkio
+EOF
+        chmod 755 ${D}${sysconfdir}/init.d/config_cgroup
+        # empower auto configuration of cgroups each time the system boots
+        install -d ${D}${sysconfdir}/rcS.d
+        ln -s ${sysconfdir}/init.d/config_cgroup ${D}${sysconfdir}/rcS.d/S99config_cgroup
+    fi
+}
+
+python () {
+    if bb.utils.contains('DISTRO_FEATURES', 'systemd', True, False, d):
+        # FILES_${PN} cannot be automatically expanded
+        pn = d.getVar('PN', True)
+        d.appendVar('FILES_'+pn, ' ${sysconfdir}/systemd/system/isulad.service')
+    else:
+        pn = d.getVar('PN', True)
+        d.appendVar('FILES_'+pn, ' ${sysconfdir}/init.d/config_cgroup')
+        d.appendVar('FILES_'+pn, ' ${sysconfdir}/rcS.d/S99config_cgroup')
 }
