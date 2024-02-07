@@ -15,6 +15,10 @@ SYSTEMD_SERVICE:${PN}-depmod = "systemd-depmod.service"
 do_install:append () {
     install -m 0644 ${WORKDIR}/systemd-depmod.service ${D}${systemd_unitdir}/system/systemd-depmod.service
     ln -sf ../systemd-depmod.service ${D}${systemd_unitdir}/system/sysinit.target.wants/systemd-depmod.service
+    # the default DNS servers systemd resolved use cannot be accessed in China
+    # so we need to change the default DNS servers to the ones that can be accessed in China
+    # for example, we can use AliDNS servers
+    sed -i 's/#DNS=/DNS=223.5.5.5/' ${D}${sysconfdir}/systemd/resolved.conf
 }
 
 # glib needs meson, meson needs python3-native
