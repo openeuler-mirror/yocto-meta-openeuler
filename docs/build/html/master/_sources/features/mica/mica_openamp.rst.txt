@@ -1,22 +1,10 @@
-基于 OpenAMP 的MICA框架
-###########################
-
 .. _build_openamp_mica:
 
-构建指南
-========
-
-.. seealso::
-
-   目前支持 qemu-arm64, 树莓派4B, Hi3093, ok3568, x86工控机。推荐使用 oebuild 快速构建包含混合部署功能的 MCS 镜像，参考 :ref:`openEuler Embedded MCS镜像构建指导 <mcs_build>`。
-
-   若需要单独构建混合部署的组件，请参考 `mcs 构建安装指导 <https://gitee.com/openeuler/mcs#%E6%9E%84%E5%BB%BA%E5%AE%89%E8%A3%85%E6%8C%87%E5%AF%BC>`_ 。
-   注意，x86仅支持 UniProton，需要切换到 `uniproton_dev 分支 <https://gitee.com/openeuler/mcs/tree/uniproton_dev/>`_ 。
-
-____
+使用指导
+########
 
 在ARM64 QEMU上运行
-==================
+******************
 
 1. 制作 dtb
 
@@ -52,218 +40,109 @@ ____
 
 3. 部署 Client OS
 
-  调整内核打印等级并插入内核模块：
+  调整内核打印等级：
 
   .. code-block:: console
 
      # 为了不影响shell的使用，先屏蔽内核打印：
-     $ echo "1 4 1 7" > /proc/sys/kernel/printk
+     qemu-aarch64:~$ echo "1 4 1 7" > /proc/sys/kernel/printk
 
-     # 插入内核模块
-     $ modprobe mcs_km
-
-  插入内核模块后，可以通过 `cat /proc/iomem` 查看预留出来的 mcs_mem。
-  若 mcs_km.ko 插入失败，可以通过 dmesg 看到对应的失败日志，可能的原因有：1.使用的交叉工具链与内核版本不匹配；2.未预留内存资源
-
-  运行mica_main程序，启动 client os：
+  运行 ``mica`` 程序，根据配置文件创建 client os：
 
   .. code-block:: console
 
-     $ mica_main -c [cpu_id] -t [target_binfile] -a [target_binaddress]
-     eg:
-     $ mica_main -c 3 -t /lib/firmware/qemu-zephyr-image.bin -a 0x7a000000
+     qemu-aarch64:~$ mica --help
+     usage: mica [-h] {create,start,stop,status} ...
 
-  若mica_main成功运行，会有如下打印：
+     Query or send control commands to the micad.
+
+     positional arguments:
+       {create,start,stop,status...}
+                             the command to execute
+         create              Create a new mica client
+         start               Start a client
+         stop                Stop a client
+         status              query the mica client status
+         ...
+
+     options:
+       -h, --help            show this help message and exit
+
+  qemu 镜像中默认安装了一个配置文件样例：`/etc/mica/qemu-zephyr-rproc.conf` ，
+  因此可以通过以下命令启动：``mica create /etc/mica/qemu-zephyr-rproc.conf``
 
   .. code-block:: console
 
-     $ mica_main -c 3 -t /lib/firmware/qemu-zephyr-image.bin -a 0x7a000000
-     ...
-     start client os
-     ...
-     pls open /dev/pts/0 to talk with client OS
-     pty_thread for uart is runnning
-     ...
+     qemu-aarch64:~$ mica create /etc/mica/qemu-zephyr-rproc.conf
+     Creating qemu-zephyr...
+     Successfully created qemu-zephyr!
+     starting qemu-zephyr...
+     start qemu-zephyr successfully!
 
-  此时， **按ctrl-c可以通知client os下线并退出mica_main** ，下线后支持重复拉起。
-  也可以根据打印提示（ ``pls open /dev/pts/0 to talk with client OS`` ），
-  通过 /dev/pts/0 与 client os 进行 shell 交互，例如：
+  由于在配置文件中指定了 AutoBoot，因此在创建时会自动拉起 qemu-zephyr 实例，拉起成功后，
+  可以通过以下命令查看实例状态：``mica status``
 
   .. code-block:: console
 
-     # 通过 SSH 登录 QEMU
-     $ ssh root@192.168.10.8
+     qemu-aarch64:~$ mica status
+     Name                          Assigned CPU        State               Service
+     qemu-zephyr                   3                   Running             rpmsg-tty1(/dev/ttyRPMSG0) rpmsg-tty(/dev/ttyRPMSG1)
 
-     ... ...
+  可以看到该实例关联的 CPU ID 为3，状态为 Running，并且为 Linux 提供了两个服务：rpmsg-tty 以及 rpmsg-tty1。
+  rpmsg-tty 绑定了 zephyr 的 shell，因此我们可以通过打开对应的设备 ``/dev/ttyRPMSG1`` 来访问 zephyr 的 shell：
+
+  .. code-block:: console
 
      # 打开 Client OS 的 shell
-     qemu-aarch64:~$ screen /dev/pts/0
+     qemu-aarch64:~$ screen /dev/ttyRPMSG1
 
      ... ...
+     # 回车后可以连上 shell，并执行 zephyr 的 shell 命令
 
      uart:~$ kernel version
      Zephyr version 3.2.0
 
-  可以通过 ``Ctrl-a k`` 或 ``Ctrl-a Ctrl-k`` 组合键退出shell，参考 `screen(1) — Linux manual page <https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS>`_ 。
+  之后，可以通过 ``Ctrl-a k`` 或 ``Ctrl-a Ctrl-k`` 组合键退出shell，参考 `screen(1) — Linux manual page <https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS>`_ 。
 
 ____
 
 在树莓派4B上运行
-================
+****************
 
 oebuild 构建出来的 MCS 镜像已经通过 dt-overlay 等方式预留了相关资源，并且默认使用了支持 psci 的 uefi 引导固件。
-因此只需要根据 :ref:`openeuler-image-uefi启动使用指导 <raspberrypi4-uefi-guide>` 进行镜像启动，再部署mcs即可，步骤跟QEMU类似：
-
-.. code-block:: console
-
-   # 调整内核打印等级
-   $ echo "1 4 1 7" > /proc/sys/kernel/printk
-
-   # 插入内核模块
-   $ modprobe mcs_km
-
-   # 运行mica_main程序，启动 client os：
-   $ mica_main -c 3 -t /lib/firmware/rpi4-zephyr-image.bin -a 0x7a000000
-
-   # 若mica_main成功运行，会有如下打印：
-   ...
-   start client os
-   ...
-   pls open /dev/pts/0 to talk with client OS
-   pty_thread for uart is runnning
-   ...
-
-   # 此时， **按ctrl-c可以通知client os下线并退出mica_main** ，下线后支持重复拉起。
-   # 也可以根据打印提示（ ``pls open /dev/pts/0 to talk with client OS`` ），
-   # 通过 /dev/pts/0 与 client os 进行 shell 交互，例如：
-
-   # 通过 SSH 登录树莓派
-   $ ssh root@192.168.10.8
-
-   ... ...
-
-   # 打开 Client OS 的 shell
-   qemu-aarch64:~$ screen /dev/pts/0
-
-   ... ...
-
-   uart:~$ kernel version
-   Zephyr version 3.2.0
-
-   # 可以通过 <Ctrl-a k> 或 <Ctrl-a Ctrl-k> 组合键退出shell，具体请参考 screen 的 manual page
-
-MICA支持对树莓派4B上运行的Uniproton进行调试，请参考 :ref:`mica_debug` 。
+因此只需要根据 :ref:`openeuler-image-uefi启动使用指导 <raspberrypi4-uefi-guide>` 进行镜像启动，再部署 MICA 即可，步骤跟QEMU类似。
 
 ____
 
-在Hi3093上运行
-==============
+在x86工控机上运行
+*****************
 
-Hi3093 需要在 uboot 中添加启动参数 ``maxcpus=3`` 预留出一个 cpu 跑 UniProton：
+.. note::
 
-.. code-block:: console
+   当前 x86 工控机只支持运行 UniProton，并且 x86 的部署方法与 arm64 有所不同，整合工作还在进行中。
 
-   # 使用在ctrl+b进入uboot，限制启动的cpu数量
-   setenv bootargs "${bootargs} maxcpus=3"
+首先，需要先根据 :ref:`工控机HVAEIPC-M10 镜像构建安装指导 <hvaepic-m10>` 在工控机上安装 openEuler Embedded 镜像。
 
-部署mcs的步骤跟QEMU类似，UniProton作为Client OS：
+之后，我们还需要编译 UniProton 以及 x86环境下需要的额外启动程序 ap_boot，
+请参考 `openEuler Embedded & Uniproton x86 MICA环境安装指导 <https://gitee.com/openeuler/UniProton/blob/master/doc/demoUsageGuide/x86_64_demo_usage_guide.md>`_ 。
 
-.. code-block:: console
-
-   # 调整内核打印等级
-   $ echo "1 4 1 7" > /proc/sys/kernel/printk
-
-   # 插入内核模块
-   $ modprobe mcs_km
-
-   # 运行mica_main程序，启动 client os：
-   $ mica_main -c 3 -t /firmware/hi3093_ut.bin -a 0x93000000 &
-
-   # 若mica_main成功运行，会有如下打印：
-   ...
-   start client os
-   ...
-   pls open /dev/pts/1 to talk with client OS
-   pty_thread for console is runnning
-   ...
-
-   # 根据打印提示（ ``pls open /dev/pts/0 to talk with client OS`` ），
-   # 通过 /dev/pts/1 查看 UniProton 的串口输出，例如：
-   qemu-aarch64:~$ screen /dev/pts/1
-
-   # 敲回车后，可以查看uniproton输出信息
-   # 可以通过 <Ctrl-a k> 或 <Ctrl-a Ctrl-k> 组合键退出console，具体请参考 screen 的 manual page
-
-____
-
-在ok3568上运行
-==============
-
-ok3568支持通过mcs拉起 RT-Thread，步骤如下：
+启动 openEuler Embedded 后，需要为 UniProton 预留出必要的内存、CPU资源。如四核CPU建议预留一个核，内存建议预留512M。
+可通过修改 boot 分区的 grub.cfg 配置内核启动参数，新增 ``maxcpus=3 memmap=512M\$0x110000000`` 参数，参考如下：
 
 .. code-block:: console
 
-   # 调整内核打印等级
-   $ echo "1 4 1 7" > /proc/sys/kernel/printk
+   openEuler-Embedded:~$ mount /dev/sda1 /boot
+   openEuler-Embedded:~$ cat /boot/efi/boot/grub.cfg
+   # Automatically created by OE
+   serial --unit=0 --speed=115200 --word=8 --parity=no --stop=1
+   default=boot
+   timeout=10
 
-   # 插入内核模块
-   $ modprobe mcs_km
+   menuentry 'boot'{
+   linux /bzImage  root=*** rw rootwait quiet maxcpus=3 memmap=512M\$0x110000000 console=ttyS0,115200 console=tty0
+   }
 
-   # 运行mica_main程序，启动 client os：
-   $ mica_main -c 3 -t /firmware/rtthread-ok3568.bin -a 0x7a000000
-
-   # 若mica_main成功运行，会有如下打印：
-   ...
-   start client os
-   ...
-
-   # ok3568支持通过输入功能编号进行交互、下线、重新拉起:
-   # 输入h查看用法
-      h
-      please input number:<1-8>
-      1. test echo
-      2. send matrix
-      3. start pty
-      4. close pty
-      5. shutdown clientOS
-      6. start clientOS
-      7. test ping
-      8. test flood-ping
-      9. exit
-
-----------
-
-在HVAEIPC-M10 (x86工控机) 上运行
-=================================
-
-当前x86工控机只支持运行UniProton。
-首先，我们需要先构建运行在x86工控机上的openEuler Embedded，参考 :ref:`基于OpenAMP的MICA镜像构建指南 <build_openamp_mica>`。
-在x86工控机上启动openEuler Embedded还需要制作启动盘，
-参考 :ref:`openEuler Embedded x86工控机镜像安装指导 <create_start_up_image>`。
-
-之后，我们还需要编译Uniproton以及x86环境下需要的额外启动程序ap_boot，
-参考 `openEuler Embedded & Uniproton x86 MICA环境安装指导 <https://gitee.com/openeuler/UniProton/blob/master/doc/demoUsageGuide/x86_64_demo_usage_guide.md>`_ 。
-
-启动openEuler Embedded后，通过修改启动盘的启动分区的grub.cfg文件，
-为Client OS预留出一个CPU以及内存资源。
-将镜像启动分区挂载到 /mnt 目录下，然后修改 /mnt/efi/boot/grub.cfg 文件，
-在 ``menuentry 'boot'`` 中添加 ``maxcpus=3`` 和 ``memmap=256M\$0x110000000`` 参数，
-限制openEuler Embedded只使用3个核心，以及预留出物理地址从0x110000000到0x11fffffff的内存资源。
-
-.. code-block:: console
-
-   $ sudo fdisk -l
-   Disk /dev/sda: 14.91 GiB, 16013942784 bytes, 31277232 sectors
-   ...
-   Number   Start (sector)    End (sector)  Size   Name
-   1       2048              1050623       512M    boot
-   ...
-   $ sudo mount /dev/sda1 /mnt
-   $ sudo vi /mnt/efi/boot/grub.cfg
-   $ sudo umount /mnt
-
-当我们成功在修改启动参数并且重启以后，
-可以通过以下命令查看当前CPU和内存的使用情况：
+修改完成后，请重启工控机，并通过以下命令查看当前CPU和内存的使用情况：
 
 .. code-block:: console
 
@@ -273,12 +152,11 @@ ok3568支持通过mcs拉起 RT-Thread，步骤如下：
    # 查看内存使用情况
    $ cat /proc/iomem
    ...
-   110000000-11fffffff : Reserved
+   110000000-12fffffff : Reserved
    ...
-               
 
 这说明当前系统正在使用3个CPU，已经预留出了一个CPU。
-内存方面，系统已经预留出了从0x110000000到0x11fffffff的内存资源。
+内存方面，系统已经预留出了从0x110000000到0x12fffffff的内存资源。
 
 接下来，我们通过在openEuler Embedded上运行如下命令启动MICA：
 
@@ -287,16 +165,9 @@ ok3568支持通过mcs拉起 RT-Thread，步骤如下：
    # 调整内核打印等级(可选择不执行)
    $ echo "1 4 1 7" > /proc/sys/kernel/printk
 
-   # 此demo使用标准openEuler Embedded镜像，其中包含mica脚本
-   # mica脚本位于 /usr/bin/mica
-   # mica脚本的使用方法可以通过 mica -h 查看
    $ mica start /path/to/executable
 
-   # 若没有使用标准镜像，没有mica脚本，可以通过以下命令启动MICA：
-   $ insmod /path/to/mcs_km.ko rmem_base=0x110000000 rmem_size=0x10000000
-   $ /path/to/mica_main -c 3 -t /path/to/executable -a 0x118000000 -b /path/to/ap_boot
-
-   # 若mica_main成功运行，会有如下打印：
+   # 若成功运行，会有如下打印：
    ...
    start client os
    ...
@@ -305,7 +176,7 @@ ok3568支持通过mcs拉起 RT-Thread，步骤如下：
    ...
    found matched endpoint, creating console with id:2 in host os
 
-   # 根据打印提示（ ``found matched endpoint, creating console with id:2 in host os`` ），
+   # 根据打印提示（found matched endpoint, creating console with id:2 in host os），
    # 说明成功创建了console，可以通过 /dev/pts/1 查看 UniProton 的串口输出，例如：
    $ screen /dev/pts/1
 
@@ -395,6 +266,8 @@ ring buffer 的定义在 ``library/include/mcs/ring_buffer.h`` 文件中。
 MICA会退出与调试相关的模块，并保留pty application模块，以保持和Client OS通过pty交互的能力。
 Uniproton会清除所有断点，并进入正常的运行状态。
 
-.. note:: 
+.. note::
+
    当前Uniproton的GDB stub仅支持 ``break``， ``continue``， ``print`` 和 ``quit`` 四个命令。
    并不支持 ``ctrl-c``，所以按下后虽然会返回GDB命令行，但是Uniproton仍然在运行。
+

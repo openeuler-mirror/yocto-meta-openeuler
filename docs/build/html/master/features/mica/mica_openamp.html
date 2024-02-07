@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>基于 OpenAMP 的MICA框架 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
+  <title>使用指导 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
@@ -20,8 +20,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="基于 RemoteProc &amp; RPMsg 框架的混合部署框架" href="mica_linux_kernel.html" />
-    <link rel="prev" title="混合关键性系统简介" href="mica.html" /> 
+    <link rel="next" title="mica命令与配置文件" href="mica_ctl.html" />
+    <link rel="prev" title="支持列表与构建指导" href="mica_build.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,21 +50,17 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">关键特性</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../software_package_description.html">当前所支持的软件包</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html">混合关键性系统框架 (MICA)</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="mica.html">混合关键性系统简介</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">基于 OpenAMP 的MICA框架</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#build-openamp-mica">构建指南</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">多OS混合关键性部署框架 (MICA)</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mica.html">简介</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mica_build.html">支持列表与构建指导</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">使用指导</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#arm64-qemu">在ARM64 QEMU上运行</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#b">在树莓派4B上运行</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#hi3093">在Hi3093上运行</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ok3568">在ok3568上运行</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#hvaeipc-m10-x86">在HVAEIPC-M10 (x86工控机) 上运行</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#gdb-stub-client-os">调试支持 GDB stub 的 Client OS</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#x86">在x86工控机上运行</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="mica_linux_kernel.html">基于 RemoteProc &amp; RPMsg 框架的混合部署框架</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mica_ctl.html">mica命令与配置文件</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mica_jailhouse.html">基于 Jailhouse 的混合部署框架</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mica_build.html">混合关键性系统（MCS）镜像构建指导</a></li>
 <li class="toctree-l3"><a class="reference internal" href="benchmark.html">性能测试</a></li>
 </ul>
 </li>
@@ -111,8 +107,8 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="../index.html">关键特性</a> &raquo;</li>
-          <li><a href="index.html">混合关键性系统框架 (MICA)</a> &raquo;</li>
-      <li>基于 OpenAMP 的MICA框架</li>
+          <li><a href="index.html">多OS混合关键性部署框架 (MICA)</a> &raquo;</li>
+      <li>使用指导</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -121,18 +117,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="openamp-mica">
-<h1>基于 OpenAMP 的MICA框架<a class="headerlink" href="#openamp-mica" title="Permalink to this headline">¶</a></h1>
-<section id="build-openamp-mica">
-<span id="id1"></span><h2>构建指南<a class="headerlink" href="#build-openamp-mica" title="Permalink to this headline">¶</a></h2>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p>目前支持 qemu-arm64, 树莓派4B, Hi3093, ok3568, x86工控机。推荐使用 oebuild 快速构建包含混合部署功能的 MCS 镜像，参考 <a class="reference internal" href="mica_build.html#mcs-build"><span class="std std-ref">openEuler Embedded MCS镜像构建指导</span></a>。</p>
-<p>若需要单独构建混合部署的组件，请参考 <a class="reference external" href="https://gitee.com/openeuler/mcs#%E6%9E%84%E5%BB%BA%E5%AE%89%E8%A3%85%E6%8C%87%E5%AF%BC">mcs 构建安装指导</a> 。
-注意，x86仅支持 UniProton，需要切换到 <a class="reference external" href="https://gitee.com/openeuler/mcs/tree/uniproton_dev/">uniproton_dev 分支</a> 。</p>
-</div>
-</section>
-<hr class="docutils" />
+  <section id="build-openamp-mica">
+<span id="id1"></span><h1>使用指导<a class="headerlink" href="#build-openamp-mica" title="Permalink to this headline">¶</a></h1>
 <section id="arm64-qemu">
 <h2>在ARM64 QEMU上运行<a class="headerlink" href="#arm64-qemu" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
@@ -172,218 +158,111 @@
 <li><p>部署 Client OS</p></li>
 </ol>
 <blockquote>
-<div><p>调整内核打印等级并插入内核模块：</p>
+<div><p>调整内核打印等级：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>为了不影响shell的使用，先屏蔽内核打印：
-<span class="gp">$ </span><span class="nb">echo</span> <span class="s2">&quot;1 4 1 7&quot;</span> &gt; /proc/sys/kernel/printk
+<span class="gp">qemu-aarch64:~$ </span><span class="nb">echo</span> <span class="s2">&quot;1 4 1 7&quot;</span> &gt; /proc/sys/kernel/printk
+</pre></div>
+</div>
+<p>运行 <code class="docutils literal notranslate"><span class="pre">mica</span></code> 程序，根据配置文件创建 client os：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica --help
+<span class="go">usage: mica [-h] {create,start,stop,status} ...</span>
 
-<span class="gp"># </span>插入内核模块
-<span class="gp">$ </span>modprobe mcs_km
+<span class="go">Query or send control commands to the micad.</span>
+
+<span class="go">positional arguments:</span>
+<span class="go">  {create,start,stop,status...}</span>
+<span class="go">                        the command to execute</span>
+<span class="go">    create              Create a new mica client</span>
+<span class="go">    start               Start a client</span>
+<span class="go">    stop                Stop a client</span>
+<span class="go">    status              query the mica client status</span>
+<span class="go">    ...</span>
+
+<span class="go">options:</span>
+<span class="go">  -h, --help            show this help message and exit</span>
 </pre></div>
 </div>
-<p>插入内核模块后，可以通过 <cite>cat /proc/iomem</cite> 查看预留出来的 mcs_mem。
-若 mcs_km.ko 插入失败，可以通过 dmesg 看到对应的失败日志，可能的原因有：1.使用的交叉工具链与内核版本不匹配；2.未预留内存资源</p>
-<p>运行mica_main程序，启动 client os：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>mica_main -c <span class="o">[</span>cpu_id<span class="o">]</span> -t <span class="o">[</span>target_binfile<span class="o">]</span> -a <span class="o">[</span>target_binaddress<span class="o">]</span>
-<span class="go">eg:</span>
-<span class="gp">$ </span>mica_main -c <span class="m">3</span> -t /lib/firmware/qemu-zephyr-image.bin -a 0x7a000000
+<p>qemu 镜像中默认安装了一个配置文件样例：<cite>/etc/mica/qemu-zephyr-rproc.conf</cite> ，
+因此可以通过以下命令启动：<code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">create</span> <span class="pre">/etc/mica/qemu-zephyr-rproc.conf</span></code></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica create /etc/mica/qemu-zephyr-rproc.conf
+<span class="go">Creating qemu-zephyr...</span>
+<span class="go">Successfully created qemu-zephyr!</span>
+<span class="go">starting qemu-zephyr...</span>
+<span class="go">start qemu-zephyr successfully!</span>
 </pre></div>
 </div>
-<p>若mica_main成功运行，会有如下打印：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>mica_main -c <span class="m">3</span> -t /lib/firmware/qemu-zephyr-image.bin -a 0x7a000000
-<span class="go">...</span>
-<span class="go">start client os</span>
-<span class="go">...</span>
-<span class="go">pls open /dev/pts/0 to talk with client OS</span>
-<span class="go">pty_thread for uart is runnning</span>
-<span class="go">...</span>
+<p>由于在配置文件中指定了 AutoBoot，因此在创建时会自动拉起 qemu-zephyr 实例，拉起成功后，
+可以通过以下命令查看实例状态：<code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">status</span></code></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica status
+<span class="go">Name                          Assigned CPU        State               Service</span>
+<span class="go">qemu-zephyr                   3                   Running             rpmsg-tty1(/dev/ttyRPMSG0) rpmsg-tty(/dev/ttyRPMSG1)</span>
 </pre></div>
 </div>
-<p>此时， <strong>按ctrl-c可以通知client os下线并退出mica_main</strong> ，下线后支持重复拉起。
-也可以根据打印提示（ <code class="docutils literal notranslate"><span class="pre">pls</span> <span class="pre">open</span> <span class="pre">/dev/pts/0</span> <span class="pre">to</span> <span class="pre">talk</span> <span class="pre">with</span> <span class="pre">client</span> <span class="pre">OS</span></code> ），
-通过 /dev/pts/0 与 client os 进行 shell 交互，例如：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>通过 SSH 登录 QEMU
-<span class="gp">$ </span>ssh root@192.168.10.8
+<p>可以看到该实例关联的 CPU ID 为3，状态为 Running，并且为 Linux 提供了两个服务：rpmsg-tty 以及 rpmsg-tty1。
+rpmsg-tty 绑定了 zephyr 的 shell，因此我们可以通过打开对应的设备 <code class="docutils literal notranslate"><span class="pre">/dev/ttyRPMSG1</span></code> 来访问 zephyr 的 shell：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>打开 Client OS 的 shell
+<span class="gp">qemu-aarch64:~$ </span>screen /dev/ttyRPMSG1
 
 <span class="go">... ...</span>
-
-<span class="gp"># </span>打开 Client OS 的 shell
-<span class="gp">qemu-aarch64:~$ </span>screen /dev/pts/0
-
-<span class="go">... ...</span>
+<span class="gp"># </span>回车后可以连上 shell，并执行 zephyr 的 shell 命令
 
 <span class="gp">uart:~$ </span>kernel version
 <span class="go">Zephyr version 3.2.0</span>
 </pre></div>
 </div>
-<p>可以通过 <code class="docutils literal notranslate"><span class="pre">Ctrl-a</span> <span class="pre">k</span></code> 或 <code class="docutils literal notranslate"><span class="pre">Ctrl-a</span> <span class="pre">Ctrl-k</span></code> 组合键退出shell，参考 <a class="reference external" href="https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS">screen(1) — Linux manual page</a> 。</p>
+<p>之后，可以通过 <code class="docutils literal notranslate"><span class="pre">Ctrl-a</span> <span class="pre">k</span></code> 或 <code class="docutils literal notranslate"><span class="pre">Ctrl-a</span> <span class="pre">Ctrl-k</span></code> 组合键退出shell，参考 <a class="reference external" href="https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS">screen(1) — Linux manual page</a> 。</p>
 </div></blockquote>
 </section>
 <hr class="docutils" />
 <section id="b">
 <h2>在树莓派4B上运行<a class="headerlink" href="#b" title="Permalink to this headline">¶</a></h2>
 <p>oebuild 构建出来的 MCS 镜像已经通过 dt-overlay 等方式预留了相关资源，并且默认使用了支持 psci 的 uefi 引导固件。
-因此只需要根据 <a class="reference internal" href="../../bsp/arm64/raspberrypi4/uefi.html#raspberrypi4-uefi-guide"><span class="std std-ref">openeuler-image-uefi启动使用指导</span></a> 进行镜像启动，再部署mcs即可，步骤跟QEMU类似：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>调整内核打印等级
-<span class="gp">$ </span><span class="nb">echo</span> <span class="s2">&quot;1 4 1 7&quot;</span> &gt; /proc/sys/kernel/printk
-
-<span class="gp"># </span>插入内核模块
-<span class="gp">$ </span>modprobe mcs_km
-
-<span class="gp"># </span>运行mica_main程序，启动 client os：
-<span class="gp">$ </span>mica_main -c <span class="m">3</span> -t /lib/firmware/rpi4-zephyr-image.bin -a 0x7a000000
-
-<span class="gp"># </span>若mica_main成功运行，会有如下打印：
-<span class="go">...</span>
-<span class="go">start client os</span>
-<span class="go">...</span>
-<span class="go">pls open /dev/pts/0 to talk with client OS</span>
-<span class="go">pty_thread for uart is runnning</span>
-<span class="go">...</span>
-
-<span class="gp"># </span>此时， **按ctrl-c可以通知client os下线并退出mica_main** ，下线后支持重复拉起。
-<span class="gp"># </span>也可以根据打印提示（ <span class="sb">``</span>pls open /dev/pts/0 to talk with client OS<span class="sb">``</span> ），
-<span class="gp"># </span>通过 /dev/pts/0 与 client os 进行 shell 交互，例如：
-
-<span class="gp"># </span>通过 SSH 登录树莓派
-<span class="gp">$ </span>ssh root@192.168.10.8
-
-<span class="go">... ...</span>
-
-<span class="gp"># </span>打开 Client OS 的 shell
-<span class="gp">qemu-aarch64:~$ </span>screen /dev/pts/0
-
-<span class="go">... ...</span>
-
-<span class="gp">uart:~$ </span>kernel version
-<span class="go">Zephyr version 3.2.0</span>
-
-<span class="gp"># </span>可以通过 &lt;Ctrl-a k&gt; 或 &lt;Ctrl-a Ctrl-k&gt; 组合键退出shell，具体请参考 screen 的 manual page
-</pre></div>
-</div>
-<p>MICA支持对树莓派4B上运行的Uniproton进行调试，请参考 <a class="reference internal" href="#mica-debug"><span class="std std-ref">调试支持 GDB stub 的 Client OS</span></a> 。</p>
+因此只需要根据 <a class="reference internal" href="../../bsp/arm64/raspberrypi4/uefi.html#raspberrypi4-uefi-guide"><span class="std std-ref">openeuler-image-uefi启动使用指导</span></a> 进行镜像启动，再部署 MICA 即可，步骤跟QEMU类似。</p>
 </section>
 <hr class="docutils" />
-<section id="hi3093">
-<h2>在Hi3093上运行<a class="headerlink" href="#hi3093" title="Permalink to this headline">¶</a></h2>
-<p>Hi3093 需要在 uboot 中添加启动参数 <code class="docutils literal notranslate"><span class="pre">maxcpus=3</span></code> 预留出一个 cpu 跑 UniProton：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>使用在ctrl+b进入uboot，限制启动的cpu数量
-<span class="go">setenv bootargs &quot;${bootargs} maxcpus=3&quot;</span>
+<section id="x86">
+<h2>在x86工控机上运行<a class="headerlink" href="#x86" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>当前 x86 工控机只支持运行 UniProton，并且 x86 的部署方法与 arm64 有所不同，整合工作还在进行中。</p>
+</div>
+<p>首先，需要先根据 <a class="reference internal" href="../../bsp/x86/HVAEIPC-M10/m10.html#hvaepic-m10"><span class="std std-ref">工控机HVAEIPC-M10 镜像构建安装指导</span></a> 在工控机上安装 openEuler Embedded 镜像。</p>
+<p>之后，我们还需要编译 UniProton 以及 x86环境下需要的额外启动程序 ap_boot，
+请参考 <a class="reference external" href="https://gitee.com/openeuler/UniProton/blob/master/doc/demoUsageGuide/x86_64_demo_usage_guide.md">openEuler Embedded &amp; Uniproton x86 MICA环境安装指导</a> 。</p>
+<p>启动 openEuler Embedded 后，需要为 UniProton 预留出必要的内存、CPU资源。如四核CPU建议预留一个核，内存建议预留512M。
+可通过修改 boot 分区的 grub.cfg 配置内核启动参数，新增 <code class="docutils literal notranslate"><span class="pre">maxcpus=3</span> <span class="pre">memmap=512M\$0x110000000</span></code> 参数，参考如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">openEuler-Embedded:~$ </span>mount /dev/sda1 /boot
+<span class="gp">openEuler-Embedded:~$ </span>cat /boot/efi/boot/grub.cfg
+<span class="gp"># </span>Automatically created by OE
+<span class="go">serial --unit=0 --speed=115200 --word=8 --parity=no --stop=1</span>
+<span class="go">default=boot</span>
+<span class="go">timeout=10</span>
+
+<span class="go">menuentry &#39;boot&#39;{</span>
+<span class="go">linux /bzImage  root=*** rw rootwait quiet maxcpus=3 memmap=512M\$0x110000000 console=ttyS0,115200 console=tty0</span>
+<span class="go">}</span>
 </pre></div>
 </div>
-<p>部署mcs的步骤跟QEMU类似，UniProton作为Client OS：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>调整内核打印等级
-<span class="gp">$ </span><span class="nb">echo</span> <span class="s2">&quot;1 4 1 7&quot;</span> &gt; /proc/sys/kernel/printk
-
-<span class="gp"># </span>插入内核模块
-<span class="gp">$ </span>modprobe mcs_km
-
-<span class="gp"># </span>运行mica_main程序，启动 client os：
-<span class="gp">$ </span>mica_main -c <span class="m">3</span> -t /firmware/hi3093_ut.bin -a 0x93000000 <span class="p">&amp;</span>
-
-<span class="gp"># </span>若mica_main成功运行，会有如下打印：
-<span class="go">...</span>
-<span class="go">start client os</span>
-<span class="go">...</span>
-<span class="go">pls open /dev/pts/1 to talk with client OS</span>
-<span class="go">pty_thread for console is runnning</span>
-<span class="go">...</span>
-
-<span class="gp"># </span>根据打印提示（ <span class="sb">``</span>pls open /dev/pts/0 to talk with client OS<span class="sb">``</span> ），
-<span class="gp"># </span>通过 /dev/pts/1 查看 UniProton 的串口输出，例如：
-<span class="gp">qemu-aarch64:~$ </span>screen /dev/pts/1
-
-<span class="gp"># </span>敲回车后，可以查看uniproton输出信息
-<span class="gp"># </span>可以通过 &lt;Ctrl-a k&gt; 或 &lt;Ctrl-a Ctrl-k&gt; 组合键退出console，具体请参考 screen 的 manual page
-</pre></div>
-</div>
-</section>
-<hr class="docutils" />
-<section id="ok3568">
-<h2>在ok3568上运行<a class="headerlink" href="#ok3568" title="Permalink to this headline">¶</a></h2>
-<p>ok3568支持通过mcs拉起 RT-Thread，步骤如下：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>调整内核打印等级
-<span class="gp">$ </span><span class="nb">echo</span> <span class="s2">&quot;1 4 1 7&quot;</span> &gt; /proc/sys/kernel/printk
-
-<span class="gp"># </span>插入内核模块
-<span class="gp">$ </span>modprobe mcs_km
-
-<span class="gp"># </span>运行mica_main程序，启动 client os：
-<span class="gp">$ </span>mica_main -c <span class="m">3</span> -t /firmware/rtthread-ok3568.bin -a 0x7a000000
-
-<span class="gp"># </span>若mica_main成功运行，会有如下打印：
-<span class="go">...</span>
-<span class="go">start client os</span>
-<span class="go">...</span>
-
-<span class="gp"># </span>ok3568支持通过输入功能编号进行交互、下线、重新拉起:
-<span class="gp"># </span>输入h查看用法
-<span class="go">   h</span>
-<span class="go">   please input number:&lt;1-8&gt;</span>
-<span class="go">   1. test echo</span>
-<span class="go">   2. send matrix</span>
-<span class="go">   3. start pty</span>
-<span class="go">   4. close pty</span>
-<span class="go">   5. shutdown clientOS</span>
-<span class="go">   6. start clientOS</span>
-<span class="go">   7. test ping</span>
-<span class="go">   8. test flood-ping</span>
-<span class="go">   9. exit</span>
-</pre></div>
-</div>
-</section>
-<hr class="docutils" />
-<section id="hvaeipc-m10-x86">
-<h2>在HVAEIPC-M10 (x86工控机) 上运行<a class="headerlink" href="#hvaeipc-m10-x86" title="Permalink to this headline">¶</a></h2>
-<p>当前x86工控机只支持运行UniProton。
-首先，我们需要先构建运行在x86工控机上的openEuler Embedded，参考 <a class="reference internal" href="#build-openamp-mica"><span class="std std-ref">基于OpenAMP的MICA镜像构建指南</span></a>。
-在x86工控机上启动openEuler Embedded还需要制作启动盘，
-参考 <a class="reference internal" href="../../bsp/x86/HVAEIPC-M10/m10.html#create-start-up-image"><span class="std std-ref">openEuler Embedded x86工控机镜像安装指导</span></a>。</p>
-<p>之后，我们还需要编译Uniproton以及x86环境下需要的额外启动程序ap_boot，
-参考 <a class="reference external" href="https://gitee.com/openeuler/UniProton/blob/master/doc/demoUsageGuide/x86_64_demo_usage_guide.md">openEuler Embedded &amp; Uniproton x86 MICA环境安装指导</a> 。</p>
-<p>启动openEuler Embedded后，通过修改启动盘的启动分区的grub.cfg文件，
-为Client OS预留出一个CPU以及内存资源。
-将镜像启动分区挂载到 /mnt 目录下，然后修改 /mnt/efi/boot/grub.cfg 文件，
-在 <code class="docutils literal notranslate"><span class="pre">menuentry</span> <span class="pre">'boot'</span></code> 中添加 <code class="docutils literal notranslate"><span class="pre">maxcpus=3</span></code> 和 <code class="docutils literal notranslate"><span class="pre">memmap=256M\$0x110000000</span></code> 参数，
-限制openEuler Embedded只使用3个核心，以及预留出物理地址从0x110000000到0x11fffffff的内存资源。</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo fdisk -l
-<span class="go">Disk /dev/sda: 14.91 GiB, 16013942784 bytes, 31277232 sectors</span>
-<span class="go">...</span>
-<span class="go">Number   Start (sector)    End (sector)  Size   Name</span>
-<span class="go">1       2048              1050623       512M    boot</span>
-<span class="go">...</span>
-<span class="gp">$ </span>sudo mount /dev/sda1 /mnt
-<span class="gp">$ </span>sudo vi /mnt/efi/boot/grub.cfg
-<span class="gp">$ </span>sudo umount /mnt
-</pre></div>
-</div>
-<p>当我们成功在修改启动参数并且重启以后，
-可以通过以下命令查看当前CPU和内存的使用情况：</p>
+<p>修改完成后，请重启工控机，并通过以下命令查看当前CPU和内存的使用情况：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>查看CPU核心数
 <span class="gp">$ </span>nproc
 <span class="go">3</span>
 <span class="gp"># </span>查看内存使用情况
 <span class="gp">$ </span>cat /proc/iomem
 <span class="go">...</span>
-<span class="go">110000000-11fffffff : Reserved</span>
+<span class="go">110000000-12fffffff : Reserved</span>
 <span class="go">...</span>
 </pre></div>
 </div>
 <p>这说明当前系统正在使用3个CPU，已经预留出了一个CPU。
-内存方面，系统已经预留出了从0x110000000到0x11fffffff的内存资源。</p>
+内存方面，系统已经预留出了从0x110000000到0x12fffffff的内存资源。</p>
 <p>接下来，我们通过在openEuler Embedded上运行如下命令启动MICA：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>调整内核打印等级<span class="o">(</span>可选择不执行<span class="o">)</span>
 <span class="gp">$ </span><span class="nb">echo</span> <span class="s2">&quot;1 4 1 7&quot;</span> &gt; /proc/sys/kernel/printk
 
-<span class="gp"># </span>此demo使用标准openEuler Embedded镜像，其中包含mica脚本
-<span class="gp"># </span>mica脚本位于 /usr/bin/mica
-<span class="gp"># </span>mica脚本的使用方法可以通过 mica -h 查看
 <span class="gp">$ </span>mica start /path/to/executable
 
-<span class="gp"># </span>若没有使用标准镜像，没有mica脚本，可以通过以下命令启动MICA：
-<span class="gp">$ </span>insmod /path/to/mcs_km.ko <span class="nv">rmem_base</span><span class="o">=</span>0x110000000 <span class="nv">rmem_size</span><span class="o">=</span>0x10000000
-<span class="gp">$ </span>/path/to/mica_main -c <span class="m">3</span> -t /path/to/executable -a 0x118000000 -b /path/to/ap_boot
-
-<span class="gp"># </span>若mica_main成功运行，会有如下打印：
+<span class="gp"># </span>若成功运行，会有如下打印：
 <span class="go">...</span>
 <span class="go">start client os</span>
 <span class="go">...</span>
@@ -392,7 +271,7 @@
 <span class="go">...</span>
 <span class="go">found matched endpoint, creating console with id:2 in host os</span>
 
-<span class="gp"># </span>根据打印提示（ <span class="sb">``</span>found matched endpoint, creating console with id:2 <span class="k">in</span> host os<span class="sb">``</span> ），
+<span class="gp"># </span>根据打印提示（found matched endpoint, creating console with id:2 <span class="k">in</span> host os），
 <span class="gp"># </span>说明成功创建了console，可以通过 /dev/pts/1 查看 UniProton 的串口输出，例如：
 <span class="gp">$ </span>screen /dev/pts/1
 
@@ -405,12 +284,11 @@
 </pre></div>
 </div>
 <hr class="docutils" />
-</section>
 <section id="gdb-stub-client-os">
-<span id="mica-debug"></span><h2>调试支持 GDB stub 的 Client OS<a class="headerlink" href="#gdb-stub-client-os" title="Permalink to this headline">¶</a></h2>
+<span id="mica-debug"></span><h3>调试支持 GDB stub 的 Client OS<a class="headerlink" href="#gdb-stub-client-os" title="Permalink to this headline">¶</a></h3>
 <p>当前仅支持调试运行在树莓派4B（aarch64）和x86工控机（x86_64）的Uniproton。</p>
 <section id="id2">
-<h3>相关接口定义<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h4>相关接口定义<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
 <p>首先，对于Client OS而言，需要支持GDB stub。
 当前MICA框架仅支持基于简单ring buffer通信的方式进行GDB stub信息的交互，
 ring buffer的地址和大小在MCS仓库中 <code class="docutils literal notranslate"><span class="pre">library/include/mcs/mica_debug_ring_buffer.h</span></code> 中定义：</p>
@@ -428,7 +306,7 @@ ring buffer的地址和大小在MCS仓库中 <code class="docutils literal notra
 <p>ring buffer 的定义在 <code class="docutils literal notranslate"><span class="pre">library/include/mcs/ring_buffer.h</span></code> 文件中。</p>
 </section>
 <section id="id3">
-<h3>使用方法<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<h4>使用方法<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <p>首先，需要构建含有MICA的openEuler Embedded镜像，请参考 <a class="reference internal" href="#build-openamp-mica"><span class="std std-ref">基于OpenAMP的MICA镜像构建指南</span></a> 。</p>
 <p>然后，需要生成适配了GDB stub 的 Uniproton，参考 <a class="reference external" href="https://gitee.com/zuyiwen/UniProton/blob/stub_dev/src/component/gdbstub/readme.txt">UniProton GDB stub 构建指南</a> 。</p>
 <p>在运行命令时，需要在启动MICA时加上 <code class="docutils literal notranslate"><span class="pre">-d</span></code> 参数。
@@ -473,13 +351,14 @@ Uniproton会清除所有断点，并进入正常的运行状态。</p>
 </section>
 </section>
 </section>
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="mica.html" class="btn btn-neutral float-left" title="混合关键性系统简介" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="mica_linux_kernel.html" class="btn btn-neutral float-right" title="基于 RemoteProc &amp; RPMsg 框架的混合部署框架" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="mica_build.html" class="btn btn-neutral float-left" title="支持列表与构建指导" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mica_ctl.html" class="btn btn-neutral float-right" title="mica命令与配置文件" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
