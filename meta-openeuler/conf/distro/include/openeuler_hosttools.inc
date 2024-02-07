@@ -107,7 +107,7 @@ HOSTTOOLS_NONFATAL += "dtc"
 ASSUME_PROVIDED += "dtc-native intltool-native"
 
 # used by wayland
-ASSUME_PROVIDED += "xorgproto-native python3-mako-native expat-native "
+ASSUME_PROVIDED += "xorgproto-native expat-native "
 
 # used by tcl
 ASSUME_PROVIDED += "tcl-native"
