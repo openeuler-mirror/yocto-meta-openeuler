@@ -45,6 +45,8 @@ SRC_URI = " \
         file://0032-fix-oci-import-compile-error.patch \
         file://0033-2188-Support-both-C-11-and-C-17.patch \
         file://0034-add-config-for-enable-cri-v1.patch \
+        file://config_cgroup \
+        file://isulad.service \
 "
 
 S = "${WORKDIR}/iSulad-v${PV}"
@@ -97,16 +99,37 @@ FILES:${PN} += "${libdir}/* "
 FILES_SOLIBSDEV = ""
 
 do_configure:prepend() {
-        grep -q CMAKE_SYSROOT ${WORKDIR}/toolchain.cmake || cat >> ${WORKDIR}/toolchain.cmake <<EOF
-        set( CMAKE_SYSROOT ${STAGING_DIR_HOST} )
+    grep -q CMAKE_SYSROOT ${WORKDIR}/toolchain.cmake || cat >> ${WORKDIR}/toolchain.cmake <<EOF
+    set( CMAKE_SYSROOT ${STAGING_DIR_HOST} )
 EOF
 }
 
 do_install:append () {
-        [[ "${libdir}" != "/usr/lib" ]] || return 0
-        if test -d ${D}/usr/lib ; then
-                install -d ${D}/${libdir}
-                mv ${D}/usr/lib/* ${D}/${libdir}
-                rm -rf ${D}/usr/lib/
-        fi
+    [[ "${libdir}" != "/usr/lib" ]] || return 0
+    if test -d ${D}/usr/lib ; then
+            install -d ${D}/${libdir}
+            mv ${D}/usr/lib/* ${D}/${libdir}
+            rm -rf ${D}/usr/lib/
+    fi
+
+    has_systemd="${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'True', 'False', d)}"
+	# if the system uses systemd, manage isulad with it
+	# the indentation of the word "EOF" is important, do not change it
+	if [ $has_systemd = "True" ]; then
+		install -d ${D}${sysconfdir}/systemd/system
+		# create isulad.service file so systemd can manage isulad based on it
+		if [ ! -e ${D}${sysconfdir}/systemd/system/isulad.service ]; then
+            install -m 0644 ${WORKDIR}/isulad.service ${D}${sysconfdir}/systemd/system
+		fi
+	fi
+
+    # if the os does not contain systemd, install init script configuring cgroups
+    # because isulad needs cgroups to control resources
+    if [ $has_systemd = "False" ]; then
+        install -d ${D}${sysconfdir}/init.d
+        install -m 0755 ${WORKDIR}/config_cgroup ${D}${sysconfdir}/init.d
+        # empower auto configuration of cgroups each time the system boots
+        install -d ${D}${sysconfdir}/rcS.d
+        ln -s ${sysconfdir}/init.d/config_cgroup ${D}${sysconfdir}/rcS.d/S99config_cgroup
+    fi
 }
