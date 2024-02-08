@@ -23,7 +23,11 @@ packagegroup-container-images \
 #    and new contaniers created, so we need an expandable rootfs.
 # 3. the virtual disk image can be reused and resized.
 IMAGE_FSTYPES_qemu-aarch64 = "wic.bz2"
-WKS_FILE = "virtdisk-qemu.wks" 
+WKS_FILE_qemu-aarch64 = "virtdisk-qemu.wks" 
+IMAGE_FSTYPES_qemu-riscv64 = "wic.bz2"
+WKS_FILE_qemu-riscv64 = "virtdisk-qemu.wks" 
+IMAGE_FSTYPES_qemu-arm = "wic.bz2"
+WKS_FILE_qemu-arm = "virtdisk-qemu.wks" 
 
 # It's a pity that the indentation of the following "here document" codes 
 # looks wired. However, it is unavoidable because the codes are used to
