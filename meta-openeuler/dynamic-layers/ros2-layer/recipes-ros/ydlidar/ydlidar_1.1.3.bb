@@ -5,9 +5,8 @@ LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=4e320231d59c825e45dbfda066af29c9"
 
 inherit cmake
 
-inherit openeuler_source
-
-SRC_URI = "file://0001-GS2.patch \
+SRC_URI:prepend = " file://V${PV}.tar.gz \
+        file://0001-GS2.patch \
         file://0002-windows.patch \
         file://0003-GS1.patch \
         file://0004-S2-Pro.patch \
@@ -42,4 +41,3 @@ do_configure:prepend:class-target() {
 
 
 BBCLASSEXTEND = "native nativesdk"
-
