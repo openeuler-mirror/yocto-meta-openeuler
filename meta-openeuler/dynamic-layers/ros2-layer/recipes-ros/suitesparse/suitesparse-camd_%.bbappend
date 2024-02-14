@@ -1,3 +1,3 @@
 require suitesparse-openeuler.inc
 
-S = "${WORKDIR}/SuiteSparse-${PV}/CAMD"
+S = "${WORKDIR}/SuiteSparse-${SUITESPARSE_PV}/CAMD"

@@ -1,3 +1,3 @@
 require suitesparse-openeuler.inc
 
-S = "${WORKDIR}/SuiteSparse-${PV}/AMD"
+S = "${WORKDIR}/SuiteSparse-${SUITESPARSE_PV}/AMD"

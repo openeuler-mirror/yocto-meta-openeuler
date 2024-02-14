@@ -1,5 +1,6 @@
 require suitesparse-openeuler.inc
 
-S = "${WORKDIR}/SuiteSparse-${PV}/SPQR"
+
+S = "${WORKDIR}/SuiteSparse-${SUITESPARSE_PV}/SPQR"
 
 EXTRA_OEMAKE += "  LAPACK='-llapack' "

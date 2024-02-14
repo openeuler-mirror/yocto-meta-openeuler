@@ -1,5 +1,5 @@
 require suitesparse-openeuler.inc
 
-S = "${WORKDIR}/SuiteSparse-${PV}/CHOLMOD"
+S = "${WORKDIR}/SuiteSparse-${SUITESPARSE_PV}/CHOLMOD"
 
 EXTRA_OEMAKE += "  LAPACK='-llapack' "
