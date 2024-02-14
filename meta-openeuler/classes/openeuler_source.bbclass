@@ -1,3 +1,9 @@
+# this bbclass is used to make a match between package name in recipe and the real package tarball name in openeuler
+# the mismatch is caused by a lot of reasons.
+#  - multiple packages share the same git repo, e.g. rcl_interfaces of openeuler contains multiple packages's src tarball
+#  - the special handling of ros2 related packages in openeuler
+
+# recipes inherited this class, should remove external src uri link
 OPENEULER_SRC_URI_REMOVE = "git https http"
 
 def check_class_valid(d):
@@ -26,6 +32,7 @@ def openeuler_get_item(d, key, default_value):
                 return pkg_item[key]
     return default_value
 
+# read localname_list from maplist file
 def get_localname_list(maplist_dir):
     import yaml
 
@@ -45,6 +52,7 @@ addhandler set_openeuler_variable
 set_openeuler_variable[eventmask] = "bb.event.RecipePreFinalise"
 #set_openeuler_variable[eventmask] = "bb.event.RecipePreFinalise bb.event.RecipeParsed bb.event.ParseStarted bb.event.ParseCompleted bb.event.RecipeTaskPreProcess"
 
+# check whether the package is in maplist file
 def check_source_list(d):
     pkg_name = d.getVar('BPN')
     if d.getVar("MAPLIST_DIR") is not None and os.path.exists(d.getVar("MAPLIST_DIR")):
@@ -53,82 +61,12 @@ def check_source_list(d):
             return True
     return False
 
-def rm_files(src_dir, dst_dir):
-    import shutil
-    if os.path.exists(src_dir):
-        shutil.rmtree(src_dir)
-    if os.path.exists(dst_dir):
-        shutil.rmtree(dst_dir)
-
-def copy_files(src_dir, dst_dir):
-    import shutil
-    if not os.path.exists(dst_dir):
-        os.makedirs(dst_dir)
-    if os.path.exists(src_dir):
-        for file in os.listdir(src_dir):
-            file_path = os.path.join(src_dir, file)
-            dst_path = os.path.join(dst_dir, file)
-            if os.path.isfile(os.path.join(src_dir, file)):
-                shutil.copy2(file_path, dst_path)
-            else:
-                copy_files(file_path, dst_path)
-
-def make_tarball_workspace(func, d):
-    import tarfile
-    import zipfile
-    import re
-    import os
-
-    workdirbase = d.getVar("WORKDIR")
-    localname = d.getVar("OPENEULER_LOCAL_NAME")
-    srcdir = d.getVar("OPENEULER_SP_DIR")
-    workspace_tarball_list = openeuler_get_item(d, 'workspace_tarball', "")
-    for workspace_tarball in workspace_tarball_list:
-        tarname = srcdir + "/" + localname + "/" + workspace_tarball.split()[-1]
-        targetdir = workdirbase + "/" + workspace_tarball.split()[0]
-        res = ""
-        if os.path.isfile(tarname):
-            if ".tar." in tarname:
-                with tarfile.open(tarname, 'r') as tf:
-                    res = tf.getnames()[0]
-            elif tarname.endswith(".zip"):
-                with zipfile.ZipFile(tarname, 'r') as zf:
-                    res = zf.namelist()[0]
-        if len(res) != 0:
-            # some archive may not have root/base dir
-            res = res.split("/")[0]
-            fromdir = workdirbase + "/" + res
-            source = os.path.abspath(fromdir)
-            target = os.path.abspath(targetdir)
-            if source != target:
-                func(source, target)
-
-python clean_tarball_workspace() {
-    make_tarball_workspace(rm_files, d)
-}
-
-python prepare_tarball_workspace() {
-    make_tarball_workspace(copy_files, d)
-}
-
 python add_openeuler_source_uri() {
     tarballs = []
     localname = d.getVar("OPENEULER_LOCAL_NAME")
     workspace_tarball_list = openeuler_get_item(d, 'workspace_tarball', "")
     for workspace_tarball in workspace_tarball_list:
-        tarballs.append(" file://" + localname + "/" + workspace_tarball.split()[-1])
+        tarballs.append(" file://" + localname + "/" + workspace_tarball.split()[-1] +
+                ";subdir=" + workspace_tarball.split()[0] + ";striplevel=1")
     d.setVar('SRC_URI', '%s %s' % (' '.join(tarballs), d.getVar("SRC_URI")))
 }
-
-base_do_unpack:prepend() {
-    if check_class_valid(d):
-        if check_source_list(d):
-            bb.build.exec_func("clean_tarball_workspace", d)
-}
-
-do_unpack:append() {
-    if check_class_valid(d):
-        if check_source_list(d):
-            bb.build.exec_func("prepare_tarball_workspace", d)
-}
-
