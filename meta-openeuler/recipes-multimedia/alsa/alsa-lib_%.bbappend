@@ -1,5 +1,3 @@
-OPENEULER_REPO_NAME = "alsa-lib"
-
 PV = "1.2.9"
 
 SRC_URI:prepend = "file://${BP}.tar.bz2 "

@@ -1,7 +1,4 @@
 # main bbfile: meta/recipes-support/boost/boost_1.75.0.bb
-
-OPENEULER_REPO_NAME = "boost"
-
 PV = "1.81.0"
 
 # modify 0001-Don-t-set-up-arch-instruction-set-flags-we-do-that-o.patch

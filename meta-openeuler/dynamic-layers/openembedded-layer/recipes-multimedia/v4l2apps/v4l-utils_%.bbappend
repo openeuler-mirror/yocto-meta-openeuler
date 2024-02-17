@@ -1,7 +1,4 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-multimedia/v4l2apps/v4l-utils_1.20.0.bb
-
-OPENEULER_REPO_NAME = "v4l-utils"
-
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 PV = "1.24.1"

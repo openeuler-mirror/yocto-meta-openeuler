@@ -6,8 +6,6 @@ S = "${WORKDIR}/${BP}"
 
 require systemd-openeuler.inc
 
-OPENEULER_REPO_NAME = "systemd"
-
 # depmodwrapper is not valid to do depmod in buildtime, add a service to do it in runtime as a workaround.
 # as modutils.sh is not run under systemd
 PACKAGE_BEFORE_PN:append = " ${PN}-depmod "

@@ -1,9 +1,6 @@
 # main bbfile: yocto-meta-openembedded/meta-filesystems/recipes-support/fuse/fuse_2.9.9.bb
-OPENEULER_REPO_NAME = "fuse"
-
 # version in openEuler
 PV = "2.9.9"
-S = "${WORKDIR}/${BP}"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI:remove = " \

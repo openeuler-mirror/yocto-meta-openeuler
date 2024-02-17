@@ -1,7 +1,4 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-graphics/gphoto2/libgphoto2_2.5.27.bb
-
-OPENEULER_REPO_NAME = "libgphoto2"
-
 PV = "2.5.18"
 
 # source change to openEuler
