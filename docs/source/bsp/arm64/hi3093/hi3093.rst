@@ -3,7 +3,7 @@ Hi3093 镜像构建与说明
  
 本章主要介绍openEuler Embedded中Hi3093系列板卡的镜像构建，使用和特性介绍。
  
-当前版本支持官方mpu_solution BSP源码的构建集成，并生成可用于Hi3093 EMMC烧录的镜像部署件。
+当前版本支持官方mpu_solution BSP源码的构建集成（mpu镜像），并生成可用于Hi3093 EMMC烧录的镜像部署件。
 
 
 Hi3093硬件介绍
@@ -57,7 +57,7 @@ Hi3093硬件介绍
       #执行完成后，将在 /home/user/buildwork/src/ 目录下载好主构建源码，并初始化构建虚拟环境。
 
 
- （2）准备mpu_solution源码：
+ （2）准备mpu_solution源码（若不使用集成BSP驱动的mpu镜像，可跳过此步骤）：
 
    获取Hi3093的mpu_solution源码授权，解压并将对应mpu_solution文件夹拷贝到src目录，如
 
@@ -74,7 +74,9 @@ Hi3093硬件介绍
       # 以上命令可追加-f参数，通过oebuild generate -l查看支持的配置，比如-f openeuler-rt开启软实时
 
 
-3. 镜像构建和部署
+3. mpu镜像构建和部署
+
+ 该镜像（openeuler-image-mpu）直接集成mpu_solution中的BSP驱动
 
  （1）进入构建目录并构建：
 
@@ -85,7 +87,8 @@ Hi3093硬件介绍
       # oebuild bitbake执行后将进入构建虚拟环境
       sudo dnf install vim
       # 注意需要安装vim工具，当前3093打包依赖xxd命令，由vim软件包提供此命令
-      bitbake openeuler-image
+      bitbake openeuler-image-mpu
+      # 注意若只需要构建普通不包含BSP驱动的通用镜像，可通过bitbake openeuler-image，将仅生成内核zImage和无BSP驱动的文件系统
 
 
  （2）构建完成后，输出件见/home/user/buildwork/build_hi3093/output/[时间搓]，内容如下
