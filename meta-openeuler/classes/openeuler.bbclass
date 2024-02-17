@@ -205,7 +205,8 @@ def download_repo(d, repo_dir, repo_url ,version = None):
     repo = init_repo_dir(repo_dir)
     remote = None
     for item in repo.remotes:
-        if repo_url == item.url:
+        # for the accuracy of comparison, remove the ".git" from the end of both strings
+        if repo_url.rstrip(".git") == item.url.rstrip(".git"):
             remote = item
         else:
             continue
