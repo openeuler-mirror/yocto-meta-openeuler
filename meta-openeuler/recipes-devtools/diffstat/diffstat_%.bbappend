@@ -2,7 +2,7 @@
 PV = "1.64"
 
 # openeuler src
-SRC_URI:prepend = "file://diffstat-${PV}.tgz \
+SRC_URI:prepend = "file://${BP}.tgz \
                   "
 
-S = "${WORKDIR}/diffstat-${PV}"
+S = "${WORKDIR}/${BP}"

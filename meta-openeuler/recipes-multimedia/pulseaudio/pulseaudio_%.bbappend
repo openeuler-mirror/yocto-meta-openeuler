@@ -14,7 +14,7 @@ SRC_URI += " \
         file://0001-alsa-ucm-Always-create-device-conflicting-supported-.patch \
 "
 
-S = "${WORKDIR}/pulseaudio-${PV}"
+S = "${WORKDIR}/${BP}"
 
 # it is a mobile feature
 PACKAGECONFIG:remove = " ofono "

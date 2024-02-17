@@ -7,6 +7,6 @@ PV = "2.5.17"
 
 # source change to openEuler
 SRC_URI += " \
-        file://gphoto2-${PV}.tar.bz2 \
+        file://${BP}.tar.bz2 \
         file://gphoto2-2.5.17-sw.patch \
         "

@@ -6,7 +6,7 @@ OPENEULER_LOCAL_NAME = "oee_archive"
 PV = "0.8.18.1.11"
 
 SRC_URI = " \
-        file://${OPENEULER_LOCAL_NAME}/${BPN}/l3afpad-${PV}.tar.gz \
+        file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.gz \
 "
 
-S = "${WORKDIR}/l3afpad-${PV}"
+S = "${WORKDIR}/${BP}"

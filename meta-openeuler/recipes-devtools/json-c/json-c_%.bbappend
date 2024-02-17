@@ -5,7 +5,7 @@ PV = "0.17-20230812"
 
 # openeuler src package
 SRC_URI:prepend = " \
-        file://json-c-${PV}.tar.gz \
+        file://${BP}.tar.gz \
         "
 
 SRC_URI[md5sum] = "6d724389b0a08c519d9dd6e2fac7efb8"

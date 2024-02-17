@@ -9,7 +9,7 @@ SRC_URI = "file://use-includedir.patch \
 "
 
 
-SRC_URI:append = "file://gmp-${PV}.tar.xz \
+SRC_URI:append = "file://${BP}.tar.xz \
 "
 
 SRC_URI[md5sum] = "956dc04e864001a9c22429f761f2c283"

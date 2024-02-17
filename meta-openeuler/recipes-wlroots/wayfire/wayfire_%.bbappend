@@ -7,11 +7,11 @@ OPENEULER_LOCAL_NAME = "oee_archive"
 PV = "0.7.5"
 
 SRC_URI += " \
-        file://${OPENEULER_LOCAL_NAME}/${BPN}/wayfire-${PV}.tar.xz \
+        file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.xz \
         file://ignore-drop-root.patch \
 "
 
-S = "${WORKDIR}/wayfire-${PV}"
+S = "${WORKDIR}/${BP}"
 
 
 # make a lite version

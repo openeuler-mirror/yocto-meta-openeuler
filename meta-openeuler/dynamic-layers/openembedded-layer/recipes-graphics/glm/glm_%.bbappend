@@ -3,8 +3,8 @@
 PV = "0.9.9.8"
 
 SRC_URI += " \
-        file://glm-${PV}.tar.gz \
+        file://${BP}.tar.gz \
         file://fix-tests-big-endian-and-installation.patch \
 "
 
-S = "${WORKDIR}/glm-${PV}"
+S = "${WORKDIR}/${BP}"

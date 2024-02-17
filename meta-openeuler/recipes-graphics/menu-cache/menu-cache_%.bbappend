@@ -6,7 +6,7 @@ PV = "1.1.0"
 # can't apply from src-openeuler
 # menu-cache-1.1.0-0001-Support-gcc10-compilation.patch
 SRC_URI += " \
-        file://menu-cache-${PV}.tar.xz \
+        file://${BP}.tar.xz \
 "
 
-S = "${WORKDIR}/menu-cache-${PV}"
+S = "${WORKDIR}/${BP}"

@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=00252fd272bf2e722925613ad74cb6c7 \
                     "
 
 # fontconfig-2.13.94-sw.patch is for arch sw, no need current
-SRC_URI:prepend = "file://fontconfig-${PV}.tar.xz \
+SRC_URI:prepend = "file://${BP}.tar.xz \
            file://backport-fontconfig-disable-network-required-test.patch \
 "
 

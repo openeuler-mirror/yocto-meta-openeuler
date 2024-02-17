@@ -4,7 +4,7 @@
 PV = "0.4.0"
 
 SRC_URI += " \
-        file://lxterminal-${PV}.tar.xz \
+        file://${BP}.tar.xz \
 "
 
-S = "${WORKDIR}/lxterminal-${PV}"
+S = "${WORKDIR}/${BP}"

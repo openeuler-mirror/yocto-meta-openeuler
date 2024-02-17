@@ -7,7 +7,7 @@ SECTION = "libs"
 OPENEULER_LOCAL_NAME = "oee_archive"
 
 PV = "1.1.0"
-SRC_URI = "file://${OPENEULER_LOCAL_NAME}/${BPN}/gcompat-${PV}.tar.gz \
+SRC_URI = "file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.gz \
            file://gcompat-modify-makefile.patch \
            file://libgcompat_musl.patch \
           "

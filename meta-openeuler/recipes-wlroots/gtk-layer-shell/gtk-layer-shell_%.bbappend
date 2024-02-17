@@ -5,7 +5,7 @@ OPENEULER_LOCAL_NAME = "oee_archive"
 PV = "0.8.1"
 
 SRC_URI += " \
-        file://${OPENEULER_LOCAL_NAME}/${BPN}/gtk-layer-shell-${PV}.tar.gz \
+        file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.gz \
 "
 
-S = "${WORKDIR}/gtk-layer-shell-${PV}"
+S = "${WORKDIR}/${BP}"

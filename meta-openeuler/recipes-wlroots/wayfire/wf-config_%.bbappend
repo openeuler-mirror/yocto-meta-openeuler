@@ -5,7 +5,7 @@ OPENEULER_LOCAL_NAME = "oee_archive"
 PV = "0.7.1"
 
 SRC_URI += " \
-        file://${OPENEULER_LOCAL_NAME}/${BPN}/wf-config-${PV}.tar.xz \
+        file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.xz \
 "
 
-S = "${WORKDIR}/wf-config-${PV}"
+S = "${WORKDIR}/${BP}"

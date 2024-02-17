@@ -3,7 +3,7 @@
 PV = "0.8.2"
 
 SRC_URI += " \
-        file://libnotify-${PV}.tar.xz \
+        file://${BP}.tar.xz \
 "
 
-S = "${WORKDIR}/libnotify-${PV}"
+S = "${WORKDIR}/${BP}"

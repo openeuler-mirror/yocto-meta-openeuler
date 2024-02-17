@@ -4,7 +4,7 @@
 PV = "0.1.10"
 
 SRC_URI += " \
-        file://lxtask-${PV}.tar.xz \
+        file://${BP}.tar.xz \
 "
 
-S = "${WORKDIR}/lxtask-${PV}"
+S = "${WORKDIR}/${BP}"

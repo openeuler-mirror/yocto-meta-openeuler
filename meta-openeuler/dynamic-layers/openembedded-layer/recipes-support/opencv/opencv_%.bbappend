@@ -6,7 +6,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/opencv:"
 
 # use src-openeuler's source
 SRC_URI:prepend = " \
-        file://opencv-${PV}.tar.gz \
+        file://${BP}.tar.gz \
         file://Fix-OpenCV-build-with-OpenEXR-before-2.2.0.patch \
         file://Fix_compilation_of_copy_assignment_operators_with_GCC.patch \
         file://Repair_clang_abi.patch \

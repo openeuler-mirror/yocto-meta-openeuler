@@ -4,7 +4,7 @@ OPENEULER_LOCAL_NAME = "oee_archive"
 
 PV = "v0.4.1"
 
-SRC_URI += "file://${OPENEULER_LOCAL_NAME}/${BPN}/libliftoff-${PV}.tar.gz \
+SRC_URI += "file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.gz \
 "
 
-S = "${WORKDIR}/libliftoff-${PV}"
+S = "${WORKDIR}/${BP}"

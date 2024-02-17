@@ -1,5 +1,5 @@
 SRC_URI = " \
-        file://lxcfs-${PV}.tar.gz \
+        file://${BP}.tar.gz \
         file://0001-systemd.patch \
         file://0002-show-dev-name-in-container.patch \
         file://0003-lxcfs-fix-cpuinfo-print.patch \

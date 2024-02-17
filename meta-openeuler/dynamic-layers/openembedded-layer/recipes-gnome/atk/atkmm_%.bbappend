@@ -4,8 +4,8 @@
 PV = "2.28.3"
 
 SRC_URI += " \
-        file://atkmm-${PV}.tar.xz \
+        file://${BP}.tar.xz \
 "
 
-S = "${WORKDIR}/atkmm-${PV}"
+S = "${WORKDIR}/${BP}"
 

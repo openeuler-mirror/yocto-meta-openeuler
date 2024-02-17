@@ -7,7 +7,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 
 SRC_URI:prepend = " \
-    file://pciutils-${PV}.tar.gz \
+    file://${BP}.tar.gz \
     file://0000-pciutils-2.2.1-idpath.patch \
     file://0001-pciutils-dir-d.patch \
 "

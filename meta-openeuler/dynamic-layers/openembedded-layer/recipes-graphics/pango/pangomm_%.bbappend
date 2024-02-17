@@ -3,8 +3,8 @@
 PV = "2.46.3"
 
 SRC_URI += " \
-        file://pangomm-${PV}.tar.xz \
+        file://${BP}.tar.xz \
 "
 
-S = "${WORKDIR}/pangomm-${PV}"
+S = "${WORKDIR}/${BP}"
 

@@ -7,7 +7,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 
 SRC_URI:prepend = "\
-        file://libassuan-${PV}.tar.bz2 \
+        file://${BP}.tar.bz2 \
         file://backport-libassuan-2.5.2-multilib.patch \
         file://backport-tests-Avoid-leaking-file-descriptors-on-errors.patch \
 "

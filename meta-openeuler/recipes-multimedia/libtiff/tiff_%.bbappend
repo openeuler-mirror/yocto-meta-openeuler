@@ -6,7 +6,7 @@ PV = "4.5.1"
 LIC_FILES_CHKSUM = "file://LICENSE.md;md5=a3e32d664d6db1386b4689c8121531c3"
 
 # source change to openEuler
-SRC_URI = "file://tiff-${PV}.tar.gz \
+SRC_URI = "file://${BP}.tar.gz \
         file://backport-CVE-2023-38288.patch \
         file://backport-CVE-2023-38289.patch \
         "                             

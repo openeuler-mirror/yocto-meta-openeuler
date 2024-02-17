@@ -25,7 +25,7 @@ LIC_FILES_CHKSUM = " \
 		"
 
 SRC_URI = " \
-		file://newlib-${PV}.tar.gz \
+		file://${BP}.tar.gz \
 		file://Modify-neon-instruction.patch \
 		"
 SRC_URI[sha256sum] = "58dd9e3eaedf519360d92d84205c3deef0b3fc286685d1c562e245914ef72c66"
@@ -37,7 +37,7 @@ SECURITY_LDFLAGS = ""
 INHIBIT_DEFAULT_DEPS = "1"
 DEPENDS = "virtual/${TARGET_PREFIX}gcc"
 
-S = "${WORKDIR}/newlib-${PV}"
+S = "${WORKDIR}/${BP}"
 B = "${WORKDIR}/build"
 
 ## disable stdlib

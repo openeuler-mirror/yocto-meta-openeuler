@@ -2,7 +2,7 @@
 PV = "1.5.10"
 
 # openeuler patch
-SRC_URI:prepend = "file://libepoxy-${PV}.tar.xz \
+SRC_URI:prepend = "file://${BP}.tar.xz \
            file://add-GLIBC_2.27-to-test-versions-for-riscv.patch \
            "
 

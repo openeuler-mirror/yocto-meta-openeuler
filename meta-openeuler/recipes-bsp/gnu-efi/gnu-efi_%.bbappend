@@ -2,4 +2,4 @@
 
 PV = "3.0.8"
 
-SRC_URI =+ "file://gnu-efi-${PV}.tar.bz2 "
+SRC_URI =+ "file://${BP}.tar.bz2 "

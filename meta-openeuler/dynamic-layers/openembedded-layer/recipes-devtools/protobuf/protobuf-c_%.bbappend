@@ -3,7 +3,7 @@
 
 # version in openEuler
 PV = "1.4.1"
-S = "${WORKDIR}/protobuf-c-${PV}"
+S = "${WORKDIR}/${BP}"
 
 # files, patches that come from openeuler
 SRC_URI:prepend = " \

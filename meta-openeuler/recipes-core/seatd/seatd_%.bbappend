@@ -4,7 +4,7 @@ OPENEULER_LOCAL_NAME = "oee_archive"
 
 PV = "0.6.4"
 
-SRC_URI += "file://${OPENEULER_LOCAL_NAME}/${BPN}/seatd-${PV}.tar.gz \
+SRC_URI += "file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.gz \
 "
 
-S = "${WORKDIR}/seatd-${PV}"
+S = "${WORKDIR}/${BP}"

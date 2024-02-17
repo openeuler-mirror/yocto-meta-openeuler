@@ -9,4 +9,4 @@ SRC_URI=  "file://v0.9.zip \
            file://0001-Enable-build-id-for-elf-files.patch \
           "
 
-S = "${WORKDIR}/opensbi-${PV}"
+S = "${WORKDIR}/${BP}"

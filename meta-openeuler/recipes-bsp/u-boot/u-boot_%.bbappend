@@ -5,11 +5,11 @@ OPENEULER_REPO_NAME = "uboot-tools"
 
 PV = "2021.10"
 
-SRC_URI=  "file://u-boot-2021.10.tar.bz2 \
+SRC_URI=  "file://${BP}.tar.bz2 \
            file://backport-uefi-distro-load-FDT-from-any-partition-on-boot-device.patch \
            file://backport-CVE-2022-34835.patch \
            file://backport-CVE-2022-33967.patch \
            file://backport-CVE-2022-30767.patch \
           "
 
-S = "${WORKDIR}/u-boot-${PV}"
+S = "${WORKDIR}/${BP}"

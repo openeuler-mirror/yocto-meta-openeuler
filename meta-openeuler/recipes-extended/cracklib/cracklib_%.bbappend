@@ -1,7 +1,7 @@
 
 PV = "2.9.11"
 
-S = "${WORKDIR}/cracklib-${PV}"
+S = "${WORKDIR}/${BP}"
 
 # get new 0001-packlib.c-support-dictionary-byte-order-dependent.patch from higher poky
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
@@ -15,7 +15,7 @@ SRC_URI:remove = " \
 # add openeuler patches
 # note: cracklib-words may not use as src-openeuler, we may check later.
 SRC_URI =+ " \
-    file://cracklib-${PV}.tar.gz \
+    file://${BP}.tar.gz \
     file://fix-problem-of-error-message-about-simplistic-passwo.patch \
     file://fix-error-length-about-simplistic-password.patch \
 "

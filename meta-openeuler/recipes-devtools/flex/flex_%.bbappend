@@ -9,7 +9,7 @@ PV = "2.6.4"
 # mkskel.sh-fix-EOL-issue-for-CRLF-systems.patch 
 # 0001-scanner-fix-default-of-yy_top_state.patch
 # 0002-scanner-fix-default-of-yy_top_state.patch
-SRC_URI:prepend = "file://flex-${PV}.tar.gz \
+SRC_URI:prepend = "file://${BP}.tar.gz \
         file://filter-memory-leak-free-scanner-postprocessing.patch \
         file://scanner-c-i-j-should-preserve-case.patch \
         file://filter-Output-correct-line-value-for-current-file.patch \

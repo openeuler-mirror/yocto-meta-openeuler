@@ -3,7 +3,7 @@
 PV = "4.2.0"
 
 SRC_URI:append = " \
-    file://mpfr-${PV}.tar.xz \
+    file://${BP}.tar.xz \
     file://mpfr-tests-tsprintf.c-Modified-a-buggy-test-of-the-thousa.patch \
 "
 

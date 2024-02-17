@@ -10,4 +10,4 @@ SRC_URI:prepend = " \
         file://v${PV}.tar.gz \
 "
 
-S = "${WORKDIR}/uthash-${PV}"
+S = "${WORKDIR}/${BP}"

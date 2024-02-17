@@ -3,7 +3,7 @@
 PV = "0.9.75"
 
 SRC_URI:append = " \
-    file://libmicrohttpd-${PV}.tar.gz \
+    file://${BP}.tar.gz \
     file://0001-gnutls-utilize-system-crypto-policy.patch \
     file://fix-libmicrohttpd-tutorial-info.patch \
     file://fixed-missing-websocket.inc-in-dist-files.patch \

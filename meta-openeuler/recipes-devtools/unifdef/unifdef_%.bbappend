@@ -4,7 +4,7 @@ OPENEULER_LOCAL_NAME = "oee_archive"
 
 # upstream source
 SRC_URI:prepend = " \
-            file://${OPENEULER_LOCAL_NAME}/${BPN}/unifdef-${PV}.tar.xz  \
+            file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.xz  \
             "
 
 # from version 2.12, compare the differences in upstream recipe

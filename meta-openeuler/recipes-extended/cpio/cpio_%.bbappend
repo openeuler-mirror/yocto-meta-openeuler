@@ -10,7 +10,7 @@ SRC_URI:remove = "file://0001-Unset-need_charset_alias-when-building-for-musl.pa
            "
 
 # upstream src and patches
-SRC_URI:prepend = " file://cpio-${PV}.tar.bz2 \
+SRC_URI:prepend = " file://${BP}.tar.bz2 \
            "
 
 # poky patches

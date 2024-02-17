@@ -11,7 +11,7 @@ SRC_URI:remove = "file://0002-modules-fcntl-allow-being-detected-by-importing-pr
            "
 
 # apply openeuler source package and patches
-SRC_URI:prepend = "file://make-${PV}.tar.gz \
+SRC_URI:prepend = "file://${BP}.tar.gz \
 "
 
 # keep same as upstream

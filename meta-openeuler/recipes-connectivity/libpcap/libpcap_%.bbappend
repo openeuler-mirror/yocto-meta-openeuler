@@ -4,7 +4,7 @@
 PV = "1.10.4"
 
 SRC_URI:prepend = " \
-    file://libpcap-${PV}.tar.gz \
+    file://${BP}.tar.gz \
     file://0003-pcap-linux-apparently-ctc-interfaces-on-s390-has-eth.patch \
     file://pcap-config-mitigate-multilib-conflict.patch \
     file://libpcap-Add-sw64-architecture.patch \

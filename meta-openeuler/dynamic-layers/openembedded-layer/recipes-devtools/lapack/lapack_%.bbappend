@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=39902829ba0c2cbac1b0debfb75a416b"
 
 # version in openEuler
 PV = "3.10.0"
-S = "${WORKDIR}/lapack-${PV}"
+S = "${WORKDIR}/${BP}"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI:remove = " \

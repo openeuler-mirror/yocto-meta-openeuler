@@ -7,11 +7,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=c8ea84ebe7b93cce676b54355dc6b2c0 \
                     file://lib/getopt.c;endline=23;md5=2069b0ee710572c03bb3114e4532cd84 \
                     "
 
-# Use the source packages from openEuler
-SRC_URI:remove = " \
-        "
-
 PV = "5.4.4"
 
-SRC_URI += "file://xz-${PV}.tar.xz \
+SRC_URI += "file://${BP}.tar.xz \
             "

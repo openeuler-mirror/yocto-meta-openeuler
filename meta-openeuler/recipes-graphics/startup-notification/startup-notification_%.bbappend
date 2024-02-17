@@ -3,7 +3,7 @@
 PV = "0.12"
 
 SRC_URI += " \
-        file://startup-notification-${PV}.tar.gz \
+        file://${BP}.tar.gz \
 "
 
-S = "${WORKDIR}/startup-notification-${PV}"
+S = "${WORKDIR}/${BP}"

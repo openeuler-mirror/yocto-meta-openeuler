@@ -9,5 +9,5 @@ SRC_URI[sha256sum] = "6b902ab103843592be5e99504f846ec109c1abb692e85347587f237a4f
 
 # tar from openeuler
 SRC_URI = " \
-    file://expat-${PV}.tar.gz \
+    file://${BP}.tar.gz \
 "

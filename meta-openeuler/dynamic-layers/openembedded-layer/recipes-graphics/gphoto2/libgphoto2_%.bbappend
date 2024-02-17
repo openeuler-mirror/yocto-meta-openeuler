@@ -6,7 +6,7 @@ PV = "2.5.18"
 
 # source change to openEuler
 SRC_URI:append = " \
-    file://libgphoto2-${PV}.tar.bz2;name=libgphoto2 \
+    file://${BP}.tar.bz2;name=libgphoto2 \
     file://gphoto2-pkgcfg.patch \
     file://gphoto2-device-return.patch \
 "

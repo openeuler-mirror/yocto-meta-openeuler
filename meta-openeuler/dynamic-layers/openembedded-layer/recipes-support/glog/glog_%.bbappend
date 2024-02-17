@@ -1,10 +1,10 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-support/glog/glog_0.5.0.bb
 # version in openEuler
 PV = "0.6.0"
-S = "${WORKDIR}/glog-${PV}"
+S = "${WORKDIR}/${BP}"
 
 SRC_URI = " \
-    file://glog-${PV}.tar.gz \
+    file://${BP}.tar.gz \
 "
 
 # From meta-openembedded, glog_0.6.0.bb

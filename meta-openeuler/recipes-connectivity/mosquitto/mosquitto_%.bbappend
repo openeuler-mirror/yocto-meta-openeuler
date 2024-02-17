@@ -3,7 +3,7 @@
 PV = "1.6.15"
 
 SRC_URI:append = " \
-        file://mosquitto-${PV}.tar.gz \
+        file://${BP}.tar.gz \
         file://add-usage-output.patch \
         file://fix-usage-exit-code.patch \
         file://CVE-2021-41039.patch \

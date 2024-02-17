@@ -4,11 +4,11 @@ OPENEULER_REPO_NAME = "ceres-solver"
 
 # version in openEuler
 PV = "2.0.0"
-S = "${WORKDIR}/ceres-solver-${PV}"
+S = "${WORKDIR}/${BP}"
 
 # files, patches that come from openeuler
 SRC_URI:prepend = " \
-    file://ceres-solver-${PV}.tar.gz \
+    file://${BP}.tar.gz \
 "
 
 # bb need .git to do_configure

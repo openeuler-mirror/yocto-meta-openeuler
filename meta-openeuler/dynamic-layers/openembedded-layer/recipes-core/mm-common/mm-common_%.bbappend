@@ -8,7 +8,7 @@ SRC_URI:remove = " \
 "
 
 SRC_URI += " \
-        file://mm-common-${PV}.tar.xz \
+        file://${BP}.tar.xz \
 "
 
-S = "${WORKDIR}/mm-common-${PV}"
+S = "${WORKDIR}/${BP}"

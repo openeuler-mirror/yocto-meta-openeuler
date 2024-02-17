@@ -10,4 +10,4 @@ SRC_URI += " \
         file://v${PV}.tar.gz \
 "
 
-S = "${WORKDIR}/intel-cmt-cat-${PV}"
+S = "${WORKDIR}/${BP}"

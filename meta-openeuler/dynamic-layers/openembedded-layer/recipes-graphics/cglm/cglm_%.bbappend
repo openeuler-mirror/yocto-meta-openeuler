@@ -5,9 +5,7 @@ OPENEULER_LOCAL_NAME = "oee_archive"
 
 PV = "0.9.1"
 
-SRC_URI += "file://${OPENEULER_LOCAL_NAME}/${BPN}/cglm-${PV}.tar.gz \
+SRC_URI += "file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.gz \
 "
 
-S = "${WORKDIR}/cglm-${PV}"
-
-
+S = "${WORKDIR}/${BP}"

@@ -5,7 +5,7 @@ OPENEULER_LOCAL_NAME = "oee_archive"
 PV = "0.1.1"
 
 SRC_URI += " \
-        file://${OPENEULER_LOCAL_NAME}/${BPN}/libdisplay-info-${PV}.tar.gz \
+        file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.gz \
 "
 
-S = "${WORKDIR}/libdisplay-info-${PV}"
+S = "${WORKDIR}/${BP}"

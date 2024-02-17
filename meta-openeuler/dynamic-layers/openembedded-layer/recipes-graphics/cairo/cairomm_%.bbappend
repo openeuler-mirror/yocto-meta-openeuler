@@ -3,8 +3,8 @@
 PV = "1.14.4"
 
 SRC_URI += " \
-        file://cairomm-${PV}.tar.xz \
+        file://${BP}.tar.xz \
 "
 
-S = "${WORKDIR}/cairomm-${PV}"
+S = "${WORKDIR}/${BP}"
 

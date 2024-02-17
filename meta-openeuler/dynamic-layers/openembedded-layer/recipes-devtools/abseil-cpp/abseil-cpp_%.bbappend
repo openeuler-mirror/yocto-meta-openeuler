@@ -2,9 +2,9 @@
 PV = "20230125.3"
 
 SRC_URI = " \
-        file://abseil-cpp-${PV}.tar.gz \
+        file://${BP}.tar.gz \
         "
 
 EXTRA_OECMAKE += "-DABSL_ENABLE_INSTALL=ON"
 
-S = "${WORKDIR}/abseil-cpp-${PV}"
+S = "${WORKDIR}/${BP}"
