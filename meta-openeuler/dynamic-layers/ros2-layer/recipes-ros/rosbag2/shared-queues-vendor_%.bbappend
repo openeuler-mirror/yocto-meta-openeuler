@@ -4,12 +4,12 @@
 do_rename_folder() {
     # concurrentqueue-8f65a8734d77c3cc00d74c0532efca872931d3ce comes from ef7dfbf553288064347d51b8ac335f1ca489032a.zip
     # do not forget to change when ef7dfbf553288064347d51b8ac335f1ca489032a.zip changes
-    if [! -d ${WORKDIR}/git/concurrentqueue-8f65a8734d77c3cc00d74c0532efca872931d3ce ] ; then
+    if [ ! -d ${WORKDIR}/git/concurrentqueue-upstream ] ; then
         mv ${WORKDIR}/git/concurrentqueue-8f65a8734d77c3cc00d74c0532efca872931d3ce ${WORKDIR}/git/concurrentqueue-upstream
     fi
     # readerwriterqueue-ef7dfbf553288064347d51b8ac335f1ca489032a comes from 8f65a8734d77c3cc00d74c0532efca872931d3ce.zip
     # do not forget to change when 8f65a8734d77c3cc00d74c0532efca872931d3ce.zip changes
-    if [! -d ${WORKDIR}/git/readerwriterqueue-ef7dfbf553288064347d51b8ac335f1ca489032a ] ; then
+    if [ ! -d ${WORKDIR}/git/singleproducerconsumer-upstream ] ; then
         mv ${WORKDIR}/git/readerwriterqueue-ef7dfbf553288064347d51b8ac335f1ca489032a ${WORKDIR}/git/singleproducerconsumer-upstream
     fi
 }
