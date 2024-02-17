@@ -1,5 +1,4 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/json-c/json-c_0.15.bb
-OPENEULER_SRC_URI_REMOVE = "https http"
 
 # json-c version in openEuler
 PV = "0.17-20230812"

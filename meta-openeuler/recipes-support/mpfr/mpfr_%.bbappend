@@ -1,7 +1,5 @@
 # main bb file: yocto-poky/meta/recipes-support/mpfr/mpfr_4.1.1.bb
 
-OPENEULER_SRC_URI_REMOVE = "git https http"
-
 PV = "4.2.0"
 
 SRC_URI:append = " \

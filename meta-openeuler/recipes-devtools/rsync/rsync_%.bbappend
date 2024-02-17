@@ -1,8 +1,7 @@
 PV = "3.2.7"
 
-OPENEULER_SRC_URI_REMOVE = "https"
 SRC_URI:prepend = " \
-        file://rsync-${PV}.tar.gz \
+        file://${BP}.tar.gz \
         "
 
 # remove out-of-date patch

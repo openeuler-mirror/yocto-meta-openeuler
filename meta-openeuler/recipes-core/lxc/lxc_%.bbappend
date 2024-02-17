@@ -17,7 +17,7 @@ SRC_URI:append = " \
         file://dnsmasq.conf \
 "
 
-S = "${WORKDIR}/${BPN}-${PV}"
+S = "${WORKDIR}/${BP}"
 
 # Remove some operational dependencies as we do not yet support full functionality.
 RDEPENDS:${PN}:remove = " \

@@ -1,6 +1,5 @@
 # main bb: yocto-poky/meta/recipes-graphics/menu-cache/menu-cache_1.1.0.bb
 
-OPENEULER_SRC_URI_REMOVE = "https http git gitsm"
 
 PV = "1.1.0"
 
@@ -11,4 +10,3 @@ SRC_URI += " \
 "
 
 S = "${WORKDIR}/menu-cache-${PV}"
-

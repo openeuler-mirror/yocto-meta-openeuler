@@ -1,6 +1,5 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-support/ceres-solver/ceres-solver_2.0.0.bb
 
-OPENEULER_SRC_URI_REMOVE = "https git"
 OPENEULER_REPO_NAME = "ceres-solver"
 
 # version in openEuler

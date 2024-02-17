@@ -3,7 +3,7 @@ PV = "1.9.18"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI = " \
-        file://${BPN}-${PV}.tar.gz \
+        file://${BP}.tar.gz \
         file://fix-the-core-file-problem.patch \
         file://haveged.service \
         file://haveged.init \

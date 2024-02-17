@@ -1,7 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-kernel/blktrace_git.bb
 
-OPENEULER_SRC_URI_REMOVE = "git"
-
 PV = "1.3.0"
 
 # src package and patches from openEuler

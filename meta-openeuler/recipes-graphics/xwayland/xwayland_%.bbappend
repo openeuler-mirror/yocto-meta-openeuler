@@ -1,4 +1,3 @@
-OPENEULER_SRC_URI_REMOVE = "http git"
 
 PV = "22.1.2"
 

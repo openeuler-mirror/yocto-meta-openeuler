@@ -2,8 +2,6 @@ inherit pkgconfig
 
 PV = "v0.370"
 
-OPENEULER_SRC_URI_REMOVE = "https git"
-
 SRC_URI += " \
         file://v0.370.tar.gz \
 "

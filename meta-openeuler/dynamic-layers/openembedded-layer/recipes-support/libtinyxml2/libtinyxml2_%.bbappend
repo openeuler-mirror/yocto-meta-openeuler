@@ -8,9 +8,6 @@ OPENEULER_REPO_NAME = "tinyxml2"
 # the dir name after unpacking the tar file
 S = "${WORKDIR}/tinyxml2-${PV}"
 
-# files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI:remove = "git://github.com/leethomason/tinyxml2.git;branch=master;protocol=https "
-
 SRC_URI += "file://tinyxml2-${PV}.tar.gz "
 
 # make libs compatible with lib64

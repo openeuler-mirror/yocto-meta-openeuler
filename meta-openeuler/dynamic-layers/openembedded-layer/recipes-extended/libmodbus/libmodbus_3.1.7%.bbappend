@@ -6,6 +6,7 @@
 PV = "3.1.6"
 
 SRC_URI:append = " \
+    file://${BP}.tar.gz \
     file://0000-libmodbus-Heap-based-Buffer-Overflow-in-modbus_reply.patch"
 
 SRC_URI[md5sum] = "15c84c1f7fb49502b3efaaa668cfd25e"

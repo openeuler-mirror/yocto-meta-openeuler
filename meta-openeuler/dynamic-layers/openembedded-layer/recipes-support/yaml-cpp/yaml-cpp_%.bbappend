@@ -1,5 +1,4 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-support/yaml-cpp/yaml-cpp_0.7.0.bb
-OPENEULER_SRC_URI_REMOVE = "https git http"
 
 # version in openEuler
 PV = "0.7.0"
@@ -10,7 +9,7 @@ SRC_URI:remove = " \
 "
 # files, patches that come from openeuler
 SRC_URI:prepend = " \
-    file://yaml-cpp-${PV}.tar.gz \
+    file://${BP}.tar.gz \
     file://yaml-cpp-cmake.patch \
 "
 

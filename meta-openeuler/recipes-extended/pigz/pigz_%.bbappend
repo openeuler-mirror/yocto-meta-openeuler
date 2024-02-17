@@ -1,4 +1,3 @@
-OPENEULER_SRC_URI_REMOVE = "http"
 
 PV = "2.7"
 

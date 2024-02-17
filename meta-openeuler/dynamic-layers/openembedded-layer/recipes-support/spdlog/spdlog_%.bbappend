@@ -1,5 +1,4 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-support/spdlog/spdlog_1.9.2.bb
-OPENEULER_SRC_URI_REMOVE = "git https http"
 
 PV = "1.11.0"
 

@@ -1,7 +1,5 @@
 # main bb: yocto-poky/meta/recipes-support/libfm/libfm_1.3.2.bb
 
-OPENEULER_SRC_URI_REMOVE = "https http git gitsm"
-
 PV = "1.3.2"
 
 # can't apply from src-openeuler:
@@ -12,4 +10,3 @@ SRC_URI += " \
 "
 
 S = "${WORKDIR}/libfm-${PV}"
-

@@ -1,7 +1,5 @@
 # version in openEuler
 
-OPENEULER_SRC_URI_REMOVE = "https"
-
 PV = "1.14.8"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=6423dcd74d7be9715b0db247fd889da3 \
@@ -14,7 +12,7 @@ SRC_URI:remove = " \
 "
 
 # apply src and patches from openEuler
-SRC_URI:prepend = "file://dbus-${PV}.tar.xz \
+SRC_URI:prepend = "file://${BP}.tar.xz \
            file://bugfix-let-systemd-restart-dbus-when-the-it-enters-failed.patch \
            file://print-load-average-when-activate-service-timeout.patch \
            file://backport-tools-Use-Python3-for-GetAllMatchRules.patch \

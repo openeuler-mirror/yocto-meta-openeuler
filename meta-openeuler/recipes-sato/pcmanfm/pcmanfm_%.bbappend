@@ -1,7 +1,5 @@
 # main bb: yocto-poky/meta/recipes-sato/pcmanfm/pcmanfm_1.3.2.bb
 
-OPENEULER_SRC_URI_REMOVE = "https http git gitsm"
-
 PV = "1.3.2"
 
 SRC_URI += " \
@@ -14,4 +12,3 @@ SRC_URI += " \
 "
 
 S = "${WORKDIR}/pcmanfm-${PV}"
-

@@ -1,8 +1,6 @@
 # version in openEuler
 PV = "2.1.1"
 
-OPENEULER_SRC_URI_REMOVE = "https http"
-
 # remove patches that can't apply in poky
 SRC_URI:remove = " \
                   file://sysfsutils-2.0.0-class-dup.patch \
@@ -10,7 +8,7 @@ SRC_URI:remove = " \
                   file://separatebuild.patch \
 "
 
-SRC_URI:prepend = "file://sysfsutils/v${PV}.tar.gz \
+SRC_URI:prepend = " file://v${PV}.tar.gz \
 "
 
 SRC_URI += "file://0001-lib-Fixed-a-memory-leak-in-lib-sysfs_driver.patch \

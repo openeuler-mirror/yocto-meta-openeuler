@@ -1,9 +1,5 @@
-OPENEULER_SRC_URI_REMOVE = "https http"
 
 PV = "3.22.0"
-
-SRC_URI:remove = " \
-"
 
 # apply openeuler source package and patches
 SRC_URI:prepend = " \

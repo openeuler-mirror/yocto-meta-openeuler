@@ -1,5 +1,4 @@
 # the main bb file: yocto-poky/meta/recipes-devtools/elfutils/elfutils_0.186.bb
-OPENEULER_SRC_URI_REMOVE = "https"
 PV = "0.189"
 
 # the path removed in 0.187
@@ -10,7 +9,7 @@ SRC_URI:remove = " \
 
 # add patches from openeuler
 SRC_URI:append = " \
-    file://elfutils-${PV}.tar.bz2 \
+    file://${BP}.tar.bz2 \
     file://Fix-segfault-in-eu-ar-m.patch \
     file://Fix-error-of-parsing-object-file-perms.patch \
     file://Fix-issue-of-moving-files-by-ar-or-br.patch \

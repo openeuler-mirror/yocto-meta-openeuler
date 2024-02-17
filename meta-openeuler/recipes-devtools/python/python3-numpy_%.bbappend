@@ -12,7 +12,6 @@ S = "${WORKDIR}/numpy-${PV}"
 
 # remove poky conflict src
 SRC_URI:remove = " \
-        https://github.com/${SRCNAME}/${SRCNAME}/releases/download/v${PV}/${SRCNAME}-${PV}.tar.gz \
         file://CVE-2021-41496.patch \
         "
 # apply new patch for new version, see:

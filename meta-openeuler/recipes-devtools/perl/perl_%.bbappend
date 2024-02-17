@@ -1,7 +1,5 @@
 # main bbfile: meta-openeuler/recipes-devtools/perl/perl_5.38.0.bb
 
-OPENEULER_SRC_URI_REMOVE = "http git"
-
 PV = "5.38.0"
 
 # patches from openeuler

@@ -6,7 +6,6 @@ PV = "5.54"
 # these two patches fix CVE-2021-0129 and CVE-2021-3658, which isn't suitable version 5.54
 # openeuler package has another patches to fix these cves.
 SRC_URI:remove = "\
-    ${KERNELORG_MIRROR}/linux/bluetooth/bluez-${PV}.tar.xz \
     file://0001-adapter-Fix-storing-discoverable-setting.patch \
     file://0001-shared-gatt-server-Fix-not-properly-checking-for-sec.patch \
 "

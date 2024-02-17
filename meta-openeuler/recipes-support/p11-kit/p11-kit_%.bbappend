@@ -1,4 +1,3 @@
-OPENEULER_SRC_URI_REMOVE = "git"
 
 PV = "0.25.0"
 
@@ -30,4 +29,3 @@ BBCLASSEXTEND += " native"
 # but if we do not include the path /usr/share/pki/ca-trust-source,
 # the trusted certificates installed by ca-certificates package will not be found.
 EXTRA_OEMESON += "-Dtrust_paths=/etc/pki/ca-trust/source:/usr/share/pki/ca-trust-source"
-

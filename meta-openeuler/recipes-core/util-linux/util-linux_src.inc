@@ -2,7 +2,6 @@ PV = "2.39.1"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 # ptest.patch, patch-fuzz warning
-OPENEULER_SRC_URI_REMOVE = "https git http"
 SRC_URI:remove = " \
         file://ptest.patch \
         file://avoid_parallel_tests.patch \
@@ -38,4 +37,3 @@ LIC_FILES_CHKSUM = "file://README.licensing;md5=12ae7768a65ec8f2e44d930df9cb43fa
                     file://libfdisk/COPYING;md5=693bcbbe16d3a4a4b37bc906bc01cc04 \
                     file://libsmartcols/COPYING;md5=693bcbbe16d3a4a4b37bc906bc01cc04 \
                     "
-

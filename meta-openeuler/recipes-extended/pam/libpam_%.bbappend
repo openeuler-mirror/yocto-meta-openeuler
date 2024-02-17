@@ -12,6 +12,7 @@ SRC_URI:remove = " \
 
 # patch from openeuler
 SRC_URI += " \
+           file://Linux-PAM-${PV}.tar.xz \
            file://bugfix-pam-1.1.8-faillock-systemtime.patch \
            file://change-ndbm-to-gdbm.patch \
            file://add-sm3-crypt-support.patch \

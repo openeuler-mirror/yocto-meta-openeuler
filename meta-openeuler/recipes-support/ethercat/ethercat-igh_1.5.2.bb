@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552"
 SECTION = "net"
 
 
-SRC_URI = " file://ethercat-e1000e-5.10.tar.gz;subdir=${BPN}-${PV};striplevel=1 \
+SRC_URI = " file://ethercat-e1000e-5.10.tar.gz;subdir=${BP};striplevel=1 \
 			file://0001-ethercat-Fix-ethercat-tool-compilation.patch \
 			file://0002-avoid-ssize_t.patch \
 	   "

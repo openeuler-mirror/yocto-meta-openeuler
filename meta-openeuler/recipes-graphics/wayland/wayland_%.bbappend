@@ -1,4 +1,3 @@
-OPENEULER_SRC_URI_REMOVE = "http git"
 
 PV = "1.22.0"
 
@@ -8,7 +7,7 @@ SRC_URI:remove = "file://0002-Do-not-hardcode-the-path-to-wayland-scanner.patch 
            file://CVE-2021-3782.patch \
            "
 
-SRC_URI:prepend = "file://wayland-${PV}.tar.xz \
+SRC_URI:prepend = "file://${BP}.tar.xz \
            "
 
 # this is a description:

@@ -6,7 +6,6 @@ PV = "2.13.1"
 LICENSE = "(FTL | GPL-2.0-or-later) & MIT"
 
 SRC_URI:remove = " \
-    ${SAVANNAH_GNU_MIRROR}/${BPN}/${BP}.tar.xz \
     file://CVE-2022-27404.patch \
     file://CVE-2022-27405.patch \
     file://CVE-2022-27406.patch \
@@ -15,7 +14,7 @@ SRC_URI:remove = " \
 # apply src-openEuler patches
 # backport-freetype-2.5.2-more-demos.patch for ft2demos
 SRC_URI:prepend = " \
-    file://freetype-${PV}.tar.xz \
+    file://${BP}.tar.xz \
     file://backport-freetype-2.3.0-enable-spr.patch \
     file://backport-freetype-2.2.1-enable-valid.patch \
     file://backport-freetype-2.6.5-libtool.patch \

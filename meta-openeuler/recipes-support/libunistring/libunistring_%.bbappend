@@ -3,7 +3,7 @@
 PV = "1.1"
 
 # files, patches that come from openeuler
-SRC_URI = " \
+SRC_URI:prepend = " \
         file://${BP}.tar.xz;name=tarball \
 "
 

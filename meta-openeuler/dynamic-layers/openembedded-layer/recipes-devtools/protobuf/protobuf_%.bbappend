@@ -1,7 +1,5 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-devtools/protobuf/protobuf_3.21.12.bb
 
-OPENEULER_SRC_URI_REMOVE = "https git"
-
 # version in openEuler
 PV = "3.19.6"
 S = "${WORKDIR}/protobuf-${PV}"

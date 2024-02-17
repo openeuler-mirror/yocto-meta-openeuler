@@ -5,7 +5,6 @@ PV = "3.9.0"
 # update configure.patch of poky
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-OPENEULER_SRC_URI_REMOVE = "https http git"
 
 SRC_URI:prepend = " \
     file://pciutils-${PV}.tar.gz \

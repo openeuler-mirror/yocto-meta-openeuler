@@ -1,7 +1,5 @@
 # main bbfile: meta-oe/recipes-benchmark/libhugetlbfs/libhugetlbfs_git.bb?h=hardknott
 
-OPENEULER_SRC_URI_REMOVE = "git"
-
 # remove patch conflicting with openeuler
 SRC_URI:remove = "file://0001-tests-makefile-Append-CPPFLAGS-rather-then-override.patch \
 "

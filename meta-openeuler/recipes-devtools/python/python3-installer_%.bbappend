@@ -1,6 +1,5 @@
 PV = "0.5.1"
 
-OPENEULER_SRC_URI_REMOVE = "http"
 OPENEULER_LOCAL_NAME = "oee_archive"
 
 # from version 0.5.1, compare the differences in upstream recipe

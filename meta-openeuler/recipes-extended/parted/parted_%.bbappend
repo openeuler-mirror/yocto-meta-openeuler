@@ -3,11 +3,7 @@
 # version in openEuler
 PV = "3.5"
 
-# Use the source packages from openEuler
-SRC_URI:remove = " \
-            ${GNU_MIRROR}/parted/parted-${PV}.tar.xz \
-            "
-SRC_URI += "file://parted-${PV}.tar.xz \
+SRC_URI += "file://${BP}.tar.xz \
             file://0001-add-support-of-gpt_sync_mbr.patch \
             file://0002-Add-extra-judgment-for-a-partition-created-success.patch \
             file://0003-bugfix-parted-fix-failure-of-mklabel-gpt_sync_mbr.patch \

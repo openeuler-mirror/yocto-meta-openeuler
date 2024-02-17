@@ -1,4 +1,3 @@
-OPENEULER_SRC_URI_REMOVE = "git"
 PV = "0.69.0"
 # export CONFIG_SHELL="/bin/bash"
 
@@ -7,7 +6,7 @@ RDEPENDS:${PN}:append:class-target = " busybox"
 
 # add new patches from openeuler
 SRC_URI:prepend = " \
-        file://${BPN}-${PV}.tar.gz                     \
+        file://${BP}.tar.gz                     \
         file://backport-query-py-ensure-reldep-is-from-the-same-sack.patch \
         file://0001-libdnf-0.65.0-add-loongarch-support.patch \
 "

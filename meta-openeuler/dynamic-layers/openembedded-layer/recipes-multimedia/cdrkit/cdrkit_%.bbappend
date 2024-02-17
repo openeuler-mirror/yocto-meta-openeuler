@@ -3,7 +3,6 @@
 # files, patches can't be applied in openeuler or conflict with openeuler
 # patches apply fail: 0001-genisoimage-Add-missing-extern-definition.patch
 SRC_URI:remove = " \
-        ${DEBIAN_MIRROR}/main/c/${BPN}/${BPN}_${PV}.orig.tar.gz \
         file://0001-genisoimage-Add-missing-extern-definition.patch \
 "
 

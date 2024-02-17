@@ -1,7 +1,5 @@
 # the main bb file: yocto-poky/meta/recipes-support/libnl/
 
-OPENEULER_SRC_URI_REMOVE = "http git"
-
 PV = "3.7.0"
 
 SRC_URI:remove = "file://enable-serial-tests.patch \

@@ -4,7 +4,6 @@
 SRC_URI:remove = "file://add-missing-python-include-dir-for-cross.patch \
 "
 
-OPENEULER_SRC_URI_REMOVE = "https git"
 
 PV = "1.4.5"
 

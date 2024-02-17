@@ -11,7 +11,7 @@ S = "${WORKDIR}/${BP}"
 
 # files, patches that come from openeuler
 SRC_URI =+ " \
-        file://${BPN}-${PV}.tar.gz \
+        file://${BP}.tar.gz \
         "
 
 SRC_URI[md5sum] = "edc3e14508f2716315787b9c88d163a1"

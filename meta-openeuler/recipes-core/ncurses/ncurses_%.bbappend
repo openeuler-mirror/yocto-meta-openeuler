@@ -1,4 +1,3 @@
-OPENEULER_SRC_URI_REMOVE = "https git http"
 
 PV = "6.4"
 
@@ -10,7 +9,7 @@ SRC_URI:remove = " \
             file://CVE-2021-39537.patch \
 "
 
-S = "${WORKDIR}/${BPN}-${PV}"
+S = "${WORKDIR}/${BP}"
 # files, patches that come from openeuler
 SRC_URI += "file://${BP}.tar.gz \
            file://ncurses-config.patch \

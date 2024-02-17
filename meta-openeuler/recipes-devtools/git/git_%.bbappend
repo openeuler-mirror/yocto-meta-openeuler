@@ -1,7 +1,5 @@
 # openeuler PV
 PV = "2.41.0"
-# remove poky src_uri
-OPENEULER_SRC_URI_REMOVE = "git https http"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}/:"
 
@@ -15,10 +13,10 @@ SRC_URI:remove = "file://CVE-2023-29007.patch \
 SRC_URI[tarball.sha256sum] = "c4a6a3dd1827895a80cbd824e14d94811796ae54037549e0da93f7b84cb45b9f"
 
 # openeuler SRC_URI
-SRC_URI:prepend = "file://git-${PV}.tar.xz \
+SRC_URI:prepend = "file://${BP}.tar.xz \
                   "
 
-S = "${WORKDIR}/git-${PV}"
+S = "${WORKDIR}/${BP}"
 
 # 2.41.0 do_install
 do_install () {

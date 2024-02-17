@@ -2,8 +2,6 @@ PV = "3.10.9"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
-SRC_URI:remove = "http://www.python.org/ftp/python/${PV}/Python-${PV}.tar.xz \
-"
 
 SRC_URI += "file://Python-3.10.9.tar.xz \
 "

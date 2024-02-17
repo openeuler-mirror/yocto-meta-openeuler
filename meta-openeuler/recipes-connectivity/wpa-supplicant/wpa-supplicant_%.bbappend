@@ -1,4 +1,3 @@
-OPENEULER_SRC_URI_REMOVE = "http git"
 
 # version in openEuler
 PV = "2.10"

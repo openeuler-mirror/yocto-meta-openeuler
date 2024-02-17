@@ -1,14 +1,8 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-graphics/gphoto2/libgphoto2_2.5.27.bb
 
 OPENEULER_REPO_NAME = "libgphoto2"
-OPENEULER_SRC_URI_REMOVE = "https http git"
 
 PV = "2.5.18"
-
-# file can't apply form oe
-SRC_URI:remove = " \
-    ${SOURCEFORGE_MIRROR}/gphoto/libgphoto2-${PV}.tar.bz2;name=libgphoto2 \
-"
 
 # source change to openEuler
 SRC_URI:append = " \

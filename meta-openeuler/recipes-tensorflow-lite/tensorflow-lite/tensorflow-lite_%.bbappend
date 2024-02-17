@@ -7,7 +7,6 @@ OPENEULER_REPO_NAME = "tensorflow"
 DEPENDS:remove = "libgfortran"
 
 SRC_URI:remove = " \
-    git://github.com/tensorflow/tensorflow.git;branch=r2.9;rev=${SRCREV};protocol=https \
     file://fix-to-cmake-2.9.1.patch \
     file://tensorflow2-lite.pc.in \
 "
@@ -52,4 +51,3 @@ do_install() {
 
 FILES:${PN}-staticdev += "${libdir}/*"
 FILES:${PN}-dev += "${libdir}/*"
-

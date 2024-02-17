@@ -8,9 +8,6 @@ DHCP_PV = "4.4.3"
 # fix LIC_FILES_CHKSUM error
 LIC_FILES_CHKSUM = "file://COPYRIGHT;md5=b88e7ca5f21908e1b2720169f6807cf6"
 
-SRC_URI:remove = "https://ftp.isc.org/isc/bind9/${PV}/${PACKAGE_FETCH_NAME}-${PV}.tar.gz \
-"
-
 S = "${WORKDIR}/dhcp-${DHCP_PV}/bind/bind-${PV}"
 
 # apply openEuler/dhcp patches

@@ -1,5 +1,4 @@
 # main bbfile: yocto-meta-ros/meta-ros-common/recipes-devtools/python/python3-empy_3.3.2.bb
-OPENEULER_SRC_URI_REMOVE = "git https http"
 
 PV = "3.3.4"
 

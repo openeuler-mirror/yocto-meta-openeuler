@@ -5,9 +5,6 @@ OPENEULER_REPO_NAME = "libusbx"
 # no udev in openeuler
 PACKAGECONFIG:class-target:remove = "udev"
 
-SRC_URI:remove = "https://github.com/libusb/libusb/releases/download/v${PV}/libusb-${PV}.tar.bz2 \
-"
-
 SRC_URI:append = " \
     file://libusb-${PV}.tar.bz2 \
 "

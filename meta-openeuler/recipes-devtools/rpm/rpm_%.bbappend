@@ -1,6 +1,5 @@
 PV = "4.18.1"
 S = "${WORKDIR}/${BP}"
-OPENEULER_SRC_URI_REMOVE = "https http git"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
@@ -15,7 +14,7 @@ SRC_URI:remove = " \
 #  Add-loongarch-architecture-support.patch 
 #  add-default-machine-name-to-support-loongarch.patch 
 SRC_URI:prepend = " \
-        file://${BPN}-${PV}.tar.bz2 \
+        file://${BP}.tar.bz2 \
         file://Unbundle-config-site-and-add-RPM-LD-FLAGS-macro.patch \
         file://rpm-4.12.0-rpm2cpio-hack.patch \
         file://add-dist-to-release-by-default.patch \

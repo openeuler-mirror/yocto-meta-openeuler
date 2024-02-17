@@ -4,10 +4,10 @@
 PV = "2.0.26"
 
 # Use the source packages from openEuler and remove conflicting patches
-SRC_URI:remove = "${KERNELORG_MIRROR}/linux/utils/kernel/kexec/kexec-tools-${PV}.tar.gz \
+SRC_URI:remove = " \
                   file://0001-arm64-kexec-disabled-check-if-kaslr-seed-dtb-propert.patch \
                   "
-SRC_URI:prepend = "file://kexec-tools-${PV}.tar.xz "
+SRC_URI:prepend = "file://${BP}.tar.xz "
 
 SRC_URI += "file://kexec-Add-quick-kexec-support.patch \
             file://kexec-Quick-kexec-implementation-for-arm64.patch \

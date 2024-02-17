@@ -4,7 +4,7 @@
 PV = "5.2.0"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI:remove = "${GNU_MIRROR}/gawk/gawk-${PV}.tar.gz \
+SRC_URI:remove = " \
             file://remove-sensitive-tests.patch \
 "
 

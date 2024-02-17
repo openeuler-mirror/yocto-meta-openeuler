@@ -8,7 +8,7 @@ PV = "1.81.0"
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
 # remove conflict files
-SRC_URI:remove = "https://boostorg.jfrog.io/artifactory/main/release/${PV}/source/${BOOST_P}.tar.bz2 \
+SRC_URI:remove = " \
         file://boost-CVE-2012-2677.patch \
         file://0001-fiber-libs-Define-SYS_futex-if-it-does-not-exist.patch \
         file://de657e01635306085488290ea83de541ec393f8b.patch \

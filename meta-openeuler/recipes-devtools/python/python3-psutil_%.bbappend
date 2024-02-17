@@ -1,4 +1,3 @@
-OPENEULER_SRC_URI_REMOVE = "http https git"
 OPENEULER_REPO_NAME = "python-psutil"
 PV = "5.9.5"
 

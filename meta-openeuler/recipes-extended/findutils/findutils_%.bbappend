@@ -4,6 +4,7 @@ PV = "4.9.0"
 
 # files, patches that come from openeuler
 SRC_URI += " \
+        file://${BP}.tar.xz \
         file://0001-findutils-xautofs.patch \
 "
 

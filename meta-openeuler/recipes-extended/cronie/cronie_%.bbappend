@@ -1,6 +1,7 @@
 PV = "1.6.1"
 
 SRC_URI += " \
+    file://cronie-${PV}.tar.gz \
     file://bugfix-cronie-systemd-alias.patch \
     file://backport-Support-reloading-with-SIGURG-in-addition-to-SIGHUP.patch \
 "

@@ -11,8 +11,6 @@ OPENEULER_REPO_NAME = "procps-ng"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI:remove = " \
-            git://gitlab.com/procps-ng/procps.git;protocol=https \
-            git://gitlab.com/procps-ng/procps.git;protocol=https;branch=master \
             file://0001-w.c-correct-musl-builds.patch \
             file://0002-proc-escape.c-add-missing-include.patch \
             "

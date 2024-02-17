@@ -5,7 +5,7 @@ PV = "0.13.2"
 
 OPENEULER_REPO_NAME = "userspace-rcu"
 
-SRC_URI = "file://userspace-rcu-${PV}.tar.bz2 \
+SRC_URI:prepend = "file://userspace-rcu-${PV}.tar.bz2 \
 "
 
 SRC_URI[md5sum] = "e76e7f8ddce0f229cbd870e7ff39193e"

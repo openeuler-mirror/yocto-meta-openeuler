@@ -3,8 +3,8 @@
 # acl version in openEuler
 PV = "2.3.1"
 
-# SRC_REV points to the supported commit id
-SRC_REV= "d17a1f95663c4d0c65a0d9974ea7a29cb774097e"
+
+SRC_URI:prepend = "file://${BP}.tar.gz "
 
 # because PV is different,  the md5 and sha256 should also be updated
 SRC_URI[md5sum] = "3cecb80cb0a52a0b273e6698ba642263"

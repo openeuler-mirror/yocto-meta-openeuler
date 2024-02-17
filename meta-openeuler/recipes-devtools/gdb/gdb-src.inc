@@ -1,4 +1,3 @@
-OPENEULER_SRC_URI_REMOVE = "https http"
 
 # version in openEuler
 PV = "12.1"

@@ -16,7 +16,7 @@ SRC_URI:remove = "file://0001-atomic-Rename-local-__atomic_compare_exchange-to-a
 #     db-5.3.28-rpm-lock-check.patch 
 #     add-check-for-device-number-in-__check_lock_fn.patch
 SRC_URI:append = "\
-    file://db-${PV}.tar.gz \
+    file://${BP}.tar.gz \
     file://libdb-multiarch.patch \
     file://db-4.6.21-1.85-compat.patch \
     file://db-4.5.20-jni-include-dir.patch \

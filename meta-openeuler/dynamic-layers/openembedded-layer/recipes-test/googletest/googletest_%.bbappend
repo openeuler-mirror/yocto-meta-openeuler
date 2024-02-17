@@ -1,6 +1,5 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-test/googletest/googletest_git.bb
 
-OPENEULER_SRC_URI_REMOVE = "https git http"
 OPENEULER_LOCAL_NAME = "gtest"
 
 # version in openEuler

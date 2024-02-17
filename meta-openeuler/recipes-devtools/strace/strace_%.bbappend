@@ -7,7 +7,7 @@ PV = "5.14"
 LIC_FILES_CHKSUM = "file://COPYING;md5=318cfc887fc8723f4e9d4709b55e065b"
 
 # remove conflict patch
-SRC_URI:remove = "https://strace.io/files/${PV}/strace-${PV}.tar.xz \
+SRC_URI:remove = " \
         file://Makefile-ptest.patch \
 "
 

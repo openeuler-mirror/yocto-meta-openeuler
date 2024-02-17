@@ -5,7 +5,6 @@ S = "${WORKDIR}/${BP}"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=731e401b36f8077ae0c134b59be5c906"
 
-OPENEULER_SRC_URI_REMOVE = "https http git gitsm"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
@@ -17,7 +16,7 @@ SRC_URI:remove = " \
 
 # Libdir not match, do not apply repair-pkgconfig-path.patch
 SRC_URI:prepend = " \
-        file://${BPN}-${PV}.tar.gz \
+        file://${BP}.tar.gz \
         file://add-secure-compile-option-in-Makefile.patch \
 "
 # from high version recipe diffs

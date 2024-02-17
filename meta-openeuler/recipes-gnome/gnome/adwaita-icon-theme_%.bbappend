@@ -1,7 +1,5 @@
 PV = "44.0"
 
-OPENEULER_SRC_URI_REMOVE = "https http git"
-
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
 SRC_URI:remove = " \
@@ -10,11 +8,10 @@ SRC_URI:remove = " \
 
 # add default repo
 SRC_URI:prepend = " \
-    file://adwaita-icon-theme-${PV}.tar.xz \
+    file://${BP}.tar.xz \
 "
 
 S = "${WORKDIR}/${BP}"
 
 DEPENDS += " librsvg "
 DEPENDS:remove = "librsvg-native"
-

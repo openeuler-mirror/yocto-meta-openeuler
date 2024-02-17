@@ -1,6 +1,5 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-support/libeigen/libeigen_3.3.7.bb
 
-OPENEULER_SRC_URI_REMOVE = "https git"
 OPENEULER_REPO_NAME = "eigen"
 
 # version in openEuler

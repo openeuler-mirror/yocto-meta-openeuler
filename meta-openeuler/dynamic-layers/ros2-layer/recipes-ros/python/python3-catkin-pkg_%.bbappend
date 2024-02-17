@@ -1,5 +1,4 @@
 # main bbfile: meta-ros/meta-ros-common/recipes-infrastructure/python/python3-catkin-pkg_0.4.24.bb
-OPENEULER_SRC_URI_REMOVE = "git https http"
 
 PV = "0.5.2"
 

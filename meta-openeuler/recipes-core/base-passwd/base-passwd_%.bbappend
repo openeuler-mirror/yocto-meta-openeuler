@@ -1,10 +1,6 @@
 # get extra config files from openeuler
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
-# remove nobash.patch, because we use /bin/bash as default SHELL
-SRC_URI:remove = "https://launchpad.net/debian/+archive/primary/+files/${BPN}_${PV}.tar.gz \
-"
-
 # as it's small, base-passwd's tar.gz is integrated in openEuler Embedded
 # to avoid network download
 OPENEULER_LOCAL_NAME = "oee_archive"

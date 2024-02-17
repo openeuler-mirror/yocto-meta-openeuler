@@ -1,8 +1,6 @@
 # main bb ref:
 # yocto-poky/meta/recipes-connectivity/openssh/openssh_8.9p1.bb
 
-OPENEULER_SRC_URI_REMOVE = "https git http"
-
 # version in openEuler
 PV = "9.3p1"
 
@@ -12,7 +10,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/openeuler-config/:"
 
 # conflict: other openeuler patches can't apply
 SRC_URI:prepend = " \
-        file://openssh-${PV}.tar.gz \
+        file://${BP}.tar.gz \
         file://openssh-9.3p1-merged-openssl-evp.patch \
         file://bugfix-sftp-when-parse_user_host_path-empty-path-should-be-allowed.patch \
         file://add-loongarch.patch \

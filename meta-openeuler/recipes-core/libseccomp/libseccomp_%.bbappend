@@ -1,6 +1,5 @@
 # the main bb file: yocto-poky/meta/recipes-support/libseccomp/libseccomp_2.5.3.bb
 
-OPENEULER_SRC_URI_REMOVE = "git"
 PV = "2.5.4"
 
 SRC_URI:prepend = " \

@@ -1,7 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-support/libunwind/libunwind_1.6.2.bb
 
-OPENEULER_SRC_URI_REMOVE = "http git"
-
 PV = "1.6.2"
 
 SRC_URI:prepend = "file://${BP}.tar.gz \

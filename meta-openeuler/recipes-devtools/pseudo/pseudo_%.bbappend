@@ -1,10 +1,5 @@
 OPENEULER_REPO_NAME = "yocto-pseudo"
 
-SRC_URI:remove = " \
-    git://git.yoctoproject.org/pseudo;branch=oe-core \
-    http://downloads.yoctoproject.org/mirror/sources/pseudo-prebuilt-2.33.tar.xz;subdir=git/prebuilt;name=prebuilt \
-"
-
 SRC_URI:prepend = "file://${BP}.tar.gz \
            https://gitee.com/openeuler/oee_archive/raw/master/pseudo/pseudo-prebuilt-2.33.tar.xz;subdir=${BP}/prebuilt;name=prebuilt \
            "

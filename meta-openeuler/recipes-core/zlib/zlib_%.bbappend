@@ -1,7 +1,5 @@
 #main bbfile: yocto-poky/meta/recipes-core/zlib/zlib_1.2.11.bb
 
-OPENEULER_SRC_URI_REMOVE = "https git http"
-
 #version in openEuler
 PV = "1.2.13"
 
@@ -14,7 +12,7 @@ SRC_URI:remove = " \
 
 # files, patches that come from openeuler
 SRC_URI:append = " \
-        file://zlib-${PV}.tar.xz \
+        file://${BP}.tar.xz \
         file://backport-zlib-1.2.5-minizip-fixuncrypt.patch \
         file://backport-fix-undefined-buffer-detected-by-oss-fuzz.patch \
         "

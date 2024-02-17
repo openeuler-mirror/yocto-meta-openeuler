@@ -4,8 +4,6 @@ PV = "4.3.2"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=382bfdf329e774859fd401eaf850d29b"
 
-OPENEULER_SRC_URI_REMOVE = "git"
-
 # apply openeuler source and patch
 SRC_URI:prepend = "file://${BP}.tar.gz \
            file://0001-add-secure-compile-option-in-Makefile.patch \

@@ -1,7 +1,5 @@
 OPENEULER_REPO_NAME = "docbook-dtds"
 
-OPENEULER_SRC_URI_REMOVE = "http"
-
 SRC_URI:prepend = "file://docbkx412.zip;subdir=docbook-4.1.2 \
            file://docbook-xml-4.2.zip;subdir=docbook-4.2 \
            file://docbook-xml-4.3.zip;subdir=docbook-4.3 \
@@ -26,4 +24,3 @@ do_install () {
           file://$DEST/catalog.xml ${D}${sysconfdir}/xml/docbook-xml.xml
     done
 }
-

@@ -3,13 +3,9 @@
 # version in openEuler
 PV = "1.16.1"
 
-# files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI:remove = " \
-            ${SOURCEFORGE_MIRROR}/asio/${BP}.tar.bz2 \
-            "
 
 SRC_URI += " \
-        file://${BPN}-${PV}.tar.gz \
+        file://${BP}.tar.gz \
         "
 
 SRC_URI[md5sum] = "d34b58ce6e452eeb142d90d48d09422b"

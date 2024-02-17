@@ -1,6 +1,5 @@
 # main bb: meta-wayland/recipes-wlroots/wayfire/wf-config_git.bb
 # from https://github.com/MarkusVolk/meta-wayland.git
-OPENEULER_SRC_URI_REMOVE = "https http git"
 OPENEULER_LOCAL_NAME = "oee_archive"
 
 PV = "0.7.1"
@@ -10,5 +9,3 @@ SRC_URI += " \
 "
 
 S = "${WORKDIR}/wf-config-${PV}"
-
-

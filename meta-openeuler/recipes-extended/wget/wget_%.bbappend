@@ -1,7 +1,5 @@
 # openeuler version
 PV = "1.21.4"
-# remove poky src_uri
-OPENEULER_SRC_URI_REMOVE = "git https http"
 
 # 1.21.4 inc LIC_FILES_CHKSUM
 LIC_FILES_CHKSUM = "file://COPYING;md5=6f65012d1daf98cb09b386cfb68df26b"

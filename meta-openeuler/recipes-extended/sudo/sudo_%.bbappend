@@ -4,7 +4,7 @@ PV = "1.9.14p1"
 
 LIC_FILES_CHKSUM = "file://LICENSE.md;md5=5100e20d35f9015f9eef6bdb27ba194f"
 
-SRC_URI:remove = "https://www.sudo.ws/dist/sudo-${PV}.tar.gz \
+SRC_URI:remove = " \
             file://0001-sudo.conf.in-fix-conflict-with-multilib.patch \
 "
 

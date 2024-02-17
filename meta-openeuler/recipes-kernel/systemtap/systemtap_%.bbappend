@@ -1,7 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-kernel/systemtap/systemtap_git.bb
 
-OPENEULER_SRC_URI_REMOVE = "git"
-
 PV = "4.9"
 
 # in 4.9, the following patches are already merged

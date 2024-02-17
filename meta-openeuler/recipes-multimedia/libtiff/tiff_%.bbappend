@@ -1,8 +1,6 @@
 # main bbfile: yocto-poky/meta/recipes-multimedia/libtiff/tiff_4.3.0.bb
 # new ref upstream: openembedded-core/meta/recipes-multimedia/libtiff/tiff_4.5.1.bb
 
-OPENEULER_SRC_URI_REMOVE = "http git"
-
 PV = "4.5.1"
 
 LIC_FILES_CHKSUM = "file://LICENSE.md;md5=a3e32d664d6db1386b4689c8121531c3"

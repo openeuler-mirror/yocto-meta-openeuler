@@ -1,6 +1,5 @@
 # main bb file: yocto-poky/meta/recipes-core/readline/readline_8.1.2.bb
 #
-OPENEULER_SRC_URI_REMOVE = "https git http"
 
 PV = "8.2"
 
@@ -11,7 +10,7 @@ SRC_URI:remove = " \
         "
 
 SRC_URI:prepend = " \
-        file://readline-${PV}.tar.gz \
+        file://${BP}.tar.gz \
         file://readline-8.0-shlib.patch \
 "
 
@@ -21,4 +20,3 @@ SRC_URI[archive.sha256sum] = "a3d4637cdbd76f3cbc9566db90306a6af7bef90b291f7c9bc5
 # diff from oe 8.2 bb
 # see: http://cgit.openembedded.org/openembedded-core/plain/meta/recipes-core/readline/readline.inc
 EXTRA_OECONF += "bash_cv_termcap_lib=ncurses --with-shared-termcap-library"
-

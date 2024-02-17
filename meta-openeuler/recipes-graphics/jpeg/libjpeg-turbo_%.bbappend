@@ -1,6 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-graphics/jpeg/libjpeg-turbo_2.1.5.1.bb
 
-OPENEULER_SRC_URI_REMOVE = "http git"
 
 # version in openEuler
 PV = "3.0.0"

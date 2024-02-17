@@ -1,7 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-kernel/powertop/powertop_2.14.bb
 
-OPENEULER_SRC_URI_REMOVE = "git"
-
 PV = "2.15"
 
 # in 2.15, the following patch is already merged

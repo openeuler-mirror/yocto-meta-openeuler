@@ -1,5 +1,4 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/intltool/intltool_0.51.0.bb
-OPENEULER_SRC_URI_REMOVE = "https http"
 PV = "0.51.0"
 
 # conflict with intltool-perl5.26-regex-fixes.patch

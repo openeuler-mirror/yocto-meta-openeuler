@@ -1,6 +1,5 @@
 PV = "1.4.0"
 
-OPENEULER_SRC_URI_REMOVE = "http"
 OPENEULER_LOCAL_NAME = "oee_archive"
 
 # upstream source

@@ -1,5 +1,4 @@
 OPENEULER_REPO_NAME = "glibc"
-OPENEULER_SRC_URI_REMOVE = "git https http"
 
 PV = "2.38"
 

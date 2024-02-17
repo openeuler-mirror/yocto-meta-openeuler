@@ -63,7 +63,6 @@ cmake_do_configure() {
 }
 
 SRC_URI:remove = " \
-    git://github.com/ARM-software/armnn.git;name=armnn;branch=${BRANCH_ARMNN} \
     file://0001-stdlib-issue-work-around.patch \
     file://0002-enable-use-of-boost-shared-library.patch \
     file://0003-generate-versioned-library.patch \
@@ -74,7 +73,7 @@ SRC_URI:remove = " \
     file://grace_hopper.jpg \
 "
 SRC_URI += " \
-   file://armnn-${PV}.tar.gz \
+   file://${BP}.tar.gz \
    file://armnn-use-static-libraries.patch \
    file://0001-modify-cmake-files.patch \
 "

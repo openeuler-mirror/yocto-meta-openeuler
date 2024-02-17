@@ -1,6 +1,5 @@
 # main bb: yocto-poky/meta/recipes-multimedia/libsndfile/libsndfile1_1.0.31.bb
 
-OPENEULER_SRC_URI_REMOVE = "https http git gitsm"
 OPENEULER_LOCAL_NAME = "libsndfile"
 
 PV = "1.2.0"
@@ -17,4 +16,3 @@ SRC_URI += " \
 "
 
 S = "${WORKDIR}/libsndfile-${PV}"
-

@@ -1,5 +1,4 @@
 OPENEULER_REPO_NAME = "docbook5-style-xsl"
-OPENEULER_SRC_URI_REMOVE = "https"
 
 PV = "1.79.1"
 

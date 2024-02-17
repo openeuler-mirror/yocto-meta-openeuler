@@ -2,10 +2,6 @@
 
 PV = "1.6.15"
 
-SRC_URI:remove = " \
-        http://mosquitto.org/files/source/mosquitto-${PV}.tar.gz \
-"
-
 SRC_URI:append = " \
         file://mosquitto-${PV}.tar.gz \
         file://add-usage-output.patch \

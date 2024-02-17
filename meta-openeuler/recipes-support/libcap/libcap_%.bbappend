@@ -5,12 +5,12 @@ SRC_URI[sha256sum] = "5f65dc5b2e9f63a0748ea1b05be7965a38548db1cbfd53b30271ff0218
 
 # openeuler package and patches
 SRC_URI = " \
-    file://${BPN}-${PV}.tar.gz \
+    file://${BP}.tar.gz \
     file://libcap-buildflags.patch \
     file://backport-libcap-Ensure-the-XATTR_NAME_CAPS-is-define.patch \
 "
 
-S = "${WORKDIR}/${BPN}-${PV}"
+S = "${WORKDIR}/${BP}"
 
 # license file is updated
 LIC_FILES_CHKSUM:remove = "file://License;md5=e2370ba375efe9e1a095c26d37e483b8"

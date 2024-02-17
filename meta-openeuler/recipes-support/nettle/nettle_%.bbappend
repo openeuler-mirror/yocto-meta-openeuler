@@ -3,11 +3,6 @@
 # version in openEuler
 PV = "3.8.1"
 
-# files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI:remove = " \
-        ${GNU_MIRROR}/${BPN}/${BP}.tar.gz \
-"
-
 # files, patches that come from openeuler
 # don't apply 0000-nettle-3.3-remove-ecc-testsuite.patch due to failure: "No known curve with name secp192r1"
 SRC_URI += " \

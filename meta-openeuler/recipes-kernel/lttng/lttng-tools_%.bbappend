@@ -1,7 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-kernel/lttng/lttng-tools_2.13.9.bb
 
-OPENEULER_SRC_URI_REMOVE = "git"
-
 PV = "2.13.5"
 
 SRC_URI:prepend = " \

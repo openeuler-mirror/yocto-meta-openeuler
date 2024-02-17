@@ -1,7 +1,6 @@
 # openeuler version
 PV = "3.1"
 
-OPENEULER_SRC_URI_REMOVE = "git https http"
 
 OPENEULER_LOCAL_NAME = "oee_archive"
 

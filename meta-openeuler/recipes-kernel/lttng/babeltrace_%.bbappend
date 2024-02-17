@@ -1,7 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-kernel/lttng/babeltrace_1.5.11.bb
 
-OPENEULER_SRC_URI_REMOVE = "git"
-
 PV = "1.5.8"
 
 # src package and patches from openEuler

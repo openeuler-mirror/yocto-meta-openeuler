@@ -1,13 +1,12 @@
-OPENEULER_SRC_URI_REMOVE = "git http"
 
 PV = "2.40"
-S = "${WORKDIR}/${BPN}-${PV}"
+S = "${WORKDIR}/${BP}"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
 # apply package source and patches from openeuler
 SRC_URI = " \
-    file://${BPN}-${PV}.tar.xz \
+    file://${BP}.tar.xz \
     file://binutils-libtool-lib64.patch \
     file://binutils-export-demangle.h.patch \
     file://binutils-no-config-h-check.patch \

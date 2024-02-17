@@ -1,7 +1,5 @@
 PV = "4.16.2"
 
-OPENEULER_SRC_URI_REMOVE = "https http git"
-
 # find patches under openeuler at firse
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
@@ -10,7 +8,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 #  dnf-4.10.0-sw.patch 
 #  0001-Add-loongarch-architecture-support.patch
 SRC_URI:prepend = " \
-        file://${BPN}-${PV}.tar.gz \
+        file://${BP}.tar.gz \
         file://add-rpm-transaction-debuginfo.patch \
         file://fix-dnf-history-undo-error-when-history-sqlite-missing.patch \
         file://get-lockfile-exists-before-unlick.patch \

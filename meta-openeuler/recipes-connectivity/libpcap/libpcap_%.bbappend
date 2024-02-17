@@ -1,7 +1,5 @@
 # main bb file: yocto-poky/meta/recipes-connectivity/libpcap/libpcap_1.10.1.bb
 
-OPENEULER_SRC_URI_REMOVE = "http git"
-
 # version in openEuler
 PV = "1.10.4"
 

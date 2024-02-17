@@ -4,8 +4,6 @@ PV = "2.28.4"
 # setting openeuler name
 OPENEULER_REPO_NAME = "SDL2"
 
-# remove poky src_uri
-OPENEULER_SRC_URI_REMOVE = "git https http"
 # remove poky license
 LIC_FILES_CHKSUM:remove = "file://LICENSE.txt;md5=68a088513da90254b2fbe664f42af315"
 
@@ -43,4 +41,3 @@ PACKAGECONFIG[pipewire] = "-DSDL_PIPEWIRE_SHARED=ON,-DSDL_PIPEWIRE_SHARED=OFF,pi
 PACKAGECONFIG[vulkan]    = "-DSDL_VULKAN=ON,-DSDL_VULKAN=OFF"
 
 FILES:${PN} += "${datadir}/licenses/SDL2/LICENSE.txt"
-

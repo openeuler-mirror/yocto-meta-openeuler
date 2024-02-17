@@ -7,7 +7,6 @@ PV = "1.8.9"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI:remove = " \
-    http://netfilter.org/projects/iptables/files/iptables-${PV}.tar.bz2 \
     file://0001-configure-Add-option-to-enable-disable-libnfnetlink.patch \
     file://0002-configure.ac-only-check-conntrack-when-libnfnetlink-enabled.patch \
     file://0001-Makefile.am-do-not-install-etc-ethertypes.patch \
@@ -24,7 +23,7 @@ SRC_URI:append = " \
 # the openeuler patch 0001-extensions-NAT-Fix-for-Werror-format-security.patch apply failed
 
 SRC_URI:append = " \
-    file://${BPN}-${PV}.tar.xz \
+    file://${BP}.tar.xz \
     file://enabled-makecheck-in-extensions.patch \
     file://bugfix-add-check-fw-in-entry.patch \
 "

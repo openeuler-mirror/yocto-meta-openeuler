@@ -1,7 +1,5 @@
 # main bb file from: meta/recipes-connectivity/openssl/openssl_3.0.8.bb
 
-OPENEULER_SRC_URI_REMOVE = "https git http"
-
 # openEuler version
 PV = "3.0.9"
 

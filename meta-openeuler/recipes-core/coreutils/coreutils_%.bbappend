@@ -1,6 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-core/coreutils/coreutils_8.32.bb
 
-OPENEULER_SRC_URI_REMOVE = "https git http"
 
 # version in openEuler
 PV = "9.3"

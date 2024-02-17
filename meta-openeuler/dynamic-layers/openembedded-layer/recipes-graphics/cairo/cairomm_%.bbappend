@@ -1,7 +1,5 @@
 # main bb: yocto-meta-openembedded/meta-oe/recipes-graphics/cairo/cairomm_1.14.3.bb
 
-OPENEULER_SRC_URI_REMOVE = "https http git gitsm"
-
 PV = "1.14.4"
 
 SRC_URI += " \

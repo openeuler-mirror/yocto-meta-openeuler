@@ -1,4 +1,3 @@
-OPENEULER_SRC_URI_REMOVE = "https http git"
 
 PV = "0.17"
 

@@ -2,7 +2,7 @@
 
 PV = "0.4.34"
 
-SRC_URI = "file://${BPN}-${PV}.tar.xz \
+SRC_URI = "file://${BP}.tar.xz \
 "
 
 SRC_URI[sha256sum] = "844e6d7db8086f793f57618d3d4b68d29d99b16034e71430df3c21cfd3c3542a"

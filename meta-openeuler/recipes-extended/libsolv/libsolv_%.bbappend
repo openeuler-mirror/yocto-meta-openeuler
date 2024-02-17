@@ -1,7 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-extended/libsolv/libsolv_0.7.22.bb
 
-OPENEULER_SRC_URI_REMOVE = "http https git"
-
 S = "${WORKDIR}/${BP}"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"

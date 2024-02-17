@@ -1,7 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-extended/stress-ng/stress-ng_0.13.12.bb
 
-OPENEULER_SRC_URI_REMOVE = "git"
-
 PV = "0.13.11"
 
 # powerpc64 is not supported now 

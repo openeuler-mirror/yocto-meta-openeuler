@@ -1,8 +1,5 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-devtools/lapack/lapack_3.9.0.bb
 
-OPENEULER_SRC_URI_REMOVE = "https git"
-OPENEULER_REPO_NAME = "lapack"
-
 LIC_FILES_CHKSUM = "file://LICENSE;md5=39902829ba0c2cbac1b0debfb75a416b"
 
 # version in openEuler
@@ -21,4 +18,3 @@ SRC_URI:prepend = " \
 
 SRC_URI[md5sum] = "d70fc27a8bdebe00481c97c728184f09"
 SRC_URI[sha256sum] = "328c1bea493a32cac5257d84157dc686cc3ab0b004e2bea22044e0a59f6f8a19"
-

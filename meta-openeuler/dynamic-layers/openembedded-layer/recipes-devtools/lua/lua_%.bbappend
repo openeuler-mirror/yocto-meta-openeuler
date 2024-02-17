@@ -1,18 +1,17 @@
 # the main bb file: yocto-poky/meta/recipes-devtools/lua/lua_5.4.4.bb
-OPENEULER_SRC_URI_REMOVE = "http https git"
 
 # openeuler version
 PV = "5.4.6"
 
 # remove patches out of date
-SRC_URI:remove = "http://www.lua.org/ftp/lua-${PV}.tar.gz;name=tarballsrc \
+SRC_URI:remove = " \
            file://CVE-2022-28805.patch \
            file://CVE-2022-33099.patch \
            "
 
 # openeuler has patches for lua-${PV}-tests
 SRC_URI:prepend = " \
-           file://lua-${PV}.tar.gz;name=tarballsrc \
+           file://${BP}.tar.gz;name=tarballsrc \
 "
 
 LIC_FILES_CHKSUM = "file://doc/readme.html;beginline=303;endline=324;md5=e05449eb28c092473f854670c6e8375a"

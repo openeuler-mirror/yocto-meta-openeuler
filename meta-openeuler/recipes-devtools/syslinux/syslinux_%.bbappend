@@ -6,7 +6,6 @@ PV = "6.04-pre1"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI:remove = " \
-        https://www.zytor.com/pub/syslinux/Testing/6.04/syslinux-${PV}.tar.xz \
 	file://determinism.patch \
 "
 

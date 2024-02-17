@@ -3,8 +3,6 @@ PV = "2.38.0"
 # openeuler tar name
 OPENEULER_BP = "AT_SPI2_ATK_2_38_0"
 
-OPENEULER_SRC_URI_REMOVE = "https"
-
 SRC_URI:prepend = "file://${OPENEULER_BP}.tar.gz \
            file://backport-fix-test-memory-leak.patch \
            file://backport-also-fix-ref-leak-in-try_get_root.patch \

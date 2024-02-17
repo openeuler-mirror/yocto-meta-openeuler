@@ -1,7 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-extended/shadow/shadow_4.11.bb
 
-OPENEULER_SRC_URI_REMOVE = "https git http"
-
 PV = "4.13"
 
 # get extra config files from openeuler(pam.d directory)

@@ -2,8 +2,6 @@
 
 PV = "4.5.2"
 
-OPENEULER_SRC_URI_REMOVE = "https git http"
-
 FILESEXTRAPATHS:prepend := "${THISDIR}/opencv:"
 
 # use src-openeuler's source
@@ -44,4 +42,3 @@ EXTRA_OECMAKE:remove = " \
 "
 
 PACKAGECONFIG += " dnn "
-

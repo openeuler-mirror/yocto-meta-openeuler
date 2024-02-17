@@ -7,6 +7,7 @@ PV = "8.2210.0"
 
 # files, patches that come from openeuler
 SRC_URI =+ " \
+        file://${BP}.tar.gz \
         file://rsyslog-8.24.0-ensure-parent-dir-exists-when-writting-log-file.patch \
         file://bugfix-rsyslog-7.4.7-imjournal-add-monotonic-timestamp.patch \
         file://bugfix-rsyslog-7.4.7-add-configuration-to-avoid-memory-leak.patch \

@@ -1,11 +1,9 @@
 
-OPENEULER_SRC_URI_REMOVE = "https http"
-
 PV = "2023.02.20"
 
 
 SRC_URI:prepend = " \
-        file://${BPN}-${PV}.tar.xz \
+        file://${BP}.tar.xz \
         "
 
 SRC_URI[md5sum] = "1a9ee97d3503d134e16c87c4fa1119cf"

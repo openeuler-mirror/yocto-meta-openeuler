@@ -9,11 +9,6 @@ LIC_FILES_CHKSUM:remove = " \
         file://lib/idn2.h.in;endline=27;md5=d0fc8ec628be130a1d5b889107e92477 \
 "
 
-# files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI:remove = " \
-        ${GNU_MIRROR}/libidn/${BPN}-${PV}.tar.gz \
-"
-
 # files, patches that come from openeuler
 SRC_URI:append = " \
         file://${BP}.tar.gz \

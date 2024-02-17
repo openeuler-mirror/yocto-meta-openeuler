@@ -1,7 +1,9 @@
 PV = "2.6.2"
 
 # apply patches in openeuler
-SRC_URI:prepend = "file://0000-systemd-idmapd-require-rpc-pipefs.patch \
+SRC_URI:prepend = " \
+        file://nfs-utils-${PV}.tar.xz \
+        file://0000-systemd-idmapd-require-rpc-pipefs.patch \
         file://0001-correct-the-statd-path-in-man.patch \
         file://0002-nfs-utils-set-use-gss-proxy-1-to-enable-gss-proxy-by.patch \
         file://0003-fix-coredump-in-bl_add_disk.patch \

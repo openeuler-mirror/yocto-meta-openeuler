@@ -1,5 +1,4 @@
 #main bbfile: yocto-meta-ros/meta-ros2/recipes-devtools/graphicsmagick/graphicsmagick_1.3.33.bb
-OPENEULER_SRC_URI_REMOVE = "https git"
 OPENEULER_REPO_NAME = "GraphicsMagick"
 
 LIC_FILES_CHKSUM = "file://Copyright.txt;md5=d46c64029c86acbab3a4deffc237d406"

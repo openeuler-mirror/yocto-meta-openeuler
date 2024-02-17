@@ -1,7 +1,5 @@
 # main bb file: yocto-poky/meta/recipes-support/libmicrohttpd/libmicrohttpd_0.9.76.bb
 
-OPENEULER_SRC_URI_REMOVE = "git https http"
-
 PV = "0.9.75"
 
 SRC_URI:append = " \

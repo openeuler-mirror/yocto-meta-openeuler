@@ -2,7 +2,6 @@
 
 # apply openEuler package
 OPENEULER_REPO_NAME = "uboot-tools"
-OPENEULER_SRC_URI_REMOVE = "https git http"
 
 PV = "2021.10"
 

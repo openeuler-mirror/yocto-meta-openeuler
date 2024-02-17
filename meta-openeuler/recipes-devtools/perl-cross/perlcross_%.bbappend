@@ -1,7 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/perl-cross/perlcross_1.3.7.bb
 
-OPENEULER_SRC_URI_REMOVE = "https"
-
 PV = "1.5"
 
 OPENEULER_LOCAL_NAME = "oee_archive"

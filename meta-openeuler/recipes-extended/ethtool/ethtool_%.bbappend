@@ -2,8 +2,6 @@
 
 PV = "6.4"
 
-SRC_URI:remove = "${KERNELORG_MIRROR}/software/network/ethtool/ethtool-${PV}.tar.gz"
-
 # ptest patch: avoid_parallel_tests.patch
 SRC_URI:prepend = "file://${BP}.tar.xz \
            "

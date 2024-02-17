@@ -1,7 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/nasm/nasm_2.15.05.bb
 
-OPENEULER_SRC_URI_REMOVE = "http git"
-
 PV = "2.16.01"
 
 # upstream patches update

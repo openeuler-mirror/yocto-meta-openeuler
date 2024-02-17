@@ -1,4 +1,3 @@
-OPENEULER_SRC_URI_REMOVE = "https git http"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:${THISDIR}/systemd:"
 
@@ -63,4 +62,3 @@ SRC_URI =+ " \
         file://delete-journal-files-except-system.journal-when-jour.patch \
         file://set-the-cpuset.cpus-mems-of-machine.slice-to-all-by-.patch \
 "
-

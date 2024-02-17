@@ -4,8 +4,7 @@
 PV = "30"
 
 # Use the source packages from openEuler
-SRC_URI:remove = "git://git.kernel.org/pub/scm/utils/kernel/kmod/kmod.git \
-        git://git.kernel.org/pub/scm/utils/kernel/kmod/kmod.git;branch=master \
+SRC_URI:remove = " \
         file://0001-depmod-Add-support-for-excluding-a-directory.patch \
         "
 SRC_URI:prepend = "file://${BP}.tar.xz \

@@ -11,7 +11,9 @@ LIC_FILES_CHKSUM = "file://LICENSE;beginline=4;md5=613211e713c4ffc489ec370e1cace
 
 # apply patches in openEuler
 # backport-0025-bind-Detect-system-time-changes.patch, backport-Fix-CVE-2021-25220.patch for bind
-SRC_URI:prepend = "file://backport-0001-change-bug-url.patch \
+SRC_URI:prepend = " \
+           file://dhcp-${PV}.tar.gz \
+           file://backport-0001-change-bug-url.patch \
            file://backport-0002-additional-dhclient-options.patch \
            file://backport-0003-Handle-releasing-interfaces-requested-by-sbin-ifup.patch \
            file://backport-0004-Support-unicast-BOOTP-for-IBM-pSeries-systems-and-ma.patch \

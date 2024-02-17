@@ -2,9 +2,6 @@ PV = "1.6"
 S = "${WORKDIR}/npth-${PV}"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-SRC_URI:remove = " \
-        ${GNUPG_MIRROR}/npth/npth-${PV}.tar.bz2 \
-"
 
 SRC_URI:append = " \
         file://npth-${PV}.tar.bz2 \

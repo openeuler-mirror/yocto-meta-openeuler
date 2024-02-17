@@ -1,5 +1,4 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-support/glog/glog_0.5.0.bb
-OPENEULER_SRC_URI_REMOVE = "https git"
 # version in openEuler
 PV = "0.6.0"
 S = "${WORKDIR}/glog-${PV}"

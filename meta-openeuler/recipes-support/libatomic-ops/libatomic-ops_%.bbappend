@@ -8,6 +8,6 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
                     "
 
 # apply src and patch from openEuler
-SRC_URI = "file://libatomic_ops-${PV}.tar.gz \
+SRC_URI:prepend = "file://libatomic_ops-${PV}.tar.gz \
 	       file://libatomic_ops-7.6.12-sw.patch \
 	       "

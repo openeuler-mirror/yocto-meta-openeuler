@@ -4,7 +4,7 @@
 PV = "23.6"
 
 SRC_URI = " \
-    file://psmisc-${PV}.tar.xz \
+    file://${BP}.tar.xz \
 "
 
 # patches from poky
@@ -12,7 +12,7 @@ SRC_URI += " \
            file://0001-Use-UINTPTR_MAX-instead-of-__WORDSIZE.patch \
 "
 
-S = "${WORKDIR}/${BPN}-${PV}"
+S = "${WORKDIR}/${BP}"
 
 do_configure:prepend() {
     # cannot run po/update-potfiles in new version

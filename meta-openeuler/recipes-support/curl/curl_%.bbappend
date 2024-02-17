@@ -25,4 +25,3 @@ EXTRA_OECONF:remove = " \
 EXTRA_OECONF:append = " \
         --with-ca-bundle=${sysconfdir}/ssl/certs/ca-bundle.crt \
 "
-

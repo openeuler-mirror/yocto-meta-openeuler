@@ -3,12 +3,8 @@
 # version in openEuler
 PV = "8.0.1"
 
-S = "${WORKDIR}/${BPN}-${PV}"
+S = "${WORKDIR}/${BP}"
 
-# files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI:remove = " \
-            git://github.com/fmtlib/fmt;branch=master;protocol=https \
-            "
 
 SRC_URI += " \
         file://${PV}.tar.gz \

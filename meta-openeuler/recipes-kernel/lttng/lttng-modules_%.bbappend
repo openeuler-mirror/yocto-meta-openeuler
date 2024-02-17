@@ -2,13 +2,12 @@
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
-OPENEULER_SRC_URI_REMOVE = "https git"
 
 OPENEULER_LOCAL_NAME = "oee_archive"
 
 # src package and patches from openEuler
 SRC_URI:prepend = " \
-        file://${OPENEULER_LOCAL_NAME}/${BPN}/${BPN}-${PV}.tar.bz2 \
+        file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.bz2 \
         file://0001-opneuler-kernel-version-workaround-for-openeuler-lin.patch \
         "
 

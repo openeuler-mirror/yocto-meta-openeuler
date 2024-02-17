@@ -1,12 +1,9 @@
 PV = "2.4.3"
 
 OPENEULER_REPO_NAME = "gnupg2"
-SRC_URI:remove = " \
-        ${GNUPG_MIRROR}/${BPN}/${BPN}-${PV}.tar.bz2 \
-"
 
 SRC_URI:append = " \
-        file://gnupg-${PV}.tar.bz2 \
+        file://${BP}.tar.bz2 \
         file://gnupg-2.1.10-secmem.patch \
         file://gnupg-2.1.1-fips-algo.patch \
         file://gnupg-2.2.23-large-rsa.patch \
@@ -18,4 +15,3 @@ SRC_URI:append = " \
         file://gnupg2-revert-rfc4880bis.patch \
         file://backport-dirmngr-Enable-the-call-of-ks_ldap_help_variables-wh.patch \
         "
-

@@ -3,18 +3,14 @@
 #version in openEuler
 PV = "4.06"
 
-S = "${WORKDIR}/${BPN}-${PV}"
+S = "${WORKDIR}/${BP}"
 
 DEPENDS:remove = "dbus"
 PACKAGECONFIG:remove = "tcp-wrappers"
 
-# files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI:remove = " \
-            ${SOURCEFORGE_MIRROR}/project/linuxquota/quota-tools/${PV}/quota-${PV}.tar.gz \
-            "
 # files, patches that come from openeuler
 SRC_URI += " \
-        file://quota-${PV}.tar.gz \
+        file://${BP}.tar.gz \
         file://0000-Limit-number-of-comparison-characters-to-4.patch \
         file://0001-Limit-maximum-of-RPC-port.patch \
         file://0002-quotaio_xfs-Warn-when-large-kernel-timestamps-cannot.patch \

@@ -3,7 +3,6 @@ require u-boot-common.inc
 require u-boot.inc
 DEPENDS += "bc-native dtc-native python3-setuptools-native"
 
-OPENEULER_SRC_URI_REMOVE = "https git"
 
 PV = "2022.07"
 

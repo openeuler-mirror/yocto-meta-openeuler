@@ -1,7 +1,5 @@
 OPENEULER_LOCAL_NAME = "oee_archive"
 
-OPENEULER_SRC_URI_REMOVE = "git"
-
 PV = "0.29.2"
 
 SRC_URI:prepend = "file://${OPENEULER_LOCAL_NAME}/${BPN}/pkg-config-${PV}.tar.gz \

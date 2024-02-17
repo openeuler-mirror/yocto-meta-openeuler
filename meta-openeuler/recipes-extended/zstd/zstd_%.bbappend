@@ -1,7 +1,7 @@
 PV = "1.5.5"
 
 SRC_URI = " \
-        file://${BPN}-${PV}.tar.gz \
+        file://${BP}.tar.gz \
            "
 
 S = "${WORKDIR}/${BP}"

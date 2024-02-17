@@ -5,10 +5,8 @@ OPENEULER_REPO_NAME = "iproute"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=eb723b61539feef013de476e68b5c50a"
 
-SRC_URI:remove = "${KERNELORG_MIRROR}/linux/utils/net/${BPN}/${BP}.tar.xz"
-
 SRC_URI:append = " \
-        file://${BPN}-${PV}.tar.xz \
+        file://${BP}.tar.xz \
         file://bugfix-iproute2-3.10.0-fix-maddr-show.patch  \
         file://bugfix-iproute2-change-proc-to-ipnetnsproc-which-is-private.patch \
         file://feature-iproute-add-support-for-ipvlan-l2e-mode.patch \

@@ -4,10 +4,6 @@ OPENEULER_REPO_NAME = "boost"
 
 PV = "1.81.0"
 
-SRC_URI:remove = " \
-        git://github.com/boostorg/build;protocol=https;branch=master \
-"
-
 SRC_URI:prepend = " \
         file://boost_1_81_0.tar.gz \
 "

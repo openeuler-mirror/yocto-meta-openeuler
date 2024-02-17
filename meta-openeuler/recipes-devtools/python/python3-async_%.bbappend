@@ -1,7 +1,5 @@
 PV = "0.6.2"
 
-# remove src_uri cotains http, rename local dir name
-OPENEULER_SRC_URI_REMOVE = "http"
 OPENEULER_LOCAL_NAME = "oee_archive"
 
 # from version 0.6.2, compare the differences in upstream recipe

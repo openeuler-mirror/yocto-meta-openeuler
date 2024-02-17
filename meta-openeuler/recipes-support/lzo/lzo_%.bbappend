@@ -1,16 +1,10 @@
 # main bbfile: yocto-poky/meta/recipes-support/lzo/lzo_2.10.bb
 
-OPENEULER_SRC_URI_REMOVE = "https git http"
-
-# attr version in openEuler
+# version in openEuler
 PV = "2.10"
 
-# files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI:remove = " \
-            "
-
-SRC_URI += " \
-        file://${BPN}-${PV}.tar.gz \
+SRC_URI:prepend = " \
+        file://${BP}.tar.gz \
         "
 
 SRC_URI[tarball.md5sum] = "39d3f3f9c55c87b1e5d6888e1420f4b5"

@@ -9,14 +9,11 @@ SRC_URI:remove = " file://CVE-2022-3715.patch \
            file://use_aclocal.patch \
            file://makerace.patch \
            file://makerace2.patch \
-           ${GNU_MIRROR}/bash/bash-${PV}-patches/bash51-001;apply=yes;striplevel=0;name=patch001 \
-           ${GNU_MIRROR}/bash/bash-${PV}-patches/bash51-002;apply=yes;striplevel=0;name=patch002 \
-           ${GNU_MIRROR}/bash/bash-${PV}-patches/bash51-003;apply=yes;striplevel=0;name=patch003 \
-           ${GNU_MIRROR}/bash/bash-${PV}-patches/bash51-004;apply=yes;striplevel=0;name=patch004 \
            "
 
 # patches in openeuler
 SRC_URI:prepend = " \
+           file://${BP}.tar.gz;name=tarball \
            file://bash-2.05a-interpreter.patch \
            file://bash-2.05b-pgrp_sync.patch \
            file://bash-4.0-nobits.patch \

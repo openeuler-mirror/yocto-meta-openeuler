@@ -1,5 +1,4 @@
 # main bb file: yocto-poky/meta/recipes-devtools/flex/flex_2.6.4.bb
-OPENEULER_SRC_URI_REMOVE = "https http"
 
 PV = "2.6.4"
 

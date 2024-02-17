@@ -1,6 +1,5 @@
 # meta-oe/recipes-devtools/yajl/yajl_2.1.0.bb?h=hardknott
 
-OPENEULER_SRC_URI_REMOVE = "git"
 
 SRC_URI:prepend = " \
         file://${PV}.tar.gz \

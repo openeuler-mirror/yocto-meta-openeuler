@@ -1,6 +1,5 @@
 # main bb: meta-wayland/recipes-wlroots/wlroots/wlroots_git.bb
 # from https://github.com/MarkusVolk/meta-wayland.git 
-OPENEULER_SRC_URI_REMOVE = "https http git"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
 OPENEULER_LOCAL_NAME = "oee_archive"
@@ -21,4 +20,3 @@ PACKAGECONFIG += " \
         ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'xwayland', '', d)} \
 "
 EXTRA_OEMESON += " -Dbackends=drm,libinput,x11 "
-

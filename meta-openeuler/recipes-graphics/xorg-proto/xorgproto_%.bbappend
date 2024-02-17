@@ -1,6 +1,5 @@
 # main bb file: yocto-poky/meta/recipes-graphics/xorg-proto/xorgproto_2021.5.bb
 
-OPENEULER_SRC_URI_REMOVE = "http git"
 
 PV = "2023.1"
 

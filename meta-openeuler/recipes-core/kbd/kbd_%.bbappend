@@ -1,7 +1,5 @@
 # main bb file: yocto-poky/meta/recipes-core/kbd/kbd_2.4.0.bb
 
-OPENEULER_SRC_URI_REMOVE = "https http"
-
 PV = "2.6.1"
 
 # license update

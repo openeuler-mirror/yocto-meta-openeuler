@@ -14,7 +14,7 @@ SRC_URI = "file://${PV}.tar.gz \
 	   file://0006-libevhtp-add-gcov-compile-options.patch \
 	  "
 
-S = "${WORKDIR}/${BPN}-${PV}"
+S = "${WORKDIR}/${BP}"
 
 DEPENDS = "libevent"
 

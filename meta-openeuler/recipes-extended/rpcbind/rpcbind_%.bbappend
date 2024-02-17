@@ -3,19 +3,15 @@
 #version in openEuler
 PV = "1.2.6"
 
-S = "${WORKDIR}/${BPN}-${PV}"
+S = "${WORKDIR}/${BP}"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
-# files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI:remove = " \
-            ${SOURCEFORGE_MIRROR}/rpcbind/rpcbind-${PV}.tar.bz2 \
-            "
 # files, patches that come from openeuler
 # all openeuler systemd patches can't apply, include rpcbind-0.2.4-runstatdir.patch
 # backport-debian-enable-rmt-calls-with-r.patch is conflict
 SRC_URI:append = " \
-        file://${BPN}-${PV}.tar.bz2 \
+        file://${BP}.tar.bz2 \
         file://bugfix-rpcbind-GETADDR-return-client-ip.patch \
         file://fix-CVE-2017-8779.patch \
         file://backport-fix-double-free-in-init_transport.patch \

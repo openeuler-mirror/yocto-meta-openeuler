@@ -1,4 +1,3 @@
-OPENEULER_SRC_URI_REMOVE = "git"
 
 OPENEULER_LOCAL_NAME = "oee_archive"
 

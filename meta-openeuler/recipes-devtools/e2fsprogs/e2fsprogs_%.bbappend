@@ -1,9 +1,8 @@
 # the main bb file: yocto-poky/meta/recipes-devtools/e2fsprogs/e2fprogs_1.46.5.bb
-OPENEULER_SRC_URI_REMOVE = "git"
 
 PV = "1.47.0"
 
-S = "${WORKDIR}/${BPN}-${PV}"
+S = "${WORKDIR}/${BP}"
 # delete package from poky
 SRC_URI:remove = " \
                 file://0001-e2fsck-fix-last-mount-write-time-when-e2fsck-is-forc.patch \
@@ -13,7 +12,7 @@ SRC_URI:remove = " \
 
 # add openeuler patches
 SRC_URI += " \
-    file://e2fsprogs-${PV}.tar.xz \
+    file://${BP}.tar.xz \
     file://0001-e2fsprogs-set-hugefile-from-4T-to-1T-in-hugefile-tes.patch \
     file://0002-e2fsck-exit-journal-recovery-when-find-EIO-ENOMEM-er.patch \
     file://0003-e2fsck-exit-journal-recovery-when-jounral-superblock.patch \
@@ -30,5 +29,3 @@ SRC_URI += " \
 SRC_URI[sha256sum] = "144af53f2bbd921cef6f8bea88bb9faddca865da3fbc657cc9b4d2001097d5db"
 
 EXTRA_OECONF += "--enable-largefile"
-
-

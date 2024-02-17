@@ -1,6 +1,5 @@
 # main bb: yocto-poky/meta/recipes-sato/l3afpad/l3afpad_git.bb
 # ref: git://git.toradex.com/meta-lxde.git
-OPENEULER_SRC_URI_REMOVE = "https http git gitsm"
 
 OPENEULER_LOCAL_NAME = "oee_archive"
 
@@ -11,4 +10,3 @@ SRC_URI = " \
 "
 
 S = "${WORKDIR}/l3afpad-${PV}"
-

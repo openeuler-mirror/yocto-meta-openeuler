@@ -1,7 +1,5 @@
 PV = "2.12"
 
-# remove http uri, rename local dir name
-OPENEULER_SRC_URI_REMOVE = "http"
 OPENEULER_LOCAL_NAME = "oee_archive"
 
 # upstream source

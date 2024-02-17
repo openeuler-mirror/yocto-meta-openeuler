@@ -2,11 +2,9 @@
 
 PV = "2.10"
 
-S = "${WORKDIR}/${BPN}-${PV}"
+S = "${WORKDIR}/${BP}"
 
-SRC_URI:remove = "git://git.code.sf.net/p/net-tools/code;protocol=https;branch=master \"
-SRC_URI:prepend = "file://${BPN}-${PV}.tar.xz \
+SRC_URI:prepend = "file://${BP}.tar.xz \
         file://backport-net-tools-cycle.patch \
         file://backport-net-tools-man.patch \
         "
-# ether-wake.c patches from openeuler not allpy for embedded

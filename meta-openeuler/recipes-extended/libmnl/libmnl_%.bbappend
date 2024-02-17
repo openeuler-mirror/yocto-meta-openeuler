@@ -1,6 +1,5 @@
 # main bbfile: meta/recipes-extended/libmnl/libmnl_1.0.4.bb
 
-OPENEULER_SRC_URI_REMOVE = "http git"
 
 PV = "1.0.5"
 

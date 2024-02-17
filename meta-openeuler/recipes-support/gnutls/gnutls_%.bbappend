@@ -11,7 +11,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI:remove = " \
-        https://www.gnupg.org/ftp/gcrypt/gnutls/v${SHRT_VER}/gnutls-${PV}.tar.xz \
         file://CVE-2022-2509.patch \
         file://CVE-2023-0361.patch \
 "

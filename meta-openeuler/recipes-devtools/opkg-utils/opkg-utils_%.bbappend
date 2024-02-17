@@ -3,10 +3,6 @@ OPENEULER_REPO_NAME = "yocto-opkg-utils"
 # version in openEuler
 PV = "0.5.0"
 
-# remove upstream url and patch, the patch can not apply
-SRC_URI:remove = "git://git.yoctoproject.org/opkg-utils;protocol=https;branch=master \
-"
-
 # add openeuler local package
 SRC_URI:prepend = "file://opkg-utils-${PV}.tar.gz \
 "

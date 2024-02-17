@@ -1,6 +1,5 @@
 # main bb: yocto-meta-openembedded/meta-oe/recipes-connectivity/hostapd/hostapd_2.10.bb
 
-OPENEULER_SRC_URI_REMOVE = "https http git gitsm"
 OPENEULER_LOCAL_NAME = "oee_archive"
 
 PV = "2.10"
@@ -14,4 +13,3 @@ SRC_URI += " \
 do_configure:append() {
     echo 'CONFIG_ACS=y' >> ${S}/hostapd/.config
 }
-

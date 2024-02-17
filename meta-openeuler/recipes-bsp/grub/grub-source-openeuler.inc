@@ -5,9 +5,6 @@ PV = "2.06"
 
 OPENEULER_REPO_NAME = "grub2"
 
-SRC_URI:remove = "${GNU_MIRROR}/grub/grub-${PV}.tar.gz \
-"
-
 SRC_URI:prepend = "file://grub-${PV}.tar.xz \
 "
 

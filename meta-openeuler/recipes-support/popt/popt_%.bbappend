@@ -2,11 +2,11 @@
 
 PV = "1.19"
 
-SRC_URI:remove = "http://ftp.rpm.org/popt/releases/popt-1.x/${BP}.tar.gz \
+SRC_URI:remove = " \
 		file://0001-popt-test-output-format-for-ptest.patch \
 "
 
-SRC_URI:prepend = "file://${BPN}-${PV}.tar.gz \
+SRC_URI:prepend = "file://${BP}.tar.gz \
 		file://fix-obscure-iconv-mis-call-error-path-could-lead-to-.patch \
 		file://fix-handle-newly-added-asset-.-call-like-elsewhere.patch \
 		file://fix-permit-reading-aliases-remove-left-over-goto-exi.patch \

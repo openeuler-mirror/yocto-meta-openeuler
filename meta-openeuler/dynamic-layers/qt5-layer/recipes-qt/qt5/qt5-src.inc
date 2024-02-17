@@ -2,8 +2,6 @@
 
 PV = "5.15.10"
 
-OPENEULER_SRC_URI_REMOVE = "http git"
-
 SRC_URI:prepend = "file://${BPN}-everywhere-opensource-src-${PV}.tar.xz \
 "
 

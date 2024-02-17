@@ -1,11 +1,5 @@
 # source bb: meta/recipes-devtools/tcltk/tcl_8.6.11.bb
-OPENEULER_SRC_URI:remove = "http https git"
-
 PV = "8.6.13"
-
-# remove upstream software
-BASE_SRC_URI:remove = "${SOURCEFORGE_MIRROR}/tcl/tcl-core${PV}-src.tar.gz \
-"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/tcl/:"
 

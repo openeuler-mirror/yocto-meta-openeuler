@@ -4,8 +4,6 @@ PV = "2.42.0"
 # openeuler tar name
 OPENEULER_BP = "AT_SPI2_CORE_2_42_0"
 
-OPENEULER_SRC_URI_REMOVE = "https"
-
 SRC_URI:prepend = "file://${OPENEULER_BP}.tar.gz \
            "
 

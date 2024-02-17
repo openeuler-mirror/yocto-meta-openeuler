@@ -4,9 +4,6 @@ PV = "73.2"
 
 LIC_FILES_CHKSUM = "file://../LICENSE;md5=80c2cf39ad8ae12b9b9482a1737c6650"
 
-SRC_URI:remove := "${BASE_SRC_URI};name=code \
-           ${DATA_SRC_URI};name=data \"
-
 SRC_URI:prepend = " \
     file://${BPN}4c-${ICU_PV}-src.tgz \
     file://gennorm2-man.patch;striplevel=2 \

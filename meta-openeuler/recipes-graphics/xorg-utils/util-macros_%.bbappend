@@ -1,6 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-graphics/xorg-util/util-macros_1.19.3.bb
 
-OPENEULER_SRC_URI_REMOVE = "http git"
 
 PV = "1.20.0"
 

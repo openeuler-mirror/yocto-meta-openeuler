@@ -9,7 +9,6 @@ DEPENDS += "libaio"
 
 PV = "2.03.18"
 
-OPENEULER_SRC_URI_REMOVE = "git"
 
 # remove open_embedded patch that not use
 SRC_URI:remove = "file://0002-Guard-use-of-mallinfo-with-__GLIBC__.patch \

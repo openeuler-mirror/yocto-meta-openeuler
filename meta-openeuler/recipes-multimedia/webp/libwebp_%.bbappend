@@ -2,11 +2,7 @@
 
 PV = "1.3.1"
 
-SRC_URI:remove = " \
-    http://downloads.webmproject.org/releases/webp/${BP}.tar.gz \
-"
-
-SRC_URI:append = " \
+SRC_URI:prepend = " \
     file://${BP}.tar.gz \
 "
 

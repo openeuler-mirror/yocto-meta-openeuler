@@ -1,7 +1,5 @@
 # main bb: yocto-poky/meta/recipes-graphics/startup-notification/startup-notification_0.12.bb
 
-OPENEULER_SRC_URI_REMOVE = "https http git gitsm"
-
 PV = "0.12"
 
 SRC_URI += " \
@@ -9,4 +7,3 @@ SRC_URI += " \
 "
 
 S = "${WORKDIR}/startup-notification-${PV}"
-

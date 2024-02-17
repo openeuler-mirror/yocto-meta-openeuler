@@ -1,4 +1,3 @@
-OPENEULER_SRC_URI_REMOVE = "http"
 
 OPENEULER_REPO_NAME = "glib2"
 
@@ -52,4 +51,3 @@ do_install:append () {
         chrpath --delete ${D}${libdir}/libgmodule-2.0.so
     fi
 }
-

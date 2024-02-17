@@ -1,5 +1,4 @@
 OPENEULER_REPO_NAME = "mesa"
-OPENEULER_SRC_URI_REMOVE = "http git"
 
 PV = "23.1.3"
 

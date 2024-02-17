@@ -1,14 +1,12 @@
 # main bbfile: from oe
 # http://cgit.openembedded.org/meta-openembedded/tree/meta-oe/recipes-security/audit/audit_3.0.9.bb
 
-OPENEULER_SRC_URI_REMOVE = "https git http"
-
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
 #version in openEuler
 PV = "3.1.1"
 
-S = "${WORKDIR}/audit-${PV}"
+S = "${WORKDIR}/${BP}"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI:remove = " \
@@ -19,7 +17,7 @@ SRC_URI:remove = " \
 #  backport-audit-flex-array-workaround.patch
 #  backport-audit-undo-flex-array.patch
 SRC_URI += " \
-        file://audit-${PV}.tar.gz \
+        file://${BP}.tar.gz \
         file://bugfix-audit-support-armv7b.patch \
         file://bugfix-audit-userspace-missing-syscalls-for-aarm64.patch \
         file://bugfix-audit-reload-coredump.patch \
