@@ -1,9 +1,5 @@
-# main bbfile: yocto-meta-openembedded/meta-oe/recipes-graphics/gphoto2/libgphoto2_2.5.27.bb
-
-OPENEULER_REPO_NAME = "gphoto2"
-
+# main bbfile: yocto-meta-openembedded/meta-oe/recipes-graphics/gphoto2/gphoto2_2.5.27.bb
 PV = "2.5.17"
-
 
 # source change to openEuler
 SRC_URI += " \
