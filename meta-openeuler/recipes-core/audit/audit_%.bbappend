@@ -8,10 +8,6 @@ PV = "3.1.1"
 
 S = "${WORKDIR}/${BP}"
 
-# files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI:remove = " \
-        "
-
 # files, patches that come from openeuler
 # This patches are conflict, not apply:
 #  backport-audit-flex-array-workaround.patch
