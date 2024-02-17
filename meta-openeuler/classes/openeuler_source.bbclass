@@ -3,9 +3,6 @@
 #  - multiple packages share the same git repo, e.g. rcl_interfaces of openeuler contains multiple packages's src tarball
 #  - the special handling of ros2 related packages in openeuler
 
-# recipes inherited this class, should remove external src uri link
-OPENEULER_SRC_URI_REMOVE = "git https http"
-
 def check_class_valid(d):
     is_diable = d.getVar('DISABLE_OPENEULER_SOURCE_MAP')
     if is_diable is None or is_diable == "False" or is_diable == "false" or is_diable == "0":

@@ -107,9 +107,20 @@ def get_openeuler_epoch(d):
 # src_uri_set is used to remove some URLs from SRC_URI through
 # OPENEULER_SRC_URI_REMOVE, because we don't want to download from
 # these URLs
+# this anonymous function is executed before any task
 python () {
     src_uri = d.getVar('SRC_URI')
     remove_list = d.getVar('OPENEULER_SRC_URI_REMOVE')
+    local_name = d.getVar('OPENEULER_LOCAL_NAME') if d.getVar('OPENEULER_LOCAL_NAME')  else d.getVar('OPENEULER_REPO_NAME')
+
+    # if software recipe is not in manifest.yaml, we will skip the handling of
+    # OPENEULER_SRC_URI_REMOVE and it also means the software recipe is not
+    # adapted in openEuler, use original fetch
+    if d.getVar("MANIFEST_DIR") is not None and os.path.exists(d.getVar("MANIFEST_DIR")):
+        manifest_list = get_manifest(d.getVar("MANIFEST_DIR"))
+        if local_name not in manifest_list:
+            d.setVar('OPENEULER_FETCH', 'disable')
+            return
 
     if src_uri and remove_list:
         uri_list = src_uri.split()
@@ -157,8 +168,7 @@ python do_openeuler_fetch() {
 
     # get source directory where to download
     src_dir = d.getVar('OPENEULER_SP_DIR')
-    repo_name = d.getVar('OPENEULER_REPO_NAME')
-    local_name = d.getVar('OPENEULER_LOCAL_NAME') if d.getVar('OPENEULER_LOCAL_NAME')  else repo_name
+    local_name = d.getVar('OPENEULER_LOCAL_NAME') if d.getVar('OPENEULER_LOCAL_NAME')  else d.getVar('OPENEULER_REPO_NAME')
 
     urls = d.getVar("SRC_URI").split()
 
@@ -179,7 +189,7 @@ python do_openeuler_fetch() {
         else:
             bb.fatal("openEuler Embedded build need manifest.yaml")
     except GitError as e:
-        bb.fatal("could not find or init gitee repository %s because %s" % (repo_name, str(e)))
+        bb.fatal("could not find or init gitee repository %s because %s" % (local_name, str(e)))
     except Exception as e:
         bb.fatal("do_openeuler_fetch failed: OPENEULER_SP_DIR %s OPENEULER_LOCAL_NAME %s exception %s" % (src_dir, local_name, str(e)))
 }
