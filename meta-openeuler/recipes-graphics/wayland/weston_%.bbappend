@@ -25,7 +25,9 @@ PACKAGECONFIG[launcher-libseat] = ""
 
 # openeuler customization
 
-SRC_URI:append = "file://openeuler.png \
+SRC_URI:append = " \
+    file://${BP}.tar.xz  \
+    file://openeuler.png \
 "
 
 do_install:append() {
