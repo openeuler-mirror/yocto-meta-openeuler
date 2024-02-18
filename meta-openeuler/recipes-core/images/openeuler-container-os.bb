@@ -1,7 +1,6 @@
 SUMMARY = "container os image"
 
 require openeuler-image-common.inc
-require openeuler-image-sdk.inc
 
 # IMAGE_INSTALL was defined in file openeuler-image-common.inc
 # overwrite this variable to remove unnecessary packages
