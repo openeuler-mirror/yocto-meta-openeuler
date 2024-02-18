@@ -4,7 +4,21 @@ HOMEPAGE = "https://gitee.com/HiEuler/hardware_driver"
 LICENSE = "CLOSED"
 
 inherit pkgconfig
-inherit ros_distro_humble
+
+# This library is depend by many ROS packages, 
+# using the lib directory instead of the lib64 directory. 
+python roslike_libdir_set() {
+    d.setVar('oldroslibdir', d.getVar('libdir'))
+    pn = e.data.getVar("PN")      
+    if pn.endswith("-native"):
+        return
+    d.setVar('libdir', d.getVar('libdir').replace('64', ''))
+    d.setVar('baselib', d.getVar('baselib').replace('64', ''))
+}
+
+addhandler roslike_libdir_set
+roslike_libdir_set[eventmask] = "bb.event.RecipePreFinalise"
+PKG_CONFIG_PATH:append:class-target = ":${PKG_CONFIG_SYSROOT_DIR}/${oldroslibdir}/pkgconfig"
 
 OPENEULER_LOCAL_NAME = "HiEuler-driver"
 

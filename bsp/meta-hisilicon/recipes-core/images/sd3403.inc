@@ -1,8 +1,3 @@
-IMAGE_FSTYPES = "ext4"
-IMAGE_FSTYPES:remove = "iso"
-IMAGE_FSTYPES_DEBUGFS = "cpio.gz"
-INITRAMFS_MAXSIZE = "476591"
-
 delete_unneeded_from_rootfs() {
     set -x
     test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
@@ -26,3 +21,4 @@ copy_928_distro() {
     set +x
 }
 IMAGE_POSTPROCESS_COMMAND += "copy_928_distro;"
+

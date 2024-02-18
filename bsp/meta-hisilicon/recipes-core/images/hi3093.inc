@@ -2,3 +2,4 @@
 
 # not add special code here, it is also used by inirtd-boot for live image
 # you can add common code here
+
