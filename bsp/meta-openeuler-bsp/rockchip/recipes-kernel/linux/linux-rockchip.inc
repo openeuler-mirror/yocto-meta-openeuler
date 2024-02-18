@@ -20,8 +20,6 @@ python do_fetch() {
 SRC_URI_append = " \
     file://rockchip-kernel \
     file://config/${MACHINE}/${MACHINE}_defconfig \
-    file://tools \
-    file://logo \
 "
 
 INHIBIT_PACKAGE_STRIP = "1"
