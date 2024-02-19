@@ -135,14 +135,14 @@ python () {
 # fetch multi repos in one recipe bb file, an example is
 # dsoftbus_1.0.bb where multi repos required by dsoftbus are
 # fetched by re-implementation of do_fetch, and it will call
-# do_openeuler_fetchs
-python do_openeuler_fetchs() {
+# do_openeuler_fetch_multi
+python do_openeuler_fetch_multi() {
 
     # Stage the variables related to the original package
     repo_name = d.getVar("OPENEULER_REPO_NAME")
     local_name = d.getVar("OPENEULER_LOCAL_NAME")
 
-    repo_list = d.getVar("PKG_REPO_LIST")
+    repo_list = d.getVar("OPENEULER_MULTI_REPOS").split()
     for item_name in repo_list:
         d.setVar("OPENEULER_REPO_NAME", item_name)
         bb.build.exec_func("do_openeuler_fetch", d)
