@@ -159,21 +159,15 @@
 <p>前文提到，如果设置了OPENEULER_REPO_NAME或OPENEULER_LOCAL_NAME则会以这两个变量内容为准进行仓库信息查找。</p>
 <p><strong>情形三：构建依赖不通过depends指定，而是通过SRC_URI指定</strong></p>
 <p>构建一个软件包时可能会从多个仓下获取源码，即不能直接通过depends添加依赖，此时需要在bbappend中添加do_fetch:prepend，在该函数中添加需要依赖的包，例如：</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">do_fetch</span><span class="p">:</span><span class="n">prepend</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">repoList</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;yocto-embedded-tools&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;libboundscheck&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;dsoftbus_standard&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;embedded-ipc&quot;</span>
-        <span class="p">]</span>
-
-    <span class="n">d</span><span class="o">.</span><span class="n">setVar</span><span class="p">(</span><span class="s2">&quot;PKG_REPO_LIST&quot;</span><span class="p">,</span> <span class="n">repoList</span><span class="p">)</span>
-
-    <span class="n">dd</span><span class="o">.</span><span class="n">build</span><span class="o">.</span><span class="n">exec_func</span><span class="p">(</span><span class="s2">&quot;do_openeuler_fetchs&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># multi-repos are required to build dsoftbus</span>
+<span class="n">OPENEULER_MULTI_REPOS</span> <span class="o">=</span> <span class="s2">&quot;yocto-embedded-tools dsoftbus_standard embedded-ipc dsoftbus&quot;</span>
+<span class="n">python</span> <span class="n">do_fetch</span><span class="p">:</span><span class="n">prepend</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">dd</span><span class="o">.</span><span class="n">build</span><span class="o">.</span><span class="n">exec_func</span><span class="p">(</span><span class="s2">&quot;do_openeuler_fetch_multi&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>通过repoList设置好需要依赖的包，同时列表中的包需要在manifest.yaml中有相关信息的记录，以以上的列表为例，我们需要在manifest.yaml中有关于yocto-embedded-tools的包信息，否则不会有任何下载功能，PKG_REPO_LIST变量的设定是为在do_openeuler_fetchs中获取依赖的包列表，do_openeuler_fetchs将依次解析PKG_REPO_LIST，并调用do_openeuler_fetch完成相关包的下载。</p>
+<p>通过OPENEULER_MULTI_REPOS设置好需要依赖的包，同时列表中的包需要在manifest.yaml中有相关信息的记录，以以上的列表为例，我们需要在manifest.yaml中有关于yocto-embedded-tools的包信息，
+否则不会有任何下载功能，OPENEULER_MULTI_REPOS变量的设定是为在do_openeuler_fetch_multi中获取依赖的包列表，do_openeuler_fetchs将依次解析OPENEULER_MULTI_REPOS，并调用do_openeuler_fetch完成相关包的下载。</p>
 </section>
 <section id="id5">
 <h2>如何关闭openeuler_fetch功能<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>

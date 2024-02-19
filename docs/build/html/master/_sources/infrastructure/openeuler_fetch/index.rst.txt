@@ -81,20 +81,14 @@ openeuler_fetch通过以下控制变量来完成相关包下载：
 
 .. code::
 
+    # multi-repos are required to build dsoftbus
+    OPENEULER_MULTI_REPOS = "yocto-embedded-tools dsoftbus_standard embedded-ipc dsoftbus"
     python do_fetch:prepend() {
-        repoList = [
-            "yocto-embedded-tools",
-            "libboundscheck",
-            "dsoftbus_standard",
-            "embedded-ipc"
-            ]
-
-        d.setVar("PKG_REPO_LIST", repoList)
-
-        dd.build.exec_func("do_openeuler_fetchs", d)
+        dd.build.exec_func("do_openeuler_fetch_multi", d)
     }
 
-通过repoList设置好需要依赖的包，同时列表中的包需要在manifest.yaml中有相关信息的记录，以以上的列表为例，我们需要在manifest.yaml中有关于yocto-embedded-tools的包信息，否则不会有任何下载功能，PKG_REPO_LIST变量的设定是为在do_openeuler_fetchs中获取依赖的包列表，do_openeuler_fetchs将依次解析PKG_REPO_LIST，并调用do_openeuler_fetch完成相关包的下载。
+通过OPENEULER_MULTI_REPOS设置好需要依赖的包，同时列表中的包需要在manifest.yaml中有相关信息的记录，以以上的列表为例，我们需要在manifest.yaml中有关于yocto-embedded-tools的包信息，
+否则不会有任何下载功能，OPENEULER_MULTI_REPOS变量的设定是为在do_openeuler_fetch_multi中获取依赖的包列表，do_openeuler_fetchs将依次解析OPENEULER_MULTI_REPOS，并调用do_openeuler_fetch完成相关包的下载。
 
 如何关闭openeuler_fetch功能
 ***************************
