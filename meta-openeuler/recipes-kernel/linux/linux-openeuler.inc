@@ -48,6 +48,12 @@ KCONFIG_MODE ?= "alldefconfig"
 # users can override it in .bbappend or .conf
 OPENEULER_KERNEL_CONFIG ?= "file://config/${ARCH}/defconfig"
 
+
+OPENEULER_REPO_NAME = "kernel-5.10"
+# download src-openeuler/kernel repo for patches
+# download openeuler/kernel-5.10 repo for linux kernel src files
+OPENEULER_MULTI_REPOS = "src-kernel-5.10 kernel-5.10"
+
 SRC_URI = "file://kernel-5.10 \
     ${OPENEULER_KERNEL_CONFIG} \
     file://meta-data;type=kmeta;destsuffix=meta-data \
@@ -97,15 +103,7 @@ python () {
 }
 
 python do_fetch() {
-    # download src-openeuler/kernel repo for patches
-    d.setVar("OPENEULER_REPO_NAME", "kernel")
-    d.setVar("OPENEULER_LOCAL_NAME", 'src-kernel-5.10')
-    bb.build.exec_func("do_openeuler_fetch", d)
-
-    # download openeuler/kernel-5.10 repo for linux kernel src files
-    d.setVar("OPENEULER_REPO_NAME", "kernel-5.10")
-    d.setVar("OPENEULER_LOCAL_NAME", 'kernel-5.10')
-    bb.build.exec_func("do_openeuler_fetch", d)
+    bb.build.exec_func("do_openeuler_fetch_multi", d)
 }
 
 KERNEL_CC:append:aarch64 = " ${TOOLCHAIN_OPTIONS}"

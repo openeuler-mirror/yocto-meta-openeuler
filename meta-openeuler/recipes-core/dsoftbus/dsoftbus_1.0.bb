@@ -23,6 +23,9 @@ dsoftbus-hichain = "${S}/base/security"
 dsoftbus-productdefine = "${S}/productdefine"
 dsoftbus-depend = "${S}/depend"
 
+# multi-repos are required to build dsoftbus
+OPENEULER_MULTI_REPOS = "yocto-embedded-tools dsoftbus_standard embedded-ipc dsoftbus"
+
 SRC_URI = " \
         file://yocto-embedded-tools/dsoftbus/build_tools/gn-linux-x86-1717.tar.gz \
         file://dsoftbus/${pkg-build}.tar.gz \
@@ -71,16 +74,7 @@ INSANE_SKIP:${PN} += "already-stripped"
 ALLOW_EMPTY:${PN} = "1"
 
 python do_fetch:prepend() {
-    repoList = [
-        "yocto-embedded-tools",
-        "dsoftbus_standard",
-        "embedded-ipc",
-        "dsoftbus"
-    ]
-
-    d.setVar("PKG_REPO_LIST", repoList)
-
-    bb.build.exec_func("do_openeuler_fetchs", d)
+    bb.build.exec_func("do_openeuler_fetch_multi", d)
 }
 
 do_unpack:append() {
