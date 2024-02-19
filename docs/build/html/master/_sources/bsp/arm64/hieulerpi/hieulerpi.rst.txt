@@ -30,18 +30,18 @@
       oebuild bitbake
 
       # 构建镜像
-      bitbake openeuler-image-ros
+      bitbake openeuler-image
 
       # 构建sdk
-      bitbake openeuler-image-ros -c populate_sdk
+      bitbake openeuler-image -c populate_sdk
 
    二进制产物介绍（对应output目录）：
 
-   - ``openeuler-glibc-x86_64-openeuler-image-ros-aarch64-sd3403-toolchain-24.03.sh``: SDK工具链
+   - ``openeuler-glibc-x86_64-openeuler-image-aarch64-sd3403-toolchain-24.03.sh``: SDK工具链
 
    - ``kernel-pi``: 适用于ss928海欧派的openEuler内核镜像（由Image + header + dtb + atf合成），可直接用于单板部署
 
-   - ``openeuler-image-ros-sd3403-20231102014821.rootfs.ext4``: 适用ss928海鸥派的根文件系统，可直接用于单板部署
+   - ``openeuler-image-sd3403-[时间戳].rootfs.ext4``: 适用ss928海鸥派的根文件系统，可直接用于单板部署
 
    - ``vmlinux-5.10.0``: 备用调试内核
 
@@ -50,6 +50,8 @@
 .. note::
 
    需要其他功能时，请在oebuild初始化时通过 ``-f features`` 添加对应的 feature。见-f列表(oebuild generate -l)
+
+   若不使能-f openeuler-ros，将生成基础镜像，仅包含hieuler的BSP驱动，无ROS框架和demo
 
 ____
 

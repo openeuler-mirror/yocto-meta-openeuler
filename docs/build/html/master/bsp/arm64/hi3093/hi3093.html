@@ -109,6 +109,7 @@
 <h1>Hi3093 镜像构建与说明<a class="headerlink" href="#hi3093" title="Permalink to this headline">¶</a></h1>
 <p>本章主要介绍openEuler Embedded中Hi3093系列板卡的镜像构建，使用和特性介绍。</p>
 <p>当前版本支持官方mpu_solution BSP源码的构建集成（mpu镜像），并生成可用于Hi3093 EMMC烧录的镜像部署件。</p>
+<p>也可构建生成hi3093的无BSP驱动镜像，用于mpu_solution进行二次集成打包。</p>
 <section id="id1">
 <h2>Hi3093硬件介绍<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <blockquote>
@@ -160,7 +161,7 @@
 </pre></div>
 </div>
 </div></blockquote>
-<p>（2）准备mpu_solution源码（若不使用集成BSP驱动的mpu镜像，可跳过此步骤）：</p>
+<p>（2）准备mpu_solution源码（若不需要集成BSP驱动的镜像，可跳过此步骤）：</p>
 <blockquote>
 <div><p>获取Hi3093的mpu_solution源码授权，解压并将对应mpu_solution文件夹拷贝到src目录，如</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">/home/user/buildwork/src/mpu_solution</span>
@@ -177,28 +178,56 @@
 </div></blockquote>
 </div></blockquote>
 <ol class="arabic simple" start="3">
-<li><p>mpu镜像构建和部署</p></li>
+<li><p>镜像构建和部署</p></li>
 </ol>
 <blockquote>
-<div><p>该镜像（openeuler-image-mpu）直接集成mpu_solution中的BSP驱动</p>
-<p>（1）进入构建目录并构建：</p>
+<div><p>镜像（openeuler-image）支持直接集成mpu_solution中的BSP驱动，也支持构建不包含mpu_solution BSP驱动的的镜像，按如下a、b场景进行操作。</p>
+<p>a、 构建基础不包含BSP驱动的镜像（无需事先准备mpu_solution源码，跳过2.2）</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd /home/user/buildwork/build_hi3093</span>
+<span class="go">oebuild bitbake</span>
+<span class="gp"># </span>oebuild bitbake执行后将进入构建虚拟环境
+<span class="gp"># </span>注意您此时应该处于进入oebuild bitbkae环境的工作根目录（如/home/openeuler/build_hi3093）
+<span class="go">bitbake openeuler-image</span>
+</pre></div>
+</div>
+<p>构建完成后，输出件见/home/user/buildwork/build_hi3093/output/[时间戳]，备用组件内容如下</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">├── Image-5.10.0-openeuler</span>
+<span class="go">├── openeuler-image-hi3093-[时间戳].rootfs.cpio.gz</span>
+<span class="go">└── zImage</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>openeuler-image-hi3093-xxx.rootfs.cpio.gz为cpio.gz格式的可解压文件系统，作为调试备用。</p>
+<p>Image为未加工的原始内核基础格式文件。</p>
+<p>zImage为未加工的原始内核压缩文件。</p>
+<p>文件系统及zImage可作为mpu_solution的输入，进行二次打包集成</p>
+</div>
+<p>若需要交叉编译工具链，可通过如下命令生成，将在output目录下有新时间戳子目录得到输出件。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>注意您此时应该处于进入oebuild bitbkae环境的工作根目录（如/home/openeuler/build_hi3093）
+<span class="go">bitbake openeuler-image -c populate_sdk</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>b、 构建直接集成mpu_solution BSP驱动的镜像：</p>
 <blockquote>
 <div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd /home/user/buildwork/build_hi3093</span>
 <span class="go">oebuild bitbake</span>
 <span class="gp"># </span>oebuild bitbake执行后将进入构建虚拟环境
 <span class="go">sudo dnf install vim</span>
 <span class="gp"># </span>注意需要安装vim工具，当前3093打包依赖xxd命令，由vim软件包提供此命令
-<span class="go">bitbake openeuler-image-mpu</span>
-<span class="gp"># </span>注意若只需要构建普通不包含BSP驱动的通用镜像，可通过bitbake openeuler-image，将仅生成内核zImage和无BSP驱动的文件系统
+<span class="gp"># </span>在构建配置文件中的DISTRO_FEATURES变量追加mpu_solution描述，可在conf/local.conf文件的末尾追加，命令如下
+<span class="go">echo &#39;DISTRO_FEATURES:append = &quot; mpu_solution &quot;&#39; &gt;&gt; conf/local.conf</span>
+<span class="gp"># </span>注意您此时应该处于进入oebuild bitbkae环境的工作根目录（如/home/openeuler/build_hi3093）
+<span class="go">bitbake openeuler-image</span>
 </pre></div>
 </div>
-</div></blockquote>
-<p>（2）构建完成后，输出件见/home/user/buildwork/build_hi3093/output/[时间搓]，内容如下</p>
-<blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">├── Hi3093_ext4fs.img</span>
+<p>构建完成后，输出件见/home/user/buildwork/build_hi3093/output/[时间戳]，内容如下</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">├── Hi3093_ext4fs.img</span>
 <span class="go">├── Hi3093_ext4fs_cms.bin</span>
 <span class="go">├── u-boot_rsa_4096.bin</span>
-<span class="go">├── openeuler-image-hi3093-xxx.rootfs.cpio.gz</span>
+<span class="go">├── openeuler-image-hi3093-[时间戳].rootfs.cpio.gz</span>
 <span class="go">└── zImage</span>
 </pre></div>
 </div>
@@ -209,10 +238,13 @@
 <p>openeuler-image-hi3093-xxx.rootfs.cpio.gz为cpio.gz格式的可解压文件系统，作为调试备用。</p>
 <p>zImage为未加工的原始内核压缩文件。</p>
 </div>
-</div></blockquote>
-<p>（3）emmc镜像烧录：</p>
-<blockquote>
-<div><p>按照Hi3093 mpu_solution烧录指导，将如下烧录5件套放置于单板/tmp目录</p>
+<p>若需要交叉编译工具链，可通过如下命令生成，将在output目录下有新时间戳子目录得到输出件。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>注意您此时应该处于进入oebuild bitbkae环境的工作根目录（如/home/openeuler/build_hi3093）
+<span class="go">bitbake openeuler-image -c populate_sdk</span>
+</pre></div>
+</div>
+<p>关于emmc镜像烧录：</p>
+<p>按照Hi3093 mpu_solution烧录指导，将如下烧录5件套放置于单板/tmp目录</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>烧录5件套:
 <span class="go">Hi3093_ext4fs.img</span>
 <span class="go">Hi3093_ext4fs_cms.bin</span>
