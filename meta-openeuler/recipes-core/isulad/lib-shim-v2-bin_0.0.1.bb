@@ -8,20 +8,20 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/MulanPSL-2.0;m
 inherit bin_package
 
 SRC_URI:aarch64 = " \
-        http://repo.openeuler.openatom.cn/openEuler-22.03-LTS-SP2/OS/aarch64/Packages/lib-shim-v2-0.0.1-6.oe2203sp2.aarch64.rpm;name=arm64;subdir=${BP} \
+        https://repo.openeuler.openatom.cn/openEuler-23.09/OS/aarch64/Packages/lib-shim-v2-0.0.1-8.oe2309.aarch64.rpm;name=arm64;subdir=${BP} \
 "
 
 SRC_URI:x86-64 =  " \
-        http://repo.openeuler.openatom.cn/openEuler-22.03-LTS-SP2/OS/x86_64/Packages/lib-shim-v2-0.0.1-6.oe2203sp2.x86_64.rpm;name=x86;subdir=${BP} \
+        https://repo.openeuler.openatom.cn/openEuler-23.09/OS/x86_64/Packages/lib-shim-v2-0.0.1-8.oe2309.x86_64.rpm;name=x86;subdir=${BP} \
 "
 
 SRC_URI:append = " \
-        http://repo.openeuler.openatom.cn/openEuler-22.03-LTS-SP2/everything/aarch64/Packages/lib-shim-v2-devel-0.0.1-6.oe2203sp2.aarch64.rpm;name=header;subdir=${BP} \
+        https://repo.openeuler.openatom.cn/openEuler-23.09/everything/aarch64/Packages/lib-shim-v2-devel-0.0.1-8.oe2309.aarch64.rpm;name=header;subdir=${BP} \
         "
 
-SRC_URI[arm64.md5sum] = "55cd6d77172138ed96c06db89408531b"
-SRC_URI[x86.md5sum] = "fb1cdaba15faae97c94f9595b09ff945"
-SRC_URI[header.md5sum] = "97c8e9fff736e0f96c36dac0e5426aa2"
+SRC_URI[arm64.md5sum] = "3bf4618ffba4196a9bdcf3d9ec4e8e83"
+SRC_URI[x86.md5sum] = "abf8ad3e5a5516dca86eedc5e585b958"
+SRC_URI[header.md5sum] = "cf038d5914510740d4e72f1400d5dbb0"
 
 S = "${WORKDIR}/${BP}"
 
