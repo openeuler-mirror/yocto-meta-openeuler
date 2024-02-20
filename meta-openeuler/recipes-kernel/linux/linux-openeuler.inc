@@ -1,16 +1,21 @@
-SUMMARY = "Linux kernel"
+SUMMARY = "openEuler Linux kernel"
 SECTION = "kernel"
 LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM ?= "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
+# inherit basic kernel.bbclass for kernel build
 inherit kernel
 # inherit kernel-yocto.bbclass for using kernel meta data mechanism
 # i.e, .scc files can be applied
 inherit kernel-yocto
+# the following tasks in kernel-yocto.bbclass does not work for openeuler
+deltask do_validate_branches
+deltask do_kernel_checkout
 
+## handling for kernel meta data
 # the original get_dirs_with_fragments will include OPENEULER_SP_DIR
 # so that all the files under OPENEULER_SP_DIR will be in the file-checksums
-# of do_kernel_metadata, which it not necessary
+# of do_kernel_metadata, which is not necessary
 def get_dirs_with_metadata(d):
     extrapaths = []
     extrafiles = []
@@ -48,13 +53,13 @@ KCONFIG_MODE ?= "alldefconfig"
 # users can override it in .bbappend or .conf
 OPENEULER_KERNEL_CONFIG ?= "file://config/${ARCH}/defconfig"
 
-
-OPENEULER_REPO_NAME = "kernel-5.10"
+## basic information
+OPENEULER_REPO_NAME = "kernel-${PV}"
 # download src-openeuler/kernel repo for patches
 # download openeuler/kernel-5.10 repo for linux kernel src files
-OPENEULER_MULTI_REPOS = "src-kernel-5.10 kernel-5.10"
+OPENEULER_MULTI_REPOS = "src-kernel-${PV} kernel-${PV}"
 
-SRC_URI = "file://kernel-5.10 \
+SRC_URI = "file://kernel-${PV} \
     ${OPENEULER_KERNEL_CONFIG} \
     file://meta-data;type=kmeta;destsuffix=meta-data \
 "
@@ -64,6 +69,13 @@ SRC_URI:append:aarch64 = " \
     file://patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch \
 "
 
+S = "${WORKDIR}/kernel-${PV}"
+
+LINUX_VERSION ?= "5.10"
+PV = "${LINUX_VERSION}"
+
+## Kernel feature sections:
+# config kernel according to xxx FEATURES
 ## DEBUG FEATURES
 KERNEL_FEATURES:append = " \
     ${@bb.utils.contains('IMAGE_FEATURES', 'debug-tweaks', 'features/debug/devmem.scc', '', d)} \
@@ -83,12 +95,7 @@ KERNEL_FEATURES:append:x86-64 = " \
 # export symbol for jailhouse, its patch is in jailhouse src folder
 SRC_URI:append = " ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'file://Jailhouse/jailhouse_export_symbol.patch', '', d)}"
 
-S = "${WORKDIR}/kernel-5.10"
-
-LINUX_VERSION ?= "5.10"
-PV = "${LINUX_VERSION}"
-
-
+# used by do_kernel_configme in yocoto-kernel.bbclass
 LINUX_VERSION_EXTENSION:append = "-openeuler"
 # delete v8 in kernel module name, such as kernel-module-xxx-5.10.0-v8
 KERNEL_MODULE_PACKAGE_SUFFIX = ""
@@ -106,6 +113,7 @@ python do_fetch() {
     bb.build.exec_func("do_openeuler_fetch_multi", d)
 }
 
+## kernel compile options
 KERNEL_CC:append:aarch64 = " ${TOOLCHAIN_OPTIONS}"
 KERNEL_LD:append:aarch64 = " ${TOOLCHAIN_OPTIONS}"
 
