@@ -4,17 +4,22 @@
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/base-files/:"
 
+require oelogo.inc
+
 # add secure option for banner use
 do_install_basefilesissue:append () {
     BANNERSTR="Authorized uses only. All activity may be monitored and reported."
+    echo -e "${OELOGO}"  >> ${D}${sysconfdir}/issue.net
     echo "${BANNERSTR}"  >> ${D}${sysconfdir}/issue.net
     echo >> ${D}${sysconfdir}/issue.net
+    echo -e "${OELOGO}"  >> ${D}${sysconfdir}/issue
     echo "${BANNERSTR}"  >> ${D}${sysconfdir}/issue
     echo >> ${D}${sysconfdir}/issue
 }
 
 do_install:append () {
     BANNERSTR="Authorized uses only. All activity may be monitored and reported."
+    echo -e "${OELOGO}"  >> ${D}${sysconfdir}/motd
     echo "${BANNERSTR}"  >> ${D}${sysconfdir}/motd
     echo >> ${D}${sysconfdir}/motd
 }
