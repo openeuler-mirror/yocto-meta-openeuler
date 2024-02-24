@@ -19,7 +19,7 @@ do_install_basefilesissue:append () {
 
 do_install:append () {
     BANNERSTR="Authorized uses only. All activity may be monitored and reported."
-    echo -e "${OELOGO}"  >> ${D}${sysconfdir}/motd
+    echo -e "${OELOGO_MOTD}"  >> ${D}${sysconfdir}/motd
     echo "${BANNERSTR}"  >> ${D}${sysconfdir}/motd
     echo >> ${D}${sysconfdir}/motd
 }
