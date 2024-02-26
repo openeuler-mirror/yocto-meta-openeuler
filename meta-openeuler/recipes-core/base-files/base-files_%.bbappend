@@ -9,7 +9,7 @@ require oelogo.inc
 # add secure option for banner use
 do_install_basefilesissue:append () {
     BANNERSTR="Authorized uses only. All activity may be monitored and reported."
-    echo -e "${OELOGO}"  >> ${D}${sysconfdir}/issue.net
+    echo -e "${OELOGO_MOTD}"  >> ${D}${sysconfdir}/issue.net
     echo "${BANNERSTR}"  >> ${D}${sysconfdir}/issue.net
     echo >> ${D}${sysconfdir}/issue.net
     echo -e "${OELOGO}"  >> ${D}${sysconfdir}/issue
