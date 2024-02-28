@@ -30,6 +30,12 @@ SRC_URI:append:x86-64 = " \
     "
 S:x86-64 = "${WORKDIR}/mcs-x86"
 
+EXTRA_OECMAKE:x86-64 = " \
+    -DDEMO_TARGET=mica_demo \
+    -DCONFIG_RING_BUFFER=y \
+    -DMICA_DEBUG_LOG=y \
+    "
+
 # the software packages required in build
 DEPENDS = "openamp libmetal update-rc.d-native"
 
