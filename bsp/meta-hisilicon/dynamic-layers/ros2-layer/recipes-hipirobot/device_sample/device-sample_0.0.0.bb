@@ -17,7 +17,7 @@ S = "${WORKDIR}"
 
 do_compile:prepend () {
     rm -rf ${S}/externed_device_sample/mpp/out
-    mkdir ${S}/externed_device_sample/mpp/out
+    mkdir -p ${S}/externed_device_sample/mpp/out
     cp -r -P ${WORKDIR}/lib ${S}/externed_device_sample/mpp/out/
     cp -r -P ${WORKDIR}/include ${S}/externed_device_sample/mpp/out/
 }
