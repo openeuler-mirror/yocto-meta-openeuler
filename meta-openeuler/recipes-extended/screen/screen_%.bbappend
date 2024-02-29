@@ -6,7 +6,8 @@ SRC_URI:remove = "file://CVE-2023-24626.patch \
 "
 
 # files, patches that come from openeuler
-SRC_URI:prepend = "file://screen-4.3.1-screenrc.patch \
+SRC_URI:prepend = "file://${BP}.tar.gz \
+           file://screen-4.3.1-screenrc.patch \
            file://screen-E3.patch \
            file://screen-4.3.1-suppress_remap.patch \
            file://screen-4.3.1-crypt.patch \
