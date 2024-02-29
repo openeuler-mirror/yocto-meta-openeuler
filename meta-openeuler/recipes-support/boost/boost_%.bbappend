@@ -29,3 +29,8 @@ S = "${WORKDIR}/${BOOST_P}"
 # keep consistent with the higher version bb
 
 BJAM_OPTS += "-sICU_PATH=${STAGING_EXECPREFIXDIR}"
+
+# from boost 1.81.0, the boost-url is synthesized into boost
+# so we need to add the url to the boost_libs
+# and no longer use the boost-url
+BOOST_LIBS += "url"
