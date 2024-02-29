@@ -15,6 +15,7 @@ SRC_URI = " \
         file://HiEuler-driver/drivers/pinmux.sh \
         file://HiEuler-driver/drivers/env.tar.gz \
         file://HiEuler-driver/drivers/can-tools.tar.gz \
+	file://HiEuler-driver/drivers/ws73.tar.gz \
         file://HiEuler-driver/mcu \
 "
 
@@ -65,6 +66,11 @@ do_install () {
 	install -m 0755 ${WORKDIR}/HiEuler-driver/mcu/load_riscv ${D}/usr/sbin
 	install -m 0755 ${WORKDIR}/HiEuler-driver/mcu/virt-tty ${D}/usr/sbin
 	install -m 0755 ${WORKDIR}/HiEuler-driver/mcu/LiteOS.bin ${D}/firmware
+
+	install -d ${D}${sysconfdir}/ws73
+	cp ${WORKDIR}/ws73/firmware/* ${D}${sysconfdir}/ws73/
+	cp ${WORKDIR}/ws73/ko/* ${D}/ko/
+	cp ${WORKDIR}/ws73/config/* ${D}${sysconfdir}/
 }
 
 INHIBIT_PACKAGE_STRIP = "1"
