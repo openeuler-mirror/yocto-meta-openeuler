@@ -25,5 +25,7 @@ copy_openeuler_distro() {
     set +x
 }
 
+MACHINEOVERRIDES =. "qemuall:"
+
 IMAGE_PREPROCESS_COMMAND += "delete_unneeded_from_rootfs;"
 IMAGE_POSTPROCESS_COMMAND += "copy_openeuler_distro;"
