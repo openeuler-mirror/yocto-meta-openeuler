@@ -5,16 +5,18 @@ PV = "1.81.0"
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
 # remove conflict files
-SRC_URI:remove = " \
-        file://boost-CVE-2012-2677.patch \
-        file://0001-fiber-libs-Define-SYS_futex-if-it-does-not-exist.patch \
-        file://de657e01635306085488290ea83de541ec393f8b.patch \
-        file://0001-futex-fix-build-on-32-bit-architectures-using-64-bit.patch \
-        file://0001-Don-t-skip-install-targets-if-there-s-build-no-in-ur.patch \
-"
+# SRC_URI:remove = " \
+#         file://boost-CVE-2012-2677.patch \
+#         file://0001-fiber-libs-Define-SYS_futex-if-it-does-not-exist.patch \
+#         file://de657e01635306085488290ea83de541ec393f8b.patch \
+#         file://0001-futex-fix-build-on-32-bit-architectures-using-64-bit.patch \
+#         file://0001-Don-t-skip-install-targets-if-there-s-build-no-in-ur.patch \
+# "
 
 SRC_URI:prepend = " \
         file://${BOOST_P}.tar.gz \
+"
+XXX = " \
         file://boost-1.80-outcome-Stop-Boost-regression-tests-complaining-about-no-test-tree.patch \
         file://boost-1.81-graph-Dont-run-performance-test-in-CI.patch \
         file://boost-1.81-random-Update-multiprecision_float_test.cpp-to-not-overflow.patch \
@@ -28,9 +30,9 @@ S = "${WORKDIR}/${BOOST_P}"
 
 # keep consistent with the higher version bb
 
-BJAM_OPTS += "-sICU_PATH=${STAGING_EXECPREFIXDIR}"
+# BJAM_OPTS += "-sICU_PATH=${STAGING_EXECPREFIXDIR}"
 
 # from boost 1.81.0, the boost-url is synthesized into boost
 # so we need to add the url to the boost_libs
 # and no longer use the boost-url
-BOOST_LIBS += "url"
+# BOOST_LIBS += "url"
