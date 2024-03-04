@@ -29,6 +29,7 @@ packagegroup-pam-plugins \
 IMAGE_INSTALL += " \
 ${@bb.utils.contains("DISTRO_FEATURES", "mcs", "packagegroup-mcs", "",d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "ros", "packagegroup-ros", "", d)} \
+webui-vue \
 "
 
 # You can add extra user here, suck like:
@@ -91,3 +92,6 @@ ROOTFS_POSTPROCESS_COMMAND += "remove_etc_version ; "
 # The shadow recipe provides the binaries(like useradd, usermod) needed by the
 # phosphor-user-manager.
 ROOTFS_RO_UNNEEDED:remove = "shadow"
+
+# bmc needs root users' home to be /home/root
+ROOT_HOME = "/home/root"
