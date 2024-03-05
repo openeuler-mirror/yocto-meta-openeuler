@@ -10,6 +10,7 @@ i2c-soft \
 v4l-utils \
 hostapd \
 hibot-user-driver \
+bluez5 \
 ${@bb.utils.contains("DISTRO_FEATURES", "ros", " \
 ai-demolib \
 mipi-ffmpeglib \
