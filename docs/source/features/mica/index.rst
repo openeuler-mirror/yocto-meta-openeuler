@@ -6,11 +6,12 @@
 
 .. toctree::
    :maxdepth: 1
-   :caption: 内容
 
-   mica.rst
-   mica_build.rst
-   mica_openamp.rst
+   intro.rst
+   supported_lists.rst
+   build.rst
+   instruction.rst
    mica_ctl.rst
+   developer_guides/index.rst
    mica_jailhouse.rst
    benchmark.rst

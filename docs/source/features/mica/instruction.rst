@@ -1,7 +1,17 @@
-.. _build_openamp_mica:
-
 使用指导
 ########
+
+MICA 主要包含三部分组件：
+
+1. ``内核模块`` ：提供RTOS启动、专用中断收发、保留内存管理等功能。不同的部署模式会有对应的内核态实现，例如 bare-metal 部署模式，对应的内核模块是 mcs_km.ko。
+
+2. ``micad`` ：MICA 的守护进程。负责管理和控制RTOS实例的创建、运行及销毁。micad 监听来自于 mica 命令行工具的调用，并根据这些调用执行相应的操作。此外，micad 还负责不同实例上的服务注册等功能。
+
+3. ``mica`` ：MICA 的命令行工具。可以使用 mica 命令根据配置文件来创建、启动、停止RTOS实例，并且能够查看实例的状态和关联的服务信息。
+
+下面，会基于 openEuler Embedded mcs 镜像介绍 MICA 的使用流程。
+
+____
 
 在ARM64 QEMU上运行
 ******************
@@ -223,7 +233,7 @@ ring buffer 的定义在 ``library/include/mcs/ring_buffer.h`` 文件中。
 使用方法
 ----------
 
-首先，需要构建含有MICA的openEuler Embedded镜像，请参考 :ref:`基于OpenAMP的MICA镜像构建指南 <build_openamp_mica>` 。
+首先，需要构建含有MICA的openEuler Embedded镜像，请参考 :ref:`MICA镜像构建指南 <mcs_build>` 。
 
 然后，需要生成适配了GDB stub 的 Uniproton，参考 `UniProton GDB stub 构建指南 <https://gitee.com/zuyiwen/UniProton/blob/stub_dev/src/component/gdbstub/readme.txt>`_ 。
 
