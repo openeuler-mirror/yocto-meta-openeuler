@@ -13,6 +13,7 @@ IMAGE_INSTALL = " \
 packagegroup-core-boot \
 packagegroup-base \
 packagegroup-pam-plugins \
+packagegroup-openssh \
 "
 
 # packages added to rootfs and target sdk
@@ -30,6 +31,7 @@ IMAGE_INSTALL += " \
 ${@bb.utils.contains("DISTRO_FEATURES", "mcs", "packagegroup-mcs", "",d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "ros", "packagegroup-ros", "", d)} \
 webui-vue \
+systemd-analyze \
 "
 
 # You can add extra user here, suck like:
