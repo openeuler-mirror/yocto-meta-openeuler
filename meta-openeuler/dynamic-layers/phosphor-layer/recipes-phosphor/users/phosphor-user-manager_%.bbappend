@@ -13,7 +13,5 @@ S = "${WORKDIR}/${BPN}"
 
 # resolve do_package error by setting the correct directory
 # for systemd
-FILES:${PN}:remove = " \
-        ${base_libdir}/systemd \
-"
+
 FILES:${PN} += "${systemd_unitdir}"
