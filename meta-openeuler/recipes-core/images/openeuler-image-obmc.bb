@@ -95,6 +95,3 @@ ROOTFS_POSTPROCESS_COMMAND += "remove_etc_version ; "
 # The shadow recipe provides the binaries(like useradd, usermod) needed by the
 # phosphor-user-manager.
 ROOTFS_RO_UNNEEDED:remove = "shadow"
-
-# bmc needs root users' home to be /home/root
-ROOT_HOME = "/home/root"
