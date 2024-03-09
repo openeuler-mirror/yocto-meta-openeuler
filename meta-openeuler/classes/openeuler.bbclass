@@ -122,6 +122,7 @@ python () {
             d.setVar('OPENEULER_FETCH', 'disable')
             return
 
+    # handle the SRC_URI
     if src_uri and remove_list:
         uri_list = src_uri.split()
         remove_list = remove_list.split()
@@ -130,6 +131,16 @@ python () {
         updated_src_uri = ' '.join(updated_uri_list)
 
         d.setVar('SRC_URI', updated_src_uri)
+
+    # all recipes adapted in openeuler will not be cached during bb parsing if BB_SRCREV_POLICY
+    # is not set to cache
+    # so there will alway be a chance to update SRCREV
+    if d.getVar('BB_SRCREV_POLICY') != "cache":
+        d.setVar('BB_DONT_CACHE', '1')
+    # set SRCREV, if SRCREV changed because of the corresponding changes in manifest.yaml,
+    # do_fetch will re-run
+    repo_item = manifest_list[local_name]
+    d.setVar('SRCREV', repo_item['version'])
 }
 
 # fetch multi repos in one recipe bb file, an example is
