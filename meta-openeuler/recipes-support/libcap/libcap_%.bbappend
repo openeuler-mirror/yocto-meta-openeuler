@@ -22,3 +22,8 @@ EXTRA_OEMAKE:class-target = " \
     OBJCOPY="${OBJCOPY}" \ 
     lib="${base_libdir}" \
 "
+
+# The Go application for libcap does not currently support cross-compilation. 
+# Turn it off so that it remains consistent with historical features.
+export GOLANG="no"
+

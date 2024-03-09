@@ -138,3 +138,7 @@ BUILDCFG_VARS += "EXTERNAL_TOOLCHAIN EXTERNAL_TARGET_SYS GCC_VERSION"
 
 # llvm configuration below
 require ${@bb.utils.contains("DISTRO_FEATURES", "clang", "conf/distro/include/tcmode-external-clang.inc", "", d)}
+
+# go configuration below
+# Bootstrap Go using a binary from openeuler host, should run yum install golang first.
+PREFERRED_PROVIDER_go-native ?= "go-native"
