@@ -6,4 +6,3 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ad
 
 SRC_URI = "file://demo-src"
 S = "${WORKDIR}/demo-src"
-SRCREV = "${AUTOREV}"
