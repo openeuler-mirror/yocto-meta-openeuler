@@ -1,2 +1,1 @@
 inherit openeuler_source
-
