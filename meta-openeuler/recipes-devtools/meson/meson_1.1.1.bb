@@ -17,7 +17,7 @@ SRC_URI = "${GITHUB_BASE_URI}/download/${PV}/meson-${PV}.tar.gz \
            "
 SRC_URI[sha256sum] = "d04b541f97ca439fb82fab7d0d480988be4bd4e62563a5ca35fadb5400727b1c"
 
-inherit python_setuptools_build_meta github-releases
+inherit python_setuptools_build_meta
 
 RDEPENDS:${PN} = "ninja python3-modules python3-pkg-resources"
 
