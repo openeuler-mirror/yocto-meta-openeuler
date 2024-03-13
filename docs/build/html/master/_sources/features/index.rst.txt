@@ -22,3 +22,4 @@
    clang_llvm.rst
    jailhouse.rst
    isula.rst
+   openbmc.rst
