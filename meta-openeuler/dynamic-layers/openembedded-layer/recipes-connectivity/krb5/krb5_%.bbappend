@@ -6,15 +6,11 @@ LIC_FILES_CHKSUM = "file://${S}/../NOTICE;md5=1d31018dba5a0ef195eb426a1e61f02e"
 
 # apply openeuler source and patch
 SRC_URI:prepend = "file://${BP}.tar.gz \
-"
-XXX = " \
     file://ksu-pam-integration.patch;patchdir=${S}/.. \
-    file://SELinux-integration.patch;patchdir=${S}/.. \
     file://Adjust-build-configuration.patch;patchdir=${S}/.. \
     file://netlib-and-dns.patch;patchdir=${S}/.. \
     file://fix-debuginfo-with-y.tab.c.patch;patchdir=${S}/.. \
     file://Remove-3des-support.patch;patchdir=${S}/.. \
-    file://Fix-krb5_cccol_have_content-bad-pointer-free.patch;patchdir=${S}/.. \
 "
 
 SRC_URI:remove = " \

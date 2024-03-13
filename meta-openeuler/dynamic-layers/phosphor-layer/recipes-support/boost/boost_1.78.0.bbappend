@@ -14,10 +14,9 @@ SRC_URI:remove = " \
         file://0001-Don-t-set-up-arch-instruction-set-flags-we-do-that-o.patch \
 "
 
-XXX:prepend = " \
+SRC_URI:append = " \
         file://boost-1.78-pool-fix-integer-overflows-in-pool-ordered_malloc.patch \
         file://boost-1.78-locale-Fix-access-to-first-element-of-empty-vector.patch \
-        file://boost-1.77-locale-remove-linking-with-boost-system.patch \
         file://boost-1.77-type_erasure-remove-boost-system-linkage.patch \
         file://boost-1.78-build-Don-t-skip-install-targets-if-there-s-build-no-in-ureqs.patch \
         file://boost-1.78-filesystem-Added-protection-for-CVE-2022-21658.patch \
