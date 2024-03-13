@@ -24,7 +24,7 @@ oebuild 的工作目录与 openEuler Embedded 版本是相关联的，构建不�
 
   * ``-u <URL>``：yocot-meta-openeuler 仓库地址，默认为 `yocto-meta-openeuler <https://gitee.com/openeuler/yocto-meta-openeuler>`_。
   * ``-b <BRANCH>``：yocot-meta-openeuler 版本分支，默认为 `master <https://gitee.com/openeuler/yocto-meta-openeuler/tree/master>`_。
-    如需构建其它版本，请按照 :ref:`oebuild 版本信息 <oebuild_version>` **下载对应版本的oebuild，并指定对应分支**。例如：`-b openEuler-22.03-LTS-SP2`。
+    如需构建其它版本，直接使用该参数指定对应分支，例如：`-b openEuler-22.03-LTS-SP2`。
   * ``<DIRECTORY>``：需要创建的工作目录。注意，要确保当前用户拥有当前目录的读写权限，否则会报错：`Permission denied`；且不能指定当前目录中已有的目录，否则会报错：`mkdir <directory> failed`。
 
   .. code-block:: console
