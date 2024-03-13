@@ -53,11 +53,10 @@ python () {
     pv = d.getVar("PV", True)
     pv_uri = pv[0:4] + '-' + pv[4:6] + '-' + pv[6:8]
     target = d.getVar("CARGO_HOST_TARGET", True)
-    cargo_uri = ("%s;md5sum=%s;sha256sum=%s;downloadname=%s" %
-                 (cargo_url(target), cargo_md5(target), cargo_sha256(target),
-                  d.getVar("PN", True) + "-" + pv + "-" + target + ".tar.gz"))
+    cargo_uri = ("%s" %
+                 (cargo_url(target)))
     src_uri = d.getVar("SRC_URI", True).split()
-    cargo_extract_path = cargo_url(target).split('/')[-1].replace('.tar.gz', '')
+    cargo_extract_path = cargo_url(target).split('/')[-1].replace('.tar.xz', '')
     d.setVar("SRC_URI", ' '.join(src_uri + [cargo_uri]))
     d.setVar("S", "${{WORKDIR}}/{}".format(cargo_extract_path))
     d.appendVarFlag("S", "vardeps", " cargo_url")
