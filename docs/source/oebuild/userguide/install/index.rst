@@ -50,33 +50,17 @@
          $ sudo ln -s python3.11 python
          $ sudo ln -s python3.11 python3
 
-**2. 安装对应版本的oebuild**
+**2. 安装oebuild**
 
-  针对不同的 openEuler Embedded 版本，需要安装对应版本的 oebuild。
-  openEuler Embedded 的版本与 `yocto-meta-openeuler <https://gitee.com/openeuler/yocto-meta-openeuler>`_ 仓库的分支是一一对应的，相关联的 oebuild 版本信息如下：
+oebuild从0.0.41版本开始已经支持对openEuler Embedded全版本构建，安装命令如下：
 
-  .. _oebuild_version:
+   .. code-block:: console
 
-  .. list-table::
-     :widths: 40 35
-     :header-rows: 1
+      # 首次安装oebuild:
+      $ pip3 install oebuild
+      
+      # 已安装过oebuild想升级到最新版：
+      $ pip3 install --upgrade oebuild
 
-     * - openEuler Embedded 版本
-       - oebuild 版本
-     * - master
-       - latest
-     * - openEuler-23.09
-       - 0.0.32
-     * - openEuler-22.03-LTS-SP2
-       - 0.0.27
-
-  执行以下命令安装 oebuild：
-
-  .. code-block:: console
-
-     # 对于 master 分支，安装最新版本的 oebuild：
-     $ pip3 install --upgrade oebuild
-
-     # 对于其它分支，安装 <version> 版本的 oebuild：
-     $ pip3 install oebuild==<version>
-
+      # 想要安装特定版本的 oebuild：
+      $ pip3 install oebuild==<version>
