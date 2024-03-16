@@ -44,15 +44,8 @@ PACKAGECONFIG_GL = "${@bb.utils.contains('DISTRO_FEATURES', 'x11 opengl', 'gl', 
                         bb.utils.contains('DISTRO_FEATURES',     'opengl', 'eglfs gles2', \
                                                                        '', d), d)}"
 
-PACKAGECONFIG_GL:append = " kms gbm"
+PACKAGECONFIG_GL:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'kms gbm', '', d)}"
+
+# font configuration
 PACKAGECONFIG_FONTS = "fontconfig"
 PACKAGECONFIG:append = " libinput examples tslib xkbcommon"
-
-OE_QTBASE_EGLFS_DEVICE_INTEGRATION = ""
-
-do_configure:prepend() {
-    # Add the appropriate EGLFS_DEVICE_INTEGRATION
-    if [ "${@d.getVar('OE_QTBASE_EGLFS_DEVICE_INTEGRATION')}" != "" ]; then
-        echo "EGLFS_DEVICE_INTEGRATION = ${OE_QTBASE_EGLFS_DEVICE_INTEGRATION}" >> ${S}/mkspecs/oe-device-extra.pri
-    fi
-}
