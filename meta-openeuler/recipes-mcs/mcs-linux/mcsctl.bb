@@ -25,14 +25,17 @@ do_fetch[depends] += "mcs-linux:do_fetch"
 
 RDEPENDS:${PN} = "python3 python3-argcomplete"
 
+RTOS_IMGS:raspberrypi4-64 = "rpi4"
+RTOS_IMGS:qemu-aarch64 = "qemu"
+
 do_install:append () {
         # install Configuration file
-	install -d ${D}/etc/mica
-	cp ${S}/rtos/arm64/*.conf ${D}/etc/mica/
+        install -d ${D}/etc/mica
+        cp ${S}/rtos/arm64/${RTOS_IMGS}*.conf ${D}/etc/mica/
 
-	# install rtos firmware
-	install -d ${D}/lib/firmware
-	cp ${S}/rtos/arm64/*.elf ${D}/lib/firmware/
+        # install rtos firmware
+        install -d ${D}/lib/firmware
+        cp ${S}/rtos/arm64/${RTOS_IMGS}*.elf ${D}/lib/firmware/
 }
 
 FILES:${PN} += "/usr/bin/mica"

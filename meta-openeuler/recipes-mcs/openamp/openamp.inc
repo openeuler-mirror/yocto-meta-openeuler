@@ -20,7 +20,10 @@ LIC_FILES_CHKSUM = "file://LICENSE.md;md5=a8d8cf662ef6bf9936a1e1413585ecbf"
 inherit cmake
 
 ### Build metadata: SRC_URI, SRCDATA, S, B, FILESEXTRAPATHS....
-SRC_URI = "file://${BP}.tar.gz"
+SRC_URI = " \
+	file://${BP}.tar.gz \
+	file://0001-remoteproc-Fix-management-of-non-loadable-program-se.patch \
+	"
 
 S = "${WORKDIR}/${BP}"
 
@@ -35,8 +38,8 @@ EXTRA_OECMAKE = " \
 	-DLIB_INSTALL_DIR=${libdir} \
 	-DLIBEXEC_INSTALL_DIR=${libexecdir} \
 	-DMACHINE=generic \
-    -DWITH_PROXY=ON \
-    -DWITH_APPS=ON \
+	-DWITH_PROXY=ON \
+	-DWITH_APPS=ON \
 	"
 
 ### Runtime metadata
