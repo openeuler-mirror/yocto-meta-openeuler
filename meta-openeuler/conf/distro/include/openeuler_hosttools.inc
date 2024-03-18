@@ -72,6 +72,9 @@ SANITY_REQUIRED_UTILITIES:remove = "diffstat chrpath"
 # zic used by tzdata(tzcode-native)
 HOSTTOOLS_NONFATAL += "fmt gperf tic zic"
 
+# used by linux-libc-headers
+HOSTTOOLS_NONFATAL += "rsync"
+
 # the following are used to remove dependency
 ## tools required possibly required by linux-libc-hearders
 ASSUME_PROVIDED += "unifdef-native rsync-native"
