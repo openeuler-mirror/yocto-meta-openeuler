@@ -1,0 +1,1 @@
+require openeuler-qt.inc
