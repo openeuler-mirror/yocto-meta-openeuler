@@ -31,7 +31,7 @@ def get_external_libc_license(d):
         if found:
             errno_paths = found[0]
             if errno_paths:
-                with open(errno_paths[0], 'rU') as f:
+                with open(errno_paths[0], 'r') as f:
                     text = f.read()
 
                 lictext = """   The GNU C Library is free software; you can redistribute it and/or
