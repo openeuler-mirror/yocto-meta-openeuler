@@ -16,6 +16,11 @@ do_deploy() {
     install -d ${DEPLOYDIR}/EFI/BOOT
     GRUBCFG=${DEPLOYDIR}/EFI/BOOT/grub.cfg
     cp ${S}/grub-bootconf $GRUBCFG
+
+    # change grub.cfg to use Image.gz to launch the kernel if enable mcs DISTRO_FEATURES
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'mcs', 'true', 'false', d)}; then
+        sed -i 's/linux \/Image /linux \/Image.gz /' $GRUBCFG
+    fi
 }
 
 addtask deploy after do_install before do_build
