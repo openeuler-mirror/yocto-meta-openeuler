@@ -1,5 +1,5 @@
 export KERNEL_SRC="${SDKTARGETSYSROOT}/usr/src/kernel"
-OPENEULER_NATIVESDK_SYSROOT=/opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux
+OPENEULER_NATIVESDK_SYSROOT=/opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-linux
 # prepare SDK
 PYTHONBIN=`which python3`
 PYTHONVERSION=`python3 --version | awk -F "." '{print $2}'`
@@ -17,6 +17,7 @@ if [ ${PYTHONPKGPATH#${OPENEULER_NATIVESDK_SYSROOT}} != "$PYTHONPKGPATH" ]; then
                             -Wl,-rpath,${OPENEULER_NATIVESDK_SYSROOT}/lib"
     popd
 
+    # ROS SDK configuration for openeuler docker using nativesdk
     if test -d $PYTHONPKGPATH; then
         if test -d ${SDKTARGETSYSROOT}/usr/share/rosidl_cmake; then
             # prepare ROS SDK, only works in the ROS environment with our nativesdk.
@@ -41,10 +42,23 @@ if [ ${PYTHONPKGPATH#${OPENEULER_NATIVESDK_SYSROOT}} != "$PYTHONPKGPATH" ]; then
             python3 -m pip install -r $OECORE_NATIVE_SYSROOT/environment-setup.d/requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
             export CMAKE_TOOLCHAIN_FILE="$OECORE_NATIVE_SYSROOT/environment-setup.d/toolchain.cmake"
 	    # avoid pythonpath err in colcon
-            sed -i 's%python_path.exists():%python_path.exists() and not (\"\%s\" \% python_path).startswith("/opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/lib"):%' ${OPENEULER_NATIVESDK_SYSROOT}/usr/lib/python3.*/site-packages/colcon_core/environment/pythonpath.py
-        fi
-	# add find_path cross compile support for numpy path
-	sed -i '/_NumPy_PATH/{n; s%NO_DEFAULT_PATH)%NO_DEFAULT_PATH CMAKE_FIND_ROOT_PATH_BOTH)%}' ${OPENEULER_NATIVESDK_SYSROOT}/usr/share/cmake-*/Modules/FindPython/Support.cmake
+            sed -i 's%python_path.exists():%python_path.exists() and not (\"\%s\" \% python_path).startswith("/opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-linux/usr/lib"):%' ${OPENEULER_NATIVESDK_SYSROOT}/usr/lib/python3.*/site-packages/colcon_core/environment/pythonpath.py
+        fi 
+        # add find_path cross compile support for numpy path 
+        sudo sed -i '/_NumPy_PATH/{n; s%NO_DEFAULT_PATH)%NO_DEFAULT_PATH CMAKE_FIND_ROOT_PATH_BOTH)%}' /usr/share/cmake*/Modules/FindPython/Support.cmake 
+        # fix .cmake lib dir from "/home/openeuelr*recipe-sysroot" to ${TARGET_SYSROOT_DIR} 
+        cmakefiles=`find ${SDKTARGETSYSROOT} -name "*\.cmake"` 
+        for cmakefile in $cmakefiles 
+        do 
+            res=`cat $cmakefile | grep recipe-sysroot` 
+            if [ $? == 0 ];then 
+                echo "Auto Check: $cmakefile" 
+                sed -i 's#recipe-sysroot#@@@@#g' $cmakefile 
+                sed -i 's#/home/openeuler/[^@]*@@@@#\${TARGET_SYSROOT_DIR}#g' $cmakefile 
+            fi 
+        done 
+        # fix make not found (CMAKE_MAKE_PROGRAM is not set)
+        ln -sfnT /usr/bin/make  ${OPENEULER_NATIVESDK_SYSROOT}/usr/bin/make
     fi
 else
     # prepare context for kernel module development

@@ -14,16 +14,15 @@ find_program( CMAKE_AR $ENV{AR} DOC "Archiver" REQUIRED )
 
 # Currently, OPENEULER_NATIVESDK_DIR uses a fixed address.
 # After optimizing the nativesdk, a generative or parameterized optimization can be performed here.
-set( OPENEULER_NATIVESDK_DIR "/opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/bin" )
+set( OPENEULER_NATIVESDK_DIR "/opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-linux/usr/bin" )
 if ($ENV{OECORE_NATIVE_SYSROOT} MATCHES "/sysroots/([a-zA-Z0-9_-]+)-.+-.+")
   set( OPENEULER_NATIVE_SYSROOT_BIN "$ENV{OECORE_NATIVE_SYSROOT}/usr/bin" )
 endif()
 set( CMAKE_SYSROOT "$ENV{OECORE_TARGET_SYSROOT}" )
 set( TARGET_SYSROOT_DIR  "$ENV{OECORE_TARGET_SYSROOT}" )
 
-set( NATIVEPYTHONPATH "${NATIVE_SYSROOT_DIR}/usr/lib/python3.9/site-packages" )
-set( TARGETPYTHONPATH "${TARGET_SYSROOT_DIR}/usr/lib/python3.9/site-packages" )
-set( ENV{PYTHONPATH} "${TARGETPYTHONPATH}:${NATIVEPYTHONPATH}" )
+set( TARGETPYTHONPATH "${TARGET_SYSROOT_DIR}/usr/lib/python3.10/site-packages" )
+set( ENV{PYTHONPATH} "${TARGETPYTHONPATH}" )
 
 set( ENV{AMENT_PREFIX_PATH} "$ENV{OECORE_TARGET_SYSROOT}/usr" )
 set( ENV{LD_LIBRARY_PATH} "$ENV{OECORE_TARGET_SYSROOT}/usr/lib:$ENV{OECORE_TARGET_SYSROOT}/usr/lib64:$ENV{LD_LIBRARY_PATH}" )
