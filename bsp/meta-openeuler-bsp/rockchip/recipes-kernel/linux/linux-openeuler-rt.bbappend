@@ -9,4 +9,4 @@ SRC_URI:remove:rockchip = " \
 "
 
 #add COMPATIBLE_MACHINE
-COMPATIBLE_MACHINE = "ok3568|ryd-3568|ok3588|ok3399"
+COMPATIBLE_MACHINE = "ok3568|ryd-3568|ok3588|ok3399|roc-rk3588s-pc"

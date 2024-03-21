@@ -28,6 +28,11 @@ SRC_URI:append = " \
     ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'file://patches/0003-ok3568-support-mcs.patch', '', d)} \
 "
 
+# patches for roc-rk3588s-pc
+SRC_URI:append:roc-rk3588s-pc = " \
+    file://patches/0001-roc-rk3588s-pc-dts.patch \
+"
+
 # more support of device is coming. so we documented this patch md5sum.
 SRC_URI[rockchip-kernel-patch.md5sum] = "8ee3af4d73b122ca17f536788e87cef6"
 
