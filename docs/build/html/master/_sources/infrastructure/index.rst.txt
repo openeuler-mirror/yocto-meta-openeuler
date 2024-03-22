@@ -14,3 +14,4 @@
    test/index.rst
    openeuler_fetch/index.rst
    manifest/index.rst
+   embedded-ci/index.rst
