@@ -109,7 +109,7 @@ do_install() {
     install -Dpm0550 ${S}/_output/local/bin/csidriver ${D}/${TARBALL_NAME}/cloud/csidriver/csidriver
     install -Dpm0550 ${S}/_output/local/bin/edgecore ${D}/${TARBALL_NAME}/edge/edgecore
     cp -r ${D}${sysconfdir}/kubeedge/crds/ ${D}/${TARBALL_NAME}
-    echo "v{PV}" > ${D}/${TARBALL_NAME}/version
+    echo "v${PV}" > ${D}/${TARBALL_NAME}/version
     pushd ${D}
     tar zcf ${TARBALL_NAME}.tar.gz ${TARBALL_NAME}/
     sha512sum ${TARBALL_NAME}.tar.gz | awk '{print $1}' > checksum_${TARBALL_NAME}.tar.gz.txt
