@@ -1,6 +1,3 @@
-IMAGE_FSTYPES = "wic"
-WKS_FILES = "phytium-efi-image.wks.in"
-
 copy_phytium_distro() {
     set -x
     test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"

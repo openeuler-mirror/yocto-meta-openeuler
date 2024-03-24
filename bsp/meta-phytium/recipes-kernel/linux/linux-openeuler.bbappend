@@ -1,3 +1,4 @@
-require recipes-kernel/linux/linux-${MACHINE}.inc
+require recipes-kernel/linux/linux-phytium.inc
 
-COMPATIBLE_MACHINE = "phytium-ft2000-4"
+# add COMPATIBLE_MACHINE
+COMPATIBLE_MACHINE = "ft2000-4"
