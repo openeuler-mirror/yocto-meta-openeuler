@@ -2,14 +2,18 @@
 
 """
 The classes below are examples of user-defined CommitRules. Commit rules are gitlint rules that
-act on the entire commit at once. Once the rules are discovered, gitlint will automatically take care of applying them
+act on the entire commit at once. Once the rules are discovered, gitlint will automatically
+take care of applying them
 to the entire commit. This happens exactly once per commit.
 
-A CommitRule contrasts with a LineRule (see examples/my_line_rules.py) in that a commit rule is only applied once on
-an entire commit. This allows commit rules to implement more complex checks that span multiple lines and/or checks
+A CommitRule contrasts with a LineRule (see examples/my_line_rules.py) in that a commit rule
+is only applied once on
+an entire commit. This allows commit rules to implement more complex checks that span multiple
+lines and/or checks
 that should only be done once per gitlint run.
 
-While every LineRule can be implemented as a CommitRule, it's usually easier and more concise to go with a LineRule if
+While every LineRule can be implemented as a CommitRule, it's usually easier and more concise
+to go with a LineRule if
 that fits your needs.
 
 For specific details, please refer to: https://jorisroovers.com/gitlint/0.19.x/rules/
@@ -18,11 +22,13 @@ For specific details, please refer to: https://jorisroovers.com/gitlint/0.19.x/r
 import re
 import copy
 from typing import List
-from gitlint.rules import CommitRule, RuleViolation, CommitMessageTitle, LineRule, CommitMessageBody
-from gitlint.options import IntOption, StrOption
+from gitlint.rules import CommitRule, RuleViolation, CommitMessageTitle, LineRule
+from gitlint.options import IntOption, StrOption, RegexOption
 
 openeuler_footers = ['Signed-off-by', 'Closes', 'Fixes', 'Co-developed-by', 'Link']
 
+
+# pylint:disable=[C0116,R1710,R0912]
 def divide_body_and_footer(message_body: List[str]):
     '''
     In gitlint, commit msg consist of title and body.
@@ -30,26 +36,26 @@ def divide_body_and_footer(message_body: List[str]):
     Correspondingly,  body add footer in openEuler embedded is equal to the body in gitlint.
     '''
     body = copy.deepcopy(message_body)
-    #When the last item is blankline, remove it
+    # When the last item is blankline, remove it
     if len(body) >= 1 and len(body[-1].strip()) == 0:
         del body[-1]
 
     if len(body) == 0:
         return ([], [])
 
-    #If contains cherry-pich comment in last line, remove it, another method will test it
+    # If contains cherry-pich comment in last line, remove it, another method will test it
     if re.match(r"^\x20*\(.*\)\x20*$", body[-1]):
         del body[-1]
 
     flags = re.UNICODE
     flags |= re.IGNORECASE
-    #value of -1 indicates that there are no tags matching in the openeuler_footers
+    # value of -1 indicates that there are no tags matching in the openeuler_footers
     first_footer_index = -1
     for body_line_num, body_line in enumerate(body):
         if len(body_line.strip()) == 0:
             continue
-        #loop matching to determine if it is defined as tag in openeuler_footers
-        #find the index of the first tag to divide body and footer in openEuler embedded
+        # loop matching to determine if it is defined as tag in openeuler_footers
+        # find the index of the first tag to divide body and footer in openEuler embedded
         is_match = False
         for openeuler_footer in openeuler_footers:
             pattern = "(^)" + openeuler_footer + ":(.*)"
@@ -60,7 +66,7 @@ def divide_body_and_footer(message_body: List[str]):
                 break
         if not is_match:
             first_footer_index = -1
-    #return to the body list and footer list
+    # return to the body list and footer list
     if first_footer_index != -1:
         real_body = body[:first_footer_index]
         real_footer = body[first_footer_index:len(body)]
@@ -68,6 +74,7 @@ def divide_body_and_footer(message_body: List[str]):
         real_body = body
         real_footer = []
     return (real_body, real_footer)
+
 
 class BlanklineBetweenThreePartsCheck(CommitRule):
     '''
@@ -91,11 +98,17 @@ class BlanklineBetweenThreePartsCheck(CommitRule):
                 is_footer_have_words = True
         if is_body_have_words:
             if len(real_body[0].strip()) != 0:
-                result.append(RuleViolation(self.id, "There must be one blankline between header and body", real_body[0], 2))
+                result.append(
+                    RuleViolation(self.id, "There must be one blankline between header and body",
+                                  real_body[0], 2))
         if is_body_have_words and is_footer_have_words:
             if len(real_body[-1].strip()) != 0:
-                result.append(RuleViolation(self.id, "There must be one blankline between body and footer", real_footer[0], len(real_body) + 1))
+                result.append(
+                    RuleViolation(self.id, "There must be one blankline between body and footer",
+                                  real_footer[0],
+                                  len(real_body) + 1))
         return result
+
 
 class TitleLength(LineRule):
     '''
@@ -120,12 +133,13 @@ class TitleLength(LineRule):
         if len(line) > max_length:
             result.append(RuleViolation(self.id, self.message.format(len(line), max_length), line))
 
-        #The subject contains at least 3 words.
+        # The subject contains at least 3 words.
         if line.find(": ") != -1:
-            subject = line[line.find(": ") + 2 : ].strip()
+            subject = line[line.find(": ") + 2:].strip()
             if len(subject) != 0 and len(subject.split()) < 2:
                 result.append(RuleViolation(self.id, "Subject contains at least 2 words.", line))
         return result
+
 
 class TitleForm(LineRule):
     '''
@@ -143,23 +157,27 @@ class TitleForm(LineRule):
         if line.find(":") == -1:
             result.append(RuleViolation(self.id, self.message, line))
         area = line[0:(line.find(":"))]
-        subject = line[(line.find(":")+1):]
+        subject = line[(line.find(":") + 1):]
         if len(area.strip()) == 0:
             result.append(RuleViolation(self.id, self.message + "<area> must not be empty", line))
         if len(subject.strip()) == 0:
-            result.append(RuleViolation(self.id, self.message + "<subject> must not be empty", line))
+            result.append(RuleViolation(self.id, self.message + "<subject> must not be empty",
+                                        line))
         else:
             if subject[0] != ' ' or (subject[0] == ' ' and subject[1] == ' '):
-                result.append(RuleViolation(self.id, self.message + "There is only one space after the colon", line))
-            #if subject.strip()[0].islower() and not area.startswith("revert"):
-            #    result.append(RuleViolation(self.id, "The first letter of subject must be capitalized", line))
-            if not re.match('.*[^?:!.,;]$', subject.strip()) :
+                result.append(RuleViolation(self.id, self.message + "There is only one space "
+                                                                    "after the colon", line))
+            if not re.match('.*[^?:!.,;]$', subject.strip()):
                 result.append(RuleViolation(self.id, "Title has trailing punctuation", line))
             if area.startswith("revert"):
-                if not re.match(r'[a-z0-9]{12}\(\S.*(:\s)[A-Za-z0-9]+.*[^?:!.,;]\)$', subject.strip()):
-                    message = '''The from of title in revert commit is ====> revert: A(B)||A is the first 12 characters of SHA-1 in the fixed commit||B is the title in the fixed commit.'''
+                if not re.match(r'[a-z0-9]{12}\(\S.*(:\s)[A-Za-z0-9]+.*[^?:!.,;]\)$',
+                                subject.strip()):
+                    message = '''The from of title in revert commit is ====> revert: A(B)||A
+                    is the first 12 characters of SHA-1 in the fixed commit||B is the title in
+                    the fixed commit.'''
                     result.append(RuleViolation(self.id, message, line))
         return result
+
 
 class BodyOrFooterLineLength(CommitRule):
     '''
@@ -179,20 +197,27 @@ class BodyOrFooterLineLength(CommitRule):
         line_count = 1
         for line in real_body:
             line_count = line_count + 1
-            if re.findall(r'(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]', line):
+            if re.findall(r'(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+'
+                          r'[-A-Za-z0-9+&@#/%=~_|]', line):
                 continue
             if len(line) > body_max_length:
-                result.append(RuleViolation(self.id, self.message.format(len(line), body_max_length), line, line_count))
+                result.append(RuleViolation(self.id, self.message.format(len(line),
+                                            body_max_length), line, line_count))
         line_count = 1 + len(real_body)
         for line in real_footer:
             line_count = line_count + 1
-            if re.findall(r'(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]', line):
+            if re.findall(r'(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]'
+                          r'+[-A-Za-z0-9+&@#/%=~_|]', line):
                 continue
             if len(line) > footer_max_length and not line.lower().startswith("Fixes:".lower()):
-                result.append(RuleViolation(self.id, self.message.format(len(line), footer_max_length), line, line_count))
+                result.append(
+                    RuleViolation(self.id, self.message.format(len(line),
+                                  footer_max_length), line, line_count))
             if line.lower().startswith("Fixes:".lower()) and len(line) > 101:
-                result.append(RuleViolation(self.id, self.message.format(len(line), 101), line, line_count))
+                result.append(RuleViolation(self.id, self.message.format(len(line), 101),
+                                            line, line_count))
         return result
+
 
 class BodyAndFooterMissingException(CommitRule):
     '''
@@ -218,6 +243,7 @@ class BodyAndFooterMissingException(CommitRule):
             result.append(RuleViolation(self.id, "Footer is missing"))
         return result
 
+
 class BodyAndFooterMaxLineCount(CommitRule):
     '''
     The number of line for body don't exceed 100 
@@ -235,13 +261,16 @@ class BodyAndFooterMaxLineCount(CommitRule):
         body_max_line_count = self.options['max-line-count-in-body'].value
         if body_line_count > body_max_line_count:
             message = "Body contains too many lines ({0} > {1})"
-            result.append(RuleViolation(self.id, message.format(body_line_count, body_max_line_count)))
+            result.append(RuleViolation(self.id, message.format(body_line_count,
+                                                                body_max_line_count)))
         footer_line_count = len(real_footer)
         footer_max_line_count = self.options['max-line-count-in-footer'].value
         if footer_line_count > footer_max_line_count:
             message = "Footer contains too many lines ({0} > {1})"
-            result.append(RuleViolation(self.id, message.format(footer_line_count, footer_max_line_count)))
+            result.append(RuleViolation(self.id, message.format(footer_line_count,
+                                                                footer_max_line_count)))
         return result
+
 
 class TagsCheck(CommitRule):
     '''
@@ -259,50 +288,68 @@ class TagsCheck(CommitRule):
         for index, line in enumerate(real_footer):
             line_count = line_count + 1
 
-            #1.can't contain blankline
+            # 1.can't contain blankline
             if len(line.strip()) == 0:
-                result.append(RuleViolation(self.id, "The footer can't contain blankline", line, line_count))
+                result.append(RuleViolation(self.id, "The footer can't contain blankline",
+                                            line, line_count))
                 continue
 
             for openeuler_footer in openeuler_footers:
-                #2.match the capitalization of tags
-                if line.lower().startswith(openeuler_footer.lower()) and not line.startswith(openeuler_footer):
-                    message = "Incorrect capitalization of tag '" + openeuler_footer + "' ,Please pay attention to capitalization."
+                # 2.match the capitalization of tags
+                if (line.lower().startswith(openeuler_footer.lower()) and
+                        not line.startswith(openeuler_footer)):
+                    message = ("Incorrect capitalization of tag '" + openeuler_footer
+                               + "' ,Please pay attention to capitalization.")
                     result.append(RuleViolation(self.id, message, line, line_count))
 
-            #3.tag-context can't be empty, and there is a space after the colon
-            if (len(line[(line.find(":")+1):].strip()) == 0) or (len(line[(line.find(":")+1):].strip()) != 0 and line[(line.find(":")+1):][0] != ' '):
-                message = "The form of footer is '<tag-name>: <tag-context>', tag-context can't be empty. There is a space after the colon"
+            # 3.tag-context can't be empty, and there is a space after the colon
+            if (len(line[(line.find(":") + 1):].strip()) == 0) or (
+                    len(line[(line.find(":") + 1):].strip()) != 0 and
+                    line[(line.find(":") + 1):][0] != ' '):
+                message = ("The form of footer is '<tag-name>: <tag-context>', tag-context can't"
+                           " be empty. There is a space after the colon")
                 result.append(RuleViolation(self.id, message, line, line_count))
 
             if line.lower().startswith("Co-developed-by".lower()):
                 co_developed_by_index.append(index)
-                #4.Co-developed-by tag must be followed by a Signed-off-by tag
-                if not ((len(real_footer) - 1) >= (index + 1) and real_footer[index + 1].lower().startswith("Signed-off-by".lower())):
-                    message = "Co-developed-by tag must be followed by a Signed-off-by tag, and the corresponding person information should be consistent."
+                # 4.Co-developed-by tag must be followed by a Signed-off-by tag
+                if not ((len(real_footer) - 1) >= (index + 1) and
+                        real_footer[index + 1].lower().startswith(
+                        "Signed-off-by".lower())):
+                    message = ("Co-developed-by tag must be followed by a Signed-off-by tag, "
+                               "and the corresponding person information should be consistent.")
                     result.append(RuleViolation(self.id, message, line, line_count))
 
-            #5.check form of tag-context in Signed-off-by tag
+            # 5.check form of tag-context in Signed-off-by tag
             if line.lower().startswith("Signed-off-by".lower()):
                 signed_off_by_index.append(index)
-                if not re.match(r'(\S+\s)+<[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.>', line[(line.find(":")+1):].strip()):
-                    message = "The from of Signed-off-by tag is: Signed-off-by: contributor-name <contributor-email>. Please pay attention to the spaces"
+                if not re.match(r'(\S+\s)+<[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.>',
+                                line[(line.find(":") + 1):].strip()):
+                    message = ("The from of Signed-off-by tag is: Signed-off-by: contributor-name"
+                               " <contributor-email>. Please pay attention to the spaces")
                     result.append(RuleViolation(self.id, message, line, line_count))
 
-            #6.check form of tag-context in Fixes tag
+            # 6.check form of tag-context in Fixes tag
             if line.lower().startswith("Fixes".lower()):
-                if not re.match(r'[a-z0-9]{12}\(\S.*(:\s)[A-Z]+.*[^?:!.,;]\)$', line[(line.find(":")+1):].strip()):
-                    message = "The from of Fixes tag is Fixes: A(B) .A is the first 12 characters of SHA-1 in the fixed commit, B is the title in the fixed commit."
+                if not re.match(r'[a-z0-9]{12}\(\S.*(:\s)[A-Z]+.*[^?:!.,;]\)$',
+                                line[(line.find(":") + 1):].strip()):
+                    message = ("The from of Fixes tag is Fixes: A(B) .A is the first 12 "
+                               "characters of SHA-1 in the fixed commit, B is the title "
+                               "in the fixed commit.")
                     result.append(RuleViolation(self.id, message, line, line_count))
 
-        #7.Check the quantity of tag Signed-off-by and whether the last line is Signed-off-by
-        if len(signed_off_by_index) == 0 or ((len(signed_off_by_index) != 0) and (signed_off_by_index[-1] != len(real_footer) - 1)):
-            message = "There must be Signed-off-by tag in footer, and the last tag of footer must be Signed-off-by tag."
+        # 7.Check the quantity of tag Signed-off-by and whether the last line is Signed-off-by
+        if len(signed_off_by_index) == 0 or (
+                (len(signed_off_by_index) != 0) and
+                (signed_off_by_index[-1] != len(real_footer) - 1)):
+            message = ("There must be Signed-off-by tag in footer, and the last tag of "
+                       "footer must be Signed-off-by tag.")
             result.append(RuleViolation(self.id, message))
         elif len(signed_off_by_index) - 1 > len(co_developed_by_index):
             message = "There is some extra Signed-off-by tags in the footer"
             result.append(RuleViolation(self.id, message))
         return result
+
 
 class LinkInClosesCheck(CommitRule):
     '''
@@ -311,7 +358,8 @@ class LinkInClosesCheck(CommitRule):
     '''
     name = 'link-in-footer-check'
     id = 'UF2'
-    options_spec = [StrOption('prefix-for-closes-tag', "https://gitee.com/openeuler/", "The prefix of URLs.")]
+    options_spec = [StrOption('prefix-for-closes-tag', "https://gitee.com/openeuler/",
+                              "The prefix of URLs.")]
 
     def validate(self, commit):
         prefix = self.options['prefix-for-closes-tag'].value
@@ -322,9 +370,11 @@ class LinkInClosesCheck(CommitRule):
         line_count = len(real_body) + 1
         for line in real_footer:
             line_count = line_count + 1
-            if line.lower().startswith("Closes".lower()) and not re.match(prefix + ".*", line[(line.find(":")+1):].strip()):
-                message = "Issue Link in Closes tag don't match prefix:" + '"'+ prefix + '"'
+            if (line.lower().startswith("Closes".lower()) and
+                    not re.match(prefix + ".*", line[(line.find(":") + 1):].strip())):
+                message = "Issue Link in Closes tag don't match prefix:" + '"' + prefix + '"'
                 return [RuleViolation(self.id, message, line, line_count)]
+
 
 class CherryPickCheck(CommitRule):
     '''
@@ -337,7 +387,7 @@ class CherryPickCheck(CommitRule):
 
     def validate(self, commit):
         body = copy.deepcopy(commit.message.body)
-        #When the last item is blankline, remove it
+        # When the last item is blankline, remove it
         msg_body_length = len(body)
         if len(body) >= 1 and len(body[-1].strip()) == 0:
             del body[-1]
@@ -348,9 +398,33 @@ class CherryPickCheck(CommitRule):
 
         if len(body) > 0 and re.match(r"^\x20*\(.*\)\x20*$", body[-1]):
             if not re.match(r"^\(cherry picked from commit .*\)\x20*$", body[-1]):
-                message = "Correct format of cherry-pick is: (cherry picked from commit commit-id, commit-id)\n"
-                message += "   Use command(git cherry-pick -x commit-id), you can get correct format automatically."
-                return [RuleViolation(self.id, message, body[-1], msg_body_length+1)]
+                message = ("Correct format of cherry-pick is: (cherry picked from "
+                           "commit commit-id, commit-id)\n")
+                message += ("   Use command(git cherry-pick -x commit-id), you can "
+                            "get correct format automatically.")
+                return [RuleViolation(self.id, message, body[-1], msg_body_length + 1)]
             if len(body) > 1 and len(str(body[-2]).strip()) == 0:
-                message = "There can't be blanklines between Signed-off-by tag and cherry-pick info."
+                message = ("There can't be blanklines between Signed-off-by "
+                           "tag and cherry-pick info.")
                 return [RuleViolation(self.id, message, body[-2], msg_body_length)]
+
+
+class BodyOrTitleContainsChinese(CommitRule):
+    """
+        Check if the title and message in commit msg contain Chinese characters
+    """
+    name = 'title-or-message-contains-chinese'
+    id = 'UC3'
+    options_spec = [RegexOption('contains-chinese',
+                                '.*[\u4e00-\u9fa5]+.*', 'Chinese check')]
+
+    def validate(self, commit):
+        result = []
+        real_body = divide_body_and_footer(commit.message.body)[0]
+        re_info = self.options['contains-chinese'].value
+        if (re.search(re_info, ''.join(real_body)) or
+                re.search(re_info, commit.message.title)):
+            result.append(RuleViolation(self.id, "Chinese characters are not "
+                                                 "allowed in the title and message of commit"))
+
+        return result
