@@ -1,20 +1,18 @@
-diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 8de1808..f209340 100644
---- a/src/CMakeLists.txt
-+++ b/src/CMakeLists.txt
-@@ -49,6 +49,7 @@ target_include_directories(libisulad_tools
+diff -uprN a/src/CMakeLists.txt b/src/CMakeLists.txt
+--- a/src/CMakeLists.txt	2024-03-20 07:35:44.334203079 +0000
++++ b/src/CMakeLists.txt	2024-03-20 07:35:52.053278588 +0000
+@@ -49,6 +49,7 @@ target_include_directories(libisulad_too
  
  set_target_properties(libisulad_tools PROPERTIES PREFIX "")
- target_link_libraries(libisulad_tools ${ZLIB_LIBRARY} ${ISULA_LIBUTILS_LIBRARY} ${CRYPTO_LIBRARY})
+ target_link_libraries(libisulad_tools ${ZLIB_LIBRARY} ${ISULA_LIBUTILS_LIBRARY} ${CRYPTO_LIBRARY} ${CAP_LIBRARY})
 +target_link_libraries(libisulad_tools -lgcompat)
  
  if (ENABLE_OCI_IMAGE)
      target_link_libraries(libisulad_tools ${LIBARCHIVE_LIBRARY})
-diff --git a/src/cmd/isula/client_console.c b/src/cmd/isula/client_console.c
-index 555f59b..1eb54e1 100644
---- a/src/cmd/isula/client_console.c
-+++ b/src/cmd/isula/client_console.c
-@@ -137,8 +137,7 @@ int create_console_fifos(bool attach_stdin, bool attach_stdout, bool attach_stde
+diff -uprN a/src/cmd/isula/client_console.c b/src/cmd/isula/client_console.c
+--- a/src/cmd/isula/client_console.c	2024-03-20 07:35:44.319202932 +0000
++++ b/src/cmd/isula/client_console.c	2024-03-20 07:35:52.036278422 +0000
+@@ -137,8 +137,7 @@ int create_console_fifos(bool attach_std
          return -1;
      }
  
@@ -24,10 +22,9 @@ index 555f59b..1eb54e1 100644
      if (ret < 0 || (size_t)ret >= sizeof(subpath)) {
          ERROR("Path is too long");
          goto cleanup;
-diff --git a/src/cmd/isulad/main.c b/src/cmd/isulad/main.c
-index 0cdbfb5..1a87af7 100644
---- a/src/cmd/isulad/main.c
-+++ b/src/cmd/isulad/main.c
+diff -uprN a/src/cmd/isulad/main.c b/src/cmd/isulad/main.c
+--- a/src/cmd/isulad/main.c	2024-03-20 07:35:44.321202952 +0000
++++ b/src/cmd/isulad/main.c	2024-03-20 07:35:52.037278431 +0000
 @@ -40,6 +40,7 @@
  #include <string.h>
  #include <strings.h>
@@ -36,10 +33,9 @@ index 0cdbfb5..1a87af7 100644
  #ifdef ENABLE_SUP_GROUPS
  #include <grp.h>
  #endif
-diff --git a/src/daemon/executor/container_cb/execution.c b/src/daemon/executor/container_cb/execution.c
-index c2a0bdb..7cc59aa 100644
---- a/src/daemon/executor/container_cb/execution.c
-+++ b/src/daemon/executor/container_cb/execution.c
+diff -uprN a/src/daemon/executor/container_cb/execution.c b/src/daemon/executor/container_cb/execution.c
+--- a/src/daemon/executor/container_cb/execution.c	2024-03-20 07:35:44.322202962 +0000
++++ b/src/daemon/executor/container_cb/execution.c	2024-03-20 07:35:52.046278519 +0000
 @@ -23,6 +23,7 @@
  #include <stdlib.h>
  #include <string.h>
@@ -48,7 +44,7 @@ index c2a0bdb..7cc59aa 100644
  
  #include <isula_libutils/container_config.h>
  #include <isula_libutils/container_config_v2.h>
-@@ -474,9 +475,9 @@ static int container_start_prepare(container_t *cont, const container_start_requ
+@@ -474,9 +475,9 @@ static int container_start_prepare(conta
  static void handle_start_io_thread_by_cc(uint32_t cc, int sync_fd, pthread_t thread_id)
  {
      if (cc == ISULAD_SUCCESS) {
@@ -60,19 +56,19 @@ index c2a0bdb..7cc59aa 100644
              }
          }
          if (sync_fd >= 0) {
-@@ -488,9 +489,9 @@ static void handle_start_io_thread_by_cc(uint32_t cc, int sync_fd, pthread_t thr
-                 ERROR("Failed to write eventfd: %s", strerror(errno));
+@@ -488,9 +489,9 @@ static void handle_start_io_thread_by_cc
+                 SYSERROR("Failed to write eventfd.");
              }
          }
 -        if (thread_id > 0) {
-+        if (thread_id != NULL) {
++        if (thread_id != NULL) { 
              if (pthread_join(thread_id, NULL) != 0) {
 -                ERROR("Failed to join thread: 0x%lx", thread_id);
 +                ERROR("Failed to join thread");
              }
          }
          if (sync_fd >= 0) {
-@@ -508,7 +509,7 @@ static int container_start_cb(const container_start_request *request, container_
+@@ -508,7 +509,7 @@ static int container_start_cb(const cont
      char *fifopath = NULL;
      container_t *cont = NULL;
      int sync_fd = -1;
@@ -81,10 +77,9 @@ index c2a0bdb..7cc59aa 100644
  
      DAEMON_CLEAR_ERRMSG();
  
-diff --git a/src/daemon/executor/container_cb/execution_create.c b/src/daemon/executor/container_cb/execution_create.c
-index e8f74f1..38ef072 100644
---- a/src/daemon/executor/container_cb/execution_create.c
-+++ b/src/daemon/executor/container_cb/execution_create.c
+diff -uprN a/src/daemon/executor/container_cb/execution_create.c b/src/daemon/executor/container_cb/execution_create.c
+--- a/src/daemon/executor/container_cb/execution_create.c	2024-03-20 07:35:44.322202962 +0000
++++ b/src/daemon/executor/container_cb/execution_create.c	2024-03-20 07:35:52.045278509 +0000
 @@ -24,6 +24,7 @@
  #include <stdint.h>
  #include <stdlib.h>
@@ -93,10 +88,9 @@ index e8f74f1..38ef072 100644
  
  #include <isula_libutils/log.h>
  #include <isula_libutils/auto_cleanup.h>
-diff --git a/src/daemon/executor/container_cb/execution_information.c b/src/daemon/executor/container_cb/execution_information.c
-index 2848022..caca444 100644
---- a/src/daemon/executor/container_cb/execution_information.c
-+++ b/src/daemon/executor/container_cb/execution_information.c
+diff -uprN a/src/daemon/executor/container_cb/execution_information.c b/src/daemon/executor/container_cb/execution_information.c
+--- a/src/daemon/executor/container_cb/execution_information.c	2024-03-20 07:35:44.322202962 +0000
++++ b/src/daemon/executor/container_cb/execution_information.c	2024-03-20 07:35:52.046278519 +0000
 @@ -39,6 +39,7 @@
  #include <stdlib.h>
  #include <string.h>
@@ -105,13 +99,12 @@ index 2848022..caca444 100644
  
  #include "isula_libutils/log.h"
  #include "isulad_config.h"
-diff --git a/src/daemon/executor/container_cb/execution_stream.c b/src/daemon/executor/container_cb/execution_stream.c
-index 7e928cf..e29321b 100644
---- a/src/daemon/executor/container_cb/execution_stream.c
-+++ b/src/daemon/executor/container_cb/execution_stream.c
-@@ -63,7 +63,10 @@
- #include "utils_file.h"
+diff -uprN a/src/daemon/executor/container_cb/execution_stream.c b/src/daemon/executor/container_cb/execution_stream.c
+--- a/src/daemon/executor/container_cb/execution_stream.c	2024-03-20 07:35:44.322202962 +0000
++++ b/src/daemon/executor/container_cb/execution_stream.c	2024-03-20 07:35:52.046278519 +0000
+@@ -64,7 +64,10 @@
  #include "utils_verify.h"
+ #include "isulad_config.h"
  
 -#if defined (__ANDROID__) || defined(__MUSL__)
 +#if defined (__ANDROID__)
@@ -121,7 +114,7 @@ index 7e928cf..e29321b 100644
  #define SIG_CANCEL_SIGNAL     SIGUSR1
  #define PTHREAD_CANCEL_ENABLE    1
  #define PTHREAD_CANCEL_DISABLE    0
-@@ -283,9 +286,9 @@ out:
+@@ -284,9 +287,9 @@ out:
  static void handle_attach_io_thread_by_cc(uint32_t cc, int sync_fd, pthread_t thread_id)
  {
      if (cc == ISULAD_SUCCESS) {
@@ -133,8 +126,8 @@ index 7e928cf..e29321b 100644
              }
          }
          if (sync_fd >= 0) {
-@@ -297,9 +300,9 @@ static void handle_attach_io_thread_by_cc(uint32_t cc, int sync_fd, pthread_t th
-                 ERROR("Failed to write eventfd: %s", strerror(errno));
+@@ -298,9 +301,9 @@ static void handle_attach_io_thread_by_c
+                 SYSERROR("Failed to write eventfd.");
              }
          }
 -        if (thread_id > 0) {
@@ -145,7 +138,7 @@ index 7e928cf..e29321b 100644
              }
          }
          if (sync_fd >= 0) {
-@@ -317,7 +320,7 @@ static int container_attach_cb(const container_attach_request *request, containe
+@@ -318,7 +321,7 @@ static int container_attach_cb(const con
      char *fifos[3] = { NULL, NULL, NULL };
      char *fifopath = NULL;
      int syncfd = -1;
@@ -154,10 +147,9 @@ index 7e928cf..e29321b 100644
      container_t *cont = NULL;
      rt_attach_params_t params = { 0 };
  
-diff --git a/src/daemon/executor/image_cb/image_cb.c b/src/daemon/executor/image_cb/image_cb.c
-index 124feb2..ae00721 100644
---- a/src/daemon/executor/image_cb/image_cb.c
-+++ b/src/daemon/executor/image_cb/image_cb.c
+diff -uprN a/src/daemon/executor/image_cb/image_cb.c b/src/daemon/executor/image_cb/image_cb.c
+--- a/src/daemon/executor/image_cb/image_cb.c	2024-03-20 07:35:44.322202962 +0000
++++ b/src/daemon/executor/image_cb/image_cb.c	2024-03-20 07:35:52.045278509 +0000
 @@ -47,6 +47,7 @@
  #include <stdint.h>
  #include <stdlib.h>
@@ -166,17 +158,16 @@ index 124feb2..ae00721 100644
  
  #include "utils.h"
  #include "error.h"
-@@ -1215,4 +1216,4 @@ void image_callback_init(service_image_callback_t *cb)
+@@ -1203,4 +1204,4 @@ void image_callback_init(service_image_c
  #ifdef ENABLE_IMAGE_SEARCH
      cb->search = image_search_cb;
  #endif
 -}
 \ No newline at end of file
 +}
-diff --git a/src/daemon/modules/events/monitord.c b/src/daemon/modules/events/monitord.c
-index 775fb9a..b9d6eee 100644
---- a/src/daemon/modules/events/monitord.c
-+++ b/src/daemon/modules/events/monitord.c
+diff -uprN a/src/daemon/modules/events/monitord.c b/src/daemon/modules/events/monitord.c
+--- a/src/daemon/modules/events/monitord.c	2024-03-20 07:35:44.327203011 +0000
++++ b/src/daemon/modules/events/monitord.c	2024-03-20 07:35:52.041278470 +0000
 @@ -24,6 +24,7 @@
  #include <stdlib.h>
  #include <string.h>
@@ -185,10 +176,9 @@ index 775fb9a..b9d6eee 100644
  
  #include "isula_libutils/log.h"
  #include "mainloop.h"
-diff --git a/src/daemon/modules/image/image_rootfs_handler.c b/src/daemon/modules/image/image_rootfs_handler.c
-index 1275658..e6a6392 100644
---- a/src/daemon/modules/image/image_rootfs_handler.c
-+++ b/src/daemon/modules/image/image_rootfs_handler.c
+diff -uprN a/src/daemon/modules/image/image_rootfs_handler.c b/src/daemon/modules/image/image_rootfs_handler.c
+--- a/src/daemon/modules/image/image_rootfs_handler.c	2024-03-20 07:35:44.329203030 +0000
++++ b/src/daemon/modules/image/image_rootfs_handler.c	2024-03-20 07:35:52.044278500 +0000
 @@ -26,6 +26,7 @@
  #include <stdio.h>
  #include <stdlib.h>
@@ -197,23 +187,21 @@ index 1275658..e6a6392 100644
  
  #include "isula_libutils/log.h"
  #include "err_msg.h"
-diff --git a/src/daemon/modules/image/oci/storage/layer_store/layer_store.c b/src/daemon/modules/image/oci/storage/layer_store/layer_store.c
-index 4edd0ca..a284145 100644
---- a/src/daemon/modules/image/oci/storage/layer_store/layer_store.c
-+++ b/src/daemon/modules/image/oci/storage/layer_store/layer_store.c
-@@ -32,6 +32,7 @@
+diff -uprN a/src/daemon/modules/image/oci/storage/layer_store/layer_store.c b/src/daemon/modules/image/oci/storage/layer_store/layer_store.c
+--- a/src/daemon/modules/image/oci/storage/layer_store/layer_store.c	2024-03-20 07:35:44.332203060 +0000
++++ b/src/daemon/modules/image/oci/storage/layer_store/layer_store.c	2024-03-20 07:35:52.042278480 +0000
+@@ -30,6 +30,7 @@
+ #include <stdlib.h>
+ #include <string.h>
  #include <sys/stat.h>
- #include <archive.h>
- #include <archive_entry.h>
 +#include <unistd.h>
  
+ #include "util_archive.h"
  #include "storage.h"
- #include "layer.h"
-diff --git a/src/daemon/modules/service/io_handler.c b/src/daemon/modules/service/io_handler.c
-index 98c763a..e02279c 100644
---- a/src/daemon/modules/service/io_handler.c
-+++ b/src/daemon/modules/service/io_handler.c
-@@ -116,7 +116,6 @@ int create_daemon_fifos(const char *id, const char *runtime, bool attach_stdin,
+diff -uprN a/src/daemon/modules/service/io_handler.c b/src/daemon/modules/service/io_handler.c
+--- a/src/daemon/modules/service/io_handler.c	2024-03-20 07:35:44.334203079 +0000
++++ b/src/daemon/modules/service/io_handler.c	2024-03-20 07:35:52.044278500 +0000
+@@ -116,7 +116,6 @@ int create_daemon_fifos(const char *id,
      char subpath[PATH_MAX] = { 0 };
      char fifodir[PATH_MAX] = { 0 };
      struct timespec now;
@@ -221,7 +209,7 @@ index 98c763a..e02279c 100644
  
      nret = clock_gettime(CLOCK_REALTIME, &now);
      if (nret != 0) {
-@@ -124,15 +123,13 @@ int create_daemon_fifos(const char *id, const char *runtime, bool attach_stdin,
+@@ -124,15 +123,13 @@ int create_daemon_fifos(const char *id,
          goto cleanup;
      }
  
@@ -236,14 +224,13 @@ index 98c763a..e02279c 100644
 -    nret = snprintf(subpath, PATH_MAX, "%s/%s/%u_%u_%u", id, operation, (unsigned int)tid, (unsigned int)now.tv_sec,
 +    nret = snprintf(subpath, PATH_MAX, "%s/%s/%u_%u", id, operation,  (unsigned int)now.tv_sec,
                      (unsigned int)(now.tv_nsec));
-     if (nret >= PATH_MAX || nret < 0) {
+     if (nret < 0 || (size_t)nret >= PATH_MAX) {
          ERROR("Failed to print string");
-diff --git a/src/daemon/modules/service/service_container.c b/src/daemon/modules/service/service_container.c
-index d69ee75..1110269 100644
---- a/src/daemon/modules/service/service_container.c
-+++ b/src/daemon/modules/service/service_container.c
-@@ -2064,9 +2064,9 @@ static void exec_container_end(container_exec_response *response, uint32_t cc, i
-             ERROR("Failed to write eventfd: %s", strerror(errno));
+diff -uprN a/src/daemon/modules/service/service_container.c b/src/daemon/modules/service/service_container.c
+--- a/src/daemon/modules/service/service_container.c	2024-03-20 07:35:44.334203079 +0000
++++ b/src/daemon/modules/service/service_container.c	2024-03-20 07:35:52.044278500 +0000
+@@ -2163,9 +2163,9 @@ static void exec_container_end(container
+             SYSERROR("Failed to write eventfd");
          }
      }
 -    if (thread_id > 0) {
@@ -254,10 +241,10 @@ index d69ee75..1110269 100644
          }
      }
      if (sync_fd >= 0) {
-@@ -2137,7 +2137,7 @@ int exec_container(const container_t *cont, const container_exec_request *reques
+@@ -2247,7 +2247,7 @@ int exec_container(const container_t *co
      char *id = NULL;
-     char *fifos[3] = { NULL, NULL, NULL };
-     char *fifopath = NULL;
+     char *io_addresses[3] = { NULL, NULL, NULL };
+     char *iopath = NULL;
 -    pthread_t thread_id = 0;
 +    pthread_t thread_id = NULL;
      defs_process_user *puser = NULL;
