@@ -7,6 +7,7 @@ packagegroup-core-tools-debug \
 packagegroup-isulad \
 wpa-supplicant \
 i2c-soft \
+mcu-tool \
 v4l-utils \
 hostapd \
 hibot-user-driver \
