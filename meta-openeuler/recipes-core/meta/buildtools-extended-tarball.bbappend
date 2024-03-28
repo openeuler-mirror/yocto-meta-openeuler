@@ -73,8 +73,10 @@ TOOLCHAIN_HOST_TASK += " \
 "
 
 # linux-libc-headers need rsync command
+# binutils-dev for llvm toolchain build
 TOOLCHAIN_HOST_TASK += " \
     nativesdk-rsync \
+    nativesdk-binutils-dev \
 "
 
 # this a workaround: Currently, in the CI environment,
