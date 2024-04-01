@@ -78,4 +78,3 @@ set_permissions_from_rootfs:append() {
  
 IMAGE_FEATURES:append = " empty-root-password" 
 require recipes-core/images/openeuler-image-common.inc                                                                     
-

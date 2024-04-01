@@ -51,4 +51,3 @@ additional_populate_sysroot() {
 }                                                         
 
 FILES:${PN} += "/boot/*"
-

@@ -15,7 +15,7 @@ SRC_URI = "file://HiEuler-driver/firmware/${BP}.tar.gz \
 SRC_URI[md5sum] = "abb0e05dd2e719f094841790c81efa57"
 SRC_URI[sha256sum] = "01d9190755f752929c82bdf6b0e16868dc7a818666b84e1dbdfa4726f6bb2731"
 
-# overide LDFLAGS to fix compilation error: "aarch64-openeuler-linux-gnu-ld.bfd: unrecognized option '-Wl,-O1'"
+# override LDFLAGS to fix compilation error: "aarch64-openeuler-linux-gnu-ld.bfd: unrecognized option '-Wl,-O1'"
 # add --no-warn-rwx-segments to avoid: warning: <file> has a LOAD segment with RWX permissions
 export LDFLAGS=" --no-warn-rwx-segments "
 

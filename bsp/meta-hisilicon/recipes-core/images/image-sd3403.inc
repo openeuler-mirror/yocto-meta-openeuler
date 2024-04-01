@@ -3,8 +3,6 @@
 
 # all 3403 app and tools
 IMAGE_INSTALL += " \
-packagegroup-core-tools-debug \
-packagegroup-isulad \
 wpa-supplicant \
 i2c-soft \
 mcu-tool \

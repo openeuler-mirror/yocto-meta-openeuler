@@ -11,4 +11,3 @@ IMAGE_ROOTFS_SIZE = "387072"
 
 IMAGE_FSTYPES:remove = "iso"
 IMAGE_FSTYPES_DEBUGFS = "cpio.gz"
-

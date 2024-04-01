@@ -21,4 +21,3 @@ copy_928_distro() {
     set +x
 }
 IMAGE_POSTPROCESS_COMMAND += "copy_928_distro;"
-

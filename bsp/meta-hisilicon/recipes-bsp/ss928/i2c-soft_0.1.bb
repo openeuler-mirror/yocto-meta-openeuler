@@ -1,5 +1,5 @@
 SUMMARY = "soft i2c driver"
-LICENSE = "GPL"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://i2c_soft.c;beginline=373;endline=373;md5=787eb329e3eac3e58f47744d2cf33699"
 
 SRC_URI = " \
