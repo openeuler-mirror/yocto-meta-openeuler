@@ -40,6 +40,8 @@ if [ ${PYTHONPKGPATH#${OPENEULER_NATIVESDK_SYSROOT}} != "$PYTHONPKGPATH" ]; then
 
             # Install host python tools
             python3 -m pip install -r $OECORE_NATIVE_SYSROOT/environment-setup.d/requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+            # Fix nativesdk pytest=0.0.0 BUG, delete residual old version pytest from nativesdk
+            rm -rf ${OPENEULER_NATIVESDK_SYSROOT}/usr/lib/python3.*/site-packages/pytest-0.0*
             export CMAKE_TOOLCHAIN_FILE="$OECORE_NATIVE_SYSROOT/environment-setup.d/toolchain.cmake"
 	    # avoid pythonpath err in colcon
             sed -i 's%python_path.exists():%python_path.exists() and not (\"\%s\" \% python_path).startswith("/opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-linux/usr/lib"):%' ${OPENEULER_NATIVESDK_SYSROOT}/usr/lib/python3.*/site-packages/colcon_core/environment/pythonpath.py
