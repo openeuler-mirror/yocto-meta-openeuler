@@ -1,6 +1,6 @@
 require conf/machine/include/arm/armv8-2a/tune-cortexa55.inc
 MACHINE_FEATURES += "efi pci vc4graphics"
-MACHINEOVERRIDES =. "hi1711:march64le:"
+MACHINEOVERRIDES =. "hi3093:march64le:"
 DEFAULTTUNE = "aarch64"
 
 require conf/multilib.conf
@@ -14,7 +14,7 @@ KERNEL_IMAGETYPE = "zImage"
 # choose dtb file
 KERNEL_DEVICETREE = ""
 ENABLE_UART = "1"
-# serial port enabled in hi1711
+# serial port enabled in hi3093
 CMDLINE_SERIAL = "ttyS0,115200"
 SERIAL_CONSOLES = "115200;ttyS0"
 
