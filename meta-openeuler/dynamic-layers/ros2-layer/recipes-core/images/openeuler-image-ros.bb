@@ -4,6 +4,7 @@
 IMAGE_FSTYPES:append:aarch64 = " iso"
 IMAGE_FSTYPES:remove:raspberrypi4 = "iso"
 
+include recipes-core/images/image-early-config-${MACHINE}.inc
 # notice: IMAGE_FEATURE configs such as IMAGE_FSTYPES should be defined before openeuler-image-common.inc(before core-image and image.bbclass)
 require recipes-core/images/openeuler-image-common.inc
 

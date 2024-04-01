@@ -3,6 +3,7 @@ SUMMARY = "A small image just capable of allowing a device to boot."
 # no any image features to get minimum rootfs
 IMAGE_FEATURES = "empty-root-password"
 
+include recipes-core/images/image-early-config-${MACHINE}.inc
 require openeuler-image-common.inc
 
 # not build sdk
