@@ -23,3 +23,16 @@ ${@bb.utils.contains('MCS_FEATURES', 'zephyr', 'zephyr-image', '', d)} \
 RDEPENDS:${PN}:append:aarch64 = "\
 mcsctl \
 "
+
+# add openamp dev to sdk
+TOOLCHAIN_TARGET_TASK += " \
+openamp-dev \
+libmetal-dev \
+sysfsutils-dev \
+"
+# no support for riscv currently
+TOOLCHAIN_TARGET_TASK:remove:riscv64 = " \
+openamp-dev \
+libmetal-dev \
+sysfsutils-dev \
+"
