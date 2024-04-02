@@ -46,8 +46,6 @@ KBUILD_DEFCONFIG = "hisic3403_defconfig"
 do_compile:append(){
     mkimage -A arm64 -O linux -T kernel -C none -a 0x080000 -e 0x080000 -n "Linux-5.10.0" -d ${KERNEL_OUTPUT_DIR}/Image uImage-tmp
     oe_runmake dtbs
-    dtc -I dts -O dtb ${WORKDIR}/dtbs/ss928-pi.dts -o ${WORKDIR}/ss928-pi.dtb
-    cat uImage-tmp arch/arm64/boot/dts/vendor/ss928v100-demo.dtb > ${KERNEL_OUTPUT_DIR}/uImage-demo
     cat uImage-tmp ${WORKDIR}/ss928-pi.dtb > ${KERNEL_OUTPUT_DIR}/uImage-pi
 }
 
@@ -58,7 +56,6 @@ SYSROOT_DIRS += "/linux-img"
 FILES:${KERNEL_PACKAGE_NAME} += "/linux-img"
 do_install:append() {
         install -d ${D}/linux-img
-        install -m 0644 ${KERNEL_OUTPUT_DIR}/uImage-demo ${D}/linux-img/uImage-demo
         install -m 0644 ${KERNEL_OUTPUT_DIR}/uImage-pi ${D}/linux-img/uImage-pi
 }
 
