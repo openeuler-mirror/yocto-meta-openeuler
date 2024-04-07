@@ -8,7 +8,7 @@ function delete_dir() {
 function do_patch() {
 	pushd $1
 	if [ $1 = "isl" ];then
-		tar xf $1-0.24.tar.gz
+		tar xf *.tar.*
 	elif [ $1 = "zlib" ];then
 		tar xf *.tar.*
 	else
@@ -44,10 +44,10 @@ function download_and_patch() {
 function do_prepare() {
 	[ ! -d "$LIB_PATH" ] && mkdir $LIB_PATH
 	pushd $LIB_PATH
-	delete_dir $KERNEL $GCC $GLIBC $MUSLC $BINUTILS $GMP $MPC $MPFR $ISL $EXPAT $GETTEXT $NCURSES $ZLIB $LIBICONV $GDB
+	delete_dir $KERNEL $GCC $GLIBC $MUSLC $BINUTILS $GMP $MPC $MPFR $ISL $EXPAT $GETTEXT $NCURSES $ZLIB $LIBICONV $GDB $ZSTD
 	git clone -b $KERNEL_BRANCH https://gitee.com/openeuler/kernel.git --depth 1
 	git clone -b $MUSLC_BRANCH https://gitee.com/src-openeuler/musl.git --depth 1 && do_patch musl;
-	download_and_patch $GCC $GLIBC $BINUTILS $GMP $MPC $MPFR $ISL $EXPAT $NCURSES $ZLIB $GDB
+	download_and_patch $GCC $GLIBC $BINUTILS $GMP $MPC $MPFR $ISL $EXPAT $NCURSES $ZLIB $GDB $ZSTD
 	#LIBICONV and GETTEXT dir is need, but with no code, it will skip when ct-ng build under our openeuler env.
 	mkdir -p $LIB_PATH/$LIBICONV/$LIBICONV_DIR
 	mkdir -p $LIB_PATH/$GETTEXT/$GETTEXT_DIR
@@ -56,7 +56,7 @@ function do_prepare() {
 
 usage()
 {
-	echo -e "Tip: sh "$THIS_SCRIPT" <work_dir>\n"
+	echo -e "Tip: sh cross-tools/prepare.sh <work_dir>\n"
 }
 
 check_use()
