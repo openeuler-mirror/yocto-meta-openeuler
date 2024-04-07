@@ -41,3 +41,7 @@ bitbake编译命令-bitbake
   .. note:: 
 
       需要注意的是，oebuild每次在调起构建环境时，会自动在当前目录创建conf目录，该目录下包含local.conf和bblayers.conf两个配置文件，该两个文件是bitbake进行构件时必不可少的两个配置文件，前者是全局配置文件，后者是层解析配置文件，这两个文件的定制是会根据compile.yaml来修改的，但是如果已经产生了conf后再次修改compile.yaml，则不会再对conf有任何效果，如果想同步conf的内容，则在修改compile.yaml后同步删除conf，这样在检测到没有conf后oebuild会再次创建conf并同步修改相关配置文件。
+
+- 容器内openeuler用户和用户组问题
+
+    oebuild bitbake功能会将宿主机端需要共享的问题进行权限变更，对应的容器端默认用户openeuler的uid和gid也会和宿主机保持一致，而/opt文件夹和/usr1文件夹在容器的操作权限在容器构建之时权限已经默认给了uid和gid为1000的用户。而宿主机的uid和gid如果不是1000的话，会导致/opt和/usr1没有权限，故出现此类问题只需要将这两个文件夹的操作权限变更到对应openeuler用户下即可。
