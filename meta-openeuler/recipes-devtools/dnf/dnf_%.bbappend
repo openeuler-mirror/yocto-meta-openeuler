@@ -14,6 +14,9 @@ SRC_URI:prepend = " \
         file://get-lockfile-exists-before-unlick.patch \
 "
 
+# in oee, dnf is a prebuild-tool, so add the following patch when build nativesdk-dnf.
+SRC_URI:append:class-nativesdk = " file://0001-dnf-write-the-log-lock-to-root.patch"
+
 # add default repo
 SRC_URI:append:class-target = " \
     file://openEuler.repo \
