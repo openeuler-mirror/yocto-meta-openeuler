@@ -4,7 +4,7 @@
 openEuler Embedded使用与开发手册
 ===========================================
 
-openEuler Embedded是基于openEuler社区、面向嵌入式场景的版本，旨在成为一个高质量、开发的的以Linux为中心的综合嵌入式系统软件平台。
+openEuler Embedded是基于openEuler社区、面向嵌入式场景的版本，旨在成为一个高质量、开放的以Linux为中心的综合嵌入式系统软件平台。
 openEuler Embedded在内核版本、软件包版本等代码层面会与openEuler其他场景的Linux保持一致，共同演进，不同之处
 在于针对嵌入场景的内核配置、软件包的组合与配置、代码特性补丁、关键特性、构建流程等方面。
 
