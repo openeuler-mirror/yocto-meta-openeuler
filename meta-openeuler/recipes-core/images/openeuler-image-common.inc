@@ -84,6 +84,9 @@ set_permissions_from_rootfs() {
 
 IMAGE_PREPROCESS_COMMAND += "set_permissions_from_rootfs;"
 
+# no need to auto-start graphics, set multi-user by default
+SYSTEMD_DEFAULT_TARGET = "multi-user.target"
+
 # sdk configuration
 require recipes-core/images/openeuler-image-sdk.inc
 
