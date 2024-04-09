@@ -1,3 +1,5 @@
+inherit kernel-yocto
+
 # add recipes-kernel path to find patch and defconfig
 FILESEXTRAPATHS:append := "${THISDIR}/files/:"
 
@@ -7,6 +9,7 @@ DEPENDS += "u-boot-tools-native"
 SRC_URI = "file://kernel-5.10-tag928 \
     file://HiEuler-driver/linux/5.10.0-153.28.0.patch \
     file://dtbs/ss928-pi.dts \
+    file://meta-data;type=kmeta;destsuffix=meta-data \
 "
 
 # remove default patch
@@ -27,7 +30,7 @@ python do_fetch() {
 
     # download src-openeuler/kernel repo for patches
     d.setVar("OPENEULER_REPO_NAME", "kernel")
-    d.setVar("OPENEULER_LOCAL_NAME", 'src-kernel-5.10')
+    d.setVar("OPENEULER_LOCAL_NAME", 'src-kernel-5.10-tag928')
     bb.build.exec_func("do_openeuler_fetch", d)
 
     # download openeuler/kernel-5.10 repo for linux kernel src files
@@ -35,6 +38,38 @@ python do_fetch() {
     d.setVar("OPENEULER_LOCAL_NAME", 'kernel-5.10-tag928')
     bb.build.exec_func("do_openeuler_fetch", d)
 }
+
+## handling for kernel meta data
+# the original get_dirs_with_fragments will include OPENEULER_SP_DIR
+# so that all the files under OPENEULER_SP_DIR will be in the file-checksums
+# of do_kernel_metadata, which is not necessary
+def get_dirs_with_metadata(d):
+    extrapaths = []
+    extrafiles = []
+    extrapathsvalue = (d.getVar("FILESEXTRAPATHS") or "")
+
+    # Remove global openeuler src dir
+    openeuler_src_dir = d.getVar("OPENEULER_SP_DIR")
+    extrapathsvalue = extrapathsvalue.replace(openeuler_src_dir, "")
+
+    # Remove default flag which was used for checking
+    extrapathsvalue = extrapathsvalue.replace("__default:", "")
+    extrapaths = extrapathsvalue.split(":")
+
+    # add scc files
+    extrapaths += find_sccs(d)
+   
+    # add patches
+    extrapaths += find_patches(d, '')
+    for path in extrapaths:
+        if path and path + ":True" not in extrafiles:
+            extrafiles.append(path + ":" + str(os.path.exists(path)))
+
+    return " ".join(extrafiles)
+
+# override the original get_dirs_with_fragments in kernel-yocto.bbclass
+do_kernel_metadata[file-checksums] = "${@get_dirs_with_metadata(d)}"
+
 
 # no external defconfig
 OPENEULER_KERNEL_CONFIG = ""

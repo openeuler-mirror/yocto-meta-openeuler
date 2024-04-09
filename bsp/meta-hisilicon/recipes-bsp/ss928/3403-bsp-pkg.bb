@@ -7,8 +7,10 @@ DEPENDS = "update-rc.d-native"
 
 OPENEULER_LOCAL_NAME = "HiEuler-driver"
 
+RT_SUFFIX = "${@bb.utils.contains('DISTRO_FEATURES', 'preempt-rt', '-rt', '', d)}"
+
 SRC_URI = " \
-        file://HiEuler-driver/drivers/ko.tar.gz \
+        file://HiEuler-driver/drivers/ko${RT_SUFFIX}.tar.gz \
         file://HiEuler-driver/drivers/ko-extra.tar.gz \
         file://HiEuler-driver/drivers/btools \
         file://HiEuler-driver/drivers/S90AutoRun \
