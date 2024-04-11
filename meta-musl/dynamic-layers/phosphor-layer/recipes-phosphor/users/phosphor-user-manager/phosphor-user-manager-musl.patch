@@ -1,0 +1,156 @@
+diff -uprN a/Makefile.am b/Makefile.am
+--- a/Makefile.am	2024-04-01 16:50:38.010765362 +0800
++++ b/Makefile.am	2024-04-01 16:59:58.384370289 +0800
+@@ -1,9 +1,10 @@
+ bin_PROGRAMS = phosphor-user-manager
+ 
+-noinst_HEADERS = user_mgr.hpp users.hpp
++noinst_HEADERS = pwd_utils.hpp user_mgr.hpp users.hpp
+ 
+ phosphor_user_manager_SOURCES = \
+                 mainapp.cpp \
++		pwd_utils.cpp \
+                 user_mgr.cpp \
+                 users.cpp
+ 
+diff -uprN a/pwd_utils.cpp b/pwd_utils.cpp
+--- a/pwd_utils.cpp	1970-01-01 08:00:00.000000000 +0800
++++ b/pwd_utils.cpp	2024-04-01 16:59:58.384370289 +0800
+@@ -0,0 +1,102 @@
++/* some musl versions incorrectly mark fgetpwent() as a GNU extension */
++#include "pwd_utils.hpp"
++
++#include <assert.h>  /* assert */
++#include <errno.h>   /* ENOENT, ERANGE */
++#include <pthread.h> /* pthread_mutex_* */
++#include <pwd.h>     /* fgetpwent, getpwent, struct passwd */
++#include <stddef.h>  /* NULL, size_t */
++#include <stdio.h>   /* FILE */
++#include <string.h>  /* memcpy, stpcpy, strlcpy, strlen */
++
++
++namespace phosphor
++{
++namespace user
++{
++
++static pthread_mutex_t pwent_mutex = PTHREAD_MUTEX_INITIALIZER;
++
++static int __fgetpwent_r(FILE *stream, struct passwd *pwd, char *buf,
++                         size_t len, struct passwd **result)
++{
++	struct passwd *pwtmp;
++	char *cursor = buf, *end = buf + len;
++
++	*result = NULL;
++	pthread_mutex_lock(&pwent_mutex);
++	pwtmp = stream != NULL ? fgetpwent(stream) : getpwent();
++	if (pwtmp == NULL) {
++		pthread_mutex_unlock(&pwent_mutex);
++		return ENOENT;
++	}
++	memcpy(pwd, pwtmp, sizeof(*pwd));
++	if (pwtmp->pw_name != NULL) {
++		pwd->pw_name = cursor;
++		cursor += strlcpy(cursor, pwtmp->pw_name, end - cursor) + 1;
++		if (cursor > end) {
++			goto err_unlock;
++		}
++	}
++	if (pwtmp->pw_passwd != NULL) {
++		pwd->pw_passwd = cursor;
++		cursor += strlcpy(cursor, pwtmp->pw_passwd, end - cursor) + 1;
++		if (cursor > end) {
++			goto err_unlock;
++		}
++	}
++	if (pwtmp->pw_gecos != NULL) {
++		pwd->pw_gecos = cursor;
++		cursor += strlcpy(cursor, pwtmp->pw_gecos, end - cursor) + 1;
++		if (cursor > end) {
++			goto err_unlock;
++		}
++	}
++	if (pwtmp->pw_dir != NULL) {
++		pwd->pw_dir = cursor;
++		cursor += strlcpy(cursor, pwtmp->pw_dir, end - cursor) + 1;
++		if (cursor > end) {
++			goto err_unlock;
++		}
++	}
++	if (pwtmp->pw_shell != NULL) {
++		pwd->pw_shell = cursor;
++		cursor += strlcpy(cursor, pwtmp->pw_shell, end - cursor) + 1;
++		if (cursor > end) {
++			goto err_unlock;
++		}
++	}
++	pthread_mutex_unlock(&pwent_mutex);
++	*result = pwd;
++
++	return 0;
++
++err_unlock:
++	pthread_mutex_unlock(&pwent_mutex);
++	return ERANGE;
++}
++
++/**
++ * Get passwd file entry.
++ */
++int fgetpwent_r(FILE *stream, struct passwd *pwd, char *buf, size_t len,
++                struct passwd **result)
++{
++	assert(stream != NULL);
++
++	return __fgetpwent_r(stream, pwd, buf, len, result);
++}
++
++/**
++ * Get user database entry.
++ *
++ * LSB 5.0: LSB-Core-generic/baselib-getpwent-r-1.html
++ */
++int getpwent_r(struct passwd *pwd, char *buf, size_t len,
++               struct passwd **result)
++{
++	return __fgetpwent_r(NULL, pwd, buf, len, result);
++}
++
++} // namespace user
++} // namespace phosphor
+diff -uprN a/pwd_utils.hpp b/pwd_utils.hpp
+--- a/pwd_utils.hpp	1970-01-01 08:00:00.000000000 +0800
++++ b/pwd_utils.hpp	2024-04-01 16:59:58.384370289 +0800
+@@ -0,0 +1,20 @@
++#pragma once
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++#include <pwd.h>
++
++namespace phosphor
++{
++namespace user
++{
++
++int fgetpwent_r(FILE *, struct passwd *, char *, size_t , struct passwd **);
++
++} // namespace user
++} // namespace phosphor
++#ifdef __cplusplus
++}
++#endif
+diff -uprN a/user_mgr.cpp b/user_mgr.cpp
+--- a/user_mgr.cpp	2024-04-01 16:50:38.010765362 +0800
++++ b/user_mgr.cpp	2024-04-01 16:59:58.384370289 +0800
+@@ -21,6 +21,7 @@
+ #include "file.hpp"
+ #include "shadowlock.hpp"
+ #include "users.hpp"
++#include "pwd_utils.hpp"
+ 
+ #include <grp.h>
+ #include <pwd.h>
