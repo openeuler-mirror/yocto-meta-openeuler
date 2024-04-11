@@ -1,6 +1,12 @@
 # version in src-openEuler
-PV = "1.5.0"
+PV = "1.6.0"
 
 SRC_URI:prepend = " file://${BP}.tar.xz "
 
-SRC_URI[sha256sum] = "560f11c4bbbca10f495f3ef7d3a6aa4ca62b4f8fb0b52e7d459d18a26e46e017"
+SRC_URI[sha256sum] = "0edc14eccdd391514458bc5f5a4b99863ed2d651e4dd761a90abf4f46ef99c2b"
+
+# sync from 1.6.0 bb from openembedded
+inherit bash-completion
+BBCLASSEXTEND += "native"
+CVE_PRODUCT += "xkbcommon:libxkbcommon"
+

@@ -1,4 +1,4 @@
-PV = "0.69.0"
+PV = "0.70.2"
 # export CONFIG_SHELL="/bin/bash"
 
 # fix rpm install error, depends to /bin/bash
@@ -7,9 +7,17 @@ RDEPENDS:${PN}:append:class-target = " busybox"
 # add new patches from openeuler
 SRC_URI:prepend = " \
         file://${BP}.tar.gz                     \
-        file://backport-query-py-ensure-reldep-is-from-the-same-sack.patch \
         file://0001-libdnf-0.65.0-add-loongarch-support.patch \
+        file://backport-python-bindings-Load-all-modules-with-RTLD_GLOBAL.patch \
+        file://backport-Avoid-reinstalling-installonly-packages-marked-for-ERASE.patch \
+        file://backport-dnf-repo-do-not-download-repository-if-our-local-cache-is-up-to-date.patch \
+        file://backport-dnf-repo-Fix-utimes-error-messages.patch \
 "
+
+# remove poky conflict
+SRC_URI:remove = " \
+        file://0001-libdnf-dnf-context.cpp-do-not-try-to-access-BDB-data.patch \
+        "
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 

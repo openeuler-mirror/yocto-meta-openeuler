@@ -2,7 +2,7 @@
 
 OPENEULER_LOCAL_NAME = "libsigcpp20"
 
-PV = "2.12.0"
+PV = "2.12.1"
 
 SRC_URI += " \
         file://${OPENEULER_LOCAL_NAME}/libsigc++-${PV}.tar.xz \

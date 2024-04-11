@@ -1,5 +1,5 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-graphics/gphoto2/libgphoto2_2.5.27.bb
-PV = "2.5.18"
+PV = "2.5.31"
 
 # source change to openEuler
 SRC_URI:append = " \

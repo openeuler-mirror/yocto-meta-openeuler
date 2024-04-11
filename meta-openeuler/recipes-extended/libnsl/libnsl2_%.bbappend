@@ -1,7 +1,7 @@
 #main bbfile: yocto-poky/meta/recipes-extended/libnsl/libnsl2_git.bb
 
 #version in openEuler
-PV = "2.0.0"
+PV = "2.0.1"
 
 S = "${WORKDIR}/libnsl-${PV}"
 

@@ -1,6 +1,6 @@
 # main bb file: yocto-poky/meta/recipes-graphics/drm/libdrm_2.4.104.bb
 
-PV = "2.4.115"
+PV = "2.4.119"
 
 DEPENDS:remove = "libpthread-stubs"
 

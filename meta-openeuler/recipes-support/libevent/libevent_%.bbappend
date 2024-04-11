@@ -9,4 +9,8 @@ SRC_URI:prepend = " \
         file://add-testcases-for-event.c-apis.patch \
         file://0001-Revert-Fix-checking-return-value-of-the-evdns_base_r.patch \
         file://backport-ssl-do-not-trigger-EOF-if-some-data-had-been-successf.patch \
+        file://backport-http-eliminate-redundant-bev-fd-manipulating-and-cac.patch \
+        file://backport-http-fix-fd-leak-on-fd-reset-by-using-bufferevent_re.patch \
+        file://backport-bufferevent-introduce-bufferevent_replacefd-like-set.patch \
+        file://backport-evutil-don-t-call-memset-before-memcpy.patch \
         "

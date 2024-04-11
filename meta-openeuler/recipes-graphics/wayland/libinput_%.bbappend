@@ -1,6 +1,6 @@
 # the main bb file: yocto-poky/meta/recipes-graphics/wayland/libinput_1.19.4.bb
 
-PV="1.22.1"
+PV="1.24.0"
 
 # update license checksum
 LIC_FILES_CHKSUM = "file://COPYING;md5=bab4ac7dc1c10bc0fb037dc76c46ef8a"

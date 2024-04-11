@@ -1,5 +1,5 @@
 
-PV = "9.0.2"
+PV = "9.0.3"
 
 SRC_URI:prepend = "file://glu-${PV}.tar.xz \
            "

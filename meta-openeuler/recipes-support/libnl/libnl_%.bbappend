@@ -8,6 +8,7 @@ SRC_URI:remove = "file://enable-serial-tests.patch \
 SRC_URI:prepend = "file://${BP}.tar.gz \
            file://backport-prevent-segfault-in-af_request_type.patch \
            file://backport-fix-bridge-info-parsing.patch \
+           file://solve-redefinition-of-struct-ipv6_mreq.patch \
 "
 
 SRC_URI[md5sum] = "b381405afd14e466e35d29a112480333"

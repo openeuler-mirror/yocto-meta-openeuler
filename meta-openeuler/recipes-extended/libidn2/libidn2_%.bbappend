@@ -1,7 +1,7 @@
 # main bbfile: yocto-poky/meta/recipes-extended/libidn/libidn2_2.3.2.bb
 
 # version in openEuler
-PV = "2.3.3"
+PV = "2.3.4"
 
 # solve lic check failed
 LIC_FILES_CHKSUM:remove = " \

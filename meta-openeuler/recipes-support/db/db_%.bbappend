@@ -35,3 +35,4 @@ SRC_URI:append = "\
     file://fix-a-potential-infinite-loop.patch \
     file://db-5.3.28-sw.patch \
 "
+# conflict from openeuler:  support-clang-build.patch

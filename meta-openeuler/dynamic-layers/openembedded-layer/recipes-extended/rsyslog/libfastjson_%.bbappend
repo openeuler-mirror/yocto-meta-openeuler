@@ -1,8 +1,9 @@
 # main bbfile: meta-oe/recipes-extended/rsyslog/libfastjson_0.99.9.bb?h=hardknott
 
+PV = "1.2304.0"
+
 SRC_URI = " \
     file://${BP}.tar.gz \
-    file://backport-CVE-2020-12762.patch \
 "
 
 SRC_URI[md5sum] = "b4668f067145d4eb2a44433d5256f277"

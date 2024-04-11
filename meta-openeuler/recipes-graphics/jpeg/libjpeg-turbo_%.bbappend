@@ -2,7 +2,7 @@
 
 
 # version in openEuler
-PV = "3.0.0"
+PV = "3.0.1"
 
 # new lic checksumb
 LIC_FILES_CHKSUM = "file://LICENSE.md;md5=2a8e0d8226a102f07ab63ed7fd6ce155"
