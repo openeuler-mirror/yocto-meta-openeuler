@@ -19,4 +19,5 @@ SRC_URI:prepend = " \
     file://${BP}.tar.gz \
     file://0000-Use-RPM-compiler-options.patch \
     file://backport-disable-live-tests.patch \
+    file://backport-CVE-2024-25629.patch \
 "

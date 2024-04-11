@@ -14,6 +14,9 @@ S = "${WORKDIR}/dhcp-${DHCP_PV}/bind/bind-${PV}"
 SRC_URI:prepend = "file://dhcp-${DHCP_PV}.tar.gz;name=dhcp.tarball \
            file://backport-0025-bind-Detect-system-time-changes.patch;striplevel=3 \
            file://backport-Fix-CVE-2021-25220.patch;striplevel=3 \
+           file://backport-CVE-2022-2795.patch;striplevel=3 \
+           file://backport-CVE-2022-38177.patch;striplevel=3 \
+           file://backport-CVE-2022-38178.patch;striplevel=3 \
 "
 
 SRC_URI[dhcp.tarball.sha256sum] = "1a7ccd64a16e5e68f7b5e0f527fd07240a2892ea53fe245620f4f5f607004521"

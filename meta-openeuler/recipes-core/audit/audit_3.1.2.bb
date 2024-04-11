@@ -8,17 +8,17 @@ LICENSE = "GPL-2.0-or-later & LGPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://COPYING;md5=94d55d512a9ba36caa9b7df079bae19f"
 
 SRC_URI = "git://github.com/linux-audit/${BPN}-userspace.git;branch=master;protocol=https \
-           file://Fixed-swig-host-contamination-issue.patch \
-           file://0001-Replace-__attribute_malloc__-with-__attribute__-__ma.patch \
+           file://0001-Fixed-swig-host-contamination-issue.patch \
+           file://0002-Replace-__attribute_malloc__-with-__attribute__-__ma.patch \
            file://auditd \
            file://auditd.service \
            file://audit-volatile.conf \
 "
 
 S = "${WORKDIR}/git"
-SRCREV = "81fa28e0e8b4be83ddba03de8b816a3df510c17e"
+SRCREV = "572eb7d4fe926e7c1c52166d08e78af54877cbc5"
 
-inherit autotools python3native python3targetconfig update-rc.d systemd
+inherit autotools python3targetconfig update-rc.d systemd
 
 UPDATERCPN = "auditd"
 INITSCRIPT_NAME = "auditd"
@@ -74,11 +74,11 @@ CONFFILES:auditd = "${sysconfdir}/audit/audit.rules"
 
 do_configure:prepend() {
 	sed -e 's|buf\[];|buf[0];|g'  ${STAGING_INCDIR}/linux/audit.h > ${S}/lib/audit.h
-        sed -i -e 's|#include <linux/audit.h>|#include "audit.h"|g' ${S}/lib/libaudit.h
+	sed -i -e 's|#include <linux/audit.h>|#include "audit.h"|g' ${S}/lib/libaudit.h
 }
 
 do_install:append() {
-        sed -i -e 's|#include "audit.h"|#include <linux/audit.h>|g' ${D}${includedir}/libaudit.h
+	sed -i -e 's|#include "audit.h"|#include <linux/audit.h>|g' ${D}${includedir}/libaudit.h
 
 	rm -f ${D}/${libdir}/python${PYTHON_BASEVERSION}/site-packages/*.a
 	rm -f ${D}/${libdir}/python${PYTHON_BASEVERSION}/site-packages/*.la

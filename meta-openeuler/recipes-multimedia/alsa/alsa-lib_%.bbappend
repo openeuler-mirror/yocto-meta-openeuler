@@ -1,4 +1,4 @@
-PV = "1.2.9"
+PV = "1.2.10"
 
 SRC_URI:prepend = "file://${BP}.tar.bz2 "
 

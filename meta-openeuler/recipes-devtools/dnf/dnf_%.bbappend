@@ -12,6 +12,7 @@ SRC_URI:prepend = " \
         file://add-rpm-transaction-debuginfo.patch \
         file://fix-dnf-history-undo-error-when-history-sqlite-missing.patch \
         file://get-lockfile-exists-before-unlick.patch \
+        file://backport-Fix-bash-completion-due-to-sqlite-changes.patch \
 "
 
 # in oee, dnf is a prebuild-tool, so add the following patch when build nativesdk-dnf.

@@ -10,10 +10,10 @@ PV = "4.4.3"
 LIC_FILES_CHKSUM = "file://LICENSE;beginline=4;md5=613211e713c4ffc489ec370e1caceabb"
 
 # apply patches in openEuler
-# backport-0025-bind-Detect-system-time-changes.patch, backport-Fix-CVE-2021-25220.patch for bind
+# backport-0025-bind-Detect-system-time-changes.patch, backport-Fix-CVE-2021-25220.patch,
+# backport-CVE-2022-2795.patch, backport-CVE-2022-38177.patch, backport-CVE-2022-38178.patch for bind
 SRC_URI:prepend = " \
            file://${BP}.tar.gz \
-           file://backport-0001-change-bug-url.patch \
            file://backport-0002-additional-dhclient-options.patch \
            file://backport-0003-Handle-releasing-interfaces-requested-by-sbin-ifup.patch \
            file://backport-0004-Support-unicast-BOOTP-for-IBM-pSeries-systems-and-ma.patch \
@@ -48,10 +48,11 @@ SRC_URI:prepend = " \
            file://fix-coredump-when-client-active-is-NULL.patch \
            file://feature-lease-time-config-ipv6.patch \
            file://add-a-test-case-to-parse-code93-in-option_unittest.patch \
-           file://bugfix-error-message-display.patch \
            file://backport-Fix-CVE-2022-2928.patch \
            file://backport-Fix-CVE-2022-2929.patch \
            file://Revert-correcting-the-logic-in-dhclient.patch \
+           file://IAID-is-output-has-hexe-if-it-contains-or.patch \
+           file://support-for-building-with-clang.patch \
 "
 
 SRC_URI[md5sum] = "9076af4cc1293dde5a7c6cae7de6ab45"

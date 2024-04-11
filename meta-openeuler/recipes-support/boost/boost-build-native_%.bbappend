@@ -2,12 +2,13 @@
 
 OPENEULER_REPO_NAME = "boost"
 
-PV = "1.81.0"
+PV = "1.83.0"
+
+BOOST_VER = "${@"_".join(d.getVar("PV").split("."))}"
+BOOST_P = "boost_${BOOST_VER}"
 
 SRC_URI:prepend = " \
-        file://boost_1_81_0.tar.gz \
+        file://${BOOST_P}.tar.gz \
 "
 
-SRC_URI[sha256sum] = "205666dea9f6a7cfed87c7a6dfbeb52a2c1b9de55712c9c1a87735d7181452b6"
-
-S = "${WORKDIR}/boost_1_81_0/tools/build"
+S = "${WORKDIR}/${BOOST_P}/tools/build"

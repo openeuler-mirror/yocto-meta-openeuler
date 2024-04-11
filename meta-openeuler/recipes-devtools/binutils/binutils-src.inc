@@ -1,5 +1,4 @@
-
-PV = "2.40"
+PV = "2.41"
 S = "${WORKDIR}/${BP}"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
@@ -7,6 +6,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 # apply package source and patches from openeuler
 SRC_URI = " \
     file://${BP}.tar.xz \
+    file://X86-Change-fpic-to-fPIC-in-PICFLAG.patch \
     file://binutils-libtool-lib64.patch \
     file://binutils-export-demangle.h.patch \
     file://binutils-no-config-h-check.patch \
@@ -14,11 +14,7 @@ SRC_URI = " \
     file://binutils-special-sections-in-groups.patch \
     file://binutils-gold-mismatched-section-flags.patch \
     file://binutils-update-linker-manual.patch \
-    file://binutils-objcopy-note-merge-speedup.patch \
-    file://binutils-reloc-symtab.patch \
-    file://binutils-CVE-2023-1972.patch \
     file://binutils-gold-empty-dwp.patch \
-    file://0001-X86-Change-fpic-to-fPIC-in-PICFLAG.patch \
 "
 
 # apply used patches from poky
@@ -26,10 +22,9 @@ SRC_URI += " \
     file://0005-Point-scripts-location-to-libdir.patch \
 "
 
-SRC_URI[sha256sum] = "820d9724f020a3e69cb337893a0b63c2db161dadcb0e06fc11dc29eb1e84a32c"
+SRC_URI[sha256sum] = "ae9a5789e23459e59606e6714723f2d3ffc31c03174191ef0d015bdf06007450"
 
 # openeuler configuration
-
 # We do not need gprofng now, if required, enable it in the future
 EXTRA_OECONF:append = " \
     --enable-gprofng=no \

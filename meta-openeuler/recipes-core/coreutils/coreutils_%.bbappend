@@ -1,8 +1,6 @@
-# main bbfile: yocto-poky/meta/recipes-core/coreutils/coreutils_8.32.bb
-
-
+# main bbfile: yocto-poky/meta/recipes-core/coreutils/coreutils_9.0.bb
 # version in openEuler
-PV = "9.3"
+PV = "9.4"
 
 # solve lic check failed
 LIC_FILES_CHKSUM:remove = " \
@@ -31,14 +29,11 @@ SRC_URI:prepend = " \
         file://bugfix-dummy_help2man.patch \
         file://skip-the-tests-that-require-selinux-if-selinux-is-di.patch \
         file://backport-config-color-alias-for-ls.patch \
+        file://backport-coreutils-df-direct.patch \
         file://backport-coreutils-i18n.patch \
-        file://backport-pr-fix-infinite-loop-when-double-spacing.patch \
-"  
+        file://backport-CVE-2024-0684-split-do-not-shrink-hold-buffer.patch \
+        file://test-skip-overlay-filesystem-because-of-no-inotify_add_watch.patch \
+        file://fix-coredump-if-enable-systemd.patch \
+"
 
-# patch from coreutils-9.3
-FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}/:"
-SRC_URI:append = " \
-           file://stdlib-mb-cur-max.patch \
-           "
-
-SRC_URI[sha256sum] = "ce30acdf4a41bc5bb30dd955e9eaa75fa216b4e3deb08889ed32433c7b3b97ce"
+SRC_URI[sha256sum] = "ea613a4cf44612326e917201bbbcdfbd301de21ffc3b59b6e5c07e040b275e52"

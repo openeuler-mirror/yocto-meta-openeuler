@@ -1,7 +1,11 @@
 # apply openeuler source package
 OPENEULER_REPO_NAME = "bluez"
 
-PV = "5.54"
+PV = "5.71"
+
+LIC_FILES_CHKSUM = "file://COPYING;md5=12f884d2ae1ff87c09e5b7ccc2c4ca7e \
+                    file://COPYING.LIB;md5=fb504b67c50331fc78734fed90fb0e09 \
+                    file://src/main.c;beginline=1;endline=24;md5=0ad83ca0dc37ab08af448777c581e7ac"
 
 # these two patches fix CVE-2021-0129 and CVE-2021-3658, which isn't suitable version 5.54
 # openeuler package has another patches to fix these cves.
@@ -12,29 +16,22 @@ SRC_URI:remove = "\
 
 SRC_URI:prepend = "\
     file://bluez-${PV}.tar.xz \
-    file://0001-obex-Use-GLib-helper-function-to-manipulate-paths.patch \
-    file://0001-build-Always-define-confdir-and-statedir.patch \
-    file://0002-systemd-Add-PrivateTmp-and-NoNewPrivileges-options.patch \
-    file://0003-systemd-Add-more-filesystem-lockdown.patch \
-    file://0004-systemd-More-lockdown.patch \
-    file://backport-CVE-2021-3588.patch \
     file://backport-bluez-disable-test-mesh-crypto.patch \
-    file://backport-media-rename-local-function-conflicting-with-pause-2.patch \
-    file://backport-CVE-2020-27153.patch \
-    file://backport-0001-CVE-2021-3658.patch \
-    file://backport-0002-CVE-2021-3658.patch \
-    file://backport-CVE-2021-43400.patch \
-    file://backport-0001-CVE-2021-0129.patch \
-    file://backport-0002-CVE-2021-0129.patch \
-    file://backport-0003-CVE-2021-0129.patch \
-    file://backport-0004-CVE-2021-0129.patch \
-    file://backport-CVE-2022-0204.patch \
-    file://backport-CVE-2021-41229.patch \
-    file://backport-CVE-2022-39176.patch \
-    file://backport-0001-CVE-2022-39177.patch \
-    file://backport-0002-CVE-2022-39177.patch \
-    file://backport-CVE-2023-27349.patch \
 "
+# From bluez5_5.72
+EXTRA_OECONF += "--enable-pie"
+do_install:append() {
+	install -d ${D}${INIT_D_DIR}
+	install -m 0755 ${WORKDIR}/init ${D}${INIT_D_DIR}/bluetooth
+
+	install -d ${D}${sysconfdir}/bluetooth/
+	if [ -f ${S}/profiles/network/network.conf ]; then
+		install -m 0644 ${S}/profiles/network/network.conf ${D}/${sysconfdir}/bluetooth/
+	fi
+	if [ -f ${S}/profiles/input/input.conf ]; then
+		install -m 0644 ${S}/profiles/input/input.conf ${D}/${sysconfdir}/bluetooth/
+	fi
+}
 
 # openeuler do not has udev package, which is not necessary for bluez
 # so remove it.
@@ -46,4 +43,4 @@ RDEPENDS:${PN}-testtools:openeuler-prebuilt = ""
 # adapte md5 checksum
 LIC_FILES_CHKSUM = "file://COPYING;md5=12f884d2ae1ff87c09e5b7ccc2c4ca7e \
                     file://COPYING.LIB;md5=fb504b67c50331fc78734fed90fb0e09 \
-                    file://src/main.c;beginline=1;endline=24;md5=9bc54b93cd7e17bf03f52513f39f926e"
+                    file://src/main.c;beginline=1;endline=24;md5=0ad83ca0dc37ab08af448777c581e7ac"

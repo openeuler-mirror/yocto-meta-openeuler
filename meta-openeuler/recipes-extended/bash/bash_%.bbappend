@@ -23,6 +23,10 @@ SRC_URI:prepend = " \
            file://bugfix-Forbidden-non-root-user-to-clear-history.patch \
            file://enable-dot-logout-and-source-bashrc-through-ssh.patch \
            file://cd-alias.patch \
+           file://bash-5.1-sw.patch \
+           file://backport-fix-for-nofork-comsub-command-printing-fix-for-crash.patch \
+           file://backport-fix-small-memleak-in-globbing.patch \
+           file://backport-fix-for-leak-when-completing-command-word-with-glob-.patch \
 "
 
 SRC_URI[tarball.sha256sum] = "13720965b5f4fc3a0d4b61dd37e7565c741da9a5be24edc2ae00182fc1b3588c"

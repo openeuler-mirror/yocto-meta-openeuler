@@ -1,5 +1,5 @@
 # openeuler version
-PV = "2.28.4"
+PV = "2.30.0"
 
 # setting openeuler name
 OPENEULER_REPO_NAME = "SDL2"
@@ -8,7 +8,7 @@ OPENEULER_REPO_NAME = "SDL2"
 LIC_FILES_CHKSUM:remove = "file://LICENSE.txt;md5=68a088513da90254b2fbe664f42af315"
 
 # add openeuler license
-LIC_FILES_CHKSUM:append = "file://LICENSE.txt;md5=31f575634fd56b27fc6b6cbe8dc9bd38"
+LIC_FILES_CHKSUM:append = "file://LICENSE.txt;md5=25231a5b96ccdd8f39eb53c07717be64"
 
 # remove 2.0.20.bb SRC_URI
 SRC_URI:remove = "\

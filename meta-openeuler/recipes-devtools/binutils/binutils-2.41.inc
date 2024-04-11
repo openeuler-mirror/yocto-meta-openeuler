@@ -12,13 +12,13 @@ LIC_FILES_CHKSUM="\
 
 # When upgrading to 2.41, please make sure there is no trailing .0, so
 # that upstream version check can work correctly.
-PV = "2.40"
-CVE_VERSION = "2.40"
-SRCBRANCH ?= "binutils-2_40-branch"
+PV = "2.41"
+CVE_VERSION = "2.41"
+SRCBRANCH ?= "binutils-2_41-branch"
 
 UPSTREAM_CHECK_GITTAGREGEX = "binutils-(?P<pver>\d+_(\d_?)*)"
 
-SRCREV ?= "4671be001eb5a899ecac3e2686a92934000f8262"
+SRCREV ?= "e13f70c7fcb2f4a39ddad4ccb83660dbfee2caeb"
 BINUTILS_GIT_URI ?= "git://sourceware.org/git/binutils-gdb.git;branch=${SRCBRANCH};protocol=https"
 SRC_URI = "\
      ${BINUTILS_GIT_URI} \
@@ -32,9 +32,7 @@ SRC_URI = "\
      file://0011-Check-for-clang-before-checking-gcc-version.patch \
      file://0012-Only-generate-an-RPATH-entry-if-LD_RUN_PATH-is-not-e.patch \
      file://0013-Define-alignof-using-_Alignof-when-using-C11-or-newe.patch \
-     file://0015-Remove-duplicate-pe-dll.o-entry-deom-targ_extra_ofil.patch \
-     file://0016-CVE-2023-25586.patch \
-     file://fix-time64.patch \
-     file://0001-Fix-an-illegal-memory-access-when-an-accessing-a-zer.patch \
+     file://0014-Remove-duplicate-pe-dll.o-entry-deom-targ_extra_ofil.patch \
+     file://0015-gprofng-Fix-build-with-64bit-file-offset-on-32bit-ma.patch \
 "
 S  = "${WORKDIR}/git"
