@@ -13,6 +13,8 @@ SRC_URI:prepend = " \
         file://CVE-2022-0561_and_CVE-2022-0562.patch \
         file://CVE-2022-0908.patch \
         file://0001-Use-the-one-argument-version-of-SetTotalBytesLimit.patch \
+        file://Merge-pull-request-21114-from-dwardor-patch-1.patch \
+        file://calib3d-use-OCV_LAPACK_FUNC.patch \
         "
 
 # remove openembedded conflict patches

@@ -1,11 +1,8 @@
 OPENEULER_REPO_NAME = "mesa"
 
-PV = "23.1.3"
+PV = "23.3.1"
 
 SRC_URI:prepend = "file://mesa-${PV}.tar.xz \
            file://backport-fix-build-err-on-arm.patch \
-           file://0001-evergreen-big-endian.patch \
-           file://llvmpipe-add-an-implementation-with-llvm-orcjit.patch \
-           file://llvmpipe-add-riscv-support-in-orcjit.patch \
-           file://llvmpipe-make-unnamed-global-have-internal-linkage.patch \
            "
+

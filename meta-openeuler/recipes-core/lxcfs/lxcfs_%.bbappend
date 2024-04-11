@@ -15,6 +15,7 @@ SRC_URI = " \
         file://0013-enable-cfs-option-to-show-correct-proc-cpuinfo-view.patch \
         file://0014-fix-pidfd_open-pidfd_send_signal-function-compilatio.patch \
         file://0015-adapt-meson-build-install.patch \
+        file://0016-typofix-fix-incorrect-printing-in-lxcfs-help-interfa.patch \
 "
 
 SRC_URI:append = " \
