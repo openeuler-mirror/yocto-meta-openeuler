@@ -82,15 +82,15 @@ autotools-brokensep 类。autotools-brokensep 类的行为与 autotools\*
 
 了解由 autotools\* 类定义的任务如何工作以及它们在幕后做了什么是有用的。
 
--  do_configure — 重新生成 configure 脚本（使用
+- do_configure — 重新生成 configure 脚本（使用
    autoreconf），然后使用交叉编译期间使用的标准参数集启动它。您可以通过
    EXTRA_OECONF 或 PACKAGECONFIG_CONFARGS 变量向 configure
    传递额外参数。
 
--  do_compile — 运行 make 命令，并指定编译器和链接器的参数。您可以通过
+- do_compile — 运行 make 命令，并指定编译器和链接器的参数。您可以通过
    EXTRA_OEMAKE 变量传递额外的参数。
 
--  do_install — 运行 make install 命令，并将 ${D} 作为 DESTDIR
+- do_install — 运行 make install 命令，并将 ${D} 作为 DESTDIR
    传递进去。
 
 5.4 base 类
@@ -305,10 +305,10 @@ cpan\* 类支持 Perl 模块。
 Perl
 模块的配方非常简单。这些配方通常只需要指向源文件的存档，然后继承适当的类文件。构建分为两种方法，具体取决于模块作者使用的方法。
 
--  使用旧的基于 Makefile.PL 的构建系统的模块需要在它们的配方中使用
+- 使用旧的基于 Makefile.PL 的构建系统的模块需要在它们的配方中使用
    cpan.bbclass。
 
--  使用基于 Build.PL 的构建系统的模块需要在它们的配方中使用
+- 使用基于 Build.PL 的构建系统的模块需要在它们的配方中使用
    cpan_build.bbclass。
 
 这两种构建方法都继承 cpan-base 类以提供基本的 Perl 支持。
@@ -426,9 +426,9 @@ dtsi文件以及C头文件，如gpio.h。
 
 do_compile任务将编译两种类型的文件：
 
--  带有.dts扩展名的常规设备树源文件。
+- 带有.dts扩展名的常规设备树源文件。
 
--  检测到文件内容中存在/plugin/;字符串的设备树覆盖层。
+- 检测到文件内容中存在/plugin/;字符串的设备树覆盖层。
 
 该类将生成的设备树二进制部署到\ *${DEPLOY_DIR_IMAGE}/devicetree/*\ 中。这与kernel-devicetree类所做的类似，添加了devicetree子目录以避免名称冲突。此外，设备树被填充到sysroot中，以便通过sysroot从其他配方中访问。
 
@@ -555,23 +555,23 @@ features_check类允许各个配方检查所需的和冲突的DISTRO_FEATURES、
 
 该类支持以下变量：
 
--  REQUIRED_DISTRO_FEATURES
+- REQUIRED_DISTRO_FEATURES
 
--  CONFLICT_DISTRO_FEATURES
+- CONFLICT_DISTRO_FEATURES
 
--  ANY_OF_DISTRO_FEATURES
+- ANY_OF_DISTRO_FEATURES
 
--  REQUIRED_MACHINE_FEATURES
+- REQUIRED_MACHINE_FEATURES
 
--  CONFLICT_MACHINE_FEATURES
+- CONFLICT_MACHINE_FEATURES
 
--  ANY_OF_MACHINE_FEATURES
+- ANY_OF_MACHINE_FEATURES
 
--  REQUIRED_COMBINED_FEATURES
+- REQUIRED_COMBINED_FEATURES
 
--  CONFLICT_COMBINED_FEATURES
+- CONFLICT_COMBINED_FEATURES
 
--  ANY_OF_COMBINED_FEATURES
+- ANY_OF_COMBINED_FEATURES
 
 如果配方中使用上述变量指定的任何条件不满足，则配方将被跳过，如果构建系统尝试构建配方，则会触发错误。
 
@@ -604,3 +604,636 @@ gettext国际化和本地化系统的软件的构建支持。所有使用gettext
 对于从github获取发布tarball的配方，github-releases类为检查可用上游版本（以支持devtool升级和自动升级助手（AUH））提供了一种标准方法。
 
 要使用它，请在配方的inherit行中添加“github-releases”，如果GITHUB_BASE_URI的默认值不合适，则在配方中设置自己的值。然后，您应该在配方中设置SRC_URI的值时使用${GITHUB_BASE_URI}。
+
+5.43 gnomebase类
+=================
+
+gnomebase类是用于从GNOME堆栈构建软件的配方的基本类。该类将SRC_URI设置为从GNOME镜像下载源代码，并使用典型的GNOME安装路径扩展FILES。
+
+5.44 go类
+==========
+
+go类支持构建Go程序。该类的行为由必需的GO_IMPORT变量控制，并由可选的GO_INSTALL和GO_INSTALL_FILTEROUT变量控制。
+
+要使用Yocto
+Project构建一个Go程序，您可以使用\ `go-helloworld_0.1.bb <https://git.yoctoproject.org/poky/tree/meta/recipes-extended/go-examples/go-helloworld_0.1.bb>`__\ 配方作为示例。
+
+5.45 go-mod类
+==============
+
+go-mod类允许使用Go模块，并继承go类。
+
+请参阅相关的\ `GO_WORKDIR <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-GO_WORKDIR>`__\ 变量。
+
+5.46 gobject-introspection类
+==============================
+
+提供支持构建支持GObject内省的软件的配方。只有在“gobject-introspection-data”功能也在DISTRO_FEATURES中，并且“qemu-usermode”也在MACHINE_FEATURES中时，此功能才启用。
+
+.. note::
+
+   默认情况下，此功能通过backfill实现，如果不适用，则应分别通过DISTRO_FEATURES_BACKFILL_CONSIDERED或MACHINE_FEATURES_BACKFILL_CONSIDERED禁用。
+
+5.47 grub-efi类
+=================
+
+grub-efi类提供了用于构建可引导映像的特定于grub-efi的功能。
+
+该类支持以下变量：
+
+`INITRD <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-INITRD>`__\ ：指示要连接并用作初始RAM磁盘（initrd）的文件系统映像列表（可选）。
+
+`ROOTFS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-ROOTFS>`__\ ：指示要包含作为根文件系统的映像（可选）。
+
+`GRUB_GFXSERIAL <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-GRUB_GFXSERIAL>`__\ ：将其设置为“1”以在启动菜单中具有图形和串行功能。
+
+`LABELS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-LABELS>`__\ ：自动配置的目标列表。
+
+`APPEND <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-APPEND>`__\ ：每个LABEL的附加字符串覆盖列表。
+
+`GRUB_OPTS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-GRUB_OPTS>`__\ ：要添加到配置中的其他选项（可选）。选项使用分号字符（；）分隔。
+
+`GRUB_TIMEOUT <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-GRUB_TIMEOUT>`__\ ：执行默认LABEL之前的超时时间（可选）。
+
+5.48 gsettings类
+==================
+
+gsettings类为需要安装GSettings（glib）模式的配方提供了通用功能。这些模式被认为是主包的一部分。在目标映像中注册和解注册模式时，会添加适当的后安装和后删除（postinst/postrm）脚本片段。
+
+5.49 gtk-doc类
+================
+
+gtk-doc类是一个帮助类，用于拉入适当的gtk-doc依赖项并禁用gtk-doc。
+
+5.50 gtk-icon-cache类
+========================
+
+gtk-icon-cache类为使用GTK+并安装图标的包生成适当的后安装和后删除（postinst/postrm）脚本片段。这些脚本片段调用gtk-update-icon-cache将字体添加到GTK+的图标缓存中。由于缓存文件是特定于架构的，因此如果需要在映像创建期间在构建主机上运行postinst脚本片段，则使用QEMU运行gtk-update-icon-cache。
+
+5.51 gtk-immodules-cache类
+=============================
+
+gtk-immodules-cache类为安装虚拟键盘的GTK+输入法模块的包生成适当的后安装和后删除（postinst/postrm）脚本片段。这些脚本片段调用gtk-update-icon-cache将输入法模块添加到缓存中。由于缓存文件是特定于架构的，因此如果需要在映像创建期间在构建主机上运行postinst脚本片段，则使用QEMU运行gtk-update-icon-cache。
+
+如果正在安装的输入法模块位于主包之外的其他包中，请设置\ `GTKIMMODULES_PACKAGES <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-GTKIMMODULES_PACKAGES>`__\ 以指定包含模块的包。
+
+5.52 gzipnative类
+===================
+
+gzipnative类允许使用不同版本的本地gzip和pigz，而不是从构建主机中获取这些工具的版本。
+
+5.53 icecc类
+==============
+
+icecc类支持Icecream，它有助于将编译工作分配给远程机器。
+
+该类为本地和交叉编译器创建带有指向icecc的符号链接的目录。根据每个配置或编译，OpenEmbedded构建系统将目录添加到PATH列表的开头，然后设置ICECC_CXX和ICECC_CC变量，这些变量分别是g++和gcc编译器的路径。
+
+对于交叉编译器，该类创建一个包含Yocto
+Project工具链的tar.gz文件，并相应地设置ICECC_VERSION，这是交叉开发工具链中使用的交叉编译器版本。
+
+该类处理所有三个不同的编译阶段（即本地、交叉内核和目标）并创建必要的环境tar.gz文件以供远程机器使用。该类还支持SDK生成。
+
+如果在您的local.conf文件中未设置ICECC_PATH，则该类尝试使用which定位icecc二进制文件。如果在您的local.conf文件中设置了ICECC_ENV_EXEC，则该变量应指向用户提供的icecc-create-env脚本。如果您不指向用户提供的脚本，则构建系统使用配方icecc-create-env_0.1.bb中提供的默认脚本。
+
+.. note::
+
+   这是一个修改后的版本，而不是与icecream一起提供的脚本。
+
+如果您不希望Icecream分布式编译支持应用于特定配方或类，则可以在local.conf文件中使用ICECC_RECIPE_DISABLE和ICECC_CLASS_DISABLE变量分别列出这些配方和类，以使OpenEmbedded构建系统在本地处理这些编译。
+
+此外，您可以在local.conf文件中使用ICECC_RECIPE_ENABLE变量列出配方，以强制启用具有空PARALLEL_MAKE变量的配方的icecc。
+
+继承icecc类会更改所有sstate签名。因此，如果开发团队拥有一个填充SSTATE_MIRRORS的专用构建系统，并且他们希望重用来自SSTATE_MIRRORS的sstate，那么所有开发人员和构建系统都需要要么继承icecc类，要么都不继承。
+
+在发行级别上，您可以继承icecc类以确保所有构建者都从相同的sstate签名开始。在继承类之后，您可以通过以下方式禁用功能：
+
+::
+
+   INHERIT_DISTRO:append = " icecc"
+   ICECC_DISABLED ??= "1"
+
+这种做法确保每个人都使用相同的签名，但还需要那些确实想使用Icecream的人单独启用该功能，如下所示在local.conf文件中：
+
+::
+
+   ICECC_DISABLED = ""
+
+5.54 image类
+==============
+
+image类帮助支持创建不同格式的图像。首先，使用rootfs*.bbclass文件之一（取决于使用的包格式）从包中创建根文件系统，然后创建一个或多个图像文件。
+
+- IMAGE_FSTYPES变量控制要生成的图像类型。
+
+- IMAGE_INSTALL变量控制要安装到图像中的软件包列表。
+
+有关自定义图像的信息，请参阅Yocto
+Project开发任务手册中的“\ `自定义图像 <https://docs.yoctoproject.org/4.0.17/dev-manual/customizing-images.html#customizing-images>`__\ ”部分。有关如何创建图像的信息，请参阅Yocto
+Project概述和概念手册中的“图像”部分。
+
+5.55 image-buildinfo类
+========================
+
+image-buildinfo类默认将包含构建信息的纯文本文件写入目标文件系统的\ *${sysconfdir}/buildinfo*\ （由IMAGE_BUILDINFO_FILE指定）。这可以用于手动确定任何给定图像的来源。它输出两个部分：
+
+1. Build Configuration:
+   变量及其值的列表（由IMAGE_BUILDINFO_VARS指定，默认为DISTRO和DISTRO_VERSION）
+
+2. Layer Revisions: 构建中使用的所有层的修订版本。
+
+此外，在构建SDK时，它将默认将相同的内容写入/buildinfo（由SDK_BUILDINFO_FILE指定）。
+
+5.56 image_types类
+=====================
+
+image_types类定义了您可以通过IMAGE_FSTYPES变量启用的所有标准图像输出类型。您可以使用此类作为如何添加对自定义图像输出类型的支持的参考。
+
+默认情况下，image类会自动启用image_types类。image类使用IMGCLASSES变量如下：
+
+::
+
+   IMGCLASSES = "rootfs_${IMAGE_PKGTYPE} image_types ${IMAGE_CLASSES}"
+   IMGCLASSES += "${@['populate_sdk_base', 'populate_sdk_ext']['linux' in d.getVar("SDK_OS")]}"
+   IMGCLASSES += "${@bb.utils.contains_any('IMAGE_FSTYPES', 'live iso hddimg', 'image-live', '', d)}"
+   IMGCLASSES += "${@bb.utils.contains('IMAGE_FSTYPES', 'container', 'image-container', '', d)}"
+   IMGCLASSES += "image_types_wic"
+   IMGCLASSES += "rootfs-postcommands"
+   IMGCLASSES += "image-postinst-intercepts"
+   inherit ${IMGCLASSES}
+
+image_types类还处理图像的转换和压缩。
+
+.. note::
+
+   要构建VMware
+   VMDK图像，需要将“wic.vmdk”添加到IMAGE_FSTYPES中。对于Virtual Box
+   Virtual Disk Image（“vdi”）和QEMU Copy On Write Version
+   2（“qcow2”）图像也是如此。
+
+5.57 image-live类
+===================
+
+这个类控制构建“实时”（即HDDIMG和ISO）图像。实时图像包含用于传统引导的syslinux，以及如果MACHINE_FEATURES包含“efi”时由EFI_PROVIDER指定的引导程序。
+
+通常，您不会直接使用此类。相反，您将“live”添加到IMAGE_FSTYPES中。
+
+5.58 insane类
+===============
+
+insane类在包生成过程中添加了一个步骤，以便OpenEmbedded构建系统生成输出质量保证检查。执行一系列检查，检查构建的输出中常见的运行时问题。分发策略通常决定是否包含此类。
+
+您可以配置这些检查，使特定的测试失败引发警告或错误消息。通常，新测试的失败会生成警告。当元数据处于已知且良好状态时，随后对同一测试的失败将生成错误消息。请参阅“QA错误和警告消息”一章，了解使用默认配置时可能会遇到的警告和错误消息列表。
+
+使用WARN_QA和ERROR_QA变量来控制这些检查的行为（即在您的自定义发行版配置中）。然而，要在配方中跳过一个或多个检查，您应该使用INSANE_SKIP。例如，要跳过配方主包中符号链接.so文件的检查，请在配方中添加以下内容。您需要意识到，在此示例中必须使用包名覆盖${PN}：
+
+::
+
+   INSANE_SKIP:${PN} += "dev-so"
+
+请注意，QA检查的目的是检测包输出中的实际或潜在问题。因此，在禁用这些检查时要谨慎。
+
+以下是您可以使用WARN_QA和ERROR_QA变量列出的测试：
+
+- already-stripped：检查生成的二进制文件是否在构建系统提取调试符号之前已经被剥离。上游软件项目的常见做法是默认剥离输出二进制文件的调试符号。为了使用-dbg包在目标上进行调试，必须禁用此剥离。
+
+- arch：检查任何二进制文件的可执行和可链接格式（ELF）类型、位大小和字节顺序，以确保它们与目标架构匹配。如果有任何二进制文件不匹配该类型，则此测试将失败，因为存在不兼容。该测试可能表明使用了错误的编译器或编译器选项。有时，像引导加载程序这样的软件可能需要绕过此检查。
+
+- buildpaths：检查输出文件中指向构建主机上的路径的位置。这些不仅会泄露有关构建环境的信息，还会阻碍二进制可重现性。
+
+- build-deps：确定是否存在通过DEPENDS、显式RDEPENDS或任务级依赖项指定的构建时依赖项，以匹配任何运行时依赖项。这种确定特别有助于发现运行时依赖项在哪里被检测到并在打包过程中添加。如果在元数据中没有指定显式依赖项，那么在打包阶段确保依赖项已构建就太晚了，因此在do_rootfs任务中将包安装到映像中时可能会出现错误，因为自动检测的依赖项未得到满足。例如，update-rc.d类会自动向安装initscript的包添加对initscripts-functions包的依赖项，该initscript引用了/etc/init.d/functions。配方真的应该在initscripts-functions包上为所涉及的包指定显式的RDEPENDS，以便OpenEmbedded构建系统能够确保initscripts配方实际上已经构建，从而提供initscripts-functions包。
+
+- configure-gettext：检查如果配方正在构建使用automake的东西，并且automake文件包含AM_GNU_GETTEXT指令，那么配方也应该继承gettext类，以确保在构建过程中可以使用gettext。
+
+- compile-host-path：检查do_compile日志中是否有使用构建主机上的路径的迹象。使用此类路径可能导致构建输出受到主机污染。
+
+- debug-deps：检查所有包（除了-dbg包）是否不依赖于-dbg包，否则会导致打包错误。
+
+- debug-files：检查除-dbg包以外的任何内容中是否有.debug目录。调试文件应该全部在-dbg包中。因此，任何其他地方打包的内容都是不正确的打包。
+
+- dep-cmp：检查运行时包之间的依赖关系（即在RDEPENDS、RRECOMMENDS、RSUGGESTS、RPROVIDES、RREPLACES和RCONFLICTS变量值中）是否有无效的版本比较语句。任何无效的比较都可能在传递给包管理器时触发失败或不良行为。
+
+- desktop：对任何.desktop文件运行desktop-file-validate程序，以验证其内容是否符合.desktop文件的规范。
+
+- dev-deps：检查所有包（除了-dev或-staticdev包）是否不依赖于-dev包，否则将是一个打包错误。
+
+- dev-so：检查.so符号链接是否在-dev包中，而不是在任何其他包中。通常，这些符号链接仅用于开发目的。因此，-dev包是它们的正确位置。在极少数情况下，例如动态加载模块，这些符号链接需要在主包中。
+
+- empty-dirs：检查包是否没有将文件安装到通常预期为空的目录（如/tmp）。由QA_EMPTY_DIRS变量指定要检查的目录列表。
+
+- file-rdeps：检查OpenEmbedded构建系统在打包时确定的文件级依赖项是否得到满足。例如，一个shell脚本可能以#!/bin/bash行开始。这一行将转化为对/bin/bash的文件依赖项。OpenEmbedded构建系统支持的三个包管理器中，只有RPM直接处理文件级依赖项，自动解析为提供文件的包。然而，其他两个包管理器缺乏该功能并不意味着依赖项仍然不需要解决。这个QA检查试图确保明确声明的RDEPENDS存在，以处理在打包文件中检测到的任何文件级依赖项。
+
+- files-invalid：检查FILES变量值中是否包含“//”，这是无效的。
+
+- host-user-contaminated：检查配方产生的包是否不包含/home以外的任何文件，其用户或组ID与运行BitBake的用户匹配。匹配通常表明文件正在以错误的UID/GID安装，因为目标ID独立于主机ID。有关更多信息，请参阅描述do_install任务的部分。
+
+- incompatible-license：当包因标记为INCOMPATIBLE_LICENSE中的许可证而被排除创建时报告。
+
+- install-host-path：检查do_install日志中是否有使用构建主机上的路径的迹象。使用此类路径可能导致构建输出受到主机污染。
+
+- installed-vs-shipped：报告在do_install中已安装但未通过FILES变量包含在任何包中的文件。在构建过程中稍后的映像中不会出现任何包中的文件。理想情况下，所有已安装的文件都应打包或根本不安装。如果文件在任何包中都不需要，可以在do_install结束时删除这些文件。
+
+- invalid-chars：检查配方元数据变量DESCRIPTION、SUMMARY、LICENSE和SECTION中是否不包含非UTF-8字符。一些包管理器不支持此类字符。
+
+- invalid-packageconfig：检查PACKAGECONFIG中是否添加了未定义的特性。例如，对于不存在以下形式的名称“foo”：
+
+   ::
+
+      PACKAGECONFIG[foo] = "..."
+
+- la：检查.la文件中是否包含任何TMPDIR路径。任何包含这些路径的.la文件都是错误的，因为libtool在自动使用这些文件时会添加正确的sysroot前缀。
+
+- ldflags：确保二进制文件是使用构建系统提供的LDFLAGS选项进行链接的。如果此测试失败，请检查LDFLAGS变量是否已传递给链接器命令。
+
+- libdir：检查库是否被安装到错误的（可能是硬编码的）安装路径。例如，此测试将捕获安装/lib/bar.so的配方，当\ :math:`{base_libdir}为“lib32”时。另一个例子是当配方安装/usr/lib64/foo.so，而`\ {libdir}为“/usr/lib”时。
+
+- libexec：检查包中是否包含/usr/libexec中的文件。如果明确将libexecdir变量设置为/usr/libexec，则不执行此检查。
+
+- mime：检查如果包包含mime类型文件（${datadir}/mime/packages中的.xml文件），配方是否还继承了mime类，以确保这些文件得到正确安装。
+
+- mime-xdg：检查如果包包含一个带有’MimeType’键的.desktop文件，配方是否继承了mime-xdg类，这是激活该文件所必需的。
+
+- missing-update-alternatives：检查如果配方设置了ALTERNATIVE变量，配方是否还继承了update-alternatives，以便正确设置替代项。
+
+- packages-list：检查通过PACKAGES变量值多次列出同一包。以这种方式安装包可能会在打包过程中引起错误。
+
+- patch-fuzz：检查补丁文件中是否存在模糊，这可能会使它们在底层代码更改时错误地应用。
+
+- patch-status-core：检查OE-Core层中配方的补丁头的Upstream-Status是否指定且有效。
+
+- patch-status-noncore：检查除OE-Core之外的层中配方的补丁头的Upstream-Status是否指定且有效。
+
+- perllocalpod：检查配方是否正确安装和打包了perllocal.pod。
+
+- perm-config：报告fs-perms.txt中格式无效的行。
+
+- perm-line：报告fs-perms.txt中格式无效的行。
+
+- perm-link：报告fs-perms.txt中指定’link’的行，其中指定的目标已经存在。
+
+- perms：目前，此检查未使用但保留。
+
+- pkgconfig：检查.pc文件中是否包含任何TMPDIR/WORKDIR路径。任何包含这些路径的.pc文件都是错误的，因为pkg-config在访问这些文件时会添加正确的sysroot前缀。
+
+- pkgname：检查PACKAGES中的所有包名称是否不包含无效字符（即除了0-9、a-z、.、+和-之外的字符）。
+
+- pkgv-undefined：检查do_package期间PKGV变量是否未定义。
+
+- pkgvarcheck：检查RDEPENDS、RREMCOMMENDS、RSUGGESTS、RCONFLICTS、RPROVIDES、RREPLACES、FILES、ALLOW_EMPTY、pkg_preinst、pkg_postinst、pkg_prerm和pkg_postrm等变量，并报告是否存在不是特定于包的变量集。在没有包后缀的情况下使用这些变量是不好的做法，可能会不必要地复杂化同一配方内其他包的依赖关系或产生其他意外后果。
+
+- pn-overrides：检查配方的名称（PN）值是否出现在OVERRIDES中。如果配方的名称使其PN值与OVERRIDES中的某个值匹配（例如，PN恰好与MACHINE或DISTRO相同），则可能会产生意外后果。例如，像FILES:${PN}
+   = “xyz”这样的赋值实际上会变成FILES = “xyz”。
+
+- rpaths：检查二进制文件中是否包含构建系统路径，如TMPDIR。如果此测试失败，说明链接器命令传递了错误的-rpath选项，您的二进制文件可能存在安全隐患。
+
+- shebang-size：检查打包脚本中的shebang行（第一行的#!）长度是否超过128个字符，这可能会导致运行时根据操作系统出现错误。
+
+- split-strip：报告从二进制文件中剥离或删除调试符号失败。
+
+- staticdev：检查非静态dev包中的静态库文件（ `*.a` ）。
+
+- src-uri-bad：检查配方设置的SRC_URI值是否包含对\ :math:`{PN}（而不是正确的`\ {BPN}）的引用，或者是否引用了不稳定的Github存档tarball。
+
+- symlink-to-sysroot：检查包中的符号链接是否指向主机上的TMPDIR。这样的符号链接在主机上可以工作，但在目标系统上运行时显然是无效的。
+
+- textrel：检查ELF二进制文件的.text部分是否包含重定位，这可能导致运行时性能影响。有关运行时性能问题的更多信息，请参阅“QA错误和警告消息”中的ELF二进制消息的解释。
+
+- unhandled-features-check：检查如果配方设置了features_check类支持的变量之一（例如REQUIRED_DISTRO_FEATURES），则配方还应继承features_check以使要求实际生效。
+
+- unimplemented-ptest：检查上游测试是否实现了ptest。
+
+- unlisted-pkg-lics：检查应用于包的所有声明的许可证也是否在配方级别声明（即LICENSE: `*` 中的任何许可证应出现在LICENSE中）。
+
+- useless-rpaths：检查二进制文件中的动态库加载路径（rpaths），默认情况下标准系统的链接器会搜索这些路径（例如/lib和/usr/lib）。虽然这些路径不会导致任何破坏，但它们确实浪费空间且没有必要。
+
+- usrmerge：如果usrmerge在DISTRO_FEATURES中，此检查将确保没有包将文件安装到根目录（/bin、/sbin、/lib、/lib64）中。
+
+- var-undefined：报告在do_package期间对打包至关重要的变量（即WORKDIR、DEPLOY_DIR、D、PN和PKGD）未定义的情况。
+
+- version-going-backwards：如果启用了buildhistory类，当正在写入的包的版本低于之前写入的同名包时，将会报告。如果您将输出包放入feed并在目标系统上使用该feed升级包，包的版本倒退可能导致目标系统无法正确升级到包的“新”版本。
+
+   .. note::
+
+      这只与您在目标系统上使用运行时包管理相关。
+
+- xorg-driver-abi：检查所有包含Xorg驱动程序的包都有ABI依赖关系。xserver-xorg配方提供了驱动程序ABI名称。所有驱动程序都应依赖于它们所针对的ABI版本。包含xorg-driver-input.inc或xorg-driver-video.inc的驱动程序配方将自动获取这些版本。因此，您只需要明确添加对二进制驱动程序配方的依赖关系。
+
+5.59 kernel类
+================
+
+kernel类描述了Linux内核构建类（kernel
+class）的功能和特性。它处理构建Linux内核，并包含构建所有内核树的代码。所需的头文件被暂存到STAGING_KERNEL_DIR目录中，以允许使用module类进行树外模块构建。
+
+如果SRC_URI中列出了一个名为defconfig的文件，那么默认情况下，do_configure会将其复制为.config文件，并将其自动用作构建的内核配置。如果已经存在.config文件，则不会执行此复制操作：这允许配方通过其他方式在do_configure:prepend中生成配置。
+
+每个构建的内核模块都单独打包，并通过解析modinfo输出来创建模块之间的依赖关系。如果需要所有模块，则安装kernel-modules包将安装所有带有模块的包以及其他各种内核包，如kernel-vmlinux。
+
+内核类包含逻辑，允许在构建内核映像时嵌入初始RAM文件系统（Initramfs）映像。有关如何构建Initramfs的信息，请参阅Yocto
+Project开发任务手册中的“构建初始RAM文件系统（Initramfs）映像”部分。
+
+内核和模块类内部使用了其他一些类，包括kernel-arch、module-base和linux-kernel-base类。
+
+5.60 kernel-arch类
+=====================
+
+kernel-arch类用于设置Linux内核编译（包括模块）的ARCH环境变量。
+
+5.61 kernel-devicetree类
+============================
+
+kernel-devicetree类由内核类继承，支持设备树生成。
+
+它的行为主要由以下变量控制：
+
+`KERNEL_DEVICETREE_BUNDLE <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-KERNEL_DEVICETREE_BUNDLE>`__\ ：是否将内核和设备树捆绑在一起
+
+`KERNEL_DTBDEST <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-KERNEL_DTBDEST>`__\ ：安装DTB文件的目录
+
+`KERNEL_DTBVENDORED <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-KERNEL_DTBVENDORED>`__\ ：是否保留供应商子目录
+
+`KERNEL_DTC_FLAGS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-KERNEL_DTC_FLAGS>`__\ ：dtc（设备树编译器）的标志
+
+`KERNEL_PACKAGE_NAME <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-KERNEL_PACKAGE_NAME>`__\ ：内核包的基本名称
+
+5.62 kernel-fitimage类
+=========================
+
+kernel-fitimage类提供了将内核映像、设备树、U-boot脚本、Initramfs捆绑包和RAM磁盘打包到单个FIT映像中的支持。理论上，FIT映像可以支持任意数量的内核、U-boot脚本、Initramfs捆绑包、RAM磁盘和设备树。然而，kernel-fitimage目前仅支持有限的用例：一个内核映像、一个可选的U-boot脚本、一个可选的Initramfs捆绑包、一个可选的RAM磁盘和任意数量的设备树。
+
+要创建FIT映像，需要将KERNEL_CLASSES设置为包含“kernel-fitimage”，并将KERNEL_IMAGETYPE、KERNEL_ALT_IMAGETYPE或KERNEL_IMAGETYPES之一设置为包含“fitImage”。
+
+在创建FIT映像时传递给mkimage
+-D的设备树编译器选项由UBOOT_MKIMAGE_DTCOPTS变量指定。
+
+kernel-fitimage创建的FIT映像中只能添加一个内核，并且内核映像在FIT中是必需的。U-Boot加载内核映像的地址由UBOOT_LOADADDRESS指定，入口点由UBOOT_ENTRYPOINT指定。如果这些地址是64位的，则必须将FIT_ADDRESS_CELLS设置为“2”。
+
+可以在kernel-fitimage创建的FIT映像中添加多个设备树，设备树是可选的。U-Boot加载设备树的地址由UBOOT_DTBO_LOADADDRESS（设备树覆盖）和UBOOT_DTB_LOADADDRESS（设备树二进制文件）指定。
+
+kernel-fitimage创建的FIT映像中只能添加一个RAM磁盘，RAM磁盘在FIT中是可选的。U-Boot加载RAM磁盘映像的地址由UBOOT_RD_LOADADDRESS指定，入口点由UBOOT_RD_ENTRYPOINT指定。当指定INITRAMFS_IMAGE时，将RAM磁盘添加到FIT映像中，并要求INITRAMFS_IMAGE_BUNDLE不设置为1。
+
+kernel-fitimage创建的FIT映像中只能添加一个Initramfs捆绑包，Initramfs捆绑包在FIT中是可选的。当使用Initramfs时，内核配置为将根文件系统与同一二进制文件中的内核捆绑在一起（例如：zImage-initramfs-MACHINE.bin）。当将内核复制到RAM并执行时，它会解压缩Initramfs根文件系统。可以通过指定INITRAMFS_IMAGE来启用Initramfs捆绑包，并要求INITRAMFS_IMAGE_BUNDLE设置为1。U-boot加载Initramfs捆绑包的地址由UBOOT_LOADADDRESS指定，入口点由UBOOT_ENTRYPOINT指定。
+
+kernel-fitimage创建的FIT映像中只能添加一个U-boot启动脚本，启动脚本是可选的。启动脚本在ITS文件中指定为包含U-boot命令的文本文件。使用启动脚本时，用户应配置U-boot
+do_install任务以将脚本复制到sysroot。因此，可以通过kernel-fitimage类将脚本包含在FIT映像中。在运行时，可以通过配置U-boot
+CONFIG_BOOTCOMMAND定义从FIT映像加载启动脚本并执行它。
+
+kernel-fitimage生成的FIT映像在适当设置UBOOT_SIGN_ENABLE、UBOOT_MKIMAGE_DTCOPTS、UBOOT_SIGN_KEYDIR和UBOOT_SIGN_KEYNAME变量时会进行签名。kernel-fitimage使用的默认FIT_HASH_ALG和FIT_SIGN_ALG值分别为“sha256”和“rsa2048”。可以使用kernel-fitimage类在将FIT_GENERATE_KEYS和UBOOT_SIGN_ENABLE都设置为“1”时生成用于签名FIT映像的密钥。
+
+5.63 kernel-grub类
+=====================
+
+kernel-grub类在安装RPM以更新部署目标上的内核时，使用内核作为优先级启动机制来更新引导区域和引导菜单。
+
+5.64 kernel-module-split类
+=============================
+
+kernel-module-split类为将 Linux 内核模块分割成单独的包提供了通用功能。
+
+5.65 kernel-uboot类
+======================
+
+kernel-uboot类提供了从vmlinux风格内核源代码构建的支持。
+
+5.66 kernel-uimage类
+========================
+
+kernel-uimage类提供对打包uImage的支持。
+
+5.67 kernel-yocto类
+========================
+
+kernel-yocto类提供了从linux-yocto风格内核源仓库构建的通用功能。
+
+5.68 kernelsrc类
+====================
+
+kernelsrc类设置了Linux内核源代码和版本。
+
+5.69 lib_package类
+======================
+
+lib_package类支持构建库并生成可执行二进制文件的配方，其中这些二进制文件不应默认与库一起安装。相反，这些二进制文件被添加到单独的${PN}-bin包中，以使它们的安装成为可选。
+
+5.70 libc*类
+===============
+
+libc*类支持构建带有libc的包的配方：
+
+- libc-common类提供构建libc的通用支持。
+
+- libc-package类支持打包glibc和eglibc。
+
+5.71 license类
+==================
+
+license类提供许可证清单的创建和许可证排除。该类默认启用，使用INHERIT_DISTRO变量的默认值。
+
+5.72 linux-kernel-base类
+===========================
+
+linux-kernel-base类为从Linux内核源代码树构建的配方提供通用功能。这些构建超出了内核本身。例如，Perf配方也继承这个类。
+
+5.73 linuxloader类
+=====================
+
+提供linuxloader()函数，该函数给出平台上提供的动态加载器/链接器的值。这个值被许多其他类使用。
+
+5.74 logging类
+=================
+
+logging类提供了用于记录各种BitBake严重性级别（即bbplain、bbnote、bbwarn、bberror、bbfatal和bbdebug）的消息的标准shell函数。
+
+该类默认启用，因为它被基类继承。
+
+5.75 meson类
+=================
+
+meson类允许创建使用Meson构建系统构建软件的配方。您可以使用MESON_BUILDTYPE、MESON_TARGET和EXTRA_OEMESON变量来指定要通过meson命令行传递的其他配置选项。
+
+5.76 metadata_scm类
+=======================
+
+metadata_scm类提供了查询源代码管理器（SCM）仓库的分支和修订的功能。
+
+基类使用这个类在每次构建开始前打印每个层的修订版本。metadata_scm类默认启用，因为它被基类继承。
+
+5.77 migrate_localcount类
+============================
+
+migrate_localcount类验证配方的localcount数据并适当增加它。
+
+5.78 mime类
+===============
+
+mime类为安装MIME类型文件的包生成适当的post-install和post-remove（postinst/postrm）脚本。这些脚本调用update-mime-database将MIME类型添加到共享数据库中。
+
+5.79 mime-xdg类
+===================
+
+mime-xdg类为安装包含MimeType条目的.desktop文件的包生成适当的post-install和post-remove（postinst/postrm）脚本。这些脚本调用update-desktop-database将MIME类型添加到由桌面文件处理的MIME类型数据库中。
+
+由于这个类，当用户在最近创建的图像上通过文件浏览器打开文件时，他们不必从所有已知应用程序的池中选择要打开文件的应用程序，即使它们无法打开选定的文件。
+
+如果您的配方将其.desktop文件作为绝对符号链接安装，则无法通过此类的当前实现检测到此类文件。在这种情况下，您必须将相应的包名称添加到MIME_XDG_PACKAGES变量中。
+
+5.80 mirrors类
+=================
+
+mirrors类为源代码镜像设置了一些标准的MIRRORS条目。这些镜像提供了一条备用路径，以防配方中指定的上游源在SRC_URI中无法使用。
+
+该类默认启用，因为它被基类继承。
+
+5.81 module类
+================
+
+module类提供对构建树外Linux内核模块的支持。该类继承了module-base和kernel-module-split类，并实现了do_compile和do_install任务。该类提供了构建和打包内核模块所需的一切。
+
+有关树外Linux内核模块的一般信息，请参阅Yocto Project
+Linux内核开发手册中的“\ `Incorporating Out-of-Tree
+Modules <https://docs.yoctoproject.org/4.0.17/kernel-dev/common.html#incorporating-out-of-tree-modules>`__\ ”部分。
+
+5.82 module-base类
+=====================
+
+module-base类提供了构建Linux内核模块的基本功能。通常，包含一个或多个内核模块并具有自己的构建模块方式的软件的配方会继承这个类，而不是继承module类。
+
+5.83 multilib*类
+===================
+
+multilib*类提供支持，用于构建具有不同目标优化或目标架构的库，并在同一图像中并行安装它们。
+
+有关使用Multilib功能的更多信息，请参阅Yocto
+Project开发任务手册中的“\ `将多个版本的库文件组合到一个映像中 <https://docs.yoctoproject.org/4.0.17/dev-manual/libraries.html#combining-multiple-versions-of-library-files-into-one-image>`__\ ”部分。
+
+5.84 native类
+=================
+
+``native``\ 类提供了为在构建主机上运行的工具（即使用构建主机上的编译器或其他工具的工具）构建配方的常见功能。
+
+您可以通过几种不同的方式创建在主机上本地运行的工具的配方：
+
+- 创建一个继承\ ``native``\ 类的\ ``myrecipe-native.bb``\ 配方。如果您使用此方法，必须在配方中将继承语句放在所有其他继承语句之后，以便最后继承\ ``native``\ 类。注意：
+
+      当以这种方式创建配方时，配方名称必须遵循以下命名约定：
+
+      ::
+
+         myrecipe-native.bb
+
+      不使用这种命名约定可能导致由于现有代码依赖于该命名约定而引起的微妙问题。
+
+- 创建或修改包含以下内容的目标配方：
+
+   ::
+
+      BBCLASSEXTEND = "native"
+
+   在配方内部，使用：class-native和：class-target覆盖来指定特定于各自本地或目标情况的任何功能。
+
+尽管应用方式不同，但\ ``native``\ 类在两种方法中都有使用。第二种方法的优势在于，您不需要为本地和目标分别拥有两个单独的配方（假设您需要两者）。配方的所有共同部分都会自动共享。
+
+5.85 nativesdk类
+====================
+
+``nativesdk``\ 类提供了希望构建作为SDK一部分运行的工具的配方的常见功能（即在SDKMACHINE上运行的工具）。
+
+您可以通过几种不同的方式创建在SDK机器上运行的工具的配方：
+
+- 创建一个继承\ ``nativesdk``\ 类的\ ``nativesdk-myrecipe.bb``\ 配方。如果您使用此方法，必须在配方中将继承语句放在所有其他继承语句之后，以便最后继承\ ``nativesdk``\ 类。
+
+- 通过添加以下内容来创建任何配方的\ ``nativesdk``\ 变体：
+
+   ::
+
+      BBCLASSEXTEND = "nativesdk"
+
+   在配方内部，使用：class-nativesdk和：class-target覆盖来指定特定于各自的SDK机器或目标情况的任何功能。
+
+.. note::
+
+   创建配方时，必须遵循以下命名约定：
+
+   ::
+
+      nativesdk-myrecipe.bb
+
+   不这样做可能会导致代码依赖于该命名约定而引起微妙的问题。
+
+尽管应用方式不同，但\ ``nativesdk``\ 类在两种方法中都有使用。第二种方法的优势在于，您不需要为SDK机器和目标分别拥有两个单独的配方（假设您需要两者）。配方的所有共同部分都会自动共享。
+
+5.86 nopackages类
+=====================
+
+禁用不需要打包的配方和类中的打包任务。
+
+5.87 npm类
+=============
+
+提供使用节点包管理器（NPM）获取的Node.js软件的支持。
+
+.. note::
+
+   目前，继承此类的配方必须使用npm://获取器来自动获取和打包依赖项。
+
+有关如何创建NPM包的信息，请参阅Yocto
+Project开发任务手册中的“\ `创建Node包管理器（NPM）包 <https://docs.yoctoproject.org/4.0.17/dev-manual/packages.html#creating-node-package-manager-npm-packages>`__\ ”部分。
+
+5.88 oelint类
+=================
+
+``oelint``\ 类是元数据/类中可用的过时的lint检查工具，位于源目录中。
+
+有一些类可能在OE-Core中一般有用，但实际上从未在OE-Core本身中使用过。\ ``oelint``\ 类就是这样一个示例。然而，了解这个类可以减少多个层之间不同版本的类似类的传播。
+
+5.89 overlayfs类
+===================
+
+在嵌入式系统设计中，通常希望拥有一个只读的根文件系统。但是，许多不同的应用程序可能希望对文件系统的某部分具有读写访问权限。当更新机制覆盖整个根文件系统时，但您可能希望在更新之间保留应用程序数据，这尤其有用。overlayfs类通过使用overlayfs并同时保持基础根文件系统为只读来实现这一点。
+
+要使用此类，请在机器配置中设置分区overlayfs将用作上层的挂载点。底层文件系统可以是任何受overlayfs支持的文件系统。这必须在您的机器配置中完成：
+
+::
+
+   OVERLAYFS_MOUNT_POINT[data] = "/data"
+
+.. note::
+
+   - 如果您在配方中重新定义此变量，QA检查将无法捕获文件存在！
+
+   - 只有systemd挂载单元文件的存在被检查，而不是其内容。
+
+   - 要获取有关overlayfs、其内部和受支持操作的更多详细信息，请参阅Linux内核的官方文档。
+
+该类假设您在BSP（例如systemd-machine-units配方）中的其他地方定义了一个名为data.mount的systemd单元，并将其安装到映像中。
+
+然后您可以在配方基础上指定可写目录（例如在my-application.bb中）：
+
+::
+
+   OVERLAYFS_WRITABLE_PATHS[data] = "/usr/share/my-custom-application"
+
+要支持多个挂载点，您可以使用不同的标志变量。假设我们希望文件系统上有一个可写位置，但不需要数据在重新启动后仍然存在，那么我们可以为tmpfs文件系统使用mnt-overlay.mount单元。
+
+在您的机器配置中：
+
+::
+
+   OVERLAYFS_MOUNT_POINT[mnt-overlay] = "/mnt/overlay"
+
+然后在您的配方中：
+
+::
+
+   OVERLAYFS_WRITABLE_PATHS[mnt-overlay] = "/usr/share/another-application"
+
+在实践中，您的应用程序配方可能需要在运行之前挂载多个覆盖层以避免写入底层文件系统（在只读文件系统的情况下可能是禁止的）。overlayfs提供了一个用于挂载覆盖层的systemd辅助服务。此辅助服务的名称为${PN}-overlays.service，可以在您的应用程序配方（以下示例中的application）systemd单元中添加以下内容来依赖它：
+
+::
+
+   [Unit]
+   After=application-overlays.service
+   Requires=application-overlays.service
+
+.. note::
+
+   该类不支持/etc目录本身，因为systemd依赖于它。要在overlayfs中获取/etc，请参见overlayfs-etc。
