@@ -31,5 +31,10 @@ ceres-solver-staticdev \
 foonathan-memory-staticdev \
 libyaml-staticdev \
 googletest \
+protobuf-c \
+libtool \
+libogg \
+libtheora \
+libusb-compat \
 "
 

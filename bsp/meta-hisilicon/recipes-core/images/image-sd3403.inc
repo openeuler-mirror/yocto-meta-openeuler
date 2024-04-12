@@ -1,11 +1,11 @@
 # This file should be included in openeuler-image.bbappend, openeuler-image-ros.bbappend, etc.
 # diff from ${MACHINE}.inc, it shoud not includ by live image
 
+require recipes-core/images/bsp-${MACHINE}.inc
+
 # all 3403 app and tools
 IMAGE_INSTALL += " \
 wpa-supplicant \
-i2c-soft \
-mcu-tool \
 v4l-utils \
 hostapd \
 hibot-user-driver \
@@ -68,99 +68,3 @@ hirobot-description \
 ", "", d)}"
 
 
-TOOLCHAIN_TARGET_TASK += " \
-hibot-user-driver-staticdev \
-json-c-staticdev \
-cjson-staticdev \
-gmp-staticdev \
-libsqlite3-staticdev \
-openamp-staticdev \
-libusb-compat-staticdev \
-libsepol-staticdev \
-libmetal-staticdev \
-shadow-staticdev \
-libseccomp-staticdev \
-bzip2-staticdev \
-lua-staticdev \
-protobuf-c-staticdev \
-libyaml-staticdev \
-openssl-staticdev \
-libpython3-staticdev \
-libestr-staticdev \
-nettle-staticdev \
-libwebp-staticdev \
-e2fsprogs-staticdev \
-zlib-staticdev \
-glibc-external-staticdev \
-audit-staticdev \
-popt-staticdev \
-libselinux-staticdev \
-libogg-staticdev \
-zstd-staticdev \
-sysfsutils-staticdev \
-libidn2-staticdev \
-python3-numpy-staticdev \
-libtool-staticdev \
-cairo-staticdev \
-libstdc++-staticdev \
-libitm-staticdev \
-libgomp-staticdev \
-libatomic-staticdev \
-bind-dhclient-staticdev \
-attr-staticdev \
-acl-staticdev \
-yajl-staticdev \
-tcl-staticdev \
-cracklib-staticdev \
-procps-staticdev \
-libjpeg-turbo-staticdev \
-libunistring-staticdev \
-libffi-staticdev \
-readline-staticdev \
-elfutils-staticdev \
-libuv-staticdev \
-libusb1-staticdev \
-gdbm-staticdev \
-ncurses-staticdev \
-libcap-staticdev \
-libwrap-staticdev \
-libnsl2-staticdev \
-libgfortran-external-staticdev \
-libarchive-staticdev \
-libpcap-staticdev \
-libevent-staticdev \
-util-linux-staticdev \
-libtirpc-staticdev \
-freetype-staticdev \
-libunwind-staticdev \
-libtheora-staticdev \
-curl-staticdev \
-lcr-staticdev \
-libcap-ng-staticdev \
-libsodium-staticdev \
-libnl-staticdev \
-util-linux-libuuid-staticdev \
-libsemanage-staticdev \
-binutils-staticdev \
-xz-staticdev \
-libpcre2-staticdev \
-libaio-staticdev \
-libuvc-staticdev \
-libpwquality-staticdev \
-zeromq-staticdev \
-boost-staticdev \
-libatomic-ops-staticdev \
-lzo-staticdev \
-libfastjson-staticdev \
-protobuf-staticdev \
-googletest-staticdev \
-libpng-staticdev \
-${@bb.utils.contains("DISTRO_FEATURES", "ros", " \
-qhull-staticdev \
-cartographer-ros-staticdev \
-costmap-queue-staticdev \
-cartographer-staticdev \
-ceres-solver-staticdev \
-foonathan-memory-staticdev \
-libflann-staticdev \
-", "", d)}"

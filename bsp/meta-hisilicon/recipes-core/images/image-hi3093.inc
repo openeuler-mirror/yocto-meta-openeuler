@@ -2,6 +2,7 @@
 # diff from ${MACHINE}.inc, it shoud not include by live image
 
 require ${@bb.utils.contains("DISTRO_FEATURES", "mpu_solution", "pack-hi3093.inc", "recipes-core/images/qemu.inc", d)}
+require recipes-core/images/bsp-${MACHINE}.inc
 
 DEPENDS:append = "${@bb.utils.contains("DISTRO_FEATURES", "mpu_solution", " signtools-hi3093 u-boot-emmc ", "", d)}"
 

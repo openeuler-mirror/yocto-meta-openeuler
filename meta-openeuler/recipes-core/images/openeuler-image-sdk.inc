@@ -80,3 +80,7 @@ kernel-devsrc \
 ${TCMODE-LIBC}-staticdev \
 libstdc++-dev \
 "
+
+# static lib need for sdk toolchian
+SDKIMAGE_FEATURES += "staticdev-pkgs"
+
