@@ -31,6 +31,7 @@ openEuler Embedded在内核版本、软件包版本等代码层面会与openEule
    infrastructure/index.rst
    references/index.rst
    bitbake/index.rst
+   yocto_manual/index.rst
 
 .. toctree::
    :maxdepth: 1
