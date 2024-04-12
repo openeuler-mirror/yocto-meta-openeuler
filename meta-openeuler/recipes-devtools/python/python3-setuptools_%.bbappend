@@ -12,6 +12,8 @@ SRC_URI:remove = " \
         file://0001-Limit-the-amount-of-whitespace-to-search-backtrack.-.patch \
 "
 
+SRC_URI[sha256sum] = "baf1fdb41c6da4cd2eae722e135500da913332ab3f2f5c7d33af9b492acb5235"
+
 # the upstream patch
 # SRC_URI:append:class-native = " file://0001-conditionally-do-not-fetch-code-by-easy_install.patch"
 SRC_URI:append = " file://0001-_distutils-sysconfig.py-make-it-possible-to-substite.patch"

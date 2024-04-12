@@ -22,7 +22,7 @@ SRC_URI:prepend = "file://qtbase-everywhere-src-5.15.6-private_api_warning.patch
            file://qtbase-opensource-src-5.9.0-mysql.patch \
            file://qtbase-use-wayland-on-gnome.patch \
            file://qt5-qtbase-gcc11.patch \
-           file://kde-5.15-rollup-20230613.patch.gz \
+           file://kde-5.15-rollup-20230613.patch \
            file://qtbase-5.15.10-fix-missing-qtsan-include.patch \
            file://qtbase-QTBUG-111994.patch \
            file://qtbase-QTBUG-112136.patch \
@@ -31,4 +31,9 @@ SRC_URI:prepend = "file://qtbase-everywhere-src-5.15.6-private_api_warning.patch
            file://add-loongarch64-support.patch \
            file://Fix-lupdate-command-error-on-loongarch64.patch \
            file://CVE-2023-37369.patch \
+           file://qtbase5.15.10-CVE-2023-38197.patch \
+           file://qtbase5.15.10-CVE-2023-43114.patch \
+           file://fix-build-error-of-libxkbcommon-1.6.0.patch \
+           file://qtbase-multilib_optflags.patch \
+           file://qtbase5.15-CVE-2023-51714.patch \
            "
