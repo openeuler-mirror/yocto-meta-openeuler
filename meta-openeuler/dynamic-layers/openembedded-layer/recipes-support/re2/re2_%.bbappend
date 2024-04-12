@@ -1,8 +1,9 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-support/re2/re2_2020.11.01.bb
+RE2_VER = "${@"-".join(d.getVar("PV").split("."))}"
+S = "${WORKDIR}/${BPN}-${RE2_VER}"
 
 # version in openEuler
 PV = "2024.02.01"
-S = "${WORKDIR}/re2-2024-02-01"
 
 SRCREV = "2d866a3d0753f4f4fce93cccc6c59c4b052d7db4"
 
@@ -12,7 +13,7 @@ INSANE_SKIP:${PN} += "dev-so"
 
 # files, patches that come from openeuler
 SRC_URI:prepend = " \
-    file://2024-02-01.tar.gz \
+    file://${RE2_VER}.tar.gz \
     file://add-some-testcases-for-abnormal-branches.patch \
 "
 
