@@ -12,5 +12,36 @@ PACKAGECONFIG:append:class-target = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'udev', '', d)} \
 "
 
-# from poky lvm2_2.03.16.bb
+
+# from poky lvm2_2.03.22.bb
+
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
+
+SRC_URI += " \
+        file://tweak-for-lvmdbusd.patch \
+        file://0001-lvmdbusd-create-dirs-for-lock-file.patch \
+"
+
+inherit python3native
+
+do_install:append() {
+
+    # following files only exist when package config `dbus` enabled
+    sed -i -e '1s,#!.*python.*,#!${USRBINPATH}/env python3,' \
+        ${D}${sbindir}/lvmdbusd \
+        ${D}${PYTHON_SITEPACKAGES_DIR}/lvmdbusd/lvmdb.py \
+        ${D}${PYTHON_SITEPACKAGES_DIR}/lvmdbusd/lvm_shell_proxy.py \
+    || true
+}
+
+SYSTEMD_SERVICE:${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'dbus', 'lvm2-lvmdbusd.service', '', d)} \
+"
+
+PACKAGECONFIG[dbus] = "--enable-dbus-service,--disable-dbus-service,,python3-dbus python3-pyudev"
+
+FILES:${PN} += " \
+    ${PYTHON_SITEPACKAGES_DIR}/lvmdbusd \
+    ${datadir}/dbus-1/system-services/com.redhat.lvmdbus1.service \
+"
+
 RDEPENDS:${PN} = "bash"
