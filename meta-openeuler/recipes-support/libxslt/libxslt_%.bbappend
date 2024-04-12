@@ -1,6 +1,6 @@
 # the main bb file: yocto-poky/meta/recipes-support/libxslt/libxslt_1.1.35.bb
 
-PV = "1.1.38"
+PV = "1.1.39"
 
 SRC_URI = " \
     file://${BP}.tar.xz \
