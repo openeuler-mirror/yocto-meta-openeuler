@@ -10,6 +10,7 @@ SRC_URI = " \
 	file://${BP}.tar.gz \
 	file://cells/ \
 	file://0001-driver-Add-support-for-remote-proc.patch \
+	file://0001-Support-for-loading-ELF_64-image.patch \
 	"
 
 DEPENDS = " \

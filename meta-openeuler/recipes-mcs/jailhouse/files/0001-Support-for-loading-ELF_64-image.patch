@@ -1,0 +1,131 @@
+From 92b0673a679749c22b2c1150500634d5ff265541 Mon Sep 17 00:00:00 2001
+From: hanzongcheng <hanzongcheng@huawei.com>
+Date: Sun, 14 Apr 2024 03:08:08 +0800
+Subject: [PATCH] Support for loading ELF_64 image
+
+* Supports ELF_64 image. The ELF entry address is used as
+  the target_address by default.
+
+Signed-off-by: hanzongcheng <hanzongcheng@huawei.com>
+
+diff --git a/tools/jailhouse.c b/tools/jailhouse.c
+index 215d239b..f102bc47 100644
+--- a/tools/jailhouse.c
++++ b/tools/jailhouse.c
+@@ -25,6 +25,81 @@
+ #include <sys/stat.h>
+ 
+ #include <jailhouse.h>
++#include <elf.h>
++
++typedef struct {
++	uint64_t offset;
++	uint64_t paddr;
++	uint64_t filesz;
++} ElfSegment;
++
++uint64_t g_elf_load_addr;
++
++static int elf_identify(const void *img_data, size_t len)
++{
++	if (len < SELFMAG || !img_data)
++		return -EINVAL;
++	if (memcmp(img_data, ELFMAG, SELFMAG) != 0)
++		return -EINVAL;
++	else
++		return 0;
++}
++
++static void *elf_load(const void *img_data, ssize_t *len)
++{
++	int i, nsegment;
++	Elf64_Ehdr *elf_hdr;
++	Elf64_Off phdrs_offset;
++	Elf64_Half phnums;
++	ElfSegment *segments;
++	void *elf_data;
++	uint64_t start, end;
++
++	elf_hdr = (Elf64_Ehdr *)img_data;
++	phdrs_offset = elf_hdr->e_phoff;
++	phnums = elf_hdr->e_phnum;
++	segments = (ElfSegment *)malloc(phnums * sizeof(ElfSegment));
++	if (!segments)
++		return NULL;
++
++	for (i = 0, nsegment = 0; i < phnums; i++) {
++		Elf64_Phdr *phdr = (Elf64_Phdr *)(img_data + phdrs_offset + i * elf_hdr->e_phentsize);
++
++		if (phdr->p_type != PT_LOAD)
++			continue;
++
++		segments[nsegment].offset = phdr->p_offset;
++		segments[nsegment].paddr = phdr->p_paddr;
++		segments[nsegment].filesz = phdr->p_filesz;
++		nsegment++;
++	}
++
++	if (nsegment == 0) {
++		free(segments);
++		return NULL;
++	}
++
++	start = segments[0].paddr;
++	end = segments[nsegment - 1].paddr + segments[nsegment - 1].filesz;
++
++	elf_data = malloc(end - start);
++	if (!elf_data) {
++		free(segments);
++		return NULL;
++	}
++
++	if (len)
++		*len = end - start;
++
++	for (i = 0; i < nsegment; i++) {
++		ElfSegment *segment = &segments[i];
++		memcpy(elf_data + segment->paddr - start, img_data + segment->offset, segment->filesz);
++	}
++
++	g_elf_load_addr = start;
++	free(segments);
++	return elf_data;
++}
+ 
+ #define JAILHOUSE_EXEC_DIR	LIBEXECDIR "/jailhouse"
+ #define JAILHOUSE_DEVICE	"/dev/jailhouse"
+@@ -170,6 +245,16 @@ static void *read_file(const char *name, size_t *size)
+ 
+ 	close(fd);
+ 
++	if (elf_identify(buffer, result) == 0) {
++		void *elf_data = elf_load(buffer, &result);
++		if (!elf_data) {
++			fprintf(stderr, "load elf data failed\n");
++			exit(1);
++		}
++		free(buffer);
++		buffer = elf_data;
++	}
++
+ 	if (size)
+ 		*size = (size_t)result;
+ 
+@@ -431,12 +516,13 @@ static int cell_shutdown_load(int argc, char *argv[],
+ 				(unsigned long)read_string(argv[arg_num++],
+ 							   &size);
+ 		} else {
++			g_elf_load_addr = 0;
+ 			image->source_address =
+ 				(unsigned long)read_file(argv[arg_num++],
+ 							 &size);
+ 		}
+ 		image->size = size;
+-		image->target_address = 0;
++		image->target_address = g_elf_load_addr;
+ 
+ 		if (arg_num < argc &&
+ 		    match_opt(argv[arg_num], "-a", "--address")) {
+-- 
+2.34.1
+
