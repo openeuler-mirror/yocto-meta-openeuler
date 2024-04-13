@@ -1,0 +1,33 @@
+From 727018ddce785a20f39e01c4d2ca444b8ba011e7 Mon Sep 17 00:00:00 2001
+From: hanzongcheng <hanzongcheng@huawei.com>
+Date: Wed, 17 Apr 2024 15:24:37 +0800
+Subject: [PATCH] uio_ivshmem: just match IVSHM_PROTO_RPMSG
+
+* just match IVSHM_PROTO_RPMSG(0x4001)
+
+Signed-off-by: hanzongcheng <hanzongcheng@huawei.com>
+
+diff --git a/drivers/uio/uio_ivshmem.c b/drivers/uio/uio_ivshmem.c
+index 0c16d428c..2941bf012 100644
+--- a/drivers/uio/uio_ivshmem.c
++++ b/drivers/uio/uio_ivshmem.c
+@@ -14,6 +14,7 @@
+ #include <linux/uio_driver.h>
+ 
+ #define DRV_NAME "uio_ivshmem"
++#define IVSHM_PROTO_RPMSG		0x4001
+ 
+ struct ivshm_dev {
+ 	struct uio_info info;
+@@ -224,7 +225,7 @@ static void ivshm_remove(struct pci_dev *pdev)
+ 
+ static const struct pci_device_id ivshm_device_id_table[] = {
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_SIEMENS, PCI_DEVICE_ID_IVSHMEM),
+-	  (PCI_CLASS_OTHERS << 16) | IVSHM_PROTO_UNDEFINED, 0xffffff },
++	  (PCI_CLASS_OTHERS << 16) | IVSHM_PROTO_RPMSG, 0xffff00 },
+ 	{ 0 }
+ };
+ MODULE_DEVICE_TABLE(pci, ivshm_device_id_table);
+-- 
+2.33.0
+
