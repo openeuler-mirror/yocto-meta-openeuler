@@ -75,7 +75,7 @@ do_kernel_metadata[file-checksums] = "${@get_dirs_with_metadata(d)}"
 OPENEULER_KERNEL_CONFIG = ""
 # use in-tree defconfig, the defconfig is in src tree
 # after patches are unpatched
-KBUILD_DEFCONFIG = "hisic3403_defconfig"
+KBUILD_DEFCONFIG = "hieulerpi1_defconfig"
 
 # add method to do_compile task to produce bootable Image
 do_compile:append(){
