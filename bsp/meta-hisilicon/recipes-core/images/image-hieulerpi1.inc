@@ -3,7 +3,7 @@
 
 require recipes-core/images/bsp-${MACHINE}.inc
 
-# all 3403 app and tools
+# all app and tools
 IMAGE_INSTALL += " \
 wpa-supplicant \
 v4l-utils \

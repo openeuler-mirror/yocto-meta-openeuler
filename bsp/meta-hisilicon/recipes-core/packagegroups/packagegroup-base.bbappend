@@ -2,7 +2,7 @@ RDEPENDS:packagegroup-base:append = " \
 e2fsprogs-resize2fs \
 "
 
-RDEPENDS:packagegroup-base:append:sd3403 = " \
-3403-tf-a \
-3403-bsp-pkg \
+RDEPENDS:packagegroup-base:append:hieulerpi1 = " \
+hieulerpi1-tf-a \
+hieulerpi1-bsp-pkg \
 "
