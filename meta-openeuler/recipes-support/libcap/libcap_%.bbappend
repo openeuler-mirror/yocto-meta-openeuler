@@ -8,6 +8,9 @@ SRC_URI = " \
     file://${BP}.tar.gz \
     file://libcap-buildflags.patch \
     file://backport-libcap-Ensure-the-XATTR_NAME_CAPS-is-define.patch \
+    file://support-specify-cc.patch \
+    file://backport-getpcaps-fix-program-name-in-help-message.patch \
+    file://backport-Stop-using-_pam_overwrite-in-pam_cap.c.patch \
 "
 
 S = "${WORKDIR}/${BP}"

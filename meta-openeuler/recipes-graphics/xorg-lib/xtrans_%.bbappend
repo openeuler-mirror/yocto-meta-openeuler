@@ -2,11 +2,13 @@ require openeuler-xorg-lib-common.inc
 
 OPENEULER_REPO_NAME = "xorg-x11-xtrans-devel"
 
-XORG_EXT = "tar.bz2"
+LICENSE = "MIT"
+LIC_FILES_CHKSUM = "file://COPYING;md5=bc875e1c864f4f62b29f7d8651f627fa"
 
-PV = "1.4.0"
+XORG_EXT = "tar.gz"
+
+PV = "1.5.0"
 
 # openeuler patches
 SRC_URI:prepend = "file://xtrans-1.0.3-avoid-gethostname.patch \
-           file://backport-0001-Automatically-disable-inet6-transport-if-ipv6-is-dis.patch \
            "

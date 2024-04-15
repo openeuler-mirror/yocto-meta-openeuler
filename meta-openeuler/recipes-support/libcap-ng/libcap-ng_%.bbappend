@@ -8,6 +8,7 @@ SRC_URI:remove = "file://determinism.patch"
 SRC_URI:append = " \
         file://${BP}.tar.gz \
         file://backport-Make-Python-test-script-compatible-with-Python2-and-Python3.patch \
+        file://backport-Fix-the-syntax-error-in-cap-ng-c-50.patch \
         "
 
 S = "${WORKDIR}/${BP}"
