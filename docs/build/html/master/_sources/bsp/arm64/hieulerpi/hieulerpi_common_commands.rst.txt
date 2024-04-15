@@ -9,11 +9,11 @@
 
 版本信息查询
 ============
-1. 【cat /etc/os-release】查看当前欧拉版本的信息
+1. 【cat /etc/os-release; cat /etc/revision】查看当前欧拉版本的信息
 
    .. code-block:: console
 
-      sd3403 ~ # cat /etc/os-release
+      hieulerpi1 ~ # cat /etc/os-release
       ID=openeuler
       NAME="openEuler Embedded(openEuler Embedded Reference Distro)"
       VERSION="24.03 (openEuler24_03)"
@@ -21,15 +21,22 @@
       PRETTY_NAME="openEuler Embedded(openEuler Embedded Reference Distro) 24.03 (openEuler24_03)"
       DISTRO_CODENAME="openEuler24_03"
 
+   .. code-block:: console
+
+      hieulerpi1 ~ # cat /etc/revision
+      20240530123456
+      yocto-meta-openeuler d775d2a2bef2321d926b545f7582f7600a63d0ec
+
+
 
 2. 【env】显示当前的环境变量
 
    .. code-block:: console
 
-      sd3403 ~ # env
+      hieulerpi1 ~ # env
       SHELL=/bin/bash
       HISTSIZE=1000
-      HOSTNAME=sd3403
+      HOSTNAME=hieulerpi1
       EDITOR=vi
       PWD=/root
       LOGNAME=root
@@ -54,9 +61,9 @@
 
    .. code-block:: console
 
-      sd3403 ~ # uname -a
-      Linux sd3403 5.10.0 #1 SMP Mon Jan 22 11:42:56 UTC 2024 aarch64 aarch64 aarch64 GNU/Linux
-      sd3403 ~ # cat /proc/version
+      hieulerpi1 ~ # uname -a
+      Linux hieulerpi1 5.10.0 #1 SMP Mon Jan 22 11:42:56 UTC 2024 aarch64 aarch64 aarch64 GNU/Linux
+      hieulerpi1 ~ # cat /proc/version
       Linux version 5.10.0 (oe-user@oe-host) (aarch64-openeuler-linux-gnu-gcc (crosstool-NG 1.25.0) 10.3.1, GNU ld (crosstool-NG 1.25.0) 2.37) #1 SMP Mon Jan 22 11:42:56 UTC 2024
 
 
@@ -183,14 +190,14 @@ LiteOS
 
    .. code-block:: console
 
-      sd3403 ~ # load_riscv 0x44000000 /firmware/LiteOS.bin
+      hieulerpi1 ~ # load_riscv 0x44000000 /firmware/LiteOS.bin
       The RISCV started!
 
 2. 【virt_tty】虚拟串口，用于调试LiteOS
 
    .. code-block:: console
 
-      sd3403 ~ # virt-tty riscv
+      hieulerpi1 ~ # virt-tty riscv
       Huawei LiteOS # help
       *******************shell commands:*************************
       cat           cd            dd            free          help          hwi           i2c_read      i2c_write
