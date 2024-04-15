@@ -134,3 +134,6 @@ HOSTTOOLS_NONFATAL += "xmlcatalog glib-genmarshal glib-compile-resources gdbus-c
 
 HOSTTOOLS_NONFATAL += "hexdump rev"
 ASSUME_PROVIDED += "hexdump rev"
+
+# used by e2fsprogs
+HOSTTOOLS += "compile_et"

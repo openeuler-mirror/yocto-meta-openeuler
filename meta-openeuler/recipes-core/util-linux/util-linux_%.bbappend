@@ -1,4 +1,4 @@
-require util-linux_src.inc
+require util-linux-common.inc
 
 # diff from upstream 2.37.4 to 2.39.1
 PACKAGECONFIG[selinux] = "--with-selinux,--without-selinux,libselinux"

@@ -4,11 +4,8 @@
 PV = "0.7.0"
 S = "${WORKDIR}/yaml-cpp-yaml-cpp-${PV}"
 
-# files, patches can't be applied in openeuler or conflict with openeuler
-SRC_URI:remove = " \
-"
 # files, patches that come from openeuler
-SRC_URI:prepend = " \
+SRC_URI = " \
     file://${BP}.tar.gz \
     file://yaml-cpp-cmake.patch \
 "

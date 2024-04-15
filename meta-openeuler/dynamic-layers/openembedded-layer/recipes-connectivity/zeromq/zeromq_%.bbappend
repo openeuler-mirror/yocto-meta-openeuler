@@ -10,4 +10,5 @@ SRC_URI:append = " \
 SRC_URI[md5sum] = "cc20b769ac10afa352e5ed2769bb23b3"
 SRC_URI[sha256sum] = "0ff5a531c9ffaf0dfdc7dc78d13d1383088f454896d252934c429b2554d10559"
 
+
 S = "${WORKDIR}/libzmq-${PV}"

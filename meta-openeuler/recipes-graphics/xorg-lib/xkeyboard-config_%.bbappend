@@ -4,7 +4,8 @@
 # version in src-openEuler
 PV = "2.39"
 
-SRC_URI:prepend = "file://${BP}.tar.xz \
+SRC_URI:prepend = " \
+    file://${BP}.tar.xz \
 "
 
 BBCLASSEXTEND += "native"

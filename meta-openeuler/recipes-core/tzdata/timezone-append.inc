@@ -1,4 +1,4 @@
-PV = "2022g"
+PV = "2024a"
 
 DL_DIR = "${OPENEULER_SP_DIR}/tzdata"
 
@@ -12,7 +12,6 @@ S = "${WORKDIR}"
 SRC_URI = " \
         file://tzcode${PV}.tar.gz;name=tzcode \
         file://tzdata${PV}.tar.gz;name=tzdata \
-        file://backport-Much-of-Greenland-still-uses-DST-from-2024-on.patch \
         file://bugfix-0001-add-Beijing-timezone.patch \
         file://remove-ROC-timezone.patch \
         file://rename-Macau-to-Macao.patch \
@@ -21,5 +20,5 @@ SRC_URI = " \
         file://skip-check_web-testcase.patch \
         "
 
-SRC_URI[tzcode.sha256sum] = "9610bb0b9656ff404c361a41f3286da53064b5469d84f00c9cb2314c8614da74"
-SRC_URI[tzdata.sha256sum] = "4491db8281ae94a84d939e427bdd83dc389f26764d27d9a5c52d782c16764478"
+SRC_URI[tzcode.sha256sum] = "80072894adff5a458f1d143e16e4ca1d8b2a122c9c5399da482cb68cba6a1ff8"
+SRC_URI[tzdata.sha256sum] = "0d0434459acbd2059a7a8da1f3304a84a86591f6ed69c6248fffa502b6edffe3"

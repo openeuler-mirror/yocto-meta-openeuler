@@ -16,5 +16,5 @@ SRC_URI:prepend = " \
 # However, now we are using 3.2.4
 FILES:libxerces-c = "${libdir}/libxerces-c-3.2.so"
 
-SRC_URI[md5sum] = "0f6b55a00a6dedb3f032f3be14898695"
-SRC_URI[sha256sum] = "705582a1956971c03ffdb014a8707d3eb9afcd51fe6e53cfcc98be70a96fb726"
+SRC_URI[md5sum] = "b564aa225ed0a9d68e17de57365ac605"
+SRC_URI[sha256sum] = "3d8ec1c7f94e38fee0e4ca5ad1e1d9db23cbf3a10bba626f6b4afa2dedafe5ab"

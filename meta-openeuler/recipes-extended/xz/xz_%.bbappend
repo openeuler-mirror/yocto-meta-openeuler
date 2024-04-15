@@ -9,5 +9,6 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=c8ea84ebe7b93cce676b54355dc6b2c0 \
 
 PV = "5.4.4"
 
-SRC_URI += "file://${BP}.tar.xz \
-            "
+SRC_URI += " \
+    file://${BP}.tar.xz \
+"

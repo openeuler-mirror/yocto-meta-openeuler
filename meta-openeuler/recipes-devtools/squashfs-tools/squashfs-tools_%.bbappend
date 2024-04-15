@@ -1,7 +1,7 @@
 # main bbfile: yocto-poky/meta/recipes-devtools/squashfs-tools/squashfs-tools_git.bb
 
 # version in openEuler
-PV = "4.5.1"
+PV = "4.6.1"
 
 FILESEXTRAPATHS:append := "${THISDIR}/files/:"
 
@@ -11,12 +11,11 @@ S = "${WORKDIR}/${BP}"
 
 # files, patches that come from openeuler
 SRC_URI = " \
-        file://${BP}.tar.gz \
-        file://0001-install-manpages.sh-do-not-write-original-timestamps.patch \
+        file://squashfs${PV}.tar.gz \
         "
 
-SRC_URI[md5sum] = "edc3e14508f2716315787b9c88d163a1"
-SRC_URI[sha256sum] = "277b6e7f75a4a57f72191295ae62766a10d627a4f5e5f19eadfbc861378deea7"
+SRC_URI[md5sum] = "db23a40fa0dc54b4d6d225fb20ee6555"
+SRC_URI[sha256sum] = "94201754b36121a9f022a190c75f718441df15402df32c2b520ca331a107511c"
 
 do_compile() {
         cd ${S}/squashfs-tools

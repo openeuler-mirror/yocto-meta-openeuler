@@ -1,7 +1,7 @@
 # main bbfile: yocto-poky/meta/recipes-extended/shadow/shadow_4.11.bb
 
-PV = "4.13"
-
+PV = "4.14.3"
+LIC_FILES_CHKSUM = "file://COPYING;md5=c9a450b7be84eac23e6353efecb60b5b"
 # get extra config files from openeuler(pam.d directory)
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
@@ -12,30 +12,25 @@ SRC_URI:remove = " \
            "
 
 # delete native patches from poky, patch failed, as it's for 4.11
-SRC_URI:remove:class-native = "file://0001-Drop-nsswitch.conf-message-when-not-in-place-eg.-musl.patch"
+SRC_URI:remove:class-native = " \
+        file://0001-Drop-nsswitch.conf-message-when-not-in-place-eg.-musl.patch \
+        file://0001-Disable-use-of-syslog-for-sysroot.patch \
+        "
 
 # use openeuler patches
 SRC_URI:prepend = "file://${BP}.tar.xz \
-           file://usermod-unlock.patch \
-           file://backport-useradd-check-if-subid-range-exists-for-user.patch \
-           file://shadow-add-sm3-crypt-support.patch \
-           file://backport-Fix-off-by-one-mistakes.patch \
-           file://backport-Fix-typos-in-length-calculations.patch \
-           file://backport-Correctly-handle-illegal-system-file-in-tz.patch \
-           file://backport-Explicitly-override-only-newlines.patch \
-           file://backport-Prevent-out-of-boundary-access.patch \
-           file://backport-Added-control-character-check.patch \
-           file://backport-Overhaul-valid_field.patch \
-           file://backport-Read-whole-line-in-yes_or_no.patch \
-           file://backport-commonio-free-removed-database-entries.patch \
-           file://backport-semanage-disconnect-to-free-libsemanage-internals.patch \
-           file://backport-run_parts-for-groupadd-and-groupdel.patch \
+            file://usermod-unlock.patch \
+            file://shadow-add-sm3-crypt-support.patch \
+            file://shadow-Remove-encrypted-passwd-for-useradd-gr.patch \
            "
 # remove patches with the same functionality in src-openeuler from poky:
+# file://shadow-update-pam-conf.patch
 SRC_URI:remove = " \
     file://CVE-2023-29383.patch \
     file://0001-Overhaul-valid_field.patch \
 "
+
+inherit pkgconfig
 
 # add extra pam files for openeuler
 # poky shadow.inc have added: chfn chpasswd chsh login newusers passwd su
@@ -44,7 +39,9 @@ PAM_SRC_URI += " \
         file://login.defs \
 "
 
-SRC_URI[sha256sum] = "813057047499c7fe81108adcf0cffa3ad4ec75e19a80151f9cbaa458ff2e86cd"
+SRC_URI[sha256sum] = "6969279236fe3152768573a38c9f83cb9ca109851a5a990aec1fc672ac2cfcd2"
+
+CFLAGS:append:libc-musl = " -DLIBBSD_OVERLAY"
 
 # no ${mandir} installed in openeuler
 ALTERNATIVE:${PN}-doc = ""
@@ -92,6 +89,16 @@ do_install:append:class-target () {
     # use /bin/bash as default SHELL
     sed -i 's:/bin/sh:/bin/bash:g' ${D}${sysconfdir}/default/useradd
 }
+
+
+SYSROOT_DIRS:append:class-native = " ${STAGING_DIR_NATIVE}/lib-shadow-deps/"
+INSANE_SKIP:${PN}:class-native = "already-stripped"
+
+PACKAGECONFIG[libbsd] = "--with-libbsd,--without-libbsd,libbsd"
+PACKAGECONFIG[logind] = "--enable-logind,--disable-logind,systemd"
+
+SYSROOT_DIRS:append:class-native = " ${STAGING_DIR_NATIVE}/lib-shadow-deps/"
+INSANE_SKIP:${PN}:class-native = "already-stripped"
 
 # keep as 4.13 recipe
 PAM_PLUGINS:remove = "pam-plugin-lastlog"
