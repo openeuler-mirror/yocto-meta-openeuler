@@ -1,12 +1,12 @@
 # main bbfile: yocto-poky/meta/recipes-graphics/fontconfig/fontconfig_2.13.1.bb
 
 # version in src-openEuler
-PV = "2.14.2"
+PV = "2.15.0"
 
 # license files changed, update LIC_FILES_CHKSUM value
 LICENSE = "MIT & MIT & PD"
 LIC_FILES_CHKSUM = "file://COPYING;md5=00252fd272bf2e722925613ad74cb6c7 \
-                    file://src/fcfreetype.c;endline=45;md5=ce976b310a013a6ace6b60afa71851c1 \
+                    file://src/fcfreetype.c;endline=45;md5=ef8702fbf3dc506715be8a9d69cb0252 \
                     "
 
 # fontconfig-2.13.94-sw.patch is for arch sw, no need current

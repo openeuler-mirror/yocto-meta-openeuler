@@ -1,24 +1,21 @@
 # main bbfile: yocto-poky/meta/recipes-extended/gawk/gawk_5.1.0.bb
 
 # version in openEuler
-PV = "5.2.0"
+PV = "5.2.2"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI:remove = " \
             file://remove-sensitive-tests.patch \
 "
 
-# files, patches that come from openeuler
+# files, patches that come from openeuler.
+# The following three patches exist in spec file, but not in the source code respository:
+# file://Disable-racy-test-in-test-iolint.awk.patch
+# file://Restore-removed-test-in-test-iolint.awk.patch
+# file://Reorder-statements-in-iolint-to-try-to-eliminate-a-r.patch
 SRC_URI:prepend = " \
            file://${BP}.tar.xz \
-           file://pma.patch \
            file://Disable-pma-test.awk.patch \
-           file://backport-Fix-a-bug-with-Node_elem_new.patch \
-           file://backport-Additional-fix-for-Node_elem_new.patch \
-           file://backport-Yet-another-fix-and-test-for-Node_elem_new.patch \
-           file://backport-Fix-a-memory-leak.patch \
-           file://backport-Code-simplification-in-interpret.h.patch \
-           file://backport-Fix-negative-NaN-issue-on-RiscV.patch \
            "
 
 SRC_URI[md5sum] = "2f724d925873fc82f5e7b1d605ba9a42"

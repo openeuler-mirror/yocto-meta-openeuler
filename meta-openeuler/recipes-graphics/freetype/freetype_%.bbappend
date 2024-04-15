@@ -1,7 +1,7 @@
 # the main bb file: yocto-poky/meta/recipes-graphics/freetype/freetype_2.11.1.bb
 # version in src-openEuler
 
-PV = "2.13.1"
+PV = "2.13.2"
 
 LICENSE = "(FTL | GPL-2.0-or-later) & MIT"
 
