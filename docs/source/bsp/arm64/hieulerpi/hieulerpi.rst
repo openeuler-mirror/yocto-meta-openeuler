@@ -14,17 +14,17 @@
    .. code-block:: console
 
       # 例
-      oebuild init build_3403
+      oebuild init my_workspace
       # 上述命令没有指定分支，使用默认分支master
-      cd xxx/build_3403
+      cd xxx/my_workspace
       oebuild update
 
 2. 依次执行以下命令完成构建
 
    .. code-block:: console
 
-      # 生成ss928构建配置文件，若需额外加入特性，见-f列表(oebuild generate -l)，下例启用必备的ros功能
-      oebuild generate -p sd3403 -f openeuler-ros
+      # 生成hieulerpi1构建配置文件，若需额外加入特性，见-f列表(oebuild generate -l)，下例启用必备的ros功能
+      oebuild generate -p hieulerpi1 -f openeuler-ros
 
       # 按提示进入构建目录，执行如下命令进入bitbake环境，进入构建交互终端
       oebuild bitbake
@@ -37,11 +37,11 @@
 
    二进制产物介绍（对应output目录）：
 
-   - ``openeuler-glibc-x86_64-openeuler-image-aarch64-sd3403-toolchain-24.03.sh``: SDK工具链
+   - ``openeuler-glibc-x86_64-openeuler-image-aarch64-hieulerpi1-toolchain-24.03.sh``: SDK工具链
 
-   - ``kernel-pi``: 适用于ss928海欧派的openEuler内核镜像（由Image + header + dtb + atf合成），可直接用于单板部署
+   - ``kernel-pi``: 适用于海欧派1的openEuler内核镜像（由Image + header + dtb + atf合成），可直接用于单板部署
 
-   - ``openeuler-image-sd3403-[时间戳].rootfs.ext4``: 适用ss928海鸥派的根文件系统，可直接用于单板部署
+   - ``openeuler-image-hieulerpi1-[时间戳].rootfs.ext4``: 适用海鸥派1的根文件系统，可直接用于单板部署
 
    - ``vmlinux-5.10.0``: 备用调试内核
 
