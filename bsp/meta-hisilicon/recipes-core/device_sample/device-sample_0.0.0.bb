@@ -38,4 +38,3 @@ FILES:${PN} = " \
 "
 
 INSANE_SKIP:${PN} += "already-stripped"
-

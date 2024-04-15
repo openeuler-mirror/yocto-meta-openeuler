@@ -1,5 +1,5 @@
 # This file should be included in openeuler-image.bbappend, openeuler-image-ros.bbappend, etc.
-# diff from ${MACHINE}.inc, it shoud not includ by live image
+# diff from ${MACHINE}.inc, it should not be included in live image
 
 require recipes-core/images/bsp-${MACHINE}.inc
 
@@ -10,6 +10,11 @@ v4l-utils \
 hostapd \
 hibot-user-driver \
 bluez5 \
+device-sample \
+"
+
+# add related packages for ros
+IMAGE_INSTALL += " \
 ${@bb.utils.contains("DISTRO_FEATURES", "ros", " \
 ai-demolib \
 mipi-ffmpeglib \
@@ -59,12 +64,9 @@ robot-init-pose \
 robot-bringup \
 ros2-wheeltec-robot \
 serial \
-device-sample \
 depth-image-proc \
 depthimage-to-laserscan \
 dtof-client-node \
 dtof-node \
 hirobot-description \
 ", "", d)}"
-
-
