@@ -7,7 +7,7 @@ XORG_EXT = "tar.xz"
 # update 0001-Drop-x11-dependencies.patch to libX11-1.8.6
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
-PV = "1.8.6"
+PV = "1.8.7"
 
 # update LICENSE checksum
 LIC_FILES_CHKSUM = "file://COPYING;md5=1d49cdd2b386c5db11ec636d680b7116"
