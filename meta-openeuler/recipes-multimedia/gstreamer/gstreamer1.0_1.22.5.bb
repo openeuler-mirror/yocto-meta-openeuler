@@ -17,13 +17,12 @@ S = "${WORKDIR}/gstreamer-${PV}"
 
 SRC_URI = "https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-${PV}.tar.xz \
            file://run-ptest \
-           file://0001-tests-respect-the-idententaion-used-in-meson.patch;striplevel=3 \
-           file://0002-tests-add-support-for-install-the-tests.patch;striplevel=3 \
-           file://0003-tests-use-a-dictionaries-for-environment.patch;striplevel=3 \
-           file://0004-tests-add-helper-script-to-run-the-installed_tests.patch;striplevel=3 \
-           file://0005-tests-remove-gstbin-test_watch_for_state_change-test.patch \
+           file://0001-tests-respect-the-idententaion-used-in-meson.patch \
+           file://0002-tests-add-support-for-install-the-tests.patch \
+           file://0003-tests-use-a-dictionaries-for-environment.patch \
+           file://0004-tests-add-helper-script-to-run-the-installed_tests.patch \
            "
-SRC_URI[sha256sum] = "67c1edf8c3c339cda5dde85f4f7b953bb9607c2d13ae970e2491c5c4c055ef5f"
+SRC_URI[sha256sum] = "3d16259e9dab8b002c57ce208a09b350d8282f5b0197306c0cdba9a0d0799744"
 
 PACKAGECONFIG ??= "${@bb.utils.contains('PTEST_ENABLED', '1', 'tests', '', d)} \
                    check \
@@ -67,6 +66,8 @@ FILES:${PN} += "${libdir}/gstreamer-1.0/*.so"
 FILES:${PN}-dev += "${libdir}/gstreamer-1.0/*.a ${libdir}/gstreamer-1.0/include"
 FILES:${PN}-bash-completion += "${datadir}/bash-completion/completions/ ${datadir}/bash-completion/helpers/gst*"
 FILES:${PN}-dbg += "${datadir}/gdb ${datadir}/gstreamer-1.0/gdb"
+
+RDEPENDS:${PN}-ptest:append:libc-glibc = " glibc-gconv-iso8859-5"
 
 CVE_PRODUCT = "gstreamer"
 

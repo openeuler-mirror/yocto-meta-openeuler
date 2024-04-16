@@ -1,6 +1,6 @@
 OPENEULER_REPO_NAME = "gstreamer1-plugins-base"
 
-PV = "1.20.3"
+PV = "1.22.5"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=69333daa044cb77e486cc36129f7a770"
 

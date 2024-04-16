@@ -1,7 +1,7 @@
 # main bbfile: yocto-poky/meta/recipes-support/gnutls/gnutls_3.7.4.bb
 
 # version in openEuler
-PV = "3.8.0"
+PV = "3.8.2"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=71391c8e0c1cfe68077e7fce3b586283 \
                     file://doc/COPYING;md5=1ebbd3e34237af26da5dc08a4e440464 \
@@ -23,6 +23,10 @@ SRC_URI:append = " \
 SRC_URI:append = " \
         file://${BP}.tar.xz \
         file://fix-ipv6-handshake-failed.patch \
+        file://backport-CVE-2024-0553-rsa-psk-minimize-branching-after-decryption.patch \
+        file://backport-CVE-2024-0567-x509-detect-loop-in-certificate-chain.patch \
+        file://backport-fix-CVE-2024-28834-nettle-avoid-normalization-of-mpz_t-in-deterministic.patch \
+        file://backport-fix-CVE-2024-28835-gnutls_x509_trust_list_verify_crt2-remove-length-lim.patch \
 "
 
 EXTRA_OECONF:remove = "--disable-libdane \

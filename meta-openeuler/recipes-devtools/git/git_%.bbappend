@@ -1,11 +1,12 @@
 # openeuler PV
-PV = "2.41.0"
+PV = "2.43.0"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}/:"
 
 # remove 2.35.7 poky patch
 SRC_URI:remove = "file://CVE-2023-29007.patch \
                   file://CVE-2023-25652.patch \
+                  file://backport-send-email-avoid-duplicate-specification-warnings.patch \
                  "
 
 

@@ -23,7 +23,7 @@ SRC_URI:append:class-native = " file://0001-configure.ac-use-a-custom-value-for-
                                 file://relocate.patch"
 SRC_URI:append:class-nativesdk = " file://relocate.patch"
 
-SRC_URI[sha256sum] = "97eb47df8ae5a3ff744f868005a090da5ab45cb48ee9836dbf5ee739a4e5cf49"
+SRC_URI[sha256sum] = "f68f7d75d06cb1635c336d34d844af97436c3f64ea14bcb7c869782f96f44277"
 
 EXTRA_OECONF = "--disable-ldap \
 		--disable-ccid-driver \
@@ -32,6 +32,7 @@ EXTRA_OECONF = "--disable-ldap \
 		--with-readline=${STAGING_LIBDIR}/.. \
 		--with-mailprog=${sbindir}/sendmail \
 		--enable-gpg-is-gpg2 \
+		--disable-tests \
                "
 # yat2m can be found from recipe-sysroot-native non-deterministically with different versioning otherwise
 CACHED_CONFIGUREVARS += "ac_cv_path_YAT2M=./yat2m"
@@ -86,4 +87,3 @@ PACKAGECONFIG[sqlite3] = "--enable-sqlite, --disable-sqlite, sqlite3"
 BBCLASSEXTEND = "native nativesdk"
 
 lcl_maybe_fortify:mipsarch = ""
-

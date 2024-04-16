@@ -6,10 +6,26 @@ SRC_URI:prepend = " \
         file://glib-${PV}.tar.xz \
 "
 
+SRC_URI:remove = " \
+    file://0001-Do-not-write-bindir-into-pkg-config-files.patch \
+    file://0001-gio-tests-portal-support-Fix-snap-test-ordering-race.patch \
+    file://0001-glocalfile-Sum-apparent-size-only-for-files-and-syml.patch \
+"
+
+SRC_URI:append = " \
+    file://gspawn-eperm.patch \
+    file://backport-gmessages-fix-dropping-irrelevant-log-domains.patch \
+    file://backport-gutils-Fix-an-unlikely-minor-leak-in-g_build_user_data_dir.patch \
+"
+
+FILES:${PN}:append = " \
+    ${datadir}/glib-2.0/dtds \
+"
+
 # fix arm build error: 'errno' undeclared (first use in this function)
 SRC_URI:append:arm = " file://0001-fix-compile-error-for-arm32.patch"
 
-PV = "2.76.4"
+PV = "2.78.3"
 
 # delete depends to shared-mime-info
 SHAREDMIMEDEP:remove = "${@['', 'shared-mime-info']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"

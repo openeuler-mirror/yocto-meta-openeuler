@@ -1,8 +1,8 @@
 # main bb file: yocto-poky/meta/recipes-support/icu/icu_68.2.bb
 
-PV = "73.2"
+PV = "74.1"
 
-LIC_FILES_CHKSUM = "file://../LICENSE;md5=80c2cf39ad8ae12b9b9482a1737c6650"
+LIC_FILES_CHKSUM = "file://../LICENSE;md5=08dc3852df8fffa807301902ad899ff8"
 
 SRC_URI:prepend = " \
     file://${BPN}4c-${ICU_PV}-src.tgz \
