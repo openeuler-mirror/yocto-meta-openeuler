@@ -6,6 +6,7 @@ SRC_URI = "\
     file://nscd.init;subdir=${REL_S}/nscd \
     file://nscd.conf;subdir=${REL_S}/nscd \
     file://nscd.service;subdir=${REL_S}/nscd \
+    file://ld.so.conf \
 "
 # For makedbs.sh
 FILESPATH .= ":${COREBASE}/meta/recipes-core/glibc/glibc"
@@ -110,7 +111,9 @@ python adjust_locale_names () {
 
 glibc_external_do_install_extra () {
     mkdir -p ${D}${sysconfdir}
-    touch ${D}${sysconfdir}/ld.so.conf
+
+    # handling for ld.so.conf
+    install -Dm 0644 ${WORKDIR}/ld.so.conf ${D}${sysconfdir}/ld.so.conf
 
     if [ ! -e ${D}${libdir}/libc.so ]; then
         bbfatal "Unable to locate installed libc.so file (${libdir}/libc.so)." \
