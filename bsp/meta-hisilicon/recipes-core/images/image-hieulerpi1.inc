@@ -8,7 +8,7 @@ IMAGE_INSTALL += " \
 wpa-supplicant \
 v4l-utils \
 hostapd \
-hibot-user-driver \
+hieulerpi1-user-driver \
 bluez5 \
 device-sample \
 "

@@ -5,27 +5,29 @@ LICENSE = "CLOSED"
 
 inherit pkgconfig
 
-# This library is depend by many ROS packages, 
-# using the lib directory instead of the lib64 directory. 
+# This driver library is depended by many ROS packages,
+# using the "lib" directory instead of the "lib64" directory
+# for ros feature
 python roslike_libdir_set() {
-    d.setVar('oldroslibdir', d.getVar('libdir'))
-    pn = e.data.getVar("PN")      
-    if pn.endswith("-native"):
-        return
-    d.setVar('libdir', d.getVar('libdir').replace('64', ''))
-    d.setVar('baselib', d.getVar('baselib').replace('64', ''))
+    if bb.utils.contains('DISTRO_FEATURES', 'ros', True, False, d):
+        old_pkg_config = d.getVar("PKG_CONFIG_SYSROOT_DIR") + d.getVar('libdir') + "/pkgconfig"
+        pn = e.data.getVar("PN")
+        if pn.endswith("-native"):
+            return
+        d.setVar('libdir', d.getVar('libdir').replace('64', ''))
+        d.setVar('baselib', d.getVar('baselib').replace('64', ''))
+        d.appendVar("PKG_CONFIG_PATH", old_pkg_config)
 }
 
 addhandler roslike_libdir_set
 roslike_libdir_set[eventmask] = "bb.event.RecipePreFinalise"
-PKG_CONFIG_PATH:append:class-target = ":${PKG_CONFIG_SYSROOT_DIR}/${oldroslibdir}/pkgconfig"
 
 OPENEULER_LOCAL_NAME = "HiEuler-driver"
 
 SRC_URI = " \
         file://HiEuler-driver/drivers/lib.tar.gz \
         file://HiEuler-driver/drivers/include.tar.gz \
-        file://hibot-user-driver.pc.in \
+        file://hieulerpi1-user-driver.pc.in \
 "
 
 S = "${WORKDIR}"
@@ -44,10 +46,10 @@ do_install:append() {
     -e s#@exec_prefix@#${exec_prefix}# \
     -e s#@libdir@#${libdir}# \
     -e s#@includedir@#${includedir}# \
-    ${WORKDIR}/hibot-user-driver.pc.in > ${WORKDIR}/hibot-user-driver.pc
+    ${WORKDIR}/hieulerpi1-user-driver.pc.in > ${WORKDIR}/hieulerpi1-user-driver.pc
 
     install -d ${D}${libdir}/pkgconfig
-    install -m 0644 ${WORKDIR}/hibot-user-driver.pc ${D}${libdir}/pkgconfig/
+    install -m 0644 ${WORKDIR}/hieulerpi1-user-driver.pc ${D}${libdir}/pkgconfig/
 
 }
 

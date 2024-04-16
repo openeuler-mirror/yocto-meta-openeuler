@@ -18,7 +18,7 @@ PV = "0.0.0"
 ROS_BPN = "mipi-camera"
 
 ROS_BUILD_DEPENDS = " \
-    hibot-user-driver \
+    hieulerpi1-user-driver \
 "
 
 ROS_BUILDTOOL_DEPENDS = " \
@@ -30,7 +30,7 @@ ROS_EXPORT_DEPENDS = ""
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
 ROS_EXEC_DEPENDS = " \
-    hibot-user-driver \
+    hieulerpi1-user-driver \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
