@@ -187,6 +187,7 @@ FILES:${PN}-dev += "${libdir}/pulse-${PV}/modules/*.la ${datadir}/vala"
 FILES:${PN}-bin += "${sysconfdir}/default/volatiles/04_pulse"
 FILES:${PN}-pa-info = "${bindir}/pa-info"
 FILES:${PN}-server = "${bindir}/pulseaudio ${bindir}/start-* ${sysconfdir} ${bindir}/pactl */udev/rules.d/*.rules */*/udev/rules.d/*.rules ${systemd_user_unitdir}/*"
+FILES:${PN}-server += "${datadir}/dbus-1/system.d/pulseaudio-system.conf"
 
 #SYSTEMD_PACKAGES = "${PN}-server"
 SYSTEMD_SERVICE:${PN}-server = "pulseaudio.service"
@@ -257,7 +258,7 @@ RDEPENDS:pulseaudio-server += "${@bb.utils.contains('DISTRO_FEATURES', 'pulseaud
 
 # pulseaudio-module-console-kit is built whenever dbus is enabled by PACKAGECONFIG
 # but consolekit depends on libx11 and is available only for DISTRO with x11 in DISTRO_FEATURES
-RDEPENDS:pulseaudio-module-console-kit =+ "${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'consolekit', '', d)}"
+RDEPENDS:pulseaudio-module-console-kit =+ "${@bb.utils.contains('DISTRO_FEATURES', 'sysvinit x11', 'consolekit', '', d)}"
 RDEPENDS:pulseaudio-misc += "pulseaudio-module-cli-protocol-unix"
 
 FILES:${PN}-module-alsa-card += "${datadir}/pulseaudio/alsa-mixer"

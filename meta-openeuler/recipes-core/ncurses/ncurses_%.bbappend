@@ -10,6 +10,7 @@ SRC_URI:remove = " \
 "
 
 S = "${WORKDIR}/${BP}"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 # files, patches that come from openeuler
 SRC_URI += "file://${BP}.tar.gz \
            file://ncurses-config.patch \
@@ -20,4 +21,11 @@ SRC_URI += "file://${BP}.tar.gz \
            file://backport-0002-CVE-2023-29491-env-access.patch \
            file://backport-fix-for-out-of-memory-condition.patch \
            file://backport-fix-coredump-when-use-Memmove.patch \
+           file://backport-CVE-2023-50495.patch \
+           file://backport-CVE-2023-45918.patch \
+"
+
+# from oe-core
+SRC_URI += "\
+           file://exit_prototype.patch \ 
 "

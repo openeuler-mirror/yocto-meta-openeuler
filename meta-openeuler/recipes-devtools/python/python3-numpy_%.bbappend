@@ -1,29 +1,30 @@
-PV = "1.21.4"
+PV = "1.24.3"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
-LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=b076ad374a7d311ba3126a22b2d52596"
 SRC_URI[md5sum] = "b3c4477a027d5b6fba5e1065064fd076"
 SRC_URI[sha256sum] = "e6c76a87633aa3fa16614b61ccedfae45b91df2767cf097aa9c933932a7ed1e0"
 OPENEULER_REPO_NAME = "numpy"
 
-SRC_URI:prepend = "file://numpy-${PV}.zip "
+SRC_URI:prepend = "file://numpy-${PV}.tar.gz "
 S = "${WORKDIR}/numpy-${PV}"
 
 # remove poky conflict src
 SRC_URI:remove = " \
         file://CVE-2021-41496.patch \
+        file://0001-numpy-core-Define-RISCV-32-support.patch \
         "
-# apply new patch for new version, see:
-# http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-devtools/python/python3-numpy_1.23.4.bb
-SRC_URI:append = "file://0001-generate_umath.py-do-not-write-full-path-to-output-f.patch "
 
 #apply openeuler patch
 SRC_URI:append = " \
-        file://backport-CVE-2021-41496.patch \
-        file://backport-CVE-2021-41495.patch \
-        file://backport-CVE-2021-34141.patch \
+        file://adapted-cython3_noexcept.patch \
         "
+# apply oe-core patch
+SRC_URI += "\
+        file://0001-simd.inc.src-Change-NPY_INLINE-to-inline.patch \
+"
+        
+RDEPENDS:${PN}-ptest:append = "${PYTHON_PN}-typing-extensions \ "
 
 # It's a workaround:
 # Due to updates to the compiler and C library, we have found that some for loops 

@@ -1,4 +1,4 @@
-PV = "4.18.1"
+PV = "4.18.2"
 S = "${WORKDIR}/${BP}"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
@@ -6,6 +6,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 # fix-declaration.patch same as backport-Fix-compiler-error-on-clang.patch in openeuler
 SRC_URI:remove = " \
         file://fix-declaration.patch \
+        file://ea3187cfcf9cac87e5bc5e7db79b0338da9e355e.patch \
 "
 
 # files, patches that come from openeuler
@@ -23,17 +24,16 @@ SRC_URI:prepend = " \
         file://bugfix-rpm-4.14.2-wait-once-get-rpmlock-fail.patch \
         file://get-in-use-of-ndb.patch \
         file://still-in-use-of-python-scripts-from-old-version.patch \
-        file://backport-Fix-compiler-error-on-clang.patch \
-        file://backport-Move-variable-to-nearest-available-scope.patch \
         file://backport-revert-Permit-building-rpm-from-git-without-pandoc.patch \
-        file://backport-Fix-per-file-plugin-hook-regression-introduced-in-4..patch \
-        file://backport-Remove-obscure-check-for-package-build-time-from-reb.patch \
-        file://backport-Fix-possible-null-pointer-reference-in-ndb.patch \
-        file://backport-Fix-rpmDigestBundleFinal-and-Update-return-code-on-i.patch \
-        file://backport-Actually-return-an-error-in-parseScript-if-parsing-f.patch \
+        file://backport-Check-inside-root-when-querying-for-files.patch \
+        file://backport-Use-unsigned-integers-for-buildtime-too-for-Y2K38-sa.patch \
+        file://backport-Fix-a-theoretical-use-of-uninitialized-struct-member.patch \
+        file://backport-Fix-spec-parser-leaks-from-trans-f-file.patch \
+        file://backport-Tip-toe-around-rpmfiFN-thin-ice-in-fsm.patch \
+        file://backport-Fix-a-memleak-on-invalid-command-line-options.patch \
+        file://backport-Let-eBPF-ELF-files-be-packaged-in-noarch-packages.patch \
         file://Add-digest-list-plugin.patch \
         file://Add-IMA-digest-list-support.patch \
-        file://backport-Check-inside-root-when-querying-for-files.patch \
 "
 
 SRC_URI[sha256sum] = "2e0d220b24749b17810ed181ac1ed005a56bbb6bc8ac429c21f314068dc65e6a"

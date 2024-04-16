@@ -8,6 +8,7 @@ SRC_URI:remove = " file://0001-src-fix-compatibility-with-ncurses-6.3.patch "
 # src package and patches from openEuler
 SRC_URI:prepend = " \
         file://${BP}.tar.gz \
+        file://backport-powertop-2.7-always-create-params.patch \
         "
 
 S = "${WORKDIR}/${BP}"

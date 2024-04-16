@@ -11,3 +11,5 @@ SRC_URI:remove = "file://0001-Use-cross-compiled-rpcgen.patch \
 "
 
 S = "${WORKDIR}/${BP}"
+
+FILESEXTRAPATHS:prepend := "${THISDIR}/:"

@@ -1,7 +1,7 @@
 #main bbfile: yocto-poky/meta/recipes-extended/procps/procps_3.3.17.bb
 
 #version in openEuler
-PV = "4.0.2"
+PV = "4.0.4"
 
 S = "${WORKDIR}/procps-ng-${PV}"
 
