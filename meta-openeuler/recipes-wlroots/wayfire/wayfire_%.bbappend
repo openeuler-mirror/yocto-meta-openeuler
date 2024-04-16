@@ -4,12 +4,14 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
 OPENEULER_LOCAL_NAME = "oee_archive"
 
-PV = "0.7.5"
+PV = "0.8.1"
 
 SRC_URI += " \
         file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.xz \
         file://ignore-drop-root.patch \
 "
+
+PACKAGECONFIG[use_system_wlroots] = "-Duse_system_wlroots=enabled,-Duse_system_wlroots=disabled,wlroots"
 
 S = "${WORKDIR}/${BP}"
 

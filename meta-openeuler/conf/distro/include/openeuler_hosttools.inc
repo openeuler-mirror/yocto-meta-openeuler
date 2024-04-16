@@ -137,3 +137,6 @@ ASSUME_PROVIDED += "hexdump rev"
 
 # used by e2fsprogs
 HOSTTOOLS += "compile_et"
+
+# used for libdbusmenu-glib
++HOSTTOOLS_NONFATAL += " xsltproc "
