@@ -23,6 +23,7 @@ require openeuler-image-common.inc
 IMAGE_INSTALL += " \
 ${@bb.utils.contains("DISTRO_FEATURES", "mcs", "packagegroup-mcs", "",d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "ros", "packagegroup-ros", "", d)} \
+${@bb.utils.contains("DISTRO_FEATURES", "hmi", "packagegroup-hmi", "", d)} \
 "
 
 # You can add extra user here, suck like:

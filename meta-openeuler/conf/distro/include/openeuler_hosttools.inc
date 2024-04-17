@@ -139,4 +139,4 @@ ASSUME_PROVIDED += "hexdump rev"
 HOSTTOOLS += "compile_et"
 
 # used for libdbusmenu-glib
-+HOSTTOOLS_NONFATAL += " xsltproc "
+HOSTTOOLS_NONFATAL += " xsltproc "

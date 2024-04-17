@@ -43,3 +43,6 @@ FILES:${PN} += " \
 FILES:${PN}-dev += " \
     ${libdir}/libwx_* \
     "
+
+INSANE_SKIP:${PN}-bin += "dev-deps"
+
