@@ -1237,3 +1237,780 @@ Project开发任务手册中的“\ `创建Node包管理器（NPM）包 <https:/
 .. note::
 
    该类不支持/etc目录本身，因为systemd依赖于它。要在overlayfs中获取/etc，请参见overlayfs-etc。
+
+5.90 overlayfs-etc类
+=====================
+
+为了在overlayfs中获取/etc目录，需要在早期启动阶段进行特殊处理。其思想是提供一个自定义的init脚本，在启动实际的init程序之前挂载/etc，因为后者已经需要挂载/etc。
+
+示例用法：
+
+::
+
+   IMAGE_FEATURES += "overlayfs-etc"
+
+.. note::
+
+   该类不能直接继承。使用\ `IMAGE_FEATURES <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-IMAGE_FEATURES>`__\ 或\ `EXTRA_IMAGE_FEATURES <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-EXTRA_IMAGE_FEATURES>`__\ 。
+
+您的机器配置应该定义至少您要使用的overlayfs的设备、挂载点和文件系统类型：
+
+::
+
+   OVERLAYFS_ETC_MOUNT_POINT = "/data"
+   OVERLAYFS_ETC_DEVICE = "/dev/mmcblk0p2"
+   OVERLAYFS_ETC_FSTYPE ?= "ext4"
+
+要控制更多的挂载选项，您应该考虑设置挂载选项（默认情况下使用默认值）：
+
+::
+
+   OVERLAYFS_ETC_MOUNT_OPTIONS = "wsync"
+
+该类提供了两种生成/sbin/init的选项：
+
+-  默认选项是将原始的/sbin/init重命名为/sbin/init.orig，并将生成的init放在原始名称下，即/sbin/init。它的优势是您无需更改任何内核参数即可使其工作，但它的限制是包管理无法使用，因为更新init管理器会删除生成的脚本。
+
+-  如果您希望保留原始的init，可以设置：
+
+   ::
+
+      OVERLAYFS_ETC_USE_ORIG_INIT_NAME = "0"
+
+   然后生成的init将被命名为/sbin/preinit，您需要在引导加载器配置中手动扩展内核参数。
+
+5.91 own-mirrors类
+====================
+
+own-mirrors类使得设置自己的PREMIRRORS变得更加容易，这些PREMIRRORS是首先从其中获取源代码的地方，然后再尝试从每个配方中SRC_URI指定的上游获取。
+
+要使用这个类，全局继承它并指定SOURCE_MIRROR_URL。以下是一个例子：
+
+::
+
+   INHERIT += "own-mirrors"
+   SOURCE_MIRROR_URL = "http://example.com/my-source-mirror"
+
+您可以在\ `SOURCE_MIRROR_URL <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-SOURCE_MIRROR_URL>`__\ 中只指定一个URL。
+
+5.92 package类
+=================
+
+package类支持从构建的输出生成包。核心通用功能位于package.bbclass中。特定包类型的代码位于这些特定的包类中：package_deb、package_rpm、package_ipk。
+
+您可以通过在conf/local.conf配置文件（位于Build
+Directory中）中使用PACKAGE_CLASSES变量来控制结果包格式的列表，您可以在其中指定一个或多个包类型。由于图像是从包生成的，因此需要包类才能启用图像生成。此变量中列出的第一个类用于图像生成。
+
+如果您选择设置开发主机上的存储库（包源），以便DNF可以使用它，那么在目标上运行图像时，可以从源安装包（即运行时安装包）。有关更多信息，请参阅Yocto
+Project开发任务手册中的“使用运行时包管理”部分。
+
+您选择的特定包类可能会影响构建时间性能和空间占用。一般来说，使用IPK构建包比使用RPM构建相同或相似的包大约需要30％的时间。这个比较考虑了具有所有先前构建的依赖项的完整包的构建。这种差异的原因是RPM包管理器创建并处理比IPK包管理器更多的元数据。因此，如果您正在构建较小的系统，您可能希望将PACKAGE_CLASSES设置为“package_ipk”。
+
+然而，在做出包管理器决策之前，您还应该考虑一些关于使用RPM的进一步事项：
+
+-  RPM由于处理更多的元数据而开始提供比IPK更多的功能。例如，这些信息包括单个文件类型、文件校验和生成和安装评估、稀疏文件支持、多库系统的冲突检测和解决、ACID风格的升级以及回滚的重新打包能力。
+
+-  对于较小的系统，使用RPM时Berkeley数据库和元数据的额外空间可能会影响您执行设备升级的能力。
+
+您可以在这些两个Yocto项目邮件列表链接中找到有关包类影响的更多信息：
+
+-  https://lists.yoctoproject.org/pipermail/poky/2011-May/006362.html
+
+-  https://lists.yoctoproject.org/pipermail/poky/2011-May/006363.html
+
+5.93 package_deb类
+====================
+
+package_deb类提供了使用Debian（即.deb）文件格式创建包的支持。该类确保将包以.deb文件格式写入${DEPLOY_DIR_DEB}目录。
+
+这个类继承了package类，并通过local.conf文件中的\ `PACKAGE_CLASSES <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-PACKAGE_CLASSES>`__\ 变量启用。
+
+5.94 package_ipk类
+====================
+
+package_ipk类提供了使用IPK（即.ipk）文件格式创建包的支持。该类确保将包以.ipk文件格式写入${DEPLOY_DIR_IPK}目录。
+
+这个类继承了package类，并通过local.conf文件中的\ `PACKAGE_CLASSES <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-PACKAGE_CLASSES>`__\ 变量启用。
+
+5.95 package_rpm类
+====================
+
+package_rpm类提供了使用RPM（即.rpm）文件格式创建包的支持。该类确保将包以.rpm文件格式写入${DEPLOY_DIR_RPM}目录。
+
+这个类继承了package类，并通过local.conf文件中的\ `PACKAGE_CLASSES <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-PACKAGE_CLASSES>`__\ 变量启用。
+
+5.96 packagedata类
+=====================
+
+packagedata类提供了读取PKGDATA_DIR中找到的pkgdata文件的通用功能。这些文件包含由OpenEmbedded构建系统生成的每个输出包的信息。
+
+这个类默认启用，因为它被继承到package类中。
+
+5.97 packagegroup类
+=====================
+
+packagegroup类设置了适用于包组配方（例如PACKAGES、PACKAGE_ARCH、ALLOW_EMPTY等）的默认值。强烈建议所有包组配方都继承这个类。
+
+有关如何使用此类的信息，请参阅Yocto
+Project开发任务手册中的“\ `使用自定义包组定制图像 <https://docs.yoctoproject.org/4.0.17/dev-manual/customizing-images.html#customizing-images-using-custom-package-groups>`__\ ”部分。
+
+以前，这个类被称为任务类。
+
+5.98 patch类
+===============
+
+patch类提供了在do_patch任务期间应用补丁的所有功能。
+
+这个类默认启用，因为它被继承到基类中。
+
+5.99 perlnative类
+====================
+
+当一个配方继承perlnative类时，它支持使用构建系统构建的Perl的本地版本，而不是使用构建主机提供的Perl版本。
+
+5.100 pypi类
+=================
+
+pypi类为从PyPI（Python包索引）构建Python模块的配方设置了适当的变量。默认情况下，它根据BPN确定PyPI包名称（如果存在，则剥离“python-”或“python3-”前缀），但在一些情况下，您可能需要在配方中手动设置PYPI_PACKAGE。
+
+pypi类设置的变量包括\ `SRC_URI <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-SRC_URI>`__\ 、\ `SECTION <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-SECTION>`__\ 、\ `HOMEPAGE <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-HOMEPAGE>`__\ 、\ `UPSTREAM_CHECK_URI <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-UPSTREAM_CHECK_URI>`__\ 、\ `UPSTREAM_CHECK_REGEX <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-UPSTREAM_CHECK_REGEX>`__\ 和\ `CVE_PRODUCT <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-CVE_PRODUCT>`__\ 。
+
+5.101 python_flit_core类
+===========================
+
+python_flit_core类启用了构建声明PEP-517兼容的flit_core.buildapi构建后端的Python模块，该构建后端在pyproject.toml的[build-system]部分中声明（参见\ `PEP-518 <https://www.python.org/dev/peps/pep-0518/>`__\ ）。
+
+使用flit_core.buildapi构建的Python模块是纯Python（没有C或Rust扩展）。
+
+在内部，它使用了python_pep517类。
+
+5.102 python_pep517类
+========================
+
+python_pep517类构建和安装一个Python
+wheel二进制存档（参见\ `PEP-517 <https://peps.python.org/pep-0517/>`__\ ）。
+
+配方不会直接继承这个类，而是通常另一个类会继承它并添加相关的本地依赖项。
+
+执行此操作的类示例包括python_flit_core、python_setuptools_build_meta和python_poetry_core。
+
+5.103 python_poetry_core类
+=============================
+
+python_poetry_core类启用了使用Poetry Core构建系统的Python模块的构建。
+
+在内部，它使用了python_pep517类。
+
+5.104 python_pyo3类
+======================
+
+python_pyo3类帮助确保使用PyO3构建的用Rust编写的Python扩展正确设置了交叉编译环境。
+
+这个类是\ `python-setuptools3_rust <https://docs.yoctoproject.org/4.0.17/ref-manual/classes.html#ref-classes-python-setuptools3-rust>`__\ 类的内部类，不应该直接在配方中使用。
+
+5.105 python-setuptools3_rust类
+==================================
+
+python-setuptools3_rust类启用了使用PyO3实现的用Rust编写的Python扩展的构建。这使得可以像编写C语言一样轻松地编译和分发用Rust编写的Python扩展。
+
+这个类继承了setuptools3和python_pyo3类。
+
+5.106 pixbufcache类
+======================
+
+pixbufcache类为安装pixbuf加载器的包生成适当的post-install和post-remove（postinst/postrm）脚本。这些脚本调用update_pixbuf_cache将pixbuf加载器添加到缓存中。由于缓存文件是特定于架构的，因此如果需要在创建映像期间在构建主机上运行postinst脚本，则使用QEMU运行update_pixbuf_cache。
+
+如果正在安装的pixbuf加载器位于配方的主包之外，请设置\ `PIXBUF_PACKAGES <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-PIXBUF_PACKAGES>`__\ 以指定包含加载器的包。
+
+5.107 pkgconfig类
+====================
+
+pkgconfig类通过使用pkg-config提供了一种获取头文件和库信息的标准方法。该类旨在将pkg-config平滑地集成到使用它的库中。
+
+在暂存期间，BitBake将pkg-config数据安装到sysroots/目录中。通过在pkg-config中使用sysroot功能，pkgconfig类不再需要操作这些文件。
+
+5.108 populate_sdk类
+=======================
+
+populate_sdk类提供了对仅SDK的配方的支持。有关使用do_populate_sdk任务构建交叉开发工具链时获得的优势的信息，请参阅Yocto
+Project应用程序开发和可扩展软件开发工具包（eSDK）手册中的“\ `构建SDK安装程序 <https://docs.yoctoproject.org/4.0.17/sdk-manual/appendix-obtain.html#building-an-sdk-installer>`__\ ”部分。
+
+5.109 populate_sdk_*类
+=========================
+
+populate_sdk_*类支持SDK创建，包括以下类：
+
+-  populate_sdk_base：支持在所有包管理器（即DEB、RPM和opkg）下创建SDK的基类。
+
+-  populate_sdk_deb：支持在Debian包管理器下创建SDK。
+
+-  populate_sdk_rpm：支持在RPM包管理器下创建SDK。
+
+-  populate_sdk_ipk：支持在opkg（IPK格式）包管理器下创建SDK。
+
+-  populate_sdk_ext：支持在所有包管理器下创建可扩展的SDK。
+
+populate_sdk_base类根据\ `IMAGE_PKGTYPE <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-IMAGE_PKGTYPE>`__\ 继承适当的populate_sdk_*（即deb、rpm和ipk）。
+
+基类确保所有源和目标目录都已建立，然后填充SDK。填充SDK后，populate_sdk_base类构建两个sysroots：${SDK_ARCH}-nativesdk，包含交叉编译器及相关工具；以及目标，包含为SDK使用配置的目标根文件系统。这两个映像位于SDK_OUTPUT，其中包括以下内容：
+
+::
+
+   ${SDK_OUTPUT}/${SDK_ARCH}-nativesdk-pkgs
+   ${SDK_OUTPUT}/${SDKTARGETSYSROOT}/target-pkgs
+
+最后，基本的populate
+SDK类创建工具链环境设置脚本、SDK的tarball和安装程序。
+
+相应的populate_sdk_deb、populate_sdk_rpm和populate_sdk_ipk类各自支持特定类型的SDK。这些类由populate_sdk_base类继承和使用。
+
+有关交叉开发工具链生成的更多信息，请参阅Yocto项目概述和概念手册中的“\ `交叉开发工具链生成 <https://docs.yoctoproject.org/4.0.17/overview-manual/concepts.html#cross-development-toolchain-generation>`__\ ”部分。有关使用do_populate_sdk任务构建交叉开发工具链时获得的优势的信息，请参阅Yocto项目应用程序开发和可扩展软件开发工具包（eSDK）手册中的“\ `构建SDK安装程序 <https://docs.yoctoproject.org/4.0.17/sdk-manual/appendix-obtain.html#building-an-sdk-installer>`__\ ”部分。
+
+5.110 prexport类
+==================
+
+prexport类提供了导出PR值的功能。
+
+.. note::
+
+   这个类不是直接使用的，而是在使用“bitbake-prserv-tool
+   export”时启用的。
+
+5.111 primport类
+====================
+
+primport类提供了导入PR值的功能。
+
+.. note::
+
+   这个类不是直接使用的，而是在使用“bitbake-prserv-tool
+   import”时启用的。
+
+5.112 prserv类
+=================
+
+prserv类提供了使用PR服务的功能，以便自动管理每个配方的PR变量的递增。
+
+这个类默认启用，因为它被包类继承。然而，OpenEmbedded构建系统不会启用此功能，除非已设置PRSERV_HOST。
+
+5.113 ptest类
+================
+
+ptest类提供了打包和安装为构建提供这些测试的软件的配方的运行时测试的功能。
+
+这个类旨在被各个配方继承。然而，除非“ptest”出现在\ `DISTRO_FEATURES <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-DISTRO_FEATURES>`__\ 中，否则该类的功能在很大程度上是禁用的。有关使用ptest进行包测试的更多信息，请参阅Yocto项目开发任务手册中的“\ `使用ptest测试包 <https://docs.yoctoproject.org/4.0.17/dev-manual/packages.html#testing-packages-with-ptest>`__\ ”部分。
+
+5.114 ptest-cargo类
+=======================
+
+ptest-cargo类是一个扩展了cargo类的类，它分别添加了compile_ptest_cargo和install_ptest_cargo步骤来构建和安装Cargo.toml文件中定义的测试套件，并将其放入一个专用的-ptest包中。
+
+5.115 ptest-gnome类
+=====================
+
+启用针对GNOME包的特定于包的测试（ptests），这些测试旨在使用gnome-desktop-testing执行。
+
+有关设置和运行ptests的信息，请参阅Yocto项目开发任务手册中的“\ `使用ptest测试包 <https://docs.yoctoproject.org/4.0.17/dev-manual/packages.html#testing-packages-with-ptest>`__\ ”部分。
+
+5.116 python3-dir类
+=====================
+
+python3-dir类提供了Python 3的基本版本、位置和站点包位置。
+
+5.117 python3native类
+========================
+
+python3native类支持使用构建系统构建的Python
+3的本地版本，而不是构建主机提供的版本。
+
+5.118 python3targetconfig类
+==============================
+
+python3targetconfig类支持使用构建系统构建的Python
+3的本地版本，而不是构建主机提供的版本，但可以访问目标机器的配置（例如正确的安装目录）。这也增加了对目标python3的依赖关系，因此仅在适当的地方使用以避免不必要地延长构建时间。
+
+5.119 qemu类
+===============
+
+qemu类提供了需要QEMU或测试QEMU存在性的配方的功能。通常，这个类用于在构建主机上使用QEMU的应用程序仿真模式运行目标系统的程序。
+
+5.120 recipe_sanity类
+=======================
+
+recipe_sanity类检查可能存在的任何影响构建的主机系统配方先决条件（例如设置的变量或存在的软件）。
+
+5.121 relocatable类
+=====================
+
+relocatable类启用将二进制文件安装到sysroot时进行重定位。
+
+该类利用chrpath类，并被cross和native类使用。
+
+5.122 remove-libtool类
+=========================
+
+remove-libtool类向do_install任务添加了一个后置函数，用于删除由libtool安装的所有.la文件。删除这些文件会导致它们在sysroot和目标包中都不存在。
+
+如果配方需要安装.la文件，则可以通过以下方式覆盖删除：
+
+::
+
+   REMOVE_LIBTOOL_LA = "0"
+
+.. note::
+
+   remove-libtool类默认情况下未启用。
+
+5.123 report-error类
+=======================
+
+report-error类支持启用错误报告工具，该工具允许您将构建错误信息提交到中央数据库。
+
+该类收集有关配方、配方版本、任务、机器、发行版、构建系统、目标系统、主机发行版、分支、提交和日志的调试信息。从这些信息中，使用JSON格式创建并存储报告文件在${`LOG_DIR <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-LOG_DIR>`__}/error-report中。
+
+5.124 rm_work类
+=================
+
+rm_work类支持删除临时工作区，这可以减轻构建过程中对硬盘的需求。
+
+OpenEmbedded构建系统在构建过程中可能会使用大量的磁盘空间。其中一部分是每个配方的${TMPDIR}/work目录下的工作文件。一旦构建系统为一个配方生成了软件包，该配方的工作文件就不再需要了。然而，默认情况下，构建系统会保留这些文件以供检查和可能的调试目的。如果您希望在构建过程中删除这些文件以节省磁盘空间，可以通过在Build
+Directory中找到的local.conf文件中添加以下内容来启用rm_work：
+
+::
+
+   INHERIT += "rm_work"
+
+如果您正在修改和构建配方的工作目录中的源代码，启用rm_work可能会导致您的源代码更改丢失。要排除某些配方的工作目录不被rm_work删除，您可以将您正在处理的配方的名称添加到RM_WORK_EXCLUDE变量中，该变量也可以在local.conf文件中设置。以下是一个例子：
+
+::
+
+   RM_WORK_EXCLUDE += "busybox glibc"
+
+5.125 rootfs*类
+==================
+
+rootfs*类支持为映像创建根文件系统，包括以下类：
+
+rootfs-postcommands类，它定义了映像配方的文件系统后处理函数。
+
+rootfs_deb类，它支持使用.deb包构建的映像的根文件系统的创建。
+
+rootfs_rpm类，它支持使用.rpm包构建的映像的根文件系统的创建。
+
+rootfs_ipk类，它支持使用.ipk包构建的映像的根文件系统的创建。
+
+rootfsdebugfiles类，它将在构建主机上找到的附加文件直接安装到根文件系统中。
+
+根文件系统是从包中创建的，具体使用哪个rootfs*文件取决于PACKAGE_CLASSES变量。
+
+有关如何创建根文件系统映像的信息，请参阅Yocto项目概述和概念手册中的“映像生成”部分。
+
+5.126 rust类
+===============
+
+rust类是一个内部类，仅在“rust”配方中使用，用于构建Rust编译器和运行时库。除了这个配方之外，它不打算直接使用。
+
+5.127 rust-common类
+=======================
+
+rust-common类是cargo_common和rust类的内部类，不打算直接使用。
+
+5.128 sanity类
+================
+
+sanity类检查主机系统上是否存在先决软件，以便用户可以了解可能影响其构建的潜在问题。该类还执行来自local.conf配置文件的基本用户配置检查，以防止常见的错误导致构建失败。分发策略通常决定是否包含此类。
+
+5.129 scons类
+=================
+
+scons类支持需要使用SCons构建系统的软件的配方。您可以使用EXTRA_OESCONS变量指定要传递给SCons命令行的附加配置选项。
+
+5.130 sdl类
+==============
+
+sdl类支持需要使用Simple DirectMedia Layer（SDL）库构建软件的配方。
+
+5.131 python_setuptools_build_meta
+python_setuptools_build_meta类启用了在pyproject.toml的[build-system]部分声明PEP-517兼容的setuptools.build_meta构建后端的Python模块的构建（参见\ `PEP-518 <https://www.python.org/dev/peps/pep-0518/>`__\ ）。
+
+使用setuptools.build_meta构建的Python模块可以是纯Python，也可以包含C或Rust扩展。
+
+内部使用python_pep517类。
+
+5.132 setuptools3类
+=======================
+
+setuptools3类支持使用基于setuptools的构建系统（例如仅具有setup.py且尚未迁移到官方pyproject.toml格式）的Python
+3.x扩展。如果您的配方使用这些构建系统，则配方需要继承setuptools3类。
+
+.. note::
+
+   setuptools3类的do_compile任务现在调用setup.py
+   bdist_wheel来构建wheel二进制存档格式（参见PEP-427）。
+
+   由此产生的一个后果是，仍然使用来自Python标准库的已弃用的distutils的遗留软件无法作为轮子进行打包。一种常见的解决方案是从distutils.core导入setup替换为从setuptools导入setup。
+
+.. note::
+
+   setuptools3类的do_install任务现在安装wheel二进制存档。在当前版本的setuptools中，legacy
+   setup.py
+   install方法已被弃用。如果setup.py不能与wheel一起使用，例如它在Python模块或标准入口点之外创建文件，那么应该使用setuptools3_legacy。
+
+5.133 setuptools3_legacy类
+=============================
+
+setuptools3_legacy类支持使用基于setuptools的构建系统（例如仅具有setup.py且尚未迁移到官方pyproject.toml格式）的Python
+3.x扩展。与setuptools3不同，它使用传统的setup.py构建和安装命令，而不是wheels。这种对setuptools的使用已被弃用，但仍然相对常见。
+
+5.134 setuptools3-base类
+===========================
+
+setuptools3-base类为支持构建Python版本3.x扩展的其他类提供可重用的基类。如果您需要setuptools3类未提供的功能，您可能希望继承setuptools3-base。一些配方不需要setuptools3类中的任务，而是继承此类。
+
+5.135 sign_rpm类
+===================
+
+sign_rpm类支持生成签名RPM包。
+
+5.136 siteconfig类
+=====================
+
+siteconfig类提供处理站点配置的功能。该类由autotools*类用于加速do_configure任务。
+
+5.137 siteinfo类
+==================
+
+siteinfo类提供了其他类或配方可能需要的目标信息。
+
+例如，考虑Autotools，它可能需要在目标硬件上执行的测试。由于在交叉编译时通常不可能这样做，因此使用站点信息提供缓存的测试结果，以便可以跳过这些测试，但仍然提供正确的值。meta/site目录包含按不同类别（如架构、字节顺序和使用的libc）排序的测试结果。站点信息通过CONFIG_SITE变量提供当前构建中包含相关数据的一组文件，Autotools会自动获取这些文件。
+
+该类还提供了可以在元数据中的其他地方使用的变量，如\ `SITEINFO_ENDIANNESS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-SITEINFO_ENDIANNESS>`__\ 和\ `SITEINFO_BITS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-SITEINFO_BITS>`__\ 。
+
+5.138 sstate类
+==================
+
+sstate类提供了对共享状态（sstate）的支持。默认情况下，通过\ `INHERIT_DISTRO <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-INHERIT_DISTRO>`__\ 变量的默认值启用该类。
+
+有关sstate的更多信息，请参阅Yocto项目概述和概念手册中的“\ `共享状态缓存 <https://docs.yoctoproject.org/4.0.17/overview-manual/concepts.html#shared-state-cache>`__\ ”部分。
+
+5.139 staging类
+=================
+
+staging类将文件安装到各个配方工作目录的sysroots中。该类包含以下关键任务：
+
+负责处理最终出现在配方sysroots中的文件的do_populate_sysroot任务。
+
+将文件安装到各个配方工作目录（即WORKDIR）中的do_prepare_recipe_sysroot任务（是populate_sysroot任务的“伙伴”任务）。
+
+staging类中的代码相当复杂，基本上分为两个阶段：
+
+-  第一阶段：第一阶段处理希望与其他依赖其原始配方的配方共享文件的配方。通常，这些依赖项通过do_install任务安装到 `{D}` 中。do_populate_sysroot任务将其中一部分文件复制到 `{SYSROOT_DESTDIR}` 中。这部分文件由SYSROOT_DIRS、SYSROOT_DIRS_NATIVE和SYSROOT_DIRS_IGNORE变量控制。
+
+   .. note::
+
+      此外，配方还可以通过在\ `SYSROOT_PREPROCESS_FUNCS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-SYSROOT_PREPROCESS_FUNCS>`__\ 变量中声明处理函数来进一步自定义这些文件。
+
+   从这些文件构建一个共享状态（sstate）对象，并将文件放入build/tmp/sysroots-components/的子目录中。扫描这些文件中的硬编码路径到原始安装位置。如果在文本文件中找到位置，则将硬编码的位置替换为令牌，并创建一个需要此类替换的文件列表。这些调整称为“FIXME”。扫描需要路径的文件列表由SSTATE_SCAN_FILES变量控制。
+
+-  第二阶段：第二阶段处理希望使用另一个配方并通过DEPENDS变量声明对该配方的依赖关系的配方。当执行此任务时，它将在配方工作目录（即WORKDIR）中创建recipe-sysroot和recipe-sysroot-native。OpenEmbedded构建系统在配方工作目录中创建指向sysroots-components中相关文件副本的硬链接。
+
+   .. note::
+
+      如果无法创建硬链接，则构建系统使用实际副本。
+
+   然后，构建系统根据第一阶段中创建的列表解决任何“FIXMEs”到路径的问题。
+
+   最后，在sysroot中具有前缀“postinst-”的任何${bindir}中的文件都将被执行。
+
+   .. note::
+
+      尽管不建议一般使用这样的sysroot
+      post安装脚本，但这些文件确实允许解决一些问题，如用户创建和模块索引。
+
+因为配方可能还有其他依赖项（例如，do_unpack[depends] += “tar-native:do_populate_sysroot”），所以还将extend_recipe_sysroot添加为依赖于DEPENDS之外的其他任务的预函数。
+
+在将依赖项安装到sysroot中时，代码遍历依赖关系图并处理依赖关系，方式与从sstate安装时的依赖关系相同。这意味着，例如，本地工具将添加其本地依赖项，但目标库不会遍历或安装其依赖项。使用相同的sstate依赖项代码，因此无论是否使用sstate，构建都应该相同。要更仔细地了解，请参阅sstate类中的setscene_depvalid()函数。
+
+构建系统小心维护它安装的文件的清单，以便可以根据需要安装给定的依赖项。还会存储已安装项目的sstate哈希，以便如果它发生变化，构建系统可以重新安装它。
+
+5.140 syslinux类
+==================
+
+syslinux类提供了构建可启动映像的特定于syslinux的功能。
+
+该类支持以下变量：
+
+`INITRD <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-INITRD>`__\ ：指示要连接并用作初始RAM磁盘（initrd）的文件系统映像列表。这个变量是可选的。
+
+`ROOTFS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-ROOTFS>`__\ ：指示要包含为根文件系统的文件系统映像。这个变量是可选的。
+
+`AUTO_SYSLINUXMENU <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-AUTO_SYSLINUXMENU>`__\ ：当设置为“1”时，启用创建自动菜单。
+
+`LABELS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-LABELS>`__\ ：列出自动配置的目标。
+
+`APPEND <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-APPEND>`__\ ：列出每个标签的附加字符串覆盖。
+
+`SYSLINUX_OPTS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-SYSLINUX_OPTS>`__\ ：列出要添加到syslinux文件的额外选项。分号字符分隔多个选项。
+
+`SYSLINUX_SPLASH <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-SYSLINUX_SPLASH>`__\ ：使用引导菜单时，列出VGA引导菜单的背景。
+
+`SYSLINUX_DEFAULT_CONSOLE <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-SYSLINUX_DEFAULT_CONSOLE>`__\ ：设置为“console=ttyX”以更改内核引导默认控制台。
+
+`SYSLINUX_SERIAL <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-SYSLINUX_SERIAL>`__\ ：设置替代串行端口。或者，当变量设置为空字符串时，关闭串行。
+
+`SYSLINUX_SERIAL_TTY <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-SYSLINUX_SERIAL_TTY>`__\ ：设置替代的“console=tty…”内核引导参数。
+
+5.141 systemd类
+==================
+
+systemd类为安装systemd单元文件的配方提供支持。
+
+除非你在DISTRO_FEATURES中包含“systemd”，否则该类的功能将被禁用。
+
+在这个类下，配方或Makefile（即配方在do_install任务期间调用的内容）将单元文件安装到\ :math:`{D}`\ {systemd_unitdir}/system。如果被安装的单元文件进入的包不是主包，你需要在配方中设置SYSTEMD_PACKAGES以标识文件将被安装的包。
+
+你应该将SYSTEMD_SERVICE设置为服务文件的名称。你还应该使用包名覆盖来指示该值适用的包。如果该值适用于配方的主包，请使用${PN}。以下是来自connman配方的示例：
+
+::
+
+   SYSTEMD_SERVICE:${PN} = "connman.service"
+
+除非将\ `SYSTEMD_AUTO_ENABLE <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-SYSTEMD_AUTO_ENABLE>`__\ 设置为“disable”，否则服务将设置为在启动时自动启动。
+
+有关systemd的更多信息，请参阅Yocto项目开发任务手册中的“\ `选择初始化管理器 <https://docs.yoctoproject.org/4.0.17/dev-manual/init-manager.html#selecting-an-initialization-manager>`__\ ”部分。
+
+5.142 systemd-boot类
+=======================
+
+systemd-boot类为构建可启动映像提供了特定于systemd-boot引导加载器的功能。这是一个内部类，不建议直接使用。
+
+.. note::
+
+   systemd-boot类是Yocto项目早期版本中使用的gummiboot类与systemd项目合并的结果。
+
+将EFI_PROVIDER变量设置为“\ `systemd-boot <https://www.freedesktop.org/wiki/Software/systemd/systemd-boot/>`__\ ”以使用此类。这样做将创建一个独立的EFI引导加载器，不依赖于systemd。
+
+有关此类中使用和支持的更多变量的信息，请参阅SYSTEMD_BOOT_CFG、SYSTEMD_BOOT_ENTRIES和SYSTEMD_BOOT_TIMEOUT变量。
+
+您还可以查看Systemd-boot文档以获取更多信息。
+
+5.143 terminal类
+==================
+
+terminal类提供对启动终端会话的支持。OE_TERMINAL变量控制用于会话的终端模拟器。
+
+其他类在需要启动单独的终端会话时使用terminal类。例如，假设PATCHRESOLVE设置为“user”的patch类、cml1类和devshell类都使用terminal类。
+
+5.144 testimage类
+====================
+
+testimage类支持使用QEMU和实际硬件对映像运行自动化测试。这些类处理加载测试并启动映像。要使用这些类，您需要执行设置环境的步骤。
+
+要启用此类，请将以下内容添加到您的配置中：
+
+::
+
+   IMAGE_CLASSES += "testimage"
+
+测试是在目标系统上通过ssh运行的命令。每个测试都用Python编写，并使用unittest模块。
+
+当使用以下命令调用时，testimage类会在映像上运行测试：
+
+::
+
+   $ bitbake -c testimage image
+
+或者，如果您希望在构建每个映像后自动运行测试，可以设置TESTIMAGE_AUTO：
+
+::
+
+   TESTIMAGE_AUTO = "1"
+
+有关如何启用、运行和创建新测试的信息，请参阅Yocto项目开发任务手册中的“执行自动化运行时测试”部分。
+
+5.145 testsdk类
+=================
+
+这个类支持针对软件开发工具包（SDKs）运行自动化测试。testsdk类在调用时会在SDK上运行测试，使用以下命令：
+
+::
+
+   $ bitbake -c testsdk image
+
+.. note::
+
+   最佳实践是使用IMAGE_CLASSES而不是INHERIT来继承testsdk类以进行自动SDK测试。
+
+5.146 texinfo类
+==================
+
+该类应由在构建时调用texinfo实用程序的上游软件包配方继承。本机和交叉配方使用texinfo-dummy-native提供的虚拟脚本以提高性能。目标架构配方使用真正的Texinfo实用程序。默认情况下，它们使用主机系统上的Texinfo实用程序。
+
+.. note::
+
+   如果您想使用与构建系统一起提供的Texinfo配方，可以从\ `ASSUME_PROVIDED <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-ASSUME_PROVIDED>`__\ 中删除“texinfo-native”，并从\ `SANITY_REQUIRED_UTILITIES <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-SANITY_REQUIRED_UTILITIES>`__\ 中删除makeinfo。
+
+5.147 toaster类
+==================
+
+toaster类收集有关软件包和映像的信息，并将它们作为BitBake用户界面可以接收的事件发送。当运行Toaster用户界面时启用该类。
+
+此类不应直接使用。
+
+5.148 toolchain-scripts类
+===========================
+
+toolchain-scripts类提供用于设置已安装SDK环境的脚本。
+
+5.149 typecheck类
+=====================
+
+typecheck类提供了验证配置级别设置的变量值与其定义类型是否匹配的支持。OpenEmbedded构建系统允许您使用“type”
+varflag定义变量的类型。以下是一个例子：
+
+::
+
+   IMAGE_FEATURES[type] = "list"
+
+5.150 uboot-config类
+uboot-config类为机器提供U-Boot配置支持。在配方中指定机器的方法如下：
+
+::
+
+   UBOOT_CONFIG ??= <default>
+   UBOOT_CONFIG[foo] = "config,images,binary"
+
+您还可以使用以下方法指定机器：
+
+::
+
+   UBOOT_MACHINE = "config"
+
+有关\ `UBOOT_CONFIG <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-UBOOT_CONFIG>`__\ 和\ `UBOOT_MACHINE <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-UBOOT_MACHINE>`__\ 变量的更多信息，请参阅相关文档。
+
+5.151 uboot-sign类
+=====================
+
+uboot-sign类提供对U-Boot的验证启动支持。它旨在从U-Boot配方中继承。
+
+以下是此类使用的一些变量：
+
+`SPL_MKIMAGE_DTCOPTS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-SPL_MKIMAGE_DTCOPTS>`__\ ：构建FIT映像时U-Boot
+mkimage的DTC选项。
+
+`SPL_SIGN_ENABLE <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-SPL_SIGN_ENABLE>`__\ ：启用对FIT映像进行签名。
+
+`SPL_SIGN_KEYDIR <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-SPL_SIGN_KEYDIR>`__\ ：包含签名密钥的目录。
+
+`SPL_SIGN_KEYNAME <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-SPL_SIGN_KEYNAME>`__\ ：签名密钥的基本文件名。
+
+`UBOOT_FIT_ADDRESS_CELLS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-UBOOT_FIT_ADDRESS_CELLS>`__\ ：FIT映像的#address-cells值。
+
+`UBOOT_FIT_DESC <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-UBOOT_FIT_DESC>`__\ ：编码到FIT映像中的描述字符串。
+
+`UBOOT_FIT_GENERATE_KEYS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-UBOOT_FIT_GENERATE_KEYS>`__\ ：如果密钥尚不存在，则生成密钥。
+
+`UBOOT_FIT_HASH_ALG <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-UBOOT_FIT_HASH_ALG>`__\ ：FIT映像的哈希算法。
+
+`UBOOT_FIT_KEY_GENRSA_ARGS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-UBOOT_FIT_KEY_GENRSA_ARGS>`__\ ：openssl
+genrsa参数。
+
+`UBOOT_FIT_KEY_REQ_ARGS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-UBOOT_FIT_KEY_REQ_ARGS>`__\ ：openssl
+req参数。
+
+`UBOOT_FIT_SIGN_ALG <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-UBOOT_FIT_SIGN_ALG>`__\ ：FIT映像的签名算法。
+
+`UBOOT_FIT_SIGN_NUMBITS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-UBOOT_FIT_SIGN_NUMBITS>`__\ ：FIT映像签名的私钥大小。
+
+`UBOOT_FIT_KEY_SIGN_PKCS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-UBOOT_FIT_KEY_SIGN_PKCS>`__\ ：用于FIT映像签名的公钥证书的算法。
+
+`UBOOT_FITIMAGE_ENABLE <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-UBOOT_FITIMAGE_ENABLE>`__\ ：启用生成U-Boot
+FIT映像。
+
+`UBOOT_MKIMAGE_DTCOPTS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-UBOOT_MKIMAGE_DTCOPTS>`__\ ：在重建包含内核的FIT映像时U-Boot
+mkimage的DTC选项。
+
+有关验证启动和签名过程的详细信息，请参阅\ `U-Boot <https://source.denx.de/u-boot/u-boot/-/blob/master/doc/uImage.FIT/verified-boot.txt>`__\ 的文档。
+
+另请参阅\ `kernel-fitimage <https://docs.yoctoproject.org/4.0.17/ref-manual/classes.html#ref-classes-kernel-fitimage>`__\ 类的描述，该类模仿了此类。
+
+5.152 uninative类
+=====================
+
+uninative类试图将构建系统与主机发行版的C库隔离，以便在不同主机发行版之间实现原生共享状态工件的重用。启用此类时，将在构建开始时下载包含预构建C库的tarball。在Poky参考发行版中，通过meta/conf/distro/include/yocto-uninative.inc默认启用此功能。其他不源自poky的发行版也可以通过“require
+conf/distro/include/yocto-uninative.inc”来使用此功能。或者，如果您愿意，可以自己构建uninative-tarball食谱，发布生成的tarball（例如通过HTTP）并适当设置UNIINATIVE_URL和UNIINATIVE_CHECKSUM。有关示例，请参阅meta/conf/distro/include/yocto-uninative.inc。
+
+extensible SDK也无条件使用uninative类。构建extensible
+SDK时，会构建uninative-tarball，并且生成的tarball包含在SDK中。
+
+5.153 update-alternatives类
+==============================
+
+update-alternatives类帮助alternatives系统处理多个来源提供相同命令的情况。当几个具有相同或相似功能的程序以相同的名称安装时，就会发生这种情况。例如，ar命令可以从busybox、binutils和elfutils包中获得。update-alternatives类处理重命名二进制文件，以便可以在没有冲突的情况下安装多个包。无论安装或随后删除了哪些包，ar命令仍然可以正常工作。该类在每个包中重命名冲突的二进制文件，并在安装或删除包期间将最高优先级的二进制文件创建为符号链接。
+
+要使用此类，您需要定义一些变量：
+
+`ALTERNATIVE <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-ALTERNATIVE>`__
+
+`ALTERNATIVE_LINK_NAME <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-ALTERNATIVE_LINK_NAME>`__
+
+`ALTERNATIVE_TARGET <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-ALTERNATIVE_TARGET>`__
+
+`ALTERNATIVE_PRIORITY <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-ALTERNATIVE_PRIORITY>`__
+
+这些变量列出了一个包所需的替代命令，提供了链接的路径名，目标的默认链接等。有关如何使用此类的详细信息，请参阅update-alternatives.bbclass文件中的注释。
+
+.. note::
+
+   您可以直接在食谱中使用update-alternatives命令。然而，在大多数情况下，此类简化了事情。
+
+5.154 update-rc.d类
+======================
+
+update-rc.d类使用update-rc.d安全地代表包安装初始化脚本。OpenEmbedded构建系统负责细节，如确保在删除包之前停止脚本，并在安装包时启动脚本。
+
+三个变量控制这个类：\ `INITSCRIPT_PACKAGES <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-INITSCRIPT_PACKAGES>`__\ 、\ `INITSCRIPT_NAME <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-INITSCRIPT_NAME>`__\ 和\ `INITSCRIPT_PARAMS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-INITSCRIPT_PARAMS>`__\ 。有关详细信息，请参阅变量链接。
+
+5.155 useradd\* 类
+====================
+
+useradd*类支持为目标上的包使用添加用户或组。例如，如果您有包含应在其自己的用户或组下运行的系统服务的包，可以使用这些类来启用用户或组的创建。Source
+Directory中的meta-skeleton/recipes-skeleton/useradd/useradd-example.bb食谱提供了一个简单的例子，展示了如何向两个包添加三个用户和组。
+
+useradd_base类提供用户或组设置的基本功能。
+
+useradd*类支持USERADD_PACKAGES、USERADD_PARAM、GROUPADD_PARAM和GROUPMEMS_PARAM变量。
+
+useradd-staticids类支持添加具有静态用户标识（uid）和组标识（gid）值的用户或组。
+
+OpenEmbedded构建系统在包安装时分配uid和gid值的默认行为是动态添加它们。这对于不关心结果用户和组的值变成什么的程序来说是正常的。在这些情况下，安装的顺序决定了最终的uid和gid值。然而，如果非确定的uid和gid值成为问题，您可以通过设置静态值来覆盖这些值的默认动态应用。当您设置静态值时，OpenEmbedded构建系统会在BBPATH中查找文件/passwd和文件/group文件以获取值。
+
+要使用静态uid和gid值，您需要设置一些变量。请参阅USERADDEXTENSION、USERADD_UID_TABLES、USERADD_GID_TABLES和USERADD_ERROR_DYNAMIC变量。您还可以查看useradd*类以获取更多信息。
+
+.. note::
+
+   您不会直接使用useradd-staticids类。您可以通过设置USERADDEXTENSION变量来启用或禁用该类。如果在配置系统中启用或禁用该类，TMPDIR可能包含错误的uid和gid值。删除TMPDIR目录将纠正此情况。
+
+5.156 utility-tasks类
+========================
+
+utility-tasks类为所有配方提供各种“实用”类型的任务支持，例如do_clean和do_listtasks。
+
+这个类默认启用，因为它被基类继承。
+
+5.157 utils类
+================
+
+utils类提供了一些通常在内联Python表达式中使用的有用的Python函数（例如${@…}）。一个示例用途是bb.utils.contains()。
+
+这个类默认启用，因为它被基类继承。
+
+5.158 vala类
+==============
+
+vala类支持需要构建使用Vala编程语言编写的软件的配方。
+
+5.159 waf类
+=============
+
+waf类支持需要构建使用Waf构建系统构建的软件的配方。您可以使用\ `EXTRA_OECONF <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-EXTRA_OECONF>`__\ 或\ `PACKAGECONFIG_CONFARGS <https://docs.yoctoproject.org/4.0.17/ref-manual/variables.html#term-PACKAGECONFIG_CONFARGS>`__\ 变量指定要传递给Waf命令行的附加配置选项。
