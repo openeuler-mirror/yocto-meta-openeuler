@@ -1,13 +1,17 @@
 require recipes-kernel/linux/linux-openeuler.inc
 
 SRC_URI:append:aarch64 = " \
-    file://src-kernel-5.10/0001-apply-preempt-RT-patch.patch \
-    file://src-kernel-5.10/0001-modify-openeuler_defconfig-for-rt62.patch \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '' ,' \
+        file://src-kernel-${PV}/0001-apply-preempt-RT-patch.patch \
+        file://src-kernel-${PV}/0001-modify-openeuler_defconfig-for-rt62.patch \
+    ', d)} \
 "
 
 SRC_URI:append:x86-64 = " \
-    file://src-kernel-5.10/0001-apply-preempt-RT-patch.patch \
-    file://src-kernel-5.10/0001-modify-openeuler_defconfig-for-rt62.patch \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '' ,' \
+        file://src-kernel-${PV}/0001-apply-preempt-RT-patch.patch \
+        file://src-kernel-${PV}/0001-modify-openeuler_defconfig-for-rt62.patch \
+    ', d)} \
 "
 
 COMPATIBLE_MACHINE = "qemu-aarch64|generic-x86-64"

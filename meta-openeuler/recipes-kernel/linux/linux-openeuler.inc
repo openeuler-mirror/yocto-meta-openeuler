@@ -51,7 +51,8 @@ KCONFIG_MODE ?= "alldefconfig"
 
 # default kernel config is in config/${ARCH}/defconfig
 # users can override it in .bbappend or .conf
-OPENEULER_KERNEL_CONFIG ?= "file://config/${ARCH}/defconfig"
+CONFIGVERSION="${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'kernel6-', '', d)}"
+OPENEULER_KERNEL_CONFIG ?= "file://${CONFIGVERSION}config/${ARCH}/defconfig"
 
 ## basic information
 OPENEULER_REPO_NAME = "kernel-${PV}"
@@ -66,12 +67,16 @@ SRC_URI = "file://kernel-${PV} \
 
 # add common patches only for aarch64
 SRC_URI:append:aarch64 = " \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
+    file://patches/${ARCH}/0001-kernel6.6-arm64-add-zImage-support-for-arm64.patch \
+    ', ' \
     file://patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch \
+    ', d)} \
 "
 
 S = "${WORKDIR}/kernel-${PV}"
 
-LINUX_VERSION ?= "5.10"
+LINUX_VERSION ?= "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '6.6', '5.10', d)}"
 PV = "${LINUX_VERSION}"
 
 ## Kernel feature sections:
@@ -94,6 +99,21 @@ KERNEL_FEATURES:append:x86-64 = " \
 "
 # export symbol for jailhouse, its patch is in jailhouse src folder
 SRC_URI:append = " ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'file://Jailhouse/jailhouse_export_symbol.patch', '', d)}"
+
+# 6.6 can't support now, should support later and remove it.
+KERNEL_FEATURES:remove = " \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
+    mcs \
+    jailhouse \ 
+    ', '', d)} \
+"
+
+MCS_FEATURES:remove = " \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
+    openamp \
+    jailhouse \
+    ', '', d)} \
+"
 
 # used by do_kernel_configme in yocoto-kernel.bbclass
 LINUX_VERSION_EXTENSION:append = "-openeuler"

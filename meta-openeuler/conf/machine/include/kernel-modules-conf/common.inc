@@ -15,7 +15,7 @@ kernel-module-nf-reject-ipv6 \
 kernel-module-xt-tcpudp \
 kernel-module-tunnel4 \
 kernel-module-af-packet \
-kernel-module-nfs-ssc \
+${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '', 'kernel-module-nfs-ssc', d)} \
 kernel-module-fscache \
 kernel-module-grace \
 kernel-module-sunrpc \
