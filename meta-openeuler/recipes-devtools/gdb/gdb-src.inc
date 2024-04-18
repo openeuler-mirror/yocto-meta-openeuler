@@ -8,13 +8,33 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI:prepend = "file://gdb-${PV}.tar.xz \
            "
 
+# patches no longer needed for version 14.1
 SRC_URI:remove = " \
         file://0001-make-man-install-relative-to-DESTDIR.patch \
+        file://0002-mips-linux-nat-Define-_ABIO32-if-not-defined.patch \
+        file://0003-ppc-ptrace-Define-pt_regs-uapi_pt_regs-on-GLIBC-syst.patch \
+        file://0005-Dont-disable-libreadline.a-when-using-disable-static.patch \
+        file://0006-use-asm-sgidefs.h.patch \
+        file://0007-Change-order-of-CFLAGS.patch \
+        file://0008-resolve-restrict-keyword-conflict.patch \
+        file://0009-Fix-invalid-sigprocmask-call.patch \
         file://0010-gdbserver-ctrl-c-handling.patch \
 "
 
+# patches from poky for version 14.1
+SRC_URI:append = " \
+        file://0001-mips-linux-nat-Define-_ABIO32-if-not-defined.patch \
+        file://0002-ppc-ptrace-Define-pt_regs-uapi_pt_regs-on-GLIBC-syst.patch \
+        file://0003-Dont-disable-libreadline.a-when-using-disable-static.patch \
+        file://0004-use-asm-sgidefs.h.patch \
+        file://0005-Change-order-of-CFLAGS.patch \
+        file://0006-resolve-restrict-keyword-conflict.patch \
+        file://0007-Fix-invalid-sigprocmask-call.patch \
+        file://0008-Define-alignof-using-_Alignof-when-using-C11-or-newe.patch \
+"
+
 # patches that come from openeuler
-SRC_URI += " \
+SRC_URI:append = " \
         file://gdb-6.3-rh-testversion-20041202.patch \
         file://gdb-6.3-gstack-20050411.patch \
         file://gdb-6.5-bz185337-resolve-tls-without-debuginfo-v2.patch \
@@ -69,11 +89,6 @@ SRC_URI += " \
 # gdb-6.6-buildid-locate-rpm.patch
 # gdb-6.6-buildid-locate-rpm-librpm-workaround.patch
 # gdb-fedora-libncursesw.patch
-
-# patches from upstream poky
-SRC_URI:append = " \
-           file://0008-Define-alignof-using-_Alignof-when-using-C11-or-newe.patch \
-           "
 
 # fix bug: in OEE, the basic library path for riscv64 is lib64/lp64d.
 # During building gdb, this directory will be deleted, but the empty

@@ -10,6 +10,10 @@ SRC_URI:remove = "file://0004-glimagesink-Downrank-to-marginal.patch \
 
 SRC_URI:prepend = " \
     file://gst-plugins-base-${PV}.tar.xz \
+"
+
+# patches from openEuler
+SRC_URI:append = " \
     file://0001-missing-plugins-Remove-the-mpegaudioversion-field.patch \
 "
 

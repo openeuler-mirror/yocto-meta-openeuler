@@ -12,6 +12,10 @@ SRC_URI[sha256sum] = "b79ea44af91b93d17cd3fe80bdae6ed43770678a9a5ae192ccea803ebb
 
 CVE_CHECK_IGNORE = ""
 
+# The following difference are for building version 2.12
+# ===============================================================
+
+# for version 2.12, the following patches for version 2.06 are not needed
 SRC_URI:remove = " \
     file://determinism.patch \
     file://CVE-2021-3981-grub-mkconfig-Restore-umask-for-the-grub.cfg.patch \

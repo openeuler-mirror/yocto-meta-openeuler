@@ -15,6 +15,14 @@ SRC_URI:prepend = " \
 
 SRC_URI[sha256sum] = "818a80712ed3caacd9b652305e01afc7fa167e6f2e94996da44b90c2ab604ce1"
 
+# The following part is for building icu with version 74.1
+# ==============================================================
+
+DEPENDS:class-native = ""
+
+DEPENDS:remove = "autoconf-archive"
+DEPENDS:append = " autoconf-archive-native"
+
 # EXTRA_OECONF = "--with-cross-build=${STAGING_ICU_DIR_NATIVE} --disable-icu-config"
 # EXTRA_OECONF:class-native = "--disable-icu-config"
 # EXTRA_OECONF:class-nativesdk = "--with-cross-build=${STAGING_ICU_DIR_NATIVE} --disable-icu-config"

@@ -6,16 +6,31 @@ SRC_URI:prepend = " \
         file://glib-${PV}.tar.xz \
 "
 
+# remove unneeded patches for version 2.78.3 from poky
 SRC_URI:remove = " \
-    file://0001-Do-not-write-bindir-into-pkg-config-files.patch \
     file://0001-gio-tests-portal-support-Fix-snap-test-ordering-race.patch \
     file://0001-glocalfile-Sum-apparent-size-only-for-files-and-syml.patch \
 "
 
+# add more patches for version 2.78.3 from poky
+# The following patches cannot be successfully applied to version 2.78.3,
+# it causes building error.
+# file://0001-Switch-from-the-deprecated-distutils-module-to-the-p.patch
+SRC_URI:append = " \
+    file://memory-monitor.patch \
+    file://fix-regex.patch \
+    file://skip-timeout.patch \
+"
+
+# add more patches for version 2.78.3 from openEuler
 SRC_URI:append = " \
     file://gspawn-eperm.patch \
     file://backport-gmessages-fix-dropping-irrelevant-log-domains.patch \
     file://backport-gutils-Fix-an-unlikely-minor-leak-in-g_build_user_data_dir.patch \
+"
+
+SRC_URI:append:class-native:append = " \
+    file://0001-meson.build-do-not-enable-pidfd-features-on-native-g.patch \
 "
 
 FILES:${PN}:append = " \

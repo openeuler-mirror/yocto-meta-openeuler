@@ -9,7 +9,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=71391c8e0c1cfe68077e7fce3b586283 \
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-# files, patches can't be applied in openeuler or conflict with openeuler
+# files, patches from poky can't be applied in openeuler or conflict with openeuler
 SRC_URI:remove = " \
         file://CVE-2022-2509.patch \
         file://CVE-2023-0361.patch \
@@ -17,6 +17,8 @@ SRC_URI:remove = " \
 
 SRC_URI:append = " \
         file://0001-Creating-.hmac-file-should-be-excuted-in-target-envi.patch \
+        file://run-ptest \
+        file://Add-ptest-support.patch \
 "
 
 # files, patches that come from openeuler
