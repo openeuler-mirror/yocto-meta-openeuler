@@ -1,7 +1,5 @@
 
-PV = "3.24.38"
-
-SRC_URI:remove = "file://0001-meson.build-build-introspection-according-to-option-.patch"
+PV = "3.24.41"
 
 # openeuler patch
 SRC_URI:prepend = "file://gtk+-${PV}.tar.xz \
