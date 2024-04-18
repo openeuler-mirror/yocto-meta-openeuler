@@ -12,7 +12,6 @@ S = "${WORKDIR}/numpy-${PV}"
 # remove poky conflict src
 SRC_URI:remove = " \
         file://CVE-2021-41496.patch \
-        file://0001-numpy-core-Define-RISCV-32-support.patch \
         "
 
 #apply openeuler patch

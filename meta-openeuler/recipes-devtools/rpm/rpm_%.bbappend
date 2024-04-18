@@ -4,6 +4,7 @@ S = "${WORKDIR}/${BP}"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 # fix-declaration.patch same as backport-Fix-compiler-error-on-clang.patch in openeuler
+# ea3187cfcf9cac87e5bc5e7db79b0338da9e355e has merged in new version
 SRC_URI:remove = " \
         file://fix-declaration.patch \
         file://ea3187cfcf9cac87e5bc5e7db79b0338da9e355e.patch \
