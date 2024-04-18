@@ -120,7 +120,8 @@ ASSUME_PROVIDED += "tcl-native"
 
 # used by python3
 # remove ASSUME_PROVIDED of openssl-native zlib-native for cmake not found bugs
-ASSUME_PROVIDED += "bzip2-replacement-native libffi-native sqlite3-native \
+# remove ASSUME_PROVIDED of sqlite3-native for cmake not found bugs
+ASSUME_PROVIDED += "bzip2-replacement-native libffi-native \
         xz-native libtirpc-native libnsl2-native autoconf-archive-native \
         gdbm-native readline-native"
 
