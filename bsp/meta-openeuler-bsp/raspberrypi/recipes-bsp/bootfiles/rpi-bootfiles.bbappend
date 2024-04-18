@@ -1,5 +1,5 @@
 OPENEULER_REPO_NAME = "raspberrypi-firmware"
-PV = "2c9ca22c4aedd1a8a6bc14698be5861525f2bfdf"
+PV = "1.20230306"
 SRC_URI = "file://firmware-${PV}.tar.gz \
 "
 
