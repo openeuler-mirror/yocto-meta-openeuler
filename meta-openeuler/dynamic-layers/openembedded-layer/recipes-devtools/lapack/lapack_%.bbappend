@@ -1,19 +1,20 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-devtools/lapack/lapack_3.9.0.bb
 
-LIC_FILES_CHKSUM = "file://LICENSE;md5=39902829ba0c2cbac1b0debfb75a416b"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=d0e7a458f9fcbf0a3ba97cef3128b85d"
 
 # version in openEuler
-PV = "3.10.0"
+PV = "3.12.0"
 S = "${WORKDIR}/${BP}"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI:remove = " \
 "
+
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 # files, patches that come from openeuler
 SRC_URI:prepend = " \
     file://v${PV}.tar.gz \
     file://0001-fix-lapack-devel-build-error.patch \
-    file://0002-Fix-out-of-bounds-read-in-slarrv.patch \
 "
 
 SRC_URI[md5sum] = "d70fc27a8bdebe00481c97c728184f09"
