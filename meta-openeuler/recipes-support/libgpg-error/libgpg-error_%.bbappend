@@ -17,5 +17,5 @@ SRC_URI:remove = "file://pkgconfig.patch \
 SRC_URI += "file://pkgconfig-fix.patch"
 
 SRC_URI:prepend = "file://${BP}.tar.gz \
-           file://libgpg-error-1.29-multilib.patch \
+        file://libgpg-error-1.29-multilib.patch \
 "
