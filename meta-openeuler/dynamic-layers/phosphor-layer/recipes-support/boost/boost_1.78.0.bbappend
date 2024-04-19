@@ -1,4 +1,4 @@
-# main bbfile: meta/recipes-support/boost/boost_1.75.0.bb
+# main bbfile: meta/recipes-support/boost/boost_1.78.0.bb
 PV = "1.78.0"
 
 # modify 0001-Don-t-set-up-arch-instruction-set-flags-we-do-that-o.patch
