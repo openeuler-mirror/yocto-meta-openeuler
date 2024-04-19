@@ -5,4 +5,6 @@ do_install:append() {
     if [ ! -e ${D}/${PYTHON_SITEPACKAGES_DIR}/${ROS_BPN}/_rclpy_pybind11.${PYTHON_SOABI}.so ]; then
         mv ${D}/${PYTHON_SITEPACKAGES_DIR}/${ROS_BPN}/_rclpy_pybind11.cpython*.so ${D}/${PYTHON_SITEPACKAGES_DIR}/${ROS_BPN}/_rclpy_pybind11.${PYTHON_SOABI}.so
     fi
-}    
+}
+
+INSANE_SKIP:${PN} += "already-stripped"
