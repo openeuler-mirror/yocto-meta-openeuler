@@ -9,13 +9,9 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 SRC_URI:remove = " \
            file://shadow-4.1.3-dots-in-usernames.patch \
            file://shadow-relaxed-usernames.patch \
+           file://0001-Drop-nsswitch.conf-message-when-not-in-place-eg.-musl.patch \
+           file://0001-Disable-use-of-syslog-for-sysroot.patch \
            "
-
-# delete native patches from poky, patch failed, as it's for 4.11
-SRC_URI:remove:class-native = " \
-        file://0001-Drop-nsswitch.conf-message-when-not-in-place-eg.-musl.patch \
-        file://0001-Disable-use-of-syslog-for-sysroot.patch \
-        "
 
 # use openeuler patches
 SRC_URI:prepend = "file://${BP}.tar.xz \
