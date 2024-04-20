@@ -13,6 +13,9 @@
 # LIC_FILES_CHKSUM, so use the license from common-licenses
 inherit common-license
 
+# avoid use llvm to influence gcc
+TOOLCHAIN = "gcc"
+
 # We don't extract anything which will create S, and we don't want to see the
 # warning about it
 S = "${WORKDIR}"
@@ -57,7 +60,6 @@ EXTERNAL_INSTALL_SOURCE_PATHS[vardepsexclude] += "EXTERNAL_TOOLCHAIN"
 # so the toolchain bits would be available for everyone to use even in the
 # directories with root permissions.
 EXTERNAL_PROPAGATE_MODE ?= "0"
-
 python () {
     # Skipping only matters up front
     if d.getVar('BB_WORKERCONTEXT', True) == '1':
