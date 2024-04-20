@@ -7,15 +7,14 @@ CC:toolchain-clang  = "${CCACHE}${HOST_PREFIX}clang ${HOST_CC_ARCH}${TOOLCHAIN_O
 CXX:toolchain-clang = "${CCACHE}${HOST_PREFIX}clang++ ${HOST_CC_ARCH}${TOOLCHAIN_OPTIONS}"
 CPP:toolchain-clang = "${CCACHE}${HOST_PREFIX}clang ${HOST_CC_ARCH}${TOOLCHAIN_OPTIONS} -E"
 CCLD:toolchain-clang = "${CCACHE}${HOST_PREFIX}clang ${HOST_CC_ARCH}${TOOLCHAIN_OPTIONS}"
-# we do not use llvm- prefix for binutils in wrapper.
-RANLIB:toolchain-clang = "${HOST_PREFIX}ranlib"
-AR:toolchain-clang = "${HOST_PREFIX}ar"
-NM:toolchain-clang = "${HOST_PREFIX}nm"
-OBJDUMP:toolchain-clang = "${HOST_PREFIX}objdump"
-OBJCOPY:toolchain-clang = "${HOST_PREFIX}objcopy"
-#STRIP:toolchain-clang = "${HOST_PREFIX}llvm-strip"
-STRINGS:toolchain-clang = "${HOST_PREFIX}strings"
-READELF:toolchain-clang = "${HOST_PREFIX}readelf"
+RANLIB:toolchain-clang = "${HOST_PREFIX}llvm-ranlib"
+AR:toolchain-clang = "${HOST_PREFIX}llvm-ar"
+NM:toolchain-clang = "${HOST_PREFIX}llvm-nm"
+OBJDUMP:toolchain-clang = "${HOST_PREFIX}llvm-objdump"
+OBJCOPY:toolchain-clang = "${HOST_PREFIX}llvm-objcopy"
+STRIP:toolchain-clang = "${HOST_PREFIX}llvm-strip"
+STRINGS:toolchain-clang = "${HOST_PREFIX}llvm-strings"
+READELF:toolchain-clang = "${HOST_PREFIX}llvm-readelf"
 
 LTO:toolchain-clang = "${@bb.utils.contains('DISTRO_FEATURES', 'thin-lto', '-flto=thin', '-flto -fuse-ld=lld', d)}"
 
