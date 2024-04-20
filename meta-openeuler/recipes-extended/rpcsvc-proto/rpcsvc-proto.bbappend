@@ -7,9 +7,6 @@ SRCREV = "c65926005e50da02a4da3e26abc42eded36cd19d"
 SRC_URI:prepend = "file://${BP}.tar.xz \
            "
 
-SRC_URI:remove = "file://0001-Use-cross-compiled-rpcgen.patch \
-"
-
 S = "${WORKDIR}/${BP}"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/:"
