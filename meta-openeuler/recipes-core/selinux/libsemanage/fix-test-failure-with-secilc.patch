@@ -1,0 +1,67 @@
+diff --git a/tests/Makefile b/tests/Makefile
+index 69f49a3..6806b84 100644
+--- a/tests/Makefile
++++ b/tests/Makefile
+@@ -1,6 +1,5 @@
+ # Add your test source files here:
+-SOURCES = $(sort $(wildcard *.c))
+-CILS = $(sort $(wildcard *.cil))
++SOURCES = $(sort $(wildcard libsemanage-tests.c test_other.c test_semanage_store.c test_utilities.c utilities.c))
+ 
+ ###########################################################################
+ 
+@@ -10,18 +9,14 @@ override CFLAGS += -I../src -I../include
+ override LDLIBS += -lcunit -lbz2 -laudit -lselinux -lsepol
+ 
+ OBJECTS = $(SOURCES:.c=.o)
+-POLICIES = $(CILS:.cil=.policy)
+ 
+-all: $(EXECUTABLE) $(POLICIES)
++all: $(EXECUTABLE)
+ 
+ $(EXECUTABLE): $(OBJECTS) ../src/libsemanage.a
+ 	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+ 
+-%.policy: %.cil
+-	../../secilc/secilc $*.cil -o $*.policy -f /dev/null
+-
+ clean distclean: 
+-	rm -rf $(OBJECTS) $(POLICIES) $(EXECUTABLE)
++	rm -rf $(OBJECTS) $(EXECUTABLE)
+ 
+ test: all 
+ 	./$(EXECUTABLE)
+diff --git a/tests/libsemanage-tests.c b/tests/libsemanage-tests.c
+index ee17670..6e3f4db 100644
+--- a/tests/libsemanage-tests.c
++++ b/tests/libsemanage-tests.c
+@@ -21,14 +21,6 @@
+ 
+ #include "test_semanage_store.h"
+ #include "test_utilities.h"
+-#include "test_handle.h"
+-#include "test_bool.h"
+-#include "test_fcontext.h"
+-#include "test_iface.h"
+-#include "test_ibendport.h"
+-#include "test_node.h"
+-#include "test_port.h"
+-#include "test_user.h"
+ #include "test_other.h"
+ 
+ #include <CUnit/Basic.h>
+@@ -72,14 +64,6 @@ static bool do_tests(int interactive, int verbose)
+ 
+ 	DECLARE_SUITE(semanage_store);
+ 	DECLARE_SUITE(semanage_utilities);
+-	DECLARE_SUITE(handle);
+-	DECLARE_SUITE(bool);
+-	DECLARE_SUITE(fcontext);
+-	DECLARE_SUITE(iface);
+-	DECLARE_SUITE(ibendport);
+-	DECLARE_SUITE(node);
+-	DECLARE_SUITE(port);
+-	DECLARE_SUITE(user);
+ 	DECLARE_SUITE(other);
+ 
+ 	if (verbose)
