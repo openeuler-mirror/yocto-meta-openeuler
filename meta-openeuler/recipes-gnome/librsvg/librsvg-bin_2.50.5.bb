@@ -9,7 +9,7 @@ INHIBIT_DEFAULT_DEPS = "1"
 
 inherit bin_package pkgconfig
 
-DEPENDS = "cairo gdk-pixbuf glib-2.0 libcroco libxml2 pango"
+DEPENDS = "cairo gdk-pixbuf glib-2.0 libxml2 pango"
 
 SRC_URI = " \
         file://librsvg.pc.in \
