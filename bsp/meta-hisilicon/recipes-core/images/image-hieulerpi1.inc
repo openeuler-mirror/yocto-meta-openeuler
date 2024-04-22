@@ -64,6 +64,7 @@ robot-init-pose \
 robot-bringup \
 ros2-wheeltec-robot \
 serial \
+ros2-nearlink-robot \
 depth-image-proc \
 depthimage-to-laserscan \
 dtof-client-node \
