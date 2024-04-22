@@ -14,7 +14,7 @@ LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=782925c2d55d090
 
 ROS_CN = ""
 PV = "0.0.0"
-ROS_BPN = "ros2-wheeltec-robot"
+ROS_BPN = "ros2-hieuler-robot"
 
 ROS_BUILD_DEPENDS = " \
     ament-index-cpp \
@@ -95,11 +95,11 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
 OPENEULER_LOCAL_NAME = "hieuler_component_chassis"
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/uart/wheeltec \
+    file://${OPENEULER_LOCAL_NAME}/uart/hieuler \
 "
 
-S = "${WORKDIR}/hieuler_component_chassis/uart/wheeltec"
-FILES:${PN} += "${datadir} ${libdir}/ros2_wheeltec_robot/*"
+S = "${WORKDIR}/hieuler_component_chassis/uart/hieuler"
+FILES:${PN} += "${datadir} ${libdir}/ros2_hieuler_robot/*"
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 ROS_BUILD_TYPE = "ament_cmake"
 

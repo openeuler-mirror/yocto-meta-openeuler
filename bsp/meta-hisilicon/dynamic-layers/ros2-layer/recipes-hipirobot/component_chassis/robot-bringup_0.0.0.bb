@@ -7,7 +7,7 @@ inherit ros_distro_humble
 inherit ros_superflore_generated
 
 DESCRIPTION = "ROS2 robot_bringup for robot_control"
-AUTHOR = "wheeltec"
+AUTHOR = "hieuler"
 SECTION = "devel"
 LICENSE = "None"
 LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=782925c2d55d09052e1842a0b4886802"
@@ -17,7 +17,7 @@ PV = "0.0.0"
 ROS_BPN = "robot-bringup"
 
 ROS_BUILD_DEPENDS = " \
-    ros2-wheeltec-robot \
+    ros2-hieuler-robot \
 "
 
 ROS_BUILDTOOL_DEPENDS = " \
@@ -25,13 +25,13 @@ ROS_BUILDTOOL_DEPENDS = " \
 "
 
 ROS_EXPORT_DEPENDS = " \
-    ros2-wheeltec-robot \
+    ros2-hieuler-robot \
 "
 
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
 ROS_EXEC_DEPENDS = " \
-    ros2-wheeltec-robot \
+    ros2-hieuler-robot \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
