@@ -13,3 +13,4 @@
    hieulerpi_common_commands.rst
    hardware_features.rst
    externed_device_sample.rst
+   hieulerpi-image.rst
