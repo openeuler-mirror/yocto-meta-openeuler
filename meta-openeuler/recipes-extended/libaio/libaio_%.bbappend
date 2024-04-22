@@ -1,6 +1,13 @@
 
 PV = "0.3.113"
 
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
+
+SRC_URI:remove = " \
+            file://libaio_fix_for_mips_syscalls.patch \
+            file://system-linkage.patch \
+"
+
 # apply package and patches from openeuler
 # 0006-libaio-Add-sw64-architecture.patch is conlict, 
 # not apply it as we not support sw64 current

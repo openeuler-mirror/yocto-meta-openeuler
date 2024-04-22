@@ -1,0 +1,21 @@
+diff --git a/harness/Makefile b/harness/Makefile
+index 4f225d3..d7243a6 100644
+--- a/harness/Makefile
++++ b/harness/Makefile
+@@ -1,7 +1,8 @@
+ # foo.
+ TEST_SRCS:=$(shell find cases/ -name \*.t | sort -n -t/ -k2)
+-EXTRAPROGS:=cases/8.p cases/10.p
+-PARTPROGS:=$(filter-out $(EXTRAPROGS), $(patsubst %.t,%.p,$(TEST_SRCS)))
++EXTRAPROGS:=cases/8.p cases/10.p 
++EXCLUPROGS:=$(EXTRAPROGS) cases/18.p cases/19.p cases/21.p
++PARTPROGS:=$(filter-out $(EXCLUPROGS), $(patsubst %.t,%.p,$(TEST_SRCS)))
+ PROGS:=$(PARTPROGS) $(EXTRAPROGS)
+ HARNESS_SRCS:=main.c
+ # io_queue.c
+@@ -62,4 +63,4 @@ extracheck: $(EXTRAPROGS) root testdir.ext2 testdir.enospc ext2.img
+ 	mount -o loop -t ext2 ext2.img testdir.ext2
+ 	./runtests.sh cases/8.p; ret=$$?; umount testdir.ext2; exit $$ret
+ 
+-check: partcheck extracheck 
++check: partcheck # extracheck 
