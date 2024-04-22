@@ -1,28 +1,5 @@
-From 7280401bdd77ca54be6867a154cc01e0d72612e0 Mon Sep 17 00:00:00 2001
-From: Damien Miller <djm@mindrot.org>
-Date: Fri, 24 Mar 2023 13:56:25 +1100
-Subject: [PATCH] remove support for old libcrypto
-
-OpenSSH now requires LibreSSL 3.1.0 or greater or
-OpenSSL 1.1.1 or greater
-
-with/ok dtucker@
-
-Upstream-Status: Backport [https://github.com/openssh/openssh-portable/commit/7280401bdd77ca54be6867a154cc01e0d72612e0]
-Comment: Hunks are refreshed.
-Signed-off-by: Riyaz Khan <Riyaz.Khan@kpit.com>
-
----
- .github/workflows/c-cpp.yml          |   7 -
- INSTALL                              |   8 +-
- cipher-aes.c                         |   2 +-
- configure.ac                         |  96 ++---
- openbsd-compat/libressl-api-compat.c | 556 +--------------------------
- openbsd-compat/openssl-compat.h      | 151 +-------
- 6 files changed, 40 insertions(+), 780 deletions(-)
-
 diff --git a/.github/workflows/c-cpp.yml b/.github/workflows/c-cpp.yml
-index 3d9aa22dba5..d299a32468d 100644
+index f316388..5123542 100644
 --- a/.github/workflows/c-cpp.yml
 +++ b/.github/workflows/c-cpp.yml
 @@ -47,9 +47,6 @@ jobs:
@@ -47,7 +24,7 @@ index 3d9aa22dba5..d299a32468d 100644
            - { target: ubuntu-latest, config: openssl-1.1.1k }
            - { target: ubuntu-latest, config: openssl-1.1.1n }
 diff --git a/INSTALL b/INSTALL
-index 68b15e13190..f99d1e2a809 100644
+index 68b15e1..f99d1e2 100644
 --- a/INSTALL
 +++ b/INSTALL
 @@ -21,12 +21,8 @@ https://zlib.net/
@@ -66,7 +43,7 @@ index 68b15e13190..f99d1e2a809 100644
  LibreSSL/OpenSSL should be compiled as a position-independent library
  (i.e. -fPIC, eg by configuring OpenSSL as "./config [options] -fPIC"
 diff --git a/cipher-aes.c b/cipher-aes.c
-index 8b101727284..87c763353d8 100644
+index 8b10172..87c7633 100644
 --- a/cipher-aes.c
 +++ b/cipher-aes.c
 @@ -69,7 +69,7 @@ ssh_rijndael_init(EVP_CIPHER_CTX *ctx, const u_char *key, const u_char *iv,
@@ -79,10 +56,10 @@ index 8b101727284..87c763353d8 100644
  	struct ssh_rijndael_ctx *c;
  	u_char buf[RIJNDAEL_BLOCKSIZE];
 diff --git a/configure.ac b/configure.ac
-index 22fee70f604..1c0ccdf19c5 100644
+index 686bc10..0069248 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -2802,42 +2802,40 @@ if test "x$openssl" = "xyes" ; then
+@@ -2808,42 +2808,40 @@ if test "x$openssl" = "xyes" ; then
  	#include <openssl/crypto.h>
  	#define DATA "conftest.ssllibver"
  		]], [[
@@ -149,7 +126,7 @@ index 22fee70f604..1c0ccdf19c5 100644
  			300*)
  				# OpenSSL 3; we use the 1.1x API
  				CPPFLAGS="$CPPFLAGS -DOPENSSL_API_COMPAT=0x10100000L"
-@@ -2847,10 +2845,10 @@ if test "x$openssl" = "xyes" ; then
+@@ -2853,10 +2851,10 @@ if test "x$openssl" = "xyes" ; then
  				CPPFLAGS="$CPPFLAGS -DOPENSSL_API_COMPAT=0x10100000L"
  				;;
  		        *)
@@ -162,7 +139,7 @@ index 22fee70f604..1c0ccdf19c5 100644
  		],
  		[
  			AC_MSG_RESULT([not found])
-@@ -2863,7 +2861,7 @@ if test "x$openssl" = "xyes" ; then
+@@ -2869,7 +2867,7 @@ if test "x$openssl" = "xyes" ; then
  
  	case "$host" in
  	x86_64-*)
@@ -171,7 +148,7 @@ index 22fee70f604..1c0ccdf19c5 100644
  		3000004*)
  			AC_MSG_ERROR([OpenSSL 3.0.4 has a potential RCE in its RSA implementation (CVE-2022-2274)])
  			;;
-@@ -2879,9 +2877,6 @@ if test "x$openssl" = "xyes" ; then
+@@ -2885,9 +2883,6 @@ if test "x$openssl" = "xyes" ; then
  	#include <openssl/opensslv.h>
  	#include <openssl/crypto.h>
  		]], [[
@@ -181,7 +158,7 @@ index 22fee70f604..1c0ccdf19c5 100644
  		exit(OpenSSL_version_num() == OPENSSL_VERSION_NUMBER ? 0 : 1);
  		]])],
  		[
-@@ -2955,44 +2950,13 @@ if test "x$openssl" = "xyes" ; then
+@@ -2961,44 +2956,13 @@ if test "x$openssl" = "xyes" ; then
  	    )
  	)
  
@@ -227,7 +204,7 @@ index 22fee70f604..1c0ccdf19c5 100644
  	])
  
  	if test "x$openssl_engine" = "xyes" ; then
-@@ -3050,8 +3014,8 @@ if test "x$openssl" = "xyes" ; then
+@@ -3056,8 +3020,8 @@ if test "x$openssl" = "xyes" ; then
  		]
  	)
  
@@ -239,7 +216,7 @@ index 22fee70f604..1c0ccdf19c5 100644
  	# Check complete ECC support in OpenSSL
  	AC_MSG_CHECKING([whether OpenSSL has NID_X9_62_prime256v1])
 diff --git a/openbsd-compat/libressl-api-compat.c b/openbsd-compat/libressl-api-compat.c
-index 498180dc894..59be17397c5 100644
+index 498180d..59be173 100644
 --- a/openbsd-compat/libressl-api-compat.c
 +++ b/openbsd-compat/libressl-api-compat.c
 @@ -1,129 +1,5 @@
@@ -817,7 +794,7 @@ index 498180dc894..59be17397c5 100644
 -
  #endif /* WITH_OPENSSL */
 diff --git a/openbsd-compat/openssl-compat.h b/openbsd-compat/openssl-compat.h
-index 61a69dd56eb..d0dd2c3450d 100644
+index 61a69dd..d0dd2c3 100644
 --- a/openbsd-compat/openssl-compat.h
 +++ b/openbsd-compat/openssl-compat.h
 @@ -33,26 +33,13 @@

@@ -1,0 +1,25 @@
+diff --git a/regress/multiplex.sh b/regress/multiplex.sh
+index 8282d0d..b64b339 100644
+--- a/regress/multiplex.sh
++++ b/regress/multiplex.sh
+@@ -78,11 +78,15 @@ echo "get ${DATA} ${COPY}" | \
+ test -f ${COPY}			|| fail "sftp: failed copy ${DATA}" 
+ cmp ${DATA} ${COPY}		|| fail "sftp: corrupted copy of ${DATA}"
+ 
+-rm -f ${COPY}
+-trace "scp transfer over multiplexed connection and check result"
+-${SCP} -S ${SSH} -F $OBJ/ssh_config -oControlPath=$CTL otherhost:${DATA} ${COPY} >>$TEST_REGRESS_LOGFILE 2>&1
+-test -f ${COPY}			|| fail "scp: failed copy ${DATA}" 
+-cmp ${DATA} ${COPY}		|| fail "scp: corrupted copy of ${DATA}"
++$SSH -F $OBJ/ssh_proxy somehost \
++    'IFS=":"; for i in $PATH;do [ -x "$i/scp" ] && exit 0; done; exit 1'
++if [ $? -eq 0 ]; then
++	rm -f ${COPY}
++	trace "scp transfer over multiplexed connection and check result"
++	${SCP} -S ${SSH} -F $OBJ/ssh_config -oControlPath=$CTL otherhost:${DATA} ${COPY} >>$TEST_REGRESS_LOGFILE 2>&1
++	test -f ${COPY}			|| fail "scp: failed copy ${DATA}" 
++	cmp ${DATA} ${COPY}		|| fail "scp: corrupted copy of ${DATA}"
++fi
+ 
+ rm -f ${COPY}
+ verbose "test $tid: forward"
