@@ -1,6 +1,8 @@
 # the main bb file: yocto-poky/meta/recipes-devtools/elfutils/elfutils_0.186.bb
 PV = "0.190"
 
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
+
 # the path removed in 0.187
 SRC_URI:remove = " \
     file://0001-debuginfod-fix-compilation-on-platforms-without-erro.patch \

@@ -1,0 +1,23 @@
+diff --git a/libelf/elf_end.c b/libelf/elf_end.c
+index 80f4d13..b103959 100644
+--- a/libelf/elf_end.c
++++ b/libelf/elf_end.c
+@@ -169,14 +169,16 @@ elf_end (Elf *elf)
+ 		   architecture doesn't require overly stringent
+ 		   alignment the raw data buffer is the same as the
+ 		   one used for presenting to the caller.  */
+-		if (scn->data_base != scn->rawdata_base)
++		if ((scn->data_base != scn->rawdata_base)
++		    && (scn->data_list.data.d.d_buf != NULL))
+ 		  free (scn->data_base);
+ 
+ 		/* The section data is allocated if we couldn't mmap
+ 		   the file.  Or if we had to decompress.  */
+-		if (elf->map_address == NULL
++		if ((elf->map_address == NULL
+ 		    || scn->rawdata_base == scn->zdata_base
+ 		    || (scn->flags & ELF_F_MALLOCED) != 0)
++		    && (scn->data_list.data.d.d_buf != NULL))
+ 		  free (scn->rawdata_base);
+ 
+ 		/* Free the list of data buffers for the section.
