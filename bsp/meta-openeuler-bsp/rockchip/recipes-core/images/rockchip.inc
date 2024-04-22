@@ -1,16 +1,8 @@
-delete_unneeded_from_rootfs() {
-    set -x
-    test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
-    rm -rf "${OUTPUT_DIR}"/*
-    cp ${IMAGE_ROOTFS}/boot/vmlinux* ${OUTPUT_DIR}/
-}
-IMAGE_PREPROCESS_COMMAND += "delete_unneeded_from_rootfs;"
-
-IMAGE_POSTPROCESS_COMMAND:append = " mov_rkupdateimg;"
-mov_rkupdateimg() {
-    cp -fp ${IMGDEPLOYDIR}/rootfs.img ${OUTPUT_DIR}/
+# mv image to pointed place with format in end of sdimg type
+IMAGE_POSTPROCESS_COMMAND:append = "mov_image_to_sdimg;"
+mov_image_to_sdimg() {
     cp -fp ${IMGDEPLOYDIR}/update.img ${OUTPUT_DIR}/
-    cp -fp ${DEPLOY_DIR_IMAGE}/boot.img ${OUTPUT_DIR}/
+    # ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.wic
 }
 
 IMAGE_FSTYPES:remove = "tar.gz"

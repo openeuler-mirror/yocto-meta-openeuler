@@ -5,6 +5,8 @@ LIC_FILES_CHKSUM = "file://${RKBASE}/licenses/LICENSE.rockchip;md5=d63890e209bf0
 
 inherit deploy native
 
+OPENEULER_REPO_NAME = "rk-binary-native"
+
 SRC_URI = " \
 	file://rk-binary-native \
 "
@@ -22,13 +24,6 @@ STRIP = "echo"
 
 # The pre-built tools have different link loader, don't change them.
 UNINATIVE_LOADER := ""
-
-python do_fetch() {
-    # download openeuler/rk-binary-native repo for linux kernel src files
-    d.setVar("OPENEULER_REPO_NAME", "rk-binary-native")
-    d.setVar("OPENEULER_LOCAL_NAME", 'rk-binary-native')
-    bb.build.exec_func("do_openeuler_fetch", d)
-}
 
 do_install () {
 	install -d ${D}/${bindir}
