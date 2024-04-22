@@ -2,6 +2,8 @@
 
 PV = "6.6"
 
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
+
 # ptest patch: avoid_parallel_tests.patch
 SRC_URI:prepend = "file://${BP}.tar.xz \
             file://netlink-fix-typo.patch \
