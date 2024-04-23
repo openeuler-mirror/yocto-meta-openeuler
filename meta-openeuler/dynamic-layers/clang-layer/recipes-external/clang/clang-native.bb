@@ -7,7 +7,7 @@ wrap_bin () {
     shift
     script="${D}${bindir}/${bin}"
     # compiler is support nativesdk now
-    execcmd="exec ${EXTERNAL_TOOLCHAIN_CLANG_BIN}/${bin} --target=x86_64-pokysdk-linux \"\$@\""
+    execcmd="exec ${EXTERNAL_TOOLCHAIN_CLANG_BIN}/${bin} --target=x86_64-openeulersdk-linux \"\$@\""
     printf '#!/bin/sh\n' >$script
     for arg in "$@"; do
         printf '%s\n' "$arg"
