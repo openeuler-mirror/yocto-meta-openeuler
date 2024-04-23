@@ -56,7 +56,7 @@ if [ ${PYTHONPKGPATH#${OPENEULER_NATIVESDK_SYSROOT}} != "$PYTHONPKGPATH" ]; then
             if [ $? == 0 ];then 
                 echo "Auto Check: $cmakefile" 
                 sed -i 's#recipe-sysroot#@@@@#g' $cmakefile 
-                sed -i 's#/home/openeuler/[^@]*@@@@#\${TARGET_SYSROOT_DIR}#g' $cmakefile 
+                sed -i 's#/home/[^@]*@@@@#\${TARGET_SYSROOT_DIR}#g' $cmakefile 
             fi 
         done 
         # fix make not found (CMAKE_MAKE_PROGRAM is not set)
