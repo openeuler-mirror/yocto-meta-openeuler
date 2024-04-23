@@ -23,3 +23,4 @@
    jailhouse.rst
    isula.rst
    openbmc.rst
+   oci-image.rst
