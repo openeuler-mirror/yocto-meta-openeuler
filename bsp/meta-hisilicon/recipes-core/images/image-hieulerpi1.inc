@@ -63,6 +63,7 @@ robot-charge-control \
 robot-init-pose \
 robot-bringup \
 ros2-hieuler-robot \
+hieuler_teleop \
 serial \
 ros2-nearlink-robot \
 depth-image-proc \
