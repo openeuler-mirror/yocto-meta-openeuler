@@ -14,3 +14,4 @@
    hardware_features.rst
    externed_device_sample.rst
    hieulerpi-image.rst
+   hieulerpi-wifi.rst
