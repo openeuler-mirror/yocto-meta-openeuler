@@ -1,6 +1,6 @@
-.. _hieulerpi-quick-start:
+.. _hieulerpi-image:
 
-欧拉派镜像获取
+海鸥派镜像获取
 #####################
 
 .. contents::
