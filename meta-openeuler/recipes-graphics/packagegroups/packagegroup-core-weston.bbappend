@@ -5,5 +5,5 @@ RDEPENDS:${PN}:remove = "\
 
 RDEPENDS:${PN}:append = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'kmscube', '', d)} \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'weston-xwayland gtk+3 gtk+3-demo wxwidgets', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'x11', 'weston-xwayland gtk+3-demo wxwidgets', '', d)} \
 "
