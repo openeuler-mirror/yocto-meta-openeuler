@@ -1,0 +1,331 @@
+From 0febc4cc96eb8e19e6be8620919f90b7aa4640fd Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Stefan=20M=C3=BCller-Klieser?= <s.mueller-klieser@phytec.de>
+Date: Tue, 7 Mar 2017 10:23:17 +0100
+Subject: [PATCH 2/2] qtwebbrowser: add application mode
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Read the BROWSER_APP_MODE environment variable and start browser without
+navigation, history and settings. All functionally must then come from
+the web application. Virtual keyboard still works as expected.
+
+Signed-off-by: Stefan Müller-Klieser <s.mueller-klieser@phytec.de>
+---
+ src/main.cpp          |  12 ++-
+ src/qml/AppMain.qml   |  13 +++
+ src/qml/AppWindow.qml | 232 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ src/resources.qrc     |   2 +
+ 4 files changed, 258 insertions(+), 1 deletion(-)
+ create mode 100644 src/qml/AppMain.qml
+ create mode 100644 src/qml/AppWindow.qml
+
+diff --git a/src/main.cpp b/src/main.cpp
+index 2181f15..f8a9681 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -35,6 +35,7 @@
+ #include "touchmockingapplication.h"
+ #endif
+ 
++#include <QString>
+ #include <QGuiApplication>
+ #include <QQmlContext>
+ #include <QQmlEngine>
+@@ -51,6 +52,12 @@ static QObject *engine_factory(QQmlEngine *engine, QJSEngine *scriptEngine)
+ 
+ int main(int argc, char **argv)
+ {
++    bool appMode = false;
++    QString app_mode_env = qgetenv("BROWSER_APP_MODE");
++    if (app_mode_env == QString("1"))
++        appMode = true;
++    qDebug() << "Appmode: " << appMode;
++
+     qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
+ 
+     //do not use any plugins installed on the device
+@@ -92,7 +99,10 @@ int main(int argc, char **argv)
+     view.setFlags(Qt::Window | Qt::WindowTitleHint);
+     view.setResizeMode(QQuickView::SizeRootObjectToView);
+     view.setColor(Qt::black);
+-    view.setSource(QUrl("qrc:///qml/Main.qml"));
++    if(appMode)
++        view.setSource(QUrl("qrc:///qml/AppMain.qml"));
++    else
++        view.setSource(QUrl("qrc:///qml/Main.qml"));
+ 
+     QObject::connect(view.engine(), SIGNAL(quit()), &app, SLOT(quit()));
+ 
+diff --git a/src/qml/AppMain.qml b/src/qml/AppMain.qml
+new file mode 100644
+index 0000000..8686761
+--- /dev/null
++++ b/src/qml/AppMain.qml
+@@ -0,0 +1,13 @@
++import QtQuick 2.5
++
++Item {
++    AppWindow{
++        id: root
++        anchors.fill: parent
++        Keyboard{
++            id: inputPanel
++            windowHeight: root.height
++            animationDuration: root.animationDuration
++        }
++    }
++}
+diff --git a/src/qml/AppWindow.qml b/src/qml/AppWindow.qml
+new file mode 100644
+index 0000000..fbf389d
+--- /dev/null
++++ b/src/qml/AppWindow.qml
+@@ -0,0 +1,232 @@
++import QtQuick 2.5
++import QtWebEngine 1.2
++
++import QtQuick.Controls 1.4
++import QtQuick.Controls.Styles 1.4
++import QtQuick.Layouts 1.2
++import QtGraphicalEffects 1.0
++
++import QtQuick.Controls.Private 1.0
++import QtQuick.Dialogs 1.2
++
++import "assets"
++import WebBrowser 1.0
++import "Utils.js" as Utils
++
++Item {
++    id: browserWindow
++
++    property string emptyBackgroundColor: "#e4e4e4"
++    property string uiHighlightColor: "#fddd5c"
++    property string inactivePagerColor: "#bcbdbe"
++    property string textFieldStrokeColor: "#3882ae"
++    property string placeholderColor: "#a0a1a2"
++    property string iconOverlayColor: "#0e202c"
++    property string iconStrokeColor: "#d6d6d6"
++    property string defaultFontFamily: "Open Sans"
++
++    property string uiColor: "#d6d6d6"
++
++    property int gridViewPageItemCount: 8
++    property int gridViewMaxBookmarks: 3 * gridViewPageItemCount
++    property int tabViewMaxTabs: 10
++    property int animationDuration: 200
++    property int velocityThreshold: 400
++    property int velocityY: 0
++    property real touchY: 0
++    property real touchReference: 0
++    property bool touchGesture: false
++
++    width: 800
++    height: 480
++    visible: true
++
++    Action {
++        shortcut: "Ctrl+D"
++        onTriggered: {
++            downloadView.visible = !downloadView.visible
++        }
++    }
++
++	property int itemWidth: browserWindow.width / 2
++    property int itemHeight: browserWindow.height / 2
++
++    property string viewState: "page"
++
++    property QtObject otrProfile: WebEngineProfile {
++        offTheRecord: true
++    }
++
++    property QtObject defaultProfile: WebEngineProfile {
++        storageName: "YABProfile"
++        offTheRecord: false
++    }
++
++    property alias webView: webEngineView
++    property alias title: webEngineView.title
++
++    property var image: QtObject {
++        property var snapshot: null
++        property string url: "about:blank"
++    }
++
++    Behavior on opacity {
++        NumberAnimation { duration: animationDuration }
++    }
++
++    anchors.fill: parent
++
++    WebEngineView {
++        id: webEngineView
++
++        url: AppEngine.initialUrl
++
++        anchors {
++            fill: parent
++        }
++
++	function takeSnapshot() {
++	    if (webEngineView.url == "" || webEngineView.url == "about:blank") {
++		tabItem.image.url = "about:blank"
++		tabItem.image.snapshot = null
++		return
++	    }
++
++	    if (tabItem.image.url == webEngineView.url || tabItem.opacity != 1.0)
++		return
++
++	    tabItem.image.url = webEngineView.url
++	    webEngineView.grabToImage(function(result) {
++		tabItem.image.snapshot = result;
++		console.log("takeSnapshot("+result.url+")")
++	    });
++	}
++
++	settings.javascriptEnabled: true
++
++	settings.pluginsEnabled: true
++
++	onCertificateError: {
++	    if (!acceptedCertificates.shouldAutoAccept(error)){
++		error.defer()
++		sslDialog.enqueue(error)
++	    } else{
++		error.ignoreCertificateError()
++	    }
++	}
++
++	onNewViewRequested: {
++	    webEngineView.takeSnapshot()
++	    var tab
++	    if (!request.userInitiated) {
++		print("Warning: Blocked a popup window.")
++		return
++	    }
++
++	    tab = tabView.createEmptyTab()
++
++	    if (!tab)
++		return
++
++	    request.openIn(tab.webView)
++	}
++
++	onFullScreenRequested: {
++	    if (request.toggleOn)
++		viewState = "fullscreen"
++	    else
++		viewState = "page"
++	    request.accept()
++	}
++    }
++
++    Desaturate {
++	id: desaturate
++	visible: desaturation != 0.0
++	anchors.fill: webEngineView
++	source: webEngineView
++
++	Behavior on desaturation {
++	    NumberAnimation { duration: animationDuration }
++	}
++    }
++
++    FastBlur {
++	id: blur
++	visible: radius != 0.0
++	anchors.fill: desaturate
++	source: desaturate
++	radius: desaturate.desaturation * 25
++    }
++
++    TouchTracker {
++	id: tracker
++	target: webEngineView
++	anchors.fill: parent
++	onTouchYChanged: browserWindow.touchY = tracker.touchY
++	onYVelocityChanged: browserWindow.velocityY = yVelocity
++	onTouchBegin: {
++	    browserWindow.touchY = tracker.touchY
++	    browserWindow.velocityY = yVelocity
++	    browserWindow.touchReference = tracker.touchY
++	    browserWindow.touchGesture = true
++	}
++	onTouchEnd: {
++	    browserWindow.velocityY = yVelocity
++	    browserWindow.touchGesture = false
++	}
++	onScrollDirectionChanged: {
++	    browserWindow.velocityY = 0
++	    browserWindow.touchReference = tracker.touchY
++	}
++    }
++
++    QtObject{
++        id: acceptedCertificates
++
++        property var acceptedUrls : []
++
++        function shouldAutoAccept(certificateError){
++            var domain = AppEngine.domainFromString(certificateError.url)
++            return acceptedUrls.indexOf(domain) >= 0
++        }
++    }
++
++    MessageDialog {
++        id: sslDialog
++
++        property var certErrors: []
++        property var currentError: null
++        visible: certErrors.length > 0
++        icon: StandardIcon.Warning
++        standardButtons: StandardButton.No | StandardButton.Yes
++        title: "Server's certificate not trusted"
++        text: "Do you wish to continue?"
++        detailedText: "If you wish so, you may continue with an unverified certificate. " +
++                      "Accepting an unverified certificate means " +
++                      "you may not be connected with the host you tried to connect to.\n" +
++                      "Do you wish to override the security check and continue?"
++        onYes: {
++            var cert = certErrors.shift()
++            var domain = AppEngine.domainFromString(cert.url)
++            acceptedCertificates.acceptedUrls.push(domain)
++            cert.ignoreCertificateError()
++            presentError()
++        }
++        onNo: reject()
++        onRejected: reject()
++
++        function reject(){
++            certErrors.shift().rejectCertificate()
++            presentError()
++        }
++        function enqueue(error){
++            currentError = error
++            certErrors.push(error)
++            presentError()
++        }
++        function presentError(){
++            informativeText = "SSL error from URL\n\n" + currentError.url + "\n\n" + currentError.description + "\n"
++        }
++    }
++}
+diff --git a/src/resources.qrc b/src/resources.qrc
+index 0ca7710..9eb84fd 100644
+--- a/src/resources.qrc
++++ b/src/resources.qrc
+@@ -1,5 +1,7 @@
+ <RCC>
+     <qresource prefix="/">
++        <file>qml/AppWindow.qml</file>
++        <file>qml/AppMain.qml</file>
+         <file>qml/BrowserWindow.qml</file>
+         <file>qml/FeaturePermissionBar.qml</file>
+         <file>qml/MockTouchPoint.qml</file>
+-- 
+1.9.1
+

@@ -9,7 +9,7 @@ HOSTTOOLS += "python3 python pod2man pkg-config sgdisk"
 HOSTTOOLS_NONFATAL += "gnu-configize"
 # used by perl-native
 HOSTTOOLS_NONFATAL += "cc"
-ASSUME_PROVIDED += "util-linux-native pkgconfig-native chrpath-replacement-native sgdisk"
+ASSUME_PROVIDED += "util-linux-native chrpath-replacement-native sgdisk"
 
 # package management tools
 HOSTTOOLS_NONFATAL += "rpm rpmbuild createrepo_c dnf unzip rpm2cpio xzcat"

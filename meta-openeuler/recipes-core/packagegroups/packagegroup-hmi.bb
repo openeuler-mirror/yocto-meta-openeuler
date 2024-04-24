@@ -6,6 +6,7 @@ PR = "r1"
 PACKAGES = "${PN}"
 
 RDEPENDS:${PN} = " \
+qtwebbrowser \
 wayfire \
 pcmanfm \
 lxterminal \
@@ -14,4 +15,6 @@ gpicview \
 l3afpad \
 ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '', 'udev-extraconf', d)} \
 adwaita-icon-theme \
+ttf-wqy-zenhei \
 "
+
