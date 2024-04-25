@@ -141,3 +141,6 @@ HOSTTOOLS += "compile_et"
 
 # used for libdbusmenu-glib
 HOSTTOOLS_NONFATAL += " xsltproc "
+
+# used for building oci image and docker image
+HOSTTOOLS_NONFATAL += " umoci skopeo"
