@@ -1,6 +1,6 @@
-.. _isula_intro:
+.. _container_os:
 
-iSula容器引擎与container os镜像
+Container OS镜像
 ########################################
 
 iSula简介
@@ -10,7 +10,7 @@ iSula是openEuler社区开发的容器引擎，它是一个轻量级的容器引
 
 openEuler Embedded在构建时集成了iSula容器引擎，用户可以通过iSula容器引擎来管理容器。
 当前iSula容器引擎的默认容器运行时为lcr，也支持runc和kata-runtime。
-支持的容器镜像格式为OCI和external rootfs。
+支持的容器镜像格式为OCI镜像，Docker镜像和external rootfs。
 
 iSula有两种容器管理操作接口：CLI和CRI。
 CLI采用命令行方式，是标准的C/S架构模式，将iSulad作为daemon服务端，iSula作为独立的客户端命令，供用户使用。
@@ -21,14 +21,15 @@ CRI是由K8S对外提供的容器和镜像服务接口，供容器引擎接入K8
 openeuler-container-os镜像简介
 =============================================
 
-当前openEuler Embedded提供了一个专门的container OS镜像，该镜像专为运行容器而制作，
+当前openEuler Embedded提供了一个专门的Container OS镜像，该镜像专为运行容器而制作，
 因此系统底噪较小。生成的zImage的大小约2.9M，rootfs.cpio.gz的大小约为27M（无systemd），
 或者36M（有systemd）。
 此镜像会集成iSula容器引擎，以及openEuler服务器版本的容器镜像。
 用户在启动此镜像并登录进入root用户以后，系统会自动启动openEuler服务器版本的容器，
 并进入交互界面。
 
-构建和运行openeuler-container-os镜像 `参考视频 <https://www.bilibili.com/video/BV1D6421375S/?spm_id_from=333.999.0.0&vd_source=27f310e89750ee568b19dbff5d1406f1>`_ 。
+构建和运行openeuler-container-os镜像 
+`参考视频 <https://www.bilibili.com/video/BV1D6421375S/?spm_id_from=333.999.0.0&vd_source=27f310e89750ee568b19dbff5d1406f1>`_ 。
 
 构建带有iSula的openEuler Embedded镜像
 =========================================
