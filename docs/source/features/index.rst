@@ -21,6 +21,5 @@
    armnn.rst
    clang_llvm.rst
    jailhouse.rst
-   isula.rst
    openbmc.rst
-   oci-image.rst
+   container/index.rst
