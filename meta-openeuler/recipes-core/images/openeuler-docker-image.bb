@@ -28,6 +28,8 @@ set_permissions_from_rootfs:append() {
 IMAGE_FSTYPES = ""
 
 do_generate_docker_image() {
+    # to solve the problem that the output directory does not exist
+    [ -d "${OUTPUT_DIR}" ] || mkdir -p ${OUTPUT_DIR}
     cd ${OUTPUT_DIR}
     # create oci image layout as the workspace,
     # the layout name should be the same as the image name
@@ -41,12 +43,13 @@ do_generate_docker_image() {
     # pack the bundle into the image
     sudo umoci repack --image openeuler-oci-image:latest bundle
     # save the oci image into docker image, so that we can use it with docker and isula
-    sudo skopeo copy oci:openeuler-oci-image:latest docker-archive:openeuler-docker-image.tar:openeuler-docker-image:latest
+    sudo skopeo copy oci:openeuler-oci-image:latest docker-archive:oee-docker-image.${TARGET_ARCH}.tar:oee-docker-image.${TARGET_ARCH}:latest
+    # compress the docker image
+    xz -z oee-docker-image.${TARGET_ARCH}.tar
     # remove temporary files
     sudo rm -rf bundle
     sudo rm -rf openeuler-oci-image
 }
 
 IMAGE_POSTPROCESS_COMMAND += "do_generate_docker_image;"
-
 
