@@ -25,7 +25,7 @@ openEuler社区的容器引擎iSula在使用“load”命令加载镜像的时�
     $ bitbake openeuler-docker-image
 
 构建完成后，在 `output/<timestamp>` 
-目录下会有 `openeuler-docker-image.tar` 结尾的文件，
+目录下会有 `oee-docker-image.<CPU architecture>.tar.xz` 结尾的文件，
 这个文件就是openEuler Embedded的Docker镜像，只是以tar格式存档。
 用户可以将此文件分发给其他用户使用。
 
@@ -33,20 +33,20 @@ openEuler社区的容器引擎iSula在使用“load”命令加载镜像的时�
 ==============================================================
 
 openEuler Embedded Docker镜像可以被docker和isula加载并使用。
-下面以isula为例讲解使用方法。
+下面以isula为例，在aarch64平台下讲解使用方法。
 
-首先，用户先讲openeuler-docker-image.tar文件拷贝到目标机器上，
+首先，用户先讲oee-docker-image.aarch64.tar.xz文件拷贝到目标机器上并解压，
 接着用户可以输入如下命令加载镜像：
 
 .. code-block:: shell
 
-    $ isula load -i openeuler-docker-image.tar
+    $ isula load -i oee-docker-image.aarch64.tar
 
 加载完成后，用户可以通过如下命令创建一个新容器并进入容器命令行进行交互：
 
 .. code-block:: shell
 
-    $ isula run -it openeuler-docker-image:latest /bin/bash
+    $ isula run -it oee-docker-image.aarch64:latest /bin/bash
 
 进入镜像后，用户可以通过如下命令查看镜像的详细信息：
 
