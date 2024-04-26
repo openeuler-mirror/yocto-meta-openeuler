@@ -130,7 +130,7 @@ oebuild会依赖一些第三方库辅助运行，因此相关的第三方库也�
 
 ::
 
-   sudo systemctl-reload && systemctl restart docker 
+   sudo systemctl reload && systemctl restart docker 
 
 5. 修改docker.sock读写权限
 
