@@ -35,7 +35,7 @@ openEuler社区的容器引擎iSula在使用“load”命令加载镜像的时�
 openEuler Embedded Docker镜像可以被docker和isula加载并使用。
 下面以isula为例，在aarch64平台下讲解使用方法。
 
-首先，用户先讲oee-docker-image.aarch64.tar.xz文件拷贝到目标机器上并解压，
+首先，用户先将oee-docker-image.aarch64.tar.xz文件拷贝到目标机器上并解压，
 接着用户可以输入如下命令加载镜像：
 
 .. code-block:: shell
