@@ -131,6 +131,21 @@ wayland 插件需要在 weston 界面支持：
 快速开发SDK
 ====================
 
+安装SDK
+---------------
+
+以树莓派镜像SDK为例：
+
+.. code-block:: console
+
+    # 请将 sdk-dir 替换为您希望安装SDK的目标目录
+    $ sh openeuler-glibc-x86_64-openeuler-image-cortexa72-raspberrypi4-64-toolchain-24.03-LTS.sh -y -d sdk-dir
+
+.. note::
+
+    由于Qt5 SDK包含主机工具，需进行重定位操作。为确保成功安装，安装目录的长度应不超过构建时设定的动态链接器长度限制，即不超过37个字母。
+
+
 使用方法
 ----------------
 
@@ -175,7 +190,9 @@ wayland 插件需要在 weston 界面支持：
   .. code-block:: console
 
       # 使用qmake生成 Makefile 文件
-      $ qmake hello.pro
+      $ mkdir build
+      $ cd build
+      $ qmake ../hello.pro
       $ make
       $ file hello
       hello: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-aarch64.so.1, BuildID[sha1]=32b523488d52d5beba18b01d02cea287604680a9, for GNU/Linux 5.10.0, with debug_info, not stripped
