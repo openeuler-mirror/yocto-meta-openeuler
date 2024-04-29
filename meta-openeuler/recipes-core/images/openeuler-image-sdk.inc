@@ -82,5 +82,5 @@ libstdc++-dev \
 "
 
 # static lib need for sdk toolchian
-SDKIMAGE_FEATURES += "staticdev-pkgs"
+SDKIMAGE_FEATURES:append = " staticdev-pkgs dev-pkgs src-pkgs dbg-pkgs "
 
