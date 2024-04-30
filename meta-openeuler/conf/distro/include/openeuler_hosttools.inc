@@ -53,7 +53,7 @@ HOSTTOOLS_NONFATAL += "gtkdocize gtkdoc-scan gtkdoc-scangobj gtkdoc-mkdb gtkdoc-
 
 # commands used by iso and wic
 HOSTTOOLS_NONFATAL += "cpio mkdosfs mcopy mkfs.ext4 debugfs fsck.ext4 dumpe2fs parted mkfs.vfat mmd hexdump xxd"
-ASSUME_PROVIDED += "cpio-native parted-native dosfstools-native  mtools-native bmap-tools-native gptfdisk-native"
+ASSUME_PROVIDED += "cpio-native parted-native dosfstools-native  mtools-native gptfdisk-native"
 
 # graphics related
 ASSUME_PROVIDED +=  "pixman-native mesa-native virglrenderer-native libsdl2-native"
@@ -137,7 +137,7 @@ HOSTTOOLS_NONFATAL += "hexdump rev"
 ASSUME_PROVIDED += "hexdump rev"
 
 # used by e2fsprogs
-HOSTTOOLS += "compile_et"
+HOSTTOOLS += "compile_et mkfs.ext3 fsck.ext3"
 
 # used for libdbusmenu-glib
 HOSTTOOLS_NONFATAL += " xsltproc "
