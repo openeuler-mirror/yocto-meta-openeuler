@@ -4,17 +4,9 @@ PV = "1.78.0"
 # modify 0001-Don-t-set-up-arch-instruction-set-flags-we-do-that-o.patch
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
-# remove patches for 1.81.0
-SRC_URI:remove = " \
-        file://boost-1.80-outcome-Stop-Boost-regression-tests-complaining-about-no-test-tree.patch \
-        file://boost-1.81-graph-Dont-run-performance-test-in-CI.patch \
-        file://boost-1.81-random-Update-multiprecision_float_test.cpp-to-not-overflow.patch \
-        file://boost-1.81-random-Update-multiprecision_int_test.cpp-to-not-accidental.patch \
-        file://boost-1.81-random-test-Add-missing-includes.patch \
-        file://0001-Don-t-set-up-arch-instruction-set-flags-we-do-that-o.patch \
-"
-
-SRC_URI:append = " \
+# since OpenBMC must use version 1.78.0
+SRC_URI = " \
+        file://${BOOST_P}.tar.gz \
         file://boost-1.78-pool-fix-integer-overflows-in-pool-ordered_malloc.patch \
         file://boost-1.78-locale-Fix-access-to-first-element-of-empty-vector.patch \
         file://boost-1.77-type_erasure-remove-boost-system-linkage.patch \
