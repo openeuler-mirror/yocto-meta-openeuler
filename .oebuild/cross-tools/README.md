@@ -14,6 +14,12 @@ prepare.sh: 用于下载构建所需的依赖仓库，并按照下载的路径�
 
 可通过ct-ng show-config查看配置基础情况（例如cp config_aarch64 .config && ct-ng show-config）
 
+编译链构建容器：swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-sdk:latest
+
+> 注意：
+>
+> 如果是自行构建，则在进入容器时使用-u 参数指定用户为openeuler
+
 最终配置可参见输出件*gcc -v
 
 例（arm64）：
@@ -28,33 +34,68 @@ Supported LTO compression algorithms: zlib
 gcc version 10.3.1 (crosstool-NG 1.25.0)
 ````
 
-
 #### 使用说明
 
-在oebuild命令环境中，输入oebuild generate进入菜单配置界面，选择toolchain进行构建后，
-oebuild会自动下载本代码进行对应的toolchain构建。
+编译链的构建有两种方式，一种是自动构建模式，另一种是交互构建模式，所谓自动构建模式就是用户确定好构建内容后oebuild自动执行构建行为，交互构建模式即为生成交叉编译链构建的基础配置文件后通过执行oebuild toolchain后根据给出的提示进行构建。
 
-或者直接输入 oebuild generate -toolchain -tn config_aarch64 即可跳过界面选择直接进行toolchain构建,如不指定tn参数则构建全部工具链，oebuild已经将对应的ct-ng操作进行集成，以全量构建为例，具体操作如下。
+自动构建模式：
+
+1，执行`oebuild generate`会弹出命令行菜单，选择`Build Toolchain`，然后选定`Auto Build`，此时会列出目前支持的交叉编译链类型，选定需要编译的交叉编译链即可，可以多选
+
+2，按esc后按y保存配置文件退出，此时就开始自动进行交叉编译链的编译
+
+交互构建模式：
+
+1，执行`oebuild generate`会弹出命令行菜单，选择`Build Toolchain`，然后按ESC后按y保存退出，此时终端窗口会有一些提示，表达的意思是进入toolchain的编译目录，然后执行`oebuild toolchain`开始构建
+
+2，进入编译目录会有toolchain.yaml构建配置文件，然后执行`oebuild toolchain`
+
 ````
-    cd /usr1 && git clone -b master https://gitee.com/openeuler/yocto-embedded-tools.git
-    cd yocto-embedded-tools/cross_tools
-    ./prepare.sh
-    chown -R openeuler:users /usr1
-    su openeuler
-    #aarch64:
-    cp config_aarch64 .config && ct-ng build
-    #arm32
-    cp config_arm32 .config && ct-ng build
-    #x86_64
-	cp config_x86_64 .config && ct-ng build
-    #riscv64
-	cp config_riscv64 .config && ct-ng build
+oebuild toolchain
+
+Welcome to the openEuler Embedded build environment, where you
+can create openEuler Embedded cross-chains tools by follows:
+./cross-tools/prepare.sh ./
+cp config_aarch64 .config && ct-ng build
+cp config_aarch64-musl .config && ct-ng build
+cp config_arm32 .config && ct-ng build
+cp config_x86_64 .config && ct-ng build
+cp config_riscv64 .config && ct-ng build
+
+[openeuler@huawei-thinkcentrem920t-n000 jjj]$
 ````
-上述操作oebuild均是在已经准备好ct-ng的镜像容器中进行，待执行完成之后进入到指定容器中进行如下操作即可获取对应编译工具链。
+3，此时继续执行，这一步主要是下载交叉编译链需要的各种库
+
+```
+./cross-tools/prepare.sh ./
+```
+
+4，拷贝config配置文件，然后执行编译命令（这里以aarch64为例）
+
+```
+$: cp config_aarch64 .config
+$: ct-ng build
+```
+
+不管是自动构建模式还是交互构建模式，在构建完后会在编译目录下生成二进制产物，编译链二进制产物在x-tools目录下，我们需要对编译链文件名做一些修改，参照如下命令：
+
 ````
-    cd /home/openeuler/x-tools/
-    mv aarch64-openeuler-linux-gnu openeuler_gcc_arm64le
-    tar czf openeuler_gcc_arm64le.tar.gz openeuler_gcc_arm64le
+$: cd x-tools
+# 针对aarch64的处理
+$: mv aarch64-openeuler-linux-gnu openeuler_gcc_arm64le
+$: tar czf openeuler_gcc_arm64le.tar.gz openeuler_gcc_arm64le
+# 针对arm32的处理
+$: mv arm-openeuler-linux-gnueabi openeuler_gcc_arm32le
+$: tar czf openeuler_gcc_arm32le.tar.gz openeuler_gcc_arm32le
+# 针对x86-64的处理
+$: mv x86_64-openeuler-linux-gnu openeuler_gcc_x86_64
+$: tar czf openeuler_gcc_x86_64.tar.gz openeuler_gcc_x86_64
+# 针对riscv64的处理
+$: mv riscv64-openeuler-linux-gnu openeuler_gcc_riscv64
+$: tar czf openeuler_gcc_riscv64.tar.gz openeuler_gcc_riscv64
+# 针对aarch64-musl的处理
+$: mv aarch64-openeuler-linux-musl openeuler_gcc_arm64le_musl
+$: tar czf openeuler_gcc_arm64le_musl.tar.gz openeuler_gcc_arm64le_musl
 ````
 
 # release.yaml
@@ -74,7 +115,6 @@ target_commitish: 标签关联的对应仓库分支
 owner: 所属工作组
 
 repo: gitee仓库名称
-
 
 
 
