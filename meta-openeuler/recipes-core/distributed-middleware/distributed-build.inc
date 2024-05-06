@@ -57,9 +57,10 @@ do_patch:append() {
     bb.build.exec_func('do_prepare_build_directory', d)
     bb.build.exec_func('do_prepare_vendor_directory', d)
     bb.build.exec_func('do_prepare_third_party_directory', d)
+    bb.build.exec_func('do_prepare_toolchain_directory', d)
 }
 
-do_configure:prepend() {
+do_prepare_toolchain_directory() {
     mkdir -p ${buildtools_dir}
     cp -rfp ${WORKDIR}/gn ${buildtools_dir}/
 
@@ -98,9 +99,4 @@ do_prepare_vendor_directory() {
 do_prepare_third_party_directory() {
     mkdir -p ${S}/third_party
     cp -rfp ${WORKDIR}/${pkg-build}/openeuler/compiler_gn/third_party/* ${S}/third_party
-}
-
-do_prepare_hilog_gn_directory() {
-    mkdir -p ${S}/base/hiviewdfx/
-    cp -rfp ${WORKDIR}/${pkg-build}/openeuler/compiler_gn/base/hiviewdfx/hilog ${S}/base/hiviewdfx
 }

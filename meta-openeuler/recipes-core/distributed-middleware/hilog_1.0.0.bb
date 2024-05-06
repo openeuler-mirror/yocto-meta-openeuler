@@ -10,7 +10,7 @@ OPENEULER_REPO_NAME = "hiviewdfx_hilog"
 pkg-hilog = "hiviewdfx_hilog-${openHarmony_release_version}"
 
 SRC_URI += " \
-            file://hiviewdfx_hilog/${pkg-hilog}.tar.gz \
+            file://${pkg-hilog}.tar.gz \
             file://hiviewdfx_hilog/0001-init-and-adapt-to-openeuler.patch;patchdir=${WORKDIR}/${pkg-hilog} \
             file://hiviewdfx_hilog/0002-fix-build-gn-files-config.patch;patchdir=${WORKDIR}/${pkg-hilog} \
             file://hiviewdfx_hilog/0003-feat-set-priv-false.patch;patchdir=${WORKDIR}/${pkg-hilog} \
@@ -21,16 +21,12 @@ SRC_URI += " \
 
 RDEPENDS:${PN} = "libboundscheck"
 
-FILES:${PN}-dev = "${includedir}"
+FILES:${PN}-dev = "${includedir} /compiler_gn"
 FILES:${PN} = "${libdir} ${bindir}"
 
-do_patch:append() {
-    bb.build.exec_func('do_prepare_hilog_directory', d)
-}
-
-do_prepare_hilog_directory() {
+do_configure:prepend() {
     mkdir -p ${S}/base/hiviewdfx/hilog
-    cp -rfp ${WORKDIR}/${pkg-hilog}/* ${S}/base/hiviewdfx/hilog
+    cp -rf ${WORKDIR}/${pkg-hilog}/* ${S}/base/hiviewdfx/hilog
 }
 
 do_compile() {
@@ -52,4 +48,10 @@ do_install() {
     install -m 554 ${S}/base/hiviewdfx/hilog/interfaces/native/innerkits/include/*.h  ${D}/${includedir}/hilog/
     install -m 554 ${S}/base/hiviewdfx/hilog/interfaces/native/innerkits/include/hilog/*.h  ${D}/${includedir}/hilog/hilog/
     install -m 554 ${S}/base/hiviewdfx/hilog/interfaces/native/innerkits/include/hilog_base/*.h  ${D}/${includedir}/hilog/hilog_base/
+
+    # copy gn files
+    mkdir -p ${D}/compiler_gn/base/hiviewdfx
+    cp -rf ${WORKDIR}/${pkg-build}/openeuler/compiler_gn/base/hiviewdfx/hilog/ ${D}/compiler_gn/base/hiviewdfx/
 }
+
+SYSROOT_DIRS += "/compiler_gn"
