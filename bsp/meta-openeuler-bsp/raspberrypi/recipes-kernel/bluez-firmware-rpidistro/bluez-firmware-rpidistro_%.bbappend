@@ -1,7 +1,7 @@
 # apply openeuler source package
 OPENEULER_REPO_NAME = "raspberrypi-firmware"
 
-PV = "20231219"
+PV = "20240419"
 
 SRC_URI = "file://raspberrypi-firmware-${PV}.tar.gz \
 "

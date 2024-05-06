@@ -1,7 +1,7 @@
 # apply openeuler source package
 OPENEULER_REPO_NAME = "raspberrypi-firmware"
 
-PV = "20231219"
+PV = "20240419"
 
 # openeuler source package directory tree is difference
 LIC_FILES_CHKSUM = "\
