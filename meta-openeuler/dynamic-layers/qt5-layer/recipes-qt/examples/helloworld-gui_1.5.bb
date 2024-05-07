@@ -19,13 +19,13 @@ S = "${WORKDIR}/${BP}"
 inherit qmake5
 
 # fix error: xxx/recipe-sysroot/usr/bin/lrelease: No such file or directory
-do_prepare_lrelease() {
-    if [ ! -e ${STAGING_BINDIR}/lrelease ]; then
-        ln -s ${STAGING_BINDIR_NATIVE}/lrelease ${STAGING_BINDIR}/lrelease
+do_configure:append() {
+    # Find native tools
+    if [ -e ${B}/app/Makefile ]; then
+        sed -i 's:${STAGING_BINDIR}/lrelease:${OE_QMAKE_PATH_EXTERNAL_HOST_BINS}/lrelease:g' ${B}/app/Makefile
+        sed -i 's:${STAGING_BINDIR}/lupdate:${OE_QMAKE_PATH_EXTERNAL_HOST_BINS}/lupdate:g' ${B}/app/Makefile
     fi
 }
-
-do_prepare_recipe_sysroot[postfuncs] += "do_prepare_lrelease"
 
 FILES:${PN} += "/usr/local/*"
 
