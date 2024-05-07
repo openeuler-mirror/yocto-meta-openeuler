@@ -40,7 +40,6 @@ export IMAGE_BASENAME = "initrd-boot"
  
 IMAGE_FSTYPES = "cpio.gz"
 IMAGE_FSTYPES_DEBUGFS = "cpio.gz"
-INITRAMFS_MAXSIZE = "262144"
  
 # make install or nologin when using busybox-inittab
 set_permissions_from_rootfs:append() {

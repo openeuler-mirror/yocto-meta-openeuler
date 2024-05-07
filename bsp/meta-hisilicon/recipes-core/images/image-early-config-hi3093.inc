@@ -6,7 +6,6 @@
 IMAGE_FSTYPES = "${@bb.utils.contains("DISTRO_FEATURES", "mpu_solution", " ext4 live cpio.gz ", " cpio.gz ", d)}"
 INITRD_IMAGE_LIVE = "initrd-boot"
 
-INITRAMFS_MAXSIZE = "476591"
 IMAGE_ROOTFS_SIZE = "387072"
 
 IMAGE_FSTYPES:remove = "iso"

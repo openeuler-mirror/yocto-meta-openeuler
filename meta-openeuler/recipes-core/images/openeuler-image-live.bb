@@ -21,7 +21,6 @@ export IMAGE_BASENAME = "openeuler-image-live"
 
 IMAGE_FSTYPES = "${INITRAMFS_FSTYPES}"
 IMAGE_FSTYPES_DEBUGFS = "${INITRAMFS_FSTYPES}"
-INITRAMFS_MAXSIZE = "262144"
 
 # INITRD_IMAGE_LIVE cannot use image live, hddimg or iso.
 IMAGE_FSTYPES:remove = "live hddimg iso"
