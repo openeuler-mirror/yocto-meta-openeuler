@@ -36,7 +36,7 @@ gcc version 10.3.1 (crosstool-NG 1.25.0)
 
 #### 使用说明
 
-编译链的构建有两种方式，一种是自动构建模式，另一种是交互构建模式，所谓自动构建模式就是用户确定好构建内容后oebuild自动执行构建行为，交互构建模式即为生成交叉编译链构建的基础配置文件后通过执行oebuild toolchain后根据给出的提示进行构建。
+编译链的构建有三种方式，一种是自动构建模式，第二种是交互构建模式，第三种是原始构建模式，所谓自动构建模式就是用户确定好构建内容后oebuild自动执行构建行为，交互构建模式即为生成交叉编译链构建的基础配置文件后通过执行oebuild toolchain后根据给出的提示进行构建，原始构建模式是最能反映交叉编译链的构建流程的，前两种方式都是通过oebuild做了封装，是为了更方便开发者使用，而原始构建模式则是一步步按流程全部执行一遍，因此对于初学者，推荐原始构建模式。
 
 自动构建模式：
 
@@ -75,6 +75,35 @@ cp config_riscv64 .config && ct-ng build
 ```
 $: cp config_aarch64 .config
 $: ct-ng build
+```
+
+原始构建模式：
+
+1，创建一个sdk构建容器
+
+```
+docker run -it -u openeuler -v /dev/net/tun:/dev/net/tun swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-sdk bash
+```
+
+2，克隆yocto-meta-openeuler源码，为了提高效率，设置深度为1
+
+```
+$ docker clone https://gitee.com/openeuler/yocto-meta-openeuler.git --depth=1
+```
+
+3，进入.oebuild/cross-tools，执行prepare.sh下载依赖库，运行完成后会在当下目录出现open_source，这个目录存放构建交叉编译链依赖的库
+
+```
+$ cd yocto-meta-openeuler/.oebuild/cross-tools
+$ ./prepare.sh
+```
+
+4，进入configs目录，选择需要构建的编译链类型，这里以aarch64为例，构建完成后会在cross-tools/x-tools下有发布件
+
+```
+$ cd configs
+$ cp config_aarch64 .config
+$ ct-ng build
 ```
 
 不管是自动构建模式还是交互构建模式，在构建完后会在编译目录下生成二进制产物，编译链二进制产物在x-tools目录下，我们需要对编译链文件名做一些修改，参照如下命令：
