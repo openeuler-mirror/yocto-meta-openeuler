@@ -75,6 +75,7 @@
 <li class="toctree-l2"><a class="reference internal" href="jailhouse.html">轻量级虚拟化工具 Jailhouse</a></li>
 <li class="toctree-l2"><a class="reference internal" href="openbmc.html">OpenBMC 镜像构建和使用</a></li>
 <li class="toctree-l2"><a class="reference internal" href="container/index.html">openEuler Embedded 容器相关特性</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kernelversions.html">内核多版本支持（5.10/6.6）介绍</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../bsp/index.html">南向支持</a></li>
@@ -157,12 +158,19 @@
 </section>
 <section id="id2">
 <h2>构建指南<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>构建结合了 meta-openeuler、poky/meta、meta-raspberrypi、meta-qt5、meta-oe 等层，目前支持在树梅派、rk3568等平台构建，构建流程如下：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>树梅派构建
+<p>构建结合了 meta-openeuler、poky/meta、meta-raspberrypi、meta-qt5、meta-oe 等层，目前支持在x86、树梅派、rk3568等平台构建，构建流程如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>需要基于wayland的wayfire窗口组合器/管理器+基础应用程序，可按如下配置（hmi相关全量特性）
+<span class="gp"># </span>树莓派构建例子：
+<span class="gp">$ </span>oebuild generate -p raspberrypi4-64 -f systemd -f hmi
+<span class="gp"># </span>x86构建例子：
+<span class="gp">$ </span>oebuild generate -p x86-64 -f systemd -f hmi
+
+<span class="gp"># </span>不需要wayfire组合器可按如下配置：
+<span class="gp"># </span>树梅派构建例子：
 <span class="gp">$ </span>oebuild generate -p raspberrypi4-64 -f systemd -f openeuler-qt -f opengl -f wayland -d ras-qt
-<span class="gp"># </span>ok3568构建
+<span class="gp"># </span>ok3568构建例子：
 <span class="gp">$ </span>oebuild generate -p ok3568 -f systemd -f openeuler-qt -f opengl -f wayland -d ok3568-qt
-<span class="gp"># </span>ryd-3568构建
+<span class="gp"># </span>ryd-3568构建例子：
 <span class="gp">$ </span>oebuild generate -p ryd-3568 -f systemd -f openeuler-qt -f opengl -f wayland -d ryd-3568-qt
 
 <span class="gp"># </span>进入交互构建终端
@@ -176,12 +184,13 @@
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>目前 rk3568 平台对 Qt5 支持尚不完善，正在开发改进中！！！</p>
+<p>hmi特性顾名思义，将持续集成Human Machine Interface相关特性。目前已支持基于wayland的wayfire窗口管理器，集成了诸如文件管理等基本应用。</p>
+<p>目前 rk3568 平台对 Qt5、HMI的支持尚不完善，正在开发改进中。</p>
 </div>
 </section>
 <section id="id3">
 <h2>示例<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<p>image 中集成了一些 demo 程序用于测试功能是否正常，如下：</p>
+<p>hmi相关image 中集成了一些 demo 程序用于用户态体验并测试功能是否正常：</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 24%" />
@@ -193,46 +202,82 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>kmscube</p></td>
-<td><p>测试驱动（kms/drm）功能，在普通窗口界面运行；</p></td>
+<tr class="row-even"><td><p>wayfire</p></td>
+<td><p>基于wayland/wlroots的窗口管理启动器（轻量桌面）</p></td>
 </tr>
-<tr class="row-odd"><td><p>helloworld-gui</p></td>
-<td><p>Qt5 helloworld 程序；</p></td>
+<tr class="row-odd"><td><p>lxtask</p></td>
+<td><p>一款轻量任务管理器（lxde系列）</p></td>
+</tr>
+<tr class="row-even"><td><p>lxterminal</p></td>
+<td><p>一款轻量图形终端（lxde系列）</p></td>
+</tr>
+<tr class="row-odd"><td><p>gpicview</p></td>
+<td><p>一款轻量图像查看器</p></td>
+</tr>
+<tr class="row-even"><td><p>l3afpad</p></td>
+<td><p>一款轻量文本编辑器</p></td>
+</tr>
+<tr class="row-odd"><td><p>pcmanfm</p></td>
+<td><p>一款轻量文件浏览器</p></td>
+</tr>
+<tr class="row-even"><td><p>qtwebbrowser</p></td>
+<td><p>一款基于qtwebengine的网页浏览器（QT官方案例）</p></td>
+</tr>
+<tr class="row-odd"><td><p>kmscube</p></td>
+<td><p>测试驱动（kms/drm）功能，在普通窗口界面运行</p></td>
+</tr>
+<tr class="row-even"><td><p>helloworld-gui</p></td>
+<td><p>Qt5 helloworld 程序</p></td>
 </tr>
 </tbody>
 </table>
-<p>在openEuler Embedded系统中运行 demo 程序。</p>
+<p>wayfire窗口组合器界面的进入（hmi特性镜像）:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>需BSP图形驱动正常、tty屏幕介质正常方可使用。
+<span class="gp">$ </span>wayfire
+<span class="gp"># </span>类似图形桌面启动，应用可自行探索。
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>为方便体验，demo启用了强制root启动wayfire，建议用户在正式使用时去除（使用普通用户执行）。另外，如果需要界面登录功能，还需要登录相关图形应用，欢迎伙伴完善贡献。</p>
+</div>
+<figure class="align-center" id="id7">
+<img alt="../_images/wayfiresow.jpg" src="../_images/wayfiresow.jpg" />
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">wayfire及其各类应用</span></code> 效果图</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>独立启动QT和eglfs图形应用案例：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>kmscube
+<span class="gp">$ </span>helloworld-gui --platform eglfs
+<span class="gp">$ </span>helloworld-gui --platform linuxfb
+</pre></div>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Qt5 程序运行时可以通过 <code class="docutils literal notranslate"><span class="pre">--platform</span></code> 选项来指定使用的平台插件，eglfs 与 wayland 是两种常见的平台插件。</p>
 </div>
-<p>普通窗口界面：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>kmscube
-<span class="gp"># </span>helloworld-gui --platform eglfs
-<span class="gp"># </span>helloworld-gui --platform linuxfb
+<p>基于weston（wayland标准组合器）启动应用程序案例：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>weston
+<span class="gp">$ </span>helloworld-gui --platform wayland
 </pre></div>
 </div>
-<p>wayland 插件需要在 weston 界面支持：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>weston
-<span class="gp"># </span>helloworld-gui --platform wayland
-</pre></div>
-</div>
-<figure class="align-center" id="id7">
+<figure class="align-center" id="id8">
 <img alt="../_images/weston.png" src="../_images/weston.png" />
 <figcaption>
-<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">weston</span></code> 效果图</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
-</figcaption>
-</figure>
-<figure class="align-center" id="id8">
-<img alt="../_images/helloworld-gui_1.png" src="../_images/helloworld-gui_1.png" />
-<figcaption>
-<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">helloworld-gui</span> <span class="pre">--platform</span> <span class="pre">wayland</span></code> 效果图1</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">weston</span></code> 效果图</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id9">
+<img alt="../_images/helloworld-gui_1.png" src="../_images/helloworld-gui_1.png" />
+<figcaption>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">helloworld-gui</span> <span class="pre">--platform</span> <span class="pre">wayland</span></code> 效果图1</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<figure class="align-center" id="id10">
 <img alt="../_images/helloworld-gui_2.png" src="../_images/helloworld-gui_2.png" />
 <figcaption>
-<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">helloworld-gui</span> <span class="pre">--platform</span> <span class="pre">wayland</span></code> 效果图2</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">helloworld-gui</span> <span class="pre">--platform</span> <span class="pre">wayland</span></code> 效果图2</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -240,14 +285,15 @@
 <h2>快速开发SDK<a class="headerlink" href="#sdk" title="Permalink to this headline">¶</a></h2>
 <section id="id4">
 <h3>安装SDK<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
-<p>以树莓派镜像SDK为例：</p>
+<p>以树莓派镜像SDK为例（建议启用hmi特性的SDK相对完整）：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>请将 sdk-dir 替换为您希望安装SDK的目标目录
 <span class="gp">$ </span>sh openeuler-glibc-x86_64-openeuler-image-cortexa72-raspberrypi4-64-toolchain-24.03-LTS.sh -y -d sdk-dir
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>由于Qt5 SDK包含主机工具，需进行重定位操作。为确保成功安装，安装目录的长度应不超过构建时设定的动态链接器长度限制，即不超过37个字母。</p>
+<p>重要：由于Qt5 SDK包含主机工具，需进行重定位操作。为确保成功安装，安装目录的长度应不超过构建时设定的动态链接器长度限制，即不超过37个字母。</p>
+<p>另外，当前hmi特性的图形SDK已集成qtwebengine等模块，但某些视频流还无法播放，将在后续持续完善。</p>
 </div>
 </section>
 <section id="id5">

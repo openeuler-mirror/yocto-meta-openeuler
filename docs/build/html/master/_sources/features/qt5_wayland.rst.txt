@@ -49,15 +49,22 @@ openEuler Embedded 图形栈主要组成包
 构建指南
 =================
 
-构建结合了 meta-openeuler、poky/meta、meta-raspberrypi、meta-qt5、meta-oe 等层，目前支持在树梅派、rk3568等平台构建，构建流程如下：
+构建结合了 meta-openeuler、poky/meta、meta-raspberrypi、meta-qt5、meta-oe 等层，目前支持在x86、树梅派、rk3568等平台构建，构建流程如下：
 
 .. code-block:: console
+    
+    # 需要基于wayland的wayfire窗口组合器/管理器+基础应用程序，可按如下配置（hmi相关全量特性）
+    # 树莓派构建例子：
+    $ oebuild generate -p raspberrypi4-64 -f systemd -f hmi
+    # x86构建例子：
+    $ oebuild generate -p x86-64 -f systemd -f hmi
 
-    # 树梅派构建
+    # 不需要wayfire组合器可按如下配置：
+    # 树梅派构建例子：
     $ oebuild generate -p raspberrypi4-64 -f systemd -f openeuler-qt -f opengl -f wayland -d ras-qt
-    # ok3568构建
+    # ok3568构建例子：
     $ oebuild generate -p ok3568 -f systemd -f openeuler-qt -f opengl -f wayland -d ok3568-qt
-    # ryd-3568构建
+    # ryd-3568构建例子：
     $ oebuild generate -p ryd-3568 -f systemd -f openeuler-qt -f opengl -f wayland -d ryd-3568-qt
 
     # 进入交互构建终端
@@ -71,43 +78,69 @@ openEuler Embedded 图形栈主要组成包
 
 .. note:: 
 
-    目前 rk3568 平台对 Qt5 支持尚不完善，正在开发改进中！！！
+    hmi特性顾名思义，将持续集成Human Machine Interface相关特性。目前已支持基于wayland的wayfire窗口管理器，集成了诸如文件管理等基本应用。
+
+    目前 rk3568 平台对 Qt5、HMI的支持尚不完善，正在开发改进中。
 
 
 示例
 ================
 
-image 中集成了一些 demo 程序用于测试功能是否正常，如下：
+hmi相关image 中集成了一些 demo 程序用于用户态体验并测试功能是否正常：
 
 ==================== ===============================================================
 程序名                  作用   
 ==================== ===============================================================
-kmscube                测试驱动（kms/drm）功能，在普通窗口界面运行；
-helloworld-gui         Qt5 helloworld 程序；
+wayfire                基于wayland/wlroots的窗口管理启动器（轻量桌面）
+lxtask                 一款轻量任务管理器（lxde系列）
+lxterminal             一款轻量图形终端（lxde系列）
+gpicview               一款轻量图像查看器
+l3afpad                一款轻量文本编辑器
+pcmanfm                一款轻量文件浏览器
+qtwebbrowser           一款基于qtwebengine的网页浏览器（QT官方案例）
+kmscube                测试驱动（kms/drm）功能，在普通窗口界面运行
+helloworld-gui         Qt5 helloworld 程序
 ==================== ===============================================================
 
-在openEuler Embedded系统中运行 demo 程序。
+wayfire窗口组合器界面的进入（hmi特性镜像）:
+
+.. code-block:: console
+
+    # 需BSP图形驱动正常、tty屏幕介质正常方可使用。
+    $ wayfire
+    # 类似图形桌面启动，应用可自行探索。
+
+.. note:: 
+
+    为方便体验，demo启用了强制root启动wayfire，建议用户在正式使用时去除（使用普通用户执行）。另外，如果需要界面登录功能，还需要登录相关图形应用，欢迎伙伴完善贡献。
+
+
+.. figure:: ../../image/qt/wayfiresow.jpg
+    :align: center
+
+    ``wayfire及其各类应用`` 效果图
+
+
+独立启动QT和eglfs图形应用案例： 
+
+.. code-block:: console
+
+    $ kmscube
+    $ helloworld-gui --platform eglfs
+    $ helloworld-gui --platform linuxfb
+
 
 .. note:: 
 
     Qt5 程序运行时可以通过 ``--platform`` 选项来指定使用的平台插件，eglfs 与 wayland 是两种常见的平台插件。
 
 
-普通窗口界面： 
+基于weston（wayland标准组合器）启动应用程序案例：
 
 .. code-block:: console
 
-    # kmscube
-    # helloworld-gui --platform eglfs
-    # helloworld-gui --platform linuxfb
-
-
-wayland 插件需要在 weston 界面支持：
-
-.. code-block:: console
-
-    # weston
-    # helloworld-gui --platform wayland
+    $ weston
+    $ helloworld-gui --platform wayland
 
 
 .. figure:: ../../image/qt/weston.png
@@ -134,7 +167,7 @@ wayland 插件需要在 weston 界面支持：
 安装SDK
 ---------------
 
-以树莓派镜像SDK为例：
+以树莓派镜像SDK为例（建议启用hmi特性的SDK相对完整）：
 
 .. code-block:: console
 
@@ -143,7 +176,9 @@ wayland 插件需要在 weston 界面支持：
 
 .. note::
 
-    由于Qt5 SDK包含主机工具，需进行重定位操作。为确保成功安装，安装目录的长度应不超过构建时设定的动态链接器长度限制，即不超过37个字母。
+    重要：由于Qt5 SDK包含主机工具，需进行重定位操作。为确保成功安装，安装目录的长度应不超过构建时设定的动态链接器长度限制，即不超过37个字母。
+
+    另外，当前hmi特性的图形SDK已集成qtwebengine等模块，但某些视频流还无法播放，将在后续持续完善。
 
 
 使用方法

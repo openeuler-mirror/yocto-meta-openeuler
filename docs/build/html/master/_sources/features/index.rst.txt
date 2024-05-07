@@ -23,3 +23,4 @@
    jailhouse.rst
    openbmc.rst
    container/index.rst
+   kernelversions.rst
