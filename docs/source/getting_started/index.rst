@@ -330,7 +330,7 @@ openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发�
 
         static void hello_exit(void)
         {
-            printk("Byebye!");
+            printk("Byebye!\r\n");
         }
 
         module_init(hello_init);
