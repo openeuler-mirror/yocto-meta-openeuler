@@ -82,3 +82,27 @@ html_favicon = str(DOC_BASE / "source" / "_static" / "images" / "favicon.ico")
 master_doc= 'index'
 
 html_show_sourcelink = False
+
+latex_engine = "xelatex"
+
+latex_elements = {
+    'papersize': 'a4paper',
+    'utf8extra': '',
+    'inputenc': '',
+    'cmappkg': '',
+    'fontenc': '',
+    'preamble': r'''
+        \usepackage{xeCJK}
+        \usepackage{indentfirst}
+        \setlength{\parindent}{2em}
+        \setCJKmainfont{Noto Sans CJK SC}
+        \setCJKmonofont{Noto Sans Mono CJK SC}
+        \XeTeXlinebreaklocale "zh"
+        \XeTeXlinebreakskip = 0pt plus 1pt
+    ''',
+}
+
+latex_documents = [
+    (master_doc, 'openeuler.tex', 'openEuler Embedded使用与开发手册',
+     '作者：openEuler Embedded', 'manual', True),
+]
