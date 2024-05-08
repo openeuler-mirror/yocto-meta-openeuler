@@ -1,5 +1,7 @@
 # main bbfile: yocto-poky/meta/recipes-support/libunwind/libunwind_1.6.2.bb
 
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
+
 PV = "1.7.2"
 
 SRC_URI:prepend = "file://${BP}.tar.gz \
