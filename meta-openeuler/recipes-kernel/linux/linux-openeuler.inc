@@ -87,10 +87,8 @@ KERNEL_FEATURES:append = " \
 "
 
 ## mcs related patches and configs
-## mcs_rpmsg.scc: Add basic functionality, including rpmsg, remoteproc
 ## mcs_jailhouse: Add jailhouse support
 KERNEL_FEATURES:append = " \
-        ${@bb.utils.contains('DISTRO_FEATURES', 'mcs', 'features/mcs/mcs_rpmsg.scc', '', d)} \
         ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'features/mcs/mcs_jailhouse.scc', '', d)} \
         "
 # add openamp support for x86 mcs
