@@ -82,12 +82,15 @@
     Policy: ping_msg.  Reply from remote os:
     Count:      23 Realtime:    1339μs Min:     326μs Avg:    1274μs Max:    3578μs
 
-3. 下图为ping测试的演示GIF图，如果不指定loop参数则会一直进行测试，直到ctrl+c退出。long-ping的测试与ping同理，在此不再展示。
+3. 下图为ping测试的演示截图图，如果不指定loop参数则会一直进行测试，直到ctrl+c退出。long-ping的测试与ping同理，在此不再展示。
 
-  .. figure:: ../../../image/benchmark/ping.gif
+  .. figure:: ../../../image/benchmark/31.png
       :align: center
 
-      图3. ping测试演示GIF
+  .. figure:: ../../../image/benchmark/32.png
+      :align: center
+
+      图3. ping测试演示
 
 3. 基于虚拟终端的通信测试
 --------------------------
@@ -149,17 +152,20 @@
 
     图4. bandwidth测试过程
 
-4. 基于虚拟终端ping与bandwidth测试演示GIF如下：
+4. 基于虚拟终端ping与bandwidth测试演示截图如下：
 
-  .. figure:: ../../../image/benchmark/pty-ping.gif
+  .. figure:: ../../../image/benchmark/5.png
       :align: center
 
-      图5. 基于虚拟终端ping测试的演示GIF
+      图5. 基于虚拟终端ping测试的演示
 
-  .. figure:: ../../../image/benchmark/pty-bandwidth.gif
+  .. figure:: ../../../image/benchmark/61.png
       :align: center
 
-      图6. 基于虚拟终端bandwidth测试的演示GIF
+  .. figure:: ../../../image/benchmark/62.png
+      :align: center
+
+      图6. 基于虚拟终端bandwidth测试的演示
 
 为其它的client os适配 benchmark
 ===============================
