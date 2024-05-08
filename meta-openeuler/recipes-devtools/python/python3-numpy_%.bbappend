@@ -1,3 +1,4 @@
+# bbfile: yocto-meta-ros/meta-ros-python2/recipes-imported-oe-core-warrior/python/python-numpy_1.16.3.bb
 PV = "1.24.3"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
@@ -18,19 +19,3 @@ SRC_URI:remove = " \
 SRC_URI:append = " \
         file://adapted-cython3_noexcept.patch \
         "
-# apply oe-core patch
-SRC_URI += "\
-        file://0001-simd.inc.src-Change-NPY_INLINE-to-inline.patch \
-"
-        
-RDEPENDS:${PN}-ptest:append = "${PYTHON_PN}-typing-extensions \ "
-
-# It's a workaround:
-# Due to updates to the compiler and C library, we have found that some for loops 
-#   have been optimized with logical issues, resulting in segmentation faults. 
-# Therefore, we are implementing a contingency plan by changing the default 
-#   optimization configuration from O2 to O1
-CXXFLAGS:prepend:class-target = " -O1 "
-CFLAGS:prepend:class-target = " -O1 "
-CXXFLAGS:remove:class-target = "-O2"
-CFLAGS:remove:class-target = "-O2"
