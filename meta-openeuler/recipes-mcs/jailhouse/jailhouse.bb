@@ -9,7 +9,6 @@ PV = "0.12"
 SRC_URI = " \
 	file://${BP}.tar.gz \
 	file://cells/ \
-	file://0001-driver-Add-support-for-remote-proc.patch \
 	file://0001-Support-for-loading-ELF_64-image.patch \
 	"
 
@@ -46,11 +45,11 @@ do_configure:prepend() {
 EXTRA_OEMAKE = "V=0 ARCH=${ARCH} CROSS_COMPILE=${TARGET_PREFIX} \
 		KDIR=${STAGING_KERNEL_BUILDDIR}"
 
-do_compile() {
+do_compile:append() {
 	oe_runmake
 }
 
-do_install() {
+do_install:append() {
 	# We want to install the python tools, but we do not want to use pip...
 	# At least with v0.10, we can work around this with
 	# 'PIP=":" PYTHON_PIP_USEABLE=yes'
