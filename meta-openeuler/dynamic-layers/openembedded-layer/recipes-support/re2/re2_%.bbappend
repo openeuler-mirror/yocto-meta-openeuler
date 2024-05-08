@@ -1,15 +1,8 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-support/re2/re2_2020.11.01.bb
-RE2_VER = "${@"-".join(d.getVar("PV").split("."))}"
-S = "${WORKDIR}/${BPN}-${RE2_VER}"
 
 # version in openEuler
 PV = "2024.02.01"
-
-SRCREV = "2d866a3d0753f4f4fce93cccc6c59c4b052d7db4"
-
-# sync with high version of oe config:
-# ignore .so in /usr/lib64
-INSANE_SKIP:${PN} += "dev-so"
+RE2_VER = "${@"-".join(d.getVar("PV").split("."))}"
 
 # files, patches that come from openeuler
 SRC_URI:prepend = " \
@@ -17,14 +10,14 @@ SRC_URI:prepend = " \
     file://add-some-testcases-for-abnormal-branches.patch \
 "
 
+S = "${WORKDIR}/${BPN}-${RE2_VER}"
+
+# from meta-oe
 DEPENDS = "abseil-cpp ${@bb.utils.contains('PTEST_ENABLED', '1', 'gtest googlebenchmark', '', d)}"
 
 inherit ptest
 
 RDEPENDS:${PN}-ptest += "cmake sed"
-RDEPENDS:${PN} += "abseil-cpp-dev"
-
-INSANE_SKIP:${PN} += "dev-deps"
 
 EXTRA_OECMAKE:remove = "\
             -DRE2_BUILD_TESTING=OFF \
@@ -43,5 +36,7 @@ do_install_ptest () {
     cp -r ${B}/libtesting.so ${D}${PTEST_PATH}
 }
 
-# ignore .so in /usr/lib64
-INSANE_SKIP:${PN} += "dev-so"
+# openeuler customized configuration
+# repack files. pack .so, pc, etc in dev package
+FILES:${PN} = "${libdir}/lib*${SOLIBS}"
+FILES:${PN}-dev = "${includedir} ${FILES_SOLIBSDEV} ${libdir}/pkgconfig ${libdir}/cmake"
