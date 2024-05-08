@@ -35,20 +35,12 @@ do_fetch[depends] += "mcs-linux:do_fetch"
 DEPENDS += "${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'jailhouse', '', d)}"
 
 do_compile() {
-       if ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'true', 'false', d)}; then
-               oe_runmake JAILHOUSE_SRC=${WORKDIR}/recipe-sysroot/
-       else
-               oe_runmake
-       fi
+        oe_runmake
 }
 
 # The inherit of module.bbclass will automatically name module packages with
 # "kernel-module-" prefix as required by the oe-core build environment.
 RPROVIDES:${PN} += "kernel-module-mcs-km"
 RPROVIDES:${PN}:x86-64 += "kernel-module-eth-i210"
-RPROVIDES:${PN} += "kernel-module-mcs-remoteproc"
-RPROVIDES:${PN} += "${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'kernel-module-mcs-ivshmem', '', d)}"
 
-# We may not use the Linux kernel's RemoteProc framework in the future,
-# so even though we provide mcs_remoteproc, we still default to load mcs_km.
 KERNEL_MODULE_AUTOLOAD += "${@bb.utils.contains('MCS_FEATURES', 'openamp', 'mcs_km', '', d)}"
