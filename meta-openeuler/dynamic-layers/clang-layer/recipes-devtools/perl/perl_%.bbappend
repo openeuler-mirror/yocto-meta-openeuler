@@ -1,2 +1,2 @@
-CFLAGS:append:raspberrypi4-64 = " -DBB_GLOBAL_CONST='' "
+CFLAGS:append:toolchain-clang = " -Wno-error=implicit-function-declaration"
 CC:append:toolchain-clang = "${@bb.utils.contains('DISTRO_FEATURES', 'ld-is-lld', ' -fuse-ld=lld', '', d)}"

@@ -11,3 +11,6 @@ SRC_URI = " \
 
 SRC_URI[md5sum] = "ead96d240d02faa5b921c0aa50c812b5"
 SRC_URI[sha256sum] = "34b8adc726883d0e85b3118fa13605e179a62b31ba51f676136ecb2d0bc1a887"
+
+# To be fixed by llvm building
+TOOLCHAIN:class-native = "gcc"
