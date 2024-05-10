@@ -42,7 +42,8 @@ openEuler Embedded蓝牙配置
 
   .. code-block:: console
 
-    $ bluetoothctl scan on
+    $ bluetoothctl
+    $ scan on
 
   扫描到的设备会显示在终端上，如下所示：
 
