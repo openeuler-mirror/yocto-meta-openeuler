@@ -1,8 +1,6 @@
 # Add the necessary override
 CCACHE_COMPILERCHECK:toolchain-clang ?= "%compiler% -v"
-# HOST_CC_ARCH:prepend:toolchain-clang = "-target ${HOST_SYS} "
-# --no-sysroot-suffix not support.
-HOST_CC_ARCH:remove:toolchain-clang = " --no-sysroot-suffix "
+HOST_CC_ARCH:prepend:toolchain-clang = "-target ${HOST_SYS} "
 CC:toolchain-clang  = "${CCACHE}${HOST_PREFIX}clang ${HOST_CC_ARCH}${TOOLCHAIN_OPTIONS}"
 CXX:toolchain-clang = "${CCACHE}${HOST_PREFIX}clang++ ${HOST_CC_ARCH}${TOOLCHAIN_OPTIONS}"
 CPP:toolchain-clang = "${CCACHE}${HOST_PREFIX}clang ${HOST_CC_ARCH}${TOOLCHAIN_OPTIONS} -E"
@@ -22,8 +20,6 @@ COMPILER_RT ??= ""
 COMPILER_RT:class-native = "-rtlib=libgcc ${UNWINDLIB}"
 COMPILER_RT:armeb = "-rtlib=libgcc ${UNWINDLIB}"
 COMPILER_RT:libc-klibc = "-rtlib=libgcc ${UNWINDLIB}"
-# not use compiler-rt now, will be enable in the future.
-COMPILER_RT:remove:runtime-gnu = "-rtlib=compiler-rt"
 
 UNWINDLIB ??= ""
 UNWINDLIB:class-native = "--unwindlib=libgcc"
@@ -63,7 +59,6 @@ TUNE_CCARGS:append:toolchain-clang = "${@bb.utils.contains("DISTRO_FEATURES", "u
 LDFLAGS:append:toolchain-clang:class-nativesdk:x86-64 = " -Wl,-dynamic-linker,${base_libdir}/ld-linux-x86-64.so.2"
 LDFLAGS:append:toolchain-clang:class-nativesdk:x86 = " -Wl,-dynamic-linker,${base_libdir}/ld-linux.so.2"
 LDFLAGS:append:toolchain-clang:class-nativesdk:aarch64 = " -Wl,-dynamic-linker,${base_libdir}/ld-linux-aarch64.so.1"
-LDFLAGS:append:toolchain-clang:class-target:aarch64 = " -Wl,-dynamic-linker,${base_libdir}/ld-linux-aarch64.so.1"
 
 LDFLAGS:toolchain-clang:class-nativesdk = "${BUILDSDK_LDFLAGS} \
                                            -Wl,-rpath-link,${STAGING_LIBDIR}/.. \
@@ -105,7 +100,7 @@ YOCTO_ALTERNATE_LIBDIR:toolchain-clang:class-target = "/${BASELIB}"
 def clang_base_deps(d):
     if not d.getVar('INHIBIT_DEFAULT_DEPS', False):
         if not oe.utils.inherits(d, 'allarch') :
-            ret = " ${MLPREFIX}clang-external-cross-${TARGET_ARCH} virtual/libc "
+            ret = " ${MLPREFIX}clang-cross-${TARGET_ARCH} virtual/libc "
             if (d.getVar('RUNTIME').find('android') != -1):
                 ret += " libcxx"
                 return ret
@@ -128,12 +123,10 @@ def clang_base_deps(d):
 
 BASE_DEFAULT_DEPS:toolchain-clang:class-target = "${@clang_base_deps(d)}"
 BASE_DEFAULT_DEPS:append:class-native:toolchain-clang:runtime-llvm = " libcxx-native compiler-rt-native"
-BASEDEPENDS:append = " clang-native"
-BASEDEPENDS:remove:pn-clang-native = "clang-native"
 BASE_DEFAULT_DEPS:append:class-nativesdk:toolchain-clang:runtime-llvm = " clang-native nativesdk-libcxx nativesdk-compiler-rt"
 
 # do_populate_sysroot needs STRIP
-POPULATESYSROOTDEPS:toolchain-clang:class-target = "${MLPREFIX}clang-external-cross-${TARGET_ARCH}:do_populate_sysroot"
+POPULATESYSROOTDEPS:toolchain-clang:class-target = "${MLPREFIX}clang-cross-${TARGET_ARCH}:do_populate_sysroot"
 
 cmake_do_generate_toolchain_file:append:toolchain-clang () {
     cat >> ${WORKDIR}/toolchain.cmake <<EOF

@@ -4,6 +4,28 @@ CLANG_VERSION_allarch = ""
 CLANG_VERSION[vardepvalue] = "${CLANG_VERSION}"
 BUILDCFG_VARS += "CLANG_VERSION"
 
+PREFERRED_PROVIDER_clang-cross-${TARGET_ARCH} = "clang-external-cross-${TARGET_ARCH}"
+
+# use gcc sysroot now, but set `--target=xxx` in wrapper script
+HOST_CC_ARCH:remove:toolchain-clang = "-target ${HOST_SYS}"
+
+# no need for clang
+HOST_CC_ARCH:remove:toolchain-clang = "--no-sysroot-suffix"
+
+TUNE_CCARGS:remove:toolchain-clang = "-Qunused-arguments"
+
+# not use compiler-rt now, will be enable in the future.
+COMPILER_RT:remove:runtime-gnu = "-rtlib=compiler-rt"
+
+LDFLAGS:append:toolchain-clang:class-target:aarch64 = " -Wl,-dynamic-linker,${base_libdir}/ld-linux-aarch64.so.1"
+
+TOOLCHAIN = "clang"
+TOOLCHAIN:class-native = "clang"
+TOOLCHAIN:class-cross = "clang"
+
+BASEDEPENDS:toolchain-clang:class-native = " clang-native"
+BASEDEPENDS:remove:pn-clang-native = "clang-native"
+
 def get_clang_version(d):
     import os.path
     import re
