@@ -1,29 +1,10 @@
 # DockerFile介绍
 
-### Dockerfile
-此文件主要用于个人构建镜像生成，以openEuler-23.09镜像为基础，按照如下步骤进行镜像生成。
+openEuler Embedded涉及到的容器镜像有两种，一种是构建嵌入式镜像的容器，其相关的Dockerfile存放在openeuler-image目录，另一种是构建交叉编译链的容器，其相关的Dockerfile存放在openeuler-sdk目录，在没个目录下都会有两个Dockerfile，其中一个是Dockerfile，其用来构建对应的容器镜像，另一个是Dockerfile_CI，其用来构建所对应的基础设施运行的容器镜像。
 
-1.下载个人构建所需依赖软件包。
+容器镜像编译命令如下（这里以构建嵌入式容器镜像为例）：
 
-2.添加名称为openeuler的组和用户，且uid和gid均为1000。
-
-3.下载cross-ng-1.26.0压缩包，安装ct-ng工具。
-
-4.从openeuler工作环境的yocto-meta-openeuler仓库中下载最新的nativesdk和toolchain发行版，并将其安装到指定位置
-
-5.安装python依赖包
-
-### Dockerfile_CI
-此文件主要用于CI构建镜像生成，以openEuler-23.09镜像为基础，按照如下步骤进行镜像生成。
-
-1.下载个人构建所需依赖软件包。
-
-2.添加名称为jenkins的组和用户，且uid和gid均为1001。
-
-3.下载并安装jenkins环境，为jenkins外部调用做准备。
-
-4.挂载/home/jenkins/agent文件夹和/home/jenkins/.jenkins文件夹
-
-5.下载cross-ng-1.26.0压缩包，安装ct-ng工具。
-
-6.从openeuler工作环境的yocto-meta-openeuler仓库中下载最新的nativesdk和toolchain发行版，并将其安装到指定位置。
+```
+cd openeuler-image
+docker build -t openeuler-container:latest .
+```

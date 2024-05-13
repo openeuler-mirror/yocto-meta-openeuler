@@ -1,0 +1,49 @@
+# base image
+FROM swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-sdk:latest
+
+ARG VERSION=4.3
+ARG user=jenkins
+ARG group=jenkins
+#must to be 1001 for adapt disk mount in jenkins'job
+ARG uid=1001
+ARG gid=1001
+ARG AGENT_WORKDIR=/home/${user}/agent
+
+USER root
+
+RUN curl --create-dirs -fsSLo /usr/share/jenkins/agent.jar https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar \
+    && chmod 755 /usr/share/jenkins \
+    && chmod 644 /usr/share/jenkins/agent.jar \
+    && ln -sf /usr/share/jenkins/agent.jar /usr/share/jenkins/slave.jar
+
+RUN curl --create-dirs -fsSLo /usr/local/bin/jenkins-agent http://121.36.53.23/AdoptOpenJDK/jenkins-agent
+#COPY jenkins-agent /usr/local/bin/jenkins-agent
+
+RUN chmod a+rx /usr/local/bin/jenkins-agent \
+     && ln -s /usr/local/bin/jenkins-agent /usr/local/bin/jenkins-slave
+
+RUN groupadd -g ${gid} ${group} && useradd -c "Jenkins user" -d /home/${user} -u ${uid} -g ${gid} -m ${user}
+RUN echo "${user} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+#add umask conf to 022 in file /etc/bashrc
+RUN echo "umask 002" >> /etc/bashrc
+
+RUN mkdir /home/${user}/.jenkins && mkdir -p ${AGENT_WORKDIR}
+RUN chown -R jenkins:jenkins /opt /usr1 ${AGENT_WORKDIR} && chmod -R 755 /opt /usr1 ${AGENT_WORKDIR}
+
+USER ${user}
+
+RUN echo "PATH=$PATH:/home/${user}/.local/bin" >> ${HOME}/.bashrc \
+    && echo "export PATH" >> ${HOME}/.bashrc
+
+RUN set -eux; \
+pip install PyYaml python-git requests python-jenkins paramiko json2table \
+gitlint sphinx_tabs sphinx_multiversion sphinx-rtd-theme Sphinx==5.1.1 \
+oebuild pyyaml pygit gitpython -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+VOLUME /home/${user}/.jenkins
+VOLUME ${AGENT_WORKDIR}
+
+WORKDIR ${AGENT_WORKDIR}
+
+ENTRYPOINT ["jenkins-agent"]
