@@ -85,7 +85,7 @@ main()
 	check_use || return 1
 	set -e
 	WORK_DIR="$1"
-	SRC_DIR="$(cd $(dirname $0)/;pwd)"
+	SRC_DIR="$(pwd)"
 	SRC_DIR="$(realpath ${SRC_DIR})"
 	if [[ -z "${WORK_DIR}" ]];then
 		WORK_DIR=$SRC_DIR

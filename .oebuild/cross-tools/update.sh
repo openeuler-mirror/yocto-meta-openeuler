@@ -12,7 +12,7 @@ function update_feature() {
 }
 
 function update_config() {
-	cp $SRC_DIR/cross-tools/configs/config_* $WORK_DIR/
+	cp $SRC_DIR/configs/config_* $WORK_DIR/
 	sed -i "s#^CT_LINUX_CUSTOM_LOCATION.*#CT_LINUX_CUSTOM_LOCATION=\"$LIB_PATH/kernel\"#g" $WORK_DIR/config_*
 	sed -i "s#^CT_BINUTILS_CUSTOM_LOCATION.*#CT_BINUTILS_CUSTOM_LOCATION=\"$LIB_PATH/$BINUTILS/$BINUTILS_DIR\"#g" $WORK_DIR/config_*
 	sed -i "s#^CT_GLIBC_CUSTOM_LOCATION.*#CT_GLIBC_CUSTOM_LOCATION=\"$LIB_PATH/$GLIBC/$GLIBC_DIR\"#g" $WORK_DIR/config_*
@@ -34,10 +34,9 @@ function update_config() {
 main()
 {
 	set -e
-	SRC_DIR="$(cd $(dirname $0)/;pwd)"
-	SRC_DIR="$(dirname ${SRC_DIR})"
+	SRC_DIR="$(pwd)"
 	SRC_DIR="$(realpath ${SRC_DIR})"
-	source "${SRC_DIR}/cross-tools/configs/config.xml"
+	source "${SRC_DIR}/configs/config.xml"
 	readonly LIB_PATH="$SRC_DIR/open_source"
 	WORK_DIR=$SRC_DIR
 
