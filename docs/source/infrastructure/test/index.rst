@@ -224,7 +224,7 @@ OS基础测试套需要标准镜像支持，主要对OS的基础能力进行测�
 嵌入式安全配置测试套
 ----------------------
 
-嵌入式安全配置测试套基于 `社区嵌入式安全加固说明 <https://openeuler.gitee.io/yocto-meta-openeuler/security_hardening/index.html>`_
+嵌入式安全配置测试套基于 `社区嵌入式安全加固说明 <https://embedded.pages.openeuler.org/security_hardening/index.html>`_
 要求进行测试。
 
 嵌入式安全配置测试套同样需要标准镜像支持，需要提前启动qemu。
@@ -280,7 +280,7 @@ OS基础测试套需要标准镜像支持，主要对OS的基础能力进行测�
     sh qemu_ctl.sh stop
 
 .. attention:: 
-    在 `社区嵌入式安全加固说明 <https://openeuler.gitee.io/yocto-meta-openeuler/security_hardening/index.html>`_ 
+    在 `社区嵌入式安全加固说明 <https://embedded.pages.openeuler.org/security_hardening/index.html>`_ 
     中有部分安全加固项为方便开发和使用并没有启用，以下用例失败为正常。
 
     列表如下：

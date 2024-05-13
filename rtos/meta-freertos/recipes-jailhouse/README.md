@@ -4,7 +4,7 @@ meta-freertos 层存放 Freertos 相关 demo 文件，recipes-jailhouse 目录�
 
 ## freertos_demo 在 oebuild中的使用方法
 
-前置依赖添加 Jailhouse：[Jailhouse构建指导](https://openeuler.gitee.io/yocto-meta-openeuler/master/features/jailhouse.html) 
+前置依赖添加 Jailhouse：[Jailhouse构建指导](https://embedded.pages.openeuler.org/master/features/jailhouse.html) 
 
 1.1 在编译目录下的compile.yaml文件中添加meta-freertos 层：
 
