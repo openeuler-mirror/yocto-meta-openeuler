@@ -10,7 +10,7 @@
 struct {
     struct jailhouse_system header;
     __u64 cpus[1];
-    struct jailhouse_memory mem_regions[17];
+    struct jailhouse_memory mem_regions[16];
     struct jailhouse_irqchip irqchips[1];
     struct jailhouse_pci_device pci_devices[1];
 } __attribute__((packed)) config = {
@@ -30,7 +30,7 @@ struct {
             .flags = JAILHOUSE_CON_ACCESS_MMIO | JAILHOUSE_CON_REGDIST_4,
         },
         .platform_info = {
-            .pci_mmconfig_base = 0x10000000,
+            .pci_mmconfig_base = 0x08e00000,
             .pci_mmconfig_end_bus = 0x0,
             .pci_is_virtual = 1,
             .pci_domain = 1,
@@ -135,14 +135,6 @@ struct {
             .size       = 0x1000, // 4.0 KB
             .flags = JAILHOUSE_MEM_READ | JAILHOUSE_MEM_WRITE | JAILHOUSE_MEM_IO,
         },
-        /* pci */
-        {
-            .phys_start = 0x10000000,
-            .virt_start = 0x10000000,
-            .size       = 0x30000000,
-            .flags = JAILHOUSE_MEM_READ | JAILHOUSE_MEM_WRITE | JAILHOUSE_MEM_IO,
-        },
-
         /*****************/
         /* Regions
          *****************/
