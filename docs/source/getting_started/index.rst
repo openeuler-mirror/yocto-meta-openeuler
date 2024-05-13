@@ -293,7 +293,7 @@ openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发�
 
      .. code-block:: console
 
-        $ cmake ..
+        $ cmake .
         $ make
 
      把编译好的hello程序拷贝到openEuler Embedded系统中。
