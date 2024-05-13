@@ -1,0 +1,158 @@
+def downloadEmbeddedCI(){
+    sh 'rm -rf embedded-ci'
+    sh "git clone ${embeddedRemote} -b ${embeddedBranch} -v embedded-ci --depth=1"
+}
+
+def downloadYoctoWithPr(String workspace, String namespace, String repo, Integer prnum, Integer deepth){
+    sh """
+        python3 main.py clone_repo \
+        -w ${workspace} \
+        -r https://gitee.com/${namespace}/${repo} \
+        -p ${repo} \
+        -pr ${prnum} \
+        -dp ${deepth}
+    """
+}
+
+def createReleaseAndUploadFile(String yaml_path, String file_dir, gitee_token){
+    sh """
+        python3 main.py create_release \
+        -gt ${gitee_token} \
+        -y ${yaml_path} \
+        -f ${file_dir}
+    """
+}
+
+pipeline {
+    agent { node "${node}" }
+    environment {
+        PATH = "/home/jenkins/.local/bin:${env.PATH}"
+    }
+    stages {
+        stage("check release"){
+            steps{
+                script{
+                    // 检查是否版本发布pr，并且是否是指定人
+                    def ptitle = "$pr_title"
+                    if (ptitle.contains("版本升级到")){
+                        env.is_release = "true"
+                    }else{
+                        env.is_release = "failed"
+                    }
+                }
+            }
+        }
+        stage("download repo"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+            steps{
+                dir('/home/jenkins/agent'){
+                    script{
+                        // 下载embedded-ci源码
+                        downloadEmbeddedCI()
+                    }
+                }
+                dir('/home/jenkins/agent/embedded-ci'){
+                    script{
+                        // 下载yocto源码
+                        downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), Integer.parseInt(commitCount))
+                    }
+                }
+            }
+        }
+        stage("prepare source"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+            steps{
+                dir('/home/jenkins/agent/yocto-meta-openeuler/.oebuild/cross-tools'){
+                    sh """
+                        ./prepare.sh
+                    """
+                }
+            }
+        }
+        stage("update config"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+            steps{
+                dir('/home/jenkins/agent/yocto-meta-openeuler/.oebuild/cross-tools'){
+                    sh """
+                        ./update.sh
+                    """
+                }
+            }
+        }
+        stage("build toolchain"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+            steps{
+                dir("/home/jenkins/agent/yocto-meta-openeuler/.oebuild/cross-tools"){
+                    script{
+                        // 构建aarch64-toolchain
+                        sh """
+                            cp config_aarch64 .config
+                            ct-ng build
+                            cd x-tools
+                            mv aarch64-openeuler-linux-gnu openeuler_gcc_arm64le
+                            tar czf openeuler_gcc_arm64le.tar.gz openeuler_gcc_arm64le
+                        """
+                        // 构建arm32-toolchain
+                        sh """
+                            cp config_arm32 .config
+                            ct-ng build
+                            cd x-tools
+                            mv arm-openeuler-linux-gnueabi openeuler_gcc_arm32le
+                            tar czf openeuler_gcc_arm32le.tar.gz openeuler_gcc_arm32le
+                        """
+                        // 构建x86-64-toolchain
+                        sh """
+                            cp config_x86_64 .config
+                            ct-ng build
+                            cd x-tools
+                            mv x86_64-openeuler-linux-gnu openeuler_gcc_x86_64
+                            tar czf openeuler_gcc_x86_64.tar.gz openeuler_gcc_x86_64
+                        """
+                        // 构建riscv64-toolchain
+                        sh """
+                            cp config_riscv64 .config
+                            ct-ng build
+                            cd x-tools
+                            mv riscv64-openeuler-linux-gnu openeuler_gcc_riscv64
+                            tar czf openeuler_gcc_riscv64.tar.gz openeuler_gcc_riscv64
+                        """
+                    }
+                }
+            }
+        }
+        stage("release gcc-toolchain"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+            steps{
+                dir('/home/jenkins/agent/embedded-ci'){
+                    script{
+                        withCredentials([string(credentialsId: "${giteeId}", variable: 'GITEETOKEN')]){
+                            sdkYamlPath = "/home/jenkins/agent/yocto-meta-openeuler/.oebuild/cross-tools/release.yaml"
+                            fileDir = "/home/jenkins/agent/yocto-meta-openeuler/.oebuild/cross-tools/x-tools"
+                            createReleaseAndUploadFile(sdkYamlPath, fileDir, "$GITEETOKEN")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
