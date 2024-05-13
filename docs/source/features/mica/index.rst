@@ -13,5 +13,3 @@
    instruction.rst
    mica_ctl.rst
    developer_guides/index.rst
-   mica_jailhouse.rst
-   benchmark.rst

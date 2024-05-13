@@ -9,16 +9,17 @@ mica命令介绍
 .. code-block:: console
 
    qemu-aarch64:~$ mica --help
-   usage: mica [-h] {create,start,stop,status} ...
+   usage: mica [-h] {create,start,stop,rm,status} ...
 
    Query or send control commands to the micad.
 
    positional arguments:
-     {create,start,stop,status...}
+     {create,start,stop,rm,status...}
                            the command to execute
        create              Create a new mica client
        start               Start a client
        stop                Stop a client
+       rm                  Remove a client
        status              query the mica client status
        ...
 
@@ -33,6 +34,9 @@ mica命令介绍
 
 ``mica stop <name>``
     停止名字为 <name> 的实例。
+
+``mica rm <name>``
+    销毁名字为 <name> 的实例。
 
 ``mica status``
     查询各个实例的状态信息，以及关联的服务信息。
@@ -54,15 +58,38 @@ ____
     实时OS的镜像路径，需要配置为绝对路径，且仅支持 elf 格式的镜像。
 
 ``AutoBoot=``
-    是否在创建实例时，自动拉起该实例，默认为 no。
+    是否在 micad 启动时自动拉起该实例，默认为 no。
 
-以下为一个配置文件样例：
+``Pedestal=``
+    指定部署底座，默认为 bare-metal，即在裸核上运行 RTOS。当前支持在 QEMU 上配置为 jailhouse，以使用 jailhouse 部署。
 
-.. code-block:: console
+``PedestalConf=``
+    指定部署底座关联的配置文件。例如 Jailhouse 部署时，需要通过 PedestalConf 指定 RTOS 所需的 Non-Root Cell 配置文件。
 
-   [Mica]
-   Name=qemu-zephyr
-   CPU=3
-   ClientPath=/lib/firmware/qemu-zephyr-rproc.elf
-   AutoBoot=yes
+以下为一些配置文件样例：
 
+示例一：
+
+   .. code-block:: console
+
+      [Mica]
+      Name=qemu-zephyr
+      CPU=3
+      ClientPath=/lib/firmware/qemu-zephyr-rproc.elf
+      AutoBoot=yes
+
+   该配置文件表明，micad启动时，会默认启动一个名为 qemu-zephyr 的实例，即在 CPU3 上加载 `/lib/firmware/qemu-zephyr-rproc.elf` 并启动。
+
+示例二：
+
+   .. code-block:: console
+
+      [Mica]
+      Name=qemu-zephyr-ivshmem
+      CPU=3
+      ClientPath=/lib/firmware/qemu-zephyr-ivshmem.elf
+      AutoBoot=no
+      Pedestal=jailhouse
+      PedestalConf=/usr/share/jailhouse/cells/qemu-arm64-zephyr-mcs-demo.cell
+
+   该配置文件定义了一个名为 qemu-zephyr-ivshmem 的实例，并指定使用 jailhouse 作为部署底座，同时该实例使用的 jailhouse Non-Root Cell 为 `/usr/share/jailhouse/cells/qemu-arm64-zephyr-mcs-demo.cell`。

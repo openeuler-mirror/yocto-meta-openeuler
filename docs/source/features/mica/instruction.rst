@@ -21,12 +21,20 @@ ____
   部署 Client OS 需要在 Linux 的设备树中添加 ``mcs-remoteproc`` 设备节点，为 Client OS 预留出必要的保留内存。
   当前，可以通过 mcs 仓库提供的 `create_dtb.sh <https://gitee.com/openeuler/mcs/blob/master/tools/create_dtb.sh>`_ 脚本生成对应的 dtb：
 
-  .. code-block:: console
+  .. tabs::
 
-     # create a dtb for qemu_cortex_a53
-     $ ./create_dtb.sh qemu-a53
+     .. code-tab:: console bare-metal部署
 
-  成功执行后，会在当前目录下生成 ``qemu.dtb`` 文件，对应 QEMU 配置为：`2G RAM, 4 cores`。
+        # create a dtb for qemu_cortex_a53
+        $ ./create_dtb.sh qemu-a53
+
+
+     .. code-tab:: console jailhouse部署
+
+        # create a dtb for qemu_cortex_a53 to support jailhouse
+        $ ./create_dtb.sh qemu-a53 -f jailhouse
+
+  成功执行后，会在当前目录下生成 ``qemu.dtb`` 或 ``qemu-jailhouse.dtb`` 文件，对应 QEMU 配置为：`2G RAM, 4 cores`。
 
 2. 启动 QEMU
 
@@ -34,85 +42,220 @@ ____
 
      下文的QEMU启动命令默认使能 ``virtio-net``，请先阅读 :ref:`QEMU 使用指导 <qemu_enable_net>` 了解如何开启网络。
 
-  使用生成出来的 ``qemu.dtb``，按照以下命令启动 QEMU，注意，需要指定 `maxcpus=3` 为 Client OS 预留出 core 3，
-  并且 `-m` 和 `-smp` 要与 dtb 的配置(2G RAM, 4 cores)保持一致，否则会启动失败：
+  使用生成出来的 dtb，按照以下命令启动 QEMU，注意，bare-metal 部署和 jailhouse 部署所依赖的 QEMU 命令略有不同：
 
-  .. code-block:: console
+  .. tabs::
 
-     $ sudo qemu-system-aarch64 -M virt,gic-version=3 -cpu cortex-a53 -nographic \
-         -device virtio-net-device,netdev=tap0 \
-         -netdev tap,id=tap0,script=/etc/qemu-ifup \
-         -m 2G -smp 4 \
-         -append 'maxcpus=3' \
-         -kernel zImage \
-         -initrd openeuler-image-*.cpio.gz \
-         -dtb qemu.dtb
+     .. tab:: bare-metal部署
+
+        | 使用生成出来的 ``qemu.dtb``，按照以下命令启动 QEMU，注意：
+        | 1. `-m` 和 `-smp` 要与 dtb 的配置(2G RAM, 4 cores)保持一致，否则会启动失败。
+        | 2. 需要指定 `maxcpus=3` 为 Client OS 预留出 core 3。
+
+        .. code-block:: console
+
+           $ sudo qemu-system-aarch64 -M virt,gic-version=3 -cpu cortex-a53 -nographic \
+               -device virtio-net-device,netdev=tap0 \
+               -netdev tap,id=tap0,script=/etc/qemu-ifup \
+               -m 2G -smp 4 \
+               -append 'maxcpus=3' \
+               -kernel zImage \
+               -initrd openeuler-image-*.cpio.gz \
+               -dtb qemu.dtb
+
+     .. tab:: jailhouse部署
+
+        | 使用生成出来的 ``qemu-jailhouse.dtb``，按照以下命令启动 QEMU，注意：
+        | 1. `-m` 和 `-smp` 要与 dtb 的配置(2G RAM, 4 cores)保持一致，否则会启动失败。
+        | 2. 启动 Jailhouse 需要指定 psci method 为 smc，因此，`-M` 需要配置为 ``virt,gic-version=3,virtualization=on,its=off``。
+        | 3. 需要通过添加启动参数 ``mem=780M`` 来预留出 Jailhouse 和 Non-root-cell 的内存。
+
+        .. code-block:: console
+
+          $ sudo qemu-system-aarch64 -M virt,gic-version=3,virtualization=on,its=off \
+              -cpu cortex-a53 -nographic \
+              -device virtio-net-device,netdev=tap0 \
+              -netdev tap,id=tap0,script=/etc/qemu-ifup \
+              -m 2G -smp 4 \
+              -append 'mem=780M' \
+              -kernel zImage \
+              -initrd openeuler-image-*.cpio.gz \
+              -dtb qemu-jailhouse.dtb
 
 3. 部署 Client OS
 
-  调整内核打印等级：
+  用户首先需要创建配置文件来关联实时OS以及指定部署方式，之后可以通过 ``mica`` 命令基于配置文件部署 client OS。
+  关于配置文件和 mica 命令的详细介绍请参考 :ref:`mica命令与配置文件介绍 <mica_ctl>`。
 
-  .. code-block:: console
+  当前 openEuler Embedded mcs 镜像默认安装了一些配置文件样例：`/etc/mica/*.conf`，因此可以通过以下步骤启动：
 
-     # 为了不影响shell的使用，先屏蔽内核打印：
-     qemu-aarch64:~$ echo "1 4 1 7" > /proc/sys/kernel/printk
+  .. tabs::
 
-  运行 ``mica`` 程序，根据配置文件创建 client os：
+     .. tab:: bare-metal部署
 
-  .. code-block:: console
+        (1) 调整内核打印等级：
 
-     qemu-aarch64:~$ mica --help
-     usage: mica [-h] {create,start,stop,status} ...
+        .. code-block:: console
 
-     Query or send control commands to the micad.
+           # 为了不影响shell的使用，先屏蔽内核打印：
+           qemu-aarch64:~$ echo "1 4 1 7" > /proc/sys/kernel/printk
 
-     positional arguments:
-       {create,start,stop,status...}
-                             the command to execute
-         create              Create a new mica client
-         start               Start a client
-         stop                Stop a client
-         status              query the mica client status
-         ...
+        (2) 启动 client OS：
 
-     options:
-       -h, --help            show this help message and exit
+        | 镜像启动时默认会根据 `/etc/mica/qemu-zephyr-rproc.conf` 创建 client OS 实例。
+        | 通过 ``mica status`` 查看该实例状态：
 
-  qemu 镜像中默认安装了一个配置文件样例：`/etc/mica/qemu-zephyr-rproc.conf` ，
-  因此可以通过以下命令启动：``mica create /etc/mica/qemu-zephyr-rproc.conf``
+        .. code-block:: console
 
-  .. code-block:: console
+          qemu-aarch64:~$ mica status
+          Name                          Assigned CPU        State               Service
+          qemu-zephyr                   3                   Offline
 
-     qemu-aarch64:~$ mica create /etc/mica/qemu-zephyr-rproc.conf
-     Creating qemu-zephyr...
-     Successfully created qemu-zephyr!
-     starting qemu-zephyr...
-     start qemu-zephyr successfully!
+        | 可以看到实例的名称为 qemu-zephyr，关联的 CPU ID 为3，状态为 Offline。
+        | 通过 ``mica start <Name>`` 启动实例：
 
-  由于在配置文件中指定了 AutoBoot，因此在创建时会自动拉起 qemu-zephyr 实例，拉起成功后，
-  可以通过以下命令查看实例状态：``mica status``
+        .. code-block:: console
 
-  .. code-block:: console
+          qemu-aarch64:~$ mica start qemu-zephyr
+          starting qemu-zephyr...
+          start qemu-zephyr successfully!
 
-     qemu-aarch64:~$ mica status
-     Name                          Assigned CPU        State               Service
-     qemu-zephyr                   3                   Running             rpmsg-tty1(/dev/ttyRPMSG0) rpmsg-tty(/dev/ttyRPMSG1)
+        启动成功后，执行 ``mica status`` 查询状态：
 
-  可以看到该实例关联的 CPU ID 为3，状态为 Running，并且为 Linux 提供了两个服务：rpmsg-tty 以及 rpmsg-tty1。
-  rpmsg-tty 绑定了 zephyr 的 shell，因此我们可以通过打开对应的设备 ``/dev/ttyRPMSG1`` 来访问 zephyr 的 shell：
+        .. code-block:: console
 
-  .. code-block:: console
+          qemu-aarch64:~$ mica status
+          Name                          Assigned CPU        State               Service
+          qemu-zephyr                   3                   Running             rpmsg-tty1(/dev/ttyRPMSG0) rpmsg-tty(/dev/ttyRPMSG1)
 
-     # 打开 Client OS 的 shell
-     qemu-aarch64:~$ screen /dev/ttyRPMSG1
+        状态更新为 Running，并且能观察到该实例提供了两个服务：rpmsg-tty 以及 rpmsg-tty1。
+        rpmsg-tty 绑定了 zephyr 的 shell，因此可以通过 screen 打开 tty 设备 ``/dev/ttyRPMSG1`` 来访问 zephyr 的 shell：
 
-     ... ...
-     # 回车后可以连上 shell，并执行 zephyr 的 shell 命令
+        .. code-block:: console
 
-     uart:~$ kernel version
-     Zephyr version 3.2.0
+          # 打开 Client OS 的 shell
+          qemu-aarch64:~$ screen /dev/ttyRPMSG1
 
-  之后，可以通过 ``Ctrl-a k`` 或 ``Ctrl-a Ctrl-k`` 组合键退出shell，参考 `screen(1) — Linux manual page <https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS>`_ 。
+          ... ...
+          # 回车后可以连上 shell，并执行 zephyr 的 shell 命令
+
+          uart:~$ kernel version
+          Zephyr version 3.2.0
+
+        之后，可以通过 ``Ctrl-a k`` 或 ``Ctrl-a Ctrl-k`` 组合键退出shell，参考 `screen(1) — Linux manual page <https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS>`_ 。
+
+        (3) 停止 client OS：
+
+        通过 ``mica stop <Name>`` 停止实例：
+
+        .. code-block:: console
+
+          qemu-aarch64:~$ mica stop qemu-zephyr
+          stopping qemu-zephyr...
+          stop qemu-zephyr successfully!
+          qemu-aarch64:~$ mica status
+          Name                          Assigned CPU        State               Service
+          qemu-zephyr                   3                   Offline
+
+        (4) 销毁 client OS：
+
+        通过 ``mica rm <Name>`` 销毁实例：
+
+        .. code-block:: console
+
+          qemu-aarch64:~$ mica rm qemu-zephyr
+          removing qemu-zephyr...
+          rm qemu-zephyr successfully!
+          qemu-aarch64:~$ mica status
+          Name                          Assigned CPU        State               Service
+
+        销毁实例后，可以执行 ``mica create qemu-zephyr-rproc.conf`` 重新创建实例。
+
+     .. tab:: jailhouse 部署
+
+        (1) 使用 SSH 登录 QEMU：
+
+        由于 jailhouse 启动 RTOS VM 后，会占用 QEMU 串口，因此需要先通过 SSH 登录到 QEMU：
+
+        .. code-block:: console
+
+           # 通过 SSH 登录 QEMU：
+           $ ssh root@192.168.10.8
+
+        (2) 初始化 Root Cell：
+
+        .. code-block:: console
+
+          qemu-aarch64:~$ jailhouse enable /usr/share/jailhouse/cells/qemu-arm64-mcs.cell
+
+        (3) 启动 client OS：
+
+        通过 ``mica create <Conf>`` 创建实例：
+
+        .. code-block:: console
+
+          qemu-aarch64:~$ mica create qemu-zephyr-ivshmem.conf
+          Creating qemu-zephyr-ivshmem...
+          Successfully created qemu-zephyr-ivshmem!
+
+        通过 ``mica start <Name>`` 启动实例：
+
+        .. code-block:: console
+
+          qemu-aarch64:~$ mica start qemu-zephyr-ivshmem
+          starting qemu-zephyr-ivshmem...
+          start qemu-zephyr-ivshmem successfully!
+
+        启动成功后，执行 ``mica status`` 查询状态：
+
+        .. code-block:: console
+
+          qemu-aarch64:~$ mica status
+          Name                          Assigned CPU        State               Service
+          qemu-zephyr-ivshmem           3                   Running             rpmsg-tty1(/dev/ttyRPMSG0) rpmsg-tty(/dev/ttyRPMSG1)
+
+        可以观察到，状态为 Running，并且该实例提供了两个服务：rpmsg-tty 以及 rpmsg-tty1。
+        rpmsg-tty 绑定了 zephyr 的 shell，因此可以通过 screen 打开 tty 设备 ``/dev/ttyRPMSG1`` 来访问 zephyr 的 shell：
+
+        .. code-block:: console
+
+          # 打开 Client OS 的 shell
+          qemu-aarch64:~$ screen /dev/ttyRPMSG1
+
+          ... ...
+          # 回车后可以连上 shell，并执行 zephyr 的 shell 命令
+
+          uart:~$ kernel version
+          Zephyr version 3.2.0
+
+        之后，可以通过 ``Ctrl-a k`` 或 ``Ctrl-a Ctrl-k`` 组合键退出shell，参考 `screen(1) — Linux manual page <https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS>`_ 。
+
+        (3) 停止 client OS：
+
+        通过 ``mica stop <Name>`` 停止实例：
+
+        .. code-block:: console
+
+          qemu-aarch64:~$ mica stop qemu-zephyr-ivshmem
+          stopping qemu-zephyr-ivshmem...
+          stop qemu-zephyr-ivshmem successfully!
+          qemu-aarch64:~$ mica status
+          Name                          Assigned CPU        State               Service
+          qemu-zephyr-ivshmem           3                   Offline
+
+        (4) 销毁 client OS：
+
+        通过 ``mica rm <Name>`` 销毁实例：
+
+        .. code-block:: console
+
+          qemu-aarch64:~$ mica rm qemu-zephyr-ivshmem
+          removing qemu-zephyr-ivshmem...
+          rm qemu-zephyr-ivshmem successfully!
+          qemu-aarch64:~$ mica status
+          Name                          Assigned CPU        State               Service
+
+        销毁实例后，可以执行 ``mica create qemu-zephyr-ivshmem.conf`` 重新创建实例。
 
 ____
 
@@ -120,7 +263,7 @@ ____
 ****************
 
 oebuild 构建出来的 MCS 镜像已经通过 dt-overlay 等方式预留了相关资源，并且默认使用了支持 psci 的 uefi 引导固件。
-因此只需要根据 :ref:`openeuler-image-uefi启动使用指导 <raspberrypi4-uefi-guide>` 进行镜像启动，再部署 MICA 即可，步骤跟QEMU类似。
+因此只需要根据 :ref:`openeuler-image-uefi启动使用指导 <raspberrypi4-uefi-guide>` 进行镜像启动，再部署 MICA 即可，步骤跟QEMU类似，但树莓派当前仅支持 bare-metal 部署。
 
 ____
 
