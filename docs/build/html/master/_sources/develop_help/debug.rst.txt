@@ -16,7 +16,7 @@
   要想使用GDB Server进行调试，一个重要的前提条件就是能够通过网络访问到openEuler Embbed镜像。\
   我们应该在启动QEMU时为它配置好网络。网络配置不需要特别复杂，配置一个简单的本地网络，使得宿主机\
   能与虚拟机正常通信即可。（参见 `QEMU使能网络场景 \
-  <https://openeuler.gitee.io/yocto-meta-openeuler/master/develop_help/qemu/qemu_start.html#id4>`_）\
+  <https://embedded.pages.openeuler.org/master/develop_help/qemu/qemu_start.html#id4>`_）\
   
   配置好了网络以后，在镜像中运行 ``ifconfig``，默认的IP地址是 ``192.168.10.8``。
 

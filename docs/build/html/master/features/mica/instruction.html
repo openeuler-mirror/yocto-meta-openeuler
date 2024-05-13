@@ -17,6 +17,7 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/tabs.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -62,8 +63,6 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="mica_ctl.html">mica命令与配置文件</a></li>
 <li class="toctree-l3"><a class="reference internal" href="developer_guides/index.html">开发者指南</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mica_jailhouse.html">基于 Jailhouse 的混合部署框架</a></li>
-<li class="toctree-l3"><a class="reference internal" href="benchmark.html">性能测试</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../lopper_devicetree.html">外设分区管理</a></li>
@@ -142,11 +141,17 @@
 <blockquote>
 <div><p>部署 Client OS 需要在 Linux 的设备树中添加 <code class="docutils literal notranslate"><span class="pre">mcs-remoteproc</span></code> 设备节点，为 Client OS 预留出必要的保留内存。
 当前，可以通过 mcs 仓库提供的 <a class="reference external" href="https://gitee.com/openeuler/mcs/blob/master/tools/create_dtb.sh">create_dtb.sh</a> 脚本生成对应的 dtb：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>create a dtb <span class="k">for</span> qemu_cortex_a53
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-YmFyZS1tZXRhbOmDqOe9sg==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-YmFyZS1tZXRhbOmDqOe9sg==" name="YmFyZS1tZXRhbOmDqOe9sg==" role="tab" tabindex="0">bare-metal部署</button><button aria-controls="panel-0-amFpbGhvdXNl6YOo572y" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-amFpbGhvdXNl6YOo572y" name="amFpbGhvdXNl6YOo572y" role="tab" tabindex="-1">jailhouse部署</button></div><div aria-labelledby="tab-0-YmFyZS1tZXRhbOmDqOe9sg==" class="sphinx-tabs-panel code-tab group-tab" id="panel-0-YmFyZS1tZXRhbOmDqOe9sg==" name="YmFyZS1tZXRhbOmDqOe9sg==" role="tabpanel" tabindex="0"><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>create a dtb <span class="k">for</span> qemu_cortex_a53
 <span class="gp">$ </span>./create_dtb.sh qemu-a53
 </pre></div>
 </div>
-<p>成功执行后，会在当前目录下生成 <code class="docutils literal notranslate"><span class="pre">qemu.dtb</span></code> 文件，对应 QEMU 配置为：<cite>2G RAM, 4 cores</cite>。</p>
+</div><div aria-labelledby="tab-0-amFpbGhvdXNl6YOo572y" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-0-amFpbGhvdXNl6YOo572y" name="amFpbGhvdXNl6YOo572y" role="tabpanel" tabindex="0"><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>create a dtb <span class="k">for</span> qemu_cortex_a53 to support jailhouse
+<span class="gp">$ </span>./create_dtb.sh qemu-a53 -f jailhouse
+</pre></div>
+</div>
+</div></div>
+<p>成功执行后，会在当前目录下生成 <code class="docutils literal notranslate"><span class="pre">qemu.dtb</span></code> 或 <code class="docutils literal notranslate"><span class="pre">qemu-jailhouse.dtb</span></code> 文件，对应 QEMU 配置为：<cite>2G RAM, 4 cores</cite>。</p>
 </div></blockquote>
 <ol class="arabic simple" start="2">
 <li><p>启动 QEMU</p></li>
@@ -156,8 +161,13 @@
 <p class="admonition-title">Note</p>
 <p>下文的QEMU启动命令默认使能 <code class="docutils literal notranslate"><span class="pre">virtio-net</span></code>，请先阅读 <a class="reference internal" href="../../develop_help/qemu/qemu_start.html#qemu-enable-net"><span class="std std-ref">QEMU 使用指导</span></a> 了解如何开启网络。</p>
 </div>
-<p>使用生成出来的 <code class="docutils literal notranslate"><span class="pre">qemu.dtb</span></code>，按照以下命令启动 QEMU，注意，需要指定 <cite>maxcpus=3</cite> 为 Client OS 预留出 core 3，
-并且 <cite>-m</cite> 和 <cite>-smp</cite> 要与 dtb 的配置(2G RAM, 4 cores)保持一致，否则会启动失败：</p>
+<p>使用生成出来的 dtb，按照以下命令启动 QEMU，注意，bare-metal 部署和 jailhouse 部署所依赖的 QEMU 命令略有不同：</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">bare-metal部署</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">jailhouse部署</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><div class="line-block">
+<div class="line">使用生成出来的 <code class="docutils literal notranslate"><span class="pre">qemu.dtb</span></code>，按照以下命令启动 QEMU，注意：</div>
+<div class="line">1. <cite>-m</cite> 和 <cite>-smp</cite> 要与 dtb 的配置(2G RAM, 4 cores)保持一致，否则会启动失败。</div>
+<div class="line">2. 需要指定 <cite>maxcpus=3</cite> 为 Client OS 预留出 core 3。</div>
+</div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo qemu-system-aarch64 -M virt,gic-version<span class="o">=</span><span class="m">3</span> -cpu cortex-a53 -nographic <span class="se">\</span>
     -device virtio-net-device,netdev<span class="o">=</span>tap0 <span class="se">\</span>
     -netdev tap,id<span class="o">=</span>tap0,script<span class="o">=</span>/etc/qemu-ifup <span class="se">\</span>
@@ -168,53 +178,69 @@
     -dtb qemu.dtb
 </pre></div>
 </div>
+</div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><div class="line-block">
+<div class="line">使用生成出来的 <code class="docutils literal notranslate"><span class="pre">qemu-jailhouse.dtb</span></code>，按照以下命令启动 QEMU，注意：</div>
+<div class="line">1. <cite>-m</cite> 和 <cite>-smp</cite> 要与 dtb 的配置(2G RAM, 4 cores)保持一致，否则会启动失败。</div>
+<div class="line">2. 启动 Jailhouse 需要指定 psci method 为 smc，因此，<cite>-M</cite> 需要配置为 <code class="docutils literal notranslate"><span class="pre">virt,gic-version=3,virtualization=on,its=off</span></code>。</div>
+<div class="line">3. 需要通过添加启动参数 <code class="docutils literal notranslate"><span class="pre">mem=780M</span></code> 来预留出 Jailhouse 和 Non-root-cell 的内存。</div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo qemu-system-aarch64 -M virt,gic-version<span class="o">=</span><span class="m">3</span>,virtualization<span class="o">=</span>on,its<span class="o">=</span>off <span class="se">\</span>
+    -cpu cortex-a53 -nographic <span class="se">\</span>
+    -device virtio-net-device,netdev<span class="o">=</span>tap0 <span class="se">\</span>
+    -netdev tap,id<span class="o">=</span>tap0,script<span class="o">=</span>/etc/qemu-ifup <span class="se">\</span>
+    -m 2G -smp <span class="m">4</span> <span class="se">\</span>
+    -append <span class="s1">&#39;mem=780M&#39;</span> <span class="se">\</span>
+    -kernel zImage <span class="se">\</span>
+    -initrd openeuler-image-*.cpio.gz <span class="se">\</span>
+    -dtb qemu-jailhouse.dtb
+</pre></div>
+</div>
+</div></div>
 </div></blockquote>
 <ol class="arabic simple" start="3">
 <li><p>部署 Client OS</p></li>
 </ol>
 <blockquote>
-<div><p>调整内核打印等级：</p>
+<div><p>用户首先需要创建配置文件来关联实时OS以及指定部署方式，之后可以通过 <code class="docutils literal notranslate"><span class="pre">mica</span></code> 命令基于配置文件部署 client OS。
+关于配置文件和 mica 命令的详细介绍请参考 <a class="reference internal" href="mica_ctl.html#mica-ctl"><span class="std std-ref">mica命令与配置文件介绍</span></a>。</p>
+<p>当前 openEuler Embedded mcs 镜像默认安装了一些配置文件样例：<cite>/etc/mica/*.conf</cite>，因此可以通过以下步骤启动：</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-2-2-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-2-2-0" name="2-0" role="tab" tabindex="0">bare-metal部署</button><button aria-controls="panel-2-2-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-2-2-1" name="2-1" role="tab" tabindex="-1">jailhouse 部署</button></div><div aria-labelledby="tab-2-2-0" class="sphinx-tabs-panel" id="panel-2-2-0" name="2-0" role="tabpanel" tabindex="0"><ol class="arabic simple">
+<li><p>调整内核打印等级：</p></li>
+</ol>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>为了不影响shell的使用，先屏蔽内核打印：
 <span class="gp">qemu-aarch64:~$ </span><span class="nb">echo</span> <span class="s2">&quot;1 4 1 7&quot;</span> &gt; /proc/sys/kernel/printk
 </pre></div>
 </div>
-<p>运行 <code class="docutils literal notranslate"><span class="pre">mica</span></code> 程序，根据配置文件创建 client os：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica --help
-<span class="go">usage: mica [-h] {create,start,stop,status} ...</span>
-
-<span class="go">Query or send control commands to the micad.</span>
-
-<span class="go">positional arguments:</span>
-<span class="go">  {create,start,stop,status...}</span>
-<span class="go">                        the command to execute</span>
-<span class="go">    create              Create a new mica client</span>
-<span class="go">    start               Start a client</span>
-<span class="go">    stop                Stop a client</span>
-<span class="go">    status              query the mica client status</span>
-<span class="go">    ...</span>
-
-<span class="go">options:</span>
-<span class="go">  -h, --help            show this help message and exit</span>
+<ol class="arabic simple" start="2">
+<li><p>启动 client OS：</p></li>
+</ol>
+<div class="line-block">
+<div class="line">镜像启动时默认会根据 <cite>/etc/mica/qemu-zephyr-rproc.conf</cite> 创建 client OS 实例。</div>
+<div class="line">通过 <code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">status</span></code> 查看该实例状态：</div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica status
+<span class="go">Name                          Assigned CPU        State               Service</span>
+<span class="go">qemu-zephyr                   3                   Offline</span>
 </pre></div>
 </div>
-<p>qemu 镜像中默认安装了一个配置文件样例：<cite>/etc/mica/qemu-zephyr-rproc.conf</cite> ，
-因此可以通过以下命令启动：<code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">create</span> <span class="pre">/etc/mica/qemu-zephyr-rproc.conf</span></code></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica create /etc/mica/qemu-zephyr-rproc.conf
-<span class="go">Creating qemu-zephyr...</span>
-<span class="go">Successfully created qemu-zephyr!</span>
+<div class="line-block">
+<div class="line">可以看到实例的名称为 qemu-zephyr，关联的 CPU ID 为3，状态为 Offline。</div>
+<div class="line">通过 <code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">start</span> <span class="pre">&lt;Name&gt;</span></code> 启动实例：</div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica start qemu-zephyr
 <span class="go">starting qemu-zephyr...</span>
 <span class="go">start qemu-zephyr successfully!</span>
 </pre></div>
 </div>
-<p>由于在配置文件中指定了 AutoBoot，因此在创建时会自动拉起 qemu-zephyr 实例，拉起成功后，
-可以通过以下命令查看实例状态：<code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">status</span></code></p>
+<p>启动成功后，执行 <code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">status</span></code> 查询状态：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica status
 <span class="go">Name                          Assigned CPU        State               Service</span>
 <span class="go">qemu-zephyr                   3                   Running             rpmsg-tty1(/dev/ttyRPMSG0) rpmsg-tty(/dev/ttyRPMSG1)</span>
 </pre></div>
 </div>
-<p>可以看到该实例关联的 CPU ID 为3，状态为 Running，并且为 Linux 提供了两个服务：rpmsg-tty 以及 rpmsg-tty1。
-rpmsg-tty 绑定了 zephyr 的 shell，因此我们可以通过打开对应的设备 <code class="docutils literal notranslate"><span class="pre">/dev/ttyRPMSG1</span></code> 来访问 zephyr 的 shell：</p>
+<p>状态更新为 Running，并且能观察到该实例提供了两个服务：rpmsg-tty 以及 rpmsg-tty1。
+rpmsg-tty 绑定了 zephyr 的 shell，因此可以通过 screen 打开 tty 设备 <code class="docutils literal notranslate"><span class="pre">/dev/ttyRPMSG1</span></code> 来访问 zephyr 的 shell：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>打开 Client OS 的 shell
 <span class="gp">qemu-aarch64:~$ </span>screen /dev/ttyRPMSG1
 
@@ -226,13 +252,110 @@ rpmsg-tty 绑定了 zephyr 的 shell，因此我们可以通过打开对应的�
 </pre></div>
 </div>
 <p>之后，可以通过 <code class="docutils literal notranslate"><span class="pre">Ctrl-a</span> <span class="pre">k</span></code> 或 <code class="docutils literal notranslate"><span class="pre">Ctrl-a</span> <span class="pre">Ctrl-k</span></code> 组合键退出shell，参考 <a class="reference external" href="https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS">screen(1) — Linux manual page</a> 。</p>
+<ol class="arabic simple" start="3">
+<li><p>停止 client OS：</p></li>
+</ol>
+<p>通过 <code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">stop</span> <span class="pre">&lt;Name&gt;</span></code> 停止实例：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica stop qemu-zephyr
+<span class="go">stopping qemu-zephyr...</span>
+<span class="go">stop qemu-zephyr successfully!</span>
+<span class="gp">qemu-aarch64:~$ </span>mica status
+<span class="go">Name                          Assigned CPU        State               Service</span>
+<span class="go">qemu-zephyr                   3                   Offline</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>销毁 client OS：</p></li>
+</ol>
+<p>通过 <code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">rm</span> <span class="pre">&lt;Name&gt;</span></code> 销毁实例：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica rm qemu-zephyr
+<span class="go">removing qemu-zephyr...</span>
+<span class="go">rm qemu-zephyr successfully!</span>
+<span class="gp">qemu-aarch64:~$ </span>mica status
+<span class="go">Name                          Assigned CPU        State               Service</span>
+</pre></div>
+</div>
+<p>销毁实例后，可以执行 <code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">create</span> <span class="pre">qemu-zephyr-rproc.conf</span></code> 重新创建实例。</p>
+</div><div aria-labelledby="tab-2-2-1" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-1" name="2-1" role="tabpanel" tabindex="0"><ol class="arabic simple">
+<li><p>使用 SSH 登录 QEMU：</p></li>
+</ol>
+<p>由于 jailhouse 启动 RTOS VM 后，会占用 QEMU 串口，因此需要先通过 SSH 登录到 QEMU：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>通过 SSH 登录 QEMU：
+<span class="gp">$ </span>ssh root@192.168.10.8
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>初始化 Root Cell：</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>jailhouse <span class="nb">enable</span> /usr/share/jailhouse/cells/qemu-arm64-mcs.cell
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>启动 client OS：</p></li>
+</ol>
+<p>通过 <code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">create</span> <span class="pre">&lt;Conf&gt;</span></code> 创建实例：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica create qemu-zephyr-ivshmem.conf
+<span class="go">Creating qemu-zephyr-ivshmem...</span>
+<span class="go">Successfully created qemu-zephyr-ivshmem!</span>
+</pre></div>
+</div>
+<p>通过 <code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">start</span> <span class="pre">&lt;Name&gt;</span></code> 启动实例：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica start qemu-zephyr-ivshmem
+<span class="go">starting qemu-zephyr-ivshmem...</span>
+<span class="go">start qemu-zephyr-ivshmem successfully!</span>
+</pre></div>
+</div>
+<p>启动成功后，执行 <code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">status</span></code> 查询状态：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica status
+<span class="go">Name                          Assigned CPU        State               Service</span>
+<span class="go">qemu-zephyr-ivshmem           3                   Running             rpmsg-tty1(/dev/ttyRPMSG0) rpmsg-tty(/dev/ttyRPMSG1)</span>
+</pre></div>
+</div>
+<p>可以观察到，状态为 Running，并且该实例提供了两个服务：rpmsg-tty 以及 rpmsg-tty1。
+rpmsg-tty 绑定了 zephyr 的 shell，因此可以通过 screen 打开 tty 设备 <code class="docutils literal notranslate"><span class="pre">/dev/ttyRPMSG1</span></code> 来访问 zephyr 的 shell：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>打开 Client OS 的 shell
+<span class="gp">qemu-aarch64:~$ </span>screen /dev/ttyRPMSG1
+
+<span class="go">... ...</span>
+<span class="gp"># </span>回车后可以连上 shell，并执行 zephyr 的 shell 命令
+
+<span class="gp">uart:~$ </span>kernel version
+<span class="go">Zephyr version 3.2.0</span>
+</pre></div>
+</div>
+<p>之后，可以通过 <code class="docutils literal notranslate"><span class="pre">Ctrl-a</span> <span class="pre">k</span></code> 或 <code class="docutils literal notranslate"><span class="pre">Ctrl-a</span> <span class="pre">Ctrl-k</span></code> 组合键退出shell，参考 <a class="reference external" href="https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS">screen(1) — Linux manual page</a> 。</p>
+<ol class="arabic simple" start="3">
+<li><p>停止 client OS：</p></li>
+</ol>
+<p>通过 <code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">stop</span> <span class="pre">&lt;Name&gt;</span></code> 停止实例：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica stop qemu-zephyr-ivshmem
+<span class="go">stopping qemu-zephyr-ivshmem...</span>
+<span class="go">stop qemu-zephyr-ivshmem successfully!</span>
+<span class="gp">qemu-aarch64:~$ </span>mica status
+<span class="go">Name                          Assigned CPU        State               Service</span>
+<span class="go">qemu-zephyr-ivshmem           3                   Offline</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>销毁 client OS：</p></li>
+</ol>
+<p>通过 <code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">rm</span> <span class="pre">&lt;Name&gt;</span></code> 销毁实例：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica rm qemu-zephyr-ivshmem
+<span class="go">removing qemu-zephyr-ivshmem...</span>
+<span class="go">rm qemu-zephyr-ivshmem successfully!</span>
+<span class="gp">qemu-aarch64:~$ </span>mica status
+<span class="go">Name                          Assigned CPU        State               Service</span>
+</pre></div>
+</div>
+<p>销毁实例后，可以执行 <code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">create</span> <span class="pre">qemu-zephyr-ivshmem.conf</span></code> 重新创建实例。</p>
+</div></div>
 </div></blockquote>
 </section>
 <hr class="docutils" />
 <section id="b">
 <h2>在树莓派4B上运行<a class="headerlink" href="#b" title="Permalink to this headline">¶</a></h2>
 <p>oebuild 构建出来的 MCS 镜像已经通过 dt-overlay 等方式预留了相关资源，并且默认使用了支持 psci 的 uefi 引导固件。
-因此只需要根据 <a class="reference internal" href="../../bsp/arm64/raspberrypi4/uefi.html#raspberrypi4-uefi-guide"><span class="std std-ref">openeuler-image-uefi启动使用指导</span></a> 进行镜像启动，再部署 MICA 即可，步骤跟QEMU类似。</p>
+因此只需要根据 <a class="reference internal" href="../../bsp/arm64/raspberrypi4/uefi.html#raspberrypi4-uefi-guide"><span class="std std-ref">openeuler-image-uefi启动使用指导</span></a> 进行镜像启动，再部署 MICA 即可，步骤跟QEMU类似，但树莓派当前仅支持 bare-metal 部署。</p>
 </section>
 <hr class="docutils" />
 <section id="x86">
@@ -302,8 +425,8 @@ rpmsg-tty 绑定了 zephyr 的 shell，因此我们可以通过打开对应的�
 <section id="gdb-stub-client-os">
 <span id="mica-debug"></span><h3>调试支持 GDB stub 的 Client OS<a class="headerlink" href="#gdb-stub-client-os" title="Permalink to this headline">¶</a></h3>
 <p>当前仅支持调试运行在树莓派4B（aarch64）和x86工控机（x86_64）的Uniproton。</p>
-<section id="id2">
-<h4>相关接口定义<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<section id="id3">
+<h4>相关接口定义<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
 <p>首先，对于Client OS而言，需要支持GDB stub。
 当前MICA框架仅支持基于简单ring buffer通信的方式进行GDB stub信息的交互，
 ring buffer的地址和大小在MCS仓库中 <code class="docutils literal notranslate"><span class="pre">library/include/mcs/mica_debug_ring_buffer.h</span></code> 中定义：</p>
@@ -320,8 +443,8 @@ ring buffer的地址和大小在MCS仓库中 <code class="docutils literal notra
 在做内存映射的时候我们ring buffer的首地址可以通过Uniproton的入口地址减去 <code class="docutils literal notranslate"><span class="pre">RING_BUFFER_SHIFT</span></code> 得到。</p>
 <p>ring buffer 的定义在 <code class="docutils literal notranslate"><span class="pre">library/include/mcs/ring_buffer.h</span></code> 文件中。</p>
 </section>
-<section id="id3">
-<h4>使用方法<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<section id="id4">
+<h4>使用方法<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
 <p>首先，需要构建含有MICA的openEuler Embedded镜像，请参考 <a class="reference internal" href="build.html#mcs-build"><span class="std std-ref">MICA镜像构建指南</span></a> 。</p>
 <p>然后，需要生成适配了GDB stub 的 Uniproton，参考 <a class="reference external" href="https://gitee.com/zuyiwen/UniProton/blob/stub_dev/src/component/gdbstub/readme.txt">UniProton GDB stub 构建指南</a> 。</p>
 <p>在运行命令时，需要在启动MICA时加上 <code class="docutils literal notranslate"><span class="pre">-d</span></code> 参数。
