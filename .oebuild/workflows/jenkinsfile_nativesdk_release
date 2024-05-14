@@ -1,0 +1,123 @@
+def downloadEmbeddedCI(){
+    sh 'rm -rf embedded-ci'
+    sh "git clone ${embeddedRemote} -b ${embeddedBranch} -v embedded-ci --depth=1"
+}
+
+def downloadYoctoWithPr(String workspace, String namespace, String repo, Integer prnum, Integer deepth){
+    sh """
+        python3 main.py clone_repo \
+        -w ${workspace} \
+        -r https://gitee.com/${namespace}/${repo} \
+        -p ${repo} \
+        -pr ${prnum} \
+        -dp ${deepth}
+    """
+}
+
+def createReleaseAndUploadFile(String yaml_path, String file_dir, gitee_token){
+    sh """
+        python3 main.py create_release \
+        -gt ${gitee_token} \
+        -y ${yaml_path} \
+        -f ${file_dir}
+    """
+}
+
+def downloadYoctoWithBranch(String workspace, String namespace, String repo, String branch, Integer deepth){
+    sh """
+        python3 main.py clone_repo \
+        -w ${workspace} \
+        -r https://gitee.com/${namespace}/${repo} \
+        -p ${repo} \
+        -v ${branch} \
+        -dp ${deepth}
+    """
+}
+
+pipeline {
+    agent { node "${node}" }
+    environment {
+        PATH = "/home/jenkins/.local/bin:${env.PATH}"
+    }
+    stages {
+        stage("check release"){
+            steps{
+                script{
+                    // 检查是否版本发布pr，并且是否是指定人
+                    def ptitle = "$pr_title"
+                    // def action = "$pull_action"
+                    // print(action)
+                    if (ptitle.contains("版本升级到")){
+                        env.is_release = "true"
+                    }else{
+                        env.is_release = "failed"
+                    }
+                }
+            }
+        }
+        stage("download repo"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+            steps{
+                dir('/home/jenkins/agent'){
+                    script{
+                        // 下载embedded-ci源码
+                        downloadEmbeddedCI()
+                    }
+                }
+                dir('/home/jenkins/agent/embedded-ci'){
+                    script{
+                        // 下载yocto源码
+                        downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), Integer.parseInt(commitCount))
+                    }
+                }
+            }
+        }
+        stage("build sdk"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+            steps{
+                dir("/home/jenkins/agent"){
+                    script{
+                        // 构建sdk
+                        sh """
+                            oebuild init workspace
+                            cd workspace/src
+                            ln -s /home/jenkins/agent/yocto-meta-openeuler yocto-meta-openeuler
+                            oebuild generate -t /usr1/openeuler/gcc/openeuler_gcc_arm64le -n /opt/buildtools/nativesdk -b_in host -d nativesdk -sdk
+                        """
+                    }
+                }
+            }
+        }
+        stage("release nativesdk"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+            steps{
+                dir('/home/jenkins/agent'){
+                    script{
+                        downloadEmbeddedCI()
+                    }
+                }
+                dir('/home/jenkins/agent/embedded-ci'){
+                    script{
+                        withCredentials([string(credentialsId: "${giteeId}", variable: 'GITEETOKEN')]){
+                            sdkYamlPath = "/home/jenkins/agent/yocto-meta-openeuler/.oebuild/nativesdk/release.yaml"
+                            fileDir = "/home/jenkins/agent/workspace/build/nativesdk/tmp/deploy/sdk"
+                            createReleaseAndUploadFile(sdkYamlPath, fileDir, "$GITEETOKEN")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
