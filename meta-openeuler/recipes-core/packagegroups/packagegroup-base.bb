@@ -90,8 +90,9 @@ packagegroup-base-libs \
 packagegroup-entropy-daemon \
 "
 
-# for x86-64 arch, add ethercat-igh intel-cmt-cat
+# for x86-64 arch, add some industrial protocol packages
 RDEPENDS:packagegroup-base-utils:append:x86-64 = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '', 'ethercat-igh', d)} \
     intel-cmt-cat \
+    linuxptp \
 "
