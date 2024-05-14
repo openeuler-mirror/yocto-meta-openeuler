@@ -1,0 +1,197 @@
+def downloadEmbeddedCI(){
+    sh 'rm -rf embedded-ci'
+    sh "git clone ${embeddedRemote} -b ${embeddedBranch} -v embedded-ci --depth=1"
+}
+
+def downloadYoctoWithPr(String workspace, String namespace, String repo, Integer prnum, Integer deepth){
+    sh """
+        python3 main.py clone_repo \
+        -w ${workspace} \
+        -r https://gitee.com/${namespace}/${repo} \
+        -p ${repo} \
+        -pr ${prnum} \
+        -dp ${deepth}
+    """
+}
+
+def buildToolchain(){
+    sh """
+        rm -rf /home/jenkins/cache/buildLLVMToolchain
+        mkdir -p /home/jenkins/cache/buildLLVMToolchain
+        cd /home/jenkins/cache/buildLLVMToolchain
+        
+        git clone https://gitee.com/eastb233/yocto-meta-openeuler.git -b master -v yocto-meta-openeuler --depth=1
+        
+        cd /home/jenkins/cache/buildLLVMToolchain/yocto-meta-openeuler/.oebuild/cross-tools
+        ./prepare.sh
+        mv open_source ../
+        ./update.sh
+        cd ..
+        cp config_aarch64 .config && ct-ng build
+        
+        # gcc cross toolchain: ~/x-tools/aarch64-openeuler-linux-gnu
+        
+        # begin build llvm toolchain
+        cd /home/jenkins/cache/buildLLVMToolchain/yocto-meta-openeuler/.oebuild/llvm-toolchain
+        ./prepare.sh
+        cd ./open_source/llvm-project
+        ./build.sh -e -o -s -i -b release -I clang-llvm-17.0.6
+        
+        # do package
+        cd /home/jenkins/cache/buildLLVMToolchain/yocto-meta-openeuler/.oebuild/llvm-toolchain/open_source/llvm-project/clang-llvm-17.0.6
+        mkdir lib64 aarch64-openeuler-linux-gnu
+        cp -rf ~/x-tools/aarch64-openeuler-linux-gnu/lib64/gcc lib64/
+        cp -rf ~/x-tools/aarch64-openeuler-linux-gnu/aarch64-openeuler-linux-gnu/include aarch64-openeuler-linux-gnu/
+        cp -rf ~/x-tools/aarch64-openeuler-linux-gnu/aarch64-openeuler-linux-gnu/sysroot aarch64-openeuler-linux-gnu/
+        
+        ln -sf ld.lld bin/aarch64-openeuler-linux-gnu-ld
+        
+        cd ..
+        tar czf clang-llvm-17.0.6.tar.gz clang-llvm-17.0.6
+        ls -l clang-llvm-17.0.6.tar.gz
+        mkdir output && mv clang-llvm-17.0.6.tar.gz output/
+        
+        # cleanup
+        sudo rm -rf ~/x-tools/aarch64-openeuler-linux-gnu*
+    """
+}
+
+
+pipeline {
+    agent { node "${node}" }
+    environment {
+        PATH = "/home/jenkins/.local/bin:${env.PATH}"
+    }
+    stages {
+        stage("check release"){
+            steps{
+                script{
+                    // 检查是否版本发布pr，并且是否是指定人
+                    def ptitle = "$pr_title"
+                    if (ptitle.contains("版本升级到")){
+                        env.is_release = "true"
+                    }else{
+                        env.is_release = "failed"
+                    }
+                }
+            }
+        }
+        stage("download repo"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+            steps{
+                dir('/home/jenkins/agent'){
+                    script{
+                        // 下载embedded-ci源码
+                        downloadEmbeddedCI()
+                    }
+                }
+                dir('/home/jenkins/agent/embedded-ci'){
+                    script{
+                        // 下载yocto源码
+                        downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), Integer.parseInt(commitCount))
+                    }
+                }
+            }
+        }
+        stage("download aarch64 chains"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+            steps{
+                dir('/home/jenkins/agent'){
+                    script{
+                        // 下载aarch64-toolchains二进制编译链
+                        sh """
+                            wget https://gitee.com/openeuler/yocto-meta-openeuler/releases/download/toolchians-v0.1.3/1_aarch64-openeuler-linux-gnu.tar.gz
+                            wget https://gitee.com/openeuler/yocto-meta-openeuler/releases/download/toolchians-v0.1.3/2_aarch64-openeuler-linux-gnu.tar.gz
+                            wget https://gitee.com/openeuler/yocto-meta-openeuler/releases/download/toolchians-v0.1.3/3_aarch64-openeuler-linux-gnu.tar.gz
+                            wget https://gitee.com/openeuler/yocto-meta-openeuler/releases/download/toolchians-v0.1.3/4_aarch64-openeuler-linux-gnu.tar.gz
+                        """
+                        // 拼接二进制文件
+                        sh """
+                            cat 1_aarch64-openeuler-linux-gnu.tar.gz 2_aarch64-openeuler-linux-gnu.tar.gz 3_aarch64-openeuler-linux-gnu.tar.gz 4_aarch64-openeuler-linux-gnu.tar.gz > aarch64-openeuler-linux-gnu.tar.gz
+                            rm 1_aarch64-openeuler-linux-gnu.tar.gz 2_aarch64-openeuler-linux-gnu.tar.gz 3_aarch64-openeuler-linux-gnu.tar.gz 4_aarch64-openeuler-linux-gnu.tar.gz
+                        """
+                        // 解压二进制文件
+                        sh """
+                            tar zxf aarch64-openeuler-linux-gnu.tar.gz
+                        """
+                    }
+                }
+            }
+        }
+        stage("prepare source"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+            steps{
+                dir('/home/jenkins/agent/yocto-meta-openeuler/.oebuild/llvm-toolchain'){
+                    sh """
+                        ./prepare.sh
+                    """
+                }
+            }
+        }
+        stage("build llvm toolchain"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+
+            steps{
+                dir("/home/jenkins/agent/yocto-meta-openeuler/.oebuild/llvm-toolchain/open_source/llvm-project"){
+                    script{
+                        sh """
+                            ./build.sh -e -o -s -i -b release -I clang-llvm-17.0.6
+                            cd clang-llvm-17.0.6
+                            mkdir lib64 aarch64-openeuler-linux-gnu
+                            cp -rf /home/jenkins/agent/aarch64-openeuler-linux-gnu/lib64/gcc lib64/
+                            cp -rf /home/jenkins/agent/aarch64-openeuler-linux-gnu/aarch64-openeuler-linux-gnu/include aarch64-openeuler-linux-gnu/
+                            cp -rf /home/jenkins/agent/aarch64-openeuler-linux-gnu/aarch64-openeuler-linux-gnu/sysroot aarch64-openeuler-linux-gnu/
+                            cd bin
+                            ln -sf ld.lld aarch64-openeuler-linux-gnu-ld
+                        """
+                    }
+                }
+                dir("/home/jenkins/agent/yocto-meta-openeuler/.oebuild/llvm-toolchain/open_source"){
+                    script{
+                        sh """
+                            cd llvm-project
+                            tar zcf clang-llvm-17.0.6.tar.gz clang-llvm-17.0.6
+                            mkdir output
+                            mv clang-llvm-17.0.6.tar.gz output
+                        """
+                    }
+                }
+            }
+        }
+        stage("release llvm-toolchain"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+            steps{
+                dir('/home/jenkins/agent/embedded-ci'){
+                    script{
+                        withCredentials([string(credentialsId: "${giteeId}", variable: 'GITEETOKEN')]){
+                            pre_path = "/home/jenkins/agent/yocto-meta-openeuler/.oebuild/llvm-toolchain"
+                            sdkYamlPath = "${pre_path}/release.yaml"
+                            fileDir = "${pre_path}/open_source/llvm-project/output"
+                            createReleaseAndUploadFile(sdkYamlPath, fileDir, "$GITEETOKEN")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
