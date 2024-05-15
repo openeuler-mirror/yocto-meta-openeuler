@@ -91,3 +91,4 @@ RUN tar xzvf riscv64-openeuler-linux-gnu.tar.gz &&  \
     mv riscv64-openeuler-linux-gnu openeuler_gcc_riscv64 && \
     rm -rf riscv64-openeuler-linux-gnu.tar.gz
 RUN rm -rf merge_data.sh
+RUN sudo chmod -R 777 /opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-linux/var/
