@@ -1,10 +1,6 @@
+require clang-external.inc
 inherit common-license native
-LICENSE = "CLOSED"
 
-EXTERNAL_NATIVE_BINARIES = "clang clang++ ld.lld lld llvm-ar llvm-nm llvm-objcopy llvm-objdump llvm-ranlib llvm-strip \
-                     llvm-addr2line llvm-cxxfilt llvm-readelf llvm-size llvm-strings"
-
-PV = "${CLANG_VERSION}"
 wrap_bin () {
     bin="$1"
     shift
@@ -27,9 +23,11 @@ wrap_bin () {
     chmod +x "$script"
 }
 
+EXTERNAL_CROSS_BINARIES = "${clang_binaries}"
+
 do_install () {
     install -d ${D}${bindir}
-    for bin in ${EXTERNAL_NATIVE_BINARIES}; do
+    for bin in ${EXTERNAL_CROSS_BINARIES}; do
         if [ ! -e "${EXTERNAL_TOOLCHAIN_CLANG_BIN}/${bin}" ]; then
             bbdebug 1 "${EXTERNAL_TOOLCHAIN_CLANG_BIN}/${bin} does not exist"
             continue
