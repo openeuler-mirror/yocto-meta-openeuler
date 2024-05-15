@@ -14,48 +14,14 @@ def downloadYoctoWithPr(String workspace, String namespace, String repo, Integer
     """
 }
 
-def buildToolchain(){
+def createReleaseAndUploadFile(String yaml_path, String file_dir, gitee_token){
     sh """
-        rm -rf /home/jenkins/cache/buildLLVMToolchain
-        mkdir -p /home/jenkins/cache/buildLLVMToolchain
-        cd /home/jenkins/cache/buildLLVMToolchain
-        
-        git clone https://gitee.com/eastb233/yocto-meta-openeuler.git -b master -v yocto-meta-openeuler --depth=1
-        
-        cd /home/jenkins/cache/buildLLVMToolchain/yocto-meta-openeuler/.oebuild/cross-tools
-        ./prepare.sh
-        mv open_source ../
-        ./update.sh
-        cd ..
-        cp config_aarch64 .config && ct-ng build
-        
-        # gcc cross toolchain: ~/x-tools/aarch64-openeuler-linux-gnu
-        
-        # begin build llvm toolchain
-        cd /home/jenkins/cache/buildLLVMToolchain/yocto-meta-openeuler/.oebuild/llvm-toolchain
-        ./prepare.sh
-        cd ./open_source/llvm-project
-        ./build.sh -e -o -s -i -b release -I clang-llvm-17.0.6
-        
-        # do package
-        cd /home/jenkins/cache/buildLLVMToolchain/yocto-meta-openeuler/.oebuild/llvm-toolchain/open_source/llvm-project/clang-llvm-17.0.6
-        mkdir lib64 aarch64-openeuler-linux-gnu
-        cp -rf ~/x-tools/aarch64-openeuler-linux-gnu/lib64/gcc lib64/
-        cp -rf ~/x-tools/aarch64-openeuler-linux-gnu/aarch64-openeuler-linux-gnu/include aarch64-openeuler-linux-gnu/
-        cp -rf ~/x-tools/aarch64-openeuler-linux-gnu/aarch64-openeuler-linux-gnu/sysroot aarch64-openeuler-linux-gnu/
-        
-        ln -sf ld.lld bin/aarch64-openeuler-linux-gnu-ld
-        
-        cd ..
-        tar czf clang-llvm-17.0.6.tar.gz clang-llvm-17.0.6
-        ls -l clang-llvm-17.0.6.tar.gz
-        mkdir output && mv clang-llvm-17.0.6.tar.gz output/
-        
-        # cleanup
-        sudo rm -rf ~/x-tools/aarch64-openeuler-linux-gnu*
+        python3 main.py create_release \
+        -gt ${gitee_token} \
+        -y ${yaml_path} \
+        -f ${file_dir}
     """
 }
-
 
 pipeline {
     agent { node "${node}" }
