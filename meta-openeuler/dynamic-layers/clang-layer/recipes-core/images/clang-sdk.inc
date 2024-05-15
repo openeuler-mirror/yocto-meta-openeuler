@@ -2,6 +2,9 @@ TOOLCHAIN_HOST_TASK =+ " \
 clang-external-cross-canadian-${TRANSLATED_TARGET_ARCH} \
 "
 
+# no need this for clang sdk init
+TOOLCHAIN_TARGET_TASK:remove = " sdk-env-external-toolchain"
+
 # when using `clang --target=${TARGET_PREFIX}` to compile
 # clang will find lib{64}/gcc/${TARGET_PREFIX}/version/crt*.o by default.
 # but our sdk just has lib{64}/gcc/${TARGET_PREFIX}-gnu/version/crt*.o, which will lead compile error.
