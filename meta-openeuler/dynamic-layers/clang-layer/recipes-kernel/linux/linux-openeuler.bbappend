@@ -10,3 +10,5 @@ KERNEL_CC = "${CCACHE}${HOST_PREFIX}clang ${HOST_CC_KERNEL_ARCH} ${DEBUG_PREFIX_
 # Makefile can pass it through CLANG_FLAGS when enable `LLVM_IAS=1`, but CLANG_FLAGS cannot
 # be passed to do_kernel_configcheck stage. So I append it on KERNEL_CC.
 KERNEL_CC:append:toolchain-clang = " -fintegrated-as"
+KERNEL_LD:toolchain-clang = "${CCACHE}${HOST_PREFIX}ld.lld"
+KERNEL_AR:toolchain-clang = "${CCACHE}${HOST_PREFIX}llvm-ar"
