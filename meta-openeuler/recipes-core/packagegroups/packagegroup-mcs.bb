@@ -1,4 +1,5 @@
 SUMMARY = "packages for mcs feature of openEuler Embedded"
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 inherit packagegroup
 
 PR = "r1"
