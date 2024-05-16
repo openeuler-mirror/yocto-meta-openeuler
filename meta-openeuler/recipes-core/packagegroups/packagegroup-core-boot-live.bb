@@ -33,13 +33,13 @@ RDEPENDS:${PN} = "\
     ${VIRTUAL-RUNTIME_dev_manager} \
     ${VIRTUAL-RUNTIME_update-alternatives} \
     ${MACHINE_ESSENTIAL_EXTRA_RDEPENDS} \
+    kernel \
+    kernel-img \
+    kernel-image \
+    kernel-vmlinux \
     os-base \
     busybox-inittab \
     "
-#    kernel 
-#    kernel-img 
-#    kernel-image 
-#    kernel-vmlinux 
 
 # No rule to make target "Image" for x86-64, remove it
 RDEPENDS:${PN}:remove:x86-64 = "kernel-img"

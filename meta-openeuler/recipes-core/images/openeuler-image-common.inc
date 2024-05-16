@@ -65,6 +65,16 @@ RPMROOTFSDEPENDS:openeuler-prebuilt = ""
 # directly use python3 in prebuilt hosttools
 EXTRANATIVEPATH:remove = "${@['', 'python3-native']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
 
+
+### OUTPUT_DIR point to image installation directory
+OUTPUTTIME = "${DATETIME}"
+# Ignore how DATETIME is computed
+OUTPUTTIME[vardepsexclude] = "DATETIME"
+OUTPUT_DIR = "${TOPDIR}/output/${OUTPUTTIME}"
+# Ignore how TOPDIR is computed
+OUTPUT_DIR[vardepsexclude] = "TOPDIR"
+
+
 # set file permission for secure configuration
 set_permissions_from_rootfs() {
    cd "${IMAGE_ROOTFS}"
@@ -79,28 +89,6 @@ SYSTEMD_DEFAULT_TARGET = "multi-user.target"
 
 # sdk configuration
 require recipes-core/images/openeuler-image-sdk.inc
-
-copy_openeuler_distro() {
-    set -x
-    test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
-    # copy rootfs image to OUTPUT
-    for IMAGETYPE in ${IMAGE_FSTYPES}
-    do
-        if [ -f ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX%.rootfs}.*${IMAGETYPE} ];then
-            rm -f "${OUTPUT_DIR}"/${IMAGE_NAME}${IMAGE_NAME_SUFFIX%.rootfs}.*${IMAGETYPE}
-            cp -fp ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX%.rootfs}.*${IMAGETYPE} "${OUTPUT_DIR}"/
-        fi
-    done
-    # copy kernel image to OUTPUT
-    for kernel_img in {zImage,uImage,Image,zboot.img,boot.img,vmlinux}
-    do
-        if [ -f "${DEPLOY_DIR_IMAGE}/$kernel_img" ];then 
-            cp -fp ${DEPLOY_DIR_IMAGE}/$kernel_img ${OUTPUT_DIR}/
-        fi
-    done
-    set +x
-}
-IMAGE_POSTPROCESS_COMMAND:append = "copy_openeuler_distro;"
 
 # specific machine configuration
 include recipes-core/images/${MACHINE}.inc

@@ -2,6 +2,10 @@
 
 # we add kernel-img and kernel-vmlinux
 RDEPENDS:${PN} += " \
+    kernel \
+    kernel-img \
+    kernel-image \
+    kernel-vmlinux \
     os-base \
     os-release \
 "
