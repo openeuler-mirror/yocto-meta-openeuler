@@ -1,4 +1,10 @@
 TOOLCHAIN = "clang"
+
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+SRC_URI:append:aarch64 = " file://fix-link-error-unknown-argument.patch \
+        file://fix-out-of-range-error.patch \
+        "
+
 DEPENDS:append = " clang-cross-${TARGET_ARCH}"
 do_kernel_configme[depends] += "clang-cross-${TARGET_ARCH}:do_populate_sysroot"
 DEPENDS:remove = "virtual/${TARGET_PREFIX}gcc"
