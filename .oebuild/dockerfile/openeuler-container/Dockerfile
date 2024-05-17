@@ -1,6 +1,6 @@
 FROM openeuler/openeuler:23.09
 
-# RUN sed -i "s#http://repo.openeuler.org#https://repo.huaweicloud.com/openeuler#g" /etc/yum.repos.d/openEuler.repo
+RUN sed -i "s#http://repo.openeuler.org#https://repo.huaweicloud.com/openeuler#g" /etc/yum.repos.d/openEuler.repo
 
 RUN set -eux; \
 yum -y install git java tar cmake gperf sqlite-devel libffi-devel xz-devel \
@@ -8,8 +8,9 @@ zlib zlib-devel openssl-devel bzip2-devel ncurses-devel readline-devel \
 libpcap-devel parted autoconf-archive chrpath gcc-c++ patch rpm-build flex \
 autoconf automake m4 bison bc libtool gettext-devel createrepo_c net-tools \
 wget sudo hostname rpcgen texinfo python meson dosfstools mtools libmpc-devel \
-gmp-devel ninja-build numactl-devel make python3 python3-pip screen glibc-locale-archive iproute \
-xz unzip help2man libstdc++-static gcc g++ rsync python3-devel gdisk umoci skopeo
+gmp-devel ninja-build numactl-devel make python3 python3-pip screen glibc-locale-archive \
+iproute xz unzip help2man libstdc++-static gcc g++ rsync python3-devel gdisk umoci skopeo \
+libxslt vim hwdata perl-XML-Parser
 
 ARG user=openeuler
 ARG group=openeuler
@@ -52,7 +53,6 @@ RUN wget ${openeuler_repo}/releases/download/nativesdk-${nativesdk_version}/${na
     && bash ./merge_data.sh
 RUN ./${nativesdk_name}-${openeuler_base_version}.sh -d /opt/buildtools/nativesdk -y
 RUN . /opt/buildtools/nativesdk/environment-setup-x86_64-openeulersdk-linux
-RUN rm -rf /opt/buildtools/nativesdk/sdk_info
 
 # download toolchain release and install it
 ARG toolchain_version=v0.1.3
@@ -92,3 +92,7 @@ RUN tar xzvf riscv64-openeuler-linux-gnu.tar.gz &&  \
     rm -rf riscv64-openeuler-linux-gnu.tar.gz
 RUN rm -rf merge_data.sh
 RUN sudo chmod -R 777 /opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-linux/var/
+
+WORKDIR /home/${user}
+
+RUN rm -rf /opt/buildtools/nativesdk/sdk_info
