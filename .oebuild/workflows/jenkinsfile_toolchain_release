@@ -73,19 +73,6 @@ pipeline {
                 dir('/home/jenkins/agent/yocto-meta-openeuler/.oebuild/cross-tools'){
                     sh """
                         ./prepare.sh
-                    """
-                }
-            }
-        }
-        stage("update config"){
-            when {
-                expression {
-                    return env.is_release == "true"
-                }
-            }
-            steps{
-                dir('/home/jenkins/agent/yocto-meta-openeuler/.oebuild/cross-tools'){
-                    sh """
                         ./update.sh
                     """
                 }
@@ -104,35 +91,58 @@ pipeline {
                         sh """
                             cp config_aarch64 .config
                             ct-ng build
-                            cd x-tools
-                            mv aarch64-openeuler-linux-gnu openeuler_gcc_arm64le
-                            tar czf openeuler_gcc_arm64le.tar.gz openeuler_gcc_arm64le
                         """
                         // 构建arm32-toolchain
                         sh """
                             cp config_arm32 .config
-                            ct-ng build
-                            cd x-tools
-                            mv arm-openeuler-linux-gnueabi openeuler_gcc_arm32le
-                            tar czf openeuler_gcc_arm32le.tar.gz openeuler_gcc_arm32le
+                            ct-ng build                           
                         """
                         // 构建x86-64-toolchain
                         sh """
                             cp config_x86_64 .config
                             ct-ng build
-                            cd x-tools
-                            mv x86_64-openeuler-linux-gnu openeuler_gcc_x86_64
-                            tar czf openeuler_gcc_x86_64.tar.gz openeuler_gcc_x86_64
                         """
                         // 构建riscv64-toolchain
                         sh """
                             cp config_riscv64 .config
                             ct-ng build
-                            cd x-tools
-                            mv riscv64-openeuler-linux-gnu openeuler_gcc_riscv64
-                            tar czf openeuler_gcc_riscv64.tar.gz openeuler_gcc_riscv64
                         """
                     }
+                }
+            }
+        }
+        stage("package toolchain"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+            steps{
+                dir("/home/jenkins/x-tools"){
+                    // 打包aarch64-toolchain
+                    sh """
+                        mv aarch64-openeuler-linux-gnu openeuler_gcc_arm64le
+                        tar czf openeuler_gcc_arm64le.tar.gz openeuler_gcc_arm64le
+                        sudo rm -rf openeuler_gcc_arm64le
+                    """
+                    // 打包arm32-toolchain
+                    sh """
+                        mv arm-openeuler-linux-gnueabi openeuler_gcc_arm32le
+                        tar czf openeuler_gcc_arm32le.tar.gz openeuler_gcc_arm32le
+                        sudo rm -rf openeuler_gcc_arm32le
+                    """
+                    // 打包x86-64-toolchain
+                    sh """
+                        mv x86_64-openeuler-linux-gnu openeuler_gcc_x86_64
+                        tar czf openeuler_gcc_x86_64.tar.gz openeuler_gcc_x86_64
+                        sudo rm -rf openeuler_gcc_x86_64
+                    """
+                    // 打包riscv64-toolchain
+                    sh """
+                        mv riscv64-openeuler-linux-gnu openeuler_gcc_riscv64
+                        tar czf openeuler_gcc_riscv64.tar.gz openeuler_gcc_riscv64
+                        sudo rm -rf openeuler_gcc_riscv64
+                    """
                 }
             }
         }
@@ -147,7 +157,7 @@ pipeline {
                     script{
                         withCredentials([string(credentialsId: "${giteeId}", variable: 'GITEETOKEN')]){
                             sdkYamlPath = "/home/jenkins/agent/yocto-meta-openeuler/.oebuild/cross-tools/release.yaml"
-                            fileDir = "/home/jenkins/agent/yocto-meta-openeuler/.oebuild/cross-tools/x-tools"
+                            fileDir = "/home/jenkins/x-tools"
                             createReleaseAndUploadFile(sdkYamlPath, fileDir, "$GITEETOKEN")
                         }
                     }
