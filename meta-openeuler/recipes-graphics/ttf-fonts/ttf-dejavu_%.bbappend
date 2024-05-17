@@ -8,3 +8,5 @@ SRC_URI:prepend = " \
     file://${OPENEULER_LOCAL_NAME}/${BPN}/dejavu-fonts-ttf-${PV}.tar.bz2 \
 "
 
+PACKAGEFUNCS:remove = " add_fontcache_postinsts "
+

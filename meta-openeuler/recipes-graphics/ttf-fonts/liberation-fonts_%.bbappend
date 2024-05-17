@@ -6,3 +6,6 @@ PV = "2.1.5"
 
 SRC_URI:prepend = "file://${OPENEULER_LOCAL_NAME}/${BPN}/liberation-fonts-ttf-${PV}.tar.gz \
 "
+
+PACKAGEFUNCS:remove = " add_fontcache_postinsts "
+ 
