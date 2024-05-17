@@ -12,4 +12,5 @@
    build.rst
    instruction.rst
    mica_ctl.rst
+   rpc.rst
    developer_guides/index.rst
