@@ -1,0 +1,154 @@
+From d4130c7a0cbbcf82b934f2e1401c98f5dcb1f6aa Mon Sep 17 00:00:00 2001
+From: s_c_c <shichuchao@huawei.com>
+Date: Wed, 15 May 2024 15:52:02 +0800
+Subject: [PATCH] feat for embedded modify language in start script
+
+---
+ start_services.sh | 52 +++++++++++++++++++++++------------------------
+ 1 file changed, 26 insertions(+), 26 deletions(-)
+
+diff --git a/start_services.sh b/start_services.sh
+index f206f36..8ae10f7 100755
+--- a/start_services.sh
++++ b/start_services.sh
+@@ -1,14 +1,14 @@
+ #!/bin/bash
+ 
+-# 此脚本用于拉起分布式各个服务
+-# 使用方法：
+-# 1. 启动所有服务: ./start_services.sh all
+-# 2. 启动某个服务: ./start_services.sh [samgr|huks|deviceauth|softbus|dm|dfs|datamgr]
++# This script is used to start distributed services
++# usage：
++# 1. Start all services: ./start_services.sh all
++# 2. Start a service: ./start_services.sh [samgr|huks|deviceauth|softbus|dm|dfs|datamgr]
+ 
+ BIN_PATH="/system/bin"
+ 
+-# 定义map，保存参数和对应执行的shell命令
+-# 如果需要增加服务启动，直接往此map中增加字段即可
++# Define a map, save parameters, and execute corresponding shell commands
++# If you need to add service startup, add fields to this map
+ declare -A COMMAND_MAP=(
+   ["samgr"]="./samgr > /system/log/samgr.log 2>&1 &"
+   ["huks"]="./sa_main /system/profile/huks_service.xml > /system/log/huks_service.log 2>&1 &"
+@@ -19,7 +19,7 @@ declare -A COMMAND_MAP=(
+   ["datamgr"]="./sa_main /system/profile/distributeddata.xml > /system/log/datamgr.log 2>&1 &"
+ )
+ 
+-# 不同服务的前驱依赖关系
++# Precursor dependencies of different services
+ declare -A CMD_REQUIRES=(
+   ["samgr"]=""
+   ["huks"]="samgr"
+@@ -32,7 +32,7 @@ declare -A CMD_REQUIRES=(
+ 
+ start_order=("samgr" "huks" "deviceauth" "softbus" "dm" "dfs" "datamgr")
+ 
+-# 日志打印函数
++# Log function
+ log() {
+   case $1 in
+     error)
+@@ -92,53 +92,53 @@ start_process() {
+   fi
+ }
+ 
+-# 判断参数是否为空
++# Check if the parameter is empty
+ if [ -z "$1" ]; then
+   log error "Usage: $0 [all|samgr|huks|deviceauth|softbus|device_manager|dfs|datamgr]"
+   exit 1
+ fi
+ 
+-# 新建日志目录
++# Create a new log directory
+ if [ ! -d "/system/log" ]; then
+   log info "/system/log directory not exist, create it"
+-  sudo mkdir -p /system/log
++  mkdir -p /system/log
+ fi
+ 
+-# 以IP地址生成SN号
++# Generate SN number with IP addres
+ if [ ! -e "/etc/SN" ]; then
+   log info "SN file not exist, add content to it."
+   ipv4_address=$(ip -4 addr show scope global | grep inet | awk '{print $2}' | cut -d '/' -f 1)
+-  echo "$ipv4_address" | sudo tee /etc/SN > /dev/null
++  echo "$ipv4_address" | tee /etc/SN > /dev/null
+ fi
+ 
+-# 软链接动态库
++# Soft link dynamic library
+ if [ ! -e "/usr/lib64/libsec_shared.z.so" ]; then
+   log info "libsec_shared.z.so not exist, create it"
+   ln -s /usr/lib64/libboundscheck.so /usr/lib64/libsec_shared.z.so
+ fi
+ 
+-# 检查 $LD_LIBRARY_PATH 是否包含 "/system/lib64"，如果不包含则加入
++# Check if $LD_LIBRARY_PATH contains "/system/lib64", if not, add it
+ if [[ ":$LD_LIBRARY_PATH:" != *":/system/lib64:"* ]]; then
+   log info "/system/lib64 not in LD_LIBRARY_PATH, add it."
+   export LD_LIBRARY_PATH="/system/lib64:$LD_LIBRARY_PATH"
+ fi
+ 
+-# 检查是否关闭selinux，如果未关闭则关闭
++# Check if selinux is closed, if not, close it
+ selinux_status=$(getenforce)
+ if [ "$selinux_status" = "Enforcing" ]; then
+     echo "SELinux set to Permissive..."
+-    sudo setenforce 0
++    setenforce 0
+ fi
+ 
+-# 如果未开启binder，开启binder
++# If binder is not enabled, enable binder
+ if [ ! -e "/dev/binder" ]; then
+   log info "Starting insert binder"
+-  # 如果当前内核已经自带了binder，则直接进行binder的挂载
++  # If the current kernel already comes with a binder, directly mount the binder
+   if grep -q '^CONFIG_ANDROID_BINDER_IPC=y$' /boot/config-$(uname -r); then
+     mkdir /dev/binderfs
+-    sudo mount -t binder binder /dev/binderfs
+-    sudo ln -s /dev/binderfs/binder /dev/binder
+-  else # 内核没有开启binder，插入相关binder的ko
++    mount -t binder binder /dev/binderfs
++    ln -s /dev/binderfs/binder /dev/binder
++  else # The kernel has not enabled the binder, insmod binder_linux.ko
+     if [ ! -f "/lib/modules/$(uname -r)/binder/binder_linux.ko" ]; then
+         log error "no binder ko find, please install binder."
+         exit 1
+@@ -148,26 +148,26 @@ if [ ! -e "/dev/binder" ]; then
+ fi
+ 
+ cd ${BIN_PATH} || exit
+-# 如果有进程还在，暂停服务防止双进程存在
++# If there are still processes, pause the services
+ if pgrep -x "samgr" > /dev/null; then
+   log info "service is running, stop it"
+   /system/bin/stop_services.sh all
+   sleep 2
+ fi
+ 
+-# 验证参数并执行相应命令
++# Verify parameters and execute corresponding commands
+ if [ "$1" == "all" ]; then
+   log info "Starting all services..."
+   for key in "${start_order[@]}"; do
+     log info "Starting $key service..."
+-    # 执行命令
++    # Execute commands
+     eval ${COMMAND_MAP[$key]}
+     sleep 1
+   done
+ else
+   if [ "${COMMAND_MAP[$1]+isset}" ]; then
+     log info "Starting $1 service..."
+-    # 执行命令
++    # Execute commands
+     start_process "$1"
+   else
+     log error "Invalid parameter: $1"
+-- 
+2.20.1 (Apple Git-117)
+

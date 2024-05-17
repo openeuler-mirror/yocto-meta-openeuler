@@ -20,6 +20,10 @@ SRC_URI += " \
             file://systemabilitymgr_safwk/services.safwk.BUILD.gn \
             "
 
+SRC_URI:append = " \
+        file://0003-feat-for-embedded-modify-language-in-start-script.patch;patchdir=${WORKDIR}/systemabilitymgr_safwk \
+"
+
 DEPENDS += "hilog c-utils distributed-beget eventhandler ipc samgr"
 
 RDEPENDS:${PN} = "libboundscheck"

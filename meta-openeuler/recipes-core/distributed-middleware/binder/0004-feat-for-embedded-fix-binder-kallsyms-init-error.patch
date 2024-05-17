@@ -1,0 +1,313 @@
+From 60c687e0fa862dbed8c91a57c6b28fdeba31c708 Mon Sep 17 00:00:00 2001
+From: s_c_c <shichuchao@huawei.com>
+Date: Mon, 13 May 2024 10:46:27 +0800
+Subject: [PATCH] feat for embedded fix binder kallsyms init error
+
+---
+ binder.c           |  25 ++++++---
+ binder_alloc.c     |   2 +-
+ external_symbols.c | 136 +++++++++++++++++++++++++++++++++------------
+ 3 files changed, 119 insertions(+), 44 deletions(-)
+
+diff --git a/binder.c b/binder.c
+index 35384d8..256f011 100644
+--- a/binder.c
++++ b/binder.c
+@@ -1026,7 +1026,7 @@ static void binder_set_nice(long nice)
+ {
+ 	long min_nice;
+ 
+-	if (can_nice(current, nice)) {
++	if (can_nice_wrp(current, nice)) {
+ 		set_user_nice(current, nice);
+ 		return;
+ 	}
+@@ -2255,10 +2255,10 @@ static void binder_deferred_fd_close(int fd)
+ 	if (!twcb)
+ 		return;
+ 	init_task_work(&twcb->twork, binder_do_fd_close);
+-	close_fd_get_file(fd, &twcb->file);
++	close_fd_get_file_wrp(fd, &twcb->file);
+ 	if (twcb->file) {
+ 		filp_close(twcb->file, current->files);
+-		task_work_add(current, &twcb->twork, TWA_RESUME);
++		task_work_add_wrp(current, &twcb->twork, TWA_RESUME);
+ 	} else {
+ 		kfree(twcb);
+ 	}
+@@ -2468,7 +2468,7 @@ static int binder_translate_binder(struct flat_binder_object *fp,
+ 		ret = -EINVAL;
+ 		goto done;
+ 	}
+-	if (security_binder_transfer_binder(proc->cred, target_proc->cred)) {
++	if (security_binder_transfer_binder_wrp(proc->cred, target_proc->cred)) {
+ 		ret = -EPERM;
+ 		goto done;
+ 	}
+@@ -2514,7 +2514,7 @@ static int binder_translate_handle(struct flat_binder_object *fp,
+ 				  proc->pid, thread->pid, fp->handle);
+ 		return -EINVAL;
+ 	}
+-	if (security_binder_transfer_binder(proc->cred, target_proc->cred)) {
++	if (security_binder_transfer_binder_wrp(proc->cred, target_proc->cred)) {
+ 		ret = -EPERM;
+ 		goto done;
+ 	}
+@@ -2602,7 +2602,7 @@ static int binder_translate_fd(u32 fd, binder_size_t fd_offset,
+ 		ret = -EBADF;
+ 		goto err_fget;
+ 	}
+-	ret = security_binder_transfer_file(proc->cred, target_proc->cred, file);
++	ret = security_binder_transfer_file_wrp(proc->cred, target_proc->cred, file);
+ 	if (ret < 0) {
+ 		ret = -EPERM;
+ 		goto err_security;
+@@ -3257,7 +3257,7 @@ static void binder_transaction(struct binder_proc *proc,
+ 			return_error_line = __LINE__;
+ 			goto err_invalid_target_handle;
+ 		}
+-		if (security_binder_transaction(proc->cred,
++		if (security_binder_transaction_wrp(proc->cred,
+ 						target_proc->cred) < 0) {
+ 			return_error = BR_FAILED_REPLY;
+ 			return_error_param = -EPERM;
+@@ -5129,7 +5129,8 @@ static int binder_thread_release(struct binder_proc *proc,
+ 	 * poll data structures holding it.
+ 	 */
+ 	if (thread->looper & BINDER_LOOPER_STATE_POLL)
+-		wake_up_pollfree(&thread->wait);
++		if (waitqueue_active(&thread->wait))
++			__wake_up_pollfree_wrp(&thread->wait);
+ 
+ 	binder_inner_proc_unlock(thread->proc);
+ 
+@@ -5256,7 +5257,7 @@ static int binder_ioctl_set_ctx_mgr(struct file *filp,
+ 		ret = -EBUSY;
+ 		goto out;
+ 	}
+-	ret = security_binder_set_context_mgr(proc->cred);
++	ret = security_binder_set_context_mgr_wrp(proc->cred);
+ 	if (ret < 0)
+ 		goto out;
+ 	if (uid_valid(context->binder_context_mgr_uid)) {
+@@ -6442,6 +6443,8 @@ static int __init init_binder_device(const char *name)
+ 	return ret;
+ }
+ 
++extern int init_kprobe_kallsyms_lookup_name(void);
++
+ static int __init binder_init(void)
+ {
+ 	int ret;
+@@ -6450,6 +6453,10 @@ static int __init binder_init(void)
+ 	struct hlist_node *tmp;
+ 	char *device_names = NULL;
+ 
++	ret = init_kprobe_kallsyms_lookup_name();
++	if (ret < 0)
++		return ret;
++
+ 	ret = binder_alloc_shrinker_init();
+ 	if (ret)
+ 		return ret;
+diff --git a/binder_alloc.c b/binder_alloc.c
+index 1f5446c..4cca95a 100644
+--- a/binder_alloc.c
++++ b/binder_alloc.c
+@@ -1010,7 +1010,7 @@ enum lru_status binder_alloc_free_page(struct list_head *item,
+ 	if (vma) {
+ 		trace_binder_unmap_user_start(alloc, index);
+ 
+-		zap_page_range(vma, page_addr, PAGE_SIZE);
++		zap_page_range_wrp(vma, page_addr, PAGE_SIZE);
+ 
+ 		trace_binder_unmap_user_end(alloc, index);
+ 	}
+diff --git a/external_symbols.c b/external_symbols.c
+index 4ee95e7..3e10949 100644
+--- a/external_symbols.c
++++ b/external_symbols.c
+@@ -14,78 +14,146 @@ typedef unsigned long (*kallsyms_lookup_name_t)(const char *name);
+ 
+ static kallsyms_lookup_name_t kallsyms_lookup_name_ptr = NULL;
+ 
+-kallsyms_lookup_name_t static get_lookup(void) {
++int init_kprobe_kallsyms_lookup_name(void)
++{
+ 	if (kallsyms_lookup_name_ptr == NULL) {
+-		register_kprobe(&kp);
++		int ret;
++		ret = register_kprobe(&kp);
++		if (ret < 0) {
++			pr_err("Couldn't register kprobe kallsyms_lookup_name, returned=%d\n", ret);
++			return ret;
++		}
+ 		kallsyms_lookup_name_ptr = (kallsyms_lookup_name_t) kp.addr;
++		pr_info("kprobe kallsyms_lookup_name addr=%p\n", kallsyms_lookup_name_ptr);
+ 		unregister_kprobe(&kp);
+ 	}
+-	return kallsyms_lookup_name_ptr;
++	return 0;
+ }
+ 
+ static void (*zap_page_range_ptr)(struct vm_area_struct *, unsigned long, unsigned long) = NULL;
+ static int (*can_nice_ptr)(const struct task_struct *, const int) = NULL;
+-static int (*security_binder_set_context_mgr_ptr)(struct task_struct *mgr) = NULL;
+-static int (*security_binder_transaction_ptr)(struct task_struct *from, struct task_struct *to) = NULL;
+-static int (*security_binder_transfer_binder_ptr)(struct task_struct *from, struct task_struct *to) = NULL;
+-static int (*security_binder_transfer_file_ptr)(struct task_struct *from, struct task_struct *to, struct file *file) = NULL;
++static int (*security_binder_set_context_mgr_ptr)(const struct cred *mgr) = NULL;
++static int (*security_binder_transaction_ptr)(const struct cred *from, const struct cred *to) = NULL;
++static int (*security_binder_transfer_binder_ptr)(const struct cred *from, const struct cred *to) = NULL;
++static int (*security_binder_transfer_file_ptr)(const struct cred *from, const struct cred *to, struct file *file) = NULL;
+ static int (*task_work_add_ptr)(struct task_struct *task, struct callback_head *twork,
+ 			enum task_work_notify_mode mode) = NULL;
+ static void (*__wake_up_pollfree_ptr)(wait_queue_head_t *wq_head) = NULL;
+ 
+ static int (*close_fd_get_file_ptr)(unsigned int fd, struct file **res) = NULL;
+ 
+-void zap_page_range(struct vm_area_struct *vma, unsigned long address, unsigned long size)
++void zap_page_range_wrp(struct vm_area_struct *vma, unsigned long address, unsigned long size)
+ {
+-	zap_page_range_ptr = get_lookup()("zap_page_range");
+-	zap_page_range_ptr(vma, address, size);
++	if (kallsyms_lookup_name_ptr) {
++		zap_page_range_ptr = kallsyms_lookup_name_ptr("zap_page_range");
++		if (zap_page_range_ptr) {
++			zap_page_range_ptr(vma, address, size);
++		} else {
++			pr_err("zap_page_range_ptr lookup failed\n");
++		}
++	}
+ }
+ 
+-int can_nice(const struct task_struct *p, const int nice)
++int can_nice_wrp(const struct task_struct *p, const int nice)
+ {
+-	can_nice_ptr = get_lookup()("can_nice");
+-	return can_nice_ptr(p, nice);
++	if (kallsyms_lookup_name_ptr) {
++		can_nice_ptr = kallsyms_lookup_name_ptr("can_nice");
++		if (can_nice_ptr) {
++			return can_nice_ptr(p, nice);
++		} else {
++			pr_err("can_nice_ptr lookup failed\n");
++		}
++	}
++	return 0;
+ }
+ 
+-int security_binder_set_context_mgr(struct task_struct *mgr)
++int security_binder_set_context_mgr_wrp(const struct cred *mgr)
+ {
+-	security_binder_set_context_mgr_ptr = get_lookup()("security_binder_set_context_mgr");
+-	return security_binder_set_context_mgr_ptr(mgr);
++	if (kallsyms_lookup_name_ptr) {
++		security_binder_set_context_mgr_ptr = kallsyms_lookup_name_ptr("security_binder_set_context_mgr");
++		if (security_binder_set_context_mgr_ptr) {
++			return security_binder_set_context_mgr_ptr(mgr);
++		} else {
++			pr_err("security_binder_set_context_mgr_ptr lookup failed\n");
++		}
++	}
++	return -1;
+ }
+ 
+-int security_binder_transaction(struct task_struct *from, struct task_struct *to)
++int security_binder_transaction_wrp(const struct cred *from, const struct cred *to)
+ {
+-	security_binder_transaction_ptr = get_lookup()("security_binder_transaction");
+-	return security_binder_transaction_ptr(from, to);
++	if (kallsyms_lookup_name_ptr) {
++		security_binder_transaction_ptr = kallsyms_lookup_name_ptr("security_binder_transaction");
++		if (security_binder_transaction_ptr) {
++			return security_binder_transaction_ptr(from, to);
++		} else {
++			pr_err("security_binder_transaction_ptr lookup failed\n");
++		}
++	}
++	return -1;
+ }
+ 
+-int security_binder_transfer_binder(struct task_struct *from, struct task_struct *to)
++int security_binder_transfer_binder_wrp(const struct cred *from, const struct cred *to)
+ {
+-	security_binder_transfer_binder_ptr = get_lookup()("security_binder_transfer_binder");
+-	return security_binder_transfer_binder_ptr(from, to);
++	if (kallsyms_lookup_name_ptr) {
++		security_binder_transfer_binder_ptr = kallsyms_lookup_name_ptr("security_binder_transfer_binder");
++		if (security_binder_transfer_binder_ptr) {
++			return security_binder_transfer_binder_ptr(from, to);
++		} else {
++			pr_err("security_binder_transfer_binder_ptr lookup failed\n");
++		}
++	}
++	return -1;
+ }
+ 
+-int security_binder_transfer_file(struct task_struct *from, struct task_struct *to, struct file *file)
++int security_binder_transfer_file_wrp(const struct cred *from, const struct cred *to, struct file *file)
+ {
+-	security_binder_transfer_file_ptr = get_lookup()("security_binder_transfer_file");
+-	return security_binder_transfer_file_ptr(from, to, file);
++	if (kallsyms_lookup_name_ptr) {
++		security_binder_transfer_file_ptr = kallsyms_lookup_name_ptr("security_binder_transfer_file");
++		if (security_binder_transfer_file_ptr) {
++			return security_binder_transfer_file_ptr(from, to, file);
++		} else {
++			pr_err("security_binder_transfer_file_ptr lookup failed\n");
++		}
++	}
++	return -1;
+ }
+ 
+-int task_work_add(struct task_struct *task, struct callback_head *twork,
++int task_work_add_wrp(struct task_struct *task, struct callback_head *twork,
+ 			enum task_work_notify_mode mode)
+ {
+-	task_work_add_ptr = get_lookup()("task_work_add");
+-	return task_work_add_ptr(task, twork, mode);
++	if (kallsyms_lookup_name_ptr) {
++		task_work_add_ptr = kallsyms_lookup_name_ptr("task_work_add");
++		if (task_work_add_ptr) {
++			return task_work_add_ptr(task, twork, mode);
++		} else {
++			pr_err("task_work_add_ptr lookup failed\n");
++		}
++	}
++	return -1;
+ }
+ 
+-int close_fd_get_file(unsigned int fd, struct file **res)
++int close_fd_get_file_wrp(unsigned int fd, struct file **res)
+ {
+-	close_fd_get_file_ptr = get_lookup()("close_fd_get_file");
+-	return close_fd_get_file_ptr(fd, res);
++	if (kallsyms_lookup_name_ptr) {
++		close_fd_get_file_ptr = kallsyms_lookup_name_ptr("close_fd_get_file");
++		if (close_fd_get_file_ptr) {
++			return close_fd_get_file_ptr(fd, res);
++		} else {
++			pr_err("close_fd_get_file_ptr lookup failed\n");
++		}
++	}
++	return -1;
+ }
+ 
+-void __wake_up_pollfree(wait_queue_head_t *wq_head)
++void __wake_up_pollfree_wrp(wait_queue_head_t *wq_head)
+ {
+-	__wake_up_pollfree_ptr = get_lookup()("__wake_up_pollfree");
+-	return __wake_up_pollfree_ptr(wq_head);
++	if (kallsyms_lookup_name_ptr) {
++		__wake_up_pollfree_ptr = kallsyms_lookup_name_ptr("__wake_up_pollfree");
++		if (__wake_up_pollfree_ptr) {
++			__wake_up_pollfree_ptr(wq_head);
++		} else {
++			pr_err("__wake_up_pollfree_ptr lookup failed\n");
++		}
++	}
+ }
+-- 
+2.20.1 (Apple Git-117)
+

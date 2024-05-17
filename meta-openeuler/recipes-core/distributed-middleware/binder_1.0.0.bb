@@ -15,6 +15,10 @@ SRC_URI = " \
             file://communication_ipc_kernel510/binder.pp \
           "
 
+SRC_URI:append = " \
+        file://0004-feat-for-embedded-fix-binder-kallsyms-init-error.patch \
+"
+
 RPROVIDES:${PN} += "kernel-module-binder-linux"
 
 FILES:${PN} = "/usr/share/"
