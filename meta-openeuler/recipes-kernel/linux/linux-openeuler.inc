@@ -149,9 +149,13 @@ do_install:append(){
 }
 
 do_deploy:append() {
-    if [ -e ${KERNEL_OUTPUT_DIR}/Image ]; then
-        install -m 0644 ${KERNEL_OUTPUT_DIR}/Image $deployDir/Image-${KERNEL_VERSION}
-    fi
+    test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
+    for kernel_img in {zImage,bzImage,uImage,Image,vmlinux,zboot.img,boot.img}
+    do
+        if [ -f "${KERNEL_OUTPUT_DIR}/$kernel_img" ];then
+            echo ${OUTPUT_DIR} ${deployDir} | xargs -n 1 cp -fp ${KERNEL_OUTPUT_DIR}/$kernel_img
+        fi
+    done
 }
 
 #not found depmodwrapper, not run postinst now
