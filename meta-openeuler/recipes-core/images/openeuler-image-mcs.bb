@@ -29,7 +29,7 @@ python () {
         if 'openamp' in mcs_features:
             d.setVar('QB_KERNEL_CMDLINE_APPEND', 'maxcpus=3')
             d.setVar('QB_DTB', d.getVar('IMAGE_NAME')+".qemuboot.dtb")
-            d.setVar('QB_DTB_LINUX', d.getVar('IMAGE_LINK_NAME')+".qemuboot.dtb")
+            d.setVar('QB_DTB_LINK', d.getVar('IMAGE_LINK_NAME')+".qemuboot.dtb")
         elif 'jailhouse' in mcs_features:
             d.setVar('QB_MACHINE', '-machine virt,gic-version=3,virtualization=on,its=off')
             d.setVar('QB_KERNEL_CMDLINE_APPEND', 'mem=750M')
