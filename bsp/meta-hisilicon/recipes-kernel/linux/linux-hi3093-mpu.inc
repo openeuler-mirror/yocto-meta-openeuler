@@ -7,7 +7,6 @@ DEPENDS += "u-boot-tools-native"
 # add prebuild tools to make uImage
 SRC_URI = " \
     file://kernel-5.10-tag3093 \
-    file://dtbs \
     file://tools \
     file://config/hi3093/defconfig \
     file://mpu_solution/src/non_real_time/adapter_for_hi3093/include/kbox \
