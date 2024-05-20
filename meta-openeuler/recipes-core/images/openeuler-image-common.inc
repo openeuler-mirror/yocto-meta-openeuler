@@ -83,16 +83,6 @@ require recipes-core/images/openeuler-image-sdk.inc
 copy_openeuler_distro() {
     set -x
     test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
-    # move everything in boot to output dir
-    rm -rf "${OUTPUT_DIR}"/*
-    cd "${IMAGE_ROOTFS}"
-    num_files=$(ls -A "boot" | wc -l)
-    if [ "$num_files" != 0 ]; then
-        cp -r boot/* "${OUTPUT_DIR}"
-        # just need the boot dir, others in boot are not needed to reduce the size of image.
-        rm -rf ./boot/*
-    fi
-    cd -
     # copy rootfs image to OUTPUT
     for IMAGETYPE in ${IMAGE_FSTYPES}
     do
