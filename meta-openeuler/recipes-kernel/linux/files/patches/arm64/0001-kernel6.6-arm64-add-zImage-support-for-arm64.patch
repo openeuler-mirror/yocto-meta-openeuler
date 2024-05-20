@@ -1,4 +1,4 @@
-From 98ec90e513ff6a85801533ded290894fdba4e21a Mon Sep 17 00:00:00 2001
+From a13b875de7758fe1348e1f59162f30a852f7028c Mon Sep 17 00:00:00 2001
 From: fanglinxu <fanglinxu@huawei.com>
 Date: Thu, 18 Apr 2024 21:18:53 +0800
 Subject: [PATCH] kernel6.6 arm64 add zImage support for arm64
@@ -8,49 +8,18 @@ and extracting the zImage itself to Image. It might be useful on machines
 with a very limited amount of storage, as the size benefit is quite significant
 
 Signed-off-by: fanglinxu <fanglinxu@huawei.com>
----
- arch/arm64/Kconfig                       |   1 +
- arch/arm64/Makefile                      |   5 +-
- arch/arm64/boot/Makefile                 |  13 +
- arch/arm64/boot/compressed/Kconfig       |  48 ++
- arch/arm64/boot/compressed/Makefile      | 121 ++++
- arch/arm64/boot/compressed/decompress.c  |  55 ++
- arch/arm64/boot/compressed/head.S        | 816 +++++++++++++++++++++++
- arch/arm64/boot/compressed/hyp-stub.S    |  91 +++
- arch/arm64/boot/compressed/image.h       |  69 ++
- arch/arm64/boot/compressed/misc.c        |  49 ++
- arch/arm64/boot/compressed/misc.h        |  13 +
- arch/arm64/boot/compressed/piggy.S       |   6 +
- arch/arm64/boot/compressed/string.c      | 177 +++++
- arch/arm64/boot/compressed/vmlinux.lds   |  53 ++
- arch/arm64/boot/compressed/vmlinux.lds.S |  87 +++
- arch/arm64/include/asm/assembler.h       |  14 +-
- arch/arm64/include/asm/virt.h            |   8 +
- 17 files changed, 1621 insertions(+), 5 deletions(-)
- create mode 100644 arch/arm64/boot/compressed/Kconfig
- create mode 100644 arch/arm64/boot/compressed/Makefile
- create mode 100644 arch/arm64/boot/compressed/decompress.c
- create mode 100644 arch/arm64/boot/compressed/head.S
- create mode 100644 arch/arm64/boot/compressed/hyp-stub.S
- create mode 100644 arch/arm64/boot/compressed/image.h
- create mode 100644 arch/arm64/boot/compressed/misc.c
- create mode 100644 arch/arm64/boot/compressed/misc.h
- create mode 100644 arch/arm64/boot/compressed/piggy.S
- create mode 100644 arch/arm64/boot/compressed/string.c
- create mode 100644 arch/arm64/boot/compressed/vmlinux.lds
- create mode 100644 arch/arm64/boot/compressed/vmlinux.lds.S
 
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 890461d3f..09fd4eb18 100644
+index 2a875546b..f193e46e3 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -2581,3 +2581,4 @@ source "drivers/acpi/Kconfig"
+@@ -2604,3 +2604,4 @@ source "drivers/acpi/Kconfig"
  
  source "arch/arm64/kvm/Kconfig"
  
 +source "arch/arm64/boot/compressed/Kconfig"
 diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
-index 94be26b6c..6d2046f12 100644
+index 94be26b6c..ac1889725 100644
 --- a/arch/arm64/Makefile
 +++ b/arch/arm64/Makefile
 @@ -11,6 +11,7 @@
@@ -167,7 +136,7 @@ index 000000000..65c37a369
 +endmenu
 diff --git a/arch/arm64/boot/compressed/Makefile b/arch/arm64/boot/compressed/Makefile
 new file mode 100644
-index 000000000..6ab779cbe
+index 000000000..5ac24299f
 --- /dev/null
 +++ b/arch/arm64/boot/compressed/Makefile
 @@ -0,0 +1,121 @@
@@ -206,10 +175,10 @@ index 000000000..6ab779cbe
 +CPPFLAGS_vmlinux.lds := -DTEXT_START="$(ZTEXTADDR)" -DBSS_START="$(ZBSSADDR)"
 +
 +compress-$(CONFIG_SELFDECOMPRESS_ZIMAGE_GZIP) = gzip
-+compress-$(CONFIG_SELFDECOMPRESS_ZIMAGE_LZO)  = lzo
-+compress-$(CONFIG_SELFDECOMPRESS_ZIMAGE_LZMA) = lzma
-+compress-$(CONFIG_SELFDECOMPRESS_ZIMAGE_XZ)   = xzkern
-+compress-$(CONFIG_SELFDECOMPRESS_ZIMAGE_LZ4)  = lz4
++compress-$(CONFIG_SELFDECOMPRESS_ZIMAGE_LZO)  = lzo_with_size
++compress-$(CONFIG_SELFDECOMPRESS_ZIMAGE_LZMA) = lzma_with_size
++compress-$(CONFIG_SELFDECOMPRESS_ZIMAGE_XZ)   = xzkern_with_size
++compress-$(CONFIG_SELFDECOMPRESS_ZIMAGE_LZ4)  = lz4_with_size
 +
 +targets       := vmlinux vmlinux.lds piggy_data piggy.o \
 +		 head.o misc.o $(OBJS)
@@ -1769,10 +1738,10 @@ index 000000000..e4d073e1d
 +  .comment 0		: { *(.comment) }
 +}
 diff --git a/arch/arm64/include/asm/assembler.h b/arch/arm64/include/asm/assembler.h
-index 7712c532c..14134236f 100644
+index 38b23786a..6d5632cb5 100644
 --- a/arch/arm64/include/asm/assembler.h
 +++ b/arch/arm64/include/asm/assembler.h
-@@ -197,9 +197,15 @@ lr	.req	x30		// link register
+@@ -193,9 +193,15 @@ lr	.req	x30		// link register
  	 * @dst: destination register (64 bit wide)
  	 * @sym: name of the symbol
  	 */
@@ -1791,7 +1760,7 @@ index 7712c532c..14134236f 100644
  	.endm
  
  	/*
-@@ -209,7 +215,7 @@ lr	.req	x30		// link register
+@@ -205,7 +211,7 @@ lr	.req	x30		// link register
  	 *       32-bit wide register, in which case it cannot be used to hold
  	 *       the address
  	 */
@@ -1820,5 +1789,5 @@ index 261d6e9df..0e59a4d74 100644
  #define HVC_STUB_ERR	0xbadca11
  
 -- 
-2.17.1
+2.34.1
 
