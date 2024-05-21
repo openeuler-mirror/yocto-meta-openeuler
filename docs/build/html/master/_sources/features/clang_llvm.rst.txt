@@ -46,41 +46,64 @@ meta-clang层中主要起作用的是clang.bbclass文件，该文件用来控制
 
      .. code-block:: console
 
-       docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/cross-compile-bisheng:v0.1
+       docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-sdk:latest
 
      2. 进入容器
 
      .. code-block:: console
 
-       docker run -idt --network host --name clang_compile swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/cross-compile-bisheng:v0.1 bash
+       docker run -idt --network host --name clang_compile -u openeuler swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-sdk:latest bash
        docker exec -it clang_compile bash
 
-     3. 下载llvm-project
+     3. 下载openEuler LLVM源码
 
      .. code-block:: console
 
        cd ~
-       git clone https://gitee.com/openeuler/llvm-project.git -b dev_15x
+       git clone -b dev_17.0.6 https://gitee.com/openeuler/llvm-project.git --depth=1
 
-     4. 初始化环境并编译
+     4. 构建LLVM工具链
 
      .. code-block:: console
 
-       source /etc/profile
-       cd llvm-project
-       ./build.sh -e -o -s -i -b release
+       cd ~/llvm-project
+       ./build.sh -e -o -s -i -b release -I clang-llvm-17.0.6
 
-   - 预编译发布
+     5. LLVM工具链集成交叉构建时目标架构的头文件和库文件
 
-     直接从预编译发布网站获取 `LLVM <http://43.136.114.130/llvm/>`_
+     正常交叉构建时，需要使用目标架构的头文件、运行时库（如crtbegin.o）、标准C库（如libc.so）等，LLVM工具链默认使用GCC的运行时库，可以通过 ``--gcc-toolchain=`` 选项指定对应GCC的路径，而标准C库、依赖库等可以通过 ``--sysroot=`` 选项指定对应的路径。
+
+     因此，使用LLVM工具链进行交叉构建时，需要使用 ``--gcc-toolchain=`` 和 ``--sysroot=`` 选项指定目标架构的头文件和库文件所在的路径，或者将相关的文件集成到LLVM工具链当中，openEuler LLVM已经使能特性能够搜索默认集成的路径。
+
+     集成所需的头文件和库文件来自于GCC交叉工具链，可以从该 `下载链接 <https://gitee.com/openeuler/yocto-meta-openeuler/releases>`_ 中下载最新 ``openEuler Embedded Toolchains`` 版本的GCC交叉工具链，选择其中的 ``aarch64`` 版本。集成方式如下，
+
+     .. code-block:: console
+
+       # llvm toolchain 目录:
+       #     /path/to/llvm-project/clang-llvm-17.0.6
+       # gcc toolchain 目录:
+       #     /path/to/gcc/openeuler_gcc_arm64le
+       cd /path/to/llvm-project/clang-llvm-17.0.6
+       mkdir lib64 aarch64-openeuler-linux-gnu
+       cp -rf /path/to/gcc/openeuler_gcc_arm64le/lib64/gcc lib64/
+       cp -rf /path/to/gcc/openeuler_gcc_arm64le/aarch64-openeuler-linux-gnu/include aarch64-openeuler-linux-gnu/
+       cp -rf /path/to/gcc/openeuler_gcc_arm64le/aarch64-openeuler-linux-gnu/sysroot aarch64-openeuler-linux-gnu/
+       
+       # 交叉构建工程中，由于部分软件包无法接收到LDFLAGS中的-fuse-ld=lld选项，导致需要去寻找ld链接器，目前以建立软链接进行处理
+       cd /path/to/llvm-project/clang-llvm-17.0.6/bin
+       ln -sf ld.lld aarch64-openeuler-linux-gnu-ld
+
+   - LLVM工具链发布版本
+
+     直接从LLVM工具链版本发布地址下载获取 `openEuler Embedded LLVM Toolchains <https://gitee.com/openeuler/yocto-meta-openeuler/releases>`_ ，发布版本支持X86_64的native构建和aarch64的交叉构建，并且已经集成了交叉构建所需的目标架构的头文件和库文件。
 
 2. 构建环境
 
-   参考 :ref:`oebuild_install` 初始化容器环境，生成配置文件时使用如下命令：
+   参考 :ref:`oebuild_install` 初始化容器环境，生成配置文件时使用如下命令。
    
    .. code-block:: console
 
-      oebuild generate -p platform -d build_direction -t /path/to/clang-llvm-15.0.3 -f clang
+      oebuild generate -p ${platform} -d ${build_directory} -t /path/to/clang-llvm-17.0.6 -f clang
 
    除了使用上述命令进行配置文件生成，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，效果跟上述命令相同。
 
@@ -92,17 +115,17 @@ meta-clang层中主要起作用的是clang.bbclass文件，该文件用来控制
 
    .. image:: ../_static/images/generate/oebuild-generate-select.png
 
-   键入 ``oebuild bitbake`` 进入容器环境后，拷贝arm64架构GCC库至编译器目录，
-
-   ``/usr1/openeuler/native_gcc/`` 为oebuild默认挂载的编译器目录：
+   键入 ``oebuild bitbake`` 进入容器环境后， ``/usr1/openeuler/native_gcc/`` 目录为oebuild默认挂载的编译器目录。
+   此外，需要调整 ``conf/local.conf`` 文件，
 
    .. code-block:: console
 
-      sudo cp /usr1/openeuler/gcc/openeuler_gcc_arm64le/* /usr1/openeuler/native_gcc/
+      # 删除文件内的一行: EXTERNAL_TOOLCHAIN:aarch64 = "/usr1/openeuler/native_gcc"
+      vim conf/local.conf
 
    .. attention::
       
-      当前只支持arm64架构。
+      当前仅验证支持了qemu-aarch64和树莓派平台的标准镜像。
 
 3. 构建命令
 

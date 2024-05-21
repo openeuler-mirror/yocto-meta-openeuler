@@ -194,40 +194,60 @@
 <ol class="arabic simple">
 <li><p>获取编译容器</p></li>
 </ol>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/cross-compile-bisheng:v0.1</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-sdk:latest</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
 <li><p>进入容器</p></li>
 </ol>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker run -idt --network host --name clang_compile swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/cross-compile-bisheng:v0.1 bash</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker run -idt --network host --name clang_compile -u openeuler swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-sdk:latest bash</span>
 <span class="go">docker exec -it clang_compile bash</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
-<li><p>下载llvm-project</p></li>
+<li><p>下载openEuler LLVM源码</p></li>
 </ol>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd ~</span>
-<span class="go">git clone https://gitee.com/openeuler/llvm-project.git -b dev_15x</span>
+<span class="go">git clone -b dev_17.0.6 https://gitee.com/openeuler/llvm-project.git --depth=1</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="4">
-<li><p>初始化环境并编译</p></li>
+<li><p>构建LLVM工具链</p></li>
 </ol>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">source /etc/profile</span>
-<span class="go">cd llvm-project</span>
-<span class="go">./build.sh -e -o -s -i -b release</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd ~/llvm-project</span>
+<span class="go">./build.sh -e -o -s -i -b release -I clang-llvm-17.0.6</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p>LLVM工具链集成交叉构建时目标架构的头文件和库文件</p></li>
+</ol>
+<p>正常交叉构建时，需要使用目标架构的头文件、运行时库（如crtbegin.o）、标准C库（如libc.so）等，LLVM工具链默认使用GCC的运行时库，可以通过 <code class="docutils literal notranslate"><span class="pre">--gcc-toolchain=</span></code> 选项指定对应GCC的路径，而标准C库、依赖库等可以通过 <code class="docutils literal notranslate"><span class="pre">--sysroot=</span></code> 选项指定对应的路径。</p>
+<p>因此，使用LLVM工具链进行交叉构建时，需要使用 <code class="docutils literal notranslate"><span class="pre">--gcc-toolchain=</span></code> 和 <code class="docutils literal notranslate"><span class="pre">--sysroot=</span></code> 选项指定目标架构的头文件和库文件所在的路径，或者将相关的文件集成到LLVM工具链当中，openEuler LLVM已经使能特性能够搜索默认集成的路径。</p>
+<p>集成所需的头文件和库文件来自于GCC交叉工具链，可以从该 <a class="reference external" href="https://gitee.com/openeuler/yocto-meta-openeuler/releases">下载链接</a> 中下载最新 <code class="docutils literal notranslate"><span class="pre">openEuler</span> <span class="pre">Embedded</span> <span class="pre">Toolchains</span></code> 版本的GCC交叉工具链，选择其中的 <code class="docutils literal notranslate"><span class="pre">aarch64</span></code> 版本。集成方式如下，</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>llvm toolchain 目录:
+<span class="gp">#     </span>/path/to/llvm-project/clang-llvm-17.0.6
+<span class="gp"># </span>gcc toolchain 目录:
+<span class="gp">#     </span>/path/to/gcc/openeuler_gcc_arm64le
+<span class="go">cd /path/to/llvm-project/clang-llvm-17.0.6</span>
+<span class="go">mkdir lib64 aarch64-openeuler-linux-gnu</span>
+<span class="go">cp -rf /path/to/gcc/openeuler_gcc_arm64le/lib64/gcc lib64/</span>
+<span class="go">cp -rf /path/to/gcc/openeuler_gcc_arm64le/aarch64-openeuler-linux-gnu/include aarch64-openeuler-linux-gnu/</span>
+<span class="go">cp -rf /path/to/gcc/openeuler_gcc_arm64le/aarch64-openeuler-linux-gnu/sysroot aarch64-openeuler-linux-gnu/</span>
+
+<span class="gp"># </span>交叉构建工程中，由于部分软件包无法接收到LDFLAGS中的-fuse-ld<span class="o">=</span>lld选项，导致需要去寻找ld链接器，目前以建立软链接进行处理
+<span class="go">cd /path/to/llvm-project/clang-llvm-17.0.6/bin</span>
+<span class="go">ln -sf ld.lld aarch64-openeuler-linux-gnu-ld</span>
 </pre></div>
 </div>
 </li>
-<li><p>预编译发布</p>
-<p>直接从预编译发布网站获取 <a class="reference external" href="http://43.136.114.130/llvm/">LLVM</a></p>
+<li><p>LLVM工具链发布版本</p>
+<p>直接从LLVM工具链版本发布地址下载获取 <a class="reference external" href="https://gitee.com/openeuler/yocto-meta-openeuler/releases">openEuler Embedded LLVM Toolchains</a> ，发布版本支持X86_64的native构建和aarch64的交叉构建，并且已经集成了交叉构建所需的目标架构的头文件和库文件。</p>
 </li>
 </ul>
 </li>
 <li><p>构建环境</p>
-<p>参考 <a class="reference internal" href="../oebuild/userguide/install/index.html#oebuild-install"><span class="std std-ref">安装步骤</span></a> 初始化容器环境，生成配置文件时使用如下命令：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild generate -p platform -d build_direction -t /path/to/clang-llvm-15.0.3 -f clang</span>
+<p>参考 <a class="reference internal" href="../oebuild/userguide/install/index.html#oebuild-install"><span class="std std-ref">安装步骤</span></a> 初始化容器环境，生成配置文件时使用如下命令。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild generate -p ${platform} -d ${build_directory} -t /path/to/clang-llvm-17.0.6 -f clang</span>
 </pre></div>
 </div>
 <p>除了使用上述命令进行配置文件生成，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，效果跟上述命令相同。</p>
@@ -236,14 +256,15 @@
 </div>
 <p>具体界面如下图所示:</p>
 <img alt="../_images/oebuild-generate-select.png" src="../_images/oebuild-generate-select.png" />
-<p>键入 <code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">bitbake</span></code> 进入容器环境后，拷贝arm64架构GCC库至编译器目录，</p>
-<p><code class="docutils literal notranslate"><span class="pre">/usr1/openeuler/native_gcc/</span></code> 为oebuild默认挂载的编译器目录：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo cp /usr1/openeuler/gcc/openeuler_gcc_arm64le/* /usr1/openeuler/native_gcc/</span>
+<p>键入 <code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">bitbake</span></code> 进入容器环境后， <code class="docutils literal notranslate"><span class="pre">/usr1/openeuler/native_gcc/</span></code> 目录为oebuild默认挂载的编译器目录。
+此外，需要调整 <code class="docutils literal notranslate"><span class="pre">conf/local.conf</span></code> 文件，</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>删除文件内的一行: EXTERNAL_TOOLCHAIN:aarch64 <span class="o">=</span> <span class="s2">&quot;/usr1/openeuler/native_gcc&quot;</span>
+<span class="go">vim conf/local.conf</span>
 </pre></div>
 </div>
 <div class="admonition attention">
 <p class="admonition-title">Attention</p>
-<p>当前只支持arm64架构。</p>
+<p>当前仅验证支持了qemu-aarch64和树莓派平台的标准镜像。</p>
 </div>
 </li>
 <li><p>构建命令</p>
