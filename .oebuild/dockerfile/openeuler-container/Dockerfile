@@ -88,6 +88,23 @@ RUN tar xzvf openeuler_gcc_riscv64.tar.gz &&  \
     rm -rf openeuler_gcc_riscv64.tar.gz
 RUN rm -rf merge_data.sh
 
+WORKDIR /usr1/openeuler
+# download llvm toolchain and install it
+RUN wget ${openeuler_repo}/releases/download/llvm-toolchain-v0.1.0/1_clang-llvm-17.0.6.tar.gz \
+    && wget ${openeuler_repo}/releases/download/llvm-toolchain-v0.1.0/2_clang-llvm-17.0.6.tar.gz \
+    && wget ${openeuler_repo}/releases/download/llvm-toolchain-v0.1.0/3_clang-llvm-17.0.6.tar.gz \
+    && wget ${openeuler_repo}/releases/download/llvm-toolchain-v0.1.0/4_clang-llvm-17.0.6.tar.gz \
+    && wget ${openeuler_repo}/releases/download/llvm-toolchain-v0.1.0/5_clang-llvm-17.0.6.tar.gz \
+    && wget ${openeuler_repo}/releases/download/llvm-toolchain-v0.1.0/6_clang-llvm-17.0.6.tar.gz \
+    && wget ${openeuler_repo}/releases/download/llvm-toolchain-v0.1.0/7_clang-llvm-17.0.6.tar.gz \
+    && wget ${openeuler_repo}/releases/download/llvm-toolchain-v0.1.0/8_clang-llvm-17.0.6.tar.gz \
+    && wget ${openeuler_repo}/releases/download/llvm-toolchain-v0.1.0/9_clang-llvm-17.0.6.tar.gz \
+    && wget ${openeuler_repo}/releases/download/llvm-toolchain-v0.1.0/merge_data.sh \
+    && bash ./merge_data.sh
+
+RUN tar zxf clang-llvm-17.0.6.tar.gz
+RUN sudo mv clang-llvm-17.0.6 llvm && sudo rm -rf clang-llvm-17.0.6.tar.gz merge_data.sh
+
 RUN sudo chmod -R 777 /opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-linux/var/
 
 WORKDIR /home/${user}
