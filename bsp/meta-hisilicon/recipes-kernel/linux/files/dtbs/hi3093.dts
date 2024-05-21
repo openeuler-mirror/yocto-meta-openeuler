@@ -1,0 +1,752 @@
+/**
+ * dtsi file for Hisilicon Hi3093 Product Board
+ *
+ * Copyright (c) Hisilicon Technologies Co., Ltd. 2021-2031. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * publishhed by the Free Software Foundation.
+ *
+ */
+/dts-v1/;
+
+/ {
+    #address-cells = <0x2>;
+    #size-cells = <0x2>;
+    model = "Hisilicon Hi1711 ASIC";
+    compatible = "hisilicon, hi1711_asic";
+    interrupt-parent = <&gic>;
+
+    aliases {
+        serial0 = &uart0;
+    };
+
+    chosen {
+		bootargs = "console=ttyS0,115200n8N earlycon=uart8250,mmio32,0x08710000 initrd=${initrd_load_addr},${initrd_size} rdinit=/sbin/init rw ekbox=0x20000$0x84be0000 kbox_mem=0x2e0000@0x84900000 swift_irqsoff_enable ramdisk_size=655360 quiet";
+	};
+
+    memory@80000000 {
+        device_type = "memory";
+        reg = <0x0 0x80000000 0x0 0x40000000>;
+    };
+
+	psci {
+		compatible = "arm,psci-0.2";
+		method = "smc";
+	};
+    cpus {
+        #address-cells = <0x1>;
+        #size-cells = <0x0>;
+
+        CPU0: cpu@0 {
+                device_type = "cpu";
+                compatible = "arm,armv8";
+                reg = <0x000>;
+                enable-method = "psci";
+                cpu-release-addr = <0x0 0x9807fff8>;
+        };
+
+        CPU1: cpu@1 {
+                device_type = "cpu";
+                compatible = "arm,armv8";
+                reg = <0x100>;
+                enable-method = "psci";
+                cpu-release-addr = <0x0 0x9807fff8>;
+        };
+        CPU2: cpu@2 {
+                device_type = "cpu";
+                compatible = "arm,armv8";
+                reg = <0x200>;
+                enable-method = "psci";
+                cpu-release-addr = <0x0 0x9807fff8>;
+        };
+        CPU3: cpu@3 {
+                device_type = "cpu";
+                compatible = "arm,armv8";
+                reg = <0x300>;
+                enable-method = "psci";
+                cpu-release-addr = <0x0 0x9807fff8>;
+        };
+    };
+
+    cpu_extra_info {
+        compatible = "cpu_info,extra_info";
+        cpu_desc = "1711";
+    };
+
+    gic: interrupt-controller@24000000 {
+        compatible = "arm,gic-v3";
+        #interrupt-cells = <3>;
+        #address-cells = <2>;
+        #size-cells = <2>;
+        ranges;
+        interrupt-controller;
+        #redistributor-regions = <1>;
+        redistributor-stride = <0x0 0x20000>;
+        reg = <0x0 0x24000000 0x0 0x10000>,     /*GICD*/
+              <0x0 0x24040000 0x0 0x80000>;     /*GICR (cpu0-cpu3)*/
+        interrupts = <0x1 0x9 0xff04>;
+    };
+
+    rtos_softdog {
+        compatible = "rtos-wtd-config";
+        softdog-enable = <1>;
+    };
+
+    fiq_glue@0x2000B000 {
+        compatible = "arm,hisi_fiq";
+        fiq_source = "GIC";
+        fiq_type = "1-N";
+        dead_loop = <1>;
+        need_invalid_cache = <1>;
+        fiq_nums = <1>;
+        interrupts = <0 109 3>;
+        #address-cells = <1>;
+        #size-cells = <1>;
+        ranges = <0x0 0x0 0x0 0xc0000000>;
+    };
+
+
+    timer {
+        compatible = "arm,armv8-timer";
+        interrupts = <0x1 0xd 0xff08>,
+                     <0x1 0xe 0xff08>,
+                     <0x1 0xb 0xff08>,
+                     <0x1 0xa 0xff08>;
+    };
+
+    pmu {
+        compatible = "arm,armv8-pmuv3";
+        interrupts = <0x1 0x7 0x4>;
+    };
+
+    bmcrtc: rtc@0 {
+            compatible = "hisilicon,bmcrtc";
+            reg = <0x0 0x0875A000 0x0 0x1000>;
+    };
+
+    reboot_handler@0 {
+        compatible = "hisilicon,hisi-reboot";
+        reg = <0x0 0x08740000 0x0 0x1000>;
+        reboot-offset = <0x148>;
+        reboot-value = <0x8>;
+    };
+
+    mmc@08630000 {
+        compatible = "hisilicon,hi1711-emmc";
+        reg = <0x0 0x08630000 0x0 0x1000>,
+              <0x0 0x0871D000 0x0 0x1000>;
+        interrupts = <0x0 136 0x4>,
+                     <0x0 42  0x4>;
+    };
+
+    sdio@08610000 {
+        compatible = "hisilicon,hi1711-sdio";
+        reg = <0x0 0x08610000 0x0 0x1000>;
+        interrupts = <0x0 138 0x4>;
+    };
+
+    soc {
+        compatible = "simple-bus";
+        #address-cells = <2>;
+        #size-cells = <2>;
+        ranges;
+
+        hi1711_refclk: refclk {
+            compatible = "fixed-clock";
+            #clock-cells = <0>;
+            clock-frequency = <25000000>;
+        };
+
+        uart0: uart@08710000 {
+            compatible = "snps,dw-apb-uart";
+            reg = <0x0 0x08710000 0x0 0x1000>;/*UART2*/
+            reg-io-width = <4>;
+            reg-shift = <2>;
+            clock-frequency = <100000000>;
+            clock-names = "apb_pclk";
+            interrupts = <0 58 4>;
+            current-speed = <0x1c200>;
+        };
+
+        uart_core: uart_core {
+            compatible = "hisilicon,hisi-uart-core";
+            reg = <0x0 0x0871D000 0x0 0x1000>;
+            clock-frequency = <100000000>;
+        };
+
+        uart1: uart@08711000 {
+            compatible = "hisilicon,hisi-uart";
+            reg = <0x0 0x08711000 0x0 0x1000>;/*UART3*/
+            interrupts = <0 59 4>;
+            port-no = <3>;
+        };
+
+        uart2: uart@08743000 {
+            compatible = "hisilicon,hisi-uart";
+            reg = <0x0 0x08743000 0x0 0x1000>;/*UART4*/
+            interrupts = <0 60 4>;
+            port-no = <4>;
+        };
+
+        uart3: uart@08744000 {
+            compatible = "hisilicon,hisi-uart";
+            reg = <0x0 0x08744000 0x0 0x1000>;/*UART5*/
+            interrupts = <0 61 4>;
+            port-no = <5>;
+        };
+
+        uart4: uart@0875D000 {
+            compatible = "hisilicon,hisi-uart";
+            reg = <0x0 0x0875D000 0x0 0x1000>;/*UART6*/
+            interrupts = <0 62 4>;
+            port-no = <6>;
+        };
+
+        uart5: uart@0875E000 {
+            compatible = "hisilicon,hisi-uart";
+            reg = <0x0 0x0875E000 0x0 0x1000>;/*UART7*/
+            interrupts = <0 63 4>;
+            port-no = <7>;
+        };
+
+        timer0@08700000 {
+            compatible = "hisilicon,hisi-timer";
+            ids = /bits/ 32 <0x0>;
+            reg = <0x0 0x08700000 0x0 0x1000>;
+            clock-sel = /bits/ 32 <2>; /*0:use main oscillator freq/64  1: use main scillator freq 2(or any other value): use bus clock(apb 100mhz)*/
+            interrupts = <0 143 4>;
+        };
+
+        timer1@08700040 {
+            compatible = "hisilicon,hisi-timer";
+            ids = /bits/ 32 <0x1>;
+            reg = <0x0 0x08700040 0x0 0x1000>;
+            clock-sel = /bits/ 32 <2>; /*0:use main oscillator freq/64  1: use main scillator freq 2(or any other value): use bus clock(apb 100mhz)*/
+            interrupts = <0 144 4>;
+        };
+
+        timer2@08702000 {
+            compatible = "hisilicon,hisi-timer";
+            ids = /bits/ 32 <0x2>;
+            reg = <0x0 0x08702000 0x0 0x1000>;
+            clock-sel = /bits/ 32 <2>; /*0:use main oscillator freq/64  1: use main scillator freq 2(or any other value): use bus clock(apb 100mhz)*/
+            interrupts = <0 145 4>;
+        };
+
+        timer3@08702040 {
+            compatible = "hisilicon,hisi-timer";
+            ids = /bits/ 32 <0x3>;
+            reg = <0x0 0x08702040 0x0 0x1000>;
+            clock-sel = /bits/ 32  <2>; /*0:use main oscillator freq/64  1: use main scillator freq 2(or any other value): use bus clock(apb 100mhz)*/
+            interrupts = <0 146 4>;
+        };
+
+        timer4@08704000 {
+            compatible = "hisilicon,hisi-timer";
+            ids = /bits/ 32 <0x4>;
+            reg = <0x0 0x08704000 0x0 0x1000>;
+            clock-sel = /bits/ 32 <2>; /*0:use main oscillator freq/64  1: use main scillator freq 2(or any other value): use bus clock(apb 100mhz)*/
+            interrupts = <0 147 4>;
+        };
+
+        timer5@08704040 {
+            compatible = "hisilicon,hisi-timer";
+            ids = /bits/ 32 <0x5>;
+            reg = <0x0 0x08704040 0x0 0x1000>;
+            clock-sel = /bits/ 32  <2>; /*0:use main oscillator freq/64  1: use main scillator freq 2(or any other value): use bus clock(apb 100mhz)*/
+            interrupts = <0 148 4>;
+        };
+
+        m3test@08740100 {
+            compatible = "hisilicon,hisi-m3test";
+            interrupts = <0 227 4>;
+        };
+
+        comm@08740000 {
+            compatible = "hisilicon, hi1711-comm";
+            interrupts = <0 43 4>,    /* cpll_dlock_int */
+                         <0 44 4>,    /* pll0_dlock_int */
+                         <0 45 4>,    /* pll1_dlock_int */
+                         <0 46 4>,    /* pll2_dlock_int */
+                         <0 219 4>,   /* dac_cable_int */
+                         <0 179 4>,   /* host_rst_pos_int */
+                         <0 224 4>,   /* host_rst_fall_int */
+                         <0 180 4>,   /* pcie0_rst_pos_int */
+                         <0 212 4>,   /* pcie0_rst_fall_int */
+                         <0 181 4>,   /* pcie1_rst_pos_int */
+                         <0 220 4>,   /* pcie1_rst_fall_int */
+                         <0 41  4>,   /* hp_ecc_err_int */
+                         <0 42  4>;   /* lp_ecc_err_int */
+        };
+
+        gpio@2001e000 {
+            compatible = "hisilicon,hi1711-gpio";
+            reg = <0x0 0x0874a000 0x0 0x5000>;
+            interrupts = <0x0 149 0x4>, /*-32*/
+                         <0x0 150 0x4>,
+                         <0x0 151 0x4>,
+                         <0x0 152 0x4>,
+                         <0x0 153 0x4>;
+        };
+
+        i2c@2000d000 {
+            compatible = "hisilicon,hi1711-i2c";
+            reg = <0x0 0x08707000 0x0 0x1000>,
+                  <0x0 0x08708000 0x0 0x1000>,
+                  <0x0 0x08709000 0x0 0x1000>,
+                  <0x0 0x0870a000 0x0 0x1000>,
+                  <0x0 0x0870b000 0x0 0x1000>,
+                  <0x0 0x0870c000 0x0 0x1000>,
+                  <0x0 0x0870d000 0x0 0x1000>,
+                  <0x0 0x0870e000 0x0 0x1000>,
+                  <0x0 0x08750000 0x0 0x1000>,
+                  <0x0 0x08751000 0x0 0x1000>,
+                  <0x0 0x08752000 0x0 0x1000>,
+                  <0x0 0x08753000 0x0 0x1000>,
+                  <0x0 0x08754000 0x0 0x1000>,
+                  <0x0 0x08755000 0x0 0x1000>,
+                  <0x0 0x08756000 0x0 0x1000>,
+                  <0x0 0x08757000 0x0 0x1000>,
+                  <0x0 0x08745000 0x0 0x1000>,
+                  <0x0 0x0876e000 0x0 0x1000>;/*0-15 i2creg ,16 ioconfig-T,17 ioconfig-R*/
+            interrupts = <0x0 72 0x4>,
+                         <0x0 73 0x4>,
+                         <0x0 74 0x4>,
+                         <0x0 75 0x4>,
+                         <0x0 76 0x4>,
+                         <0x0 77 0x4>,
+                         <0x0 78 0x4>,
+                         <0x0 79 0x4>,
+                         <0x0 80 0x4>,
+                         <0x0 81 0x4>,
+                         <0x0 82 0x4>,
+                         <0x0 83 0x4>,
+                         <0x0 84 0x4>,
+                         <0x0 85 0x4>,
+                         <0x0 86 0x4>,
+                         <0x0 87 0x4>;/*0-15*/
+        };
+
+        smbus@0x08707000 {
+            compatible = "hisilicon,hi1711-smbus";
+            reg = <0x0 0x08707000 0x0 0x1000>,
+                  <0x0 0x08708000 0x0 0x1000>,
+                  <0x0 0x08709000 0x0 0x1000>,
+                  <0x0 0x0870a000 0x0 0x1000>,
+                  <0x0 0x0870b000 0x0 0x1000>,
+                  <0x0 0x0870c000 0x0 0x1000>,
+                  <0x0 0x0870d000 0x0 0x1000>,
+                  <0x0 0x0870e000 0x0 0x1000>,
+                  <0x0 0x08750000 0x0 0x1000>,
+                  <0x0 0x08751000 0x0 0x1000>,
+                  <0x0 0x08752000 0x0 0x1000>,
+                  <0x0 0x08753000 0x0 0x1000>,
+                  <0x0 0x08754000 0x0 0x1000>,
+                  <0x0 0x08755000 0x0 0x1000>,
+                  <0x0 0x08756000 0x0 0x1000>,
+                  <0x0 0x08757000 0x0 0x1000>,
+                  <0x0 0x08745000 0x0 0x1000>,
+                  <0x0 0x08740000 0x0 0x1000>;/*0-15 smbusreg ,16 ioconfig,17 sysctrl*/
+            interrupts = <0x0 72 0x4>,
+                         <0x0 73 0x4>,
+                         <0x0 74 0x4>,
+                         <0x0 75 0x4>,
+                         <0x0 76 0x4>,
+                         <0x0 77 0x4>,
+                         <0x0 78 0x4>,
+                         <0x0 79 0x4>,
+                         <0x0 80 0x4>,
+                         <0x0 81 0x4>,
+                         <0x0 82 0x4>,
+                         <0x0 83 0x4>,
+                         <0x0 84 0x4>,
+                         <0x0 85 0x4>,
+                         <0x0 86 0x4>,
+                         <0x0 87 0x4>;/*0-15*/
+        };
+
+        sfc0@8640000 {
+            compatible = "hisilicon,hi1711-sfc0";
+            reg = <0x0 0x08640000 0x0 0x8000>,
+                  <0x0 0x60000000 0x0 0x10000000>;/*0 sfc0 reg,1 sfc0 cs0 cs1 buf 256MB*/
+            sfccsid = <3>;/*cs0 used bit0, cs1 bit1*/
+            busid = <0>;
+            use_hw_lock = <1>;/*0-not use, 1-use*/
+            hw_lock_id = <4>;
+            interrupts = <0x0 159 0x4>;
+        };
+
+        sfc1@8600000 {
+            compatible = "hisilicon,hi1711-sfc1";
+            reg = <0x0 0x08600000 0x0 0x8000>,
+                  <0x0 0x70000000 0x0 0x10000000>;/*0 sfc1 reg,1 sfc1 cs0 cs1 buf 256MB*/
+            sfccsid = <3>;/*cs0 used bit0, cs1 bit1*/
+            busid = <1>;
+            use_hw_lock = <1>;/*0-not use, 1-use*/
+            hw_lock_id = <5>;
+            interrupts = <0x0 112  0x4>;
+        };
+
+        spi0@08713000 {
+            compatible = "hisilicon,hisi-spi";
+            ctlid = /bits/ 32 <0x0>; /*controler not use*/
+            reg = <0x0 0x08713000 0x0 0x1000>;
+            clock-sel = /bits/ 32 <2>; /*0: FPGA freq, 2(or any other value): use bus clock(apb 100mhz)*/
+            interrupts = <0 114 4>;
+        };
+
+        spi1@08713000 {
+            compatible = "hisilicon,hisi-spi";
+            ctlid = /bits/ 32 <0x1>; /*not use*/
+            reg = <0x0 0x08715000 0x0 0x1000>;
+            clock-sel = /bits/ 32 <2>; /*0: FPGA freq, 2(or any other value): use bus clock(apb 100mhz)*/
+            interrupts = <0 139 4>;
+        };
+
+        pwm@08759000{
+            compatible = "hisilicon, hi1711-pwm";
+            reg = <0x0 0x08759000 0x0 0x1000>,
+                  <0x0 0x08745000 0x0 0x1000>;/*reg0,reg1,io config*/
+            interrupts = <0 115 4>,
+                         <0 141 4>;  /*147-32,173-32*/
+        };
+
+        ipmb@0x8716000{
+            compatible = "hisilicon,hi1711-ipmb";
+            reg = <0x0 0x8716000 0x0 0x1000>,
+                  <0x0 0x8717000 0x0 0x1000>,
+                  <0x0 0x8718000 0x0 0x1000>,
+                  <0x0 0x8719000 0x0 0x1000>;
+            interrupts = <0 132 4>,
+                         <0 133 4>,
+                         <0 134 4>,
+                         <0 135 4>;  /*(164-167)-32*/
+        };
+
+        peci@08746000{
+            compatible = "hisilicon, hi1711-peci";
+            reg = <0x0 0x0876b000 0x0 0x1000>,
+                  <0x0 0x08746000 0x0 0x1000>;
+            interrupts = <0 37 4>,
+                         <0 127 4>;
+        };
+
+        dmac@08714000{
+            compatible = "hisilicon, hi1711-dmac";
+            reg = <0x0 0x08714000 0x0 0x1000>;
+            interrupts = <0 116 4>;
+        };
+
+        norflash@30000000{
+            compatible = "hisilicon, physmap-norflash";
+            reg = <0x0 0x30000000 0x0 0x08000000>;
+            flash-no = <1>;
+            flash_width = <2>;
+        };
+
+        cpld@08748000{
+            compatible = "hisilicon, hi1711-cpld";
+            reg = <0x0 0x08748000 0x0 0x1000>,
+                  <0x0 0x08749000 0x0 0x1000>,
+                  <0x0 0x40000000 0x0 0x1000>;
+            interrupts = <0 128 4>,
+                         <0 129 4>;
+        };
+
+        watchdog@08763000{
+            compatible = "hisilicon, hi1711-watchdog";
+            reg = <0x0 0x08763000 0x0 0x1000>,
+                  <0x0 0x08764000 0x0 0x1000>,
+                  <0x0 0x08765000 0x0 0x1000>,
+                  <0x0 0x08766000 0x0 0x1000>,
+                  <0x0 0x08767000 0x0 0x1000>,
+                  <0x0 0x08768000 0x0 0x1000>;
+        };
+
+        kcs@0x08722000{
+            compatible = "hisilicon, hi1711-kcs";
+            reg = <0x0 0x08722000 0x0 0x1000>,
+                  <0x0 0x08723000 0x0 0x1000>,
+                  <0x0 0x08724000 0x0 0x1000>,
+                  <0x0 0x08725000 0x0 0x1000>,
+                  <0x0 0x08732000 0x0 0x1000>,
+                  <0x0 0x08733000 0x0 0x1000>,
+                  <0x0 0x08734000 0x0 0x1000>,
+                  <0x0 0x08735000 0x0 0x1000>;
+            interrupts = <0 120 4>,
+                         <0 121 4>,
+                         <0 122 4>,
+                         <0 123 4>,
+                         <0 88 4>,
+                         <0 89 4>,
+                         <0 90 4>,
+                         <0 91 4>;
+        };
+
+        wdi@08726000{
+            compatible = "hisilicon, hi1711-wdi";
+            reg = <0x0 0x08726000 0x0 0x1000>,
+                  <0x0 0x08736000 0x0 0x1000>;
+        };
+
+        bt@08727000{
+            compatible = "hisilicon, hi1711-bt";
+            reg = <0x0 0x08727000 0x0 0x1000>,
+                  <0x0 0x08728000 0x0 0x1000>,
+                  <0x0 0x08737000 0x0 0x1000>,
+                  <0x0 0x08738000 0x0 0x1000>;
+            interrupts = <0 124 4>,
+                         <0 125 4>,
+                         <0 92 4>,
+                         <0 93 4>;
+        };
+
+        sol@0872c000{
+            compatible = "hisilicon, hi1711-sol";
+            reg = <0x0 0x0872c000 0x0 0x1000>,
+                  <0x0 0x0873c000 0x0 0x1000>,
+                  <0x0 0x08710800 0x0 0x1000>,
+                  <0x0 0x08711800 0x0 0x1000>,
+                  <0x0 0x08743800 0x0 0x1000>;
+            interrupts = <0 130 4>,
+                         <0 96 4>,
+                         <0 64 4>,
+                         <0 65 4>,
+                         <0 66 4>;
+        };
+
+        p80@08721000{
+            compatible = "hisilicon, hi1711-p80";
+            reg = <0x0 0x08721000 0x0 0x1000>,
+                  <0x0 0x08731000 0x0 0x1000>;
+        };
+
+        mailbox@08729000{
+            compatible = "hisilicon, hi1711-mailbox";
+            reg = <0x0 0x08729000 0x0 0x1000>,
+                  <0x0 0x08739000 0x0 0x1000>;
+            interrupts = <0 126 4>,
+                         <0 94 4>;
+        };
+
+        sgpio@08761000{
+            compatible = "hisilicon, hi1711-sgpio";
+            reg = <0x0 0x08761000 0x0 0x1000>,
+                  <0x0 0x08762000 0x0 0x1000>;
+            interrupts = <0 48 4>,
+                         <0 49 4>;
+        };
+
+        adc@08769000{
+            compatible = "hisilicon, hi1711-adc";
+            reg = <0x0 0x08769000 0x0 0x1000>,
+                  <0x0 0x0876a000 0x0 0x1000>;
+            interrupts = <0 35 4>,
+                         <0 36 4>;
+        };
+
+        localbus@08712000{
+            compatible = "hisilicon, hi1711-localbus";
+            reg = <0x0 0x8712000 0x0 0x1000>;
+            interrupts = <0x0 111 0x4>;
+        };
+
+        espi@08730000{
+            compatible = "hisilicon, hi1711-espi";
+            reg = <0x0 0x08730000 0x0 0x1000>;
+            interrupts = <0 97  4>,
+                         <0 100 4>;
+        };
+
+        canbus@08741000{
+            compatible = "hisilicon, hi1711-canbus";
+            reg = <0x0 0x08741000 0x0 0x1000>,
+                  <0x0 0x08742000 0x0 0x1000>;
+            interrupts = <0 118 4>,
+                         <0 119 4>;
+        };
+
+        mdio@08747000{
+            compatible = "hisilicon, hi1711-mdio";
+            reg = <0x0 0x08747000 0x0 0x1000>;
+            interrupts = <0x0 137 0x4>;
+        };
+
+        gmac@cd000000 {
+            compatible = "hisilicon, hi1711_gmac_net";
+            reg = <0x0 0xcd00000 0x0 0x1000>,
+                  <0x0 0xcd01000 0x0 0x1000>,
+                  <0x0 0xcd02000 0x0 0x1000>,
+                  <0x0 0xcd03000 0x0 0x1000>;
+            interrupts = <0x0 52 0x4>,
+                         <0x0 53 0x4>,
+                         <0x0 54 0x4>,
+                         <0x0 55 0x4>;
+            phy_addr = <0x07000302>;
+        };
+
+        usb2_0: usb2_0@08800000 {
+            compatible = "hisilicon, hi1711-usb";
+            reg = <0x0 0x08800000 0x0 0x10000>,
+                  <0x0 0x08b00000 0x0 0x2000>,
+                  <0x0 0x0cd0c000 0x0 0x100>;
+            interrupts = <0x0 187 0x4>;
+            dr_mode = "peripheral";
+            controller_index = "0";
+        };
+
+        dwc3@08800000 {
+            compatible = "snps,dwc3";
+            reg = <0x0 0x08800000 0x0 0x10000>;
+            interrupts = <0x0 184 0x4>;
+            maximum-speed = "high-speed";
+            dr_mode = "peripheral";
+        };
+
+        usb2_1: usb2_1@08900000 {
+            compatible = "hisilicon, hi1711-usb";
+            reg = <0x0 0x08900000 0x0 0x10000>,
+                  <0x0 0x08b02000 0x0 0x2000>,
+                  <0x0 0x0cd0c000 0x0 0x100>;
+            interrupts = <0x0 188 0x4>;
+            dr_mode = "peripheral";
+            controller_index = "1";
+        };
+
+        dwc3@08900000 {
+            compatible = "snps,dwc3";
+            reg = <0x0 0x08900000 0x0 0x10000>;
+            interrupts = <0x0 185 0x4>;
+            maximum-speed = "high-speed";
+            dr_mode = "peripheral";
+        };
+
+        usb2_2: usb2_2@08a00000 {
+            compatible = "hisilicon, hi1711-usb";
+            reg = <0x0 0x08a00000 0x0 0x10000>,
+                  <0x0 0x08b04000 0x0 0x2000>,
+                  <0x0 0x0cd0c000 0x0 0x100>;
+            interrupts = <0x0 189 0x4>;
+            dr_mode = "otg";
+            controller_index = "2";
+        };
+
+        dwc3@08a00000 {
+            compatible = "snps,dwc3";
+            reg = <0x0 0x08a00000 0x0 0x10000>;
+            interrupts = <0x0 186 0x4>;
+            maximum-speed = "high-speed";
+            dr_mode = "otg";
+        };
+
+        usb3: usb3@0cc00000 {
+        compatible = "hisilicon, hi1711-usb";
+            reg = <0x0 0x0cc00000 0x0 0x10000>,
+                  <0x0 0x0cd06000 0x0 0x2000>,
+                  <0x0 0x0cd0c000 0x0 0x100>;
+            interrupts = <0x0 191 0x4>;
+            dr_mode = "otg";
+            controller_index = "3";
+        };
+
+        dwc3@0cc00000 {
+            compatible = "snps,dwc3";
+            reg = <0x0 0x0cc00000 0x0 0x10000>,
+                  <0x0 0x0cd06000 0x0 0x2000>;
+            interrupts = <0x0 190 0x4>;
+            maximum-speed = "super-speed";
+            dr_mode = "otg";
+        };
+
+        ddrc@08780000 {
+            compatible = "hisilicon, hi1711-ddrc";
+            reg = <0x0 0x08780000 0x0 0x10000>;
+            interrupts = <0x0 200 0x4>,
+                         <0x0 201 0x4>;
+        };
+
+        trng@0876c000 {
+            compatible = "hisilicon, hi1711-trng";
+            reg = <0x0 0x0876c000 0x0 0x10000>;
+            interrupts = <0x0 39 0x4>;
+        };
+
+        pci_fix@08B21000 {
+            compatible = "hisilicon,hi1711-pci_fix";
+            reg = <0x0 0xCD0C000 0x0 0x100>,/*HI1711_HP_SUB_BASE*/
+                  <0x0 0x8B20000 0x0 0x100>,/*HI1711_HOST_SUBSYS_BASE*/
+                  <0x0 0x8B21000 0x0 0x100>,/*HI1711_PCI0_MISC_BASE*/
+                  <0x0 0xCD0E000 0x0 0x100>,/*HI1711_PCI1_MISC_BASE*/
+                  <0x0 0x8B10000 0x0 0x1000>,/*HI1711_PCI0_DM_BASE*/
+                  <0x0 0xCD10000 0x0 0x1000>,/*HI1711_PCI1_DM_BASE*/
+                  <0x0 0x8B06000 0x0 0x1000>,/*HI1711_PCI0_PCS_BASE*/
+                  <0x0 0xCD08000 0x0 0x1000>;/*HI1711_PCI1_PCS_BASE*/
+            interrupts = <0x0 208 0x4>,/*PCIE0 linkdown irq*/
+                         <0x0 216 0x4>;/*PCIE1 linkdown irq*/
+        };
+
+        bmc_driver@CD10000 {
+            compatible = "hisilicon,hi1711-bmc_driver";
+            reg = <0x0 0xCD10000 0x0 0x1000>,/*HI1711_PCI1_DM_BASE*/
+                  <0x0 0xCD0E000 0x0 0x1000>;
+            interrupts = <0x0 218 0x4>;/*pcie1 edma irq*/
+        };
+
+        bmc_vnet_driver@CD10000 {
+            compatible = "hisilicon,hi1711-bmc_vnet_driver";
+            reg = <0x0 0xCD10000 0x0 0x1000>,/*HI1711_PCI1_DM_BASE*/
+                  <0x0 0xCD0E000 0x0 0x1000>;
+            interrupts = <0x0 131 0x4>;/*h2b_edma_int*/
+        };
+
+        mctp@1C00A000{
+            compatible = "hisilicon,hi1711-mctp_driver";
+            reg = <0x0 0xcd05000 0x0 0x100>;
+            interrupts = <0x0 117 0x4>;/*mctp irq*/
+        };
+
+        vce@08b0c000{
+            compatible = "hisilicon,hi1711-vce_driver";
+            reg = <0x0 0x08b0c000 0x0 0x4000>;
+            interrupts = <0x0 113 0x4>;/*vce irq*/
+        };
+
+        pci_rst_int@08740000 {
+            compatible = "hisilicon,hi1711-pcie_rst_driver";
+            interrupts = <0x0 220 0x4>,
+                         <0x0 212 0x4>,
+                         <0x0 181 0x4>,
+                         <0x0 180 0x4>;
+        };
+
+        hwlock@08740000 {
+            compatible = "hisilicon,hi1711-hwlock";
+            interrupts = <0x0 38 0x4>;
+        };
+
+        pcie@0xCD0E000 {
+            compatible = "hisilicon,hip-pcie";
+            reg = <0 0xCD0E000 0 0x100>, <0 0x0CD10000 0 0x1000>,
+                  <0 0xCD08000 0 0x2000>, <0 0x23D00000 0 0x200000>;
+            reg-names = "misc", "rc_dbi", "pcs", "config";
+            interrupts = <0x0 216 0x4>,//PCIE1 linkdown irq//
+                         <0x0 221 0x4>;//PCIE1 msi(intb) irq//
+            bus-range = <0x0 0xff>;
+            #address-cells = <3>;
+            #size-cells = <2>;
+            device_type = "pci";
+            ranges = <0x02000000 0 0x1C000000 0x0 0x1C000000 0 0x7c00000>,
+                     <0x01000000 0 0x0 0 0x23C00000 0 0x100000>;
+            num-lanes = <1>;
+            port-id = <0>;
+            status = "ok";
+        };
+
+        msg_scm3@08740000 {
+            compatible = "hisilicon, hi1711-msg_scm3";
+            interrupts = <0 225 4>;/*inter core communication from secure M3*/
+        };
+    };
+};
+

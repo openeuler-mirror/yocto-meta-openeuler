@@ -1,4 +1,4 @@
-update_cpio_for_ext4() {
+make_boot_intrd() {
     set -x
     test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
     rm -rf "${OUTPUT_DIR}"/*
@@ -18,9 +18,9 @@ update_cpio_for_ext4() {
     cd -
     set +x
 }
-IMAGE_PREPROCESS_COMMAND += "update_cpio_for_ext4;"
+IMAGE_PREPROCESS_COMMAND:append = "make_boot_intrd;"
 
-sign_copy_distro() {
+sign_copy_distro_3093() {
     set -x
     cd ${WORKDIR}/recipe-sysroot/signtools/build_sign
     EXT4CMS_FILE="Hi3093_ext4fs_cms.bin"
@@ -46,4 +46,4 @@ sign_copy_distro() {
     cd -
     set +x
 }
-IMAGE_POSTPROCESS_COMMAND += "sign_copy_distro;"
+IMAGE_POSTPROCESS_COMMAND:append = "sign_copy_distro_3093;"

@@ -62,7 +62,7 @@ set_permissions_from_rootfs:append() {
             mv ./lib/modules/hi3093/* ./lib/net
         fi
 
-        dels="./boot ./usr/bin ./usr/games ./usr/include ./usr/lib ./usr/libexec ./usr/share ./lib/depmod.d ./lib/modprobe.d ./lib/modules ./opt"
+        dels="./usr/lib64/grub ./boot ./usr/bin ./usr/games ./usr/include ./usr/lib ./usr/libexec ./usr/share ./lib/depmod.d ./lib/modprobe.d ./lib/modules ./opt"
         for dird in $dels
         do
             if [ -d $dird ];then
