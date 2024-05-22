@@ -10,7 +10,7 @@ autoconf automake m4 bison bc libtool gettext-devel createrepo_c net-tools \
 wget sudo hostname rpcgen texinfo python meson dosfstools mtools libmpc-devel \
 gmp-devel ninja-build numactl-devel make python3 python3-pip screen glibc-locale-archive \
 iproute xz unzip help2man libstdc++-static gcc g++ rsync python3-devel gdisk umoci skopeo \
-libxslt vim hwdata perl-XML-Parser
+libxslt vim hwdata perl-XML-Parser iptables
 
 ARG user=openeuler
 ARG group=openeuler
