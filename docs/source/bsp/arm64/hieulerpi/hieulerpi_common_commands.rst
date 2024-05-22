@@ -198,7 +198,7 @@ LiteOS
    .. code-block:: console
 
       hieulerpi1 ~ # virt-tty riscv
-      Huawei LiteOS # help
+      LiteOS # help
       *******************shell commands:*************************
       cat           cd            dd            free          help          hwi           i2c_read      i2c_write
       ls            lsfd          memcheck      mkdir         proc_ipcm     pwd           reset         rm
