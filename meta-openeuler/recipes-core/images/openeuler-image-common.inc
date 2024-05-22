@@ -88,7 +88,14 @@ copy_openeuler_distro() {
     do
         if [ -f ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX%.rootfs}.*${IMAGETYPE} ];then
             rm -f "${OUTPUT_DIR}"/${IMAGE_NAME}${IMAGE_NAME_SUFFIX%.rootfs}.*${IMAGETYPE}
-            cp -fp ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX%.rootfs}.*${IMAGETYPE} "${OUTPUT_DIR}"/
+            if [ ${IMAGETYPE} == "iso"  ];then
+                # avoid CI iso file copy failed for unknown reason(maybe docker filesystem BUG)
+                isofile=$(realpath ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX%.rootfs}.*${IMAGETYPE})
+                isofile_base=$(basename "$isofile")
+                dd if=${isofile} of="${OUTPUT_DIR}"/${isofile_base}
+            else
+                cp -fp ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX%.rootfs}.*${IMAGETYPE} "${OUTPUT_DIR}"/
+            fi
         fi
     done
     # copy kernel image to OUTPUT
