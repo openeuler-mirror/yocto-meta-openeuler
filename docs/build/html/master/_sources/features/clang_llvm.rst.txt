@@ -115,16 +115,10 @@ meta-clang层中主要起作用的是clang.bbclass文件，该文件用来控制
 
    .. image:: ../_static/images/generate/oebuild-generate-select.png
 
-   键入 ``oebuild bitbake`` 进入容器环境后， ``/usr1/openeuler/native_gcc/`` 目录为oebuild默认挂载的编译器目录。
-   此外，需要调整 ``conf/local.conf`` 文件，
-
-   .. code-block:: console
-
-      # 删除文件内的一行: EXTERNAL_TOOLCHAIN:aarch64 = "/usr1/openeuler/native_gcc"
-      vim conf/local.conf
+   键入 ``oebuild bitbake`` 进入容器环境进行镜像构建，当前 ``/usr1/openeuler/native_gcc/`` 目录为oebuild默认挂载的编译器目录。
 
    .. attention::
-      
+
       当前仅验证支持了qemu-aarch64和树莓派平台的标准镜像。
 
 3. 构建命令
