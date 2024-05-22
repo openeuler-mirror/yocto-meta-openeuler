@@ -4,13 +4,16 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://license.txt;md5=473b63a963910267fc231e5a65bf1a2d \
                     "
 
-SRC_URI = "git://github.com/FreeRTOS/FreeRTOS-Kernel.git;branch=main;protocol=https \
+SRC_URI = "https://github.com/FreeRTOS/FreeRTOS-Kernel/releases/download/V${PV}/FreeRTOS-KernelV${PV}.zip \
            file://Jailhouse_FreeRTOS_demo.tar.gz   \
 "
-SRCREV = "309a18a03adab1eaca5d86654dd4e1075ee49e7a"
+
+SRC_URI[sha256sum] = "eebd58aa71a623c9381f25f77b708c0ed14ef995a8913e2460fe9f286bb271eb"
+
 S = "${WORKDIR}/Jailhouse_FreeRTOS_demo"
 
-EXTRA_OEMAKE = "CROSS=${TARGET_PREFIX} FREERTOS_SRC=${WORKDIR}/git"
+EXTRA_OEMAKE = "CROSS=${TARGET_PREFIX} FREERTOS_SRC=${WORKDIR}/FreeRTOS-KernelV${PV} \
+    FREERTOS_PORT_SRC=${WORKDIR}/FreeRTOS-KernelV${PV}/portable/GCC/ARM_AARCH64"
 
 do_compile() {
 	oe_runmake
