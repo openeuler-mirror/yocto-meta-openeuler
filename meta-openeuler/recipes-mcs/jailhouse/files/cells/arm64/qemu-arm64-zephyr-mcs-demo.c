@@ -11,9 +11,9 @@
 struct {
 	struct jailhouse_cell_desc cell;
 	__u64 cpus[1];
-	struct jailhouse_memory mem_regions[12];
+	struct jailhouse_memory mem_regions[8];
 	struct jailhouse_irqchip irqchips[1];
-	struct jailhouse_pci_device pci_devices[2];
+	struct jailhouse_pci_device pci_devices[1];
 } __attribute__((packed)) config = {
 	.cell = {
 		.signature = JAILHOUSE_CELL_DESC_SIGNATURE,
@@ -26,8 +26,9 @@ struct {
 		.num_memory_regions = ARRAY_SIZE(config.mem_regions),
 		.num_irqchips = ARRAY_SIZE(config.irqchips),
 		.num_pci_devices = ARRAY_SIZE(config.pci_devices),
-
+		/* virt pci irq base */
 		.vpci_irq_base = 140-32,
+		/* zephyr reset address*/
 		.cpu_reset_address = 0x7a000000,
 
 		.console = {
@@ -37,28 +38,12 @@ struct {
 				 JAILHOUSE_CON_REGDIST_4,
 		},
 	},
-
+	/* cpus allocated to zephyr cell */
 	.cpus = {
 		0x2,
 	},
 
 	.mem_regions = {
-		/* IVSHMEM shared memory regions (demo) */
-		{
-			.phys_start = 0x6fffc000,
-			.virt_start = 0x6fffc000,
-			.size = 0x1000,
-			.flags = JAILHOUSE_MEM_READ | JAILHOUSE_MEM_ROOTSHARED,
-		},
-		{
-			.phys_start = 0x6fffd000,
-			.virt_start = 0x6fffd000,
-			.size = 0x1000,
-			.flags = JAILHOUSE_MEM_READ | JAILHOUSE_MEM_WRITE |
-				JAILHOUSE_MEM_ROOTSHARED,
-		},
-		{ 0 },
-		{ 0 },
 		/* IVSHMEM shared memory regions for virtio-rpmsg */
 		{
 			.phys_start = 0x6fffe000,
@@ -73,7 +58,9 @@ struct {
 			.flags = JAILHOUSE_MEM_READ | JAILHOUSE_MEM_WRITE |
 				JAILHOUSE_MEM_ROOTSHARED,
 		},
+		/* output region for peer 0, no used, so set to 0 */
 		{ 0 },
+		/* output region for peer 0, no used, so set to 1 */
 		{ 0 },
 		/* UART */ {
 			.phys_start = 0x09000000,
@@ -110,38 +97,31 @@ struct {
 			.address = 0x08000000,
 			.pin_base = 32,
 			.pin_bitmap = {
-				1 << (33 - 32),
+				1 << (33 - 32),  /* uart@9000000 's interrupt */
 				0,
 				0,
-				/* enable irq 140,141,143 */
-				(1 << (140 - 128)) | (1 << (141 - 128)) | (1 << (143 - 128))
+				/* virt pci interrupts:140 -143  map to zephyr
+				 * 140: pin1, 141: pin2, 142: pin3, 143: pin4
+				 */
+				(0xf << (140 - 128))
 			},
 		},
 	},
 
 	.pci_devices = {
 		{
-			/* IVSHMEM 00:00.0 (demo) */
-			.type = JAILHOUSE_PCI_TYPE_IVSHMEM,
-			.domain = 1,
-			.bdf = 0 << 3,
-			.bar_mask = JAILHOUSE_IVSHMEM_BAR_MASK_INTX,
-			.shmem_regions_start = 0,
-			.shmem_dev_id = 1,
-			.shmem_peers = 2,
-			.shmem_protocol = JAILHOUSE_SHMEM_PROTO_UNDEFINED,
-		},
-		{
 			/*
 			 * IVSHMEM virtio-rpmsg
-			 * 7: VIRTIO_ID_RPMSG
-			 * 0x4001: our own class code
+			 * 0x4001: class code for openeuler embedded mcs
 			 */
 			.type = JAILHOUSE_PCI_TYPE_IVSHMEM,
 			.domain = 1,
-			.bdf = 7 << 3,
+			/* bus:dev:fn = 0:0:0 , use device numer to generate int line info
+			 * int line = device number + 1
+			*/
+			.bdf = 0 << 3,
 			.bar_mask = JAILHOUSE_IVSHMEM_BAR_MASK_INTX,
-			.shmem_regions_start = 4,
+			.shmem_regions_start = 0,
 			.shmem_dev_id = 1,
 			.shmem_peers = 2,
 			.shmem_protocol = 0x4001,
