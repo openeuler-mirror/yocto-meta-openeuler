@@ -10,9 +10,12 @@
 struct {
 	struct jailhouse_cell_desc cell;
 	__u64 cpus[1];
-	struct jailhouse_memory mem_regions[12];
+	/* the size of the following arrays must match the definitons at the end 
+	* i.e., mem_regions[7] = 7 memory regions defined, pci_devices[1] = 1 pci device defined
+	*/
+	struct jailhouse_memory mem_regions[7];
 	struct jailhouse_irqchip irqchips[1];
-	struct jailhouse_pci_device pci_devices[2];
+	struct jailhouse_pci_device pci_devices[1];
 } __attribute__((packed)) config = {
 	.cell = {
 		.signature = JAILHOUSE_CELL_DESC_SIGNATURE,
@@ -41,39 +44,6 @@ struct {
 	},
 
 	.mem_regions = {
-		/* IVSHMEM shared memory regions (demo) */
-		{
-			.phys_start = 0x1faf0000,
-			.virt_start = 0x1faf0000,
-			.size = 0x1000,
-			.flags = JAILHOUSE_MEM_READ | JAILHOUSE_MEM_ROOTSHARED,
-		},
-		{
-			.phys_start = 0x1faf1000,
-			.virt_start = 0x1faf1000,
-			.size = 0x9000,
-			.flags = JAILHOUSE_MEM_READ | JAILHOUSE_MEM_WRITE |
-				JAILHOUSE_MEM_ROOTSHARED,
-		},
-		{
-			.phys_start = 0x1fafa000,
-			.virt_start = 0x1fafa000,
-			.size = 0x2000,
-			.flags = JAILHOUSE_MEM_READ | JAILHOUSE_MEM_ROOTSHARED,
-		},
-		{
-			.phys_start = 0x1fafc000,
-			.virt_start = 0x1fafc000,
-			.size = 0x2000,
-			.flags = JAILHOUSE_MEM_READ | JAILHOUSE_MEM_WRITE |
-				JAILHOUSE_MEM_ROOTSHARED,
-		},
-		{
-			.phys_start = 0x1fafe000,
-			.virt_start = 0x1fafe000,
-			.size = 0x2000,
-			.flags = JAILHOUSE_MEM_READ | JAILHOUSE_MEM_ROOTSHARED,
-		},
 		/* IVSHMEM shared memory regions for virtio-rpmsg */
 		{
 			.phys_start = 0x6fffe000,
@@ -121,37 +91,27 @@ struct {
 			.pin_base = 32,
 			.pin_bitmap = {
 				0,
+				0, /* uart interrupt 93 is not allocated */
 				0,
-				0,
-				(1 << (140 - 128)) | (1 << (141 - 128)) | (1 << (142 - 128)) | (1 << (143 - 128))
+				/* virt pci interrupts:140 -143  map to zephyr
+				 * 140: pin1, 141: pin2, 142: pin3, 143: pin4
+				 */
+				(0xf << (140 - 128))
 			},
 		},
 	},
 
 	.pci_devices = {
-		{ /* IVSHMEM (demo) */
+		{
 			.type = JAILHOUSE_PCI_TYPE_IVSHMEM,
 			.domain = 1,
+			/* the bdf must match the one int the client cell*/
 			.bdf = 0 << 3,
 			.bar_mask = JAILHOUSE_IVSHMEM_BAR_MASK_INTX,
 			.shmem_regions_start = 0,
 			.shmem_dev_id = 1,
-			.shmem_peers = 3,
-			.shmem_protocol = JAILHOUSE_SHMEM_PROTO_UNDEFINED,
-		},
-		{
-			/*
-			 * IVSHMEM virtio-rpmsg
-			 * 7: VIRTIO_ID_RPMSG
-			 * 0x4001: our own class code
-			 */
-			.type = JAILHOUSE_PCI_TYPE_IVSHMEM,
-			.domain = 1,
-			.bdf = 7 << 3,
-			.bar_mask = JAILHOUSE_IVSHMEM_BAR_MASK_INTX,
-			.shmem_regions_start = 5,
-			.shmem_dev_id = 1,
 			.shmem_peers = 2,
+			/* 0x4001: openeuler class code IVSHMEM virtio-rpmsg */
 			.shmem_protocol = 0x4001,
 		},
 	},

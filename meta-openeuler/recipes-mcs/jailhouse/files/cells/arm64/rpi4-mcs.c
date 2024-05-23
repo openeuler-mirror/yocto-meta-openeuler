@@ -12,9 +12,9 @@
 struct {
 	struct jailhouse_system header;
 	__u64 cpus[1];
-	struct jailhouse_memory mem_regions[16];
+	struct jailhouse_memory mem_regions[11];
 	struct jailhouse_irqchip irqchips[2];
-	struct jailhouse_pci_device pci_devices[2];
+	struct jailhouse_pci_device pci_devices[1];
 } __attribute__((packed)) config = {
 	.header = {
 		.signature = JAILHOUSE_SYSTEM_SIGNATURE,
@@ -62,37 +62,6 @@ struct {
 	},
 
 	.mem_regions = {
-		/* IVSHMEM shared memory regions for 00:00.0 (demo) */
-		{
-			.phys_start = 0x1faf0000,
-			.virt_start = 0x1faf0000,
-			.size = 0x1000,
-			.flags = JAILHOUSE_MEM_READ,
-		},
-		{
-			.phys_start = 0x1faf1000,
-			.virt_start = 0x1faf1000,
-			.size = 0x9000,
-			.flags = JAILHOUSE_MEM_READ | JAILHOUSE_MEM_WRITE,
-		},
-		{
-			.phys_start = 0x1fafa000,
-			.virt_start = 0x1fafa000,
-			.size = 0x2000,
-			.flags = JAILHOUSE_MEM_READ | JAILHOUSE_MEM_WRITE,
-		},
-		{
-			.phys_start = 0x1fafc000,
-			.virt_start = 0x1fafc000,
-			.size = 0x2000,
-			.flags = JAILHOUSE_MEM_READ,
-		},
-		{
-			.phys_start = 0x1fafe000,
-			.virt_start = 0x1fafe000,
-			.size = 0x2000,
-			.flags = JAILHOUSE_MEM_READ,
-		},
 		/* IVSHMEM shared memory regions for virtio-rpmsg */
 		{
 			.phys_start = 0x6fffe000,
@@ -186,29 +155,16 @@ struct {
 	},
 
 	.pci_devices = {
-		{ /* IVSHMEM 0001:00:00.0 (demo) */
+		{
 			.type = JAILHOUSE_PCI_TYPE_IVSHMEM,
 			.domain = 1,
+			/* the bdf must match the one int the client cell*/
 			.bdf = 0 << 3,
 			.bar_mask = JAILHOUSE_IVSHMEM_BAR_MASK_INTX,
 			.shmem_regions_start = 0,
 			.shmem_dev_id = 0,
-			.shmem_peers = 3,
-			.shmem_protocol = JAILHOUSE_SHMEM_PROTO_UNDEFINED,
-		},
-		{
-			/*
-			 * IVSHMEM virtio-rpmsg
-			 * 7: VIRTIO_ID_RPMSG
-			 * 0x4001: our own class code
-			 */
-			.type = JAILHOUSE_PCI_TYPE_IVSHMEM,
-			.domain = 1,
-			.bdf = 7 << 3,
-			.bar_mask = JAILHOUSE_IVSHMEM_BAR_MASK_INTX,
-			.shmem_regions_start = 5,
-			.shmem_dev_id = 0,
 			.shmem_peers = 2,
+			/* 0x4001: openeuler class code IVSHMEM virtio-rpmsg */
 			.shmem_protocol = 0x4001,
 		},
 	},
