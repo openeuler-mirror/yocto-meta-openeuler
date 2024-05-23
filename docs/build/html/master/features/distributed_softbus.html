@@ -69,7 +69,12 @@
 <li class="toctree-l4"><a class="reference internal" href="#id11">容器中启动并测试软总线</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#id12">限制约束</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">3.2版本的软总线使用指南</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id13">接口变更</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id14">服务端使用</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">限制约束</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#faq">FAQ</a></li>
 </ul>
 </li>
@@ -1217,7 +1222,70 @@
 </section>
 </section>
 <section id="id12">
-<h2>限制约束<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<h2>3.2版本的软总线使用指南<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<p>在嵌入式24.03-LTS版本中，可以通过修改 <code class="file docutils literal notranslate"><span class="pre">packagegroups/packagegroup-dsoftbus.bb</span></code> 文件来尝试使用3.2版本的软总线，并在qemu-aarch64平台进行测试。只需要将3.2版本软总线相关的软件包添加到镜像构建当中去，如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">RDEPENDS:packagegroup-dsoftbus:append:aarch64 = &quot; \</span>
+<span class="go">hilog \</span>
+<span class="go">c-utils \</span>
+<span class="go">distributed-beget \</span>
+<span class="go">eventhandler \</span>
+<span class="go">binder \</span>
+<span class="go">ipc \</span>
+<span class="go">samgr \</span>
+<span class="go">safwk \</span>
+<span class="go">huks \</span>
+<span class="go">device-auth \</span>
+<span class="go">communication-dsoftbus \</span>
+<span class="go">&quot;</span>
+</pre></div>
+</div>
+<section id="id13">
+<h3>接口变更<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<p>3.2版本的软总线与3.1版本相比，主要的一些接口变化如下：</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 38%" />
+<col style="width: 38%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>接口功能</p></th>
+<th class="head"><p>3.1版本</p></th>
+<th class="head"><p>3.2版本</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>发布服务</p></td>
+<td><p>PublishService</p></td>
+<td><p>PublishLNN</p></td>
+</tr>
+<tr class="row-odd"><td><p>注销服务</p></td>
+<td><p>UnPublishService</p></td>
+<td><p>StopPublishLNN</p></td>
+</tr>
+<tr class="row-even"><td><p>发现服务</p></td>
+<td><p>StartDiscovery</p></td>
+<td><p>RefreshLNN</p></td>
+</tr>
+<tr class="row-odd"><td><p>停止服务</p></td>
+<td><p>StopDiscovery</p></td>
+<td><p>StopRefreshLNN</p></td>
+</tr>
+</tbody>
+</table>
+<p>各API参数详见头文件描述。</p>
+</section>
+<section id="id14">
+<h3>服务端使用<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<p>3.2版本的软总线启动方式与3.1版本有所不同。由 <code class="file docutils literal notranslate"><span class="pre">/system/bin/start_services.sh</span></code> 脚本进行启动软总线相关服务，而 <code class="file docutils literal notranslate"><span class="pre">/system/bin/stop_services.sh</span></code>  脚本关闭服务。如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">/system/bin/start_services.sh softbus</span>
+<span class="go">/system/bin/stop_services.sh all</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id15">
+<h2>限制约束<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h2>
 <p>1.支持wifi和有限的标准以太局域网下的coap设备发现和传输。蓝牙目前仅支持ble发现，ble发现需要开启蓝牙，参照 <a class="reference internal" href="../linux/bluetooth/bluetooth_config.html#bluetooth-config"><span class="std std-ref">openEuler Embedded蓝牙配置</span></a> ，br连接和通信功能在后续版本中持续支持。
 2.目前基于容器的3.2版本软总线目前暂不支持蓝牙发现能力。</p>
 </section>
