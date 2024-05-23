@@ -101,14 +101,12 @@ SRC_URI:append = " ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'file://Jai
 # 6.6 can't support now, should support later and remove it.
 KERNEL_FEATURES:remove = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
-    mcs \
     jailhouse \ 
     ', '', d)} \
 "
 
 MCS_FEATURES:remove = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
-    openamp \
     jailhouse \
     ', '', d)} \
 "
