@@ -65,18 +65,18 @@ Options:
 
 使用LLVM工具链进行交叉构建时，需要使用`--gcc-toolchain=`和`--sysroot=`选项指定目标架构的头文件和库文件所在的路径，或者将相关的文件集成到LLVM工具链当中，openEuler LLVM已经使能特性能够搜索默认集成的路径。
 
-集成所需的头文件和库文件来自于GCC交叉工具链，可以从该[下载链接](https://gitee.com/openeuler/yocto-meta-openeuler/releases)中下载`aarch64-openeuler-linux-gnu.tar.gz`的GCC交叉工具链。集成方式如下，
+集成所需的头文件和库文件来自于GCC交叉工具链，可以从该[下载链接](https://gitee.com/openeuler/yocto-meta-openeuler/releases)中下载最新`openEuler Embedded Toolchains`版本的GCC交叉工具链，选择其中的`aarch64`版本。集成方式如下，
 
 ```
 # llvm toolchain 目录:
 #     /path/to/llvm-project/clang-llvm-17.0.6
 # gcc toolchain 目录:
-#     /path/to/gcc/aarch64-openeuler-linux-gnu
+#     /path/to/gcc/openeuler_gcc_arm64le
 cd /path/to/llvm-project/clang-llvm-17.0.6
 mkdir lib64 aarch64-openeuler-linux-gnu
-cp -rf /path/to/gcc/aarch64-openeuler-linux-gnu/lib64/gcc lib64/
-cp -rf /path/to/gcc/aarch64-openeuler-linux-gnu/aarch64-openeuler-linux-gnu/include aarch64-openeuler-linux-gnu/
-cp -rf /path/to/gcc/aarch64-openeuler-linux-gnu/aarch64-openeuler-linux-gnu/sysroot aarch64-openeuler-linux-gnu/
+cp -rf /path/to/gcc/openeuler_gcc_arm64le/lib64/gcc lib64/
+cp -rf /path/to/gcc/openeuler_gcc_arm64le/aarch64-openeuler-linux-gnu/include aarch64-openeuler-linux-gnu/
+cp -rf /path/to/gcc/openeuler_gcc_arm64le/aarch64-openeuler-linux-gnu/sysroot aarch64-openeuler-linux-gnu/
 
 # 交叉构建工程中，由于部分软件包无法接收到LDFLAGS中的-fuse-ld=lld选项，导致需要去寻找ld链接器，目前以建立软链接进行处理
 cd /path/to/llvm-project/clang-llvm-17.0.6/bin
