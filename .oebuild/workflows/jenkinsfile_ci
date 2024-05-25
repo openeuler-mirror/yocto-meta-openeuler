@@ -24,6 +24,12 @@ def formatRes(String name, String action, String check_res, String log_path){
     """, returnStdout: true).trim()
 }
 
+def delete_build_dir(String build_dir){
+    sh """
+        rm -rf ${build_dir}
+    """
+}
+
 def getRandomStr(){
     return sh(script: """
         cat /proc/sys/kernel/random/uuid
@@ -113,6 +119,8 @@ def STAGES_RES = []
 
 def IMAGE_DATE = ""
 
+def BUILD_DIR_PRE = "/home/jenkins/oebuild_workspace/build/"
+
 pipeline {
     agent { node "${node}" }
     environment {
@@ -165,6 +173,8 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
 
                                     // 执行ok3568镜像编译检查
                                     stageName = "ok3568"
@@ -182,6 +192,8 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
 
                                     // 执行qemu-aarch64-ros-mcs镜像编译检查
                                     stageName = "qemu-aarch64-ros-mcs"
@@ -200,7 +212,9 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
-                                
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
+
                                     // 执行qemu-aarch64-llvm镜像编译检查
                                     stageName = "qemu-aarch64-llvm"
                                     arch = "aarch64"
@@ -218,7 +232,9 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
-                                
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
+
                                     // 执行raspberrypi4-64-llvm镜像编译检查
                                     stageName = "raspberrypi4-64-llvm"
                                     arch = "aarch64"
@@ -236,6 +252,8 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
                                 }
                             }
                         }
@@ -243,7 +261,7 @@ pipeline {
                 }
                 stage("qemu-aarch64-kernel6.6 raspberrypi4-64 raspberrypi4-64-kernel6.6 qemu-aarch64-kernel6.6-llvm raspberrypi4-64-kernel6.6-llvm"){
                     agent { node "${node}" }
-                    steps {raspberrypi4-64-kernel6.6-llvm
+                    steps {
                         dir('/home/jenkins/agent'){
                             script{
                                 downloadEmbeddedCI(embeddedRemote, embeddedBranch)
@@ -265,7 +283,7 @@ pipeline {
                                     def arch = "aarch64"
                                     def task_res_code = sh (script: """
                                         python3 main.py build \
-                                        -c /home/raspberrypi4-64-kernel6.6-llvmjenkins/agent/yocto-meta-openeuler \
+                                        -c /home/jenkins/agent/yocto-meta-openeuler \
                                         -target openeuler_image \
                                         -a $arch \
                                         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
@@ -277,6 +295,8 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
 
                                     // 执行raspberrypi4-64镜像编译检查
                                     stageName = "raspberrypi4-64"
@@ -294,6 +314,8 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
 
                                     // 执行raspberrypi4-64-kernel6.6镜像编译检查
                                     stageName = "raspberrypi4-64-kernel6.6"
@@ -312,11 +334,13 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
-                                
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
+
                                     // 执行qemu-aarch64-kernel6.6-llvm镜像编译检查
-                                    def stageName = "qemu-aarch64-kernel6.6-llvm"
-                                    def arch = "aarch64"
-                                    def task_res_code = sh (script: """
+                                    stageName = "qemu-aarch64-kernel6.6-llvm"
+                                    arch = "aarch64"
+                                    task_res_code = sh (script: """
                                         python3 main.py build \
                                         -c /home/jenkins/agent/yocto-meta-openeuler \
                                         -target openeuler_image \
@@ -330,6 +354,8 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
 
                                     // 执行raspberrypi4-64-kernel6.6镜像编译检查
                                     stageName = "raspberrypi4-64-kernel6.6-llvm"
@@ -348,7 +374,8 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
-                                
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
                                 }
                             }
                         }
@@ -389,7 +416,9 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
-                                
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
+
                                     // 执行raspberrypi4-64-rt-hmi镜像编译检查
                                     stageName = "raspberrypi4-64-rt-hmi-kernel6.6"
                                     arch = "aarch64"
@@ -407,7 +436,9 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
-                                
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
+
                                     // 执行hieulerpi1镜像编译检查
                                     stageName = "hieulerpi1"
                                     arch = "aarch64"
@@ -424,7 +455,8 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
-
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
                                 }
                             }
                         }
@@ -464,6 +496,8 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
 
                                     // 执行hieulerpi1-ros镜像编译检查
                                     stageName = "hieulerpi1-ros"
@@ -482,7 +516,9 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
-                                
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
+
                                     // 执行qemu-arm32镜像编译检查
                                     stageName = "qemu-arm32"
                                     arch = "arm32"
@@ -499,7 +535,8 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
-                                
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
                                 }
                             }
                         }
@@ -539,7 +576,9 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
-                                
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
+
                                     // 执行x86-64-rt-hmi-ros-mcs镜像编译检查
                                     stageName = "x86-64-rt-hmi-ros-mcs"
                                     arch = "x86-64"
@@ -557,7 +596,9 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
-                                
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
+
                                     // 执行x86-64-rt-hmi-ros-mcs-kernel6.6镜像编译检查
                                     stageName = "x86-64-rt-hmi-ros-mcs-kernel6.6"
                                     arch = "x86-64"
@@ -575,6 +616,8 @@ pipeline {
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
                                     handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
+                                    // 删除编译目录
+                                    delete_build_dir(BUILD_DIR_PRE + stageName)
                                 }
                             }
                         }
