@@ -1,7 +1,7 @@
-.. _yocto_getting_started2:
+.. _basic_parsing_logic:
 
 ===================
-Yocto 入门文档二
+基本文件解析逻辑
 ===================
 
 上一章已经安装了Poky，但面对Poky中多如繁花的文件，新用户也是脑袋一晕，不知该如何下手。其实，结合上一篇文章，开发者应该已经对元数据文件有了基本的了解，bitbake运行最基础的文件只有bitbake.conf与base.bbclass，一个配置公共变量，一个配置公共任务，开发者可以在base.bbclass中配置变量，但是不能在bitbake.conf文件配置任务，另外还有层管理的两个配置文件。
@@ -12,6 +12,7 @@ Yocto 入门文档二
 .. note:: 
     
     Yocto制定的规范在日常开发时并不强制遵循，因此开发时有很高的自由度，但如果想要使用已存在的功能，那么最好还是遵循规范！
+
 
 共享功能
 ===================
@@ -30,8 +31,8 @@ INHERIT                与以上三种不同，INHERIT是个变量，只在conf�
 ==================== ===============================================================
 
 | ``inherit`` 面向的对象的是 ``.bbclass`` 文件，若指定目录存在 :file:`autotools.bbclass` ，则可以通过 ``inherit autotools`` 调用这个类提供的功能；
-| ``include`` 面向的对象的是 ``.inc`` 文件，若指定目录存在 :file:`test_defs.inc` ，通过 ``include test_defs.inc`` 调用， ``require`` 相同；
-| ``INHERIT`` 面向的对象的是全局的bbclass文件，通过 ``INHERIT += "autotools"`` 调用，将autotools设置为全局类，即所有包都会继承这个类；
+| ``include`` 面向的对象的是 ``.inc`` 文件，若指定目录存在 :file:`test_defs.inc` ，则可以通过 ``include test_defs.inc`` 调用这个文件的内容， ``require`` 使用方式与 ``include`` 相同；
+| ``INHERIT`` 面向的对象的是全局的bbclass文件，通过 ``INHERIT += "package"`` 调用，将package设置为全局类，即所有包解析时都会继承这个类。
 
 
 除 ``INHERIT`` 之外，使用其他三个指令扩展文件时会在使用处扩展被扩展的文件，举例说明：
@@ -144,16 +145,3 @@ Poky实现meta-poky、meta-yocto-bsp层，增加了发行版的配置。开发�
 .. note:: 
 
     初始化环境后用户可以自定义local.conf以及bblayers.conf脚本加入自己的层配置。
-
-
-总结
-============
-
-本章节主要介绍四个指令的作用以及Poky的简单使用，介绍了yocto的共享功能。
-
-
-参考文献
-==================
-
-| poky/documentation/ref-manual/structure.rst
-| poky/bitbake/doc/bitbake-user-manual/bitbake-user-manual-metadata.rst

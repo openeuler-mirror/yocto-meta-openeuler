@@ -1,7 +1,7 @@
-.. _yocto_getting_started3:
+.. _variables_and_tasks:
 
 ====================
-Yocto 入门文档三
+变量与任务
 ====================
 
 任务是BitBake的执行单元，变量可能会对任务产生影响。本篇章介绍常用的变量与任务。
@@ -71,11 +71,11 @@ Yocto 入门文档三
 基本任务
 ================
 
-配方（.bb文件）使用任务来完成软件的配置、编译和打包等。本节提供了在OpenEmbedded（Yocto）构建系统中定义的任务的参考。
+配方（.bb文件）使用任务来完成软件的配置、编译和打包等，第一节中通过 addtask 指令实现了自定义任务。本节提供了在OpenEmbedded（Yocto）构建系统中定义的部分任务的作用。
 
 Yocto支持的主要任务如下：
 
-.. image:: ../../image/yocto/yocto_tasks.png
+.. image:: ../../../image/yocto/yocto_tasks.png
 
 每个包实际的任务执行顺序可以在工作目录查看，具体是 :file:`${WORKDIR}/temp/log.task_order` 文件。
 
@@ -93,7 +93,7 @@ Yocto支持的主要任务如下：
 
 ``do_fetch`` 任务获取源文件， ``do_unpack`` 任务将源文件解压到工作目录（${WORKDIR}）下。默认情况下，一切都在工作目录中完成，该目录具有已定义的结构。在下图中，存在两个示例层次结构：一个基于包架构（即PACKAGE_ARCH）和一个基于机器（即MACHINE）。底层结构是相同的，区别在于OpenEmbedded构建系统使用什么作为构建目标（例如通用架构、构建主机、SDK或特定机器）。
 
-.. image:: ../../image/yocto/tasks_do_fetch.png
+.. image:: ../../../image/yocto/tasks_do_fetch.png
 
 ``do_fetch`` 任务使用SRC_URI变量定位源码文件；基于SRC_URI变量值中每个条目的前缀来确定使用哪个提取器来获取源文件， ``file://`` 开头为本地文件， ``http://、git://`` 等为上游获取的源文件；
 
@@ -154,7 +154,7 @@ OpenEmbedded构建系统使用FILESPATH变量来扫描SRC_URI中本地文件的�
 
 编译源代码，此任务在当前工作目录设置为${B}的情况下运行。如果找到构建文件（Makefile、makefile或GNUmakefile），则此任务的默认行为是运行 ``oe_runmake`` 函数。如果没有找到这样的文件， ``do_compile`` 任务什么也不做。
 
-.. image:: ../../image/yocto/tasks_do_compile.png
+.. image:: ../../../image/yocto/tasks_do_compile.png
 
 
 ``do_install``
@@ -197,7 +197,7 @@ OpenEmbedded构建系统使用FILESPATH变量来扫描SRC_URI中本地文件的�
 
 分析和包拆分过程的工作、阶段和中间结果使用以下几个方面：
 
-.. image:: ../../image/yocto/tasks_do_package.png
+.. image:: ../../../image/yocto/tasks_do_package.png
 
 详见 :file:`meta/classes/package.bbclass` 。
 
@@ -260,7 +260,7 @@ OpenEmbedded构建系统使用FILESPATH变量来扫描SRC_URI中本地文件的�
 
 启动镜像生成过程，此任务通过 ``IMAGE_PREPROCESS_COMMAND`` 对image进行预处理，并通过动态生成的 ``do_image_xxx`` （镜像格式决定）任务构建图像。
 
-.. image:: ../../image/yocto/tasks_do_image.png
+.. image:: ../../../image/yocto/tasks_do_image.png
 
 详见 :file:`meta/classes/image.bbclass` 。
 
