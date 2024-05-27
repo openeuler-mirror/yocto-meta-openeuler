@@ -5,6 +5,8 @@
 该 meta 层为 openEuler Embedded 提供飞腾平台 BSP 支持，目前支持的处理器如下
 - FT2000-4
 - D2000
+- E2000
+    - phytiumpi
 
 ## 目录结构
 

@@ -26,6 +26,17 @@ SRC_URI:append:ft2000-4 = " \
     file://patches/0001-allow-ACPI-AML-cover-the-kernel-memory.patch \
 "
 
+SRC_URI:append:phytiumpi = " \
+	file://phytiumpi.its \
+"
+
+DEPENDS:append:phytiumpi = " u-boot-tools-native dtc-native"
+do_deploy:append:phytiumpi() {
+    cp ${WORKDIR}/${MACHINE}.its  ./
+    uboot-mkimage -f ${MACHINE}.its  fitImage
+    cp fitImage  ${DEPLOY_DIR_IMAGE}/fitImage
+}
+
 # add patch tool to solve patch apply
 PATCHTOOL = "git"
 

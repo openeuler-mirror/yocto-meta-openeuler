@@ -1,0 +1,59 @@
+/*
+ * Compilation:
+ * mkimage -f fit_kernel_dtb.its fit_kernel_dtb.itb
+ *
+ * Files in linux build dir:
+ * - arch/arm/boot/Image (zImage-old-ok)
+ * - arch/arm/boot/dts/ft.dtb
+ *
+ * fatload usb 0:1 0x90100000 fit_kernel_dtb.itb
+ * bootm 0x90100000#e2000
+ *
+ */
+
+/dts-v1/;
+/ {
+	description = "U-Boot fitImage for Phytium Phytiumpi";
+	#address-cells = <1>;
+
+	images {
+		kernel {
+			description = "Linux kernel";
+			data = /incbin/("arch/arm64/boot/Image.gz");
+			type = "kernel";
+			arch = "arm64";
+			os = "linux";
+			compression = "gzip";
+			load =  <0x80080000>;
+			entry = <0x80080000>;
+			hash-1 {
+				algo = "sha1";
+			};
+		};
+
+		fdt-phytium {
+			description = "FDT phytiumpi";
+			data = /incbin/("arch/arm64/boot/dts/phytium/phytiumpi_firefly.dtb");
+			type = "flat_dt";
+			arch = "arm64";
+			compression = "none";
+			hash-1 {
+				algo = "sha1";
+			};
+		};
+	};
+
+	configurations {
+		default = "phytium@cecport";
+
+		phytium {
+			description = "phytimpi";
+			kernel = "kernel";
+			fdt = "fdt-phytium";
+			hash-1 {
+				algo = "sha1";
+			};
+		};
+
+	};
+};
