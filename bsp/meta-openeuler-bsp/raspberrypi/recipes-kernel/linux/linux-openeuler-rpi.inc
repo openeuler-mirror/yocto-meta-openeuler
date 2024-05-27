@@ -15,3 +15,21 @@ OPENEULER_KERNEL_CONFIG = ""
 KBUILD_DEFCONFIG = "bcm2711_defconfig"
 
 COMPATIBLE_MACHINE = "raspberrypi4-64"
+
+# use rpi kernel tag
+SRC_URI:raspberrypi4 = " \
+    ${OPENEULER_KERNEL_CONFIG} \
+    file://meta-data;type=kmeta;destsuffix=meta-data \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
+            file://kernel-${PV} \
+    ', ' \
+            file://kernel-${PV}-tag-rpi \
+    ', d)} \
+"
+OPENEULER_REPO_NAME:raspberrypi4 = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'kernel-${PV}', 'kernel-${PV}-tag-rpi', d)}"
+OPENEULER_LOACL_NAME:raspberrypi4 = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'kernel-${PV}', 'kernel-${PV}-tag-rpi', d)}"
+S:raspberrypi4 = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '${WORKDIR}/kernel-${PV}', '${WORKDIR}/kernel-${PV}-tag-rpi', d)}"
+OPENEULER_MULTI_REPOS:raspberrypi4 = " \
+${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' src-kernel-${PV} kernel-${PV} ', ' src-kernel-${PV}-tag-rpi kernel-${PV}-tag-rpi ', d)} \
+"
+
