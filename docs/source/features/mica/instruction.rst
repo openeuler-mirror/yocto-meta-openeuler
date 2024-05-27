@@ -1,3 +1,5 @@
+.. _mica_instructions:
+
 使用指导
 ########
 
@@ -341,86 +343,4 @@ ____
 .. code-block:: console
 
    $ mica stop
-
-----------------
-
-.. _mica_debug:
-
-调试支持 GDB stub 的 Client OS
-============================================
-
-当前仅支持调试运行在树莓派4B（aarch64）和x86工控机（x86_64）的Uniproton。
-
-相关接口定义
--------------
-
-首先，对于Client OS而言，需要支持GDB stub。
-当前MICA框架仅支持基于简单ring buffer通信的方式进行GDB stub信息的交互，
-ring buffer的地址和大小在MCS仓库中 ``library/include/mcs/mica_debug_ring_buffer.h`` 中定义：
-
-.. code-block:: c
-
-   // x86 ring buffer base address offset and size
-   #define RING_BUFFER_SHIFT 0x4000
-   #define RING_BUFFER_SIZE 0x1000
-
-   // aarch64 ring buffer address and size
-   #define RING_BUFFER_ADDR 0x70040000
-   #define RING_BUFFER_SIZE 0x1000
-
-x86架构下由于ring buffer存在的物理空间的首地址始终相对于Uniproton的入口地址是固定的，
-在做内存映射的时候我们ring buffer的首地址可以通过Uniproton的入口地址减去 ``RING_BUFFER_SHIFT`` 得到。
-
-ring buffer 的定义在 ``library/include/mcs/ring_buffer.h`` 文件中。
-
-使用方法
-----------
-
-首先，需要构建含有MICA的openEuler Embedded镜像，请参考 :ref:`MICA镜像构建指南 <mcs_build>` 。
-
-然后，需要生成适配了GDB stub 的 Uniproton，参考 `UniProton GDB stub 构建指南 <https://gitee.com/zuyiwen/UniProton/blob/stub_dev/src/component/gdbstub/readme.txt>`_ 。
-
-在运行命令时，需要在启动MICA时加上 ``-d`` 参数。
-并且，由于需要对可执行文件进行调试， ``-t`` 参数需要指定包含符号表的可执行文件的路径。
-一般来说，plain binary format的可执行文件并没有相关调试信息，
-所以我们只能使用elf格式的可执行文件进行调试。
-当然，如果 ``-t`` 参数指定的是格式为plain binary format的可执行文件的路径，
-调试模式仍然可以正常启动，但是在启动GDB client的时候无法正确读取符号表，
-需要用 ``file`` 命令额外指定包含符号表的可执行文件的路径。
-
-以下是启动MICA调试模式的命令：
-
-.. code-block:: console
-
-   # 若使用的是标准镜像，则使用mica脚本启动MICA：
-   $ mica start /path/to/executable -d
-   # 若没有mica脚本，则使用如下命令启动MICA：
-   $ insmod /path/to/mcs_km.ko rmem_base=0x118000000 rmem_size=0x10000000
-   # 启动MICA调试模式：
-   $ /path/to/mica_main -c 3 -t /path/to/executable -a 0x118000000 -b /path/to/ap_boot -d
-   ...
-   MICA gdb proxy server: starting...
-   GNU gdb (GDB) 12.1
-   Copyright (C) 2022 Free Software Foundation, Inc.
-   License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
-   This is free software: you are free to change and redistribute it.
-   There is NO WARRANTY, to the extent permitted by law.
-   Type "show copying" and "show warranty" for details.
-   This GDB was configured as "x86_64-openeuler-linux".
-   ...
-   MICA gdb proxy server: read for messages forwarding ...
-   (gdb) 
-
-此时，用户可以直接通过GDB命令行输入命令与Client OS进行交互。
-如果用户想要通过GDB命令行像正常情况一样运行client OS，可以直接不设置断点，输入命令 ``continue`` 。
-
-按下 ``ctrl-c`` 之后会返回GDB命令行，此时用户可以输入GDB命令与Client OS进行交互。
-如果用户想要退出调试模式，必须在GDB命令行输入 ``quit`` 命令。之后，
-MICA会退出与调试相关的模块，并保留pty application模块，以保持和Client OS通过pty交互的能力。
-Uniproton会清除所有断点，并进入正常的运行状态。
-
-.. note::
-
-   当前Uniproton的GDB stub仅支持 ``break``， ``continue``， ``print`` 和 ``quit`` 四个命令。
-   并不支持 ``ctrl-c``，所以按下后虽然会返回GDB命令行，但是Uniproton仍然在运行。
 
