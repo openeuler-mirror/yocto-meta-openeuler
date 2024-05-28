@@ -110,3 +110,5 @@ RUN sudo chmod -R 777 /opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-lin
 WORKDIR /home/${user}
 
 RUN rm -rf /opt/buildtools/nativesdk/sdk_info
+# install necessary python package because Optee-os need this package involve during compile
+RUN pip3.10 install cryptography
