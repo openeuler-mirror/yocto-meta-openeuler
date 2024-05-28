@@ -14,38 +14,38 @@ manifest管理命令-manifest
 
 .. code-block:: console
 
-    oebuild manifest [-c create] [-r recover] [-m_dir manifest_dir]
+    oebuild manifest [ create / download ] [-f MANIFEST_DIR]
 
 .. warning:: 
-    在这里需要着重说明的是，openEuler Embedded的基线文件放置在根目录下的 `.oebuild/manifest.yaml` ，与openeuler_fetch紧密结合，在下载上游源码包时会解析manifest.yaml，然后寻找对应上游包的信息，根据上游包git信息进行包下载，如果manifest.yaml基线文件不存在，则会以分支方式下载，此时上游源码包就是该分支最新的代码。
+    在这里需要着重说明的是，openEuler Embedded的基线文件放置在根目录下的 `.oebuild/manifest.yaml` ，与openeuler_fetch紧密结合，在下载上游源码包时会解析manifest.yaml，然后寻找对应上游包的信息，根据上游包git信息进行包下载。
 
 
--m: manifest_dir
+-f: manifest_dir
 ----------------
 
 该参数表示基线文件manifest.yaml的路径，参数后面需要跟manifest.yaml的路径，该参数不管是用于生成基线文件还是根据基线文件更新上游源码都是需要指定的，该参数使用方式如下：
 
 .. code-block:: console
 
-    oebuild manifest -m_dir /some/local/manifest.yaml
+    oebuild manifest -f /some/local/manifest.yaml
 
--c: create
+create
 ----------
 
 该参数表示用于生成基线文件，该参数使用方式如下：
 
 .. code-block:: console
 
-    oebuild manifest -c -m_dir /some/local/manifest.yaml
+    oebuild manifest create -f /some/local/manifest.yaml
 
--r: recover
+download
 -----------
 
 该参数表示用于根据基线文件更新基线源码，该参数使用方式如下：
 
 .. code-block:: console
 
-    oebuild manifest -r -m_dir /some/local/manifest.yaml
+    oebuild manifest download -f /some/local/manifest.yaml
 
 
 .. note:: 需要注意的是，在更新上游源码的过程中，对于某个包如果已经存在该仓，那么oebuild会遍历该仓下所有remote，然后与解析的remote_url进行对比，如果比对成功，则直接以该remote进行fetch操作，然后将对应的version检出来，如果比对不成功，则oebuild会在该仓下创建一个remote，并命名为upstream，指向的remote_url即为从manifest.yaml解析出来的remote_url，然后对upstream进行fetch操作，再将对应的version检出来。
