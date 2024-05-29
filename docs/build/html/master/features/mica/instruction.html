@@ -62,8 +62,8 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="mica_ctl.html">mica命令与配置文件</a></li>
-<li class="toctree-l3"><a class="reference internal" href="rpc.html">基于UniProton的RPC服务</a></li>
 <li class="toctree-l3"><a class="reference internal" href="developer_guides/index.html">开发者指南</a></li>
+<li class="toctree-l3"><a class="reference internal" href="services/index.html">跨OS服务</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../lopper_devicetree.html">外设分区管理</a></li>
@@ -124,8 +124,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="id1">
-<h1>使用指导<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+  <section id="mica-instructions">
+<span id="id1"></span><h1>使用指导<a class="headerlink" href="#mica-instructions" title="Permalink to this headline">¶</a></h1>
 <p>MICA 主要包含三部分组件：</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">内核模块</span></code> ：提供RTOS启动、专用中断收发、保留内存管理等功能。不同的部署模式会有对应的内核态实现，例如 bare-metal 部署模式，对应的内核模块是 mcs_km.ko。</p></li>
@@ -422,73 +422,6 @@ rpmsg-tty 绑定了 zephyr 的 shell，因此可以通过 screen 打开 tty 设�
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>mica stop
 </pre></div>
 </div>
-<hr class="docutils" />
-<section id="gdb-stub-client-os">
-<span id="mica-debug"></span><h3>调试支持 GDB stub 的 Client OS<a class="headerlink" href="#gdb-stub-client-os" title="Permalink to this headline">¶</a></h3>
-<p>当前仅支持调试运行在树莓派4B（aarch64）和x86工控机（x86_64）的Uniproton。</p>
-<section id="id3">
-<h4>相关接口定义<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
-<p>首先，对于Client OS而言，需要支持GDB stub。
-当前MICA框架仅支持基于简单ring buffer通信的方式进行GDB stub信息的交互，
-ring buffer的地址和大小在MCS仓库中 <code class="docutils literal notranslate"><span class="pre">library/include/mcs/mica_debug_ring_buffer.h</span></code> 中定义：</p>
-<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="c1">// x86 ring buffer base address offset and size</span>
-<span class="cp">#define RING_BUFFER_SHIFT 0x4000</span>
-<span class="cp">#define RING_BUFFER_SIZE 0x1000</span>
-
-<span class="c1">// aarch64 ring buffer address and size</span>
-<span class="cp">#define RING_BUFFER_ADDR 0x70040000</span>
-<span class="cp">#define RING_BUFFER_SIZE 0x1000</span>
-</pre></div>
-</div>
-<p>x86架构下由于ring buffer存在的物理空间的首地址始终相对于Uniproton的入口地址是固定的，
-在做内存映射的时候我们ring buffer的首地址可以通过Uniproton的入口地址减去 <code class="docutils literal notranslate"><span class="pre">RING_BUFFER_SHIFT</span></code> 得到。</p>
-<p>ring buffer 的定义在 <code class="docutils literal notranslate"><span class="pre">library/include/mcs/ring_buffer.h</span></code> 文件中。</p>
-</section>
-<section id="id4">
-<h4>使用方法<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
-<p>首先，需要构建含有MICA的openEuler Embedded镜像，请参考 <a class="reference internal" href="build.html#mcs-build"><span class="std std-ref">MICA镜像构建指南</span></a> 。</p>
-<p>然后，需要生成适配了GDB stub 的 Uniproton，参考 <a class="reference external" href="https://gitee.com/zuyiwen/UniProton/blob/stub_dev/src/component/gdbstub/readme.txt">UniProton GDB stub 构建指南</a> 。</p>
-<p>在运行命令时，需要在启动MICA时加上 <code class="docutils literal notranslate"><span class="pre">-d</span></code> 参数。
-并且，由于需要对可执行文件进行调试， <code class="docutils literal notranslate"><span class="pre">-t</span></code> 参数需要指定包含符号表的可执行文件的路径。
-一般来说，plain binary format的可执行文件并没有相关调试信息，
-所以我们只能使用elf格式的可执行文件进行调试。
-当然，如果 <code class="docutils literal notranslate"><span class="pre">-t</span></code> 参数指定的是格式为plain binary format的可执行文件的路径，
-调试模式仍然可以正常启动，但是在启动GDB client的时候无法正确读取符号表，
-需要用 <code class="docutils literal notranslate"><span class="pre">file</span></code> 命令额外指定包含符号表的可执行文件的路径。</p>
-<p>以下是启动MICA调试模式的命令：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>若使用的是标准镜像，则使用mica脚本启动MICA：
-<span class="gp">$ </span>mica start /path/to/executable -d
-<span class="gp"># </span>若没有mica脚本，则使用如下命令启动MICA：
-<span class="gp">$ </span>insmod /path/to/mcs_km.ko <span class="nv">rmem_base</span><span class="o">=</span>0x118000000 <span class="nv">rmem_size</span><span class="o">=</span>0x10000000
-<span class="gp"># </span>启动MICA调试模式：
-<span class="gp">$ </span>/path/to/mica_main -c <span class="m">3</span> -t /path/to/executable -a 0x118000000 -b /path/to/ap_boot -d
-<span class="go">...</span>
-<span class="go">MICA gdb proxy server: starting...</span>
-<span class="go">GNU gdb (GDB) 12.1</span>
-<span class="go">Copyright (C) 2022 Free Software Foundation, Inc.</span>
-<span class="go">License GPLv3+: GNU GPL version 3 or later &lt;http://gnu.org/licenses/gpl.html&gt;</span>
-<span class="go">This is free software: you are free to change and redistribute it.</span>
-<span class="go">There is NO WARRANTY, to the extent permitted by law.</span>
-<span class="go">Type &quot;show copying&quot; and &quot;show warranty&quot; for details.</span>
-<span class="go">This GDB was configured as &quot;x86_64-openeuler-linux&quot;.</span>
-<span class="go">...</span>
-<span class="go">MICA gdb proxy server: read for messages forwarding ...</span>
-<span class="gp gp-VirtualEnv">(gdb)</span>
-</pre></div>
-</div>
-<p>此时，用户可以直接通过GDB命令行输入命令与Client OS进行交互。
-如果用户想要通过GDB命令行像正常情况一样运行client OS，可以直接不设置断点，输入命令 <code class="docutils literal notranslate"><span class="pre">continue</span></code> 。</p>
-<p>按下 <code class="docutils literal notranslate"><span class="pre">ctrl-c</span></code> 之后会返回GDB命令行，此时用户可以输入GDB命令与Client OS进行交互。
-如果用户想要退出调试模式，必须在GDB命令行输入 <code class="docutils literal notranslate"><span class="pre">quit</span></code> 命令。之后，
-MICA会退出与调试相关的模块，并保留pty application模块，以保持和Client OS通过pty交互的能力。
-Uniproton会清除所有断点，并进入正常的运行状态。</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>当前Uniproton的GDB stub仅支持 <code class="docutils literal notranslate"><span class="pre">break</span></code>， <code class="docutils literal notranslate"><span class="pre">continue</span></code>， <code class="docutils literal notranslate"><span class="pre">print</span></code> 和 <code class="docutils literal notranslate"><span class="pre">quit</span></code> 四个命令。
-并不支持 <code class="docutils literal notranslate"><span class="pre">ctrl-c</span></code>，所以按下后虽然会返回GDB命令行，但是Uniproton仍然在运行。</p>
-</div>
-</section>
-</section>
 </section>
 </section>
 

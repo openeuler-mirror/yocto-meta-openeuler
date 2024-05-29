@@ -20,7 +20,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="基于UniProton的RPC服务" href="rpc.html" />
+    <link rel="next" title="开发者指南" href="developer_guides/index.html" />
     <link rel="prev" title="使用指导" href="instruction.html" /> 
 </head>
 
@@ -60,8 +60,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#id2">实例配置文件介绍</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="rpc.html">基于UniProton的RPC服务</a></li>
 <li class="toctree-l3"><a class="reference internal" href="developer_guides/index.html">开发者指南</a></li>
+<li class="toctree-l3"><a class="reference internal" href="services/index.html">跨OS服务</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../lopper_devicetree.html">外设分区管理</a></li>
@@ -156,6 +156,8 @@
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">status</span></code></dt><dd><p>查询各个实例的状态信息，以及关联的服务信息。</p>
 </dd>
+<dt><code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">gdb</span> <span class="pre">&lt;name&gt;</span></code></dt><dd><p>如果名字为 &lt;name&gt; 的实例支持调试，可以通过该命令启动 GDB Client 开始调试。</p>
+</dd>
 </dl>
 </section>
 <hr class="docutils" />
@@ -174,6 +176,8 @@
 <dt><code class="docutils literal notranslate"><span class="pre">Pedestal=</span></code></dt><dd><p>指定部署底座，默认为 bare-metal，即在裸核上运行 RTOS。当前支持在 QEMU 上配置为 jailhouse，以使用 jailhouse 部署。</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">PedestalConf=</span></code></dt><dd><p>指定部署底座关联的配置文件。例如 Jailhouse 部署时，需要通过 PedestalConf 指定 RTOS 所需的 Non-Root Cell 配置文件。</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">Debug=</span></code></dt><dd><p>bool类型，表示OS二进制是否支持调试，默认为 no。如果支持调试，可以通过 mica gdb 命令启动 GDB Client 开始调试。</p>
 </dd>
 </dl>
 <p>以下为一些配置文件样例：</p>
@@ -201,6 +205,18 @@
 </div>
 <p>该配置文件定义了一个名为 qemu-zephyr-ivshmem 的实例，并指定使用 jailhouse 作为部署底座，同时该实例使用的 jailhouse Non-Root Cell 为 <cite>/usr/share/jailhouse/cells/qemu-arm64-zephyr-mcs-demo.cell</cite>。</p>
 </div></blockquote>
+<p>示例三：</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[Mica]</span>
+<span class="go">Name=rpi4-uniproton-debug</span>
+<span class="go">CPU=3</span>
+<span class="go">ClientPath=/lib/firmware/rpi4-uniproton-debug.elf</span>
+<span class="go">AutoBoot=yes</span>
+<span class="go">Debug=yes</span>
+</pre></div>
+</div>
+<p>该配置文件定义了一个名为 rpi4-uniproton-debug 的实例，并指定该实例实现了GDB stub，支持调试。</p>
+</div></blockquote>
 </section>
 </section>
 
@@ -209,7 +225,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="instruction.html" class="btn btn-neutral float-left" title="使用指导" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="rpc.html" class="btn btn-neutral float-right" title="基于UniProton的RPC服务" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="developer_guides/index.html" class="btn btn-neutral float-right" title="开发者指南" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

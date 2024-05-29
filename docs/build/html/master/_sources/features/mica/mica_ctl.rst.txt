@@ -41,6 +41,9 @@ mica命令介绍
 ``mica status``
     查询各个实例的状态信息，以及关联的服务信息。
 
+``mica gdb <name>``
+    如果名字为 <name> 的实例支持调试，可以通过该命令启动 GDB Client 开始调试。
+
 ____
 
 实例配置文件介绍
@@ -65,6 +68,9 @@ ____
 
 ``PedestalConf=``
     指定部署底座关联的配置文件。例如 Jailhouse 部署时，需要通过 PedestalConf 指定 RTOS 所需的 Non-Root Cell 配置文件。
+
+``Debug=``
+    bool类型，表示OS二进制是否支持调试，默认为 no。如果支持调试，可以通过 mica gdb 命令启动 GDB Client 开始调试。
 
 以下为一些配置文件样例：
 
@@ -93,3 +99,16 @@ ____
       PedestalConf=/usr/share/jailhouse/cells/qemu-arm64-zephyr-mcs-demo.cell
 
    该配置文件定义了一个名为 qemu-zephyr-ivshmem 的实例，并指定使用 jailhouse 作为部署底座，同时该实例使用的 jailhouse Non-Root Cell 为 `/usr/share/jailhouse/cells/qemu-arm64-zephyr-mcs-demo.cell`。
+
+示例三：
+
+    .. code-block:: console
+
+       [Mica]
+       Name=rpi4-uniproton-debug
+       CPU=3
+       ClientPath=/lib/firmware/rpi4-uniproton-debug.elf
+       AutoBoot=yes
+       Debug=yes
+
+    该配置文件定义了一个名为 rpi4-uniproton-debug 的实例，并指定该实例实现了GDB stub，支持调试。
