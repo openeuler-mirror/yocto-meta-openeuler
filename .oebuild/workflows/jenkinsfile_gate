@@ -36,6 +36,20 @@ def mkdirOpeneulerLog(){
     return logdir
 }
 
+def prepare_srccode(workspace){
+    sh """
+        if [[ -f "$SHARE_DIR/$giteeTargetBranch/src.tar.gz" ]]; then
+            pushd ${workspace}
+            oebuild init oebuild_workspace
+            cd oebuild_workspace
+            rm -rf build
+            cp -f $SHARE_DIR/$giteeTargetBranch/src.tar.gz .
+            tar zxf src.tar.gz
+            popd
+        fi
+    """
+}
+
 def STAGES_RES = []
 
 pipeline {
@@ -63,7 +77,7 @@ pipeline {
                                 // 执行pre
                                 sh """
                                     python3 main.py pre \
-                                        -s /home/jenkins/ccache/openeuler_embedded \
+                                        -s $SHARE_DIR \
                                         -o $giteeTargetNamespace \
                                         -p $giteeRepoName \
                                         -pr $giteePullRequestid \
@@ -195,7 +209,7 @@ pipeline {
                         }
                     }
                 }
-                stage("qemu_aarch64"){
+                stage("qemu-aarch64"){
                     agent { node "${node}" }
                     when {
                         expression {
@@ -213,6 +227,7 @@ pipeline {
                                 // 执行qemu_aarch64编译
                                 // 下载yocto源码
                                 downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
+                                prepare_srccode("/home/jenkins")
                                 def randomStr = getRandomStr()
                                 def logDir = mkdirOpeneulerLog()
                                 // 执行镜像编译检查
@@ -224,7 +239,7 @@ pipeline {
                                     -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
                                     -p qemu-aarch64 \
                                     -i openeuler-image \
-                                    -s_in "/home/jenkins/ccache/openeuler_embedded/${giteeTargetBranch}/sstate-cache/qemu-aarch64" \
+                                    -s_in "$SHARE_DIR/${giteeTargetBranch}/sstate-cache/qemu-aarch64" \
                                     -d qemu-aarch64 > ${logDir}/${randomStr}.log
                                 """, returnStatus: true)
                                 
@@ -236,12 +251,12 @@ pipeline {
                                 }
                                 // 对检查赋值
                                 archiveArtifacts "${logDir}/*.log"
-                                STAGES_RES.push(formatRes("qemu_aarch64", "build", check_res, "artifact/${logDir}/${randomStr}.log"))
+                                STAGES_RES.push(formatRes("qemu-aarch64", "build", check_res, "artifact/${logDir}/${randomStr}.log"))
                             }
                         }
                     }
                 }
-                stage("qemu_aarch64_tiny"){
+                stage("qemu-aarch64-tiny"){
                     agent { node "${node}" }
                     when {
                         expression {
@@ -259,6 +274,7 @@ pipeline {
                                 // 执行qemu_aarch64编译
                                 // 下载yocto源码
                                 downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
+                                prepare_srccode("/home/jenkins")
                                 def randomStr = getRandomStr()
                                 def logDir = mkdirOpeneulerLog()
                                 // 执行镜像编译检查
@@ -270,7 +286,7 @@ pipeline {
                                     -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
                                     -p qemu-aarch64 \
                                     -i openeuler-image-tiny \
-                                    -s_in "/home/jenkins/ccache/openeuler_embedded/${giteeTargetBranch}/sstate-cache/qemu-aarch64" \
+                                    -s_in "$SHARE_DIR/${giteeTargetBranch}/sstate-cache/qemu-aarch64" \
                                     -d qemu-aarch64-tiny > ${logDir}/${randomStr}.log
                                 """, returnStatus: true)
                                 
@@ -282,12 +298,12 @@ pipeline {
                                 }
                                 // 对检查赋值
                                 archiveArtifacts "${logDir}/*.log"
-                                STAGES_RES.push(formatRes("qemu_aarch64_tiny", "build", check_res, "artifact/${logDir}/${randomStr}.log"))
+                                STAGES_RES.push(formatRes("qemu-aarch64-tiny", "build", check_res, "artifact/${logDir}/${randomStr}.log"))
                             }
                         }
                     }
                 }
-                stage("qemu_arm"){
+                stage("qemu-arm"){
                     agent { node "${node}" }
                     when {
                         expression {
@@ -305,6 +321,7 @@ pipeline {
                                 // 执行qemu_arm编译
                                 // 下载yocto源码
                                 downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
+                                prepare_srccode("/home/jenkins")
                                 def randomStr = getRandomStr()
                                 def logDir = mkdirOpeneulerLog()
                                 // 执行镜像编译检查
@@ -316,7 +333,7 @@ pipeline {
                                     -t /usr1/openeuler/gcc/openeuler_gcc_arm32le \
                                     -p qemu-arm \
                                     -i openeuler-image \
-                                    -s_in "/home/jenkins/ccache/openeuler_embedded/${giteeTargetBranch}/sstate-cache/qemu-arm32" \
+                                    -s_in "$SHARE_DIR/${giteeTargetBranch}/sstate-cache/qemu-arm" \
                                     -d qemu-arm32 > ${logDir}/${randomStr}.log
                                 """, returnStatus: true)
                                 
@@ -328,12 +345,12 @@ pipeline {
                                 }
                                 // 对检查赋值
                                 archiveArtifacts "${logDir}/*.log"
-                                STAGES_RES.push(formatRes("qemu_arm", "build", check_res, "artifact/${logDir}/${randomStr}.log"))
+                                STAGES_RES.push(formatRes("qemu-arm", "build", check_res, "artifact/${logDir}/${randomStr}.log"))
                             }
                         }
                     }
                 }
-                stage("qemu_x86"){
+                stage("qemu-x86"){
                     agent { node "${node}" }
                     when {
                         expression {
@@ -353,6 +370,7 @@ pipeline {
                                 def randomStr = getRandomStr()
                                 def logDir = mkdirOpeneulerLog()
                                 downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
+                                prepare_srccode("/home/jenkins")
                                 // 执行镜像编译检查
                                 def task_res_code = sh (script: """
                                     python3 main.py build \
@@ -362,7 +380,7 @@ pipeline {
                                     -t /usr1/openeuler/gcc/openeuler_gcc_x86_64 \
                                     -p x86-64 \
                                     -i openeuler-image \
-                                    -s_in "/home/jenkins/ccache/openeuler_embedded/${giteeTargetBranch}/sstate-cache/qemu-x86-64" \
+                                    -s_in "$SHARE_DIR/${giteeTargetBranch}/sstate-cache/qemu-x86" \
                                     -d qemu-x86-64 > ${logDir}/${randomStr}.log
                                 """, returnStatus: true)
                                 
@@ -374,7 +392,7 @@ pipeline {
                                 }
                                 // 对检查赋值
                                 archiveArtifacts "${logDir}/*.log"
-                                STAGES_RES.push(formatRes("qemu_x86", "build", check_res, "artifact/${logDir}/${randomStr}.log"))
+                                STAGES_RES.push(formatRes("qemu-x86", "build", check_res, "artifact/${logDir}/${randomStr}.log"))
                             }
                         }
                     }

@@ -1,0 +1,246 @@
+// this jenkinsfile is for src code and gate sstate cache
+
+def downloadEmbeddedCI(String remote_url, String branch){
+    sh 'rm -rf embedded-ci'
+    sh "git clone ${remote_url} -b ${branch} -v embedded-ci --depth=1"
+}
+
+def downloadYoctoWithBranch(String workspace, String namespace, String repo, String branch, Integer deepth){
+    sh """
+        python3 main.py clone_repo \
+        -w ${workspace} \
+        -r https://gitee.com/${namespace}/${repo} \
+        -p ${repo} \
+        -v ${branch} \
+        -dp ${deepth}
+    """
+}
+
+def formatRes(String name, String action, String check_res, String log_path){
+    return sh (script: """
+        python3 main.py serial \
+            -c name=${name} \
+            -c action=${action} \
+            -c result=${check_res} \
+            -c log_path=${log_path}
+    """, returnStdout: true).trim()
+}
+
+def getRandomStr(){
+    return sh(script: """
+        cat /proc/sys/kernel/random/uuid
+    """, returnStdout: true).trim()
+}
+
+def putSStateCacheToDst(String local_dir, String dst_dir){
+    sh """
+        python3 main.py put_to_dst \
+        -t 1 \
+        -dd $dst_dir \
+        -ld $local_dir
+    """
+}
+
+def mkdirOpeneulerLog(){
+    def logdir = "openeuler/log"
+    sh "mkdir -p $logdir"
+    return logdir
+}
+
+def getNowDatetime(){
+    return sh(script: """
+        date "+%Y%m%d%H%M%S"
+    """, returnStdout: true).trim()
+}
+
+def handleAfterBuildImage(String stageName, String arch, Integer build_res_code, String logDir, String randomStr, String IMAGE_DATE, List<String> STAGES_RES){
+    def build_res = "failed"
+    if (build_res_code == 0){
+        build_res = "success"
+        //将sstate-cache推送到共享磁盘
+        //由于当前构建得sstate-cache中包含指向 sstate_origin_dir 中文件的软连接，故先复制为temp
+        //复制时，遇到软连接默认复制软连接指向的真实文件），再删除源文件夹，最后mv操作
+        def sstate_local_dir = "~/oebuild_workspace/build/${stageName}/sstate-cache"
+        def sstate_dst_dir = "${SHARE_DIR}/${ciBranch}/sstate-cache/${stageName}-temp"
+        putSStateCacheToDst(sstate_local_dir, sstate_dst_dir)
+        def sstate_origin_dir = "${SHARE_DIR}/${ciBranch}/sstate-cache/${stageName}"
+        sh (script: """
+            rm -rf ${sstate_origin_dir}
+            mv ${sstate_dst_dir} ${sstate_origin_dir}
+        """
+        )
+    }
+    // 对检查赋值
+    archiveArtifacts "${logDir}/*.log"
+    STAGES_RES.push(formatRes(stageName, "build", build_res, "artifact/${logDir}/Build-${stageName}-${randomStr}.log"))
+}
+
+def prepare_srccode(workspace){
+    sh """
+        if [[ -f "$SHARE_DIR/$ciBranch/src.tar.gz" ]]; then
+            pushd ${workspace}
+            oebuild init oebuild_workspace
+            cd oebuild_workspace
+            rm -rf build
+            cp -f $SHARE_DIR/$ciBranch/src.tar.gz .
+            tar zxf src.tar.gz
+            popd
+        fi
+    """
+}
+
+def STAGES_RES = []
+
+pipeline {
+    agent { node "${node}" }
+    environment {
+        PATH = "/home/jenkins/.local/bin:${env.PATH}"
+    }
+    stages {
+        stage("init-task"){
+            steps{
+                dir('/home/jenkins/agent'){
+                    script{
+                        downloadEmbeddedCI(embeddedRemote, embeddedBranch)
+                        IMAGE_DATE = getNowDatetime()
+                    }
+                }
+            }
+        }
+        stage("build task"){
+            parallel {
+                stage("qemu-aarch64"){
+                    agent { node "${node}" }
+                    steps {
+                        dir('/home/jenkins/agent'){
+                            script{
+                                downloadEmbeddedCI(embeddedRemote, embeddedBranch)
+                            }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            script{
+                                //下载yocto-meta-openeuler代码
+                                downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
+                                prepare_srccode("/home/jenkins")
+                                def randomStr = getRandomStr()
+                                def logDir = mkdirOpeneulerLog()
+
+                                // 执行qemu-aarch64镜像编译检查
+                                def stageName = "qemu-aarch64"
+                                def arch = "aarch64"
+                                def task_res_code = sh (script: """
+                                    python3 main.py build \
+                                    -c /home/jenkins/agent/${repoName} \
+                                    -target openeuler_image \
+                                    -a $arch \
+                                    -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
+                                    -p qemu-aarch64 \
+                                    -i "openeuler-image" \
+                                    -oe "\\-\\-no_layer" \
+                                    -dt $IMAGE_DATE \
+                                    -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
+                                """, returnStatus: true)
+                                handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
+                            }
+                        }
+                    }
+                }
+                stage("qemu-arm"){
+                    agent { node "${node}" }
+                    steps {
+                        dir('/home/jenkins/agent'){
+                            script{
+                                downloadEmbeddedCI(embeddedRemote, embeddedBranch)
+                            }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            script{
+                                //下载yocto-meta-openeuler代码
+                                downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
+                                prepare_srccode("/home/jenkins")
+                                def randomStr = getRandomStr()
+                                def logDir = mkdirOpeneulerLog()
+                                // 执行qemu-arm镜像编译检查
+                                def stageName = "qemu-arm"
+                                def arch = "arm32"
+                                def task_res_code = sh (script: """
+                                    python3 main.py build \
+                                    -c /home/jenkins/agent/${repoName} \
+                                    -target openeuler_image \
+                                    -a $arch \
+                                    -t /usr1/openeuler/gcc/openeuler_gcc_arm32le \
+                                    -p qemu-arm \
+                                    -i "openeuler-image" \
+                                    -oe "\\-\\-no_layer" \
+                                    -dt $IMAGE_DATE \
+                                    -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
+                                """, returnStatus: true)
+                                handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
+                            }
+                        }
+                    }
+                }
+                stage("qemu-x86"){
+                    agent { node "${node}" }
+                    steps {
+                        dir('/home/jenkins/agent'){
+                            script{
+                                downloadEmbeddedCI(embeddedRemote, embeddedBranch)
+                            }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            script{
+                                //下载yocto-meta-openeuler代码
+                                downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
+                                prepare_srccode("/home/jenkins")
+                                def randomStr = getRandomStr()
+                                def logDir = mkdirOpeneulerLog()
+                                // 执行qemu-x86镜像编译检查
+                                def stageName = "qemu-x86"
+                                def arch = "x86-64"
+                                def task_res_code = sh (script: """
+                                    python3 main.py build \
+                                    -c /home/jenkins/agent/${repoName} \
+                                    -target openeuler_image \
+                                    -a $arch \
+                                    -t /usr1/openeuler/gcc/openeuler_gcc_x86_64 \
+                                    -p x86-64 \
+                                    -i "openeuler-image" \
+                                    -oe "\\-\\-no_layer" \
+                                    -dt $IMAGE_DATE \
+                                    -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
+                                """, returnStatus: true)
+                                handleAfterBuildImage(stageName, arch, task_res_code, logDir, randomStr, IMAGE_DATE, STAGES_RES)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            dir('/home/jenkins/agent/embedded-ci'){
+                script{
+                    withCredentials([
+                        string(credentialsId: "${giteeId}", variable: 'GITEETOKEN')
+                    ]){
+                        def chks = ""
+                        for (int i = 0; i < STAGES_RES.size(); ++i) {
+                            chks = "${chks} -chk ${STAGES_RES[i]}"
+                        }
+                        sh """
+                        python3 main.py comment \
+                             -m ci \
+                             -o $repoNamespace \
+                             -p $commentRepoName \
+                             -b $ciBranch \
+                             -gt $GITEETOKEN \
+                             $chks
+                        """
+                    }
+                }
+            }
+        }
+    }
+}

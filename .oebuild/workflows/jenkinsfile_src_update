@@ -1,0 +1,34 @@
+// this jenkinsfile is for src code download
+
+pipeline {
+    agent { node "${node}" }
+    environment {
+        PATH = "/home/jenkins/.local/bin:${env.PATH}"
+    }
+    stages {
+        stage("update src"){
+            steps{
+                dir(SHARE_DIR + "/" + ciBranch){
+                    script{
+                        sh """
+                            oebuild init oebuild_workspace
+                            cd oebuild_workspace
+                            pushd src
+                            if [ -d "yocto-meta-openeuler" ];then
+                                cd yocto-meta-openeuler
+                                git checkout master
+                                git pull
+                            else
+                                git clone https://gitee.com/openeuler/yocto-meta-openeuler
+                            fi
+                            popd
+                            oebuild manifest download
+                            tar zcf src.tar.gz --exclude="src/yocto-meta-openeuler" src
+                            mv src.tar.gz $SHARE_DIR/$ciBranch/src.tar.gz
+                        """
+                    }
+                }
+            }
+        }
+    }
+}

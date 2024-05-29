@@ -84,9 +84,9 @@ def handleAfterBuildImage(String stageName, String arch, Integer build_res_code,
         //将sstate-cache推送到共享磁盘
         //由于当前构建得sstate-cache中包含指向 sstate_origin_dir 中文件的软连接，故先复制为temp（复制时，遇到软连接默认复制软连接指向的真实文件），再删除源文件夹，最后mv操作
         def sstate_local_dir = "~/oebuild_workspace/build/${stageName}/sstate-cache"
-        def sstate_dst_dir = "/home/jenkins/ccache/openeuler_embedded/${ciBranch}/sstate-cache/${stageName}-temp"
+        def sstate_dst_dir = "$SHARE_DIR/${ciBranch}/sstate-cache/${stageName}-temp"
         putSStateCacheToDst(sstate_local_dir, sstate_dst_dir)
-        def sstate_origin_dir = "/home/jenkins/ccache/openeuler_embedded/${ciBranch}/sstate-cache/${stageName}"
+        def sstate_origin_dir = "$SHARE_DIR/${ciBranch}/sstate-cache/${stageName}"
         sh (script: """
             rm -rf ${sstate_origin_dir}
             mv ${sstate_dst_dir} ${sstate_origin_dir}
@@ -113,6 +113,20 @@ def handleAfterBuildImage(String stageName, String arch, Integer build_res_code,
     if (build_res_code == 0 && (stageName.contains("qemu") && !stageName.contains("riscv"))){
         STAGES_RES.push(formatRes(stageName, "test", test_res, "artifact/${logDir}/Test-${stageName}-${randomStr}.log"))
     }
+}
+
+def prepare_srccode(workspace){
+    sh """
+        if [[ -f "$SHARE_DIR/$ciBranch/src.tar.gz" ]]; then
+            pushd ${workspace}
+            oebuild init oebuild_workspace
+            cd oebuild_workspace
+            rm -rf build
+            cp -f $SHARE_DIR/$ciBranch/src.tar.gz .
+            tar zxf src.tar.gz
+            popd
+        fi
+    """
 }
 
 def STAGES_RES = []
@@ -154,6 +168,7 @@ pipeline {
                                 ]){
                                     //下载yocto-meta-openeuler代码
                                     downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
+                                    prepare_srccode("/home/jenkins")
                                     def randomStr = getRandomStr()
                                     def logDir = mkdirOpeneulerLog()
 
@@ -168,7 +183,7 @@ pipeline {
                                         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
                                         -p ok3588 \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -187,7 +202,7 @@ pipeline {
                                         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
                                         -p ok3568 \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -207,7 +222,7 @@ pipeline {
                                         -p qemu-aarch64 \
                                         -f "openeuler-ros;openeuler-mcs" \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -227,7 +242,7 @@ pipeline {
                                         -p qemu-aarch64 \
                                         -f "clang" \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -247,7 +262,7 @@ pipeline {
                                         -p raspberrypi4-64 \
                                         -f "clang" \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -274,9 +289,9 @@ pipeline {
                                 ]){
                                     //下载yocto-meta-openeuler代码
                                     downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
+                                    prepare_srccode("/home/jenkins")
                                     def randomStr = getRandomStr()
                                     def logDir = mkdirOpeneulerLog()
-
                                     
                                     // 执行qemu-aarch64-kernel6.6镜像编译检查
                                     def stageName = "qemu-aarch64-kernel6.6"
@@ -290,7 +305,7 @@ pipeline {
                                         -p qemu-aarch64 \
                                         -f "kernel6" \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -309,7 +324,7 @@ pipeline {
                                         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
                                         -p raspberrypi4-64 \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -329,7 +344,7 @@ pipeline {
                                         -p raspberrypi4-64 \
                                         -f kernel6 \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -349,7 +364,7 @@ pipeline {
                                         -p qemu-aarch64 \
                                         -f "kernel6;clang" \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -369,7 +384,7 @@ pipeline {
                                         -p raspberrypi4-64 \
                                         -f "kernel6;clang" \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -396,6 +411,7 @@ pipeline {
                                 ]){
                                     //下载yocto-meta-openeuler代码
                                     downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
+                                    prepare_srccode("/home/jenkins")
                                     def randomStr = getRandomStr()
                                     def logDir = mkdirOpeneulerLog()
 
@@ -411,7 +427,7 @@ pipeline {
                                         -p raspberrypi4-64 \
                                         -f "openeuler-rt;hmi" \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -431,7 +447,7 @@ pipeline {
                                         -p raspberrypi4-64 \
                                         -f "openeuler-rt;hmi;kernel6" \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -450,7 +466,7 @@ pipeline {
                                         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
                                         -p hieulerpi1 \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -477,6 +493,7 @@ pipeline {
                                 ]){
                                     //下载yocto-meta-openeuler代码
                                     downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
+                                    prepare_srccode("/home/jenkins")
                                     def randomStr = getRandomStr()
                                     def logDir = mkdirOpeneulerLog()
 
@@ -491,7 +508,7 @@ pipeline {
                                         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
                                         -p hieulerpi1 \
                                         -i "openeuler-image-tiny" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -511,7 +528,7 @@ pipeline {
                                         -p hieulerpi1 \
                                         -f "openeuler-ros" \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -530,7 +547,7 @@ pipeline {
                                         -t /usr1/openeuler/gcc/openeuler_gcc_arm32le \
                                         -p qemu-arm \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -557,6 +574,7 @@ pipeline {
                                 ]){
                                     //下载yocto-meta-openeuler代码
                                     downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
+                                    prepare_srccode("/home/jenkins")
                                     def randomStr = getRandomStr()
                                     def logDir = mkdirOpeneulerLog()
 
@@ -571,7 +589,7 @@ pipeline {
                                         -t /usr1/openeuler/gcc/openeuler_gcc_riscv64 \
                                         -p qemu-riscv64 \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -591,7 +609,7 @@ pipeline {
                                         -p x86-64 \
                                         -f "openeuler-rt;hmi;openeuler-ros;openeuler-mcs" \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
@@ -611,7 +629,7 @@ pipeline {
                                         -p x86-64 \
                                         -f "kernel6;openeuler-rt;hmi;openeuler-ros;openeuler-mcs" \
                                         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-                                        -s_out "/home/jenkins/ccache/openeuler_embedded/$ciBranch/sstate-cache/$stageName" \
+                                        -oe "\\-\\-no_layer" \
                                         -dt $IMAGE_DATE \
                                         -d $stageName > ${logDir}/Build-${stageName}-${randomStr}.log
                                     """, returnStatus: true)
