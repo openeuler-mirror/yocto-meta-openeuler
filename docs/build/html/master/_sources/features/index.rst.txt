@@ -8,7 +8,6 @@
    :maxdepth: 1
    :caption: 内容
 
-   software_package_description.rst
    mica/index.rst
    lopper_devicetree.rst
    ros.rst
@@ -24,3 +23,4 @@
    openbmc.rst
    container/index.rst
    kernelversions.rst
+   software_package_description.rst
