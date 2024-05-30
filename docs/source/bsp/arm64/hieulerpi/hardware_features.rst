@@ -8,4 +8,4 @@
 .. image:: hieulerpi.png
 
 
-其他特性: `待更新  <https://www.ebaina.com/>`_
+其他 `参考  <https://www.ebaina.com/>`_
