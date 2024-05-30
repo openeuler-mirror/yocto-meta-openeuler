@@ -255,16 +255,19 @@ def download_repo(d, repo_dir, repo_url ,version = None):
         oee_archive_download(oee_archive_dir = repo_dir, subdir = d.getVar("OEE_ARCHIVE_SUBDIR"))
 
     try:
+        # if get commit version, just return
         repo.commit(version)
+        bb.utils.unlockfile(lf)
+        return
     except:
         bb.debug(1, 'commit does not exist, shallow fetch: ' + version)
         remote.fetch(version, depth=1)
 
-    # if repo is modified, restore it
-    if repo.is_dirty():
-        repo.git.checkout(".")
-    repo.git.checkout(version)
-
+    # here, we use try to avoid users modify the repo, if user modified, just given warning
+    try:
+        repo.git.checkout(version)
+    except:
+        bb.warn("the version %s checkout failed ...", version)
     bb.utils.unlockfile(lf)
 
 def get_manifest(manifest_dir):
