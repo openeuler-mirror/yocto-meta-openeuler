@@ -9,3 +9,4 @@ orangepi
    :maxdepth: 1
 
    orangepi5.rst
+   orangepi4-lts.rst
