@@ -131,8 +131,14 @@
 <section id="buniproton">
 <h2>基于树莓派4B调测Uniproton<a class="headerlink" href="#buniproton" title="Permalink to this headline">¶</a></h2>
 <p>树莓派4B的具体介绍 <a class="reference internal" href="../../../bsp/arm64/raspberrypi4/index.html#board-raspberrypi4b"><span class="std std-ref">树莓派4B</span></a> 。</p>
-<p>编译好了树莓派的openeuler-image-mcs镜像并烧录到sd卡，在树莓派上启动后，参见 <a class="reference internal" href="../../../bsp/arm64/raspberrypi4/uefi.html#raspberrypi4-uefi-guide"><span class="std std-ref">树莓派mcs镜像构建指导</span></a>。
-配置好UEFI，之后进入系统。</p>
+<p>树莓派的openeuler-image-mcs构建，参见 <a class="reference internal" href="../../../bsp/arm64/raspberrypi4/uefi.html#raspberrypi4-uefi-guide"><span class="std std-ref">树莓派mcs镜像构建指导</span></a>。
+由于需要调试，需要在oebuild构建目录中的conf文件夹下的local.conf文件中添加如下配置：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Enable Debugging Features, like including gdb binary in the image</span>
+<span class="nv">IMAGE_FEATURE</span> <span class="o">+=</span> <span class="s2">&quot;debug-tweaks&quot;</span>
+</pre></div>
+</div>
+<p>当然，也可以在openeuler-image-mcs.bb文件中临时增加上述配置。</p>
+<p>编译好了树莓派的openeuler-image-mcs镜像并烧录到sd卡，在树莓派上启动后，配置好UEFI，之后进入系统。</p>
 <p>此时，输入如下命令，查看当前系统中支持的RTOS：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ mica status
 Name                          Assigned CPU        State               Service
@@ -151,7 +157,7 @@ start uniproton-gdb successfully!
 </div>
 <p>此时，可以通过启动GDB Client连接到MICA GDB server，以调测Uniproton内核：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ mica gdb uniproton-gdb
-gdb /root/raspi4.elf -ex <span class="s1">&#39;target extended-remote :5678&#39;</span>         -ex <span class="s1">&#39;set remote run-packet off&#39;</span> -ex <span class="s1">&#39;set remotetimeout unlimited&#39;</span>
+gdb /root/raspi4.elf -ex <span class="s1">&#39;target extended-remote :5678&#39;</span> -ex <span class="s1">&#39;set remote run-packet off&#39;</span> -ex <span class="s1">&#39;set remotetimeout unlimited&#39;</span>
 GNU gdb <span class="o">(</span>GDB<span class="o">)</span> <span class="m">14</span>.1
 Copyright <span class="o">(</span>C<span class="o">)</span> <span class="m">2023</span> Free Software Foundation, Inc.
 License GPLv3+: GNU GPL version <span class="m">3</span> or later &lt;http://gnu.org/licenses/gpl.html&gt;
@@ -285,7 +291,7 @@ ring buffer的地址和大小在MCS仓库中 <code class="docutils literal notra
 <section id="id2">
 <h3>使用方法<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>首先，需要构建含有MICA的openEuler Embedded镜像，请参考 <a class="reference internal" href="../build.html#mcs-build"><span class="std std-ref">MICA镜像构建指南</span></a> 。</p>
-<p>然后，需要生成适配了GDB stub 的 Uniproton，参考 <a class="reference external" href="https://gitee.com/zuyiwen/UniProton/blob/stub_dev/src/component/gdbstub/readme.txt">UniProton GDB stub 构建指南</a> 。</p>
+<p>然后，需要生成适配了GDB stub 的 Uniproton，参考 <a class="reference external" href="https://gitee.com/openeuler/UniProton/blob/master/doc/gdbstub.md">UniProton GDB stub 构建指南</a> 。</p>
 <p>在运行命令时，需要在启动MICA时加上 <code class="docutils literal notranslate"><span class="pre">-d</span></code> 参数。
 并且，由于需要对可执行文件进行调试， <code class="docutils literal notranslate"><span class="pre">-t</span></code> 参数需要指定包含符号表的可执行文件的路径。
 一般来说，plain binary format的可执行文件并没有相关调试信息，
@@ -323,7 +329,7 @@ Uniproton会清除所有断点，并进入正常的运行状态。</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>当前Uniproton的GDB stub支持 <code class="docutils literal notranslate"><span class="pre">break</span></code>， <code class="docutils literal notranslate"><span class="pre">continue</span></code>， <code class="docutils literal notranslate"><span class="pre">print</span></code> ，
-<code class="docutils literal notranslate"><span class="pre">quit</span></code> ， <code class="docutils literal notranslate"><span class="pre">watch</span></code>， <code class="docutils literal notranslate"><span class="pre">run</span></code> 和 <code class="docutils literal notranslate"><span class="pre">ctrl-c</span></code> 七个命令。</p>
+<code class="docutils literal notranslate"><span class="pre">quit</span></code> ， <code class="docutils literal notranslate"><span class="pre">backtrace</span></code>， <code class="docutils literal notranslate"><span class="pre">watch</span></code>， <code class="docutils literal notranslate"><span class="pre">step</span></code>， <code class="docutils literal notranslate"><span class="pre">run</span></code> 和 <code class="docutils literal notranslate"><span class="pre">ctrl-c</span></code> 九个命令。</p>
 </div>
 </section>
 </section>

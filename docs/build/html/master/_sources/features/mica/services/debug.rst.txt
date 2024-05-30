@@ -10,8 +10,17 @@
 
 树莓派4B的具体介绍 :ref:`树莓派4B <board_raspberrypi4b>` 。
 
-编译好了树莓派的openeuler-image-mcs镜像并烧录到sd卡，在树莓派上启动后，参见 :ref:`树莓派mcs镜像构建指导 <raspberrypi4-uefi-guide>`。
-配置好UEFI，之后进入系统。
+树莓派的openeuler-image-mcs构建，参见 :ref:`树莓派mcs镜像构建指导 <raspberrypi4-uefi-guide>`。
+由于需要调试，需要在oebuild构建目录中的conf文件夹下的local.conf文件中添加如下配置：
+
+.. code-block:: shell
+
+    # Enable Debugging Features, like including gdb binary in the image
+    IMAGE_FEATURE += "debug-tweaks"
+
+当然，也可以在openeuler-image-mcs.bb文件中临时增加上述配置。
+
+编译好了树莓派的openeuler-image-mcs镜像并烧录到sd卡，在树莓派上启动后，配置好UEFI，之后进入系统。
 
 此时，输入如下命令，查看当前系统中支持的RTOS：
 
@@ -39,7 +48,7 @@
 .. code-block:: shell
 
     $ mica gdb uniproton-gdb
-    gdb /root/raspi4.elf -ex 'target extended-remote :5678'         -ex 'set remote run-packet off' -ex 'set remotetimeout unlimited'
+    gdb /root/raspi4.elf -ex 'target extended-remote :5678' -ex 'set remote run-packet off' -ex 'set remotetimeout unlimited'
     GNU gdb (GDB) 14.1
     Copyright (C) 2023 Free Software Foundation, Inc.
     License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
@@ -182,7 +191,7 @@ ring buffer 的定义在 ``library/include/mcs/ring_buffer.h`` 文件中。
 
 首先，需要构建含有MICA的openEuler Embedded镜像，请参考 :ref:`MICA镜像构建指南 <mcs_build>` 。
 
-然后，需要生成适配了GDB stub 的 Uniproton，参考 `UniProton GDB stub 构建指南 <https://gitee.com/zuyiwen/UniProton/blob/stub_dev/src/component/gdbstub/readme.txt>`_ 。
+然后，需要生成适配了GDB stub 的 Uniproton，参考 `UniProton GDB stub 构建指南 <https://gitee.com/openeuler/UniProton/blob/master/doc/gdbstub.md>`_ 。
 
 在运行命令时，需要在启动MICA时加上 ``-d`` 参数。
 并且，由于需要对可执行文件进行调试， ``-t`` 参数需要指定包含符号表的可执行文件的路径。
@@ -226,4 +235,4 @@ Uniproton会清除所有断点，并进入正常的运行状态。
 .. note::
 
     当前Uniproton的GDB stub支持 ``break``， ``continue``， ``print`` ，
-    ``quit`` ， ``watch``， ``run`` 和 ``ctrl-c`` 七个命令。
+    ``quit`` ， ``backtrace``， ``watch``， ``step``， ``run`` 和 ``ctrl-c`` 九个命令。
