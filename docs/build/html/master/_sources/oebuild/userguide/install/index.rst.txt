@@ -5,7 +5,7 @@
 
 .. note::
 
-   - oebuild 基于 python 实现，支持最低的 python3 版本为 **python3.8**。
+   - oebuild 基于 python3 实现，建议使用 **python>=3.10** 的版本。
 
    - 当前 **仅支持在64位的x86环境** 下使用 oebuild，并且需要在 **普通用户** 下进行 oebuild 的安装运行。
 
