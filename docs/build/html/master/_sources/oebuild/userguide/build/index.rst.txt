@@ -1,7 +1,7 @@
 .. _oebuild_usage:
 
-使用指导
-########
+构建OS镜像使用指导
+##################
 
 本章节内容会介绍 oebuild 的具体使用方法，可根据下述步骤，了解 oebuild 的相关命令并掌握如何构建定制化的 openEuler Embedded 镜像。
 
@@ -76,6 +76,13 @@ ____
     具体界面如下图所示:
 
     .. image:: ../../../_static/images/generate/oebuild-generate-select.png
+    
+  1. 此时在"choice build target"中选择OS表示构建OS镜像，
+  2. 在"choice platform"选择需要构建的单板，图中示例为qemu-aarch64
+  3. 在"os features"下选择需要构建的特性
+  4. 在directory输入编译目录名，至此按q，退出，按y确认即可生成编译目录
+
+  或者直接在命令行输入命令
 
   .. code-block:: console
 
@@ -154,8 +161,6 @@ ____
    - ``bitbake <target> -g``：输出 <target> 相关的构建依赖分析 pn-buildlist、task-depends.dot。
 
    关于 bitbake 命令更详细丰富的用法，请参考 `yocto bitbake manual <https://docs.yoctoproject.org/bitbake/bitbake-user-manual/bitbake-user-manual-intro.html#the-bitbake-command>`_。
-
-____
 
 进一步了解
 **********

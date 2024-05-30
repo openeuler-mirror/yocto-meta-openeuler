@@ -19,3 +19,5 @@ oebuild目前主要有以下9个主要的使用命令：
     runqemu.rst
     menv.rst
     mplugin.rst
+    deploy-target.rst
+    undeploy-target.rst
