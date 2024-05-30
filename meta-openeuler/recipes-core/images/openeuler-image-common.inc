@@ -80,6 +80,15 @@ SYSTEMD_DEFAULT_TARGET = "multi-user.target"
 # sdk configuration
 require recipes-core/images/openeuler-image-sdk.inc
 
+remove_unneed_files() {
+    # remove unnecessary host dnf database file
+    if [ -d ${IMAGE_ROOTFS}/opt/buildtools ];then
+        rm -rf ${IMAGE_ROOTFS}/opt/buildtools
+    fi
+}
+
+IMAGE_PREPROCESS_COMMAND:append = "remove_unneed_files;"
+
 copy_openeuler_distro() {
     set -x
     test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
