@@ -36,9 +36,9 @@ SRC_URI += " \
             file://communication_ipc/sdk.BUILD.gn \
             "
 
-DEPENDS += "hilog c-utils distributed-beget eventhandler openssl cjson binder"
+DEPENDS += "hilog c-utils distributed-beget eventhandler openssl cjson"
 
-RDEPENDS:${PN} = "libboundscheck binder"
+RDEPENDS:${PN} = "libboundscheck"
 
 FILES:${PN}-dev = "${includedir} /compiler_gn"
 FILES:${PN} = "${libdir} ${bindir} /system"

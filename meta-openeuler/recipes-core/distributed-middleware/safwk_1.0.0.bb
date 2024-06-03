@@ -22,6 +22,7 @@ SRC_URI += " \
 
 SRC_URI:append = " \
         file://0003-feat-for-embedded-modify-language-in-start-script.patch;patchdir=${WORKDIR}/systemabilitymgr_safwk \
+        file://0005-feat-for-embedded-modify-binder-check-conditions.patch;patchdir=${WORKDIR}/systemabilitymgr_safwk \
 "
 
 DEPENDS += "hilog c-utils distributed-beget eventhandler ipc samgr"

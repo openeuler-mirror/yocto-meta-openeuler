@@ -1,0 +1,41 @@
+From 14e714aa114fa764541e5c13c99694bcd980eecf Mon Sep 17 00:00:00 2001
+From: s_c_c <shichuchao@huawei.com>
+Date: Thu, 30 May 2024 11:05:49 +0800
+Subject: [PATCH] feat for embedded modify binder check conditions
+
+---
+ start_services.sh | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/start_services.sh b/start_services.sh
+index 8ae10f7..cbceee7 100755
+--- a/start_services.sh
++++ b/start_services.sh
+@@ -104,6 +104,15 @@ if [ ! -d "/system/log" ]; then
+   mkdir -p /system/log
+ fi
+ 
++# Create directories
++if [ ! -d "/storage/maindata" ]; then
++  log info "/storage/maindata directory not exist, create it"
++  mkdir -p /storage/maindata
++  mkdir -p /storage/bakdata
++
++  mkdir -p /data/service/el1/public/deviceauth/account
++fi
++
+ # Generate SN number with IP addres
+ if [ ! -e "/etc/SN" ]; then
+   log info "SN file not exist, add content to it."
+@@ -134,7 +143,7 @@ fi
+ if [ ! -e "/dev/binder" ]; then
+   log info "Starting insert binder"
+   # If the current kernel already comes with a binder, directly mount the binder
+-  if grep -q '^CONFIG_ANDROID_BINDER_IPC=y$' /boot/config-$(uname -r); then
++  if [ -d "/sys/kernel/debug/binder/" ] || grep -q '^CONFIG_ANDROID_BINDER_IPC=y$' /boot/config-$(uname -r); then
+     mkdir /dev/binderfs
+     mount -t binder binder /dev/binderfs
+     ln -s /dev/binderfs/binder /dev/binder
+-- 
+2.20.1 (Apple Git-117)
+
