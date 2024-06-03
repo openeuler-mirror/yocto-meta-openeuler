@@ -35,7 +35,7 @@ do_configure:prepend() {
 
 do_compile() {
     cd ${S}
-    ./build.sh --product-name openeuler --target-cpu arm64 -v --gn-args is_clang=false --gn-args use_gold=false --gn-args target_sysroot=\"${RECIPE_SYSROOT}\"
+    ./build.sh --product-name openeuler --target-cpu arm64 -v --gn-args is_clang=${is_clang} --gn-args use_gold=false --gn-args target_sysroot=\"${RECIPE_SYSROOT}\"
 }
 
 do_install() {
@@ -48,8 +48,8 @@ do_install() {
     # bin
     install -m 0755 ${S}/out/openeuler/packages/phone/system/bin/param_service ${D}/${bindir}/
     # shared library
-    install -m 0755 ${S}/out/openeuler/linux_arm64/startup/init/libbeget_proxy.z.so ${D}/${libdir}/
-    install -m 0755 ${S}/out/openeuler/linux_arm64/startup/init/libbegetutil.z.so ${D}/${libdir}/
+    install -m 0755 ${S}/out/openeuler/linux_*arm64/startup/init/libbeget_proxy.z.so ${D}/${libdir}/
+    install -m 0755 ${S}/out/openeuler/linux_*arm64/startup/init/libbegetutil.z.so ${D}/${libdir}/
     ln -s ../../${libdir}/libbeget_proxy.z.so ${D}/system/lib64/libbeget_proxy.z.so
     ln -s ../../${libdir}/libbegetutil.z.so ${D}/system/lib64/libbegetutil.z.so
     # header files

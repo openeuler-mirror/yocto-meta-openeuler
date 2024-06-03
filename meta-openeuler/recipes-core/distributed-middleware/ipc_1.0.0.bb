@@ -66,7 +66,7 @@ do_configure:prepend() {
 
 do_compile() {
     cd ${S}
-    ./build.sh --product-name openeuler --target-cpu arm64 -v --gn-args is_clang=false --gn-args use_gold=false --gn-args target_sysroot=\"${RECIPE_SYSROOT}\"
+    ./build.sh --product-name openeuler --target-cpu arm64 -v --gn-args is_clang=${is_clang} --gn-args use_gold=false --gn-args target_sysroot=\"${RECIPE_SYSROOT}\"
 }
 
 do_install() {
@@ -77,15 +77,15 @@ do_install() {
     install -d -m 0755 ${D}/system/lib64/
 
     # install libs and headers from ipc
-    install -m 0755 ${S}/out/openeuler/linux_arm64/communication/ipc/*.so ${D}/${libdir}/
+    install -m 0755 ${S}/out/openeuler/linux_*arm64/communication/ipc/*.so ${D}/${libdir}/
     ln -s ../../${libdir}/libdbinder.z.so ${D}/system/lib64/libdbinder.z.so
     ln -s ../../${libdir}/libipc_core.z.so ${D}/system/lib64/libipc_core.z.so
     ln -s ../../${libdir}/libipc_single.z.so ${D}/system/lib64/libipc_single.z.so
     find ${S}/out/openeuler/innerkits/linux-arm64/ipc/ -name *.h -print0 | xargs -0 -i cp -rf {} ${D}/${includedir}/ipc/
 
     # install libs and headers from dsoftbus
-    rm -f ${S}/out/openeuler/linux_arm64/communication/dsoftbus/libsoftbus_server.z.so
-    install -m 0755 ${S}/out/openeuler/linux_arm64/communication/dsoftbus/*.so ${D}/${libdir}/
+    rm -f ${S}/out/openeuler/linux_*arm64/communication/dsoftbus/libsoftbus_server.z.so
+    install -m 0755 ${S}/out/openeuler/linux_*arm64/communication/dsoftbus/*.so ${D}/${libdir}/
     ln -s ../../${libdir}/libcoap.z.so ${D}/system/lib64/libcoap.z.so
     ln -s ../../${libdir}/libFillpSo.open.z.so ${D}/system/lib64/libFillpSo.open.z.so
     ln -s ../../${libdir}/libnstackx_congestion.open.z.so ${D}/system/lib64/libnstackx_congestion.open.z.so
@@ -99,12 +99,12 @@ do_install() {
     find ${S}/out/openeuler/innerkits/linux-arm64/dsoftbus/ -name *.h -print0 | xargs -0 -i cp -rvf {} ${D}/${includedir}/dsoftbus/
 
     # install libs and headers from third party components
-    install -m 0755 ${S}/out/openeuler/linux_arm64/common/common/*.so ${D}/${libdir}/
+    install -m 0755 ${S}/out/openeuler/linux_*arm64/common/common/*.so ${D}/${libdir}/
     ln -s ../../${libdir}/libcjson.z.so ${D}/system/lib64/libcjson.z.so
     ln -s ../../${libdir}/libsec_shared.z.so ${D}/system/lib64/libsec_shared.z.so
     ln -s ../../${libdir}/libsqlite.z.so ${D}/system/lib64/libsqlite.z.so
 
-    install -m 0755 ${S}/out/openeuler/linux_arm64/common/dsoftbus/*.so ${D}/${libdir}/
+    install -m 0755 ${S}/out/openeuler/linux_*arm64/common/dsoftbus/*.so ${D}/${libdir}/
     ln -s ../../${libdir}/libmbedtls.z.so ${D}/system/lib64/libmbedtls.z.so
 
     install -m 554 ${S}/third_party/mbedtls/include/mbedtls/*.h ${D}/${includedir}/mbedtls/

@@ -36,7 +36,7 @@ do_configure:prepend() {
 
 do_compile() {
     cd ${S}
-    ./build.sh --product-name openeuler --target-cpu arm64 -v --gn-args is_clang=false --gn-args use_gold=false --gn-args target_sysroot=\"${RECIPE_SYSROOT}\"
+    ./build.sh --product-name openeuler --target-cpu arm64 -v --gn-args is_clang=${is_clang} --gn-args use_gold=false --gn-args target_sysroot=\"${RECIPE_SYSROOT}\"
 }
 
 do_install() {
@@ -44,8 +44,8 @@ do_install() {
     install -d -m 0755 ${D}/${libdir}/
     install -d -m 0755 ${D}/${bindir}/
     # shared library
-    install -m 0755 ${S}/out/openeuler/linux_arm64/notification/eventhandler/libeventhandler_native.z.so ${D}/${libdir}/
-    install -m 0755 ${S}/out/openeuler/linux_arm64/notification/eventhandler/libeventhandler.z.so ${D}/${libdir}/
+    install -m 0755 ${S}/out/openeuler/linux_*arm64/notification/eventhandler/libeventhandler_native.z.so ${D}/${libdir}/
+    install -m 0755 ${S}/out/openeuler/linux_*arm64/notification/eventhandler/libeventhandler.z.so ${D}/${libdir}/
     # header files
     install -m 554 ${S}/base/notification/eventhandler/interfaces/inner_api/*.h ${D}/${includedir}/eventhandler/
 

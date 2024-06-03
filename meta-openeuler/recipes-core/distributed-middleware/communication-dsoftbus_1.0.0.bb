@@ -49,7 +49,7 @@ do_configure:prepend() {
 do_compile() {
     cd ${S}
     # no support clang
-    ./build.sh --product-name openeuler --target-cpu arm64 -v --gn-args is_clang=false --gn-args use_gold=false --gn-args target_sysroot=\"${RECIPE_SYSROOT}\"
+    ./build.sh --product-name openeuler --target-cpu arm64 -v --gn-args is_clang=${is_clang} --gn-args use_gold=false --gn-args target_sysroot=\"${RECIPE_SYSROOT}\"
 }
 
 do_install() {
@@ -63,7 +63,7 @@ do_install() {
     rm -rf ${S}/out/openeuler/innerkits/linux-arm64/dsoftbus/softbus_client/inner_kits/transport/inner_session.h
     find ${S}/out/openeuler/innerkits/linux-arm64/dsoftbus/ -name *.h -print0 | xargs -0 -i cp -rf {} ${D}/${includedir}/dsoftbus/
     # install libs from dsoftbus
-    install -m 0755 ${S}/out/openeuler/linux_arm64/communication/dsoftbus/libsoftbus_server.z.so ${D}/${libdir}/
+    install -m 0755 ${S}/out/openeuler/linux_*arm64/communication/dsoftbus/libsoftbus_server.z.so ${D}/${libdir}/
     ln -s ../../${libdir}/libsoftbus_server.z.so ${D}/system/lib64/libsoftbus_server.z.so
     # install headers and BUILD.gn from third party sqlite
     install -m 0755 ${S}/third_party/sqlite/include/*.h ${D}/${includedir}/sqlite/

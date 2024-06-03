@@ -31,7 +31,7 @@ do_configure:prepend() {
 
 do_compile() {
     cd ${S}
-    ./build.sh --product-name openeuler --target-cpu arm64 -v --gn-args is_clang=false --gn-args use_gold=false --gn-args target_sysroot=\"${RECIPE_SYSROOT}\"
+    ./build.sh --product-name openeuler --target-cpu arm64 -v --gn-args is_clang=${is_clang} --gn-args use_gold=false --gn-args target_sysroot=\"${RECIPE_SYSROOT}\"
 }
 
 do_install() {
@@ -42,7 +42,7 @@ do_install() {
 
     # prepare so
     install -m 0755 ${S}/out/openeuler/packages/phone/system/lib64/libhilog*.so ${D}${libdir}/
-    install -m 0755 ${S}/out/openeuler/linux_arm64/obj/base/hiviewdfx/hilog/interfaces/native/innerkits/libhilog_base.a ${D}/${libdir}/
+    install -m 0755 ${S}/out/openeuler/linux_*arm64/obj/base/hiviewdfx/hilog/interfaces/native/innerkits/libhilog_base.a ${D}/${libdir}/
 
     # prepare head files
     install -m 554 ${S}/base/hiviewdfx/hilog/interfaces/native/innerkits/include/*.h  ${D}/${includedir}/hilog/

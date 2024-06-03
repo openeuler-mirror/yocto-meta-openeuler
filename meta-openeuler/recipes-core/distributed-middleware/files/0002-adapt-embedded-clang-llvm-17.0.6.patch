@@ -1,0 +1,110 @@
+diff --git a/config/clang/clang.gni b/config/clang/clang.gni
+index 9728e12..93cc72f 100755
+--- a/config/clang/clang.gni
++++ b/config/clang/clang.gni
+@@ -4,9 +4,9 @@
+ 
+ import("//build/toolchain/toolchain.gni")
+ 
+-default_clang_base_path = "/usr/lib64/llvm15/"
++default_clang_base_path = "/usr1/openeuler/llvm/"
+ clang_lib_path =
+-    "${default_clang_base_path}/lib/clang/15.0.7/lib"
++    "${default_clang_base_path}/lib/clang/17/lib"
+ 
+ declare_args() {
+   # Indicates if the build should use the Chrome-specific plugins for enforcing
+diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
+index 508e0ab..bd9771e 100755
+--- a/config/compiler/BUILD.gn
++++ b/config/compiler/BUILD.gn
+@@ -726,8 +726,8 @@ config("compiler_cpu_abi") {
+       }
+     } else if (current_cpu == "arm64") {
+       if (is_clang && !is_ohos && !is_nacl) {
+-        cflags += [ "--target=aarch64-linux-gnu" ]
+-        ldflags += [ "--target=aarch64-linux-gnu" ]
++        cflags += [ "--target=aarch64-openeuler-linux-gnu" ]
++        ldflags += [ "--target=aarch64-openeuler-linux-gnu" ]
+       }
+       if (is_clang && is_ohos) {
+         ldflags += [ "-Wl,--hash-style=gnu" ]
+diff --git a/config/ohos/BUILD.gn b/config/ohos/BUILD.gn
+index 84a3ea1..608d349 100755
+--- a/config/ohos/BUILD.gn
++++ b/config/ohos/BUILD.gn
+@@ -79,7 +79,7 @@ config("runtime_library") {
+ 
+   ldflags += [
+     "-L" + rebase_path("${musl_sysroot}/usr/lib/${abi_target}", root_build_dir),
+-    "-L" + rebase_path("${clang_base_path}/lib/clang/15.0.7/lib/${abi_target}",
++    "-L" + rebase_path("${clang_base_path}/lib/clang/17/lib/${abi_target}",
+                        root_build_dir),
+   ]
+ 
+diff --git a/config/ohos/config.gni b/config/ohos/config.gni
+index e5d4d54..666f224 100644
+--- a/config/ohos/config.gni
++++ b/config/ohos/config.gni
+@@ -37,5 +37,5 @@ if (is_ohos) {
+     assert(false, "Architecture not supported")
+   }
+ 
+-  libclang_rt_file = "${clang_base_path}/lib/clang/15.0.7/lib/${abi_target}/libclang_rt.builtins.a"
++  libclang_rt_file = "${clang_base_path}/lib/clang/17/lib/${abi_target}/libclang_rt.builtins.a"
+ }
+diff --git a/toolchain/gcc_toolchain.gni b/toolchain/gcc_toolchain.gni
+index 6a68e42..b1d6f01 100755
+--- a/toolchain/gcc_toolchain.gni
++++ b/toolchain/gcc_toolchain.gni
+@@ -585,13 +585,13 @@ template("clang_toolchain") {
+ 
+   gcc_toolchain(target_name) {
+     # prefix = rebase_path("$clang_base_path/bin", root_build_dir)
+-    prefix = "/usr/lib64/llvm15/bin"
++    prefix = "/usr1/openeuler/llvm/bin"
+     cc = "$prefix/clang"
+     cxx = "$prefix/clang++"
+     ld = cxx
+-    readelf = "${toolprefix}readelf"
+-    ar = "${prefix}/llvm-ar"
+-    nm = "${toolprefix}nm"
++    readelf = "${prefix}/${toolprefix}llvm-readelf"
++    ar = "${prefix}/${toolprefix}llvm-ar"
++    nm = "${prefix}/${toolprefix}llvm-nm"
+ 
+     forward_variables_from(invoker,
+                            [
+diff --git a/toolchain/linux/BUILD.gn b/toolchain/linux/BUILD.gn
+index 9019e67..a299dfc 100755
+--- a/toolchain/linux/BUILD.gn
++++ b/toolchain/linux/BUILD.gn
+@@ -140,7 +140,7 @@ clang_toolchain("clang_x86_64") {
+ }
+ 
+ clang_toolchain("linux_clang_arm64") {
+-  toolprefix = "/usr/bin/"
++  toolprefix = ""
+   toolchain_args = {
+     current_cpu = "arm64"
+     current_os = "linux"
+@@ -166,4 +166,4 @@ gcc_toolchain("linux_arm64") {
+     is_clang = false
+   }
+   shlib_extension = ".z.so"
+-}
+\ No newline at end of file
++}
+diff --git a/toolchain/toolchain.gni b/toolchain/toolchain.gni
+index 7794e6f..a4ca2ed 100755
+--- a/toolchain/toolchain.gni
++++ b/toolchain/toolchain.gni
+@@ -46,7 +46,7 @@ hermetic_xcode_path =
+ declare_args() {
+   if (is_clang) {
+     # Clang compiler version. Clang files are placed at version-dependent paths.
+-    clang_version = "15.0.7"
++    clang_version = "17"
+   }
+   use_custom_clang = true
+ }

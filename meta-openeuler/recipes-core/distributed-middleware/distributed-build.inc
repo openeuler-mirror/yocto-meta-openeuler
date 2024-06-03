@@ -14,6 +14,9 @@ buildtools_dir = "${S}/prebuilts/build-tools/linux-x86/bin"
 
 OPENEULER_MULTI_REPOS = "yocto-embedded-tools distributed-build distributed-build_lite"
 
+is_clang = "false"
+is_clang:toolchain-clang = "true"
+
 SRC_URI = " \
         file://yocto-embedded-tools/dsoftbus/build_tools/gn-linux-x86-1717.tar.gz \
         file://distributed-build/${pkg-build}.tar.gz \
@@ -47,6 +50,7 @@ SRC_URI = " \
 
 SRC_URI:append = " \
         file://0001-feat-for-embedded-comment-out-unrecognized-options.patch;patchdir=${WORKDIR}/${pkg-build} \
+        file://0002-adapt-embedded-clang-llvm-17.0.6.patch;patchdir=${WORKDIR}/${pkg-build} \
 "
 
 python do_fetch:prepend() {

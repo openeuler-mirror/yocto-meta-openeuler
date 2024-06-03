@@ -33,7 +33,7 @@ do_configure:prepend() {
 
 do_compile() {
     cd ${S}
-    ./build.sh --product-name openeuler --target-cpu arm64 -v --gn-args is_clang=false --gn-args use_gold=false --gn-args target_sysroot=\"${RECIPE_SYSROOT}\"
+    ./build.sh --product-name openeuler --target-cpu arm64 -v --gn-args is_clang=${is_clang} --gn-args use_gold=false --gn-args target_sysroot=\"${RECIPE_SYSROOT}\"
 }
 
 do_install() {
@@ -46,7 +46,7 @@ do_install() {
     find ${S}/out/openeuler/innerkits/linux-arm64/huks/ -name *.h -print0 | xargs -0 -i cp -rf {} ${D}/${includedir}/huks/
     install -m 544 ${S}/base/security/huks/frameworks/huks_standard/main/common/include/*.h ${D}/${includedir}/huks/
     # copy so file.
-    install -m 0755 ${S}/out/openeuler/linux_arm64/security/huks/*.so ${D}/${libdir}/
+    install -m 0755 ${S}/out/openeuler/linux_*arm64/security/huks/*.so ${D}/${libdir}/
     ln -s ../../${libdir}/libhuks_engine_core_standard.z.so ${D}/system/lib64/libhuks_engine_core_standard.z.so
     ln -s ../../${libdir}/libhuks_ndk.z.so ${D}/system/lib64/libhuks_ndk.z.so
     ln -s ../../${libdir}/libhukssdk.z.so ${D}/system/lib64/libhukssdk.z.so

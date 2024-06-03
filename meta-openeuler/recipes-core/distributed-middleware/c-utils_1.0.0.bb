@@ -33,7 +33,7 @@ do_configure:prepend() {
 
 do_compile() {
     cd ${S}
-    ./build.sh --product-name openeuler --target-cpu arm64 -v --gn-args is_clang=false --gn-args use_gold=false --gn-args target_sysroot=\"${RECIPE_SYSROOT}\"
+    ./build.sh --product-name openeuler --target-cpu arm64 -v --gn-args is_clang=${is_clang} --gn-args use_gold=false --gn-args target_sysroot=\"${RECIPE_SYSROOT}\"
 }
 
 do_install() {
@@ -43,7 +43,7 @@ do_install() {
     install -d ${D}/${includedir}/src/
 
     # install so
-    install -m 0755 ${S}/out/openeuler/linux_arm64/commonlibrary/c_utils/libutils.z.so ${D}/${libdir}/
+    install -m 0755 ${S}/out/openeuler/linux_*arm64/commonlibrary/c_utils/libutils.z.so ${D}/${libdir}/
 
     # install head files
     install -m 554 ${S}/commonlibrary/c_utils/base/include/*.h  ${D}/${includedir}/c_utils/

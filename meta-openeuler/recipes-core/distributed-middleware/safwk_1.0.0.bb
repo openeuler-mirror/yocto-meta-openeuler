@@ -42,7 +42,7 @@ do_configure:prepend() {
 
 do_compile() {
     cd ${S}
-    ./build.sh --product-name openeuler --target-cpu arm64 -v --gn-args is_clang=false --gn-args use_gold=false --gn-args target_sysroot=\"${RECIPE_SYSROOT}\"
+    ./build.sh --product-name openeuler --target-cpu arm64 -v --gn-args is_clang=${is_clang} --gn-args use_gold=false --gn-args target_sysroot=\"${RECIPE_SYSROOT}\"
 }
 
 do_install() {
@@ -52,9 +52,9 @@ do_install() {
     install -d -m 0755 ${D}/system/bin/
 
     # prepare so
-    install -m 0755 ${S}/out/openeuler/linux_arm64/systemabilitymgr/safwk/*.so ${D}/${libdir}/
+    install -m 0755 ${S}/out/openeuler/linux_*arm64/systemabilitymgr/safwk/*.so ${D}/${libdir}/
     # prepare bin
-    install -m 0755 ${S}/out/openeuler/linux_arm64/systemabilitymgr/safwk/sa_main ${D}/${bindir}/
+    install -m 0755 ${S}/out/openeuler/linux_*arm64/systemabilitymgr/safwk/sa_main ${D}/${bindir}/
     ln -s ../../${bindir}/sa_main ${D}/system/bin/sa_main
 
     install -m 0755 ${WORKDIR}/systemabilitymgr_safwk/start_services.sh ${D}/system/bin/
