@@ -53,6 +53,10 @@ do_install:append() {
 
 }
 
+# hieulerpi1-user-driver provides libboundscheck.so
+PROVIDES += "libboundscheck"
+RPROVIDES:${PN} += "libboundscheck"
+
 FILES:${PN} += " \
     ${libdir}/*so* \
     ${libdir}/npu/*so* \
