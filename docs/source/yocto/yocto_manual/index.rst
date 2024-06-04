@@ -1,6 +1,6 @@
 .. _yocto_manual:
 
-yocto 手册
+yocto 手册参考
 ##############
 
 .. toctree::

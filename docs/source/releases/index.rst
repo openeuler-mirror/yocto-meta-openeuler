@@ -10,3 +10,4 @@
     :reversed:
 
     release-notes-*
+    republish.rst

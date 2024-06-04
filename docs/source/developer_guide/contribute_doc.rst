@@ -1,6 +1,6 @@
 .. _contribute_doc:
 
-如何撰写并贡献文档
+文档提交指导
 ##################
 
 openEuler Embedded采用Sphinx来构建文档，生成html静态页面，并最终托管在gitee pages上。

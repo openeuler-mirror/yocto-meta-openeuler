@@ -1,6 +1,6 @@
 .. _commit_msg:
 
-git commit提交规范
+代码提交指导
 ######################################
 
 开发人员通过git commit和gitee pr的形式向openEuler Embedded进行贡献，其中git commit msg需遵循相应的规范。

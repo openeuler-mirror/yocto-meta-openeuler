@@ -1,7 +1,7 @@
 .. _openeuler_embedded_infrastructure:
 
 
-基础设施
+基础设施指导
 ################################
 
 本章包含了openEuler Embedded相关基础设施的介绍，具体如下：

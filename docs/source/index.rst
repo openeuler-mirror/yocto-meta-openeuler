@@ -17,29 +17,12 @@ openEuler Embedded在内核版本、软件包版本等代码层面会与openEule
    introduction/index.rst
    getting_started/index.rst
    releases/index.rst
-   faq/index.rst
 
 .. toctree::
    :maxdepth: 1
    :caption: 指导手册
 
-   features/index.rst
-   bsp/index.rst
-   yocto/index.rst
-   develop_help/index.rst
-   linux/index.rst
-   infrastructure/index.rst
+   user_guide/index.rst
+   developer_guide/index.rst
+   faq/index.rst
    references/index.rst
-   bitbake/index.rst
-   yocto_manual/index.rst
-
-.. toctree::
-   :maxdepth: 1
-   :caption: oebuild 指导
-
-   oebuild/intro.rst
-   oebuild/userguide/index.rst
-   oebuild/expand/index.rst
-   oebuild/faq/index.rst
-   oebuild/develop/index.rst
-   oebuild/release/index.rst

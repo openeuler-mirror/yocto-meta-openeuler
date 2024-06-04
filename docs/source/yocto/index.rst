@@ -1,6 +1,6 @@
 .. _yocto:
 
-构建系统
+yocto 手册
 ============================
 
 由于openEuler Embedded是面向嵌入式场景的，其对构建系统的核心诉求是： **交叉编译、灵活的定制化与裁剪**，
@@ -17,7 +17,6 @@ openEuler Embeddedd的核心构建系统是基于Yocto，但又根据自身的�
    recipe.rst
    meta-openeuler.rst
    exploration.rst
-   development.rst
    poky4.0.rst
    addpackage_guide.rst
    image_develop.rst
@@ -28,3 +27,4 @@ openEuler Embeddedd的核心构建系统是基于Yocto，但又根据自身的�
    partitioned_image.rst
    openeuler_src_uri_remove.rst
    add_package_src.rst
+   yocto_manual/index.rst
