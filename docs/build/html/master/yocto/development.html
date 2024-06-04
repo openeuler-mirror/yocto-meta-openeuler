@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Yocto开发 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+  <title>Yocto开发指导 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
@@ -20,8 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="yocto poky 4.0 语法变更" href="poky4.0.html" />
-    <link rel="prev" title="深入Yocto" href="exploration.html" /> 
+    <link rel="next" title="oebuild开发指导" href="../oebuild/develop/index.html" />
+    <link rel="prev" title="开发方式指导" href="../developer_guide/develop/new_develop.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,72 +44,42 @@
 <li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">总体介绍</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">常见问题</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../features/index.html">关键特性</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../bsp/index.html">南向支持</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">构建系统</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="overview.html">Yocto介绍</a></li>
-<li class="toctree-l2"><a class="reference internal" href="yocto_quick_start_manual/index.html">yocto 工程快速入门</a></li>
-<li class="toctree-l2"><a class="reference internal" href="recipe.html">Yocto 标准配方解析</a></li>
-<li class="toctree-l2"><a class="reference internal" href="meta-openeuler.html">openeuler层结构及演进策略</a></li>
-<li class="toctree-l2"><a class="reference internal" href="exploration.html">深入Yocto</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Yocto开发</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#layer">如何定制添加layer</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#image">添加image</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#bbimage">1）通过自定义bb文件添加image</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id1">2）通过自定义包组添加image</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/index.html">用户使用指导</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../developer_guide/index.html">开发及贡献指导</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../developer_guide/code_download_compile.html">下载编译指导</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../developer_guide/develop/index.html">代码开发指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../developer_guide/develop/new_develop.html">开发方式指导</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Yocto开发指导</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#layer">如何定制添加layer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#image">添加image</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bb">添加一个新的配方bb</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bbclass">添加bbclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">添加新架构</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config">支持多config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">使用外部工具链</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#recipes">recipes版本选择</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src-uri">SRC_URI中文件和目录查找</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">配方打包时如何分包</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">配方中添加日志打印</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">对指定架构或任务等进行定制配置（选项、补丁等）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">编译选项配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9">依赖关系配置（包、任务）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#provides">配方中的虚拟provides</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#bb">添加一个新的配方bb</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#recipetoolbb">使用recipetool自动添加bb文件</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#devtoolbb">使用devtool自动添加bb文件</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id2">从零添加bb</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../oebuild/develop/index.html">oebuild开发指导</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#bbclass">添加bbclass</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id3">添加新架构</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#config">支持多config</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id4">使用外部工具链</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#recipes">recipes版本选择</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#src-uri">SRC_URI中文件和目录查找</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id5">配方打包时如何分包</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id6">配方中添加日志打印</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id7">对指定架构或任务等进行定制配置（选项、补丁等）</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id8">编译选项配置</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id9">依赖关系配置（包、任务）</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#provides">配方中的虚拟provides</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developer_guide/debug/index.html">功能调试指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developer_guide/commit.html">代码提交指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developer_guide/contribute_doc.html">文档提交指导</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="poky4.0.html">yocto poky 4.0 语法变更</a></li>
-<li class="toctree-l2"><a class="reference internal" href="addpackage_guide.html">新增配方支持指导</a></li>
-<li class="toctree-l2"><a class="reference internal" href="image_develop.html">镜像定制</a></li>
-<li class="toctree-l2"><a class="reference internal" href="container_environment.html">openEuler Embedded 容器环境介绍</a></li>
-<li class="toctree-l2"><a class="reference internal" href="priority.html">Yocto 元数据优先级</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sstate.html">share state 机制</a></li>
-<li class="toctree-l2"><a class="reference internal" href="devshell.html">Yocto 实现终端应用</a></li>
-<li class="toctree-l2"><a class="reference internal" href="partitioned_image.html">使用 yocto 创建分区镜像</a></li>
-<li class="toctree-l2"><a class="reference internal" href="openeuler_src_uri_remove.html">OPENEULER_SRC_URI_REMOVE</a></li>
-<li class="toctree-l2"><a class="reference internal" href="add_package_src.html">如何添加或修改软件包源</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../develop_help/index.html">开发帮助</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../linux/index.html">使用与配置</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../infrastructure/index.html">基础设施</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../references/index.html">参考文献</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../bitbake/index.html">BitBake 手册</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../yocto_manual/index.html">yocto 手册</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">oebuild 指导</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../oebuild/intro.html">简介</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../oebuild/userguide/index.html">用户指南</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../oebuild/expand/index.html">oebuild扩展功能</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../oebuild/faq/index.html">常见问题</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../oebuild/develop/index.html">开发者指南</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../oebuild/release/index.html">版本变更日志</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/index.html">参考文档</a></li>
 </ul>
 
         </div>
@@ -126,8 +96,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="index.html">构建系统</a> &raquo;</li>
-      <li>Yocto开发</li>
+          <li><a href="../developer_guide/index.html">开发及贡献指导</a> &raquo;</li>
+          <li><a href="../developer_guide/develop/index.html">代码开发指导</a> &raquo;</li>
+      <li>Yocto开发指导</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -137,7 +108,7 @@
            <div itemprop="articleBody">
              
   <section id="yocto">
-<span id="yocto-development"></span><h1>Yocto开发<a class="headerlink" href="#yocto" title="Permalink to this headline">¶</a></h1>
+<span id="yocto-development"></span><h1>Yocto开发指导<a class="headerlink" href="#yocto" title="Permalink to this headline">¶</a></h1>
 <section id="layer">
 <h2>如何定制添加layer<a class="headerlink" href="#layer" title="Permalink to this headline">¶</a></h2>
 <img alt="../_images/create_layer.png" src="../_images/create_layer.png" />
@@ -322,8 +293,8 @@ RRECOMMENDS:${PN}-tools = &quot;\
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="exploration.html" class="btn btn-neutral float-left" title="深入Yocto" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="poky4.0.html" class="btn btn-neutral float-right" title="yocto poky 4.0 语法变更" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../developer_guide/develop/new_develop.html" class="btn btn-neutral float-left" title="开发方式指导" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../oebuild/develop/index.html" class="btn btn-neutral float-right" title="oebuild开发指导" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

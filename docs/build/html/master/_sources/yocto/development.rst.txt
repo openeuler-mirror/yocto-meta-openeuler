@@ -1,6 +1,6 @@
 .. _yocto_development:
 
-Yocto开发
+Yocto开发指导
 =============
 
 如何定制添加layer
