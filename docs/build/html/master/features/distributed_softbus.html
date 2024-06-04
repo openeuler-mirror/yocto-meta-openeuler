@@ -57,8 +57,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#id2">特性介绍</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id3">嵌入式软总线应用指南</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#isula">基于isula的软总线应用指南</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id12">3.2版本的软总线使用指南</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id15">限制约束</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id12">3.2版本接口变更</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id14">限制约束</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#faq">FAQ</a></li>
 </ul>
 </li>
@@ -134,6 +134,7 @@
 </ul>
 <p>软总线南向支持WiFi（22.09新增）和有线以太网通信，同时后续可持续拓展蓝牙等通信方式。并为北向的分布式应用提供统一的API接口，屏蔽底层通信机制。</p>
 <p>软总线依赖于设备认证、IPC、日志和系统参数（SN号）等周边模块，嵌入式系统中将这些依赖模块进行了样板性质的替换，以实现软总线基本功能。实际的周边模块功能实现，还需要用户根据实际业务场景进行丰富和替换，以拓展软总线能力。</p>
+<p>24.03-LTS版本之后，软总线从3.1版本升级到了3.2版本，支持5.10内核，暂不支持6.6内核。原有接口保持兼容，启动方式有所不同，3.2版本不再通过softbus_server_main启动软总线服务，而是通过脚本进行启动。各个子模块以组件化的方式进行协同，而不是原先的单独进程。</p>
 </section>
 <section id="id3">
 <h2>嵌入式软总线应用指南<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
@@ -150,9 +151,9 @@
 </section>
 <section id="id5">
 <h3>服务端启动<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
-<p>服务端主程序名为softbus_server_main。</p>
+<p>服务端的服务启动脚本为start_services.sh。</p>
 <p>如部署模型，软总线通过独立进程部署的方式对外提供服务，通过执行服务端主程序可拉起软总线进程提供对外服务。</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">openeuler ~ # softbus_server_main &gt;log.file &amp;</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">openeuler ~ # /system/bin/start_services.sh softbus</span>
 </pre></div>
 </div>
 <p>1.当服务端被拉起时，会主动通过名为ethX/wifiX的网络设备进行coap广播，对对端设备进行自动探测。</p>
@@ -162,8 +163,8 @@
 <div class="admonition attention">
 <p class="admonition-title">Attention</p>
 <ul class="simple">
-<li><p>用户请参考部署模型，保证单设备节点上有且仅有唯一的softbus_server_main进程。</p></li>
-<li><p>用户需要在启动softbus_server_main前配置/etc/SN，并保证多设备下SN号的唯一性</p></li>
+<li><p>用户请参考部署模型，保证单设备节点上有且仅有唯一的服务进程。</p></li>
+<li><p>用户需要在启动前配置/etc/SN，并保证多设备下SN号的唯一性</p></li>
 </ul>
 </div>
 </section>
@@ -582,7 +583,7 @@
 </pre></div>
 </div>
 <p>在配置好SDK环境 编译客户端主程序如下：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span><span class="o">{</span>CC<span class="o">}</span> -lsoftbus_client.z -lboundscheck softbus_client_main.c -o softbus_client_main
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span><span class="o">{</span>CC<span class="o">}</span> -lsoftbus_client.z -lboundscheck -I<span class="o">=</span>/usr/include/dsoftbus/ softbus_client_main.c -o softbus_client_main
 </pre></div>
 </div>
 <p>编译完成后会得到dsoftbus_client_main程序</p>
@@ -637,7 +638,7 @@
 <li><p>启动分布式软总线</p>
 <p>在qemu1和qemu2中启动分布式软总线的服务端</p>
 <blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">softbus_server_main &gt;log.file &amp;</span>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">/system/bin/start_services.sh softbus</span>
 </pre></div>
 </div>
 <p>将编译好的客户端分发到qemu1和qemu2的根目录中</p>
@@ -746,7 +747,7 @@
 <p><strong>客户端编译</strong></p>
 <p>客户端提供动态链接库：libdeviceauth_sdk.z.so</p>
 <p>用户使用hichain创建群组和添加可信设备时，需要作为客户端程序显式链接该动态库，即可通过函数调用使用hichain提供的API。</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>: <span class="si">${</span><span class="nv">CROSS_COMPILE</span><span class="si">}</span>ld -ldeviceauth_sdk.z -lcjson
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>: <span class="si">${</span><span class="nv">CROSS_COMPILE</span><span class="si">}</span>ld -ldeviceauth_sdk.z -lcjson -lbegetutil.z -I<span class="o">=</span>/usr/include/device_auth/ -I<span class="o">=</span>/usr/include/init/
 </pre></div>
 </div>
 <p><strong>使用范例</strong></p>
@@ -1114,7 +1115,7 @@
 <p>当用户有需求自定义修改软总线功能模块时，可使用全量编译方式构建软总线的各个子模块。</p>
 <p>嵌入式版本提供的dsoftbus代码已集成于yocto构建系统，作为一个package存在，编译参照 <a class="reference internal" href="../oebuild/userguide/install/index.html#oebuild-install"><span class="std std-ref">安装步骤</span></a> 章节。</p>
 <p>用户也可按照镜像编译指导完成环境准备后按如下命令单独进行编译（和单独编译package方法一致）</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake dsoftbus</span>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake packagegroup-dsoftbus</span>
 </pre></div>
 </div>
 <p>编译过程和结果遵循yocto构建策略，日志和生成物参考yocto bb文件和默认工作目录。</p>
@@ -1202,25 +1203,7 @@
 </section>
 </section>
 <section id="id12">
-<h2>3.2版本的软总线使用指南<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
-<p>在嵌入式24.03-LTS版本中，可以通过修改 <code class="file docutils literal notranslate"><span class="pre">packagegroups/packagegroup-dsoftbus.bb</span></code> 文件来尝试使用3.2版本的软总线，并在qemu-aarch64平台进行测试。只需要将3.2版本软总线相关的软件包添加到镜像构建当中去，如下：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">RDEPENDS:packagegroup-dsoftbus:append:aarch64 = &quot; \</span>
-<span class="go">hilog \</span>
-<span class="go">c-utils \</span>
-<span class="go">distributed-beget \</span>
-<span class="go">eventhandler \</span>
-<span class="go">binder \</span>
-<span class="go">ipc \</span>
-<span class="go">samgr \</span>
-<span class="go">safwk \</span>
-<span class="go">huks \</span>
-<span class="go">device-auth \</span>
-<span class="go">communication-dsoftbus \</span>
-<span class="go">&quot;</span>
-</pre></div>
-</div>
-<section id="id13">
-<h3>接口变更<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<h2>3.2版本接口变更<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
 <p>3.2版本的软总线与3.1版本相比，主要的一些接口变化如下：</p>
 <table class="docutils align-default">
 <colgroup>
@@ -1254,9 +1237,8 @@
 </tbody>
 </table>
 <p>各API参数详见头文件描述。</p>
-</section>
-<section id="id14">
-<h3>服务端使用<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<section id="id13">
+<h3>服务端使用<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
 <p>3.2版本的软总线启动方式与3.1版本有所不同。由 <code class="file docutils literal notranslate"><span class="pre">/system/bin/start_services.sh</span></code> 脚本进行启动软总线相关服务，而 <code class="file docutils literal notranslate"><span class="pre">/system/bin/stop_services.sh</span></code>  脚本关闭服务。如下：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">/system/bin/start_services.sh softbus</span>
 <span class="go">/system/bin/stop_services.sh all</span>
@@ -1264,10 +1246,10 @@
 </div>
 </section>
 </section>
-<section id="id15">
-<h2>限制约束<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h2>
+<section id="id14">
+<h2>限制约束<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h2>
 <p>1.支持wifi和有限的标准以太局域网下的coap设备发现和传输。蓝牙目前仅支持ble发现，ble发现需要开启蓝牙，参照 <a class="reference internal" href="../linux/bluetooth/bluetooth_config.html#bluetooth-config"><span class="std std-ref">openEuler Embedded蓝牙配置</span></a> ，br连接和通信功能在后续版本中持续支持。
-2.目前基于容器的3.2版本软总线目前暂不支持蓝牙发现能力。</p>
+2.目前3.2版本软总线目前暂不支持蓝牙发现能力。</p>
 </section>
 <section id="faq">
 <h2>FAQ<a class="headerlink" href="#faq" title="Permalink to this headline">¶</a></h2>
