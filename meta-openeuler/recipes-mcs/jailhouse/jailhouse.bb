@@ -40,6 +40,10 @@ do_configure:prepend() {
 	if ls ${WORKDIR}/cells/${ARCH}/${JH_CELLS}*.c 1>/dev/null 2>&1; then
 		cp -f ${WORKDIR}/cells/${ARCH}/${JH_CELLS}*.c ${S}/configs/${ARCH}/
 	fi
+
+	if ls ${WORKDIR}/cells/${ARCH}/*${JH_CELLS}.dts 1>/dev/null 2>&1; then
+		cp -f ${WORKDIR}/cells/${ARCH}/*${JH_CELLS}.dts ${S}/configs/${ARCH}/dts/
+	fi
 }
 
 EXTRA_OEMAKE = "V=0 ARCH=${ARCH} CROSS_COMPILE=${TARGET_PREFIX} \
@@ -64,16 +68,10 @@ do_install:append() {
 	install -d ${D}${INMATES_DIR}
 	install -m 0644 ${B}/inmates/demos/${ARCH}/*.bin ${D}${INMATES_DIR}
 
-	if [ ${JH_ARCH}  != "x86" ]; then
+	if [ ${ARCH} != "x86" ]; then
 		install -d ${D}${DTS_DIR}
 		install -m 0644 ${B}/configs/${ARCH}/dts/*${JH_CELLS}.dtb ${D}${DTS_DIR}
 	fi
-}
-
-# export symbol for mcs
-SYSROOT_PREPROCESS_FUNCS += "additional_populate_sysroot"
-additional_populate_sysroot() {
-    install ${B}/Module.symvers ${SYSROOT_DESTDIR}
 }
 
 PACKAGE_BEFORE_PN = "kernel-module-jailhouse pyjailhouse ${PN}-tools ${PN}-demos"
