@@ -8,5 +8,5 @@
 .. toctree::
    :maxdepth: 1
 
+   gdb_guide/index.rst
    qemu/index.rst
-   debug_instruction.rst
