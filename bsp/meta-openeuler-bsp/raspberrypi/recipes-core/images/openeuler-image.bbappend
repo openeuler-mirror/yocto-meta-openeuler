@@ -3,4 +3,5 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 WKS_FILE = "sdimage-rpi.wks"
 WKS_FILE_DEPENDS = ""
 
-include ${@bb.utils.contains('DISTRO_FEATURES', 'mcs', 'mcs.inc', '', d)}
+require ${@bb.utils.contains('DISTRO_FEATURES', 'mcs', 'mcs.inc', '', d)}
+require ${@bb.utils.contains('BUILD_GUEST_OS', '1', 'initrd-install.inc', '', d)}

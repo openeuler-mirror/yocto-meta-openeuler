@@ -10,6 +10,9 @@ GRUB_ROOT := "root=/dev/mmcblk0p2 rootfstype=ext4 rootwait"
 #set maxcpus=3, reserve cpu3 for clientos
 APPEND += "${@bb.utils.contains("MCS_FEATURES", "openamp", "maxcpus=3", "", d)}"
 
+# To boot an image with guest os, we use the initramfs image as the Monitor VM.
+require ${@bb.utils.contains('BUILD_GUEST_OS', '1', 'initrd.inc', '', d)}
+
 inherit deploy
 
 do_deploy() {
