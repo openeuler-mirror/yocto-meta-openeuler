@@ -5,7 +5,7 @@
 openEuler Embedded 23.09
 ###########################
 
-openEuler Embedded 23.03是openEuler Embedded第四个创新版本，本版本的主要更新如下
+openEuler Embedded 23.09是openEuler Embedded第四个创新版本，本版本的主要更新如下
 
 * release manager：
 
