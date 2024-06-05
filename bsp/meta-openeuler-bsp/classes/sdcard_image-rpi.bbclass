@@ -1,5 +1,6 @@
 # This is a copy of sdcard_image-rpi.bbclass from meta-raspberrypi
-# we just add uefi_configuration here to make uefi configs before Burn Partitions 
+#
+# NOTE: we add uefi_configuration here to make uefi configs before Burn Partitions
 
 inherit image_types
 
@@ -79,8 +80,14 @@ SDIMG_VFAT = "${IMAGE_NAME}.vfat"
 SDIMG_LINK_VFAT = "${IMGDEPLOYDIR}/${IMAGE_LINK_NAME}.vfat"
 
 uefi_configuration() {
-    echo "uefi_configuration make nothing"
+    # For uefi, install Image or fitImage by default.
+    if [ ! -z "${INITRAMFS_IMAGE}" -a "${INITRAMFS_IMAGE_BUNDLE}" = "1" ]; then
+        mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${INITRAMFS_LINK_NAME}.bin ::${SDIMG_KERNELIMAGE} || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${INITRAMFS_LINK_NAME}.bin into boot.img"
+    else
+        mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE} ::${SDIMG_KERNELIMAGE} || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE} into boot.img"
+    fi
 }
+
 IMAGE_CMD:rpi-sdimg () {
 
     # Align partitions
@@ -139,11 +146,7 @@ IMAGE_CMD:rpi-sdimg () {
             mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE} ::${KERNEL_IMAGETYPE} || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE} into boot.img"
         fi
     else
-        if [ ! -z "${INITRAMFS_IMAGE}" -a "${INITRAMFS_IMAGE_BUNDLE}" = "1" ]; then
-            mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${INITRAMFS_LINK_NAME}.bin ::${SDIMG_KERNELIMAGE} || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}-${INITRAMFS_LINK_NAME}.bin into boot.img"
-        else
-            mcopy -v -i ${WORKDIR}/boot.img -s ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE} ::${SDIMG_KERNELIMAGE} || bbfatal "mcopy cannot copy ${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE} into boot.img"
-        fi
+        uefi_configuration ""
     fi
 
     # Add files (eg. hypervisor binaries) from the deploy dir
@@ -173,8 +176,6 @@ IMAGE_CMD:rpi-sdimg () {
     # Add stamp file
     echo "${IMAGE_NAME}" > ${WORKDIR}/image-version-info
     mcopy -v -i ${WORKDIR}/boot.img ${WORKDIR}/image-version-info :: || bbfatal "mcopy cannot copy ${WORKDIR}/image-version-info into boot.img"
-
-    uefi_configuration ""
 
     # Deploy vfat partition
     if [ "${SDIMG_VFAT_DEPLOY}" = "1" ]; then
