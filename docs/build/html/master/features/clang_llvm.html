@@ -113,8 +113,8 @@
 <p>本章介绍如何使用 clang/llvm 编译工具链构建 openEuler Embedded。</p>
 <section id="id2">
 <h2>clang/llvm 介绍<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
-<p>LLVM 项目是模块化和可重用编译器以及工具链的集合，clang 是其编译器前端。相比较于GNU编译工具链，其优势在于编译速度更快，静态检查工具更加完善，可拓展性更强等等。</p>
-<p>GNU工具链与LLVM工具链主要区别如下表：</p>
+<p>LLVM 项目是模块化和可重用编译器以及工具链的集合，clang 是其编译器前端。相比较于 GNU 编译工具链，其优势在于编译速度更快，静态检查工具更加完善，可拓展性更强等等。</p>
+<p>GNU 工具链与 LLVM 工具链主要区别如下表：</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 22%" />
@@ -177,16 +177,37 @@
 </section>
 <section id="meta-clang">
 <h2>meta-clang 层介绍<a class="headerlink" href="#meta-clang" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">meta-clang</span></code> 层包含使用 clang/llvm 编译器工具链所需要的recipes和bbclass文件，由于 openeuler 使用 external-toolchain 机制，无需在 yocto 工程中编译 clang/llvm 工具链。</p>
-<p>meta-clang层中主要起作用的是clang.bbclass文件，该文件用来控制编译时传入clang/llvm编译器工具链变量和依赖，除此之外，目前还有一小部分软件包并不完美支持使用clang/llvm来编译，nonclangable.conf文件记录了这些软件包的情况。</p>
+<p><code class="docutils literal notranslate"><span class="pre">meta-clang</span></code> 层包含使用 clang/llvm 编译工具链所需要的 recipes 和 bbclass 文件，由于 openEuler 使用 external-toolchain 机制，无需在 yocto 工程中编译 clang/llvm 工具链。</p>
+<p>meta-clang 层中主要起作用的是 clang.bbclass 文件，该文件用来控制编译时传入 clang/llvm 编译工具链的变量和依赖，除此之外，目前还有一小部分软件包并不完美支持使用 clang/llvm 来编译，nonclangable.conf 文件记录了这些软件包的情况。</p>
 </section>
 <section id="id3">
 <h2>构建指导<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<ol class="arabic">
-<li><p>clang/llvm 编译工具链获取：</p>
-<ul>
-<li><p>源码构建</p>
-<ol class="arabic simple">
+<section id="oebuild">
+<h3>1. 使用 oebuild 和标准容器进行构建<a class="headerlink" href="#oebuild" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>参考 <a class="reference internal" href="../oebuild/userguide/install/index.html#oebuild-install"><span class="std std-ref">安装步骤</span></a> 初始化容器环境，并熟悉使用 oebuild 构建 openEuler Embedded。使能 clang/llvm 编译工具链需要在生成配置文件时增加 <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">clang</span></code></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild generate -p ${platform} -d ${build_directory} -f clang</span>
+</pre></div>
+</div>
+<p>键入 <code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">bitbake</span></code> 进入容器环境进行镜像构建，构建命令如下</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake openeuler-image-llvm</span>
+</pre></div>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>当前仅验证了 qemu-aarch64 和树莓派平台的标准镜像，包括 5.10 版本和 6.6 版本的内核。</p>
+</div>
+</div></blockquote>
+</section>
+<section id="id4">
+<h3>2. 使用自定义 clang/llvm 编译工具链进行构建<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>用户也可以自定义定制 clang/llvm 编译工具链来进行 openEuler Embedded 的构建。</p>
+</div></blockquote>
+<section id="llvm">
+<h4>2.1 LLVM 工具链构建方式<a class="headerlink" href="#llvm" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><ol class="arabic simple">
 <li><p>获取编译容器</p></li>
 </ol>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-sdk:latest</span>
@@ -200,21 +221,25 @@
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
-<li><p>下载openEuler LLVM源码</p></li>
+<li><p>下载 openEuler LLVM 源码，用户可基于 openEuler llvm-project 仓进行特性的开发</p></li>
 </ol>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd ~</span>
 <span class="go">git clone -b dev_17.0.6 https://gitee.com/openeuler/llvm-project.git --depth=1</span>
 </pre></div>
 </div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>请基于 dev_17.0.6 分支进行开发，其他版本 LLVM 未进行过验证，开源版本 LLVM 缺少 openEuler Embedded 构建工程的相关适配，如需使用，需要自行适配。</p>
+</div>
 <ol class="arabic simple" start="4">
-<li><p>构建LLVM工具链</p></li>
+<li><p>构建 LLVM 工具链</p></li>
 </ol>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd ~/llvm-project</span>
 <span class="go">./build.sh -e -o -s -i -b release -I clang-llvm-17.0.6</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="5">
-<li><p>LLVM工具链集成交叉构建时目标架构的头文件和库文件</p></li>
+<li><p>LLVM 工具链集成交叉构建时目标架构的头文件和库文件</p></li>
 </ol>
 <p>正常交叉构建时，需要使用目标架构的头文件、运行时库（如crtbegin.o）、标准C库（如libc.so）等，LLVM工具链默认使用GCC的运行时库，可以通过 <code class="docutils literal notranslate"><span class="pre">--gcc-toolchain=</span></code> 选项指定对应GCC的路径，而标准C库、依赖库等可以通过 <code class="docutils literal notranslate"><span class="pre">--sysroot=</span></code> 选项指定对应的路径。</p>
 <p>因此，使用LLVM工具链进行交叉构建时，需要使用 <code class="docutils literal notranslate"><span class="pre">--gcc-toolchain=</span></code> 和 <code class="docutils literal notranslate"><span class="pre">--sysroot=</span></code> 选项指定目标架构的头文件和库文件所在的路径，或者将相关的文件集成到LLVM工具链当中，openEuler LLVM已经使能特性能够搜索默认集成的路径。</p>
@@ -234,40 +259,52 @@
 <span class="go">ln -sf ld.lld aarch64-openeuler-linux-gnu-ld</span>
 </pre></div>
 </div>
-</li>
-<li><p>LLVM工具链发布版本</p>
-<p>直接从LLVM工具链版本发布地址下载获取 <a class="reference external" href="https://gitee.com/openeuler/yocto-meta-openeuler/releases">openEuler Embedded LLVM Toolchains</a> ，发布版本支持X86_64的native构建和aarch64的交叉构建，并且已经集成了交叉构建所需的目标架构的头文件和库文件。</p>
-</li>
-</ul>
-</li>
-<li><p>构建环境</p>
-<p>参考 <a class="reference internal" href="../oebuild/userguide/install/index.html#oebuild-install"><span class="std std-ref">安装步骤</span></a> 初始化容器环境，生成配置文件时使用如下命令。</p>
+<ol class="arabic simple" start="6">
+<li><p>LLVM 工具链预发布版本获取</p></li>
+</ol>
+<p>预发布的 LLVM 工具链版本可以从如下地址获取 <a class="reference external" href="https://gitee.com/openeuler/yocto-meta-openeuler/releases">openEuler Embedded LLVM Toolchains</a> ，预发布版本支持 x86_64 的 native 构建和 aarch64 的交叉构建，并且已经集成了交叉构建所需的目标架构的头文件和库文件。</p>
+</div></blockquote>
+</section>
+<section id="openeuler-embedded">
+<h4>2.2 openEuler Embedded 构建方式<a class="headerlink" href="#openeuler-embedded" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>生成配置文件时使用如下命令</p></li>
+</ol>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild generate -p ${platform} -d ${build_directory} -t /path/to/clang-llvm-17.0.6 -f clang</span>
 </pre></div>
 </div>
-<p>除了使用上述命令进行配置文件生成，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，效果跟上述命令相同。</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild generate</span>
+<p>键入 <code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">bitbake</span></code> 进入容器环境进行镜像构建，当前 <code class="docutils literal notranslate"><span class="pre">/usr1/openeuler/native_gcc/</span></code> 目录为 oebuild 默认挂载的编译器目录。</p>
+<ol class="arabic simple" start="2">
+<li><p>目前需要调整 <code class="docutils literal notranslate"><span class="pre">conf/local.conf</span></code> 配置文件</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span><span class="nv">在</span> <span class="o">==</span> the content is user <span class="nv">added</span> <span class="o">==</span> 以下部分
+<span class="gp"># </span>注释掉：EXTERNAL_TOOLCHAIN_GCC:aarch64 <span class="o">=</span> <span class="s2">&quot;/usr1/openeuler/native_gcc&quot;</span>
+<span class="gp"># </span>并增加一行：EXTERNAL_TOOLCHAIN_LLVM <span class="o">=</span> <span class="s2">&quot;/usr1/openeuler/native_gcc&quot;</span>
+<span class="go">vim conf/local.conf</span>
 </pre></div>
 </div>
-<p>具体界面如下图所示:</p>
-<img alt="../_images/oebuild-generate-select.png" src="../_images/oebuild-generate-select.png" />
-<p>键入 <code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">bitbake</span></code> 进入容器环境进行镜像构建，当前 <code class="docutils literal notranslate"><span class="pre">/usr1/openeuler/native_gcc/</span></code> 目录为oebuild默认挂载的编译器目录。</p>
-<div class="admonition attention">
-<p class="admonition-title">Attention</p>
-<p>当前仅验证支持了qemu-aarch64和树莓派平台的标准镜像。</p>
-</div>
-</li>
-<li><p>构建命令</p>
+<ol class="arabic simple" start="3">
+<li><p>构建命令</p></li>
+</ol>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake openeuler-image-llvm</span>
 </pre></div>
 </div>
-</li>
-<li><p>SDK生成</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake openeuler-image-llvm -c populate_sdk</span>
+</div></blockquote>
+</section>
+</section>
+<section id="sdk">
+<h3>3. SDK 生成<a class="headerlink" href="#sdk" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake openeuler-image-llvm -c populate_sdk</span>
 </pre></div>
 </div>
-</li>
-</ol>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>安装完成 LLVM 版本 SDK 后，在首次初始化 SDK 时会存在若干处交互配置项，目前需要全部手动输入 N</p>
+</div>
+</div></blockquote>
+</section>
 </section>
 </section>
 
