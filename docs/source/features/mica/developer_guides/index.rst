@@ -5,3 +5,4 @@
    :maxdepth: 1
 
    rtos.rst
+   ../../../developer_guide/debug/gdb_guide/index.rst
