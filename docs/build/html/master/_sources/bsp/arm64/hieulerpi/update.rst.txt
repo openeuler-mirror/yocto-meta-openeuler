@@ -41,7 +41,8 @@
        ├── boot_env.bin             # uboot
        ├── boot_image.bin        # uboot环境变量
        ├── kernel                            # linux内核
-       └── rootfs.ext4                   # 根文件系统
+       ├── rootfs.ext4                   # 根文件系统
+       └── env_append.txt                   # 烧录固件辅助文件
 
 由于FAT32文件系统单文件最大仅支持4G的大小，在升级时除正常的单文件升级外还支持分块文件的升级。分块名为原始文件后追加分区编号，\ **编号从0开始**\ ，编号不允许带无意义的0，例如\ **rootfs.ext401**.
 
@@ -57,7 +58,8 @@
        ├── rootfs.ext42
        ├── rootfs.ext43
        ├── rootfs.ext44
-       └── rootfs.ext45
+       ├── rootfs.ext45
+       └── env_append.txt        # 烧录固件辅助文件
 
 3) 升级固件
 ~~~~~~~~~~~
