@@ -20,7 +20,7 @@ SRC_URI:remove = "\
 # ref: meta-raspberrypi/dynamic-layers/qt5-layer/recipes-qt/qt5/qtbase_%.bbappend
 PACKAGECONFIG_GL = "${@bb.utils.contains('DISTRO_FEATURES', 'x11 opengl', 'gl', \
                         bb.utils.contains('DISTRO_FEATURES',     'opengl', 'eglfs gles2', \
-                                                                       '', d), d)}"
+                                                                       'no-opengl', d), d)}"
 
 PACKAGECONFIG_GL:append = " ${@bb.utils.contains('DISTRO_FEATURES', 'opengl', 'kms gbm', '', d)}"
 
