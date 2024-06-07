@@ -1,0 +1,33 @@
+From 0facda308510839f33c34b3416080d9e72e51440 Mon Sep 17 00:00:00 2001
+From: Chunrong Guo <guochunrong@phytium.com.cn>
+Date: Wed, 14 Jun 2023 13:55:16 +0800
+Subject: [PATCH] image-hd: remove MBR space
+
+Signed-off-by: Chunrong Guo <guochunrong@phytium.com.cn>
+---
+ image-hd.c | 9 ---------
+ 1 file changed, 9 deletions(-)
+
+diff --git a/image-hd.c b/image-hd.c
+index 5e3a3b4..09affcd 100644
+--- a/image-hd.c
++++ b/image-hd.c
+@@ -859,15 +859,6 @@ static int hdimage_setup(struct image *image, cfg_t *cfg)
+ 					part->name);
+ 			return -EINVAL;
+ 		}
+-		if (!part->extended) {
+-			int ret = check_overlap(image, part);
+-			if (ret)
+-				return ret;
+-		} else if (now > part->offset) {
+-			image_error(image, "part %s overlaps with previous partition\n",
+-					part->name);
+-			return -EINVAL;
+-		}
+ 		if (part->in_partition_table && (part->size % 512)) {
+ 			image_error(image, "part %s size (%lld) must be a "
+ 					"multiple of 1 sector (512 bytes)\n",
+-- 
+2.25.1
+
