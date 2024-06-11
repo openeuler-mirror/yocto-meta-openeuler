@@ -117,7 +117,7 @@ python () {
     # OPENEULER_SRC_URI_REMOVE and it also means the software recipe is not
     # adapted in openEuler, use original fetch
     if d.getVar("MANIFEST_DIR") is not None and os.path.exists(d.getVar("MANIFEST_DIR")):
-        manifest_list = get_manifest(d.getVar("MANIFEST_DIR"))
+        manifest_list = d.getVar("MANIFEST_LIST")
         if local_name not in manifest_list:
             d.setVar('OPENEULER_FETCH', 'disable')
             return
@@ -193,7 +193,7 @@ python do_openeuler_fetch() {
     try:
         # determine whether the variable MANIFEST_DIR is None
         if d.getVar("MANIFEST_DIR") is not None and os.path.exists(d.getVar("MANIFEST_DIR")):
-            manifest_list = get_manifest(d.getVar("MANIFEST_DIR"))
+            manifest_list = d.getVar("MANIFEST_LIST")
             if local_name in manifest_list:
                 repo_item = manifest_list[local_name]
                 download_repo(d, repo_dir, repo_item['remote_url'], repo_item['version'])
@@ -270,11 +270,21 @@ def download_repo(d, repo_dir, repo_url ,version = None):
         bb.warn("the version %s checkout failed ...", version)
     bb.utils.unlockfile(lf)
 
-def get_manifest(manifest_dir):
-    import yaml
 
-    with open(manifest_dir, 'r' ,encoding="utf-8") as r_f:
-        return yaml.load(r_f.read(), yaml.Loader)['manifest_list']
+# store YAML data within MANIFEST_LIST variable
+addhandler parse_manifest
+python parse_manifest() {
+    # used to read YAML file data
+    def get_manifest(manifest_yaml):
+        import yaml
+
+        with open(manifest_yaml, 'r' ,encoding="utf-8") as r_f:
+            return yaml.load(r_f.read(), yaml.Loader)['manifest_list']
+
+    d.setVar('MANIFEST_LIST', get_manifest(d.getVar("MANIFEST_DIR")))
+}
+parse_manifest[eventmask] = "bb.event.ConfigParsed"
+
 
 # call "do_openeuler_fetch" at the beginning of do_fetch,
 # it will fetch software packages, the related patches and other files
