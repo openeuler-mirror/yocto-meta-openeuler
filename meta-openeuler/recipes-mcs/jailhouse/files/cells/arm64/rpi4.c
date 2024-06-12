@@ -3,7 +3,7 @@
  *
  * Configuration for Raspberry Pi 4 (quad-core Cortex-A72, 1GB, 2GB, 4GB or 8GB RAM)
  *
- * NOTE: Reservation via device tree: reg = <0 0x10000000 0x10000000>
+ * NOTE: Reservation via device tree: reg = <0 0x10000000 0x10000000> or mem=750M
  */
 
 #include <jailhouse/types.h>
@@ -99,7 +99,6 @@ struct {
 				JAILHOUSE_MEM_EXECUTE,
 		},
 		/*
-		 * ~2M reserved for shared memory regions
 		 * 4M reserved for the hypervisor
 		 *
 		 * 0x2000 0000 - 0x6fff e000 for root
