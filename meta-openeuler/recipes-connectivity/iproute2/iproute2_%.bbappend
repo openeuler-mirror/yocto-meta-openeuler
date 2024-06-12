@@ -42,6 +42,7 @@ SRC_URI += " \
         file://backport-tipc-fix-keylen-check.patch \
         file://bugfix-iproute2-3.10.0-fix-maddr-show.patch \
         file://bugfix-iproute2-cancel-some-test-cases.patch \
+        file://feature-iproute2-supports-to-parse-UB-device-and-related-display-of-vf-address.patch \
         file://bugfix-iproute2-change-proc-to-ipnetnsproc-which-is-private.patch \
         file://feature-iproute-add-support-for-ipvlan-l2e-mode.patch \
 " 
