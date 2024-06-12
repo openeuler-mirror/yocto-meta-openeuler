@@ -8,9 +8,10 @@ SRC_URI_remove = " \
     git://github.com/rpm-software-management/dnf.git;branch=master;protocol=https \
 "
 
-# apply patches from openeuler before poky
+# apply patches from openeuler after poky
 SRC_URI_append = " \
     file://${BP}.tar.gz \
+    file://add-sw_64-support-not-upstream-modified.patch \
     file://add-rpm-transaction-debuginfo.patch \
     file://fix-dnf-history-undo-error-when-history-sqlite-missing.patch \
     file://backport-fix-plugins-unit-tests-unload-plugins-upon-their-deletion.patch \
