@@ -24,6 +24,8 @@ SRC_URI_append += " \
         file://backport-CVE-2021-41496.patch \
         file://backport-CVE-2021-41495.patch \
         file://backport-CVE-2021-34141.patch \
+        file://numpy-1.21.4-sw.patch \
+        file://backport-MAINT-Do-not-forward-__-deep-copy__-calls-of-_Gener.patch \
         "
 
 # It's a workaround:
