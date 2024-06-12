@@ -9,17 +9,7 @@ Rockchip板卡镜像构建与使用
 Rockchip镜像构建指导
 =====================
 
-- 参照 :ref:`oebuild安装步骤<oebuild_install>` 完成oebuild安装，并详细了解构建过程
-
-- 定制化设备：
-
-  1. 在使用oebuild 初始化后，复制yocto-meta-openeuler/bsp/meta-openeuler-bsp/conf/ok3568.conf改成自己的设备命名，如ok3568.conf，需要改动的其他参数请参考yocto文档；
-  
-  2. 把设备树文件添加到yocto-meta-openeuler/bsp/meta-openeuler-bsp/rockchip/recipes-kernel/linux/files/内；
-
-  3. 修改yocto-meta-openeuler/bsp/meta-openeuler-bsp/conf/ok3568.conf中的ROCKCHIP_KERNEL_DTB_NAME，改成自己的设备名；
-
-  4. 如果增加了自己的设备，请复制yocto-meta-openeuler/.oebuild/platform/ok3568.yaml并命名为自己的设备名，如果不能附加功能请关注yocto-meta-openeuler/.oebuild/features/下面的对应功能support:中添加自己的机器。 
+- 参照 :ref:`oebuild安装步骤<oebuild_install>` 完成oebuild安装，并详细了解构建过程 
 
 - 依次执行以下例子命令完成构建
 
