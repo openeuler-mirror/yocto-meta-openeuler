@@ -52,8 +52,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../code_download_compile.html">下载编译指导</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">代码开发指导</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">开发方式指导</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#yocto">基于yocto的开发方式</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#sdk">基于SDK的开发方式</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#yocto">基于yocto的开发方式</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../yocto/development.html">Yocto开发指导</a></li>
@@ -96,12 +96,134 @@
              
   <section id="new-develop">
 <span id="id1"></span><h1>开发方式指导<a class="headerlink" href="#new-develop" title="Permalink to this headline">¶</a></h1>
-<p>代码开发可以分为基于yocto的开发以及基于SDK的开发，下面分别进行详细解释</p>
-<section id="yocto">
-<h2>基于yocto的开发方式<a class="headerlink" href="#yocto" title="Permalink to this headline">¶</a></h2>
-</section>
+<p>代码开发可以分为基于SDK的开发以及基于yocto的开发，下面分别进行详细解释</p>
 <section id="sdk">
 <h2>基于SDK的开发方式<a class="headerlink" href="#sdk" title="Permalink to this headline">¶</a></h2>
+<p>该开发方式在 <a class="reference internal" href="../../getting_started/index.html#getting-started"><span class="std std-ref">快速上手</span></a> 中 <strong>基于SDK的应用开发</strong> 章节有详细介绍</p>
+</section>
+<hr class="docutils" />
+<section id="yocto">
+<h2>基于yocto的开发方式<a class="headerlink" href="#yocto" title="Permalink to this headline">¶</a></h2>
+<p>openEuler Embedded提供了基于yocto工程的开发方式，开发者可以依赖yocto构建工程中的编译器、库、头文件等进行开发。
+不同于SDK开发方式，yocto构建工程不需要手动设置编译器等，适用于添加软件包开发的场景。
+若只需单独编译用户态程序或内核，建议采用基于SDK的开发方式。
+下面将介绍如何使用ARM64的yocto构建工程进行开发。</p>
+<section id="id2">
+<h3>1. 搭建yocto构建环境<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>按照 <a class="reference internal" href="../../getting_started/index.html#getting-started"><span class="std std-ref">快速上手</span></a> 指导搭建ARM64构建环境，完成必要主机包安装以及oebuild构建环境初始化后，
+构建容器会被拉取到本地，此时在 <code class="docutils literal notranslate"><span class="pre">&lt;work_dir&gt;</span></code> 执行以下命令即可进入构建容器的环境：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;work_dir&gt;
+
+<span class="c1"># 下载yocto-meta-openeuler以及构建使用的容器</span>
+oebuild update
+
+<span class="c1"># 下载源码，便于后续基于yocto的开发</span>
+oebuild manifest download -f src/yocto-meta-openeuler/.oebuild/manifest.yaml
+</pre></div>
+</div>
+<p>构建环境生成后即可开始进行软件包/内核开发</p>
+</div></blockquote>
+</section>
+<section id="id3">
+<h3>2. 添加软件目录及代码<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ol class="arabic">
+<li><p><strong>通过本地添加软件目录及代码</strong></p>
+<p>以添加hello软件包（功能为打印hello world）为例，运行在openEuler Embedded根文件系统镜像中。</p>
+<p>在src目录下创建一个hello目录，其中包含 <code class="file docutils literal notranslate"><span class="pre">hello.c</span></code> 文件，源码如下：</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span><span class="cp"></span>
+
+<span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;hello world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>编写CMakeLists.txt，和hello.c文件放在同一个目录。</p>
+<div class="highlight-CMake notranslate"><div class="highlight"><pre><span></span><span class="nb">project</span><span class="p">(</span><span class="s">hello</span> <span class="s">C</span><span class="p">)</span>
+
+<span class="nb">add_executable</span><span class="p">(</span><span class="s">hello</span> <span class="s">hello.c</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>通过yaml添加软件目录及代码</strong></p>
+<p>在 gitee 或其他线上托管仓库上建立 hello 仓库，仓库中添加如上的hello.c及CMakeLists.txt文件，
+将仓库地址添加至 yaml 文件 <code class="file docutils literal notranslate"><span class="pre">yocto-meta-openeuler/.oebuild/manifest.yaml</span></code> 末尾：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">hello:</span>
+<span class="go">   remote_url: https://gitee.com/openeuler/hello.git</span>
+<span class="go">   version: 4da472bba5924d1d422b595ae7497935ee678de0</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</section>
+<section id="bb">
+<h3>3. 添加BB文件<a class="headerlink" href="#bb" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>添加完软件目录后，在yocto仓库中添加 hello 仓库的编译配方，配方添加方式参考 <a class="reference internal" href="../../yocto/development.html#yocto-development"><span class="std std-ref">Yocto开发指导</span></a>
+将BB文件添加至 <code class="docutils literal notranslate"><span class="pre">yocto-meta-openeuler/meta-openeuler/recipes-core/hello</span></code> 目录中
+BB文件参考如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">S = &quot;${WORKDIR}/git&quot;</span>
+<span class="go">SRCREV = &quot;4da472bba5924d1d422b595ae7497935ee678de0&quot;</span>
+
+<span class="go">inherit  packagegroups</span>
+
+<span class="go">PACKAGES =+ &quot;hello&quot;</span>
+
+<span class="go">FILES:hello = &quot;hello&quot;</span>
+
+<span class="go">do_install:append() {</span>
+<span class="go">    install -D -m 0755 ${WORKDIR}/hello ${D}/sbin/hello</span>
+<span class="go">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="id4">
+<h3>4. 添加编译项并编译全量镜像<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>以 qemu-aarch64 镜像为例，在其编译配置中添加 hello 包的编译项
+路径为 <code class="docutils literal notranslate"><span class="pre">yocto-meta-openeuler/meta-openeuler/recipes-core/packagegroups/packagegroup-core-base-utils.bb</span></code>
+在编译包的最后添加hello包编译</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">RDEPENDS:${PN} = &quot;\</span>
+<span class="go">audit \</span>
+<span class="go">auditd \</span>
+<span class="go">audispd-plugins \</span>
+<span class="go">cracklib \</span>
+<span class="go">libpwquality \</span>
+<span class="go">libpam \</span>
+<span class="go">packagegroup-pam-plugins \</span>
+<span class="go">shadow \</span>
+<span class="go">shadow-securetty \</span>
+<span class="go">bash \</span>
+<span class="go">hello \</span>
+<span class="go">&quot;</span>
+</pre></div>
+</div>
+<p>进入yocto编译环境, 命令如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>oebuild generate -p qemu-aarch64 -d build_arm64
+<span class="gp">$ </span>oebuild bitbake
+<span class="gp">$ </span>bitbake openeuler-image
+</pre></div>
+</div>
+<p>把编译好的镜像和文件系统通过qemu启动。</p>
+</div></blockquote>
+</section>
+<section id="id5">
+<h3>5. 运行软件<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p><strong>运行用户态程序</strong></p>
+<blockquote>
+<div><p>在openEuler Embedded系统中运行hello程序。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>hello
+</pre></div>
+</div>
+<p>如运行成功，则会输出 <code class="docutils literal notranslate"><span class="pre">hello</span> <span class="pre">world</span></code>。</p>
+</div></blockquote>
+</div></blockquote>
+</section>
 </section>
 </section>
 
