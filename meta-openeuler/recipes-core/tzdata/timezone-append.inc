@@ -24,6 +24,12 @@ SRC_URI = " \
         file://backport-This-year-Morocco-springs-forward-April-23-not-April.patch \
         file://backport-Palestine-no-longer-observes-DST-during-Ramadan.patch \
         file://backport-Greenland-changed-standard-time-already.patch \
+        file://backport-Fix-Palestine-predictions-for-2072-through-2075.patch \
+        file://backport-Ittoqqortoormiit-America-Scoresbysund-zone-change.patch \
+        file://backport-Vostok-was-at-07-and-just-switched-to-05.patch \
+        file://backport-Sync-Casey-data-from-timeanddate.com.patch \
+        file://backport-Kazakhstan-unifies-on-UTC-5-beginning-2024-03-01.patch \
+        file://backport-Palestine-springs-forward-a-week-later-after-Ramadan.patch \
         file://bugfix-0001-add-Beijing-timezone.patch \
         file://remove-country-selection-from-tzselect-steps.patch \
         file://remove-ROC-timezone.patch \
