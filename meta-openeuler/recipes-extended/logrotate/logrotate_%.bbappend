@@ -12,8 +12,9 @@ SRC_URI_remove = " \
 
 # files, patches that come from openeuler
 SRC_URI_prepend = " \
-        file://${BPN}/${BP}.tar.xz;name=tarball \
+        file://${BP}.tar.xz;name=tarball \
         file://${BPN}/0001-logrotate-3.20.1-lock-state-msg.patch \
+        file://backport-do-not-rotate-old-logs-on-prerotate-failure.patch \
 "
 
 SRC_URI[tarball.md5sum] = "24704642e1e6c7889edbe2b639636caf"
