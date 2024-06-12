@@ -14,6 +14,10 @@ DEPENDS += "libpcre"
 # source version differs greatly from poky, use SRC_URI of a later version 
 # from http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-core/glib-2.0/glib-2.0_2.72.3.bb
 # mingw32 patch: 0001-Set-host_machine-correctly-when-building-with-mingw3.patch
+# -----------------------------------------------------------------------------------------------
+# The following patches cannot be applied successfully:
+# file://backport-gregex-set-default-max-stack-size-for-PCRE2-JIT-compiler-to-512KiB.patch
+# file://backport-gregex-if-JIT-stack-limit-is-reached-fall-back-to-interpretive-matching.patch
 SRC_URI = " \
     file://glib-${PV}.tar.xz \
     file://backport-add-version-macros-for-GLib-2.74.patch \
@@ -52,10 +56,13 @@ SRC_URI = " \
     file://backport-glocalfilemonitor-Avoid-file-monitor-destruction-from-event-thread.patch \
     file://backport-glocalfilemonitor-Skip-event-handling-if-the-source-has-been-destroyed.patch \
     file://backport-tests-Add-a-test-for-GFileMonitor-deadlocks.patch \
+    file://backport-Make-sure-the-GTask-is-freed-on-a-graceful-disconnect.patch \
+    file://backport-gmessages-fix-dropping-irrelevant-log-domains.patch \
+    file://backport-gutils-Fix-an-unlikely-minor-leak-in-g_build_user_data_dir.patch \
 "
 
-#patch from openembedded.org
-SRC_URI += " \
+# patch from poky for newer version
+SRC_URI_append = " \
     file://0001-Do-not-ignore-return-value-of-write.patch \
     file://0001-Do-not-write-bindir-into-pkg-config-files.patch \
     file://0001-Fix-DATADIRNAME-on-uclibc-Linux.patch \
@@ -67,10 +74,6 @@ SRC_URI += " \
     file://0001-Set-host_machine-correctly-when-building-with-mingw3.patch \
     file://0010-Do-not-hardcode-python-path-into-various-tools.patch \
     file://Enable-more-tests-while-cross-compiling.patch \
-"
-
-#patch from files dir in project self
-SRC_URI +=" \
     file://relocate-modules.patch \
 "
 
