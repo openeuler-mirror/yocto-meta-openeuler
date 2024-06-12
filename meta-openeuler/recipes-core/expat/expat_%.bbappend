@@ -35,5 +35,22 @@ SRC_URI = " \
     file://backport-0002-CVE-2022-40674.patch \
     file://backport-CVE-2022-43680.patch \
     file://backport-tests-Cover-overeager-DTD-destruction-in-XML_Externa.patch \
+    file://backport-CVE-2024-28757-001.patch \
+    file://backport-CVE-2024-28757-002.patch \
+    file://backport-CVE-2024-28757-003.patch \
+    file://backport-CVE-2024-28757-004.patch \
+    file://backport-001-CVE-2023-52426.patch \
+    file://backport-002-CVE-2023-52426.patch \
+    file://backport-003-CVE-2023-52426.patch \
+    file://backport-004-CVE-2023-52426.patch \
+    file://backport-001-CVE-2023-52425.patch \
+    file://backport-002-CVE-2023-52425.patch \
+    file://backport-003-CVE-2023-52425.patch \
+    file://backport-004-CVE-2023-52425.patch \
+    file://backport-005-CVE-2023-52425.patch \
+    file://backport-006-CVE-2023-52425.patch \
+    file://backport-007-CVE-2023-52425.patch \
+    file://backport-008-CVE-2023-52425.patch \
+    file://backport-009-CVE-2023-52425.patch \
 "
 
