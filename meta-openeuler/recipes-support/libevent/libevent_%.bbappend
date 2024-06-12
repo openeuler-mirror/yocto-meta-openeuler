@@ -11,4 +11,5 @@ SRC_URI_prepend = " \
     file://backport-http-eliminate-redundant-bev-fd-manipulating-and-cac.patch \
     file://backport-http-fix-fd-leak-on-fd-reset-by-using-bufferevent_re.patch \
     file://backport-bufferevent-introduce-bufferevent_replacefd-like-set.patch \
+    file://backport-evutil-don-t-call-memset-before-memcpy.patch \
 "

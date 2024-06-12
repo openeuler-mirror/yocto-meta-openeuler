@@ -3,7 +3,9 @@
 # version in src-openEuler
 PV = "2.38"
 
-SRC_URI = "file://${BP}.tar.xz"
+SRC_URI = "file://${BP}.tar.xz \
+        file://backport-run-the-pytest-test-suite-as-part-of-meson-test.patch \
+        "
 
 # use nativesdk's python3 tool
 DEPENDS_remove = "python3-native"

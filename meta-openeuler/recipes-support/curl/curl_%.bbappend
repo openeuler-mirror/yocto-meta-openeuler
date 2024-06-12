@@ -87,6 +87,28 @@ SRC_URI += " \
     file://backport-CVE-2023-32001.patch \
     file://backport-CVE-2023-38545.patch \
     file://backport-CVE-2023-38546.patch \
+    file://backport-CVE-2023-46218.patch \
+    file://backport-0001-CVE-2023-46219.patch \
+    file://backport-0002-CVE-2023-46219.patch \
+    file://backport-tool_progress-avoid-division-by-zero-in-parallel-pro.patch \
+    file://backport-digest-pass-over-leading-spaces-in-qop-values.patch \
+    file://backport-Curl_close-call-Curl_resolver_cancel-to-avoid-memory.patch \
+    file://backport-easy-fix-the-altsvc-init-for-curl_easy_duphandle.patch \
+    file://backport-libssh-if-sftp_init-fails-don-t-get-the-sftp-error-c.patch \
+    file://backport-url-move-back-the-IDN-conversion-of-proxy-names.patch \
+    file://backport-ftp-support-growing-files-with-CURLOPT_IGNORE_CONTEN.patch \
+    file://backport-http-fix-the-1-comparison-for-IPv6-localhost-for-coo.patch \
+    file://backport-multi-free-up-more-data-earleier-in-DONE.patch \
+    file://backport-curl_path-bring-back-support-for-SFTP-path-ending-in.patch \
+    file://backport-transfer-refuse-POSTFIELDS-RESUME_FROM-combo.patch \
+    file://backport-tool_operate-refuse-data-or-form-and-continue-at-com.patch \
+    file://backport-http-free-the-url-before-storing-a-new-copy.patch \
+    file://backport-url-fix-null-dispname-for-connect-to-option.patch \
+    file://backport-vtls-avoid-memory-leak-if-sha256-call-fails.patch \
+    file://backport-urlapi-make-sure-zoneid-is-also-duplicated-in-curl_u.patch \
+    file://backport-transfer-also-stop-the-sending-on-closed-connection.patch \
+    file://backport-openssl-avoid-BN_num_bits-NULL-pointer-derefs.patch \
+    file://backport-CVE-2024-2398.patch \
 "      
 
 SRC_URI[md5sum] = "74d3c4ca8aaa6c0619806d6e246e65fb"

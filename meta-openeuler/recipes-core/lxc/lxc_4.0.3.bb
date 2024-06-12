@@ -34,9 +34,18 @@ SRC_URI = "file://${BP}.tar.gz \
            file://0024-remove-process-inheritable-capability.patch  \
            file://0025-fix-ops-hierarchies-cause-coredump.patch  \
            file://0026-meminfo-cri-1.25.patch  \
+           file://0027-add-loongarch64-support-for-lxc.patch \
+           file://0028-use-ocihooks-env-after-getenv.patch \
+           file://0029-fix-mixed-use-of-signed-and-unsigned-type.patch \
+           file://0030-remove-unused-meminfo-stats.patch \
+           file://0031-lxc-attach-Fix-lost-return-codes-of-spawned-processe.patch \
+           file://0032-fix-load-bpf-failed.patch \
+           file://0033-fix-mount-device-path-incorrect.patch \
+           file://0034-add-secure-compile-macro.patch \
+           file://0035-codecheck-fix.patch \
 "
 
-SRC_URI_append = " \
+SRC_URI:append = " \
 		   file://check_only_rootfs_as_filesystem_type.patch \
                    file://0027-fix-redeclaration.patch \
 "
@@ -55,7 +64,7 @@ EXTRA_OECONF = " \
         --enable-isulad \
 "
 
-FILES_${PN} += " \
+FILES:${PN} += " \
         /usr/share \
         /lib/systemd/system \
 "
@@ -64,4 +73,4 @@ inherit autotools
 
 BBCLASSEXTEND = "native nativesdk"
 
-CFLAGS_append = "-Wno-error=stringop-overflow -Wno-error=strict-prototypes -Wno-error=old-style-definition"
+CFLAGS:append = " -Wno-error=stringop-overflow -Wno-error=strict-prototypes -Wno-error=old-style-definition -Wno-error=address  -Wno-error=uninitialized "

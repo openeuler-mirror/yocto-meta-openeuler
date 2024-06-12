@@ -8,6 +8,7 @@ SRC_URI += " \
     file://backport-CVE-2021-31566.patch \
     file://backport-CVE-2022-26280.patch \
     file://backport-CVE-2022-36227.patch \
+    file://backport-CVE-2024-20696.patch \
     file://libarchive-uninitialized-value.patch \
 "
 

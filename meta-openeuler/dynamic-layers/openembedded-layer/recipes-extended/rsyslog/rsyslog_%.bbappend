@@ -13,6 +13,17 @@ SRC_URI =+ " \
         file://rsyslog-8.37.0-initialize-variables-and-check-return-value.patch \
         file://backport-core-bugfix-local-hostname-invalid-if-no-global-config-object-given.patch  \
         file://backport-imtcp-bugfix-legacy-config-directives-did-no-longer-work.patch  \
+        file://backport-imfile-tests-ext-directorys-fd-leak-in-case-of-inotify-on.patch \
+        file://backport-imfile-fix-ext-directory-s-fd-leak-in-case-of-inotify.patch \
+        file://backport-core-bugfix-potential-segfault-on-busy-systems.patch \
+        file://backport-mmnormalize-bugfix-if-msg-cannot-be-parsed-parser-chain-is.patch \
+        file://backport-openssl-Replaced-depreceated-method-SSLv23_method-with.patch \
+        file://backport-lookup-tables-bugfix-reload-on-HUP-did-not-work-when.patch \
+        file://backport-lookup-tables-fix-static-analyzer-issue.patch \
+        file://backport-tcpflood-bugfix-TCP-sending-was-not-implemented-properly.patch \
+        file://backport-tcpflood-bugfix-plain-tcp-send-error-not-properly-reported.patch \
+        file://backport-fix-startup-issue-on-modern-systemd-systems.patch \
+        file://backport-tcp-net-subsystem-handle-data-race-gracefully.patch \
 "
 
 SRC_URI[md5sum] = "23239f609af189b0814f8adc95ad9c02"

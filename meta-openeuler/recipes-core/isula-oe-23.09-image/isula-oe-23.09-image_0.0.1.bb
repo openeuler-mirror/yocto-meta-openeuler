@@ -6,6 +6,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=d2effe8e0f44784c33108dbc1e00ba8c"
 OPENEULER_LOCAL_NAME = "oee_archive"
 SRC_URI = " \
     file://${OPENEULER_LOCAL_NAME}/${BPN}/${BPN}.tar.gz \
+    file://isulad \
 "
 
 S = "${WORKDIR}/${BPN}"
@@ -23,34 +24,21 @@ do_install() {
     # in /etc/systemd/system/multi-user.target.wants
     # the indentation of word "EOF" is important, do not change it
 	if [ ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'True', 'False', d)} = "True" ]; then
+        # create soft link in /etc/systemd/system/multi-user.target.wants to start isulad when system boot
 		install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
 		ln -sf ${sysconfdir}/systemd/system/isulad.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/isulad.service
 	else
+        # install init script to /etc/init.d
         install -d ${D}${sysconfdir}/init.d
-        cat <<-EOF > ${D}${sysconfdir}/init.d/isulad
-            #!/bin/sh
-            # start isula daemon when system boot in background
-            isulad &
-EOF
-        chmod 0755 ${D}${sysconfdir}/init.d/isulad
+        install -m 0755 ${WORKDIR}/isulad ${D}${sysconfdir}/init.d/isulad
+        # create soft link in /etc/rcS.d to start isulad when system boot
         install -d ${D}${sysconfdir}/rcS.d
         ln -sf ${sysconfdir}/init.d/isulad ${D}${sysconfdir}/rcS.d/S99isulad
     fi
 }
 
-FILES_${PN} += " \
+FILES:${PN} += " \
     /containers/${BPN}.tar \
 "
 
-python () {
-    if bb.utils.contains('DISTRO_FEATURES', 'systemd', True, False, d):
-        # FILES_${PN} cannot be automatically expanded
-        pn = d.getVar('PN', True)
-        d.appendVar('FILES_'+pn, ' ${sysconfdir}/systemd/system/multi-user.target.wants/isulad.service')
-    else:
-        pn = d.getVar('PN', True)
-        d.appendVar('FILES_'+pn, ' ${sysconfdir}/init.d/isulad')
-        d.appendVar('FILES_'+pn, ' ${sysconfdir}/rcS.d/S99isulad')
-}
-
-RDEPENDS_${PN} += "isulad"
+RDEPENDS:${PN} += "isulad"

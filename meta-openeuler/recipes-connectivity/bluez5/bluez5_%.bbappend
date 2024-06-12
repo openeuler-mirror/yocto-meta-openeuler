@@ -37,6 +37,9 @@ SRC_URI_prepend = "file://bluez-${PV}.tar.xz \
     file://backport-0001-CVE-2022-39177.patch \
     file://backport-0002-CVE-2022-39177.patch \
     file://backport-CVE-2023-27349.patch \
+    file://backport-CVE-2023-45866.patch \
+    file://backport-CVE-2023-50229-CVE-2023-50230.patch \
+    file://Fix-crash-after-pair-command.patch \
 "
 
 # openeuler do not has udev package, which is not necessary for bluez

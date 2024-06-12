@@ -7,6 +7,9 @@ SRC_URI = "file://${BP}.tar.gz \
     file://0001-fix-byte_order_is_valid-function-logic.patch \
     file://backport-check-namespace.sh-adjust-aarch64-symbols.patch \
     file://backport-tests-run-coredump-unwind-Skip-test-if-no-coredump-h.patch \
+    file://backport-aarch64-unw_step-validates-address-before-calling-dwarf_get.patch \
+    file://backport-avoid-calling-printf-because-OE-glibc-2.34-used-mno-.patch \
+    file://backport-fix-run-ptrace-mapper-test-case-failed.patch \
 "
 
 SRC_URI[md5sum] = "f625b6a98ac1976116c71708a73dc44a"

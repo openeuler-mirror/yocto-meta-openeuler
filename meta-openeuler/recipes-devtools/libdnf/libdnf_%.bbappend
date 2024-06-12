@@ -9,6 +9,10 @@ SRC_URI = " \
         file://${BPN}-${PV}.tar.gz                     \
         file://backport-query-py-ensure-reldep-is-from-the-same-sack.patch \
         file://0001-libdnf-0.65.0-add-loongarch-support.patch \
+        file://backport-python-bindings-Load-all-modules-with-RTLD_GLOBAL.patch \
+        file://backport-Avoid-reinstalling-installonly-packages-marked-for-ERASE.patch \
+        file://backport-dnf-repo-do-not-download-repository-if-our-local-cache-is-up-to-date.patch \
+        file://backport-dnf-repo-Fix-utimes-error-messages.patch \
 "
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"

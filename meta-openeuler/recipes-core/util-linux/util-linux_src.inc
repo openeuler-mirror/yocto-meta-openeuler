@@ -108,8 +108,46 @@ SRC_URI_prepend += " \
         file://backport-column-fix-greedy-mode-on-l.patch \
         file://backport-column-fix-memory-leak.patch \
         file://backport-column-fix-l.patch \
+        file://backport-scriptreplay-support-ctrl-s-and-ctrl-g.patch \
+        file://backport-login-use-correct-terminal-fd-during-setup.patch \
+        file://backport-login-prevent-undefined-ioctl-and-tcsetattr-calls.patch \
+        file://backport-libblkid-avoid-memory-leak-of-cachefile-path.patch \
+        file://backport-more-avoid-out-of-bound-access.patch \
+        file://backport-lslogins-fix-realloc-loop-allocation-size.patch \
+        file://backport-ldattach-don-t-call-exit-from-signal-handler.patch \
+        file://backport-libblkid-ntfs-validate-that-sector_size-is-a-power-o.patch \
+        file://backport-blkid-fix-call-to-err_exclusive_options.patch \
+        file://backport-libblkid-reset-errno-before-calling-probefuncs.patch \
+        file://backport-lib-path-fix-possible-out-of-boundary-access.patch \
+        file://backport-libmount-improve-mnt_table_next_child_fs.patch \
+        file://backport-libmount-fix-possible-NULL-dereference-coverity-scan.patch \
+        file://backport-libsmartcols-drop-spourious-newline-in-between-strea.patch \
+        file://backport-libsmartcols-flush-correct-stream.patch \
+        file://backport-libsmartcols-only-recognize-closed-object-as-final-e.patch \
+        file://backport-cal-avoid-out-of-bound-write.patch \
+        file://backport-libfdisk-sun-properly-initialize-partition-data.patch \
+        file://backport-include-c.h-add-helpers-for-unaligned-structure-acce.patch \
+        file://backport-libblkid-probe-read-data-in-chunks.patch \
+        file://backport-libblkid-avoid-aligning-out-of-probing-area.patch \
+        file://backport-libblkid-drbd-validate-zero-padding.patch \
+        file://backport-more-exit-if-POLLERR-and-POLLHUP-on-stdin-is-receive.patch \
+        file://backport-libblkid-hfsplus-reduce-false-positive.patch \
+        file://backport-wall-fix-calloc-cal-Werror-calloc-transposed-args.patch \
+        file://backport-libblkid-drbd-reduce-false-positive.patch \
+        file://backport-lib-cpuset-exit-early-from-cpulist_parse.patch \
+        file://backport-sys-utils-lscpu-Unblock-SIGSEGV-before-vmware_bdoor.patch \
+        file://backport-libblkid-Check-offset-in-LUKS2-header.patch \
+        file://backport-more-fix-poll-use.patch \
+        file://backport-CVE-2024-28085.patch \
+        file://backport-lscpu-don-t-use-NULL-sharedmap.patch \
+        file://backport-lscpu-use-topology-maps-in-more-robust-way.patch \
+        file://backport-hexdump-check-blocksize-when-display-data.patch \
+        file://backport-lslocks-fix-buffer-overflow.patch \
+        file://backport-last-avoid-out-of-bounds-array-access.patch \
+        file://backport-lsipc-fix-semaphore-USED-counter.patch \
         file://Add-check-to-resolve-uname26-version-test-failed.patch \
         file://SKIPPED-no-root-permissions-test.patch \
+        file://util-linux-Add-sw64-architecture.patch \
 "
 
 SRC_URI[sha256sum] = "6a0764c1aae7fb607ef8a6dd2c0f6c47d5e5fd27aa08820abaad9ec14e28e9d9"
