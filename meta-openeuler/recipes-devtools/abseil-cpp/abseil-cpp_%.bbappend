@@ -14,6 +14,7 @@ SRC_URI = "file://abseil-cpp-${PV}.tar.gz \
 SRC_URI += " \
         file://backport-Do-not-leak-maes-msse4.1-into-pkgconfig.patch \
         file://abseil-cpp-20210324.2-sw.patch \
+        file://backport-Add-missing-include-for-std-unique_ptr.patch \
         "
 
 S = "${WORKDIR}/abseil-cpp-${PV}"

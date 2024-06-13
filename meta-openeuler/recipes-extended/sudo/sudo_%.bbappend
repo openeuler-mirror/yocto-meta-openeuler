@@ -43,6 +43,12 @@ SRC_URI += " \
     file://backport-sudo_putenv_nodebug-require-that-the-environment-str.patch \
     file://backport-Linux-execve-2-allows-argv-or-envp-to-be-NULL.patch \
     file://backport-Fix-potential-NULL-pointer-deference-found-by-clang-.patch \
+    file://backport-Set-command_info-to-NULL-once-it-is-freed.patch \
+    file://backport-sudoers_parse_ldif-do-not-free-parse_tree-before-usi.patch \
+    file://backport-Do-not-rely-on-the-definition-of-ALLOW-DENY-being-tr.patch \
+    file://backport-CVE-2023-42465.patch \
+    file://backport-Make-all-match-functions-return-ALLOW-DENY-.patch \
+    file://backport-role_to_sudoers-only-try-to-reuse-a-privilege-if-one.patch \
 "
 
 SRC_URI[sha256sum] = "9e3b8b8da7def43b6e60c257abe80467205670fd0f7c081de1423c414b680f2d"

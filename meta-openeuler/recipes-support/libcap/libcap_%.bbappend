@@ -25,6 +25,8 @@ SRC_URI_prepend = " \
     file://backport-Large-strings-can-confuse-libcap-s-internal-strdup-c.patch \
     file://backport-There-was-a-small-memory-leak-in-pam_cap.so-when-lib.patch \
     file://backport-libcap-Ensure-the-XATTR_NAME_CAPS-is-define.patch \
+    file://backport-getpcaps-fix-program-name-in-help-message.patch \
+    file://backport-Stop-using-_pam_overwrite-in-pam_cap.c.patch \
 "
 
 # BUILD_GPERF is now reserved, please use USE_GPERF=yes or no instead.

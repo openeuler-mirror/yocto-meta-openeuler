@@ -12,6 +12,7 @@ SRC_URI_prepend = "file://${BP}.tar.gz \
         file://0001-file-localmagic.patch \
         file://0002-fix-typos-fxlb.patch \
         file://CVE-2022-48554.patch \
+        file://0003-Avoid-leak-in-zlib-clusterfuzz.patch \
 "
 S = "${WORKDIR}/${BP}"
 SRC_URI[sha256sum] = "13e532c7b364f7d57e23dfeea3147103150cb90593a57af86c10e4f6e411603f"

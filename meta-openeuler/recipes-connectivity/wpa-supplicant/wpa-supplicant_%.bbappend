@@ -98,6 +98,7 @@ file://backport-0001-CVE-2022-23303-CVE-2022-23304.patch \
 file://backport-0002-CVE-2022-23303-CVE-2022-23304.patch \
 file://backport-0003-CVE-2022-23303-CVE-2022-23304.patch \
 file://backport-0004-CVE-2022-23303-CVE-2022-23304.patch \
+file://CVE-2023-52160.patch \
 "
 
 # checksum changed

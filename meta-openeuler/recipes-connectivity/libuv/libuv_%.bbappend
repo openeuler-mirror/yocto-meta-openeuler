@@ -10,6 +10,9 @@ SRC_URI_prepend = "file://${BPN}-v${PV}.tar.gz \
                 file://libuv-Add-sw64-architecture.patch \
                 file://backport-Skip-some-tests.patch \
                 file://0001-test-fix-typo-in-test-tty-escape-sequence-processing.patch \
+                file://backport-0001-CVE-2024-24806.patch \
+                file://backport-0002-CVE-2024-24806.patch \
+                file://backport-0003-CVE-2024-24806.patch \
 "
 
 S = "${WORKDIR}/${BPN}-v${PV}"

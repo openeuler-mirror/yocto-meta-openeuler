@@ -13,6 +13,15 @@ SRC_URI_prepend = "file://0000-systemd-idmapd-require-rpc-pipefs.patch \
            file://0009-rpc-pipefs-generator-allocate-enough-space-for-pipef.patch \
            file://0010-nfs-utils-Don-t-allow-junction-tests-to-trigger-auto.patch \
            file://0011-Covscan-Scan-Wrong-Check-of-Return-Value.patch \
+           file://0012-rpcdebug-avoid-buffer-underflow-if-read-returns-0.patch \
+           file://0013-export-Fix-rootdir-corner-case-in-next_mnt.patch \
+           file://0014-Move-version.h-into-a-common-include-directory.patch \
+           file://0015-mountd-only-do-NFSv4-logging-on-supported-kernels.patch \
+           file://0016-libnfsidmap-try-to-get-the-domain-directly-from-host.patch \
+           file://0017-Fixed-a-regression-in-the-junction-code.patch \
+           file://0018-export-fix-handling-of-error-from-match_fsid.patch \
+           file://0019-export-move-cache_open-before-workers-are-forked.patch \
+           file://0020-gssd-fix-handling-DNS-lookup-failure.patch \
 "
 
 # fix nativesdk lib use error: /opt/buildtools/nativesdk/sysroots/x86_64-pokysdk-linux/usr/lib/libresolv.so: 

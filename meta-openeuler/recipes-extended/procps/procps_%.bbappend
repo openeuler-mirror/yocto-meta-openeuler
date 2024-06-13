@@ -30,6 +30,10 @@ SRC_URI += " \
         file://backport-vmstat-Update-memory-statistics.patch \
         file://backport-vmstat-Print-guest-time.patch \
         file://backport-ps-Fix-possible-buffer-overflow-in-C-option.patch \
+        file://backport-ps-Correct-BSD-c-option.patch \
+        file://backport-library-address-remaining-cpu-distortions-stat-api.patch \
+        file://backport-ps-don-t-lose-tasks-when-sort-used-with-forest-mode.patch \
+        file://backport-acknowledge-fix-for-the-lost-tasks-ps-issue.patch \
 "
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
