@@ -30,14 +30,13 @@ oebuild支持在oebuild工作目录下直接指定配置文件实现一键式构
      - yocto-meta-raspberrypi
      - yocto-meta-openeuler/meta-clang
     docker_param:
-    image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
-    parameters: -itd --network host
-    volumns:
-     - /dev/net/tun:/dev/net/tun
-    command: bash
+     image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
+     parameters: -itd --network host
+     volumns:
+      - /dev/net/tun:/dev/net/tun
+     command: bash
 
     bitbake_cmds:
      - bitbake zlib
 
 以上配置文件在回车命令执行后会自动创建编译目录，并执行zlib的编译动作
-
