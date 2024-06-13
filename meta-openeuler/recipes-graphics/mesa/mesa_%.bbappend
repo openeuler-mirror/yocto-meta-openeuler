@@ -22,6 +22,13 @@ SRC_URI_prepend = " \
         file://${BP}.tar.xz \
         file://backport-fix-build-err-on-arm.patch \
         file://0001-evergreen-big-endian.patch \
+        file://add_fangtian_support.patch \
+        file://1000-meson-add-loongarch64-build-support.patch \
+        file://1001-gallivm-temporary-disable-coroutines-on-loongarch64.patch \
+        file://1002-gallivm-arit-use-LLVMBuildFPToUI-when-the-float-is-n.patch \
+        file://1003-gallivm-add-more-optlevel-for-debug-purpose-on-loong.patch \
+        file://1004-gallivm-fix-gnome-can-not-start-bug.patch \
+        file://1005-kmsro-Extend-to-include-loongson-drm-support.patch \
         file://mesa-21.3.1-meson.build-make-TLS-ELF-optional.patch \
 "
 
