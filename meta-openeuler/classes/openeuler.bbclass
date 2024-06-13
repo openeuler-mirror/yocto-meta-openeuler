@@ -257,8 +257,6 @@ def download_repo(d, repo_dir, repo_url ,version = None):
     try:
         # if get commit version, just return
         repo.commit(version)
-        bb.utils.unlockfile(lf)
-        return
     except:
         bb.debug(1, 'commit does not exist, shallow fetch: ' + version)
         remote.fetch(version, depth=1)
