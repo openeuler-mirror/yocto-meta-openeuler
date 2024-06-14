@@ -17,7 +17,6 @@ SRC_URI_remove = "\
 # backport-0025-bind-Detect-system-time-changes.patch, backport-Fix-CVE-2021-25220.patch for bind
 SRC_URI_prepend = " \
            file://dhcp-${PV}.tar.gz \
-           file://backport-0001-change-bug-url.patch \
            file://backport-0002-additional-dhclient-options.patch \
            file://backport-0003-Handle-releasing-interfaces-requested-by-sbin-ifup.patch \
            file://backport-0004-Support-unicast-BOOTP-for-IBM-pSeries-systems-and-ma.patch \
@@ -52,10 +51,10 @@ SRC_URI_prepend = " \
            file://fix-coredump-when-client-active-is-NULL.patch \
            file://feature-lease-time-config-ipv6.patch \
            file://add-a-test-case-to-parse-code93-in-option_unittest.patch \
-           file://bugfix-error-message-display.patch \
            file://backport-Fix-CVE-2022-2928.patch \
            file://backport-Fix-CVE-2022-2929.patch \
            file://Revert-correcting-the-logic-in-dhclient.patch \
+           file://IAID-is-output-has-hexe-if-it-contains-or.patch \
 "
 
 SRC_URI[md5sum] = "9076af4cc1293dde5a7c6cae7de6ab45"
