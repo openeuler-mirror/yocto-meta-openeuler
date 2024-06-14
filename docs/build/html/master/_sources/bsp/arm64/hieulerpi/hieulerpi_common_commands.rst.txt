@@ -1,15 +1,15 @@
 .. _board_hieulerpi_common_commands:
 
 ========================================
-欧拉派海鸥系列常用命令
+海鸥派常用命令
 ========================================
 
-本章主要介绍欧拉派海鸥系列使用过程中小部分常用命令。
+本章主要介绍海鸥派使用过程中小部分常用命令。
 
 
 版本信息查询
 ============
-1. 【cat /etc/os-release; cat /etc/revision】查看当前欧拉版本的信息
+1. 【cat /etc/os-release; cat /etc/revision】查看当前openEuler Embedded版本的信息
 
    .. code-block:: console
 
@@ -204,6 +204,4 @@ LiteOS
       ls            lsfd          memcheck      mkdir         proc_ipcm     pwd           reset         rm
       rmdir         ssp_read      ssp_write     stack         swtmr         systeminfo    task          uname
       writeproc
-
-
 

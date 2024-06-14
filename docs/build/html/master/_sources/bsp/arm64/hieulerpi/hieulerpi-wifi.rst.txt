@@ -1,11 +1,11 @@
 .. _hieulerpi-wifi:
 
-海鸥派wifi使用
+海鸥派WiFi使用
 #####################
 
 .. contents::
 
-Station模式(连接wifi)
+Station模式(连接WiFi)
 ===========================
 
 海鸥派使用wpa_supplicant管理网络连接。 ``wpa_supplicant`` 与 ``wpa_cli`` 需要
@@ -142,7 +142,7 @@ wpa_cli控制无线网卡
 DHCP(动态获取IP)
 ------------------------
 
-在连接到wifi后需要设置本地无线网卡的IP，保证海鸥派与路由设备在同一网段。
+在连接到WiFi后需要设置本地无线网卡的IP，保证海鸥派与路由设备在同一网段。
 
 使用dhclient命令从网络动态获取IP。
 
