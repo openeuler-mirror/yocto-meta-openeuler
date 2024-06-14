@@ -11,7 +11,7 @@ PV = "1.7.2"
 # update LICENSE checksum
 LIC_FILES_CHKSUM = "file://COPYING;md5=172255dee66bb0151435b2d5d709fcf7"
 
-SRC_URI_prepend = "file://libX11-1.7.2.tar.bz2 \
+SRC_URI_prepend = "file://libX11-${PV}.tar.bz2 \
            file://dont-forward-keycode-0.patch \
            file://backport-makekeys-handle-the-new-EVDEVK-xorgproto-symbols.patch \
            file://libX11-1.7.2-sw_64.patch \

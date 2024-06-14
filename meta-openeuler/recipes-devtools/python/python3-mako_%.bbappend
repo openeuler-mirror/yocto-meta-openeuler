@@ -2,12 +2,8 @@ require pypi-src-openeuler.inc
 
 OPENEULER_REPO_NAME = "python-mako"
 
-PV = "1.2.4"
+PV = "1.1.4"
 
-LIC_FILES_CHKSUM = "file://LICENSE;md5=ad08dd28df88e64b35bcac27c822ee34"
+# openeuler patches
+SRC_URI += "file://CVE-2022-40023.patch;patchdir=${S}/mako"
 
-SRC_URI_remove = "file://CVE-2022-40023.patch"
-
-RDEPENDS_${PN} += "${PYTHON_PN}-markupsafe \
-                  ${PYTHON_PN}-pygments \
-                  "

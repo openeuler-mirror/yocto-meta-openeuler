@@ -562,6 +562,61 @@ SRC_URI =+ " \
            file://backport-core-unit-fix-notification-about-unit-dependency-cha.patch \
            file://backport-core-unit-make-JoinsNamespaceOf-implies-the-inverse-.patch \
            file://backport-core-unit-update-bidirectional-dependency-simultaneo.patch \
+           file://backport-journalctl-verify-that-old-entries-are-not-sealed-wi.patch \
+           file://backport-units-modprobe-.service-don-t-unescape-instance-name.patch \
+           file://backport-core-path-do-not-enqueue-new-job-in-.trigger_notify-.patch \
+           file://backport-socket-fix-use-of-ERRNO_IS_DISCONNECT.patch \
+           file://backport-sd-bus-fix-use-of-ERRNO_IS_DISCONNECT.patch \
+           file://backport-resolved-fix-use-of-ERRNO_IS_DISCONNECT.patch \
+           file://backport-bus-add-some-minimal-bounds-check-on-signatures.patch \
+           file://backport-udev-builtin-net_id-fix-potential-buffer-overflow.patch \
+           file://backport-hostname-Make-sure-we-pass-error-to-bus_verify_polki.patch \
+           file://backport-Limit-rlim_max-in-rlimit_nofile_safe-to-nr_open.patch \
+           file://backport-udev-raise-RLIMIT_NOFILE-as-high-as-we-can.patch \
+           file://backport-json-use-unsigned-for-refernce-counter.patch \
+           file://backport-macro-check-over-flow-in-reference-counter.patch \
+           file://backport-sd-bus-fix-reference-counter-to-be-incremented.patch \
+           file://backport-sd-bus-introduce-ref-unref-function-for-track_item.patch \
+           file://backport-sd-bus-do-not-read-unused-value.patch \
+           file://backport-sd-bus-do-not-return-negative-errno-when-unknown-nam.patch \
+           file://backport-sd-bus-use-hashmap_contains-and-drop-unnecessary-cas.patch \
+           file://backport-test-shorten-code-a-bit.patch \
+           file://backport-test-add-several-tests-for-track-item.patch \
+           file://backport-sd-bus-switch-to-a-manual-overflow-check-in.patch \
+           file://backport-Use-dummy-allocator-to-make-accesses-defined-as-per-standard.patch \
+           file://backport-rules-import-previous-SYSTEMD_READY-state-for-suspen.patch \
+           file://backport-rules-go-to-the-end-of-rules-indeed-when-dm-is-suspe.patch \
+           file://backport-CVE-2023-7008.patch \
+           file://backport-core-add-possibility-to-not-track-certain-unit-types.patch \
+           file://backport-journal-recalculate-line_max-when-stdout-stream-stat.patch \
+           file://backport-pid1-terminate-cylon-string.patch \
+           file://backport-pid1-move-draw_cylong-to-pretty-print.-ch.patch \
+           file://backport-test-add-test-for-draw_cylon.patch \
+           file://backport-locale-util-do-not-call-setlocale-when-multi-threade.patch \
+           file://backport-resolve-fix-wrong-error-cause-assignment-to-log_debu.patch \
+           file://backport-resolve-do-not-trigger-assertion-on-exit.patch \
+           file://backport-network-neighbor-add-missing-OOM-check.patch \
+           file://backport-dissect-tool-right-align-the-partition-number.patch \
+           file://backport-dissect-image-fix-fd-leak-in-dissected_image_acquire.patch \
+           file://backport-udev-even-if-a-device-is-a-zac-device-scsi-ID_SERIAL.patch \
+           file://backport-core-log-message-when-reloading-finishes.patch \
+           file://backport-sd-device-reduce-indentation.patch \
+           file://backport-sd-device-use-ERRNO_IS_DEVICE_ABSENT-at-one-more-pla.patch \
+           file://backport-sd-device-fix-possible-use-of-uninitialized-value.patch \
+           file://backport-sd-device-rename-arguments-and-variables.patch \
+           file://backport-sd-device-drop-unused-device_copy_properties.patch \
+           file://backport-sd-device-make-device_shallow_clone-static.patch \
+           file://backport-sd-device-do-not-read-uevent-file-in-device_clone_wi.patch \
+           file://backport-basic-fix-overflow-detection-in-sigbus_pop.patch \
+           file://backport-busctl-avoid-asserting-on-NULL-message.patch \
+           file://backport-resolve-don-t-add-sockets-to-the-graveyard-on-shutdo.patch \
+           file://backport-sd-journal-check-sd-event-state-before-setting-up-po.patch \
+           file://backport-shutdown-get-only-active-md-arrays.patch \
+           file://backport-core-exec-do-not-crash-with-UtmpMode-user-without-Us.patch \
+           file://backport-CVE-2023-50387.patch \
+           file://backport-CVE-2023-50868.patch \
+           file://backport-login-user-runtime-dir-properly-check-for-mount-poin.patch \
+           file://backport-user-util-validate-the-right-field.patch \
            file://update-rtc-with-system-clock-when-shutdown.patch \
            file://udev-add-actions-while-rename-netif-failed.patch \
            file://fix-two-VF-virtual-machines-have-same-mac-address.patch \
@@ -592,10 +647,6 @@ SRC_URI =+ " \
            file://Don-t-set-AlternativeNamesPolicy-by-default.patch \
            file://change-NTP-server-to-x.pool.ntp.org.patch \
            file://keep-weight-consistent-with-the-set-value.patch \
-           file://Systemd-Add-sw64-architecture.patch \
-           file://0029-Add-support-for-the-LoongArch-architecture.patch \
-           file://0030-Add-LoongArch-dmi-virt-detection-and-testcase.patch \
-           file://add-loongarch-for-missing_syscall_def.patch \
            file://core-update-arg_default_rlimit-in-bump_rlimit.patch \
            file://set-forwardtowall-no-to-avoid-emerg-log-shown-on-she.patch \
            file://core-cgroup-support-cpuset.patch \
@@ -624,6 +675,11 @@ SRC_URI =+ " \
            file://add-support-to-relabel-systemd-process-for-embedded.patch \
            file://embedded-add-noexec-mount-option-to-strenthen-tmp-pa.patch \
            file://embedded-use-yocto-configs.patch \
+           file://embedded-add-cpuset-cgv1-and-freezer-cgv1-option.patch \
+           file://Systemd-Add-sw64-architecture.patch \
+           file://0029-Add-support-for-the-LoongArch-architecture.patch \
+           file://0030-Add-LoongArch-dmi-virt-detection-and-testcase.patch \
+           file://add-loongarch-for-missing_syscall_def.patch \
            "
 
 # fix error: redefinition of 'struct statx_timestamp' with glibc-2.36
