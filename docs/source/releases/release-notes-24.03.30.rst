@@ -54,7 +54,7 @@ openEuler Embedded 24.03是openEuler Embedded第二个LTS版本，本版本的�
 
   - 南向BSP：
 
-    - 联合海思、启诺（ebaina）、鼎桥通信、菁蓉联创等合作伙伴共同打造了新硬件海鸥派，原生使用openEuler Embedded系统，支持环境感知，机器视觉，ROS应用，工业控制等能力，详细介绍参见 :ref:`board_ss928`
+    - 联合海思、启诺（ebaina）、鼎桥通信、菁蓉联创等合作伙伴共同打造了新硬件海鸥派，原生使用openEuler Embedded系统，支持环境感知，机器视觉，ROS应用，工业控制等能力，详细介绍参见 :ref:`board_hieulerpi`
 
     - 实现了myir-remi，myd-ym62x等新硬件的支持，详细介绍参见 :ref:`board_myir_remi`
 
