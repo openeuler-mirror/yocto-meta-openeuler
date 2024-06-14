@@ -1,20 +1,14 @@
 .. _bsp:
 
-南向新增支持开发指导
+南向使用指导
 ################################
 
-本章介绍openEuler Embedded的南向支持，包括如果新增新的BSP、所支持的硬件列表等等。
-
-.. toctree::
-   :maxdepth: 1
-   :caption: 南向开发注意事项
-
-   board-support/index
+本章介绍openEuler Embedded的当前支持的所有硬件的使用方式。
+所有支持的硬件在下方列表中。
 
 .. toctree::
    :maxdepth: 1
    :glob:
-   :caption: 目前所支持的硬件
 
    arm64/index
    x86/index

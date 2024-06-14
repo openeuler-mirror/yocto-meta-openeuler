@@ -11,4 +11,4 @@
    new_develop.rst
    ../../yocto/development.rst
    ../../oebuild/develop/index.rst
-
+   board-support/index
