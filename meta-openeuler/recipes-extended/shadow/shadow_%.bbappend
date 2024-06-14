@@ -33,22 +33,64 @@ SRC_URI_append = " \
            file://groupdel-fix-SIGSEGV-when-passwd-does-not-exist.patch \
            file://shadow-add-sm3-crypt-support.patch \
            file://backport-useradd-modify-check-ID-range-for-system-users.patch \
+           file://backport-man-po-Makefile.in-switch-from-xml2po-to-itstool.patch \
+           file://backport-Only-free-sgent-if-it-was-initialized.patch \
+           file://backport-Fix-parentheses-in-configure.ac.patch \
+           file://backport-Added-documentation-around-CREATE_MAIL_SPOOL.patch \
+           file://backport-Handle-malformed-lines-in-hushlogins-file.patch \
+           file://backport-Improve-child-error-handling.patch \
+           file://backport-lib-check-NULL-before-freeing-passwd-data.patch \
+           file://backport-CVE-2013-4235.patch \
            file://backport-Add-header-guards.patch \
            file://backport-Change-to-strncat.patch \
-           file://backport-Do-not-return-garbage-in-run_parts.patch \
            file://backport-Handle-ERANGE-error-correctly.patch \
+           file://backport-Do-not-return-garbage-in-run_parts.patch \
            file://backport-Initialize-local-variables.patch \
-           file://backport-Remove-commented-out-code-and-FIXMEs.patch \
-           file://backport-Remove-redeclared-variable.patch \
            file://backport-libmisc-add-check-fopen-return-value-in-read_random_.patch \
            file://backport-passwd-erase-password-copy-on-all-error-branches.patch \
+           file://backport-Remove-commented-out-code-and-FIXMEs.patch \
+           file://backport-Remove-redeclared-variable.patch \
            file://backport-chpasswd-add-get_salt-for-generating-salt-value.patch \
            file://backport-chpasswd-fix-function-problem-with-R-parameter.patch \
+           file://backport-script-to-kill-subjects-processes-from-userdel.patch \
+           file://backport-Avoid-races-in-chown_tree.patch \
+           file://backport-Avoid-races-in-remove_tree.patch \
+           file://backport-Require-symlink-support.patch \
+           file://backport-Fail-if-regular-file-pre-exists-in-copy_tree.patch \
+           file://backport-More-robust-file-content-copy-in-copy_tree.patch \
+           file://backport-Address-minor-compiler-warnings.patch \
+           file://backport-Avoid-races-in-copy_tree.patch \
+           file://backport-useradd-check-MLS-enablement-before-setting-serange.patch \
+           file://backport-libmisc-minimum-id-check-for-system-accounts.patch \
+           file://backort-useradd-Fix-buffer-overflow-when-using-a-prefix.patch \
+           file://backport-useradd-check-if-subid-range-exists-for-user.patch \
            file://backport-Fix-off-by-one-mistakes.patch \
            file://backport-Fix-typos-in-length-calculations.patch \
            file://backport-Correctly-handle-illegal-system-file-in-tz.patch \
            file://backport-Explicitly-override-only-newlines.patch \
            file://backport-Prevent-out-of-boundary-access.patch \
+           file://backport-Added-control-character-check.patch  \
+           file://backport-Overhaul-valid_field.patch \
+           file://backport-Read-whole-line-in-yes_or_no.patch \
+           file://backport-run_parts-for-groupadd-and-groupdel.patch \
+           file://backport-commonio-free-removed-database-entries.patch \
+           file://backport-semanage-disconnect-to-free-libsemanage-internals.patch \
+           file://backport-process_prefix_flag-Drop-privileges.patch \
+           file://backport-chsh-Verify-that-login-shell-path-is-absolute.patch \
+           file://backport-Plug-econf-memory-leaks.patch \
+           file://backport-def_load-avoid-NULL-deref.patch \
+           file://backport-Check-if-crypt_method-null-before-dereferencing.patch \
+           file://backport-usermod-fix-off-by-one-issues.patch \
+           file://backport-gpasswd-1-Fix-password-leak.patch \
+           file://backport-chgpasswd-fix-segfault-in-command-line-options.patch \
+           file://backport-chpasswd-add-IS_CRYPT_METHOD.patch \
+           file://backport-Fix-yescrypt-support.patch \
+           file://backport-newgrp-fix-potential-string-injection.patch \
+           file://shadow-Remove-encrypted-passwd-for-useradd-gr.patch \
+           file://backport-shadow-userdel-add-the-adaptation-to-the-busybox-ps-.patch \
+           file://backport-lib-btrfs-avoid-NULL-dereference.patch \
+           file://backport-src-passwd.c-Switch-to-day-precision.patch \
+           file://backport-src-passwd-add-overflow-check.patch  \
 "
 
 # add extra pam files for openeuler

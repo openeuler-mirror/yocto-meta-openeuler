@@ -20,6 +20,9 @@ SRC_URI_prepend =+ "file://perl-5.34.0.tar.xz \
             file://backport-CVE-2023-31484.patch \
             file://backport-CVE-2023-31486.patch \
             file://backport-CVE-2022-48522.patch \
+            file://backport-CVE-2023-47100-CVE-2023-47038.patch \
+            file://backport-CVE-2023-47039.patch \
+            file://fix-test-case-failure-caused-by-zlib.patch \
 "
 
 SRC_URI_remove += "\

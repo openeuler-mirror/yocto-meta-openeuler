@@ -22,5 +22,6 @@ SRC_URI = " \
     file://backport-004-CVE-2023-31147.patch \
     file://backport-005-CVE-2023-31147.patch \
     file://backport-CVE-2023-31124.patch \
+    file://backport-CVE-2024-25629.patch \
 "
 

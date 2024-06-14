@@ -29,6 +29,10 @@ SRC_URI = " \
 # file://backport-CVE-2021-43519.patch
 # file://backport-CVE-2022-28805.patch
 # file://backport-CVE-2021-44964.patch
+# file://backport-Bug-stack-overflow-with-nesting-of-coroutine.close.patch
+# file://backport-Bug-Loading-a-corrupted-binary-file-can-segfault.patch
+# file://backport-Bug-Recursion-in-getobjname-can-stack-overflow.patch
+# file://backport-Emergency-new-version-5.4.6.patch
 
 SRC_URI += "\
     file://lua-${PV_testsuites}-tests.tar.gz;name=tarballtest \

@@ -52,4 +52,12 @@ SRC_URI += " \
     file://0038-Quiet-unused-variable-warnings.patch \
     file://0039-ext2fs-Use-64bit-lseek-when-_FILE_OFFSET_BITS-is-64.patch \
     file://0040-e2fsck-fix-bad-htree-checksums-in-preen-mode.patch \
+    file://0041-debugfs-Fix-infinite-loop-when-dump-log.patch \
+    file://0042-debugfs-Use-the-hash_version-from-superblock-if-a-fi.patch \
+    file://0043-tune2fs-fuse2fs-debugfs-save-error-information-durin.patch \
+    file://0044-resize2fs-use-Direct-I-O-when-reading-the-superblock.patch \
+    file://0045-modify-dumpe2fs-to-report-free-block-ranges-for-bigalloc.patch \
+    file://0046-e2fsck-fix-acl-block-leak-when-process-orphan-list.patch \
+    file://0047-e2fsck-when-mutating-file-name-make-sure-its-length-.patch \
+    file://0048-reisze2fs-sanity-check-free-block-group-counts-when-.patch  \
 "

@@ -22,9 +22,11 @@ SRC_URI_append += " \
            file://bugfix-Forbidden-non-root-user-to-clear-history.patch \
            file://enable-dot-logout-and-source-bashrc-through-ssh.patch \
            file://cd-alias.patch \
+           file://bash-5.1-sw.patch \
            file://backport-fix-crash-in-readline-when-started-with-an-invalid.patch \
+           file://backport-fix-CVE-2022-3715.patch \
            file://backport-Bash-5.1-patch-10-fix-for-wait-n-being-interrupted-b.patch \
-           file://backport-Bash-5.1-patch-11-save-and-restore-alias-parsing-whe.patch \ 
+           file://backport-Bash-5.1-patch-11-save-and-restore-alias-parsing-whe.patch \
            file://backport-Bash-5.1-patch-12-fix-race-condition-with-child-proc.patch \
            file://backport-Bash-5.1-patch-13-fix-tilde-expansion-after-unquoted.patch \
            file://backport-Bash-5.1-patch-14-fix-off-by-one-error-when-reading-.patch \
@@ -35,6 +37,13 @@ SRC_URI_append += " \
            file://backport-fix-for-nofork-comsub-command-printing-fix-for-crash.patch \
            file://backport-fix-small-memleak-in-globbing.patch \
            file://backport-fix-for-leak-when-completing-command-word-with-glob-.patch \
+           file://backport-fix-for-E-transformation-fixes-for-failures-in-arith.patch \
+           file://backport-changes-for-quoting-special-and-multibyte-characters.patch \
+           file://backport-fixes-for-LINENO-in-multi-line-simple-commands-print.patch \
+           file://backport-changes-to-SIGINT-handler-while-waiting-for-a-child-.patch \
+           file://backport-renamed-several-functions-beginning-with-legal_-chan.patch \
+           file://backport-fix-for-cd-when-curent-directory-doesn-t-exist-fix-w.patch \
+           file://backport-Fix-a-performance-regression-while-using-large-numbe.patch \
 "
 
 SRC_URI[tarball.sha256sum] = "0cfb5c9bb1a29f800a97bd242d19511c997a1013815b805e0fdd32214113d6be"

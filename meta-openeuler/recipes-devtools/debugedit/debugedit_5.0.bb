@@ -11,6 +11,10 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552 \
 
 SRC_URI = "https://sourceware.org/ftp/debugedit/${PV}/debugedit-${PV}.tar.xz"
 
+# tests-Handle-zero-directory-entry-in-.debug_line-DWA.patch compile failed
+# file://find-debuginfo.sh-decompress-DWARF-compressed-ELF-se.patch compile failed
+# file://backport-Fix-u-option.patch compile failed
+
 SRC_URI:append:libc-musl = " \
            file://0001-tools-Add-error.h-for-non-glibc-case.patch \
            file://0002-sepdebugcrcfix.c-do-not-use-64bit-variants.patch \

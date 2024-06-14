@@ -18,7 +18,14 @@ SRC_URI_prepend = "file://${BP}.tar.gz \
         file://backport-python-sepolicy-Cache-conditional-rule-queries.patch;patchdir=.. \
         file://backport-restorecond-add-check-for-strdup-in-strings_list_add.patch;patchdir=.. \
         file://backport-python-Use-isinstance-instead-of-type.patch;patchdir=.. \
-        "
+        file://backport-restorecond-compatible-with-the-use-of-EUID.patch;patchdir=.. \
+        file://backport-sepolicy-manpage.py-make-output-deterministic.patch;patchdir=.. \
+        file://restorecond-remove-dependency-of-glib2.patch;patchdir=.. \
+        file://backport-newrole-silence-compiler-warnings.patch;patchdir=.. \
+        file://backport-newrole-use-DJB2a-string-hash-function.patch;patchdir=.. \
+        file://backport-python-Harden-more-tools-against-rogue-modules.patch;patchdir=.. \
+        file://backport-setfiles-avoid-unsigned-integer-underflow.patch;patchdir=.. \
+"
 
 SRC_URI[md5sum] = "f2d555505dfcf13a89144306d4bc5bdc"
 SRC_URI[sha256sum] = "7dc28e398afab9e917f02ce23dc93aff817f79171550e88bc743e31cde26f936"
