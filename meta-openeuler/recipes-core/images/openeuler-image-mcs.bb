@@ -9,6 +9,7 @@ REQUIRED_DISTRO_FEATURES = "mcs"
 # currently, only openamp requrires re-generating dtb
 inherit ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'qemuboot-mcs-dtb', '', d)}
 
+IMAGE_FEATURES:remove = "weston"
 
 # basic packages required, e.g., boot, ssh ,debug
 # overwrite this variable, or IMAGE_INSTALL was standard packages in openeuler-image-common.inc file
