@@ -128,20 +128,20 @@ Rufus工具的配置如下图：
 
 **phytiumpi 登录方式**
 
-    + 使用串口登录：
++ 使用串口登录：
 
-        镜像使能了串口登录功能，按照 phytiumpi 的串口连接方式，如下图，可以启用串口操作。
+镜像使能了串口登录功能，按照 phytiumpi 的串口连接方式，如下图，可以启用串口操作。
 
-        示例：使用ttyusb转接器，将 phytiumpi 串口通过USB连接到 Mobaxterm ：
+示例：使用ttyusb转接器，将 phytiumpi 串口通过USB连接到 Mobaxterm ：
 
-        Mobaxterm 的启动打印如下图：
+Mobaxterm 的启动打印如下图：
 
 .. image:: phytiumpi-image/mobaterm.png
 
-    + 使用HDMI登录：
++ 使用HDMI登录：
 
-        phytiumpi 连接显示器(phytiumpi 视频输出接口为标准 HDMI)、键盘、鼠标后，启动 phytiumpi，可以看到 phytiumpi 启动日志输出到显示器上。待 phytiumpi 启动成功，输入用户名（root）和密码登录。
+phytiumpi 连接显示器(phytiumpi 视频输出接口为标准 HDMI)、键盘、鼠标后，启动 phytiumpi，可以看到 phytiumpi 启动日志输出到显示器上。待 phytiumpi 启动成功，输入用户名（root）和密码登录。
 
-        HDMI 的启动打印如下图：
+HDMI 的启动打印如下图：
 
 .. image:: phytiumpi-image/hdmi.png
