@@ -140,7 +140,7 @@ Rufus工具的配置如下图：
 
     + 使用HDMI登录：
 
-        phytiumpi 连接显示器（phytiumpi 视频输出接口为标准 HDMI）、键盘、鼠标后，启动 phytiumpi，可以看到 phytiumpi 启动日志输出到显示器上。待 phytiumpi 启动成功，输入用户名（root）和密码登录。
+        phytiumpi 连接显示器(phytiumpi 视频输出接口为标准 HDMI)、键盘、鼠标后，启动 phytiumpi，可以看到 phytiumpi 启动日志输出到显示器上。待 phytiumpi 启动成功，输入用户名（root）和密码登录。
 
         HDMI 的启动打印如下图：
 
