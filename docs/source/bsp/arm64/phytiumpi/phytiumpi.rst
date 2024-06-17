@@ -3,7 +3,7 @@ phytiumpi 镜像构建与说明
 
 本章主要介绍 openEuler Embedded 中 phytiumpi 系列板卡的镜像构建，使用和特性介绍。
 
-phytiumpi 板卡搭载的 soc 型号为 phytium e2000q 支持SD卡启动，因此我们构建出的镜像在烧录到SD卡中即可飞腾开发板中启动，建议准备一个8G以上的SD卡，并准备一个USBtty串口设备。
+phytiumpi 板卡搭载的 soc 型号为 phytium e2000q，支持SD卡启动，因此我们构建出的镜像烧录到SD卡后即可在飞腾开发板中启动，建议准备一个8G以上的SD卡，并准备一个USBtty串口设备。
 
 
 镜像构建与使用
@@ -11,7 +11,7 @@ phytiumpi 板卡搭载的 soc 型号为 phytium e2000q 支持SD卡启动，因�
 
 1. 构建机器和oebuild工具准备：
 
-（1）准备一个 ubuntu x86 构建主机环境（建议22.04，依赖Python>=3.8，配置建议预留200G存储）
+（1）准备一个 ubuntu x86 构建主机环境（建议22.04，依赖Python>=3.10，配置建议预留200G存储）
 
 （2）安装 oebuild（具体 oebuild 用法可参见 :ref:`oebuild_install` ），注意以普通用户安装 oebuild ，例：
 
@@ -22,7 +22,7 @@ phytiumpi 板卡搭载的 soc 型号为 phytium e2000q 支持SD卡启动，因�
         pip install oebuild
 
 
-（3）准备 oebuild 的工具依赖（docker）：
+（3）准备 oebuild 的工具依赖(docker)：
 
     .. code-block:: console
 
@@ -35,7 +35,7 @@ phytiumpi 板卡搭载的 soc 型号为 phytium e2000q 支持SD卡启动，因�
 
 2. oebuild 构建代码准备：
 
-（1）初始化构建分支代码（请不要以root及sudo权限执行）：
+（1）初始化构建分支代码(请不要以root及sudo权限执行)：
 
    .. code-block:: console
 
@@ -59,16 +59,16 @@ phytiumpi 板卡搭载的 soc 型号为 phytium e2000q 支持SD卡启动，因�
         # 以上命令可追加-f参数，通过 oebuild generate -l 查看支持的配置，比如-f openeuler-rt开启软实时
 
 
-3. 镜像构建和部署
+3. 镜像构建和部署：
 
-（1）构建 phytiumpi 镜像
+（1）构建 phytiumpi 镜像：
 
     .. code-block:: console
 
         cd /home/user/buildwork/phytiumpi
         oebuild bitbake
         # oebuild bitbake 执行后将进入构建交互环境
-        # 注意您此时应该处于进入 oebuild bitbkae 环境的工作根目录（如/home/openeuler/phytiumpi
+        # 注意您此时应该处于进入 oebuild bitbkae 环境的工作根目录(如/home/openeuler/phytiumpi)
         bitbake openeuler-image
 
 构建完成后，输出件见 /home/user/buildwork/phytiumpi/output/[时间戳]，备用组件内容如下
@@ -122,28 +122,26 @@ Rufus工具的配置如下图：
 
 **启用 phytiumpi**
 
-默认用户名：root，密码：第一次启动没有默认密码，需重新配置，且密码强度有相应要求， 需要数字、字母、特殊字符组合最少8位，例如abcd@2024。
+默认用户名：root，密码：第一次启动没有默认密码，需重新配置，且密码强度有相应要求，需要数字、字母、特殊字符组合最少8位，例如abcd@2024。
 
 将刷写镜像后的SD卡插入 phytiumpi，通电启用。
 
-** phytiumpi 登录方式**
+**phytiumpi 登录方式**
 
-本地登录
+    + 使用串口登录：
 
-a.使用串口登录：
+        镜像使能了串口登录功能，按照 phytiumpi 的串口连接方式，如下图，可以启用串口操作。
 
-镜像使能了串口登录功能，按照 phytiumpi 的串口连接方式，如下图，可以启用串口操作。
+        示例：使用ttyusb转接器，将 phytiumpi 串口通过USB连接到 Mobaxterm ：
 
-示例：使用ttyusb转接器，将 phytiumpi 串口通过USB连接到 Mobaxterm ：
-
-Mobaxterm 的启动打印如下图：
+        Mobaxterm 的启动打印如下图：
 
 .. image:: phytiumpi-image/mobaterm.png
 
-b.使用HDMI登录：
+    + 使用HDMI登录：
 
-phytiumpi 连接显示器（phytiumpi 视频输出接口为标准 HDMI）、键盘、鼠标后，启动 phytiumpi，可以看到 phytiumpi 启动日志输出到显示器上。待 phytiumpi 启动成功，输入用户名（root）和密码登录。
+        phytiumpi 连接显示器（phytiumpi 视频输出接口为标准 HDMI）、键盘、鼠标后，启动 phytiumpi，可以看到 phytiumpi 启动日志输出到显示器上。待 phytiumpi 启动成功，输入用户名（root）和密码登录。
 
-HDMI 的启动打印如下图：
+        HDMI 的启动打印如下图：
 
 .. image:: phytiumpi-image/hdmi.png
