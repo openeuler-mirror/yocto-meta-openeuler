@@ -157,10 +157,13 @@ RDEPENDS:${PN} += " \
         ${@bb.utils.contains('USE_PREBUILD_SHIM_V2', '1', 'lib-shim-v2-bin', 'lib-shim-v2', d)} \
 "
 
-EXTRA_OECMAKE = "-DENABLE_GRPC=ON \
+EXTRA_OECMAKE = "-DENABLE_GRPC=ON -DENABLE_GRPC_REMOTE_CONNECT=OFF \
         ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '-DENABLE_SYSTEMD_NOTIFY=ON', '-DENABLE_SYSTEMD_NOTIFY=OFF', d)} \
 		-DENABLE_SHIM_V2=ON -DENABLE_OPENSSL_VERIFY=ON \
 		-DGRPC_CONNECTOR=ON \
+        -DENABLE_CRI_API_V1=ON \
+        -DENABLE_CDI=ON \
+        -DCMAKE_CXX_STANDARD=17 \
 		"
 
 # lib-shim-v2 depends on rust which is not well supported for arm32 and riscv64
@@ -185,6 +188,11 @@ do_configure:prepend() {
     grep -q CMAKE_SYSROOT ${WORKDIR}/toolchain.cmake || cat >> ${WORKDIR}/toolchain.cmake <<EOF
     set( CMAKE_SYSROOT ${STAGING_DIR_HOST} )
 EOF
+}
+
+do_compile:prepend() {
+    sed -i "10 a\# undef linux" ${WORKDIR}/build/grpc/src/api/services/cri/v1alpha/api.pb.h
+    sed -i "10 a\# undef linux" ${WORKDIR}/build/grpc/src/api/services/cri/v1/api_v1.pb.h
 }
 
 DEPENDS += "update-rc.d-native"
