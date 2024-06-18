@@ -17,6 +17,8 @@ SRC_URI += "file://parted-${PV}.tar.xz \
             file://0007-fat_op_context_new-free-ctx-remap-and-goto-correct-l.patch \
             file://0008-hfsplus_cache_from_extent-fix-memleak.patch \
             file://0009-fat_clobber-set-boot_sector-NULL-and-free-boot_secto.patch \
+            file://0010-parted-remove-patch-which-modifid-cyl-size.patch \
+            file://0011-libparted-Fix-potential-NULL-dereference-in-ped_disk.patch \
             "
 
 # the patch check-vfat.patch will result in error

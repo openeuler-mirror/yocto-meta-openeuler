@@ -52,6 +52,9 @@ SRC_URI_prepend = " \
         file://backport-who-don-t-crash-if-clock-gyrates.patch \
         file://backport-doc-od-strings-clarify-operation.patch \
         file://backport-wc-port-to-kernels-that-disable-XSAVE-YMM.patch \
+        file://test-skip-overlay-filesystem-because-of-no-inotify_add_watch.patch \
+        file://fix-typo-in-zh_CN.patch \
+        file://backport-sort-don-t-trust-st_size-on-proc-files.patch \
 "  
 
 EXTRA_OECONF_remove_class-native = "--without-gmp"

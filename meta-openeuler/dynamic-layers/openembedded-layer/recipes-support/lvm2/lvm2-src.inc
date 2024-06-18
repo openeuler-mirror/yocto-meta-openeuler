@@ -48,6 +48,8 @@ SRC_URI_prepend = "file://LVM2.${PV}.tgz \
             file://0029-vgchange-acquire-an-exclusive-VG-lock-for-refresh.patch \
             file://0030-udev-create-symlinks-and-watch-even-in-suspended-sta.patch \
             file://0031-udev-import-previous-results-of-blkid-when-in-suspen.patch \
+            file://0032-clean-up-group-struct-in-_stats_create_group-error-path.patch \
+            file://0033-dm-event-release-buffer-on-dm_event_get_version.patch \
 " 
 
 SRC_URI[sha256sum] = "4a63bc8a084a8ae3c7bc5e6530cac264139d218575c64416c8b99e3fe039a05c"

@@ -12,6 +12,7 @@ SRC_URI_remove += " \
 # patch from openeuler
 SRC_URI += " \
            file://bugfix-pam-1.1.8-faillock-systemtime.patch \
+           file://backport-CVE-2024-22365-pam_namespace-protect_dir-use-O_DIRECTORY-to-prevent.patch \
            file://change-ndbm-to-gdbm.patch \
            file://add-sm3-crypt-support.patch \
            file://1003-Change-chinese-translation.patch \

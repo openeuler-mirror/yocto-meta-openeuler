@@ -10,6 +10,7 @@ PV = "5.2.5"
 
 SRC_URI += "file://xz-${PV}.tar.xz \
             file://backport-CVE-2022-1271.patch \
+            file://backport-liblzma-Add-overflow-check-for-Unpadded-size-in-lzma.patch \
             "
 
 SRC_URI[md5sum] = "aa1621ec7013a19abab52a8aff04fe5b"

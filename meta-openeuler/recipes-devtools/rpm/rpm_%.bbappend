@@ -6,12 +6,13 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 # delete useless patches form rpm_4.16.1.3.bb
 SRC_URI_remove = " \
     git://github.com/rpm-software-management/rpm;branch=rpm-4.16.x;protocol=https \
-            file://0001-Fix-build-with-musl-C-library.patch \
-            file://0011-Do-not-require-that-ELF-binaries-are-executable-to-b.patch \
-            file://0001-rpm-rpmio.c-restrict-virtual-memory-usage-if-limit-s.patch \
-           file://0001-CVE-2021-3521.patch \
-           file://0002-CVE-2021-3521.patch \
-           file://0003-CVE-2021-3521.patch \
+    file://0001-Fix-build-with-musl-C-library.patch \
+    file://0011-Do-not-require-that-ELF-binaries-are-executable-to-b.patch \
+    file://0001-rpm-rpmio.c-restrict-virtual-memory-usage-if-limit-s.patch \
+    file://0001-CVE-2021-3521.patch \
+    file://0002-CVE-2021-3521.patch \
+    file://0003-CVE-2021-3521.patch \
+    file://0001-Add-a-color-setting-for-mips64_n32-binaries.patch \
 "
 
 SRC_URI_append = " \
@@ -20,7 +21,7 @@ SRC_URI_append = " \
 
 # files, patches that come from openeuler
 SRC_URI_prepend = " \
-        http://ftp.rpm.org/releases/rpm-4.17.x/${BPN}-${PV}.tar.bz2 \
+        file://${BPN}-${PV}.tar.bz2 \
         file://Unbundle-config-site-and-add-RPM-LD-FLAGS-macro.patch \
         file://rpm-4.12.0-rpm2cpio-hack.patch \
         file://add-dist-to-release-by-default.patch \
@@ -91,6 +92,51 @@ SRC_URI_prepend = " \
         file://backport-CVE-2021-35938.patch \
         file://backport-rpm2cpio.sh-strip-null-bytes-with-tr.patch \
         file://backport-rpm2cpio.sh-only-read-needed-bytes-of-file-magic.patch \
+        file://backport-Fix-rpm-lua-rpm_vercmp-error-message-if-second-argum.patch \
+        file://backport-Make-pgpPubkeyFingerprint-do-something-meaningful-ag.patch \
+        file://backport-Fix-possible-descriptor-leak-in-fsmOpenat.patch \
+        file://backport-Move-file-metadata-setting-back-to-unpack-stage.patch \
+        file://backport-Fix-header-leak-in-rpmInstall.patch \
+        file://backport-Fix-eiu-sourceURL-info-leak-in-rpmInstall.patch \
+        file://backport-Fix-h-blob-leak-when-installing-source-rpms.patch \
+        file://backport-Fix-Header-leak-when-running-rpm2cpio.patch \
+        file://backport-Use-unsigned-integers-more-consistently-in-the-handl.patch \
+        file://backport-Fix-file-leak-when-src-rpm-in-URL-format-is-used-for.patch \
+        file://backport-Fix-BANames-leak-in-handlePreambleTag.patch \
+        file://backport-Fix-prog-leak-in-parseScript.patch \
+        file://backport-Fix-elf-leak-in-getElfColor.patch \
+        file://backport-Fix-sbp-leak-when-running-rpmbuild-with-quiet.patch \
+        file://backport-Fix-memleak-when-running-generate_buildrequires.patch \
+        file://backport-Fix-memleak-when-fsmRename-failed-in-fsmCommit.patch \
+        file://backport-Fix-fileleak-and-memleak-in-rpmInstall.patch \
+        file://backport-Fix-fileleak-when-urlGetFile-fails-in-rpmInstall.patch \
+        file://backport-Fix-install-of-block-and-character-special-files-219.patch \
+        file://backport-Use-fd-based-ops-for-metadata-in-FA_TOUCH-mode-too-w.patch \
+        file://backport-Add-a-test-for-special-device-node-installation.patch \
+        file://backport-support-for-POSIX-getopt-behaviour.patch \
+        file://backport-Use-proper-type-for-copyTagsFromMainDebug.patch \
+        file://backport-Fix-a-copy-paste-help-description-of-whatconflicts-R.patch \
+        file://backport-Fix-a-segfault-on-a-non-stringable-argument-to-macro.patch \
+        file://backport-Remove-obscure-check-for-package-build-time-from-reb.patch \
+        file://backport-Fix-possible-null-pointer-reference-in-ndb.patch \
+        file://backport-Fix-rpmDigestBundleFinal-and-Update-return-code-on-i.patch \
+        file://backport-Actually-return-an-error-in-parseScript-if-parsing-f.patch \
+        file://backport-Check-inside-root-when-querying-for-files.patch \
+        file://backport-Fix-regression-on-ctrl-c-during-transaction-killing-.patch \
+        file://backport-Use-unsigned-integers-for-buildtime-too-for-Y2K38-sa.patch \
+        file://backport-Fix-a-theoretical-use-of-uninitialized-struct-member.patch \
+        file://backport-Fix-spec-parser-leaks-from-trans-f-file.patch \
+        file://backport-Tip-toe-around-rpmfiFN-thin-ice-in-fsm.patch \
+        file://backport-Fix-a-memleak-on-invalid-command-line-options.patch \
+        file://backport-Let-eBPF-ELF-files-be-packaged-in-noarch-packages.patch \
+        file://fix-macros-autopath-num-error.patch \
+        file://backport-Fix-some-int-enum-confusion-in-the-build-code.patch \
+        file://backport-Use-the-internal-DB_CTRL-enum-for-intenal-uses-consi.patch \
+        file://backport-An-enumeration-is-not-a-bitfield-use-an-integer-inst.patch \
+        file://backport-Fix-an-enum-int-type-mismatch-in-rpmfiArchiveReadToF.patch \
+        file://backport-Fix-an-enum-int-type-mismatch-in-transaction-verify-.patch \
+        file://backport-Fix-enum-type-mismatch-in-rpmTagGetValue.patch \
+        file://backport-Don-t-segfault-on-missing-priority-tag.patch \
 "
 
 SRC_URI[sha256sum] = "2e0d220b24749b17810ed181ac1ed005a56bbb6bc8ac429c21f314068dc65e6a"
@@ -100,7 +146,7 @@ EXTRA_OECONF_remove = " --without-lua"
 DEPENDS += "lua"
 DEPENDS_remove = "db"
 
-PACKAGECONFIG_append = "sqlite zstd ndb"
+PACKAGECONFIG_append = " sqlite zstd ndb "
 PACKAGECONFIG[sqlite] = "--enable-sqlite=yes,--enable-sqlite=no,sqlite3"
 PACKAGECONFIG[ndb] = "--enable-ndb,--disable-ndb"
 PACKAGECONFIG[bdb-ro] = "--enable-bdb-ro,--disable-bdb-ro"

@@ -20,6 +20,7 @@ SRC_URI_prepend = " \
     file://0004-Improve-performance-of-parsing-unknown-fields-in-Jav.patch \
     file://0005-fix-CVE-2022-1941.patch \
     file://0006-fix-CVE-2022-3171.patch \
+    file://0007-add-coverage-compile-option.patch \
 "
 
 SRC_URI[md5sum] = "d0a7dd930210af5285c08c8a2c2304ab"
