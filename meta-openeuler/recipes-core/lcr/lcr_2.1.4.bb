@@ -16,14 +16,20 @@ inherit cmake pkgconfig
 ### Build metadata
 SRC_URI = " \
         file://v${PV}.tar.gz \
-        file://0001-support-check-symbols-and-compile-code-in-cmake.patch \
-        file://0002-remove-unnecessary-strerror.patch \
-        file://0003-improve-code-of-function-in-log.patch \
-        file://0004-support-visibility-of-compiler.patch \
-        file://0005-refactor-util-buffer-and-add-ut.patch \
-        file://0006-264-Support-both-C-11-and-C-17.patch \
-        file://0007-262-Fix-empty-pointer-and-overflow.patch \
-        file://0008-266-set-env-to-avoid-invoke-lxc-binary-directly.patch \
+        file://0001-add-systemd-cgroup-field-in-isulad-and-shim-config.patch \
+        file://0002-Add-http-parser-as-third-party-component.patch \
+        file://0003-add-enable-pod-events-field.patch \
+        file://0004-add-swap-usage-fields-in-shim-stats-and-container-in.patch \
+        file://0005-Add-oomkilled-field-in-inspect.json.patch \
+        file://0006-add-runtime-in-process-state.patch \
+        file://0007-restore-bufsize-to-prevent-log-loss.patch \
+        file://0008-support-clang-build.patch \
+        file://0009-support-cdi-spec.patch \
+        file://0010-remove-file-mode-check-in-ut.patch \
+        file://0011-remove-lcr-created-spec-only-if-create-failed.patch \
+        file://0012-Fix-info-inproper-data-type-for-timestamp.patch \
+        file://0013-fix-bug-for-potential-config-seccomp-ocihook-write-e.patch \
+        file://0014-add-codecheck-fix.patch \
 "
 
 S = "${WORKDIR}/${BPN}-v${PV}"
