@@ -10,7 +10,7 @@ Weston 是一个开源项目，作为 Wayland 显示服务器协议的参考实�
 
 Qt5 是常见的嵌入式图形库之一，是一个跨平台的 C++ 应用程序开发框架，提供了丰富的图形界面组件和工具，可以用于开发桌面应用程序、嵌入式应用程序等；QtWayland 是 Qt5 框架中的一个模块，用于支持 Wayland 协议，QtWayland 模块提供了一组 API，使 Qt5 应用程序能够与 Wayland 协议兼容的显示服务器进行交互。
 
-OpenEuler Embedded 系统支持使用 weston 作为窗口管理器，支持 Qt5 作为嵌入式图形库。
+openEuler Embedded 系统支持使用 weston 作为窗口管理器，支持 Qt5 作为嵌入式图形库。
 
 
 Wayland 框架简介

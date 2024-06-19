@@ -9,7 +9,6 @@
    :caption: 内容
 
    mica/index.rst
-   lopper_devicetree.rst
    ros.rst
    muslc.rst
    distributed_softbus.rst

@@ -1,9 +1,9 @@
 .. _rust:
 
-支持Rust工具链
+Rust支持
 ######################################
 
-本章介绍OpenEuler Embedded中对于Rust工具链的支持。
+本章介绍openEuler Embedded中对于Rust语言的支持。
 
 为什么选择Rust
 ---------------------
@@ -11,9 +11,9 @@
 #. **内存安全性**：Rust提供了一套基于借用、生命周期等语法用于防止发生内存不安全的行为，编译器会在编译时期就帮助程序员避免大多数错误。
 #. **更好的包管理工具**：Rust提供了Cargo工具用于管理Rust项目的构建、下载依赖与分发等。
 
-OpenEuler Embedded对于Rust工具链的支持
+openEuler Embedded对于Rust工具链的支持
 ----------------------------------------
-目前OpenEuler Embedded中的Rust工具链主要包含以下组件：
+目前openEuler Embedded中的Rust工具链主要包含以下组件：
 
 1. ``cargo.bbclass`` ：用于提供yocto构建Rust项目的支持。``cargo.bbclass`` 定义了一系列Task用于构建基于Cargo工具组织的Rust项目，同时也定义了一系列变量支持编译的自定义。Rust项目的recipe可以通过继承`cargo`类，定义一些标准变量就可以实现项目的构建与发布。
 #. ``rustc-bin-cross`` 与 ``cargo-bin-cross``：用于引入Rust编译器 ``rustc`` 和包管理工具 ``cargo`` 的recipe，目前是通过官方提供的预编译二进制包完成项目搭建。
@@ -68,14 +68,14 @@ CARGO_FEATURES 		   一个空格划分的列表，代表需要启用的Cargo特�
 ==================== ===============================================================================================
 
 
-为什么没有使用OpenEuler生态中的Rust工具链
+为什么没有使用openEuler生态中的Rust工具链
 ---------------------------------------------
-目前OpenEuler源代码 `仓库 <https://gitee.com/src-openeuler/rust/tree/master/>`_ 中提供了Rust工具链的源代码，OpenEuler发行版也支持安装 ``rustc`` 与 ``cargo`` 工具。但是因为以下原因没有使用：
+目前openEuler源代码 `仓库 <https://gitee.com/src-openeuler/rust/tree/master/>`_ 中提供了Rust工具链的源代码，openEuler发行版也支持安装 ``rustc`` 与 ``cargo`` 工具。但是因为以下原因没有使用：
 
 1. 完全从源代码构建Rust工具链是比较繁琐的。因为 ``rustc`` 还需要构建LLVM编译器后端，整个构建的中间文件可以达到10G级别的大小。参考 `面向嵌入式场景的构建系统Yocto应用与思考 <https://mp.weixin.qq.com/s/zyC9NFu9SAHYBkD3HTrZYA>`_ 中的构建原则，我们更倾向于使用已编译好的包进行构建。
-#. OpenEuler发行版可以安装Rust工具链，但是在x86平台下只能安装x86的 ``rust-std`` Rust标准库，如果需要进行交叉编译，还需要安装目标平台的Rust标准库，因此无法通过本机工具的方法构建
+#. openEuler发行版可以安装Rust工具链，但是在x86平台下只能安装x86的 ``rust-std`` Rust标准库，如果需要进行交叉编译，还需要安装目标平台的Rust标准库，因此无法通过本机工具的方法构建
 
-基于以上原因目前使用官方的预编译包。更好的解决办法是OpenEuler可以提供在x86安装不同平台的Rust标准库的方法，这样既能保证同源，也能减少从源码构建的复杂性。
+基于以上原因目前使用官方的预编译包。更好的解决办法是openEuler可以提供在x86安装不同平台的Rust标准库的方法，这样既能保证同源，也能减少从源码构建的复杂性。
 
 
 增加对于新版本Rust工具链的支持

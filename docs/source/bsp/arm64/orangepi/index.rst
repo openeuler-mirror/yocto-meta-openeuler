@@ -1,7 +1,7 @@
 .. _board_orangepi:
 
 
-orangepi
+香橙派
 ########
 
 

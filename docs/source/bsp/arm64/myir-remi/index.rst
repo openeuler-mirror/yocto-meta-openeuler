@@ -1,7 +1,7 @@
 .. _board_myir_remi:
 
 
-myir-remi
+瑞米派
 ##########
 
 

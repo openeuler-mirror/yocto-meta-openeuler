@@ -14,3 +14,4 @@
    mica_ctl.rst
    developer_guides/index.rst
    services/index.rst
+   lopper_devicetree.rst
