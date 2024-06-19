@@ -23,7 +23,8 @@ openEuler Embedded 24.03是openEuler Embedded第二个LTS版本，本版本的�
 
 * Linux框架
 
-  - 内核与社区紧密保持同步，支持5.10与6.6双版本内核
+  - 内核与社区紧密保持同步，支持5.10与6.6双版本内核, 用户依据BSP的适配情况选择对应版本的内核，6.6内核的支持情况请参考 :ref:`kernelversions_intro`
+  - 用户也可以选择自定义版本的内核
 
 * 关键特性
   

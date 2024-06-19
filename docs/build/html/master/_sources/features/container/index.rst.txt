@@ -1,5 +1,6 @@
+.. _openeuler_embedded_containers:
 
-openEuler Embedded 容器相关特性
+嵌入式容器相关特性
 ######################################################
 
 .. toctree::

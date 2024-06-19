@@ -6,7 +6,7 @@ myir-remi 镜像构建与说明
 myir-remi硬件介绍
 ==================
 
-参考: `瑞米派 介绍 <http://down.myir-tech.com/RemiPi/>`_ 中《文档下载》的三个资料。
+参考: `瑞米派介绍 <http://down.myir-tech.com/RemiPi/>`_ 中《文档下载》的三个资料。
 
 .. image:: myir-remi-image/document_5.png
 
@@ -109,7 +109,7 @@ oebuild构建代码准备：
 
 （2）制作sd卡镜像并烧录：
 
-正常编译完成后并没有sd卡镜像，sd卡镜像需要单独制作，具体可参考瑞米派 介绍 <http://down.myir-tech.com/RemiPi/>_ 中“文档下载 -> 软件资料”，如下所示：
+正常编译完成后并没有sd卡镜像，sd卡镜像需要单独制作，具体可参考 `瑞米派介绍 <http://down.myir-tech.com/RemiPi/>`_ 中“文档下载 -> 软件资料”，如下所示：
 
 .. image:: myir-remi-image/document_0.png
 
