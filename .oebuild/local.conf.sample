@@ -327,3 +327,25 @@ EXTERNAL_TOOLCHAIN_FEATURES_DEFAULT = "locale-utf8-is-default"
 # manifest is base line for building openEuler Embedded image
 MANIFEST_DIR ?= "${OPENEULER_SP_DIR}/yocto-meta-openeuler/.oebuild/manifest.yaml"
 MAPLIST_DIR ?= "${OPENEULER_SP_DIR}/yocto-meta-openeuler/.oebuild/maplist.yaml"
+
+# After the update of GCC, it aligns the data segment by MAXPAGESIZE
+# rather than COMMONPAGESIZE. In a lot of 64 bit architecture, the
+# MAXPAGESIZE is much larger than 4KB. For example, in aarch64
+# MAXPAGESIZE is equal to 64KB. As a result, the padding will be much
+# larger than before, which enlarge the binary.
+#
+# Under embedded scenario, the memory is limited. Even though larger
+# page size brings better performance, we should choose keeping the page
+# size to be 4KB to better utilize the memory space.
+#
+# After applying this limitation, the rootfs can be shrinked by 13.33%
+# for the openeuler-image.
+#
+# WARNING: since we limit the MAXPAGESIZE to be 4KB, if the user
+# manually change the page size in kernel config to be 64KB, the binary
+# cannot be run normally.
+#
+# For more info, see the following link:
+# https://gitee.com/openeuler/yocto-meta-openeuler/issues/IA4BRS?from=project-issue
+#
+LDFLAGS:append = " -Wl,-zmax-page-size=0x1000 "
