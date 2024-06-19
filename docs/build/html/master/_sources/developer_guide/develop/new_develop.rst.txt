@@ -32,7 +32,7 @@ openEuler Embedded提供了基于yocto工程的开发方式，开发者可以依
       # 下载yocto-meta-openeuler以及构建使用的容器
       oebuild update
 
-      # 下载源码，便于后续基于yocto的开发
+      # 下载全部源码，便于后续基于yocto的开发；也可以不下载，yocto构建时会按需下载源码。
       oebuild manifest download -f src/yocto-meta-openeuler/.oebuild/manifest.yaml
 
    构建环境生成后即可开始进行软件包/内核开发。
@@ -65,6 +65,8 @@ openEuler Embedded提供了基于yocto工程的开发方式，开发者可以依
 
         add_executable(hello hello.c)
 
+        install(TARGETS hello DESTINATION ${CMAKE_INSTALL_BINDIR})
+
    2. **通过yaml添加软件目录及代码**
 
      本方式适用于远程仓库已建立的情况，详细用法可参考 :ref:`openeuler_fetch`，在 gitee 或其他线上托管仓库上建立 hello 仓库，仓库中添加如上的hello.c及CMakeLists.txt文件，将仓库地址添加至 yaml 文件 :file:`yocto-meta-openeuler/.oebuild/manifest.yaml` 末尾：
@@ -78,12 +80,12 @@ openEuler Embedded提供了基于yocto工程的开发方式，开发者可以依
 3. 添加BB文件
 --------------------------------
 
-   添加完软件目录后，在yocto仓库中添加 hello 仓库的编译配方，配方添加方式参考 :ref:`yocto_development`，将BB文件添加至 ``yocto-meta-openeuler/meta-openeuler/recipes-core/hello`` 目录中，添加文件 hello_1.0.bb，BB文件参考如下：
+   添加完软件目录后，在yocto仓库中添加 hello 仓库的编译配方，配方添加方式参考 :ref:`yocto_development`，将BB文件添加至 ``yocto-meta-openeuler/meta-openeuler/recipes-examples/hello/`` 目录中，添加文件 hello_1.0.bb，BB文件参考如下：
 
    .. code-block:: console
 
       ### 包描述信息
-      DESCRIPTION = "Simple helloworld application"
+      DESCRIPTION = "Simple helloworld application by cmake"
       ### 包组分类
       SECTION = "examples"
       ### LICENSE信息
@@ -94,45 +96,27 @@ openEuler Embedded提供了基于yocto工程的开发方式，开发者可以依
       LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
       ### 源码文件位置，"file://" 开头表示文件为本地文件
-      ### 编译时框架会从如 src/hello 等相对路径查找文件，不需要从官方链接下载
-      SRC_URI = "file://helloworld.c"
+      ### 编译时框架会从如 src/bb名(不含版本号) 等相对路径查找文件，不需要从官方链接下载
+      SRC_URI = "file://hello \
+      "
 
       ### 构建时源码所在的目录，yocto构建时会将源码拷贝/解压到 WORKDIR 目录
-      ### 由于 hello 目录中没有下层目录，因此 S 直接赋值为: WORKDIR
       ### 若软件包为压缩包，解压后可能生成新一级目录，此时 S 需要赋值为: WORKDIR/解压后的目录
-      S = "${WORKDIR}"
+      S = "${WORKDIR}/hello"
 
-      ### 自定义 compile 任务
-      do_compile() {
-         ${CC} ${LDFLAGS} helloworld.c -o helloworld
-      }
-
-      ### 自定义 install 任务
-      do_install() {
-         install -d ${D}${bindir}
-         install -m 0755 helloworld ${D}${bindir}
-      }
+      # 表示基于cmake构建系统编译
+      inherit cmake
 
    更多的软件包添加配方解析参考 :ref:`yocto_recipe`，上述讲解为软件包定制添加，若开发者需要进行镜像定制则可参考 :ref:`yocto_image_develop`
 
 4. 添加编译项并编译全量镜像
 --------------------------------
 
-   以 qemu-aarch64 镜像为例，在其编译配置中添加 hello 包的编译项，路径为 ``yocto-meta-openeuler/meta-openeuler/recipes-core/packagegroups/packagegroup-core-base-utils.bb``，在编译包的最后添加hello包编译：
+   根据 :ref:`yocto_image_develop` 章节，修改 ``yocto-meta-openeuler/meta-openeuler/recipes-core/images/openeuler-image-common.inc`` IMAGE_INSTALL 变量，追加 hello 包：
 
    .. code-block:: console
 
-      RDEPENDS:${PN} = "\
-      audit \
-      auditd \
-      audispd-plugins \
-      cracklib \
-      libpwquality \
-      libpam \
-      packagegroup-pam-plugins \
-      shadow \
-      shadow-securetty \
-      bash \
+      IMAGE_INSTALL += "\
       hello \
       "
 
