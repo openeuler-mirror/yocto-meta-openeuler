@@ -13,7 +13,7 @@ SRC_URI = " \
 SRC_URI:append = " \
     file://0001-rpminstaller-add-support-for-openEuler.patch \
     file://1000-add-riscv64-support.patch \
-    file://fix_git_checkerror.patch \
+    file://openeuler-embedded-support-only.patch \
     file://edgecore.example.yaml \
     file://cloudcore.example.yaml \
 "
@@ -48,6 +48,7 @@ do_compile() {
 	export CC="${CC}"
 	export LD="${LD}"
 	export GOBIN=""
+	export OEE_YOCTO_VERSION="v${PV}-oee+yocto"
     # Any GOLDFLAGS strings cause passing parameter err for unknown reason: 
     #   panic: runtime error: index out of range [1] with length 1
     # current we use left NULL as workaround.
@@ -88,6 +89,7 @@ do_install() {
     # install service file in /etc/kubeedge/ as well so that no need to download from internet when they use keadm
     install -m 0644 ${S}/build/tools/cloudcore.service ${D}${sysconfdir}/kubeedge/
     install -m 0644 ${S}/build/tools/edgecore.service ${D}${sysconfdir}/kubeedge/
+    sed -i 's#/usr/local/bin/edgecore#/usr/bin/edgecore#g' ${D}${sysconfdir}/kubeedge/edgecore.service
 
     # crd yamls for kubernetes
     install -Dm 0644 ${S}/build/crds/devices/devices_v1alpha1_devicemodel.yaml ${D}${sysconfdir}/kubeedge/crds/devices/devices_v1alpha1_devicemodel.yaml
@@ -159,6 +161,40 @@ FILES:edgesite = " \
 "
 
 FILES:keadmtarball = "/${TARBALL_NAME}.tar.gz /checksum_${TARBALL_NAME}.tar.gz.txt /kubeedge-v1.8.0-linux-arm64"
+
+# If board config use =y instead ko, remove it from bbappend.
+RDEPENDS:edgecore += " \
+        kernel-module-llc \
+        kernel-module-stp \
+        kernel-module-bridge \
+        kernel-module-br-netfilter \
+        kernel-module-libcrc32c \
+        kernel-module-nf-conntrack \
+        kernel-module-nf-conntrack-netlink \
+        kernel-module-nfnetlink-log \
+        kernel-module-nfnetlink \
+        kernel-module-nf-nat \
+        kernel-module-vxlan \
+        kernel-module-veth \
+        kernel-module-nf-defrag-ipv4 \
+        kernel-module-nf-defrag-ipv6 \
+        kernel-module-nft-chain-nat \
+        kernel-module-nft-compat \
+        kernel-module-nft-counter \
+        kernel-module-xt-addrtype \
+        kernel-module-xt-comment \
+        kernel-module-xt-conntrack \
+        kernel-module-xt-mark \
+        kernel-module-xt-masquerade \
+        kernel-module-xt-multiport \
+        kernel-module-xt-nat \
+        kernel-module-xt-tcpudp \
+        kernel-module-xt-connmark \
+        kernel-module-xt-statistic \
+        kernel-module-xt-physdev \
+        kernel-module-xt-nflog \
+        kernel-module-xt-limit \
+"
 
 # sync Kubernetes kernel RRECOMMENDS
 RRECOMMENDS:${PN} = "\

@@ -95,6 +95,11 @@ KERNEL_FEATURES:append = " \
 KERNEL_FEATURES:append:x86-64 = " \
     ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'features/mcs/0001-x86-irq-add-a-vector-define-for-mcs.patch', '', d)} \
 "
+
+KERNEL_FEATURES:append = " \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kubeedge', 'features/kubeedge/kubeedge.scc', '', d)} \
+"
+
 # export symbol for jailhouse, its patch is in jailhouse src folder
 SRC_URI:append = " ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'file://Jailhouse/jailhouse_export_symbol.patch', '', d)}"
 

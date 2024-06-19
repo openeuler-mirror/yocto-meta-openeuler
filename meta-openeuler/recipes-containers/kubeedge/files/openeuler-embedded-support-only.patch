@@ -1,0 +1,101 @@
+diff --git a/hack/lib/golang.sh b/hack/lib/golang.sh
+index 90e4862..096012f 100755
+--- a/hack/lib/golang.sh
++++ b/hack/lib/golang.sh
+@@ -80,9 +80,8 @@ kubeedge::version::get_version_info() {
+ 
+   # If GIT_VERSION is not a valid Semantic Version, then refuse to build.
+   if ! [[ "${GIT_VERSION}" =~ ^v([0-9]+)\.([0-9]+)(\.[0-9]+)?(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]; then
+-      echo "GIT_VERSION should be a valid Semantic Version. Current value: ${GIT_VERSION}"
+-      echo "Please see more details here: https://semver.org"
+-      exit 1
++      # fix for yocto build
++      GIT_VERSION=$(echo "${OEE_YOCTO_VERSION}")
+   fi
+ }
+ 
+diff --git a/keadm/cmd/keadm/app/cmd/util/common.go b/keadm/cmd/keadm/app/cmd/util/common.go
+index 7a9d366..0466fdf 100644
+--- a/keadm/cmd/keadm/app/cmd/util/common.go
++++ b/keadm/cmd/keadm/app/cmd/util/common.go
+@@ -48,7 +48,7 @@ const (
+ 	CloudServiceFile     = "cloudcore.service"
+ 	ServiceFileURLFormat = "https://raw.githubusercontent.com/kubeedge/kubeedge/release-%s/build/tools/%s"
+ 	KubeEdgePath         = "/etc/kubeedge/"
+-	KubeEdgeUsrBinPath   = "/usr/local/bin"
++	KubeEdgeUsrBinPath   = "/usr/bin"
+ 	KubeEdgeBinaryName   = "edgecore"
+ 
+ 	KubeCloudBinaryName = "cloudcore"
+@@ -110,22 +110,8 @@ func (co *Common) SetOSInterface(intf types.OSTypeInstaller) {
+ 
+ // GetPackageManager get package manager of OS
+ func GetPackageManager() string {
+-	cmd := NewCommand("command -v apt || command -v yum || command -v pacman")
+-	err := cmd.Exec()
+-	if err != nil {
+-		fmt.Println(err)
+-		return ""
+-	}
+-
+-	if strings.HasSuffix(cmd.GetStdOut(), APT) {
+-		return APT
+-	} else if strings.HasSuffix(cmd.GetStdOut(), YUM) {
+-		return YUM
+-	} else if strings.HasSuffix(cmd.GetStdOut(), PACMAN) {
+-		return PACMAN
+-	} else {
+-		return ""
+-	}
++	// for openEuler Embedded special
++	return YUM
+ }
+ 
+ // GetOSInterface helps in returning OS specific object which implements OSTypeInstaller interface.
+@@ -335,7 +321,8 @@ func runEdgeCore(version semver.Version) error {
+ 	edgecoreServiceName := "edgecore"
+ 
+ 	if systemdExist {
+-		binExec = fmt.Sprintf("sudo ln /etc/kubeedge/%s.service /etc/systemd/system/%s.service && sudo systemctl daemon-reload && sudo systemctl enable %s && sudo systemctl start %s", edgecoreServiceName, edgecoreServiceName, edgecoreServiceName, edgecoreServiceName)
++        // openeuler Embedded need run keadm by root for without sudo cmd.
++		binExec = fmt.Sprintf("ln /etc/kubeedge/%s.service /etc/systemd/system/%s.service && systemctl daemon-reload && systemctl enable %s && systemctl start %s", edgecoreServiceName, edgecoreServiceName, edgecoreServiceName, edgecoreServiceName)
+ 	} else {
+ 		binExec = fmt.Sprintf("%s/%s > %skubeedge/edge/%s.log 2>&1 &", KubeEdgeUsrBinPath, KubeEdgeBinaryName, KubeEdgePath, KubeEdgeBinaryName)
+ 	}
+@@ -375,11 +362,11 @@ func killKubeEdgeBinary(proc string) error {
+ 		if systemdExist && serviceName != "" {
+ 			// remove the system service.
+ 			serviceFilePath := fmt.Sprintf("/etc/systemd/system/%s.service", serviceName)
+-			serviceFileRemoveExec := fmt.Sprintf("&& sudo rm %s", serviceFilePath)
++			serviceFileRemoveExec := fmt.Sprintf("&& rm %s", serviceFilePath)
+ 			if _, err := os.Stat(serviceFilePath); err != nil && os.IsNotExist(err) {
+ 				serviceFileRemoveExec = ""
+ 			}
+-			binExec = fmt.Sprintf("sudo systemctl stop %s.service && sudo systemctl disable %s.service %s && sudo systemctl daemon-reload", serviceName, serviceName, serviceFileRemoveExec)
++			binExec = fmt.Sprintf("systemctl stop %s.service && systemctl disable %s.service %s && systemctl daemon-reload", serviceName, serviceName, serviceFileRemoveExec)
+ 		} else {
+ 			binExec = fmt.Sprintf("pkill %s", proc)
+ 		}
+diff --git a/keadm/cmd/keadm/app/cmd/util/rpminstaller.go b/keadm/cmd/keadm/app/cmd/util/rpminstaller.go
+index 058008b..3d4cbc0 100644
+--- a/keadm/cmd/keadm/app/cmd/util/rpminstaller.go
++++ b/keadm/cmd/keadm/app/cmd/util/rpminstaller.go
+@@ -69,7 +69,8 @@ func (r *RpmOS) InstallMQTT() error {
+ 	}
+ 	// epel-release package does not included in openEuler
+ 	if vendorName == openEulerVendorName {
+-		commands = commands[1:]
++		// mosquitto have packed on openEuler embedded
++		commands = commands[2:]
+ 	}
+ 
+ 	// install MQTT
+@@ -112,6 +113,8 @@ func (r *RpmOS) InstallKubeEdge(options types.InstallOptions) error {
+ 		return fmt.Errorf("can't support this architecture of RpmOS: %s", result)
+ 	}
+ 
++	// openEuler embedded have pack/installed it. Just return nil(none err).
++	return nil
+ 	return installKubeEdge(options, arch, r.KubeEdgeVersion)
+ }
+ 
