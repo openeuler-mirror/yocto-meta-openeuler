@@ -3,6 +3,9 @@ SUMMARY = "container os image"
 require openeuler-image-common.inc
 require openeuler-image-sdk.inc
 
+inherit features_check
+REQUIRED_DISTRO_FEATURES = "isulad"
+
 # IMAGE_INSTALL was defined in file openeuler-image-common.inc
 # overwrite this variable to remove unnecessary packages
 # this image is only used to start containers

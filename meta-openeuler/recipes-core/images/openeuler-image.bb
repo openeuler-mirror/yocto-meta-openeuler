@@ -26,6 +26,7 @@ require openeuler-image-sdk.inc
 IMAGE_INSTALL += " \
 ${@bb.utils.contains("DISTRO_FEATURES", "mcs", "packagegroup-mcs", "",d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "ros", "packagegroup-ros", "", d)} \
+${@bb.utils.contains("DISTRO_FEATURES", "isulad", "packagegroup-isulad", "", d)} \
 "
 
 # You can add extra user here, suck like:
