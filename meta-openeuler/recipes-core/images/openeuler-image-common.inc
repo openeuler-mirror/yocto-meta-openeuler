@@ -7,7 +7,6 @@ packagegroup-base \
 packagegroup-openssh \
 packagegroup-network \
 packagegroup-kernel-modules \
-packagegroup-isulad \
 packagegroup-dsoftbus \
 "
 
