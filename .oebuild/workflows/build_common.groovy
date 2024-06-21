@@ -208,7 +208,7 @@ def build_qemu_aarch64_ros_mcs(image_date, log_dir, random_str){
         -a ${arch} \
         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
         -p qemu-aarch64 \
-        -f "openeuler-ros;openeuler-mcs" \
+        -f "openeuler-ros;openeuler-mcs;openeuler-container" \
         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
         -oe "\\-\\-no_layer" \
         -dt ${image_date} \
@@ -252,7 +252,7 @@ def build_raspberrypi4_64_llvm(image_date, log_dir, random_str){
         -a ${arch} \
         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
         -p raspberrypi4-64 \
-        -f "clang" \
+        -f "clang;openeuler-container" \
         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
         -oe "\\-\\-no_layer" \
         -dt ${image_date} \
@@ -274,7 +274,7 @@ def build_qemu_aarch64_kernel6(image_date, log_dir, random_str){
         -a ${arch} \
         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
         -p qemu-aarch64 \
-        -f "kernel6" \
+        -f "kernel6;openeuler-container" \
         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
         -oe "\\-\\-no_layer" \
         -dt ${image_date} \
@@ -296,6 +296,7 @@ def build_raspberrypi4_64(image_date, log_dir, random_str){
         -a ${arch} \
         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
         -p raspberrypi4-64 \
+        -f "openeuler-container" \
         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
         -oe "\\-\\-no_layer" \
         -dt ${image_date} \
@@ -317,7 +318,7 @@ def build_raspberrypi4_64_kernel6(image_date, log_dir, random_str){
         -a ${arch} \
         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
         -p raspberrypi4-64 \
-        -f kernel6 \
+        -f "kernel6;openeuler-container" \
         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
         -oe "\\-\\-no_layer" \
         -dt ${image_date} \
@@ -339,7 +340,7 @@ def build_qemu_aarch64_kernel6_llvm(image_date, log_dir, random_str){
         -a ${arch} \
         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
         -p qemu-aarch64 \
-        -f "kernel6;clang" \
+        -f "kernel6;clang;openeuler-container" \
         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
         -oe "\\-\\-no_layer" \
         -dt ${image_date} \
@@ -361,7 +362,7 @@ def build_raspberrypi4_64_kernel6_llvm(image_date, log_dir, random_str){
         -a ${arch} \
         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
         -p raspberrypi4-64 \
-        -f "kernel6;clang" \
+        -f "kernel6;clang;openeuler-container" \
         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
         -oe "\\-\\-no_layer" \
         -dt ${image_date} \
@@ -383,7 +384,7 @@ def build_raspberrypi4_64_rt_hmi(image_date, log_dir, random_str){
         -a ${arch} \
         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
         -p raspberrypi4-64 \
-        -f "openeuler-rt;hmi" \
+        -f "openeuler-rt;hmi;openeuler-container" \
         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
         -oe "\\-\\-no_layer" \
         -dt ${image_date} \
@@ -405,7 +406,7 @@ def build_raspberrypi4_64_kernel6_rt_hmi(image_date, log_dir, random_str){
         -a ${arch} \
         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
         -p raspberrypi4-64 \
-        -f "openeuler-rt;hmi;kernel6" \
+        -f "openeuler-rt;hmi;kernel6;openeuler-container" \
         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
         -oe "\\-\\-no_layer" \
         -dt ${image_date} \
@@ -427,6 +428,7 @@ def build_hieulerpi1(image_date, log_dir, random_str){
         -a ${arch} \
         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
         -p hieulerpi1 \
+        -f "openeuler-container" \
         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
         -oe "\\-\\-no_layer" \
         -dt ${image_date}} \
@@ -469,7 +471,7 @@ def build_hieulerpi1_ros(image_date, log_dir, random_str){
         -a ${arch} \
         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
         -p hieulerpi1 \
-        -f "openeuler-ros" \
+        -f "openeuler-ros;openeuler-container" \
         -i "openeuler-image;openeuler-image -c do_populate_sdk" \
         -oe "\\-\\-no_layer" \
         -dt ${image_date} \
@@ -577,6 +579,7 @@ def build_qemu_aarch64(image_date, log_dir, random_str){
         -a ${arch} \
         -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
         -p qemu-aarch64 \
+        -f "openeuler-container" \
         -i "openeuler-image" \
         -oe "\\-\\-no_layer" \
         -dt ${image_date} \
