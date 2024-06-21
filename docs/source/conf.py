@@ -71,6 +71,14 @@ exclude_patterns = []
 #html_theme = 'alabaster'
 html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme_options = {
+    'navigation_depth': 5,
+    'sticky_navigation': False,
+}
+
+html_css_files = [
+    'css/custom.css',
+]
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
