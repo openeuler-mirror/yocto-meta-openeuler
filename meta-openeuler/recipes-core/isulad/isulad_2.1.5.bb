@@ -157,26 +157,29 @@ RDEPENDS:${PN} += " \
         ${@bb.utils.contains('USE_PREBUILD_SHIM_V2', '1', 'lib-shim-v2-bin', 'lib-shim-v2', d)} \
 "
 
-EXTRA_OECMAKE = "-DENABLE_GRPC=ON -DENABLE_GRPC_REMOTE_CONNECT=OFF \
+EXTRA_OECMAKE = " \
+        -DENABLE_GRPC=ON -DENABLE_GRPC_REMOTE_CONNECT=OFF \
         ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '-DENABLE_SYSTEMD_NOTIFY=ON', '-DENABLE_SYSTEMD_NOTIFY=OFF', d)} \
-		-DENABLE_SHIM_V2=ON -DENABLE_OPENSSL_VERIFY=ON \
-		-DGRPC_CONNECTOR=ON \
+        -DDEBUG=ON \
+        -DCMAKE_SKIP_RPATH=TRUE \
+        -DENABLE_SHIM_V2=ON \
+        -DENABLE_UT=OFF \
         -DENABLE_CRI_API_V1=ON \
         -DENABLE_CDI=ON \
         -DCMAKE_CXX_STANDARD=17 \
-		"
+"
 
 # lib-shim-v2 depends on rust which is not well supported for arm32 and riscv64
 # there are issues with building grpc on arm32 and riscv platforms.
 DEPENDS:remove:arm = " lib-shim-v2 lib-shim-v2-bin grpc grpc-native "
 RDEPENDS:${PN}:remove:arm = " lib-shim-v2 lib-shim-v2-bin grpc "
-EXTRA_OECMAKE:remove:arm = " -DENABLE_SHIM_V2=ON -DENABLE_GRPC=ON -DGRPC_CONNECTOR=ON "
-EXTRA_OECMAKE:append:arm = " -DENABLE_SHIM_V2=OFF -DENABLE_GRPC=OFF -DGRPC_CONNECTOR=OFF "
+EXTRA_OECMAKE:remove:arm = " -DENABLE_SHIM_V2=ON -DENABLE_GRPC=ON "
+EXTRA_OECMAKE:append:arm = " -DENABLE_SHIM_V2=OFF -DENABLE_GRPC=OFF "
 
 DEPENDS:remove:riscv64 = " lib-shim-v2 lib-shim-v2-bin grpc grpc-native "
 RDEPENDS:${PN}:remove:riscv64 = " lib-shim-v2 lib-shim-v2-bin grpc "
-EXTRA_OECMAKE:remove:riscv64 = " -DENABLE_SHIM_V2=ON -DENABLE_GRPC=ON -DGRPC_CONNECTOR=ON "
-EXTRA_OECMAKE:append:riscv64 = " -DENABLE_SHIM_V2=OFF -DENABLE_GRPC=OFF -DGRPC_CONNECTOR=OFF "
+EXTRA_OECMAKE:remove:riscv64 = " -DENABLE_SHIM_V2=ON -DENABLE_GRPC=ON "
+EXTRA_OECMAKE:append:riscv64 = " -DENABLE_SHIM_V2=OFF -DENABLE_GRPC=OFF "
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
@@ -190,7 +193,7 @@ do_configure:prepend() {
 EOF
 }
 
-do_compile:prepend() {
+do_configure:append() {
     sed -i "10 a\# undef linux" ${WORKDIR}/build/grpc/src/api/services/cri/v1alpha/api.pb.h
     sed -i "10 a\# undef linux" ${WORKDIR}/build/grpc/src/api/services/cri/v1/api_v1.pb.h
 }
