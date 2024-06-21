@@ -33,9 +33,21 @@ openeuler-container-os镜像简介
 构建带有iSula的openEuler Embedded镜像
 =========================================
 
-当前openEuler Embedded标准镜像中已经集成了iSula容器引擎。
-只需要构建一个标准的openEuler Embedded镜像即可。
-具体的构建过程，参见 :ref:`openeuler_embedded_oebuild`。
+当前openEuler Embedded标准镜像中默认不集成iSula容器引擎。
+如果需要使用iSula容器引擎，用户需要在 ``local.conf`` 中增加如下特性：
+
+.. code-block:: shell
+
+    DISTRO_FEATURES:append = " isulad "
+
+当然，也可以通过oebuild在生成构建目录的时候，指定增加容器特性。
+oebuild会在生成构建目录的时候帮忙将上述配置添加到 ``local.conf`` ：
+
+.. code-block:: shell
+
+    $ oebuild generate -f openeuler-container
+
+之后具体的构建过程，参见 :ref:`openeuler_embedded_oebuild`。
 
 构建openeuler-container-os的过程和标准的openEuler Embedded镜像类似，
 不同之处仅仅在于，在构建镜像中需要输入如下命令而非 ``bitbake openeuler-image`` ：
