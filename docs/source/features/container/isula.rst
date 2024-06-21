@@ -19,8 +19,15 @@ CRI是由K8S对外提供的容器和镜像服务接口，供容器引擎接入K8
 构建带有iSula的openEuler Embedded镜像
 =========================================
 
-当前openEuler Embedded标准镜像中已经集成了iSula容器引擎。
-只需要构建一个标准的openEuler Embedded镜像即可。
+当前openEuler Embedded标准镜像中默认不集成iSula容器引擎。
+如果需要集成isulad，需要在 ``local.conf`` 文件中添加如下配置：
+
+.. code-block:: shell
+
+    DISTRO_FEATURES:append = " isulad "
+
+当然，也可以通过oebuild，在生成构建目录时增加 ``-f openeuler-container``
+参数,以指定构建openEuler Embedded镜像时集成iSula容器引擎。
 具体的构建过程，参见 :ref:`oebuild_usage`。
 
 构建openeuler-container-os的过程和标准的openEuler Embedded镜像类似，
