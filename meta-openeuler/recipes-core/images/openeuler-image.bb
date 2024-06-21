@@ -24,7 +24,7 @@ IMAGE_INSTALL += " \
 ${@bb.utils.contains("DISTRO_FEATURES", "mcs", "packagegroup-mcs", "",d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "ros", "packagegroup-ros", "", d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "hmi", "packagegroup-hmi", "", d)} \
-${@bb.utils.contains("DISTRO_FEATURES", "kubeedge", "packagegroup-kubeedge", "", d)} \
+${@bb.utils.contains("DISTRO_FEATURES", "kubeedge isulad", "packagegroup-kubeedge", "", d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "isulad", "packagegroup-isulad", "", d)} \
 "
 

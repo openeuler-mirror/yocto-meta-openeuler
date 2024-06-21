@@ -13,6 +13,7 @@ IMAGE_INSTALL = " \
 packagegroup-core-boot \
 packagegroup-kernel-modules \
 packagegroup-openssh \
+${@bb.utils.contains("DISTRO_FEATURES", "kubeedge isulad", "packagegroup-kubeedge", "", d)} \
 packagegroup-isulad \
 packagegroup-container-images \
 "
