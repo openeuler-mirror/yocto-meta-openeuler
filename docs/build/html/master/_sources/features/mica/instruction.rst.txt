@@ -265,7 +265,24 @@ ____
 ****************
 
 oebuild 构建出来的 MCS 镜像已经通过 dt-overlay 等方式预留了相关资源，并且默认使用了支持 psci 的 uefi 引导固件。
-因此只需要根据 :ref:`openeuler-image-uefi启动使用指导 <raspberrypi4-uefi-guide>` 进行镜像启动，再部署 MICA 即可，步骤跟QEMU类似，但树莓派当前仅支持 bare-metal 部署。
+因此只需要根据 :ref:`openeuler-image-uefi启动使用指导 <raspberrypi4-uefi-guide>` 进行镜像启动，再部署 MICA 即可，步骤跟QEMU类似。
+
+.. tabs::
+
+    .. tab:: bare-metal部署
+
+      .. code-block:: console
+
+        raspberrypi4-64:~$ mica start rpi4-uniproton
+        raspberrypi4-64:~$ mica stop rpi4-uniproton
+
+    .. tab:: jailhouse 部署
+
+      .. code-block:: console
+
+        raspberrypi4-64:~$ jailhouse enable /usr/share/jailhouse/cells/rpi4.cell
+        raspberrypi4-64:~$ mica start rpi4-zephyr-ivshmem
+        raspberrypi4-64:~$ mica stop rpi4-zephyr-ivshmem
 
 ____
 
