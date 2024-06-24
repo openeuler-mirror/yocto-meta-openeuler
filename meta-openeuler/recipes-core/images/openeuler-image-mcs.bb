@@ -29,8 +29,12 @@ python () {
         mcs_features = d.getVar('MCS_FEATURES').split()
         if 'openamp' in mcs_features:
             d.setVar('QB_KERNEL_CMDLINE_APPEND', 'maxcpus=3')
-            d.setVar('QB_DTB', d.getVar('IMAGE_NAME')+".qemuboot.dtb")
-            d.setVar('QB_DTB_LINK', d.getVar('IMAGE_LINK_NAME')+".qemuboot.dtb")
+            # IMAGE_NAME variable depends on DATETIME variable, result in error:
+            # The metadata is not deterministic and this needs to be fixed
+            # this is a workaround to fix:
+            # not build soft link, remove IMAGE_VERSION_SUFFIX from QB_DTB
+            d.setVar('QB_DTB', d.getVar('IMAGE_LINK_NAME') + ".qemuboot.dtb")
+            d.setVar('QB_DTB_LINK', d.getVar('IMAGE_LINK_NAME') + ".qemuboot.dtb")
         elif 'jailhouse' in mcs_features:
             d.setVar('QB_MACHINE', '-machine virt,gic-version=3,virtualization=on,its=off')
             d.setVar('QB_KERNEL_CMDLINE_APPEND', 'mem=750M')
