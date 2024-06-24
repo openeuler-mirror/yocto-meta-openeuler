@@ -37,7 +37,21 @@ def get_localname_list(maplist_dir):
         return yaml.load(r_f.read(), yaml.Loader)['localname_list']
 
 
+
+# handle the license warning found in ROS2 support
+# the warning is caused by the unmatch between meta-ros and yocto-poky
 python set_openeuler_variable() {
+
+    license_mapping = {
+        "LGPL": "LGPL-2.1-or-later",
+        "BSD": "BSD-3-Clause"
+    }
+
+    license = d.getVar("LICENSE")
+
+    if license in license_mapping:
+        d.setVar("LICENSE", license_mapping[license])
+
     if check_class_valid(d):
         openeuler_set_version(d)
         openeuler_set_localname(d)
