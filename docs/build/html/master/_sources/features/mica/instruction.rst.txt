@@ -25,18 +25,18 @@ ____
 
   .. tabs::
 
-     .. code-tab:: console bare-metal部署
+     .. tab:: bare-metal部署
 
-        # create a dtb for qemu_cortex_a53
-        $ ./create_dtb.sh qemu-a53
+        .. code-block:: console
 
+           # create a dtb for qemu_cortex_a53
+           $ ./create_dtb.sh qemu-a53
 
-     .. code-tab:: console jailhouse部署
+        成功执行后，会在当前目录下生成 ``qemu.dtb`` 文件，对应 QEMU 配置为：`2G RAM, 4 cores`。
 
-        # create a dtb for qemu_cortex_a53 to support jailhouse
-        $ ./create_dtb.sh qemu-a53 -f jailhouse
+     .. tab:: jailhouse部署
 
-  成功执行后，会在当前目录下生成 ``qemu.dtb`` 或 ``qemu-jailhouse.dtb`` 文件，对应 QEMU 配置为：`2G RAM, 4 cores`。
+        jailhouse 通过 cell 文件进行资源的预留和分配，无需单独配置设备树。
 
 2. 启动 QEMU
 
@@ -67,10 +67,9 @@ ____
 
      .. tab:: jailhouse部署
 
-        | 使用生成出来的 ``qemu-jailhouse.dtb``，按照以下命令启动 QEMU，注意：
-        | 1. `-m` 和 `-smp` 要与 dtb 的配置(2G RAM, 4 cores)保持一致，否则会启动失败。
-        | 2. 启动 Jailhouse 需要指定 psci method 为 smc，因此，`-M` 需要配置为 ``virt,gic-version=3,virtualization=on,its=off``。
-        | 3. 需要通过添加启动参数 ``mem=780M`` 来预留出 Jailhouse 和 Non-root-cell 的内存。
+        | 按照以下命令启动 QEMU，注意：
+        | 1. 启动 Jailhouse 需要指定 psci method 为 smc，因此，`-M` 需要配置为 ``virt,gic-version=3,virtualization=on,its=off``。
+        | 2. 需要通过添加启动参数 ``mem=750M`` 来预留出 Jailhouse 和 Non-root-cell 的内存。
 
         .. code-block:: console
 
@@ -79,10 +78,9 @@ ____
               -device virtio-net-device,netdev=tap0 \
               -netdev tap,id=tap0,script=/etc/qemu-ifup \
               -m 2G -smp 4 \
-              -append 'mem=780M' \
+              -append 'mem=750M' \
               -kernel zImage \
-              -initrd openeuler-image-*.cpio.gz \
-              -dtb qemu-jailhouse.dtb
+              -initrd openeuler-image-*.cpio.gz
 
 3. 部署 Client OS
 
@@ -281,8 +279,11 @@ oebuild 构建出来的 MCS 镜像已经通过 dt-overlay 等方式预留了相�
       .. code-block:: console
 
         raspberrypi4-64:~$ jailhouse enable /usr/share/jailhouse/cells/rpi4.cell
+        raspberrypi4-64:~$ mica create rpi4-zephyr-ivshmem.conf
         raspberrypi4-64:~$ mica start rpi4-zephyr-ivshmem
         raspberrypi4-64:~$ mica stop rpi4-zephyr-ivshmem
+
+      也可以参考 :ref:`如何在树莓派上使用 Jailhouse 进行多OS混合部署 <jailhouse_on_rpi4>`，了解如何通过 Jailhouse 实现 openEuler Embedded + openEuler Embedded + zephyr (1 core + 2 cores + 1 core) 的混合部署。
 
 ____
 

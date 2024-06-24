@@ -139,16 +139,13 @@
 <div><p>部署 Client OS 需要在 Linux 的设备树中添加 <code class="docutils literal notranslate"><span class="pre">mcs-remoteproc</span></code> 设备节点，为 Client OS 预留出必要的保留内存。
 当前，可以通过 mcs 仓库提供的 <a class="reference external" href="https://gitee.com/openeuler/mcs/blob/master/tools/create_dtb.sh">create_dtb.sh</a> 脚本生成对应的 dtb：</p>
 <div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-YmFyZS1tZXRhbOmDqOe9sg==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-YmFyZS1tZXRhbOmDqOe9sg==" name="YmFyZS1tZXRhbOmDqOe9sg==" role="tab" tabindex="0">bare-metal部署</button><button aria-controls="panel-0-amFpbGhvdXNl6YOo572y" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-amFpbGhvdXNl6YOo572y" name="amFpbGhvdXNl6YOo572y" role="tab" tabindex="-1">jailhouse部署</button></div><div aria-labelledby="tab-0-YmFyZS1tZXRhbOmDqOe9sg==" class="sphinx-tabs-panel code-tab group-tab" id="panel-0-YmFyZS1tZXRhbOmDqOe9sg==" name="YmFyZS1tZXRhbOmDqOe9sg==" role="tabpanel" tabindex="0"><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>create a dtb <span class="k">for</span> qemu_cortex_a53
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-0-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-0-0-0" name="0-0" role="tab" tabindex="0">bare-metal部署</button><button aria-controls="panel-0-0-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-0-0-1" name="0-1" role="tab" tabindex="-1">jailhouse部署</button></div><div aria-labelledby="tab-0-0-0" class="sphinx-tabs-panel" id="panel-0-0-0" name="0-0" role="tabpanel" tabindex="0"><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>create a dtb <span class="k">for</span> qemu_cortex_a53
 <span class="gp">$ </span>./create_dtb.sh qemu-a53
 </pre></div>
 </div>
-</div><div aria-labelledby="tab-0-amFpbGhvdXNl6YOo572y" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-0-amFpbGhvdXNl6YOo572y" name="amFpbGhvdXNl6YOo572y" role="tabpanel" tabindex="0"><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>create a dtb <span class="k">for</span> qemu_cortex_a53 to support jailhouse
-<span class="gp">$ </span>./create_dtb.sh qemu-a53 -f jailhouse
-</pre></div>
-</div>
+<p>成功执行后，会在当前目录下生成 <code class="docutils literal notranslate"><span class="pre">qemu.dtb</span></code> 文件，对应 QEMU 配置为：<cite>2G RAM, 4 cores</cite>。</p>
+</div><div aria-labelledby="tab-0-0-1" class="sphinx-tabs-panel" hidden="true" id="panel-0-0-1" name="0-1" role="tabpanel" tabindex="0"><p>jailhouse 通过 cell 文件进行资源的预留和分配，无需单独配置设备树。</p>
 </div></div>
-<p>成功执行后，会在当前目录下生成 <code class="docutils literal notranslate"><span class="pre">qemu.dtb</span></code> 或 <code class="docutils literal notranslate"><span class="pre">qemu-jailhouse.dtb</span></code> 文件，对应 QEMU 配置为：<cite>2G RAM, 4 cores</cite>。</p>
 </div></blockquote>
 <ol class="arabic simple" start="2">
 <li><p>启动 QEMU</p></li>
@@ -176,20 +173,18 @@
 </pre></div>
 </div>
 </div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><div class="line-block">
-<div class="line">使用生成出来的 <code class="docutils literal notranslate"><span class="pre">qemu-jailhouse.dtb</span></code>，按照以下命令启动 QEMU，注意：</div>
-<div class="line">1. <cite>-m</cite> 和 <cite>-smp</cite> 要与 dtb 的配置(2G RAM, 4 cores)保持一致，否则会启动失败。</div>
-<div class="line">2. 启动 Jailhouse 需要指定 psci method 为 smc，因此，<cite>-M</cite> 需要配置为 <code class="docutils literal notranslate"><span class="pre">virt,gic-version=3,virtualization=on,its=off</span></code>。</div>
-<div class="line">3. 需要通过添加启动参数 <code class="docutils literal notranslate"><span class="pre">mem=780M</span></code> 来预留出 Jailhouse 和 Non-root-cell 的内存。</div>
+<div class="line">按照以下命令启动 QEMU，注意：</div>
+<div class="line">1. 启动 Jailhouse 需要指定 psci method 为 smc，因此，<cite>-M</cite> 需要配置为 <code class="docutils literal notranslate"><span class="pre">virt,gic-version=3,virtualization=on,its=off</span></code>。</div>
+<div class="line">2. 需要通过添加启动参数 <code class="docutils literal notranslate"><span class="pre">mem=750M</span></code> 来预留出 Jailhouse 和 Non-root-cell 的内存。</div>
 </div>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo qemu-system-aarch64 -M virt,gic-version<span class="o">=</span><span class="m">3</span>,virtualization<span class="o">=</span>on,its<span class="o">=</span>off <span class="se">\</span>
     -cpu cortex-a53 -nographic <span class="se">\</span>
     -device virtio-net-device,netdev<span class="o">=</span>tap0 <span class="se">\</span>
     -netdev tap,id<span class="o">=</span>tap0,script<span class="o">=</span>/etc/qemu-ifup <span class="se">\</span>
     -m 2G -smp <span class="m">4</span> <span class="se">\</span>
-    -append <span class="s1">&#39;mem=780M&#39;</span> <span class="se">\</span>
+    -append <span class="s1">&#39;mem=750M&#39;</span> <span class="se">\</span>
     -kernel zImage <span class="se">\</span>
-    -initrd openeuler-image-*.cpio.gz <span class="se">\</span>
-    -dtb qemu-jailhouse.dtb
+    -initrd openeuler-image-*.cpio.gz
 </pre></div>
 </div>
 </div></div>
@@ -359,10 +354,12 @@ rpmsg-tty 绑定了 zephyr 的 shell，因此可以通过 screen 打开 tty 设�
 </pre></div>
 </div>
 </div><div aria-labelledby="tab-3-3-1" class="sphinx-tabs-panel" hidden="true" id="panel-3-3-1" name="3-1" role="tabpanel" tabindex="0"><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">raspberrypi4-64:~$ </span>jailhouse <span class="nb">enable</span> /usr/share/jailhouse/cells/rpi4.cell
+<span class="gp">raspberrypi4-64:~$ </span>mica create rpi4-zephyr-ivshmem.conf
 <span class="gp">raspberrypi4-64:~$ </span>mica start rpi4-zephyr-ivshmem
 <span class="gp">raspberrypi4-64:~$ </span>mica stop rpi4-zephyr-ivshmem
 </pre></div>
 </div>
+<p>也可以参考 <a class="reference internal" href="../jailhouse.html#jailhouse-on-rpi4"><span class="std std-ref">如何在树莓派上使用 Jailhouse 进行多OS混合部署</span></a>，了解如何通过 Jailhouse 实现 openEuler Embedded + openEuler Embedded + zephyr (1 core + 2 cores + 1 core) 的混合部署。</p>
 </div></div>
 </section>
 <hr class="docutils" />

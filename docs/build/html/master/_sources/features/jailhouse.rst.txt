@@ -132,9 +132,80 @@ Jailhouse 使用指导
          Hello 7 from cell!
          ... ...
 
-   .. note::
+.. _jailhouse_on_rpi4:
 
-      树莓派4B上 Jailhouse 的使用方法与 QEMU 类似，但需要提前分配保留内存（openeuler-image-mcs 默认已保留了 0x10000000-0x20000000）。
+____
+
+在树莓派上使用 Jailhouse 进行多OS混合部署
+=========================================
+
+   openEuler Embedded 支持在树莓派上通过 Jailhouse 实现 openEuler Embedded + openEuler Embedded + zephyr (1 core + 2 cores + 1 core) 的混合部署。具体步骤如下：
+
+   1. 构建多OS混合部署镜像
+
+      根据 :ref:`mcs镜像构建指导 <mcs_build>`，使用 oebuild 初始化编译环境。
+
+      .. code-block:: console
+
+         # 构建支持嵌入式图形的混合部署镜像。注意，该镜像构建任务数量多，耗时较长。
+         $ oebuild rpi4_jailhouse_hmi_img.yaml
+         $ cd rpi4_jailhouse_hmi_img
+         $ oebuild bitbake
+         $ bitbake openeuler-image
+
+         # 或者，构建只覆盖基础软件包的裁剪镜像
+         $ oebuild rpi4_jailhouse_tiny_img.yaml
+         $ cd rpi4_jailhouse_tiny_img
+         $ oebuild bitbake
+         $ bitbake openeuler-image
+
+      构建完成后，在 ``output`` 目录下可以看到镜像，如：
+
+      .. code-block:: shell
+
+         $ tree output/
+         output/
+         └── 20240624030106
+             ├── Image
+             ├── openeuler-image-mcs-raspberrypi4-64-20240624030106.rootfs.cpio.gz
+             ├── openeuler-image-raspberrypi4-64-20240624030106.rootfs.rpi-sdimg
+             └── vmlinux
+
+   2. 启动镜像
+
+      将 ``openeuler-image-raspberrypi4-64-*.rootfs.rpi-sdimg`` 烧录到树莓派的SD卡上，并按照 :ref:`openeuler-image-uefi启动使用指导 <raspberrypi4-uefi-guide>` 进行镜像启动。
+
+      .. note::
+
+         | 对于树莓派的多OS混合部署镜像，Root Cell 上运行的 openEuler Embedded 作为管理 VM，仅用于实现 VM 的管理，因此使用 initrd 启动，不会挂载 SD 卡的 ROOT 分区。
+         | 实际上，混合部署镜像将绝大部分的树莓派硬件设备（包括SD卡，USB，GPU等）分配给了 Non-root Cell，Root Cell 只使用 UART1(GPIO 14, 15)和以太网端口。
+         | 因此，镜像启动后，只能通过串口或 ssh 到默认的 IP 地址：192.168.10.8 进行登录。
+
+      .. code-block:: console
+
+         # 通过 SSH 登录
+         $ ssh root@192.168.10.8
+
+         # 初始化 Root Cell
+         $ jailhouse enable /usr/share/jailhouse/cells/rpi4.cell
+
+         # 启动 Non-root Cell (zephyr)
+         $ mica create rpi4-zephyr-ivshmem.conf
+         $ mica start rpi4-zephyr-ivshmem
+         # 之后，可以通过打开 Root Cell 的 tty 设备来访问 zephyr 的 shell
+         $ screen /dev/ttyRPMSG0
+
+         # 启动 Non-root Cell (openEuler Embedded)
+         $ jailhouse cell linux /usr/share/jailhouse/cells/rpi4-linux.cell /boot/Image \
+             -d /usr/share/jailhouse/cells/dts/inmate-rpi4.dtb \
+             -c "console=ttyAMA1,115200 root=/dev/mmcblk0p2 rootfstype=ext4 rootwait \
+                 coherent_pool=1M 8250.nr_uarts=1 snd_bcm2835.enable_compat_alsa=0 snd_bcm2835.enable_hdmi=1 \
+                 bcm2708_fb.fbwidth=1920 bcm2708_fb.fbheight=1080 bcm2708_fb.fbswap=1 \
+                 vc_mem.mem_base=0x3ec00000 vc_mem.mem_size=0x40000000 dwc_otg.lpm_enable=0 cma=96M"
+
+         # 加载成功后，能够在 UART2(GPIO 0, 1) 上看到 Non-root 的启动日志，并且能够通过 hdmi 进行登录
+         # 若使用的是支持嵌入式图形的混合部署镜像，可以使用 wayfire 桌面
+         $ wayfire
 
 ____
 
