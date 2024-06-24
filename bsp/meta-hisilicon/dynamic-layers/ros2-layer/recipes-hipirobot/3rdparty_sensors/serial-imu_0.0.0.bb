@@ -9,7 +9,7 @@ inherit ros_superflore_generated
 DESCRIPTION = "serial imu data "
 AUTHOR = "linux"
 SECTION = "devel"
-LICENSE = "Apache-License-2.0-"
+LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=08089942be34a90341784faa0455623f"
 
 ROS_CN = ""

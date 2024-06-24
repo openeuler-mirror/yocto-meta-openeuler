@@ -9,7 +9,7 @@ inherit ros_superflore_generated
 DESCRIPTION = "TODO: Package description"
 AUTHOR = "xtark"
 SECTION = "devel"
-LICENSE = "None"
+LICENSE = "MulanPSL-2.0 "
 LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=782925c2d55d09052e1842a0b4886802"
 
 ROS_CN = ""

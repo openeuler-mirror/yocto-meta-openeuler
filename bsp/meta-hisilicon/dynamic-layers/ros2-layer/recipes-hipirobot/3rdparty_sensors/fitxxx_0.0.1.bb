@@ -11,7 +11,7 @@ AUTHOR = "Zhigang Wu"
 ROS_AUTHOR = "Zhigang Wu, "
 HOMEPAGE = "http://"
 SECTION = "devel"
-LICENSE = "None"
+LICENSE = "MulanPSL-2.0"
 LIC_FILES_CHKSUM = "file://package.xml;beginline=10;endline=10;md5=6502ff61cb1ae6c791640a0afbea6cf0"
 
 ROS_CN = ""

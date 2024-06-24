@@ -9,7 +9,7 @@ inherit ros_superflore_generated
 DESCRIPTION = "A package containing message definitions for teb_local_planner."
 AUTHOR = "Vinnam Kim"
 SECTION = "devel"
-LICENSE = "Apache-License-2.0"
+LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=12c26a18c7f493fdc7e8a93b16b7c04f"
 
 ROS_CN = ""

@@ -2,6 +2,7 @@
 
 PV = "0.5.2"
 
+LICESNSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=f223d8c5dc6d4bd04ad8bf355633bfc8"
 
 S = "${WORKDIR}/catkin_pkg-${PV}"

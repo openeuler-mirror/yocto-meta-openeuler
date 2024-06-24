@@ -9,7 +9,7 @@ inherit ros_superflore_generated
 DESCRIPTION = "ROS2 ros2_nearlink_robot for control_robot"
 AUTHOR = "eulercar"
 SECTION = "devel"
-LICENSE = "None"
+LICENSE = "MulanPSL-2.0"
 LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=782925c2d55d09052e1842a0b4886802"
 
 ROS_CN = ""
@@ -71,4 +71,3 @@ DISABLE_OPENEULER_SOURCE_MAP = "1"
 ROS_BUILD_TYPE = "ament_cmake"
 
 inherit ros_${ROS_BUILD_TYPE}
-

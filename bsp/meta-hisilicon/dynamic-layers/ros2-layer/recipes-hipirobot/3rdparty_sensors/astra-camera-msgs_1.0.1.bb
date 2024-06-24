@@ -9,7 +9,7 @@ inherit ros_superflore_generated
 DESCRIPTION = "A package containing orbbec camera messages definitions."
 AUTHOR = "Joe Dong"
 SECTION = "devel"
-LICENSE = "all-copyrights-reserved"
+LICENSE = "MulanPSL-2.0"
 LIC_FILES_CHKSUM = "file://package.xml;beginline=8;endline=8;md5=dc598af4b0c94a75cbcc6b3d79c24b12"
 
 ROS_CN = ""

@@ -9,7 +9,7 @@ inherit ros_superflore_generated
 DESCRIPTION = "A ROS2 package to find and publish frame relationship"
 AUTHOR = "Your Name"
 SECTION = "devel"
-LICENSE = "Apache-License-2.0"
+LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://package.xml;beginline=9;endline=9;md5=12c26a18c7f493fdc7e8a93b16b7c04f"
 
 ROS_CN = ""
