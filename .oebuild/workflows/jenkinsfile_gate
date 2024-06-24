@@ -397,6 +397,53 @@ pipeline {
                         }
                     }
                 }
+                stage("hieulerpi1"){
+                    agent { node "${node}" }
+                    when {
+                        expression {
+                            return env.pr_check_result.contains("code")
+                        }
+                    }
+                    steps {
+                        dir('/home/jenkins/agent'){
+                            script{
+                                downloadEmbeddedCI()
+                            }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            script{
+                                // 执行hieulerpi1编译
+                                // 下载yocto源码
+                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
+                                prepare_srccode("/home/jenkins")
+                                def randomStr = getRandomStr()
+                                def logDir = mkdirOpeneulerLog()
+                                // 执行镜像编译检查
+                                def task_res_code = sh (script: """
+                                    python3 main.py build \
+                                    -c /home/jenkins/agent/yocto-meta-openeuler \
+                                    -target openeuler_image \
+                                    -a aarch64 \
+                                    -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
+                                    -p hieulerpi1 \
+                                    -i openeuler-image \
+                                    -s_in "$SHARE_DIR/${giteeTargetBranch}/sstate-cache/hieulerpi1" \
+                                    -d hieulerpi1 > ${logDir}/${randomStr}.log
+                                """, returnStatus: true)
+                                
+                                def check_res = ""
+                                if (task_res_code == 0){
+                                    check_res = "success"
+                                }else{
+                                    check_res = "failed"
+                                }
+                                // 对检查赋值
+                                archiveArtifacts "${logDir}/*.log"
+                                STAGES_RES.push(formatRes("hieulerpi1", "build", check_res, "artifact/${logDir}/${randomStr}.log"))
+                            }
+                        }
+                    }
+                }
             }
         }
     }

@@ -88,6 +88,27 @@ pipeline {
                         }
                     }
                 }
+                stage("hieulerpi1"){
+                    agent { node "${node}" }
+                    steps {
+                        dir('/home/jenkins/agent'){
+                            script{
+                                BUILD_COM.downloadEmbeddedCI(embeddedRemote, embeddedBranch)
+                            }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            script{
+                                //下载yocto-meta-openeuler代码
+                                BUILD_COM.downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
+                                BUILD_COM.prepareSrcCode("/home/jenkins")
+                                def random_str = BUILD_COM.getRandomStr()
+                                def log_dir = BUILD_COM.mkdirOpeneulerLog()
+
+                                BUILD_COM.build_hieulerpi1(IMAGE_DATE, log_dir, random_str)
+                            }
+                        }
+                    }
+                }
             }
         }
     }
