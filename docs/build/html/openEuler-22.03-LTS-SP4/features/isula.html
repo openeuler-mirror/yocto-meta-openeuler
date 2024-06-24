@@ -131,9 +131,17 @@ CRI是由K8S对外提供的容器和镜像服务接口，供容器引擎接入K8
 </section>
 <section id="isulaopeneuler-embedded">
 <h2>构建带有iSula的openEuler Embedded镜像<a class="headerlink" href="#isulaopeneuler-embedded" title="Permalink to this headline">¶</a></h2>
-<p>当前openEuler Embedded标准镜像中已经集成了iSula容器引擎。
-只需要构建一个标准的openEuler Embedded镜像即可。
-具体的构建过程，参见 <a class="reference internal" href="../yocto/oebuild.html#openeuler-embedded-oebuild"><span class="std std-ref">基于 oebuild 快速构建</span></a>。</p>
+<p>当前openEuler Embedded标准镜像中默认不集成iSula容器引擎。
+如果需要使用iSula容器引擎，用户需要在 <code class="docutils literal notranslate"><span class="pre">local.conf</span></code> 中增加如下特性：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>DISTRO_FEATURES:append <span class="o">=</span> <span class="s2">&quot; isulad &quot;</span>
+</pre></div>
+</div>
+<p>当然，也可以通过oebuild在生成构建目录的时候，指定增加容器特性。
+oebuild会在生成构建目录的时候帮忙将上述配置添加到 <code class="docutils literal notranslate"><span class="pre">local.conf</span></code> ：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ oebuild generate -f openeuler-container
+</pre></div>
+</div>
+<p>之后具体的构建过程，参见 <a class="reference internal" href="../yocto/oebuild.html#openeuler-embedded-oebuild"><span class="std std-ref">基于 oebuild 快速构建</span></a>。</p>
 <p>构建openeuler-container-os的过程和标准的openEuler Embedded镜像类似，
 不同之处仅仅在于，在构建镜像中需要输入如下命令而非 <code class="docutils literal notranslate"><span class="pre">bitbake</span> <span class="pre">openeuler-image</span></code> ：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>bitbake openeuler-container-os
