@@ -1,0 +1,38 @@
+build_in: docker
+machine: raspberrypi4-64
+toolchain_type: EXTERNAL_TOOLCHAIN:aarch64
+no_layer: false
+repos:
+- yocto-poky
+- yocto-meta-openembedded
+- yocto-meta-raspberrypi
+- Jailhouse
+- yocto-meta-qt5
+local_conf: |+
+  DISTRO_FEATURES:append = " hmi "
+  DISTRO_FEATURES:append = " opengl"
+  OPENEULER_DEFAULT_DISTRO_FEATURES:append = " x11"
+  DISTRO_FEATURES:append = " wayland"
+  IMAGE_FEATURES:append = " weston"
+  GLIBC_GENERATE_LOCALES:append = "en_US.UTF-8 zh_CN.UTF-8 "
+
+  INIT_MANAGER = "systemd"
+  VIRTUAL-RUNTIME_dev_manager = "systemd" 
+
+  MCS_FEATURES ?= "jailhouse"
+  DISTRO_FEATURES:append = " mcs"
+  BUILD_GUEST_OS = "1"
+
+layers:
+- yocto-meta-raspberrypi
+- yocto-meta-openeuler/rtos/meta-openeuler-rtos
+- yocto-meta-openembedded/meta-oe
+- yocto-meta-qt5
+docker_param:
+  image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
+  parameters: -itd --network host
+  volumns:
+  - /dev/net/tun:/dev/net/tun
+  command: bash
+bitbake_cmds:
+- bitbake openeuler-image
