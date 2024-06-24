@@ -301,16 +301,15 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
 **使用方法**
 
-以树莓派ROS2镜像为例：
-
 **1. 在构建完成镜像后，通过populate_sdk生成SDK**
 
   .. code-block:: console
 
+    # 以树莓派ROS2镜像为例
     $ oebuild generate -p raspberrypi4-64 -f openeuler-ros -d raspberrypi4-64-ros
     $ oebuild bitbake
-    $ bitbake openeuler-image-ros
-    $ bitbake openeuler-image-ros -c populate_sdk
+    $ bitbake openeuler-image
+    $ bitbake openeuler-image -c populate_sdk
 
   随后在“output/[时间戳]/”目录下即可找到对应SDK安装文件，例如
 
@@ -319,31 +318,53 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
     openeuler-glibc-x86_64-openeuler-image-ros-cortexa72-raspberrypi4-64-toolchain-23.03.sh
 
 
-**2. SDK的安装和初始化**
+**2. SDK的安装和初始化——已获得SDK的上层开发者，可直接从此章节开始进行参考**
 
-  目前可用oebuild初始化的构建容器作为开发容器（后续会推出专用SDK的一站式oebuild功能，敬请期待）。
+  目前可用oebuild初始化的构建容器作为开发容器（后续会推出专用SDK的一站式oebuild功能，敬请期待），开发容器和构建容器可通用。
+
+  (0). 前置准备——此过程重新罗列容器的准备过程，如您已经会进入构建容器，此步骤可通跳过。
+
+  a. 确保主机环境python3版本为3.10及其以上，若python3版本不匹配，建议通过conda安装匹配的python3版本环境。
+
+  b. 确认docker已安装，参考网上ubuntu安装docker方法
+
+  c. 安装oebuild最新版本 ( :ref:`abc步骤命令参考 <oebuild_install>` )
+
+  d. 通过oebuild初始化工作目录
+
+  .. code-block:: console
+
+    $ oebuild init [-b SDK配套分支]  [工作目录]
+    $ cd [工作目录]
+    $ oebuild update
+
+  e. 在对应工作目录，执行容器环境初始化
+
+  .. code-block:: console
+
+    $ oebuild generate -p [平台] [-d DIRECTORY]  
+    # -p 为对应平台，与使用的SDK配套，arm64可选qemu-aarch64，x86可选x86-64，或根据单板平台选择
+    # PLATFORM开发容器并不区分
+    # -d为容器环境的和主机环境即将创建的共享目录
 
   (1). 进入容器环境
 
-  有两种方式可进入容器，任选其一即可：
-
-  方式1：通过oebuild bitbake进入容器
-
-  此方式同时会进入bitbake，和SDK环境暂不冲突，且能够自动初始化容器的主机端工具环境。
+  此时确认您已cd到对应工作目录，即(0)中oebuild generate -d指定的目录，也是您主机和容器的共享目录。
 
   .. code-block:: console
 
     $ oebuild bitbake
 
-  方式2：通过docker命令进入纯容器环境
+  oebuild进入开发容器的原理介绍：
 
-  容器id可通过查看oebuild初始化的构建目录的.env文件，其short_id就是容器id。以“18bb5d58da3e”为例：
+  oebuild bitbake命令执行时，会自动检测工作目录下的.env文件，并检查short_id对应的容器id是否存在。
+  
+  如果不存在就新建一个容器并生成.env文件和short_id，建立容器时，会将当前所处的工作目录（主机），挂载到容器的对应目录。
 
-  .. code-block:: console
+  如需了解具体过程，可参考 :ref:`oebuild bitbake功能介绍 <command_index_bitbake>`
 
-    $ docker exec -it 18bb5d58da3e bash
-    $ su openeuler
-    $ source /opt/buildtools/nativesdk/environment-setup-x86_64-pokysdk-linux #初始化nativesdk（在oebuild bitbake中会自动初始化）
+  除此之外，进入容器后，oebuild bitbake会自动配置一些构建工具的环境建立，如nativesdk等，其中ROS SDK所依赖的主机pyhton3工具就来源于nativesdk。
+
 
   (2). 安装1中生成的SDK的sh安装脚本
 
@@ -366,6 +387,8 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
     $ . /home/openeuler/build/raspberrypi4-64/output/20230523023324/sdk/environment-setup-cortexa72-openeuler-linux
 
   可以看到，此步骤将自动初始化交叉编译的依赖，如colcon等工具。
+  
+  此外，除了初始化上述SDK的环境变量，您无需额外source ros.setup等ROS工作空间，在SDK内部，我们已经准备好了，而SDK提供的colcon，会将colcon命令执行目录自动作为ROS的新增工作空间。
 
 
 **3. 通过colcon交叉编译ROS包**
@@ -375,14 +398,15 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
   .. code-block:: console
 
     $ cd your_rospkg_workspace
-    $ colcon build --merge-install --cmake-force-configure --cmake-args -DBUILD_TESTING=False
+    $ colcon build --cmake-args -DBUILD_TESTING=False
+    # 注： 这里--cmake-args -DBUILD_TESTING=False 参数是必要项，顾名思义，是为了禁止做不必要的构建时测试，构建时测试需不适用于SDK，且SDK没有集成相关组件。
     
   完成后，和colcon用法一样，在工作目录将生成install文件夹，即交叉编译的目标产物。
 
 
-**4. 部署和运行**
+**4. 部署和运行（重要）**
 
-  在3中，colcon生成的install可以直接拷贝到目标机器上进行部署运行，但由于colcon固定了工作目录，拷贝到新目录后，需要替换一下colcon指定的工作目录。
+  在3中，colcon生成的install可以直接拷贝到目标机器上进行部署运行，但由于colcon固定了工作目录和python解析器，拷贝到新目录后，需要替换一下colcon指定的工作目录和python解析器。
 
   假设原colcon工作目录为“home/openeuler/build/raspberrypi4-64/your_colcon_workspace/install”，需编辑全部setup.sh文件，将如下内容进行修改：
 
@@ -396,11 +420,19 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
     _colcon_prefix_chain_sh_COLCON_CURRENT_PREFIX=/ros_runtime/install
 
-  您可执行如下命令进行批量修改：
+  而构建时python解析器是nativesdk提供的，构建时解析器有部分py配置没有及时修正，在目标环境运行时将报错，需要进行修改：
+
+  .. code-block:: console
+
+    _colcon_python_executable="/opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-linux/usr/bin/python3"
+
+  【建议】您直接执行如下命令进行批量修改（后续将集成到colcon或其他工具自动修改）：
 
   .. code-block:: console
 
     $ cd /ros_runtime/install
+    $ find ./ -type f -exec sed -i 's@/opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-linux/usr/bin/python3@/usr/bin/python3@g' {} +
+    # 下述命令需按实际目录填写修改
     $ find ./ -type f -exec sed -i 's@/home/openeuler/build/raspberrypi4-64/your_colcon_workspace/install@/ros_runtime/install@g' {} +
 
   最后通过如下命令进行工作目录的初始化：
@@ -415,42 +447,9 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 关于ROS源码
 =================
 
-上游ROS发布的源码存放于github，中国用户下载较慢，且src-openEuler社区针对ROS全量分包源码还在完善。
+当前src-openeuler已集成ROS humble的所有软件源码，对应通过yocto-meta-openeuler/.oebuild/目录下的maplist.yaml和manifest.yaml可以查询源码包列表和基线。
 
-为加构建过程，嵌入式版本统一将ROS涉及的ROS软件包临时存放于yocto-embedded-tools仓库的dev_ros分支中，并遵循一定的源码存放规则，后续src-openeuler针对ROS分包支持后将对此部分进行优化。
-
-**源码存放规则（暂行）**
-
-  **仓库**：https://gitee.com/openeuler/yocto-embedded-tools.git
-
-  **分支**：dev_ros
-
-  **相对目录**：ros_depends
-
-  **要求**：
-
-  以yocto的包名作为文件夹名，单独存放tarball压缩包，例如ros_depends/tf2/0.13.12-1.tar.gz，并按要求填充src.txt配置文件。tarball的下载建议使用src_helper.sh脚本。
-
-  **src_helper.sh脚本说明**
-
-    当前目录中提供了src_helper.sh脚本，脚本会根据src.txt描述文件进行对应包名目录的创建并通过wget下载对应的包，
-    该脚本用于开发者添加新源码包到该仓库时使用。
-
-  **src.txt说明**
-
-    若需要引入新的ROS标准包，开发者可追加ros.txt内容，并按如下规则：
-
-    **第一列** 为yocto中包名。
-
-    **第二列** 为该包在yocto中定义的工作目录，比如通常SRC_URI若为git链接，则需使用git。单包多压缩包目录可表示多行，可参见foonathan-memory。
-
-    **第三列** 为该包的上游获取地址，若为标准ROS包，开发者可从meta-ros对应distro的bb文件中通过"matches with"关键字获取到。
-
-    .. note:: 第一列和第二列的包名在yocto构建时将自动引用。
-
-        整个yocto-embedded-tool的dev_ros分支，在构建时会以新本地名字ros-dev-tools作为构建源码输入存在。
-        
-        实现参见: openeuler_ros_source.bbclass
+所有ROS软件包，默认都加上了openeuler_source.bbclass，yocto构建时将自动映射软件包基线，若需定制且您有yocto经验，可参见相关实现: openeuler_source.bbclass
 
 
 快速镜像集成(ros2recipe)
@@ -465,7 +464,7 @@ ros2recipe当前还处于前期开发阶段，在依赖解析部分还存在较�
 **其他说明:**
 superfores能够实现以一个ROS版本生成全量官方ROS组件包，对整体ROS和oe层进行了复杂的依赖关联，但不支持将独立的第三方包转换为yocto配方。
 
-针对该场景，ros2recipe如何能够更好更快的补全依赖关系、减少手工bbappend的适配，是一个很有挑战性的工作。我们会逐步完善，在此也期待您的贡献。
+针对该场景，ros2recipe如何能够更好更快的补全依赖关系、减少手工bbappend的适配，是一个很有挑战性的工作。需要大量的案例进行逐步完善，在此期待您的贡献。
 
 **使用方法**
 
@@ -473,6 +472,23 @@ superfores能够实现以一个ROS版本生成全量官方ROS组件包，对整�
 
         yocto-meta-openeuler/scripts/ros2recipe.sh
 
-    .. note:: 其中相对目录的使用原理，请参考并理解“关于ROS源码”。
+
+ROS2 SDK上层开发者常见FAQ
+============================
+
+**问：我在开发容器中安装好了SDK，也编译过我的工程了，过了几天，我再进入容器再编译同样工程，却不行了?**
+
+答：不管SDK安装在哪里（不管是否为容器和主机的共享目录），SDK会依赖容器中的非共享目录的配置内容，而容器如果没有及时保存(断电等原因)，包括环境变量的这些数据都会丢失。
+
+在此建议您，如果关机后重启，建议重新安装SDK。且不管在任何场景，只要重新进入容器，都需要初始化SDK的环境变量。
+
+
+**问：我在ubuntu中调试了一个ROS应用包，代码用SDK编译却报错头文件找不到，比如#include <nav_msgs/msg/odometry.hpp>，这是什么原因？**
+
+答：您可以确认SDK的安装路径中，是否存在对应文件，比如odometry.hpp，您会发现对应文件存在于xxx/nav_msgs/nav_msgs/msg/odometry.hpp的目录，那么大概率是因为您的ROS应用包的CMakeLists.txt中缺少对nav_msgs的依赖描述
+
+针对上面问题，请确保您的CMakeLists.txt配置文件中：(1)find_package(nav_msgs REQUIRED) (2)ament_target_dependencies([pkgname] xxxxx nav_msgs)包含nav_msgs的依赖信息。
+
+而如果ubuntu没有问题，可能是因为ubuntu的依赖软件安装目录没有分离成独立目录，正好在inlcude所在的一级目录恰巧被找到了，而严谨的做法是需要在CMakeLists中描述清楚依赖的。
 
 
