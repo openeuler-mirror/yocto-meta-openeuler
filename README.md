@@ -19,7 +19,7 @@ yocto-meta-openeuler是用于构建openEuler Embedded的一系列构建配方的
 * **RTOS** : openEuler Embeddd的RTOS(Real-Time Operating System)抽象层，主要针对Linux和RTOS混合关键部署的场景，当前支持RT-Thread和Zephyr
 * **docs** : openEuler Embedded使用和开发文档， CI会自动构建文档，并发布于如下地址：
 
-    [**openEuler Embedded开发使用文档**](https://embedded.pages.openeuler.org)
+    [**openEuler Embedded开发使用文档**](https://pages.openeuler.openatom.cn/embedded/docs/build/html/master/)
 
 ## 快速上手
 
@@ -27,7 +27,7 @@ yocto-meta-openeuler是用于构建openEuler Embedded的一系列构建配方的
 
 当前只支持在X86 64位的Linux环境下构建openEuler Embedded。具体操作见说明文档：
 
-[**使用oebuild快速构建openEuler Embedded**](https://embedded.pages.openeuler.org/master/yocto/oebuild.html)
+[**使用oebuild快速构建openEuler Embedded**](https://pages.openeuler.openatom.cn/embedded/docs/build/html/master/oebuild/index.html)
 
 oebuild会自动在src目录下git clone本仓库，默认切换到最新开发分支，即**master**。
 

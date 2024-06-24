@@ -1,3 +1,5 @@
+.. _security_configuration_baseline:
+
 .. raw:: html
 
    <center>
