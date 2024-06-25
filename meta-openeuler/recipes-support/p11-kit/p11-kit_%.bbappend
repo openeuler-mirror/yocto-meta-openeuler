@@ -2,7 +2,7 @@
 
 OPENEULER_SRC_URI_REMOVE = "git"
 
-# latest version in 22.03-LTS-SP3
+# latest version in 22.03-LTS-SP4
 PV = "0.24.0"
 
 SRC_URI = "file://${BP}.tar.xz \

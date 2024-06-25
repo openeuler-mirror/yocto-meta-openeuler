@@ -1,6 +1,6 @@
 require pypi-src-openeuler.inc
 
-# latest commit of branch Multi-Version_OpenStack-Train_openEuler-22.03-LTS-SP3
+# latest commit of branch Multi-Version_OpenStack-Train_openEuler-22.03-LTS-SP4
 PV = "1.5.7"
 LIC_FILES_CHKSUM = "file://README.rst;md5=7c91dbdbf7e4eb3603e9b6c94bf2aa7f"
 SRC_URI[md5sum] = "f6adbdd69365ecca20513c709f9b7c93"
