@@ -1,7 +1,7 @@
 # main bbfile: yocto-meta-ros/meta-ros-common/recipes-devtools/python/python3-empy_3.3.2.bb
 
 PV = "3.3.4"
-
+LICENSE = "LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://README;md5=10d1c4f6d15ab0aa52e80cc7d6ca0959"
 
 SRC_URI[md5sum] = "8bae96e87128393448c1ec837ae78c85"
