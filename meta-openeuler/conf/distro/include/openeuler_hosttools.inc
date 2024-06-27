@@ -15,6 +15,9 @@ ASSUME_PROVIDED += "util-linux-native chrpath-replacement-native sgdisk"
 HOSTTOOLS_NONFATAL += "rpm rpmbuild createrepo_c dnf unzip rpm2cpio xzcat"
 ASSUME_PROVIDED += "rpm-native createrepo-c-native unzip-native"
 
+HOSTTOOLS += "quilt"
+ASSUME_PROVIDED += "quilt-native"
+
 # commands used by kernel build
 HOSTTOOLS_NONFATAL += "flex bison bc kmod depmod insmod"
 ASSUME_PROVIDED += "bc-native bison-native flex-native kmod-native"
