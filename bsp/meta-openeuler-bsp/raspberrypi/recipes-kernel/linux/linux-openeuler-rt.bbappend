@@ -6,6 +6,7 @@ SRC_URI_remove_raspberrypi4 += " \
 SRC_URI += "\
     file://src-kernel-5.10/0000-raspberrypi-kernel.patch \
     file://src-kernel-5.10/0002-modify-bcm2711_defconfig-for-rt-rpi-kernel.patch \
+    file://src-kernel-5.10/0003-rpi4-extern.patch \
 "
 
 require linux-openeuler-rpi.inc
