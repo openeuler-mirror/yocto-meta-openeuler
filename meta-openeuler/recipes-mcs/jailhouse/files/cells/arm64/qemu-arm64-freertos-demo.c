@@ -25,7 +25,6 @@ struct {
         .num_irqchips = ARRAY_SIZE(config.irqchips),
         .num_pci_devices = ARRAY_SIZE(config.pci_devices),
         .vpci_irq_base = 101,
-        .use_virt_cpuid = 1,
         .console = {
             .address = 0x9000000,
             .size = 0x1000,
