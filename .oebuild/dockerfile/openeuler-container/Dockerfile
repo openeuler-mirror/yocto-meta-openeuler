@@ -10,7 +10,7 @@ autoconf automake m4 bison bc libtool gettext-devel createrepo_c net-tools \
 wget sudo hostname rpcgen texinfo python meson dosfstools mtools libmpc-devel \
 gmp-devel ninja-build numactl-devel make python3 python3-pip screen glibc-locale-archive \
 iproute xz unzip help2man libstdc++-static gcc g++ rsync python3-devel gdisk umoci skopeo \
-libxslt vim hwdata perl-XML-Parser iptables
+libxslt vim hwdata perl-XML-Parser iptables golang quilt
 
 ARG user=openeuler
 ARG group=openeuler
@@ -112,4 +112,4 @@ WORKDIR /home/${user}
 
 RUN rm -rf /opt/buildtools/nativesdk/sdk_info
 # install necessary python package because Optee-os need this package involve during compile
-RUN pip3.10 install cryptography
+RUN pip3 install cryptography -i https://pypi.tuna.tsinghua.edu.cn/simple
