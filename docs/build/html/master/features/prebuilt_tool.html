@@ -59,7 +59,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#id2">预构建工具介绍</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id3">预构建工具开发指南</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#id4">预构建工具构建方式</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#id5">预构建工具中添加包方式</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id5">预构建工具安装</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id6">预构建工具中添加包方式</a></li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="#yocto">Yocto 构建使用主机二进制命令指导</a></li>
@@ -126,29 +127,22 @@
 <section id="id4">
 <h3>预构建工具构建方式<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>按照以下步骤构建预构建工具。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ oebuild generate -d prebuilt_tool
-$ cd build/prebuilt_tool
-$ oebuild bitbake
-$ vi conf/local.conf
-### 修改 MACHINE 变量为 qemux86-64(x86环境构建)
-### 注释 TCMODE = &quot;external-toolchain&quot; 配置
-### 修改 OPENEULER_PREBUILT_TOOLS_ENABLE = &quot;no&quot;
-$ bitbake buildtools-extended-tarball
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ oebuild samples
+### 根据输出内容选择 prebuilt_tool.yaml 对应的编号，即可自动构建。
 </pre></div>
 </div>
-<p>除了使用上述命令进行配置文件生成之外，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，此菜单选项可以替代上述命令中的oebuild generate，选择保存之后继续执行上述命令中的bitbake及后续命令即可。</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild generate</span>
-</pre></div>
-</div>
-<p>具体界面如下图所示:</p>
-<img alt="../_images/oebuild-generate-select.png" src="../_images/oebuild-generate-select.png" />
-<p>目前，oebuild 尚未实现自动配置预构建工具的配置文件。因此，需要按照上述步骤手动进行配置。</p>
 <p>构建完成的预构建工具产物位于 <code class="file docutils literal notranslate"><span class="pre">tmp/deploy/sdk</span></code> 目录。</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ ls ./tmp/deploy/sdk/
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ cd build/prebuilt_tool/tmp/deploy/sdk/
+$ ls
 x86_64-buildtools-extended-nativesdk-standalone-version.host.manifest  x86_64-buildtools-extended-nativesdk-standalone-version.target.manifest
 x86_64-buildtools-extended-nativesdk-standalone-version.sh             x86_64-buildtools-extended-nativesdk-standalone-version.testdata.json
-### 运行 sh 脚本解压安装到指定目录
-$ sh ./tmp/deploy/sdk/x86_64-buildtools-extended-nativesdk-standalone-23.09.sh -y -d /path/to/install_sdk_dir
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h3>预构建工具安装<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>### 通过运行 sh 脚本解压安装到指定目录
+$ sh ./tmp/deploy/sdk/x86_64-buildtools-extended-nativesdk-standalone-24.03.sh -y -d /path/to/install_sdk_dir
 $ ls /path/to/install_sdk_dir/
 environment-setup-x86_64-openeulersdk-linux  relocate_sdk.py  relocate_sdk.sh  sysroots  version-x86_64-openeulersdk-linux
 ### 运行 environment-setup-x86_64-xxx-linux 初始化 sdk 环境
@@ -156,10 +150,14 @@ $ source /path/to/install_sdk_dir/environment-setup-x86_64-openeulersdk-linux
 </pre></div>
 </div>
 <p>在环境初始化完成后，您应该使用 <code class="docutils literal notranslate"><span class="pre">env</span></code> 命令来验证环境变量的设置是否正确。一种有效的验证方法是检查环境变量 <strong>PATH</strong> 是否包含了预构建工具的二进制路径，以确保预构建工具能够正确运行。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>预构建工具安装时需进行重定位操作，为确保成功安装，安装目录的长度不应超过构建时设定的动态链接器长度限制，不超过37个字母。</p>
+</div>
 </section>
-<section id="id5">
-<h3>预构建工具中添加包方式<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
-<p>示例：预构建工具中添加 make 命令。</p>
+<section id="id6">
+<h3>预构建工具中添加包方式<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p><strong>示例：</strong> 预构建工具中添加 make 命令。</p>
 <p>修改 <code class="file docutils literal notranslate"><span class="pre">meta-openeuler/recipes-core/meta/buildtools-extended-tarball.bbappend</span></code> 文件，按照如下方式适配 <strong>TOOLCHAIN_HOST_TASK</strong> 变量：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TOOLCHAIN_HOST_TASK</span> <span class="o">+=</span> <span class="s2">&quot;nativesdk-make&quot;</span>
 </pre></div>

@@ -23,36 +23,27 @@ openEuler 开发者在 yocto-meta-openeuler 中进行了多项准备工作，以
 
 ::
 
-    $ oebuild generate -d prebuilt_tool
-    $ cd build/prebuilt_tool
-    $ oebuild bitbake
-    $ vi conf/local.conf
-    ### 修改 MACHINE 变量为 qemux86-64(x86环境构建)
-    ### 注释 TCMODE = "external-toolchain" 配置
-    ### 修改 OPENEULER_PREBUILT_TOOLS_ENABLE = "no"
-    $ bitbake buildtools-extended-tarball
+    $ oebuild samples
+    ### 根据输出内容选择 prebuilt_tool.yaml 对应的编号，即可自动构建。
 
-除了使用上述命令进行配置文件生成之外，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，此菜单选项可以替代上述命令中的oebuild generate，选择保存之后继续执行上述命令中的bitbake及后续命令即可。
-
-.. code-block:: console
-
- oebuild generate
-
-具体界面如下图所示:
-
-.. image:: ../_static/images/generate/oebuild-generate-select.png
-
-目前，oebuild 尚未实现自动配置预构建工具的配置文件。因此，需要按照上述步骤手动进行配置。
 
 构建完成的预构建工具产物位于 :file:`tmp/deploy/sdk` 目录。
 
 ::
 
-    $ ls ./tmp/deploy/sdk/
+    $ cd build/prebuilt_tool/tmp/deploy/sdk/
+    $ ls
     x86_64-buildtools-extended-nativesdk-standalone-version.host.manifest  x86_64-buildtools-extended-nativesdk-standalone-version.target.manifest
     x86_64-buildtools-extended-nativesdk-standalone-version.sh             x86_64-buildtools-extended-nativesdk-standalone-version.testdata.json
-    ### 运行 sh 脚本解压安装到指定目录
-    $ sh ./tmp/deploy/sdk/x86_64-buildtools-extended-nativesdk-standalone-23.09.sh -y -d /path/to/install_sdk_dir
+
+
+预构建工具安装
+------------------
+
+::
+
+    ### 通过运行 sh 脚本解压安装到指定目录
+    $ sh ./tmp/deploy/sdk/x86_64-buildtools-extended-nativesdk-standalone-24.03.sh -y -d /path/to/install_sdk_dir
     $ ls /path/to/install_sdk_dir/
     environment-setup-x86_64-openeulersdk-linux  relocate_sdk.py  relocate_sdk.sh  sysroots  version-x86_64-openeulersdk-linux
     ### 运行 environment-setup-x86_64-xxx-linux 初始化 sdk 环境
@@ -60,10 +51,15 @@ openEuler 开发者在 yocto-meta-openeuler 中进行了多项准备工作，以
 
 在环境初始化完成后，您应该使用 ``env`` 命令来验证环境变量的设置是否正确。一种有效的验证方法是检查环境变量 **PATH** 是否包含了预构建工具的二进制路径，以确保预构建工具能够正确运行。
 
+.. note::
+
+    预构建工具安装时需进行重定位操作，为确保成功安装，安装目录的长度不应超过构建时设定的动态链接器长度限制，不超过37个字母。
+
+
 预构建工具中添加包方式
 -------------------------
 
-示例：预构建工具中添加 make 命令。
+**示例：** 预构建工具中添加 make 命令。
 
 修改 :file:`meta-openeuler/recipes-core/meta/buildtools-extended-tarball.bbappend` 文件，按照如下方式适配 **TOOLCHAIN_HOST_TASK** 变量：
 
