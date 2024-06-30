@@ -44,7 +44,8 @@ python set_openeuler_variable() {
 
     license_mapping = {
         "LGPL": "LGPL-2.1-or-later",
-        "BSD": "BSD-3-Clause"
+        "BSD": "BSD-3-Clause",
+        "Apache-2.0 & BSD" : "Apache-2.0 & BSD-3-Clause",
     }
 
     license = d.getVar("LICENSE")
