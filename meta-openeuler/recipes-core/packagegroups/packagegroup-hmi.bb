@@ -16,5 +16,6 @@ l3afpad \
 ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '', 'udev-extraconf', d)} \
 adwaita-icon-theme \
 ttf-wqy-zenhei \
+firefox-bin \
 "
 
