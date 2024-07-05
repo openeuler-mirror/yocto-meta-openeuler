@@ -43,8 +43,7 @@
   要想使用GDB Server进行调试，一个重要的前提条件就是能够通过网络访问到openEuler Embbed镜像。
   如果是调试在QEMU中运行的openEuler Embedded中的程序，我们应该在启动QEMU时为它配置好网络。
   网络配置不需要特别复杂，配置一个简单的本地网络，使得宿主机能与虚拟机正常通信即可。
-  （参见 `QEMU使能网络场景 \
-  <https://embedded.pages.openeuler.org/master/develop_help/qemu/qemu_start.html#id4>`_）
+  （参见 :ref:`QEMU使用指导 <qemu_enable_net>`）
 
   如果是调试在开发板中运行的openEuler Embedded中的程序，我们可以使用网口，
   通过以太网连接开发板。以树莓派4B为例，

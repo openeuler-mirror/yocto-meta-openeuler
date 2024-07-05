@@ -1070,7 +1070,7 @@ hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，�
 
 参考:
 
- `嵌入式设备网络配置 <https://embedded.pages.openeuler.org/master/linux/network/network_config.html>`_
+ :ref:`嵌入式设备网络配置 <network_config>`
 
  `树莓派SD卡烧录指导 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E5%88%B7%E5%86%99%E9%95%9C%E5%83%8F.md#%E5%88%B7%E5%86%99-sd-%E5%8D%A1>`_
 
