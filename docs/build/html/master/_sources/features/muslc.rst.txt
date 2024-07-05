@@ -94,8 +94,7 @@ qemu镜像的构建
 
         /usr1/build/ouput
 
-镜像运行 `QEMU参考运行指导 <https://embedded.pages.openeuler.org/master/getting_started/index.html#id4>`_
-
+镜像运行 :ref:`QEMU运行指导 <qemu_start>`
 
 树莓派镜像的构建
 ----------------------------------------
@@ -117,7 +116,7 @@ qemu镜像的构建
 
         /usr1/build/ouput 
 
-镜像运行 `树莓派参考运行指导 <https://embedded.pages.openeuler.org/master/features/raspberrypi.html>`_
+镜像运行 :ref:`树莓派运行指导 <board_raspberrypi4_build>`
 
 clang+llvm构建镜像
 ----------------------------------------
