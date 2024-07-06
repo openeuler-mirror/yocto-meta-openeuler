@@ -119,3 +119,6 @@ IMAGE_POSTPROCESS_COMMAND:append = "copy_openeuler_distro;"
 
 # specific machine configuration
 include recipes-core/images/${MACHINE}.inc
+
+# Add a grub option for live image
+LABELS_LIVE = "boot install install(without-formatting)"

@@ -11,9 +11,20 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin
 # wait for the kernel module to finish
 sleep 5
 
-#just when LABEL=install-efi, we start this install, see grub.cfg
+# LABEL is required and is the type of installation to be run:
+# 1. LABEL=boot
+#    Boot into an initramfs for debugging or testing.
+#
+# 2. LABLE=install-efi
+#    Format the disk and install image.
+#
+# 3. LABLE=install(without-formatting)
+#    Install image on a disk without formatting.
+#
+# NOTE: See grub-efi-cfg.bbclass and image-live.bbclass(set_live_vm_vars(...))
+# for details on how to add a LABLE.
 cmdstr=`cat /proc/cmdline | awk -F 'LABEL=' '{print $2}' | awk '{print $1}'`
-if [ "$cmdstr" != "install-efi" ]; then
+if [ "$cmdstr" == "boot" ]; then
     export HOME=/home/root
     source /etc/profile
     /bin/sh
@@ -215,10 +226,12 @@ fi
 device=/dev/$TARGET_DEVICE_NAME
 
 #
-# The udev automounter can cause pain here, kill it
+# The udev/mdev automounter can cause pain here, kill it
 #
 rm -f /etc/udev/rules.d/automount.rules
 rm -f /etc/udev/scripts/mount*
+rm -f /etc/mdev.conf
+kill `pidof mdev` 2> /dev/null || /bin/true
 
 #
 # Unmount anything the automounter had mounted
@@ -261,44 +274,46 @@ bootfs=${device}${part_prefix}1
 rootfs=${device}${part_prefix}2
 swap=${device}${part_prefix}3
 
-echo "*****************"
-echo "Boot partition size:   $boot_size MB ($bootfs)"
-echo "Rootfs partition size: $rootfs_size MB ($rootfs)"
-echo "Swap partition size:   $swap_size MB ($swap)"
-echo "*****************"
-echo "Deleting partition table on ${device} ..."
-dd if=/dev/zero of=${device} bs=512 count=35
+if [ "$cmdstr" != "install(without-formatting)" ]; then
+    echo "*****************"
+    echo "Boot partition size:   $boot_size MB ($bootfs)"
+    echo "Rootfs partition size: $rootfs_size MB ($rootfs)"
+    echo "Swap partition size:   $swap_size MB ($swap)"
+    echo "*****************"
+    echo "Deleting partition table on ${device} ..."
+    dd if=/dev/zero of=${device} bs=512 count=35
 
-echo "Creating new partition table on ${device} ..."
-parted ${device} mklabel gpt
+    echo "Creating new partition table on ${device} ..."
+    parted ${device} mklabel gpt
 
-echo "Creating boot partition on $bootfs"
-parted ${device} mkpart boot fat32 0% $boot_size
-parted ${device} set 1 boot on
+    echo "Creating boot partition on $bootfs"
+    parted ${device} mkpart boot fat32 0% $boot_size
+    parted ${device} set 1 boot on
 
-echo "Creating rootfs partition on $rootfs"
-parted ${device} mkpart root ext4 $rootfs_start $rootfs_end
+    echo "Creating rootfs partition on $rootfs"
+    parted ${device} mkpart root ext4 $rootfs_start $rootfs_end
 
-echo "Creating swap partition on $swap"
-parted ${device} mkpart swap linux-swap $swap_start 100%
+    echo "Creating swap partition on $swap"
+    parted ${device} mkpart swap linux-swap $swap_start 100%
 
-parted ${device} print
+    parted ${device} print
 
-echo "Waiting for device nodes..."
-C=0
-while [ $C -ne 3 ] && [ ! -e $bootfs  -o ! -e $rootfs -o ! -e $swap ]; do
-    C=$(( C + 1 ))
-    sleep 1
-done
+    echo "Waiting for device nodes..."
+    C=0
+    while [ $C -ne 3 ] && [ ! -e $bootfs  -o ! -e $rootfs -o ! -e $swap ]; do
+	C=$(( C + 1 ))
+	sleep 1
+    done
 
-echo "Formatting $bootfs to vfat..."
-mkfs.vfat $bootfs
+    echo "Formatting $bootfs to vfat..."
+    mkfs.vfat $bootfs
 
-echo "Formatting $rootfs to ext4..."
-mkfs.ext4 $rootfs
+    echo "Formatting $rootfs to ext4..."
+    mkfs.ext4 -F $rootfs
 
-echo "Formatting swap partition...($swap)"
-mkswap $swap
+    echo "Formatting swap partition...($swap)"
+    mkswap $swap
+fi
 
 mkdir /tgt_root
 mkdir /src_root
@@ -306,6 +321,11 @@ mkdir -p /boot
 
 # Handling of the target root partition
 mount $rootfs /tgt_root
+if [ "$?" -ne 0 ] && [ "$cmdstr" == "install(without-formatting)" ]; then
+    echo "Installation(without formatting) failed. Aborted."
+    exit 1
+fi
+
 mount -o rw,loop,noatime,nodiratime /run/media/${TARGET_CDROM_NAME}/${rootfs_name} /src_root
 echo "Copying rootfs files..."
 cp -a /src_root/* /tgt_root
@@ -343,6 +363,7 @@ if [ -f /run/media/${TARGET_CDROM_NAME}/EFI/BOOT/grub.cfg ]; then
     # Update grub config for the installed image
     # Delete the install entry
     sed -i "/menuentry 'install'/,/^}/d" $GRUBCFG_TMP
+    sed -i "/menuentry 'install(without-formatting)'/,/^}/d" $GRUBCFG_TMP
     # Delete the initrd lines
     sed -i "/initrd /d" $GRUBCFG_TMP
     # Delete any LABEL= strings
