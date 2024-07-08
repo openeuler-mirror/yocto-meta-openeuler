@@ -49,7 +49,7 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
     $ oebuild generate -p qemu-aarch64 -f openeuler-ros -d aarch64-qemu-ros
     $ oebuild bitbake
-    $ bitbake openeuler-image-ros
+    $ bitbake openeuler-image
 
 
 构建树莓派参照如下命令
@@ -58,7 +58,7 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
     $ oebuild generate -p raspberrypi4-64 -f openeuler-ros -d raspberrypi4-64-ros
     $ oebuild bitbake
-    $ bitbake openeuler-image-ros
+    $ bitbake openeuler-image
 
 除了使用上述命令进行配置文件生成之外，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，此菜单选项可以替代上述命令中的oebuild generate，选择保存之后继续执行上述命令中的bitbake及后续命令即可。
 
@@ -70,9 +70,9 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
     .. image:: ../_static/images/generate/oebuild-generate-select.png
 
-.. note:: 当前openeuler-image-ros镜像默认集成ros-core核心功能
+.. note:: 当前只要开启了ros特性，openeuler-image镜像会默认集成ros-core核心功能
 
-    基于树莓派的openeuler-image-ros镜像还加入了SLAM典型功能
+    基于树莓派的ROS特性镜像还加入了SLAM典型功能
     （相关导航和制图典型场景功能正在完善中，欢迎试用和加入贡献）
 
     另外按照嵌入式运行时原则，将尽量不在target集成编译类、观测类、仿真类等工具
@@ -315,7 +315,7 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
   .. code-block:: console
     
-    openeuler-glibc-x86_64-openeuler-image-ros-cortexa72-raspberrypi4-64-toolchain-23.03.sh
+    openeuler-glibc-x86_64-openeuler-image-cortexa72-raspberrypi4-64-toolchain-23.03.sh
 
 
 **2. SDK的安装和初始化——已获得SDK的上层开发者，可直接从此章节开始进行参考**
@@ -373,7 +373,7 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
   .. code-block:: console
 
     $ cd /home/openeuler/build/raspberrypi4-64/output/20230523023324
-    $ ./openeuler-glibc-x86_64-openeuler-image-ros-cortexa72-raspberrypi4-64-toolchain-23.03.sh
+    $ ./openeuler-glibc-x86_64-openeuler-image-cortexa72-raspberrypi4-64-toolchain-23.03.sh
     # 输入安装目录，假设为“/home/openeuler/build/raspberrypi4-64/output/20230523023324/sdk”，目录请事先创建好，按“y”确认
     $ /home/openeuler/build/raspberrypi4-64/output/20230523023324/sdk
     $ y
