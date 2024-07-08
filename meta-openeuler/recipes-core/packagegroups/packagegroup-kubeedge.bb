@@ -13,5 +13,7 @@ packagegroup-isulad \
 edgecore \
 keadm \
 ntpdate \
+cri-tools \
+cni \
 "
 
