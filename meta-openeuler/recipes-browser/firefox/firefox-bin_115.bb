@@ -29,7 +29,7 @@ SRC_URI[x86.md5sum] = "14974c129ca66e9227535836468d70ba"
 
 S = "${WORKDIR}/${BP}"
 
-RDEPENDS:${PN} += "libvpx libwebp ffmpeg dbus-glib"
+RDEPENDS:${PN} += "libvpx libwebp ffmpeg dbus-glib nss nspr "
 
 do_install:append() {
     # openeuler embedded shell binary not in usr, fix it
