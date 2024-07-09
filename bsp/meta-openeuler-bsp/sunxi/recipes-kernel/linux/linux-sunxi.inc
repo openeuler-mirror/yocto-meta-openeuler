@@ -9,7 +9,7 @@ SRC_URI:remove = " \
 ## basic information
 OPENEULER_REPO_NAME = "allwinner-kernel"
 # download src-openeuler/kernel repo for patches
-OPENEULER_MULTI_REPOS = "allwinner-kernel"
+OPENEULER_REPO_NAMES = "allwinner-kernel"
 
 SRC_URI:prepend = " \
     file://allwinner-kernel \

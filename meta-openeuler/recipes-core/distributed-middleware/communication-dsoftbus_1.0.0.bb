@@ -10,7 +10,7 @@ pkg-libcoap = "third_party_libcoap-${openHarmony_release_version}"
 pkg-sqlite = "third_party_sqlite-${openHarmony_release_version}"
 
 OPENEULER_REPO_NAME = "communication_dsoftbus"
-OPENEULER_MULTI_REPOS += " communication_ipc"
+OPENEULER_REPO_NAMES += " communication_ipc"
 
 SRC_URI += " \
             file://${pkg-dsoftbus}.tar.gz;subdir=${pkg-dsoftbus} \

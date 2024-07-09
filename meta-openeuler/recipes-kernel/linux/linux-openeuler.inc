@@ -58,7 +58,7 @@ OPENEULER_KERNEL_CONFIG ?= "file://${CONFIGVERSION}config/${ARCH}/defconfig"
 OPENEULER_REPO_NAME = "kernel-${PV}"
 # download src-openeuler/kernel repo for patches
 # download openeuler/kernel-5.10 repo for linux kernel src files
-OPENEULER_MULTI_REPOS = "src-kernel-${PV} kernel-${PV}"
+OPENEULER_REPO_NAMES = "src-kernel-${PV} kernel-${PV}"
 
 SRC_URI = "file://kernel-${PV} \
     ${OPENEULER_KERNEL_CONFIG} \
@@ -128,10 +128,6 @@ python () {
     if d.getVar("KERNEL_PACKAGE_NAME") == "kernel" and d.getVar("PREFERRED_PROVIDER_virtual/kernel") != d.getVar("PN"):
         d.delVar("BB_DONT_CACHE")
         raise bb.parse.SkipRecipe("Set PREFERRED_PROVIDER_virtual/kernel to %s to enable it" % (d.getVar("PN")))
-}
-
-python do_fetch() {
-    bb.build.exec_func("do_openeuler_fetch_multi", d)
 }
 
 ## kernel compile options

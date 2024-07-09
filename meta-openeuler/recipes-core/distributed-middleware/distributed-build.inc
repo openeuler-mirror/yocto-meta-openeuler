@@ -12,7 +12,7 @@ pkg-build-lite = "build_lite-${openHarmony_release_version}"
 
 buildtools_dir = "${S}/prebuilts/build-tools/linux-x86/bin"
 
-OPENEULER_MULTI_REPOS = "yocto-embedded-tools distributed-build distributed-build_lite"
+OPENEULER_REPO_NAMES += "yocto-embedded-tools distributed-build distributed-build_lite"
 
 is_clang = "false"
 is_clang:toolchain-clang = "true"
@@ -52,10 +52,6 @@ SRC_URI:append = " \
         file://0001-feat-for-embedded-comment-out-unrecognized-options.patch;patchdir=${WORKDIR}/${pkg-build} \
         file://0002-adapt-embedded-clang-llvm-17.0.6.patch;patchdir=${WORKDIR}/${pkg-build} \
 "
-
-python do_fetch:prepend() {
-    bb.build.exec_func("do_openeuler_fetch_multi", d)
-}
 
 do_patch:append() {
     bb.build.exec_func('do_prepare_build_directory', d)

@@ -9,11 +9,7 @@ SRC_URI:remove = " \
 "
 
 # fetch kernel and patch for phytium
-OPENEULER_MULTI_REPOS = "phytium-kernel src-kernel-5.10-tag-phytium"
-
-python do_fetch() {
-    bb.build.exec_func("do_openeuler_fetch_multi", d)
-}
+OPENEULER_REPO_NAMES = "phytium-kernel src-kernel-5.10-tag-phytium"
 
 # use phytium kernel repo
 SRC_URI:append = " \

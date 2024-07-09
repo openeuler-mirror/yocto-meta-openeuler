@@ -1,6 +1,6 @@
 OPENEULER_REPO_NAME = "yocto-pseudo"
 
-OPENEULER_MULTI_REPOS = "yocto-pseudo oee_archive"
+OPENEULER_REPO_NAMES = "yocto-pseudo oee_archive"
 
 SRC_URI:prepend = "file://${BP}.tar.gz \
           file://oee_archive/pseudo/pseudo-prebuilt-2.33.tar.xz;subdir=${BP}/prebuilt;name=prebuilt \
@@ -17,8 +17,4 @@ do_compile:class-native:openeuler-prebuilt () {
           ${S}/configure ${PSEUDO_EXTRA_OPTS} --prefix=${prefix} --libdir=${prefix}/lib/pseudo/lib --with-sqlite-lib=/lib --with-sqlite=${OPENEULER_NATIVESDK_SYSROOT}/usr --cflags="${CFLAGS}" --bits=${SITEINFO_BITS} --without-rpath
         fi
         oe_runmake ${MAKEOPTS}
-}
-
-python do_fetch() {
-    bb.build.exec_func("do_openeuler_fetch_multi", d)
 }

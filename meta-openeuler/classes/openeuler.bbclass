@@ -143,24 +143,14 @@ python () {
     d.setVar('SRCREV', repo_item['version'])
 }
 
-# fetch multi repos in one recipe bb file, an example is
-# dsoftbus_1.0.bb where multi repos required by dsoftbus are
-# fetched by re-implementation of do_fetch, and it will call
-# do_openeuler_fetch_multi
-python do_openeuler_fetch_multi() {
 
-    # Stage the variables related to the original package
-    repo_name = d.getVar("OPENEULER_REPO_NAME")
-    local_name = d.getVar("OPENEULER_LOCAL_NAME")
-
-    repo_list = d.getVar("OPENEULER_MULTI_REPOS").split()
-    for item_name in repo_list:
-        d.setVar("OPENEULER_REPO_NAME", item_name)
-        bb.build.exec_func("do_openeuler_fetch", d)
-
-    # Restore the variables related to the original package
-    d.setVar("OPENEULER_REPO_NAME", repo_name)
-    d.setVar("OPENEULER_LOCAL_NAME", local_name)
+# call "do_openeuler_fetch" at the beginning of do_fetch,
+# it will fetch software packages, the related patches and other files
+# from openeuler's gitee repo.
+# if success,  other part of base_do_fetch will skip download as
+# files are already downloaded by do_openeuler_fetch
+python base_do_fetch:prepend() {
+    bb.build.exec_func("do_openeuler_fetch", d)
 }
 
 # fetch software packages from openeuler's repos first,
@@ -172,37 +162,39 @@ python do_openeuler_fetch() {
     import git
     from git import GitError
 
-    # if we set OPENEULER_FETCH to disable in local.conf or bb file,
-    # we will do nothing
-    if d.getVar('OPENEULER_FETCH') == "disable":
-        return
-
-    # get source directory where to download
-    src_dir = d.getVar('OPENEULER_SP_DIR')
-    local_name = d.getVar('OPENEULER_LOCAL_NAME') if d.getVar('OPENEULER_LOCAL_NAME')  else d.getVar('OPENEULER_REPO_NAME')
-
-    urls = d.getVar("SRC_URI").split()
-
     # for fake recipes without SRC_URI pass
     src_uri = (d.getVar('SRC_URI') or "").split()
     if len(src_uri) == 0:
         return
 
-    repo_dir = os.path.join(src_dir, local_name)
+    if d.getVar('OPENEULER_FETCH') == "disable":
+        return
+    
+    def openeuler_fetch(d, repo_name):
+        # get source directory where to download
+        src_dir = d.getVar('OPENEULER_SP_DIR')
+        local_name = repo_name
+        # local download path
+        repo_dir = os.path.join(src_dir, local_name)
 
-    try:
-        # determine whether the variable MANIFEST_DIR is None
-        if d.getVar("MANIFEST_DIR") is not None and os.path.exists(d.getVar("MANIFEST_DIR")):
-            manifest_list = d.getVar("MANIFEST_LIST")
-            if local_name in manifest_list:
-                repo_item = manifest_list[local_name]
-                download_repo(d, repo_dir, repo_item['remote_url'], repo_item['version'])
-        else:
-            bb.fatal("openEuler Embedded build need manifest.yaml")
-    except GitError as e:
-        bb.fatal("could not find or init gitee repository %s because %s" % (local_name, str(e)))
-    except Exception as e:
-        bb.fatal("do_openeuler_fetch failed: OPENEULER_SP_DIR %s OPENEULER_LOCAL_NAME %s exception %s" % (src_dir, local_name, str(e)))
+        try:
+            # determine whether the variable MANIFEST_DIR is None
+            if d.getVar("MANIFEST_DIR") is not None and os.path.exists(d.getVar("MANIFEST_DIR")):
+                manifest_list = d.getVar("MANIFEST_LIST")
+                if local_name in manifest_list:
+                    repo_item = manifest_list[local_name]
+                    download_repo(d, repo_dir, repo_item['remote_url'], repo_item['version'])
+            else:
+                bb.fatal("openEuler Embedded build need manifest.yaml")
+        except GitError as e:
+            bb.fatal("could not find or init gitee repository %s because %s" % (local_name, str(e)))
+        except Exception as e:
+            bb.fatal("do_openeuler_fetch failed: OPENEULER_SP_DIR %s OPENEULER_LOCAL_NAME %s exception %s" % (src_dir, local_name, str(e)))
+
+    repo_list = d.getVar("OPENEULER_REPO_NAMES").split()
+    for repo_name in repo_list:
+        # download code from openEuler
+        openeuler_fetch(d, repo_name)
 }
 
 def init_repo_dir(repo_dir):
@@ -282,16 +274,6 @@ python parse_manifest() {
     d.setVar('MANIFEST_LIST', get_manifest(d.getVar("MANIFEST_DIR")))
 }
 parse_manifest[eventmask] = "bb.event.ConfigParsed"
-
-
-# call "do_openeuler_fetch" at the beginning of do_fetch,
-# it will fetch software packages, the related patches and other files
-# from openeuler's gitee repo.
-# if success,  other part of base_do_fetch will skip download as
-# files are already downloaded by do_openeuler_fetch
-python base_do_fetch:prepend() {
-    bb.build.exec_func("do_openeuler_fetch", d)
-}
 
 python do_openeuler_clean() {
     import os

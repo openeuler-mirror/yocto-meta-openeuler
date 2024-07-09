@@ -1,6 +1,6 @@
 # ref bb: https://git.yoctoproject.org/meta-virtualization/tree/recipes-networking/cni
 
-OPENEULER_MULTI_REPOS = "cni oee_archive"
+OPENEULER_REPO_NAMES = "cni oee_archive"
 
 PV = "1.2.0"
 

@@ -12,7 +12,7 @@ SRC_URI:append = " \
     file://patches/0002-fix_fpsimd_sched_panic.patch \
 "
 
-OPENEULER_MULTI_REPOS += "src-kernel-5.10-tag-rockchip"
+OPENEULER_REPO_NAMES += "src-kernel-5.10-tag-rockchip"
 
 #add COMPATIBLE_MACHINE
 COMPATIBLE_MACHINE = "ok3568|ryd-3568|ok3588|ok3399|roc-rk3588s-pc|orangepi4-lts|orangepi5"
