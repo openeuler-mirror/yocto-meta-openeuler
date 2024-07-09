@@ -7,7 +7,7 @@
 特性介绍
 ***************************
 
-在openEuler Embedded构建镜像时，需要提前下载所有软件包，而openEuler Embedded由上百个软件包构成，完全下载耗时耗力。功能函数openeuler_fetch解决了该问题，它可以在openEuler Embedded构建镜像时，按需从上游源码包自动下载软件包。例如当你只想编译busybox这一个软件包，而不需要将其他软件包全部下载的时候，使用openeuler_fetch即可实现，你只需要初始化完环境即可进入编译环节。
+在openEuler Embedded构建镜像时，不需要提前下载所有软件包。功能函数openeuler_fetch在openEuler Embedded构建镜像时，按需从上游源码包自动下载软件包。例如当你只想编译busybox这一个软件包，而不需要将其他软件包全部下载的时候，使用openeuler_fetch即可实现，你只需要初始化完环境即可进入编译环节。
 
 openeuler_fetch运行机制
 ***************************
@@ -22,6 +22,8 @@ openeuler_fetch通过以下控制变量来完成相关包下载：
  - OPENEULER_REPO_NAME: 软件包名，该名一般和构建包名一致，但在特殊情况下需要改动，例如构建libtool-cross时，构建包名为libtool-cross，因此默认OPENEULER_REPO_NAME为libtool-cross，但是依赖包路径是libtool，则需要将OPENEULER_REPO_NAME改为libtool
 
  - OPENEULER_LOCAL_NAME: 软件包本地名称，即软件包在本地路径名称，一般该变量如果不设置则在系统处理时默认和OPENEULER_REPO_NAME一样，该变量意在解决软件包名和本地存储路径不一致问题
+
+ - OPENEULER_REPO_NAMES: openeuler_fetch调用时实际用到的变量名，默认设置为OPENEULER_LOCAL_NAME，可追加不同的软件包名到此变量实现多仓下载
 
 整体openeuler_fetch下载就是依靠以上相关变量确定下载的包信息，而获取下载包的信息是在openEuler Embedded的基线文件中记录的，该文件目录为.oebuild/manifest.yaml，如果在基线文件中能命中该包信息，则会进行下载，否则不做任何操作。基线文件中的包信息包含该包的version，因此在命中该包后会根据version来确定该包的版本，并且为了更快的完成下载任务，我们尽可能的减少下载的代码量，因此openeuler_fetch在下载代码时其深度设定为1。在对该包的匹配过程中，如果本地可以检出该包的version，则直接切换包版本，否则进行fetch操作，然后再进行包版本检出。
 
@@ -77,18 +79,15 @@ openeuler_fetch通过以下控制变量来完成相关包下载：
 
 **情形三：构建依赖不通过depends指定，而是通过SRC_URI指定**
 
-构建一个软件包时可能会从多个仓下获取源码，即不能直接通过depends添加依赖，此时需要在bbappend中添加do_fetch:prepend，在该函数中添加需要依赖的包，例如：
+构建一个软件包时可能会从多个仓下获取源码，即不能直接通过depends添加依赖，此时需要设置OPENEULER_REPO_NAMES，追加需要依赖的包，例如：
 
 .. code::
 
     # multi-repos are required to build dsoftbus
-    OPENEULER_MULTI_REPOS = "yocto-embedded-tools dsoftbus_standard embedded-ipc dsoftbus"
-    python do_fetch:prepend() {
-        dd.build.exec_func("do_openeuler_fetch_multi", d)
-    }
+    OPENEULER_REPO_NAMES = "yocto-embedded-tools dsoftbus_standard embedded-ipc dsoftbus"
 
-通过OPENEULER_MULTI_REPOS设置好需要依赖的包，同时列表中的包需要在manifest.yaml中有相关信息的记录，以以上的列表为例，我们需要在manifest.yaml中有关于yocto-embedded-tools的包信息，
-否则不会有任何下载功能，OPENEULER_MULTI_REPOS变量的设定是为在do_openeuler_fetch_multi中获取依赖的包列表，do_openeuler_fetchs将依次解析OPENEULER_MULTI_REPOS，并调用do_openeuler_fetch完成相关包的下载。
+通过OPENEULER_REPO_NAMES设置好需要依赖的包，同时列表中的包需要在manifest.yaml中有相关信息的记录，以以上的列表为例，我们需要在manifest.yaml中有关于yocto-embedded-tools的包信息，
+否则不会有任何下载功能，OPENEULER_REPO_NAMES变量的设定是为在do_openeuler_fetch中获取依赖的包列表，do_openeuler_fetch将依次解析OPENEULER_REPO_NAMES，并调用do_openeuler_fetch完成相关包的下载。
 
 如何关闭openeuler_fetch功能
 ***************************
