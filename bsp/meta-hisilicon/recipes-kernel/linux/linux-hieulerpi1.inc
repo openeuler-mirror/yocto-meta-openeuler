@@ -4,7 +4,7 @@ inherit kernel-yocto
 FILESEXTRAPATHS:append := "${THISDIR}/files/:"
 
 # for mkimage
-DEPENDS += "u-boot-tools-native"
+DEPENDS += "u-boot-tools-native dtc-native"
 
 SRC_URI = "file://kernel-5.10-tag928 \
     file://HiEuler-driver/linux/5.10.0-153.28.0.patch \

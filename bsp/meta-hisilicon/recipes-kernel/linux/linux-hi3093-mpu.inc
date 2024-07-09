@@ -2,7 +2,7 @@
 FILESEXTRAPATHS:append := "${THISDIR}/files/:"
 
 # for mkimage
-DEPENDS += "u-boot-tools-native"
+DEPENDS += "u-boot-tools-native dtc-native"
 
 # add prebuild tools to make uImage
 SRC_URI = " \

@@ -19,6 +19,9 @@ SRC_URI[sha256sum] = "01d9190755f752929c82bdf6b0e16868dc7a818666b84e1dbdfa4726f6
 # add --no-warn-rwx-segments to avoid: warning: <file> has a LOAD segment with RWX permissions
 export LDFLAGS=" --no-warn-rwx-segments "
 
+# tf-a requires dtc native
+DEPENDS += "dtc-native"
+
 # uImage as BL33
 DEPENDS += "virtual/kernel"
 
