@@ -27,3 +27,7 @@ SRC_URI = " \
         file://0023-proc-fix-proc-diskstats-output-format.patch \
         file://0024-typofix-fix-incorrect-printing-in-lxcfs-help-interfa.patch \
 "
+
+SRC_URI:append = " \
+	file://systemd-ensure-var-lib-lxcfs-exists.patch \
+"
