@@ -1,0 +1,1 @@
+require xen-openeuler.inc
