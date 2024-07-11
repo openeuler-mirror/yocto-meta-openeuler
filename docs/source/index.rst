@@ -17,6 +17,7 @@ openEuler Embedded在内核版本、软件包版本等代码层面会与openEule
    introduction/index.rst
    getting_started/index.rst
    releases/index.rst
+   test_data/index.rst
 
 .. toctree::
    :maxdepth: 1
