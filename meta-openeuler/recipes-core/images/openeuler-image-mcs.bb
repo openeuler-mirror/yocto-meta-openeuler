@@ -6,8 +6,12 @@ require openeuler-image-common.inc
 inherit features_check
 REQUIRED_DISTRO_FEATURES = "mcs"
 
-# currently, only openamp requrires re-generating dtb
-inherit ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'qemuboot-mcs-dtb', '', d)}
+# Only inherit the qemuboot classes when building for a qemu machine
+QB_QEMU_CLASSES = ""
+QB_QEMU_CLASSES:append:qemuall = "${@bb.utils.contains('DISTRO_FEATURES', 'xen', ' qemuboot-xen-defaults qemuboot-xen-dtb', '', d)}"
+QB_QEMU_CLASSES:append:qemuall = "${@bb.utils.contains('MCS_FEATURES', 'openamp', ' qemuboot-mcs-dtb', '', d)}"
+QB_MEM = "-m 1048"
+inherit ${QB_QEMU_CLASSES}
 
 IMAGE_FEATURES:remove = "weston"
 
@@ -25,7 +29,6 @@ python () {
 
     # qemu-aarch64 related handling
     if 'qemu-aarch64' in machine:
-        d.setVar('QB_MEM', '-m 2G')
         mcs_features = d.getVar('MCS_FEATURES').split()
         if 'openamp' in mcs_features:
             d.setVar('QB_KERNEL_CMDLINE_APPEND', 'maxcpus=3')
