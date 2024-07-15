@@ -108,7 +108,7 @@ def get_openeuler_epoch(d):
 # OPENEULER_SRC_URI_REMOVE, because we don't want to download from
 # these URLs
 # this anonymous function is executed before any task
-python () {
+python src_uri_set() {
     src_uri = d.getVar('SRC_URI')
     remove_list = d.getVar('OPENEULER_SRC_URI_REMOVE')
     local_name = d.getVar('OPENEULER_LOCAL_NAME') if d.getVar('OPENEULER_LOCAL_NAME')  else d.getVar('OPENEULER_REPO_NAME')
@@ -142,6 +142,11 @@ python () {
     repo_item = manifest_list[local_name]
     d.setVar('SRCREV', repo_item['version'])
 }
+
+addhandler src_uri_set
+# this event needs to run before the anonymous function defined base.bbclass,
+# and after the set_openeuler_variable event defined in openeuler_source.bbclass
+src_uri_set[eventmask] = "bb.event.RecipePostKeyExpansion"
 
 
 # call "do_openeuler_fetch" at the beginning of do_fetch,
