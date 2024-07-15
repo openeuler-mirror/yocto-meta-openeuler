@@ -25,6 +25,8 @@ MACHINEOVERRIDES =. "${@bb.utils.contains('TUNE_FEATURES', 'cortexa9', 'armv7a:'
 TUNE_FEATURES:append:virtclass-multilib-lib32 = " cortexa9"
 TUNE_FEATURES:remove:virtclass-multilib-lib32 = " vfp"
 
+require ${@bb.utils.contains('DISTRO_FEATURES', 'xen', 'qemu-xen.inc', '', d)}
+
 # simplest serial console setting, no VT
 SERIAL_CONSOLES ?= "115200;ttyAMA0"
 USE_VT ?= "0"
