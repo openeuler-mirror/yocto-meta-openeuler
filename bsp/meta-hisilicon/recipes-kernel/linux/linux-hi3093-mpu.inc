@@ -4,6 +4,8 @@ FILESEXTRAPATHS:append := "${THISDIR}/files/:"
 # for mkimage
 DEPENDS += "u-boot-tools-native dtc-native"
 
+OPENEULER_REPO_NAMES = "kernel-5.10-tag3093 src-kernel-5.10-tag3093"
+
 # add prebuild tools to make uImage
 SRC_URI = " \
     file://kernel-5.10-tag3093 \
@@ -16,6 +18,8 @@ SRC_URI = " \
     file://dtbs/hi3093_mcs_2with2.dts \
     file://dtbs/hi3093.dts \
 "
+
+S = "${WORKDIR}/kernel-5.10-tag3093"
 
 # add patch tool to solve patch apply
 PATCHTOOL = "git"
@@ -42,20 +46,6 @@ FILES:bootfile=" \
     /boot/hi1711_asic.dtb \
 "
 RPROVIDES:${PN} += "bootfile"
-
-python do_fetch() {
-    # download src-openeuler/kernel repo for patches
-    d.setVar("OPENEULER_REPO_NAME", "kernel")
-    d.setVar("OPENEULER_LOCAL_NAME", 'src-kernel-5.10-tag3093')
-    bb.build.exec_func("do_openeuler_fetch", d)
-
-    # download openeuler/kernel-5.10 repo for linux kernel src files
-    d.setVar("OPENEULER_REPO_NAME", "kernel-5.10")
-    d.setVar("OPENEULER_LOCAL_NAME", 'kernel-5.10-tag3093')
-    bb.build.exec_func("do_openeuler_fetch", d)
-}
-
-S = "${WORKDIR}/kernel-5.10-tag3093"
 
 do_copy_headers() {
     cd ${S}/

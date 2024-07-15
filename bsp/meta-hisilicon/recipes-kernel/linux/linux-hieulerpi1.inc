@@ -6,6 +6,8 @@ FILESEXTRAPATHS:append := "${THISDIR}/files/:"
 # for mkimage
 DEPENDS += "u-boot-tools-native dtc-native"
 
+OPENEULER_REPO_NAMES = "kernel-5.10-tag928 src-kernel-5.10-tag928 HiEuler-driver"
+
 SRC_URI = "file://kernel-5.10-tag928 \
     file://HiEuler-driver/linux/5.10.0-153.28.0.patch \
     file://dtbs/ss928-pi.dts \
@@ -21,23 +23,6 @@ SRC_URI:remove = " \
 SRC_URI:append = " file://HiEuler-driver/firmware/trusted-firmware-a-2.2.tar.gz "
 
 S = "${WORKDIR}/kernel-5.10-tag928"
-
-python do_fetch() {
-    # download HiEuler repo for patches
-    d.setVar("OPENEULER_REPO_NAME", "HiEuler-driver")
-    d.setVar("OPENEULER_LOCAL_NAME", 'HiEuler-driver')
-    bb.build.exec_func("do_openeuler_fetch", d)
-
-    # download src-openeuler/kernel repo for patches
-    d.setVar("OPENEULER_REPO_NAME", "kernel")
-    d.setVar("OPENEULER_LOCAL_NAME", 'src-kernel-5.10-tag928')
-    bb.build.exec_func("do_openeuler_fetch", d)
-
-    # download openeuler/kernel-5.10 repo for linux kernel src files
-    d.setVar("OPENEULER_REPO_NAME", "kernel-5.10")
-    d.setVar("OPENEULER_LOCAL_NAME", 'kernel-5.10-tag928')
-    bb.build.exec_func("do_openeuler_fetch", d)
-}
 
 ## handling for kernel meta data
 # the original get_dirs_with_fragments will include OPENEULER_SP_DIR

@@ -13,6 +13,8 @@ PROVIDES = "virtual/bootloader"
 
 DEPENDS += "bc-native dtc-native"
 
+OPENEULER_REPO_NAMES = "rk-binary-native u-boot-rockchip"
+
 PV = "2017.09"
 
 LIC_FILES_CHKSUM = "file://Licenses/README;md5=a2c678cfd4a4d97135585cad908541c6"
@@ -23,18 +25,6 @@ SRC_URI = " \
 "
 
 S = "${WORKDIR}/u-boot-rockchip"
-
-python do_fetch() {
-    # download rk-binary-native repo for patches
-    d.setVar("OPENEULER_REPO_NAME", "rk-binary-native")
-    d.setVar("OPENEULER_LOCAL_NAME", 'rk-binary-native')
-    bb.build.exec_func("do_openeuler_fetch", d)
-
-    # download u-boot-rockchip repo for u-boot src files
-    d.setVar("OPENEULER_REPO_NAME", "u-boot-rockchip")
-    d.setVar("OPENEULER_LOCAL_NAME", 'u-boot-rockchip')
-    bb.build.exec_func("do_openeuler_fetch", d)
-}
 
 SRCREV_FORMAT = "default_rk-binary-native"
 
