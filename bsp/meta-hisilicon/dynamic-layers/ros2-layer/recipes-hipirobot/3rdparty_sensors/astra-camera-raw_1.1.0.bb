@@ -98,6 +98,7 @@ ROS_EXEC_DEPENDS = " \
     tf2-sensor-msgs \
     tf2-eigen \
     libeigen \
+    libudev \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.

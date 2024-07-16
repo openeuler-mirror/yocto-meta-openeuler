@@ -51,6 +51,7 @@ ROS_EXEC_DEPENDS = " \
     std-msgs \
     tf2-geometry-msgs \
     nav2-msgs \
+    hieulerpi1-user-driver \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.

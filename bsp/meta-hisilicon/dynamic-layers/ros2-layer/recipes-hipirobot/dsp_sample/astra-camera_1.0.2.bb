@@ -102,6 +102,8 @@ ROS_EXEC_DEPENDS = " \
     tf2-ros \
     tf2-sensor-msgs \
     libeigen \
+    hieulerpi1-user-driver \
+    astra-camera-raw \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.

@@ -63,6 +63,7 @@ ROS_EXEC_DEPENDS = " \
     mipi-camera \
     zxing \
     std-msgs \
+    hieulerpi1-user-driver \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.

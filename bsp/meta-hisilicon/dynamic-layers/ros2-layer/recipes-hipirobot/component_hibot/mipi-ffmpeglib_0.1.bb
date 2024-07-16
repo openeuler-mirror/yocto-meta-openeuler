@@ -1,4 +1,4 @@
-SUMMARY = "lib depneds from mipi app"
+SUMMARY = "user lib for mipi"
 DESCRIPTION = "user lib for mipi"
 HOMEPAGE = "hipirobot/hieuler_component_ai"
 LICENSE = "CLOSED"
@@ -17,6 +17,13 @@ do_install:append() {
     install -d ${D}${libdir}
     cp -rf -P ${WORKDIR}/hieuler_component_ai/sample/camera/src/ffmpeglib/lib/* ${D}${libdir}
 }
+
+# runtime dependencies, the following packages are required by the driver library
+RDEPENDS:${PN} += " \
+    glibc-external \
+    libstdc++ \
+    libgcc-external \
+"
 
 FILES:${PN} += " \
     ${libdir}/*so* \

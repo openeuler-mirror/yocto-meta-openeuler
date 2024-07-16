@@ -24,6 +24,14 @@ do_install:append() {
 
 }
 
+# runtime dependencies, the following packages are required by the driver library
+RDEPENDS:${PN} += " \
+    hieulerpi1-user-driver \
+    glibc-external \
+    libstdc++ \
+    libgcc-external \
+"
+
 FILES:${PN} += " \
     ${libdir}/*so* \
     /res/* \

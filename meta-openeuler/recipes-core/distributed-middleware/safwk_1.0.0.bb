@@ -27,7 +27,7 @@ SRC_URI:append = " \
 
 DEPENDS += "hilog c-utils distributed-beget eventhandler ipc samgr"
 
-RDEPENDS:${PN} = "libboundscheck"
+RDEPENDS:${PN} = "libboundscheck bash"
 
 FILES:${PN}-dev = "${includedir} /compiler_gn"
 FILES:${PN} = "${libdir} ${bindir} /system"

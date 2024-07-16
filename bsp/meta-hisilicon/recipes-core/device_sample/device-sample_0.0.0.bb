@@ -13,6 +13,8 @@ SRC_URI = " \
         file://externed_device_sample \
 "
 
+RDEPENDS:${PN} = "hieulerpi1-user-driver"
+
 S = "${WORKDIR}"
 
 do_compile:prepend () {

@@ -20,6 +20,8 @@ SRC_URI += " \
 
 DEPENDS += "hilog c-utils distributed-beget eventhandler ipc samgr safwk"
 
+RDEPENDS:${PN} = "libboundscheck"
+
 FILES:${PN}-dev = "${includedir} /compiler_gn"
 FILES:${PN} = "${libdir} ${bindir} /system"
 
