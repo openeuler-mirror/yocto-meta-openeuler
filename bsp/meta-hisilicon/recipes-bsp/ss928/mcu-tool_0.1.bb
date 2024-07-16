@@ -8,6 +8,8 @@ SRC_URI = " \
 
 S = "${WORKDIR}/mcu_tool"
 
+TARGET_CC_ARCH += "${LDFLAGS}"
+
 do_compile() {
     ${CC} ${S}/mcu_tool.c -o ${S}/mcu_tool
 }
