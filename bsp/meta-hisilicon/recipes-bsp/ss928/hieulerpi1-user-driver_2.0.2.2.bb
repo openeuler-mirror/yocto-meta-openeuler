@@ -38,7 +38,6 @@ do_install:append() {
     cp -rf -P ${WORKDIR}/lib/* ${D}${libdir}
     cp -rf -P ${WORKDIR}/include/* ${D}/usr/include/
     cd ${D}${libdir}
-    ln -s libsecurec.so libboundscheck.so
     cd -
     sed \
     -e s#@VERSION@#${PV}# \
@@ -53,9 +52,12 @@ do_install:append() {
 
 }
 
-# hieulerpi1-user-driver provides libboundscheck.so
-PROVIDES += "libboundscheck"
-RPROVIDES:${PN} += "libboundscheck"
+# runtime dependencies, the following packages are required by the driver library
+RDEPENDS:${PN} += " \
+    glibc-external \
+    libstdc++ \
+    libgcc-external \
+"
 
 FILES:${PN} += " \
     ${libdir}/*so* \
