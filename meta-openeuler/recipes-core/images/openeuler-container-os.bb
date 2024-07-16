@@ -1,10 +1,5 @@
 SUMMARY = "container os image"
 
-require openeuler-image-common.inc
-
-inherit features_check
-REQUIRED_DISTRO_FEATURES = "isulad"
-
 # notice: IMAGE_FEATURE configs such as IMAGE_FSTYPES is recommended to be defined before openeuler-image-common.inc, 
 # because openeuler-image-common.inc inlcude core-image.bbclass, and image.bbclass in core-image.bbclass
 # will traverse the type of IMAGE_FSTYPES to include the image-${FSTYPE}.class corresponding to the type,
@@ -14,6 +9,10 @@ REQUIRED_DISTRO_FEATURES = "isulad"
 # Here we provide configuration file image-early-config-${MACHINE}.inc to accommodate the variables that need
 # to be defined in advance as mentioned above
 include recipes-core/images/image-early-config-${MACHINE}.inc
+require openeuler-image-common.inc
+
+inherit features_check
+REQUIRED_DISTRO_FEATURES = "isulad"
 
 # IMAGE_INSTALL was defined in file openeuler-image-common.inc
 # overwrite this variable to remove unnecessary packages
