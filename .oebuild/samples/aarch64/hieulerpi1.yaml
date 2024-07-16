@@ -1,0 +1,22 @@
+build_in: docker
+machine: hieulerpi1
+toolchain_type: EXTERNAL_TOOLCHAIN:aarch64
+no_layer: false
+repos:
+- yocto-poky
+- yocto-meta-openembedded
+local_conf: |+
+  DISTRO_FEATURES:append = " isulad "
+
+layers:
+- yocto-meta-openeuler/bsp/meta-hisilicon
+- yocto-meta-openembedded/meta-multimedia
+docker_param:
+  image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
+  parameters: -itd --network host
+  volumns:
+  - /dev/net/tun:/dev/net/tun
+  command: bash
+bitbake_cmds:
+- bitbake openeuler-image
+- bitbake openeuler-image -c do_populate_sdk

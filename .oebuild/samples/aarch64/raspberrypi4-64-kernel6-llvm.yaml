@@ -1,0 +1,31 @@
+build_in: docker
+machine: raspberrypi4-64
+toolchain_type: EXTERNAL_TOOLCHAIN:aarch64
+no_layer: false
+repos:
+- yocto-poky
+- yocto-meta-openembedded
+- yocto-meta-raspberrypi
+local_conf: |+
+  DISTRO_FEATURES:append = " isulad "
+
+  DISTRO_FEATURES:append = " kernel6 "
+  PREFERRED_VERSION_linux-openeuler ?= "6.6%"
+  PREFERRED_VERSION_linux-openeuler-rt ?= "6.6%"
+
+  DISTRO_FEATURES:append = " clang ld-is-lld"
+  DISTRO_FEATURES_NATIVE:append = " clang "
+  EXTERNAL_TOOLCHAIN_CLANG_BIN = "${EXTERNAL_TOOLCHAIN_LLVM}/bin"
+
+layers:
+- yocto-meta-raspberrypi
+- yocto-meta-openeuler/meta-clang
+docker_param:
+  image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
+  parameters: -itd --network host
+  volumns:
+  - /dev/net/tun:/dev/net/tun
+  command: bash
+bitbake_cmds:
+- bitbake openeuler-image
+- bitbake openeuler-image -c do_populate_sdk

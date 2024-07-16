@@ -1,0 +1,18 @@
+build_in: docker
+machine: generic-x86-64
+toolchain_type: EXTERNAL_TOOLCHAIN:x86-64
+no_layer: false
+repos:
+- yocto-poky
+- yocto-meta-openembedded
+local_conf: |
+layers: []
+docker_param:
+  image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
+  parameters: -itd --network host --cap-add NET_ADMIN
+  volumns:
+  - /dev/net/tun:/dev/net/tun
+  command: bash
+bitbake_cmds:
+- bitbake openeuler-image
+- bitbake openeuler-image -c do_populate_sdk

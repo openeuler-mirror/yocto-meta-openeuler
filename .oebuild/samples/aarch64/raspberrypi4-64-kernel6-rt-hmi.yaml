@@ -1,0 +1,39 @@
+build_in: docker
+machine: raspberrypi4-64
+toolchain_type: EXTERNAL_TOOLCHAIN:aarch64
+no_layer: false
+repos:
+- yocto-poky
+- yocto-meta-openembedded
+- yocto-meta-raspberrypi
+- yocto-meta-qt5
+local_conf: |+
+  PREFERRED_PROVIDER_virtual/kernel = "linux-openeuler-rt"
+  DISTRO_FEATURES:append = " preempt-rt "
+
+  DISTRO_FEATURES:append = " isulad "
+
+  DISTRO_FEATURES:append = " hmi "
+  DISTRO_FEATURES:append = " opengl"
+  OPENEULER_DEFAULT_DISTRO_FEATURES:append = " x11"
+  DISTRO_FEATURES:append = " wayland"
+  IMAGE_FEATURES:append = " weston"
+  GLIBC_GENERATE_LOCALES:append = "en_US.UTF-8 zh_CN.UTF-8 "
+
+  DISTRO_FEATURES:append = " kernel6 "
+  PREFERRED_VERSION_linux-openeuler ?= "6.6%"
+  PREFERRED_VERSION_linux-openeuler-rt ?= "6.6%"
+
+layers:
+- yocto-meta-raspberrypi
+- yocto-meta-openembedded/meta-oe
+- yocto-meta-qt5
+docker_param:
+  image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
+  parameters: -itd --network host
+  volumns:
+  - /dev/net/tun:/dev/net/tun
+  command: bash
+bitbake_cmds:
+- bitbake openeuler-image
+- bitbake openeuler-image -c do_populate_sdk
