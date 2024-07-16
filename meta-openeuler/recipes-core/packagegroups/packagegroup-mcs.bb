@@ -19,6 +19,7 @@ mcs-linux \
 ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'mcs-km', '', d)} \
 ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'jailhouse', '', d)} \
 ${@bb.utils.contains('MCS_FEATURES', 'zephyr', 'zephyr-image', '', d)} \
+${@bb.utils.contains('DISTRO_FEATURES', 'xen', 'packagegroup-xen', '', d)} \
 "
 
 ### MCS DEPLOY TOOLS
