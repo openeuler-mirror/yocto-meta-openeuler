@@ -72,3 +72,12 @@ dtof-client-node \
 dtof-node \
 hirobot-description \
 ", "", d)}"
+
+
+# 1. dsoftbus is not adpated to hieulerpi1
+# 2. hieulerpi1-user-driver provides libsecurec.so,
+#  it conflicts with libboundscheck, especially in SDK
+# so, remove dsoftbus from IMAGE_INSTALL for hieulerpi1
+IMAGE_INSTALL:remove = " \
+    packagegroup-dsoftbus \
+"
