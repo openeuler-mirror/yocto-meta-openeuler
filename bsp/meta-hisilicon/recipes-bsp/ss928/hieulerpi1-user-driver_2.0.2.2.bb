@@ -52,13 +52,6 @@ do_install:append() {
 
 }
 
-# runtime dependencies, the following packages are required by the driver library
-RDEPENDS:${PN} += " \
-    glibc-external \
-    libstdc++ \
-    libgcc-external \
-"
-
 FILES:${PN} += " \
     ${libdir}/*so* \
     ${libdir}/npu/*so* \
@@ -76,6 +69,11 @@ FILES:${PN}-staticdev += " \
     ${libdir}/npu/*a \
     ${libdir}/svp_npu/*a \
 "
- 
-EXCLUDE_FROM_SHLIBS = "1"
+
+# hieulerpi1-user-driver package provides library with the same name but located in different paths,
+# which will lead to the following dependency issues when detecting the shlib:
+# do_package: hieulerpi1-user-driver: Multiple shlib providers for libascendcl.so: hieulerpi1-user-driver, hieulerpi1-user-driver ...
+# set these as private libraries, don't try to search provider for it
+PRIVATE_LIBS = "libgraph.so libascendcl.so "
+
 INSANE_SKIP:${PN} += "already-stripped dev-so"

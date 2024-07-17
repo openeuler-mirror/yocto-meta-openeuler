@@ -18,12 +18,6 @@ do_install:append() {
     cp -rf -P ${WORKDIR}/hieuler_component_ai/sample/camera/src/ffmpeglib/lib/* ${D}${libdir}
 }
 
-# runtime dependencies, the following packages are required by the driver library
-RDEPENDS:${PN} += " \
-    glibc-external \
-    libstdc++ \
-    libgcc-external \
-"
 
 FILES:${PN} += " \
     ${libdir}/*so* \
@@ -31,5 +25,4 @@ FILES:${PN} += " \
 
 FILES:${PN}-dev = ""
 
-EXCLUDE_FROM_SHLIBS = "1"
 INSANE_SKIP:${PN} += "already-stripped dev-so"
