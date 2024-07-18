@@ -98,4 +98,3 @@ do_install:append:riscv64() {
 	rm -rf ${D}/usr/lib64
 }
 
-DEPENDS += "mpfr"
