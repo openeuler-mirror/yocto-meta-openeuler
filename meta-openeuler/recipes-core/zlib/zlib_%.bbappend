@@ -10,7 +10,6 @@ SRC_URI_remove = " \
 # files, patches that come from openeuler
 SRC_URI += " \
         file://zlib-1.2.5-minizip-fixuncrypt.patch \
-        file://fix-undefined-buffer-detected-by-oss-fuzz.patch \
         file://backport-0001-CVE-2018-25032.patch \
         file://backport-0002-CVE-2018-25032.patch \
         file://backport-0001-CVE-2022-37434.patch \
