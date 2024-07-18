@@ -7,9 +7,8 @@ PV = "v1.1.11"
 
 SRC_URI = "file://${BP}.tar.gz"
 
-INSANE_SKIP:${PN} += "already-stripped"
-FILES:${PN}-dev = "${includedir}"
-FILES:${PN} = "${libdir}"
+# Makefile does not use the LDFLAGS environment variable, so the CC environment variable is used to include LDFLAGS
+TARGET_CC_ARCH += "${LDFLAGS}"
 
 do_install () {
     install -d ${D}${libdir}/
@@ -17,3 +16,8 @@ do_install () {
     install -m 0755 ${S}/lib/libboundscheck.so ${D}${libdir}/
     install -m 554 ${S}/include/*.h ${D}${includedir}/
 }
+
+FILES:${PN} = "${libdir}"
+FILES:${PN}-dev = "${includedir}"
+
+INSANE_SKIP:${PN} += "already-stripped"
