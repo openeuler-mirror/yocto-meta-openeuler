@@ -24,6 +24,15 @@ do_compile:prepend () {
     cp -r -P ${WORKDIR}/include ${S}/externed_device_sample/mpp/out/
 }
 
+TARGET_CC_ARCH += "${LDFLAGS}"
+# Makefile does not support the use of the CC environment variable,
+# so use make CC="${CC}"
+EXTRA_OEMAKE += 'CC="${CC}"'
+
+# workaround to fix error:
+# `undefined reference to `vtable for __cxxabiv1::__class_type_info'`
+LDFLAGS:remove = "-Wl,--as-needed"
+
 do_compile () {
     pushd externed_device_sample
     oe_runmake
