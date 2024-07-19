@@ -58,12 +58,23 @@ pipeline {
         PATH = "/home/jenkins/.local/bin:${env.PATH}"
     }
     stages {
-        stage("clone embedded-ci"){
+        stage("clone embedded yocto"){
             steps{
                 dir('/home/jenkins/agent'){
                     script{
                         downloadEmbeddedCI()
                     }
+                }
+                dir('/home/jenkins/agent/embedded-ci'){
+                    // 下载yocto源码
+                    downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), Integer.parseInt(commitCount))
+                    
+                }
+                dir('/home/jenkins/agent/embedded-ci'){
+                    stash(name: "embedded-ci")
+                }
+                dir('/home/jenkins/agent/yocto-meta-openeuler'){
+                    stash(name: "yocto-meta-openeuler")
                 }
             }
         }
@@ -103,8 +114,6 @@ pipeline {
                 dir('/home/jenkins/agent/embedded-ci'){
                     script{
                         withCredentials([string(credentialsId: "${giteeId}", variable: 'GITEETOKEN')]){
-                            // 下载yocto源码
-                            downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), Integer.parseInt(commitCount))
                             def randomStr = getRandomStr()
                             def logDir = mkdirOpeneulerLog()
                             // 执行commit检查
@@ -179,14 +188,19 @@ pipeline {
                     steps{
                         dir('/home/jenkins/agent'){
                             script{
-                                downloadEmbeddedCI()
+                                sh "mkdir embedded-ci"
+                                sh "mkdir yocto-meta-openeuler"
                             }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            unstash(name: "embedded-ci")
+                        }
+                        dir('/home/jenkins/agent/yocto-meta-openeuler'){
+                            unstash(name: "yocto-meta-openeuler")
                         }
                         dir('/home/jenkins/agent/embedded-ci'){
                             script{
                                 // 执行docs编译
-                                // 下载yocto源码
-                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
                                 def randomStr = getRandomStr()
                                 def logDir = mkdirOpeneulerLog()
                                 // 执行文档编译检查
@@ -219,14 +233,19 @@ pipeline {
                     steps {
                         dir('/home/jenkins/agent'){
                             script{
-                                downloadEmbeddedCI()
+                                sh "mkdir embedded-ci"
+                                sh "mkdir yocto-meta-openeuler"
                             }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            unstash(name: "embedded-ci")
+                        }
+                        dir('/home/jenkins/agent/yocto-meta-openeuler'){
+                            unstash(name: "yocto-meta-openeuler")
                         }
                         dir('/home/jenkins/agent/embedded-ci'){
                             script{
                                 // 执行qemu_aarch64编译
-                                // 下载yocto源码
-                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
                                 prepare_srccode("/home/jenkins")
                                 def randomStr = getRandomStr()
                                 def logDir = mkdirOpeneulerLog()
@@ -266,14 +285,19 @@ pipeline {
                     steps {
                         dir('/home/jenkins/agent'){
                             script{
-                                downloadEmbeddedCI()
+                                sh "mkdir embedded-ci"
+                                sh "mkdir yocto-meta-openeuler"
                             }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            unstash(name: "embedded-ci")
+                        }
+                        dir('/home/jenkins/agent/yocto-meta-openeuler'){
+                            unstash(name: "yocto-meta-openeuler")
                         }
                         dir('/home/jenkins/agent/embedded-ci'){
                             script{
                                 // 执行qemu_aarch64编译
-                                // 下载yocto源码
-                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
                                 prepare_srccode("/home/jenkins")
                                 def randomStr = getRandomStr()
                                 def logDir = mkdirOpeneulerLog()
@@ -313,14 +337,19 @@ pipeline {
                     steps {
                         dir('/home/jenkins/agent'){
                             script{
-                                downloadEmbeddedCI()
+                                sh "mkdir embedded-ci"
+                                sh "mkdir yocto-meta-openeuler"
                             }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            unstash(name: "embedded-ci")
+                        }
+                        dir('/home/jenkins/agent/yocto-meta-openeuler'){
+                            unstash(name: "yocto-meta-openeuler")
                         }
                         dir('/home/jenkins/agent/embedded-ci'){
                             script{
                                 // 执行qemu_arm编译
-                                // 下载yocto源码
-                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
                                 prepare_srccode("/home/jenkins")
                                 def randomStr = getRandomStr()
                                 def logDir = mkdirOpeneulerLog()
@@ -360,16 +389,21 @@ pipeline {
                     steps {
                         dir('/home/jenkins/agent'){
                             script{
-                                downloadEmbeddedCI()
+                                sh "mkdir embedded-ci"
+                                sh "mkdir yocto-meta-openeuler"
                             }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            unstash(name: "embedded-ci")
+                        }
+                        dir('/home/jenkins/agent/yocto-meta-openeuler'){
+                            unstash(name: "yocto-meta-openeuler")
                         }
                         dir('/home/jenkins/agent/embedded-ci'){
                             script{
                                 // 执行qemu_arm编译
-                                // 下载yocto源码
                                 def randomStr = getRandomStr()
                                 def logDir = mkdirOpeneulerLog()
-                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
                                 prepare_srccode("/home/jenkins")
                                 // 执行镜像编译检查
                                 def task_res_code = sh (script: """
@@ -407,14 +441,19 @@ pipeline {
                     steps {
                         dir('/home/jenkins/agent'){
                             script{
-                                downloadEmbeddedCI()
+                                sh "mkdir embedded-ci"
+                                sh "mkdir yocto-meta-openeuler"
                             }
+                        }
+                        dir('/home/jenkins/agent/embedded-ci'){
+                            unstash(name: "embedded-ci")
+                        }
+                        dir('/home/jenkins/agent/yocto-meta-openeuler'){
+                            unstash(name: "yocto-meta-openeuler")
                         }
                         dir('/home/jenkins/agent/embedded-ci'){
                             script{
                                 // 执行hieulerpi1编译
-                                // 下载yocto源码
-                                downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
                                 prepare_srccode("/home/jenkins")
                                 def randomStr = getRandomStr()
                                 def logDir = mkdirOpeneulerLog()
@@ -452,26 +491,26 @@ pipeline {
             dir('/home/jenkins/agent/embedded-ci'){
                 script{
                     withCredentials([
-                        string(credentialsId: "${giteeId}", variable: 'GITEETOKEN'),
-                        usernamePassword(credentialsId: "${jenkinsId}", usernameVariable: 'JUSER',passwordVariable: 'JPASSWD')]){
-                            if (currentBuild.result != 'ABORTED') {
-                                def chks = ""
-                                for (int i = 0; i < STAGES_RES.size(); ++i) {
-                                    chks = "${chks} -chk ${STAGES_RES[i]}"
-                                }
-
-                                def duration_time = System.currentTimeMillis() - currentBuild.startTimeInMillis
-                                sh """
-                                python3 main.py comment \
-                                     -m gate \
-                                     -o $giteeTargetNamespace \
-                                     -p $giteeRepoName \
-                                     -pr $giteePullRequestid \
-                                     -gt $GITEETOKEN \
-                                     -dt $duration_time \
-                                     $chks
-                                """
+                    string(credentialsId: "${giteeId}", variable: 'GITEETOKEN'),
+                    usernamePassword(credentialsId: "${jenkinsId}", usernameVariable: 'JUSER',passwordVariable: 'JPASSWD')]){
+                        if (currentBuild.result != 'ABORTED') {
+                            def chks = ""
+                            for (int i = 0; i < STAGES_RES.size(); ++i) {
+                                chks = "${chks} -chk ${STAGES_RES[i]}"
                             }
+
+                            def duration_time = System.currentTimeMillis() - currentBuild.startTimeInMillis
+                            sh """
+                            python3 main.py comment \
+                                    -m gate \
+                                    -o $giteeTargetNamespace \
+                                    -p $giteeRepoName \
+                                    -pr $giteePullRequestid \
+                                    -gt $GITEETOKEN \
+                                    -dt $duration_time \
+                                    $chks
+                            """
+                        }
                     }
                 }
             }
