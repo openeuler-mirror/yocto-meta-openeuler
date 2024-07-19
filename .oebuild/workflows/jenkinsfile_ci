@@ -26,8 +26,11 @@ pipeline {
                 dir('/home/jenkins/agent/embedded-ci'){
                     stash(name: "embedded-ci")
                 }
+                // the stash will not include .git, so mv .git to .git_bak
                 dir('/home/jenkins/agent/yocto-meta-openeuler'){
+                    sh "mv .git .git_bak"
                     stash(name: "yocto-meta-openeuler")
+                    sh "mv .git_bak .git"
                 }
             }
         }
@@ -50,6 +53,7 @@ pipeline {
                         }
                         dir('/home/jenkins/agent/yocto-meta-openeuler'){
                             unstash(name: "yocto-meta-openeuler")
+                            sh "mv .git_bak .git"
                         }
                         dir('/home/jenkins/agent/embedded-ci'){
                             script{
@@ -88,6 +92,7 @@ pipeline {
                         }
                         dir('/home/jenkins/agent/yocto-meta-openeuler'){
                             unstash(name: "yocto-meta-openeuler")
+                            sh "mv .git_bak .git"
                         }
                         dir('/home/jenkins/agent/embedded-ci'){
                             script{
@@ -126,6 +131,7 @@ pipeline {
                         }
                         dir('/home/jenkins/agent/yocto-meta-openeuler'){
                             unstash(name: "yocto-meta-openeuler")
+                            sh "mv .git_bak .git"
                         }
                         dir('/home/jenkins/agent/embedded-ci'){
                             script{
@@ -164,6 +170,7 @@ pipeline {
                         }
                         dir('/home/jenkins/agent/yocto-meta-openeuler'){
                             unstash(name: "yocto-meta-openeuler")
+                            sh "mv .git_bak .git"
                         }
                         dir('/home/jenkins/agent/embedded-ci'){
                             script{
@@ -185,7 +192,7 @@ pipeline {
                         }
                     }
                 }
-                stage("group5"){/
+                stage("group5"){
                     agent { node "${node}" }
                     when {
                         expression { env.group5 != null }
@@ -202,6 +209,7 @@ pipeline {
                         }
                         dir('/home/jenkins/agent/yocto-meta-openeuler'){
                             unstash(name: "yocto-meta-openeuler")
+                            sh "mv .git_bak .git"
                         }
                         dir('/home/jenkins/agent/embedded-ci'){
                             script{
@@ -228,9 +236,6 @@ pipeline {
     }
     post {
         always {
-            when {
-                expression { env.isComment != null and env.isComment }
-            }
             dir('/home/jenkins/agent/embedded-ci'){
                 script{
                     withCredentials([
@@ -242,12 +247,12 @@ pipeline {
                         }
                         sh """
                         python3 main.py comment \
-                             -m ci \
-                             -o ${repoNamespace} \
-                             -p ${commentRepoName} \
-                             -b ${ciBranch} \
-                             -gt ${GITEETOKEN} \
-                             ${chks}
+                            -m ci \
+                            -o ${repoNamespace} \
+                            -p ${commentRepoName} \
+                            -b ${ciBranch} \
+                            -gt ${GITEETOKEN} \
+                            ${chks}
                         """
                     }
                 }

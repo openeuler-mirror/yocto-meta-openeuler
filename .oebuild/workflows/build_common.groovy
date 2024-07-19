@@ -1,4 +1,5 @@
 STAGES_RES = []
+OEBUILD_DIR = "/home/jenkins/oebuild_workspace"
 
 def downloadEmbeddedCI(String remote_url, String branch){
     sh 'rm -rf embedded-ci'
@@ -93,7 +94,7 @@ def handleAfterBuildImage(String stage_name, String arch, Integer build_res_code
         if (putToRemote == true){
             // put the image to remote server
             def remote_dir = remoteDir+"/${arch}/${stage_name}"
-            def local_dir = "${oebuildDir}/build/${stage_name}/output/${image_date}/"
+            def local_dir = "${OEBUILD_DIR}/build/${stage_name}/output/${image_date}/"
             uploadImageWithKey(remoteIP, remote_dir, remoteUname, remoteKey, local_dir)
         }
         if (saveSstateCache == true){
@@ -102,7 +103,7 @@ def handleAfterBuildImage(String stage_name, String arch, Integer build_res_code
             // sstate_origin_dir, we first copy it to a temporary folder (during copying,
             // soft links are defaulted to copy the actual files they point to), then delete
             // the source folder, and finally perform an mv operation.
-            def sstate_local_dir = "${oebuildDir}/build/${stage_name}/sstate-cache"
+            def sstate_local_dir = "${OEBUILD_DIR}/build/${stage_name}/sstate-cache"
             def sstate_dst_dir = "${shareDir}/${ciBranch}/sstate-cache/${stage_name}-temp"
             putSStateCacheToDst(sstate_local_dir, sstate_dst_dir)
             def sstate_origin_dir = "${shareDir}/${ciBranch}/sstate-cache/${stage_name}"
@@ -118,7 +119,7 @@ def handleAfterBuildImage(String stage_name, String arch, Integer build_res_code
                 python3 main.py utest \
                 -target openeuler_image \
                 -a ${arch} \
-                -td ${oebuildDir}/build/${stage_name} \
+                -td ${OEBUILD_DIR}/build/${stage_name} \
                 -tm ${mugenRemote} \
                 -tb ${mugenBranch} > ${log_dir}/Test-${stage_name}-${random_str}.log
             """, returnStatus: true)
@@ -173,7 +174,7 @@ def build_ok3588(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 //Perform the compilation check for the ok3568 image.
@@ -194,7 +195,7 @@ def build_ok3568(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 //Perform the compilation check for the qemu-aarch64-ros-mcs image.
@@ -216,7 +217,7 @@ def build_qemu_aarch64_ros_mcs(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 //Perform the compilation check for the qemu-aarch64-llvm image.
@@ -238,7 +239,7 @@ def build_qemu_aarch64_llvm(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }                                
 
 //Perform the compilation check for the raspberrypi4-64-llvm image.
@@ -260,7 +261,7 @@ def build_raspberrypi4_64_llvm(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 //Perform the compilation check for the qemu-aarch64-kernel6 image.
@@ -282,7 +283,7 @@ def build_qemu_aarch64_kernel6(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 //Perform the compilation check for the raspberrypi4-64 image.
@@ -304,7 +305,7 @@ def build_raspberrypi4_64(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)                                  
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)                                  
 }
 
 //Perform the compilation check for the raspberrypi4-64-kernel6 image.
@@ -326,7 +327,7 @@ def build_raspberrypi4_64_kernel6(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 //Perform the compilation check for the qemu-aarch64-kernel6-llvm image.
@@ -348,7 +349,7 @@ def build_qemu_aarch64_kernel6_llvm(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 //Perform the compilation check for the raspberrypi4-64-kernel6-llvm image.
@@ -370,7 +371,7 @@ def build_raspberrypi4_64_kernel6_llvm(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 //Perform the compilation check for the raspberrypi4-64-rt-hmi image.
@@ -392,7 +393,7 @@ def build_raspberrypi4_64_rt_hmi(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 //Perform the compilation check for the raspberrypi4-64-kernel6-rt-hmi image.
@@ -414,7 +415,7 @@ def build_raspberrypi4_64_kernel6_rt_hmi(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 //Perform the compilation check for the hieulerpi1 image.
@@ -436,7 +437,7 @@ def build_hieulerpi1(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 //Perform the compilation check for the hieulerpi1-tiny image.
@@ -457,7 +458,7 @@ def build_hieulerpi1_tiny(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 //Perform the compilation check for the hieulerpi1-ros image.
@@ -479,7 +480,7 @@ def build_hieulerpi1_ros(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 //Perform the compilation check for the qemu-arm image.
@@ -500,7 +501,7 @@ def build_qemu_arm(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 //Perform the compilation check for the qemu-riscv64 image.
@@ -521,7 +522,7 @@ def build_qemu_riscv64(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 //Perform the compilation check for the x86-64-rt-hmi-ros-mcs image.
@@ -543,7 +544,7 @@ def build_x86_64_rt_hmi_ros_mcs(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 //Perform the compilation check for the x86-64-kernel6-rt-hmi-ros-mcs image.
@@ -565,7 +566,7 @@ def build_x86_64_kernel6_rt_hmi_ros_mcs(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 //Perform the compilation check for the qemu-aarch64 image.
@@ -587,7 +588,7 @@ def build_qemu_aarch64(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 //Perform the compilation check for the x86-64 image.
@@ -608,7 +609,7 @@ def build_x86_64(image_date, log_dir, random_str){
     """, returnStatus: true)
     handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
     // delete build directory
-    deleteBuildDir(oebuildDir + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
 }
 
 return this
