@@ -1,5 +1,5 @@
-
 PV = "6.4"
+CVE_VERSION = "${PV}"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 # CVE-2021-39537.patch from poky is for 6.2 and no need for openeuler 6.3 version
@@ -9,8 +9,6 @@ SRC_URI:remove = " \
             file://CVE-2021-39537.patch \
 "
 
-S = "${WORKDIR}/${BP}"
-FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 # files, patches that come from openeuler
 SRC_URI += "file://${BP}.tar.gz \
            file://ncurses-config.patch \
@@ -25,7 +23,10 @@ SRC_URI += "file://${BP}.tar.gz \
            file://backport-CVE-2023-45918.patch \
 "
 
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 # from oe-core
 SRC_URI += "\
-           file://exit_prototype.patch \ 
+           file://exit_prototype.patch \
 "
+
+S = "${WORKDIR}/${BP}"
