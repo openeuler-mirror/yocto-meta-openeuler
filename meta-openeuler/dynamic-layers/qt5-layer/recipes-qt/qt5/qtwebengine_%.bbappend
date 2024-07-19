@@ -2,12 +2,14 @@ require qt5-src.inc
 
 FILESEXTRAPATHS:append := "${THISDIR}/qtwebengine/:"
 
+OPENEULER_REPO_NAMES = "qtwebengine ${@bb.utils.contains('DISTRO_FEATURES', 'LICENSE_AT_OWN_RISK', ' third_party_openh264 ', '', d)} "
+
 SRC_URI:remove = " file://${BPN}-everywhere-opensource-src-${PV}.tar.xz "
 
 # remove: riscv64 conflict patches with meta-qt5 patches
 #    riscv-v8.patch 
 #    riscv-qt5-qtwebengine.patch 
-#    qtwebengine-ffmpeg5.patch 
+# need qtwebengine-ffmpeg5.patch to uss oee ffmpeg
 
 # force-to-build-dir-path.patch fix:
 # ERROR Can't get the real build dir path.
@@ -35,6 +37,8 @@ SRC_URI:prepend = " \
     file://fix-build-tools-to-run-with-python3.11.patch \
     file://fix-qt5-qtwebengine-build-with-clang-17.patch \
     file://force-to-build-dir-path.patch \
+    file://qtwebengine-ffmpeg5.patch \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'LICENSE_AT_OWN_RISK', ' file://third_party_openh264 ', '', d)} \
 "
 
 # this patch same as qtwebengine-everywhere-src-5.15.5-TRUE.patch
@@ -55,4 +59,34 @@ do_configure:append() {
     mkdir -p ${S}/include/QtWebEngine/private
     cp -f ${S}/include/QtWebEngine/5.15.10/QtWebEngine/private/*  ${S}/include/QtWebEngine/private
     sed -i 's#\.\./\.\./\.\./\.\./\.\./#\.\./\.\./#g' ${S}/include/QtWebEngine/private/*
+
+    mkdir -p ${S}/src/3rdparty/chromium/third_party/openh264/src
+    if [ -d ${WORKDIR}/third_party_openh264 ];then
+        cp -r ${WORKDIR}/third_party_openh264/* ${S}/src/3rdparty/chromium/third_party/openh264/src/
+    fi
 }
+
+# fix libwebp err depend, add libwebp-native, sync from new version upstream-recipes
+PACKAGECONFIG[libwebp] = "-feature-webengine-system-libwebp,-no-feature-webengine-system-libwebp,libwebp libwebp-native"
+# use oee's ffmpeg, third_party source from qtwebengine in src-openeuler have removed
+PACKAGECONFIG[ffmpeg] = "-feature-webengine-system-ffmpeg,-no-feature-webengine-system-ffmpeg,ffmpeg"
+
+# video need proprietary-codecs(include openh264) to enable,
+# If used for commercial purposes, self evaluation and authorization are required
+# openh264 LICENSE notice:  https://www.openh264.org/faq.html.
+PACKAGECONFIG = " \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'LICENSE_AT_OWN_RISK', ' proprietary-codecs ', '', d)} \
+    webrtc \
+    ffmpeg \
+    libwebp \
+    opus \
+    libvpx \
+    libevent \
+    libpng \
+    glib \
+    zlib \
+    pepper-plugins \
+    printing-and-pdf \
+    spellchecker \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulseaudio', '', d)} \
+"
