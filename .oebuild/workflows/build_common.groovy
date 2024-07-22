@@ -85,6 +85,25 @@ def putSStateCacheToDst(String local_dir, String dst_dir){
     """
 }
 
+def uploadLogWithKey(String remote_ip, String remote_dir, String username, String remote_key, String local_path){
+    sh """
+        scp -i ${remote_key} -o 'StrictHostKeyChecking no' ${local_path} ${username}@${remote_ip}:${remote_dir}
+    """
+}
+
+def handleLog(log_pre_dir, log_file){
+    log_path = "${log_pre_dir}/${log_file}"
+    if (env.isUploadLog != null && env.isUploadLog == "true"){
+        withCredentials([
+            file(credentialsId: openEulerEmbeddedKey, variable: 'openEulerKey')
+        ]){
+            uploadLogWithKey(openEulerRemoteIP, openEulerLogDir, openEulerRemoteUser, openEulerKey, log_path)
+        }
+        log_path = "${openEulerLogUrl}/${log_file}"
+    }
+    return log_path
+}
+
 def handleAfterBuildImage(String stage_name, String arch, Integer build_res_code, String log_dir, String random_str, String image_date){
     def build_res = "failed"
     def test_res = "failed"
@@ -130,9 +149,16 @@ def handleAfterBuildImage(String stage_name, String arch, Integer build_res_code
     }
     // Check the assignment
     archiveArtifacts "${log_dir}/*.log"
-    STAGES_RES.push(formatRes(stage_name, "build", build_res, "artifact/${log_dir}/Build-${stage_name}-${random_str}.log"))
+
+    // if need to upload log to remote
+    log_file = "Build-${stage_name}-${random_str}.log"
+    log_path = handleLog(log_dir, log_file)
+    STAGES_RES.push(formatRes(stage_name, "build", build_res, log_path))
+
     if (build_res_code == 0 && (stage_name.contains("qemu") && stage_name.contains("x86-64") && !stage_name.contains("riscv"))){
-        STAGES_RES.push(formatRes(stage_name, "test", test_res, "artifact/${log_dir}/Test-${stage_name}-${random_str}.log"))
+        log_file = "Test-${stage_name}-${random_str}.log"
+        log_path = handleLog(log_dir, log_file)
+        STAGES_RES.push(formatRes(stage_name, "test", test_res, log_path))
     }
 }
 
