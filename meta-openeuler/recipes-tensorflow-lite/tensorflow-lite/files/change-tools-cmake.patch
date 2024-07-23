@@ -1,0 +1,182 @@
+diff -urpN a/tensorflow/lite/CMakeLists.txt b/tensorflow/lite/CMakeLists.txt
+--- a/tensorflow/lite/CMakeLists.txt	2024-07-21 14:42:31.900041655 +0000
++++ b/tensorflow/lite/CMakeLists.txt	2024-07-21 14:48:49.563383581 +0000
+@@ -515,14 +515,14 @@ target_include_directories(tensorflow-li
+ )
+ target_link_libraries(tensorflow-lite
+   PUBLIC
+-    Eigen3::Eigen
++    ${Eigen3_LIBRARY}
+     NEON_2_SSE
+-    absl::flags
+-    absl::hash
+-    absl::status
+-    absl::strings
+-    absl::synchronization
+-    absl::variant
++    absl_flags
++    absl_hash
++    absl_status
++    absl_strings
++    absl_synchronization
++    absl_variant
+     farmhash
+     fft2d_fftsg2d
+     flatbuffers
+diff -urpN a/tensorflow/lite/tools/cmake/modules/Findabsl.cmake b/tensorflow/lite/tools/cmake/modules/Findabsl.cmake
+--- a/tensorflow/lite/tools/cmake/modules/Findabsl.cmake	2024-07-21 14:42:31.978042552 +0000
++++ b/tensorflow/lite/tools/cmake/modules/Findabsl.cmake	2024-07-21 14:48:49.557383512 +0000
+@@ -15,7 +15,6 @@
+ 
+ # grpc uses find_package in CONFIG mode for this package, so override the
+ # system installation and build from source instead.
+-include(abseil-cpp)
+ if(abseil-cpp_POPULATED)
+   set(_ABSL_LIBRARY_NAMES
+     algorithm
+diff -urpN a/tensorflow/lite/tools/cmake/modules/abseil-cpp.cmake b/tensorflow/lite/tools/cmake/modules/abseil-cpp.cmake
+--- a/tensorflow/lite/tools/cmake/modules/abseil-cpp.cmake	2024-07-21 14:42:31.977042541 +0000
++++ b/tensorflow/lite/tools/cmake/modules/abseil-cpp.cmake	2024-07-21 14:48:49.557383512 +0000
+@@ -22,12 +22,6 @@ include(OverridableFetchContent)
+ 
+ OverridableFetchContent_Declare(
+   abseil-cpp
+-  GIT_REPOSITORY https://github.com/abseil/abseil-cpp
+-  # Sync with tensorflow/third_party/absl/workspace.bzl
+-  GIT_TAG 273292d1cfc0a94a65082ee350509af1d113344d
+-  GIT_SHALLOW TRUE
+-  GIT_PROGRESS TRUE
+-  PREFIX "${CMAKE_BINARY_DIR}"
+   SOURCE_DIR "${CMAKE_BINARY_DIR}/abseil-cpp"
+ )
+ OverridableFetchContent_GetProperties(abseil-cpp)
+diff -urpN a/tensorflow/lite/tools/cmake/modules/clog.cmake b/tensorflow/lite/tools/cmake/modules/clog.cmake
+--- a/tensorflow/lite/tools/cmake/modules/clog.cmake	2024-07-21 14:42:31.977042541 +0000
++++ b/tensorflow/lite/tools/cmake/modules/clog.cmake	2024-07-21 14:48:49.557383512 +0000
+@@ -21,11 +21,7 @@ include(OverridableFetchContent)
+ 
+ OverridableFetchContent_Declare(
+   clog
+-  GIT_REPOSITORY https://github.com/pytorch/cpuinfo
+-  # Sync with tensorflow/third_party/clog/workspace.bzl
+-  GIT_TAG 5e63739504f0f8e18e941bd63b2d6d42536c7d90
+-  GIT_PROGRESS TRUE
+-  SOURCE_DIR "${CMAKE_BINARY_DIR}/clog"
++  SOURCE_DIR "${CMAKE_BINARY_DIR}/cpuinfo"
+ )
+ OverridableFetchContent_GetProperties(clog)
+ if(NOT clog_POPULATED)
+diff -urpN a/tensorflow/lite/tools/cmake/modules/cpuinfo.cmake b/tensorflow/lite/tools/cmake/modules/cpuinfo.cmake
+--- a/tensorflow/lite/tools/cmake/modules/cpuinfo.cmake	2024-07-21 14:42:31.978042552 +0000
++++ b/tensorflow/lite/tools/cmake/modules/cpuinfo.cmake	2024-07-21 14:48:49.557383512 +0000
+@@ -21,10 +21,6 @@ include(OverridableFetchContent)
+ 
+ OverridableFetchContent_Declare(
+   cpuinfo
+-  GIT_REPOSITORY https://github.com/pytorch/cpuinfo
+-  # Sync with tensorflow/third_party/cpuinfo/workspace.bzl
+-  GIT_TAG 5e63739504f0f8e18e941bd63b2d6d42536c7d90
+-  GIT_PROGRESS TRUE
+   SOURCE_DIR "${CMAKE_BINARY_DIR}/cpuinfo"
+ )
+ OverridableFetchContent_GetProperties(cpuinfo)
+diff -urpN a/tensorflow/lite/tools/cmake/modules/eigen.cmake b/tensorflow/lite/tools/cmake/modules/eigen.cmake
+--- a/tensorflow/lite/tools/cmake/modules/eigen.cmake	2024-07-21 14:42:31.978042552 +0000
++++ b/tensorflow/lite/tools/cmake/modules/eigen.cmake	2024-07-21 14:48:49.557383512 +0000
+@@ -21,24 +21,18 @@ include(OverridableFetchContent)
+ 
+ OverridableFetchContent_Declare(
+   eigen
+-  GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
+-  # Sync with tensorflow/third_party/eigen3/workspace.bzl
+-  GIT_TAG 0e187141679fdb91da33249d18cb79a011c0e2ea
+-  # It's not currently (cmake 3.17) possible to shallow clone with a GIT TAG
+-  # as cmake attempts to git checkout the commit hash after the clone
+-  # which doesn't work as it's a shallow clone hence a different commit hash.
+-  # https://gitlab.kitware.com/cmake/cmake/-/issues/17770
+-  # GIT_SHALLOW TRUE
+-  GIT_PROGRESS TRUE
+-  PREFIX "${CMAKE_BINARY_DIR}"
+   SOURCE_DIR "${CMAKE_BINARY_DIR}/eigen"
+-  LICENSE_FILE "COPYING.MPL2"
+ )
+ OverridableFetchContent_GetProperties(eigen)
+ if(NOT eigen_POPULATED)
+   OverridableFetchContent_Populate(eigen)
+ endif()
+ 
++set(EIGEN_SOURCE_DIR "${eigen_SOURCE_DIR}" CACHE PATH
++  "Source directory for the CMake project."
++)
++
++include_directories(${CMAKE_BINARY_DIR}/eigen)
+ # Patch Eigen to disable Fortran compiler check for BLAS and LAPACK tests.
+ if(NOT EIGEN_DISABLED_FORTRAN_COMPILER_CHECK)
+   file(WRITE "${eigen_SOURCE_DIR}/cmake/language_support.cmake" "
+diff -urpN a/tensorflow/lite/tools/cmake/modules/farmhash.cmake b/tensorflow/lite/tools/cmake/modules/farmhash.cmake
+--- a/tensorflow/lite/tools/cmake/modules/farmhash.cmake	2024-07-21 14:42:31.978042552 +0000
++++ b/tensorflow/lite/tools/cmake/modules/farmhash.cmake	2024-07-21 14:48:49.557383512 +0000
+@@ -21,15 +21,6 @@ include(OverridableFetchContent)
+ 
+ OverridableFetchContent_Declare(
+   farmhash
+-  GIT_REPOSITORY https://github.com/google/farmhash
+-  # Sync with tensorflow/third_party/farmhash/workspace.bzl
+-  GIT_TAG 0d859a811870d10f53a594927d0d0b97573ad06d
+-  # It's not currently possible to shallow clone with a GIT TAG
+-  # as cmake attempts to git checkout the commit hash after the clone
+-  # which doesn't work as it's a shallow clone hence a different commit hash.
+-  # https://gitlab.kitware.com/cmake/cmake/-/issues/17770
+-  # GIT_SHALLOW TRUE
+-  GIT_PROGRESS TRUE
+   SOURCE_DIR "${CMAKE_BINARY_DIR}/farmhash"
+ )
+ OverridableFetchContent_GetProperties(farmhash)
+diff -urpN a/tensorflow/lite/tools/cmake/modules/flatbuffers.cmake b/tensorflow/lite/tools/cmake/modules/flatbuffers.cmake
+--- a/tensorflow/lite/tools/cmake/modules/flatbuffers.cmake	2024-07-21 14:42:31.978042552 +0000
++++ b/tensorflow/lite/tools/cmake/modules/flatbuffers.cmake	2024-07-21 14:48:49.557383512 +0000
+@@ -21,11 +21,6 @@ include(FetchContent)
+ 
+ OverridableFetchContent_Declare(
+   flatbuffers
+-  GIT_REPOSITORY https://github.com/google/flatbuffers
+-  # Sync with tensorflow/third_party/flatbuffers/workspace.bzl
+-  GIT_TAG v2.0.6
+-  GIT_SHALLOW TRUE
+-  GIT_PROGRESS TRUE
+   SOURCE_DIR "${CMAKE_BINARY_DIR}/flatbuffers"
+ )
+ 
+diff -urpN a/tensorflow/lite/tools/cmake/modules/gemmlowp.cmake b/tensorflow/lite/tools/cmake/modules/gemmlowp.cmake
+--- a/tensorflow/lite/tools/cmake/modules/gemmlowp.cmake	2024-07-21 14:42:31.978042552 +0000
++++ b/tensorflow/lite/tools/cmake/modules/gemmlowp.cmake	2024-07-21 14:48:49.557383512 +0000
+@@ -21,15 +21,6 @@ include(OverridableFetchContent)
+ 
+ OverridableFetchContent_Declare(
+   gemmlowp
+-  GIT_REPOSITORY https://github.com/google/gemmlowp
+-  # Sync with tensorflow/third_party/gemmlowp/workspace.bzl
+-  GIT_TAG fda83bdc38b118cc6b56753bd540caa49e570745
+-  # It's not currently (cmake 3.17) possible to shallow clone with a GIT TAG
+-  # as cmake attempts to git checkout the commit hash after the clone
+-  # which doesn't work as it's a shallow clone hence a different commit hash.
+-  # https://gitlab.kitware.com/cmake/cmake/-/issues/17770
+-  # GIT_SHALLOW TRUE
+-  GIT_PROGRESS TRUE
+   SOURCE_DIR "${CMAKE_BINARY_DIR}/gemmlowp"
+ )
+ 
+diff -urpN a/tensorflow/lite/tools/cmake/modules/ruy.cmake b/tensorflow/lite/tools/cmake/modules/ruy.cmake
+--- a/tensorflow/lite/tools/cmake/modules/ruy.cmake	2024-07-21 14:42:31.978042552 +0000
++++ b/tensorflow/lite/tools/cmake/modules/ruy.cmake	2024-07-21 14:48:49.557383512 +0000
+@@ -21,10 +21,6 @@ include(OverridableFetchContent)
+ 
+ OverridableFetchContent_Declare(
+   ruy
+-  GIT_REPOSITORY https://github.com/google/ruy
+-  # Sync with tensorflow/third_party/ruy/workspace.bzl
+-  GIT_TAG 841ea4172ba904fe3536789497f9565f2ef64129
+-  GIT_PROGRESS TRUE
+   SOURCE_DIR "${CMAKE_BINARY_DIR}/ruy"
+ )
+ OverridableFetchContent_GetProperties(ruy)

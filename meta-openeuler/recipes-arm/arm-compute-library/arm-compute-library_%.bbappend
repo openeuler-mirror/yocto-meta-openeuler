@@ -13,7 +13,7 @@ SRC_URI[arm-compute-library.sha256sum] = "2f70f54d84390625222503ea38650c00c49d4b
 
 S = "${WORKDIR}/ComputeLibrary-${PV}"
 
-EXTRA_OESCONS = "arch=arm64-v8a extra_cxx_flags="-fPIC -Wno-unused-but-set-variable -Wno-ignored-qualifiers -Wno-noexcept" benchmark_tests=1 validation_tests=0 set_soname=1"
+EXTRA_OESCONS = "arch=arm64-v8a extra_cxx_flags="-fPIC -Wno-unused-but-set-variable -Wno-ignored-qualifiers -Wno-noexcept -Wno-strict-overflow -Wno-array-bounds" benchmark_tests=1 validation_tests=0 set_soname=1"
 EXTRA_OESCONS += "neon=1 opencl=0 embed_kernels=1"
 EXTRA_OESCONS:remove = "MAXLINELENGTH=2097152"
 

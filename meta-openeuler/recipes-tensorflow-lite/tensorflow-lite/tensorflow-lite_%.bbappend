@@ -4,7 +4,7 @@ PV = "2.10.0"
 
 OPENEULER_REPO_NAME = "tensorflow"
 
-DEPENDS:remove = "libgfortran"
+DEPENDS:remove:libc-musl = "libgfortran"
 
 SRC_URI:remove = " \
     file://fix-to-cmake-2.9.1.patch \
@@ -13,7 +13,11 @@ SRC_URI:remove = " \
 
 SRC_URI = " \
     file://tensorflow-${PV}.tar.gz \
+    file://external.tar.bz2.partaa \
+    file://external.tar.bz2.partab \
+    file://external.tar.bz2.partac \
     file://modify-deps-on-libclang-gcsfs-gast.patch \
+    file://change-tools-cmake.patch \
 "
 
 
@@ -21,6 +25,19 @@ S = "${WORKDIR}/tensorflow-${PV}"
 
 EXTRA_OECMAKE:append = " -DTFLITE_ENABLE_XNNPACK=OFF "
 
+DEPENDS += " \
+    abseil-cpp  \
+"
+
+do_configure:prepend() {
+	cat ${WORKDIR}/external.tar.* | tar -xvjf - -C ${WORKDIR}/
+        mv ${WORKDIR}/external/eigen_archive ${WORKDIR}/build/eigen
+        mv ${WORKDIR}/external/farmhash_archive ${WORKDIR}/build/farmhash
+        mv ${WORKDIR}/external/gemmlowp ${WORKDIR}/build/gemmlowp
+        mv ${WORKDIR}/external/cpuinfo ${WORKDIR}/build/cpuinfo
+        mv ${WORKDIR}/external/ruy ${WORKDIR}/build/ruy
+        mv ${WORKDIR}/external/flatbuffers ${WORKDIR}/build/flatbuffers
+}
 
 do_install() {
     # install libraries
