@@ -76,6 +76,8 @@ SRC_URI += " \
    file://${BP}.tar.gz \
    file://armnn-use-static-libraries.patch \
    file://0001-modify-cmake-files.patch \
+   file://0002-add-inculde-iterator.patch \
+   file://0003-change-absl-libs-path.patch \
 "
 S = "${WORKDIR}/${BP}"
 
