@@ -35,22 +35,11 @@
 		#size-cells = <0x2>;
 		ranges;
 
-	        client_os_reserved: client_os_reserved@93000000 {
-	                reg = <0x00 0x93000000 0x00 0x4000000>;
-	                no-map;
+		mcs@90000000 {
+			reg = <0x0 0x90000000 0x0 0x5000000>;
+			compatible = "mcs_mem";
+			no-map;
 		};
-	
-		client_os_dma_memory_region: client_os-dma-memory@90000000 {
-	                compatible = "shared-dma-pool";
-	                reg = <0x00 0x90000000 0x00 0x3000000>;
-	                no-map;
-		};
-	};
-
-    mcs-remoteproc {
-		compatible = "oe,mcs_remoteproc";
-		memory-region = <&client_os_dma_memory_region>,
-				<&client_os_reserved>;
 	};
 
 	psci {
@@ -327,44 +316,162 @@
             domain=<0x1 0x1 0x1 0x1 0x0>;
         };
 
-        i2c@2000d000 {
-            compatible = "hisilicon,hi1711-i2c";
-            reg = <0x0 0x08707000 0x0 0x1000>,
-                  <0x0 0x08708000 0x0 0x1000>,
-                  <0x0 0x08709000 0x0 0x1000>,
-                  <0x0 0x0870a000 0x0 0x1000>,
-                  <0x0 0x0870b000 0x0 0x1000>,
-                  <0x0 0x0870c000 0x0 0x1000>,
-                  <0x0 0x0870d000 0x0 0x1000>,
-                  <0x0 0x0870e000 0x0 0x1000>,
-                  <0x0 0x08750000 0x0 0x1000>,
-                  <0x0 0x08751000 0x0 0x1000>,
-                  <0x0 0x08752000 0x0 0x1000>,
-                  <0x0 0x08753000 0x0 0x1000>,
-                  <0x0 0x08754000 0x0 0x1000>,
-                  <0x0 0x08755000 0x0 0x1000>,
-                  <0x0 0x08756000 0x0 0x1000>,
-                  <0x0 0x08757000 0x0 0x1000>,
-                  <0x0 0x08745000 0x0 0x1000>,
-                  <0x0 0x0876e000 0x0 0x1000>;/*0-15 i2creg ,16 ioconfig-T,17 ioconfig-R*/
-            interrupts = <0x0 72 0x4>,
-                         <0x0 73 0x4>,
-                         <0x0 74 0x4>,
-                         <0x0 75 0x4>,
-                         <0x0 76 0x4>,
-                         <0x0 77 0x4>,
-                         <0x0 78 0x4>,
-                         <0x0 79 0x4>,
-                         <0x0 80 0x4>,
-                         <0x0 81 0x4>,
-                         <0x0 82 0x4>,
-                         <0x0 83 0x4>,
-                         <0x0 84 0x4>,
-                         <0x0 85 0x4>,
-                         <0x0 86 0x4>,
-                         <0x0 87 0x4>;/*0-15*/
-            domain=<0x0 0x0 0x0 0x1 0x1 0x1 0x1 0x1 0x1 0x1 0x1 0x1 0x1 0x1 0x1 0x1>;
+        i2c_bus0: i2c@8707000 {
+            compatible = "hisilicon,hi309x-i2c";
+            reg = <0x0 0x08707000 0x0 0x1000>;
+            clock-frequency = <100000>;
+            interrupts = <0x0 72 0x4>;
         };
+
+        i2c_bus1: i2c@8708000 {
+            compatible = "hisilicon,hi309x-i2c";
+            reg = <0x0 0x08708000 0x0 0x1000>;
+            clock-frequency = <100000>;
+            interrupts = <0x0 73 0x4>;
+        };
+
+        i2c_bus2: i2c@8709000 {
+            compatible = "hisilicon,hi309x-i2c";
+            reg = <0x0 0x08709000 0x0 0x1000>;
+            clock-frequency = <100000>;
+            interrupts = <0x0 74 0x4>;
+        };
+
+        i2c_bus3: i2c@870a000 {
+            compatible = "hisilicon,hi309x-i2c";
+            reg = <0x0 0x0870a000 0x0 0x1000>;
+            clock-frequency = <100000>;
+            interrupts = <0x0 75 0x4>;
+        };
+
+        i2c_bus4: i2c@870b000 {
+            compatible = "hisilicon,hi309x-i2c";
+            reg = <0x0 0x0870b000 0x0 0x1000>;
+            clock-frequency = <100000>;
+            interrupts = <0x0 76 0x4>;
+        };
+
+        i2c_bus5: i2c@870c000 {
+            compatible = "hisilicon,hi309x-i2c";
+            reg = <0x0 0x0870c000 0x0 0x1000>;
+            clock-frequency = <100000>;
+            interrupts = <0x0 77 0x4>;
+        };
+
+        i2c_bus6: i2c@870d000 {
+            compatible = "hisilicon,hi309x-i2c";
+            reg = <0x0 0x0870d000 0x0 0x1000>;
+            clock-frequency = <100000>;
+            interrupts = <0x0 78 0x4>;
+        };
+
+        i2c_bus7: i2c@870e000 {
+            compatible = "hisilicon,hi309x-i2c";
+            reg = <0x0 0x0870e000 0x0 0x1000>;
+            clock-frequency = <100000>;
+            interrupts = <0x0 79 0x4>;
+        };
+
+        i2c_bus8: i2c@8750000 {
+            compatible = "hisilicon,hi309x-i2c";
+            reg = <0x0 0x08750000 0x0 0x1000>;
+            clock-frequency = <100000>;
+            interrupts = <0x0 80 0x4>;
+        };
+
+        i2c_bus9: i2c@8751000 {
+            compatible = "hisilicon,hi309x-i2c";
+            reg = <0x0 0x08751000 0x0 0x1000>;
+            clock-frequency = <100000>;
+            interrupts = <0x0 81 0x4>;
+        };
+
+        i2c_bus10: i2c@8752000 {
+            compatible = "hisilicon,hi309x-i2c";
+            reg = <0x0 0x08752000 0x0 0x1000>;
+            clock-frequency = <100000>;
+            interrupts = <0x0 82 0x4>;
+        };
+
+        i2c_bus11: i2c@8753000 {
+            compatible = "hisilicon,hi309x-i2c";
+            reg = <0x0 0x08753000 0x0 0x1000>;
+            clock-frequency = <100000>;
+            interrupts = <0x0 83 0x4>;
+        };
+
+        i2c_bus12: i2c@8754000 {
+            compatible = "hisilicon,hi309x-i2c";
+            reg = <0x0 0x08754000 0x0 0x1000>;
+            clock-frequency = <100000>;
+            interrupts = <0x0 84 0x4>;
+        };
+
+        i2c_bus13: i2c@8755000 {
+            compatible = "hisilicon,hi309x-i2c";
+            reg = <0x0 0x08755000 0x0 0x1000>;
+            clock-frequency = <100000>;
+            interrupts = <0x0 85 0x4>;
+        };
+
+        i2c_bus14: i2c@8756000 {
+            compatible = "hisilicon,hi309x-i2c";
+            reg = <0x0 0x08756000 0x0 0x1000>;
+            clock-frequency = <100000>;
+            interrupts = <0x0 86 0x4>;
+        };
+
+        i2c_bus15: i2c@8757000 {
+            compatible = "hisilicon,hi309x-i2c";
+            reg = <0x0 0x08757000 0x0 0x1000>;
+            clock-frequency = <100000>;
+            interrupts = <0x0 87 0x4>;
+        };
+
+        /* 
+         * The i2c@2000d000 node is used to implement the method in the src/non_real_time/drivers/i2c directory. 
+         * This method does not use the Linux kernel framework.
+         * If you need to use this driver, delete i2c_bus0 to i2c_bus15 and use the i2c@2000d000 node. 
+         */
+        /*
+         * i2c@2000d000 {
+         *     compatible = "hisilicon,hi1711-i2c";
+         *     reg = <0x0 0x08707000 0x0 0x1000>,
+         *           <0x0 0x08708000 0x0 0x1000>,
+         *           <0x0 0x08709000 0x0 0x1000>,
+         *           <0x0 0x0870a000 0x0 0x1000>,
+         *           <0x0 0x0870b000 0x0 0x1000>,
+         *           <0x0 0x0870c000 0x0 0x1000>,
+         *           <0x0 0x0870d000 0x0 0x1000>,
+         *           <0x0 0x0870e000 0x0 0x1000>,
+         *           <0x0 0x08750000 0x0 0x1000>,
+         *           <0x0 0x08751000 0x0 0x1000>,
+         *           <0x0 0x08752000 0x0 0x1000>,
+         *           <0x0 0x08753000 0x0 0x1000>,
+         *           <0x0 0x08754000 0x0 0x1000>,
+         *           <0x0 0x08755000 0x0 0x1000>,
+         *           <0x0 0x08756000 0x0 0x1000>,
+         *           <0x0 0x08757000 0x0 0x1000>,
+         *           <0x0 0x08745000 0x0 0x1000>,
+         *           <0x0 0x0876e000 0x0 0x1000>;//0-15 i2creg ,16 ioconfig-T,17 ioconfig-R
+         *     interrupts = <0x0 72 0x4>,
+         *                  <0x0 73 0x4>,
+         *                  <0x0 74 0x4>,
+         *                  <0x0 75 0x4>,
+         *                  <0x0 76 0x4>,
+         *                  <0x0 77 0x4>,
+         *                  <0x0 78 0x4>,
+         *                  <0x0 79 0x4>,
+         *                  <0x0 80 0x4>,
+         *                  <0x0 81 0x4>,
+         *                  <0x0 82 0x4>,
+         *                  <0x0 83 0x4>,
+         *                  <0x0 84 0x4>,
+         *                  <0x0 85 0x4>,
+         *                  <0x0 86 0x4>,
+         *                  <0x0 87 0x4>;//0-15
+         * };
+         */
 
         smbus@0x08707000 {
             compatible = "hisilicon,hi1711-smbus";
@@ -790,6 +897,13 @@
         msg_scm3@08740000 {
             compatible = "hisilicon, hi1711-msg_scm3";
             interrupts = <0 225 4>;/*inter core communication from secure M3*/
+        };
+
+        gpu@18000000 {
+            compatible = "hisilicon, hi1711-gpu";
+            reg = <0x0 0x18000000 0x0 0x200000>,
+                <0x0 0x80000000 0x0 0x2000000>;
+            interrupts = <0x0 47 0x4>;
         };
     };
 };
