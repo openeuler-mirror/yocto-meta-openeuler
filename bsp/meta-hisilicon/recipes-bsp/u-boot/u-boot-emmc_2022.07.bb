@@ -14,6 +14,7 @@ SRC_URI = " \
     file://mpu_solution/src/real_time/baremetal/common/hi309x_baremetal.h \
     file://mpu_solution/build/build_sign \
     file://mpu_solution/build/version_5.10 \
+    file://mpu_solution/src/patches/uboot/uboot-mtd-spi.patch \
 "
 
 S = "${WORKDIR}/mpu_solution/open_source/u-boot/u-boot"
