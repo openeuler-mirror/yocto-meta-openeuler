@@ -1,190 +1,124 @@
 def BUILD_COM
 def IMAGE_DATE = ""
+def BUILD_IMGS
 
 pipeline {
-    agent { node "${node}" }
+    agent any
     environment {
         PATH = "/home/jenkins/.local/bin:${env.PATH}"
     }
     stages {
         stage("init task"){
+            agent { node "${node}" }
             steps{
                 script{
                     BUILD_COM = load '.oebuild/workflows/build_common.groovy'
+                    IMAGE_DATE = BUILD_COM.getNowDatetime()
+                    INIT_ENV = load '.oebuild/workflows/init_env.groovy'
+                    INIT_ENV.init_environment()
+                    BUILD_IMGS = BUILD_COM.split_build(env.buildImages, env.parallelNum)
                 }
                 dir('/home/jenkins/agent'){
                     script{
                         BUILD_COM.downloadEmbeddedCI(embeddedRemote, embeddedBranch)
-                        IMAGE_DATE = BUILD_COM.getNowDatetime()
                     }
+                }
+                dir('/home/jenkins/agent/embedded-ci'){
+                    script{
+                        BUILD_COM.downloadYoctoWithBranch("/home/jenkins/agent", yoctoRemote, yoctoBranch, 1)
+                    }
+                }
+                dir('/home/jenkins/agent/embedded-ci'){
+                    stash(name: "embedded-ci")
+                }
+                // the stash will not include .git, so mv .git to .git_bak
+                dir('/home/jenkins/agent/yocto-meta-openeuler'){
+                    sh "mv .git .git_bak"
+                    stash(name: "yocto-meta-openeuler")
+                    sh "mv .git_bak .git"
                 }
             }
         }
         stage("build task"){
-            parallel {
+            parallel{
                 stage("group1"){
-                    agent { node "${node}" }
+                    agent { node "$node" }
+                    when { expression { BUILD_IMGS.size() >= 1 } }
                     steps {
-                        dir('/home/jenkins/agent'){
-                            script{
-                                BUILD_COM.downloadEmbeddedCI(embeddedRemote, embeddedBranch)
-                            }
-                        }
-                        dir('/home/jenkins/agent/embedded-ci'){
-                            script{
-                                withCredentials([
-                                    file(credentialsId: remoteID, variable: 'remoteKey')
-                                ]){
-                                    //下载yocto-meta-openeuler代码
-                                    BUILD_COM.downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
-                                    BUILD_COM.prepareSrcCode("/home/jenkins")
-                                    def random_str = BUILD_COM.getRandomStr()
-                                    def log_dir = BUILD_COM.mkdirOpeneulerLog()
-
-                                    for (image_name in group1.split()){
-                                        println "build ${image_name} ..."
-                                        BUILD_COM.dynamicBuild(image_name, IMAGE_DATE, log_dir, random_str)
-                                    }
-                                }
-                            }
+                        script{
+                            BUILD_COM.buildTask(BUILD_IMGS[0], IMAGE_DATE)
                         }
                     }
                 }
                 stage("group2"){
-                    agent { node "${node}" }
+                    agent { node "$node" }
+                    when { expression { BUILD_IMGS.size() >= 2 } }
                     steps {
-                        dir('/home/jenkins/agent'){
-                            script{
-                                BUILD_COM.downloadEmbeddedCI(embeddedRemote, embeddedBranch)
-                            }
-                        }
-                        dir('/home/jenkins/agent/embedded-ci'){
-                            script{
-                                withCredentials([
-                                    file(credentialsId: remoteID, variable: 'remoteKey')
-                                ]){
-                                    //下载yocto-meta-openeuler代码
-                                    BUILD_COM.downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
-                                    BUILD_COM.prepareSrcCode("/home/jenkins")
-                                    def random_str = BUILD_COM.getRandomStr()
-                                    def log_dir = BUILD_COM.mkdirOpeneulerLog()
-
-                                    for (image_name in group2.split()){
-                                        println "build ${image_name} ..."
-                                        BUILD_COM.dynamicBuild(image_name, IMAGE_DATE, log_dir, random_str)
-                                    }
-                                }
-                            }
+                        script{
+                            BUILD_COM.buildTask(BUILD_IMGS[1], IMAGE_DATE)
                         }
                     }
                 }
                 stage("group3"){
-                    agent { node "${node}" }
+                    agent { node "$node" }
+                    when { expression { BUILD_IMGS.size() >= 3 } }
                     steps {
-                        dir('/home/jenkins/agent'){
-                            script{
-                                BUILD_COM.downloadEmbeddedCI(embeddedRemote, embeddedBranch)
-                            }
-                        }
-                        dir('/home/jenkins/agent/embedded-ci'){
-                            script{
-                                withCredentials([
-                                    file(credentialsId: remoteID, variable: 'remoteKey')
-                                ]){
-                                    //下载yocto-meta-openeuler代码
-                                    BUILD_COM.downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
-                                    BUILD_COM.prepareSrcCode("/home/jenkins")
-                                    def random_str = BUILD_COM.getRandomStr()
-                                    def log_dir = BUILD_COM.mkdirOpeneulerLog()
-
-                                    for (image_name in group3.split()){
-                                        println "build ${image_name} ..."
-                                        BUILD_COM.dynamicBuild(image_name, IMAGE_DATE, log_dir, random_str)
-                                    }
-                                }
-                            }
+                        script{
+                            BUILD_COM.buildTask(BUILD_IMGS[2], IMAGE_DATE)
                         }
                     }
                 }
                 stage("group4"){
-                    agent { node "${node}" }
+                    agent { node "$node" }
+                    when { expression { BUILD_IMGS.size() >= 4 } }
                     steps {
-                        dir('/home/jenkins/agent'){
-                            script{
-                                BUILD_COM.downloadEmbeddedCI(embeddedRemote, embeddedBranch)
-                            }
-                        }
-                        dir('/home/jenkins/agent/embedded-ci'){
-                            script{
-                                withCredentials([
-                                    file(credentialsId: remoteID, variable: 'remoteKey')
-                                ]){
-                                    //下载yocto-meta-openeuler代码
-                                    BUILD_COM.downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
-                                    BUILD_COM.prepareSrcCode("/home/jenkins")
-                                    def random_str = BUILD_COM.getRandomStr()
-                                    def log_dir = BUILD_COM.mkdirOpeneulerLog()
-
-                                    for (image_name in group4.split()){
-                                        println "build ${image_name} ..."
-                                        BUILD_COM.dynamicBuild(image_name, IMAGE_DATE, log_dir, random_str)
-                                    }
-                                }
-                            }
+                        script{
+                            BUILD_COM.buildTask(BUILD_IMGS[3], IMAGE_DATE)
                         }
                     }
                 }
                 stage("group5"){
-                    agent { node "${node}" }
+                    agent { node "$node" }
+                    when { expression { BUILD_IMGS.size() >= 5 } }
                     steps {
-                        dir('/home/jenkins/agent'){
-                            script{
-                                BUILD_COM.downloadEmbeddedCI(embeddedRemote, embeddedBranch)
-                            }
-                        }
-                        dir('/home/jenkins/agent/embedded-ci'){
-                            script{
-                                withCredentials([
-                                    file(credentialsId: remoteID, variable: 'remoteKey')
-                                ]){
-                                    //下载yocto-meta-openeuler代码
-                                    BUILD_COM.downloadYoctoWithBranch("/home/jenkins/agent", repoNamespace, repoName, ciBranch, 1)
-                                    BUILD_COM.prepareSrcCode("/home/jenkins")
-                                    def random_str = BUILD_COM.getRandomStr()
-                                    def log_dir = BUILD_COM.mkdirOpeneulerLog()
-
-                                    for (image_name in group5.split()){
-                                        println "build ${image_name} ..."
-                                        BUILD_COM.dynamicBuild(image_name, IMAGE_DATE, log_dir, random_str)
-                                    }
-                                }
-                            }
+                        script{
+                            BUILD_COM.buildTask(BUILD_IMGS[4], IMAGE_DATE)
                         }
                     }
                 }
             }
         }
-    }
-    post {
-        always {
-            dir('/home/jenkins/agent/embedded-ci'){
-                script{
-                    withCredentials([
-                        string(credentialsId: "${giteeId}", variable: 'GITEETOKEN')
-                    ]){
-                        def chks = ""
-                        for (int i = 0; i < BUILD_COM.STAGES_RES.size(); ++i) {
-                            chks = "${chks} -chk ${BUILD_COM.STAGES_RES[i]}"
+        stage("comment"){
+            agent { node "${node}" }
+            when {
+                expression { env.isComment != null && env.isComment == "true" }
+            }
+            steps {
+                dir('/home/jenkins/agent'){
+                    script{
+                        sh "mkdir embedded-ci"
+                    }
+                }
+                dir('/home/jenkins/agent/embedded-ci'){
+                    unstash(name: "embedded-ci")
+                    script{
+                        withCredentials([
+                            string(credentialsId: "${giteeId}", variable: 'GITEETOKEN')
+                        ]){
+                            def chks = ""
+                            for (int i = 0; i < BUILD_COM.STAGES_RES.size(); ++i) {
+                                chks = "${chks} -chk ${BUILD_COM.STAGES_RES[i]}"
+                            }
+                            sh """
+                            python3 main.py comment \
+                                -m ci \
+                                -o ${commentNameSpace} \
+                                -p ${commentRepo} \
+                                -b ${commentRepoBranch} \
+                                -gt ${GITEETOKEN} \
+                                ${chks}
+                            """
                         }
-                        sh """
-                        python3 main.py comment \
-                             -m ci \
-                             -o ${repoNamespace} \
-                             -p ${commentRepoName} \
-                             -b ${ciBranch} \
-                             -gt ${GITEETOKEN} \
-                             ${chks}
-                        """
                     }
                 }
             }
