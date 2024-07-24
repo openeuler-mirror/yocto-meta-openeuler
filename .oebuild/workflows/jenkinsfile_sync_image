@@ -1,0 +1,63 @@
+pipeline {
+    agent { node "${node}" }
+    environment {
+        PATH = "/home/jenkins/.local/bin:${env.PATH}"
+    }
+    stages {
+        stage("sync image"){
+            steps{
+                script{
+                    BUILD_COM = load '.oebuild/workflows/build_common.groovy'
+                    INIT_ENV = load '.oebuild/workflows/init_env.groovy'
+                    INIT_ENV.init_environment()
+                }
+                dir('/home/jenkins/agent'){
+                    script{
+                        BUILD_COM.downloadEmbeddedCI(env.embeddedRemote, env.embeddedBranch)
+                    }
+                }
+                dir('/home/jenkins/agent/embedded-ci'){
+                    script{
+                        for (arch in env.archList.split(" ")) {
+                            def image_list = BUILD_COM.get_remote_images(env.baseImgUrl+"/"+arch)
+                            println(image_list)
+                            for (image in image_list.split(" ")) {
+                                if(image.contains("/") == false){
+                                    continue
+                                }
+                                println("now sync ${image} ")
+                                // 检查远程目录是否存在
+                                if (BUILD_COM.remote_address_exists(env.targetImgUrl+"/"+arch+"/"+image) == "no"){
+                                    withCredentials([
+                                        file(credentialsId: env.openEulerImgRemoteKey, variable: 'openEulerImgKey')
+                                    ]){
+                                        def file_link = env.baseImgUrl+"/"+arch+"/"+image+".tar.gz"
+                                        //下载压缩包
+                                        sh """
+                                            mkdir -p /home/jenkins/agent/upload
+                                            cd /home/jenkins/agent/upload
+                                            wget $file_link -q
+                                            tar_file=`basename $file_link`
+                                            tar zxf \$tar_file
+                                            rm -f \$tar_file
+                                        """
+                                        def image_name = image.split("/")[0]
+                                        def remote_dir = env.openEulerImgRemoteDir+"/${arch}/${image_name}"
+                                        def local_dir = "/home/jenkins/agent/upload"
+                                        BUILD_COM.uploadImageWithKey(
+                                            openEulerImgRemoteIP,
+                                            remote_dir,
+                                            openEulerImgRemoteUser,
+                                            openEulerImgKey,
+                                            local_dir)
+                                        sh "rm -rf /home/jenkins/agent/upload"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
