@@ -15,3 +15,7 @@ SERIAL_CONSOLES = "115200;ttyAMA0"
 # arm and arm64 both support -mlittle-endian so no
 # need to consider compat32.
 TUNE_CCARGS .= " -mlittle-endian"
+
+# recovery EFI_PROVIDER option, which is removed in packagegroup-core-boot
+EFI_PROVIDER ??= "grub-efi"
+IMAGE_INSTALL:append = " ${@bb.utils.contains("MACHINE_FEATURES", "efi", "${EFI_PROVIDER}", "", d)} "
