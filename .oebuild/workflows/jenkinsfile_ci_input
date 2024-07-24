@@ -32,10 +32,13 @@ pipeline {
                         ]){
                             BUILD_COM.prepareSrcCode("/home/jenkins")
                             def random_str = BUILD_COM.getRandomStr()
-                            def log_dir = BUILD_COM.mkdirOpeneulerLog()
+                            BUILD_COM.mkdirOpeneulerLog()
 
                             println "build ${imageName} ..."
-                            BUILD_COM.dynamicBuild(imageName, IMAGE_DATE, log_dir, random_str)
+                            image_split = imageName.split("/")
+                            yocto_dir = "/home/jenkins/agent/yocto-meta-openeuler"
+                            BUILD_COM.dynamicBuild(yocto_dir, image_split[0], image_split[1], IMAGE_DATE, log_dir, random_str)
+                            BUILD_COM.artifactsLogs()
                         }
                     }
                 }

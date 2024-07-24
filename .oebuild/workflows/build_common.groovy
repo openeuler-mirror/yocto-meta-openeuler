@@ -1,5 +1,7 @@
 STAGES_RES = []
 OEBUILD_DIR = "/home/jenkins/oebuild_workspace"
+AGENT = "/home/jenkins/agent"
+LOG_DIR = "openeuler/logs"
 
 def downloadEmbeddedCI(String remote_url, String branch){
     sh 'rm -rf embedded-ci'
@@ -51,9 +53,16 @@ def getRandomStr(){
 }
 
 def mkdirOpeneulerLog(){
-    def logdir = "openeuler/log"
-    sh "mkdir -p ${logdir}"
-    return logdir
+    dir(AGENT){
+        sh "mkdir -p ${LOG_DIR}"
+    }
+}
+
+def artifactsLogs(){
+    dir(AGENT){
+        sh "ls -al ${LOG_DIR}"
+        archiveArtifacts artifacts: "${LOG_DIR}/*.log", fingerprint: true
+    }
 }
 
 def getNowDatetime(){
@@ -91,20 +100,23 @@ def uploadLogWithKey(String remote_ip, String remote_dir, String username, Strin
     """
 }
 
-def handleLog(log_pre_dir, log_file){
-    log_path = "${log_pre_dir}/${log_file}"
+def handleLog(log_file){
+    log_path = "${LOG_DIR}/${log_file}"
     if (env.isUploadLog != null && env.isUploadLog == "true"){
         withCredentials([
             file(credentialsId: openEulerEmbeddedKey, variable: 'openEulerKey')
         ]){
-            uploadLogWithKey(openEulerRemoteIP, openEulerLogDir, openEulerRemoteUser, openEulerKey, log_path)
+            def local_log_path = "${AGENT}/${log_path}"
+            uploadLogWithKey(openEulerRemoteIP, openEulerLogDir, openEulerRemoteUser, openEulerKey, local_log_path)
         }
         log_path = "${openEulerLogUrl}/${log_file}"
+    }else{
+        log_path = "artifact/${log_path}"
     }
     return log_path
 }
 
-def handleAfterBuildImage(String stage_name, String arch, Integer build_res_code, String log_dir, String random_str, String image_date){
+def handleAfterBuildImage(String image_name, String arch, Integer build_res_code, String random_str, String image_date){
     def build_res = "failed"
     def test_res = "failed"
     def test_res_code = 1
@@ -112,8 +124,8 @@ def handleAfterBuildImage(String stage_name, String arch, Integer build_res_code
         build_res = "success"
         if (putToRemote == true){
             // put the image to remote server
-            def remote_dir = remoteDir+"/${arch}/${stage_name}"
-            def local_dir = "${OEBUILD_DIR}/build/${stage_name}/output/${image_date}/"
+            def remote_dir = remoteDir+"/${arch}/${image_name}"
+            def local_dir = "${OEBUILD_DIR}/build/${image_name}/output/${image_date}/"
             uploadImageWithKey(remoteIP, remote_dir, remoteUname, remoteKey, local_dir)
         }
         if (saveSstateCache == true){
@@ -122,10 +134,10 @@ def handleAfterBuildImage(String stage_name, String arch, Integer build_res_code
             // sstate_origin_dir, we first copy it to a temporary folder (during copying,
             // soft links are defaulted to copy the actual files they point to), then delete
             // the source folder, and finally perform an mv operation.
-            def sstate_local_dir = "${OEBUILD_DIR}/build/${stage_name}/sstate-cache"
-            def sstate_dst_dir = "${shareDir}/${ciBranch}/sstate-cache/${stage_name}-temp"
+            def sstate_local_dir = "${OEBUILD_DIR}/build/${image_name}/sstate-cache"
+            def sstate_dst_dir = "${shareDir}/${ciBranch}/sstate-cache/${image_name}-temp"
             putSStateCacheToDst(sstate_local_dir, sstate_dst_dir)
-            def sstate_origin_dir = "${shareDir}/${ciBranch}/sstate-cache/${stage_name}"
+            def sstate_origin_dir = "${shareDir}/${ciBranch}/sstate-cache/${image_name}"
             sh (script: """
                 rm -rf ${sstate_origin_dir}
                 mv ${sstate_dst_dir} ${sstate_origin_dir}
@@ -133,32 +145,30 @@ def handleAfterBuildImage(String stage_name, String arch, Integer build_res_code
             )
         }
         // Test the build artifacts of the QEMU image and x86 image.
-        if(stage_name.contains("qemu") && stage_name.contains("x86-64") && !stage_name.contains("riscv")){
+        if(image_name.contains("qemu") && image_name.contains("x86-64") && !image_name.contains("riscv")){
             test_res_code = sh (script: """
                 python3 main.py utest \
                 -target openeuler_image \
                 -a ${arch} \
-                -td ${OEBUILD_DIR}/build/${stage_name} \
+                -td ${OEBUILD_DIR}/build/${image_name} \
                 -tm ${mugenRemote} \
-                -tb ${mugenBranch} > ${log_dir}/Test-${stage_name}-${random_str}.log
+                -tb ${mugenBranch} > ${AGENT}/${LOG_DIR}/Test-${image_name}-${random_str}.log
             """, returnStatus: true)
             if (test_res_code == 0){
                 test_res = "success"
             }
         }
     }
-    // Check the assignment
-    archiveArtifacts "${log_dir}/*.log"
 
     // if need to upload log to remote
-    log_file = "Build-${stage_name}-${random_str}.log"
-    log_path = handleLog(log_dir, log_file)
-    STAGES_RES.push(formatRes(stage_name, "build", build_res, log_path))
+    log_file = "Build-${image_name}-${random_str}.log"
+    log_path = handleLog(log_file)
+    STAGES_RES.push(formatRes(image_name, "build", build_res, log_path))
 
-    if (build_res_code == 0 && (stage_name.contains("qemu") && stage_name.contains("x86-64") && !stage_name.contains("riscv"))){
-        log_file = "Test-${stage_name}-${random_str}.log"
-        log_path = handleLog(log_dir, log_file)
-        STAGES_RES.push(formatRes(stage_name, "test", test_res, log_path))
+    if (build_res_code == 0 && (image_name.contains("qemu") && image_name.contains("x86-64") && !image_name.contains("riscv"))){
+        log_file = "Test-${image_name}-${random_str}.log"
+        log_path = handleLog(log_file)
+        STAGES_RES.push(formatRes(image_name, "test", test_res, log_path))
     }
 }
 
@@ -176,466 +186,41 @@ def prepareSrcCode(workspace){
     """
 }
 
+def translateCompileToHost(yocto_dir, arch, image_name){
+    def compileContent = readYaml file: "${yocto_dir}/.oebuild/samples/${arch}/${image_name}.yaml"
+    compileContent.build_in = "host"
+    if (arch == "aarch64"){
+        compileContent.toolchain_dir = "/usr1/openeuler/gcc/openeuler_gcc_arm64le"
+    }
+    if (arch == "arm32"){
+        compileContent.toolchain_dir = "/usr1/openeuler/gcc/openeuler_gcc_arm32le"
+    }
+    if (arch == "riscv64"){
+        compileContent.toolchain_dir = "/usr1/openeuler/gcc/openeuler_gcc_riscv64"
+    }
+    if (arch == "x86-64"){
+        compileContent.toolchain_dir = "/usr1/openeuler/gcc/openeuler_gcc_x86_64"
+    }
+    samples_dir = "/home/jenkins/agent/samples/${arch}"
+    sh "mkdir -p ${samples_dir}"
+    writeYaml file: "${samples_dir}/${image_name}.yaml", data: compileContent
+    return "${samples_dir}/${image_name}.yaml"
+}
+
 // dynamic invoke build image function
-def dynamicBuild(image_name, image_date, log_dir, random_str){
-    image_name = image_name.replace("-", "_")
-    "build_${image_name}"(image_date, log_dir, random_str)
-}
-
-// Perform the compilation check for the ok3588 image.
-def build_ok3588(image_date, log_dir, random_str){
-    def stage_name = "ok3588"
-    def arch = "aarch64"
+def dynamicBuild(yocto_dir, arch, image_name, image_date, random_str){
+    compile_path = translateCompileToHost(yocto_dir, arch, image_name)
+    // prepare oebuild build environment
     def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-        -p ok3588 \
-        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
+        oebuild init ${OEBUILD_DIR}
+        cd ${OEBUILD_DIR}
+        mkdir -p build
+        ln -sf ${yocto_dir} src/yocto-meta-openeuler
+        oebuild ${compile_path} > ${AGENT}/${LOG_DIR}/Build-${image_name}-${random_str}.log
     """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
+    handleAfterBuildImage(image_name, arch, task_res_code, random_str, image_date)
     // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}
-
-//Perform the compilation check for the ok3568 image.
-def build_ok3568(image_date, log_dir, random_str){
-    def stage_name = "ok3568"
-    def arch = "aarch64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-        -p ok3568 \
-        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}
-
-//Perform the compilation check for the qemu-aarch64-ros-mcs image.
-def build_qemu_aarch64_ros_mcs(image_date, log_dir, random_str){
-    def stage_name = "qemu-aarch64-ros-mcs"
-    def arch = "aarch64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-        -p qemu-aarch64 \
-        -f "openeuler-ros;openeuler-mcs;openeuler-container" \
-        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}
-
-//Perform the compilation check for the qemu-aarch64-llvm image.
-def build_qemu_aarch64_llvm(image_date, log_dir, random_str){
-    def stage_name = "qemu-aarch64-llvm"
-    def arch = "aarch64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-        -p qemu-aarch64 \
-        -f "clang" \
-        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}                                
-
-//Perform the compilation check for the raspberrypi4-64-llvm image.
-def build_raspberrypi4_64_llvm(image_date, log_dir, random_str){
-    def stage_name = "raspberrypi4-64-llvm"
-    def arch = "aarch64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-        -p raspberrypi4-64 \
-        -f "clang;openeuler-container" \
-        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}
-
-//Perform the compilation check for the qemu-aarch64-kernel6 image.
-def build_qemu_aarch64_kernel6(image_date, log_dir, random_str){
-    def stage_name = "qemu-aarch64-kernel6"
-    def arch = "aarch64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-        -p qemu-aarch64 \
-        -f "kernel6;openeuler-container" \
-        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}
-
-//Perform the compilation check for the raspberrypi4-64 image.
-def build_raspberrypi4_64(image_date, log_dir, random_str){
-    def stage_name = "raspberrypi4-64"
-    def arch = "aarch64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-        -p raspberrypi4-64 \
-        -f "openeuler-container" \
-        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)                                  
-}
-
-//Perform the compilation check for the raspberrypi4-64-kernel6 image.
-def build_raspberrypi4_64_kernel6(image_date, log_dir, random_str){
-    def stage_name = "raspberrypi4-64-kernel6"
-    def arch = "aarch64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-        -p raspberrypi4-64 \
-        -f "kernel6;openeuler-container" \
-        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}
-
-//Perform the compilation check for the qemu-aarch64-kernel6-llvm image.
-def build_qemu_aarch64_kernel6_llvm(image_date, log_dir, random_str){
-    def stage_name = "qemu-aarch64-kernel6-llvm"
-    def arch = "aarch64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-        -p qemu-aarch64 \
-        -f "kernel6;clang;openeuler-container" \
-        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d $stage_name > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}
-
-//Perform the compilation check for the raspberrypi4-64-kernel6-llvm image.
-def build_raspberrypi4_64_kernel6_llvm(image_date, log_dir, random_str){
-    def stage_name = "raspberrypi4-64-kernel6-llvm"
-    def arch = "aarch64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-        -p raspberrypi4-64 \
-        -f "kernel6;clang;openeuler-container" \
-        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}
-
-//Perform the compilation check for the raspberrypi4-64-rt-hmi image.
-def build_raspberrypi4_64_rt_hmi(image_date, log_dir, random_str){
-    def stage_name = "raspberrypi4-64-rt-hmi"
-    def arch = "aarch64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-        -p raspberrypi4-64 \
-        -f "openeuler-rt;hmi;openeuler-container" \
-        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}
-
-//Perform the compilation check for the raspberrypi4-64-kernel6-rt-hmi image.
-def build_raspberrypi4_64_kernel6_rt_hmi(image_date, log_dir, random_str){
-    def stage_name = "raspberrypi4-64-kernel6-rt-hmi"
-    def arch = "aarch64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-        -p raspberrypi4-64 \
-        -f "openeuler-rt;hmi;kernel6;openeuler-container" \
-        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}
-
-//Perform the compilation check for the hieulerpi1 image.
-def build_hieulerpi1(image_date, log_dir, random_str){
-    def stage_name = "hieulerpi1"
-    def arch = "aarch64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-        -p hieulerpi1 \
-        -f "openeuler-container" \
-        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date}} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}
-
-//Perform the compilation check for the hieulerpi1-tiny image.
-def build_hieulerpi1_tiny(image_date, log_dir, random_str){
-    def stage_name = "hieulerpi1-tiny"
-    def arch = "aarch64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-        -p hieulerpi1 \
-        -i "openeuler-image-tiny" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}
-
-//Perform the compilation check for the hieulerpi1-ros image.
-def build_hieulerpi1_ros(image_date, log_dir, random_str){
-    def stage_name = "hieulerpi1-ros"
-    def arch = "aarch64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-        -p hieulerpi1 \
-        -f "openeuler-ros;openeuler-container" \
-        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}
-
-//Perform the compilation check for the qemu-arm image.
-def build_qemu_arm(image_date, log_dir, random_str){
-    def stage_name = "qemu-arm"
-    def arch = "arm"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_arm32le \
-        -p qemu-arm \
-        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}
-
-//Perform the compilation check for the qemu-riscv64 image.
-def build_qemu_riscv64(image_date, log_dir, random_str){
-    def stage_name = "qemu-riscv64"
-    def arch = "riscv64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_riscv64 \
-        -p qemu-riscv64 \
-        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}
-
-//Perform the compilation check for the x86-64-rt-hmi-ros-mcs image.
-def build_x86_64_rt_hmi_ros_mcs(image_date, log_dir, random_str){
-    def stage_name = "x86-64-rt-hmi-ros-mcs"
-    def arch = "x86-64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_x86_64 \
-        -p x86-64 \
-        -f "openeuler-rt;hmi;openeuler-ros;openeuler-mcs" \
-        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}
-
-//Perform the compilation check for the x86-64-kernel6-rt-hmi-ros-mcs image.
-def build_x86_64_kernel6_rt_hmi_ros_mcs(image_date, log_dir, random_str){
-    def stage_name = "x86-64-kernel6-rt-hmi-ros-mcs"
-    def arch = "x86-64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_x86_64 \
-        -p x86-64 \
-        -f "kernel6;openeuler-rt;hmi;openeuler-ros;openeuler-mcs" \
-        -i "openeuler-image;openeuler-image -c do_populate_sdk" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}
-
-//Perform the compilation check for the qemu-aarch64 image.
-def build_qemu_aarch64(image_date, log_dir, random_str){
-    def stage_name = "qemu-aarch64"
-    def arch = "aarch64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_arm64le \
-        -p qemu-aarch64 \
-        -f "openeuler-container" \
-        -i "openeuler-image" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
-}
-
-//Perform the compilation check for the x86-64 image.
-def build_x86_64(image_date, log_dir, random_str){
-    def stage_name = "x86-64"
-    def arch = "x86-64"
-    def task_res_code = sh (script: """
-        python3 main.py build \
-        -c /home/jenkins/agent/yocto-meta-openeuler \
-        -target openeuler_image \
-        -a ${arch} \
-        -t /usr1/openeuler/gcc/openeuler_gcc_x86_64 \
-        -p x86-64 \
-        -i "openeuler-image" \
-        -oe "\\-\\-no_layer" \
-        -dt ${image_date} \
-        -d ${stage_name} > ${log_dir}/Build-${stage_name}-${random_str}.log
-    """, returnStatus: true)
-    handleAfterBuildImage(stage_name, arch, task_res_code, log_dir, random_str, image_date)
-    // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + stage_name)
+    deleteBuildDir(OEBUILD_DIR + "/build/" + image_name)
 }
 
 return this
