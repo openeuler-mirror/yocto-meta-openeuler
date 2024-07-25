@@ -160,7 +160,7 @@ FILES:edgesite = " \
         ${bindir}/edgesite-server \
 "
 
-FILES:keadmtarball = "/${TARBALL_NAME}.tar.gz /checksum_${TARBALL_NAME}.tar.gz.txt /kubeedge-v1.8.0-linux-arm64"
+FILES:keadmtarball = "/${TARBALL_NAME}.tar.gz /checksum_${TARBALL_NAME}.tar.gz.txt /${TARBALL_NAME} "
 
 # If board config use =y instead ko, remove it from bbappend.
 RDEPENDS:edgecore += " \
