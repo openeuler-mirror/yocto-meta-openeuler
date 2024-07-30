@@ -1,4 +1,4 @@
-FROM openeuler/openeuler:23.09
+FROM hub.oepkgs.net/openeuler/openeuler:24.03
 
 # RUN sed -i "s#http://repo.openeuler.org#https://repo.huaweicloud.com/openeuler#g" /etc/yum.repos.d/openEuler.repo
 
@@ -73,20 +73,16 @@ RUN wget ${openeuler_repo}/releases/download/${toolchain_version}/1_openeuler_gc
     && wget ${openeuler_repo}/releases/download/${toolchain_version}/2_openeuler_gcc_riscv64.tar.gz \
     && wget ${openeuler_repo}/releases/download/${toolchain_version}/3_openeuler_gcc_riscv64.tar.gz \
     && wget ${openeuler_repo}/releases/download/${toolchain_version}/merge_data.sh \
-    && bash ./merge_data.sh
-# deal aarch64 toolchain
-RUN tar xzvf openeuler_gcc_arm64le.tar.gz &&  \
-    rm -rf openeuler_gcc_arm64le.tar.gz
-# deal x86_64 toolchain
-RUN tar xzvf openeuler_gcc_x86_64.tar.gz &&  \
-    rm -rf openeuler_gcc_x86_64.tar.gz
-# deal arm toolchain
-RUN tar xzvf openeuler_gcc_arm32le.tar.gz &&  \
-    rm -rf openeuler_gcc_arm32le.tar.gz
-# deal riscv64 toolchain
-RUN tar xzvf openeuler_gcc_riscv64.tar.gz &&  \
-    rm -rf openeuler_gcc_riscv64.tar.gz
-RUN rm -rf merge_data.sh
+    && bash ./merge_data.sh \
+    && tar xzvf openeuler_gcc_arm64le.tar.gz \
+    && rm -rf openeuler_gcc_arm64le.tar.gz \
+    && tar xzvf openeuler_gcc_x86_64.tar.gz \
+    && rm -rf openeuler_gcc_x86_64.tar.gz \
+    && tar xzvf openeuler_gcc_arm32le.tar.gz \
+    && rm -rf openeuler_gcc_arm32le.tar.gz \
+    && tar xzvf openeuler_gcc_riscv64.tar.gz \
+    && rm -rf openeuler_gcc_riscv64.tar.gz \
+    && rm -rf merge_data.sh
 
 WORKDIR /usr1/openeuler
 # download llvm toolchain and install it
@@ -101,10 +97,10 @@ RUN wget ${openeuler_repo}/releases/download/${llvm_toolchain_version}/1_clang-l
     && wget ${openeuler_repo}/releases/download/${llvm_toolchain_version}/8_clang-llvm-17.0.6.tar.gz \
     && wget ${openeuler_repo}/releases/download/${llvm_toolchain_version}/9_clang-llvm-17.0.6.tar.gz \
     && wget ${openeuler_repo}/releases/download/${llvm_toolchain_version}/merge_data.sh \
-    && bash ./merge_data.sh
-
-RUN tar zxf clang-llvm-17.0.6.tar.gz
-RUN sudo mv clang-llvm-17.0.6 llvm && sudo rm -rf clang-llvm-17.0.6.tar.gz merge_data.sh
+    && bash ./merge_data.sh \
+    && tar zxf clang-llvm-17.0.6.tar.gz \
+    && sudo mv clang-llvm-17.0.6 llvm \
+    && sudo rm -rf clang-llvm-17.0.6.tar.gz merge_data.sh
 
 RUN sudo chmod -R 777 /opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-linux/var/
 
