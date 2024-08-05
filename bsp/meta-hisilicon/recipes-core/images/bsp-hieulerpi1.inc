@@ -4,5 +4,6 @@ IMAGE_INSTALL:append = " \
 hieulerpi1-tf-a \
 hieulerpi1-bsp-pkg \
 i2c-soft \
+ch343 \
 mcu-tool \
 "
