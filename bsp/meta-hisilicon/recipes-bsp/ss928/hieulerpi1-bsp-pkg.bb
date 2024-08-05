@@ -41,7 +41,7 @@ do_install () {
     install -m 0755 ${WORKDIR}/ko-extra/pre_vo ${D}/usr/bin/
 
     cp -r ${WORKDIR}/ko ${D}/
-    cp -f ${WORKDIR}/ko-extra/ch343.ko ${D}/ko
+    # cp -f ${WORKDIR}/ko-extra/ch343.ko ${D}/ko
 
     #for mipi, use load_ss928v100 from ko-extra
     cp -f ${WORKDIR}/ko-extra/load_ss928v100 ${D}/ko
