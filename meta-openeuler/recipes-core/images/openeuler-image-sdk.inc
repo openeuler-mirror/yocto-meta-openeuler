@@ -1,14 +1,16 @@
 # set IMAGE_LOCALES_ARCHIVE to 0 and unset SDKIMAGE_LINGUAS, to avoid run generate_locale_archive()
 IMAGE_LOCALES_ARCHIVE = "0"
+
+
 # currently we don't install language configurations
 SDKIMAGE_LINGUAS = ""
-SDK_RELOCATE_AFTER_INSTALL = "0"
-
+SDK_RELOCATE_AFTER_INSTALL = "${@['1', '0']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
 export SDK_OS = "linux"
-
+# when PREBUILT_TOOLCHAIN_ENABLE is yes
 # no need generate host packages, we directly use them in docker env, default in populate_sdk_base.bbclass
-TOOLCHAIN_HOST_TASK:remove = "nativesdk-packagegroup-sdk-host"
-
+# when PREBUILT_TOOLCHAIN_ENABLE is no, most native/nativesdk packages can be built
+# so we can follow poky's original way to handle sdk
+TOOLCHAIN_HOST_TASK:remove = "${@["", 'nativesdk-packagegroup-sdk-host']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
 # use prebuilt tools build
 SDK_DEPENDS:remove = "${@['', '${SDK_ARCHIVE_DEPENDS} cross-localedef-native']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
 
@@ -64,6 +66,10 @@ add_include_link() {
     # must relative path, otherwise will not found after decompression.
     ln -s ../../../${REAL_MULTIMACH_TARGET_SYS}/usr/include include
     cd -
+
+# the external toolchain in container may be read-only because of container configuration,
+# so we need to make it writable here to guarantee the SDK after installation is writeable
+    chmod -R u+w  ${SDK_OUTPUT}/${SDKPATH}/sysroots
 }
 
 # functions added to last after sdk has been created
@@ -83,4 +89,3 @@ libstdc++-dev \
 
 # static lib need for sdk toolchian
 SDKIMAGE_FEATURES:append = " staticdev-pkgs dev-pkgs src-pkgs dbg-pkgs "
-
