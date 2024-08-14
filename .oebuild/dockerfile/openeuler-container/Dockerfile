@@ -84,6 +84,9 @@ RUN wget ${openeuler_repo}/releases/download/${toolchain_version}/1_openeuler_gc
     && rm -rf openeuler_gcc_riscv64.tar.gz \
     && rm -rf merge_data.sh
 
+# give write authority to gcc
+RUN chmod u+w -R ./*
+
 WORKDIR /usr1/openeuler
 # download llvm toolchain and install it
 ARG llvm_toolchain_version=llvm-toolchain-v0.1.1
