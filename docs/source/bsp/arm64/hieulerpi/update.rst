@@ -116,32 +116,42 @@ ToolPlatform工具是烧录芯片镜像的最基本工具，未烧录任何芯�
 1) 创建启动SD卡
 ~~~~~~~~~~~~~~~
 
-启动SD卡只需在SD卡中创建ext4格式的文件系统即可，并通过修改\ ``sd_rootfs_num``\ 环境变量指定正确的分区。
+从SD卡启动需在SD卡中创建对应boot文件分区表及rootfs系统分区表，可以通过修改\ ``sd_rootfs_num``\ 环境变量指定正确的分区。
 
    【注】：
 
    1. 若正常进行分区sd卡的第一分区，分区号为1，后续分区以此类推。
 
-   2. 若不创建分区表直接在SD卡上创建文件系统，分区号为0。
-
-   3. 默认从2号分区启动。
+   2. 默认从2号分区启动。
 
 .. code:: bash
 
-   # fdisk 创建分区表，具体设备节点根据实际情况修改
-   sudo fidsk /dev/sdb
-   # mkfs.ext4创建文件系统
-   sudo mkfs.ext4 /dev/sdb1
-   # 将分区镜像写入分区
-   sudo dd if=rootfs.ext4 of=/dev/sdb1
+   # 使用 fdisk 创建两个分区表，具体设备节点根据实际情况修改，此处需创建好对应1和2分区
+   sudo fdisk /dev/sdb
+   # 将分区号为1的分区格式化为 FAT32 格式，用于存储boot相关文件
+   sudo mkfs.vfat -F 32 /dev/sdb1
+   # 将该FAT32分区表挂载
+   sudo mount  /dev/sdb1 /mnt/xxx
+   # 并在挂载后的路径内创建boot文件夹后拷入boot/kernel/rootfs等文件
+   # 注意此处boot文件夹内不要放入env_append.txt文件
+   .
+   └── boot
+      ├── boot_env.bin             # uboot
+      ├── boot_image.bin           # uboot环境变量
+      ├── kernel                   # linux内核
+      └── rootfs.ext4              # 根文件系统
 
-.. code:: bash
-
-   # 在uboot终端中执行以下命令设置SD卡启动分区
-   setenv sd_rootfs_num 1
+   # 将分区号为1的分区格式化为 ext4，用于写入rootfs
+   sudo mkfs.ext4 /dev/sdb2
 
 2) 从SD卡启动
 ~~~~~~~~~~~~~
+
+在uboot的串口终端中输入如下命令，将boot文件夹中的系统写入对应分区
+.. code:: bash
+
+   # 将系统写入对应分区
+   cpfile "mmc 1:1 /boot/rootfs.ext4" "mmc 1:2 0x0"
 
 若要从SD卡启动则需要修改启动参数\ ``boot_media``\ ，在uboot的串口终端中输入\ ``print boot_media``\ 命令可查看当前的启动方式，boot_media为\ ``emmc``\ 时从板载的emmc启动，boot_media为\ ``sd``\ 时从SD卡启动。
 
@@ -166,6 +176,8 @@ ToolPlatform工具是烧录芯片镜像的最基本工具，未烧录任何芯�
    1. SD卡启动必须为ext4格式的文件系统
 
    2. 默认从SD卡的第二分区启动，若要修改启动分区可修改环境变量\ ``sd_rootfs_num``
+
+   3. 完成对应操作后需要使用\ ``saveenv``\ 保存环境变量
 
 五、常见问题
 ------------
