@@ -199,31 +199,39 @@
 <span id="id8"></span><h2>四、SD卡启动<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <section id="id9">
 <h3>1) 创建启动SD卡<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
-<p>启动SD卡只需在SD卡中创建ext4格式的文件系统即可，并通过修改<code class="docutils literal notranslate"><span class="pre">sd_rootfs_num</span></code>环境变量指定正确的分区。</p>
+<p>从SD卡启动需在SD卡中创建对应boot文件分区表及rootfs系统分区表，可以通过修改<code class="docutils literal notranslate"><span class="pre">sd_rootfs_num</span></code>环境变量指定正确的分区。</p>
 <blockquote>
 <div><p>【注】：</p>
 <ol class="arabic simple">
 <li><p>若正常进行分区sd卡的第一分区，分区号为1，后续分区以此类推。</p></li>
-<li><p>若不创建分区表直接在SD卡上创建文件系统，分区号为0。</p></li>
 <li><p>默认从2号分区启动。</p></li>
 </ol>
 </div></blockquote>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># fdisk 创建分区表，具体设备节点根据实际情况修改</span>
-sudo fidsk /dev/sdb
-<span class="c1"># mkfs.ext4创建文件系统</span>
-sudo mkfs.ext4 /dev/sdb1
-<span class="c1"># 将分区镜像写入分区</span>
-sudo dd <span class="k">if</span><span class="o">=</span>rootfs.ext4 <span class="nv">of</span><span class="o">=</span>/dev/sdb1
-</pre></div>
-</div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 在uboot终端中执行以下命令设置SD卡启动分区</span>
-setenv sd_rootfs_num <span class="m">1</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 使用 fdisk 创建两个分区表，具体设备节点根据实际情况修改，此处需创建好对应1和2分区</span>
+sudo fdisk /dev/sdb
+<span class="c1"># 将分区号为1的分区格式化为 FAT32 格式，用于存储boot相关文件</span>
+sudo mkfs.vfat -F <span class="m">32</span> /dev/sdb1
+<span class="c1"># 将该FAT32分区表挂载</span>
+sudo mount  /dev/sdb1 /mnt/xxx
+<span class="c1"># 并在挂载后的路径内创建boot文件夹后拷入boot/kernel/rootfs等文件</span>
+<span class="c1"># 注意此处boot文件夹内不要放入env_append.txt文件</span>
+.
+└── boot
+   ├── boot_env.bin             <span class="c1"># uboot</span>
+   ├── boot_image.bin           <span class="c1"># uboot环境变量</span>
+   ├── kernel                   <span class="c1"># linux内核</span>
+   └── rootfs.ext4              <span class="c1"># 根文件系统</span>
+
+<span class="c1"># 将分区号为2的分区格式化为 ext4，用于写入rootfs</span>
+sudo mkfs.ext4 /dev/sdb2
+<span class="c1"># 将rootfs镜像写入2号分区</span>
+sudo dd <span class="k">if</span><span class="o">=</span>rootfs.ext4 <span class="nv">of</span><span class="o">=</span>/dev/sdb2
 </pre></div>
 </div>
 </section>
 <section id="id10">
 <h3>2) 从SD卡启动<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
-<p>若要从SD卡启动则需要修改启动参数<code class="docutils literal notranslate"><span class="pre">boot_media</span></code>，在uboot的串口终端中输入<code class="docutils literal notranslate"><span class="pre">print</span> <span class="pre">boot_media</span></code>命令可查看当前的启动方式，boot_media为<code class="docutils literal notranslate"><span class="pre">emmc</span></code>时从板载的emmc启动，boot_media为<code class="docutils literal notranslate"><span class="pre">sd</span></code>时从SD卡启动。</p>
+<p>若要从SD卡启动则需要在uboot内修改启动参数<code class="docutils literal notranslate"><span class="pre">boot_media</span></code>，在uboot的串口终端中输入<code class="docutils literal notranslate"><span class="pre">print</span> <span class="pre">boot_media</span></code>命令可查看当前的启动方式，boot_media为<code class="docutils literal notranslate"><span class="pre">emmc</span></code>时从板载的emmc启动，boot_media为<code class="docutils literal notranslate"><span class="pre">sd</span></code>时从SD卡启动。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># print boot_media</span>
 <span class="n">boot_media</span><span class="o">=</span><span class="n">emmc</span>
 </pre></div>
@@ -240,6 +248,7 @@ setenv boot_media emmc
 <ol class="arabic simple">
 <li><p>SD卡启动必须为ext4格式的文件系统</p></li>
 <li><p>默认从SD卡的第二分区启动，若要修改启动分区可修改环境变量<code class="docutils literal notranslate"><span class="pre">sd_rootfs_num</span></code></p></li>
+<li><p>完成对应操作后需要使用<code class="docutils literal notranslate"><span class="pre">saveenv</span></code>保存环境变量</p></li>
 </ol>
 </div></blockquote>
 </section>
