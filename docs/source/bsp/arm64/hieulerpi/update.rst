@@ -141,19 +141,15 @@ ToolPlatform工具是烧录芯片镜像的最基本工具，未烧录任何芯�
       ├── kernel                   # linux内核
       └── rootfs.ext4              # 根文件系统
 
-   # 将分区号为1的分区格式化为 ext4，用于写入rootfs
+   # 将分区号为2的分区格式化为 ext4，用于写入rootfs
    sudo mkfs.ext4 /dev/sdb2
+   # 将rootfs镜像写入2号分区
+   sudo dd if=rootfs.ext4 of=/dev/sdb2
 
 2) 从SD卡启动
 ~~~~~~~~~~~~~
 
-在uboot的串口终端中输入如下命令，将boot文件夹中的系统写入对应分区
-.. code:: bash
-
-   # 将系统写入对应分区
-   cpfile "mmc 1:1 /boot/rootfs.ext4" "mmc 1:2 0x0"
-
-若要从SD卡启动则需要修改启动参数\ ``boot_media``\ ，在uboot的串口终端中输入\ ``print boot_media``\ 命令可查看当前的启动方式，boot_media为\ ``emmc``\ 时从板载的emmc启动，boot_media为\ ``sd``\ 时从SD卡启动。
+若要从SD卡启动则需要在uboot内修改启动参数\ ``boot_media``\ ，在uboot的串口终端中输入\ ``print boot_media``\ 命令可查看当前的启动方式，boot_media为\ ``emmc``\ 时从板载的emmc启动，boot_media为\ ``sd``\ 时从SD卡启动。
 
 .. code:: 
 
