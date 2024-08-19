@@ -12,9 +12,6 @@ set( CMAKE_CXX_COMPILER_LAUNCHER  )
 set( CMAKE_ASM_COMPILER $ENV{CROSS_COMPILE}gcc )
 find_program( CMAKE_AR $ENV{AR} DOC "Archiver" REQUIRED )
 
-# Currently, OPENEULER_NATIVESDK_DIR uses a fixed address.
-# After optimizing the nativesdk, a generative or parameterized optimization can be performed here.
-set( OPENEULER_NATIVESDK_DIR "/opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-linux/usr/bin" )
 if ($ENV{OECORE_NATIVE_SYSROOT} MATCHES "/sysroots/([a-zA-Z0-9_-]+)-.+-.+")
   set( OPENEULER_NATIVE_SYSROOT_BIN "$ENV{OECORE_NATIVE_SYSROOT}/usr/bin" )
 endif()
@@ -48,12 +45,13 @@ set( CMAKE_CXX_LINK_FLAGS " ${OPENEULER_LD_FLAGS} $ENV{LDFLAGS} --sysroot=${TARG
 
 # only search in the paths provided so cmake doesnt pick
 # up libraries and tools from the native build machine
-set( CMAKE_FIND_ROOT_PATH ${TARGET_SYSROOT_DIR} ${OPENEULER_NATIVESDK_DIR} ${OPENEULER_NATIVE_SYSROOT_BIN} ${CMAKE_INSTALL_PREFIX} $ENV{COLCON_WORK_PATH} $ENV{EXTRA_ALLOW_PATH_USER})
+# COLCON_WORKSPACE_PATH is created for colcon build to find necessary config files
+set( CMAKE_FIND_ROOT_PATH ${TARGET_SYSROOT_DIR} ${OPENEULER_NATIVE_SYSROOT_BIN} ${CMAKE_INSTALL_PREFIX} $ENV{COLCON_WORKSPACE_PATH} $ENV{EXTRA_ALLOW_PATH_USER})
 set( CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY )
 set( CMAKE_FIND_ROOT_PATH_MODE_PROGRAM ONLY )
 set( CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY )
 set( CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY )
-set( CMAKE_PROGRAM_PATH "/" )
+set( CMAKE_PROGRAM_PATH "${OPENEULER_NATIVE_SYSROOT_BIN}" )
 
 # We need to set the rpath to the correct directory as cmake does not provide any
 # directory as rpath by default
@@ -69,4 +67,3 @@ list(APPEND CMAKE_MODULE_PATH "${TARGET_SYSROOT_DIR}/usr/share/cmake/Modules/")
 set( CMAKE_LIBRARY_PATH ${CMAKE_INSTALL_PREFIX}/lib)
 set( CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX}/lib)
 set( CMAKE_SYSTEM_LIBRARY_PATH ${CMAKE_INSTALL_PREFIX}/lib)
-

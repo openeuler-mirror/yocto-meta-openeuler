@@ -38,3 +38,15 @@ libtheora \
 libusb-compat \
 "
 
+TOOLCHAIN_HOST_TASK += " \
+nativesdk-sdk-provides-dummy \
+nativesdk-python3 \
+nativesdk-python3-colcon-common-extensions \
+nativesdk-python3-numpy \
+nativesdk-python3-pytest \
+nativesdk-python3-empy \
+nativesdk-python3-lark-parser \
+nativesdk-cmake \
+nativesdk-make \
+nativesdk-ninja \
+"
