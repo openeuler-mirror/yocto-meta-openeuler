@@ -8,7 +8,6 @@ INHIBIT_DEFAULT_DEPS = "1"
 SRC_URI = " \
         file://openeuler_target_env.sh \
         file://toolchain.cmake \
-        file://requirements.txt \
         "
 
 S = "${WORKDIR}"
@@ -19,7 +18,6 @@ do_install() {
     install -d ${openeuler_env_path}/
     install ${WORKDIR}/openeuler_target_env.sh ${openeuler_env_path}/
     install ${WORKDIR}/toolchain.cmake ${openeuler_env_path}/
-    install ${WORKDIR}/requirements.txt ${openeuler_env_path}/
 }
 
 PACKAGES = "${PN}"
