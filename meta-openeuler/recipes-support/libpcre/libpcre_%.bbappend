@@ -14,5 +14,9 @@ SRC_URI:prepend = " \
         file://pcre-${PV}.tar.bz2 \
         "
 
+SRC_URI:prepend:riscv64 = " \
+        file://add-riscv-jit-backport.patch \
+"
+
 SRC_URI[md5sum] = "4452288e6a0eefb2ab11d36010a1eebb"
 SRC_URI[sha256sum] = "4dae6fdcd2bb0bb6c37b5f97c33c2be954da743985369cddac3546e3218bffb8"

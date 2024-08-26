@@ -1,7 +1,7 @@
 # apply openeuler source package
 OPENEULER_REPO_NAME = "bluez"
 
-PV = "5.71"
+PV = "5.77"
 
 SRC_URI:prepend = "\
     file://bluez-${PV}.tar.xz \
@@ -9,7 +9,9 @@ SRC_URI:prepend = "\
 "
 
 # removed by rpi in 5.66 version
-SRC_URI:remove = "file://0004-Move-the-43xx-firmware-into-lib-firmware.patch"
+SRC_URI:remove = "file://0004-Move-the-43xx-firmware-into-lib-firmware.patch \
+                file://0001-Allow-using-obexd-without-systemd-in-the-user-sessio.patch \
+                "
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 SRC_URI:append:rpi = " \

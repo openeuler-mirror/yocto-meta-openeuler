@@ -18,6 +18,28 @@ SRC_URI += " \
         file://bugfix-audit-userspace-missing-syscalls-for-aarm64.patch \
         file://bugfix-audit-reload-coredump.patch \
         file://audit-Add-sw64-architecture.patch \
+        file://backport-Rewrite-legacy-service-functions-in-terms-of-systemc.patch \
+        file://backport-Error-out-if-required-zos-parameters-missing.patch \
+        file://backport-Fix-deprecated-python-function.patch \
+        file://backport-lib-close-audit-socket-in-load_feature_bitmap-334.patch \
+        file://backport-lib-enclose-macro-to-avoid-precedence-issues.patch \
+        file://backport-memory-allocation-updates-341.patch \
+        file://backport-lib-cast-to-unsigned-char-for-character-test-functio.patch \
+        file://backport-Make-session-id-consistently-typed-327.patch \
+        file://backport-Avoid-file-descriptor-leaks-in-multi-threaded-applic.patch \
+        file://backport-first-part-of-NULL-pointer-checks.patch \
+        file://backport-second-part-of-NULL-pointer-checks.patch \
+        file://backport-last-part-of-NULL-pointer-checks.patch \
+        file://backport-Fixed-NULL-checks.patch \
+        file://backport-update-error-messages-in-NULL-Checks.patch \
+        file://backport-adding-the-file-descriptor-closure.patch \
+        file://backport-correcting-memcmp-args-in-check_rule_mismatch-functi.patch \
+        file://backport-Use-atomic_int-if-available-for-signal-related-flags.patch \
+        file://backport-Use-atomic_uint-if-available-for-signal-related-flag.patch \
+        file://backport-avoiding-of-NULL-pointers-dereference-366.patch \
+        file://backport-Cleanup-code-in-LRU.patch \
+        file://backport-Fix-memory-leaks.patch \
+        file://backport-fix-one-more-leak.patch \
         file://auditd.conf \
         file://audit.rules \
         "

@@ -28,6 +28,8 @@ SRC_URI:prepend = "file://pcre2-${PV}.tar.bz2 \
             file://backport-Fix-backreferences-with-unset-backref-and-non-greedy.patch \
             file://backport-Sanity-checks-for-ctype-functions-342.patch \
             file://backport-Fix-incorrect-class-character-matches-in-JIT.patch \
+            file://backport-Fixing-an-issue-using-empty-character-sets-in-jit.patch \
+            file://backport-pcre2grep-document-better-possible-multiline-matchin.patch \
 "
 
 SRC_URI[sha256sum] = "8d36cd8cb6ea2a4c2bb358ff6411b0c788633a2a45dabbf1aeb4b701d1b5e840"
