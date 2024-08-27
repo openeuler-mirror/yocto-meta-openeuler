@@ -18,6 +18,14 @@ SRC_URI:prepend = " \
         file://backport-CVE-2019-16163.patch \
         file://backport-CVE-2023-36617.patch \
         file://backport-CVE-2024-27281.patch \
+        file://backport-CVE-2024-27282.patch \
+        file://backport-rubygems-rubygems-Drop-to-support-Psych-3.0-bundled-.patch \
+        file://backport-0001-CVE-2024-35221.patch \
+        file://backport-0002-CVE-2024-35221.patch \
+        file://backport-0003-CVE-2024-35221.patch \
+        file://backport-0004-CVE-2024-35221.patch \
+        file://backport-0005-CVE-2024-35221.patch \
+        file://upgrade-lib-rexml-to-3.3.1.patch \
 "
 
 SRC_URI:remove = " \

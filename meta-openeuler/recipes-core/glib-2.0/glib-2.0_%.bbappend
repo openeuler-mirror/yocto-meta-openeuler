@@ -27,6 +27,8 @@ SRC_URI:append = " \
     file://gspawn-eperm.patch \
     file://backport-gmessages-fix-dropping-irrelevant-log-domains.patch \
     file://backport-gutils-Fix-an-unlikely-minor-leak-in-g_build_user_data_dir.patch \
+    file://backport-CVE-2024-34397.patch \
+    file://backport-gdbusconnection-Allow-name-owners-to-have-the-syntax-of-a-well-known-name.patch \
 "
 
 SRC_URI:append:class-native:append = " \

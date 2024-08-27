@@ -1,12 +1,12 @@
 # the main bb file: yocto-poky/meta/recipes-graphics/xorg-lib/pixman_0.40.0.bb
 
-PV = "0.42.2"
+PV = "0.43.4"
 
 SRC_URI = "file://${BPN}-${BP}.tar.bz2 \
 "
 
-SRC_URI[md5sum] = "b07d3ba74f4824d94fa8f4e5248858d4"
-SRC_URI[sha256sum] = "891a3a8b925562306dbbaaad88a80b83d68d6a41485ff2a8b1e09cd5350e4362"
+SRC_URI[md5sum] = "9f89246b6e783a8c10fef451906791c1"
+SRC_URI[sha256sum] = "b5d6e50d0738d6e4818d05054580fd6d4cf762e24e91d2a2884a4b91baa76d6a"
 
 S = "${WORKDIR}/${BPN}-${BP}"
 

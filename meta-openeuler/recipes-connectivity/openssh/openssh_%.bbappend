@@ -19,6 +19,7 @@ SRC_URI:prepend = " \
         file://skip-scp-test-if-there-is-no-scp-on-remote-path-as-s.patch \
         file://backport-CVE-2023-48795-upstream-implement-strict-key-exchange-in-ssh-and-ss.patch \
         file://backport-CVE-2023-51385-upstream-ban-user-hostnames-with-most-shell-metachar.patch \
+        file://backport-fix-CVE-2024-6387.patch \
         "
 
 # from oe-core

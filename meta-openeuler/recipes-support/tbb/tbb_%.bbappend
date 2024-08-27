@@ -4,14 +4,14 @@
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
-
 # version in openEuler
-PV = "2020.3"
+PV = "2021.11.0"
 
 # files, patches that come from openeuler
-SRC_URI:prepend = " \
-    file://tbb-${PV}.tar.gz \
-    file://bugfix-tbb-fix-__TBB_machine_fetchadd4-was-not-declared-on-.patch \
+SRC_URI = "file://tbb-${PV}.tar.gz \
+        file://tbb-2021-Werror.patch \
+        file://tbb-2021-strict-aliasing.patch \
+        file://bugfix-tbb-fix-__TBB_machine_fetchadd4-was-not-declared-on-.patch \
 "
 
 S = "${WORKDIR}/oneTBB-${PV}"

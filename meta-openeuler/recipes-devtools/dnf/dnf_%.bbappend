@@ -13,6 +13,12 @@ SRC_URI:prepend = " \
         file://fix-dnf-history-undo-error-when-history-sqlite-missing.patch \
         file://get-lockfile-exists-before-unlick.patch \
         file://backport-Fix-bash-completion-due-to-sqlite-changes.patch \
+        file://backport-remove-duplicates-when-no-duplicates-exit-with-0.patch \
+        file://backport-remove-oldinstallonly-when-no-old-installonly-packages-exit-with-0.patch \
+        file://backport-Add-all-candidates-for-reinstall-to-solver.patch \
+        file://backport-Limit-queries-to-nevra-forms-when-provided-by-command.patch \
+        file://backport-doc-Remove-provide-of-spec-definition-for-repoquery-command.patch \
+        file://backport-Update-the-man-page-entry-for-the-countme-option.patch \
 "
 
 # in oee, dnf is a prebuild-tool, so add the following patch when build nativesdk-dnf.

@@ -1,7 +1,7 @@
 # main bbfile: yocto-poky/meta/recipes-extended/bash/bash_5.1.16.bb
 
 # bash version in openeuler
-PV = "5.2.15"
+PV = "5.2.21"
 
 # These patches have been merged in this version
 SRC_URI:remove = " file://CVE-2022-3715.patch \
@@ -27,9 +27,15 @@ SRC_URI:prepend = " \
            file://backport-fix-for-nofork-comsub-command-printing-fix-for-crash.patch \
            file://backport-fix-small-memleak-in-globbing.patch \
            file://backport-fix-for-leak-when-completing-command-word-with-glob-.patch \
+           file://backport-fix-for-E-transformation-fixes-for-failures-in-arith.patch \
+           file://backport-changes-for-quoting-special-and-multibyte-characters.patch \
+           file://backport-fixes-for-LINENO-in-multi-line-simple-commands-print.patch \
+           file://backport-changes-to-SIGINT-handler-while-waiting-for-a-child-.patch \
+           file://backport-renamed-several-functions-beginning-with-legal_-chan.patch \
+           file://backport-fix-for-cd-when-curent-directory-doesn-t-exist-fix-w.patch \
 "
 
-SRC_URI[tarball.sha256sum] = "13720965b5f4fc3a0d4b61dd37e7565c741da9a5be24edc2ae00182fc1b3588c"
+SRC_URI[tarball.sha256sum] = "c8e31bdc59b69aaffc5b36509905ba3e5cbb12747091d27b4b977f078560d5b8"
 
 # When testing the performance of the shell using UnixBench, we found that the sh of busybox(ash)
 # outperformed bash, so we still make sh link to busybox instead of bash.
