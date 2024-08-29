@@ -1,6 +1,6 @@
 require openeuler-xorg-lib-common.inc
 
-PV = "1.2.1"
+PV = "1.2.2"
 
 # License update
 LIC_FILES_CHKSUM = "file://COPYING;md5=dbf3bd0f2348eeccd0f217146ba26250"

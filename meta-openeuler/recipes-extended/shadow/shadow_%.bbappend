@@ -18,6 +18,10 @@ SRC_URI:prepend = "file://${BP}.tar.xz \
             file://usermod-unlock.patch \
             file://shadow-add-sm3-crypt-support.patch \
             file://shadow-Remove-encrypted-passwd-for-useradd-gr.patch \
+            file://backport-port-fix-OVERRUN-CWE-119.patch \
+            file://backport-src-usermod.c-update_group_file-Fix-RESOURCE_LEAK-CW.patch \
+            file://backport-src-usermod.c-update_gshadow_file-Fix-RESOURCE_LEAK-.patch \
+            file://backport-src-groupmod.c-delete-gr_free_members-grp-to-avoid-d.patch \
            "
 # remove patches with the same functionality in src-openeuler from poky:
 # file://shadow-update-pam-conf.patch

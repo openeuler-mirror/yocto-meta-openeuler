@@ -1,16 +1,15 @@
 # bbfile: yocto-poky/meta/recipes-support/libbsd/libbsd_0.11.5.bb
 
-PV = "0.10.0"
+PV = "0.12.2"
 
-LIC_FILES_CHKSUM = "file://COPYING;md5=2120be0173469a06ed185b688e0e1ae0"
+LIC_FILES_CHKSUM = "file://COPYING;md5=9b087a0981a1fcad42efbba6d4925a0f"
 
 SRC_URI = " \
         file://${BP}.tar.xz \
-        file://libbsd-symver.patch \
 "
 
-SRC_URI[md5sum] = "ead96d240d02faa5b921c0aa50c812b5"
-SRC_URI[sha256sum] = "34b8adc726883d0e85b3118fa13605e179a62b31ba51f676136ecb2d0bc1a887"
+SRC_URI[md5sum] = "1aa07d44ee00e2cc1ae3ac10baae7a68"
+SRC_URI[sha256sum] = "b88cc9163d0c652aaf39a99991d974ddba1c3a9711db8f1b5838af2a14731014"
 
 # To be fixed by llvm building
 TOOLCHAIN:class-native = "gcc"

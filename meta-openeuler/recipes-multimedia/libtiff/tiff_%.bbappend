@@ -11,7 +11,8 @@ SRC_URI = "file://${BP}.tar.gz \
         file://backport-0001-CVE-2023-6277.patch \
         file://backport-0002-CVE-2023-6277.patch \
         file://backport-0003-CVE-2023-6277.patch \
-        "                             
+        file://backport-0004-CVE-2024-7006.patch \
+        "
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 # poky patch

@@ -9,6 +9,7 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
            file://backport-aarch64-unw_step-validates-address-before-calling-dwarf_get.patch \
            file://backport-avoid-calling-printf-because-OE-glibc-2.34-used-mno-.patch \
            file://backport-fix-run-ptrace-mapper-test-case-failed.patch \
+           file://riscv.patch \
            "
 
 # poky conflict

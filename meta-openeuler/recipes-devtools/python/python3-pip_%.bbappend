@@ -37,4 +37,6 @@ SRC_URI:remove = " \
 SRC_URI:append =" \
         file://remove-existing-dist-only-if-path-conflicts.patch \
         file://dummy-certifi.patch \
+        file://backport-CVE-2023-45803-Made-body-stripped-from-HTTP-requests.patch \
+        file://backport-CVE-2024-37891-Strip-Proxy-Authorization-header-on-redirects.patch \
 "

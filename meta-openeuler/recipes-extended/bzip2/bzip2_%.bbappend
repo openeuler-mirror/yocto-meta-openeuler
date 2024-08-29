@@ -11,4 +11,6 @@ SRC_URI:append = " \
     file://${BP}.tar.gz \
     file://0001-add-compile-option.patch \
     file://0002-CVE-2019-12900.patch \
+    file://0003-license-and-version-print-should-output-to-stdout-and-exit-with-code-0.patch \
+    file://bzip2-1.0.8-toolchain-variable.patch \
 "

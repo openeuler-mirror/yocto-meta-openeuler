@@ -25,9 +25,10 @@ PACKAGECONFIG[manpages] = "--enable-xmlto, --disable-xmlto, xmlto-native docbook
 
 # alsa-utils specified in SRC_URI due to alsa-utils-scripts recipe
 SRC_URI = "https://www.alsa-project.org/files/pub/utils/alsa-utils-${PV}.tar.bz2 \
-           file://0001-aplay-axfer-Replace-off64_t-with-off_t.patch \
+           file://0001-topology.c-include-locale.h.patch \
+           file://0001-nhlt-nhlt-dmic-info.c-include-sys-types.h.patch \
            "
-SRC_URI[sha256sum] = "e140fa604c351f36bd72167c8860c69d81b964ae6ab53992d6434dde38e9333c"
+SRC_URI[sha256sum] = "104b62ec7f02a7ce16ca779f4815616df1cc21933503783a9107b5944f83063a"
 
 # On build machines with python-docutils (not python3-docutils !!) installed
 # rst2man (not rst2man.py) is detected and compile fails with
@@ -56,6 +57,7 @@ ALSA_UTILS_PKGS = "\
              alsa-utils-alsaloop \
              alsa-utils-alsaucm \
              alsa-utils-scripts \
+             alsa-utils-nhltdmicinfo \
             "
 
 PACKAGES += "${ALSA_UTILS_PKGS}"
@@ -81,6 +83,7 @@ FILES:alsa-utils-scripts     = "${sbindir}/alsaconf \
                ${sbindir}/alsa-info.sh \
                ${sbindir}/alsabat-test.sh \
               "
+FILES:alsa-utils-nhltdmicinfo = "${bindir}/nhlt-dmic-info"
 
 SUMMARY:alsa-utils-alsabat      = "Command-line sound tester for ALSA sound card driver"
 SUMMARY:alsa-utils-alsatplg     = "Converts topology text files into binary format for kernel"
@@ -97,6 +100,7 @@ SUMMARY:alsa-utils-aseqdump     = "Shows the events received at an ALSA sequence
 SUMMARY:alsa-utils-alsaloop     = "ALSA PCM loopback utility"
 SUMMARY:alsa-utils-alsaucm      = "ALSA Use Case Manager"
 SUMMARY:alsa-utils-scripts      = "Shell scripts that show help info and create ALSA configuration files"
+SUMMARY:alsa-utils-nhltdmicinfo = "Dumps microphone array information from ACPI NHLT table"
 
 RRECOMMENDS:alsa-utils-alsactl = "alsa-states"
 
