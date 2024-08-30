@@ -6,6 +6,9 @@ EXTRA_IMAGECMD_ext4 += "-E no_copy_xattrs"
 # add /init symlink to rootfs, refer to IMAGE_CMD_cpio
 IMAGE_PREPROCESS_COMMAND += "add_init_to_rootfs;"
 
+# boot space 52M
+BOOT_SPACE = "53248"
+
 add_init_to_rootfs() {
     if [ "${IMAGE_BUILDING_DEBUGFS}" != "true" ]; then
         if [ ! -L ${IMAGE_ROOTFS}/init ] && [ ! -e ${IMAGE_ROOTFS}/init ]; then
