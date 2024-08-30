@@ -71,9 +71,6 @@ def init_environment(){
     if (env.commentRepo == null || env.commentRepo == ""){
         env.commentRepo = "yocto-embedded-tools"
     }
-    if (env.commentRepoBranch == null || env.commentRepoBranch == ""){
-        env.commentRepoBranch = "master"
-    }
     // set other
     if (env.isSaveCache == null || env.isSaveCache == ""){
         env.isSaveCache = "false"
