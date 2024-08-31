@@ -232,6 +232,7 @@ def prepareSrcCode(workspace){
             rm -rf build
             cp -f ${shareDir}/${ciBranch}/src.tar.gz .
             tar zxf src.tar.gz
+            sync
             popd
         fi
     """
