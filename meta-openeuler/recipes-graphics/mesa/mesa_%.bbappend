@@ -1,4 +1,4 @@
-# main bbfile: meta-openeuler/recipes-graphics/mesa/mesa_23.1.3.bb
+# main bbfile: meta-openeuler/recipes-graphics/mesa/mesa_24.0.3.bb
 
 require mesa-src.inc
 
