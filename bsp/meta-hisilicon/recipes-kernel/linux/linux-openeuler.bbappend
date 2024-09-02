@@ -1,4 +1,4 @@
 # add COMPATIBLE_MACHINE
-COMPATIBLE_MACHINE = "hi3093|hieulerpi1|hiedge1"
+COMPATIBLE_MACHINE = "hi3093|hieulerpi1|hiedge1|hipico"
 
 require recipes-kernel/linux/${@bb.utils.contains('DISTRO_FEATURES', 'mpu_solution', 'linux-hi3093-mpu.inc', 'linux-${MACHINE}.inc', d)}
