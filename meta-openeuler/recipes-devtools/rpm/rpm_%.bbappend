@@ -33,6 +33,19 @@ SRC_URI:prepend = " \
         file://backport-Tip-toe-around-rpmfiFN-thin-ice-in-fsm.patch \
         file://backport-Fix-a-memleak-on-invalid-command-line-options.patch \
         file://backport-Let-eBPF-ELF-files-be-packaged-in-noarch-packages.patch \
+        file://backport-Fix-some-int-enum-confusion-in-the-build-code.patch \
+        file://backport-Use-the-internal-DB_CTRL-enum-for-intenal-uses-consi.patch \
+        file://backport-An-enumeration-is-not-a-bitfield-use-an-integer-inst.patch \
+        file://backport-Fix-an-enum-int-type-mismatch-in-rpmfiArchiveReadToF.patch \
+        file://backport-Fix-an-enum-int-type-mismatch-in-transaction-verify-.patch \
+        file://backport-Fix-enum-type-mismatch-in-rpmTagGetValue.patch \
+        file://backport-Free-old-cookie-value-to-prevent-a-memory-leak.patch \
+        file://backport-Fix-pointer-bogosity-in-rpmlog-callback.patch \
+        file://backport-Fix-an-ancient-memleak-on-caps-parsing-add-tests.patch \
+        file://backport-Fix-potential-use-of-uninitialized-pipe-array.patch \
+        file://backport-Fix-potential-use-of-uninitialized-pgp-struct.patch \
+        file://backport-Use-unsigned-integers-more-consistently-in-the-handl.patch \
+        file://backport-Use-proper-type-for-copyTagsFromMainDebug.patch \
         file://Add-digest-list-plugin.patch \
         file://Add-IMA-digest-list-support.patch \
 "

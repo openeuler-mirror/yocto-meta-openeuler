@@ -1,4 +1,4 @@
-PV = "1.5.5"
+PV = "1.5.6"
 
 SRC_URI = " \
         file://${BP}.tar.gz \

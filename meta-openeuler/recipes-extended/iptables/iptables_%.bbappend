@@ -26,6 +26,18 @@ SRC_URI:append = " \
     file://${BP}.tar.xz \
     file://enabled-makecheck-in-extensions.patch \
     file://bugfix-add-check-fw-in-entry.patch \
+    file://backport-ebtables-translate-Print-flush-command-after-parsing-is-finished.patch \
+    file://backport-xtables-eb-fix-crash-when-opts-isn-t-reallocated.patch \
+    file://backport-iptables-Fix-handling-of-non-existent-chains.patch \
+    file://backport-Special-casing-for-among-match-in-compare_matches.patch \
+    file://backport-libipt_icmp-Fix-confusion-between-255-and-any.patch \
+    file://backport-fix-wrong-maptype-of-base-chain-counters-on-restore.patch \
+    file://backport-Fix-checking-of-conntrack-ctproto.patch \
+    file://backport-Fix-for-non-CIDR-compatible-hostmasks.patch \
+    file://backport-Prevent-XTOPT_PUT-with-XTTYPE_HOSTMASK.patch \
+    file://backport-libiptc-Fix-for-another-segfault-due-to-chain-index-NULL-pointer.patch \
+    file://backport-libxtables-Fix-memleak-of-matches-udata.patch \
+    file://backport-xshared-Fix-parsing-of-empty-string-arg-in-c-option.patch \
 "
 # the openeuler patch apply failed
 # file://0001-extensions-NAT-Fix-for-Werror-format-security.patch

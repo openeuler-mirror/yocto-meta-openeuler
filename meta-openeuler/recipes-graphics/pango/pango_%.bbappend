@@ -1,6 +1,6 @@
 # the main bb file: yocto-poky/meta/recipes-graphics/pango/pango_1.50.4.bb
 
-PV = "1.51.0"
+PV = "1.52.1"
 
 SRC_URI:prepend = "file://${BP}.tar.xz;name=archive \
 "

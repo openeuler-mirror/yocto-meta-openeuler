@@ -1,12 +1,11 @@
 # main bbfile: yocto-poky/meta/recipes-extended/logrotate/logrotate_3.18.0.bb
 
 # version in openEuler
-PV = "3.21.0"
+PV = "3.22.0"
 
 # files, patches that come from openeuler
 SRC_URI:prepend = " \
         file://${BP}.tar.xz \
-        file://backport-do-not-rotate-old-logs-on-prerotate-failure.patch \
 "
 
 

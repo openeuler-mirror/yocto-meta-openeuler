@@ -1,6 +1,6 @@
 require openeuler-xorg-lib-common.inc
 
-PV = "1.3.5"
+PV = "1.3.6"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=4234bb3b2f1521ea101e4e9db7c33c69"
 

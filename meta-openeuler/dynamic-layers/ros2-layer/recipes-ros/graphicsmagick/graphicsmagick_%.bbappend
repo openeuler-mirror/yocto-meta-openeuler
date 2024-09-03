@@ -1,10 +1,10 @@
 #main bbfile: yocto-meta-ros/meta-ros2/recipes-devtools/graphicsmagick/graphicsmagick_1.3.33.bb
 OPENEULER_REPO_NAME = "GraphicsMagick"
 
-LIC_FILES_CHKSUM = "file://Copyright.txt;md5=d46c64029c86acbab3a4deffc237d406"
+LIC_FILES_CHKSUM = "file://Copyright.txt;md5=5ad9b143299aada53e485843fbafd494"
 
 # version in openEuler
-PV = "1.3.41"
+PV = "1.3.43"
 
 # files, patches that come from openeuler
 SRC_URI:prepend = " \
