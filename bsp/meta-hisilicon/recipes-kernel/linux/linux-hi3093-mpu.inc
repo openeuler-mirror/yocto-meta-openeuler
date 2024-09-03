@@ -6,11 +6,12 @@ DEPENDS += "u-boot-tools-native dtc-native"
 
 OPENEULER_REPO_NAMES = "kernel-5.10-tag3093 src-kernel-5.10-tag3093"
 
+PV = "5.10-tag3093"
+OPENEULER_KERNEL_CONFIG = "file://config/hi3093/defconfig"
+
 # add prebuild tools to make uImage
-SRC_URI = " \
-    file://kernel-5.10-tag3093 \
+SRC_URI:append = " \
     file://tools \
-    file://config/hi3093/defconfig \
     file://mpu_solution/src/non_real_time/adapter_for_hi3093/include/kbox \
     file://mpu_solution/platform/securec/include \
     file://mpu_solution/src/patches/openEuler \
@@ -18,8 +19,6 @@ SRC_URI = " \
     file://dtbs/hi3093_mcs_2with2.dts \
     file://dtbs/hi3093.dts \
 "
-
-S = "${WORKDIR}/kernel-5.10-tag3093"
 
 # add patch tool to solve patch apply
 PATCHTOOL = "git"
