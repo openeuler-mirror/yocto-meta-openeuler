@@ -1,0 +1,24 @@
+build_in: docker
+machine: ok-a40i
+toolchain_type: EXTERNAL_TOOLCHAIN:arm
+no_layer: false
+repos:
+- yocto-poky
+- yocto-meta-openembedded
+- yocto-meta-sunxi
+- yocto-meta-arm
+local_conf: |
+  PREFERRED_PROVIDER_virtual/kernel ?= "linux-openeuler"
+layers:
+- yocto-meta-arm/meta-arm
+- yocto-meta-arm/meta-arm-toolchain
+- yocto-meta-sunxi
+docker_param:
+  image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
+  parameters: -itd --network host
+  volumns:
+  - /dev/net/tun:/dev/net/tun
+  command: bash
+bitbake_cmds:
+- bitbake openeuler-image
+- bitbake openeuler-image -c do_populate_sdk
