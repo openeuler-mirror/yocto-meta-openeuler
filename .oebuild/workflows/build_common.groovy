@@ -239,27 +239,36 @@ def prepareSrcCode(workspace){
 }
 
 def translateCompileToHost(yocto_dir, arch, image_name, image_date){
-    def compileContent = readYaml file: "${yocto_dir}/.oebuild/samples/${arch}/${image_name}.yaml"
-    compileContent.build_in = "host"
-    if (arch == "aarch64"){
-        compileContent.toolchain_dir = "/usr1/openeuler/gcc/openeuler_gcc_arm64le"
-    }
-    if (arch == "arm32"){
-        compileContent.toolchain_dir = "/usr1/openeuler/gcc/openeuler_gcc_arm32le"
-    }
-    if (arch == "riscv64"){
-        compileContent.toolchain_dir = "/usr1/openeuler/gcc/openeuler_gcc_riscv64"
-    }
-    if (arch == "x86-64"){
-        compileContent.toolchain_dir = "/usr1/openeuler/gcc/openeuler_gcc_x86_64"
-    }
-    compileContent.local_conf += """
-DATETIME = "${image_date}"
-    """
-    samples_dir = "/home/jenkins/agent/samples/${arch}"
+    def read_image_yaml = "${yocto_dir}/.oebuild/samples/${arch}/${image_name}.yaml"
+    def samples_dir = "/home/jenkins/agent/samples/${arch}"
     sh "mkdir -p ${samples_dir}"
-    writeYaml file: "${samples_dir}/${image_name}.yaml", data: compileContent
-    return "${samples_dir}/${image_name}.yaml"
+    def write_image_yaml = "${samples_dir}/${image_name}.yaml"
+    def code = """
+import subprocess
+try:
+    from ruamel.yaml import YAML
+except ModuleNotFoundError:
+    subprocess.call(args="pip install ruamel.yaml -i https://pypi.tuna.tsinghua.edu.cn/simple",
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    shell=True)
+    from ruamel.yaml import YAML
+
+with open("$read_image_yaml", "r", encoding="utf-8") as file:
+    yaml = YAML()
+    data = yaml.load(file.read())
+
+data["build_in"] = "host"
+data["local_conf"] += '\\nDATETIME = "$image_date"'
+
+with open("$write_image_yaml", "w", encoding="utf-8") as file:
+    yaml = YAML()
+    yaml.dump(data, file)
+"""
+    def file_name = getRandomStr()
+    writeFile file: file_name, text: code, encoding: "UTF-8"
+    sh "python3 ${file_name}"
+    return write_image_yaml
 }
 
 // dynamic invoke build image function
