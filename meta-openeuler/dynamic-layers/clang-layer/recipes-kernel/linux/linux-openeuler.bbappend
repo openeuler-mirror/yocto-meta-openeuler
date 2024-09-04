@@ -5,6 +5,9 @@ SRC_URI:append:aarch64 = " file://fix-link-error-unknown-argument.patch \
         file://fix-out-of-range-error.patch \
         "
 
+SRC_URI:append = " file://fix-extra-warning-in-clang.patch \
+        "
+
 DEPENDS:append = " clang-cross-${TARGET_ARCH}"
 do_kernel_configme[depends] += "clang-cross-${TARGET_ARCH}:do_populate_sysroot"
 DEPENDS:remove = "virtual/${TARGET_PREFIX}gcc"
