@@ -1,0 +1,28 @@
+From bbf7bdc8df60da127bc9179a75ad962e5c4619c4 Mon Sep 17 00:00:00 2001
+From: eastb233 <xiezhiheng@huawei.com>
+Date: Wed, 4 Sep 2024 15:10:11 +0800
+Subject: [PATCH] Suppress extra warning in clang
+
+---
+ Makefile | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/Makefile b/Makefile
+index e1e4ca473..aa6746b40 100644
+--- a/Makefile
++++ b/Makefile
+@@ -985,6 +985,11 @@ KBUILD_CFLAGS   += -Werror=date-time
+ # enforce correct pointer usage
+ KBUILD_CFLAGS   += $(call cc-option,-Werror=incompatible-pointer-types)
+ 
++ifdef CONFIG_CC_IS_CLANG
++# -Werror=incompatible-pointer-types controls -Werror=incompatible-pointer-types-discards-qualifiers, disable it here
++KBUILD_CFLAGS   += $(call cc-option,-Wno-error=incompatible-pointer-types-discards-qualifiers)
++endif
++
+ # Require designated initializers for all marked structures
+ KBUILD_CFLAGS   += $(call cc-option,-Werror=designated-init)
+ 
+-- 
+2.27.0
+
