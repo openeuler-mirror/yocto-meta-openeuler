@@ -28,3 +28,4 @@ CXXFLAGS:append = " -fPIC"
 # if we are not building shared libraries
 #
 RDEPENDS:${PN}-dev += "${@bb.utils.contains("PACKAGECONFIG","shared","","${PN}-staticdev",d)}"
+SRC_URI[sha256sum] = "8ad4a4d328dce9226a23158420548f4dcb4303edd2cd4068e03d1385701d9080"

@@ -1,13 +1,13 @@
 #main bbfile: yocto-poky/meta/recipes-core/zlib/zlib_1.2.11.bb
 
 #version in openEuler
-PV = "1.3.1"
+PV = "1.2.13"
 
 # files, patches that come from openeuler
 SRC_URI = " \
         file://${BP}.tar.xz \
         file://backport-zlib-1.2.5-minizip-fixuncrypt.patch \
-        file://backport-fix-undefined-buffer-detected-by-oss-fuzz.patch \
+        file://backport-CVE-2023-45853.patch \
         "
 
 # files, patches that come from openeuler for aarch64, there are compile err in 0004-zlib-Optimize-CRC32.patch, not apply

@@ -8,3 +8,4 @@ do_install:append() {
 }
 
 INSANE_SKIP:${PN} += "already-stripped"
+SRC_URI[sha256sum] = "6f685bf6eba43ac21f6dcfad35142f76d4aab519c791572a82433e4fe0f35f16"

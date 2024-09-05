@@ -25,6 +25,7 @@ SRC_URI:append = " \
         file://${BP}.tar.bz2 \
         file://backport-CVE-2022-28391.patch \
         file://backport-CVE-2022-48174.patch \
+        file://backport-CVE-2023-42363.patch \
         file://init.cfg \
         file://rcS.default \
         file://mdev.cfg \

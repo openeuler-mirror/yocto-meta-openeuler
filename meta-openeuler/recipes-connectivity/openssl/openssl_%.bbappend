@@ -35,6 +35,22 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
         file://Backport-Add-NULL-checks-where-ContentInfo-data-can-be-NULL.patch \
         file://Backport-Fix-SM4-XTS-aarch64-assembly-implementation-bug.patch \
         file://fix-add-loongarch64-target.patch \
+        file://backport-CVE-2024-2511-Fix-unconstrained-session-cache-growth-in-TLSv1.3.patch \
+        file://backport-Add-a-test-for-session-cache-handling.patch \
+        file://backport-Extend-the-multi_resume-test-for-simultaneous-resump.patch \
+        file://backport-Hardening-around-not_resumable-sessions.patch \
+        file://backport-Add-a-test-for-session-cache-overflow.patch \
+        file://backport-CVE-2024-4603-Check-DSA-parameters-for-exce.patch \
+        file://Backport-Add-a-test-for-late-loading-of-an-ENGINE-in-TLS.patch \
+        file://Backport-Don-t-attempt-to-set-provider-params-on-an-ENGINE-ba.patch \
+        file://Backport-CVE-2024-4741-Only-free-the-read-buffers-if-we-re-not-using-them.patch \
+        file://Backport-CVE-2024-4741-Set-rlayer.packet-to-NULL-after-we-ve-finished-using.patch \
+        file://Backport-CVE-2024-4741-Extend-the-SSL_free_buffers-testing.patch \
+        file://Backport-CVE-2024-4741-Move-the-ability-to-load-the-dasync-engine-into-sslt.patch \
+        file://Backport-CVE-2024-4741-Further-extend-the-SSL_free_buffers-testing.patch \
+        file://Backport-bn-Properly-error-out-if-aliasing-return-value-with-.patch \
+        file://Backport-CVE-2024-5535-Fix-SSL_select_next_proto.patch \
+        file://Backport-CVE-2024-5535-Add-a-test-for-ALPN-and-NPN.patch \
 "
 do_install:append () {
         #Remove the empty directory that conflict with ca-certificates.

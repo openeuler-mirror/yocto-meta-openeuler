@@ -1,11 +1,13 @@
 # main bbfile: yocto-poky/meta/recipes-support/attr/acl_2.2.53.bb
 
 # acl version in openEuler
-PV = "2.3.1"
+PV = "2.3.2"
 
 
-SRC_URI:prepend = "file://${BP}.tar.gz "
+SRC_URI = "file://${BP}.tar.xz \
+           file://backport-acl_copy_entry-Prevent-accidental-NULL-pointer-deref.patch \
+"
 
 # because PV is different,  the md5 and sha256 should also be updated
 SRC_URI[md5sum] = "3cecb80cb0a52a0b273e6698ba642263"
-SRC_URI[sha256sum] = "760c61c68901b37fdd5eefeeaf4c0c7a26bdfdd8ac747a1edff1ce0e243c11af"
+SRC_URI[sha256sum] = "5f2bdbad629707aa7d85c623f994aa8a1d2dec55a73de5205bac0bf6058a2f7c"

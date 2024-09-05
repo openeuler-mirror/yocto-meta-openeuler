@@ -98,3 +98,4 @@ do_install:append:riscv64() {
 	rm -rf ${D}/usr/lib64
 }
 
+SRC_URI[sha256sum] = "f11df3194f99d6eda173a342646b131c1dfabd19fc49813c39b9b7de19fc734a"

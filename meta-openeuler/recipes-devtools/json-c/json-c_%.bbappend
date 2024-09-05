@@ -9,6 +9,6 @@ SRC_URI:prepend = " \
         "
 
 SRC_URI[md5sum] = "6d724389b0a08c519d9dd6e2fac7efb8"
-SRC_URI[sha256sum] = "024d302a3aadcbf9f78735320a6d5aedf8b77876c8ac8bbb95081ca55054c7eb"
+SRC_URI[sha256sum] = "10c69b3cb5851f8bde67264ff7d8d679abe310441789e78d4b8225d0d9b09504"
 
 S = "${WORKDIR}/json-c-json-c-${PV}"

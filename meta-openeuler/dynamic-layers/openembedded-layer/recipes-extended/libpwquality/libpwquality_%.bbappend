@@ -12,6 +12,7 @@ SRC_URI =+ " \
     file://modify-pwquality_conf.patch \
     file://fix-password-similarity.patch \
     file://fix-doc-about-difok.patch \
+    file://backport-Make-maxclassrepeat-1-behavior-consistent-with-docs.patch \
 "
 
 # do not enable python bindings, as well as not use gettext to translate
