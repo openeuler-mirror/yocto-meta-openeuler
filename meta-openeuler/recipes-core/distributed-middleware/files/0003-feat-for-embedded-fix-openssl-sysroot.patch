@@ -1,0 +1,40 @@
+From 35409d60b17990bbbc03bb49a1acf0a377078c00 Mon Sep 17 00:00:00 2001
+From: s_c_c <shichuchao@huawei.com>
+Date: Thu, 5 Sep 2024 16:38:21 +0800
+Subject: [PATCH] feat for embedded fix openssl sysroot
+
+---
+ openeuler/compiler_gn/third_party/openssl/BUILD.gn | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/openeuler/compiler_gn/third_party/openssl/BUILD.gn b/openeuler/compiler_gn/third_party/openssl/BUILD.gn
+index 7b953eb..c25540e 100644
+--- a/openeuler/compiler_gn/third_party/openssl/BUILD.gn
++++ b/openeuler/compiler_gn/third_party/openssl/BUILD.gn
+@@ -12,12 +12,13 @@
+ # limitations under the License.
+ 
+ import("//build/ohos.gni")
++import("//build/config/sysroot.gni")
+ 
+ # Only use this to set/unset some cflags, use "platform" variable in gn template to add
+ # source code for Windows.
+ 
+ config("libcrypto_config") {
+-  include_dirs = [ "/usr/include/openssl" ]
++  include_dirs = [ "${sysroot}/usr/include/openssl" ]
+   libs = [ "crypto" ]
+ }
+ 
+@@ -30,7 +31,7 @@ group("libcrypto_shared") {
+ }
+ 
+ config("libssl_config") {
+-  include_dirs = [ "/usr/include/openssl" ]
++  include_dirs = [ "${sysroot}/usr/include/openssl" ]
+   libs = [ "ssl" ]
+ }
+ 
+-- 
+2.45.2.windows.1
+

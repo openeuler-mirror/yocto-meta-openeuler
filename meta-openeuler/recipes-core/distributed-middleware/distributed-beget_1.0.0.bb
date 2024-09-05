@@ -14,11 +14,19 @@ SRC_URI += " \
             file://distributed-beget/0003-feat-for-embedded-fix-sysroot-hilog-path.patch;patchdir=${WORKDIR}/${pkg-beget} \
             file://distributed-beget/0004-refactor-using-the-reactor-framework.patch;patchdir=${WORKDIR}/${pkg-beget} \
             file://distributed-beget/0005-feat-for-embedded-fix-compile-errors-after-refactor.patch;patchdir=${WORKDIR}/${pkg-beget} \
+            file://distributed-beget/0006-feat-auto-generated-udid-and-add-new-interfaces.patch;patchdir=${WORKDIR}/${pkg-beget} \
+            file://distributed-beget/0007-modify-default-param-read-path.patch;patchdir=${WORKDIR}/${pkg-beget} \
+            file://distributed-beget/0008-fix-missing-header-file-and-type-compatibility.patch;patchdir=${WORKDIR}/${pkg-beget} \
+            file://distributed-beget/0009-fix-can-not-find-function-link-in-debug-mode.patch;patchdir=${WORKDIR}/${pkg-beget} \
             file://distributed-beget/startup.bundle.json \
             file://distributed-beget/startup.BUILD.gn \
             "
 
-DEPENDS += "hilog c-utils"
+SRC_URI:append = " \
+        file://0004-feat-for-embedded-fix-openssl-dep.patch;patchdir=${WORKDIR}/${pkg-beget} \
+"
+
+DEPENDS += "hilog c-utils openssl"
 
 RDEPENDS:${PN} = "libboundscheck"
 

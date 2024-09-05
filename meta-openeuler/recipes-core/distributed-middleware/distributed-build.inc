@@ -51,6 +51,7 @@ SRC_URI = " \
 SRC_URI:append = " \
         file://0001-feat-for-embedded-comment-out-unrecognized-options.patch;patchdir=${WORKDIR}/${pkg-build} \
         file://0002-adapt-embedded-clang-llvm-17.0.6.patch;patchdir=${WORKDIR}/${pkg-build} \
+        file://0003-feat-for-embedded-fix-openssl-sysroot.patch;patchdir=${WORKDIR}/${pkg-build} \
 "
 
 do_patch:append() {
