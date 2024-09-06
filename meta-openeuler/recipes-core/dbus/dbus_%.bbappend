@@ -17,6 +17,10 @@ SRC_URI:prepend = "file://${BP}.tar.xz \
             file://print-load-average-when-activate-service-timeout.patch \
             file://backport-tools-Use-Python3-for-GetAllMatchRules.patch \
             file://backport-Do-not-crash-when-reloading-configuration.patch \
+            file://backport-bus-Don-t-crash-if-bus_context_create_client_policy-.patch \
+            file://backport-bus-When-failing-to-reload-client-policy-continue-it.patch \
+            file://backport-test-Add-a-targeted-test-for-_dbus_unix_groups_from_.patch \
+            file://backport-userdb-Add-proper-error-reporting-when-getting-group.patch \
 "
 
 # checksum changed

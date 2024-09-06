@@ -12,6 +12,11 @@ SRC_URI:prepend = " \
         file://backport-Avoid-reinstalling-installonly-packages-marked-for-ERASE.patch \
         file://backport-dnf-repo-do-not-download-repository-if-our-local-cache-is-up-to-date.patch \
         file://backport-dnf-repo-Fix-utimes-error-messages.patch \
+        file://backport-subject-py-Fix-memory-leak.patch \
+        file://backport-MergedTransaction-Calculate-RPM-difference-between-two-same-versions-as-no-op.patch \
+        file://backport-MergedTransaction-Fix-invalid-memory-access-when-dropping.patch \
+        file://backport-Fix-countme-bucket-calculation.patch \
+        file://backport-Fix-up-some-comments-in-addCountmeFlag.patch \
 "
 
 # remove poky conflict

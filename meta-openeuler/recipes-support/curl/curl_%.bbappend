@@ -15,6 +15,14 @@ SRC_URI = " \
 	file://backport-pre-CVE-2024-2004.patch \
 	file://backport-CVE-2024-2004.patch \
 	file://backport-CVE-2024-2398.patch \
+	file://backport-tool_cb_rea-limit-rate-unpause-for-T-uploads.patch \
+	file://backport-paramhlp-fix-CRLF-stripping-files-with-d-file.patch \
+	file://backport-libssh2-set-length-to-0-if-strdup-failed.patch \
+	file://backport-openldap-create-ldap-URLs-correctly-for-IPv6-addresses.patch \
+	file://backport-multi-avoid-memory-leak-risk.patch \
+	file://backport-tool_cfgable-free-proxy_-cipher13_list-on-exit.patch \
+	file://backport-CVE-2024-7264-x509asn1-clean-up-GTime2str.patch \
+	file://backport-CVE-2024-7264-x509asn1-unittests-and-fixes-fo.patch \
 "      
 
 ### openeuler configuration
