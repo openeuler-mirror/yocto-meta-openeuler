@@ -7,5 +7,6 @@ PV = "20.11.1"
 SRC_URI:prepend = " \
     file://node-v${PV}.tar.xz \
     file://0002-Revert-deps-V8-tagged.patch \
+    file://0003-fix-fd-is-null-when-calling-clearBuffer.patch \
 "
 

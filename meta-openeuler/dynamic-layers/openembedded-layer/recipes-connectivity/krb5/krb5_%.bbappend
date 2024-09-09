@@ -13,6 +13,17 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
     file://fix-debuginfo-with-y.tab.c.patch;patchdir=${S}/.. \
     file://Remove-3des-support.patch;patchdir=${S}/.. \
     file://Fix-krb5_cccol_have_content-bad-pointer-free.patch;patchdir=${S}/.. \
+    file://Do-not-reload-a-modified-profile-data-object.patch;patchdir=${S}/.. \
+    file://backport-Fix-unimportant-memory-leaks.patch;patchdir=${S}/.. \
+    file://backport-Remove-klist-s-defname-global-variable.patch;patchdir=${S}/.. \
+    file://backport-Fix-two-unlikely-memory-leaks.patch;patchdir=${S}/.. \
+    file://backport-Allow-modifications-of-empty-profiles.patch;patchdir=${S}/.. \
+    file://fix-leak-in-KDC-NDR-encoding.patch;patchdir=${S}/.. \
+    file://backport-Fix-more-non-prototype-functions.patch;patchdir=${S}/.. \
+    file://backport-Fix-Python-regexp-literals.patch;patchdir=${S}/.. \
+    file://backport-Handle-empty-initial-buffer-in-IAKERB-initiator.patch;patchdir=${S}/.. \
+    file://backport-CVE-2024-37370-CVE-2024-37371-Fix-vulnerabilities-in-GSS-message-token-handling.patch;patchdir=${S}/.. \
+    file://backport-Change-krb5_get_credentials-endtime-behavior.patch;patchdir=${S}/.. \
 "
 
 SRC_URI:remove = " \
