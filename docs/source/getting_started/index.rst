@@ -7,17 +7,17 @@
 ====
 
 openEuler Embedded是基于openEuler社区面向嵌入式场景的Linux版本。由于嵌入式系统应用受到如资源、功耗、多样性等因素的约束，面向服务器领域的Linux及相应的构建系统很难满足嵌入式场景的要求，因此业界广泛采用 `Yocto <https://www.yoctoproject.org/>`_
-来定制化构建嵌入式Linux。
+来定制化构建嵌入式Linux。openEuler Embedded当前也采用了Yocto进行构建，但实现了与openEuler其他版本代码同源。
 
-openEuler Embedded当前也采用了yocto构建，但实现了与openEuler其他版本代码同源。本章节将介绍如何使用 `yocto-meta-openeuler <https://gitee.com/openeuler/yocto-meta-openeuler>`_
-项目构建 ARM64 QEMU 镜像，以及如何基于镜像完成基本的嵌入式Linux应用开发。建议按照指导步骤完成镜像构建和运行，以熟悉 `yocto-meta-openeuler` 的开发流程。树莓派等其它平台镜像的构建开发流程也类似，具体可参阅 :ref:`南向支持 <bsp>` 章节。
+本章节将介绍如何基于`yocto-meta-openeuler <https://gitee.com/openeuler/yocto-meta-openeuler>`_
+仓库构建ARM64 QEMU镜像，以及如何基于镜像和生成的SDK完成基本的嵌入式Linux应用开发。建议按照指导步骤完成镜像构建和运行，以熟悉 openEuler Embedded的镜像构建流程。树莓派等其它平台镜像的构建开发流程也类似，具体可参阅 :ref:`南向支持 <bsp>` 章节。
 
 ____
 
 构建 ARM64 QEMU 镜像
 ====================
 
-openEuler Embedded采用yocto构建，但通过 `oebuild <https://gitee.com/openeuler/oebuild>`_ 简化了构建流程。按照以下步骤可以快速构建出一个openEuler Embedded镜像，包括工具链。
+openEuler Embedded采用yocto构建，同时设计了基于Python的元工具 `oebuild <https://gitee.com/openeuler/oebuild>`_ 以简化相对复杂的yocto构建流程。按照以下步骤可以快速构建出一个openEuler Embedded镜像。
 
 .. note::
 
@@ -32,7 +32,7 @@ openEuler Embedded采用yocto构建，但通过 `oebuild <https://gitee.com/open
 
    .. tabs::
 
-      .. code-tab:: shell openEuler
+      .. code-tab:: shell openEuler 24.03
 
          # 安装必要的软件包
          $ sudo yum install python3 python3-pip docker
@@ -43,7 +43,7 @@ openEuler Embedded采用yocto构建，但通过 `oebuild <https://gitee.com/open
          $ sudo systemctl daemon-reload && sudo systemctl restart docker
          $ sudo chmod o+rw /var/run/docker.sock
 
-      .. code-tab:: shell Ubuntu
+      .. code-tab:: shell Ubuntu 22.04
 
          # 安装必要的软件包
          $ sudo apt-get install python3 python3-pip docker docker.io
@@ -54,7 +54,7 @@ openEuler Embedded采用yocto构建，但通过 `oebuild <https://gitee.com/open
          $ sudo systemctl daemon-reload && sudo systemctl restart docker
          $ sudo chmod o+rw /var/run/docker.sock
 
-      .. code-tab:: shell SUSELeap15.4
+      .. code-tab:: shell SUSELeap 15.4
 
          #安装必要的软件包
          $ sudo zypper install python311 python311-pip docker
@@ -75,7 +75,7 @@ openEuler Embedded采用yocto构建，但通过 `oebuild <https://gitee.com/open
 2. 初始化oebuild构建环境
 ------------------------
 
-   运行 oebuild 完成初始化工作，包括创建工作目录、拉取构建容器等，之后的构建都需要在 ``<work_dir>`` 下进行：
+   运行 oebuild 完成初始化工作，包括创建工作目录、拉取构建容器等，之后的构建都需要在 :file:`<work_dir>` 下进行：
 
    .. code-block:: shell
 
@@ -91,7 +91,7 @@ openEuler Embedded采用yocto构建，但通过 `oebuild <https://gitee.com/open
 3. 开始构建
 -----------
 
-   继续执行以下命令进行 ``ARM64 QEMU`` 镜像的构建，``build_arm64`` 为该镜像的构建目录：
+   继续执行以下命令进行 ``ARM64 QEMU`` 镜像的构建，:file:`build_arm64` 为该镜像的构建目录：
 
    .. code-block:: shell
 
@@ -107,7 +107,7 @@ openEuler Embedded采用yocto构建，但通过 `oebuild <https://gitee.com/open
       # 根据提示进入 build_arm64 构建目录，并开始构建
       $ oebuild bitbake openeuler-image
 
-   除了使用上述命令进行配置文件生成之外，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，此菜单选项可以替代上述命令中的oebuild generate，选择保存之后继续执行上述命令中的bitbake及后续命令即可。
+   除了使用上述命令进行配置文件生成之外，还可以使用如下命令进入到菜单选择界面进行对应配置填写和选择，此菜单选项可以替代上述命令中的 ``oebuild generate -p qemu-aarch64 -d build_arm64`` ，选择保存之后继续执行上述命令中的bitbake及后续命令即可。
 
    .. code-block:: console
 
@@ -120,26 +120,26 @@ openEuler Embedded采用yocto构建，但通过 `oebuild <https://gitee.com/open
 4. 运行镜像
 -----------
 
-   完成构建后，在构建目录下的 ``output`` 目录下可以看到如下文件：
+   完成构建后，在构建目录下的 :file:`output` 目录下可以看到如下文件：
 
-   - ``zImage``: 内核镜像，基于openEuler社区Linux 5.10代码构建；
-   - ``openeuler-image-qemu-xxx.cpio.gz``: 标准根文件系统镜像， 进行了必要安全加固，增加了audit、cracklib、OpenSSH、Linux PAM、shadow、iSula容器等所支持的软件包；
-   - ``openeuler-image-qemu-aarch64-xxx.iso``: iso格式的镜像，可用于制作U盘启动盘；
-   - ``vmlinux``: 对应的vmlinux，可用于内核调试。
+   - :file:`zImage`: 内核镜像，基于openEuler社区Linux 5.10内核构建；
+   - :file:`openeuler-image-qemu-xxx.cpio.gz`: 标准根文件系统镜像， 进行了必要安全加固，增加了audit、cracklib、OpenSSH、Linux PAM、shadow、iSulad容器等所支持的软件包；
+   - :file:`openeuler-image-qemu-aarch64-xxx.iso`: iso格式的镜像，可用于制作U盘启动盘；
+   - :file:`vmlinux`: 对应的vmlinux镜像，可用于内核调试。
 
    在主机上通过以下命令安装QEMU:
 
    .. tabs::
 
-      .. tab:: openEuler
+      .. tab:: openEuler 24.03
 
          $ sudo yum install qemu-system-aarch64
 
-      .. tab:: Ubuntu
+      .. tab:: Ubuntu 22.04
 
          $ sudo apt-get install qemu-system-arm
 
-      .. tab:: SUSELeap15.4
+      .. tab:: SUSELeap 15.4
 
          $ sudo zypper install qemu-arm
 
@@ -172,7 +172,7 @@ ____
 基于SDK的应用开发
 =================
 
-嵌入式系统往往面临资源受限的问题，包括处理器性能、内存容量、存储空间等方面。因此，需要使用交叉编译器在构建主机上编译目标代码，以在嵌入式系统上运行。
+嵌入式系统往往面临资源受限的问题，包括处理器性能、内存容量、存储空间等方面。因此，需要使用交叉编译器在构建主机上编译目标代码，并在目标系统（开发板/仿真器）上运行。
 
 openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发所依赖的交叉编译器、库、头文件。下面将介绍如何构建ARM64的SDK，以及如何使用SDK进行用户态程序和内核模块的开发。
 
@@ -189,6 +189,15 @@ openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发�
 
    - ``openeuler-glibc-x86_64-xxxxx-toolchain-xxxx.sh``: openEuler Embedded SDK自解压安装包，SDK包含了开发（用户态程序、内核模块等）所必需的工具、库和头文件等。
 
+   .. note::
+
+      - openEuler Embedded SDK主要包含两大部分：
+
+        - **目标系统对应的开发用根文件系统**， 在 :file:`<目标架构>-openeuler-linux` 目录下，包含动态库、静态库、内核源码、头文件、配置文件、文档等，一般不包含目标系统可执行文件
+
+        - **主机开发工具**，在 :file:`<主机架构>-openeulersdk-linux` 目录下，默认只包含有GCC交叉编译工具链，没有其他主机工具，如cmake, ninja，make等，如果需要，需自行
+          在主机上安装， 或者配置nativesdk, 包含更多的主机工具，具体可以参考ROS2 SDK。
+
 .. _install-openeuler-embedded-sdk:
 
 2. 安装SDK
@@ -200,21 +209,22 @@ openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发�
 
     .. tabs::
 
-       .. tab:: openEuler
+       .. tab:: openEuler 24.03
 
           $ sudo yum install make gcc g++ flex bison gmp-devel libmpc-devel openssl-devel elfutils-libelf-devel
 
-       .. tab:: Ubuntu
+       .. tab:: Ubuntu 22.04
 
           $ sudo apt-get install make gcc g++ flex bison libgmp3-dev libmpc-dev libssl-dev libelf-dev
 
-       .. tab:: SUSELeap15.4
+       .. tab:: SUSELeap 15.4
 
           $ sudo zypper in gcc gcc-c++ make bison gmp-devel libmpc3 openssl cmake flex libelf-devel
 
   - **执行SDK自解压安装脚本**
 
-    首先找到上一步生成的.sh文件所在的目录（在 `build_arm64/output/<文件夹名>/` 路径下，一个例子是 ``build_arm64/output/20230904145457/`` 。如有多个数字命名的文件夹，则可根据文件夹名找出最新输出的sh文件目录），之后运行如下命令：
+    首先找到上一步生成的.sh文件所在的目录（在 :file:`build_arm64/output/<文件夹名>/` 路径下，一个例子是 :file:`build_arm64/output/20230904145457/`。如有多个数字命名的文件夹，则可根据文件夹名找出最新输出的sh文件目录），或者从构建
+    目录 :file:`tmp/deploy/sdk` 中获取，之后运行如下命令：
 
     .. code-block:: console
 
