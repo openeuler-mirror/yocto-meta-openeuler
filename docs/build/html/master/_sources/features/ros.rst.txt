@@ -7,18 +7,20 @@
 总体介绍
 ==========================
 
-机器人尤其服务机器人领域近年来发展迅速，ROS是一个适用于机器人的开源的元操作系统，已在众多领域被广泛应用，常规ROS存在较多平台约束，大多与ubuntu等desktop版本强依赖。
+机器人尤其服务机器人领域近年来发展迅速，ROS（Robot Operating System）作为一个适用于机器人的开源中间件框架，已经在众多领域得到广泛应用。然而，常规的ROS系统存在较多的平台约束，通常与Ubuntu等桌面操作系统
+强依赖，这限制了其在更广泛的嵌入式设备上的应用。ROS目前有两个主要版本，ROS1和ROS2。ROS1于2010年发布，ROS2于2017年发布，ROS2相较于ROS1有较大的改进，详细介绍请参考 `ROS2入门教程 <https://book.guyuehome.com/>`_ 。
 
-随着ROS1开始广泛融入各领域无人系统的研发，系统的诸多问题陆续暴露出来。为了适应新时代机器人研发的和操作系统生态发展的需要，ROS2应运而生。
+为了使ROS2能够在高度定制化的嵌入式Linux系统上运行，通过Yocto项目构建的meta-ROS层成为了关键途径。meta-ROS为ROS2提供了必要的软件包配方和配置，使其能够适配基于Yocto的嵌入式Linux系统。
 
-为使能ROS2在高度定制化的嵌入式Linux运行，支持通过yocto构建的meta-ROS（原LG维护）layer层成为嵌入式ROS支持的关键途径。然而，当前原生meta-ros应用门槛较高且未充分考虑嵌入式运行时的关键场景要素。
+尽管meta-ROS层为ROS2支持提供了基础，但其应用门槛较高，且未充分考虑嵌入式运行时的关键场景要素，如实时性能和资源限制。这使得开发者在将ROS2应用于嵌入式项目时面临挑战。
 
-openEuler Embedded的嵌入式ROS运行时支持意在提高易用性、解决高门槛问题的同时，构建嵌入式运行时竞争力（如实时、小型化等）。
+openEuler Embedded对ROS2的运行时支持，旨在提高易用性、解决高门槛问题的同时，构建机器人嵌入式运行时的竞争力。openEuler Embedded通过简化ROS2的集成流程、提供实时性能优化和小型化支持，使得ROS2能
+够在资源受限的嵌入式设备上高效运行。
 
 框架
 =========================
 
-openEuler Embedded中ROS运行时整体架构图如下所示，分为运行视图和构建视图，构建视图总体基于开源meta-ros layer `meta-ros <https://github.com/ros/meta-ros/>`_ 作为基础。
+openEuler Embedded中ROS2运行时整体架构图如下所示，分为运行视图和构建视图，构建视图总体基于开源meta-ros layer `meta-ros <https://github.com/ros/meta-ros/>`_ 作为基础。
 
     .. figure:: ../../image/ros/plan_ros_architecture.png
         :align: center
@@ -70,20 +72,18 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
     .. image:: ../_static/images/generate/oebuild-generate-select.png
 
-.. note:: 当前只要开启了ros特性，openeuler-image镜像会默认集成ros-core核心功能
+.. note:: 
+    * 当前只要开启了ros特性，openeuler-image镜像会默认集成ros-core核心功能
 
-    基于树莓派的ROS特性镜像还加入了SLAM典型功能
-    （相关导航和制图典型场景功能正在完善中，欢迎试用和加入贡献）
+    * 基于树莓派的ROS特性镜像还加入了SLAM典型功能（相关导航和制图典型场景功能正在完善中，欢迎试用和加入贡献）
 
-    另外按照嵌入式运行时原则，将尽量不在target集成编译类、观测类、仿真类等工具
+    * 另外按照嵌入式运行时原则，请尽量不在目标系统中集成编译类、观测类、仿真类等更适合在开发主机上运行的工具
 
-    | 注意：
-    | pcl点云库比较耗编译主机的内存资源，对该库进行了线程限制（-j 2），可参见对应pcl的bbappend配方。
-    | 另外，虽已限制在(-j 2)，其编译所需的主机内存要求需大于等于14G（加上swap空间）。
-    | 若您的编译主机配置足够，可解开（-j 2）限制。
-    | 参考：
-    | 在16线程32GB内存的机器解除限制后无法成功编译；
-    | 在24线程64GB内存的机器上测试可解除线程限制成功编译。
+    **注意** ：
+     pcl点云库比较耗编译主机的内存资源，对该库进行了线程限制（-j 2），可参见对应pcl的bbappend配方。
+     另外，虽已限制在(-j 2)，其编译所需的主机内存要求需大于等于14G（加上swap空间）。
+     若您的编译主机配置足够，可解开（-j 2）限制，例如在16线程32GB内存的机器解除限制后无法成功编译，
+     在24线程64GB内存的机器上测试可解除线程限制成功编译。
 
 
 镜像使用示例
@@ -183,7 +183,9 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
       # demo消息发布
       $ ros2 run demo_nodes_cpp talker
 
-  .. note:: 单机通信同理，在同一台设备上通过多个终端分别执行demo_nodes_cpp发布和订阅即可，属于ROS常规用法，不再详述。
+  .. note:: 
+    
+    单机通信同理，在同一台设备上通过多个终端分别执行demo_nodes_cpp发布和订阅即可，属于ROS常规用法，不再详述。
 
 
 **2.originbot小车制图和导航示例（树莓派作为主控板）**
@@ -207,9 +209,10 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
     openEuler Embedded树莓派使能无线连接参见 :ref:`openEuler Embedded网络配置-Wi-Fi网络配置 <network_config_wifi>`
 
     .. note:: 
+
       观测PC可为ubuntu，需要安装ROS和oringbot观测端，参见：
 
-      `PC端ubuntu ros安装 <http://originbot.org/guide/pc_config/#2-ros2>`_
+      `PC端ubuntu ROS2安装 <http://originbot.org/guide/pc_config/#2-ros2>`_
 
       `PC端ubuntu oringbot安装 <http://originbot.org/guide/pc_config/#3-pc>`_
 
@@ -283,9 +286,9 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
         图 2 openEuler Embedded中ROS SLAM DEMO示例
 
-  .. note:: 其他应用如导航类似，请直接参考orinbot官方资料。如
-
-      自主导航，将建好的地图至于对应包位置即可，参见 `originbot 自主导航 <http://originbot.org/application/navigation/>`_
+  .. note::
+      其他应用如导航类似，请直接参考orinbot官方资料。如自主导航，将建好的地图至于对应包位置即可，
+      参见 `originbot 自主导航 <http://originbot.org/application/navigation/>`_
 
 
 快速开发SDK
@@ -293,7 +296,7 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
 **使用说明**
 
-版本新增支持快速开发SDK，目前支持在oebuild初始化的容器中，通过安装构建生成的SDK，对ROS包进行快速交叉编译。目前支持colcon编译工具，和基础colcon用法一致。
+openEuler Embedded支持ROS2快速开发SDK，目前支持在主机或者oebuild初始化的容器中，通过安装构建生成的SDK，对ROS包进行快速交叉编译。目前支持colcon编译工具，和基础colcon用法一致。
 
 **使用约束**
 
@@ -308,67 +311,29 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
     # 以树莓派ROS2镜像为例
     $ oebuild generate -p raspberrypi4-64 -f openeuler-ros -d raspberrypi4-64-ros
     $ oebuild bitbake
+    # 在conf/local.conf中，设置 OPENEULER_PREBUILT_TOOLS_ENABLE = "no" ,这样就可以尽可能
+    # 生成nativesdk所需要的工具
     $ bitbake openeuler-image
     $ bitbake openeuler-image -c populate_sdk
 
-  随后在“output/[时间戳]/”目录下即可找到对应SDK安装文件，例如
+  .. note::
+    如果要使用ROS2 SDK，请确认 :file:`conf/local.conf` 中OPENEULER_PREBUILT_TOOLS_ENABLE = "no" ，只有这样SDK中才会包含
+    colcon, cmake, python, make等主机工具，可以进行ROS2应用的开发。
+
+  随后在 :file:`output/[时间戳]/` 目录下即可找到对应SDK安装文件，例如
 
   .. code-block:: console
     
-    openeuler-glibc-x86_64-openeuler-image-cortexa72-raspberrypi4-64-toolchain-23.03.sh
+    openeuler-glibc-x86_64-openeuler-image-cortexa72-raspberrypi4-64-toolchain-24.03.sh
 
 
-**2. SDK的安装和初始化——已获得SDK的上层开发者，可直接从此章节开始进行参考**
+**2. SDK的安装和初始化**
 
-  目前可用oebuild初始化的构建容器作为开发容器（后续会推出专用SDK的一站式oebuild功能，敬请期待），开发容器和构建容器可通用。
+  已获得SDK的上层应用开发者，可直接从此节开始进行参考
 
-  (0). 前置准备——此过程重新罗列容器的准备过程，如您已经会进入构建容器，此步骤可通跳过。
+  (1). 安装1中生成的SDK的sh安装脚本
 
-  a. 确保主机环境python3版本为3.10及其以上，若python3版本不匹配，建议通过conda安装匹配的python3版本环境。
-
-  b. 确认docker已安装，参考网上ubuntu安装docker方法
-
-  c. 安装oebuild最新版本 ( :ref:`abc步骤命令参考 <oebuild_install>` )
-
-  d. 通过oebuild初始化工作目录
-
-  .. code-block:: console
-
-    $ oebuild init [-b SDK配套分支]  [工作目录]
-    $ cd [工作目录]
-    $ oebuild update
-
-  e. 在对应工作目录，执行容器环境初始化
-
-  .. code-block:: console
-
-    $ oebuild generate -p [平台] [-d DIRECTORY]  
-    # -p 为对应平台，与使用的SDK配套，arm64可选qemu-aarch64，x86可选x86-64，或根据单板平台选择
-    # PLATFORM开发容器并不区分
-    # -d为容器环境的和主机环境即将创建的共享目录
-
-  (1). 进入容器环境
-
-  此时确认您已cd到对应工作目录，即(0)中oebuild generate -d指定的目录，也是您主机和容器的共享目录。
-
-  .. code-block:: console
-
-    $ oebuild bitbake
-
-  oebuild进入开发容器的原理介绍：
-
-  oebuild bitbake命令执行时，会自动检测工作目录下的.env文件，并检查short_id对应的容器id是否存在。
-  
-  如果不存在就新建一个容器并生成.env文件和short_id，建立容器时，会将当前所处的工作目录（主机），挂载到容器的对应目录。
-
-  如需了解具体过程，可参考 :ref:`oebuild bitbake功能介绍 <command_index_bitbake>`
-
-  除此之外，进入容器后，oebuild bitbake会自动配置一些构建工具的环境建立，如nativesdk等，其中ROS SDK所依赖的主机pyhton3工具就来源于nativesdk。
-
-
-  (2). 安装1中生成的SDK的sh安装脚本
-
-  假设SDK脚本位于目录“/home/openeuler/build/raspberrypi4-64/output/20230523023324”
+  假设SDK脚本位于目录:file:`/home/openeuler/build/raspberrypi4-64/output/20230523023324``
 
   .. code-block:: console
 
@@ -378,15 +343,11 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
     $ /home/openeuler/build/raspberrypi4-64/output/20230523023324/sdk
     $ y
 
-  (3). 根据提示执行SDK初始化
-
-  后续再次进入容器环境后，只需要初始化即可，不需要（2）安装步骤，用法和我们常规SDK的使用无区别。
+  (2). 根据提示执行SDK初始化
   
   .. code-block:: console
 
     $ . /home/openeuler/build/raspberrypi4-64/output/20230523023324/sdk/environment-setup-cortexa72-openeuler-linux
-
-  可以看到，此步骤将自动初始化交叉编译的依赖，如colcon等工具。
   
   此外，除了初始化上述SDK的环境变量，您无需额外source ros.setup等ROS工作空间，在SDK内部，我们已经准备好了，而SDK提供的colcon，会将colcon命令执行目录自动作为ROS的新增工作空间。
 
@@ -406,43 +367,41 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 
 **4. 部署和运行（重要）**
 
-  在3中，colcon生成的install可以直接拷贝到目标机器上进行部署运行，但由于colcon固定了工作目录和python解析器，拷贝到新目录后，需要替换一下colcon指定的工作目录和python解析器。
-
-  假设原colcon工作目录为“home/openeuler/build/raspberrypi4-64/your_colcon_workspace/install”，需编辑全部setup.sh文件，将如下内容进行修改：
-
-  .. code-block:: console
-
-    _colcon_prefix_chain_sh_COLCON_CURRENT_PREFIX=/home/openeuler/build/raspberrypi4-64/your_colcon_workspace/install
-
-  部署到目标环境后，假设新工作目录为“/ros_runtime/install”，则需将setup.sh文件的对应行修改为如下内容：
-
-  .. code-block:: console
-
-    _colcon_prefix_chain_sh_COLCON_CURRENT_PREFIX=/ros_runtime/install
-
-  而构建时python解析器是nativesdk提供的，构建时解析器有部分py配置没有及时修正，在目标环境运行时将报错，需要进行修改：
-
-  .. code-block:: console
-
-    _colcon_python_executable="/opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-linux/usr/bin/python3"
-
-  【建议】您直接执行如下命令进行批量修改（后续将集成到colcon或其他工具自动修改）：
-
-  .. code-block:: console
-
-    $ cd /ros_runtime/install
-    $ find ./ -type f -exec sed -i 's@/opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-linux/usr/bin/python3@/usr/bin/python3@g' {} +
-    # 下述命令需按实际目录填写修改
-    $ find ./ -type f -exec sed -i 's@/home/openeuler/build/raspberrypi4-64/your_colcon_workspace/install@/ros_runtime/install@g' {} +
-
-  最后通过如下命令进行工作目录的初始化：
+  对于基于C/C++的ROS2软件包，colcon生成的install可以直接拷贝到目标机器上进行部署运行，
+  通过如下命令在目标系统上进行工作目录的初始化：
 
   .. code-block:: console
 
     $ cd /ros_runtime/install
     $ source /etc/profile.d/ros/setup.bash # 初始化ROS工作目录
-    $ source setup.sh # 将当前目录，加入到ROS的额外工作目录
+    $ source setup.bash # 将当前目录，加入到ROS的额外工作目录
+  
+  .. attention:: 
+    
+    请尽量使用setup.bash, 如果使用setup.sh, 需要提前设置COLCON_CURRENT_PREFIX变量为目标系统上的工作目录路径，如
+    不设置，则setup.sh会使用开发主机上的工作目录路径，从而造成失败。
 
+  对于基于python的ROS2软件包，并不会发生实际的构建，而是将python代码打包安装，但由于setuptool的限制，需要把install目录下
+  由setuptool中easy install所生成的wrapper script中shebang行中指向的python解释器路径替换为目标机器上的python解释器路径，
+  然后拷贝到目标机器上运行即可。具体以ROS2的demo_nodes_py为例，会在 :file:`/install/demo_nodes_py/lib/demo_nodes_py/` 下生成
+  相应的wrapper script，就需要修改各个wrapper script中的shebang行中的python解释器路径。
+
+  .. code-block:: python
+
+    #!/home/openeuler/sdk/sysroots/x86_64-openeulersdk-linux/usr/bin/python3
+    # EASY-INSTALL-ENTRY-SCRIPT: 'demo-nodes-py==0.20.5','console_scripts','talker'
+    import re
+    import sys
+
+
+  改为
+
+   .. code-block:: python
+
+    #!/usr/bin/python3
+    # EASY-INSTALL-ENTRY-SCRIPT: 'demo-nodes-py==0.20.5','console_scripts','talker'
+    import re
+    import sys 
 
 关于ROS源码
 =================
@@ -490,5 +449,3 @@ ROS2 SDK上层开发者常见FAQ
 针对上面问题，请确保您的CMakeLists.txt配置文件中：(1)find_package(nav_msgs REQUIRED) (2)ament_target_dependencies([pkgname] xxxxx nav_msgs)包含nav_msgs的依赖信息。
 
 而如果ubuntu没有问题，可能是因为ubuntu的依赖软件安装目录没有分离成独立目录，正好在inlcude所在的一级目录恰巧被找到了，而严谨的做法是需要在CMakeLists中描述清楚依赖的。
-
-
