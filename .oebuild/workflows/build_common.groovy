@@ -259,7 +259,7 @@ with open("$read_image_yaml", "r", encoding="utf-8") as file:
     data = yaml.load(file.read())
 
 data["build_in"] = "host"
-data["local_conf"] += '\\nDATETIME = "$image_date"'
+data["local_conf"] += '\\nDATETIME = "$image_date"\\nINHERIT += "rm_work"'
 
 with open("$write_image_yaml", "w", encoding="utf-8") as file:
     yaml = YAML()
