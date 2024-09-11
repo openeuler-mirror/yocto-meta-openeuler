@@ -142,7 +142,7 @@ int main(int argc,char*argv[])
 		return 0;
 	}
 	int i2c_addr = atoi_auto(argv[ARGS_I2C_ADDR]);
-	int ret;
+	int ret = 0;
 
 	struct i2c_rdwr_ioctl_data ioctl_data;
 	int i2c_dev = open(argv[ARGS_I2C_DEV], O_RDWR);
@@ -161,6 +161,8 @@ int main(int argc,char*argv[])
 		if(!strcmp(argv[ARGS_OPT+1],"off"))
 			buffer[3] = 0x00;
 		if(send_msg(i2c_dev,&msg,1))
+			ret = -1;
+			printf("Failed to send LED message\n");
 			goto error;
 	}
 	else if(
@@ -175,6 +177,8 @@ int main(int argc,char*argv[])
 		if(!strcmp(argv[ARGS_OPT+1],"off"))
 			buffer[3] = 0x00;
 		if(send_msg(i2c_dev,&msg,1))
+			ret = -2;
+			printf("Failed to send Nearlink message\n");
 			goto error;
 	}
 	else if(
@@ -191,6 +195,8 @@ int main(int argc,char*argv[])
 		msgs[1].flags = I2C_M_RD;
 		msgs[1].len = 4;
 		if(send_msg(i2c_dev,msgs,2))
+			ret = -3;
+			printf("Failed to read temperature data\n");
 			goto error;
 		float* data = (float*)(msgs[1].buf);
 		printf("%f\n",*data);
@@ -209,6 +215,8 @@ int main(int argc,char*argv[])
 		msgs[1].flags = I2C_M_RD;
 		msgs[1].len = 4;
 		if(send_msg(i2c_dev,msgs,2))
+			ret = -4;
+			printf("Failed to read voltage data\n");
 			goto error;
 		float* data = (float*)(msgs[1].buf);
 		printf("%f\n",*data);
