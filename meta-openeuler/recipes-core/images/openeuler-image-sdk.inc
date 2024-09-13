@@ -69,7 +69,12 @@ add_include_link() {
 
 # the external toolchain in container may be read-only because of container configuration,
 # so we need to make it writable here to guarantee the SDK after installation is writeable
-    chmod -R u+w  ${SDK_OUTPUT}/${SDKPATH}/sysroots
+
+# note: The reason we specify the full path to `chmod` here is because in some images, building
+# the SDK can lead to a situation where it depends on `native-chmod`, and the native version
+# tends to be relatively high which results in execution failures. Our goal is simply to grant
+# write permissions to files under `sysroots`, so as a compromise solution, we specify `chmod`.
+    /usr/bin/chmod -R u+w  ${SDK_OUTPUT}/${SDKPATH}/sysroots
 }
 
 # note: In RISC-V64, the lib directory points to the lib directory, even for 64-bit architectures.
