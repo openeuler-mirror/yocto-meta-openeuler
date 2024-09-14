@@ -3,6 +3,8 @@
 OPENEULER_REPO_NAME = "glibc"
 OPENEULER_LOCAL_NAME = "glibc"
 
+PV = "2.38"
+
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI:prepend = " \
