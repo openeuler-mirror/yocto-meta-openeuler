@@ -3,13 +3,6 @@ PV = "8.6.14"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/tcl/:"
 
-# fix_issue_with_old_distro_glibc.patch only needs to be used when built on glibc older than 2.14
-# fix_non_native_build_issue.patch cannot be applied
-SRC_URI:remove = " \
-            file://fix_non_native_build_issue.patch \
-            file://fix_issue_with_old_distro_glibc.patch \
-    "
-
 # source code package name has been changed
 # openEuler patch will cause expect compile task failed, so do not patch openEuler patchs
 BASE_SRC_URI += " \
