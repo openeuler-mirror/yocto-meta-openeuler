@@ -1,13 +1,11 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-support/glog/glog_0.5.0.bb
 # version in openEuler
-PV = "0.7.1"
+PV = "0.6.0"
 S = "${WORKDIR}/${BP}"
 
 SRC_URI = " \
     file://${BP}.tar.gz \
 "
-
-LIC_FILES_CHKSUM = "file://COPYING;md5=583a6ead531ca3cd5a2ea593a2888800"
 
 # From meta-openembedded, glog_0.6.0.bb
 PACKAGECONFIG[64bit-atomics] = ",-DCMAKE_CXX_STANDARD_LIBRARIES='-latomic',,"
