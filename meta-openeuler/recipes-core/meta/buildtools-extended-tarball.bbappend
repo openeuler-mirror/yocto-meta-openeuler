@@ -79,6 +79,11 @@ TOOLCHAIN_HOST_TASK += " \
     nativesdk-binutils-dev \
 "
 
+# for decompress the rpm package which is compressed using zstd
+TOOLCHAIN_HOST_TASK += " \
+    nativesdk-zstd \
+"
+
 # this a workaround: Currently, in the CI environment,
 # there is a bug in the make operation, which the `realpath xxx_path` in the makefile cannot be executed correctly
 # So remove nativesdk-make from the prebuilt tool

@@ -148,4 +148,7 @@ HOSTTOOLS_NONFATAL += " xsltproc "
 # used for building oci image and docker image
 HOSTTOOLS_NONFATAL += " umoci skopeo"
 
+# used for prepare project
+HOSTTOOLS += "unzstd"
+
 ASSUME_PROVIDED += " python3-cryptography-native "
