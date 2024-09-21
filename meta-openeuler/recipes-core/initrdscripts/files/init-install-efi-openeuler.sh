@@ -24,7 +24,7 @@ sleep 5
 # NOTE: See grub-efi-cfg.bbclass and image-live.bbclass(set_live_vm_vars(...))
 # for details on how to add a LABLE.
 cmdstr=`cat /proc/cmdline | awk -F 'LABEL=' '{print $2}' | awk '{print $1}'`
-if [ "$cmdstr" == "boot" ]; then
+if echo "$cmdstr" | grep -qwi "boot"; then
     export HOME=/home/root
     source /etc/profile
     /bin/sh
