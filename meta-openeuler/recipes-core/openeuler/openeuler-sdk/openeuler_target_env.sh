@@ -1,9 +1,9 @@
-# prepare SDK
-PYTHONBIN=`which python3`
-PYTHONVERSION=`python3 --version | awk -F "." '{print $2}'`
+## prepare SDK environment for openEuler Embedded
 
-# prepare context for kernel module development
-cd "${SDKTARGETSYSROOT}/usr/src/kernel"
+# prepare context for out of tree kernel module development
+# KERNEL_SRC can be referenced in the make file of kernel module
+export KERNEL_SRC="${SDKTARGETSYSROOT}/usr/src/kernel"
+cd "${KERNEL_SRC}"
 make modules_prepare PKG_CONFIG_SYSROOT_DIR= PKG_CONFIG_PATH=
 cd -
 
@@ -11,6 +11,8 @@ cd -
 if [ -f "${OECORE_NATIVE_SYSROOT}/usr/bin/colcon" ];then
 
     echo "Preparing ROS2 SDK..."
+
+    PYTHONVERSION=`python3 --version | awk -F "." '{print $2}'`
     # cmake toolchain file for ros2 SDK
     export CMAKE_TOOLCHAIN_FILE="$OECORE_NATIVE_SYSROOT/environment-setup.d/toolchain.cmake"
     # add target python3 site-packages path
