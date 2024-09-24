@@ -23,3 +23,5 @@ KERNEL_CC = "${CCACHE}${HOST_PREFIX}clang ${HOST_CC_KERNEL_ARCH} ${DEBUG_PREFIX_
 KERNEL_CC:append:toolchain-clang = " -fintegrated-as"
 KERNEL_LD:toolchain-clang = "${CCACHE}${HOST_PREFIX}ld.lld"
 KERNEL_AR:toolchain-clang = "${CCACHE}${HOST_PREFIX}llvm-ar"
+
+KERNEL_LD:append:toolchain-clang:x86-64 = "${@bb.utils.contains('DISTRO_FEATURES', 'ld-is-lld', ' --undefined-version', '', d)}"

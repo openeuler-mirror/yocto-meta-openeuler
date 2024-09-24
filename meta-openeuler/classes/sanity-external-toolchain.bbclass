@@ -51,6 +51,7 @@ def check_toolchain_sanity(d, generate_events=False):
 
         # remove llvm configuration. testcase used for gcc, not llvm
         l.setVar('LDFLAGS:remove', ' -fuse-ld=lld')
+        l.setVar('HOST_CC_ARCH:remove:toolchain-clang:x86-64', '-mlittle-endian')
 
         cmd = l.expand('${EXTERNAL_TOOLCHAIN_BIN}/${EXTERNAL_CC} ${HOST_CC_ARCH} ${CFLAGS} ${LDFLAGS} test.c -o test')
         exttc_sanity_run(shlex.split(cmd), d, generate_events, tmpdir)
