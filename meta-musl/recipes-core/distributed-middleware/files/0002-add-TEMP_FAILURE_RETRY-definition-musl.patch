@@ -1,0 +1,21 @@
+diff -urpN a/base/src/ashmem.cpp b/base/src/ashmem.cpp
+--- a/base/src/ashmem.cpp	2024-09-24 09:07:53.486512760 +0000
++++ b/base/src/ashmem.cpp	2024-09-24 09:09:17.001431109 +0000
+@@ -33,6 +33,17 @@
+ #include "utils_log.h"
+ 
+ namespace OHOS {
++
++/* Evaluate EXPRESSION, and repeat as long as it returns -1 with `errno'
++   set to EINTR.  */
++
++# define TEMP_FAILURE_RETRY(expression) \
++  (__extension__                                                              \
++    ({ long int __result;                                                     \
++       do __result = (long int) (expression);                                 \
++       while (__result == -1L && errno == EINTR);                             \
++       __result; }))
++
+ static pthread_mutex_t g_ashmemLock = PTHREAD_MUTEX_INITIALIZER;
+ 
+ static int AshmemOpenLocked()
