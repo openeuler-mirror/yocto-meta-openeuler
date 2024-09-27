@@ -72,11 +72,18 @@ add_include_link() {
     chmod -R u+w  ${SDK_OUTPUT}/${SDKPATH}/sysroots
 }
 
+# note: In RISC-V64, the lib directory points to the lib directory, even for 64-bit architectures.
+# Therefore, it is necessary to copy the lib directory of the external toolchain into the SDK as well.
+add_riscv64_lib_to_sdk () {
+    cp -r ${EXTERNAL_TOOLCHAIN}/lib ${SDK_OUTPUT}/${SDKPATHNATIVE}/usr/
+}
+
 # functions added to last after sdk has been created
 SDK_POSTPROCESS_COMMAND += "copy_opeueuler_sdk;"
 # functions prepend to the front before sdk has been packaged
 SDK_POSTPROCESS_COMMAND =+ "delete_bin_from_sdk; add_sysroot_link; add_include_link;"
 
+SDK_POSTPROCESS_COMMAND:prepend:riscv64 = " add_riscv64_lib_to_sdk;"
 
 # extra target packages added to sdk
 # libgcc(libgcc_s.so) is required for user space application
