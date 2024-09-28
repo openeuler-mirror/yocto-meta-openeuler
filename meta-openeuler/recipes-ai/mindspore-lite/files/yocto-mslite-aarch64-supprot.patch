@@ -1,0 +1,166 @@
+diff --git a/cmake/external_libs/flatbuffers.cmake b/cmake/external_libs/flatbuffers.cmake
+index 2fde4311251..e57edd104bf 100644
+--- a/cmake/external_libs/flatbuffers.cmake
++++ b/cmake/external_libs/flatbuffers.cmake
+@@ -4,9 +4,9 @@ if(EXISTS ${TOP_DIR}/mindspore/lite/providers/flatbuffer/native_flatbuffer.cfg)
+ endif()
+ if(ENABLE_NATIVE_FLATBUFFER)
+     file(STRINGS ${TOP_DIR}/mindspore/lite/providers/flatbuffer/native_flatbuffer.cfg native_flatbuffer_path)
+-    set(FLATC "${native_flatbuffer_path}/bin")
++    set(FLATC "${native_flatbuffer_path}/bin/flatc")
+     set(FLAT_BUFFERS "")
+-    set(flatbuffers_INC "${native_flatbuffer_path}/common")
++    set(flatbuffers_INC "${native_flatbuffer_path}/include")
+     if(EXISTS ${native_flatbuffer_path}/template)
+         set(FLATBUFFER_TEMPALTE "${native_flatbuffer_path}/template")
+     endif()
+@@ -153,18 +153,19 @@ if(ENABLE_NATIVE_FLATBUFFER)
+                 if(if_inner MATCHES "inner")
+                     add_custom_command(
+                             OUTPUT ${generated_file}
+-                            COMMAND ${FLATC} --template ${FLATBUFFER_TEMPALTE} --cpp
+-                            -o ${generated_output_dir}
+-                            ${schema}
++                            COMMAND ${FLATC} --gen-mutable
++                            --reflect-names --gen-object-api -o ${generated_output_dir}
++                            ${total_schema_dirs}
++                            -c -b --reflect-types ${schema}
+                             DEPENDS ${FLATC} ${schema}
+                             WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+                             COMMENT "Running C++ flatbuffers compiler on ${schema}" VERBATIM)
+                 else()
+                     add_custom_command(
+                             OUTPUT ${generated_file}
+-                            COMMAND ${FLATC} --template ${FLATBUFFER_TEMPALTE} --cpp
+-                            -o ${generated_output_dir}
+-                            ${schema}
++                            COMMAND ${FLATC} -o ${generated_output_dir}
++                            ${total_schema_dirs}
++                            -c -b  ${schema}
+                             DEPENDS ${FLATC} ${schema}
+                             WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+                             COMMENT "Running C++ flatbuffers compiler on ${schema}" VERBATIM)
+@@ -232,4 +233,4 @@ else()
+                     ${generated_output_dir})
+         endif()
+     endfunction()
+-endif()
+\ No newline at end of file
++endif()
+diff --git a/cmake/external_libs/jpeg_turbo.cmake b/cmake/external_libs/jpeg_turbo.cmake
+index c3b0b59168a..6bc19fc8ea4 100644
+--- a/cmake/external_libs/jpeg_turbo.cmake
++++ b/cmake/external_libs/jpeg_turbo.cmake
+@@ -65,16 +65,8 @@ if(BUILD_LITE)
+     endif()
+ endif()
+ 
+-mindspore_add_pkg(jpeg_turbo
+-        VER 2.0.4
+-        LIBS jpeg turbojpeg
+-        URL ${REQ_URL}
+-        SHA256 ${SHA256}
+-        CMAKE_OPTION ${CMAKE_OPTION}
+-        PATCHES ${JPEG_TURBO_PATCHE}
+-        PATCHES ${CVE_2020_35538}
+-        PATCHES ${CVE_2021_46822}
+-        )
++set(libjpeg-turbo_DIR   "$ENV{PKG_CONFIG_SYSROOT_DIR}/usr/lib64/cmake/libjpeg-turbo")
++find_package(libjpeg-turbo REQUIRED)
+ include_directories(${jpeg_turbo_INC})
+-add_library(mindspore::jpeg_turbo ALIAS jpeg_turbo::jpeg)
+-add_library(mindspore::turbojpeg ALIAS jpeg_turbo::turbojpeg)
++add_library(mindspore::jpeg_turbo ALIAS libjpeg-turbo::jpeg)
++add_library(mindspore::turbojpeg ALIAS libjpeg-turbo::turbojpeg)
+diff --git a/cmake/external_libs/json.cmake b/cmake/external_libs/json.cmake
+index 1e2e4ade365..50cd02963b0 100644
+--- a/cmake/external_libs/json.cmake
++++ b/cmake/external_libs/json.cmake
+@@ -18,23 +18,7 @@ else()
+     set(INCLUDE "./include")
+ endif()
+ 
+-set(ENABLE_NATIVE_JSON "off")
+-if(EXISTS ${TOP_DIR}/mindspore/lite/providers/json/native_json.cfg)
+-    set(ENABLE_NATIVE_JSON "on")
+-endif()
+-if(ENABLE_NATIVE_JSON)
+-    file(STRINGS ${TOP_DIR}/mindspore/lite/providers/json/native_json.cfg native_json_path)
+-    mindspore_add_pkg(nlohmann_json3101
+-            VER 3.10.1
+-            HEAD_ONLY ${INCLUDE}
+-            DIR ${native_json_path})
+-    add_library(mindspore::json ALIAS nlohmann_json3101)
+-else()
+-    mindspore_add_pkg(nlohmann_json3101
+-            VER 3.10.1
+-            HEAD_ONLY ${INCLUDE}
+-            URL ${REQ_URL}
+-            SHA256 ${SHA256})
+-    include_directories(${nlohmann_json3101_INC})
+-    add_library(mindspore::json ALIAS nlohmann_json3101)
+-endif()
+\ No newline at end of file
++set(nlohmann_json_DIR   "$ENV{PKG_CONFIG_SYSROOT_DIR}/usr/share/cmake/nlohmann_json")
++find_package(nlohmann_json REQUIRED)
++include_directories(${nlohmann_json3101_INC})
++add_library(mindspore::json ALIAS nlohmann_json)
+diff --git a/cmake/external_libs/pybind11.cmake b/cmake/external_libs/pybind11.cmake
+index 5ba18ab41bd..00c938f9a44 100644
+--- a/cmake/external_libs/pybind11.cmake
++++ b/cmake/external_libs/pybind11.cmake
+@@ -39,30 +39,6 @@ set(pybind11_CXXFLAGS "-D_FORTIFY_SOURCE=2 -O2")
+ set(pybind11_CFLAGS "-D_FORTIFY_SOURCE=2 -O2")
+ set(pybind11_patch ${TOP_DIR}/third_party/patch/pybind11/pybind11.patch001)
+ 
+-if(PYTHON_VERSION MATCHES "3.7")
+-    mindspore_add_pkg(pybind11
+-        VER 2.4.3
+-        URL ${REQ_URL}
+-        SHA256 ${SHA256}
+-        CMAKE_OPTION -DPYBIND11_TEST=OFF -DPYBIND11_LTO_CXX_FLAGS=FALSE
+-        )
+-elseif(PYTHON_VERSION MATCHES "3.8")
+-    mindspore_add_pkg(pybind11
+-        VER 2.6.1
+-        URL ${REQ_URL}
+-        SHA256 ${SHA256}
+-        CMAKE_OPTION -DPYBIND11_TEST=OFF -DPYBIND11_LTO_CXX_FLAGS=FALSE
+-        )
+-else()
+-    mindspore_add_pkg(pybind11
+-        VER 2.6.1
+-        URL ${REQ_URL}
+-        SHA256 ${SHA256}
+-        PATCHES ${pybind11_patch}
+-        CMAKE_OPTION -DPYBIND11_TEST=OFF -DPYBIND11_LTO_CXX_FLAGS=FALSE
+-        )
+-endif()
+-
+ include_directories(${pybind11_INC})
+ find_package(pybind11 REQUIRED)
+ set_property(TARGET pybind11::module PROPERTY IMPORTED_GLOBAL TRUE)
+diff --git a/cmake/external_libs/zlib.cmake b/cmake/external_libs/zlib.cmake
+index 29efc99193b..38617705a66 100644
+--- a/cmake/external_libs/zlib.cmake
++++ b/cmake/external_libs/zlib.cmake
+@@ -12,15 +12,7 @@ else()
+     set(ZLIB_PATCH_ROOT ${CMAKE_SOURCE_DIR}/third_party/patch/zlib)
+ endif()
+ 
+-mindspore_add_pkg(zlib
+-        VER 1.2.11
+-        LIBS z
+-        URL ${REQ_URL}
+-        SHA256 ${SHA256}
+-        CMAKE_OPTION -DCMAKE_BUILD_TYPE:STRING=Release
+-        PATCHES ${ZLIB_PATCH_ROOT}/CVE-2018-25032.patch
+-        PATCHES ${ZLIB_PATCH_ROOT}/CVE-2022-37434.patch
+-        PATCHES ${ZLIB_PATCH_ROOT}/CVE-2023-45853.patch)
+-
+-include_directories(${zlib_INC})
+-add_library(mindspore::z ALIAS zlib::z)
++set(ZLIB_ROOT "$ENV{PKG_CONFIG_SYSROOT_DIR}/usr")
++find_package(ZLIB REQUIRED)
++include_directories(${ZLIB_INCLUDE_DIRS})
++add_library(mindspore::z ALIAS ZLIB::ZLIB)
