@@ -11,6 +11,3 @@ SKIP_RECIPE[suitesparse-cholmod] = "Please Use suitesparse instead."
 # add to blacklist for runtime decouple
 SKIP_RECIPE[git] = "Not building with openEuler Embedded ros runtime."
 SKIP_RECIPE[gcc] = "Not building with openEuler Embedded ros runtime."
-
-# current oe's tbb version is too new for ros
-PREFERRED_VERSION_tbb = "2020.3"

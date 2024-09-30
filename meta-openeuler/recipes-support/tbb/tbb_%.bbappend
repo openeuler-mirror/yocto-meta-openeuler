@@ -1,4 +1,3 @@
-# current oe's version is too new for ros-foxy
 # main bb from:
 # http://cgit.openembedded.org/meta-openembedded/tree/meta-oe/recipes-support/tbb?id=11562e889d485118ed377ef0dac17b7e95689281
 
