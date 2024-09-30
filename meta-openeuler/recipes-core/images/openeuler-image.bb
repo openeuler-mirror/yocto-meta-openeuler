@@ -28,6 +28,7 @@ ${@bb.utils.contains("DISTRO_FEATURES", "kubeedge isulad", "packagegroup-kubeedg
 ${@bb.utils.contains("DISTRO_FEATURES", "isulad", "packagegroup-isulad", "", d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "preempt-rt", "packagegroup-preempt-rt", "", d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "dsoftbus", "packagegroup-dsoftbus", "", d)} \
+${@bb.utils.contains("DISTRO_FEATURES", "benchmarks", "packagegroup-openeuler-benchmarks", "", d)} \
 "
 
 # You can add extra user here, suck like:
