@@ -102,14 +102,14 @@
 <section id="id2">
 <h2>简介<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>openEuler Embedded是基于openEuler社区面向嵌入式场景的Linux版本。由于嵌入式系统应用受到如资源、功耗、多样性等因素的约束，面向服务器领域的Linux及相应的构建系统很难满足嵌入式场景的要求，因此业界广泛采用 <a class="reference external" href="https://www.yoctoproject.org/">Yocto</a>
-来定制化构建嵌入式Linux。</p>
-<p>openEuler Embedded当前也采用了yocto构建，但实现了与openEuler其他版本代码同源。本章节将介绍如何使用 <a class="reference external" href="https://gitee.com/openeuler/yocto-meta-openeuler">yocto-meta-openeuler</a>
-项目构建 ARM64 QEMU 镜像，以及如何基于镜像完成基本的嵌入式Linux应用开发。建议按照指导步骤完成镜像构建和运行，以熟悉 <cite>yocto-meta-openeuler</cite> 的开发流程。树莓派等其它平台镜像的构建开发流程也类似，具体可参阅 <a class="reference internal" href="../bsp/index.html#bsp"><span class="std std-ref">南向支持</span></a> 章节。</p>
+来定制化构建嵌入式Linux。openEuler Embedded当前也采用了Yocto进行构建，但实现了与openEuler其他版本代码同源。</p>
+<p>本章节将介绍如何基于`yocto-meta-openeuler &lt;<a class="reference external" href="https://gitee.com/openeuler/yocto-meta-openeuler">https://gitee.com/openeuler/yocto-meta-openeuler</a>&gt;`_
+仓库构建ARM64 QEMU镜像，以及如何基于镜像和生成的SDK完成基本的嵌入式Linux应用开发。建议按照指导步骤完成镜像构建和运行，以熟悉 openEuler Embedded的镜像构建流程。树莓派等其它平台镜像的构建开发流程也类似，具体可参阅 <a class="reference internal" href="../bsp/index.html#bsp"><span class="std std-ref">南向支持</span></a> 章节。</p>
 </section>
 <hr class="docutils" />
 <section id="arm64-qemu">
 <h2>构建 ARM64 QEMU 镜像<a class="headerlink" href="#arm64-qemu" title="Permalink to this headline">¶</a></h2>
-<p>openEuler Embedded采用yocto构建，但通过 <a class="reference external" href="https://gitee.com/openeuler/oebuild">oebuild</a> 简化了构建流程。按照以下步骤可以快速构建出一个openEuler Embedded镜像，包括工具链。</p>
+<p>openEuler Embedded采用yocto构建，同时设计了基于Python的元工具 <a class="reference external" href="https://gitee.com/openeuler/oebuild">oebuild</a> 以简化相对复杂的yocto构建流程。按照以下步骤可以快速构建出一个openEuler Embedded镜像。</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul>
@@ -125,7 +125,7 @@
 <blockquote>
 <div><p>需要在构建主机上安装必要的主机包，包括oebuild及其运行依赖：</p>
 <div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-b3BlbkV1bGVy" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-b3BlbkV1bGVy" name="b3BlbkV1bGVy" role="tab" tabindex="0">openEuler</button><button aria-controls="panel-0-VWJ1bnR1" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-VWJ1bnR1" name="VWJ1bnR1" role="tab" tabindex="-1">Ubuntu</button><button aria-controls="panel-0-U1VTRUxlYXAxNS40" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-U1VTRUxlYXAxNS40" name="U1VTRUxlYXAxNS40" role="tab" tabindex="-1">SUSELeap15.4</button></div><div aria-labelledby="tab-0-b3BlbkV1bGVy" class="sphinx-tabs-panel code-tab group-tab" id="panel-0-b3BlbkV1bGVy" name="b3BlbkV1bGVy" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 安装必要的软件包</span>
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-b3BlbkV1bGVyIDI0LjAz" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-b3BlbkV1bGVyIDI0LjAz" name="b3BlbkV1bGVyIDI0LjAz" role="tab" tabindex="0">openEuler 24.03</button><button aria-controls="panel-0-VWJ1bnR1IDIyLjA0" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-VWJ1bnR1IDIyLjA0" name="VWJ1bnR1IDIyLjA0" role="tab" tabindex="-1">Ubuntu 22.04</button><button aria-controls="panel-0-U1VTRUxlYXAgMTUuNA==" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-U1VTRUxlYXAgMTUuNA==" name="U1VTRUxlYXAgMTUuNA==" role="tab" tabindex="-1">SUSELeap 15.4</button></div><div aria-labelledby="tab-0-b3BlbkV1bGVyIDI0LjAz" class="sphinx-tabs-panel code-tab group-tab" id="panel-0-b3BlbkV1bGVyIDI0LjAz" name="b3BlbkV1bGVyIDI0LjAz" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 安装必要的软件包</span>
 $ sudo yum install python3 python3-pip docker
 $ pip install oebuild
 
@@ -135,7 +135,7 @@ $ sudo systemctl daemon-reload <span class="o">&amp;&amp;</span> sudo systemctl 
 $ sudo chmod o+rw /var/run/docker.sock
 </pre></div>
 </div>
-</div><div aria-labelledby="tab-0-VWJ1bnR1" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-0-VWJ1bnR1" name="VWJ1bnR1" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 安装必要的软件包</span>
+</div><div aria-labelledby="tab-0-VWJ1bnR1IDIyLjA0" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-0-VWJ1bnR1IDIyLjA0" name="VWJ1bnR1IDIyLjA0" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 安装必要的软件包</span>
 $ sudo apt-get install python3 python3-pip docker docker.io
 $ pip install oebuild
 
@@ -145,7 +145,7 @@ $ sudo systemctl daemon-reload <span class="o">&amp;&amp;</span> sudo systemctl 
 $ sudo chmod o+rw /var/run/docker.sock
 </pre></div>
 </div>
-</div><div aria-labelledby="tab-0-U1VTRUxlYXAxNS40" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-0-U1VTRUxlYXAxNS40" name="U1VTRUxlYXAxNS40" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#安装必要的软件包</span>
+</div><div aria-labelledby="tab-0-U1VTRUxlYXAgMTUuNA==" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-0-U1VTRUxlYXAgMTUuNA==" name="U1VTRUxlYXAgMTUuNA==" role="tabpanel" tabindex="0"><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#安装必要的软件包</span>
 $ sudo zypper install python311 python311-pip docker
 $ pip3 install oebuild
 
@@ -168,7 +168,7 @@ $ sudo ln -s python3.11 python3
 <section id="id4">
 <h3>2. 初始化oebuild构建环境<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <blockquote>
-<div><p>运行 oebuild 完成初始化工作，包括创建工作目录、拉取构建容器等，之后的构建都需要在 <code class="docutils literal notranslate"><span class="pre">&lt;work_dir&gt;</span></code> 下进行：</p>
+<div><p>运行 oebuild 完成初始化工作，包括创建工作目录、拉取构建容器等，之后的构建都需要在 <code class="file docutils literal notranslate"><span class="pre">&lt;work_dir&gt;</span></code> 下进行：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># &lt;work_dir&gt; 为要创建的工作目录</span>
 $ oebuild init &lt;work_dir&gt;
 
@@ -184,7 +184,7 @@ $ oebuild update
 <section id="id5">
 <h3>3. 开始构建<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <blockquote>
-<div><p>继续执行以下命令进行 <code class="docutils literal notranslate"><span class="pre">ARM64</span> <span class="pre">QEMU</span></code> 镜像的构建，<code class="docutils literal notranslate"><span class="pre">build_arm64</span></code> 为该镜像的构建目录：</p>
+<div><p>继续执行以下命令进行 <code class="docutils literal notranslate"><span class="pre">ARM64</span> <span class="pre">QEMU</span></code> 镜像的构建，<code class="file docutils literal notranslate"><span class="pre">build_arm64</span></code> 为该镜像的构建目录：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 所有的构建工作都需要在 oebuild 工作目录下进行</span>
 $ <span class="nb">cd</span> &lt;work_dir&gt;
 
@@ -198,7 +198,7 @@ $ <span class="nb">cd</span> build/build_arm64/
 $ oebuild bitbake openeuler-image
 </pre></div>
 </div>
-<p>除了使用上述命令进行配置文件生成之外，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，此菜单选项可以替代上述命令中的oebuild generate，选择保存之后继续执行上述命令中的bitbake及后续命令即可。</p>
+<p>除了使用上述命令进行配置文件生成之外，还可以使用如下命令进入到菜单选择界面进行对应配置填写和选择，此菜单选项可以替代上述命令中的 <code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">generate</span> <span class="pre">-p</span> <span class="pre">qemu-aarch64</span> <span class="pre">-d</span> <span class="pre">build_arm64</span></code> ，选择保存之后继续执行上述命令中的bitbake及后续命令即可。</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild generate</span>
 </pre></div>
 </div>
@@ -209,16 +209,16 @@ $ oebuild bitbake openeuler-image
 <section id="id6">
 <h3>4. 运行镜像<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <blockquote>
-<div><p>完成构建后，在构建目录下的 <code class="docutils literal notranslate"><span class="pre">output</span></code> 目录下可以看到如下文件：</p>
+<div><p>完成构建后，在构建目录下的 <code class="file docutils literal notranslate"><span class="pre">output</span></code> 目录下可以看到如下文件：</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">zImage</span></code>: 内核镜像，基于openEuler社区Linux 5.10代码构建；</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">openeuler-image-qemu-xxx.cpio.gz</span></code>: 标准根文件系统镜像， 进行了必要安全加固，增加了audit、cracklib、OpenSSH、Linux PAM、shadow、iSula容器等所支持的软件包；</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">openeuler-image-qemu-aarch64-xxx.iso</span></code>: iso格式的镜像，可用于制作U盘启动盘；</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">vmlinux</span></code>: 对应的vmlinux，可用于内核调试。</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">zImage</span></code>: 内核镜像，基于openEuler社区Linux 5.10内核构建；</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">openeuler-image-qemu-xxx.cpio.gz</span></code>: 标准根文件系统镜像， 进行了必要安全加固，增加了audit、cracklib、OpenSSH、Linux PAM、shadow、iSulad容器等所支持的软件包；</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">openeuler-image-qemu-aarch64-xxx.iso</span></code>: iso格式的镜像，可用于制作U盘启动盘；</p></li>
+<li><p><code class="file docutils literal notranslate"><span class="pre">vmlinux</span></code>: 对应的vmlinux镜像，可用于内核调试。</p></li>
 </ul>
 <p>在主机上通过以下命令安装QEMU:</p>
 <div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">openEuler</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">Ubuntu</button><button aria-controls="panel-1-1-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-2" name="1-2" role="tab" tabindex="-1">SUSELeap15.4</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><p>$ sudo yum install qemu-system-aarch64</p>
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-1-1-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-1-1-0" name="1-0" role="tab" tabindex="0">openEuler 24.03</button><button aria-controls="panel-1-1-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-1" name="1-1" role="tab" tabindex="-1">Ubuntu 22.04</button><button aria-controls="panel-1-1-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-1-1-2" name="1-2" role="tab" tabindex="-1">SUSELeap 15.4</button></div><div aria-labelledby="tab-1-1-0" class="sphinx-tabs-panel" id="panel-1-1-0" name="1-0" role="tabpanel" tabindex="0"><p>$ sudo yum install qemu-system-aarch64</p>
 </div><div aria-labelledby="tab-1-1-1" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-1" name="1-1" role="tabpanel" tabindex="0"><p>$ sudo apt-get install qemu-system-arm</p>
 </div><div aria-labelledby="tab-1-1-2" class="sphinx-tabs-panel" hidden="true" id="panel-1-1-2" name="1-2" role="tabpanel" tabindex="0"><p>$ sudo zypper install qemu-arm</p>
 </div></div>
@@ -247,7 +247,7 @@ $ oebuild bitbake openeuler-image
 <hr class="docutils" />
 <section id="sdk">
 <h2>基于SDK的应用开发<a class="headerlink" href="#sdk" title="Permalink to this headline">¶</a></h2>
-<p>嵌入式系统往往面临资源受限的问题，包括处理器性能、内存容量、存储空间等方面。因此，需要使用交叉编译器在构建主机上编译目标代码，以在嵌入式系统上运行。</p>
+<p>嵌入式系统往往面临资源受限的问题，包括处理器性能、内存容量、存储空间等方面。因此，需要使用交叉编译器在构建主机上编译目标代码，并在目标系统（开发板/仿真器）上运行。</p>
 <p>openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发所依赖的交叉编译器、库、头文件。下面将介绍如何构建ARM64的SDK，以及如何使用SDK进行用户态程序和内核模块的开发。</p>
 <section id="id7">
 <h3>1. 构建SDK<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
@@ -260,6 +260,18 @@ $ oebuild bitbake openeuler-image
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">openeuler-glibc-x86_64-xxxxx-toolchain-xxxx.sh</span></code>: openEuler Embedded SDK自解压安装包，SDK包含了开发（用户态程序、内核模块等）所必需的工具、库和头文件等。</p></li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>openEuler Embedded SDK主要包含两大部分：</p>
+<ul>
+<li><p><strong>目标系统对应的开发用根文件系统</strong>， 在 <code class="file docutils literal notranslate"><span class="pre">&lt;目标架构&gt;-openeuler-linux</span></code> 目录下，包含动态库、静态库、内核源码、头文件、配置文件、文档等，一般不包含目标系统可执行文件</p></li>
+<li><p><strong>主机开发工具</strong>，在 <code class="file docutils literal notranslate"><span class="pre">&lt;主机架构&gt;-openeulersdk-linux</span></code> 目录下，默认只包含有GCC交叉编译工具链，没有其他主机工具，如cmake, ninja，make等，如果需要，需自行
+在主机上安装， 或者配置nativesdk, 包含更多的主机工具，具体可以参考ROS2 SDK。</p></li>
+</ul>
+</li>
+</ul>
+</div>
 </div></blockquote>
 </section>
 <section id="install-openeuler-embedded-sdk">
@@ -269,13 +281,14 @@ $ oebuild bitbake openeuler-image
 <li><p><strong>安装依赖软件包</strong></p>
 <p>使用SDK开发内核模块需要安装一些必要的软件包，运行如下命令：</p>
 <div class="sphinx-tabs docutils container">
-<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-2-2-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-2-2-0" name="2-0" role="tab" tabindex="0">openEuler</button><button aria-controls="panel-2-2-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-2-2-1" name="2-1" role="tab" tabindex="-1">Ubuntu</button><button aria-controls="panel-2-2-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-2-2-2" name="2-2" role="tab" tabindex="-1">SUSELeap15.4</button></div><div aria-labelledby="tab-2-2-0" class="sphinx-tabs-panel" id="panel-2-2-0" name="2-0" role="tabpanel" tabindex="0"><p>$ sudo yum install make gcc g++ flex bison gmp-devel libmpc-devel openssl-devel elfutils-libelf-devel</p>
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-2-2-0" aria-selected="true" class="sphinx-tabs-tab" id="tab-2-2-0" name="2-0" role="tab" tabindex="0">openEuler 24.03</button><button aria-controls="panel-2-2-1" aria-selected="false" class="sphinx-tabs-tab" id="tab-2-2-1" name="2-1" role="tab" tabindex="-1">Ubuntu 22.04</button><button aria-controls="panel-2-2-2" aria-selected="false" class="sphinx-tabs-tab" id="tab-2-2-2" name="2-2" role="tab" tabindex="-1">SUSELeap 15.4</button></div><div aria-labelledby="tab-2-2-0" class="sphinx-tabs-panel" id="panel-2-2-0" name="2-0" role="tabpanel" tabindex="0"><p>$ sudo yum install make gcc g++ flex bison gmp-devel libmpc-devel openssl-devel elfutils-libelf-devel</p>
 </div><div aria-labelledby="tab-2-2-1" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-1" name="2-1" role="tabpanel" tabindex="0"><p>$ sudo apt-get install make gcc g++ flex bison libgmp3-dev libmpc-dev libssl-dev libelf-dev</p>
 </div><div aria-labelledby="tab-2-2-2" class="sphinx-tabs-panel" hidden="true" id="panel-2-2-2" name="2-2" role="tabpanel" tabindex="0"><p>$ sudo zypper in gcc gcc-c++ make bison gmp-devel libmpc3 openssl cmake flex libelf-devel</p>
 </div></div>
 </li>
 <li><p><strong>执行SDK自解压安装脚本</strong></p>
-<p>首先找到上一步生成的.sh文件所在的目录（在 <cite>build_arm64/output/&lt;文件夹名&gt;/</cite> 路径下，一个例子是 <code class="docutils literal notranslate"><span class="pre">build_arm64/output/20230904145457/</span></code> 。如有多个数字命名的文件夹，则可根据文件夹名找出最新输出的sh文件目录），之后运行如下命令：</p>
+<p>首先找到上一步生成的.sh文件所在的目录（在 <code class="file docutils literal notranslate"><span class="pre">build_arm64/output/&lt;文件夹名&gt;/</span></code> 路径下，一个例子是 <code class="file docutils literal notranslate"><span class="pre">build_arm64/output/20230904145457/</span></code>。如有多个数字命名的文件夹，则可根据文件夹名找出最新输出的sh文件目录），或者从构建
+目录 <code class="file docutils literal notranslate"><span class="pre">tmp/deploy/sdk</span></code> 中获取，之后运行如下命令：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sh openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-*.sh
 </pre></div>
 </div>
