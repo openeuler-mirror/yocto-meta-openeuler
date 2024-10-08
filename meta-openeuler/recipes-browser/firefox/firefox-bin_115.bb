@@ -11,21 +11,21 @@ inherit bin_package mime-xdg
 
 # using image mirrors to accelerate downloads
 PREMIRRORS:prepend:aarch64 = "\
-        https://.*/.* https://mirrors.nju.edu.cn/openeuler/openEuler-24.03-LTS/everything/aarch64/Packages/ \
+        https://.*/.* https://mirrors.nju.edu.cn/openeuler/openEuler-24.09/everything/aarch64/Packages/ \
 "
 PREMIRRORS:prepend:x86-64 = "\
-        https://.*/.* https://mirrors.nju.edu.cn/openeuler/openEuler-24.03-LTS/everything/x86_64/Packages/ \
+        https://.*/.* https://mirrors.nju.edu.cn/openeuler/openEuler-24.09/everything/x86_64/Packages/ \
 "
 
 SRC_URI:aarch64 = " \
-        https://repo.openeuler.openatom.cn/openEuler-24.03-LTS/everything/aarch64/Packages/firefox-115.9.0-1.oe2403.aarch64.rpm;name=arm64;subdir=${BP} \
+        https://repo.openeuler.openatom.cn/openEuler-24.09/everything/aarch64/Packages/firefox-115.15.0-1.oe2409.aarch64.rpm;name=arm64;subdir=${BP} \
 "
 SRC_URI:x86-64 =  " \
-        https://repo.openeuler.openatom.cn/openEuler-24.03-LTS/everything/x86_64/Packages/firefox-115.9.0-1.oe2403.x86_64.rpm;name=x86;subdir=${BP} \
+        https://repo.openeuler.openatom.cn/openEuler-24.09/everything/x86_64/Packages/firefox-115.15.0-1.oe2409.x86_64.rpm;name=x86;subdir=${BP} \
 "
 
-SRC_URI[arm64.md5sum] = "d54d7331fa1d8d8eaeccfdafb6ad35ad"
-SRC_URI[x86.md5sum] = "14974c129ca66e9227535836468d70ba"
+SRC_URI[arm64.md5sum] = "eabbe71d4140dc3416cc76452b6b3d0d"
+SRC_URI[x86.md5sum] = "864e305c6cbf77541010f14f265c8857"
 
 S = "${WORKDIR}/${BP}"
 
