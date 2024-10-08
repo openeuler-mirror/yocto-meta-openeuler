@@ -14,7 +14,6 @@
 # This corresponds to cargo release 1.76.0
 
 OPENEULER_LOCAL_NAME = "oee_archive"
-OEE_ARCHIVE_SUBDIR = "rust"
 
 def get_by_triple(hashes, component, triple):
     try:

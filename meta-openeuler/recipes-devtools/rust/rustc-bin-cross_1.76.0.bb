@@ -12,7 +12,6 @@
 # substantial portions of the software.
 
 OPENEULER_LOCAL_NAME = "oee_archive"
-OEE_ARCHIVE_SUBDIR = "rust"
 
 LIC_FILES_CHKSUM = "file://COPYRIGHT;md5=93a95682d51b4cb0a633a97046940ef0"
 

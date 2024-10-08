@@ -216,6 +216,7 @@ def download_repo(d, repo_dir, repo_url ,version = None):
     import git
     from git import GitCommandError
     import subprocess
+    import re
 
     lock_file = os.path.join(repo_dir, "file.lock")
     lf = bb.utils.lockfile(lock_file, block=True)
@@ -248,8 +249,24 @@ def download_repo(d, repo_dir, repo_url ,version = None):
         if res.returncode != 0:
             bb.fatal(f"in oee_archive run git sparse-checkout add {subdir} faild")
 
+    # get subdir from repo_url, like oee_archive/aaa/aaaa.tar.gz, we should get aaa subdir
+    def filter_oee_archive_sub_dir(oee_archive_uri):
+        pattern = oee_archive_uri.replace("file://oee_archive/", "")
+        pattern_split = pattern.split("/")
+        if len(pattern_split) > 1:
+            return pattern_split[0]
+        else:
+            return None
+
     if "oee_archive" in repo_url:
-        oee_archive_download(oee_archive_dir = repo_dir, subdir = d.getVar("OEE_ARCHIVE_SUBDIR"))
+        for item_uri in d.getVar("SRC_URI").split(" "):
+            if "oee_archive" not in item_uri:
+                continue
+            item_uri = item_uri.strip()
+            sub_dir = filter_oee_archive_sub_dir(item_uri)
+            if sub_dir is None:
+                bb.fatal("the uri format about oee_archive is wrong, should like file://oee_archive/aaa/bbb")
+            oee_archive_download(oee_archive_dir = repo_dir, subdir = sub_dir)
 
     try:
         # if get commit version, just return
