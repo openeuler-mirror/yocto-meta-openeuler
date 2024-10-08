@@ -3,7 +3,6 @@
 # so we use the latest version from upstream go stored at oee_archive. 
 # If there are updates later on src-openEuler, this part can be optimized
 OPENEULER_LOCAL_NAME = "oee_archive"
-OEE_ARCHIVE_SUBDIR = "go"
 
 PV = "1.22.0"
 
