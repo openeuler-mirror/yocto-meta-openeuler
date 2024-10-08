@@ -26,3 +26,5 @@ RDEPENDS:${PN}-testtools:openeuler-prebuilt = ""
 
 # From oe-core bluez5_5.71.bb
 EXTRA_OECONF += "--enable-pie"
+
+FILES:${PN} += "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', "/usr/lib/systemd/user/dbus-org.bluez.obex.service", '', d)}"
