@@ -16,4 +16,3 @@ ntpdate \
 cri-tools \
 cni \
 "
-

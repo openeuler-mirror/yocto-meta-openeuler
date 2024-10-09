@@ -22,4 +22,3 @@ set_permissions_from_rootfs:append() {
     fi
     cd -
 }
-

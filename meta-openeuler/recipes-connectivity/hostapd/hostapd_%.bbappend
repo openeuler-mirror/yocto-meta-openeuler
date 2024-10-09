@@ -11,4 +11,3 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 SRC_URI += " \
         file://${OPENEULER_LOCAL_NAME}/hostapd/${BP}.tar.gz \
 "
-

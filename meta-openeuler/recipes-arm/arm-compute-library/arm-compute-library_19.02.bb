@@ -41,4 +41,3 @@ INSANE_SKIP:${PN}-dev = "dev-elf ldflags"
 FILES:${PN}-source = "${datadir}/${BPN}"
 INSANE_SKIP:${PN}-source = "ldflags libdir staticdev"
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
-

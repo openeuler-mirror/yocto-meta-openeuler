@@ -12,4 +12,3 @@ SRC_URI:prepend = " \
 "
 
 S = "${WORKDIR}/Font-Awesome-${PV}"
-

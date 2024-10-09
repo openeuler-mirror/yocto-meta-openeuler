@@ -48,4 +48,3 @@ FILES:${PN} = " \
  
 # don't need '/etc/ima'
 INSANE_SKIP:${PN} += "already-stripped installed-vs-shipped"
-

@@ -14,4 +14,3 @@ do_compile() {
     ./make.bash ${GOMAKEARGS}
     cd ${B}
 }
-

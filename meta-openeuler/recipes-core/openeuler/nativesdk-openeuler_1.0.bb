@@ -19,4 +19,3 @@ PACKAGES = "${PN}"
 FILES:${PN} = "${SDKPATHNATIVE}"
 
 inherit nativesdk
-

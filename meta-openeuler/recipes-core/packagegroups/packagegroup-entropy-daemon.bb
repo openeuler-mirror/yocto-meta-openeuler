@@ -12,4 +12,3 @@ RDEPENDS:${PN} = " \
 ${@bb.utils.contains('DISTRO_FEATURES', 'rng-tools', 'rng-tools', '', d)} \
 ${@bb.utils.contains('DISTRO_FEATURES', 'haveged', 'haveged', '', d)} \
 "
-
