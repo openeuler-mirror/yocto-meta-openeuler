@@ -14,7 +14,7 @@ SRC_URI = "file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.gz \
 SRC_URI[md5sum] = "2622f7077e30436b2310bea0232c7cec"
 SRC_URI[sha256sum] = "3905a6d6affa84fb629d1565a4e4bdc82812bba49a457b8249ab445eeb28011b"
 
-# overide LDFLAGS to allow rpi4 TF-A to build without: "aarch64-openeuler-linux-gnu-ld.bfd: unrecognized option '-Wl,-O1'"
+# override LDFLAGS to allow rpi4 TF-A to build without: "aarch64-openeuler-linux-gnu-ld.bfd: unrecognized option '-Wl,-O1'"
 # add "--no-warn-rwx-segments" to fix: "bl2.elf has a LOAD segment with RWX permissions"
 export LDFLAGS="--no-warn-rwx-segments"
 

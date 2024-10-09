@@ -3,7 +3,7 @@
 PV = "1.47.0"
 
 S = "${WORKDIR}/${BP}"
-# delete package from poky
+# delete patches from poky
 SRC_URI:remove = " \
                 file://0001-e2fsck-fix-last-mount-write-time-when-e2fsck-is-forc.patch \
                 file://0010-libext2fs-add-sanity-check-to-extent-manipulation.patch \

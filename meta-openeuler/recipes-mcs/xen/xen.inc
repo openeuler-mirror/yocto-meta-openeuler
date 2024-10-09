@@ -85,7 +85,7 @@ export HOSTCXX="${BUILD_CXX}"
 # make xen requires CROSS_COMPILE set by hand as it does not abide by ./configure
 export CROSS_COMPILE="${TARGET_PREFIX}"
 
-# overide LDFLAGS to allow xen to build without: "x86_64-oe-linux-ld: unrecognized option '-Wl,-O1'"
+# override LDFLAGS to allow xen to build without: "x86_64-oe-linux-ld: unrecognized option '-Wl,-O1'"
 export LDFLAGS=""
 
 # No additional C flags for the main hypervisor build

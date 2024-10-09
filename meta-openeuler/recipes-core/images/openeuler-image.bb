@@ -1,5 +1,5 @@
 # notice: IMAGE_FEATURE configs such as IMAGE_FSTYPES is recommended to be defined before openeuler-image-common.inc, 
-# because openeuler-image-common.inc inlcude core-image.bbclass, and image.bbclass in core-image.bbclass
+# because openeuler-image-common.inc include core-image.bbclass, and image.bbclass in core-image.bbclass
 # will traverse the type of IMAGE_FSTYPES to include the image-${FSTYPE}.class corresponding to the type,
 # so if we have special IMAGE_FSTYPES, such as live, IMAGE_FSTYPES needs to be clearly defined in advance,
 # otherwise, the following error will occur:
