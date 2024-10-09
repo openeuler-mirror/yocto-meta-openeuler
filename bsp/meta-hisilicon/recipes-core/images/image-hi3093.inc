@@ -1,5 +1,5 @@
 # This file should be included in openeuler-image.bbappend, openeuler-image-ros.bbappend, etc.
-# diff from ${MACHINE}.inc, it shoud not include by live image
+# diff from ${MACHINE}.inc, it should not be included by live image
 
 require ${@bb.utils.contains("DISTRO_FEATURES", "mpu_solution", "pack-hi3093.inc", "recipes-core/images/qemu.inc", d)}
 require recipes-core/images/bsp-${MACHINE}.inc
