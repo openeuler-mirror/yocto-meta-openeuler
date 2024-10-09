@@ -35,4 +35,3 @@ PACKAGES =+ "${PN}-var"
 #  irc:*:39:39:ircd:/var/run/ircd:/sbin/nologin
 #  gnats:*:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/sbin/nologin
 #  nobody:*:65534:65534:nobody:/nonexistent:/sbin/nologin
-

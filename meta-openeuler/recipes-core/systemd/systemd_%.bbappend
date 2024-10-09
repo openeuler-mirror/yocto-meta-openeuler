@@ -29,4 +29,3 @@ FILES:udev += " \
                ${rootlibexecdir}/udev/rules.d/40-elevator.rules \
                ${rootlibexecdir}/udev/rules.d/73-idrac.rules \
 "
-

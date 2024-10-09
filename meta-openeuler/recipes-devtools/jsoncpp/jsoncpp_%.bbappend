@@ -9,4 +9,3 @@ SRC_URI:prepend = " \
 "
 
 S = "${WORKDIR}/${BP}"
-

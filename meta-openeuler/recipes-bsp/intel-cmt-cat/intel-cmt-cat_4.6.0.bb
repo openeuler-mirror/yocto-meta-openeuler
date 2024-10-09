@@ -27,4 +27,3 @@ INSANE_SKIP:${PN} += "libdir"
 INSANE_SKIP:${PN} += "already-stripped"
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
-

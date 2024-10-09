@@ -52,4 +52,3 @@ do_generate_docker_image() {
 }
 
 IMAGE_POSTPROCESS_COMMAND:append = "do_generate_docker_image;"
-

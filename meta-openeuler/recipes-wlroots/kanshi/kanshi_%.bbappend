@@ -12,4 +12,3 @@ SRC_URI += " \
 "
 
 S = "${WORKDIR}/kanshi-v${PV}"
-

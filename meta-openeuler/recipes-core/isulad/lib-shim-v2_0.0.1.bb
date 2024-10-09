@@ -48,4 +48,3 @@ directory = "lib-shim-v2-${PV}/vendor"
 
 EOF
 }
-

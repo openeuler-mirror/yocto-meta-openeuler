@@ -53,4 +53,3 @@ do_install() {
     cp $CP_ARGS ${S}/include ${D}${datadir}/${BPN}/.
     cp $CP_ARGS ${S}/support ${D}${datadir}/${BPN}/.
 }
-

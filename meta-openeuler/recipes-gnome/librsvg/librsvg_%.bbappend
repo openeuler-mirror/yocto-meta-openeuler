@@ -33,4 +33,3 @@ directory = "vendor"
 
 EOF
 }
-

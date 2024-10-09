@@ -8,4 +8,3 @@ SRC_URI:prepend = " \
 "
 
 EXTRA_OEMESON += "-Dtests=disabled -Dvapi=disabled"
-

@@ -32,4 +32,3 @@ do_install() {
 
 # Specify files to package
 FILES:${PN} = "${bindir}/ms-lite-demo /usr/model"
-

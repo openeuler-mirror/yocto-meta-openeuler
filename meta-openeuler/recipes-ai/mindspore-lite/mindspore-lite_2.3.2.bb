@@ -60,4 +60,3 @@ FILES:${PN}-staticdev = "${libdir}/*a"
 FILES:${PN}-dev = "${includedir}"
 
 INSANE_SKIP:${PN} += "already-stripped"
-

@@ -5,4 +5,3 @@ SRC_URI:prepend = " \
 "
 
 S = "${WORKDIR}/nss-mdns-${PV}"
-
