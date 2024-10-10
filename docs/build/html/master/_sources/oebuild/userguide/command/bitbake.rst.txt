@@ -56,7 +56,7 @@ bitbake编译命令-bitbake
             image: 
                 swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
             parameters: -itd --network host
-            volumns:
+            volumes:
             - /dev/net/tun:/dev/net/tun
             - <path_to_oebuild_work>/src:/usr1/openeuler/src
             - <path_to_oebuild_work>/build/qemu-aarch64:/home/openeuler/build/qemu-aarch64
