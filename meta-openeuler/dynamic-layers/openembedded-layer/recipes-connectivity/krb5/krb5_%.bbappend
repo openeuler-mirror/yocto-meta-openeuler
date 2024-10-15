@@ -46,29 +46,5 @@ PACKAGECONFIG[keyutils] = "--with-keyutils,--without-keyutils,keyutils"
 
 EXTRA_OECONF:remove = "--without-tcl"
 
-PACKAGE_BEFORE_PN =+ "${PN}-admin-server \
-                      ${PN}-gss-samples \
-                      ${PN}-k5tls \
-                      ${PN}-kdc \
-                      ${PN}-kdc-ldap \
-                      ${PN}-kpropd \
-                      ${PN}-otp \
-                      ${PN}-pkinit \
-                      ${PN}-spake \
-                      ${PN}-user \
-                      libgssapi-krb5 \
-                      libgssrpc \
-                      libk5crypto \
-                      libkadm5clnt-mit \
-                      libkadm5srv-mit \
-                      libkdb5 \
-                      libkrad \
-                      libkrb5 \
-                      libkrb5support \
-                      libverto \
-"
-
-PACKAGES = ""
-
 inherit multilib_script
 MULTILIB_SCRIPTS = "${PN}-dev:${bindir}/krb5-config"
