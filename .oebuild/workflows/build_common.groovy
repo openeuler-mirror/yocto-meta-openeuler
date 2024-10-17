@@ -225,13 +225,12 @@ def handleAfterBuildImage(String image_name, String arch, Integer build_res_code
 
 def prepareSrcCode(workspace){
     sh """
-        if [[ -f "${shareDir}/${ciBranch}/src.tar.gz" ]]; then
+        if [[ -d "${shareDir}/${ciBranch}/oebuild_workspace/src" ]]; then
             pushd ${workspace}
             oebuild init oebuild_workspace
             cd oebuild_workspace
             rm -rf build
-            cp -f ${shareDir}/${ciBranch}/src.tar.gz .
-            tar zxf src.tar.gz
+            rsync -a ${shareDir}/${ciBranch}/oebuild_workspace/src . --exclude yocto-meta-openeuler
             sync
             popd
         fi
