@@ -1,5 +1,5 @@
 LICENSE = "MulanPSLv2"
-LIC_FILES_CHKSUM = "file://README.md;md5=4bf7fb6fb9c07b28de67367a205551c8"
+LIC_FILES_CHKSUM = "file://README.md;md5=4674a368d3e69d7ab6c6090a6b8ac02a"
 
 DEPENDS += " \
   boost \
