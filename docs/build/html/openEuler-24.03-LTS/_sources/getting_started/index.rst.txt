@@ -9,7 +9,7 @@
 openEuler Embedded是基于openEuler社区面向嵌入式场景的Linux版本。由于嵌入式系统应用受到如资源、功耗、多样性等因素的约束，面向服务器领域的Linux及相应的构建系统很难满足嵌入式场景的要求，因此业界广泛采用 `Yocto <https://www.yoctoproject.org/>`_
 来定制化构建嵌入式Linux。openEuler Embedded当前也采用了Yocto进行构建，但实现了与openEuler其他版本代码同源。
 
-本章节将介绍如何基于`yocto-meta-openeuler <https://gitee.com/openeuler/yocto-meta-openeuler>`_
+本章节将介绍如何基于 `yocto-meta-openeuler <https://gitee.com/openeuler/yocto-meta-openeuler>`_
 仓库构建ARM64 QEMU镜像，以及如何基于镜像和生成的SDK完成基本的嵌入式Linux应用开发。建议按照指导步骤完成镜像构建和运行，以熟悉 openEuler Embedded的镜像构建流程。树莓派等其它平台镜像的构建开发流程也类似，具体可参阅 :ref:`南向支持 <bsp>` 章节。
 
 ____
