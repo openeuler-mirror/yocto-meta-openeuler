@@ -14,7 +14,7 @@ do_compile:prepend () {
     # the original registry is https://registry.npmjs.org/, 
     # too slow in China!!!!!!!!
     # use the Chinese mirror instead
-    npm config set registry https://registry.npmmirror.com/
+    npm config set registry https://r.cnpmjs.org/
 }
 
 TOOLCHAIN = "gcc"
