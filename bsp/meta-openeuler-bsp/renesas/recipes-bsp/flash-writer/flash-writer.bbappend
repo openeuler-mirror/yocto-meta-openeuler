@@ -1,0 +1,1 @@
+require recipes-bsp/flash-writer/${MACHINE}.inc
