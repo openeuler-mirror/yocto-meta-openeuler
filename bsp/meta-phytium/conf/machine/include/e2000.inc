@@ -15,3 +15,5 @@ SERIAL_CONSOLES = "115200;ttyAMA0"
 # arm and arm64 both support -mlittle-endian so no
 # need to consider compat32.
 TUNE_CCARGS .= " -mlittle-endian"
+
+IMAGE_INSTALL:append = " kernel-modules"
