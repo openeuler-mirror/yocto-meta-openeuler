@@ -14,7 +14,7 @@ SRC_URI = " file://hipico_hardware_driver \
 S = "${WORKDIR}/hipico_hardware_driver/drivers"
 
 INSANE_SKIP:${PN} += "already-stripped"
-FILES:${PN} = "${sysconfdir} ${systemd_system_unitdir} /ko"
+FILES:${PN} = "${sysconfdir} ${systemd_system_unitdir} /usr/sbin /ko"
 
 do_install () {
     install -d ${D}${sysconfdir}/init.d
@@ -31,6 +31,9 @@ do_install () {
 
     cp ${S}/ws73/etc/* ${D}${sysconfdir}/ -r
     cp ${S}/ws73/ko/* ${D}/ko/wifi/
+    install -d ${D}/usr/sbin
+    install -m 0755 ${S}/ws73/bin/sparklinkctrl ${D}/usr/sbin
+    install -m 0755 ${S}/ws73/bin/sparklinkd ${D}/usr/sbin
 }
 
 INHIBIT_PACKAGE_STRIP = "1"
