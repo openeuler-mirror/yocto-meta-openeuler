@@ -35,27 +35,17 @@ def split_build(String build_images, String parallel_str_num){
     def build_list = [:]
     def parallel_num = parallel_str_num.toInteger()
     def image_list = build_images.replace("\n", " ").split(" ")
-    // note: It is not possible to directly obtain an integer from dividing two numbers
-    // here because a safety plugin is required. Therefore, we convert it to a string
-    // and then split the string to obtain the integer.
-    def int_num_str = (image_list.size() / parallel_num).toString()
-    def int_num = int_num_str.split("\\.")[0].toInteger()
-    int_num = int_num + (image_list.size() % parallel_num > 0 ? 1 : 0)
     def build_index = 0
-    def build_item = ""
-    def tmp_num = 0
     for(int i = 0; i < image_list.size(); i++){
-        build_item = build_item + " " + image_list[i]
-        tmp_num = tmp_num + 1
-        if(tmp_num >= int_num){
-            build_list[build_index] = build_item.trim()
-            build_index = build_index + 1
-            build_item = ""
-            tmp_num = 0
+        if (build_index >= parallel_num){
+            build_index = 0
         }
-    }
-    if(build_item != ""){
-        build_list[build_index] = build_item.trim()
+        if (build_list[build_index] == null) {
+            build_list[build_index] = image_list[i]
+        }else{
+            build_list[build_index] = build_list[build_index] + " " + image_list[i]
+        }
+        build_index = build_index + 1
     }
     return build_list
 }
