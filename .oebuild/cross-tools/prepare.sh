@@ -35,9 +35,43 @@ function do_patch() {
     echo "------------do_patch for $1 done!"
 }
 
+function get_remote_from_manifest() {
+	REPO_NAME="$1"
+	LINE_NUM=`grep -n " $REPO_NAME:" $MANIFEST_PATH | awk -F ":" '{print $1}'`
+	LINE_NUM=$(expr $LINE_NUM + 1)
+	REMOTE=`awk "NR==$LINE_NUM" $MANIFEST_PATH | awk -F "remote_url: " '{print $2}'`
+	echo $REMOTE
+}
+
+function get_version_from_manifest() {
+	REPO_NAME="$1"
+	LINE_NUM=`grep -n " $REPO_NAME:" $MANIFEST_PATH | awk -F ":" '{print $1}'`
+	LINE_NUM=$(expr $LINE_NUM + 2)
+	VERSION=`awk "NR==$LINE_NUM" $MANIFEST_PATH | awk -F "version: " '{print $2}'`
+	echo $VERSION
+}
+
 function download_and_patch() {
 	while [ $# != 0 ] ; do
-		[ -n "$1" ] && echo "Download $1" && git clone -b $COMMON_BRANCH https://gitee.com/src-openeuler/$1.git --depth 1 && do_patch $1; shift;
+		echo "download $1 ..."
+		if [ $1 == "$KERNEL" ];then
+			REMOTE=$(get_remote_from_manifest "kernel-5.10")
+			VERSION=$(get_version_from_manifest "kernel-5.10")
+		else
+			REMOTE=$(get_remote_from_manifest $1)
+			VERSION=$(get_version_from_manifest $1)
+		fi
+		mkdir -p $1
+		pushd $1
+		git init
+		git remote add upstream $REMOTE
+		git fetch upstream $VERSION --depth=1
+		git checkout $VERSION
+		popd
+		if [ $1 != "$KERNEL" ];then
+			do_patch $1
+		fi
+		shift
 	done
 }
 
@@ -45,9 +79,7 @@ function do_prepare() {
 	[ ! -d "$LIB_PATH" ] && mkdir $LIB_PATH
 	pushd $LIB_PATH
 	delete_dir $KERNEL $GCC $GLIBC $MUSLC $BINUTILS $GMP $MPC $MPFR $ISL $EXPAT $GETTEXT $NCURSES $ZLIB $LIBICONV $GDB $ZSTD
-	git clone -b $KERNEL_BRANCH https://gitee.com/openeuler/kernel.git --depth 1
-	git clone -b $MUSLC_BRANCH https://gitee.com/src-openeuler/musl.git --depth 1 && do_patch musl;
-	download_and_patch $GCC $GLIBC $BINUTILS $GMP $MPC $MPFR $ISL $EXPAT $NCURSES $ZLIB $GDB $ZSTD
+	download_and_patch $KERNEL $MUSLC $GCC $GLIBC $BINUTILS $GMP $MPC $MPFR $ISL $EXPAT $NCURSES $ZLIB $GDB $ZSTD
 	#LIBICONV and GETTEXT dir is need, but with no code, it will skip when ct-ng build under our openeuler env.
 	mkdir -p $LIB_PATH/$LIBICONV/$LIBICONV_DIR
 	mkdir -p $LIB_PATH/$GETTEXT/$GETTEXT_DIR
@@ -95,16 +127,13 @@ main()
 	source $SRC_DIR/configs/config.xml
     OE_PATCH_DIR="$SRC_DIR/patches"
 	readonly LIB_PATH="$WORK_DIR/open_source"
+	readonly MANIFEST_PATH="$SRC_DIR/$MANIFEST"
 
 	do_prepare
 
 	cd $WORK_DIR
 	echo "Prepare done! Now you can run: (not in root please)"
-	echo "'cp config_arm32 .config && ct-ng build' for build arm"
-	echo "'cp config_aarch64 .config && ct-ng build' for build arm64"
-	echo "'cp config_x86_64 .config && ct-ng build' for build x86_64"
-	echo "'cp config_riscv64 .config && ct-ng build' for build riscv64"
-	echo "'cp config_aarch64-musl .config && ct-ng build' for build muslc_aarch64"
+	echo "./update.sh"
 }
 
 main "$@"

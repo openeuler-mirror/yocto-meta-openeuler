@@ -12,7 +12,7 @@ function update_feature() {
 }
 
 function update_config() {
-	cp $SRC_DIR/configs/config_* $WORK_DIR/
+	cp -f $SRC_DIR/configs/config_* $WORK_DIR/
 	sed -i "s#^CT_LINUX_CUSTOM_LOCATION.*#CT_LINUX_CUSTOM_LOCATION=\"$LIB_PATH/kernel\"#g" $WORK_DIR/config_*
 	sed -i "s#^CT_BINUTILS_CUSTOM_LOCATION.*#CT_BINUTILS_CUSTOM_LOCATION=\"$LIB_PATH/$BINUTILS/$BINUTILS_DIR\"#g" $WORK_DIR/config_*
 	sed -i "s#^CT_GLIBC_CUSTOM_LOCATION.*#CT_GLIBC_CUSTOM_LOCATION=\"$LIB_PATH/$GLIBC/$GLIBC_DIR\"#g" $WORK_DIR/config_*
