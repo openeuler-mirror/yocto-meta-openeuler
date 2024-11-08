@@ -7,7 +7,7 @@ PV = "1.14.0"
 
 S = "${WORKDIR}/${BP}"
 SRC_URI:append = " \
-        file://${OPENEULER_LOCAL_NAME}/v${PV}.tar.gz \
+        file://v${PV}.tar.gz \
 "
 
 SRC_URI:remove = " \

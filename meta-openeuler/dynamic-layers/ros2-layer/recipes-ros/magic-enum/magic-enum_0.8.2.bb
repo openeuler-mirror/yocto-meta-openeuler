@@ -40,8 +40,8 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
 OPENEULER_LOCAL_NAME = "magic_enum"
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/ros-humble-magic-enum_0.8.2.orig.tar.gz \
-    file://${OPENEULER_LOCAL_NAME}/magic_enum-fix-build_tests.patch \
+    file://ros-humble-magic-enum_0.8.2.orig.tar.gz \
+    file://magic_enum-fix-build_tests.patch \
 "
 
 FILES:${PN} += "${datadir}"

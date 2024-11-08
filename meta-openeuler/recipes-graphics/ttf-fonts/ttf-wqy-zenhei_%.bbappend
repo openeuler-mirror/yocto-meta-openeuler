@@ -4,7 +4,7 @@ OPENEULER_LOCAL_NAME = "wqy-zenhei-fonts"
 
 PV = "0.9.46-May"
 
-SRC_URI:prepend = "file://${OPENEULER_LOCAL_NAME}/wqy-zenhei-${PV}.tar.bz2 \
+SRC_URI:prepend = "file://wqy-zenhei-${PV}.tar.bz2 \
 "
 
 PACKAGEFUNCS:remove = " add_fontcache_postinsts "
