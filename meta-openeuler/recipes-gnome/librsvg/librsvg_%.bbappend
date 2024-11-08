@@ -16,8 +16,8 @@ export RUST_TARGET
 PV = "2.57.1"
 
 SRC_URI:prepend = " \
-    file://${OPENEULER_LOCAL_NAME}/librsvg-${PV}.tar.xz \
-    file://${OPENEULER_LOCAL_NAME}/vendor.tar.xz \
+    file://librsvg-${PV}.tar.xz \
+    file://vendor.tar.xz \
 "
 
 S = "${WORKDIR}/librsvg-${PV}"

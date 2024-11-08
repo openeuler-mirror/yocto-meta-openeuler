@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/MulanPSL-2.0;m
 
 # Use the operation files from current layer
 FILESEXTRAPATHS:prepend := "${THISDIR}/:"
-SRC_URI = "file://lops/"
+SRC_URI = "file://lops"
 
 DEPENDS += "lopper-native"
 

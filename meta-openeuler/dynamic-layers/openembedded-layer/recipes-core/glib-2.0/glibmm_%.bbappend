@@ -5,8 +5,8 @@ OPENEULER_LOCAL_NAME = "glibmm24"
 PV = "2.66.5"
 
 SRC_URI += " \
-        file://${OPENEULER_LOCAL_NAME}/${BP}.tar.xz \
-        file://${OPENEULER_LOCAL_NAME}/glibmm24-gcc11.patch \
+        file://${BP}.tar.xz \
+        file://glibmm24-gcc11.patch \
 "
 
 S = "${WORKDIR}/${BP}"
