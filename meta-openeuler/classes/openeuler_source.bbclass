@@ -75,10 +75,9 @@ def check_source_list(d):
 
 python add_openeuler_source_uri() {
     tarballs = []
-    localname = d.getVar("OPENEULER_LOCAL_NAME")
     workspace_tarball_list = openeuler_get_item(d, 'workspace_tarball', "")
     for workspace_tarball in workspace_tarball_list:
-        tarballs.append(" file://" + localname + "/" + workspace_tarball.split()[-1] +
+        tarballs.append(" file://" + workspace_tarball.split()[-1] +
                 ";subdir=" + workspace_tarball.split()[0] + ";striplevel=1")
     d.setVar('SRC_URI', '%s %s' % (' '.join(tarballs), d.getVar("SRC_URI")))
 }
