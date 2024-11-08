@@ -1,6 +1,6 @@
 PV = "6.6.3"
 
-OPENEULER_REPO_NAME = "btrfs-progs"
+OPENEULER_LOCAL_NAME = "btrfs-progs"
 
 # remove poky attr
 SRC_URI:remove = "\

@@ -26,10 +26,9 @@ SRC_URI:raspberrypi4 = " \
             file://kernel-${PV}-tag-rpi \
     ', d)} \
 "
-OPENEULER_REPO_NAME:raspberrypi4 = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'kernel-${PV}', 'kernel-${PV}-tag-rpi', d)}"
+
 OPENEULER_LOACL_NAME:raspberrypi4 = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'kernel-${PV}', 'kernel-${PV}-tag-rpi', d)}"
 S:raspberrypi4 = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '${WORKDIR}/kernel-${PV}', '${WORKDIR}/kernel-${PV}-tag-rpi', d)}"
 OPENEULER_REPO_NAMES:raspberrypi4 = " \
 ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' src-kernel-${PV} kernel-${PV} ', ' src-kernel-${PV}-tag-rpi kernel-${PV}-tag-rpi ', d)} \
 "
-

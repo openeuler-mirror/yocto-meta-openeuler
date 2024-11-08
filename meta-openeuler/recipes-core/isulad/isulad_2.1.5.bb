@@ -7,7 +7,7 @@ LICENSE = "MulanPSL-2.0"
 
 LIC_FILES_CHKSUM = "file://LICENSES/LICENSE;md5=1acb172ffd3d252285dd1b8b8459941e"
 
-OPENEULER_REPO_NAME = "iSulad"
+OPENEULER_LOCAL_NAME = "iSulad"
 
 inherit features_check
 REQUIRED_DISTRO_FEATURES = "isulad"

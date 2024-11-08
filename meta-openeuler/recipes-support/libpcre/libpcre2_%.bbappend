@@ -4,7 +4,7 @@
 PV = "10.42"
 LIC_FILES_CHKSUM = "file://LICENCE;md5=41bfb977e4933c506588724ce69bf5d2"
 
-OPENEULER_REPO_NAME = "pcre2"
+OPENEULER_LOCAL_NAME = "pcre2"
 
 # use openeuler source
 SRC_URI:prepend = "file://pcre2-${PV}.tar.bz2 \

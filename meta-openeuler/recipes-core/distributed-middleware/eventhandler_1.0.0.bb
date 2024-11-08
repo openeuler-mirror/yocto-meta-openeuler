@@ -7,7 +7,7 @@ require distributed-build.inc
 
 pkg-eventhandler = "notification_eventhandler-${openHarmony_release_version}"
 
-OPENEULER_REPO_NAME = "notification_eventhandler"
+OPENEULER_LOCAL_NAME = "notification_eventhandler"
 
 SRC_URI += " \
             file://${pkg-eventhandler}.tar.gz \

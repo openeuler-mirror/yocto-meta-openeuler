@@ -4,7 +4,7 @@
 PV = "253"
 S = "${WORKDIR}/systemd-${PV}"
 
-OPENEULER_REPO_NAME = "systemd"
+OPENEULER_LOCAL_NAME = "systemd"
 require systemd-openeuler.inc
 
 # glib needs meson, meson needs python3-native

@@ -1,4 +1,4 @@
-OPENEULER_REPO_NAME = "yocto-opkg-utils"
+OPENEULER_LOCAL_NAME = "yocto-opkg-utils"
 
 # version in openEuler
 PV = "0.5.0"

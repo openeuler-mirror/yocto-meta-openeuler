@@ -1,6 +1,6 @@
 # main bbfile: meta/recipes-support/boost/boost-build-native_4.3.0.bb
 
-OPENEULER_REPO_NAME = "boost"
+OPENEULER_LOCAL_NAME = "boost"
 
 PV = "1.83.0"
 

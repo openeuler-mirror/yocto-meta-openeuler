@@ -1,4 +1,4 @@
-OPENEULER_REPO_NAME = "alsa-lib"
+OPENEULER_LOCAL_NAME = "alsa-lib"
 
 PV = "1.2.7.1"
 

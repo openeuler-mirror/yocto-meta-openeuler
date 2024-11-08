@@ -1,6 +1,6 @@
 # main bb: yocto-poky/meta/recipes-core/glibc/cross-localedef-native_2.35.bb
 #
-OPENEULER_REPO_NAME = "glibc"
+OPENEULER_LOCAL_NAME = "glibc"
 OPENEULER_LOCAL_NAME = "glibc"
 
 PV = "2.38"

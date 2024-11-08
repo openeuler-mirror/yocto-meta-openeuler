@@ -1,5 +1,5 @@
 # apply openeuler source package
-OPENEULER_REPO_NAME = "raspberrypi-firmware"
+OPENEULER_LOCAL_NAME = "raspberrypi-firmware"
 
 PV = "20240419"
 

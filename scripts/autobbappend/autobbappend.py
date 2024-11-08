@@ -147,7 +147,7 @@ def read_name(spec_dir):
     return name
 
 
-#OPENEULER_REPO_NAME used when the repository name is inconsistent with the ${BPN}.Refer to opkg-utils
+#OPENEULER_LOCAL_NAME used when the repository name is inconsistent with the ${BPN}.Refer to opkg-utils
 def read_repo_name(spec_dir):
     (repo_path, spec_name) = os.path.split(spec_dir)
     (path, repo_name) = os.path.split(repo_path)

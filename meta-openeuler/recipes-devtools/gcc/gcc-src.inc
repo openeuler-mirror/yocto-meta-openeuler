@@ -1,4 +1,4 @@
-OPENEULER_REPO_NAME = "gcc"
+OPENEULER_LOCAL_NAME = "gcc"
 
 # don't apply CVE patch in Poky
 SRC_URI:remove = "file://CVE-2023-4039.patch"

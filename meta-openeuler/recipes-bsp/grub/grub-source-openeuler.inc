@@ -3,7 +3,7 @@ PV = "2.12"
 
 # Notice: openeuler's patches have many conflicts to patch, drop them.
 
-OPENEULER_REPO_NAME = "grub2"
+OPENEULER_LOCAL_NAME = "grub2"
 
 SRC_URI:prepend = "file://grub-${PV}.tar.xz \
 "

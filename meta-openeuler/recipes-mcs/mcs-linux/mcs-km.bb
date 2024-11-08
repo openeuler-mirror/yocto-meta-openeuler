@@ -15,7 +15,7 @@ require mcs-resources-overlay.inc
 
 ### Build metadata: SRC_URI, SRCDATA, S, B, FILESEXTRAPATHS....
 PV = "0.0.1"
-OPENEULER_REPO_NAME = "mcs"
+OPENEULER_LOCAL_NAME = "mcs"
 
 SRC_URI:append:aarch64 = " \
     file://mcs/mcs_km \

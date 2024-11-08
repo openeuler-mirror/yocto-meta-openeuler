@@ -1,5 +1,5 @@
 # apply openeuler source package
-OPENEULER_REPO_NAME = "bluez"
+OPENEULER_LOCAL_NAME = "bluez"
 
 PV = "5.71"
 

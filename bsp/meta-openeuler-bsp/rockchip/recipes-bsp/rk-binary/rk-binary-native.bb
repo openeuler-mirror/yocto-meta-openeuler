@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://${RKBASE}/licenses/LICENSE.rockchip;md5=d63890e209bf0
 
 inherit deploy native
 
-OPENEULER_REPO_NAME = "rk-binary-native"
+OPENEULER_LOCAL_NAME = "rk-binary-native"
 
 SRC_URI = " \
 	file://rk-binary-native \

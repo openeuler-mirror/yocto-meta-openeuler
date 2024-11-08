@@ -1,7 +1,7 @@
 # main bbfile: yocto-poky/meta/recipes-bsp/u-boot/u-boot_2021.01.bb
 
 # apply openEuler package
-OPENEULER_REPO_NAME = "uboot-tools"
+OPENEULER_LOCAL_NAME = "uboot-tools"
 
 # fix LIC_FILES_CHKSUM
 LICENSE = "GPL-2.0-or-later"

@@ -1,7 +1,7 @@
 PV = "4.18.2"
 
 # set repo name for xen-tools
-OPENEULER_REPO_NAME = "xen"
+OPENEULER_LOCAL_NAME = "xen"
 SRC_URI = " \
     file://RELEASE-${PV}.tar.gz \
     "

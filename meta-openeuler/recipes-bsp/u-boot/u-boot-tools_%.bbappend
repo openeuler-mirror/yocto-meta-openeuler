@@ -4,7 +4,7 @@ LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/README;md5=2ca5f2c35c8cc335f0a19756634782f1"
 
 
-OPENEULER_REPO_NAME = "uboot-tools"
+OPENEULER_LOCAL_NAME = "uboot-tools"
 PV = "2024.01"
 
 DEPENDS += "python3-setuptools-native gnutls util-linux swig-native"

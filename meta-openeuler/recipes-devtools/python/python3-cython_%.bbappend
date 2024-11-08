@@ -1,6 +1,6 @@
 PV = "3.0.8"
 require pypi-src-openeuler.inc
-OPENEULER_REPO_NAME = "Cython"
+OPENEULER_LOCAL_NAME = "Cython"
 
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=61c3ee8961575861fa86c7e62bc9f69c"
 

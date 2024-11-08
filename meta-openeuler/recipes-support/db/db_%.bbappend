@@ -1,5 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-support/db/db_5.3.28.bb
-OPENEULER_REPO_NAME = "libdb"
+OPENEULER_LOCAL_NAME = "libdb"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 # patches that apply fail:

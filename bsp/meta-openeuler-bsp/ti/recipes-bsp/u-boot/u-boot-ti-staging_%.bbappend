@@ -1,4 +1,4 @@
-OPENEULER_REPO_NAME = "myir-ti-uboot"
+OPENEULER_LOCAL_NAME = "myir-ti-uboot"
 
 SRCPV = ""
 

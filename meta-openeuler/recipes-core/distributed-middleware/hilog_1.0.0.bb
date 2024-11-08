@@ -5,7 +5,7 @@ LICENSE = "CLOSED"
 
 require distributed-build.inc
 
-OPENEULER_REPO_NAME = "hiviewdfx_hilog"
+OPENEULER_LOCAL_NAME = "hiviewdfx_hilog"
 
 pkg-hilog = "hiviewdfx_hilog-${openHarmony_release_version}"
 

@@ -1,6 +1,6 @@
 require pypi-src-openeuler.inc
 
-OPENEULER_REPO_NAME = "python-mako"
+OPENEULER_LOCAL_NAME = "python-mako"
 
 PV = "1.2.4"
 

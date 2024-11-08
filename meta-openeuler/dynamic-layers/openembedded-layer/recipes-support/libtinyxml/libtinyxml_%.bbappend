@@ -3,7 +3,7 @@
 # openeuler version
 PV = "2.6.2"
 
-OPENEULER_REPO_NAME = "tinyxml"
+OPENEULER_LOCAL_NAME = "tinyxml"
 
 S = "${WORKDIR}/tinyxml"
 

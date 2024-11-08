@@ -9,6 +9,6 @@ SRC_URI:remove = " \
 "
 
 S = "${WORKDIR}/pybind11-${PV}"
-OPENEULER_REPO_NAME = "pybind11"
+OPENEULER_LOCAL_NAME = "pybind11"
 
 SRC_URI:prepend = "file://pybind11-${PV}.tar.gz "

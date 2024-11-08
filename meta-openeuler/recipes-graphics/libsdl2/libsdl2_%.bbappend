@@ -2,7 +2,7 @@
 PV = "2.30.0"
 
 # setting openeuler name
-OPENEULER_REPO_NAME = "SDL2"
+OPENEULER_LOCAL_NAME = "SDL2"
 
 # remove poky license
 LIC_FILES_CHKSUM:remove = "file://LICENSE.txt;md5=68a088513da90254b2fbe664f42af315"

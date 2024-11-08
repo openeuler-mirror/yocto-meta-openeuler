@@ -12,7 +12,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=74b1b7a7ee537a16390ed514498bf23c"
 inherit setuptools3
 
 ### Build metadata: SRC_URI, SRCDATA, S, B, FILESEXTRAPATHS....
-OPENEULER_REPO_NAME = "mcs"
+OPENEULER_LOCAL_NAME = "mcs"
 
 SRC_URI = " \
         file://mcs \

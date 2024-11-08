@@ -2,7 +2,7 @@
 PV = "0.40.0"
 
 require pypi-src-openeuler.inc
-OPENEULER_REPO_NAME = "python-wheel"
+OPENEULER_LOCAL_NAME = "python-wheel"
 
 # from version 0.40.0, compare the differences in upstream recipe
 SRC_URI[sha256sum] = "cd1196f3faee2b31968d626e1731c94f99cbdb67cf5a46e4f5656cbee7738873"

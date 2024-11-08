@@ -1,4 +1,4 @@
-OPENEULER_REPO_NAME = "trusted-firmware-a"
+OPENEULER_LOCAL_NAME = "trusted-firmware-a"
 
 PV:k3 = "git"
 

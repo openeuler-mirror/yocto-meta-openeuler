@@ -1,6 +1,6 @@
 # main bbfile: yocto-poky/meta/recipes-support/libjitterentropy_3.4.0.bb
 
-OPENEULER_REPO_NAME = "jitterentropy-library"
+OPENEULER_LOCAL_NAME = "jitterentropy-library"
 
 # version in openEuler
 PV = "3.3.1"

@@ -7,7 +7,7 @@ require distributed-build.inc
 
 pkg-samgr = "systemabilitymgr_samgr-${openHarmony_release_version}"
 
-OPENEULER_REPO_NAME = "systemabilitymgr_samgr"
+OPENEULER_LOCAL_NAME = "systemabilitymgr_samgr"
 
 SRC_URI += " \
             file://${pkg-samgr}.tar.gz \
