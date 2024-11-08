@@ -1,6 +1,6 @@
 PV = "2.4.3"
 
-OPENEULER_REPO_NAME = "gnupg2"
+OPENEULER_LOCAL_NAME = "gnupg2"
 
 SRC_URI:append = " \
         file://${BP}.tar.bz2 \

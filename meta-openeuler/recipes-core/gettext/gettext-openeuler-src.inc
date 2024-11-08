@@ -1,4 +1,4 @@
-OPENEULER_REPO_NAME = "gettext"
+OPENEULER_LOCAL_NAME = "gettext"
 
 PV = "0.22.5"
 

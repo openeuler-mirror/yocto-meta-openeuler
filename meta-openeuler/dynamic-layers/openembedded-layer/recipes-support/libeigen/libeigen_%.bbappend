@@ -1,6 +1,6 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-support/libeigen/libeigen_3.3.7.bb
 
-OPENEULER_REPO_NAME = "eigen"
+OPENEULER_LOCAL_NAME = "eigen"
 
 # version in openEuler
 PV = "3.3.8"

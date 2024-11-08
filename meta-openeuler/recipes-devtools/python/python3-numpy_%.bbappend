@@ -5,7 +5,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
 SRC_URI[md5sum] = "b3c4477a027d5b6fba5e1065064fd076"
 SRC_URI[sha256sum] = "e6c76a87633aa3fa16614b61ccedfae45b91df2767cf097aa9c933932a7ed1e0"
-OPENEULER_REPO_NAME = "numpy"
+OPENEULER_LOCAL_NAME = "numpy"
 
 SRC_URI:prepend = "file://numpy-${PV}.tar.gz "
 S = "${WORKDIR}/numpy-${PV}"

@@ -11,7 +11,7 @@ pkg-libcoap = "third_party_libcoap-${openHarmony_release_version}"
 pkg-mbedtls = "third_party_mbedtls-${openHarmony_release_version}"
 pkg-sqlite = "third_party_sqlite-${openHarmony_release_version}"
 
-OPENEULER_REPO_NAME = "communication_ipc"
+OPENEULER_LOCAL_NAME = "communication_ipc"
 
 SRC_URI += " \
             file://${pkg-ipc}.tar.gz \

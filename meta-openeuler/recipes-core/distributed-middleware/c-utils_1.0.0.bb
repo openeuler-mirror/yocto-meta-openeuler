@@ -7,7 +7,7 @@ require distributed-build.inc
 
 pkg-c-utils = "commonlibrary_c_utils-${openHarmony_release_version}"
 
-OPENEULER_REPO_NAME = "commonlibrary_c_utils"
+OPENEULER_LOCAL_NAME = "commonlibrary_c_utils"
 
 SRC_URI += " \
             file://${pkg-c-utils}.tar.gz \

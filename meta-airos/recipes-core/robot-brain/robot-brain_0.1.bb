@@ -21,7 +21,7 @@ DEPENDS += " \
   nlopt \
   "
 
-OPENEULER_REPO_NAME = "robot-brain"
+OPENEULER_LOCAL_NAME = "robot-brain"
 SRC_URI = "file://robot-brain \
   "
 S = "${WORKDIR}/robot-brain"

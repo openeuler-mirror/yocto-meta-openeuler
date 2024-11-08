@@ -8,9 +8,7 @@ SRC_URI:remove = " \
 "
 
 ## basic information
-OPENEULER_REPO_NAME = "rockchip-kernel"
-# download src-openeuler/kernel repo for patches
-OPENEULER_REPO_NAMES = "rockchip-kernel"
+OPENEULER_LOCAL_NAME = "rockchip-kernel"
 
 SRC_URI:append = " \
     file://rockchip-kernel \

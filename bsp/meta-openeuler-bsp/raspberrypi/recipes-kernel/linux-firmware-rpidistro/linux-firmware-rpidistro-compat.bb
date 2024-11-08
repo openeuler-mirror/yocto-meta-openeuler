@@ -25,7 +25,7 @@ LICENSE = "\
 "
 
 # apply openeuler source package
-OPENEULER_REPO_NAME = "raspberrypi-firmware"
+OPENEULER_LOCAL_NAME = "raspberrypi-firmware"
 
 inherit allarch
 

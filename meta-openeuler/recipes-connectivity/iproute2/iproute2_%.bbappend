@@ -1,7 +1,7 @@
 # the main bb file: yocto-poky/meta/recipes-connectivity/iproute2/iproute2_5.17.0.bb
 
 PV = "6.6.0"
-OPENEULER_REPO_NAME = "iproute"
+OPENEULER_LOCAL_NAME = "iproute"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=eb723b61539feef013de476e68b5c50a"
 

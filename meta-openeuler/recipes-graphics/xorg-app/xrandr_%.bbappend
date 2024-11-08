@@ -1,6 +1,6 @@
 require openeuler-xorg-app-common.inc
 
-OPENEULER_REPO_NAME = "xorg-x11-server-utils"
+OPENEULER_LOCAL_NAME = "xorg-x11-server-utils"
 
 PV = "1.5.0"
 

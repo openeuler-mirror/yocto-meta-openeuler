@@ -1,4 +1,4 @@
-OPENEULER_REPO_NAME = "mesa"
+OPENEULER_LOCAL_NAME = "mesa"
 
 PV = "24.0.3"
 

@@ -1,3 +1,3 @@
 PV = "3.1.1"
 require pypi-src-openeuler.inc
-OPENEULER_REPO_NAME = "${PYPI_PACKAGE}"
+OPENEULER_LOCAL_NAME = "${PYPI_PACKAGE}"

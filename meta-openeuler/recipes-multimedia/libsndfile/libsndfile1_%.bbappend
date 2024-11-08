@@ -1,6 +1,6 @@
 # main bb: yocto-poky/meta/recipes-multimedia/libsndfile/libsndfile1_1.0.31.bb
 
-OPENEULER_REPO_NAME = "libsndfile"
+OPENEULER_LOCAL_NAME = "libsndfile"
 
 PV = "1.2.2"
 

@@ -2,7 +2,7 @@ FILESEXTRAPATHS:append := "${THISDIR}/files/:"
 
 PV = "6.1.46"
 
-OPENEULER_REPO_NAME = "myir-ti-linux"
+OPENEULER_LOCAL_NAME = "myir-ti-linux"
 
 # ti-layer have overwrite do_configure to deal with defconfig in meta-ti-bsp/recipes-kernel/linux/setup-defconfig.inc
 

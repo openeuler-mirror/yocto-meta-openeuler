@@ -1,4 +1,4 @@
-OPENEULER_REPO_NAME = "docbook5-style-xsl"
+OPENEULER_LOCAL_NAME = "docbook5-style-xsl"
 
 PV = "1.79.1"
 

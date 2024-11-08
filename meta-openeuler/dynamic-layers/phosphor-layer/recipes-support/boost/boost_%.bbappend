@@ -17,4 +17,4 @@ SRC_URI[sha256sum] = "c0685b68dd44cc46574cce86c4e17c0f611b15e195be9848dfd0769a0a
 
 S = "${WORKDIR}/${BOOST_P}"
 
-OPENEULER_REPO_NAME = "boost-obmc"
+OPENEULER_LOCAL_NAME = "boost-obmc"

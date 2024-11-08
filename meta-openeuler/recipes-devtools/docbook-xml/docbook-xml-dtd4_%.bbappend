@@ -1,4 +1,4 @@
-OPENEULER_REPO_NAME = "docbook-dtds"
+OPENEULER_LOCAL_NAME = "docbook-dtds"
 
 SRC_URI:prepend = "file://docbkx412.zip;subdir=docbook-4.1.2 \
            file://docbook-xml-4.2.zip;subdir=docbook-4.2 \

@@ -6,7 +6,7 @@ LICENSE = "MulanPSL-2.0"
 
 LIC_FILES_CHKSUM = "file://README.md;md5=d604563bbee4408a10fdefa08f9368a2"
 
-OPENEULER_REPO_NAME = "lib-shim-v2"
+OPENEULER_LOCAL_NAME = "lib-shim-v2"
 
 # support for loongarch64 pathes not apply current:
 # 0001-add-loongarch64-support-for-nix.patch

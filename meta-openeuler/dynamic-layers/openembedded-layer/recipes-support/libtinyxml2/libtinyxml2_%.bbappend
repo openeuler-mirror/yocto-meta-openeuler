@@ -3,7 +3,7 @@
 # openeuler version
 PV = "9.0.0"
 
-OPENEULER_REPO_NAME = "tinyxml2"
+OPENEULER_LOCAL_NAME = "tinyxml2"
 
 # the dir name after unpacking the tar file
 S = "${WORKDIR}/tinyxml2-${PV}"

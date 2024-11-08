@@ -1,5 +1,5 @@
 #main bbfile: yocto-meta-ros/meta-ros2/recipes-devtools/graphicsmagick/graphicsmagick_1.3.33.bb
-OPENEULER_REPO_NAME = "GraphicsMagick"
+OPENEULER_LOCAL_NAME = "GraphicsMagick"
 
 LIC_FILES_CHKSUM = "file://Copyright.txt;md5=5ad9b143299aada53e485843fbafd494"
 

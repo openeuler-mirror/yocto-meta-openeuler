@@ -7,7 +7,7 @@ inherit module
 
 pkg-binder = "binder-openEuler-22.03-LTS-SP2"
 
-OPENEULER_REPO_NAME = "communication_ipc_kernel510"
+OPENEULER_LOCAL_NAME = "communication_ipc_kernel510"
 
 SRC_URI = " \
             file://${pkg-binder}.tar.gz \

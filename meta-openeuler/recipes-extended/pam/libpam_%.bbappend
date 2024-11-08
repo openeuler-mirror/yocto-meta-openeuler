@@ -1,7 +1,7 @@
 PV = "1.5.3"
 
 # get files from pam, not libpam
-OPENEULER_REPO_NAME = "pam"
+OPENEULER_LOCAL_NAME = "pam"
 
 # remove rejected patch
 SRC_URI:remove = " \

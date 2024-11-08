@@ -7,7 +7,7 @@ require distributed-build.inc
 
 pkg-huks = "security_huks-${openHarmony_release_version}"
 
-OPENEULER_REPO_NAME = "security_huks"
+OPENEULER_LOCAL_NAME = "security_huks"
 
 SRC_URI += " \
             file://${pkg-huks}.tar.gz \

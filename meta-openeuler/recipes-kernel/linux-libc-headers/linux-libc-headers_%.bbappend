@@ -1,4 +1,4 @@
-OPENEULER_REPO_NAME = "kernel-5.10"
+OPENEULER_LOCAL_NAME = "kernel-5.10"
 
 PV = "5.10"
 

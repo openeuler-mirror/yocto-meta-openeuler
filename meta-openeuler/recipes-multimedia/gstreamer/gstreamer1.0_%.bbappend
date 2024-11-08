@@ -1,4 +1,4 @@
-OPENEULER_REPO_NAME = "gstreamer1"
+OPENEULER_LOCAL_NAME = "gstreamer1"
 
 FILESEXTRAPATHS:append := "${THISDIR}/gstreamer1.0/:"
 

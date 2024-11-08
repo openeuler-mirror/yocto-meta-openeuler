@@ -1,5 +1,5 @@
 
-OPENEULER_REPO_NAME = "glib2"
+OPENEULER_LOCAL_NAME = "glib2"
 
 # openeuler patch
 SRC_URI:prepend = " \

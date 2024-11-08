@@ -7,7 +7,7 @@ require distributed-build.inc
 
 pkg-device-auth = "security_device_auth-${openHarmony_release_version}"
 
-OPENEULER_REPO_NAME = "security_device_auth"
+OPENEULER_LOCAL_NAME = "security_device_auth"
 
 SRC_URI += " \
             file://security_device_auth;unpack=true \

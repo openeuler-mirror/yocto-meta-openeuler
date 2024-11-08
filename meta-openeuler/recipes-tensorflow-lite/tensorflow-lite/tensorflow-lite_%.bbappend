@@ -2,7 +2,7 @@
 
 PV = "2.10.0"
 
-OPENEULER_REPO_NAME = "tensorflow"
+OPENEULER_LOCAL_NAME = "tensorflow"
 
 DEPENDS:remove:libc-musl = "libgfortran"
 

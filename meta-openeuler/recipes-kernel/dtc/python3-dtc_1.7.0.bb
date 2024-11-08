@@ -7,7 +7,7 @@ LICENSE = "GPL-2.0-only | BSD-2-Clause"
 
 DEPENDS = "flex-native bison-native swig-native python3-setuptools-scm-native libyaml dtc"
 
-OPENEULER_REPO_NAME = "dtc"
+OPENEULER_LOCAL_NAME = "dtc"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI = "file://dtc-${PV}.tar.xz \

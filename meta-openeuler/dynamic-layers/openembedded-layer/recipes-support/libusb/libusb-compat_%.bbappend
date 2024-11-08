@@ -1,4 +1,4 @@
-OPENEULER_REPO_NAME = "libusb"
+OPENEULER_LOCAL_NAME = "libusb"
 PV = "0.1.8"
 
 SRC_URI:prepend = "file://${BP}.tar.bz2 \

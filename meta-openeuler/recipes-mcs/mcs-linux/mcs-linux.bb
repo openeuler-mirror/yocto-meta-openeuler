@@ -16,7 +16,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=74b1b7a7ee537a16390ed514498bf23c"
 inherit cmake
 
 ### Build metadata: SRC_URI, SRCDATA, S, B, FILESEXTRAPATHS....
-OPENEULER_REPO_NAME = "mcs"
+OPENEULER_LOCAL_NAME = "mcs"
 PV = "0.0.1"
 SRC_URI:append:aarch64 = " \
     file://mcs \

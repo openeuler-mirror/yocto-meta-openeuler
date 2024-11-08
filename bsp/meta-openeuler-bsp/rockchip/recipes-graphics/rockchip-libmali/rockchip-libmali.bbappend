@@ -1,4 +1,4 @@
-OPENEULER_REPO_NAME = "mali-common"
+OPENEULER_LOCAL_NAME = "mali-common"
 OPENEULER_REPO_NAMES = "mali-${MALI_GPU}-${MALI_VERSION} mali-common"
 
 SRC_URI = " \

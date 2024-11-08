@@ -1,4 +1,4 @@
-OPENEULER_REPO_NAME = "yocto-pseudo"
+OPENEULER_LOCAL_NAME = "yocto-pseudo"
 
 OPENEULER_REPO_NAMES = "yocto-pseudo oee_archive"
 

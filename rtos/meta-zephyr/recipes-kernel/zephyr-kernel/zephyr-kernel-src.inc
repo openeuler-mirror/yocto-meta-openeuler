@@ -6,7 +6,7 @@ CVE_PRODUCT = "zephyr"
 inherit cmake
 
 # all zephyr related applications share the same code base
-OPENEULER_REPO_NAME = "zephyrproject"
+OPENEULER_LOCAL_NAME = "zephyrproject"
 
 # the dir holds all the zephyr project related source codes, e.g.
 # zephyr kernel, zephyr modules, tools

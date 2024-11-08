@@ -10,7 +10,7 @@ BUGTRACKER = "https://gitee.com/openeuler/yocto-meta-openeuler"
 ### Package manager metadata: SECTION, PRIOIRTY(only for deb, opkg)
 SECTION = "libs"
 
-OPENEULER_REPO_NAME = "OpenAMP"
+OPENEULER_LOCAL_NAME = "OpenAMP"
 
 ### License metadata
 LICENSE = "BSD-2-Clause & BSD-3-Clause & GPL-2.0-only & Apache-2.0"

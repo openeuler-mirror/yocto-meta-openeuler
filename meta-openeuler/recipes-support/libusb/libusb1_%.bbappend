@@ -1,6 +1,6 @@
 # the main bb file: yocto-poky/meta/recipes-support/libusb/libusb1_1.0.26.bb
 
-OPENEULER_REPO_NAME = "libusbx"
+OPENEULER_LOCAL_NAME = "libusbx"
 
 # no udev in openeuler
 PACKAGECONFIG:class-target:remove = "udev"

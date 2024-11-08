@@ -7,7 +7,7 @@ require distributed-build.inc
 
 pkg-safwk = "systemabilitymgr_safwk-${openHarmony_release_version}"
 
-OPENEULER_REPO_NAME = "systemabilitymgr_safwk"
+OPENEULER_LOCAL_NAME = "systemabilitymgr_safwk"
 
 SRC_URI += " \
             file://${pkg-safwk}.tar.gz \

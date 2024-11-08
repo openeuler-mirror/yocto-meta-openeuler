@@ -1,4 +1,4 @@
-OPENEULER_REPO_NAME = "gstreamer1-plugins-base"
+OPENEULER_LOCAL_NAME = "gstreamer1-plugins-base"
 
 PV = "1.22.5"
 

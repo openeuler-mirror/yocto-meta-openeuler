@@ -55,7 +55,7 @@ CONFIGVERSION="${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'kernel6-', ''
 OPENEULER_KERNEL_CONFIG ?= "file://${CONFIGVERSION}config/${ARCH}/defconfig"
 
 ## basic information
-OPENEULER_REPO_NAME = "kernel-${PV}"
+OPENEULER_LOCAL_NAME = "kernel-${PV}"
 # download src-openeuler/kernel repo for patches
 # download openeuler/kernel-5.10 repo for linux kernel src files
 OPENEULER_REPO_NAMES = "src-kernel-${PV} kernel-${PV}"

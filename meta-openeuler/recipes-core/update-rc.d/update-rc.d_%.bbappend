@@ -3,7 +3,7 @@
 # update-rc.d does not require code download, to avoid the conflict of update-rc.d folder
 # (set by DL_DIR ?= "${OPENEULER_SP_DIR}/${BPN}" )
 # and update-rc.d script file (with update-rc.d_0.8.bb ),
-OPENEULER_REPO_NAME = "update-rc.d_dummy"
+OPENEULER_LOCAL_NAME = "update-rc.d_dummy"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 

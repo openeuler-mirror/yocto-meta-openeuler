@@ -1,5 +1,5 @@
 # apply openeuler source package
-OPENEULER_REPO_NAME = "raspberrypi-bluetooth"
+OPENEULER_LOCAL_NAME = "raspberrypi-bluetooth"
 
 PV = "87248a382d1a81b80a62730975135d87fffd7ef1"
 

@@ -1,4 +1,4 @@
-OPENEULER_REPO_NAME = "raspberrypi-firmware"
+OPENEULER_LOCAL_NAME = "raspberrypi-firmware"
 PV = "1.20240306"
 SRC_URI = "file://firmware-${PV}.tar.gz \
 "

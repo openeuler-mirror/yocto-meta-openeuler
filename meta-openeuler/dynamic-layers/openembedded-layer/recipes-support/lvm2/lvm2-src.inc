@@ -3,7 +3,7 @@
 # adapt 0005-do-not-build-manual.patch for 2.03.14 version
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-OPENEULER_REPO_NAME = "lvm2"
+OPENEULER_LOCAL_NAME = "lvm2"
 
 DEPENDS += "libaio"
 
