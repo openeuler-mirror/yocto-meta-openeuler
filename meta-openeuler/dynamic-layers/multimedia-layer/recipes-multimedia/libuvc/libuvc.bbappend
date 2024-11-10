@@ -1,7 +1,8 @@
 # ref: yocto-meta-openembedded/meta-multimedia/recipes-multimedia/libuvc/libuvc.bb
 
-PV = "v0.0.7"
+PV = "0.0.7"
 
-inherit openeuler_source
-
-S = "${WORKDIR}/git"
+SRC_URI:prepend = " \
+    file://v${PV}.tar.gz \
+    "
+S = "${WORKDIR}/${BP}"
