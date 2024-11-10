@@ -4,9 +4,9 @@
 ## some definitions in it can be overridden here
 
 # for openeuler embedded it is no need to create DL_DIR, here we use
-# ${OPENEULER_SP_DIR}/${OPENEULER_REPO_NAME} to represent download
+# ${OPENEULER_SP_DIR}/${OPENEULER_LOCAL_NAME} to represent download
 # directory for each software package. OPENEULER_SP_DIR
-# is already created, and OPENEULER_REPO_NAME will be created
+# is already created, and OPENEULER_LOCAL_NAME will be created
 # in openeuler_fetch or fetch
 # Thus, overrides the definition in base.bbclass
 do_fetch[dirs] = "${OPENEULER_SP_DIR}"
@@ -24,7 +24,7 @@ def openeuler_get_checksum_file_list(d):
 
     fetch = bb.fetch2.Fetch([], d, cache = False, localonly = True)
 
-    dl_dir = d.getVar('DL_DIR')
+    dl_dir = d.getVar('OPENEULER_DL_DIR')
     filelist = []
     for u in fetch.urls:
         if u.startswith("file://"):
@@ -111,7 +111,7 @@ def get_openeuler_epoch(d):
 python src_uri_set() {
     src_uri = d.getVar('SRC_URI')
     remove_list = d.getVar('OPENEULER_SRC_URI_REMOVE')
-    local_name = d.getVar('OPENEULER_LOCAL_NAME') if d.getVar('OPENEULER_LOCAL_NAME')  else d.getVar('OPENEULER_REPO_NAME')
+    local_name = d.getVar('OPENEULER_LOCAL_NAME')
 
     # if software recipe is not in manifest.yaml, we will skip the handling of
     # OPENEULER_SRC_URI_REMOVE and it also means the software recipe is not
@@ -178,23 +178,25 @@ python do_openeuler_fetch() {
     def openeuler_fetch(d, repo_name):
         # get source directory where to download
         src_dir = d.getVar('OPENEULER_SP_DIR')
-        local_name = repo_name
         # local download path
-        repo_dir = os.path.join(src_dir, local_name)
+        repo_dir = os.path.join(src_dir, repo_name)
+
+        if not os.path.exists(repo_dir):
+            os.makedirs(repo_dir)
 
         try:
             # determine whether the variable MANIFEST_DIR is None
             if d.getVar("MANIFEST_DIR") is not None and os.path.exists(d.getVar("MANIFEST_DIR")):
                 manifest_list = d.getVar("MANIFEST_LIST")
-                if local_name in manifest_list:
-                    repo_item = manifest_list[local_name]
+                if repo_name in manifest_list:
+                    repo_item = manifest_list[repo_name]
                     download_repo(d, repo_dir, repo_item['remote_url'], repo_item['version'])
             else:
                 bb.fatal("openEuler Embedded build need manifest.yaml")
         except GitError as e:
-            bb.fatal("could not find or init gitee repository %s because %s" % (local_name, str(e)))
+            bb.fatal("could not find or init gitee repository %s because %s" % (repo_name, str(e)))
         except Exception as e:
-            bb.fatal("do_openeuler_fetch failed: OPENEULER_SP_DIR %s OPENEULER_LOCAL_NAME %s exception %s" % (src_dir, local_name, str(e)))
+            bb.fatal("do_openeuler_fetch failed: OPENEULER_SP_DIR %s OPENEULER_LOCAL_NAME %s exception %s" % (src_dir, repo_name, str(e)))
 
     repo_list = d.getVar("OPENEULER_REPO_NAMES").split()
     for repo_name in repo_list:
@@ -311,16 +313,9 @@ python do_openeuler_clean() {
             return False
 
     src_dir = d.getVar('OPENEULER_SP_DIR')
-
-    repo_list = d.getVar('PKG_REPO_LIST')
-    if repo_list != None:
-        for item in repo_list:
-            repo_dir = os.path.join(src_dir, item["repo_name"])
-            remove_lock(repo_dir)
-    else:
-        repo_name = d.getVar("OPENEULER_REPO_NAME")
-        repo_dir = os.path.join(src_dir, repo_name)
-        remove_lock(repo_dir)
+    repo_name = d.getVar("OPENEULER_LOCAL_NAME")
+    repo_dir = os.path.join(src_dir, repo_name)
+    remove_lock(repo_dir)
 }
 
 addtask do_openeuler_clean before do_clean
