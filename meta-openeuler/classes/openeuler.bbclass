@@ -251,24 +251,11 @@ def download_repo(d, repo_dir, repo_url ,version = None):
         if res.returncode != 0:
             bb.fatal(f"in oee_archive run git sparse-checkout add {subdir} faild")
 
-    # get subdir from repo_url, like oee_archive/aaa/aaaa.tar.gz, we should get aaa subdir
-    def filter_oee_archive_sub_dir(oee_archive_uri):
-        pattern = oee_archive_uri.replace("file://oee_archive/", "")
-        pattern_split = pattern.split("/")
-        if len(pattern_split) > 1:
-            return pattern_split[0]
-        else:
-            return None
-
     if "oee_archive" in repo_url:
-        for item_uri in d.getVar("SRC_URI").split(" "):
-            if "oee_archive" not in item_uri:
-                continue
-            item_uri = item_uri.strip()
-            sub_dir = filter_oee_archive_sub_dir(item_uri)
-            if sub_dir is None:
-                bb.fatal("the uri format about oee_archive is wrong, should like file://oee_archive/aaa/bbb")
-            oee_archive_download(oee_archive_dir = repo_dir, subdir = sub_dir)
+        sub_dir = d.getVar("OEE_ARCHIVE_SUB_DIR")
+        if sub_dir is None:
+            bb.fatal("no sub dir is givned under oee_archive ")
+        oee_archive_download(oee_archive_dir = repo_dir, subdir = sub_dir)
 
     try:
         # if get commit version, just return
