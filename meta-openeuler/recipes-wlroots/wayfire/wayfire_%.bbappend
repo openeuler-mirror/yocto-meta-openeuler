@@ -2,12 +2,12 @@
 # from https://github.com/MarkusVolk/meta-wayland.git
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
 PV = "0.8.1"
 
 SRC_URI += " \
-        file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.xz \
+        file://${BP}.tar.xz \
         file://ignore-drop-root.patch \
 "
 

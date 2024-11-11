@@ -13,7 +13,9 @@
 
 # This corresponds to cargo release 1.76.0
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
+OEE_ARCHIVE_SUB_DIR = "rust"
+
 
 def get_by_triple(hashes, component, triple):
     try:
@@ -24,7 +26,7 @@ def get_by_triple(hashes, component, triple):
 # for native tools, openeuler yocto build docker only support x86_64 host
 def cargo_url(triple):
     URLS = {
-        "x86_64-unknown-linux-gnu": "file://oee_archive/rust/cargo-${PV}-x86_64-unknown-linux-gnu.tar.xz",
+        "x86_64-unknown-linux-gnu": "file://cargo-${PV}-x86_64-unknown-linux-gnu.tar.xz",
     }
     return get_by_triple(URLS, "cargo_url", triple)
 

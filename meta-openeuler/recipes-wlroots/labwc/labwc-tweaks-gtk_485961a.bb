@@ -13,7 +13,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 REQUIRED_DISTRO_FEATURES = "wayland"
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
+OEE_ARCHIVE_SUB_DIR = "labwc"
 
 DEPENDS += " \
 	libxml2 \
@@ -27,7 +28,7 @@ inherit meson pkgconfig features_check
 PV = "485961a"
 
 SRC_URI += " \
-    file://${OPENEULER_LOCAL_NAME}/labwc/labwc-tweaks-gtk-485961a.zip \
+    file://labwc-tweaks-gtk-485961a.zip \
 "
 
 S = "${WORKDIR}/labwc-tweaks-gtk-master"

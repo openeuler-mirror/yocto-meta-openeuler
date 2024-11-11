@@ -1,7 +1,7 @@
 # ref bb: https://git.yoctoproject.org/meta-virtualization/tree/recipes-networking/cni
 
 OPENEULER_REPO_NAMES = "cni oee_archive"
-
+OEE_ARCHIVE_SUB_DIR = "cni"
 PV = "1.2.0"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=e3fc50a88d0a364313df4b21ef20c29e"

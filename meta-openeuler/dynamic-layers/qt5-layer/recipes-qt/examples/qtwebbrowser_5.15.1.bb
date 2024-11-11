@@ -2,7 +2,7 @@ DESCRIPTION = "Qt Web Browser"
 LICENSE = "GPL-3.0"
 LIC_FILES_CHKSUM = "file://LICENSE.GPLv3;md5=a40e2bb02b1ac431f461afd03ff9d1d6"
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
 inherit qmake5 systemd
 # require recipes-qt/qt5/qt5-git.inc
@@ -20,7 +20,7 @@ SRC_URI += " \
 #    file://${PN}.service
 
 SRC_URI:prepend = " \
-    file://${OPENEULER_LOCAL_NAME}/${BPN}/v5.15.1_QtAS.tar.gz \
+    file://v5.15.1_QtAS.tar.gz \
 "
 
 S = "${WORKDIR}/qt-apps-qtwebbrowser-${PV}_QtAS"

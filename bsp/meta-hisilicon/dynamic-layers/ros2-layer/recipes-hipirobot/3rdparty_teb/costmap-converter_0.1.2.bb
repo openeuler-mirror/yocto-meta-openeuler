@@ -69,12 +69,12 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/costmap_converter/costmap_converter-9565858.tar.gz \
+    file://costmap_converter-9565858.tar.gz \
 "
 
 S = "${WORKDIR}/costmap_converter/costmap_converter"

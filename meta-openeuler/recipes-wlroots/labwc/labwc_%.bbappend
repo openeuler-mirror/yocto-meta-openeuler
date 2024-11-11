@@ -1,7 +1,7 @@
 # main bb: meta-wayland/recipes-wlroots/labwc/labwc_git.bb
 # from https://github.com/MarkusVolk/meta-wayland.git
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
 PV = "0.7.2"
 
@@ -9,7 +9,7 @@ DEPENDS:remove = " wlroots-0.16 "
 DEPENDS:append = " wlroots "
 
 SRC_URI += " \
-    file://${OPENEULER_LOCAL_NAME}/${BPN}/${PV}.tar.gz \
+    file://${PV}.tar.gz \
     file://autostart \
 "
 

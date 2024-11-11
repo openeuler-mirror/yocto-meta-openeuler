@@ -1,10 +1,10 @@
 PV = "2.12"
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
 # upstream source
 SRC_URI:prepend = " \
-            file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.xz  \
+            file://${BP}.tar.xz  \
             "
 
 # from version 2.12, compare the differences in upstream recipe

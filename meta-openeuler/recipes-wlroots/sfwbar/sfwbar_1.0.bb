@@ -9,12 +9,12 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=1ebbd3e34237af26da5dc08a4e440464"
 
 REQUIRED_DISTRO_FEATURES = "wayland"
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
 PV = "1.0.beta15"
 
 SRC_URI += " \
-        file://${OPENEULER_LOCAL_NAME}/${BPN}/v1.0_beta15.tar.gz \
+        file://v1.0_beta15.tar.gz \
 "
 
 S = "${WORKDIR}/sfwbar-1.0_beta15"

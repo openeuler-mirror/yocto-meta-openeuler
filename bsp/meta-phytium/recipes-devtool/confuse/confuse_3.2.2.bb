@@ -5,9 +5,9 @@ SECTION = "libs"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=42fa47330d4051cd219f7d99d023de3a"
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
-SRC_URI = "file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.gz"
+SRC_URI = "file://${BP}.tar.gz"
 SRC_URI[sha256sum] = "71316b55592f8d0c98924242c98dbfa6252153a8b6e7d89e57fe6923934d77d0"
 
 SRC_URI += "file://0001-only-apply-search-path-logic-to-relative-pathnames.patch"

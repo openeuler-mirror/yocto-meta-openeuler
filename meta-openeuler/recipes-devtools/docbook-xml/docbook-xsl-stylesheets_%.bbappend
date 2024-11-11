@@ -1,11 +1,10 @@
-OPENEULER_LOCAL_NAME = "docbook5-style-xsl"
 
 PV = "1.79.1"
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
 # upstream src and patches
-SRC_URI:append = " file://${OPENEULER_LOCAL_NAME}/${BPN}/docbook-xsl-${PV}.tar.bz2 \
+SRC_URI:append = " file://docbook-xsl-${PV}.tar.bz2 \
            "
 
 # 1.79.2 has conflict with shared-mime-info, no this version in openeuler

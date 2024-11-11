@@ -1,10 +1,10 @@
 # main bb: yocto-poky/meta/recipes-support/vte/vte_0.66.2.bb
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
 PV = "0.66.2"
 
 SRC_URI += " \
-        file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.xz \
+        file://${BP}.tar.xz \
 "
 
 S = "${WORKDIR}/${BP}"

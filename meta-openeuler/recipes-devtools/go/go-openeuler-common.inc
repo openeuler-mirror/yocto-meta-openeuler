@@ -2,12 +2,13 @@
 # There are conflicts between upstream community Yocto provided cross compilation patches, 
 # so we use the latest version from upstream go stored at oee_archive. 
 # If there are updates later on src-openEuler, this part can be optimized
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
+OEE_ARCHIVE_SUB_DIR = "go"
 
 PV = "1.22.0"
 
 SRC_URI:prepend = " \
-    file://${OPENEULER_LOCAL_NAME}/go/go${PV}.src.tar.gz;name=main \
+    file://go${PV}.src.tar.gz;name=main \
 "
 
 do_compile:prepend() {

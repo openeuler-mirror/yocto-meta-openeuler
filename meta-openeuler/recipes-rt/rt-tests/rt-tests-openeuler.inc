@@ -1,8 +1,8 @@
-
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
+OEE_ARCHIVE_SUB_DIR = "rt-tests"
 
 SRC_URI:append = " \
-    file://${OPENEULER_LOCAL_NAME}/rt-tests/rt-tests-${PV}.tar.gz \
+    file://rt-tests-${PV}.tar.gz \
     "
 
 S = "${WORKDIR}/rt-tests-${PV}"

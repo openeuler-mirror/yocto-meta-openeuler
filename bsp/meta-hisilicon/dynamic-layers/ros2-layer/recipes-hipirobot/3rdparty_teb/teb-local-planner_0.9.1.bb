@@ -105,12 +105,12 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/teb_local_planner/teb_local_planner-630a22e.tar.gz \
+    file://teb_local_planner-630a22e.tar.gz \
 "
 
 S = "${WORKDIR}/teb_local_planner/teb_local_planner"

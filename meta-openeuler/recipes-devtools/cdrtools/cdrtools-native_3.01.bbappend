@@ -1,5 +1,5 @@
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
 SRC_URI:prepend = " \
-    file://${OPENEULER_LOCAL_NAME}/cdrtools/cdrtools-${PV}.tar.bz2 \
+    file://cdrtools-${PV}.tar.bz2 \
 "
