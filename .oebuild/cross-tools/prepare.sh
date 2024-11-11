@@ -127,7 +127,7 @@ main()
 	source $SRC_DIR/configs/config.xml
     OE_PATCH_DIR="$SRC_DIR/patches"
 	readonly LIB_PATH="$WORK_DIR/open_source"
-	readonly MANIFEST_PATH="$SRC_DIR/$MANIFEST"
+	readonly MANIFEST_PATH="$(realpath ${MANIFEST})"
 
 	do_prepare
 
