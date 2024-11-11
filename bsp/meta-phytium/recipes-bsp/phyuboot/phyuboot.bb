@@ -5,10 +5,10 @@ LIC_FILES_CHKSUM = "file://PPL-1.0;md5=9dd6301488f42abb6e3196ef96b8daa9"
 
 inherit deploy
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/${BPN}/${BPN}.tar.gz \
+    file://${BPN}.tar.gz \
 "
 
 S = "${WORKDIR}/phyuboot"

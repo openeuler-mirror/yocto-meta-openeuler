@@ -3,9 +3,9 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
 # as it's small, base-passwd's tar.gz is integrated in openEuler Embedded
 # to avoid network download
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
-SRC_URI:prepend = " file://${OPENEULER_LOCAL_NAME}/${BPN}/${BPN}_${PV}.tar.gz "
+SRC_URI:prepend = " file://${BPN}_${PV}.tar.gz "
 
 SRC_URI:append = " file://revert_nobash.patch "
 

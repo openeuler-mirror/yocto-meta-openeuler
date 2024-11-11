@@ -5,9 +5,9 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ad
 BPN = "arm-trusted-firmware"
 PV = "2.6"
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
-SRC_URI = "file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.gz \
+SRC_URI = "file://${BP}.tar.gz \
            file://0001-RPI3-RPI4-revert-rpi3_pwr_down_wfi.patch \
         "
 

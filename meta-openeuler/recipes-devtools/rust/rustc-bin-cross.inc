@@ -75,7 +75,7 @@ do_install[depends] += "virtual/fakeroot-native:do_populate_sysroot"
 
 python () {
     pv = d.getVar("PV", True)
-    base_uri = "file://oee_archive/rust"
+    base_uri = "file://"
     targets = d.getVar("RUST_ALL_TARGETS", True).split()
     build_target = d.getVar("RUST_BUILD_TARGET", True)
     rustc_src_uri = ("%s/rustc-${PV}-%s.tar.xz" %

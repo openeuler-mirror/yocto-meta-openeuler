@@ -13,9 +13,9 @@ DEPENDS += " \
 SYSROOT_DIRS += "/opt/orocos \
   "
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 SRC_URI += " \
-        file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.gz \
+        file://${BP}.tar.gz \
 "
 S = "${WORKDIR}/orocos_toolchain"
 do_package_qa[noexec] = "1"

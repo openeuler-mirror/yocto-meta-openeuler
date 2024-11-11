@@ -1,7 +1,7 @@
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
 PV = "20211108"
 
-SRC_URI:prepend = "file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.gz \
+SRC_URI:prepend = "file://${BP}.tar.gz \
 "

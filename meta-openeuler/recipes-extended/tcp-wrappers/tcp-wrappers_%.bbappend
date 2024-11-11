@@ -2,9 +2,9 @@
 # openeuler's tcp-wrapper (https://gitee.com/src-openeuler/tcp_wrappers)
 # is the version supporting ipv6, different with poky's one
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
 # upstream src and patches
 SRC_URI:prepend = " \
-            file://${OPENEULER_LOCAL_NAME}/${BPN}/tcp_wrappers_${PV}.tar.gz  \
+            file://tcp_wrappers_${PV}.tar.gz  \
            "

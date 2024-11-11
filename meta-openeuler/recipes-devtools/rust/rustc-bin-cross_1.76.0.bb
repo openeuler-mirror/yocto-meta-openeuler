@@ -11,7 +11,8 @@
 # the above copyright notice and this permission notice shall be included in all copies or 
 # substantial portions of the software.
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
+OEE_ARCHIVE_SUB_DIR = "rust"
 
 LIC_FILES_CHKSUM = "file://COPYRIGHT;md5=93a95682d51b4cb0a633a97046940ef0"
 

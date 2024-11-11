@@ -3,11 +3,11 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
 # src package and patches from openEuler
 SRC_URI:prepend = " \
-        file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.bz2 \
+        file://${BP}.tar.bz2 \
         file://0001-opneuler-kernel-version-workaround-for-openeuler-lin.patch \
         "
 

@@ -2,7 +2,7 @@
 # from https://github.com/MarkusVolk/meta-wayland.git 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
 PV = "0.17.2"
 
@@ -10,7 +10,7 @@ PV = "0.17.2"
 # Using the host's data file as a workaround:
 #    * HWdata needs to be installed on the host
 SRC_URI += " \
-        file://${OPENEULER_LOCAL_NAME}/${BPN}/wlroots-${PV}.tar.gz \
+        file://wlroots-${PV}.tar.gz \
         file://use-hwdata-host.patch \
 "
 

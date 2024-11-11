@@ -3,9 +3,9 @@ DESCRIPTION = "The smallest isulad image is for running openeuler server version
 LICENSE = "MulanPSLv2"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=d2effe8e0f44784c33108dbc1e00ba8c"
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME}/${BPN}/${BPN}.tar.gz \
+    file://${BPN}.tar.gz \
     file://isulad \
 "
 

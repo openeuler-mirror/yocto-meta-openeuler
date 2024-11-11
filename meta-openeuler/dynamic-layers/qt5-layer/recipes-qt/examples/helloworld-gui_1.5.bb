@@ -10,9 +10,9 @@ DEPENDS = "qtbase qttools-native"
 # Depends on gles2 enabled and that's not default configuration
 EXCLUDE_FROM_WORLD = "1"
 
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
 
-SRC_URI = "file://${OPENEULER_LOCAL_NAME}/${BPN}/${BP}.tar.gz"
+SRC_URI = "file://${BP}.tar.gz"
 
 S = "${WORKDIR}/${BP}"
 

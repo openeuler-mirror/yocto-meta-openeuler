@@ -1,6 +1,6 @@
-OPENEULER_LOCAL_NAME = "oee_archive"
+inherit oee-archive
+OEE_ARCHIVE_SUB_DIR = "${PYPI_PACKAGE}"
 
 SRC_URI:prepend = " \
-    file://${OPENEULER_LOCAL_NAME}/${PYPI_PACKAGE}/${PYPI_PACKAGE}-${PV}.tar.gz \
+    file://${PYPI_PACKAGE}-${PV}.tar.gz \
 "
-
