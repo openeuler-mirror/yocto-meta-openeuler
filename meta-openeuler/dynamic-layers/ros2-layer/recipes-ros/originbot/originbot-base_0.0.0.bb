@@ -53,11 +53,10 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 OPENEULER_LOCAL_NAME = "originbot-v1.0.2"
 
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME} \
+    file://originbot_base \
 "
 
-S = "${WORKDIR}/originbot-v1.0.2/originbot_base"
+S = "${WORKDIR}/originbot_base"
 ROS_BUILD_TYPE = "ament_cmake"
 
 inherit ros_${ROS_BUILD_TYPE}
-

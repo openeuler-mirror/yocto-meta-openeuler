@@ -58,10 +58,10 @@ RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 OPENEULER_LOCAL_NAME = "originbot-v1.0.2"
 
 SRC_URI = " \
-    file://${OPENEULER_LOCAL_NAME} \
+    file://originbot_driver/ydlidar_ros2_driver \
 "
 
-S = "${WORKDIR}/originbot-v1.0.2/originbot_driver/ydlidar_ros2_driver"
+S = "${WORKDIR}/originbot_driver/ydlidar_ros2_driver"
 ROS_BUILD_TYPE = "ament_cmake"
 
 inherit ros_${ROS_BUILD_TYPE}
