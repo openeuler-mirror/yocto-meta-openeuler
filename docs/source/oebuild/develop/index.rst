@@ -98,7 +98,7 @@ oebuild是用python3开发的，因此在做开发工作前请先安装好python
             self.configure = Configure()
             super().__init__(
                 'hello',
-                'this is your hello mesasge',
+                'this is your hello message',
                 textwrap.dedent('''\
                 this is hello description
     '''

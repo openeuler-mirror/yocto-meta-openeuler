@@ -44,7 +44,7 @@ html_sidebars = {
     ],
 }
 
-# 指定哪个分支为 lastest 版本
+# 指定哪个分支为 latest 版本
 smv_latest_version = 'master'
 
 
