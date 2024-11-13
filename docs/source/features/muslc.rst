@@ -92,7 +92,7 @@ qemu镜像的构建
 
 .. code-block:: console
 
-        /usr1/build/ouput
+        /usr1/build/output
 
 镜像运行 :ref:`QEMU运行指导 <qemu_start>`
 
@@ -114,7 +114,7 @@ qemu镜像的构建
 
 .. code-block:: console
 
-        /usr1/build/ouput 
+        /usr1/build/output 
 
 镜像运行 :ref:`树莓派运行指导 <board_raspberrypi4_build>`
 
@@ -439,7 +439,7 @@ lmbench OS性能测试
 null call	4.19     	4.36    	-3.90%
 null I/O	4.43     	4.48    	-1.12%
 stat	        12.8	        13.1         	-2.29%
-open clos	29.6     	29.3    	1.02%
+open close	29.6     	29.3    	1.02%
 slct TCP	19.3     	19.4    	-0.52%
 sig inst	6.2             6.6             -6.06%
 sig hndl	24.8     	24.4    	1.64%

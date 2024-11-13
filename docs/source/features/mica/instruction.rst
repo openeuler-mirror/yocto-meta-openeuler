@@ -345,7 +345,7 @@ ____
    start client os
    ...
    pls open /dev/pts/1 to talk with client OS
-   pty_thread for console is runnning
+   pty_thread for console is running
    ...
    found matched endpoint, creating console with id:2 in host os
 
