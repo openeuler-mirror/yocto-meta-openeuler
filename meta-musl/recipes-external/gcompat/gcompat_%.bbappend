@@ -12,4 +12,3 @@ FILES:${PN}:append:riscv64 = " /lib64"
 FILES:${PN}-dev:append:riscv64 = " /lib64/libgcompat.so.0"
 FILES:${PN}:append:riscv64 = " /usr/lib64"
 FILES:${PN}-staticdev:append:riscv64 = " /usr/lib64/libgcompat.a"
-

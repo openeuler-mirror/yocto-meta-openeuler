@@ -15,4 +15,3 @@ SRC_URI:prepend = " \
     file://Feature-fix-sm2-sm3-code-error.patch;patchdir=nss \
     file://Feature-fix-sm3-code-error.patch;patchdir=nss \
 "
-

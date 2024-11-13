@@ -4,4 +4,3 @@
 PV = "2020.11.20"
 
 SRC_URI:prepend = "file://${BP}.tar.xz "
-

@@ -14,4 +14,3 @@ SRC_URI[md5sum] = "73fd3b90947d6382118fdd8c63d42e0c"
 SRC_URI[sha256sum] = "74a2ef0dcadc525825942e37d0bd28c5cfdbd8e4cd83c028f90f3a3731983216"
 
 S = "${WORKDIR}/${BP}"
-

@@ -7,4 +7,3 @@ wpa-supplicant \
 bluez5 \
 ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'kernel-module-brcmfmac-wcc' ,'', d)} \
 "
-

@@ -42,4 +42,3 @@ python do_preconfigure () {
 }
 addtask do_preconfigure after do_patch
 do_preconfigure[depends] += "gnu-config-native:do_populate_sysroot autoconf-native:do_populate_sysroot"
-

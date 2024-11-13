@@ -45,4 +45,3 @@ FILES:${PN}-dev += " \
     "
 
 INSANE_SKIP:${PN}-bin += "dev-deps"
-

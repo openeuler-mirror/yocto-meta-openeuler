@@ -85,4 +85,3 @@ FILES:${PN} += "${datadir} ${libdir}/depth_image/depth"
 ROS_BUILD_TYPE = "ament_cmake"
 
 inherit ros_${ROS_BUILD_TYPE}
-

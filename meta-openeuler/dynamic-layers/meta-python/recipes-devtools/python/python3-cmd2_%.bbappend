@@ -9,4 +9,3 @@ require pypi-src-openeuler.inc
 # file and in the release tarball it is already correctly created
 FILESEXTRAPATHS:prepend := "${THISDIR}/python3-cmd2/:"
 SRC_URI:append = "file://0001-setup.py-remove-the-setup_requires-for-setuptools-scm.patch"
-

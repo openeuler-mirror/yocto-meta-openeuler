@@ -31,4 +31,3 @@ sysroot_stage_all () {
 }
 
 PACKAGES = ""
-

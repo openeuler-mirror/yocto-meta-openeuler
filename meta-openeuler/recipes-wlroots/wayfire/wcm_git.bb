@@ -28,4 +28,3 @@ EXTRA_OEMESON += "--buildtype release"
 FILES:${PN} += "${prefix}"
 
 BBCLASSEXTEND = ""
-

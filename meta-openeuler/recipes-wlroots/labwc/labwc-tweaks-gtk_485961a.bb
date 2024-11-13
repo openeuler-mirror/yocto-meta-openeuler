@@ -34,4 +34,3 @@ SRC_URI += " \
 S = "${WORKDIR}/labwc-tweaks-gtk-master"
 
 FILES:${PN} += "${datadir}"
-

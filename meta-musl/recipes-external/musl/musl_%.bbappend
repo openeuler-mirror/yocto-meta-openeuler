@@ -20,4 +20,3 @@ FILES:${PN}:append:riscv64 = " \
     ${base_libdir}/../lib64/lp64d/ld-musl-riscv64.so.1 \
     ${sysconfdir}/ld-musl-riscv64.path \
 "
-

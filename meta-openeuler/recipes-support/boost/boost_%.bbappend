@@ -21,4 +21,3 @@ S = "${WORKDIR}/${BOOST_P}"
 # keep consistent with the higher version bb
 
 BJAM_OPTS += "-sICU_PATH=${STAGING_EXECPREFIXDIR}"
-

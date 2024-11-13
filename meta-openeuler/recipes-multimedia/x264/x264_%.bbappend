@@ -37,4 +37,3 @@ do_configure:append() {
 }
 
 do_prepare_recipe_sysroot[postfuncs] += "do_prepare_gnu_config"
-

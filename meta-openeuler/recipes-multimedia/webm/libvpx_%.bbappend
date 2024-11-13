@@ -16,4 +16,3 @@ S = "${WORKDIR}/${BP}"
 # sync from meta-oe/recipes-multimedia/webm/libvpx_1.13.0.bb
 BUILD_LDFLAGS += "-pthread"
 BBCLASSEXTEND += "native"
-

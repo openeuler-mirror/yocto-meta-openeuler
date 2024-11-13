@@ -8,4 +8,3 @@ SRC_URI:append = " \
         file://add-test-cases.patch \
         file://backport-0002-posix-Add-npth_poll-npth_ppoll.patch \
  "
-

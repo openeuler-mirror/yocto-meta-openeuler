@@ -8,4 +8,3 @@ SRC_URI:prepend = " \
     file://node-v${PV}.tar.xz \
     file://0002-Revert-deps-V8-tagged.patch \
 "
-

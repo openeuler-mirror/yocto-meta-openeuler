@@ -19,4 +19,3 @@ do_configure:append() {
 	popd
 	echo "DRV_OBJS += ../src/drivers/driver_nl80211_android.o" >> ${S}/src/drivers/drivers.mak
 }
-

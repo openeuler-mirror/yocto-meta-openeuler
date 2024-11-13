@@ -97,4 +97,3 @@ SRC_URI:append = " \
 do_install:append:riscv64() {
 	rm -rf ${D}/usr/lib64
 }
-

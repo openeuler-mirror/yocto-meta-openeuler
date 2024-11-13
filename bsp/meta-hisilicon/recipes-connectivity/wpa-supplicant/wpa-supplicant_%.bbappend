@@ -22,4 +22,3 @@ do_configure:append() {
     sed -i "s/#CONFIG_ROAM_EXTRA_SUPPORT=y/CONFIG_ROAM_EXTRA_SUPPORT=y/g" .config
     popd
 }
-

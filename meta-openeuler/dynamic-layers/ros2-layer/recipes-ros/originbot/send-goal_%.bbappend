@@ -12,4 +12,3 @@ ROS_BUILD_DEPENDS += " \
 "
 
 FILES:${PN} += "/usr/share /usr/lib"
-

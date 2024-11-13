@@ -307,4 +307,3 @@ do_check() {
     oe_runmake -i ${MAKE_CHECK_TARGETS} RUNTESTFLAGS="${MAKE_CHECK_RUNTESTFLAGS}"
 }
 addtask check after do_compile do_populate_sysroot
-

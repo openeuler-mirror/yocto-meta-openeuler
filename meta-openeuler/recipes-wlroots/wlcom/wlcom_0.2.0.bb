@@ -45,4 +45,3 @@ EXTRA_OEMESON += "--buildtype release"
 FILES:${PN} += "${datadir} ${libdir}"
 
 BBCLASSEXTEND = ""
-

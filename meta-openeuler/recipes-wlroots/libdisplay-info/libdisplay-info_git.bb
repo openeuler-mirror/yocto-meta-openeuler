@@ -14,4 +14,3 @@ SRCREV = "92b031749c0fe84ef5cdf895067b84a829920e25"
 inherit meson pkgconfig
 
 BBCLASSEXTEND = "native"
-

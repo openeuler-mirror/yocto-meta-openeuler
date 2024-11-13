@@ -39,4 +39,3 @@ do_install() {
         cat ${S}/Module.symvers >> ${STAGING_KERNEL_BUILDDIR}/Module.symvers
     fi
 }
-

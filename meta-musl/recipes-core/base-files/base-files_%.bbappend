@@ -14,4 +14,3 @@ do_install:prepend:libc-musl () {
 
         install -m 0644 ${WORKDIR}/nsswitch.conf ${D}${sysconfdir}/nsswitch.conf
 }
-

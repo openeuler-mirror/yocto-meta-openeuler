@@ -8,4 +8,3 @@ SRC_URI:prepend = " \
     file://0005-Fix-the-popup-position-of-a-Menu.patch \
     file://0006-Accessibility-respect-value-in-attached-Accessible-i.patch \
 "
-

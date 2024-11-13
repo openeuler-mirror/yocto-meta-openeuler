@@ -24,4 +24,3 @@ SRC_URI:prepend = " \
 "
 SRC_URI[md5sum] = "432ef01499d514f4606343276afa0ec3"
 SRC_URI[sha256sum] = "0215c6593c4ee9f1f7f28238c4e8995584ebf3b556e9dbf933d84feb98d5b9ef"
-

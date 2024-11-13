@@ -5,4 +5,3 @@ SRC_URI = " \
 "
 
 S = "${WORKDIR}/brotli-${PV}"
-

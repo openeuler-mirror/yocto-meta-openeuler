@@ -15,4 +15,3 @@
 do_install:append () {
     echo "export LC_ALL=C" >> ${D}${sysconfdir}/profile
 }
-

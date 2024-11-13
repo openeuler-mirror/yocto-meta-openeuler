@@ -57,4 +57,3 @@ S = "${WORKDIR}/originbot-v1.0.2/originbot_linefollower"
 ROS_BUILD_TYPE = "ament_python"
 
 inherit ros_${ROS_BUILD_TYPE}
-

@@ -11,4 +11,3 @@ require modules-hi3093.inc
 do_configure:append() {
     sed -i '/sfc1/d' ${S}/Makefile
 }
-

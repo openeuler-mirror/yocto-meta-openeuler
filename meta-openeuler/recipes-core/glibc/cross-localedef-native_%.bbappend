@@ -21,4 +21,3 @@ do_unpack:append() {
 do_copy_localedef_source() {
     mv ${WORKDIR}/localedef-master ${S}/localedef
 }
-

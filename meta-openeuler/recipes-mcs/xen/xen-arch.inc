@@ -15,4 +15,3 @@ def map_xen_arch(a, d):
     elif a in valid_archs:           return a
     else:
         return "INVALID"
-

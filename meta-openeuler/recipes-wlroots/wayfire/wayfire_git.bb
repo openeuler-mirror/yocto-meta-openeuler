@@ -65,4 +65,3 @@ do_install:append() {
 
 FILES:${PN} += "${datadir} ${libdir}"
 FILES:${PN}-dev = "${includedir} ${libdir}/pkgconfig ${libdir}/libwlroots.so ${libdir}/libwf-utils.so ${libdir}/libwf-config.so"
-
