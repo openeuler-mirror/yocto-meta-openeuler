@@ -62,6 +62,7 @@ glib-2.0 \
 libbfd \
 wpa-supplicant \
 hostapd \
+hipico-mpp-sample \
 "
 
 # some packages to be removed from IMAGE_INSTALL

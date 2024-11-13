@@ -11,15 +11,21 @@ SRC_URI = " file://hipico_hardware_driver \
         ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' file://hipico-bsp.service ', '', d)} \
 "
 
-S = "${WORKDIR}/hipico_hardware_driver/drivers"
+S = "${WORKDIR}/hipico_hardware_driver"
 
 INSANE_SKIP:${PN} += "already-stripped"
-FILES:${PN} = "${sysconfdir} ${systemd_system_unitdir} /usr/sbin /ko"
+FILES:${PN} = "${sysconfdir} ${systemd_system_unitdir} /usr/sbin /ko /etc /root"
+
+do_compile () {
+    pushd ${S}/reg-tools-1.0.0
+    oe_runmake
+    popd
+}
 
 do_install () {
     install -d ${D}${sysconfdir}/init.d
 
-    install -m 0755 ${S}/S90AutoRun.sh ${D}${sysconfdir}/init.d/
+    install -m 0755 ${S}/drivers/S90AutoRun.sh ${D}${sysconfdir}/init.d/
     if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
         install -d ${D}${systemd_system_unitdir}
         install -m 0644 ${WORKDIR}/hipico-bsp.service ${D}${systemd_system_unitdir}
@@ -28,12 +34,21 @@ do_install () {
     fi
 
     install -d ${D}/ko/wifi
-
-    cp ${S}/ws73/etc/* ${D}${sysconfdir}/ -r
-    cp ${S}/ws73/ko/* ${D}/ko/wifi/
+	
+    cp ${S}/ko/* ${D}/ko -r
+    cp ${S}/drivers/ws73/etc/* ${D}${sysconfdir}/ -r
+    cp ${S}/drivers/ws73/ko/* ${D}/ko/wifi/
     install -d ${D}/usr/sbin
-    install -m 0755 ${S}/ws73/bin/sparklinkctrl ${D}/usr/sbin
-    install -m 0755 ${S}/ws73/bin/sparklinkd ${D}/usr/sbin
+    install -m 0755 ${S}/drivers/ws73/bin/sparklinkctrl ${D}/usr/sbin
+    install -m 0755 ${S}/drivers/ws73/bin/sparklinkd ${D}/usr/sbin
+	
+    install -d ${D}/usr/sbin
+    cp ${S}/reg-tools-1.0.0/bin/* ${D}/usr/sbin
+
+    install -d ${D}/root
+    cp ${S}/scripts/* ${D}/root/
+	
+    cp -rf ${S}/Wireless ${D}/etc/
 }
 
 INHIBIT_PACKAGE_STRIP = "1"
