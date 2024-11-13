@@ -3,18 +3,20 @@ FILESEXTRAPATHS:append := "${THISDIR}/files/:"
 
 # remove origin kernel and patch in linux-openeuler.inc
 SRC_URI:remove = " \
-    file://kernel-5.10 \
-    file://src-kernel-5.10 \
+    file://kernel-${PV} \
+    file://src-kernel-${PV} \
     file://patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch \
+    file://patches/${ARCH}/0001-kernel6.6-arm64-add-zImage-support-for-arm64.patch \
 "
 
 # fetch kernel and patch for phytium
-OPENEULER_REPO_NAMES = "phytium-kernel src-kernel-5.10-tag-phytium"
+OPENEULER_REPO_NAME = "phytium-kernel-${PV}"
+OPENEULER_REPO_NAMES = "phytium-kernel-${PV} src-kernel-${PV}-tag-phytium"
 
 # use phytium kernel repo
 SRC_URI:append = " \
-    file://phytium-kernel \
-    file://src-kernel-5.10-tag-phytium \
+    file://phytium-kernel-${PV} \
+    file://src-kernel-${PV}-tag-phytium \
 "
 
 # patches for ft2000-4
@@ -36,6 +38,6 @@ do_deploy:append:phytiumpi() {
 # add patch tool to solve patch apply
 PATCHTOOL = "git"
 
-S = "${WORKDIR}/phytium-kernel"
+S = "${WORKDIR}/phytium-kernel-${PV}"
 
-OPENEULER_KERNEL_CONFIG = "file://config/${MACHINE}/${MACHINE}_defconfig"
+OPENEULER_KERNEL_CONFIG = "file://${CONFIGVERSION}config/${MACHINE}/${MACHINE}_defconfig"
