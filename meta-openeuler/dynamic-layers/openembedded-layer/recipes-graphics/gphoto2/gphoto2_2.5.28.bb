@@ -18,4 +18,3 @@ inherit autotools pkgconfig gettext
 EXTRA_OECONF += "--with-jpeg-prefix=${STAGING_INCDIR} \
                  --without-cdk \
 "
-

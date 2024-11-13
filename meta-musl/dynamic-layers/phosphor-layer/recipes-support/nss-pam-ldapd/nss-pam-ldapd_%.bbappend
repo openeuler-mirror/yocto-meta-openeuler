@@ -6,5 +6,3 @@ SRC_URI:append = " \
 
 RDEPENDS:${PN}:remove = "nscd"
 RDEPENDS:${PN} += "musl-nscd"
-
-

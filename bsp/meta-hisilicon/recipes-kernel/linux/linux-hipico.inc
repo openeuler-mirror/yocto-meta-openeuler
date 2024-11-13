@@ -39,4 +39,3 @@ SYSROOT_PREPROCESS_FUNCS += "additional_populate_sysroot"
 additional_populate_sysroot() {
     sysroot_stage_dir ${D}/linux-img ${SYSROOT_DESTDIR}/linux-img
 }
-

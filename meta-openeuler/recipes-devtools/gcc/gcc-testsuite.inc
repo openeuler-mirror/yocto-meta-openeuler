@@ -105,4 +105,3 @@ python check_prepare() {
         f.write("lappend boards_dir {0}\n".format(dejagnudir))
         f.write("set CFLAGS_FOR_TARGET \"{0}\"\n".format(d.getVar("TOOLCHAIN_OPTIONS")))
 }
-

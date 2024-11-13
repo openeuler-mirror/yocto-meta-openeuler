@@ -59,4 +59,3 @@ PACKAGECONFIG ?= " \
     xkb \ 
 "
 FILES:${PN} += " ${datadir} "
-

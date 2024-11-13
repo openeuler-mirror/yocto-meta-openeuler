@@ -8,4 +8,3 @@ SRC_URI:prepend = "file://wqy-zenhei-${PV}.tar.bz2 \
 "
 
 PACKAGEFUNCS:remove = " add_fontcache_postinsts "
-

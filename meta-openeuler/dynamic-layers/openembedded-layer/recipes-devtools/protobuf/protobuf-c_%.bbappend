@@ -21,4 +21,3 @@ SRC_URI:prepend = " \
     file://backport-Work-around-GOOGLE_-changes-in-protobuf-22.0.patch \
     file://backport-Use-GOOGLE_LOG-FATAL-instead-of-GOOGLE_LOG-DFATAL.patch \
 "
-

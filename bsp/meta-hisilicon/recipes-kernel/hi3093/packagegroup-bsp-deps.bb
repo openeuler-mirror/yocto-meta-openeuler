@@ -13,4 +13,3 @@ RDEPENDS:${PN} += " \
     kernel-module-map-funcs \
     kernel-module-can-dev \
 "
-

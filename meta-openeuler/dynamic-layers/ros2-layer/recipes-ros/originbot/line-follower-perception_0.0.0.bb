@@ -59,4 +59,3 @@ S = "${WORKDIR}/originbot_deeplearning/line_follower_perception"
 ROS_BUILD_TYPE = "ament_cmake"
 
 inherit ros_${ROS_BUILD_TYPE}
-

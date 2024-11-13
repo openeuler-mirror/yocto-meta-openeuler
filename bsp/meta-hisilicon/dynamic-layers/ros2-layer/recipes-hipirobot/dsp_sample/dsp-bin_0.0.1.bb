@@ -21,4 +21,3 @@ FILES:${PN} = " \
 "
  
 INSANE_SKIP:${PN} += "already-stripped dev-deps"
-

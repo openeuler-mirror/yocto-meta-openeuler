@@ -10,4 +10,3 @@ SRC_URI:prepend = " \
     file://0001-add-secure-compile-option-in-Makefile.patch \
     file://0002-add-secure-compile-fs-check-in-Makefile.patch \
 "
-

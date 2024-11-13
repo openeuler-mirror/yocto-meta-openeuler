@@ -65,4 +65,3 @@ FILES:${PN} += "${datadir} ${libdir}/imu_calib/*"
 ROS_BUILD_TYPE = "ament_cmake"
 
 inherit ros_${ROS_BUILD_TYPE}
-

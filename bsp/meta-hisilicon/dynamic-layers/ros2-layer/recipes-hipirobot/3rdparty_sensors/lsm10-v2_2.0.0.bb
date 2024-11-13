@@ -83,4 +83,3 @@ FILES:${PN} += "${datadir} ${libdir}/lsm10_v2/*"
 ROS_BUILD_TYPE = "ament_cmake"
 
 inherit ros_${ROS_BUILD_TYPE}
-

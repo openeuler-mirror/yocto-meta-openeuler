@@ -6,4 +6,3 @@ PV = "1.4.7"
 SRC_URI = " \
     file://${BPN}-${PV}.tar.xz \
 "
-

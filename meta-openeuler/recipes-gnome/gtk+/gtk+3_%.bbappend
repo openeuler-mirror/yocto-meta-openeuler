@@ -12,4 +12,3 @@ SRC_URI:prepend = "file://gtk+-${PV}.tar.xz \
 PACKAGECONFIG[cups] = ",,cups,cups"
 PACKAGECONFIG[cloudproviders] = "-Dcloudproviders=true,-Dcloudproviders=false,libcloudproviders"
 PACKAGECONFIG[tracker3] = "-Dtracker3=true,-Dtracker3=false,tracker,tracker-miners"
-

@@ -54,4 +54,3 @@ S = "${WORKDIR}/originbot_navigation"
 ROS_BUILD_TYPE = "ament_cmake"
 
 inherit ros_${ROS_BUILD_TYPE}
-

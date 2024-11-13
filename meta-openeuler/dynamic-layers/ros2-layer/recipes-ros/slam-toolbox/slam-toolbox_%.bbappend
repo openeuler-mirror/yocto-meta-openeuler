@@ -57,4 +57,3 @@ ROS_BUILD_DEPENDS:append = " \
 ROS_EXEC_DEPENDS:append = " \
         suitesparse \
 "
-

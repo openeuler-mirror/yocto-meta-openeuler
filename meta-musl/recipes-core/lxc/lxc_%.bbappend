@@ -12,4 +12,3 @@ LDFLAGS:append = " -lgcompat"
 do_compile:prepend() {
        sed -i "s/init_lxc_static_LDFLAGS = -all-static -pthread/init_lxc_static_LDFLAGS = -pthread/" ${S}/src/lxc/Makefile.am
 }
-

@@ -50,4 +50,3 @@ S = "${WORKDIR}/ros-humble-magic-enum-0.8.2"
 ROS_BUILD_TYPE = "cmake"
 
 inherit ros_${ROS_BUILD_TYPE}
-

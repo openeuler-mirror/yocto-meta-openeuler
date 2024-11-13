@@ -9,4 +9,3 @@ SRC_URI:prepend = " \
     file://0002-Revert-deps-V8-tagged.patch \
     file://0003-fix-fd-is-null-when-calling-clearBuffer.patch \
 "
-

@@ -32,4 +32,3 @@ PACKAGECONFIG:append = "${@bb.utils.contains('LICENSE_FLAGS_ACCEPTED', 'commerci
 # %global _without_xvid    1
 LICENSE_FLAGS:remove = "commercial"
 PACKAGECONFIG:append = " vpx theora v4l2 "
-

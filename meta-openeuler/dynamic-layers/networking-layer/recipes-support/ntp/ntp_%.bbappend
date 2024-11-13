@@ -23,4 +23,3 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
            file://backport-add-NULL-pointer-check-when-ntpd-deletes-the-last-interface.patch \
            file://backport-ntpd-abort-if-fail-to-drop-root.patch \
 "
-

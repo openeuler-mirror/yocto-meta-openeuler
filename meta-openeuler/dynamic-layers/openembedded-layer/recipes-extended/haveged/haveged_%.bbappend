@@ -23,4 +23,3 @@ do_install:append() {
     install -Dm 0755 ${WORKDIR}/haveged.init ${D}${sysconfdir}/init.d/haveged
     sed -i -e "s,@SBINDIR@,${sbindir},g" ${D}${sysconfdir}/init.d/haveged
 }
-

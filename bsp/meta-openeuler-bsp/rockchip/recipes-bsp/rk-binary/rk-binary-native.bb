@@ -47,5 +47,3 @@ do_install () {
 	install -m 0755 afptool ${D}/${bindir}
 	install -m 0755 rkImageMaker ${D}/${bindir}
 }
-
-

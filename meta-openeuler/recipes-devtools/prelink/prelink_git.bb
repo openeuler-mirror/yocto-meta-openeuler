@@ -180,4 +180,3 @@ fi
 
 prelink -au
 }
-

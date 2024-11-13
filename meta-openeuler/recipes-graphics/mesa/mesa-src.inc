@@ -9,4 +9,3 @@ SRC_URI:remove = " \
 SRC_URI:prepend = "file://mesa-${PV}.tar.xz \
            file://backport-fix-build-err-on-arm.patch \
            "
-

@@ -8,4 +8,3 @@ SRC_URI += " \
 "
 
 S = "${WORKDIR}/${BP}"
-

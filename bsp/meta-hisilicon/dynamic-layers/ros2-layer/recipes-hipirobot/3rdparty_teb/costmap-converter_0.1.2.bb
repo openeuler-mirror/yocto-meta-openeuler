@@ -84,4 +84,3 @@ FILES:${PN} += "${datadir}"
 ROS_BUILD_TYPE = "ament_cmake"
 
 inherit ros_${ROS_BUILD_TYPE}
-

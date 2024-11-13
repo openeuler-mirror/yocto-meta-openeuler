@@ -20,4 +20,3 @@ PACKAGECONFIG ??= "\
 "
 PACKAGECONFIG[ipv6] = "--enable-ipv6,--disable-ipv6"
 PACKAGECONFIG[gssapi] = "--enable-gssapi,--disable-gssapi,krb5"
-

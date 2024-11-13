@@ -18,4 +18,3 @@ EXTRA_OECONF += "--enable-gtk3 --enable-man"
 FILES:${PN} += "${datadir}/icons/hicolor/128x128/apps/lxterminal.png"
 
 inherit autotools pkgconfig gettext
-

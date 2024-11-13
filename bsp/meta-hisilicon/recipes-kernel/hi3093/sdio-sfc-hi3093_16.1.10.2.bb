@@ -16,4 +16,3 @@ RPROVIDES:${PN} += "kernel-module-mmc-block "
 RPROVIDES:${PN} += "kernel-module-mmc-core "
 RPROVIDES:${PN} += "kernel-module-emmc-drv "
 RPROVIDES:${PN} += "kernel-module-sdio-drv "
-

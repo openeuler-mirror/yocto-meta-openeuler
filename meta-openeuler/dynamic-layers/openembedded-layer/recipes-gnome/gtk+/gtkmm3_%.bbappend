@@ -9,4 +9,3 @@ SRC_URI += " \
 "
 
 S = "${WORKDIR}/gtkmm-${PV}"
-
