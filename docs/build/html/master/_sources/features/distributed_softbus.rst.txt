@@ -393,7 +393,7 @@ softbus客户端API头文件在嵌入式版本提供的sdk中对外开放，可�
         		return;
         	}
         
-        	printf("\nInput Node num to commnunication:");
+        	printf("\nInput Node num to communication:");
         	scanf_s("%d", &input);
         	if (input <= 0 || input > dev_num) {
         		printf("error input num\n");
@@ -585,7 +585,7 @@ softbus客户端API头文件在嵌入式版本提供的sdk中对外开放，可�
 
     .. code-block:: console
 
-        Input Node num to commnunication:1
+        Input Node num to communication:1
 
     若传输成功，则在对端设备上会显示传输数据的结果
 
@@ -912,7 +912,7 @@ hichain的客户端API头文件在嵌入式版本提供的sdk中对外开放，�
     				goto err_cJSON_AddToObject;
     			}
     		} else {
-    			printf("unsupport connection type:%d\n", device->addr[i].type);
+    			printf("unsupported connection type:%d\n", device->addr[i].type);
     			goto err_cJSON_AddToObject;
     		}
     	}

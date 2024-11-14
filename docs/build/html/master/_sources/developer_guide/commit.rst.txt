@@ -29,9 +29,9 @@ commit msg样式与示例
   .. code-block:: shell
 
     #此commit仅做示例，非真实commit
-    yocto: Update poky-4.0 grammer details
+    yocto: Update poky-4.0 grammar details
 
-    update yocto grammer: replace '_' with ':' for yocto version stability.
+    update yocto grammar: replace '_' with ':' for yocto version stability.
     
     Signed-off-by: zhangsan <zhangsan@163.com>
 
@@ -152,7 +152,7 @@ commit msg详细说明
 
     .. code-block:: shell
     
-      revert: 54a4f0239f2e(yocto: Update poky-4.0 grammer details)
+      revert: 54a4f0239f2e(yocto: Update poky-4.0 grammar details)
 
       some reasons for revert.
 

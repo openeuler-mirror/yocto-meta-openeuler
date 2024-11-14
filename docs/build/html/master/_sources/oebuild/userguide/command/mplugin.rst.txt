@@ -156,7 +156,7 @@ oebuild-init.py的代码如下:
 
     def do_run(self, args: argparse.ArgumentParser, unknown = None):
         '''
-        detach target dicrectory if finished init, if inited, just put out err msg and exit
+        detach target directory if finished init, if inited, just put out err msg and exit
         '''
 
         # perpare parse help command
@@ -178,7 +178,7 @@ oebuild-init.py的代码如下:
             return
 
         if not self.init_workspace(args.directory):
-            logger.error("mkdir %s faild", args.directory)
+            logger.error("mkdir %s failed", args.directory)
             return
 
         os.chdir(args.directory)

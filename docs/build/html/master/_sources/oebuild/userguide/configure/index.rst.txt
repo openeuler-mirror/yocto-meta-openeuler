@@ -85,7 +85,7 @@ compile.yaml.sample：构建配置模板文件
     # machine replaces the machine parameter in local.conf,
     # in general, platform lists a list in the 
     # `yocto-meta-openeuler/.oebuild/platform` directory, and the 
-    # mechine value is specified in the specific platform
+    # machine value is specified in the specific platform
     #
     machine: qemu-aarch64
 
