@@ -52,7 +52,7 @@ do_copy_headers() {
     # yocto's built-in patch mechanism has abnormal failure issues. 
     # Here is a solution to avoid this issue
     grep  "int disable_multi," ${S}/drivers/mmc/core/block.c || patch -p1 < ${WORKDIR}/mpu_solution/src/patches/openEuler/kernel-22.03-lts-sp3-mmc.patch
-    grep  "#include <linux/jiffies.h>" {S}/drivers/gpu/drm/hisilicon/hibmc/hibmc_drm_drv.c || patch -p1 < ${WORKDIR}/mpu_solution/src/patches/openEuler/kernel-gpu-drm-hisilicon-hibmc.patch
+    grep  "#include <linux/jiffies.h>" ${S}/drivers/gpu/drm/hisilicon/hibmc/hibmc_drm_drv.c || patch -p1 < ${WORKDIR}/mpu_solution/src/patches/openEuler/kernel-gpu-drm-hisilicon-hibmc.patch
     cd -
     cp -rf ${WORKDIR}/mpu_solution/platform/securec/include/* ${S}/include/linux
     mkdir -p ${S}/include/linux/kbox
