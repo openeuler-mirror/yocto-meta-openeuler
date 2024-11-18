@@ -112,7 +112,7 @@ KERNEL_CC:toolchain-clang = "${CCACHE}clang ${HOST_CC_KERNEL_ARCH} -fuse-ld=lld 
 KERNEL_LD:toolchain-clang = "${CCACHE}ld.lld"
 KERNEL_AR:toolchain-clang = "${CCACHE}llvm-ar"
 ```
-if you want use LLVM integrated assembler for some older kernel, newer vesion is enabled default.
+if you want use LLVM integrated assembler for some older kernel, newer version is enabled default.
 ```shell
 do_compile:prepend:toolchain-clang() {
 	export LLVM_IAS=1

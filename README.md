@@ -50,9 +50,9 @@ oebuild构建后会自动生成如下目录结构：
     一个合格的git提交信息如下所示，请尽可能在提交信息中描述相关信息，例如改动的地方，修改的原因，如何验证等等。（需要替换的内容用“[]”包含，实际提交信息中不用包含“[]”）
 
     ```
-    [module name, e.g. docs]: [git commit msg titile (what to change)]
+    [module name, e.g. docs]: [git commit msg title (what to change)]
 
-    [git commit msg body (detailed explaination of what to change, why to change, and even how to verify)]
+    [git commit msg body (detailed explanation of what to change, why to change, and even how to verify)]
 
     Signed-off-by: [name] <[email]>
     ```
