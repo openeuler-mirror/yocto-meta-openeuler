@@ -98,6 +98,9 @@ KERNEL_FEATURES:append:x86-64 = " \
 # xen kernel support
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'xen', ' features/xen/xen.scc', '', d)}"
 
+# zvm kernel support
+KERNEL_FEATURES:append = "${@bb.utils.contains('MCS_FEATURES', 'zvm', ' features/zvm/zvm.scc', '', d)}"
+
 KERNEL_FEATURES:append = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'kubeedge', 'features/kubeedge/kubeedge.scc', '', d)} \
 "
