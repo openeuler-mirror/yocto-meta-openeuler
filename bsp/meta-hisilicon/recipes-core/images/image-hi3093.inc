@@ -52,7 +52,7 @@ ${@bb.utils.contains("DISTRO_FEATURES", "mpu_solution", " \
         kernel-module-ksecurec \
         kernel-module-msg-scm3-drv \
         kernel-module-localbus-drv \
-        kernel-module-spi-drv \
+        kernel-module-spi-hi309x-drv \
         kernel-module-uartconnect-drv \
         kernel-module-trng-drv \
         kernel-module-pci-fix-drv \
@@ -72,4 +72,10 @@ ${@bb.utils.contains("DISTRO_FEATURES", "mpu_solution", " \
         kernel-module-libcomposite \
         kernel-module-dwc3 \
         kernel-module-usb-common \
+", "", d)}"
+
+IMAGE_INSTALL:remove = "${@bb.utils.contains("DISTRO_FEATURES", "preempt-rt", " \ 
+        kernel-module-i2c-drv \
+        kernel-module-udc-core \
+        kernel-module-usb-drv \
 ", "", d)}"
