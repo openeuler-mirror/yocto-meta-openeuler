@@ -1,0 +1,97 @@
+Upstream-Status: Inappropriate [Local configuration]
+Reason: Patch applied to meet zvm-specific requirements, not suitable for upstream as it caters to local configuration needs.
+
+--- qemu-6.2.0/hw/arm/virt.c	2021-12-15 04:42:02.000000000 +0800
++++ qemu-6.2.0/hw/arm/virt.c	2023-01-10 10:26:05.097333085 +0800
+@@ -162,6 +162,10 @@ static const MemMapEntry base_memmap[] =
+     [VIRT_PCIE_ECAM] =          { 0x3f000000, 0x01000000 },
+     /* Actual RAM size depends on initial RAM and device memory settings */
+     [VIRT_MEM] =                { GiB, LEGACY_RAMLIMIT_BYTES },
++    [VIRT_RESERVED] =           { 0xc0000000, 0x00a00000 },
++    [VIRT_UART1] =              { 0x09001000, 0x00001000 },
++    [VIRT_UART2] =              { 0x09002000, 0x00001000 },
++    [VIRT_RESERVED2] =          { 0xd0000000, 0x00100000 },
+ };
+ 
+ /*
+@@ -189,6 +193,8 @@ static const int a15irqmap[] = {
+     [VIRT_GPIO] = 7,
+     [VIRT_SECURE_UART] = 8,
+     [VIRT_ACPI_GED] = 9,
++    [VIRT_UART1] = 10,
++    [VIRT_UART2] = 11,
+     [VIRT_MMIO] = 16, /* ...to 16 + NUM_VIRTIO_TRANSPORTS - 1 */
+     [VIRT_GIC_V2M] = 48, /* ...to 48 + NUM_GICV2M_SPIS - 1 */
+     [VIRT_SMMU] = 74,    /* ...to 74 + NUM_SMMU_IRQS - 1 */
+@@ -841,6 +847,8 @@ static void create_uart(const VirtMachin
+     qemu_fdt_setprop(ms->fdt, nodename, "clock-names",
+                          clocknames, sizeof(clocknames));
+ 
++    if(uart == VIRT_UART1){} else
++    if(uart == VIRT_UART2){} else 
+     if (uart == VIRT_UART) {
+         qemu_fdt_setprop_string(ms->fdt, "/chosen", "stdout-path", nodename);
+     } else {
+@@ -1892,12 +1900,15 @@ static void machvirt_init(MachineState *
+     MemoryRegion *secure_sysmem = NULL;
+     MemoryRegion *tag_sysmem = NULL;
+     MemoryRegion *secure_tag_sysmem = NULL;
++    MemoryRegion *reserved_ram = g_new(MemoryRegion, 1);
++    MemoryRegion *reserved_ram2 = g_new(MemoryRegion, 1);
+     int n, virt_max_cpus;
+     bool firmware_loaded;
+     bool aarch64 = true;
+     bool has_ged = !vmc->no_ged;
+     unsigned int smp_cpus = machine->smp.cpus;
+     unsigned int max_cpus = machine->smp.max_cpus;
++    unsigned int vm_uart_count = 0;
+ 
+     /*
+      * In accelerated mode, the memory map is computed earlier in kvm_type()
+@@ -2112,13 +2123,29 @@ static void machvirt_init(MachineState *
+ 
+     fdt_add_pmu_nodes(vms);
+ 
+-    create_uart(vms, VIRT_UART, sysmem, serial_hd(0));
++    create_uart(vms, VIRT_UART, sysmem, serial_hd(vm_uart_count++));
++
++    if (serial_hd(vm_uart_count)) {
++        create_uart(vms, VIRT_UART1, sysmem, serial_hd(vm_uart_count++));
++    }
++
++
++    if (serial_hd(vm_uart_count)) {
++        create_uart(vms, VIRT_UART2, sysmem, serial_hd(vm_uart_count++));
++    }
++
+ 
+     if (vms->secure) {
+         create_secure_ram(vms, secure_sysmem, secure_tag_sysmem);
+-        create_uart(vms, VIRT_SECURE_UART, secure_sysmem, serial_hd(1));
++        create_uart(vms, VIRT_SECURE_UART, secure_sysmem, serial_hd(vm_uart_count++));
+     }
+ 
++    memory_region_init_ram(reserved_ram, NULL, "mach-virt.reserved_ram", vms->memmap[VIRT_RESERVED].size, NULL);
++    memory_region_add_subregion(sysmem, vms->memmap[VIRT_RESERVED].base, reserved_ram);
++    memory_region_init_ram(reserved_ram2, NULL, "mach-virt.reserved_ram2", vms->memmap[VIRT_RESERVED2].size, NULL);
++    memory_region_add_subregion(sysmem, vms->memmap[VIRT_RESERVED2].base, reserved_ram2);
++
++
+     if (tag_sysmem) {
+         create_tag_ram(tag_sysmem, vms->memmap[VIRT_MEM].base,
+                        machine->ram_size, "mach-virt.tag");
+
+
+--- qemu-6.2.0/include/hw/arm/virt.h	2021-12-15 04:42:02.000000000 +0800
++++ qemu-6.2.0/include/hw/arm/virt.h	2023-01-10 10:24:18.039171547 +0800
+@@ -86,6 +86,10 @@ enum {
+     VIRT_ACPI_GED,
+     VIRT_NVDIMM_ACPI,
+     VIRT_PVTIME,
++    VIRT_RESERVED,
++    VIRT_RESERVED2,
++    VIRT_UART1,
++    VIRT_UART2,
+     VIRT_LOWMEMMAP_LAST,
+ };
+ 
