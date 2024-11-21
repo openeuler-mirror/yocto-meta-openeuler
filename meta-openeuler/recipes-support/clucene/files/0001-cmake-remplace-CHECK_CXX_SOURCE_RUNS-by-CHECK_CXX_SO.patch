@@ -1,0 +1,138 @@
+From d67a282f30d49443ec4f8e63925b357edb66f906 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Andreas=20M=C3=BCller?= <schnitzeltony@googlemail.com>
+Date: Wed, 11 Nov 2015 21:32:11 +0100
+Subject: [PATCH 1/5] cmake: remplace CHECK_CXX_SOURCE_RUNS by
+ CHECK_CXX_SOURCE_COMPILES
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+a test run is not possible so just do a test compile
+
+Upstream-Status: Inappropriate [cross specific]
+
+Signed-off-by: Andreas Müller <schnitzeltony@googlemail.com>
+---
+ src/shared/CMakeLists.txt                   | 1 -
+ src/shared/cmake/CheckAtomicFunctions.cmake | 4 ++--
+ src/shared/cmake/CheckErrorHandling.cmake   | 2 +-
+ src/shared/cmake/CheckNamespace.cmake       | 4 ++--
+ src/shared/cmake/CheckPthread.cmake         | 2 +-
+ src/shared/cmake/CheckSnprintf.cmake        | 4 ++--
+ src/shared/cmake/DefineStaticSyntax.cmake   | 4 ++--
+ 7 files changed, 10 insertions(+), 11 deletions(-)
+
+diff --git a/src/shared/CMakeLists.txt b/src/shared/CMakeLists.txt
+index 68314a7..18e9612 100644
+--- a/src/shared/CMakeLists.txt
++++ b/src/shared/CMakeLists.txt
+@@ -11,7 +11,6 @@ set(CMAKE_MODULE_PATH "${clucene-shared_SOURCE_DIR}/cmake")
+ INCLUDE (CheckIncludeFiles)
+ INCLUDE (CheckIncludeFileCXX)
+ INCLUDE (CheckCXXSourceCompiles)
+-INCLUDE (CheckCXXSourceRuns)
+ INCLUDE (CheckFunctionExists)
+ 
+ #local macros
+diff --git a/src/shared/cmake/CheckAtomicFunctions.cmake b/src/shared/cmake/CheckAtomicFunctions.cmake
+index e63f089..2e9c163 100644
+--- a/src/shared/cmake/CheckAtomicFunctions.cmake
++++ b/src/shared/cmake/CheckAtomicFunctions.cmake
+@@ -1,9 +1,9 @@
+-INCLUDE(CheckCXXSourceRuns)
++INCLUDE(CheckCXXSourceCompiles)
+ 
+ MACRO ( CHECK_HAVE_GCC_ATOMIC_FUNCTIONS result )
+ 
+ # Do step by step checking,
+-CHECK_CXX_SOURCE_RUNS("
++CHECK_CXX_SOURCE_COMPILES("
+ #include <cstdlib>
+ int main()
+ {
+diff --git a/src/shared/cmake/CheckErrorHandling.cmake b/src/shared/cmake/CheckErrorHandling.cmake
+index e60a491..24b3e94 100644
+--- a/src/shared/cmake/CheckErrorHandling.cmake
++++ b/src/shared/cmake/CheckErrorHandling.cmake
+@@ -3,7 +3,7 @@
+ 
+ MACRO ( CHECK_HAVE_FUNCTION_TRY_BLOCKS result )
+     #check for try/catch blocks
+-    CHECK_CXX_SOURCE_RUNS("
++    CHECK_CXX_SOURCE_COMPILES("
+     	void foo() { try{ return; } catch( ... ){} }
+     	int main(){ foo(); return 0; }" ${result})
+     IF ( NOT ${result} )
+diff --git a/src/shared/cmake/CheckNamespace.cmake b/src/shared/cmake/CheckNamespace.cmake
+index 688232a..512d412 100644
+--- a/src/shared/cmake/CheckNamespace.cmake
++++ b/src/shared/cmake/CheckNamespace.cmake
+@@ -1,8 +1,8 @@
+ #check if we support namespaces
+ MACRO ( CHECK_NAMESPACE haveNamespace )
+     #Check if namespaces work in the compiler
+-    CHECK_CXX_SOURCE_RUNS("
++    CHECK_CXX_SOURCE_COMPILES("
+     	namespace Outer { namespace Inner { int i = 0; }}
+     	int main(){ using namespace Outer::Inner; return i; }" 
+     	${haveNamespace} )
+-ENDMACRO ( CHECK_NAMESPACE haveNamespace )
+\ No newline at end of file
++ENDMACRO ( CHECK_NAMESPACE haveNamespace )
+diff --git a/src/shared/cmake/CheckPthread.cmake b/src/shared/cmake/CheckPthread.cmake
+index f69f13e..f3f3896 100644
+--- a/src/shared/cmake/CheckPthread.cmake
++++ b/src/shared/cmake/CheckPthread.cmake
+@@ -5,7 +5,7 @@ MACRO ( CHECK_PTHREAD_RECURSIVE ifpthread result)
+ IF ( ${ifpthread} )
+ 	SET ( CMAKE_REQUIRED_FLAGS "${CMAKE_THREAD_LIBS_INIT}")
+ 
+-    CHECK_CXX_SOURCE_RUNS("
++    CHECK_CXX_SOURCE_COMPILES("
+         #include <sys/types.h>
+         #include <pthread.h>
+         #include <stdlib.h>
+diff --git a/src/shared/cmake/CheckSnprintf.cmake b/src/shared/cmake/CheckSnprintf.cmake
+index 8e99e33..c2f8a5c 100644
+--- a/src/shared/cmake/CheckSnprintf.cmake
++++ b/src/shared/cmake/CheckSnprintf.cmake
+@@ -3,7 +3,7 @@
+ MACRO ( CHECK_SNPRINTF )
+     #check that our snprintf works correctly...
+     IF ( _CL_HAVE_FUNCTION_SNPRINTF )
+-    CHECK_CXX_SOURCE_RUNS("
++    CHECK_CXX_SOURCE_COMPILES("
+     	#include <stdio.h>
+     	int main(){
+     		char ovbuf[7];
+@@ -23,7 +23,7 @@ MACRO ( CHECK_SNPRINTF )
+     
+     #check that our swnprintf works correctly...
+     IF ( _CL_HAVE_FUNCTION_SNWPRINTF )
+-    CHECK_CXX_SOURCE_RUNS("
++    CHECK_CXX_SOURCE_COMPILES("
+     	#include <stdio.h>
+     	#include <wchar.h>
+     	
+diff --git a/src/shared/cmake/DefineStaticSyntax.cmake b/src/shared/cmake/DefineStaticSyntax.cmake
+index 7be2415..ab9f85d 100644
+--- a/src/shared/cmake/DefineStaticSyntax.cmake
++++ b/src/shared/cmake/DefineStaticSyntax.cmake
+@@ -3,11 +3,11 @@
+ MACRO ( DEFINE_STATIC_SYNTAX ) 
+ 
+     #check which syntax of static const to use
+-    CHECK_CXX_SOURCE_RUNS("class x{public: static const int SCI=55; }; int main(){ x a; if ( a.SCI!=55 ) throw \"err\"; return 0; }" LUCENE_STATIC_CONSTANT_SYNTAX)
++    CHECK_CXX_SOURCE_COMPILES("class x{public: static const int SCI=55; }; int main(){ x a; if ( a.SCI!=55 ) throw \"err\"; return 0; }" LUCENE_STATIC_CONSTANT_SYNTAX)
+     IF ( LUCENE_STATIC_CONSTANT_SYNTAX )
+         SET ( LUCENE_STATIC_CONSTANT_SYNTAX "static const type assignment")
+     ELSE ( LUCENE_STATIC_CONSTANT_SYNTAX )
+         SET ( LUCENE_STATIC_CONSTANT_SYNTAX "enum { assignment }")
+     ENDIF ( LUCENE_STATIC_CONSTANT_SYNTAX )
+ 
+-ENDMACRO ( DEFINE_STATIC_SYNTAX ) 
+\ No newline at end of file
++ENDMACRO ( DEFINE_STATIC_SYNTAX ) 
+-- 
+2.1.0
+
