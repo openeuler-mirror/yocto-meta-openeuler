@@ -1,0 +1,58 @@
+We should ideally provide '/bin/pg_config' in postgresql-server-devel, and
+provide no pg_config binary in libpq package.  But most of the Fedora packages
+that use pg_config actually only build against PG libraries (and
+postgresql-server-devel isn't needed).  So.., to avoid the initial rush around
+rhbz#1618698 change, rather provide pg_server_config binary, which int urn means
+that we'll have to fix only a minimal set of packages which really build
+PostgreSQL server modules.
+
+diff -ur postgresql-14rc1/src/bin/pg_config/Makefile pgsql14/src/bin/pg_config/Makefile
+--- postgresql-14rc1/src/bin/pg_config/Makefile	2021-09-20 23:33:01.000000000 +0200
++++ pgsql14/src/bin/pg_config/Makefile	2021-09-22 10:48:06.484093152 +0200
+@@ -11,6 +11,8 @@
+ PGFILEDESC = "pg_config - report configuration information"
+ PGAPPICON=win32
+ 
++PG_CONFIG = pg_server_config$(X)
++
+ subdir = src/bin/pg_config
+ top_builddir = ../../..
+ include $(top_builddir)/src/Makefile.global
+@@ -19,22 +21,22 @@
+ 	$(WIN32RES) \
+ 	pg_config.o
+ 
+-all: pg_config
++all: $(PG_CONFIG)
+ 
+-pg_config: $(OBJS) | submake-libpgport
+-	$(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) $(LDFLAGS_EX) $(LIBS) -o $@$(X)
++$(PG_CONFIG): $(OBJS) | submake-libpgport
++	$(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) $(LDFLAGS_EX) $(LIBS) -o $@
+ 
+ install: all installdirs
+-	$(INSTALL_SCRIPT) pg_config$(X) '$(DESTDIR)$(bindir)/pg_config$(X)'
++	$(INSTALL_SCRIPT) $(PG_CONFIG) '$(DESTDIR)$(bindir)/$(PG_CONFIG)'
+ 
+ installdirs:
+ 	$(MKDIR_P) '$(DESTDIR)$(bindir)'
+ 
+ uninstall:
+-	rm -f '$(DESTDIR)$(bindir)/pg_config$(X)'
++	rm -f '$(DESTDIR)$(bindir)/$(PG_CONFIG)'
+ 
+ clean distclean maintainer-clean:
+-	rm -f pg_config$(X) $(OBJS)
++	rm -f $(PG_CONFIG) $(OBJS)
+ 	rm -rf tmp_check
+ 
+ check:
+diff -ur postgresql-15.0_original/src/bin/pg_config/nls.mk postgresql-15.0/src/bin/pg_config/nls.mk
+--- postgresql-15.0_original/src/bin/pg_config/nls.mk        2022-09-05 23:12:45.000000000 +0200
++++ postgresql-15.0/src/bin/pg_config/nls.mk 2022-09-27 17:04:14.618932977 +0200
+@@ -1,4 +1,4 @@
+ # src/bin/pg_config/nls.mk
+-CATALOG_NAME     = pg_config
++CATALOG_NAME     = pg_server_config
+ AVAIL_LANGUAGES  = cs de el es fr he it ja ka ko pl pt_BR ru sv tr uk vi zh_CN
+ GETTEXT_FILES    = pg_config.c ../../common/config_info.c ../../common/exec.c

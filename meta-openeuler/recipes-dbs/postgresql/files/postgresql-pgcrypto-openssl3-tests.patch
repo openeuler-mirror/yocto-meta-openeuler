@@ -1,0 +1,90 @@
+diff -ur postgresql-13.4/contrib/pgcrypto/expected/pgp-decrypt.out postgresql-13.4.patched/contrib/pgcrypto/expected/pgp-decrypt.out
+--- postgresql-13.4/contrib/pgcrypto/expected/pgp-decrypt.out	2021-08-09 16:49:05.000000000 -0400
++++ postgresql-13.4.patched/contrib/pgcrypto/expected/pgp-decrypt.out	2021-09-01 08:16:48.138600886 -0400
+@@ -4,20 +4,6 @@
+ --  Checking ciphers
+ select pgp_sym_decrypt(dearmor('
+ -----BEGIN PGP MESSAGE-----
+-Comment: dat1.blowfish.sha1.mdc.s2k3.z0
+-
+-jA0EBAMCfFNwxnvodX9g0jwB4n4s26/g5VmKzVab1bX1SmwY7gvgvlWdF3jKisvS
+-yA6Ce1QTMK3KdL2MPfamsTUSAML8huCJMwYQFfE=
+-=JcP+
+------END PGP MESSAGE-----
+-'), 'foobar');
+- pgp_sym_decrypt 
+------------------
+- Secret message.
+-(1 row)
+-
+-select pgp_sym_decrypt(dearmor('
+------BEGIN PGP MESSAGE-----
+ Comment: dat1.aes.sha1.mdc.s2k3.z0
+ 
+ jA0EBwMCci97v0Q6Z0Zg0kQBsVf5Oe3iC+FBzUmuMV9KxmAyOMyjCc/5i8f1Eest
+diff -ur postgresql-13.4/contrib/pgcrypto/expected/pgp-pubkey-decrypt.out postgresql-13.4.patched/contrib/pgcrypto/expected/pgp-pubkey-decrypt.out
+--- postgresql-13.4/contrib/pgcrypto/expected/pgp-pubkey-decrypt.out	2021-08-09 16:49:05.000000000 -0400
++++ postgresql-13.4.patched/contrib/pgcrypto/expected/pgp-pubkey-decrypt.out	2021-09-01 08:05:27.750172653 -0400
+@@ -594,13 +594,6 @@
+ (1 row)
+ 
+ select pgp_pub_decrypt(dearmor(data), dearmor(seckey))
+-from keytbl, encdata where keytbl.id=2 and encdata.id=2;
+- pgp_pub_decrypt 
+------------------
+- Secret msg
+-(1 row)
+-
+-select pgp_pub_decrypt(dearmor(data), dearmor(seckey))
+ from keytbl, encdata where keytbl.id=3 and encdata.id=3;
+  pgp_pub_decrypt 
+ -----------------
+diff -ur postgresql-15.0_original/contrib/pgcrypto/Makefile postgresql-15.0/contrib/pgcrypto/Makefile
+--- postgresql-15.0_original/contrib/pgcrypto/Makefile	2022-09-05 23:12:45.000000000 +0200
++++ postgresql-15.0/contrib/pgcrypto/Makefile	2022-09-27 17:12:54.463159362 +0200
+@@ -39,9 +39,9 @@
+ 	pgcrypto--1.0--1.1.sql
+ PGFILEDESC = "pgcrypto - cryptographic functions"
+ 
+-REGRESS = init md5 sha1 hmac-md5 hmac-sha1 blowfish rijndael \
+-	sha2 des 3des cast5 \
+-	crypt-des crypt-md5 crypt-blowfish crypt-xdes \
++REGRESS = init md5 sha1 hmac-md5 hmac-sha1 rijndael \
++	sha2 \
++	crypt-md5 \
+ 	pgp-armor pgp-decrypt pgp-encrypt $(CF_PGP_TESTS) \
+ 	pgp-pubkey-decrypt pgp-pubkey-encrypt pgp-info
+
+diff -ur postgresql-13.4/contrib/pgcrypto/sql/pgp-decrypt.sql postgresql-13.4.patched/contrib/pgcrypto/sql/pgp-decrypt.sql
+--- postgresql-13.4/contrib/pgcrypto/sql/pgp-decrypt.sql	2021-08-09 16:49:05.000000000 -0400
++++ postgresql-13.4.patched/contrib/pgcrypto/sql/pgp-decrypt.sql	2021-09-01 08:16:12.525212175 -0400
+@@ -5,16 +5,6 @@
+ --  Checking ciphers
+ select pgp_sym_decrypt(dearmor('
+ -----BEGIN PGP MESSAGE-----
+-Comment: dat1.blowfish.sha1.mdc.s2k3.z0
+-
+-jA0EBAMCfFNwxnvodX9g0jwB4n4s26/g5VmKzVab1bX1SmwY7gvgvlWdF3jKisvS
+-yA6Ce1QTMK3KdL2MPfamsTUSAML8huCJMwYQFfE=
+-=JcP+
+------END PGP MESSAGE-----
+-'), 'foobar');
+-
+-select pgp_sym_decrypt(dearmor('
+------BEGIN PGP MESSAGE-----
+ Comment: dat1.aes.sha1.mdc.s2k3.z0
+ 
+ jA0EBwMCci97v0Q6Z0Zg0kQBsVf5Oe3iC+FBzUmuMV9KxmAyOMyjCc/5i8f1Eest
+diff -ur postgresql-13.4/contrib/pgcrypto/sql/pgp-pubkey-decrypt.sql postgresql-13.4.patched/contrib/pgcrypto/sql/pgp-pubkey-decrypt.sql
+--- postgresql-13.4/contrib/pgcrypto/sql/pgp-pubkey-decrypt.sql	2021-08-09 16:49:05.000000000 -0400
++++ postgresql-13.4.patched/contrib/pgcrypto/sql/pgp-pubkey-decrypt.sql	2021-09-01 08:06:18.963732342 -0400
+@@ -606,9 +606,6 @@
+ from keytbl, encdata where keytbl.id=1 and encdata.id=1;
+ 
+ select pgp_pub_decrypt(dearmor(data), dearmor(seckey))
+-from keytbl, encdata where keytbl.id=2 and encdata.id=2;
+-
+-select pgp_pub_decrypt(dearmor(data), dearmor(seckey))
+ from keytbl, encdata where keytbl.id=3 and encdata.id=3;
+ 
+ select pgp_pub_decrypt(dearmor(data), dearmor(seckey))
