@@ -1,4 +1,4 @@
-# source bb: meta/recipes-devtools/tcltk/tcl_8.6.11.bb
+# source bb: yocto-meta-openeuler/meta-openeuler/recipes-devtools/tcltk/tcl_8.6.14.bb
 PV = "8.6.14"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/tcl/:"
@@ -15,3 +15,5 @@ SRC_URI[sha256sum] = "ff604f43862a778827d7ecd1ad7686950ac2ef48d9cf69d3424cea9de0
 FILES:${PN}-dev += "${libdir}/tcl8.6/*.c"
 
 EXTRA_OECONF += "--with-tzdata=no"
+
+SYSROOT_DIRS += "${bindir}"
