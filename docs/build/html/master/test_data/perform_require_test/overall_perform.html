@@ -57,6 +57,14 @@
 <li class="toctree-l5"><a class="reference internal" href="#id7">测试结论</a></li>
 </ul>
 </li>
+<li class="toctree-l4"><a class="reference internal" href="#io">1.2.3 IO性能</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#id8">测试工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id9">测试方案</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id10">测试结果</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id11">测试结果分析</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id12">测试结论</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -128,8 +136,8 @@
 <blockquote>
 <div><p>进行五轮测试，取五次平均值统计结果如下：</p>
 </div></blockquote>
-<table class="docutils align-center" id="id8">
-<caption><span class="caption-text">表1-1 CPU运算性能结果</span><a class="headerlink" href="#id8" title="Permalink to this table">¶</a></caption>
+<table class="docutils align-center" id="id13">
+<caption><span class="caption-text">表1-1 CPU运算性能结果</span><a class="headerlink" href="#id13" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 20%" />
 <col style="width: 20%" />
@@ -190,6 +198,111 @@
 <ol class="arabic simple">
 <li><p>在CPU运算性能方面，OEE-RT的性能全面优于OEE。</p></li>
 <li><p>OEE-RT在添加Jailhouse后，对OEE-RT的性能几乎没有影响，各项指标性能相当。</p></li>
+</ol>
+</section>
+</section>
+<section id="io">
+<h2>1.2.3 IO性能<a class="headerlink" href="#io" title="Permalink to this headline">¶</a></h2>
+<section id="id8">
+<h3>测试工具<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>sysbench</p></li>
+</ul>
+</section>
+<section id="id9">
+<h3>测试方案<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>使用sysbench的fileio工具，创建测试数据（prepare）指定文件读写模式为rndrw（随机读写），在指定时间内完成的读写速率，最后清理数据（cleanup）</p>
+<p>测试指令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>准备阶段：
+
+<span class="go">taskset -c 2 sysbench fileio --threads=1 --file-test-mode=rndrw --file-total-size=64M</span>
+
+<span class="go">--file-num=16 --file-block-size=1M prepare</span>
+
+<span class="gp"># </span>运行阶段：
+
+<span class="go">taskset -c 2 sysbench fileio --threads=1 --file-test-mode=rndrw --file-total-size=64M</span>
+
+<span class="go">--file-num=16 --file-block-size=1M run</span>
+</pre></div>
+</div>
+<p>指令均在串口终端下执行。</p>
+</div></blockquote>
+</section>
+<section id="id10">
+<h3>测试结果<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>进行五轮测试，取五次平均值统计结果如下：</p>
+</div></blockquote>
+<table class="docutils align-center" id="id14">
+<caption><span class="caption-text">表1-10 IO读写测试结果</span><a class="headerlink" href="#id14" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>测试工具</strong></p></td>
+<td><p><strong>测试项</strong></p></td>
+<td><p><strong>OEE</strong></p></td>
+<td><p><strong>OEE-RT</strong></p></td>
+<td><p><strong>OEE-RT+Jailhouse</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>sysbench fileio</p></td>
+<td><p>随机读速度（MB/s）</p></td>
+<td><p>3.90</p></td>
+<td><p>119.9</p></td>
+<td><p>119.074</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>随机写速度（MB/s）</p></td>
+<td><p>2.59</p></td>
+<td><p>79.934</p></td>
+<td><p>79.39</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p>最小读写时间(ms)</p></td>
+<td><p>0.89</p></td>
+<td><p>0.152</p></td>
+<td><p>0.138</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>平均读写时间(ms)</p></td>
+<td><p>113.08</p></td>
+<td><p>4.416</p></td>
+<td><p>4.458</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p>最大读写时间(ms)</p></td>
+<td><p>1736.64</p></td>
+<td><p>63.916</p></td>
+<td><p>63.644</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>95%的读写时间(ms)</p></td>
+<td><p>885.28</p></td>
+<td><p>27.466</p></td>
+<td><p>27.562</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id11">
+<h3>测试结果分析<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p>在随机读和随机写的速度上，OEE-RT分别达到了119.9MB/s和79.934MB/s，相比OEE的3.90MB/s和2.59MB/s,有了数量级级别的性能提升。</p></li>
+<li><p>在读写时间上，OEE-RT相对于OEE来说，也有很大的性能提升。比如在平均读写时间和最大读写时间上，OEE-RT相比OEE来说，也获得了数量级级别的性能提升。</p></li>
+<li><p>OEE-RT在添加Jailhouse虚拟化后，不管是在读写速度上还是在读写时间上，性能影响几乎可以忽略不计。</p></li>
+</ol>
+</section>
+<section id="id12">
+<h3>测试结论<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p>在IO性能测试的各项指标上，OEE-RT相比OEE，性能都获得了大幅提升。</p></li>
+<li><p>OEE-RT在添加Jailhouse虚拟化后，IO性能几乎没有影响。</p></li>
 </ol>
 </section>
 </section>
