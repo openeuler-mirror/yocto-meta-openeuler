@@ -57,7 +57,7 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
 inherit oee-archive
-OEE_ARCHIVE_SUB_DIR = "costmap_converter"
+OEE_ARCHIVE_SUB_DIR = "costmap-converter"
 
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 
