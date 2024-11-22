@@ -60,7 +60,7 @@ DEPENDS += "${ROS_EXPORT_DEPENDS} ${ROS_BUILDTOOL_EXPORT_DEPENDS}"
 RDEPENDS:${PN} += "${ROS_EXEC_DEPENDS}"
 
 inherit oee-archive
-OEE_ARCHIVE_SUB_DIR = "teb_local_planner"
+OEE_ARCHIVE_SUB_DIR = "teb-local-planner"
 
 DISABLE_OPENEULER_SOURCE_MAP = "1"
 
