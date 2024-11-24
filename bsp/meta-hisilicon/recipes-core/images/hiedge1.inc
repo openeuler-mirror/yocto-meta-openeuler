@@ -3,9 +3,11 @@ delete_unneeded_from_rootfs() {
     test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
     rm -rf "${OUTPUT_DIR}"/*
     cd "${IMAGE_ROOTFS}"
-    cp -r boot/* "${OUTPUT_DIR}"
-    # just need the boot dir, others in boot are not needed to reduce the size of image.
-    rm -rf ./boot/*
+    if [ "$(ls boot)" ]; then
+        cp -r boot/* "${OUTPUT_DIR}"
+        # just need the boot dir, others in boot are not needed to reduce the size of image.
+        rm -rf ./boot/*
+    fi
     cd -
     set +x
 }
