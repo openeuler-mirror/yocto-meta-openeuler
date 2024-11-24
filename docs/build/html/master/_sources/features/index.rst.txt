@@ -23,3 +23,4 @@
    container/index.rst
    kernelversions.rst
    software_package_description.rst
+   zvm.rst
