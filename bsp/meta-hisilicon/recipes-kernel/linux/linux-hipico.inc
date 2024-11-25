@@ -8,14 +8,14 @@ OPENEULER_REPO_NAMES = "kernel-5.10-tag626 src-kernel-5.10-tag626"
 
 OPENEULER_KERNEL_CONFIG = "file://config/hipico/hipico_debug_defconfig"
 
-SRC_URI:append = " file://kernel-5.10-tag626 \
+PV = "5.10-tag626"
+
+SRC_URI:append = " \
     file://patch/0001-hipico-kernel-510-patch-d8e3bcbbe.patch \
     file://config/hipico/hipico_debug_defconfig \
     file://dtbs/hipico.dts \
     file://its/linux_image.its \
 "
-
-S = "${WORKDIR}/kernel-5.10-tag626"
 
 # add method to do_compile task to produce bootable Image
 do_compile:append(){
