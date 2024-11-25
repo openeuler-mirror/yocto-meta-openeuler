@@ -62,6 +62,7 @@ glib-2.0 \
 libbfd \
 wpa-supplicant \
 hostapd \
+bluez5 \
 hipico-mpp-sample \
 "
 
