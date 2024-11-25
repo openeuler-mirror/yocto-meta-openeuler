@@ -1,7 +1,8 @@
 # add recipes-kernel path to find patch and defconfig
 FILESEXTRAPATHS:append := "${THISDIR}/files/:"
 
-# add patch prebuild tools and logo
+# remove openeuler's default kernel and patches, rockchip's kernel
+# is maintained in https://gitee.com/openeuler/rockchip-kernel.git
 SRC_URI:remove = " \
     file://kernel-5.10 \
     file://patches/${ARCH}/0001-arm64-add-zImage-support-for-arm64.patch \
@@ -9,6 +10,8 @@ SRC_URI:remove = " \
 
 ## basic information
 OPENEULER_LOCAL_NAME = "rockchip-kernel"
+OPENEULER_REPO_NAMES = "rockchip-kernel"
+
 
 SRC_URI:append = " \
     file://rockchip-kernel \
