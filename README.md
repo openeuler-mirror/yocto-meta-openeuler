@@ -16,7 +16,7 @@ yocto-meta-openeuler是用于构建openEuler Embedded的一系列构建配方的
 * **scripts** : 一系列辅助工具，用于帮助构建环境，如下载代码仓、创建构建环境等等
 * **meta-openeuler** : 构建openEuler Embedded所创建的Yocto层，包含相应的配置、构建配方等等
 * **bsp** : openEuler Embedded的BSP(Board Support Package)抽象层，包含当前openEuler Embedded所支持的硬件BSP, 如QEMU、树莓派4B等等
-* **RTOS** : openEuler Embeddd的RTOS(Real-Time Operating System)抽象层，主要针对Linux和RTOS混合关键部署的场景，当前支持RT-Thread和Zephyr
+* **RTOS** : openEuler Embedded的RTOS(Real-Time Operating System)抽象层，主要针对Linux和RTOS混合关键部署的场景，当前支持RT-Thread和Zephyr
 * **docs** : openEuler Embedded使用和开发文档， CI会自动构建文档，并发布于如下地址：
 
     [**openEuler Embedded开发使用文档**](https://pages.openeuler.openatom.cn/embedded/docs/build/html/master/)
