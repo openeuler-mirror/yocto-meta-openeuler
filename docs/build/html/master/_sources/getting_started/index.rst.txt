@@ -35,7 +35,7 @@ openEuler Embedded采用yocto构建，同时设计了基于Python的元工具 `o
       .. code-tab:: shell openEuler 24.03
 
          # 安装必要的软件包
-         $ sudo yum install python3 python3-pip docker
+         $ sudo yum install git python3 python3-pip docker
          $ pip install oebuild
 
          # 配置docker环境
@@ -46,7 +46,7 @@ openEuler Embedded采用yocto构建，同时设计了基于Python的元工具 `o
       .. code-tab:: shell Ubuntu 22.04
 
          # 安装必要的软件包
-         $ sudo apt-get install python3 python3-pip docker docker.io
+         $ sudo apt-get install git python3 python3-pip docker docker.io
          $ pip install oebuild
 
          # 配置docker环境
@@ -57,7 +57,7 @@ openEuler Embedded采用yocto构建，同时设计了基于Python的元工具 `o
       .. code-tab:: shell SUSELeap 15.4
 
          #安装必要的软件包
-         $ sudo zypper install python311 python311-pip docker
+         $ sudo zypper install git python311 python311-pip docker
          $ pip3 install oebuild
 
          #配置docker环境
