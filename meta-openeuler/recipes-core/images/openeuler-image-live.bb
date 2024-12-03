@@ -15,6 +15,7 @@ PACKAGE_INSTALL = "${INITRAMFS_SCRIPTS} \
         base-passwd \
         ${ROOTFS_BOOTSTRAP_INSTALL} \
         packagegroup-kernel-modules \
+        efivar efibootmgr \
 "
 
 export IMAGE_BASENAME = "openeuler-image-live"
