@@ -79,8 +79,11 @@ def generate_multiline_variable(var, container, sort=True, key=None):
             [item + ' \\' for item in container]) + '\n"\n'
     return assignment + expression
 
-tree = parse(xml_path)
-package_root = tree.getroot()
+try:
+    tree = parse(xml_path)
+    package_root = tree.getroot()
+except Exception as e:
+    print("Parsing Error:",e)
 
 for info in package_root.findall('name'):
     pkg_name = info.text.replace('_','-')
