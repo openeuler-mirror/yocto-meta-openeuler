@@ -18,6 +18,7 @@ SRC_URI = " \
         file://HiEuler-driver/drivers/env.tar.gz \
         file://HiEuler-driver/drivers/can-tools.tar.gz \
         file://HiEuler-driver/drivers/ws73.tar.gz \
+        file://HiEuler-driver/drivers/sparklink-tools.tar.gz \
         file://HiEuler-driver/mcu \
         ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' file://hieulerpi1-bsp.service ', '', d)} \
 "
@@ -79,6 +80,9 @@ do_install () {
     cp ${WORKDIR}/ws73/firmware/* ${D}${sysconfdir}/ws73/
     cp ${WORKDIR}/ws73/ko/* ${D}/ko/
     cp ${WORKDIR}/ws73/config/* ${D}${sysconfdir}/
+
+    install -m 0755 ${WORKDIR}/sparklink-tools/sparklinkd ${D}/usr/sbin
+    install -m 0755 ${WORKDIR}/sparklink-tools/sparklinkctrl ${D}/usr/sbin
 }
 
 INHIBIT_PACKAGE_STRIP = "1"
