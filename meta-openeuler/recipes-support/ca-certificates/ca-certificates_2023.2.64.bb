@@ -94,68 +94,68 @@ EOF
 }
 
 do_install () {
-    install -d -m 755 ${D}/${sysconfdir}/pki/tls/certs
-    install -d -m 755 ${D}/${sysconfdir}/pki/java
-    install -d -m 755 ${D}/${sysconfdir}/ssl
-    install -d -m 755 ${D}/${sysconfdir}/pki/ca-trust/source
-    install -d -m 755 ${D}/${sysconfdir}/pki/ca-trust/source/anchors
-    install -d -m 755 ${D}/${sysconfdir}/pki/ca-trust/source/blacklist
-    install -d -m 755 ${D}/${sysconfdir}/pki/ca-trust/extracted
-    install -d -m 755 ${D}/${sysconfdir}/pki/ca-trust/extracted/pem
-    install -d -m 755 ${D}/${sysconfdir}/pki/ca-trust/extracted/openssl
-    install -d -m 755 ${D}/${sysconfdir}/pki/ca-trust/extracted/java
-    install -d -m 755 ${D}/${sysconfdir}/pki/ca-trust/extracted/edk2
-    install -d -m 755 ${D}/${datadir}/pki/ca-trust-source
-    install -d -m 755 ${D}/${datadir}/pki/ca-trust-source/anchors
-    install -d -m 755 ${D}/${datadir}/pki/ca-trust-source/blacklist
-    install -d -m 755 ${D}/${datadir}/pki/ca-trust-legacy
-    install -d -m 755 ${D}/${bindir}
+    install -d -m 755 ${D}${sysconfdir}/pki/tls/certs
+    install -d -m 755 ${D}${sysconfdir}/pki/java
+    install -d -m 755 ${D}${sysconfdir}/ssl
+    install -d -m 755 ${D}${sysconfdir}/pki/ca-trust/source
+    install -d -m 755 ${D}${sysconfdir}/pki/ca-trust/source/anchors
+    install -d -m 755 ${D}${sysconfdir}/pki/ca-trust/source/blacklist
+    install -d -m 755 ${D}${sysconfdir}/pki/ca-trust/extracted
+    install -d -m 755 ${D}${sysconfdir}/pki/ca-trust/extracted/pem
+    install -d -m 755 ${D}${sysconfdir}/pki/ca-trust/extracted/openssl
+    install -d -m 755 ${D}${sysconfdir}/pki/ca-trust/extracted/java
+    install -d -m 755 ${D}${sysconfdir}/pki/ca-trust/extracted/edk2
+    install -d -m 755 ${D}${datadir}/pki/ca-trust-source
+    install -d -m 755 ${D}${datadir}/pki/ca-trust-source/anchors
+    install -d -m 755 ${D}${datadir}/pki/ca-trust-source/blacklist
+    install -d -m 755 ${D}${datadir}/pki/ca-trust-legacy
+    install -d -m 755 ${D}${bindir}
 
-    install -p -m 644 ca-certificates/ca-bundle.trust.p11-kit ${D}/${datadir}/pki/ca-trust-source/ca-bundle.trust.p11-kit
+    install -p -m 644 ca-certificates/ca-bundle.trust.p11-kit ${D}${datadir}/pki/ca-trust-source/ca-bundle.trust.p11-kit
 
-    install -p -m 644 ca-certificates/ca-bundle.legacy.default.crt ${D}/${datadir}/pki/ca-trust-legacy/ca-bundle.legacy.default.crt
-    install -p -m 644 ca-certificates/ca-bundle.legacy.disable.crt ${D}/${datadir}/pki/ca-trust-legacy/ca-bundle.legacy.disable.crt
+    install -p -m 644 ca-certificates/ca-bundle.legacy.default.crt ${D}${datadir}/pki/ca-trust-legacy/ca-bundle.legacy.default.crt
+    install -p -m 644 ca-certificates/ca-bundle.legacy.disable.crt ${D}${datadir}/pki/ca-trust-legacy/ca-bundle.legacy.disable.crt
 
-    install -p -m 644 ${S}/ca-legacy.conf ${D}/${sysconfdir}/pki/ca-trust/ca-legacy.conf
+    install -p -m 644 ${S}/ca-legacy.conf ${D}${sysconfdir}/pki/ca-trust/ca-legacy.conf
 
-    touch -r ${S}/certdata.txt ${D}/${datadir}/pki/ca-trust-source/ca-bundle.trust.p11-kit
+    touch -r ${S}/certdata.txt ${D}${datadir}/pki/ca-trust-source/ca-bundle.trust.p11-kit
 
-    touch -r ${S}/certdata.txt ${D}/${datadir}/pki/ca-trust-legacy/ca-bundle.legacy.default.crt
-    touch -r ${S}/certdata.txt ${D}/${datadir}/pki/ca-trust-legacy/ca-bundle.legacy.disable.crt
+    touch -r ${S}/certdata.txt ${D}${datadir}/pki/ca-trust-legacy/ca-bundle.legacy.default.crt
+    touch -r ${S}/certdata.txt ${D}${datadir}/pki/ca-trust-legacy/ca-bundle.legacy.disable.crt
 
     # TODO: consider to dynamically create the update-ca-trust script from within
     #       this .spec file, in order to have the output file+directory names at once place only.
-    install -p -m 755 ${S}/update-ca-trust ${D}/${bindir}/update-ca-trust
+    install -p -m 755 ${S}/update-ca-trust ${D}${bindir}/update-ca-trust
 
-    install -p -m 755 ${S}/ca-legacy ${D}/${bindir}/ca-legacy
+    install -p -m 755 ${S}/ca-legacy ${D}${bindir}/ca-legacy
 
     # touch ghosted files that will be extracted dynamically
     # Set chmod 444 to use identical permission
-    touch ${D}/${sysconfdir}/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
-    chmod 444 ${D}/${sysconfdir}/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
-    touch ${D}/${sysconfdir}/pki/ca-trust/extracted/pem/email-ca-bundle.pem
-    chmod 444 ${D}/${sysconfdir}/pki/ca-trust/extracted/pem/email-ca-bundle.pem
-    touch ${D}/${sysconfdir}/pki/ca-trust/extracted/pem/objsign-ca-bundle.pem
-    chmod 444 ${D}/${sysconfdir}/pki/ca-trust/extracted/pem/objsign-ca-bundle.pem
-    touch ${D}/${sysconfdir}/pki/ca-trust/extracted/openssl/ca-bundle.trust.crt
-    chmod 444 ${D}/${sysconfdir}/pki/ca-trust/extracted/openssl/ca-bundle.trust.crt
-    touch ${D}/${sysconfdir}/pki/ca-trust/extracted/java/cacerts
-    chmod 444 ${D}/${sysconfdir}/pki/ca-trust/extracted/java/cacerts
-    touch ${D}/${sysconfdir}/pki/ca-trust/extracted/edk2/cacerts.bin
-    chmod 444 ${D}/${sysconfdir}/pki/ca-trust/extracted/edk2/cacerts.bin
+    touch ${D}${sysconfdir}/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+    chmod 444 ${D}${sysconfdir}/pki/ca-trust/extracted/pem/tls-ca-bundle.pem
+    touch ${D}${sysconfdir}/pki/ca-trust/extracted/pem/email-ca-bundle.pem
+    chmod 444 ${D}${sysconfdir}/pki/ca-trust/extracted/pem/email-ca-bundle.pem
+    touch ${D}${sysconfdir}/pki/ca-trust/extracted/pem/objsign-ca-bundle.pem
+    chmod 444 ${D}${sysconfdir}/pki/ca-trust/extracted/pem/objsign-ca-bundle.pem
+    touch ${D}${sysconfdir}/pki/ca-trust/extracted/openssl/ca-bundle.trust.crt
+    chmod 444 ${D}${sysconfdir}/pki/ca-trust/extracted/openssl/ca-bundle.trust.crt
+    touch ${D}${sysconfdir}/pki/ca-trust/extracted/java/cacerts
+    chmod 444 ${D}${sysconfdir}/pki/ca-trust/extracted/java/cacerts
+    touch ${D}${sysconfdir}/pki/ca-trust/extracted/edk2/cacerts.bin
+    chmod 444 ${D}${sysconfdir}/pki/ca-trust/extracted/edk2/cacerts.bin
 
     # /etc/ssl/certs symlink for 3rd-party tools
     ln -s ../pki/tls/certs \
-        ${D}/${sysconfdir}/ssl/certs
+        ${D}${sysconfdir}/ssl/certs
     # legacy filenames
     ln -s ${sysconfdir}/pki/ca-trust/extracted/pem/tls-ca-bundle.pem \
-        ${D}/${sysconfdir}/pki/tls/cert.pem
+        ${D}${sysconfdir}/pki/tls/cert.pem
     ln -s ${sysconfdir}/pki/ca-trust/extracted/pem/tls-ca-bundle.pem \
-        ${D}/${sysconfdir}/pki/tls/certs/ca-bundle.crt
+        ${D}${sysconfdir}/pki/tls/certs/ca-bundle.crt
     ln -s ${sysconfdir}/pki/ca-trust/extracted/openssl/ca-bundle.trust.crt \
-        ${D}/${sysconfdir}/pki/tls/certs/ca-bundle.trust.crt
+        ${D}${sysconfdir}/pki/tls/certs/ca-bundle.trust.crt
     ln -s ${sysconfdir}/pki/ca-trust/extracted/java/cacerts \
-        ${D}/${sysconfdir}/pki/java/cacerts
+        ${D}${sysconfdir}/pki/java/cacerts
 }
 
 
@@ -214,14 +214,31 @@ ${sysconfdir}/pki/ca-trust/extracted/java/cacerts \
 ${sysconfdir}/pki/ca-trust/extracted/edk2/cacerts.bin \
 "
 
+DEST="${D}${sysconfdir}/pki/ca-trust/extracted"
 
-# run the following code at startup
-pkg_postinst_ontarget:${PN} () {
-    ${bindir}/ca-legacy install
-    ${bindir}/update-ca-trust
+do_install:append:() {
+
+    if [ -f /usr/bin/p11-kit ];then
+        # do the work of ca-legacy install (default)
+        ln -s ${datadir}/pki/ca-trust-legacy/ca-bundle.legacy.default.crt \
+            ${D}${sysconfdir}/pki/ca-trust/ca-bundle.legacy.crt
+        
+        # do the work of update-ca-trust
+        # because of issues in p11-kit-native, we use openeuler host(container)'s p11-kit to extract, 
+        # and the ca-bundle.trust.crt to extract
+        # note: must have /usr/bin/p11-kit
+
+        export P11_KIT_NO_USER_CONFIG=1
+        /usr/bin/p11-kit extract --format=openssl-bundle --filter=certificates --overwrite --comment ${DEST}/openssl/ca-bundle.trust.crt
+        /usr/bin/p11-kit extract --format=pem-bundle --filter=ca-anchors --overwrite --comment --purpose server-auth ${DEST}/pem/tls-ca-bundle.pem
+        /usr/bin/p11-kit extract --format=pem-bundle --filter=ca-anchors --overwrite --comment --purpose email ${DEST}/pem/email-ca-bundle.pem
+        /usr/bin/p11-kit extract --format=pem-bundle --filter=ca-anchors --overwrite --comment --purpose code-signing ${DEST}/pem/objsign-ca-bundle.pem
+        /usr/bin/p11-kit extract --format=java-cacerts --filter=ca-anchors --overwrite --purpose server-auth ${DEST}/java/cacerts
+        /usr/bin/p11-kit extract --format=edk2-cacerts --filter=ca-anchors --overwrite --purpose=server-auth ${DEST}/edk2/cacerts.bin
+    fi
 }
 
 RDEPENDS:${PN} += "p11-kit"
 
-# support native and nativesdk
-BBCLASSEXTEND = "native nativesdk"
+# support nativesdk?
+BBCLASSEXTEND = "nativesdk"
