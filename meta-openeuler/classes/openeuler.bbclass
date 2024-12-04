@@ -257,6 +257,23 @@ def download_repo(d, repo_dir, repo_url ,version = None):
             bb.fatal("no sub dir is givned under oee_archive ")
         oee_archive_download(oee_archive_dir = repo_dir, subdir = sub_dir)
 
+    # the function is used to download large file in repo
+    def lfs_download(repo_dir, remote_name, version):
+        res = subprocess.run(f"git lfs fetch {remote_name} {version}",
+                            shell=True,
+                            cwd=repo_dir,
+                            encoding="utf-8",
+                            stderr=subprocess.PIPE)
+        if res.returncode != 0:
+            bb.fatal(res.stderr)
+        res = subprocess.run(f"git lfs checkout {version}",
+                            shell=True,
+                            cwd=repo_dir,
+                            encoding="utf-8",
+                            stderr=subprocess.PIPE)
+        if res.returncode != 0:
+            bb.fatal(res.stderr)
+
     try:
         # if get commit version, just return
         repo.commit(version)
@@ -269,6 +286,11 @@ def download_repo(d, repo_dir, repo_url ,version = None):
         repo.git.checkout(version)
     except:
         bb.warn("the version %s checkout failed ...", version)
+
+    # if the repo has large file it will has .gitattrbutes
+    if os.path.exists(repo_dir+"/.gitattributes"):
+        lfs_download(repo_dir=repo_dir, remote_name=remote.name, version=version)
+
     bb.utils.unlockfile(lf)
 
 
