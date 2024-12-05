@@ -16,15 +16,14 @@ pipeline {
                             pushd src
                             if [ -d "yocto-meta-openeuler" ];then
                                 cd yocto-meta-openeuler
-                                git checkout master
+                                git fetch origin
+                                git checkout $ciBranch
                                 git pull
                             else
-                                git clone https://gitee.com/openeuler/yocto-meta-openeuler
+                                git clone https://gitee.com/openeuler/yocto-meta-openeuler -b $ciBranch
                             fi
                             popd
                             oebuild manifest download
-                            tar zcf src.tar.gz --exclude="src/yocto-meta-openeuler" src
-                            mv src.tar.gz $shareDir/$ciBranch/src.tar.gz
                         """
                     }
                 }

@@ -96,6 +96,11 @@ def init_environment(){
     if (env.archList == null || env.archList == ""){
         env.archList = "aarch64 arm32 x86-64 riscv64"
     }
+
+    // gate environment param
+    if (env.jenkinsId == null || env.jenkinsId == ""){
+
+    }
 }
 
 return this

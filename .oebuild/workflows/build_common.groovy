@@ -10,17 +10,16 @@ def downloadEmbeddedCI(String remote_url, String branch){
 }
 
 def downloadYoctoWithBranch(String workspace, String repo_remote, String branch, Integer deepth){
-    sh """
-        python3 main.py clone_repo \
-        -w ${workspace} \
-        -r ${repo_remote} \
-        -p ${YOCTO_NAME} \
-        -v ${branch} \
-        -dp ${deepth}
-    """
+    dir(workspace){
+        sh 'rm -rf yocto-meta-openeuler'
+        sh "git clone ${repo_remote} -b ${branch} --depth=${deepth}"
+    }
 }
 
 def downloadYoctoWithPr(String workspace, String repo_remote, Integer prnum, Integer deepth){
+    dir(workspace){
+        sh 'rm -rf yocto-meta-openeuler'
+    }
     sh """
         python3 main.py clone_repo \
         -w ${workspace} \
@@ -131,7 +130,7 @@ def uploadLogWithKey(String remote_ip, String remote_dir, String username, Strin
     """
 }
 
-def handleLog(log_file){
+def handleLog(String log_file){
     log_path = "${LOG_DIR}/${log_file}"
     if (env.isUploadLog != null && env.isUploadLog == "true"){
         withCredentials([
@@ -151,7 +150,11 @@ def handleLog(log_file){
     return log_path
 }
 
-def handleAfterBuildImage(String image_name, String arch, Integer build_res_code, String random_str, String image_date){
+def handleAfterBuildImage(String image_name,
+                        String arch,
+                        Integer build_res_code,
+                        String random_str,
+                        String image_date){
     def build_res = "failed"
     def test_res = "failed"
     def test_res_code = 1
@@ -213,21 +216,11 @@ def handleAfterBuildImage(String image_name, String arch, Integer build_res_code
     STAGES_RES.push(formatRes(image_name, "build", build_res, log_path))
 }
 
-def prepareSrcCode(workspace){
-    sh """
-        if [[ -d "${shareDir}/${ciBranch}/oebuild_workspace/src" ]]; then
-            pushd ${workspace}
-            oebuild init oebuild_workspace
-            cd oebuild_workspace
-            rm -rf build
-            rsync -a ${shareDir}/${ciBranch}/oebuild_workspace/src . --exclude yocto-meta-openeuler
-            sync
-            popd
-        fi
-    """
-}
-
-def translateCompileToHost(yocto_dir, arch, image_name, image_date){
+def translateCompileToHost(String yocto_dir,
+                        String arch,
+                        String image_name,
+                        String image_date,
+                        String cache_src_dir){
     def read_image_yaml = "${yocto_dir}/.oebuild/samples/${arch}/${image_name}.yaml"
     def samples_dir = "/home/jenkins/agent/samples/${arch}"
     sh "mkdir -p ${samples_dir}"
@@ -248,6 +241,7 @@ with open("$read_image_yaml", "r", encoding="utf-8") as file:
     data = yaml.load(file.read())
 
 data["build_in"] = "host"
+data["cache_src_dir"] = "$cache_src_dir"
 data["local_conf"] += '\\nDATETIME = "$image_date"\\nINHERIT += "rm_work"'
 
 with open("$write_image_yaml", "w", encoding="utf-8") as file:
@@ -261,8 +255,13 @@ with open("$write_image_yaml", "w", encoding="utf-8") as file:
 }
 
 // dynamic invoke build image function
-def dynamicBuild(yocto_dir, arch, image_name, image_date, random_str){
-    compile_path = translateCompileToHost(yocto_dir, arch, image_name, image_date)
+def dynamicBuild(String yocto_dir,
+                String arch,
+                String image_name,
+                String image_date,
+                String random_str,
+                String cache_src_dir){
+    compile_path = translateCompileToHost(yocto_dir, arch, image_name, image_date, cache_src_dir)
     // prepare oebuild build environment
     def task_res_code = sh (script: """
         oebuild init ${OEBUILD_DIR}
@@ -276,33 +275,61 @@ def dynamicBuild(yocto_dir, arch, image_name, image_date, random_str){
     deleteBuildDir(OEBUILD_DIR + "/build/" + image_name)
 }
 
+def stashRepo(String workdir,String stash_name){
+    dir(workdir+"/"+stash_name){
+        sh """
+        if [ -d .git ];then
+            mv .git .git_bak
+        fi
+        """
+        stash(stash_name)
+        // the stash will not include .git, so mv .git to .git_bak
+        sh """
+        if [ -d .git_bak ];then
+            mv .git_bak .git
+        fi
+        """
+    }
+}
+
+def unstashRepo(String workdir,String stash_name){
+    dir(workdir){
+        sh "rm -rf $stash_name"
+        sh "mkdir -p $stash_name"
+    }
+    dir(workdir+"/"+stash_name){
+        unstash(name: stash_name)
+        sh """
+        if [ -d .git_bak ] && [ ! -d .git ];then
+            mv .git_bak .git
+        fi
+        """
+    }
+}
+
 def buildTask(String build_imgs, String image_date){
-    dir('/home/jenkins/agent'){
-        sh "mkdir -p embedded-ci"
-        sh "mkdir -p yocto-meta-openeuler"
-    }
+    unstashRepo('/home/jenkins/agent', 'embedded-ci')
+    unstashRepo('/home/jenkins/agent', 'yocto-meta-openeuler')
     dir('/home/jenkins/agent/embedded-ci'){
-        unstash(name: "embedded-ci")
-    }
-    dir('/home/jenkins/agent/yocto-meta-openeuler'){
-        unstash(name: "yocto-meta-openeuler")
-        sh "mv .git_bak .git"
-    }
-    dir('/home/jenkins/agent/embedded-ci'){
-        prepareSrcCode("/home/jenkins")
-        def random_str = getRandomStr()
+        def randomStr = getRandomStr()
         mkdirOpeneulerLog()
-        for (image_name in build_imgs.split()){
-            println "build ${image_name} ..."
-            image_split = image_name.split("/")
-            yocto_dir = "/home/jenkins/agent/yocto-meta-openeuler"
-            dynamicBuild(yocto_dir, image_split[0], image_split[1], image_date, random_str)
+        cacheSrcDir = "$shareDir/$ciBranch/oebuild_workspace/src"
+        for (imageName in build_imgs.split()){
+            println "build ${imageName} ..."
+            imageSplit = imageName.split("/")
+            yoctoDir = "/home/jenkins/agent/yocto-meta-openeuler"
+            dynamicBuild(yoctoDir,
+                        imageSplit[0],
+                        imageSplit[1],
+                        image_date,
+                        randomStr,
+                        cacheSrcDir)
         }
         artifactsLogs()
     }
 }
 
-def get_remote_images(base_url) {
+def get_remote_images(String base_url) {
     def code = """
 import requests
 import subprocess
@@ -359,7 +386,7 @@ return sh (script: """
 """, returnStdout: true).trim()
 }
 
-def remote_address_exists(base_url){
+def remote_address_exists(String base_url){
     def code = """
 import requests
 

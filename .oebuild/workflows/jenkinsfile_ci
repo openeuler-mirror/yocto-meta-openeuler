@@ -29,15 +29,8 @@ pipeline {
                         dir('/home/jenkins/agent/embedded-ci'){
                             BUILD_COM.downloadYoctoWithBranch("/home/jenkins/agent", yoctoRemote, yoctoBranch, 1)
                         }
-                        dir('/home/jenkins/agent/embedded-ci'){
-                            stash(name: "embedded-ci")
-                        }
-                        // the stash will not include .git, so mv .git to .git_bak
-                        dir('/home/jenkins/agent/yocto-meta-openeuler'){
-                            sh "mv .git .git_bak"
-                            stash(name: "yocto-meta-openeuler")
-                            sh "mv .git_bak .git"
-                        }
+                        BUILD_COM.stashRepo('/home/jenkins/agent', 'embedded-ci')
+                        BUILD_COM.stashRepo('/home/jenkins/agent', 'yocto-meta-openeuler')
                     }
                 }
             }
@@ -103,11 +96,8 @@ pipeline {
             steps {
                 script{
                     node("${node}"){
-                        dir('/home/jenkins/agent'){
-                            sh "mkdir -p embedded-ci"
-                        }
+                        BUILD_COM.unstashRepo('/home/jenkins/agent', 'embedded-ci')
                         dir('/home/jenkins/agent/embedded-ci'){
-                            unstash(name: "embedded-ci")
                             withCredentials([
                                 string(credentialsId: "${giteeId}", variable: 'GITEETOKEN')
                             ]){
