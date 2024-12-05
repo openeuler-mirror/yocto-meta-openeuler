@@ -6,7 +6,9 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/GPL-2.0-or-later;md5=fed5435554
 
 DEPENDS += "openssl-native"
 
-SRC_URI = "file://ca-certificates"
+SRC_URI = "file://ca-certificates \
+           file://0001-add-sysroot-prefix-and-use-relative-path-for-symlink.patch \
+        "
 
 S = "${WORKDIR}/ca-certificates"
 
@@ -148,13 +150,13 @@ do_install () {
     ln -s ../pki/tls/certs \
         ${D}${sysconfdir}/ssl/certs
     # legacy filenames
-    ln -s ${sysconfdir}/pki/ca-trust/extracted/pem/tls-ca-bundle.pem \
+    ln -s ${@oe.path.relative('${sysconfdir}/pki/tls', '${sysconfdir}/pki/ca-trust/extracted/pem/tls-ca-bundle.pem')} \
         ${D}${sysconfdir}/pki/tls/cert.pem
-    ln -s ${sysconfdir}/pki/ca-trust/extracted/pem/tls-ca-bundle.pem \
+    ln -s ${@oe.path.relative('${sysconfdir}/pki/tls/certs', '${sysconfdir}/pki/ca-trust/extracted/pem/tls-ca-bundle.pem')} \
         ${D}${sysconfdir}/pki/tls/certs/ca-bundle.crt
-    ln -s ${sysconfdir}/pki/ca-trust/extracted/openssl/ca-bundle.trust.crt \
+    ln -s ${@oe.path.relative('${sysconfdir}/pki/tls/certs', '${sysconfdir}/pki/ca-trust/extracted/openssl/ca-bundle.trust.crt')} \
         ${D}${sysconfdir}/pki/tls/certs/ca-bundle.trust.crt
-    ln -s ${sysconfdir}/pki/ca-trust/extracted/java/cacerts \
+    ln -s ${@oe.path.relative('${sysconfdir}/pki/java', '${sysconfdir}/pki/ca-trust/extracted/java/cacerts')} \
         ${D}${sysconfdir}/pki/java/cacerts
 }
 
@@ -214,31 +216,21 @@ ${sysconfdir}/pki/ca-trust/extracted/java/cacerts \
 ${sysconfdir}/pki/ca-trust/extracted/edk2/cacerts.bin \
 "
 
-DEST="${D}${sysconfdir}/pki/ca-trust/extracted"
+do_install:append:class-target () {
+    SYSROOT="${D}${base_prefix}" ${D}${bindir}/ca-legacy install
+    SYSROOT="${D}${base_prefix}" ${D}${bindir}/update-ca-trust
+}
 
-do_install:append:() {
+do_install:append:class-nativesdk () {
+    SYSROOT="${D}${SDKPATHNATIVE}" ${D}${bindir}/ca-legacy install
+    SYSROOT="${D}${SDKPATHNATIVE}" ${D}${bindir}/update-ca-trust
+}
 
-    if [ -f /usr/bin/p11-kit ];then
-        # do the work of ca-legacy install (default)
-        ln -s ${datadir}/pki/ca-trust-legacy/ca-bundle.legacy.default.crt \
-            ${D}${sysconfdir}/pki/ca-trust/ca-bundle.legacy.crt
-        
-        # do the work of update-ca-trust
-        # because of issues in p11-kit-native, we use openeuler host(container)'s p11-kit to extract, 
-        # and the ca-bundle.trust.crt to extract
-        # note: must have /usr/bin/p11-kit
-
-        export P11_KIT_NO_USER_CONFIG=1
-        /usr/bin/p11-kit extract --format=openssl-bundle --filter=certificates --overwrite --comment ${DEST}/openssl/ca-bundle.trust.crt
-        /usr/bin/p11-kit extract --format=pem-bundle --filter=ca-anchors --overwrite --comment --purpose server-auth ${DEST}/pem/tls-ca-bundle.pem
-        /usr/bin/p11-kit extract --format=pem-bundle --filter=ca-anchors --overwrite --comment --purpose email ${DEST}/pem/email-ca-bundle.pem
-        /usr/bin/p11-kit extract --format=pem-bundle --filter=ca-anchors --overwrite --comment --purpose code-signing ${DEST}/pem/objsign-ca-bundle.pem
-        /usr/bin/p11-kit extract --format=java-cacerts --filter=ca-anchors --overwrite --purpose server-auth ${DEST}/java/cacerts
-        /usr/bin/p11-kit extract --format=edk2-cacerts --filter=ca-anchors --overwrite --purpose=server-auth ${DEST}/edk2/cacerts.bin
-    fi
+do_install:append:class-native () {
+    SYSROOT="${D}${base_prefix}" ${D}${bindir}/ca-legacy install
+    SYSROOT="${D}${base_prefix}" ${D}${bindir}/update-ca-trust
 }
 
 RDEPENDS:${PN} += "p11-kit"
 
-# support nativesdk?
-BBCLASSEXTEND = "nativesdk"
+BBCLASSEXTEND = "native nativesdk"

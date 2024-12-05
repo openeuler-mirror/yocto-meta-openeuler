@@ -1,0 +1,116 @@
+From cd394ce7e373b55ac14fe365b49eb64a7824bf49 Mon Sep 17 00:00:00 2001
+From: huangyan <huangyan@cdjrlc.com>
+Date: Mon, 9 Dec 2024 01:08:39 +0800
+Subject: [PATCH] add-sysroot-prefix-and-use-relative-path-for-symlink
+
+---
+ ca-legacy       | 57 ++++++++++++++++++++++++++++++++++++++++++-------
+ update-ca-trust |  2 +-
+ 2 files changed, 50 insertions(+), 9 deletions(-)
+
+diff --git a/ca-legacy b/ca-legacy
+index d63489e..6fdd892 100644
+--- a/ca-legacy
++++ b/ca-legacy
+@@ -2,10 +2,49 @@
+ 
+ #set -vx
+ 
+-LCFILE=/etc/pki/ca-trust/ca-legacy.conf
+-LLINK=/etc/pki/ca-trust/source/ca-bundle.legacy.crt
+-LDEFAULT=/usr/share/pki/ca-trust-legacy/ca-bundle.legacy.default.crt
+-LDISABLE=/usr/share/pki/ca-trust-legacy/ca-bundle.legacy.disable.crt
++LCFILE=$SYSROOT/etc/pki/ca-trust/ca-legacy.conf
++LLINK=$SYSROOT/etc/pki/ca-trust/source/ca-bundle.legacy.crt
++LDEFAULT=$SYSROOT/usr/share/pki/ca-trust-legacy/ca-bundle.legacy.default.crt
++LDISABLE=$SYSROOT/usr/share/pki/ca-trust-legacy/ca-bundle.legacy.disable.crt
++
++# calculate relative path between two absolute paths
++rel_path() {
++    local source="$1"
++    local target="$2"
++
++    # Normalize paths (remove double slashes and trailing slashes)
++    source=$(echo "$source" | sed 's#//*#/#g' | sed 's#/$##')
++    target=$(echo "$target" | sed 's#//*#/#g' | sed 's#/$##')
++
++    local common_part="$source"
++    local result=""
++
++    while [[ "${target#$common_part}" == "${target}" ]]; do
++        common_part="$(dirname "$common_part")"
++        if [[ -z "$result" ]]; then
++            result=".."
++        else
++            result="../$result"
++        fi
++    done
++
++    if [[ "$common_part" == "/" ]]; then
++        result="$result/${target#/}"
++    else
++        result="$result/${target#$common_part/}"
++    fi
++
++    # Remove any remaining double slashes
++    result=$(echo "$result" | sed 's#//*#/#g')
++
++    # If result is empty, it means source and target are the same
++    if [[ -z "$result" ]]; then
++        result="."
++    fi
++
++    echo "$result"
++}
++
+ 
+ # An absent value, or any unexpected value, is treated as "default".
+ is_disabled()
+@@ -32,10 +71,12 @@ do_install()
+     is_disabled
+     if [ $? -eq 0 ]; then
+         # found, legacy is disabled
+-        ln -sf $LDISABLE $LLINK
++        rel_target=$(rel_path $(dirname $LLINK) $LDISABLE)
++        ln -sf $rel_target $LLINK
+     else
+         # expression not found, legacy is set to default
+-        ln -sf $LDEFAULT $LLINK
++        rel_target=$(rel_path $(dirname $LLINK) $LDEFAULT)
++        ln -sf $rel_target $LLINK
+     fi
+ }
+ 
+@@ -43,14 +84,14 @@ do_default()
+ {
+     sed -i 's/^legacy *=.*$/legacy=default/' $LCFILE
+     do_install
+-    /usr/bin/update-ca-trust
++    $SYSROOT/usr/bin/update-ca-trust
+ }
+ 
+ do_disable()
+ {
+     sed -i 's/^legacy *=.*$/legacy=disable/' $LCFILE
+     do_install
+-    /usr/bin/update-ca-trust
++    $SYSROOT/usr/bin/update-ca-trust
+ }
+ 
+ do_help()
+diff --git a/update-ca-trust b/update-ca-trust
+index fe03ed2..926e8ee 100644
+--- a/update-ca-trust
++++ b/update-ca-trust
+@@ -7,7 +7,7 @@
+ # support the syntax "update-ca-trust extract" trigger the generation of output 
+ # files in $DEST.
+ 
+-DEST=/etc/pki/ca-trust/extracted
++DEST=$SYSROOT/etc/pki/ca-trust/extracted
+ 
+ # Prevent p11-kit from reading user configuration files.
+ export P11_KIT_NO_USER_CONFIG=1
+-- 
+2.34.1
+
