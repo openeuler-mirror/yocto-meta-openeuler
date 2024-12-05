@@ -1,5 +1,7 @@
+.. _mindspore_lite:
+
 构建Mindspore Lite使用指导
-#########################
+####################################
 
 本章主要介绍如何构建Mindspore Lite，以及如何应用其进行端侧推理。
 
@@ -24,6 +26,8 @@ MindSpore Lite是MindSpore推出的轻量级、高性能AI推理框架，旨在�
 
 第 1 步: 构建准备
 ************************
+
+**(当前支持arm64标准CPU推理，构建是以arm64标准qemu镜像为例)**
 
 1. 准备一个 ubuntu x86 构建主机环境 （建议22.04）
 
@@ -91,10 +95,12 @@ MindSpore Lite是MindSpore推出的轻量级、高性能AI推理框架，旨在�
      $ bitbake mindspore-lite
 
 第 3 步 执行推理 （Demo）
-************************
+*******************************************
 我们集成了一个简易Demo执行推理，通过调用mobilenet实现简单的图像分类，在本步中，我们直接运行Demo，具体如何定制化构建将在下一步介绍。
 
 **（示例支持arm64通用，无后端定制，欢迎厂商贡献后端驱动）**
+
+**（仅作为演示参考，为方便验证，直接加入到对应镜像配方的IMAGE_INSTALL中；若正式集成时，建议自行新增一个专用的packagegroup并通过DISTRO_FEATURES开关进行控制）**
 
 1. 添加 MindSpore Lite 和 Demo 到 openEuler 镜像：
 
@@ -147,7 +153,7 @@ MindSpore Lite是MindSpore推出的轻量级、高性能AI推理框架，旨在�
    执行推理的结果可能因模型和输入图片的不同而有所变化，请根据实际情况调整。
 
 第 4 步 自行构建推理
-************************
+***********************************
 
 如果希望更改demo或者应用在其他项目中，可以自行编写代码并配置，具体mindspore及demo的文件结构为：
 
@@ -448,9 +454,10 @@ CMakeLists.txt
             dl
     )
 
+参考链接
+************************
 
-
-
-
-
-
+1. 快 速 上 手 — openEuler Embedded 在 线 文 档 24.03 documentation. (n.d.).Retrieved September 30, 2024,from https://embedded.pages.openeuler.org/master/getting_started/index.html
+2. QEMU 使用 — openEuler Embedded 在线文档 24.03 documentation. (n.d.).Retrieved September 30, 2024,from https://pages.openeuler.openatom.cn/embedded/docs/build/html/master/developer_guide/debug/qemu/qemu_start.html
+3. 编 译 端 侧 MindSpore Lite — MindSpore Lite master 文 档 . (n.d.). Retrieved September 30, 2024,from https://www.mindspore.cn/lite/docs/zh-CN/r2.2/use/build.html
+4. 端 侧 推 理 快 速 入 门 — MindSpore Lite master 文 档 . (n.d.). Retrieved September 30, 2024, from https://www.mindspore.cn/lite/docs/zh-CN/r2.2/quick_start/one_hour_introduction.html

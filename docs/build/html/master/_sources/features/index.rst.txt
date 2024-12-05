@@ -24,3 +24,4 @@
    kernelversions.rst
    software_package_description.rst
    zvm.rst
+   mindspore_lite.rst
