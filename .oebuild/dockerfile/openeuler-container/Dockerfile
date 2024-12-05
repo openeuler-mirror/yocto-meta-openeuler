@@ -12,6 +12,9 @@ gmp-devel ninja-build numactl-devel make python3 python3-pip screen glibc-locale
 iproute xz unzip help2man libstdc++-static gcc g++ rsync python3-devel gdisk umoci skopeo \
 libxslt vim hwdata perl-XML-Parser iptables golang quilt
 
+RUN wget https://repo.oepkgs.net/openeuler/rpm/openEuler-20.03-LTS-SP1/compatible/c7/x86_64/Packages/git-lfs-2.10.0-1.x86_64.rpm
+RUN rpm -ivh git-lfs-2.10.0-1.x86_64.rpm && rm -f git-lfs-2.10.0-1.x86_64.rpm
+
 ARG user=openeuler
 ARG group=openeuler
 ARG uid=1000
