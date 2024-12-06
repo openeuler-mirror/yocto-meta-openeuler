@@ -141,6 +141,12 @@ glibc_external_do_install_extra () {
     if [ -e "${D}${bindir}/tzselect" ]; then
         sed -e '1s#bash#sh#' -i "${D}${bindir}/tzselect"
     fi
+
+    # Work around for ld launcher when some binary search /lib path for arm64
+    if [ -e "${D}/lib64/ld-linux-aarch64.so.1" ]; then
+        install -d ${D}/lib
+        ln -sf /lib64/ld-linux-aarch64.so.1 ${D}/lib/ld-linux-aarch64.so.1
+    fi
 }
 
 bberror:task-install () {
@@ -210,6 +216,10 @@ FILES:${PN} += "\
     ${base_libdir}/lp64d \
 "
 
+# Work around for ld launcher when some binary search /lib path for arm64
+FILES:${PN} += "\
+    /lib/ld-linux-aarch64.so.1 \
+"
 
 FILES:${PN}-dev:remove := "${datadir}/aclocal"
 
