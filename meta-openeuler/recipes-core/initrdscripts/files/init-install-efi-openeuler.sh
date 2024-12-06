@@ -287,11 +287,11 @@ if [ "$cmdstr" != "install(without-formatting)" ]; then
     parted ${device} mklabel gpt
 
     echo "Creating boot partition on $bootfs"
-    parted ${device} mkpart boot fat32 0% $boot_size
+    parted ${device} mkpart primary fat32 0% $boot_size
     parted ${device} set 1 boot on
 
     echo "Creating rootfs partition on $rootfs"
-    parted ${device} mkpart root ext4 $rootfs_start $rootfs_end
+    parted ${device} mkpart primary ext4 $rootfs_start $rootfs_end
 
     echo "Creating swap partition on $swap"
     parted ${device} mkpart swap linux-swap $swap_start 100%
