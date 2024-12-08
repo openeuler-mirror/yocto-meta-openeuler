@@ -3,6 +3,8 @@
 # openEuler version
 PV = "3.0.12"
 
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
+
 # conflict with openEuler patches
 SRC_URI:remove = "file://CVE-2023-0464.patch \
         file://CVE-2023-0465.patch \
@@ -52,7 +54,22 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
         file://Backport-CVE-2024-5535-Fix-SSL_select_next_proto.patch \
         file://Backport-CVE-2024-5535-Add-a-test-for-ALPN-and-NPN.patch \
 "
+
+# use openeuler style ssl env setup file
+SRC_URI:remove:class-nativesdk = " \
+           file://environment.d-openssl.sh \
+           "
+SRC_URI:append:class-nativesdk = " \
+           file://environment.d-openeuler-openssl.sh \
+           "
+
 do_install:append () {
         #Remove the empty directory that conflict with ca-certificates.
         rm -rf ${D}${sysconfdir}/ssl/certs
+}
+
+do_install:append:class-nativesdk () {
+        # override poky ssl env setup file
+	rm -f ${D}${SDKPATHNATIVE}/environment-setup.d/openssl.sh
+        install -m 644 ${WORKDIR}/environment.d-openeuler-openssl.sh ${D}${SDKPATHNATIVE}/environment-setup.d/openssl.sh
 }
