@@ -177,10 +177,11 @@ python do_openeuler_fetch() {
         return
     
     def sync_repo_from_cache(d, repo_dir):
-            base_name = os.path.basename(repo_dir)
-            cache_repo_dir = os.path.join(d.getVar('CACHE_SRC_DIR'), base_name)
-            if os.path.exists(cache_repo_dir):
-                subprocess.run(f"rsync -a {cache_repo_dir}/ {repo_dir}/", shell=True)
+        base_name = os.path.basename(repo_dir)
+        cache_repo_dir = os.path.join(d.getVar('CACHE_SRC_DIR'), base_name)
+        if os.path.exists(cache_repo_dir):
+            subprocess.run(f"rsync -aR {cache_repo_dir}/ {repo_dir}/", shell=True)
+            subprocess.run("sync", shell=True)
 
     def openeuler_fetch(d, repo_name):
         # get source directory where to download
@@ -250,17 +251,27 @@ def download_repo(d, repo_dir, repo_url ,version = None):
     # download what you want, and only what you need, no more others. In order to do this, we use git 
     # sparse-checkout, which reduces your working tree to a subset of
     # tracked files. You can see more detail by visiting https://git-scm.com/docs/git-sparse-checkout
-    def oee_archive_download(oee_archive_dir:str, subdir: str):      
-        res = subprocess.run("git sparse-checkout init", shell=True, stderr=subprocess.PIPE, text=True, cwd=oee_archive_dir)
+    def oee_archive_download(oee_archive_dir:str, subdir: str):
+        # if exists subdir and return
+        if os.path.exists(os.path.join(oee_archive_dir, sub_dir)):
+            return
+        res = subprocess.run("git sparse-checkout init",
+                        shell=True,
+                        stderr=subprocess.PIPE,
+                        text=True,
+                        cwd=oee_archive_dir)
         if res.returncode != 0:
-            bb.error(res.stderr)
-            bb.fatal("in oee_archive run git sparse-checkout init faild")
+            bb.fatal(f"in oee_archive run git sparse-checkout init faild, error: {res.stderr}")
         res = subprocess.run(f"git sparse-checkout list | grep {subdir}", shell=True, cwd=oee_archive_dir)
         if res.returncode == 0:
             return
-        res = subprocess.run(f"git sparse-checkout add {subdir}", shell=True, cwd=oee_archive_dir)
+        res = subprocess.run(f"git sparse-checkout add {subdir}",
+                        shell=True,
+                        stderr=subprocess.PIPE,
+                        text=True,
+                        cwd=oee_archive_dir)
         if res.returncode != 0:
-            bb.fatal(f"in oee_archive run git sparse-checkout add {subdir} faild")
+            bb.fatal(f"in oee_archive run git sparse-checkout add {subdir} faild, error: {res.stderr}")
 
     if "oee_archive" in repo_url:
         sub_dir = d.getVar("OEE_ARCHIVE_SUB_DIR")
@@ -296,7 +307,7 @@ def download_repo(d, repo_dir, repo_url ,version = None):
     try:
         repo.git.checkout(version)
     except:
-        bb.warn("the version %s checkout failed ...", version)
+        bb.warn("the version %s checkout failed ..." , version)
 
     # if the repo has large file it will has .gitattrbutes
     if os.path.exists(repo_dir+"/.gitattributes"):
