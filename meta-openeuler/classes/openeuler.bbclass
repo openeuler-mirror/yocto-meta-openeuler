@@ -166,7 +166,6 @@ python do_openeuler_fetch() {
     import shutil
     import git
     from git import GitError
-    import subprocess
 
     # for fake recipes without SRC_URI pass
     src_uri = (d.getVar('SRC_URI') or "").split()
@@ -175,25 +174,12 @@ python do_openeuler_fetch() {
 
     if d.getVar('OPENEULER_FETCH') == "disable":
         return
-    
-    def sync_repo_from_cache(d, repo_dir):
-        base_name = os.path.basename(repo_dir)
-        cache_repo_dir = os.path.join(d.getVar('CACHE_SRC_DIR'), base_name)
-        if os.path.exists(cache_repo_dir):
-            subprocess.run(f"rsync -aR {cache_repo_dir}/ {repo_dir}/", shell=True)
-            subprocess.run("sync", shell=True)
 
     def openeuler_fetch(d, repo_name):
         # get source directory where to download
         src_dir = d.getVar('OPENEULER_SP_DIR')
         # local download path
         repo_dir = os.path.join(src_dir, repo_name)
-
-        if not os.path.exists(repo_dir):
-            os.makedirs(repo_dir)
-            # here we sync repo from cache, note when repo is not exist we sync
-            if d.getVar('CACHE_SRC_DIR'):
-                sync_repo_from_cache(d, repo_dir)
 
         try:
             # determine whether the variable MANIFEST_DIR is None
@@ -231,8 +217,20 @@ def download_repo(d, repo_dir, repo_url ,version = None):
     import subprocess
     import re
 
+    def sync_repo_from_cache(d, repo_dir):
+        base_name = os.path.basename(repo_dir)
+        cache_repo_dir = os.path.join(d.getVar('CACHE_SRC_DIR'), base_name)
+        if os.path.exists(cache_repo_dir):
+            subprocess.run(f"rsync -a {cache_repo_dir}/ {repo_dir}/", shell=True)
+
     lock_file = os.path.join(repo_dir, "file.lock")
     lf = bb.utils.lockfile(lock_file, block=True)
+
+    if not os.path.exists(repo_dir):
+        os.makedirs(repo_dir)
+        # here we sync repo from cache, note when repo is not exist we sync
+        if d.getVar('CACHE_SRC_DIR'):
+            sync_repo_from_cache(d, repo_dir)
 
     repo = init_repo_dir(repo_dir)
 
