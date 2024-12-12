@@ -1,5 +1,5 @@
 #IMAGE_FEATURES += "splash"
-IMAGE_FSTYPES = "rpi-sdimg"
+IMAGE_FSTYPES = "rpi-sdimg cpio.gz"
 SDIMG_ROOTFS_TYPE = "ext4"
 EXTRA_IMAGECMD_ext4 += "-E no_copy_xattrs"
 
