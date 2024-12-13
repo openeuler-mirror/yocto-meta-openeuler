@@ -7,29 +7,45 @@
 特性介绍
 ***************************
 
-在openEuler Embedded构建镜像时，不需要提前下载所有软件包。功能函数openeuler_fetch在openEuler Embedded构建镜像时，按需从上游源码包自动下载软件包。例如当你只想编译busybox这一个软件包，而不需要将其他软件包全部下载的时候，使用openeuler_fetch即可实现，你只需要初始化完环境即可进入编译环节。
+在openEuler Embedded构建镜像时，所有上游软件包仓全部来自于欧拉社区，对于欧拉社区来说，其代码托管平台为gitee，一个软件包仓库不止有源码压缩包，还有对应的patch以及其他编译依赖文件，而openEuler Embedded在构建时通过SRC_URI指定了依赖文件查询地址，因此这些依赖文件需要预先准备在对应的路径下，而对于构建所依赖的上游软件包，要不一次性全部下载完全，要不在构建时按需下载，openeuler_fetch就是为了解决按需下载的理想情况。openeuler_fetch是一个类，这个类被设置为所有的bb文件都将继承，在<meta-openeuler/conf/distro/openeuler.conf>中可以看到INHERIT字段添加了openeuler。
 
 openeuler_fetch运行机制
 ***************************
 
-openeuler_fetch在classes/openeuler.bbclass中实现，函数名为do_openeuler_fetch，该函数在base_do_fetch:prepend中通过bb.build.exec_func()函数调用，即openeuler_fetch运行完还会继续执行do_fetch，这样做的原因是不管openeuler_fetch运行成功与否都可以让fetch继续补充，例如有一款软件包在gitee中不存在，或在配置中配置错误，或者源码目录有相关的改动导致openeuler_fetch运行失败，不用担心，do_fetch可以继续完成文件的查找。
+openeuler_fetch在classes/openeuler.bbclass中实现，函数名为do_openeuler_fetch，该函数在base_do_fetch:prepend中通过bb.build.exec_func()函数调用，即openeuler_fetch运行完还会继续执行do_fetch，这样做的原因是不管openeuler_fetch运行成功与否都可以让fetch继续补充。
+在openeuler_fetch运行时，在最开始阶段，会检测是否有缓存源码，如果有则利用，否则继续执行下一步
+如果下载的软件仓是oee_archive，则会进行特殊处理，这是因为oee_archive仓库主要用于存放一些欧拉社区不存在的软件包或者一些比较大的源码包，每个源码压缩包会在某个二级目录下，而对于整个oee_archive来说，一次性全部下载会很臃肿占空间而且还很耗费时间，因此会只下载指定的二级目录
+如果openeuler_fetch在运行时检测到已经准备好的软件包仓（已准备好是指已正常在软件包仓检出某一个版本）存在.gitattributes，则意味着该仓存在大文件，则会默认执行git-lfs来将对应的大文件下载下来
 
 openeuler_fetch运行逻辑
 ***************************
 
-openeuler_fetch通过以下控制变量来完成相关包下载：
+与openeuler_fetch相关的变量介绍：
 
- - OPENEULER_REPO_NAME: 软件包名，该名一般和构建包名一致，但在特殊情况下需要改动，例如构建libtool-cross时，构建包名为libtool-cross，因此默认OPENEULER_REPO_NAME为libtool-cross，但是依赖包路径是libtool，则需要将OPENEULER_REPO_NAME改为libtool
+ - OPENEULER_LOCAL_NAME: 软件包本地名称，即软件包在本地路径名称，该值默认与BPN保持一致，查看其定义文件<meta-openeuler/conf/distro/openeuler.conf>，但是我们有时候配方名称并不一定与软件包目录名一致，当出现这样的现象时需要设置该值，例如：对于配方astra-camera-msgs_1.0.1来说，其BPN为astra-camera-msgs，但是其仓名为：hieuler_3rdparty_sensors，则需要设置:
+ 
+ .. code::
 
- - OPENEULER_LOCAL_NAME: 软件包本地名称，即软件包在本地路径名称，一般该变量如果不设置则在系统处理时默认和OPENEULER_REPO_NAME一样，该变量意在解决软件包名和本地存储路径不一致问题
+    OPENEULER_LOCAL_NAME = "hieuler_3rdparty_sensors"
 
- - OPENEULER_REPO_NAMES: openeuler_fetch调用时实际用到的变量名，默认设置为OPENEULER_LOCAL_NAME，可追加不同的软件包名到此变量实现多仓下载
+ - OPENEULER_REPO_NAMES: openeuler_fetch调用时实际用到的变量名，默认设置为OPENEULER_LOCAL_NAME，可追加不同的软件包名到此变量实现多仓下载，名称之间用空格隔开，其真实应用代码如下：
+
+ .. code::
+    
+        repo_list = d.getVar("OPENEULER_REPO_NAMES").split()
+        for repo_name in repo_list:
+            # download code from openEuler
+            openeuler_fetch(d, repo_name)
+ 
+ 如果一个配方有涉及到多个源码包仓，则将所有的源码包仓名全部加到OPENEULER_REPO_NAMES中，如下：
+
+ .. code::
+    
+    OPENEULER_REPO_NAMES = "src-kernel-${PV} kernel-${PV}"
+
+ - CACHE_SRC_DIR: 上游源码缓存路径，这里指的缓存是存在一份全量的openEuler Embedded上游源码，如果设置了该值，那么在执行代码下载之前会优先从该缓存目录同步相应的代码仓。
 
 整体openeuler_fetch下载就是依靠以上相关变量确定下载的包信息，而获取下载包的信息是在openEuler Embedded的基线文件中记录的，该文件目录为.oebuild/manifest.yaml，如果在基线文件中能命中该包信息，则会进行下载，否则不做任何操作。基线文件中的包信息包含该包的version，因此在命中该包后会根据version来确定该包的版本，并且为了更快的完成下载任务，我们尽可能的减少下载的代码量，因此openeuler_fetch在下载代码时其深度设定为1。在对该包的匹配过程中，如果本地可以检出该包的version，则直接切换包版本，否则进行fetch操作，然后再进行包版本检出。
-
-另外openeuler_fetch对于OPENEULER_REPO_NAME与OPENEULER_LOCAL_NAME的处理为如果设定了OPENEULER_LOCAL_NAME则选用OPENEULER_LOCAL_NAME作为reponame，用reponame来查找manifest.yaml中的相关包信息，否则选用OPENEULER_REPO_NAME作为reponame，因此对于同一个仓，由于不同的应用场景需要选用不同的分支，那么则需要设定不同的OPENEULER_LOCAL_NAME。
-
-例如特性M与N，都依赖a仓，但是版本分支不同，因此对于M来说，其所设定的a仓的OPENEULER_LOCAL_NAME为a-1，对于N来说，其所设定的a仓的OPENEULER_LOCAL_NAME为a-2，而manifest.yaml中需要各自记录a-1与a-2的版本信息。
 
 如何适配其他软件包
 ***************************
@@ -62,7 +78,7 @@ openeuler_fetch通过以下控制变量来完成相关包下载：
         remote_url: https://gitee.com/src-openeuler/pcre2.git
         version: 82f14dfaf634ca8ae076aef7a19c65136c4e4a3d
 
-可以看到其key键是pcre2，那么这种情况是因为其bbappend文件中设置了OPENEULER_REPO_NAME或OPENEULER_LOCAL_NAME，关于这两个变量的使用请参考上文“openeuler_fetch运行机制”，这里不再详述，下面附上其代码范例：
+可以看到其key键是pcre2，那么这种情况是因为其bbappend文件中设置了OPENEULER_LOCAL_NAME，关于这两个变量的使用请参考上文“openeuler_fetch运行机制”，这里不再详述，下面附上其代码范例：
 
 .. code:: 
 
@@ -73,9 +89,6 @@ openeuler_fetch通过以下控制变量来完成相关包下载：
     LIC_FILES_CHKSUM = "file://LICENCE;md5=41bfb977e4933c506588724ce69bf5d2"
 
     OPENEULER_REPO_NAME = "pcre2"
-
-
-前文提到，如果设置了OPENEULER_REPO_NAME或OPENEULER_LOCAL_NAME则会以这两个变量内容为准进行仓库信息查找。
 
 **情形三：构建依赖不通过depends指定，而是通过SRC_URI指定**
 
