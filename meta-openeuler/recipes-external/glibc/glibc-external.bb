@@ -145,7 +145,7 @@ glibc_external_do_install_extra () {
     # Work around for ld launcher when some binary search /lib path for arm64
     if [ -e "${D}/lib64/ld-linux-aarch64.so.1" ]; then
         install -d ${D}/lib
-        ln -sf /lib64/ld-linux-aarch64.so.1 ${D}/lib/ld-linux-aarch64.so.1
+        ln -sf ../lib64/ld-linux-aarch64.so.1 ${D}/lib/ld-linux-aarch64.so.1
     fi
 }
 
