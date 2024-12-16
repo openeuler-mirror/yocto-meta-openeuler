@@ -56,9 +56,6 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
 "
 
 # use openeuler style ssl env setup file
-SRC_URI:remove:class-nativesdk = " \
-           file://environment.d-openssl.sh \
-           "
 SRC_URI:append:class-nativesdk = " \
            file://environment.d-openeuler-openssl.sh \
            "
