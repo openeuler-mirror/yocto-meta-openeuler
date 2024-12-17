@@ -297,7 +297,7 @@ ____
 首先，需要先根据 :ref:`工控机HVAEIPC-M10 镜像构建安装指导 <hvaepic-m10>` 在工控机上安装 openEuler Embedded 镜像。
 
 之后，我们还需要编译 UniProton 以及 x86环境下需要的额外启动程序 ap_boot，
-请参考 `openEuler Embedded & Uniproton x86 MICA环境安装指导 <https://gitee.com/openeuler/UniProton/blob/master/doc/demoUsageGuide/x86_64_demo_usage_guide.md>`_ 。
+请参考 `openEuler Embedded & Uniproton x86 MICA环境安装指导 <https://gitee.com/openeuler/UniProton/blob/master/doc/demo_guide/x86_64_usage.md>`_ 。
 
 启动 openEuler Embedded 后，需要为 UniProton 预留出必要的内存、CPU资源。如四核CPU建议预留一个核，内存建议预留512M。
 可通过修改 boot 分区的 grub.cfg 配置内核启动参数，新增 ``maxcpus=3 memmap=512M\$0x110000000`` 参数，参考如下：
