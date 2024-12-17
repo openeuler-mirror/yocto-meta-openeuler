@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>嵌入式分区虚拟机Jailhouse &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="OpenBMC 镜像构建和使用" href="openbmc.html" />
+    <link rel="prev" title="clang/llvm 编译工具链支持" href="clang_llvm.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mica/index.html">多OS混合关键性部署框架 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="muslc.html">musl libc的支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed_softbus.html">分布式软总线</a></li>
+<li class="toctree-l3"><a class="reference internal" href="preempt_rt.html">软实时系统介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prebuilt_tool.html">预构建工具特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rust.html">Rust支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qt5_wayland.html">嵌入式图形支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="armnn.html">ArmNN的支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="clang_llvm.html">clang/llvm 编译工具链支持</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">嵌入式分区虚拟机Jailhouse</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">总体介绍</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">Jailhouse 构建指导</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#oebuild">方法一：使用 oebuild 构建</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#mcs-sdk">方法二：使用 MCS 镜像的 SDK 构建</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">Jailhouse 使用指导</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jailhouse-os">在树莓派上使用 Jailhouse 进行多OS混合部署</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#jailhouse-freertos">使用 Jailhouse 运行 FreeRTOS</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="openbmc.html">OpenBMC 镜像构建和使用</a></li>
+<li class="toctree-l3"><a class="reference internal" href="container/index.html">嵌入式容器相关特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernelversions.html">内核多版本支持（5.10/6.6）介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="software_package_description.html">当前所支持的软件包</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zvm.html">嵌入式实时虚拟机ZVM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mindspore_lite.html">构建Mindspore Lite使用指导</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../bsp/index.html">南向使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../user_guide/index.html">用户使用指导</a> &raquo;</li>
+          <li><a href="index.html">关键特性指导</a> &raquo;</li>
+      <li>嵌入式分区虚拟机Jailhouse</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="jailhouse">
+<h1>嵌入式分区虚拟机Jailhouse<a class="headerlink" href="#jailhouse" title="Permalink to this headline">¶</a></h1>
+<section id="id1">
+<h2>总体介绍<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Jailhouse 是一种轻量级嵌入式分区虚拟机，与传统的全功能虚拟化解决方案（如 KVM 和 Xen）不同，它不提供完整的虚拟机管理和抽象功能，
+而是一种基于Linux的静态分区虚拟化方案。Jailhouse 不支持任何设备模拟，不同客户虚拟机之间也不共享任何 CPU，所以也没有调度器。</p>
+<p>Jailhouse 的工作是将硬件资源进行静态分区，每个分区称为一个 cell，每个 cell 之间是相互隔离开的，并且拥有自己的硬件资源(CPU、内存、外设等)，
+运行在 cell 内的裸机应用程序或操作系统称为 inmate。
+Jailhouse 的第一个 cell 叫 Root Cell，这是一个特权Cell，内部运行的是一个 Linux 系统，依赖该 Linux 接管系统硬件资源，以及进行硬件的初始化和启动。
+除了 Root Cell 的其它 cell 统一称为 Non-root Cell，从 Root Cell 中获取系统资源，可独占或与 Root Cell 共享。</p>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="id2">
+<h2>Jailhouse 构建指导<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<section id="oebuild">
+<h3>方法一：使用 oebuild 构建<a class="headerlink" href="#oebuild" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>openEuler Embedded 目前支持在 qemu-arm64 和 RPI4 上运行 Jailhouse，默认集成到了 openeuler-image-mcs 镜像，构建方法可参考 <a class="reference internal" href="mica/build.html#mcs-build"><span class="std std-ref">mcs镜像构建指导</span></a>。</p>
+<p>请注意，需要修改 oebuild 的编译配置文件 compile.yaml，把 MCS_FEATURES 中的 openamp 改成 jailhouse。</p>
+</div></blockquote>
+</section>
+<section id="mcs-sdk">
+<h3>方法二：使用 MCS 镜像的 SDK 构建<a class="headerlink" href="#mcs-sdk" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>按照 <a class="reference internal" href="mica/build.html#mcs-build"><span class="std std-ref">mcs镜像构建指导</span></a> 构建出 MCS 镜像的SDK后，可以使用 SDK 交叉编译 Jailhouse，提升开发效率。步骤如下：</p>
+<ol class="arabic">
+<li><p>准备 Jailhouse 源码：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>下载 Jailhouse 源码：
+<span class="gp">$ </span>git clone https://gitee.com/src-openeuler/Jailhouse.git
+<span class="gp">$ </span><span class="nb">cd</span> Jailhouse<span class="p">;</span> tar -xzf jailhouse-0.12.tar.gz
+
+<span class="gp"># </span>打入 openEuler Embedded 的增强补丁：
+<span class="gp">$ </span>curl -OL https://gitee.com/openeuler/yocto-meta-openeuler/raw/master/meta-openeuler/recipes-mcs/jailhouse/files/0001-driver-Add-support-for-remote-proc.patch
+<span class="gp">$ </span><span class="nb">cd</span> jailhouse-0.12<span class="p">;</span> patch -p1 &lt; ../0001-driver-Add-support-for-remote-proc.patch
+</pre></div>
+</div>
+</li>
+</ol>
+<blockquote>
+<div><p>执行以上步骤后，代码目录为：jailhouse-0.12，即我们的构建目录。</p>
+</div></blockquote>
+<ol class="arabic" start="2">
+<li><p>安装MCS镜像的SDK：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sh openeuler-glibc-x86_64-openeuler-image-mcs-aarch64-qemu-aarch64-toolchain-*.sh
+<span class="go">openEuler Embedded(openEuler Embedded Reference Distro) SDK installer version *</span>
+<span class="go">===================================================================================</span>
+<span class="go">Enter target directory for SDK (default: /opt/openeuler/oecore-x86_64): ./sdk</span>
+<span class="go">You are about to install the SDK to &quot;/usr1/openeuler/sdk&quot;. Proceed [Y/n]? y</span>
+<span class="go">Extracting SDK...................done</span>
+<span class="go">Setting it up...SDK has been successfully set up and is ready to be used.</span>
+<span class="go">Each time you wish to use the SDK in a new shell session, you need to source the environment setup script e.g.</span>
+<span class="gp">$ </span>. /usr1/openeuler/sdk/environment-setup-aarch64-openeuler-linux
+</pre></div>
+</div>
+<p>若 SDK 安装失败，请参考 <a class="reference internal" href="../getting_started/index.html#install-openeuler-embedded-sdk"><span class="std std-ref">安装SDK</span></a> 章节，排查是否缺少依赖软件包。</p>
+<p>完成 SDK 安装后，按照提示，在 jailhouse-0.12 目录下，执行：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>. /usr1/openeuler/sdk/environment-setup-aarch64-openeuler-linux
+
+<span class="gp"># </span>需要自定义新增的cell文件，可以直接放在 configs/<span class="si">${</span><span class="nv">ARCH</span><span class="si">}</span> 目录中，然后执行编译：
+<span class="gp">$ </span>make <span class="nv">KDIR</span><span class="o">=</span><span class="si">${</span><span class="nv">KERNEL_SRC</span><span class="si">}</span> -j<span class="k">$(</span>nproc<span class="k">)</span>
+</pre></div>
+</div>
+<p>编译完成后，构建产物如下：</p>
+<ul class="simple">
+<li><p>cell文件：<cite>configs/${ARCH}</cite> 目录下；</p></li>
+<li><p>Jailhouse 固件 jailhouse.bin ：在 <cite>hypervisor</cite> 目录下，需要拷贝到单板的 <cite>/lib/firmware</cite> 目录；</p></li>
+<li><p>Jailhouse 驱动 jailhouse.ko ：在 <cite>driver</cite> 目录下；</p></li>
+<li><p>用户态工具 jailhouse ：在 <cite>tools</cite> 目录。</p></li>
+</ul>
+</li>
+</ol>
+</div></blockquote>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h2>Jailhouse 使用指导<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>Jailhouse 构建完成后，生成文件分为三部分：</p>
+<ul class="simple">
+<li><p>Jailhouse 驱动和固件: <code class="docutils literal notranslate"><span class="pre">jailhouse.ko,</span> <span class="pre">jailhouse.bin</span></code>，提供用户态接口并初始化 hypervisor；</p></li>
+<li><p>cell 和 guest 镜像：cell是镜像运行所需的系统资源的描述；guest镜像运行在cell内，包括裸机，RTOS等；</p></li>
+<li><p>用户态工具 <code class="docutils literal notranslate"><span class="pre">jailhouse</span></code>：负责加载cell，运行镜像，查看运行状态等。</p></li>
+</ul>
+<p>openeuler-image-mcs 镜像中安装了可用的 cell 和 inmates-demo，下面以 <code class="docutils literal notranslate"><span class="pre">qemu-arm64</span></code> 为例，介绍 Jailhouse 的使用。</p>
+<ol class="arabic">
+<li><p>启动 QEMU</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-aarch64 -machine virt,gic-version=3,virtualization=on,its=off \</span>
+<span class="go">   -cpu cortex-a57 -nographic -smp 4 -m 2G  \</span>
+<span class="go">   -append &quot;console=ttyAMA0 loglevel=8 mem=1G&quot; \</span>
+<span class="go">   -kernel zImage \</span>
+<span class="go">   -initrd openeuler-image-mcs-qemu-aarch64-*.rootfs.cpio.gz</span>
+</pre></div>
+</div>
+</li>
+<li><p>初始化 Root Cell</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">jailhouse enable /usr/share/jailhouse/cells/qemu-arm64-openeuler-demo.cell</span>
+</pre></div>
+</div>
+</li>
+<li><p>初始化 Non-root Cell</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">jailhouse cell create /usr/share/jailhouse/cells/qemu-arm64-inmate-demo.cell</span>
+</pre></div>
+</div>
+</li>
+<li><p>加载 inmate</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">jailhouse cell load 1 /usr/share/jailhouse/inmates/uart-demo.bin</span>
+<span class="go">jailhouse cell start 1</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>之后可以看到 uart-demo 的打印：</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Started cell &quot;inmate-demo&quot;</span>
+<span class="go">======= 0x0Hello 1 from cell!</span>
+<span class="go">Hello 2 from cell!</span>
+<span class="go">Hello 3 from cell!</span>
+<span class="go">Hello 4 from cell!</span>
+<span class="go">Hello 5 from cell!</span>
+<span class="go">Hello 6 from cell!</span>
+<span class="go">Hello 7 from cell!</span>
+<span class="go">... ...</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</section>
+<hr class="docutils" id="jailhouse-on-rpi4" />
+<section id="jailhouse-os">
+<h2>在树莓派上使用 Jailhouse 进行多OS混合部署<a class="headerlink" href="#jailhouse-os" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>openEuler Embedded 支持在树莓派上通过 Jailhouse 实现 openEuler Embedded + openEuler Embedded + zephyr (1 core + 2 cores + 1 core) 的混合部署。具体步骤如下：</p>
+<ol class="arabic">
+<li><p>构建多OS混合部署镜像</p>
+<p>根据 <a class="reference internal" href="mica/build.html#mcs-build"><span class="std std-ref">mcs镜像构建指导</span></a>，使用 oebuild 初始化编译环境。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>构建支持嵌入式图形的混合部署镜像。注意，该镜像构建任务数量多，耗时较长。
+<span class="gp">$ </span>oebuild rpi4_jailhouse_hmi_img.yaml
+<span class="gp">$ </span><span class="nb">cd</span> rpi4_jailhouse_hmi_img
+<span class="gp">$ </span>oebuild bitbake
+<span class="gp">$ </span>bitbake openeuler-image
+
+<span class="gp"># </span>或者，构建只覆盖基础软件包的裁剪镜像
+<span class="gp">$ </span>oebuild rpi4_jailhouse_tiny_img.yaml
+<span class="gp">$ </span><span class="nb">cd</span> rpi4_jailhouse_tiny_img
+<span class="gp">$ </span>oebuild bitbake
+<span class="gp">$ </span>bitbake openeuler-image
+</pre></div>
+</div>
+<p>构建完成后，在 <code class="docutils literal notranslate"><span class="pre">output</span></code> 目录下可以看到镜像，如：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ tree output/
+output/
+└── <span class="m">20240624030106</span>
+    ├── Image
+    ├── openeuler-image-mcs-raspberrypi4-64-20240624030106.rootfs.cpio.gz
+    ├── openeuler-image-raspberrypi4-64-20240624030106.rootfs.rpi-sdimg
+    └── vmlinux
+</pre></div>
+</div>
+</li>
+<li><p>启动镜像</p>
+<p>将 <code class="docutils literal notranslate"><span class="pre">openeuler-image-raspberrypi4-64-*.rootfs.rpi-sdimg</span></code> 烧录到树莓派的SD卡上，并按照 <a class="reference internal" href="../bsp/arm64/raspberrypi4/uefi.html#raspberrypi4-uefi-guide"><span class="std std-ref">openeuler-image-uefi启动使用指导</span></a> 进行镜像启动。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<div class="line-block">
+<div class="line">对于树莓派的多OS混合部署镜像，Root Cell 上运行的 openEuler Embedded 作为管理 VM，仅用于实现 VM 的管理，因此使用 initrd 启动，不会挂载 SD 卡的 ROOT 分区。</div>
+<div class="line">实际上，混合部署镜像将绝大部分的树莓派硬件设备（包括SD卡，USB，GPU等）分配给了 Non-root Cell，Root Cell 只使用 UART1(GPIO 14, 15)和以太网端口。</div>
+<div class="line">因此，镜像启动后，只能通过串口或 ssh 到默认的 IP 地址：192.168.10.8 进行登录。</div>
+</div>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>通过 SSH 登录
+<span class="gp">$ </span>ssh root@192.168.10.8
+
+<span class="gp"># </span>初始化 Root Cell
+<span class="gp">$ </span>jailhouse <span class="nb">enable</span> /usr/share/jailhouse/cells/rpi4.cell
+
+<span class="gp"># </span>启动 Non-root Cell <span class="o">(</span>zephyr<span class="o">)</span>
+<span class="gp">$ </span>mica create rpi4-zephyr-ivshmem.conf
+<span class="gp">$ </span>mica start rpi4-zephyr-ivshmem
+<span class="gp"># </span>之后，可以通过打开 Root Cell 的 tty 设备来访问 zephyr 的 shell
+<span class="gp">$ </span>screen /dev/ttyRPMSG0
+
+<span class="gp"># </span>启动 Non-root Cell <span class="o">(</span>openEuler Embedded<span class="o">)</span>
+<span class="gp">$ </span>jailhouse cell linux /usr/share/jailhouse/cells/rpi4-linux.cell /boot/Image <span class="se">\</span>
+    -d /usr/share/jailhouse/cells/dts/inmate-rpi4.dtb <span class="se">\</span>
+    -c <span class="s2">&quot;console=ttyAMA1,115200 root=/dev/mmcblk0p2 rootfstype=ext4 rootwait \</span>
+<span class="s2">        coherent_pool=1M 8250.nr_uarts=1 snd_bcm2835.enable_compat_alsa=0 snd_bcm2835.enable_hdmi=1 \</span>
+<span class="s2">        bcm2708_fb.fbwidth=1920 bcm2708_fb.fbheight=1080 bcm2708_fb.fbswap=1 \</span>
+<span class="s2">        vc_mem.mem_base=0x3ec00000 vc_mem.mem_size=0x40000000 dwc_otg.lpm_enable=0 cma=96M&quot;</span>
+
+<span class="gp"># </span>加载成功后，能够在 UART2<span class="o">(</span>GPIO <span class="m">0</span>, <span class="m">1</span><span class="o">)</span> 上看到 Non-root 的启动日志，并且能够通过 hdmi 进行登录
+<span class="gp"># </span>若使用的是支持嵌入式图形的混合部署镜像，可以使用 wayfire 桌面
+<span class="gp">$ </span>wayfire
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="jailhouse-freertos">
+<h2>使用 Jailhouse 运行 FreeRTOS<a class="headerlink" href="#jailhouse-freertos" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>目前仅支持在 qemu-arm64 上通过 Jailhouse 运行 FreeRTOS。</p>
+<ol class="arabic">
+<li><p>添加 FreeRTOS 的构建</p>
+<p>根据 <a class="reference internal" href="mica/build.html#mcs-build"><span class="std std-ref">mcs镜像构建指导</span></a>，使用 oebuild 初始化编译环境。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># qemu-arm64</span>
+oebuild generate -p qemu-aarch64 -f openeuler-mcs -d &lt;build_arm64_mcs&gt;
+</pre></div>
+</div>
+<p>除了使用上述命令进行配置文件生成之外，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，此菜单选项可以替代上述命令中的oebuild generate，选择保存之后继续执行上述命令中的bitbake及后续命令即可。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild generate</span>
+</pre></div>
+</div>
+<p>具体界面如下图所示:</p>
+<img alt="../_images/oebuild-generate-select.png" src="../_images/oebuild-generate-select.png" />
+<p>进入 <code class="docutils literal notranslate"><span class="pre">&lt;build&gt;</span></code> 目录，添加 <code class="docutils literal notranslate"><span class="pre">meta-freertos</span></code></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># BBLAYERS 中添加 meta-freertos</span>
+vi conf/bblayers.conf
+
+BBLAYERS ?<span class="o">=</span> <span class="s2">&quot; \</span>
+<span class="s2">  ... ...</span>
+<span class="s2">/usr1/openeuler/src/yocto-poky/../yocto-meta-openeuler/rtos/meta-freertos \</span>
+<span class="s2">&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p>构建 jailhouse-freertos</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>oebuild bitbake jailhouse-freertos
+</pre></div>
+</div>
+</li>
+<li><p>加载 FreeRTOS</p>
+<p>构建完成后，oebuild 构建目录下可以获取 <code class="docutils literal notranslate"><span class="pre">FreeRTOS.bin</span></code>，放到 qemu 上通过 Jailhouse 加载运行：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 获取 FreeRTOS.bin</span>
+find . -name FreeRTOS.bin
+
+<span class="c1"># 放到 qemu 上，通过 Jailhouse 加载运行</span>
+jailhouse cell load <span class="m">1</span> FreeRTOS.bin
+jailhouse cell start <span class="m">1</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="clang_llvm.html" class="btn btn-neutral float-left" title="clang/llvm 编译工具链支持" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="openbmc.html" class="btn btn-neutral float-right" title="OpenBMC 镜像构建和使用" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-24.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../master/features/jailhouse.html">master</a></dd>
+      <dd><a href="../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP2/features/jailhouse.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP3/features/jailhouse.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP4/features/jailhouse.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../openEuler-23.03/features/jailhouse.html">openEuler-23.03</a></dd>
+      <dd><a href="../../openEuler-23.09/features/jailhouse.html">openEuler-23.09</a></dd>
+      <dd><a href="../../openEuler-24.03-LTS/features/jailhouse.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="jailhouse.html">openEuler-24.09</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

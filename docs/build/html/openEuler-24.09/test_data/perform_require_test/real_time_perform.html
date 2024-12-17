@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1.1 实时性能 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="1.2 综合性能" href="overall_perform.html" />
+    <link rel="prev" title="1 性能测试数据" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">测试数据</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">1 性能测试数据</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">1.1 实时性能</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">1.1.1 测试目的</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">1.1.2 测试条件</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">1.1.3 中断响应实时延迟</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#id5">测试工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id6">测试方案</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id7">测试结果</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id8">测试结果分析</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id9">测试结论</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#id10">1.1.4 周期调度抖动</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#id11">测试工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id12">测试方案</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id13">测试结果</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id14">测试结果分析</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id15">测试结论</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#id16">1.1.5 信号在多个线程间传递的延迟</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#id17">测试工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id18">测试方案</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id19">测试结果</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id20">测试结果分析</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id21">测试结论</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#id22">1.1.6 信号在两个线程间传递的延迟</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#id23">测试工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id24">测试方案</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id25">测试结果</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id26">测试结果分析</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id27">测试结论</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#pv">1.1.7 信号量PV操作的延迟</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#id28">测试工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id29">测试方案</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id30">测试结果</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id31">测试结果分析</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id32">测试结论</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#id33">1.1.8 互斥锁获取的延迟</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#id34">测试工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id35">测试方案</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id36">测试结果</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id37">测试结果分析</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id38">测试结论</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="overall_perform.html">1.2 综合性能</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/index.html">用户使用指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">测试数据</a> &raquo;</li>
+          <li><a href="index.html">1 性能测试数据</a> &raquo;</li>
+      <li>1.1 实时性能</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="real-time-perform">
+<span id="id1"></span><h1>1.1 实时性能<a class="headerlink" href="#real-time-perform" title="Permalink to this headline">¶</a></h1>
+<section id="id2">
+<h2>1.1.1 测试目的<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>为了评估基于OEE、OEE-RT 以及 OEE-RT + Jailhouse的系统在某些场景下的性能表现及性能差异。
+例如它们的中断响应的实时延迟、周期调度的抖动、以及信号在多个线程间传递的延迟等。</p>
+</section>
+<section id="id3">
+<h2>1.1.2 测试条件<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>OEE, OEE+RT以及OEE+RT+Jailhouse</p></li>
+<li><p>RK3568 开发板</p></li>
+<li><p>在RK3568的开发板上分别部署OEE, OEE-RT 以及OEE+RT+Jailhouse。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h2>1.1.3 中断响应实时延迟<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<section id="id5">
+<h3>测试工具<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>信号发生器</p></li>
+<li><p>GD32单片机开发板</p></li>
+</ul>
+</section>
+<section id="id6">
+<h3>测试方案<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>使用信号发生器作为中断源，产生1kHz方波，接入结果统计平台(本方案使用GD32单片机开发板)，记时作为中断触发时间。</p></li>
+<li><p>同时接入RK3568硬件平台外部中断引脚，触发中断并在OEE-RT的中断处理程序中对RK3568的GPIO引脚进行电平翻转，并将该引脚接入结果统计平台，结果统计平台记时作为中断响应时间。</p></li>
+<li><p>结果统计平台(GD32单片机开发板)得到中断响应时间与中断触发时间后，计算之间差值即得到中断响应延迟。</p></li>
+<li><p>本方案使用信号发生器，其可提供稳定且精确的方波信号，便于测试和验证，并且信号发生器能保证每次实验条件一致，有助于获得可靠的测试结果</p></li>
+</ul>
+<figure class="align-center" id="id39">
+<img alt="../../_images/1-1.png" src="../../_images/1-1.png" />
+<figcaption>
+<p><span class="caption-text">图1-1 硬件连接示意图</span><a class="headerlink" href="#id39" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="id7">
+<h3>测试结果<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>对两个操作系统平台分别测试五千万次，得到统计结果如下：</p>
+</div></blockquote>
+<table class="docutils align-center" id="id40">
+<caption><span class="caption-text">表1-1 中断响应延迟结果</span><a class="headerlink" href="#id40" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>测试对象</strong></p></td>
+<td><p><strong>统计次数</strong></p></td>
+<td><p><strong>最大时延/us</strong></p></td>
+<td><p><strong>≥10us占比</strong></p></td>
+<td><p><strong>备注</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>OEE</p></td>
+<td><p>50000000</p></td>
+<td><p>24.2</p></td>
+<td><p>0.0090%</p></td>
+<td><p>≥10us占比十万分之9</p></td>
+</tr>
+<tr class="row-odd"><td><p>OEE-RT</p></td>
+<td><p>50000000</p></td>
+<td><p>10</p></td>
+<td><p>0.000004%</p></td>
+<td><p>≥10us占比亿分之4</p></td>
+</tr>
+<tr class="row-even"><td><p>OEE-RT+Jailhouse</p></td>
+<td><p>50000000</p></td>
+<td><p>13</p></td>
+<td><p>0.00000118%</p></td>
+<td><p>≥10us占比小于百万分之二</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id8">
+<h3>测试结果分析<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>OEE在中断响应延迟上最大可达24.2us，并且≥10us占比十万分之9。 OEE-RT在这方面性能提升明显。</p></li>
+<li><p>OEE-RT+Jailhouse平台小于10us的占比99.99978%。</p></li>
+<li><p>加入Jailhouse虚拟化后，平台的中断响应延迟比不加的时候多3us，但总延迟小于20us。</p></li>
+</ul>
+</section>
+<section id="id9">
+<h3>测试结论<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>在中断响应延迟上，OEE-RT相较于OEE有很大的性能提升。</p></li>
+<li><p>加入Jailhouse虚拟化后，中断响应总延迟小于20us，可以满足大部分场景的实时需求。</p></li>
+</ul>
+</section>
+</section>
+<section id="id10">
+<h2>1.1.4 周期调度抖动<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<section id="id11">
+<h3>测试工具<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>stress</p></li>
+<li><p>Kit</p></li>
+<li><p>cyclictest</p></li>
+</ul>
+</section>
+<section id="id12">
+<h3>测试方案<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>本轮测试采用cyclictest套件工具。Jailhouse只有root cell，分配一个核。</p>
+<p>执行如下指令运行stress给系统加压：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">stress --cpu 4 --io 2 --vm 2 --vm-bytes 512M --hdd 2 --hdd -bytes 512M</span>
+</pre></div>
+</div>
+<p>执行如下指令运行cyclictest：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">taskset -c 2 cyclictest -i 1000 -p 99 -t 1 --policy=fifo -h 100 -D 12h &gt; /dev/console &amp;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="id13">
+<h3>测试结果<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>经过12小时测试，统计结果如下：</p>
+</div></blockquote>
+<table class="docutils align-center" id="id41">
+<caption><span class="caption-text">表1-2 周期调度抖动结果</span><a class="headerlink" href="#id41" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>测试工具</strong></p></td>
+<td><p><strong>测试对象</strong></p></td>
+<td><p><strong>统计次数</strong></p></td>
+<td><p><strong>最大抖动/us</strong></p></td>
+<td><p><strong>≥70us占比</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>cyclictest</p></td>
+<td><p>OEE-RT+Jailhouse</p></td>
+<td><p>43199998</p></td>
+<td><p>105</p></td>
+<td><p>0.0000833%</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>OEE-RT</p></td>
+<td><p>43199992</p></td>
+<td><p>188</p></td>
+<td><p>0.0002894%</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p>OEE</p></td>
+<td><p>43200000</p></td>
+<td><p>726</p></td>
+<td><p>9.5059652%</p></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<div><p>注：cyclictest记录的数据为用户态线程。</p>
+</div></blockquote>
+</section>
+<section id="id14">
+<h3>测试结果分析<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<p>根据表1-2：</p>
+<ul class="simple">
+<li><p>OEE 在本测试中，抖动≥70us的占比超过9.5%，实时性能较差。OEE-RT相较与OEE，实时性能有很大提升。</p></li>
+<li><p>OEE-RT+Jailhouse平台小于100us的占比均在99.9%范围内。</p></li>
+<li><p>cyclictest测试中，添加Jailhouse后OEE-RT的最大抖动为105us，比不加Jailhouse的时候少了83us，提升44.15%。</p></li>
+</ul>
+</section>
+<section id="id15">
+<h3>测试结论<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>OEE在不加RT的情况下，实时性能较差。相较于OEE, OEE-RT的实时性能提升很大。</p></li>
+<li><p>OEE-RT+Jailhouse平台在添加Jailhouse虚拟化后对OEE-RT的实时性有很大提升，说明Jailhouse的资源隔离对OEE-RT的实时性有很大帮助。</p></li>
+</ul>
+</section>
+</section>
+<section id="id16">
+<h2>1.1.5 信号在多个线程间传递的延迟<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h2>
+<section id="id17">
+<h3>测试工具<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>signaltest</p></li>
+</ul>
+</section>
+<section id="id18">
+<h3>测试方案<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>使用rt-tests的signaltest工具获取信号发送和接收的时间差值。</p>
+<p>设置测试线程优先级为最高的99（多线程的话会依次降低），循环测试一千万次，测试线程数为4，测试指令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">taskset -c 2 signaltest -l 1000000 -p 99 -t 4</span>
+</pre></div>
+</div>
+<p>指令均在串口终端下执行。</p>
+</div></blockquote>
+</section>
+<section id="id19">
+<h3>测试结果<a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>统计结果如下：</p>
+</div></blockquote>
+<table class="docutils align-center" id="id42">
+<caption><span class="caption-text">表1-3 信号在多个线程间传递时延的测试结果</span><a class="headerlink" href="#id42" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>测试工具</strong></p></td>
+<td><p><strong>测试项</strong></p></td>
+<td></td>
+<td><p><strong>OEE</strong></p></td>
+<td><p><strong>OEE-RT</strong></p></td>
+<td><p><strong>OEE-RT+Jailhouse</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>signaltest</p></td>
+<td><p>线程1（优先级99）</p></td>
+<td><p>最小值（us）</p></td>
+<td><p>75</p></td>
+<td><p>70</p></td>
+<td><p>97</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>平均值（us）</p></td>
+<td><p>91</p></td>
+<td><p>74</p></td>
+<td><p>100</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>最大值（us）</p></td>
+<td><p>411</p></td>
+<td><p>144</p></td>
+<td><p>146</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>线程2（优先级99）</p></td>
+<td><p>最小值（us）</p></td>
+<td><p>75</p></td>
+<td><p>70</p></td>
+<td><p>97</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>平均值（us）</p></td>
+<td><p>719</p></td>
+<td><p>700</p></td>
+<td><p>727</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>最大值（us）</p></td>
+<td><p>10584</p></td>
+<td><p>10156</p></td>
+<td><p>10186</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p>线程3（优先级99）</p></td>
+<td><p>最小值（us）</p></td>
+<td><p>75</p></td>
+<td><p>70</p></td>
+<td><p>96</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>平均值（us）</p></td>
+<td><p>719</p></td>
+<td><p>700</p></td>
+<td><p>727</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>最大值（us）</p></td>
+<td><p>10598</p></td>
+<td><p>10167</p></td>
+<td><p>10189</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>线程4（优先级99）</p></td>
+<td><p>最小值（us）</p></td>
+<td><p>74</p></td>
+<td><p>70</p></td>
+<td><p>96</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>平均值（us）</p></td>
+<td><p>719</p></td>
+<td><p>700</p></td>
+<td><p>727</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>最大值（us）</p></td>
+<td><p>10610</p></td>
+<td><p>10179</p></td>
+<td><p>10192</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id20">
+<h3>测试结果分析<a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h3>
+<p>根据表1-3：</p>
+<ul class="simple">
+<li><p>OEE-RT在优先级最高的线程1的最大延迟时间为144us,比OEE的411us有很大提升。</p></li>
+<li><p>OEE-RT+Jailhouse在多个线程对信号的传递延迟上，均大于OEE-RT。</p></li>
+<li><p>添加Jailhouse的情况下，优先级最高的线程1的最大延迟时间达到146us，与OEE-RT的144us相差很小。</p></li>
+</ul>
+</section>
+<section id="id21">
+<h3>测试结论<a class="headerlink" href="#id21" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>OEE-RT在多个线程间传递时延上，性能比OEE要好。</p></li>
+<li><p>添加Jailhouse虚拟化后，OEE-RT上的信号延迟性能虽然变差，但整体都在可接受范围内。</p></li>
+</ul>
+</section>
+</section>
+<section id="id22">
+<h2>1.1.6 信号在两个线程间传递的延迟<a class="headerlink" href="#id22" title="Permalink to this headline">¶</a></h2>
+<section id="id23">
+<h3>测试工具<a class="headerlink" href="#id23" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>sigwaittest</p></li>
+</ul>
+</section>
+<section id="id24">
+<h3>测试方案<a class="headerlink" href="#id24" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>使用rt-tests的sigwaittest测量在两个线程间传递的时延。</p>
+<p>设置测试线程优先级为最高的99（多线程的话会依次降低），循环测试一千万次，测试线程对数为2，测试指令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">taskset -c 2 sigwaittest -l 1000000 -p 99 -t 2</span>
+</pre></div>
+</div>
+<p>指令均在串口终端下执行。</p>
+</div></blockquote>
+</section>
+<section id="id25">
+<h3>测试结果<a class="headerlink" href="#id25" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>统计结果如下：</p>
+</div></blockquote>
+<table class="docutils align-center" id="id43">
+<caption><span class="caption-text">表1-4 信号在两个线程间传递延迟的测试结果</span><a class="headerlink" href="#id43" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>测试工具</strong></p></td>
+<td><p><strong>测试项</strong></p></td>
+<td></td>
+<td><p><strong>OEE</strong></p></td>
+<td><p><strong>OEE-RT</strong></p></td>
+<td><p><strong>OEE-RT+Jailhouse</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>sigwaittest</p></td>
+<td><p>线程1（优先级99）</p></td>
+<td><p>最小值（us）</p></td>
+<td><p>19</p></td>
+<td><p>18</p></td>
+<td><p>25</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>平均值（us）</p></td>
+<td><p>26</p></td>
+<td><p>20</p></td>
+<td><p>27</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>最大值（us）</p></td>
+<td><p>172</p></td>
+<td><p>69</p></td>
+<td><p>69</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>线程2（优先级99）</p></td>
+<td><p>最小值（us）</p></td>
+<td><p>19</p></td>
+<td><p>18</p></td>
+<td><p>25</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>平均值（us）</p></td>
+<td><p>28</p></td>
+<td><p>20</p></td>
+<td><p>27</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>最大值（us）</p></td>
+<td><p>256</p></td>
+<td><p>103</p></td>
+<td><p>148</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id26">
+<h3>测试结果分析<a class="headerlink" href="#id26" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p>从表的数据上看，OEE-RT在最大延迟上相比OEE有非常大的提升，两个线程分别从172us提升到69us和从256us提升到103us。</p></li>
+<li><p>OEE-RT在添加Jailhouse后，总体上性能变差，在最高优先级的线程1上，只在信号的最大延迟上与OEE-RT保持了性能的持平（69us）。</p></li>
+</ol>
+</section>
+<section id="id27">
+<h3>测试结论<a class="headerlink" href="#id27" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p>当信号在两个线程间传递时，在信号的传递延迟上，OEE-RT比OEE各项指标都有提升，特别是在最大延迟上提升明显。</p></li>
+<li><p>OEE-RT在添加Jailhouse后，总体上性能变差，但在最大延迟上还是要优于OEE。</p></li>
+</ol>
+</section>
+</section>
+<section id="pv">
+<h2>1.1.7 信号量PV操作的延迟<a class="headerlink" href="#pv" title="Permalink to this headline">¶</a></h2>
+<section id="id28">
+<h3>测试工具<a class="headerlink" href="#id28" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>sigwaittest</p></li>
+</ul>
+</section>
+<section id="id29">
+<h3>测试方案<a class="headerlink" href="#id29" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>使用rt-tests的sigwaittest测量信号量PV操作的时延。</p>
+<p>设置测试线程优先级为最高的99（多线程的话会依次降低），循环测试一千万次，测试线程对数量为2，测试指令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">taskset -c 2 svsematest -l 1000000 -p 99 -t 2</span>
+</pre></div>
+</div>
+<p>指令均在串口终端下执行。</p>
+</div></blockquote>
+</section>
+<section id="id30">
+<h3>测试结果<a class="headerlink" href="#id30" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>统计结果如下：</p>
+</div></blockquote>
+<table class="docutils align-center" id="id44">
+<caption><span class="caption-text">表1-5 信号量PV操作时延的测试结果</span><a class="headerlink" href="#id44" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>测试工具</strong></p></td>
+<td><p><strong>测试项</strong></p></td>
+<td></td>
+<td><p><strong>OEE</strong></p></td>
+<td><p><strong>OEE-RT</strong></p></td>
+<td><p><strong>OEE-RT+Jailhouse</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>svsematest</p></td>
+<td><p>线程1（优先级99）</p></td>
+<td><p>最小值（us）</p></td>
+<td><p>12</p></td>
+<td><p>11</p></td>
+<td><p>16</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>平均值（us）</p></td>
+<td><p>14</p></td>
+<td><p>13</p></td>
+<td><p>18</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>最大值（us）</p></td>
+<td><p>218</p></td>
+<td><p>47</p></td>
+<td><p>48</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>线程2（优先级99）</p></td>
+<td><p>最小值（us）</p></td>
+<td><p>12</p></td>
+<td><p>11</p></td>
+<td><p>16</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>平均值（us）</p></td>
+<td><p>14</p></td>
+<td><p>13</p></td>
+<td><p>18</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>最大值（us）</p></td>
+<td><p>112</p></td>
+<td><p>105</p></td>
+<td><p>99</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id31">
+<h3>测试结果分析<a class="headerlink" href="#id31" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p>在信号量PV操作的延迟上，OEE-RT和OEE 在最小延迟时间和平均延迟时间上性能差别不大，但是线程1的最大延迟时间可达218us，OEE-RT 是47us。</p></li>
+<li><p>OEE-RT在添加Jailhouse的情况下，信号量PV操作的延迟性能变差。但是其最小值和平均值都可以控制在20us之内。</p></li>
+</ol>
+</section>
+<section id="id32">
+<h3>测试结论<a class="headerlink" href="#id32" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p>总体而言，OEE-RT在信号量PV操作的延迟上有更好的性能。</p></li>
+<li><p>OEE-RT在添加Jailhouse的情况下，信号量PV操作的延迟性能变差。</p></li>
+</ol>
+</section>
+</section>
+<section id="id33">
+<h2>1.1.8 互斥锁获取的延迟<a class="headerlink" href="#id33" title="Permalink to this headline">¶</a></h2>
+<section id="id34">
+<h3>测试工具<a class="headerlink" href="#id34" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>ptsematest</p></li>
+</ul>
+</section>
+<section id="id35">
+<h3>测试方案<a class="headerlink" href="#id35" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>使用rt-tests的ptsematest测量互斥锁解锁前和上锁后的时延。</p>
+<p>设置测试线程优先级为最高的99（多线程的话会依次降低），循环测试20分钟（最高优先级线程运行次数约一千一百万次），测试线程对数为2，测试指令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">taskset -c 2 ptsematest -D 20m -p 99 -t 2</span>
+</pre></div>
+</div>
+<p>指令均在串口终端下执行。</p>
+</div></blockquote>
+</section>
+<section id="id36">
+<h3>测试结果<a class="headerlink" href="#id36" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>在本轮测试中，发现在20分钟的测试结束时，测试程序ptsematest由于释放互斥锁会带来，统计结果如下：</p>
+</div></blockquote>
+<table class="docutils align-center" id="id45">
+<caption><span class="caption-text">表1-6 互斥锁获取时延的测试结果</span><a class="headerlink" href="#id45" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>测试工具</strong></p></td>
+<td><p><strong>测试项</strong></p></td>
+<td></td>
+<td><p><strong>OEE</strong></p></td>
+<td><p><strong>OEE-RT</strong></p></td>
+<td><p><strong>OEE-RT+Jailhouse</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>ptsematest</p></td>
+<td><p>线程1（优先级99）</p></td>
+<td><p>最小值（us）</p></td>
+<td><p>12</p></td>
+<td><p>11</p></td>
+<td><p>16</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>平均值（us）</p></td>
+<td><p>18</p></td>
+<td><p>12</p></td>
+<td><p>17</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>最大值（us）</p></td>
+<td><p>196</p></td>
+<td><p>47</p></td>
+<td><p>48</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>线程2（优先级99）</p></td>
+<td><p>最小值（us）</p></td>
+<td><p>11</p></td>
+<td><p>11</p></td>
+<td><p>15</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td><p>平均值（us）</p></td>
+<td><p>13</p></td>
+<td><p>13</p></td>
+<td><p>22</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td><p>最大值（us）</p></td>
+<td><p>167</p></td>
+<td><p>80</p></td>
+<td><p>87</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id37">
+<h3>测试结果分析<a class="headerlink" href="#id37" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p>互斥锁获取的延迟上，OEE-RT和OEE在最小延迟时间和平均延迟时间上均在20us以内，且两者差别不大。</p></li>
+<li><p>在最大延迟时间上，OEE-RT从OEE的196us降为47us，性能优化明显。说明OEE-RT在互斥锁获取的延迟时间上波动更小。</p></li>
+<li><p>OEE-RT在添加Jailhouse的情况下，在互斥锁获取延迟上，绝对时间下降均在约10us以内。</p></li>
+</ol>
+</section>
+<section id="id38">
+<h3>测试结论<a class="headerlink" href="#id38" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p>在互斥锁获取的延迟上，OEE-RT和OEE在最小延迟时间和平均延迟时间上差别不大。</p></li>
+<li><p>在最大延迟时间上，OEE-RT相比OEE性能提升明显，在互斥锁获取的延迟时间上波动更小。</p></li>
+<li><p>OEE-RT在添加Jailhouse的情况下，在互斥锁获取延迟上，性能有所下降。</p></li>
+</ol>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="1 性能测试数据" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="overall_perform.html" class="btn btn-neutral float-right" title="1.2 综合性能" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-24.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../master/test_data/perform_require_test/real_time_perform.html">master</a></dd>
+      <dd><a href="../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../openEuler-24.03-LTS/test_data/perform_require_test/real_time_perform.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="real_time_perform.html">openEuler-24.09</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

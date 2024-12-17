@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yocto开发指导 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="oebuild开发指导" href="../oebuild/develop/index.html" />
+    <link rel="prev" title="开发方式指导" href="../developer_guide/develop/new_develop.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/index.html">用户使用指导</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../developer_guide/index.html">开发及贡献指导</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../developer_guide/code_download_compile.html">下载编译指导</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../developer_guide/develop/index.html">代码开发指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../developer_guide/develop/new_develop.html">开发方式指导</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Yocto开发指导</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#layer">如何定制添加layer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#image">添加image</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#bbimage">1）通过自定义bb文件添加image</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id1">2）通过自定义包组添加image</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#bb">添加一个新的配方bb</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#recipetoolbb">使用recipetool自动添加bb文件</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#devtoolbb">使用devtool自动添加bb文件</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id2">从零添加bb</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#bbclass">添加bbclass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">添加新架构</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#config">支持多config</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">使用外部工具链</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#recipes">recipes版本选择</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src-uri">SRC_URI中文件和目录查找</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">配方打包时如何分包</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">配方中添加日志打印</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">对指定架构或任务等进行定制配置（选项、补丁等）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">编译选项配置</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9">依赖关系配置（包、任务）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#provides">配方中的虚拟provides</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../oebuild/develop/index.html">oebuild开发指导</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../developer_guide/develop/board-support/index.html">新增南向硬件支持</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../developer_guide/debug/index.html">功能调试指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developer_guide/commit.html">代码提交指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../developer_guide/contribute_doc.html">文档提交指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../developer_guide/index.html">开发及贡献指导</a> &raquo;</li>
+          <li><a href="../developer_guide/develop/index.html">代码开发指导</a> &raquo;</li>
+      <li>Yocto开发指导</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="yocto">
+<span id="yocto-development"></span><h1>Yocto开发指导<a class="headerlink" href="#yocto" title="Permalink to this headline">¶</a></h1>
+<section id="layer">
+<h2>如何定制添加layer<a class="headerlink" href="#layer" title="Permalink to this headline">¶</a></h2>
+<img alt="../_images/create_layer.png" src="../_images/create_layer.png" />
+<p>即使你只有一两个配方文件，还是建议你创建自己的层，而不是把配方添加到OE-Core或者Yocto项目层，随着你的配方越来越多，这种好处更能体现出来，且容易迁移到你的其它
+项目中去。你可以修改配置文件，使你的层添加到项目中。还可以用yocto-layer脚本来创建层。</p>
+<p>通常一个layer的结构包含3个文件夹：conf、classes、recipes-xxx。开发人员可以自行创建recipes-*文件夹，存放其他软件包的bb文件。recipes-xxx目录仅用于区分
+不同类型的软件包/特性，实际可以作为一个recipes目录存放的。classes目录和poky原生的目录类似，主要存放自研的bbclass。conf目录是必须存在的，用于配置此layer的
+信息。</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>classes: 类文件(.bbclass)中提供了一些可以和其他配方（和类文件在同一层中）共享的功能，多个配方可以从同一个类文件继承一些配置和功能。</p></li>
+<li><p>conf: 这个区域包含了针对这个层和发行相关的配置信息（比如说conf/layer.conf)。local.conf和bblayers.conf的定制模板也可以放在此目录，构建时通过
+TEMPLATECONF变量指定。</p></li>
+<li><p>recipes-xx: 包含了一些会影响全局的配方文件和配方追加文件。其中一些配方和追加文件被用来增加初始化脚本，特定发行版的配置和自定义的配方等文件。recepies-xx
+目录的例子就是recipes-core和recipes-kernel。不同recepies-*目录下的内容和结构也会有所不同。通常来说，这些目录下含了配方文件(*.bb)和配方追加文件(*.bbappend)，
+还有一些针对发行版的配置文件和其他文件。</p></li>
+</ul>
+</div></blockquote>
+<p>添加新层可以通过以下步骤完成：</p>
+<ol class="arabic simple">
+<li><p>创建新层文件夹meta-xxx</p></li>
+<li><p>创建新层配置文件conf/layer.conf。</p></li>
+<li><p>告诉 Bitbake 关于新层bblayers.conf</p></li>
+<li><p>根据层类型，添加内容。如果层添加了对机器的支持，则在层内的 conf/machine/ 文件中添加机器配置。如果层添加了发行版策略，则在层内的 conf/distro/ 文件中添加发行版配置。如果层引入了新的配方，则将需要的配方放在该层内的 recipes-* 子目录中。</p></li>
+</ol>
+<p>以下是一个层的主要目录结构:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> ./
+├── build/ 编译目录
+│   ├── bitbake.lock
+│   └── conf/
+│       ├── local.conf
+│       └── bblayers.conf
+├── meta-openeuler/  新层
+│   ├── classes/  如果需要提供公共类，则添加
+│   ├── recipe-core/
+│       ├── glibc/
+│            ├── files/
+│            ├── glibc_2.31.bb
+│            └── glibc.inc
+│   └── conf/
+│       ├── machine/ **按需添加** ，新硬件平台则需要
+│            ├── qemu_arm.conf
+│            └── qemu_aarch64.conf
+│       ├── distro/ **按需添加** ，新的发行版
+│            └── openeuler.conf
+│       ├── local.conf.sample
+│       ├── layer.conf
+│       └── bblayers.conf.sample
+└── meta/   原始yocto社区poky下
+    ├── classes/
+    │   └── base.bbclass
+    └── conf/
+        ├── bitbake.conf
+        └── layer.conf
+</pre></div>
+</div>
+<p>通过TEMPLATECONF变量指向新层的conf目录，yocto会自动将.sample赋值到build目录
+当前也可以通过yocto提供的工具添加新的基础layer：</p>
+<blockquote>
+<div><div class="line-block">
+<div class="line"><code class="docutils literal notranslate"><span class="pre">bitbake-layers</span> <span class="pre">create-layer</span> <span class="pre">../layers/meta-hello</span></code> 创建层</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">bitbake-layers</span> <span class="pre">add-layer</span> <span class="pre">meta-hello</span></code> 将层添加到conf/bblayers.conf</div>
+</div>
+</div></blockquote>
+</section>
+<section id="image">
+<h2>添加image<a class="headerlink" href="#image" title="Permalink to this headline">¶</a></h2>
+<section id="bbimage">
+<h3>1）通过自定义bb文件添加image<a class="headerlink" href="#bbimage" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><div class="line-block">
+<div class="line">添加bb文件如下：</div>
+</div>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">IMAGE_INSTALL</span> <span class="o">=</span> <span class="s2">&quot;packagegroup-core-x11-base package1 package2&quot;</span>
+<span class="n">inherit</span> <span class="n">core</span><span class="o">-</span><span class="n">image</span>
+</pre></div>
+</div>
+<p>也可参考yocto提供的已有的image做定制修改</p>
+<p>其中IMAGE_INSTALL中配置的名称必须使用 OpenEmbedded 表示法而不是 Debian 表示法作为名称（例如 glibc-dev 而不是 libc6-dev）</p>
+<p>Yocto提供了一些默认的images的配方，可参考 <a class="reference external" href="https://docs.yoctoproject.org/ref-manual/images.html">https://docs.yoctoproject.org/ref-manual/images.html</a></p>
+</section>
+<section id="id1">
+<h3>2）通过自定义包组添加image<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><div class="line-block">
+<div class="line">对于复杂的自定义image，自定义image的最佳方法是创建用于构建一个或多个image的自定义包组配方。</div>
+</div>
+<div class="line-block">
+<div class="line">包组配方的一个很好的例子是 meta/recipes-core/packagegroups/packagegroup-base.bb。</div>
+</div>
+<div class="line-block">
+<div class="line">通过PACKAGES 变量列出要生成的包组包。 inherit packagegroup 语句设置适当的默认值，并为 PACKAGES 语句中指定的每个包自动添加 -dev、-dbg 和 -ptest 补充包。</div>
+</div>
+<div class="line-block">
+<div class="line">inherit packagegroup 语句应该位于配方顶部附近，当然在 PACKAGES 语句之前。</div>
+</div>
+<div class="line-block">
+<div class="line">对于 PACKAGES 中指定的每个包，可以使用 RDEPENDS 和 RRECOMMENDS 来提供父任务包应包含的包列表。您可以在 packagegroup-base.bb 配方中进一步查看这些示例。</div>
+</div>
+<div class="line-block">
+<div class="line">以下一个简短的虚构示例：</div>
+</div>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>DESCRIPTION = &quot;My Custom Package Groups&quot;
+
+inherit packagegroup
+
+PACKAGES = &quot;\
+    ${PN}-apps \
+    ${PN}-tools \
+    &quot;
+
+RDEPENDS:${PN}-apps = &quot;\
+    dropbear \
+    portmap \
+    psplash&quot;
+
+RDEPENDS:${PN}-tools = &quot;\
+    oprofile \
+    oprofileui-server \
+    lttng-tools&quot;
+
+RRECOMMENDS:${PN}-tools = &quot;\
+    kernel-module-oprofile&quot;
+</pre></div>
+</div>
+<p>在前面的示例中，创建了两个包组包，并列出了它们的依赖项和推荐的包依赖项：packagegroup-custom-apps 和 packagegroup-custom-tools。要使用这些包组包构建映像，您需要将 packagegroup-custom-apps、 packagegroup-custom-tools 添加到 IMAGE_INSTALL。</p>
+</section>
+</section>
+<section id="bb">
+<h2>添加一个新的配方bb<a class="headerlink" href="#bb" title="Permalink to this headline">¶</a></h2>
+<section id="recipetoolbb">
+<h3>使用recipetool自动添加bb文件<a class="headerlink" href="#recipetoolbb" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="devtoolbb">
+<h3>使用devtool自动添加bb文件<a class="headerlink" href="#devtoolbb" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="id2">
+<h3>从零添加bb<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+</section>
+</section>
+<section id="bbclass">
+<h2>添加bbclass<a class="headerlink" href="#bbclass" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="id3">
+<h2>添加新架构<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="config">
+<h2>支持多config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="id4">
+<h2>使用外部工具链<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="recipes">
+<h2>recipes版本选择<a class="headerlink" href="#recipes" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="src-uri">
+<h2>SRC_URI中文件和目录查找<a class="headerlink" href="#src-uri" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="id5">
+<h2>配方打包时如何分包<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="id6">
+<h2>配方中添加日志打印<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="id7">
+<h2>对指定架构或任务等进行定制配置（选项、补丁等）<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="id8">
+<h2>编译选项配置<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="id9">
+<h2>依赖关系配置（包、任务）<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="provides">
+<h2>配方中的虚拟provides<a class="headerlink" href="#provides" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../developer_guide/develop/new_develop.html" class="btn btn-neutral float-left" title="开发方式指导" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../oebuild/develop/index.html" class="btn btn-neutral float-right" title="oebuild开发指导" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-24.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../master/yocto/development.html">master</a></dd>
+      <dd><a href="../../openEuler-21.09/yocto/development.html">openEuler-21.09</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS/yocto/development.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP1/yocto/development.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP2/yocto/development.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP3/yocto/development.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP4/yocto/development.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../openEuler-22.09/yocto/development.html">openEuler-22.09</a></dd>
+      <dd><a href="../../openEuler-23.03/yocto/development.html">openEuler-23.03</a></dd>
+      <dd><a href="../../openEuler-23.09/yocto/development.html">openEuler-23.09</a></dd>
+      <dd><a href="../../openEuler-24.03-LTS/yocto/development.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="development.html">openEuler-24.09</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

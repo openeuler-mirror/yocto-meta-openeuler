@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>代码提交指导 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="文档提交指导" href="contribute_doc.html" />
+    <link rel="prev" title="QEMU控制台" href="debug/qemu/qemu_monitor.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/index.html">用户使用指导</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">开发及贡献指导</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="code_download_compile.html">下载编译指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="develop/index.html">代码开发指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="debug/index.html">功能调试指导</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">代码提交指导</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">commit msg样式与示例</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">commit msg详细说明</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">本地检查commit msg</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">配置提交模板</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="contribute_doc.html">文档提交指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">开发及贡献指导</a> &raquo;</li>
+      <li>代码提交指导</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="commit-msg">
+<span id="id1"></span><h1>代码提交指导<a class="headerlink" href="#commit-msg" title="Permalink to this headline">¶</a></h1>
+<p>开发人员通过git commit和gitee pr的形式向openEuler Embedded进行贡献，其中git commit msg需遵循相应的规范。</p>
+<p>openEuler Embedded部署了基于 <a class="reference external" href="https://jorisroovers.com/gitlint/latest">gitlint</a> 的机制来检查git commit是否符合规范，
+具体的规范实现位于 <a class="reference external" href="https://gitee.com/openeuler/yocto-meta-openeuler">代码仓</a> 下的 <code class="file docutils literal notranslate"><span class="pre">.gitlint</span></code> 和 <code class="file docutils literal notranslate"><span class="pre">scripts/gitlint/openeuler_embedded_commit_rules.py</span></code> 中。</p>
+<section id="id3">
+<h2>commit msg样式与示例<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>commit msg提交规范样式如下(具体规则请看 <a class="reference internal" href="#id7"><span class="std std-ref">详细说明</span></a> )：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>header
+&lt;blank line&gt;
+body
+&lt;blank line&gt;
+footer
+<span class="o">(</span>cherry-pick info<span class="o">)</span> <span class="c1">#可选，若此commit通过cherry-pick获得，应注明来源commit id</span>
+</pre></div>
+</div>
+</div></blockquote>
+<blockquote id="id4">
+<div><p>完整示例1：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#此commit仅做示例，非真实commit</span>
+yocto: Update poky-4.0 grammar details
+
+update yocto grammar: replace <span class="s1">&#39;_&#39;</span> with <span class="s1">&#39;:&#39;</span> <span class="k">for</span> yocto version stability.
+
+Signed-off-by: zhangsan &lt;zhangsan@163.com&gt;
+</pre></div>
+</div>
+</div></blockquote>
+<blockquote id="id5">
+<div><p>完整示例2：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#此commit仅做示例，非真实commit</span>
+ros2: Fix ros2 sdk bugs <span class="k">for</span> humble
+
+* fix ament depend
+* avoid pythonpath err <span class="k">in</span> colcon
+* fix find_path err <span class="k">in</span> numpy <span class="k">for</span> cross-compile
+
+Fixes: adii232naidf<span class="o">(</span>ros2: Upgrade ros2 sdk <span class="k">for</span> humble<span class="o">)</span>  <span class="c1">#假定这是对应产生问题的commit，非真实commit</span>
+Closes: https://gitee.com/openeuler/yocto-meta-openeuler/issues/T7SQ40?from<span class="o">=</span>project-issue   <span class="c1">#假设这是要关闭的issue，非真实链接</span>
+Co-developed-by: zhangsan &lt;zhangsan@163.com&gt;    <span class="c1">#共同贡献者</span>
+Signed-off-by: zhangsan &lt;zhangsan@163.com&gt;
+Co-developed-by: lisi &lt;lisi@163.com&gt;            <span class="c1">#共同贡献者</span>
+Signed-off-by: lisi &lt;lisi@163.com&gt;
+Signed-off-by: lihua &lt;lisi@163.com&gt;             <span class="c1">#提交人，共同贡献者之一</span>
+</pre></div>
+</div>
+</div></blockquote>
+<blockquote id="id6">
+<div><p>完整示例3：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#此commit仅做示例，非真实commit，实际版本更新内容未完全罗列</span>
+yocto!: Update poky version to <span class="m">4</span>.0<span class="o">(</span>kirkstone<span class="o">)</span>
+
+* upgrade yocto version, because it can be maintained <span class="k">for</span> longer.
+
+* Here are the changes made during this upgrade:
+  - some variables have changed their names.
+  - because of the uncertainty <span class="k">in</span> future default branch names <span class="k">in</span> git repositories,
+    it is now required to add a branch name to all URLs described by
+    git:// and gitsm:// SRC_URI entries.
+  - distutils has been deprecated upstream <span class="k">in</span> Python <span class="m">3</span>.10 and thus the distutils* classes have
+    been moved to meta-python. Recipes that inherit the distutils* classes should be updated to
+    inherit setuptools* equivalents instead.
+  - some recipes have been removed.
+  - :append/:prepend <span class="k">in</span> combination with other operators.
+
+Link: https://docs.yoctoproject.org/migration-guides/migration-4.0.html
+Signed-off-by: wangermazi &lt;wangermazi@163.com&gt;
+<span class="o">(</span>cherry picked from commit h84b88e9e49483aeec884am02ef98056622f6eb8<span class="o">)</span>    <span class="c1">#从其他分支cherry-pick过来的commit id信息</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="id7">
+<span id="id8"></span><h2>commit msg详细说明<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>commit msg由三部分组成，分别为 <code class="docutils literal notranslate"><span class="pre">header</span></code> ， <code class="docutils literal notranslate"><span class="pre">body</span></code> 和 <code class="docutils literal notranslate"><span class="pre">footer</span></code> ，每部分都不可少，且 <code class="docutils literal notranslate"><span class="pre">header</span></code> 与 <code class="docutils literal notranslate"><span class="pre">body</span></code> ， <code class="docutils literal notranslate"><span class="pre">body</span></code> 与 <code class="docutils literal notranslate"><span class="pre">footer</span></code> 之间都必须有空行，整体commit msg使用英文描述。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">header</span></code> 行必须有且仅有一行，形式为 <code class="docutils literal notranslate"><span class="pre">&lt;area&gt;:</span> <span class="pre">&lt;subject&gt;</span></code> , 在冒号后有一个空格。当提交为非revert类型时，行长度不超过80字符；为revert类型时，行长度不超过102字符，其中：</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">area</span></code> 非空，一般为配方名称，或要更改的文件的简短路径，若同时修改多个配方，也可使用更抽象的属类，比如config, 层的名字，docs等。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">subject</span></code> 非空，应包含对更改的简介描述。必须使用祈使句和现在时态，即不可使用’changed’或’changes’,而是使用’change’（具体解释可见 <a class="reference external" href="https://365git.tumblr.com/post/3308646748/writing-git-commit-messages">此</a> ）。不能在末尾加标点符号，不能包含表情符号，至少包含3个单词。</p></li>
+<li><p>revert类型提交请看 <a class="reference internal" href="#id10"><span class="std std-ref">第6点</span></a> 。</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p><code class="docutils literal notranslate"><span class="pre">body</span></code> 为提交的详细描述，非空。不能包含表情符号，并使用祈使句和现在时态。对于不包含URL链接的行，要求每行不超过100个字符，若包含URL链接，字符没有限制，不过建议将URL链接单独成一行，提高可读性。</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>应包含改变的动机（why），改变的内容（what），怎样改变的（how），并将其与以前的行为进行对比。</p></li>
+<li><p>如果提交跨5个文件或者50行代码，应在 <code class="docutils literal notranslate"><span class="pre">body</span></code> 中描述出来，文档相关的提交除外。</p></li>
+<li><p>内容可引用之前commit信息， 记得同时带上commit id（SHA-1的前12个字符）和对应的 <code class="docutils literal notranslate"><span class="pre">header</span></code> 信息。</p></li>
+<li><p>可以使用连字符或星号表示更多段落，同时可以配合使用悬挂缩进，所有段落可适当用空行分开增强可读性。示例见 <a class="reference internal" href="#id6"><span class="std std-ref">完整示例3</span></a> 。</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li><p><code class="docutils literal notranslate"><span class="pre">footer</span></code> 包含一个或多个标签，每个标签为一行，且标签之间不空行。
+每行标签的形式为 <code class="docutils literal notranslate"><span class="pre">&lt;tag-name&gt;:</span> <span class="pre">&lt;tag-context&gt;</span></code> ，注意冒号后面有一个空格。
+原则上每行不超过100个字符（ <code class="docutils literal notranslate"><span class="pre">Fixes</span></code> 标签为不超过101字符），除非标签包含完整URL链接。另外 <code class="docutils literal notranslate"><span class="pre">footer</span></code> 必须包含 <code class="docutils literal notranslate"><span class="pre">Signed-off-by</span></code> 标签，且 <code class="docutils literal notranslate"><span class="pre">footer</span></code> 的末尾标签（最后一行）必须为 <code class="docutils literal notranslate"><span class="pre">Signed-off-by</span></code> 标签。以下为可使用标签的介绍：</p></li>
+</ol>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">Signed-off-by</span></code> ：社区不允许匿名贡献，每个commiter都必须进行身份确认（需要 <a class="reference external" href="https://www.openeuler.org/zh/community/contribution/detail.html">签署CLA</a> ）。格式为：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#commiter-name为提交者的真实姓名拼音，如张三，李四 应分别为 zhangsan,lisi</span>
+<span class="c1">#random@developer.example.org 必须为签署协议时账号绑定的邮箱</span>
+<span class="c1">#注意commiter-name左右两边有空格</span>
+Signed-off-by: commiter-name &lt;random@developer.example.org&gt;
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Closes</span></code> ：用于说明该次提交修复了 <a class="reference external" href="https://gitee.com/openeuler/yocto-meta-openeuler/issues">issue问题</a> ，标签后带上被修复的issue链接，由于issue位于openEuler社区，因此链接的前缀必须为：<a class="reference external" href="https://gitee.com/openeuler/">https://gitee.com/openeuler/</a>  。如果同时修复了多个issue，则可写多行 <code class="docutils literal notranslate"><span class="pre">Closes</span></code> 标签，每行带一个issue链接，如下所示：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Closes: https://gitee.com/openeuler/yocto-meta-openeuler/issues/I7SQ40?from<span class="o">=</span>project-issue
+Closes: https://gitee.com/openeuler/yocto-meta-openeuler/issues/I7071W?from<span class="o">=</span>project-issue
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Fixes</span></code> ：用于说明该次提交是为了解决之前 commit id 带来的问题，标签后附加之前产生问题的提交，包括其commit id（取SHA-1的前12个字符）和对应的header信息，如下所示（假设解决 <a class="reference internal" href="#id5"><span class="std std-ref">完整示例2</span></a> 带来的问题）：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Fixes: 54a4f0239f2e<span class="o">(</span>ros2: Fix ros2 sdk bugs <span class="k">for</span> humble<span class="o">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Co-developed-by</span></code> ：用于说明代码是由多个开发人员共同贡献，向共同作者提供归属（除了提交者本人）。每个 <code class="docutils literal notranslate"><span class="pre">Co-developed-by</span></code> 标签下都必须紧跟 <code class="docutils literal notranslate"><span class="pre">Signed-off-by</span></code> 标签，形式为（也可见于 <a class="reference internal" href="#id5"><span class="std std-ref">完整示例2</span></a> ）：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Co-developed-by: First Co-Author &lt;first@coauthor.example.org&gt;
+Signed-off-by: First Co-Author &lt;first@coauthor.example.org&gt;
+Co-developed-by: Second Co-Author &lt;second@coauthor.example.org&gt;
+Signed-off-by: Second Co-Author &lt;second@coauthor.example.org&gt;
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">Link</span></code> ：用于使用附加背景和详细信息的网页对该次提交予以说明，此时，标签后接完整URL，示例如 <a class="reference internal" href="#id6"><span class="std std-ref">完整示例3</span></a> 。</p>
+</div></blockquote>
+<ol class="arabic simple" start="5">
+<li><p>若提交的代码包含了重大变更（如poky版本升级、重要接口参数减少、接口删除、迁移等），需在 <code class="docutils literal notranslate"><span class="pre">header</span></code> 行中的冒号前加一个 <code class="docutils literal notranslate"><span class="pre">！</span></code> ，并且在 <code class="docutils literal notranslate"><span class="pre">body</span></code> 中完整描述重大变更信息（包括更改内容、原因及迁移位置等信息）。在 <a class="reference internal" href="#id6"><span class="std std-ref">完整示例3</span></a> 就使用了此方法。</p></li>
+</ol>
+</div></blockquote>
+<blockquote id="id10">
+<div><ol class="arabic simple" start="6">
+<li><p>如果是进行以往提交的回退，则 <code class="docutils literal notranslate"><span class="pre">area</span></code> 填写为revert， <code class="docutils literal notranslate"><span class="pre">subject</span></code> 为被回退提交的 commit id 和header信息，在 <code class="docutils literal notranslate"><span class="pre">body</span></code> 中应写回退的原因。比如要回退以上 <a class="reference internal" href="#id4"><span class="std std-ref">完整示例1</span></a> （假设其commit id前12位为：54a4f0239f2e），则commit msg为：</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>revert: 54a4f0239f2e<span class="o">(</span>yocto: Update poky-4.0 grammar details<span class="o">)</span>
+
+some reasons <span class="k">for</span> revert.
+
+Signed-off-by: developer &lt;random@developer.example.org&gt;
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="7">
+<li><p>如果commit是通过 <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">cherry-pick</span></code> 获得，建议使用 <code class="docutils literal notranslate"><span class="pre">-x</span></code> 选项（这样在cherry-pick时，git会自动生成来源说明），备注好源分支的commit id信息，便于后续追溯查看使用。正确格式为（也可见于 <a class="reference internal" href="#id6"><span class="std std-ref">完整示例3</span></a> ）：</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">#注意，该行必须位于Signed-off-by标签后，两者之间不留空行</span>
+<span class="c1">#其中 6024a1fca1455a6e3dc84082f60bh2b481dc5f9e 指来源分支上的commit id</span>
+<span class="c1">#使用”git cherry-pick -x“可以自动生成</span>
+<span class="o">(</span>cherry picked from commit 6024a1fca1455a6e3dc84082f60bh2b481dc5f9e<span class="o">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="8">
+<li><p>建议每次合并请求（Pull Request）不要超过10次提交。</p></li>
+</ol>
+</div></blockquote>
+</section>
+<section id="id11">
+<h2>本地检查commit msg<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>安装gitlint工具：</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ pip install gitlint
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p><a class="reference external" href="https://jorisroovers.com/gitlint/latest/commit_hooks/">设置Commit-msg hook</a> ，使得在每次提交时可按照代码仓根目录下的 <code class="file docutils literal notranslate"><span class="pre">.gitlint</span></code> 配置的规则，来自动检查您的提交消息。在代码仓下的任意目录中执行如下命令即可：</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ gitlint install-hook
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</section>
+<section id="id12">
+<h2>配置提交模板<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>在本地任意位置创建一个模板文件 <code class="docutils literal notranslate"><span class="pre">template.txt</span></code> ， 内容填写你想要的模板。以下内容可以作为一个示例模板(记得替换下your-name和your-email为你自己的名字和邮箱)：</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>area: subject
+
+*why
+*what
+*how
+
+Signed-off-by: your-name &lt;your-email&gt;
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>执行如下命令之一,选择进行全局配置或者当前代码仓配置，配置git的提交模板:</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ git config --local commit.template /path/to/template.txt   //需在对应代码仓的文件夹下执行，只为该代码仓提交时配置模板
+$ git config --global commit.template /path/to/template.txt  //全局配置该模板
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="debug/qemu/qemu_monitor.html" class="btn btn-neutral float-left" title="QEMU控制台" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="contribute_doc.html" class="btn btn-neutral float-right" title="文档提交指导" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-24.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../master/developer_guide/commit.html">master</a></dd>
+      <dd><a href="../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../openEuler-24.03-LTS/developer_guide/commit.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="commit.html">openEuler-24.09</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

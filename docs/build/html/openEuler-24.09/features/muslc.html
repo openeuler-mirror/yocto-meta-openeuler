@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>musl libc的支持 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="分布式软总线" href="distributed_softbus.html" />
+    <link rel="prev" title="嵌入式ROS运行时支持" href="ros.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mica/index.html">多OS混合关键性部署框架 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">musl libc的支持</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">musl libc的介绍</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#meta-musl">meta-musl层介绍</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">构建环境</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#qemu">qemu镜像的构建</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">树莓派镜像的构建</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#clang-llvm">clang+llvm构建镜像</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muslglibc">musl与glibc性能对比测试</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#libc-bench">libc-bench性能测试</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#coremark">coremark性能测试</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lmbench-os">lmbench OS性能测试</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#unixbench">unixbench性能测试</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="distributed_softbus.html">分布式软总线</a></li>
+<li class="toctree-l3"><a class="reference internal" href="preempt_rt.html">软实时系统介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prebuilt_tool.html">预构建工具特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rust.html">Rust支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qt5_wayland.html">嵌入式图形支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="armnn.html">ArmNN的支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="clang_llvm.html">clang/llvm 编译工具链支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jailhouse.html">嵌入式分区虚拟机Jailhouse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openbmc.html">OpenBMC 镜像构建和使用</a></li>
+<li class="toctree-l3"><a class="reference internal" href="container/index.html">嵌入式容器相关特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernelversions.html">内核多版本支持（5.10/6.6）介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="software_package_description.html">当前所支持的软件包</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zvm.html">嵌入式实时虚拟机ZVM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mindspore_lite.html">构建Mindspore Lite使用指导</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../bsp/index.html">南向使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../user_guide/index.html">用户使用指导</a> &raquo;</li>
+          <li><a href="index.html">关键特性指导</a> &raquo;</li>
+      <li>musl libc的支持</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="musl-libc">
+<span id="id1"></span><h1>musl libc的支持<a class="headerlink" href="#musl-libc" title="Permalink to this headline">¶</a></h1>
+<p>本章介绍使用musl libc构建openEuler Embedded。</p>
+<section id="id2">
+<h2>musl libc的介绍<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>musl libc是构建在Linux系统调用API之上的C标准库的实现，是一个轻量级libc库，用于嵌入式操作系统和移动设备。它包括在基本语言标准、POSIX和广泛认可的扩展中定义的接口。</p>
+</section>
+<section id="meta-musl">
+<h2>meta-musl层介绍<a class="headerlink" href="#meta-musl" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">meta-musl</span></code> 层包含所有涉及musl libc的软件包的补丁，该层以叠加 <code class="docutils literal notranslate"><span class="pre">*.bbappend</span></code> 的形式，把musl libc相关修改到对应软件包上。对于后续软件包的适配可直接在meta-musl层中进行修改，更加利于后期管理和维护。</p>
+<p><code class="docutils literal notranslate"><span class="pre">meta-musl</span></code> 层目录结构如下</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">tree -L 3  .</span>
+<span class="go">.</span>
+<span class="go">├── conf</span>
+<span class="go">│   └── layer.conf</span>
+<span class="go">├── recipes-connectivity</span>
+<span class="go">│   ├── iproute2</span>
+<span class="go">│   │   ├── iproute2</span>
+<span class="go">│   │   └── iproute2_%.bbappend</span>
+<span class="go">├── recipes-core</span>
+<span class="go">│   ├── dsoftbus</span>
+<span class="go">│   │   ├── dsoftbus</span>
+<span class="go">│   │   └── dsoftbus_%.bbappend</span>
+<span class="go">├── ......</span>
+<span class="go">├── ......</span>
+<span class="go">└── ......</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h2>构建环境<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>构建环境推荐：master</p>
+<p>构建环境指导：详见 <a class="reference internal" href="../oebuild/userguide/install/index.html#oebuild-install"><span class="std std-ref">安装步骤</span></a></p>
+<p>编译器构建指导：musl交叉工具链的生成可 <a class="reference external" href="https://gitee.com/openeuler/yocto-embedded-tools/tree/master/cross_tools">参考编译器构建指导</a></p>
+<p>特定环境配置：由于poky升级到4.0.x后，meson的编译规则改变，会导致一些包产生中间产物–检查交叉编译环境配置的可执行程序，但是目前docker中没有musl的链接器：ld-musl-aarch64.so.1，所以需要执行下边命令把musl的链接器拷贝到docker中：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo docker cp /path/aarch64-openeuler-linux-musl/xx/ld-musl-aarch64.so.1  dockerid:/usr/lib64</span>
+</pre></div>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>ld-musl-aarch64.so.1要修改成实体的，不要拷贝软连接！</p>
+</div>
+</section>
+<section id="qemu">
+<h2>qemu镜像的构建<a class="headerlink" href="#qemu" title="Permalink to this headline">¶</a></h2>
+<p>1.构建环境示例</p>
+<p>参考 <a class="reference internal" href="../oebuild/userguide/install/index.html#oebuild-install"><span class="std std-ref">安装步骤</span></a> 初始化容器环境，生成配置文件时使用如下命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild generate -p qemu-aarch64 -t /path/to/aarch64-openeuler-linux-musl -f musl</span>
+</pre></div>
+</div>
+<p>除了使用上述命令进行配置文件生成，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，效果跟上述命令相同。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild generate</span>
+</pre></div>
+</div>
+<p>具体界面如下图所示:</p>
+<img alt="../_images/oebuild-generate-select.png" src="../_images/oebuild-generate-select.png" />
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>当前在容器里是没有musl-arm64的工具链，需要按照上面工具链的生成指导生成。</p>
+</div>
+<p>2.构建命令</p>
+<p>键入 <code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">bitbake</span></code> 进入容器环境后，执行下面命令即可编译镜像：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake openeuler-image</span>
+</pre></div>
+</div>
+<p>3.构建镜像生成目录示例</p>
+<p>结果件默认生成在构建目录下的output目录下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">/usr1/build/output</span>
+</pre></div>
+</div>
+<p>镜像运行 <a class="reference internal" href="../developer_guide/debug/qemu/qemu_start.html#qemu-start"><span class="std std-ref">QEMU运行指导</span></a></p>
+</section>
+<section id="id5">
+<h2>树莓派镜像的构建<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p>1.构建命令示例</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild generate -p raspberrypi4-64 -t /path/to/aarch64-openeuler-linux-musl -f musl</span>
+
+<span class="go">oebuild bitbake</span>
+
+<span class="go">bitbake openeuler-image</span>
+</pre></div>
+</div>
+<p>2.构建镜像生成目录</p>
+<p>结果件默认生成在构建目录下的output目录下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">/usr1/build/output</span>
+</pre></div>
+</div>
+<p>镜像运行 <a class="reference internal" href="../bsp/arm64/raspberrypi4/build.html#board-raspberrypi4-build"><span class="std std-ref">树莓派运行指导</span></a></p>
+</section>
+<section id="clang-llvm">
+<h2>clang+llvm构建镜像<a class="headerlink" href="#clang-llvm" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>构建环境</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>当前在容器中没有集成musl相关的工具链，所以需要先把基于musl编译的arm64架构GCC库拷贝至编译器目录：</p>
+</div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sudo cp /path/to/aarch64-openeuler-linux-musl/* /path/to/clang-llvm-15.0.3</span>
+</pre></div>
+</div>
+<p>参考 <a class="reference internal" href="../oebuild/userguide/install/index.html#oebuild-install"><span class="std std-ref">安装步骤</span></a> 初始化容器环境，生成配置文件时使用如下命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild generate -p platform -d build_direction -t /path/to/clang-llvm-15.0.3 -f clang -f musl</span>
+</pre></div>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>当前只支持arm64架构，支持的平台：qemu-aarch64、raspberrypi4-64。</p>
+</div>
+</li>
+<li><p>构建命令</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake openeuler-image-llvm</span>
+</pre></div>
+</div>
+</li>
+<li><p>SDK生成</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake openeuler-image-llvm -c populate_sdk</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="muslglibc">
+<h2>musl与glibc性能对比测试<a class="headerlink" href="#muslglibc" title="Permalink to this headline">¶</a></h2>
+<p>性能测试平台采用了主频为600Mhz的树莓派4B，测试集采用了libc-bench、coremark、lmbench、unixbench，以下为测试集简介：</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 86%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>测试集</p></th>
+<th class="head"><p>简介</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>libc-bench</p></td>
+<td><p>musl 官方提供的测试集，用于时间和内存效率的测试，该测试集中比较了各种C/POSIX标准库函数的实现。</p></td>
+</tr>
+<tr class="row-odd"><td><p>coremark</p></td>
+<td><p>CoreMark是由EEMBC提出的基准测试程序， 是评测嵌入式芯片性能的最常用测试程序之一。</p></td>
+</tr>
+<tr class="row-even"><td><p>lmbench</p></td>
+<td><p>lmbench 是个用于评价系统综合性能的多平台开源 benchmark，能够测试包括文档读写、 内存操作、进程创建销毁开销、网络等性能。</p></td>
+</tr>
+<tr class="row-odd"><td><p>unixbench</p></td>
+<td><p>unixbench是一个用于测试unix系统性能的工具。</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="libc-bench">
+<h2>libc-bench性能测试<a class="headerlink" href="#libc-bench" title="Permalink to this headline">¶</a></h2>
+<p>1.执行时间测试</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 22%" />
+<col style="width: 22%" />
+<col style="width: 22%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>测试项</p></th>
+<th class="head"><p>glibc执行时间(s)</p></th>
+<th class="head"><p>musl执行时间(s)</p></th>
+<th class="head"><p>性能比</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>b_malloc_sparse</p></td>
+<td><p>0.133191926</p></td>
+<td><p>0.155694333</p></td>
+<td><p>-14%</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_malloc_bubble</p></td>
+<td><p>0.132751351</p></td>
+<td><p>0.160789685</p></td>
+<td><p>-17%</p></td>
+</tr>
+<tr class="row-even"><td><p>b_malloc_tiny1</p></td>
+<td><p>0.004129741</p></td>
+<td><p>0.006242797</p></td>
+<td><p>-34%</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_malloc_tiny2</p></td>
+<td><p>0.003741592</p></td>
+<td><p>0.004415814</p></td>
+<td><p>-15%</p></td>
+</tr>
+<tr class="row-even"><td><p>b_malloc_big1</p></td>
+<td><p>0.030093408</p></td>
+<td><p>0.085103333</p></td>
+<td><p>-65%</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_malloc_big2</p></td>
+<td><p>0.026437222</p></td>
+<td><p>0.059723722</p></td>
+<td><p>-56%</p></td>
+</tr>
+<tr class="row-even"><td><p>b_malloc_thread_stress</p></td>
+<td><p>0.057703185</p></td>
+<td><p>0.191215629</p></td>
+<td><p>-70%</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_malloc_thread_local</p></td>
+<td><p>0.040528055</p></td>
+<td><p>0.1589995</p></td>
+<td><p>-75%</p></td>
+</tr>
+<tr class="row-even"><td><p>b_string_strstr(abcd)</p></td>
+<td><p>0.022583204</p></td>
+<td><p>0.033620482</p></td>
+<td><p>-33%</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_string_strstr(azby)</p></td>
+<td><p>0.022762333</p></td>
+<td><p>0.052186926</p></td>
+<td><p>-56%</p></td>
+</tr>
+<tr class="row-even"><td><p>b_string_strstr(ac)</p></td>
+<td><p>0.023064741</p></td>
+<td><p>0.034024092</p></td>
+<td><p>-32%</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_string_strstr(aaac)</p></td>
+<td><p>0.02253924</p></td>
+<td><p>0.034291277</p></td>
+<td><p>-34%</p></td>
+</tr>
+<tr class="row-even"><td><p>b_string_strstr(aaaaac)</p></td>
+<td><p>0.024667129</p></td>
+<td><p>0.038916833</p></td>
+<td><p>-37%</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_string_memset</p></td>
+<td><p>0.021160371</p></td>
+<td><p>0.016245278</p></td>
+<td><p>30%</p></td>
+</tr>
+<tr class="row-even"><td><p>b_string_strchr</p></td>
+<td><p>0.028452092</p></td>
+<td><p>0.044776333</p></td>
+<td><p>-36%</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_string_strlen</p></td>
+<td><p>0.01696987</p></td>
+<td><p>0.025606074</p></td>
+<td><p>-34%</p></td>
+</tr>
+<tr class="row-even"><td><p>b_pthread_createjoin_serial1</p></td>
+<td><p>0.546294574</p></td>
+<td><p>0.589207315</p></td>
+<td><p>-7%</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_pthread_createjoin_serial2</p></td>
+<td><p>0.518631648</p></td>
+<td><p>0.443272055</p></td>
+<td><p>17%</p></td>
+</tr>
+<tr class="row-even"><td><p>b_pthread_create_serial1</p></td>
+<td><p>0.452602518</p></td>
+<td><p>0.405491611</p></td>
+<td><p>12%</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_pthread_uselesslock</p></td>
+<td><p>0.167918796</p></td>
+<td><p>0.151241092</p></td>
+<td><p>11%</p></td>
+</tr>
+<tr class="row-even"><td><p>b_stdio_putcgetc</p></td>
+<td><p>0.269504648</p></td>
+<td><p>0.296806204</p></td>
+<td><p>-9%</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_pthread_createjoin_minimal1</p></td>
+<td><p>0.526583</p></td>
+<td><p>0.565946184</p></td>
+<td><p>-7%</p></td>
+</tr>
+<tr class="row-even"><td><p>b_pthread_createjoin_minimal2</p></td>
+<td><p>0.455035314</p></td>
+<td><p>0.490921982</p></td>
+<td><p>-7%</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>备注</strong> ：性能比由 <code class="docutils literal notranslate"><span class="pre">glibc执行时间/musl执行时间-1</span></code> 计算得到。</p>
+<p>2.内存占用测试</p>
+<ul class="simple">
+<li><p>虚拟内存占用测试</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 26%" />
+<col style="width: 26%" />
+<col style="width: 27%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>测试项</p></th>
+<th class="head"><p>glibc(KB)</p></th>
+<th class="head"><p>musl(KB)</p></th>
+<th class="head"><p>glibc_virt/musl_virt</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>b_malloc_sparse</p></td>
+<td><p>38992</p></td>
+<td><p>8480</p></td>
+<td><p>4.60</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_malloc_bubble</p></td>
+<td><p>39364</p></td>
+<td><p>156</p></td>
+<td><p>252.33</p></td>
+</tr>
+<tr class="row-even"><td><p>b_malloc_tiny1</p></td>
+<td><p>688</p></td>
+<td><p>32</p></td>
+<td><p>21.50</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_malloc_tiny2</p></td>
+<td><p>688</p></td>
+<td><p>628</p></td>
+<td><p>1.10</p></td>
+</tr>
+<tr class="row-even"><td><p>b_malloc_big1</p></td>
+<td><p>160</p></td>
+<td><p>24</p></td>
+<td><p>6.67</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_malloc_big2</p></td>
+<td><p>80192</p></td>
+<td><p>87404</p></td>
+<td><p>0.92</p></td>
+</tr>
+<tr class="row-even"><td><p>b_malloc_thread_stress</p></td>
+<td><p>16808</p></td>
+<td><p>52</p></td>
+<td><p>323.23</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_malloc_thread_local</p></td>
+<td><p>16808</p></td>
+<td><p>80</p></td>
+<td><p>210.10</p></td>
+</tr>
+<tr class="row-even"><td><p>b_string_strstr(abc)</p></td>
+<td><p>160</p></td>
+<td><p>16</p></td>
+<td><p>10.00</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_string_strstr(azby)</p></td>
+<td><p>160</p></td>
+<td><p>16</p></td>
+<td><p>10.00</p></td>
+</tr>
+<tr class="row-even"><td><p>b_string_strstr(ac)</p></td>
+<td><p>160</p></td>
+<td><p>16</p></td>
+<td><p>10.00</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_string_strstr(aaac)</p></td>
+<td><p>160</p></td>
+<td><p>16</p></td>
+<td><p>10.00</p></td>
+</tr>
+<tr class="row-even"><td><p>b_string_strstr(aaaaac)</p></td>
+<td><p>160</p></td>
+<td><p>16</p></td>
+<td><p>10.00</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_string_memset</p></td>
+<td><p>160</p></td>
+<td><p>16</p></td>
+<td><p>10.00</p></td>
+</tr>
+<tr class="row-even"><td><p>b_string_strchr</p></td>
+<td><p>160</p></td>
+<td><p>16</p></td>
+<td><p>10.00</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_string_strlen</p></td>
+<td><p>160</p></td>
+<td><p>16</p></td>
+<td><p>10.00</p></td>
+</tr>
+<tr class="row-even"><td><p>b_pthread_createjoin_serial1</p></td>
+<td><p>8352</p></td>
+<td><p>16</p></td>
+<td><p>522.00</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_pthread_createjoin_serial2</p></td>
+<td><p>32928</p></td>
+<td><p>16</p></td>
+<td><p>2058.00</p></td>
+</tr>
+<tr class="row-even"><td><p>b_pthread_create_serial1</p></td>
+<td><p>20480820</p></td>
+<td><p>50016</p></td>
+<td><p>409.49</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_pthread_uselesslock</p></td>
+<td><p>8352</p></td>
+<td><p>16</p></td>
+<td><p>522.00</p></td>
+</tr>
+<tr class="row-even"><td><p>b_stdio_putcgetc</p></td>
+<td><p>160</p></td>
+<td><p>16</p></td>
+<td><p>10.00</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_stdio_putcgetc_unlocked</p></td>
+<td><p>160</p></td>
+<td><p>16</p></td>
+<td><p>10.00</p></td>
+</tr>
+<tr class="row-even"><td><p>b_regex_compile</p></td>
+<td><p>160</p></td>
+<td><p>40</p></td>
+<td><p>4.00</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_regex_search</p></td>
+<td><p>160</p></td>
+<td><p>16</p></td>
+<td><p>10.00</p></td>
+</tr>
+<tr class="row-even"><td><p>b_regex_search</p></td>
+<td><p>160</p></td>
+<td><p>16</p></td>
+<td><p>10.00</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_pthread_createjoin_minimal1</p></td>
+<td><p>8352</p></td>
+<td><p>16</p></td>
+<td><p>522.00</p></td>
+</tr>
+<tr class="row-even"><td><p>b_pthread_createjoin_minimal2</p></td>
+<td><p>41120</p></td>
+<td><p>16</p></td>
+<td><p>2570.00</p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p>物理内存占用测试</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 26%" />
+<col style="width: 26%" />
+<col style="width: 27%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>测试项</p></th>
+<th class="head"><p>glibc(KB)</p></th>
+<th class="head"><p>musl(KB)</p></th>
+<th class="head"><p>glibc_res/musl_res</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>b_malloc_sparse</p></td>
+<td><p>38980</p></td>
+<td><p>8480</p></td>
+<td><p>4.60</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_malloc_bubble</p></td>
+<td><p>39240</p></td>
+<td><p>92</p></td>
+<td><p>426.52</p></td>
+</tr>
+<tr class="row-even"><td><p>b_malloc_tiny1</p></td>
+<td><p>568</p></td>
+<td><p>32</p></td>
+<td><p>17.75</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_malloc_tiny2</p></td>
+<td><p>568</p></td>
+<td><p>604</p></td>
+<td><p>0.94</p></td>
+</tr>
+<tr class="row-even"><td><p>b_malloc_big1</p></td>
+<td><p>32</p></td>
+<td><p>24</p></td>
+<td><p>1.33</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_malloc_big2</p></td>
+<td><p>8044</p></td>
+<td><p>16072</p></td>
+<td><p>0.50</p></td>
+</tr>
+<tr class="row-even"><td><p>b_malloc_thread_stress</p></td>
+<td><p>164</p></td>
+<td><p>52</p></td>
+<td><p>3.15</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_malloc_thread_local</p></td>
+<td><p>184</p></td>
+<td><p>80</p></td>
+<td><p>2.30</p></td>
+</tr>
+<tr class="row-even"><td><p>b_string_strstr(abc)</p></td>
+<td><p>20</p></td>
+<td><p>16</p></td>
+<td><p>1.25</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_string_strstr(azby)</p></td>
+<td><p>20</p></td>
+<td><p>16</p></td>
+<td><p>1.25</p></td>
+</tr>
+<tr class="row-even"><td><p>b_string_strstr(ac)</p></td>
+<td><p>20</p></td>
+<td><p>16</p></td>
+<td><p>1.25</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_string_strstr(aaac)</p></td>
+<td><p>20</p></td>
+<td><p>16</p></td>
+<td><p>1.25</p></td>
+</tr>
+<tr class="row-even"><td><p>b_string_strstr(aaaaac)</p></td>
+<td><p>20</p></td>
+<td><p>16</p></td>
+<td><p>1.25</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_string_memset</p></td>
+<td><p>20</p></td>
+<td><p>16</p></td>
+<td><p>1.25</p></td>
+</tr>
+<tr class="row-even"><td><p>b_string_strchr</p></td>
+<td><p>20</p></td>
+<td><p>16</p></td>
+<td><p>1.25</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_string_strlen</p></td>
+<td><p>20</p></td>
+<td><p>16</p></td>
+<td><p>1.25</p></td>
+</tr>
+<tr class="row-even"><td><p>b_pthread_createjoin_serial1</p></td>
+<td><p>28</p></td>
+<td><p>16</p></td>
+<td><p>1.75</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_pthread_createjoin_serial2</p></td>
+<td><p>68</p></td>
+<td><p>16</p></td>
+<td><p>4.25</p></td>
+</tr>
+<tr class="row-even"><td><p>b_pthread_create_serial1</p></td>
+<td><p>20724</p></td>
+<td><p>10016</p></td>
+<td><p>2.07</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_pthread_uselesslock</p></td>
+<td><p>28</p></td>
+<td><p>16</p></td>
+<td><p>1.75</p></td>
+</tr>
+<tr class="row-even"><td><p>b_stdio_putcgetc</p></td>
+<td><p>24</p></td>
+<td><p>16</p></td>
+<td><p>1.50</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_stdio_putcgetc_unlocked</p></td>
+<td><p>24</p></td>
+<td><p>16</p></td>
+<td><p>1.50</p></td>
+</tr>
+<tr class="row-even"><td><p>b_regex_compile</p></td>
+<td><p>32</p></td>
+<td><p>28</p></td>
+<td><p>1.14</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_regex_search</p></td>
+<td><p>32</p></td>
+<td><p>16</p></td>
+<td><p>2.00</p></td>
+</tr>
+<tr class="row-even"><td><p>b_regex_search</p></td>
+<td><p>84</p></td>
+<td><p>16</p></td>
+<td><p>5.25</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_pthread_createjoin_minimal1</p></td>
+<td><p>28</p></td>
+<td><p>16</p></td>
+<td><p>1.75</p></td>
+</tr>
+<tr class="row-even"><td><p>b_pthread_createjoin_minimal2</p></td>
+<td><p>76</p></td>
+<td><p>16</p></td>
+<td><p>4.75</p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p>系统可回收内存测试</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 26%" />
+<col style="width: 26%" />
+<col style="width: 27%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>测试项</p></th>
+<th class="head"><p>glibc(KB)</p></th>
+<th class="head"><p>musl(KB)</p></th>
+<th class="head"><p>glibc_dirty/musl_dirty</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>b_malloc_sparse</p></td>
+<td><p>38976</p></td>
+<td><p>8480</p></td>
+<td><p>4.60</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_malloc_bubble</p></td>
+<td><p>39236</p></td>
+<td><p>92</p></td>
+<td><p>426.48</p></td>
+</tr>
+<tr class="row-even"><td><p>b_malloc_tiny1</p></td>
+<td><p>564</p></td>
+<td><p>32</p></td>
+<td><p>17.63</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_malloc_tiny2</p></td>
+<td><p>564</p></td>
+<td><p>604</p></td>
+<td><p>0.93</p></td>
+</tr>
+<tr class="row-even"><td><p>b_malloc_big1</p></td>
+<td><p>28</p></td>
+<td><p>24</p></td>
+<td><p>1.17</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_malloc_big2</p></td>
+<td><p>8040</p></td>
+<td><p>13052</p></td>
+<td><p>0.62</p></td>
+</tr>
+<tr class="row-even"><td><p>b_malloc_thread_stress</p></td>
+<td><p>160</p></td>
+<td><p>52</p></td>
+<td><p>3.08</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_malloc_thread_local</p></td>
+<td><p>180</p></td>
+<td><p>80</p></td>
+<td><p>2.25</p></td>
+</tr>
+<tr class="row-even"><td><p>b_string_strstr(abc)</p></td>
+<td><p>16</p></td>
+<td><p>16</p></td>
+<td><p>1.00</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_string_strstr(azby)</p></td>
+<td><p>16</p></td>
+<td><p>16</p></td>
+<td><p>1.00</p></td>
+</tr>
+<tr class="row-even"><td><p>b_string_strstr(ac)</p></td>
+<td><p>16</p></td>
+<td><p>16</p></td>
+<td><p>1.00</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_string_strstr(aaac)</p></td>
+<td><p>16</p></td>
+<td><p>16</p></td>
+<td><p>1.00</p></td>
+</tr>
+<tr class="row-even"><td><p>b_string_strstr(aaaaac)</p></td>
+<td><p>16</p></td>
+<td><p>16</p></td>
+<td><p>1.00</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_string_memset</p></td>
+<td><p>16</p></td>
+<td><p>16</p></td>
+<td><p>1.00</p></td>
+</tr>
+<tr class="row-even"><td><p>b_string_strchr</p></td>
+<td><p>16</p></td>
+<td><p>16</p></td>
+<td><p>1.00</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_string_strlen</p></td>
+<td><p>16</p></td>
+<td><p>16</p></td>
+<td><p>1.00</p></td>
+</tr>
+<tr class="row-even"><td><p>b_pthread_createjoin_serial1</p></td>
+<td><p>24</p></td>
+<td><p>16</p></td>
+<td><p>1.50</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_pthread_createjoin_serial2</p></td>
+<td><p>64</p></td>
+<td><p>16</p></td>
+<td><p>4.00</p></td>
+</tr>
+<tr class="row-even"><td><p>b_pthread_create_serial1</p></td>
+<td><p>20720</p></td>
+<td><p>10016</p></td>
+<td><p>2.07</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_pthread_uselesslock</p></td>
+<td><p>24</p></td>
+<td><p>16</p></td>
+<td><p>1.50</p></td>
+</tr>
+<tr class="row-even"><td><p>b_stdio_putcgetc</p></td>
+<td><p>20</p></td>
+<td><p>16</p></td>
+<td><p>1.25</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_stdio_putcgetc_unlocked</p></td>
+<td><p>20</p></td>
+<td><p>16</p></td>
+<td><p>1.25</p></td>
+</tr>
+<tr class="row-even"><td><p>b_regex_compile</p></td>
+<td><p>28</p></td>
+<td><p>28</p></td>
+<td><p>1.00</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_regex_search</p></td>
+<td><p>28</p></td>
+<td><p>16</p></td>
+<td><p>1.75</p></td>
+</tr>
+<tr class="row-even"><td><p>b_regex_search</p></td>
+<td><p>80</p></td>
+<td><p>16</p></td>
+<td><p>5.00</p></td>
+</tr>
+<tr class="row-odd"><td><p>b_pthread_createjoin_minimal1</p></td>
+<td><p>24</p></td>
+<td><p>16</p></td>
+<td><p>1.50</p></td>
+</tr>
+<tr class="row-even"><td><p>b_pthread_createjoin_minimal2</p></td>
+<td><p>72</p></td>
+<td><p>16</p></td>
+<td><p>4.50</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="coremark">
+<h2>coremark性能测试<a class="headerlink" href="#coremark" title="Permalink to this headline">¶</a></h2>
+<p>1.单线程测试</p>
+<ul class="simple">
+<li><p>glibc测试结果</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">2K performance run parameters for coremark.</span>
+<span class="go">CoreMark Size    : 666</span>
+<span class="go">Total ticks      : 12256</span>
+<span class="go">Total time (secs): 12.256000</span>
+<span class="go">Iterations/Sec   : 3263.707572</span>
+<span class="go">Iterations       : 40000</span>
+<span class="go">Compiler version : GCC10.3.1</span>
+<span class="go">Compiler flags   : -O2 -DPERFORMANCE_RUN=1  -lrt</span>
+<span class="go">Memory location  : Please put data memory location here</span>
+<span class="go">              (e.g. code in flash, data on heap etc)</span>
+<span class="go">seedcrc          : 0xe9f5</span>
+<span class="go">[0]crclist       : 0xe714</span>
+<span class="go">[0]crcmatrix     : 0x1fd7</span>
+<span class="go">[0]crcstate      : 0x8e3a</span>
+<span class="go">[0]crcfinal      : 0x25b5</span>
+<span class="go">Correct operation validated. See README.md for run and reporting rules.</span>
+<span class="go">CoreMark 1.0 : 3263.707572 / GCC10.3.1 -O2 -DPERFORMANCE_RUN=1  -lrt / Heap</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>musl测试结果</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">2K performance run parameters for coremark.</span>
+<span class="go">CoreMark Size    : 666</span>
+<span class="go">Total ticks      : 12333</span>
+<span class="go">Total time (secs): 12.333000</span>
+<span class="go">Iterations/Sec   : 3243.330901</span>
+<span class="go">Iterations       : 40000</span>
+<span class="go">Compiler version : GCC10.3.1</span>
+<span class="go">Compiler flags   : -O2 -DPERFORMANCE_RUN=1  -lrt</span>
+<span class="go">Memory location  : Please put data memory location here</span>
+<span class="go">              (e.g. code in flash, data on heap etc)</span>
+<span class="go">seedcrc          : 0xe9f5</span>
+<span class="go">[0]crclist       : 0xe714</span>
+<span class="go">[0]crcmatrix     : 0x1fd7</span>
+<span class="go">[0]crcstate      : 0x8e3a</span>
+<span class="go">[0]crcfinal      : 0x25b5</span>
+<span class="go">Correct operation validated. See README.md for run and reporting rules.</span>
+<span class="go">CoreMark 1.0 : 3243.330901 / GCC10.3.1 -O2 -DPERFORMANCE_RUN=1  -lrt / Heap</span>
+</pre></div>
+</div>
+<p>综上，得到glibc得分为 <code class="docutils literal notranslate"><span class="pre">5.45</span> <span class="pre">Coremark/Mhz</span></code> ，musl得分为 <code class="docutils literal notranslate"><span class="pre">5.41</span> <span class="pre">Coremark/Mhz</span></code> 。</p>
+<p>2.多线程测试</p>
+<ul class="simple">
+<li><p>glibc测试结果</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">2K performance run parameters for coremark.</span>
+<span class="go">CoreMark Size    : 666</span>
+<span class="go">Total ticks      : 12284</span>
+<span class="go">Total time (secs): 12.284000</span>
+<span class="go">Iterations/Sec   : 13025.073266</span>
+<span class="go">Iterations       : 160000</span>
+<span class="go">Compiler version : GCC10.3.1</span>
+<span class="go">Compiler flags   : -O2 -DMULTITHREAD=4 -DUSE_PTHREAD -DPERFORMANCE_RUN=1  -lrt</span>
+<span class="go">Parallel PThreads : 4</span>
+<span class="go">Memory location  : Please put data memory location here</span>
+<span class="go">              (e.g. code in flash, data on heap etc)</span>
+<span class="go">seedcrc          : 0xe9f5</span>
+<span class="go">[0]crclist       : 0xe714</span>
+<span class="go">[1]crclist       : 0xe714</span>
+<span class="go">[2]crclist       : 0xe714</span>
+<span class="go">[3]crclist       : 0xe714</span>
+<span class="go">[0]crcmatrix     : 0x1fd7</span>
+<span class="go">[1]crcmatrix     : 0x1fd7</span>
+<span class="go">[2]crcmatrix     : 0x1fd7</span>
+<span class="go">[3]crcmatrix     : 0x1fd7</span>
+<span class="go">[0]crcstate      : 0x8e3a</span>
+<span class="go">[1]crcstate      : 0x8e3a</span>
+<span class="go">[2]crcstate      : 0x8e3a</span>
+<span class="go">[3]crcstate      : 0x8e3a</span>
+<span class="go">[0]crcfinal      : 0x25b5</span>
+<span class="go">[1]crcfinal      : 0x25b5</span>
+<span class="go">[2]crcfinal      : 0x25b5</span>
+<span class="go">[3]crcfinal      : 0x25b5</span>
+<span class="go">Correct operation validated. See README.md for run and reporting rules.</span>
+<span class="go">CoreMark 1.0 : 13025.073266 / GCC10.3.1 -O2 -DMULTITHREAD=4 -DUSE_PTHREAD -DPERFORMANCE_RUN=1  -lrt / Heap / 4:PThreads</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>musl测试结果</p></li>
+</ul>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">2K performance run parameters for coremark.</span>
+<span class="go">CoreMark Size    : 666</span>
+<span class="go">Total ticks      : 12281</span>
+<span class="go">Total time (secs): 12.281000</span>
+<span class="go">Iterations/Sec   : 13028.255028</span>
+<span class="go">Iterations       : 160000</span>
+<span class="go">Compiler version : GCC10.3.1</span>
+<span class="go">Compiler flags   : -O2 -DMULTITHREAD=4 -DUSE_PTHREAD -DPERFORMANCE_RUN=1  -lrt</span>
+<span class="go">Parallel PThreads : 4</span>
+<span class="go">Memory location  : Please put data memory location here</span>
+<span class="go">              (e.g. code in flash, data on heap etc)</span>
+<span class="go">seedcrc          : 0xe9f5</span>
+<span class="go">[0]crclist       : 0xe714</span>
+<span class="go">[1]crclist       : 0xe714</span>
+<span class="go">[2]crclist       : 0xe714</span>
+<span class="go">[3]crclist       : 0xe714</span>
+<span class="go">[0]crcmatrix     : 0x1fd7</span>
+<span class="go">[1]crcmatrix     : 0x1fd7</span>
+<span class="go">[2]crcmatrix     : 0x1fd7</span>
+<span class="go">[3]crcmatrix     : 0x1fd7</span>
+<span class="go">[0]crcstate      : 0x8e3a</span>
+<span class="go">[1]crcstate      : 0x8e3a</span>
+<span class="go">[2]crcstate      : 0x8e3a</span>
+<span class="go">[3]crcstate      : 0x8e3a</span>
+<span class="go">[0]crcfinal      : 0x25b5</span>
+<span class="go">[1]crcfinal      : 0x25b5</span>
+<span class="go">[2]crcfinal      : 0x25b5</span>
+<span class="go">[3]crcfinal      : 0x25b5</span>
+<span class="go">Correct operation validated. See README.md for run and reporting rules.</span>
+<span class="go">CoreMark 1.0 : 13028.255028 / GCC10.3.1 -O2 -DMULTITHREAD=4 -DUSE_PTHREAD -DPERFORMANCE_RUN=1  -lrt / Heap / 4:PThreads</span>
+</pre></div>
+</div>
+<p>综上，得到glibc得分为 <code class="docutils literal notranslate"><span class="pre">21.74</span> <span class="pre">Coremark/Mhz</span></code> ，musl得分为 <code class="docutils literal notranslate"><span class="pre">21.75</span> <span class="pre">Coremark/Mhz</span></code> 。</p>
+</section>
+<section id="lmbench-os">
+<h2>lmbench OS性能测试<a class="headerlink" href="#lmbench-os" title="Permalink to this headline">¶</a></h2>
+<p>1.处理器进程操作时间(微秒)</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 26%" />
+<col style="width: 28%" />
+<col style="width: 24%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>测试项</p></th>
+<th class="head"><p>glibc</p></th>
+<th class="head"><p>musl</p></th>
+<th class="head"><p>性能差异</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>null call</p></td>
+<td><p>4.19</p></td>
+<td><p>4.36</p></td>
+<td><p>-3.90%</p></td>
+</tr>
+<tr class="row-odd"><td><p>null I/O</p></td>
+<td><p>4.43</p></td>
+<td><p>4.48</p></td>
+<td><p>-1.12%</p></td>
+</tr>
+<tr class="row-even"><td><p>stat</p></td>
+<td><p>12.8</p></td>
+<td><p>13.1</p></td>
+<td><p>-2.29%</p></td>
+</tr>
+<tr class="row-odd"><td><p>open close</p></td>
+<td><p>29.6</p></td>
+<td><p>29.3</p></td>
+<td><p>1.02%</p></td>
+</tr>
+<tr class="row-even"><td><p>slct TCP</p></td>
+<td><p>19.3</p></td>
+<td><p>19.4</p></td>
+<td><p>-0.52%</p></td>
+</tr>
+<tr class="row-odd"><td><p>sig inst</p></td>
+<td><p>6.2</p></td>
+<td><p>6.6</p></td>
+<td><p>-6.06%</p></td>
+</tr>
+<tr class="row-even"><td><p>sig hndl</p></td>
+<td><p>24.8</p></td>
+<td><p>24.4</p></td>
+<td><p>1.64%</p></td>
+</tr>
+<tr class="row-odd"><td><p>fork proc</p></td>
+<td><p>645</p></td>
+<td><p>488</p></td>
+<td><p>32.17%</p></td>
+</tr>
+<tr class="row-even"><td><p>exec proc</p></td>
+<td><p>765</p></td>
+<td><p>580</p></td>
+<td><p>31.90%</p></td>
+</tr>
+<tr class="row-odd"><td><p>sh proc</p></td>
+<td><p>4899</p></td>
+<td><p>2212</p></td>
+<td><p>121.47%</p></td>
+</tr>
+</tbody>
+</table>
+<p>2.上下文切换时间(微秒)</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 26%" />
+<col style="width: 28%" />
+<col style="width: 24%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>测试项</p></th>
+<th class="head"><p>glibc</p></th>
+<th class="head"><p>musl</p></th>
+<th class="head"><p>性能差异</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>2p/0K ctxsw</p></td>
+<td><p>24.9</p></td>
+<td><p>23.3</p></td>
+<td><p>6.87%</p></td>
+</tr>
+<tr class="row-odd"><td><p>2p/16K ctxsw</p></td>
+<td><p>23.8</p></td>
+<td><p>24.2</p></td>
+<td><p>-1.65%</p></td>
+</tr>
+<tr class="row-even"><td><p>2p/64K ctxsw</p></td>
+<td><p>24.2</p></td>
+<td><p>20.7</p></td>
+<td><p>16.91%</p></td>
+</tr>
+<tr class="row-odd"><td><p>8p/16K ctxsw</p></td>
+<td><p>28.3</p></td>
+<td><p>24.3</p></td>
+<td><p>16.46%</p></td>
+</tr>
+<tr class="row-even"><td><p>8p/64K ctxsw</p></td>
+<td><p>27.6</p></td>
+<td><p>26.6</p></td>
+<td><p>3.76%</p></td>
+</tr>
+<tr class="row-odd"><td><p>16p/16K ctxsw</p></td>
+<td><p>28.2</p></td>
+<td><p>26.6</p></td>
+<td><p>6.02%</p></td>
+</tr>
+<tr class="row-even"><td><p>16p/64K ctxsw</p></td>
+<td><p>37.9</p></td>
+<td><p>36</p></td>
+<td><p>5.28%</p></td>
+</tr>
+</tbody>
+</table>
+<p>3.本地管道通信延迟(微秒)</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 26%" />
+<col style="width: 28%" />
+<col style="width: 24%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>测试项</p></th>
+<th class="head"><p>glibc</p></th>
+<th class="head"><p>musl</p></th>
+<th class="head"><p>性能差异</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Pipe</p></td>
+<td><p>84.3</p></td>
+<td><p>81.2</p></td>
+<td><p>3.82%</p></td>
+</tr>
+<tr class="row-odd"><td><p>AF UNIX</p></td>
+<td><p>81.9</p></td>
+<td><p>71.7</p></td>
+<td><p>14.23%</p></td>
+</tr>
+<tr class="row-even"><td><p>UDP</p></td>
+<td><p>144.6</p></td>
+<td><p>133.7</p></td>
+<td><p>8.15%</p></td>
+</tr>
+<tr class="row-odd"><td><p>TCP</p></td>
+<td><p>199.1</p></td>
+<td><p>196.1</p></td>
+<td><p>1.53%</p></td>
+</tr>
+<tr class="row-even"><td><p>TCP conn</p></td>
+<td><p>556</p></td>
+<td><p>556</p></td>
+<td><p>0.00%</p></td>
+</tr>
+</tbody>
+</table>
+<p>4.文件延迟(微秒)</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 27%" />
+<col style="width: 23%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>测试项</p></th>
+<th class="head"><p>glibc</p></th>
+<th class="head"><p>musl</p></th>
+<th class="head"><p>性能差异</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0K File Create</p></td>
+<td><p>52.4</p></td>
+<td><p>52.6</p></td>
+<td><p>-0.38%</p></td>
+</tr>
+<tr class="row-odd"><td><p>0K File Delete</p></td>
+<td><p>37.1</p></td>
+<td><p>37.5</p></td>
+<td><p>-1.07%</p></td>
+</tr>
+<tr class="row-even"><td><p>10K File Create</p></td>
+<td><p>106.5</p></td>
+<td><p>104.1</p></td>
+<td><p>2.31%</p></td>
+</tr>
+<tr class="row-odd"><td><p>10K File Delete</p></td>
+<td><p>59.8</p></td>
+<td><p>60.7</p></td>
+<td><p>-1.48%</p></td>
+</tr>
+<tr class="row-even"><td><p>Mmap Latency</p></td>
+<td><p>21.8K</p></td>
+<td><p>21.8K</p></td>
+<td><p>0.00%</p></td>
+</tr>
+<tr class="row-odd"><td><p>Prot Fault</p></td>
+<td><p>3.325</p></td>
+<td><p>3.342</p></td>
+<td><p>-0.51%</p></td>
+</tr>
+<tr class="row-even"><td><p>Page Fault</p></td>
+<td><p>1.7151</p></td>
+<td><p>1.7067</p></td>
+<td><p>0.49%</p></td>
+</tr>
+<tr class="row-odd"><td><p>100fd selct</p></td>
+<td><p>10.5</p></td>
+<td><p>10.6</p></td>
+<td><p>-0.94%</p></td>
+</tr>
+</tbody>
+</table>
+<p>5.本地通信带宽(MB/s)</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 27%" />
+<col style="width: 23%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>测试项</p></th>
+<th class="head"><p>glibc</p></th>
+<th class="head"><p>musl</p></th>
+<th class="head"><p>性能差异</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Pipe</p></td>
+<td><p>303</p></td>
+<td><p>306</p></td>
+<td><p>0.99%</p></td>
+</tr>
+<tr class="row-odd"><td><p>AF UNIX</p></td>
+<td><p>592</p></td>
+<td><p>746</p></td>
+<td><p>26.01%</p></td>
+</tr>
+<tr class="row-even"><td><p>TCP</p></td>
+<td><p>373</p></td>
+<td><p>425</p></td>
+<td><p>13.94%</p></td>
+</tr>
+<tr class="row-odd"><td><p>File reread</p></td>
+<td><p>1028.7</p></td>
+<td><p>1020.9</p></td>
+<td><p>-0.76%</p></td>
+</tr>
+<tr class="row-even"><td><p>Mmap reread</p></td>
+<td><p>2837.4</p></td>
+<td><p>2837.6</p></td>
+<td><p>0.01%</p></td>
+</tr>
+<tr class="row-odd"><td><p>Bcopy (libc)</p></td>
+<td><p>1637.4</p></td>
+<td><p>1639.8</p></td>
+<td><p>0.15%</p></td>
+</tr>
+<tr class="row-even"><td><p>Bcopy(hand)</p></td>
+<td><p>1613</p></td>
+<td><p>1635.1</p></td>
+<td><p>1.37%</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mem read</p></td>
+<td><p>2128</p></td>
+<td><p>2124</p></td>
+<td><p>-0.19%</p></td>
+</tr>
+<tr class="row-even"><td><p>Mem write</p></td>
+<td><p>1681</p></td>
+<td><p>1680</p></td>
+<td><p>-0.06%</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="unixbench">
+<h2>unixbench性能测试<a class="headerlink" href="#unixbench" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 32%" />
+<col style="width: 13%" />
+<col style="width: 14%" />
+<col style="width: 12%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>测试项</p></th>
+<th class="head"><p>musl</p></th>
+<th class="head"><p>glibc</p></th>
+<th class="head"><p>基准线</p></th>
+<th class="head"><p>musl对比基准线</p></th>
+<th class="head"><p>glibc对比基准线</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Dhrystone 2 using register variables</p></td>
+<td><p>4981154.2 lps</p></td>
+<td><p>6244531.8 lps</p></td>
+<td><p>116700.0 lps</p></td>
+<td><p>426.8</p></td>
+<td><p>535.1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Double-Precision Whetstone</p></td>
+<td><p>1059.1 MWIPS</p></td>
+<td><p>1062.0 MWIPS</p></td>
+<td><p>55.0 MWIPS</p></td>
+<td><p>192.6</p></td>
+<td><p>193.1</p></td>
+</tr>
+<tr class="row-even"><td><p>Execl Throughput</p></td>
+<td><p>1215.8 lps</p></td>
+<td><p>653.9 lps</p></td>
+<td><p>43.0 lps</p></td>
+<td><p>282.7</p></td>
+<td><p>152.1</p></td>
+</tr>
+<tr class="row-odd"><td><p>File Copy 1024 bufsize 2000 maxblocks</p></td>
+<td><p>62370.8 KBps</p></td>
+<td><p>59823.5 KBps</p></td>
+<td><p>3960.0 KBps</p></td>
+<td><p>157.5</p></td>
+<td><p>151.1</p></td>
+</tr>
+<tr class="row-even"><td><p>File Copy 256 bufsize 500 maxblocks</p></td>
+<td><p>17242.5 KBps</p></td>
+<td><p>16201.4 KBps</p></td>
+<td><p>1655.0 KBps</p></td>
+<td><p>104.2</p></td>
+<td><p>97.9</p></td>
+</tr>
+<tr class="row-odd"><td><p>File Copy 4096 bufsize 8000 maxblocks</p></td>
+<td><p>195350.9 KBps</p></td>
+<td><p>191638.2 KBps</p></td>
+<td><p>5800.0 KBps</p></td>
+<td><p>336.8</p></td>
+<td><p>330.4</p></td>
+</tr>
+<tr class="row-even"><td><p>Pipe Throughput</p></td>
+<td><p>58289.1 lps</p></td>
+<td><p>58878.8 lps</p></td>
+<td><p>12440.0 lps</p></td>
+<td><p>46.9</p></td>
+<td><p>47.3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pipe-based Context Switching</p></td>
+<td><p>12190.6 lps</p></td>
+<td><p>12742.8 lps</p></td>
+<td><p>4000.0 lps</p></td>
+<td><p>30.5</p></td>
+<td><p>31.9</p></td>
+</tr>
+<tr class="row-even"><td><p>Process Creation</p></td>
+<td><p>1596.9 lps</p></td>
+<td><p>1209.4 lps</p></td>
+<td><p>126.0 lps</p></td>
+<td><p>126.7</p></td>
+<td><p>96</p></td>
+</tr>
+<tr class="row-odd"><td><p>Shell Scripts (1 concurrent)</p></td>
+<td><p>1894.0 lpm</p></td>
+<td><p>1516.3 lpm</p></td>
+<td><p>42.4 lpm</p></td>
+<td><p>446.7</p></td>
+<td><p>357.6</p></td>
+</tr>
+<tr class="row-even"><td><p>Shell Scripts (8 concurrent)</p></td>
+<td><p>594.4 lpm</p></td>
+<td><p>478.0 lpm</p></td>
+<td><p>6.0 lpm</p></td>
+<td><p>990.6</p></td>
+<td><p>796.7</p></td>
+</tr>
+<tr class="row-odd"><td><p>System Call Overhead</p></td>
+<td><p>46124.2 lps</p></td>
+<td><p>46279.8 lps</p></td>
+<td><p>15000.0 lpm</p></td>
+<td><p>30.7</p></td>
+<td><p>30.9</p></td>
+</tr>
+</tbody>
+</table>
+<p>综上，基于glibc的树莓派系统跑分结果为 <code class="docutils literal notranslate"><span class="pre">146.5</span></code> ，基于muslc的树莓派系统跑分结果为 <code class="docutils literal notranslate"><span class="pre">161.6</span></code> 。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ros.html" class="btn btn-neutral float-left" title="嵌入式ROS运行时支持" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="distributed_softbus.html" class="btn btn-neutral float-right" title="分布式软总线" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-24.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../master/features/muslc.html">master</a></dd>
+      <dd><a href="../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP2/features/muslc.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP3/features/muslc.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP4/features/muslc.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../openEuler-23.03/features/muslc.html">openEuler-23.03</a></dd>
+      <dd><a href="../../openEuler-23.09/features/muslc.html">openEuler-23.09</a></dd>
+      <dd><a href="../../openEuler-24.03-LTS/features/muslc.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="muslc.html">openEuler-24.09</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

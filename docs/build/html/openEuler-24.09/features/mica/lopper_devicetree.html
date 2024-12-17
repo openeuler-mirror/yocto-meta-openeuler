@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>外设分区管理 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="嵌入式ROS运行时支持" href="../ros.html" />
+    <link rel="prev" title="基于UniProton的RPC服务" href="services/rpc.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">多OS混合关键性部署框架 (MICA)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="intro.html">简介</a></li>
+<li class="toctree-l4"><a class="reference internal" href="supported_lists.html">支持列表</a></li>
+<li class="toctree-l4"><a class="reference internal" href="build.html">构建指导</a></li>
+<li class="toctree-l4"><a class="reference internal" href="instruction.html">使用指导</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mica_ctl.html">mica命令与配置文件</a></li>
+<li class="toctree-l4"><a class="reference internal" href="developer_guides/index.html">开发者指南</a></li>
+<li class="toctree-l4"><a class="reference internal" href="services/index.html">跨OS服务</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">外设分区管理</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#id2">总体介绍</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id3">如何使用外设分区管理</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id4">如何编写外设分区配置文件</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../muslc.html">musl libc的支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../distributed_softbus.html">分布式软总线</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../preempt_rt.html">软实时系统介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../prebuilt_tool.html">预构建工具特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rust.html">Rust支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../qt5_wayland.html">嵌入式图形支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../armnn.html">ArmNN的支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../clang_llvm.html">clang/llvm 编译工具链支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../jailhouse.html">嵌入式分区虚拟机Jailhouse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../openbmc.html">OpenBMC 镜像构建和使用</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../container/index.html">嵌入式容器相关特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../kernelversions.html">内核多版本支持（5.10/6.6）介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../software_package_description.html">当前所支持的软件包</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../zvm.html">嵌入式实时虚拟机ZVM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mindspore_lite.html">构建Mindspore Lite使用指导</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../bsp/index.html">南向使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../user_guide/index.html">用户使用指导</a> &raquo;</li>
+          <li><a href="../index.html">关键特性指导</a> &raquo;</li>
+          <li><a href="index.html">多OS混合关键性部署框架 (MICA)</a> &raquo;</li>
+      <li>外设分区管理</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>外设分区管理<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<section id="id2">
+<h2>总体介绍<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>受益于硬件技术的快速发展，先进封装技术带来了更高的集成度，一个片上系统(SoC)中能够封装各种丰富的外设组件，为部署混合关键性系统提供了坚实的物理基础，但同时也带来了一个挑战：Linux、RTOS或其他操作系统在运行时有各自的资源访问需求，需要能够直接访问 SoC 的不同部分，并排运行并且不会相互干扰。针对该场景，用户可以使用外设分区管理配置各OS需要的外设资源。</p>
+<p>通过外设分区管理，能够在集成构建的过程中，根据用户的配置文件，对完整的设备树进行解析和操作，最终生成针对不同OS的设备树。</p>
+<p>本章主要介绍如何基于yocto-meta-openeuler使用外设分区管理，以及如何编写自定义的配置文件。</p>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h2>如何使用外设分区管理<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>在对应的BSP层添加 <code class="docutils literal notranslate"><span class="pre">lopper-ops.bbappend</span></code> 和 <code class="docutils literal notranslate"><span class="pre">lops</span></code> 文件夹，用于承载用户的配置文件。例如：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">.</span>
+<span class="go">└── meta-openeuler-bsp</span>
+<span class="go">    └── recipes-kernel</span>
+<span class="go">        └── lopper</span>
+<span class="go">            ├── lopper-ops.bbappend</span>
+<span class="go">            └── lops</span>
+<span class="go">                └── lop-user-config.dts</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">lopper-ops.bbappend</span></code> 主要是将当前目录的lops文件夹传递给yocto，内容如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cat lopper-ops.bbappend
+<span class="gp"># </span>Use the operation files from current layer
+<span class="go">FILESEXTRAPATHS:prepend := &quot;${THISDIR}/:&quot;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">lops</span></code> 用于存放用户自定义的配置文件，这些配置文件统一用device-tree格式描述，但是有单独的语法，
+用于描述关于输入设备树的操作，包括：修改（删除）某个设备节点；添加自定义节点；提取部分节点并生成新的设备树等。
+具体如何编写 <code class="docutils literal notranslate"><span class="pre">lop-user-config.dts</span></code> ，请参考下一小节。</p>
+</li>
+<li><p>在使用设备树文件的配方中（假设为 <code class="docutils literal notranslate"><span class="pre">foo-A.bb</span></code>），调用 lopper-devicetree.bbclass ，并配置输入和输出，如：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># foo-A.bb</span>
+inherit lopper-devicetree
+<span class="nv">INPUT_DT</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">B</span><span class="si">}</span><span class="s2">/input-sample.dtb&quot;</span>
+<span class="nv">OUTPUT_DT</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">B</span><span class="si">}</span><span class="s2">/output-sample.dtb&quot;</span>
+</pre></div>
+</div>
+<div class="line-block">
+<div class="line"><strong>输入</strong>：<code class="docutils literal notranslate"><span class="pre">input-sample.dtb</span></code>，完整的设备树。</div>
+<div class="line"><strong>输出</strong>：<code class="docutils literal notranslate"><span class="pre">output-sample.dtb</span></code>，处理后的设备树。此外，还会输出根据配置文件生成的RTOS侧设备树。</div>
+<div class="line">即：</div>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>                                       ┌──────►  output-sample.dtb   -- for Linux
+                                       │
+                                       │
+                   lop-user-config.dts │
+input-sample.dtb ──────────────────────┤
+                                       │
+                                       │
+                                       │
+                                       └──────►  serial-for-zephyr.dts -- for zephyr
+</pre></div>
+</div>
+<p>默认会通过 lopper-devicetree 中的 do_mkdts 完成设备树的处理，这个任务默认的依赖关系为
+<code class="docutils literal notranslate"><span class="pre">before</span> <span class="pre">do_install</span> <span class="pre">after</span> <span class="pre">do_compile</span></code> ，因此，用户可以在 <code class="docutils literal notranslate"><span class="pre">do_install</span></code> 中使用处理后的设备树 <code class="docutils literal notranslate"><span class="pre">output-sample.dtb</span></code>。</p>
+<p>另外，用户可以通过配置文件生成RTOS侧的设备树，例如，指明提取某个 serial 节点，并生成
+<code class="docutils literal notranslate"><span class="pre">serial-for-zephyr.dts</span></code> ，经过处理后，这份 dts 默认会被安装到 <code class="docutils literal notranslate"><span class="pre">foo-A</span></code> 的 SYSROOT_DIR 中，
+因此，在其它的配方中（<code class="docutils literal notranslate"><span class="pre">foo-B.bb</span></code>）可以通过以下方法获取该 dts 文件：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># foo-B.bb</span>
+
+<span class="c1"># add dependence</span>
+<span class="nv">DEPENDS</span> <span class="o">+=</span> <span class="s2">&quot;foo-A&quot;</span>
+
+<span class="c1"># get the serial-for-zephyr.dts</span>
+do_configure:append<span class="o">()</span> <span class="o">{</span>
+    cp <span class="si">${</span><span class="nv">WORKDIR</span><span class="si">}</span>/recipe-sysroot/lop_dts/serial-for-zephyr.dts <span class="si">${</span><span class="nv">B</span><span class="si">}</span>/
+<span class="o">}</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p>yocto-meta-openeuler 中为树莓派添加了一个使用案例，将 <code class="docutils literal notranslate"><span class="pre">serial&#64;7e201a00</span></code> 提取给zephyr使用，
+参考提交 <a class="reference external" href="https://gitee.com/openeuler/yocto-meta-openeuler/commit/144641062">rpi4: extract a serial for zephyr</a>。</p>
+</div>
+</section>
+<hr class="docutils" />
+<section id="id4">
+<h2>如何编写外设分区配置文件<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>外设分区管理是基于开源工具 lopper 完成的，用户可以自定义配置文件（lopper operations），以实现设备树节点的修改、删除、提取等操作。
+关于 lopper operations 详细完整的语法配置，可以阅读学习 <a class="reference external" href="https://github.com/devicetree-org/lopper/blob/master/README-architecture.md">lopper/README-architecture</a>。
+下面，会介绍一些较为常用的功能接口。</p>
+<p><strong>lopper operations 的格式</strong>：</p>
+<blockquote>
+<div><p>lopper operations(lops) 的结构类似于标准的dts文件，设备树的根必须指定 <code class="docutils literal notranslate"><span class="pre">compatible</span> <span class="pre">=</span> <span class="pre">&quot;system-device-tree-v1,lop&quot;;</span></code>，以便识别为 lop 文件。
+所有的操作都需要定义在 <code class="docutils literal notranslate"><span class="pre">lops/lop_&lt;number&gt;</span></code> 中（number仅用于标识，lop的解析顺序是其出现在文件中的顺序）。</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>/dts-v1/;
+
+/ {
+        compatible = &quot;system-device-tree-v1&quot;;
+        lops {
+                lop_&lt;number&gt; {
+                        compatible = &quot;system-device-tree-v1,lop,&lt;lop type&gt;&quot;;   // compatible 注明 lop 的类型
+                        &lt;lop specific properties&gt;;
+                };
+                lop_&lt;number&gt; {
+                        compatible = &quot;system-device-tree-v1,lop,&lt;lop type&gt;&quot;;
+                        &lt;lop specific properties&gt;;
+                };
+        };
+};
+</pre></div>
+</div>
+</div></blockquote>
+<p>不同类型的 lop 有各自的 compatible 和 properties，包括：</p>
+<ol class="arabic">
+<li><p><strong>modify</strong></p>
+<p>用于修改指定路径的设备节点，包括修改property、添加property、删除或移动设备节点。</p>
+<p>对应的 compatible 为：<code class="docutils literal notranslate"><span class="pre">&quot;system-device-tree-v1,lop,modify&quot;</span></code></p>
+<p>对应的 property 格式为：<code class="docutils literal notranslate"><span class="pre">modify</span> <span class="pre">=</span> <span class="pre">&quot;&lt;path</span> <span class="pre">to</span> <span class="pre">node&gt;:&lt;property&gt;:&lt;replacement&gt;&quot;</span></code></p>
+<p>具体用法可参考：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>// 重命名 /cpus_r5 节点为 /cpus
+lop_1 <span class="o">{</span>
+      <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,modify&quot;</span><span class="p">;</span>
+      <span class="nv">modify</span> <span class="o">=</span> <span class="s2">&quot;/cpus_r5/::/cpus/&quot;</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+
+// 删除 /cpus_r5 节点
+lop_2 <span class="o">{</span>
+      <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,modify&quot;</span><span class="p">;</span>
+      <span class="nv">modify</span> <span class="o">=</span> <span class="s2">&quot;/cpus_r5/::&quot;</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+
+// 移动 /cpus_r5 节点到 /soc/cpus_r5
+lop_3 <span class="o">{</span>
+      <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,modify&quot;</span><span class="p">;</span>
+      <span class="nv">modify</span> <span class="o">=</span> <span class="s2">&quot;/cpus_r5::/soc/cpus_r5&quot;</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+
+// 将 memory@800000000 中的 reg 修改为 modify_val 中的 reg
+lop_4 <span class="o">{</span>
+      <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,modify&quot;</span><span class="p">;</span>
+      <span class="nv">modify</span> <span class="o">=</span> <span class="s2">&quot;/memory@800000000:reg:&amp;modify_val#reg&quot;</span><span class="p">;</span>
+      modify_val <span class="o">{</span>
+          <span class="nv">reg</span> <span class="o">=</span> &lt;0x0 0x00000000 0x0 0x200000&gt;<span class="p">;</span>
+      <span class="o">}</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+
+// 为 /soc/serial@7e201000 节点添加 my-prop <span class="o">=</span> okay
+lop_5 <span class="o">{</span>
+      <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,modify&quot;</span><span class="p">;</span>
+      <span class="nv">modify</span> <span class="o">=</span> <span class="s2">&quot;/soc/serial@7e201000:my-prop:okay&quot;</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+
+// 修改 /soc/serial@7e201000 的 my-prop 为 disable
+lop_6 <span class="o">{</span>
+      <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,modify&quot;</span><span class="p">;</span>
+      <span class="nv">modify</span> <span class="o">=</span> <span class="s2">&quot;/soc/serial@7e201000:my-prop:disable&quot;</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>node add</strong></p>
+<p>添加节点，例如添加 <code class="docutils literal notranslate"><span class="pre">mcs&#64;70000000</span></code> 到 /reserved-memory/ 中：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>lop_1 <span class="o">{</span>
+      <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,add&quot;</span><span class="p">;</span>
+      <span class="nv">node_src</span> <span class="o">=</span> <span class="s2">&quot;mcs@70000000&quot;</span><span class="p">;</span>
+      <span class="nv">node_dest</span> <span class="o">=</span> <span class="s2">&quot;/reserved-memory/&quot;</span><span class="p">;</span>
+      mcs@70000000 <span class="o">{</span>
+          <span class="nv">reg</span> <span class="o">=</span> &lt;0x00 0x70000000 0x00 0x10000000&gt;<span class="p">;</span>
+          <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;mcs_mem&quot;</span><span class="p">;</span>
+          no-map<span class="p">;</span>
+      <span class="o">}</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>output</strong></p>
+<p>将指定的 nodes 输出到 output 中（源文件不会被修改），output 可以指定为 dts 也可以指定为 dtb，而且 nodes 支持正则匹配。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>// 将 <span class="s2">&quot;reserved-memory&quot;</span>, <span class="s2">&quot;cpu1&quot;</span>, <span class="s2">&quot;ipi1&quot;</span> 节点输出到 test.dtb
+lop_1 <span class="o">{</span>
+      <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,output&quot;</span><span class="p">;</span>
+      <span class="nv">outfile</span> <span class="o">=</span> <span class="s2">&quot;test.dtb&quot;</span><span class="p">;</span>
+      <span class="nv">nodes</span> <span class="o">=</span> <span class="s2">&quot;reserved-memory&quot;</span>, <span class="s2">&quot;cpu1&quot;</span>, <span class="s2">&quot;ipi1&quot;</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+
+// 所有的节点都输出到 test.dtb
+lop_2 <span class="o">{</span>
+      <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,output&quot;</span><span class="p">;</span>
+      <span class="nv">outfile</span> <span class="o">=</span> <span class="s2">&quot;test.dtb&quot;</span><span class="p">;</span>
+      // * is <span class="s2">&quot;all nodes&quot;</span>
+      <span class="nv">nodes</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+
+// 所有 testprop 为 testvalue 的 axi 节点都输出到 test.dts
+lop_3 <span class="o">{</span>
+      <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,output&quot;</span><span class="p">;</span>
+      <span class="nv">outfile</span> <span class="o">=</span> <span class="s2">&quot;test.dts&quot;</span><span class="p">;</span>
+      <span class="nv">nodes</span> <span class="o">=</span> <span class="s2">&quot;axi.*:testprop:testvalue&quot;</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>select</strong></p>
+<p>select lop 通常用于选择一个满足 select_* 的节点。可以同时有多条 select 语句，并且这些 select 是全局的，在 lop_1 定义的 select，可以沿用到 lop_2 中。</p>
+<p>select 的语法跟 modify 操作的语法相同：<code class="docutils literal notranslate"><span class="pre">select_*</span> <span class="pre">=</span> <span class="pre">&quot;&lt;path</span> <span class="pre">to</span> <span class="pre">node&gt;:&lt;property&gt;:&lt;value&gt;&quot;</span></code></p>
+<p>示例一：选择满足 select_1 或满足 select_2 的节点，类似于 <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">(node1</span> <span class="pre">||</span> <span class="pre">node2)</span></code> ：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>// <span class="k">for</span> node1
+<span class="nv">select_1</span> <span class="o">=</span> <span class="s2">&quot;/path/or/regex/to/nodes:prop:val&quot;</span><span class="p">;</span>
+
+// <span class="k">for</span> node2
+<span class="nv">select_2</span> <span class="o">=</span> <span class="s2">&quot;/path/or/2nd/node/regex:prop2:val2&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>示例二：选择同时满足 select_1 和 select_2 的节点，类似于 <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">(node1.prop1.val1</span> <span class="pre">&amp;&amp;</span> <span class="pre">node1.prop2.val2)</span></code> ：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>// <span class="k">for</span> node1.prop1.val1
+<span class="nv">select_1</span> <span class="o">=</span> <span class="s2">&quot;/path/or/regex/to/nodes:prop1:val1&quot;</span><span class="p">;</span>
+
+// <span class="k">for</span> node1.prop2.val2
+<span class="nv">select_2</span> <span class="o">=</span> <span class="s2">&quot;:prop2:val2&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>由于 select 是全局的，因此用法十分灵活，也略微复杂，一些用法示例：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>lop_1 <span class="o">{</span>
+      <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,select-v1&quot;</span><span class="p">;</span>
+      // 清除前面选择的节点
+      select_1<span class="p">;</span>
+      // 选择 compatible 为 <span class="s2">&quot;.*arm,cortex-a72.*&quot;</span>，并且 cpu-idle-states 为 <span class="m">3</span> 的 cpu 节点
+      <span class="nv">select_2</span> <span class="o">=</span> <span class="s2">&quot;/cpus/.*:compatible:.*arm,cortex-a72.*&quot;</span><span class="p">;</span>
+      <span class="nv">select_3</span> <span class="o">=</span> <span class="s2">&quot;:cpu-idle-states:3&quot;</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+
+lop_2 <span class="o">{</span>
+      // modify 的 path 是空，所以对之前 <span class="k">select</span> 的节点进行 modify 操作
+      <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,modify&quot;</span><span class="p">;</span>
+      <span class="nv">modify</span> <span class="o">=</span> <span class="s2">&quot;:testprop:testvalue&quot;</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+
+lop_4 <span class="o">{</span>
+      <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,select-v1&quot;</span><span class="p">;</span>
+      // 清空之前的select
+      select_1<span class="p">;</span>
+      // 选择 compatible 为 <span class="s2">&quot;.*arm,cortex-a72.*&quot;</span> 的 cpu 节点
+      // 或 phy-handle 为 0x9 的 axi 节点
+      <span class="nv">select_2</span> <span class="o">=</span> <span class="s2">&quot;/cpus/.*:compatible:.*arm,cortex-a72.*&quot;</span><span class="p">;</span>
+      <span class="nv">select_3</span> <span class="o">=</span> <span class="s2">&quot;/axi/.*:phy-handle:0x9&quot;</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>cond</strong></p>
+<p>可以在任意的 lop 中使用 cond 指定一个 select lop，并进行条件判断，若 select lop 为真，则 lop 会继续解析并执行；若 select lop 为假，则 lop 会被忽略。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>lops <span class="o">{</span>
+      // 定义一个 <span class="k">select</span> lop，
+      // 判断 device-tree 的 compatible 是否为 <span class="s2">&quot;raspberrypi,4-model-b\0brcm,bcm2711&quot;</span>
+      lop_1: lop_1 <span class="o">{</span>
+          <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,select-v1&quot;</span><span class="p">;</span>
+          select_1<span class="p">;</span>
+          <span class="nv">select_2</span> <span class="o">=</span> <span class="s2">&quot;/:compatible:raspberrypi,4-model-b\0brcm,bcm2711&quot;</span><span class="p">;</span>
+      <span class="o">}</span><span class="p">;</span>
+
+      // 通过 cond 进行条件判断
+      // 若 <span class="k">select</span> 为真，则进行 modify 操作，删除 /soc/serial@7e201a00/ 节点
+      lop_1_1: lop_1_1 <span class="o">{</span>
+          lop_1_1_1 <span class="o">{</span>
+                  <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,modify&quot;</span><span class="p">;</span>
+                  <span class="nv">cond</span> <span class="o">=</span> &lt;<span class="p">&amp;</span>lop_1&gt;<span class="p">;</span>
+                  <span class="nv">modify</span> <span class="o">=</span> <span class="s2">&quot;/soc/serial@7e201a00/::&quot;</span><span class="p">;</span>
+          <span class="o">}</span><span class="p">;</span>
+      <span class="o">}</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>tree</strong></p>
+<p>可以通过 tree 指定一个 node 集，并且对该 node 集进行 modify，output 等操作。</p>
+<p>modify 等 lop，默认会对输入的设备树文件进行操作，如果指定了 tree 就会在对应的 node 集中进行操作，如：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>// 创建一棵 tree<span class="o">(</span>test-tree<span class="o">)</span>，包含 nodes 中指定的节点
+lop_1 <span class="o">{</span>
+      <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,tree&quot;</span><span class="p">;</span>
+      <span class="nv">tree</span> <span class="o">=</span> <span class="s2">&quot;test-tree&quot;</span><span class="p">;</span>
+      <span class="nv">nodes</span> <span class="o">=</span> <span class="s2">&quot;reserved-memory&quot;</span>, <span class="s2">&quot;cpu1&quot;</span>, <span class="s2">&quot;ipi1&quot;</span><span class="p">;</span>
+      <span class="nv">nodes</span> <span class="o">=</span> <span class="s2">&quot;reserved-memory&quot;</span>, <span class="s2">&quot;zynqmp-rpu&quot;</span>, <span class="s2">&quot;zynqmp_ipi1&quot;</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+
+// 针对 test-tree 做 modify
+lop_2 <span class="o">{</span>
+      <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,modify&quot;</span><span class="p">;</span>
+      <span class="nv">tree</span> <span class="o">=</span> <span class="s2">&quot;test-tree&quot;</span><span class="p">;</span>
+      <span class="nv">modify</span> <span class="o">=</span> <span class="s2">&quot;/reserved-memory:#size-cells:3&quot;</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+
+// 针对 test-tree 进行 output 操作，输出 nodes 中指定的节点
+lop_3 <span class="o">{</span>
+      <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,output&quot;</span><span class="p">;</span>
+      <span class="nv">tree</span> <span class="o">=</span> <span class="s2">&quot;test-tree&quot;</span><span class="p">;</span>
+      <span class="nv">outfile</span> <span class="o">=</span> <span class="s2">&quot;output.dts&quot;</span><span class="p">;</span>
+      <span class="nv">nodes</span> <span class="o">=</span> <span class="s2">&quot;reserved-memory&quot;</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>print</strong></p>
+<p>print lop 可以用于增加调试打印，任何以 print 开头的property在被处理时，都会输出到 stdout。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>lop_1 <span class="o">{</span>
+      <span class="nv">compatible</span> <span class="o">=</span> <span class="s2">&quot;system-device-tree-v1,lop,print-v1&quot;</span><span class="p">;</span>
+      <span class="nv">print</span> <span class="o">=</span> <span class="s2">&quot;print_test: print 1&quot;</span><span class="p">;</span>
+      <span class="nv">print2</span> <span class="o">=</span> <span class="s2">&quot;print_test: print2&quot;</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>应用示例： <a class="reference external" href="https://gitee.com/openeuler/yocto-meta-openeuler/commit/144641062">rpi4: extract a serial for zephyr</a></p>
+<p>除本文介绍的接口外，lopper 还支持一些其它的 lops，比如 conditional, exec, code 等，还支持通过 assists 加载自定义的 python 代码进行 dts 的解析处理。</p>
+<p>更多用法探索，请阅读学习 <a class="reference external" href="https://github.com/devicetree-org/lopper/blob/master/README-architecture.md">lopper/README-architecture</a>。</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="services/rpc.html" class="btn btn-neutral float-left" title="基于UniProton的RPC服务" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../ros.html" class="btn btn-neutral float-right" title="嵌入式ROS运行时支持" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-24.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../master/features/mica/lopper_devicetree.html">master</a></dd>
+      <dd><a href="../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../openEuler-24.03-LTS/features/mica/lopper_devicetree.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="lopper_devicetree.html">openEuler-24.09</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>
