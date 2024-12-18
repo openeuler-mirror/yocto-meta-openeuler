@@ -15,6 +15,10 @@ SRC_URI =+ " \
         file://print-main-queue-info-to-journal-when-queue-full.patch \
         file://print-main-queue-info-to-journal-when-receive-USR1-signal.patch \
         file://backport-outchannel-eleminate-type-cast-for-compatibility-rea.patch \
+        file://backport-fix-printing-of-time_t-values.patch \
+        file://backport-omfile-do-not-carry-out-actual-action-when-writing-to-dev-null.patch \
+        file://backport-fix-memory-leak-in-omazureeventhubs-on-accepted-PN_D.patch \
+        file://tls-bugfix-parameter-StreamDriver_CRLFile-not-known.patch \
 "
 
 # file://0001-tests-disable-the-check-for-inotify.patch
@@ -39,3 +43,8 @@ PACKAGECONFIG[openssl] = "--enable-openssl,--disable-openssl,openssl,"
 PACKAGECONFIG[libcap-ng] = "--enable-libcap-ng,--disable-libcap-ng,libcap-ng,"
 
 PACKAGECONFIG[systemd] = "--enable-libsystemd,--disable-libsystemd,systemd,"
+
+# the syslog starting need workDirectory with /var/lib/rsyslog
+do_install:append(){
+        mkdir -p ${D}/var/lib/rsyslog
+}
