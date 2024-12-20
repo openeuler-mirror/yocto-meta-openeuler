@@ -212,6 +212,7 @@ def init_repo_dir(repo_dir):
 
 # init repo in repo_dir from manifest file
 def download_repo(d, repo_dir, repo_url ,version = None):
+    import os
     import git
     from git import GitCommandError
     import subprocess
@@ -226,8 +227,9 @@ def download_repo(d, repo_dir, repo_url ,version = None):
     lock_file = os.path.join(repo_dir, "file.lock")
     lf = bb.utils.lockfile(lock_file, block=True)
 
-    if not os.path.exists(repo_dir):
-        os.makedirs(repo_dir)
+    # note: bb.utils.lockfile will mkdir directory if not exists
+    dir_list = os.listdir(repo_dir)
+    if len(dir_list) ==1 and dir_list[0] == "file.lock":
         # here we sync repo from cache, note when repo is not exist we sync
         if d.getVar('CACHE_SRC_DIR'):
             sync_repo_from_cache(d, repo_dir)
