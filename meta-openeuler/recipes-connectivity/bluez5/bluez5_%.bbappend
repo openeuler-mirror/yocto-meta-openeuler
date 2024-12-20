@@ -6,6 +6,11 @@ PV = "5.71"
 SRC_URI:prepend = "\
     file://bluez-${PV}.tar.xz \
     file://backport-bluez-disable-test-mesh-crypto.patch \
+    file://0001-Fix-crash-after-pair-command.patch \
+    file://Fix-memory-leak.patch \
+"
+SRC_URI:sw_64:prepend = " \ 
+    file://bluez-5.54-sw.patch \
 "
 
 # removed by rpi in 5.66 version

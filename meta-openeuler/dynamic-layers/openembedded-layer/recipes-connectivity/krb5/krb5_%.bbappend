@@ -5,15 +5,34 @@ PV = "1.21.2"
 LIC_FILES_CHKSUM = "file://${S}/../NOTICE;md5=32cb3a99207053d9f5c1ef177c4d6e34"
 
 # apply openeuler source and patch
-SRC_URI:prepend = "file://${BP}.tar.gz \
-    file://ksu-pam-integration.patch;patchdir=${S}/.. \
-    file://SELinux-integration.patch;patchdir=${S}/.. \
-    file://Adjust-build-configuration.patch;patchdir=${S}/.. \
-    file://netlib-and-dns.patch;patchdir=${S}/.. \
-    file://fix-debuginfo-with-y.tab.c.patch;patchdir=${S}/.. \
-    file://Remove-3des-support.patch;patchdir=${S}/.. \
-    file://Fix-krb5_cccol_have_content-bad-pointer-free.patch;patchdir=${S}/.. \
+PATCH_DIR = "${S}/.."
+SRC_URI:prepend = " \
+    file://${BP}.tar.gz \
+    file://ksu-pam-integration.patch;patchdir=${PATCH_DIR} \
+    file://SELinux-integration.patch;patchdir=${PATCH_DIR} \
+    file://Adjust-build-configuration.patch;patchdir=${PATCH_DIR} \
+    file://netlib-and-dns.patch;patchdir=${PATCH_DIR} \
+    file://fix-debuginfo-with-y.tab.c.patch;patchdir=${PATCH_DIR} \
+    file://Remove-3des-support.patch;patchdir=${PATCH_DIR} \
+    file://Fix-krb5_cccol_have_content-bad-pointer-free.patch;patchdir=${PATCH_DIR} \
+    file://Do-not-reload-a-modified-profile-data-object.patch;patchdir=${PATCH_DIR} \
+    file://backport-Fix-two-unlikely-memory-leaks.patch;patchdir=${PATCH_DIR} \
+    file://backport-Fix-unimportant-memory-leaks.patch;patchdir=${PATCH_DIR} \
+    file://backport-Allow-modifications-of-empty-profiles.patch;patchdir=${PATCH_DIR} \
+    file://fix-leak-in-KDC-NDR-encoding.patch;patchdir=${PATCH_DIR} \
+    file://backport-Fix-more-non-prototype-functions.patch;patchdir=${PATCH_DIR} \
+    file://backport-Fix-Python-regexp-literals.patch;patchdir=${PATCH_DIR} \
+    file://backport-Handle-empty-initial-buffer-in-IAKERB-initiator.patch;patchdir=${PATCH_DIR} \
+    file://backport-CVE-2024-37370-CVE-2024-37371-Fix-vulnerabilities-in-GSS-message-token-handling.patch;patchdir=${PATCH_DIR} \
+    file://backport-Change-krb5_get_credentials-endtime-behavior.patch;patchdir=${PATCH_DIR} \
+    file://backport-Fix-memory-leak-in-PAC-checksum-verification.patch;patchdir=${PATCH_DIR} \
+    file://fix-libkadm5-parameter-leak.patch;patchdir=${PATCH_DIR} \
+    file://backport-CVE-2024-3596.patch;patchdir=${PATCH_DIR} \
 "
+
+# unapplicable patch from openEuler
+#  file://backport-Remove-klist-s-defname-global-variable.patch;patchdir=${PATCH_DIR} 
+
 
 SRC_URI:remove = " \
     file://0001-aclocal-Add-parameter-to-disable-keyutils-detection.patch \

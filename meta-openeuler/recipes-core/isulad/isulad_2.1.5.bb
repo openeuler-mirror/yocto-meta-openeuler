@@ -125,8 +125,59 @@ SRC_URI = " \
         file://0108-skip-test-rely-on-docker.io.patch \
 "
 
-# openEuler Embedded's modification
-# 0001-configuration-use-lcr.patch: use lcr instead of runc
+# unappliable patches from openeuler:
+#         file://0109-modify-default-registry-mirrors-in-ci-test.patch 
+#         file://0110-add-timestamp-in-PodSandboxStatu-response.patch 
+#         file://0111-bugfix-for-file-param-verify.patch 
+#         file://0112-bugfix-change-cni-log-info.patch 
+#         file://0113-move-shutdown-handle-after-init-module.patch 
+#         file://0114-bugfix-for-null-pointer-reference.patch 
+#         file://0115-bugfix-for-m_criService-shutdown.patch 
+#         file://0116-fix-bug-in-ci-test.patch 
+#         file://0117-add-nri-design-doc.patch 
+#         file://0118-NRI-add-nri-head-file-and-common-func.patch 
+#         file://0119-skip-calling-cni-plugin-cleanup-when-network-namespa.patch 
+#         file://0120-nri-add-convert-and-utils-impl-for-nri.patch 
+#         file://0121-get-realpath-before-ns-mountpoint-verification.patch 
+#         file://0122-nri-impl-for-nri-plugin-and-adaption.patch 
+#         file://0123-code-improve-for-codecheck.patch 
+#         file://0124-change-pull-registry-to-hub.oepkgs.net.patch 
+#         file://0125-fix-clang-build-error.patch 
+#         file://0126-add-a-new-registry-to-prevent-missing-mirrors.patch 
+#         file://0127-change-image-digest-ci-test-for-registry-change.patch 
+#         file://0128-bugfix-for-ci-make-and-install-shell.patch 
+#         file://0129-do-not-use-1000-as-the-test-gid-to-prevent-conflicts.patch 
+#         file://0130-only-use-the-openeuler-mirror-registry-in-ci.patch 
+#         file://0131-modify-alpine-image-source-to-isulad-alpine.patch 
+#         file://0132-update-docs-design-README_zh.md.patch 
+#         file://0133-modify-the-image-name-isulad-ubuntu-to-ubuntu.patch 
+#         file://0134-ignore-chdir-failed-errmsg-when-kill-and-delete.patch 
+#         file://0135-followlocation-only-not-with-head.patch 
+#         file://0136-update-docs-design-detailed-Image-image_storage_driv.patch 
+#         file://0137-upgrade-isulad-compilation-script-install_iSulad_on_.patch 
+#         file://0138-bugfix-for-log-in-make_safedir_is_noexec.patch 
+#         file://0139-containers-in-paused-state-are-not-allowed-to-start.patch 
+#         file://0140-remove-meaningless-code.patch 
+#         file://0141-fix-unqualified-call-to-std-move.patch 
+#         file://0142-pull-failure-shows-error-reason.patch 
+#         file://0143-move-CGROUP2_SUPER_MAGIC-define-to-cgroup.c.patch 
+#         file://0144-update-centos-build-script.patch 
+#         file://0145-cni-change-error-info.patch 
+#         file://0146-bugfix-for-sem_wait-call-when-errno-is-EINTR.patch 
+#         file://0149-move-nri-call-in-stop-and-remove-con.patch 
+#         file://0150-add-missing-con-linux-info-for-nri-module.patch 
+#         file://0151-sandbox-sandbox-api-update.patch 
+#         file://0152-add-omitted-macro-definition.patch 
+#         file://0153-sandbox-sandbox-api-adapt-rust-interface.patch 
+#         file://0154-add-linux-capability.h-head-file.patch 
+#         file://0155-sandbox-fix-unused-variables.patch 
+#         file://0156-sandbox-sandbox-api-adapt-rust-interface-UT.patch 
+#         file://0148-fix-issues-Isula-ps-cannot-display-port-mapping.patch 
+#         file://0147-add-no-pivot-root-support.patch 
+# "
+
+# openEuler Embedded's modification 
+# configuration-use-lcr.patch: use lcr instead of runc
 # config_cgroup: configure cgroups when the system does not use systemd
 # isulad.service: systemd service file for isulad
 SRC_URI:append = " \

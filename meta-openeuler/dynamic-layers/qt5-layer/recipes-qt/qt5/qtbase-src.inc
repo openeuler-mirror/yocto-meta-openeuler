@@ -29,4 +29,6 @@ SRC_URI:prepend = "file://qtbase-everywhere-src-5.15.6-private_api_warning.patch
            file://fix-build-error-of-libxkbcommon-1.6.0.patch \
            file://qtbase-multilib_optflags.patch \
            file://qtbase5.15-CVE-2023-51714.patch \
+           file://CVE-2024-25580-qtbase-5.15.diff \
+           file://CVE-2023-45935.patch \
            "

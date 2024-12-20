@@ -4,6 +4,7 @@ PV = "3.27.9"
 SRC_URI:prepend = " \
            file://cmake-${PV}.tar.gz \
            file://cmake-findruby.patch \
+           file://cmake-3.27.9-fix-cxx-standard-check-issue.patch \
 "
 
 LIC_FILES_CHKSUM:remove = "file://Copyright.txt;md5=31023e1d3f51ca90a58f55bcee8e2339"

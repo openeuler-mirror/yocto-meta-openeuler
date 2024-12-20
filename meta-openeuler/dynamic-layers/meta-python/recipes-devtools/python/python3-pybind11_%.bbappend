@@ -6,6 +6,7 @@ SRC_URI[sha256sum] = "f1bcc07caa568eb312411dde5308b1e250bd0e1bc020fae855bf9f4320
 SRC_URI:remove = " \
         file://0001-Do-not-strip-binaries.patch \
         file://0001-Do-not-check-pointer-size-when-cross-compiling.patch \
+        file://0001-fix-cmake-skip-empty-PYBIND11_PYTHON_EXECUTABLE_LAST.patch \
 "
 
 S = "${WORKDIR}/pybind11-${PV}"

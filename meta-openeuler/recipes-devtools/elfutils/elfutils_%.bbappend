@@ -16,6 +16,7 @@ SRC_URI:append = " \
     file://Fix-segfault-in-eu-ar-m.patch \
     file://Fix-issue-of-moving-files-by-ar-or-br.patch \
     file://CVE-2024-25260.patch \
+    file://Backport-fix-handling-of-corefiles-with-non-contiguous-segments.patch \
 "
 
 SRC_URI[sha256sum] = "e70b0dfbe610f90c4d1fe0d71af142a4e25c3c4ef9ebab8d2d72b65159d454c8"

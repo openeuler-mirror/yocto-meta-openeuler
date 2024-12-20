@@ -8,4 +8,7 @@ SRC_URI:prepend = " \
     file://0003-pcap-linux-apparently-ctc-interfaces-on-s390-has-eth.patch \
     file://pcap-config-mitigate-multilib-conflict.patch \
     file://libpcap-Add-sw64-architecture.patch \
+    file://backport-0001-CVE-2023-7256.patch \
+    file://backport-0002-CVE-2023-7256.patch \
+    file://backport-CVE-2024-8006.patch \
 "

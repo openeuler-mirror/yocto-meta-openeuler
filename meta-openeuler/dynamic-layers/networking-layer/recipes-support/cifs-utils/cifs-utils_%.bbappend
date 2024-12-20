@@ -1,6 +1,8 @@
 PV = "7.0"
 
 SRC_URI:prepend = "file://${BP}.tar.bz2 \
+                file://0001-cifs.upcall-fix-UAF-in-get_cachename_from_process_en.patch \
+                file://0002-cifs-utils-Make-automake-treat-sbin-as-exec-not-data.patch \
            "
 
 SRC_URI:remove = " \

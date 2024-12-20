@@ -4,6 +4,7 @@ PV = "3.24.41"
 # openeuler patch
 SRC_URI:prepend = "file://gtk+-${PV}.tar.xz \
            file://0001-Let-the-notification-icon-use-the-size-specified-by-.patch \
+           file://backport-gtk+-3.24-CVE-2024-6655.patch \
            "
 # delete-taboo-words.patch: git patch error
 #PATCHTOOL = "git"

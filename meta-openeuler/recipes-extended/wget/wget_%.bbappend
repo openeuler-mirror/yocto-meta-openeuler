@@ -6,6 +6,8 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6f65012d1daf98cb09b386cfb68df26b"
 
 # openeuler SRC_URI
 SRC_URI:prepend = "file://${BP}.tar.gz \
+              file://backport-wget-1.17-path.patch \
+              file://backport-CVE-2024-38428.patch \
                   "
 
 # openeuler SRC_URI[sha256sum]

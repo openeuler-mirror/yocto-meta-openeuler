@@ -7,6 +7,7 @@ SRC_URI = " \
                 file://${BP}.tar.xz \
                 file://openEuler-add-secure-compile-option-in-Makefile.patch \
                 file://remove-ldflags-in-cflags.patch \
+                file://fix-secure-compile-option-error-in-Makefile.patch \
         "
 
 # yocto-poky specifies 'S = "${WORKDIR}/git', but since we are using the openeuler package,

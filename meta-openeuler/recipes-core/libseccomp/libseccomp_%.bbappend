@@ -7,6 +7,7 @@ SRC_URI:prepend = " \
     file://backport-arch-disambiguate-in-arch-syscall-validate.patch \
     file://Add-64-bit-LoongArch-support.patch \
     file://fix-build-error-for-libseccomp.patch \
+    file://fix_undefined_behavior_in_scmp_bpf_sim.patch \
 "
 
 S = "${WORKDIR}/${BP}"

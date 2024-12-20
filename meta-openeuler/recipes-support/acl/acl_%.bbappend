@@ -4,7 +4,9 @@
 PV = "2.3.1"
 
 
-SRC_URI:prepend = "file://${BP}.tar.gz "
+SRC_URI:prepend = "file://${BP}.tar.gz \
+ file://backport-acl_copy_entry-Prevent-accidental-NULL-pointer-deref.patch \
+"
 
 # because PV is different,  the md5 and sha256 should also be updated
 SRC_URI[md5sum] = "3cecb80cb0a52a0b273e6698ba642263"

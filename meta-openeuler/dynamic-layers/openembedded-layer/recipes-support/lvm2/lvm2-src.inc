@@ -32,6 +32,12 @@ SRC_URI:prepend = "file://LVM2.${PV}.tgz \
             file://0015-vgchange-acquire-an-exclusive-VG-lock-for-refresh.patch \
             file://0016-dm-event-release-buffer-on-dm_event_get_version.patch \
             file://0017-clean-up-group-struct-in-_stats_create_group-error-path.patch \
+            file://0018-do-not-pass-empty-string-in-callback.patch \
+            file://0019-fix-memleak-in-vgchange.patch \
+            file://0020-udev-create-dev-disk-by-label-symlinks-for-DM-devs-t.patch \
+            file://0021-lvmcache-fix-memleaks-on-list-removal.patch \
+            file://0022-dmstats-Fix-memory-leak-on-error-path.patch \
+            file://0023-fix-function-undeclared-in-libdm-common.c-and-dev-cache.c.patch \
 " 
 
 # from meta-oe lvm2-2.03.22 recipe

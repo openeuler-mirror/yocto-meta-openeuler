@@ -13,8 +13,12 @@ SRC_URI:remove = " \
 
 # the follow patch will occur gsm lib not found
 # file://libsndfile-1.0.25-system-gsm.patch
+
+# unapplicable patch for src/mat4.c
+# file://backport-CVE-2022-33065.patch 
 SRC_URI += " \
         file://libsndfile-${PV}.tar.xz \
+        file://backport-CVE-2024-50612.patch \
 "
 
 # poky patch

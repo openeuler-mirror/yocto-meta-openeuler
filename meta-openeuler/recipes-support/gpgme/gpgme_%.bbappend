@@ -17,6 +17,7 @@ SRC_URI:prepend = "\
         file://gpgme-1.3.2-largefile.patch \
         file://0001-fix-stupid-ax_python_devel.patch \
         file://backport-0002-setup_py_extra_opts.patch \
+        file://backport-tests-Fix-segv-in-t-json.c.patch \
         file://0001-posix-io.c-Use-off_t-instead-of-off64_t.patch \
         file://0001-autogen.sh-remove-unknown-in-version.patch \
         "

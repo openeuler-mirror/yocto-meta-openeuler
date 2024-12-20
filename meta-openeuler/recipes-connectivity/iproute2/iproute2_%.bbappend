@@ -14,6 +14,7 @@ SRC_URI:append = " \
         file://backport-rdma-Fix-the-error-of-accessing-string-variable-outs.patch \
         file://feature-iproute-add-support-for-ipvlan-l2e-mode.patch \
         file://bugfix-iproute2-cancel-some-test-cases.patch \
+        file://backport-exit-exec-in-child-process-if-setup-fails.patch \
 "
 
 SRC_URI[sha256sum] = "4c51b8decbc7e4da159ffb066f590cfb93dbf9af7ff86b1647ce42b7c179a272"

@@ -11,7 +11,7 @@ SRC_URI:remove = " \
 
 # openeuler has patches for lua-${PV}-tests
 SRC_URI:prepend = " \
-           file://${BP}.tar.gz;name=tarballsrc \
+        file://${BP}.tar.gz;name=tarballsrc \
 "
 
 LIC_FILES_CHKSUM = "file://doc/readme.html;beginline=303;endline=324;md5=e05449eb28c092473f854670c6e8375a"

@@ -16,6 +16,7 @@ SRC_URI:append = " \
     file://0001-riscv64-adjust-type-definitions.patch \
     file://0001-riscv64-ignore-unknown-relocs.patch \
     file://no-werror.patch \
+    file://fix-build-error-on-loongarch64.patch \
 "
 
 # patches unneeded for version 3.0.17

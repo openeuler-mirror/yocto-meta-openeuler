@@ -11,6 +11,10 @@ SRC_URI:prepend = " \
         file://0003-export-fix-handling-of-error-from-match_fsid.patch \
         file://0004-export-move-cache_open-before-workers-are-forked.patch \
         file://0005-gssd-fix-handling-DNS-lookup-failure.patch \
+        file://0006-nfsidmap-fix-a-memory-leak.patch \
+        file://0007-rpc-gssd-service-has-status-failed-due-to-segfault.patch \
+        file://0008-fixed-a-regression-in-the-junction-code.patch \
+        file://0009-libnfsidmap-try-to-get-the-domain-directly-from-host.patch \
 "
 
 # patch in oe-core

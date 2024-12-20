@@ -24,6 +24,12 @@ SRC_URI += " \
     file://0009-e2fsck-save-EXT2_ERROR_FS-flag-during-journal-replay.patch \
     file://0010-tune2fs-fuse2fs-debugfs-save-error-information-durin.patch \
     file://0011-mke2fs.conf-remove-metadata_csum_seed-and-orphan_fil.patch \
+    file://0012-debugfs-fix-infinite-loop-while-dumping-the-journal.patch \
+    file://0013-e4crypt-fix-spurious-Success-error-message.patch \
+    file://0014-e2fsck-update-quota-accounting-after-directory-optim.patch \
+    file://0015-e2fsck-update-quota-when-deallocating-a-bad-inode.patch \
+    file://0016-fsck-fix-memory-leak-on-an-error-exit.patch \
+    file://0017-mke2fs-batch-zeroing-inode-table.patch \
 "
 
 SRC_URI[sha256sum] = "144af53f2bbd921cef6f8bea88bb9faddca865da3fbc657cc9b4d2001097d5db"

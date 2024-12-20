@@ -11,7 +11,10 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
 		file://fix-handle-newly-added-asset-.-call-like-elsewhere.patch \
 		file://fix-permit-reading-aliases-remove-left-over-goto-exi.patch \
 		file://fix-coverity-CID-1057440-Unused-pointer-value-UNUSED.patch \
-        file://revert-fix-memory-leak-regressions-in-popt.patch \
+		file://Fix-poptCallbackType-documentation.patch  \
+		file://Fix-multiple-typos-in-comments.patch  \
+		file://Fix-potential-double-free-in-test3.c.patch  \
+		file://revert-fix-memory-leak-regressions-in-popt.patch \
 "
 
 SRC_URI[md5sum] = "eaa2135fddb6eb03f2c87ee1823e5a78"

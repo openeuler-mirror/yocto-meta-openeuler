@@ -11,6 +11,10 @@ SRC_URI:prepend = "\
         file://backport-Treat-condition-both-as-positive-and-negative-literal-in-pool_add_pos_literals_complex_dep.patch \
         file://backport-Add-testcase-for-last-commit.patch \
         file://backport-choice-rules-also-do-solver_choicerulecheck-for-package-downgrades.patch \
+        file://backport-Fix-a-couple-small-static-analysis-findings-for-uninitialized-structs.patch \
+        file://backport-resolve_installed-remove-dead-code.patch \
+        file://backport-Move-special-updaters-handling-into-its-own-function.patch \
+        file://backport-Handle-installed-packages-in-three-passes.patch \
 "
 
 # delete -DENABLE_RPMDB_BDB=ON, not used with new rpm version

@@ -53,7 +53,19 @@ SRC_URI:prepend = " \
            file://Revert-correcting-the-logic-in-dhclient.patch \
            file://IAID-is-output-has-hexe-if-it-contains-or.patch \
            file://support-for-building-with-clang.patch \
+           file://bugfix-cancel-rebind6-timer-after-ipv6-expire.patch \
 "
+
+# unapplicable patches
+# file://backport-0001-CVE-2024-1737.patch 
+# file://backport-CVE-2024-1975.patch 
+# file://backport-optimize-the-slabheader-placement-for-certain-RRtype.patch 
+# file://backport-0002-CVE-2024-1737.patch 
+# file://backport-0003-CVE-2024-1737.patch 
+# file://backport-0004-CVE-2024-1737.patch            
+
+
+
 
 SRC_URI[md5sum] = "9076af4cc1293dde5a7c6cae7de6ab45"
 SRC_URI[sha256sum] = "0e3ec6b4c2a05ec0148874bcd999a66d05518378d77421f607fb0bc9d0135818"

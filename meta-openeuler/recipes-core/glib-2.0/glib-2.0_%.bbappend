@@ -27,7 +27,17 @@ SRC_URI:append = " \
     file://gspawn-eperm.patch \
     file://backport-gmessages-fix-dropping-irrelevant-log-domains.patch \
     file://backport-gutils-Fix-an-unlikely-minor-leak-in-g_build_user_data_dir.patch \
+    file://gio-fix-filesystem-type-ext-err.patch \
+    file://backport-CVE-2024-34397.patch \
+    file://backport-gdbusconnection-Allow-name-owners-to-have-the-syntax-of-a-well-known-name.patch \
+    file://backport-gdbusmessage-Clean-the-cached-arg0-when-setting-the-message-body.patch \
+    file://backport-gsocketclient-Fix-a-use-after-free-in-g_socket_client_connected_callback.patch \
+    file://backport-gcontextspecificgroup-Wait-until-stop_func-is-done.patch \
+    file://backport-gresources-fix-memory-leak-from-libelf.patch \
+    file://Correct-translation-information.patch \
+    file://backport-CVE-2024-52533.patch \
 "
+
 
 SRC_URI:append:class-native:append = " \
     file://0001-meson.build-do-not-enable-pidfd-features-on-native-g.patch \

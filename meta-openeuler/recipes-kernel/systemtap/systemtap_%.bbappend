@@ -12,6 +12,8 @@ SRC_URI:remove = " file://0001-PR28778-gcc-warning-tweak-for-sprintf-precision-p
 SRC_URI:append = " \
                 file://huawei-fix-network-tcp-test-error.patch \
                 file://huawei-local-is-only-valid-in-functions-for-shellche-sc2168.patch \
+                file://Add-basic-LoongArch64-support.patch \
+                file://Make-stp_task_work-compatible-with-6.11-kernels.patch \
         "
 
 PACKAGECONFIG ??= "translator sqlite monitor python3-probes ${@bb.utils.filter('DISTRO_FEATURES', 'debuginfod', d)}"

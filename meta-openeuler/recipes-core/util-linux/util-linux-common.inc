@@ -10,7 +10,6 @@ SRC_URI:remove = " \
 "
 
 # files, patches that come from openeuler
-# not apply: util-linux-Add-sw64-architecture.patch
 SRC_URI:prepend = " \
         file://util-linux-${PV}.tar.xz \
         file://2.36-login-lastlog-create.patch \
@@ -22,7 +21,24 @@ SRC_URI:prepend = " \
         file://backport-fadvise-test-test-with-64k-blocks.patch \
         file://backport-tests-lsfd-mkfds-alter-the-L4-ports-for-avo.patch \
         file://SKIPPED-no-root-permissions-test.patch \
+        file://backport-CVE-2024-28085.patch \
+        file://backport-tests-test_mkfds-netlink-pass-a-correct-file-descrip.patch \
+        file://backport-tests-functions.sh-add-a-helper-funcion-making-a-dev.patch \
+        file://backport-tests-lsfd-don-t-refer-on-the-line-follwoing-the-use.patch \
+        file://backport-lsfd-fix-memory-leak-in-append_filter_expr.patch \
+        file://backport-libmount-use-some-MS_-flags-as-superblock-flags.patch \
+        file://backport-libmount-Fix-regression-when-mounting-with-atime.patch \
+        file://backport-libmount-ifdef-statx-call.patch \
+        file://backport-libmount-improve-mnt_table_next_child_fs.patch \
+        file://backport-libmount-make-sure-option-is-used-as-string.patch \
+        file://backport-libmount-fix-possible-memory-leak.patch \
+        file://backport-libmount-Fix-atime-remount-for-new-API.patch \
+        file://sfdisk-fix-crash-casued-by-out-of-bounds-access.patch \
 "
+
+# unapplicable OE patches: 
+# file://util-linux-Add-sw64-architecture.patch
+# file://add-new-gmo-file.patch
 
 LICENSE = "GPL-2.0-or-later & LGPL-2.1-or-later & BSD-2-Clause & BSD-3-Clause & BSD-4-Clause"
 LIC_FILES_CHKSUM = "file://README.licensing;md5=12ae7768a65ec8f2e44d930df9cb43fa \

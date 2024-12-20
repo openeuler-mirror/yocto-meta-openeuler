@@ -10,6 +10,7 @@ LIC_FILES_CHKSUM = "file://LICENSE.md;md5=2a8e0d8226a102f07ab63ed7fd6ce155"
 SRC_URI:remove = "file://0001-libjpeg-turbo-fix-package_qa-error.patch"
 
 SRC_URI:prepend = "file://${BP}.tar.gz \
+  file://Add-loongarch64.patch \
 "
 
 # QA Issue: libturbojpeg: /usr/lib64/libturbojpeg.so.0.3.0 

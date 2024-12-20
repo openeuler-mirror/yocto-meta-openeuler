@@ -35,6 +35,51 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
         file://Backport-Add-NULL-checks-where-ContentInfo-data-can-be-NULL.patch \
         file://Backport-Fix-SM4-XTS-aarch64-assembly-implementation-bug.patch \
         file://fix-add-loongarch64-target.patch \
+        file://backport-CVE-2024-2511-Fix-unconstrained-session-cache-growth-in-TLSv1.3.patch \
+        file://backport-Add-a-test-for-session-cache-handling.patch \
+        file://backport-Extend-the-multi_resume-test-for-simultaneous-resump.patch \
+        file://backport-Hardening-around-not_resumable-sessions.patch \
+        file://backport-Add-a-test-for-session-cache-overflow.patch \
+        file://backport-CVE-2024-4603-Check-DSA-parameters-for-exce.patch \
+        file://Backport-Add-a-test-for-late-loading-of-an-ENGINE-in-TLS.patch \
+        file://Backport-Don-t-attempt-to-set-provider-params-on-an-ENGINE-ba.patch \
+        file://Backport-CVE-2024-4741-Only-free-the-read-buffers-if-we-re-not-using-them.patch \
+        file://Backport-CVE-2024-4741-Set-rlayer.packet-to-NULL-after-we-ve-finished-using.patch \
+        file://Backport-CVE-2024-4741-Extend-the-SSL_free_buffers-testing.patch \
+        file://Backport-CVE-2024-4741-Move-the-ability-to-load-the-dasync-engine-into-sslt.patch \
+        file://Backport-CVE-2024-4741-Further-extend-the-SSL_free_buffers-testing.patch \
+        file://Backport-bn-Properly-error-out-if-aliasing-return-value-with-.patch \
+        file://Backport-CVE-2024-5535-Fix-SSL_select_next_proto.patch \
+        file://Backport-CVE-2024-5535-Add-a-test-for-ALPN-and-NPN.patch \
+        file://backport-Add-FIPS_mode-compatibility-macro.patch \
+        file://Backport-CVE-2024-6119-Avoid-type-errors-in-EAI-related-name-check-logic.patch \
+        file://backport-Add-CTX-copy-function-for-EVP_MD-to-optimize-the-per.patch \
+        file://backport-Decoder-resolution-performance-optimizations.patch \
+        file://backport-Improve-performance-of-the-encoder-collection.patch \
+        file://backport-evp_md_init_internal-Avoid-reallocating-algctx-if-di.patch \
+        file://backport-Remove-the-_fetch_by_number-functions.patch \
+        file://backport-Make-IV-buf-in-prov_cipher_ctx_st-aligned.patch \
+        file://backport-ossl_namemap_name2_num-Avoid-unnecessary-OPENSSL_str.patch \
+        file://backport-performance-improve-ossl_lh_strcasehash.patch \
+        file://backport-01-Improve-FIPS-RSA-keygen-performance.patch \
+        file://backport-02-Improve-FIPS-RSA-keygen-performance.patch \
+        file://backport-When-we-re-just-reading-EX_CALLBACK-data-just-get-a-.patch \
+        file://backport-Avoid-an-unneccessary-lock-if-we-didn-t-add-anything.patch \
+        file://backport-use-__builtin_expect-to-improve-EVP_EncryptUpdate-pe.patch \
+        file://backport-Drop-ossl_namemap_add_name_n-and-simplify-ossl_namem.patch \
+        file://backport-Don-t-take-a-write-lock-to-retrieve-a-value-from-a-s.patch \
+        file://backport-aes-avoid-accessing-key-length-field-directly.patch \
+        file://backport-evp-enc-cache-cipher-key-length.patch \
+        file://backport-Avoid-calling-into-provider-with-the-same-iv_len-or-.patch \
+        file://backport-property-use-a-stack-to-efficiently-convert-index-to.patch \
+        file://backport-Revert-Release-the-drbg-in-the-global-default-contex.patch \
+        file://backport-Refactor-a-separate-func-for-provider-activation-fro.patch \
+        file://backport-Refactor-OSSL_LIB_CTX-to-avoid-using-CRYPTO_EX_DATA.patch \
+        file://backport-Release-the-drbg-in-the-global-default-context-befor.patch \
+        file://backport-params-provide-a-faster-TRIE-based-param-lookup.patch \
+        file://add-FIPS_mode_set-support.patch \
+        file://backport-CVE-2024-9143-Harden-BN_GF2m_poly2arr-against-misuse.patch \
+        file://Fix-build-error-for-ppc64le.patch \
 "
 do_install:append () {
         #Remove the empty directory that conflict with ca-certificates.

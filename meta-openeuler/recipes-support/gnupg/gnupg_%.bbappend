@@ -14,4 +14,7 @@ SRC_URI:append = " \
         file://gnupg-2.2.21-coverity.patch \
         file://gnupg2-revert-rfc4880bis.patch \
         file://backport-dirmngr-Enable-the-call-of-ks_ldap_help_variables-wh.patch \
+        file://backport-gpg-Make-no-literal-work-again-for-c-and-store.patch \
+        file://backport-gpg-Fix-minor-memory-leak-during-certain-smartcard-o.patch \
+        file://supports-sm2-algorithm-signature-and-uses-sm3-hash-algorithm.patch \
         "

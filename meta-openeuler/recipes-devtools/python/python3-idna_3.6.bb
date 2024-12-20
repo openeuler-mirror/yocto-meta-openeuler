@@ -13,4 +13,8 @@ RDEPENDS:${PN}:class-target = "\
     python3-codecs \
 "
 
+SRC_URI:append = " \
+    file://backport-CVE-2024-3651.patch \
+"
+
 BBCLASSEXTEND = "native nativesdk"

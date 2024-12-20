@@ -8,6 +8,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=382bfdf329e774859fd401eaf850d29b"
 SRC_URI:prepend = "file://v${PV}.tar.gz \
            file://0001-add-secure-compile-option-in-Makefile.patch \
            file://0002-solve-the-BEP-problem.patch \
+           file://0003-client-hs-fix-segmentation-fault.patch \
 "
 
 S = "${WORKDIR}/${BP}"

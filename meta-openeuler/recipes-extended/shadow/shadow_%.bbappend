@@ -18,6 +18,9 @@ SRC_URI:prepend = "file://${BP}.tar.xz \
             file://usermod-unlock.patch \
             file://shadow-add-sm3-crypt-support.patch \
             file://shadow-Remove-encrypted-passwd-for-useradd-gr.patch \
+            file://shadow-libsubid-Dealocate-memory-on-exit.patch \
+            file://backport-lib-idmapping.c--Use-long-constants-in-prctl-2.patch \
+            file://backport-man-lastlog-remove-wrong-use-of-keyword-term.patch \
            "
 # remove patches with the same functionality in src-openeuler from poky:
 # file://shadow-update-pam-conf.patch

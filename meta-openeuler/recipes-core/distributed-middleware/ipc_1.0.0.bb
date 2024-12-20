@@ -36,6 +36,10 @@ SRC_URI += " \
             file://communication_ipc/sdk.BUILD.gn \
             "
 
+# unappliable patches from openeuler:
+# file://communication_ipc/0008-fix-binder-kallsyms-initialization-error.patch 
+
+
 DEPENDS += "hilog c-utils distributed-beget eventhandler openssl cjson"
 
 RDEPENDS:${PN} = "libboundscheck"

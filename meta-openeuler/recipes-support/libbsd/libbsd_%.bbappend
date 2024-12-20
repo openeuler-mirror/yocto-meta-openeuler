@@ -7,6 +7,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=2120be0173469a06ed185b688e0e1ae0"
 SRC_URI = " \
         file://${BP}.tar.xz \
         file://libbsd-symver.patch \
+        file://0001-add-loongarch64-support-for-libbsd.patch \
 "
 
 SRC_URI[md5sum] = "ead96d240d02faa5b921c0aa50c812b5"

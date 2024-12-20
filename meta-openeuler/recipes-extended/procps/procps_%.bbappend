@@ -20,6 +20,13 @@ SRC_URI += " \
         file://openeuler-add-M-and-N-options-for-top.patch \
         file://openeuler-top-exit-with-error-when-pid-overflow.patch \
         file://backport-library-address-remaining-cpu-distortions-stat-api.patch \
+        file://backport-uptime-fix-output-on-60-seconds.patch \
+        file://backport-ps-don-t-lose-tasks-when-sort-used-with-forest-mode.patch \
+        file://backport-acknowledge-fix-for-the-lost-tasks-ps-issue.patch \
+        file://openeuler-uptime-Fix-uptime-return-0-user-when-systemd-pam-is-.patch \
+        file://openeuler-w-Fix-w-print-0-user-when-systemd-pam-is-not-install.patch \
+        file://backport-library-implement-guest-total-tics-change-stat-api.patch \
+        file://backport-top-adapt-to-that-guest-total-tics-change-stat-api.patch \
 "
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263 \

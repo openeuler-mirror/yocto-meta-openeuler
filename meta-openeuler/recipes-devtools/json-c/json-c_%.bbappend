@@ -6,6 +6,10 @@ PV = "0.17-20230812"
 # openeuler src package
 SRC_URI:prepend = " \
         file://${BP}.tar.gz \
+        file://backport-fix-issue-854-Set-error-json_tokener_error_memory-in.patch \
+        file://backport-Handle-yet-another-out-of-memory-condition.patch \
+        file://backport-Issue-857-fix-a-few-places-where-json_tokener-should.patch \
+        file://backport-Take-2-fixing-the-placement-of-json_tokener_error_memory.patch \
         "
 
 SRC_URI[md5sum] = "6d724389b0a08c519d9dd6e2fac7efb8"

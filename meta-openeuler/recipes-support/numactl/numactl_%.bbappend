@@ -16,4 +16,5 @@ SRC_URI:prepend = " \
     file://0010-fix-fix-memory-leaks-when-run-with-H.patch \
     file://0011-libnuma-Fix-unexpected-output.patch \
     file://0012-libnuma-Fix-incorrect-print-and-exit-of-numa_preferr.patch \
+    file://0013-fix-the-using-of-the-uninitialized-value.patch \
 "

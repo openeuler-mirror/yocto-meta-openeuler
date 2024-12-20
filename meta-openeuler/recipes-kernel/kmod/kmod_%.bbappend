@@ -10,6 +10,7 @@ SRC_URI:remove = " \
 SRC_URI:prepend = "file://${BP}.tar.xz \
         file://0001-Module-replace-the-module-with-new-module.patch \
         file://0002-Module-suspend-the-module-by-rmmod-r-option.patch \
+        file://0003-clear-file-memory-if-map-fails.patch \
         "
 
 SRC_URI[md5sum] = "85202f0740a75eb52f2163c776f9b564"

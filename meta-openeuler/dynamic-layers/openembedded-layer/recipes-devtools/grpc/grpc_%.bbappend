@@ -19,6 +19,7 @@ SRC_URI:prepend = " \
         file://${BP}.tar.gz \
         file://add-secure-compile-option-in-Makefile.patch \
 "
+
 # from high version recipe diffs
 EXTRA_OECMAKE += " \
         -D_gRPC_PROTOBUF_PROTOC_EXECUTABLE=${STAGING_BINDIR_NATIVE}/protoc \

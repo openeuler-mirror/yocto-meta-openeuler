@@ -17,4 +17,6 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
         file://scanner-Ignore-comment-lines-in-skeleton-files.patch \
         file://scanner-temporarily-protect-against-ccl-overflow-ove.patch \
         file://scanner-prevent-overflow-in-add_action.patch \
+        file://0003-backport-Fix-pattern-documentation-for-case-insensitive-ranges.patch \
+        file://0004-backport-fix-typo.patch \
            "

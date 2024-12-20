@@ -18,4 +18,20 @@ SRC_URI = " \
     file://backport-002-CVE-2023-52426.patch \
     file://backport-003-CVE-2023-52426.patch \
     file://backport-004-CVE-2023-52426.patch \
-"
+    file://backport-001-CVE-2023-52425.patch \
+    file://backport-002-CVE-2023-52425.patch \
+    file://backport-003-CVE-2023-52425.patch \
+    file://backport-004-CVE-2023-52425.patch \
+    file://backport-005-CVE-2023-52425.patch \
+    file://backport-006-CVE-2023-52425.patch \
+    file://backport-007-CVE-2023-52425.patch \
+    file://backport-008-CVE-2023-52425.patch \
+    file://backport-009-CVE-2023-52425.patch \
+    file://backport-001-CVE-2024-45490.patch \
+    file://backport-002-CVE-2024-45490.patch \
+    file://backport-003-CVE-2024-45490.patch \
+    file://backport-CVE-2024-45491.patch \
+    file://backport-CVE-2024-45492.patch \
+    file://backport-CVE-2024-50602.patch \
+    file://backport-CVE-2024-50602-testcase.patch \
+    "

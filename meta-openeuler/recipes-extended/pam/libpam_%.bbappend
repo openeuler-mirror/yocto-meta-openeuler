@@ -15,6 +15,9 @@ SRC_URI += " \
            file://Linux-PAM-${PV}.tar.xz \
            file://bugfix-pam-1.1.8-faillock-systemtime.patch \
            file://backport-CVE-2024-22365-pam_namespace-protect_dir-use-O_DIRECTORY-to-prevent.patch \
+           file://backport-pam_pwhistory-fix-passing-NULL-filename-argument-to-pwhistory-helper.patch \
+           file://backport-pam_access-make-non-resolveable-hostname-a-debug-out.patch \
+           file://backport-CVE-2024-10963.patch \
            file://change-ndbm-to-gdbm.patch \
            file://add-sm3-crypt-support.patch \
 "

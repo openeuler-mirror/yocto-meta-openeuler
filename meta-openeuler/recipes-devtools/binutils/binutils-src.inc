@@ -15,6 +15,7 @@ SRC_URI = " \
     file://binutils-gold-mismatched-section-flags.patch \
     file://binutils-update-linker-manual.patch \
     file://binutils-gold-empty-dwp.patch \
+    file://Fix-gold-linker-relocation-offset.patch \
 "
 
 # apply used patches from poky

@@ -37,6 +37,48 @@ SRC_URI:prepend = " \
         file://Add-IMA-digest-list-support.patch \
 "
 
+SRC_URI:append = " \
+        file://backport-Fix-some-int-enum-confusion-in-the-build-code.patch \
+        file://backport-Use-the-internal-DB_CTRL-enum-for-intenal-uses-consi.patch \
+        file://backport-An-enumeration-is-not-a-bitfield-use-an-integer-inst.patch \
+        file://backport-Fix-an-enum-int-type-mismatch-in-rpmfiArchiveReadToF.patch \
+        file://backport-Fix-an-enum-int-type-mismatch-in-transaction-verify-.patch \
+        file://backport-Fix-enum-type-mismatch-in-rpmTagGetValue.patch \
+        file://backport-Free-old-cookie-value-to-prevent-a-memory-leak.patch \
+        file://backport-Fix-pointer-bogosity-in-rpmlog-callback.patch \
+        file://backport-Fix-an-ancient-memleak-on-caps-parsing-add-tests.patch \
+        file://backport-Fix-potential-use-of-uninitialized-pipe-array.patch \
+        file://backport-Fix-potential-use-of-uninitialized-pgp-struct.patch \
+        file://backport-Use-unsigned-integers-more-consistently-in-the-handl.patch \
+        file://backport-Use-proper-type-for-copyTagsFromMainDebug.patch \
+        file://backport-Reset-recursion-depth-for-error-message.patch \
+        file://backport-Fix-division-by-zero-in-elfdeps-RhBug-2299414.patch \
+        file://backport-Make-sure-dirs-are-not-relocated-twice.patch \
+        file://backport-Fix-root-relocation-regression.patch \
+        file://backport-Fix-crash-on-Lua-file-trigger-exiting-with-return-ed.patch \
+        file://backport-Fix-V-option-usage-in-our-tests.patch \
+        file://backport-Remove-libtool-la-symlinks.patch \
+        file://backport-Specify-the-private-key-in-rpm-addsign.patch \
+        file://backport-Use-EVP_PKEY_verify-to-verify-DSA-signatures.patch \
+        file://backport-No-longer-use-the-low-level-API-in-openssl-3.patch \
+        file://backport-Add-ECDSA-support-to-digest_openssl.patch \
+        file://backport-Support-NIST-P-521.patch \
+        file://backport-Allow-signing-with-ECDSA-keys.patch \
+        file://backport-Support-ECDSA-in-key-parsing.patch \
+        file://backport-Fix-memleak-when-process-policies.patch \
+        file://backport-Enforce-the-same-sanity-checks-on-db-add-and-rebuild.patch \
+        file://backport-Fix-a-memory-leak-on-rpmdb-importdb.patch \
+        file://backport-Require-macro-filenames-to-end-in-alphanum-char.patch \
+        file://backport-Allow-version-to-be-omitted-in-the-replace-test-spec.patch \
+        file://backport-Fix-wrong-return-code-on-O_DIRECTORY-open-of-invalid.patch \
+        file://backport-Refactor-fsmOpenat-return-style-for-consistency-with.patch \
+        file://backport-Report-unsafe-symlinks-during-installation-as-a-spec.patch \
+        file://backport-Fix-FA_TOUCH-ed-files-getting-removed-on-failed-upda.patch \
+"
+
+# unappliable patches from openeuler
+# file://Support-sm2p256v1-of-ECDSA-and-sm3-of-hash.patch 
+
 SRC_URI[sha256sum] = "2e0d220b24749b17810ed181ac1ed005a56bbb6bc8ac429c21f314068dc65e6a"
 
 

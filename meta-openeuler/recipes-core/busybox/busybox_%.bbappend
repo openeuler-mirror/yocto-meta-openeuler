@@ -18,6 +18,9 @@ SRC_URI:remove = " \
             file://0002-man-fix-segfault-in-man-1.patch \
             file://fail_on_no_media.patch \
             file://recognize_connmand.patch \
+            file://backport-CVE-2023-42363.patch \
+            file://backport-CVE-2023-42364-CVE-2023-42365.patch \
+            file://backport-CVE-2023-42366.patch \
             "
 
 #we always want busybox with mdev\init packages to support multi init manager
@@ -30,6 +33,12 @@ SRC_URI:append = " \
         file://mdev.cfg \
         ${@bb.utils.contains('IMAGE_FEATURES', 'debug-tweaks', 'file://devmem.cfg', '', d)} \
         "
+# CVEs
+SRC_URI += " \
+        file://backport-CVE-2023-42363.patch \
+        file://backport-CVE-2023-42364-CVE-2023-42365.patch \
+        file://backport-CVE-2023-42366.patch \
+"
 
 # support NFS, which depends on libtirpc
 DEPENDS += "libtirpc"

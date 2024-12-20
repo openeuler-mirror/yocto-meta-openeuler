@@ -19,6 +19,20 @@ SRC_URI:prepend = " \
         file://skip-scp-test-if-there-is-no-scp-on-remote-path-as-s.patch \
         file://backport-CVE-2023-48795-upstream-implement-strict-key-exchange-in-ssh-and-ss.patch \
         file://backport-CVE-2023-51385-upstream-ban-user-hostnames-with-most-shell-metachar.patch \
+        file://backport-fix-CVE-2024-6387.patch \
+        file://backport-CVE-2023-51384-upstream-apply-destination-constraints-to-all-p11-ke.patch \
+        file://backport-upstream-Make-sure-sftp_get_limits-only-returns-0-if.patch \
+        file://backport-upstream-when-connecting-via-socket-the-default-case.patch \
+        file://backport-upstream-set-errno-EAFNOSUPPORT-when-filtering-addre.patch \
+        file://backport-upstream-when-invoking-KnownHostsCommand-to-determin.patch \
+        file://backport-upstream-ensure-key_fd-is-filled-when-DSA-is-disable.patch \
+        file://backport-upstream-fix-memory-leak-in-mux-proxy-mode-when-requ.patch \
+        file://backport-CVE-2021-36368-added-option-to-disable-trivial-auth.patch \
+        file://backport-upstream-Fix-proxy-multiplexing-O-proxy-bug.patch \
+        file://backport-openssh-6.6p1-keyperm.patch \
+        file://backport-upstream-make-parsing-user-host-consistently-look-for-the-last-in.patch \
+        file://backport-upstream-Do-not-apply-authorized_keys-options-when-signature.patch \
+        file://backport-upstream-some-extra-paranoia.patch \
         "
 
 # from oe-core
@@ -30,6 +44,10 @@ SRC_URI:remove = " \
         file://f107467179428a0e3ea9e4aa9738ac12ff02822d.patch \
         file://0001-Default-to-not-using-sandbox-when-cross-compiling.patch \
 "
+
+# unapplicable patches: 
+# file://backport-openssh-7.7p1-fips.patch 
+# 
 
 # in version 9.3p1, the line RDEPENDS:${PN}-dev = "" is removed
 # Thus, ${PN}-dev has a default dependency on ${PN}

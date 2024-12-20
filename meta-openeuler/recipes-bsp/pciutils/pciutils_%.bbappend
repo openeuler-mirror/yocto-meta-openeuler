@@ -11,6 +11,7 @@ SRC_URI:prepend = " \
     file://0000-pciutils-2.2.1-idpath.patch \
     file://0001-pciutils-dir-d.patch \
     file://0002-Support-specify-CC.patch \
+    file://0003-Fix-memory-leak-when-fill-flags-has-PCI_FILL_PARENT.patch \
 "
 
 SRC_URI[sha256sum] = "01f5b9ee8eff577e9953a43bafb3ead76e0654a7288dc26d79627074956fb1e0"

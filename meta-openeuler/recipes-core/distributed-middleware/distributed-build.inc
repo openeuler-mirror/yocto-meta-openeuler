@@ -44,14 +44,20 @@ SRC_URI = " \
         file://distributed-build_lite/${pkg-build-lite}.tar.gz \
         file://distributed-build_lite/0001-feat-Adapt-to-Openeuler-python.patch;patchdir=${WORKDIR}/${pkg-build-lite} \
         file://distributed-build_lite/0002-feat-Adapt-to-Openeuler-productdefine.patch;patchdir=${WORKDIR}/${pkg-build-lite} \
-        file://distributed-build_lite/0003-feat-Adapt-to-Openeule-remove-useless-code.patch;patchdir=${WORKDIR}/${pkg-build-lite} \
-        file://distributed-build_lite/0004-feat-for-embedded-check-clang-path.patch;patchdir=${WORKDIR}/${pkg-build-lite} \
         "
 
 SRC_URI:append = " \
         file://0001-feat-for-embedded-comment-out-unrecognized-options.patch;patchdir=${WORKDIR}/${pkg-build} \
-        file://0002-adapt-embedded-clang-llvm-17.0.6.patch;patchdir=${WORKDIR}/${pkg-build} \
 "
+
+# unapplicable patches from openEuler:
+# file://distributed-build/0026-feat-for-embedded-fix-jsoncpp-icu-zlib-sysroot.patch 
+# file://distributed-build/0027-feat-support-gn-upgrade.patch 
+# file://distributed-build/0028-change-clang-compiler-path.patch 
+# file://distributed-build/0029-feat-adapt-for-llvm17.patch 
+# file://distributed-build_lite/0003-feat-Adapt-to-Openeule-remove-useless-code.patch  
+# file://0002-adapt-embedded-clang-llvm-17.0.6.patch;patchdir=${WORKDIR}/${pkg-build} 
+
 
 do_patch:append() {
     bb.build.exec_func('do_prepare_build_directory', d)

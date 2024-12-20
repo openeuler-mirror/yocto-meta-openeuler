@@ -7,8 +7,18 @@ PV = "6.1.1"
 # source change to openEuler
 SRC_URI:prepend = "file://${BP}.tar.xz \
         file://avformat-get_first_dts.patch \
-        file://0001-fix-CVE-2024-31578.patch \
-        file://0002-fix-CVE-2024-31582.patch \
+        file://fix-CVE-2023-50007.patch \
+        file://fix-CVE-2023-50008.patch \
+        file://fix-CVE-2024-31578.patch \
+        file://fix-CVE-2024-31582.patch \
+        file://fix_libsvgdec_compile_error.patch \
+        file://CVE-2023-49528.patch \
+        file://fix-CVE-2023-49502.patch \
+        file://fix-CVE-2024-32230.patch \
+        file://CVE-2024-7055.patch \
+        file://CVE-2023-49501.patch \
+        file://backport-CVE-2024-35366.patch \
+        file://backport-CVE-2024-35367.patch \
         "                             
 
 # x264 and some pkgconfig need LICENSE_FLAGS_ACCEPTED commercial flag 

@@ -34,6 +34,21 @@ SRC_URI:prepend = " \
         file://backport-CVE-2024-0684-split-do-not-shrink-hold-buffer.patch \
         file://test-skip-overlay-filesystem-because-of-no-inotify_add_watch.patch \
         file://fix-coredump-if-enable-systemd.patch \
+        file://backport-sort-don-t-trust-st_size-on-proc-files.patch \
+        file://backport-cat-don-t-trust-st_size-on-proc-files.patch \
+        file://backport-dd-don-t-trust-st_size-on-proc-files.patch \
+        file://backport-split-don-t-trust-st_size-on-proc-files.patch \
+        file://backport-pinky-fix-string-size-calculation.patch \
+        file://backport-cksum-consistently-validate-length-attributes.patch \
+        file://backport-timeout-fix-race-where-we-might-kill-arbitrary-proce.patch \
+        file://backport-timeout-fix-narrow-race-in-failing-to-kill-processes.patch \
+        file://backport-maint-basenc-consistently-check-buffer-bounds-when-e.patch \
+        file://backport-putenv-Don-t-crash-upon-out-of-memory.patch \
+        file://backport-head-off_t-not-uintmax_t-for-file-offset.patch \
+        file://backport-shuf-avoid-integer-overflow-on-huge-inputs.patch \
+        file://backport-shuf-fix-randomness-bug.patch \
+        file://backport-head-fix-overflows-in-elide_tail_bytes_pipe.patch \
+        file://coreutils-9.0-sw.patch \
 "
 
 SRC_URI[sha256sum] = "ea613a4cf44612326e917201bbbcdfbd301de21ffc3b59b6e5c07e040b275e52"

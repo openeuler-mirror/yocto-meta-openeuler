@@ -7,6 +7,11 @@ SRC_URI:prepend = "file://${BP}.tar.xz \
            file://backport-gzip-detect-invalid-input.patch \
            file://backport-gzip-test-invalid-input-bug.patch \
            file://fix-verbose-disable.patch \
+           file://fix-exit-status-on-broken-pipe.patch \
            "
+
+# this patch cause compiling failed 
+#  file://performance-neoncrc32-and-prfm.patch 
+
 
 SRC_URI[sha256sum] = "ce5e03e519f637e1f814011ace35c4f87b33c0bbabeec35baf5fbd3479e91956"

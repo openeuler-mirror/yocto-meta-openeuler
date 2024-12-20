@@ -28,6 +28,17 @@ SRC_URI:prepend = "file://pcre2-${PV}.tar.bz2 \
             file://backport-Fix-backreferences-with-unset-backref-and-non-greedy.patch \
             file://backport-Sanity-checks-for-ctype-functions-342.patch \
             file://backport-Fix-incorrect-class-character-matches-in-JIT.patch \
+            file://backport-Fixing-an-issue-using-empty-character-sets-in-jit.patch \
+            file://backport-pcre2grep-document-better-possible-multiline-matchin.patch \
+            file://backport-Remove-incorrect-optimization-in-DFA-matching-when-p.patch \
+            file://backport-Implement-PCRE2_EXTRA_CASELESS_RESTRICT-and-related-.patch \
+            file://backport-Additional-PCRE2_EXTRA_ASCII_xxx-code.patch \
+            file://backport-Fix-non-recognition-of-some-octal-escapes-in-substitute.patch \
+            file://backport-Guard-against-out-of-bounds-memory-access-when-parsing.patch \
+            file://backport-Add-Perl-titlecasing-475.patch \
+            file://backport-Fix-incorrect-positive-error-code-from-pcre2_substitute.patch \
+            file://backport-pcre2_compile-avoid-1-byte-buffer-overread-parsing-V.patch \
+            file://backport-Improve-error-message-for-N-name-in-character-classes.patch \
 "
 
 SRC_URI[sha256sum] = "8d36cd8cb6ea2a4c2bb358ff6411b0c788633a2a45dabbf1aeb4b701d1b5e840"

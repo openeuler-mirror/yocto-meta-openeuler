@@ -14,6 +14,7 @@ SRC_URI:prepend = "file://expect${PV}.tar.gz \
            file://expect-5.45-passmass-su-full-path.patch \
            file://expect-5.45-mkpasswd-man.patch \
            file://expect-5.45-format-security.patch \
+           file://backport-expect-5.45-headers.patch \
            "
 
 # expect-5.45-format-security.patch and 0001-Resolve-string-formatting-issues.patch provide the same

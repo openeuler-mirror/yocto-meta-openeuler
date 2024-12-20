@@ -12,6 +12,8 @@ SRC_URI:remove = "file://backport-Much-of-Greenland-still-uses-DST-from-2024-on.
         file://remove-El_Aaiun-timezone.patch \
         file://remove-Israel-timezone.patch \
         file://skip-check_web-testcase.patch \
+				file://Asia-Almaty-matches-Asia-Tashkent-from-now-on.patch \
+				file://America-Scoresbysund-matches-America-Nuuk-from-now-o.patch \
 "
 
 # no need to depends on tzcode-native, as nativesdk-tzcode is included
