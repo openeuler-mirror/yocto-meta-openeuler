@@ -34,9 +34,21 @@ SRC_URI[sha256sum] = "774032006128a896437f5913e132aa27dbfb937cd8847e449522d5a12d
 DEPENDS:remove = "liblogging"
 PACKAGECONFIG:remove = "libgcrypt"
 
-# new version alter
+# new version uses openssl
 PACKAGECONFIG:remove = "gnutls"
 PACKAGECONFIG:append = " openssl"
+
+# in openeuler rsyslog's repo, there are rsyslog.conf and rsyslog.service which
+# will conflict with the rsyslog.conf and rsyslog.service in openembedded's rsyslog
+# recipe. Here we use a trick to use openembedded's rsyslog config files.
+do_install:prepend() {
+    # remove openeuler's config files as they have higher priority
+    rm ${WORKDIR}/rsyslog.conf
+    rm ${WORKDIR}/rsyslog.service
+    # use openembedded's config files
+    cp ${FILE_DIRNAME}/rsyslog/rsyslog.conf ${WORKDIR}
+    cp ${FILE_DIRNAME}/rsyslog/rsyslog.service ${WORKDIR}
+}
 
 PACKAGECONFIG[openssl] = "--enable-openssl,--disable-openssl,openssl,"
 # For libcap-ng, see commit log and  https://github.com/rsyslog/rsyslog/issues/5091
