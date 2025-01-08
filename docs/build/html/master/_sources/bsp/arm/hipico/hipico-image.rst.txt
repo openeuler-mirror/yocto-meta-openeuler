@@ -46,7 +46,7 @@ oebuild是openeuler构建开发环境的工具，可以根据配置自动拉取d
    oebuild update
 
    # 创建hipico构建环境
-   oebuild generate -p hipico -d build_arm64
+   oebuild generate -p hipico -d build_pico
 
 3.构建openeuler镜像
 ---------------------
@@ -55,7 +55,7 @@ oebuild是openeuler构建开发环境的工具，可以根据配置自动拉取d
 
    <work_dir>
        ├── build
-       │   └── build_arm64				# 构建目录
+       │   └── build_pico				# 构建目录
        └── src
            ├── yocto-meta-openeuler	# openeuler主仓库
            ├── ...						# 其它源码仓库
@@ -65,11 +65,11 @@ oebuild是openeuler构建开发环境的工具，可以根据配置自动拉取d
 .. code:: bash
 
    # 切换到构建目录
-   cd <work_dir>/build/build_arm64
+   cd <work_dir>/build/build_pico
    # 编译openeuler镜像
    oebuild bitbake openeuler-image
 
-构建完成后，在\ ``<work_dir>/build/build_arm64/output/<构建时间戳>``\ 目录中生成构建产物。
+构建完成后，在\ ``<work_dir>/build/build_pico/output/<构建时间戳>``\ 目录中生成构建产物。
 
 .. code:: 
 
