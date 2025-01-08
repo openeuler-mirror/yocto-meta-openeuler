@@ -13,6 +13,7 @@
    arm64/index
    x86/index
    riscv/index
+   arm/index
 
 .. list-table:: 支持列表清单
     :widths: 15 10 10 20
@@ -23,7 +24,7 @@
       - 厂商
       - 芯片型号
       - 参考开发板
-    * - ARM
+    * - ARM/ARM64
       - 瑞芯微
       - RK3399
       - 香橙派4
