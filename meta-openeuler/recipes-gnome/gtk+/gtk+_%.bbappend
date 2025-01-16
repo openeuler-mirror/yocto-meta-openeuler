@@ -4,5 +4,5 @@ inherit oee-archive
 PV = "2.24.33"
 
 SRC_URI:prepend = " \
-    file://{BPN}-${PV}.tar.xz \
+    file://${BPN}-${PV}.tar.xz \
 "
