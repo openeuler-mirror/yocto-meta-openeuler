@@ -1,5 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-kernel/kexec/kexec-tools_2.0.21.bb
-
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 # kexec-tools version in openEuler
 PV = "2.0.26"
 
