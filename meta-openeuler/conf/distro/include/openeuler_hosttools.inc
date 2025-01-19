@@ -23,7 +23,7 @@ HOSTTOOLS_NONFATAL += "flex bison bc kmod depmod insmod"
 ASSUME_PROVIDED += "bc-native bison-native flex-native kmod-native"
 
 # autotools related tools
-HOSTTOOLS_NONFATAL += "automake autoreconf aclocal libtoolize m4 autoconf autoheader automake-1.16 aclocal-1.16 \
+HOSTTOOLS_NONFATAL += "automake autoreconf aclocal libtoolize m4 autoconf autoheader automake-1.16 aclocal-1.16 automake-1.17 aclocal-1.17 \
               libtool autopoint autoscan autom4te autoupdate"
 ASSUME_PROVIDED += "automake-native autoconf-native libtool-native m4-native"
 
