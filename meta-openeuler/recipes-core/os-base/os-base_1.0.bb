@@ -19,6 +19,8 @@ SRC_URI = " \
 	file://services \
 	file://protocols \
 	file://rpc \
+	file://10-eth0.network  \
+	file://70-persistent-net.rules \
 "
 
 do_install() {
@@ -29,13 +31,22 @@ do_install() {
 
 # all init scripts should be in /etc/init.d, currently openeuler embedded specific init functions are mainly
 # located in rc.functions and rc.sysinit
-	install -d ${D}${sysconfdir}/init.d
-	install -m 0744 ${WORKDIR}/rc.functions ${D}${sysconfdir}/init.d
-	install -m 0744 ${WORKDIR}/rc.sysinit ${D}${sysconfdir}/init.d
-# to match busybox's rcS script and buysbox-inittab, set a link in rc5.d to let rc.sysinit run
-	if [ x"${INIT_MANAGER}" = x"mdev-busybox" ]; then
-		install -d ${D}${sysconfdir}/rc5.d
-		update-rc.d -r ${D} rc.sysinit start 50 5 .
+	if ${@bb.utils.contains('DISTRO_FEATURES','sysvinit','true','false',d)}; then
+		install -d ${D}${sysconfdir}/init.d
+		install -m 0744 ${WORKDIR}/rc.functions ${D}${sysconfdir}/init.d
+		install -m 0744 ${WORKDIR}/rc.sysinit ${D}${sysconfdir}/init.d
+		# to match busybox's rcS script and buysbox-inittab, set a link in rc5.d to let rc.sysinit run
+		if [ x"${INIT_MANAGER}" = x"mdev-busybox" ]; then
+			install -d ${D}${sysconfdir}/rc5.d
+			update-rc.d -r ${D} rc.sysinit start 50 5 .
+		fi
+	fi
+## systemd related basic configuration
+	if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
+		install -d ${D}${sysconfdir}/systemd/network
+		install -d ${D}${sysconfdir}/udev/rules.d
+		install -m 0644 ${WORKDIR}/10-eth0.network ${D}${sysconfdir}/systemd/network
+		install -m 0644 ${WORKDIR}/70-persistent-net.rules ${D}${sysconfdir}/udev/rules.d
 	fi
 
 # necessary infrastructure for basic TCP/IP based networking from netbase_6.2.bb
