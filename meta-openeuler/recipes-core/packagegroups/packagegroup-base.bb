@@ -61,7 +61,6 @@ elfutils \
 "
 
 RDEPENDS:packagegroup-base-libs = " \
-initscripts \
 json-c \
 libcap-bin \
 libcap-ng-bin \
