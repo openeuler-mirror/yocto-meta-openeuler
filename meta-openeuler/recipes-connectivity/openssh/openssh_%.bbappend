@@ -6,8 +6,7 @@ PV = "9.3p2"
 
 # notice files in openssh are all from higher version of oe
 # ref: http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-connectivity/openssh/openssh?id=c80a3a7a4a9dc40cbb675777a1ba1481532ecb05
-FILESEXTRAPATHS:prepend := "${THISDIR}/openeuler-config/:"
-FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 # conflict: other openeuler patches can't apply
 SRC_URI:prepend = " \
