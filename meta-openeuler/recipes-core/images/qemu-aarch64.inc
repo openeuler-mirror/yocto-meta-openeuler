@@ -8,8 +8,8 @@ QB_DEFAULT_FSTYPE = "${@d.getVar('IMAGE_FSTYPES').split(' ')[0]}"
 QB_MACHINE = "-machine virt,gic-version=3"
 QB_CPU = "-cpu cortex-a53"
 QB_SMP = "-smp 4"
-# for features like ros, we need to increase the memory size
-QB_MEM = "${@bb.utils.contains("DISTRO_FEATURES", "ros", "-m 1024", "-m 256", d)}"
+# use 1024M memory to cover most scenarios
+QB_MEM = "-m 1024"
 QB_CPU_KVM = "-cpu host -machine gic-version=3"
 # For graphics to work we need to define the VGA device as well as the necessary USB devices
 QB_GRAPHICS = "-device virtio-gpu-pci"
