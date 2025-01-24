@@ -16,7 +16,7 @@ RUST_BASE_URI := "https://static.rust-lang.org"
 # Many crates rely on pkg-config to find native versions of their libraries for
 # linking - do the simple thing and make it generally available.
 DEPENDS:append = "\
-    cargo-bin-cross-${TARGET_ARCH} \
+    ${@ "cargo-bin-cross-${TARGET_ARCH}" if d.getVar('TARGET_ARCH') != "${BUILD_ARCH}" else "cargo-bin-native" }    \
     pkgconfig-native \
 "
 
@@ -125,7 +125,7 @@ EOF
     fi
 }
 
-cargo_do_configure() {
+cargo_bin_do_configure() {
     mkdir -p "${B}"
     mkdir -p "${CARGO_HOME}"
     mkdir -p "${WRAPPER_DIR}"
@@ -173,7 +173,7 @@ EOF
     create_cargo_config
 }
 
-cargo_do_compile() {
+cargo_bin_do_compile() {
     export TARGET_CC="${WRAPPER_DIR}/cc-wrapper.sh"
     export TARGET_CXX="${WRAPPER_DIR}/cxx-wrapper.sh"
     export CC="${WRAPPER_DIR}/cc-native-wrapper.sh"
@@ -191,7 +191,7 @@ cargo_do_compile() {
     cargo build ${CARGO_BUILD_FLAGS}
 }
 
-cargo_do_install() {
+cargo_bin_do_install() {
     if [ "${CARGO_BUILD_TYPE}" = "--release" ]; then
         local cargo_bindir="${CARGO_RELEASE_DIR}"
     else
