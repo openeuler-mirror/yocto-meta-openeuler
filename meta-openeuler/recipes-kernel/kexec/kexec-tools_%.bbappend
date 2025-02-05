@@ -15,3 +15,5 @@ SRC_URI += "file://kexec-Add-quick-kexec-support.patch \
 
 SRC_URI[md5sum] = "ce3c79e0f639035ef7ddfc39b286a61a"
 SRC_URI[sha256sum] = "7fe36a064101cd5c515e41b2be393dce3ca88adce59d6ee668e0af7c0c4570cd"
+
+RDEPENDS:${PN} += "makedumpfile"
