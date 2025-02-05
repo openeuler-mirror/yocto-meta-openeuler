@@ -31,6 +31,7 @@ gzip \
 bzip2 \
 iproute2-ip \
 iptables \
+kexec-tools \
 kmod \
 less \
 logrotate \
