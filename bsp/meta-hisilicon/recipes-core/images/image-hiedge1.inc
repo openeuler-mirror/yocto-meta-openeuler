@@ -8,11 +8,6 @@ IMAGE_INSTALL += " \
 hiedge1-user-driver \
 "
 
+inherit features_check
 
-# 1. dsoftbus is not adpated to hieulerpi1
-# 2. user-driver may provides libsecurec.so,
-#  it conflicts with libboundscheck, especially in SDK
-# so, remove dsoftbus from IMAGE_INSTALL
-IMAGE_INSTALL:remove = " \
-    packagegroup-dsoftbus \
-"
+CONFLICT_DISTRO_FEATURES = " dsoftbus "
