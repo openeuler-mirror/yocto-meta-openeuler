@@ -6,11 +6,9 @@ require recipes-core/images/bsp-${MACHINE}.inc
 
 DEPENDS:append = "${@bb.utils.contains("DISTRO_FEATURES", "mpu_solution", " signtools-hi3093 u-boot-emmc ", "", d)}"
 
-# too large for hhi3093 emmc
-IMAGE_INSTALL:remove = " \
-packagegroup-isulad \
-packagegroup-dsoftbus \
-"
+inherit features_check
+
+CONFLICT_DISTRO_FEATURES = " dsoftbus isulad "
 
 # note, these  modules form 3093 bsp not release now:
 #   * kernel-module-sol-drv 
