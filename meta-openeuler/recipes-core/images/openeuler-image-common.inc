@@ -65,9 +65,11 @@ EXTRANATIVEPATH:remove = "${@['', 'python3-native']['${OPENEULER_PREBUILT_TOOLS_
 
 # set file permission for secure configuration
 set_permissions_from_rootfs() {
-   cd "${IMAGE_ROOTFS}"
-   chmod 750 ./etc/init.d
-   cd -
+    cd "${IMAGE_ROOTFS}"
+    if [ -d ./etc/init.d ];then
+       chmod 755 ./etc/init.d
+    fi
+    cd -
 }
 
 IMAGE_PREPROCESS_COMMAND += "set_permissions_from_rootfs;"
