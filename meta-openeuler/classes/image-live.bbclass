@@ -73,13 +73,13 @@ BOOTIMG_EXTRA_SPACE ?= "512"
 
 populate_live() {
     populate_kernel $1
-    # zImage is not support, when recive a zImage, replace with Image
+    # zImage is not supported in tradition Grub+BIOS, replace zImage with Image*
     # it should compact with DEPLOY_DIR_IMAGE/image in meta-openeuler/recipes-core/images/qemu.inc 
     if [ "${KERNEL_IMAGETYPE}" == "zImage" ];then 
         if [ -e ${DEPLOY_DIR_IMAGE}/Image* ]; then
             install -m 0644 ${DEPLOY_DIR_IMAGE}/Image* $1/${KERNEL_IMAGETYPE}
         else
-            bbfatal "unsupport zImage in grub cfg, should replace with ${DEPLOY_DIR_IMAGE}/Image* but not exists."
+            bbfatal "zImage unsupported in grub cfg, should replace with ${DEPLOY_DIR_IMAGE}/Image* but not exists."
         fi
     fi
 
