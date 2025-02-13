@@ -3,38 +3,35 @@
 
 SUMMARY = "Simple initramfs image. Mostly used for live images"
 
+# install scripts for efi boot
 INITRAMFS_SCRIPTS ?= "\
                       initramfs-module-install-efi \
                      "
 
-# we want a non systemd init manager, packagegroup-core-boot-live is for it.
-VIRTUAL-RUNTIME_base-utils = "packagegroup-core-boot-live"
-
+# packages containing necessary tools required in image live,
 PACKAGE_INSTALL = "${INITRAMFS_SCRIPTS} \
-        ${VIRTUAL-RUNTIME_base-utils} \
-        base-passwd \
+        packagegroup-core-boot-live \
         ${ROOTFS_BOOTSTRAP_INSTALL} \
         packagegroup-kernel-modules \
         efivar efibootmgr \
 "
 
 export IMAGE_BASENAME = "openeuler-image-live"
-
 IMAGE_FSTYPES = "${INITRAMFS_FSTYPES}"
-IMAGE_FSTYPES_DEBUGFS = "${INITRAMFS_FSTYPES}"
 
-# INITRD_IMAGE_LIVE cannot use image live, hddimg or iso.
-IMAGE_FSTYPES:remove = "live hddimg iso"
-
-# make install or nologin when using busybox-inittab
+# directly call install-efi.sh after initialization
 set_permissions_from_rootfs:append() {
-    cd "${IMAGE_ROOTFS}"
-    if [ -e ./etc/inittab ];then
-        sed -i "s#respawn:/sbin/getty.*#respawn:-/bin/sh /init.d/install-efi.sh#g" ./etc/inittab
-    fi
-    cd -
-}
 
-IMAGE_FEATURES:append = " empty-root-password"
+    # if sysvinit is used, modify inittab to call install-efi.sh
+    if ${@bb.utils.contains('DISTRO_FEATURES','sysvinit','true','false',d)}; then
+        cd "${IMAGE_ROOTFS}"
+        if [ -e ./etc/inittab ];then
+            sed -i "s#respawn:/sbin/getty.*#respawn:-/bin/sh /init.d/install-efi.sh#g" ./etc/inittab
+        fi
+        cd -
+    fi
+
+    # todo: call install-efi.sh in systemd
+}
 
 require openeuler-image-common.inc
