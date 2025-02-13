@@ -4,14 +4,9 @@ PR = "r1"
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 inherit packagegroup
 
-# live should use this VIRTUAL-RUNTIME as we don't want systemd:
-# Notice: we need busybox-inittab to setup in RDEPENDS
-DISTRO_FEATURES_BACKFILL_CONSIDERED:append := " systemd"
-VIRTUAL-RUNTIME_dev_manager := "busybox-mdev"
-VIRTUAL-RUNTIME_init_manager := "busybox"
-VIRTUAL-RUNTIME_initscripts := "initscripts"
-VIRTUAL-RUNTIME_keymaps := "keymaps"
-VIRTUAL-RUNTIME_login_manager := "busybox"
+# Distro can override the following VIRTUAL-RUNTIME providers:
+VIRTUAL-RUNTIME_dev_manager ?= "udev"
+VIRTUAL-RUNTIME_keymaps ?= "keymaps"
 
 EFI_PROVIDER ??= "grub-efi"
 
@@ -38,7 +33,6 @@ RDEPENDS:${PN} = "\
     kernel-image \
     kernel-vmlinux \
     os-base \
-    busybox-inittab \
     "
 
 # No rule to make target "Image" for x86-64, remove it
