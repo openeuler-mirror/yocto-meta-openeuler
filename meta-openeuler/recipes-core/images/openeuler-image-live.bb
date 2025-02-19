@@ -21,7 +21,6 @@ IMAGE_FSTYPES = "${INITRAMFS_FSTYPES}"
 
 # directly call install-efi.sh after initialization
 set_permissions_from_rootfs:append() {
-
     # if sysvinit is used, modify inittab to call install-efi.sh
     if ${@bb.utils.contains('DISTRO_FEATURES','sysvinit','true','false',d)}; then
         cd "${IMAGE_ROOTFS}"
@@ -31,7 +30,12 @@ set_permissions_from_rootfs:append() {
         cd -
     fi
 
-    # todo: call install-efi.sh in systemd
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
+        # Mask getty.target for the live image. We'll use tty device in install-efi.sh.
+        cd "${IMAGE_ROOTFS}"
+        ln -sf /dev/null ./etc/systemd/system/getty.target
+        cd -
+    fi
 }
 
 require openeuler-image-common.inc

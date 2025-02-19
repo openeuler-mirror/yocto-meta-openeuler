@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh
 #
 # Copyright (c) 2012, Intel Corporation.
 # All rights reserved.
@@ -6,6 +6,8 @@
 # install.sh 
 #
 
+set +e
+trap 'echo "Caught Ctrl+C, exiting..."; exit 1' SIGINT
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 # wait for the kernel module to finish
