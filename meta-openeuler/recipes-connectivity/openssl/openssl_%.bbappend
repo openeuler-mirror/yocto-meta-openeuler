@@ -12,6 +12,8 @@ SRC_URI:remove = "file://CVE-2023-0464.patch \
         file://0001-Configure-do-not-tweak-mips-cflags.patch \
 "
 
+EXTRA_OECONF:append = " enable-sm2 enable-sm4"
+
 # patches in openEuler
 SRC_URI:prepend = "file://${BP}.tar.gz \
         file://openssl-3.0-build.patch \
