@@ -59,6 +59,7 @@ xz \
 expect \
 sysfsutils \
 elfutils \
+openssl-bin \
 "
 
 RDEPENDS:packagegroup-base-libs = " \
