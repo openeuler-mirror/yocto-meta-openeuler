@@ -10,7 +10,7 @@ SRC_URI = " file://ethercat-e1000e-5.10.tar.gz;subdir=${BP};striplevel=1 \
 			file://0002-avoid-ssize_t.patch \
 	   "
 
-PACKAGECONFIG ??= "e1000e"
+PACKAGECONFIG ??= "e1000e generic"
 
 PACKAGECONFIG[generic] = "--enable-generic,--disable-generic,"
 PACKAGECONFIG[8139too] = "--enable-8139too,--disable-8139too,"
