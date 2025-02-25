@@ -1,7 +1,7 @@
 # base image
-FROM openeuler/openeuler:21.09
+FROM hub.oepkgs.net/openeuler/openeuler:20.03
 
-RUN sed -i 's/repo.openeuler.org/archives.openeuler\.openatom\.cn/g' /etc/yum.repos.d/openEuler.repo
+# RUN sed -i 's/repo.openeuler.org/archives.openeuler\.openatom\.cn/g' /etc/yum.repos.d/openEuler.repo
 
 # yum install
 RUN set -eux; \
@@ -12,7 +12,9 @@ autoconf automake m4 bison bc libtool gettext-devel createrepo_c net-tools \
 wget sudo hostname rpcgen texinfo meson dosfstools mtools libmpc-devel \
 gmp-devel ninja-build numactl-devel make python python3 python3-pip screen \
 iproute help2man gdisk libstdc++-static diffstat lzip python3-devel rsync \
-xz-lzma-compat xz unzip gcc g++ vim hwdata libxslt perl-XML-Parser umoci skopeo
+xz-lzma-compat xz unzip gcc gcc-c++ vim hwdata libxslt perl-XML-Parser umoci skopeo
+
+RUN yum clean packages
 
 ARG user=openeuler
 ARG group=openeuler
