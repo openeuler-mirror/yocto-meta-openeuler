@@ -62,6 +62,13 @@ elfutils \
 openssl-bin \
 "
 
+# riscv64 arch is not support kexec-tools, view yocto-poky/meta/recipes-kernel/kexec/kexec-tools_2.0.23.bb
+# and check COMPATIBLE_HOST param
+RDEPENDS:packagegroup-base-utils:remove:riscv64 = "\
+    kexec-tools \
+"
+
+
 RDEPENDS:packagegroup-base-libs = " \
 json-c \
 libcap-bin \
