@@ -4,13 +4,19 @@ LICENSE = "GPL-2.0-only & LGPL-2.1-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=59530bdf33659b29e73d4adb9f9f6552"
 SECTION = "net"
 
+# Currently, version 1.5.2 is on src-openEuler/master branch.
+# However, this version does not support kernel 6.6, so we use
+# version 1.6.3 from oee_archive for now.
+inherit oee-archive
+OEE_ARCHIVE_SUB_DIR = "igh-ethercat"
 
-SRC_URI = " file://ethercat-e1000e-5.10.tar.gz;subdir=${BP};striplevel=1 \
-			file://0001-ethercat-Fix-ethercat-tool-compilation.patch \
-			file://0002-avoid-ssize_t.patch \
-	   "
+SRC_URI = " \
+    file://ethercat-${PV}.tar.bz2 \
+"
 
-PACKAGECONFIG ??= "e1000e generic"
+S = "${WORKDIR}/ethercat-${PV}"
+
+PACKAGECONFIG ??= "generic"
 
 PACKAGECONFIG[generic] = "--enable-generic,--disable-generic,"
 PACKAGECONFIG[8139too] = "--enable-8139too,--disable-8139too,"
@@ -46,4 +52,7 @@ do_install:append() {
 	oe_runmake distclean
 }
 
-FILES:${PN} += "${nonarch_base_libdir}/modules/${KERNEL_VERSION}"
+FILES:${PN} += " \
+${nonarch_base_libdir}/modules/${KERNEL_VERSION} \
+/usr/share \
+"
