@@ -5,8 +5,8 @@ require recipes-core/images/bsp-${MACHINE}.inc
 
 # all app and tools
 IMAGE_INSTALL += " \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
-    ', ' \
     ethercat-igh \
-    ', d)} \
+    libmodbus \
+    openjpeg \
+    opencv \
 "
