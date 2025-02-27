@@ -16,5 +16,4 @@ adwaita-icon-theme \
 ttf-wqy-zenhei \
 firefox-bin \
 labwc \
-openjpeg \
 "
