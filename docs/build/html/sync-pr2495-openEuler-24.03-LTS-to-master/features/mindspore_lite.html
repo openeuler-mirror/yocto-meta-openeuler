@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>构建Mindspore Lite使用指导 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="南向使用指导" href="../bsp/index.html" />
+    <link rel="prev" title="嵌入式实时虚拟机ZVM" href="zvm.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mica/index.html">多OS混合关键性部署框架 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="muslc.html">musl libc的支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed_softbus.html">分布式软总线</a></li>
+<li class="toctree-l3"><a class="reference internal" href="preempt_rt.html">软实时系统介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prebuilt_tool.html">预构建工具特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rust.html">Rust支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qt5_wayland.html">嵌入式图形支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="armnn.html">ArmNN的支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="clang_llvm.html">clang/llvm 编译工具链支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jailhouse.html">嵌入式分区虚拟机Jailhouse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openbmc.html">OpenBMC 镜像构建和使用</a></li>
+<li class="toctree-l3"><a class="reference internal" href="container/index.html">嵌入式容器相关特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernelversions.html">内核多版本支持（5.10/6.6）介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="software_package_description.html">当前所支持的软件包</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zvm.html">嵌入式实时虚拟机ZVM</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">构建Mindspore Lite使用指导</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">简介</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">功能介绍</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">第 1 步: 构建准备</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">第 2 步： 执行构建</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#demo">第 3 步 执行推理 （Demo）</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">第 4 步 自行构建推理</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7">参考链接</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../bsp/index.html">南向使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../user_guide/index.html">用户使用指导</a> &raquo;</li>
+          <li><a href="index.html">关键特性指导</a> &raquo;</li>
+      <li>构建Mindspore Lite使用指导</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mindspore-lite">
+<span id="id1"></span><h1>构建Mindspore Lite使用指导<a class="headerlink" href="#mindspore-lite" title="Permalink to this headline">¶</a></h1>
+<p>本章主要介绍如何构建Mindspore Lite，以及如何应用其进行端侧推理。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>在构建前，请确保构建主机满足以下条件：</p>
+<ul class="simple">
+<li><p>至少有 <strong>8G</strong> 内存。</p></li>
+<li><p>建议有 <strong>200G</strong> 以上存储。</p></li>
+<li><p>建议使用内存、CPU数量更多的主机，增加构建速度。</p></li>
+</ul>
+</div>
+<section id="id2">
+<h2>简介<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>MindSpore Lite是MindSpore推出的轻量级、高性能AI推理框架，旨在满足端侧设备上日益增长的AI应用需求。它专注于在移动设备和物联网（IoT）设备上部署和运行AI模型，已广泛应用于图像分类、目标识别、人脸识别、文字识别等领域。</p>
+<p>更详尽的信息及使用指南可参考官网：<a class="reference external" href="https://www.mindspore.cn/lite/?version=r2.0">https://www.mindspore.cn/lite/?version=r2.0</a></p>
+</section>
+<section id="id3">
+<h2>功能介绍<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>当前集成版本为r2.3.1，主要集成端侧推理核心包，未集成Mindspore Lite相关工具（如模型转换等），具体功能为：可以调用已有的ms模型在嵌入式设备上进行直接推理。</p>
+</section>
+<section id="id4">
+<h2>第 1 步: 构建准备<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p><strong>(当前支持arm64标准CPU推理，构建是以arm64标准qemu镜像为例)</strong></p>
+<ol class="arabic">
+<li><p>准备一个 ubuntu x86 构建主机环境 （建议22.04）</p></li>
+<li><p>openEuler镜像构建准备，下述操作摘自官方使用指南：<a class="reference external" href="https://pages.openeuler.openatom.cn/embedded/docs/build/html/master/getting_started/index.html">https://pages.openeuler.openatom.cn/embedded/docs/build/html/master/getting_started/index.html</a></p></li>
+<li><p>安装必要的软件包</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo apt-get install python3 python3-pip docker docker.io
+$ pip install oebuild
+</pre></div>
+</div>
+</li>
+<li><p>配置docker环境</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ sudo usermod -a -G docker <span class="k">$(</span>whoami<span class="k">)</span>
+$ sudo systemctl daemon-reload <span class="o">&amp;&amp;</span> sudo systemctl restart docker
+$ sudo chmod o+rw /var/run/docker.sock
+</pre></div>
+</div>
+</li>
+<li><p>初始化oebuild构建环境</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># &lt;work_dir&gt; 为要创建的工作目录</span>
+$ oebuild init &lt;work_dir&gt;
+
+<span class="c1"># 进入工作目录</span>
+$ <span class="nb">cd</span> &lt;work_dir&gt;
+
+<span class="c1"># 拉取构建容器、yocto-meta-openeuler 项目代码</span>
+$ oebuild update
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="id5">
+<h2>第 2 步： 执行构建<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>进入工作目录</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> &lt;work_dir&gt;
+</pre></div>
+</div>
+</li>
+<li><p>创建配置文件</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ oebuild generate -p qemu-aarch64 -d build_arm64
+</pre></div>
+</div>
+</li>
+<li><p>切换到包含 compile.yaml 的编译空间目录</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> build/build_arm64/
+</pre></div>
+</div>
+</li>
+<li><p>进入交互环境</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ oebuild bitbake
+</pre></div>
+</div>
+</li>
+<li><p>执行构建</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ bitbake mindspore-lite
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="demo">
+<h2>第 3 步 执行推理 （Demo）<a class="headerlink" href="#demo" title="Permalink to this headline">¶</a></h2>
+<p>我们集成了一个简易Demo执行推理，通过调用mobilenet实现简单的图像分类，在本步中，我们直接运行Demo，具体如何定制化构建将在下一步介绍。</p>
+<p><strong>（示例支持arm64通用，无后端定制，欢迎厂商贡献后端驱动）</strong></p>
+<p><strong>（仅作为演示参考，为方便验证，直接加入到对应镜像配方的IMAGE_INSTALL中；若正式集成时，建议自行新增一个专用的packagegroup并通过DISTRO_FEATURES开关进行控制）</strong></p>
+<ol class="arabic">
+<li><p>添加 MindSpore Lite 和 Demo 到 openEuler 镜像：</p>
+<ul>
+<li><p>进入镜像配置文件夹，地址如下：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&lt;work_dir&gt;/src/yocto-meta-openeuler/meta-openeuler/recipes-core/images
+</pre></div>
+</div>
+</li>
+<li><p>添加 MindSpore Lite、Demo Classification 和 OpenCV，示例如下：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">IMAGE_INSTALL</span> <span class="o">+=</span> <span class="s2">&quot; \</span>
+<span class="si">${</span><span class="p">@bb.utils.contains(</span><span class="s2">&quot;DISTRO_FEATURES&quot;</span><span class="p">, </span><span class="s2">&quot;mcs&quot;</span><span class="p">, </span><span class="s2">&quot;packagegroup-mcs&quot;</span><span class="p">, </span><span class="s2">&quot;&quot;</span><span class="p">, d)</span><span class="si">}</span><span class="s2"> \</span>
+<span class="si">${</span><span class="p">@bb.utils.contains(</span><span class="s2">&quot;DISTRO_FEATURES&quot;</span><span class="p">, </span><span class="s2">&quot;ros&quot;</span><span class="p">, </span><span class="s2">&quot;packagegroup-ros&quot;</span><span class="p">, </span><span class="s2">&quot;&quot;</span><span class="p">, d)</span><span class="si">}</span><span class="s2"> \</span>
+<span class="si">${</span><span class="p">@bb.utils.contains(</span><span class="s2">&quot;DISTRO_FEATURES&quot;</span><span class="p">, </span><span class="s2">&quot;hmi&quot;</span><span class="p">, </span><span class="s2">&quot;packagegroup-hmi&quot;</span><span class="p">, </span><span class="s2">&quot;&quot;</span><span class="p">, d)</span><span class="si">}</span><span class="s2"> \</span>
+<span class="si">${</span><span class="p">@bb.utils.contains(</span><span class="s2">&quot;DISTRO_FEATURES&quot;</span><span class="p">, </span><span class="s2">&quot;kubeedge isulad&quot;</span><span class="p">, </span><span class="s2">&quot;packagegroup-kubeedge&quot;</span><span class="p">, </span><span class="s2">&quot;&quot;</span><span class="p">, d)</span><span class="si">}</span><span class="s2"> \</span>
+<span class="si">${</span><span class="p">@bb.utils.contains(</span><span class="s2">&quot;DISTRO_FEATURES&quot;</span><span class="p">, </span><span class="s2">&quot;isulad&quot;</span><span class="p">, </span><span class="s2">&quot;packagegroup-isulad&quot;</span><span class="p">, </span><span class="s2">&quot;&quot;</span><span class="p">, d)</span><span class="si">}</span><span class="s2"> \</span>
+<span class="s2">mindspore-lite demo-classification opencv \</span>
+<span class="s2">&quot;</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</li>
+<li><p>构建镜像，产物在output文件夹下</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ bitbake openeuler-image
+</pre></div>
+</div>
+</li>
+</ol>
+<ol class="arabic" start="2">
+<li><p>配置网络信息，根据官网文档中“使能本地网络”执行操作，具体参考：
+<a class="reference external" href="https://pages.openeuler.openatom.cn/embedded/docs/build/html/master/developer_guide/debug/qemu/qemu_start.html?highlight=qemu%20net">https://pages.openeuler.openatom.cn/embedded/docs/build/html/master/developer_guide/debug/qemu/qemu_start.html?highlight=qemu%20net</a></p></li>
+<li><p>运行并进入QEMU中，Demo的图片存放在 <cite>/usr/pictures</cite> 中，同时，由于在上一步中实现了本地网络配置，可以通过 <cite>scp</cite> 工具把主机中的图片传输到 QEMU 中，之后根据图片文件名称执行推理：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ ms-demo-class /usr/model/mobilenetv2.ms /usr/pictures/tench.webp /usr/pictures/labels.txt
+</pre></div>
+</div>
+<p>其中，<cite>mobilenetv2.ms</cite> 是我们的模型，<cite>tench.webp</cite> 是图片名称，由于一些冲突问题，当前仅支持 webp 格式的图片，请注意；<cite>labels.txt</cite> 是标签文件。</p>
+<p>执行推理后，会返回图像的预测结果：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>------- print outputs ----------
+Predicted class index: 0
+Predicted label: tench, Tinca tinca
+------- print end ----------
+</pre></div>
+</div>
+<p>执行推理的结果可能因模型和输入图片的不同而有所变化，请根据实际情况调整。</p>
+</li>
+</ol>
+</section>
+<section id="id6">
+<h2>第 4 步 自行构建推理<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
+<p>如果希望更改demo或者应用在其他项目中，可以自行编写代码并配置，具体mindspore及demo的文件结构为：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>mindspore-lite/
+├── files/
+│   ├── demo-class/
+│   │   ├── model/
+│   │   ├── CMakeLists.txt
+│   │   └── main.cc
+│   ├── pictures/
+│   └── yocto-mslite-aarch64-supprot.patch
+├── demo-classification_1.0.bb
+└── mindspore-lite_2.3.2.bb
+</pre></div>
+</div>
+<p>在自行设计推理时，可以修改demo-classification_1.0.bb， main.cc， CMakeLists.txt文件，由于模型文件过大，这里我们采用了在recipe中编写链接下载，没有直接存储。
+如果希望获得模型源文件可访问：<a class="reference external" href="https://download-mindspore.osinfra.cn/model_zoo/official/lite/quick_start/mobilenetv2.ms">https://download-mindspore.osinfra.cn/model_zoo/official/lite/quick_start/mobilenetv2.ms</a></p>
+<p>具体文件内容为（可根据实际情况修改）：</p>
+<p>demo-classification_1.0.bb</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;Application demo for mindspore-lite&quot;</span>
+<span class="nv">AUTHOR</span> <span class="o">=</span> <span class="s2">&quot;Huawei Technologies Co., Ltd&quot;</span>
+<span class="nv">LICENSE</span> <span class="o">=</span> <span class="s2">&quot;CLOSED&quot;</span>
+
+<span class="nv">SRC_URI</span> <span class="o">=</span> <span class="s2">&quot; \</span>
+<span class="s2">file://demo-class \</span>
+<span class="s2">file://pictures/ \</span>
+<span class="s2">https://download-mindspore.osinfra.cn/model_zoo/official/lite/quick_start/mobilenetv2.ms;name=model \</span>
+<span class="s2">&quot;</span>
+
+SRC_URI<span class="o">[</span>model.sha256sum<span class="o">]</span> <span class="o">=</span> <span class="s2">&quot;5a7ccd53bf92d8b294a703a1302d4230a311b2d19a8d212eedd65ff6838cfa84&quot;</span>
+
+<span class="c1"># Source directory</span>
+<span class="nv">S</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">WORKDIR</span><span class="si">}</span><span class="s2">/demo-classification&quot;</span>
+
+<span class="nv">DEPENDS</span> <span class="o">=</span> <span class="s2">&quot;mindspore-lite opencv&quot;</span>
+
+<span class="c1"># Inherit pkg</span>
+inherit cmake
+
+<span class="nv">EXTRA_OECMAKE</span> <span class="o">+=</span> <span class="s2">&quot;-DCMAKE_CXX_FLAGS=-I</span><span class="si">${</span><span class="nv">STAGING_INCDIR</span><span class="si">}</span><span class="s2">/opencv4&quot;</span>
+<span class="nv">EXTRA_OECMAKE</span> <span class="o">+=</span> <span class="s2">&quot;-DCMAKE_EXE_LINKER_FLAGS=-L</span><span class="si">${</span><span class="nv">STAGING_LIBDIR</span><span class="si">}</span><span class="s2">&quot;</span>
+
+do_configure:prepend<span class="o">(){</span>
+    cp -rf <span class="si">${</span><span class="nv">WORKDIR</span><span class="si">}</span>/demo-class/* <span class="si">${</span><span class="nv">S</span><span class="si">}</span>
+    cp <span class="si">${</span><span class="nv">WORKDIR</span><span class="si">}</span>/mobilenetv2.ms <span class="si">${</span><span class="nv">S</span><span class="si">}</span>/model
+<span class="o">}</span>
+
+do_configure<span class="o">[</span>depends<span class="o">]</span> +<span class="o">=</span> <span class="s2">&quot;opencv:do_populate_sysroot mindspore-lite:do_populate_sysroot&quot;</span>
+
+<span class="c1"># Install the demo binary</span>
+do_install<span class="o">()</span> <span class="o">{</span>
+    install -d <span class="si">${</span><span class="nv">D</span><span class="si">}${</span><span class="nv">bindir</span><span class="si">}</span>
+    install -m <span class="m">0755</span> <span class="si">${</span><span class="nv">B</span><span class="si">}</span>/ms-demo-class <span class="si">${</span><span class="nv">D</span><span class="si">}${</span><span class="nv">bindir</span><span class="si">}</span>/
+    install -d <span class="si">${</span><span class="nv">D</span><span class="si">}</span>/usr/model
+    install -m <span class="m">0755</span> <span class="si">${</span><span class="nv">WORKDIR</span><span class="si">}</span>/mobilenetv2.ms <span class="si">${</span><span class="nv">D</span><span class="si">}</span>/usr/model
+    install -d <span class="si">${</span><span class="nv">D</span><span class="si">}</span>/usr/pictures
+    cp -r <span class="si">${</span><span class="nv">WORKDIR</span><span class="si">}</span>/pictures/* <span class="si">${</span><span class="nv">D</span><span class="si">}</span>/usr/pictures/
+<span class="o">}</span>
+
+<span class="c1"># Specify files to package</span>
+FILES:<span class="si">${</span><span class="nv">PN</span><span class="si">}</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">bindir</span><span class="si">}</span><span class="s2">/ms-demo-class /usr/model /usr/pictures&quot;</span>
+</pre></div>
+</div>
+<p>main.cc</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span>#include &lt;iostream&gt;
+#include &lt;fstream&gt;
+#include &lt;opencv2/opencv.hpp&gt;
+#include &lt;opencv2/imgcodecs.hpp&gt;
+#include &lt;opencv2/highgui.hpp&gt;
+#include &quot;include/api/model.h&quot;
+#include &quot;include/api/context.h&quot;
+#include &quot;include/api/status.h&quot;
+#include &quot;include/api/types.h&quot;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;map&gt;
+#include &lt;sstream&gt;
+#include &lt;regex&gt;
+
+using mindspore::MSTensor;
+
+// Function to read model file
+char *ReadFile(const char *file, size_t *size) {
+    if (file == nullptr) {
+        std::cerr &lt;&lt; &quot;file is nullptr.&quot; &lt;&lt; std::endl;
+        return nullptr;
+    }
+
+    std::ifstream ifs(file, std::ifstream::in | std::ifstream::binary);
+    if (!ifs.good()) {
+        std::cerr &lt;&lt; &quot;file: &quot; &lt;&lt; file &lt;&lt; &quot; is not exist.&quot; &lt;&lt; std::endl;
+        return nullptr;
+    }
+
+    if (!ifs.is_open()) {
+        std::cerr &lt;&lt; &quot;file: &quot; &lt;&lt; file &lt;&lt; &quot; open failed.&quot; &lt;&lt; std::endl;
+        return nullptr;
+    }
+
+    ifs.seekg(0, std::ios::end);
+    *size = ifs.tellg();
+    std::unique_ptr&lt;char[]&gt; buf(new (std::nothrow) char[*size]);
+    if (buf == nullptr) {
+        std::cerr &lt;&lt; &quot;malloc buf failed, file: &quot; &lt;&lt; file &lt;&lt; std::endl;
+        ifs.close();
+        return nullptr;
+    }
+
+    ifs.seekg(0, std::ios::beg);
+    ifs.read(buf.get(), *size);
+    ifs.close();
+
+    return buf.release();
+}
+
+// Function to load labels from the provided dictionary-style labels.txt
+std::map&lt;int, std::string&gt; LoadLabels(const std::string &amp;label_file) {
+    std::map&lt;int, std::string&gt; labels;
+    std::ifstream file(label_file);
+    std::string content((std::istreambuf_iterator&lt;char&gt;(file)), std::istreambuf_iterator&lt;char&gt;());
+
+    // Regular expression to match {index: &#39;label&#39;}
+    std::regex pattern(R&quot;(\s*(\d+)\s*:\s*&#39;([^&#39;]*)&#39;)&quot;);
+    std::smatch match;
+
+    auto labels_begin = std::sregex_iterator(content.begin(), content.end(), pattern);
+    auto labels_end = std::sregex_iterator();
+
+    for (std::sregex_iterator i = labels_begin; i != labels_end; ++i) {
+        std::smatch match = *i;
+        int index = std::stoi(match[1].str());  // Extract the index
+        std::string label = match[2].str();     // Extract the label
+        labels[index] = label;
+    }
+
+    return labels;
+}
+
+// Function to preprocess image, resize it to model&#39;s input size and normalize
+std::vector&lt;float&gt; PreprocessImage(std::string image_path, int target_height, int target_width) {
+    // Read the image
+    cv::Mat image = cv::imread(image_path, cv::IMREAD_COLOR);
+    if (image.empty()) {
+        std::cerr &lt;&lt; &quot;Failed to read image: &quot; &lt;&lt; image_path &lt;&lt; std::endl;
+        return {};
+    }
+
+    // Resize the image to the target size
+    cv::resize(image, image, cv::Size(target_width, target_height));
+
+    // Convert the image to float32 and normalize to [0, 1]
+    image.convertTo(image, CV_32F, 1.0 / 255.0);
+
+    // Flatten the image data into a vector
+    std::vector&lt;float&gt; input_data;
+    input_data.assign(image.begin&lt;float&gt;(), image.end&lt;float&gt;());
+
+    return input_data;
+}
+
+int main(int argc, const char **argv) {
+    // Check input arguments for model path, image path, and labels path
+    if (argc &lt; 4) {
+        std::cerr &lt;&lt; &quot;Usage: &quot; &lt;&lt; argv[0] &lt;&lt; &quot; &lt;model_path&gt; &lt;image_path&gt; &lt;label_path&gt;&quot; &lt;&lt; std::endl;
+        return -1;
+    }
+
+    std::string model_path = argv[1];
+    std::string image_path = argv[2];
+    std::string label_path = argv[3];
+
+    // Load labels
+    std::map&lt;int, std::string&gt; labels = LoadLabels(label_path);
+    if (labels.empty()) {
+        std::cerr &lt;&lt; &quot;Failed to load labels from: &quot; &lt;&lt; label_path &lt;&lt; std::endl;
+        return -1;
+    }
+
+    // Read model file
+    size_t size = 0;
+    char *model_buf = ReadFile(model_path.c_str(), &amp;size);
+    if (model_buf == nullptr) {
+        std::cerr &lt;&lt; &quot;Read model file failed.&quot; &lt;&lt; std::endl;
+        return -1;
+    }
+
+    // Create and init context, add CPU device info
+    auto context = std::make_shared&lt;mindspore::Context&gt;();
+    if (context == nullptr) {
+        delete[](model_buf);
+        std::cerr &lt;&lt; &quot;New context failed.&quot; &lt;&lt; std::endl;
+        return -1;
+    }
+    auto &amp;device_list = context-&gt;MutableDeviceInfo();
+    auto device_info = std::make_shared&lt;mindspore::CPUDeviceInfo&gt;();
+    if (device_info == nullptr) {
+        delete[](model_buf);
+        std::cerr &lt;&lt; &quot;New CPUDeviceInfo failed.&quot; &lt;&lt; std::endl;
+        return -1;
+    }
+    device_list.push_back(device_info);
+
+    // Create model
+    auto model = new (std::nothrow) mindspore::Model();
+    if (model == nullptr) {
+        delete[](model_buf);
+        std::cerr &lt;&lt; &quot;New Model failed.&quot; &lt;&lt; std::endl;
+        return -1;
+    }
+
+    // Build model
+    auto build_ret = model-&gt;Build(model_buf, size, mindspore::kMindIR, context);
+    delete[](model_buf);
+    if (build_ret != mindspore::kSuccess) {
+        delete model;
+        std::cerr &lt;&lt; &quot;Build model error &quot; &lt;&lt; std::endl;
+        return -1;
+    }
+
+    // Preprocess the input image
+    int input_height = 224;  // MobileNetV2 input size
+    int input_width = 224;
+    std::vector&lt;float&gt; input_data = PreprocessImage(image_path, input_height, input_width);
+    if (input_data.empty()) {
+        delete model;
+        return -1;
+    }
+
+    // Get Input
+    auto inputs = model-&gt;GetInputs();
+    for (auto &amp;tensor : inputs) {
+        auto input_data_ptr = reinterpret_cast&lt;float *&gt;(tensor.MutableData());
+        if (input_data_ptr == nullptr) {
+            std::cerr &lt;&lt; &quot;MallocData for inTensor failed.&quot; &lt;&lt; std::endl;
+            delete model;
+            return -1;
+        }
+        memcpy(input_data_ptr, input_data.data(), input_data.size() * sizeof(float));
+    }
+
+    // Predict
+    std::vector&lt;MSTensor&gt; outputs;
+    auto status = model-&gt;Predict(inputs, &amp;outputs);
+    if (status != mindspore::kSuccess) {
+        std::cerr &lt;&lt; &quot;Inference error.&quot; &lt;&lt; std::endl;
+        delete model;
+        return -1;
+    }
+
+    // Post-process: Get the class with highest probability and print corresponding label
+    std::cout &lt;&lt; &quot;\n------- print outputs ----------&quot; &lt;&lt; std::endl;
+    for (auto tensor : outputs) {
+        auto out_data = reinterpret_cast&lt;float *&gt;(tensor.MutableData());
+        int class_idx = std::max_element(out_data, out_data + tensor.ElementNum()) - out_data;
+        std::cout &lt;&lt; &quot;Predicted class index: &quot; &lt;&lt; class_idx &lt;&lt; std::endl;
+        if (labels.find(class_idx) != labels.end()) {
+            std::cout &lt;&lt; &quot;Predicted label: &quot; &lt;&lt; labels[class_idx] &lt;&lt; std::endl;
+        } else {
+            std::cerr &lt;&lt; &quot;Invalid class index&quot; &lt;&lt; std::endl;
+        }
+    }
+    std::cout &lt;&lt; &quot;------- print end ----------\n&quot; &lt;&lt; std::endl;
+
+    // Delete model
+    delete model;
+    return mindspore::kSuccess;
+}
+</pre></div>
+</div>
+<p>CMakeLists.txt</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>cmake_minimum_required(VERSION 3.12)
+project(Demo)
+
+include_directories($ENV{PKG_CONFIG_SYSROOT_DIR}/usr/)
+link_directories($ENV{PKG_CONFIG_SYSROOT_DIR}/usr/lib64)
+
+find_package(OpenCV REQUIRED)
+
+add_executable(ms-demo-class main.cc)
+
+target_link_libraries(
+        ms-demo-class
+        ${OpenCV_LIBS}
+        mindspore-lite
+        pthread
+        dl
+)
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h2>参考链接<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>快 速 上 手 — openEuler Embedded 在 线 文 档 24.03 documentation. (n.d.).Retrieved September 30, 2024,from <a class="reference external" href="https://embedded.pages.openeuler.org/master/getting_started/index.html">https://embedded.pages.openeuler.org/master/getting_started/index.html</a></p></li>
+<li><p>QEMU 使用 — openEuler Embedded 在线文档 24.03 documentation. (n.d.).Retrieved September 30, 2024,from <a class="reference external" href="https://pages.openeuler.openatom.cn/embedded/docs/build/html/master/developer_guide/debug/qemu/qemu_start.html">https://pages.openeuler.openatom.cn/embedded/docs/build/html/master/developer_guide/debug/qemu/qemu_start.html</a></p></li>
+<li><p>编 译 端 侧 MindSpore Lite — MindSpore Lite master 文 档 . (n.d.). Retrieved September 30, 2024,from <a class="reference external" href="https://www.mindspore.cn/lite/docs/zh-CN/r2.2/use/build.html">https://www.mindspore.cn/lite/docs/zh-CN/r2.2/use/build.html</a></p></li>
+<li><p>端 侧 推 理 快 速 入 门 — MindSpore Lite master 文 档 . (n.d.). Retrieved September 30, 2024, from <a class="reference external" href="https://www.mindspore.cn/lite/docs/zh-CN/r2.2/quick_start/one_hour_introduction.html">https://www.mindspore.cn/lite/docs/zh-CN/r2.2/quick_start/one_hour_introduction.html</a></p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="zvm.html" class="btn btn-neutral float-left" title="嵌入式实时虚拟机ZVM" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../bsp/index.html" class="btn btn-neutral float-right" title="南向使用指导" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: sync-pr2495-openEuler-24.03-LTS-to-master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../master/features/mindspore_lite.html">master</a></dd>
+      <dd><a href="../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../openEuler-24.09/features/mindspore_lite.html">openEuler-24.09</a></dd>
+      <dd><a href="mindspore_lite.html">sync-pr2495-openEuler-24.03-LTS-to-master</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

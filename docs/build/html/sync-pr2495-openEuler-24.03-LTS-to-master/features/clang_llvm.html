@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>clang/llvm 编译工具链支持 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="嵌入式分区虚拟机Jailhouse" href="jailhouse.html" />
+    <link rel="prev" title="ArmNN的支持" href="armnn.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mica/index.html">多OS混合关键性部署框架 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="muslc.html">musl libc的支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed_softbus.html">分布式软总线</a></li>
+<li class="toctree-l3"><a class="reference internal" href="preempt_rt.html">软实时系统介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="prebuilt_tool.html">预构建工具特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rust.html">Rust支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qt5_wayland.html">嵌入式图形支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="armnn.html">ArmNN的支持</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">clang/llvm 编译工具链支持</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">clang/llvm 介绍</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#meta-clang">meta-clang 层介绍</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">构建指导</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#oebuild">1. 使用 oebuild 和标准容器进行构建</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id4">2. 使用自定义 clang/llvm 编译工具链进行构建</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#sdk">3. SDK 生成</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="jailhouse.html">嵌入式分区虚拟机Jailhouse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openbmc.html">OpenBMC 镜像构建和使用</a></li>
+<li class="toctree-l3"><a class="reference internal" href="container/index.html">嵌入式容器相关特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernelversions.html">内核多版本支持（5.10/6.6）介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="software_package_description.html">当前所支持的软件包</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zvm.html">嵌入式实时虚拟机ZVM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mindspore_lite.html">构建Mindspore Lite使用指导</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../bsp/index.html">南向使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../user_guide/index.html">用户使用指导</a> &raquo;</li>
+          <li><a href="index.html">关键特性指导</a> &raquo;</li>
+      <li>clang/llvm 编译工具链支持</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="clang-llvm">
+<span id="id1"></span><h1>clang/llvm 编译工具链支持<a class="headerlink" href="#clang-llvm" title="Permalink to this headline">¶</a></h1>
+<p>本章介绍如何使用 clang/llvm 编译工具链构建 openEuler Embedded。</p>
+<section id="id2">
+<h2>clang/llvm 介绍<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>LLVM 项目是模块化和可重用编译器以及工具链的集合，clang 是其编译器前端。相比较于 GNU 编译工具链，其优势在于编译速度更快，静态检查工具更加完善，可拓展性更强等等。</p>
+<p>GNU 工具链与 LLVM 工具链主要区别如下表：</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 34%" />
+<col style="width: 44%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>项目</p></th>
+<th class="head"><p>GNU工具链</p></th>
+<th class="head"><p>LLVM工具链</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>C编译器</p></td>
+<td><p>gcc</p></td>
+<td><p>clang</p></td>
+</tr>
+<tr class="row-odd"><td><p>C++编译器</p></td>
+<td><p>g++</p></td>
+<td><p>clang++</p></td>
+</tr>
+<tr class="row-even"><td><p>binutils</p></td>
+<td><p>GNU binutils</p></td>
+<td><p>LLVM binutils</p></td>
+</tr>
+<tr class="row-odd"><td><p>汇编器</p></td>
+<td><p>GNU as</p></td>
+<td><p>集成汇编器</p></td>
+</tr>
+<tr class="row-even"><td><p>链接器</p></td>
+<td><p>ld.bfd,ld.gold</p></td>
+<td><p>LLVM linker ld.lld</p></td>
+</tr>
+<tr class="row-odd"><td><p>运行时</p></td>
+<td><p>libgcc</p></td>
+<td><p>compiler-rt</p></td>
+</tr>
+<tr class="row-even"><td><p>原子操作</p></td>
+<td><p>libatomic</p></td>
+<td><p>compiler-rt</p></td>
+</tr>
+<tr class="row-odd"><td><p>C语言库</p></td>
+<td><p>GNU libc glibc</p></td>
+<td><p>LLVM libc</p></td>
+</tr>
+<tr class="row-even"><td><p>C++标准库</p></td>
+<td><p>libstdc++</p></td>
+<td><p>libc++</p></td>
+</tr>
+<tr class="row-odd"><td><p>C++ABI</p></td>
+<td><p>libsupcxx</p></td>
+<td><p>libc++abi</p></td>
+</tr>
+<tr class="row-even"><td><p>栈展开</p></td>
+<td><p>libgcc_s</p></td>
+<td><p>LLVM libunwind</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="meta-clang">
+<h2>meta-clang 层介绍<a class="headerlink" href="#meta-clang" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">meta-clang</span></code> 层包含使用 clang/llvm 编译工具链所需要的 recipes 和 bbclass 文件，由于 openEuler 使用 external-toolchain 机制，无需在 yocto 工程中编译 clang/llvm 工具链。</p>
+<p>meta-clang 层中主要起作用的是 clang.bbclass 文件，该文件用来控制编译时传入 clang/llvm 编译工具链的变量和依赖，除此之外，目前还有一小部分软件包并不完美支持使用 clang/llvm 来编译，nonclangable.conf 文件记录了这些软件包的情况。</p>
+</section>
+<section id="id3">
+<h2>构建指导<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<section id="oebuild">
+<h3>1. 使用 oebuild 和标准容器进行构建<a class="headerlink" href="#oebuild" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>参考 <a class="reference internal" href="../oebuild/userguide/install/index.html#oebuild-install"><span class="std std-ref">安装步骤</span></a> 初始化容器环境，并熟悉使用 oebuild 构建 openEuler Embedded。使能 clang/llvm 编译工具链需要在生成配置文件时增加 <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">clang</span></code></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild generate -p ${platform} -d ${build_directory} -f clang</span>
+</pre></div>
+</div>
+<p>键入 <code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">bitbake</span></code> 进入容器环境进行镜像构建，构建命令如下</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake openeuler-image-llvm</span>
+</pre></div>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>当前仅验证了 qemu-aarch64 和树莓派平台的标准镜像，包括 5.10 版本和 6.6 版本的内核。</p>
+</div>
+</div></blockquote>
+</section>
+<section id="id4">
+<h3>2. 使用自定义 clang/llvm 编译工具链进行构建<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><p>用户也可以自定义定制 clang/llvm 编译工具链来进行 openEuler Embedded 的构建。</p>
+</div></blockquote>
+<section id="llvm">
+<h4>2.1 LLVM 工具链构建方式<a class="headerlink" href="#llvm" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>获取编译容器</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-sdk:latest</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>进入容器</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">docker run -idt --network host --name clang_compile -u openeuler swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-sdk:latest bash</span>
+<span class="go">docker exec -it clang_compile bash</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>下载 openEuler LLVM 源码，用户可基于 openEuler llvm-project 仓进行特性的开发</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd ~</span>
+<span class="go">git clone -b dev_17.0.6 https://gitee.com/openeuler/llvm-project.git --depth=1</span>
+</pre></div>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>请基于 dev_17.0.6 分支进行开发，其他版本 LLVM 未进行过验证，开源版本 LLVM 缺少 openEuler Embedded 构建工程的相关适配，如需使用，需要自行适配。</p>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>构建 LLVM 工具链</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cd ~/llvm-project</span>
+<span class="go">./build.sh -e -o -s -i -b release -I clang-llvm-17.0.6</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p>LLVM 工具链集成交叉构建时目标架构的头文件和库文件</p></li>
+</ol>
+<p>正常交叉构建时，需要使用目标架构的头文件、运行时库（如crtbegin.o）、标准C库（如libc.so）等，LLVM工具链默认使用GCC的运行时库，可以通过 <code class="docutils literal notranslate"><span class="pre">--gcc-toolchain=</span></code> 选项指定对应GCC的路径，而标准C库、依赖库等可以通过 <code class="docutils literal notranslate"><span class="pre">--sysroot=</span></code> 选项指定对应的路径。</p>
+<p>因此，使用LLVM工具链进行交叉构建时，需要使用 <code class="docutils literal notranslate"><span class="pre">--gcc-toolchain=</span></code> 和 <code class="docutils literal notranslate"><span class="pre">--sysroot=</span></code> 选项指定目标架构的头文件和库文件所在的路径，或者将相关的文件集成到LLVM工具链当中，openEuler LLVM已经使能特性能够搜索默认集成的路径。</p>
+<p>集成所需的头文件和库文件来自于GCC交叉工具链，可以从该 <a class="reference external" href="https://gitee.com/openeuler/yocto-meta-openeuler/releases">下载链接</a> 中下载最新 <code class="docutils literal notranslate"><span class="pre">openEuler</span> <span class="pre">Embedded</span> <span class="pre">Toolchains</span></code> 版本的GCC交叉工具链，选择其中的 <code class="docutils literal notranslate"><span class="pre">aarch64</span></code> 版本。集成方式如下，</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>llvm toolchain 目录:
+<span class="gp">#     </span>/path/to/llvm-project/clang-llvm-17.0.6
+<span class="gp"># </span>gcc toolchain 目录:
+<span class="gp">#     </span>/path/to/gcc/openeuler_gcc_arm64le
+<span class="go">cd /path/to/llvm-project/clang-llvm-17.0.6</span>
+<span class="go">mkdir lib64 aarch64-openeuler-linux-gnu</span>
+<span class="go">cp -rf /path/to/gcc/openeuler_gcc_arm64le/lib64/gcc lib64/</span>
+<span class="go">cp -rf /path/to/gcc/openeuler_gcc_arm64le/aarch64-openeuler-linux-gnu/include aarch64-openeuler-linux-gnu/</span>
+<span class="go">cp -rf /path/to/gcc/openeuler_gcc_arm64le/aarch64-openeuler-linux-gnu/sysroot aarch64-openeuler-linux-gnu/</span>
+
+<span class="gp"># </span>交叉构建工程中，由于部分软件包无法接收到LDFLAGS中的-fuse-ld<span class="o">=</span>lld选项，导致需要去寻找ld链接器，目前以建立软链接进行处理
+<span class="go">cd /path/to/llvm-project/clang-llvm-17.0.6/bin</span>
+<span class="go">ln -sf ld.lld aarch64-openeuler-linux-gnu-ld</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="6">
+<li><p>LLVM 工具链预发布版本获取</p></li>
+</ol>
+<p>预发布的 LLVM 工具链版本可以从如下地址获取 <a class="reference external" href="https://gitee.com/openeuler/yocto-meta-openeuler/releases">openEuler Embedded LLVM Toolchains</a> ，预发布版本支持 x86_64 的 native 构建和 aarch64 的交叉构建，并且已经集成了交叉构建所需的目标架构的头文件和库文件。</p>
+</div></blockquote>
+</section>
+<section id="openeuler-embedded">
+<h4>2.2 openEuler Embedded 构建方式<a class="headerlink" href="#openeuler-embedded" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>生成配置文件时使用如下命令</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild generate -p ${platform} -d ${build_directory} -t /path/to/clang-llvm-17.0.6 -f clang</span>
+</pre></div>
+</div>
+<p>键入 <code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">bitbake</span></code> 进入容器环境进行镜像构建，当前 <code class="docutils literal notranslate"><span class="pre">/usr1/openeuler/native_gcc/</span></code> 目录为 oebuild 默认挂载的编译器目录。</p>
+<ol class="arabic simple" start="2">
+<li><p>目前需要调整 <code class="docutils literal notranslate"><span class="pre">conf/local.conf</span></code> 配置文件</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span><span class="nv">在</span> <span class="o">==</span> the content is user <span class="nv">added</span> <span class="o">==</span> 以下部分
+<span class="gp"># </span>注释掉：EXTERNAL_TOOLCHAIN_GCC:aarch64 <span class="o">=</span> <span class="s2">&quot;/usr1/openeuler/native_gcc&quot;</span>
+<span class="gp"># </span>并增加一行：EXTERNAL_TOOLCHAIN_LLVM <span class="o">=</span> <span class="s2">&quot;/usr1/openeuler/native_gcc&quot;</span>
+<span class="go">vim conf/local.conf</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>构建命令</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake openeuler-image-llvm</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+</section>
+<section id="sdk">
+<h3>3. SDK 生成<a class="headerlink" href="#sdk" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake openeuler-image-llvm -c populate_sdk</span>
+</pre></div>
+</div>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>安装完成 LLVM 版本 SDK 后，在首次初始化 SDK 时会存在若干处交互配置项，目前需要全部手动输入 N</p>
+</div>
+</div></blockquote>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="armnn.html" class="btn btn-neutral float-left" title="ArmNN的支持" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="jailhouse.html" class="btn btn-neutral float-right" title="嵌入式分区虚拟机Jailhouse" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: sync-pr2495-openEuler-24.03-LTS-to-master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../master/features/clang_llvm.html">master</a></dd>
+      <dd><a href="../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP2/features/clang_llvm.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP3/features/clang_llvm.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP4/features/clang_llvm.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../openEuler-23.03/features/clang_llvm.html">openEuler-23.03</a></dd>
+      <dd><a href="../../openEuler-23.09/features/clang_llvm.html">openEuler-23.09</a></dd>
+      <dd><a href="../../openEuler-24.03-LTS/features/clang_llvm.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../openEuler-24.09/features/clang_llvm.html">openEuler-24.09</a></dd>
+      <dd><a href="clang_llvm.html">sync-pr2495-openEuler-24.03-LTS-to-master</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

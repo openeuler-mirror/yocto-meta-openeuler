@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rockchip板卡镜像构建与使用 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="x86硬件" href="../../x86/index.html" />
+    <link rel="prev" title="Rockchip" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../features/index.html">关键特性指导</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">南向使用指导</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">ARM64硬件</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../d2000/index.html">d2000</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../ft2000-4/index.html">ft2000-4</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../hi3093/index.html">Hi3093</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../hieulerpi/index.html">海鸥派</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../myir-remi/index.html">瑞米派</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../orangepi/index.html">香橙派</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../phytiumpi/index.html">phytiumpi</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../raspberrypi4/index.html">树莓派4B</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html">Rockchip</a><ul class="current">
+<li class="toctree-l5 current"><a class="current reference internal" href="#">Rockchip板卡镜像构建与使用</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../x86/index.html">x86硬件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../riscv/index.html">RISCV硬件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../arm/index.html">ARM硬件</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../user_guide/index.html">用户使用指导</a> &raquo;</li>
+          <li><a href="../../index.html">南向使用指导</a> &raquo;</li>
+          <li><a href="../index.html">ARM64硬件</a> &raquo;</li>
+          <li><a href="index.html">Rockchip</a> &raquo;</li>
+      <li>Rockchip板卡镜像构建与使用</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="rockchip">
+<span id="board-rockchip-build"></span><h1>Rockchip板卡镜像构建与使用<a class="headerlink" href="#rockchip" title="Permalink to this headline">¶</a></h1>
+<p>本章主要介绍openEuler Embedded中Rockchip系列板卡的构建，使用和特性介绍。</p>
+<section id="id1">
+<h2>Rockchip镜像构建指导<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>参照 <a class="reference internal" href="../../../oebuild/userguide/install/index.html#oebuild-install"><span class="std std-ref">oebuild安装步骤</span></a> 完成oebuild安装，并详细了解构建过程</p></li>
+<li><p>依次执行以下例子命令完成构建</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>生成ok3568配置文件，目前支持的设备有ryd-3568,ok3568,ok3588.ok3399。如果添加了自己的设备请改对应的名字
+<span class="go">oebuild generate -p ok3568 -d ok3568</span>
+
+<span class="gp"># </span>进入构建交互终端
+<span class="go">oebuild bitbake</span>
+
+<span class="gp"># </span>构建镜像
+<span class="go">bitbake openeuler-image</span>
+
+<span class="gp"># </span>构建sdk
+<span class="go">bitbake openeuler-image -c populate_sdk</span>
+</pre></div>
+</div>
+</li>
+<li><p>除了使用上述命令oebuild generate -p ok3568 -d ok3568进行配置文件生成之外，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，效果跟上述命令相同。</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild generate</span>
+</pre></div>
+</div>
+<p>具体界面如下图所示:</p>
+<img alt="../../../_images/oebuild-generate-select.png" src="../../../_images/oebuild-generate-select.png" />
+</div></blockquote>
+</li>
+<li><p>二进制介绍：</p>
+<ol class="arabic simple">
+<li><p>boot.img: openEuler Embedded 适用rk3568内核镜像。</p></li>
+<li><p>rootfs.img: 适用rk3568根文件系统，由xxx.ext4改名生成。</p></li>
+<li><p>boot.img: openEuler Embedded 适用rk3568内核镜像。</p></li>
+<li><p>update.img: 整体的烧录镜像，可自行定制，请参考yocto-meta-rockchip/wic/generic-gptdisk.wks.in与yocto-meta-rockchip/conf/machine/include/rockchip-common.inc中的方法。</p></li>
+<li><p>openeuler-glibc-x86_64-openeuler-image-aarch64-ok3568-toolchain-*.sh: SDK工具链。</p></li>
+</ol>
+</li>
+</ul>
+</section>
+<section id="ok3568">
+<h2>镜像使用方法，以飞凌ok3568为例<a class="headerlink" href="#ok3568" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>烧写前镜像使用</p>
+<p>创建挂载目录</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mkdir ${WORKDIR}/rootfs</span>
+</pre></div>
+</div>
+<p>挂载rootfs</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mount -t ext4 openeuler-image-ok3568-\*.rootfs.ext4 ${WORKDIR}/rootfs</span>
+</pre></div>
+</div>
+<p>挂载完成后，可以查看ok3568根文件系统的文件或者自行添加内容。</p>
+</li>
+<li><p>镜像烧录仅支持windows:</p>
+<p>将文件DriverAssitant_v5.11.zip解压到任意目录，以管理员权限运行打开DriverInstall.exe 程序，然后点击“驱动安装”进行安装。</p>
+<figure class="align-center">
+<img alt="../../../_images/install_driver1.png" src="../../../_images/install_driver1.png" />
+</figure>
+<figure class="align-center">
+<img alt="../../../_images/install_driver2.png" src="../../../_images/install_driver2.png" />
+</figure>
+<figure class="align-center">
+<img alt="../../../_images/install_driver3.png" src="../../../_images/install_driver3.png" />
+</figure>
+</li>
+</ol>
+</section>
+<section id="id2">
+<h2>内核镜像和文件系统烧写方法<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>准备工作：将瑞芯微开发工具RKDevTool_Release.zip解压到全英文路径下，打开瑞芯微开发工具RKDevTool。</p>
+<section id="id3">
+<h3>增量烧写（调试推介使用）<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>使用Type-C线连接开发板和主机，按住开发板的Recovery键不要松开，然后按下RESET键系统复位，大约两秒后松开Recovery键，瑞芯微开发工具RKDevTool将提示发现LOADER设备。</p>
+<figure class="align-center">
+<img alt="../../../_images/switch_turn_to_off.png" src="../../../_images/switch_turn_to_off.png" />
+</figure>
+<figure class="align-center">
+<img alt="../../../_images/RKDevTool1.png" src="../../../_images/RKDevTool1.png" />
+</figure>
+</li>
+<li><p>点击“设备分区表”按钮，将自动读取分区地址。会有某些分区读不到的提示，点击确定即可。</p>
+<figure class="align-center">
+<img alt="../../../_images/device_parted_scan.png" src="../../../_images/device_parted_scan.png" />
+</figure>
+</li>
+<li><p>在地址栏右键选择添加项，添加文件系统的地址。</p>
+<figure class="align-center">
+<img alt="../../../_images/add_partition.png" src="../../../_images/add_partition.png" />
+</figure>
+<figure class="align-center">
+<img alt="../../../_images/compare_rootfs_address.png" src="../../../_images/compare_rootfs_address.png" />
+</figure>
+</li>
+<li><p>勾选Boot和rootfs，并选择Boot和rootfs的路径。</p>
+<figure class="align-center">
+<img alt="../../../_images/choose_partition.png" src="../../../_images/choose_partition.png" />
+</figure>
+</li>
+<li><p>点击“执行”按钮将自动烧写内核和文件系统，并重新启动。</p>
+<figure class="align-center">
+<img alt="../../../_images/start_burning.png" src="../../../_images/start_burning.png" />
+</figure>
+</li>
+</ol>
+</section>
+<section id="id4">
+<h3>全量烧写<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>如果loader正常，使用Type-C线连接开发板和主机，按住开发板的Recovery键不要松开，然后按下RESET键系统复位，大约两秒后松开Recovery键，瑞芯微开发工具RKDevTool将提示发现LOADER设备。</p>
+<figure class="align-center">
+<img alt="../../../_images/switch_turn_to_off.png" src="../../../_images/switch_turn_to_off.png" />
+</figure>
+<figure class="align-center">
+<img alt="../../../_images/RKDevTool1.png" src="../../../_images/RKDevTool1.png" />
+</figure>
+</li>
+<li><p>如果loader损坏，可以按住 BOOT 键然后按复位键进入 maskrom 模式进行烧写，此时系统将提示发现一个 maskrom 设备。</p>
+<figure class="align-center">
+<img alt="../../../_images/maskrom.png" src="../../../_images/maskrom.png" />
+</figure>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul>
+<li><div class="line-block">
+<div class="line">maskrom模式与loader模式烧录方法一致。</div>
+</div>
+</li>
+<li><p>maskrom 模式下不要点击“设备分区表”，为无效操作。</p></li>
+</ul>
+</div>
+<ol class="arabic" start="3">
+<li><p>点击“升级固件”选项卡，点击“固件”按钮选择完整的升级镜像 update.img。程序将对固件进行解析，因此需要等待一会。</p>
+<figure class="align-center">
+<img alt="../../../_images/update_img.png" src="../../../_images/update_img.png" />
+</figure>
+</li>
+<li><p>依次点击擦除Flash，升级按钮即可完成升级。</p>
+<figure class="align-center">
+<img alt="../../../_images/update_img_success.png" src="../../../_images/update_img_success.png" />
+</figure>
+</li>
+</ol>
+</section>
+</section>
+<section id="openeuler-embedded">
+<h2>基于openEuler Embedded 瑞芯微系列开发板使用<a class="headerlink" href="#openeuler-embedded" title="Permalink to this headline">¶</a></h2>
+<section id="id5">
+<h3>启用瑞芯微系列开发板<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>硬件版本要求：飞凌ok3568、ok3399、ok3588,ryd-3568或者经上述方法自己添加后的开发板。</p>
+<p>默认用户名：root，密码：第一次启动没有默认密码，需重新配置，且密码强度有相应要求， 需要数字、字母、特殊字符组合最少8位，例如openEuler&#64;2021。</p>
+<p>将刷写镜像后的核心板通电启用。</p>
+</section>
+<section id="id6">
+<h3>开发板登录方式<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<section id="id7">
+<h4>本地登录<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<ul>
+<li><p>使用串口登录：</p>
+<p>镜像使能了串口登录功能，按照开发板的串口连接方式，如下图，可以启用串口操作。</p>
+<p>示例：使用ttyusb转接器，将开发板的串口通过USB连接到putty：</p>
+</li>
+</ul>
+<figure class="align-center">
+<img alt="../../../_images/console_link.png" src="../../../_images/console_link.png" />
+</figure>
+<ul>
+<li><p>使用HDMI登录：</p>
+<p>开发板连接显示器（开发板视频输出接口为HDMI）、键盘、鼠标后，启动开发板，可以看到ok3568启动日志输出到显示器上。待ok3568启动成功，输入用户名（root）和密码登录。</p>
+</li>
+</ul>
+</section>
+<section id="ssh">
+<h4>ssh 远程登录<a class="headerlink" href="#ssh" title="Permalink to this headline">¶</a></h4>
+<section id="id8">
+<h5>网络配置<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h5>
+<section id="id9">
+<h6>启动后无线网卡配置<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h6>
+<ol class="arabic simple">
+<li><p>使用终端连接工具通过串口连接开发板</p></li>
+</ol>
+<figure class="align-center">
+<img alt="../../../_images/console1.png" src="../../../_images/console1.png" />
+</figure>
+<figure class="align-center">
+<img alt="../../../_images/console2.png" src="../../../_images/console2.png" />
+</figure>
+<ol class="arabic simple" start="2">
+<li><p>使用wpa_passphrase工具将wifi密码加密，生成配置</p></li>
+</ol>
+<p>执行命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">wpa_passphrase wifi_name password</span>
+</pre></div>
+</div>
+<figure class="align-center">
+<img alt="../../../_images/wpa_passphrase.png" src="../../../_images/wpa_passphrase.png" />
+</figure>
+<ol class="arabic simple" start="3">
+<li><p>将生成的配置写入配置文件/etc/wpa_supplicant.conf：</p></li>
+</ol>
+<p>执行命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">vi /etc/wpa_supplicant.conf</span>
+</pre></div>
+</div>
+<figure class="align-center">
+<img alt="../../../_images/wpa_supplicant.png" src="../../../_images/wpa_supplicant.png" />
+</figure>
+</section>
+<section id="id10">
+<h6>启用无线网卡<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h6>
+<ol class="arabic simple">
+<li><p>执行命令：</p></li>
+</ol>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ifup mlan0</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>启用wifi网卡后，会自动生成IP，可直接查看网卡信息。</p></li>
+</ol>
+<blockquote>
+<div><p>执行命令：ifconfig</p>
+<figure class="align-center">
+<img alt="../../../_images/ifconfig.png" src="../../../_images/ifconfig.png" />
+</figure>
+<p>使用ssh命令登录:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">ssh root@x.x.x.x</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+</section>
+<section id="id11">
+<h5>分区扩容<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h5>
+<blockquote>
+<div><p>默认根目录分区空间比较小，在使用之前，需要对分区进行扩容或挂载（在23.03及其之后的版本中，已实现自动扩容，首次烧录镜像启动会自动执行扩容并提示重启）</p>
+<p>执行 fdisk -l 命令查看磁盘分区信息。例子中的ok3568设备回显如下：</p>
+</div></blockquote>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Number  Start (sector)    End (sector)  Size Name</span>
+<span class="go">1           16384           24575 4096K uboot</span>
+<span class="go">2           24576           32767 4096K misc</span>
+<span class="go">3           32768           98303 32.0M boot</span>
+<span class="go">4           98304          163839 32.0M recovery</span>
+<span class="go">5          163840          229375 32.0M backup</span>
+<span class="go">6          229376        12812287 6144M rootfs</span>
+<span class="go">7        12812288        13074431  128M oem</span>
+<span class="go">8        13074432        30777279 8643M userdata</span>
+
+<span class="go">对应数据分区为 rootfs，与userdata</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+</section>
+<section id="id12">
+<h2>rockchip系列镜像特性介绍<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>rk3568硬件特性，参考: <a class="reference external" href="https://dl.radxa.com/rock3/docs/hw/datasheet/Rockchip%20Rockchip%20TRM%20Part1%20V1.1-20210301.pdf">Rockchip TRM手册</a></p></li>
+</ol>
+<p>其他硬件请参考瑞芯微官方释放的文档。</p>
+<p>目前已使能串口设备，可以访问uart，其他硬件特性目前支持:无线网卡、GPU、TF卡、以太网卡、USB Host、SPI、HDMI。</p>
+<ol class="arabic simple" start="2">
+<li><p>支持百级嵌入式软件包，见软件包功能列表。</p></li>
+<li><p>支持部署rt实时内核。</p></li>
+</ol>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Rockchip" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../x86/index.html" class="btn btn-neutral float-right" title="x86硬件" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: sync-pr2495-openEuler-24.03-LTS-to-master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/bsp/arm64/rockchip/rockchip.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/bsp/arm64/rockchip/rockchip.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/bsp/arm64/rockchip/rockchip.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/bsp/arm64/rockchip/rockchip.html">openEuler-24.09</a></dd>
+      <dd><a href="rockchip.html">sync-pr2495-openEuler-24.03-LTS-to-master</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>新增 BSP 层指南 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="新增既有厂商硬件指南" href="add_new_board.html" />
+    <link rel="prev" title="新增南向硬件支持" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">开发及贡献指导</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../code_download_compile.html">下载编译指导</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">代码开发指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../new_develop.html">开发方式指导</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../yocto/development.html">Yocto开发指导</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../oebuild/develop/index.html">oebuild开发指导</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">新增南向硬件支持</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">新增 BSP 层指南</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#id1">BSP 层介绍</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#bsp-root-name-conf">编写 bsp_root_name.conf 常用的变量</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id2">bsp_root_name.conf 变量使用示例</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#bsp-root-name-conf-from-poky">bsp_root_name.conf 文件示例（from Poky）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#yocto-meta-openeuler-bsp">yocto-meta-openeuler 仓 bsp 目录层次介绍</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#meta-raspberrypi">meta-raspberrypi 分析</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id3">添加自定义的BSP层</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="add_new_board.html">新增既有厂商硬件指南</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../debug/index.html">功能调试指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../commit.html">代码提交指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../contribute_doc.html">文档提交指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">开发及贡献指导</a> &raquo;</li>
+          <li><a href="../index.html">代码开发指导</a> &raquo;</li>
+          <li><a href="index.html">新增南向硬件支持</a> &raquo;</li>
+      <li>新增 BSP 层指南</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bsp">
+<span id="add-new-bsp-layer"></span><h1>新增 BSP 层指南<a class="headerlink" href="#bsp" title="Permalink to this headline">¶</a></h1>
+<p>本篇章介绍BSP层基础知识以及如何新增BSP层。</p>
+<section id="id1">
+<h2>BSP 层介绍<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>板级支持包（BSP）是定义如何支持特定硬件设备、设备集或硬件平台的信息集合。BSP包括有关设备上存在的硬件功能的信息、内核配置信息以及所需的任何其他硬件驱动程序；BSP还列出了除了用于基本和可选平台功能的通用Linux软件堆栈之外所需的任何其他软件组件，例如”u-boot”和”grub”。</p>
+<p>因此，BSP层也需要提供如上的功能。BSP层与其他yocto层定义在技术上并没有区别，BSP层也是一个yocto层，只是提供的功能与普通层会有稍许差异。BSP层的核心是 <code class="file docutils literal notranslate"><span class="pre">conf/machine/*.conf</span></code> 文件，其中定义了硬件依赖的信息。BSP层的目录层级一般分布如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>conf：存放一或多个bsp_root_name.conf文件；
+classes：存放硬件相关的类文件目录；
+recipes-bsp：存放启动相关固件的recipes目录；
+recipes-kernel：存放与内核相关固件recipes目录；
+recipes-*：其他的一些recipes目录，通常采用bbappend对源bb进行适配，实现适配硬件的功能；
+</pre></div>
+</div>
+</section>
+<section id="bsp-root-name-conf">
+<h2>编写 bsp_root_name.conf 常用的变量<a class="headerlink" href="#bsp-root-name-conf" title="Permalink to this headline">¶</a></h2>
+<p>编写 <code class="file docutils literal notranslate"><span class="pre">conf/machine/bsp_root_name.conf</span></code> 需要了解一些yocto已支持的与硬件有关的变量。</p>
+<ul class="simple">
+<li><p>PREFERRED_PROVIDER_virtual/kernel：定义内核的源bb；openEuler已默认设置为linux-openeuler；</p></li>
+<li><p>PREFERRED_VERSION_linux-yocto：poky中有多个linux-yocto（内核，openEuler需改为linux-openeuler）的版本，此变量可决定需要的linux-yocto的版本；openEuler内核目前只有一个版本，可不设置；</p></li>
+<li><p>MACHINE_FEATURES：支持的硬件功能列表；</p></li>
+<li><p>MACHINE_EXTRA_RRECOMMENDS：与硬件相关的程序包列表，这些程序包对于启动映像不是必需的，常定义为内核模块、设备树等包；当前openEuler未使用，期待后续优化；</p></li>
+<li><p>EXTRA_IMAGEDEPENDS: 构建镜像依赖于配方（类似于DEPENDS），但不会安装到根文件系统；</p></li>
+<li><p>DEFAULTTUNE：优化硬件、CPU和应用程序性能，yocto当前已支持很多的处理器，见 <code class="docutils literal notranslate"><span class="pre">meta/conf/machine/include</span></code> 目录；</p></li>
+<li><p>TUNE_FEATURES：在给定特定处理器的情况下，用于调整编译器以获得最佳使用的功能；影响TUNE_CCARGS变量；</p></li>
+<li><p>TUNE_CCARGS：为目标系统指定架构特定的C编译器标志；影响CC、CXX等变量；</p></li>
+<li><p>IMAGE_FSTYPES：创建根文件系统的格式；</p></li>
+<li><p>EXTRA_IMAGECMD：指定镜像创建命令的其他选项，影响IMAGE_CMD变量；使用时需对应镜像类型关联的override；</p></li>
+<li><p>IMAGE_CMD：指定为特定镜像类型创建镜像文件的命令；使用时需对应镜像类型关联的override；</p></li>
+<li><p>SERIAL_CONSOLES：定义要使用getty启用的串行控制台（TTY）；</p></li>
+<li><p>SERIAL_CONSOLES_CHECK：指定TTY设备，以便在使用getty启用它们之前检查 <code class="docutils literal notranslate"><span class="pre">/proc/consoles</span></code> ；此变量目前仅支持SysVinit，不支持systemd；</p></li>
+<li><p>KERNEL_IMAGETYPE：要为设备构建的内核类型；</p></li>
+<li><p>KERNEL_DEVICETREE：生成的Linux内核设备树（即dtb文件的名称）；</p></li>
+<li><p>KERNEL_MODULE_AUTOLOAD：启动时自动加载的内核模块；</p></li>
+<li><p>KERNEL_EXTRA_ARGS：编译内核时传递的”make”命令行参数。</p></li>
+<li><p>UBOOT_SUFFIX：指向生成的U-Boot扩展名，默认为 <code class="docutils literal notranslate"><span class="pre">bin</span></code>；</p></li>
+<li><p>UBOOT_MACHINE：指定生成U-Boot映像时在make命令行上传递的值；</p></li>
+<li><p>UBOOT_CONFIG：可同时配置UBOOT_MACHINE、IMAGE_FSTYPE、UBOOT_BINARIES，以’,’为分割符；类似于PACKAGECONFIG变量；</p></li>
+<li><p>UBOOT_ENTRYPOINT：指定U-Boot映像的入口点；</p></li>
+<li><p>UBOOT_LOADADDRESS：指定U-Boot映像的加载地址；</p></li>
+<li><p>IMAGE_BOOT_FILES：使用带有”bootimg partition”或”bootimg efi”源插件的Wic工具准备映像时，安装在设备引导分区中的文件；</p></li>
+<li><p>WKS_FILE: 用于创建分区映像文件的位置；</p></li>
+<li><p>EFI_PROVIDER：指定使用的EFI bootloader；</p></li>
+<li><p>XSERVER：指定应安装的程序包，以便为当前计算机提供X服务器和驱动程序；</p></li>
+<li><p>PACKAGE_EXTRA_ARCHS：指定与设备CPU兼容的架构列表。当您为使用不同处理器（如XScale和ARM926-EJS）的多个不同设备构建时，此变量非常有用。</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>ENABLE_UART：树梅派层独有变量，为1则使能UART功能；</p></li>
+<li><p>CMDLINE：树梅派层独有变量，用于生成cmdline.txt；</p></li>
+<li><p>CMDLINE_SERIAL：树梅派层独有变量，用于生成CMDLINE。</p></li>
+</ul>
+</div>
+</section>
+<section id="id2">
+<h2>bsp_root_name.conf 变量使用示例<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 74%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>变量</p></th>
+<th class="head"><p>使用示例</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>DEFAULTTUNE</p></td>
+<td><p>DEFAULTTUNE ?= “riscv64”</p></td>
+</tr>
+<tr class="row-odd"><td><p>TUNE_FEATURES</p></td>
+<td><p>TUNE_FEATURES ??= “${TUNE_FEATURES_tune-${DEFAULTTUNE}}”</p></td>
+</tr>
+<tr class="row-even"><td><p>PREFERRED_PROVIDER_virtual/kernel</p></td>
+<td><p>PREFERRED_PROVIDER_virtual/kernel = “linux-openeuler”</p></td>
+</tr>
+<tr class="row-odd"><td><p>KERNEL_IMAGETYPE</p></td>
+<td><p>KERNEL_IMAGETYPE = “zImage”</p></td>
+</tr>
+<tr class="row-even"><td><p>KERNEL_DEVICETREE</p></td>
+<td><p>KERNEL_DEVICETREE = “am335x-bone.dtb am335x-boneblack.dtb am335x-bonegreen.dtb”</p></td>
+</tr>
+<tr class="row-odd"><td><p>KERNEL_MODULE_AUTOLOAD</p></td>
+<td><p>KERNEL_MODULE_AUTOLOAD += “mlan”</p></td>
+</tr>
+<tr class="row-even"><td><p>KERNEL_EXTRA_ARGS</p></td>
+<td><p>KERNEL_EXTRA_ARGS += “LOADADDR=${UBOOT_ENTRYPOINT}”</p></td>
+</tr>
+<tr class="row-odd"><td><p>EXTRA_IMAGEDEPENDS</p></td>
+<td><p>EXTRA_IMAGEDEPENDS += “u-boot”</p></td>
+</tr>
+<tr class="row-even"><td><p>MACHINE_FEATURES</p></td>
+<td><p>MACHINE_FEATURES += “efi pci vc4graphics”</p></td>
+</tr>
+<tr class="row-odd"><td><p>MACHINE_EXTRA_RRECOMMENDS</p></td>
+<td><p>MACHINE_EXTRA_RRECOMMENDS += “kernel-modules”</p></td>
+</tr>
+<tr class="row-even"><td><p>IMAGE_FSTYPES</p></td>
+<td><p>IMAGE_FSTYPES += “cpio.gz”</p></td>
+</tr>
+<tr class="row-odd"><td><p>EXTRA_IMAGECMD</p></td>
+<td><p>EXTRA_IMAGECMD_ext4 ?= “-i 4096”</p></td>
+</tr>
+<tr class="row-even"><td><p>IMAGE_CMD</p></td>
+<td><p>IMAGE_CMD_ext4 = “oe_mkext234fs ext4 ${EXTRA_IMAGECMD}”</p></td>
+</tr>
+<tr class="row-odd"><td><p>SERIAL_CONSOLES</p></td>
+<td><p>SERIAL_CONSOLES ?= “115200;ttyS0 115200;ttyO0”</p></td>
+</tr>
+<tr class="row-even"><td><p>SERIAL_CONSOLES_CHECK</p></td>
+<td><p>SERIAL_CONSOLES_CHECK = “${SERIAL_CONSOLES}”</p></td>
+</tr>
+<tr class="row-odd"><td><p>UBOOT_SUFFIX</p></td>
+<td><p>UBOOT_SUFFIX ?= “bin”</p></td>
+</tr>
+<tr class="row-even"><td><p>UBOOT_MACHINE</p></td>
+<td><p>UBOOT_MACHINE = “config”</p></td>
+</tr>
+<tr class="row-odd"><td><p>UBOOT_ENTRYPOINT</p></td>
+<td><p>UBOOT_ENTRYPOINT = “0x80008000”</p></td>
+</tr>
+<tr class="row-even"><td><p>UBOOT_LOADADDRESS</p></td>
+<td><p>UBOOT_LOADADDRESS = “0x80008000”</p></td>
+</tr>
+<tr class="row-odd"><td><p>IMAGE_BOOT_FILES</p></td>
+<td><p>IMAGE_BOOT_FILES ?= “u-boot.${UBOOT_SUFFIX} ${SPL_BINARY} ${KERNEL_IMAGETYPE} ${KERNEL_DEVICETREE}”</p></td>
+</tr>
+<tr class="row-even"><td><p>WKS_FILE</p></td>
+<td><p>WKS_FILE ??= “${IMAGE_BASENAME}.${MACHINE}.wks”</p></td>
+</tr>
+<tr class="row-odd"><td><p>EFI_PROVIDER</p></td>
+<td><p>EFI_PROVIDER ??= “grub-efi”</p></td>
+</tr>
+<tr class="row-even"><td><p>XSERVER</p></td>
+<td><p>XSERVER ?= “xserver-xorg xf86-video-fbdev”</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="bsp-root-name-conf-from-poky">
+<h2>bsp_root_name.conf 文件示例（from Poky）<a class="headerlink" href="#bsp-root-name-conf-from-poky" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p><code class="file docutils literal notranslate"><span class="pre">meta-yocto-bsp/conf/machine/genericx86-64.conf</span></code>：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#@TYPE: Machine
+#@NAME: Generic x86_64
+#@DESCRIPTION: Machine configuration for generic x86_64 (64-bit) PCs and servers. Supports a moderately wide range of drivers that should boot and be usable on &quot;typical&quot; hardware.
+
+DEFAULTTUNE ?= &quot;core2-64&quot;
+require conf/machine/include/tune-core2.inc
+require conf/machine/include/genericx86-common.inc
+
+SERIAL_CONSOLES_CHECK = &quot;ttyS0&quot;
+#For runqemu
+QB_SYSTEM_NAME = &quot;qemu-system-x86_64&quot;
+</pre></div>
+</div>
+<p><code class="file docutils literal notranslate"><span class="pre">meta-yocto-bsp/conf/machine/include/genericx86-common.inc</span></code>：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>include conf/machine/include/x86-base.inc
+require conf/machine/include/qemuboot-x86.inc
+MACHINE_FEATURES += &quot;wifi efi pcbios&quot;
+
+PREFERRED_VERSION_linux-yocto ?= &quot;5.10%&quot;
+PREFERRED_PROVIDER_virtual/kernel ?= &quot;linux-yocto&quot;
+PREFERRED_PROVIDER_virtual/xserver ?= &quot;xserver-xorg&quot;
+XSERVER ?= &quot;${XSERVER_X86_BASE} \
+            ${XSERVER_X86_EXT} \
+            ${XSERVER_X86_I915} \
+            ${XSERVER_X86_I965} \
+            ${XSERVER_X86_FBDEV} \
+            ${XSERVER_X86_VESA} \
+            ${XSERVER_X86_MODESETTING} \
+        &quot;
+
+MACHINE_EXTRA_RRECOMMENDS += &quot;kernel-modules linux-firmware&quot;
+
+GLIBC_ADDONS = &quot;nptl&quot;
+
+EXTRA_OECONF:append:pn-matchbox-panel-2 = &quot; --with-battery=acpi&quot;
+
+IMAGE_FSTYPES += &quot;wic wic.bmap&quot;
+WKS_FILE ?= &quot;genericx86.wks.in&quot;
+EFI_PROVIDER ??= &quot;grub-efi&quot;
+do_image_wic[depends] += &quot;gptfdisk-native:do_populate_sysroot&quot;
+do_image_wic[recrdeptask] += &quot;do_bootimg&quot;
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="yocto-meta-openeuler-bsp">
+<h2>yocto-meta-openeuler 仓 bsp 目录层次介绍<a class="headerlink" href="#yocto-meta-openeuler-bsp" title="Permalink to this headline">¶</a></h2>
+<p>bsp目录下存放openeuler当前支持的bsp层，开发者新增的bsp层放在此目录下；其中meta-openeuler-bsp层通常是对上游层的一些适配与自研，类似于meta-openeuler层与meta层的关系。以下对目录下各bsp层作简要介绍：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">meta-openeuler-bsp</span></code></p></li>
+</ul>
+<blockquote>
+<div><p>上游的bsp层无法独立在openeuler层中很好的工作，该层作为上游层与openeuler层之间的桥梁， <code class="docutils literal notranslate"><span class="pre">meta-openeuler-bsp</span></code> 层提供统一的对bsp层的修改，层中对recipes的修改基于yocto工程中 <code class="docutils literal notranslate"><span class="pre">bbappend</span></code> 形式来实现。</p>
+</div></blockquote>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">meta-xxx</span></code></p></li>
+</ul>
+<blockquote>
+<div><p>其它支持的bsp层，如meta-rockchip与meta-hisilicon。</p>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>原来该目录下存在原生的meta-raspberrypi层，但是由于openEuler Embedded代码结构的管理，该层被移到openeuler/meta-raspberrypi，该仓库的链接地址为：<a class="reference external" href="https://gitee.com/openeuler/yocto-meta-raspberrypi.git">https://gitee.com/openeuler/yocto-meta-raspberrypi.git</a>，在构建树莓派镜像时，我们需要树莓派的platform配置文件，该文件就是raspberrypi6-64.yaml，在该文件中引入了树莓派层，同时添加了repo下载信息，在repo中添加yocto-meta-raspberrypi是因为oebuild会在启用bitbake编译环境前下载该仓，而我们需要bitbake在解析菜谱前将所有需要的layer准备好。</p>
+</div>
+</section>
+<section id="meta-raspberrypi">
+<h2>meta-raspberrypi 分析<a class="headerlink" href="#meta-raspberrypi" title="Permalink to this headline">¶</a></h2>
+<p><strong>meta-raspberrypi实现树梅派镜像构建的原理：</strong></p>
+<p>首先，树莓派主要启动方式是通过把镜像烧录到sd卡中来启动，这就需要在yocto工程中生成可供烧录至sd卡的镜像， <code class="docutils literal notranslate"><span class="pre">meta-raspberrypi</span></code> 层中提供了 <code class="docutils literal notranslate"><span class="pre">classes/sdcard_image-rpi.bbclass</span></code> 这样一个类文件来实现(也可以看作是一个制作脚本)。脚本中的实现也不复杂，主要是构建 boot.img 文件并写入/boot分区，把 rootfs 文件写入/root分区，其中 boot.img 中会包含dtb、cmdline、config、kernel、启动固件等内容，这些内容怎么获取，最终是什么样的形式，是由 <code class="docutils literal notranslate"><span class="pre">recipes-bsp/bootfiles/</span></code> 目录中对应的 recipes 来决定的， <code class="docutils literal notranslate"><span class="pre">sdcard_image-rpi.bbclass</span></code> 只负责将最终产物搬移至 boot.img 中。这也就是 <code class="docutils literal notranslate"><span class="pre">classes</span></code> 和 <code class="docutils literal notranslate"><span class="pre">recipes-bsp</span></code> 中主要组成部分，逻辑是 <code class="docutils literal notranslate"><span class="pre">classes/sdcard_image-rpi.bbclass</span></code> 镜像生成脚本依赖 <code class="docutils literal notranslate"><span class="pre">recipes-bsp/bootfiles/</span></code> 中启动相关recipes的产物。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>具体怎么组织文件内容，以及最终镜像的产物由开发板对应的启动方式来确定。</p>
+</div>
+</section>
+<section id="id3">
+<h2>添加自定义的BSP层<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>初始化yocto构建环境；</p></li>
+<li><p>增加一个普通的层；</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span># 生成一个默认层，可以自定义层路径，默认在当前目录生成
+$ bitbake-layers create-layer /path/to/yocto-meta-openeuler/bsp/meta-bsp_name
+# 添加层到bblayers.conf
+$ bitbake-layers add-layer /path/to/yocto-meta-openeuler/bsp/meta-bsp_name
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>根据需求编写 <code class="file docutils literal notranslate"><span class="pre">conf/machine/bsp_root_name.conf、bb、bbclass</span></code> （bb、bbclass文件是可选项）；通常需修改CPU、内核类型、根文件系统格式、设备树、内核模块等相关变量；</p></li>
+<li><p>修改构建目录中 <code class="file docutils literal notranslate"><span class="pre">conf/local.conf</span></code> 中MACHINE变量的值为 <code class="file docutils literal notranslate"><span class="pre">conf/machine/bsp_root_name.conf</span></code> 实际的值（不加.conf）；</p></li>
+<li><p>构建镜像。</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>如果涉及到二次打包镜像，建议像树莓派那样，提供定制化脚本，放在classes目录中，在 <code class="docutils literal notranslate"><span class="pre">conf/machine/bsp_root_name.conf</span></code> 中增加 <code class="docutils literal notranslate"><span class="pre">IMAGE_CLASSES</span> <span class="pre">+=</span> <span class="pre">&quot;xxxxx&quot;</span></code> 使其生效，并增加相应依赖的启动固件的 recipes；如果涉及到其他固件，也可以添加相应的 recipes。</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="新增南向硬件支持" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="add_new_board.html" class="btn btn-neutral float-right" title="新增既有厂商硬件指南" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: sync-pr2495-openEuler-24.03-LTS-to-master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/developer_guide/develop/board-support/add_new_bsp_layer.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/developer_guide/develop/board-support/add_new_bsp_layer.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/developer_guide/develop/board-support/add_new_bsp_layer.html">openEuler-24.09</a></dd>
+      <dd><a href="add_new_bsp_layer.html">sync-pr2495-openEuler-24.03-LTS-to-master</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>
