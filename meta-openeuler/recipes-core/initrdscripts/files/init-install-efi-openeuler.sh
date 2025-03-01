@@ -402,7 +402,7 @@ fi
 
 # Copy kernel artifacts. To add more artifacts just add to types
 # For now just support kernel types already being used by something in OE-core
-for types in bzImage zImage vmlinux vmlinuz fitImage; do
+for types in bzImage zImage Image vmlinux vmlinuz fitImage xen; do
     for kernel in `find /run/media/${TARGET_CDROM_NAME}/ -iname $types*`; do
         cp $kernel /boot
     done

@@ -4,6 +4,7 @@ PV = "4.18.2"
 OPENEULER_LOCAL_NAME = "xen"
 SRC_URI = " \
     file://RELEASE-${PV}.tar.gz \
+    file://xen.cfg \
     "
 
 # xen-tools also uses the xen source pkg, so specify "xen" instead of "BPN".
