@@ -1,0 +1,2205 @@
+From ed2a1e751ec603cd164598c2369b265983e34c84 Mon Sep 17 00:00:00 2001
+From: OpenEmbedded <oe.patch@oe>
+Date: Sat, 1 Mar 2025 10:58:38 +0800
+Subject: [PATCH] add tspi-3566 device tree
+
+---
+ .../dts/rockchip/tspi-rk3566-core-v10.dtsi    | 949 ++++++++++++++++++
+ .../dts/rockchip/tspi-rk3566-csi-v10.dtsi     | 269 +++++
+ .../dts/rockchip/tspi-rk3566-dsi-v10.dtsi     | 394 ++++++++
+ .../dts/rockchip/tspi-rk3566-edp-v10.dtsi     | 164 +++
+ .../dts/rockchip/tspi-rk3566-gmac1-v10.dtsi   |  53 +
+ .../dts/rockchip/tspi-rk3566-hdmi-v10.dtsi    |  68 ++
+ .../rockchip/tspi-rk3566-user-v10-linux.dts   | 239 +++++
+ 7 files changed, 2136 insertions(+)
+ create mode 100755 arch/arm64/boot/dts/rockchip/tspi-rk3566-core-v10.dtsi
+ create mode 100755 arch/arm64/boot/dts/rockchip/tspi-rk3566-csi-v10.dtsi
+ create mode 100755 arch/arm64/boot/dts/rockchip/tspi-rk3566-dsi-v10.dtsi
+ create mode 100755 arch/arm64/boot/dts/rockchip/tspi-rk3566-edp-v10.dtsi
+ create mode 100755 arch/arm64/boot/dts/rockchip/tspi-rk3566-gmac1-v10.dtsi
+ create mode 100755 arch/arm64/boot/dts/rockchip/tspi-rk3566-hdmi-v10.dtsi
+ create mode 100755 arch/arm64/boot/dts/rockchip/tspi-rk3566-user-v10-linux.dts
+
+diff --git a/arch/arm64/boot/dts/rockchip/tspi-rk3566-core-v10.dtsi b/arch/arm64/boot/dts/rockchip/tspi-rk3566-core-v10.dtsi
+new file mode 100755
+index 000000000..0ce21a49e
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/tspi-rk3566-core-v10.dtsi
+@@ -0,0 +1,949 @@
++/********************************************************************
++ * 共建开源生态是我们的目标。为此我们努力把性价比和颜值做到极致。
++ * 同时全面开放SDK、原理图、PCB等所有软硬件资料。
++ * 提供交流平台、免费训练营、开发者扶持计划等，让您能够尽情发挥您的才华。
++ * 我们坚信自由和定制化是开源生态的核心。
++ * 泰山派开发板不仅仅是立创开发板的产品，它更是我们共同努力的成果。
++ * 我们只是抛砖引玉，期望能够激发出更多的创意和想法。
++ * 我们渴望与志同道合的伙伴们携手合作，共同探索无限可能。
++ * 让我们各展所长，共同建设一个强大的开源生态系统。
++ * 泰山派开发板等待着您的加入。
++ * 让我们一起推动技术的前进，一起创未来！
++ *********************************************************************
++ * 立创开发板不靠卖板赚钱，以培养中国工程师为己任。  
++ * 开发板官网：www.lckfb.com
++ * 嘉立创论坛：www.jlc-bbs.com/lckfb 
++ * 资料教程：wiki.lckfb.com  
++ * 开源项目：https://oshwhub.com/search?wd=%E6%B3%B0%E5%B1%B1%E6%B4%BE   
++ * 关注B站：【立创开发板】，掌握我们的最新动态！  
++ *********************************************************************/
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/pwm/pwm.h>
++#include <dt-bindings/pinctrl/rockchip.h>
++#include <dt-bindings/input/rk-input.h>
++#include <dt-bindings/display/drm_mipi_dsi.h>
++#include <dt-bindings/sensor-dev.h>
++
++/ {
++	aliases {
++		mmc0 = &sdhci;
++		mmc1 = &sdmmc0;
++		mmc2 = &sdmmc1;
++		mmc3 = &sdmmc2;
++	};
++
++	chosen: chosen {
++		bootargs = "earlycon=uart8250,mmio32,0xfe660000 console=ttyFIQ0 console=tty1 root=PARTUUID=614e0000-0000 rw rootwait";
++		// bootargs = "earlycon=uart8250,mmio32,0xfe660000 console=ttyFIQ0 root=PARTUUID=614e0000-0000 rw rootwait";
++	};
++
++	fiq-debugger {
++		compatible = "rockchip,fiq-debugger";
++		rockchip,serial-id = <2>;
++		rockchip,wake-irq = <0>;
++		/* If enable uart uses irq instead of fiq */
++		rockchip,irq-mode-enable = <1>;
++		rockchip,baudrate = <1500000>;  /* Only 115200 and 1500000 */
++		interrupts = <GIC_SPI 252 IRQ_TYPE_LEVEL_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&uart2m0_xfer>;
++		status = "okay";
++	};
++
++	debug: debug@fd904000 {
++		compatible = "rockchip,debug";
++		reg = <0x0 0xfd904000 0x0 0x1000>,
++			<0x0 0xfd905000 0x0 0x1000>,
++			<0x0 0xfd906000 0x0 0x1000>,
++			<0x0 0xfd907000 0x0 0x1000>;
++	};
++
++	cspmu: cspmu@fd90c000 {
++		compatible = "rockchip,cspmu";
++		reg = <0x0 0xfd90c000 0x0 0x1000>,
++			<0x0 0xfd90d000 0x0 0x1000>,
++			<0x0 0xfd90e000 0x0 0x1000>,
++			<0x0 0xfd90f000 0x0 0x1000>;
++	};
++
++	adc_keys: adc-keys {
++		compatible = "adc-keys";
++		io-channels = <&saradc 0>;
++		io-channel-names = "buttons";
++		keyup-threshold-microvolt = <1800000>;
++		poll-interval = <100>;
++
++		restart-key {
++			label = "restart";
++			linux,code = <KEY_RESTART>;
++			press-threshold-microvolt = <108>;
++		};
++	};
++
++	audiopwmout_diff: audiopwmout-diff {
++		status = "disabled";
++		compatible = "simple-audio-card";
++		simple-audio-card,format = "i2s";
++		simple-audio-card,name = "rockchip,audiopwmout-diff";
++		simple-audio-card,mclk-fs = <256>;
++		simple-audio-card,bitclock-master = <&master>;
++		simple-audio-card,frame-master = <&master>;
++		simple-audio-card,cpu {
++			sound-dai = <&i2s3_2ch>;
++		};
++		master: simple-audio-card,codec {
++			sound-dai = <&dig_acodec>;
++		};
++	};
++
++	dc_12v: dc-12v {
++		compatible = "regulator-fixed";
++		regulator-name = "dc_12v";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <12000000>;
++		regulator-max-microvolt = <12000000>;
++	};
++
++	pdmics: dummy-codec {
++		status = "disabled";
++		compatible = "rockchip,dummy-codec";
++		#sound-dai-cells = <0>;
++	};
++
++	pdm_mic_array: pdm-mic-array {
++		status = "disabled";
++		compatible = "simple-audio-card";
++		simple-audio-card,name = "rockchip,pdm-mic-array";
++		simple-audio-card,cpu {
++			sound-dai = <&pdm>;
++		};
++		simple-audio-card,codec {
++			sound-dai = <&pdmics>;
++		};
++	};
++
++	rk809_sound: rk809-sound {
++		status = "okay";
++		compatible = "rockchip,multicodecs-card";
++		rockchip,card-name = "rockchip-rk809";
++		hp-det-gpio = <&gpio3 RK_PA1 GPIO_ACTIVE_LOW>;
++		rockchip,format = "i2s";
++		rockchip,mclk-fs = <256>;
++		rockchip,cpu = <&i2s1_8ch>;
++		rockchip,codec = <&rk809_codec>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&hp_det>;
++	};
++
++	spdif-sound {
++		status = "disabled";
++		compatible = "simple-audio-card";
++		simple-audio-card,name = "ROCKCHIP,SPDIF";
++		simple-audio-card,mclk-fs = <128>;
++		simple-audio-card,cpu {
++				sound-dai = <&spdif_8ch>;
++		};
++		simple-audio-card,codec {
++				sound-dai = <&spdif_out>;
++		};
++	};
++
++	spdif_out: spdif-out {
++			status = "disabled";
++			compatible = "linux,spdif-dit";
++			#sound-dai-cells = <0>;
++	};
++
++	vad_sound: vad-sound {
++		status = "disabled";
++		compatible = "rockchip,multicodecs-card";
++		rockchip,card-name = "rockchip,rk3568-vad";
++		rockchip,cpu = <&i2s1_8ch>;
++		rockchip,codec = <&rk809_codec>, <&vad>;
++	};
++
++	vcc3v3_sys: vcc3v3-sys {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc3v3_sys";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		vin-supply = <&vcc5v0_sys>;
++	};
++
++	vcc5v0_sys: vcc5v0-sys {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc5v0_sys";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		vin-supply = <&dc_12v>;
++	};
++
++	vcc5v0_usb: vcc5v0-usb {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc5v0_usb";
++		regulator-always-on;
++		regulator-boot-on;
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++	};
++
++	vcc5v0_host: vcc5v0-host-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc5v0_host";
++		regulator-boot-on;
++		regulator-always-on;
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		enable-active-high;
++		gpio = <&gpio4 RK_PC4 GPIO_ACTIVE_HIGH>;
++		vin-supply = <&vcc5v0_usb>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&vcc5v0_host_en>;
++	};
++
++    
++    	bt_sco: bt-sco {
++		status = "disabled";
++		compatible = "delta,dfbmcs320";
++		#sound-dai-cells = <1>;
++	};
++
++	bt_sound: bt-sound {
++		status = "disabled";
++		compatible = "simple-audio-card";
++		simple-audio-card,format = "dsp_a";
++		simple-audio-card,bitclock-inversion;
++		simple-audio-card,mclk-fs = <256>;
++		simple-audio-card,name = "rockchip,bt";
++		simple-audio-card,cpu {
++			sound-dai = <&i2s3_2ch>;
++		};
++		simple-audio-card,codec {
++			sound-dai = <&bt_sco 1>;
++		};
++	};
++
++	sdio_pwrseq: sdio-pwrseq {
++		compatible = "mmc-pwrseq-simple";
++		clocks = <&rk809 1>;
++		clock-names = "ext_clock";
++		pinctrl-names = "default";
++		pinctrl-0 = <&wifi_enable_h>;
++
++		/*
++		 * On the module itself this is one of these (depending
++		 * on the actual card populated):
++		 * - SDIO_RESET_L_WL_REG_ON
++		 * - PDN (power down when low)
++		 */
++		post-power-on-delay-ms = <200>;
++		reset-gpios = <&gpio2 RK_PB1 GPIO_ACTIVE_LOW>;
++	};
++
++	wireless_wlan: wireless-wlan {
++		compatible = "wlan-platdata";
++		pinctrl-names = "default";
++		pinctrl-0 = <&wifi_host_wake_irq>;
++		WIFI,host_wake_irq = <&gpio2 RK_PB2 GPIO_ACTIVE_HIGH>;
++		rockchip,grf = <&grf>;
++		wifi_chip_type = "ap6212";
++		status = "okay";
++	};
++
++	wireless_bluetooth: wireless-bluetooth {
++		compatible = "bluetooth-platdata";
++		clocks = <&rk809 1>;
++		clock-names = "ext_clock";
++		//wifi-bt-power-toggle;
++		uart_rts_gpios = <&gpio2 RK_PB5 GPIO_ACTIVE_LOW>;
++		pinctrl-names = "default", "rts_gpio";
++		pinctrl-0 = <&uart1m0_rtsn>;
++		pinctrl-1 = <&uart1_gpios>;
++		BT,reset_gpio    = <&gpio2 RK_PB7 GPIO_ACTIVE_HIGH>;
++		BT,wake_gpio     = <&gpio2 RK_PC1 GPIO_ACTIVE_HIGH>;
++		BT,wake_host_irq = <&gpio2 RK_PC0 GPIO_ACTIVE_HIGH>;
++		status = "okay";
++	};
++
++	test-power {
++		status = "okay";
++	};
++};
++
++&reserved_memory {
++	ramoops: ramoops@110000 {
++		compatible = "ramoops";
++		reg = <0x0 0x110000 0x0 0xf0000>;
++		record-size = <0x20000>;
++		console-size = <0x80000>;
++		ftrace-size = <0x00000>;
++		pmsg-size = <0x50000>;
++	};
++};
++
++&rng {
++	status = "okay";
++};
++
++&rockchip_suspend {
++	status = "okay";
++};
++
++&vop {
++	disable-win-move;
++};
++
++&vp0 {
++	cursor-win-id = <ROCKCHIP_VOP2_CLUSTER0>;
++};
++&bus_npu {
++	bus-supply = <&vdd_logic>;
++	pvtm-supply = <&vdd_cpu>;
++	status = "okay";
++};
++
++&cpu0 {
++	cpu-supply = <&vdd_cpu>;
++};
++
++&dfi {
++	status = "okay";
++};
++
++&dmc {
++	center-supply = <&vdd_logic>;
++	status = "okay";
++};
++
++&gpu {
++	mali-supply = <&vdd_gpu>;
++	status = "okay";
++};
++
++
++&i2c0 {
++	status = "okay";
++
++	vdd_cpu: tcs4525@1c {
++		compatible = "tcs,tcs4525";
++		reg = <0x1c>;
++		vin-supply = <&vcc5v0_sys>;
++		regulator-compatible = "fan53555-reg";
++		regulator-name = "vdd_cpu";
++		regulator-min-microvolt = <712500>;
++		regulator-max-microvolt = <1390000>;
++		regulator-init-microvolt = <900000>;
++		regulator-ramp-delay = <2300>;
++		fcs,suspend-voltage-selector = <1>;
++		regulator-boot-on;
++		regulator-always-on;
++		regulator-state-mem {
++			regulator-off-in-suspend;
++		};
++	};
++
++	rk809: pmic@20 {
++		compatible = "rockchip,rk809";
++		reg = <0x20>;
++		interrupt-parent = <&gpio0>;
++		interrupts = <3 IRQ_TYPE_LEVEL_LOW>;
++
++		pinctrl-names = "default", "pmic-sleep",
++				"pmic-power-off", "pmic-reset";
++		pinctrl-0 = <&pmic_int>;
++		pinctrl-1 = <&soc_slppin_slp>, <&rk817_slppin_slp>;
++		pinctrl-2 = <&soc_slppin_gpio>, <&rk817_slppin_pwrdn>;
++		pinctrl-3 = <&soc_slppin_gpio>, <&rk817_slppin_rst>;
++
++		rockchip,system-power-controller;
++		wakeup-source;
++		#clock-cells = <1>;
++		clock-output-names = "rk808-clkout1", "rk808-clkout2";
++		//fb-inner-reg-idxs = <2>;
++		/* 1: rst regs (default in codes), 0: rst the pmic */
++		pmic-reset-func = <0>;
++		/* not save the PMIC_POWER_EN register in uboot */
++		not-save-power-en = <1>;
++
++		vcc1-supply = <&vcc3v3_sys>;
++		vcc2-supply = <&vcc3v3_sys>;
++		vcc3-supply = <&vcc3v3_sys>;
++		vcc4-supply = <&vcc3v3_sys>;
++		vcc5-supply = <&vcc3v3_sys>;
++		vcc6-supply = <&vcc3v3_sys>;
++		vcc7-supply = <&vcc3v3_sys>;
++		vcc8-supply = <&vcc3v3_sys>;
++		vcc9-supply = <&vcc3v3_sys>;
++
++		pwrkey {
++			status = "okay";
++		};
++
++		pinctrl_rk8xx: pinctrl_rk8xx {
++			gpio-controller;
++			#gpio-cells = <2>;
++
++			rk817_slppin_null: rk817_slppin_null {
++				pins = "gpio_slp";
++				function = "pin_fun0";
++			};
++
++			rk817_slppin_slp: rk817_slppin_slp {
++				pins = "gpio_slp";
++				function = "pin_fun1";
++			};
++
++			rk817_slppin_pwrdn: rk817_slppin_pwrdn {
++				pins = "gpio_slp";
++				function = "pin_fun2";
++			};
++
++			rk817_slppin_rst: rk817_slppin_rst {
++				pins = "gpio_slp";
++				function = "pin_fun3";
++			};
++		};
++
++		regulators {
++			vdd_logic: DCDC_REG1 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-min-microvolt = <500000>;
++				regulator-max-microvolt = <1350000>;
++				regulator-init-microvolt = <900000>;
++				regulator-ramp-delay = <6001>;
++				regulator-initial-mode = <0x2>;
++				regulator-name = "vdd_logic";
++				regulator-state-mem {
++					regulator-off-in-suspend;
++				};
++			};
++
++			vdd_gpu: DCDC_REG2 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-min-microvolt = <500000>;
++				regulator-max-microvolt = <1350000>;
++				regulator-init-microvolt = <900000>;
++				regulator-ramp-delay = <6001>;
++				regulator-initial-mode = <0x2>;
++				regulator-name = "vdd_gpu";
++				regulator-state-mem {
++					regulator-off-in-suspend;
++				};
++			};
++
++			vcc_ddr: DCDC_REG3 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-initial-mode = <0x2>;
++				regulator-name = "vcc_ddr";
++				regulator-state-mem {
++					regulator-on-in-suspend;
++				};
++			};
++
++			vdd_npu: DCDC_REG4 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-min-microvolt = <500000>;
++				regulator-max-microvolt = <1350000>;
++				regulator-init-microvolt = <900000>;
++				regulator-ramp-delay = <6001>;
++				regulator-initial-mode = <0x2>;
++				regulator-name = "vdd_npu";
++				regulator-state-mem {
++					regulator-off-in-suspend;
++				};
++			};
++
++			vdda0v9_image: LDO_REG1 {
++				regulator-boot-on;
++				regulator-always-on;
++				regulator-min-microvolt = <900000>;
++				regulator-max-microvolt = <900000>;
++				regulator-name = "vdda0v9_image";
++				regulator-state-mem {
++					regulator-off-in-suspend;
++				};
++			};
++
++			vdda_0v9: LDO_REG2 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-min-microvolt = <900000>;
++				regulator-max-microvolt = <900000>;
++				regulator-name = "vdda_0v9";
++				regulator-state-mem {
++					regulator-off-in-suspend;
++				};
++			};
++
++			vdda0v9_pmu: LDO_REG3 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-min-microvolt = <900000>;
++				regulator-max-microvolt = <900000>;
++				regulator-name = "vdda0v9_pmu";
++				regulator-state-mem {
++					regulator-on-in-suspend;
++					regulator-suspend-microvolt = <900000>;
++				};
++			};
++
++			vccio_acodec: LDO_REG4 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-min-microvolt = <3000000>;
++				regulator-max-microvolt = <3000000>;
++				regulator-name = "vccio_acodec";
++				regulator-state-mem {
++					regulator-off-in-suspend;
++				};
++			};
++
++			vccio_sd: LDO_REG5 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-name = "vccio_sd";
++				regulator-state-mem {
++					regulator-off-in-suspend;
++				};
++			};
++
++			vcc3v3_pmu: LDO_REG6 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-min-microvolt = <3300000>;
++				regulator-max-microvolt = <3300000>;
++				regulator-name = "vcc3v3_pmu";
++				regulator-state-mem {
++					regulator-on-in-suspend;
++					regulator-suspend-microvolt = <3300000>;
++				};
++			};
++
++			vcca_1v8: LDO_REG7 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-name = "vcca_1v8";
++				regulator-state-mem {
++					regulator-off-in-suspend;
++				};
++			};
++
++			vcca1v8_pmu: LDO_REG8 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-name = "vcca1v8_pmu";
++				regulator-state-mem {
++					regulator-on-in-suspend;
++					regulator-suspend-microvolt = <1800000>;
++				};
++			};
++
++			vcca1v8_image: LDO_REG9 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-name = "vcca1v8_image";
++				regulator-state-mem {
++					regulator-off-in-suspend;
++				};
++			};
++
++			vcc_1v8: DCDC_REG5 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-min-microvolt = <1800000>;
++				regulator-max-microvolt = <1800000>;
++				regulator-name = "vcc_1v8";
++				regulator-state-mem {
++					regulator-off-in-suspend;
++				};
++			};
++
++			vcc_3v3: SWITCH_REG1 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-name = "vcc_3v3";
++				regulator-state-mem {
++					regulator-off-in-suspend;
++				};
++			};
++
++			vcc3v3_sd: SWITCH_REG2 {
++				regulator-always-on;
++				regulator-boot-on;
++				regulator-name = "vcc3v3_sd";
++				regulator-state-mem {
++					regulator-off-in-suspend;
++				};
++			};
++		};
++
++		rk809_codec: codec {
++			#sound-dai-cells = <1>;
++			compatible = "rockchip,rk809-codec", "rockchip,rk817-codec";
++			clocks = <&cru I2S1_MCLKOUT>;
++			clock-names = "mclk";
++			assigned-clocks = <&cru I2S1_MCLKOUT>, <&cru I2S1_MCLK_TX_IOE>;
++			assigned-clock-rates = <12288000>;
++			assigned-clock-parents = <&cru I2S1_MCLKOUT_TX>, <&cru I2S1_MCLKOUT_TX>;
++			pinctrl-names = "default";
++			pinctrl-0 = <&i2s1m0_mclk>;
++			hp-volume = <20>;
++			spk-volume = <3>;
++			mic-in-differential;
++			status = "okay";
++		};
++	};
++};
++
++&i2s1_8ch {
++	status = "okay";
++	rockchip,clk-trcm = <1>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2s1m0_sclktx
++		     &i2s1m0_lrcktx
++		     &i2s1m0_sdi0
++		     &i2s1m0_sdo0>;
++};
++
++&i2s3_2ch {
++	pinctrl-0 = <&i2s3m0_sclk &i2s3m0_lrck &i2s3m0_sdi &i2s3m0_sdo>;
++	rockchip,bclk-fs = <32>;
++	status = "disabled";
++};
++
++&iep {
++	status = "okay";
++};
++
++&iep_mmu {
++	status = "okay";
++};
++
++&jpegd {
++	status = "okay";
++};
++
++&jpegd_mmu {
++	status = "okay";
++};
++
++&mpp_srv {
++	status = "okay";
++};
++
++&pinctrl {
++	pmic {
++		pmic_int: pmic_int {
++			rockchip,pins =
++				<0 RK_PA3 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++
++		soc_slppin_gpio: soc_slppin_gpio {
++			rockchip,pins =
++				<0 RK_PA2 RK_FUNC_GPIO &pcfg_output_low>;
++		};
++
++		soc_slppin_slp: soc_slppin_slp {
++			rockchip,pins =
++				<0 RK_PA2 1 &pcfg_pull_none>;
++		};
++
++		soc_slppin_rst: soc_slppin_rst {
++			rockchip,pins =
++				<0 RK_PA2 2 &pcfg_pull_none>;
++		};
++	};
++
++	usb {
++		vcc5v0_host_en: vcc5v0-host-en {
++			rockchip,pins = <4 RK_PC4 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
++    sdio-pwrseq {
++		wifi_enable_h: wifi-enable-h {
++			rockchip,pins = <2 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++
++	wireless-wlan {
++		wifi_host_wake_irq: wifi-host-wake-irq {
++			rockchip,pins = <2 RK_PB2 RK_FUNC_GPIO &pcfg_pull_down>;
++		};
++	};
++
++	wireless-bluetooth {
++		uart1_gpios: uart1-gpios {
++			rockchip,pins = <2 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++};
++
++
++ /*
++  * There are 10 independent IO domains in RK3566/RK3568, including PMUIO[0:2] and VCCIO[1:7].
++  * 1/ PMUIO0 and PMUIO1 are fixed-level power domains which cannot be configured;
++  * 2/ PMUIO2 and VCCIO1,VCCIO[3:7] domains require that their hardware power supply voltages
++  *    must be consistent with the software configuration correspondingly
++  *	a/ When the hardware IO level is connected to 1.8V, the software voltage configuration
++  *	   should also be configured to 1.8V accordingly;
++  *	b/ When the hardware IO level is connected to 3.3V, the software voltage configuration
++  *	   should also be configured to 3.3V accordingly;
++  * 3/ VCCIO2 voltage control selection (0xFDC20140)
++  *	BIT[0]: 0x0: from GPIO_0A7 (default)
++  *	BIT[0]: 0x1: from GRF
++  *    Default is determined by Pin FLASH_VOL_SEL/GPIO0_A7:
++  *	L:VCCIO2 must supply 3.3V
++  *	H:VCCIO2 must supply 1.8V
++  */
++&pmu_io_domains {
++	status = "okay";
++	pmuio2-supply = <&vcc3v3_pmu>;
++	vccio1-supply = <&vccio_acodec>;
++	vccio3-supply = <&vccio_sd>;
++	vccio4-supply = <&vcc_1v8>;//wucaicheng wifi VCCIO_WL 0¦¸=1V8
++	vccio5-supply = <&vcc_3v3>;
++	vccio6-supply = <&vcc_1v8>;//wucaicheng PHY  0¦¸=1V8
++	vccio7-supply = <&vcc_3v3>;
++};
++
++
++&rk_rga {
++	status = "okay";
++};
++
++&rkvdec {
++	status = "okay";
++};
++
++&rkvdec_mmu {
++	status = "okay";
++};
++
++&rkvenc {
++	venc-supply = <&vdd_logic>;
++	status = "okay";
++};
++
++&rkvenc_mmu {
++	status = "okay";
++};
++
++&rknpu {
++	rknpu-supply = <&vdd_npu>;
++	status = "okay";
++};
++
++&rknpu_mmu {
++	status = "okay";
++};
++
++&saradc {
++	status = "okay";
++	vref-supply = <&vcca_1v8>;
++};
++
++&sdhci {
++	bus-width = <8>;
++	no-sdio;
++	no-sd;
++	non-removable;
++	max-frequency = <200000000>;
++	full-pwr-cycle-in-suspend;
++	status = "okay";
++};
++
++&nandc0 {
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "disabled";
++
++	nand@0 {
++		reg = <0>;
++		nand-bus-width = <8>;
++		nand-ecc-mode = "hw";
++		nand-ecc-strength = <16>;
++		nand-ecc-step-size = <1024>;
++	};
++};
++
++&sfc {
++	status = "disabled";
++
++	flash@0 {
++		compatible = "spi-nand";
++		reg = <0>;
++		spi-max-frequency = <75000000>;
++		spi-rx-bus-width = <4>;
++		spi-tx-bus-width = <1>;
++	};
++};
++
++&sdmmc0 {
++	max-frequency = <150000000>;
++	no-sdio;
++	no-mmc;
++	bus-width = <4>;
++	cap-mmc-highspeed;
++	cap-sd-highspeed;
++	disable-wp;
++	sd-uhs-sdr104;
++	vmmc-supply = <&vcc3v3_sd>;
++	vqmmc-supply = <&vccio_sd>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdmmc0_bus4 &sdmmc0_clk &sdmmc0_cmd &sdmmc0_det>;
++	status = "okay";
++};
++
++&sdmmc1 {
++	max-frequency = <150000000>;
++	no-sd;
++	no-mmc;
++	bus-width = <4>;
++	disable-wp;
++	cap-sd-highspeed;
++	cap-sdio-irq;
++	keep-power-in-suspend;
++	mmc-pwrseq = <&sdio_pwrseq>;
++	non-removable;
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdmmc1_bus4 &sdmmc1_cmd &sdmmc1_clk>;
++	sd-uhs-sdr104;
++	status = "okay";
++};
++
++&sdmmc2 {
++	status = "disabled";
++};
++
++
++&spdif_8ch {
++	status = "disabled";
++};
++
++&tsadc {
++	status = "okay";
++};
++
++&u2phy0_host {
++	phy-supply = <&vcc5v0_host>;
++	status = "okay";
++};
++
++&u2phy0_otg {
++	status = "okay";
++};
++
++&u2phy1_host {
++	phy-supply = <&vcc5v0_host>;
++	status = "okay";
++};
++
++&u2phy1_otg {
++	phy-supply = <&vcc5v0_host>;
++	status = "okay";
++};
++
++&usb2phy0 {
++	status = "okay";
++};
++
++&usb2phy1 {
++	status = "okay";
++};
++
++&usb_host0_ehci {
++	status = "okay";
++};
++
++&usb_host0_ohci {
++	status = "okay";
++};
++
++&usb_host1_ehci {
++	status = "okay";
++};
++
++&usb_host1_ohci {
++	status = "okay";
++};
++
++&usbdrd_dwc3 {
++	dr_mode = "otg";
++	extcon = <&usb2phy0>;
++	status = "okay";
++};
++
++&usbdrd30 {
++	status = "okay";
++};
++
++&usbhost_dwc3 {
++	status = "okay";
++};
++
++&usbhost30 {
++	status = "okay";
++};
++
++&vad {
++	rockchip,audio-src = <&i2s1_8ch>;
++	rockchip,buffer-time-ms = <128>;
++	rockchip,det-channel = <0>;
++	rockchip,mode = <0>;
++};
++
++&vdpu {
++	status = "okay";
++};
++
++&vdpu_mmu {
++	status = "okay";
++};
++
++&vepu {
++	status = "okay";
++};
++
++&vepu_mmu {
++	status = "okay";
++};
++
++&vop {
++	status = "okay";
++	assigned-clocks = <&cru DCLK_VOP0>, <&cru DCLK_VOP1>, <&cru DCLK_VOP2>;
++	assigned-clock-parents = <&pmucru PLL_HPLL>, <&cru PLL_VPLL>, <&cru PLL_GPLL>;
++};
++
++&vop_mmu {
++	status = "okay";
++};
++
++&i2s2_2ch {
++	pinctrl-0 = <&i2s2m0_sclktx &i2s2m0_lrcktx &i2s2m0_sdi &i2s2m0_sdo>;
++	rockchip,bclk-fs = <32>;
++	status = "disabled";
++};
++&uart1 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart1m0_xfer &uart1m0_ctsn>;
++};
+diff --git a/arch/arm64/boot/dts/rockchip/tspi-rk3566-csi-v10.dtsi b/arch/arm64/boot/dts/rockchip/tspi-rk3566-csi-v10.dtsi
+new file mode 100755
+index 000000000..1d2768d4a
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/tspi-rk3566-csi-v10.dtsi
+@@ -0,0 +1,269 @@
++/********************************************************************
++ * 共建开源生态是我们的目标。为此我们努力把性价比和颜值做到极致。
++ * 同时全面开放SDK、原理图、PCB等所有软硬件资料。
++ * 提供交流平台、免费训练营、开发者扶持计划等，让您能够尽情发挥您的才华。
++ * 我们坚信自由和定制化是开源生态的核心。
++ * 泰山派开发板不仅仅是立创开发板的产品，它更是我们共同努力的成果。
++ * 我们只是抛砖引玉，期望能够激发出更多的创意和想法。
++ * 我们渴望与志同道合的伙伴们携手合作，共同探索无限可能。
++ * 让我们各展所长，共同建设一个强大的开源生态系统。
++ * 泰山派开发板等待着您的加入。
++ * 让我们一起推动技术的前进，一起创未来！
++ *********************************************************************
++ * 立创开发板不靠卖板赚钱，以培养中国工程师为己任。  
++ * 开发板官网：www.lckfb.com
++ * 嘉立创论坛：www.jlc-bbs.com/lckfb 
++ * 资料教程：wiki.lckfb.com  
++ * 开源项目：https://oshwhub.com/search?wd=%E6%B3%B0%E5%B1%B1%E6%B4%BE   
++ * 关注B站：【立创开发板】，掌握我们的最新动态！  
++ *********************************************************************/
++
++//phy u序列
++&combphy1_usq {
++	status = "okay";
++};
++
++//phy P序列
++&combphy2_psq {
++	status = "okay";
++};
++
++//dphy硬件
++&csi2_dphy_hw {
++	status = "okay";
++};
++//摄像头D-PHY接口
++&csi2_dphy0 {
++	status = "disabled";
++	/*
++	 * dphy0 only used for full mode,
++	 * full mode and split mode are mutually exclusive
++	 */
++	ports {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		port@0 {
++			reg = <0>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			dphy0_in: endpoint@1 {
++				reg = <1>;
++				// remote-endpoint = <&gc8034_out>;
++				data-lanes = <1 2 3 4>;
++			};
++		};
++
++		port@1 {
++			reg = <1>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			dphy0_out: endpoint@1 {
++				reg = <1>;
++				remote-endpoint = <&isp0_in>;
++			};
++		};
++	};
++};
++
++//摄像头D-PHY接口
++&csi2_dphy1 {
++	status = "okay";
++
++	/*
++	 * dphy1 only used for split mode,
++	 * can be used  concurrently  with dphy2
++	 * full mode and split mode are mutually exclusive
++	 */
++	ports {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		port@0 {
++			reg = <0>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			dphy1_in: endpoint@1 {
++				reg = <1>;
++				remote-endpoint = <&ov5695_out>;
++				data-lanes = <1 2>;
++			};
++		};
++
++		port@1 {
++			reg = <1>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			dphy1_out: endpoint@1 {
++				reg = <1>;
++				remote-endpoint = <&isp0_in>;
++			};
++		};
++	};
++};
++//摄像头D-PHY接口
++&csi2_dphy2 {
++	status = "disabled";
++
++	/*
++	 * dphy2 only used for split mode,
++	 * can be used  concurrently  with dphy1
++	 * full mode and split mode are mutually exclusive
++	 */
++	ports {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		port@0 {
++			reg = <0>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			dphy2_in: endpoint@1 {
++				reg = <1>;
++				//remote-endpoint = <&gc5025_out>;
++				data-lanes = <1 2>;
++			};
++		};
++
++		port@1 {
++			reg = <1>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			dphy2_out: endpoint@1 {
++				reg = <1>;
++				remote-endpoint = <&mipi_csi2_input>;
++			};
++		};
++	};
++};
++
++
++
++&mipi_csi2 {
++	status = "disabled";
++
++	ports {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		port@0 {
++			reg = <0>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			mipi_csi2_input: endpoint@1 {
++				reg = <1>;
++				remote-endpoint = <&dphy2_out>;
++				data-lanes = <1 2>;
++			};
++		};
++
++		port@1 {
++			reg = <1>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			mipi_csi2_output: endpoint@0 {
++				reg = <0>;
++				remote-endpoint = <&cif_mipi_in>;
++				data-lanes = <1 2>;
++			};
++		};
++	};
++};
++
++//Rockchip Camera Interface
++&rkcif {
++	status = "disabled";
++};
++
++//dvp接口摄像头
++&rkcif_dvp {
++	status = "disabled";
++
++	port {
++		/* Parallel bus endpoint */
++		dvp_in_bcam: endpoint {
++			// remote-endpoint = <&gc2145_out>;
++			bus-width = <8>;
++			vsync-active = <0>;
++			hsync-active = <1>;
++		};
++	};
++};
++
++//LVDS接口摄像头
++&rkcif_mipi_lvds {
++	status = "disabled";
++
++	port {
++		cif_mipi_in: endpoint {
++			remote-endpoint = <&mipi_csi2_output>;
++			data-lanes = <1 2>;
++		};
++	};
++};
++
++//摄像头内存管理
++&rkcif_mmu {
++	status = "disabled";
++};
++
++//硬件图像处理器模块
++&rkisp {
++	status = "okay";
++};
++
++//硬件图像处理器模块内存管理器
++&rkisp_mmu {
++	status = "okay";
++};
++
++//图像处理接口
++&rkisp_vir0 {
++	status = "okay";
++
++	port {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		isp0_in: endpoint@0 {
++			reg = <0>;
++			remote-endpoint = <&dphy1_out>;
++		};
++	};
++};
++
++&i2c4 {
++	/* i2c4 sda conflict with camera pwdn */
++	status = "okay";
++	ov5695: ov5695@36 {
++		status = "okay";
++		compatible = "ovti,ov5695";
++		reg = <0x36>;
++		clocks = <&cru CLK_CIF_OUT>;
++		clock-names = "xvclk";
++		power-domains = <&power RK3568_PD_VI>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&cif_clk>;
++        reset-gpios = <&gpio4 RK_PB5 GPIO_ACTIVE_LOW>;
++		pwdn-gpios = <&gpio4 RK_PB4 GPIO_ACTIVE_HIGH>;
++		power-gpios = <&gpio0 RK_PB0 GPIO_ACTIVE_HIGH>;
++		rockchip,camera-module-index = <0>;
++		rockchip,camera-module-facing = "back";
++		rockchip,camera-module-name = "TongJu";
++		rockchip,camera-module-lens-name = "CHT842-MD";
++		port {
++			ov5695_out: endpoint {
++				remote-endpoint = <&dphy1_in>;
++				data-lanes = <1 2>;
++			};
++		};
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/tspi-rk3566-dsi-v10.dtsi b/arch/arm64/boot/dts/rockchip/tspi-rk3566-dsi-v10.dtsi
+new file mode 100755
+index 000000000..82c4f009d
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/tspi-rk3566-dsi-v10.dtsi
+@@ -0,0 +1,394 @@
++/********************************************************************
++ * 共建开源生态是我们的目标。为此我们努力把性价比和颜值做到极致。
++ * 同时全面开放SDK、原理图、PCB等所有软硬件资料。
++ * 提供交流平台、免费训练营、开发者扶持计划等，让您能够尽情发挥您的才华。
++ * 我们坚信自由和定制化是开源生态的核心。
++ * 泰山派开发板不仅仅是立创开发板的产品，它更是我们共同努力的成果。
++ * 我们只是抛砖引玉，期望能够激发出更多的创意和想法。
++ * 我们渴望与志同道合的伙伴们携手合作，共同探索无限可能。
++ * 让我们各展所长，共同建设一个强大的开源生态系统。
++ * 泰山派开发板等待着您的加入。
++ * 让我们一起推动技术的前进，一起创未来！
++ *********************************************************************
++ * 立创开发板不靠卖板赚钱，以培养中国工程师为己任。  
++ * 开发板官网：www.lckfb.com
++ * 嘉立创论坛：www.jlc-bbs.com/lckfb 
++ * 资料教程：wiki.lckfb.com  
++ * 开源项目：https://oshwhub.com/search?wd=%E6%B3%B0%E5%B1%B1%E6%B4%BE   
++ * 关注B站：【立创开发板】，掌握我们的最新动态！  
++ *********************************************************************/
++ 
++/ {
++	backlight: backlight {
++		compatible = "pwm-backlight";
++		pwms = <&pwm5 0 25000 0>;
++		brightness-levels = <
++			  0  20  20  21  21  22  22  23
++			 23  24  24  25  25  26  26  27
++			 27  28  28  29  29  30  30  31
++			 31  32  32  33  33  34  34  35
++			 35  36  36  37  37  38  38  39
++			 40  41  42  43  44  45  46  47
++			 48  49  50  51  52  53  54  55
++			 56  57  58  59  60  61  62  63
++			 64  65  66  67  68  69  70  71
++			 72  73  74  75  76  77  78  79
++			 80  81  82  83  84  85  86  87
++			 88  89  90  91  92  93  94  95
++			 96  97  98  99 100 101 102 103
++			104 105 106 107 108 109 110 111
++			112 113 114 115 116 117 118 119
++			120 121 122 123 124 125 126 127
++			128 129 130 131 132 133 134 135
++			136 137 138 139 140 141 142 143
++			144 145 146 147 148 149 150 151
++			152 153 154 155 156 157 158 159
++			160 161 162 163 164 165 166 167
++			168 169 170 171 172 173 174 175
++			176 177 178 179 180 181 182 183
++			184 185 186 187 188 189 190 191
++			192 193 194 195 196 197 198 199
++			200 201 202 203 204 205 206 207
++			208 209 210 211 212 213 214 215
++			216 217 218 219 220 221 222 223
++			224 225 226 227 228 229 230 231
++			232 233 234 235 236 237 238 239
++			240 241 242 243 244 245 246 247
++			248 249 250 251 252 253 254 255
++		>;
++		default-brightness-level = <255>;
++	};
++};
++
++&pwm5 {
++	status = "okay";
++};
++
++&i2c1 {
++	status = "okay";
++	ts@5d {
++		compatible = "goodix,gt9xx";
++		reg = <0x5d>;
++		tp-size = <89>;
++		max-x = <1280>;
++		max-y = <800>;
++		touch-gpio = <&gpio1 RK_PA0 IRQ_TYPE_LEVEL_LOW>;
++		reset-gpio = <&gpio1 RK_PA1 GPIO_ACTIVE_LOW>;
++	};
++};
++
++&pinctrl {
++	dsi1 {
++		dsi1_rst_gpio: dsi1-rst-gpio {
++			rockchip,pins = <3 RK_PC1 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++};
++
++/*
++ * video_phy1 needs to be enabled
++ * when dsi1 is enabled
++ */
++&dsi1 {
++	status = "okay";
++};
++
++&dsi1_in_vp0 {
++	status = "okay";
++};
++
++&dsi1_in_vp1 {
++	status = "disabled";
++};
++
++&video_phy1 {
++	status = "okay";
++};
++
++&route_dsi1 {
++	status = "okay";
++	connect = <&vp0_out_dsi1>;
++};
++
++&dsi1 {
++	status = "okay";
++	rockchip,lane-rate = <500>;
++	dsi1_panel: panel@0 {
++		status = "okay";
++		compatible = "simple-panel-dsi";
++		reset-gpios = <&gpio3 RK_PC1 GPIO_ACTIVE_LOW>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&dsi1_rst_gpio>;
++		reg = <0>;
++		backlight = <&backlight>;
++		reset-delay-ms = <30>;
++		enable-delay-ms = <100>;
++		prepare-delay-ms = <20>;
++		unprepare-delay-ms = <20>;
++		disable-delay-ms = <20>;
++        width-mm = <68>;
++		height-mm = <121>;
++		init-delay-ms = <10>;
++		dsi,flags = <(MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST |
++			MIPI_DSI_MODE_LPM | MIPI_DSI_MODE_EOT_PACKET)>;
++		dsi,format = <MIPI_DSI_FMT_RGB888>;
++		dsi,lanes  = <4>;
++		panel-init-sequence = [
++			39 00 04 FF 98 81 03
++			15 00 02 01 00
++			15 00 02 02 00
++			15 00 02 03 53    
++			15 00 02 04 53    
++			15 00 02 05 13
++			15 00 02 06 04
++			15 00 02 07 02
++			15 00 02 08 02
++			15 00 02 09 00
++			15 00 02 0a 00
++			15 00 02 0b 00
++			15 00 02 0c 00
++			15 00 02 0d 00
++			15 00 02 0e 00
++			15 00 02 0f 00
++			15 00 02 10 00
++			15 00 02 11 00
++			15 00 02 12 00
++			15 00 02 13 00
++			15 00 02 14 00
++			15 00 02 15 00
++			15 00 02 16 00
++			15 00 02 17 00
++			15 00 02 18 00
++			15 00 02 19 00
++			15 00 02 1a 00
++			15 00 02 1b 00
++			15 00 02 1c 00
++			15 00 02 1d 00
++			15 00 02 1e c0
++			15 00 02 1f 00
++			15 00 02 20 02
++			15 00 02 21 09
++			15 00 02 22 00
++			15 00 02 23 00
++			15 00 02 24 00
++			15 00 02 25 00
++			15 00 02 26 00
++			15 00 02 27 00
++			15 00 02 28 55
++			15 00 02 29 03
++			15 00 02 2a 00
++			15 00 02 2b 00
++			15 00 02 2c 00
++			15 00 02 2d 00
++			15 00 02 2e 00
++			15 00 02 2f 00
++			15 00 02 30 00
++			15 00 02 31 00
++			15 00 02 32 00
++			15 00 02 33 00
++			15 00 02 34 00
++			15 00 02 35 00
++			15 00 02 36 00
++			15 00 02 37 00
++			15 00 02 38 3C
++			15 00 02 39 00
++			15 00 02 3a 00
++			15 00 02 3b 00
++			15 00 02 3c 00
++			15 00 02 3d 00
++			15 00 02 3e 00
++			15 00 02 3f 00
++			15 00 02 40 00
++			15 00 02 41 00
++			15 00 02 42 00
++			15 00 02 43 00
++			15 00 02 44 00
++			
++			15 00 02 50 01
++			15 00 02 51 23
++			15 00 02 52 45
++			15 00 02 53 67
++			15 00 02 54 89
++			15 00 02 55 ab
++			15 00 02 56 01
++			15 00 02 57 23
++			15 00 02 58 45
++			15 00 02 59 67
++			15 00 02 5a 89
++			15 00 02 5b ab
++			15 00 02 5c cd
++			15 00 02 5d ef
++
++			15 00 02 5e 01
++			15 00 02 5f 0A    
++			15 00 02 60 02    
++			15 00 02 61 02    
++			15 00 02 62 08    
++			15 00 02 63 15    
++			15 00 02 64 14    
++			15 00 02 65 02    
++			15 00 02 66 11    
++			15 00 02 67 10    
++			15 00 02 68 02    
++			15 00 02 69 0F    
++			15 00 02 6a 0E    
++			15 00 02 6b 02    
++			15 00 02 6c 0D    
++			15 00 02 6d 0C    
++			15 00 02 6e 06    
++			15 00 02 6f 02    
++			15 00 02 70 02    
++			15 00 02 71 02    
++			15 00 02 72 02    
++			15 00 02 73 02    
++			15 00 02 74 02    
++			
++			15 00 02 75 0A    
++			15 00 02 76 02    
++			15 00 02 77 02    
++			15 00 02 78 06    
++			15 00 02 79 15    
++			15 00 02 7a 14    
++			15 00 02 7b 02    
++			15 00 02 7c 10    
++			15 00 02 7d 11    
++			15 00 02 7e 02    
++			15 00 02 7f 0C    
++			15 00 02 80 0D    
++			15 00 02 81 02    
++			15 00 02 82 0E    
++			15 00 02 83 0F    
++			15 00 02 84 08    
++			15 00 02 85 02    
++			15 00 02 86 02    
++			15 00 02 87 02    
++			15 00 02 88 02    
++			15 00 02 89 02    
++			15 00 02 8A 02    
++
++
++			39 00 04 FF 98 81 04
++			//15 00 02 00 00  //
++			// 15 00 02 2F 01   //bist 用户调试，屏幕会闪演示测试
++			15 00 02 3B C0  
++			15 00 02 6C 15
++			15 00 02 6E 30  
++			15 00 02 6F 55  
++			15 00 02 3A 24
++			15 00 02 8D 1F
++			15 00 02 87 BA
++			15 00 02 26 76
++			15 00 02 B2 D1
++			15 00 02 B5 07
++			15 00 02 35 1F
++			15 00 02 88 0B
++			15 00 02 21 09
++
++
++			39 00 04 FF 98 81 01
++			15 00 02 22 0A
++			15 00 02 31 09
++			15 00 02 40 33
++			15 00 02 53 37
++			15 00 02 55 38
++			15 00 02 50 95
++			15 00 02 51 95
++			15 00 02 60 30
++
++			15 00 02 A0 0F        
++			15 00 02 A1 17        
++			15 00 02 A2 22        
++			15 00 02 A3 19        
++			15 00 02 A4 15        
++			15 00 02 A5 28        
++			15 00 02 A6 1C        
++			15 00 02 A7 1C        
++			15 00 02 A8 78        
++			15 00 02 A9 1C        
++			15 00 02 AA 28        
++			15 00 02 AB 69        
++			15 00 02 AC 1A        
++			15 00 02 AD 19        
++			15 00 02 AE 4B        
++			15 00 02 AF 22        
++			15 00 02 B0 2A        
++			15 00 02 B1 4B        
++			15 00 02 B2 6B        
++			15 00 02 B3 3F        
++
++			15 00 02 C0 01        
++			15 00 02 C1 17        
++			15 00 02 C2 22        
++			15 00 02 C3 19        
++			15 00 02 C4 15        
++			15 00 02 C5 28        
++			15 00 02 C6 1C        
++			15 00 02 C7 1D        
++			15 00 02 C8 78        
++			15 00 02 C9 1C        
++			15 00 02 CA 28        
++			15 00 02 CB 69        
++			15 00 02 CC 1A        
++			15 00 02 CD 19        
++			15 00 02 CE 4B        
++			15 00 02 CF 22        
++			15 00 02 D0 2A        
++			15 00 02 D1 4B        
++			15 00 02 D2 6B        
++			15 00 02 D3 3F        
++			39 00 04 FF 98 81 00		
++			05 78 01 11
++			05 14 01 29
++		];
++
++		panel-exit-sequence = [
++			05 00 01 28
++			05 00 01 10
++		];
++
++		disp_timings1: display-timings {
++			native-mode = <&dsi1_timing0>;
++			dsi1_timing0: timing0 {
++				clock-frequency = <71000000>;
++				hactive = <800>;
++				vactive = <1280>;
++				hfront-porch = <52>;
++				hsync-len = <8>;
++				hback-porch = <48>;
++				vfront-porch = <15>;
++				vsync-len = <6>;
++				vback-porch = <16>;
++				hsync-active = <0>;
++				vsync-active = <0>;
++				de-active = <0>;
++				pixelclk-active = <0>;
++			};
++		};
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++				panel_in_dsi1: endpoint {
++					remote-endpoint = <&dsi1_out_panel>;
++				};
++			};
++		};
++	};
++
++	ports {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		port@1 {
++			reg = <1>;
++			dsi1_out_panel: endpoint {
++				remote-endpoint = <&panel_in_dsi1>;
++			};
++		};
++	};
++
++};
++
+diff --git a/arch/arm64/boot/dts/rockchip/tspi-rk3566-edp-v10.dtsi b/arch/arm64/boot/dts/rockchip/tspi-rk3566-edp-v10.dtsi
+new file mode 100755
+index 000000000..96f275399
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/tspi-rk3566-edp-v10.dtsi
+@@ -0,0 +1,164 @@
++/********************************************************************
++ * 共建开源生态是我们的目标。为此我们努力把性价比和颜值做到极致。
++ * 同时全面开放SDK、原理图、PCB等所有软硬件资料。
++ * 提供交流平台、免费训练营、开发者扶持计划等，让您能够尽情发挥您的才华。
++ * 我们坚信自由和定制化是开源生态的核心。
++ * 泰山派开发板不仅仅是立创开发板的产品，它更是我们共同努力的成果。
++ * 我们只是抛砖引玉，期望能够激发出更多的创意和想法。
++ * 我们渴望与志同道合的伙伴们携手合作，共同探索无限可能。
++ * 让我们各展所长，共同建设一个强大的开源生态系统。
++ * 泰山派开发板等待着您的加入。
++ * 让我们一起推动技术的前进，一起创未来！
++ *********************************************************************
++ * 立创开发板不靠卖板赚钱，以培养中国工程师为己任。  
++ * 开发板官网：www.lckfb.com
++ * 嘉立创论坛：www.jlc-bbs.com/lckfb 
++ * 资料教程：wiki.lckfb.com  
++ * 开源项目：https://oshwhub.com/search?wd=%E6%B3%B0%E5%B1%B1%E6%B4%BE   
++ * 关注B站：【立创开发板】，掌握我们的最新动态！  
++ *********************************************************************/
++
++/ {
++	edp_panel: edp-panel {
++		compatible = "simple-panel";
++		backlight = <&backlight>;
++		enable-gpios = <&gpio0 RK_PA6 GPIO_ACTIVE_HIGH>;
++		enable-delay-ms = <120>;
++		pinctrl-0 = <&edp_en_gpio>;
++		edp_disp_timings: display-timings {
++			native-mode = <&edp_timing0>;
++
++			edp_timing0: edp_timing0 {
++				clock-frequency = <150000000>;
++				hactive = <1920>;
++				vactive = <1080>;
++				hfront-porch = <150>;
++				hsync-len = <5>;
++				hback-porch = <5>;
++				vfront-porch = <3>;
++				vsync-len = <1>;
++				vback-porch = <9>;
++				hsync-active = <0>;
++				vsync-active = <0>;
++				de-active = <0>;
++				pixelclk-active = <0>;
++			};
++		};
++
++		ports {
++			panel_in_edp: endpoint {
++				remote-endpoint = <&edp_out_panel>;
++			};
++		};
++	};
++
++	backlight: backlight {
++		compatible = "pwm-backlight";
++		pwms = <&pwm4 0 25000 0>;
++		brightness-levels = <
++			  0  20  20  21  21  22  22  23
++			 23  24  24  25  25  26  26  27
++			 27  28  28  29  29  30  30  31
++			 31  32  32  33  33  34  34  35
++			 35  36  36  37  37  38  38  39
++			 40  41  42  43  44  45  46  47
++			 48  49  50  51  52  53  54  55
++			 56  57  58  59  60  61  62  63
++			 64  65  66  67  68  69  70  71
++			 72  73  74  75  76  77  78  79
++			 80  81  82  83  84  85  86  87
++			 88  89  90  91  92  93  94  95
++			 96  97  98  99 100 101 102 103
++			104 105 106 107 108 109 110 111
++			112 113 114 115 116 117 118 119
++			120 121 122 123 124 125 126 127
++			128 129 130 131 132 133 134 135
++			136 137 138 139 140 141 142 143
++			144 145 146 147 148 149 150 151
++			152 153 154 155 156 157 158 159
++			160 161 162 163 164 165 166 167
++			168 169 170 171 172 173 174 175
++			176 177 178 179 180 181 182 183
++			184 185 186 187 188 189 190 191
++			192 193 194 195 196 197 198 199
++			200 201 202 203 204 205 206 207
++			208 209 210 211 212 213 214 215
++			216 217 218 219 220 221 222 223
++			224 225 226 227 228 229 230 231
++			232 233 234 235 236 237 238 239
++			240 241 242 243 244 245 246 247
++			248 249 250 251 252 253 254 255
++		>;
++		default-brightness-level = <200>;
++	};
++};
++
++&pwm4 {
++	status = "okay";
++};
++
++&pinctrl {
++	edp {
++		edp_en_gpio: edp-en-gpio {
++			rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
++	};
++};
++
++
++&edp {
++	status = "okay";
++	force-hpd;
++    ports {
++		edp_out: port@1 {
++			reg = <1>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++			edp_out_panel: endpoint@0 {
++				reg = <0>;
++				remote-endpoint = <&panel_in_edp>;
++			};
++		};
++	};
++};
++
++&edp_phy {
++ 	status = "okay";
++};
++
++&route_edp {
++	status = "okay";
++	connect = <&vp0_out_edp>;
++	// connect = <&vp1_out_edp>;
++};
++
++&edp_in_vp0 {
++	status = "okay";  
++};
++
++&edp_in_vp1 {
++	status = "disabled";
++};
++
++&edp_panel {
++	status = "okay";
++};
++
++/*************************************************
++				11.6寸1366x768
++**************************************************/
++// &edp_timing0 {
++// 	clock-frequency = <72300000>;
++// 	hactive = <1366>;
++// 	vactive = <768>;
++// 	hfront-porch = <150>;
++// 	hsync-len = <5>;
++// 	hback-porch = <5>;
++// 	vfront-porch = <3>;
++// 	vsync-len = <1>;
++// 	vback-porch = <9>;
++// 	hsync-active = <0>;
++// 	vsync-active = <0>;
++// 	de-active = <0>;
++// 	pixelclk-active = <0>;
++// };
+\ No newline at end of file
+diff --git a/arch/arm64/boot/dts/rockchip/tspi-rk3566-gmac1-v10.dtsi b/arch/arm64/boot/dts/rockchip/tspi-rk3566-gmac1-v10.dtsi
+new file mode 100755
+index 000000000..c67ebf95d
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/tspi-rk3566-gmac1-v10.dtsi
+@@ -0,0 +1,53 @@
++/********************************************************************
++ * 共建开源生态是我们的目标。为此我们努力把性价比和颜值做到极致。
++ * 同时全面开放SDK、原理图、PCB等所有软硬件资料。
++ * 提供交流平台、免费训练营、开发者扶持计划等，让您能够尽情发挥您的才华。
++ * 我们坚信自由和定制化是开源生态的核心。
++ * 泰山派开发板不仅仅是立创开发板的产品，它更是我们共同努力的成果。
++ * 我们只是抛砖引玉，期望能够激发出更多的创意和想法。
++ * 我们渴望与志同道合的伙伴们携手合作，共同探索无限可能。
++ * 让我们各展所长，共同建设一个强大的开源生态系统。
++ * 泰山派开发板等待着您的加入。
++ * 让我们一起推动技术的前进，一起创未来！
++ *********************************************************************
++ * 立创开发板不靠卖板赚钱，以培养中国工程师为己任。  
++ * 开发板官网：www.lckfb.com
++ * 嘉立创论坛：www.jlc-bbs.com/lckfb 
++ * 资料教程：wiki.lckfb.com  
++ * 开源项目：https://oshwhub.com/search?wd=%E6%B3%B0%E5%B1%B1%E6%B4%BE   
++ * 关注B站：【立创开发板】，掌握我们的最新动态！  
++ *********************************************************************/
++
++&gmac1 {
++	phy-mode = "rgmii";
++	clock_in_out = "output";
++
++	snps,reset-gpio = <&gpio0 RK_PC7 GPIO_ACTIVE_LOW>;
++	snps,reset-active-low;
++	/* Reset time is 20ms, 100ms for rtl8211f */
++	snps,reset-delays-us = <0 20000 100000>;
++
++	assigned-clocks = <&cru SCLK_GMAC1_RX_TX>, <&cru SCLK_GMAC1>;
++	assigned-clock-parents = <&cru SCLK_GMAC1_RGMII_SPEED>, <&cru CLK_MAC1_2TOP>;
++	assigned-clock-rates = <0>, <125000000>;
++
++	pinctrl-names = "default";
++	pinctrl-0 = <&gmac1m1_miim
++		     &gmac1m1_tx_bus2
++		     &gmac1m1_rx_bus2
++		     &gmac1m1_rgmii_clk
++		     &gmac1m1_rgmii_bus>;
++
++	tx_delay = <0x36>;
++	rx_delay = <0x25>;
++
++	phy-handle = <&rgmii_phy0>;
++	status = "okay";
++};
++
++&mdio1 {
++	rgmii_phy0: phy@0 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <0x0>;
++	};
++};
+diff --git a/arch/arm64/boot/dts/rockchip/tspi-rk3566-hdmi-v10.dtsi b/arch/arm64/boot/dts/rockchip/tspi-rk3566-hdmi-v10.dtsi
+new file mode 100755
+index 000000000..76c5af220
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/tspi-rk3566-hdmi-v10.dtsi
+@@ -0,0 +1,68 @@
++/********************************************************************
++ * 共建开源生态是我们的目标。为此我们努力把性价比和颜值做到极致。
++ * 同时全面开放SDK、原理图、PCB等所有软硬件资料。
++ * 提供交流平台、免费训练营、开发者扶持计划等，让您能够尽情发挥您的才华。
++ * 我们坚信自由和定制化是开源生态的核心。
++ * 泰山派开发板不仅仅是立创开发板的产品，它更是我们共同努力的成果。
++ * 我们只是抛砖引玉，期望能够激发出更多的创意和想法。
++ * 我们渴望与志同道合的伙伴们携手合作，共同探索无限可能。
++ * 让我们各展所长，共同建设一个强大的开源生态系统。
++ * 泰山派开发板等待着您的加入。
++ * 让我们一起推动技术的前进，一起创未来！
++ *********************************************************************
++ * 立创开发板不靠卖板赚钱，以培养中国工程师为己任。  
++ * 开发板官网：www.lckfb.com
++ * 嘉立创论坛：www.jlc-bbs.com/lckfb 
++ * 资料教程：wiki.lckfb.com  
++ * 开源项目：https://oshwhub.com/search?wd=%E6%B3%B0%E5%B1%B1%E6%B4%BE   
++ * 关注B站：【立创开发板】，掌握我们的最新动态！  
++ *********************************************************************/
++ 
++/{
++    hdmi_sound: hdmi-sound {
++		compatible = "simple-audio-card";
++		simple-audio-card,format = "i2s";
++		simple-audio-card,mclk-fs = <128>;
++		simple-audio-card,name = "rockchip,hdmi";
++		status = "disabled";
++
++		simple-audio-card,cpu {
++				sound-dai = <&i2s0_8ch>;
++		};
++		simple-audio-card,codec {
++				sound-dai = <&hdmi>;
++		};
++	};
++};
++
++&hdmi {
++	status = "okay";
++	rockchip,phy-table =
++		<92812500  0x8009 0x0000 0x0270>,
++		<165000000 0x800b 0x0000 0x026d>,
++		<185625000 0x800b 0x0000 0x01ed>,
++		<297000000 0x800b 0x0000 0x01ad>,
++		<594000000 0x8029 0x0000 0x0088>,
++		<000000000 0x0000 0x0000 0x0000>;
++};
++
++&hdmi_in_vp0 {
++	status = "okay";
++};
++
++&hdmi_in_vp1 {
++	status = "disabled";
++};
++
++&hdmi_sound {
++	status = "okay";
++};
++
++&i2s0_8ch {
++	status = "okay";
++};
++
++&route_hdmi {
++	status = "okay";
++	connect = <&vp0_out_hdmi>;
++};
+diff --git a/arch/arm64/boot/dts/rockchip/tspi-rk3566-user-v10-linux.dts b/arch/arm64/boot/dts/rockchip/tspi-rk3566-user-v10-linux.dts
+new file mode 100755
+index 000000000..b2c4abaa6
+--- /dev/null
++++ b/arch/arm64/boot/dts/rockchip/tspi-rk3566-user-v10-linux.dts
+@@ -0,0 +1,239 @@
++/********************************************************************
++ * 共建开源生态是我们的目标。为此我们努力把性价比和颜值做到极致。
++ * 同时全面开放SDK、原理图、PCB等所有软硬件资料。
++ * 提供交流平台、免费训练营、开发者扶持计划等，让您能够尽情发挥您的才华。
++ * 我们坚信自由和定制化是开源生态的核心。
++ * 泰山派开发板不仅仅是立创开发板的产品，它更是我们共同努力的成果。
++ * 我们只是抛砖引玉，期望能够激发出更多的创意和想法。
++ * 我们渴望与志同道合的伙伴们携手合作，共同探索无限可能。
++ * 让我们各展所长，共同建设一个强大的开源生态系统。
++ * 泰山派开发板等待着您的加入。
++ * 让我们一起推动技术的前进，一起创未来！
++ *********************************************************************
++ * 立创开发板不靠卖板赚钱，以培养中国工程师为己任。  
++ * 开发板官网：www.lckfb.com
++ * 嘉立创论坛：www.jlc-bbs.com/lckfb 
++ * 资料教程：wiki.lckfb.com  
++ * 开源项目：https://oshwhub.com/search?wd=%E6%B3%B0%E5%B1%B1%E6%B4%BE   
++ * 关注B站：【立创开发板】，掌握我们的最新动态！  
++ *********************************************************************/
++ 
++/dts-v1/;
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/display/media-bus-format.h>
++#include <dt-bindings/pinctrl/rockchip.h>
++#include "rk3566.dtsi"
++#include <dt-bindings/display/rockchip_vop.h>
++
++
++//tspi核心配置层，这里是几乎后期不需要怎么改动
++#include "tspi-rk3566-core-v10.dtsi"
++
++//【开/关】EDP 显示屏幕配置，用户可以基于此复制自己的屏幕，注意EDP与MIPI屏幕互斥，因为共用了VOP如果需要同显自行修改
++// #include "tspi-rk3566-edp-v10.dtsi"
++
++//【开/关】mipi 显示屏幕配置，用户可以基于此复制自己的屏幕，注意EDP与MIPI屏幕互斥，因为共用了VOP如果需要同显自行修改
++// #include "tspi-rk3566-dsi-v10.dtsi"
++
++//【开/关】HDMI 显示屏幕配置，里面内容几乎可以不用动，如果不需要hdmi显示直接注释掉即可
++#include "tspi-rk3566-hdmi-v10.dtsi"
++
++//【开/关】摄像头 目前视频的是ov5659
++#include "tspi-rk3566-csi-v10.dtsi"
++
++//【开/关】网口 扩展板上使用的是千兆网，不接扩展板情况下可以关闭
++#include "tspi-rk3566-gmac1-v10.dtsi"
++
++//【开/关】下方是用户定义层，所有用户修改理论上在此下方修改就好了
++/ {
++	model = "lckfb tspi V10 Board";
++	compatible = "lckfb,tspi-v10", "rockchip,rk3566";
++
++	rk_headset: rk-headset {
++		compatible = "rockchip_headset";
++		headset_gpio = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&hp_det>;
++	};
++
++	leds: leds {
++		compatible = "gpio-leds";
++		rgb_led_r: rgb-led-r {
++			gpios = <&gpio1 RK_PB2 GPIO_ACTIVE_LOW>;
++			linux,default-trigger = "timer";
++			linux,delay-reg = <0>;   		// 延时注册
++			linux,blink-delay-on = <500>; 	// 打开时间
++			linux,blink-delay-off = <500>;	// 关闭时间
++		};
++		rgb_led_g: rgb-led-g {
++			gpios = <&gpio1 RK_PB1 GPIO_ACTIVE_LOW>;
++			linux,default-trigger = "timer";
++			linux,delay-reg = <100>;   		// 延时注册
++			linux,blink-delay-on = <1000>; 
++			linux,blink-delay-off = <1000>;
++		};
++		rgb_led_b: rgb-led-b {
++			gpios = <&gpio1 RK_PB0 GPIO_ACTIVE_LOW>;
++			linux,default-trigger = "timer";
++			linux,delay-reg = <100>;  		// 延时注册
++			linux,blink-delay-on = <1500>; 
++			linux,blink-delay-off = <1500>;
++		};
++	};
++	
++	vcc5v0_ex39_host: vcc5v0-ex39-host-regulator {
++		compatible = "regulator-fixed";
++		regulator-name = "vcc5v0_ex39_host";
++		regulator-boot-on;
++		regulator-always-on;
++		regulator-min-microvolt = <5000000>;
++		regulator-max-microvolt = <5000000>;
++		enable-active-high;
++		gpio = <&gpio0 RK_PA5 GPIO_ACTIVE_HIGH>;
++		vin-supply = <&vcc5v0_usb>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&ex39_usb_vcc5v0_host_en>;
++	};	
++
++};
++
++&usbhost_dwc3 {
++	phys = <&u2phy0_host>; 
++	phy-names = "usb2-phy";
++	maximum-speed = "high-speed"; 
++	status = "okay";
++};
++&combphy1_usq {
++	rockchip,dis-u3otg1-port; 
++	status = "okay";
++};
++
++&sata1 {
++	rockchip,enable-ssc;
++	status = "okay";
++};
++
++&pinctrl {
++	headphone {
++		hp_det: hp-det {
++			rockchip,pins = <0 RK_PC5 RK_FUNC_GPIO &pcfg_pull_down>;
++		};
++	};
++	ex39_usb {
++		ex39_usb_vcc5v0_host_en: ex39-usb-vcc5v0-host-en {
++			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>;
++		};
++	};
++};
++
++//用户三色灯
++&leds {
++	status = "okay";
++};
++
++//耳机插入检测，不使用扩展板情况需关闭，否则默认会检测到耳机插入
++&rk_headset {
++	status = "okay";
++};
++
++//用户串口3
++&uart3 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart3m1_xfer>;
++};
++
++//用户I2C2
++&i2c2 {
++	status = "okay";
++
++	/*添加你的I2C设备参考
++	gt1x: gt1x@14 {
++		compatible = "goodix,gt1x";
++		reg = <0x14>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&touch_gpio>;
++		goodix,rst-gpio = <&gpio0 RK_PB6 GPIO_ACTIVE_HIGH>;
++		goodix,irq-gpio = <&gpio0 RK_PB5 IRQ_TYPE_LEVEL_LOW>;
++	};*/
++};
++
++&i2c3 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&i2c3m1_xfer>;
++	/*添加你的I2C设备参考
++	gt1x: gt1x@14 {
++		compatible = "goodix,gt1x";
++		reg = <0x14>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&touch_gpio>;
++		goodix,rst-gpio = <&gpio0 RK_PB6 GPIO_ACTIVE_HIGH>;
++		goodix,irq-gpio = <&gpio0 RK_PB5 IRQ_TYPE_LEVEL_LOW>;
++	};*/
++};
++
++
++&spi3 {
++	status = "okay";
++	max-freq = <48000000>;
++	dma-names = "tx","rx";
++	pinctrl-names = "default", "high_speed";
++	pinctrl-0 = <&spi3m1_cs0 &spi3m1_pins>;
++	pinctrl-1 = <&spi3m1_cs0 &spi3m1_pins_hs>;
++	spi_test@10 {
++		compatible ="rockchip,spi_test_bus1_cs0";
++		reg = <0>;
++		spi-max-frequency = <24000000>;
++		status = "okay";
++	};
++};
++
++&pwm8 {
++	status = "okay";
++};
++
++&pwm9 {
++	status = "okay";
++};
++
++&pwm14 {
++	status = "okay";
++};
++
++//pwd 15遥控器
++&pwm15 {
++	status = "okay";
++	compatible = "rockchip,remotectl-pwm";
++	remote_pwm_id = <3>;
++	handle_cpu_id = <1>;
++	remote_support_psci = <0>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&pwm15m0_pins>;
++
++	//用户自定方法：adb设置输出日志并通过dmesg确定usercode=address与key_table=command
++	//echo 1 > sys/module/rockchip_pwm_remotectl/parameters/code_print
++	//键值可在 include/dt-bindings/input/linux-event-codes.h 中查找
++	ir_key1 {
++		rockchip,usercode = <0xff00>;
++		rockchip,key_table =
++			<0xf2	KEY_MENU>,
++			<0xe9	KEY_BACK>,
++			<0xe3	KEY_ENTER>,
++			<0xe7	KEY_UP>,
++			<0xad	KEY_DOWN>,
++			<0xf7	KEY_LEFT>,
++			<0xa5	KEY_RIGHT>,
++			<0xba	KEY_1>,
++			<0xb9	KEY_2>,
++			<0xb8	KEY_3>,
++			<0xbb	KEY_4>,
++			<0xbf	KEY_5>,
++			<0xbc	KEY_6>,
++			<0xf8	KEY_7>,
++			<0xea	KEY_8>,
++			<0xf6	KEY_9>,
++			<0xe6	KEY_0>;
++	};
++};
+\ No newline at end of file
+-- 
+2.34.1
+

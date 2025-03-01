@@ -12,9 +12,19 @@ SRC_URI:remove = " \
 OPENEULER_LOCAL_NAME = "rockchip-kernel"
 OPENEULER_REPO_NAMES = "rockchip-kernel"
 
+OPENEULER_LOCAL_NAME:tspi-3566 = "rockchip-kernel-tspi-3566"
+OPENEULER_REPO_NAMES:tspi-3566 = "rockchip-kernel-tspi-3566"
 
 SRC_URI:append = " \
     file://rockchip-kernel \
+"
+
+SRC_URI:remove:tspi-3566 = " \
+    file://rockchip-kernel \
+"
+
+SRC_URI:append:tspi-3566 = " \
+    file://rockchip-kernel-tspi-3566 \
 "
 
 INHIBIT_PACKAGE_STRIP = "1"
@@ -24,7 +34,15 @@ SRC_URI:append:ok3568 = " \
     ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'file://patches/0003-ok3568-support-mcs.patch', '', d)} \
 "
 
+# add tspi-3566 device tree
+SRC_URI:append:tspi-3566 = " \
+    file://patches/0001-add-tspi-3566-device-tree.patch \
+"
+
 S = "${WORKDIR}/rockchip-kernel"
+
+# tspi kernel directory
+S:tspi-3566 = "${WORKDIR}/rockchip-kernel-tspi-3566"
 
 OPENEULER_KERNEL_CONFIG = "file://config/${SOC_FAMILY}/defconfig"
 
