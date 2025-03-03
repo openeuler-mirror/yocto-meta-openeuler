@@ -20,11 +20,14 @@ SECTION = "devel"
 inherit cross
 inherit cargo_bin
 
-# prevent loop dependency
-DEPENDS:remove = "cargo-bin-cross-${TARGET_ARCH}"
+PN:class-native = "rustc-bin-native-${BUILD_ARCH}"
+
+DEPENDS:remove = "\
+    ${@ "cargo-bin-cross-${TARGET_ARCH}" if d.getVar('TARGET_ARCH') != "${BUILD_ARCH}" else "cargo-bin-native" }    \
+"
 
 # Required to link binaries
-DEPENDS += "gcc-cross-${TARGET_ARCH}"
+DEPENDS += "${@ "gcc-cross-${TARGET_ARCH}" if d.getVar('TARGET_ARCH') == "X86_64" else "" }"
 
 PN = "rustc-bin-cross-${TARGET_ARCH}"
 
