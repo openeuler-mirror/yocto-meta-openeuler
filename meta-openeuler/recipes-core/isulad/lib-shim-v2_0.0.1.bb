@@ -1,4 +1,4 @@
-inherit cargo
+inherit cargo_bin
 SUMMARY = "lib-shim-v2 is shim v2 ttrpc client which is called by iSulad."
 DESCRIPTION = "Based on Rust programming language, as a shim v2 ttrpc client, it is called by iSulad."
 HOMEPAGE = "https://gitee.com/openeuler/lib-shim-v2"
