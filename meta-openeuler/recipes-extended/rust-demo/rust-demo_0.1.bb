@@ -1,4 +1,4 @@
-inherit cargo
+inherit cargo_bin
 SUMMARY = "Rust simple demo"
 DESCRIPTION = "A demo using openeuler Rust toolchain"
 LICENSE = "MIT"
