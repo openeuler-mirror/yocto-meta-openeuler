@@ -21,9 +21,13 @@ inherit cross
 inherit cargo_bin
 
 # prevent loop dependency
-DEPENDS:remove = "cargo-bin-cross-${TARGET_ARCH}"
+DEPENDS:remove = "\
+    ${@ "cargo-bin-cross-${TARGET_ARCH}" if d.getVar('TARGET_ARCH') != "${BUILD_ARCH}" else "cargo-bin-native" }    \
+"
 
 PN = "cargo-bin-cross-${TARGET_ARCH}"
+
+PROVIDES += "cargo-bin-native"
 
 CARGO_HOST_TARGET = "${@rust_target(d, 'HOST')}"
 
