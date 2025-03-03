@@ -6,4 +6,4 @@ MACHINEOVERRIDES =. "qemuall:"
 
 # support runqemu function
 IMAGE_CLASSES += "qemuboot"
-EXTRA_IMAGEDEPENDS += "qemu-helper-native:do_addto_recipe_sysroot"
+EXTRA_IMAGEDEPENDS += "qemu-system-native qemu-helper-native:do_addto_recipe_sysroot"
