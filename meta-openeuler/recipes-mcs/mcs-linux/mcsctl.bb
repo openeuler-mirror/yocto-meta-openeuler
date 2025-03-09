@@ -35,7 +35,7 @@ do_install:append () {
 
         # install rtos firmware
         install -d ${D}/lib/firmware
-        cp ${S}/rtos/arm64/${RTOS_IMGS}*.elf ${D}/lib/firmware/
+        cp ${S}/rtos/arm64/*.elf ${D}/lib/firmware/
 }
 
 FILES:${PN} += "/usr/bin/mica"

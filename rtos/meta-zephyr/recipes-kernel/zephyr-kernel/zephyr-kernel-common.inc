@@ -11,14 +11,17 @@ ZEPHYR_MAKE_BIN_OUTPUT = "zephyr.bin"
 ZEPHYR_MAKE_EFI_OUTPUT = "zephyr.efi"
 
 # default use ninja as compile backend
+# "-DCMAKE_TOOLCHAIN_FILE= " is a trick to bypass toolchain file for linux application
+# as zephyr is not linux application
 EXTRA_OECMAKE = "\
+    -DCMAKE_TOOLCHAIN_FILE= \
     -DZEPHYR_BASE=${ZEPHYR_BASE} \
-    -DBOARD=${BOARD} \
+    -DBOARD=${ZEPHYR_BOARD} \
     -DZEPHYR_MODULES=${ZEPHYR_MODULES} \
     -DBUILD_VERSION=${ZEPHYR_VERSION} \
     "
 
-export ZEPHYR_BASE="${S}/zephyr"
+export ZEPHYR_BASE="${S}/zephyr-${ZEPHYR_VERSION}"
 
 DEPENDS += "gperf-native"
 
@@ -33,8 +36,8 @@ python () {
     d.delVar('LDFLAGS')
 }
 
-OE_TERMINAL_EXPORTS += "BOARD"
-OE_TERMINAL_EXPORTS += "ZEPHYR_SRC_DIR"
+OE_TERMINAL_EXPORTS += "ZEPHYR_BOARD"
+OE_TERMINAL_EXPORTS += "ZEPHYR_APP_DIR"
 OE_TERMINAL_EXPORTS += "ZEPHYR_BASE"
 
 do_configure:prepend() {

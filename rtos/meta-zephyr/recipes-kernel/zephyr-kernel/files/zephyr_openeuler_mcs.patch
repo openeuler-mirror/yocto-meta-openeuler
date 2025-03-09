@@ -1,64 +1,208 @@
-diff --git a/arch/arm64/core/Kconfig b/arch/arm64/core/Kconfig
-index 968454634f..2e23271ad3 100644
---- a/arch/arm64/core/Kconfig
-+++ b/arch/arm64/core/Kconfig
-@@ -257,6 +257,9 @@ config ARM64_PA_BITS_40
- config ARM64_PA_BITS_42
- 	bool "42-bit"
+diff --git a/boards/qemu/cortex_a53/Kconfig.defconfig b/boards/qemu/cortex_a53/Kconfig.defconfig
+index 70fe11c6d73..c0b78c1f0b8 100644
+--- a/boards/qemu/cortex_a53/Kconfig.defconfig
++++ b/boards/qemu/cortex_a53/Kconfig.defconfig
+@@ -42,5 +42,11 @@ config QEMU_ICOUNT_SLEEP
+ 	default y
  
-+config ARM64_PA_BITS_44
-+	bool "44-bit"
-+
- config ARM64_PA_BITS_48
- 	bool "48-bit"
- endchoice
-@@ -267,6 +270,7 @@ config ARM64_PA_BITS
- 	default 36 if ARM64_PA_BITS_36
- 	default 40 if ARM64_PA_BITS_40
- 	default 42 if ARM64_PA_BITS_42
-+	default 44 if ARM64_PA_BITS_44
- 	default 48 if ARM64_PA_BITS_48
- 
- config MAX_XLAT_TABLES
-diff --git a/arch/arm64/core/cache.c b/arch/arm64/core/cache.c
-index d5aefaf3a9..19d905cc3e 100644
---- a/arch/arm64/core/cache.c
-+++ b/arch/arm64/core/cache.c
-@@ -214,5 +214,11 @@ int arch_icache_range(void *addr, size_t size, int op)
- 
- int arch_icache_all(int op)
- {
--	return -ENOTSUP;
-+	/* invalidate all instruction cache */
-+	__asm__ volatile ("ic iallu" ::: "memory");
-+
-+	dsb();
-+	isb();
-+
-+	return 0;
- }
-diff --git a/boards/arm64/qemu_cortex_a53/Kconfig.defconfig b/boards/arm64/qemu_cortex_a53/Kconfig.defconfig
-index cbe833f42f..0c43eb2eac 100644
---- a/boards/arm64/qemu_cortex_a53/Kconfig.defconfig
-+++ b/boards/arm64/qemu_cortex_a53/Kconfig.defconfig
-@@ -9,4 +9,11 @@ config BUILD_OUTPUT_BIN
- config BOARD
- 	default "qemu_cortex_a53"
- 
+ endif # QEMU_ICOUNT
 +if IPM
 +
 +config IPM_GIC_SGI
 +	default y
 +
 +endif # IPM
-+
+ 
  endif # BOARD_QEMU_CORTEX_A53
-diff --git a/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote.dts b/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote.dts
+diff --git a/boards/qemu/cortex_a53/board.yml b/boards/qemu/cortex_a53/board.yml
+index ab04f6ac8f1..89303f59086 100644
+--- a/boards/qemu/cortex_a53/board.yml
++++ b/boards/qemu/cortex_a53/board.yml
+@@ -6,3 +6,5 @@ board:
+     variants:
+     - name: smp
+     - name: xip
++    - name: remote
++    - name: ivshmem
+diff --git a/boards/qemu/cortex_a53/qemu_cortex_a53_qemu_cortex_a53_ivshmem.dts b/boards/qemu/cortex_a53/qemu_cortex_a53_qemu_cortex_a53_ivshmem.dts
 new file mode 100644
-index 0000000000..b73939dd43
+index 00000000000..fbbd693f495
 --- /dev/null
-+++ b/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote.dts
-@@ -0,0 +1,65 @@
++++ b/boards/qemu/cortex_a53/qemu_cortex_a53_qemu_cortex_a53_ivshmem.dts
+@@ -0,0 +1,93 @@
++/*
++ * Copyright (c) 2019 Carlo Caione <ccaione@baylibre.com>
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ *
++ */
++
++/dts-v1/;
++#include <arm64/qemu/qemu-virt-a53.dtsi>
++#include <zephyr/dt-bindings/pcie/pcie.h>
++
++/ {
++	model = "QEMU Cortex-A53";
++	compatible = "qemu,arm-cortex-a53";
++
++	psci {
++		compatible = "arm,psci-0.2";
++		method = "hvc";
++		label = "PSCI";
++	};
++
++	chosen {
++		zephyr,sram = &sram1;
++		/* uart0 is used for debug, which also may be used by Linux */
++		zephyr,console = &uart0;
++		zephyr,shell-uart = &uart_rpmsg0;
++		zephyr,flash = &flash0;
++		zephyr,pcie-controller = &pcie_jailhouse;
++	};
++
++	uart_rpmsg0: ep0 {
++		status = "okay";
++		compatible = "zephyr,rpmsg-uart";
++		/* the rpmsg-tty driver requires ep-name should be rpmsg-tty* */
++		ep-name = "rpmsg-tty";
++	};
++
++	uart_rpmsg1: ep1 {
++		status = "okay";
++		compatible = "zephyr,rpmsg-uart";
++		ep-name = "rpmsg-tty1";
++	};
++
++	soc {
++
++		sram1: memory@7a000000 {
++			compatible = "mmio-sram";
++			reg = <0x0 0x7a000000 0x0 DT_SIZE_M(10)>;
++		};
++
++		pcie_jailhouse: pcie@8e00000 {
++			compatible = "pci-host-ecam-generic";
++			device_type = "pci";
++			reg = <0x00 0x08e00000 0x00 0x100000>;
++			#size-cells = <0x02>;
++			#address-cells = <0x03>;
++			ranges = <0x02000000 0x00 0x10000000 0x0 0x10000000 0x00 0x10000>;
++			#interrupt-cells = <0x01>;
++			interrupt-map-mask = <0x00 0x00 0x00 0x07>;
++			interrupt-map = <
++				0x00 0x00 0x00 1 &gic 0 0 GIC_SPI 108 IRQ_TYPE_EDGE IRQ_DEFAULT_PRIORITY
++				0x00 0x00 0x00 2 &gic 0 0 GIC_SPI 109 IRQ_TYPE_EDGE IRQ_DEFAULT_PRIORITY
++				0x00 0x00 0x00 3 &gic 0 0 GIC_SPI 110 IRQ_TYPE_EDGE IRQ_DEFAULT_PRIORITY
++				0x00 0x00 0x00 4 &gic 0 0 GIC_SPI 111 IRQ_TYPE_EDGE IRQ_DEFAULT_PRIORITY>;
++			bus-range = <0x00 0x00>;
++		};
++
++	};
++};
++
++&uart0 {
++	status = "okay";
++	current-speed = <115200>;
++};
++
++&pcie {
++	status = "disabled";
++};
++
++&pcie_jailhouse {
++	ivshmem0: ivshmem@0 {
++		compatible = "qemu,ivshmem";
++		ivshmem-v2;
++		vendor-id = <0x110A>;           /* Siemens */
++		device-id = <0x4106>;           /* IVSHMEM */
++		class-rev = <0xFF400100>;       /* PCI_CLASS_OTHERS | IVSHMEM_PROTO_RPMSG */
++		class-rev-mask = <0xFFFFFF00>;  /* PCI_CLASS_MASK | IVSHMEM_PROTO_MASK */
++		interrupt-parent = <&pcie_jailhouse>;
++		interrupts = <1 2 3 4>;
++		reg = <0x00 0x00 0x00 0x00 0x01>;
++		status = "okay";
++	};
++};
+diff --git a/boards/qemu/cortex_a53/qemu_cortex_a53_qemu_cortex_a53_ivshmem_defconfig b/boards/qemu/cortex_a53/qemu_cortex_a53_qemu_cortex_a53_ivshmem_defconfig
+new file mode 100644
+index 00000000000..646bc473caa
+--- /dev/null
++++ b/boards/qemu/cortex_a53/qemu_cortex_a53_qemu_cortex_a53_ivshmem_defconfig
+@@ -0,0 +1,68 @@
++CONFIG_ARM_ARCH_TIMER=y
++CONFIG_QEMU_ICOUNT=n
++
++# Cache management
++CONFIG_CACHE_MANAGEMENT=y
++
++# Enable UART driver
++CONFIG_SERIAL=y
++
++# Enable console
++CONFIG_CONSOLE=y
++# no early console, because uart_rpmsg is used
++CONFIG_EARLY_CONSOLE=y
++CONFIG_UART_CONSOLE=y
++CONFIG_PRINTK=y
++
++# to use remote, must be in Non-Secure world
++CONFIG_ARMV8_A_NS=y
++
++# Enable RPMSG based serial port
++CONFIG_UART_RPMSG=y
++CONFIG_UART_INTERRUPT_DRIVEN=y
++
++CONFIG_OPENAMP=y
++CONFIG_RPMSG_SERVICE_MODE_REMOTE=y
++CONFIG_OPENAMP_MASTER=n
++CONFIG_OPENAMP_RSC_TABLE_NUM_RPMSG_BUFF=8
++CONFIG_OPENAMP_RSC_TABLE=y
++CONFIG_HEAP_MEM_POOL_SIZE=4096
++# shell must be initialized after uart_rpmsg
++CONFIG_SHELL_BACKEND_SERIAL_INIT_PRIORITY=60
++# the tx ring buffer size is the same of bufffer of rpmsg_virtio buffer
++CONFIG_SHELL_BACKEND_SERIAL_TX_RING_BUFFER_SIZE=512
++
++# no IPM as we use virtualization
++CONFIG_IPM=n
++
++CONFIG_PCIE=y
++CONFIG_POLL=y
++CONFIG_PCIE_CONTROLLER=y
++CONFIG_PCIE_ECAM=y
++CONFIG_KERNEL_VM_SIZE=0x80000000
++
++# Hungry PCI requires phys addresses with more than 32 bits
++CONFIG_ARM64_VA_BITS_40=y
++CONFIG_ARM64_PA_BITS_40=y
++
++CONFIG_VIRTUALIZATION=y
++CONFIG_IVSHMEM=y
++CONFIG_IVSHMEM_V2=y
++CONFIG_IVSHMEM_DOORBELL=y
++CONFIG_DYNAMIC_INTERRUPTS=y
++# the correct init order:
++# serial->pci controler->
++# ->pci scan->pci device(ivshmem_init)
++# ->virtio->rpmsg endpoint
++CONFIG_SERIAL_INIT_PRIORITY=41
++CONFIG_CONSOLE_INIT_PRIORITY=42
++CONFIG_PCIE_INIT_PRIORITY=43
++CONFIG_KERNEL_INIT_PRIORITY_DEVICE=41
++
++CONFIG_KERNEL_DIRECT_MAP=y
++CONFIG_LOG=y
++CONFIG_LOG_BACKEND_UART=y
++# comment out the following for debug
++#CONFIG_LOG_MODE_IMMEDIATE=y
++#CONFIG_LOG_DEFAULT_LEVEL=4
++#CONFIG_LOG_PRINTK=n
+diff --git a/boards/qemu/cortex_a53/qemu_cortex_a53_qemu_cortex_a53_remote.dts b/boards/qemu/cortex_a53/qemu_cortex_a53_qemu_cortex_a53_remote.dts
+new file mode 100644
+index 00000000000..dd5b3acc2c9
+--- /dev/null
++++ b/boards/qemu/cortex_a53/qemu_cortex_a53_qemu_cortex_a53_remote.dts
+@@ -0,0 +1,69 @@
 +/*
 + * Copyright (c) 2019 Carlo Caione <ccaione@baylibre.com>
 + *
@@ -82,7 +226,7 @@ index 0000000000..b73939dd43
 +	chosen {
 +		zephyr,sram = &sram1;
 +		/* uart0 is used for debug, which also may be used by Linux */
-+		zephyr,console = &uart_rpmsg0;
++		zephyr,console = &uart0;
 +		zephyr,shell-uart = &uart_rpmsg0;
 +		zephyr,flash = &flash0;
 +		/*
@@ -111,10 +255,9 @@ index 0000000000..b73939dd43
 +	};
 +
 +	soc {
-+
 +		ipc_shm0: memory@70000000 {
 +			compatible = "mmio-sram";
-+			reg = <0 0x70000000 0 0x30000>;
++			reg = <0 0x70000000 0 0x100000>;
 +		};
 +
 +		sram1: memory@7a000000 {
@@ -124,14 +267,17 @@ index 0000000000..b73939dd43
 +
 +	};
 +};
-diff --git a/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote_defconfig b/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote_defconfig
++
++&uart0 {
++	status = "okay";
++	current-speed = <115200>;
++};
+diff --git a/boards/qemu/cortex_a53/qemu_cortex_a53_qemu_cortex_a53_remote_defconfig b/boards/qemu/cortex_a53/qemu_cortex_a53_qemu_cortex_a53_remote_defconfig
 new file mode 100644
-index 0000000000..1f42894d44
+index 00000000000..91cd83af6e1
 --- /dev/null
-+++ b/boards/arm64/qemu_cortex_a53/qemu_cortex_a53_remote_defconfig
-@@ -0,0 +1,39 @@
-+CONFIG_SOC_QEMU_CORTEX_A53=y
-+CONFIG_BOARD_QEMU_CORTEX_A53=y
++++ b/boards/qemu/cortex_a53/qemu_cortex_a53_qemu_cortex_a53_remote_defconfig
+@@ -0,0 +1,37 @@
 +CONFIG_ARM_ARCH_TIMER=y
 +CONFIG_QEMU_ICOUNT=n
 +
@@ -169,225 +315,13 @@ index 0000000000..1f42894d44
 +CONFIG_SHELL_BACKEND_SERIAL_INIT_PRIORITY=60
 +# the tx ring buffer size is the same of bufffer of rpmsg_virtio buffer
 +CONFIG_SHELL_BACKEND_SERIAL_TX_RING_BUFFER_SIZE=512
-diff --git a/boards/arm64/rpi4_cortex_a72/Kconfig.board b/boards/arm64/rpi4_cortex_a72/Kconfig.board
-new file mode 100644
-index 0000000000..cb4c7b7e89
---- /dev/null
-+++ b/boards/arm64/rpi4_cortex_a72/Kconfig.board
-@@ -0,0 +1,7 @@
-+# Copyright (c) 2022 openEuler Embedded
-+# SPDX-License-Identifier: Apache-2.0
-+
-+config BOARD_RPI4_CORTEX_A72
-+	bool "Raspberry Pi 4B"
-+	depends on SOC_RPI4_CORTEX_A72
-+	select ARM64
-diff --git a/boards/arm64/rpi4_cortex_a72/Kconfig.defconfig b/boards/arm64/rpi4_cortex_a72/Kconfig.defconfig
-new file mode 100644
-index 0000000000..7b426d0162
---- /dev/null
-+++ b/boards/arm64/rpi4_cortex_a72/Kconfig.defconfig
-@@ -0,0 +1,19 @@
-+# Copyright (c) 2022 openEuler Embedded
-+# SPDX-License-Identifier: Apache-2.0
-+
-+if BOARD_RPI4_CORTEX_A72
-+
-+config BUILD_OUTPUT_BIN
-+	default y
-+
-+config BOARD
-+	default "rpi4_cortex_a72"
-+
-+if IPM
-+
-+config IPM_GIC_SGI
-+	default y
-+
-+endif # IPM
-+
-+endif # BOARD_RPI4_CORTEX_A72
-diff --git a/boards/arm64/rpi4_cortex_a72/board.cmake b/boards/arm64/rpi4_cortex_a72/board.cmake
-new file mode 100644
-index 0000000000..5471723b68
---- /dev/null
-+++ b/boards/arm64/rpi4_cortex_a72/board.cmake
-@@ -0,0 +1,5 @@
-+# Copyright (c) 2022 openEuler Embedded
-+# SPDX-License-Identifier: Apache-2.0
-+
-+board_runner_args(openocd "--use-elf" "--config=${BOARD_DIR}/support/rpi4_cortex_a72.cfg")
-+include(${ZEPHYR_BASE}/boards/common/openocd.board.cmake)
-diff --git a/boards/arm64/rpi4_cortex_a72/rpi4_cortex_a72.dts b/boards/arm64/rpi4_cortex_a72/rpi4_cortex_a72.dts
-new file mode 100644
-index 0000000000..11bcee24dc
---- /dev/null
-+++ b/boards/arm64/rpi4_cortex_a72/rpi4_cortex_a72.dts
-@@ -0,0 +1,62 @@
-+/*
-+ * Copyright (c) 2022 openEuler Embedded
-+ *
-+ * SPDX-License-Identifier: Apache-2.0
-+ *
-+ */
-+
-+/dts-v1/;
-+#include <arm64/broadcom/rpi4-a72.dtsi>
-+
-+/ {
-+	model = "Raspberry Pi4 B Cortex A72";
-+	compatible = "rpi4,arm-cortex-a72";
-+
-+	psci {
-+		compatible = "arm,psci-0.2";
-+		method = "smc";
-+		label = "PSCI";
-+	};
-+
-+	chosen {
-+		zephyr,sram = &sram1;
-+		zephyr,console = &uart_rpmsg0;
-+		zephyr,shell-uart = &uart_rpmsg1;
-+		/*
-+		 * shared memory reserved for the inter-processor communication
-+		 */
-+		 zephyr,ipc_shm = &ipc_shm0;
-+		 zephyr,ipc = &ipm_gic_sgi0;
-+	};
-+
-+	ipm_gic_sgi0: ipm{
-+		compatible = "arm,gic-sgi";
-+		label = "gic_sgi0";
-+	};
-+
-+	uart_rpmsg0: ep0 {
-+		status = "okay";
-+		compatible = "zephyr,rpmsg-uart";
-+		ep-name = "console";
-+	};
-+
-+	uart_rpmsg1: ep1 {
-+		status = "okay";
-+		compatible = "zephyr,rpmsg-uart";
-+		ep-name = "uart";
-+	};
-+
-+	soc {
-+
-+		ipc_shm0: memory@70000000 {
-+			compatible = "mmio-sram";
-+			reg = <0 0x70000000 0 0x30000>;
-+		};
-+
-+		sram1: memory@7a000000 {
-+			compatible = "mmio-sram";
-+			reg = <0x0 0x7a000000 0x0 DT_SIZE_M(10)>;
-+		};
-+
-+	};
-+};
-diff --git a/boards/arm64/rpi4_cortex_a72/rpi4_cortex_a72_defconfig b/boards/arm64/rpi4_cortex_a72/rpi4_cortex_a72_defconfig
-new file mode 100644
-index 0000000000..a1517f6a02
---- /dev/null
-+++ b/boards/arm64/rpi4_cortex_a72/rpi4_cortex_a72_defconfig
-@@ -0,0 +1,39 @@
-+CONFIG_SOC_RPI4_CORTEX_A72=y
-+CONFIG_BOARD_RPI4_CORTEX_A72=y
-+CONFIG_ARM64_VA_BITS_48=y
-+CONFIG_ARM64_PA_BITS_44=y
-+CONFIG_ARM_ARCH_TIMER=y
-+CONFIG_QEMU_ICOUNT=n
-+
-+# Cache management
-+CONFIG_CACHE_MANAGEMENT=y
-+
-+# Enable UART driver
-+CONFIG_SERIAL=y
-+CONFIG_PRINTK=y
-+
-+# Enable console
-+CONFIG_CONSOLE=y
-+CONFIG_UART_CONSOLE=y
-+
-+# no boot banner
-+CONFIG_BOOT_BANNER=n
-+
-+# to use remote, must be in Non-Secure world
-+CONFIG_ARMV8_A_NS=y
-+
-+# Enable RPMSG based serial port
-+CONFIG_UART_RPMSG=y
-+CONFIG_UART_INTERRUPT_DRIVEN=y
-+
-+# support psci ops
-+CONFIG_PM_CPU_OPS=y
-+CONFIG_OPENAMP=y
-+CONFIG_IPM=y
-+CONFIG_RPMSG_SERVICE_MODE_REMOTE=y
-+CONFIG_OPENAMP_MASTER=n
-+CONFIG_HEAP_MEM_POOL_SIZE=4096
-+# shell must be initialized after uart_rpmsg
-+CONFIG_SHELL_BACKEND_SERIAL_INIT_PRIORITY=60
-+# the tx ring buffer size is the same of bufffer of rpmsg_virtio buffer
-+CONFIG_SHELL_BACKEND_SERIAL_TX_RING_BUFFER_SIZE=512
-diff --git a/boards/arm64/rpi4_cortex_a72/support/rpi4_cortex_a72.cfg b/boards/arm64/rpi4_cortex_a72/support/rpi4_cortex_a72.cfg
-new file mode 100644
-index 0000000000..aca8d9643e
---- /dev/null
-+++ b/boards/arm64/rpi4_cortex_a72/support/rpi4_cortex_a72.cfg
-@@ -0,0 +1,44 @@
-+source [find interface/jlink.cfg]
-+
-+set _CHIPNAME bcm2711
-+set _DAP_TAPID 0x4ba00477
-+
-+adapter_khz 1000
-+
-+transport select jtag
-+reset_config trst_and_srst
-+
-+telnet_port 4444
-+
-+# create tap
-+jtag newtap auto0 tap -irlen 4 -expected-id $_DAP_TAPID
-+
-+# create dap
-+dap create auto0.dap -chain-position auto0.tap
-+
-+set CTIBASE {0x80420000 0x80520000 0x80620000 0x80720000}
-+set DBGBASE {0x80410000 0x80510000 0x80610000 0x80710000}
-+
-+set _cores 4
-+
-+set _TARGETNAME $_CHIPNAME.a72
-+set _CTINAME $_CHIPNAME.cti
-+set _smp_command ""
-+
-+for {set _core 0} {$_core < $_cores} { incr _core} {
-+    cti create $_CTINAME.$_core -dap auto0.dap -ap-num 0 -ctibase [lindex $CTIBASE $_core]
-+
-+    set _command "target create ${_TARGETNAME}.$_core aarch64 \
-+                    -dap auto0.dap  -dbgbase [lindex $DBGBASE $_core] \
-+                    -coreid $_core -cti $_CTINAME.$_core"
-+    if {$_core != 0} {
-+        set _smp_command "$_smp_command $_TARGETNAME.$_core"
-+    } else {
-+        set _smp_command "target smp $_TARGETNAME.$_core"
-+    }
-+
-+    eval $_command
-+}
-+
-+# eval $_smp_command
-+targets $_TARGETNAME.0
 diff --git a/drivers/interrupt_controller/intc_gic.c b/drivers/interrupt_controller/intc_gic.c
-index 129b395c55..81b7643401 100644
+index 862d389f816..72160937a8e 100644
 --- a/drivers/interrupt_controller/intc_gic.c
 +++ b/drivers/interrupt_controller/intc_gic.c
-@@ -230,7 +230,10 @@ int arm_gic_init(const struct device *unused)
- 	ARG_UNUSED(unused);
- 
+@@ -275,7 +275,10 @@ static void gic_cpu_init(void)
+ int arm_gic_init(const struct device *dev)
+ {
  	/* Init of Distributor interface registers */
 -	gic_dist_init();
 +	/* openamp client does not init the global part of GIC */
@@ -398,14 +332,15 @@ index 129b395c55..81b7643401 100644
  	/* Init CPU interface registers */
  	gic_cpu_init();
 diff --git a/drivers/interrupt_controller/intc_gicv3.c b/drivers/interrupt_controller/intc_gicv3.c
-index e19d409abb..363a7fa9ee 100644
+index e3c25c4d8b8..64cf4e952f2 100644
 --- a/drivers/interrupt_controller/intc_gicv3.c
 +++ b/drivers/interrupt_controller/intc_gicv3.c
-@@ -553,7 +553,10 @@ int arm_gic_init(const struct device *unused)
- {
- 	ARG_UNUSED(unused);
+@@ -600,7 +600,11 @@ static void __arm_gic_init(void)
  
+ int arm_gic_init(const struct device *dev)
+ {
 -	gicv3_dist_init();
++
 +/* openamp client does not init the global part of GIC */
 +	if (!IS_ENABLED(CONFIG_OPENAMP_SLAVE)) {
 +		gicv3_dist_init();
@@ -414,23 +349,23 @@ index e19d409abb..363a7fa9ee 100644
  	__arm_gic_init();
  
 diff --git a/drivers/ipm/CMakeLists.txt b/drivers/ipm/CMakeLists.txt
-index cee766242d..9bf300c88f 100644
+index cc79cce4f83..e15aeed5013 100644
 --- a/drivers/ipm/CMakeLists.txt
 +++ b/drivers/ipm/CMakeLists.txt
-@@ -12,4 +12,6 @@ zephyr_library_sources_ifdef(CONFIG_IPM_CAVS_IDC ipm_cavs_idc.c)
- zephyr_library_sources_ifdef(CONFIG_IPM_STM32_HSEM ipm_stm32_hsem.c)
- zephyr_library_sources_ifdef(CONFIG_IPM_CAVS_HOST ipm_cavs_host.c)
+@@ -15,5 +15,6 @@ zephyr_library_sources_ifdef(CONFIG_IPM_SEDI ipm_sedi.c)
+ zephyr_library_sources_ifdef(CONFIG_IPM_IVSHMEM ipm_ivshmem.c)
  zephyr_library_sources_ifdef(CONFIG_ESP32_SOFT_IPM ipm_esp32.c)
+ zephyr_library_sources_ifdef(CONFIG_XLNX_IPI ipm_xlnx_ipi.c)
 +zephyr_library_sources_ifdef(CONFIG_IPM_GIC_SGI ipm_gic_sgi.c)
-+
+ 
  zephyr_library_sources_ifdef(CONFIG_USERSPACE   ipm_handlers.c)
 diff --git a/drivers/ipm/Kconfig b/drivers/ipm/Kconfig
-index 13e99323b1..13831f31c8 100644
+index 81c64202427..dd881e461f8 100644
 --- a/drivers/ipm/Kconfig
 +++ b/drivers/ipm/Kconfig
-@@ -39,6 +39,24 @@ source "drivers/ipm/Kconfig.imx"
- source "drivers/ipm/Kconfig.stm32"
- source "drivers/ipm/Kconfig.intel_adsp"
+@@ -63,6 +63,24 @@ source "drivers/ipm/Kconfig.ivshmem"
+ source "drivers/ipm/Kconfig.sedi"
+ 
  
 +config IPM_GIC_SGI
 +	bool "ARM GIC SGI driver"
@@ -455,10 +390,10 @@ index 13e99323b1..13831f31c8 100644
  source "subsys/logging/Kconfig.template.log_config"
 diff --git a/drivers/ipm/ipm_gic_sgi.c b/drivers/ipm/ipm_gic_sgi.c
 new file mode 100644
-index 0000000000..67dc4fa2f6
+index 00000000000..bb7b5d6662d
 --- /dev/null
 +++ b/drivers/ipm/ipm_gic_sgi.c
-@@ -0,0 +1,143 @@
+@@ -0,0 +1,149 @@
 +/*
 + * Copyright (c) 2022 openEuler
 + *
@@ -472,6 +407,9 @@ index 0000000000..67dc4fa2f6
 +#include <zephyr/kernel.h>
 +#include <zephyr/drivers/ipm.h>
 +#include <zephyr/drivers/interrupt_controller/gic.h>
++
++#include <zephyr/logging/log.h>
++LOG_MODULE_REGISTER(ipm_gic_sgi, CONFIG_IPM_LOG_LEVEL);
 +
 +
 +/* Device config structure */
@@ -494,6 +432,8 @@ index 0000000000..67dc4fa2f6
 +	const uint64_t mpidr = GET_MPIDR();
 +	const struct ipm_gic_sgi_device_config *config = d->config;
 +
++	LOG_DBG("gic_sig_send:id:%x, data:%p, size:%d", id, data, size);
++
 +	if (!IS_ENABLED(CONFIG_OPENAMP_SLAVE)) {
 +		/*
 +		 * Send SGI to all cores except itself, this is for test as host does not know
@@ -503,7 +443,7 @@ index 0000000000..67dc4fa2f6
 +		gic_raise_sgi(config->intno, mpidr, SGIR_TGT_MASK & ~(1 << MPIDR_TO_CORE(mpidr)));
 +	} else {
 +		/* Send SGI only to core 0 (master core) for client side to
-+		 * avoid uncessary ipi interrupts
++		 * avoid unnecessary ipi interrupts
 +		 */
 +		gic_raise_sgi(config->intno, mpidr, 0x1);
 +	}
@@ -601,33 +541,36 @@ index 0000000000..67dc4fa2f6
 +			DEVICE_DT_INST_GET(0),
 +			0);
 +	irq_enable(CONFIG_IPM_GIC_SGI_INTNO);
++	LOG_INF("gic sgi int config");
 +}
 diff --git a/drivers/serial/CMakeLists.txt b/drivers/serial/CMakeLists.txt
-index 8fac82f7a8..874902e89f 100644
+index 9ac2f22920d..b7444d8a716 100644
 --- a/drivers/serial/CMakeLists.txt
 +++ b/drivers/serial/CMakeLists.txt
-@@ -50,6 +50,7 @@ zephyr_library_sources_ifdef(CONFIG_UART_XEN_HVC uart_hvc_xen.c)
- zephyr_library_sources_ifdef(CONFIG_UART_XEN_HVC_CONSOLEIO uart_hvc_xen_consoleio.c)
- zephyr_library_sources_ifdef(CONFIG_UART_PIPE uart_pipe.c)
- zephyr_library_sources_ifdef(CONFIG_UART_SMARTBOND uart_smartbond.c)
+@@ -68,6 +68,7 @@ zephyr_library_sources_ifdef(CONFIG_UART_HOSTLINK uart_hostlink.c)
+ zephyr_library_sources_ifdef(CONFIG_UART_EMUL uart_emul.c)
+ zephyr_library_sources_ifdef(CONFIG_UART_NUMAKER uart_numaker.c)
+ zephyr_library_sources_ifdef(CONFIG_UART_EFINIX_SAPPIHIRE uart_efinix_sapphire.c)
 +zephyr_library_sources_ifdef(CONFIG_UART_RPMSG uart_rpmsg.c)
- 
- zephyr_library_sources_ifdef(CONFIG_USERSPACE   uart_handlers.c)
- 
+ zephyr_library_sources_ifdef(CONFIG_UART_SEDI uart_sedi.c)
+ zephyr_library_sources_ifdef(CONFIG_UART_MAX32 uart_max32.c)
+ zephyr_library_sources_ifdef(CONFIG_UART_BCM2711_MU uart_bcm2711.c)
 diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
-index 5cb2d10f0c..9ef5c1349b 100644
+index faa150237c5..38bd3026cfc 100644
 --- a/drivers/serial/Kconfig
 +++ b/drivers/serial/Kconfig
-@@ -201,5 +201,6 @@ source "drivers/serial/Kconfig.neorv32"
- source "drivers/serial/Kconfig.xen"
+@@ -244,6 +244,8 @@ rsource "Kconfig.xen"
  
- source "drivers/serial/Kconfig.smartbond"
-+source "drivers/serial/Kconfig.rpmsg_uart"
+ rsource "Kconfig.ifx_cat1"
  
- endif # SERIAL
++rsource "Kconfig.rpmsg_uart"
++
+ rsource "Kconfig.smartbond"
+ 
+ rsource "Kconfig.nxp_s32"
 diff --git a/drivers/serial/Kconfig.rpmsg_uart b/drivers/serial/Kconfig.rpmsg_uart
 new file mode 100644
-index 0000000000..a1e4535146
+index 00000000000..a1e45351462
 --- /dev/null
 +++ b/drivers/serial/Kconfig.rpmsg_uart
 @@ -0,0 +1,30 @@
@@ -663,7 +606,7 @@ index 0000000000..a1e4535146
 +endif # UART_RPMSG
 diff --git a/drivers/serial/uart_rpmsg.c b/drivers/serial/uart_rpmsg.c
 new file mode 100644
-index 0000000000..6e2f278f3d
+index 00000000000..e38c101ae20
 --- /dev/null
 +++ b/drivers/serial/uart_rpmsg.c
 @@ -0,0 +1,310 @@
@@ -743,7 +686,7 @@ index 0000000000..6e2f278f3d
 +	wrote = ring_buf_put(&uart_data->rb, data, len);
 +
 +	if (wrote < len) {
-+		LOG_INF("ring buf is full, data overrun\n");
++		LOG_INF("ring buf is full, data overrun");
 +		/* ring buf is full, disable rx? */
 +	}
 +
@@ -943,7 +886,7 @@ index 0000000000..6e2f278f3d
 +									NULL, data);
 +
 +	if (status < 0) {
-+		LOG_INF("RPMSG UART initialized error\n");
++		LOG_INF("RPMSG UART initialized error");
 +		return status;
 +	}
 +
@@ -958,7 +901,7 @@ index 0000000000..6e2f278f3d
 +
 +#endif
 +
-+	LOG_INF("IPC UART initialized successfully\n");
++	LOG_INF("IPC UART initialized successfully");
 +
 +	return 0;
 +}
@@ -977,70 +920,108 @@ index 0000000000..6e2f278f3d
 +		&uart_rpmsg_api);
 +
 +DT_INST_FOREACH_STATUS_OKAY(UART_RPMSG_INIT)
-diff --git a/dts/arm64/broadcom/rpi4-a72.dtsi b/dts/arm64/broadcom/rpi4-a72.dtsi
-new file mode 100644
-index 0000000000..e336f9ea74
---- /dev/null
-+++ b/dts/arm64/broadcom/rpi4-a72.dtsi
-@@ -0,0 +1,55 @@
-+/*
-+ * Copyright (c) 2022 openEule Embedded
-+ *
-+ * SPDX-License-Identifier: Apache-2.0
-+ */
-+
-+ #include <mem.h>
-+ #include <arm64/armv8-a.dtsi>
-+ #include <zephyr/dt-bindings/interrupt-controller/arm-gic.h>
-+
-+ / {
-+	#address-cells = <2>;
-+	#size-cells = <2>;
-+
-+    cpus {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+        cpu@0 {
-+			device_type = "cpu";
-+			compatible = "arm,cortex-a72";
-+			reg = <0>;
-+		};
-+     };
-+
-+    timer {
-+        compatible = "arm,armv8-timer";
-+        interrupt-parent = <&gic>;
-+        interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL
-+                	IRQ_DEFAULT_PRIORITY>,
-+                <GIC_PPI 14 IRQ_TYPE_LEVEL
-+                	IRQ_DEFAULT_PRIORITY>,
-+                <GIC_PPI 11 IRQ_TYPE_LEVEL
-+                	IRQ_DEFAULT_PRIORITY>,
-+                <GIC_PPI 10 IRQ_TYPE_LEVEL
-+            		IRQ_DEFAULT_PRIORITY>;
-+     };
-+
-+     soc {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+        ranges;
-+
-+        interrupt-parent = <&gic>;
-+
-+        gic: interrupt-controller@ff841000 {
-+            compatible = "arm,gic";
-+            reg = <0x00 0xFF841000 0x00 0x1000>,
-+				<0x00 0xFF842000 0x00 0x2000>;
-+            interrupt-controller;
-+            #interrupt-cells = <4>;
-+            status = "okay";
-+        };
-+    };
-+ };
+diff --git a/drivers/virtualization/virt_ivshmem.c b/drivers/virtualization/virt_ivshmem.c
+index bce1dd4c428..da188e0f8f6 100644
+--- a/drivers/virtualization/virt_ivshmem.c
++++ b/drivers/virtualization/virt_ivshmem.c
+@@ -214,26 +214,27 @@ static bool ivshmem_configure(const struct device *dev)
+ 		/* State table R/O */
+ 		cap_pos = vendor_cap + IVSHMEM_CFG_STATE_TAB_SZ / 4;
+ 		size_t state_table_size = pcie_conf_read(data->pcie->bdf, cap_pos);
+-		LOG_INF("State table size 0x%zX", state_table_size);
+ 		if (state_table_size < sizeof(uint32_t) * data->max_peers) {
+ 			LOG_ERR("Invalid state table size %zu", state_table_size);
+ 			return false;
+ 		}
+ 		k_mem_map_phys_bare((uint8_t **)&data->state_table_shmem,
+ 				    shmem_phys_addr, state_table_size,
+-				    K_MEM_CACHE_WB | K_MEM_PERM_USER);
+-
++				    K_MEM_CACHE_WB | K_MEM_PERM_USER | K_MEM_DIRECT_MAP);
++		LOG_INF("State table size 0x%zX at 0x%lX (mapped to 0x%lX)",
++					state_table_size, shmem_phys_addr, data->state_table_shmem);
+ 		/* R/W section (optional) */
+ 		cap_pos = vendor_cap + IVSHMEM_CFG_RW_SECTION_SZ / 4;
+ 		data->rw_section_size = pcie_conf_read_u64(data->pcie->bdf, cap_pos);
+ 		size_t rw_section_offset = state_table_size;
+-		LOG_INF("RW section size 0x%zX", data->rw_section_size);
+ 		if (data->rw_section_size > 0) {
+ 			k_mem_map_phys_bare((uint8_t **)&data->rw_section_shmem,
+ 					    shmem_phys_addr + rw_section_offset,
+ 					    data->rw_section_size,
+-					    K_MEM_CACHE_WB | K_MEM_PERM_RW | K_MEM_PERM_USER);
++					    K_MEM_CACHE_WB | K_MEM_PERM_RW | K_MEM_PERM_USER | K_MEM_DIRECT_MAP);
+ 		}
++		LOG_INF("RW section size 0x%zX at 0x%lX (mapped to 0x%lX)",
++			data->rw_section_size, shmem_phys_addr + rw_section_offset, data->rw_section_shmem);
+ 
+ 		/* Output sections */
+ 		cap_pos = vendor_cap + IVSHMEM_CFG_OUTPUT_SECTION_SZ / 4;
+@@ -250,8 +251,12 @@ static bool ivshmem_configure(const struct device *dev)
+ 			if (i == regs->id) {
+ 				flags |= K_MEM_PERM_RW;
+ 			}
+-			k_mem_map_phys_bare((uint8_t **)&data->output_section_shmem[i],
+-					    phys_addr, data->output_section_size, flags);
++			if (data->output_section_size > 0) {
++				k_mem_map_phys_bare((uint8_t **)&data->output_section_shmem[i],
++						phys_addr, data->output_section_size, flags);
++				LOG_INF("Output section at 0x%lX (mapped to 0x%lX)",
++				phys_addr, data->output_section_shmem[i]);
++			}
+ 		}
+ 
+ 		data->size = output_section_offset +
+@@ -276,7 +281,7 @@ static bool ivshmem_configure(const struct device *dev)
+ 
+ 		k_mem_map_phys_bare((uint8_t **)&data->shmem,
+ 				    shmem_phys_addr, data->size,
+-				    K_MEM_CACHE_WB | K_MEM_PERM_RW | K_MEM_PERM_USER);
++				    K_MEM_CACHE_WB | K_MEM_PERM_RW | K_MEM_PERM_USER | K_MEM_DIRECT_MAP);
+ 	}
+ 
+ 	if (msi_x_bar_present) {
+diff --git a/dts/arm64/qemu/qemu-virt-a53.dtsi b/dts/arm64/qemu/qemu-virt-a53.dtsi
+index cb96eba2874..d1f86148eed 100644
+--- a/dts/arm64/qemu/qemu-virt-a53.dtsi
++++ b/dts/arm64/qemu/qemu-virt-a53.dtsi
+@@ -7,8 +7,8 @@
+ /*
+  * Derived from DTS extracted with:
+  *
+- *   qemu-system-aarch64 -machine virt -cpu cortex-a53 -nographic
+- *         -machine dumpdtb=virt.dtb
++ *   qemu-system-aarch64 -machine virt,gic-version=host,accel=kvm
++ *         -cpu cortex-a53 -nographic -machine dumpdtb=virt.dtb
+  *
+  *   dtc -I dtb -O dts virt.dtb
+  */
+@@ -28,13 +28,13 @@
+ 
+ 		cpu@0 {
+ 			device_type = "cpu";
+-			compatible = "arm,cortex-a53";
++			compatible = "arm,cortex-virt";
+ 			reg = <0>;
+ 		};
+ 
+ 		cpu@1 {
+ 			device_type = "cpu";
+-			compatible = "arm,cortex-a53";
++			compatible = "arm,cortex-virt";
+ 			reg = <1>;
+ 		};
+ 	};
+@@ -151,4 +151,4 @@
+ 			bus-range = <0x00 0xff>;
+ 		};
+ 	};
+-};
++};
+\ No newline at end of file
 diff --git a/dts/bindings/ipm/arm,gic-sgi.yaml b/dts/bindings/ipm/arm,gic-sgi.yaml
 new file mode 100644
-index 0000000000..282a4207d4
+index 00000000000..282a4207d47
 --- /dev/null
 +++ b/dts/bindings/ipm/arm,gic-sgi.yaml
 @@ -0,0 +1,9 @@
@@ -1055,7 +1036,7 @@ index 0000000000..282a4207d4
 +
 diff --git a/dts/bindings/serial/zephy,rpmsg-uart.yaml b/dts/bindings/serial/zephy,rpmsg-uart.yaml
 new file mode 100644
-index 0000000000..a961661887
+index 00000000000..a9616618872
 --- /dev/null
 +++ b/dts/bindings/serial/zephy,rpmsg-uart.yaml
 @@ -0,0 +1,14 @@
@@ -1073,8 +1054,27 @@ index 0000000000..a961661887
 +        type: string
 +        required: true
 +        description: the endpoint name of uart-rpmsg device
+diff --git a/include/zephyr/arch/arm64/cache.h b/include/zephyr/arch/arm64/cache.h
+index cddd901ba02..d8e2cb51b5a 100644
+--- a/include/zephyr/arch/arm64/cache.h
++++ b/include/zephyr/arch/arm64/cache.h
+@@ -190,7 +190,13 @@ static ALWAYS_INLINE size_t arch_icache_line_size_get(void)
+ 
+ static ALWAYS_INLINE int arch_icache_flush_all(void)
+ {
+-	return -ENOTSUP;
++	/* invalidate all instruction cache */
++	__asm__ volatile ("ic iallu" ::: "memory");
++
++	z_barrier_dsync_fence_full();
++	z_barrier_isync_fence_full();
++
++	return 0;
+ }
+ 
+ static ALWAYS_INLINE int arch_icache_invd_all(void)
 diff --git a/include/zephyr/ipc/rpmsg_service.h b/include/zephyr/ipc/rpmsg_service.h
-index e599c8deac..b1047d3cab 100644
+index e599c8deac4..b1047d3cab5 100644
 --- a/include/zephyr/ipc/rpmsg_service.h
 +++ b/include/zephyr/ipc/rpmsg_service.h
 @@ -32,13 +32,18 @@ extern "C" {
@@ -1106,299 +1106,112 @@ index e599c8deac..b1047d3cab 100644
  /**
   * @}
   */
-diff --git a/samples/subsys/ipc/openamp/CMakeLists.txt b/samples/subsys/ipc/openamp/CMakeLists.txt
-index daf99d8abe..8380389027 100644
---- a/samples/subsys/ipc/openamp/CMakeLists.txt
-+++ b/samples/subsys/ipc/openamp/CMakeLists.txt
-@@ -16,6 +16,9 @@ elseif("${BOARD}" STREQUAL "mps2_an521")
-   set(BOARD_REMOTE "mps2_an521_remote")
- elseif("${BOARD}" STREQUAL "v2m_musca_b1")
-   set(BOARD_REMOTE "v2m_musca_b1_ns")
-+elseif("${BOARD}" STREQUAL "qemu_cortex_a53")
-+  set(QEMU_EXTRA_FLAGS "-m;1G;-serial;pty;-smp;2;-device;loader,file=${REMOTE_ZEPHYR_DIR}/zephyr.elf,cpu-num=1")
-+  set(BOARD_REMOTE "qemu_cortex_a53")
- else()
-   message(FATAL_ERROR "${BOARD} was not supported for this sample")
- endif()
-diff --git a/samples/subsys/ipc/openamp/README.rst b/samples/subsys/ipc/openamp/README.rst
-index 429d47bc8d..830023cddc 100644
---- a/samples/subsys/ipc/openamp/README.rst
-+++ b/samples/subsys/ipc/openamp/README.rst
-@@ -42,6 +42,14 @@ Building the application for v2m_musca_b1
-    :board: v2m_musca_b1
-    :goals: debug
+diff --git a/lib/open-amp/resource_table.c b/lib/open-amp/resource_table.c
+index a857c3ca05f..fb10f664652 100644
+--- a/lib/open-amp/resource_table.c
++++ b/lib/open-amp/resource_table.c
+@@ -39,7 +39,7 @@ static struct fw_resource_table __resource resource_table = {
+ 		.num = RSC_TABLE_NUM_ENTRY,
+ 	},
+ 	.offset = {
+-
++		offsetof(struct fw_resource_table, ept_table),
+ #if (CONFIG_OPENAMP_RSC_TABLE_NUM_RPMSG_BUFF > 0)
+ 		offsetof(struct fw_resource_table, vdev),
+ #endif
+@@ -49,10 +49,15 @@ static struct fw_resource_table __resource resource_table = {
+ #endif
+ 	},
  
-+Building the application for qemu_cortex_a53
-+***********************************************
++	.ept_table = {
++		.type = RSC_VENDOR_EPT_TABLE,
++		.num_of_epts = 0,
++	},
 +
-+.. zephyr-app-commands::
-+   :zephyr-app: samples/subsys/ipc/openamp
-+   :board: qemu_cortex_a53
-+   :goals: run
-+
- Open a serial terminal (minicom, putty, etc.) and connect the board with the
- following settings:
+ #if (CONFIG_OPENAMP_RSC_TABLE_NUM_RPMSG_BUFF > 0)
+ 	/* Virtio device entry */
+ 	.vdev = {
+-		RSC_VDEV, VIRTIO_ID_RPMSG, 0, RPMSG_IPU_C0_FEATURES, 0, 0, 0,
++		RSC_VDEV, VIRTIO_ID_RPMSG, 2, RPMSG_IPU_C0_FEATURES, 0, 0, 0,
+ 		VRING_COUNT, {0, 0},
+ 	},
  
-diff --git a/samples/subsys/ipc/openamp/boards/qemu_cortex_a53.conf b/samples/subsys/ipc/openamp/boards/qemu_cortex_a53.conf
-new file mode 100644
-index 0000000000..3aa80f31f4
---- /dev/null
-+++ b/samples/subsys/ipc/openamp/boards/qemu_cortex_a53.conf
-@@ -0,0 +1,2 @@
-+CONFIG_PM_CPU_OPS=y
-+CONFIG_ARMV8_A_NS=y
-diff --git a/samples/subsys/ipc/openamp/boards/qemu_cortex_a53.overlay b/samples/subsys/ipc/openamp/boards/qemu_cortex_a53.overlay
-new file mode 100644
-index 0000000000..ff1f5c7dfb
---- /dev/null
-+++ b/samples/subsys/ipc/openamp/boards/qemu_cortex_a53.overlay
-@@ -0,0 +1,6 @@
-+/*
-+ * Copyright (c) 2022 openEuler Embedded
-+ *
-+ * SPDX-License-Identifier: Apache-2.0
-+ */
-+#include "qemu_cortex_a53_overlay.dtsi"
-diff --git a/samples/subsys/ipc/openamp/boards/qemu_cortex_a53_overlay.dtsi b/samples/subsys/ipc/openamp/boards/qemu_cortex_a53_overlay.dtsi
-new file mode 100644
-index 0000000000..85e1b47198
---- /dev/null
-+++ b/samples/subsys/ipc/openamp/boards/qemu_cortex_a53_overlay.dtsi
-@@ -0,0 +1,32 @@
-+/*
-+ * Copyright (c) 2022 openEuler Embedded
-+ *
-+ * SPDX-License-Identifier: Apache-2.0
-+ */
-+
-+/ {
-+	chosen {
-+		/*
-+		 * shared memory reserved for the inter-processor communication
-+		 */
-+		zephyr,ipc_shm = &ipc_shm0;
-+		zephyr,ipc = &ipm_gic_sgi0;
-+	};
-+
-+	ipm_gic_sgi0: ipm{
-+		compatible = "arm,gic-sgi";
-+	};
-+
-+	soc {
-+		/* reserve 3 MB for inter-processor communication */
-+		ipc_shm0: memory@70000000 {
-+			compatible = "mmio-sram";
-+			reg = <0 0x70000000 0 0x30000>;
-+		};
-+		/* memory used by openamp client */
-+		sram1: memory@7a000000 {
-+			compatible = "mmio-sram";
-+			reg = <0x0 0x7a000000 0x0 DT_SIZE_M(10)>;
-+		};
-+	};
-+};
-diff --git a/samples/subsys/ipc/openamp/remote/CMakeLists.txt b/samples/subsys/ipc/openamp/remote/CMakeLists.txt
-index b5cc53b48f..ee29ffa2cb 100644
---- a/samples/subsys/ipc/openamp/remote/CMakeLists.txt
-+++ b/samples/subsys/ipc/openamp/remote/CMakeLists.txt
-@@ -8,12 +8,18 @@ cmake_minimum_required(VERSION 3.20.0)
- if(("${BOARD}" STREQUAL "lpcxpresso54114_m0")
- 	OR "${BOARD}" STREQUAL "lpcxpresso55s69_cpu1"
- 	OR "${BOARD}" STREQUAL "mps2_an521_remote"
--	OR "${BOARD}" STREQUAL "v2m_musca_b1_ns")
-+	OR "${BOARD}" STREQUAL "v2m_musca_b1_ns"
-+	OR "${BOARD}" STREQUAL "qemu_cortex_a53")
- 	message(STATUS "${BOARD} compiles as remote in this sample")
- else()
- 	message(FATAL_ERROR "${BOARD} was not supported for this sample")
- endif()
+diff --git a/lib/open-amp/resource_table.h b/lib/open-amp/resource_table.h
+index dc577fafa7e..5bfedada2b0 100644
+--- a/lib/open-amp/resource_table.h
++++ b/lib/open-amp/resource_table.h
+@@ -7,6 +7,7 @@
+ #ifndef RESOURCE_TABLE_H__
+ #define RESOURCE_TABLE_H__
  
-+if("${BOARD}" STREQUAL "qemu_cortex_a53")
-+	set(CONF_FILE "prj_qemu_cortex_a53.conf")
-+	set(DTC_OVERLAY_FILE CACHE STRING "boards/qemu_cortex_a53.overlay" FORCE)
-+endif()
-+
- find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
- project(openamp_remote)
++#include <openamp/rpmsg.h>
+ #include <openamp/remoteproc.h>
+ #include <openamp/virtio.h>
  
-diff --git a/samples/subsys/ipc/openamp/remote/boards/qemu_cortex_a53.overlay b/samples/subsys/ipc/openamp/remote/boards/qemu_cortex_a53.overlay
-new file mode 100644
-index 0000000000..47e6d47f58
---- /dev/null
-+++ b/samples/subsys/ipc/openamp/remote/boards/qemu_cortex_a53.overlay
-@@ -0,0 +1,18 @@
-+/*
-+ * Copyright (c) 2022 openEuler Embedded
-+ *
-+ * SPDX-License-Identifier: Apache-2.0
-+ */
-+
-+#include "../../boards/qemu_cortex_a53_overlay.dtsi"
-+
-+/ {
-+	chosen {
-+		zephyr,sram = &sram1;
-+	};
-+
-+};
-+
-+&uart0 {
-+	status = "disabled";
-+};
-diff --git a/samples/subsys/ipc/openamp/remote/prj_qemu_cortex_a53.conf b/samples/subsys/ipc/openamp/remote/prj_qemu_cortex_a53.conf
-new file mode 100644
-index 0000000000..895e31280b
---- /dev/null
-+++ b/samples/subsys/ipc/openamp/remote/prj_qemu_cortex_a53.conf
-@@ -0,0 +1,18 @@
-+CONFIG_BOOT_BANNER=n
-+CONFIG_STDOUT_CONSOLE=n
-+CONFIG_PRINTK=n
-+CONFIG_IPM=y
-+CONFIG_HEAP_MEM_POOL_SIZE=4096
-+CONFIG_OPENAMP=y
-+CONFIG_OPENAMP_MASTER=n
-+CONFIG_ARMV8_A_NS=y
-+# Disable UART driver
-+CONFIG_SERIAL=n
-+
-+# Disable console
-+CONFIG_CONSOLE=n
-+CONFIG_UART_CONSOLE=n
-+
-+# Disable serial port
-+CONFIG_UART_PL011=n
-+CONFIG_UART_INTERRUPT_DRIVEN=n
-diff --git a/samples/subsys/ipc/openamp/remote/src/main.c b/samples/subsys/ipc/openamp/remote/src/main.c
-index 06124069f4..06ed2bd894 100644
---- a/samples/subsys/ipc/openamp/remote/src/main.c
-+++ b/samples/subsys/ipc/openamp/remote/src/main.c
-@@ -19,6 +19,13 @@
+@@ -28,9 +29,12 @@ extern "C" {
+ #define VRING_BUFF_ADDRESS      -1  /* allocated by Master processor */
+ #define VRING_ALIGNMENT         16  /* fixed to match with Linux constraint */
  
- #include "common.h"
- 
-+/*
-+ * 32 bit: -1 == 0xffffffff
-+ * 64 bit: -1 == 0xffffffffffffffff
-+ */
-+#define DEFAULT_PAGE_SHIFT (-1UL)
-+#define DEFAULT_PAGE_MASK  (-1UL)
++#define RSC_VENDOR_EPT_TABLE    128 /* List of bound endpoints */
 +
- #define APP_TASK_STACK_SIZE (1024)
- K_THREAD_STACK_DEFINE(thread_stack, APP_TASK_STACK_SIZE);
- static struct k_thread thread_data;
-@@ -36,8 +43,8 @@ static struct metal_device shm_device = {
- 			.virt       = (void *) SHM_START_ADDR,
- 			.physmap    = shm_physmap,
- 			.size       = SHM_SIZE,
--			.page_shift = 0xffffffff,
--			.page_mask  = 0xffffffff,
-+			.page_shift = DEFAULT_PAGE_SHIFT,
-+			.page_mask  = DEFAULT_PAGE_MASK,
- 			.mem_flags  = 0,
- 			.ops        = { NULL },
- 		},
-diff --git a/samples/subsys/ipc/openamp/sample.yaml b/samples/subsys/ipc/openamp/sample.yaml
-index df871bca0d..0921aa2b7f 100644
---- a/samples/subsys/ipc/openamp/sample.yaml
-+++ b/samples/subsys/ipc/openamp/sample.yaml
-@@ -4,7 +4,7 @@ sample:
-     name: OpenAMP example integration
- tests:
-     sample.ipc.openamp:
--        platform_allow: lpcxpresso54114_m4 lpcxpresso55s69_cpu0 mps2_an521 v2m_musca_b1
-+        platform_allow: lpcxpresso54114_m4 lpcxpresso55s69_cpu0 mps2_an521 v2m_musca_b1 qemu_cortex_a53
-         tags: ipm
-         harness: console
-         harness_config:
-diff --git a/samples/subsys/ipc/openamp/src/main.c b/samples/subsys/ipc/openamp/src/main.c
-index bdbfc17bb4..181d2b151f 100644
---- a/samples/subsys/ipc/openamp/src/main.c
-+++ b/samples/subsys/ipc/openamp/src/main.c
-@@ -20,6 +20,17 @@
+ #endif
  
- #include "common.h"
+ enum rsc_table_entries {
++	RSC_TABLE_EPT_TABLE_ENTRY,
+ #if (CONFIG_OPENAMP_RSC_TABLE_NUM_RPMSG_BUFF > 0)
+ 	RSC_TABLE_VDEV_ENTRY,
+ #endif
+@@ -40,10 +44,27 @@ enum rsc_table_entries {
+ 	RSC_TABLE_NUM_ENTRY
+ };
  
-+#if defined(CONFIG_SOC_QEMU_CORTEX_A53)
-+#include <zephyr/drivers/pm_cpu_ops.h>
-+#endif
++METAL_PACKED_BEGIN
++struct ept_info {
++	char name[RPMSG_NAME_SIZE];
++	uint32_t addr;
++	uint32_t dest_addr;
++} METAL_PACKED_END;
 +
-+/*
-+ * 32 bit: -1 == 0xffffffff
-+ * 64 bit: -1 == 0xffffffffffffffff
-+ */
-+#define DEFAULT_PAGE_SHIFT (-1UL)
-+#define DEFAULT_PAGE_MASK  (-1UL)
++#define MAX_NUM_OF_EPTS 64
 +
- #define APP_TASK_STACK_SIZE (1024)
- K_THREAD_STACK_DEFINE(thread_stack, APP_TASK_STACK_SIZE);
- static struct k_thread thread_data;
-@@ -37,8 +48,8 @@ static struct metal_device shm_device = {
- 			.virt       = (void *) SHM_START_ADDR,
- 			.physmap    = shm_physmap,
- 			.size       = SHM_SIZE,
--			.page_shift = 0xffffffff,
--			.page_mask  = 0xffffffff,
-+			.page_shift = DEFAULT_PAGE_SHIFT,
-+			.page_mask  = DEFAULT_PAGE_MASK,
- 			.mem_flags  = 0,
- 			.ops        = { NULL },
- 		},
-@@ -292,6 +303,12 @@ void main(void)
- 	defined(CONFIG_SOC_V2M_MUSCA_B1)
- 	wakeup_cpu1();
- 	k_msleep(500);
-+#elif defined(CONFIG_SOC_QEMU_CORTEX_A53)
-+	/* start the secondary cpu by psci in qemu*/
-+	if (pm_cpu_on(1, DT_REG_ADDR(DT_NODELABEL(sram1)))) {
-+		printk("Failed to boot secondary CPU core\n");
-+		return;
-+	}
- #endif /* #if defined(CONFIG_SOC_MPS2_AN521) */
- }
++METAL_PACKED_BEGIN
++struct fw_rsc_ept {
++	uint32_t type;
++	uint32_t num_of_epts;
++	struct ept_info endpoints[MAX_NUM_OF_EPTS];
++} METAL_PACKED_END;
++
+ struct fw_resource_table {
+ 	struct resource_table hdr;
+ 	uint32_t offset[RSC_TABLE_NUM_ENTRY];
  
-diff --git a/soc/arm64/qemu_cortex_a53/CMakeLists.txt b/soc/arm64/qemu_cortex_a53/CMakeLists.txt
-index fd39809a83..52eba76c8f 100644
---- a/soc/arm64/qemu_cortex_a53/CMakeLists.txt
-+++ b/soc/arm64/qemu_cortex_a53/CMakeLists.txt
-@@ -2,3 +2,8 @@
- # SPDX-License-Identifier: Apache-2.0
++	struct fw_rsc_ept ept_table;
+ #if (CONFIG_OPENAMP_RSC_TABLE_NUM_RPMSG_BUFF > 0)
+ 	struct fw_rsc_vdev vdev;
+ 	struct fw_rsc_vdev_vring vring0;
+diff --git a/soc/arm/qemu_cortex_a53/CMakeLists.txt b/soc/arm/qemu_cortex_a53/CMakeLists.txt
+index 35d88056740..18a38dd2016 100644
+--- a/soc/arm/qemu_cortex_a53/CMakeLists.txt
++++ b/soc/arm/qemu_cortex_a53/CMakeLists.txt
+@@ -3,6 +3,7 @@
  
  zephyr_library_sources_ifdef(CONFIG_ARM_MMU mmu_regions.c)
-+
-+if(CONFIG_OPENAMP_RSC_TABLE)
-+  zephyr_linker_section(NAME .resource_table GROUP ROM_REGION NOINPUT)
-+  zephyr_linker_section_configure(SECTION .resource_table KEEP INPUT ".resource_table*")
-+endif()
-diff --git a/soc/arm64/qemu_cortex_a53/linker.ld b/soc/arm64/qemu_cortex_a53/linker.ld
-index 9b7be757e1..9ea9975f75 100644
---- a/soc/arm64/qemu_cortex_a53/linker.ld
-+++ b/soc/arm64/qemu_cortex_a53/linker.ld
-@@ -6,3 +6,14 @@
-  */
  
- #include <zephyr/arch/arm64/scripts/linker.ld>
-+
-+
-+SECTIONS
-+     {
-+#ifdef CONFIG_OPENAMP_RSC_TABLE
-+        SECTION_PROLOGUE(.resource_table,, SUBALIGN(4))
-+        {
-+            KEEP(*(.resource_table*))
-+        } GROUP_LINK_IN(ROMABLE_REGION)
-+#endif
-+     }
-diff --git a/soc/arm64/qemu_cortex_a53/mmu_regions.c b/soc/arm64/qemu_cortex_a53/mmu_regions.c
-index b5d1205775..3d162c3e73 100644
---- a/soc/arm64/qemu_cortex_a53/mmu_regions.c
-+++ b/soc/arm64/qemu_cortex_a53/mmu_regions.c
-@@ -19,6 +19,13 @@ static const struct arm_mmu_region mmu_regions[] = {
+-zephyr_include_directories(.)
+-
+ set(SOC_LINKER_SCRIPT ${ZEPHYR_BASE}/include/zephyr/arch/arm64/scripts/linker.ld CACHE INTERNAL "")
++if(CONFIG_OPENAMP_RSC_TABLE)
++zephyr_linker_sources(DATA_SECTIONS rsc_table_linker.ld)
++endif()
+diff --git a/soc/arm/qemu_cortex_a53/mmu_regions.c b/soc/arm/qemu_cortex_a53/mmu_regions.c
+index b5d1205775f..afd584c56a1 100644
+--- a/soc/arm/qemu_cortex_a53/mmu_regions.c
++++ b/soc/arm/qemu_cortex_a53/mmu_regions.c
+@@ -19,6 +19,12 @@ static const struct arm_mmu_region mmu_regions[] = {
  			      DT_REG_ADDR_BY_IDX(DT_INST(0, arm_gic), 1),
  			      DT_REG_SIZE_BY_IDX(DT_INST(0, arm_gic), 1),
  			      MT_DEVICE_nGnRnE | MT_P_RW_U_NA | MT_DEFAULT_SECURE_STATE),
-+
-+#if defined(CONFIG_OPENAMP)
++#if defined(CONFIG_OPENAMP) && !defined(CONFIG_IVSHMEM)
 +	MMU_REGION_FLAT_ENTRY("IPC_SHM",
 +			      DT_REG_ADDR(DT_NODELABEL(ipc_shm0)),
 +			      DT_REG_SIZE(DT_NODELABEL(ipc_shm0)),
@@ -1407,111 +1220,30 @@ index b5d1205775..3d162c3e73 100644
  };
  
  const struct arm_mmu_config mmu_config = {
-diff --git a/soc/arm64/rpi4_cortex_a72/CMakeLists.txt b/soc/arm64/rpi4_cortex_a72/CMakeLists.txt
+diff --git a/soc/arm/qemu_cortex_a53/rsc_table_linker.ld b/soc/arm/qemu_cortex_a53/rsc_table_linker.ld
 new file mode 100644
-index 0000000000..42356c2508
+index 00000000000..665093337f9
 --- /dev/null
-+++ b/soc/arm64/rpi4_cortex_a72/CMakeLists.txt
-@@ -0,0 +1,4 @@
-+# Copyright (c) 2022 openEuler Embedded
-+# SPDX-License-Identifier: Apache-2.0
-+
-+zephyr_library_sources_ifdef(CONFIG_ARM_MMU mmu_regions.c)
-diff --git a/soc/arm64/rpi4_cortex_a72/Kconfig.defconfig b/soc/arm64/rpi4_cortex_a72/Kconfig.defconfig
-new file mode 100644
-index 0000000000..e27f454829
---- /dev/null
-+++ b/soc/arm64/rpi4_cortex_a72/Kconfig.defconfig
-@@ -0,0 +1,17 @@
-+# Copyright (c) 2022 openEuler Embedded
-+# SPDX-License-Identifier: Apache-2.0
-+
-+if SOC_RPI4_CORTEX_A72
-+
-+config SOC
-+	default "rpi4_cortex_a72"
-+
-+config NUM_IRQS
-+	# must be >= the highest interrupt number used
-+	# - include the UART interrupts
-+	default 100
-+
-+config SYS_CLOCK_HW_CYCLES_PER_SEC
-+	default 54000000
-+
-+endif # SOC_RPI4_CORTEX_A72
-diff --git a/soc/arm64/rpi4_cortex_a72/Kconfig.soc b/soc/arm64/rpi4_cortex_a72/Kconfig.soc
-new file mode 100644
-index 0000000000..6ce979d3b8
---- /dev/null
-+++ b/soc/arm64/rpi4_cortex_a72/Kconfig.soc
-@@ -0,0 +1,8 @@
-+# Copyright (c) 2022 openEuler Embedded
-+# SPDX-License-Identifier: Apache-2.0
-+
-+config SOC_RPI4_CORTEX_A72
-+	bool "Raspberry Pi 4 (cortex-a72)"
-+	select ARM64
-+	select CPU_CORTEX_A72
-+	select GIC_V2
-diff --git a/soc/arm64/rpi4_cortex_a72/linker.ld b/soc/arm64/rpi4_cortex_a72/linker.ld
-new file mode 100644
-index 0000000000..499492ed89
---- /dev/null
-+++ b/soc/arm64/rpi4_cortex_a72/linker.ld
-@@ -0,0 +1,8 @@
++++ b/soc/arm/qemu_cortex_a53/rsc_table_linker.ld
+@@ -0,0 +1,13 @@
 +/*
-+ * Copyright (c) 2022 openEuler Embedded
-+ *
-+ * SPDX-License-Identifier: Apache-2.0
-+ *
-+ */
-+
-+#include <zephyr/arch/arm64/scripts/linker.ld>
-diff --git a/soc/arm64/rpi4_cortex_a72/mmu_regions.c b/soc/arm64/rpi4_cortex_a72/mmu_regions.c
-new file mode 100644
-index 0000000000..25ec334558
---- /dev/null
-+++ b/soc/arm64/rpi4_cortex_a72/mmu_regions.c
-@@ -0,0 +1,33 @@
-+/*
-+ * Copyright (c) 2022 openEuler Embedded
++ * Copyright (c) 2023, openEuler Embedded
 + *
 + * SPDX-License-Identifier: Apache-2.0
 + */
-+#include <zephyr/arch/arm64/arm_mmu.h>
-+#include <zephyr/devicetree.h>
-+#include <zephyr/sys/util.h>
 +
-+static const struct arm_mmu_region mmu_regions[] = {
-+
-+	MMU_REGION_FLAT_ENTRY("GIC",
-+			      DT_REG_ADDR_BY_IDX(DT_INST(0, arm_gic), 0),
-+			      DT_REG_SIZE_BY_IDX(DT_INST(0, arm_gic), 0),
-+			      MT_DEVICE_nGnRnE | MT_P_RW_U_NA | MT_DEFAULT_SECURE_STATE),
-+
-+	MMU_REGION_FLAT_ENTRY("GIC",
-+			      DT_REG_ADDR_BY_IDX(DT_INST(0, arm_gic), 1),
-+			      DT_REG_SIZE_BY_IDX(DT_INST(0, arm_gic), 1),
-+			      MT_DEVICE_nGnRnE | MT_P_RW_U_NA | MT_DEFAULT_SECURE_STATE),
-+
-+#if defined(CONFIG_OPENAMP)
-+	MMU_REGION_FLAT_ENTRY("IPC_SHM",
-+			      DT_REG_ADDR(DT_NODELABEL(ipc_shm0)),
-+			      DT_REG_SIZE(DT_NODELABEL(ipc_shm0)),
-+			      MT_DEVICE_nGnRnE | MT_P_RW_U_NA | MT_DEFAULT_SECURE_STATE),
-+#endif
-+};
-+
-+const struct arm_mmu_config mmu_config = {
-+	.num_regions = ARRAY_SIZE(mmu_regions),
-+	.mmu_regions = mmu_regions,
-+};
++ SECTION_PROLOGUE(.resource_table,, SUBALIGN(4))
++        {
++          _resource_table_start = .;
++          KEEP(*(.resource_table*))
++          _resource_table_end = .;
++        } GROUP_LINK_IN(ROMABLE_REGION)
++        _resource_tables_size = _resource_table_end - _resource_table_start;
 diff --git a/subsys/ipc/rpmsg_service/CMakeLists.txt b/subsys/ipc/rpmsg_service/CMakeLists.txt
-index 357a2bc6c3..cbfdd5f5e1 100644
+index 357a2bc6c3f..b63b11be8f0 100644
 --- a/subsys/ipc/rpmsg_service/CMakeLists.txt
 +++ b/subsys/ipc/rpmsg_service/CMakeLists.txt
-@@ -1,4 +1,14 @@
+@@ -1,4 +1,19 @@
  # SPDX-License-Identifier: Apache-2.0
  
 +if(CONFIG_OPENAMP_RSC_TABLE)
@@ -1520,17 +1252,30 @@ index 357a2bc6c3..cbfdd5f5e1 100644
 +# and rpmsg buffers. The METAL_MAX_DEVICE_REGIONS has to be redefined to add a
 +# second region for the resource table.
 +zephyr_compile_definitions(METAL_MAX_DEVICE_REGIONS=2)
++if(CONFIG_IVSHMEM_DOORBELL)
++# if IVSHMEM is enabled, use IVSHMEM specific implementation
++zephyr_sources(rpmsg_backend_rsc_table_ivshmem.c)
++else()
 +zephyr_sources(rpmsg_backend_rsc_table.c)
++endif()
 +else()
  zephyr_sources(rpmsg_backend.c)
 +endif()
  zephyr_sources(rpmsg_service.c)
 +zephyr_sources(rpmsg_rpc_service.c)
 diff --git a/subsys/ipc/rpmsg_service/Kconfig b/subsys/ipc/rpmsg_service/Kconfig
-index 17d75b3745..ecfc8ea0a0 100644
+index 17d75b37452..7ea7d964d64 100644
 --- a/subsys/ipc/rpmsg_service/Kconfig
 +++ b/subsys/ipc/rpmsg_service/Kconfig
-@@ -46,7 +46,7 @@ endchoice
+@@ -23,7 +23,6 @@ config RPMSG_SERVICE_DUAL_IPM_SUPPORT
+ 
+ menuconfig RPMSG_SERVICE
+ 	bool "RPMsg service for multiple users"
+-	select IPM
+ 	select OPENAMP
+ 	help
+ 	  Enables support for a service that can be shared by multiple
+@@ -46,7 +45,7 @@ endchoice
  
  config RPMSG_SERVICE_NUM_ENDPOINTS
  	int "Max number of registered endpoints"
@@ -1540,10 +1285,10 @@ index 17d75b3745..ecfc8ea0a0 100644
  	  Maximal number of endpoints that can be registered for given
  	  RPMsg service.
 diff --git a/subsys/ipc/rpmsg_service/rpmsg_backend.c b/subsys/ipc/rpmsg_service/rpmsg_backend.c
-index 431fd093be..c3d6efd82a 100644
+index b3f428e011c..fe1212de906 100644
 --- a/subsys/ipc/rpmsg_service/rpmsg_backend.c
 +++ b/subsys/ipc/rpmsg_service/rpmsg_backend.c
-@@ -59,6 +59,13 @@ static const struct device *const ipm_handle =
+@@ -60,6 +60,13 @@ static const struct device *const ipm_handle =
  	DEVICE_DT_GET(DT_CHOSEN(zephyr_ipc));
  #endif
  
@@ -1557,7 +1302,7 @@ index 431fd093be..c3d6efd82a 100644
  static metal_phys_addr_t shm_physmap[] = { SHM_START_ADDR };
  static struct metal_device shm_device = {
  	.name = SHM_DEVICE_NAME,
-@@ -69,8 +76,8 @@ static struct metal_device shm_device = {
+@@ -70,8 +77,8 @@ static struct metal_device shm_device = {
  			.virt       = (void *) SHM_START_ADDR,
  			.physmap    = shm_physmap,
  			.size       = SHM_SIZE,
@@ -1569,7 +1314,7 @@ index 431fd093be..c3d6efd82a 100644
  			.ops        = { NULL },
  		},
 diff --git a/subsys/ipc/rpmsg_service/rpmsg_backend.h b/subsys/ipc/rpmsg_service/rpmsg_backend.h
-index a74e46b852..1851178902 100644
+index a74e46b8520..a9f874a0392 100644
 --- a/subsys/ipc/rpmsg_service/rpmsg_backend.h
 +++ b/subsys/ipc/rpmsg_service/rpmsg_backend.h
 @@ -13,15 +13,22 @@
@@ -1596,7 +1341,7 @@ index a74e46b852..1851178902 100644
  
  /*
   * @brief Initialize RPMsg backend
-@@ -35,7 +42,11 @@ extern "C" {
+@@ -35,7 +42,13 @@ extern "C" {
   * @retval 0 Initialization successful
   * @retval <0 Initialization error reported by OpenAMP
   */
@@ -1605,15 +1350,17 @@ index a74e46b852..1851178902 100644
 +#else
  int rpmsg_backend_init(struct metal_io_region **io, struct virtio_device *vdev);
 +#endif
++
++extern struct rpmsg_virtio_device rvdev;
  
  #ifdef __cplusplus
  }
 diff --git a/subsys/ipc/rpmsg_service/rpmsg_backend_rsc_table.c b/subsys/ipc/rpmsg_service/rpmsg_backend_rsc_table.c
 new file mode 100644
-index 0000000000..26f97a5c57
+index 00000000000..e2d817e3185
 --- /dev/null
 +++ b/subsys/ipc/rpmsg_service/rpmsg_backend_rsc_table.c
-@@ -0,0 +1,236 @@
+@@ -0,0 +1,318 @@
 +/*
 + * Copyright (c) 2023, openEuler Embedded
 + *
@@ -1625,10 +1372,13 @@ index 0000000000..26f97a5c57
 +#include <zephyr/kernel.h>
 +#include <zephyr/drivers/ipm.h>
 +#include <zephyr/device.h>
++#include <zephyr/drivers/pm_cpu_ops.h>
++#include <zephyr/drivers/cache.h>
 +#include <zephyr/logging/log.h>
 +
 +#include <openamp/open_amp.h>
 +#include <metal/device.h>
++#include <metal/cache.h>
 +#include <resource_table.h>
 +
 +#define LOG_MODULE_NAME rpmsg_backend
@@ -1645,6 +1395,14 @@ index 0000000000..26f97a5c57
 +#error "resource table implementation is only for device"
 +#endif
 +
++
++/* use resource tables's  reserved[0] to carry some extra information
++ *  the following IDs come from PSCI definition
++ */
++#define CPU_OFF_FUNCID		0x84000002
++#define CPU_SUSPEND_FUNCID 	0xc4000001
++#define CPU_ON_FUNCID		0xC4000003
++#define SYSTEM_RESET		0x84000009
 +
 +#define IPM_WORK_QUEUE_STACK_SIZE CONFIG_RPMSG_SERVICE_WORK_QUEUE_STACK_SIZE
 +#define IPM_WORK_QUEUE_PRIORITY   K_HIGHEST_APPLICATION_THREAD_PRIO
@@ -1678,7 +1436,8 @@ index 0000000000..26f97a5c57
 +};
 +
 +static struct virtio_device *cur_vdev;
-+static struct k_work ipm_work;
++static struct k_work ipm_work_vring_rx;
++static struct k_work ipm_work_cpu_off;
 +
 +static int virtio_notify(void *priv, uint32_t id)
 +{
@@ -1695,27 +1454,101 @@ index 0000000000..26f97a5c57
 +	return status;
 +}
 +
-+
-+static void ipm_callback_process(struct k_work *work)
++static void ipm_work_handle_vring_rx(struct k_work *work)
 +{
 +	/* as remote device, VRING1_ID is for RX (from host to devive)*/
 +	rproc_virtio_notified(cur_vdev, VRING1_ID);
 +}
 +
-+static void ipm_callback(const struct device *dev,
-+						void *context, uint32_t id,
-+						volatile void *data)
++static void ipm_work_handle_cpu_off(struct k_work *work)
 +{
++	LOG_DBG("zephyr: cpu off");
++		/* before cpu_off, some clean ops need to be done:
++		 * - turn off tasks, device, etc.
++		 * - clear cache, memory etc.
++		 */
++	cache_data_invd_all();
++	cache_instr_invd_all();
++
++	/* \todo: extra work to notify other tasks that cpu is going to
++		turn off
++	*/
++
++	/* from arm64 supporting psci, call pm_cpu_off to turn off */
++	pm_cpu_off();
++}
++
++static void reset_vq(void)
++{
++	if (rvdev.svq != NULL) {
++		/*
++		 * For svq:
++		 * vq_free_cnt: Set to vq_nentries, all descriptors in the svq are available.
++		 * vq_queued_cnt: Set to 0, no descriptors waiting to be processed in the svq.
++		 * vq_desc_head_idx: Set to 0, the next available descriptor is at the beginning
++		 *                   of the descriptor table.
++		 * vq_available_idx: Set to 0, No descriptors have been added to the available ring.
++		 * vq_used_cons_idx: No descriptors have been added to the used ring.
++		 * vq_ring.avail->idx and vq_ring.used->idx will be set at host.
++		 */
++		rvdev.svq->vq_free_cnt = rvdev.svq->vq_nentries;
++		rvdev.svq->vq_queued_cnt = 0;
++		rvdev.svq->vq_desc_head_idx = 0;
++		rvdev.svq->vq_available_idx = 0;
++		rvdev.svq->vq_used_cons_idx = 0;
++	}
++
++	if (rvdev.rvq != NULL) {
++		/*
++		 * For rvq:
++		 * Because host resets its tx vq, on the remote side,
++		 * it also needs to reset the rx rq.
++		 */
++		rvdev.rvq->vq_available_idx = 0;
++		rvdev.rvq->vq_used_cons_idx = 0;
++		rvdev.rvq->vq_ring.used->idx = 0;
++		rvdev.rvq->vq_ring.avail->idx = 0;
++		metal_cache_flush(&(rvdev.rvq->vq_ring.used->idx),
++				  sizeof(rvdev.rvq->vq_ring.used->idx));
++		metal_cache_flush(&(rvdev.rvq->vq_ring.avail->idx),
++				  sizeof(rvdev.rvq->vq_ring.avail->idx));
++	}
++}
++
++static void ipm_callback(const struct device *dev,
++			 void *context, uint32_t id,
++			 volatile void *data)
++{
++	struct fw_resource_table *rsc;
++	uint32_t status;
++
++	rsc = (struct fw_resource_table *)context;
++	metal_cache_invalidate(rsc->hdr.reserved, sizeof(rsc->hdr.reserved));
++	status = rsc->hdr.reserved[0];
++
 +	(void)dev;
 +
 +	LOG_DBG("Got callback of id %u", id);
-+	/* TODO: Separate workqueue is needed only
-+	 * for serialization master (app core)
-+	 *
-+	 * Use sysworkq to optimize memory footprint
-+	 * for serialization slave (net core)
-+	 */
-+	k_work_submit_to_queue(&ipm_work_q, &ipm_work);
++
++	/* use resource table's reserved bits for extra work */
++	if (status == 0)
++		return;
++
++	LOG_DBG("rsc reserved[0]:%x", status);
++
++	if (status == CPU_OFF_FUNCID) {
++		/* cpu off work */
++		k_work_submit_to_queue(&ipm_work_q, &ipm_work_cpu_off);
++	} else if (status == CPU_ON_FUNCID || status == 0) {
++		/* normal work */
++		k_work_submit_to_queue(&ipm_work_q, &ipm_work_vring_rx);
++	} else if (status == SYSTEM_RESET) {
++		/* attach work: reset virtqueue */
++		reset_vq();
++		/* clear reserved[0] after the reset work is completed */
++		rsc->hdr.reserved[0] = 0;
++		metal_cache_flush(rsc->hdr.reserved, sizeof(rsc->hdr.reserved));
++	}
 +}
 +
 +struct virtio_device *
@@ -1768,38 +1601,11 @@ index 0000000000..26f97a5c57
 +int rpmsg_backend_init(struct metal_io_region **io, struct virtio_device **vdev)
 +{
 +	void *rsc_table;
-+	struct fw_resource_table *rsc;
 +	struct metal_io_region *rsc_io;
 +	int rsc_size;
 +	int32_t                  err;
 +	struct metal_init_params metal_params = METAL_INIT_DEFAULTS;
 +	struct metal_device     *device;
-+	
-+
-+
-+	/* IPM setup */
-+
-+	/* Start IPM workqueue */
-+	k_work_queue_start(&ipm_work_q, ipm_stack_area,
-+			   K_THREAD_STACK_SIZEOF(ipm_stack_area),
-+			   IPM_WORK_QUEUE_PRIORITY, NULL);
-+	k_thread_name_set(&ipm_work_q.thread, "ipm_work_q");
-+
-+	/* Setup IPM workqueue item */
-+	k_work_init(&ipm_work, ipm_callback_process);
-+
-+	if (!device_is_ready(ipm_handle)) {
-+		LOG_ERR("IPM device is not ready");
-+		return -ENODEV;
-+	}
-+
-+	ipm_register_callback(ipm_handle, ipm_callback, NULL);
-+
-+	err = ipm_set_enabled(ipm_handle, 1);
-+	if (err != 0) {
-+		LOG_ERR("Could not enable IPM interrupts and callbacks");
-+		return err;
-+	}
 +
 +	/* Libmetal setup */
 +	err = metal_init(&metal_params);
@@ -1830,15 +1636,38 @@ index 0000000000..26f97a5c57
 +		return err;
 +	}
 +
-+	rsc_table_get(&rsc_table, &rsc_size);
-+	rsc = (struct fw_resource_table *)rsc_table;
-+
++	rsc_table_get((struct fw_resource_table **)&rsc_table, &rsc_size);
 +	metal_io_init(&device->regions[1], rsc_table,
 +		      (metal_phys_addr_t *)rsc_table, rsc_size, -1, 0, NULL);
 +	rsc_io = metal_device_io_region(device, 1);
 +	if (!rsc_io) {
 +		LOG_ERR("Failed to get rsc_io region");
 +		return -1;
++	}
++
++	/* IPM setup */
++
++	/* Start IPM workqueue */
++	k_work_queue_start(&ipm_work_q, ipm_stack_area,
++			   K_THREAD_STACK_SIZEOF(ipm_stack_area),
++			   IPM_WORK_QUEUE_PRIORITY, NULL);
++	k_thread_name_set(&ipm_work_q.thread, "ipm_work_q");
++
++	/* Setup IPM workqueue item */
++	k_work_init(&ipm_work_vring_rx, ipm_work_handle_vring_rx);
++	k_work_init(&ipm_work_cpu_off, ipm_work_handle_cpu_off);
++
++	if (!device_is_ready(ipm_handle)) {
++		LOG_ERR("IPM device is not ready");
++		return -ENODEV;
++	}
++
++	ipm_register_callback(ipm_handle, ipm_callback, rsc_table);
++
++	err = ipm_set_enabled(ipm_handle, 1);
++	if (err != 0) {
++		LOG_ERR("Could not enable IPM interrupts and callbacks");
++		return err;
 +	}
 +
 +	/* virtio device setup */
@@ -1850,13 +1679,271 @@ index 0000000000..26f97a5c57
 +
 +	return 0;
 +}
-\ No newline at end of file
+diff --git a/subsys/ipc/rpmsg_service/rpmsg_backend_rsc_table_ivshmem.c b/subsys/ipc/rpmsg_service/rpmsg_backend_rsc_table_ivshmem.c
+new file mode 100644
+index 00000000000..799e6502aba
+--- /dev/null
++++ b/subsys/ipc/rpmsg_service/rpmsg_backend_rsc_table_ivshmem.c
+@@ -0,0 +1,253 @@
++/*
++ * Copyright (c) 2023, openEuler Embedded
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ */
++
++#include "rpmsg_backend.h"
++
++#include <zephyr/kernel.h>
++#include <zephyr/drivers/virtualization/ivshmem.h>
++#include <zephyr/device.h>
++#include <zephyr/logging/log.h>
++#include <kernel_arch_interface.h>
++
++#include <openamp/open_amp.h>
++#include <metal/device.h>
++#include <resource_table.h>
++
++#define LOG_MODULE_NAME rpmsg_backend
++LOG_MODULE_REGISTER(LOG_MODULE_NAME, CONFIG_RPMSG_SERVICE_LOG_LEVEL);
++
++/* Configuration defines */
++#define MASTER IS_ENABLED(CONFIG_RPMSG_SERVICE_MODE_MASTER)
++
++#if	IS_ENABLED(CONFIG_RPMSG_SERVICE_MODE_MASTER)
++#error "resource table implementation is only for device"
++#endif
++
++
++#define IVSHMEM_EVENT_POLL_STACK_SIZE	8192
++#define IVSHMEM_EVENT_POLL_PRIO		K_HIGHEST_APPLICATION_THREAD_PRIO
++
++/* End of configuration defines */
++
++K_THREAD_STACK_DEFINE(ivshmem_event_poll_stack, IVSHMEM_EVENT_POLL_STACK_SIZE);
++static struct k_thread ivshmem_event_poll_thread;
++
++static const struct device *ivshmem_dev =
++		DEVICE_DT_GET(DT_NODELABEL(ivshmem0));
++
++static struct metal_device shm_device = {
++	.name = SHM_DEVICE_NAME,
++	.num_regions = 2,
++	.regions = {
++	/* shared memory io, only the addr in [share mem start + share mem size]
++	 * can be accessed and guaranteed by metal_io_read/write
++	 */
++		{.virt = NULL},
++	/* resource table io, only the addr in [resource table start + table size]
++	 * can be accessed and guaranteed by metal_io_read/write
++	 */
++		{.virt = NULL},
++	},
++	.node = { NULL },
++	.irq_num = 0,
++	.irq_info = NULL
++};
++
++static struct virtio_device *cur_vdev;
++
++static int virtio_notify(void *priv, uint32_t id)
++{
++	ARG_UNUSED(priv);
++	int status;
++	uint16_t peer_dest_id = ivshmem_get_id(ivshmem_dev);
++
++	peer_dest_id -= 1;
++
++	status = ivshmem_int_peer(ivshmem_dev, peer_dest_id, 0);
++
++	if (status != 0) {
++		LOG_ERR("ivshmem_int_peer failed to notify: %d", status);
++		return status;
++	}
++
++	return status;
++}
++
++struct virtio_device *
++platform_create_vdev(void *rsc_table, struct metal_io_region *rsc_io)
++{
++	struct fw_rsc_vdev_vring *vring_rsc;
++	struct virtio_device *vdev;
++	int ret;
++
++	vdev = rproc_virtio_create_vdev(VIRTIO_DEV_DEVICE, VDEV_ID,
++					rsc_table_to_vdev(rsc_table),
++					rsc_io, NULL, virtio_notify, NULL);
++
++	if (!vdev) {
++		LOG_ERR("failed to create vdev");
++		return NULL;
++	}
++
++	/* wait master rpmsg init completion */
++	rproc_virtio_wait_remote_ready(vdev);
++
++	vring_rsc = rsc_table_get_vring0(rsc_table);
++	LOG_DBG("vring_rsc info: num:%d, da:0x%x", vring_rsc->num, vring_rsc->da);
++	ret = rproc_virtio_init_vring(vdev, 0, vring_rsc->notifyid,
++				      (void *)(uintptr_t)vring_rsc->da, rsc_io,
++				      vring_rsc->num, vring_rsc->align);
++	if (ret) {
++		LOG_ERR("failed to init vring 0");
++		goto failed;
++	}
++
++	vring_rsc = rsc_table_get_vring1(rsc_table);
++	ret = rproc_virtio_init_vring(vdev, 1, vring_rsc->notifyid,
++				      (void *)(uintptr_t)vring_rsc->da, rsc_io,
++				      vring_rsc->num, vring_rsc->align);
++	if (ret) {
++		LOG_ERR("failed to init vring 1");
++		goto failed;
++	}
++
++	cur_vdev = vdev;
++	return vdev;
++
++failed:
++	rproc_virtio_remove_vdev(vdev);
++
++	return NULL;
++}
++
++static void ivshmem_event_poll_thread_entry(void *arg1, void *arg2, void *arg3)
++{
++	ARG_UNUSED(arg1);
++	ARG_UNUSED(arg2);
++	ARG_UNUSED(arg3);
++
++	/* k_poll was signaled or not */
++	unsigned int poll_signaled;
++	/* vector received */
++	int ivshmem_vector_rx;
++	int ret;
++
++	struct k_poll_signal sig;
++
++	struct k_poll_event events[] = {
++		K_POLL_EVENT_INITIALIZER(K_POLL_TYPE_SIGNAL,
++					 K_POLL_MODE_NOTIFY_ONLY,
++					 &sig),
++	};
++
++	k_poll_signal_init(&sig);
++
++	ret = ivshmem_register_handler(ivshmem_dev, &sig, 0);
++
++	if (ret < 0) {
++		LOG_ERR("registering handlers must be supported: %d\n", ret);
++		k_panic();
++	}
++
++	while (1) {
++		LOG_DBG("%s: waiting interrupt from remote peers...\n", __func__);
++		ret = k_poll(events, ARRAY_SIZE(events), K_FOREVER);
++
++		k_poll_signal_check(&sig, &poll_signaled, &ivshmem_vector_rx);
++		/* get ready for next signal */
++		k_poll_signal_reset(&sig);
++
++		/* as remote device, VRING1_ID is for RX (from host to device)*/
++		rproc_virtio_notified(cur_vdev, VRING1_ID);
++	}
++}
++
++int rpmsg_backend_init(struct metal_io_region **io, struct virtio_device **vdev)
++{
++	uintptr_t	rsc_table;
++	struct metal_io_region *rsc_io;
++	int rsc_size;
++	int32_t                  err;
++	struct metal_init_params metal_params = METAL_INIT_DEFAULTS;
++	struct metal_device     *device;
++	size_t shmem_size;
++	uintptr_t shmem_phy_addr;
++	static metal_phys_addr_t shm_physmap;
++
++	k_thread_create(&ivshmem_event_poll_thread,
++			ivshmem_event_poll_stack,
++			IVSHMEM_EVENT_POLL_STACK_SIZE,
++			(k_thread_entry_t)ivshmem_event_poll_thread_entry,
++			NULL, NULL, NULL, IVSHMEM_EVENT_POLL_PRIO, 0, K_NO_WAIT);
++
++	/* get ivshmem info, shmem is already mapped in virt_ivshmem. c*/
++	shmem_size = ivshmem_get_rw_mem_section(ivshmem_dev, &shmem_phy_addr);
++
++	LOG_INF("ivshmem addr is 0x%lX, size is 0x%lX", shmem_phy_addr, shmem_size);
++
++	/* Libmetal setup */
++	err = metal_init(&metal_params);
++	if (err) {
++		LOG_ERR("metal_init: failed - error code %d", err);
++		return err;
++	}
++
++	err = metal_register_generic_device(&shm_device);
++	if (err) {
++		LOG_ERR("Couldn't register shared memory device: %d", err);
++		return err;
++	}
++
++	err = metal_device_open("generic", SHM_DEVICE_NAME, &device);
++	if (err) {
++		LOG_ERR("metal_device_open failed: %d", err);
++		return err;
++	}
++
++	/* part1 resource table 
++	 * here resource table will be parsed by the other side and
++	 * copied to the 1st page of ivshmem read&write section. 
++	 * we call rst_table_get to get the correct size and init meta
++	 * io region 
++	 *
++	 */
++	rsc_table_get((struct fw_resource_table **)&rsc_table, &rsc_size);
++	rsc_table = shmem_phy_addr;
++
++	LOG_DBG("rsc_table phys addr is %lx", (uintptr_t)rsc_table);
++
++	metal_io_init(&device->regions[1], (void *)rsc_table,
++		      (metal_phys_addr_t *)rsc_table, rsc_size, -1, 0, NULL);
++	rsc_io = metal_device_io_region(device, 1);
++	if (!rsc_io) {
++		LOG_ERR("Failed to get rsc_io region");
++		return -1;
++	}
++
++	/* part 2: shared mem used for virtio, skip rsc table */
++	shm_physmap = rsc_table + CONFIG_MMU_PAGE_SIZE;
++	metal_io_init(&device->regions[0], (void *)(shm_physmap), &shm_physmap,
++		      shmem_size - CONFIG_MMU_PAGE_SIZE , -1, 0, NULL);
++
++	/* shared mem io should be return to the caller */
++	*io = metal_device_io_region(device, 0);
++	if (!*io) {
++		LOG_ERR("metal_device_io_region failed to get region");
++		return err;
++	}
++	
++	/* virtio device setup */
++	*vdev = platform_create_vdev((void *)rsc_table, rsc_io);
++
++	if (*vdev == NULL) {
++		return -1;
++	}
++
++	/* enable ivshmem device interrupt */
++	ivshmem_enable_interrupts(ivshmem_dev, true);
++
++	return 0;
++}
 diff --git a/subsys/ipc/rpmsg_service/rpmsg_rpc_service.c b/subsys/ipc/rpmsg_service/rpmsg_rpc_service.c
 new file mode 100644
-index 0000000000..c4e7769f17
+index 00000000000..635921f0e35
 --- /dev/null
 +++ b/subsys/ipc/rpmsg_service/rpmsg_rpc_service.c
-@@ -0,0 +1,150 @@
+@@ -0,0 +1,148 @@
 +/*
 + * Copyright (c) 2022, openEuler Embedded
 + *
@@ -1870,7 +1957,7 @@ index 0000000000..c4e7769f17
 +#include <zephyr/device.h>
 +#include <zephyr/ipc/rpmsg_service.h>
 +#include <zephyr/drivers/pm_cpu_ops.h>
-+#include <zephyr/drivers/cache.h>
++#include <zephyr/cache.h>
 +#include <zephyr/logging/log.h>
 +
 +#define LOG_MODULE_NAME rpmsg_rpc_service
@@ -1915,10 +2002,10 @@ index 0000000000..c4e7769f17
 +
 +	if (service) {
 +		if (service->cb_function(data, len) < 0) {
-+			LOG_ERR("call back %d error\n", id);
++			LOG_ERR("call back %d error", id);
 +		}
 +	} else {
-+		LOG_ERR("no service found\n");
++		LOG_ERR("no service found");
 +	}
 +
 +	return 0;
@@ -1979,11 +2066,11 @@ index 0000000000..c4e7769f17
 +	 * - turn off tasks, device, etc.
 +	 * - clear cache, memory etc.
 +	 */
-+	cache_data_all(K_CACHE_WB_INVD);
-+	cache_instr_all(K_CACHE_INVD);
++	sys_cache_data_flush_all();
++	sys_cache_instr_flush_all();
 +
 +	/* from arm64 supporting psci, call pm_cpu_off to turn off */
-+	pm_cpu_off();
++	//pm_cpu_off();
 +
 +	return 0;
 +}
@@ -1993,13 +2080,11 @@ index 0000000000..c4e7769f17
 +	{RPMSG_SYS_SERVICE_POWER_OFF, sys_service_power_off_cb}
 +};
 +
-+static int rpmsg_sys_service_init(const struct device *dev)
++static int rpmsg_sys_service_init(void)
 +{
-+	(void)dev;
-+
 +	unsigned int n_services = sizeof(sys_service_table) / sizeof(struct rpmsg_rpc_service);
 +
-+	LOG_INF("number of services: %d\n", n_services);
++	LOG_INF("number of services: %d", n_services);
 +
 +	rpmsg_rpc_service_init(&sys_service_inst, sys_service_table, n_services);
 +
@@ -2009,7 +2094,7 @@ index 0000000000..c4e7769f17
 +SYS_INIT(rpmsg_sys_service_init, POST_KERNEL,  CONFIG_RPMSG_SERVICE_EP_REG_PRIORITY);
 diff --git a/subsys/ipc/rpmsg_service/rpmsg_rpc_service.h b/subsys/ipc/rpmsg_service/rpmsg_rpc_service.h
 new file mode 100644
-index 0000000000..e6c4b0a105
+index 00000000000..e6c4b0a1050
 --- /dev/null
 +++ b/subsys/ipc/rpmsg_service/rpmsg_rpc_service.h
 @@ -0,0 +1,60 @@
@@ -2074,10 +2159,10 @@ index 0000000000..e6c4b0a105
 +
 +#endif /* ZEPHYR_SUBSYS_IPC_RPMSG_RPC_SERVICE_H */
 diff --git a/subsys/ipc/rpmsg_service/rpmsg_service.c b/subsys/ipc/rpmsg_service/rpmsg_service.c
-index e82c7a6be7..da51f70e96 100644
+index 616bfb86ebd..470f9e644ec 100644
 --- a/subsys/ipc/rpmsg_service/rpmsg_service.c
 +++ b/subsys/ipc/rpmsg_service/rpmsg_service.c
-@@ -20,7 +20,11 @@ LOG_MODULE_REGISTER(LOG_MODULE_NAME, CONFIG_RPMSG_SERVICE_LOG_LEVEL);
+@@ -20,8 +20,12 @@ LOG_MODULE_REGISTER(LOG_MODULE_NAME, CONFIG_RPMSG_SERVICE_LOG_LEVEL);
  
  #define MASTER IS_ENABLED(CONFIG_RPMSG_SERVICE_MODE_MASTER)
  
@@ -2085,10 +2170,12 @@ index e82c7a6be7..da51f70e96 100644
 +static struct virtio_device *vdev;
 +#else
  static struct virtio_device vdev;
+-static struct rpmsg_virtio_device rvdev;
 +#endif
- static struct rpmsg_virtio_device rvdev;
++struct rpmsg_virtio_device rvdev;
  static struct metal_io_region *io;
  static bool ep_crt_started;
+ 
 @@ -29,16 +33,30 @@ static bool ep_crt_started;
  static struct rpmsg_virtio_shm_pool shpool;
  #endif
@@ -2122,7 +2209,7 @@ index e82c7a6be7..da51f70e96 100644
  }
  
  #if MASTER
-@@ -88,12 +106,15 @@ static int rpmsg_service_init(const struct device *dev)
+@@ -86,12 +104,15 @@ static int rpmsg_service_init(void)
  		LOG_ERR("RPMsg backend init failed with error %d", err);
  		return err;
  	}
@@ -2139,7 +2226,7 @@ index e82c7a6be7..da51f70e96 100644
  #endif
  
  	if (err) {
-@@ -131,7 +152,8 @@ static int rpmsg_service_init(const struct device *dev)
+@@ -129,7 +150,8 @@ static int rpmsg_service_init(void)
  	return 0;
  }
  
@@ -2149,7 +2236,7 @@ index e82c7a6be7..da51f70e96 100644
  {
  	if (ep_crt_started) {
  		return -EINPROGRESS;
-@@ -141,7 +163,8 @@ int rpmsg_service_register_endpoint(const char *name, rpmsg_ept_cb cb)
+@@ -139,7 +161,8 @@ int rpmsg_service_register_endpoint(const char *name, rpmsg_ept_cb cb)
  		if (!endpoints[i].name) {
  			endpoints[i].name = name;
  			endpoints[i].cb = cb;
@@ -2159,7 +2246,7 @@ index e82c7a6be7..da51f70e96 100644
  			return i;
  		}
  	}
-@@ -156,6 +179,11 @@ bool rpmsg_service_endpoint_is_bound(int endpoint_id)
+@@ -154,6 +177,11 @@ bool rpmsg_service_endpoint_is_bound(int endpoint_id)
  	return endpoints[endpoint_id].bound;
  }
  
@@ -2171,20 +2258,3 @@ index e82c7a6be7..da51f70e96 100644
  int rpmsg_service_send(int endpoint_id, const void *data, size_t len)
  {
  	return rpmsg_send(&endpoints[endpoint_id].ep, data, len);
-diff --git a/west.yml b/west.yml
-index e006f43aa9..cdcef2cea5 100644
---- a/west.yml
-+++ b/west.yml
-@@ -133,12 +133,6 @@ manifest:
-       path: modules/hal/stm32
-       groups:
-         - hal
--    - name: hal_telink
--      revision: 38573af589173259801ae6c2b34b7d4c9e626746
--      path: modules/hal/telink
--      submodules: true
--      groups:
--        - hal
-     - name: hal_ti
-       revision: 000b944a788b6005d7776198e1348f5c8a657259
-       path: modules/hal/ti
