@@ -47,5 +47,10 @@ python () {
             d.setVar('QB_DTB_LINK', d.getVar('IMAGE_LINK_NAME') + ".qemuboot.dtb")
         elif 'jailhouse' in mcs_features:
             d.setVar('QB_MACHINE', '-machine virt,gic-version=3,virtualization=on,its=off')
+            d.setVar('QB_MEM', '-m 2048')
+            d.setVar('QB_OPT_APPEND','')
+            d.setVar('QB_RNG','')
+            d.setVar('QB_GRAPHICS','')
+            d.setVar('QB_NETWORK_DEVICE', "-device virtio-net-device,netdev=net0,mac=@MAC@")
             d.setVar('QB_KERNEL_CMDLINE_APPEND', 'mem=750M')
 }

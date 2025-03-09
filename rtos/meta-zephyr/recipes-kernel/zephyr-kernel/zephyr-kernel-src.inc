@@ -1,5 +1,5 @@
 LICENSE = "Apache-2.0"
-LIC_FILES_CHKSUM = "file://zephyr/LICENSE;md5=fa818a259cbed7ce8bc2a22d35a464fc"
+LIC_FILES_CHKSUM = "file://zephyr-${ZEPHYR_VERSION}/LICENSE;md5=fa818a259cbed7ce8bc2a22d35a464fc"
 
 CVE_PRODUCT = "zephyr"
 
@@ -11,12 +11,12 @@ OPENEULER_LOCAL_NAME = "zephyrproject"
 # the dir holds all the zephyr project related source codes, e.g.
 # zephyr kernel, zephyr modules, tools
 ZEPHYR_PROJECT_DIR ?= "zephyr_project"
-ZEPHYR_VERSION ?="3.2.0"
+ZEPHYR_VERSION ?="3.7.1"
 
 SRC_URI = "\
-    file://zephyr_project_v${ZEPHYR_VERSION}.tar.gz;subdir=zephyr_project \
-    file://zephyr_openeuler_mcs.patch;patchdir=zephyr \
-    file://libmetal_fix_configure_error.patch;patchdir=modules/hal/libmetal \
+    file://lts3-zephyr-${ZEPHYR_VERSION}.tar.gz;subdir=zephyr_project \
+    file://lts3-zephyr-modules-${ZEPHYR_VERSION}.tar.gz;subdir=zephyr_project \
+    file://zephyr_openeuler_mcs.patch;patchdir=zephyr-${ZEPHYR_VERSION} \
 "
 
 # This file might be included from other places (like other layers) and not

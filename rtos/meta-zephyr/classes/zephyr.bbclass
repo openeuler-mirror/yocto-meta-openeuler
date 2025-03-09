@@ -29,14 +29,6 @@ TOOLCHAIN_OPTIONS = ""
 # qemuboot writes into IMGDEPLOYDIR, force to write to DEPLOY_DIR_IMAGE
 IMGDEPLOYDIR = "${DEPLOY_DIR_IMAGE}"
 
-python () {
-    # Translate MACHINE into Zephyr BOARD
-    # Zephyr BOARD is basically our MACHINE, except we must use "-" instead of "_"
-    board = d.getVar('ZEPHYR_BOARD', True)
-    board = board.replace('-', '_')
-    d.setVar('BOARD',board)
-}
-
 python do_menuconfig() {
     os.chdir(d.getVar('B', True))
     configdir = d.getVar('B', True)
@@ -67,5 +59,5 @@ addtask menuconfig after do_configure
 
 python do_devshell:prepend () {
     # Most likely we need to manually edit prj.conf...
-    os.chdir(d.getVar('ZEPHYR_SRC_DIR', True))
+    os.chdir(d.getVar('ZEPHYR_APP_DIR', True))
 }
