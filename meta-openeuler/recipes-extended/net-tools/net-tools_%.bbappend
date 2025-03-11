@@ -1,5 +1,7 @@
 # main bb file: yocto-poky/meta/recipes-extended/net-tools/net-tools_2.10.bb
 
+DEPENDS += "libselinux bluez5"
+
 PV = "2.10"
 
 S = "${WORKDIR}/${BP}"
