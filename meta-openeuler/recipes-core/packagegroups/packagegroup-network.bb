@@ -1,4 +1,4 @@
-SUMMARY = "network packagegroup"
+SUMMARY = "openeuler embedded network functions packagegroup"
 PR = "r1"
 
 inherit packagegroup
@@ -24,18 +24,3 @@ dhcp-server-config \
 dhcp-omshell \
 dhcp-relay \
 "
-
-RDEPENDS:${PN}-wifi = " \
-wpa-supplicant \
-"
-
-RDEPENDS:${PN}-bluetooth = " \
-bluez5 \
-"
-
-# The bluez used by image running on raspberrypi should use the 
-# raspberrypi distro.
-python () {
-    if d.getVar('MACHINE') == 'raspberrypi4-64':
-        d.appendVar("RDEPENDS:"+d.getVar('PN')+"-bluetooth", " bluez-firmware-rpidistro")
-}
