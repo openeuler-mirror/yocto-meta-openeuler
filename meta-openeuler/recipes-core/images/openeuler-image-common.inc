@@ -3,10 +3,11 @@ IMAGE_INSTALL = " \
 packagegroup-core-boot \
 packagegroup-core-base-utils \
 packagegroup-core-tools-debug \
-packagegroup-base \
+packagegroup-base-extended \
 packagegroup-openssh \
 packagegroup-network \
 packagegroup-kernel-modules \
+packagegroup-core-full-cmdline \
 "
 
 # no extra language settings
