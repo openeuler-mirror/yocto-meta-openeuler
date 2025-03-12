@@ -20,7 +20,6 @@ IMAGE_FEATURES:remove = "weston"
 IMAGE_INSTALL = " \
 packagegroup-core-boot \
 packagegroup-kernel-modules \
-packagegroup-openssh \
 packagegroup-mcs \
 "
 
