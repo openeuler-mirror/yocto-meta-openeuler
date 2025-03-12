@@ -9,9 +9,9 @@ require openeuler-image-common.inc
 # not build sdk
 deltask populate_sdk
 
-# tiny image overwrite this variable, or IMAGE_INSTALL was standard packages in openeuler-image-common.inc file
-IMAGE_INSTALL = " \
-packagegroup-core-boot \
+# PACKAGE_INSTALL is the final var to control what is installed in rootfs
+PACKAGE_INSTALL = " \
+    packagegroup-core-boot \
 "
 
 # make install or nologin when using busybox-inittab
