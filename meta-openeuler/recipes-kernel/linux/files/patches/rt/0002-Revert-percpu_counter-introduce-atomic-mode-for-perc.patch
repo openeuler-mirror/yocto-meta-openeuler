@@ -1,0 +1,157 @@
+From cde9fbe05f93632ff7ae372530529748299f3ce4 Mon Sep 17 00:00:00 2001
+From: hanzongcheng <hanzongcheng@huawei.com>
+Date: Thu, 6 Mar 2025 16:44:38 +0800
+Subject: [PATCH 2/2] Revert "percpu_counter: introduce atomic mode for
+ percpu_counter"
+
+This reverts commit 69381c36f1ac06079e7a27999503d6b1ceb10c09.
+
+diff --git a/include/linux/percpu_counter.h b/include/linux/percpu_counter.h
+index c50716df9fa3..8cb7c071bd5c 100644
+--- a/include/linux/percpu_counter.h
++++ b/include/linux/percpu_counter.h
+@@ -21,18 +21,7 @@
+ 
+ struct percpu_counter {
+ 	raw_spinlock_t lock;
+-	/*
+-	 * Depending on whether counters is NULL, we can support two modes,
+-	 * atomic mode using count_atomic and perpcu mode using count.
+-	 * The single-thread processes should use atomic mode to reduce the
+-	 * memory consumption and performance regression.
+-	 * The multiple-thread processes should use percpu mode to reduce the
+-	 * error margin.
+-	 */
+-	union {
+-		s64 count;
+-		atomic64_t count_atomic;
+-	};
++	s64 count;
+ #ifdef CONFIG_HOTPLUG_CPU
+ 	struct list_head list;	/* All percpu_counters are on a list */
+ #endif
+@@ -43,14 +32,14 @@ extern int percpu_counter_batch;
+ 
+ int __percpu_counter_init_many(struct percpu_counter *fbc, s64 amount,
+ 			       gfp_t gfp, u32 nr_counters,
+-			       struct lock_class_key *key, bool switch_mode);
++			       struct lock_class_key *key);
+ 
+ #define percpu_counter_init_many(fbc, value, gfp, nr_counters)		\
+ 	({								\
+ 		static struct lock_class_key __key;			\
+ 									\
+ 		__percpu_counter_init_many(fbc, value, gfp, nr_counters,\
+-					   &__key, false);		\
++					   &__key);			\
+ 	})
+ 
+ 
+@@ -141,20 +130,6 @@ static inline bool percpu_counter_initialized(struct percpu_counter *fbc)
+ 	return (fbc->counters != NULL);
+ }
+ 
+-static inline s64 percpu_counter_atomic_read(struct percpu_counter *fbc)
+-{
+-	return atomic64_read(&fbc->count_atomic);
+-}
+-
+-static inline void percpu_counter_atomic_add(struct percpu_counter *fbc,
+-					     s64 amount)
+-{
+-	atomic64_add(amount, &fbc->count_atomic);
+-}
+-
+-int percpu_counter_switch_to_pcpu_many(struct percpu_counter *fbc,
+-				       u32 nr_counters);
+-
+ #else /* !CONFIG_SMP */
+ 
+ struct percpu_counter {
+@@ -278,23 +253,6 @@ static inline bool percpu_counter_initialized(struct percpu_counter *fbc)
+ static inline void percpu_counter_sync(struct percpu_counter *fbc)
+ {
+ }
+-
+-static inline s64 percpu_counter_atomic_read(struct percpu_counter *fbc)
+-{
+-	return fbc->count;
+-}
+-
+-static inline void percpu_counter_atomic_add(struct percpu_counter *fbc,
+-					     s64 amount)
+-{
+-	percpu_counter_add(fbc, amount);
+-}
+-
+-static inline int percpu_counter_switch_to_pcpu_many(struct percpu_counter *fbc,
+-						     u32 nr_counters)
+-{
+-	return 0;
+-}
+ #endif	/* CONFIG_SMP */
+ 
+ static inline void percpu_counter_inc(struct percpu_counter *fbc)
+diff --git a/lib/percpu_counter.c b/lib/percpu_counter.c
+index fb30d739f4b5..58a3392f471b 100644
+--- a/lib/percpu_counter.c
++++ b/lib/percpu_counter.c
+@@ -153,7 +153,7 @@ EXPORT_SYMBOL(__percpu_counter_sum);
+ 
+ int __percpu_counter_init_many(struct percpu_counter *fbc, s64 amount,
+ 			       gfp_t gfp, u32 nr_counters,
+-			       struct lock_class_key *key, bool switch_mode)
++			       struct lock_class_key *key)
+ {
+ 	unsigned long flags __maybe_unused;
+ 	size_t counter_size;
+@@ -174,8 +174,7 @@ int __percpu_counter_init_many(struct percpu_counter *fbc, s64 amount,
+ #ifdef CONFIG_HOTPLUG_CPU
+ 		INIT_LIST_HEAD(&fbc[i].list);
+ #endif
+-		if (likely(!switch_mode))
+-			fbc[i].count = amount;
++		fbc[i].count = amount;
+ 		fbc[i].counters = (void *)counters + (i * counter_size);
+ 
+ 		debug_percpu_counter_activate(&fbc[i]);
+@@ -332,36 +331,6 @@ bool __percpu_counter_limited_add(struct percpu_counter *fbc,
+ 	return good;
+ }
+ 
+-/*
+- * percpu_counter_switch_to_pcpu_many: Converts struct percpu_counters from
+- * atomic mode to percpu mode.
+- *
+- * Return: 0 if percpu_counter is already in atomic mode or successfully
+- * switched to atomic mode; -ENOMEM if perpcu memory allocation fails,
+- * perpcu_counter is still in atomic mode.
+- */
+-int percpu_counter_switch_to_pcpu_many(struct percpu_counter *fbc,
+-				       u32 nr_counters)
+-{
+-	static struct lock_class_key __key;
+-	unsigned long flags;
+-	bool ret = 0;
+-
+-	if (percpu_counter_initialized(fbc))
+-		return 0;
+-
+-	preempt_disable();
+-	local_irq_save(flags);
+-	if (likely(!percpu_counter_initialized(fbc)))
+-		ret = __percpu_counter_init_many(fbc, 0,
+-					GFP_ATOMIC|__GFP_NOWARN|__GFP_ZERO,
+-					nr_counters, &__key, true);
+-	local_irq_restore(flags);
+-	preempt_enable();
+-
+-	return ret;
+-}
+-
+ static int __init percpu_counter_startup(void)
+ {
+ 	int ret;
+-- 
+2.34.1
+

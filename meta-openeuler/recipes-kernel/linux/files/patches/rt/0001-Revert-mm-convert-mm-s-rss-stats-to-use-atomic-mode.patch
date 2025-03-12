@@ -1,0 +1,160 @@
+From 0499beb597907174e77b6740a9bf00fdbf1ba0bf Mon Sep 17 00:00:00 2001
+From: hanzongcheng <hanzongcheng@huawei.com>
+Date: Thu, 6 Mar 2025 16:41:49 +0800
+Subject: [PATCH 1/2] Revert "mm: convert mm's rss stats to use atomic mode"
+
+This reverts commit c333c44449530463d06fb3feb9e50959aed06061.
+
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 2e6ef9532fc3..552154963c35 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -2630,66 +2630,30 @@ static inline bool get_user_page_fast_only(unsigned long addr,
+  */
+ static inline unsigned long get_mm_counter(struct mm_struct *mm, int member)
+ {
+-	struct percpu_counter *fbc = &mm->rss_stat[member];
+-
+-	if (percpu_counter_initialized(fbc))
+-		return percpu_counter_read_positive(fbc);
+-
+-	return percpu_counter_atomic_read(fbc);
++	return percpu_counter_read_positive(&mm->rss_stat[member]);
+ }
+ 
+ void mm_trace_rss_stat(struct mm_struct *mm, int member);
+ 
+ static inline void add_mm_counter(struct mm_struct *mm, int member, long value)
+ {
+-	struct percpu_counter *fbc = &mm->rss_stat[member];
+-
+-	if (percpu_counter_initialized(fbc))
+-		percpu_counter_add(fbc, value);
+-	else
+-		percpu_counter_atomic_add(fbc, value);
++	percpu_counter_add(&mm->rss_stat[member], value);
+ 
+ 	mm_trace_rss_stat(mm, member);
+ }
+ 
+ static inline void inc_mm_counter(struct mm_struct *mm, int member)
+ {
+-	add_mm_counter(mm, member, 1);
+-}
+-
+-static inline void dec_mm_counter(struct mm_struct *mm, int member)
+-{
+-	add_mm_counter(mm, member, -1);
+-}
+-
+-static inline s64 mm_counter_sum(struct mm_struct *mm, int member)
+-{
+-	struct percpu_counter *fbc = &mm->rss_stat[member];
++	percpu_counter_inc(&mm->rss_stat[member]);
+ 
+-	if (percpu_counter_initialized(fbc))
+-		return percpu_counter_sum(fbc);
+-
+-	return percpu_counter_atomic_read(fbc);
+-}
+-
+-static inline s64 mm_counter_sum_positive(struct mm_struct *mm, int member)
+-{
+-	struct percpu_counter *fbc = &mm->rss_stat[member];
+-
+-	if (percpu_counter_initialized(fbc))
+-		return percpu_counter_sum_positive(fbc);
+-
+-	return percpu_counter_atomic_read(fbc);
++	mm_trace_rss_stat(mm, member);
+ }
+ 
+-static inline int mm_counter_switch_to_pcpu(struct mm_struct *mm)
++static inline void dec_mm_counter(struct mm_struct *mm, int member)
+ {
+-	return percpu_counter_switch_to_pcpu_many(mm->rss_stat, NR_MM_COUNTERS);
+-}
++	percpu_counter_dec(&mm->rss_stat[member]);
+ 
+-static inline void mm_counter_destroy(struct mm_struct *mm)
+-{
+-	percpu_counter_destroy_many(mm->rss_stat, NR_MM_COUNTERS);
++	mm_trace_rss_stat(mm, member);
+ }
+ 
+ /* Optimized variant when folio is already known not to be anon */
+diff --git a/include/trace/events/kmem.h b/include/trace/events/kmem.h
+index a4e40ae6a8c8..6e62cc64cd92 100644
+--- a/include/trace/events/kmem.h
++++ b/include/trace/events/kmem.h
+@@ -399,8 +399,8 @@ TRACE_EVENT(rss_stat,
+ 		__entry->mm_id = mm_ptr_to_hash(mm);
+ 		__entry->curr = !!(current->mm == mm);
+ 		__entry->member = member;
+-		__entry->size = (mm_counter_sum_positive(mm, member)
+-							<< PAGE_SHIFT);
++		__entry->size = (percpu_counter_sum_positive(&mm->rss_stat[member])
++							    << PAGE_SHIFT);
+ 	),
+ 
+ 	TP_printk("mm_id=%u curr=%d type=%s size=%ldB",
+diff --git a/kernel/fork.c b/kernel/fork.c
+index f30b24c68442..e709419299c6 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -858,7 +858,7 @@ static void check_mm(struct mm_struct *mm)
+ 			 "Please make sure 'struct resident_page_types[]' is updated as well");
+ 
+ 	for (i = 0; i < NR_MM_COUNTERS; i++) {
+-		long x = mm_counter_sum(mm, i);
++		long x = percpu_counter_sum(&mm->rss_stat[i]);
+ 
+ 		if (unlikely(x))
+ 			pr_alert("BUG: Bad rss-counter state mm:%p type:%s val:%ld\n",
+@@ -959,7 +959,7 @@ void __mmdrop(struct mm_struct *mm)
+ 	put_user_ns(mm->user_ns);
+ 	mm_pasid_drop(mm);
+ 	mm_destroy_cid(mm);
+-	mm_counter_destroy(mm);
++	percpu_counter_destroy_many(mm->rss_stat, NR_MM_COUNTERS);
+ 
+ 	free_mm(mm);
+ }
+@@ -1371,11 +1371,17 @@ static struct mm_struct *mm_init(struct mm_struct *mm, struct task_struct *p,
+ 	if (mm_alloc_cid(mm))
+ 		goto fail_cid;
+ 
++	if (percpu_counter_init_many(mm->rss_stat, 0, GFP_KERNEL_ACCOUNT,
++				     NR_MM_COUNTERS))
++		goto fail_pcpu;
++
+ 	sp_init_mm(mm);
+ 	mm->user_ns = get_user_ns(user_ns);
+ 	lru_gen_init_mm(mm);
+ 	return mm;
+ 
++fail_pcpu:
++	mm_destroy_cid(mm);
+ fail_cid:
+ 	destroy_context(mm);
+ fail_nocontext:
+@@ -1791,16 +1797,6 @@ static int copy_mm(unsigned long clone_flags, struct task_struct *tsk)
+ 	if (!oldmm)
+ 		return 0;
+ 
+-	/*
+-	 * For single-thread processes, rss_stat is in atomic mode, which
+-	 * reduces the memory consumption and performance regression caused by
+-	 * using percpu. For multiple-thread processes, rss_stat is switched to
+-	 * the percpu mode to reduce the error margin.
+-	 */
+-	if (clone_flags & CLONE_THREAD)
+-		if (mm_counter_switch_to_pcpu(oldmm))
+-			return -ENOMEM;
+-
+ 	if (clone_flags & CLONE_VM) {
+ 		mmget(oldmm);
+ 		mm = oldmm;
+-- 
+2.34.1
+
