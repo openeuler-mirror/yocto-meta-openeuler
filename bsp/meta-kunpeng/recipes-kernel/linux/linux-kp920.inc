@@ -10,7 +10,13 @@ SRC_URI:remove:aarch64 = " \
 "
 
 CONFIGVERSION="${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'kernel6-', '', d)}"
-OPENEULER_KERNEL_CONFIG = "file://${CONFIGVERSION}config/kp920/defconfig"
+
+SRC_URI:append = " \
+    file://cfg-fragments/kp920-build.cfg \
+"
+
+OPENEULER_KERNEL_CONFIG = ""
+KBUILD_DEFCONFIG = "openeuler_defconfig"
 
 # add COMPATIBLE_MACHINE
 COMPATIBLE_MACHINE = "kp920"
