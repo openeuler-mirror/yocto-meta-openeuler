@@ -21,14 +21,12 @@ IMAGE_FEATURES:remove = "weston"
 IMAGE_INSTALL = " \
 packagegroup-core-boot \
 packagegroup-kernel-modules \
-packagegroup-openssh \
 packagegroup-mcs \
 "
 # ZVM currently support simple kernel 
 IMAGE_INSTALL:remove = " \
     ${@bb.utils.contains('MCS_FEATURES', 'zvm', ' \
     packagegroup-kernel-modules \
-    packagegroup-openssh \
     ', '', d)}"
 
 python () {

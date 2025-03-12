@@ -13,7 +13,6 @@ IMAGE_INSTALL = " \
 packagegroup-core-boot \
 packagegroup-base \
 packagegroup-pam-plugins \
-packagegroup-openssh \
 "
 
 # packages added to rootfs and target sdk

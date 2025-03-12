@@ -4,7 +4,6 @@ packagegroup-core-boot \
 packagegroup-core-base-utils \
 packagegroup-core-tools-debug \
 packagegroup-base-extended \
-packagegroup-openssh \
 packagegroup-network \
 packagegroup-kernel-modules \
 packagegroup-core-full-cmdline \
@@ -27,7 +26,7 @@ OPENEUELR_IMAGE_USERS ?= " \
 # by default, allow root login and empty password from ssh
 # because of the configuration of OPENEUELR_IMAGE_USERS
 # root password will be required to reset at first login
-OPENEULER_IMAGE_FEATURES ?= "allow-root-login allow-empty-password"
+OPENEULER_IMAGE_FEATURES ?= "allow-root-login allow-empty-password ssh-server-openssh"
 IMAGE_FEATURES:append = " ${OPENEULER_IMAGE_FEATURES}"
 
 # image-level user and user group configuration
