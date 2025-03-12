@@ -30,4 +30,4 @@ SRC_URI:append = " \
 COMPATIBLE_MACHINE = "qemu-aarch64|generic-x86-64"
 
 ## Preempt-RT
-KERNEL_FEATURES:append =  "features/preempt-rt/preempt-rt.scc"
+KERNEL_FEATURES:append =  " features/preempt-rt/preempt-rt.scc"
