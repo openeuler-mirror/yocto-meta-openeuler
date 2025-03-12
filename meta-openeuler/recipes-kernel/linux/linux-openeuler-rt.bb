@@ -20,6 +20,13 @@ SRC_URI:append:x86-64 = " \
     ', d)} \
 "
 
+SRC_URI:append = " \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
+        file://patches/rt/0001-Revert-mm-convert-mm-s-rss-stats-to-use-atomic-mode.patch \
+        file://patches/rt/0002-Revert-percpu_counter-introduce-atomic-mode-for-perc.patch \
+    ', '', d)} \
+"
+
 COMPATIBLE_MACHINE = "qemu-aarch64|generic-x86-64"
 
 ## Preempt-RT
