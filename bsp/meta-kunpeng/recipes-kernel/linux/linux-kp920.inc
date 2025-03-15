@@ -20,3 +20,7 @@ KBUILD_DEFCONFIG = "openeuler_defconfig"
 
 # add COMPATIBLE_MACHINE
 COMPATIBLE_MACHINE = "kp920"
+
+# strip modules for kp920 image
+EXTRA_OEMAKE += "INSTALL_MOD_STRIP=1"
+INSANE_SKIP:${PN} += "already-stripped"
