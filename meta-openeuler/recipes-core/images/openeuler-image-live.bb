@@ -12,6 +12,7 @@ INITRAMFS_SCRIPTS ?= "\
 PACKAGE_INSTALL = "${INITRAMFS_SCRIPTS} \
         packagegroup-core-boot-live \
         ${ROOTFS_BOOTSTRAP_INSTALL} \
+        kernel-modules \
         packagegroup-kernel-modules \
         efivar efibootmgr \
 "
