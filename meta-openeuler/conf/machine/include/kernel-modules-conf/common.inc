@@ -1,5 +1,5 @@
 INSTALLMODULES = " \
-kernel-module-overlay \
+${@bb.utils.contains('DISTRO_FEATURES', 'isulad', 'kernel-module-overlay', '', d)} \
 kernel-module-8021q \
 kernel-module-ext2 \
 kernel-module-inet-diag \
