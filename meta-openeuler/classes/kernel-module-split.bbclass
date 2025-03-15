@@ -95,7 +95,10 @@ python split_kernel_module_packages () {
             bb.warn("module_autoload_%s was replaced by KERNEL_MODULE_AUTOLOAD for cases where basename == module name, please drop it" % basename)
         if autoload and basename not in autoloadlist:
             bb.warn("module_autoload_%s is defined but '%s' isn't included in KERNEL_MODULE_AUTOLOAD, please add it there" % (basename, basename))
-        if basename in autoloadlist:
+        # KERNEL_MODULE_AUTOLOAD contains kernel-module-xxx, xxx module will be autoloaded
+        postfix = format.split('%s')[1]
+        autoloadpkg = pkg.replace(postfix, '')
+        if basename in autoloadlist or autoloadpkg in autoloadlist:
             name = '%s/etc/modules-load.d/%s.conf' % (dvar, basename)
             f = open(name, 'w')
             if autoload:
