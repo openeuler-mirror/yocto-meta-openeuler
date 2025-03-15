@@ -1,4 +1,4 @@
-# the main bb file: yocto-poky/meta/recipes-connectivity/iproute2/iproute2_5.17.0.bb
+# the main bb file: yocto-poky/meta/recipes-connectivity/iptables/iptables_1.8.7.bb
 
 LICENSE = "GPL-2.0-or-later"
 
