@@ -38,14 +38,20 @@ rootfs_name="rootfs.img"
 echo "Check ISO/ext4 and CD-ROM..."
 iso_support=`cat /proc/filesystems | grep iso9660 | awk '{print $1}'`
 if [ "$iso_support" != "iso9660" ]; then
-    echo "Kernel not support iso9660 filesystem. Please check."
-    exit 1
+    modprobe iso9660 2> /dev/null
+    if [ "$?" -ne 0 ]; then
+        echo "Kernel not support iso9660 filesystem. Please check."
+        exit 1
+    fi
 fi
 
 ext4_support=`cat /proc/filesystems | grep ext4 | awk '{print $1}'`
 if [ "$ext4_support" != "ext4" ]; then
-    echo "Kernel not support ext4 filesystem. Please check."
-    exit 1
+    modprobe ext4 2> /dev/null
+    if [ "$?" -ne 0 ]; then
+        echo "Kernel not support ext4 filesystem. Please check."
+        exit 1
+    fi
 fi
 
 cdromlists=`ls /sys/block/ | grep -Ev "ram|loop"` || true
