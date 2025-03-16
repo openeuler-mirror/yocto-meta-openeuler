@@ -13,6 +13,7 @@ CONFIGVERSION="${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'kernel6-', ''
 
 SRC_URI:append = " \
     file://cfg-fragments/kp920-build.cfg \
+    file://cfg-fragments/common-pc-drivers.cfg \
 "
 
 OPENEULER_KERNEL_CONFIG = ""
