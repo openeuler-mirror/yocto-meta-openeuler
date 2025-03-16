@@ -2,31 +2,8 @@
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
-PV = "8.0.0"
-
-# License on 8.0.0
-LIC_FILES_CHKSUM = "file://COPYING;md5=d79ee9e66bb0f95d3386a7acae780b70 \
-                    file://libweston/compositor.c;endline=27;md5=6c53bbbd99273f4f7c4affa855c33c0a"
-
-
-SRC_URI[sha256sum] = "7518b49b2eaa1c3091f24671bdcc124fd49fc8f1af51161927afa4329c027848"
-
-# keep as 8.0.0
-EXTRA_OEMESON += "-Dbackend-default=auto"
-
-PACKAGECONFIG:append = " launch fbdev"
-
-PACKAGECONFIG[fbdev] = "-Dbackend-fbdev=true,-Dbackend-fbdev=false,udev mtdev"
-
-PACKAGECONFIG[launch] = "-Dweston-launch=true,-Dweston-launch=false,drm"
-
-PACKAGECONFIG[launcher-libseat] = ""
-
-
 # openeuler customization
-
 SRC_URI:append = " \
-    file://${BP}.tar.xz  \
     file://openeuler.png \
 "
 
