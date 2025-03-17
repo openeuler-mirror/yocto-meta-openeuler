@@ -49,13 +49,8 @@ do_compile() {
 	export LD="${LD}"
 	export GOBIN=""
 	export OEE_YOCTO_VERSION="v${PV}-oee+yocto"
-    # Any GOLDFLAGS strings cause passing parameter err for unknown reason: 
-    #   panic: runtime error: index out of range [1] with length 1
-    # current we use left NULL as workaround.
-    # the GOLDFLAGS from src-openeuler is:
-    #    "-buildid=none -buildmode=pie -extldflags=-ftrapv -extldflags=-zrelro -extldflags=-znow -linkmode=external -extldflags=-static -extldflags '-Wl,-s'"
-    export GOLDFLAGS=""
-
+    export GOLDFLAGS="-buildid=none -buildmode=pie -extldflags ' -zrelro -ftrapv -znow -static' -linkmode=external"
+  
     make all CGO_FLAGS=${CGO_FLAGS} GO=${GO}
     ${GO} build -v -o _output/local/bin/csidriver  github.com/kubeedge/kubeedge/cloud/cmd/csidriver
 }
@@ -65,7 +60,7 @@ do_install() {
     # create directories
     install -d ${D}${bindir}
     install -d ${D}${sysconfdir}
-    install -d ${D}${systemd_unitdir}/system/
+    install -d ${D}${systemd_system_unitdir}/
     install -d ${D}${sysconfdir}/kubeedge
     install -d ${D}${sysconfdir}/kubeedge/config
     install -d ${D}${sysconfdir}/kubeedge/tools
@@ -84,8 +79,8 @@ do_install() {
     install -Dpm0640 ${WORKDIR}/edgecore.example.yaml ${D}${sysconfdir}/kubeedge/config/edgecore.example.yaml
 
     # service file for systemd
-    install -m 0644 ${S}/build/tools/cloudcore.service ${D}${systemd_unitdir}/system/
-    install -m 0644 ${S}/build/tools/edgecore.service ${D}${systemd_unitdir}/system/
+    install -m 0644 ${S}/build/tools/cloudcore.service ${D}${systemd_system_unitdir}/
+    install -m 0644 ${S}/build/tools/edgecore.service ${D}${systemd_system_unitdir}/
     # install service file in /etc/kubeedge/ as well so that no need to download from internet when they use keadm
     install -m 0644 ${S}/build/tools/cloudcore.service ${D}${sysconfdir}/kubeedge/
     install -m 0644 ${S}/build/tools/edgecore.service ${D}${sysconfdir}/kubeedge/
@@ -143,7 +138,7 @@ FILES:cloudcore = " \
         ${bindir}/cloudcore \
         ${bindir}/admission \
         ${bindir}/csidriver \
-        ${systemd_unitdir}/system/cloudcore.service \
+        ${systemd_system_unitdir}/cloudcore.service \
         ${sysconfdir}/kubeedge/crds \
         ${sysconfdir}/kubeedge/tools/certgen.sh \
         ${sysconfdir}/kubeedge/config/cloudcore.example.yaml \
@@ -151,7 +146,7 @@ FILES:cloudcore = " \
 
 FILES:edgecore = " \
         ${bindir}/edgecore \
-        ${systemd_unitdir}/system/edgecore.service \
+        ${systemd_system_unitdir}/edgecore.service \
         ${sysconfdir}/kubeedge/config/edgecore.example.yaml \
 "
 
@@ -171,7 +166,6 @@ RDEPENDS:edgecore += " \
         kernel-module-libcrc32c \
         kernel-module-nf-conntrack \
         kernel-module-nf-conntrack-netlink \
-        kernel-module-nfnetlink-log \
         kernel-module-nfnetlink \
         kernel-module-nf-nat \
         kernel-module-vxlan \
