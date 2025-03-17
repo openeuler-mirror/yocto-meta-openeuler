@@ -1,5 +1,4 @@
 SUMMARY = "container os image"
-
 # notice: IMAGE_FEATURE configs such as IMAGE_FSTYPES is recommended to be defined before openeuler-image-common.inc, 
 # because openeuler-image-common.inc inlcude core-image.bbclass, and image.bbclass in core-image.bbclass
 # will traverse the type of IMAGE_FSTYPES to include the image-${FSTYPE}.class corresponding to the type,

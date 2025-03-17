@@ -1,3 +1,90 @@
+# issues
+
+## isulad 问题
+
+启动isulad.service 后， 会发现isula找不到 engine 相关文件;
+
+## 版本问题
+
+考虑到大文件托管不便，现在暂时移除 airgap images; 相关的脚本、设置也都已经作为yocto文件了，暂时将上游设置为k3s-io official
+TODO src-openeuler 上游版本和 k3s-io有小出入，他们提供的是1.24+ 的 k3s, 当时QEMU试验部署没有很好工作，所以暂时用1.22.17
+
+
+## package
+
+目前的packagegroup-k3s其实是一个单包, 是用变量来控制 full k3s(server) 或者 agent, 这样不好，下一次PR时改成packagegroup的形式；
+
+## do patch
+
+k3s check config 脚本在oee镜像中是无用的；因为 oee 镜像没有 kernel cfg 列表
+待解决
+
+## do compile
+
+### cni
+
+目前使用 oee `yocto-meta-openeuler/recipe-container/cni-plugin` 的cni
+TODO: 移除 cni-plugin 配方的依赖，把 cni 也作为单独进程压缩到 multicall binary 中
+
+### seccomp && selinux
+
+还未整合起来, 其中 seccomp 是安全上必需的
+
+### containerd, runc, containerd shim
+
+目前 oee k3s 配方中提供了 containerd, isulad 两种 runtime endpoint 的部分支持，还有一些设置需要在runtime进行，已经整合到脚本/systemd service文件中；
+
+构建containerd以及相关组件的构建暂时从k3s配方中移除，分析后认为应该单独作为依赖配方构建;即暂时不可以使用 k3s containerd作为 runtime endpoint
+
+### go vendor & go modules mix compilation
+
+    # ? 如果要构建非 isulad 作runtime的k3s,把 vendor和module混用起来比较好
+    # 1. 不希望在do_compile时重复拉取依赖。
+    # 2. 其他组件多数是vendor构建的，不保证编译结果差异
+
+已经在本地尝试中，如果最终分析结果为没必要，那就不会提交;
+
+### multicall binary
+
+#### intro
+
+k3s实现 single binary , bunches of processes 的方式是压缩-解压, 在调用上，类似于busybox,将各组件做符号链接指向containerd, 识别command line argument来确定要启用的服务，并进行解压。
+
+multicall k3s binary 在WORKDIR下一直编译不了,导致压缩二进制这一步无法进行，目前都是用无压缩地二进制测试
+
+#### undefined data.Asset
+    # ? FIXME: 
+    #   cmd/k3s/main.go:181:16: undefined: data.AssetNames
+    #   cmd/k3s/main.go:218:23: undefined: data.Asset
+    # under ${S}, pkg/data/data.go is empty indeed
+    # 位于${S}下编译会出现上面的错误
+    # 源码是从 FROM=yocto-meta-openeuler/../k3s 获取,复制到${S}
+    # 在FROM用完全相同地编译指令，编译，则没有问题, go env 除了pwd地差别，其他完全没有差异；
+    # 使用sysroot-native的go, host的go,都一样
+    # 从${FROM}前往${S}, 失败，从${S}返回到${FROM}, 成功 
+    # 将${S}复制到外部，依然失败,${FROM}复制到相同区域，依然成功
+    # tree 差别为 ${S} 总是多一个 pkg/deploy/zz_generated... 文件，但将此文件mv到FROM,
+    # S依然失败，FROM依然成功；build 前总是 go clean -cache 
+    # 编译指令如下：
+    # `CGO_ENABLED=0 ${GO} build -tags "urfave_cli_no_docs" -ldflags "${K3S_LDFLAGS} ${STATIC}"`
+    # -v -o "${PN}-${ARCH}" ./cmd/k3s/main.go  
+    # 手动加打印也确认了用的是pkg/data/data.go
+
+解决中
+
+### airgap images
+
+#### Why airgap images?
+
+airgap images使得agent node在仅联通 server node时即可加入k3s集群;
+配方在调试时总是通过k3s-io官方prebuild的airgap image。
+**如果** 在配方中实现了 airgap images 的构建，那么会方便许多,而且不依赖外部托管数百MB的airgap images了
+
+
+airgap images 将k3s运行依赖地容器镜像组件通过docker build 打包，目前只能在host上打包，本地尝试中, 如果airgap并不比较，则不提交
+初步分析 没有发现比较容易地在无容器引擎环境中build 容器镜像; oebuild 容器环境内部目前也没有提供 containerd/docker/podman等。
+
+
 # k3s: Lightweight Kubernetes
 
 Rancher's [k3s](https://k3s.io/), available under

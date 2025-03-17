@@ -26,8 +26,9 @@ set -e
 #   - K3S_URL (REQUIRED)
 #     The URL of the k3s server to connect to in agent mode. Must use HTTPS protocol.
 #
-#   - K3S_TOKEN/K3S_TOKEN_FILE/K3S_CLUSTER_SECRET (REQUIRED)
+#   - K3S_TOKEN/K3S_TOKEN_FILE (REQUIRED)
 #     Cluster secret token for agent authentication. At least one must be set.
+#     CLUSTER_SECRETE is deprecated
 #
 #   - AIRGAP_IMAGES_DIR
 #     Directory containing k3s-airgap-images-ARCH.tar.gz for offline installation
@@ -40,7 +41,10 @@ set -e
 #       ARGS="--disable=traefik" => "k3s agent --disable=traefik"
 #
 #   - CONTAINER_RT_EP
-#     Container runtime endpoint (default: unix:///var/run/isulad.sock instead of containerd.sock)
+#     Container runtime endpoint type 
+#     default CONTAINER_RT_EP=isulad => --container-runtime-endpoint unix:///var/run/isulad.sock instead of containerd.sock)
+#     if CONTAINER_RT_EP=embedded => use embedded k3s containerd instead.
+#     otherwise => --container-runtime=endpint "${CONTAINER_RT_EP}"
 #
 #   - INSTALL_K3S_BIN_DIR
 #     Directory to install k3s binary and scripts (default: /usr/bin)
@@ -53,6 +57,9 @@ set -e
 #
 #   - SKIP_LOAD_AIRGAP
 #     If set to true, prevents loading airgap images to isula
+#
+#   - ONLY_SET_ISULAD
+#     If set to true, only isulad configuration will take place
 #
 # Notes:
 # 1. This version ONLY supports agent mode and requires:
@@ -130,10 +137,8 @@ verify_k3s_url() {
 
 # --- setup basic environment ---
 setup_env() {
-    verify_k3s_url
 
     # always set OEE as agent mode
-    CMD_K3S=agent
     AIRGAP_DIR="${AIRGAP_IMAGES_DIR:-/etc/k3s/tools}"
     rawARCH="$(uname -m)"
     case "$rawARCH" in
@@ -156,10 +161,29 @@ setup_env() {
       AIRGAP_IMAGES="${AIRGAP_DIR}/k3s-airgap-images-${ARCH}.tar.gz"
     fi
      
-    CONTAINER_RT_EP="--container-runtime-endpoint=unix:///var/run/isulad.sock"
 
-    CMD_K3S_EXEC="${CMD_K3S}$(quote_indent ""@":" ${CONTAINER_RT_EP}"")"
+    
+    if [ "$ONLY_SET_ISULAD" = "true" ]; then
+      config_isulad 
+      exit 0
+    fi
+    verify_k3s_url
 
+    CONTAINER_RT_EP=${CONTAINER_RT_EP:-"isulad"}
+    case $CONTAINER_RT_EP in
+      "isulad")
+        CONTAINER_RUNTIME_ENDPOINT="--container-runtime-endpoint=unix:///var/run/isulad.sock"
+        ;;
+      "embedded")
+        CONTAINER_RUNTIME_ENDPOINT=""
+        ;;
+      *) 
+        CONTAINER_RUNTIME_ENDPOINT="--container-runtime-endpoint=${CONTAINER_RT_EP}"
+        ;;
+    esac
+
+    CMD_K3S=agent
+    CMD_K3S_EXEC="${CMD_K3S}$(quote_indent ""$@""${CONTAINER_RUNTIME_ENDPOINT}"")"
     SYSTEM_NAME=k3s-${CMD_K3S}
 
     SUDO=sudo
@@ -193,8 +217,6 @@ setup_env() {
     FILE_K3S_SERVICE=${SYSTEMD_DIR}/${SERVICE_K3S}
     FILE_K3S_ENV=${SYSTEMD_DIR}/${SERVICE_K3S}.env
 
-    # Command for k3s execution
-    CMD_K3S_EXEC="${CMD_K3S}$(quote_indent "$@")"
 }
 
 # --- create killall script ---
@@ -377,6 +399,12 @@ create_scripts() {
     create_uninstall
 }
 
+systemd_disable() {
+    $SUDO systemctl disable ${SYSTEM_NAME} >/dev/null 2>&1 || true
+    $SUDO rm -f /etc/systemd/system/${SERVICE_K3S} || true
+    $SUDO rm -f /etc/systemd/system/${SERVICE_K3S}.env || true
+}
+
 # --- create environment file ---
 create_env_file() {
     info "Creating environment file ${FILE_K3S_ENV}"
@@ -429,9 +457,6 @@ ExecStart=${BIN_DIR}/k3s \\
 EOF
 }
 
-create_service_files() {
-    create_env_file
-}
 
 # --- enable and start systemd service ---
 systemd_enable_and_start() {
@@ -448,6 +473,8 @@ isulad_daemon_set() {
     sed -i 's/"cni-bin-dir": "*",/"cni-bin-dir": "\/var\/lib\/rancher\/k3s\/data\/current\/bin",/' /etc/isulad/daemon.json
     sed -i 's/"cni-conf-dir": "*",/"cni-conf-dir": "\/var\/lib\/rancher\/k3s\/agent\/etc\/cni\/net.d",/' /etc/isulad/daemon.json
     sed -i 's/"pod-sandbox-image": "*",/"pod-sandbox-image": "docker.io\/rancher\/mirrored-pause:3.6",/' /etc/isulad/daemon.json
+    systemctl daemon-reload
+    systemctl restart isulad
 }
 
 isulad_preload_images() {
@@ -463,8 +490,8 @@ isulad_preload_images() {
 }
 
 config_isulad() {
-  isulad_preload_images
   isulad_daemon_set 
+  isulad_preload_images
 }
 
 eval set -- $(escape "${ARGS}") $(quote "${@}")
@@ -472,8 +499,14 @@ eval set -- $(escape "${ARGS}") $(quote "${@}")
 {
     setup_env "$@"
     create_scripts
-    #create_service_files
-    config_isulad
+    create_env_file
+    if [ "${CONTAINER_RT_EP}" = "isulad" ]; then
+      config_isulad
+    elif [ "${CONTAINER_RT_EP}" = "embedded" ]; then
+      create_systemd_service_file 
+    else
+      echo "customize k3s-agent.service manually for endpoint ${CONTAINER_RT_EP}"
+    fi
     systemd_enable_and_start
 }
 
