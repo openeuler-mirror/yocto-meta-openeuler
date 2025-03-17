@@ -1,7 +1,7 @@
 # enable cgroup v2
 # isulad, embedded, ...
 container_runtime_endpoint = "embedded"
-PV = "v1.22.17-rc1+k3s1"
+PV = "1.22.17-k3s1"
 #full_k3s = "false"
 MAX_K3S_BINARY_SIZE ?= "61000000"
 GO_BUILD_LDFLAGS:append = ""

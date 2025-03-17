@@ -3,10 +3,10 @@ DESCRIPTION = "Lightweight Kubernetes, intended to be a fully compliant Kubernet
 HOMEPAGE = "https://k3s.io/"
 LICENSE = "Apache-2.0"
 S = "${WORKDIR}/${BP}"
-LIC_FILES_CHKSUM = "file://${WORKDIR}/${BP}/LICENSE;md5=2ee41112a44fe7014dce33e26468ba93"
+LIC_FILES_CHKSUM = "file://${S}/LICENSE;md5=2ee41112a44fe7014dce33e26468ba93"
 APPEND += " cgroup_no_v1=all"
 
-PV = "v1.22.17"
+PV = "v1.22.17-k3s1"
 
 python() {
   if d.getVar('TUNE_PKGARCH') == 'aarch64':
@@ -21,13 +21,12 @@ python() {
 
 do_compile[network] = "1"
 SRC_URI = "\ 
-           file://${BP}.tar.gz \
+           file://oee_archive/${BP}.tar.gz \
            file://k3s-agent.service \
            file://k3s.service \
            file://k3s-kill-agent \
            file://k3s-killall.sh \
            file://modules.txt \
-           file://k3s-${ARCH}-${PV} \ 
            file://k3s-install-agent \
            file://install.sh \
            file://k3s-rootless.service \
@@ -60,7 +59,7 @@ PKG_CNI_PLUGINS="github.com/containernetworking/plugins"
 # PKG_K8S_BASE = "k8s.io/component-base"
 # PKG_K8S_CLIENT = "k8s.io/client-go/pkg"
 # PKG_CNI_PLUGINS = "github.com/containernetworking/plugins"
-COMMIT = "9c3769d"
+COMMIT = "3ed243d"
 #COMMIT = "3ed243d"
 #COMMIT = "3d82902b" from k3s-io upstream
 
@@ -163,7 +162,7 @@ do_compile() {
         #  * warning: Using 'dlopen' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
         #  * warning: Using 'getaddrinfo' in statically linked applications requires at runtime the shared libraries from the glibc version used for linking
         # NOTICE In k3s version 1.22 and later, k3s-io has removed the building for the 
-        # standalone k3s-agent binary, resulting in an increase of a little in the binary size.
+        # standalone k3s-agent binary,resulting in an increase of a little in the binary size.
         # both two products are stored in /var/lib/rancher/k3s/data/SomeHash/bin
         if [ "${full_k3s}" = "true" ]; then
           ${GO} build  -mod=readonly -tags "${SERVER_TAGS}"  -ldflags "${SERVER_LDFLAGS}" \
@@ -329,13 +328,10 @@ do_install() {
           sed -i "s#\(Exec\)\(.*\)=\(.*\)\(k3s\)#\1\2=${k3s_bindir}/\4#g"  "${unitfile_destdir}/k3s-agent.service"
 
           if [ "${container_runtime_endpoint}" = "isulad" ]; then
-            install "${WORKDIR}/k3s-airgap-images-arm64.tar.gz" "${D}${sysconfdir}/k3s/tools"
             sed -i "s#^ExecStart=\(.*\)#ExecStart=\1\n\t --container-runtime-endpoint unix:///var/run/isulad.sock #" "${unitfile_destdir}/k3s-agent.service"
             sed -i "s/^Documentation=.*$/&\nRequires=isulad.service /" "${unitfile_destdir}/k3s-agent.service"
             sed -i "s/^Requires=isulad.service/&\nAfter=isulad.service/" "${unitfile_destdir}/k3s-agent.service"
-          elif [ "${container_runtime_endpoint}" = "embedded" ]; then
-            install "${WORKDIR}/k3s-airgap-images-arm64.tar.gz" "${D}${localstatedir}/lib/rancher/k3s/agent/images"
-          else
+          elif [ "${container_runtime_endpoint}" != "embedded" ]; then
             # customize your endpoint setup functions in k3s_%.bbappend
             install_other_endpoint
           fi
