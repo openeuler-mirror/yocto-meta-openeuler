@@ -1,0 +1,131 @@
+#!/bin/sh -eu
+#
+# Copyright (C) 2020 Axis Communications AB
+#
+# SPDX-License-Identifier: Apache-2.0
+set -x
+ENV_CONF=/etc/systemd/system/k3s-agent.service.d/10-env.conf
+
+usage() {
+    echo "
+USAGE:
+    ${0##*/} [OPTIONS]
+OPTIONS:
+    --token value, -t value             Token to use for authentication [\$K3S_TOKEN]
+    --token-file value                  Token file to use for authentication [\$K3S_TOKEN_FILE]
+    --server value, -s value            Server to connect to [\$K3S_URL]
+    --node-name value                   Node name [\$K3S_NODE_NAME]
+    --resolv-conf value                 Kubelet resolv.conf file [\$K3S_RESOLV_CONF]
+    --cluster-secret value              Shared secret used to bootstrap a cluster [\$K3S_CLUSTER_SECRET]
+    --isula-setup, -i                  Setup container runtime endpoint as iSulad
+    -h                                  print this
+"
+}
+
+isulad_daemon_set() {
+    sed -i 's/"cni-bin-dir": "*",/"cni-bin-dir": "\/var\/lib\/rancher\/k3s\/data\/current\/bin",/' /etc/isulad/daemon.json
+    sed -i 's/"cni-conf-dir": "*",/"cni-conf-dir": "\/var\/lib\/rancher\/k3s\/agent\/etc\/cni\/net.d",/' /etc/isulad/daemon.json
+}
+
+isulad_preload_images() {
+    if [ ! -e "/etc/k3s/tools/k3s-airgap-images-arm64.tar.gz" ]; then
+      echo "failed to find k3s-airgap-images tarball!"
+      exit -1
+    fi
+    isula load -i /etc/k3s/tools/k3s-airgap-images-arm64.tar.gz
+}
+
+isula_set() {
+  isulad_preload_images
+  isulad_daemon_set 
+}
+
+[ $# -gt 0 ] || {
+    usage
+    exit 1
+}
+
+rm -f $ENV_CONF
+mkdir -p ${ENV_CONF%/*}
+echo [Service] > $ENV_CONF
+
+while getopts "t:s:ih-:" opt; do
+    case $opt in
+        h)
+            usage
+            exit
+            ;;
+        i)
+            isulad_daemon_set
+            exit
+            ;;
+        t)
+            VAR_NAME=K3S_TOKEN
+            ;;
+        s)
+            VAR_NAME=K3S_URL
+            ;;
+        -)
+            [ $# -ge $OPTIND ] || {
+                usage
+                exit 1
+            }
+            opt=$OPTARG
+            case $opt in
+                token)
+                    VAR_NAME=K3S_TOKEN
+                    eval OPTARG='$'$OPTIND
+                    OPTIND=$(($OPTIND + 1))
+                    ;;
+                token-file)
+                    VAR_NAME=K3S_TOKEN_FILE
+                    eval OPTARG='$'$OPTIND
+                    OPTIND=$(($OPTIND + 1))
+                    ;;
+                server)
+                    VAR_NAME=K3S_URL
+                    eval OPTARG='$'$OPTIND
+                    OPTIND=$(($OPTIND + 1))
+                    ;;
+                node-name)
+                    VAR_NAME=K3S_NODE_NAME
+                    eval OPTARG='$'$OPTIND
+                    OPTIND=$(($OPTIND + 1))
+                    ;;
+                resolv-conf)
+                    VAR_NAME=K3S_RESOLV_CONF
+                    eval OPTARG='$'$OPTIND
+                    OPTIND=$(($OPTIND + 1))
+                    ;;
+                cluster-secret)
+                    VAR_NAME=K3S_CLUSTER_SECRET
+                    eval OPTARG='$'$OPTIND
+                    OPTIND=$(($OPTIND + 1))
+                    ;;
+                isula-setup)
+                    isula_set
+                    exit
+                    ;;
+                help)
+                    usage
+                    exit
+                    ;;
+                *)
+                    usage
+                    exit 1
+                    ;;
+            esac
+            ;;
+        *)
+            usage
+            exit 1
+            ;;
+    esac
+echo Environment=$VAR_NAME=$OPTARG >> $ENV_CONF
+done
+
+chmod 0644 $ENV_CONF
+rm -rf /var/lib/rancher/k3s/agent
+systemctl daemon-reload
+systemctl restart k3s-agent
+systemctl enable k3s-agent.service

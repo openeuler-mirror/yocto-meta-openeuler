@@ -105,6 +105,11 @@ KERNEL_FEATURES:append = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'kubeedge', 'features/kubeedge/kubeedge.scc', '', d)} \
 "
 
+# k3s kernel support
+KERNEL_FEATURES:append = " \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'k3s', 'features/k3s/k3s.scc', '', d)} \
+"
+
 # export symbol for jailhouse, its patch is in jailhouse src folder
 SRC_URI:append = " ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'file://Jailhouse/jailhouse_export_symbol.patch', '', d)}"
 

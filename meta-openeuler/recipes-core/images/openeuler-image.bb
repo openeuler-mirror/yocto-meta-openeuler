@@ -25,6 +25,7 @@ ${@bb.utils.contains("DISTRO_FEATURES", "mcs", "packagegroup-mcs", "",d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "ros", "packagegroup-ros", "", d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "hmi", "packagegroup-hmi", "", d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "kubeedge isulad", "packagegroup-kubeedge", "", d)} \
+${@bb.utils.contains("DISTRO_FEATURES", "k3s isulad", "k3s packagegroup-k3s", "", d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "isulad", "packagegroup-isulad", "", d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "preempt-rt", "packagegroup-preempt-rt", "", d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "dsoftbus", "packagegroup-dsoftbus", "", d)} \
