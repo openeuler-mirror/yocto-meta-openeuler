@@ -3,7 +3,12 @@
 # Copyright (C) 2020 Axis Communications AB
 #
 # SPDX-License-Identifier: Apache-2.0
+
+#
+# Simplified from  k3s-install.sh
+
 set -x
+
 ENV_CONF=/etc/systemd/system/k3s-agent.service.d/10-env.conf
 
 usage() {
@@ -25,6 +30,7 @@ OPTIONS:
 isulad_daemon_set() {
     sed -i 's/"cni-bin-dir": "*",/"cni-bin-dir": "\/var\/lib\/rancher\/k3s\/data\/current\/bin",/' /etc/isulad/daemon.json
     sed -i 's/"cni-conf-dir": "*",/"cni-conf-dir": "\/var\/lib\/rancher\/k3s\/agent\/etc\/cni\/net.d",/' /etc/isulad/daemon.json
+    sed -i 's/"pod-sandbox-image": "*",/"pod-sandbox-image": "docker.io\/rancher\/mirrored-pause:3.6",/' /etc/isulad/daemon.json
 }
 
 isulad_preload_images() {

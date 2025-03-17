@@ -5,11 +5,6 @@ LICENSE = "Apache-2.0"
 S = "${WORKDIR}/${BP}"
 LIC_FILES_CHKSUM = "file://${WORKDIR}/${BP}/LICENSE;md5=2ee41112a44fe7014dce33e26468ba93"
 
-BAK_SRC_URI = "git://github.com/k3s-io/k3s.git;brenach=release-1.20 \
-        file://k3s-install.sh \
-        file://k3s-agent.sh \
-" 
-
 #PV = "v1.24.5-rc1+k3s2"
 # 实际上PV=v1.24.12-rc1+k3s1, v1.22.17这个名字只是调试用, k3s release page=31
 PV = "v1.22.17+k3s1"
@@ -23,18 +18,18 @@ SRC_URI = " \
            file://k3s-agent.service \
            file://k3s.service \
            file://k3s-agent \
-           file://k3s-clean.sh \
+           file://k3s-kill-agent \
            file://cni-containerd-net.conf \
            file://k3s-killall.sh \
            file://modules.txt \
            file://k3s-arm64-${PV} \ 
            file://k3s-airgap-images-arm64.tar.gz;unpack=0 \
+           file://k3s-install-agent \
            file://install.sh \
            file://k3s-rootless.service \
 "
-include src_uri.inc
 
-CNI_NETWORKING_FILES ?= "${WORKDIR}/cni-containerd-net.conf"
+include src_uri.inc
 
 inherit go
 inherit goarch
@@ -44,8 +39,10 @@ inherit systemd
 PACKAGECONFIG = ""
 GO_IMPORT = "import"
 full_k3s = "true"
+isulad_as_endpoint = "true"
 PKG = "github.com/k3s-io/k3s"
 PKGCOMMIT = "3ed243d"
+#PKGCOMMIT = "3d82902b" from k3s-io upstream
 VERSION_FLAGS = " \
   -X ${PKG}/pkg/version.Version=${PV} \
   -X ${PKG}/pkg/version.GitCommit=${PKGCOMMIT} \
@@ -141,28 +138,28 @@ do_install() {
         fi
 
         install -m 755 "${build_bindir}/k3s" "${D}${k3s_bindir}"
-        install -m 755 "${WORKDIR}/k3s-clean" "${D}${k3s_bindir}"
-        install -m 755 "${WORKDIR}/k3s-killall.sh" "${D}${k3s_bindir}"
+        install -m 755 "${WORKDIR}/k3s-kill-agent" "${D}${k3s_bindir}"
 
 
+        # next commit : remove full_k3s, support k3s agent only and make binary smaller
         if [ "${full_k3s}" = "true" ]; then
           #crictl conflicts
           #ln -sr "${D}${k3s_bindir}/k3s" "${D}${k3s_bindir}/crictl"
           ln -sr "${D}${k3s_bindir}/k3s" "${D}${k3s_bindir}/ctr"
           ln -sr "${D}${k3s_bindir}/k3s" "${D}${k3s_bindir}/kubectl"
-          ln -sr "${D}${k3s_bindir}/k3s" "${D}${k3s_bindir}/k3s-agent"
+          #ln -sr "${D}${k3s_bindir}/k3s" "${D}${k3s_bindir}/k3s-agent"
           ln -sr "${D}${k3s_bindir}/k3s" "${D}${k3s_bindir}/k3s-server"
           ln -sr "${D}${k3s_bindir}/k3s" "${D}${k3s_bindir}/k3s-completion"
           ln -sr "${D}${k3s_bindir}/k3s" "${D}${k3s_bindir}/k3s-certificate"
           ln -sr "${D}${k3s_bindir}/k3s" "${D}${k3s_bindir}/k3s-secrets-encrpyt"
           # etcd does not well work in some k3s at lower version 
           #ln -sr "${D}${k3s_bindir}/k3s" "${D}${k3s_bindir}/k3s-etcd-snapshot"
-        else 
-          install -m 755 "${WORKDIR}/k3s-agent" "${D}${k3s_bindir}"
+          install -m 755 "${WORKDIR}/k3s-killall.sh" "${D}${k3s_bindir}"
         fi
+        install -m 755 "${WORKDIR}/k3s-agent" "${D}${k3s_bindir}"
 
         # install script for tests
-        install -D -m 755 "${WORKDIR}/install.sh" "${D}${k3s_bindir}/k3s-install"
+        install -D -m 755 "${WORKDIR}/k3s-install-agent" "${D}${k3s_bindir}/k3s-install-agent"
 
         # install airgap container images
         install "${WORKDIR}/k3s-airgap-images-arm64.tar.gz" "${D}${sysconfdir}/k3s/tools"
@@ -179,7 +176,11 @@ do_install() {
 
           install -D -m 0644 "${WORKDIR}/k3s-agent.service" "${unitfile_destdir}/k3s-agent.service"
           sed -i "s#\(Exec\)\(.*\)=\(.*\)\(k3s\)#\1\2=${k3s_bindir}/\4#g"  "${unitfile_destdir}/k3s-agent.service"
-          sed -i '/^ExecStart=/ s#$# --container-runtime-endpoint unix:///var/run/isulad.sock --image-service-endpoint=unix:///var/run/isulad.sock#' "${unitfile_destdir}/k3s-agent.service"
+         if [ "${isulad_as_endpoint}" = "true" ]; then
+          sed -i "s#^ExecStart=\(.*\)#ExecStart=\1\n\t --container-runtime-endpoint unix:///var/run/isulad.sock #" "${unitfile_destdir}/k3s-agent.service"
+          sed -i "s#Requires=containerd.service#Requires=isulad.service#g" "${unitfile_destdir}/k3s.service"
+          sed -i "s#After=containerd.service*#After=isulad.service#" "${unitfile_destdir}/k3s.service"
+         fi
 
         else
           echo "Systemd-free k3s hasn't implemented!" 
@@ -199,13 +200,13 @@ FULL_K3S_FILES = " \
   ${k3s_bindir}/k3s-certificate \
   ${k3s_bindir}/k3s-server \
   ${k3s_bindir}/k3s-agent \
-  ${k3s_bindir}/k3s-clean \
+  ${k3s_bindir}/k3s-install-agent \
+  ${k3s_bindir}/k3s-kill-agent \
   ${k3s_bindir}/k3s-killall.sh \
   ${unitfile_destdir}/k3s.service \
 "
 
 FILES:${PN} += " \
-  ${bb.utils.contains('full_k3s', 'true', '', '${k3s_bindir}/k3s-agent', d)} \
   ${unitfile_destdir}/k3s-agent.service \
   ${bb.utils.contains('full_k3s', 'true', '${FULL_K3S_FILES}', '', d)} \
    \
@@ -215,7 +216,14 @@ SYSTEMD_SERVICE:${PN} = "k3s-agent.service \
   k3s.service \
 "
 #SYSTEMD_AUTO_ENABLE:${PN} = "enable"
-RDEPENDS:${PN} = "conntrack-tools coreutils findutils iptables iproute2"
+RDEPENDS:${PN} = " \ 
+  conntrack-tools  \
+  coreutils  \
+  findutils  \
+  iptables  \
+  iproute2 \
+  ${@bb.utils.contains('USE_PREBUILD_SHIM_V2', '1', 'lib-shim-v2-bin', 'lib-shim-v2', d)} \
+"
 
 RDEPENDS:${PN} = " \
         kernel-module-stp \
@@ -229,12 +237,14 @@ RDEPENDS:${PN} = " \
         kernel-module-xt-comment \
         kernel-module-xt-nat \
         kernel-module-xt-tcpudp \
+        kernel-module-br-netfilter \
+        kernel-module-veth \
+        kernel-module-iptable-mangle \
+        kernel-module-ip6table-mangle \
 "
 
 RRECOMMEND:${PN} = "\
         kernel-module-vxlan \
-        kernel-module-veth \
-        kernel-module-br-netfilter \
         kernel-module-nf-conntrack-netlink \
         kernel-module-nfnetlink-log \
         kernel-module-nft-chain-nat \
@@ -263,8 +273,6 @@ RRECOMMEND:${PN} = "\
                      kernel-module-xt-nflog \
                      kernel-module-xt-limit \
                      kernel-module-nfnetlink-log \
-                     kernel-module-iptable-mangle \
-                     kernel-module-ip6table-mangle \
                      kernel-module-nfnetlink  \
                      "
 
