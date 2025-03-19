@@ -33,6 +33,9 @@ if echo "$cmdstr" | grep -qwi "boot"; then
     exit 1
 fi
 
+# blocks kernel messages with priority ≥ 6, including KERN_INFO and KERN_DEBUG
+echo "5 4 1 7" > /proc/sys/kernel/printk
+
 rootfs_name="rootfs.img"
 
 echo "Check ISO/ext4 and CD-ROM..."
