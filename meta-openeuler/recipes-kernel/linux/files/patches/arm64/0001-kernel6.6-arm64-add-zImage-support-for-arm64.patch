@@ -1,4 +1,4 @@
-From a13b875de7758fe1348e1f59162f30a852f7028c Mon Sep 17 00:00:00 2001
+From 5da21254e52dae396f721c3060674d7b1bfad467 Mon Sep 17 00:00:00 2001
 From: fanglinxu <fanglinxu@huawei.com>
 Date: Thu, 18 Apr 2024 21:18:53 +0800
 Subject: [PATCH] kernel6.6 arm64 add zImage support for arm64
@@ -10,22 +10,22 @@ with a very limited amount of storage, as the size benefit is quite significant
 Signed-off-by: fanglinxu <fanglinxu@huawei.com>
 
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 2a875546b..f193e46e3 100644
+index 9da9d58f1c02..aaf820f2d70f 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -2604,3 +2604,4 @@ source "drivers/acpi/Kconfig"
+@@ -2684,3 +2684,4 @@ source "drivers/acpi/Kconfig"
  
  source "arch/arm64/kvm/Kconfig"
  
 +source "arch/arm64/boot/compressed/Kconfig"
 diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
-index 94be26b6c..ac1889725 100644
+index c94e7035c85c..bb4b416c3df7 100644
 --- a/arch/arm64/Makefile
 +++ b/arch/arm64/Makefile
 @@ -11,6 +11,7 @@
  # Copyright (C) 1995-2001 by Russell King
  
- LDFLAGS_vmlinux	:=--no-undefined -X
+ LDFLAGS_vmlinux	:=--no-undefined -X --pic-veneer
 +OBJCOPYFLAGS    :=-O binary -R .note -R .note.gnu.build-id -R .comment -S
  
  ifeq ($(CONFIG_RELOCATABLE), y)
@@ -49,7 +49,7 @@ index 94be26b6c..ac1889725 100644
  
  Image.%: Image
 diff --git a/arch/arm64/boot/Makefile b/arch/arm64/boot/Makefile
-index 1761f5972..684d01aa0 100644
+index 1761f5972443..684d01aa0f5f 100644
 --- a/arch/arm64/boot/Makefile
 +++ b/arch/arm64/boot/Makefile
 @@ -16,7 +16,11 @@
@@ -82,7 +82,7 @@ index 1761f5972..684d01aa0 100644
  EFI_ZBOOT_MACH_TYPE	:= ARM64
 diff --git a/arch/arm64/boot/compressed/Kconfig b/arch/arm64/boot/compressed/Kconfig
 new file mode 100644
-index 000000000..65c37a369
+index 000000000000..65c37a369820
 --- /dev/null
 +++ b/arch/arm64/boot/compressed/Kconfig
 @@ -0,0 +1,48 @@
@@ -136,7 +136,7 @@ index 000000000..65c37a369
 +endmenu
 diff --git a/arch/arm64/boot/compressed/Makefile b/arch/arm64/boot/compressed/Makefile
 new file mode 100644
-index 000000000..5ac24299f
+index 000000000000..5ac24299fa17
 --- /dev/null
 +++ b/arch/arm64/boot/compressed/Makefile
 @@ -0,0 +1,121 @@
@@ -263,7 +263,7 @@ index 000000000..5ac24299f
 +	$(call cmd,shipped)
 diff --git a/arch/arm64/boot/compressed/decompress.c b/arch/arm64/boot/compressed/decompress.c
 new file mode 100644
-index 000000000..1d479ca02
+index 000000000000..1d479ca02697
 --- /dev/null
 +++ b/arch/arm64/boot/compressed/decompress.c
 @@ -0,0 +1,55 @@
@@ -324,7 +324,7 @@ index 000000000..1d479ca02
 +}
 diff --git a/arch/arm64/boot/compressed/head.S b/arch/arm64/boot/compressed/head.S
 new file mode 100644
-index 000000000..ff3c43db7
+index 000000000000..ff3c43db7f31
 --- /dev/null
 +++ b/arch/arm64/boot/compressed/head.S
 @@ -0,0 +1,816 @@
@@ -1146,7 +1146,7 @@ index 000000000..ff3c43db7
 +.L_user_stack_end:
 diff --git a/arch/arm64/boot/compressed/hyp-stub.S b/arch/arm64/boot/compressed/hyp-stub.S
 new file mode 100644
-index 000000000..23188463c
+index 000000000000..23188463c4b4
 --- /dev/null
 +++ b/arch/arm64/boot/compressed/hyp-stub.S
 @@ -0,0 +1,91 @@
@@ -1243,7 +1243,7 @@ index 000000000..23188463c
 +	invalid_vector	el1_error_invalid
 diff --git a/arch/arm64/boot/compressed/image.h b/arch/arm64/boot/compressed/image.h
 new file mode 100644
-index 000000000..92cf985e0
+index 000000000000..92cf985e0a07
 --- /dev/null
 +++ b/arch/arm64/boot/compressed/image.h
 @@ -0,0 +1,69 @@
@@ -1318,7 +1318,7 @@ index 000000000..92cf985e0
 +#endif /* __ASM_IMAGE_H */
 diff --git a/arch/arm64/boot/compressed/misc.c b/arch/arm64/boot/compressed/misc.c
 new file mode 100644
-index 000000000..7fe61e939
+index 000000000000..7fe61e939ff5
 --- /dev/null
 +++ b/arch/arm64/boot/compressed/misc.c
 @@ -0,0 +1,49 @@
@@ -1373,7 +1373,7 @@ index 000000000..7fe61e939
 +}
 diff --git a/arch/arm64/boot/compressed/misc.h b/arch/arm64/boot/compressed/misc.h
 new file mode 100644
-index 000000000..9aa136d48
+index 000000000000..9aa136d48709
 --- /dev/null
 +++ b/arch/arm64/boot/compressed/misc.h
 @@ -0,0 +1,13 @@
@@ -1392,7 +1392,7 @@ index 000000000..9aa136d48
 +#endif
 diff --git a/arch/arm64/boot/compressed/piggy.S b/arch/arm64/boot/compressed/piggy.S
 new file mode 100644
-index 000000000..10f705ba9
+index 000000000000..10f705ba9656
 --- /dev/null
 +++ b/arch/arm64/boot/compressed/piggy.S
 @@ -0,0 +1,6 @@
@@ -1404,7 +1404,7 @@ index 000000000..10f705ba9
 +input_data_end:
 diff --git a/arch/arm64/boot/compressed/string.c b/arch/arm64/boot/compressed/string.c
 new file mode 100644
-index 000000000..5d8f9eafb
+index 000000000000..5d8f9eafb3e8
 --- /dev/null
 +++ b/arch/arm64/boot/compressed/string.c
 @@ -0,0 +1,177 @@
@@ -1587,7 +1587,7 @@ index 000000000..5d8f9eafb
 +}
 diff --git a/arch/arm64/boot/compressed/vmlinux.lds b/arch/arm64/boot/compressed/vmlinux.lds
 new file mode 100644
-index 000000000..6bcd3b492
+index 000000000000..6bcd3b49236e
 --- /dev/null
 +++ b/arch/arm64/boot/compressed/vmlinux.lds
 @@ -0,0 +1,53 @@
@@ -1646,7 +1646,7 @@ index 000000000..6bcd3b492
 +}
 diff --git a/arch/arm64/boot/compressed/vmlinux.lds.S b/arch/arm64/boot/compressed/vmlinux.lds.S
 new file mode 100644
-index 000000000..e4d073e1d
+index 000000000000..e4d073e1d58f
 --- /dev/null
 +++ b/arch/arm64/boot/compressed/vmlinux.lds.S
 @@ -0,0 +1,87 @@
@@ -1738,7 +1738,7 @@ index 000000000..e4d073e1d
 +  .comment 0		: { *(.comment) }
 +}
 diff --git a/arch/arm64/include/asm/assembler.h b/arch/arm64/include/asm/assembler.h
-index 38b23786a..6d5632cb5 100644
+index 38b23786aeb4..6d5632cb5290 100644
 --- a/arch/arm64/include/asm/assembler.h
 +++ b/arch/arm64/include/asm/assembler.h
 @@ -193,9 +193,15 @@ lr	.req	x30		// link register
@@ -1770,7 +1770,7 @@ index 38b23786a..6d5632cb5 100644
  	adrp	\dst, \sym
  	ldr	\dst, [\dst, :lo12:\sym]
 diff --git a/arch/arm64/include/asm/virt.h b/arch/arm64/include/asm/virt.h
-index 261d6e9df..0e59a4d74 100644
+index 261d6e9df2e1..0e59a4d74b63 100644
 --- a/arch/arm64/include/asm/virt.h
 +++ b/arch/arm64/include/asm/virt.h
 @@ -43,6 +43,14 @@
