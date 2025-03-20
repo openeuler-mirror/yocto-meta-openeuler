@@ -9,3 +9,4 @@ Rockchip
    :maxdepth: 1
 
    rockchip.rst
+   tspi-3566.rst
