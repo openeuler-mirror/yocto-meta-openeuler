@@ -10,6 +10,9 @@ LIC_FILES_CHKSUM += " \
         file://src/ls.c;beginline=1;endline=15;md5=b720a8b317035d66c555fc6d89e3674c \
 "
 
+# To keep things in line with openEuler, we only install coreutils under /usr/bin
+export base_bindir = "/usr/bin"
+
 # files, patches can't be applied in openeuler or conflict with openeuler
 # remove-usr-local-lib-from-m4.patch same as bugfix-remove-usr-local-lib-from-m4.patch
 SRC_URI:remove = " \
