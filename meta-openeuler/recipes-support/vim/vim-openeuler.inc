@@ -43,3 +43,11 @@ SRC_URI = " \
 	file://bugfix-rm-modify-info-version.patch \
 	file://fix-CVE-2024-47814.patch \
 	"
+
+# According to vim.spec, install defaults.vim from runtime files
+do_install:append() {
+    install -d ${D}${datadir}/vim/vim90
+    install -m 0644 ${S}/runtime/defaults.vim ${D}${datadir}/vim/vim90/defaults.vim
+}
+
+FILES:${PN} += "${datadir}/vim/*"
