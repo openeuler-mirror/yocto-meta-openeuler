@@ -31,3 +31,6 @@ SRC_URI = "file://unzip${PV}.tar.gz \
                 file://CVE-2019-13232-fur2.patch \
                 file://CVE-2022-0530.patch \
                 file://CVE-2022-0529.patch"
+
+# Fix: File '<file>' in package '<package>' doesn't have GNU_HASH
+TARGET_CC_ARCH += "${LDFLAGS}"
