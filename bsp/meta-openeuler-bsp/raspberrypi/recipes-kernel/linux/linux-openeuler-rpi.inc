@@ -20,15 +20,12 @@ COMPATIBLE_MACHINE = "raspberrypi4-64"
 SRC_URI:raspberrypi4 = " \
     ${OPENEULER_KERNEL_CONFIG} \
     file://meta-data;type=kmeta;destsuffix=meta-data \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
-            file://kernel-${PV} \
-    ', ' \
-            file://kernel-${PV}-tag-rpi \
-    ', d)} \
+    file://kernel-${PV}-tag-rpi \
 "
 
-OPENEULER_LOACL_NAME:raspberrypi4 = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'kernel-${PV}', 'kernel-${PV}-tag-rpi', d)}"
-S:raspberrypi4 = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '${WORKDIR}/kernel-${PV}', '${WORKDIR}/kernel-${PV}-tag-rpi', d)}"
+OPENEULER_LOACL_NAME:raspberrypi4 = "kernel-${PV}-tag-rpi"
+S:raspberrypi4 = "${WORKDIR}/kernel-${PV}-tag-rpi"
 OPENEULER_REPO_NAMES:raspberrypi4 = " \
-${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' src-kernel-${PV} kernel-${PV} ', ' src-kernel-${PV}-tag-rpi kernel-${PV}-tag-rpi ', d)} \
+    kernel-${PV}-tag-rpi \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'src-kernel-${PV}', 'src-kernel-${PV}-tag-rpi', d)} \
 "
