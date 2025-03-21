@@ -17,3 +17,10 @@ SRC_URI[md5sum] = "ce3c79e0f639035ef7ddfc39b286a61a"
 SRC_URI[sha256sum] = "7fe36a064101cd5c515e41b2be393dce3ca88adce59d6ee668e0af7c0c4570cd"
 
 RDEPENDS:${PN} += "makedumpfile"
+
+# don't install kexec_test
+do_install:append () {
+    if [ -e ${D}${libdir} ]; then
+        rm -r ${D}${libdir}
+    fi
+}
