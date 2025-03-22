@@ -1,7 +1,7 @@
 # main bbfile: meta-networking/recipes-support/tcpdump/tcpdump_4.99.1.bb;branch=master
 
 # version in openEuler
-PV = "4.99.3"
+PV = "4.99.4"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI:remove = " \
@@ -17,5 +17,5 @@ SRC_URI:prepend = " \
     file://backport-0009-Change-n-flag-to-nn-in-TESTonce.patch \
     file://tcpdump-Add-sw64-architecture.patch \
 "
-SRC_URI[md5sum] = "929a255c71a9933608bd7c31927760f7"
-SRC_URI[sha256sum] = "79b36985fb2703146618d87c4acde3e068b91c553fb93f021a337f175fd10ebe"
+SRC_URI[md5sum] = "d90471c90f780901e591807927ef0f07"
+SRC_URI[sha256sum] = "0232231bb2f29d6bf2426e70a08a7e0c63a0d59a9b44863b7f5e2357a6e49fea"
