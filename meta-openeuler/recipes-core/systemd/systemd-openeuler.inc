@@ -11,7 +11,6 @@ SRC_URI =+ " \
         file://backport-sd-event-fix-error-handling.patch \
         file://backport-core-refuse-dbus-activation-if-dbus-is-not-running.patch \
         file://backport-core-only-refuse-Type-dbus-service-enqueuing-if-dbus.patch \
-        file://update-rtc-with-system-clock-when-shutdown.patch \
         file://udev-add-actions-while-rename-netif-failed.patch \
         file://fix-two-VF-virtual-machines-have-same-mac-address.patch \
         file://logind-set-RemoveIPC-to-false-by-default.patch \
@@ -61,4 +60,11 @@ SRC_URI =+ " \
         file://bugfix-for-cgroup-Swap-cgroup-v1-deletion-and-migration.patch \
         file://delete-journal-files-except-system.journal-when-jour.patch \
         file://set-the-cpuset.cpus-mems-of-machine.slice-to-all-by-.patch \
+"
+
+# This patch provided by openEuler doesn't work for embedded's current needs.
+# Because embedded's "base_dir" is "/bin" instead of "/usr/bin". So, we need
+# to use our updated patch.
+SRC_URI += " \
+        file://update-rtc-with-system-clock-when-shutdown.patch \
 "

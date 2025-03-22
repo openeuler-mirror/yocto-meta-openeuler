@@ -1,0 +1,52 @@
+From a13f14c6a2da55b9f797b6f33449ba523c07dd46 Mon Sep 17 00:00:00 2001
+From: update-rtc-with-system-clock-when-shutdown
+Date: Sat, 2 Feb 2019 02:54:52 -0500
+Subject: [PATCH] Module: modification summary
+---
+ units/hwclock-save.service.in | 19 +++++++++++++++++++
+ units/meson.build             |  2 ++
+ 2 files changed, 21 insertions(+)
+ create mode 100644 units/hwclock-save.service.in
+
+diff --git a/units/hwclock-save.service.in b/units/hwclock-save.service.in
+new file mode 100644
+index 0000000..db33418
+--- /dev/null
++++ b/units/hwclock-save.service.in
+@@ -0,0 +1,19 @@
++#  This file is part of systemd.
++#
++#  systemd is free software; you can redistribute it and/or modify it+
++#  under the terms of the GNU General Public License as published by
++#  the Free Software Foundation; either version 2 of the License, or
++#  (at your option) any later version.
++
++[Unit]
++Description=Update RTC With System Clock
++
++[Service]
++Type=oneshot
++ExecStart=/bin/true
++ExecStop=/sbin/hwclock --systohc
++RemainAfterExit=yes
++
++[Install]
++WantedBy=default.target
++
+diff --git a/units/meson.build b/units/meson.build
+index aa2ed11..9992389 100644
+--- a/units/meson.build
++++ b/units/meson.build
+@@ -220,6 +220,8 @@ in_units = [
+          'sysinit.target.wants/'],
+         ['systemd-update-done.service',          '',
+          'sysinit.target.wants/'],
++        ['hwclock-save.service',                 '',
++         'sysinit.target.wants/'],
+         ['systemd-update-utmp-runlevel.service', 'ENABLE_UTMP HAVE_SYSV_COMPAT',
+          'multi-user.target.wants/ graphical.target.wants/ rescue.target.wants/'],
+         ['systemd-update-utmp.service',          'ENABLE_UTMP',
+--
+2.23.0
+
+
