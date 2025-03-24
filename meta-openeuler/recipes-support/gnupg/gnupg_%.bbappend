@@ -16,5 +16,4 @@ SRC_URI:append = " \
         file://backport-dirmngr-Enable-the-call-of-ks_ldap_help_variables-wh.patch \
         file://backport-gpg-Make-no-literal-work-again-for-c-and-store.patch \
         file://backport-gpg-Fix-minor-memory-leak-during-certain-smartcard-o.patch \
-        file://supports-sm2-algorithm-signature-and-uses-sm3-hash-algorithm.patch \
         "
