@@ -110,6 +110,8 @@ KERNEL_FEATURES:append = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'k3s', 'features/k3s/k3s.scc', '', d)} \
 "
 
+# fetch jailhouse first to get jailhouse_export_symbol.patch
+do_fetch[depends] += " ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'jailhouse:do_fetch', '', d)}"
 # export symbol for jailhouse, its patch is in jailhouse src folder
 SRC_URI:append = " ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'file://Jailhouse/jailhouse_export_symbol.patch', '', d)}"
 
