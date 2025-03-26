@@ -1,3 +1,3 @@
 require recipes-kernel/linux/linux-kp920.inc
 
-SRC_URI += "file://cfg-fragments/rt.cfg"
+SRC_URI += "file://config/cfg-fragments/rt.cfg"
