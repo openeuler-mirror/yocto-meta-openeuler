@@ -54,6 +54,17 @@ KCONFIG_MODE ?= "alldefconfig"
 CONFIGVERSION="${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'kernel6-', '', d)}"
 OPENEULER_KERNEL_CONFIG ?= "file://${CONFIGVERSION}config/${ARCH}/defconfig"
 
+# For x86, we use the openeuler_defconfig provided by the kernel repository.
+OPENEULER_KERNEL_CONFIG:x86-64 = ""
+KBUILD_DEFCONFIG:x86-64 = "openeuler_defconfig"
+SRC_URI:append:x86-64 = " \
+    file://config/cfg-fragments/embedded-build.cfg \
+    file://config/cfg-fragments/common-pc-drivers.cfg \
+"
+# strip modules for x86 image
+EXTRA_OEMAKE:x86-64 += "INSTALL_MOD_STRIP=1"
+INSANE_SKIP:${PN} += "already-stripped"
+
 ## basic information
 OPENEULER_LOCAL_NAME = "kernel-${PV}"
 # download src-openeuler/kernel repo for patches
