@@ -38,12 +38,21 @@ echo "5 4 1 7" > /proc/sys/kernel/printk
 
 rootfs_name="rootfs.img"
 
-echo "Check ISO/ext4 and CD-ROM..."
+echo "Check ISO/vfat/ext4 and CD-ROM..."
 iso_support=`cat /proc/filesystems | grep iso9660 | awk '{print $1}'`
 if [ "$iso_support" != "iso9660" ]; then
     modprobe iso9660 2> /dev/null
     if [ "$?" -ne 0 ]; then
         echo "Kernel not support iso9660 filesystem. Please check."
+        exit 1
+    fi
+fi
+
+vfat_support=`cat /proc/filesystems | grep vfat | awk '{print $1}'`
+if [ "$vfat_support" != "vfat" ]; then
+    modprobe vfat 2> /dev/null
+    if [ "$?" -ne 0 ]; then
+        echo "Kernel not support vfat filesystem. Please check."
         exit 1
     fi
 fi
