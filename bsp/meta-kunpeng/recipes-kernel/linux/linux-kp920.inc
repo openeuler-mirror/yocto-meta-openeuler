@@ -12,8 +12,8 @@ SRC_URI:remove:aarch64 = " \
 CONFIGVERSION="${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'kernel6-', '', d)}"
 
 SRC_URI:append = " \
-    file://cfg-fragments/kp920-build.cfg \
-    file://cfg-fragments/common-pc-drivers.cfg \
+    file://config/cfg-fragments/embedded-build.cfg \
+    file://config/cfg-fragments/common-pc-drivers.cfg \
 "
 
 OPENEULER_KERNEL_CONFIG = ""
