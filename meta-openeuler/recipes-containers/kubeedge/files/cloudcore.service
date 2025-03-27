@@ -1,0 +1,14 @@
+[Unit]
+Description=cloudcore.service
+Required=br_netfilter.service
+After=br_netfilter.service
+
+[Service]
+Type=simple
+ExecStartPre=/bin/sh -xc '! /usr/bin/systemctl is-enabled --quiet nm-cloud-setup.service'
+ExecStart=/usr/bin/cloudcore
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

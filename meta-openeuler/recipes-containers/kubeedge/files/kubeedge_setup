@@ -1,0 +1,464 @@
+#!/bin/bash
+set -o errexit
+# set -x
+
+info() {
+    echo '[INFO] ' "$@"
+}
+
+warn()
+{
+    echo '[WARN] ' "$@" >&2
+}
+
+fatal() {
+    echo '[ERROR] ' "$@" >&2
+    exit 1
+}
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") <command> [options]
+
+For edgecore, the easiest way to deploy your edgecore is to run:
+  kesetup join --token=12345 --ipport=IP:Port
+
+For cloudcore, it's better to run setup:
+  kesetup setup -m=cloud -n=cloud.kubeedge
+  keadm init --arguments 
+  kesetup override
+
+Available commands:
+  help          Show this help message
+  join          Setup environment and then join node to the cloud (mode=edge)
+    -i, --ipport=   Address for joinging the cloud, passed to keadm as --cloudcore-ipport=
+    -t, --token=    Token for joining the cloud, passed to keadm as --token=
+    -v, --version=  KubeEdge version (default: @KUBEEDGE_VERSION@), 
+                  passed to keadm as --kubeedge-version=
+  setup         Setup environment for cloud/edge node
+    -m, --mode=     cloud or edge
+    -n, --hostname= [Optional] hostname for this node
+  override      Override config files **after joined to or initialized a cloudcore**
+    -m,, --mode=    [Optional] cloud or edge (default: the mode passed to kesetu setup)
+  pull          get necassary OCI images from registry
+
+Example usage:
+  # Setup environment for node
+  $(basename "$0") setup --mode=cloud
+  $(basename "$0") setup --mode=edge -
+
+  # Join an edgecore to cloudcore with token
+  $(basename "$0") join --token=12345 --ipport=192.168.123.123:10001
+
+  # Override cloud configs 
+  $(basename "$0") override
+
+EOF
+}
+
+arch="$(uname -m)"
+config_dir=/etc/kubeedge/config
+tools_dir=/etc/kubeedge/bools
+tarball_dir=/etc/kubeedge/tarballs
+flannel_version=v0.14.0
+kubeedge_version=@KUBEEDGE_VERSION@
+mode_record=/var/run/kubeedge/ROLE
+
+arch_to_toolarch() {
+    case $1 in
+    x86_64)
+        toolarch="amd64"
+        ;;
+    aarch64)
+        toolarch="arm64"
+        ;;
+    *)
+        echo "unsupported arch: $arch [x86_64|aarch64]"
+        exit 1
+        ;;
+    esac
+    echo "get toolarch: $toolarch"
+}
+
+restart_isulad() {
+    echo "restart isulad"
+    systemctl daemon-reload
+    systemctl restart isulad
+    sleep 1
+}
+
+update_isulad_config() {
+    systemctl enable isulad --now
+    local mode=$1
+    echo "update isulad config: $mode"
+    SRC_DAEMON="/etc/isulad/daemon.json"
+    DAEMON=$tools_dir/isulad-$mode-daemon.json
+    cp $DAEMON $SRC_DAEMON --backup
+    restart_isulad
+}
+
+systemd_service_restart() {
+  systemctl daemon-reload
+  systemctl enable kubelet
+  systemctl enable --now /usr/lib/systemd/system/br_netfilter.service 
+}
+
+# TODO try to download layers manually during bitbake running
+download_flannel_image() {
+    local arch=$1
+    echo "download flannel image: $arch"
+    isula pull --platform=linux/$arch quay.io/coreos/flannel:$flannel_version
+    isula save -o $tarball_dir/flannel-$arch.tar quay.io/coreos/flannel:$flannel_version
+}
+
+load_flannel_image() {
+    echo "load flannel image"
+    isula load -i $tarball_dir/flannel-$toolarch.tar
+}
+
+clean_flannel_image_tarball() {
+    local arch=$1
+    echo "clean flannel image tarball: $arch"
+    rm -rf $tarball_dir/flannel-$arch.tar
+}
+
+flannel_subnet() {
+#/var/run/flannel/subnet.env
+  subnet_file=/var/run/flannel/subnet.env
+  cat > /var/run/flannel/subnet.env << EOF
+FLANNEL_NETWORK=10.244.0.0/16
+FLANNEL_SUBNET=10.244.0.1/24
+FLANNEL_MTU=1450
+FLANNEL_IPMASQ=true
+EOF
+}
+
+install_flannel() {
+    local mode=$1
+    echo "install flannel: $mode"
+    kubectl apply -f $tools_dir/kube-flannel-$mode.yml
+    kubectl wait --timeout=120s --for=condition=Ready pod -l app=flannel -n kube-system
+}
+
+download_kubeedge_pause_image() {
+    local arch=$1
+    echo "download kubeedge pause image: $arch"
+    isula pull --platform=linux/$arch kubeedge/pause:3.1
+    isula save -o $tarball_dir/kubeedge-pause-$arch.tar kubeedge/pause:3.1
+}
+
+load_kubeedge_pause_image() {
+    echo "load kubeedge pause image"
+    isula load -i $tarball_dir/kubeedge-pause-$toolarch.tar
+}
+
+clean_kubeedge_pause_image_tarball() {
+    local arch=$1
+    echo "clean kubeedge pause image tarball: $arch"
+    rm -rf $tarball_dir/kubeedge-pause-$arch.tar
+}
+
+download_nginx_image() {
+    local arch=$1
+    echo "download nginx image: $arch"
+    isula pull --platform=linux/$arch nginx:alpine
+    isula save -o $tarball_dir/nginx-$arch.tar nginx:alpine
+}
+
+load_nginx_image() {
+    echo "load nginx image"
+    isula load -i $tarball_dir/nginx-$toolarch.tar
+}
+
+clean_nginx_image_tarball() {
+    local arch=$1
+    echo "clean nginx image tarball: $arch"
+    rm -rf $tarball_dir/nginx-$arch.tar
+}
+
+timesync() {
+    if which timedatectl > /dev/null 2>&1; then
+         TIME_CONF=/etc/systemd/timesyncd.conf.d
+         mkdir -p $TIME_CONF
+         echo "NTP=ntp.ntsc.ac.cn cn.ntp.org.cn" > "${TIME_CONF}/cn_ntp_pool"
+         timedatectl set-timezone Asia/Shanghai
+         timedatectl set-ntp true
+         systemctl restart systemd-timesyncd
+         timedatectl
+     else
+         warn "cannot find timedatectl."
+         note "use alternatives like ntpdate to synchronize the system clock"
+     fi
+}
+
+k8s_ipforward() {
+  k8sconf=/etc/sysctl.d/kubernetes.conf 
+  cat >> $k8sconf << EOF
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+vm.swappiness=0
+EOF
+    sysctl -p $k8sconf
+
+  cat /proc/sys/net/bridge/bridge-nf-call-ip6tables
+  cat /proc/sys/net/bridge/bridge-nf-call-iptables
+
+  k8sinit=/etc/init.d/k8s.sh
+  if [[ ! -f $k8sinit ]]; then
+    touch $k8sinit
+    chmod +x $k8sinit
+  fi
+  if ! grep -q "#ipforward" $k8sinit; then
+    cat >> $k8sinit << EOF
+#!/bin/sh
+#ipforward
+sysctl -w net.bridge.bridge-nf-call-ip6tables = 1
+sysctl -w net.bridge.bridge-nf-call-iptables = 1
+EOF
+    sysctl -p $k8sconf
+  fi
+
+}
+
+setup_cloud_env() {
+  local hname=$1
+  hostname $hname
+  modprobe overlay
+  modprobe br_netfilter
+  systemctl disable firewalld --now
+  setenforce 0
+  swapoff -a
+  config_sysfiles
+  mkdir -p /var/run/kubeedge
+  echo "CLOUD" > $mode_record
+}
+
+# According to the oee kubeedge patch, there is an assumption that we run as root
+setup_edge_env() {
+  local hname=$1
+  hostname $hname
+  setenforce 0
+  mkdir -p /var/run/kubeedge
+  echo "EDGE" > $mode_record
+}
+
+config_sysfiles() {
+  local mode=$1
+  if [ $mode = "cloud" ]; then
+  sed -ri 's/.*swap.*/#&/' /etc/fstab
+  k8s_ipforward
+  [ ! -f /etc/sysctl.conf ] && return
+  sed -i "s/net.ipv4.ip_forward=0/net.ipv4.ip_forward=1/g" /etc/sysctl.conf
+  sed -i 12a\vm.swappiness=0 /etc/sysctl.conf
+  fi
+
+  # systemd files
+  [ $mode = "cloud" ] && [ ! -f /etc/systemd/system/cloudcore.service ] && 
+  [ -f /etc/kubeedge/cloudcore.service ] && (
+    cp /etc/kubeedge/cloudcore.service /etc/systemd/system/cloudcore.service
+  )
+
+  [ $mode = "edge" ] && [ ! -f /etc/systemd/system/edgecore.service ] && 
+  [ -f /etc/kubeedge/edgecore.service ] && (
+    cp /etc/kubeedge/edgecore.service /etc/systemd/system/edgecore.service
+  )
+}
+
+
+setup_cloud() {
+    local name=$1
+    local hname=${name:-"cloud.kubeedge"}
+    info "setup cloud with hostname $hname"
+    arch_to_toolarch $arch
+    setup_cloud_env $hname
+    timesync
+    update_isulad_config cloud
+    install_flannel cloud
+    systemd_service_restart
+}
+
+setup_edge() {
+    local name=$1
+    local hname=${name:-"edge.kubeedge"}
+    info "setup edge with hostname $hname"
+    arch_to_toolarch $arch
+    setup_edge_env $hname
+    timesync
+    update_isulad_config edge
+    install_flannel edge
+    systemctl restart edgecore
+}
+
+override_edge_configs() {
+  if [[ ! -f $tools_dir/edgecore.oee.yaml ]]; then
+    warn "No default  edgecore yaml in $tools_dir"
+  else
+    cp $tools_dir/edgecore.oee.yaml $config_dir/edgecore.yaml
+  fi
+  flannel_subnet
+}
+
+override_cloud_configs() {
+  if [ ! -f $tools_dir/cloudcore.example.yaml ]; then
+    warn "No default  cloudcore yaml in $tools_dir"
+  else
+    cp $tools_dir/cloudcore.example.yaml $config_dir/cloudcore.yaml
+  fi
+
+  # override the systemd service file
+  pkill cloudcore
+  info "override cloudcore service unit file"
+  cp /etc/kubeedge/cloudcore.service /etc/systemd/system/cloudcore.service
+  flannel_subnet
+
+  systemctl daemon-reload
+  systemctl enable cloudcore
+  systemctl restart cloudcore
+}
+
+override_configs() {
+  local mode=$1
+  info "override files for $mode"
+  override_${mode}_configs
+}
+
+handle_join() {
+    local other_options=
+    shift 
+
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --ipport=*|-i=*)
+                ipport="${1#*=}"
+                ;;
+            --token=*|-t=*)
+                token="${1#*=}"
+                ;;
+            --version=*|-v=*)
+                version="${1#*=}"
+                ;;
+            *)
+                other_options="$other_options $1"
+                ;;
+        esac
+        shift
+    done
+
+    echo "extra options = $other_options"
+    [ -z "$ipport" ] && fatal "Missing required --ipport parameter"
+    [ -z "$token" ] && fatal "Missing required --token parameter"
+
+    version=${version:-$kubeedge_version}
+
+    echo setup_edge
+
+    info "Joining cloud with address: $ipport, token: $token"
+    echo keadm join \
+        --cloudcore-ipport="$ipport" \
+        --token="$token" \
+        --kubeedge-version="$version" \
+        $other_options \
+
+    override_configs edge
+}
+
+handle_setup() {
+    local mode=
+    shift
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --mode=*|-m=*)
+                mode="${1#*=}"
+                ;;
+            --hostname=*|-n=*)
+                hname="${1#*=}"
+                ;;
+            *)
+                ;;
+        esac
+        shift
+    done
+
+    [[ -f "$mode_record" ]] && role=$(< $mode_record)
+    mode=${mode:-"$role"}
+    [[ -z "$mode" ]] && fatal "mode is required for setup"
+
+    case "$mode" in
+        cloud|edge)
+            setup_${mode} $hname
+            ;;
+        *)
+            fatal "Invalid mode '$mode'"
+            ;;
+    esac
+}
+
+handle_override() {
+    local mode role=
+    shift
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --mode=cloud|--mode=edge|-m=cloud|-m=edge)
+                mode="${1#*=}"
+                ;;
+            *)
+                break
+                ;;
+        esac
+        shift
+    done
+    echo "mode=$mode"
+
+    if [[ -z "$mode" ]]; then
+      [ ! -f $mode_record ] && fatal "Override mode is required"
+      role=$(< $mode_record)
+      [[ -z "$role" ]] && fatal "--mode option is missing, and we cannot get the 
+        mode info from $mode_record. it seems that you should run kesetup setup --mode=<mode> first"
+    fi
+    mode=${mode:-"$role"}
+    [[ -z "$mode" ]] && 
+    override_configs "$mode"
+}
+
+handle_pull() {
+  local oci_list="k8s.gcr.io/pause:3.2 abcdefg:1.0"
+  local registry=$2
+  local download_by_download_blobs=$3
+  registry=${registry:-"docker.io"}
+  echo "Pulling image list from registry $2"
+  echo "Due to the GFW, pulling images may be hard. If download-blob option is enabled
+    kesetup will download blobs of the OCI image from $registry"
+  echo "TODO"
+  for oci in $oci_list do
+    ocipath="$registry/$oci"
+  done
+}
+
+main() {
+  case "$1" in
+        help)
+            usage
+            exit 0
+            ;;
+        join)
+            handle_join "$@"
+            ;;
+        setup)
+            handle_setup "$@"
+            ;;
+        override)
+            handle_override "$@"
+            ;;
+        pull)
+            handle_pull "$@"
+            ;;
+        *)
+            usage
+            fatal "Invalid command '$1'"
+            ;;
+    esac
+}
+
+main "$@"
