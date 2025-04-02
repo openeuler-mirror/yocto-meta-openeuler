@@ -18,9 +18,16 @@ SRC_URI[sha256sum] = "7fe36a064101cd5c515e41b2be393dce3ca88adce59d6ee668e0af7c0c
 
 RDEPENDS:${PN} += "makedumpfile"
 
+# According to the kdump.sysconfig provided by openeuler, add additional kdump commandline
+KDUMP_CMD:aarch64 = "irqpoll nr_cpus=1 reset_devices cgroup_disable=memory udev.children-max=2 panic=10 swiotlb=noforce novmcoredd numa=off"
+KDUMP_CMD:x86-64 = "irqpoll nr_cpus=1 reset_devices cgroup_disable=memory mce=off numa=off udev.children-max=2 panic=10 acpi_no_memhotplug transparent_hugepage=never nokaslr hest_disable novmcoredd"
+
 # don't install kexec_test
 do_install:append () {
     if [ -e ${D}${libdir} ]; then
         rm -r ${D}${libdir}
     fi
+
+    sed -i -e 's,@KDUMP_COMMANDLINE@,${KDUMP_CMD},g' \
+        ${D}${sysconfdir}/sysconfig/kdump.conf
 }
