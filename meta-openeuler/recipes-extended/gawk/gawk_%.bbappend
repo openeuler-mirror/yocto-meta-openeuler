@@ -20,3 +20,4 @@ SRC_URI:prepend = " \
 
 SRC_URI[md5sum] = "2f724d925873fc82f5e7b1d605ba9a42"
 SRC_URI[sha256sum] = "e4ddbad1c2ef10e8e815ca80208d0162d4c983e6cca16f925e8418632d639018"
+ASSUME_PROVIDE_PKGS = "gawk"

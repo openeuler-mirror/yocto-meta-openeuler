@@ -9,3 +9,5 @@ SRC_URI += " \
 "
 
 SRC_URI[sha256sum] = "a2bfb8c09d436770edc59f50fa483e785b161a3b7b9d547573cb08065fd462fe"
+
+ASSUME_PROVIDE_PKGS = "findutils"

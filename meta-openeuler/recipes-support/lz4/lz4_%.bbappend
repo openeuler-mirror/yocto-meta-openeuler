@@ -23,3 +23,5 @@ SRC_URI += " \
 
 SRC_URI[tarball.md5sum] = "3a1ab1684e14fc1afc66228ce61b2db3"
 SRC_URI[tarball.sha256sum] = "030644df4611007ff7dc962d981f390361e6c97a34e5cbc393ddfbe019ffe2c1"
+
+ASSUME_PROVIDE_PKGS = "lz4"

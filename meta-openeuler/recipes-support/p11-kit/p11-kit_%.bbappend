@@ -29,3 +29,5 @@ BBCLASSEXTEND += " native"
 # but if we do not include the path /usr/share/pki/ca-trust-source,
 # the trusted certificates installed by ca-certificates package will not be found.
 EXTRA_OEMESON += "-Dtrust_paths=/etc/pki/ca-trust/source:/usr/share/pki/ca-trust-source"
+
+ASSUME_PROVIDE_PKGS = "p11-kit p11-kit-trust"

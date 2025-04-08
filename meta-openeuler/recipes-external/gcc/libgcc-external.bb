@@ -89,3 +89,5 @@ python add_sys_symlink () {
         pn = d.getVar('PN')
         d.appendVar('FILES:%s-dev' % pn, ' ${libdir}/${TARGET_SYS}')
 }
+
+ASSUME_PROVIDE_PKGS = "libgcc"

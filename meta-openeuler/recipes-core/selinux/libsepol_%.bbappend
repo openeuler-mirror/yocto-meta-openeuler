@@ -10,3 +10,5 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
         "
 
 S = "${WORKDIR}/${BP}"
+
+ASSUME_PROVIDE_PKGS = "libsepol"

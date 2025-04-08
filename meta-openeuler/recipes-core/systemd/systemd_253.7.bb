@@ -834,3 +834,5 @@ pkg_postinst:udev-hwdb () {
 pkg_prerm:udev-hwdb () {
 	rm -f $D${sysconfdir}/udev/hwdb.bin
 }
+
+ASSUME_PROVIDE_PKGS = "systemd systemd-libs systemd-udev"

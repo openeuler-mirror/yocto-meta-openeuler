@@ -12,3 +12,5 @@ PV = "5.4.4"
 SRC_URI += " \
     file://${BP}.tar.xz \
 "
+
+ASSUME_PROVIDE_PKGS = "xz-libs xz"

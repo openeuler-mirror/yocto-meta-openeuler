@@ -87,3 +87,5 @@ do_install:append () {
         #Remove the empty directory that conflict with ca-certificates.
         rm -rf ${D}${sysconfdir}/ssl/certs
 }
+
+ASSUME_PROVIDE_PKGS ="openssl openssl-libs"

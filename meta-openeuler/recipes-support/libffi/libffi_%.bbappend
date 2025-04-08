@@ -6,3 +6,5 @@ SRC_URI:prepend = " \
         file://fix-AARCH64EB-support.patch \
         file://libffi-Add-sw64-architecture.patch \
 "
+
+ASSUME_PROVIDE_PKGS = "libffi"

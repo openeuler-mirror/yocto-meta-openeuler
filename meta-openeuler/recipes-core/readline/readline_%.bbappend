@@ -20,3 +20,5 @@ SRC_URI[archive.sha256sum] = "a3d4637cdbd76f3cbc9566db90306a6af7bef90b291f7c9bc5
 # diff from oe 8.2 bb
 # see: http://cgit.openembedded.org/openembedded-core/plain/meta/recipes-core/readline/readline.inc
 EXTRA_OECONF += "bash_cv_termcap_lib=ncurses --with-shared-termcap-library"
+
+ASSUME_PROVIDE_PKGS = "readline"

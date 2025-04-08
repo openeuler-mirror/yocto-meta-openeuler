@@ -9,3 +9,5 @@ SRC_URI:prepend = "file://v${PV}.tar.gz \
            "
 
 S = "${WORKDIR}/${BP}"
+
+ASSUME_PROVIDE_PKGS = "libxcrypt"

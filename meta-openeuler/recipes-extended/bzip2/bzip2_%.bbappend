@@ -14,3 +14,5 @@ SRC_URI:append = " \
     file://0003-license-and-version-print-should-output-to-stdout-and-exit-with-code-0.patch \
     file://bzip2-1.0.8-toolchain-variable.patch \
 "
+
+ASSUME_PROVIDE_PKGS = "bzip2"

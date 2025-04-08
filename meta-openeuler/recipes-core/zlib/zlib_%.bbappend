@@ -24,3 +24,5 @@ do_configure() {
 	LDCONFIG=true ${S}/configure --prefix=${prefix} --shared --libdir=${libdir} --uname=GNU
 }
 do_configure[cleandirs] += "${B}"
+
+ASSUME_PROVIDE_PKGS = "zlib"

@@ -4,3 +4,5 @@
 # to prevent the strip.
 INHIBIT_SYSROOT_STRIP = "1"
 INHIBIT_PACKAGE_STRIP = "1"
+
+ASSUME_PROVIDE_PKGS = "libgcc"

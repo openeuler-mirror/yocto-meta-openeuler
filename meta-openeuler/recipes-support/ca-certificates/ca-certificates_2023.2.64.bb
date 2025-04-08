@@ -225,3 +225,5 @@ RDEPENDS:${PN} += "p11-kit"
 
 # support native and nativesdk
 BBCLASSEXTEND = "native nativesdk"
+
+ASSUME_PROVIDE_PKGS = "ca-certificates"

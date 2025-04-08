@@ -116,3 +116,5 @@ do_deploy_source_date_epoch () {
         echo "${SDE_FILE} not found!"
     fi
 }
+
+ASSUME_PROVIDE_PKGS = "libstdc++ libgomp"

@@ -116,3 +116,5 @@ do_install_ptest() {
 ANY_OF_DISTRO_FEATURES = "pam systemd"
 
 # ============= end from 1.5.3.bb =============
+
+ASSUME_PROVIDE_PKGS = "pam"

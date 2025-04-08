@@ -18,3 +18,5 @@ SRC_URI:prepend = " \
     file://0002-util-ulockmgr_server.c-conditionally-define-closefro.patch \
     file://0003-add-fuse-test-dir.patch \
 "
+
+ASSUME_PROVIDE_PKGS = "fuse fuse-common fuse-help"

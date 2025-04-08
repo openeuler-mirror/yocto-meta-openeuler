@@ -8,3 +8,5 @@ SRC_URI:prepend = " \
     file://Use-the-compiler-switch-O0-for-compiling-jitterentro.patch \
     file://add-GCRY_MD_SM3_PGP-set-to-109.patch \
     "
+
+ASSUME_PROVIDE_PKGS = "libgcrypt"

@@ -45,3 +45,5 @@ do_install:append() {
         # strip hosttool path out of generated files
         sed -i -e 's:${HOSTTOOLS_DIR}/::g' ${D}${docdir}/${BP}/examples/hdtbl/*.roff
 }
+
+ASSUME_PROVIDE_PKGS = "groff-base"

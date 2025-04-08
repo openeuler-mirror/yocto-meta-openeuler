@@ -15,3 +15,5 @@ SRC_URI:prepend = "file://${BP}.tar.xz \
 
 
 SRC_URI[sha256sum] = "ce5e03e519f637e1f814011ace35c4f87b33c0bbabeec35baf5fbd3479e91956"
+
+ASSUME_PROVIDE_PKGS = "gzip"

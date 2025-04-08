@@ -6,3 +6,4 @@ PV = "1.6.40"
 SRC_URI:prepend = "file://${BP}.tar.gz \
            file://libpng-multilib.patch \
 "
+ASSUME_PROVIDE_PKGS = "libpng"

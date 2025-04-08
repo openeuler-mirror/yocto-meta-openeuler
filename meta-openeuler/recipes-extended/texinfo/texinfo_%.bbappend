@@ -22,3 +22,5 @@ FILES:${PN}-doc = "${infodir}/texi* \
                    ${mandir}/man1 ${mandir}/man5"
 
 S = "${WORKDIR}/${BP}"
+
+ASSUME_PROVIDE_PKGS = "info openEuler-gpg-keys"

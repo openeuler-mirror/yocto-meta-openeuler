@@ -76,3 +76,5 @@ do_install:append() {
 do_install:append:arm() {
     sed -i "/arch=b64/d" ${D}/etc/audit/audit.rules
 }
+
+ASSUME_PROVIDE_PKGS = "audit-libs"

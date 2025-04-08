@@ -35,3 +35,5 @@ SRC_URI += " \
 SRC_URI[sha256sum] = "144af53f2bbd921cef6f8bea88bb9faddca865da3fbc657cc9b4d2001097d5db"
 
 EXTRA_OECONF += "--enable-largefile"
+
+ASSUME_PROVIDE_PKGS = "e2fsprogs e2fsprogs-help"

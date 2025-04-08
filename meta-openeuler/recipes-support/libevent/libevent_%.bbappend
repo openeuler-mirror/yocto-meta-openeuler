@@ -16,6 +16,6 @@ SRC_URI:prepend = " \
         file://backport-0002-Avoid-calling-read-2-on-eventfd-on-each-event-loop-w.patch \
         file://0004-fix-function-undeclared.patch \
         "
-
 # unapplicable patches:
 # file://backport-Makefile-missing-test-dir.patch 
+ASSUME_PROVIDE_PKGS = "libevent"

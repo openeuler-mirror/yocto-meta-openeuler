@@ -14,3 +14,5 @@ SRC_URI = "file://${BP}.tar.xz \
 do_configure:remove() {
 	find ${S}/xmlconf/ -type f -exec chmod -x {} \+
 }
+
+ASSUME_PROVIDE_PKGS = "libxml2"

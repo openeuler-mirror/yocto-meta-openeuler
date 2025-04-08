@@ -48,3 +48,5 @@ SRC_URI = " \
     file://backport-Stop-updating-m_eventPtr-on-exit-for-reentry.patch \
     file://backport-Make-parser-m_eventPtr-handling-clearer.patch \
     "
+
+ASSUME_PROVIDE_PKGS = "expat"

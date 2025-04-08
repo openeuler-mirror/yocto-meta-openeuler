@@ -14,3 +14,5 @@ SRC_URI:append = "file://${BP}.tar.xz \
 
 SRC_URI[md5sum] = "956dc04e864001a9c22429f761f2c283"
 SRC_URI[sha256sum] = "a3c2b80201b89e68616f4ad30bc66aee4927c3ce50e33929ca819d5c43538898"
+
+ASSUME_PROVIDE_PKGS = "gmp"

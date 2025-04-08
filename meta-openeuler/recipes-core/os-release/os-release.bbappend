@@ -25,3 +25,5 @@ OS_RELEASE_FIELDS:append = " BUILD_ID OEE_REVISION"
 
 # Ensure the git commands run every time bitbake is invoked.
 BB_DONT_CACHE = "1"
+
+ASSUME_PROVIDE_PKGS:${PN} = "openEuler-repos openEuler-release openEuler-gpg-keys"
