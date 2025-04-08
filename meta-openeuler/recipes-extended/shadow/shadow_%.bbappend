@@ -102,3 +102,5 @@ INSANE_SKIP:${PN}:class-native = "already-stripped"
 
 # keep as 4.13 recipe
 PAM_PLUGINS:remove = "pam-plugin-lastlog"
+
+ASSUME_PROVIDE_PKGS = "shadow shadow-subid-devel"

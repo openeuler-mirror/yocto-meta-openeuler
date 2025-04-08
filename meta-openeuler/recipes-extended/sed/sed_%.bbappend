@@ -12,3 +12,5 @@ SRC_URI += " \
     file://sed/backport-sed-c-flag.patch \
     file://backport-sed-fix-symlink-bufsize-readlink-check.patch \
 "
+
+ASSUME_PROVIDE_PKGS = "sed"

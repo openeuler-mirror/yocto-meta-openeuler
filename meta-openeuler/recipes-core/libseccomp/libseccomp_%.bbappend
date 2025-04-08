@@ -11,3 +11,5 @@ SRC_URI:prepend = " \
 "
 
 S = "${WORKDIR}/${BP}"
+
+ASSUME_PROVIDE_PKGS = "libseccomp"

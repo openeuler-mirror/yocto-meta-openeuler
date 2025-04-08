@@ -17,3 +17,5 @@ LIC_FILES_CHKSUM = "file://Copyright;md5=fec7ecfe714722b2bb0aaff7d200c701 \
 do_configure:remove() {
 	find ${S}/xmlconf/ -type f -exec chmod -x {} \+
 }
+
+ASSUME_PROVIDE_PKGS = "libxml2"

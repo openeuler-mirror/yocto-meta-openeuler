@@ -84,3 +84,5 @@ do_install:append () {
         chrpath --delete ${D}${libdir}/libgmodule-2.0.so
     fi
 }
+
+ASSUME_PROVIDE_PKGS = "glib2"

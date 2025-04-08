@@ -35,3 +35,5 @@ FILES:${PN} += "${base_libdir}/security/pam_pwquality.so"
 FILES:${PN}-dbg += "${base_libdir}/security/.debug"
 FILES:${PN}-staticdev += "${base_libdir}/security/pam_pwquality.a"
 FILES:${PN}-dev += "${base_libdir}/security/pam_pwquality.la"
+
+ASSUME_PROVIDE_PKGS = "libpwquality"

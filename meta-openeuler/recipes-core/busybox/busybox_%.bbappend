@@ -59,3 +59,5 @@ do_install:append () {
 }
 
 SRC_URI[tarball.sha256sum] = "b8cc24c9574d809e7279c3be349795c5d5ceb6fdf19ca709f80cde50e47de314"
+
+ASSUME_PROVIDE_PKGS = "which cpio vim-minimal diffutils systemd systemd-libs systemd-udev"

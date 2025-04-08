@@ -39,7 +39,7 @@ FILES:${PN}:append:class-target = " \
 
 do_install:append:class-target() {
     mkdir -p ${D}/etc/yum.repos.d/ || echo ""
-    local version_dir="openEuler-${DISTRO_VERSION}"
+    local version_dir="${@bb.utils.contains("DISTRO_FEATURES", "oebridge", "${SERVER_VERSION}", "openEuler-${DISTRO_VERSION}", d)}"
     sed -i "s/OPENEULER_VER/${version_dir}/g" ${WORKDIR}/openEuler.repo
     cp -f ${WORKDIR}/openEuler.repo ${D}/etc/yum.repos.d/
 }

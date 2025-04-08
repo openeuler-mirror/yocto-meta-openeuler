@@ -7,3 +7,5 @@ SRC_URI:prepend = " file://${BP}.tar.gz \
            "
 
 SRC_URI[sha256sum] = "eb872b4f0e1f0ebe59c9f7bd8c506c4204893ba6a8492de31df416f0d5170fd0"
+
+ASSUME_PROVIDE_PKGS = "pigz"

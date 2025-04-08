@@ -19,3 +19,5 @@ SRC_URI:prepend = "file://${BP}.tar.xz \
 SRC_URI[sha256sum] = "ccdf452387a6380973d2927363e9cbb939fa2068915a6f937ff9d24522024683"
 
 EXTRA_OECONF = "--disable-tests"
+
+ASSUME_PROVIDE_PKGS = "kbd"

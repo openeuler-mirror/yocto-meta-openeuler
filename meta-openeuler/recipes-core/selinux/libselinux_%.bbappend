@@ -17,3 +17,5 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
 SRC_URI += "file://0003-libselinux-restore-drop-the-obsolete-LSF-transitiona.patch"
 
 S = "${WORKDIR}/${BP}"
+
+ASSUME_PROVIDE_PKGS = "libselinux"

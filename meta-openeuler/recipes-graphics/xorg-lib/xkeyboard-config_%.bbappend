@@ -9,3 +9,5 @@ SRC_URI:prepend = " \
 "
 
 BBCLASSEXTEND += "native"
+
+ASSUME_PROVIDE_PKGS = "xkeyboard-config"

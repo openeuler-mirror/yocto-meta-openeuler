@@ -30,3 +30,5 @@ do_configure:prepend() {
 
 SRC_URI[md5sum] = "48a0c8810ec4780b99c0a4f9931c21c6"
 SRC_URI[sha256sum] = "8b6fd202f3f1d8fa395d3b7a5d821227cfd8bb4a9a584a7ae30cf62cea6287dd"
+
+ASSUME_PROVIDE_PKGS = "cracklib"

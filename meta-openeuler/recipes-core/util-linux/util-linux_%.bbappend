@@ -5,3 +5,5 @@ PACKAGECONFIG[selinux] = "--with-selinux,--without-selinux,libselinux"
 RRECOMMENDS:${PN}-ptest += " kernel-module-algif-hash "
 ALTERNATIVE_LINK_NAME[ipcrm] = "${bindir}/ipcrm"
 ALTERNATIVE_LINK_NAME[ipcs] = "${bindir}/ipcs"
+
+ASSUME_PROVIDE_PKGS = "libsmartcols libmount libblkid libfdisk util-linux"

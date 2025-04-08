@@ -28,3 +28,5 @@ do_install:append() {
 	# Strip non-reproducible build flags (containing build paths)
 	sed -i -e 's|^CC.*|CC=""|g' -e 's|^CFLAGS.*|CFLAGS=""|g' ${D}${bindir}/gawkbug
 }
+
+ASSUME_PROVIDE_PKGS = "gawk"

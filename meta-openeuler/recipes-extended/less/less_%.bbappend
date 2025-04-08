@@ -16,3 +16,5 @@ SRC_URI = "file://${BP}.tar.gz \
 
 SRC_URI[md5sum] = "1cdec714569d830a68f4cff11203cdba"
 SRC_URI[sha256sum] = "a69abe2e0a126777e021d3b73aa3222e1b261f10e64624d41ec079685a6ac209"
+
+ASSUME_PROVIDE_PKGS = "less"

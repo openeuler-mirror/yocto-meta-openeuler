@@ -13,3 +13,5 @@ SRC_URI += " \
     file://${BP}.tar.xz \
     file://xz-5213-547-562-libtool.patch \
 "
+
+ASSUME_PROVIDE_PKGS = "xz-libs xz"

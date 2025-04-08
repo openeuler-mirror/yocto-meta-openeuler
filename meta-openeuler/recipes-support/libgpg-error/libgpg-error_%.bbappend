@@ -19,3 +19,5 @@ SRC_URI += "file://pkgconfig-fix.patch"
 SRC_URI:prepend = "file://${BP}.tar.bz2 \
         file://libgpg-error-1.48-multilib.patch \
 "
+
+ASSUME_PROVIDE_PKGS = "libgpg-error"

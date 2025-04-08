@@ -45,3 +45,5 @@ FILES:${PN} += " \
 "
 
 RDEPENDS:${PN} = "bash"
+
+ASSUME_PROVIDE_PKGS ="device-mapper"

@@ -34,3 +34,5 @@ SRC_URI:prepend = " \
 "
 
 SRC_URI[sha256sum] = "ea613a4cf44612326e917201bbbcdfbd301de21ffc3b59b6e5c07e040b275e52"
+
+ASSUME_PROVIDE_PKGS = "coreutils"

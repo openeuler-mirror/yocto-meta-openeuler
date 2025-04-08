@@ -72,3 +72,5 @@ do_install:append:class-nativesdk () {
 	rm -f ${D}${SDKPATHNATIVE}/environment-setup.d/openssl.sh
         install -m 644 ${WORKDIR}/environment.d-openeuler-openssl.sh ${D}${SDKPATHNATIVE}/environment-setup.d/openssl.sh
 }
+
+ASSUME_PROVIDE_PKGS ="openssl openssl-libs"

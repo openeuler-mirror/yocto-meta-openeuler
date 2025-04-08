@@ -26,3 +26,5 @@ SRC_URI[sha256sum] = "f366c823a6724af313b6bbe975b2809f9a157e5f6a43612a72949138d1
 
 # openeuler patch need bison binary
 DEPENDS += "bison-native"
+
+ASSUME_PROVIDE_PKGS = "gdbm"

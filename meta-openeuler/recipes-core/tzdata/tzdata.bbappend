@@ -57,3 +57,5 @@ do_install:openeuler-prebuilt() {
 
 	chown -R root:root ${D}
 }
+
+ASSUME_PROVIDE_PKGS = "tzdata"

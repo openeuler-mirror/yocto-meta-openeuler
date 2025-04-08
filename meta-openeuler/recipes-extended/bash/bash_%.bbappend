@@ -40,3 +40,5 @@ SRC_URI[tarball.sha256sum] = "c8e31bdc59b69aaffc5b36509905ba3e5cbb12747091d27b4b
 # When testing the performance of the shell using UnixBench, we found that the sh of busybox(ash)
 # outperformed bash, so we still make sh link to busybox instead of bash.
 ALTERNATIVE:${PN}:remove = "sh"
+
+ASSUME_PROVIDE_PKGS = "bash"

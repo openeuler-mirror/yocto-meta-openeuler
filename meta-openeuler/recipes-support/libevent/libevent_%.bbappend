@@ -16,3 +16,5 @@ SRC_URI:prepend = " \
         file://0002-Avoid-calling-read-2-on-eventfd-on-each-event-loop-w.patch \
         file://backport-Fix-potential-Null-pointer-dereference-in-regress_fi.patch \
         "
+
+ASSUME_PROVIDE_PKGS = "libevent"

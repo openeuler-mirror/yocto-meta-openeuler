@@ -26,3 +26,5 @@ SRC_URI[tarball.sha256sum] = "030644df4611007ff7dc962d981f390361e6c97a34e5cbc393
 
 # 1.10.0 version need to change EXTRA_OEMAKE, otherwise some header files can't be found
 EXTRA_OEMAKE = "DESTDIR=${D} BUILD_STATIC=no"
+
+ASSUME_PROVIDE_PKGS = "lz4"

@@ -12,3 +12,5 @@ SRC_URI:append = " \
 
 SRC_URI[tarball.md5sum] = "e1ee6772c2ee5ddc25ea465a33af3004"
 SRC_URI[tarball.sha256sum] = "eb37be57c1cf650b3a8a4fc7cd66c8b3dfc06215b41956a16325a9388171bc40"
+
+ASSUME_PROVIDE_PKGS = "libnsl2"

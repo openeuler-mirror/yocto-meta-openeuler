@@ -5,3 +5,5 @@ SRC_URI:prepend = " \
         file://backport-Fix-signed-vs-unsigned-comparison.patch \
         file://fix-AARCH64EB-support.patch \
 "
+
+ASSUME_PROVIDE_PKGS = "libffi"

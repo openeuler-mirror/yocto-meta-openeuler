@@ -23,3 +23,5 @@ do_install:append () {
     echo "${BANNERSTR}"  >> ${D}${sysconfdir}/motd
     echo >> ${D}${sysconfdir}/motd
 }
+
+ASSUME_PROVIDE_PKGS:${PN} = "setup filesystem basesystem"

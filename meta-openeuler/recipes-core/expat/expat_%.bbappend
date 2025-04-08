@@ -11,3 +11,5 @@ SRC_URI[sha256sum] = "9c7c1b5dcbc3c237c500a8fb1493e14d9582146dd9b42aa8d3ffb856a3
 SRC_URI = " \
     file://${BP}.tar.gz \
 "
+
+ASSUME_PROVIDE_PKGS = "expat"

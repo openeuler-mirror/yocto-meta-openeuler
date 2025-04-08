@@ -234,3 +234,5 @@ do_install:append:class-native () {
 RDEPENDS:${PN} += "p11-kit"
 
 BBCLASSEXTEND = "native nativesdk"
+
+ASSUME_PROVIDE_PKGS = "ca-certificates"

@@ -67,3 +67,5 @@ do_install() {
 	# Remove /var/run as it is created on startup
 	rm -rf ${D}${localstatedir}/run
 }
+
+ASSUME_PROVIDE_PKGS = "dbus dbus-common dbus-daemon dbus-libs dbus-tools"

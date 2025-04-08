@@ -19,3 +19,5 @@ SRC_URI[sha256sum] = "f897dd72698dc6ac1ef03255cd0a5734ad932318e4adbaebc7338ef2f5
 # yocto-poky specifies 'S = "${WORKDIR}/git', but since we are using the openeuler package,
 # we need to re-specify it
 S = "${WORKDIR}/${BP}"
+
+ASSUME_PROVIDE_PKGS = "kmod kmod-libs"

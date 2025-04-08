@@ -302,3 +302,5 @@ RDEPENDS:${PN}-dev:remove = "${LINUX_LIBC_RDEP_REMOVE}"
 
 FILES:${PN}-dev:remove = "${base_libdir}/*_nonshared.a ${libdir}/*_nonshared.a"
 FILES:${PN}-dev += "${libdir}/libc_nonshared.a ${libdir}/libpthread_nonshared.a ${libdir}/libmvec_nonshared.a"
+
+ASSUME_PROVIDE_PKGS:${PN} = "glibc glibc-common"

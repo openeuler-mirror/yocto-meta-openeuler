@@ -30,3 +30,5 @@ SRC_URI += "\
 "
 
 S = "${WORKDIR}/${BP}"
+
+ASSUME_PROVIDE_PKGS = "ncurses-libs ncurses-base ncureses"

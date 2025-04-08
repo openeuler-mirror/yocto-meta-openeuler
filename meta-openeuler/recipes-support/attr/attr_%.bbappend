@@ -10,3 +10,5 @@ SRC_URI += " \
             file://0003-attr-eliminate-a-dead-store-in-attr_copy_action.patch \
             file://0004-fix-stale-attr-references.patch \
 "
+
+ASSUME_PROVIDE_PKGS = "attr"

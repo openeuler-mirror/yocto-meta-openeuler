@@ -33,3 +33,5 @@ SRC_URI:prepend = "file://pcre2-${PV}.tar.bz2 \
 "
 
 SRC_URI[sha256sum] = "8d36cd8cb6ea2a4c2bb358ff6411b0c788633a2a45dabbf1aeb4b701d1b5e840"
+
+ASSUME_PROVIDE_PKGS = "pcre2"

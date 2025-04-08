@@ -7,3 +7,5 @@ SRC_URI:prepend = " \
     file://${BP}.tar.bz2 \
     file://Use-the-compiler-switch-O0-for-compiling-jitterentro.patch \
     "
+
+ASSUME_PROVIDE_PKGS = "libgcrypt"

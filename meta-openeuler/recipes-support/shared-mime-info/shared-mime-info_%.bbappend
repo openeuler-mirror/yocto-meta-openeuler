@@ -18,3 +18,5 @@ SRC_URI:append = " \
 "
 
 S = "${WORKDIR}/${BP}"
+
+ASSUME_PROVIDE_PKGS = "shared-mime-info"
