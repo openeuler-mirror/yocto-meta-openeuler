@@ -30,6 +30,7 @@ ${@bb.utils.contains("DISTRO_FEATURES", "isulad", "packagegroup-isulad", "", d)}
 ${@bb.utils.contains("DISTRO_FEATURES", "preempt-rt", "packagegroup-preempt-rt", "", d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "dsoftbus", "packagegroup-dsoftbus", "", d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "benchmarks", "packagegroup-openeuler-benchmarks", "", d)} \
+${@bb.utils.contains("DISTRO_FEATURES", "oebridge", "packagegroup-oebridge", "", d)} \
 "
 
 # You can add extra user here, suck like:

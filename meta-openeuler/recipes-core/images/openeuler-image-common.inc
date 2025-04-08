@@ -1,3 +1,6 @@
+# Add oebridge image configuration
+inherit ${@bb.utils.contains('DISTRO_FEATURES', 'oebridge', 'image-oebridge', '', d)}
+
 # openeuler standard image packages
 IMAGE_INSTALL = " \
 packagegroup-core-boot \

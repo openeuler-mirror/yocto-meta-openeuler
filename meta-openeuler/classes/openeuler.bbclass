@@ -349,3 +349,9 @@ python do_openeuler_clean() {
 }
 
 addtask do_openeuler_clean before do_clean
+
+# OEBridge is designed to seamlessly integrate openEuler Embedded with the Euler
+# northbound ecosystem. This enables openEuler Embedded to install server software
+# packages via DNF, significantly reducing development complexity and simplifying
+# software adaptation.
+inherit ${@bb.utils.contains('DISTRO_FEATURES', 'oebridge', 'oebridge', '', d)}
