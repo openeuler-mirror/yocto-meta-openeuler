@@ -11,7 +11,7 @@ AI算力高达10.4TopsINT8，双内核异构引擎，同时支持 4K\@60fps H.26
 同时海鸥派在工业领域提出一套完整的 OS for AI 开发环境，能够支持多类机器人算法与应用的高效部署。
 **硬件外设接口参考图**
 
-.. image:: hieulerpi.png
+.. image:: images/hieulerpi.png
 
 **开发板主要特性**
 

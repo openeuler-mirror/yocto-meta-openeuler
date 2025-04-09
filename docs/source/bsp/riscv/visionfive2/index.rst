@@ -62,7 +62,7 @@ flash里的uboot会依次遍历sd卡，eMMC和NVME，如果sd卡中有文件，�
   visionfive-v2的串口通过引脚6、8、10进行转接。具体引脚分布见图1。
   visionfive-v2串口在openEuler Embedded中的设备为ttyS0，波特率为115200。
 
-.. figure:: VF2_40pin.svg
+.. figure:: images/VF2_40pin.svg
   :align: center
   
   图1 visionfive-v2 引脚图

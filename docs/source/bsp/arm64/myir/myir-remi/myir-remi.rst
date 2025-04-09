@@ -8,7 +8,7 @@ myir-remi硬件介绍
 
 参考: `瑞米派介绍 <http://down.myir-tech.com/RemiPi/>`_ 中《文档下载》的三个资料。
 
-.. image:: myir-remi-image/document_5.png
+.. image:: images/document_5.png
 
 
 镜像构建与使用
@@ -111,25 +111,25 @@ oebuild构建代码准备：
 
 正常编译完成后并没有sd卡镜像，sd卡镜像需要单独制作，具体可参考 `瑞米派介绍 <http://down.myir-tech.com/RemiPi/>`_ 中“文档下载 -> 软件资料”，如下所示：
 
-.. image:: myir-remi-image/document_0.png
+.. image:: images/document_0.png
 
 下载好资料后内容列表如下：
 
-.. image:: myir-remi-image/document_1.png
+.. image:: images/document_1.png
 
 打开《Remi Pi_Linux软件开发指南.pdf》，选择《4.3. 制作SD卡烧录器》，如图：
 
-.. image:: myir-remi-image/document_2.png
+.. image:: images/document_2.png
 
 按要求制作完SD卡镜像后就是烧录了，参考《4.2 windows下烧录系统》章节，如图：
 
-.. image:: myir-remi-image/document_3.png
+.. image:: images/document_3.png
 
 （3）启动myir-remi并连接调试：
 
 开发板的接线方式如下图：
 
-.. image:: myir-remi-image/document_4.png
+.. image:: images/document_4.png
     
 ubuntu下调试
 -----------------

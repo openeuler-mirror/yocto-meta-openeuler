@@ -1,7 +1,6 @@
 .. _board_rockchip:
 
-
-Rockchip
+基于瑞芯微(Rockchip)SoC的硬件
 #################################
 
 
