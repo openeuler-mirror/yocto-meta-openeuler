@@ -131,11 +131,11 @@ orangepi4-lts硬件介绍
 
 开发板的接线方式如下图：
 
-.. image:: orangepi-image/serial_orangepi4-lts.png
+.. image:: images/serial_orangepi4-lts.png
 
 串口的接线方式如下图：
 
-.. image:: orangepi-image/serial_1.png
+.. image:: images/serial_1.png
 
 
 **ubuntu下调试**

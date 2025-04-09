@@ -164,11 +164,11 @@ a.使用串口登录：
 
 示例：使用ttyusb转接器，将树莓派串口通过USB连接到putty：
 
-.. image:: rasp-ttyusb-connect.png
+.. image:: images/rasp-ttyusb-connect.png
 
 putty配置参考： Serial line:ttyUSB0 speed:115200 Connection type:Serial
 
-.. image:: putty_config.png
+.. image:: images/putty_config.png
 
 b.使用HDMI登录：
 
