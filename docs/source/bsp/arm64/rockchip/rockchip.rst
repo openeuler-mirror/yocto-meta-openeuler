@@ -72,13 +72,13 @@ Rockchip镜像构建指导
 
    将文件DriverAssitant_v5.11.zip解压到任意目录，以管理员权限运行打开DriverInstall.exe 程序，然后点击“驱动安装”进行安装。
 
-   .. figure:: install_driver1.png
+   .. figure:: images/install_driver1.png
      :align: center
 
-   .. figure:: install_driver2.png
+   .. figure:: images/install_driver2.png
      :align: center
 
-   .. figure:: install_driver3.png
+   .. figure:: images/install_driver3.png
      :align: center
 
 内核镜像和文件系统烧写方法
@@ -91,33 +91,33 @@ Rockchip镜像构建指导
 
 1. 使用Type-C线连接开发板和主机，按住开发板的Recovery键不要松开，然后按下RESET键系统复位，大约两秒后松开Recovery键，瑞芯微开发工具RKDevTool将提示发现LOADER设备。
 
-   .. figure:: switch_turn_to_off.png
+   .. figure:: images/switch_turn_to_off.png
      :align: center
 
-   .. figure:: RKDevTool1.png
+   .. figure:: images/RKDevTool1.png
      :align: center
 
 2. 点击“设备分区表”按钮，将自动读取分区地址。会有某些分区读不到的提示，点击确定即可。
 
-   .. figure:: device_parted_scan.png
+   .. figure:: images/device_parted_scan.png
      :align: center
 
 3. 在地址栏右键选择添加项，添加文件系统的地址。
 
-   .. figure:: add_partition.png
+   .. figure:: images/add_partition.png
      :align: center
 
-   .. figure:: compare_rootfs_address.png
+   .. figure:: images/compare_rootfs_address.png
      :align: center
 
 4. 勾选Boot和rootfs，并选择Boot和rootfs的路径。
 
-   .. figure:: choose_partition.png
+   .. figure:: images/choose_partition.png
      :align: center
 
 5. 点击“执行”按钮将自动烧写内核和文件系统，并重新启动。
 
-   .. figure:: start_burning.png
+   .. figure:: images/start_burning.png
      :align: center
 
 全量烧写
@@ -125,15 +125,15 @@ Rockchip镜像构建指导
 
 1. 如果loader正常，使用Type-C线连接开发板和主机，按住开发板的Recovery键不要松开，然后按下RESET键系统复位，大约两秒后松开Recovery键，瑞芯微开发工具RKDevTool将提示发现LOADER设备。
 
-   .. figure:: switch_turn_to_off.png
+   .. figure:: images/switch_turn_to_off.png
      :align: center
 
-   .. figure:: RKDevTool1.png
+   .. figure:: images/RKDevTool1.png
      :align: center
 
 2. 如果loader损坏，可以按住 BOOT 键然后按复位键进入 maskrom 模式进行烧写，此时系统将提示发现一个 maskrom 设备。
 
-   .. figure:: maskrom.png
+   .. figure:: images/maskrom.png
      :align: center
 
 .. note::
@@ -144,12 +144,12 @@ Rockchip镜像构建指导
 
 3. 点击“升级固件”选项卡，点击“固件”按钮选择完整的升级镜像 update.img。程序将对固件进行解析，因此需要等待一会。
 
-   .. figure:: update_img.png
+   .. figure:: images/update_img.png
      :align: center
 
 4. 依次点击擦除Flash，升级按钮即可完成升级。
 
-   .. figure:: update_img_success.png
+   .. figure:: images/update_img_success.png
      :align: center
 
 基于openEuler Embedded 瑞芯微系列开发板使用
@@ -176,7 +176,7 @@ Rockchip镜像构建指导
 
   示例：使用ttyusb转接器，将开发板的串口通过USB连接到putty：
 
-.. figure:: console_link.png
+.. figure:: images/console_link.png
   :align: center
 
 - 使用HDMI登录：
@@ -194,10 +194,10 @@ ssh 远程登录
 
 1. 使用终端连接工具通过串口连接开发板
 
-.. figure:: console1.png
+.. figure:: images/console1.png
   :align: center
 
-.. figure:: console2.png
+.. figure:: images/console2.png
   :align: center
 
 2. 使用wpa_passphrase工具将wifi密码加密，生成配置
@@ -208,7 +208,7 @@ ssh 远程登录
 
   wpa_passphrase wifi_name password
 
-.. figure:: wpa_passphrase.png
+.. figure:: images/wpa_passphrase.png
   :align: center
 
 3. 将生成的配置写入配置文件/etc/wpa_supplicant.conf：
@@ -219,7 +219,7 @@ ssh 远程登录
 
   vi /etc/wpa_supplicant.conf
 
-.. figure:: wpa_supplicant.png
+.. figure:: images/wpa_supplicant.png
   :align: center
 
 启用无线网卡
@@ -235,7 +235,7 @@ ssh 远程登录
 
   执行命令：ifconfig
 
-  .. figure:: ifconfig.png
+  .. figure:: images/ifconfig.png
     :align: center
 
   使用ssh命令登录:

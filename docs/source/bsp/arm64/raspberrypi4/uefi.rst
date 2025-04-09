@@ -25,38 +25,38 @@ openeuler-image-mcs启动使用指导
 
 1. **烧录后首次启动需修改UEFI配置，启动阶段按ESC进入UEFI，按下图操作解锁3G内存限制并关闭ACPI选用DEVICETREE，保存重启后再操作步骤2**
 
-    .. figure:: launch_step1.png
+    .. figure:: images/launch_step1.png
         :align: center
 
-    .. figure:: launch_step2.png
+    .. figure:: images/launch_step2.png
         :align: center
 
-    .. figure:: launch_step3.png
+    .. figure:: images/launch_step3.png
         :align: center
 
-    .. figure:: launch_step4.png
+    .. figure:: images/launch_step4.png
         :align: center
 
-    .. figure:: launch_step5.png
+    .. figure:: images/launch_step5.png
         :align: center
 
 2. **更改boot order或手动选择SD卡启动，如下，最后选择Commit Changes and Exit**
 
-    .. figure:: boot_order1.png
+    .. figure:: images/boot_order1.png
         :align: center
 
-    .. figure:: boot_order2.png
+    .. figure:: images/boot_order2.png
         :align: center
 
-    .. figure:: boot_order3.png
+    .. figure:: images/boot_order3.png
         :align: center
 
-    .. figure:: boot_order4.png
+    .. figure:: images/boot_order4.png
         :align: center
 
    **启动截图**
 
-    .. figure:: boot.png
+    .. figure:: images/boot.png
         :align: center
 
    .. attention::
@@ -355,6 +355,6 @@ ____
 
    其中，使用的ACPI资源表/DTB是UEFI固件初始化好的（引导内核前已放在对应内存），不过cmdline/bootargs可通过grub.cfg进行配置，在加载内核时，grub会传递给UEFI并上报给系统。
 
-    .. figure:: rasp_uefi.png
+    .. figure:: images/rasp_uefi.png
         :align: center
 

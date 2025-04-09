@@ -64,7 +64,7 @@ QEMU支持X86的iso镜像安装，步骤如下：
 
 4. 选择 ``install`` 后，进行系统安装，依次输入cdrom和安装盘：
 
-   .. image:: qemu-install.png
+   .. image:: images/qemu-install.png
 
    之后稍作等待，完成系统安装后，会提示： ``Installation successful. Remove your installation media and press ENTER to reboot.`` 此时可以直接按 ``<CTRL-a> + x`` 关闭QEMU。
 

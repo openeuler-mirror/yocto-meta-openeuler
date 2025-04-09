@@ -116,7 +116,7 @@ phytiumpi 板卡搭载的 soc 型号为 phytium e2000q，支持SD卡启动，因
 
 Rufus工具的配置如下图：
 
-    .. image:: phytiumpi-image/phytiumpi_rufus.png
+    .. image:: images/phytiumpi_rufus.png
 
 （3）启动 phytiumpi 并连接调试：
 
@@ -136,7 +136,7 @@ Rufus工具的配置如下图：
 
 Mobaxterm 的启动打印如下图：
 
-.. image:: phytiumpi-image/mobaterm.png
+.. image:: images/mobaterm.png
 
 + 使用HDMI登录：
 
@@ -144,4 +144,4 @@ phytiumpi 连接显示器(phytiumpi 视频输出接口为标准 HDMI)、键盘�
 
 HDMI 的启动打印如下图：
 
-.. image:: phytiumpi-image/hdmi.png
+.. image:: images/hdmi.png
