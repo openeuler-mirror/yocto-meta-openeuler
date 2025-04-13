@@ -7,3 +7,6 @@ SRC_URI += " \
         file://backport-CVE-2024-28182-1.patch \
         file://backport-CVE-2024-28182-2.patch \
 "
+
+# accroding to nghttp2-1.57.0.bb, no nghttp2-client and nghttp2-server
+RDEPENDS:${PN} = "${PN}-proxy (>= ${PV}) "
