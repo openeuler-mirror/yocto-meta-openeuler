@@ -2,6 +2,14 @@
 
 PV = "0.164"
 
+# in openeuler, prebuilt external toolchain is used, so the chain x264->binutils-native-
+# ->gnu-config-native will be broken. so we add gnu-config-native to the DEPENDS here.
+#
+# when ${OPENEULER_PREBUILT_TOOLS_ENABLE}" = "yes", the special handling in 
+# do_prepare_gnu_config is required, because DEPENDS += "gnu-config-native" does not work
+# as in openeuler_hosttools.inc, ASSUME_PROVIDED += "gnu-config-native" is set
+DEPENDS += "gnu-config-native"
+
 # source change to openEuler
 SRC_URI = "file://x264-0.164-20231001git31e19f92.tar.bz2 \
         file://x264-nover.patch \
