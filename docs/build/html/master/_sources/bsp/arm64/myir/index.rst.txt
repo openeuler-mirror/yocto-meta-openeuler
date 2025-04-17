@@ -9,3 +9,4 @@
    :maxdepth: 1
 
    myir-remi/myir-remi.rst
+   myd-ld25x/index.rst
