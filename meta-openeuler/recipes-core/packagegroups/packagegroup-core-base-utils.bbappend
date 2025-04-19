@@ -86,6 +86,7 @@ RDEPENDS:${PN} = "\
     libusb1 \
     glib-2.0 \
     libbfd \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'epkg', 'epkg', '', d)} \
 "
 
 # riscv64 arch is not support kexec-tools, view yocto-poky/meta/recipes-kernel/kexec/kexec-tools_2.0.23.bb
