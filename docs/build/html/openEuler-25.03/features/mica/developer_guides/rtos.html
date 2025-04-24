@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>实时OS的对接工作 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/tabs.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="基于GDB Server的调试指南" href="../../../developer_guide/debug/gdb_guide/index.html" />
+    <link rel="prev" title="开发者指南" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">多OS混合关键性部署框架 (MICA)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../intro.html">简介</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../supported_lists.html">支持列表</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../build.html">构建指导</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../instruction.html">使用指导</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../mica_ctl.html">mica命令与配置文件</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="index.html">开发者指南</a><ul class="current">
+<li class="toctree-l5 current"><a class="current reference internal" href="#">实时OS的对接工作</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../../../developer_guide/debug/gdb_guide/index.html">基于GDB Server的调试指南</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../services/index.html">跨OS服务</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../lopper_devicetree.html">外设分区管理</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../muslc.html">musl libc的支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed_softbus.html">分布式软总线</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../preempt_rt.html">软实时系统介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../prebuilt_tool.html">预构建工具特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rust.html">Rust支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../qt5_wayland.html">嵌入式图形支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../armnn.html">ArmNN的支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../clang_llvm.html">clang/llvm 编译工具链支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../openbmc.html">OpenBMC 镜像构建和使用</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">嵌入式容器相关特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../kernelversions.html">内核多版本支持（5.10/6.6）介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../software_package_description.html">当前所支持的软件包</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../jailhouse.html">嵌入式分区虚拟机Jailhouse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../zvm.html">嵌入式实时虚拟机ZVM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../xen.html">嵌入式实时虚拟机XEN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mindspore_lite.html">构建Mindspore Lite使用指导</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../user_guide/index.html">用户使用指导</a> &raquo;</li>
+          <li><a href="../../index.html">关键特性指导</a> &raquo;</li>
+          <li><a href="../index.html">多OS混合关键性部署框架 (MICA)</a> &raquo;</li>
+          <li><a href="index.html">开发者指南</a> &raquo;</li>
+      <li>实时OS的对接工作</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="os">
+<h1>实时OS的对接工作<a class="headerlink" href="#os" title="Permalink to this headline">¶</a></h1>
+<p>两个 OS 之间的通信，最底层的依赖可以概括为共享内存的读写和中断的收发。但为了实现高效的通信，还需要借助 OpenAMP 在不同的OS上实现一个传输层。
+因此在 RTOS 侧，需要基于共享内存和中断完成 OpenAMP 的初始化。</p>
+<p>此外，为了避免在代码中引入过多的静态资源定义，MICA 规定了实时OS需要添加 <code class="docutils literal notranslate"><span class="pre">.resource_table</span></code> 段（资源表）。
+引入资源表，一方面能够让 Linux 在加载 RTOS 时，辨别 RTOS 需要哪些资源，从而进行资源的动态分配；另一方面还能通过资源表的特定表项来扩展更多的功能，包括生命周期管理、通信的恢复等。</p>
+<p>因此，实时OS的对接工作主要包括：</p>
+<ol class="arabic simple">
+<li><p>资源表的适配；</p></li>
+<li><p>OpenAMP 的初始化。</p></li>
+</ol>
+<hr class="docutils" />
+<section id="id1">
+<h2>资源表的适配<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>资源表介绍</p></li>
+</ol>
+<blockquote>
+<div><p>资源表是 ELF 镜像中的 <code class="docutils literal notranslate"><span class="pre">.resource_table</span></code> 段，其包含 RTOS 所需要的系统资源。</p>
+<p>RTOS 侧所需要的资源信息，需要使用对应的资源表项进行承载，并整合存放到资源表中。Linux 在加载 RTOS ELF 镜像时，会先找到 <code class="docutils literal notranslate"><span class="pre">.resource_table</span></code> 段，再根据其中存放的表项执行对应的初始化动作。</p>
+<p>因此，<code class="docutils literal notranslate"><span class="pre">.resource_table</span></code> 段需要将下面的结构体放在起始位置，以便于Linux解析：</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * struct resource_table - firmware resource table header</span>
+<span class="cm"> * @ver: version number</span>
+<span class="cm"> * @num: number of resource entries</span>
+<span class="cm"> * @reserved: reserved (must be zero)</span>
+<span class="cm"> * @offset: array of offsets pointing at the various resource entries</span>
+<span class="cm"> *</span>
+<span class="cm"> * The header of the resource table, as expressed by this structure,</span>
+<span class="cm"> * contains a version number (should we need to change this format in the</span>
+<span class="cm"> * future), the number of available resource entries, and their offsets</span>
+<span class="cm"> * in the table.</span>
+<span class="cm"> */</span><span class="w"></span>
+<span class="k">struct</span> <span class="nc">resource_table</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">      </span><span class="n">u32</span><span class="w"> </span><span class="n">ver</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">u32</span><span class="w"> </span><span class="n">num</span><span class="p">;</span><span class="w"></span>
+<span class="w">      </span><span class="n">u32</span><span class="w"> </span><span class="n">reserved</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span><span class="w"></span>
+<span class="w">      </span><span class="n">u32</span><span class="w"> </span><span class="n">offset</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="n">__packed</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>紧接着该结构体的是资源表项，每个资源表项都需要以下面的结构作为开头，前32位是资源表项的类型，之后的是该资源表项的具体数据：</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * struct fw_rsc_hdr - firmware resource entry header</span>
+<span class="cm"> * @type: resource type</span>
+<span class="cm"> * @data: resource data</span>
+<span class="cm"> *</span>
+<span class="cm"> * Every resource entry begins with a &#39;struct fw_rsc_hdr&#39; header providing</span>
+<span class="cm"> * its @type. The content of the entry itself will immediately follow</span>
+<span class="cm"> * this header, and it should be parsed according to the resource type.</span>
+<span class="cm"> */</span><span class="w"></span>
+<span class="w"> </span><span class="k">struct</span> <span class="nc">fw_rsc_hdr</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">       </span><span class="n">u32</span><span class="w"> </span><span class="n">type</span><span class="p">;</span><span class="w"></span>
+<span class="w">       </span><span class="n">u8</span><span class="w"> </span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"></span>
+<span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="n">__packed</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+<p>每个资源表项都有唯一的类型，当前 OpenAMP 支持的资源表项类型包括：</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * enum fw_resource_type - types of resource entries</span>
+<span class="cm"> *</span>
+<span class="cm"> * @RSC_CARVEOUT:   request for allocation of a physically contiguous memory region.</span>
+<span class="cm"> * @RSC_DEVMEM:     request to iommu_map a memory-based peripheral.</span>
+<span class="cm"> * @RSC_TRACE:      announces the availability of a trace buffer into which</span>
+<span class="cm"> *                  the remote remoteproc will be writing logs.</span>
+<span class="cm"> * @RSC_VDEV:       declare support for a virtio device, and serve as its virtio header.</span>
+<span class="cm"> * @RSC_VENDOR_START: start of the vendor specific resource types range</span>
+<span class="cm"> * @RSC_VENDOR_END  : end of the vendor specific resource types range</span>
+<span class="cm"> * @RSC_LAST:       just keep this one at the end</span>
+<span class="cm"> *</span>
+<span class="cm"> * Please note that these values are used as indices to the rproc_handle_rsc</span>
+<span class="cm"> * lookup table, so please keep them sane. Moreover, @RSC_LAST is used to</span>
+<span class="cm"> * check the validity of an index before the lookup table is accessed, so</span>
+<span class="cm"> * please update it as needed.</span>
+<span class="cm"> */</span><span class="w"></span>
+<span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="n">fw_resource_type</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">         </span><span class="n">RSC_CARVEOUT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="n">RSC_DEVMEM</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="n">RSC_TRACE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="n">RSC_VDEV</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="n">RSC_LAST</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="n">RSC_VENDOR_START</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">128</span><span class="p">,</span><span class="w"></span>
+<span class="w">         </span><span class="n">RSC_VENDOR_END</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">512</span><span class="p">,</span><span class="w"></span>
+<span class="w"> </span><span class="p">};</span><span class="w"></span>
+</pre></div>
+</div>
+<p>具体每一个表项的定义，可以查看 <a class="reference external" href="https://github.com/OpenAMP/open-amp/blob/main/lib/include/openamp/remoteproc.h">OpenAMP 中资源表项的定义</a>。
+当前 OS 之间的通信需要用到的是 <code class="docutils literal notranslate"><span class="pre">RSC_VDEV</span></code>，即通过该资源表项，声明 RTOS 侧的 virtio device 需要的资源信息。另外，还可以在 [128, 511] 范围内扩展用户自定义的资源表项。</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://github.com/OpenAMP/open-amp/blob/main/lib/include/openamp/remoteproc.h">OpenAMP 资源表项的定义</a>。</p>
+<p><a class="reference external" href="https://www.kernel.org/doc/html/v5.10/staging/remoteproc.html#binary-firmware-structure">Linux 内核文档中关于资源表的描述</a>。</p>
+</div>
+</div></blockquote>
+<hr class="docutils" />
+<ol class="arabic simple" start="2">
+<li><p>资源表样例</p></li>
+</ol>
+<blockquote>
+<div><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<div class="line-block">
+<div class="line">OpenAMP zynq7：</div>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://github.com/OpenAMP/open-amp/blob/main/apps/machine/zynq7/rsc_table.h">rsc_table.h</a>, <a class="reference external" href="https://github.com/OpenAMP/open-amp/blob/main/apps/machine/zynq7/rsc_table.c">rsc_table.c</a>。</div>
+<div class="line"><br /></div>
+</div>
+<div class="line">UniProton：</div>
+<div class="line-block">
+<div class="line"><a class="reference external" href="https://gitee.com/openeuler/UniProton/blob/master/demos/raspi4/apps/openamp/resource_table.h">resource_table.h</a>, <a class="reference external" href="https://gitee.com/openeuler/UniProton/blob/master/demos/raspi4/apps/openamp/resource_table.c">resource_table.c</a>。</div>
+</div>
+</div>
+</div>
+<p>以 UniProton 的 resource_table 为例，通过使用 <code class="docutils literal notranslate"><span class="pre">__attribute__((section(&quot;.resource_table&quot;)))</span></code> 将下面的结构体放置到 <code class="docutils literal notranslate"><span class="pre">.resource_table</span></code> 段中：</p>
+<div class="sphinx-tabs docutils container">
+<div aria-label="Tabbed content" class="closeable" role="tablist"><button aria-controls="panel-0-cmVzb3VyY2VfdGFibGUuYw==" aria-selected="true" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-cmVzb3VyY2VfdGFibGUuYw==" name="cmVzb3VyY2VfdGFibGUuYw==" role="tab" tabindex="0">resource_table.c</button><button aria-controls="panel-0-cmVzb3VyY2VfdGFibGUuaA==" aria-selected="false" class="sphinx-tabs-tab code-tab group-tab" id="tab-0-cmVzb3VyY2VfdGFibGUuaA==" name="cmVzb3VyY2VfdGFibGUuaA==" role="tab" tabindex="-1">resource_table.h</button></div><div aria-labelledby="tab-0-cmVzb3VyY2VfdGFibGUuYw==" class="sphinx-tabs-panel code-tab group-tab" id="panel-0-cmVzb3VyY2VfdGFibGUuYw==" name="cmVzb3VyY2VfdGFibGUuYw==" role="tabpanel" tabindex="0"><div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="k">static</span><span class="w"> </span><span class="k">struct</span> <span class="nc">fw_resource_table</span><span class="w"> </span><span class="n">resource_table</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="n">ver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">    </span><span class="cm">/* 资源表项的数量 */</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="n">num</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RSC_TABLE_NUM_ENTRY</span><span class="p">,</span><span class="w"></span>
+
+<span class="w">    </span><span class="cm">/* 每个资源表项在资源表中的偏移 */</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">offsetof</span><span class="p">(</span><span class="k">struct</span> <span class="nc">fw_resource_table</span><span class="p">,</span><span class="w"> </span><span class="n">vdev</span><span class="p">),</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+
+<span class="w">    </span><span class="cm">/*</span>
+<span class="cm">     * offset 之后为具体的资源表项内容，以下为 RPMsg Virtio Device 的配置</span>
+<span class="cm">     *</span>
+<span class="cm">     * RSC_VDEV: 对应的资源表项的类型为 RSC_VDEV</span>
+<span class="cm">     * VIRTIO_ID_RPMSG: Virtio ID, 对应于 virtio_ids.h 中的定义，表明该 Virtio 设备用于 RPMsg</span>
+<span class="cm">     * 2: Virtio 设备的 notifyid, 不能与 vring 的 notifyid 重复，由于 vring 使用了0和1，因此这里指定为2</span>
+<span class="cm">     * RPMSG_VDEV_DFEATURES: 配置为1，表示支持 RPMsg name service</span>
+<span class="cm">     * VRING_COUNT: 对应的 vring 的数量，为2，包括 tx vring 和 rx vring</span>
+<span class="cm">     */</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="n">vdev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">RSC_VDEV</span><span class="p">,</span><span class="w"> </span><span class="n">VIRTIO_ID_RPMSG</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">RPMSG_VDEV_DFEATURES</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="n">VRING_COUNT</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="p">},</span><span class="w"></span>
+
+<span class="w">    </span><span class="cm">/*</span>
+<span class="cm">     * Vring 的配置，为 RSC_VDEV 表项的最后一部分</span>
+<span class="cm">     *</span>
+<span class="cm">     * vring0 - tx vring</span>
+<span class="cm">     * vring1 - rx vring</span>
+<span class="cm">     *</span>
+<span class="cm">     * VRING_TX_ADDRESS, VRING_RX_ADDRESS: 配置为 -1，由 Linux 侧为 vring 分配地址</span>
+<span class="cm">     * VRING_ALIGNMENT: vring 的对齐要求</span>
+<span class="cm">     * NUM_RPMSG_BUFF: vring 的 buffer 数量，必须为 2 的幂次方</span>
+<span class="cm">     * VRING0_ID, VRING1_ID: vring 的 notifyid，可以分别指定为 0，1</span>
+<span class="cm">     */</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="n">vring0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">VRING_TX_ADDRESS</span><span class="p">,</span><span class="w"> </span><span class="n">VRING_ALIGNMENT</span><span class="p">,</span><span class="w"></span>
+<span class="w">               </span><span class="n">NUM_RPMSG_BUFF</span><span class="p">,</span><span class="w"> </span><span class="n">VRING0_ID</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">},</span><span class="w"></span>
+<span class="w">    </span><span class="p">.</span><span class="n">vring1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">VRING_RX_ADDRESS</span><span class="p">,</span><span class="w"> </span><span class="n">VRING_ALIGNMENT</span><span class="p">,</span><span class="w"></span>
+<span class="w">               </span><span class="n">NUM_RPMSG_BUFF</span><span class="p">,</span><span class="w"> </span><span class="n">VRING1_ID</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">},</span><span class="w"></span>
+<span class="p">};</span><span class="w"></span>
+</pre></div>
+</div>
+</div><div aria-labelledby="tab-0-cmVzb3VyY2VfdGFibGUuaA==" class="sphinx-tabs-panel code-tab group-tab" hidden="true" id="panel-0-cmVzb3VyY2VfdGFibGUuaA==" name="cmVzb3VyY2VfdGFibGUuaA==" role="tabpanel" tabindex="0"><div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="n">METAL_PACKED_BEGIN</span><span class="w"></span>
+<span class="k">struct</span> <span class="nc">fw_resource_table</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ver</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">reserved</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span><span class="w"></span>
+<span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">offset</span><span class="p">[</span><span class="n">RSC_TABLE_NUM_ENTRY</span><span class="p">];</span><span class="w">   </span><span class="c1">// 每个表项在资源表中的偏移</span>
+
+<span class="w">    </span><span class="k">struct</span> <span class="nc">fw_rsc_vdev</span><span class="w"> </span><span class="n">vdev</span><span class="p">;</span><span class="w">                    </span><span class="c1">// RSC_VDEV 类型的资源表项</span>
+<span class="w">    </span><span class="k">struct</span> <span class="nc">fw_rsc_vdev_vring</span><span class="w"> </span><span class="n">vring0</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="k">struct</span> <span class="nc">fw_rsc_vdev_vring</span><span class="w"> </span><span class="n">vring1</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"> </span><span class="n">METAL_PACKED_END</span><span class="p">;</span><span class="w"></span>
+</pre></div>
+</div>
+</div></div>
+<p>之后，在 UniProton 的链接脚本中，将 <code class="docutils literal notranslate"><span class="pre">.resource_table</span></code> 段链接到 ELF 镜像中：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>readelf -eW rtos.elf
+<span class="go">ELF Header:</span>
+<span class="go">... ...</span>
+<span class="go">Entry point address:               0x7a001094</span>
+<span class="go">... ...</span>
+
+<span class="go">Section Headers:</span>
+<span class="go">[Nr] Name              Type            Address          Off    Size   ES Flg Lk Inf Al</span>
+<span class="go">... ...</span>
+<span class="go">[ 1] text              PROGBITS        000000007a000000 001000 00f000 00  AX  0   0 2048</span>
+<span class="go">... ...</span>
+<span class="go">[16] .resource_table   PROGBITS        000000007a029230 013080 000058 00  WA  0   0  4</span>
+
+
+<span class="go">Section to Segment mapping:</span>
+<span class="go"> Segment Sections...</span>
+<span class="go">  00     text ...... rodata bss noinit</span>
+<span class="go">  01     datas ...... .resource_table</span>
+</pre></div>
+</div>
+<p>可以看到，资源表被放置在数据段的最后一部分，起始地址为 <cite>0x7a029230</cite>，大小为 <cite>0x58</cite>。</p>
+<p>MICA 通过解析 RTOS ELF 的信息，将 RTOS 的代码段和数据段分别加载到对应的内存位置。即从 <code class="docutils literal notranslate"><span class="pre">text</span></code> 的起始地址(<cite>0x7a000000</cite>)开始，到 <code class="docutils literal notranslate"><span class="pre">.resource_table</span></code> 的结束地址。</p>
+<p>另外，值得注意的是，RTOS ELF 镜像的入口地址为 <code class="docutils literal notranslate"><span class="pre">0x7a001094</span></code>，这意味着加载完成后，CPU会跳转到该地址运行。</p>
+<p>初始化流程如下：</p>
+<img alt="../../../_images/rtos_init.jpg" src="../../../_images/rtos_init.jpg" />
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h2>OpenAMP的初始化<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>针对资源表中的 RSC_VDEV 表项，Linux 首先会为其中的 tx/rx vring 分配共享内存地址，再根据表项中的配置初始化 Linux 侧的 vdev (virtio device)。
+之后，RTOS 可以根据资源表中的信息，获取 tx/rx vring 的起始地址，动态初始化 vring，而不需要在代码中做过多的静态定义。</p>
+<p>因此，RTOS侧的 OpenAMP 的初始化流程可以简单概括为以下几个步骤：</p>
+<ol class="arabic simple">
+<li><p>使能对应的中断。根据不同的场景，中断有不同的实现。例如，裸金属部署场景，中断通过7号 SGI 中断实现；jailhouse 部署，中断会通过 ivshmem doorbell 实现。</p></li>
+<li><p>根据资源表创建 vdev。</p></li>
+<li><p>等待 Linux 侧的 vdev 初始化完成后，再根据资源表中的 vring 信息动态初始化 vdev 对应的 tx/rx vring。</p></li>
+<li><p>根据 vdev 初始化 rpmsg device。</p></li>
+</ol>
+<p>对应的代码流程如下：</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="cm">/* 根据资源表创建 vdev */</span><span class="w"></span>
+<span class="n">vdev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rproc_virtio_create_vdev</span><span class="p">(</span><span class="n">VIRTIO_DEV_DEVICE</span><span class="p">,</span><span class="w"> </span><span class="n">VDEV_ID</span><span class="p">,</span><span class="w"></span>
+<span class="w">                                </span><span class="n">rsc_table_to_vdev</span><span class="p">(</span><span class="n">rsc_table</span><span class="p">),</span><span class="w"></span>
+<span class="w">                                </span><span class="n">rsc_io</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">virtio_notify</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span><span class="w"></span>
+
+<span class="cm">/* 等待 Linux 侧的 vdev 初始化完成 */</span><span class="w"></span>
+<span class="n">rproc_virtio_wait_remote_ready</span><span class="p">(</span><span class="n">vdev</span><span class="p">);</span><span class="w"></span>
+
+<span class="cm">/* 从资源表中获取 tx vring 的信息 */</span><span class="w"></span>
+<span class="n">vring_rsc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rsc_table_get_vring0</span><span class="p">(</span><span class="n">rsc_table</span><span class="p">);</span><span class="w"></span>
+
+<span class="cm">/* 初始化 tx vring */</span><span class="w"></span>
+<span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rproc_virtio_init_vring</span><span class="p">(</span><span class="n">vdev</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">vring_rsc</span><span class="o">-&gt;</span><span class="n">notifyid</span><span class="p">,</span><span class="w"></span>
+<span class="w">                              </span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)(</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="n">vring_rsc</span><span class="o">-&gt;</span><span class="n">da</span><span class="p">,</span><span class="w"> </span><span class="n">rsc_io</span><span class="p">,</span><span class="w"></span>
+<span class="w">                              </span><span class="n">vring_rsc</span><span class="o">-&gt;</span><span class="n">num</span><span class="p">,</span><span class="w"> </span><span class="n">vring_rsc</span><span class="o">-&gt;</span><span class="n">align</span><span class="p">);</span><span class="w"></span>
+
+<span class="cm">/* 初始化 rx vring */</span><span class="w"></span>
+<span class="n">vring_rsc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rsc_table_get_vring1</span><span class="p">(</span><span class="n">rsc_table</span><span class="p">);</span><span class="w"></span>
+<span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rproc_virtio_init_vring</span><span class="p">(</span><span class="n">vdev</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">vring_rsc</span><span class="o">-&gt;</span><span class="n">notifyid</span><span class="p">,</span><span class="w"></span>
+<span class="w">                              </span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">)(</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="n">vring_rsc</span><span class="o">-&gt;</span><span class="n">da</span><span class="p">,</span><span class="w"> </span><span class="n">rsc_io</span><span class="p">,</span><span class="w"></span>
+<span class="w">                              </span><span class="n">vring_rsc</span><span class="o">-&gt;</span><span class="n">num</span><span class="p">,</span><span class="w"> </span><span class="n">vring_rsc</span><span class="o">-&gt;</span><span class="n">align</span><span class="p">);</span><span class="w"></span>
+
+<span class="cm">/* 使用 vdev 创建 rpmsg device */</span><span class="w"></span>
+<span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rpmsg_init_vdev</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rvdev</span><span class="p">,</span><span class="w"> </span><span class="n">vdev</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">shm_io</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span><span class="w"></span>
+
+<span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rpmsg_virtio_get_rpmsg_device</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rvdev</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://gitee.com/openeuler/UniProton/blob/master/demos/raspi4/apps/openamp/rpmsg_backend_rsc_table.c">UniProton 的示例代码:</a>。</p>
+</div>
+<p>另外，为了避免中断时间过长，影响实时性，可以考虑将 <cite>rproc_virtio_notified</cite> 放到线程中执行，在中断流程仅做线程的唤醒：</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">receive_message</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="w"></span>
+<span class="p">{</span><span class="w"></span>
+<span class="w">     </span><span class="cm">/* 等待信号量 */</span><span class="w"></span>
+<span class="w">     </span><span class="n">Waiting</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">semaphore</span><span class="w"> </span><span class="p">...</span><span class="w"></span>
+
+<span class="w">     </span><span class="cm">/* 信号量到来后，说明 rx vring 有需要处理的消息，进行 virtio_notify */</span><span class="w"></span>
+<span class="w">     </span><span class="n">rproc_virtio_notified</span><span class="p">(</span><span class="n">vdev</span><span class="p">,</span><span class="w"> </span><span class="n">VRING1_ID</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p>完成 OpenAMP 的初始化后，RTOS 可以通过 rpmsg device 创建 rpmsg endpoint 与 Linux 进行通信：</p>
+<div class="highlight-C notranslate"><div class="highlight"><pre><span></span><span class="cm">/*</span>
+<span class="cm"> * 通过 name service 创建名为 &quot;rpmsg-tty&quot; 的 endpoint</span>
+<span class="cm"> * Linux 接收到 name service 的消息后，会创建匹配的 endpoint，之后两端可以进行消息通信</span>
+<span class="cm"> * RTOS 会通过 rpmsg_rx_tty_callback 处理 Linux 侧发来的消息</span>
+<span class="cm"> */</span><span class="w"></span>
+<span class="n">ret</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rpmsg_create_ept</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tty_ept</span><span class="p">,</span><span class="w"> </span><span class="n">rpdev</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;rpmsg-tty&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">                       </span><span class="n">RPMSG_ADDR_ANY</span><span class="p">,</span><span class="w"> </span><span class="n">RPMSG_ADDR_ANY</span><span class="p">,</span><span class="w"></span>
+<span class="w">                       </span><span class="n">rpmsg_rx_tty_callback</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span><span class="w"></span>
+
+<span class="cm">/*</span>
+<span class="cm"> * 利用 endpoint 发送消息</span>
+<span class="cm"> * Linux 侧的 MICA 默认会将来自于 &quot;rpmsg-tty&quot; 的消息转发到 /dev/ttyRPMSGx</span>
+<span class="cm"> */</span><span class="w"></span>
+<span class="n">rpmsg_send</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tty_ept</span><span class="p">,</span><span class="w"> </span><span class="n">tx_buff</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">);</span><span class="w"></span>
+</pre></div>
+</div>
+<p>RPMsg 通信建立流程如下：</p>
+<blockquote>
+<div><img alt="../../../_images/rpmsg_init.jpg" src="../../../_images/rpmsg_init.jpg" />
+</div></blockquote>
+<p>在 RTOS 调用 rpmsg_create_ept 建立 rpmsg-tty 端点时，并不需要指定该端点绑定的源地址和目的地址，而是通过 name service 进行 “name” 到 “port” 的转换。
+name service 会在本地分配一个唯一的源地址，并将该服务名称(“rpmsg-tty”)和源地址(“src”)封装成 NS Msg(Name service Message)发送到Linux，触发 Linux 的 ns_bind_cb 回调。
+在回调中，Linux侧可以进行服务的匹配和对应的初始化流程，并且会为 rpmsg-tty 服务分配 Linux 侧的源地址。这之后，Linux 侧 endpoint 的信息已经完整了，即 Linux 可以通过 rpmsg_send 向 RTOS 发送消息。
+RTOS 侧首次接到该消息时，会更新 rpmsg-tty 的目的地址，完成 endpoint 的建立和绑定。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="开发者指南" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../../developer_guide/debug/gdb_guide/index.html" class="btn btn-neutral float-right" title="基于GDB Server的调试指南" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-25.03
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/features/mica/developer_guides/rtos.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/features/mica/developer_guides/rtos.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/features/mica/developer_guides/rtos.html">openEuler-24.09</a></dd>
+      <dd><a href="rtos.html">openEuler-25.03</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

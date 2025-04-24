@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>软实时系统介绍 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="预构建工具特性" href="prebuilt_tool.html" />
+    <link rel="prev" title="分布式软总线" href="distributed_softbus.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mica/index.html">多OS混合关键性部署框架 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="muslc.html">musl libc的支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="distributed_softbus.html">分布式软总线</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">软实时系统介绍</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id2">软实时特性介绍</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">软实时镜像构建指导</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">验证软实时是否使能</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">软实时性能测试</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#realtime-tuning">软实时性能优化</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="prebuilt_tool.html">预构建工具特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="rust.html">Rust支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="qt5_wayland.html">嵌入式图形支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="armnn.html">ArmNN的支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="clang_llvm.html">clang/llvm 编译工具链支持</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openbmc.html">OpenBMC 镜像构建和使用</a></li>
+<li class="toctree-l3"><a class="reference internal" href="container/index.html">嵌入式容器相关特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="kernelversions.html">内核多版本支持（5.10/6.6）介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="software_package_description.html">当前所支持的软件包</a></li>
+<li class="toctree-l3"><a class="reference internal" href="jailhouse.html">嵌入式分区虚拟机Jailhouse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="zvm.html">嵌入式实时虚拟机ZVM</a></li>
+<li class="toctree-l3"><a class="reference internal" href="xen.html">嵌入式实时虚拟机XEN</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mindspore_lite.html">构建Mindspore Lite使用指导</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../user_guide/index.html">用户使用指导</a> &raquo;</li>
+          <li><a href="index.html">关键特性指导</a> &raquo;</li>
+      <li>软实时系统介绍</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="preempt-rt">
+<span id="id1"></span><h1>软实时系统介绍<a class="headerlink" href="#preempt-rt" title="Permalink to this headline">¶</a></h1>
+<p>本章主要介绍openEuler Embedded软实时系统的特性说明，构建方式和性能测试。</p>
+<section id="id2">
+<h2>软实时特性介绍<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p><strong>实时性简介</strong></p>
+<blockquote>
+<div><p>实时的诉求通常是事件的响应时间不能超过规定的期限，一个事件的最大响应时间应该是确定的、可以预测的。</p>
+</div></blockquote>
+<p><strong>PREEMPT_RT补丁简介</strong></p>
+<blockquote>
+<div><p>PREEMPT_RT补丁（以下简称RT补丁）可直接打在内核源码上，并通过内核配置选项 CONFIG_PREEMPT_RT=y 使能软实时功能。RT补丁实现的核心在于最小化内核中不可抢占部分的代码，从而使高优先级任务就绪时能及时抢占低优先级任务，减少切换时延。除此之外，补丁通过多种降低时延的措施，对锁、驱动等模块也进行了优化。</p>
+</div></blockquote>
+<p><strong>补丁关键功能举例</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>增加中断程序的可抢占性（中断线程化、软中断线程化）</p></li>
+<li><p>增加临界区的可抢占性（如自旋锁）</p></li>
+<li><p>增加关中断代码的可抢占性</p></li>
+<li><p>解决优先级反转问题（优先级继承）</p></li>
+</ul>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h2>软实时镜像构建指导<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>根据 <a class="reference internal" href="../oebuild/userguide/install/index.html#oebuild-install"><span class="std std-ref">oebuild快速构建</span></a> ，初始化oebuild工作目录；</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>oebuild init &lt;directory&gt;
+<span class="nb">cd</span> &lt;directory&gt;
+oebuild update
+</pre></div>
+</div>
+</li>
+<li><p>进入oebuild工作目录，创建对应的编译配置文件，软实时镜像需要添加 <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">openeuler-rt</span></code>：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># arm64</span>
+oebuild generate -p qemu-aarch64 -f openeuler-rt -d &lt;build_arm64_rt&gt;
+
+<span class="c1"># RPI4</span>
+oebuild generate -p raspberrypi4-64 -f openeuler-rt -d &lt;build_rpi_rt&gt;
+
+<span class="c1"># x86</span>
+oebuild generate -p x86-64 -f openeuler-rt -d &lt;build_x86_rt&gt;
+</pre></div>
+</div>
+<p>除了使用上述命令进行配置文件生成之外，还可以使用如下命令进入到菜单选择界面进行对应数据填写和选择，此菜单选项可以替代上述命令中的oebuild generate，选择保存之后继续执行上述命令中的bitbake及后续命令即可。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild generate</span>
+</pre></div>
+</div>
+<p>具体界面如下图所示:</p>
+<img alt="../_images/oebuild-generate-select.png" src="../_images/oebuild-generate-select.png" />
+</li>
+<li><p>进入 <code class="docutils literal notranslate"><span class="pre">&lt;build&gt;</span></code> 目录，编译openeuler-image：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>oebuild bitbake openeuler-image
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ol class="arabic simple">
+<li><p>openEuler Embedded 软实时特性当前不支持 arm32 架构</p></li>
+</ol>
+</div>
+</li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="id4">
+<h2>验证软实时是否使能<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>使能软实时特性后，系统会带有 <code class="docutils literal notranslate"><span class="pre">PREEMPT_RT</span></code> 字样，可以通过以下命令进行判断：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ uname -a
+Linux openeuler ... SMP PREEMPT_RT Fri Mar <span class="m">25</span> <span class="m">03</span>:58:22 UTC <span class="m">2022</span> aarch64 GNU/Linux
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="id5">
+<h2>软实时性能测试<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p><strong>软实时相关测试</strong></p>
+<dl class="simple">
+<dt>参考 <a class="reference external" href="https://wiki.linuxfoundation.org/realtime/documentation/howto/tools/rt-tests">RT-Tests 指导</a> 进行软实时相关测试，用例包括但不限于：</dt><dd><ol class="arabic simple">
+<li><p>cyclictest 时延性能测试</p></li>
+<li><p>pi_stress 优先级继承测试</p></li>
+<li><p>hackbench 负载构造工具</p></li>
+</ol>
+</dd>
+</dl>
+<p>下面以cyclictest 时延性能测试为例进行说明。</p>
+<p><strong>cyclictest 时延性能测试</strong></p>
+<blockquote>
+<div><div class="admonition note">
+<p class="admonition-title">Note</p>
+<div class="line-block">
+<div class="line"><strong>对于x86架构</strong>：</div>
+<div class="line-block">
+<div class="line">cyclictest工具依赖 <code class="docutils literal notranslate"><span class="pre">libnuma.so</span></code> ，而SDK中未提供该库，建议使用openEuler-Embedded构建容器（或其它x86环境）编译cyclictest，并将libnuma.so上传到环境的 <code class="docutils literal notranslate"><span class="pre">/lib64/</span></code> 目录。</div>
+<div class="line"><br /></div>
+</div>
+<div class="line"><strong>对于arm64架构</strong>：</div>
+<div class="line-block">
+<div class="line">可以参考下述步骤，使用SDK进行交叉编译。</div>
+</div>
+</div>
+</div>
+<ol class="arabic">
+<li><p>准备开发环境</p>
+<p>参考 <a class="reference internal" href="../getting_started/index.html#install-openeuler-embedded-sdk"><span class="std std-ref">安装SDK</span></a></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sh openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-22.03.sh</span>
+
+<span class="go">. /path/to/sdk/environment-setup-aarch64-openeuler-linux</span>
+</pre></div>
+</div>
+</li>
+<li><p>编译用例</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">git clone https://git.kernel.org/pub/scm/utils/rt-tests/rt-tests.git</span>
+<span class="go">cd rt-tests</span>
+<span class="go">git checkout stable/v1.0</span>
+<span class="go">make all</span>
+</pre></div>
+</div>
+</li>
+<li><p>执行用例</p>
+<p>编译完成后生成二进制 <code class="file docutils literal notranslate"><span class="pre">cyclictest</span></code>，传入单板环境后可查看执行cyclictest时可配置的参数：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">./cyclictest --help</span>
+</pre></div>
+</div>
+<p>cyclictest有多种参数配置方法，用例具体的入参设计可参考：<a class="reference external" href="https://wiki.linuxfoundation.org/realtime/documentation/howto/tools/cyclictest/test-design">test-design</a></p>
+<p>输入示例：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">./cyclictest -p 90 -m -i 100 -n -h 100 -l 10000000</span>
+</pre></div>
+</div>
+<p>输出示例：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>/dev/cpu_dma_latency <span class="nb">set</span> to 0us
+<span class="go">policy: fifo: loadavg: 2.32 1.99 1.58 1/95 311</span>
+
+<span class="go">T: 0 (  311) P:90 I:100 C:10000000 Min:      7 Act:    9 Avg:    8 Max:      16</span>
+</pre></div>
+</div>
+<p>即用例循环1000万次后，平均时延为8us，最坏时延为16us（该数据仅为示例，具体以环境实测为准）。</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>如果树莓派4B的空载情况下，平均时延较差（如超过20us），可查看使用的树莓派固件是否将CPU频率配置为了节能模式，并根据需要将CPU频率配置为最高运行频率。如无cpufreq相关接口，则不涉及。</p>
+<p>输入示例：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor</span>
+</pre></div>
+</div>
+<p>输出示例：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">powersave</span>
+</pre></div>
+</div>
+<p>如上结果表示CPU频率为节能模式。</p>
+<p>配置CPU最高运行频率，输入示例：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">echo performance &gt; /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor</span>
+</pre></div>
+</div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+<hr class="docutils" />
+</section>
+<section id="realtime-tuning">
+<span id="id6"></span><h2>软实时性能优化<a class="headerlink" href="#realtime-tuning" title="Permalink to this headline">¶</a></h2>
+<p>性能优化的原则是：降低不确定性，提高可预期性。实时性能的优化是非常复杂的，涉及硬件底层架构特征、内核采用的机制策略，以及上层软件的编程设计等。以下介绍了x86平台的一些性能优化措施：</p>
+<ul>
+<li><p>调整BIOS配置：
+关闭 <code class="docutils literal notranslate"><span class="pre">Hyper-Threading</span></code>, <code class="docutils literal notranslate"><span class="pre">Intel</span> <span class="pre">SpeendStep</span></code>.</p></li>
+<li><p>添加内核启动参数：</p>
+<blockquote>
+<div><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Kernel Command Line</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>intel_pstate=disable</p></td>
+<td><p>禁用intel调频</p></td>
+</tr>
+<tr class="row-odd"><td><p>nohalt idle=poll intel_idle.max_cstate=0 processor.max_cstate=1</p></td>
+<td><p>避免CPU陷入深层次的省电睡眠状态</p></td>
+</tr>
+<tr class="row-even"><td><p>nowatchdog</p></td>
+<td><p>关闭softlockup和hardlockup</p></td>
+</tr>
+<tr class="row-odd"><td><p>mce=ignore_ce</p></td>
+<td><p>忽略mce</p></td>
+</tr>
+<tr class="row-even"><td><p>clocksource=tsc tsc=reliable</p></td>
+<td><p>指定tsc作为系统clocksource</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</li>
+<li><p>修改虚拟内存统计周期：
+<code class="docutils literal notranslate"><span class="pre">sysctl</span> <span class="pre">-w</span> <span class="pre">vm.stat_interval=120</span></code></p></li>
+<li><p>除了上述的针对系统全局的配置修改外，还可以为某些核进行单独配置：</p>
+<blockquote>
+<div><table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Kernel Command Line</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>isolcpus=&lt;cpu number&gt;,…,&lt;cpu number&gt;</p></td>
+<td><p>避免普通任务在指定CPU上调度运行</p></td>
+</tr>
+<tr class="row-odd"><td><p>nohz_full=&lt;cpu number&gt;,…,&lt;cpu number&gt;</p></td>
+<td><p>关闭指定CPU的tick</p></td>
+</tr>
+<tr class="row-even"><td><p>rcu_nocbs=&lt;cpu number&gt;,…,&lt;cpu number&gt;</p></td>
+<td><p>卸载指定CPU的RCU回调任务</p></td>
+</tr>
+<tr class="row-odd"><td><p>irqaffinity=&lt;cpu number&gt;,…,&lt;cpu number&gt;</p></td>
+<td><p>配置中断亲缘性，默认由指定核处理中断</p></td>
+</tr>
+</tbody>
+</table>
+<p>可以为某些核进行以上配置，再将实时任务进行绑核，以减少实时任务受到的干扰。例如：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>Step1:
+  <span class="c1"># 修改cmdline以隔离出cpu2及cpu3:</span>
+  <span class="s2">&quot;isolcpus=2,3 nohz_full=2,3 rcu_nocbs=2,3 irqaffinity=0,1&quot;</span>
+
+Step <span class="m">2</span>:
+  <span class="c1"># 将实时任务绑定到2核或3核</span>
+  taskset -c <span class="m">2</span> ./realtime_task1
+  taskset -c <span class="m">3</span> ./realtime_task2
+</pre></div>
+</div>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>openEuler-Embedded 可以通过修改boot分区的 <code class="docutils literal notranslate"><span class="pre">grub.cfg</span></code> 配置内核启动参数，例如：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>vi /run/media/sda1/efi/boot/grub.cfg
+
+<span class="c1"># cmdline 为 &quot;rw quiet&quot;</span>
+menuentry <span class="s1">&#39;boot&#39;</span><span class="o">{</span>
+    linux /bzImage  <span class="nv">root</span><span class="o">=</span><span class="nv">PARTUUID</span><span class="o">=</span>eaecae14-7021-4551-9183-29b0d210222f rw quiet
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>如果没有 <code class="docutils literal notranslate"><span class="pre">/run/media/sda1/efi/boot/grub.cfg</span></code> 可以使用 <code class="docutils literal notranslate"><span class="pre">fdisk</span> <span class="pre">-l</span></code> 查看磁盘分区，使用 <code class="docutils literal notranslate"><span class="pre">mount</span></code> 自行挂载 boot 分区。</p>
+</div>
+</li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="distributed_softbus.html" class="btn btn-neutral float-left" title="分布式软总线" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="prebuilt_tool.html" class="btn btn-neutral float-right" title="预构建工具特性" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-25.03
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../master/features/preempt_rt.html">master</a></dd>
+      <dd><a href="../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS/features/preempt_rt.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP1/features/preempt_rt.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP2/features/preempt_rt.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP3/features/preempt_rt.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP4/features/preempt_rt.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../openEuler-22.09/features/preempt_rt.html">openEuler-22.09</a></dd>
+      <dd><a href="../../openEuler-23.03/features/preempt_rt.html">openEuler-23.03</a></dd>
+      <dd><a href="../../openEuler-23.09/features/preempt_rt.html">openEuler-23.09</a></dd>
+      <dd><a href="../../openEuler-24.03-LTS/features/preempt_rt.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../openEuler-24.09/features/preempt_rt.html">openEuler-24.09</a></dd>
+      <dd><a href="preempt_rt.html">openEuler-25.03</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

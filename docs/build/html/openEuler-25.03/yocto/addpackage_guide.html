@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>新增配方支持指导 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="镜像定制" href="image_develop.html" />
+    <link rel="prev" title="yocto poky 4.0 语法变更" href="poky4.0.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../user_guide/index.html">用户使用指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../faq/index.html">常见问题</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../references/index.html">参考文档</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../references/references_doc.html">参考文献</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../bitbake/index.html">BitBake 手册</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">yocto 手册</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="overview.html">Yocto介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="yocto_quick_start_manual/index.html">yocto 工程快速入门</a></li>
+<li class="toctree-l3"><a class="reference internal" href="recipe.html">Yocto 标准配方解析</a></li>
+<li class="toctree-l3"><a class="reference internal" href="meta-openeuler.html">openeuler层结构及演进策略</a></li>
+<li class="toctree-l3"><a class="reference internal" href="exploration.html">深入Yocto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="poky4.0.html">yocto poky 4.0 语法变更</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">新增配方支持指导</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#bbappend">bbappend 文件介绍</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#bbappend-openeuler">bbappend 在 openEuler 嵌入式的应用实践</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#id2">配方文件查找</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#openeuler">切换 openEuler 源码</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">基于 openEuler 源码构建示例</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="image_develop.html">镜像定制</a></li>
+<li class="toctree-l3"><a class="reference internal" href="container_environment.html">openEuler Embedded 开发容器环境介绍</a></li>
+<li class="toctree-l3"><a class="reference internal" href="priority.html">Yocto 元数据优先级</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sstate.html">share state 机制</a></li>
+<li class="toctree-l3"><a class="reference internal" href="devshell.html">Yocto 实现终端应用</a></li>
+<li class="toctree-l3"><a class="reference internal" href="partitioned_image.html">使用 yocto 创建分区镜像</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openeuler_src_uri_remove.html">OPENEULER_SRC_URI_REMOVE</a></li>
+<li class="toctree-l3"><a class="reference internal" href="add_package_src.html">如何添加或修改软件包源</a></li>
+<li class="toctree-l3"><a class="reference internal" href="yocto_manual/index.html">yocto 手册参考</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../references/index.html">参考文档</a> &raquo;</li>
+          <li><a href="index.html">yocto 手册</a> &raquo;</li>
+      <li>新增配方支持指导</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="yocto-add-package-recipe">
+<span id="id1"></span><h1>新增配方支持指导<a class="headerlink" href="#yocto-add-package-recipe" title="Permalink to this headline">¶</a></h1>
+<p>配方（*.bb 文件）是 Yocto 项目中的核心组成部分，每个软件组件的构建都依赖于相应的配方来进行定义和配置，Yocto 构建系统通过这些配方来管理软件组件的构建过程。从零开始编写一个配方文件可能会比较繁琐，尽管已经在 *.conf 文件中配置好了绝大多数的变量。建议先学习 <a class="reference internal" href="recipe.html#yocto-recipe"><span class="std std-ref">Yocto 标准配方解析</span></a> 章节了解配方。</p>
+<p>如果要为每个开源包都手动编写配方文件，将是一项非常耗时和复杂的工作。幸运的是，Yocto 的官方仓库已经为大部分软件包提供了指定版本的配方文件。</p>
+<p>设想一种情况，如果您的源码版本与 Yocto 官方仓库中的配方版本相差不大，您可以考虑直接基于 Yocto 仓库中的配方进行少量修改，以实现切换源码的需求。这样可以节省大量时间和精力，并且确保构建过程的一致性和准确性。然而，请注意，直接修改官方仓库的配方文件可能不是最佳实践，因为它们可能会在未来的版本中更新或更改。</p>
+<p>在可能的情况下，可以创建一个新的配方文件，并参考官方仓库中的现有配方作为基础，这是一种不错的方式。这种方式的缺点是会带来大量的冗余代码，同时不好跟进上游版本维护。Yocto 提供了一种机制，即 *.bbappend 文件，bbappend 文件允许用户为现有的配方文件添加或覆盖变量和任务，而无需复制整个配方。这样既避免了冗余代码，又便于与上游版本维护保持同步。我们将在下文中详细介绍 bbappend 文件。</p>
+<section id="bbappend">
+<h2>bbappend 文件介绍<a class="headerlink" href="#bbappend" title="Permalink to this headline">¶</a></h2>
+<p>bbappend 文件是 Yocto 构建系统中的一个特殊文件，用于扩展或修改现有的配方文件。它允许用户为现有的软件包添加额外的构建步骤、修改变量或添加依赖关系，而无需修改原始的配方文件。使用 bbappend 文件的优点在于，它可以轻松地对现有配方进行微调，而不会破坏原始的构建逻辑。这使得在构建过程中添加自定义构建步骤、修复兼容性问题或添加特定平台的支持变得简单。</p>
+<p>命名规范上，bbappend 文件通常以 &lt;package_name&gt;_&lt;package_version&gt;.bbappend 的形式命名，其中 &lt;package_name&gt; 是要扩展的原始配方文件的名称。它的内容类似于一个普通的配方文件，但主要用于扩展而不是完全替换原始配方。</p>
+<p>要使用 bbappend 文件，您需要将其放在 <strong>BBFILES</strong> 变量指定的目录中。构建系统会自动检测并应用这些文件，按照它们在目录中的顺序进行加载和应用。</p>
+</section>
+<section id="bbappend-openeuler">
+<h2>bbappend 在 openEuler 嵌入式的应用实践<a class="headerlink" href="#bbappend-openeuler" title="Permalink to this headline">¶</a></h2>
+<section id="id2">
+<h3>配方文件查找<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>bbappend 需要基于已知的配方文件，如果在已知的 <code class="file docutils literal notranslate"><span class="pre">poky/meta</span></code> 等层没有找到需要的配方文件，可以在 <a class="reference external" href="http://layers.openembedded.org/layerindex/branch/master/recipes/">OpenEmbedded Layer</a> 搜索，然后拷贝需要的文件（bb文件、补丁等）到 meta-openeuler 层。再根据需要添加 bbappend 文件。</p>
+</section>
+<section id="openeuler">
+<h3>切换 openEuler 源码<a class="headerlink" href="#openeuler" title="Permalink to this headline">¶</a></h3>
+<p>构建时，我们使用的源码主要来源是 <a class="reference external" href="https://gitee.com/organizations/src-openeuler/projects">src-openEuler</a>  与 <a class="reference external" href="https://gitee.com/organizations/openeuler/projects">openEuler</a>  。在切换源码时，需要考虑以下几种情形。</p>
+<ul>
+<li><p><strong>情形一：</strong> 源码来源不一致。Poky 通常使用官方链接作为源码的来源，这有其明显的优势，但可能会受到国内网络速度的限制，导致源码获取速度较慢。</p>
+<p>面对情形一，openEuler 首先在默认的 <code class="docutils literal notranslate"><span class="pre">do_fetch</span></code> 任务中配置了 <code class="docutils literal notranslate"><span class="pre">do_openeuler_fetch</span></code> 子任务，用于获取自 openEuler 的源代码。 <code class="docutils literal notranslate"><span class="pre">do_openeuler_fetch</span></code> 任务会根据 <code class="file docutils literal notranslate"><span class="pre">.oebuild/manifest.yaml</span></code> 中软件包的 commit 信息，下载源码到本地路径（<code class="file docutils literal notranslate"><span class="pre">/usr/openeuler/src</span></code>），原理见 <a class="reference internal" href="../infrastructure/openeuler_fetch/index.html#openeuler-fetch"><span class="std std-ref">通过openeuler_fetch使用openEuler软件包</span></a> 。关于软件包源码的组织方式，详情参考 <a class="reference internal" href="add_package_src.html#add-package-src"><span class="std std-ref">如何添加或修改软件包源</span></a>。</p>
+<p>下一步需要在在配方中将 <strong>SRC_URI</strong> 指定的官方链接删除，并添加本地源码路径，详细步骤参考 <a class="reference internal" href="openeuler_src_uri_remove.html#openeuler-src-uri-remove"><span class="std std-ref">OPENEULER_SRC_URI_REMOVE</span></a>。</p>
+</li>
+<li><p><strong>情形二：</strong> 源码版本不一致。由于选择源码来源自 openEuler，这可能会导致源码版本不一致，因为不同来源的版本维护可能存在差异。</p>
+<p>面对情形二，在处理源码版本不一致的问题时，openEuler 借助 bbappend 文件中的模糊匹配机制来有效地解决。通过这种方式，开发者能够根据不同的源码版本进行匹配，并在追加配方中重新配置相应的版本号。以 openEuler 例子 <code class="file docutils literal notranslate"><span class="pre">meta-openeuler/recipes-devtools/libcomps/libcomps_%.bbappend</span></code> 来说，openEuler 中 libcomps 源码的实际版本为 0.1.19，而 Poky 中 libcomps 配方的版本是 0.1.18, 但我们可以使用 <code class="file docutils literal notranslate"><span class="pre">libcomps_%.bbappend</span></code> 进行模糊匹配，并在追加配方中重新配置 <strong>PV</strong> 为匹配的版本号（如 0.1.19）。这种机制使得我们可以轻松地处理源码版本不一致的问题，确保构建过程的顺利进行。配置如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">### libcomps_%.bbappend</span>
+<span class="n">PV</span> <span class="o">=</span> <span class="s2">&quot;0.1.19&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>情形三：</strong> 解压源码后名称不一致。有些 tar 包在解压后，其文件和目录名称可能与预期不一致，这可能会给后续的构建过程带来困扰。</p>
+<p>面对情形三，解压源码后名称不一致。为了解决这个问题，我们需要重新配置变量 <strong>S</strong>，以确保构建时能够找到正确的解压后的源码目录。以 openEuler 例子 <code class="file docutils literal notranslate"><span class="pre">meta-openeuler/recipes-devtools/libcomps/libcomps_%.bbappend</span></code> 来说，poky 指定源码解压后得到的源码目录为 <code class="file docutils literal notranslate"><span class="pre">git</span></code>，但 openEuler 中 libcomps 源码压缩包解压后源码目录为 <code class="file docutils literal notranslate"><span class="pre">libcomps-$</span><em><span class="pre">PV</span></em></code> （也可以简写为${BP}），因此我们需要重新配置变量 <strong>S</strong>， 这样构建时才能找到解压后的源码目录。配置如下：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">### libcomps_%.bbappend</span>
+<span class="n">S</span> <span class="o">=</span> <span class="s2">&quot;$</span><span class="si">{WORKDIR}</span><span class="s2">/$</span><span class="si">{BP}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
+</section>
+<section id="id4">
+<h2>基于 openEuler 源码构建示例<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p><strong>切换 libcomps 使用 openEuler 源码步骤如下：</strong></p>
+<ol class="arabic simple">
+<li><p><code class="file docutils literal notranslate"><span class="pre">.oebuild/manifest.yaml</span></code> 增加如下行：</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">libcomps</span><span class="p">:</span>
+<span class="n">remote_url</span><span class="p">:</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">gitee</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">src</span><span class="o">-</span><span class="n">openeuler</span><span class="o">/</span><span class="n">libcomps</span><span class="o">.</span><span class="n">git</span>
+<span class="n">version</span><span class="p">:</span> <span class="n">ba528fe723a61dbccc67f557b7566318c3e4193d</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p><code class="file docutils literal notranslate"><span class="pre">meta-openeuler/recipes-devtools/libcomps/libcomps_%.bbappend</span></code> 内容如下：</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">### 去除 SRC_URI 中 git 开头的链接</span>
+<span class="n">OPENEULER_SRC_URI_REMOVE</span> <span class="o">=</span> <span class="s2">&quot;git&quot;</span>
+
+<span class="c1">### 重新设置 PV</span>
+<span class="n">PV</span> <span class="o">=</span> <span class="s2">&quot;0.1.19&quot;</span>
+
+<span class="c1">### 替换源码为本地路径</span>
+<span class="n">SRC_URI</span><span class="p">:</span><span class="n">prepend</span> <span class="o">=</span> <span class="s2">&quot;file://$</span><span class="si">{PV}</span><span class="s2">.tar.gz </span><span class="se">\</span>
+<span class="s2">        &quot;</span>
+
+<span class="c1">### 重新设置源码目录</span>
+<span class="n">S</span> <span class="o">=</span> <span class="s2">&quot;$</span><span class="si">{WORKDIR}</span><span class="s2">/$</span><span class="si">{BP}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>运行 bitbake 构建</p></li>
+</ol>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>...
+$ oebuild bitbake
+$ bitbake libcomps
+</pre></div>
+</div>
+<p>在构建成功后，表示新增软件包配方的支持已完成，并且它现在可用于部署到镜像中。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="poky4.0.html" class="btn btn-neutral float-left" title="yocto poky 4.0 语法变更" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="image_develop.html" class="btn btn-neutral float-right" title="镜像定制" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-25.03
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../master/yocto/addpackage_guide.html">master</a></dd>
+      <dd><a href="../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS/yocto/addpackage_guide.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP1/yocto/addpackage_guide.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP2/yocto/addpackage_guide.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP3/yocto/addpackage_guide.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../openEuler-22.03-LTS-SP4/yocto/addpackage_guide.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../openEuler-22.09/yocto/addpackage_guide.html">openEuler-22.09</a></dd>
+      <dd><a href="../../openEuler-23.03/yocto/addpackage_guide.html">openEuler-23.03</a></dd>
+      <dd><a href="../../openEuler-23.09/yocto/addpackage_guide.html">openEuler-23.09</a></dd>
+      <dd><a href="../../openEuler-24.03-LTS/yocto/addpackage_guide.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../openEuler-24.09/yocto/addpackage_guide.html">openEuler-24.09</a></dd>
+      <dd><a href="addpackage_guide.html">openEuler-25.03</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>
