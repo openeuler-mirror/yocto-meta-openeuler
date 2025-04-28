@@ -253,7 +253,7 @@ def download_repo(d, repo_dir, repo_url ,version = None):
     # tracked files. You can see more detail by visiting https://git-scm.com/docs/git-sparse-checkout
     def oee_archive_download(oee_archive_dir:str, subdir: str):
         # if exists subdir and return
-        if os.path.exists(os.path.join(oee_archive_dir, sub_dir)):
+        if os.path.exists(os.path.join(oee_archive_dir, subdir)):
             return
         res = subprocess.run("git sparse-checkout init",
                         shell=True,
@@ -261,7 +261,7 @@ def download_repo(d, repo_dir, repo_url ,version = None):
                         text=True,
                         cwd=oee_archive_dir)
         if res.returncode != 0:
-            bb.fatal(f"in oee_archive run git sparse-checkout init faild, error: {res.stderr}")
+            bb.fatal(f"in oee_archive run git sparse-checkout init failed, error: {res.stderr}")
         res = subprocess.run(f"git sparse-checkout list | grep {subdir}", shell=True, cwd=oee_archive_dir)
         if res.returncode == 0:
             return
@@ -271,7 +271,7 @@ def download_repo(d, repo_dir, repo_url ,version = None):
                         text=True,
                         cwd=oee_archive_dir)
         if res.returncode != 0:
-            bb.fatal(f"in oee_archive run git sparse-checkout add {subdir} faild, error: {res.stderr}")
+            bb.fatal(f"in oee_archive run git sparse-checkout add {subdir} failed, error: {res.stderr}")
 
     if "oee_archive" in repo_url:
         sub_dir = d.getVar("OEE_ARCHIVE_SUB_DIR")
@@ -307,7 +307,7 @@ def download_repo(d, repo_dir, repo_url ,version = None):
     try:
         repo.git.checkout(version)
     except:
-        bb.warn("the version %s checkout failed ..." , version)
+        bb.warn("the version %s checkout failed ..." % version)
 
     # if the repo has large file it will has .gitattrbutes
     if os.path.exists(repo_dir+"/.gitattributes"):
