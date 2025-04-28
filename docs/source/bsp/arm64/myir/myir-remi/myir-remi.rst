@@ -1,4 +1,6 @@
-myir-remi 镜像构建与说明                                                              
+.. _board_myir_remi:
+
+瑞米派镜像构建与说明
 ########################
  
 本章主要介绍openEuler Embedded中myir-remi（瑞米派）系列板卡的镜像构建，使用和特性介绍。

@@ -1,4 +1,4 @@
-.. _board_myir_remi:
+.. _board_myir:
 
 
 米尔系列硬件
