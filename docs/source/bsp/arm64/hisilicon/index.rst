@@ -1,4 +1,4 @@
-.. _board_hi3093:
+.. _board_hisilicon:
 
 
 基于海思(Hisilicon)SoC的硬件

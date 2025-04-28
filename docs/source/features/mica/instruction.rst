@@ -294,7 +294,7 @@ ____
 
    当前 x86 工控机只支持运行 UniProton，并且 x86 的部署方法与 arm64 有所不同，整合工作还在进行中。
 
-首先，需要先根据 :ref:`工控机HVAEIPC-M10 镜像构建安装指导 <hvaepic-m10>` 在工控机上安装 openEuler Embedded 镜像。
+首先，需要先根据 :ref:`工控机HVAEIPC-M10 镜像构建安装指导 <board_hvaepic-m10>` 在工控机上安装 openEuler Embedded 镜像。
 
 之后，我们还需要编译 UniProton 以及 x86环境下需要的额外启动程序 ap_boot，
 请参考 `openEuler Embedded & Uniproton x86 MICA环境安装指导 <https://gitee.com/openeuler/UniProton/blob/master/doc/demo_guide/x86_64_usage.md>`_ 。
