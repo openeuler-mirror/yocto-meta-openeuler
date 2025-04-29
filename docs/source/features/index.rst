@@ -10,6 +10,7 @@
 
    mica/index.rst
    ros.rst
+   epkg.rst
    muslc.rst
    distributed_softbus.rst
    preempt_rt.rst
