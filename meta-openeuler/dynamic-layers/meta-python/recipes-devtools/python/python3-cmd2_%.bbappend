@@ -10,5 +10,4 @@ require pypi-src-openeuler.inc
 FILESEXTRAPATHS:prepend := "${THISDIR}/python3-cmd2/:"
 SRC_URI:append = " \
         file://0001-setup.py-remove-the-setup_requires-for-setuptools-scm.patch \
-        file://backport-Fix-Nonetype-error-when-building-with-PyInstaller-and-no-console-flag-2.4.3.patch \
 "
