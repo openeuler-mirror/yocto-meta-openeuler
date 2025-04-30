@@ -14,10 +14,6 @@ SRC_URI:remove = " \
 
 SRC_URI[sha256sum] = "baf1fdb41c6da4cd2eae722e135500da913332ab3f2f5c7d33af9b492acb5235"
 
-# the upstream patch
-# SRC_URI:append:class-native = " file://0001-conditionally-do-not-fetch-code-by-easy_install.patch"
-SRC_URI:append = " file://0001-_distutils-sysconfig.py-make-it-possible-to-substite.patch"
-
 # the openeuler patch
 SRC_URI:append = " file://bugfix-eliminate-random-order-in-metadata.patch \
         file://backport-CVE-2024-6345.patch \
