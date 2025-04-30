@@ -1,9 +1,8 @@
-PV = "0.5.1"
+PV = "0.6.0"
 
 inherit oee-archive
 
-# from version 0.5.1, compare the differences in upstream recipe
-SRC_URI[sha256sum] = "f970995ec2bb815e2fdaf7977b26b2091e1e386f0f42eafd5ac811953dc5d445"
+SRC_URI[sha256sum] = "b4df8cf5a649ff6f25cb885a7a93662f38229e05f1859db663f752a6203014f6"
 
 # upstream source
 SRC_URI:prepend = " \
