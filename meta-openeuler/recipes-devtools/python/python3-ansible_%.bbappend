@@ -19,3 +19,9 @@ SRC_URI = " \
         file://CVE-2023-5115.patch \
         file://CVE-2023-5764.patch \
 "
+
+do_install:append() {
+    # For openeuler, we need to gather machine's information to support oedeploy.
+    sed -i "s|^gathering = explicit|#gathering = implicit|g" \
+        ${D}/${sysconfdir}/ansible/ansible.cfg
+}
