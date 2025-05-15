@@ -12,6 +12,9 @@ SERIAL_CONSOLES ?= "115200;ttyS0"
 
 RDEPENDS:${PN}:remove = "initramfs-framework-base"
 
+# For pxe install
+RDEPENDS:${PN}:append = " dhcp-client tftp-hpa"
+
 do_install:append() {
         install -m 0755 ${WORKDIR}/init-install-efi-openeuler.sh ${D}/init.d/install-efi.sh
 
