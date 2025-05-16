@@ -18,6 +18,13 @@ SRC_URI:append = " \
     file://CVE-2023-44446.patch \
     file://CVE-2023-37329.patch \
     file://0001-meson-build-gir-even-when-cross-compiling-if-introsp.patch \
+    file://backport-CVE-2024-47538.patch \
+    file://backport-CVE-2024-47541.patch \
+    file://backport-CVE-2024-47542.patch \
+    file://backport-CVE-2024-47600.patch \
+    file://backport-CVE-2024-47607.patch \
+    file://backport-CVE-2024-47615.patch \
+    file://backport-CVE-2024-47835.patch \
 "
 
 # unsupport for 1.16.2

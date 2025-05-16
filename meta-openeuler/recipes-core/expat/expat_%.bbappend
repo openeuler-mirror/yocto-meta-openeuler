@@ -34,4 +34,17 @@ SRC_URI = " \
     file://backport-CVE-2024-45492.patch \
     file://backport-CVE-2024-50602.patch \
     file://backport-CVE-2024-50602-testcase.patch \
+    file://backport-001-CVE-2024-8176.patch \
+    file://backport-002-CVE-2024-8176.patch \
+    file://backport-003-CVE-2024-8176.patch \
+    file://backport-004-CVE-2024-8176.patch \
+    file://backport-005-CVE-2024-8176.patch \
+    file://backport-006-CVE-2024-8176.patch \
+    file://backport-007-CVE-2024-8176.patch \
+    file://backport-008-CVE-2024-8176.patch \
+    file://backport-009-CVE-2024-8176.patch \
+    file://backport-010-CVE-2024-8176.patch \
+    file://backport-011-CVE-2024-8176.patch \
+    file://backport-Stop-updating-m_eventPtr-on-exit-for-reentry.patch \
+    file://backport-Make-parser-m_eventPtr-handling-clearer.patch \
     "

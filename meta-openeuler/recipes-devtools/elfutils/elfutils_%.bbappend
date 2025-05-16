@@ -17,6 +17,14 @@ SRC_URI:append = " \
     file://Fix-issue-of-moving-files-by-ar-or-br.patch \
     file://CVE-2024-25260.patch \
     file://Backport-fix-handling-of-corefiles-with-non-contiguous-segments.patch \
+    file://add-sw_64-support.patch \
+    file://backport-fix-riscv64-return-value-location-retrieval-implementation.patch \
+    file://backport-CVE-2025-1352.patch \
+    file://backport-CVE-2025-1365.patch \
+    file://backport-CVE-2025-1371.patch \
+    file://backport-CVE-2025-1372.patch \
+    file://backport-CVE-2025-1376.patch \
+    file://backport-CVE-2025-1377.patch \
 "
 
 SRC_URI[sha256sum] = "e70b0dfbe610f90c4d1fe0d71af142a4e25c3c4ef9ebab8d2d72b65159d454c8"

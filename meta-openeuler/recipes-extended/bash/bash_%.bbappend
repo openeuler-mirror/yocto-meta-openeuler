@@ -37,6 +37,8 @@ SRC_URI:prepend = " \
            file://backport-fix-for-cd-when-curent-directory-doesn-t-exist-fix-w.patch \
            file://only-scripts-verified-by-execveat-are-allowed-to-run.patch \
            file://Fix-for-a-crash-if-one-of-the-expressions-in-an-arit.patch \
+           file://backport-posix-change-for-undoing-redirections-after-failed-e.patch \
+           file://backport-fix-issue-with-failed-history-expansion-changing-the.patch \
 "
 
 SRC_URI[tarball.sha256sum] = "13720965b5f4fc3a0d4b61dd37e7565c741da9a5be24edc2ae00182fc1b3588c"

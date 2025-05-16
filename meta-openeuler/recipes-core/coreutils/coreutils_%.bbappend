@@ -48,6 +48,11 @@ SRC_URI:prepend = " \
         file://backport-shuf-avoid-integer-overflow-on-huge-inputs.patch \
         file://backport-shuf-fix-randomness-bug.patch \
         file://backport-head-fix-overflows-in-elide_tail_bytes_pipe.patch \
+        file://backport-numfmt-don-t-require-a-suffix-with-from-iec-i.patch \
+        file://backport-sort-fix-debug-buffer-overrun.patch \
+        file://backport-tac-avoid-out-of-bounds-access.patch \
+        file://backport-yes-avoid-failure-on-CHERI-protected-systems.patch \
+        file://backport-cat-fix-plain-cat-bug.patch \
         file://coreutils-9.0-sw.patch \
 "
 

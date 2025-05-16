@@ -9,4 +9,5 @@ SRC_URI:prepend = " \
 # patches from openEuler
 SRC_URI:append = " \
         file://gstreamer-inspect-rpm-format.patch \
+        file://add-sw64-support.patch \
 "

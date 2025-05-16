@@ -5,6 +5,7 @@ SRC_URI = " \
         file://abseil-cpp-20210324.2-sw.patch \
         file://0001-add-loongarch-suopport-for-abseil-cpp.patch \
         file://0002-PR-1644-unscaledcycleclock-remove-RISC-V-support.patch \
+        file://backport-CVE-2025-0838.patch \
         "
 
 EXTRA_OECMAKE += " \

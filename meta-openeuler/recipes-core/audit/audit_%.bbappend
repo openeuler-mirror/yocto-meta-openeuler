@@ -52,6 +52,9 @@ SRC_URI += " \
         file://backport-Fix-memory-leaks.patch \
         file://backport-fix-one-more-leak.patch \
         file://backport-Correct-output-when-displaying-rules-with-exe-path-d.patch \
+        file://backport-ausearch-format-Fix-display-of-renamed-file-411.patch \
+        file://backport-Fix-a-maybe-uninitialized-warning.patch \
+        file://backport-ausearch-parse-fix-parsing-for-success-uid-in-parse_.patch \
         "
 
 # we don't want audit python3 runtime tool

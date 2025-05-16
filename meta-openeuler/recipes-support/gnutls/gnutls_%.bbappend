@@ -29,6 +29,7 @@ SRC_URI:append = " \
         file://backport-CVE-2024-0567-x509-detect-loop-in-certificate-chain.patch \
         file://backport-fix-CVE-2024-28834-nettle-avoid-normalization-of-mpz_t-in-deterministic.patch \
         file://backport-fix-CVE-2024-28835-gnutls_x509_trust_list_verify_crt2-remove-length-lim.patch \
+        file://backport-CVE-2024-12243-x509-optimize-name-constraints-processing.patch \
 "
 
 EXTRA_OECONF:remove = "--disable-libdane \

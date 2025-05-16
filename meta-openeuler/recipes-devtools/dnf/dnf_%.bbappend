@@ -22,6 +22,7 @@ SRC_URI:prepend = " \
         file://backport-doc-Remove-provide-of-spec-definition-for-repoquery-command.patch \
         file://backport-Update-the-man-page-entry-for-the-countme-option.patch \
         file://backport-Allow-local-downloads-to-same-downloaddir.patch \
+        file://bugfix-automatic-Use-add_security_filters-not-_update_secur.patch \
 "
 
 # in oee, dnf is a prebuild-tool, so add the following patch when build nativesdk-dnf.
