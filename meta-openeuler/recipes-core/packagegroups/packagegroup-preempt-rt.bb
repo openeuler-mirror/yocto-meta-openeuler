@@ -10,4 +10,6 @@ PACKAGES = "${PN}"
 RDEPENDS:${PN} = " \
     rt-tests \
     hwlatdetect \
+    stress-ng \
+    screen \
 "
