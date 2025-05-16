@@ -9,6 +9,7 @@ IMAGE_INSTALL += " \
     libmodbus \
     openjpeg \
     opencv \
+    oedeploy \
     ${@bb.utils.contains("DISTRO_FEATURES", "k8s", " \
     packagegroup-kubernetes-base \
     packagegroup-k8s-host \
