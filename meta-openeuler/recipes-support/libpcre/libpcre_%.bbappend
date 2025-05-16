@@ -10,9 +10,9 @@ OPENEULER_LOCAL_NAME = "pcre"
 LIC_FILES_CHKSUM = "file://LICENCE;md5=b5d5d1a69a24ea2718263f1ff85a1c58"
 
 # bb name is libpcre, but we want pcre in openeuler
+# conflict with the patch: add-riscv-jit-backport.patch
 SRC_URI:prepend = " \
         file://pcre-${PV}.tar.bz2 \
-        file://add-riscv-jit-backport.patch \
         "
 
 SRC_URI[md5sum] = "4452288e6a0eefb2ab11d36010a1eebb"
