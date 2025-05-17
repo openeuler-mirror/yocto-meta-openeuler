@@ -9,6 +9,7 @@ PACKAGES = "${PN}"
 RDEPENDS:${PN} = " \
     glibc-external-utils \
     libgpg-error \
+    gpgme \
     libgcrypt \
 "
 
