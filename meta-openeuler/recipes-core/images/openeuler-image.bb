@@ -7,6 +7,9 @@
 # Here we provide configuration file image-early-config-${MACHINE}.inc to accommodate the variables that need
 # to be defined in advance as mentioned above
 include recipes-core/images/image-early-config-${MACHINE}.inc
+
+# Add oebridge image configuration
+inherit ${@bb.utils.contains('DISTRO_FEATURES', 'oebridge', 'image-oebridge', '', d)}
 require openeuler-image-common.inc
 
 # packages added to rootfs and target sdk
