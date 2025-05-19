@@ -6,3 +6,4 @@
 
    debug.rst
    rpc.rst
+   umt.rst

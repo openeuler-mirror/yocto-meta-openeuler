@@ -18,8 +18,9 @@
    qt5_wayland.rst
    armnn.rst
    clang_llvm.rst
-   jailhouse.rst
    openbmc.rst
    container/index.rst
    kernelversions.rst
    software_package_description.rst
+   jailhouse.rst
+   xen.rst
