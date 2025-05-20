@@ -129,11 +129,11 @@ orangepi5硬件介绍
     
 开发板的接线方式如下图：
 
-.. image:: orangepi-image/serial_orangepi5.png
+.. image:: images/serial_orangepi5.png
 
 串口的接线方式如下图：
 
-.. image:: orangepi-image/serial_1.png
+.. image:: images/serial_1.png
     
 1. ubuntu下调试
  
