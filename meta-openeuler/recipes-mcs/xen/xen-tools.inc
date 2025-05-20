@@ -400,6 +400,7 @@ FILES:${PN} = "\
     ${sysconfdir}/xen/auto \
     ${sysconfdir}/xen/cpupool \
     ${localstatedir}/xen/dump \
+    ${sysconfdir}/xen/*.cfg \
     "
 
 FILES:${PN}-console = "\
@@ -824,6 +825,8 @@ do_install() {
         rm -f ${D}/${systemd_unitdir}/system/xenstored.service
         rm -f ${D}/${systemd_unitdir}/system/var-lib-xenstored.mount
     fi
+
+    install -m 0644 ${WORKDIR}/cfg/*.cfg ${D}${sysconfdir}/xen/
 }
 
 pkg_postinst:${PN}-volatiles() {
