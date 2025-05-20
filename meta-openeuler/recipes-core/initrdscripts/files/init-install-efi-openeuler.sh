@@ -66,56 +66,124 @@ if [ "$ext4_support" != "ext4" ]; then
     fi
 fi
 
-cdromlists=`ls /sys/block/ | grep -Ev "ram|loop"` || true
-if [ -z "${cdromlists}" ]; then
-    echo "Can't find any CDROM. Please check CDROM to install ISO image."
-    exit 1
-fi
+# if PXE, LABEL=install-pxe
+if [ "$cmdstr" == "install-pxe" ]; then
+    # Get IP & configuration name
+    pxe_cfg=$(grep -o 'install_cfg=[^ ]*' /proc/cmdline | cut -d= -f2-)
+    ip=$(echo "$pxe_cfg" | sed -n 's#.*://\([^/]*\).*#\1#p')
+    cfg=$(echo "$pxe_cfg" | sed -n 's#.*://[^/]*/\([^/]*\)#\1#p')
+    echo "IP addr: ${ip}"
+    echo "cfg path: ${cfg}"
 
-for cdname in $cdromlists; do
-    echo "-------------------------------"
-    echo /dev/$cdname
-    if [ -r /sys/block/$cdname/device/vendor ]; then
-        echo -n "VENDOR="
-        cat /sys/block/$cdname/device/vendor
-    fi
-    if [ -r /sys/block/$cdname/device/model ]; then
-        echo -n "MODEL="
-        cat /sys/block/$cdname/device/model
-    fi
-    if [ -r /sys/block/$cdname/device/uevent ]; then
-        echo -n "UEVENT="
-        cat /sys/block/$cdname/device/uevent
-    fi
-    echo
-done
-
-cdromlists_parent=$cdromlists
-cdromlists=""
-for cdrom_parent in $cdromlists_parent; do
-    cdroms=`ls /dev/${cdrom_parent}* | awk -F '/' '{print $3}'`
-    cdromlists="$cdromlists $cdroms"
-done
-
-# Get user choice
-TARGET_CDROM_NAME=""
-while true; do
-    echo "Please type the target where iso image is, or press n to exit ($cdromlists ): "
-    read answer
-    if [ "$answer" = "n" ]; then
-        echo "Installation manually aborted."
+    # set network
+    dhclient -r
+    dhclient -v -4 -s ${ip}
+    ping -c 3 ${ip}
+    if [ $? -eq 1 ]; then
+        echo "Error: Failed to set network."
         exit 1
     fi
+
+    # Get configuration fie
+    tftp -4 ${ip} -c get ${cfg}
+    if [ ! -f "${cfg}"]; then
+        echo "Error: Configuration file does not exist."
+        exit 1
+    fi
+    source ${cfg}
+    echo "Install ISO: ${INSTALL_ISO}"
+    echo "Target Device: ${TARGET_DEVICE_NAME}"
+    echo "ISO SHA256: ${INSTALL_ISO_SHA256}"
+    if [ -z "${INSTALL_ISO}" ]; then
+        echo "Error: INSTALL_ISO is empty. The configuration file is incorrect or not provided."
+        exit 1
+    fi
+    if [ -z "${TARGET_DEVICE_NAME}" ]; then
+        echo "Error: TARGET_DEVICE_NAME is empty. The configuration file is incorrect or not provided."
+        exit 1
+    fi
+    if [ -z "${INSTALL_ISO_SHA256}" ]; then
+        echo "Error: INSTALL_ISO_SHA256 is empty. The configuration file is incorrect or not provided."
+        exit 1
+    fi
+
+    # Get ISO file & verify sha256
+    tftp -4 ${ip} -c get ${INSTALL_ISO}
+    tftp -4 ${ip} -c get ${INSTALL_ISO_SHA256}
+    expected_hash=$(cat "${INSTALL_ISO_SHA256}")
+    actual_hash=$(sha256sum "${INSTALL_ISO}" | awk '{print $1}')
+    if [ "${expected_hash}" != "${actual_hash}" ]; then
+        echo "Error: SHA256 verification failed."
+        echo "Expected hash: ${expected_hash}"
+        echo "Actual hash: ${actual_hash}"
+        exit 1
+    else
+        echo "SHA256 verification succeeded."
+    fi
+    dhclient -r
+
+    # losetup ISO
+    LOOP_DEVICE=$(losetup -f)
+    if [ -z "${LOOP_DEVICE}" ]; then
+        echo "Error: Can't find any free loop device."
+        exit 1
+    fi
+    losetup ${LOOP_DEVICE} ${INSTALL_ISO}
+    TARGET_CDROM_NAME="${LOOP_DEVICE#/dev/}"
+    echo "Loop device: ${LOOP_DEVICE}"
+    echo "Target cdrom: ${TARGET_CDROM_NAME}"
+else
+    cdromlists=`ls /sys/block/ | grep -Ev "ram|loop"` || true
+    if [ -z "${cdromlists}" ]; then
+        echo "Can't find any CDROM. Please check CDROM to install ISO image."
+        exit 1
+    fi
+
     for cdname in $cdromlists; do
-        if [ "$answer" = "$cdname" ]; then
-            TARGET_CDROM_NAME=$answer
+        echo "-------------------------------"
+        echo /dev/$cdname
+        if [ -r /sys/block/$cdname/device/vendor ]; then
+            echo -n "VENDOR="
+            cat /sys/block/$cdname/device/vendor
+        fi
+        if [ -r /sys/block/$cdname/device/model ]; then
+            echo -n "MODEL="
+            cat /sys/block/$cdname/device/model
+        fi
+        if [ -r /sys/block/$cdname/device/uevent ]; then
+            echo -n "UEVENT="
+            cat /sys/block/$cdname/device/uevent
+        fi
+        echo
+    done
+
+    cdromlists_parent=$cdromlists
+    cdromlists=""
+    for cdrom_parent in $cdromlists_parent; do
+        cdroms=`ls /dev/${cdrom_parent}* | awk -F '/' '{print $3}'`
+        cdromlists="$cdromlists $cdroms"
+    done
+
+    # Get user choice
+    TARGET_CDROM_NAME=""
+    while true; do
+        echo "Please type the target where iso image is, or press n to exit ($cdromlists ): "
+        read answer
+        if [ "$answer" = "n" ]; then
+            echo "Installation manually aborted."
+            exit 1
+        fi
+        for cdname in $cdromlists; do
+            if [ "$answer" = "$cdname" ]; then
+                TARGET_CDROM_NAME=$answer
+                break
+            fi
+        done
+        if [ -n "$TARGET_CDROM_NAME" ]; then
             break
         fi
     done
-    if [ -n "$TARGET_CDROM_NAME" ]; then
-        break
-    fi
-done
+fi
 
 mkdir -p /run/media/${TARGET_CDROM_NAME}/
 mount /dev/${TARGET_CDROM_NAME} /run/media/${TARGET_CDROM_NAME}/
@@ -143,104 +211,107 @@ boot_size=$(( boot_size + 10 ))
 # 5% for swap
 swap_ratio=5
 
-# Get a list of hard drives
-hdnamelist=""
-live_dev_name=`cat /proc/mounts | grep ${TARGET_CDROM_NAME%/} | awk '{print $1}'`
-live_dev_name=${live_dev_name#\/dev/}
-# Only strip the digit identifier if the device is not an mmc
-case $live_dev_name in
-    mmcblk*)
-    ;;
-    nvme*)
-    ;;
-    *)
-        live_dev_name=${live_dev_name%%[0-9]*}
-    ;;
-esac
-
-echo "Searching for hard drives ..."
-
-# Some eMMC devices have special sub devices such as mmcblk0boot0 etc
-# we're currently only interested in the root device so pick them wisely
-devices=`ls /sys/block/ | grep -v mmcblk` || true
-mmc_devices=`ls /sys/block/ | grep "mmcblk[0-9]\{1,\}$"` || true
-devices="$devices $mmc_devices"
-
-for device in $devices; do
-    case $device in
-        loop*)
-            # skip loop device
-            ;;
-        sr*)
-            # skip CDROM device
-            ;;
-        ram*)
-            # skip ram device
-            ;;
+# verify if TARGET_DEVICE_NAME is empty
+if [ -z "${TARGET_DEVICE_NAME}" ]; then
+    # Get a list of hard drives
+    hdnamelist=""
+    live_dev_name=`cat /proc/mounts | grep ${TARGET_CDROM_NAME%/} | awk '{print $1}'`
+    live_dev_name=${live_dev_name#\/dev/}
+    # Only strip the digit identifier if the device is not an mmc
+    case $live_dev_name in
+        mmcblk*)
+        ;;
+        nvme*)
+        ;;
         *)
-            # skip the device LiveOS is on
-            # Add valid hard drive name to the list
-            case $device in
-                $live_dev_name*)
-                # skip the device we are running from
-                ;;
-                *)
-                    hdnamelist="$hdnamelist $device"
-                ;;
-            esac
-            ;;
+            live_dev_name=${live_dev_name%%[0-9]*}
+        ;;
     esac
-done
 
-if [ -z "${hdnamelist}" ]; then
-    echo "You need another device (besides the live device /dev/${live_dev_name}) to install the image. Installation aborted."
-    exit 1
-fi
+    echo "Searching for hard drives ..."
 
-TARGET_DEVICE_NAME=""
-for hdname in $hdnamelist; do
-    # Display found hard drives and their basic info
-    echo "-------------------------------"
-    echo /dev/$hdname
-    if [ -r /sys/block/$hdname/device/vendor ]; then
-        echo -n "VENDOR="
-        cat /sys/block/$hdname/device/vendor
-    fi
-    if [ -r /sys/block/$hdname/device/model ]; then
-        echo -n "MODEL="
-        cat /sys/block/$hdname/device/model
-    fi
-    if [ -r /sys/block/$hdname/device/uevent ]; then
-        echo -n "UEVENT="
-        cat /sys/block/$hdname/device/uevent
-    fi
-    echo
-done
+    # Some eMMC devices have special sub devices such as mmcblk0boot0 etc
+    # we're currently only interested in the root device so pick them wisely
+    devices=`ls /sys/block/ | grep -v mmcblk` || true
+    mmc_devices=`ls /sys/block/ | grep "mmcblk[0-9]\{1,\}$"` || true
+    devices="$devices $mmc_devices"
 
-# Get user choice
-while true; do
-    echo "Please select an install target or press n to exit ($hdnamelist ): "
-    read answer
-    if [ "$answer" = "n" ]; then
-        echo "Installation manually aborted."
+    for device in $devices; do
+        case $device in
+            loop*)
+                # skip loop device
+                ;;
+            sr*)
+                # skip CDROM device
+                ;;
+            ram*)
+                # skip ram device
+                ;;
+            *)
+                # skip the device LiveOS is on
+                # Add valid hard drive name to the list
+                case $device in
+                    $live_dev_name*)
+                    # skip the device we are running from
+                    ;;
+                    *)
+                        hdnamelist="$hdnamelist $device"
+                    ;;
+                esac
+                ;;
+        esac
+    done
+
+    if [ -z "${hdnamelist}" ]; then
+        echo "You need another device (besides the live device /dev/${live_dev_name}) to install the image. Installation aborted."
         exit 1
     fi
+
+    TARGET_DEVICE_NAME=""
     for hdname in $hdnamelist; do
-        if [ "$answer" = "$hdname" ]; then
-            TARGET_DEVICE_NAME=$answer
+        # Display found hard drives and their basic info
+        echo "-------------------------------"
+        echo /dev/$hdname
+        if [ -r /sys/block/$hdname/device/vendor ]; then
+            echo -n "VENDOR="
+            cat /sys/block/$hdname/device/vendor
+        fi
+        if [ -r /sys/block/$hdname/device/model ]; then
+            echo -n "MODEL="
+            cat /sys/block/$hdname/device/model
+        fi
+        if [ -r /sys/block/$hdname/device/uevent ]; then
+            echo -n "UEVENT="
+            cat /sys/block/$hdname/device/uevent
+        fi
+        echo
+    done
+
+    # Get user choice
+    while true; do
+        echo "Please select an install target or press n to exit ($hdnamelist ): "
+        read answer
+        if [ "$answer" = "n" ]; then
+            echo "Installation manually aborted."
+            exit 1
+        fi
+        for hdname in $hdnamelist; do
+            if [ "$answer" = "$hdname" ]; then
+                TARGET_DEVICE_NAME=$answer
+                break
+            fi
+        done
+        if [ -n "$TARGET_DEVICE_NAME" ]; then
             break
         fi
     done
-    if [ -n "$TARGET_DEVICE_NAME" ]; then
-        break
-    fi
-done
 
-if [ -n "$TARGET_DEVICE_NAME" ]; then
-    echo "Installing image on /dev/$TARGET_DEVICE_NAME ..."
-else
-    echo "No hard drive selected. Installation aborted."
-    exit 1
+    if [ -n "$TARGET_DEVICE_NAME" ]; then
+        echo "Installing image on /dev/$TARGET_DEVICE_NAME ..."
+    else
+        echo "No hard drive selected. Installation aborted."
+        exit 1
+    fi
 fi
 
 device=/dev/$TARGET_DEVICE_NAME
@@ -265,14 +336,18 @@ if [ ! -e /etc/mtab ] && [ -e /proc/mounts ]; then
     ln -sf /proc/mounts /etc/mtab
 fi
 
-disk_size=$(parted ${device} unit mb print | grep '^Disk .*: .*MB' | cut -d" " -f 3 | sed -e "s/MB//")
-
+disk_size=$(parted ${device} unit s print | grep '^Disk .*: .*s' | cut -d" " -f 3 | sed -e "s/s//")
 swap_size=$((disk_size*swap_ratio/100))
-rootfs_size=$((disk_size-boot_size-swap_size))
 
-rootfs_start=$((boot_size))
+logical_sector_size=$(blockdev --getss ${device})
+boot_size=$((logical_sector_size*boot_size))
+boot_size=$(( (boot_size + 2047) / 2048 * 2048 - 1))
+rootfs_size=$((disk_size-boot_size-swap_size))
+rootfs_size=$(( (rootfs_size + 2047) / 2048 * 2048 - 1))
+
+rootfs_start=$((boot_size + 1))
 rootfs_end=$((rootfs_start+rootfs_size))
-swap_start=$((rootfs_end))
+swap_start=$((rootfs_end + 1))
 
 # MMC devices are special in a couple of ways
 # 1) they use a partition prefix character 'p'
@@ -307,22 +382,22 @@ if [ "$cmdstr" != "install(without-formatting)" ]; then
     parted ${device} mklabel gpt
 
     echo "Creating boot partition on $bootfs"
-    parted ${device} mkpart primary fat32 0% $boot_size
+    parted -a optimal ${device} mkpart primary fat32 2048s ${boot_size}s
     parted ${device} set 1 boot on
 
     echo "Creating rootfs partition on $rootfs"
-    parted ${device} mkpart primary ext4 $rootfs_start $rootfs_end
+    parted -a optimal ${device} mkpart primary ext4 ${rootfs_start}s ${rootfs_end}s
 
     echo "Creating swap partition on $swap"
-    parted ${device} mkpart swap linux-swap $swap_start 100%
+    parted -a optimal ${device} mkpart swap linux-swap ${swap_start}s 100%
 
     parted ${device} print
 
     echo "Waiting for device nodes..."
     C=0
     while [ $C -ne 3 ] && [ ! -e $bootfs  -o ! -e $rootfs -o ! -e $swap ]; do
-	C=$(( C + 1 ))
-	sleep 1
+    C=$(( C + 1 ))
+    sleep 1
     done
 
     echo "Formatting $bootfs to vfat..."
