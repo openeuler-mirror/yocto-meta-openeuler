@@ -254,7 +254,7 @@ def download_repo(d, repo_dir, repo_url ,version = None):
         # if exists subdir and return
         if os.path.exists(os.path.join(oee_archive_dir, subdir)):
             return
-        res = subprocess.run("git sparse-checkout init",
+        res = subprocess.run("git sparse-checkout init --cone",
                         shell=True,
                         stderr=subprocess.PIPE,
                         text=True,
@@ -275,7 +275,7 @@ def download_repo(d, repo_dir, repo_url ,version = None):
     if "oee_archive" in repo_url:
         sub_dir = d.getVar("OEE_ARCHIVE_SUB_DIR")
         if sub_dir is None:
-            bb.fatal("no sub dir is givned under oee_archive ")
+            bb.fatal("no sub dir is given under oee_archive ")
         oee_archive_download(oee_archive_dir = repo_dir, subdir = sub_dir)
 
     # the function is used to download large file in repo
