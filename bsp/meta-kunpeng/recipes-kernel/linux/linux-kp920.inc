@@ -16,6 +16,9 @@ SRC_URI:append = " \
     file://config/cfg-fragments/common-pc-drivers.cfg \
 "
 
+# The kp920 kernel configuration now supports k8s and does not require a separate configuration file.
+SRC_URI:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'k8s', ' file://kubernetes.scc', '', d)}"
+
 OPENEULER_KERNEL_CONFIG = ""
 KBUILD_DEFCONFIG = "openeuler_defconfig"
 
