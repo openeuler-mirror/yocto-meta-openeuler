@@ -110,7 +110,7 @@ if [ "$cmdstr" == "install-pxe" ]; then
     # Get ISO file & verify sha256
     tftp -4 ${ip} -c get ${INSTALL_ISO}
     tftp -4 ${ip} -c get ${INSTALL_ISO_SHA256}
-    expected_hash=$(cat "${INSTALL_ISO_SHA256}")
+    expected_hash=$(cat "${INSTALL_ISO_SHA256}" | awk '{print $1}')
     actual_hash=$(sha256sum "${INSTALL_ISO}" | awk '{print $1}')
     if [ "${expected_hash}" != "${actual_hash}" ]; then
         echo "Error: SHA256 verification failed."
