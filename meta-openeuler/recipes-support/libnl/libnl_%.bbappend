@@ -23,6 +23,11 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
           file://backport-fix-error-handling-in-nl_str2ip_protos.patch \
           file://backport-handle-negative-and-zero-size-in-nla_memcpy.patch \
           file://backport-use-thread-safe-gmtime_r-instead-of-gmtime.patch \
+          file://backport-fix-ubsan-complaint-about-incorrect.patch \
+          file://backport-fix-new-object-in-callback-v2-on-update-obj.patch \
+          file://backport-fix-IPv6-ecmp-route-deleted-nexthop-matching.patch \
+          file://backport-treat-routes-with-via-nexthops-as-univers-scoped.patch \
+          file://backport-keep-link-info-instead-of-release-and-reacquire.patch \
 "
 
 SRC_URI[md5sum] = "b381405afd14e466e35d29a112480333"

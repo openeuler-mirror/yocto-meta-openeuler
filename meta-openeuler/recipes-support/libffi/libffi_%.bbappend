@@ -4,4 +4,5 @@ SRC_URI:prepend = " \
         file://${BP}.tar.gz \
         file://backport-Fix-signed-vs-unsigned-comparison.patch \
         file://fix-AARCH64EB-support.patch \
+        file://libffi-Add-sw64-architecture.patch \
 "

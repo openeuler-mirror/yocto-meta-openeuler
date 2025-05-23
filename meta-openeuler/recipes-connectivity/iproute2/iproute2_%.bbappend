@@ -12,6 +12,10 @@ SRC_URI:append = " \
         file://backport-rdma-Update-uapi-headers.patch \
         file://backport-rdma-Add-support-to-dump-SRQ-resource-in-raw-format.patch \
         file://backport-rdma-Fix-the-error-of-accessing-string-variable-outs.patch \
+        file://backport-ss-fix-expired-time-format-of-timer.patch \
+        file://backport-route-filter-by-interface-on-multipath-routes.patch \
+        file://backport-lib-names-check-calloc-return-value-in-db_names_alloc.patch \
+        file://backport-fix-fd-leak-when-playing-with-netns.patch \
         file://feature-iproute-add-support-for-ipvlan-l2e-mode.patch \
         file://bugfix-iproute2-cancel-some-test-cases.patch \
         file://backport-exit-exec-in-child-process-if-setup-fails.patch \

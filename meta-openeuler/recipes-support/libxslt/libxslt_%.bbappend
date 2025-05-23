@@ -5,6 +5,8 @@ PV = "1.1.39"
 SRC_URI = " \
     file://${BP}.tar.xz \
     file://CVE-2015-9019.patch \
+    file://CVE-2024-55549.patch \
+    file://CVE-2025-24855.patch \
 "
 
 EXTRA_OECONF:remove = "--with-html-subdir=${BPN}"

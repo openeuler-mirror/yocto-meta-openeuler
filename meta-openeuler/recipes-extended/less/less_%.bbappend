@@ -18,7 +18,8 @@ SRC_URI = "file://${BP}.tar.gz \
           file://backport-Fix-for-previous-fix.patch \
           file://backport-Avoid-stealing-data-from-an-input-program-that-uses-.patch \
           file://backport-Do-not-assume-PATH_MAX-is-defined.patch \
-            "
+	  file://backport-Fix-bug-related-to-ctrl-X-when-output-is-not-a-termi.patch \
+"
 CAUSE_CONFIGURE_ERR = " \
           file://less-475-fsync.patch \
 "

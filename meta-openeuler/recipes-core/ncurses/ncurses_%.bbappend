@@ -1,3 +1,4 @@
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 PV = "6.4"
 CVE_VERSION = "${PV}"
 
@@ -23,10 +24,10 @@ SRC_URI += "file://${BP}.tar.gz \
            file://backport-CVE-2023-45918.patch \
 "
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 # from oe-core
 SRC_URI += "\
            file://exit_prototype.patch \
+           file://ncurses-sw-support.patch \
 "
 
 S = "${WORKDIR}/${BP}"

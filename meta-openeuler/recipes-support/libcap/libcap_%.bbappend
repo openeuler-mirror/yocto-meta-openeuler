@@ -11,6 +11,8 @@ SRC_URI = " \
     file://support-specify-cc.patch \
     file://backport-getpcaps-fix-program-name-in-help-message.patch \
     file://backport-Stop-using-_pam_overwrite-in-pam_cap.c.patch \
+    file://backport-CVE-2025-1390-pam_cap-Fix-potential-configuration-parsing-error.patch \
+    file://backport-Address-some-static-analysis-observations.patch \
 "
 
 S = "${WORKDIR}/${BP}"

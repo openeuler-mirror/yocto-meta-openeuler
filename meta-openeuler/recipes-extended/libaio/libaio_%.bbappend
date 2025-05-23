@@ -19,7 +19,9 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
            file://0004-libaio-makefile-add-D_FORTIFY_SOURCE-flag.patch \
            file://0005-Fix-compile-error-that-exec-checking-need-super-priv.patch \
            file://0007-Fix-build-error-if-compiler-is-clang.patch \
-           "
+           file://0008-Move-semicolon-to-SYMVER-and-DEFSYMVER-call-sites.patch \
+           file://0009-Use-new-symver-function-attribute-to-support-LTO-bui.patch \
+"
 
 S = "${WORKDIR}/${BP}"
 
