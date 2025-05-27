@@ -5,6 +5,7 @@ OPENEULER_LOCAL_NAME = "xen"
 SRC_URI = " \
     file://RELEASE-${PV}.tar.gz \
     file://xen.cfg \
+    file://cfg/ \
     "
 
 # xen-tools also uses the xen source pkg, so specify "xen" instead of "BPN".

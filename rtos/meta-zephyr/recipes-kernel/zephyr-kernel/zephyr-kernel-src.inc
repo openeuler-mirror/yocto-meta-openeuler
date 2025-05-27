@@ -17,6 +17,7 @@ SRC_URI = "\
     file://lts3-zephyr-${ZEPHYR_VERSION}.tar.gz;subdir=zephyr_project \
     file://lts3-zephyr-modules-${ZEPHYR_VERSION}.tar.gz;subdir=zephyr_project \
     file://zephyr_openeuler_mcs.patch;patchdir=zephyr-${ZEPHYR_VERSION} \
+    file://boards-xenvm-return-separate-defconfig-for-xenvm-wit.patch;patchdir=zephyr-${ZEPHYR_VERSION} \
 "
 
 # This file might be included from other places (like other layers) and not
