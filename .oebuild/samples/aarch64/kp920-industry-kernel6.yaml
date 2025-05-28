@@ -1,4 +1,4 @@
-# Features: systemd, hmi, kernel6, xen, mcs, isulad, epkg, k8s, rt
+# Features: systemd, hmi, kernel6, xen, mcs, isulad, epkg, rt, oebridge
 build_in: docker
 machine: kp920
 toolchain_type: EXTERNAL_TOOLCHAIN:aarch64
@@ -31,20 +31,21 @@ local_conf: |+
   INIT_MANAGER = "systemd"
   DISTRO_FEATURES:append = " epkg"
 
-  DISTRO_FEATURES:append = " k8s virtualization"
-
   PREFERRED_PROVIDER_virtual/kernel = "linux-openeuler-rt"
   DISTRO_FEATURES:append = " preempt-rt "
+
+  DISTRO_FEATURES:append = " oebridge "
+  SERVER_MIRROR = "https://mirrors.tuna.tsinghua.edu.cn/openeuler"
+  SERVER_VERSION = "openEuler-24.03-LTS-SP1"
 
 layers:
 - yocto-meta-openeuler/bsp/meta-kunpeng
 - yocto-meta-openembedded/meta-oe
 - yocto-meta-qt5
 - yocto-meta-openeuler/rtos/meta-openeuler-rtos
-- yocto-meta-virtualization
 docker_param:
   image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
-  parameters: -itd --network host
+  parameters: -itd --network host --cap-add NET_ADMIN
   volumns:
   - /dev/net/tun:/dev/net/tun
   command: bash
