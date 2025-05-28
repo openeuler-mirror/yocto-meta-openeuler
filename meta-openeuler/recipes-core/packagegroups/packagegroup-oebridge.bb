@@ -6,10 +6,13 @@ inherit packagegroup
 PACKAGES = "${PN}"
 
 # need glibc-external-utils provides binary such as locale, getent, etc.
+# gnupg is used to verify the signatures of RPM packages.
+# gpgme, libgcrypt and libgpg-error are dnf dependencies.
 RDEPENDS:${PN} = " \
     glibc-external-utils \
     libgpg-error \
     gpgme \
+    gnupg \
     libgcrypt \
 "
 
