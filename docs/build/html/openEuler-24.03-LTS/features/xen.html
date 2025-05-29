@@ -72,7 +72,11 @@
 <li class="toctree-l5"><a class="reference internal" href="#oebuild">使用 oebuild 构建</a></li>
 </ul>
 </li>
-<li class="toctree-l4"><a class="reference internal" href="#id3">Xen 使用指导</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">Xen 使用指导</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#xendom0domu">引导Xen、Dom0和DomU流程</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#kp920osdomu">示例：基于KP920引导一个实时OS作为DomU</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -130,39 +134,43 @@
 <h2>Xen 构建指导<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <section id="oebuild">
 <h3>使用 oebuild 构建<a class="headerlink" href="#oebuild" title="Permalink to this headline">¶</a></h3>
-<blockquote>
-<div><p>目前已经在 yocto-meta-openeuler 中实现了对 QEMU-ARM64、KP920 的支持。</p>
+<p>目前已经在 yocto-meta-openeuler 中实现了对 QEMU-ARM64、KP920 的支持。</p>
 <ol class="arabic">
 <li><p>根据 <a class="reference internal" href="mica/build.html#mcs-build"><span class="std std-ref">mcs镜像构建指导</span></a>，使用 oebuild 初始化编译环境。</p></li>
 <li><p>进入oebuild工作目录，创建编译配置文件 <code class="docutils literal notranslate"><span class="pre">compile.yaml</span></code> :</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>构建 qemu-aarch64 镜像，包含mcs和xen特性，此处构建目录名为 build_xen
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>构建 qemu-aarch64 镜像，包含mcs和xen特性，此处构建目录名为 build_xen
 <span class="go">oebuild generate -p qemu-aarch64 -f mcs -f xen -d qemu-xen</span>
 
 <span class="gp"># </span>或者，构建 KP920 镜像，包含mcs和xen特性，此处构建目录名为 build_xen
 <span class="go">oebuild generate -p kp920 -f mcs -f xen -d kp920-xen</span>
 </pre></div>
 </div>
+</div></blockquote>
 </li>
 <li><p>进入 <code class="docutils literal notranslate"><span class="pre">build_xen</span></code> 目录使用oebuild容器构建:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild bitbake</span>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild bitbake</span>
 <span class="gp"># </span>进入容器后
 <span class="go">bitbake openeuler-image</span>
 </pre></div>
 </div>
+</div></blockquote>
 </li>
 <li><p>构建完成后，在 output 目录下有对应的部署件：KP920提供iso镜像，QEMU提供zImage和initrd。</p></li>
 </ol>
-</div></blockquote>
 </section>
 </section>
 <hr class="docutils" />
 <section id="id3">
 <h2>Xen 使用指导<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<blockquote>
-<div><ol class="arabic">
+<section id="xendom0domu">
+<h3>引导Xen、Dom0和DomU流程<a class="headerlink" href="#xendom0domu" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
 <li><p>构建完成后使用 <code class="docutils literal notranslate"><span class="pre">runqemu</span></code> 启动 QEMU，或者是在 KP920 上正常安装 ISO 镜像，之后默认会通过 qemu 参数或 grub 配置完成 Xen 和 Dom0 的引导。</p></li>
 <li><p>之后，可以通过以下 config 配置，并执行 <code class="docutils literal notranslate"><span class="pre">xl</span> <span class="pre">create</span> <span class="pre">xen-linux.cfg</span></code> 启动 Linux DomU：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cat xen-linux.cfg
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cat xen-linux.cfg
 <span class="go">name = &quot;domU&quot;</span>
 <span class="go">memory = 512</span>
 <span class="go">vcpus = 1</span>
@@ -171,10 +179,61 @@
 <span class="go">extra = &quot;console=hvc0 root=/dev/xvda rw&quot;</span>
 </pre></div>
 </div>
-<p>如果需要退出 DomU 的 shell，可以通过 <code class="docutils literal notranslate"><span class="pre">ctrl</span> <span class="pre">+</span> <span class="pre">]</span></code> 组合键切换回 Dom0，通过 <code class="docutils literal notranslate"><span class="pre">xl</span> <span class="pre">console</span> <span class="pre">domU</span></code> 可以重新进入。</p>
+</div></blockquote>
 </li>
 </ol>
+<p>如果需要退出 DomU 的 shell，可以通过 <code class="docutils literal notranslate"><span class="pre">ctrl</span> <span class="pre">+</span> <span class="pre">]</span></code> 组合键切换回 Dom0，通过 <code class="docutils literal notranslate"><span class="pre">xl</span> <span class="pre">console</span> <span class="pre">domU</span></code> 可以重新进入。</p>
+</section>
+<section id="kp920osdomu">
+<h3>示例：基于KP920引导一个实时OS作为DomU<a class="headerlink" href="#kp920osdomu" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p>KP920使能xen的镜像已默认打包一个实时OS的示例，包括xen config和使能xen的zephyr镜像。</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">kp920 ~ # cat /etc/xen/xen-kp920-zephyr.cfg</span>
+<span class="go">name = &quot;zephyr&quot;</span>
+<span class="go">memory = 512</span>
+<span class="go">vcpus = 1</span>
+<span class="go">kernel = &quot;/lib/firmware/zephyr.bin&quot;</span>
+<span class="go">gic_version = &quot;v3&quot;</span>
+
+<span class="go">kp920 ~ # ls /lib/firmware/zephyr.bin</span>
+<span class="go">/lib/firmware/zephyr.bin</span>
+</pre></div>
+</div>
 </div></blockquote>
+</li>
+<li><p>根据上述引导流程，可按需引导该实时OS示例：</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">kp920 ~ # xl create -c /etc/xen/xen-kp920-zephyr.cfg</span>
+<span class="go">Parsing config from /etc/xen/xen-kp920-zephyr.cfg</span>
+<span class="go">libxl: info: libxl_create.c:122:libxl__domain_build_info_setdefault: qemu-xen is unavailable, using qemu-xen-traditional instead: No such file or directory</span>
+<span class="go">[00:00:00.000,000] &lt;inf&gt; xen_events: xen_events_init: events inited</span>
+
+<span class="go">[00:00:00.000,000] &lt;inf&gt; uart_hvc_xen: Xen HVC inited successfully</span>
+
+<span class="go">*** Booting Zephyr OS build 3.7.1 ***</span>
+<span class="go">thread_a: Hello World from cpu 0 on xenvm!</span>
+<span class="go">thread_b: Hello World from cpu 0 on xenvm!</span>
+<span class="go">thread_a: Hello World from cpu 0 on xenvm!</span>
+<span class="go">thread_b: Hello World from cpu 0 on xenvm!</span>
+<span class="go">thread_a: Hello World from cpu 0 on xenvm!</span>
+
+<span class="go">kp920 ~ # xl list</span>
+<span class="go">Name                                        ID   Mem VCPUs      State   Time(s)</span>
+<span class="go">Domain-0                                     0  1024     4     r-----       7.0</span>
+<span class="go">zephyr                                       3   512     1     -b----       1.1</span>
+
+<span class="go">kp920 ~ # xl console zephyr</span>
+<span class="go">thread_b: Hello World from cpu 0 on xenvm!</span>
+<span class="go">thread_a: Hello World from cpu 0 on xenvm!</span>
+<span class="go">thread_b: Hello World from cpu 0 on xenvm!</span>
+<span class="go">thread_a: Hello World from cpu 0 on xenvm!</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+</section>
 </section>
 </section>
 
