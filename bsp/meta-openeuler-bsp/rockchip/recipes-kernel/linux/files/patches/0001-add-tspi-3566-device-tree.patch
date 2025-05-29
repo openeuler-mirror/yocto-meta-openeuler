@@ -1,17 +1,17 @@
-From ed2a1e751ec603cd164598c2369b265983e34c84 Mon Sep 17 00:00:00 2001
-From: OpenEmbedded <oe.patch@oe>
-Date: Sat, 1 Mar 2025 10:58:38 +0800
+From 5723243e9468debc0d970629c3d1ce81fc119e1b Mon Sep 17 00:00:00 2001
+From: lixinyu <lixinyu44@huawei.com>
+Date: Thu, 29 May 2025 15:43:16 +0800
 Subject: [PATCH] add tspi-3566 device tree
 
 ---
- .../dts/rockchip/tspi-rk3566-core-v10.dtsi    | 949 ++++++++++++++++++
- .../dts/rockchip/tspi-rk3566-csi-v10.dtsi     | 269 +++++
- .../dts/rockchip/tspi-rk3566-dsi-v10.dtsi     | 394 ++++++++
- .../dts/rockchip/tspi-rk3566-edp-v10.dtsi     | 164 +++
- .../dts/rockchip/tspi-rk3566-gmac1-v10.dtsi   |  53 +
- .../dts/rockchip/tspi-rk3566-hdmi-v10.dtsi    |  68 ++
- .../rockchip/tspi-rk3566-user-v10-linux.dts   | 239 +++++
- 7 files changed, 2136 insertions(+)
+ .../dts/rockchip/tspi-rk3566-core-v10.dtsi    | 929 ++++++++++++++++++
+ .../dts/rockchip/tspi-rk3566-csi-v10.dtsi     | 249 +++++
+ .../dts/rockchip/tspi-rk3566-dsi-v10.dtsi     | 374 +++++++
+ .../dts/rockchip/tspi-rk3566-edp-v10.dtsi     | 144 +++
+ .../dts/rockchip/tspi-rk3566-gmac1-v10.dtsi   |  33 +
+ .../dts/rockchip/tspi-rk3566-hdmi-v10.dtsi    |  48 +
+ .../rockchip/tspi-rk3566-user-v10-linux.dts   | 219 +++++
+ 7 files changed, 1996 insertions(+)
  create mode 100755 arch/arm64/boot/dts/rockchip/tspi-rk3566-core-v10.dtsi
  create mode 100755 arch/arm64/boot/dts/rockchip/tspi-rk3566-csi-v10.dtsi
  create mode 100755 arch/arm64/boot/dts/rockchip/tspi-rk3566-dsi-v10.dtsi
@@ -22,30 +22,10 @@ Subject: [PATCH] add tspi-3566 device tree
 
 diff --git a/arch/arm64/boot/dts/rockchip/tspi-rk3566-core-v10.dtsi b/arch/arm64/boot/dts/rockchip/tspi-rk3566-core-v10.dtsi
 new file mode 100755
-index 000000000..0ce21a49e
+index 000000000..4e07201e6
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/tspi-rk3566-core-v10.dtsi
-@@ -0,0 +1,949 @@
-+/********************************************************************
-+ * 共建开源生态是我们的目标。为此我们努力把性价比和颜值做到极致。
-+ * 同时全面开放SDK、原理图、PCB等所有软硬件资料。
-+ * 提供交流平台、免费训练营、开发者扶持计划等，让您能够尽情发挥您的才华。
-+ * 我们坚信自由和定制化是开源生态的核心。
-+ * 泰山派开发板不仅仅是立创开发板的产品，它更是我们共同努力的成果。
-+ * 我们只是抛砖引玉，期望能够激发出更多的创意和想法。
-+ * 我们渴望与志同道合的伙伴们携手合作，共同探索无限可能。
-+ * 让我们各展所长，共同建设一个强大的开源生态系统。
-+ * 泰山派开发板等待着您的加入。
-+ * 让我们一起推动技术的前进，一起创未来！
-+ *********************************************************************
-+ * 立创开发板不靠卖板赚钱，以培养中国工程师为己任。  
-+ * 开发板官网：www.lckfb.com
-+ * 嘉立创论坛：www.jlc-bbs.com/lckfb 
-+ * 资料教程：wiki.lckfb.com  
-+ * 开源项目：https://oshwhub.com/search?wd=%E6%B3%B0%E5%B1%B1%E6%B4%BE   
-+ * 关注B站：【立创开发板】，掌握我们的最新动态！  
-+ *********************************************************************/
-+
+@@ -0,0 +1,929 @@
 +#include <dt-bindings/gpio/gpio.h>
 +#include <dt-bindings/pwm/pwm.h>
 +#include <dt-bindings/pinctrl/rockchip.h>
@@ -977,30 +957,10 @@ index 000000000..0ce21a49e
 +};
 diff --git a/arch/arm64/boot/dts/rockchip/tspi-rk3566-csi-v10.dtsi b/arch/arm64/boot/dts/rockchip/tspi-rk3566-csi-v10.dtsi
 new file mode 100755
-index 000000000..1d2768d4a
+index 000000000..07e1b9c03
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/tspi-rk3566-csi-v10.dtsi
-@@ -0,0 +1,269 @@
-+/********************************************************************
-+ * 共建开源生态是我们的目标。为此我们努力把性价比和颜值做到极致。
-+ * 同时全面开放SDK、原理图、PCB等所有软硬件资料。
-+ * 提供交流平台、免费训练营、开发者扶持计划等，让您能够尽情发挥您的才华。
-+ * 我们坚信自由和定制化是开源生态的核心。
-+ * 泰山派开发板不仅仅是立创开发板的产品，它更是我们共同努力的成果。
-+ * 我们只是抛砖引玉，期望能够激发出更多的创意和想法。
-+ * 我们渴望与志同道合的伙伴们携手合作，共同探索无限可能。
-+ * 让我们各展所长，共同建设一个强大的开源生态系统。
-+ * 泰山派开发板等待着您的加入。
-+ * 让我们一起推动技术的前进，一起创未来！
-+ *********************************************************************
-+ * 立创开发板不靠卖板赚钱，以培养中国工程师为己任。  
-+ * 开发板官网：www.lckfb.com
-+ * 嘉立创论坛：www.jlc-bbs.com/lckfb 
-+ * 资料教程：wiki.lckfb.com  
-+ * 开源项目：https://oshwhub.com/search?wd=%E6%B3%B0%E5%B1%B1%E6%B4%BE   
-+ * 关注B站：【立创开发板】，掌握我们的最新动态！  
-+ *********************************************************************/
-+
+@@ -0,0 +1,249 @@
 +//phy u序列
 +&combphy1_usq {
 +	status = "okay";
@@ -1252,30 +1212,10 @@ index 000000000..1d2768d4a
 +};
 diff --git a/arch/arm64/boot/dts/rockchip/tspi-rk3566-dsi-v10.dtsi b/arch/arm64/boot/dts/rockchip/tspi-rk3566-dsi-v10.dtsi
 new file mode 100755
-index 000000000..82c4f009d
+index 000000000..e7f28ecef
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/tspi-rk3566-dsi-v10.dtsi
-@@ -0,0 +1,394 @@
-+/********************************************************************
-+ * 共建开源生态是我们的目标。为此我们努力把性价比和颜值做到极致。
-+ * 同时全面开放SDK、原理图、PCB等所有软硬件资料。
-+ * 提供交流平台、免费训练营、开发者扶持计划等，让您能够尽情发挥您的才华。
-+ * 我们坚信自由和定制化是开源生态的核心。
-+ * 泰山派开发板不仅仅是立创开发板的产品，它更是我们共同努力的成果。
-+ * 我们只是抛砖引玉，期望能够激发出更多的创意和想法。
-+ * 我们渴望与志同道合的伙伴们携手合作，共同探索无限可能。
-+ * 让我们各展所长，共同建设一个强大的开源生态系统。
-+ * 泰山派开发板等待着您的加入。
-+ * 让我们一起推动技术的前进，一起创未来！
-+ *********************************************************************
-+ * 立创开发板不靠卖板赚钱，以培养中国工程师为己任。  
-+ * 开发板官网：www.lckfb.com
-+ * 嘉立创论坛：www.jlc-bbs.com/lckfb 
-+ * 资料教程：wiki.lckfb.com  
-+ * 开源项目：https://oshwhub.com/search?wd=%E6%B3%B0%E5%B1%B1%E6%B4%BE   
-+ * 关注B站：【立创开发板】，掌握我们的最新动态！  
-+ *********************************************************************/
-+ 
+@@ -0,0 +1,374 @@
 +/ {
 +	backlight: backlight {
 +		compatible = "pwm-backlight";
@@ -1652,30 +1592,10 @@ index 000000000..82c4f009d
 +
 diff --git a/arch/arm64/boot/dts/rockchip/tspi-rk3566-edp-v10.dtsi b/arch/arm64/boot/dts/rockchip/tspi-rk3566-edp-v10.dtsi
 new file mode 100755
-index 000000000..96f275399
+index 000000000..f4074d146
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/tspi-rk3566-edp-v10.dtsi
-@@ -0,0 +1,164 @@
-+/********************************************************************
-+ * 共建开源生态是我们的目标。为此我们努力把性价比和颜值做到极致。
-+ * 同时全面开放SDK、原理图、PCB等所有软硬件资料。
-+ * 提供交流平台、免费训练营、开发者扶持计划等，让您能够尽情发挥您的才华。
-+ * 我们坚信自由和定制化是开源生态的核心。
-+ * 泰山派开发板不仅仅是立创开发板的产品，它更是我们共同努力的成果。
-+ * 我们只是抛砖引玉，期望能够激发出更多的创意和想法。
-+ * 我们渴望与志同道合的伙伴们携手合作，共同探索无限可能。
-+ * 让我们各展所长，共同建设一个强大的开源生态系统。
-+ * 泰山派开发板等待着您的加入。
-+ * 让我们一起推动技术的前进，一起创未来！
-+ *********************************************************************
-+ * 立创开发板不靠卖板赚钱，以培养中国工程师为己任。  
-+ * 开发板官网：www.lckfb.com
-+ * 嘉立创论坛：www.jlc-bbs.com/lckfb 
-+ * 资料教程：wiki.lckfb.com  
-+ * 开源项目：https://oshwhub.com/search?wd=%E6%B3%B0%E5%B1%B1%E6%B4%BE   
-+ * 关注B站：【立创开发板】，掌握我们的最新动态！  
-+ *********************************************************************/
-+
+@@ -0,0 +1,144 @@
 +/ {
 +	edp_panel: edp-panel {
 +		compatible = "simple-panel";
@@ -1820,33 +1740,12 @@ index 000000000..96f275399
 +// 	de-active = <0>;
 +// 	pixelclk-active = <0>;
 +// };
-\ No newline at end of file
 diff --git a/arch/arm64/boot/dts/rockchip/tspi-rk3566-gmac1-v10.dtsi b/arch/arm64/boot/dts/rockchip/tspi-rk3566-gmac1-v10.dtsi
 new file mode 100755
-index 000000000..c67ebf95d
+index 000000000..4003eb4d3
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/tspi-rk3566-gmac1-v10.dtsi
-@@ -0,0 +1,53 @@
-+/********************************************************************
-+ * 共建开源生态是我们的目标。为此我们努力把性价比和颜值做到极致。
-+ * 同时全面开放SDK、原理图、PCB等所有软硬件资料。
-+ * 提供交流平台、免费训练营、开发者扶持计划等，让您能够尽情发挥您的才华。
-+ * 我们坚信自由和定制化是开源生态的核心。
-+ * 泰山派开发板不仅仅是立创开发板的产品，它更是我们共同努力的成果。
-+ * 我们只是抛砖引玉，期望能够激发出更多的创意和想法。
-+ * 我们渴望与志同道合的伙伴们携手合作，共同探索无限可能。
-+ * 让我们各展所长，共同建设一个强大的开源生态系统。
-+ * 泰山派开发板等待着您的加入。
-+ * 让我们一起推动技术的前进，一起创未来！
-+ *********************************************************************
-+ * 立创开发板不靠卖板赚钱，以培养中国工程师为己任。  
-+ * 开发板官网：www.lckfb.com
-+ * 嘉立创论坛：www.jlc-bbs.com/lckfb 
-+ * 资料教程：wiki.lckfb.com  
-+ * 开源项目：https://oshwhub.com/search?wd=%E6%B3%B0%E5%B1%B1%E6%B4%BE   
-+ * 关注B站：【立创开发板】，掌握我们的最新动态！  
-+ *********************************************************************/
-+
+@@ -0,0 +1,33 @@
 +&gmac1 {
 +	phy-mode = "rgmii";
 +	clock_in_out = "output";
@@ -1882,30 +1781,10 @@ index 000000000..c67ebf95d
 +};
 diff --git a/arch/arm64/boot/dts/rockchip/tspi-rk3566-hdmi-v10.dtsi b/arch/arm64/boot/dts/rockchip/tspi-rk3566-hdmi-v10.dtsi
 new file mode 100755
-index 000000000..76c5af220
+index 000000000..e6beab078
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/tspi-rk3566-hdmi-v10.dtsi
-@@ -0,0 +1,68 @@
-+/********************************************************************
-+ * 共建开源生态是我们的目标。为此我们努力把性价比和颜值做到极致。
-+ * 同时全面开放SDK、原理图、PCB等所有软硬件资料。
-+ * 提供交流平台、免费训练营、开发者扶持计划等，让您能够尽情发挥您的才华。
-+ * 我们坚信自由和定制化是开源生态的核心。
-+ * 泰山派开发板不仅仅是立创开发板的产品，它更是我们共同努力的成果。
-+ * 我们只是抛砖引玉，期望能够激发出更多的创意和想法。
-+ * 我们渴望与志同道合的伙伴们携手合作，共同探索无限可能。
-+ * 让我们各展所长，共同建设一个强大的开源生态系统。
-+ * 泰山派开发板等待着您的加入。
-+ * 让我们一起推动技术的前进，一起创未来！
-+ *********************************************************************
-+ * 立创开发板不靠卖板赚钱，以培养中国工程师为己任。  
-+ * 开发板官网：www.lckfb.com
-+ * 嘉立创论坛：www.jlc-bbs.com/lckfb 
-+ * 资料教程：wiki.lckfb.com  
-+ * 开源项目：https://oshwhub.com/search?wd=%E6%B3%B0%E5%B1%B1%E6%B4%BE   
-+ * 关注B站：【立创开发板】，掌握我们的最新动态！  
-+ *********************************************************************/
-+ 
+@@ -0,0 +1,48 @@
 +/{
 +    hdmi_sound: hdmi-sound {
 +		compatible = "simple-audio-card";
@@ -1956,30 +1835,10 @@ index 000000000..76c5af220
 +};
 diff --git a/arch/arm64/boot/dts/rockchip/tspi-rk3566-user-v10-linux.dts b/arch/arm64/boot/dts/rockchip/tspi-rk3566-user-v10-linux.dts
 new file mode 100755
-index 000000000..b2c4abaa6
+index 000000000..b9bbcc4e8
 --- /dev/null
 +++ b/arch/arm64/boot/dts/rockchip/tspi-rk3566-user-v10-linux.dts
-@@ -0,0 +1,239 @@
-+/********************************************************************
-+ * 共建开源生态是我们的目标。为此我们努力把性价比和颜值做到极致。
-+ * 同时全面开放SDK、原理图、PCB等所有软硬件资料。
-+ * 提供交流平台、免费训练营、开发者扶持计划等，让您能够尽情发挥您的才华。
-+ * 我们坚信自由和定制化是开源生态的核心。
-+ * 泰山派开发板不仅仅是立创开发板的产品，它更是我们共同努力的成果。
-+ * 我们只是抛砖引玉，期望能够激发出更多的创意和想法。
-+ * 我们渴望与志同道合的伙伴们携手合作，共同探索无限可能。
-+ * 让我们各展所长，共同建设一个强大的开源生态系统。
-+ * 泰山派开发板等待着您的加入。
-+ * 让我们一起推动技术的前进，一起创未来！
-+ *********************************************************************
-+ * 立创开发板不靠卖板赚钱，以培养中国工程师为己任。  
-+ * 开发板官网：www.lckfb.com
-+ * 嘉立创论坛：www.jlc-bbs.com/lckfb 
-+ * 资料教程：wiki.lckfb.com  
-+ * 开源项目：https://oshwhub.com/search?wd=%E6%B3%B0%E5%B1%B1%E6%B4%BE   
-+ * 关注B站：【立创开发板】，掌握我们的最新动态！  
-+ *********************************************************************/
-+ 
+@@ -0,0 +1,219 @@
 +/dts-v1/;
 +
 +#include <dt-bindings/gpio/gpio.h>
@@ -2199,7 +2058,6 @@ index 000000000..b2c4abaa6
 +			<0xe6	KEY_0>;
 +	};
 +};
-\ No newline at end of file
 -- 
 2.34.1
 
