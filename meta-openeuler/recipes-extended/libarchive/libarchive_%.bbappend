@@ -3,6 +3,8 @@ PV = "3.7.1"
 
 # openeuler src
 SRC_URI:prepend = "file://${BP}.tar.gz \
+           file://backport-CVE-2025-1632.patch \
+           file://backport-CVE-2025-25724.patch \
            "
 
 FILESEXTRAPATHS:append := "${THISDIR}/${BPN}/:"

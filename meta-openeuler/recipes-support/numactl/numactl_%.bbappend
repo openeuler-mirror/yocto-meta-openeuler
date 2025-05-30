@@ -17,4 +17,6 @@ SRC_URI:prepend = " \
     file://0011-libnuma-Fix-unexpected-output.patch \
     file://0012-libnuma-Fix-incorrect-print-and-exit-of-numa_preferr.patch \
     file://0013-fix-the-using-of-the-uninitialized-value.patch \
+    file://0014-backport-Make-numa_available-respect-EPERM.patch \
+    file://0015-backport-fix-nodemask-allocation-size-for-get_mempolicy.patch \
 "

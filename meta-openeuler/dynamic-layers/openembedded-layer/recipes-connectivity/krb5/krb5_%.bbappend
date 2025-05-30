@@ -28,6 +28,19 @@ SRC_URI:prepend = " \
     file://backport-Fix-memory-leak-in-PAC-checksum-verification.patch;patchdir=${PATCH_DIR} \
     file://fix-libkadm5-parameter-leak.patch;patchdir=${PATCH_DIR} \
     file://backport-CVE-2024-3596.patch;patchdir=${PATCH_DIR} \
+    file://backport-Avoid-mutex-locking-in-krb5int_trace.patch;patchdir=${PATCH_DIR} \
+    file://backport-Fix-unlikely-password-change-leak.patch;patchdir=${PATCH_DIR} \
+    file://backport-Allow-null-keyblocks-in-IOV-checksum-functions.patch;patchdir=${PATCH_DIR} \
+    file://backport-Fix-krb5_ldap_list_policy-filtering-loop.patch;patchdir=${PATCH_DIR} \
+    file://backport-Fix-various-issues-detected-by-static-analysis.patch;patchdir=${PATCH_DIR} \
+    file://backport-Fix-krb5_crypto_us_timeofday-microseconds-check.patch;patchdir=${PATCH_DIR} \
+    file://backport-Prevent-late-initialization-of-GSS-error-map.patch;patchdir=${PATCH_DIR} \
+    file://backport-CVE-2025-24528.patch;patchdir=${PATCH_DIR} \
+    file://backport-Fix-LDAP-module-leak-on-authentication-error.patch;patchdir=${PATCH_DIR} \
+    file://backport-Fix-minor-logic-errors.patch;patchdir=${PATCH_DIR} \
+    file://backport-Fix-type-violation-in-libkrad.patch;patchdir=${PATCH_DIR} \
+    file://backport-Fix-various-small-logic-errors.patch;patchdir=${PATCH_DIR} \
+    file://backport-Prevent-undefined-shift-in-decode_krb5_flags.patch;patchdir=${PATCH_DIR} \
 "
 
 # unapplicable patch from openEuler

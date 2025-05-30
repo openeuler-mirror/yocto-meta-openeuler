@@ -41,6 +41,7 @@ SRC_URI:append = " \
     file://tests-extensions-add-some-testcases.patch \
     file://backport-extensions-recent-Fix-format-string-for-unsigned-values.patch \
     file://backport-nft-cmd-Init-struct-nft_cmd-head-early.patch \
+    file://backport-ip6tables-Fix-checking-existence-of-rule.patch \
 "
 # the openeuler patch apply failed
 # file://0001-extensions-NAT-Fix-for-Werror-format-security.patch

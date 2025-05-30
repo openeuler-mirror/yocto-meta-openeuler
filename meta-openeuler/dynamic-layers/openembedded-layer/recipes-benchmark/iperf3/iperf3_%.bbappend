@@ -1,12 +1,11 @@
 # main bb file: yocto-meta-openembedded/meta-oe/recipes-benchmark/iperf3/iperf3_3.11.bb
 
-PV = "3.16"
+PV = "3.18"
 
-LIC_FILES_CHKSUM = "file://LICENSE;md5=dc6301c8256ceb8f71c9e3c2ae9096b9"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=f9873a72f714e240530e759e103ac7b2"
 
 SRC_URI:prepend = " \
                   file://iperf-${PV}.tar.gz \
-                  file://CVE-2024-26306.patch \
                   "
 
 # update 0001-configure.ac-check-for-CPP-prog.patch from iperf3_3.16.bb
