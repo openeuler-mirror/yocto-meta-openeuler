@@ -17,8 +17,18 @@ fakeroot python do_make_rootfs_db(){
     import os
     import shutil
     import subprocess
+    import fnmatch
+
+    def check_oe_repo_rpm_map(root_dir, prefix):
+        # the oe'pkg to make db must in pre-install pkg pool(oee's rootfs rpm repo)
+        for root, dirs, files in os.walk(root_dir):
+            for filename in fnmatch.filter(files, f'{prefix}*rpm'):
+                return True
+        return False
 
     def make_db(db_dir, rpms_dir, root_tmp):
+        installed_set = set()
+        bad_map_set = set()
         with open(f"{d.getVar('TOPDIR')}/cache/ASSUME_PROVIDE_PKGS", 'r', encoding='utf-8') as f:
             pkg_data = f.readlines()
             for pkg in pkg_data:
@@ -30,9 +40,18 @@ fakeroot python do_make_rootfs_db(){
                 for fi in os.walk(os.path.join(rpms_dir, pkg_split[0])):
                     if len(fi[2])==0:
                         continue
+                    if pkg_split[1] in bad_map_set:
+                        continue
+                    if not check_oe_repo_rpm_map(root_tmp + "/../oe-rootfs-repo/rpm/", pkg_split[1]):
+                        bad_map_set.add(pkg_split[1])
+                        continue
                     for rpm_pkg in fi[2]:
+                        # avoid duplicate and accelerate our db build.
+                        if rpm_pkg in installed_set:
+                            continue
                         if not rpm_pkg.endswith(".rpm"):
                             continue
+                        print(f"make rpm db: {rpm_pkg}")
                         res = subprocess.run(f"rpm -ivh --dbpath {db_dir} --nosignature \
                             --root {root_tmp} --nodeps --justdb --ignorearch {rpm_pkg} --force",
                             shell=True,
@@ -41,6 +60,7 @@ fakeroot python do_make_rootfs_db(){
                             text=True)
                         if res.returncode != 0:
                             bb.fatal(res.stderr)
+                        installed_set.add(rpm_pkg)
 
     # make rpm db
     rpms_cache_dir = f"{d.getVar('TOPDIR')}/cache/rpms"+ \
@@ -48,7 +68,8 @@ fakeroot python do_make_rootfs_db(){
                     "/oe"+ \
                     "/"+d.getVar('TUNE_ARCH')
     db_cache_dir = "/var/lib/rpm"
-    subprocess.run(f"rm -rf {os.path.join(d.getVar('IMAGE_ROOTFS'), db_cache_dir)}",shell=True)
+    rootfs_db_files = d.getVar('IMAGE_ROOTFS') + "/var/lib/rpm/*" 
+    subprocess.run(f"rm -rf {rootfs_db_files}",shell=True)
     make_db(db_dir=db_cache_dir, rpms_dir=rpms_cache_dir, root_tmp=d.getVar("IMAGE_ROOTFS"))
 }
 
