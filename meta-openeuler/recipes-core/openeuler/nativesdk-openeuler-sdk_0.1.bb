@@ -24,3 +24,10 @@ PACKAGES = "${PN}"
 FILES:${PN} = " ${SDKPATHNATIVE}"
 
 inherit nativesdk
+
+# not need for nativesdk-openeuler-sdk:
+# may failed due to remote url err, skip it
+python do_download_oepkg:prepend(){
+    return
+}
+
