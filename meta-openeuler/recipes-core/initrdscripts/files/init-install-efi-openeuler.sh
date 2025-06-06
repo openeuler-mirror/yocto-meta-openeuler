@@ -204,9 +204,9 @@ fi
 if [ -e /run/media/${TARGET_CDROM_NAME}/initrd ]; then
     boot_size=$(( boot_size - $( du -ms /run/media/${TARGET_CDROM_NAME}/initrd | awk '{print $1}') ))
 fi
-# add 10M to provide some extra space for users and account
+# add 64M to provide some extra space for users and account
 # for rounding in the above subtractions
-boot_size=$(( boot_size + 10 ))
+boot_size=$(( boot_size + 64 ))
 
 # 5% for swap
 swap_ratio=5
@@ -371,9 +371,9 @@ swap=${device}${part_prefix}3
 
 if [ "$cmdstr" != "install(without-formatting)" ]; then
     echo "*****************"
-    echo "Boot partition size:   $boot_size MB ($bootfs)"
-    echo "Rootfs partition size: $rootfs_size MB ($rootfs)"
-    echo "Swap partition size:   $swap_size MB ($swap)"
+    echo "Boot partition size:   $boot_size sectors ($bootfs)"
+    echo "Rootfs partition size: $rootfs_size sectors ($rootfs)"
+    echo "Swap partition size:   $swap_size sectors ($swap)"
     echo "*****************"
     echo "Deleting partition table on ${device} ..."
     dd if=/dev/zero of=${device} bs=512 count=35
@@ -406,8 +406,12 @@ if [ "$cmdstr" != "install(without-formatting)" ]; then
     echo "Formatting $rootfs to ext4..."
     mkfs.ext4 -F $rootfs
 
-    echo "Formatting swap partition...($swap)"
-    mkswap $swap
+    if which mkswap > /dev/null 2>&1; then
+      echo "Formatting swap partition...($swap)"
+      mkswap $swap
+    else
+      echo "mkswap not found, ignore the swap partition."
+    fi
 fi
 
 mkdir /tgt_root
