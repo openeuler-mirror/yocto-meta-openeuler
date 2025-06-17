@@ -8,6 +8,7 @@ SRC_URI:remove = " \
 
 ## basic information
 OPENEULER_LOCAL_NAME = "allwinner-kernel"
+OPENEULER_REPO_NAMES += "allwinner-kernel"
 
 SRC_URI:prepend = " \
     file://allwinner-kernel \
