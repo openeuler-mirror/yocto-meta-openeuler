@@ -33,7 +33,71 @@ SRC_URI:prepend = " \
         file://backport-libmount-make-sure-option-is-used-as-string.patch \
         file://backport-libmount-fix-possible-memory-leak.patch \
         file://backport-libmount-Fix-atime-remount-for-new-API.patch \
+        file://backport-sys-utils-setpriv-fix-potential-memory-leak.patch \
+        file://backport-sys-utils-save_adjtime-fix-memory-leak.patch \
+        file://backport-wall-fix-possible-memory-leak.patch \
+        file://backport-suL-fix-use-after-free-on-error.patch \
+        file://backport-cfdisk-add-hint-about-labels-for-bootable-flag.patch \
+        file://backport-column-fix-memory-leak.patch \
+        file://backport-column-fix-l.patch \
+        file://backport-scriptreplay-support-ctrl-s-and-ctrl-g.patch \
+        file://backport-login-use-correct-terminal-fd-during-setup.patch \
+        file://backport-login-prevent-undefined-ioctl-and-tcsetattr-calls.patch \
+        file://backport-libblkid-avoid-memory-leak-of-cachefile-path.patch \
+        file://backport-more-avoid-out-of-bound-access.patch \
+        file://backport-lslogins-fix-realloc-loop-allocation-size.patch \
+        file://backport-ldattach-don-t-call-exit-from-signal-handler.patch \
+        file://backport-libblkid-ntfs-validate-that-sector_size-is-a-power-o.patch \
+        file://backport-blkid-fix-call-to-err_exclusive_options.patch \
+        file://backport-libblkid-reset-errno-before-calling-probefuncs.patch \
+        file://backport-lib-path-fix-possible-out-of-boundary-access.patch \
+        file://backport-libmount-fix-possible-NULL-dereference-coverity-scan.patch \
+        file://backport-libsmartcols-drop-spourious-newline-in-between-strea.patch \
+        file://backport-libsmartcols-flush-correct-stream.patch \
+        file://backport-libsmartcols-only-recognize-closed-object-as-final-e.patch \
+        file://backport-cal-avoid-out-of-bound-write.patch \
+        file://backport-libfdisk-sun-properly-initialize-partition-data.patch \
+        file://backport-include-c.h-add-helpers-for-unaligned-structure-acce.patch \
+        file://backport-libblkid-probe-read-data-in-chunks.patch \
+        file://backport-libblkid-avoid-aligning-out-of-probing-area.patch \
+        file://backport-libblkid-drbd-validate-zero-padding.patch \
+        file://backport-more-exit-if-POLLERR-and-POLLHUP-on-stdin-is-receive.patch \
+        file://backport-libblkid-hfsplus-reduce-false-positive.patch \
+        file://backport-wall-fix-calloc-cal-Werror-calloc-transposed-args.patch \
+        file://backport-libblkid-drbd-reduce-false-positive.patch \
+        file://backport-lib-cpuset-exit-early-from-cpulist_parse.patch \
+        file://backport-sys-utils-lscpu-Unblock-SIGSEGV-before-vmware_bdoor.patch \
+        file://backport-libblkid-Check-offset-in-LUKS2-header.patch \
+        file://backport-more-fix-poll-use.patch \
+        file://backport-lscpu-don-t-use-NULL-sharedmap.patch \
+        file://backport-hexdump-check-blocksize-when-display-data.patch \
+        file://backport-lslocks-fix-buffer-overflow.patch \
+        file://backport-last-avoid-out-of-bounds-array-access.patch \
+        file://backport-lsipc-fix-semaphore-USED-counter.patch \
+        file://backport-fsck.minix-fix-possible-overrun.patch \
+        file://backport-wall-make-sure-unsigned-variable-not-underflow.patch \
+        file://backport-Fix-ul_path_read_buffer.patch \
+        file://backport-libblkid-constify-cached-disk-data.patch \
+        file://backport-jsonwrt-add-ul_jsonwrt_flush.patch \
+        file://backport-dmesg-print-object-closing-brace-while-waiting-for-n.patch \
+        file://backport-sys-utils-hwclock-rtc-fix-pointer-usage.patch \
+        file://backport-rev-Check-for-wchar-conversion-errors.patch \
+        file://backport-libsmartcols-fix-column-reduction.patch \
+        file://backport-libmount-cleanup-fake-mode.patch \
+        file://backport-lsmem-make-lsmem-to-check-for-the-nodes-more-robust.patch \
+        file://backport-cfdisk-fix-possible-integer-overflow-coverity-scan.patch \
+        file://backport-more-make-sure-we-have-data-on-stderr.patch \
+        file://backport-libblkid-apfs-validate-checksums.patch \
+        file://backport-lscpu-add-riscv-cputype-support.patch \
+        file://backport-libblkid-fix-potential-memory-leaks.patch \
+        file://backport-sys-utils-fix-add-NULL-check-for-mnt_fs_get_target-r.patch \
+        file://backport-sulogin-fix-POSIX-locale-use.patch \
+        file://backport-setpriv.c-fix-memory-leak-in-parse_groups-function.patch \
+        file://backport-whereis-avoid-accessing-uninitialized-memory.patch \
+        file://backport-dmesg-fix-notime-use.patch \
         file://sfdisk-fix-crash-casued-by-out-of-bounds-access.patch \
+        file://mount-fix-use-option-owner-mount-failed.patch \
+        file://mkfs.bfs-fix-memory-leaks-and-weak-code.patch \
 "
 
 # unapplicable OE patches: 

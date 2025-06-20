@@ -19,6 +19,14 @@ SRC_URI =+ " \
         file://backport-omfile-do-not-carry-out-actual-action-when-writing-to-dev-null.patch \
         file://backport-fix-memory-leak-in-omazureeventhubs-on-accepted-PN_D.patch \
         file://tls-bugfix-parameter-StreamDriver_CRLFile-not-known.patch \
+        file://backport-Fix-passing-the-value-to-EscapeChar.patch \
+        file://backport-Do-not-free-the-uninitialized-cstring.patch \
+        file://backport-Keep-original-free-pattern.patch \
+        file://backport-network-subsystem-improve-connection-failure-error-m.patch \
+        file://backport-Fix-runConf-NULL-pointer-refence.patch \
+        file://backport-rainerscript-do-not-try-to-call-a-function-if-it-doe.patch \
+        file://backport-nsd_ptcp-regression-fix-remove-debugging-messages-em.patch \
+        file://backport-Fix-legacy-ActionQueueDiscardMark-parameter.patch \
 "
 
 # file://0001-tests-disable-the-check-for-inotify.patch

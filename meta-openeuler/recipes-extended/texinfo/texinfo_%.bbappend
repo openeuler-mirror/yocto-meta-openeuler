@@ -3,6 +3,7 @@ PV = "7.0.3"
 
 # openeuler source
 SRC_URI:prepend = "file://${BP}.tar.xz \
+           file://add-support-sw_64.patch \
            "
 # for version 7.0.3, compare the differences in upstream recipe
 SRC_URI[sha256sum] = "3cc5706fb086b895e1dc2b407aade9f95a3a233ff856273e2b659b089f117683"

@@ -11,6 +11,8 @@ SRC_URI:remove = " \
 
 SRC_URI:prepend = "file://${BP}.tar.gz \
             file://Fix-compilation-error-on-sw64-arch.patch \
+            file://backport-If-user-s-tty-goes-away-tell-monitor-to-revoke-the-t.patch \
+            file://backport-Avoid-using-ioctl-TIOCNOTTY-in-the-monitor.patch \
 "
 
 SRC_URI[sha256sum] = "558d10b9a1991fb3b9fa7fa7b07ec4405b7aefb5b3cb0b0871dbc81e3a88e558"

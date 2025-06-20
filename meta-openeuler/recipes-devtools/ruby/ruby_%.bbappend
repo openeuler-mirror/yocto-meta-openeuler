@@ -31,6 +31,11 @@ SRC_URI:prepend = " \
         file://backport-CVE-2024-43398-upgrade-lib-rexml-to-3.3.6.patch \
         file://backport-CVE-2024-47220.patch \
         file://backport-CVE-2024-49761.patch \
+        file://backport-CVE-2025-25186.patch \
+        file://backport-CVE-2025-27219.patch \
+        file://backport-CVE-2025-27220.patch \
+        file://backport-0001-CVE-2025-27221.patch \
+        file://backport-0002-CVE-2025-27221.patch \
 "
 
 SRC_URI:remove = " \

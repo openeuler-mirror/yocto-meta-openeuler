@@ -21,6 +21,11 @@ SRC_URI:prepend = "file://${BP}.tar.xz \
             file://shadow-libsubid-Dealocate-memory-on-exit.patch \
             file://backport-lib-idmapping.c--Use-long-constants-in-prctl-2.patch \
             file://backport-man-lastlog-remove-wrong-use-of-keyword-term.patch \
+            file://backport-lib-csrand.c-Fix-the-lower-part-of-the-domain-of-csr.patch \
+            file://limit-username-length-to-32.patch \
+            file://backport-src-useradd.c-get_groups-Fix-memory-leak.patch \
+            file://backport-src-gpasswd-Clear-password-in-more-cases.patch \
+            file://backport-lib-encrypt.c-Do-not-exit-in-error-case.patch \
            "
 # remove patches with the same functionality in src-openeuler from poky:
 # file://shadow-update-pam-conf.patch
