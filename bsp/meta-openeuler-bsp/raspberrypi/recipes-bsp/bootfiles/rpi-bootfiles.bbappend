@@ -1,5 +1,5 @@
 OPENEULER_LOCAL_NAME = "raspberrypi-firmware"
-PV = "1.20240306"
+PV = "1.20241008"
 SRC_URI = "file://firmware-${PV}.tar.gz \
 "
 
