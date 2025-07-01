@@ -18,4 +18,6 @@ RDEPENDS:${PN}:remove:x86-64 = "kernel-img"
 RDEPENDS:${PN}:remove =  " \
     netbase \
     ${@bb.utils.contains("MACHINE_FEATURES", "efi", "${EFI_PROVIDER} kernel", "", d)} \
+    ${@bb.utils.contains("INIT_MANAGER", "mdev-busybox", "udev", "", d)} \
+    ${@bb.utils.contains("INIT_MANAGER", "none", "udev", "", d)} \
 "
