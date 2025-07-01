@@ -2,8 +2,7 @@
 
 OPENEULER_LOCAL_NAME = "libusbx"
 
-# no udev in openeuler
-PACKAGECONFIG:class-target:remove = "udev"
+PACKAGECONFIG:class-target:remove = "${@bb.utils.contains('VIRTUAL-RUNTIME_dev_manager', 'busybox-mdev', 'udev', '', d)}"
 
 SRC_URI:append = " \
     file://libusb-${PV}.tar.bz2 \

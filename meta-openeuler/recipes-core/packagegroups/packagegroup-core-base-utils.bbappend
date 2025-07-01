@@ -6,6 +6,7 @@
 #   * kea is not used
 #   * audit, auditd, audispd-plugins are fore secure reasons.
 #     kexec-tools for kernel core dump
+#   * dhcpcd serves as a client for dhcp and dhcpv6.
 #
 RDEPENDS:${PN} = "\
     base-passwd \
@@ -102,3 +103,4 @@ RDEPENDS:${PN}:append:x86-64 = " \
     intel-cmt-cat \
     linuxptp \
 "
+
