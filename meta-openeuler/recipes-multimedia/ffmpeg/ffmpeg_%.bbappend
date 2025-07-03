@@ -19,7 +19,7 @@ SRC_URI:prepend = "file://${BP}.tar.xz \
 
 # x264 and some pkgconfig need LICENSE_FLAGS_ACCEPTED commercial flag 
 # OSV notice: Please consider GPL contamination when releasing
-PACKAGECONFIG:append = "${@bb.utils.contains('LICENSE_FLAGS_ACCEPTED', 'commercial', ' gpl x264 ', '', d)}"
+PACKAGECONFIG:append = "${@bb.utils.contains('LICENSE_FLAGS_ACCEPTED', 'commercial', ' gpl x264 x265 ', '', d)}"
 
 # sync non GPL pkgconfig and remove LICENSE_FLAGS commercial from openuelr
 # ref: src-openeuler/ffmpeg/ffmpeg.spec
