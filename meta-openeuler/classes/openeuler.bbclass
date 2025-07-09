@@ -272,10 +272,8 @@ def download_repo(d, repo_dir, repo_url ,version = None):
         if res.returncode != 0:
             bb.fatal(f"in oee_archive run git sparse-checkout add {subdir} failed, error: {res.stderr}")
 
-    if "oee_archive" in repo_url:
+    if d.getVar("OEE_ARCHIVE_SUB_DIR") is not None:
         sub_dir = d.getVar("OEE_ARCHIVE_SUB_DIR")
-        if sub_dir is None:
-            bb.fatal("no sub dir is given under oee_archive ")
         oee_archive_download(oee_archive_dir = repo_dir, subdir = sub_dir)
 
     # the function is used to download large file in repo
