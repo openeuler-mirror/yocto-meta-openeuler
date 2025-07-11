@@ -1,0 +1,45 @@
+From 1deb7c03776a9839f03118165ae954c3aeb79405 Mon Sep 17 00:00:00 2001
+From: alichinese <lixinyu44@h-partners.com>
+Date: Fri, 11 Jul 2025 10:45:27 +0800
+Subject: [PATCH] fix wl_android module compile about rev_info_delim is NULL
+
+---
+ .../net/wireless/rockchip_wlan/rkwifi/bcmdhd/wl_android.c | 8 ++++----
+ .../wireless/rockchip_wlan/rkwifi/bcmdhd/wl_android_ext.c | 2 +-
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/wireless/rockchip_wlan/rkwifi/bcmdhd/wl_android.c b/drivers/net/wireless/rockchip_wlan/rkwifi/bcmdhd/wl_android.c
+index ae863e1f653c..a291c2037939 100755
+--- a/drivers/net/wireless/rockchip_wlan/rkwifi/bcmdhd/wl_android.c
++++ b/drivers/net/wireless/rockchip_wlan/rkwifi/bcmdhd/wl_android.c
+@@ -12054,10 +12054,10 @@ wl_handle_private_cmd(struct net_device *net, char *command, u32 cmd_len)
+ #if defined(DHD_BLOB_EXISTENCE_CHECK)
+ 		dhd_pub_t *dhdp = wl_cfg80211_get_dhdp(net);
+ #endif /* DHD_BLOB_EXISTENCE_CHECK */
+-		if ((rev_info_delim) &&
+-			(strnicmp(rev_info_delim, CMD_COUNTRY_DELIMITER,
+-			strlen(CMD_COUNTRY_DELIMITER)) == 0) &&
+-			(rev_info_delim + 1)) {
++
++		if (rev_info_delim && 
++				strncmp(rev_info_delim + 1, CMD_COUNTRY_DELIMITER,
++					strlen(CMD_COUNTRY_DELIMITER)) == 0) {
+ 			revinfo  = bcm_atoi(rev_info_delim + 1);
+ 		} else {
+ 			revinfo = 0;
+diff --git a/drivers/net/wireless/rockchip_wlan/rkwifi/bcmdhd/wl_android_ext.c b/drivers/net/wireless/rockchip_wlan/rkwifi/bcmdhd/wl_android_ext.c
+index 4b884dfc5427..3d81abdb3985 100755
+--- a/drivers/net/wireless/rockchip_wlan/rkwifi/bcmdhd/wl_android_ext.c
++++ b/drivers/net/wireless/rockchip_wlan/rkwifi/bcmdhd/wl_android_ext.c
+@@ -2636,7 +2636,7 @@ wl_ext_get_country(struct net_device *dev, char *data, char *command,
+ 		char *rev_info_delim = country_code + 2; /* 2 bytes of country code */
+ 		int revinfo = 0;
+ 		if ((rev_info_delim) &&
+-			(strnicmp(rev_info_delim, "/", strlen("/")) == 0) && (rev_info_delim + 1)) {
++			(strnicmp(rev_info_delim, "/", strlen("/")) == 0)) {
+ 			revinfo  = bcm_atoi(rev_info_delim + 1);
+ 		}
+ #ifdef WL_CFG80211
+-- 
+2.34.1
+
