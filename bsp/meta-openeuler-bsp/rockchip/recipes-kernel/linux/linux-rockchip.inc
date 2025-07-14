@@ -12,7 +12,7 @@ SRC_URI:remove = " \
 OPENEULER_LOCAL_NAME = "rockchip-kernel"
 OPENEULER_REPO_NAMES = "rockchip-kernel"
 
-SRC_URI:append = " \
+SRC_URI += " \
     file://rockchip-kernel \
 "
 
