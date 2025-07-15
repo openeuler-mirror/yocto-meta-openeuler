@@ -63,7 +63,8 @@ SRC_URI:prepend = " \
 # file://backport-0002-CVE-2024-1737.patch 
 # file://backport-0003-CVE-2024-1737.patch 
 # file://backport-0004-CVE-2024-1737.patch            
-
+# file://backport-0028-CVE-2023-3341.patch
+# file://backport-0029-CVE-2024-11187.patch
 
 
 

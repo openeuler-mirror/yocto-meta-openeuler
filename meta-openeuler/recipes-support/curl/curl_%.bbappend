@@ -27,6 +27,21 @@ SRC_URI = " \
 	file://backport-url-allow-DoH-transfers-to-override-max-connection-limit.patch \
 	file://backport-pre-CVE-2024-9681.patch \
 	file://backport-CVE-2024-9681.patch \
+        file://backport-multi-check-that-the-multi-handle-is-valid-in-curl_m.patch \
+        file://backport-cookie-treat-cookie-name-case-sensitively.patch \
+        file://backport-CVE-2024-11053-pre1.patch \
+        file://backport-CVE-2024-11053-pre2.patch \
+        file://backport-CVE-2024-11053-pre3.patch \
+        file://backport-CVE-2024-11053-pre4.patch \
+        file://backport-CVE-2024-11053-pre5.patch \
+        file://backport-CVE-2024-11053.patch \
+        file://backport-CVE-2024-11053-post1.patch \
+        file://backport-CVE-2024-11053-post2.patch \
+        file://backport-CVE-2025-0167.patch \
+        file://backport-CVE-2025-0725.patch \
+        file://backport-altsvc-avoid-integer-overflow-in-expire-calculation.patch \
+        file://backport-urlapi-fix-redirect-to-a-new-fragment-or-query-only-adapt.patch \
+        file://backport-tool_getparam-clear-sensitive-arguments-better.patch \
 "      
 
 ### openeuler configuration

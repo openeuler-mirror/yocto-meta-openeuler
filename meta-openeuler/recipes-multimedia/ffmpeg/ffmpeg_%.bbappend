@@ -19,6 +19,13 @@ SRC_URI:prepend = "file://${BP}.tar.xz \
         file://CVE-2023-49501.patch \
         file://backport-CVE-2024-35366.patch \
         file://backport-CVE-2024-35367.patch \
+        file://backport-CVE-2024-35368.patch \
+        file://backport-CVE-2024-36616.patch \
+        file://backport-CVE-2024-36618.patch \
+        file://backport-CVE-2024-36617.patch \
+        file://backport-CVE-2024-36619.patch \
+        file://backport-CVE-2024-35369.patch \
+        file://backport-CVE-2024-36613.patch \
         "                             
 
 # x264 and some pkgconfig need LICENSE_FLAGS_ACCEPTED commercial flag 

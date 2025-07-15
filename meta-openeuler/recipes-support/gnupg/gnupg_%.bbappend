@@ -16,4 +16,11 @@ SRC_URI:append = " \
         file://backport-dirmngr-Enable-the-call-of-ks_ldap_help_variables-wh.patch \
         file://backport-gpg-Make-no-literal-work-again-for-c-and-store.patch \
         file://backport-gpg-Fix-minor-memory-leak-during-certain-smartcard-o.patch \
+        file://backport-0001-CVE-2025-30258.patch \
+        file://backport-0002-CVE-2025-30258.patch \
+        file://backport-0003-CVE-2025-30258.patch \
+        file://backport-0004-CVE-2025-30258.patch \
+        file://backport-0005-CVE-2025-30258.patch \
+        file://backport-0006-CVE-2025-30258.patch \
+        file://backport-gpg-Fix-double-free-of-internal-data.patch \ 
        "

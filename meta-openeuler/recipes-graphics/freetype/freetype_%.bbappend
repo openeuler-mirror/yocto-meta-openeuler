@@ -21,6 +21,7 @@ SRC_URI:prepend = " \
     file://backport-freetype-2.8-multilib.patch \
     file://backport-freetype-2.10.0-internal-outline.patch \
     file://backport-freetype-2.10.1-debughook.patch \
+    file://backport-CVE-2025-27363.patch \
 "
 
 LIC_FILES_CHKSUM = "file://LICENSE.TXT;md5=843b6efc16f6b1652ec97f89d5a516c0 \

@@ -11,10 +11,14 @@ SRC_URI:prepend = "\
 "
 SRC_URI:sw_64:prepend = " \ 
     file://bluez-5.54-sw.patch \
+    file://add-sw_64-support.patch \
 "
 
 # removed by rpi in 5.66 version
-SRC_URI:remove = "file://0004-Move-the-43xx-firmware-into-lib-firmware.patch"
+SRC_URI:remove = "\
+                  file://0004-Move-the-43xx-firmware-into-lib-firmware.patch \
+                  file://bluez-5.54-sw.patch \ 
+"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 SRC_URI:append:rpi = " \

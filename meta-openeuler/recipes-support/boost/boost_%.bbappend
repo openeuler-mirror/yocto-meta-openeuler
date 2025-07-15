@@ -8,12 +8,13 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 # For example, meta-phosphor needs boost 1.78.0 to be built
 
 SRC_URI = " \
-        file://${BOOST_P}.tar.gz \
+        file://${BOOST_P}.tar.bz2 \
         file://boost-1.81-graph-Dont-run-performance-test-in-CI.patch \
         file://boost-1.81-random-Update-multiprecision_float_test.cpp-to-not-overflow.patch \
         file://boost-1.81-random-Update-multiprecision_int_test.cpp-to-not-accidental.patch \
         file://boost-1.81-random-test-Add-missing-includes.patch \
         file://boost-1.81-phoenix-Update-avoid-placeholders-uarg1.10-ODR-violates.patch \
+        file://boost-1.73.0-cmakedir.patch \
         "
 
 S = "${WORKDIR}/${BOOST_P}"

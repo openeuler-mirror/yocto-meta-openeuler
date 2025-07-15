@@ -7,3 +7,7 @@ S = "${WORKDIR}/${BP}"
 SRC_URI:prepend = " \
     file://${BP}.tar.gz \
 "
+
+SRC_URI:append = " \
+    file://gflags-fix_pkgconfig.patch \
+"

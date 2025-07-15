@@ -7,6 +7,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 SRC_URI = " \
     file://${BP}.tar.xz \
     file://X86-Change-fpic-to-fPIC-in-PICFLAG.patch \
+    file://Sw64-binutils-Add-Sw64-support.patch \
     file://binutils-libtool-lib64.patch \
     file://binutils-export-demangle.h.patch \
     file://binutils-no-config-h-check.patch \
@@ -16,6 +17,9 @@ SRC_URI = " \
     file://binutils-update-linker-manual.patch \
     file://binutils-gold-empty-dwp.patch \
     file://Fix-gold-linker-relocation-offset.patch \
+    file://nm-Avoid-potential-segmentation-fault-when-displaying.patch \
+    file://backport-CVE-2025-0840.patch \
+    file://aarch64-add-l4-instruction.patch \
 "
 
 # apply used patches from poky
