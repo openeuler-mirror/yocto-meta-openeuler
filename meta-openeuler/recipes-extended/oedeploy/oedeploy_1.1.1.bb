@@ -2,7 +2,7 @@ SUMMARY = "Tool suite for app installation and deployment"
 DESCRIPTION = "oeDeploy"
 HOMEPAGE = "https://gitee.com/openeuler/oeDeploy"
 
-PV = "1.1.0"
+PV = "1.1.1"
 
 SRC_URI += " \
    file://oedp-${PV}.tar.gz \
