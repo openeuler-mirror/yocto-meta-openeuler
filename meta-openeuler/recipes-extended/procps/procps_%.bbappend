@@ -46,4 +46,4 @@ do_configure:prepend() {
 
 SRC_URI[sha256sum] = "ee3fcd2ea6ff94aa43a81ba5cc7912b7c9615acd2911c7a3d3ea081287fdf47a"
 
-ASSUME_PROVIDE_PKGS = "procps"
+ASSUME_PROVIDE_PKGS = "procps-ng"
