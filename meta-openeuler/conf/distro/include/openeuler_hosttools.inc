@@ -151,4 +151,7 @@ HOSTTOOLS_NONFATAL += " umoci skopeo"
 # used for prepare project
 HOSTTOOLS += "unzstd"
 
+# used for rockchip uboot make.sh scripts
+HOSTTOOLS += "truncate fdtget"
+
 ASSUME_PROVIDED += " python3-cryptography-native "
