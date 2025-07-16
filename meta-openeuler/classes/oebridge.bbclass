@@ -35,6 +35,8 @@ python(){
 }
 
 addtask do_download_oepkg before do_package_write_rpm after do_package_qa
+# Any tasks that access the network must be marked as such using the network flag.
+do_download_oepkg[network] = "1"
 
 inherit oebridge-common
 
@@ -50,7 +52,13 @@ def get_package_details(base, package_name):
         "Checksum": pkg.chksum[1].hex()
     }
 
-python do_download_oepkg(){
+# Currently, oebridge triggers the do_download_epkg function for all tasks,
+# but only the class-target actually needs it. Other tasks, such as nativesdk,
+# do not need to include the do_download_epkg function.
+python do_download_oepkg() {
+}
+
+python do_download_oepkg:class-target(){
     import os
     import subprocess
 
