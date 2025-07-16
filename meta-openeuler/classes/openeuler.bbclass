@@ -118,9 +118,6 @@ python src_uri_set() {
     # adapted in openEuler, use original fetch
     if d.getVar("MANIFEST_DIR") is not None and os.path.exists(d.getVar("MANIFEST_DIR")):
         manifest_list = d.getVar("MANIFEST_LIST")
-        if local_name not in manifest_list:
-            d.setVar('OPENEULER_FETCH', 'disable')
-            return
 
     # handle the SRC_URI
     if src_uri and remove_list:
@@ -139,8 +136,9 @@ python src_uri_set() {
         d.setVar('BB_DONT_CACHE', '1')
     # set SRCREV, if SRCREV changed because of the corresponding changes in manifest.yaml,
     # do_fetch will re-run
-    repo_item = manifest_list[local_name]
-    d.setVar('SRCREV', repo_item['version'])
+    if local_name in manifest_list:
+        repo_item = manifest_list[local_name]
+        d.setVar('SRCREV', repo_item['version'])
 }
 
 addhandler src_uri_set
@@ -196,6 +194,8 @@ python do_openeuler_fetch() {
             bb.fatal("do_openeuler_fetch failed: OPENEULER_SP_DIR %s OPENEULER_LOCAL_NAME %s exception %s" % (src_dir, repo_name, str(e)))
 
     repo_list = d.getVar("OPENEULER_REPO_NAMES").split()
+    if d.getVar("OPENEULER_LOCAL_NAME"):
+        repo_list.append(d.getVar("OPENEULER_LOCAL_NAME"))
     for repo_name in repo_list:
         # download code from openEuler
         openeuler_fetch(d, repo_name)
