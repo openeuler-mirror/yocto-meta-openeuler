@@ -60,6 +60,7 @@ KBUILD_DEFCONFIG:x86-64 = "openeuler_defconfig"
 SRC_URI:append:x86-64 = " \
     file://config/cfg-fragments/embedded-build.cfg \
     file://config/cfg-fragments/common-pc-drivers.cfg \
+    file://config/cfg-fragments/virtio.cfg \
 "
 # strip modules for x86 image
 EXTRA_OEMAKE:x86-64 += "INSTALL_MOD_STRIP=1"

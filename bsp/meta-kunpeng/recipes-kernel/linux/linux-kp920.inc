@@ -14,6 +14,7 @@ CONFIGVERSION="${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'kernel6-', ''
 SRC_URI:append = " \
     file://config/cfg-fragments/embedded-build.cfg \
     file://config/cfg-fragments/common-pc-drivers.cfg \
+    file://config/cfg-fragments/virtio.cfg \
 "
 
 # The kp920 kernel configuration now supports k8s and does not require a separate configuration file.
