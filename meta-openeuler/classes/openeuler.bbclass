@@ -120,7 +120,7 @@ python src_uri_set() {
         manifest_list = d.getVar("MANIFEST_LIST")
 
     # handle the SRC_URI
-    if src_uri and remove_list:
+    if (local_name in manifest_list) and src_uri and remove_list:
         uri_list = src_uri.split()
         remove_list = remove_list.split()
 
