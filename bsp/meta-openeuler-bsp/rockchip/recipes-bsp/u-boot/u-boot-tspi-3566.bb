@@ -12,7 +12,7 @@ do_copy_rkbin_source() {
 
 do_configure:prepend() {
 	# the python scripts need python2, so we create tmp soft link
-    ln -s $(which python) ${RECIPE_SYSROOT_NATIVE}${bindir_native}/python2
+    ln -sf $(which python) ${RECIPE_SYSROOT_NATIVE}${bindir_native}/python2
 }
 
 do_compile() {
@@ -37,6 +37,6 @@ do_deploy() {
 # add parameter to deploy directory
 do_deploy:append() {
     if [ -f "${WORKDIR}/${PARAMETER}" ]; then
-        install ${WORKDIR}/${PARAMETER} ${OUTPUT_DIR}/parameter
+        install ${WORKDIR}/${PARAMETER} ${OUTPUT_DIR}/parameter.txt
     fi
 }
