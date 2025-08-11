@@ -13,7 +13,7 @@
    add_new_bsp_layer.rst
 
 .. note::
-   如果厂商在 :ref:`board-support-list` 已经支持，可以按照下面的步骤快速新增。
+   参考下面的步骤快速新增。
 
 .. toctree::
    :maxdepth: 1
