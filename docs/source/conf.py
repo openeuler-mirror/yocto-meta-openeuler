@@ -72,7 +72,7 @@ exclude_patterns = []
 html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_theme_options = {
-    'navigation_depth': 5,
+    'navigation_depth': 7,
     'sticky_navigation': False,
 }
 
