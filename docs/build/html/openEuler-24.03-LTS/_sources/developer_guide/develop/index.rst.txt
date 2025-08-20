@@ -12,3 +12,4 @@
    ../../yocto/development.rst
    ../../oebuild/develop/index.rst
    board-support/index
+   kernel_develop.rst

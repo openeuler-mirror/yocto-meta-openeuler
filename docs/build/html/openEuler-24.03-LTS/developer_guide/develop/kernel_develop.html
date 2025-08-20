@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Linux内核开发指导 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="功能调试指导" href="../debug/index.html" />
+    <link rel="prev" title="新增既有厂商硬件指南" href="board-support/add_new_board.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../user_guide/index.html">用户使用指导</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">开发及贡献指导</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../code_download_compile.html">下载编译指导</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">代码开发指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="new_develop.html">开发方式指导</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../yocto/development.html">Yocto开发指导</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../oebuild/develop/index.html">oebuild开发指导</a></li>
+<li class="toctree-l3"><a class="reference internal" href="board-support/index.html">新增南向硬件支持</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Linux内核开发指导</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">内核代码修改指导</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#id2">内核代码下载</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id3">内核代码修改</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id6">内核选项配置</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../debug/index.html">功能调试指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../commit.html">代码提交指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute_doc.html">文档提交指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">开发及贡献指导</a> &raquo;</li>
+          <li><a href="index.html">代码开发指导</a> &raquo;</li>
+      <li>Linux内核开发指导</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="linux">
+<h1>Linux内核开发指导<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h1>
+<p>在使用 openEuler Embedded 时，通常需要对内核进行定制。目前，meta-openeuler 提供了一系列与 Linux kernel 相关的配方，借助 Yocto 的支持，用户可以在 meta-openeuler 的基础上，高效地调试并定制所需的内核。</p>
+<p>本章节内容会基于 meta-openeuler 介绍如何进行内核开发指导，包括如何下载内核代码以及修改内核代码、选项配置等内容，其它更详细的流程，可以参阅 <a class="reference external" href="https://docs.yoctoproject.org/kernel-dev/index.html#">Yocto Project Linux Kernel Development Manual</a> 进一步了解。</p>
+<section id="id1">
+<h2>内核代码修改指导<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>目前，openEuler Embedded 提供了两种内核配方：<code class="docutils literal notranslate"><span class="pre">linux-openeuler.bb</span></code> 和 <code class="docutils literal notranslate"><span class="pre">linux-openeuler-rt.bb</span></code>。在使用 oebuild 构建时，如果通过 <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">rt</span></code> 选项指定构建 Preempt RT 版本，会通过设置 <code class="docutils literal notranslate"><span class="pre">PREFERRED_PROVIDER_virtual/kernel</span> <span class="pre">=</span> <span class="pre">&quot;linux-openeuler-rt&quot;</span></code> 来选择 <code class="docutils literal notranslate"><span class="pre">linux-openeuler-rt.bb</span></code>。
+实际上，这两种配方的构建流程基本一致，区别在于构建 Preempt RT 版本时，会额外应用一些内核补丁并调整部分内核配置。因此，下文将以 <code class="docutils literal notranslate"><span class="pre">linux-openeuler-rt.bb</span></code> 为例进行详细说明。</p>
+<section id="id2">
+<h3>内核代码下载<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>执行以下命令下载内核代码：</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span># 由于内核构建配方名称为 linux-openeuler-rt.bb，因此下载命令为：
+$ bitbake linux-openeuler-rt -c do_fetch
+</pre></div>
+</div>
+<p>当前openEuler Embedded的代码下载流程如下：</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>┌───────────────────────────────┐
+│          触发内核构建          │
+│   bitbake linux-openeuler-rt  │
+└───────────────┬───────────────┘
+                │
+                │
+                ▼
+┌───────────────────────────────┐
+│      触发 do_openeuler_fetch  │
+│          下载内核代码          │
+└───────────────┬───────────────┘
+                │
+                │
+                ▼
+┌───────────────────────────────┐
+│  根据 OPENEULER_REPO_NAMES和  │
+│   manifest.yaml 完成代码下载   │
+└───────────────────────────────┘
+</pre></div>
+</div>
+<p>以目前 openEuler Embedded 的内核配置为例；</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 内核大版本号，为 5.10 或 6.6</span>
+<span class="nv">PV</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">LINUX_VERSION</span><span class="si">}</span><span class="s2">&quot;</span>
+
+...
+
+<span class="nv">OPENEULER_LOCAL_NAME</span> <span class="o">=</span> <span class="s2">&quot;kernel-</span><span class="si">${</span><span class="nv">PV</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nv">OPENEULER_REPO_NAMES</span> <span class="o">=</span> <span class="s2">&quot;src-kernel-</span><span class="si">${</span><span class="nv">PV</span><span class="si">}</span><span class="s2"> kernel-</span><span class="si">${</span><span class="nv">PV</span><span class="si">}</span><span class="s2">&quot;</span>
+
+...
+
+<span class="nv">SRC_URI</span> <span class="o">=</span> <span class="s2">&quot; \</span>
+<span class="s2">  file://kernel-</span><span class="si">${</span><span class="nv">PV</span><span class="si">}</span><span class="s2"> \</span>
+<span class="s2">  file://src-kernel-</span><span class="si">${</span><span class="nv">PV</span><span class="si">}</span><span class="s2">/0001-apply-preempt-RT-patch.patch \</span>
+<span class="s2">  ...</span>
+<span class="s2">  &quot;</span>
+</pre></div>
+</div>
+<ul>
+<li><p><strong>OPENEULER_LOCAL_NAME</strong>：</p>
+<p>内核源码目录名称。例如，构建 5.10 版本的内核时，PV为 5.10，因此会使用 oebuild 代码目录下的 src/kernel-5.10 作为构建代码来源。</p>
+</li>
+<li><p><strong>OPENEULER_REPO_NAMES</strong>：</p>
+<p>触发 do_openeuler_fetch 任务时自动下载的代码仓库名称。例如，构建 5.10 版本内核时，会触发下载 src-kernel-5.10 以及 kernel-5.10 两个仓库。</p>
+<p>do_openeuler_fetch 任务会根据 yocto-meta-openeuler 仓库的 .oebuild/manifest.yaml 文件下载这两个仓库：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># .oebuild/manifest.yaml</span>
+
+<span class="nt">kernel-5.10</span><span class="p">:</span>
+  <span class="nt">remote_url</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://gitee.com/openeuler/kernel.git</span>
+  <span class="nt">version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">920880cbeb4a3390da6f9e95508b29abbf45140d</span>
+
+
+<span class="nt">src-kernel-5.10</span><span class="p">:</span>
+  <span class="nt">remote_url</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://gitee.com/src-openeuler/kernel.git</span>
+  <span class="nt">version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">8020b640cad7531b50bbd356a06c9fcf6265ac21</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><strong>kernel-5.10</strong> 的上游仓库是 <strong>openeuler/kernel</strong>，即 openeuler 内核源码仓库，用于存放由 openeuler 社区维护的 Linux 内核代码。</p>
+<p><strong>src-kernel-5.10</strong> 的上游仓库是 <strong>src-openeuler/kernel</strong>，即 openeuler 内核制品仓库，用于构建 openeuler 社区各发行版本的内核发布包，并存放一些尚未合并到源码仓库的补丁，例如树莓派补丁、软实时补丁等。</p>
+<p>在 <strong>src-openeuler/kernel</strong> 仓库中，<strong>kernel.spec</strong> 或 <strong>kernel-rt.spec</strong> 文件会指定使用 <strong>openeuler/kernel</strong> 仓库中某个特定 tag 的源码来构建和发布内核。openEuler Embedded 会根据 <strong>kernel.spec</strong> 和 <strong>kernel-rt.spec</strong> 文件来选择用于构建的内核版本。</p>
+<p>因此，在 <strong>.oebuild/manifest.yaml</strong> 文件中，<strong>kernel-5.10</strong> 的 <strong>version</strong> 字段对应于 <strong>openeuler/kernel</strong> 仓库中某个特定 tag 的 commit ID，而 <strong>src-kernel-5.10</strong> 的 <strong>version</strong> 字段则对应于 <strong>src-openeuler/kernel</strong> 仓库中某个发布分支的 commit ID。</p>
+</div>
+</li>
+</ul>
+<blockquote>
+<div><p>当需要升级 openEuler 的内核版本时，可以通过修改 <strong>version</strong> 值来使用其他发布版本。如果需要替换整个内核源码仓库，建议单独指定 <strong>PV</strong> 值，并在 <strong>manifest.yaml</strong> 文件中添加对应的仓库路径。具体实现可以参考 <strong>yocto-meta-openeuler</strong> 中树莓派或 Hi3093 的相关配置。</p>
+</div></blockquote>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h3>内核代码修改<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<section id="id4">
+<h4>1. 源码修改<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<ul>
+<li><p><strong>场景一：为内核应用补丁</strong></p>
+<blockquote>
+<div><p>如果需要为内核应用补丁进行构建，可以将补丁文件放置于 <code class="docutils literal notranslate"><span class="pre">meta-openeuler/recipes-kernel/linux/files/patches</span></code> 目录中，并在 <code class="docutils literal notranslate"><span class="pre">SRC_URI</span></code> 中指定该补丁文件。例如：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">## 假设代码补丁文件路径为： meta-openeuler/recipes-kernel/linux/files/patches/0001-kernel.patch</span>
+
+SRC_URI:append <span class="o">=</span> <span class="s2">&quot; \</span>
+<span class="s2">    file://patches/0001-kernel.patch \</span>
+<span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p><strong>场景二：修改内核源码进行调试</strong></p>
+<blockquote>
+<div><p>如果希望能够直接修改内核源码进行内核调试，建议按照以下步骤进行：</p>
+<ol class="arabic simple">
+<li><p>执行以下命令触发内核源码下载</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 以 linux-openeuler-rt 内核为例，其它内核（如linux-openeuler）请根据实际名称进行操作。</span>
+$ bitbake linux-openeuler-rt -c do_fetch
+</pre></div>
+</div>
+<p>此时，会根据 manifest.yaml 文件自动触发内核下载，假设 PV 为 5.10，则会下载内核源码到 src/kernel-5.10 目录中。</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>进入到oebuild工作目录的 src/kernel-5.10，修改内核代码</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> src/kernel-5.10
+<span class="c1"># 在此目录中进行内核代码的修改</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>进入到oebuild工作目录的 src/yocto-meta-openeuler，注释 manifest.yaml 中对应的仓库地址</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ vim .oebuild/manifest.yaml
+
+<span class="c1"># 注释掉以下内容：</span>
+<span class="c1">#kernel-5.10:</span>
+<span class="c1">#  remote_url: https://gitee.com/openeuler/kernel.git</span>
+<span class="c1">#  version: 920880cbeb4a3390da6f9e95508b29abbf45140d</span>
+</pre></div>
+</div>
+<p>这是因为，当 manifest.yaml 中指定了仓库地址时，在 do_openeuler_fetch 过程中会将仓库代码还原到 version 指定的 commit ID 节点。为了避免本地修改被删除，需要将其注释。</p>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li><p>构建内核</p></li>
+</ol>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ bitbake linux-openeuler-rt
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<section id="id5">
+<h4>2. 设备树指定<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<p>在 Yocto 工程里，可以通过 <code class="docutils literal notranslate"><span class="pre">KERNEL_DEVICETREE</span></code> 来指定DTB，具体的用法如下：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 在 machine.conf 里，指定 KERNEL_DEVICETREE</span>
+<span class="c1"># 例如：bsp/meta-openeuler-bsp/conf/machine/orangepi5.conf</span>
+
+<span class="c1"># 方式一：只需要单独的设备树</span>
+<span class="c1"># 设备树源码 dts 文件可以通过 patch 的方式将其应用到内核源码中的 arch/arm64/boot/dts/ 目录下，KERNEL_DEVICETREE 指定对应的 dtb 文件名</span>
+<span class="nv">KERNEL_DEVICETREE</span> <span class="o">=</span> <span class="s2">&quot;rockchip/opi5.dtb&quot;</span>           <span class="c1"># 将会使用 arch/arm64/boot/dts/rockchip/opi5.dts 生成 DTB</span>
+
+
+<span class="c1"># 方式二：需要多份设备树</span>
+<span class="nv">DTB_FILES</span> <span class="o">=</span> <span class="s2">&quot;am335x-bone.dtb am335x-boneblack.dtb am335x-bonegreen.dtb&quot;</span>
+<span class="nv">KERNEL_DEVICETREE</span> <span class="o">=</span> <span class="s1">&#39;${@&#39;</span> <span class="s1">&#39;.join(&#39;</span>ti/omap/%s<span class="s1">&#39; % d for d in &#39;</span><span class="si">${</span><span class="nv">DTB_FILES</span><span class="si">}</span><span class="s1">&#39;.split())}&#39;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id6">
+<h3>内核选项配置<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<section id="config">
+<h4>1. 指定内核CONFIG文件<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h4>
+<ul>
+<li><p><strong>场景一：使用内核源码树外的config文件</strong></p>
+<blockquote>
+<div><p>如果需要使用的 config 文件不放在内核源码树中，可以通过以下步骤将其指定给内核构建过程：</p>
+<ol class="arabic simple">
+<li><p>准备 config 文件</p></li>
+</ol>
+<blockquote>
+<div><p>将所需的 config 文件放置在 <code class="docutils literal notranslate"><span class="pre">meta-openeuler/recipes-kernel/linux/files/config</span></code> 目录中。例如，假设文件名为 test_config。</p>
+</div></blockquote>
+<ol class="arabic simple" start="2">
+<li><p>指定 OPENEULER_KERNEL_CONFIG</p></li>
+</ol>
+<blockquote>
+<div><p>在内核配方文件（如 linux-openeuler-rt.bb）中，通过 <code class="docutils literal notranslate"><span class="pre">OPENEULER_KERNEL_CONFIG</span></code> 变量指定所需的config。例如：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># linux-openeuler-rt.bb</span>
+<span class="c1"># test_config 为需要使用的config文件</span>
+
+<span class="nv">OPENEULER_KERNEL_CONFIG</span> <span class="o">=</span> <span class="s2">&quot;file://config/test_config&quot;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</li>
+<li><p><strong>场景二：使用内核源码树内的config文件</strong></p>
+<blockquote>
+<div><p>如果需要构建的内核源码树中有所需要的config文件，可以在内核配方文件（如 linux-openeuler-rt.bb）中，通过 <code class="docutils literal notranslate"><span class="pre">KBUILD_DEFCONFIG</span></code> 变量指定所需的 config。例如：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 由于config文件直接由内核源码仓库提供，不需要使用 meta-openeuler 仓库的 config，需要注释该变量</span>
+<span class="nv">OPENEULER_KERNEL_CONFIG</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<span class="c1"># 将其指定为内核源码树内的 config 文件，例如使用 arch/arm64/configs/openeuler_defconfig</span>
+<span class="nv">KBUILD_DEFCONFIG</span> <span class="o">=</span> <span class="s2">&quot;openeuler_defconfig&quot;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<section id="id7">
+<h4>2. 调整内核CONFIG选项<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<p>在 Yocto 工程中，可以通过多种方式进行内核的CONFIG调整，以下为详细介绍：</p>
+<section id="menuconfig">
+<h5>方式一：通过 menuconfig 调整<a class="headerlink" href="#menuconfig" title="Permalink to this headline">¶</a></h5>
+<p>执行以下命令打开 menuconfig 窗口：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ bitbake linux-openeuler-rt -c menuconfig
+</pre></div>
+</div>
+<p>在打开的 menuconfig 窗口中，根据需要修改内核CONFIG选项。修改完成后，menuconfig 会在yocto构建目录下生成一个 .config 文件，文件路径大致为：<cite>tmp/work/&lt;name&gt;-openeuler-linux/linux-openeuler/5.10-r0/build</cite> 。</p>
+<p>这里需要注意的是：menuconfig 作为内核构建工程中的一个子任务，它产生的 .config 文件是一个中间文件，当 Yocot 重新触发内核构建工程时，所有的中间文件都会被清除（包括.config文件）。
+因此建议通过 menuconfig 修改后，及时保存生成的 .config 文件，并按照上文《使用内核源码树外的config文件》来指定每次构建内核时都采用该文件。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ cp tmp/work/&lt;name&gt;-openeuler-linux/linux-openeuler/5.10-r0/build/.config <span class="se">\</span>
+     &lt;oebuild_workdir&gt;/src/yocto-meta-openeuler/meta-openeuler/recipes-kernel/linux/files/config/new_config
+
+$ vim &lt;oebuild_workdir&gt;/src/yocto-meta-openeuler/meta-openeuler/recipes-kernel/linux/linux-openeuler.bb
+  <span class="c1"># 指定 config 文件</span>
+  <span class="nv">OPENEULER_KERNEL_CONFIG</span> <span class="o">=</span> <span class="s2">&quot;file://config/new_config&quot;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>不建议通过手动修改 defconfig 文件来进行内核选项配置，因为内核配置选项之间存在复杂的依赖关系。例如，选项 A 依赖于选项 B。如果只在 defconfig 文件中手动启用选项 A，而没有启用选项 B，那么在内核配置解析阶段，由于依赖关系未满足，选项 A 也不会被启用。</p>
+</div>
+</section>
+<section id="kernel-metadata">
+<h5>方式二：通过 kernel_metadata 调整<a class="headerlink" href="#kernel-metadata" title="Permalink to this headline">¶</a></h5>
+<p>Yocto提供了 <a class="reference external" href="https://docs.yoctoproject.org/kernel-dev/advanced.html#configuration">Kernel Metadata</a> 机制，metadata 包含配置一个或多个配置片段文件(.cfg)以及一个描述这些配置片段的文件(.scc)组成。</p>
+<p>例如，可以将与 Preempt RT 相关的选项，通过 <code class="docutils literal notranslate"><span class="pre">preempt-rt.scc</span></code> 和 <code class="docutils literal notranslate"><span class="pre">preempt-rt.cfg</span></code> 来承载：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>meta-data/features/preempt-rt/preempt-rt.scc:
+  define KFEATURE_DESCRIPTION <span class="s2">&quot;Enable preempt related configs&quot;</span>
+  define KFEATURE_COMPATIBILITY all
+
+  kconf non-hardware preempt-rt.cfg
+
+
+meta-data/features/preempt-rt/preempt-rt.cfg:
+  <span class="c1">#</span>
+  <span class="c1">#  preempt-rt related kernel config</span>
+  <span class="c1">#</span>
+  <span class="nv">CONFIG_PREEMPT_RT</span><span class="o">=</span>y
+</pre></div>
+</div>
+<p>之后，需要在 linux-openeuler-rt.bb 中使能该特性：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1">## Preempt-RT</span>
+KERNEL_FEATURES:append <span class="o">=</span>  <span class="s2">&quot; features/preempt-rt/preempt-rt.scc&quot;</span>
+</pre></div>
+</div>
+<p>建议将某些特性功能强相关的 config 选项通过 kernel_metadata 来承载，便于维护。</p>
+</section>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="board-support/add_new_board.html" class="btn btn-neutral float-left" title="新增既有厂商硬件指南" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../debug/index.html" class="btn btn-neutral float-right" title="功能调试指导" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-24.03-LTS
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../master/index.html">master</a></dd>
+      <dd><a href="../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="kernel_develop.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

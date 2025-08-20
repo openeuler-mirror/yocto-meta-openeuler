@@ -159,10 +159,160 @@
 <hr class="docutils" />
 <section id="id5">
 <h2>安装说明<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
-<div class="admonition seealso">
+<ol class="arabic simple">
+<li><p>使用光驱安装：</p></li>
+</ol>
+<blockquote>
+<div><div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p>参考 <a class="reference internal" href="../../../x86/HVAEIPC-M10/m10.html#iso-install"><span class="std std-ref">openEuler Embedded ISO 镜像安装说明</span></a>，若使用 BMC 进行安装，请在 BMC 界面挂载光驱并选择光驱启动之后进行镜像安装。</p>
 </div>
+</div></blockquote>
+<ol class="arabic" start="2">
+<li><p>使用PXE安装：</p>
+<p>2.1 环境准备</p>
+<blockquote>
+<div><p>执行PXE安装需要准备一台PXE服务器，并确保需要安装镜像的设备可以与PXE服务器建立连接。PXE服务器用于存放 openEuler Embedded 镜像与各项配置文件，以便目标机器通过连接PXE服务器，进行PXE安装。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>下文将PXE服务器 IP 设置为 192.168.122.10，目标机器需要与PXE服务器在同网段下。</p>
+</div>
+</div></blockquote>
+<p>2.2 PXE服务器配置</p>
+<ol class="arabic">
+<li><p>设置HTTP服务</p>
+<p>通过以下命令安装 httpd 服务，并进行启动和激活：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>yum install -y httpd
+<span class="gp"># </span>systemctl start httpd
+<span class="gp"># </span>systemctl <span class="nb">enable</span> httpd
+</pre></div>
+</div>
+</li>
+<li><p>设置TFTP服务</p>
+<p>通过以下命令安装 tftp 服务，并进行相关配置：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>yum install -y tftp-server xinetd
+<span class="gp"># </span>vim /etc/xinetd.d/tftp
+<span class="go">  service tftp</span>
+<span class="go">  {</span>
+<span class="go">  socket_type = dgram</span>
+<span class="go">  protocol = udp</span>
+<span class="go">  wait = yes</span>
+<span class="go">  user = root</span>
+<span class="go">  server = /usr/sbin/in.tftpd</span>
+<span class="go">  server_args = -s /var/lib/tftpboot</span>
+<span class="go">  disable = no</span>
+<span class="go">  per_source = 11</span>
+<span class="go">  cps = 100 2</span>
+<span class="go">  flags = IPv4</span>
+<span class="go">  }</span>
+<span class="gp"># </span>systemctl start tftp
+<span class="gp"># </span>systemctl <span class="nb">enable</span> tftp
+<span class="gp"># </span>systemctl start xinetd
+<span class="gp"># </span>systemctl status xinetd
+<span class="gp"># </span>systemctl <span class="nb">enable</span> xinetd
+</pre></div>
+</div>
+</li>
+<li><p>设置DHCP服务</p>
+<p>通过以下命令安装 dhcp 服务，并进行相关配置：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>yum install -y dhcp
+<span class="gp"># </span>vim /etc/dhcp/dhcpd.conf
+<span class="go">  authoritative</span>
+<span class="go">  ddns-update-style interim;</span>
+<span class="go">  ignore client-updates;</span>
+<span class="go">  subnet 192.168.122.0 netmask 255.255.255.0 {</span>
+<span class="go">      range 192.168.122.100 192.168.122.200;     # 动态IP范围</span>
+<span class="go">      next-server 192.168.122.10;                # PXE服务器IP地址</span>
+<span class="go">      filename &quot;grubaa64.efi&quot;;                   # 默认的grub文件名，需要与下文中下载的grub文件名保持一致</span>
+<span class="go">      option routers 192.168.122.1;              # 网关地址</span>
+<span class="go">      option subnet-mask 255.255.255.0;          # 子网掩码</span>
+<span class="go">      default-lease-time 86400;</span>
+<span class="go">      max-lease-time 172800;</span>
+<span class="go">  }</span>
+
+<span class="gp"># </span>systemctl start dhcpd
+<span class="gp"># </span>systemctl <span class="nb">enable</span> dhcpd
+</pre></div>
+</div>
+</li>
+<li><p>安装源的制作</p>
+<p>通过以下命令本地挂载 openEuler Embedded ISO镜像：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>mkdir -p /mnt/iso
+<span class="gp"># </span>sudo mount openeuler_embedded.iso /mnt/iso    <span class="c1"># 镜像名称请以实际为准</span>
+</pre></div>
+</div>
+</li>
+<li><p>准备PXE安装所需文件</p></li>
+</ol>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>准备启动引导文件：</p></li>
+</ol>
+<blockquote>
+<div><p>下载 <a class="reference external" href="https://mirrors.nju.edu.cn/openeuler/openEuler-24.03-LTS/everything/aarch64/EFI/BOOT/grubaa64.efi">grubaa64.efi</a>，之后，通过以下命令，将grub放在tftpboot目录，并创建grub.cfg：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>准备引导文件：
+<span class="gp"># </span>mkdir -p /var/lib/tftpboot
+<span class="gp"># </span>cp grubaa64.efi /var/lib/tftpboot
+<span class="gp"># </span>cp /mnt/iso/Image /var/lib/tftpboot
+<span class="gp"># </span>cp /mnt/iso/initrd /var/lib/tftpboot
+
+<span class="gp"># </span>创建 grub.cfg
+<span class="gp"># </span>vim /var/lib/tftpboot/grub.cfg
+<span class="go">  set default=&quot;1&quot;</span>
+
+<span class="go">  function load_video {</span>
+<span class="go">    if [ x$feature_all_video_module = xy ]; then</span>
+<span class="go">      insmod all_video</span>
+<span class="go">    else</span>
+<span class="go">      insmod efi_gop</span>
+<span class="go">      insmod efi_uga</span>
+<span class="go">      insmod ieee1275_fb</span>
+<span class="go">      insmod vbe</span>
+<span class="go">      insmod vga</span>
+<span class="go">      insmod video_bochs</span>
+<span class="go">      insmod video_cirrus</span>
+<span class="go">    fi</span>
+<span class="go">  }</span>
+
+<span class="go">  load_video</span>
+<span class="go">  set gfxpayload=keep</span>
+<span class="go">  insmod gzio</span>
+<span class="go">  insmod part_gpt</span>
+<span class="go">  insmod ext2</span>
+
+<span class="go">  set timeout=60</span>
+
+<span class="go">  menuentry &#39;openEuler Embedded PXE Install&#39; {</span>
+<span class="go">    linux /Image LABEL=install-pxe install_cfg=http://192.168.122.10/install_pxe.cfg  root=/dev/ram0 console=tty1 crashkernel=256M</span>
+<span class="go">    initrd /initrd</span>
+<span class="go">  }</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="loweralpha simple" start="2">
+<li><p>准备 ISO 安装所需文件：</p></li>
+</ol>
+<blockquote>
+<div><p>PXE安装需要iso镜像、iso镜像的sha256校验值，以及配置文件 <code class="docutils literal notranslate"><span class="pre">install_pxe.cfg</span></code>：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>假设iso镜像名为 openeuler_embedded.iso，sha256校验值文件为 openeuler_embedded.iso.sha256sum
+<span class="gp"># </span>cp openeuler_embedded.iso /var/lib/tftpboot
+<span class="gp"># </span>cp openeuler_embedded.iso.sha256sum /var/lib/tftpboot
+<span class="gp"># </span>chmod +rx /var/lib/tftpboot
+<span class="gp"># </span>chmod +r /var/lib/tftpboot/openeuler_embedded.iso
+
+<span class="gp"># </span>vim /var/lib/tftpboot/install_pxe.cfg
+<span class="go"> INSTALL_ISO=&quot;openeuler_embedded.iso&quot;                      # openEuler Embedded 镜像名称</span>
+<span class="go"> TARGET_DEVICE_NAME=&quot;sda&quot;                                  # 目标机器预备安装系统的盘</span>
+<span class="go"> INSTALL_ISO_SHA256=&quot;openeuler_embedded.iso.sha256sum&quot;     # 镜像sha256sum校验值文件</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div></blockquote>
+<p>2.3 安装步骤</p>
+<p>在 BMC 界面选择 <code class="docutils literal notranslate"><span class="pre">PXE</span></code> 启动项，重启系统开始自动化安装，系统安装完成后，会提示：<code class="docutils literal notranslate"><span class="pre">Installation</span> <span class="pre">successful.</span> <span class="pre">Remove</span> <span class="pre">your</span> <span class="pre">installation</span> <span class="pre">media</span> <span class="pre">and</span> <span class="pre">press</span> <span class="pre">ENTER</span> <span class="pre">to</span> <span class="pre">reboot.</span></code>
+之后可以在 BMC 界面选择 <code class="docutils literal notranslate"><span class="pre">BIOS</span></code> 启动项，按 Enter 键重启机器，重启后进入 BIOS 界面选择对应的磁盘启动项，进行系统启动。</p>
+</li>
+</ol>
 </section>
 </section>
 
