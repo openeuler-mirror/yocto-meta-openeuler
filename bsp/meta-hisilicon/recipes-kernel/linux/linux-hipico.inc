@@ -6,13 +6,13 @@ DEPENDS += "u-boot-tools-native dtc-native"
 
 OPENEULER_REPO_NAMES = "kernel-5.10-tag626 src-kernel-5.10-tag626"
 
-OPENEULER_KERNEL_CONFIG = "file://config/hipico/hipico_debug_defconfig"
+OPENEULER_KERNEL_CONFIG = "file://config/hipico/${@bb.utils.contains('DISTRO_FEATURES', 'mini-img', 'hipico_mini_defconfig', 'hipico_debug_defconfig', d)}"
 
 PV = "5.10-tag626"
 
 SRC_URI:append = " \
     file://patch/0001-hipico-kernel-510-patch-d8e3bcbbe.patch \
-    file://config/hipico/hipico_debug_defconfig \
+    file://config/hipico/${@bb.utils.contains('DISTRO_FEATURES', 'mini-img', 'hipico_mini_defconfig', 'hipico_debug_defconfig', d)} \
     file://dtbs/hipico.dts \
     file://its/linux_image.its \
 "

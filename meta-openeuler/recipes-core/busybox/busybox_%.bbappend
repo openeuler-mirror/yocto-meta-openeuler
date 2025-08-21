@@ -34,17 +34,21 @@ SRC_URI:append = " \
 
 # support NFS, which depends on libtirpc
 DEPENDS += "libtirpc"
+DEPENDS:remove = "${@bb.utils.contains('TCLIBC', 'musl', 'libtirpc', '', d)}"
 CFLAGS += "${@bb.utils.contains('DEPENDS', 'libtirpc', '-I${STAGING_INCDIR}/tirpc', '', d)}"
+
 
 do_prepare_config:append () {
     set +e
-    grep -E '^CONFIG_FEATURE_MOUNT_NFS=y|^CONFIG_FEATURE_INETD_RPC=y' ${S}/.config
-    ret=$?
-    if [ $ret -eq 0 ]; then
-        grep -E '^CONFIG_EXTRA_CFLAGS=".*-I/usr/include/tirpc|^CONFIG_EXTRA_LDLIBS=".*tirpc' ${S}/.config
+    if ! ${@bb.utils.contains('DISTRO_FEATURES', 'mini-img', 'true', 'false', d)}; then
+        grep -E '^CONFIG_FEATURE_MOUNT_NFS=y|^CONFIG_FEATURE_INETD_RPC=y' ${S}/.config
         ret=$?
-        if [ $ret -ne 0 ]; then
-            sed -i 's/^CONFIG_EXTRA_LDLIBS="/CONFIG_EXTRA_LDLIBS="tirpc /g' ${S}/.config
+        if [ $ret -eq 0 ]; then
+            grep -E '^CONFIG_EXTRA_CFLAGS=".*-I/usr/include/tirpc|^CONFIG_EXTRA_LDLIBS=".*tirpc' ${S}/.config
+            ret=$?
+            if [ $ret -ne 0 ]; then
+                sed -i 's/^CONFIG_EXTRA_LDLIBS="/CONFIG_EXTRA_LDLIBS="tirpc /g' ${S}/.config
+            fi
         fi
     fi
     set -e

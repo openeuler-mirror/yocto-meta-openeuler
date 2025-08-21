@@ -21,6 +21,10 @@ PROVIDES += "virtual/libc \
 DEPENDS = "bsd-headers \
           libssp-nonshared \
           "
+
+DEPENDS:arm = " \
+          libssp-nonshared \
+          "
 INHIBIT_DEFAULT_DEPS = "1"
 
 PR = "r1"
@@ -54,9 +58,13 @@ musl_external_do_install_extra(){
     
     # Support perf compile
     # Due to musl missing __always_inline definition
-    sed -i '/#include <asm\/swab.h>/a\#include <sys/cdefs.h>' ${D}${includedir}/linux/swab.h
-    sed -i '/#include <linux\/swab.h>/a\#include <sys/cdefs.h>' ${D}${includedir}/linux/byteorder/little_endian.h
-    
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'mini-img', 'false', 'true', d)}; then
+        # 支持 perf 编译
+        # 由于 musl 缺少 __always_inline 定义
+        sed -i '/#include <asm\/swab.h>/a\#include <sys/cdefs.h>' ${D}${includedir}/linux/swab.h
+        sed -i '/#include <linux\/swab.h>/a\#include <sys/cdefs.h>' ${D}${includedir}/linux/byteorder/little_endian.h
+    fi
+ 
     # Delete conflict file
     rm -f ${D}${base_libdir}/libgcc_s.so
     rm -f ${D}${base_libdir}/libgcc_s.so.1
@@ -80,6 +88,7 @@ FILES:${PN}-staticdev = " \
 "
 # Add depend package
 RDEPENDS:${PN} += " bsd-headers gcompat gcompat-dev"
+RDEPENDS:${PN}:remove:arm = "gcompat gcompat-dev"
 
 INSANE_SKIP:${PN} += "installed-vs-shipped"
 INSANE_SKIP += "dev-elf dev-so"
