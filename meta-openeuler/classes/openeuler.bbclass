@@ -3,6 +3,28 @@
 ## openeuler.bbclass is inherited after base.bbclass,
 ## some definitions in it can be overridden here
 
+# When using the Clang compiler to build the target, we still employ
+# GCC to compile native packages. The following settings reconfigure
+# the toolchain-related parameters to enforce the use of the x86 GCC
+# compiler for compilation
+CC:toolchain-clang:class-native  = "${BUILD_CC}"
+CXX:toolchain-clang:class-native =  "${BUILD_CXX}"
+CPP:toolchain-clang:class-native = "${BUILD_CPP}"
+CCLD:toolchain-clang:class-native = "${BUILD_CCLD}"
+RANLIB:toolchain-clang:class-native = "${BUILD_RANLIB}"
+AR:toolchain-clang:class-native = "${BUILD_AR}"
+NM:toolchain-clang:class-native = "${BUILD_NM}"
+OBJDUMP:toolchain-clang:class-native = "objdump"
+OBJCOPY:toolchain-clang:class-native = "objcopy"
+STRIP:toolchain-clang:class-native = "${BUILD_STRIP}"
+STRINGS:toolchain-clang:class-native = "strings"
+READELF:toolchain-clang:class-native = "readelf"
+CPPFLAGS:toolchain-clang:class-native = "${BUILD_CPPFLAGS}"
+CFLAGS:toolchain-clang:class-native = "${BUILD_CFLAGS}"
+CXXFLAGS:toolchain-clang:class-native = "${BUILD_CXXFLAGS}"
+LDFLAGS:toolchain-clang:class-native = "${BUILD_LDFLAGS}"
+TOOLCHAIN:class-native = "gcc"
+
 # for openeuler embedded it is no need to create DL_DIR, here we use
 # ${OPENEULER_SP_DIR}/${OPENEULER_LOCAL_NAME} to represent download
 # directory for each software package. OPENEULER_SP_DIR
