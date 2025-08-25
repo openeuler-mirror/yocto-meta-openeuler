@@ -14,3 +14,5 @@ SRC_URI:prepend = "file://${BP}.tar.xz \
   file://0010-fix-CVE-2024-0229-3.patch \
   file://0011-fix-CVE-2024-31083.patch \
            "
+
+DEPENDS += "libtirpc"
