@@ -27,6 +27,7 @@ RDEPENDS:${PN} = "python3 python3-argcomplete"
 
 RTOS_IMGS:raspberrypi4-64 = "rpi4"
 RTOS_IMGS:qemu-aarch64 = "qemu"
+RTOS_IMGS:hieulerpi1 = "hieulerpi"
 
 do_install:append () {
         # install Configuration file

@@ -25,6 +25,7 @@ ${@bb.utils.contains('DISTRO_FEATURES', 'xen', 'packagegroup-xen', '', d)} \
 ### MCS DEPLOY TOOLS
 RDEPENDS:${PN}:append:aarch64 = " mcsctl"
 RDEPENDS:${PN}:append:x86-64 = " mcs-tools"
+RDEPENDS:${PN}:append = " ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'mcs-script', '', d)}"
 
 # add openamp dev to sdk
 TOOLCHAIN_TARGET_TASK += " \

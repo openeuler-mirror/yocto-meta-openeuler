@@ -106,6 +106,10 @@ KERNEL_FEATURES:append = " \
 KERNEL_FEATURES:append:x86-64 = " \
     ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'features/mcs/0001-x86-irq-add-a-vector-define-for-mcs.patch', '', d)} \
 "
+KERNEL_FEATURES:append:aarch64 = " \
+    ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'features/mcs/0005-arm64-cpu-export-cpu_logical_map-symbol-for-mcs.patch', '', d)} \
+"
+
 # xen kernel support
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'xen', ' features/xen/xen.scc', '', d)}"
 

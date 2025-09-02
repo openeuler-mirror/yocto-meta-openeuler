@@ -1,0 +1,31 @@
+From 6422b6ee5734463af9deb5d44415d17779824fd0 Mon Sep 17 00:00:00 2001
+From: Wanming Hu <huwanming@huawei.com>
+Date: Sat, 30 Aug 2025 19:58:42 +0800
+Subject: [PATCH] arm64/cpu: export cpu_logical_map symbol for mcs
+
+* MCS needs cpu_logical_map symbol to fetch MPIDR value of certain cpu.
+  However, kernel did not export this symbol, which forces mcs module
+  to use kprobe to use it. As we find out that kprobe is not always supported
+  by all the embedded images, we export this symbol in linux to replace the
+  kprobe.
+
+Signed-off-by: Wanming Hu <huwanming@huawei.com>
+---
+ arch/arm64/kernel/setup.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/kernel/setup.c b/arch/arm64/kernel/setup.c
+index 0d6cd99f7..922e379a7 100644
+--- a/arch/arm64/kernel/setup.c
++++ b/arch/arm64/kernel/setup.c
+@@ -342,6 +342,7 @@ u64 cpu_logical_map(int cpu)
+ {
+ 	return __cpu_logical_map[cpu];
+ }
++EXPORT_SYMBOL(cpu_logical_map);
+ 
+ void __init __no_sanitize_address setup_arch(char **cmdline_p)
+ {
+-- 
+2.34.1
+

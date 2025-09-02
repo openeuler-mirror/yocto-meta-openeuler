@@ -11,6 +11,7 @@ PV = "5.10-tag928"
 SRC_URI:append = " \
     file://HiEuler-driver/linux/5.10.0-153.28.0.patch \
     file://dtbs/ss928-pi.dts \
+    file://dtbs/ss928-pi_mcs.dts \
 "
 
 # remove default patch
@@ -27,11 +28,12 @@ OPENEULER_KERNEL_CONFIG = ""
 # after patches are unpatched
 KBUILD_DEFCONFIG = "hieulerpi1_defconfig"
 
+WORKDTS = "${@bb.utils.contains('MCS_FEATURES', 'openamp', 'ss928-pi_mcs.dts', 'ss928-pi.dts', d)}"
 # add method to do_compile task to produce bootable Image
 do_compile:append(){
     mkimage -A arm64 -O linux -T kernel -C none -a 0x080000 -e 0x080000 -n "Linux-5.10.0" -d ${KERNEL_OUTPUT_DIR}/Image uImage-tmp
     oe_runmake dtbs
-    dtc -I dts -O dtb ${WORKDIR}/dtbs/ss928-pi.dts -o ${WORKDIR}/ss928-pi.dtb
+    dtc -I dts -O dtb ${WORKDIR}/dtbs/${WORKDTS} -o ${WORKDIR}/ss928-pi.dtb
     cat uImage-tmp ${WORKDIR}/ss928-pi.dtb > ${KERNEL_OUTPUT_DIR}/uImage-pi
 }
 
