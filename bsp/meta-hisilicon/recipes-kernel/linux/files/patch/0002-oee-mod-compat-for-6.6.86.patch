@@ -1,0 +1,57 @@
+From 32bacf96d4c1a16ebbed00f9093d7d119044c97b Mon Sep 17 00:00:00 2001
+From: ci <auto@ci.com>
+Date: Mon, 25 Aug 2025 11:48:38 +0800
+Subject: [PATCH]  oee mod compat for 6.6.86
+
+---
+ kernel/module/main.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index b00e31721..469298f37 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -2073,6 +2073,28 @@ static void module_augment_kernel_taints(struct module *mod, struct load_info *i
+ 
+ }
+ 
++static int same_magic_plus(const char *modmagic, const char *vermagic,
++                bool has_crcs)
++{
++    /* make openeuler magic compatible with compat binary */
++    int ret;
++    const char *vermagic_plus;
++    size_t len = strlen(vermagic) + 1;
++    char *temp = kmalloc(len, GFP_KERNEL);
++    if (!temp) {
++        return -ENOMEM;
++    }
++    memset(temp, 0, len);
++    /* make 6.6.86-openeuler XXX compat with 6.6.86 XXX */
++    strncpy(temp, vermagic + 10, len - 10);
++    strncpy(temp, vermagic, 6);
++
++    vermagic_plus = temp;
++    ret = same_magic(modmagic, vermagic_plus, has_crcs);
++    kfree(temp);
++    return ret;
++}
++
+ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
+ {
+ 	const char *modmagic = get_modinfo(info, "vermagic");
+@@ -2087,9 +2109,11 @@ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
+ 		if (err)
+ 			return err;
+ 	} else if (!same_magic(modmagic, vermagic, info->index.vers)) {
++	    if (!same_magic_plus(modmagic, vermagic, info->index.vers)) {
+ 		pr_err("%s: version magic '%s' should be '%s'\n",
+ 		       info->name, modmagic, vermagic);
+ 		return -ENOEXEC;
++	    }
+ 	}
+ 
+ 	err = check_modinfo_livepatch(mod, info);
+-- 
+2.34.1
+

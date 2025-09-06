@@ -24,9 +24,11 @@ roslike_libdir_set[eventmask] = "bb.event.RecipePreFinalise"
 
 OPENEULER_LOCAL_NAME = "HiEuler-driver"
 
+KN_SUFFIX = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '-6.6', '', d)}"
+
 SRC_URI = " \
-        file://HiEuler-driver/drivers/lib.tar.gz \
-        file://HiEuler-driver/drivers/include.tar.gz \
+        file://HiEuler-driver/drivers${KN_SUFFIX}/lib.tar.gz \
+        file://HiEuler-driver/drivers${KN_SUFFIX}/include.tar.gz \
         file://hieulerpi1-user-driver.pc.in \
 "
 
@@ -58,6 +60,7 @@ FILES:${PN} += " \
     ${libdir}/svp_npu/*so* \
     ${libdir}/npu/stub/*so* \
     ${libdir}/stub/*so* \
+    ${libdir}/extdrv/*so* \
 "
 
 FILES:${PN}-dev = " \
@@ -68,6 +71,7 @@ FILES:${PN}-dev = " \
 FILES:${PN}-staticdev += " \
     ${libdir}/npu/*a \
     ${libdir}/svp_npu/*a \
+    ${libdir}/extdrv/*a \
 "
 
 # hieulerpi1-user-driver package provides library with the same name but located in different paths,

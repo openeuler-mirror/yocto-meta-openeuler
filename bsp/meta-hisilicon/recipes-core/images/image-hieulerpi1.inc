@@ -10,7 +10,7 @@ v4l-utils \
 hostapd \
 hieulerpi1-user-driver \
 bluez5 \
-device-sample \
+${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'fb-tool', 'device-sample', d)} \
 "
 
 # add related packages for ros

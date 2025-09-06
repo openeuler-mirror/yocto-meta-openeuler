@@ -8,10 +8,11 @@ DEPENDS = "update-rc.d-native"
 OPENEULER_LOCAL_NAME = "HiEuler-driver"
 
 RT_SUFFIX = "${@bb.utils.contains('DISTRO_FEATURES', 'preempt-rt', '-rt', '', d)}"
+KN_SUFFIX = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '-6.6', '', d)}"
 
 SRC_URI = " \
-        file://HiEuler-driver/drivers/ko${RT_SUFFIX}.tar.gz \
-        file://HiEuler-driver/drivers/ko-extra.tar.gz \
+        file://HiEuler-driver/drivers${KN_SUFFIX}/ko${RT_SUFFIX}.tar.gz \
+        file://HiEuler-driver/drivers${KN_SUFFIX}/ko-extra.tar.gz \
         file://HiEuler-driver/drivers/btools \
         file://HiEuler-driver/drivers/S90AutoRun \
         file://HiEuler-driver/drivers/pinmux.sh \
@@ -46,6 +47,9 @@ do_install () {
 
     #for mipi, use load_ss928v100 from ko-extra
     cp -f ${WORKDIR}/ko-extra/load_ss928v100 ${D}/ko
+    # optimize awk format which may not recognized
+    sed -i 's/\$1\/1024\/1024/strtonum(\$1)\/1024\/1024/' ${D}/ko/load_ss928v100*
+    chmod 755 ${D}/ko/load_ss928v100
 
     # install wifi-1102a firmware
     # cp -f ${WORKDIR}/wifi-1102a-tools/plat.ko ${D}/ko
