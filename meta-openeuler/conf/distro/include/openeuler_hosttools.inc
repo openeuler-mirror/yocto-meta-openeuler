@@ -155,3 +155,6 @@ HOSTTOOLS += "unzstd"
 HOSTTOOLS += "truncate fdtget"
 
 ASSUME_PROVIDED += " python3-cryptography-native "
+
+# used for oebridge permission
+HOSTTOOLS += " getfacl setfacl "

@@ -47,6 +47,8 @@ INSTALL_PKG_LISTS = " \
 # other libs is incompatible with config, use oe's pkg, list is:
 INSTALL_PKG_LISTS += " \
     python3:force \
+    python3-pip:force \
+    systemd-libs:force \
     libgomp:force \
     libvorbis:force \
     libogg:force \
@@ -59,13 +61,31 @@ INSTALL_PKG_LISTS += " \
     gobject-introspection:force \
 "
 
-python() {
+# add for advance install oe pkgs using chroot target arch with qemu, need qemu-user-static of host
+# note kernel bellow 6.9 patch need xorg-x11-server-1.20.11-32
+# see https://gitee.com/src-openeuler/xorg-x11-server/commit/d8c7ac6e53e01fa757e58ed044b9915756d826b1
+XFCE_PKG_LISTS = " \
+    dejavu-fonts:real \
+    liberation-fonts:real \
+    gnu-*-fonts:real \
+    wqy-zenhei-fonts:real \
+    xorg-*:real \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '', 'xorg-x11-server-1.20.11-32*:real', d)} \
+    ${@bb.utils.contains('MACHINE', 'hieulerpi1', 'xorg-x11-server-1.20.11-32*:real', '', d)} \
+    xfwm4:real \
+    xfdesktop:real \
+    xfce4-*:real \
+    xfce4-*-plugin:real \
+    network-manager-applet:real \
+"
+INSTALL_PKG_LISTS += "${@bb.utils.contains('DISTRO_FEATURES', 'oe-xfce', d.getVar('XFCE_PKG_LISTS'), '', d)}"
+
+python do_install_list_prepare(){
     import os
     import subprocess
 
     # write INSTALL_PKG_LISTS to a file for getting install pkg list when do_rootfs
     with open(f"{d.getVar('TOPDIR')}/cache/INSTALL_PKG_LIST", 'w', encoding='utf-8') as f:
         f.write(d.getVar('INSTALL_PKG_LISTS').replace(" ", "\n"))
-
-    d.setVar("ASSUME_PROVIDE_PKGS", d.getVar('INSTALL_PKG_LISTS'))
 }
+addtask do_install_list_prepare before do_download_oepkg

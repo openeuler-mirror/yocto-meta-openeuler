@@ -12,7 +12,6 @@ def get_package_details(base, package_name):
         "Checksum": pkg.chksum[1].hex()
     }
 
-
 fakeroot python do_make_rootfs_db(){
     import os
     import shutil
@@ -120,8 +119,18 @@ fakeroot python do_dnf_install_pkgs(){
         base.download_packages(base.transaction.install_set)
         base.do_transaction()
 
+    def run_cmd_with_cwd(cmd, cwd):
+        res = subprocess.run(cmd,
+                        shell=True,
+                        stderr=subprocess.PIPE,
+                        cwd=cwd,
+                        text=True)
+        if res.returncode != 0:
+                bb.fatal(res.stderr)
+
     cache_dir = f"{d.getVar('TOPDIR')}/cache/install_pkgs"
     force_list = []
+    real_list = []
     with open(f"{d.getVar('TOPDIR')}/cache/INSTALL_PKG_LIST", 'r', encoding='utf-8') as f:
         pkg_lists = f.read().replace("\n"," ")
         for pkg in pkg_lists.split():
@@ -130,6 +139,10 @@ fakeroot python do_dnf_install_pkgs(){
             if ":force" in pkg:
                 pkg = pkg.split(":")[0]
                 force_list.append(pkg)
+            if ":real" in pkg:
+                pkg = pkg.split(":")[0]
+                real_list.append(pkg)
+                continue
             install_pkg(d.getVar('IMAGE_ROOTFS'), cache_dir, pkg)
 
     base = init_base_common(DEFAULT_REPO_LIST)
@@ -165,8 +178,50 @@ fakeroot python do_dnf_install_pkgs(){
                     text=True)
         if res.returncode != 0:
             bb.fatal(res.stderr)
-}
 
+    repo_dir = d.getVar('IMAGE_ROOTFS') + "/etc/yum.repos.d"
+    os.makedirs(repo_dir, exist_ok=True)
+
+    openeuler_repo_path = f"{d.getVar('THISDIR')}/../../recipes-devtools/dnf/files/openEuler.repo"
+    if os.path.exists(openeuler_repo_path):
+        subprocess.run(f"cp {openeuler_repo_path} {repo_dir}",
+            shell=True,
+            cwd=repo_dir)
+        subprocess.run(f"sed -i 's/OPENEULER_VER/{d.getVar('SERVER_VERSION')}/g' openEuler.repo",
+            shell=True,
+            cwd=repo_dir)
+    else:
+        bb.error("openEuler.repo not found")
+
+    # do some prepare action
+    if len(real_list) > 0:
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 cp -rfP rootfs temp/", d.getVar("WORKDIR"))
+        run_cmd_with_cwd(f"getfacl -R rootfs > temp/rootfs_permission", d.getVar("WORKDIR"))
+        run_cmd_with_cwd(f"find rootfs -type l -printf '%u:%g %p\n' > temp/rootfs_softlink", d.getVar("WORKDIR"))
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo setfacl --restore=rootfs_permission", d.getVar("WORKDIR")+"/temp")
+        run_cmd_with_cwd(f"cat rootfs_softlink | while read -r o p;do PSEUDO_UNLOAD=1 sudo chown -h \"$o\" \"$p\"; done", d.getVar("WORKDIR")+"/temp")
+        real_list_str = " ".join(real_list)
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
+        {real_list_str} -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo getfacl -R rootfs > ../rootfs_permission", d.getVar("WORKDIR")+"/temp")
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo find rootfs -type l -printf '%u:%g %p\n' > ../rootfs_softlink", d.getVar("WORKDIR")+"/temp")
+        res = subprocess.run("stat -c '%u:%g' temp",
+                        shell=True,
+                        stderr=subprocess.PIPE,
+                        stdout=subprocess.PIPE,
+                        cwd=d.getVar("WORKDIR"),
+                        text=True)
+        if res.returncode != 0:
+            bb.fatal(res.stderr)
+        ugid = res.stdout.strip()
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs chown -R {ugid} /", d.getVar("WORKDIR"))
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs chmod -R 777 /", d.getVar("WORKDIR"))
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo rm -f temp/rootfs/root/.bash_history", d.getVar("WORKDIR"))
+        run_cmd_with_cwd(f"rm -rf ./rootfs", d.getVar("WORKDIR"))
+        run_cmd_with_cwd(f"cp -rfP temp/rootfs ./", d.getVar("WORKDIR"))
+        run_cmd_with_cwd(f"setfacl --restore=rootfs_permission", d.getVar("WORKDIR"))
+        run_cmd_with_cwd(f"cat rootfs_softlink | while read -r o p;do chown -h \"$o\" \"$p\"; done", d.getVar("WORKDIR"))
+}
 
 python do_run_post_action(){
     import os
@@ -191,23 +246,9 @@ python do_run_post_action(){
         ln_split = ln_line.split(":")
         if os.path.exists(os.path.join(d.getVar("IMAGE_ROOTFS"), ln_split[0])):
             subprocess.run(f"ln -s {ln_split[0]} {ln_split[1]}",shell=True,cwd=d.getVar("IMAGE_ROOTFS"),text=True)
-
-    repo_dir = d.getVar('IMAGE_ROOTFS') + "/etc/yum.repos.d"
-    os.makedirs(repo_dir, exist_ok=True)
-
-    openeuler_repo_path = f"{d.getVar('THISDIR')}/../../recipes-devtools/dnf/files/openEuler.repo"
-    if os.path.exists(openeuler_repo_path):
-        subprocess.run(f"cp {openeuler_repo_path} {repo_dir}",
-            shell=True,
-            cwd=repo_dir)
-        subprocess.run(f"sed -i 's/OPENEULER_VER/{d.getVar('SERVER_VERSION')}/g' openEuler.repo",
-            shell=True,
-            cwd=repo_dir)
-    else:
-        bb.error("openEuler.repo not found")
 }
 
-do_custom_install_prepare() {
+fakeroot do_custom_install_prepare() {
     # This is a workaround for the server environment where the chkconfig package (a low-level foundational 
     # software component) is provided. This package creates a symbolic link /etc/init.d, which conflicts with 
     # any existing physical /etc/init.d directory, preventing the installation of the chkconfig package.
@@ -222,30 +263,75 @@ do_custom_install_prepare() {
     if [ -d "${IMAGE_ROOTFS}/etc/init.d" ]; then
         mv ${IMAGE_ROOTFS}/etc/init.d ${IMAGE_ROOTFS}/etc/init.d-yocto-tmp
     fi
+    #  avoid chkconfig conflict with initscripts by rc5.d (physical vs softlink)
+    if [ -d "${IMAGE_ROOTFS}/etc/rc5.d" ]; then
+        mv ${IMAGE_ROOTFS}/etc/rc5.d ${IMAGE_ROOTFS}/etc/rc5.d-yocto-tmp
+    fi
+
+    # for dnf install, then shoud delete it
+    if [ ! -d "${IMAGE_ROOTFS}/var/volatile/log" ]; then
+        mkdir -p ${IMAGE_ROOTFS}/var/volatile/log
+    fi
+    if [ ! -d "${IMAGE_ROOTFS}/var/volatile/tmp" ]; then
+        mkdir -p ${IMAGE_ROOTFS}/var/volatile/tmp
+    fi
+
+    # backup ${IMAGE_ROOTFS}/etc/resolv.conf
+    if [ -f "${IMAGE_ROOTFS}/etc/resolv.conf" ] || [ -L "${IMAGE_ROOTFS}/etc/resolv.conf" ]; then
+        mv ${IMAGE_ROOTFS}/etc/resolv.conf ${IMAGE_ROOTFS}/etc/resolv.conf.bak
+    fi
+    cp -f /etc/resolv.conf ${IMAGE_ROOTFS}/etc/resolv.conf
 }
 
-do_custom_install_complete() {
+fakeroot do_custom_install_complete() {
     # workaround for pkg chkconfig conflict, restore /etc/init.d-yocto-tmp to /etc/init.d
     targetdir=$(readlink -f "${IMAGE_ROOTFS}/etc/init.d")
     if [ -d "$targetdir" ]; then
        # path or soft link path exist
-       mv ${IMAGE_ROOTFS}/etc/init.d-yocto-tmp/* ${IMAGE_ROOTFS}/etc/init.d
+       mv ${IMAGE_ROOTFS}/etc/init.d-yocto-tmp/* ${IMAGE_ROOTFS}/etc/init.d || true
        rm -r ${IMAGE_ROOTFS}/etc/init.d-yocto-tmp
     else
        # path or soft link path not exist
        mv ${IMAGE_ROOTFS}/etc/init.d-yocto-tmp ${IMAGE_ROOTFS}/etc/init.d
     fi
+
+    targetdir=$(readlink -f "${IMAGE_ROOTFS}/etc/rc5.d")
+    if [ -d "$targetdir" ]; then
+       # path or soft link path exist
+       mv ${IMAGE_ROOTFS}/etc/rc5.d-yocto-tmp/* ${IMAGE_ROOTFS}/etc/rc5.d || true
+       rm -r ${IMAGE_ROOTFS}/etc/rc5.d-yocto-tmp
+    else
+       # path or soft link path not exist
+       mv ${IMAGE_ROOTFS}/etc/rc5.d-yocto-tmp ${IMAGE_ROOTFS}/etc/rc5.d
+    fi
+
+    # delete log
+    if [ -d "${IMAGE_ROOTFS}/var/volatile/log" ]; then
+        rm -rf ${IMAGE_ROOTFS}/var/volatile/log
+    fi
+    if [ -d "${IMAGE_ROOTFS}/var/volatile/tmp" ]; then
+        rm -rf ${IMAGE_ROOTFS}/var/volatile/tmp
+    fi
+
+    # delete ${IMAGE_ROOTFS}/etc/resolv.conf
+    if [ -f "${IMAGE_ROOTFS}/etc/resolv.conf" ]; then
+        rm ${IMAGE_ROOTFS}/etc/resolv.conf
+    fi
+    # restore ${IMAGE_ROOTFS}/etc/resolv.conf.bak，to resolv.conf
+    if [ -f "${IMAGE_ROOTFS}/etc/resolv.conf.bak" ] || [ -L "${IMAGE_ROOTFS}/etc/resolv.conf.bak" ]; then
+        mv ${IMAGE_ROOTFS}/etc/resolv.conf.bak ${IMAGE_ROOTFS}/etc/resolv.conf
+    fi
 }
 
-do_dnf_install_pkgs:prepend() {
-    bb.build.exec_func('do_custom_install_prepare', d)
+do_oebridge_clean() {
+    sudo rm -rf ${WORKDIR}/temp/rootfs
 }
 
-do_dnf_install_pkgs:append() {
-    bb.build.exec_func('do_custom_install_complete', d)
-}
 
-# do_rootfs -> do_make_rootfs_db -> do_dnf_install_pkgs -> do_run_post_action -> do_image
+# do_rootfs -> do_make_rootfs_db -> do_custom_install_prepare -> do_dnf_install_pkgs -> do_custom_install_complete -> do_run_post_action -> do_image
 addtask do_make_rootfs_db after do_rootfs before do_dnf_install_pkgs
 addtask do_dnf_install_pkgs before do_run_post_action
 addtask do_run_post_action before do_image
+addtask do_custom_install_prepare before do_dnf_install_pkgs after do_make_rootfs_db
+addtask do_custom_install_complete after do_dnf_install_pkgs before do_run_post_action
+addtask do_oebridge_clean before do_clean
