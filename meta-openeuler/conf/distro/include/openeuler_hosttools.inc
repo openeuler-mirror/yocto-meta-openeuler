@@ -5,7 +5,7 @@
 HOSTTOOLS:remove = "chrpath cpp rpcgen"
 HOSTTOOLS_NONFATAL += "chrpath cpp rpcgen"
 # basic tools
-HOSTTOOLS += "python3 python pod2man pkg-config sgdisk"
+HOSTTOOLS += "pod2man pkg-config sgdisk"
 HOSTTOOLS_NONFATAL += "gnu-configize"
 # used by perl-native
 HOSTTOOLS_NONFATAL += "cc"
@@ -147,9 +147,6 @@ HOSTTOOLS_NONFATAL += " xsltproc "
 
 # used for building oci image and docker image
 HOSTTOOLS_NONFATAL += " umoci skopeo"
-
-# used for prepare project
-HOSTTOOLS += "unzstd"
 
 # used for rockchip uboot make.sh scripts
 HOSTTOOLS += "truncate fdtget"
