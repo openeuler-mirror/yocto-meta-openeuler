@@ -1,0 +1,65 @@
+From 36195637e5f8e3049f6e5f447c4d02579fe4bd73 Mon Sep 17 00:00:00 2001
+From: bbgod118 <hewenbin11@h-partners.com>
+Date: Mon, 8 Sep 2025 14:44:15 +0800
+Subject: [PATCH] kernel-support-pfp
+
+Signed-off-by: bbgod118 <hewenbin11@h-partners.com>
+---
+ Kconfig                | 6 ++++++
+ kernel/fork.c          | 2 ++
+ kernel/power/process.c | 4 ++++
+ 3 files changed, 12 insertions(+)
+
+diff --git a/Kconfig b/Kconfig
+index 745bc773f..c0daa73d7 100644
+--- a/Kconfig
++++ b/Kconfig
+@@ -30,3 +30,9 @@ source "lib/Kconfig"
+ source "lib/Kconfig.debug"
+ 
+ source "Documentation/Kconfig"
++
++config POWER_FAIL_PROTECTION
++	bool "Enable power fail protection"
++	default y
++	help
++	  Select 'y' to enable power fail protection.
+\ No newline at end of file
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 9b1ea79de..01dad276f 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -144,6 +144,8 @@ DEFINE_PER_CPU(unsigned long, process_counts) = 0;
+ 
+ __cacheline_aligned DEFINE_RWLOCK(tasklist_lock);  /* outer */
+ 
++EXPORT_SYMBOL_GPL(tasklist_lock);
++
+ #ifdef CONFIG_PROVE_RCU
+ int lockdep_tasklist_lock_is_held(void)
+ {
+diff --git a/kernel/power/process.c b/kernel/power/process.c
+index b9faa363c..f2b0255dc 100644
+--- a/kernel/power/process.c
++++ b/kernel/power/process.c
+@@ -159,6 +159,8 @@ int freeze_processes(void)
+ 	return error;
+ }
+ 
++EXPORT_SYMBOL(freeze_processes);
++
+ /**
+  * freeze_kernel_threads - Make freezable kernel threads go to the refrigerator.
+  *
+@@ -186,6 +188,8 @@ int freeze_kernel_threads(void)
+ 	return error;
+ }
+ 
++EXPORT_SYMBOL(freeze_kernel_threads);
++
+ void thaw_processes(void)
+ {
+ 	struct task_struct *g, *p;
+-- 
+2.34.1
+

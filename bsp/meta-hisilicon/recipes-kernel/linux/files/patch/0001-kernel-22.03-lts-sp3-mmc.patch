@@ -1,0 +1,511 @@
+From 1ad3ecb152300acaa7eb193d1c9d3fcce01212f4 Mon Sep 17 00:00:00 2001
+From: bbgod118 <hewenbin11@h-partners.com>
+Date: Mon, 8 Sep 2025 14:37:41 +0800
+Subject: [PATCH] kernel-22.03-lts-sp3-mmc
+
+Signed-off-by: bbgod118 <hewenbin11@h-partners.com>
+---
+ drivers/mmc/core/block.c | 48 +++++++++++++------------------------
+ drivers/mmc/core/bus.c   | 26 ++------------------
+ drivers/mmc/core/core.c  |  7 +-----
+ drivers/mmc/core/core.h  |  1 -
+ drivers/mmc/core/host.c  | 26 +++-----------------
+ drivers/mmc/core/mmc.c   | 52 ++++------------------------------------
+ drivers/mmc/core/sd.c    | 49 +++++++++++++++++++++----------------
+ drivers/mmc/core/sdio.c  |  4 +---
+ 8 files changed, 57 insertions(+), 156 deletions(-)
+
+diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
+index 71ecdb134..b41905683 100644
+--- a/drivers/mmc/core/block.c
++++ b/drivers/mmc/core/block.c
+@@ -169,7 +169,7 @@ static inline int mmc_blk_part_switch(struct mmc_card *card,
+ 				      unsigned int part_type);
+ static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
+ 			       struct mmc_card *card,
+-			       int recovery_mode,
++			       int disable_multi,
+ 			       struct mmc_queue *mq);
+ static void mmc_blk_hsq_req_done(struct mmc_request *mrq);
+ 
+@@ -1299,7 +1299,7 @@ static void mmc_blk_eval_resp_error(struct mmc_blk_request *brq)
+ }
+ 
+ static void mmc_blk_data_prep(struct mmc_queue *mq, struct mmc_queue_req *mqrq,
+-			      int recovery_mode, bool *do_rel_wr_p,
++			      int disable_multi, bool *do_rel_wr_p,
+ 			      bool *do_data_tag_p)
+ {
+ 	struct mmc_blk_data *md = mq->blkdata;
+@@ -1363,12 +1363,12 @@ static void mmc_blk_data_prep(struct mmc_queue *mq, struct mmc_queue_req *mqrq,
+ 			brq->data.blocks--;
+ 
+ 		/*
+-		 * After a read error, we redo the request one (native) sector
++		 * After a read error, we redo the request one sector
+ 		 * at a time in order to accurately determine which
+ 		 * sectors can be read successfully.
+ 		 */
+-		if (recovery_mode)
+-			brq->data.blocks = queue_physical_block_size(mq->queue) >> 9;
++		if (disable_multi)
++			brq->data.blocks = 1;
+ 
+ 		/*
+ 		 * Some controllers have HW issues while operating
+@@ -1496,7 +1496,8 @@ void mmc_blk_cqe_recovery(struct mmc_queue *mq)
+ 	err = mmc_cqe_recovery(host);
+ 	if (err)
+ 		mmc_blk_reset(mq->blkdata, host, MMC_BLK_CQE_RECOVERY);
+-	mmc_blk_reset_success(mq->blkdata, MMC_BLK_CQE_RECOVERY);
++	else
++		mmc_blk_reset_success(mq->blkdata, MMC_BLK_CQE_RECOVERY);
+ 
+ 	pr_debug("%s: CQE recovery done\n", mmc_hostname(host));
+ }
+@@ -1587,7 +1588,7 @@ static int mmc_blk_cqe_issue_rw_rq(struct mmc_queue *mq, struct request *req)
+ 
+ static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
+ 			       struct mmc_card *card,
+-			       int recovery_mode,
++			       int disable_multi,
+ 			       struct mmc_queue *mq)
+ {
+ 	u32 readcmd, writecmd;
+@@ -1596,7 +1597,7 @@ static void mmc_blk_rw_rq_prep(struct mmc_queue_req *mqrq,
+ 	struct mmc_blk_data *md = mq->blkdata;
+ 	bool do_rel_wr, do_data_tag;
+ 
+-	mmc_blk_data_prep(mq, mqrq, recovery_mode, &do_rel_wr, &do_data_tag);
++	mmc_blk_data_prep(mq, mqrq, disable_multi, &do_rel_wr, &do_data_tag);
+ 
+ 	brq->mrq.cmd = &brq->cmd;
+ 
+@@ -1687,7 +1688,7 @@ static int mmc_blk_fix_state(struct mmc_card *card, struct request *req)
+ 
+ #define MMC_READ_SINGLE_RETRIES	2
+ 
+-/* Single (native) sector read during recovery */
++/* Single sector read during recovery */
+ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
+ {
+ 	struct mmc_queue_req *mqrq = req_to_mmc_queue_req(req);
+@@ -1695,7 +1696,6 @@ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
+ 	struct mmc_card *card = mq->card;
+ 	struct mmc_host *host = card->host;
+ 	blk_status_t error = BLK_STS_OK;
+-	size_t bytes_per_read = queue_physical_block_size(mq->queue);
+ 
+ 	do {
+ 		u32 status;
+@@ -1730,13 +1730,13 @@ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
+ 		else
+ 			error = BLK_STS_OK;
+ 
+-	} while (blk_update_request(req, error, bytes_per_read));
++	} while (blk_update_request(req, error, 512));
+ 
+ 	return;
+ 
+ error_exit:
+ 	mrq->data->bytes_xfered = 0;
+-	blk_update_request(req, BLK_STS_IOERR, bytes_per_read);
++	blk_update_request(req, BLK_STS_IOERR, 512);
+ 	/* Let it try the remaining request again */
+ 	if (mqrq->retries > MMC_MAX_RETRIES - 1)
+ 		mqrq->retries = MMC_MAX_RETRIES - 1;
+@@ -1877,9 +1877,9 @@ static void mmc_blk_mq_rw_recovery(struct mmc_queue *mq, struct request *req)
+ 		return;
+ 	}
+ 
+-	if (rq_data_dir(req) == READ && brq->data.blocks >
+-			queue_physical_block_size(mq->queue) >> 9) {
+-		/* Read one (native) sector at a time */
++	if (!mmc_large_sector(card) && rq_data_dir(req) == READ &&
++	    brq->data.blocks > 1) {
++		/* Read one sector at a time */
+ 		mmc_blk_read_single(mq, req);
+ 		return;
+ 	}
+@@ -3057,27 +3057,11 @@ static void mmc_blk_shutdown(struct mmc_card *card)
+ #ifdef CONFIG_PM_SLEEP
+ static int mmc_blk_suspend(struct device *dev)
+ {
+-	struct mmc_card *card = mmc_dev_to_card(dev);
+-
+-	return _mmc_blk_suspend(card);
++	return 0;
+ }
+ 
+ static int mmc_blk_resume(struct device *dev)
+ {
+-	struct mmc_blk_data *part_md;
+-	struct mmc_blk_data *md = dev_get_drvdata(dev);
+-
+-	if (md) {
+-		/*
+-		 * Resume involves the card going into idle state,
+-		 * so current partition is always the main one.
+-		 */
+-		md->part_curr = md->part_type;
+-		mmc_queue_resume(&md->queue);
+-		list_for_each_entry(part_md, &md->part, part) {
+-			mmc_queue_resume(&part_md->queue);
+-		}
+-	}
+ 	return 0;
+ }
+ #endif
+diff --git a/drivers/mmc/core/bus.c b/drivers/mmc/core/bus.c
+index 4383c262b..68735f6e0 100644
+--- a/drivers/mmc/core/bus.c
++++ b/drivers/mmc/core/bus.c
+@@ -171,34 +171,12 @@ static void mmc_bus_shutdown(struct device *dev)
+ #ifdef CONFIG_PM_SLEEP
+ static int mmc_bus_suspend(struct device *dev)
+ {
+-	struct mmc_card *card = mmc_dev_to_card(dev);
+-	struct mmc_host *host = card->host;
+-	int ret;
+-
+-	ret = pm_generic_suspend(dev);
+-	if (ret)
+-		return ret;
+-
+-	ret = host->bus_ops->suspend(host);
+-	if (ret)
+-		pm_generic_resume(dev);
+-
+-	return ret;
++	return 0;
+ }
+ 
+ static int mmc_bus_resume(struct device *dev)
+ {
+-	struct mmc_card *card = mmc_dev_to_card(dev);
+-	struct mmc_host *host = card->host;
+-	int ret;
+-
+-	ret = host->bus_ops->resume(host);
+-	if (ret)
+-		pr_warn("%s: error %d during resume (card was removed?)\n",
+-			mmc_hostname(host), ret);
+-
+-	ret = pm_generic_resume(dev);
+-	return ret;
++	return 0;
+ }
+ #endif
+ 
+diff --git a/drivers/mmc/core/core.c b/drivers/mmc/core/core.c
+index d5ca59bd1..44827cef5 100644
+--- a/drivers/mmc/core/core.c
++++ b/drivers/mmc/core/core.c
+@@ -2343,7 +2343,7 @@ void mmc_start_host(struct mmc_host *host)
+ 	_mmc_detect_change(host, 0, false);
+ }
+ 
+-void __mmc_stop_host(struct mmc_host *host)
++void mmc_stop_host(struct mmc_host *host)
+ {
+ 	if (host->slot.cd_irq >= 0) {
+ 		mmc_gpio_set_cd_wake(host, false);
+@@ -2352,11 +2352,6 @@ void __mmc_stop_host(struct mmc_host *host)
+ 
+ 	host->rescan_disable = 1;
+ 	cancel_delayed_work_sync(&host->detect);
+-}
+-
+-void mmc_stop_host(struct mmc_host *host)
+-{
+-	__mmc_stop_host(host);
+ 
+ 	/* clear pm flags now and let card drivers set them as needed */
+ 	host->pm_flags = 0;
+diff --git a/drivers/mmc/core/core.h b/drivers/mmc/core/core.h
+index a6c814fdb..db3c9c688 100644
+--- a/drivers/mmc/core/core.h
++++ b/drivers/mmc/core/core.h
+@@ -69,7 +69,6 @@ static inline void mmc_delay(unsigned int ms)
+ 
+ void mmc_rescan(struct work_struct *work);
+ void mmc_start_host(struct mmc_host *host);
+-void __mmc_stop_host(struct mmc_host *host);
+ void mmc_stop_host(struct mmc_host *host);
+ 
+ void _mmc_detect_change(struct mmc_host *host, unsigned long delay,
+diff --git a/drivers/mmc/core/host.c b/drivers/mmc/core/host.c
+index b949a4468..a2bbab1d5 100644
+--- a/drivers/mmc/core/host.c
++++ b/drivers/mmc/core/host.c
+@@ -65,7 +65,7 @@ static const struct dev_pm_ops mmc_host_class_dev_pm_ops = {
+ 	.complete = mmc_host_class_complete,
+ };
+ 
+-#define MMC_HOST_CLASS_DEV_PM_OPS (&mmc_host_class_dev_pm_ops)
++#define MMC_HOST_CLASS_DEV_PM_OPS NULL
+ #else
+ #define MMC_HOST_CLASS_DEV_PM_OPS NULL
+ #endif
+@@ -79,18 +79,9 @@ static void mmc_host_classdev_release(struct device *dev)
+ 	kfree(host);
+ }
+ 
+-static int mmc_host_classdev_shutdown(struct device *dev)
+-{
+-	struct mmc_host *host = cls_dev_to_mmc_host(dev);
+-
+-	__mmc_stop_host(host);
+-	return 0;
+-}
+-
+ static struct class mmc_host_class = {
+ 	.name		= "mmc_host",
+ 	.dev_release	= mmc_host_classdev_release,
+-	.shutdown_pre	= mmc_host_classdev_shutdown,
+ 	.pm		= MMC_HOST_CLASS_DEV_PM_OPS,
+ };
+ 
+@@ -539,16 +530,6 @@ struct mmc_host *devm_mmc_alloc_host(struct device *dev, int extra)
+ }
+ EXPORT_SYMBOL(devm_mmc_alloc_host);
+ 
+-static int mmc_validate_host_caps(struct mmc_host *host)
+-{
+-	if (host->caps & MMC_CAP_SDIO_IRQ && !host->ops->enable_sdio_irq) {
+-		dev_warn(host->parent, "missing ->enable_sdio_irq() ops\n");
+-		return -EINVAL;
+-	}
+-
+-	return 0;
+-}
+-
+ /**
+  *	mmc_add_host - initialise host hardware
+  *	@host: mmc host
+@@ -561,9 +542,8 @@ int mmc_add_host(struct mmc_host *host)
+ {
+ 	int err;
+ 
+-	err = mmc_validate_host_caps(host);
+-	if (err)
+-		return err;
++	WARN_ON((host->caps & MMC_CAP_SDIO_IRQ) &&
++		!host->ops->enable_sdio_irq);
+ 
+ 	err = device_add(&host->class_dev);
+ 	if (err)
+diff --git a/drivers/mmc/core/mmc.c b/drivers/mmc/core/mmc.c
+index 2059cd226..6866288c8 100644
+--- a/drivers/mmc/core/mmc.c
++++ b/drivers/mmc/core/mmc.c
+@@ -1380,17 +1380,13 @@ static int mmc_select_hs400es(struct mmc_card *card)
+ 		goto out_err;
+ 	}
+ 
+-	/*
+-	 * Bump to HS timing and frequency. Some cards don't handle
+-	 * SEND_STATUS reliably at the initial frequency.
+-	 */
+ 	mmc_set_timing(host, MMC_TIMING_MMC_HS);
+-	mmc_set_bus_speed(card);
+-
+ 	err = mmc_switch_status(card, true);
+ 	if (err)
+ 		goto out_err;
+ 
++	mmc_set_clock(host, card->ext_csd.hs_max_dtr);
++
+ 	/* Switch card to DDR with strobe bit */
+ 	val = EXT_CSD_DDR_BUS_WIDTH_8 | EXT_CSD_BUS_WIDTH_STROBE;
+ 	err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
+@@ -1448,7 +1444,7 @@ static int mmc_select_hs400es(struct mmc_card *card)
+ static int mmc_select_hs200(struct mmc_card *card)
+ {
+ 	struct mmc_host *host = card->host;
+-	unsigned int old_timing, old_signal_voltage, old_clock;
++	unsigned int old_timing, old_signal_voltage;
+ 	int err = -EINVAL;
+ 	u8 val;
+ 
+@@ -1479,17 +1475,8 @@ static int mmc_select_hs200(struct mmc_card *card)
+ 				   false, true);
+ 		if (err)
+ 			goto err;
+-
+-		/*
+-		 * Bump to HS timing and frequency. Some cards don't handle
+-		 * SEND_STATUS reliably at the initial frequency.
+-		 * NB: We can't move to full (HS200) speeds until after we've
+-		 * successfully switched over.
+-		 */
+ 		old_timing = host->ios.timing;
+-		old_clock = host->ios.clock;
+ 		mmc_set_timing(host, MMC_TIMING_MMC_HS200);
+-		mmc_set_clock(card->host, card->ext_csd.hs_max_dtr);
+ 
+ 		/*
+ 		 * For HS200, CRC errors are not a reliable way to know the
+@@ -1502,10 +1489,8 @@ static int mmc_select_hs200(struct mmc_card *card)
+ 		 * mmc_select_timing() assumes timing has not changed if
+ 		 * it is a switch error.
+ 		 */
+-		if (err == -EBADMSG) {
+-			mmc_set_clock(host, old_clock);
++		if (err == -EBADMSG)
+ 			mmc_set_timing(host, old_timing);
+-		}
+ 	}
+ err:
+ 	if (err) {
+@@ -1832,34 +1817,7 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
+ 		}
+ 	}
+ 
+-	/*
+-	 * If cache size is higher than 0, this indicates the existence of cache
+-	 * and it can be turned on. Note that some eMMCs from Micron has been
+-	 * reported to need ~800 ms timeout, while enabling the cache after
+-	 * sudden power failure tests. Let's extend the timeout to a minimum of
+-	 * DEFAULT_CACHE_EN_TIMEOUT_MS and do it for all cards.
+-	 */
+-	if (card->ext_csd.cache_size > 0) {
+-		unsigned int timeout_ms = MIN_CACHE_EN_TIMEOUT_MS;
+-
+-		timeout_ms = max(card->ext_csd.generic_cmd6_time, timeout_ms);
+-		err = mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
+-				EXT_CSD_CACHE_CTRL, 1, timeout_ms);
+-		if (err && err != -EBADMSG)
+-			goto free_card;
+-
+-		/*
+-		 * Only if no error, cache is turned on successfully.
+-		 */
+-		if (err) {
+-			pr_warn("%s: Cache is supported, but failed to turn on (%d)\n",
+-				mmc_hostname(card->host), err);
+-			card->ext_csd.cache_ctrl = 0;
+-			err = 0;
+-		} else {
+-			card->ext_csd.cache_ctrl = 1;
+-		}
+-	}
++	card->ext_csd.cache_ctrl = 0;
+ 
+ 	/*
+ 	 * Enable Command Queue if supported. Note that Packed Commands cannot
+diff --git a/drivers/mmc/core/sd.c b/drivers/mmc/core/sd.c
+index 868b121ce..bac343a8d 100644
+--- a/drivers/mmc/core/sd.c
++++ b/drivers/mmc/core/sd.c
+@@ -853,8 +853,7 @@ int mmc_sd_get_cid(struct mmc_host *host, u32 ocr, u32 *cid, u32 *rocr)
+ 	 * the CCS bit is set as well. We deliberately deviate from the spec in
+ 	 * regards to this, which allows UHS-I to be supported for SDSC cards.
+ 	 */
+-	if (!mmc_host_is_spi(host) && (ocr & SD_OCR_S18R) &&
+-	    rocr && (*rocr & SD_ROCR_S18A)) {
++	if (!mmc_host_is_spi(host) && rocr && (*rocr & 0x01000000)) {
+ 		err = mmc_set_uhs_voltage(host, pocr);
+ 		if (err == -EAGAIN) {
+ 			retries--;
+@@ -933,15 +932,14 @@ int mmc_sd_setup_card(struct mmc_host *host, struct mmc_card *card,
+ 
+ 		/* Erase init depends on CSD and SSR */
+ 		mmc_init_erase(card);
+-	}
+ 
+-	/*
+-	 * Fetch switch information from card. Note, sd3_bus_mode can change if
+-	 * voltage switch outcome changes, so do this always.
+-	 */
+-	err = mmc_read_switch(card);
+-	if (err)
+-		return err;
++		/*
++		 * Fetch switch information from card.
++		 */
++		err = mmc_read_switch(card);
++		if (err)
++			return err;
++	}
+ 
+ 	/*
+ 	 * For SPI, enable CRC as appropriate.
+@@ -1091,15 +1089,26 @@ static int mmc_sd_init_card(struct mmc_host *host, u32 ocr,
+ 	if (!v18_fixup_failed && !mmc_host_is_spi(host) && mmc_host_uhs(host) &&
+ 	    mmc_sd_card_using_v18(card) &&
+ 	    host->ios.signal_voltage != MMC_SIGNAL_VOLTAGE_180) {
+-		if (mmc_host_set_uhs_voltage(host) ||
+-		    mmc_sd_init_uhs_card(card)) {
+-			v18_fixup_failed = true;
+-			mmc_power_cycle(host, ocr);
+-			if (!oldcard)
+-				mmc_remove_card(card);
+-			goto retry;
++		/*
++		 * Re-read switch information in case it has changed since
++		 * oldcard was initialized.
++		 */
++		if (oldcard) {
++			err = mmc_read_switch(card);
++			if (err)
++				goto free_card;
++		}
++		if (mmc_sd_card_using_v18(card)) {
++			if (mmc_host_set_uhs_voltage(host) ||
++			    mmc_sd_init_uhs_card(card)) {
++				v18_fixup_failed = true;
++				mmc_power_cycle(host, ocr);
++				if (!oldcard)
++					mmc_remove_card(card);
++				goto retry;
++			}
++			goto done;
+ 		}
+-		goto cont;
+ 	}
+ 
+ 	/* Initialization sequence for UHS-I cards */
+@@ -1134,7 +1143,7 @@ static int mmc_sd_init_card(struct mmc_host *host, u32 ocr,
+ 			mmc_set_bus_width(host, MMC_BUS_WIDTH_4);
+ 		}
+ 	}
+-cont:
++
+ 	if (host->cqe_ops && !host->cqe_enabled) {
+ 		err = host->cqe_ops->cqe_enable(host, card);
+ 		if (!err) {
+@@ -1152,7 +1161,7 @@ static int mmc_sd_init_card(struct mmc_host *host, u32 ocr,
+ 		err = -EINVAL;
+ 		goto free_card;
+ 	}
+-
++done:
+ 	host->card = card;
+ 	return 0;
+ 
+diff --git a/drivers/mmc/core/sdio.c b/drivers/mmc/core/sdio.c
+index 85c2947ed..19633b42a 100644
+--- a/drivers/mmc/core/sdio.c
++++ b/drivers/mmc/core/sdio.c
+@@ -708,8 +708,6 @@ static int mmc_sdio_init_card(struct mmc_host *host, u32 ocr,
+ 	if (host->ops->init_card)
+ 		host->ops->init_card(host, card);
+ 
+-	card->ocr = ocr_card;
+-
+ 	/*
+ 	 * If the host and card support UHS-I mode request the card
+ 	 * to switch to 1.8V signaling level.  No 1.8v signalling if
+@@ -822,7 +820,7 @@ static int mmc_sdio_init_card(struct mmc_host *host, u32 ocr,
+ 			goto mismatch;
+ 		}
+ 	}
+-
++	card->ocr = ocr_card;
+ 	mmc_fixup_device(card, sdio_fixup_methods);
+ 
+ 	if (card->type == MMC_TYPE_SD_COMBO) {
+-- 
+2.34.1
+
