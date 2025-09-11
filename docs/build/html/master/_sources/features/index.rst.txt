@@ -10,6 +10,7 @@
 
    mica/index.rst
    ros.rst
+   oebridge.rst
    epkg.rst
    muslc.rst
    distributed_softbus.rst
