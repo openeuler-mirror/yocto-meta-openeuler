@@ -264,10 +264,12 @@ fakeroot do_custom_install_prepare() {
         mv ${IMAGE_ROOTFS}/etc/init.d ${IMAGE_ROOTFS}/etc/init.d-yocto-tmp
     fi
     #  avoid chkconfig conflict with initscripts by rc5.d (physical vs softlink)
-    if [ -d "${IMAGE_ROOTFS}/etc/rc5.d" ]; then
-        mv ${IMAGE_ROOTFS}/etc/rc5.d ${IMAGE_ROOTFS}/etc/rc5.d-yocto-tmp
-    fi
-
+    for level in {0..6}; do
+        if [ -d "${IMAGE_ROOTFS}/etc/rc${level}.d" ]; then
+            mv "${IMAGE_ROOTFS}/etc/rc${level}.d" "${IMAGE_ROOTFS}/etc/rc${level}.d-yocto-tmp"
+        fi
+    done
+    
     # for dnf install, then shoud delete it
     if [ ! -d "${IMAGE_ROOTFS}/var/volatile/log" ]; then
         mkdir -p ${IMAGE_ROOTFS}/var/volatile/log
@@ -288,22 +290,24 @@ fakeroot do_custom_install_complete() {
     targetdir=$(readlink -f "${IMAGE_ROOTFS}/etc/init.d")
     if [ -d "$targetdir" ]; then
        # path or soft link path exist
-       mv ${IMAGE_ROOTFS}/etc/init.d-yocto-tmp/* ${IMAGE_ROOTFS}/etc/init.d || true
-       rm -r ${IMAGE_ROOTFS}/etc/init.d-yocto-tmp
+       mv ${IMAGE_ROOTFS}/etc/init.d-yocto-tmp/* ${IMAGE_ROOTFS}/etc/init.d 2>/dev/null || true
+       rm -rf ${IMAGE_ROOTFS}/etc/init.d-yocto-tmp
     else
        # path or soft link path not exist
-       mv ${IMAGE_ROOTFS}/etc/init.d-yocto-tmp ${IMAGE_ROOTFS}/etc/init.d
+       mv ${IMAGE_ROOTFS}/etc/init.d-yocto-tmp ${IMAGE_ROOTFS}/etc/init.d 2>/dev/null || true
     fi
 
-    targetdir=$(readlink -f "${IMAGE_ROOTFS}/etc/rc5.d")
-    if [ -d "$targetdir" ]; then
-       # path or soft link path exist
-       mv ${IMAGE_ROOTFS}/etc/rc5.d-yocto-tmp/* ${IMAGE_ROOTFS}/etc/rc5.d || true
-       rm -r ${IMAGE_ROOTFS}/etc/rc5.d-yocto-tmp
-    else
-       # path or soft link path not exist
-       mv ${IMAGE_ROOTFS}/etc/rc5.d-yocto-tmp ${IMAGE_ROOTFS}/etc/rc5.d
-    fi
+    for level in {0..6}; do
+        targetdir=$(readlink -f "${IMAGE_ROOTFS}/etc/rc${level}.d")
+        if [ -d "$targetdir" ]; then
+            # path or soft link path exist
+            mv ${IMAGE_ROOTFS}/etc/rc${level}.d-yocto-tmp/* ${IMAGE_ROOTFS}/etc/rc${level}.d 2>/dev/null || true
+            rm -rf ${IMAGE_ROOTFS}/etc/rc${level}.d-yocto-tmp
+        else
+            # path or soft link path not exist
+            mv ${IMAGE_ROOTFS}/etc/rc${level}.d-yocto-tmp ${IMAGE_ROOTFS}/etc/rc${level}.d 2>/dev/null || true
+        fi
+    done
 
     # delete log
     if [ -d "${IMAGE_ROOTFS}/var/volatile/log" ]; then
