@@ -1,22 +1,34 @@
 STAGES_RES = []
-OEBUILD_DIR = "/home/jenkins/oebuild_workspace"
-AGENT = "/home/jenkins/agent"
-LOG_DIR = "openeuler/logs"
-YOCTO_NAME = "yocto-meta-openeuler"
+class Config{
+    static final String OEBUILD_DIR = "/home/jenkins/oebuild_workspace"
+    static final String AGENT = "/home/jenkins/agent"
+    static final String LOG_DIR = "openeuler/logs"
+    static final String YOCTO_NAME = "yocto-meta-openeuler"
+}
+
+def getConfig(String key){
+    return Config."${key}"
+}
 
 def downloadEmbeddedCI(String remote_url, String branch){
     sh 'rm -rf embedded-ci'
     sh "git clone ${remote_url} -b ${branch} -v embedded-ci --depth=1"
 }
 
-def downloadYoctoWithBranch(String workspace, String repo_remote, String branch, Integer deepth){
+def downloadYoctoWithBranch(String workspace,
+                        String repo_remote,
+                        String branch,
+                        Integer deepth){
     dir(workspace){
         sh 'rm -rf yocto-meta-openeuler'
         sh "git clone ${repo_remote} -b ${branch} --depth=${deepth}"
     }
 }
 
-def downloadYoctoWithPr(String workspace, String repo_remote, Integer prnum, Integer deepth){
+def downloadYoctoWithPr(String workspace,
+                    String repo_remote,
+                    Integer prnum,
+                    Integer deepth){
     dir(workspace){
         sh 'rm -rf yocto-meta-openeuler'
     }
@@ -24,7 +36,7 @@ def downloadYoctoWithPr(String workspace, String repo_remote, Integer prnum, Int
         python3 main.py clone_repo \
         -w ${workspace} \
         -r ${repo_remote} \
-        -p ${YOCTO_NAME} \
+        -p ${Config.YOCTO_NAME} \
         -pr ${prnum} \
         -dp ${deepth}
     """
@@ -59,7 +71,10 @@ def split_build(String build_images, String parallel_str_num){
     return build_list
 }
 
-def formatRes(String name, String action, String check_res, String log_path){
+def formatRes(String name,
+            String action,
+            String check_res,
+            String log_path){
     return sh (script: """
         python3 main.py serial \
             -c name=${name} \
@@ -82,15 +97,15 @@ def getRandomStr(){
 }
 
 def mkdirOpeneulerLog(){
-    dir(AGENT){
-        sh "mkdir -p ${LOG_DIR}"
+    dir(Config.AGENT){
+        sh "mkdir -p ${Config.LOG_DIR}"
     }
 }
 
 def artifactsLogs(){
-    dir(AGENT){
-        sh "ls -al ${LOG_DIR}"
-        archiveArtifacts artifacts: "${LOG_DIR}/*.log", fingerprint: true
+    dir(Config.AGENT){
+        sh "ls -al ${Config.LOG_DIR}"
+        archiveArtifacts artifacts: "${Config.LOG_DIR}/*.log", fingerprint: true
     }
 }
 
@@ -100,24 +115,59 @@ def getNowDatetime(){
     """, returnStdout: true).trim()
 }
 
-def uploadTarImageWithKey(String remote_ip, String remote_dir, String username, String remote_key, String local_dir){
+def uploadTarImageWithKey(String remote_ip,
+                        String remote_port,
+                        String remote_dir,
+                        String username,
+                        String remote_key,
+                        String local_dir){
     sh """
         timestamp=`basename ${local_dir}`
         dir_name=`dirname ${local_dir}`
         cd \${dir_name}
         tar zcf \${timestamp}.tar.gz \${timestamp}
-        ssh -i ${remote_key} -o 'StrictHostKeyChecking no' ${username}@${remote_ip} "mkdir -p ${remote_dir}"
-        scp -i ${remote_key} -o 'StrictHostKeyChecking no' \${timestamp}.tar.gz ${username}@${remote_ip}:${remote_dir}
+        ssh -i ${remote_key} -p ${remote_port} -o 'StrictHostKeyChecking no' ${username}@${remote_ip} "mkdir -p ${remote_dir}"
+        scp -i ${remote_key} -p ${remote_port} -o 'StrictHostKeyChecking no' \${timestamp}.tar.gz ${username}@${remote_ip}:${remote_dir}
     """
 }
 
-def uploadImageWithKey(String remote_ip, String remote_dir, String username, String remote_key, String local_dir){
+def uploadTarImageWithUserName(String remote_ip,
+                            String remote_port,
+                            String remote_dir,
+                            String username,
+                            String remote_pwd,
+                            String local_dir){
+    sh """
+        timestamp=`basename ${local_dir}`
+        dir_name=`dirname ${local_dir}`
+        pushd \${dir_name}
+        tar zcf \${timestamp}.tar.gz \${timestamp}
+        popd
+
+        python3 main.py put_to_dst \
+            -t 0 \
+            -ld $local_dir/../\${timestamp}.tar.gz \
+            -dd $remote_dir \
+            -i $remote_ip \
+            -p $remote_port \
+            -u $username \
+            -w $remote_pwd
+    """
+}
+
+def uploadImageWithKey(String remote_ip,
+                        String remote_port,
+                        String remote_dir,
+                        String username,
+                        String remote_key,
+                        String local_dir){
     sh """
         python3 main.py put_to_dst \
         -t 0 \
+        -i $remote_ip \
+        -p $remote_port \
         -ld $local_dir \
         -dd $remote_dir \
-        -i $remote_ip \
         -u $username \
         -k $remote_key \
         -sign \
@@ -134,24 +184,65 @@ def putSStateCacheToDst(String local_dir, String dst_dir){
     """
 }
 
-def uploadLogWithKey(String remote_ip, String remote_dir, String username, String remote_key, String local_path){
+def uploadLogWithKey(String remote_ip,
+                    String remote_dir,
+                    String username,
+                    String remote_key,
+                    String local_path){
     sh """
         scp -i ${remote_key} -o 'StrictHostKeyChecking no' ${local_path} ${username}@${remote_ip}:${remote_dir}
     """
 }
 
+def uploadLogWithUserName(String remote_ip,
+                        String remote_port,
+                        String remote_dir,
+                        String username,
+                        String remote_pwd,
+                        String local_path){
+    sh """
+        python3 main.py put_to_dst \
+        -t 0 \
+        -ld $local_path \
+        -dd $remote_dir \
+        -i $remote_ip \
+        -p $remote_port \
+        -u $username \
+        -w $remote_pwd
+    """
+}
+
 def handleLog(String log_file){
-    log_path = "${LOG_DIR}/${log_file}"
+    def log_path = "${Config.LOG_DIR}/${log_file}"
     if (env.isUploadLog != null && env.isUploadLog == "true"){
-        withCredentials([
-            file(credentialsId: openEulerLogRemoteKey, variable: 'openEulerLogKey')
-        ]){
-            def local_log_path = "${AGENT}/${log_path}"
-            uploadLogWithKey(openEulerLogRemoteIP,
-                            openEulerLogRemoteDir,
-                            openEulerLogRemoteUser,
-                            openEulerLogKey,
-                            local_log_path)
+        if (env.openEulerLogCreditType == "UserKey"){
+            withCredentials([
+                file(credentialsId: openEulerLogRemoteId, variable: 'openEulerLogKey')
+            ]){
+                def local_log_path = "${Config.AGENT}/${log_path}"
+                uploadLogWithKey(openEulerLogRemoteIP,
+                                openEulerLogRemoteDir,
+                                openEulerLogRemoteUser,
+                                openEulerLogKey,
+                                local_log_path)
+            }
+        }
+
+        if (env.openEulerLogCreditType == "UserPwd"){
+            withCredentials([
+                usernamePassword(
+                    credentialsId: openEulerLogRemoteId,
+                    usernameVariable: 'openEulerLogUser',
+                    passwordVariable: 'openEulerLogPwd')
+            ]){
+                def local_log_path = "${Config.AGENT}/${log_path}"
+                uploadLogWithUserName(openEulerLogRemoteIP,
+                                openEulerLogRemotePort,
+                                openEulerLogRemoteDir,
+                                openEulerLogUser,
+                                openEulerLogPwd,
+                                local_log_path)
+            }
         }
         log_path = "${openEulerLogRemoteUrl}/${log_file}"
     }else{
@@ -173,15 +264,35 @@ def handleAfterBuildImage(String image_name,
         if (env.isUploadImg != null && env.isUploadImg == "true"){
             // put the image to remote server
             def remote_dir = openEulerImgRemoteDir+"/${arch}/${image_name}"
-            def local_dir = "${OEBUILD_DIR}/build/${image_name}/output/${image_date}/"
-            withCredentials([
-                file(credentialsId: env.openEulerImgRemoteKey, variable: 'openEulerImgKey')
-            ]){
-                uploadTarImageWithKey(openEulerImgRemoteIP,
-                                remote_dir,
-                                openEulerImgRemoteUser,
-                                openEulerImgKey,
-                                local_dir)
+            def local_dir = "${Config.OEBUILD_DIR}/build/${image_name}/output/${image_date}/"
+            if (env.openEulerImgCreditType == "UserKey"){
+                withCredentials([
+                    file(credentialsId: env.openEulerImgRemoteId, variable: 'openEulerImgKey')
+                ]){
+                    uploadImageWithKey(
+                        openEulerImgRemoteIP,
+                        remote_dir,
+                        openEulerImgRemoteUser,
+                        openEulerImgKey,
+                        local_dir)
+                }
+            }
+            if (env.openEulerImgCreditType == "UserPwd"){
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: openEulerImgRemoteId,
+                        usernameVariable: 'openEulerImgUser',
+                        passwordVariable: 'openEulerImgPwd')
+                ]){
+                    uploadTarImageWithUserName(
+                        openEulerImgRemoteIP,
+                        openEulerImgRemotePort,
+                        remote_dir,
+                        openEulerImgUser,
+                        openEulerImgPwd,
+                        local_dir
+                    )
+                }
             }
         }
         if (env.isSaveCache != null && env.isSaveCache == "true"){
@@ -190,7 +301,7 @@ def handleAfterBuildImage(String image_name,
             // sstate_origin_dir, we first copy it to a temporary folder (during copying,
             // soft links are defaulted to copy the actual files they point to), then delete
             // the source folder, and finally perform an mv operation.
-            def sstate_local_dir = "${OEBUILD_DIR}/build/${image_name}/sstate-cache"
+            def sstate_local_dir = "${Config.OEBUILD_DIR}/build/${image_name}/sstate-cache"
             def sstate_dst_dir = "${shareDir}/${ciBranch}/sstate-cache/${image_name}-temp"
             putSStateCacheToDst(sstate_local_dir, sstate_dst_dir)
             def sstate_origin_dir = "${shareDir}/${ciBranch}/sstate-cache/${image_name}"
@@ -206,23 +317,23 @@ def handleAfterBuildImage(String image_name,
                     python3 main.py utest \
                     -target openeuler_image \
                     -a ${arch} \
-                    -td ${OEBUILD_DIR}/build/${image_name} \
+                    -td ${Config.OEBUILD_DIR}/build/${image_name} \
                     -tm ${mugenRemote} \
-                    -tb ${mugenBranch} > ${AGENT}/${LOG_DIR}/Test-${image_name}-${random_str}.log
+                    -tb ${mugenBranch} > ${Config.AGENT}/${Config.LOG_DIR}/Test-${image_name}-${random_str}.log
                 """, returnStatus: true)
                 if (test_res_code == 0){
                     test_res = "success"
                 }
-                log_file = "Test-${image_name}-${random_str}.log"
-                log_path = handleLog(log_file)
+                def log_file = "Test-${image_name}-${random_str}.log"
+                def log_path = handleLog(log_file)
                 STAGES_RES.push(formatRes(image_name, "test", test_res, log_path))
             }
         }
     }
 
     // if need to upload log to remote
-    log_file = "Build-${image_name}-${random_str}.log"
-    log_path = handleLog(log_file)
+    def log_file = "Build-${image_name}-${random_str}.log"
+    def log_path = handleLog(log_file)
     STAGES_RES.push(formatRes(image_name, "build", build_res, log_path))
 }
 
@@ -271,18 +382,18 @@ def dynamicBuild(String yocto_dir,
                 String image_date,
                 String random_str,
                 String cache_src_dir){
-    compile_path = translateCompileToHost(yocto_dir, arch, image_name, image_date, cache_src_dir)
+    def compile_path = translateCompileToHost(yocto_dir, arch, image_name, image_date, cache_src_dir)
     // prepare oebuild build environment
     def task_res_code = sh (script: """
-        oebuild init ${OEBUILD_DIR}
-        cd ${OEBUILD_DIR}
+        oebuild init ${Config.OEBUILD_DIR}
+        cd ${Config.OEBUILD_DIR}
         mkdir -p build
         ln -sf ${yocto_dir} src/yocto-meta-openeuler
-        oebuild ${compile_path} > ${AGENT}/${LOG_DIR}/Build-${image_name}-${random_str}.log
+        oebuild ${compile_path} > ${Config.AGENT}/${Config.LOG_DIR}/Build-${image_name}-${random_str}.log
     """, returnStatus: true)
     handleAfterBuildImage(image_name, arch, task_res_code, random_str, image_date)
     // delete build directory
-    deleteBuildDir(OEBUILD_DIR + "/build/" + image_name)
+    deleteBuildDir(Config.OEBUILD_DIR + "/build/" + image_name)
 }
 
 def stashRepo(String workdir,String stash_name){
@@ -323,11 +434,11 @@ def buildTask(String build_imgs, String image_date){
     dir('/home/jenkins/agent/embedded-ci'){
         def randomStr = getRandomStr()
         mkdirOpeneulerLog()
-        cacheSrcDir = "$shareDir/$ciBranch/oebuild_workspace/src"
+        def cacheSrcDir = "$shareDir/$ciBranch/oebuild_workspace/src"
         for (imageName in build_imgs.split()){
             println "build ${imageName} ..."
-            imageSplit = imageName.split("/")
-            yoctoDir = "/home/jenkins/agent/yocto-meta-openeuler"
+            def imageSplit = imageName.split("/")
+            def yoctoDir = "/home/jenkins/agent/yocto-meta-openeuler"
             dynamicBuild(yoctoDir,
                         imageSplit[0],
                         imageSplit[1],
@@ -342,28 +453,35 @@ def buildTask(String build_imgs, String image_date){
 def get_remote_images(String base_url) {
     def code = """
 import requests
-import subprocess
-try:
-    from bs4 import BeautifulSoup
-except ModuleNotFoundError:
-    subprocess.call(args="pip install bs4 -i https://pypi.tuna.tsinghua.edu.cn/simple",
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    shell=True)
-    subprocess.call(args="pip install lxml -i https://pypi.tuna.tsinghua.edu.cn/simple",
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    shell=True)
-    from bs4 import BeautifulSoup
 import re
+import html.parser
+
+class PreTextParser(html.parser.HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.in_pre = False
+        self.pre_content = []
+    
+    def handle_starttag(self, tag, attrs):
+        if tag.lower() == 'pre':
+            self.in_pre = True
+    
+    def handle_endtag(self, tag):
+        if tag.lower() == 'pre':
+            self.in_pre = False
+    
+    def handle_data(self, data):
+        if self.in_pre:
+            self.pre_content.append(data)
 
 def get_pre_text(url, typ):
     res = []
     content = requests.get(url)
-    resHTML = content.text
-    soup = BeautifulSoup(resHTML, 'lxml')
-    for item in soup.pre.children:
-        for dir_name in item.text.split(" "):
+    parser = PreTextParser()
+    parser.feed(content.text)
+    
+    for text in parser.pre_content:
+        for dir_name in text.split():
             if typ == "dir" and dir_name.endswith("/") and not dir_name.startswith("."):
                 res.append(dir_name)
                 continue
@@ -379,18 +497,20 @@ for image in image_list:
     time_list = get_pre_text(base_url + "/" + image, "gz")
     tmp_times = []
     for time_name in time_list:
-        match = re.search("^[0-9]{14}(.tar.gz)\$", time_name)
+        match = re.search("^[0-9]{14}(.tar.gz)", time_name)
         if match:
             tmp_times.append(time_name.replace(".tar.gz", ""))
     tmp_times.sort(reverse=True)
     if len(tmp_times) > 0:
         target_list.append(image + tmp_times[0])
-
 print(" ".join(target_list))
 """
 
+println "base_url: $base_url"
+
 file_name = getRandomStr()
 writeFile file: file_name, text: code, encoding: "UTF-8"
+
 return sh (script: """
     python3 ${file_name}
 """, returnStdout: true).trim()

@@ -2,7 +2,7 @@ def BUILD_COM
 def IMAGE_DATE = ""
 
 pipeline {
-    agent any
+    agent { node "${node}" }
     environment {
         PATH = "/home/jenkins/.local/bin:${env.PATH}"
     }
@@ -78,7 +78,7 @@ pipeline {
                     node("${node}"){
                         BUILD_COM.unstashRepo('/home/jenkins/agent', 'embedded-ci')
                         BUILD_COM.unstashRepo('/home/jenkins/agent', 'yocto-meta-openeuler')
-                        def logDir = BUILD_COM.AGENT+"/"+BUILD_COM.LOG_DIR
+                        def logDir = BUILD_COM.getConfig('AGENT')+"/"+BUILD_COM.getConfig('LOG_DIR')
                         dir('/home/jenkins/agent/embedded-ci'){
                             // check commit_msg
                             withCredentials([string(credentialsId: "${giteeId}", variable: 'GITEETOKEN')]){
@@ -109,7 +109,7 @@ pipeline {
                                         "check",
                                         "commit_check",
                                         checkRes,
-                                        "artifact/${BUILD_COM.LOG_DIR}/${randomStr}.log"))
+                                        "artifact/${BUILD_COM.getConfig('LOG_DIR')}/${randomStr}.log"))
                             }
                             // check commit_scope
                             withCredentials([string(credentialsId: "${giteeId}", variable: 'GITEETOKEN')]){
@@ -140,7 +140,7 @@ pipeline {
                                         "check",
                                         "scope_check",
                                         checkRes,
-                                        "artifact/${BUILD_COM.LOG_DIR}/${randomStr}.log"))
+                                        "artifact/${BUILD_COM.getConfig('LOG_DIR')}/${randomStr}.log"))
                             }
                         }
                     }
@@ -165,7 +165,7 @@ pipeline {
                             node("${node}"){
                                 BUILD_COM.unstash('/home/jenkins/agent', 'embedded-ci')
                                 BUILD_COM.unstash('/home/jenkins/agent', 'yocto-meta-openeuler')
-                                def logDir = BUILD_COM.AGENT+"/"+BUILD_COM.LOG_DIR
+                                def logDir = BUILD_COM.getConfig('AGENT')+"/"+BUILD_COM.getConfig('LOG_DIR')
                                 dir('/home/jenkins/agent/embedded-ci'){
                                     // 执行docs编译
                                     def randomStr = BUILD_COM.getRandomStr()
@@ -190,7 +190,7 @@ pipeline {
                                             "docs",
                                             "build",
                                             checkRes,
-                                            "artifact/${BUILD_COM.LOG_DIR}/${randomStr}.log"))
+                                            "artifact/${BUILD_COM.getConfig('LOG_DIR')}/${randomStr}.log"))
                                 }
                             }
                         }
