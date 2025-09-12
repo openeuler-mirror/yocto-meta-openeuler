@@ -25,42 +25,57 @@ def init_environment(){
     }
     // set remote log
     if (env.isUploadLog == null || env.isUploadLog == ""){
-        env.isUploadLog = "false"
+        env.isUploadLog = "true"
     }
     if (env.openEulerLogRemoteIP == null || env.openEulerLogRemoteIP == ""){
-        env.openEulerLogRemoteIP = "43.136.114.130"
+        env.openEulerLogRemoteIP = "39.155.145.68"
+    }
+    if (env.openEulerLogRemotePort == null || env.openEulerLogRemotePort == ""){
+        env.openEulerLogRemotePort = "22"
     }
     if (env.openEulerLogRemoteUser == null || env.openEulerLogRemoteUser == ""){
-        env.openEulerLogRemoteUser = "openeuler"
+        env.openEulerLogRemoteUser = "root"
     }
-    if (env.openEulerLogRemoteKey == null || env.openEulerLogRemoteKey == ""){
-        env.openEulerLogRemoteKey = "openEulerEmbeddedRemoteKey"
+    if (env.openEulerLogRemoteId == null || env.openEulerLogRemoteId == ""){
+        env.openEulerLogRemoteId = "AF-Logs-Node-secret"
+    }
+    if (env.openEulerLogCreditType == null || env.openEulerLogCreditType == ""){
+        env.openEulerLogCreditType = "UserPwd"
     }
     if (env.openEulerLogRemoteDir == null || env.openEulerLogRemoteDir == ""){
-        env.openEulerLogRemoteDir = "/var/www/html/openeuler-log"
+        env.openEulerLogRemoteDir = "/data/logs/embedded-log"
     }
     if (env.openEulerLogRemoteUrl == null || env.openEulerLogRemoteUrl == ""){
-        env.openEulerLogRemoteUrl = "http://43.136.114.130/openeuler-log"
+        env.openEulerLogRemoteUrl = "https://build-logs.openeuler.openatom.cn:38080/embedded-log"
     }
     // set remote image
     if (env.isUploadImg == null || env.isUploadImg == ""){
-        env.isUploadImg = "false"
+        env.isUploadImg = "true"
     }
     if (env.openEulerImgRemoteIP == null || env.openEulerImgRemoteIP == ""){
-        env.openEulerImgRemoteIP = "43.136.114.130"
+        env.openEulerImgRemoteIP = "39.155.145.68"
+    }
+    if (env.openEulerImgRemotePort == null || env.openEulerImgRemotePort == ""){
+        env.openEulerImgRemotePort = "22"
     }
     if (env.openEulerImgRemoteUser == null || env.openEulerImgRemoteUser == ""){
-        env.openEulerImgRemoteUser = "openeuler"
+        env.openEulerImgRemoteUser = "root"
     }
-    if (env.openEulerImgRemoteKey == null || env.openEulerImgRemoteKey == ""){
-        env.openEulerImgRemoteKey = "openEulerEmbeddedRemoteKey"
+    if (env.openEulerImgRemoteId == null || env.openEulerImgRemoteId == ""){
+        env.openEulerImgRemoteId = "AF-Logs-Node-secret"
+    }
+    if (env.openEulerImgCreditType == null || env.openEulerImgCreditType == ""){
+        env.openEulerImgCreditType = "UserPwd"
     }
     if (env.openEulerImgRemoteDir == null || env.openEulerImgRemoteDir == ""){
-        env.openEulerImgRemoteDir = "/var/www/html/openeuler-ci/master"
+        env.openEulerImgRemoteDir = "/data/logs/packages/master"
+    }
+    if (env.openEulerImgRemoteUrl == null || env.openEulerImgRemoteUrl == ""){
+        env.openEulerImgRemoteUrl = "https://build-logs.openeuler.openatom.cn:38080/packages"
     }
     // set comment
     if (env.isComment == null || env.isComment == ""){
-        env.isComment = "false"
+        env.isComment = "true"
     }
     if (env.giteeId == null || env.giteeId == ""){
         env.giteeId = "gitee-api-token"
@@ -88,10 +103,10 @@ def init_environment(){
         env.buildImages = "aarch64/qemu-aarch64 aarch64/hieulerpi1 arm32/qemu-arm riscv/qemu-riscv54 x86-64/x86-64"
     }
     if (env.baseImgUrl == null  || env.baseImgUrl == ""){
-        env.baseImgUrl = "http://43.136.114.130/openeuler-ci/master"
+        env.baseImgUrl = "https://build-logs.openeuler.openatom.cn:38080/packages/master"
     }
     if (env.targetImgUrl == null || env.targetImgUrl == ""){
-        env.targetImgUrl = "http://121.36.84.172/dailybuild/EBS-openEuler-Mainline/EBS-openEuler-Mainline/embedded_img"
+        env.targetImgUrl = "http://121.36.84.172/dailybuild/EBS-openEuler-Mainline/embedded_img"
     }
     if (env.archList == null || env.archList == ""){
         env.archList = "aarch64 arm32 x86-64 riscv64"
