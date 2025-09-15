@@ -10,6 +10,9 @@
 #
 # See also: Other QB_ variables as defined by the qemuboot.bbclass.
 
+# QB_SYSTEM_NAME requires qemu-system-native
+DEPENDS += "qemu-system-native"
+
 write_mcs_section() {
     # remove last '}'
     sed -i '$ d' $1
