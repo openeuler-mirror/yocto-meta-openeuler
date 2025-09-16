@@ -1,1 +1,1 @@
-require recipes-kernel/linux/linux-${MACHINE}.inc
+include recipes-kernel/linux/linux-${MACHINE}.inc
