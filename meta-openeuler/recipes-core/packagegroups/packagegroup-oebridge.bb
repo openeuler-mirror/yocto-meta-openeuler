@@ -80,6 +80,12 @@ XFCE_PKG_LISTS = " \
 "
 INSTALL_PKG_LISTS += "${@bb.utils.contains('DISTRO_FEATURES', 'oe-xfce', d.getVar('XFCE_PKG_LISTS'), '', d)}"
 
+ROS_PKG_LISTS = " \
+    ros-humble-ros-base:real \
+    ros-humble-turtlesim:real \
+"
+INSTALL_PKG_LISTS += "${@bb.utils.contains('DISTRO_FEATURES', 'oe-ros', d.getVar('ROS_PKG_LISTS'), '', d)}"
+
 python do_install_list_prepare(){
     import os
     import subprocess

@@ -27,6 +27,7 @@ SRC_URI:append:class-nativesdk = " file://0001-dnf-write-the-log-lock-to-root.pa
 # add default repo
 SRC_URI:append:class-target = " \
     file://openEuler.repo \
+    file://openEulerROS.repo \
 "
 
 S = "${WORKDIR}/${BP}"
@@ -35,6 +36,7 @@ SRC_URI[sha256sum] = "7de4eb8e85c4d9a74db6f1f827d2dd3348e265631f8678a1dbf7e3346b
 
 FILES:${PN}:append:class-target = " \
     /etc/yum.repos.d/openEuler.repo \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'oe-ros', '/etc/yum.repos.d/openEulerROS.repo', '', d)} \
     "
 
 do_install:append:class-target() {
@@ -42,4 +44,5 @@ do_install:append:class-target() {
     local version_dir="${@bb.utils.contains("DISTRO_FEATURES", "oebridge", "${SERVER_VERSION}", "openEuler-${DISTRO_VERSION}", d)}"
     sed -i "s/OPENEULER_VER/${version_dir}/g" ${WORKDIR}/openEuler.repo
     cp -f ${WORKDIR}/openEuler.repo ${D}/etc/yum.repos.d/
+    cp -f ${WORKDIR}/openEulerROS.repo ${D}/etc/yum.repos.d/
 }
