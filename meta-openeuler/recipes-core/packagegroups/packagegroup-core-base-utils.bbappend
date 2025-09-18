@@ -87,6 +87,7 @@ RDEPENDS:${PN} = "\
     libusb1 \
     glib-2.0 \
     libbfd \
+    icu \
     ${@bb.utils.contains('DISTRO_FEATURES', 'epkg', 'epkg', '', d)} \
 "
 
