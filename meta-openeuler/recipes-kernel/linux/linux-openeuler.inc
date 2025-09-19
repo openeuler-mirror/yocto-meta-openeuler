@@ -196,3 +196,9 @@ do_deploy:append() {
 pkg_postinst_${KERNEL_PACKAGE_NAME}-base () {
     :
 }
+
+
+# qemu is 1st class BSP in openeuler, so add qemu specific kernel customeriazation here
+# for other BSP, plese do it in its own layer and use dynamic layer mechanism under bsp/met-openeuler-bsp, for example, see
+# raspberrypi bsp
+SRC_URI:append:qemu-aarch64= "${@bb.utils.contains('DISTRO_FEATURES', 'oe-xfce', 'file://config/cfg-fragments/qemu-aarch64-xfce.cfg', '', d)}"
