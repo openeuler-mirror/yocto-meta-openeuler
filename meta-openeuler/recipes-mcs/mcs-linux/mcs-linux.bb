@@ -13,7 +13,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=74b1b7a7ee537a16390ed514498bf23c"
 
 
 ### Inheritance and includes if needed
-inherit cmake
+inherit cmake systemd
 
 ### Build metadata: SRC_URI, SRCDATA, S, B, FILESEXTRAPATHS....
 OPENEULER_LOCAL_NAME = "mcs"
@@ -52,9 +52,12 @@ do_install:append:aarch64 () {
         install -d ${D}${sysconfdir}/init.d
         install -d ${D}${sysconfdir}/rc5.d
         install -m 0755 ${S}/mica/micad/init/micad.init ${D}${sysconfdir}/init.d
-	update-rc.d -r ${D} micad.init start 90 5 .
+        update-rc.d -r ${D} micad.init start 90 5 .
     fi
 }
+
+SYSTEMD_PACKAGES = "mcs-linux"
+SYSTEMD_SERVICE:mcs-linux = "micad.service"
 
 FILES:${PN} = " \
      ${bindir}/* \
