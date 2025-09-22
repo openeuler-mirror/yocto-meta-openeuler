@@ -71,9 +71,11 @@ OPENEULER_LOCAL_NAME = "kernel-${PV}"
 # download openeuler/kernel-5.10 repo for linux kernel src files
 OPENEULER_REPO_NAMES = "src-kernel-${PV} kernel-${PV}"
 
+# workaround: avoid issue of '+' vermagic of module out-tree of yocto: 0001-fix-yocto-localversion-outtree-ko-error-for-6.6.patch
 SRC_URI = "file://kernel-${PV} \
     ${OPENEULER_KERNEL_CONFIG} \
     file://meta-data;type=kmeta;destsuffix=meta-data \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'file://patches/0001-fix-yocto-localversion-outtree-ko-error-for-6.6.patch', '', d)} \
 "
 
 # add common patches only for aarch64
