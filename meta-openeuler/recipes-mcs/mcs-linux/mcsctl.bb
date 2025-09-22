@@ -30,13 +30,22 @@ RTOS_IMGS:qemu-aarch64 = "qemu"
 RTOS_IMGS:hieulerpi1 = "hieulerpi"
 
 do_install:append () {
-        # install Configuration file
-        install -d ${D}/etc/mica
-        cp ${S}/rtos/arm64/${RTOS_IMGS}*.conf ${D}/etc/mica/
+    ## todo: more fine-grained process of mica conf file and
+    ## RTOS images
+    # install Configuration file
+    set -- "${S}/rtos/arm64/${RTOS_IMGS}"*.conf
+    if [ -f "$1" ]; then
+        install -d "${D}/etc/mica"
+        cp -- "$@" "${D}/etc/mica/"
+    fi
 
-        # install rtos firmware
-        install -d ${D}/lib/firmware
-        cp ${S}/rtos/arm64/*.elf ${D}/lib/firmware/
+
+    # install rtos firmware
+    set -- "${S}/rtos/arm64/${RTOS_IMGS}"*.elf
+    if [ -f "$1" ]; then
+        install -d "${D}/lib/firmware"
+        cp -- "$@" "${D}/lib/firmware/"
+    fi
 }
 
 FILES:${PN} += "/usr/bin/mica"
