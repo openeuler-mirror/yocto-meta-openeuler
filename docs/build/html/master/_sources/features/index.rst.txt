@@ -28,3 +28,4 @@
    zvm.rst
    xen.rst
    mindspore_lite.rst
+   miniaturization.rst
