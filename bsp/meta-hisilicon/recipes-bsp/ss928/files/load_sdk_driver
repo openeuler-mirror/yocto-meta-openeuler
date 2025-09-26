@@ -1,0 +1,280 @@
+#!/bin/sh
+# Usage: ./load_ss928v100 [ -r|-i|-a ] [ -sensor0~3 ]
+#         -r : rmmod all modules
+#         -i : insmod all modules
+#         -a : rmmod all moules and then insmod them
+# e.g: ./load_ss928v100 -i -sensor0 os08a20 -sensor1 os08a20 -sensor2 os08a20 -sensor3 os08a20
+
+####### select sensor type for your test ########################
+####      os08a20             ####
+####      os05a10_slave       ####
+####      imx347_slave        ####
+####      imx485              ####
+####      os04a10             ####
+####      os08b10             ####
+####################Variables Definition##########################
+
+SNS_TYPE0=os08a20;               # sensor type
+SNS_TYPE1=os08a20;               # sensor type
+SNS_TYPE2=os08a20;               # sensor type
+SNS_TYPE3=os08a20;               # sensor type
+
+#DDR start:0x40000000, IPCM(2M); DSP(62M); MCU(192M); kernel start:0x50000000,  OS(512M); MMZ start:0x70000000
+mem_total=8192                # 4096M, total mem
+mem_start=0x40000000          # phy mem start
+ipcm_mem_size=2               # 2M, ipcm mem
+dsp_mem_size=62               # 62M, dsp mem
+mcu_mem_size=192              # 192M, mcu mem
+os_mem_size=512               # 512M, os mem
+
+mmz_start=0x70000000;         # mmz start addr
+mmz_size=3328M;               # 3328M, mmz size
+
+reserve_mem_size=0            # 0M, reserve mmz size
+##################################################################
+ko_path=/ko
+
+function report_error()
+{
+    echo "******* Error: There's something wrong, please check! *****"
+    exit 1
+}
+
+function insert_ko()
+{
+    # sys config
+    insmod $ko_path/sys_config.ko sensors=sns0=$SNS_TYPE0,sns1=$SNS_TYPE1,sns2=$SNS_TYPE2,sns3=$SNS_TYPE3
+    # driver load
+    insmod $ko_path/ot_osal.ko anony=1 mmz_allocator=ot mmz=anonymous,0,$mmz_start,$mmz_size$1 || report_error
+    insmod $ko_path/ot_irq.ko
+    insmod $ko_path/ot_user_proc.ko
+    insmod $ko_path/ot_base.ko
+    insmod $ko_path/ot_sys.ko
+    insmod $ko_path/ot_tde.ko
+    insmod $ko_path/ot_vo.ko
+    insmod $ko_path/svp_npu/ot_svp_npu.ko
+    # gfbg: default fb0:argb1555,3840x2160,2buf;fb1:argb8888,1920x1080,2buf;fb2:clut4,3840x2160,1buf
+    insmod $ko_path/gfbg.ko video="gfbg:vram0_size:32400,vram1_size:16200,vram3_size:4052"
+
+    insmod $ko_path/ot_hdmi.ko
+    insmod $ko_path/ot_mipi_tx.ko g_smooth=0
+    insmod $ko_path/ot_mipi_rx.ko
+}
+
+function remove_ko()
+{
+    rmmod ot_mipi_rx
+    rmmod ot_mipi_tx
+    rmmod ot_hdmi
+    rmmod gfbg
+    rmmod svp_npu/ot_svp_npu.ko
+    rmmod ot_vo
+    rmmod ot_tde
+    rmmod ot_sys
+    rmmod ot_base
+    rmmod ot_user_proc
+    rmmod ot_irq
+    rmmod ot_osal
+    rmmod sys_config
+}
+
+load_usage()
+{
+    echo "Usage:  $0 [-option] [-sensor0~3] "
+    echo "options:"
+    echo "    -i                       insert modules"
+    echo "    -r                       remove modules"
+    echo "    -a                       remove modules first, then insert modules"
+    echo "    -sensor0~3 sensor_name   config sensor type [default: os08a20]"
+    echo "    -total mem_size          config total mem size [unit: M, default: 4096]"
+    echo "    -osmem os_mem_size       config os mem size [unit: M, default: 512]"
+    echo "    -h                       help information"
+    echo -e "Available sensors: os08a20 os05a10_slave imx347_slave"
+    echo -e "for example: $0 -i -sensor0 os08a20 -sensor1 os08a20 -sensor2 os08a20 -sensor3 os08a20 -total 4096 -osmem 512\n"
+}
+
+function get_mem_size_from_cmdline() {
+    input="$1"
+    default_size="$2"
+    number=$(echo "$input" | sed 's/\([0-9]\+\).*/\1/')
+    suffix=$(echo "$input" | sed 's/[^MG]//g')
+
+    if [ -z "$suffix" ]; then
+        echo "$default_size"
+        return
+    fi
+    
+    if [ -z "$number" ]; then
+        echo "$default_size"
+        return
+    fi
+    
+    if [ "$suffix" = "M" ]; then
+        echo "$number"
+    elif [ "$suffix" = "G" ]; then
+        result=$(($number * 1024))
+        echo "$result"
+    else
+        echo "Invalid suffix: $suffix"
+        return 1
+    fi
+}
+
+function extract_and_update_mem_sizes() {
+    # 从 /proc/cmdline 提取 mem 和 total_mem 参数
+    cmd_mem_size=$(cat /proc/cmdline | grep -oE 'mem=[0-9]+[MG]' | head -n 1 | sed 's/mem=//')
+    cmd_total_mem_size=$(cat /proc/cmdline | grep -oE 'total_mem=[0-9]+[MG]' | head -n 1 | sed 's/total_mem=//')
+
+    if [ -z "$cmd_total_mem_size" ]; then
+        cmd_total_mem_size=$(cat /proc/cmdline | grep -oE 'total_mem_size=[0-9]+[MG]' | head -n 1 | sed 's/total_mem_size=//')
+    fi
+
+    # 如果 cmd_mem_size 为空，则使用默认值
+    if [ -z "$cmd_mem_size" ]; then
+        os_mem_size=$(get_mem_size_from_cmdline "" "$os_mem_size")
+    else
+        os_mem_size=$(get_mem_size_from_cmdline "$cmd_mem_size" "$os_mem_size")
+    fi
+
+    # 如果 cmd_total_mem_size 为空，则使用默认值
+    if [ -z "$cmd_total_mem_size" ]; then
+        mem_total=$(get_mem_size_from_cmdline "" "$mem_total")
+    else
+        mem_total=$(get_mem_size_from_cmdline "$cmd_total_mem_size" "$mem_total")
+    fi
+    
+    echo "os_mem_size: $os_mem_size"
+    echo "mem_total: $mem_total"
+}
+
+function calc_mmz_info()
+{
+    mmz_start=`echo "$mem_start $os_mem_size $mcu_mem_size $dsp_mem_size $ipcm_mem_size" |
+    awk 'BEGIN { temp = 0; }
+    {
+                        temp = strtonum($1)/1024/1024 + $2 + $3 + $4 + $5;
+    }
+    END { printf("0x%x00000\n", temp); }'`
+
+    mmz_size=`echo "$mem_total $os_mem_size $mcu_mem_size $dsp_mem_size $ipcm_mem_size $reserve_mem_size" |
+    awk 'BEGIN { temp = 0; }
+    {
+            temp = $1 - $2 - $3 - $4 - $5 - $6;
+    }
+    END { printf("%dM\n", temp); }'`
+    echo "mmz_start: $mmz_start, mmz_size: $mmz_size"
+}
+
+b_arg_insmod=0
+b_arg_remove=0
+function parse_arg()
+{
+    ######################parse arg###################################
+    b_arg_sensor0=0
+    b_arg_sensor1=0
+    b_arg_sensor2=0
+    b_arg_sensor3=0
+    b_arg_total_mem=0
+    b_arg_os_mem=0
+
+    for arg in $@
+    do
+        if [ $b_arg_sensor0 -eq 1 ] ; then
+            b_arg_sensor0=0;
+            SNS_TYPE0=$arg;
+        fi
+        if [ $b_arg_sensor1 -eq 1 ] ; then
+            b_arg_sensor1=0;
+            SNS_TYPE1=$arg;
+        fi
+        if [ $b_arg_sensor2 -eq 1 ] ; then
+            b_arg_sensor2=0;
+            SNS_TYPE2=$arg;
+        fi
+        if [ $b_arg_sensor3 -eq 1 ] ; then
+            b_arg_sensor3=0;
+            SNS_TYPE3=$arg;
+        fi
+
+        if [ $b_arg_total_mem -eq 1 ]; then
+            b_arg_total_mem=0;
+            mem_total=$arg;
+
+            if [ -z $mem_total ]; then
+                echo "[error] mem_total is null"
+                exit;
+            fi
+        fi
+
+        if [ $b_arg_os_mem -eq 1 ] ; then
+            b_arg_os_mem=0;
+            os_mem_size=$arg;
+
+            if [ -z $os_mem_size ]; then
+                echo "[error] os_mem_size is null"
+                exit;
+            fi
+        fi
+
+        case $arg in
+            "-i")
+                b_arg_insmod=1;
+                ;;
+            "-r")
+                b_arg_remove=1;
+                ;;
+            "-a")
+                b_arg_insmod=1;
+                b_arg_remove=1;
+                ;;
+            "-h")
+                load_usage;
+                ;;
+            "-sensor0")
+                b_arg_sensor0=1;
+                ;;
+            "-sensor")
+                b_arg_sensor0=1;
+                ;;
+            "-sensor1")
+                b_arg_sensor1=1;
+                ;;
+            "-sensor2")
+                b_arg_sensor2=1;
+                ;;
+            "-sensor3")
+                b_arg_sensor3=1;
+                ;;
+            "-osmem")
+                b_arg_os_mem=1;
+                ;;
+            "-total")
+                b_arg_total_mem=1;
+                ;;
+        esac
+    done
+
+    if [ $os_mem_size -ge $((mem_total - dsp_mem_size - reserve_mem_size)) ] ; then
+        echo "[err] os_mem[$os_mem_size], over total_mem[$mem_total] - dsp_mem[$dsp_mem_size] - reserve_mem[$reserve_mem_size]"
+        exit;
+    fi
+    #######################parse arg end########################
+}
+
+if [ $# -lt 1 ]; then
+    load_usage;
+    exit 0;
+fi
+
+parse_arg $@
+extract_and_update_mem_sizes;
+calc_mmz_info;
+
+#######################Action###############################
+if [ $b_arg_remove -eq 1 ]; then
+    remove_ko;
+fi
+
+if [ $b_arg_insmod -eq 1 ]; then
+    insert_ko;
+fi

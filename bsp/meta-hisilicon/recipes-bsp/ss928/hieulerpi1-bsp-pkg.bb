@@ -4,15 +4,20 @@ LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
 
 DEPENDS = "update-rc.d-native"
+DEPENDS += " ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'hieulerpi1-sdk-pkg', '', d)} "
+do_fetch[depends] += "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'hieulerpi1-sdk-pkg:do_deploy', '', d)}"
 
 OPENEULER_LOCAL_NAME = "HiEuler-driver"
 
 RT_SUFFIX = "${@bb.utils.contains('DISTRO_FEATURES', 'preempt-rt', '-rt', '', d)}"
-KN_SUFFIX = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '-6.6', '', d)}"
 
 SRC_URI = " \
-        file://HiEuler-driver/drivers${KN_SUFFIX}/ko${RT_SUFFIX}.tar.gz \
-        file://HiEuler-driver/drivers${KN_SUFFIX}/ko-extra.tar.gz \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
+        file://${DEPLOY_DIR}/third_party_sdk/ko.tar.gz \
+    ', ' \
+        file://HiEuler-driver/drivers/ko${RT_SUFFIX}.tar.gz \ 
+        file://HiEuler-driver/drivers/ko-extra.tar.gz \
+    ', d)} \
         file://HiEuler-driver/drivers/btools \
         file://HiEuler-driver/drivers/S90AutoRun \
         file://HiEuler-driver/drivers/pinmux.sh \
@@ -21,7 +26,7 @@ SRC_URI = " \
         file://HiEuler-driver/drivers/ws73.tar.gz \
         file://HiEuler-driver/drivers/sparklink-tools.tar.gz \
         file://HiEuler-driver/mcu \
-        ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' file://hieulerpi1-bsp.service ', '', d)} \
+        ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' file://hieulerpi1-bsp.service file://hieulerpi1-fb.service ', '', d)} \
 "
 
 S = "${WORKDIR}/HiEuler-driver/drivers"
@@ -40,29 +45,51 @@ do_install () {
     ln -s /usr/bin/btools ${D}/usr/bin/bspmm
     ln -s /usr/bin/btools ${D}/usr/bin/i2c_read
     ln -s /usr/bin/btools ${D}/usr/bin/i2c_write
-    install -m 0755 ${WORKDIR}/ko-extra/pre_vo ${D}/usr/bin/
+    if [ -e ${WORKDIR}/ko-extra/pre_vo ];then
+        install -m 0755 ${WORKDIR}/ko-extra/pre_vo ${D}/usr/bin/
+    fi
 
     cp -r ${WORKDIR}/ko ${D}/
-    # cp -f ${WORKDIR}/ko-extra/ch343.ko ${D}/ko
+    if [ -e ${WORKDIR}/ko-extra/ch343.ko ];then
+        cp -f ${WORKDIR}/ko-extra/ch343.ko ${D}/ko
+    fi
 
     #for mipi, use load_ss928v100 from ko-extra
-    cp -f ${WORKDIR}/ko-extra/load_ss928v100 ${D}/ko
-    # optimize awk format which may not recognized
-    sed -i 's/\$1\/1024\/1024/strtonum(\$1)\/1024\/1024/' ${D}/ko/load_ss928v100*
-    chmod 755 ${D}/ko/load_ss928v100
+    if [ -e ${WORKDIR}/ko-extra/load_ss928v100 ];then
+        cp -f ${WORKDIR}/ko-extra/load_ss928v100 ${D}/ko
+        # optimize awk format which may not recognized
+        sed -i 's/\$1\/1024\/1024/strtonum(\$1)\/1024\/1024/' ${D}/ko/load_ss928v100*
+        chmod 755 ${D}/ko/load_ss928v100
+    fi
 
     # install wifi-1102a firmware
-    # cp -f ${WORKDIR}/wifi-1102a-tools/plat.ko ${D}/ko
-    # cp -f ${WORKDIR}/wifi-1102a-tools/wifi.ko ${D}/ko
-    # install -m 0755 ${WORKDIR}/wifi-1102a-tools/start_wifi ${D}/usr/bin/
-    # install -d ${D}/vendor
-    # cp -rf ${WORKDIR}/wifi-1102a-tools/vendor/* ${D}/vendor
+    if [ -e ${WORKDIR}/wifi-1102a-tools ];then
+        cp -f ${WORKDIR}/wifi-1102a-tools/plat.ko ${D}/ko
+        cp -f ${WORKDIR}/wifi-1102a-tools/wifi.ko ${D}/ko
+        install -m 0755 ${WORKDIR}/wifi-1102a-tools/start_wifi ${D}/usr/bin/
+        install -d ${D}/vendor
+        cp -rf ${WORKDIR}/wifi-1102a-tools/vendor/* ${D}/vendor
+    fi
 
     install -m 0755 ${S}/S90AutoRun ${D}${sysconfdir}/init.d/
     install -m 0755 ${S}/pinmux.sh ${D}${sysconfdir}/init.d/
+
+    # workaround for 6.6 new version, just load sdk ko, other ko need pack later
+    if [ -e ${WORKDIR}/ko/load_sdk_driver ];then
+	echo "#!/bin/sh" > ${D}${sysconfdir}/init.d/S90AutoRun
+	echo "/ko/load_sdk_driver -i" >> ${D}${sysconfdir}/init.d/S90AutoRun
+    fi
+
     if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
         install -d ${D}${systemd_system_unitdir}
         install -m 0644 ${WORKDIR}/hieulerpi1-bsp.service ${D}${systemd_system_unitdir}
+        install -m 0644 ${WORKDIR}/hieulerpi1-fb.service ${D}${systemd_system_unitdir}
+        if ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'true', 'false', d)}; then
+            # enable auto start
+            install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants/
+            ln -sf ${systemd_system_unitdir}/hieulerpi1-bsp.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/hieulerpi1-bsp.service
+            ln -sf ${systemd_system_unitdir}/hieulerpi1-fb.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/hieulerpi1-fb.service
+        fi
     else
         update-rc.d -r ${D} S90AutoRun start 90 5 .
         update-rc.d -r ${D} pinmux.sh start 90 5 .

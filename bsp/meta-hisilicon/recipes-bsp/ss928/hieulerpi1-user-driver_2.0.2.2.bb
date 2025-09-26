@@ -3,6 +3,9 @@ DESCRIPTION = "user lib and headers repack from SS928V100_SDK"
 HOMEPAGE = "https://gitee.com/HiEuler/hardware_driver"
 LICENSE = "CLOSED"
 
+DEPENDS += " ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'hieulerpi1-sdk-pkg', '', d)} "
+do_fetch[depends] += "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'hieulerpi1-sdk-pkg:do_deploy', '', d)}"
+
 inherit pkgconfig
 
 # This driver library is depended by many ROS packages,
@@ -24,11 +27,14 @@ roslike_libdir_set[eventmask] = "bb.event.RecipePreFinalise"
 
 OPENEULER_LOCAL_NAME = "HiEuler-driver"
 
-KN_SUFFIX = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '-6.6', '', d)}"
-
 SRC_URI = " \
-        file://HiEuler-driver/drivers${KN_SUFFIX}/lib.tar.gz \
-        file://HiEuler-driver/drivers${KN_SUFFIX}/include.tar.gz \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
+        file://${DEPLOY_DIR}/third_party_sdk/lib.tar.gz \
+        file://${DEPLOY_DIR}/third_party_sdk/include.tar.gz \
+    ', ' \
+        file://HiEuler-driver/drivers/lib.tar.gz \
+        file://HiEuler-driver/drivers/include.tar.gz \
+    ', d)} \
         file://hieulerpi1-user-driver.pc.in \
 "
 
@@ -80,4 +86,4 @@ FILES:${PN}-staticdev += " \
 # set these as private libraries, don't try to search provider for it
 PRIVATE_LIBS = "libgraph.so libascendcl.so "
 
-INSANE_SKIP:${PN} += "already-stripped dev-so"
+INSANE_SKIP:${PN} += "already-stripped dev-so installed-vs-shipped"

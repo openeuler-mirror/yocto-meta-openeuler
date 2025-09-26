@@ -18,7 +18,7 @@ PV = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '6.6-tag928', '5.10-tag
 
 SRC_URI:append = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
-        file://HiEuler-driver/linux/0001-oh_ss928-oee.patch \
+        file://patch/0001-oh_ss928-oee.patch \
         file://patch/0002-oee-mod-compat-for-6.6.86.patch \
 	file://dtbs/ss928-pi-kernel6.dts \
 	file://dtbs/ss928-pi-kernel6_mcs.dts \
@@ -50,12 +50,6 @@ OPENEULER_KERNEL_CONFIG = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'f
 # for old kernels(5.10), keep use in-tree hieulerpi1_defconfig
 # KBUILD_DEFCONFIG = "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '', 'hieulerpi1_defconfig', d)}"
 KBUILD_DEFCONFIG = ""
-
-do_compile:prepend(){
-    # avoid issue of '+' vermagic of module in-tree of yocto 
-    sed -i '/echo "+"/d' ${STAGING_KERNEL_DIR}/scripts/setlocalversion
-}
-
 
 MCS_SUFFIX = "${@bb.utils.contains('MCS_FEATURES', 'openamp', '_mcs', '', d)}"
 # add method to do_compile task to produce bootable Image
