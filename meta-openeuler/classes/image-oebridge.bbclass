@@ -342,6 +342,8 @@ do_oebridge_clean() {
     sudo rm -rf ${WORKDIR}/temp/rootfs
 }
 
+do_make_rootfs_db[network] = "1"
+do_dnf_install_pkgs[network] = "1"
 
 # do_rootfs -> do_make_rootfs_db -> do_custom_install_prepare -> do_dnf_install_pkgs -> do_custom_install_complete -> do_run_post_action -> do_image
 addtask do_make_rootfs_db after do_rootfs before do_dnf_install_pkgs

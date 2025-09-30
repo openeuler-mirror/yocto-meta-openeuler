@@ -100,4 +100,4 @@ python do_download_oepkg(){
                 bb.fatal(res.stderr)
                 return
 }
-
+do_download_oepkg[network] = "1"
