@@ -26,7 +26,26 @@ oebridge 是 openEuler Embedded 北向通天塔计划的核心组件，旨在打
 构建指导
 ========
 
-通过 oebuild 指定 ``-f oebridge`` 进行特性使能，其他构建流程不变。
+前提：需要构建所使用的host支持qemu-user-static，对于ubuntu机器，可通过如下命令安装：
+
+  .. code-block:: console
+
+     $ sudo apt install qemu-user-static
+
+其他host机器方法类似，请自行安装配置。
+
+安装并配置qemu-user-static后，需要最终满足如下配置（aarch6作为target4为例）：
+
+  .. code-block:: console
+
+     $ cat /proc/sys/fs/binfmt_misc/qemu-aarch64
+     $ # 返回如下结果
+     $ ..
+     $ interpreter /usr/bin/qemu-aarch64-static
+     $ ...
+     $ 注：可能interpreter是个软连接，指向qemu-aarch64-static
+
+满足前提后，通过 oebuild 指定 ``-f oebridge`` 进行特性使能，其他构建流程不变。
 
 建议配合 ``-f systemd`` 来使用，因为服务器版本较多基础软件依赖systemd座位启动底座。使能代码示例：
 
