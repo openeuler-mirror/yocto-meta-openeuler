@@ -79,6 +79,10 @@ XFCE_PKG_LISTS = " \
     network-manager-applet:real \
 "
 INSTALL_PKG_LISTS += "${@bb.utils.contains('DISTRO_FEATURES', 'oe-xfce', d.getVar('XFCE_PKG_LISTS'), '', d)}"
+RDEPENDS:${PN} += " \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'oe-xfce', 'firefox-bin', '', d)} \
+"
+
 
 ROS_PKG_LISTS = " \
     ros-humble-ros-base:real \
