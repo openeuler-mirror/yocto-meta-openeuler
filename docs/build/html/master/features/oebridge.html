@@ -57,6 +57,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#id2">特性功能</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id3">构建指导</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#id4">高阶定制——开发集成接口</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5">应用范例</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="epkg.html">openEuler包管理器EPKG</a></li>
@@ -123,10 +124,10 @@
 <p>oebridge 是 openEuler Embedded 北向通天塔计划的核心组件，旨在打通 openEuler 服务器源与嵌入式系统的软件兼容复用通道。通过解决嵌入式与服务器端软件元数据不兼容、依赖链差异等问题，突破嵌入式北向生态软件数量有限的瓶颈，让嵌入式系统既能保留 Yocto 定制化优势，又能复用 openEuler 全站超 35000 款软件包的能力。</p>
 <p>当前架构图如下，主要通过dnf包管理和openEuler源进行链接，后续将考虑如何更好的将嵌入式定制和epkg包管理进行结合。</p>
 <blockquote>
-<div><figure class="align-center" id="id5">
+<div><figure class="align-center" id="id6">
 <img alt="../_images/oebridge_architecture.png" src="../_images/oebridge_architecture.png" />
 <figcaption>
-<p><span class="caption-text">图 1 oebridge基础架构</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">图 1 oebridge基础架构</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </div></blockquote>
@@ -309,6 +310,31 @@ ASSUME_PROVIDE_PKGS:<span class="si">${</span><span class="nv">PN</span><span cl
 </pre></div>
 </div>
 </div></blockquote>
+</section>
+<section id="id5">
+<h2>应用范例<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<p><strong>xfce桌面应用</strong></p>
+<p>oebridge可以将xfce桌面系统的软件包集成到openEuler Embedded镜像中，用户可以在嵌入式系统中运行xfce桌面环境。软件包源默认采用openEuler服务器源，用户也可以根据需要配置其他软件源。以下将以qemu-aarch64为例进行说明。</p>
+<p>构建方式：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># 在完成创建oebuild工作环境后，执行以下命令
+oebuild samples  // 列出构建模板，选择qemu-aarch64-xfce-systemd对应的编号等待完成构建
+</pre></div>
+</div>
+<p>启动命令：</p>
+<p>因为是qemu镜像，因此需要提前安装好qemu-system-aarch64仿真器。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># 安装qemu-system-aarch64仿真器</span>
+<span class="n">sudo</span> <span class="n">apt</span> <span class="n">install</span> <span class="n">qemu</span><span class="o">-</span><span class="n">system</span><span class="o">-</span><span class="n">aarch64</span>    <span class="o">//</span> <span class="n">ubuntu桌面系统</span>
+
+<span class="c1"># 启动qemu-aarch64镜像</span>
+<span class="c1"># 在qemu-aarch64-xfce-systemd目录下执行以下命令</span>
+<span class="n">sudo</span> <span class="n">qemu</span><span class="o">-</span><span class="n">system</span><span class="o">-</span><span class="n">aarch64</span> <span class="o">-</span><span class="n">M</span> <span class="n">virt</span> <span class="o">-</span><span class="n">smp</span> <span class="mi">8</span> <span class="o">-</span><span class="n">cpu</span> <span class="n">cortex</span><span class="o">-</span><span class="n">a72</span> <span class="o">-</span><span class="n">m</span> <span class="mi">16</span><span class="n">G</span> <span class="o">--</span><span class="n">kernel</span> <span class="n">output</span><span class="o">/&lt;</span><span class="n">timestamp</span><span class="o">&gt;/</span><span class="n">zImage</span> <span class="o">--</span><span class="n">initrd</span> <span class="n">output</span><span class="o">/&lt;</span><span class="n">timestamp</span><span class="o">&gt;/</span><span class="n">openeuler</span><span class="o">-</span><span class="n">image</span><span class="o">-</span><span class="n">qemu</span><span class="o">-</span><span class="n">aarch64</span><span class="o">-*.</span><span class="n">rootfs</span><span class="o">.</span><span class="n">cpio</span><span class="o">.</span><span class="n">gz</span> <span class="o">-</span><span class="n">display</span> <span class="n">sdl</span> <span class="o">-</span><span class="n">device</span> <span class="n">virtio</span><span class="o">-</span><span class="n">vga</span> <span class="o">-</span><span class="n">device</span> <span class="n">qemu</span><span class="o">-</span><span class="n">xhci</span> <span class="o">-</span><span class="n">usb</span> <span class="o">-</span><span class="n">device</span> <span class="n">usb</span><span class="o">-</span><span class="n">mouse</span> <span class="o">-</span><span class="n">device</span> <span class="n">usb</span><span class="o">-</span><span class="n">kbd</span> <span class="o">-</span><span class="n">device</span> <span class="n">usb</span><span class="o">-</span><span class="n">tablet</span>  <span class="o">-</span><span class="n">device</span> <span class="n">virtio</span><span class="o">-</span><span class="n">net</span><span class="o">-</span><span class="n">device</span><span class="p">,</span><span class="n">netdev</span><span class="o">=</span><span class="n">tap0</span> <span class="o">-</span><span class="n">netdev</span> <span class="n">tap</span><span class="p">,</span><span class="nb">id</span><span class="o">=</span><span class="n">tap0</span><span class="p">,</span><span class="n">script</span><span class="o">=/</span><span class="n">etc</span><span class="o">/</span><span class="n">qemu</span><span class="o">-</span><span class="n">ifup</span> <span class="o">-</span><span class="n">serial</span> <span class="n">stdio</span>
+
+<span class="c1"># 在启动后以root用户登陆，执行以下命令启动xfce桌面系统</span>
+<span class="n">startxfce4</span>
+</pre></div>
+</div>
+<p>效果图如下：</p>
+<img alt="qemu-xfce" class="align-center" src="../_images/qemu-xfce.png" />
 </section>
 </section>
 

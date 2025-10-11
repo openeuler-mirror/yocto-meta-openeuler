@@ -200,4 +200,39 @@ base-files      setup filesystem basesystem
     "
     INSTALL_PKG_LISTS += "${@bb.utils.contains('DISTRO_FEATURES', 'oe-xfce', d.getVar('XFCE_PKG_LISTS'), '', d)}"
 
+应用范例
+==========
+
+**xfce桌面应用**
+
+oebridge可以将xfce桌面系统的软件包集成到openEuler Embedded镜像中，用户可以在嵌入式系统中运行xfce桌面环境。软件包源默认采用openEuler服务器源，用户也可以根据需要配置其他软件源。以下将以qemu-aarch64为例进行说明。
+
+构建方式：
+
+.. code::
+
+    # 在完成创建oebuild工作环境后，执行以下命令
+    oebuild samples  // 列出构建模板，选择qemu-aarch64-xfce-systemd对应的编号等待完成构建
+
+启动命令：
+
+因为是qemu镜像，因此需要提前安装好qemu-system-aarch64仿真器。
+
+.. code::
+
+    # 安装qemu-system-aarch64仿真器
+    sudo apt install qemu-system-aarch64    // ubuntu桌面系统
+
+    # 启动qemu-aarch64镜像
+    # 在qemu-aarch64-xfce-systemd目录下执行以下命令
+    sudo qemu-system-aarch64 -M virt -smp 8 -cpu cortex-a72 -m 16G --kernel output/<timestamp>/zImage --initrd output/<timestamp>/openeuler-image-qemu-aarch64-*.rootfs.cpio.gz -display sdl -device virtio-vga -device qemu-xhci -usb -device usb-mouse -device usb-kbd -device usb-tablet  -device virtio-net-device,netdev=tap0 -netdev tap,id=tap0,script=/etc/qemu-ifup -serial stdio
+
+    # 在启动后以root用户登陆，执行以下命令启动xfce桌面系统
+    startxfce4
+
+效果图如下：
+
+.. image:: ./images/qemu-xfce.png
+    :alt: qemu-xfce
+    :align: center
 
