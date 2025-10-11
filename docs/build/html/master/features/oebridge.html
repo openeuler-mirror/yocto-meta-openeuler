@@ -140,7 +140,25 @@
 </section>
 <section id="id3">
 <h2>构建指导<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<p>通过 oebuild 指定 <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">oebridge</span></code> 进行特性使能，其他构建流程不变。</p>
+<p>前提：需要构建所使用的host支持qemu-user-static，对于ubuntu机器，可通过如下命令安装：</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo apt install qemu-user-static
+</pre></div>
+</div>
+</div></blockquote>
+<p>其他host机器方法类似，请自行安装配置。</p>
+<p>安装并配置qemu-user-static后，需要最终满足如下配置（aarch6作为target4为例）：</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cat /proc/sys/fs/binfmt_misc/qemu-aarch64
+<span class="gp">$ </span><span class="c1"># 返回如下结果</span>
+<span class="gp">$ </span>..
+<span class="gp">$ </span>interpreter /usr/bin/qemu-aarch64-static
+<span class="gp">$ </span>...
+<span class="gp">$ </span>注：可能interpreter是个软连接，指向qemu-aarch64-static
+</pre></div>
+</div>
+</div></blockquote>
+<p>满足前提后，通过 oebuild 指定 <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">oebridge</span></code> 进行特性使能，其他构建流程不变。</p>
 <p>建议配合 <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">systemd</span></code> 来使用，因为服务器版本较多基础软件依赖systemd座位启动底座。使能代码示例：</p>
 <blockquote>
 <div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>oebuild generate -p <span class="si">${</span><span class="nv">platform</span><span class="si">}</span>  -f oebridge -f systemd
