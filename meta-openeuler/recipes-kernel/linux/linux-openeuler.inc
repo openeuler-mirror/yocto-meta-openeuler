@@ -126,6 +126,10 @@ KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'xen', ' featu
 # zvm kernel support
 KERNEL_FEATURES:append = "${@bb.utils.contains('MCS_FEATURES', 'zvm', ' features/zvm/zvm.scc', '', d)}"
 
+# containerd kernel support
+KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'containerd', ' features/basic-containerd/containerd.scc', '', d)}"
+
+# kubeedge kernel support
 KERNEL_FEATURES:append = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'kubeedge', 'features/kubeedge/kubeedge.scc', '', d)} \
 "
@@ -200,7 +204,47 @@ pkg_postinst_${KERNEL_PACKAGE_NAME}-base () {
 }
 
 
-# qemu is 1st class BSP in openeuler, so add qemu specific kernel customeriazation here
+# qemu is the first class BSP in openeuler, so add qemu specific kernel customeriazation here
 # for other BSP, plese do it in its own layer and use dynamic layer mechanism under bsp/met-openeuler-bsp, for example, see
 # raspberrypi bsp
 SRC_URI:append:qemu-aarch64= "${@bb.utils.contains('DISTRO_FEATURES', 'oe-xfce', 'file://config/cfg-fragments/qemu-aarch64-xfce.cfg', '', d)}"
+
+do_container_configs[doc] = "Checks the kernel configs required by container, parses the output, and issues warnings/notes for missing configs."
+do_container_configs() {
+    wget -P ${WORKDIR}  https://github.com/moby/moby/raw/master/contrib/check-config.sh || true
+    if [ -f ${WORKDIR}/check-config.sh ]; then
+        sed -i 's,zcat "$2" | grep "$1", cat "$2" | grep "$1",g' ${WORKDIR}/check-config.sh
+        chmod +x ${WORKDIR}/check-config.sh
+        kconfigfile="${B}/.config" 
+        section=""
+        NO_COLOR=1 script_output=$(${WORKDIR}/check-config.sh ${kconfigfile} 2>&1 || true)
+        echo "${script_output}" | while IFS= read -r line; do
+            if echo "$line" | grep -q "Generally Necessary:"; then
+                section="necessary"
+                continue
+            fi
+            if echo "$line" | grep -q "Optional Features:"; then
+                section="optional"
+                continue
+            fi
+            
+            if echo "$line" | grep -q "missing" && echo "$line" | grep -q "CONFIG_"; then
+                local trimed=$(echo "$line" | sed -E 's/.*(CONFIG_[A-Z0-9_]+):\s*([a-z]+).*/\1 is \2/')
+                if [ "$section" = "necessary" ]; then
+                    bbwarn "necessary ability for container: $trimed"
+                elif [ "$section" = "optional" ]; then
+                    bbwarn "optional ability for container: $trimed"
+                else
+                    bbwarn "ability for container: $line"
+                fi
+            fi
+        done
+    else
+        bbwarn "Could not download moby check-config.sh, skipping kernel config check."
+    fi
+}
+
+python () {
+    if bb.utils.contains_any('DISTRO_FEATURES', 'containerd k3s', True, False, d):
+        bb.build.addtask('container_configs', 'do_compile', 'do_configure',d)
+}

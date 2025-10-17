@@ -1,5 +1,5 @@
 INSTALLMODULES = " \
-${@bb.utils.contains('DISTRO_FEATURES', 'isulad', 'kernel-module-overlay', '', d)} \
+${@bb.utils.contains_any('DISTRO_FEATURES', 'isulad containerd', 'kernel-module-overlay', '', d)} \
 kernel-module-8021q \
 kernel-module-ext2 \
 kernel-module-inet-diag \
@@ -8,7 +8,7 @@ kernel-module-ip6-udp-tunnel \
 kernel-module-ipip \
 kernel-module-ipt-reject \
 kernel-module-ipv6 \
-kernel-module-nf-defrag-ipv6 \
+${@bb.utils.contains_any('DISTRO_FEATURES', 'k3s containerd', '', 'kernel-module-nf-defrag-ipv6',d)} \
 kernel-module-nf-nat \
 kernel-module-nf-reject-ipv4 \
 kernel-module-nf-reject-ipv6 \
