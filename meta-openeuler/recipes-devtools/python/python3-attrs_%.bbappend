@@ -12,3 +12,5 @@ SRC_URI:remove = " \
 	file://0001-conftest.py-disable-deadline.patch \
 	file://run-ptest \
 "
+
+ASSUME_PROVIDE_PKGS = "python3-attrs"

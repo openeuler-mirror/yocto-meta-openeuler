@@ -5,3 +5,5 @@ SRC_URI += " \
         file://backport-Improve-CMake-build-system.patch \
         file://backport-CVE-2024-3205-Fix-emitter-states-handling-when-write_indicator-fails.patch \
 "
+
+ASSUME_PROVIDE_PKGS = "libyaml"

@@ -9,3 +9,5 @@ SRC_URI = " \
     "
 
 SRC_URI[sha256sum] = "7abcfd161c6e2742ca5c6c0895d1f853c940f203304a0b49da4e1eca5d088ca6"
+
+ASSUME_PROVIDE_PKGS = "sqlite"

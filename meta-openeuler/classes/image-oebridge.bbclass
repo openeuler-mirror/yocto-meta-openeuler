@@ -204,34 +204,56 @@ fakeroot python do_dnf_install_pkgs(){
     else:
         bb.error("openEuler.repo not found")
 
+    if d.getVar('OEBRIDGE_EXTRA_FILE_PATH'):
+        temp_file_path = f"{d.getVar('OEBRIDGE_EXTRA_FILE_PATH')}"
+        run_cmd_with_cwd(f"cp {temp_file_path} rootfs", d.getVar("WORKDIR"))
+
     # do some prepare action
+    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 cp -rfP rootfs temp/", d.getVar("WORKDIR"))
+    run_cmd_with_cwd(f"getfacl -R rootfs > temp/rootfs_permission", d.getVar("WORKDIR"))
+    run_cmd_with_cwd(f"find rootfs -type l -printf '%u:%g %p\n' > temp/rootfs_softlink", d.getVar("WORKDIR"))
+    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo setfacl --restore=rootfs_permission", d.getVar("WORKDIR")+"/temp")
+    run_cmd_with_cwd(f"cat rootfs_softlink | while read -r o p;do PSEUDO_UNLOAD=1 sudo chown -h \"$o\" \"$p\"; done", d.getVar("WORKDIR")+"/temp")
+    
     if len(real_list) > 0:
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 cp -rfP rootfs temp/", d.getVar("WORKDIR"))
-        run_cmd_with_cwd(f"getfacl -R rootfs > temp/rootfs_permission", d.getVar("WORKDIR"))
-        run_cmd_with_cwd(f"find rootfs -type l -printf '%u:%g %p\n' > temp/rootfs_softlink", d.getVar("WORKDIR"))
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo setfacl --restore=rootfs_permission", d.getVar("WORKDIR")+"/temp")
-        run_cmd_with_cwd(f"cat rootfs_softlink | while read -r o p;do PSEUDO_UNLOAD=1 sudo chown -h \"$o\" \"$p\"; done", d.getVar("WORKDIR")+"/temp")
         real_list_str = " ".join(real_list)
         run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
         {real_list_str} -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo getfacl -R rootfs > ../rootfs_permission", d.getVar("WORKDIR")+"/temp")
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo find rootfs -type l -printf '%u:%g %p\n' > ../rootfs_softlink", d.getVar("WORKDIR")+"/temp")
-        res = subprocess.run("stat -c '%u:%g' temp",
-                        shell=True,
-                        stderr=subprocess.PIPE,
-                        stdout=subprocess.PIPE,
-                        cwd=d.getVar("WORKDIR"),
-                        text=True)
-        if res.returncode != 0:
-            bb.fatal(res.stderr)
-        ugid = res.stdout.strip()
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs chown -R {ugid} /", d.getVar("WORKDIR"))
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs chmod -R 777 /", d.getVar("WORKDIR"))
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo rm -f temp/rootfs/root/.bash_history", d.getVar("WORKDIR"))
-        run_cmd_with_cwd(f"rm -rf ./rootfs", d.getVar("WORKDIR"))
-        run_cmd_with_cwd(f"cp -rfP temp/rootfs ./", d.getVar("WORKDIR"))
-        run_cmd_with_cwd(f"setfacl --restore=rootfs_permission", d.getVar("WORKDIR"))
-        run_cmd_with_cwd(f"cat rootfs_softlink | while read -r o p;do chown -h \"$o\" \"$p\"; done", d.getVar("WORKDIR"))
+        
+    if os.path.exists(os.path.join(d.getVar("WORKDIR"), "temp/rootfs/oebridge-extra-command.sh")):
+        # 从WORKDIR复制oebridge_extra_command.sh到rootfs
+        image_rootfs = d.getVar("IMAGE_ROOTFS")
+        # 给oebridge_extra_command.sh添加可执行权限
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs chmod +x /oebridge-extra-command.sh", d.getVar("WORKDIR"))
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs /oebridge-extra-command.sh", d.getVar("WORKDIR"))
+        # 删除oebridge_extra_command.sh
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs rm -f /oebridge-extra-command.sh", d.getVar("WORKDIR"))
+    
+    oebridge_pip_list = d.getVar('OEBRIDGE_PIP_LISTS',"").split("\n")
+    if len(oebridge_pip_list) > 0:
+        oebridge_pip_list_str = " ".join(oebridge_pip_list)
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs pip3 install {oebridge_pip_list_str} -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple", d.getVar("WORKDIR"))
+
+    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo getfacl -R rootfs > ../rootfs_permission", d.getVar("WORKDIR")+"/temp")
+    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo find rootfs -type l -printf '%u:%g %p\n' > ../rootfs_softlink", d.getVar("WORKDIR")+"/temp")
+    res = subprocess.run("stat -c '%u:%g' temp",
+                    shell=True,
+                    stderr=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    cwd=d.getVar("WORKDIR"),
+                    text=True)
+    if res.returncode != 0:
+        bb.fatal(res.stderr)
+    ugid = res.stdout.strip()
+    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs chown -R {ugid} /", d.getVar("WORKDIR"))
+    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs chmod -R 777 /", d.getVar("WORKDIR"))
+    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo rm -f temp/rootfs/root/.bash_history", d.getVar("WORKDIR"))
+    run_cmd_with_cwd(f"rm -rf ./rootfs", d.getVar("WORKDIR"))
+    run_cmd_with_cwd(f"cp -rfP temp/rootfs ./", d.getVar("WORKDIR"))
+    run_cmd_with_cwd(f"setfacl --restore=rootfs_permission", d.getVar("WORKDIR"))
+    run_cmd_with_cwd(f"cat rootfs_softlink | while read -r o p;do chown -h \"$o\" \"$p\"; done", d.getVar("WORKDIR"))
+
+    subprocess.run(f"rm -f rootfs/oebridge-extra-command.tmp", shell=True, text=True)
 }
 
 python do_run_post_action(){
