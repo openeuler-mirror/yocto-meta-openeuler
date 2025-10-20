@@ -36,6 +36,9 @@ EXTRA_OECMAKE:x86-64 = " \
     -DMICA_DEBUG_LOG=y \
     "
 
+# enable name-based rpmsg tty suffix via CMake option when requested
+EXTRA_OECMAKE:append = " ${@bb.utils.contains('MCS_FEATURES', 'new_tty_suffix', ' -DRPMSG_TTY_USE_CLIENT_NAME=1', '', d)}"
+
 # the software packages required in build
 DEPENDS = "openamp libmetal update-rc.d-native"
 
