@@ -9,7 +9,6 @@ PACKAGES = " \
     ${PN} \
 "
 
-# TODO: version migration for containerd (to >1.7.1)
 # TODO: cni compatibility
 RDEPENDS:${PN} = " \
     virtual-containerd \
