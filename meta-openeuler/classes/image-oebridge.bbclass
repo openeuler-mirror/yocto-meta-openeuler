@@ -229,10 +229,12 @@ fakeroot python do_dnf_install_pkgs(){
         # 删除oebridge_extra_command.sh
         run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs rm -f /oebridge-extra-command.sh", d.getVar("WORKDIR"))
     
-    oebridge_pip_list = d.getVar('OEBRIDGE_PIP_LISTS',"").split("\n")
-    if len(oebridge_pip_list) > 0:
-        oebridge_pip_list_str = " ".join(oebridge_pip_list)
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs pip3 install {oebridge_pip_list_str} -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple", d.getVar("WORKDIR"))
+    # the OEBRIDGE_PIP_LISTS may be none, so check it, else raise None has no attribute 'split'
+    if d.getVar('OEBRIDGE_PIP_LISTS') is not None:
+        oebridge_pip_list = d.getVar('OEBRIDGE_PIP_LISTS',"").split("\n")
+        if len(oebridge_pip_list) > 0:
+            oebridge_pip_list_str = " ".join(oebridge_pip_list)
+            run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs pip3 install {oebridge_pip_list_str} -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple", d.getVar("WORKDIR"))
 
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo getfacl -R rootfs > ../rootfs_permission", d.getVar("WORKDIR")+"/temp")
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo find rootfs -type l -printf '%u:%g %p\n' > ../rootfs_softlink", d.getVar("WORKDIR")+"/temp")
