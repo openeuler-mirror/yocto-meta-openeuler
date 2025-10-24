@@ -36,6 +36,8 @@ RUN sed -i 's/TMOUT=300/TMOUT=/g' /etc/bashrc
 # add umask conf to 022 in file /etc/bashrc
 RUN echo "umask 022" >> /etc/bashrc
 
+RUN chmod 777 /var/log/hawkey.log && chmod -R 777 /var/cache/dnf
+
 USER openeuler
 
 ARG openeuler_repo=https://gitee.com/openeuler/yocto-meta-openeuler
@@ -58,20 +60,23 @@ RUN ./${nativesdk_name}-${openeuler_base_version}.sh -d /opt/buildtools/nativesd
 RUN . /opt/buildtools/nativesdk/environment-setup-x86_64-openeulersdk-linux
 
 # download toolchain release and install it
-ARG toolchain_version=toolchains-v0.1.5
+ARG toolchain_version=toolchains-v0.1.8
 RUN mkdir -p /usr1/openeuler/gcc
 WORKDIR /usr1/openeuler/gcc
-RUN wget ${openeuler_repo}/releases/download/${toolchain_version}/1_openeuler_gcc_arm64le.tar.gz \
-    && wget ${openeuler_repo}/releases/download/${toolchain_version}/2_openeuler_gcc_arm64le.tar.gz \
-    && wget ${openeuler_repo}/releases/download/${toolchain_version}/3_openeuler_gcc_arm64le.tar.gz \
-    && wget ${openeuler_repo}/releases/download/${toolchain_version}/4_openeuler_gcc_arm64le.tar.gz \
+RUN wget ${openeuler_repo}/releases/download/${toolchain_version}/1_openeuler_gcc_arm32le.tar.gz \
+    && wget ${openeuler_repo}/releases/download/${toolchain_version}/2_openeuler_gcc_arm32le.tar.gz \
+    && wget ${openeuler_repo}/releases/download/${toolchain_version}/3_openeuler_gcc_arm32le.tar.gz \
+    && wget ${openeuler_repo}/releases/download/${toolchain_version}/1_openeuler_gcc_arm32le-musl.tar.gz \
+    && wget ${openeuler_repo}/releases/download/${toolchain_version}/2_openeuler_gcc_arm32le-musl.tar.gz \
+    && wget ${openeuler_repo}/releases/download/${toolchain_version}/3_openeuler_gcc_arm32le-musl.tar.gz \
     && wget ${openeuler_repo}/releases/download/${toolchain_version}/1_openeuler_gcc_x86_64.tar.gz \
     && wget ${openeuler_repo}/releases/download/${toolchain_version}/2_openeuler_gcc_x86_64.tar.gz \
     && wget ${openeuler_repo}/releases/download/${toolchain_version}/3_openeuler_gcc_x86_64.tar.gz \
     && wget ${openeuler_repo}/releases/download/${toolchain_version}/4_openeuler_gcc_x86_64.tar.gz \
-    && wget ${openeuler_repo}/releases/download/${toolchain_version}/1_openeuler_gcc_arm32le.tar.gz \
-    && wget ${openeuler_repo}/releases/download/${toolchain_version}/2_openeuler_gcc_arm32le.tar.gz \
-    && wget ${openeuler_repo}/releases/download/${toolchain_version}/3_openeuler_gcc_arm32le.tar.gz \
+    && wget ${openeuler_repo}/releases/download/${toolchain_version}/1_openeuler_gcc_arm64le.tar.gz \
+    && wget ${openeuler_repo}/releases/download/${toolchain_version}/2_openeuler_gcc_arm64le.tar.gz \
+    && wget ${openeuler_repo}/releases/download/${toolchain_version}/3_openeuler_gcc_arm64le.tar.gz \
+    && wget ${openeuler_repo}/releases/download/${toolchain_version}/4_openeuler_gcc_arm64le.tar.gz \
     && wget ${openeuler_repo}/releases/download/${toolchain_version}/1_openeuler_gcc_riscv64.tar.gz \
     && wget ${openeuler_repo}/releases/download/${toolchain_version}/2_openeuler_gcc_riscv64.tar.gz \
     && wget ${openeuler_repo}/releases/download/${toolchain_version}/3_openeuler_gcc_riscv64.tar.gz \
@@ -83,6 +88,8 @@ RUN wget ${openeuler_repo}/releases/download/${toolchain_version}/1_openeuler_gc
     && rm -rf openeuler_gcc_x86_64.tar.gz \
     && tar xzvf openeuler_gcc_arm32le.tar.gz \
     && rm -rf openeuler_gcc_arm32le.tar.gz \
+    && tar xzvf openeuler_gcc_arm32le-musl.tar.gz \
+    && rm -rf openeuler_gcc_arm32le-musl.tar.gz \
     && tar xzvf openeuler_gcc_riscv64.tar.gz \
     && rm -rf openeuler_gcc_riscv64.tar.gz \
     && rm -rf merge_data.sh
