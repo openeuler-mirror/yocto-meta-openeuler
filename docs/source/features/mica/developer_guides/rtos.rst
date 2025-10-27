@@ -264,7 +264,7 @@ OpenAMP的初始化
 
 .. seealso::
 
-   `UniProton 的示例代码: <https://gitee.com/openeuler/UniProton/blob/master/demos/raspi4/apps/openamp/rpmsg_backend_rsc_table.c>`_。
+   `UniProton 的示例代码: <https://gitee.com/openeuler/UniProton/blob/master/src/component/mica/rpmsg_backend_rsc_table.c>`_。
 
 另外，为了避免中断时间过长，影响实时性，可以考虑将 `rproc_virtio_notified` 放到线程中执行，在中断流程仅做线程的唤醒：
 
