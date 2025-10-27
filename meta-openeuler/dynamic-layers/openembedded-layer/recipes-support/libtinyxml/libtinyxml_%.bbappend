@@ -7,7 +7,9 @@ OPENEULER_LOCAL_NAME = "tinyxml"
 
 S = "${WORKDIR}/tinyxml"
 
+FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
+
 SRC_URI += "file://tinyxml_2_6_2.tar.gz \
         file://CVE-2021-42260.patch \
-        file://2-fix-devel-package-error.patch \
+        file://CVE-2023-34194.patch \
         "
