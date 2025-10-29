@@ -1,0 +1,1446 @@
+From c54572e1160ba54a8b1739986c842b9a43cb01ba Mon Sep 17 00:00:00 2001
+From: Wanming Hu <huwanming@huawei.com>
+Date: Sat, 13 Sep 2025 18:15:48 +0800
+Subject: [PATCH] xenvm: support mcs rpmsg communication
+
+Support mcs rpmsg communication, by using xenstore
+to fetch gnttab reference and evtchn port from master.
+Then we initialize shared memory and interrupt through
+them, and initialize the rpmsg device and services.
+
+Signed-off-by: Wanming Hu <huwanming@huawei.com>
+---
+ boards/xen/xenvm/board.yml                    |   1 +
+ boards/xen/xenvm/xenvm_xenvm_mcs.dts          |  97 +++++
+ boards/xen/xenvm/xenvm_xenvm_mcs_defconfig    |  43 ++
+ drivers/xen/CMakeLists.txt                    |   1 +
+ drivers/xen/gnttab.c                          |  33 +-
+ drivers/xen/xenstore.c                        | 316 ++++++++++++++
+ include/zephyr/xen/gnttab.h                   |  10 +
+ include/zephyr/xen/public/xenstore.h          |  79 ++++
+ include/zephyr/xen/xs_wire.h                  | 147 +++++++
+ lib/open-amp/resource_table.c                 |   6 +
+ lib/open-amp/resource_table.h                 |  20 +-
+ soc/xen/CMakeLists.txt                        |   3 +
+ soc/xen/rsc_table_linker.ld                   |  13 +
+ subsys/ipc/rpmsg_service/CMakeLists.txt       |  26 +-
+ subsys/ipc/rpmsg_service/rpmsg_backend.h      |   8 +
+ .../rpmsg_backend_rsc_table_xen.c             | 408 ++++++++++++++++++
+ 16 files changed, 1186 insertions(+), 25 deletions(-)
+ create mode 100644 boards/xen/xenvm/xenvm_xenvm_mcs.dts
+ create mode 100644 boards/xen/xenvm/xenvm_xenvm_mcs_defconfig
+ create mode 100644 drivers/xen/xenstore.c
+ create mode 100644 include/zephyr/xen/public/xenstore.h
+ create mode 100644 include/zephyr/xen/xs_wire.h
+ create mode 100644 soc/xen/rsc_table_linker.ld
+ create mode 100644 subsys/ipc/rpmsg_service/rpmsg_backend_rsc_table_xen.c
+
+diff --git a/boards/xen/xenvm/board.yml b/boards/xen/xenvm/board.yml
+index 5b5aec44c55..c89b8618f85 100644
+--- a/boards/xen/xenvm/board.yml
++++ b/boards/xen/xenvm/board.yml
+@@ -5,3 +5,4 @@ board:
+   - name: xenvm
+     variants:
+     - name: gicv3
++    - name: mcs
+\ No newline at end of file
+diff --git a/boards/xen/xenvm/xenvm_xenvm_mcs.dts b/boards/xen/xenvm/xenvm_xenvm_mcs.dts
+new file mode 100644
+index 00000000000..db58d44e7d5
+--- /dev/null
++++ b/boards/xen/xenvm/xenvm_xenvm_mcs.dts
+@@ -0,0 +1,97 @@
++/*
++ * Copyright (c) 2020 EPAM Systems
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ *
++ * This file was created by running
++ *
++ * # LIBXL_DEBUG_DUMP_DTB=domu-libxl.dtb xl create zephyr.conf
++ *
++ * decompiling resulting domu-libxl.dtb and then manually aligning it
++ * with zephyr requirements.
++ */
++
++/dts-v1/;
++
++#include <mem.h>
++#include <arm64/armv8-a.dtsi>
++#include <zephyr/dt-bindings/interrupt-controller/arm-gic.h>
++
++/ {
++	model = "XENVM";
++	compatible = "xen,xenvm";
++	interrupt-parent = <&gic>;
++	#address-cells = <0x02>;
++	#size-cells = <0x02>;
++
++	chosen {
++		zephyr,sram = &ram;
++		/* xen_hvc is used for debug, which also may be used by Linux */
++		zephyr,console = &xen_hvc;
++		zephyr,shell-uart = &uart_rpmsg0;
++	};
++
++	cpus {
++		#address-cells = <0x01>;
++		#size-cells = <0x00>;
++
++		cpu@0 {
++			device_type = "cpu";
++			compatible = "arm,armv8";
++			enable-method = "psci";
++			reg = <0x00>;
++		};
++	};
++
++	psci {
++		compatible = "arm,psci-1.0", "arm,psci-0.2", "arm,psci";
++		method = "hvc";
++	};
++
++	ram: memory@40000000 {
++		device_type = "mmio-sram";
++		reg = <0x00 0x40000000 0x00 DT_SIZE_M(16)>;
++	};
++
++	gic: interrupt-controller@3001000 {
++		compatible = "arm,gic-v3", "arm,gic";
++		#interrupt-cells = <0x04>;
++		#address-cells = <0x00>;
++		interrupt-controller;
++		reg = <0x00 0x3001000 0x00 0x10000 0x00 0x3020000 0x00 0x1000000>;
++	};
++
++	timer {
++		compatible = "arm,armv8-timer";
++		interrupts = <GIC_PPI 0x0d IRQ_TYPE_LEVEL IRQ_DEFAULT_PRIORITY
++			      GIC_PPI 0x0e IRQ_TYPE_LEVEL IRQ_DEFAULT_PRIORITY
++			      GIC_PPI 0x0b IRQ_TYPE_LEVEL IRQ_DEFAULT_PRIORITY>;
++		interrupt-parent = <&gic>;
++	};
++
++	hypervisor: hypervisor@38000000 {
++		compatible = "xen,xen";
++		reg = <0x00 0x38000000 0x00 0x1000000>;
++		interrupts = <GIC_PPI 0x0f IRQ_TYPE_EDGE IRQ_DEFAULT_PRIORITY>;
++		interrupt-parent = <&gic>;
++	};
++
++	xen_hvc: hvc {
++		compatible = "xen,hvc-uart";
++		status = "okay";
++	};
++
++	uart_rpmsg0: ep0 {
++		status = "okay";
++		compatible = "zephyr,rpmsg-uart";
++		/* the rpmsg-tty driver requires ep-name should be rpmsg-tty* */
++		ep-name = "rpmsg-tty";
++	};
++
++	uart_rpmsg1: ep1 {
++		status = "okay";
++		compatible = "zephyr,rpmsg-uart";
++		ep-name = "rpmsg-tty1";
++	};
++
++};
+diff --git a/boards/xen/xenvm/xenvm_xenvm_mcs_defconfig b/boards/xen/xenvm/xenvm_xenvm_mcs_defconfig
+new file mode 100644
+index 00000000000..3cc11e8f845
+--- /dev/null
++++ b/boards/xen/xenvm/xenvm_xenvm_mcs_defconfig
+@@ -0,0 +1,43 @@
++# Enable UART driver
++CONFIG_SERIAL=y
++
++CONFIG_MAX_XLAT_TABLES=24
++
++# Enable console
++CONFIG_CONSOLE=y
++CONFIG_UART_CONSOLE=y
++
++# Enable logging subsys
++CONFIG_LOG=y
++CONFIG_LOG_MODE_MINIMAL=n
++CONFIG_TIMER_READS_ITS_FREQUENCY_AT_RUNTIME=y
++
++# Enable RPMSG based serial port
++CONFIG_UART_RPMSG=y
++CONFIG_UART_INTERRUPT_DRIVEN=y
++
++# support psci ops
++CONFIG_OPENAMP=y
++# CONFIG_IPM=y
++CONFIG_RPMSG_SERVICE_MODE_REMOTE=y
++CONFIG_OPENAMP_MASTER=n
++CONFIG_OPENAMP_RSC_TABLE_NUM_RPMSG_BUFF=8
++CONFIG_OPENAMP_RSC_TABLE=y
++# shell must be initialized after uart_rpmsg
++CONFIG_SHELL_BACKEND_SERIAL_INIT_PRIORITY=62
++# the tx ring buffer size is the same of buffer of rpmsg_virtio buffer
++CONFIG_SHELL_BACKEND_SERIAL_TX_RING_BUFFER_SIZE=512
++
++CONFIG_LOG_BUFFER_SIZE=65536
++
++CONFIG_XEN_GRANT_TABLE_INIT_PRIORITY=47
++CONFIG_RPMSG_SERVICE_INIT_PRIORITY=55
++CONFIG_CONSOLE_INIT_PRIORITY=62
++
++CONFIG_LOG_BACKEND_UART=y
++CONFIG_HEAP_MEM_POOL_SIZE=262144
++
++CONFIG_PSCI_SHELL=y
++
++CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC=50000000
++CONFIG_TIMER_READS_ITS_FREQUENCY_AT_RUNTIME=n
+\ No newline at end of file
+diff --git a/drivers/xen/CMakeLists.txt b/drivers/xen/CMakeLists.txt
+index 412be7d318d..cc7188610d7 100644
+--- a/drivers/xen/CMakeLists.txt
++++ b/drivers/xen/CMakeLists.txt
+@@ -5,5 +5,6 @@ zephyr_sources(hvm.c)
+ zephyr_sources(events.c)
+ zephyr_sources_ifdef(CONFIG_XEN_GRANT_TABLE gnttab.c)
+ zephyr_sources(memory.c)
++zephyr_sources(xenstore.c)
+ 
+ add_subdirectory_ifdef(CONFIG_XEN_DOM0 dom0)
+diff --git a/drivers/xen/gnttab.c b/drivers/xen/gnttab.c
+index 8ceb97e2db1..e5f8cb98132 100644
+--- a/drivers/xen/gnttab.c
++++ b/drivers/xen/gnttab.c
+@@ -189,35 +189,44 @@ static void gop_eagain_retry(int cmd, struct gnttab_map_grant_ref *gref)
+ 	}
+ }
+ 
+-void *gnttab_get_page(void)
++void *gnttab_get_continuous_page(unsigned int count)
+ {
+ 	int ret;
+ 	void *page_addr;
+ 	struct xen_remove_from_physmap rfpm;
+ 
+-	page_addr = k_aligned_alloc(XEN_PAGE_SIZE, XEN_PAGE_SIZE);
++	page_addr = k_aligned_alloc(XEN_PAGE_SIZE, XEN_PAGE_SIZE * count);
+ 	if (!page_addr) {
+ 		LOG_WRN("Failed to allocate memory for gnttab page!\n");
+ 		return NULL;
+ 	}
+ 
+ 	rfpm.domid = DOMID_SELF;
+-	rfpm.gpfn = xen_virt_to_gfn(page_addr);
+ 
+-	/*
+-	 * GNTTABOP_map_grant_ref will simply replace the entry in the P2M
+-	 * and not release any RAM that may have been associated with
+-	 * page_addr, so we release this memory before mapping.
+-	 */
+-	ret = HYPERVISOR_memory_op(XENMEM_remove_from_physmap, &rfpm);
+-	if (ret) {
+-		LOG_WRN("Failed to remove gnttab page from physmap, ret = %d\n", ret);
+-		return NULL;
++	for (unsigned int i = 0; i < count; i++) {
++		void *offset_page_addr = (char *)page_addr + i * XEN_PAGE_SIZE;
++		rfpm.gpfn = xen_virt_to_gfn(offset_page_addr);
++		/*
++		* GNTTABOP_map_grant_ref will simply replace the entry in the P2M
++		* and not release any RAM that may have been associated with
++		* page_addr, so we release this memory before mapping.
++		*/
++		ret = HYPERVISOR_memory_op(XENMEM_remove_from_physmap, &rfpm);
++		if (ret) {
++			LOG_WRN("Failed to remove gnttab page from physmap, ret = %d\n", ret);
++			return NULL;
++		}
+ 	}
+ 
+ 	return page_addr;
+ }
+ 
++
++void *gnttab_get_page(void)
++{
++	return gnttab_get_continuous_page(1);
++}
++
+ void gnttab_put_page(void *page_addr)
+ {
+ 	int ret, nr_extents = 1;
+diff --git a/drivers/xen/xenstore.c b/drivers/xen/xenstore.c
+new file mode 100644
+index 00000000000..d25d50115d0
+--- /dev/null
++++ b/drivers/xen/xenstore.c
+@@ -0,0 +1,316 @@
++/*
++ * xenstore.c: static, synchronous, read-only xenbus client for mica.
++ *
++ * Copyright (c) 2009 Tim Deegan, Citrix Systems (R&D) Ltd.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions
++ * are met:
++ * 1. Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ * 2. Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ *
++ * THIS SOFTWARE IS PROVIDED BY AUTHOR AND CONTRIBUTORS ``AS IS'' AND
++ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ * ARE DISCLAIMED.  IN NO EVENT SHALL AUTHOR OR CONTRIBUTORS BE LIABLE
++ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
++ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
++ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
++ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
++ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
++ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
++ * SUCH DAMAGE.
++ */
++
++#include <zephyr/xen/public/xenstore.h>
++#include <zephyr/sys/barrier.h>
++#include <zephyr/xen/hvm.h>
++
++LOG_MODULE_REGISTER(xen_xenstore);
++
++static struct xenstore_domain_interface *rings; /* Shared ring with dom0 */
++static uint32_t event;                     /* Event-channel to dom0 */
++static char payload[XENSTORE_PAYLOAD_MAX + 1];  /* Unmarshalling area */
++
++static void ring_wait(void)
++{
++    struct sched_poll poll;
++
++    memset(&poll, 0, sizeof(poll));
++    set_xen_guest_handle(poll.ports, &event);
++    poll.nr_ports = 1;
++
++    // while ( !test_and_clear_bit(event, shinfo->evtchn_pending) )
++        HYPERVISOR_sched_op(SCHEDOP_poll, &poll);
++}
++
++/* Connect our xenbus client to the backend.
++ * Call once, before any other xenbus actions. */
++int xenbus_setup(void)
++{
++	uintptr_t xenstore_addr = 0;
++    uint64_t val;
++	int ret;
++
++    /* Ask Xen where the xenbus event channel is. */
++	ret = hvm_get_parameter(HVM_PARAM_STORE_EVTCHN, DOMID_SELF, &val);
++    if (ret) {
++		LOG_ERR("Failed to get store evtchn: %d", ret);
++		return ret;
++	}
++    event = val;
++
++	/* Ask Xen where the xenbus shared page is. */
++	ret = hvm_get_parameter(HVM_PARAM_STORE_PFN, DOMID_SELF, &val);
++    if (ret) {
++		LOG_ERR("Failed to get store PFN %d: %d", HVM_PARAM_STORE_PFN, ret);
++		return ret;
++	}
++	xenstore_addr = (uintptr_t) (val << XEN_PAGE_SHIFT);
++	k_mem_map_phys_bare((uint8_t **)&rings, xenstore_addr, XEN_PAGE_SIZE,
++				   K_MEM_PERM_RW);
++
++    LOG_INF("Xenbus xenstore_addr 0x%lx, rings %p, event channel %lu",
++           xenstore_addr, rings, (unsigned long) event);
++
++	return 0;
++}
++
++/* Reset the xenbus connection so the next kernel can start again. */
++void xenbus_shutdown(void)
++{
++    evtchn_send_t send;
++
++    if (rings->server_features & XENSTORE_SERVER_FEATURE_RECONNECTION) {
++        rings->connection = XENSTORE_RECONNECT;
++        send.port = event;
++        HYPERVISOR_event_channel_op(EVTCHNOP_send, &send);
++        while (*(volatile uint32_t*)&rings->connection == XENSTORE_RECONNECT)
++            ring_wait ();
++    } else {
++        /* If the backend reads the state while we're erasing it then the
++         * ring state will become corrupted, preventing guest frontends from
++         * connecting. This is rare. To help diagnose the failure, we fill
++         * the ring with XS_INVALID packets. */
++        memset(rings->req, 0xff, XENSTORE_RING_SIZE);
++        memset(rings->rsp, 0xff, XENSTORE_RING_SIZE);
++        rings->req_cons = rings->req_prod = 0;
++        rings->rsp_cons = rings->rsp_prod = 0;
++    }
++
++    rings = NULL;
++}
++
++/* Helper functions: copy data in and out of the ring */
++static void ring_write(const char *data, uint32_t len)
++{
++    uint32_t part, done = 0;
++
++	if (len > XENSTORE_PAYLOAD_MAX) {
++		LOG_ERR("ring_write: len > XENSTORE_PAYLOAD_MAX");
++		return;
++	}
++
++    while ( len )
++    {
++        /* Don't overrun the consumer pointer */
++        while ( (part = (XENSTORE_RING_SIZE - 1) -
++                 MASK_XENSTORE_IDX(rings->req_prod - rings->req_cons)) == 0 )
++            ring_wait();
++        /* Don't overrun the end of the ring */
++        if ( part > (XENSTORE_RING_SIZE - MASK_XENSTORE_IDX(rings->req_prod)) )
++            part = XENSTORE_RING_SIZE - MASK_XENSTORE_IDX(rings->req_prod);
++        /* Don't write more than we were asked for */
++        if ( part > len ) 
++            part = len;
++
++        memcpy(rings->req + MASK_XENSTORE_IDX(rings->req_prod),
++               data + done, part);
++        compiler_barrier(); /* = wmb before prod write, rmb before next cons read */
++        rings->req_prod += part;
++        len -= part;
++        done += part;
++    }
++}
++
++static void ring_read(char *data, uint32_t len)
++{
++    uint32_t part, done = 0;
++
++	if (len > XENSTORE_PAYLOAD_MAX) {
++		LOG_ERR("ring_read: len > XENSTORE_PAYLOAD_MAX");
++		return;
++	}
++
++    while ( len )
++    {
++        /* Don't overrun the producer pointer */
++        while ( (part = MASK_XENSTORE_IDX(rings->rsp_prod -
++                                          rings->rsp_cons)) == 0 )
++        {
++            /*
++             * Don't wait for producer to fill the ring if it is already full.
++             * Condition happens when you write string > 1K into the ring.
++             * eg case prod=1272 cons=248.
++             */
++            if ( rings->rsp_prod - rings->rsp_cons == XENSTORE_RING_SIZE )
++            {
++                part = XENSTORE_RING_SIZE;
++                break;
++            }
++            ring_wait();
++        }
++        /* Don't overrun the end of the ring */
++        if ( part > (XENSTORE_RING_SIZE - MASK_XENSTORE_IDX(rings->rsp_cons)) )
++            part = XENSTORE_RING_SIZE - MASK_XENSTORE_IDX(rings->rsp_cons);
++        /* Don't read more than we were asked for */
++        if ( part > len )
++            part = len;
++
++        memcpy(data + done,
++               rings->rsp + MASK_XENSTORE_IDX(rings->rsp_cons), part);
++        // barrier(); /* = wmb before cons write, rmb before next prod read */
++		compiler_barrier(); /* = wmb before cons write, rmb before next prod read */
++        rings->rsp_cons += part;
++        len -= part;
++        done += part;
++    }
++}
++
++#define MAX_SEGMENTS    4
++
++/* Send a request. */
++static void xenbus_send(uint32_t type, ...)
++{
++    struct xsd_sockmsg hdr;
++    va_list ap;
++    struct {
++        const char *data;
++        uint32_t len;
++    } seg[MAX_SEGMENTS];
++    evtchn_send_t send;
++    int i, n;
++
++    /* Put the request on the ring */
++    hdr.type = type;
++    hdr.req_id = 0;  /* We only ever issue one request at a time */
++    hdr.tx_id = 0;   /* We never use transactions */
++    hdr.len = 0;
++
++    va_start(ap, type);
++    for ( i = 0; ; i++ ) {
++        seg[i].data = va_arg(ap, const char *);
++        seg[i].len = va_arg(ap, uint32_t);
++
++        if ( seg[i].data == NULL )
++            break;
++
++        hdr.len += seg[i].len;
++    }
++    n = i;
++    va_end(ap);
++
++    ring_write((char *) &hdr, sizeof hdr);
++    for ( i = 0; i < n; i++ )
++        ring_write(seg[i].data, seg[i].len);
++
++    /* Tell the other end about the request */
++    send.port = event;
++    HYPERVISOR_event_channel_op(EVTCHNOP_send, &send);
++}
++
++/* Wait for the answer to a previous request.
++ * Returns 0 for success, or an errno for error.
++ * The answer is returned in a static buffer which is only
++ * valid until the next call of xenbus_send(). */
++static int xenbus_recv(uint32_t *reply_len, const char **reply_data,
++                       uint32_t *reply_type)
++{
++    struct xsd_sockmsg hdr;
++
++    do
++    {
++        /* Pull the reply off the ring */
++        ring_read((char *) &hdr, sizeof(hdr));
++        ring_read(payload, hdr.len);
++        /* For sanity's sake, nul-terminate the answer */
++        payload[hdr.len] = '\0';
++
++    } while ( hdr.type == XS_DEBUG );
++
++    if ( reply_type )
++        *reply_type = hdr.type;
++
++    /* Handle errors */
++    if ( hdr.type == XS_ERROR )
++    {
++        int i;
++
++        *reply_len = 0;
++        for ( i = 0; i < ((sizeof xsd_errors) / (sizeof xsd_errors[0])); i++ )
++            if ( !strcmp(xsd_errors[i].errstring, payload) )
++                return xsd_errors[i].errnum;
++        /* Default error value if we couldn't decode the ASCII error */
++        return EIO;
++    }
++
++    if ( reply_data )
++        *reply_data = payload;
++    if ( reply_len )
++        *reply_len = hdr.len;
++    return 0;
++}
++
++
++/* Read a xenstore key.  Returns a nul-terminated string (even if the XS
++ * data wasn't nul-terminated) or NULL.  The returned string is in a
++ * static buffer, so only valid until the next xenstore/xenbus operation.
++ * If @default_resp is specified, it is returned in preference to a NULL or
++ * empty string received from xenstore.
++ */
++const char *xenstore_read(const char *path, const char *default_resp)
++{
++    uint32_t len = 0, type = 0;
++    const char *answer = NULL;
++
++    xenbus_send(XS_READ,
++                path, strlen(path),
++                "", 1, /* nul separator */
++                NULL, 0);
++
++    if ( xenbus_recv(&len, &answer, &type) || (type != XS_READ) )
++        answer = NULL;
++
++    if ( (default_resp != NULL) && ((answer == NULL) || (*answer == '\0')) )
++        answer = default_resp;
++
++    /* We know xenbus_recv() nul-terminates its answer, so just pass it on. */
++    return answer;
++}
++
++/* Write a xenstore key.  @value must be a nul-terminated string. Returns
++ * zero on success or a xenstore error code on failure.
++ */
++int xenstore_write(const char *path, const char *value)
++{
++    uint32_t len = 0, type = 0;
++    const char *answer = NULL;
++    int ret;
++
++    xenbus_send(XS_WRITE,
++                path, strlen(path),
++                "", 1, /* nul separator */
++                value, strlen(value),
++                NULL, 0);
++
++    ret = xenbus_recv(&len, &answer, &type);
++
++    if ( ret == 0 && ((type != XS_WRITE) || (len != 3) ||
++                      !answer || strcmp(answer, "OK")) )
++        ret = EIO;
++
++    return ret;
++}
+diff --git a/include/zephyr/xen/gnttab.h b/include/zephyr/xen/gnttab.h
+index be6a0d5c906..ce042a56aa4 100644
+--- a/include/zephyr/xen/gnttab.h
++++ b/include/zephyr/xen/gnttab.h
+@@ -40,6 +40,16 @@ int gnttab_end_access(grant_ref_t gref);
+  */
+ int32_t gnttab_alloc_and_grant(void **map, bool readonly);
+ 
++/*
++ * Provides interface to acquire free page, that can be used for
++ * mapping of foreign frames. Should be freed by gnttab_put_page()
++ * after usage.
++ *
++ * @return - pointer to page start address, that can be used as host_addr
++ *           in struct gnttab_map_grant_ref, NULL on error.
++ */
++void *gnttab_get_continuous_page(unsigned int count);
++
+ /*
+  * Provides interface to acquire free page, that can be used for
+  * mapping of foreign frames. Should be freed by gnttab_put_page()
+diff --git a/include/zephyr/xen/public/xenstore.h b/include/zephyr/xen/public/xenstore.h
+new file mode 100644
+index 00000000000..fa75e2a6ca8
+--- /dev/null
++++ b/include/zephyr/xen/public/xenstore.h
+@@ -0,0 +1,79 @@
++/* SPDX-License-Identifier: MIT */
++
++/******************************************************************************
++ * xen.h
++ *
++ * Guest OS interface to Xen.
++ *
++ * Permission is hereby granted, free of charge, to any person obtaining a copy
++ * of this software and associated documentation files (the "Software"), to
++ * deal in the Software without restriction, including without limitation the
++ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
++ * sell copies of the Software, and to permit persons to whom the Software is
++ * furnished to do so, subject to the following conditions:
++ *
++ * The above copyright notice and this permission notice shall be included in
++ * all copies or substantial portions of the Software.
++ *
++ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
++ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
++ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
++ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
++ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
++ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
++ * DEALINGS IN THE SOFTWARE.
++ *
++ * Copyright (c) 2004, K A Fraser
++ */
++
++#ifndef __XEN_PUBLIC_XENSTORE_H__
++#define __XEN_PUBLIC_XENSTORE_H__
++
++#if defined(CONFIG_ARM64)
++#include "arch-arm.h"
++#else
++#error "Unsupported architecture"
++#endif
++
++#include <zephyr/arch/arm64/hypercall.h>
++#include <zephyr/xen/generic.h>
++#include <zephyr/xen/public/memory.h>
++#include <zephyr/xen/public/sched.h>
++#include "../xs_wire.h"
++
++#include <zephyr/init.h>
++#include <zephyr/kernel.h>
++#include <zephyr/logging/log.h>
++#include <zephyr/sys/device_mmio.h>
++
++enum xenbus_state {
++    XenbusStateUnknown       = 0,
++    XenbusStateInitialising  = 1,
++    /*
++     * InitWait: Finished early initialisation but waiting for information
++     * from the peer or hotplug scripts.
++     */
++    XenbusStateInitWait      = 2,
++    /*
++     * Initialised: Waiting for a connection from the peer.
++     */
++    XenbusStateInitialised   = 3,
++    XenbusStateConnected     = 4,
++    /*
++     * Closing: The device is being closed due to an error or an unplug event.
++     */
++    XenbusStateClosing       = 5,
++    XenbusStateClosed        = 6,
++    /*
++     * Reconfiguring: The device is being reconfigured.
++     */
++    XenbusStateReconfiguring = 7,
++    XenbusStateReconfigured  = 8
++};
++
++int xenbus_setup(void);
++int xenstore_write(const char *path, const char *value);
++const char *xenstore_read(const char *path, const char *default_resp);
++void xenbus_shutdown(void);
++
++#endif /* __XEN_PUBLIC_XENSTORE_H__ */
+diff --git a/include/zephyr/xen/xs_wire.h b/include/zephyr/xen/xs_wire.h
+new file mode 100644
+index 00000000000..04e6849feb1
+--- /dev/null
++++ b/include/zephyr/xen/xs_wire.h
+@@ -0,0 +1,147 @@
++/* SPDX-License-Identifier: MIT */
++/*
++ * Details of the "wire" protocol between Xen Store Daemon and client
++ * library or guest kernel.
++ *
++ * Copyright (C) 2005 Rusty Russell IBM Corporation
++ */
++
++#ifndef _XS_WIRE_H
++#define _XS_WIRE_H
++
++enum xsd_sockmsg_type
++{
++    XS_CONTROL,
++#define XS_DEBUG XS_CONTROL
++    XS_DIRECTORY,
++    XS_READ,
++    XS_GET_PERMS,
++    XS_WATCH,
++    XS_UNWATCH,
++    XS_TRANSACTION_START,
++    XS_TRANSACTION_END,
++    XS_INTRODUCE,
++    XS_RELEASE,
++    XS_GET_DOMAIN_PATH,
++    XS_WRITE,
++    XS_MKDIR,
++    XS_RM,
++    XS_SET_PERMS,
++    XS_WATCH_EVENT,
++    XS_ERROR,
++    XS_IS_DOMAIN_INTRODUCED,
++    XS_RESUME,
++    XS_SET_TARGET,
++    /* XS_RESTRICT has been removed */
++    XS_RESET_WATCHES = XS_SET_TARGET + 2,
++    XS_DIRECTORY_PART,
++
++    XS_TYPE_COUNT,      /* Number of valid types. */
++
++    XS_INVALID = 0xffff /* Guaranteed to remain an invalid type */
++};
++
++#define XS_WRITE_NONE "NONE"
++#define XS_WRITE_CREATE "CREATE"
++#define XS_WRITE_CREATE_EXCL "CREATE|EXCL"
++
++/* We hand errors as strings, for portability. */
++struct xsd_errors
++{
++    int errnum;
++    const char *errstring;
++};
++#ifdef EINVAL
++#define XSD_ERROR(x) { x, #x }
++/* LINTED: static unused */
++static const struct xsd_errors xsd_errors[]
++#if defined(__GNUC__)
++__attribute__((unused))
++#endif
++    = {
++    /* /!\ New errors should be added at the end of the array. */
++    XSD_ERROR(EINVAL),
++    XSD_ERROR(EACCES),
++    XSD_ERROR(EEXIST),
++    XSD_ERROR(EISDIR),
++    XSD_ERROR(ENOENT),
++    XSD_ERROR(ENOMEM),
++    XSD_ERROR(ENOSPC),
++    XSD_ERROR(EIO),
++    XSD_ERROR(ENOTEMPTY),
++    XSD_ERROR(ENOSYS),
++    XSD_ERROR(EROFS),
++    XSD_ERROR(EBUSY),
++    XSD_ERROR(EAGAIN),
++    XSD_ERROR(EISCONN),
++    XSD_ERROR(E2BIG),
++    XSD_ERROR(EPERM),
++};
++#endif
++
++struct xsd_sockmsg
++{
++    uint32_t type;  /* XS_??? */
++    uint32_t req_id;/* Request identifier, echoed in daemon's response.  */
++    uint32_t tx_id; /* Transaction id (0 if not related to a transaction). */
++    uint32_t len;   /* Length of data following this. */
++
++    /* Generally followed by nul-terminated string(s). */
++};
++
++enum xs_watch_type
++{
++    XS_WATCH_PATH = 0,
++    XS_WATCH_TOKEN
++};
++
++/*
++ * `incontents 150 xenstore_struct XenStore wire protocol.
++ *
++ * Inter-domain shared memory communications. */
++#define XENSTORE_RING_SIZE 1024
++typedef uint32_t XENSTORE_RING_IDX;
++#define MASK_XENSTORE_IDX(idx) ((idx) & (XENSTORE_RING_SIZE-1))
++struct xenstore_domain_interface {
++    char req[XENSTORE_RING_SIZE]; /* Requests to xenstore daemon. */
++    char rsp[XENSTORE_RING_SIZE]; /* Replies and async watch events. */
++    XENSTORE_RING_IDX req_cons, req_prod;
++    XENSTORE_RING_IDX rsp_cons, rsp_prod;
++    uint32_t server_features; /* Bitmap of features supported by the server */
++    uint32_t connection;
++    uint32_t error;
++};
++
++/* Violating this is very bad.  See docs/misc/xenstore.txt. */
++#define XENSTORE_PAYLOAD_MAX 4096
++
++/* Violating these just gets you an error back */
++#define XENSTORE_ABS_PATH_MAX 3072
++#define XENSTORE_REL_PATH_MAX 2048
++
++/* The ability to reconnect a ring */
++#define XENSTORE_SERVER_FEATURE_RECONNECTION 1
++/* The presence of the "error" field in the ring page */
++#define XENSTORE_SERVER_FEATURE_ERROR        2
++
++/* Valid values for the connection field */
++#define XENSTORE_CONNECTED 0 /* the steady-state */
++#define XENSTORE_RECONNECT 1 /* reconnect in progress */
++
++/* Valid values for the error field */
++#define XENSTORE_ERROR_NONE    0 /* No error */
++#define XENSTORE_ERROR_COMM    1 /* Communication problem */
++#define XENSTORE_ERROR_RINGIDX 2 /* Invalid ring index */
++#define XENSTORE_ERROR_PROTO   3 /* Protocol violation (payload too long) */
++
++#endif /* _XS_WIRE_H */
++
++/*
++ * Local variables:
++ * mode: C
++ * c-file-style: "BSD"
++ * c-basic-offset: 4
++ * tab-width: 4
++ * indent-tabs-mode: nil
++ * End:
++ */
+diff --git a/lib/open-amp/resource_table.c b/lib/open-amp/resource_table.c
+index fb10f664652..05747b9ca15 100644
+--- a/lib/open-amp/resource_table.c
++++ b/lib/open-amp/resource_table.c
+@@ -42,6 +42,7 @@ static struct fw_resource_table __resource resource_table = {
+ 		offsetof(struct fw_resource_table, ept_table),
+ #if (CONFIG_OPENAMP_RSC_TABLE_NUM_RPMSG_BUFF > 0)
+ 		offsetof(struct fw_resource_table, vdev),
++		offsetof(struct fw_resource_table, vring_offset),
+ #endif
+ 
+ #if defined(CONFIG_RAM_CONSOLE)
+@@ -68,6 +69,11 @@ static struct fw_resource_table __resource resource_table = {
+ 	.vring1 = {VRING_RX_ADDRESS, VRING_ALIGNMENT,
+ 		   CONFIG_OPENAMP_RSC_TABLE_NUM_RPMSG_BUFF,
+ 		   VRING1_ID, 0},
++
++	.vring_offset = {
++		.type = RSC_VENDOR_VRING_OFFSET,
++		.offset = {0, 0},
++	},
+ #endif
+ 
+ #if defined(CONFIG_RAM_CONSOLE)
+diff --git a/lib/open-amp/resource_table.h b/lib/open-amp/resource_table.h
+index 5bfedada2b0..4cb3a9ea016 100644
+--- a/lib/open-amp/resource_table.h
++++ b/lib/open-amp/resource_table.h
+@@ -29,7 +29,8 @@ extern "C" {
+ #define VRING_BUFF_ADDRESS      -1  /* allocated by Master processor */
+ #define VRING_ALIGNMENT         16  /* fixed to match with Linux constraint */
+ 
+-#define RSC_VENDOR_EPT_TABLE    128 /* List of bound endpoints */
++#define RSC_VENDOR_EPT_TABLE    128 /* List of bound endp oints */
++#define RSC_VENDOR_VRING_OFFSET 130 /* Offset of vrings from shmem base addr */
+ 
+ #endif
+ 
+@@ -37,6 +38,7 @@ enum rsc_table_entries {
+ 	RSC_TABLE_EPT_TABLE_ENTRY,
+ #if (CONFIG_OPENAMP_RSC_TABLE_NUM_RPMSG_BUFF > 0)
+ 	RSC_TABLE_VDEV_ENTRY,
++	RSC_TABLE_VRING_OFFSET_ENTRY,
+ #endif
+ #if defined(CONFIG_RAM_CONSOLE)
+ 	RSC_TABLE_TRACE_ENTRY,
+@@ -60,6 +62,13 @@ struct fw_rsc_ept {
+ 	struct ept_info endpoints[MAX_NUM_OF_EPTS];
+ } METAL_PACKED_END;
+ 
++#define MAX_NUM_OF_VRINGS 8
++METAL_PACKED_BEGIN
++struct fw_rsc_vring_offset {
++	uint32_t type;
++	uint32_t offset[MAX_NUM_OF_VRINGS];
++} METAL_PACKED_END;
++
+ struct fw_resource_table {
+ 	struct resource_table hdr;
+ 	uint32_t offset[RSC_TABLE_NUM_ENTRY];
+@@ -69,6 +78,7 @@ struct fw_resource_table {
+ 	struct fw_rsc_vdev vdev;
+ 	struct fw_rsc_vdev_vring vring0;
+ 	struct fw_rsc_vdev_vring vring1;
++	struct fw_rsc_vring_offset vring_offset;
+ #endif
+ 
+ #if defined(CONFIG_RAM_CONSOLE)
+@@ -96,6 +106,14 @@ inline struct fw_rsc_vdev_vring *rsc_table_get_vring1(struct fw_resource_table *
+ 	return &rsc_table->vring1;
+ }
+ 
++inline uint32_t rsc_table_get_vring_offset(struct fw_resource_table *rsc_table, int i)
++{
++	if (i >= MAX_NUM_OF_VRINGS) {
++		return 0;
++	}
++	return rsc_table->vring_offset.offset[i];
++}
++
+ #endif
+ 
+ #ifdef __cplusplus
+diff --git a/soc/xen/CMakeLists.txt b/soc/xen/CMakeLists.txt
+index 7ffbb965792..d0aad8798be 100644
+--- a/soc/xen/CMakeLists.txt
++++ b/soc/xen/CMakeLists.txt
+@@ -3,3 +3,6 @@
+ zephyr_library_sources_ifdef(CONFIG_ARM_MMU mmu_regions.c)
+ 
+ set(SOC_LINKER_SCRIPT ${ZEPHYR_BASE}/include/zephyr/arch/arm64/scripts/linker.ld CACHE INTERNAL "")
++if(CONFIG_OPENAMP_RSC_TABLE)
++zephyr_linker_sources(DATA_SECTIONS rsc_table_linker.ld)
++endif()
+\ No newline at end of file
+diff --git a/soc/xen/rsc_table_linker.ld b/soc/xen/rsc_table_linker.ld
+new file mode 100644
+index 00000000000..665093337f9
+--- /dev/null
++++ b/soc/xen/rsc_table_linker.ld
+@@ -0,0 +1,13 @@
++/*
++ * Copyright (c) 2023, openEuler Embedded
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ */
++
++ SECTION_PROLOGUE(.resource_table,, SUBALIGN(4))
++        {
++          _resource_table_start = .;
++          KEEP(*(.resource_table*))
++          _resource_table_end = .;
++        } GROUP_LINK_IN(ROMABLE_REGION)
++        _resource_tables_size = _resource_table_end - _resource_table_start;
+diff --git a/subsys/ipc/rpmsg_service/CMakeLists.txt b/subsys/ipc/rpmsg_service/CMakeLists.txt
+index b63b11be8f0..eab6deaede4 100644
+--- a/subsys/ipc/rpmsg_service/CMakeLists.txt
++++ b/subsys/ipc/rpmsg_service/CMakeLists.txt
+@@ -1,19 +1,21 @@
+ # SPDX-License-Identifier: Apache-2.0
+ 
+ if(CONFIG_OPENAMP_RSC_TABLE)
+-# METAL_MAX_DEVICE_REGIONS is used to give the number of memory regions shared
+-# between processors. By default only one region is defined for the vrings
+-# and rpmsg buffers. The METAL_MAX_DEVICE_REGIONS has to be redefined to add a
+-# second region for the resource table.
+-zephyr_compile_definitions(METAL_MAX_DEVICE_REGIONS=2)
+-if(CONFIG_IVSHMEM_DOORBELL)
+-# if IVSHMEM is enabled, use IVSHMEM specific implementation
+-zephyr_sources(rpmsg_backend_rsc_table_ivshmem.c)
++    # METAL_MAX_DEVICE_REGIONS is used to give the number of memory regions shared
++    # between processors. By default only one region is defined for the vrings
++    # and rpmsg buffers. The METAL_MAX_DEVICE_REGIONS has to be redefined to add a
++    # second region for the resource table.
++    zephyr_compile_definitions(METAL_MAX_DEVICE_REGIONS=2)
++    if(CONFIG_IVSHMEM_DOORBELL)
++        # if IVSHMEM is enabled, use IVSHMEM specific implementation
++        zephyr_sources(rpmsg_backend_rsc_table_ivshmem.c)
++    elseif(CONFIG_XEN)
++        zephyr_sources(rpmsg_backend_rsc_table_xen.c)
++    else()
++        zephyr_sources(rpmsg_backend_rsc_table.c)
++    endif()
+ else()
+-zephyr_sources(rpmsg_backend_rsc_table.c)
+-endif()
+-else()
+-zephyr_sources(rpmsg_backend.c)
++    zephyr_sources(rpmsg_backend.c)
+ endif()
+ zephyr_sources(rpmsg_service.c)
+ zephyr_sources(rpmsg_rpc_service.c)
+diff --git a/subsys/ipc/rpmsg_service/rpmsg_backend.h b/subsys/ipc/rpmsg_service/rpmsg_backend.h
+index a9f874a0392..30b4f47700d 100644
+--- a/subsys/ipc/rpmsg_service/rpmsg_backend.h
++++ b/subsys/ipc/rpmsg_service/rpmsg_backend.h
+@@ -14,10 +14,18 @@ extern "C" {
+ #endif
+ 
+ #if defined(CONFIG_OPENAMP_RSC_TABLE)
++#if defined(CONFIG_XEN)
++#define SHM_DEVICE_NAME	"shm"
++extern uintptr_t shm_start_addr;
++extern size_t shm_size;
++#define SHM_START_ADDR shm_start_addr
++#define SHM_SIZE shm_size
++#else
+ #define SHM_DEVICE_NAME	"shm"
+ #define SHM_NODE		DT_CHOSEN(zephyr_ipc_shm)
+ #define SHM_START_ADDR	DT_REG_ADDR(SHM_NODE)
+ #define SHM_SIZE		DT_REG_SIZE(SHM_NODE)
++#endif
+ #else
+ #define VDEV_START_ADDR		DT_REG_ADDR(DT_CHOSEN(zephyr_ipc_shm))
+ #define VDEV_SIZE		DT_REG_SIZE(DT_CHOSEN(zephyr_ipc_shm))
+diff --git a/subsys/ipc/rpmsg_service/rpmsg_backend_rsc_table_xen.c b/subsys/ipc/rpmsg_service/rpmsg_backend_rsc_table_xen.c
+new file mode 100644
+index 00000000000..215fbbcf2ef
+--- /dev/null
++++ b/subsys/ipc/rpmsg_service/rpmsg_backend_rsc_table_xen.c
+@@ -0,0 +1,408 @@
++/*
++ * Copyright (c) 2023, openEuler Embedded
++ *
++ * SPDX-License-Identifier: Apache-2.0
++ */
++
++#include "rpmsg_backend.h"
++
++#include <zephyr/kernel.h>
++#include <zephyr/drivers/virtualization/ivshmem.h>
++#include <zephyr/device.h>
++#include <zephyr/logging/log.h>
++#include <zephyr/xen/gnttab.h>
++#include <zephyr/xen/events.h>
++#include <zephyr/xen/public/xenstore.h>
++
++#include <kernel_arch_interface.h>
++
++#include <openamp/open_amp.h>
++#include <metal/device.h>
++#include <resource_table.h>
++
++#define LOG_MODULE_NAME rpmsg_backend
++LOG_MODULE_REGISTER(LOG_MODULE_NAME, CONFIG_RPMSG_SERVICE_LOG_LEVEL);
++
++/* 新增 MAX_GREF 宏定义 */
++#define MAX_GREF 256
++
++/* Configuration defines */
++#define MASTER IS_ENABLED(CONFIG_RPMSG_SERVICE_MODE_MASTER)
++
++#if	IS_ENABLED(CONFIG_RPMSG_SERVICE_MODE_MASTER)
++#error "resource table implementation is only for device"
++#endif
++
++/* rpmsg shm info */
++uintptr_t shm_start_addr;
++size_t shm_size;
++metal_phys_addr_t shm_physmap;
++static uint16_t g_domid;
++
++static struct virtio_device *cur_vdev;
++static evtchn_port_t cur_evtchn_port;
++
++/* xenstore info */
++#define MAX_DOMID 			1024
++#define XS_ROOT				"/local/domain"
++#define XS_DEVICE			"mica"
++
++static struct metal_device shm_device = {
++	.name = SHM_DEVICE_NAME,
++	.num_regions = 2,
++	.regions = {
++	/* shared memory io, only the addr in [share mem start + share mem size]
++	 * can be accessed and guaranteed by metal_io_read/write
++	 */
++		{.virt = NULL},
++	/* resource table io, only the addr in [resource table start + table size]
++	 * can be accessed and guaranteed by metal_io_read/write
++	 */
++		{.virt = NULL},
++	},
++	.node = { NULL },
++	.irq_num = 0,
++	.irq_info = NULL
++};
++
++static int virtio_notify(void *priv, uint32_t id)
++{
++	ARG_UNUSED(priv);
++	ARG_UNUSED(id);
++
++	notify_evtchn(cur_evtchn_port);
++
++	return 0;
++}
++
++struct virtio_device *
++platform_create_vdev(void *rsc_table, struct metal_io_region *rsc_io)
++{
++	struct fw_rsc_vdev_vring *vring_rsc;
++	struct virtio_device *vdev;
++	uint32_t vring_offset, local_da;
++	int ret;
++
++	vdev = rproc_virtio_create_vdev(VIRTIO_DEV_DEVICE, VDEV_ID,
++					rsc_table_to_vdev(rsc_table),
++					rsc_io, NULL, virtio_notify, NULL);
++
++	if (!vdev) {
++		LOG_ERR("failed to create vdev");
++		return NULL;
++	}
++
++	LOG_INF("vdev->vrings_info[0].info.vaddr: %p", vdev->vrings_info[0].info.vaddr);
++
++	/* wait master rpmsg init completion */
++	rproc_virtio_wait_remote_ready(vdev);
++
++	/* 
++	 * Since master will add shm pool addr to desc data in vring0, we have to 
++	 * change to local vring0 desc, which will contain shm pool addr starting
++	 * from our local gnttab base addr.
++	 */
++	vring_rsc = rsc_table_get_vring0(rsc_table);
++	vring_offset = rsc_table_get_vring_offset(rsc_table, 0);
++	local_da = SHM_START_ADDR + vring_offset;
++
++	LOG_INF("vring_rsc 0 info: num:%d, da:0x%x", vring_rsc->num, local_da);
++	ret = rproc_virtio_init_vring(vdev, 0, vring_rsc->notifyid,
++				      (void *)(uintptr_t)local_da, rsc_io,
++				      vring_rsc->num, vring_rsc->align);
++	if (ret) {
++		LOG_ERR("failed to init vring 0");
++		goto failed;
++	}
++
++	vring_rsc = rsc_table_get_vring1(rsc_table);
++	vring_offset = rsc_table_get_vring_offset(rsc_table, 1);
++	local_da = SHM_START_ADDR + vring_offset;
++	LOG_INF("vring_rsc 1 info: num:%d, da:0x%x", vring_rsc->num, local_da);
++	ret = rproc_virtio_init_vring(vdev, 1, vring_rsc->notifyid,
++				      (void *)(uintptr_t)local_da, rsc_io,
++				      vring_rsc->num, vring_rsc->align);
++	if (ret) {
++		LOG_ERR("failed to init vring 1");
++		goto failed;
++	}
++
++	cur_vdev = vdev;
++	return vdev;
++
++failed:
++	rproc_virtio_remove_vdev(vdev);
++
++	return NULL;
++}
++
++static int get_xen_info(int gref[], int *gref_num, int *evtchn_port)
++{
++	int ret = 0;
++	const char *s = NULL;
++	uint16_t domid;
++	uint16_t found_domid = -1;
++	char path[1024];
++
++	ret = xenbus_setup();
++	if (ret) {
++		LOG_ERR("%s: failed to setup xenbus, ret = %d\n", __func__, ret);
++		return ret;
++	}
++
++	/* Iterate through potential domids to find accessible path */
++	for (domid = 0; domid < MAX_DOMID; domid++) {
++		/* Construct path: /local/domain/<domid> */
++		snprintf(path, sizeof(path), "%s/%d", XS_ROOT, domid);
++
++		/* Check if path is readable (current domid should allow access) */
++		s = xenstore_read(path, NULL);
++		if (s != NULL) {
++			LOG_INF("%s: Found accessible domid %d at %s", __func__, domid, path);
++			found_domid = domid;
++			break;  // Stop at first accessible domid
++		} else {
++			LOG_INF("%s: No access to %s (domid %d)", __func__, path, domid);
++		}
++	}
++
++	if (found_domid == -1) {
++		LOG_ERR("%s: Failed to find accessible domid (checked 0-%d)", __func__, MAX_DOMID - 1);
++		return -ENOENT;
++	}
++	LOG_INF("%s: Current domid confirmed: %d", __func__, found_domid);
++	g_domid = found_domid;
++
++	/* Fetch /local/domain/0/backend/mica/1/0/gref_num */
++	snprintf(path, sizeof(path), "%s/0/backend/%s/%d/0/gref_num", XS_ROOT, XS_DEVICE, g_domid);
++	s = xenstore_read(path, NULL);
++	if (s != NULL) {
++		LOG_INF("%s: Found gref_num %s at %s", __func__, s, path);
++		*gref_num = strtol(s, NULL, 0);
++	} else {
++		LOG_INF("%s: No access to %s (domid %d)", __func__, path, g_domid);
++	}
++
++	/* 读取每个 grant reference (gref_0, gref_1, ..., gref_n) */
++	if (*gref_num > 0 && *gref_num <= MAX_GREF) {
++		for (int i = 0; i < *gref_num; i++) {
++			snprintf(path, sizeof(path), "%s/0/backend/%s/%d/0/gref_%d", 
++				 XS_ROOT, XS_DEVICE, g_domid, i);
++			s = xenstore_read(path, NULL);
++			if (s != NULL) {
++				LOG_INF("%s: Found gref_%d %s at %s", __func__, i, s, path);
++				gref[i] = strtol(s, NULL, 0);
++			} else {
++				LOG_ERR("%s: Failed to read gref_%d at %s", __func__, i, path);
++				return -ENOENT;
++			}
++		}
++	} else if (*gref_num > MAX_GREF) {
++		LOG_ERR("%s: gref_num (%d) exceeds MAX_GREF (%d)", __func__, *gref_num, MAX_GREF);
++		return -EINVAL;
++	}
++
++	/* Fetch /local/domain/0/backend/mica/1/0/evtchn */
++	snprintf(path, sizeof(path), "%s/0/backend/%s/%d/0/evtchn_port", XS_ROOT, XS_DEVICE, g_domid);
++	s = xenstore_read(path, NULL);
++	if (s != NULL) {
++		LOG_INF("%s: Found evtchn %s at %s", __func__, s, path);
++		*evtchn_port = strtol(s, NULL, 0);
++	} else {
++		LOG_INF("%s: No access to %s (domid %d)", __func__, path, g_domid);
++	}
++
++	return 0;
++}
++
++static void evtchn_cb(void *data)
++{
++	rproc_virtio_notified(cur_vdev, VRING1_ID);
++}
++
++static int init_evtchn(int port)
++{
++	int ret;
++
++	ret = bind_interdomain_event_channel(0, port, evtchn_cb, NULL);
++	if (ret < 0) {
++		LOG_ERR("bind_interdomain_event_channel remote %d failed", port);
++		return ret;
++	}
++
++	cur_evtchn_port = ret;
++
++	return 0;
++}
++
++/**
++ * @brief Init shared memory address and size using grant table API.
++ *
++ * This function maps the grant references to virtual addresses
++ * and sets the shared memory size.
++ *
++ * @param shmem_addr Pointer to store the shared memory physical address.
++ * @param shmem_size Pointer to store the shared memory size.
++ * @param gref Array of grant references.
++ * @param gref_num Number of grant references.
++ * @return 0 on success, negative error code on failure.
++ */
++static int init_gnttab_shmem(uintptr_t *shmem_addr, size_t *shmem_size, int gref[], int gref_num)
++{
++	unsigned int num_pages;
++	void *page_addr;
++
++    *shmem_size = gref_num * CONFIG_MMU_PAGE_SIZE;
++    num_pages = (*shmem_size) / CONFIG_MMU_PAGE_SIZE;
++
++    // Array to hold mapping operations
++    struct gnttab_map_grant_ref map_ops[num_pages];
++
++	// Get a contiguous block of pages for mapping
++    page_addr = gnttab_get_continuous_page(num_pages);
++    if (!page_addr) {
++        LOG_ERR("Failed to get contiguous pages for mapping");
++        return -ENOMEM;
++    }
++
++    // Initialize mapping operations with individual grant references
++    for (unsigned int i = 0; i < num_pages; i++) {
++        map_ops[i].host_addr = (unsigned long)page_addr + i * CONFIG_MMU_PAGE_SIZE;
++        map_ops[i].ref = gref[i]; // 使用数组中的每个 grant reference
++        map_ops[i].dom = 0;
++        map_ops[i].flags = GNTMAP_host_map;
++    }
++
++    // Map grant references
++    int ret = gnttab_map_refs(map_ops, num_pages);
++    if (ret < 0) {
++        LOG_ERR("gnttab_map_refs failed: %d", ret);
++        for (unsigned int i = 0; i < num_pages; i++) {
++            void *offset_page_addr = (char *)page_addr + i * CONFIG_MMU_PAGE_SIZE;
++            gnttab_put_page(offset_page_addr);
++        }
++        return ret;
++    }
++    // Check per-page status
++    for (unsigned int i = 0; i < num_pages; i++) {
++        if (map_ops[i].status != GNTST_okay) {
++            LOG_ERR("Page %u mapping failed with status: %s", i, gnttabop_error(map_ops[i].status));
++            // Clean up acquired pages
++            for (unsigned int j = 0; j < num_pages; j++) {
++                gnttab_put_page((void *)map_ops[j].host_addr);
++            }
++            return -EFAULT;
++        }
++    }
++
++    // Return the starting address of the mapped memory
++    *shmem_addr = (uintptr_t)map_ops[0].host_addr;
++    return 0;
++}
++
++
++int rpmsg_backend_init(struct metal_io_region **io, struct virtio_device **vdev)
++{
++	uintptr_t	rsc_table;
++	struct metal_io_region *rsc_io;
++	int rsc_size;
++	int32_t                  err = 0;
++	struct metal_init_params metal_params = METAL_INIT_DEFAULTS;
++	struct metal_device     *device;
++	metal_phys_addr_t shm_virtmap;
++	struct fw_rsc_vdev_vring *vring0_rsc;
++	int gref[MAX_GREF]; // 替换 gref_start 为 gref 数组
++	int gref_num = -1, evtchn_port = -1;
++	char path[1024];
++	char state_str[8];
++
++	// Map physical address to virtual address with device memory attributes
++	err = get_xen_info(gref, &gref_num, &evtchn_port);
++	if (err) {
++        return err;
++    }
++	
++	err = init_evtchn(evtchn_port);
++	if (err) {
++		return err;
++	}
++
++	err = init_gnttab_shmem(&shm_start_addr, &shm_size, gref, gref_num);
++    if (err) {
++        return err;
++    }
++
++	LOG_INF("xen gnttab shmem addr is 0x%lX, size is 0x%lX", shm_start_addr, shm_size);
++
++	/* Libmetal setup */
++	err = metal_init(&metal_params);
++	if (err) {
++		LOG_ERR("metal_init: failed - error code %d", err);
++		return err;
++	}
++
++	err = metal_register_generic_device(&shm_device);
++	if (err) {
++		LOG_ERR("Couldn't register shared memory device: %d", err);
++		return err;
++	}
++
++	err = metal_device_open("generic", SHM_DEVICE_NAME, &device);
++	if (err) {
++		LOG_ERR("metal_device_open failed: %d", err);
++		return err;
++	}
++
++	/* 
++	 * part 1: resource table 
++	 * Resource table will be parsed by the other side and
++	 * copied to the 1st page of gnttab shmem. 
++	 * We call rst_table_get to get the correct size and init meta
++	 * io region
++	 */
++	rsc_table_get((struct fw_resource_table **)&rsc_table, &rsc_size);
++	rsc_table = shm_start_addr;
++
++	LOG_INF("SHM_START_ADDR is 0x%lX", SHM_START_ADDR);
++	LOG_INF("SHM_SIZE is 0x%lX", SHM_SIZE);
++	LOG_INF("SHM_DEVICE_NAME is %s", SHM_DEVICE_NAME);
++
++	metal_io_init(&device->regions[1], (void *)rsc_table,
++		      (metal_phys_addr_t *)rsc_table, rsc_size, -1, 0, NULL);
++	rsc_io = metal_device_io_region(device, 1);
++	if (!rsc_io) {
++		LOG_ERR("Failed to get rsc_io region");
++		return -1;
++	}
++
++	/* part 2: shared mem used for virtio, skip rsc table */
++	vring0_rsc = rsc_table_get_vring0((void *)rsc_table);
++	shm_physmap = vring0_rsc->da;
++
++	shm_virtmap = rsc_table + CONFIG_MMU_PAGE_SIZE;
++	metal_io_init(&device->regions[0], (void *)shm_virtmap,  // Virtual address: local pages from grant reference
++		      &shm_physmap,  // Physical address: master's physical address passed by rsc table
++		      shm_size - CONFIG_MMU_PAGE_SIZE, -1, 0, NULL);
++
++	/* shared mem io should be return to the caller */
++	*io = metal_device_io_region(device, 0);
++	if (!*io) {
++		LOG_ERR("metal_device_io_region failed to get region");
++		return err;
++	}
++
++	/* virtio device setup */
++	*vdev = platform_create_vdev((void *)rsc_table, rsc_io);
++
++	if (*vdev == NULL) {
++		return -1;
++	}
++
++	/* echo 3 > /local/domain/1/device/mica/0/backend/state */
++	snprintf(path, sizeof(path), "%s/%d/device/%s/0/backend/state", XS_ROOT, g_domid, XS_DEVICE);
++	snprintf(state_str, sizeof(state_str), "%d", XenbusStateConnected);
++
++	(void) xenstore_write(path, state_str);
++
++	return 0;
++}
+\ No newline at end of file
+-- 
+2.34.1
+

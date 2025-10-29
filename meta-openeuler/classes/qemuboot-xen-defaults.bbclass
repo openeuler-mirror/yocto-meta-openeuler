@@ -14,7 +14,7 @@ QB_XEN_DOM0_BOOTARGS ??= \
 # Launch with one initial domain, dom0, with one boot module, the kernel
 DOM0_KERNEL ??= "${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}"
 DOM0_KERNEL_LOAD_ADDR ??= "0x45000000"
-QB_XEN_DOMAIN_MODULES ??= "${DOM0_KERNEL}:${DOM0_KERNEL_LOAD_ADDR}:multiboot,kernel"
+QB_XEN_DOMAIN_MODULES ??= "${DOM0_KERNEL}:${DOM0_KERNEL_LOAD_ADDR}:xen,linux-zimage"
 
 # Qemuboot for Arm uses the QB_DEFAULT_KERNEL method to load Xen
 # and the device loader option for the dom0 kernel:
@@ -50,3 +50,17 @@ QB_DTB_LINK:qemu-aarch64 = "${IMAGE_LINK_NAME}.qemuboot.dtb"
 # 32-bit Arm: qemuboot with a device tree binary
 QB_DTB:qemuarm = "${IMAGE_NAME}.qemuboot.dtb"
 QB_DTB_LINK:qemuarm = "${IMAGE_LINK_NAME}.qemuboot.dtb"
+
+# Copy needed xen images to output dir for manual deploy
+copy_xen_images() {
+    set -x
+    test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
+
+    if [ -f "${DEPLOY_DIR_IMAGE}/${QB_DEFAULT_KERNEL}" ];then
+        cp -fp ${DEPLOY_DIR_IMAGE}/${QB_DEFAULT_KERNEL} ${OUTPUT_DIR}/
+    fi
+
+    set +x
+}
+
+IMAGE_POSTPROCESS_COMMAND:append = "copy_xen_images;"

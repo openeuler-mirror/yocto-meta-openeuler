@@ -23,6 +23,8 @@ python () {
             d.setVar('ZEPHYR_BOARD', 'qemu_cortex_a53/qemu_cortex_a53/remote')
         elif 'jailhouse' in mcs_features:
             d.setVar('ZEPHYR_BOARD', 'qemu_cortex_a53/qemu_cortex_a53/ivshmem')
+        elif 'xen' in distro_features:
+            d.setVar('ZEPHYR_BOARD', 'xenvm/xenvm/mcs')
     elif 'raspberrypi4-64' in machine:
         if 'openamp' in mcs_features:
             d.setVar('ZEPHYR_BOARD', 'rpi_4b/rpi_4b/remote')

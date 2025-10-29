@@ -41,6 +41,8 @@ do_compile() {
 # The inherit of module.bbclass will automatically name module packages with
 # "kernel-module-" prefix as required by the oe-core build environment.
 RPROVIDES:${PN} += "kernel-module-mcs-km"
+RPROVIDES:${PN} += "${@bb.utils.contains('DISTRO_FEATURES', 'xen', 'kernel-module-xen-mcsback', '', d)}"
 RPROVIDES:${PN}:append:x86-64 = " kernel-module-eth-i210"
 
 KERNEL_MODULE_AUTOLOAD += "${@bb.utils.contains('MCS_FEATURES', 'openamp', 'mcs_km', '', d)}"
+KERNEL_MODULE_AUTOLOAD += "${@bb.utils.contains('DISTRO_FEATURES', 'xen', 'xen-mcsback', '', d)}"

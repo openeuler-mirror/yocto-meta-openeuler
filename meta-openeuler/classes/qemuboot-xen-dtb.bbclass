@@ -171,6 +171,12 @@ generate_xen_qemuboot_dtb() {
         fi
         ln -s "${QB_DTB}" "${QEMUBOOT_DTB_LINK}"
     fi
+
+    # Copy xen dtb to output dir for manual deploy
+    test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
+    if [ -f "${QEMUBOOT_DTB}" ];then
+        cp -fp ${QEMUBOOT_DTB} ${OUTPUT_DIR}/
+    fi
 }
 
 do_write_xen_qemuboot_dtb() {
