@@ -41,10 +41,10 @@ RUN chmod 777 /var/log/hawkey.log && chmod -R 777 /var/cache/dnf
 USER openeuler
 
 ARG openeuler_repo=https://gitee.com/openeuler/yocto-meta-openeuler
-ARG openeuler_base_version=24.03-LTS
+ARG openeuler_base_version=latest
 
 # download nativesdk release and install it
-ARG nativesdk_version=v0.1.2
+ARG nativesdk_version=v0.1.3
 ARG nativesdk_name=x86_64-buildtools-extended-nativesdk-standalone
 RUN mkdir -p /opt/buildtools/nativesdk/sdk_info
 WORKDIR /opt/buildtools/nativesdk/sdk_info
