@@ -215,6 +215,13 @@ fakeroot python do_dnf_install_pkgs(){
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo setfacl --restore=rootfs_permission", d.getVar("WORKDIR")+"/temp")
     run_cmd_with_cwd(f"cat rootfs_softlink | while read -r o p;do PSEUDO_UNLOAD=1 sudo chown -h \"$o\" \"$p\"; done", d.getVar("WORKDIR")+"/temp")
     
+    if "oe-extra" in d.getVar("DISTRO_FEATURES"):
+        # here add extra repo for installing pkgs from oepkgs.net, but the repo source is extras, like:
+        # https://repo.oepkgs.net/openeuler/rpm/openEuler-24.03-LTS/extras/aarch64/
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
+        dnf-plugins-core -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
+        extra_mirror = "https://repo.oepkgs.net/openeuler/rpm"
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf config-manager --add-repo {extra_mirror}/{d.getVar('SERVER_VERSION')}/extras/{d.getVar('TUNE_ARCH')}/", d.getVar("WORKDIR"))
     if len(real_list) > 0:
         real_list_str = " ".join(real_list)
         run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
