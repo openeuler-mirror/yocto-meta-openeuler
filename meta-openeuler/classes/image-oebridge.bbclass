@@ -243,6 +243,8 @@ fakeroot python do_dnf_install_pkgs(){
             oebridge_pip_list_str = " ".join(oebridge_pip_list)
             run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs pip3 install {oebridge_pip_list_str} -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple", d.getVar("WORKDIR"))
 
+    # remove all dnf cache data before pack the rootfs
+    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf clean all", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo getfacl -R rootfs > ../rootfs_permission", d.getVar("WORKDIR")+"/temp")
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo find rootfs -type l -printf '%u:%g %p\n' > ../rootfs_softlink", d.getVar("WORKDIR")+"/temp")
     res = subprocess.run("stat -c '%u:%g' temp",
