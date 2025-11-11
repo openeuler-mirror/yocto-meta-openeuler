@@ -39,4 +39,7 @@ set_permissions_from_rootfs:append() {
     fi
 }
 
+# live system not support oebridge feature
+DISTRO_FEATURES:remove := " oebridge "
+
 require openeuler-image-common.inc
