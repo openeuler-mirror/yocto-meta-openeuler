@@ -1,3 +1,4 @@
+
 From 6d1c8fd5830e8f2e967ca9ca5fe45c999116356e Mon Sep 17 00:00:00 2001
 From: oee <oee@oee.com>
 Date: Tue, 16 Sep 2025 14:41:51 +0800
@@ -34,22 +35,16 @@ index 7056005..0eb5388 100644
  export CONFIG_USER_BIT=USER_BIT_64
  export CONFIG_LINUX_STYLE=y
  # CONFIG_BOTH_STYLE is not set
-diff --git a/smp/a55_linux/mpp/component/security_subsys/cipher/v3/Makefile b/smp/a55_linux/mpp/component/security_subsys/cipher/v3/Makefile
-index 9ce31b0..b7cd6d5 100644
---- a/smp/a55_linux/mpp/component/security_subsys/cipher/v3/Makefile
-+++ b/smp/a55_linux/mpp/component/security_subsys/cipher/v3/Makefile
-@@ -4,9 +4,9 @@
- default:
- 	@cp -r src/common/common_check_param.c src/api/
- 	@cp -r src/common/common_check_param.c src/drv/drivers/
--	@cd src && make mbedtls_patch && make
-+#	@cd src && make mbedtls_patch && make
- 
- clean:
- 	@rm -rf src/api/common_check_param.c
- 	@rm -rf src/drv/drivers/common_check_param.c
--	@cd src && make mbedtls_clean && make clean
-+#	@cd src && make mbedtls_clean && make clean
+--- a/smp/a55_linux/mpp/component/security_subsys/cipher/v3/src/mbedtls.sh
++++ b/smp/a55_linux/mpp/component/security_subsys/cipher/v3/src/mbedtls.sh
+@@ -24,6 +24,7 @@ if [[ $cmd == PATCH ]]; then
+ 		if [ -f $PATCH ]; then
+ 		        patch -p1 -d $MBEDTLS_DIR/$MBEDTLS_VER < $PATCH;
+         	fi
++                patch -p1 -d $MBEDTLS_DIR/$MBEDTLS_VER < $MBEDTLS_DIR/sdk-fix-mbedtls-err-2.16.10.patch.in
+ 	fi
+ else
+ 	if [ -e $MBEDTLS_DIR/$MBEDTLS_VER.tar.gz ]; then
 diff --git a/smp/a55_linux/mpp/sample/ss928_fb_tool/Makefile b/smp/a55_linux/mpp/sample/ss928_fb_tool/Makefile
 new file mode 100644
 index 0000000..b6d5a87

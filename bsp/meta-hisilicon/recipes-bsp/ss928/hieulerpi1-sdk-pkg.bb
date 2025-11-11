@@ -9,11 +9,18 @@ DEPENDS = "update-rc.d-native"
 
 OPENEULER_LOCAL_NAME = "Hispark-ss928v100-gcc-sdk"
 
+OPENEULER_SRC_URI_REMOVE = ""
+
 SRC_URI = " \
         file://Hispark-ss928v100-gcc-sdk \
         file://0001-yocto-928-sdk-build-support.patch \
+        file://0002-fix-928-sdk-cipher-invalid.patch \
         file://load_sdk_driver \
+        https://gitee.com/openeuler/oee_archive/raw/master/mbedtls/v2.16.10.tar.gz;name=mbedtls;unpack=0 \
+        file://sdk-fix-mbedtls-err-2.16.10.patch.in \
 "
+
+SRC_URI[mbedtls.md5sum] = "35c8002be7088cb9cedb28e9917d7b24"
 
 S = "${WORKDIR}/Hispark-ss928v100-gcc-sdk"
 
@@ -21,6 +28,8 @@ INSANE_SKIP:${PN} += "already-stripped"
 FILES:${PN} = "/root/sample"
 
 do_compile() {
+    cp -f ${WORKDIR}/v2.16.10.tar.gz ${S}/open_source/mbedtls/mbedtls-2.16.10.tar.gz
+    cp -f ${WORKDIR}/sdk-fix-mbedtls-err-2.16.10.patch.in ${S}/open_source/mbedtls/sdk-fix-mbedtls-err-2.16.10.patch.in
     export KERNEL_ROOT=${STAGING_KERNEL_BUILDDIR}
     cd ${S}/smp/a55_linux/mpp/out/obj
     oe_runmake
