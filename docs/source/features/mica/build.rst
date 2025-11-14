@@ -7,7 +7,7 @@
 
      混合关键性部署框架作为 openEuler Embedded 的特性，可以按需集成到 openEuler Embedded 镜像中。
 
-     请参考 :ref:`南向支持章节 <bsp>` 构建不同平台的镜像，只需要在使用 ``oebuild generate`` 时选择 ``openeuler-mcs`` 即可。
+     请参考 :ref:`南向支持章节 <bsp>` 构建不同平台的镜像，只需要在使用 ``oebuild generate`` 时选择 ``mcs`` 即可。
 
   以下为 qemu-aarch64 平台的构建步骤，其它平台的构建步骤与之类似：
 
@@ -23,20 +23,22 @@
 
      .. code-block:: console
 
-        $ oebuild generate -p <platform> -f openeuler-mcs -d <build_mcs>
+        $ oebuild generate -p <platform> -f mcs -d <build_mcs>
 
         # 以 qemu-arm64 为例，platform 可以指定为 qemu-aarch64
         # 其它平台请运行 oebuild generate -l 查看
 
-        $ oebuild generate -p qemu-aarch64 -f openeuler-mcs -d <build_mcs>
+        $ oebuild generate -p qemu-aarch64 -f mcs -d <build_mcs>
 
      之后，在 ``<build_mcs>`` 目录下，会生成编译配置文件 ``compile.yaml``。
 
      .. note::
 
-        MICA 支持在 `bare-metal` 和 `jailhouse` 两种不同的环境上运行，默认构建 `bare-metal`。
+        MICA 支持在 `bare-metal`、`jailhouse`、`xen` 三种不同的环境上运行，默认构建 `bare-metal`。
 
         若需要支持 `jailhouse`，请修改编译配置文件 ``compile.yaml``，把 **MCS_FEATURES 中的 openamp 改成 jailhouse**。
+
+        若需要支持 `xen`，请在oebuild generate时额外添加 -f xen，无需修改 ``compile.yaml``。
 
   3. 进入 ``<build_mcs>`` 目录，编译 openeuler-image 或 openeuler-image-mcs，两个镜像都会安装 mcs 组件，但 openeuler-image-mcs 仅包含少量的基础软件包：
 
