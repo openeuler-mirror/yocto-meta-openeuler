@@ -46,6 +46,12 @@ do_install:append () {
         install -d "${D}/lib/firmware"
         cp -- "$@" "${D}/lib/firmware/"
     fi
+
+    # install rtos bin for xen
+    set -- "${S}/rtos/arm64/${RTOS_IMGS}"*.bin
+    if [ -f "$1" ]; then
+        cp -- "$@" "${D}/lib/firmware/"
+    fi
 }
 
 FILES:${PN} += "/usr/bin/mica"
