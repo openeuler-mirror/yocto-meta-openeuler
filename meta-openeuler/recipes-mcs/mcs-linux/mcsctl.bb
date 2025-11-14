@@ -50,6 +50,7 @@ do_install:append () {
     # install rtos bin for xen
     set -- "${S}/rtos/arm64/${RTOS_IMGS}"*.bin
     if [ -f "$1" ]; then
+        install -d "${D}/lib/firmware"
         cp -- "$@" "${D}/lib/firmware/"
     fi
 }
