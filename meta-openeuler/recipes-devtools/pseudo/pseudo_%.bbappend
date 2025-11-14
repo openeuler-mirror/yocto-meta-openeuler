@@ -1,10 +1,12 @@
 OPENEULER_LOCAL_NAME = "yocto-pseudo"
 
-OPENEULER_REPO_NAMES = "yocto-pseudo oee_archive"
+OPENEULER_REPO_NAMES = "yocto-pseudo"
+
+inherit oee-archive
 OEE_ARCHIVE_SUB_DIR = "pseudo"
 
 SRC_URI:prepend = "file://${BP}.tar.gz \
-          file://oee_archive/pseudo/pseudo-prebuilt-2.33.tar.xz;subdir=${BP}/prebuilt;name=prebuilt \
+          file://pseudo-prebuilt-2.33.tar.xz;subdir=${BP}/prebuilt;name=prebuilt \
            "
 
 PV = "df1d1321fb093283485c387e3c933d2d264e509c"

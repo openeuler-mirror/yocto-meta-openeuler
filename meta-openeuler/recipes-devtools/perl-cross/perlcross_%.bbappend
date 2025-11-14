@@ -5,6 +5,7 @@ PV = "1.5"
 inherit oee-archive
 
 SRC_URI:remove = " \
+            https://github.com/arsv/perl-cross/releases/download/1.5/perl-cross-1.5.tar.gz;name=perl-cross \
             file://0001-Makefile-check-the-file-if-patched-or-not.patch \
 "
 

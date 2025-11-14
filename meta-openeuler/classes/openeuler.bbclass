@@ -220,6 +220,8 @@ python do_openeuler_fetch() {
         repo_list.append(d.getVar("OPENEULER_LOCAL_NAME"))
     for repo_name in repo_list:
         # download code from openEuler
+        if repo_name == "oee_archive":
+            continue
         openeuler_fetch(d, repo_name)
 }
 
@@ -267,36 +269,6 @@ def download_repo(d, repo_dir, repo_url ,version = None):
     if remote is None:
         remote_name = "upstream"
         remote = git.Remote.add(repo = repo, name = remote_name, url = repo_url)
-
-    # This download function is only used for downloading oee_archive which holds tar packages, it can
-    # download what you want, and only what you need, no more others. In order to do this, we use git 
-    # sparse-checkout, which reduces your working tree to a subset of
-    # tracked files. You can see more detail by visiting https://git-scm.com/docs/git-sparse-checkout
-    def oee_archive_download(oee_archive_dir:str, subdir: str):
-        # if exists subdir and return
-        if os.path.exists(os.path.join(oee_archive_dir, subdir)):
-            return
-        res = subprocess.run("git sparse-checkout init --cone",
-                        shell=True,
-                        stderr=subprocess.PIPE,
-                        text=True,
-                        cwd=oee_archive_dir)
-        if res.returncode != 0:
-            bb.fatal(f"in oee_archive run git sparse-checkout init failed, error: {res.stderr}")
-        res = subprocess.run(f"git sparse-checkout list | grep {subdir}", shell=True, cwd=oee_archive_dir)
-        if res.returncode == 0:
-            return
-        res = subprocess.run(f"git sparse-checkout add {subdir}",
-                        shell=True,
-                        stderr=subprocess.PIPE,
-                        text=True,
-                        cwd=oee_archive_dir)
-        if res.returncode != 0:
-            bb.fatal(f"in oee_archive run git sparse-checkout add {subdir} failed, error: {res.stderr}")
-
-    if d.getVar("OEE_ARCHIVE_SUB_DIR") is not None:
-        sub_dir = d.getVar("OEE_ARCHIVE_SUB_DIR")
-        oee_archive_download(oee_archive_dir = repo_dir, subdir = sub_dir)
 
     # the function is used to download large file in repo
     def lfs_download(repo_dir, remote_name, version):

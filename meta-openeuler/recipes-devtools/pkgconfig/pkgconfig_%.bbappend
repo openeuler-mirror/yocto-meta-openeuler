@@ -2,6 +2,7 @@ inherit oee-archive
 
 PV = "0.29.2"
 
+SRC_URI:remove = "git://gitlab.freedesktop.org/pkg-config/pkg-config.git;branch=master;protocol=https"
 SRC_URI:prepend = "file://pkg-config-${PV}.tar.gz \
            "
 

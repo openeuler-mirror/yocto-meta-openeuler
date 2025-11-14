@@ -3,24 +3,21 @@ SECTION = "base"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=34d15ab872e1eb3db3292ffb63006766"
 
-inherit module
+inherit module oee-archive
+OEE_ARCHIVE_SUB_DIR = "mbedtls"
 
 DEPENDS = "update-rc.d-native"
 
 OPENEULER_LOCAL_NAME = "Hispark-ss928v100-gcc-sdk"
-
-OPENEULER_SRC_URI_REMOVE = ""
 
 SRC_URI = " \
         file://Hispark-ss928v100-gcc-sdk \
         file://0001-yocto-928-sdk-build-support.patch \
         file://0002-fix-928-sdk-cipher-invalid.patch \
         file://load_sdk_driver \
-        https://gitee.com/openeuler/oee_archive/raw/master/mbedtls/v2.16.10.tar.gz;name=mbedtls;unpack=0 \
+        file://v2.16.10.tar.gz;unpack=0 \
         file://sdk-fix-mbedtls-err-2.16.10.patch.in \
 "
-
-SRC_URI[mbedtls.md5sum] = "35c8002be7088cb9cedb28e9917d7b24"
 
 S = "${WORKDIR}/Hispark-ss928v100-gcc-sdk"
 
