@@ -1,0 +1,271 @@
+#!/bin/sh -eu
+# Lightweight helper to configure a k3s agent on openEuler Embedded.
+# Combines the simple environment templating flow from upstream k3s-agent
+# with the isulad preparation logic we carried historically in k3s-install-agent.
+
+ENV_CONF=/etc/systemd/system/k3s-agent.service.d/10-env.conf
+ISULAD_DAEMON_JSON=/etc/isulad/daemon.json
+AIRGAP_IMAGES_DIR=${AIRGAP_IMAGES_DIR:-/etc/k3s/tools}
+AIRGAP_IMAGES=${AIRGAP_IMAGES:-}
+SKIP_ISULA_AIRGAP=${SKIP_ISULA_AIRGAP:-false}
+SKIP_AIRGAP=${SKIP_AIRGAP:-$SKIP_ISULA_AIRGAP}
+CONTAINER_RT_EP=${CONTAINER_RT_EP:-@default_container_engine@}
+FORCE_ISULA_SETUP=false
+
+info() { printf '[INFO] %s\n' "$*"; }
+warn() { printf '[WARN] %s\n' "$*" >&2; }
+fatal() { printf '[ERROR] %s\n' "$*" >&2; exit 1; }
+
+bool_true() {
+    case "$1" in
+        1|true|TRUE|yes|YES) return 0 ;;
+    esac
+    return 1
+}
+
+detect_arch() {
+    case "$(uname -m)" in
+        arm|armv7l) printf 'arm' ;;
+        aarch64|arm64) printf 'arm64' ;;
+        x86_64) printf 'amd64' ;;
+        s390x) printf 's390x' ;;
+        *) fatal "unsupported architecture $(uname -m)" ;;
+    esac
+}
+
+resolve_airgap_path() {
+    if [ -n "$AIRGAP_IMAGES" ]; then
+        printf '%s' "$AIRGAP_IMAGES"
+        return
+    fi
+    arch=$(detect_arch)
+    printf '%s/k3s-airgap-images-%s.tar.gz' "$AIRGAP_IMAGES_DIR" "$arch"
+}
+
+isulad_daemon_set() {
+    if [ ! -f "$ISULAD_DAEMON_JSON" ]; then
+        warn "${ISULAD_DAEMON_JSON} not found, skipping isulad daemon tweaks"
+        return 0
+    fi
+    sed -i 's/"cni-bin-dir": "*",/"cni-bin-dir": "\/var\/lib\/rancher\/k3s\/data\/current\/bin",/' "$ISULAD_DAEMON_JSON"
+    sed -i 's/"cni-conf-dir": "*",/"cni-conf-dir": "\/var\/lib\/rancher\/k3s\/agent\/etc\/cni\/net.d",/' "$ISULAD_DAEMON_JSON"
+    sed -i 's/"pod-sandbox-image": "*",/"pod-sandbox-image": "docker.io\/rancher\/mirrored-pause:3.6",/' "$ISULAD_DAEMON_JSON"
+    systemctl daemon-reload >/dev/null 2>&1 || true
+    systemctl restart isulad
+}
+
+isulad_preload_images() {
+    bool_true "$SKIP_AIRGAP" && { info "skipping isula airgap preload"; return; }
+    image_tar=$(resolve_airgap_path)
+    if [ ! -f "$image_tar" ]; then
+        warn "airgap archive $image_tar not found; skipping isula preload"
+        return
+    fi
+    if ! command -v isula >/dev/null 2>&1; then
+        warn "isula command missing; cannot preload $image_tar"
+        return
+    fi
+    info "loading airgap images from $image_tar"
+    isula load -i "$image_tar" >/dev/null
+}
+
+configure_isulad() {
+    info "configuring isulad runtime"
+    isulad_daemon_set
+    isulad_preload_images
+}
+
+containerd_preload_images() {
+    bool_true "$SKIP_AIRGAP" && { info "skipping containerd airgap preload"; return; }
+    image_tar=$(resolve_airgap_path)
+    if [ ! -f "$image_tar" ]; then
+        warn "airgap archive $image_tar not found; skipping containerd preload"
+        return
+    fi
+    if ! command -v ctr >/dev/null 2>&1; then
+        warn "ctr command missing; cannot preload $image_tar"
+        return
+    fi
+    info "importing airgap images into containerd from $image_tar"
+    if ! ctr -n k8s.io images import "$image_tar" >/dev/null 2>&1; then
+        warn "ctr failed to import $image_tar"
+    fi
+}
+
+is_containerd_endpoint() {
+    case "$1" in
+        containerd|unix:///run/containerd/containerd.sock|unix:///var/run/containerd/containerd.sock|/run/containerd/containerd.sock|/var/run/containerd/containerd.sock)
+            return 0
+            ;;
+    esac
+    return 1
+}
+
+configure_runtime_endpoint() {
+    K3S_AGENT_SERVICE="/etc/systemd/system/k3s-agent.service"
+    if [ ! -f "$K3S_AGENT_SERVICE" ]; then
+        warn "k3s-agent.service not found, skipping runtime endpoint configuration"
+        return
+    fi
+    
+    if [ -z "$CONTAINER_RT_EP" ]; then
+        info "No container runtime endpoint specified, using default"
+        return
+    fi
+    
+    case "$CONTAINER_RT_EP" in
+        isulad)
+            NEW_ENDPOINT="unix:///var/run/isulad.sock"
+            ;;
+        containerd)
+            NEW_ENDPOINT="unix:///run/containerd/containerd.sock"
+            ;;
+        *)
+            if echo "$CONTAINER_RT_EP" | grep -q "^unix://"; then
+                NEW_ENDPOINT="$CONTAINER_RT_EP"
+            else
+                NEW_ENDPOINT="unix:///run/$CONTAINER_RT_EP/$CONTAINER_RT_EP.sock"
+            fi
+            ;;
+    esac
+    
+    if grep -q "ExecStart=.*--container-runtime-endpoint=${NEW_ENDPOINT}" "$K3S_AGENT_SERVICE" 2>/dev/null; then
+        info "k3s-agent.service already configured with correct endpoint: $NEW_ENDPOINT"
+        return
+    fi
+    
+    if grep -q "ExecStart=.*k3s agent" "$K3S_AGENT_SERVICE" 2>/dev/null; then
+        sed -i "s|ExecStart=\(.*\) --container-runtime-endpoint=[^ ]*|\1|g" "$K3S_AGENT_SERVICE"
+        sed -i "s|ExecStart=.*k3s agent.*|& --container-runtime-endpoint=${NEW_ENDPOINT}|" "$K3S_AGENT_SERVICE"
+        info "Updated k3s-agent.service with container runtime endpoint: $NEW_ENDPOINT"
+    fi
+}
+
+usage() {
+cat <<'USAGE'
+Usage: k3s-install-agent [OPTIONS]
+
+Options:
+  -t, --token <value>           Cluster token
+  -s, --server <url>            k3s server URL
+  -e, --endpoint <name>         Container runtime endpoint (default: @default_container_engine@)
+      --token-file <path>       Read token from file
+      --node-name <name>        Override node name
+      --resolv-conf <path>      Custom resolv.conf for kubelet
+      --cluster-secret <value>  Legacy shared secret support
+      --isulad-setup            Configure isulad and exit
+      --airgap <path>           Explicit airgap tarball for runtime preload
+      --skip-airgap             Skip loading any airgap tarball
+  -h, --help                    Show this message
+USAGE
+}
+
+[ $# -gt 0 ] || { usage; exit 0; }
+case $1 in
+    -*) :;;
+    *) usage; exit 1;;
+esac
+
+rm -f "$ENV_CONF"
+mkdir -p "${ENV_CONF%/*}"
+printf '[Service]\n' > "$ENV_CONF"
+
+while getopts "t:s:e:-:hi" opt; do
+    case "$opt" in
+        h)
+            usage
+            exit 0
+            ;;
+        i)
+            FORCE_ISULA_SETUP=true
+            ;;
+        t)
+            VAR_NAME=K3S_TOKEN
+            ;;
+        s)
+            VAR_NAME=K3S_URL
+            ;;
+        e)
+            CONTAINER_RT_EP=$OPTARG
+            continue
+            ;;
+        -)
+            [ $# -ge $OPTIND ] || { usage; exit 1; }
+            optname=$OPTARG
+            case "$optname" in
+                token)
+                    VAR_NAME=K3S_TOKEN
+                    ;;
+                token-file)
+                    VAR_NAME=K3S_TOKEN_FILE
+                    ;;
+                server)
+                    VAR_NAME=K3S_URL
+                    ;;
+                node-name)
+                    VAR_NAME=K3S_NODE_NAME
+                    ;;
+                resolv-conf)
+                    VAR_NAME=K3S_RESOLV_CONF
+                    ;;
+                cluster-secret)
+                    VAR_NAME=K3S_CLUSTER_SECRET
+                    ;;
+                endpoint)
+                    eval OPTARG='$'$OPTIND
+                    OPTIND=$((OPTIND + 1))
+                    CONTAINER_RT_EP=$OPTARG
+                    continue
+                    ;;
+                airgap)
+                    eval OPTARG='$'$OPTIND
+                    OPTIND=$((OPTIND + 1))
+                    AIRGAP_IMAGES=$OPTARG
+                    continue
+                    ;;
+                skip-airgap)
+                    SKIP_AIRGAP=true
+                    SKIP_ISULA_AIRGAP=true
+                    continue
+                    ;;
+                isulad-setup)
+                    FORCE_ISULA_SETUP=true
+                    continue
+                    ;;
+                help)
+                    usage
+                    exit 0
+                    ;;
+                *)
+                    usage
+                    exit 1
+                    ;;
+            esac
+            eval OPTARG='$'$OPTIND
+            OPTIND=$((OPTIND + 1))
+            ;;
+        *)
+            usage; exit 1;;
+    esac
+    printf 'Environment=%s=%s\n' "$VAR_NAME" "$OPTARG" >> "$ENV_CONF"
+done
+
+chmod 0644 "$ENV_CONF"
+
+if bool_true $FORCE_ISULA_SETUP && [[ "$CONTAINER_RT_EP" = "isulad" ]]; then
+    configure_isulad
+    exit $?
+fi
+
+if [ "$CONTAINER_RT_EP" = "isulad" ]; then
+    configure_isulad
+elif is_containerd_endpoint "$CONTAINER_RT_EP"; then
+    containerd_preload_images
+fi
+
+configure_runtime_endpoint
+
+rm -rf /var/lib/rancher/k3s/agent
+systemctl daemon-reload
+systemctl restart k3s-agent
+systemctl enable k3s-agent.service

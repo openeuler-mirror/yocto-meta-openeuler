@@ -3,11 +3,11 @@ SUMMARY = "custom lightweight containerd-based toolkits"
 inherit packagegroup features_check
 
 REQUIRED_DISTRO_FEATURES += "systemd"
-# it is not recommended to package this simple lightweight containerd packagegroup together with isulad
-CONFLICT_DISTRO_FEATURES = "isulad"
 PACKAGES = " \
     ${PN} \
 "
+
+BUILD_NERDCRTL = ""
 
 # TODO: cni compatibility
 RDEPENDS:${PN} = " \
@@ -16,21 +16,15 @@ RDEPENDS:${PN} = " \
     oci-systemd-hook \
     oci-runtime-tools \
     oci-image-tools \
-    nerdctl \
     bridge-utils \
+    ${@bb.utils.contains('BUILD_NERDCTL', '', '', 'nerdctl', d)} \
     "
+# due to network issue, it's recommended to install nerdctl via oebridge
+# nerdctl
 
 RRECOMMENDS:${PN} = " \
     cni \
     kernel-module-veth \
     kernel-module-bridge \ 
     kernel-module-br-netfilter \
-    kernel-module-ebtables \
-    kernel-module-nf-nat \
-    kernel-module-nf-conntrack-netlink \
-    kernel-module-xt-comment \
-    kernel-module-xt-statistic \
-    kernel-module-xt-multiport \
-    kernel-module-xt-addrtype \
-    kernel-module-xt-masquerade \
-"
+    "

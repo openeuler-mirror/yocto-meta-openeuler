@@ -14,12 +14,12 @@ SRCREV_plugins = "b6a0e0bc96906f0d3bd6bfcaab0b5ae72292f46c"
 SRCREV_flannel_plugin = "6464faacf5c00e25321573225d74638455ef03a0"
 SRCREV_FORMAT = "cni_plugins"
 SRC_URI = "\
-	git://github.com/containernetworking/cni.git;branch=main;name=cni;protocol=https;destsuffix=${GO_SRCURI_DESTSUFFIX} \
+	git://github.com/containernetworking/cni.git;branch=main;name=cni;protocol=https;destsuffix=${WORKDIR}/$[BP}/src/import \
 	file://modules.txt \
 	"
 
-SRC_URI += "git://github.com/containernetworking/plugins.git;branch=main;destsuffix=${GO_SRCURI_DESTSUFFIX}/src/github.com/containernetworking/plugins;name=plugins;protocol=https"
-SRC_URI += "git://github.com/flannel-io/cni-plugin;branch=main;name=flannel_plugin;protocol=https;destsuffix=${GO_SRCURI_DESTSUFFIX}/src/github.com/containernetworking/plugins/plugins/meta/flannel"
+SRC_URI += "git://github.com/containernetworking/plugins.git;branch=main;destsuffix=${WORKDIR}/$[BP}/src/import/src/github.com/containernetworking/plugins;name=plugins;protocol=https"
+SRC_URI += "git://github.com/flannel-io/cni-plugin;branch=main;name=flannel_plugin;protocol=https;destsuffix=${WORKDIR}/$[BP}/src/import/src/github.com/containernetworking/plugins/plugins/meta/flannel"
 
 # generated via:
 # ./scripts/oe-go-mod-autogen.py --repo https://github.com/containernetworking/cni.git --rev <insert your rev here>
