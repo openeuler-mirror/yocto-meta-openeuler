@@ -9,18 +9,20 @@ mica命令介绍
 .. code-block:: console
 
    qemu-aarch64:~$ mica --help
-   usage: mica [-h] {create,start,stop,rm,status} ...
+   usage: mica [-h] {create,start,stop,rm,set,status,gdb} ...
 
    Query or send control commands to the micad.
 
    positional arguments:
-     {create,start,stop,rm,status...}
+     {create,start,stop,rm,set,status,gdb}
                            the command to execute
        create              Create a new mica client
        start               Start a client
        stop                Stop a client
        rm                  Remove a client
+       set                 Update settings for a client
        status              query the mica client status
+       gdb                 Start GDB client
        ...
 
    options:
@@ -44,6 +46,17 @@ mica命令介绍
 ``mica gdb <name>``
     如果名字为 <name> 的实例支持调试，可以通过该命令启动 GDB Client 开始调试。
 
+``mica set <name> <resource> <value>``
+    在线更新名字为 <name> 的实例的 <resource> 为 <value>。
+
+    当前仅支持xen部署时配置CPU、VCPU、CPUWeight、CPUCapacity、Memory资源项，<value>和实例配置文件的入参要求保持一致。
+
+    例如：
+
+    ``mica set qemu-uniproton-xen Memory 1024`` 表示将名字为 ``qemu-uniproton-xen`` 的实例的内存更新为1024MB。
+
+    ``mica set qemu-uniproton-xen CPUCapacity 100`` 表示将名字为 ``qemu-uniproton-xen`` 的实例的CPU算力更新为1个物理CPU。
+
 ____
 
 实例配置文件介绍
@@ -51,26 +64,58 @@ ____
 
 配置文件用于创建实例，通过不同的选项参数承载该实例对应的实时OS、CPU 等信息。**所有的选项需要放在** ``[Mica]`` **段中配置**：
 
-``Name=``
-    实例名称，必须唯一。
-
-``CPU=``
-    为实时OS分配的核号，范围：0 到 nproc - 1。
-
-``ClientPath=``
-    实时OS的镜像路径，需要配置为绝对路径，且仅支持 elf 格式的镜像。
-
-``AutoBoot=``
-    是否在 micad 启动时自动拉起该实例，默认为 no。
-
-``Pedestal=``
-    指定部署底座，默认为 bare-metal，即在裸核上运行 RTOS。当前支持在 QEMU 上配置为 jailhouse，以使用 jailhouse 部署。
-
-``PedestalConf=``
-    指定部署底座关联的配置文件。例如 Jailhouse 部署时，需要通过 PedestalConf 指定 RTOS 所需的 Non-Root Cell 配置文件。
-
-``Debug=``
-    bool类型，表示OS二进制是否支持调试，默认为 no。如果支持调试，可以通过 mica gdb 命令启动 GDB Client 开始调试。
+  +--------------------+----------------------------------------+------------------------------+----------+
+  |      配置项        |           配置内容                     |           入参要求           | 底座支持 |
+  +====================+========================================+==============================+==========+
+  |``Name=``           |实例名称，必须唯一                      |str（长度<32）                |ALL       |
+  +--------------------+----------------------------------------+------------------------------+----------+
+  |``CPU=``            |为实时OS分配的核号，范围 0 ~ nproc - 1  |str（长度<128）               | ALL      |
+  |                    | bare-metal：仅支持单核                 |                              |          |
+  |                    |                                        |                              |          |
+  |                    | jailhouse：实际由cell文件配置          |                              |          |
+  |                    |                                        |                              |          |
+  |                    | xen：支持多核                          |                              |          |
+  +--------------------+----------------------------------------+------------------------------+----------+
+  |``ClientPath=``     |实时OS的镜像路径，需要配置为绝对路径，  |str（长度<128）               |ALL       |
+  |                    |且仅支持elf                             |                              |          |
+  +--------------------+----------------------------------------+------------------------------+----------+
+  |``AutoBoot=``       |是否在micad启动时自动拉起该实例，       |yes/no                        |ALL       |
+  |                    |默认为no                                |                              |          |
+  +--------------------+----------------------------------------+------------------------------+----------+
+  |``Pedestal=``       |指定部署底座，默认为baremetal，即在裸核 |str（长度<128）               |ALL       |
+  |                    |运行RTOS；支持配置为jailhouse/xen       |                              |          |
+  +--------------------+----------------------------------------+------------------------------+----------+
+  |``PedestalConf=``   |指定部署底座关联的配置文件              |str（长度<128）               |ALL       |
+  |                    | bare-metal：不涉及                     |                              |          |
+  |                    |                                        |                              |          |
+  |                    | jailhouse：指定RTOS所需的              |                              |          |
+  |                    | Non-Root Cell配置文件                  |                              |          |
+  |                    |                                        |                              |          |
+  |                    | xen：指定用于引导RTOS的bin文件         |                              |          |
+  +--------------------+----------------------------------------+------------------------------+----------+
+  |``Debug=``          |表示OS二进制是否支持调试，默认为no      |yes/no                        |ALL       |
+  |                    |                                        |                              |          |
+  |                    |如果支持调试，可以通过mica gdb命令启动  |                              |          |
+  |                    |GDB Client开始调试                      |                              |          |
+  +--------------------+----------------------------------------+------------------------------+----------+
+  |``VCPU=``           |为实时OS分配的虚拟CPU数量               |int（范围1~nproc）            |xen       |
+  +--------------------+----------------------------------------+------------------------------+----------+
+  |``MaxVCPU=``        |在线扩容时可为实时OS分配                |int（范围1~nproc）            |xen       |
+  |                    |的最大虚拟CPU数量，默认和VCPU一致       |                              |          |
+  +--------------------+----------------------------------------+------------------------------+----------+
+  |``CPUWeight=``      |为实时OS分配的CPU算力权重，             |int（范围1~65535）            |xen       |
+  |                    |默认256                                 |                              |          |
+  +--------------------+----------------------------------------+------------------------------+----------+
+  |``CPUCapacity=``    |为实时OS分配的CPU算力（百分比）         |int（范围0~100*nproc）        |xen       |
+  |                    |                                        |                              |          |
+  |                    |例如100表示1个物理CPU，50表示           |                              |          |
+  |                    |半个物理CPU，默认0即不限制              |                              |          |
+  +--------------------+----------------------------------------+------------------------------+----------+
+  |``Memory=``         |为实时OS分配的内存大小（MB）            |int                           |xen       |
+  +--------------------+----------------------------------------+------------------------------+----------+
+  |``MaxMemory=``      |在线扩容时可为实时OS分配                |int（>= Memory）              |xen       |
+  |                    |的最大内存大小（MB），默认等于Memory    |                              |          |
+  +--------------------+----------------------------------------+------------------------------+----------+
 
 以下为一些配置文件样例：
 
@@ -112,3 +157,20 @@ ____
        Debug=yes
 
     该配置文件定义了一个名为 rpi4-uniproton-debug 的实例，并指定该实例实现了GDB stub，支持调试。
+
+示例四：
+
+    .. code-block:: console
+
+       [Mica]
+        Name=qemu-uniproton-xen
+        CPU=1-3
+        ClientPath=/lib/firmware/qemu-uniproton-xen.elf
+        AutoBoot=no
+        Pedestal=xen
+        PedestalConf=/lib/firmware/qemu-uniproton-xen.bin
+        Memory=1024
+        VCPU=1
+        CPUCapacity=50
+
+    该配置文件定义了一个名为 qemu-uniproton-xen 的实例，并指定使用 xen 作为部署底座，同时该实例使用的 xen 引导文件为 `/lib/firmware/qemu-uniproton-xen.bin`，RTOS运行在核1、2、3。

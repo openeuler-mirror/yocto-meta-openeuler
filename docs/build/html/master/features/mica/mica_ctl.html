@@ -130,25 +130,27 @@
 <section id="id1">
 <h2>mica命令介绍<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica --help
-<span class="go">usage: mica [-h] {create,start,stop,rm,status} ...</span>
+<span class="go">usage: mica [-h] {create,start,stop,rm,set,status,gdb} ...</span>
 
 <span class="go">Query or send control commands to the micad.</span>
 
 <span class="go">positional arguments:</span>
-<span class="go">  {create,start,stop,rm,status...}</span>
+<span class="go">  {create,start,stop,rm,set,status,gdb}</span>
 <span class="go">                        the command to execute</span>
 <span class="go">    create              Create a new mica client</span>
 <span class="go">    start               Start a client</span>
 <span class="go">    stop                Stop a client</span>
 <span class="go">    rm                  Remove a client</span>
+<span class="go">    set                 Update settings for a client</span>
 <span class="go">    status              query the mica client status</span>
+<span class="go">    gdb                 Start GDB client</span>
 <span class="go">    ...</span>
 
 <span class="go">options:</span>
 <span class="go">  -h, --help            show this help message and exit</span>
 </pre></div>
 </div>
-<dl class="simple">
+<dl>
 <dt><code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">create</span> <span class="pre">&lt;conf&gt;</span></code></dt><dd><p>根据配置文件创建一个 mica 实例，该实例会关联一个实时OS，以及该实时OS运行的系统资源，包括 CPU 等。</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">start</span> <span class="pre">&lt;name&gt;</span></code></dt><dd><p>启动名字为 &lt;name&gt; 的实例。</p>
@@ -161,28 +163,127 @@
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">gdb</span> <span class="pre">&lt;name&gt;</span></code></dt><dd><p>如果名字为 &lt;name&gt; 的实例支持调试，可以通过该命令启动 GDB Client 开始调试。</p>
 </dd>
+<dt><code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">set</span> <span class="pre">&lt;name&gt;</span> <span class="pre">&lt;resource&gt;</span> <span class="pre">&lt;value&gt;</span></code></dt><dd><p>在线更新名字为 &lt;name&gt; 的实例的 &lt;resource&gt; 为 &lt;value&gt;。</p>
+<p>当前仅支持xen部署时配置CPU、VCPU、CPUWeight、CPUCapacity、Memory资源项，&lt;value&gt;和实例配置文件的入参要求保持一致。</p>
+<p>例如：</p>
+<p><code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">set</span> <span class="pre">qemu-uniproton-xen</span> <span class="pre">Memory</span> <span class="pre">1024</span></code> 表示将名字为 <code class="docutils literal notranslate"><span class="pre">qemu-uniproton-xen</span></code> 的实例的内存更新为1024MB。</p>
+<p><code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">set</span> <span class="pre">qemu-uniproton-xen</span> <span class="pre">CPUCapacity</span> <span class="pre">100</span></code> 表示将名字为 <code class="docutils literal notranslate"><span class="pre">qemu-uniproton-xen</span></code> 的实例的CPU算力更新为1个物理CPU。</p>
+</dd>
 </dl>
 </section>
 <hr class="docutils" />
 <section id="id2">
 <h2>实例配置文件介绍<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p>配置文件用于创建实例，通过不同的选项参数承载该实例对应的实时OS、CPU 等信息。<strong>所有的选项需要放在</strong> <code class="docutils literal notranslate"><span class="pre">[Mica]</span></code> <strong>段中配置</strong>：</p>
-<dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">Name=</span></code></dt><dd><p>实例名称，必须唯一。</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">CPU=</span></code></dt><dd><p>为实时OS分配的核号，范围：0 到 nproc - 1。</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">ClientPath=</span></code></dt><dd><p>实时OS的镜像路径，需要配置为绝对路径，且仅支持 elf 格式的镜像。</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">AutoBoot=</span></code></dt><dd><p>是否在 micad 启动时自动拉起该实例，默认为 no。</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">Pedestal=</span></code></dt><dd><p>指定部署底座，默认为 bare-metal，即在裸核上运行 RTOS。当前支持在 QEMU 上配置为 jailhouse，以使用 jailhouse 部署。</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">PedestalConf=</span></code></dt><dd><p>指定部署底座关联的配置文件。例如 Jailhouse 部署时，需要通过 PedestalConf 指定 RTOS 所需的 Non-Root Cell 配置文件。</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">Debug=</span></code></dt><dd><p>bool类型，表示OS二进制是否支持调试，默认为 no。如果支持调试，可以通过 mica gdb 命令启动 GDB Client 开始调试。</p>
+<blockquote>
+<div><table class="docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 40%" />
+<col style="width: 30%" />
+<col style="width: 10%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>配置项</p></th>
+<th class="head"><p>配置内容</p></th>
+<th class="head"><p>入参要求</p></th>
+<th class="head"><p>底座支持</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Name=</span></code></p></td>
+<td><p>实例名称，必须唯一</p></td>
+<td><p>str（长度&lt;32）</p></td>
+<td><p>ALL</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CPU=</span></code></p></td>
+<td><dl>
+<dt>为实时OS分配的核号，范围 0 ~ nproc - 1</dt><dd><p>bare-metal：仅支持单核</p>
+<p>jailhouse：实际由cell文件配置</p>
+<p>xen：支持多核</p>
 </dd>
 </dl>
+</td>
+<td><p>str（长度&lt;128）</p></td>
+<td><p>ALL</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ClientPath=</span></code></p></td>
+<td><p>实时OS的镜像路径，需要配置为绝对路径，
+且仅支持elf</p></td>
+<td><p>str（长度&lt;128）</p></td>
+<td><p>ALL</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AutoBoot=</span></code></p></td>
+<td><p>是否在micad启动时自动拉起该实例，
+默认为no</p></td>
+<td><p>yes/no</p></td>
+<td><p>ALL</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Pedestal=</span></code></p></td>
+<td><p>指定部署底座，默认为baremetal，即在裸核
+运行RTOS；支持配置为jailhouse/xen</p></td>
+<td><p>str（长度&lt;128）</p></td>
+<td><p>ALL</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">PedestalConf=</span></code></p></td>
+<td><dl>
+<dt>指定部署底座关联的配置文件</dt><dd><p>bare-metal：不涉及</p>
+<p>jailhouse：指定RTOS所需的
+Non-Root Cell配置文件</p>
+<p>xen：指定用于引导RTOS的bin文件</p>
+</dd>
+</dl>
+</td>
+<td><p>str（长度&lt;128）</p></td>
+<td><p>ALL</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Debug=</span></code></p></td>
+<td><p>表示OS二进制是否支持调试，默认为no</p>
+<p>如果支持调试，可以通过mica gdb命令启动
+GDB Client开始调试</p>
+</td>
+<td><p>yes/no</p></td>
+<td><p>ALL</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">VCPU=</span></code></p></td>
+<td><p>为实时OS分配的虚拟CPU数量</p></td>
+<td><p>int（范围1~nproc）</p></td>
+<td><p>xen</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MaxVCPU=</span></code></p></td>
+<td><p>在线扩容时可为实时OS分配
+的最大虚拟CPU数量，默认和VCPU一致</p></td>
+<td><p>int（范围1~nproc）</p></td>
+<td><p>xen</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CPUWeight=</span></code></p></td>
+<td><p>为实时OS分配的CPU算力权重，
+默认256</p></td>
+<td><p>int（范围1~65535）</p></td>
+<td><p>xen</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CPUCapacity=</span></code></p></td>
+<td><p>为实时OS分配的CPU算力（百分比）</p>
+<p>例如100表示1个物理CPU，50表示
+半个物理CPU，默认0即不限制</p>
+</td>
+<td><p>int（范围0~100*nproc）</p></td>
+<td><p>xen</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Memory=</span></code></p></td>
+<td><p>为实时OS分配的内存大小（MB）</p></td>
+<td><p>int</p></td>
+<td><p>xen</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MaxMemory=</span></code></p></td>
+<td><p>在线扩容时可为实时OS分配
+的最大内存大小（MB），默认等于Memory</p></td>
+<td><p>int（&gt;= Memory）</p></td>
+<td><p>xen</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
 <p>以下为一些配置文件样例：</p>
 <p>示例一：</p>
 <blockquote>
@@ -219,6 +320,22 @@
 </pre></div>
 </div>
 <p>该配置文件定义了一个名为 rpi4-uniproton-debug 的实例，并指定该实例实现了GDB stub，支持调试。</p>
+</div></blockquote>
+<p>示例四：</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[Mica]</span>
+<span class="go"> Name=qemu-uniproton-xen</span>
+<span class="go"> CPU=1-3</span>
+<span class="go"> ClientPath=/lib/firmware/qemu-uniproton-xen.elf</span>
+<span class="go"> AutoBoot=no</span>
+<span class="go"> Pedestal=xen</span>
+<span class="go"> PedestalConf=/lib/firmware/qemu-uniproton-xen.bin</span>
+<span class="go"> Memory=1024</span>
+<span class="go"> VCPU=1</span>
+<span class="go"> CPUCapacity=50</span>
+</pre></div>
+</div>
+<p>该配置文件定义了一个名为 qemu-uniproton-xen 的实例，并指定使用 xen 作为部署底座，同时该实例使用的 xen 引导文件为 <cite>/lib/firmware/qemu-uniproton-xen.bin</cite>，RTOS运行在核1、2、3。</p>
 </div></blockquote>
 </section>
 </section>

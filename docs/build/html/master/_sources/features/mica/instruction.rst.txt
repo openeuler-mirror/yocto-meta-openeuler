@@ -38,13 +38,17 @@ ____
 
         jailhouse 通过 cell 文件进行资源的预留和分配，无需单独配置设备树。
 
+     .. tab:: xen部署
+
+        xen 给Client OS使用的保留内存是动态申请和释放的，无需通过dts静态预留保留内存，使用可正常部署xen dom0的dtb即可。
+
 2. 启动 QEMU
 
   .. note::
 
      下文的QEMU启动命令默认使能 ``virtio-net``，请先阅读 :ref:`QEMU 使用指导 <qemu_enable_net>` 了解如何开启网络。
 
-  使用生成出来的 dtb，按照以下命令启动 QEMU，注意，bare-metal 部署和 jailhouse 部署所依赖的 QEMU 命令略有不同：
+  使用生成出来的 dtb，按照以下命令启动 QEMU，注意，bare-metal、jailhouse、xen 部署所依赖的 QEMU 命令略有不同：
 
   .. tabs::
 
@@ -81,6 +85,27 @@ ____
               -append 'mem=750M' \
               -kernel zImage \
               -initrd openeuler-image-*.cpio.gz
+
+     .. tab:: xen部署
+
+        | 按照以下命令启动 QEMU，注意：
+        | 1. **低版本qemu存在影响xen的bug，会造成RTOS xen镜像卡死，建议使用高版本qemu。** 可参考 `qemu.org — Build instructions <https://www.qemu.org/download/>`_ 。
+        | 2. 构建-f mcs -f xen的镜像后，生成的 ``*.qemuboot.dtb`` 已带有 `multiboot,module xen,linux-zimage` 节点，可直接用于部署xen dom0。
+        | 3. 启动参数 ``mem=1024M`` 是预留给xen总共的内存，dom0 Linux的内存请通过dts ``xen,xen-bootargs`` 的 ``dom0_mem`` 进行配置。
+
+        .. code-block:: console
+
+          $ sudo /home/user/qemu-10.1.2/build/qemu-system-aarch64 -device virtio-net-pci,netdev=net0 \
+              -netdev tap,id=net0,ifname=tap0,script=/etc/qemu-ifup \
+              -initrd openeuler-image-*.cpio.gz\
+              -device loader,file=Image,addr=0x45000000 \
+              -machine virt,gic-version=3 \
+              -machine virtualization=true \
+              -cpu cortex-a53 -smp 4 -m 4096 \
+              -serial mon:stdio -nographic \
+              -kernel xen-qemu-aarch64 \
+              -append 'root=/dev/ram0 rw debugshell  mem=1024M console=ttyAMA0,115200' \
+              -dtb openeuler-image-mcs-qemu-aarch64-*.qemuboot.dtb
 
 3. 部署 Client OS
 
@@ -256,6 +281,97 @@ ____
           Name                          Assigned CPU        State               Service
 
         销毁实例后，可以执行 ``mica create qemu-zephyr-ivshmem.conf`` 重新创建实例。
+
+     .. tab:: xen部署
+
+        (1) 调整内核打印等级：
+
+        .. code-block:: console
+
+           # 为了不影响shell的使用，先屏蔽内核打印：
+           qemu-aarch64:~$ echo "1 4 1 7" > /proc/sys/kernel/printk
+
+        (2) 启动 client OS：
+
+        | 镜像启动时默认会根据 `/etc/mica/qemu-uniproton-xen.conf` 和 `/etc/mica/qemu-zephyr-xen.conf`  创建 client OS 实例。
+        | 通过 ``mica status`` 查看该实例状态：
+
+        .. code-block:: console
+
+          qemu-aarch64 ~ # mica status
+          Name                          Assigned CPU        State               Service
+          qemu-uniproton-xen            1-3                 Offline
+          qemu-zephyr-xen               1-3                 Offline
+
+        | 可以看到实例的名称为 qemu-uniproton-xen 和 qemu-zephyr-xen，关联的 CPU ID 为1-3，状态为 Offline。
+        | 通过 ``mica start <Name>`` 启动实例，以 qemu-uniproton-xen 为例：
+
+        .. code-block:: console
+
+          qemu-aarch64:~$ mica start qemu-uniproton-xen
+          starting qemu-uniproton-xen...
+          start qemu-uniproton-xen successfully!
+
+        启动成功后，执行 ``mica status`` 查询状态：
+
+        .. code-block:: console
+
+          qemu-aarch64:~$ mica status
+          Name                          Assigned CPU        State               Service
+          qemu-uniproton-xen            1-3                 Running             rpmsg-tty(/dev/ttyRPMSG0) rpmsg-rpc rpmsg-umt
+          qemu-zephyr-xen               1-3                 Offline
+
+        状态更新为 Running，并且能观察到该实例提供了服务：rpmsg-tty。
+
+        rpmsg-tty 绑定了 uniproton 的 shell，因此可以通过 screen 打开 tty 设备 ``/dev/ttyRPMSG0`` 来访问 uniproton 的 shell：
+
+        .. code-block:: console
+
+          # 打开 Client OS 的 shell
+          qemu-aarch64:~$ screen /dev/ttyRPMSG0
+
+          ... ...
+          # 回车后可以连上 shell，并执行 uniproton 的 shell 命令
+          openEuler UniProton # taskInfo
+          Pid              Name             Status
+          ---------------- ---------------- ----------------
+          1                IdleTask         0x41
+          3                pthread          0x41
+          4                pthread          0x9
+          6                SerialShellTask  0xc1
+          0                                 0x1
+
+
+        之后，可以通过 ``Ctrl-a k`` 或 ``Ctrl-a Ctrl-k`` 组合键退出shell，参考 `screen(1) — Linux manual page <https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS>`_ 。
+
+        (3) 停止 client OS：
+
+        通过 ``mica stop <Name>`` 停止实例：
+
+        .. code-block:: console
+
+          qemu-aarch64:~$ mica stop qemu-uniproton-xen
+          stopping qemu-uniproton-xen...
+          stop qemu-uniproton-xen successfully!
+          qemu-aarch64:~$ mica status
+          Name                          Assigned CPU        State               Service
+          qemu-uniproton-xen            1-3                 Offline
+          qemu-zephyr-xen               1-3                 Offline
+
+        (4) 销毁 client OS：
+
+        通过 ``mica rm <Name>`` 销毁实例：
+
+        .. code-block:: console
+
+          qemu-aarch64:~$ mica rm qemu-uniproton-xen
+          removing qemu-uniproton-xen...
+          rm qemu-uniproton-xen successfully!
+          qemu-aarch64:~$ mica status
+          Name                          Assigned CPU        State               Service
+          qemu-zephyr-xen               1-3                 Offline
+
+        销毁实例后，可以执行 ``mica create qemu-uniproton-xen.conf`` 重新创建实例。
 
 ____
 

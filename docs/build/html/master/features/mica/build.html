@@ -127,7 +127,7 @@
 <div><div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p>混合关键性部署框架作为 openEuler Embedded 的特性，可以按需集成到 openEuler Embedded 镜像中。</p>
-<p>请参考 <a class="reference internal" href="../../bsp/index.html#bsp"><span class="std std-ref">南向支持章节</span></a> 构建不同平台的镜像，只需要在使用 <code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">generate</span></code> 时选择 <code class="docutils literal notranslate"><span class="pre">openeuler-mcs</span></code> 即可。</p>
+<p>请参考 <a class="reference internal" href="../../bsp/index.html#bsp"><span class="std std-ref">南向支持章节</span></a> 构建不同平台的镜像，只需要在使用 <code class="docutils literal notranslate"><span class="pre">oebuild</span> <span class="pre">generate</span></code> 时选择 <code class="docutils literal notranslate"><span class="pre">mcs</span></code> 即可。</p>
 </div>
 <p>以下为 qemu-aarch64 平台的构建步骤，其它平台的构建步骤与之类似：</p>
 <ol class="arabic">
@@ -139,19 +139,20 @@
 </div>
 </li>
 <li><p>进入oebuild工作目录，创建编译配置文件 <code class="docutils literal notranslate"><span class="pre">compile.yaml</span></code>：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>oebuild generate -p &lt;platform&gt; -f openeuler-mcs -d &lt;build_mcs&gt;
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>oebuild generate -p &lt;platform&gt; -f mcs -d &lt;build_mcs&gt;
 
 <span class="gp"># </span>以 qemu-arm64 为例，platform 可以指定为 qemu-aarch64
 <span class="gp"># </span>其它平台请运行 oebuild generate -l 查看
 
-<span class="gp">$ </span>oebuild generate -p qemu-aarch64 -f openeuler-mcs -d &lt;build_mcs&gt;
+<span class="gp">$ </span>oebuild generate -p qemu-aarch64 -f mcs -d &lt;build_mcs&gt;
 </pre></div>
 </div>
 <p>之后，在 <code class="docutils literal notranslate"><span class="pre">&lt;build_mcs&gt;</span></code> 目录下，会生成编译配置文件 <code class="docutils literal notranslate"><span class="pre">compile.yaml</span></code>。</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>MICA 支持在 <cite>bare-metal</cite> 和 <cite>jailhouse</cite> 两种不同的环境上运行，默认构建 <cite>bare-metal</cite>。</p>
+<p>MICA 支持在 <cite>bare-metal</cite>、<cite>jailhouse</cite>、<cite>xen</cite> 三种不同的环境上运行，默认构建 <cite>bare-metal</cite>。</p>
 <p>若需要支持 <cite>jailhouse</cite>，请修改编译配置文件 <code class="docutils literal notranslate"><span class="pre">compile.yaml</span></code>，把 <strong>MCS_FEATURES 中的 openamp 改成 jailhouse</strong>。</p>
+<p>若需要支持 <cite>xen</cite>，请在oebuild generate时额外添加 -f xen，无需修改 <code class="docutils literal notranslate"><span class="pre">compile.yaml</span></code>。</p>
 </div>
 </li>
 <li><p>进入 <code class="docutils literal notranslate"><span class="pre">&lt;build_mcs&gt;</span></code> 目录，编译 openeuler-image 或 openeuler-image-mcs，两个镜像都会安装 mcs 组件，但 openeuler-image-mcs 仅包含少量的基础软件包：</p>
