@@ -6,41 +6,6 @@ SRC_URI = ""
 
 require k3s-config.inc
 
-python () {
-    variants = get_k3s_variants(d)
-
-    external_endpoint = (d.getVar('K3S_EXTERNAL_ENDPOINT') or '').strip()
-
-    if external_endpoint:
-        selected_engine = external_endpoint
-        bb.note("K3S: External container engine is %s, selecting %s version" % (selected_engine, selected_engine))
-    else: # fallback/default to bundle-containerd
-        selected_engine = "bundle-containerd"
-
-    if selected_engine not in variants:
-        bb.warn('Unknown selected container engine "%s", falling back to containerd' % selected_engine)
-        selected_engine = "containerd"
-
-    variant = variants[selected_engine]
-    pv = variant['pv']
-    srcrev = variant['srcrev']
-    d.setVar('K3S_BRANCH', variant['branch'])
-    d.setVar('PV', variant['pv'] + "+git" + variant['srcrev'])
-    d.setVar('SRCREV_k3s', variant['srcrev'])
-    d.setVar('K3S_SELECTED_ENGINE', selected_engine)
-
-    # Select dependency files based on container engine and binary source
-    # When using prebuilt binary, these files are not needed (skip them)
-    d.setVar('K3S_DEP_SRC_URI_FILE', 'src_uri-' + pv + '.inc')
-    d.setVar('K3S_DEP_RELOCATION_FILE', 'relocation-' + pv + '.inc')
-    d.setVar('K3S_DEP_MODULES_TXT', 'modules-' + pv + '.txt')
-    d.setVar('K3S_BUILD_TAGS', variant.get('basic_build_tags', ''))
-    if selected_engine == "bundle-containerd":
-        bb.note("K3S: Using prebuilt binary, skipping dependency source/relocation files")
-        d.setVar('K3S_DEP_SRC_URI_FILE', '')
-        d.setVar('K3S_DEP_RELOCATION_FILE', '')
-        d.setVar('K3S_DEP_MODULES_TXT', '')
-}
 
 
 K3S_BUILD_TAGS:append = "\
