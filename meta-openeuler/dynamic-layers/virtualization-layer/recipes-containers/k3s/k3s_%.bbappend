@@ -5,9 +5,6 @@ SRCREV_FORMAT = "k3s"
 SRC_URI = ""
 
 require k3s-config.inc
-# used for downloading dependencies during do_fetch
-K3S_DEP_SRC_URI_FILE ?= ""
-K3S_DEP_RELOCATION_FILE ?= ""
 
 python () {
     variants = get_k3s_variants(d)
@@ -17,7 +14,7 @@ python () {
     if external_endpoint:
         selected_engine = external_endpoint
         bb.note("K3S: External container engine is %s, selecting %s version" % (selected_engine, selected_engine))
-    else:
+    else: # fallback/default to bundle-containerd
         selected_engine = "bundle-containerd"
 
     if selected_engine not in variants:
@@ -25,6 +22,8 @@ python () {
         selected_engine = "containerd"
 
     variant = variants[selected_engine]
+    pv = variant['pv']
+    srcrev = variant['srcrev']
     d.setVar('K3S_BRANCH', variant['branch'])
     d.setVar('PV', variant['pv'] + "+git" + variant['srcrev'])
     d.setVar('SRCREV_k3s', variant['srcrev'])
@@ -32,26 +31,17 @@ python () {
 
     # Select dependency files based on container engine and binary source
     # When using prebuilt binary, these files are not needed (skip them)
-    if d.getVar('K3S_PREBUILD_BINARY') == "1":
+    d.setVar('K3S_DEP_SRC_URI_FILE', 'src_uri-' + pv + '.inc')
+    d.setVar('K3S_DEP_RELOCATION_FILE', 'relocation-' + pv + '.inc')
+    d.setVar('K3S_DEP_MODULES_TXT', 'modules-' + pv + '.txt')
+    d.setVar('K3S_BUILD_TAGS', variant.get('basic_build_tags', ''))
+    if selected_engine == "bundle-containerd":
         bb.note("K3S: Using prebuilt binary, skipping dependency source/relocation files")
         d.setVar('K3S_DEP_SRC_URI_FILE', '')
         d.setVar('K3S_DEP_RELOCATION_FILE', '')
-        d.setVar('K3S_BUILD_TAGS', 'urfave_cli_no_docs static_build ctrd  netcgo osusergo providerless')
-    elif selected_engine == "isulad":
-        d.setVar('K3S_DEP_SRC_URI_FILE', 'src_uri-isulad.inc')
-        d.setVar('K3S_DEP_RELOCATION_FILE', 'relocation-isulad.inc')
-        d.setVar('K3S_BUILD_TAGS', 'no_btrfs ctrd  netcgo osusergo providerless')
-    else:
-        d.setVar('K3S_DEP_SRC_URI_FILE', 'src_uri-containerd.inc')
-        d.setVar('K3S_DEP_RELOCATION_FILE', 'relocation-containerd.inc')
-        d.setVar('K3S_BUILD_TAGS', 'urfave_cli_no_docs ctrd  netcgo osusergo providerless')
+        d.setVar('K3S_DEP_MODULES_TXT', '')
 }
 
-# k3s additional abilities:
-apparmor="0"
-selinux="0"
-# hightly recommended to statically build
-static_build="1"
 
 K3S_BUILD_TAGS:append = "\
     ${@bb.utils.contains('apparmor', '1', 'apparmor', '', d)} \
@@ -61,6 +51,9 @@ K3S_BUILD_TAGS:append = "\
 
 require ${K3S_DEP_SRC_URI_FILE}
 require ${K3S_DEP_RELOCATION_FILE}
+SRC_URI_MODULES = "\
+    ${@'file://${K3S_DEP_MODULES_TXT}' if d.getVar('K3S_DEP_MODULES_TXT') else ''} \
+"
 
 SRC_URI += " \
     git://github.com/k3s-io/k3s.git;branch=${K3S_BRANCH};name=k3s;protocol=https \
@@ -71,7 +64,7 @@ SRC_URI += " \
     file://cni-containerd-net.conf \
     file://0001-Finding-host-local-in-usr-libexec.patch;patchdir=src/import \
     file://k3s-killall.sh \
-    file://modules.txt \
+    ${SRC_URI_MODULES} \
 "
 
 BIN_PREFIX = "${exec_prefix}"
@@ -86,20 +79,6 @@ GO_BUILD_LDFLAGS = "-X github.com/k3s-io/k3s/pkg/version.Version=${PV} \
                    "
 
 K3S_AGENT_BUILD_TAGS ?= "${K3S_BUILD_TAGS}"
-
-# Use prebuilt k3s binary from k3s.io instead of building from source
-# Set to "1" to enable using prebuilt binaries (much faster)
-# Remain empty to build from source (default)
-K3S_PREBUILD_BINARY ?= ""
-
-K3S_MIRROR_URL ?= ""
-
-upx_compress = "false"
-
-# Map Yocto arch to k3s arch naming
-K3S_ARCH:x86-64 = "amd64"
-K3S_ARCH:arm = "arm"
-K3S_ARCH:aarch64 = "arm64"
 
 
 do_download_prebuilt() {
@@ -162,6 +141,15 @@ k3s_fix_gomodcache_perms() {
 
 do_compile[postfuncs] += " k3s_fix_gomodcache_perms"
 do_compile[prefuncs] += " k3s_fix_gomodcache_perms "
+# Wanna fetch k3s dependencies dureing do_fetch(), just rewrite do_compile():
+# * we have prepared src_uri-${PV}.inc, relocation-${PV}.inc and modules-${PV}.txt files,
+#   hence you can keep do_fetch unchanged
+# * do_compile[network] = "0"
+# * comment do_compile[postfuncs] += " k3s_fix_gomodcache_perms"
+# * comment do_compile[prefuncs] += " k3s_fix_gomodcache_perms"
+# * mapping dependencies cache to correct location, according to the guide [yocto-meta-openeuler/scripts/oe-go-mod-autogen.py]
+#   or read [meta-virtualization/recipes-containers/k3s/k3s_git.bb as reference]
+# * change build mode to go vendor 
 do_compile() {
     if [ "${K3S_PREBUILD_BINARY}" = "1" ]; then
         if [ -f "${S}/src/import/dist/artifacts/k3s" ]; then
@@ -188,8 +176,7 @@ do_compile() {
     build_output="./dist/artifacts/k3s"
     build_tags="${K3S_BUILD_TAGS}"
     if [ "${K3S_ROLE}" = "agent" ]; then
-        # temporary build k3s full binary instead of agentic only
-        # build_target="./cmd/agent/main.go"
+        build_target="./cmd/agent/main.go"
         build_tags="${K3S_AGENT_BUILD_TAGS}"
     fi
 
@@ -276,8 +263,8 @@ do_install() {
     fi
 }
 
-FILES:${k3s}-server += "${systemd_system_unitdir}/k3s.service.ori"
-FILES:${k3s}-agent += "${systemd_system_unitdir}/k3s-agent.service.ori"
+FILES:${PN}-server += "${systemd_system_unitdir}/k3s.service.ori"
+FILES:${PN}-agent += "${systemd_system_unitdir}/k3s-agent.service.ori"
 
 # external container engine selection
 python () {

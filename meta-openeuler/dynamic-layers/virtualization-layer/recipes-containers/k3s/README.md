@@ -1,28 +1,28 @@
-# k3s：轻量级 Kubernetes 简明指南
+# yocto k3s
 
 这个目录提供了在 openEuler Embedded 上构建和运行 [k3s](https://k3s.io/) 所需的 BitBake 配方、补丁和运行时脚本。k3s 是基于 Apache License 2.0 的精简版 Kubernetes，非常适合边缘和资源受限设备。
+
 我们重写了meta-virtualization的k3s配方，方便在 openEuler Yocto 构建体系里直接使用。
 
 ---
 
 ## 这套配方能够做什么
 
-- **一次构建输出 server 与 agent**：`k3s` 多路复用二进制会同时提供 `kubectl`、`crictl` 和 `ctr`（在使用外部 containerd 时自动跳过 `ctr`）。
-- **按需切换容器运行时**：通过一个变量就能指定使用 isulad、外部 containerd，或者保留 k3s 自带的 bundle containerd。
-- **可控的依赖获取方式**：既支持在 `do_fetch` 阶段完成 go module 下载，也支持在 `do_compile` 阶段联网下载依赖。
-- **开箱即可的运行时脚本**：包括安装 agent、清理节点、停止服务等常用脚本，并提供 systemd 单元文件。
+- **一次构建输出 server 或 agent**：`k3s` 多路复用二进制会同时提供 `kubectl`、`crictl` 和 `ctr`（在使用外部 containerd 时自动跳过 `ctr`）。
+- **按需切换容器运行时**：可以设定 isulad、外部 containerd  作为 k3s external endpoint，或者默认使用 k3s 自带的 bundle containerd。
+- **可控的依赖获取方式**：考虑不同的网络情况，支持在 `do_fetch` 阶段完成 go module 下载，也支持在 `do_compile` 阶段联网下载依赖。
 
 ---
 
 ## 快速开始
 
 1. 在 oebuild generate 中添加 k3s feature, 默认启用 k3s-agent
-2. 可以在 `local.conf` 中添加 DISTRO_FEATURES:append = "k3s-server", 来构建 k3s server
-3. 直接运行：
+2. 可以在 `local.conf` 中将 DISTRO_FEATURES:append = "k3s-agent" 改为 "k3s-server", 来构建 完整的k3s server二进制，默认静态链接分发
+3. 运行：
    ```bash
    bitbake k3s
    ```
-  默认会构建带 bundle containerd 的版本（当前为 v1.27.15-rc2+k3s1）。
+  默认会构建带 bundle containerd 的版本（当前为 v1.27.15-rc2+k3s1）, isulad作为外部endpoint时k3s的版本为v1.22.6
 
 ---
 
@@ -34,7 +34,7 @@
 
 ```conf
 # conf/local.conf
-K3S_EXTERNAL_ENDPOINT ?= "isulad"      # 也可以是 containerd
+K3S_EXTERNAL_ENDPOINT ?= "containerd"  # "containerd", "isulad" or "bundle-containerd"(默认)
 ```
 
 - 设为 `isulad` 或 `containerd`：选择对应版本并生成带 `--container-runtime-endpoint` 的 systemd 配置。
@@ -140,7 +140,7 @@ k3s-agent.sh -t <token> -s https://<server>:6443
 
 ---
 
-## 还想了解更多？
+## 更多
 
 - k3s 官方文档：<https://rancher.com/docs/k3s/latest/en/>
 - 网络选项（CNI、Flannel 后端等）：<https://rancher.com/docs/k3s/latest/en/installation/network-options/>

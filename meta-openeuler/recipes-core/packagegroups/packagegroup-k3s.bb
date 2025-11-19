@@ -4,13 +4,14 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 PR = "r1"
 
-inherit packagegroup
+inherit packagegroup features_check
 inherit cni_networking
 
 REQUIRED_DISTRO_FEATURES ?= "seccomp"
 
 
 PACKAGES = "\
+  ${PN} \
   ${PN}-server \
   ${PN}-agent \
   "
