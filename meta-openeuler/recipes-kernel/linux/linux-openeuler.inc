@@ -211,7 +211,7 @@ SRC_URI:append:qemu-aarch64= "${@bb.utils.contains('DISTRO_FEATURES', 'oe-xfce',
 
 do_container_configs[doc] = "Checks the kernel configs required by container, parses the output, and issues warnings/notes for missing configs."
 do_container_configs() {
-    wget -P ${WORKDIR}  https://github.com/moby/moby/raw/master/contrib/check-config.sh || true
+    wget --timeout=10 -P ${WORKDIR}  https://github.com/moby/moby/raw/master/contrib/check-config.sh || true
     if [ -f ${WORKDIR}/check-config.sh ]; then
         sed -i 's,zcat "$2" | grep "$1", cat "$2" | grep "$1",g' ${WORKDIR}/check-config.sh
         chmod +x ${WORKDIR}/check-config.sh
