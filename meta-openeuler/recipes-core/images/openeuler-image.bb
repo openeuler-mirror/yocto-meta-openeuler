@@ -37,3 +37,6 @@ ${@bb.utils.contains("DISTRO_FEATURES", "containerd", "packagegroup-basic-contai
 # You can add extra user here, suck like:
 # inherit extrausers
 # EXTRA_USERS_PARAMS = "useradd -p '' openeuler;"
+
+MCS_IMAGE_INCLUDE = "${@bb.utils.contains('DISTRO_FEATURES', 'mcs', 'mcs-image-common.inc', '', d)}"
+include ${MCS_IMAGE_INCLUDE}
