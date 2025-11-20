@@ -5,6 +5,7 @@ SRCREV_FORMAT = "k3s"
 SRC_URI = ""
 
 require k3s-config.inc
+inherit cni_networking
 
 
 
