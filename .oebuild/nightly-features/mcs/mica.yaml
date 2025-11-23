@@ -1,7 +1,16 @@
 id: mica
 prompt: Enable the MCS stack
 machines:
-  [qemu-aarch64, raspberrypi4-64, hi3093, ok3568, kp920, x86-64, hieulerpi1]
+  [
+    qemu-aarch64,
+    raspberrypi4-64,
+    hi3093,
+    ok3568,
+    kp920,
+    x86-64,
+    hieulerpi1,
+    phytiumpi,
+  ]
 config:
   layers:
     - yocto-meta-openeuler/rtos/meta-openeuler-rtos
@@ -9,17 +18,25 @@ config:
   local_conf:
     - 'DISTRO_FEATURES:append = " mcs "'
     - 'MCS_FEATURES ?= "openamp"'
+    - 'MCS_FEATURES:kp920:append = " zephyr "'
+    - 'MCS_FEATURES:qemu-aarch64:append = " zephyr "'
     - 'RPI_USE_UEFI:raspberrypi4-64 = "1"'
 
-one_of:
+sub_feats:
   - id: baremetal
     name: Baremetal (openAMP)
     dependencies: [hypervisor/baremetal]
   - id: xen
     name: Xen virtualization
+    machines: [qemu-aarch64, phytiumpi]
     dependencies: [hypervisor/xen]
   - id: jailhouse
     name: Jailhouse
     dependencies: [hypervisor/jailhouse]
 
-default_one_of: baremetal
+one_of:
+  - self/baremetal
+  - self/xen
+  - self/jailhouse
+
+default_one_of: self/baremetal

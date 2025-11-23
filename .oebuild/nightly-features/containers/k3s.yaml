@@ -3,9 +3,24 @@ name: K3s Kubernetes
 prompt: Enable K3s (default k3s-agent)
 dependencies: [containers]
 machines: [qemu-aarch64, phytiumpi]
-selects: [k3s-agent, k3s-server]
+selects:
+  - self/k3s-agent
+  - self/k3s-server
 config:
   layers:
     - yocto-meta-virtualization
   local_conf:
     - 'DISTRO_FEATURES:append = " k3s-agent "'
+
+sub_feats:
+  - id: k3s-agent
+    name: K3s Agent
+    config:
+      local_conf:
+        - 'DISTRO_FEATURES:append = " k3s-agent "'
+
+  - id: k3s-server
+    name: K3s Server
+    config:
+      local_conf:
+        - 'DISTRO_FEATURES:append = " k3s-server "'

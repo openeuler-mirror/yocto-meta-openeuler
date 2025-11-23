@@ -1,12 +1,17 @@
 # Neo oebuild feature generation specifications
 
-> **Core Feature**: Dependency handling is integrated into the `local.conf` and `bblayers.conf` generation procedure.
+> **Core Feature**: 
+> 1. Systemetic
+>     Dependency handling is integrated into the bitbake global variables settings procedure.
+> 2. Simple
+>     Handle only positive dependencies and simple conflicts, 
+>     we do not handle complex negative dependencies such as conflicts,
+>     conflicts should be handled in bitbake recipes
 
 Features are stored as individual YAML files organized by category directories. The directory structure serves as the source of truth for categorization.
 
 ## Feature Categories
 
-`categories.yaml`
 
   - **`mcs/`**: Virtualization and multi-tenant core components (MCS, Micrun, z/VM, etc.)
   - **`containers/`**: Container runtime support (containerd/isulad/docker/podman) and Kubernetes helpers.
@@ -31,7 +36,7 @@ Features are stored as individual YAML files organized by category directories. 
 
 #### Core Meta
 
-  * **`id`** (Required): The leaf identifier of the feature.
+  * **`id`** (Required): The leaf identifier of the feature. id cannot be "self"
   * **`name`**: Display name in menuconfig (defaults to `id` if not specified).
   * **`prompt`**: Description shown in menuconfig interface.
   * **`machines`**: List of supported machines.
@@ -50,9 +55,10 @@ Defines what is injected into the Yocto build environment.
 
   * **`sub_feats`**: A **List** of feature objects defined inline.
       * **Visibility**: Visible only when the parent is enabled. Default state is **unchecked** (unless selected by logic).
-      * **Usage**: Must be used to define items before they can be referenced in `one_of` or `choice`.
+      * **Usage**: Must be used to define items before they can be referenced in **Selection Controls** (`one_of`, `choice`).
+      * **non-recursive**: Recursive sub_feat is **forbidden**
 
-#### Selection Controls
+#### Choice Controls
 
   * **`one_of`**: **Mandatory Single Choice**.
 
@@ -76,6 +82,14 @@ Defines what is injected into the Yocto build environment.
 
       * List of Feature IDs.
       * **Logic**: If this feature is enabled, all listed features are **automatically enabled**.
+  
+  Constraints
+  * **conflicts**: **Global Exclusion**.
+  
+      * List of Feature IDs.
+      * Supported Syntax: Full IDs, or self/ references to sub-features.
+      * Logic: If any feature listed here is currently Enabled (or selected to be enabled), the current feature cannot be enabled.
+      * Usage: Used to define mutual exclusivity between features that are not siblings (i.e., not covered by one_of).
 
 ### 3\. The `self` Keyword
 
@@ -225,16 +239,16 @@ config:
 # Define sub-features
 sub_feats:
   - id: isulad
-    name: iSulaD
+    name: isulad container engine
     config:
        local_conf:
-         - 'CONTAINER_rUNTIME = "isulad"'
+         - 'VIRTUAL-RUNTIME_container_engine:append = "isulad"'
   
   - id: containerd
-    name: containerd
+    name: containerd container engine
     config:
        local_conf:
-         - 'CONTAINER_rUNTIME = "containerd"'
+         - 'VIRTUAL-RUNTIME_container_engine:append = "containerd"'
 
   - id: download
     name: Manually download container engine
@@ -267,6 +281,144 @@ config:
     - 'DISTRO_FEATURES_NATIVE:append = " clang "'
     - 'EXTERNAL_TOOLCHAIN_CLANG_BIN = "${EXTERNAL_TOOLCHAIN_LLVM}/bin"'
 ```
+
+### 6. Feature with Global Conflicts
+
+```yaml
+# File: nightly-features/system/network-manager.yaml
+id: dummy-zvm
+prompt: dummy zvm conflict example
+
+
+conflicts:
+  - yocto/packagegroup-kernel-modules  # Cannot coexist with systemd-networkd
+  - self                # Just an example: maybe the main daemon conflicts with its own wifi sub-feat in some weird mode
+```
+
+# oebuild generate cli spec
+
+
+
+# CLI & Interaction Specification
+
+To ensure a seamless experience between the CLI (`oebuild generate`) and the Menuconfig TUI, the system relies on a **Declarative** input model and a shared **State Artifact**.
+
+## 1\. Unified State Management
+
+Both the CLI and Menuconfig must operate on a single "Source of Truth" to ensure interoperability. They do not write directly to `local.conf` immediately; instead, they modify a feature state file.
+
+  * **oebuild geneate** compatibility
+  * **Artifact Path**: `<build_dir>/compile.yaml`
+  * **Workflow**:
+    1.  **Load**: Parser reads all Feature YAMLs
+    2.  **Modify**: Apply CLI arguments (`-f`) or User Interface changes.
+    3.  **Resolve**: Execute the **Resolution Algorithm** (Dependency/Logic checks).
+    4.  **Save**: Write to `compile.yaml` this part of generaion logic should be compatible with oebuild generate, which geneate compile.yaml
+    5.  **Generate**: detailed configuration is written to `local.conf` / `bblayers.conf` based on the finalized state.
+
+## 2\. CLI Command Interface
+
+The CLI treats feature selection as a declaration of intent.
+
+### Syntax
+
+```bash
+oebuild generate -m <machine> [-f <feature_identifier>]...
+```
+
+### Identifier Resolution Rules
+
+The CLI accepts flexible identifiers to maximize user convenience. The parser must resolve them in the following strict order:
+
+1.  **Exact Full ID Match**:
+      * Input: `mcs/mica` -\> Matches `mcs/mica`.
+      * Input: `mcs/mica/xen` -\> Matches sub-feature `xen` under `mcs/mica`.
+2.  **Unique Leaf ID Match**:
+      * Input: `k3s` -\> Scans all features. If only `containers/k3s` exists, match it.
+      * *Error Condition*: If both `containers/k3s` and `networking/k3s` exist, abort with **Ambiguity Error**.
+3.  **Sub-feature Short Match**:
+      * Input: `xen` -\> If `hypervisor/xen` exists, match it. If `mcs/mica/xen` (sub-feature) is the only other `xen`, match it.
+      * *Priority*: Top-level features take precedence over sub-features if names collide.
+
+## 3\. Resolution Algorithm (The Brain)
+
+When a feature is requested via CLI, the parser must execute the following logic sequence:
+
+### Step A: Visibility & Machine Check
+
+Before enabling any feature `F`:
+
+1.  Check `F.machines`. If the current machine is not supported, **Abort** with error.
+2.  If `F` is a sub-feature, recursively check its Parent's machine support.
+
+### Step B: Dependency Expansion (Auto-Resolution)
+
+Conflict logics are just dummy, leave a space for future, do not really do those conflicts dep calculation:
+
+0. **Conflict Check** (Pre-flight):
+> Before enabling feature F, check its conflicts list.
+> If any feature C in F.conflicts is already in the Enabled Set:
+> Abort with Conflict Error: "Cannot enable 'F' because it conflicts with enabled feature 'C'."
+> Symmetry Check: Also check if any already enabled feature E lists F in its conflicts.
+1.  **Enable F**. Add `F` to the Enabled Set.
+2.  **Dependencies**: For each ID in `F.dependencies`, recursively execute **Step A** and **Step B**.
+3.  **Selects**: 
+> For each ID in `F.selects`, recursively execute **Step A** and **Step B**.
+> Note: If a selects target triggers a Conflict Error, the entire operation fails.
+4.  **Auto Parent Selection**: If `F` is a sub-feature, automatically **Enable its Parent**.
+
+### Step C: `one_of` / `choice` Logic
+
+Handling selections within a feature group (e.g., Hypervisors in `mcs/mica`):
+
+1.  **User Priority**: Explicit CLI arguments (`-f xen`) **always override** defaults.
+2.  **Conflict Detection**:
+      * If a `one_of` group has multiple options enabled via explicit CLI args (e.g., `-f baremetal -f xen`), **Abort** with **Conflict Error**.
+3.  **Default Fallback**:
+      * If a `one_of` group has **NO** options selected by the user, and **NO** options selected by `selects` from other features:
+          * Apply `default_one_of` (if defined).
+          * If no default is defined, leave it empty (unless logic requires it, in which case, warn).
+
+## 4\. Error Handling Standards
+
+The parser must provide actionable error messages.
+
+### Case 1: Ambiguity
+
+```text
+[Error] Ambiguous feature ID: 'debug'
+Candidates:
+  - system/debug
+  - mcs/debug
+Please use the Full ID (e.g., -f system/debug).
+```
+
+### Case 2: Machine Incompatibility
+
+```text
+[Error] Feature 'xen' is not supported on machine 'raspberrypi4'.
+Trace:
+  - Requested: mcs/mica
+  - Selected: mcs/mica/xen (User Input)
+  - Constraint: xen requires machine [qemu-aarch64, x86-64]
+```
+
+### Case 3: Mutually Exclusive Conflict
+
+```text
+[Error] Conflict in feature 'mcs/mica':
+You requested both 'baremetal' and 'xen', but they are mutually exclusive (one_of).
+```
+
+
+# Additional Current implementation requirements
+
+* due to undetermined conflict rules, I remained a simple conflict handling logic branch, 
+  leave a placeholder for *conflict*.
+  and I'm not really calculating conflicts, this is an unstable syntax
+  
+* implementation the new oebuild generate in oebuild/app/plugins/neo-generate  
+  
 
 # Yocto global variables readjustment
 
