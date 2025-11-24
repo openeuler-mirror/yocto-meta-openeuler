@@ -4,7 +4,7 @@
 > 1. Systemetic
 >     Dependency handling is integrated into the bitbake global variables settings procedure.
 > 2. Simple
->     Handle only positive dependencies and simple conflicts, 
+>     Handle only positive dependencies and simple conflicts(may be no conflict handling)  , 
 >     we do not handle complex negative dependencies such as conflicts,
 >     conflicts should be handled in bitbake recipes
 
@@ -31,6 +31,12 @@ Features are stored as individual YAML files organized by category directories. 
   * **Category ID**: Derived directly from the directory name.
   * **Feature ID (Leaf)**: Defined in the `id` field of the YAML.
   * **Full ID**: `<category_id>/<leaf_id>` (Globally unique identifier).
+  * when **category_id** is euqal to **leaf_id**, `<category_id>/<leaf_id>` can be shorten to be a prefix `<category_id>` 
+  ```
+  mcs dir contains mcs.yaml, which id is mcs/mcs
+  hence we can shorten it to mcs, and mcs/mcs/micrun can be mcs/micrun
+  ``` 
+
 
 ### 2\. Feature Schema
 
@@ -83,14 +89,21 @@ Defines what is injected into the Yocto build environment.
       * List of Feature IDs.
       * **Logic**: If this feature is enabled, all listed features are **automatically enabled**.
   
-  Constraints
+  Constraints Proposal (Not Introduced Yet) 
+      
   * **conflicts**: **Global Exclusion**.
   
       * List of Feature IDs.
       * Supported Syntax: Full IDs, or self/ references to sub-features.
       * Logic: If any feature listed here is currently Enabled (or selected to be enabled), the current feature cannot be enabled.
       * Usage: Used to define mutual exclusivity between features that are not siblings (i.e., not covered by one_of).
-
+      * NOTICE: we can avoid conflicts key by add a new feature layer:
+      > for example, mcs/baremetal, mcs/xen, mcs/jailhouse should be exclusive and mcs must select one of them
+      > we can use mcs/ped, defining these pedestal as sub_feats of mcs/ped, and set one_of to achive the goal
+      > mcs/ped.one_of: `[self/xen, self/baremetal, self/jailhouse]`
+  
+  NOTICE: it is no need to introduce conflict keyword in
+  
 ### 3\. The `self` Keyword
 
   * **Usage**: Used in `dependencies`, `selects`, `one_of`, and `choice` fields.
@@ -323,7 +336,7 @@ The CLI treats feature selection as a declaration of intent.
 ### Syntax
 
 ```bash
-oebuild generate -m <machine> [-f <feature_identifier>]...
+oebuild generate -p <machine> [-f <feature_identifier>]...
 ```
 
 ### Identifier Resolution Rules
@@ -336,7 +349,11 @@ The CLI accepts flexible identifiers to maximize user convenience. The parser mu
 2.  **Unique Leaf ID Match**:
       * Input: `k3s` -\> Scans all features. If only `containers/k3s` exists, match it.
       * *Error Condition*: If both `containers/k3s` and `networking/k3s` exist, abort with **Ambiguity Error**.
-3.  **Sub-feature Short Match**:
+3.  **Duplcated prefix Short Match**:
+      * Input: `mcs` prefix -\> consider as  `mcs/mcs` if there is mcs feature located under category mcs.
+      * Non-recursive handling
+      * when **category_id** is euqal to **leaf_id**, `<category_id>/<leaf_id>` can be shorten to be a prefix `<category_id>` 
+4.  **Sub-feature Short Match**:
       * Input: `xen` -\> If `hypervisor/xen` exists, match it. If `mcs/mica/xen` (sub-feature) is the only other `xen`, match it.
       * *Priority*: Top-level features take precedence over sub-features if names collide.
 
@@ -379,6 +396,7 @@ Handling selections within a feature group (e.g., Hypervisors in `mcs/mica`):
           * Apply `default_one_of` (if defined).
           * If no default is defined, leave it empty (unless logic requires it, in which case, warn).
 
+
 ## 4\. Error Handling Standards
 
 The parser must provide actionable error messages.
@@ -409,6 +427,52 @@ Trace:
 [Error] Conflict in feature 'mcs/mica':
 You requested both 'baremetal' and 'xen', but they are mutually exclusive (one_of).
 ```
+
+## oebuild generate options
+
+### list
+
+now `oebuild neo-generate --list` remains flatten, which is terrible to read:
+
+```
+│ hypervisor/jailhouse                   hi3093, kp920, ok3568, qemu-aarch64, raspberrypi4-64         │
+│ hypervisor/xen                         kp920, phytiumpi, qemu-aarch64                               │
+│ kernel/kernel6                         all                                                          │
+│ kernel/rt                              all                                                          │
+│ mcs/mica                               hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
+│                                        raspberrypi4-64, x86-64                                      │
+│ mcs/mica-rtos                          hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
+│                                        raspberrypi4-64, x86-64                                      │
+│ mcs/mica-rtos/uniproton                hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
+│                                        raspberrypi4-64, x86-64                                      │
+│ mcs/mica-rtos/zephyr                   hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
+│                                        raspberrypi4-64, x86-64                                      │
+│ mcs/mica/baremetal                     hi3093, hieulerpi1, kp920, ok3568, qemu-aarch64,             │
+│                                        raspberrypi4-64, x86-64                                      │
+│ mcs/mica/jailhouse                     hi3093, kp920, ok3568, qemu-aarch64, raspberrypi4-64         │
+│ mcs/mica/xen                           phytiumpi, qemu-aarch64                                      │
+│ mcs/micrun                             phytiumpi, qemu-aarch64  
+```
+
+what we want is indentation by depth 
+
+```
+
+│ mcs
+│ - mcs/mica                              hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
+│                                        raspberrypi4-64, x86-64                                      │
+│  - mcs/mica/baremetal                     hi3093, hieulerpi1, kp920, ok3568, qemu-aarch64,             │
+│                                        raspberrypi4-64, x86-64                                      │
+│  - mcs/mica/jailhouse                     hi3093, kp920, ok3568, qemu-aarch64, raspberrypi4-64         │
+│  - mcs/mica/xen                           phytiumpi, qemu-aarch64                                      │
+│  - mcs/mica-rtos                         hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
+│   - mcs/mica-rtos/uniproton              hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
+│                                        raspberrypi4-64, x86-64                                      │
+│   - mcs/mica-rtos/zephyr                hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
+│                                        raspberrypi4-64, x86-64                                      │
+│ - mcs/micrun                             phytiumpi, qemu-aarch64  
+```
+
 
 
 # Additional Current implementation requirements
