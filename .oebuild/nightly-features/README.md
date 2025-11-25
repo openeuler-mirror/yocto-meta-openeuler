@@ -1,4 +1,99 @@
-# Neo oebuild feature generation specifications
+# Neo oebuild feature generation specifications - kconfigs
+
+`feature -> kconfig symbol`
+
+Two files In One Dir:
+
+## Yocto injection Metadata
+
+```json
+// kconfig-features/containers.json
+{
+  "FEATURE_METADATA": {
+    "CONFIG_CONTAINERS": {
+      "local_conf": ["DISTRO_FEATURES:append = \" virtualization containers \""]
+    },
+    "CONFIG_CONTAINERD": {
+      "layers": ["yocto-meta-virtualization"],
+      "local_conf": ["DISTRO_FEATURES:append = \" containerd \""]
+    },
+    "CONFIG_ISULAD": {
+      "local_conf": ["DISTRO_FEATURES:append = \" isulad \""]
+    },
+    "CONFIG_K3S": {
+      "local_conf": ["DISTRO_FEATURES:append = \" k3s-agent \""]
+    },
+    "CONFIG_K3S_AGENT": {
+      "local_conf": ["DISTRO_FEATURES:append = \" k3s-agent \""]
+    },
+    "CONFIG_K3S_SERVER": {
+      "local_conf": ["DISTRO_FEATURES:append = \" k3s-server \""]
+    }
+  }
+}
+```
+
+## Dependencies and categorization file (kconfig DSL):
+
+```dsl
+
+menu "Container runtimes( containers/containers.yaml:1 )"
+
+config CONFIG_CONTAINERS
+    bool "Container ability support"
+    help
+      Enable basic tooling and kernel tweaks for containers.
+
+choice
+    prompt "Container engine choice"
+    depends on CONFIG_CONTAINERS
+    default CONFIG_CONTAINERS_DOWNLOAD
+
+config CONFIG_CONTAINERS_DOWNLOAD
+    bool "Manual download (containers/containers.yaml:9)"
+    depends on CONFIG_CONTAINERS
+    help
+      Use an externally downloaded engine instead of building one.
+
+config CONFIG_CONTAINERD
+    bool "Containerd runtime (containers/containerd.yaml:1)"
+    depends on CONFIG_CONTAINERS && (MACHINE_QEMU_AARCH64 || MACHINE_PHYTIUMP)
+    select CONFIG_CONTAINERS
+    help
+      Enable containerd as the runtime and add yocto-meta-virtualization.
+
+config CONFIG_ISULAD
+    bool "Isulad runtime (containers/isulad.yaml:1)"
+    depends on CONFIG_CONTAINERS && (MACHINE_QEMU_AARCH64 || MACHINE_RASPBERRYPI4_64 || MACHINE_HIEULERPI1 || MACHINE_KP920)
+
+endchoice
+
+config CONFIG_K3S
+    bool "K3s Kubernetes (containers/k3s.yaml:1)"
+    depends on CONFIG_CONTAINERS && (MACHINE_QEMU_AARCH64 || MACHINE_PHYTIUMP)
+    select CONFIG_K3S_AGENT
+    select CONFIG_K3S_SERVER
+
+config CONFIG_K3S_AGENT
+    bool "K3s Agent"
+    depends on CONFIG_K3S
+
+config CONFIG_K3S_SERVER
+    bool "K3s Server"
+    depends on CONFIG_K3S
+
+config CONFIG_KUBEEDGE
+    bool "KubeEdge edge stack (containers/kubeedge.yaml:1)"
+    depends on CONFIG_CONTAINERS && CONFIG_ISULAD && (MACHINE_QEMU_AARCH64 || MACHINE_RASPBERRYPI4_64 || MACHINE_HIEULERPI1)
+
+config CONFIG_PODMAN
+    bool "Podman runtime (containers/podman.yaml:1)"
+    depends on CONFIG_CONTAINERS
+```
+
+
+
+# Neo oebuild feature generation specifications - yaml
 
 > **Core Feature**: 
 > 1. Systemetic
@@ -13,7 +108,7 @@ Features are stored as individual YAML files organized by category directories. 
 ## Feature Categories
 
 
-  - **`mcs/`**: Virtualization and multi-tenant core components (MCS, Micrun, z/VM, etc.)
+  - **`mica/`**: Virtualization and multi-tenant core components (MCS, Micrun, z/VM, etc.)
   - **`containers/`**: Container runtime support (containerd/isulad/docker/podman) and Kubernetes helpers.
   - **`system/`**: Init managers, debug tooling, OpenBMC, webserver stacks.
   - **`robotics/`**: Robotics middleware stacks (ROS 2, AiROS).
@@ -21,7 +116,7 @@ Features are stored as individual YAML files organized by category directories. 
   - **`desktop/`**: UI/graphics support (Qt5, OpenGL, Wayland, X11).
   - **`toolchain/`**: Compiler and libc options (Clang, musl).
   - **`package_manager/`**: Package managers (EPKG, openEuler bridge).
-  - **`hypervisor/`**: Low-level hypervisor options referenced by `mcs/` selections.
+  - **`hypervisor/`**: Low-level hypervisor options, may be referenced by `mica/` selections.
 
 ## YAML Feature Specification
 
@@ -31,10 +126,10 @@ Features are stored as individual YAML files organized by category directories. 
   * **Category ID**: Derived directly from the directory name.
   * **Feature ID (Leaf)**: Defined in the `id` field of the YAML.
   * **Full ID**: `<category_id>/<leaf_id>` (Globally unique identifier).
-  * when **category_id** is euqal to **leaf_id**, `<category_id>/<leaf_id>` can be shorten to be a prefix `<category_id>` 
+  * **Category Root Feature ID** when **category_id** is euqal to **leaf_id**, `<category_id>/<leaf_id>` can be shorten to be a prefix `<category_id>` 
   ```
-  mcs dir contains mcs.yaml, which id is mcs/mcs
-  hence we can shorten it to mcs, and mcs/mcs/micrun can be mcs/micrun
+  mica dir contains mica.yaml, which id shoule be mica/mica, but due to this rule, the id must be mica, not mica/mica
+  and mica.yaml sub_feats baremetal, should be mica/baremetal, not mica/mica/baremetal!
   ``` 
 
 
@@ -98,9 +193,9 @@ Defines what is injected into the Yocto build environment.
       * Logic: If any feature listed here is currently Enabled (or selected to be enabled), the current feature cannot be enabled.
       * Usage: Used to define mutual exclusivity between features that are not siblings (i.e., not covered by one_of).
       * NOTICE: we can avoid conflicts key by add a new feature layer:
-      > for example, mcs/baremetal, mcs/xen, mcs/jailhouse should be exclusive and mcs must select one of them
-      > we can use mcs/ped, defining these pedestal as sub_feats of mcs/ped, and set one_of to achive the goal
-      > mcs/ped.one_of: `[self/xen, self/baremetal, self/jailhouse]`
+      > for example, mica/baremetal, mica/xen, mica/jailhouse should be exclusive and mcs must select one of them
+      > we can use mica, defining these pedestal as sub_feats of mica, and set one_of to achive the goal
+      > mica .one_of: `[self/xen, self/baremetal, self/jailhouse]`
   
   NOTICE: it is no need to introduce conflict keyword in
   
@@ -108,7 +203,8 @@ Defines what is injected into the Yocto build environment.
 
   * **Usage**: Used in `dependencies`, `selects`, `one_of`, and `choice` fields.
   * **Resolution**: Replaced at parse time with the current feature's namespace.
-      * Example: `self/baremetal` inside `mcs/mica.yaml` resolves to `mcs/mica/baremetal`.
+      * Example: `self/A` inside `B/BB.yaml`(id=BB) resolves to `B/BB/A`.
+      * Example: `self/A` inside `B/BB.yaml`（id=B) resolves to `B/A`.
 
 -----
 
@@ -187,7 +283,7 @@ sub_feats:
 
 ### 3\. Feature with `one_of` (Restructured)
 
-*File: `nightly-features/mcs/mica.yaml`*
+*File: `nightly-features/mica/mica.yaml`*
 
 ```yaml
 id: mica
@@ -349,10 +445,21 @@ The CLI accepts flexible identifiers to maximize user convenience. The parser mu
 2.  **Unique Leaf ID Match**:
       * Input: `k3s` -\> Scans all features. If only `containers/k3s` exists, match it.
       * *Error Condition*: If both `containers/k3s` and `networking/k3s` exist, abort with **Ambiguity Error**.
-3.  **Duplcated prefix Short Match**:
-      * Input: `mcs` prefix -\> consider as  `mcs/mcs` if there is mcs feature located under category mcs.
-      * Non-recursive handling
-      * when **category_id** is euqal to **leaf_id**, `<category_id>/<leaf_id>` can be shorten to be a prefix `<category_id>` 
+3.  **Category feature**: 
+      This is kind of "syntax sugar"  rule, 
+      When category id equals to root feature id, this feature becames the category root feature, whose full id is the `<category_id`, instead of `<category_id>/<same_feat_id>`
+      And root features has highest priority, see example below:
+      * dir FEAT
+      |---- FEAT.yaml, define sub_feat XA, XA full id is `FEAT/XA`, FEAT is root category
+      |---- FEATB.yaml, define sub_feat XB, XB full id is `FEAT/FEATB/XB`
+      |---- XA.yaml,id=XA     # not allowed, because full id is `FEAT/XA.yaml`, conflict with FEAET.XA
+      |---- XB.yaml,id=XB     # allowed, because XB full id is `FEAT/XB`
+      
+      User can spell the feature without repeat the name, 
+      * Input: `mica/xen` is like `mica/(mica)/xen`, when there is a mica category, a mica feature, with a `sub_feat` called xen
+      * Input: `mica` is like `mica/(mica)`, when there is a mica category, a mica feature, in this case, the feature can be matched by *Rule3* as well,
+        match both the rules, if two results is different, abort with **Ambiguity Error** message about the conflicts
+    
 4.  **Sub-feature Short Match**:
       * Input: `xen` -\> If `hypervisor/xen` exists, match it. If `mcs/mica/xen` (sub-feature) is the only other `xen`, match it.
       * *Priority*: Top-level features take precedence over sub-features if names collide.
