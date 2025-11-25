@@ -20,18 +20,82 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-import os
-import sys
-import logging
 import argparse
-import shutil
-import urllib.request
-import urllib.error
-from collections import OrderedDict
-import subprocess
-import textwrap
+import logging
+import os
 import re
+import shutil
+import subprocess
+import sys
+import textwrap
+import urllib.error
+import urllib.request
+from collections import OrderedDict
 
+"""
+* this is a modified version of oe-go-mod-autogen.py
+> use pure python networking to fetch
+> migrate some subprocess to shutil operations
+简介:
+    本脚本用于解析 Go 项目的 `go.mod` 文件，并自动生成适用于 OpenEmbedded (OE)
+    构建系统的依赖项配置文件。其核心目标是将 Go 的在线模块依赖，转换为可被 BitBake
+    fetcher 处理的、支持离线构建和 SState 缓存的源码包集合。
+
+    脚本会分析主项目的 `go.mod`，递归地解析所有依赖（包括 `replace` 指令），
+    通过查询模块元数据找到真实的 Git 仓库地址，并下载它们以确定精确的 commit ID。
+
+使用方法:
+    在你的 OE recipe 所在目录运行此脚本。
+
+    基本命令格式:
+        ./oe-go-mod-autogen.py --repo <项目git仓库URL> --rev <版本号或commit ID>
+
+    示例:
+        ./oe-go-mod-autogen.py --repo https://github.com/containerd/nerdctl.git --rev v1.7.3
+
+    主要参数:
+        --repo:     目标 Go 项目的 Git 仓库 URL (必需)。
+        --rev:      项目的版本号（如 tag `v1.2.3`）或完整的 commit hash (必需)。
+        --workdir:  工作目录，用于存放下载的仓库和生成的输出文件 (默认为当前目录)。
+
+生成文件说明:
+    脚本成功运行后，会在工作目录下生成以下三个文件，你需要将它们整合到 OE recipe 中：
+
+    1. src_uri.inc:
+       包含所有依赖模块的 `SRC_URI` 和 `SRCREV` 定义。在 OE recipe 中通过
+       `include src_uri.inc` 语句引入，BitBake 将会自动下载所有源码。
+
+    2. relocation.inc:
+       包含一段 shell 脚本 (`do_compile:prepend`)。它会在编译前被执行，
+       负责将 BitBake 下载到 `${WORKDIR}` 的各个依赖源码，正确地移动和组织成
+       Go `vendor` 目录结构，以支持 `-mod=vendor` 模式编译。
+
+    3. modules.txt:
+       根据 `go.mod` 生成的模块列表文件。在编译前需要将其复制到 `vendor/` 目录下，
+       以满足 Go 工具链在 vendored 构建模式下的要求。
+
+注意事项:
+    1. 网络与环境:
+       - 运行脚本需要有效的互联网连接，以便克隆 Git 仓库和查询模块信息。
+       - 请确保系统中已安装 `git` 命令行工具且在 `PATH` 中。
+
+    2. 缓存机制:
+       - 脚本会在工作目录下创建 `repos/` 和 `wget-contents/` 目录作为缓存，
+         这可以加速后续的重复运行。
+       - 如果需要进行一次完全干净的分析（例如，上游 `go.mod` 已更新），
+         请手动删除这两个缓存目录。
+
+    3. 与 OE Recipe 集成:
+       - 本脚本仅生成依赖配置文件，并不能创建完整的 OE recipe (`.bb` 文件)。
+         你需要参考 `meta-virtualization` 等层中的现有示例（如 `nerdctl`, `k3s`），
+         将生成的文件整合到自己的 recipe 中。
+
+    4. 模块解析失败:
+       - 对于无法自动解析的模块仓库地址（如私有仓库或特殊的 vanity URL），
+         脚本可能会失败。此时，可以根据日志提示，手动创建或修改
+         `wget-contents/<module_name>.repo_url.cache` 文件来指定正确的仓库 URL，
+         然后重新运行脚本。
+"""
 # This switch is used to make this script error out ASAP, mainly for debugging purpose
 ERROR_OUT_ON_FETCH_AND_CHECKOUT_FAILURE = False
 
@@ -118,25 +182,25 @@ class GoModTool(object):
             repo_url_final = repo_url
         else:
             repo_url_final = default_protocol + repo_url
-        
+
         logger.debug("fetch and checkout %s %s" % (repo_url_final, rev))
         repos_dir = os.path.join(self.workdir, 'repos')
         if not os.path.exists(repos_dir):
             os.makedirs(repos_dir)
-        
+
         repo_basename = repo_url.split('/')[-1].split('.git')[0]
         repo_dest_dir = os.path.join(repos_dir, repo_basename)
         module_last_name = module_name.split('/')[-1]
-        
+
         # Default action is fetch, but we use a list for safety
         git_action = ["fetch"]
-        
+
         if os.path.exists(repo_dest_dir):
             if checkout:
                 # check if current HEAD is rev
                 try:
                     headrev = subprocess.check_output(['git', 'rev-list', '-1', 'HEAD'], cwd=repo_dest_dir).decode('utf-8').strip()
-                    
+
                     # Logic to emulate: git rev-list -1 %s 2>/dev/null || git rev-list -1 %s/%s
                     try:
                         requiredrev = subprocess.check_output(['git', 'rev-list', '-1', rev], cwd=repo_dest_dir, stderr=subprocess.DEVNULL).decode('utf-8').strip()
@@ -157,13 +221,13 @@ class GoModTool(object):
                 # determine if the current repo points to the desired remote repo
                 try:
                     remote_origin_url = subprocess.check_output(['git', 'config', '--get', 'remote.origin.url'], cwd=repo_dest_dir).decode('utf-8').strip()
-                    
+
                     target_check_url = remote_origin_url
                     if target_check_url.endswith('.git') and not repo_url_final.endswith('.git'):
                          target_check_url = target_check_url[:-4]
                     elif not target_check_url.endswith('.git') and repo_url_final.endswith('.git'):
                          target_check_url = target_check_url + '.git'
-                         
+
                     if target_check_url != repo_url_final:
                         logger.info("remote.origin.url for %s is not %s, will do a clean clone" % (repo_dest_dir, repo_url_final))
                         git_action = ["clone"]
@@ -184,7 +248,7 @@ class GoModTool(object):
             git_cwd = repos_dir if git_action == ["clone"] else repo_dest_dir
             cmd = ['git'] + git_action + [repo_url_final]
             logger.info("Running %s in %s" % (" ".join(cmd), git_cwd))
-            
+
             # Use subprocess.DEVNULL instead of shell redirection
             subprocess.check_call(cmd, cwd=git_cwd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except subprocess.CalledProcessError:
@@ -205,10 +269,10 @@ class GoModTool(object):
                     if get_subpath:
                         # Clean up potential temp branches
                         subprocess.call(['git', 'branch', '-D', 'check_subpath'], cwd=repo_dest_dir, stderr=subprocess.DEVNULL)
-                        
+
                         # Create and checkout branch safely
                         subprocess.check_call(['git', 'checkout', '-b', 'check_subpath', rev_return], cwd=repo_dest_dir, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                        
+
                         # try to get the subpath for this module
                         module_name_parts = module_name.split('/')
                         while (len(module_name_parts) > 0):
@@ -233,7 +297,7 @@ class GoModTool(object):
             else:
                 tag = '/'.join(module_parts) + '/' + rev
                 last_module_part_replaced = False
-            
+
             logger.debug("use %s as the initial tag for %s" % (tag, module_name))
             tag_parts = tag.split('/')
             while(len(tag_parts) > 0):
@@ -244,7 +308,7 @@ class GoModTool(object):
                         if get_subpath:
                             subprocess.call(['git', 'branch', '-D', 'check_subpath'], cwd=repo_dest_dir, stderr=subprocess.DEVNULL)
                             subprocess.check_call(['git', 'checkout', '-b', 'check_subpath', rev_return], cwd=repo_dest_dir, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                            
+
                             # get subpath for the actual_module_name
                             if last_module_part_replaced:
                                 subpath = '/'.join(tag_parts[:-1]) + '/' + module_parts[-1]
@@ -314,7 +378,7 @@ class GoModTool(object):
         # parse the require_lines and replace_lines to form self.modules_require and self.modules_replace
         #
         logger.debug("Parsing require_lines and replace_lines ...")
-        
+
         for line in self.replace_lines:
             try:
                 orig_module, actual = line.split('=>')
@@ -329,7 +393,7 @@ class GoModTool(object):
                 print( f"exception {e} caught while parsing, ignoring line: {line}")
                 # sys.exit(1)
                 continue
-        
+
         for line in self.require_lines:
             module_name, version = line.strip().split()
             logger.debug("require line: %s" % line)
@@ -372,12 +436,12 @@ class GoModTool(object):
         try:
             url = f"https://{module_name}?go-get=1"
             logger.info("Fetching metadata from %s" % url)
-            
+
             # Use standard library instead of wget
             req = urllib.request.Request(url, headers={'User-Agent': 'OE-Go-Mod-Autogen'})
             with urllib.request.urlopen(req, timeout=15) as response:
                 html_content = response.read().decode('utf-8', errors='ignore')
-                
+
                 # Write to file to preserve debugging logic of original script
                 with open(wget_content_file, 'w') as f:
                     f.write(html_content)
@@ -394,7 +458,7 @@ class GoModTool(object):
                             logger.warning('Unsupported VCS %s for module %s' % (vcs, module_name))
                             self.modules_unhandled[module_name] = 'vcs %s is not supported' % vcs
                             return None
-                        
+
                         with open(url_cache_file, 'w') as f:
                             f.write(repo_url)
                         return repo_url
@@ -406,12 +470,12 @@ class GoModTool(object):
             url = f"https://pkg.go.dev/{module_name}"
             logger.info("Fetching info from %s" % url)
             req = urllib.request.Request(url, headers={'User-Agent': 'OE-Go-Mod-Autogen'})
-            
+
             with urllib.request.urlopen(req, timeout=15) as response:
                 html_content = response.read().decode('utf-8', errors='ignore')
                 with open(wget_content_file, 'w') as f:
                     f.write(html_content)
-                
+
                 # Basic parsing for pkg.go.dev
                 repo_url_found = False
                 repo_url = ""
