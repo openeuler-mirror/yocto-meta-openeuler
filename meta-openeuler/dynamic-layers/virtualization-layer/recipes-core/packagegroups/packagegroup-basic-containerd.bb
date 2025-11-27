@@ -7,9 +7,7 @@ PACKAGES = " \
     ${PN} \
 "
 
-BUILD_NERDCRTL = ""
 
-# TODO: cni compatibility
 RDEPENDS:${PN} = " \
     virtual-containerd \
     virtual-runc \
@@ -17,14 +15,11 @@ RDEPENDS:${PN} = " \
     oci-runtime-tools \
     oci-image-tools \
     bridge-utils \
-    ${@bb.utils.contains('BUILD_NERDCTL', '', '', 'nerdctl', d)} \
+    ${@bb.utils.contains('BUILD_GIT_NERDCTL', '', '', 'nerdctl', d)} \
     "
-# due to network issue, it's recommended to install nerdctl via oebridge
-# nerdctl
 
 RRECOMMENDS:${PN} = " \
-    cni \
     kernel-module-veth \
-    kernel-module-bridge \ 
+    kernel-module-bridge \
     kernel-module-br-netfilter \
     "
