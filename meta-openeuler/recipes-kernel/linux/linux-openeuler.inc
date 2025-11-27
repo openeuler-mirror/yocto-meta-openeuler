@@ -245,6 +245,6 @@ do_container_configs() {
 }
 
 python () {
-    if bb.utils.contains_any('DISTRO_FEATURES', 'containerd k3s', True, False, d):
+    if bb.utils.contains_any('DISTRO_FEATURES', 'containerd k3s-agent k3s-server docker podman containers', True, False, d):
         bb.build.addtask('container_configs', 'do_compile', 'do_configure',d)
 }
