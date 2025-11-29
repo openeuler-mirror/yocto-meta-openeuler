@@ -39,7 +39,7 @@ ____
 
    .. code-block:: shell
 
-      sudo qemu-system-x86_64 -m 1G -nographic -append 'console=ttyS0' –kernel bzImage –initrd *.rootfs.cpio.gz
+      sudo qemu-system-x86_64 -m 4G -cpu host,vmx=on,sse4.2=on,avx=on,avx2=on,avx512f=on,bmi2=on,adx=on -enable-kvm -nographic -append 'console=ttyS0' -kernel bzImage -initrd *.rootfs.cpio.gz
 
 ____
 
@@ -60,7 +60,7 @@ QEMU支持X86的iso镜像安装，步骤如下：
 
    .. code-block:: shell
 
-      sudo qemu-system-x86_64 -m 1G -nographic -cdrom openeuler-image-*.iso -bios OVMF.fd -hda disk.img
+      sudo qemu-system-x86_64 -m 4G -cpu host,vmx=on,sse4.2=on,avx=on,avx2=on,avx512f=on,bmi2=on,adx=on -enable-kvm -nographic -cdrom openeuler-image-*.iso -bios OVMF.fd -hda disk.img
 
    进入gurb界面后，选择 ``boot`` 可以进入live os，一般用于debug；选择 ``install`` 进入系统安装流程。
 
@@ -74,4 +74,4 @@ QEMU支持X86的iso镜像安装，步骤如下：
 
    .. code-block:: shell
 
-      sudo qemu-system-x86_64 -m 1G -nographic -bios OVMF.fd -hda disk.img
+      sudo qemu-system-x86_64 -m 4G -cpu host,vmx=on,sse4.2=on,avx=on,avx2=on,avx512f=on,bmi2=on,adx=on -enable-kvm -nographic -bios OVMF.fd -hda disk.img
