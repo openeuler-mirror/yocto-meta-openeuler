@@ -1,99 +1,4 @@
-# Neo oebuild feature generation specifications - kconfigs
-
-`feature -> kconfig symbol`
-
-Two files In One Dir:
-
-## Yocto injection Metadata
-
-```json
-// kconfig-features/containers.json
-{
-  "FEATURE_METADATA": {
-    "CONFIG_CONTAINERS": {
-      "local_conf": ["DISTRO_FEATURES:append = \" virtualization containers \""]
-    },
-    "CONFIG_CONTAINERD": {
-      "layers": ["yocto-meta-virtualization"],
-      "local_conf": ["DISTRO_FEATURES:append = \" containerd \""]
-    },
-    "CONFIG_ISULAD": {
-      "local_conf": ["DISTRO_FEATURES:append = \" isulad \""]
-    },
-    "CONFIG_K3S": {
-      "local_conf": ["DISTRO_FEATURES:append = \" k3s-agent \""]
-    },
-    "CONFIG_K3S_AGENT": {
-      "local_conf": ["DISTRO_FEATURES:append = \" k3s-agent \""]
-    },
-    "CONFIG_K3S_SERVER": {
-      "local_conf": ["DISTRO_FEATURES:append = \" k3s-server \""]
-    }
-  }
-}
-```
-
-## Dependencies and categorization file (kconfig DSL):
-
-```dsl
-
-menu "Container runtimes( containers/containers.yaml:1 )"
-
-config CONFIG_CONTAINERS
-    bool "Container ability support"
-    help
-      Enable basic tooling and kernel tweaks for containers.
-
-choice
-    prompt "Container engine choice"
-    depends on CONFIG_CONTAINERS
-    default CONFIG_CONTAINERS_DOWNLOAD
-
-config CONFIG_CONTAINERS_DOWNLOAD
-    bool "Manual download (containers/containers.yaml:9)"
-    depends on CONFIG_CONTAINERS
-    help
-      Use an externally downloaded engine instead of building one.
-
-config CONFIG_CONTAINERD
-    bool "Containerd runtime (containers/containerd.yaml:1)"
-    depends on CONFIG_CONTAINERS && (MACHINE_QEMU_AARCH64 || MACHINE_PHYTIUMP)
-    select CONFIG_CONTAINERS
-    help
-      Enable containerd as the runtime and add yocto-meta-virtualization.
-
-config CONFIG_ISULAD
-    bool "Isulad runtime (containers/isulad.yaml:1)"
-    depends on CONFIG_CONTAINERS && (MACHINE_QEMU_AARCH64 || MACHINE_RASPBERRYPI4_64 || MACHINE_HIEULERPI1 || MACHINE_KP920)
-
-endchoice
-
-config CONFIG_K3S
-    bool "K3s Kubernetes (containers/k3s.yaml:1)"
-    depends on CONFIG_CONTAINERS && (MACHINE_QEMU_AARCH64 || MACHINE_PHYTIUMP)
-    select CONFIG_K3S_AGENT
-    select CONFIG_K3S_SERVER
-
-config CONFIG_K3S_AGENT
-    bool "K3s Agent"
-    depends on CONFIG_K3S
-
-config CONFIG_K3S_SERVER
-    bool "K3s Server"
-    depends on CONFIG_K3S
-
-config CONFIG_KUBEEDGE
-    bool "KubeEdge edge stack (containers/kubeedge.yaml:1)"
-    depends on CONFIG_CONTAINERS && CONFIG_ISULAD && (MACHINE_QEMU_AARCH64 || MACHINE_RASPBERRYPI4_64 || MACHINE_HIEULERPI1)
-
-config CONFIG_PODMAN
-    bool "Podman runtime (containers/podman.yaml:1)"
-    depends on CONFIG_CONTAINERS
-```
-
-
-
-# Neo oebuild feature generation specifications - yaml
+# Neo oebuild feature generation specifications
 
 > **Core Feature**: 
 > 1. Systemetic
@@ -107,8 +12,8 @@ Features are stored as individual YAML files organized by category directories. 
 
 ## Feature Categories
 
-
-  - **`mica/`**: Virtualization and multi-tenant core components (MCS, Micrun, z/VM, etc.)
+the sample of categories: 
+  - **`mcs/`**: Virtualization and multi-tenant core components (MCS, Micrun, z/VM, etc.)
   - **`containers/`**: Container runtime support (containerd/isulad/docker/podman) and Kubernetes helpers.
   - **`system/`**: Init managers, debug tooling, OpenBMC, webserver stacks.
   - **`robotics/`**: Robotics middleware stacks (ROS 2, AiROS).
@@ -116,11 +21,11 @@ Features are stored as individual YAML files organized by category directories. 
   - **`desktop/`**: UI/graphics support (Qt5, OpenGL, Wayland, X11).
   - **`toolchain/`**: Compiler and libc options (Clang, musl).
   - **`package_manager/`**: Package managers (EPKG, openEuler bridge).
-  - **`hypervisor/`**: Low-level hypervisor options, may be referenced by `mica/` selections.
+  - **`hypervisor/`**: Low-level hypervisor options, may be referenced by `mcs/` selections.
 
 ## YAML Feature Specification
 
-### 1\. File Structure & Identification
+### File Structure & Identification
 
   * **Directory Structure**: `nightly-features/<category_id>/<leaf_id>.yaml`
   * **Category ID**: Derived directly from the directory name.
@@ -128,12 +33,12 @@ Features are stored as individual YAML files organized by category directories. 
   * **Full ID**: `<category_id>/<leaf_id>` (Globally unique identifier).
   * **Category Root Feature ID** when **category_id** is euqal to **leaf_id**, `<category_id>/<leaf_id>` can be shorten to be a prefix `<category_id>` 
   ```
-  mica dir contains mica.yaml, which id shoule be mica/mica, but due to this rule, the id must be mica, not mica/mica
-  and mica.yaml sub_feats baremetal, should be mica/baremetal, not mica/mica/baremetal!
+  mcs dir contains mcs.yaml, which id shoule be mcs/mcs, but due to this rule, the id must be mcs, not mcs/mcs
+  and mcs.yaml sub_feats baremetal, should be mcs/baremetal, not mcs/mcs/baremetal!
   ``` 
 
 
-### 2\. Feature Schema
+### Feature Schema
 
 #### Core Meta
 
@@ -193,13 +98,13 @@ Defines what is injected into the Yocto build environment.
       * Logic: If any feature listed here is currently Enabled (or selected to be enabled), the current feature cannot be enabled.
       * Usage: Used to define mutual exclusivity between features that are not siblings (i.e., not covered by one_of).
       * NOTICE: we can avoid conflicts key by add a new feature layer:
-      > for example, mica/baremetal, mica/xen, mica/jailhouse should be exclusive and mcs must select one of them
-      > we can use mica, defining these pedestal as sub_feats of mica, and set one_of to achive the goal
-      > mica .one_of: `[self/xen, self/baremetal, self/jailhouse]`
+      > for example, mcs/baremetal, mcs/xen, mcs/jailhouse should be exclusive and mcs must select one of them
+      > we can use mcs, defining these pedestal as sub_feats of mcs, and set one_of to achive the goal
+      > mcs .one_of: `[self/xen, self/baremetal, self/jailhouse]`
   
   NOTICE: it is no need to introduce conflict keyword in
   
-### 3\. The `self` Keyword
+### The `self` Keyword
 
   * **Usage**: Used in `dependencies`, `selects`, `one_of`, and `choice` fields.
   * **Resolution**: Replaced at parse time with the current feature's namespace.
@@ -210,7 +115,7 @@ Defines what is injected into the Yocto build environment.
 
 ## Dependency Graph Rules (Strict Mode)
 
-### 1\. Visibility Chain Principle
+### Visibility Chain Principle
 
 A feature is **Visible** in the menu if and only if:
 
@@ -218,7 +123,7 @@ A feature is **Visible** in the menu if and only if:
 2.  All its **`dependencies`** are satisfied (Enabled).
 3.  Its **Parent** (if it is a sub-feature) is Enabled.
 
-### 2\. Machine Support Propagation
+### Machine Support Propagation
 
 If a dependency does not support the current machine, the dependent feature is strictly hidden.
 
@@ -226,7 +131,7 @@ If a dependency does not support the current machine, the dependent feature is s
 
 ## Examples
 
-### 1\. Simple Feature
+### Simple Feature
 
 *File: `nightly-features/package_manager/oebridge.yaml`*
 
@@ -244,7 +149,7 @@ config:
     - 'GLIBC_GENERATE_LOCALES:append = "en_US.UTF-8 zh_CN.UTF-8"'
 ```
 
-### 2\. Feature with Dependencies & Auto-Select
+### Feature with Dependencies & Auto-Select
 
 *File: `nightly-features/containers/k3s.yaml`*
 
@@ -281,12 +186,12 @@ sub_feats:
         - 'DISTRO_FEATURES:append = " k3s-server "'
 ```
 
-### 3\. Feature with `one_of` (Restructured)
+### Feature with `one_of` (Restructured)
 
-*File: `nightly-features/mica/mica.yaml`*
+*File: `nightly-features/mcs/mcs.yaml`*
 
 ```yaml
-id: mica
+id: mcs
 name: MCS, Mixed Criticality System
 prompt: Enable the MCS virtualization stack
 machines: [qemu-aarch64, raspberrypi4-64, hi3093, ok3568, kp920, x86-64, hieulerpi1]
@@ -331,7 +236,7 @@ one_of:
 default_one_of: self/baremetal
 ```
 
-### 4\. Feature with `sub_feats` and `choice`
+### Feature with `sub_feats` and `choice`
 
 *File: `nightly-features/containers/containers.yaml`*
 
@@ -372,7 +277,7 @@ choice:
   - self/download
 ```
 
-### 5\. Feature with Machine Restrictions
+### Feature with Machine Restrictions
 
 *File: `nightly-features/toolchain/clang.yaml`*
 
@@ -391,57 +296,68 @@ config:
     - 'EXTERNAL_TOOLCHAIN_CLANG_BIN = "${EXTERNAL_TOOLCHAIN_LLVM}/bin"'
 ```
 
-### 6. Feature with Global Conflicts
 
-```yaml
-# File: nightly-features/system/network-manager.yaml
-id: dummy-zvm
-prompt: dummy zvm conflict example
+# Implementation Specification
 
+To ensure a seamless experience between the CLI (`oebuild generate`-compatible) and the Menuconfig TUI, the system relies on a **Declarative** input model and the same Artifact (`compile.yaml`)
 
-conflicts:
-  - yocto/packagegroup-kernel-modules  # Cannot coexist with systemd-networkd
-  - self                # Just an example: maybe the main daemon conflicts with its own wifi sub-feat in some weird mode
-```
-
-# oebuild generate cli spec
-
-
-
-# CLI & Interaction Specification
-
-To ensure a seamless experience between the CLI (`oebuild generate`) and the Menuconfig TUI, the system relies on a **Declarative** input model and a shared **State Artifact**.
-
-## 1\. Unified State Management
-
-Both the CLI and Menuconfig must operate on a single "Source of Truth" to ensure interoperability. They do not write directly to `local.conf` immediately; instead, they modify a feature state file.
-
-  * **oebuild geneate** compatibility
-  * **Artifact Path**: `<build_dir>/compile.yaml`
+  * **oebuild geneate** cli compatibility
+  * **Artifact Path**: the same `<build_dir>/compile.yaml`
   * **Workflow**:
     1.  **Load**: Parser reads all Feature YAMLs
     2.  **Modify**: Apply CLI arguments (`-f`) or User Interface changes.
     3.  **Resolve**: Execute the **Resolution Algorithm** (Dependency/Logic checks).
+    > for menuconfig mode, the resolution is with a dynamic kconfig file generation procedure
     4.  **Save**: Write to `compile.yaml` this part of generaion logic should be compatible with oebuild generate, which geneate compile.yaml
-    5.  **Generate**: detailed configuration is written to `local.conf` / `bblayers.conf` based on the finalized state.
 
-## 2\. CLI Command Interface
+## CLI Command Interface
 
 The CLI treats feature selection as a declaration of intent.
 
-### Syntax
+### TL;DR
 
-```bash
-oebuild generate -p <machine> [-f <feature_identifier>]...
+Too long; Don't Read.
+
+just learn oebuild generate(neo-generate) examples below:
+
+```sh
+oebuild generate -p <machine> [-f <feature_identifier>]... [-d <build_dir>]
+oebuild neo-generate -p <machine> [-f <feature_identifier>]... -d <build_dir>
 ```
+
+```sh
+# generate xen-based-mica, and with oebridge, for hi3591
+oebuild generate -p hi3591 -f mcs -f xen -f oebridge
+oebuild neo-generate -p hi3591 -f mcs/xen -f oebridge
+
+# generate micrun
+oebuild generate -p qemu-aarch64 -f micrun -f mcs -f xen -f containers
+oebuild neo-generate -p qemu-aarch64 -f micrun 
+
+# generate qemu-aarch64 target, install k3s-server
+oebuild generate -p qemu-aarch64 -f k3s -d target; 
+cd target; sed -i 's/k3s-agent/k3s-server/g' ./compile.yaml
+oebuild generate -p qemu-aarch64 -f k3s-server -d target; 
+oebuild bitbake openeuler-image # found conflicts when building!
+
+
+# generate qemu-aarch64 target, install both k3s-server and k3s-agent
+oebuild generate -p qemu-aarch64 -f k3s -d target;
+cd target;
+sed '/k3s-agent/a\ k3s-server' ./compile.yaml
+
+oebuild neo-generate -p qemu-aarch64 -f k3s-server -f k3s-agent -d target;  # Error! k3s-agent and k3s-server are conflicting
+
+```
+
 
 ### Identifier Resolution Rules
 
 The CLI accepts flexible identifiers to maximize user convenience. The parser must resolve them in the following strict order:
 
 1.  **Exact Full ID Match**:
-      * Input: `mcs/mica` -\> Matches `mcs/mica`.
-      * Input: `mcs/mica/xen` -\> Matches sub-feature `xen` under `mcs/mica`.
+      * Input: `mcs/mcs` -\> Matches `mcs/mcs`.
+      * Input: `mcs/mcs/xen` -\> Matches sub-feature `xen` under `mcs/mcs`.
 2.  **Unique Leaf ID Match**:
       * Input: `k3s` -\> Scans all features. If only `containers/k3s` exists, match it.
       * *Error Condition*: If both `containers/k3s` and `networking/k3s` exist, abort with **Ambiguity Error**.
@@ -456,55 +372,15 @@ The CLI accepts flexible identifiers to maximize user convenience. The parser mu
       |---- XB.yaml,id=XB     # allowed, because XB full id is `FEAT/XB`
       
       User can spell the feature without repeat the name, 
-      * Input: `mica/xen` is like `mica/(mica)/xen`, when there is a mica category, a mica feature, with a `sub_feat` called xen
-      * Input: `mica` is like `mica/(mica)`, when there is a mica category, a mica feature, in this case, the feature can be matched by *Rule3* as well,
+      * Input: `mcs/xen` is like `mcs/(mcs)/xen`, when there is a mcs category, a mcs feature, with a `sub_feat` called xen
+      * Input: `mcs` is like `mcs/(mcs)`, when there is a mcs category, a mcs feature, in this case, the feature can be matched by *Rule3* as well,
         match both the rules, if two results is different, abort with **Ambiguity Error** message about the conflicts
     
 4.  **Sub-feature Short Match**:
-      * Input: `xen` -\> If `hypervisor/xen` exists, match it. If `mcs/mica/xen` (sub-feature) is the only other `xen`, match it.
+      * Input: `xen` -\> If `hypervisor/xen` exists, match it. If `mcs/mcs/xen` (sub-feature) is the only other `xen`, match it.
       * *Priority*: Top-level features take precedence over sub-features if names collide.
-
-## 3\. Resolution Algorithm (The Brain)
-
-When a feature is requested via CLI, the parser must execute the following logic sequence:
-
-### Step A: Visibility & Machine Check
-
-Before enabling any feature `F`:
-
-1.  Check `F.machines`. If the current machine is not supported, **Abort** with error.
-2.  If `F` is a sub-feature, recursively check its Parent's machine support.
-
-### Step B: Dependency Expansion (Auto-Resolution)
-
-Conflict logics are just dummy, leave a space for future, do not really do those conflicts dep calculation:
-
-0. **Conflict Check** (Pre-flight):
-> Before enabling feature F, check its conflicts list.
-> If any feature C in F.conflicts is already in the Enabled Set:
-> Abort with Conflict Error: "Cannot enable 'F' because it conflicts with enabled feature 'C'."
-> Symmetry Check: Also check if any already enabled feature E lists F in its conflicts.
-1.  **Enable F**. Add `F` to the Enabled Set.
-2.  **Dependencies**: For each ID in `F.dependencies`, recursively execute **Step A** and **Step B**.
-3.  **Selects**: 
-> For each ID in `F.selects`, recursively execute **Step A** and **Step B**.
-> Note: If a selects target triggers a Conflict Error, the entire operation fails.
-4.  **Auto Parent Selection**: If `F` is a sub-feature, automatically **Enable its Parent**.
-
-### Step C: `one_of` / `choice` Logic
-
-Handling selections within a feature group (e.g., Hypervisors in `mcs/mica`):
-
-1.  **User Priority**: Explicit CLI arguments (`-f xen`) **always override** defaults.
-2.  **Conflict Detection**:
-      * If a `one_of` group has multiple options enabled via explicit CLI args (e.g., `-f baremetal -f xen`), **Abort** with **Conflict Error**.
-3.  **Default Fallback**:
-      * If a `one_of` group has **NO** options selected by the user, and **NO** options selected by `selects` from other features:
-          * Apply `default_one_of` (if defined).
-          * If no default is defined, leave it empty (unless logic requires it, in which case, warn).
-
-
-## 4\. Error Handling Standards
+      
+## Error Handling Standards
 
 The parser must provide actionable error messages.
 
@@ -523,76 +399,34 @@ Please use the Full ID (e.g., -f system/debug).
 ```text
 [Error] Feature 'xen' is not supported on machine 'raspberrypi4'.
 Trace:
-  - Requested: mcs/mica
-  - Selected: mcs/mica/xen (User Input)
+  - Requested: mcs/mcs
+  - Selected: mcs/mcs/xen (User Input)
   - Constraint: xen requires machine [qemu-aarch64, x86-64]
 ```
 
 ### Case 3: Mutually Exclusive Conflict
 
 ```text
-[Error] Conflict in feature 'mcs/mica':
+[Error] Conflict in feature 'mcs/mcs':
 You requested both 'baremetal' and 'xen', but they are mutually exclusive (one_of).
 ```
 
-## oebuild generate options
+## list options modification
 
-### list
-
-now `oebuild neo-generate --list` remains flatten, which is terrible to read:
+now `oebuild neo-generate --list` prints features tree instead of flat list
 
 ```
-│ hypervisor/jailhouse                   hi3093, kp920, ok3568, qemu-aarch64, raspberrypi4-64         │
-│ hypervisor/xen                         kp920, phytiumpi, qemu-aarch64                               │
-│ kernel/kernel6                         all                                                          │
-│ kernel/rt                              all                                                          │
-│ mcs/mica                               hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
-│                                        raspberrypi4-64, x86-64                                      │
-│ mcs/mica-rtos                          hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
-│                                        raspberrypi4-64, x86-64                                      │
-│ mcs/mica-rtos/uniproton                hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
-│                                        raspberrypi4-64, x86-64                                      │
-│ mcs/mica-rtos/zephyr                   hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
-│                                        raspberrypi4-64, x86-64                                      │
-│ mcs/mica/baremetal                     hi3093, hieulerpi1, kp920, ok3568, qemu-aarch64,             │
-│                                        raspberrypi4-64, x86-64                                      │
-│ mcs/mica/jailhouse                     hi3093, kp920, ok3568, qemu-aarch64, raspberrypi4-64         │
-│ mcs/mica/xen                           phytiumpi, qemu-aarch64                                      │
-│ mcs/micrun                             phytiumpi, qemu-aarch64  
-```
-
-what we want is indentation by depth 
-
-```
-
 │ mcs
-│ - mcs/mica                              hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
+│ - mcs/mcs                              hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
 │                                        raspberrypi4-64, x86-64                                      │
-│  - mcs/mica/baremetal                     hi3093, hieulerpi1, kp920, ok3568, qemu-aarch64,             │
+│  - mcs/mcs/baremetal                     hi3093, hieulerpi1, kp920, ok3568, qemu-aarch64,             │
 │                                        raspberrypi4-64, x86-64                                      │
-│  - mcs/mica/jailhouse                     hi3093, kp920, ok3568, qemu-aarch64, raspberrypi4-64         │
-│  - mcs/mica/xen                           phytiumpi, qemu-aarch64                                      │
-│  - mcs/mica-rtos                         hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
-│   - mcs/mica-rtos/uniproton              hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
+│  - mcs/mcs/jailhouse                     hi3093, kp920, ok3568, qemu-aarch64, raspberrypi4-64         │
+│  - mcs/mcs/xen                           phytiumpi, qemu-aarch64                                      │
+│  - mcs/mcs-rtos                         hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
+│   - mcs/mcs-rtos/uniproton              hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
 │                                        raspberrypi4-64, x86-64                                      │
-│   - mcs/mica-rtos/zephyr                hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
+│   - mcs/mcs-rtos/zephyr                hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
 │                                        raspberrypi4-64, x86-64                                      │
 │ - mcs/micrun                             phytiumpi, qemu-aarch64  
 ```
-
-
-
-# Additional Current implementation requirements
-
-* due to undetermined conflict rules, I remained a simple conflict handling logic branch, 
-  leave a placeholder for *conflict*.
-  and I'm not really calculating conflicts, this is an unstable syntax
-  
-* implementation the new oebuild generate in oebuild/app/plugins/neo-generate  
-  
-
-# Yocto global variables readjustment
-
-## mcs variables
-
-TODO
