@@ -11,3 +11,9 @@ attrs \
 "
 
 IMAGE_INSTALL += " libyaml elfutils sqlite3 "
+
+# add kernel-module
+INSTALLMODULES += " \
+"
+
+KERNEL_MODULE_AUTOLOAD = "${INSTALLMODULES}"

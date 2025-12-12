@@ -1,0 +1,56 @@
+From c7de24cc0ab9840736da14da1c4796ad438a0e9e Mon Sep 17 00:00:00 2001
+From: auto generate <ci@auto.com>
+Date: Mon, 30 Dec 2024 20:29:00 +0800
+Subject: [PATCH] oee mod compat
+
+---
+ kernel/module.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/kernel/module.c b/kernel/module.c
+index 6b6fc3587..24ad13fce 100644
+--- a/kernel/module.c
++++ b/kernel/module.c
+@@ -3273,6 +3273,28 @@ static int setup_load_info(struct load_info *info, int flags)
+ 	return 0;
+ }
+ 
++static int same_magic_plus(const char *modmagic, const char *vermagic,
++                bool has_crcs)
++{
++    /* make openeuler magic compatible with ascend binary */
++    int ret;
++    const char *vermagic_plus;
++    size_t len = strlen(vermagic) + 1;
++    char *temp = kmalloc(len, GFP_KERNEL);
++    if (!temp) {
++        return -ENOMEM;
++    }
++    memset(temp, 0, len);
++    strncpy(temp, vermagic + 9, len + 9);
++    strncpy(temp, vermagic, 7);
++    *(temp + 6) -= 2;
++
++    vermagic_plus = temp;
++    ret = same_magic(modmagic, vermagic_plus, has_crcs);
++    kfree(temp);
++    return ret;
++}
++
+ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
+ {
+ 	const char *modmagic = get_modinfo(info, "vermagic");
+@@ -3287,9 +3309,11 @@ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
+ 		if (err)
+ 			return err;
+ 	} else if (!same_magic(modmagic, vermagic, info->index.vers)) {
++        if (!same_magic_plus(modmagic, vermagic, info->index.vers)) {
+ 		pr_err("%s: version magic '%s' should be '%s'\n",
+ 		       info->name, modmagic, vermagic);
+ 		return -ENOEXEC;
++        }
+ 	}
+ 
+ 	if (!get_modinfo(info, "intree")) {
+-- 
+2.17.1
