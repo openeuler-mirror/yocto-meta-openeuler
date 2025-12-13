@@ -41,7 +41,7 @@ rootfs_name="rootfs.img"
 echo "Check ISO/vfat/ext4 and CD-ROM..."
 iso_support=`cat /proc/filesystems | grep iso9660 | awk '{print $1}'`
 if [ "$iso_support" != "iso9660" ]; then
-    modprobe iso9660 2> /dev/null
+    modprobe isofs
     if [ "$?" -ne 0 ]; then
         echo "Kernel not support iso9660 filesystem. Please check."
         exit 1
@@ -425,6 +425,7 @@ if [ "$?" -ne 0 ] && [ "$cmdstr" == "install(without-formatting)" ]; then
     exit 1
 fi
 
+modprobe loop 2> /dev/null
 mount -o rw,loop,noatime,nodiratime /run/media/${TARGET_CDROM_NAME}/${rootfs_name} /src_root
 echo "Copying rootfs files..."
 cp -a /src_root/* /tgt_root
