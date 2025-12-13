@@ -13,6 +13,7 @@ QB_QEMU_CLASSES:append:qemuall = "${@bb.utils.contains('MCS_FEATURES', 'openamp'
 QB_QEMU_CLASSES:append:qemuall = "${@bb.utils.contains('MCS_FEATURES', 'zvm', ' qemuboot-zvm-defaults', '', d)}"
 QB_MEM = "-m 1048"
 inherit ${QB_QEMU_CLASSES}
+inherit ${@bb.utils.contains('MCS_FEATURES', 'micrun', 'mcs-oci-utils', '', d)}
 
 IMAGE_FEATURES:remove = "weston"
 
