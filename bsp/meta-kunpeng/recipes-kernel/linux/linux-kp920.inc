@@ -14,6 +14,7 @@ CONFIGVERSION="${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'kernel6-', ''
 SRC_URI:append = " \
     file://config/cfg-fragments/embedded-build.cfg \
     file://config/cfg-fragments/common-pc-drivers.cfg \
+    file://config/cfg-fragments/no-hisi-pmu.cfg \
 "
 
 OPENEULER_KERNEL_CONFIG = ""
