@@ -15,6 +15,7 @@ SRC_URI:append = " \
     file://config/cfg-fragments/embedded-build.cfg \
     file://config/cfg-fragments/common-pc-drivers.cfg \
     file://config/cfg-fragments/virtio.cfg \
+    file://config/cfg-fragments/no-hisi-pmu.cfg \
 "
 
 # The kp920 kernel configuration now supports k8s and does not require a separate configuration file.
