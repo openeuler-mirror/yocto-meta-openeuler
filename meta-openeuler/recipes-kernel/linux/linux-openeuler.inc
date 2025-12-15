@@ -31,7 +31,7 @@ def get_dirs_with_metadata(d):
 
     # add scc files
     extrapaths += find_sccs(d)
-   
+
     # add patches
     extrapaths += find_patches(d, '')
     for path in extrapaths:
@@ -126,8 +126,8 @@ KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'xen', ' featu
 # zvm kernel support
 KERNEL_FEATURES:append = "${@bb.utils.contains('MCS_FEATURES', 'zvm', ' features/zvm/zvm.scc', '', d)}"
 
-# containerd kernel support
-KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES', 'containerd', ' features/basic-containerd/containerd.scc', '', d)}"
+# container kernel support (for moby echo container engines features)
+KERNEL_FEATURES:append = "${@bb.utils.contains_any('DISTRO_FEATURES', 'containers containerd docker', ' features/containers/containers.scc', '', d)}"
 
 # kubeedge kernel support
 KERNEL_FEATURES:append = " \
@@ -147,7 +147,7 @@ SRC_URI:append = " ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'file://Jai
 # 6.6 can't support now, should support later and remove it.
 KERNEL_FEATURES:remove = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
-    jailhouse \ 
+    jailhouse \
     ', '', d)} \
 "
 
@@ -215,7 +215,7 @@ do_container_configs() {
     if [ -f ${WORKDIR}/check-config.sh ]; then
         sed -i 's,zcat "$2" | grep "$1", cat "$2" | grep "$1",g' ${WORKDIR}/check-config.sh
         chmod +x ${WORKDIR}/check-config.sh
-        kconfigfile="${B}/.config" 
+        kconfigfile="${B}/.config"
         section=""
         NO_COLOR=1 script_output=$(${WORKDIR}/check-config.sh ${kconfigfile} 2>&1 || true)
         echo "${script_output}" | while IFS= read -r line; do
@@ -227,7 +227,7 @@ do_container_configs() {
                 section="optional"
                 continue
             fi
-            
+
             if echo "$line" | grep -q "missing" && echo "$line" | grep -q "CONFIG_"; then
                 local trimed=$(echo "$line" | sed -E 's/.*(CONFIG_[A-Z0-9_]+):\s*([a-z]+).*/\1 is \2/')
                 if [ "$section" = "necessary" ]; then

@@ -9,3 +9,6 @@ SRC_URI:remove = "git://github.com/containerd/containerd;branch=release/1.6;prot
 SRC_URI:append = "git://github.com/containerd/containerd;branch=release/1.7;protocol=https;destsuffix=git/src/github.com/containerd/containerd \
 "
 #EXTRA_OEMAKE:append:pn-containerd-opencontainers = " GO111MODULE=on GO_BUILD_FLAGS+=-mod=vendor"
+
+# Require containers feature for containerd
+REQUIRED_DISTRO_FEATURES += "containers"

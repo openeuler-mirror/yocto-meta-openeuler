@@ -1,8 +1,8 @@
 DESCRIPTION = "package group for simple custom container tools including nerdctl, containerd, and dependencies."
 SUMMARY = "custom lightweight containerd-based toolkits"
-inherit packagegroup features_check
+inherit packagegroup features_check containers
 
-REQUIRED_DISTRO_FEATURES += "systemd"
+REQUIRED_DISTRO_FEATURES += "systemd containers"
 PACKAGES = " \
     ${PN} \
 "
