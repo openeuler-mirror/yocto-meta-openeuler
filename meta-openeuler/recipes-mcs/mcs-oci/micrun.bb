@@ -17,9 +17,7 @@ OPENEULER_LOCAL_NAME = "mcs"
 SRC_URI = "file://mcs"
 
 S = "${WORKDIR}/mcs"
-# debug usage
-MICRUN_SRC = "${S}/micran"
-#MICRUN_SRC = "${S}/micrun-go"
+MICRUN_SRC = "${S}/micrun-go"
 do_fetch[depends] += "mcs-linux:do_fetch"
 
 inherit go
@@ -32,6 +30,7 @@ GO_IMPORT = "micrun"
 MICRUN_BIN ?= "containerd-shim-mica-v2"
 MICRUN_LINK ?= "micrun"
 MICRUN_SHIM_NAME ?= "io.containerd.mica.v2"
+GOBUILD_MODE ?= "vendor"
 
 python __anonymous () {
     if not bb.utils.contains('MCS_FEATURES', 'micrun', True, False, d):
@@ -43,16 +42,19 @@ GO_EXTRA_LDFLAGS += "-X main.ShimName=${MICRUN_SHIM_NAME} -s -w"
 GOPATH="${MICRUN_SRC}:${MICRUN_SRC}/vendor.move:${STAGING_DIR_TARGET}/${prefix}/local/go:${MICRUN_SRC}/src/import/.gopath"
 
 do_compile() {
-    cd ${MICRUN_SRC}
-
-    mkdir -p vendor.move/src
-    cp -r vendor/* vendor.move/src
-
     export GO111MODULE=on
     export CGO_ENABLED=0
     export GOARCH=${TARGET_ARCH}
-    export GOBUILDFLAGS="${GO_EXTRA_LDFLAGS} -mod=vendor"
+    export GOBUILDFLAGS="${GO_EXTRA_LDFLAGS}"
 
+    export GOPROXY="${MICRUN_GOPROXY}"
+    bbwarn "GOPROXY=${GOPROXY}"
+    cd ${MICRUN_SRC}
+    if [ "$GOBUILD_MODE" = "vendor" ]; then
+      mkdir -p vendor.move/src
+      cp -r vendor/* vendor.move/src
+      GOBUILDFLAGS="${GOBUILDFLAGS} -mod=vendor"
+    fi
     install -d ${B}/bin
 
     ${GO} build ${GOBUILDFLAGS} -o ${B}/bin/${MICRUN_BIN} .
