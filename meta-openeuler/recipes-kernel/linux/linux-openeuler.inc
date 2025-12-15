@@ -134,9 +134,9 @@ KERNEL_FEATURES:append = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'kubeedge', 'features/kubeedge/kubeedge.scc', '', d)} \
 "
 
-# k3s kernel support
+# K8s/K3s kernel support
 KERNEL_FEATURES:append = " \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'k3s', 'features/k3s/k3s.scc', '', d)} \
+    ${@bb.utils.contains_any('DISTRO_FEATURES', 'k3s-agent k3s-server', 'features/k3s/k3s.scc', '', d)} \
 "
 
 # fetch jailhouse first to get jailhouse_export_symbol.patch
