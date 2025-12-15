@@ -13,6 +13,7 @@ def getConfig(String key){
 def downloadEmbeddedCI(String remote_url, String branch){
     sh 'rm -rf embedded-ci'
     sh "git clone ${remote_url} -b ${branch} -v embedded-ci --depth=1"
+    sh "pip3 install GitPython -q -i https://pypi.tuna.tsinghua.edu.cn/simple"
 }
 
 def downloadYoctoWithBranch(String workspace,
@@ -442,58 +443,63 @@ def buildTask(String build_imgs, String image_date){
 
 def get_remote_images(String base_url) {
     def code = """
+try:
+    from bs4 import BeautifulSoup
+except ImportError:
+    import subprocess
+    import sys
+    subprocess.run([sys.executable,
+            "-m", "pip", "install", "beautifulsoup4",
+            "-i", "https://pypi.tuna.tsinghua.edu.cn/simple",
+            "-q"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL)
+    from bs4 import BeautifulSoup
 import requests
-import re
-import html.parser
+from datetime import datetime
 
-class PreTextParser(html.parser.HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.in_pre = False
-        self.pre_content = []
-    
-    def handle_starttag(self, tag, attrs):
-        if tag.lower() == 'pre':
-            self.in_pre = True
-    
-    def handle_endtag(self, tag):
-        if tag.lower() == 'pre':
-            self.in_pre = False
-    
-    def handle_data(self, data):
-        if self.in_pre:
-            self.pre_content.append(data)
+def get_latest_build_by_filename_timestamp(html_content):
 
-def get_pre_text(url, typ):
-    res = []
-    content = requests.get(url)
-    parser = PreTextParser()
-    parser.feed(content.text)
-    
-    for text in parser.pre_content:
-        for dir_name in text.split():
-            if typ == "dir" and dir_name.endswith("/") and not dir_name.startswith("."):
-                res.append(dir_name)
-                continue
-            if typ == "gz" and dir_name.endswith(".tar.gz") and not dir_name.startswith("."):
-                res.append(dir_name)
-    return res
+    soup = BeautifulSoup(html_content, 'html.parser')
 
-# get image list
+    link_tags = soup.select('#list tbody td.link a')
+    valid_files = []
+    
+    for a_tag in link_tags:
+        file_name = a_tag.get_text().strip()
+        if file_name.endswith('.tar.gz') and 'Parent directory' not in file_name:
+            timestamp_str = file_name.replace('.tar.gz', '')
+            valid_files.append({'name': timestamp_str})
+
+    if not valid_files:
+        return None
+    latest_file = max(valid_files, key=lambda x: x['name'])
+
+    return latest_file
+
 base_url = "$base_url"
-image_list = get_pre_text(base_url, "dir")
+
+html_content = content = requests.get(base_url).text
+
+soup = BeautifulSoup(html_content, 'html.parser')
+
+link_tds = soup.select('#list tbody td.link a')
+mirror_names = []
+
+for a_tag in link_tds:
+    text = a_tag.get_text().strip()
+    if text != 'Parent directory/':
+        mirror_name = text.rstrip('/')
+        mirror_names.append(mirror_name)
+
 target_list = []
-for image in image_list:
-    time_list = get_pre_text(base_url + "/" + image, "gz")
-    tmp_times = []
-    for time_name in time_list:
-        match = re.search("^[0-9]{14}(.tar.gz)", time_name)
-        if match:
-            tmp_times.append(time_name.replace(".tar.gz", ""))
-    tmp_times.sort(reverse=True)
-    if len(tmp_times) > 0:
-        target_list.append(image + tmp_times[0])
+for idx, name in enumerate(mirror_names, 1):
+    os_html = requests.get(base_url + name + '/').text
+    latest_build = get_latest_build_by_filename_timestamp(os_html)
+    target_list.append(name + "/" + latest_build['name'])
+
 print(" ".join(target_list))
+
 """
 
 println "base_url: $base_url"
