@@ -2,10 +2,13 @@
 # 1. filter required sample files
 # 2. package sample files into output directory
 # 3. add more logics about oci containerizations
+# 4. update qemu boot configurations
 python __anonymous () {
     bb.note("mcs-oci-utils.bbclass: inherited")
 }
 
+# enlarge dom0_mem for containerization + systemd + oci tools
+QB_XEN_CMDLINE_EXTRA = "dom0_mem=1536M"
 HAS_MICRUN = "${@bb.utils.contains('MCS_FEATURES', 'micrun', '1', '0', d)}"
 HAS_ZEPHYR = "${@bb.utils.contains('MCS_FEATURES', 'zephyr', '1', '0', d)}"
 HAS_UNIPROTON = "${@bb.utils.contains('MCS_FEATURES', 'uniproton', '1', '0', d)}"
