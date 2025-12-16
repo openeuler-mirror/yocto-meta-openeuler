@@ -6,4 +6,5 @@ SRC_URI:append = " \
 
 SRC_URI:append:hipico = " \
         file://udhcpd.cfg \
+        file://wget.cfg \
 "
