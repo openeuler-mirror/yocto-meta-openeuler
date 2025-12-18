@@ -7,6 +7,7 @@ require recipes-core/images/bsp-${MACHINE}.inc
 IMAGE_INSTALL = " \
     busybox \
     glibc \
+    strace \
     hostapd \
     wpa-supplicant \
     hipico-mpp-sample \

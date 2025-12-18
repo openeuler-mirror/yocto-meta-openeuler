@@ -10,7 +10,7 @@ set_virtual_uart_login() {
     fi
 }
 
-IMAGE_PREPROCESS_COMMAND:append = "set_virtual_uart_login;"
+# IMAGE_PREPROCESS_COMMAND:append = "set_virtual_uart_login;"
 
 add_lib_soft_link() {
     if [ -d ${IMAGE_ROOTFS}/lib/ ];then
