@@ -55,8 +55,13 @@ chmod_modcache() {
     fi
 
     if [ -d "${B}/pkg" ]; then
-        chmod -R u+rwX,go+rwX "${B}/pkg" "${MICRUN_SRC}/vendor"
+        chmod -R u+rwX,go+rwX "${B}/pkg"
         bbnote "change permission for current pkg directory"
+    fi
+
+    if [ -d "${vendor_dir}" ]; then
+        chmod -R u+rwX,go+rwX "${vendor_dir}"
+        bbnote "change permission for vendor directory"
     fi
 }
 
