@@ -1,12 +1,11 @@
 PV = "v2.0.0-beta.v1"
 SRCREV_nerdcli = "265d6b9cf526ce7d9ed8d34a0e3c3066901cc463"
 
-FILESEXTRAPATHS:prepend = "${THISDIR}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI = "\
     git://github.com/containerd/nerdctl.git;name=nerdcli;branch=main;protocol=https \
     file://0001-Makefile-allow-external-specification-of-build-setti.patch \
-    file://modules.txt \
  "
 
 inherit go
@@ -110,6 +109,5 @@ do_compile() {
     # Ensure vendor directory has correct permissions before compile
     chmod_modcache
 
-    cp ${WORKDIR}/modules.txt vendor/
     oe_runmake GO=${GO} BUILDTAGS="${BUILDTAGS}" binaries
 }
