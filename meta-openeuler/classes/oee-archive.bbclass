@@ -72,7 +72,7 @@ def pull_oee_archive_repo_sub_lfs(repo, sub_dir):
         # Use the python-git module to execute git lfs pull, including only the specified subdirectory
         repo.git.lfs('pull', '--include', '%s/*' % sub_dir)
     except GitCommandError:
-        raise Exception("pull repo submodule lfs files failed in repo %s" % repo_dir)
+        raise Exception("pull repo submodule lfs files failed in repo %s" % sub_dir)
 
 python do_download_oee_archive(){
     import os

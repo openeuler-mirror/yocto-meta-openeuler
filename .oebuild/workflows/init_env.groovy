@@ -1,14 +1,14 @@
 def init_environment(){
     // set embedded
     if (env.embeddedRemote == null || env.embeddedRemote == ""){
-        env.embeddedRemote = "https://gitee.com/openeuler/embedded-ci.git"
+        env.embeddedRemote = "https://atomgit.com/openeuler/embedded-ci.git"
     }
     if (env.embeddedBranch == null || env.embeddedBranch == ""){
         env.embeddedBranch = "master"
     }
     // set build repo
     if (env.yoctoRemote == null || env.yoctoRemote == ""){
-        env.yoctoRemote = "https://gitee.com/openeuler/yocto-meta-openeuler.git"
+        env.yoctoRemote = "https://atomgit.com/openeuler/yocto-meta-openeuler.git"
     }
     if (env.yoctoBranch == null || env.yoctoBranch == ""){
         env.yoctoBranch = "master"
