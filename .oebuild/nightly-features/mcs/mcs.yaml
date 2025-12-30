@@ -23,14 +23,18 @@ config:
 sub_feats:
   - id: baremetal # mcs/mcs/baremetal
     name: Baremetal (openAMP)
-    dependencies: [hypervisor/baremetal]
+    selects: [hypervisor/baremetal]
   - id: xen
     name: Xen virtualization
     machines: [qemu-aarch64, phytiumpi]
-    dependencies: [hypervisor/xen]
+    selects: [hypervisor/xen]
+    config:
+      - 'MCS_FEATURES:append = "xen"'
   - id: jailhouse
     name: Jailhouse
-    dependencies: [hypervisor/jailhouse]
+    selects: [hypervisor/jailhouse]
+    config:
+      - 'MCS_FEATURES:append = "jailhouse"'
 
 one_of:
   - self/baremetal # mcs/mcs/baremetal
