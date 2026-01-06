@@ -24,6 +24,7 @@ inherit go
 inherit goarch
 inherit features_check
 inherit deploy
+inherit go-mod-vendor
 
 GO_IMPORT = "micrun"
 
@@ -31,7 +32,10 @@ MICRUN_BIN ?= "containerd-shim-mica-v2"
 MICRUN_LINK ?= "micrun"
 MICRUN_SHIM_NAME ?= "io.containerd.mica.v2"
 GOBUILD_MODE ?= "online"
-vendor_dir="${MICRUN_SRC}/vendor"
+
+GO_MOD_VENDOR_SRC_DIR = "${MICRUN_SRC}"
+GO_MOD_VENDOR_GOPROXY = "${MICRUN_GOPROXY}"
+GO_MOD_VENDOR_GOARCH = "${TARGET_ARCH}"
 
 python __anonymous () {
     if not bb.utils.contains('MCS_FEATURES', 'micrun', True, False, d):
@@ -40,75 +44,6 @@ python __anonymous () {
 
 
 GO_EXTRA_LDFLAGS += "-X main.ShimName=${MICRUN_SHIM_NAME} -s -w"
-#GOPATH="${MICRUN_SRC}:${MICRUN_SRC}/vendor.move:${STAGING_DIR_TARGET}/${prefix}/local/go:${MICRUN_SRC}/src/import/.gopath"
-GOMODCACHE="${MICRUN_SRC}/pkg/mod"
-
-
-
-# NOTICE: why not use go mod -modcacherw?
-# 1. go mod -modcacherw requires go mod building instead of vendor building
-#    vendor mode is recommended
-# 2. chmod_modcache hooks + setup_deps() can do more things than go mod -modcacherw
-chmod_modcache() {
-    if [ -d "${GOMODCACHE}" ]; then
-        chmod -R u+rwX,go+rwX "${GOMODCACHE}"
-    fi
-
-    if [ -d "${B}/pkg" ]; then
-        chmod -R u+rwX,go+rwX "${B}/pkg" "${MICRUN_SRC}/vendor"
-        bbnote "change permission for current pkg directory"
-    fi
-}
-
-vendor_ok() {
-    if [ ! -d "${vendor_dir}" ]; then
-        bbnote "** ${PN} vendor directory missing, refreshing dependencies"
-        return 1
-    fi
-    (
-        GO111MODULE=on GOFLAGS="-mod=vendor" ${GO} list ./... >/dev/null 2>&1
-    )
-    rc=$?
-    if [ ${rc} -ne 0 ]; then
-        bbwarn "** vendor directory validation failed"
-
-        return ${rc}
-    fi
-
-    (
-        GO111MODULE=on GOFLAGS="-mod=vendor" ${GO} mod verify >/dev/null 2>&1
-    )
-    rc=$?
-    if [ ${rc} -ne 0 ]; then
-        bbwarn "vendor directory verification failed"
-    fi
-    return ${rc}
-}
-
-# ensure cached go vendor directory rw permissions are set correctly
-do_setup_deps[prefuncs] = "chmod_modcache"
-do_setup_deps[postfuncs] = "chmod_modcache"
-do_setup_deps[network] = "1"
-do_setup_deps() {
-  export GO111MODULE=on
-  export CGO_ENABLED=0
-  export GOARCH=${TARGET_ARCH}
-  export GOBUILDFLAGS="${GO_EXTRA_LDFLAGS}"
-  export GOPROXY="${MICRUN_GOPROXY}"
-  cd ${MICRUN_SRC}
-  if vendor_ok; then
-    bbnote "vendor directory healthy, skipping dependency setup"
-    return
-  fi
-  bbwarn "** use GOPROXY=${GOPROXY}, if network issues occurred, try setting GOPROXY or modify your network configs"
-  ${GO} mod vendor
-  if ! ${GO} mod verify >/dev/null 2>&1; then
-    bbfatal "go mod verify failed after vendoring"
-  fi
-  bbnote "go mod vendor finished"
-}
-
-addtask do_setup_deps after do_patch before do_compile
 
 do_compile() {
     export GO111MODULE=on

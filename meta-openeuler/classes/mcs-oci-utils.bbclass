@@ -41,8 +41,6 @@ copy_binary_artifacts() {
                 cp -fp "$zf" ${micrun_output_dir}/
             fi
         done
-        # If mcs/xen is enabled, sample files requires *.bin
-        [ "${HAS_XEN}" = 1 ] && cp -fp "zephyr.bin" ${micrun_output_dir}/
     fi
 
     if [ "${HAS_UNIPROTON}" = "1" ]; then
@@ -52,9 +50,6 @@ copy_binary_artifacts() {
                 cp -fp "$uniproton_file" ${micrun_output_dir}/
             fi
         done
-
-        # If mcs/xen is enabled, sample files requires *.bin
-        [ "${HAS_XEN}" = 1 ] && cp -fp "uniproton.bin" ${micrun_output_dir}/
     fi
 }
 
