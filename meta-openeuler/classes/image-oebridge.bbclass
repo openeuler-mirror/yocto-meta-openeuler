@@ -131,6 +131,7 @@ fakeroot python do_dnf_install_pkgs(){
     cache_dir = f"{d.getVar('TOPDIR')}/cache/install_pkgs"
     force_list = []
     real_list = []
+    extra_list = []
     with open(f"{d.getVar('TOPDIR')}/cache/INSTALL_PKG_LIST", 'r', encoding='utf-8') as f:
         pkg_lists = f.read().replace("\n"," ")
         for pkg in pkg_lists.split():
@@ -142,6 +143,10 @@ fakeroot python do_dnf_install_pkgs(){
             if ":real" in pkg:
                 pkg = pkg.split(":")[0]
                 real_list.append(pkg)
+                continue
+            if ":extra" in pkg:
+                pkg = pkg.split(":")[0]
+                extra_list.append(pkg)
                 continue
             install_pkg(d.getVar('IMAGE_ROOTFS'), cache_dir, pkg)
 
@@ -214,19 +219,29 @@ fakeroot python do_dnf_install_pkgs(){
     run_cmd_with_cwd(f"find rootfs -type l -printf '%u:%g %p\n' > temp/rootfs_softlink", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo setfacl --restore=rootfs_permission", d.getVar("WORKDIR")+"/temp")
     run_cmd_with_cwd(f"cat rootfs_softlink | while read -r o p;do PSEUDO_UNLOAD=1 sudo chown -h \"$o\" \"$p\"; done", d.getVar("WORKDIR")+"/temp")
-    
-    if "oe-extra" in d.getVar("DISTRO_FEATURES"):
-        # here add extra repo for installing pkgs from oepkgs.net, but the repo source is extras, like:
-        # https://repo.oepkgs.net/openeuler/rpm/openEuler-24.03-LTS/extras/aarch64/
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
-        dnf-plugins-core -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
-        extra_mirror = "https://repo.oepkgs.net/openeuler/rpm"
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf config-manager --add-repo {extra_mirror}/{d.getVar('SERVER_VERSION')}/extras/{d.getVar('TUNE_ARCH')}/", d.getVar("WORKDIR"))
+        
     if len(real_list) > 0:
         real_list_str = " ".join(real_list)
         run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
         {real_list_str} -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
-        
+
+    if len(extra_list) > 0:
+        # here add extra repo for installing pkgs from oepkgs.net, but the repo source is extras, like:
+        # https://repo.oepkgs.net/openeuler/rpm/openEuler-24.03-LTS/extras/aarch64/
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
+        dnf-plugins-core -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
+        extra_mirror = "repo.oepkgs.net/openeuler/rpm"
+        # add extra mirror
+        extra_repo = f"{extra_mirror}/{d.getVar('SERVER_VERSION')}/extras/{d.getVar('TUNE_ARCH')}/"
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf config-manager --add-repo http://{extra_repo}/", d.getVar("WORKDIR"))
+        extra_repo_id = f"{extra_repo}".replace("/", "_")
+        # install extra mirror package
+        extra_list_str = " ".join(extra_list)
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
+        {extra_list_str} -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
+        # disable extra mirror
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf config-manager --set-disabled {extra_repo_id}", d.getVar("WORKDIR"))
+
     if os.path.exists(os.path.join(d.getVar("WORKDIR"), "temp/rootfs/oebridge-extra-command.sh")):
         # 从WORKDIR复制oebridge_extra_command.sh到rootfs
         image_rootfs = d.getVar("IMAGE_ROOTFS")
