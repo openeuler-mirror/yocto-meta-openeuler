@@ -14,10 +14,12 @@
 ####      os08b10             ####
 ####################Variables Definition##########################
 
-SNS_TYPE0=os08a20;               # sensor type
-SNS_TYPE1=os08a20;               # sensor type
-SNS_TYPE2=os08a20;               # sensor type
-SNS_TYPE3=os08a20;               # sensor type
+SNS_TYPE0=imx347_slave;               # sensor type
+SNS_TYPE1=imx347_slave;               # sensor type
+SNS_TYPE2=imx347_slave;               # sensor type
+SNS_TYPE3=imx347_slave;               # sensor type
+
+VO_INTF=mipi_tx
 
 #DDR start:0x40000000, IPCM(2M); DSP(62M); MCU(192M); kernel start:0x50000000,  OS(512M); MMZ start:0x70000000
 mem_total=8192                # 4096M, total mem
@@ -32,7 +34,7 @@ mmz_size=3328M;               # 3328M, mmz size
 
 reserve_mem_size=0            # 0M, reserve mmz size
 ##################################################################
-ko_path=/ko
+ko_path=/opt/ko
 
 function report_error()
 {
@@ -43,7 +45,7 @@ function report_error()
 function insert_ko()
 {
     # sys config
-    insmod $ko_path/sys_config.ko sensors=sns0=$SNS_TYPE0,sns1=$SNS_TYPE1,sns2=$SNS_TYPE2,sns3=$SNS_TYPE3
+    insmod $ko_path/sys_config.ko sensors=sns0=$SNS_TYPE0,sns1=$SNS_TYPE1,sns2=$SNS_TYPE2,sns3=$SNS_TYPE3 vo_intf=$VO_INTF
     # driver load
     insmod $ko_path/ot_osal.ko anony=1 mmz_allocator=ot mmz=anonymous,0,$mmz_start,$mmz_size$1 || report_error
     insmod $ko_path/ot_irq.ko
@@ -63,10 +65,18 @@ function insert_ko()
     insmod $ko_path/ot_otp.ko
     insmod $ko_path/ot_cipher.ko
     insmod $ko_path/ot_klad.ko
+    insmod /opt/sample/tsensor/hi_tsensor.ko
+    insmod /opt/sample/mipi_rx/i2c_soft_driver.ko
 }
 
 function remove_ko()
 {
+    rmmod /opt/sample/mipi_rx/i2c_soft_driver.ko
+    rmmod /opt/sample/tsensor/hi_tsensor.ko
+    rmmod ot_klad
+    rmmod ot_cipher
+    rmmod ot_otp
+
     rmmod ot_mipi_rx
     rmmod ot_mipi_tx
     rmmod ot_hdmi
@@ -80,10 +90,6 @@ function remove_ko()
     rmmod ot_irq
     rmmod ot_osal
     rmmod sys_config
-
-    rmmod ot_otp
-    rmmod ot_cipher
-    rmmod ot_klad
 }
 
 load_usage()
