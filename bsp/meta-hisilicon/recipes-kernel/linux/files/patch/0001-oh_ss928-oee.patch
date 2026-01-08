@@ -1,7 +1,7 @@
-From 72b2e1893d62a53a6e138cd0855fee8093a4400a Mon Sep 17 00:00:00 2001
-From: ss <ss@ss.com>
-Date: Fri, 22 Aug 2025 17:28:44 +0800
-Subject: [PATCH] oh_ss928 for oee
+From 3fa85eb9f03cc34960b45f86068a4cf7af32df5b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E6=B8=A9=E8=87=B4=E9=B9=8F?= <wenzhipeng@ebaina.com>
+Date: Mon, 29 Dec 2025 13:45:39 +0800
+Subject: [PATCH] oh_ss928-oee
 
 源补丁来源说明获取：
 从OpenHarmony5.1_SS928V100_* 的kernel.patch中提取出对应oh_ss928.patch
@@ -60,15 +60,18 @@ drivers/pwm/pwm-bsp.c:404:24: error: void value not ignored as it ought to be
       |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 原因分析：oh_ss928.patch如下代码不能删除，补丁中误删了？需将其加回来。
+include/linux/pwm.h
 -static inline int pwm_apply_state(struct pwm_device *pwm, const struct pwm_state *state)
 -{
 -       return pwm_apply_might_sleep(pwm, state);
 -}
  
 ===
+drivers/pwm/pwm-bsp.c
 5 、bsp_pwm_get_state 需要改成int返回类型，修改了对应函数类型
 
 ===
+drivers/pwm/pwm-bsp.c
 6、 pwmchip_remove是void返回，不用接受ret
 
 ===
@@ -107,19 +110,19 @@ SDHCI_QUIRK2_RESET_AFTER_SET_XFER_MODE 改成 SDHCI_QUIRK2_PRESET_VALUE_BROKEN
  README.OpenSource                             |   11 -
  README_OpenHarmony.md                         |    5 -
  arch/arm64/Kconfig                            |   16 +-
- arch/arm64/Kconfig.platforms                  |   17 +
+ arch/arm64/Kconfig.platforms                  |   26 +
  arch/arm64/Makefile                           |    3 +
  arch/arm64/boot/Makefile                      |   25 +-
  arch/arm64/boot/dts/Makefile                  |    5 +
- arch/arm64/boot/dts/vendor/Makefile           |    3 +
+ arch/arm64/boot/dts/vendor/Makefile           |    5 +
  .../boot/dts/vendor/ss928v100-demb-emmc.dts   |   23 +
  .../boot/dts/vendor/ss928v100-demb-flash.dts  |   23 +
- arch/arm64/boot/dts/vendor/ss928v100-demb.dts |  349 ++
+ arch/arm64/boot/dts/vendor/ss928v100-demb.dts |  357 ++
  arch/arm64/boot/dts/vendor/ss928v100.dtsi     | 1017 +++++
  .../boot/dts/vendor/ss928v100_family_usb.dtsi |  111 +
- arch/arm64/configs/ss928v100_defconfig        |  239 ++
- arch/arm64/configs/ss928v100_emmc_defconfig   | 3386 +++++++++++++++
- arch/arm64/configs/ss928v100_nand_defconfig   | 3277 ++++++++++++++
+ arch/arm64/configs/ss928v100_defconfig        |  264 ++
+ arch/arm64/configs/ss928v100_emmc_defconfig   | 3407 +++++++++++++++
+ arch/arm64/configs/ss928v100_nand_defconfig   | 3491 +++++++++++++++
  arch/arm64/mm/fault.c                         |    2 +-
  arch/arm64/mm/flush.c                         |    1 +
  arch/arm64/net/bpf_jit_comp.c                 |    4 +-
@@ -196,7 +199,7 @@ SDHCI_QUIRK2_RESET_AFTER_SET_XFER_MODE 改成 SDHCI_QUIRK2_PRESET_VALUE_BROKEN
  drivers/i2c/vendor/vendor_i2c_dev.c           |   72 +
  drivers/i2c/vendor/vendor_i2c_dev.h           |   18 +
  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |   15 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  339 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  343 +-
  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |   24 +
  drivers/iommu/iommu-sva.c                     |   10 +-
  drivers/iommu/iommu.c                         |  174 +
@@ -240,7 +243,7 @@ SDHCI_QUIRK2_RESET_AFTER_SET_XFER_MODE 改成 SDHCI_QUIRK2_PRESET_VALUE_BROKEN
  drivers/mtd/spi-nor/controllers/Kconfig       |   41 +
  drivers/mtd/spi-nor/controllers/Makefile      |    1 +
  drivers/mtd/spi-nor/controllers/bsp-sfc.c     |  793 ++++
- drivers/mtd/spi-nor/core.c                    |  312 +-
+ drivers/mtd/spi-nor/core.c                    |  324 +-
  drivers/mtd/spi-nor/core.h                    |   28 +
  drivers/net/ethernet/Kconfig                  |    1 +
  drivers/net/ethernet/Makefile                 |    1 +
@@ -275,10 +278,10 @@ SDHCI_QUIRK2_RESET_AFTER_SET_XFER_MODE 改成 SDHCI_QUIRK2_PRESET_VALUE_BROKEN
  drivers/pci/Makefile                          |    1 +
  drivers/pci/bsp_pcie/Kconfig                  |   27 +
  drivers/pci/bsp_pcie/Makefile                 |    8 +
- drivers/pci/bsp_pcie/pci.h                    |   85 +
- drivers/pci/bsp_pcie/pcie.c                   |  606 +++
+ drivers/pci/bsp_pcie/pci.h                    |  100 +
+ drivers/pci/bsp_pcie/pcie.c                   |  902 ++++
  drivers/pci/bsp_pcie/pcie_ss928v100.c         |  383 ++
- drivers/pci/bsp_pcie/pcie_ss928v100.h         |   74 +
+ drivers/pci/bsp_pcie/pcie_ss928v100.h         |   76 +
  drivers/pci/of.c                              |   10 +
  drivers/pwm/Kconfig                           |    9 +
  drivers/pwm/Makefile                          |    1 +
@@ -329,16 +332,26 @@ SDHCI_QUIRK2_RESET_AFTER_SET_XFER_MODE 改成 SDHCI_QUIRK2_PRESET_VALUE_BROKEN
  drivers/thermal/thermal_core.h                |    3 -
  drivers/thermal/thermal_netlink.c             |    9 +-
  drivers/tty/serial/amba-pl011.c               |   23 +
+ drivers/usb/dwc3/core.h                       |    9 +
+ drivers/usb/dwc3/gadget.c                     |  115 +
  drivers/usb/gadget/Kconfig                    |    7 -
  drivers/usb/gadget/epautoconf.c               |   14 +
  drivers/usb/gadget/function/Makefile          |    5 -
  drivers/usb/gadget/function/f_generic.c       | 3789 -----------------
  drivers/usb/gadget/function/f_mass_storage.c  |   17 +
+ drivers/usb/gadget/function/f_uac1.c          |  141 +
+ drivers/usb/gadget/function/f_uvc.c           |   10 +
  drivers/usb/gadget/function/u_generic.h       |  356 --
- drivers/usb/gadget/function/uvc_v4l2.c        |   30 +-
+ drivers/usb/gadget/function/uvc.h             |    6 +
+ drivers/usb/gadget/function/uvc_configfs.c    |  387 ++
+ drivers/usb/gadget/function/uvc_configfs.h    |   20 +
+ drivers/usb/gadget/function/uvc_queue.c       |    7 +
+ drivers/usb/gadget/function/uvc_v4l2.c        |   43 +-
+ drivers/usb/gadget/function/uvc_video.c       |  133 +
+ drivers/usb/serial/option.c                   |   98 +
  drivers/usb/serial/usb_wwan.c                 |    4 +
  drivers/vendor/Kconfig                        |   10 +
- drivers/vendor/Makefile                       |    6 +
+ drivers/vendor/Makefile                       |    7 +
  drivers/vendor/basedrv_clk/Kconfig            |    3 +
  drivers/vendor/basedrv_clk/Makefile           |    7 +
  drivers/vendor/basedrv_clk/basedrv-clock.h    |   20 +
@@ -354,7 +367,7 @@ SDHCI_QUIRK2_RESET_AFTER_SET_XFER_MODE 改成 SDHCI_QUIRK2_PRESET_VALUE_BROKEN
  drivers/vendor/mmc/CMakeLists.txt             |   26 +
  drivers/vendor/mmc/ChangLog                   |    7 +
  drivers/vendor/mmc/Kconfig                    |   64 +
- drivers/vendor/mmc/Makefile                   |   53 +
+ drivers/vendor/mmc/Makefile                   |   54 +
  drivers/vendor/mmc/adapter/nebula_adapter.c   | 1256 ++++++
  drivers/vendor/mmc/adapter/nebula_fmea.c      |  116 +
  drivers/vendor/mmc/adapter/nebula_quick.c     |  254 ++
@@ -383,8 +396,8 @@ SDHCI_QUIRK2_RESET_AFTER_SET_XFER_MODE 改成 SDHCI_QUIRK2_PRESET_VALUE_BROKEN
  drivers/vendor/mmc/platform/sdhci_tianhe.c    |  371 ++
  drivers/vendor/mmc/platform/sdhci_tianhe.h    |  101 +
  .../vendor/mmc/platform/sdhci_wudangstick.c   |  511 +++
- drivers/vendor/mmc/sdhci_nebula.c             |  198 +
- drivers/vendor/mmc/sdhci_nebula.h             |  381 ++
+ drivers/vendor/mmc/sdhci_nebula.c             |  208 +
+ drivers/vendor/mmc/sdhci_nebula.h             |  391 ++
  drivers/vendor/mmc/sdhci_shaolinsword.c       |  826 ++++
  drivers/vendor/mmc/version.mak                |    1 +
  drivers/vendor/npu/Kconfig                    |    7 +
@@ -392,6 +405,8 @@ SDHCI_QUIRK2_RESET_AFTER_SET_XFER_MODE 改成 SDHCI_QUIRK2_PRESET_VALUE_BROKEN
  drivers/vendor/npu/npu_misc.c                 |  770 ++++
  drivers/vendor/npu/npu_svm.c                  | 1413 ++++++
  drivers/vendor/npu/smmu_power_on.c            |   91 +
+ drivers/vendor/peri/Makefile                  |    2 +
+ drivers/vendor/peri/peri_io_ss928v100.c       |   47 +
  drivers/vendor/usb/Kconfig                    |    6 +
  drivers/vendor/usb/Makefile                   |   12 +
  drivers/vendor/usb/defconfig                  |    5 +
@@ -536,7 +551,6 @@ SDHCI_QUIRK2_RESET_AFTER_SET_XFER_MODE 改成 SDHCI_QUIRK2_PRESET_VALUE_BROKEN
  include/linux/fsverity.h                      |   37 -
  include/linux/gfp.h                           |   14 +-
  include/linux/gfp_types.h                     |    6 +-
- include/linux/hck/lite_hck_ced.h              |   50 -
  include/linux/hck/lite_hck_code_sign.h        |   39 -
  include/linux/hck/lite_hck_hideaddr.h         |   25 -
  include/linux/hck/lite_hck_inet.h             |   26 -
@@ -564,7 +578,7 @@ SDHCI_QUIRK2_RESET_AFTER_SET_XFER_MODE 改成 SDHCI_QUIRK2_PRESET_VALUE_BROKEN
  include/linux/page-flags.h                    |   28 -
  include/linux/pstore.h                        |    8 -
  include/linux/pstore_ram.h                    |    1 -
- include/linux/pwm.h                           |    8 +-
+ include/linux/pwm.h                           |    4 +
  include/linux/sched.h                         |  124 -
  include/linux/sched/core_ctl.h                |   14 -
  include/linux/sched/cpufreq.h                 |    3 -
@@ -582,6 +596,7 @@ SDHCI_QUIRK2_RESET_AFTER_SET_XFER_MODE 改成 SDHCI_QUIRK2_PRESET_VALUE_BROKEN
  include/linux/swap.h                          |   20 -
  include/linux/timer.h                         |    7 -
  include/linux/uidgid.h                        |    8 -
+ include/linux/vendor/peri_io.h                |  116 +
  include/linux/vendor/sva_ext.h                |   88 +
  include/linux/vendor/vendor_i2c.h             |   27 +
  include/linux/vm_event_item.h                 |   18 -
@@ -596,6 +611,7 @@ SDHCI_QUIRK2_RESET_AFTER_SET_XFER_MODE 改成 SDHCI_QUIRK2_PRESET_VALUE_BROKEN
  include/uapi/linux/fsverity.h                 |   22 -
  include/uapi/linux/sched.h                    |    4 +-
  include/uapi/linux/sched/types.h              |   19 -
+ include/uapi/linux/usb/video.h                |   60 +
  init/Kconfig                                  |   63 -
  init/init_task.c                              |    3 -
  kernel/bpf/arraymap.c                         |   26 +-
@@ -720,7 +736,7 @@ SDHCI_QUIRK2_RESET_AFTER_SET_XFER_MODE 改成 SDHCI_QUIRK2_PRESET_VALUE_BROKEN
  .../selftests/bpf/prog_tests/tailcalls.c      |  156 -
  .../selftests/bpf/progs/tailcall_freplace.c   |   23 -
  .../testing/selftests/bpf/progs/tc_bpf2bpf.c  |   23 -
- 617 files changed, 58428 insertions(+), 67769 deletions(-)
+ 631 files changed, 60219 insertions(+), 67768 deletions(-)
  delete mode 100644 OAT.xml
  delete mode 100644 README.OpenSource
  delete mode 100644 README_OpenHarmony.md
@@ -928,16 +944,18 @@ SDHCI_QUIRK2_RESET_AFTER_SET_XFER_MODE 改成 SDHCI_QUIRK2_PRESET_VALUE_BROKEN
  create mode 100644 drivers/vendor/npu/npu_misc.c
  create mode 100644 drivers/vendor/npu/npu_svm.c
  create mode 100644 drivers/vendor/npu/smmu_power_on.c
- create mode 100755 drivers/vendor/usb/Kconfig
- create mode 100755 drivers/vendor/usb/Makefile
- create mode 100755 drivers/vendor/usb/defconfig
- create mode 100755 drivers/vendor/usb/driver_config.mk
- create mode 100755 drivers/vendor/usb/driver_obj.mk
+ create mode 100644 drivers/vendor/peri/Makefile
+ create mode 100644 drivers/vendor/peri/peri_io_ss928v100.c
+ create mode 100644 drivers/vendor/usb/Kconfig
+ create mode 100644 drivers/vendor/usb/Makefile
+ create mode 100644 drivers/vendor/usb/defconfig
+ create mode 100644 drivers/vendor/usb/driver_config.mk
+ create mode 100644 drivers/vendor/usb/driver_obj.mk
  create mode 100644 drivers/vendor/usb/proc.c
- create mode 100755 drivers/vendor/usb/proc.h
- create mode 100755 drivers/vendor/usb/version.mak
+ create mode 100644 drivers/vendor/usb/proc.h
+ create mode 100644 drivers/vendor/usb/version.mak
  create mode 100644 drivers/vendor/usb/wing_usb.c
- create mode 100755 drivers/vendor/usb/wing_usb.h
+ create mode 100644 drivers/vendor/usb/wing_usb.h
  create mode 100644 drivers/vendor/usb_phy/Kconfig
  create mode 100644 drivers/vendor/usb_phy/Makefile
  create mode 100644 drivers/vendor/usb_phy/common.c
@@ -1045,7 +1063,6 @@ SDHCI_QUIRK2_RESET_AFTER_SET_XFER_MODE 改成 SDHCI_QUIRK2_PRESET_VALUE_BROKEN
  create mode 100644 include/linux/bsp_cma.h
  delete mode 100644 include/linux/code_sign.h
  create mode 100644 include/linux/edmac.h
- delete mode 100644 include/linux/hck/lite_hck_ced.h
  delete mode 100644 include/linux/hck/lite_hck_code_sign.h
  delete mode 100644 include/linux/hck/lite_hck_hideaddr.h
  delete mode 100644 include/linux/hck/lite_hck_inet.h
@@ -1060,6 +1077,7 @@ SDHCI_QUIRK2_RESET_AFTER_SET_XFER_MODE 改成 SDHCI_QUIRK2_PRESET_VALUE_BROKEN
  delete mode 100755 include/linux/sched/rtg_ctrl.h
  create mode 100644 include/linux/securec.h
  create mode 100644 include/linux/securectype.h
+ create mode 100644 include/linux/vendor/peri_io.h
  create mode 100644 include/linux/vendor/sva_ext.h
  create mode 100644 include/linux/vendor/vendor_i2c.h
  delete mode 100755 include/trace/events/eas_sched.h
@@ -1823,10 +1841,10 @@ index 658c6a61a..7c3c124c0 100644
  
  menu "Power management options"
 diff --git a/arch/arm64/Kconfig.platforms b/arch/arm64/Kconfig.platforms
-index 606912019..eaa1aac4d 100644
+index 606912019..fb32afd13 100644
 --- a/arch/arm64/Kconfig.platforms
 +++ b/arch/arm64/Kconfig.platforms
-@@ -153,6 +153,23 @@ config ARCH_KEEMBAY
+@@ -153,6 +153,32 @@ config ARCH_KEEMBAY
  	help
  	  This enables support for Intel Movidius SoC code-named Keem Bay.
  
@@ -1846,6 +1864,15 @@ index 606912019..eaa1aac4d 100644
 +	select PINCTRL
 +        help
 +          Support for Vendor SS928V100 Soc family
++
++config ARCH_SS927V100
++    bool "Vendor ss927v100 family"
++    depends on ARCH_BSP
++	select ARM_TIMER_SP804
++	select HISILICON_IRQ_MBIGEN if PCI
++	select PINCTRL
++	help
++	  Support for Vendor SS927V100 Soc family
 +		  
  config ARCH_MEDIATEK
  	bool "MediaTek SoC Family"
@@ -1865,7 +1892,7 @@ index 117828607..e6d119b04 100644
  	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
  
 diff --git a/arch/arm64/boot/Makefile b/arch/arm64/boot/Makefile
-index 1761f5972443..f4537e8af7e0 100644
+index 1761f5972..f4537e8af 100644
 --- a/arch/arm64/boot/Makefile
 +++ b/arch/arm64/boot/Makefile
 @@ -16,7 +16,7 @@
@@ -1908,7 +1935,7 @@ index 1761f5972443..f4537e8af7e0 100644
  EFI_ZBOOT_BFD_TARGET	:= elf64-littleaarch64
  EFI_ZBOOT_MACH_TYPE	:= ARM64
 diff --git a/arch/arm64/boot/dts/Makefile b/arch/arm64/boot/dts/Makefile
-index 30dd6347a929..01f0bcf63ad1 100644
+index 30dd6347a..01f0bcf63 100644
 --- a/arch/arm64/boot/dts/Makefile
 +++ b/arch/arm64/boot/dts/Makefile
 @@ -33,3 +33,8 @@ subdir-y += tesla
@@ -1922,7 +1949,7 @@ index 30dd6347a929..01f0bcf63ad1 100644
 +clean-files := dts/*.dtb *.dtb
 diff --git a/arch/arm64/boot/dts/vendor/Makefile b/arch/arm64/boot/dts/vendor/Makefile
 new file mode 100644
-index 000000000000..90df17a4ccd1
+index 000000000..ca56fdc08
 --- /dev/null
 +++ b/arch/arm64/boot/dts/vendor/Makefile
 @@ -0,0 +1,5 @@
@@ -1934,7 +1961,7 @@ index 000000000000..90df17a4ccd1
 \ No newline at end of file
 diff --git a/arch/arm64/boot/dts/vendor/ss928v100-demb-emmc.dts b/arch/arm64/boot/dts/vendor/ss928v100-demb-emmc.dts
 new file mode 100644
-index 000000000..a5996206b
+index 000000000..d274ad84a
 --- /dev/null
 +++ b/arch/arm64/boot/dts/vendor/ss928v100-demb-emmc.dts
 @@ -0,0 +1,23 @@
@@ -1963,7 +1990,7 @@ index 000000000..a5996206b
 +
 diff --git a/arch/arm64/boot/dts/vendor/ss928v100-demb-flash.dts b/arch/arm64/boot/dts/vendor/ss928v100-demb-flash.dts
 new file mode 100644
-index 000000000..b5fbc2595
+index 000000000..d64a7383e
 --- /dev/null
 +++ b/arch/arm64/boot/dts/vendor/ss928v100-demb-flash.dts
 @@ -0,0 +1,23 @@
@@ -1992,10 +2019,10 @@ index 000000000..b5fbc2595
 +
 diff --git a/arch/arm64/boot/dts/vendor/ss928v100-demb.dts b/arch/arm64/boot/dts/vendor/ss928v100-demb.dts
 new file mode 100644
-index 000000000..cc7e375a8
+index 000000000..f1844be7b
 --- /dev/null
 +++ b/arch/arm64/boot/dts/vendor/ss928v100-demb.dts
-@@ -0,0 +1,349 @@
+@@ -0,0 +1,357 @@
 +/* Copyright (c) 2017 Shenshu Technologies Co., Ltd.
 + *
 + * This program is free software; you can redistribute  it and/or modify it
@@ -2332,6 +2359,14 @@ index 000000000..cc7e375a8
 +&gmac1 {
 +    phy-handle = <&ethphy1>;
 +    phy-mode = "rgmii-id";
++};
++
++&pcie0 {
++	status = "okay";
++};
++
++&edmacv310_0 {
++	status = "disabled";
 +};
 +
 +&pwm {
@@ -3487,10 +3522,10 @@ index 000000000..ae13bf4b0
 +};
 diff --git a/arch/arm64/configs/ss928v100_defconfig b/arch/arm64/configs/ss928v100_defconfig
 new file mode 100644
-index 000000000..37ad67cfd
+index 000000000..09a892c32
 --- /dev/null
 +++ b/arch/arm64/configs/ss928v100_defconfig
-@@ -0,0 +1,239 @@
+@@ -0,0 +1,264 @@
 +# CONFIG_LOCALVERSION_AUTO is not set
 +CONFIG_SYSVIPC=y
 +CONFIG_USELIB=y
@@ -3634,9 +3669,26 @@ index 000000000..37ad67cfd
 +# CONFIG_HWMON is not set
 +CONFIG_MFD_BSP_FMC=y
 +CONFIG_MFD_SYSCON=y
++# CONFIG_MEDIA_CEC_SUPPORT is not set
++CONFIG_MEDIA_SUPPORT=y
++CONFIG_MEDIA_USB_SUPPORT=y
++CONFIG_USB_VIDEO_CLASS=y
 +CONFIG_FB=y
++CONFIG_SOUND=y
++CONFIG_SND=y
 +# CONFIG_HID_SUPPORT is not set
-+# CONFIG_USB_SUPPORT is not set
++CONFIG_USB=y
++CONFIG_USB_XHCI_HCD=y
++CONFIG_USB_STORAGE=y
++CONFIG_USB_DWC3=y
++# CONFIG_USB_DWC3_OF_SIMPLE is not set
++CONFIG_USB_GADGET=y
++CONFIG_USB_CONFIGFS=y
++CONFIG_USB_CONFIGFS_ACM=y
++CONFIG_USB_CONFIGFS_RNDIS=y
++CONFIG_USB_CONFIGFS_MASS_STORAGE=y
++CONFIG_USB_CONFIGFS_F_UAC1=y
++CONFIG_USB_CONFIGFS_F_UVC=y
 +# CONFIG_VIRTIO_MENU is not set
 +# CONFIG_VHOST_MENU is not set
 +# CONFIG_SURFACE_PLATFORMS is not set
@@ -3646,6 +3698,10 @@ index 000000000..37ad67cfd
 +CONFIG_ARM_SMMU_V3=y
 +CONFIG_ARM_SMMU_V3_SVA=y
 +# CONFIG_NVMEM is not set
++CONFIG_USB_WING=y
++CONFIG_WING_UPS_PHY=y
++CONFIG_WING_UPS_XVP_PHY=y
++CONFIG_WING_UPS_NANO_PHY=y
 +CONFIG_VENDOR_NPU=y
 +CONFIG_EXT3_FS=y
 +CONFIG_XFS_FS=y
@@ -3730,12 +3786,17 @@ index 000000000..37ad67cfd
 +CONFIG_RCU_CPU_STALL_TIMEOUT=60
 +# CONFIG_FTRACE is not set
 +# CONFIG_STRICT_DEVMEM is not set
++CONFIG_BLK_DEV=y
++CONFIG_BLK_DEV_RAM=y
++CONFIG_BLK_DEV_RAM_COUNT=16
++CONFIG_BLK_DEV_RAM_SIZE=65536
+\ No newline at end of file
 diff --git a/arch/arm64/configs/ss928v100_emmc_defconfig b/arch/arm64/configs/ss928v100_emmc_defconfig
 new file mode 100644
-index 000000000..4b0cfee2c
+index 000000000..c4fa70200
 --- /dev/null
 +++ b/arch/arm64/configs/ss928v100_emmc_defconfig
-@@ -0,0 +1,3386 @@
+@@ -0,0 +1,3407 @@
 +#
 +# Automatically generated file; DO NOT EDIT.
 +# Linux/arm64 6.6.90 Kernel Configuration
@@ -4868,7 +4929,10 @@ index 000000000..4b0cfee2c
 +CONFIG_OF_RESERVED_MEM=y
 +# CONFIG_OF_OVERLAY is not set
 +# CONFIG_PARPORT is not set
-+# CONFIG_BLK_DEV is not set
++CONFIG_BLK_DEV=y
++CONFIG_BLK_DEV_RAM=y
++CONFIG_BLK_DEV_RAM_COUNT=16
++CONFIG_BLK_DEV_RAM_SIZE=65536
 +
 +#
 +# NVME Support
@@ -5711,7 +5775,10 @@ index 000000000..4b0cfee2c
 +# CONFIG_MEDIA_CEC_SUPPORT is not set
 +# end of CEC support
 +
-+# CONFIG_MEDIA_SUPPORT is not set
++CONFIG_MEDIA_SUPPORT=y
++CONFIG_MEDIA_USB_SUPPORT=y
++CONFIG_USB_VIDEO_CLASS=y
++CONFIG_USB_VIDEO_CLASS_INPUT_EVDEV=y
 +
 +#
 +# Graphics support
@@ -5764,7 +5831,9 @@ index 000000000..4b0cfee2c
 +# CONFIG_LOGO is not set
 +# end of Graphics support
 +
-+# CONFIG_SOUND is not set
++CONFIG_SOUND=y
++CONFIG_SND=y
++CONFIG_SND_USB=y
 +# CONFIG_HID_SUPPORT is not set
 +CONFIG_USB_OHCI_LITTLE_ENDIAN=y
 +CONFIG_USB_SUPPORT=y
@@ -5849,9 +5918,9 @@ index 000000000..4b0cfee2c
 +# CONFIG_USB_CDNS_SUPPORT is not set
 +# CONFIG_USB_MUSB_HDRC is not set
 +CONFIG_USB_DWC3=y
-+CONFIG_USB_DWC3_HOST=y
++# CONFIG_USB_DWC3_HOST is not set
 +# CONFIG_USB_DWC3_GADGET is not set
-+# CONFIG_USB_DWC3_DUAL_ROLE is not set
++CONFIG_USB_DWC3_DUAL_ROLE=y
 +
 +#
 +# Platform Glue Driver Support
@@ -5930,7 +5999,12 @@ index 000000000..4b0cfee2c
 +CONFIG_USB_LIBCOMPOSITE=y
 +CONFIG_USB_F_ACM=y
 +CONFIG_USB_U_SERIAL=y
++CONFIG_USB_U_ETHER=y
++CONFIG_USB_U_AUDIO=y
++CONFIG_USB_F_RNDIS=y
 +CONFIG_USB_F_MASS_STORAGE=y
++CONFIG_USB_F_UAC1=y
++CONFIG_USB_F_UVC=y
 +CONFIG_USB_CONFIGFS=y
 +# CONFIG_USB_CONFIGFS_SERIAL is not set
 +CONFIG_USB_CONFIGFS_ACM=y
@@ -5938,12 +6012,14 @@ index 000000000..4b0cfee2c
 +# CONFIG_USB_CONFIGFS_NCM is not set
 +# CONFIG_USB_CONFIGFS_ECM is not set
 +# CONFIG_USB_CONFIGFS_ECM_SUBSET is not set
-+# CONFIG_USB_CONFIGFS_RNDIS is not set
++CONFIG_USB_CONFIGFS_RNDIS=y
 +# CONFIG_USB_CONFIGFS_EEM is not set
 +CONFIG_USB_CONFIGFS_MASS_STORAGE=y
 +# CONFIG_USB_CONFIGFS_F_LB_SS is not set
 +# CONFIG_USB_CONFIGFS_F_FS is not set
++CONFIG_USB_CONFIGFS_F_UAC1=y
 +# CONFIG_USB_CONFIGFS_F_HID is not set
++CONFIG_USB_CONFIGFS_F_UVC=y
 +# CONFIG_USB_CONFIGFS_F_PRINTER is not set
 +
 +#
@@ -5966,7 +6042,7 @@ index 000000000..4b0cfee2c
 +# end of USB Gadget precomposed configurations
 +
 +# CONFIG_TYPEC is not set
-+# CONFIG_USB_ROLE_SWITCH is not set
++CONFIG_USB_ROLE_SWITCH=y
 +CONFIG_MMC=y
 +CONFIG_PWRSEQ_EMMC=y
 +CONFIG_PWRSEQ_SIMPLE=y
@@ -6083,7 +6159,12 @@ index 000000000..4b0cfee2c
 +# end of Clock Source drivers
 +
 +# CONFIG_MAILBOX is not set
-+# CONFIG_IOMMU_SUPPORT is not set
++CONFIG_IOMMU_IO_PGTABLE_ARMV7S=y
++CONFIG_IOMMU_DEFAULT_DMA_LAZY=y
++CONFIG_ARM_SMMU_V3=y
++CONFIG_ARM_SMMU_V3_SVA=y
++# CONFIG_NVMEM is not set
++CONFIG_VENDOR_NPU=y
 +
 +#
 +# Remoteproc drivers
@@ -6418,7 +6499,8 @@ index 000000000..4b0cfee2c
 +# CONFIG_UFS_FS is not set
 +# CONFIG_EROFS_FS is not set
 +CONFIG_NETWORK_FILESYSTEMS=y
-+# CONFIG_NFS_FS is not set
++CONFIG_NFS_FS=y
++CONFIG_NLS=y
 +# CONFIG_NFSD is not set
 +# CONFIG_CEPH_FS is not set
 +# CONFIG_CIFS is not set
@@ -7124,10 +7206,10 @@ index 000000000..4b0cfee2c
 +# end of Kernel hacking
 diff --git a/arch/arm64/configs/ss928v100_nand_defconfig b/arch/arm64/configs/ss928v100_nand_defconfig
 new file mode 100644
-index 000000000..fb677b107
+index 000000000..1857d3329
 --- /dev/null
 +++ b/arch/arm64/configs/ss928v100_nand_defconfig
-@@ -0,0 +1,3277 @@
+@@ -0,0 +1,3491 @@
 +#
 +# Automatically generated file; DO NOT EDIT.
 +# Linux/arm64 6.6.90 Kernel Configuration
@@ -8393,7 +8475,10 @@ index 000000000..fb677b107
 +CONFIG_OF_RESERVED_MEM=y
 +# CONFIG_OF_OVERLAY is not set
 +# CONFIG_PARPORT is not set
-+# CONFIG_BLK_DEV is not set
++CONFIG_BLK_DEV=y
++CONFIG_BLK_DEV_RAM=y
++CONFIG_BLK_DEV_RAM_COUNT=16
++CONFIG_BLK_DEV_RAM_SIZE=65536
 +
 +#
 +# NVME Support
@@ -8658,7 +8743,7 @@ index 000000000..fb677b107
 +
 +# CONFIG_PPP is not set
 +# CONFIG_SLIP is not set
-+
++CONFIG_USB_NET_DRIVERS=y
 +#
 +# Host-side USB support is needed for USB Network Adapter support
 +#
@@ -9217,7 +9302,10 @@ index 000000000..fb677b107
 +# CONFIG_MEDIA_CEC_SUPPORT is not set
 +# end of CEC support
 +
-+# CONFIG_MEDIA_SUPPORT is not set
++CONFIG_MEDIA_SUPPORT=y
++CONFIG_MEDIA_USB_SUPPORT=y
++CONFIG_USB_VIDEO_CLASS=y
++CONFIG_USB_VIDEO_CLASS_INPUT_EVDEV=y
 +
 +#
 +# Graphics support
@@ -9268,10 +9356,218 @@ index 000000000..fb677b107
 +# CONFIG_LOGO is not set
 +# end of Graphics support
 +
-+# CONFIG_SOUND is not set
++CONFIG_SOUND=y
++CONFIG_SND=y
++CONFIG_SND_USB=y
 +# CONFIG_HID_SUPPORT is not set
 +CONFIG_USB_OHCI_LITTLE_ENDIAN=y
-+# CONFIG_USB_SUPPORT is not set
++CONFIG_USB_SUPPORT=y
++CONFIG_USB_COMMON=y
++# CONFIG_USB_ULPI_BUS is not set
++# CONFIG_USB_CONN_GPIO is not set
++CONFIG_USB_ARCH_HAS_HCD=y
++CONFIG_USB=y
++# CONFIG_USB_ANNOUNCE_NEW_DEVICES is not set
++
++#
++# Miscellaneous USB options
++#
++CONFIG_USB_DEFAULT_PERSIST=y
++# CONFIG_USB_FEW_INIT_RETRIES is not set
++# CONFIG_USB_DYNAMIC_MINORS is not set
++# CONFIG_USB_OTG is not set
++# CONFIG_USB_OTG_PRODUCTLIST is not set
++# CONFIG_USB_OTG_DISABLE_EXTERNAL_HUB is not set
++CONFIG_USB_AUTOSUSPEND_DELAY=2
++# CONFIG_USB_MON is not set
++
++#
++# USB Host Controller Drivers
++#
++# CONFIG_USB_C67X00_HCD is not set
++CONFIG_USB_XHCI_HCD=y
++# CONFIG_USB_XHCI_DBGCAP is not set
++# CONFIG_USB_XHCI_PCI_RENESAS is not set
++CONFIG_USB_XHCI_PLATFORM=y
++# CONFIG_USB_EHCI_HCD is not set
++# CONFIG_USB_OXU210HP_HCD is not set
++# CONFIG_USB_ISP116X_HCD is not set
++# CONFIG_USB_MAX3421_HCD is not set
++# CONFIG_USB_OHCI_HCD is not set
++# CONFIG_USB_SL811_HCD is not set
++# CONFIG_USB_R8A66597_HCD is not set
++# CONFIG_USB_HCD_TEST_MODE is not set
++
++#
++# USB Device Class drivers
++#
++# CONFIG_USB_ACM is not set
++# CONFIG_USB_PRINTER is not set
++# CONFIG_USB_WDM is not set
++# CONFIG_USB_TMC is not set
++
++#
++# NOTE: USB_STORAGE depends on SCSI but BLK_DEV_SD may
++#
++
++#
++# also be needed; see USB_STORAGE Help for more info
++#
++CONFIG_USB_STORAGE=y
++# CONFIG_USB_STORAGE_DEBUG is not set
++# CONFIG_USB_STORAGE_REALTEK is not set
++# CONFIG_USB_STORAGE_DATAFAB is not set
++# CONFIG_USB_STORAGE_FREECOM is not set
++# CONFIG_USB_STORAGE_ISD200 is not set
++# CONFIG_USB_STORAGE_USBAT is not set
++# CONFIG_USB_STORAGE_SDDR09 is not set
++# CONFIG_USB_STORAGE_SDDR55 is not set
++# CONFIG_USB_STORAGE_JUMPSHOT is not set
++# CONFIG_USB_STORAGE_ALAUDA is not set
++# CONFIG_USB_STORAGE_ONETOUCH is not set
++# CONFIG_USB_STORAGE_KARMA is not set
++# CONFIG_USB_STORAGE_CYPRESS_ATACB is not set
++# CONFIG_USB_STORAGE_ENE_UB6250 is not set
++# CONFIG_USB_UAS is not set
++
++#
++# USB Imaging devices
++#
++# CONFIG_USB_MDC800 is not set
++# CONFIG_USB_MICROTEK is not set
++# CONFIG_USBIP_CORE is not set
++
++#
++# USB dual-mode controller drivers
++#
++# CONFIG_USB_CDNS_SUPPORT is not set
++# CONFIG_USB_MUSB_HDRC is not set
++CONFIG_USB_DWC3=y
++# CONFIG_USB_DWC3_HOST is not set
++# CONFIG_USB_DWC3_GADGET is not set
++CONFIG_USB_DWC3_DUAL_ROLE=y
++
++#
++# Platform Glue Driver Support
++#
++# CONFIG_USB_DWC3_OF_SIMPLE is not set
++# CONFIG_USB_DWC2 is not set
++# CONFIG_USB_CHIPIDEA is not set
++# CONFIG_USB_ISP1760 is not set
++
++#
++# USB port drivers
++#
++# CONFIG_USB_SERIAL is not set
++
++#
++# USB Miscellaneous drivers
++#
++# CONFIG_USB_EMI62 is not set
++# CONFIG_USB_EMI26 is not set
++# CONFIG_USB_ADUTUX is not set
++# CONFIG_USB_SEVSEG is not set
++# CONFIG_USB_LEGOTOWER is not set
++# CONFIG_USB_LCD is not set
++# CONFIG_USB_CYPRESS_CY7C63 is not set
++# CONFIG_USB_CYTHERM is not set
++# CONFIG_USB_IDMOUSE is not set
++# CONFIG_USB_APPLEDISPLAY is not set
++# CONFIG_APPLE_MFI_FASTCHARGE is not set
++# CONFIG_USB_LD is not set
++# CONFIG_USB_TRANCEVIBRATOR is not set
++# CONFIG_USB_IOWARRIOR is not set
++# CONFIG_USB_TEST is not set
++# CONFIG_USB_EHSET_TEST_FIXTURE is not set
++# CONFIG_USB_ISIGHTFW is not set
++# CONFIG_USB_YUREX is not set
++# CONFIG_USB_EZUSB_FX2 is not set
++# CONFIG_USB_HUB_USB251XB is not set
++# CONFIG_USB_HSIC_USB3503 is not set
++# CONFIG_USB_HSIC_USB4604 is not set
++# CONFIG_USB_LINK_LAYER_TEST is not set
++# CONFIG_USB_ONBOARD_HUB is not set
++
++#
++# USB Physical Layer drivers
++#
++# CONFIG_NOP_USB_XCEIV is not set
++# CONFIG_USB_GPIO_VBUS is not set
++# CONFIG_USB_ISP1301 is not set
++# CONFIG_USB_ULPI is not set
++# end of USB Physical Layer drivers
++
++CONFIG_USB_GADGET=y
++# CONFIG_USB_GADGET_DEBUG is not set
++# CONFIG_USB_GADGET_DEBUG_FILES is not set
++CONFIG_USB_GADGET_VBUS_DRAW=2
++CONFIG_USB_GADGET_STORAGE_NUM_BUFFERS=2
++# CONFIG_U_SERIAL_CONSOLE is not set
++
++#
++# USB Peripheral Controller
++#
++# CONFIG_USB_GR_UDC is not set
++# CONFIG_USB_R8A66597 is not set
++# CONFIG_USB_PXA27X is not set
++# CONFIG_USB_MV_UDC is not set
++# CONFIG_USB_MV_U3D is not set
++# CONFIG_USB_SNP_UDC_PLAT is not set
++# CONFIG_USB_M66592 is not set
++# CONFIG_USB_BDC_UDC is not set
++# CONFIG_USB_NET2272 is not set
++# CONFIG_USB_GADGET_XILINX is not set
++# CONFIG_USB_MAX3420_UDC is not set
++# CONFIG_USB_DUMMY_HCD is not set
++# end of USB Peripheral Controller
++
++CONFIG_USB_LIBCOMPOSITE=y
++CONFIG_USB_F_ACM=y
++CONFIG_USB_U_SERIAL=y
++CONFIG_USB_U_ETHER=y
++CONFIG_USB_U_AUDIO=y
++CONFIG_USB_F_RNDIS=y
++CONFIG_USB_F_MASS_STORAGE=y
++CONFIG_USB_F_UAC1=y
++CONFIG_USB_F_UVC=y
++CONFIG_USB_CONFIGFS=y
++# CONFIG_USB_CONFIGFS_SERIAL is not set
++CONFIG_USB_CONFIGFS_ACM=y
++# CONFIG_USB_CONFIGFS_OBEX is not set
++# CONFIG_USB_CONFIGFS_NCM is not set
++# CONFIG_USB_CONFIGFS_ECM is not set
++# CONFIG_USB_CONFIGFS_ECM_SUBSET is not set
++CONFIG_USB_CONFIGFS_RNDIS=y
++# CONFIG_USB_CONFIGFS_EEM is not set
++CONFIG_USB_CONFIGFS_MASS_STORAGE=y
++# CONFIG_USB_CONFIGFS_F_LB_SS is not set
++# CONFIG_USB_CONFIGFS_F_FS is not set
++CONFIG_USB_CONFIGFS_F_UAC1=y
++# CONFIG_USB_CONFIGFS_F_HID is not set
++CONFIG_USB_CONFIGFS_F_UVC=y
++# CONFIG_USB_CONFIGFS_F_PRINTER is not set
++
++#
++# USB Gadget precomposed configurations
++#
++# CONFIG_USB_ZERO is not set
++# CONFIG_USB_ETH is not set
++# CONFIG_USB_G_NCM is not set
++# CONFIG_USB_GADGETFS is not set
++# CONFIG_USB_FUNCTIONFS is not set
++# CONFIG_USB_MASS_STORAGE is not set
++# CONFIG_USB_G_SERIAL is not set
++# CONFIG_USB_G_PRINTER is not set
++# CONFIG_USB_CDC_COMPOSITE is not set
++# CONFIG_USB_G_ACM_MS is not set
++# CONFIG_USB_G_MULTI is not set
++# CONFIG_USB_G_HID is not set
++# CONFIG_USB_G_DBGP is not set
++# CONFIG_USB_RAW_GADGET is not set
++# end of USB Gadget precomposed configurations
++
++# CONFIG_TYPEC is not set
++CONFIG_USB_ROLE_SWITCH=y
 +# CONFIG_MMC is not set
 +# CONFIG_SCSI_UFSHCD is not set
 +# CONFIG_MEMSTICK is not set
@@ -17675,7 +17971,7 @@ index 000000000..47f7bc854
 +#endif
 diff --git a/drivers/edmac/edmacv310.c b/drivers/edmac/edmacv310.c
 new file mode 100644
-index 000000000..b837da1c2
+index 000000000..09adcca1f
 --- /dev/null
 +++ b/drivers/edmac/edmacv310.c
 @@ -0,0 +1,950 @@
@@ -17718,7 +18014,7 @@ index 000000000..b837da1c2
 +#include "edmacv310.h"
 +#include <linux/securec.h>
 +
-+#ifdef CONFIG_ARCH_SS928V100
++#if defined (CONFIG_ARCH_SS928V100) || defined(CONFIG_ARCH_SS927V100)
 +#include "edma_ss928v100.h"
 +#endif
 +
@@ -22603,7 +22899,7 @@ index 8a16cd3ef..f48e03b15 100644
 +}
 +#endif
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 6cecbac0e..18d98a7fd 100644
+index 6cecbac0e..955d2dcb6 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 @@ -81,6 +81,9 @@ DEFINE_MUTEX(arm_smmu_asid_lock);
@@ -22977,7 +23273,7 @@ index 6cecbac0e..18d98a7fd 100644
  	/* And we're up. Go go go! */
  	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
  				     "smmu3.%pa", &ioaddr);
-@@ -3905,21 +4065,166 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+@@ -3905,28 +4065,171 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
  err_free_sysfs:
  	iommu_device_sysfs_remove(&smmu->iommu);
  err_disable:
@@ -23144,6 +23440,14 @@ index 6cecbac0e..18d98a7fd 100644
  }
  
  static void arm_smmu_device_shutdown(struct platform_device *pdev)
+ {
+-	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+-
+-	arm_smmu_device_disable(smmu);
++	arm_smmu_device_remove(pdev);
+ }
+ 
+ static const struct of_device_id arm_smmu_of_match[] = {
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
 index 9915850dd..0aaeb5845 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
@@ -31088,10 +31392,20 @@ index 000000000..dfd7b3511
 +MODULE_LICENSE("GPL v2");
 +MODULE_DESCRIPTION("SPI Nor Flash Controller Driver");
 diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-index 1b0c6770c..88a4a8aa4 100644
+index 1b0c6770c..b2443e553 100644
 --- a/drivers/mtd/spi-nor/core.c
 +++ b/drivers/mtd/spi-nor/core.c
-@@ -435,6 +435,10 @@ int spi_nor_read_id(struct spi_nor *nor, u8 naddr, u8 ndummy, u8 *id,
+@@ -21,6 +21,9 @@
+ #include <linux/sizes.h>
+ #include <linux/slab.h>
+ #include <linux/spi/flash.h>
++#ifdef CONFIG_ARCH_BSP
++#include <linux/securec.h>
++#endif
+ 
+ #include "core.h"
+ 
+@@ -435,6 +438,10 @@ int spi_nor_read_id(struct spi_nor *nor, u8 naddr, u8 ndummy, u8 *id,
  		ret = nor->controller_ops->read_reg(nor, SPINOR_OP_RDID, id,
  						    SPI_NOR_MAX_ID_LEN);
  	}
@@ -31102,7 +31416,7 @@ index 1b0c6770c..88a4a8aa4 100644
  	return ret;
  }
  
-@@ -1818,7 +1822,15 @@ static int spi_nor_erase(struct mtd_info *mtd, struct erase_info *instr)
+@@ -1818,7 +1825,15 @@ static int spi_nor_erase(struct mtd_info *mtd, struct erase_info *instr)
  	ret = spi_nor_prep_and_lock_pe(nor, instr->addr, instr->len);
  	if (ret)
  		return ret;
@@ -31119,7 +31433,7 @@ index 1b0c6770c..88a4a8aa4 100644
  	/* whole-chip erase? */
  	if (len == mtd->size && !(nor->flags & SNOR_F_NO_OP_CHIP_ERASE)) {
  		unsigned long timeout;
-@@ -2060,6 +2072,14 @@ static const struct flash_info *spi_nor_detect(struct spi_nor *nor)
+@@ -2060,6 +2075,14 @@ static const struct flash_info *spi_nor_detect(struct spi_nor *nor)
  		return ERR_PTR(ret);
  	}
  
@@ -31134,7 +31448,7 @@ index 1b0c6770c..88a4a8aa4 100644
  	/* Cache the complete flash ID. */
  	nor->id = devm_kmemdup(nor->dev, id, SPI_NOR_MAX_ID_LEN, GFP_KERNEL);
  	if (!nor->id)
-@@ -2142,6 +2162,15 @@ static int spi_nor_write(struct mtd_info *mtd, loff_t to, size_t len,
+@@ -2142,6 +2165,15 @@ static int spi_nor_write(struct mtd_info *mtd, loff_t to, size_t len,
  	ret = spi_nor_prep_and_lock_pe(nor, to, len);
  	if (ret)
  		return ret;
@@ -31150,7 +31464,7 @@ index 1b0c6770c..88a4a8aa4 100644
  
  	for (i = 0; i < len; ) {
  		ssize_t written;
-@@ -2189,10 +2218,151 @@ static int spi_nor_write(struct mtd_info *mtd, loff_t to, size_t len,
+@@ -2189,10 +2221,151 @@ static int spi_nor_write(struct mtd_info *mtd, loff_t to, size_t len,
  
  write_err:
  	spi_nor_unlock_and_unprep_pe(nor, to, len);
@@ -31302,7 +31616,7 @@ index 1b0c6770c..88a4a8aa4 100644
  static int spi_nor_check(struct spi_nor *nor)
  {
  	if (!nor->dev ||
-@@ -3370,6 +3540,98 @@ static const struct flash_info *spi_nor_match_name(struct spi_nor *nor,
+@@ -3370,6 +3543,107 @@ static const struct flash_info *spi_nor_match_name(struct spi_nor *nor,
  	return NULL;
  }
  
@@ -31310,10 +31624,19 @@ index 1b0c6770c..88a4a8aa4 100644
 +
 +static int bsp_spi_nor_init_params(struct spi_nor *nor)
 +{
++	errno_t err = -1;
++
 +	nor->params = devm_kzalloc(nor->dev, sizeof(*nor->params), GFP_KERNEL);
 +	if (!nor->params)
 +		return -ENOMEM;
-+	memcpy(nor->params, nor->info->params, sizeof(*nor->params));
++
++	err = memcpy_s(nor->params, sizeof(struct spi_nor_flash_parameter),
++			                        nor->info->params, sizeof(*nor->params));
++	if (err != EOK) {
++		devm_kfree(nor->dev, nor->params);
++		dev_dbg(nor->dev, "nor params memory copy fail\n");
++		return err;
++	}
 +
 +	spi_nor_init_default_params(nor);
 +
@@ -31401,7 +31724,7 @@ index 1b0c6770c..88a4a8aa4 100644
  static const struct flash_info *spi_nor_get_flash_info(struct spi_nor *nor,
  						       const char *name)
  {
-@@ -3378,9 +3640,14 @@ static const struct flash_info *spi_nor_get_flash_info(struct spi_nor *nor,
+@@ -3378,9 +3652,14 @@ static const struct flash_info *spi_nor_get_flash_info(struct spi_nor *nor,
  	if (name)
  		info = spi_nor_match_name(nor, name);
  	/* Try to auto-detect if chip name wasn't specified or not found */
@@ -31418,7 +31741,7 @@ index 1b0c6770c..88a4a8aa4 100644
  	/*
  	 * If caller has specified name of flash model that can normally be
  	 * detected using JEDEC, let's verify it.
-@@ -3506,10 +3773,23 @@ int spi_nor_scan(struct spi_nor *nor, const char *name,
+@@ -3506,10 +3785,23 @@ int spi_nor_scan(struct spi_nor *nor, const char *name,
  
  	mutex_init(&nor->lock);
  
@@ -31445,7 +31768,7 @@ index 1b0c6770c..88a4a8aa4 100644
  
  	if (spi_nor_use_parallel_locking(nor))
  		init_waitqueue_head(&nor->rww.wait);
-@@ -3525,6 +3805,22 @@ int spi_nor_scan(struct spi_nor *nor, const char *name,
+@@ -3525,6 +3817,22 @@ int spi_nor_scan(struct spi_nor *nor, const char *name,
  	if (ret)
  		return ret;
  
@@ -31468,7 +31791,7 @@ index 1b0c6770c..88a4a8aa4 100644
  	/* Send all the required SPI flash commands to initialize device */
  	ret = spi_nor_init(nor);
  	if (ret)
-@@ -3532,7 +3828,9 @@ int spi_nor_scan(struct spi_nor *nor, const char *name,
+@@ -3532,7 +3840,9 @@ int spi_nor_scan(struct spi_nor *nor, const char *name,
  
  	/* No mtd_info fields should be used up to this point. */
  	spi_nor_set_mtd_info(nor);
@@ -39382,10 +39705,10 @@ index 000000000..b513f5616
 +endif
 diff --git a/drivers/pci/bsp_pcie/pci.h b/drivers/pci/bsp_pcie/pci.h
 new file mode 100644
-index 000000000..25efee032
+index 000000000..c9718d93c
 --- /dev/null
 +++ b/drivers/pci/bsp_pcie/pci.h
-@@ -0,0 +1,85 @@
+@@ -0,0 +1,100 @@
 +/*
 + *  arch/arm/include/asm/mach/pci.h
 + *
@@ -39406,9 +39729,24 @@ index 000000000..25efee032
 +struct pci_bus;
 +struct device;
 +
++#ifdef CONFIG_PCI_MSI
++#define BSP_PCI_MSI_NR (8 * 32)
++struct bsp_msi {
++	DECLARE_BITMAP(used, BSP_PCI_MSI_NR);
++	struct device dev;
++	struct irq_domain *domain;
++	struct irq_domain *msi_domain;
++	unsigned long pages;
++	struct mutex lock;
++	int irq;
++};
++#endif
 +struct hw_pci {
 +#ifdef CONFIG_PCI_DOMAINS
 +	int domain;
++#endif
++#ifdef CONFIG_PCI_MSI
++	struct bsp_msi msi;
 +#endif
 +	struct device *dev;
 +	struct pci_ops *ops;
@@ -39473,10 +39811,10 @@ index 000000000..25efee032
 +#endif /* __ASM_MACH_PCI_H */
 diff --git a/drivers/pci/bsp_pcie/pcie.c b/drivers/pci/bsp_pcie/pcie.c
 new file mode 100644
-index 000000000..34fa5228b
+index 000000000..3719254c1
 --- /dev/null
 +++ b/drivers/pci/bsp_pcie/pcie.c
-@@ -0,0 +1,606 @@
+@@ -0,0 +1,902 @@
 +/*
 + * Copyright (c) 2016-2017 Shenshu Technologies Co., Ltd.
 + *
@@ -39509,6 +39847,7 @@ index 000000000..34fa5228b
 +#include <linux/interrupt.h>
 +#include <linux/irq.h>
 +#include <linux/irqdomain.h>
++#include <linux/msi.h>
 +#include <linux/of_irq.h>
 +#include "../pci.h"
 +#ifdef CONFIG_ARM64
@@ -39522,6 +39861,18 @@ index 000000000..34fa5228b
 +#define READ_OPS_MOVE_LEFT  3
 +
 +#define PCIE_DEBUG_LEVEL PCIE_DBG_MODULE
++
++#define MSI_CONTRL_INTERRUPT 0x830
++#define MSI_CTRL_UPPER_ADDR_OFF 0x824
++#define MSI_CTRL_ADDR_OFF 0x820
++#define MSI_CTRL_INT_EN_OFF0 0x828
++#define MSI_CTRL_INT_EN_OFF1 0x834
++#define MSI_CTRL_INT_EN_OFF2 0x840
++#define MSI_CTRL_INT_EN_OFF3 0x84c
++#define MSI_CTRL_INT_EN_OFF4 0x858
++#define MSI_CTRL_INT_EN_OFF5 0x864
++#define MSI_CTRL_INT_EN_OFF6 0x870
++#define MSI_CTRL_INT_EN_OFF7 0x87c
 +
 +#ifdef PCIE_DEBUG
 +#define pcie_debug(level, str, arg...) \
@@ -39656,6 +40007,276 @@ index 000000000..34fa5228b
 +#define pcie_cfg_bus(busnr) ((busnr & 0xff) << 20)
 +#define pcie_cfg_dev(devfn) ((devfn & 0xff) << 12)
 +#define pcie_cfg_reg(reg) (reg & 0xffc) /* set dword align */
++
++#ifdef CONFIG_PCI_MSI
++static struct irq_chip bsp_msi_irq_chip = {
++	.name = "PCIe MSI",
++	.irq_ack    = irq_chip_ack_parent,
++	.irq_enable = pci_msi_unmask_irq,
++	.irq_disable = pci_msi_mask_irq,
++	.irq_mask = pci_msi_mask_irq,
++	.irq_unmask = pci_msi_unmask_irq,
++};
++
++static void bsp_msi_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
++{
++	struct hw_pci *pcie = irq_data_get_irq_chip_data(data);
++	struct bsp_msi *msi = &pcie->msi;
++
++	msg->address_lo = virt_to_phys((void *)(uintptr_t)msi->pages); /* address low bits */
++	msg->address_hi = (virt_to_phys((void *)(uintptr_t)msi->pages) >> 32); /* 32:address high bits */
++	msg->data = data->hwirq;
++}
++
++static void bsp_msi_ack_irq(struct irq_data *data)
++{
++	/*
++	 * bsp_pcie_msi_irq() will have performed the Ack.
++	 * Eventually, this should be fixed and the Ack be moved in
++	 * the respective callbacks for INTx and MSI.
++	 */
++}
++
++
++static int bsp_msi_set_affinity(struct irq_data *irq_data,
++				const struct cpumask *mask, bool force)
++{
++	return -EINVAL;
++}
++static struct irq_chip bsp_msi_bottom_irq_chip = {
++	.name			= "BSP PCI BOTTOM MSI",
++	.irq_compose_msi_msg	= bsp_msi_compose_msi_msg,
++	.irq_ack                = bsp_msi_ack_irq,
++	.irq_set_affinity = bsp_msi_set_affinity,
++};
++
++static int bsp_msi_alloc(struct bsp_msi *chip)
++{
++	int msi;
++
++	mutex_lock(&chip->lock);
++
++	msi = find_first_zero_bit(chip->used, BSP_PCI_MSI_NR);
++	if (msi < BSP_PCI_MSI_NR)
++		set_bit(msi, chip->used);
++	else {
++		dev_err(&chip->dev, "test msi alloc err, msi[%d]\n", msi);
++		msi = -ENOSPC;
++	}
++
++	mutex_unlock(&chip->lock);
++
++	return msi;
++}
++static int bsp_irq_domain_alloc(struct irq_domain *domain, unsigned int virq,
++				unsigned int nr_irqs, void *args)
++{
++	struct hw_pci *pcie = domain->host_data;
++	struct bsp_msi *msi = &pcie->msi;
++	int hwirq;
++	int i;
++
++	hwirq = bsp_msi_alloc(msi);
++
++	mutex_lock(&msi->lock);
++	for (i = 0; i < nr_irqs; i++) {
++		irq_domain_set_info(domain, virq + i, hwirq + i, &bsp_msi_bottom_irq_chip,
++				domain->host_data, handle_simple_irq, NULL, NULL);
++	}
++
++	mutex_unlock(&msi->lock);
++
++	return 0;
++}
++
++static void bsp_msi_free(struct bsp_msi *chip, unsigned long irq)
++{
++	struct device *dev = &chip->dev;
++
++	mutex_lock(&chip->lock);
++	if (!test_bit(irq, chip->used))
++		dev_err(dev, "trying to free unused MSI#%lu\n", irq);
++	else
++		clear_bit(irq, chip->used);
++
++	mutex_unlock(&chip->lock);
++}
++
++static void bsp_irq_domain_free(struct irq_domain *domain, unsigned int virq,
++					unsigned int nr_irqs)
++{
++	struct hw_pci *pcie = domain->host_data;
++	struct bsp_msi *msi = &pcie->msi;
++	struct irq_data *d = irq_get_irq_data(virq);
++	irq_hw_number_t hwirq = 0;
++
++	if (d != NULL)
++		hwirq = irqd_to_hwirq(d);
++
++	bsp_msi_free(msi, hwirq);
++}
++static const struct irq_domain_ops msi_domain_ops = {
++	.alloc  = bsp_irq_domain_alloc,
++	.free   = bsp_irq_domain_free,
++};
++static struct msi_domain_info bsp_msi_domain_info = {
++	.flags	= MSI_FLAG_USE_DEF_DOM_OPS | MSI_FLAG_USE_DEF_CHIP_OPS | MSI_FLAG_MULTI_PCI_MSI,
++	.chip = &bsp_msi_irq_chip,
++ };
++
++static irqreturn_t bsp_pcie_msi_irq(int irq, void *data)
++{
++	struct hw_pci *bsp_pcie = data;
++	struct device *dev = bsp_pcie->dev;
++	struct bsp_msi *msi = &bsp_pcie->msi;
++	unsigned int i;
++	unsigned int processed = 0;
++	void *dbi_base = (void *)(uintptr_t)
++			 pcie_info[bsp_pcie->nr_controllers].conf_base_addr;
++
++	/* 8 EP interrupt managment unit */
++	for (i = 0; i < 8; i++) {
++		unsigned long reg = readl(dbi_base + 0x830 + i * 0xc);
++
++		while (reg) {
++			/* the offest base on the first set bit of reg */
++			unsigned int offset = find_first_bit(&reg, 32);
++			unsigned int index = i * 32 + offset;
++			unsigned int irq;
++
++			/* clear the interrupt */
++			writel(1 << offset, dbi_base + MSI_CONTRL_INTERRUPT + i * 0xc);
++
++			irq = irq_find_mapping(msi->domain, index);
++			if (irq)
++				generic_handle_irq(irq);
++			else {
++				/*
++				 * * that's weird who triggered this?
++				 * * just clear it
++				 *  */
++				dev_err(dev, "unexpected MSI\n");
++			}
++
++			/* see if there's any more pending in this vector */
++			reg = readl(dbi_base +  MSI_CONTRL_INTERRUPT + i * 0xc);
++			processed++;
++		}
++	}
++	return processed > 0 ? IRQ_HANDLED : IRQ_NONE;
++}
++
++int pci_msi_is_enable(struct platform_device *pdev)
++{
++	int msi_irq;
++
++	msi_irq = platform_get_irq_byname(pdev, "msi");
++	if (msi_irq < 0)
++		return false;
++
++	return true;
++}
++
++int bsp_pcie_enable_msi(struct hw_pci *pcie)
++{
++	struct device *dev = pcie->dev;
++	struct platform_device *pdev = to_platform_device(dev);
++	struct bsp_msi *msi = &pcie->msi;
++	unsigned long base;
++	int err;
++
++	void *dbi_base = (void *)(uintptr_t)pcie_info[pcie->nr_controllers].conf_base_addr;
++
++	if (!msi) {
++		dev_err(dev, "msi is null, error.\n");
++		return -EINVAL;
++	}
++
++	mutex_init(&msi->lock);
++	msi->domain = irq_domain_add_linear(dev->of_node, BSP_PCI_MSI_NR,
++					    &msi_domain_ops, pcie);
++	bsp_msi_domain_info.chip_data=dev;
++	msi->msi_domain = pci_msi_create_irq_domain(of_node_to_fwnode(dev->of_node),
++					&bsp_msi_domain_info, msi->domain);
++	if (!msi->domain) {
++		dev_err(dev, "failed to create IRQ domain\n");
++		return -ENOMEM;
++	}
++
++	err = platform_get_irq_byname(pdev, "msi");
++	if (err < 0) {
++		dev_err(dev, "failed to get IRQ: %d\n", err);
++		goto err;
++	}
++
++	msi->irq = err;
++
++	err = request_irq(msi->irq, bsp_pcie_msi_irq, IRQF_NO_THREAD,
++			  bsp_msi_irq_chip.name, pcie);
++	if (err < 0) {
++		dev_err(dev, "failed to request IRQ: %d\n", err);
++		goto err;
++	}
++
++	/* setup AFI/FPCI range */
++	msi->pages = __get_free_pages(GFP_KERNEL, 0);
++	base = virt_to_phys((void *)(uintptr_t)msi->pages);
++
++	/* write high bits */
++	writel(base >> COMMON_32BIT_SHIFT, dbi_base + MSI_CTRL_UPPER_ADDR_OFF);
++	/* write lower bits */
++	writel(base, dbi_base + MSI_CTRL_ADDR_OFF);
++
++	/* enable all MSI vectors */
++	writel(0xffffffff, dbi_base + MSI_CTRL_INT_EN_OFF0);
++	writel(0xffffffff, dbi_base + MSI_CTRL_INT_EN_OFF1);
++	writel(0xffffffff, dbi_base + MSI_CTRL_INT_EN_OFF2);
++	writel(0xffffffff, dbi_base + MSI_CTRL_INT_EN_OFF3);
++	writel(0xffffffff, dbi_base + MSI_CTRL_INT_EN_OFF4);
++	writel(0xffffffff, dbi_base + MSI_CTRL_INT_EN_OFF5);
++	writel(0xffffffff, dbi_base + MSI_CTRL_INT_EN_OFF6);
++	writel(0xffffffff, dbi_base + MSI_CTRL_INT_EN_OFF7);
++
++	return 0;
++
++err:
++	irq_domain_remove(msi->domain);
++	return err;
++}
++
++static int bsp_pcie_disable_msi(struct hw_pci *pcie)
++{
++	struct bsp_msi *msi = &pcie->msi;
++	unsigned int i, irq;
++	void *dbi_base = (void *)(uintptr_t)
++			 pcie_info[pcie->nr_controllers].conf_base_addr;
++
++	/* disable all MSI vectors */
++	writel(0x0, dbi_base + MSI_CTRL_INT_EN_OFF0);
++	writel(0x0, dbi_base + MSI_CTRL_INT_EN_OFF1);
++	writel(0x0, dbi_base + MSI_CTRL_INT_EN_OFF2);
++	writel(0x0, dbi_base + MSI_CTRL_INT_EN_OFF3);
++	writel(0x0, dbi_base + MSI_CTRL_INT_EN_OFF4);
++	writel(0x0, dbi_base + MSI_CTRL_INT_EN_OFF5);
++	writel(0x0, dbi_base + MSI_CTRL_INT_EN_OFF6);
++	writel(0x0, dbi_base + MSI_CTRL_INT_EN_OFF7);
++
++	free_pages(msi->pages, 0);
++
++	if (msi->irq > 0)
++		free_irq(msi->irq, pcie);
++
++	for (i = 0; i < BSP_PCI_MSI_NR; i++) {
++		irq = irq_find_mapping(msi->domain, i);
++		if (irq > 0)
++			irq_dispose_mapping(irq);
++	}
++
++	irq_domain_remove(msi->domain);
++
++	return 0;
++}
++#endif
 +
 +static unsigned long to_pcie_address(struct pci_bus *bus,
 +		unsigned int devfn, int where)
@@ -40006,14 +40627,27 @@ index 000000000..34fa5228b
 +
 +	bsp_pcie->nr_controllers = pcie_controllers_nr;
 +	pr_err("Number of PCIe controllers: %d\n", bsp_pcie->nr_controllers);
++#ifdef CONFIG_PCI_MSI
++	if (pci_msi_is_enable(pdev)) {
++		err = bsp_pcie_enable_msi(bsp_pcie);
++		if (err < 0) {
++			pr_err("failed to enable MSI support: %d\n", err);
++			goto pcie_init_err;
++		}
++	}
++#endif
 +
 +	err = pci_common_init(pdev, bsp_pcie);
 +
 +	if (err)
-+		goto pcie_init_err;
++		goto disable_msi;
 +
 +	return 0;
-+
++disable_msi:
++#ifdef CONFIG_PCI_MSI
++	if (pci_msi_is_enable(pdev))
++		bsp_pcie_disable_msi(bsp_pcie);
++#endif
 +pcie_init_err:
 +	__arch_pcie_info_release(&pcie_info[pcie_controllers_nr]);
 +
@@ -40474,10 +41108,10 @@ index 000000000..9d572a200
 +}
 diff --git a/drivers/pci/bsp_pcie/pcie_ss928v100.h b/drivers/pci/bsp_pcie/pcie_ss928v100.h
 new file mode 100644
-index 000000000..eb6022a72
+index 000000000..35fe3ac33
 --- /dev/null
 +++ b/drivers/pci/bsp_pcie/pcie_ss928v100.h
-@@ -0,0 +1,74 @@
+@@ -0,0 +1,76 @@
 +/*
 + * Copyright (c) 2020-2021 Shenshu Technologies Co., Ltd.
 + *
@@ -40551,6 +41185,8 @@ index 000000000..eb6022a72
 +#define ATU_TARGET_LOW_REG	0x918
 +#define ATU_ATRGET_HIGH_REG	0x91c
 +
++#define COMMON_32BIT_SHIFT		32
++
 +#endif
 diff --git a/drivers/pci/of.c b/drivers/pci/of.c
 index 51e3dd0ea..70a82d28d 100644
@@ -40605,7 +41241,7 @@ index c822389c2..bdb710716 100644
  obj-$(CONFIG_PWM_CRC)		+= pwm-crc.o
 diff --git a/drivers/pwm/pwm-bsp.c b/drivers/pwm/pwm-bsp.c
 new file mode 100644
-index 000000000..1957c0f63
+index 000000000..27d82a8ba
 --- /dev/null
 +++ b/drivers/pwm/pwm-bsp.c
 @@ -0,0 +1,426 @@
@@ -47233,6 +47869,257 @@ index bb31ac9ca..9f7ab0403 100644
  	snprintf(uap->type, sizeof(uap->type), "PL011 rev%u", amba_rev(dev));
  
  	if (device_property_read_u32(&dev->dev, "reg-io-width", &val) == 0) {
+diff --git a/drivers/usb/dwc3/core.h b/drivers/usb/dwc3/core.h
+index 06be72f78..69e0adb2b 100644
+--- a/drivers/usb/dwc3/core.h
++++ b/drivers/usb/dwc3/core.h
+@@ -695,7 +695,11 @@ struct dwc3_event_buffer {
+ #define DWC3_EP_DIRECTION_TX	true
+ #define DWC3_EP_DIRECTION_RX	false
+ 
++#ifdef CONFIG_ARCH_BSP
++#define DWC3_TRB_NUM		4096
++#else
+ #define DWC3_TRB_NUM		256
++#endif
+ 
+ /**
+  * struct dwc3_ep - device side endpoint representation
+@@ -766,8 +770,13 @@ struct dwc3_ep {
+ 	 * By using u8 types we ensure that our % operator when incrementing
+ 	 * enqueue and dequeue get optimized away by the compiler.
+ 	 */
++#ifdef CONFIG_ARCH_BSP
++	u16			trb_enqueue;
++	u16			trb_dequeue;
++#else
+ 	u8			trb_enqueue;
+ 	u8			trb_dequeue;
++#endif
+ 
+ 	u8			number;
+ 	u8			type;
+diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
+index fdaace156..e2479362d 100644
+--- a/drivers/usb/dwc3/gadget.c
++++ b/drivers/usb/dwc3/gadget.c
+@@ -165,7 +165,11 @@ static void dwc3_ep0_reset_state(struct dwc3 *dwc)
+  * if it is point to the link TRB, wrap around to the beginning. The
+  * link TRB is always at the last TRB entry.
+  */
++#ifdef CONFIG_ARCH_BSP
++static void dwc3_ep_inc_trb(u16 *index)
++#else
+ static void dwc3_ep_inc_trb(u8 *index)
++#endif
+ {
+ 	(*index)++;
+ 	if (*index == (DWC3_TRB_NUM - 1))
+@@ -1195,9 +1199,15 @@ static void dwc3_gadget_ep_free_request(struct usb_ep *ep,
+  * index is 0, we will wrap backwards, skip the link TRB, and return
+  * the one just before that.
+  */
++#ifdef CONFIG_ARCH_BSP
++static struct dwc3_trb *dwc3_ep_prev_trb(struct dwc3_ep *dep, u16 index)
++{
++	u16 tmp = index;
++#else
+ static struct dwc3_trb *dwc3_ep_prev_trb(struct dwc3_ep *dep, u8 index)
+ {
+ 	u8 tmp = index;
++#endif
+ 
+ 	if (!tmp)
+ 		tmp = DWC3_TRB_NUM - 1;
+@@ -1207,7 +1217,11 @@ static struct dwc3_trb *dwc3_ep_prev_trb(struct dwc3_ep *dep, u8 index)
+ 
+ static u32 dwc3_calc_trbs_left(struct dwc3_ep *dep)
+ {
++#ifdef CONFIG_ARCH_BSP
++	u16			trbs_left;
++#else
+ 	u8			trbs_left;
++#endif
+ 
+ 	/*
+ 	 * If the enqueue & dequeue are equal then the TRB ring is either full
+@@ -1261,6 +1275,9 @@ static void dwc3_prepare_one_trb(struct dwc3_ep *dep,
+ 	struct dwc3		*dwc = dep->dwc;
+ 	struct usb_gadget	*gadget = dwc->gadget;
+ 	enum usb_device_speed	speed = gadget->speed;
++#ifdef CONFIG_ARCH_BSP
++	unsigned int chain_skip = 0;
++#endif
+ 
+ 	if (use_bounce_buffer)
+ 		dma = dep->dwc->bounce_addr;
+@@ -1289,6 +1306,7 @@ static void dwc3_prepare_one_trb(struct dwc3_ep *dep,
+ 		break;
+ 
+ 	case USB_ENDPOINT_XFER_ISOC:
++#ifndef CONFIG_ARCH_BSP
+ 		if (!node) {
+ 			trb->ctrl = DWC3_TRBCTL_ISOCHRONOUS_FIRST;
+ 
+@@ -1330,6 +1348,30 @@ static void dwc3_prepare_one_trb(struct dwc3_ep *dep,
+ 		} else {
+ 			trb->ctrl = DWC3_TRBCTL_ISOCHRONOUS;
+ 		}
++#else
++		if (!node) {
++			trb->ctrl = DWC3_TRBCTL_ISOCHRONOUS_FIRST;
++			if (speed == USB_SPEED_HIGH) {
++				struct usb_ep *ep = &dep->endpoint;
++				unsigned int mult = 0x2;
++				unsigned int maxp = usb_endpoint_maxp(ep->desc);
++
++				if (trb_length <= (0x2 * maxp))
++					mult--;
++
++				if (trb_length <= maxp)
++					mult--;
++
++				trb->size |= DWC3_TRB_SIZE_PCM1(mult);
++				chain_skip = 1;
++			}
++			if (speed == USB_SPEED_SUPER)
++				chain_skip = 1;
++		} else {
++			chain_skip = 1;
++			trb->ctrl = DWC3_TRBCTL_ISOCHRONOUS;
++		}
++#endif
+ 
+ 		if (!no_interrupt && !chain)
+ 			trb->ctrl |= DWC3_TRB_CTRL_ISP_IMI;
+@@ -1367,7 +1409,11 @@ static void dwc3_prepare_one_trb(struct dwc3_ep *dep,
+ 	if ((!no_interrupt && !chain) || must_interrupt)
+ 		trb->ctrl |= DWC3_TRB_CTRL_IOC;
+ 
++#ifdef CONFIG_ARCH_BSP
++	if ((!chain_skip) && chain)
++#else
+ 	if (chain)
++#endif
+ 		trb->ctrl |= DWC3_TRB_CTRL_CHN;
+ 	else if (dep->stream_capable && is_last &&
+ 		 !DWC3_MST_CAPABLE(&dwc->hwparams))
+@@ -1435,9 +1481,20 @@ static int dwc3_prepare_last_sg(struct dwc3_ep *dep,
+ 	req->needs_extra_trb = num_trbs > 1;
+ 
+ 	/* Prepare a normal TRB */
++#ifdef CONFIG_ARCH_BSP
++	if (req->direction || req->request.length) {
++		if (usb_endpoint_xfer_isoc(dep->endpoint.desc))
++			dwc3_prepare_one_trb(dep, req, entry_length,
++				req->needs_extra_trb, 0, false, false);
++		else
++			dwc3_prepare_one_trb(dep, req, entry_length,
++				req->needs_extra_trb, node, false, false);
++	}
++#else
+ 	if (req->direction || req->request.length)
+ 		dwc3_prepare_one_trb(dep, req, entry_length,
+ 				req->needs_extra_trb, node, false, false);
++#endif
+ 
+ 	/* Prepare extra TRBs for ZLP and MPS OUT transfer alignment */
+ 	if ((!req->direction && !req->request.length) || req->needs_extra_trb)
+@@ -1515,8 +1572,17 @@ static int dwc3_prepare_trbs_sg(struct dwc3_ep *dep,
+ 				}
+ 			}
+ 
++#ifdef CONFIG_ARCH_BSP
++			if (usb_endpoint_xfer_isoc(dep->endpoint.desc))
++				dwc3_prepare_one_trb(dep, req, trb_length, 1, 0, false,
++					must_interrupt);
++			else
++				dwc3_prepare_one_trb(dep, req, trb_length, 1, i, false,
++					must_interrupt);
++#else
+ 			dwc3_prepare_one_trb(dep, req, trb_length, 1, i, false,
+ 					must_interrupt);
++#endif
+ 		}
+ 
+ 		/*
+@@ -1641,6 +1707,23 @@ static int dwc3_prepare_trbs(struct dwc3_ep *dep)
+ 
+ static void dwc3_gadget_ep_cleanup_cancelled_requests(struct dwc3_ep *dep);
+ 
++#ifdef CONFIG_ARCH_BSP
++#define DWC3_EVENT_PRAM_MAX_SOFFN   0x3fff
++static int __dwc3_gadget_get_frame(struct dwc3 *dwc);
++
++static bool __dwc3_gadget_target_frame_elapsed(struct dwc3_ep *dep)
++{
++	u16 cframe =  __dwc3_gadget_get_frame(dep->dwc);
++	u16 eframe = dep->frame_number & DWC3_EVENT_PRAM_MAX_SOFFN;
++
++	if (eframe == cframe)
++		return true;
++
++	return (((eframe - cframe) & DWC3_EVENT_PRAM_MAX_SOFFN)
++		> DWC3_EVENT_PRAM_MAX_SOFFN / 0x2); // we use half of DWC3_EVENT_PRAM_MAX_SOFFN for calc, so divided by 2
++}
++#endif
++
+ static int __dwc3_gadget_kick_transfer(struct dwc3_ep *dep)
+ {
+ 	struct dwc3_gadget_ep_cmd_params params;
+@@ -1678,6 +1761,14 @@ static int __dwc3_gadget_kick_transfer(struct dwc3_ep *dep)
+ 	if (starting) {
+ 		params.param0 = upper_32_bits(req->trb_dma);
+ 		params.param1 = lower_32_bits(req->trb_dma);
++#ifdef CONFIG_ARCH_BSP
++		if (usb_endpoint_xfer_isoc(dep->endpoint.desc)) {
++			while (__dwc3_gadget_target_frame_elapsed(dep))
++				dep->frame_number = DWC3_ALIGN_FRAME(dep, 1);
++
++			dep->frame_number = DWC3_ALIGN_FRAME(dep, 1);
++		}
++#endif
+ 		cmd = DWC3_DEPCMD_STARTTRANSFER;
+ 
+ 		if (dep->stream_capable)
+@@ -2002,6 +2093,29 @@ static int __dwc3_gadget_ep_queue(struct dwc3_ep *dep, struct dwc3_request *req)
+ 	 * Without this trick, we are very, very likely gonna get Bus Expiry
+ 	 * errors which will force us issue EndTransfer command.
+ 	 */
++#ifdef CONFIG_ARCH_BSP
++	if (usb_endpoint_xfer_isoc(dep->endpoint.desc)) {
++		if (!(dep->flags & DWC3_EP_PENDING_REQUEST) &&
++				!(dep->flags & DWC3_EP_TRANSFER_STARTED)) {
++			return 0;
++		}
++
++		if (req->request.num_sgs) { // UVC
++			if (dep->resource_index && list_empty(&dep->started_list)) {
++				dwc3_stop_active_transfer(dep, true, true);
++				return 0;
++			}
++		}
++
++		if (!(dep->flags & DWC3_EP_TRANSFER_STARTED)) {
++			if ((dep->flags & DWC3_EP_PENDING_REQUEST)) {
++				return __dwc3_gadget_start_isoc(dep);
++			}
++		}
++		if (req->request.num_sgs)
++			return 0;
++	}
++#else
+ 	if (usb_endpoint_xfer_isoc(dep->endpoint.desc)) {
+ 		if (!(dep->flags & DWC3_EP_TRANSFER_STARTED)) {
+ 			if ((dep->flags & DWC3_EP_PENDING_REQUEST))
+@@ -2010,6 +2124,7 @@ static int __dwc3_gadget_ep_queue(struct dwc3_ep *dep, struct dwc3_request *req)
+ 			return 0;
+ 		}
+ 	}
++#endif
+ 
+ 	__dwc3_gadget_kick_transfer(dep);
+ 
 diff --git a/drivers/usb/gadget/Kconfig b/drivers/usb/gadget/Kconfig
 index 4eeb4d299..c7fa0ec74 100644
 --- a/drivers/usb/gadget/Kconfig
@@ -51146,6 +52033,263 @@ index c265a1f62..c779e71ca 100644
  	for (i = 0; i < ARRAY_SIZE(common->luns); ++i)
  		if (common->luns[i])
  			common->luns[i]->unit_attention_data =
+diff --git a/drivers/usb/gadget/function/f_uac1.c b/drivers/usb/gadget/function/f_uac1.c
+index 6f0e1d803..f5b09d8ca 100644
+--- a/drivers/usb/gadget/function/f_uac1.c
++++ b/drivers/usb/gadget/function/f_uac1.c
+@@ -33,6 +33,20 @@
+ #define FUOUT_EN(_opts) ((_opts)->c_mute_present \
+ 			|| (_opts)->c_volume_present)
+ 
++#ifdef CONFIG_ARCH_BSP
++#define F_AUDIO_ALL_INTERFACES_COUNT 3
++
++static struct usb_interface_assoc_descriptor uac_iad = {
++	.bLength = sizeof(uac_iad),
++	.bDescriptorType = USB_DT_INTERFACE_ASSOCIATION,
++	.bFirstInterface = 0,
++	.bInterfaceCount = F_AUDIO_ALL_INTERFACES_COUNT,
++	.bFunctionClass = USB_CLASS_AUDIO,
++	.bFunctionSubClass = 0,
++	.bFunctionProtocol = UAC_VERSION_1,
++};
++#endif
++
+ struct f_uac1 {
+ 	struct g_audio g_audio;
+ 	u8 ac_intf, as_in_intf, as_out_intf;
+@@ -258,7 +272,64 @@ static struct uac_iso_endpoint_descriptor as_iso_in_desc = {
+ 	.wLockDelay =		0,
+ };
+ 
++#ifdef CONFIG_ARCH_BSP
++static struct usb_ss_ep_comp_descriptor as_ss_ep_comp = {
++	.bLength =		USB_DT_SS_EP_COMP_SIZE,
++	.bDescriptorType =	USB_DT_SS_ENDPOINT_COMP,
++	.bMaxBurst =		0,
++	.bmAttributes =		0,
++	.wBytesPerInterval =	cpu_to_le16(UAC1_OUT_EP_MAX_PACKET_SIZE),
++};
++
++static struct usb_ss_ep_comp_descriptor ac_ss_int_ep_comp = {
++	.bLength =		USB_DT_SS_EP_COMP_SIZE,
++	.bDescriptorType =	USB_DT_SS_ENDPOINT_COMP,
++	.bMaxBurst =		0,
++	.bmAttributes =		0,
++	.wBytesPerInterval =	cpu_to_le16(0x40),
++};
++#endif
++
+ static struct usb_descriptor_header *f_audio_desc[] = {
++#ifdef CONFIG_ARCH_BSP
++	(struct usb_descriptor_header *)&uac_iad,
++#endif
++	(struct usb_descriptor_header *)&ac_interface_desc,
++	(struct usb_descriptor_header *)&ac_header_desc,
++
++	(struct usb_descriptor_header *)&usb_out_it_desc,
++	(struct usb_descriptor_header *)&io_out_ot_desc,
++	(struct usb_descriptor_header *)&out_feature_unit_desc,
++
++	(struct usb_descriptor_header *)&io_in_it_desc,
++	(struct usb_descriptor_header *)&usb_in_ot_desc,
++	(struct usb_descriptor_header *)&in_feature_unit_desc,
++
++	(struct usb_descriptor_header *)&ac_int_ep_desc,
++
++	(struct usb_descriptor_header *)&as_out_interface_alt_0_desc,
++	(struct usb_descriptor_header *)&as_out_interface_alt_1_desc,
++	(struct usb_descriptor_header *)&as_out_header_desc,
++
++	(struct usb_descriptor_header *)&as_out_type_i_desc,
++
++	(struct usb_descriptor_header *)&as_out_ep_desc,
++	(struct usb_descriptor_header *)&as_iso_out_desc,
++
++	(struct usb_descriptor_header *)&as_in_interface_alt_0_desc,
++	(struct usb_descriptor_header *)&as_in_interface_alt_1_desc,
++	(struct usb_descriptor_header *)&as_in_header_desc,
++
++	(struct usb_descriptor_header *)&as_in_type_i_desc,
++
++	(struct usb_descriptor_header *)&as_in_ep_desc,
++	(struct usb_descriptor_header *)&as_iso_in_desc,
++	NULL,
++};
++
++#ifdef CONFIG_ARCH_BSP
++static struct usb_descriptor_header *f_audio_ss_desc[] = {
++	(struct usb_descriptor_header *)&uac_iad,
+ 	(struct usb_descriptor_header *)&ac_interface_desc,
+ 	(struct usb_descriptor_header *)&ac_header_desc,
+ 
+@@ -271,6 +342,7 @@ static struct usb_descriptor_header *f_audio_desc[] = {
+ 	(struct usb_descriptor_header *)&in_feature_unit_desc,
+ 
+ 	(struct usb_descriptor_header *)&ac_int_ep_desc,
++	(struct usb_descriptor_header *)&ac_ss_int_ep_comp,
+ 
+ 	(struct usb_descriptor_header *)&as_out_interface_alt_0_desc,
+ 	(struct usb_descriptor_header *)&as_out_interface_alt_1_desc,
+@@ -279,6 +351,7 @@ static struct usb_descriptor_header *f_audio_desc[] = {
+ 	(struct usb_descriptor_header *)&as_out_type_i_desc,
+ 
+ 	(struct usb_descriptor_header *)&as_out_ep_desc,
++	(struct usb_descriptor_header *)&as_ss_ep_comp,
+ 	(struct usb_descriptor_header *)&as_iso_out_desc,
+ 
+ 	(struct usb_descriptor_header *)&as_in_interface_alt_0_desc,
+@@ -288,9 +361,11 @@ static struct usb_descriptor_header *f_audio_desc[] = {
+ 	(struct usb_descriptor_header *)&as_in_type_i_desc,
+ 
+ 	(struct usb_descriptor_header *)&as_in_ep_desc,
++	(struct usb_descriptor_header *)&as_ss_ep_comp,
+ 	(struct usb_descriptor_header *)&as_iso_in_desc,
+ 	NULL,
+ };
++#endif
+ 
+ enum {
+ 	STR_AC_IF,
+@@ -1024,6 +1099,56 @@ uac1_ac_header_descriptor *build_ac_header_desc(struct f_uac1_opts *opts)
+ /* Use macro to overcome line length limitation */
+ #define USBDHDR(p) (struct usb_descriptor_header *)(p)
+ 
++#ifdef CONFIG_ARCH_BSP
++static void build_audio_ss_desc(struct f_uac1_opts *opts)
++{
++	int i = 0;
++
++	f_audio_ss_desc[i++] = USBDHDR(&uac_iad);
++	f_audio_ss_desc[i++] = USBDHDR(&ac_interface_desc);
++	f_audio_ss_desc[i++] = USBDHDR(ac_header_desc);
++
++	if (EPOUT_EN(opts)) {
++		f_audio_ss_desc[i++] = USBDHDR(&usb_out_it_desc);
++		f_audio_ss_desc[i++] = USBDHDR(&io_out_ot_desc);
++		if (FUOUT_EN(opts))
++			f_audio_ss_desc[i++] = USBDHDR(out_feature_unit_desc);
++	}
++
++	if (EPIN_EN(opts)) {
++		f_audio_ss_desc[i++] = USBDHDR(&io_in_it_desc);
++		f_audio_ss_desc[i++] = USBDHDR(&usb_in_ot_desc);
++		if (FUIN_EN(opts))
++			f_audio_ss_desc[i++] = USBDHDR(in_feature_unit_desc);
++	}
++
++	if (FUOUT_EN(opts) || FUIN_EN(opts)) {
++		f_audio_ss_desc[i++] = USBDHDR(&ac_int_ep_desc);
++		f_audio_ss_desc[i++] = USBDHDR(&ac_ss_int_ep_comp);
++	}
++
++	if (EPOUT_EN(opts)) {
++		f_audio_ss_desc[i++] = USBDHDR(&as_out_interface_alt_0_desc);
++		f_audio_ss_desc[i++] = USBDHDR(&as_out_interface_alt_1_desc);
++		f_audio_ss_desc[i++] = USBDHDR(&as_out_header_desc);
++		f_audio_ss_desc[i++] = USBDHDR(&as_out_type_i_desc);
++		f_audio_ss_desc[i++] = USBDHDR(&as_out_ep_desc);
++		f_audio_ss_desc[i++] = USBDHDR(&as_ss_ep_comp);
++		f_audio_ss_desc[i++] = USBDHDR(&as_iso_out_desc);
++	}
++	if (EPIN_EN(opts)) {
++		f_audio_ss_desc[i++] = USBDHDR(&as_in_interface_alt_0_desc);
++		f_audio_ss_desc[i++] = USBDHDR(&as_in_interface_alt_1_desc);
++		f_audio_ss_desc[i++] = USBDHDR(&as_in_header_desc);
++		f_audio_ss_desc[i++] = USBDHDR(&as_in_type_i_desc);
++		f_audio_ss_desc[i++] = USBDHDR(&as_in_ep_desc);
++		f_audio_ss_desc[i++] = USBDHDR(&as_ss_ep_comp);
++		f_audio_ss_desc[i++] = USBDHDR(&as_iso_in_desc);
++	}
++	f_audio_ss_desc[i] = NULL;
++}
++#endif
++
+ static void setup_descriptor(struct f_uac1_opts *opts)
+ {
+ 	/* patch descriptors */
+@@ -1080,6 +1205,9 @@ static void setup_descriptor(struct f_uac1_opts *opts)
+ 	}
+ 
+ 	i = 0;
++#ifdef CONFIG_ARCH_BSP
++	f_audio_desc[i++] = USBDHDR(&uac_iad);
++#endif
+ 	f_audio_desc[i++] = USBDHDR(&ac_interface_desc);
+ 	f_audio_desc[i++] = USBDHDR(ac_header_desc);
+ 
+@@ -1117,6 +1245,9 @@ static void setup_descriptor(struct f_uac1_opts *opts)
+ 		f_audio_desc[i++] = USBDHDR(&as_iso_in_desc);
+ 	}
+ 	f_audio_desc[i] = NULL;
++#ifdef CONFIG_ARCH_BSP
++	build_audio_ss_desc(opts);
++#endif
+ }
+ 
+ static int f_audio_validate_opts(struct g_audio *audio, struct device *dev)
+@@ -1217,6 +1348,9 @@ static int f_audio_bind(struct usb_configuration *c, struct usb_function *f)
+ 		}
+ 	}
+ 
++#ifdef CONFIG_ARCH_BSP
++	uac_iad.iFunction = us[STR_AC_IF].id;
++#endif
+ 	ac_interface_desc.iInterface = us[STR_AC_IF].id;
+ 	usb_out_it_desc.iTerminal = us[STR_USB_OUT_IT].id;
+ 	usb_out_it_desc.iChannelNames = us[STR_USB_OUT_IT_CH_NAMES].id;
+@@ -1302,6 +1436,9 @@ static int f_audio_bind(struct usb_configuration *c, struct usb_function *f)
+ 	status = usb_interface_id(c, f);
+ 	if (status < 0)
+ 		goto err_free_fu;
++#ifdef CONFIG_ARCH_BSP
++	uac_iad.bFirstInterface = status;
++#endif
+ 	ac_interface_desc.bInterfaceNumber = status;
+ 	uac1->ac_intf = status;
+ 	uac1->ac_alt = 0;
+@@ -1367,8 +1504,12 @@ static int f_audio_bind(struct usb_configuration *c, struct usb_function *f)
+ 	setup_descriptor(audio_opts);
+ 
+ 	/* copy descriptors, and track endpoint copies */
++#ifdef CONFIG_ARCH_BSP
++	status = usb_assign_descriptors(f, f_audio_desc, f_audio_desc, f_audio_ss_desc, NULL);
++#else
+ 	status = usb_assign_descriptors(f, f_audio_desc, f_audio_desc, NULL,
+ 					NULL);
++#endif
+ 	if (status)
+ 		goto err_free_fu;
+ 
+diff --git a/drivers/usb/gadget/function/f_uvc.c b/drivers/usb/gadget/function/f_uvc.c
+index 2e6bafb2a..9b4a9bfcd 100644
+--- a/drivers/usb/gadget/function/f_uvc.c
++++ b/drivers/usb/gadget/function/f_uvc.c
+@@ -29,6 +29,11 @@
+ #include "uvc_v4l2.h"
+ #include "uvc_video.h"
+ 
++#ifdef CONFIG_ARCH_BSP
++#define SS_EP_BURST				10
++#define SS_STREAMING_MAXACKET	3072
++#endif
++
+ unsigned int uvc_gadget_trace_param;
+ module_param_named(trace, uvc_gadget_trace_param, uint, 0644);
+ MODULE_PARM_DESC(trace, "Trace level bitmask");
+@@ -949,7 +954,12 @@ static struct usb_function_instance *uvc_alloc_inst(void)
+ 	INIT_LIST_HEAD(&opts->extension_units);
+ 
+ 	opts->streaming_interval = 1;
++#ifdef CONFIG_ARCH_BSP
++	opts->streaming_maxpacket = SS_STREAMING_MAXACKET;
++	opts->streaming_maxburst = SS_EP_BURST;
++#else
+ 	opts->streaming_maxpacket = 1024;
++#endif
+ 	snprintf(opts->function_name, sizeof(opts->function_name), "UVC Camera");
+ 
+ 	ret = uvcg_attach_configfs(opts);
 diff --git a/drivers/usb/gadget/function/u_generic.h b/drivers/usb/gadget/function/u_generic.h
 deleted file mode 100644
 index 24429c7fd..000000000
@@ -51509,11 +52653,673 @@ index 24429c7fd..000000000
 -
 -#endif /* U_GENERIC_H */
 \ No newline at end of file
+diff --git a/drivers/usb/gadget/function/uvc.h b/drivers/usb/gadget/function/uvc.h
+index 6751de8b6..4f32ad4c4 100644
+--- a/drivers/usb/gadget/function/uvc.h
++++ b/drivers/usb/gadget/function/uvc.h
+@@ -100,6 +100,12 @@ struct uvc_video {
+ 
+ 	unsigned int uvc_num_requests;
+ 
++#ifdef CONFIG_ARCH_BSP
++	unsigned int num_sgs;
++	__u8 *sg_buf;
++	volatile bool is_streaming;
++#endif
++
+ 	/* Requests */
+ 	unsigned int req_size;
+ 	struct uvc_request *ureq;
+diff --git a/drivers/usb/gadget/function/uvc_configfs.c b/drivers/usb/gadget/function/uvc_configfs.c
+index 4acf336e9..7b3463ca2 100644
+--- a/drivers/usb/gadget/function/uvc_configfs.c
++++ b/drivers/usb/gadget/function/uvc_configfs.c
+@@ -15,6 +15,9 @@
+ #include <linux/sort.h>
+ #include <linux/usb/uvc.h>
+ #include <linux/usb/video.h>
++#ifdef CONFIG_ARCH_BSP
++#include <linux/securec.h>
++#endif
+ 
+ /* -----------------------------------------------------------------------------
+  * Global Utility Structures and Macros
+@@ -1566,11 +1569,15 @@ static const struct uvcg_config_group_type uvcg_control_grp_type = {
+ /* -----------------------------------------------------------------------------
+  * streaming/uncompressed
+  * streaming/mjpeg
++ * streaming/framebased
+  */
+ 
+ static const char * const uvcg_format_names[] = {
+ 	"uncompressed",
+ 	"mjpeg",
++#ifdef CONFIG_ARCH_BSP
++	"framebased",
++#endif
+ };
+ 
+ static struct uvcg_color_matching *
+@@ -1777,6 +1784,10 @@ static int uvcg_streaming_header_allow_link(struct config_item *src,
+ 	target_fmt = container_of(to_config_group(target), struct uvcg_format,
+ 				  group);
+ 
++#ifdef CONFIG_ARCH_BSP
++	if (!target_fmt)
++		goto out;
++#endif
+ 	uvcg_format_set_indices(to_config_group(target));
+ 
+ 	format_ptr = kzalloc(sizeof(*format_ptr), GFP_KERNEL);
+@@ -1816,6 +1827,10 @@ static void uvcg_streaming_header_drop_link(struct config_item *src,
+ 	target_fmt = container_of(to_config_group(target), struct uvcg_format,
+ 				  group);
+ 
++#ifdef CONFIG_ARCH_BSP
++	if (!target_fmt)
++		goto out;
++#endif
+ 	list_for_each_entry_safe(format_ptr, tmp, &src_hdr->formats, entry)
+ 		if (format_ptr->fmt == target_fmt) {
+ 			list_del(&format_ptr->entry);
+@@ -1826,6 +1841,9 @@ static void uvcg_streaming_header_drop_link(struct config_item *src,
+ 
+ 	--target_fmt->linked;
+ 
++#ifdef CONFIG_ARCH_BSP
++out:
++#endif
+ 	mutex_unlock(&opts->lock);
+ 	mutex_unlock(su_mutex);
+ }
+@@ -2022,6 +2040,9 @@ UVCG_FRAME_ATTR(dw_min_bit_rate, dwMinBitRate, 32);
+ UVCG_FRAME_ATTR(dw_max_bit_rate, dwMaxBitRate, 32);
+ UVCG_FRAME_ATTR(dw_max_video_frame_buffer_size, dwMaxVideoFrameBufferSize, 32);
+ UVCG_FRAME_ATTR(dw_default_frame_interval, dwDefaultFrameInterval, 32);
++#ifdef CONFIG_ARCH_BSP
++UVCG_FRAME_ATTR(dw_bytes_perline, dwBytesPerLine, 32);
++#endif
+ 
+ #undef UVCG_FRAME_ATTR
+ 
+@@ -2105,7 +2126,11 @@ static ssize_t uvcg_frame_dw_frame_interval_store(struct config_item *item,
+ 
+ UVC_ATTR(uvcg_frame_, dw_frame_interval, dwFrameInterval);
+ 
++#ifdef CONFIG_ARCH_BSP
++static struct configfs_attribute *uvcg_frame_attrs1[] = {
++#else
+ static struct configfs_attribute *uvcg_frame_attrs[] = {
++#endif
+ 	&uvcg_frame_attr_b_frame_index,
+ 	&uvcg_frame_attr_bm_capabilities,
+ 	&uvcg_frame_attr_w_width,
+@@ -2118,11 +2143,38 @@ static struct configfs_attribute *uvcg_frame_attrs[] = {
+ 	NULL,
+ };
+ 
++#ifdef CONFIG_ARCH_BSP
++static struct configfs_attribute *uvcg_frame_attrs2[] = {
++	&uvcg_frame_attr_b_frame_index,
++	&uvcg_frame_attr_bm_capabilities,
++	&uvcg_frame_attr_w_width,
++	&uvcg_frame_attr_w_height,
++	&uvcg_frame_attr_dw_min_bit_rate,
++	&uvcg_frame_attr_dw_max_bit_rate,
++	&uvcg_frame_attr_dw_default_frame_interval,
++	&uvcg_frame_attr_dw_frame_interval,
++	&uvcg_frame_attr_dw_bytes_perline,
++	NULL,
++};
++
++static const struct config_item_type uvcg_frame_type1 = {
++	.ct_item_ops	= &uvcg_config_item_ops,
++	.ct_attrs	= uvcg_frame_attrs1,
++	.ct_owner	= THIS_MODULE,
++};
++
++static const struct config_item_type uvcg_frame_type2 = {
++	.ct_item_ops    = &uvcg_config_item_ops,
++	.ct_attrs       = uvcg_frame_attrs2,
++	.ct_owner       = THIS_MODULE,
++};
++#else
+ static const struct config_item_type uvcg_frame_type = {
+ 	.ct_item_ops	= &uvcg_config_item_ops,
+ 	.ct_attrs	= uvcg_frame_attrs,
+ 	.ct_owner	= THIS_MODULE,
+ };
++#endif
+ 
+ static struct config_item *uvcg_frame_make(struct config_group *group,
+ 					   const char *name)
+@@ -2145,6 +2197,9 @@ static struct config_item *uvcg_frame_make(struct config_group *group,
+ 	h->frame.dw_max_bit_rate		= 55296000;
+ 	h->frame.dw_max_video_frame_buffer_size	= 460800;
+ 	h->frame.dw_default_frame_interval	= 666666;
++#ifdef CONFIG_ARCH_BSP
++	h->frame.dw_bytes_perline		= 0;
++#endif
+ 
+ 	opts_item = group->cg_item.ci_parent->ci_parent->ci_parent;
+ 	opts = to_f_uvc_opts(opts_item);
+@@ -2157,6 +2212,11 @@ static struct config_item *uvcg_frame_make(struct config_group *group,
+ 	} else if (fmt->type == UVCG_MJPEG) {
+ 		h->frame.b_descriptor_subtype = UVC_VS_FRAME_MJPEG;
+ 		h->fmt_type = UVCG_MJPEG;
++#ifdef CONFIG_ARCH_BSP
++	} else if (fmt->type == UVCG_FRAMEBASED) {
++		h->frame.b_descriptor_subtype = UVC_VS_FRAME_FRAME_BASED;
++		h->fmt_type = UVCG_FRAMEBASED;
++#endif
+ 	} else {
+ 		mutex_unlock(&opts->lock);
+ 		kfree(h);
+@@ -2175,7 +2235,14 @@ static struct config_item *uvcg_frame_make(struct config_group *group,
+ 	++fmt->num_frames;
+ 	mutex_unlock(&opts->lock);
+ 
++#ifdef CONFIG_ARCH_BSP
++	if (fmt->type == UVCG_FRAMEBASED)
++		config_item_init_type_name(&h->item, name, &uvcg_frame_type2);
++	else
++		config_item_init_type_name(&h->item, name, &uvcg_frame_type1);
++#else
+ 	config_item_init_type_name(&h->item, name, &uvcg_frame_type);
++#endif
+ 
+ 	return &h->item;
+ }
+@@ -2215,8 +2282,10 @@ static void uvcg_format_set_indices(struct config_group *fmt)
+ 	list_for_each_entry(ci, &fmt->cg_children, ci_entry) {
+ 		struct uvcg_frame *frm;
+ 
++#ifndef CONFIG_ARCH_BSP
+ 		if (ci->ci_type != &uvcg_frame_type)
+ 			continue;
++#endif
+ 
+ 		frm = to_uvcg_frame(ci);
+ 		frm->frame.b_frame_index = i++;
+@@ -2677,6 +2746,260 @@ static const struct uvcg_config_group_type uvcg_mjpeg_grp_type = {
+ 	.name = "mjpeg",
+ };
+ 
++#ifdef CONFIG_ARCH_BSP
++/* -----------------------------------------------------------------------------
++ * streaming/framebased/<NAME>
++ */
++
++static struct configfs_group_operations uvcg_framebased_group_ops = {
++	.make_item              = uvcg_frame_make,
++	.drop_item              = uvcg_frame_drop,
++};
++
++#define UVCG_FRAMEBASED_ATTR_RO(cname, aname, bits)			\
++static ssize_t uvcg_framebased_##cname##_show(struct config_item *item,	\
++		char *page)						\
++{									\
++	struct uvcg_framebased *u = to_uvcg_framebased(item);		\
++	struct f_uvc_opts *opts;					\
++	struct config_item *opts_item;					\
++	struct mutex *su_mutex = &u->fmt.group.cg_subsys->su_mutex;	\
++	int result;							\
++									\
++	mutex_lock(su_mutex); /* for navigating configfs hierarchy */	\
++									\
++	opts_item = u->fmt.group.cg_item.ci_parent->ci_parent->ci_parent;\
++	opts = to_f_uvc_opts(opts_item);				\
++									\
++	mutex_lock(&opts->lock);					\
++	result = sprintf_s(page, PAGE_SIZE, "%u\n", le##bits##_to_cpu(u->desc.aname)); \
++	mutex_unlock(&opts->lock);					\
++									\
++	mutex_unlock(su_mutex);						\
++	return result;							\
++}									\
++									\
++UVC_ATTR_RO(uvcg_framebased_, cname, aname)
++
++#define UVCG_FRAMEBASED_ATTR(cname, aname, bits)			\
++static ssize_t uvcg_framebased_##cname##_show(struct config_item *item,	\
++		char *page)						\
++{									\
++	struct uvcg_framebased *u = to_uvcg_framebased(item);		\
++	struct f_uvc_opts *opts;					\
++	struct config_item *opts_item;					\
++	struct mutex *su_mutex = &u->fmt.group.cg_subsys->su_mutex;	\
++	int result;							\
++									\
++	mutex_lock(su_mutex); /* for navigating configfs hierarchy */	\
++									\
++	opts_item = u->fmt.group.cg_item.ci_parent->ci_parent->ci_parent; \
++	opts = to_f_uvc_opts(opts_item);				\
++									\
++	mutex_lock(&opts->lock);					\
++	result = sprintf_s(page, PAGE_SIZE, "%u\n", le##bits##_to_cpu(u->desc.aname)); \
++	mutex_unlock(&opts->lock);					\
++									\
++	mutex_unlock(su_mutex);						\
++	return result;							\
++}									\
++									\
++static ssize_t								\
++uvcg_framebased_##cname##_store(struct config_item *item,		\
++		const char *page, size_t len)				\
++{									\
++	struct uvcg_framebased *u = to_uvcg_framebased(item);		\
++	struct f_uvc_opts *opts;					\
++	struct config_item *opts_item;					\
++	struct mutex *su_mutex = &u->fmt.group.cg_subsys->su_mutex;	\
++	int ret;							\
++	u8 num;								\
++									\
++	mutex_lock(su_mutex); /* for navigating configfs hierarchy */	\
++									\
++	opts_item = u->fmt.group.cg_item.ci_parent->ci_parent->ci_parent;\
++	opts = to_f_uvc_opts(opts_item);				\
++									\
++	mutex_lock(&opts->lock);					\
++	if (u->fmt.linked || opts->refcnt) {				\
++		ret = -EBUSY;						\
++		goto end;						\
++	}								\
++									\
++	ret = kstrtou8(page, 0, &num);					\
++	if (ret)							\
++		goto end;						\
++									\
++	if (num > 255) {						\
++		ret = -EINVAL;						\
++		goto end;						\
++	}								\
++	u->desc.aname = num;						\
++	ret = len;							\
++end:									\
++	mutex_unlock(&opts->lock);					\
++	mutex_unlock(su_mutex);						\
++	return ret;							\
++}									\
++									\
++UVC_ATTR(uvcg_framebased_, cname, aname)
++
++UVCG_FRAMEBASED_ATTR_RO(b_format_index, bFormatIndex, 8);
++UVCG_FRAMEBASED_ATTR_RO(b_bits_per_pixel, bBitsPerPixel, 8);
++UVCG_FRAMEBASED_ATTR(b_default_frame_index, bDefaultFrameIndex, 8);
++UVCG_FRAMEBASED_ATTR_RO(b_aspect_ratio_x, bAspectRatioX, 8);
++UVCG_FRAMEBASED_ATTR_RO(b_aspect_ratio_y, bAspectRatioY, 8);
++UVCG_FRAMEBASED_ATTR_RO(bm_interface_flags, bmInterfaceFlags, 8);
++
++#undef UVCG_FRAMEBASED_ATTR
++#undef UVCG_FRAMEBASED_ATTR_RO
++
++static ssize_t uvcg_framebased_guid_format_show(struct config_item *item,
++						char *page)
++{
++	struct uvcg_framebased *ch = to_uvcg_framebased(item);
++	struct f_uvc_opts *opts;
++	struct config_item *opts_item;
++	struct mutex *su_mutex = &ch->fmt.group.cg_subsys->su_mutex;
++
++	mutex_lock(su_mutex); /* for navigating configfs hierarchy */
++
++	opts_item = ch->fmt.group.cg_item.ci_parent->ci_parent->ci_parent;
++	opts = to_f_uvc_opts(opts_item);
++
++	mutex_lock(&opts->lock);
++	memcpy_s(page, sizeof(ch->desc.guidFormat), ch->desc.guidFormat, sizeof(ch->desc.guidFormat));
++	mutex_unlock(&opts->lock);
++
++	mutex_unlock(su_mutex);
++
++	return sizeof(ch->desc.guidFormat);
++}
++
++static ssize_t uvcg_framebased_guid_format_store(struct config_item *item,
++						 const char *page, size_t len)
++{
++	struct uvcg_framebased *ch = to_uvcg_framebased(item);
++	struct f_uvc_opts *opts;
++	struct config_item *opts_item;
++	struct mutex *su_mutex = &ch->fmt.group.cg_subsys->su_mutex;
++	int ret;
++
++	mutex_lock(su_mutex); /* for navigating configfs hierarchy */
++
++	opts_item = ch->fmt.group.cg_item.ci_parent->ci_parent->ci_parent;
++	opts = to_f_uvc_opts(opts_item);
++
++	mutex_lock(&opts->lock);
++	if (ch->fmt.linked || opts->refcnt) {
++		ret = -EBUSY;
++		goto end;
++	}
++
++	memcpy_s(ch->desc.guidFormat, sizeof(ch->desc.guidFormat), page,
++	       min(sizeof(ch->desc.guidFormat), len));
++	ret = sizeof(ch->desc.guidFormat);
++
++end:
++	mutex_unlock(&opts->lock);
++	mutex_unlock(su_mutex);
++	return ret;
++}
++
++UVC_ATTR(uvcg_framebased_, guid_format, guidFormat);
++
++static inline ssize_t
++uvcg_framebased_bma_controls_show(struct config_item *item, char *page)
++{
++	struct uvcg_framebased *u = to_uvcg_framebased(item);
++
++	return uvcg_format_bma_controls_show(&u->fmt, page);
++}
++
++static inline ssize_t
++uvcg_framebased_bma_controls_store(struct config_item *item,
++				   const char *page, size_t len)
++{
++	struct uvcg_framebased *u = to_uvcg_framebased(item);
++
++	return uvcg_format_bma_controls_store(&u->fmt, page, len);
++}
++
++UVC_ATTR(uvcg_framebased_, bma_controls, bmaControls);
++
++static struct configfs_attribute *uvcg_framebased_attrs[] = {
++	&uvcg_framebased_attr_b_format_index,
++	&uvcg_framebased_attr_b_default_frame_index,
++	&uvcg_framebased_attr_b_bits_per_pixel,
++	&uvcg_framebased_attr_b_aspect_ratio_x,
++	&uvcg_framebased_attr_b_aspect_ratio_y,
++	&uvcg_framebased_attr_bm_interface_flags,
++	&uvcg_framebased_attr_bma_controls,
++	&uvcg_framebased_attr_guid_format,
++	NULL,
++};
++
++static const struct config_item_type uvcg_framebased_type = {
++	.ct_item_ops    = &uvcg_config_item_ops,
++	.ct_group_ops   = &uvcg_framebased_group_ops,
++	.ct_attrs       = uvcg_framebased_attrs,
++	.ct_owner       = THIS_MODULE,
++};
++
++static struct config_group *uvcg_framebased_make(struct config_group *group,
++						 const char *name)
++{
++	static char guid[] = { /* Declear frame based as H264 format */
++		'H',  '2',  '6',  '4', 0x00, 0x00, 0x10, 0x00,
++		0x80, 0x00, 0x00, 0xaa, 0x00, 0x38, 0x9b, 0x71
++	};
++	struct uvcg_framebased *h;
++	struct config_item *streaming;
++	struct uvcg_color_matching *color_match;
++ 
++	streaming = group->cg_item.ci_parent;
++	color_match = uvcg_format_get_default_color_match(streaming);
++	if (!color_match)
++		return ERR_PTR(-EINVAL);
++
++	h = kzalloc(sizeof(*h), GFP_KERNEL);
++	if (!h)
++		return ERR_PTR(-ENOMEM);
++
++	h->desc.bLength                 = UVC_DT_FORMAT_FRAMEBASED_SIZE;
++	h->desc.bDescriptorType         = USB_DT_CS_INTERFACE;
++	h->desc.bDescriptorSubType      = UVC_VS_FORMAT_FRAME_BASED;
++	memcpy_s(h->desc.guidFormat, sizeof(guid), guid, sizeof(guid));
++	h->desc.bBitsPerPixel           = 0;
++	h->desc.bDefaultFrameIndex      = 1;
++	h->desc.bAspectRatioX           = 0;
++	h->desc.bAspectRatioY           = 0;
++	h->desc.bmInterfaceFlags        = 0;
++	h->desc.bCopyProtect            = 0;
++	h->desc.bVariableSize           = 1;
++
++	INIT_LIST_HEAD(&h->fmt.frames);
++	h->fmt.type = UVCG_FRAMEBASED;
++	h->fmt.color_matching = color_match;
++	config_group_init_type_name(&h->fmt.group, name,
++				    &uvcg_framebased_type);
++
++	return &h->fmt.group;
++}
++
++static struct configfs_group_operations uvcg_framebased_grp_ops = {
++	.make_group             = uvcg_framebased_make,
++};
++
++static const struct uvcg_config_group_type uvcg_framebased_grp_type = {
++	.type = {
++		.ct_item_ops    = &uvcg_config_item_ops,
++		.ct_group_ops   = &uvcg_framebased_grp_ops,
++		.ct_owner       = THIS_MODULE,
++	},
++	.name = "framebased",
++};
++#endif
+ /* -----------------------------------------------------------------------------
+  * streaming/color_matching/default
+  */
+@@ -2965,6 +3288,13 @@ static int __uvcg_cnt_strm(void *priv1, void *priv2, void *priv3, int n,
+ 				container_of(fmt, struct uvcg_mjpeg, fmt);
+ 
+ 			*size += sizeof(m->desc);
++#ifdef CONFIG_ARCH_BSP
++		} else if (fmt->type == UVCG_FRAMEBASED) {
++			struct uvcg_framebased *f =
++				container_of(fmt, struct uvcg_framebased, fmt);
++
++			*size += sizeof(f->desc);
++#endif
+ 		} else {
+ 			return -EINVAL;
+ 		}
+@@ -2975,6 +3305,13 @@ static int __uvcg_cnt_strm(void *priv1, void *priv2, void *priv3, int n,
+ 		int sz = sizeof(frm->dw_frame_interval);
+ 
+ 		*size += sizeof(frm->frame);
++#ifdef CONFIG_ARCH_BSP
++		/*
++		 * framebased has duplicate member with uncompressed and
++		 * mjpeg, so minus it
++		 */
++		*size -= sizeof(u32);
++#endif
+ 		*size += frm->frame.b_frame_interval_type * sz;
+ 	}
+ 	break;
+@@ -2991,6 +3328,29 @@ static int __uvcg_cnt_strm(void *priv1, void *priv2, void *priv3, int n,
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_ARCH_BSP
++static int __uvcg_copy_framebased_desc(void *dest, struct uvcg_frame *frm,
++				       int sz)
++{
++	struct uvc_frame_framebased *desc = dest;
++
++	desc->bLength = frm->frame.b_length;
++	desc->bDescriptorType = frm->frame.b_descriptor_type;
++	desc->bDescriptorSubType = frm->frame.b_descriptor_subtype;
++	desc->bFrameIndex = frm->frame.b_frame_index;
++	desc->bmCapabilities = frm->frame.bm_capabilities;
++	desc->wWidth = frm->frame.w_width;
++	desc->wHeight = frm->frame.w_height;
++	desc->dwMinBitRate = frm->frame.dw_min_bit_rate;
++	desc->dwMaxBitRate = frm->frame.dw_max_bit_rate;
++	desc->dwDefaultFrameInterval = frm->frame.dw_default_frame_interval;
++	desc->bFrameIntervalType = frm->frame.b_frame_interval_type;
++	desc->dwBytesPerLine = frm->frame.dw_bytes_perline;
++
++	return 0;
++}
++#endif
++
+ /*
+  * Fill an array of streaming descriptors.
+  *
+@@ -3045,6 +3405,17 @@ static int __uvcg_fill_strm(void *priv1, void *priv2, void *priv3, int n,
+ 			m->desc.bNumFrameDescriptors = fmt->num_frames;
+ 			memcpy(*dest, &m->desc, sizeof(m->desc));
+ 			*dest += sizeof(m->desc);
++#ifdef CONFIG_ARCH_BSP
++		} else if (fmt->type == UVCG_FRAMEBASED) {
++			struct uvcg_framebased *f =
++				container_of(fmt, struct uvcg_framebased,
++					     fmt);
++
++			f->desc.bFormatIndex = n + 1;
++			f->desc.bNumFrameDescriptors = fmt->num_frames;
++			memcpy_s(*dest, sizeof(f->desc), &f->desc, sizeof(f->desc));
++			*dest += sizeof(f->desc);
++#endif
+ 		} else {
+ 			return -EINVAL;
+ 		}
+@@ -3054,8 +3425,16 @@ static int __uvcg_fill_strm(void *priv1, void *priv2, void *priv3, int n,
+ 		struct uvcg_frame *frm = priv1;
+ 		struct uvc_descriptor_header *h = *dest;
+ 
++#ifdef CONFIG_ARCH_BSP
++		sz = sizeof(frm->frame) - 0x4;
++		if (frm->fmt_type != UVCG_FRAMEBASED)
++			memcpy_s(*dest, sz, &frm->frame, sz);
++		else
++			__uvcg_copy_framebased_desc(*dest, frm, sz);
++#else
+ 		sz = sizeof(frm->frame);
+ 		memcpy(*dest, &frm->frame, sz);
++#endif
+ 		*dest += sz;
+ 		sz = frm->frame.b_frame_interval_type *
+ 			sizeof(*frm->dw_frame_interval);
+@@ -3067,6 +3446,11 @@ static int __uvcg_fill_strm(void *priv1, void *priv2, void *priv3, int n,
+ 		else if (frm->fmt_type == UVCG_MJPEG)
+ 			h->bLength = UVC_DT_FRAME_MJPEG_SIZE(
+ 				frm->frame.b_frame_interval_type);
++#ifdef CONFIG_ARCH_BSP
++		else if (frm->fmt_type == UVCG_FRAMEBASED)
++			h->bLength = UVC_DT_FRAME_FRAMEBASED_SIZE(
++				frm->frame.b_frame_interval_type);
++#endif
+ 	}
+ 	break;
+ 	case UVCG_COLOR_MATCHING: {
+@@ -3285,6 +3669,9 @@ static const struct uvcg_config_group_type uvcg_streaming_grp_type = {
+ 		&uvcg_streaming_header_grp_type,
+ 		&uvcg_uncompressed_grp_type,
+ 		&uvcg_mjpeg_grp_type,
++#ifdef CONFIG_ARCH_BSP
++		&uvcg_framebased_grp_type,
++#endif
+ 		&uvcg_color_matching_grp_type,
+ 		&uvcg_streaming_class_grp_type,
+ 		NULL,
+diff --git a/drivers/usb/gadget/function/uvc_configfs.h b/drivers/usb/gadget/function/uvc_configfs.h
+index c6a690158..007e960f8 100644
+--- a/drivers/usb/gadget/function/uvc_configfs.h
++++ b/drivers/usb/gadget/function/uvc_configfs.h
+@@ -49,6 +49,9 @@ container_of(group_ptr, struct uvcg_color_matching, group)
+ enum uvcg_format_type {
+ 	UVCG_UNCOMPRESSED = 0,
+ 	UVCG_MJPEG,
++#ifdef CONFIG_ARCH_BSP
++	UVCG_FRAMEBASED,
++#endif
+ };
+ 
+ struct uvcg_format {
+@@ -105,6 +108,9 @@ struct uvcg_frame {
+ 		u32	dw_max_video_frame_buffer_size;
+ 		u32	dw_default_frame_interval;
+ 		u8	b_frame_interval_type;
++#ifdef CONFIG_ARCH_BSP
++		u32 dw_bytes_perline;
++#endif
+ 	} __attribute__((packed)) frame;
+ 	u32 *dw_frame_interval;
+ };
+@@ -142,6 +148,20 @@ static inline struct uvcg_mjpeg *to_uvcg_mjpeg(struct config_item *item)
+ 	return container_of(to_uvcg_format(item), struct uvcg_mjpeg, fmt);
+ }
+ 
++/* -----------------------------------------------------------------------------
++ * streaming/framebased/<NAME>
++ */
++
++struct uvcg_framebased {
++	struct uvcg_format              fmt;
++	struct uvc_format_framebased    desc;
++};
++
++static inline struct uvcg_framebased *to_uvcg_framebased(struct config_item *item)
++{
++	return container_of(to_uvcg_format(item), struct uvcg_framebased, fmt);
++}
++
+ /* -----------------------------------------------------------------------------
+  * control/extensions/<NAME>
+  */
+diff --git a/drivers/usb/gadget/function/uvc_queue.c b/drivers/usb/gadget/function/uvc_queue.c
+index 0aa3d7e1f..cec42dfa8 100644
+--- a/drivers/usb/gadget/function/uvc_queue.c
++++ b/drivers/usb/gadget/function/uvc_queue.c
+@@ -63,7 +63,11 @@ static int uvc_queue_setup(struct vb2_queue *vq,
+ 	 */
+ 	nreq = DIV_ROUND_UP(DIV_ROUND_UP(sizes[0], 2), req_size);
+ 	nreq = clamp(nreq, 4U, 64U);
++#ifdef CONFIG_ARCH_BSP
++	video->uvc_num_requests = 1;
++#else
+ 	video->uvc_num_requests = nreq;
++#endif
+ 
+ 	return 0;
+ }
+@@ -85,6 +89,9 @@ static int uvc_buffer_prepare(struct vb2_buffer *vb)
+ 
+ 	buf->state = UVC_BUF_STATE_QUEUED;
+ 	if (queue->use_sg) {
++#ifdef CONFIG_ARCH_BSP
++		buf->mem = vb2_plane_vaddr(vb, 0);
++#endif
+ 		buf->sgt = vb2_dma_sg_plane_desc(vb, 0);
+ 		buf->sg = buf->sgt->sgl;
+ 	} else {
 diff --git a/drivers/usb/gadget/function/uvc_v4l2.c b/drivers/usb/gadget/function/uvc_v4l2.c
-index e61bad79d..0195625be 100644
+index e61bad79d..fa3456607 100644
 --- a/drivers/usb/gadget/function/uvc_v4l2.c
 +++ b/drivers/usb/gadget/function/uvc_v4l2.c
-@@ -264,29 +264,15 @@ uvc_v4l2_try_format(struct file *file, void *fh, struct v4l2_format *fmt)
+@@ -15,6 +15,9 @@
+ #include <linux/videodev2.h>
+ #include <linux/vmalloc.h>
+ #include <linux/wait.h>
++#ifdef CONFIG_ARCH_BSP
++#include <linux/securec.h>
++#endif
+ 
+ #include <media/v4l2-dev.h>
+ #include <media/v4l2-event.h>
+@@ -39,6 +42,16 @@ static const struct uvc_format_desc *to_uvc_format(struct uvcg_format *uformat)
+ 			return ERR_PTR(-EINVAL);
+ 
+ 		memcpy(guid, unc->desc.guidFormat, sizeof(guid));
++#ifdef CONFIG_ARCH_BSP
++	} else if (uformat->type == UVCG_FRAMEBASED) {
++		struct uvcg_framebased *unc;
++
++		unc = to_uvcg_framebased(&uformat->group.cg_item);
++		if (!unc)
++			return ERR_PTR(-EINVAL);
++
++		memcpy_s(guid, sizeof(guid), unc->desc.guidFormat, sizeof(guid));
++#endif
+ 	}
+ 
+ 	format = uvc_format_by_guid(guid);
+@@ -264,29 +277,15 @@ uvc_v4l2_try_format(struct file *file, void *fh, struct v4l2_format *fmt)
  	if (!uframe)
  		return -EINVAL;
  
@@ -51551,6 +53357,350 @@ index e61bad79d..0195625be 100644
  	fmt->fmt.pix.colorspace = V4L2_COLORSPACE_SRGB;
  	fmt->fmt.pix.priv = 0;
  
+diff --git a/drivers/usb/gadget/function/uvc_video.c b/drivers/usb/gadget/function/uvc_video.c
+index 281e75027..1ce346adc 100644
+--- a/drivers/usb/gadget/function/uvc_video.c
++++ b/drivers/usb/gadget/function/uvc_video.c
+@@ -196,6 +196,58 @@ uvc_video_encode_isoc_sg(struct usb_request *req, struct uvc_video *video,
+ 	}
+ }
+ 
++#ifdef CONFIG_ARCH_BSP
++static void
++uvc_video_encode_isoc_sgs(struct usb_request *req, struct uvc_video *video,
++		struct uvc_buffer *buf)
++{
++	int ret;
++	int len;
++	int ttllen = 0;
++	unsigned int sg_idx;
++	u8 *mem = NULL;
++	u8 *ownn = NULL;
++	struct uvc_request *ureq = req->context;
++
++	for (sg_idx = 0; sg_idx < video->num_sgs; sg_idx++) {
++		mem = sg_virt(&req->sg[sg_idx]);
++		len = video->req_size;
++		ownn = mem;
++
++		/* Add the header. */
++		ret = uvc_video_encode_header(video, buf, mem, len);
++		mem += ret;
++		len -= ret;
++
++		/* Process video data. */
++		ret = uvc_video_encode_data(video, buf, mem, len);
++		len -= ret;
++
++		/* Sync sg buffer len , default is 1024 or 3072 */
++		sg_set_buf(&req->sg[sg_idx], sg_virt(&req->sg[sg_idx]),
++				video->req_size - len);
++		ttllen += video->req_size - len;
++
++		if (buf->bytesused == video->queue.buf_used) {
++			video->queue.buf_used = 0;
++			buf->state = UVC_BUF_STATE_DONE;
++			list_del(&buf->queue);
++			video->fid ^= UVC_STREAM_FID;
++			uvcg_complete_buffer(&video->queue, buf);
++			ureq->last_buf = NULL;
++			break;
++		}
++	}
++	req->num_sgs = sg_idx + 1;
++	if (req->num_sgs > video->num_sgs) {
++		uvcg_dbg(&video->uvc->func, "Frame size is larger than available buffer size!\n");
++		req->num_sgs = video->num_sgs;
++	}
++	sg_mark_end(&req->sg[req->num_sgs - 1]);
++	req->length = ttllen;
++}
++#endif
++
+ static void
+ uvc_video_encode_isoc(struct usb_request *req, struct uvc_video *video,
+ 		struct uvc_buffer *buf)
+@@ -265,7 +317,9 @@ uvc_video_complete(struct usb_ep *ep, struct usb_request *req)
+ 
+ 	case -EXDEV:
+ 		uvcg_dbg(&video->uvc->func, "VS request missed xfer.\n");
++#ifndef CONFIG_ARCH_BSP
+ 		queue->flags |= UVC_QUEUE_DROP_INCOMPLETE;
++#endif
+ 		break;
+ 
+ 	case -ESHUTDOWN:	/* disconnect from host. */
+@@ -297,10 +351,26 @@ static int
+ uvc_video_free_requests(struct uvc_video *video)
+ {
+ 	unsigned int i;
++#ifdef CONFIG_ARCH_BSP
++	unsigned int sg_idx;
++#endif
+ 
+ 	if (video->ureq) {
+ 		for (i = 0; i < video->uvc_num_requests; ++i) {
++#ifdef CONFIG_ARCH_BSP
++			for (sg_idx = 0; sg_idx < video->num_sgs; sg_idx++)
++				if (sg_page(&video->ureq[i].req->sg[sg_idx])) {
++					kfree(sg_virt(&video->ureq[i].req->sg[sg_idx]));
++					video->ureq[i].req->num_mapped_sgs = 0;
++				}
++
++			if (video->ureq[i].req->sg) {
++				kfree(video->ureq[i].req->sg);
++				video->ureq[i].req->sg = NULL;
++			}
++#else
+ 			sg_free_table(&video->ureq[i].sgt);
++#endif
+ 
+ 			if (video->ureq[i].req) {
+ 				usb_ep_free_request(video->ep, video->ureq[i].req);
+@@ -339,6 +409,40 @@ uvc_video_alloc_requests(struct uvc_video *video)
+ 	if (video->ureq == NULL)
+ 		return -ENOMEM;
+ 
++#ifdef CONFIG_ARCH_BSP
++	struct scatterlist  *sg;
++	unsigned int num_sgs;
++	unsigned int sg_idx;
++	num_sgs = ((video->imagesize / (req_size - 0x8)) + 0x2) ;
++	video->num_sgs = num_sgs;
++
++	for (i = 0; i < video->uvc_num_requests; ++i) {
++		sg = kmalloc(num_sgs * sizeof(struct scatterlist), GFP_ATOMIC);
++		if (sg == NULL)
++			goto error;
++		sg_init_table(sg, num_sgs);
++
++		video->ureq[i].req = usb_ep_alloc_request(video->ep, GFP_KERNEL);
++		if (video->ureq[i].req == NULL)
++			goto error;
++
++		for (sg_idx = 0 ; sg_idx < num_sgs ; sg_idx++) {
++			video->sg_buf = kmalloc(req_size, GFP_KERNEL);
++			if (video->sg_buf == NULL)
++				goto error;
++			sg_set_buf(&sg[sg_idx], video->sg_buf, req_size);
++		}
++		video->ureq[i].req->sg = sg;
++		video->ureq[i].req->num_sgs = num_sgs;
++		video->ureq[i].req->length = 0;
++		video->ureq[i].req->complete = uvc_video_complete;
++		video->ureq[i].req->context = &video->ureq[i];
++		video->ureq[i].video = video;
++		video->ureq[i].last_buf = NULL;
++
++		list_add_tail(&video->ureq[i].req->list, &video->req_free);
++	}
++#else
+ 	for (i = 0; i < video->uvc_num_requests; ++i) {
+ 		video->ureq[i].req_buffer = kmalloc(req_size, GFP_KERNEL);
+ 		if (video->ureq[i].req_buffer == NULL)
+@@ -361,6 +465,7 @@ uvc_video_alloc_requests(struct uvc_video *video)
+ 			       DIV_ROUND_UP(req_size - UVCG_REQUEST_HEADER_LEN,
+ 					    PAGE_SIZE) + 2, GFP_KERNEL);
+ 	}
++#endif
+ 
+ 	video->req_size = req_size;
+ 
+@@ -393,6 +498,11 @@ static void uvcg_video_pump(struct work_struct *work)
+ 	bool buf_done;
+ 	int ret;
+ 
++#ifdef CONFIG_ARCH_BSP
++	if (!video->is_streaming)
++		return;
++#endif
++
+ 	while (video->ep->enabled) {
+ 		/*
+ 		 * Retrieve the first available USB request, protected by the
+@@ -416,6 +526,9 @@ static void uvcg_video_pump(struct work_struct *work)
+ 		buf = uvcg_queue_head(queue);
+ 
+ 		if (buf != NULL) {
++#ifdef CONFIG_ARCH_BSP
++			sg_unmark_end(&req->sg[req->num_sgs - 1]);
++#endif
+ 			video->encode(req, video, buf);
+ 			buf_done = buf->state == UVC_BUF_STATE_DONE;
+ 		} else if (!(queue->flags & UVC_QUEUE_DISCONNECTED) && !is_bulk) {
+@@ -426,6 +539,10 @@ static void uvcg_video_pump(struct work_struct *work)
+ 			 */
+ 			req->length = 0;
+ 			buf_done = false;
++#ifdef CONFIG_ARCH_BSP
++			spin_unlock_irqrestore(&queue->irqlock, flags);
++			break;
++#endif
+ 		} else {
+ 			/*
+ 			 * Either the queue has been disconnected or no video buffer
+@@ -481,6 +598,9 @@ static void uvcg_video_pump(struct work_struct *work)
+ 		return;
+ 
+ 	spin_lock_irqsave(&video->req_lock, flags);
++#ifdef CONFIG_ARCH_BSP
++	sg_unmark_end(&req->sg[req->num_sgs - 1]);
++#endif
+ 	list_add_tail(&req->list, &video->req_free);
+ 	spin_unlock_irqrestore(&video->req_lock, flags);
+ 	return;
+@@ -503,6 +623,9 @@ int uvcg_video_enable(struct uvc_video *video, int enable)
+ 	if (!enable) {
+ 		cancel_work_sync(&video->pump);
+ 		uvcg_queue_cancel(&video->queue, 0);
++#ifdef CONFIG_ARCH_BSP
++		video->is_streaming = false;
++#endif
+ 
+ 		for (i = 0; i < video->uvc_num_requests; ++i)
+ 			if (video->ureq && video->ureq[i].req)
+@@ -523,8 +646,15 @@ int uvcg_video_enable(struct uvc_video *video, int enable)
+ 		video->encode = uvc_video_encode_bulk;
+ 		video->payload_size = 0;
+ 	} else
++#ifndef CONFIG_ARCH_BSP
+ 		video->encode = video->queue.use_sg ?
+ 			uvc_video_encode_isoc_sg : uvc_video_encode_isoc;
++#else
++		video->encode = video->queue.use_sg ?
++			uvc_video_encode_isoc_sgs : uvc_video_encode_isoc;
++
++	video->is_streaming = true;
++#endif
+ 
+ 	video->req_int_count = 0;
+ 
+@@ -553,6 +683,9 @@ int uvcg_video_init(struct uvc_video *video, struct uvc_device *uvc)
+ 	video->width = 320;
+ 	video->height = 240;
+ 	video->imagesize = 320 * 240 * 2;
++#ifdef CONFIG_ARCH_BSP
++	video->is_streaming = false;
++#endif
+ 
+ 	/* Initialize the video buffers queue. */
+ 	uvcg_queue_init(&video->queue, uvc->v4l2_dev.dev->parent,
+diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+index a9f95bb35..949072f23 100644
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -636,6 +636,8 @@ static void option_instat_callback(struct urb *urb);
+ /* Device needs ZLP */
+ #define ZLP		BIT(17)
+ 
++/* TD tech products*/
++#define TDTECH_VENDOR_ID		0x3466
+ 
+ static const struct usb_device_id option_ids[] = {
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_COLT) },
+@@ -2439,6 +2441,102 @@ static const struct usb_device_id option_ids[] = {
+ 	{ USB_DEVICE_INTERFACE_CLASS(0x1bbb, 0x0640, 0xff),			/* TCL IK512 ECM */
+ 	  .driver_info = NCTRL(3) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(0x2949, 0x8700, 0xff) },			/* Neoway N723-EA */
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x01, 0x03) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x01, 0x06) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x01, 0x0A) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x01, 0x0B) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x01, 0x0E) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x01, 0x10) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x01, 0x12) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x01, 0x13) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x01, 0x14) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x01, 0x15) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x01, 0x18) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x01, 0x19) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x01, 0x1A) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x01, 0x1B) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x01, 0x1C) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x01, 0x1D) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x02, 0x03) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x02, 0x06) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x02, 0x0A) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x02, 0x0B) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x02, 0x0E) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x02, 0x10) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x02, 0x12) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x02, 0x13) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x02, 0x14) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x02, 0x15) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x02, 0x18) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x02, 0x19) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x02, 0x1A) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x02, 0x1B) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x02, 0x1C) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x02, 0x1D) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x03, 0x03) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x03, 0x06) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x03, 0x0A) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x03, 0x0B) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x03, 0x0E) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x03, 0x10) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x03, 0x12) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x03, 0x13) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x03, 0x14) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x03, 0x15) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x03, 0x18) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x03, 0x19) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x03, 0x1A) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x03, 0x1B) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x03, 0x1C) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x03, 0x1D) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x04, 0x03) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x04, 0x06) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x04, 0x0A) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x04, 0x0B) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x04, 0x0E) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x04, 0x10) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x04, 0x12) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x04, 0x13) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x04, 0x14) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x04, 0x15) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x04, 0x18) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x04, 0x19) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x04, 0x1A) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x04, 0x1B) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x04, 0x1C) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x04, 0x1D) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x05, 0x03) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x05, 0x06) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x05, 0x0A) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x05, 0x0B) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x05, 0x0E) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x05, 0x10) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x05, 0x12) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x05, 0x13) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x05, 0x14) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x05, 0x15) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x05, 0x18) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x05, 0x19) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x05, 0x1A) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x05, 0x1B) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x05, 0x1C) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x05, 0x1D) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x06, 0x03) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x06, 0x06) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x06, 0x0A) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x06, 0x0B) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x06, 0x0E) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x06, 0x10) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x06, 0x12) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x06, 0x13) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x06, 0x14) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x06, 0x15) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x06, 0x18) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x06, 0x19) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x06, 0x1A) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x06, 0x1B) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x06, 0x1C) },
++	{ USB_VENDOR_AND_INTERFACE_INFO(TDTECH_VENDOR_ID, 0xff, 0x06, 0x1D) },
+ 	{ } /* Terminating entry */
+ };
+ MODULE_DEVICE_TABLE(usb, option_ids);
 diff --git a/drivers/usb/serial/usb_wwan.c b/drivers/usb/serial/usb_wwan.c
 index 0017f6e96..1a9369148 100644
 --- a/drivers/usb/serial/usb_wwan.c
@@ -51585,16 +53735,17 @@ index 000000000..ff521b5f2
 +endmenu
 diff --git a/drivers/vendor/Makefile b/drivers/vendor/Makefile
 new file mode 100644
-index 000000000..d7be16682
+index 000000000..adfe72d2a
 --- /dev/null
 +++ b/drivers/vendor/Makefile
-@@ -0,0 +1,6 @@
+@@ -0,0 +1,7 @@
 +obj-$(CONFIG_USB_WING)                  += usb/
 +obj-$(CONFIG_WING_UPS_PHY)              += usb_phy/
 +obj-$(CONFIG_BASEDRV_CLK)               += basedrv_clk/
 +obj-$(CONFIG_CMA)			+= cma/
 +obj-$(CONFIG_MMC)                       += mmc/
 +obj-$(CONFIG_VENDOR_NPU)                += npu/
++obj-y					+= peri/
 diff --git a/drivers/vendor/basedrv_clk/Kconfig b/drivers/vendor/basedrv_clk/Kconfig
 new file mode 100644
 index 000000000..7fbbbbc69
@@ -53112,10 +55263,10 @@ index 000000000..79f68e381
 \ No newline at end of file
 diff --git a/drivers/vendor/mmc/Makefile b/drivers/vendor/mmc/Makefile
 new file mode 100644
-index 000000000..2cca2b5ce
+index 000000000..0c3f063b1
 --- /dev/null
 +++ b/drivers/vendor/mmc/Makefile
-@@ -0,0 +1,53 @@
+@@ -0,0 +1,54 @@
 +include $(src)/version.mak
 +ccflags-y += -DSDHCI_NEBULA_KERNEL_VERSION=\"$(SDHCI_NEBULA_KERNEL_VERSION)\"
 +
@@ -53146,6 +55297,7 @@ index 000000000..2cca2b5ce
 +mmc_plat_src-$(CONFIG_ARCH_WUDANGSTICK)  += platform/sdhci_wudangstick.o
 +mmc_plat_src-$(CONFIG_ARCH_SHAOLINGUN)   += platform/sdhci_wudangstick.o
 +mmc_plat_src-$(CONFIG_ARCH_SS928V100)    += platform/sdhci_ss928v100.o
++mmc_plat_src-$(CONFIG_ARCH_SS927V100)    += platform/sdhci_ss928v100.o
 +mmc_plat_src-$(CONFIG_ARCH_HI3519DV500_FAMILY)  += platform/sdhci_hi3519dv500.o
 +mmc_plat_src-$(CONFIG_ARCH_SHAOLINSWORD) 	+= platform/sdhci_shaolinsword_c.o
 +mmc_plat_src-$(CONFIG_ARCH_HIWING) 		+= platform/sdhci_hiwing.o
@@ -59730,10 +61882,10 @@ index 000000000..5a7ed140c
 +
 diff --git a/drivers/vendor/mmc/sdhci_nebula.c b/drivers/vendor/mmc/sdhci_nebula.c
 new file mode 100644
-index 000000000..b017148ec
+index 000000000..fa30db7c3
 --- /dev/null
 +++ b/drivers/vendor/mmc/sdhci_nebula.c
-@@ -0,0 +1,198 @@
+@@ -0,0 +1,208 @@
 +/*
 + * Copyright (c) CompanyNameMagicTag 2022. All rights reserved.
 + * Description: Nebula SDHCI driver
@@ -59780,6 +61932,16 @@ index 000000000..b017148ec
 +	.adma_write_desc = sdhci_nebula_adma_write_desc,
 +#endif
 +
++#ifdef CONFIG_MMC_SDHCI_IO_ACCESSORS
++#if defined(CONFIG_ARCH_SS928V100 || CONFIG_ARCH_SS927V100)
++	.write_l = sdhci_nebula_writel,
++	.write_w = sdhci_nebula_writew,
++	.write_b = sdhci_nebula_writeb,
++	.read_l = sdhci_nebula_readl,
++	.read_w = sdhci_nebula_readw,
++	.read_b = sdhci_nebula_readb,
++#endif
++#endif
 +};
 +
 +static const struct sdhci_pltfm_data g_sdhci_nebula_pdata = {
@@ -59934,10 +62096,10 @@ index 000000000..b017148ec
 +MODULE_LICENSE("GPL v2");
 diff --git a/drivers/vendor/mmc/sdhci_nebula.h b/drivers/vendor/mmc/sdhci_nebula.h
 new file mode 100644
-index 000000000..81935c8c1
+index 000000000..7de979257
 --- /dev/null
 +++ b/drivers/vendor/mmc/sdhci_nebula.h
-@@ -0,0 +1,381 @@
+@@ -0,0 +1,391 @@
 +/*
 + * Copyright (c) CompanyNameMagicTag 2022. All rights reserved.
 + * Description: Nebula SDHCI driver header
@@ -60310,6 +62472,16 @@ index 000000000..81935c8c1
 +void sdhci_nebula_adma_write_desc(struct sdhci_host *host, void **desc,
 +		dma_addr_t addr, int len, unsigned int cmd);
 +void sdhci_nebula_reset(struct sdhci_host *host, u8 mask);
++#ifdef CONFIG_MMC_SDHCI_IO_ACCESSORS
++#if defined(CONFIG_ARCH_SS928V100) || defined(CONFIG_ARCH_SS927V100)
++void sdhci_nebula_writel(struct sdhci_host *host, u32 val, int reg);
++void sdhci_nebula_writew(struct sdhci_host *host, u16 val, int reg);
++void sdhci_nebula_writeb(struct sdhci_host *host, u8 val, int reg);
++u32 sdhci_nebula_readl(struct sdhci_host *host, int reg);
++u16 sdhci_nebula_readw(struct sdhci_host *host, int reg);
++u8 sdhci_nebula_readb(struct sdhci_host *host, int reg);
++#endif
++#endif
 +
 +/*
 + * Export api by dfx
@@ -60321,7 +62493,7 @@ index 000000000..81935c8c1
 +#endif /* _DRIVERS_MMC_SDHCI_NEBULA_H */
 diff --git a/drivers/vendor/mmc/sdhci_shaolinsword.c b/drivers/vendor/mmc/sdhci_shaolinsword.c
 new file mode 100644
-index 000000000..2946f8948
+index 000000000..f64294a6d
 --- /dev/null
 +++ b/drivers/vendor/mmc/sdhci_shaolinsword.c
 @@ -0,0 +1,826 @@
@@ -61961,7 +64133,7 @@ index 000000000..879365801
 +
 diff --git a/drivers/vendor/npu/npu_svm.c b/drivers/vendor/npu/npu_svm.c
 new file mode 100644
-index 000000000..a5a5dda0a
+index 000000000..9fa12d7ca
 --- /dev/null
 +++ b/drivers/vendor/npu/npu_svm.c
 @@ -0,0 +1,1413 @@
@@ -62871,7 +65043,7 @@ index 000000000..a5a5dda0a
 +		return -1;
 +	}
 +
-+	svm_flush_range(mm, addr, size);
++	svm_flush_range(mm, start, end);
 +
 +	mutex_lock(&svm_dev_pm_mutex);
 +	for (; i < SVM_DEV_MAX; i++) {
@@ -63475,8 +65647,69 @@ index 000000000..ce0579115
 +
 +
 +MODULE_LICENSE("GPL v2");
+diff --git a/drivers/vendor/peri/Makefile b/drivers/vendor/peri/Makefile
+new file mode 100644
+index 000000000..1a0c92eae
+--- /dev/null
++++ b/drivers/vendor/peri/Makefile
+@@ -0,0 +1,2 @@
++obj-$(CONFIG_ARCH_SS928V100) += peri_io_ss928v100.o
++obj-$(CONFIG_ARCH_SS927V100) += peri_io_ss928v100.o
+diff --git a/drivers/vendor/peri/peri_io_ss928v100.c b/drivers/vendor/peri/peri_io_ss928v100.c
+new file mode 100644
+index 000000000..cda2f87b1
+--- /dev/null
++++ b/drivers/vendor/peri/peri_io_ss928v100.c
+@@ -0,0 +1,47 @@
++/*
++ * Copyright (c) 2025 HiSilicon (Shanghai) Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ * 
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ * 
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, see
++ * <https://www.gnu.org/licenses/>.
++ */
++
++#include <asm/io.h>
++#include <linux/spinlock.h>
++#include <linux/vendor/peri_io.h>
++
++static DEFINE_SPINLOCK(peri_lock);
++
++unsigned long bsp_peri_lock(enum bsp_peri_type type)
++{
++	unsigned long flags = 0;
++ 
++	switch (type) {
++	case BSP_PERI_SDIO:
++		spin_lock_irqsave(&peri_lock, flags);
++	default:
++		break;
++	}
++	return flags;
++}
++
++void bsp_peri_unlock(unsigned long flags, enum bsp_peri_type type)
++{
++	switch (type) {
++	case BSP_PERI_SDIO:
++		spin_unlock_irqrestore(&peri_lock, flags);
++	default:
++		break;
++	}
++}
++
 diff --git a/drivers/vendor/usb/Kconfig b/drivers/vendor/usb/Kconfig
-new file mode 100755
+new file mode 100644
 index 000000000..a5dfa069f
 --- /dev/null
 +++ b/drivers/vendor/usb/Kconfig
@@ -63488,7 +65721,7 @@ index 000000000..a5dfa069f
 +	help
 +	  Say Y or M here if you want support Wing USB controller.
 diff --git a/drivers/vendor/usb/Makefile b/drivers/vendor/usb/Makefile
-new file mode 100755
+new file mode 100644
 index 000000000..8d6678afa
 --- /dev/null
 +++ b/drivers/vendor/usb/Makefile
@@ -63506,7 +65739,7 @@ index 000000000..8d6678afa
 +obj-$(CONFIG_USB_WING) += wing-usb.o
 +wing-usb-y := wing_usb.o proc.o
 diff --git a/drivers/vendor/usb/defconfig b/drivers/vendor/usb/defconfig
-new file mode 100755
+new file mode 100644
 index 000000000..4a7c1e657
 --- /dev/null
 +++ b/drivers/vendor/usb/defconfig
@@ -63517,7 +65750,7 @@ index 000000000..4a7c1e657
 +CONFIG_USB_UAS=y
 +CONFIG_SCSI_SCAN_ASYNC=y
 diff --git a/drivers/vendor/usb/driver_config.mk b/drivers/vendor/usb/driver_config.mk
-new file mode 100755
+new file mode 100644
 index 000000000..a0a59edae
 --- /dev/null
 +++ b/drivers/vendor/usb/driver_config.mk
@@ -63528,7 +65761,7 @@ index 000000000..a0a59edae
 +RECOVERY_DRIVER_CONFIG += CONFIG_USB_WING=y
 +RECOVERY_DRIVER_DEFCONFIG_FILE += $(TARGET_KERNEL_DIR)/drivers/huanglong/ups/usb/defconfig
 diff --git a/drivers/vendor/usb/driver_obj.mk b/drivers/vendor/usb/driver_obj.mk
-new file mode 100755
+new file mode 100644
 index 000000000..60b4cf4b2
 --- /dev/null
 +++ b/drivers/vendor/usb/driver_obj.mk
@@ -63537,7 +65770,7 @@ index 000000000..60b4cf4b2
 +
 diff --git a/drivers/vendor/usb/proc.c b/drivers/vendor/usb/proc.c
 new file mode 100644
-index 000000000..090c02c44
+index 000000000..8a618f594
 --- /dev/null
 +++ b/drivers/vendor/usb/proc.c
 @@ -0,0 +1,152 @@
@@ -63694,7 +65927,7 @@ index 000000000..090c02c44
 +}
 +
 diff --git a/drivers/vendor/usb/proc.h b/drivers/vendor/usb/proc.h
-new file mode 100755
+new file mode 100644
 index 000000000..b9e7d1cce
 --- /dev/null
 +++ b/drivers/vendor/usb/proc.h
@@ -63718,7 +65951,7 @@ index 000000000..b9e7d1cce
 +
 +#endif /* _WING_USB_PROC_H_ */
 diff --git a/drivers/vendor/usb/version.mak b/drivers/vendor/usb/version.mak
-new file mode 100755
+new file mode 100644
 index 000000000..758a8ae5f
 --- /dev/null
 +++ b/drivers/vendor/usb/version.mak
@@ -63726,7 +65959,7 @@ index 000000000..758a8ae5f
 +USB_KERNEL_VERSION="USB_KERNEL 1.0.0"
 diff --git a/drivers/vendor/usb/wing_usb.c b/drivers/vendor/usb/wing_usb.c
 new file mode 100644
-index 000000000..b8987f49b
+index 000000000..a5717fd78
 --- /dev/null
 +++ b/drivers/vendor/usb/wing_usb.c
 @@ -0,0 +1,1013 @@
@@ -64744,7 +66977,7 @@ index 000000000..b8987f49b
 +MODULE_LICENSE("GPL v2");
 +MODULE_VERSION(USB_KERNEL_VERSION);
 diff --git a/drivers/vendor/usb/wing_usb.h b/drivers/vendor/usb/wing_usb.h
-new file mode 100755
+new file mode 100644
 index 000000000..cb09a595c
 --- /dev/null
 +++ b/drivers/vendor/usb/wing_usb.h
@@ -105399,62 +107632,6 @@ index 10234b767..dfde1e1e3 100644
  #define __GFP_BITS_MASK ((__force gfp_t)((1 << __GFP_BITS_SHIFT) - 1))
  
  /**
-diff --git a/include/linux/hck/lite_hck_ced.h b/include/linux/hck/lite_hck_ced.h
-deleted file mode 100644
-index 9d1ffb7cc..000000000
---- a/include/linux/hck/lite_hck_ced.h
-+++ /dev/null
-@@ -1,50 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-or-later */
--/*
-- * Copyright (c) 2023 Huawei Device Co., Ltd.
-- */
--
--#ifndef _LITE_HCK_CED_H
--#define _LITE_HCK_CED_H
--
--#include <linux/mm.h>
--#include <linux/fs.h>
--#include <linux/hck/lite_vendor_hooks.h>
--
--#ifndef CONFIG_HCK
--#undef CALL_HCK_LITE_HOOK
--#define CALL_HCK_LITE_HOOK(name, args...)
--#undef REGISTER_HCK_LITE_HOOK
--#define REGISTER_HCK_LITE_HOOK(name, probe)
--#undef REGISTER_HCK_LITE_DATA_HOOK
--#define REGISTER_HCK_LITE_DATA_HOOK(name, probe, data)
--#else
--DECLARE_HCK_LITE_HOOK(ced_setattr_insert_lhck,
--	TP_PROTO(struct task_struct *task),
--	TP_ARGS(task));
--
--DECLARE_HCK_LITE_HOOK(ced_switch_task_namespaces_lhck,
--	TP_PROTO(const struct nsproxy *new),
--	TP_ARGS(new));
--
--DECLARE_HCK_LITE_HOOK(ced_detection_lhck,
--	TP_PROTO(struct task_struct *task),
--	TP_ARGS(task));
--
--DECLARE_HCK_LITE_HOOK(ced_exit_lhck,
--	TP_PROTO(struct task_struct *task),
--	TP_ARGS(task));
--
--DECLARE_HCK_LITE_HOOK(ced_kernel_clone_lhck,
--	TP_PROTO(struct task_struct *task),
--	TP_ARGS(task));
--
--DECLARE_HCK_LITE_HOOK(ced_commit_creds_lhck,
--	TP_PROTO(const struct cred *new),
--	TP_ARGS(new));
--
--DECLARE_HCK_LITE_HOOK(ced_switch_task_namespaces_permission_lhck,
--	TP_PROTO(const struct nsproxy *new, int *ret),
--	TP_ARGS(new, ret));
--#endif /* CONFIG_HCK */
--
--#endif /* _LITE_HCK_CED_H */
 diff --git a/include/linux/hck/lite_hck_code_sign.h b/include/linux/hck/lite_hck_code_sign.h
 deleted file mode 100644
 index 83bcddaf0..000000000
@@ -105874,7 +108051,7 @@ index a3166100f..9f5ae5f0a 100644
  extern struct device_type i2c_adapter_type;
  extern struct device_type i2c_client_type;
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index b6ef263e8..0f9959026 100644
+index b6ef263e8..ff7acbb44 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
 @@ -346,6 +346,10 @@ struct iommu_domain_ops {
@@ -105883,7 +108060,7 @@ index b6ef263e8..0f9959026 100644
  	void (*flush_iotlb_all)(struct iommu_domain *domain);
 +#if defined(CONFIG_VENDOR_NPU)
 +	void (*inv_iotlb_range)(struct iommu_domain *domain,
-+			struct mm_struct *mm, unsigned long start, unsigned long end);
++			struct mm_struct *mm, unsigned long start, unsigned long size);
 +#endif
  	void (*iotlb_sync_map)(struct iommu_domain *domain, unsigned long iova,
  			       size_t size);
@@ -107177,7 +109354,7 @@ index 95981aa83..9d65ff94e 100644
  	u32		flags;
  	struct persistent_ram_ecc_info ecc_info;
 diff --git a/include/linux/pwm.h b/include/linux/pwm.h
-index 44fe5fae2..a83cde630 100644
+index 44fe5fae2..1db4d0d01 100644
 --- a/include/linux/pwm.h
 +++ b/include/linux/pwm.h
 @@ -59,6 +59,10 @@ enum {
@@ -109142,6 +111319,128 @@ index 2e2c52529..b0542cd11 100644
  #define INVALID_UID KUIDT_INIT(-1)
  #define INVALID_GID KGIDT_INIT(-1)
  
+diff --git a/include/linux/vendor/peri_io.h b/include/linux/vendor/peri_io.h
+new file mode 100644
+index 000000000..0b3afcd7f
+--- /dev/null
++++ b/include/linux/vendor/peri_io.h
+@@ -0,0 +1,116 @@
++/*
++ * Copyright (c) 2025 HiSilicon (Shanghai) Technologies Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License
++ * as published by the Free Software Foundation; either version 2
++ * of the License, or (at your option) any later version.
++ * 
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ * 
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, see
++ * <https://www.gnu.org/licenses/>.
++ */
++
++#ifndef __PERIPH_IO_H
++#define __PERIPH_IO_H
++
++#include <asm/io.h>
++#include <linux/types.h>
++
++enum bsp_peri_type {
++	BSP_PERI_NONE = 0,
++	BSP_PERI_SDIO,
++	BSP_PERI_MMC,
++	BSP_PERI_USB,
++	BSP_PERI_SATA,
++	BSP_PERI_GMAC
++};
++
++unsigned long bsp_peri_lock(enum bsp_peri_type type);
++void bsp_peri_unlock(unsigned long flags, enum bsp_peri_type type);
++
++#define BSP_PERI_DEF_READ(fn, n_bits)		\
++static inline u##n_bits bsp_peri_##fn(		\
++	const volatile void __iomem *addr,	\
++	enum bsp_peri_type type)		\
++{ 						\
++	u##n_bits val;				\
++	unsigned long flags;			\
++	flags = bsp_peri_lock(type);		\
++	val = fn(addr);				\
++	bsp_peri_unlock(flags, type);		\
++	return val;				\
++}
++
++#define BSP_PERI_DEF_WRITE(fn, n_bits)		\
++static inline void bsp_peri_##fn(u##n_bits val,	\
++	volatile void __iomem *addr,		\
++	enum bsp_peri_type type)		\
++{ 						\
++	unsigned long flags;			\
++	flags = bsp_peri_lock(type);		\
++	fn(val, addr);				\
++	bsp_peri_unlock(flags, type);		\
++}
++
++#define BSP_PERI_DEF_READ_REP(fn)		\
++static inline void bsp_peri_##fn(		\
++	const volatile void __iomem *addr,	\
++	void *buffer, unsigned int count,	\
++	enum bsp_peri_type type)		\
++{						\
++	unsigned long flags;			\
++	flags = bsp_peri_lock(type);		\
++	fn(addr, buffer, count);		\
++	bsp_peri_unlock(flags, type);		\
++}
++
++#define BSP_PERI_DEF_WRITE_REP(fn)		\
++static inline void bsp_peri_##fn(		\
++	volatile void __iomem *addr,	\
++	const void *buffer, unsigned int count,	\
++	enum bsp_peri_type type)		\
++{						\
++	unsigned long flags;			\
++	flags = bsp_peri_lock(type);		\
++	fn(addr, buffer, count);		\
++	bsp_peri_unlock(flags, type);		\
++}
++
++BSP_PERI_DEF_READ(readb, 8)
++BSP_PERI_DEF_READ(readw, 16)
++BSP_PERI_DEF_READ(readl, 32)
++BSP_PERI_DEF_READ(readq, 64)
++
++BSP_PERI_DEF_WRITE(writeb, 8)
++BSP_PERI_DEF_WRITE(writew, 16)
++BSP_PERI_DEF_WRITE(writel, 32)
++BSP_PERI_DEF_WRITE(writeq, 64)
++
++BSP_PERI_DEF_READ(ioread8, 8)
++BSP_PERI_DEF_READ(ioread16, 16)
++BSP_PERI_DEF_READ(ioread32, 32)
++BSP_PERI_DEF_READ(ioread64, 64)
++
++BSP_PERI_DEF_WRITE(iowrite8, 8)
++BSP_PERI_DEF_WRITE(iowrite16, 16)
++BSP_PERI_DEF_WRITE(iowrite32, 32)
++BSP_PERI_DEF_WRITE(iowrite64, 64)
++
++BSP_PERI_DEF_READ_REP(ioread8_rep)
++BSP_PERI_DEF_READ_REP(ioread16_rep)
++BSP_PERI_DEF_READ_REP(ioread32_rep)
++BSP_PERI_DEF_READ_REP(ioread64_rep)
++
++BSP_PERI_DEF_WRITE_REP(iowrite8_rep)
++BSP_PERI_DEF_WRITE_REP(iowrite16_rep)
++BSP_PERI_DEF_WRITE_REP(iowrite32_rep)
++BSP_PERI_DEF_WRITE_REP(iowrite64_rep)
++
++#endif /* __PERIPH_IO_H */
++
 diff --git a/include/linux/vendor/sva_ext.h b/include/linux/vendor/sva_ext.h
 new file mode 100644
 index 000000000..17ae4cef1
@@ -110216,6 +112515,76 @@ index 0c7f45507..906623856 100644
  };
  
  #endif /* _UAPI_LINUX_SCHED_TYPES_H */
+diff --git a/include/uapi/linux/usb/video.h b/include/uapi/linux/usb/video.h
+index 2ff0e8a3a..e500bcd5f 100644
+--- a/include/uapi/linux/usb/video.h
++++ b/include/uapi/linux/usb/video.h
+@@ -597,5 +597,65 @@ struct UVC_FRAME_MJPEG(n) {				\
+ 	__le32 dwFrameInterval[n];			\
+ } __attribute__ ((packed))
+ 
++#ifdef CONFIG_ARCH_BSP
++/* Frame Based Payload - 3.1.1. Frame Based Video Format Descriptor */
++struct uvc_format_framebased {
++	__u8  bLength;
++	__u8  bDescriptorType;
++	__u8  bDescriptorSubType;
++	__u8  bFormatIndex;
++	__u8  bNumFrameDescriptors;
++	__u8  guidFormat[16];
++	__u8  bBitsPerPixel;
++	__u8  bDefaultFrameIndex;
++	__u8  bAspectRatioX;
++	__u8  bAspectRatioY;
++	__u8  bmInterfaceFlags;
++	__u8  bCopyProtect;
++	__u8  bVariableSize;
++} __attribute__((__packed__));
++
++#define UVC_DT_FORMAT_FRAMEBASED_SIZE                  28
++
++/* Frame Based Payload - 3.1.2. Frame Based Video Frame Descriptor */
++struct uvc_frame_framebased {
++	__u8  bLength;
++	__u8  bDescriptorType;
++	__u8  bDescriptorSubType;
++	__u8  bFrameIndex;
++	__u8  bmCapabilities;
++	__u16 wWidth;
++	__u16 wHeight;
++	__u32 dwMinBitRate;
++	__u32 dwMaxBitRate;
++	__u32 dwDefaultFrameInterval;
++	__u8  bFrameIntervalType;
++	__u32 dwBytesPerLine;
++	__u32 dwFrameInterval[];
++} __attribute__((__packed__));
++
++#define UVC_DT_FRAME_FRAMEBASED_SIZE(n)                        (26+4*(n))
++
++#define UVC_FRAME_FRAMEBASED(n) \
++	uvc_frame_framebased_##n
++
++#define DECLARE_UVC_FRAME_FRAMEBASED(n)			\
++struct UVC_FRAME_FRAMEBASED(n) {			\
++	__u8  bLength;					\
++	__u8  bDescriptorType;				\
++	__u8  bDescriptorSubType;                       \
++	__u8  bFrameIndex;                              \
++	__u8  bmCapabilities;                           \
++	__u16 wWidth;                                   \
++	__u16 wHeight;                                  \
++	__u32 dwMinBitRate;                             \
++	__u32 dwMaxBitRate;                             \
++	__u32 dwDefaultFrameInterval;                   \
++	__u8  bFrameIntervalType;                       \
++	__u32 dwBytesPerLine;                           \
++	__u32 dwFrameInterval[n];                       \
++} __attribute__ ((packed))
++#endif
++
+ #endif /* __LINUX_USB_VIDEO_H */
+ 
 diff --git a/init/Kconfig b/init/Kconfig
 index 486bd372b..1105cb53f 100644
 --- a/init/Kconfig

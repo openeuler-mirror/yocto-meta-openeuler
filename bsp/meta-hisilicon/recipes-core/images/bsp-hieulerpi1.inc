@@ -4,7 +4,13 @@
 IMAGE_INSTALL:append = " \
 hieulerpi1-tf-a \
 hieulerpi1-bsp-pkg \
-i2c-soft \
-${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '', 'ch343', d)} \
-mcu-tool \
+${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
+    hieulerpi1-peripherals-driver \
+    hieulerpi1-peripherals-sample \
+    hieulerpi1-mpp-sample \
+', ' \
+    i2c-soft \
+    ch343 \
+    mcu-tool \
+', d)} \
 "
