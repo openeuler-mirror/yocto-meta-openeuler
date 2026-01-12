@@ -1,4 +1,9 @@
 # ref bb: https://git.yoctoproject.org/meta-virtualization/tree/recipes-networking/cni
+inherit oee-archive
+
+# Ensure cni repo directory takes precedence over oee_archive for file:// URLs
+# This allows file://v1.2.0.tar.gz to be fetched from the correct location
+FILESEXTRAPATHS:prepend := "${OPENEULER_SP_DIR}/cni:"
 
 OPENEULER_REPO_NAMES = "cni oee_archive"
 OEE_ARCHIVE_SUB_DIR = "cni"
