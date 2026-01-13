@@ -59,3 +59,29 @@ FILES:${PN} += "/usr/bin/mica"
 FILES:${PN} += "/lib/firmware"
 FILES:${PN} += "/etc/mica"
 INSANE_SKIP:${PN} += "already-stripped"
+
+# Deploy uniproton images to DEPLOY_DIR_IMAGE for micrun to use
+inherit deploy
+do_deploy() {
+    # Deploy uniproton elf and bin files for micrun
+    for uniproton_elf in "${S}/rtos/arm64/${RTOS_IMGS}"*uniproton*.elf; do
+        if [ -f "$uniproton_elf" ]; then
+            basename=$(basename "$uniproton_elf")
+            install -d "${DEPLOY_DIR_IMAGE}"
+            install -m 0644 "$uniproton_elf" "${DEPLOY_DIR_IMAGE}/${basename}"
+            # Also create a symlink with simpler name for mcs-oci-utils.bbclass to find
+            ln -sf "${basename}" "${DEPLOY_DIR_IMAGE}/uniproton.elf"
+        fi
+    done
+
+    for uniproton_bin in "${S}/rtos/arm64/${RTOS_IMGS}"*uniproton*.bin; do
+        if [ -f "$uniproton_bin" ]; then
+            basename=$(basename "$uniproton_bin")
+            install -d "${DEPLOY_DIR_IMAGE}"
+            install -m 0644 "$uniproton_bin" "${DEPLOY_DIR_IMAGE}/${basename}"
+            # Also create a symlink with simpler name for mcs-oci-utils.bbclass to find
+            ln -sf "${basename}" "${DEPLOY_DIR_IMAGE}/uniproton.bin"
+        fi
+    done
+}
+addtask deploy after do_install before do_build
