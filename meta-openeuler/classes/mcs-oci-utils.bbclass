@@ -43,14 +43,14 @@ copy_binary_artifacts() {
         done
     fi
 
-    if [ "${HAS_UNIPROTON}" = "1" ]; then
-        bbnote "Copying Uniproton images (uniproton feature enabled)"
-        for uniproton_file in ${DEPLOY_DIR_IMAGE}/uniproton.*; do
-            if [ -f "$uniproton_file" ]; then
-                cp -fp "$uniproton_file" ${micrun_output_dir}/
-            fi
-        done
-    fi
+    # Copy Uniproton images if they exist in deploy directory
+    # Automatically detect uniproton files regardless of HAS_UNIPROTON flag
+    for uniproton_file in ${DEPLOY_DIR_IMAGE}/uniproton.*; do
+        if [ -f "$uniproton_file" ]; then
+            bbnote "Copying Uniproton image: $(basename "$uniproton_file")"
+            cp -fp "$uniproton_file" ${micrun_output_dir}/
+        fi
+    done
 }
 
 # Copy micrun scripts to OUTPUT directory without installing to rootfs
