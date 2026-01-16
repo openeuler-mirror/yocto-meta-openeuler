@@ -72,7 +72,7 @@ qemu镜像的构建
 
 具体界面如下图所示:
 
-.. image:: ../_static/images/generate/oebuild-generate-select.png
+.. image:: ../../../_static/images/generate/oebuild-generate-select.png
 
 .. attention::
 

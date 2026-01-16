@@ -17,7 +17,7 @@ Wayland 框架简介
 =========================
 
 
-.. figure:: ../../image/qt/wayland_frame.png
+.. figure:: ../../../image/qt/wayland_frame.png
     :align: center
 
     Wayland 框架示意图
@@ -115,7 +115,7 @@ wayfire窗口组合器界面的进入（hmi特性镜像）:
     为方便体验，demo启用了强制root启动wayfire，建议用户在正式使用时去除（使用普通用户执行）。另外，如果需要界面登录功能，还需要登录相关图形应用，欢迎伙伴完善贡献。
 
 
-.. figure:: ../../image/qt/wayfiresow.jpg
+.. figure:: ../../../image/qt/wayfiresow.jpg
     :align: center
 
     ``wayfire及其各类应用`` 效果图
@@ -143,19 +143,19 @@ wayfire窗口组合器界面的进入（hmi特性镜像）:
     $ helloworld-gui --platform wayland
 
 
-.. figure:: ../../image/qt/weston.png
+.. figure:: ../../../image/qt/weston.png
     :align: center
 
     ``weston`` 效果图
 
 
-.. figure:: ../../image/qt/helloworld-gui_1.png
+.. figure:: ../../../image/qt/helloworld-gui_1.png
     :align: center
 
     ``helloworld-gui --platform wayland`` 效果图1
 
 
-.. figure:: ../../image/qt/helloworld-gui_2.png
+.. figure:: ../../../image/qt/helloworld-gui_2.png
     :align: center
 
     ``helloworld-gui --platform wayland`` 效果图2

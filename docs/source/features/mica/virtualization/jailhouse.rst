@@ -231,7 +231,7 @@ ____
 
       具体界面如下图所示:
 
-      .. image:: ../_static/images/generate/oebuild-generate-select.png
+      .. image:: ../../../_static/images/generate/oebuild-generate-select.png
 
       进入 ``<build>`` 目录，添加 ``meta-freertos``
 

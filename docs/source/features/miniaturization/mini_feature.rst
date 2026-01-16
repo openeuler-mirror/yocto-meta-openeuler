@@ -1,4 +1,4 @@
-.. _miniaturization:
+.. _miniaturization_features:
 
 小型化特性
 ============
@@ -24,7 +24,7 @@
     * - 用户态内存
       - 0.722M
 
-.. image:: images/ram.png
+.. image:: ../images/ram.png
    :alt: 内存使用情况
 
 内核态内存定义：SUnreclaim(不可回收)+KernelStack(内核栈)+PageTables(页表)+VmallocUsed(已分配内存)+Percpu(CPU缓存)
@@ -131,12 +131,12 @@ musl是一个轻量级C/C++标准库，注重代码质量和安全性。
 gcc与clang的编译数据对比(musl库)
 +++++++++++++++++++++++++++++++++++
 
-.. image:: images/musl-compare.png
+.. image:: ../images/musl-compare.png
 
 clang+musl对busybox的编译数据对比
 +++++++++++++++++++++++++++++++++++++
 
-.. image:: images/busybox-compare.png
+.. image:: ../images/busybox-compare.png
 
 编译链的制作
 :::::::::::::
