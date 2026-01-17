@@ -1,12 +1,11 @@
-.. _container:
+.. _system_kernel_features:
 
 
-边缘容器
+内核支持
 ################################
 
 .. toctree::
    :maxdepth: 2
    :caption: 内容
 
-   embedded_container/index.rst
-   rt_container/index.rst
+   kernelversions.rst

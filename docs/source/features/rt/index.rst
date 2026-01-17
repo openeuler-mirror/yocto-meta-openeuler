@@ -1,12 +1,11 @@
-.. _container:
+.. _rt:
 
 
-边缘容器
+实时性
 ################################
 
 .. toctree::
    :maxdepth: 2
    :caption: 内容
 
-   embedded_container/index.rst
-   rt_container/index.rst
+   preempt_rt.rst

@@ -1,12 +1,11 @@
-.. _container:
+.. _miniaturization:
 
 
-边缘容器
+小型化特性
 ################################
 
 .. toctree::
    :maxdepth: 2
    :caption: 内容
 
-   embedded_container/index.rst
-   rt_container/index.rst
+   mini_feature.rst

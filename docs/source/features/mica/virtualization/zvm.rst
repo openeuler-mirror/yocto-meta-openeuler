@@ -116,7 +116,7 @@ ZVM 使用指导
 
       如下图所示:
 
-      .. image:: ../../image/mcs/zvm/zvm_new_run_os.png
+      .. image:: ../../../../image/mcs/zvm/zvm_new_run_os.png
       
    5. 启动Linux虚拟机
    
@@ -127,4 +127,4 @@ ZVM 使用指导
    
    6. 最终连接到2个虚拟机如下图所示:
 
-      .. image:: ../../image/mcs/zvm/zvm_screen_openeuler_zephyr.png
+      .. image:: ../../../../image/mcs/zvm/zvm_screen_openeuler_zephyr.png

@@ -1,12 +1,11 @@
-.. _container:
+.. _graphics:
 
 
-边缘容器
+图形
 ################################
 
 .. toctree::
    :maxdepth: 2
    :caption: 内容
 
-   embedded_container/index.rst
-   rt_container/index.rst
+   qt5_wayland.rst
