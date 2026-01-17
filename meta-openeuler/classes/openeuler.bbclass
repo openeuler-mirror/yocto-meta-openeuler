@@ -132,35 +132,42 @@ def get_openeuler_epoch(d):
 # this anonymous function is executed before any task
 python src_uri_set() {
     src_uri = d.getVar('SRC_URI')
-    remove_list = d.getVar('OPENEULER_SRC_URI_REMOVE')
+    remove_list_str = d.getVar('OPENEULER_SRC_URI_REMOVE')
     local_name = d.getVar('OPENEULER_LOCAL_NAME')
 
     # if software recipe is not in manifest.yaml, we will skip the handling of
     # OPENEULER_SRC_URI_REMOVE and it also means the software recipe is not
     # adapted in openEuler, use original fetch
-    if d.getVar("MANIFEST_DIR") is not None and os.path.exists(d.getVar("MANIFEST_DIR")):
-        manifest_list = d.getVar("MANIFEST_LIST")
+    manifest_list = d.getVar("MANIFEST_LIST")
+    if manifest_list is None:
+        return
 
-    # handle the SRC_URI
-    if (local_name in manifest_list) and src_uri and remove_list:
+    # oee-archive.bbclass is included, it must be adated for openeuler
+    # so need to process the SRC_URI
+    if d.getVar("OEE_ARCHIVE_DIR"):
+        local_name = "oee_archive"
+
+    if not local_name or local_name not in manifest_list:
+        return
+
+    # handle the SRC_URI for openeuler adapted recipes
+    if  src_uri and remove_list_str:
         uri_list = src_uri.split()
-        remove_list = remove_list.split()
+        remove_items = remove_list_str.split()
 
-        updated_uri_list = [uri for uri in uri_list if not any(uri.strip().startswith(remove_item.strip()) for remove_item in remove_list)]
+        updated_uri_list = [uri for uri in uri_list if not any(uri.strip().startswith(item.strip()) for item in remove_items)]
         updated_src_uri = ' '.join(updated_uri_list)
 
         d.setVar('SRC_URI', updated_src_uri)
 
-    # all recipes adapted in openeuler will not be cached during bb parsing if BB_SRCREV_POLICY
-    # is not set to cache
-    # so there will alway be a chance to update SRCREV
-    if d.getVar('BB_SRCREV_POLICY') != "cache":
-        d.setVar('BB_DONT_CACHE', '1')
-    # set SRCREV, if SRCREV changed because of the corresponding changes in manifest.yaml,
-    # do_fetch will re-run
-    if local_name in manifest_list:
-        repo_item = manifest_list[local_name]
-        d.setVar('SRCREV', repo_item['version'])
+        # all recipes adapted in openeuler will not be cached during bb parsing if BB_SRCREV_POLICY
+        # is not set to cache
+        # so there will alway be a chance to update SRCREV
+        if d.getVar('BB_SRCREV_POLICY') != "cache":
+            d.setVar('BB_DONT_CACHE', '1')
+        # set SRCREV, if SRCREV changed because of the corresponding changes in manifest.yaml,
+        # do_fetch will re-run
+        d.setVar('SRCREV', manifest_list[local_name]['version'])
 }
 
 addhandler src_uri_set
