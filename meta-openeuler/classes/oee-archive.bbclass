@@ -92,17 +92,3 @@ python do_download_oee_archive(){
 do_download_oee_archive[lockfiles] = "/tmp/openeuler/oee_archive.lock"
 do_download_oee_archive[network] = "1"
 addtask do_download_oee_archive before do_fetch
-
-# store YAML data within MANIFEST_LIST variable
-addhandler parse_manifest
-python parse_manifest() {
-    # used to read YAML file data
-    def get_manifest(manifest_yaml):
-        import yaml
-
-        with open(manifest_yaml, 'r' ,encoding="utf-8") as r_f:
-            return yaml.load(r_f.read(), yaml.Loader)['manifest_list']
-
-    d.setVar('MANIFEST_LIST', get_manifest(d.getVar("MANIFEST_DIR")))
-}
-parse_manifest[eventmask] = "bb.event.ConfigParsed"
