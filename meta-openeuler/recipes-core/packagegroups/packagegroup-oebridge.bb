@@ -59,6 +59,10 @@ INSTALL_PKG_LISTS += " \
     glib2:force \
     avahi-libs:force \
     gobject-introspection:force \
+    openssl:force \
+    openssl-libs:force \
+    perl:force \
+    perl-libs:force \
 "
 
 # add for advance install oe pkgs using chroot target arch with qemu, need qemu-user-static of host
