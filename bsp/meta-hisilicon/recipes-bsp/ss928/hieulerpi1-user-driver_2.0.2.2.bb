@@ -3,8 +3,8 @@ DESCRIPTION = "user lib and headers repack from SS928V100_SDK"
 HOMEPAGE = "https://gitee.com/HiEuler/hardware_driver"
 LICENSE = "CLOSED"
 
-DEPENDS += " ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'hieulerpi1-sdk-pkg', '', d)} "
-do_fetch[depends] += "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'hieulerpi1-sdk-pkg:do_deploy', '', d)}"
+DEPENDS += " ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'hieulerpi1-sdk-pkg hieulerpi1-mpp-sample', '', d)} "
+do_fetch[depends] += "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'hieulerpi1-sdk-pkg:do_deploy hieulerpi1-mpp-sample:do_deploy', '', d)}"
 
 inherit pkgconfig
 

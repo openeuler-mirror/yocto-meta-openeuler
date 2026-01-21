@@ -57,6 +57,13 @@ EOF
 cat > "${D}${sysconfdir}/rcS.d/S80network" << 'EOF'
 #!/bin/sh
 
+cat > /etc/resolv.conf << 'EORESOLV'
+nameserver 8.8.8.8
+nameserver 114.114.114.114
+nameserver 2001:4860:4860::8888
+nameserver 2001:4860:4860::8844
+EORESOLV
+
 ipaddr=192.168.1.168
 bootp=
 gateway=192.168.1.1
@@ -103,16 +110,6 @@ fi
 
 ifconfig lo 127.0.0.1
 
-rm -f /etc/resolv.conf
-cat > /etc/resolv.conf << 'EORESOLV'
-nameserver 8.8.8.8
-nameserver 114.114.114.114
-nameserver 2001:4860:4860::8888
-nameserver 2001:4860:4860::8844
-EORESOLV
-
-sleep 1
-/etc/init.d/networking restart
 EOF
 
 > ${S}/pinmux.sh && cat > ${S}/pinmux.sh << 'EOF'
