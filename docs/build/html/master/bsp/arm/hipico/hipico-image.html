@@ -1,22 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HiPico镜像构建 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
-  <!--[if lt IE 9]>
-    <script src="../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=fdb61a23" />
+
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+      <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -29,11 +28,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> openEuler Embedded在线文档
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -88,12 +91,12 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../../user_guide/index.html">用户使用指导</a> &raquo;</li>
-          <li><a href="../../index.html">南向硬件支持与使用指导</a> &raquo;</li>
-          <li><a href="../index.html">ARM硬件</a> &raquo;</li>
-          <li><a href="index.html">HiPico</a> &raquo;</li>
-      <li>HiPico镜像构建</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">南向硬件支持与使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">ARM硬件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">HiPico</a></li>
+      <li class="breadcrumb-item active">HiPico镜像构建</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -103,47 +106,47 @@
            <div itemprop="articleBody">
              
   <section id="hipico">
-<span id="hipico-image"></span><h1>HiPico镜像构建<a class="headerlink" href="#hipico" title="Permalink to this headline">¶</a></h1>
+<span id="hipico-image"></span><h1>HiPico镜像构建<a class="headerlink" href="#hipico" title="Link to this heading">¶</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>相关文档</p>
 <p>openeuler官方文档：<a class="reference internal" href="../../../getting_started/index.html#getting-started"><span class="std std-ref">快速上手</span></a></p>
 </div>
 <section id="id1">
-<h2>1.检查基本开发环境<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<h2>1.检查基本开发环境<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <p>开发建议使用ubuntu系统，需要先安装ubuntu系统并配置基本的ubuntu开发环境。</p>
 <p>openeuler的构建都在docker中进行，因此对系统的依赖只有docker和python。其中python版本最低为<strong>python3.8及以上</strong>，建议python版本越新越好。若当前系统中没有指定版本的python，建议使用<strong>conda</strong>创建虚拟的python环境。</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 安装docker</span>
-sudo apt-get install docker docker.io
+sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>docker<span class="w"> </span>docker.io
 <span class="c1"># 配置docker环境</span>
-sudo usermod -a -G docker <span class="k">$(</span>whoami<span class="k">)</span>
-sudo systemctl daemon-reload <span class="o">&amp;&amp;</span> sudo systemctl restart docker
-sudo chmod o+rw /var/run/docker.sock
+sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>docker<span class="w"> </span><span class="k">$(</span>whoami<span class="k">)</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>docker
+sudo<span class="w"> </span>chmod<span class="w"> </span>o+rw<span class="w"> </span>/var/run/docker.sock
 </pre></div>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 若当前主机包含python3.8及以上版本的python可直接执行以下命令安装oebuild</span>
 <span class="c1"># 若不包含指定版本，参考conda使用手册安装虚拟环境后在虚拟环境中安装oebuild</span>
-pip install oebuild
+pip<span class="w"> </span>install<span class="w"> </span>oebuild
 </pre></div>
 </div>
 </section>
 <section id="id2">
-<h2>2.初始化构建环境<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2>2.初始化构建环境<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <p>oebuild是openeuler构建开发环境的工具，可以根据配置自动拉取docker镜像、源码、初始化构建环境等操作。</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 创建工作目录</span>
-oebuild init &lt;work_dir&gt;
+oebuild<span class="w"> </span>init<span class="w"> </span>&lt;work_dir&gt;
 <span class="c1"># 切换到工作目录</span>
-<span class="nb">cd</span> &lt;work_dir&gt;
+<span class="nb">cd</span><span class="w"> </span>&lt;work_dir&gt;
 <span class="c1"># 拉取构建容器、yocto-meta-openeuler 项目代码</span>
-oebuild update
+oebuild<span class="w"> </span>update
 
 <span class="c1"># 创建hipico构建环境</span>
-oebuild generate -p hipico -d build_pico
+oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"> </span>hipico<span class="w"> </span>-d<span class="w"> </span>build_pico
 </pre></div>
 </div>
 </section>
 <section id="openeuler">
-<h2>3.构建openeuler镜像<a class="headerlink" href="#openeuler" title="Permalink to this headline">¶</a></h2>
+<h2>3.构建openeuler镜像<a class="headerlink" href="#openeuler" title="Link to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;work_dir&gt;
     ├── build
     │   └── build_pico                               # 构建目录
@@ -154,9 +157,9 @@ oebuild generate -p hipico -d build_pico
 </div>
 <p>构建openeuler系统需要切换到<strong>构建目录</strong>，再执行命令。</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 切换到构建目录</span>
-<span class="nb">cd</span> &lt;work_dir&gt;/build/build_pico
+<span class="nb">cd</span><span class="w"> </span>&lt;work_dir&gt;/build/build_pico
 <span class="c1"># 编译openeuler镜像</span>
-oebuild bitbake openeuler-image
+oebuild<span class="w"> </span>bitbake<span class="w"> </span>openeuler-image
 </pre></div>
 </div>
 <p>构建完成后，在<code class="docutils literal notranslate"><span class="pre">&lt;work_dir&gt;/build/build_pico/output/&lt;构建时间戳&gt;</span></code>目录中生成构建产物。</p>
@@ -230,6 +233,16 @@ oebuild bitbake openeuler-image
   </span>
   <div class="rst-other-versions">
     <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../../24.03-lts/index.html">24.03-lts</a></dd>
+      <dd><a href="../../../../llvm-toolchain-v0.1.1/index.html">llvm-toolchain-v0.1.1</a></dd>
+      <dd><a href="../../../../nativesdk-v0.1.2/index.html">nativesdk-v0.1.2</a></dd>
+      <dd><a href="../../../../nativesdk-v0.1.3/bsp/arm/hipico/hipico-image.html">nativesdk-v0.1.3</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.5/index.html">toolchains-v0.1.5</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.7/bsp/arm/hipico/hipico-image.html">toolchains-v0.1.7</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.8/bsp/arm/hipico/hipico-image.html">toolchains-v0.1.8</a></dd>
+    </dl>
+    <dl>
       <dt>Branches</dt>
       <dd><a href="hipico-image.html">master</a></dd>
       <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
@@ -240,7 +253,6 @@ oebuild bitbake openeuler-image
       <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
       <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
       <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
-      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
       <dd><a href="../../../../openEuler-24.03-LTS/bsp/arm/hipico/hipico-image.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
       <dd><a href="../../../../openEuler-25.03/bsp/arm/hipico/hipico-image.html">openEuler-25.03</a></dd>

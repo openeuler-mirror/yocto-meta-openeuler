@@ -1,17 +1,13 @@
-.. _mixed_criticality_system:
+.. _mica:
 
 
-多OS混合关键性部署框架 (MICA)
-#############################
+混合关键性部署 (MICA)
+################################
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
+   :caption: 内容
 
    intro.rst
-   supported_lists.rst
-   build.rst
-   instruction.rst
-   mica_ctl.rst
-   developer_guides/index.rst
-   services/index.rst
-   lopper_devicetree.rst
+   mica_core/index.rst
+   virtualization/index.rst

@@ -1,22 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>调试支持 GDB stub 的 Client OS &mdash; openEuler Embedded在线文档 24.03 documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
-    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
-  <!--[if lt IE 9]>
-    <script src="../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=fdb61a23" />
+
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+      <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -29,11 +28,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> openEuler Embedded在线文档
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -107,12 +110,12 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../../user_guide/index.html">用户使用指导</a> &raquo;</li>
-          <li><a href="../../index.html">关键特性指导</a> &raquo;</li>
-          <li><a href="../index.html">多OS混合关键性部署框架 (MICA)</a> &raquo;</li>
-          <li><a href="index.html">跨OS服务</a> &raquo;</li>
-      <li>调试支持 GDB stub 的 Client OS</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">多OS混合关键性部署框架 (MICA)</a></li>
+          <li class="breadcrumb-item"><a href="index.html">跨OS服务</a></li>
+      <li class="breadcrumb-item active">调试支持 GDB stub 的 Client OS</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -122,126 +125,126 @@
            <div itemprop="articleBody">
              
   <section id="gdb-stub-client-os">
-<span id="mica-debug"></span><h1>调试支持 GDB stub 的 Client OS<a class="headerlink" href="#gdb-stub-client-os" title="Permalink to this headline">¶</a></h1>
+<span id="mica-debug"></span><h1>调试支持 GDB stub 的 Client OS<a class="headerlink" href="#gdb-stub-client-os" title="Link to this heading">¶</a></h1>
 <p>当前仅支持调试运行在树莓派4B（aarch64）和x86工控机（x86_64）的Uniproton。</p>
 <section id="buniproton">
-<h2>基于树莓派4B调测Uniproton<a class="headerlink" href="#buniproton" title="Permalink to this headline">¶</a></h2>
+<h2>基于树莓派4B调测Uniproton<a class="headerlink" href="#buniproton" title="Link to this heading">¶</a></h2>
 <p>树莓派4B的具体介绍 <a class="reference internal" href="../../../bsp/arm64/raspberrypi4/index.html#board-raspberrypi4b"><span class="std std-ref">树莓派4B</span></a> 。</p>
 <p>树莓派的openeuler-image-mcs构建，参见 <a class="reference internal" href="../../../bsp/arm64/raspberrypi4/uefi.html#raspberrypi4-uefi-guide"><span class="std std-ref">树莓派mcs镜像构建指导</span></a>。
 由于需要调试，需要在oebuild构建目录中的conf文件夹下的local.conf文件中添加如下配置：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Enable Debugging Features, like including gdb binary in the image</span>
-<span class="nv">IMAGE_FEATURE</span> <span class="o">+=</span> <span class="s2">&quot;debug-tweaks&quot;</span>
+<span class="nv">IMAGE_FEATURE</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="s2">&quot;debug-tweaks&quot;</span>
 </pre></div>
 </div>
 <p>当然，也可以在openeuler-image-mcs.bb文件中临时增加上述配置。</p>
 <p>编译好了树莓派的openeuler-image-mcs镜像并烧录到sd卡，在树莓派上启动后，配置好UEFI，之后进入系统。</p>
 <p>此时，输入如下命令，查看当前系统中支持的RTOS：</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ mica status
-Name                          Assigned CPU        State               Service
-uniproton                     <span class="m">3</span>                   Offline
-uniproton-gdb                 <span class="m">3</span>                   Offline
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mica<span class="w"> </span>status
+Name<span class="w">                          </span>Assigned<span class="w"> </span>CPU<span class="w">        </span>State<span class="w">               </span>Service
+uniproton<span class="w">                     </span><span class="m">3</span><span class="w">                   </span>Offline
+uniproton-gdb<span class="w">                 </span><span class="m">3</span><span class="w">                   </span>Offline
 </pre></div>
 </div>
 <p>其中，uniproton-gdb是支持GDB stub的Uniproton。它的conf文件的路径为
 <code class="docutils literal notranslate"><span class="pre">/etc/mica/rpi4-uniproton-gdb.conf</span></code> 。这里，有一个很重要的配置选项 <code class="docutils literal notranslate"><span class="pre">Debug=yes</span></code> ，
 表示此实例支持GDB stub。</p>
 <p>输入如下命令启动支持GDB stub的Uniproton：</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ mica start uniproton-gdb
-starting uniproton-gdb...
-start uniproton-gdb successfully!
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mica<span class="w"> </span>start<span class="w"> </span>uniproton-gdb
+starting<span class="w"> </span>uniproton-gdb...
+start<span class="w"> </span>uniproton-gdb<span class="w"> </span>successfully!
 </pre></div>
 </div>
 <p>此时，可以通过启动GDB Client连接到MICA GDB server，以调测Uniproton内核：</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ mica gdb uniproton-gdb
-gdb /root/raspi4.elf -ex <span class="s1">&#39;target extended-remote :5678&#39;</span> -ex <span class="s1">&#39;set remote run-packet off&#39;</span> -ex <span class="s1">&#39;set remotetimeout unlimited&#39;</span>
-GNU gdb <span class="o">(</span>GDB<span class="o">)</span> <span class="m">14</span>.1
-Copyright <span class="o">(</span>C<span class="o">)</span> <span class="m">2023</span> Free Software Foundation, Inc.
-License GPLv3+: GNU GPL version <span class="m">3</span> or later &lt;http://gnu.org/licenses/gpl.html&gt;
-This is free software: you are free to change and redistribute it.
-There is NO WARRANTY, to the extent permitted by law.
-Type <span class="s2">&quot;show copying&quot;</span> and <span class="s2">&quot;show warranty&quot;</span> <span class="k">for</span> details.
-This GDB was configured as <span class="s2">&quot;aarch64-openeuler-linux&quot;</span>.
-Type <span class="s2">&quot;show configuration&quot;</span> <span class="k">for</span> configuration details.
-For bug reporting instructions, please see:
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mica<span class="w"> </span>gdb<span class="w"> </span>uniproton-gdb
+gdb<span class="w"> </span>/root/raspi4.elf<span class="w"> </span>-ex<span class="w"> </span><span class="s1">&#39;target extended-remote :5678&#39;</span><span class="w"> </span>-ex<span class="w"> </span><span class="s1">&#39;set remote run-packet off&#39;</span><span class="w"> </span>-ex<span class="w"> </span><span class="s1">&#39;set remotetimeout unlimited&#39;</span>
+GNU<span class="w"> </span>gdb<span class="w"> </span><span class="o">(</span>GDB<span class="o">)</span><span class="w"> </span><span class="m">14</span>.1
+Copyright<span class="w"> </span><span class="o">(</span>C<span class="o">)</span><span class="w"> </span><span class="m">2023</span><span class="w"> </span>Free<span class="w"> </span>Software<span class="w"> </span>Foundation,<span class="w"> </span>Inc.
+License<span class="w"> </span>GPLv3+:<span class="w"> </span>GNU<span class="w"> </span>GPL<span class="w"> </span>version<span class="w"> </span><span class="m">3</span><span class="w"> </span>or<span class="w"> </span>later<span class="w"> </span>&lt;http://gnu.org/licenses/gpl.html&gt;
+This<span class="w"> </span>is<span class="w"> </span>free<span class="w"> </span>software:<span class="w"> </span>you<span class="w"> </span>are<span class="w"> </span>free<span class="w"> </span>to<span class="w"> </span>change<span class="w"> </span>and<span class="w"> </span>redistribute<span class="w"> </span>it.
+There<span class="w"> </span>is<span class="w"> </span>NO<span class="w"> </span>WARRANTY,<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>extent<span class="w"> </span>permitted<span class="w"> </span>by<span class="w"> </span>law.
+Type<span class="w"> </span><span class="s2">&quot;show copying&quot;</span><span class="w"> </span>and<span class="w"> </span><span class="s2">&quot;show warranty&quot;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>details.
+This<span class="w"> </span>GDB<span class="w"> </span>was<span class="w"> </span>configured<span class="w"> </span>as<span class="w"> </span><span class="s2">&quot;aarch64-openeuler-linux&quot;</span>.
+Type<span class="w"> </span><span class="s2">&quot;show configuration&quot;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>configuration<span class="w"> </span>details.
+For<span class="w"> </span>bug<span class="w"> </span>reporting<span class="w"> </span>instructions,<span class="w"> </span>please<span class="w"> </span>see:
 &lt;https://www.gnu.org/software/gdb/bugs/&gt;.
-Find the GDB manual and other documentation resources online at:
-    &lt;http://www.gnu.org/software/gdb/documentation/&gt;.
+Find<span class="w"> </span>the<span class="w"> </span>GDB<span class="w"> </span>manual<span class="w"> </span>and<span class="w"> </span>other<span class="w"> </span>documentation<span class="w"> </span>resources<span class="w"> </span>online<span class="w"> </span>at:
+<span class="w">    </span>&lt;http://www.gnu.org/software/gdb/documentation/&gt;.
 
-For help, <span class="nb">type</span> <span class="s2">&quot;help&quot;</span>.
-Type <span class="s2">&quot;apropos word&quot;</span> to search <span class="k">for</span> commands related to <span class="s2">&quot;word&quot;</span>...
-Reading symbols from /root/raspi4.elf...
-Remote debugging using :5678
-warning: Remote gdbserver does not support determining executable automatically.
-RHEL &lt;<span class="o">=</span><span class="m">6</span>.8 and &lt;<span class="o">=</span><span class="m">7</span>.2 versions of gdbserver <span class="k">do</span> not support such automatic executable detection.
-The following versions of gdbserver support it:
-- Upstream version of gdbserver <span class="o">(</span>unsupported<span class="o">)</span> <span class="m">7</span>.10 or later
-- Red Hat Developer Toolset <span class="o">(</span>DTS<span class="o">)</span> version of gdbserver from DTS <span class="m">4</span>.0 or later <span class="o">(</span>only on x86_64<span class="o">)</span>
-- RHEL-7.3 versions of gdbserver <span class="o">(</span>on any architecture<span class="o">)</span>
-0x000000007b025eb4 <span class="k">in</span> OsGdbArchInit <span class="o">()</span>
-Support <span class="k">for</span> the <span class="s1">&#39;vRun&#39;</span> packet on the current remote target is <span class="nb">set</span> to <span class="s2">&quot;off&quot;</span>.
+For<span class="w"> </span>help,<span class="w"> </span><span class="nb">type</span><span class="w"> </span><span class="s2">&quot;help&quot;</span>.
+Type<span class="w"> </span><span class="s2">&quot;apropos word&quot;</span><span class="w"> </span>to<span class="w"> </span>search<span class="w"> </span><span class="k">for</span><span class="w"> </span>commands<span class="w"> </span>related<span class="w"> </span>to<span class="w"> </span><span class="s2">&quot;word&quot;</span>...
+Reading<span class="w"> </span>symbols<span class="w"> </span>from<span class="w"> </span>/root/raspi4.elf...
+Remote<span class="w"> </span>debugging<span class="w"> </span>using<span class="w"> </span>:5678
+warning:<span class="w"> </span>Remote<span class="w"> </span>gdbserver<span class="w"> </span>does<span class="w"> </span>not<span class="w"> </span>support<span class="w"> </span>determining<span class="w"> </span>executable<span class="w"> </span>automatically.
+RHEL<span class="w"> </span>&lt;<span class="o">=</span><span class="m">6</span>.8<span class="w"> </span>and<span class="w"> </span>&lt;<span class="o">=</span><span class="m">7</span>.2<span class="w"> </span>versions<span class="w"> </span>of<span class="w"> </span>gdbserver<span class="w"> </span><span class="k">do</span><span class="w"> </span>not<span class="w"> </span>support<span class="w"> </span>such<span class="w"> </span>automatic<span class="w"> </span>executable<span class="w"> </span>detection.
+The<span class="w"> </span>following<span class="w"> </span>versions<span class="w"> </span>of<span class="w"> </span>gdbserver<span class="w"> </span>support<span class="w"> </span>it:
+-<span class="w"> </span>Upstream<span class="w"> </span>version<span class="w"> </span>of<span class="w"> </span>gdbserver<span class="w"> </span><span class="o">(</span>unsupported<span class="o">)</span><span class="w"> </span><span class="m">7</span>.10<span class="w"> </span>or<span class="w"> </span>later
+-<span class="w"> </span>Red<span class="w"> </span>Hat<span class="w"> </span>Developer<span class="w"> </span>Toolset<span class="w"> </span><span class="o">(</span>DTS<span class="o">)</span><span class="w"> </span>version<span class="w"> </span>of<span class="w"> </span>gdbserver<span class="w"> </span>from<span class="w"> </span>DTS<span class="w"> </span><span class="m">4</span>.0<span class="w"> </span>or<span class="w"> </span>later<span class="w"> </span><span class="o">(</span>only<span class="w"> </span>on<span class="w"> </span>x86_64<span class="o">)</span>
+-<span class="w"> </span>RHEL-7.3<span class="w"> </span>versions<span class="w"> </span>of<span class="w"> </span>gdbserver<span class="w"> </span><span class="o">(</span>on<span class="w"> </span>any<span class="w"> </span>architecture<span class="o">)</span>
+0x000000007b025eb4<span class="w"> </span><span class="k">in</span><span class="w"> </span>OsGdbArchInit<span class="w"> </span><span class="o">()</span>
+Support<span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span><span class="s1">&#39;vRun&#39;</span><span class="w"> </span>packet<span class="w"> </span>on<span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>remote<span class="w"> </span>target<span class="w"> </span>is<span class="w"> </span><span class="nb">set</span><span class="w"> </span>to<span class="w"> </span><span class="s2">&quot;off&quot;</span>.
 <span class="o">(</span>gdb<span class="o">)</span>
 </pre></div>
 </div>
 <p>第一行打印的gdb命令是输入 <code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">gdb</span> <span class="pre">&lt;name&gt;</span></code> 后所实际执行的gdb命令，
 用户可以依据此提示进一步调试。之后，用户进入GDB命令行，可以执行相应的GDB命令。
 接下来会演示一些当前Uniproton支持的调测命令：</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>gdb<span class="o">)</span> b OsTestInit
-warning: could not convert <span class="s1">&#39;OsTestInit&#39;</span> from the host encoding <span class="o">(</span>ANSI_X3.4-1968<span class="o">)</span> to UTF-32.
-This normally should not happen, please file a bug report.
-Breakpoint <span class="m">1</span> at 0x7b007b4c: file /home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c, line <span class="m">42</span>.
-<span class="o">(</span>gdb<span class="o">)</span> c
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>b<span class="w"> </span>OsTestInit
+warning:<span class="w"> </span>could<span class="w"> </span>not<span class="w"> </span>convert<span class="w"> </span><span class="s1">&#39;OsTestInit&#39;</span><span class="w"> </span>from<span class="w"> </span>the<span class="w"> </span>host<span class="w"> </span>encoding<span class="w"> </span><span class="o">(</span>ANSI_X3.4-1968<span class="o">)</span><span class="w"> </span>to<span class="w"> </span>UTF-32.
+This<span class="w"> </span>normally<span class="w"> </span>should<span class="w"> </span>not<span class="w"> </span>happen,<span class="w"> </span>please<span class="w"> </span>file<span class="w"> </span>a<span class="w"> </span>bug<span class="w"> </span>report.
+Breakpoint<span class="w"> </span><span class="m">1</span><span class="w"> </span>at<span class="w"> </span>0x7b007b4c:<span class="w"> </span>file<span class="w"> </span>/home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c,<span class="w"> </span>line<span class="w"> </span><span class="m">42</span>.
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>c
 Continuing.
 
-Breakpoint <span class="m">1</span>, OsTestInit <span class="o">()</span> at /home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c:42
-warning: <span class="m">42</span>     /home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c: No such file or directory
-<span class="o">(</span>gdb<span class="o">)</span> s
-<span class="m">43</span>      <span class="k">in</span> /home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c
-<span class="o">(</span>gdb<span class="o">)</span> p param
-<span class="nv">$1</span> <span class="o">=</span> <span class="o">{</span><span class="nv">taskEntry</span> <span class="o">=</span> 0x0, <span class="nv">taskPrio</span> <span class="o">=</span> <span class="m">0</span>, <span class="nv">reserved</span> <span class="o">=</span> <span class="m">0</span>, <span class="nv">args</span> <span class="o">=</span> <span class="o">{</span><span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">2063689196</span><span class="o">}</span>,
-<span class="nv">stackSize</span> <span class="o">=</span> <span class="m">2063629368</span>,
-<span class="nv">name</span> <span class="o">=</span> 0x2307b01dd48 &lt;error: Cannot access memory at address 0x2307b01dd48&gt;, <span class="nv">stackAddr</span> <span class="o">=</span> <span class="m">2064460304</span><span class="o">}</span>
-<span class="o">(</span>gdb<span class="o">)</span> s
-<span class="m">45</span>      <span class="k">in</span> /home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c
-<span class="o">(</span>gdb<span class="o">)</span> p param
-<span class="nv">$2</span> <span class="o">=</span> <span class="o">{</span><span class="nv">taskEntry</span> <span class="o">=</span> 0x0, <span class="nv">taskPrio</span> <span class="o">=</span> <span class="m">0</span>, <span class="nv">reserved</span> <span class="o">=</span> <span class="m">0</span>, <span class="nv">args</span> <span class="o">=</span> <span class="o">{</span><span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span><span class="o">}</span>, <span class="nv">stackSize</span> <span class="o">=</span> <span class="m">0</span>, <span class="nv">name</span> <span class="o">=</span> 0x0,
-<span class="nv">stackAddr</span> <span class="o">=</span> <span class="m">0</span><span class="o">}</span>
-<span class="o">(</span>gdb<span class="o">)</span> watch param.taskPrio
-Hardware watchpoint <span class="m">2</span>: param.taskPrio
-<span class="o">(</span>gdb<span class="o">)</span> c
+Breakpoint<span class="w"> </span><span class="m">1</span>,<span class="w"> </span>OsTestInit<span class="w"> </span><span class="o">()</span><span class="w"> </span>at<span class="w"> </span>/home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c:42
+warning:<span class="w"> </span><span class="m">42</span><span class="w">     </span>/home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c:<span class="w"> </span>No<span class="w"> </span>such<span class="w"> </span>file<span class="w"> </span>or<span class="w"> </span>directory
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>s
+<span class="m">43</span><span class="w">      </span><span class="k">in</span><span class="w"> </span>/home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p<span class="w"> </span>param
+<span class="nv">$1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="nv">taskEntry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0x0,<span class="w"> </span><span class="nv">taskPrio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="nv">reserved</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="nv">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="m">0</span>,<span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="m">2063689196</span><span class="o">}</span>,
+<span class="nv">stackSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2063629368</span>,
+<span class="nv">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0x2307b01dd48<span class="w"> </span>&lt;error:<span class="w"> </span>Cannot<span class="w"> </span>access<span class="w"> </span>memory<span class="w"> </span>at<span class="w"> </span>address<span class="w"> </span>0x2307b01dd48&gt;,<span class="w"> </span><span class="nv">stackAddr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2064460304</span><span class="o">}</span>
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>s
+<span class="m">45</span><span class="w">      </span><span class="k">in</span><span class="w"> </span>/home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p<span class="w"> </span>param
+<span class="nv">$2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="nv">taskEntry</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0x0,<span class="w"> </span><span class="nv">taskPrio</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="nv">reserved</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="nv">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">{</span><span class="m">0</span>,<span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="m">0</span><span class="o">}</span>,<span class="w"> </span><span class="nv">stackSize</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="nv">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0x0,
+<span class="nv">stackAddr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="o">}</span>
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>watch<span class="w"> </span>param.taskPrio
+Hardware<span class="w"> </span>watchpoint<span class="w"> </span><span class="m">2</span>:<span class="w"> </span>param.taskPrio
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>c
 Continuing.
 
-Hardware watchpoint <span class="m">2</span>: param.taskPrio
+Hardware<span class="w"> </span>watchpoint<span class="w"> </span><span class="m">2</span>:<span class="w"> </span>param.taskPrio
 
-Old <span class="nv">value</span> <span class="o">=</span> <span class="m">0</span>
-New <span class="nv">value</span> <span class="o">=</span> <span class="m">25</span>
-OsTestInit <span class="o">()</span> at /home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c:48
-<span class="m">48</span>      <span class="k">in</span> /home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c
-<span class="o">(</span>gdb<span class="o">)</span> c
+Old<span class="w"> </span><span class="nv">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
+New<span class="w"> </span><span class="nv">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">25</span>
+OsTestInit<span class="w"> </span><span class="o">()</span><span class="w"> </span>at<span class="w"> </span>/home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c:48
+<span class="m">48</span><span class="w">      </span><span class="k">in</span><span class="w"> </span>/home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>c
 Continuing.
 
-Watchpoint <span class="m">2</span> deleted because the program has left the block <span class="k">in</span>
-which its expression is valid.
-0x000000007b007c54 <span class="k">in</span> PRT_AppInit <span class="o">()</span>
-    at /home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c:86
-<span class="m">86</span>      <span class="k">in</span> /home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c
-<span class="o">(</span>gdb<span class="o">)</span> c
+Watchpoint<span class="w"> </span><span class="m">2</span><span class="w"> </span>deleted<span class="w"> </span>because<span class="w"> </span>the<span class="w"> </span>program<span class="w"> </span>has<span class="w"> </span>left<span class="w"> </span>the<span class="w"> </span>block<span class="w"> </span><span class="k">in</span>
+which<span class="w"> </span>its<span class="w"> </span>expression<span class="w"> </span>is<span class="w"> </span>valid.
+0x000000007b007c54<span class="w"> </span><span class="k">in</span><span class="w"> </span>PRT_AppInit<span class="w"> </span><span class="o">()</span>
+<span class="w">    </span>at<span class="w"> </span>/home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c:86
+<span class="m">86</span><span class="w">      </span><span class="k">in</span><span class="w"> </span>/home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>c
 Continuing.
 ^C
-Program received signal SIGINT, Interrupt.
-0x000000007b01da84 <span class="k">in</span> PRT_SemPend <span class="o">()</span>
-<span class="o">(</span>gdb<span class="o">)</span> run
-The program being debugged has been started already.
-Start it from the beginning? <span class="o">(</span>y or n<span class="o">)</span> y
-Starting program: /root/raspi4.elf
-warning: Remote gdbserver does not support determining executable automatically.
-RHEL &lt;<span class="o">=</span><span class="m">6</span>.8 and &lt;<span class="o">=</span><span class="m">7</span>.2 versions of gdbserver <span class="k">do</span> not support such automatic executable detection.
-The following versions of gdbserver support it:
-- Upstream version of gdbserver <span class="o">(</span>unsupported<span class="o">)</span> <span class="m">7</span>.10 or later
-- Red Hat Developer Toolset <span class="o">(</span>DTS<span class="o">)</span> version of gdbserver from DTS <span class="m">4</span>.0 or later <span class="o">(</span>only on x86_64<span class="o">)</span>
-- RHEL-7.3 versions of gdbserver <span class="o">(</span>on any architecture<span class="o">)</span>
+Program<span class="w"> </span>received<span class="w"> </span>signal<span class="w"> </span>SIGINT,<span class="w"> </span>Interrupt.
+0x000000007b01da84<span class="w"> </span><span class="k">in</span><span class="w"> </span>PRT_SemPend<span class="w"> </span><span class="o">()</span>
+<span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>run
+The<span class="w"> </span>program<span class="w"> </span>being<span class="w"> </span>debugged<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>started<span class="w"> </span>already.
+Start<span class="w"> </span>it<span class="w"> </span>from<span class="w"> </span>the<span class="w"> </span>beginning?<span class="w"> </span><span class="o">(</span>y<span class="w"> </span>or<span class="w"> </span>n<span class="o">)</span><span class="w"> </span>y
+Starting<span class="w"> </span>program:<span class="w"> </span>/root/raspi4.elf
+warning:<span class="w"> </span>Remote<span class="w"> </span>gdbserver<span class="w"> </span>does<span class="w"> </span>not<span class="w"> </span>support<span class="w"> </span>determining<span class="w"> </span>executable<span class="w"> </span>automatically.
+RHEL<span class="w"> </span>&lt;<span class="o">=</span><span class="m">6</span>.8<span class="w"> </span>and<span class="w"> </span>&lt;<span class="o">=</span><span class="m">7</span>.2<span class="w"> </span>versions<span class="w"> </span>of<span class="w"> </span>gdbserver<span class="w"> </span><span class="k">do</span><span class="w"> </span>not<span class="w"> </span>support<span class="w"> </span>such<span class="w"> </span>automatic<span class="w"> </span>executable<span class="w"> </span>detection.
+The<span class="w"> </span>following<span class="w"> </span>versions<span class="w"> </span>of<span class="w"> </span>gdbserver<span class="w"> </span>support<span class="w"> </span>it:
+-<span class="w"> </span>Upstream<span class="w"> </span>version<span class="w"> </span>of<span class="w"> </span>gdbserver<span class="w"> </span><span class="o">(</span>unsupported<span class="o">)</span><span class="w"> </span><span class="m">7</span>.10<span class="w"> </span>or<span class="w"> </span>later
+-<span class="w"> </span>Red<span class="w"> </span>Hat<span class="w"> </span>Developer<span class="w"> </span>Toolset<span class="w"> </span><span class="o">(</span>DTS<span class="o">)</span><span class="w"> </span>version<span class="w"> </span>of<span class="w"> </span>gdbserver<span class="w"> </span>from<span class="w"> </span>DTS<span class="w"> </span><span class="m">4</span>.0<span class="w"> </span>or<span class="w"> </span>later<span class="w"> </span><span class="o">(</span>only<span class="w"> </span>on<span class="w"> </span>x86_64<span class="o">)</span>
+-<span class="w"> </span>RHEL-7.3<span class="w"> </span>versions<span class="w"> </span>of<span class="w"> </span>gdbserver<span class="w"> </span><span class="o">(</span>on<span class="w"> </span>any<span class="w"> </span>architecture<span class="o">)</span>
 
-Breakpoint <span class="m">1</span>, OsTestInit <span class="o">()</span> at /home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c:42
-warning: <span class="m">42</span>     /home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c: No such file or directory
+Breakpoint<span class="w"> </span><span class="m">1</span>,<span class="w"> </span>OsTestInit<span class="w"> </span><span class="o">()</span><span class="w"> </span>at<span class="w"> </span>/home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c:42
+warning:<span class="w"> </span><span class="m">42</span><span class="w">     </span>/home/zzz/repo/private/UniProton/demos/raspi4/apps/openamp/main.c:<span class="w"> </span>No<span class="w"> </span>such<span class="w"> </span>file<span class="w"> </span>or<span class="w"> </span>directory
 <span class="o">(</span>gdb<span class="o">)</span>
 </pre></div>
 </div>
@@ -255,9 +258,9 @@ warning: <span class="m">42</span>     /home/zzz/repo/private/UniProton/demos/ra
 </ol>
 <p>输入 <code class="docutils literal notranslate"><span class="pre">quit</span></code> 命令退出GDB调试模式，之后，Uniproton会清除所有断点，并进入正常的运行状态。
 之后，如果想停止Uniproton，可以输入如下命令：</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ mica stop uniproton-gdb
-stopping uniproton-gdb...
-stop uniproton-gdb successfully!
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mica<span class="w"> </span>stop<span class="w"> </span>uniproton-gdb
+stopping<span class="w"> </span>uniproton-gdb...
+stop<span class="w"> </span>uniproton-gdb<span class="w"> </span>successfully!
 </pre></div>
 </div>
 <div class="admonition note">
@@ -268,10 +271,10 @@ stop uniproton-gdb successfully!
 </div>
 </section>
 <section id="x86uniproton">
-<h2>基于x86工控机调测Uniproton<a class="headerlink" href="#x86uniproton" title="Permalink to this headline">¶</a></h2>
+<h2>基于x86工控机调测Uniproton<a class="headerlink" href="#x86uniproton" title="Link to this heading">¶</a></h2>
 <p>工控机的具体介绍 <a class="reference internal" href="../../../bsp/x86/HVAEIPC-M10/m10.html#hvaepic-m10"><span class="std std-ref">工控机</span></a> 。</p>
 <section id="id1">
-<h3>相关接口定义<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<h3>相关接口定义<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
 <p>首先，对于Client OS而言，需要支持GDB stub。
 当前MICA框架仅支持基于简单ring buffer通信的方式进行GDB stub信息的交互，
 ring buffer的地址和大小在MCS仓库中 <code class="docutils literal notranslate"><span class="pre">library/include/mcs/mica_debug_ring_buffer.h</span></code> 中定义：</p>
@@ -285,7 +288,7 @@ ring buffer的地址和大小在MCS仓库中 <code class="docutils literal notra
 <p>ring buffer 的定义在 <code class="docutils literal notranslate"><span class="pre">library/include/mcs/ring_buffer.h</span></code> 文件中。</p>
 </section>
 <section id="id2">
-<h3>使用方法<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3>使用方法<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
 <p>首先，需要构建含有MICA的openEuler Embedded镜像，请参考 <a class="reference internal" href="../build.html#mcs-build"><span class="std std-ref">MICA镜像构建指南</span></a> 。</p>
 <p>然后，需要生成适配了GDB stub 的 Uniproton，参考 <a class="reference external" href="https://gitee.com/openeuler/UniProton/blob/master/doc/gdbstub.md">UniProton GDB stub 构建指南</a> 。</p>
 <p>在运行命令时，需要在启动MICA时加上 <code class="docutils literal notranslate"><span class="pre">-d</span></code> 参数。
@@ -297,11 +300,11 @@ ring buffer的地址和大小在MCS仓库中 <code class="docutils literal notra
 需要用 <code class="docutils literal notranslate"><span class="pre">file</span></code> 命令额外指定包含符号表的可执行文件的路径。</p>
 <p>以下是启动MICA调试模式的命令：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>若使用的是标准镜像，则使用mica脚本启动MICA：
-<span class="gp">$ </span>mica start /path/to/executable -d
+<span class="gp">$ </span>mica<span class="w"> </span>start<span class="w"> </span>/path/to/executable<span class="w"> </span>-d
 <span class="gp"># </span>若没有mica脚本，则使用如下命令启动MICA：
-<span class="gp">$ </span>insmod /path/to/mcs_km.ko <span class="nv">rmem_base</span><span class="o">=</span>0x118000000 <span class="nv">rmem_size</span><span class="o">=</span>0x10000000
+<span class="gp">$ </span>insmod<span class="w"> </span>/path/to/mcs_km.ko<span class="w"> </span><span class="nv">rmem_base</span><span class="o">=</span>0x118000000<span class="w"> </span><span class="nv">rmem_size</span><span class="o">=</span>0x10000000
 <span class="gp"># </span>启动MICA调试模式：
-<span class="gp">$ </span>/path/to/mica_main -c <span class="m">3</span> -t /path/to/executable -a 0x118000000 -b /path/to/ap_boot -d
+<span class="gp">$ </span>/path/to/mica_main<span class="w"> </span>-c<span class="w"> </span><span class="m">3</span><span class="w"> </span>-t<span class="w"> </span>/path/to/executable<span class="w"> </span>-a<span class="w"> </span>0x118000000<span class="w"> </span>-b<span class="w"> </span>/path/to/ap_boot<span class="w"> </span>-d
 <span class="go">...</span>
 <span class="go">MICA gdb proxy server: starting...</span>
 <span class="go">GNU gdb (GDB) 12.1</span>
@@ -364,8 +367,18 @@ Uniproton会清除所有断点，并进入正常的运行状态。</p>
   </span>
   <div class="rst-other-versions">
     <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../../24.03-lts/features/mica/services/debug.html">24.03-lts</a></dd>
+      <dd><a href="../../../../llvm-toolchain-v0.1.1/index.html">llvm-toolchain-v0.1.1</a></dd>
+      <dd><a href="../../../../nativesdk-v0.1.2/index.html">nativesdk-v0.1.2</a></dd>
+      <dd><a href="../../../../nativesdk-v0.1.3/features/mica/services/debug.html">nativesdk-v0.1.3</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.5/index.html">toolchains-v0.1.5</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.7/features/mica/services/debug.html">toolchains-v0.1.7</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.8/features/mica/services/debug.html">toolchains-v0.1.8</a></dd>
+    </dl>
+    <dl>
       <dt>Branches</dt>
-      <dd><a href="../../../../master/features/mica/services/debug.html">master</a></dd>
+      <dd><a href="../../../../master/index.html">master</a></dd>
       <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
       <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
       <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
@@ -374,7 +387,6 @@ Uniproton会清除所有断点，并进入正常的运行状态。</p>
       <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
       <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
       <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
-      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
       <dd><a href="../../../../openEuler-24.03-LTS/features/mica/services/debug.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="debug.html">openEuler-24.09</a></dd>
       <dd><a href="../../../../openEuler-25.03/features/mica/services/debug.html">openEuler-25.03</a></dd>
