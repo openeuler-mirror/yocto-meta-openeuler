@@ -1,22 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>clang/llvm 编译工具链支持 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
-    <link rel="shortcut icon" href="../_static/favicon.ico"/>
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=fdb61a23" />
+
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -29,11 +28,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> openEuler Embedded在线文档
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -85,9 +88,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="index.html">关键特性</a> &raquo;</li>
-      <li>clang/llvm 编译工具链支持</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">关键特性</a></li>
+      <li class="breadcrumb-item active">clang/llvm 编译工具链支持</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -97,18 +100,13 @@
            <div itemprop="articleBody">
              
   <section id="clang-llvm">
-<span id="id1"></span><h1>clang/llvm 编译工具链支持<a class="headerlink" href="#clang-llvm" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>clang/llvm 编译工具链支持<a class="headerlink" href="#clang-llvm" title="Link to this heading">¶</a></h1>
 <p>本章介绍如何使用 clang/llvm 编译工具链构建 openEuler Embedded。</p>
 <section id="id2">
-<h2>clang/llvm 介绍<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<h2>clang/llvm 介绍<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <p>LLVM 项目是模块化和可重用编译器以及工具链的集合，clang 是其编译器前端。相比较于GNU编译工具链，其优势在于编译速度更快，静态检查工具更加完善，可拓展性更强等等。</p>
 <p>GNU工具链与LLVM工具链主要区别如下表：</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 22%" />
-<col style="width: 34%" />
-<col style="width: 44%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>项目</p></th>
 <th class="head"><p>GNU工具链</p></th>
@@ -164,12 +162,12 @@
 </table>
 </section>
 <section id="meta-clang">
-<h2>meta-clang 层介绍<a class="headerlink" href="#meta-clang" title="Permalink to this headline">¶</a></h2>
+<h2>meta-clang 层介绍<a class="headerlink" href="#meta-clang" title="Link to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">meta-clang</span></code> 层包含使用 clang/llvm 编译器工具链所需要的recipes和bbclass文件，由于 openeuler 使用 external-toolchain 机制，无需在 yocto 工程中编译 clang/llvm 工具链。</p>
 <p>meta-clang层中主要起作用的是clang.bbclass文件，该文件用来控制编译时传入clang/llvm编译器工具链变量和依赖，除此之外，目前还有一小部分软件包并不完美支持使用clang/llvm来编译，nonclangable.conf文件记录了这些软件包的情况。</p>
 </section>
 <section id="id3">
-<h2>构建指导<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<h2>构建指导<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
 <ol class="arabic">
 <li><p>clang/llvm 编译工具链获取：</p>
 <ul>
@@ -262,8 +260,18 @@
   </span>
   <div class="rst-other-versions">
     <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../24.03-lts/features/clang_llvm.html">24.03-lts</a></dd>
+      <dd><a href="../../llvm-toolchain-v0.1.1/features/clang_llvm.html">llvm-toolchain-v0.1.1</a></dd>
+      <dd><a href="../../nativesdk-v0.1.2/features/clang_llvm.html">nativesdk-v0.1.2</a></dd>
+      <dd><a href="../../nativesdk-v0.1.3/features/clang_llvm.html">nativesdk-v0.1.3</a></dd>
+      <dd><a href="../../toolchains-v0.1.5/features/clang_llvm.html">toolchains-v0.1.5</a></dd>
+      <dd><a href="../../toolchains-v0.1.7/features/clang_llvm.html">toolchains-v0.1.7</a></dd>
+      <dd><a href="../../toolchains-v0.1.8/features/clang_llvm.html">toolchains-v0.1.8</a></dd>
+    </dl>
+    <dl>
       <dt>Branches</dt>
-      <dd><a href="../../master/features/clang_llvm.html">master</a></dd>
+      <dd><a href="../../master/index.html">master</a></dd>
       <dd><a href="../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
       <dd><a href="../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
       <dd><a href="../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
@@ -272,7 +280,6 @@
       <dd><a href="../../openEuler-22.03-LTS-SP4/features/clang_llvm.html">openEuler-22.03-LTS-SP4</a></dd>
       <dd><a href="../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
       <dd><a href="clang_llvm.html">openEuler-23.03</a></dd>
-      <dd><a href="../../openEuler-23.09/features/clang_llvm.html">openEuler-23.09</a></dd>
       <dd><a href="../../openEuler-24.03-LTS/features/clang_llvm.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../openEuler-24.09/features/clang_llvm.html">openEuler-24.09</a></dd>
       <dd><a href="../../openEuler-25.03/features/clang_llvm.html">openEuler-25.03</a></dd>
