@@ -5,11 +5,10 @@ PV = "1.5"
 inherit oee-archive
 
 SRC_URI:remove = " \
-            https://github.com/arsv/perl-cross/releases/download/1.5/perl-cross-1.5.tar.gz;name=perl-cross \
             file://0001-Makefile-check-the-file-if-patched-or-not.patch \
 "
 
 # get tarball locally
 SRC_URI += "file://perl-cross-${PV}.tar.gz;name=perl-cross"
 
-SRC_URI[sha256sum] = "d744a390939e2ebb9a12f6725b4d9c19255a141d90031eff90ea183fdfcbf211"
+SRC_URI[perl-cross.sha256sum] = "d744a390939e2ebb9a12f6725b4d9c19255a141d90031eff90ea183fdfcbf211"

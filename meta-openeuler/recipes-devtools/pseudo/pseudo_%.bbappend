@@ -1,6 +1,6 @@
+# src verion is in yocto-pseudo repo
+# prebuilt version is in oee-archive repo
 OPENEULER_LOCAL_NAME = "yocto-pseudo"
-
-OPENEULER_REPO_NAMES = "yocto-pseudo"
 
 inherit oee-archive
 OEE_ARCHIVE_SUB_DIR = "pseudo"
