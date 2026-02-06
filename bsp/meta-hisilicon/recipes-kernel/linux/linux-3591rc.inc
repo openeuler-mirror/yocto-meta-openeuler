@@ -22,7 +22,9 @@ SRC_URI:append = " \
 	 \
     ', ' \
         file://patch/3591rc/0001-add-3591-bsp-depends.patch \
+	file://patch/3591rc/0001-add-3591b-net-support-ascend-milan-support-hns3.patch \
         file://patch/3591rc/0002-add-securec-source-for-3591.patch \
+        file://patch/3591rc/0001-add-cert-for-3591.patch \
         file://patch/3591rc/make_oee_ko_compat.patch \
     ', d)} \
 "
