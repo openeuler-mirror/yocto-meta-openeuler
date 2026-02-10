@@ -1,0 +1,175 @@
+/dts-v1/;
+
+/memreserve/    0x0000000000000000 0x0000000000010000;
+/ {
+    compatible = "hisilicon,hi1910p-evb", "hisilicon,ascend610";
+    hisi,boardid = <0 2 1 4>;
+    aicpu_partial_good_enable = <0>;
+    #address-cells = <0x2>;
+    #size-cells = <0x2>;
+    interrupt-parent = <0x1>;
+    model = "OPI AI Station";
+
+    socworkmode: socworkmode {
+        compatible = "socworkmode";
+        is_actstd = <0>;
+        is_loadbalanc = <0>;
+        total_chipnum = <1>;
+        phy_log_map = <0>;
+        domain_mode = <0>;
+    };
+
+    soc {
+        compatible = "simple-bus";
+        #address-cells = <0x2>;
+        #size-cells = <0x2>;
+        ranges;
+
+        uart0: uart@840C0000 {
+            compatible = "arm,sbsa-uart";
+            reg = <0x0 0x840c0000 0x0 0x10000>;
+            interrupts = <0x0 0x147 0x4>;    /* interrupt 359 */
+            current-speed = <0x1c200>;
+        };
+
+        refclk150M: refclk150M {
+            compatible = "fixed-clock";
+            #clock-cells = <0>;
+            clock-frequency = <150000000>;
+            clock-output-names = "refclk";
+        };
+
+        uart1: uart@8B040000 {
+            compatible = "arm,pl011", "arm,primecell";
+            reg = <0x00 0x8b040000 0x00 0x1000>; //配置为UART基地址
+            interrupts = <0x00 0x13d 0x04>;       //配置UART中断号
+            current-speed = <0x1c200>;
+            arm,primecell-periphid = <0x00241011>;
+            clocks = <&refclk150M>;
+            clock-names = "apb_pclk";
+            no-flow-ctrl;  // Avoid chip uart register arrangement is inconsistent with pl011
+            pinctrl-names = "default", "idle";
+            pinctrl-0 = <&iomg002_pmx_func &iomg003_pmx_func>;    //工作状态
+            pinctrl-1 = <&iomg002_pmx_idle &iomg003_pmx_idle>;    //休眠状态
+        };
+        uart2: uart@8B050000 {
+            compatible = "arm,pl011", "arm,primecell";
+            reg = < 0x00 0x8b050000 0x00 0x1000 >; //配置为UART基地址
+            interrupts = < 0x00 0x13e 0x04 >;       //配置UART中断号
+            current-speed = < 0x1c200 >;
+            arm,primecell-periphid = <0x00241011>;
+            clocks = <&refclk150M>;
+            clock-names = "apb_pclk";
+            no-flow-ctrl;  // Avoid chip uart register arrangement is inconsistent with pl011
+            pinctrl-names = "default", "idle";
+            pinctrl-0 = <&iomg005_pmx_func &iomg004_pmx_func>;    //工作状态
+            pinctrl-1 = <&iomg005_pmx_idle &iomg004_pmx_idle>;    //休眠状态
+        };
+	//uart9: uart@A4720000 {
+        //    compatible = "arm,pl011", "arm,primecell";
+        //    reg = < 0x00 0xA4720000 0x00 0x1000 >; //配置为UART基地址
+        //    interrupts = < 0x00 0x14b 0x04 >;       //配置UART中断号
+        //    current-speed = < 0x1c200 >;
+        //    arm,primecell-periphid = <0x00241011>;
+        //    clocks = <&refclk200M>;
+        //    clock-names = "apb_pclk";
+        //    no-flow-ctrl;  // Avoid chip uart register arrangement is inconsistent with pl011
+        //    pinctrl-names = "default", "idle";
+        //    pinctrl-0 = <&iomg005_pmx_func &iomg004_pmx_func>;    //工作状态
+        //    pinctrl-1 = <&iomg005_pmx_idle &iomg004_pmx_idle>;    //休眠状态
+        //};
+
+    };
+
+    leds: gpio-leds {
+        compatible = "gpio-leds";
+        pinctrl-names = "default", "idle";
+        pinctrl-0 = <&gpio189_pmx_func &iomg060_pmx_func &iomg061_pmx_func &iomg062_pmx_func &iomg063_pmx_func &iomg053_pmx_func &iomg064_pmx_func &iomg065_pmx_func>;
+        pinctrl-1 = <&gpio189_pmx_idle &iomg060_pmx_idle &iomg061_pmx_idle &iomg062_pmx_idle &iomg063_pmx_idle &iomg053_pmx_idle &iomg064_pmx_idle &iomg065_pmx_idle>;
+        status = "okay";
+
+        led@0 {
+            gpios = <&portf 0x1d 0>;
+            label = "status_led";
+            linux,default-trigger = "heartbeat";
+            linux,default-trigger-delay-ms = <0>;
+        };
+
+        led1@1 {
+            gpios = <&portb 0x1c 0>;
+            label = "reset";
+            linux,default-trigger = "default-on";
+        };
+
+        led2@2 {
+            gpios = <&portb 0x1d 0>;
+            label = "int";
+            linux,default-trigger = "default-on";
+        };
+
+        led3@3 {
+            gpios = <&portb 0x1e 0>;
+            label = "reset2";
+            linux,default-trigger = "default-on";
+        };
+
+        led4@4 {
+            gpios = <&portb 0x1f 0>;
+            label = "int2";
+            linux,default-trigger = "default-on";
+        };
+
+        led5@5 {
+            gpios = <&portb 0x15 0>;
+            label = "wifi_chip_en";
+            linux,default-trigger = "default-on";
+        };
+
+        led6@6 {
+            gpios = <&portc 0x0 0>;
+            label = "wifi_en";
+            linux,default-trigger = "default-on";
+        };
+
+        led7@7 {
+            gpios = <&portc 0x1 0>;
+            label = "bt_en";
+            linux,default-trigger = "default-on";
+        };
+    };
+
+    chosen {
+        bootargs = "console=ttyAMA0,115200 crashkernel=200M rw rdinit=/sbin/init root=/dev/cpsVG/rootfs selinux=0 systemd.debug_shell syslog no_console_suspend fbcon=map:3 earlycon=pl011,mmio32,0x840c0000 initrd=0x880002100,450M rootwait log_redirect=0x1fc000@0xb101000 cma=256M default_hugepagesz=2M panic=3 ascend_enable_all sbsa_gwdt.action=2 watchdog.sysfs_write=1 use_kallsyms_lookup_symbol hardlockup_cpu_freq=1900000 coredump_filter=0x31 enable_ascend_share_pool enable_sp_multi_group_mode bootdot=0x1C8@0x312F1108 osname=AOS_DP loglevel=1";
+    };
+
+    // 64M
+    // chosen {
+    //     bootargs = "console=ttyAMA0,115200 crashkernel=200M rw rdinit=/sbin/init root=/dev/cpsVG/rootfs selinux=0 systemd.debug_shell syslog no_console_suspend fbcon=map:3 earlycon=pl011,mmio32,0x840c0000 initrd=0x880002100,450M rootwait log_redirect=0x1fc000@0xb101000 cma=256M default_hugepagesz=2M panic=3 ascend_enable_all sbsa_gwdt.action=2 watchdog.sysfs_write=1 use_kallsyms_lookup_symbol hardlockup_cpu_freq=1900000 coredump_filter=0x31 enable_ascend_share_pool enable_sp_multi_group_mode bootdot=0x1C8@0x312F1108 osname=AOS_DP loglevel=1 pci=assign-busses,realloc,hpmemsize=64M,nocrs";
+    // };
+
+    /include/ "helper-kernel-1p-AG.dtsi"
+    /include/ "hi1910p-lp.dtsi"
+    /include/ "hi1910p-fpga-mntn-dc.dtsi"
+    /include/ "hi1910p-smmu-common.dtsi"
+    /include/ "hi1910p-retr.dtsi"
+    /include/ "hi1910p-iTrustee.dtsi"
+    /include/ "hi1910p-asic-gpio.dtsi"
+    /include/ "helper-gpio-pinctrl-925.dtsi"
+    /include/ "hi1910p-ipcdrv.dtsi"
+    /include/ "hi1910p-server-asic-spi.dtsi"
+    /include/ "hi1910p-server-asic-i2c.dtsi"
+    /include/ "helper-evb-emmc.dtsi"
+    /include/ "hi1910p-ts-dc-drv.dtsi"
+    /include/ "hi1910p-dc-fpga-devdrv.dtsi"
+    /include/ "hi1910p-fpga-hidvpp.dtsi"
+    /include/ "hi1910p-mbigen-peri.dtsi"
+    /include/ "hi1910p-mbigen-io.dtsi"
+    /include/ "hi1910p-mbigen-media.dtsi"
+    /include/ "hi1910p-mbigen-ao.dtsi"
+    /include/ "hi1910p-evb-svm.dtsi"
+    /include/ "hi1910p-power-off.dtsi"
+    /include/ "hi1910p-soc-xge.dtsi"
+    /include/ "hi1910p-soc-asic-pci.dtsi"
+    /include/ "hi1910p-hsmdrv.dtsi"
+    /include/ "hi1910p-can-925.dtsi"
+};

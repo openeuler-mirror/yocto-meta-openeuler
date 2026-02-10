@@ -1,0 +1,179 @@
+resource_manage@0x1F0200000 {
+    compatible = "hisi,resource_manage","simple-bus";
+    #address-cells = <0x2>;
+    #size-cells = <0x2>;
+    ranges;
+
+    dev_hw = "Davinci";
+    dev_id = <0>;
+    chip_id = <0>;
+    die_id = <0>;
+
+    ts_subsys {
+        compatible = "ts_subsys","simple-bus";
+        ranges;
+
+        ts-0 {
+            compatible = "ts-0","simple-bus";
+            tsid = <0>;
+            #address-cells = <0x2>;
+            #size-cells = <0x2>;
+            ranges;
+
+            reg-node {
+                compatible = "reg-node";
+                reg = <0x5 0x00040000 0x0 0x10000>,
+                    <0x5 0x08000000 0x0 0x2000000>,
+                    <0x5 0x28000000 0x0 0x8000000>,
+                    <0x5 0x20028000 0x0 0x0004000>,
+                    <0x5 0x21000000 0x0 0x1000000>,
+                    <0x5 0x20800000 0x0 0x0800000>,
+                    <0x5 0x20008000 0x0 0x0008000>,
+                    <0x5 0x20004000 0x0 0x0004000>,
+                    <0x5 0x20100000 0x0 0x0100000>,
+                    <0x5 0x20200000 0x0 0x0100000>;
+
+                reg-names = "TS_SYSCTRL_REG",
+                    "TS_DOORBELL_REG",
+                    "TS_STARS_RTSQ_SCHED_REG",
+                    "TS_STARS_CQINT_REG",
+                    "TS_STARS_CDQM_REG",
+                    "TS_STARS_TOPIC_REG",
+                    "TS_STARS_INT_REG",
+                    "TS_STARS_RTSQ_CFG_REG",
+                    "TS_STARS_NOTIFY_TBL_REG",
+                    "TS_STARS_EVENT_TBL_NS_REG";
+            };
+
+            rsvmem-node {
+                compatible = "rsvmem-node";
+                reg = <0x5 0x00200000 0x0 0x20000>,
+                    <0x0 0x24240000 0x0 0x4800000>,
+                    <0x0 0x22000000 0x0 0x0008000>,
+                    <0x0 0x2223dc00 0x0 0x0000400>;
+
+                reg-names = "TS_SRAM_MEM",
+                    "TS_SQCQ_MEM",
+                    "TS_STARS_TOPIC_MAILBOX_MEM",
+                    "TSFW_SHR_MEM";
+            };
+
+           irq-node {
+                compatible = "irq-node","simple-bus";
+                stars-irq {
+                    compatible = "stars-irq";
+                    interrupt-parent = <&mbigen_stars>;
+                    irq-type = "lpi";
+                    interrupts = <594 4>, <595 4>, <596 4>, <597 4>,
+                            <598 4>, <599 4>, <600 4>, <601 4>,
+                            <602 4>, <603 4>, <604 4>, <605 4>,
+                            <606 4>, <607 4>, <608 4>, <609 4>,
+                            <610 4>, <611 4>, <612 4>, <613 4>,
+                            <614 4>, <615 4>, <616 4>, <617 4>,
+                            <618 4>, <619 4>, <620 4>, <621 4>,
+                            <622 4>, <623 4>, <624 4>, <625 4>,
+                            <626 4>, <627 4>;
+
+                    mbox_ack_irq {
+                        irq-index = <15>;
+                    };
+                    func_cq_irq {
+                        irq-index = <16>;
+                    };
+                    cq_update_irq {
+                        irq-index = <20>;
+                    };
+                    stars_cdqm_irq {
+                        irq-index = <25>;
+                    };
+                    stars_topic_irq {
+                        irq-index = <26>,<27>,<28>,<29>;
+                    };
+                    sq_send_trigger_irq {
+                        irq-index = <14>,<17>,<18>,<19>,<21>;
+                    };
+                    tscpu_stars_irq {
+                        irq-index = <0>,<1>,<2>,<3>,<4>,<5>,<6>,<7>,<8>,<9>,<10>,<11>,<12>,<13>;
+                    };
+                };
+            };
+
+            mia_res_node {
+                compatible = "mia-res-node";
+
+                mia_stars_stream {
+                    start = <0>;
+                    total_num = <512>;
+                    bitmap = <0x0 0xffff>;
+                    unit_per_bit = <32>;
+                };
+                mia_stars_event {
+                    start = <0>;
+                    total_num = <65536>;
+                    bitmap = <0x0 0xffff>;
+                    unit_per_bit = <4096>;
+                };
+                mia_stars_notify {
+                    start = <0>;
+                    total_num = <2048>;
+                    bitmap = <0x0 0xffff>;
+                    unit_per_bit = <128>;
+                };
+                mia_stars_model {
+                    start = <0>;
+                    total_num = <512>;
+                    bitmap = <0x0 0xffff>;
+                    unit_per_bit = <32>;
+                };
+                mia_stars_cmo {
+                    start = <1>;
+                    total_num = <65535>;
+                    bitmap = <0x0 0xffff>;
+                    unit_per_bit = <4095>;
+                };
+                mia_stars_rtsq {
+                    start = <0>;
+                    total_num = <512>;
+                    bitmap = <0x0 0xffff>;
+                    unit_per_bit = <32>;
+                };
+                mia_stars_rtcq {
+                    start = <0>;
+                    total_num = <512>;
+                    bitmap = <0x0 0xffff>;
+                    unit_per_bit = <32>;
+                };
+                mia_stars_cdq {
+                    start = <0>;
+                    total_num = <16>;
+                    bitmap = <0x0 0xffff>;
+                    unit_per_bit = <1>;
+                };
+                mia_maint_sq {
+                    start = <0>;
+                    total_num = <4>;
+                    bitmap = <0x0 0x1>;
+                    unit_per_bit = <4>;
+                };
+                mia_maint_cq {
+                    start = <0>;
+                    total_num = <10>;
+                    bitmap = <0x0 0x1>;
+                    unit_per_bit = <10>;
+                };
+                mia_stars_swsq {
+                    start = <0>;
+                    total_num = <16>;
+                    bitmap = <0x0 0x1>;
+                    unit_per_bit = <16>;
+                };
+                mia_stars_swcq {
+                    start = <0>;
+                    total_num = <16>;
+                    bitmap = <0x0 0x1>;
+                    unit_per_bit = <16>;
+                };
+            };
+        };
+    };
+};

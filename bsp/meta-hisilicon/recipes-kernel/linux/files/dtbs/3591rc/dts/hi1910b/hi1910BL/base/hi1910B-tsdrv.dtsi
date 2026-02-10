@@ -1,0 +1,43 @@
+devdrv@0x130000000 {
+    compatible = "hisi,mini-devdrv-device";
+    #address-cells = <0x2>;
+    #size-cells = <0x2>;
+
+    reg = <0x0 0xD0000000 0x0 0x1000000>,    /* 0 GICV3_base ? */
+        <0x4 0x00120000 0x0 0x10000>,  /* 1 Dispatch ? */
+        <0x0 0xC0140000 0x0 0x10000>,  /* 2 SYSCTL */
+        <0x5 0x20000000 0x0 0x20000000>,  /* 3 START_base */
+        <0x0 0xC01E0000 0x0 0x10000>; /* 4 ARM_RAS */
+
+    status = "ok";
+    chip_id = <0>;
+
+    aicpu,ts2ai_interrupt = <328>;
+    aicpu,host_interrpt = <312>;
+    aicpu,ipc_cpu_interrpt = <201>;
+    aicpu,ipc_mbx_interrpt = <213>;
+    aicpu,system_freq = <50000000>;
+
+    aicpu,esl_occupy_bitmap = <0xF0>;
+    aicpu,emu_occupy_bitmap = <0xF0>;
+    aicpu,fpga_occupy_bitmap = <0x02>;
+    aicpu,asic_occupy_bitmap = <0xFFFC>;
+
+    ts-0 {
+        compatible = "ts-0";
+        tsid = <0>;
+
+        ts_sysctl_paddr = <0x5 0x00040000>;
+        ts_sysctl_size = <0x10000>;
+        ts_doorbell_paddr = <0x5 0x08000000>;
+        ts_doorbell_size = <0x2000000>;
+        ts_sram_paddr = <0x5 0x00200000>;
+        ts_sram_size = <0x20000>;
+        stars_reg = <0x5 0x20000000>;
+        stars_size = <0x20000000>;
+    };
+};
+
+tsdrv@0x1F0230000 {
+    compatible = "hisi,tsdrv_device";
+};

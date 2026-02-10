@@ -15,7 +15,7 @@ absl-py \
 attrs \  
 "
 
-IMAGE_INSTALL += " libyaml elfutils sqlite3 "
+IMAGE_INSTALL += " libyaml elfutils sqlite3 ${@bb.utils.contains('DISTRO_FEATURES', '3591fullimg', 'ntpdate', '', d)} "
 
 # add kernel-module
 INSTALLMODULES += " \

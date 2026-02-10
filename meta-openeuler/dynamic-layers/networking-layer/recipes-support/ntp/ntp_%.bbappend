@@ -19,7 +19,6 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
            file://ntp-ssl-libs.patch \
            file://bugfix-fix-bind-port-in-debug-mode.patch \
            file://bugfix-fix-ifindex-length.patch \
-           file://fix-MD5-manpage.patch \
            file://backport-add-NULL-pointer-check-when-ntpd-deletes-the-last-interface.patch \
            file://backport-ntpd-abort-if-fail-to-drop-root.patch \
 "
