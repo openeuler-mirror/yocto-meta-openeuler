@@ -42,121 +42,121 @@ do_install () {
         install -d ${D}${sysconfdir}/rcS.d
         touch ${D}${sysconfdir}/rcS.d/S02initfs ${D}${sysconfdir}/rcS.d/S80network
         chmod 777 ${D}${sysconfdir}/rcS.d/S02initfs ${D}${sysconfdir}/rcS.d/S80network
-cat > ${D}${sysconfdir}/rcS.d/S02initfs << 'EOF'
-#!/bin/sh
+		cat > ${D}${sysconfdir}/rcS.d/S02initfs <<-'EOF'
+		#!/bin/sh
 
-RESIZE_DONE_FLAG="/etc/.resize2fs_done"
-if [ ! -f "$RESIZE_DONE_FLAG" ]; then
-	root=$(grep -o 'root=[^ ]*' /proc/cmdline | cut -d= -f2)
-	if /sbin/resize2fs "$root"; then
-		touch "$RESIZE_DONE_FLAG"
-	fi
-fi
-EOF
+		RESIZE_DONE_FLAG="/etc/.resize2fs_done"
+		if [ ! -f "$RESIZE_DONE_FLAG" ]; then
+		    root=$(grep -o 'root=[^ ]*' /proc/cmdline | cut -d= -f2)
+		    if /sbin/resize2fs "$root"; then
+		        touch "$RESIZE_DONE_FLAG"
+		    fi
+		fi
+		EOF
 
-cat > "${D}${sysconfdir}/rcS.d/S80network" << 'EOF'
-#!/bin/sh
+		cat > "${D}${sysconfdir}/rcS.d/S80network" <<-'EOF'
+		#!/bin/sh
 
-cat > /etc/resolv.conf << 'EORESOLV'
-nameserver 8.8.8.8
-nameserver 114.114.114.114
-nameserver 2001:4860:4860::8888
-nameserver 2001:4860:4860::8844
-EORESOLV
+		cat > /etc/resolv.conf << 'EORESOLV'
+		nameserver 8.8.8.8
+		nameserver 114.114.114.114
+		nameserver 2001:4860:4860::8888
+		nameserver 2001:4860:4860::8844
+		EORESOLV
 
-ipaddr=192.168.1.168
-bootp=
-gateway=192.168.1.1
-netmask=255.255.255.0
-hostname=
-netdev=eth0
-autoconf=
+		ipaddr=192.168.1.168
+		bootp=
+		gateway=192.168.1.1
+		netmask=255.255.255.0
+		hostname=
+		netdev=eth0
+		autoconf=
 
-for ipinfo in `cat /proc/cmdline`
-do
-        case "$ipinfo" in
-        ip=*)
-                for var in ipaddr bootp gateway netmask hostname netdev autoconf
-                do
-                        eval read $var
-                done << EOC
-                $(echo "$ipinfo" | sed "s/:/\n/g" | sed "s/^[    ]*$/-/g" | sed 's/ip=//')
-EOC
-                ipaddr=`echo "$ipaddr" | cut -d = -f 2`
-                [ x$ipaddr == x ] && ipaddr=x
-                ;;
-        esac
-done
+		for ipinfo in `cat /proc/cmdline`
+		do
+		        case "$ipinfo" in
+		        ip=*)
+		                for var in ipaddr bootp gateway netmask hostname netdev autoconf
+		                do
+		                        eval read $var
+		                done << EOC
+		                $(echo "$ipinfo" | sed "s/:/\n/g" | sed "s/^[    ]*$/-/g" | sed 's/ip=//')
+		EOC
+		                ipaddr=`echo "$ipaddr" | cut -d = -f 2`
+		                [ x$ipaddr == x ] && ipaddr=x
+		                ;;
+		        esac
+		done
 
-[ -z "$ipaddr" ] && exit 0
+		[ -z "$ipaddr" ] && exit 0
 
-echo "      IP: $ipaddr"
-echo "   BOOTP: $bootp"
-echo " GATEWAY: $gateway"
-echo " NETMASK: $netmask"
-echo "HOSTNAME: $hostname"
-echo "  NETDEV: $netdev"
-echo "AUTOCONF: $autoconf"
+		echo "      IP: $ipaddr"
+		echo "   BOOTP: $bootp"
+		echo " GATEWAY: $gateway"
+		echo " NETMASK: $netmask"
+		echo "HOSTNAME: $hostname"
+		echo "  NETDEV: $netdev"
+		echo "AUTOCONF: $autoconf"
 
-if [ x$ipaddr == x- ] ; then
-        # use DHCP
-        :
-else
-        cmd="ifconfig $netdev $ipaddr"
-        [ x$netmask != x- ] && cmd="$cmd netmask $netmask"
-        eval $cmd
-        [ x$gateway != x- ] && route add default gw $gateway
-fi
+		if [ x$ipaddr == x- ] ; then
+		        # use DHCP
+		        :
+		else
+		        cmd="ifconfig $netdev $ipaddr"
+		        [ x$netmask != x- ] && cmd="$cmd netmask $netmask"
+		        eval $cmd
+		        [ x$gateway != x- ] && route add default gw $gateway
+		fi
 
-ifconfig lo 127.0.0.1
+		ifconfig lo 127.0.0.1
 
-EOF
+		EOF
 
-> ${S}/pinmux.sh && cat > ${S}/pinmux.sh << 'EOF'
-#!/bin/sh
+		cat > ${S}/pinmux.sh <<-'EOF'
+		#!/bin/sh
 
-export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH
+		export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH
 
-# USRT3_RX
-bspmm 0x0102F012C 0x1201 > /dev/null
-# USRT3_TX
-bspmm 0x0102F0130 0x1201 > /dev/null
+		# USRT3_RX
+		bspmm 0x0102F012C 0x1201 > /dev/null
+		# USRT3_TX
+		bspmm 0x0102F0130 0x1201 > /dev/null
 
-# USRT4_RX
-bspmm 0x0102F0134 0x1201 > /dev/null
-# USRT4_TX
-bspmm 0x0102F0138 0x1201 > /dev/null
+		# USRT4_RX
+		bspmm 0x0102F0134 0x1201 > /dev/null
+		# USRT4_TX
+		bspmm 0x0102F0138 0x1201 > /dev/null
 
-# SPI0_SCLK
-bspmm 0x0102F01D8 0x1201 > /dev/null
-# SPI0_SDO
-bspmm 0x0102F01DC 0x1201 > /dev/null
-# SPI0_SDI
-bspmm 0x0102F01E0 0x1201 > /dev/null
-# SPI0_CSN
-bspmm 0x0102F01E4 0x1201 > /dev/null
-# SYS_RSTN
-bspmm 0x0102F0114 0x1201 > /dev/null
-# CAN_INT
-bspmm 0x0102F0030 0x1200 > /dev/null
+		# SPI0_SCLK
+		bspmm 0x0102F01D8 0x1201 > /dev/null
+		# SPI0_SDO
+		bspmm 0x0102F01DC 0x1201 > /dev/null
+		# SPI0_SDI
+		bspmm 0x0102F01E0 0x1201 > /dev/null
+		# SPI0_CSN
+		bspmm 0x0102F01E4 0x1201 > /dev/null
+		# SYS_RSTN
+		bspmm 0x0102F0114 0x1201 > /dev/null
+		# CAN_INT
+		bspmm 0x0102F0030 0x1200 > /dev/null
 
-# I2C6_SDA  GPIO1_6
-bspmm 0x010230038 0x1200 > /dev/null
-# I2C6_SCL  GPIO1_7
-bspmm 0x01023003C 0x1200 > /dev/null
-# I2C7_SDA  GPIO2_0
-bspmm 0x010230040 0x1200 > /dev/null
-# I2C7_SCL  GPIO2_2
-bspmm 0x010230048 0x1200 > /dev/null
+		# I2C6_SDA  GPIO1_6
+		bspmm 0x010230038 0x1200 > /dev/null
+		# I2C6_SCL  GPIO1_7
+		bspmm 0x01023003C 0x1200 > /dev/null
+		# I2C7_SDA  GPIO2_0
+		bspmm 0x010230040 0x1200 > /dev/null
+		# I2C7_SCL  GPIO2_2
+		bspmm 0x010230048 0x1200 > /dev/null
 
-# PWM0_OUT1_0_P
-bspmm 0x0102F01EC 0x1201 > /dev/null
-# PWM0_OUT15_0_P
-bspmm 0x0102F00DC 0x1205 > /dev/null
+		# PWM0_OUT1_0_P
+		bspmm 0x0102F01EC 0x1201 > /dev/null
+		# PWM0_OUT15_0_P
+		bspmm 0x0102F00DC 0x1205 > /dev/null
 
-# LSADC_CH3
-bspmm 0x0102F00FC 0x1200 > /dev/null
-EOF
+		# LSADC_CH3
+		bspmm 0x0102F00FC 0x1200 > /dev/null
+		EOF
     else
         cp -r ${WORKDIR}/ko ${D}/
         install -d ${D}${sysconfdir}/ws73
