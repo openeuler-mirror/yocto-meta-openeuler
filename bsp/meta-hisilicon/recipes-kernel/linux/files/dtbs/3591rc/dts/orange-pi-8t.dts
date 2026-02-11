@@ -1,0 +1,168 @@
+/dts-v1/;
+
+/ {
+	compatible = "hisilicon,hi1910B-evb", "hisilicon,ascend610";
+	hisi,boardid = <0x0 0x0 0x0 0x0>;
+	#address-cells = <0x2>;
+	#size-cells = <0x2>;
+	interrupt-parent = <0x1>;
+	model = "Orange Pi Ai Pro";
+
+	/include/ "base/hi1910B-asic-kernel-rc.dtsi"
+	/include/ "base/hi1910B-commmon-smmu.dtsi"
+	/include/ "base/hi1910B-mpam.dtsi"
+	// /include/ "base/hi1910B-lp-pm.dtsi"
+	/include/ "base/hi1910B-lp-devmng.dtsi"
+	/include/ "base/hi1910B-mbigen-ao.dtsi"
+	/include/ "base/hi1910B-gpio.dtsi"
+	// /include/ "base/hi1910B-bindcore.dtsi"
+	// /include/ "base/hi1910B-can.dtsi"
+	/include/ "base/hi1910B-emmc.dtsi"
+	/include/ "base/hi1910B-ipcdrv.dtsi"
+	/include/ "base/hi1910B-ts-drv.dtsi"
+	/include/ "base/hi1910B-tsdrv.dtsi"
+	/include/ "base/hi1910B-network-M100-B51.dtsi"
+	/include/ "base/hi1910B-hidvpp.dtsi"
+	/include/ "base/hi1910B-hdmi.dtsi"
+	/include/ "product/hi1910B-audio.dtsi"
+	/include/ "base/hi1910B-mipitx.dtsi"
+	// /include/ "base/hi1910B-vdp.dtsi"
+	/include/ "base/hi1910B-drm.dtsi"
+	/include/ "base/hi1910B-isp.dtsi"
+	/include/ "base/hi1910B-hilink.dtsi"
+	/include/ "base/hi1910B-mntn-milanr3.dtsi"
+	/include/ "base/hi1910B-gpu.dtsi"
+	/include/ "base/hi1910B-ctl.dtsi"
+        /include/ "base/hi1910B-itrustee.dtsi"
+        // /include/ "base/hi1910B-sata.dtsi"
+        /include/ "product/hi1910B-pcie-rc-M100-B51.dtsi"
+        /include/ "product/hi1910B-pinctrl-M100-B51.dtsi"
+	/include/ "product/hi1910B-hiusbc-B51.dtsi"
+        /include/ "product/hi1910B-i2c-M100-B51.dtsi"
+        /include/ "product/hi1910B-spi-M100-B51.dtsi"
+	/include/ "base/hi1910B-abl-qos.dtsi"
+
+	poweroff {
+		compatible = "hisi,power_off";
+		reg = <0x0 0xc4060000 0x0 0x10000>;
+		pinctrl-names = "default", "idle";
+		pinctrl-0 = <&poweroff_pmx_func>;
+		pinctrl-1 = <&poweroff_pmx_idle>;
+	};
+
+	chosen {
+		bootargs = "console=ttyAMA0,115200 console=tty1 log_redirect=0x1fc000@0x22741000 root=/dev/mmcblk1p1 rw rdinit=/sbin/init rodata=off syslog earlycon=pl011,mmio32,0xC4010000 initrd=0x2BA00000,300M rootwait mpam=of enable_ascend_share_pool ascend_enable_all enable_sp_multi_group_mode init_all_gicr enable_fpga no_console_suspend use_kallsyms_lookup_symbol selinux=0 systemd.unified_cgroup_hierarchy=0 fbcon=map:6 movable_node cma=256M rootfstype=ext4 ";
+	};
+};
+
+&eth0 {
+	pinctrl-names = "default", "idle";
+	pinctrl-0 = <&mdc0_cfg_func &mdio0_cfg_func>;
+	pinctrl-1 = <&mdc0_cfg_func &mdio0_cfg_func>;
+};
+
+&i2c5_ao {
+	bq25713: bq25713@6b {
+		status = "okay";
+		compatible = "ti,bq25713";
+		reg = <0x6b>;
+
+		ti,charge-current = <2000000>;
+		ti,max-input-voltage = <21000000>;
+		ti,max-input-current = <3000000>;
+		ti,max-charge-voltage = <12600000>;
+		ti,input-current = <500000>;
+		ti,input-current-sdp = <500000>;
+		ti,input-current-dcp = <2000000>;
+		ti,input-current-cdp = <2000000>;
+		ti,minimum-sys-voltage = <7400000>;
+		ti,otg-voltage = <5000000>;
+		ti,otg-current = <1500000>;
+	};
+};
+
+&hdmi {
+	TMDS_DRV_CFG_CH_2_0 = <0x40042805 0x00042805 0x00042805 0x40042905 0x00042905 0x00042905>;
+	TMDS_DRV_CFG_CH_1_4 = <0x40021B02 0x00021B02 0x00021B02 0x40021B02 0x00021B02 0x00021B02>;
+};
+
+&i2c7_peri {
+	pinctrl-names = "default", "idle";
+	pinctrl-0 = <&scl7_cfg_func &sda7_cfg_func>;
+	pinctrl-1 = <&scl7_cfg_func &sda7_cfg_func>;
+};
+
+&i2c8_peri {
+	pinctrl-names = "default", "idle";
+	pinctrl-0 = <&scl8_cfg_func &sda8_cfg_func>;
+	pinctrl-1 = <&scl8_cfg_func &sda8_cfg_func>;
+
+	eeprom_board:eeprom@50 {
+		compatible = "eeprom,eeprom_m24256";
+		reg = <0x50>;
+	};
+};
+
+&i2c9_ao {
+        eeprom_model:eeprom@50 {
+                compatible = "eeprom,eeprom_m24256";
+                reg = <0x50>;
+        };
+};
+
+&{/soc} {
+        refclk150M: refclk150M {
+            compatible = "fixed-clock";
+            #clock-cells = <0>;
+            clock-frequency = <150000000>;
+            clock-output-names = "refclk";
+        };
+
+	/*uart1: uart@82220000 {
+		compatible = "arm,pl011", "arm,primecell";
+		reg = < 0x00 0x82220000 0x00 0x1000 >;
+		interrupts = < 0x00 0xaa 0x04 >;
+		current-speed = < 0x1c200 >;
+		arm,primecell-periphid = <0x00241011>;
+		clocks = <&refclk150M>;
+		clock-names = "apb_pclk";
+		pinctrl-names = "default", "idle";
+		pinctrl-0 = <&uart1_tx_pmx_func &uart1_rx_pmx_func>;
+		pinctrl-1 = <&uart1_tx_pmx_idle &uart1_rx_pmx_idle>;
+	};*/
+
+	uart2: uart@82230000 {
+		compatible = "arm,pl011", "arm,primecell";
+		reg = < 0x00 0x82230000 0x00 0x1000 >;
+		interrupts = < 0x00 0xab 0x04 >;
+		current-speed = < 0x1c200 >;
+		arm,primecell-periphid = <0x00241011>;
+		clocks = <&refclk150M>;
+		clock-names = "apb_pclk";
+		pinctrl-names = "default", "idle";
+		pinctrl-0 = <&uart2_tx_pmx_func &uart2_rx_pmx_func>;
+		pinctrl-1 = <&uart2_tx_pmx_idle &uart2_rx_pmx_idle>;
+	};
+
+	uart7: uart@401080000 {
+		compatible = "arm,pl011", "arm,primecell";
+		reg = < 0x04 0x01080000 0x00 0x1000 >;  //配置为UART基地址
+		interrupts = < 0x00 0x11b 0x04 >;         //配置UART中断号
+		current-speed = < 0x1c200 >;
+		arm,primecell-periphid = <0x00241011>;
+		clocks = <&refclk150M>;                   //配置UART时钟频率
+		clock-names = "apb_pclk";
+		pinctrl-names = "default", "idle";
+		pinctrl-0 = <&uart7_tx_pmx_func &uart7_rx_pmx_func>;   //工作状态
+		pinctrl-1 = <&uart7_tx_pmx_idle &uart7_rx_pmx_idle>;   //休眠状态
+	};
+};
+
+&gpio4 {
+	led1_light {
+		gpio-hog;
+		gpios = <0x13 0x0>;
+		output-high;
+		line-name = "led_light";
+	};
+};

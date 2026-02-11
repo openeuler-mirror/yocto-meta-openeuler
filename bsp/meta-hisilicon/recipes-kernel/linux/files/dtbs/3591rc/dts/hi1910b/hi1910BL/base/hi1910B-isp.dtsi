@@ -1,0 +1,70 @@
+media {
+    #address-cells = <2>;
+    #size-cells = <2>;
+    compatible = "simple-bus";
+    isp_enable = <0x1>;
+    vpss_enable = <0x1>;
+    ranges;
+
+    osal: osal {
+        compatible = "hisilicon,media-osal";
+    };
+    sys_config: sys_config {
+        compatible = "hisilicon,hisi-media-sys_config";
+    };
+    sys: sys {
+        compatible = "hisilicon,hisi-media-sys";
+    };
+
+    mipi_rx: mipi_rx@300280000 {
+        compatible = "hisilicon,hisi-media-mipi_rx";
+        reg = <0x3 0x00280000 0x0 0x40000>, <0x3 0x002C0000 0x0 0x40000>;
+        reg-names = "MIPI_RX", "SLVS_EC";
+        interrupts = <0 254 4>, <0 259 4>; // 286, 291
+        interrupt-names = "MIPI_RX", "SLVS_EC";
+        pinctrl-names = "default";
+        pinctrl-0 = <&iomg010_pmx_sensor_clk0 &iomg011_pmx_sensor_clk1 &iomg012_pmx_sensor_clk2 &iomg013_pmx_sensor_clk3 &iomg014_pmx_sensor_rstn0
+                     &iomg015_pmx_sensor_rstn2 &iomg016_pmx_sensor_hs0 &iomg017_pmx_sensor_vs0 &iomg018_pmx_sensor_hs2 &iomg019_pmx_sensor_vs2>;
+    };
+
+    vi: vi@300400000 {
+        compatible = "hisilicon,hisi-media-vi";
+        reg = <0x3 0x00400000 0x0 0xa0000>, <0x3 0x00200000 0x0 0x40000>;
+        reg-names = "VI_CAP0", "VI_PROC0";
+        interrupts-extended = <&mbigen_vicap0 934 4>, <&mbigen_viproc0 935 4>; // LPI irq : mbix_spi_space(64) + mbix_lpi_space(1_4) : 128*6 + mbix5_lpi_pin_num : 64+128*6+102 ;
+        interrupt-names = "VI_CAP0", "VI_PROC0";
+    };
+
+    isp: isp@300220000 {
+        compatible = "hisilicon,hisi-media-isp";
+        reg = <0x3 0x00220000 0x0 0x20000>;
+        reg-names = "ISP";
+        interrupt-parent = <&mbigen_vicap0>;
+        hisi-viinterrupts = <934 4>;
+        interrupt-names = "ISP";
+    };
+
+    vpss: vpss@3001e0000 {
+        compatible = "hisilicon,hisi-media-vpss";
+        reg = <0x3 0x001e0000 0x0 0x10000>;
+        reg-names = "vpss0";
+        interrupts-extended = <&mbigen_vpss0 936 4>;
+        interrupt-names = "vpss0";
+    };
+
+    vgs0@0x2010c0000 {
+        compatible = "hidvpp,dvpp,vgs";
+        reg = <0x2 0x10c0000 0x0 0x20000>;
+        interrupt-parent = <&mbigen_vgs0>;
+        interrupts = <0x33F 0x4>;
+        smmuflag = <0x0>;
+       };
+
+    gdc0@0x2010a0000 {
+        compatible = "hidvpp,dvpp,gdc";
+        reg = <0x2 0x10a0000 0x0 0x20000>;
+        interrupt-parent = <&mbigen_gdc0>;
+        interrupts = <0x33E 0x4>;
+        smmuflag = <0x0>;
+       };
+};

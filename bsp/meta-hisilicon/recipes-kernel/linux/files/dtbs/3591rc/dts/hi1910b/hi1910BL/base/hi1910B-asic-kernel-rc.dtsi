@@ -1,0 +1,244 @@
+	cpus {
+		#address-cells = <0x1>;
+		#size-cells = <0x0>;
+
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,armv8";
+			reg = <0x0>;
+			enable-method = "psci";
+			cpu-release-addr = <0x0 0xfff8>;
+			numa-node-id = <0x0>;
+		};
+
+		cpu1: cpu@1 {
+			device_type = "cpu";
+			compatible = "arm,armv8";
+			reg = <0x100>;
+			enable-method = "psci";
+			cpu-release-addr = <0x0 0xfff8>;
+			numa-node-id = <0x0>;
+		};
+
+		cpu2: cpu@2 {
+			device_type = "cpu";
+			compatible = "arm,armv8";
+			reg = <0x200>;
+			enable-method = "psci";
+			cpu-release-addr = <0x0 0xfff8>;
+			numa-node-id = <0x0>;
+		};
+
+		cpu3: cpu@3 {
+			device_type = "cpu";
+			compatible = "arm,armv8";
+			reg = <0x300>;
+			enable-method = "psci";
+			cpu-release-addr = <0x0 0xfff8>;
+			numa-node-id = <0x0>;
+		};
+
+		cpu-map {
+			cluster0 {
+				core0 {
+					cpu = <&cpu0>;
+				};
+				core1 {
+					cpu = <&cpu1>;
+				};
+				core2 {
+					cpu = <&cpu2>;
+				};
+				core3 {
+					cpu = <&cpu3>;
+				};
+			};
+		};
+
+		psci {
+			compatible = "arm,psci-0.2";
+			method = "smc";
+		};
+	};
+
+	interrupt-controller@D0000000 {
+		compatible = "arm,gic-v3";
+		#interrupt-cells = <0x3>;
+		#address-cells = <0x2>;
+		#size-cells = <0x2>;
+		ranges;
+		interrupt-controller;
+		#redistributor-regions = <0x1>;
+		redistributor-stride = <0x0 0x40000>;
+		reg = <0x0 0xd0000000 0x0 0x10000 0x0 0xd0100000 0x0 0x800000>;
+		interrupts = <0x1 0x9 0xff04>;
+		linux,phandle = <0x1>;
+		phandle = <0x1>;
+		enable-init-all-gicr;
+
+		its: interrupt-controller@D2000000 {
+			compatible = "arm,gic-v3-its";
+			msi-controller;
+			#msi-cells = <0x1>;
+			reg = <0x0 0xd2000000 0x0 0x100000>;
+		};
+	};
+
+	timer {
+		compatible = "arm,armv8-timer";
+		interrupts = <0x1 0xd 0xff08 0x1 0xe 0xff08 0x1 0xb 0xff08 0x1 0xa 0xff08>;
+	};
+
+	soc {
+		compatible = "simple-bus";
+		#address-cells = <0x2>;
+		#size-cells = <0x2>;
+		ranges;
+
+		uart@C4010000 {
+			compatible = "arm,sbsa-uart";
+			reg = <0x0 0xc4010000 0x0 0x10000>;
+			interrupts = <0x0 0xa9 0x4>;
+			current-speed = <0x1c200>;
+		};
+
+		watchdog@c42e0000{
+			compatible = "arm,sbsa-gwdt";
+			reg = <0x0 0xc42e0000 0x0 0x10000>,
+				<0x0 0xc42f0000 0x0 0x10000>;
+			interrupts = <0 266 4>;
+			timeout-sec = <10>;
+		};
+	};
+
+	memory0@numa0 {
+		device_type = "memory";
+		reg = <0x0 0x0 0x0 0x78000000>;
+		numa-node-id = <0x0>;
+	}; // dont't change this node
+
+	memory1_ts0@numa0 {
+		device_type = "memory";
+		reg = <0x20 0x80000000 0x0 0x20000000>;
+		numa-node-id = <0x2>;
+		hotpluggable;
+	};
+
+	memory1_p2p@numa0 {
+		device_type = "memory";
+		reg = <0x20 0xA0000000 0x0 0x0>;
+		numa-node-id = <0x1>;
+	};
+
+	memory1@numa0 {
+		device_type = "memory";
+		reg = <0x20 0x80000000 0x1 0x0>;
+		numa-node-id = <0x0>;
+	};
+
+	memory2@numa0 {
+		device_type = "memory";
+		reg = <0x0 0x0 0x0 0x0>;
+		numa-node-id = <0x0>;
+	};
+
+	memory3@numa0 {
+		device_type = "memory";
+		reg = <0x0 0x0 0x0 0x0>;
+		numa-node-id = <0x0>;
+	};
+
+	memory4@numa0 {
+		device_type = "memory";
+		reg = <0x0 0x0 0x0 0x0>;
+		numa-node-id = <0x0>;
+	};
+
+	memory5@numa0 {
+		device_type = "memory";
+		reg = <0x0 0x0 0x0 0x0>;
+		numa-node-id = <0x0>;
+	};
+
+	distance-map {
+		compatible = "numa-distance-map-v1";
+		distance-matrix = <0 2 100>,
+				  <1 2 100>;
+	};
+
+	pmu {
+		compatible = "arm,armv8-pmuv3";
+		interrupts = <0x1 0x07 0x4>;
+	};
+
+	va2pa_trunk: trunk@0x22140000 {
+		compatible = "ts dynamic";
+		no-map;
+		reg = <0x0 0x22140000 0x0 0x100000>; // 1M
+	};
+
+	os_kbox {
+		compatible = "os_kbox";
+		reg = <0x0 0x23910000 0x0 0x400000>;
+	};
+
+    firmware {
+        sdei {
+            compatible      = "arm,sdei-1.0"; // NMI
+            method          = "smc";
+        };
+    };
+
+	/* RAS */
+	hisi_hest@10600000 {
+		compatible = "dt_apei, hest";
+		reg = <0x0 0x10600000 0x0 0x400000>;
+		/* SPI 319 type is configed by BIOS */
+		interrupts = <0x0 287 0x1>;
+	};
+
+	reserved-memory {
+		#address-cells = <0x2>;
+		#size-cells = <0x2>;
+		ranges;
+
+		reserved_mem0@0 {
+			no-map;
+			reg = <0x0 0x00000000 0x0 0x10600000>;
+		};
+
+		/* RAS BUFFER, no no-map! */
+		reserved_mem0@10600000 {
+			reg = <0x0 0x10600000 0x0 0x00400000>;
+		};
+
+		reserved_mem0@21000000 {
+			no-map;
+			reg = <0x0 0x21000000 0x0 0x01740000>;
+		};
+
+		reserved_mem0@22940000 {
+			no-map;
+			reg = <0x0 0x22940000 0x0 0x066C0000>;
+		};
+
+		ddrdump_reserved: ddrdumpbuffer@0x {
+			compatible = "ddr dump buffer";
+			no-map;
+			reg = <0x20 0xA0000000 0x0 0x2000000>;
+		};
+
+		/* DRM CMA BUFFER, reusable */
+		hmi_cma: hmi_cma_highmem {
+			compatible = "shared-dma-pool";
+			reusable;
+			size = <0x0 0x20000000>;
+			reg = <0x20 0xA2000000 0x0 0x20000000>;
+		};
+
+		// kernel log reserved memory
+		reserved_mem_kernel_log@22741000 {
+			reg = <0x0 0x22741000 0x0 0x1fc000>;
+		};
+	};
+

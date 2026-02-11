@@ -1,0 +1,273 @@
+hidvpp_corenum {
+	compatible = "hidvpp,dvpp,corenum";
+	vpc_num_for_use = <0x2>;
+	vdec_num_for_use = <0x4>;
+	venc_num_for_use = <0x3>;
+	jpegd_num_for_use = <0x2>;
+	jpege_num_for_use = <0x1>;
+};
+
+hidvpp {
+	compatible = "hidvpp,hisi-dvpp";
+	chip-num = <0x1>;
+
+	hidvpp_chip {
+		compatible = "hidvpp,hisi-chip";
+		#address-cells = <0x2>;
+		#size-cells = <0x2>;
+		chip-id = <0x0>;
+
+		hidvpp_sys {
+			compatible = "hidvpp,dvpp,sys";
+			#address-cells = <0x2>;
+			#size-cells = <0x2>;
+			subsys-id = <0x0>;
+
+			dvpp_controler@0x200130000 {
+				compatible = "hidvpp,dvpp,controler";
+				reg = <0x2 0x130000 0x0 0x10000>;
+			};
+
+			dvpp_scheduler0@0x200100000 {
+				compatible = "hidvpp,dvpp,scheduler";
+				reg = <0x2 0x100000 0x0 0x10000>;
+				scheduler-id = <0x0>;
+			};
+
+			dvpp_scheduler1@0x201000000 {
+				compatible = "hidvpp,dvpp,scheduler";
+				reg = <0x2 0x1000000 0x0 0x10000>;
+				scheduler-id = <0x1>;
+			};
+
+			dvpp_aa {
+				compatible = "hisilicon,dvpp,aa";
+				reg = <0x0 0xc1100000 0x0 0x10000>;
+				index-in-subsys = <0x0>;
+				aa_id = <0x0>; // global id
+			};
+
+			dvpp_smmu@0x200000000 {
+				compatible = "hisilicon,dvpp,smmu";
+				reg = <0x2 0x0000000 0x0 0x100000>;
+				index-in-subsys = <0x0>;
+				smmu_id = <0x0>; // global id
+			};
+
+			dvpp_disp {
+				compatible = "hisilicon,dvpp,dispatch";
+				reg = <0x2 0x1200000 0x0 0x10000>;
+				index-in-subsys = <0x0>;
+				dispatch_id = <0x0>; // gloabl id
+			};
+
+			vpc0@0x200300000 {
+				compatible = "hidvpp,dvpp,vpc";
+				reg = <0x2 0x300000 0x0 0x80000>;
+				interrupt-parent = <&mbigen_vpc0>;
+				interrupts = <0x246 0x4>;
+				smmuflag = <0x0>;
+				index-in-subsys = <0x0>;
+				connect-scheduler-id = <0>;
+				index-in-schedule = <0x0>;
+				index-in-port = <0x0>;
+			};
+			vpc0-err@0x200300000 {
+				compatible = "hidvpp,dvpp,vpc-err";
+				interrupt-parent = <&mbigen_vpc0>;
+				interrupts = <0x247 0x4>;
+				index-in-subsys = <0x0>;
+			};
+			vpc1@0x201100000 {
+				compatible = "hidvpp,dvpp,vpc";
+				reg = <0x2 0x1100000 0x0 0x80000>;
+				interrupt-parent = <&mbigen_vpc1>;
+				interrupts = <0x248 0x4>;
+				smmuflag = <0x0>;
+				index-in-subsys = <0x1>;
+				connect-scheduler-id = <1>;
+				index-in-schedule = <0x0>;
+				index-in-port = <0x0>;
+			};
+			vpc1-err@0x201100000 {
+				compatible = "hidvpp,dvpp,vpc-err";
+				interrupt-parent = <&mbigen_vpc1>;
+				interrupts = <0x249 0x4>;
+				index-in-subsys = <0x1>;
+			};
+
+			// DVPP 0 VDEC
+			vdec0@0x200200000 {
+				compatible = "hidvpp,dvpp,vdec";
+				reg = <0x2 0x200000 0x0 0x20000>;
+				interrupt-parent = <&mbigen_vdec0>;
+				interrupts = <0x293 0x4>;
+				smmuflag = <0x0>;
+				index-in-subsys = <0x0>;
+				connect-scheduler-id = <0>;
+				index-in-schedule = <0x4>;
+				index-in-port = <0x0>;
+			};
+
+                        vdec1@0x200220000 {
+                                compatible = "hidvpp,dvpp,vdec";
+                                reg = <0x2 0x220000 0x0 0x20000>;
+                                interrupt-parent = <&mbigen_vdec1>;
+                                interrupts = <0x294 0x4>;
+                                smmuflag = <0x0>;
+                                index-in-subsys = <0x1>;
+                                connect-scheduler-id = <0>;
+                                index-in-schedule = <0x5>;
+                                index-in-port = <0x0>;
+                        };
+
+                        vdec2@0x201020000 {
+                                compatible = "hidvpp,dvpp,vdec";
+                                reg = <0x2 0x1020000 0x0 0x20000>;
+                                interrupt-parent = <&mbigen_vdec2>;
+                                interrupts = <0x295 0x4>;
+                                smmuflag = <0x0>;
+                                index-in-subsys = <0x2>;
+                                connect-scheduler-id = <1>;
+                                index-in-schedule = <0x1>;
+                                index-in-port = <0x0>;
+                        };
+
+                        vdec3@0x201040000 {
+                                compatible = "hidvpp,dvpp,vdec";
+                                reg = <0x2 0x1040000 0x0 0x20000>;
+                                interrupt-parent = <&mbigen_vdec3>;
+                                interrupts = <0x296 0x4>;
+                                smmuflag = <0x0>;
+                                index-in-subsys = <0x3>;
+                                connect-scheduler-id = <1>;
+                                index-in-schedule = <0x2>;
+                                index-in-port = <0x0>;
+                        };
+
+
+			jpeg_jpegd0@0x200140000 {
+				compatible = "hidvpp,dvpp,jpeg,jpegd";
+				reg = <0x2 0x14A000 0x0 0x1000>,
+					  <0x2 0x140000 0x0 0x40000>,
+					  <0x2 0x142000 0x0 0x2000>;
+				interrupt-parent = <&mbigen_jpeg_jpegd0>;
+				interrupts = <0x240 0x4 0x241 0x4>; // LPI irq : mbix_spi_space(64) + mbix_lpi_space(1_4) : 128*4 + mbix5_lpi_pin_num : 64+128*4+14 ; mbix_SPI : pin_num - 32(offset in os)
+				smmuflag = <0x0>;
+				index-in-subsys = <0x0>;
+				connect-scheduler-id = <0>;
+				index-in-schedule = <0x1>;
+				index-in-port = <0x0>;
+			};
+
+			jpeg_jpegd1@0x200180000 {
+				compatible = "hidvpp,dvpp,jpeg,jpegd";
+				reg = <0x2 0x18A000 0x0 0x1000>,
+					  <0x2 0x180000 0x0 0x40000>,
+					  <0x2 0x182000 0x0 0x2000>;
+				interrupt-parent = <&mbigen_jpeg_jpegd1>;
+				interrupts = <0x242 0x4 0x243 0x4>; // LPI irq : mbix_spi_space(64) + mbix_lpi_space(1_4) : 128*4 + mbix5_lpi_pin_num : 64+128*4+14 ; mbix_SPI : pin_num - 32(offset in os)
+				smmuflag = <0x0>;
+				index-in-subsys = <0x1>;
+				connect-scheduler-id = <0>;
+				index-in-schedule = <0x2>;
+				index-in-port = <0x0>;
+			};
+
+			jpeg_jpege0@0x2001c0000 {
+				compatible = "hidvpp,dvpp,jpeg,jpege";
+				reg = <0x2 0x1cA000 0x0 0x1000>,
+					  <0x2 0x1c0000 0x0 0x40000>,
+					  <0x2 0x1c2000 0x0 0x2000>;
+				interrupt-parent = <&mbigen_jpeg_jpege0>;
+				interrupts = <0x244 0x4 0x245 0x4>; // LPI irq : mbix_spi_space(64) + mbix_lpi_space(1_4) : 128*4 + mbix5_lpi_pin_num : 64+128*4+14 ; mbix_SPI : pin_num - 32(offset in os)
+				smmuflag = <0x0>;
+				index-in-subsys = <0x0>;
+				connect-scheduler-id = <0>;
+				index-in-schedule = <0x3>;
+				index-in-port = <0x0>;
+			};
+
+			venc0@0x200240000 {
+				compatible = "hidvpp,dvpp,hi-venc";
+				reg = <0x2 0x240000 0x0 0x20000>;
+				interrupt-parent = <&mbigen_venc0>;
+				interrupts = <0x297 0x4>; // LPI irq : mbix_spi_space(64) + mbix_lpi_space(1_4) : 128*4 + mbix5_lpi_pin_num : 64+128*4+87 ; mbix_SPI : pin_num - 32(offset in os)
+				smmuflag = <0x0>;
+				index-in-subsys = <0x0>;
+				connect-scheduler-id = <0>;
+				index-in-schedule = <0x6>;
+				index-in-port = <0x0>;
+			};
+
+                        venc1@0x201060000 {
+                                compatible = "hidvpp,dvpp,hi-venc";
+                                reg = <0x2 0x1060000 0x0 0x20000>;
+                                interrupt-parent = <&mbigen_venc1>;
+                                interrupts = <0x298 0x4>; // LPI irq : mbix_spi_space(64) + mbix_lpi_space(1_4) : 128*4 + mbix5_lpi_pin_num : 64+128*4+87 ; mbix_SPI : pin_num - 32(offset in os)
+                                smmuflag = <0x0>;
+                                index-in-subsys = <0x1>;
+                                connect-scheduler-id = <1>;
+                                index-in-schedule = <0x3>;
+                                index-in-port = <0x0>;
+                        };
+
+                        venc2@0x201080000 {
+                                compatible = "hidvpp,dvpp,hi-venc";
+                                reg = <0x2 0x1080000 0x0 0x20000>;
+                                interrupt-parent = <&mbigen_venc2>;
+                                interrupts = <0x299 0x4>; // LPI irq : mbix_spi_space(64) + mbix_lpi_space(1_4) : 128*4 + mbix5_lpi_pin_num : 64+128*4+87 ; mbix_SPI : pin_num - 32(offset in os)
+                                smmuflag = <0x0>;
+                                index-in-subsys = <0x2>;
+                                connect-scheduler-id = <1>;
+                                index-in-schedule = <0x4>;
+                                index-in-port = <0x0>;
+                        };
+
+		};
+
+		// DVPP profiling 每个die共用一个stars
+		hidvpp_stars {
+			compatible = "hidvpp,stars";
+			hidvpp_vpc_task@0x522C00000 {
+				compatible = "hidvpp,vpc,task-cnt";
+				reg = <0x5 0x22C00000 0x0 0x1114>;
+			};
+
+			hidvpp_jpegd_task@0x522C04000 {
+				compatible = "hidvpp,jpegd,task-cnt";
+				reg = <0x5 0x22C04000 0x0 0x1018>;
+			};
+
+			hidvpp_jpege_task@0x522C08000 {
+				compatible = "hidvpp,jpege,task-cnt";
+				reg = <0x5 0x22C08000 0x0 0x1018>;
+			};
+
+			hidvpp_virt_reg@0x520040000 {
+				compatible = "hidvpp,stars,virt-reg";
+				reg = <0x5 0x20040000 0x0 0x10100>;
+			};
+
+			hidvpp_stars_busy@0x523000000 {
+				compatible = "hidvpp,stars,busy-cnt";
+				reg = <0x5 0x23000000 0x0 0x0C04>;
+			};
+		};
+	};
+};
+
+hidvpp_ipcm {
+	compatible = "vendor,ipcm";
+	interrupts = <0 101 4>, <0 102 4>, <0 103 4>, <0 104 4>;  // SPI irq: 101 = 133 - 32; 102 = 134 - 32;  4:level
+
+	addr_info {
+		compatible = "dvpp,addr_info";
+		die-num = <0x1>;
+		die0_addr_info {
+			compatible = "dvpp,die0,addr_info";
+			address-base = <0x000 0x00000000>;
+			address-offset-mask = <0xFF 0xFFFFFFFF>;
+		};
+	};
+};

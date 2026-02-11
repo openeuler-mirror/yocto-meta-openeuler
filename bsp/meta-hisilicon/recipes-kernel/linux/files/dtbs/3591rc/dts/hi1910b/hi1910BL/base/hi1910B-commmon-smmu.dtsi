@@ -1,0 +1,132 @@
+/**
+* dts file for Hisilicon Ascend Dxxx Development Board
+*
+* Copyright (C) 2020 Hisilicon Ltd.
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License version 2 as
+* publishhed by the Free Software Foundation.
+*
+* Owner：OS
+* Author:  c00283067
+* Create: Tue Apr 21 20:07:41 EDT 2020
+*/
+    dsmmu0: dvpp0_smmu0@200000000 {
+        compatible = "arm,smmu-v3";
+        reg = <0x2 0x00000000 0x0 0x40000>;
+        #iommu-cells = <1>;
+        msi-parent = <&its 0xff01>;
+        msi-map = <0xff01 &its 0xff01 0x2000>;
+        msi-map-mask = <0xffff>;
+        dma-coherent;
+        hisilicon,broken-prefetch-cmd;
+    };
+
+    aic_smmu: aic_smmu@777777700 {
+        compatible = "arm,smmu-v3";
+        reg = <0x7 0x00000000 0x0 0x100000>;
+        #iommu-cells = <1>;
+        msi-parent = <&its 0xff03>;
+        msi-map = <0xff03 &its 0xff03 0x2000>;
+        msi-map-mask = <0xffff>;
+        dma-coherent;
+        hisilicon,broken-prefetch-cmd;
+    };
+
+    peri_smmu: peri_smmu@80000000 {
+        compatible = "arm,smmu-v3";
+        reg = <0x0 0x80000000 0x0 0x100000>;
+        #iommu-cells = <1>;
+        msi-parent = <&its 0xff06>;
+        msi-map = <0xff06 &its 0xff06 0x2000>;
+        msi-map-mask = <0xffff>;
+        dma-coherent;
+        hisilicon,broken-prefetch-cmd;
+    };
+
+    io_smmu: io_smmu_controller@a0000000 {
+        compatible = "arm,smmu-v3";
+        reg = <0x0 0xa0000000 0x0 0x100000>;
+        #iommu-cells = <1>;
+        msi-parent = <&its 0xff04>;
+        msi-map = <0xff04 &its 0xff04 0x2000>;
+        msi-map-mask = <0xffff>;
+        dma-coherent;
+        hisilicon,broken-prefetch-cmd;
+    };
+
+    mediasmmu: media_smmu@400000000 {
+        compatible = "arm,smmu-v3";
+        reg = <0x4 0x00000000 0x0 0x40000>;
+        #iommu-cells = <1>;
+        msi-parent = <&its 0xff07>;
+        msi-map = <0xff07 &its 0xff07 0x2000>;
+        msi-map-mask = <0xffff>;
+        dma-coherent;
+        hisilicon,broken-prefetch-cmd;
+    };
+
+    ispsmmu0: isp0_smmu0@300000000 {
+        compatible = "arm,smmu-v3";
+        reg = <0x3 0x00000000 0x0 0x40000>;
+        #iommu-cells = <1>;
+        msi-parent = <&its 0xff02>;
+        msi-map = <0xff02 &its 0xff02 0x2000>;
+        msi-map-mask = <0xffff>;
+        dma-coherent;
+        hisilicon,broken-prefetch-cmd;
+    };
+	davinci_svm {
+		compatible = "hisilicon,svm";
+		ranges;
+	    #size-cells = <0x2>;
+	    #address-cells = <0x2>;
+		memory-region = <&va2pa_trunk>;
+	    cpu-num = <0x4>;
+
+	    aicore {
+		iommus = <&aic_smmu 0x1f>;
+		dma-coherent;
+		dma-can-stall;
+		pasid-num-bits = <0x10>;
+		};
+
+	    dvpp0 {
+	        iommus = <&dsmmu0 0x1f>;
+	        dma-coherent;
+	        dma-can-stall;
+	        pasid-num-bits = <0x10>;
+	        enable-ttb1;
+	        smmu-name = "dvpp_smmu_0";
+	        iova-range = <0xffff0000 0x00000000 0x4 0x00000000>;
+	    };
+
+	    peri {
+	        iommus = <&peri_smmu 0x1f>;
+	        dma-coherent;
+	        dma-can-stall;
+	        pasid-num-bits = <0x10>;
+	    };
+
+	    io {
+	        iommus = <&io_smmu 0x1f>;
+	        dma-coherent;
+	        dma-can-stall;
+	        pasid-num-bits = <0x10>;
+	    };
+
+	    media {
+	        iommus = <&mediasmmu 0x1f>;
+	        dma-coherent;
+	        dma-can-stall;
+	        pasid-num-bits = <0x10>;
+	    };
+
+	    isp0 {
+	        iommus = <&ispsmmu0 0x1f>;
+	        dma-coherent;
+	        dma-can-stall;
+	        pasid-num-bits = <0x10>;
+	        //hisi,smmu_bypass;
+	    };
+	};
