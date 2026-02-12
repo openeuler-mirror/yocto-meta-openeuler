@@ -80,7 +80,9 @@ do_compile() {
 do_install () {
     mkdir -p ${S}/deploy/{include,lib}
     cp -a ${S}/include/hisilicon/* ${S}/deploy/include
+	cp -a ${S}/include/3rdparty/* ${S}/deploy/include
     cp -a ${S}/lib/gcc/hisilicon/* ${S}/deploy/lib
+    cp -a ${S}/lib/gcc/3rdparty/* ${S}/deploy/lib
     cd ${S}/deploy
     tar czf include.tar.gz include/
     tar caf lib.tar.gz lib/
@@ -107,7 +109,7 @@ do_install () {
 
     rm -rf ${S}/src/vio/imx347 ${S}/src/vio/os04a10 ${S}/src/vio/os08a20 ${S}/src/vio/sc450ai
     install -d ${D}/root/sample
-    find ${S}/src -type f -executable ! -name "*.so*" ! -name "*.a" ! -name "*.o" ! -name "*.c" ! -name "Makefile" \
+    find ${S}/src -type f -executable ! -name "*.so*" ! -name "*.a" ! -name "*.o" ! -name "*.c" ! -name "*.cpp" ! -name "Makefile" \
         | xargs -I {} install -m 0755 {} ${D}/root/sample
     cd -
 }
