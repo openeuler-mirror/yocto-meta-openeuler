@@ -64,6 +64,11 @@ SYSTEMD_SERVICE:mcs-linux = "micad.service"
 
 FILES:${PN} = " \
      ${bindir}/* \
+     ${libdir}/*.so* \
      ${systemd_system_unitdir} \
      ${sysconfdir} \
 "
+
+# Skip QA check for non-symlink .so in -dev package
+# The shared library libmica.so has no version number, which is acceptable for mica
+INSANE_SKIP:${PN}-dev += "dev-elf"
