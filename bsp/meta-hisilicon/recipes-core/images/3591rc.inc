@@ -52,3 +52,17 @@ copy_3591img_distro() {
 }
 
 IMAGE_POSTPROCESS_COMMAND += "${@bb.utils.contains('DISTRO_FEATURES', '3591fullimg', 'copy_3591img_distro;', '', d)}"
+
+copy_3591ebl_distro() {
+    set -x
+    EBL_SUFIX="-ebl."
+    mkdir -p ${OUTPUT_DIR}
+    for IMAGETYPE in ${IMAGE_FSTYPES}
+    do
+        rm -f "${OUTPUT_DIR}"/${IMAGE_NAME}${IMAGE_NAME_SUFFIX%.rootfs}.*${IMAGETYPE}
+        cp -fp ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX%.rootfs}.*${IMAGETYPE} ${OUTPUT_DIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX%.rootfs}${EBL_SUFIX}${IMAGETYPE}
+    done
+    set +x
+}
+
+IMAGE_POSTPROCESS_COMMAND:append = "${@bb.utils.contains('DISTRO_FEATURES', '3591ebl', 'copy_3591ebl_distro;', '', d)}"
