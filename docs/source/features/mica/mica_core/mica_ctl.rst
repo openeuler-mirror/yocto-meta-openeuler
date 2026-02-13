@@ -70,11 +70,6 @@ ____
   |``Name=``           |实例名称，必须唯一                      |str（长度<32）                |ALL       |
   +--------------------+----------------------------------------+------------------------------+----------+
   |``CPU=``            |为实时OS分配的核号，范围 0 ~ nproc - 1  |str（长度<128）               | ALL      |
-  |                    | bare-metal：仅支持单核                 |                              |          |
-  |                    |                                        |                              |          |
-  |                    | jailhouse：实际由cell文件配置          |                              |          |
-  |                    |                                        |                              |          |
-  |                    | xen：支持多核                          |                              |          |
   +--------------------+----------------------------------------+------------------------------+----------+
   |``ClientPath=``     |实时OS的镜像路径，需要配置为绝对路径，  |str（长度<128）               |ALL       |
   |                    |且仅支持elf                             |                              |          |
@@ -86,12 +81,6 @@ ____
   |                    |运行RTOS；支持配置为jailhouse/xen       |                              |          |
   +--------------------+----------------------------------------+------------------------------+----------+
   |``PedestalConf=``   |指定部署底座关联的配置文件              |str（长度<128）               |ALL       |
-  |                    | bare-metal：不涉及                     |                              |          |
-  |                    |                                        |                              |          |
-  |                    | jailhouse：指定RTOS所需的              |                              |          |
-  |                    | Non-Root Cell配置文件                  |                              |          |
-  |                    |                                        |                              |          |
-  |                    | xen：指定用于引导RTOS的bin文件         |                              |          |
   +--------------------+----------------------------------------+------------------------------+----------+
   |``Debug=``          |表示OS二进制是否支持调试，默认为no      |yes/no                        |ALL       |
   |                    |                                        |                              |          |
@@ -116,6 +105,23 @@ ____
   |``MaxMemory=``      |在线扩容时可为实时OS分配                |int（>= Memory）              |xen       |
   |                    |的最大内存大小（MB），默认等于Memory    |                              |          |
   +--------------------+----------------------------------------+------------------------------+----------+
+
+**各底座的配置说明**
+
+**``CPU=`` 参数：**
+
+- baremetal：仅支持单核，范围 0 ~ nproc - 1
+- hetero：指定为 riscv
+- jailhouse：实际由cell文件配置
+- xen：支持多核，范围 0 ~ nproc - 1，例如 1-3 表示使用 CPU1、CPU2、CPU3 这三个物理核
+
+**``PedestalConf=`` 参数：**
+
+- baremetal：不涉及
+- hetero：指定用于引导RTOS的bin文件
+- jailhouse：指定RTOS所需的 Non-Root Cell配置文件
+- xen：指定用于引导RTOS的bin文件
+
 
 以下为一些配置文件样例：
 
@@ -174,3 +180,17 @@ ____
         CPUCapacity=50
 
     该配置文件定义了一个名为 qemu-uniproton-xen 的实例，并指定使用 xen 作为部署底座，同时该实例使用的 xen 引导文件为 `/lib/firmware/qemu-uniproton-xen.bin`，RTOS运行在核1、2、3。
+
+示例五：
+
+    .. code-block:: console
+
+       [Mica]
+       Name=liteos
+       CPU=riscv
+       ClientPath=/lib/firmware/liteos.elf
+       AutoBoot=no
+       Pedestal=hetero
+       PedestalConf=/lib/firmware/liteos.bin
+
+    该配置文件定义了一个名为 liteos 的实例，并指定使用 hetero 作为部署底座，表示在RISC-V核上运行RTOS，同时该实例使用的引导文件为 `/lib/firmware/liteos.bin`。

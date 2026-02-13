@@ -34,7 +34,9 @@
 
      .. note::
 
-        MICA 支持在 `bare-metal`、`jailhouse`、`xen` 三种不同的环境上运行，默认构建 `bare-metal`。
+        MICA 支持在 `bare-metal`、`hetero`、`jailhouse`、`xen` 四种不同的环境上运行，默认构建 `bare-metal`。
+
+        `hetero` 也是裸金属部署的一种，用于在ARM64主机上运行RISC-V架构MCU上的RTOS，与 `bare-metal` 共用相同的构建流程。
 
         若需要支持 `jailhouse`，请修改编译配置文件 ``compile.yaml``，把 **MCS_FEATURES 中的 openamp 改成 jailhouse**。
 
