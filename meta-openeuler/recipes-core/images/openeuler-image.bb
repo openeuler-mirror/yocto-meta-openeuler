@@ -40,3 +40,7 @@ ${@bb.utils.contains("DISTRO_FEATURES", "containerd", "packagegroup-basic-contai
 
 MCS_IMAGE_INCLUDE = "${@bb.utils.contains('DISTRO_FEATURES', 'mcs', 'mcs-image-common.inc', '', d)}"
 include ${MCS_IMAGE_INCLUDE}
+
+# enable kernel-dev feature
+KERNEL_DEV_INCLUDE = "${@bb.utils.contains('DISTRO_FEATURES', 'kdev', 'kernel-dev.inc', '', d)}"
+include ${KERNEL_DEV_INCLUDE}
