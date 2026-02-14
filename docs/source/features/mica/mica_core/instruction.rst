@@ -478,3 +478,70 @@ ____
 
    $ mica stop
 
+____
+
+在hieulerpi上运行（异构部署）
+**************************************
+
+异构（hetero）部署模式支持在ARM64主机上运行RISC-V MCU的RTOS。当前仅hieulerpi支持异构模式，且异构模式仅支持RISC-V架构的RTOS。
+
+配置说明
+--------
+
+设备树配置
+~~~~~~~~~~
+
+异构部署需要在设备树中为RISC-V核配置共享内存区域和通信中断号。示例如下：
+
+.. code-block:: dts
+
+   mcs-riscv-remoteproc {
+		compatible = "oe,mcs_riscv_remoteproc";
+		memory-region = <&riscv_os_dma_memory_region>,
+				<&riscv_os_reserved>;
+
+		reg = <0x00 0x11031000 0x00 0x1000>;
+
+		/* 0: GIC_SPI */
+		/* 26: 中断号偏移 (58 - 32 = 26) */
+		/* 4: IRQ_TYPE_LEVEL_HIGH */
+		interrupts = <0 26 4>;
+		interrupt-parent = <0x01>;
+   };
+
+配置文件示例
+~~~~~~~~~~~~
+
+需要指定 ``Pedestal=hetero`` 和 ``CPU=riscv``：
+
+.. code-block:: console
+
+   [Mica]
+   Name=liteos
+   CPU=riscv
+   ClientPath=/lib/firmware/liteos.elf
+   AutoBoot=no
+   Pedestal=hetero
+   PedestalConf=/lib/firmware/liteos.bin
+
+.. note::
+
+   异构模式使用的内核模块仍然是 ``mcs_km.ko``。
+
+构建与运行
+----------
+
+使用oebuild构建异构部署镜像时，与bare-metal使用相同的构建流程即可。
+
+部署RTOS实例后，可以通过以下命令查看状态：
+
+.. code-block:: console
+
+   hieulerpi1 ~ # mica status
+   Name                          Assigned CPU        State               Service
+   liteos                        riscv               Running             rpmsg-tty(/dev/ttyRPMSG0) rpmsg-rpc rpmsg-umt
+
+.. note::
+
+   当前暂未提供RTOS示例镜像，用户需要自行构建RTOS镜像并进行调试。
+
