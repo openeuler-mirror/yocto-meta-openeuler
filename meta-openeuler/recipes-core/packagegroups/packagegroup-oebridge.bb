@@ -41,6 +41,7 @@ INSTALL_PKG_LISTS = " \
     dnf \
     rpm \
 "
+INSTALL_PKG_LISTS += "${@bb.utils.contains('DISTRO_FEATURES', 'kdev', ' kernel-devel ', '', d)}"
 
 # we should ensure libstdc++ api is compatible, ohterwise we need oe's libstdc++.
 # currently, oee's python3 is diff from oe2403, shoud use oe2403's pkg.

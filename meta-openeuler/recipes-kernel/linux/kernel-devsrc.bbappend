@@ -8,4 +8,4 @@ RDEPENDS:${PN}:remove:aarch64 = " gawk"
 INHIBIT_PACKAGE_STRIP = "1"
 INSANE_SKIP:${PN} += "arch"
 
-ASSUME_PROVIDE_PKGS = "kernel-dev"
+ASSUME_PROVIDE_PKGS = "kernel-devel"
