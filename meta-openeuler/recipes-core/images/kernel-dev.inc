@@ -1,6 +1,6 @@
 # kernel-dev Configuration
 
-IMAGE_INSTALL += " flex bison "
+IMAGE_INSTALL += " flex bison kernel-devsrc "
 
 fakeroot install_kernel_devsrc() {
     rpm -ivh --dbpath /var/lib/rpm --nosignature --root ${IMAGE_ROOTFS} --nodeps --ignorearch \
