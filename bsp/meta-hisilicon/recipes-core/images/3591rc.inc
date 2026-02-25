@@ -4,6 +4,30 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 # require ${@bb.utils.contains('DISTRO_FEATURES', 'mcs', 'mcs.inc', '', d)}
 # require ${@bb.utils.contains('BUILD_GUEST_OS', '1', 'initrd-install.inc', '', d)}
 
+systemd_preset_all:prepend() {
+    # use NetworkManager if exist
+    SRV_FILE_NETWORK_MANAGER="${IMAGE_ROOTFS}${root_prefix}/usr/lib/systemd/system/NetworkManager.service"
+    if [ -e "${SRV_FILE_NETWORK_MANAGER}" ]; then
+	SYSTEMD_PRESET_FILE="${IMAGE_ROOTFS}${root_prefix}/lib/systemd/system-preset/90-systemd.preset"
+	if [ -f "${SYSTEMD_PRESET_FILE}" ]; then
+	    # disable systemd-networkd
+            sed -i \
+	        -e 's/^enable systemd-networkd.service/disable systemd-networkd.service/' \
+	        -e 's/^enable systemd-network-generator.service/disable systemd-network-generator.service/' \
+	        "${SYSTEMD_PRESET_FILE}"
+	fi
+	DHCPCD_PRESET_FILE="${IMAGE_ROOTFS}${root_prefix}/lib/systemd/system-preset/98-dhcpcd.preset"
+	if [ -f "${DHCPCD_PRESET_FILE}" ]; then
+	    # disable dhcpcd preset
+            sed -i 's/^enable dhcpcd.service/disable dhcpcd.service/' "${DHCPCD_PRESET_FILE}"
+	fi
+        # enable NetworkManager
+	NEW_PRESET_FILE="${IMAGE_ROOTFS}${root_prefix}/lib/systemd/system-preset/90-networkmanager.preset"
+	echo "enable NetworkManager.service" > "${NEW_PRESET_FILE}"
+	chmod 0644 "${NEW_PRESET_FILE}"
+    fi
+}
+
 delete_unneeded_and_make_first_boot() {
     set -x
     test -d "${OUTPUT_DIR}" || mkdir -p "${OUTPUT_DIR}"
@@ -43,6 +67,7 @@ IMAGE_PREPROCESS_COMMAND += "${@bb.utils.contains('DISTRO_FEATURES', '3591fullim
 
 copy_3591img_distro() {
     set -x
+    mkdir -p ${OUTPUT_DIR}
     for IMAGETYPE in ${IMAGE_FSTYPES}
     do
         rm -f "${OUTPUT_DIR}"/${IMAGE_NAME}${IMAGE_NAME_SUFFIX%.rootfs}.*${IMAGETYPE}
