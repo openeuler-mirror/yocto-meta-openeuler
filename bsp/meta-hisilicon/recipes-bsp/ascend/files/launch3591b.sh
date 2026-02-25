@@ -31,3 +31,5 @@ fi
 
 # other init.
 # export LIBGL_ALWAYS_SOFTWARE=1
+
+rfkill unblock all
