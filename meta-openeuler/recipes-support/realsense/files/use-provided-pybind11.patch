@@ -1,0 +1,33 @@
+From 3724abeb08920182a08074462b9a030b6cda8a49 Mon Sep 17 00:00:00 2001
+From: Scott Ware <scott.r.ware@intel.com>
+Date: Fri, 13 Jun 2025 13:06:01 +0100
+Subject: [PATCH 5/5] Use provided pybind11
+Upstream-Status: Inappropriate [OE-Specific]
+
+Signed-off-by: Scott Ware <scott.r.ware@intel.com>
+---
+ CMake/external_pybind11.cmake | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/CMake/external_pybind11.cmake b/CMake/external_pybind11.cmake
+index a2ab2f868..39cba3de0 100644
+--- a/CMake/external_pybind11.cmake
++++ b/CMake/external_pybind11.cmake
+@@ -117,9 +117,11 @@ function(get_pybind11_json)
+ 
+ endfunction()
+ 
+-# Trigger the build
+-get_pybind11()
+-get_pybind11_json()
++find_package(Python REQUIRED COMPONENTS Interpreter Development)
++find_package(pybind11 CONFIG REQUIRED)
++option( PYTHON_INSTALL_DIR "Installation directory for Python libraries"
++    "${Python_SITEARCH}/pyrealsense2"
++)
+ 
+ # This function overrides "pybind11_add_module" function,  arguments is same as "pybind11_add_module" arguments
+ # pybind11_add_module(<name> SHARED [file, file2, ...] )
+-- 
+2.43.0
+
