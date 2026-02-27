@@ -87,6 +87,8 @@ XFCE_PKG_LISTS = " \
 INSTALL_PKG_LISTS += "${@bb.utils.contains('DISTRO_FEATURES', 'oe-xfce', d.getVar('XFCE_PKG_LISTS'), '', d)}"
 RDEPENDS:${PN} += " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'oe-xfce', 'firefox-bin', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'librealsense', 'librealsense2 librealsense2-tools \
+        librealsense2-debug-tools librealsense2-dev librealsense2-examples librealsense2-staticdev', '', d)} \
 "
 
 ROS_PKG_LISTS = " \

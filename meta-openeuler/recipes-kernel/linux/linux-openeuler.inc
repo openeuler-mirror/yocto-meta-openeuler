@@ -139,6 +139,22 @@ KERNEL_FEATURES:append = " \
     ${@bb.utils.contains_any('DISTRO_FEATURES', 'k3s-agent k3s-server', 'features/k3s/k3s.scc', '', d)} \
 "
 
+# 3rd_driver librealsense kernel support
+python () {
+    pv = d.getVar("PV", True)
+    if pv.startswith("5.10"):
+        d.setVar("LIBREALSENSE_FIX_PATCH", ' \
+            features/3rd_drivers/librealsense/0001-Add-missing-HID-timestamp-patch-for-Gyro-sensor_5.10.patch \
+            features/3rd_drivers/librealsense/0002-Add-support-for-RealSense-camera-formats-metadata_5.10.patch \
+            features/3rd_drivers/librealsense/0003-Bug-fix-for-incomplete-PowerLineFrequency-enumeration_5.10.patch')
+    else:
+        d.setVar("LIBREALSENSE_FIX_PATCH", ' features/3rd_drivers/librealsense/6.6-realsense-camera-formats.patch ')
+}
+KERNEL_FEATURES:append = " \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'librealsense', 'features/3rd_drivers/librealsense/librealsense.scc', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'librealsense', "${LIBREALSENSE_FIX_PATCH}", '', d)} \
+"
+
 # fetch jailhouse first to get jailhouse_export_symbol.patch
 do_fetch[depends] += " ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'jailhouse:do_fetch', '', d)}"
 # export symbol for jailhouse, its patch is in jailhouse src folder

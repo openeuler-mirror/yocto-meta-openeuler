@@ -1,6 +1,10 @@
-PV = "3.11.2"
+# use a newer stable version 3.12.0 from oee-archive
+inherit oee-archive
+OEE_ARCHIVE_SUB_DIR = "nlohmann-json"
 
-LIC_FILES_CHKSUM = "file://LICENSE.MIT;md5=f969127d7b7ed0a8a63c2bbeae002588"
+PV = "3.12.0"
+
+LIC_FILES_CHKSUM = "file://LICENSE.MIT;md5=3b489645de9825cca5beeb9a7e18b6eb"
 
 SRC_URI += " \
     file://v${PV}.tar.gz \
