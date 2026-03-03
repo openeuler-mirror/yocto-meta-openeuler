@@ -97,6 +97,9 @@ ROS_PKG_LISTS = " \
 "
 INSTALL_PKG_LISTS += "${@bb.utils.contains('DISTRO_FEATURES', 'oe-ros', d.getVar('ROS_PKG_LISTS'), '', d)}"
 
+IBROBOT_INCLUDE = "${@bb.utils.contains('DISTRO_FEATURES', 'ibrobot', 'packagegroup-ibrobot.inc', '', d)}"
+include ${IBROBOT_INCLUDE}
+
 python do_install_list_prepare(){
     import os
     import subprocess

@@ -44,3 +44,5 @@ EXTRA_OECMAKE:remove = " \
 "
 
 PACKAGECONFIG += " dnn "
+
+ASSUME_PROVIDE_PKGS:${PN} = "opencv"
