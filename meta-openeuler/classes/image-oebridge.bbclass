@@ -222,6 +222,7 @@ fakeroot python do_dnf_install_pkgs(){
         
     if len(real_list) > 0:
         real_list_str = " ".join(real_list)
+        bb.plain("install real packages: " + real_list_str)
         run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
         {real_list_str} -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
 

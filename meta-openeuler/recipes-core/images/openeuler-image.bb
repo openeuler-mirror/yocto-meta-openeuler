@@ -32,7 +32,6 @@ ${@bb.utils.contains("DISTRO_FEATURES", "dsoftbus", "packagegroup-dsoftbus", "",
 ${@bb.utils.contains("DISTRO_FEATURES", "benchmarks", "packagegroup-openeuler-benchmarks", "", d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "oebridge", "packagegroup-oebridge", "", d)} \
 ${@bb.utils.contains("DISTRO_FEATURES", "containerd", "packagegroup-basic-containerd", "", d)} \
-${@bb.utils.contains("DISTRO_FEATURES", "ibrobot", "packagegroup-ibrobot", "", d)} \
 "
 
 # You can add extra user here, suck like:
