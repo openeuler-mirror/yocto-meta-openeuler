@@ -1,3 +1,5 @@
+.. _xen:
+
 嵌入式实时虚拟机XEN
 ###################
 
@@ -113,4 +115,3 @@ Xen 使用指导
         thread_a: Hello World from cpu 0 on xenvm!
         thread_b: Hello World from cpu 0 on xenvm!
         thread_a: Hello World from cpu 0 on xenvm!
-

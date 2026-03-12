@@ -9,7 +9,7 @@
   <title>用户消息传递服务 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=fdb61a23" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=458d985c" />
 
   
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
@@ -117,8 +117,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="id1">
-<h1>用户消息传递服务<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+  <section id="mica-umt">
+<span id="id1"></span><h1>用户消息传递服务<a class="headerlink" href="#mica-umt" title="Link to this heading">¶</a></h1>
 <section id="id2">
 <h2>简介<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
 <p>在多 OS 混合部署场景下，Linux 与实时操作系统（RTOS）通过 RPMsg 协议进行跨核通信。默认配置下，RPMsg 使用 512 字节固定大小的消息缓冲区进行数据传输。当传输较大数据时，会触发以下问题：</p>
@@ -138,36 +138,180 @@
 [Data] -&gt; RPMsg Buffer -&gt; IPI -&gt; RPMsg Buffer -&gt; [Data]</p>
 <p>rpmsg-umt：
 [Data] -&gt; Shared Memory -&gt; (IPI + Metadata) -&gt; Shared Memory -&gt; [Data]</p>
+<p>UMT 服务支持 baremetal 和 hetero 两种部署底座，通过 <code class="docutils literal notranslate"><span class="pre">ped_type</span></code> 参数进行区分。</p>
 </section>
 <section id="id3">
 <h2>使用方法<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
-<p>rpmsg-umt 提供了以下接口进行数据发送：</p>
-<blockquote>
-<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
-<span class="cm">* @brief 发送数据到指定实例的RTOS并等待接收返回结果。</span>
-<span class="cm">*</span>
-<span class="cm">* 该函数用于将数据发送到指定实例的RTOS（实时操作系统），并等待接收返回结果。</span>
-<span class="cm">*</span>
-<span class="cm">* @param data 指向要发送的数据内容的指针。调用者应确保该缓冲区包含正确的数据内容。</span>
-<span class="cm">* @param data_len 要发送的数据长度。调用者应提供实际要发送的数据长度。</span>
-<span class="cm">* @param target_instance 要发送的目标实例ID, uniproton 启动配置文件中&quot;InstanceID&quot;值。</span>
-<span class="cm">*               注：     当前不支持多实例，target_instance赋值为0；支持多实例以后修改成具体实例号</span>
-<span class="cm">* @param rcv_data 指向接收数据缓冲区的指针。调用者应确保缓冲区已分配足够的内存来存储接收到的数据。</span>
-<span class="cm">* @param rcv_data_len 指向接收数据长度的指针。调用者应提供一个整型变量的地址，用于存储接收到的数据长度。</span>
-<span class="cm">*</span>
-<span class="cm">* @return int 返回值表示函数执行结果。</span>
-<span class="cm">*             - 0 表示成功发送数据并接收返回结果。</span>
-<span class="cm">*             - -1 表示发送失败。</span>
-<span class="cm">*/</span>
-<span class="kt">int</span><span class="w"> </span><span class="nf">send_data_to_rtos_and_wait_rcv</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">data_len</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">target_instance</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">rcv_data</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">rcv_data_len</span><span class="p">);</span>
+<p>UMT 提供了两类接口：上下文接口和一次性接口。</p>
+<section id="id4">
+<h3>上下文接口<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<p>上下文接口适用于需要多次通信的场景，创建一次上下文后可以重复使用，减少资源分配开销。</p>
+<section id="id5">
+<h4>创建上下文<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h4>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * @brief Create UMT communication context</span>
+<span class="cm"> *</span>
+<span class="cm"> * Allocates and initializes resources.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param target_instance Target instance ID (only 0 supported)</span>
+<span class="cm"> * @param ped_type Pedestal type: MCS_KM_PED_BAREMETAL or MCS_KM_PED_RISCV</span>
+<span class="cm"> * @return Context handle on success, NULL on failure</span>
+<span class="cm"> * @note Call umt_context_destroy when done</span>
+<span class="cm"> */</span>
+<span class="k">extern</span><span class="w"> </span><span class="n">umt_context_t</span><span class="o">*</span><span class="w"> </span><span class="nf">umt_context_create</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">target_instance</span><span class="p">,</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="n">mcs_km_pedestal_type</span><span class="w"> </span><span class="n">ped_type</span><span class="p">);</span>
 </pre></div>
 </div>
-</div></blockquote>
-<p>Linux 端示例可以参考 <a class="reference external" href="https://gitee.com/openeuler/mcs/blob/master/test/send-data/send-data.c#">send-data.c</a> 。</p>
+</section>
+<section id="id6">
+<h4>销毁上下文<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h4>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * @brief Destroy UMT communication context</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param ctx Context handle</span>
+<span class="cm"> * @note Safe if ctx is NULL; releases any held lock before destroy</span>
+<span class="cm"> */</span>
+<span class="k">extern</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">umt_context_destroy</span><span class="p">(</span><span class="n">umt_context_t</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h4>发送数据<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h4>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * @brief Send data using context (no reply wait)</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param ctx Context handle</span>
+<span class="cm"> * @param offset Offset in umt shared memory (bytes), 0 ~ (OPENAMP_SHM_COPY_SIZE - data_len)</span>
+<span class="cm"> * @param data Data to send</span>
+<span class="cm"> * @param data_len Data length</span>
+<span class="cm"> * @return 0 on success, negative errno on failure (e.g. -EINVAL for invalid ctx, offset or data_len)</span>
+<span class="cm"> * @note Lock is acquired/released internally</span>
+<span class="cm"> */</span>
+<span class="k">extern</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">send_data_with_umt_context</span><span class="p">(</span><span class="n">umt_context_t</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">offset</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">data_len</span><span class="p">);</span>
+</pre></div>
+</div>
+<section id="id8">
+<h5>接收数据（阻塞）<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h5>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * @brief Receive data using context (block until data arrives or timeout)</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param ctx Context handle</span>
+<span class="cm"> * @param rcv_data Receive buffer</span>
+<span class="cm"> * @param rcv_data_len Output: received length</span>
+<span class="cm"> * @param timeout_ms Timeout in ms; 0 = wait forever</span>
+<span class="cm"> * @return 0 on success, negative errno on failure (e.g. -EINVAL invalid ctx, -ETIMEDOUT on timeout,</span>
+<span class="cm"> *         -ENODATA, -ENODEV, -EFAULT from read path)</span>
+<span class="cm"> * @note Lock released during wait, re-acquired after</span>
+<span class="cm"> * @note Do not use the same context for both blocking receive and callback; use one mode per context.</span>
+<span class="cm"> */</span>
+<span class="k">extern</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">receive_data_with_umt_context</span><span class="p">(</span><span class="n">umt_context_t</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">rcv_data</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">rcv_data_len</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">timeout_ms</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id9">
+<h4>注册接收回调<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h4>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * @brief Register receive callback (library runs an internal thread that waits for data and calls callback)</span>
+<span class="cm"> *</span>
+<span class="cm"> * One callback per context. Callback and blocking receive_data_with_umt_context must not be used on the same context.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param ctx Context handle</span>
+<span class="cm"> * @param callback  Called with (data, data_len, priv); data is valid only during the call</span>
+<span class="cm"> * @param priv  Opaque pointer passed to callback (e.g. application context)</span>
+<span class="cm"> * @return 0 on success, negative errno on failure (e.g. -EINVAL if ctx/callback NULL or already registered,</span>
+<span class="cm"> *         -ENOMEM, -EAGAIN if thread create fails)</span>
+<span class="cm"> */</span>
+<span class="k">extern</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">umt_register_rcv_cb</span><span class="p">(</span><span class="n">umt_context_t</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="n">umt_rcv_cb_t</span><span class="w"> </span><span class="n">callback</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">priv</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * @brief Unregister receive callback and stop the internal receive thread</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param ctx Context handle</span>
+<span class="cm"> * @return 0 on success, negative errno on failure (e.g. -EINVAL if ctx is NULL, or no callback registered)</span>
+<span class="cm"> */</span>
+<span class="k">extern</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">umt_unregister_rcv_cb</span><span class="p">(</span><span class="n">umt_context_t</span><span class="w"> </span><span class="o">*</span><span class="n">ctx</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id10">
+<h3>一次性接口<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
+<p>一次性接口适用于简单的单次通信场景，内部会自动创建和销毁上下文。</p>
+<section id="id11">
+<h4>发送数据<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h4>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * @brief One-shot send to RTOS (creates/destroys context internally; offset 0)</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param data Data to send</span>
+<span class="cm"> * @param data_len Data length</span>
+<span class="cm"> * @param target_instance Target instance ID (must be 0)</span>
+<span class="cm"> * @param ped_type MCS_KM_PED_BAREMETAL or MCS_KM_PED_RISCV</span>
+<span class="cm"> * @return 0 on success, negative errno on failure (e.g. -EINVAL if ctx or offset invalid)</span>
+<span class="cm"> */</span>
+<span class="k">extern</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">send_data_to_rtos</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">data_len</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">target_instance</span><span class="p">,</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="n">mcs_km_pedestal_type</span><span class="w"> </span><span class="n">ped_type</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+<section id="id12">
+<h4>接收数据<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h4>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * @brief One-shot receive from RTOS (creates/destroys context internally)</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param rcv_data Receive buffer</span>
+<span class="cm"> * @param rcv_data_len Output: received length</span>
+<span class="cm"> * @param target_instance Target instance ID (must be 0)</span>
+<span class="cm"> * @param timeout_ms Timeout in ms; 0 = wait forever</span>
+<span class="cm"> * @param ped_type MCS_KM_PED_BAREMETAL or MCS_KM_PED_RISCV</span>
+<span class="cm"> * @return 0 on success, negative errno on failure (e.g. -ENOMEM, -ETIMEDOUT, -EINVAL, -ENODATA, -EFAULT)</span>
+<span class="cm"> */</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">receive_data_from_rtos</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">rcv_data</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">rcv_data_len</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">target_instance</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">timeout_ms</span><span class="p">,</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="n">mcs_km_pedestal_type</span><span class="w"> </span><span class="n">ped_type</span><span class="p">);</span>
+</pre></div>
+</div>
+<section id="id13">
+<h5>发送并等待回复（旧接口）<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h5>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * @brief One-shot send and wait for reply (legacy API; uses BAREMETAL)</span>
+<span class="cm"> *</span>
+<span class="cm"> * Use send_data_to_rtos_and_wait_rcv_ped to specify pedestal.</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param data Data to send</span>
+<span class="cm"> * @param data_len Data length</span>
+<span class="cm"> * @param target_instance Target instance ID (must be 0)</span>
+<span class="cm"> * @param rcv_data Receive buffer</span>
+<span class="cm"> * @param rcv_data_len Output: received length</span>
+<span class="cm"> * @return 0 on success, negative errno on failure (e.g. -ENOMEM, -EINVAL, -ETIMEDOUT)</span>
+<span class="cm"> */</span>
+<span class="k">extern</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">send_data_to_rtos_and_wait_rcv</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">data_len</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">target_instance</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">rcv_data</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">rcv_data_len</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * @brief One-shot send and wait for reply with specified pedestal type</span>
+<span class="cm"> *</span>
+<span class="cm"> * @param data Data to send</span>
+<span class="cm"> * @param data_len Data length</span>
+<span class="cm"> * @param target_instance Target instance ID (must be 0)</span>
+<span class="cm"> * @param rcv_data Receive buffer</span>
+<span class="cm"> * @param rcv_data_len Output: received length</span>
+<span class="cm"> * @param ped_type MCS_KM_PED_BAREMETAL or MCS_KM_PED_RISCV</span>
+<span class="cm"> * @return 0 on success, negative errno on failure (e.g. -ENOMEM, -EINVAL, -ETIMEDOUT)</span>
+<span class="cm"> */</span>
+<span class="k">extern</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">send_data_to_rtos_and_wait_rcv_ped</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">data</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">data_len</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">target_instance</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">rcv_data</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">rcv_data_len</span><span class="p">,</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="n">mcs_km_pedestal_type</span><span class="w"> </span><span class="n">ped_type</span><span class="p">);</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>对于 baremetal 底座，使用 <code class="docutils literal notranslate"><span class="pre">MCS_KM_PED_BAREMETAL</span></code> 作为 ped_type 参数</p></li>
+<li><p>对于 hetero 底座（RISC-V），使用 <code class="docutils literal notranslate"><span class="pre">MCS_KM_PED_RISCV</span></code> 作为 ped_type 参数</p></li>
+</ul>
+</div>
+<p>Linux 端示例可以参考 <a class="reference external" href="https://atomgit.com/openeuler/mcs/tree/master/test/test_umt#">test_umt</a> 。</p>
 <p>RTOS 端实现可以参考 UniProton <a class="reference external" href="https://gitee.com/openeuler/UniProton/pulls/454">PR454</a>，<a class="reference external" href="https://gitee.com/openeuler/UniProton/pulls/457">PR457</a> 。</p>
 </section>
-<section id="id4">
-<h2>性能指标<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+</section>
+</section>
+</section>
+<section id="id14">
+<h2>性能指标<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h2>
 <p>测试环境：</p>
 <ul class="simple">
 <li><p>KunPeng 920</p></li>
