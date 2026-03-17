@@ -6,7 +6,7 @@
 该部分内容旨在提供用户使用openEuler Embedded的相关指导。具体内容如下：
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    ../features/index.rst
    ../bsp/index.rst
