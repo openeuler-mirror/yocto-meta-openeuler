@@ -208,19 +208,19 @@ robot_config
      - 文件路径
      - 用途
    * - 主启动文件
-     - ``la unch/robot.launch.py``
+     - ``launch/robot.launch.py``
      - 统一系统入口点
    * - 机器人配置
-     - `` config/robots/*.yaml``
+     - ``config/robots/*.yaml``
      - 每个机器人的 规格说明
    * - 契约构建器
-     - ``robot_config /contract_builder.py``
+     - ``robot_config/contract_builder.py``
      - 自动生成 观测/动作契约
    * - 启动构建器
-     - ``robot_con fig/launch_builders/``
+     - ``robot_config/launch_builders/``
      - 模块化启动 组合
    * - 配置加载器
-     - ``robot_con fig/config_loader.py``
+     - ``robot_config/config_loader.py``
      - YAML 解析和 验证
 
 **配置文件**: - ``config/robots/so101_single_arm.yaml`` - SO-101 机器人规格 - ``config/calibration/*.yaml`` - 传感器校准数据 - ``config/contracts/*.yaml`` - 预生成的契约
@@ -412,19 +412,19 @@ action_dispatch
      - 文件
      - 用途
    * - 分发器节点
-     - ``a ction_dispatc her_node.py``
-     - 主执行循环和 队列管理
+     - ``action_dispatcher_node.py``
+     - 主执行循环和队列管理
    * - 时序平滑器
-     - ``temporal_ smoother.py``
+     - ``temporal_smoother.py``
      - 跨帧动作混合
    * - 平滑器管理器
-     - ``temp oral_smoother _manager.py``
+     - ``temporal_smoother_manager.py``
      - 平滑器生命周期管理
    * - 话题执行器
-     - ``exe cutors/topic_ executor.py``
+     - ``executors/topic_executor.py``
      - 高频位置控制
    * - 动作执行器
-     - ``exec utors/action_ executor.py``
+     - ``executors/action_executor.py``
      - 基于轨迹的控制
 
 **节点参数**:
@@ -441,27 +441,27 @@ action_dispatch
      - int
      - 100
      - 最大动作队列长度
-   * - ``wate rmark_threshold``
+   * - ``watermark_threshold``
      - int
      - 20
-     - 当队列 < 阈值时 触发推理
-   * - ``co ntrol_frequency``
+     - 当队列 < 阈值时触发推理
+   * - ``control_frequency``
      - double
      - 100.0
      - 控制循环频率（Hz）
-   * - ``inferenc e_action_server``
+   * - ``inference_action_server``
      - string
-     - ``/act_infe rence_node/Di spatchInfer``
+     - ``/act_inference_node/DispatchInfer``
      - 推理动作服务器名称
    * - ``contract_path``
      - string
      - ``''``
      - 契约 YAML 路径
-   * - ``temporal_sm oothing_enabled``
+   * - ``temporal_smoothing_enabled``
      - bool
      - false
      - 启用跨帧平滑
-   * - ``temporal _ensemble_coeff``
+   * - ``temporal_ensemble_coeff``
      - double
      - 0.01
      - 指数平滑系数
@@ -558,8 +558,7 @@ dataset_tools
 
 **输出格式**: - ROS2 MCAP bag（录制）- LeRobot v3 数据集（转换）: - ``data/`` - 包含观测/动作张量的 Parquet 文件 - ``videos/`` - MP4 编码的相机流
 
-**依赖**: - ``rclpy`` - ``rosbag2_py`` - ``ibrobot_msgs`` -
-``tensormsg`` - ``robot_config`` - ``lerobot``（用于数据集格式）
+**依赖**: ``rclpy``、``rosbag2_py``、``ibrobot_msgs``、``tensormsg``、``robot_config``、``lerobot`` （用于数据集格式）
 
 **来源**: `README.md:60 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L60>`__
 
@@ -675,8 +674,7 @@ robot_description
 
 **URDF 组件**: - 基础 URDF: 运动学和连杆几何 - ros2_control: 硬件接口声明 - Gazebo: 传感器插件和物理属性
 
-**依赖**: - ``robot_state_publisher`` -
-``joint_state_publisher``（可选，用于独立测试）
+**依赖**: ``robot_state_publisher``, ``joint_state_publisher`` (可选, 用于独立测试)
 
 **来源**: `README.md:62 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L62>`__, `src/README.md:76-78 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/README.md#L76-L78>`__
 
@@ -688,7 +686,7 @@ so101_hardware
 | **类型**: 硬件驱动插件
 | **语言**: C++
 | **位置**: ``src/so101_hardware/``
-| **插件**: ``so101_hardware/SO101Hardware``（ros2_control 硬件接口）
+| **插件**: ``so101_hardware/SO101Hardware`` （ros2_control 硬件接口）
 
 **用途**: 使用飞特舵机 SDK 实现 SO-101 机器人的 ros2_control 硬件接口。通过串口通信提供物理舵机的位置/速度读写。
 
@@ -728,7 +726,7 @@ so101_hardware
 --------
 
 lerobot（外部子模块）
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 | **类型**: Python ML 库
 | **语言**: Python
@@ -810,10 +808,10 @@ lerobot（外部子模块）
      - 包
      - 构建工具
    * - ament_python
-     - ``robot_config``, ``tensormsg``, ``inf erence_service``, ``a ction_dispatch``, ` `dataset_tools``, ``robot_teleop``, ``robot_moveit``
+     - ``robot_config``, ``tensormsg``, ``inference_service``, ``action_dispatch``, ``dataset_tools``, ``robot_teleop``, ``robot_moveit``
      - setuptools
    * - ament_cmake
-     - ` `so101_hardware``
+     - ``so101_hardware``
      - CMake
    * - Interface
      - ``ibrobot_msgs``
@@ -886,63 +884,61 @@ lerobot（外部子模块）
      - 语言
      - 关键可执行文件
      - 主要用途
-   * - `` ibrobot _msgs``
-     - I nter face
+   * - ``ibrobot_msgs``
+     - Interface
      - IDL
      - -
      - 消息/动作定义
-   * - `` robot_c onfig``
-     - C onfi g/La unch
+   * - ``robot_config``
+     - Config/Launch
      - Python
      - -
-     - 唯一事实来源， 启动编排
-   * - ``tens ormsg``
-     - Lib rary
+     - 唯一事实来源，启动编排
+   * - ``tensormsg``
+     - Library
      - Python
      - -
      - ROS↔张量协议转换
-   * - ``infer ence_se rvice``
-     - Ser vice
+   * - ``inference_service``
+     - Service
      - Python
-     - ``lerob ot_policy_node``, ``pure _inference_node``
-     - 模型推理 （ACT、Diffusion、 VLA）
-   * - ``act ion_dis patch``
-     - Ser vice
+     - ``lerobot_policy_node``, ``pure_inference_node``
+     - 模型推理（ACT、Diffusion、VLA）
+   * - ``action_dispatch``
+     - Service
      - Python
-     - ``action_ dispatcher_node``
+     - ``action_dispatcher_node``
      - 动作队列 + 时序平滑
-   * - ``d ataset_ tools``
-     - T ools
+   * - ``dataset_tools``
+     - Tools
      - Python
-     - ``ep isode_recorder``, `` bag_to_lerobot``, ``record_cli``
+     - ``episode_recorder``, ``bag_to_lerobot``, ``record_cli``
      - 数据采集与转换
-   * - `` robot_t eleop``
-     - Con trol
+   * - ``robot_teleop``
+     - Control
      - Python
-     - `` vr_teleop_node``, ``xb ox_teleop_node``, etc.
+     - ``vr_teleop_node``, ``xbox_teleop_node``, etc.
      - 遥操作接口
-   * - `` robot_m oveit``
-     - Plan ning
-     - Py thon/YAML
-     - ``mo veit_gateway.py``
-     - MoveIt2 配置 与网关
-   * - ``robot _descri ption``
-     - As sets
+   * - ``robot_moveit``
+     - Planning
+     - Python/YAML
+     - ``moveit_gateway.py``
+     - MoveIt2 配置与网关
+   * - ``robot_description``
+     - Assets
      - URDF/SRDF
      - -
      - 机器人模型和网格
-   * - ``so 101_har dware``
-     - Dr iver
+   * - ``so101_hardware``
+     - Driver
      - C++
      - - (plugin)
      - ros2_control 硬件接口
-   * - ``le robot``
-     - Exte rnal
+   * - ``lerobot``
+     - External
      - Python
      - -
-     - ML 训练库 （子模块）
+     - ML 训练库（子模块）
 
 **来源**: `README.md:44-71 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L44-L71>`__, `src/README.md:20-87 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/README.md#L20-L87>`__,
 `docs/architecture.md:217-265 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/docs/architecture.md#L217-L265>`__
-
---------------

@@ -42,8 +42,6 @@ IB-Robot 概述
 
 **来源**: `README.md:1-192 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L1-L192>`__, `docs/architecture.md:1-313 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/docs/architecture.md#L1-L313>`__
 
---------------
-
 什么是 IB-Robot？
 -----------------
 
@@ -570,7 +568,7 @@ IB-Robot 支持两种策略推理执行模式：
      └─ TensorPostprocessor (CPU)
 
 分布式模式（云-边）
-~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
 
 边缘节点执行预处理，云端节点执行 GPU 推理，边缘节点执行后处理：
 
@@ -664,5 +662,3 @@ IB-Robot 支持两种策略推理执行模式：
 -  **硬件集成**: 参阅 `ros2_control Configuration <#11.1>`__ 和 `Hardware Plugins <#11.2>`__
 
 **来源**: `README.md:1-192 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L1-L192>`__, `docs/architecture.md:1-313 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/docs/architecture.md#L1-L313>`__
-
---------------

@@ -407,7 +407,7 @@ VS Code 集成
 VS Code 配置为通过任务、Python 环境检测和 C++ IntelliSense 与 IB-Robot 构建系统无缝协作。
 
 Python 环境配置
-~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
 
 工作区配置为自动使用 ``venv`` Python 解释器：
 
@@ -685,5 +685,3 @@ VS Code IntelliSense 不工作
 **解决方法**: 1. 重新加载 VS Code: ``Ctrl+Shift+P`` → "Developer: Reload Window" 2. 选择正确的 Python 解释器: ``Ctrl+Shift+P`` → "Python: Select Interpreter" → ``venv/bin/python3`` 3. 验证终端中的 ``PYTHONPATH``: ``echo $PYTHONPATH`` 应包含 ``libs/lerobot/src``
 
 **来源**: `scripts/build.sh:162-178 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/scripts/build.sh#L162-L178>`__, `README.md:172-186 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L172-L186>`__
-
---------------

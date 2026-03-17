@@ -184,7 +184,7 @@
 --------------
 
 关节定义（单一数据源）
---------------------
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``joints`` 部分建立所有控制模式和配置中关节命名和分组的 **单一数据源**。这防止了关节规格的重复和不一致。
 
@@ -818,5 +818,3 @@ ros2_control 配置
 **来源：**
 `src/robot_config/config/robots/so101_single_arm.yaml:1-329 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L1-L329>`__，
 `src/robot_config/README.md:1-527 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/README.md#L1-L527>`__
-
---------------

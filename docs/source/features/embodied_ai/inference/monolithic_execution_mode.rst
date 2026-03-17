@@ -428,5 +428,3 @@ RTX 4060 上 ACT 策略的典型延迟（chunk_size=100）：
 
 **源码**：`src/inference_service/README.en.md:18-37 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/README.en.md#L18-L37>`__,
 `src/inference_service/inference_service/lerobot_policy_node.py:8-27 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L8-L27>`__
-
---------------

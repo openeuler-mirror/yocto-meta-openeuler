@@ -35,8 +35,8 @@
 
 IB-Robot 配置系统遵循 DRY（Don't Repeat Yourself）原则，以 robot_config YAML 为权威来源。但是，某些配置必须在派生文件中复制以兼容 ROS2：
 
--  **ros2_control 控制器**需要在控制器 YAML 文件中显式关节列表
--  **MoveIt 控制器**需要在 MoveIt 配置文件中显式关节列表
+-  ros2_control 控制器需要在控制器 YAML 文件中显式关节列表
+-  MoveIt 控制器需要在 MoveIt 配置文件中显式关节列表
 
 验证脚本检测这些派生配置何时偏离事实来源，在部署前捕获错误。它设计用于集成到 CI/CD 管道中，提供自动化的配置一致性检查。
 
@@ -489,8 +489,6 @@ ROS 路径解析
 **源码：** `scripts/validate_config.py:26-44 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/scripts/validate_config.py#L26-L44>`__,
 `scripts/validate_config.py:276-294 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/scripts/validate_config.py#L276-L294>`__
 
---------------
-
 使用示例
 --------
 
@@ -612,7 +610,7 @@ Pre-commit 钩子
 ~~~~~~~~
 
 =========== ====== ==============================
-级别       符号   行为
+级别        符号   行为
 =========== ====== ==============================
 ``INFO``    ℹ      仅在详细模式下显示
 ``WARNING`` ⚠      始终显示
@@ -652,5 +650,3 @@ Pre-commit 钩子
 
 **源码：** `scripts/validate_config.py:34-43 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/scripts/validate_config.py#L34-L43>`__,
 `scripts/validate_config.py:276-294 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/scripts/validate_config.py#L276-L294>`__
-
---------------

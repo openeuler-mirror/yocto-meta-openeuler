@@ -1,5 +1,5 @@
 ros2_control 配置
-================
+~~~~~~~~~~~~~~~~~~~~
 
 .. raw:: html
 
@@ -27,7 +27,7 @@ ros2_control 配置
 --------------
 
 目的与范围
----------
+----------
 
 robot_config YAML 文件中的 ``ros2_control`` 部分提供了 IB-Robot 系统与 ros2_control 硬件抽象框架之间的配置桥梁。此配置定义：
 
@@ -368,11 +368,11 @@ ros2_control 配置通过 ``LaunchBuilder`` 模式与启动系统集成。启动
    * - ``use_sim`` 值
      - 硬件插件
      - 描述
-   * - ``false``（默认）
-     - ``so101_hardwar e/SO101SystemHardware``
+   * - ``false`` （默认）
+     - ``so101_hardware/SO101SystemHardware``
      - 通过串口的 真实硬件
    * - ``true``
-     - ``gz_ros2_co ntrol/GazeboSimSystem``
+     - ``gz_ros2_control/GazeboSimSystem``
      - Gazebo 物理 仿真
 
 启动构建器在将配置传递给 controller_manager 之前自动修改 ``hardware_plugin`` 字段。
@@ -632,7 +632,7 @@ ros2_control 配置通过 ``LaunchBuilder`` 模式与启动系统集成。启动
 ~~~~~~~~~~~~
 
 硬件插件未找到
-^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~
 
 **错误**：
 ``Could not find hardware plugin: so101_hardware/SO101SystemHardware``
@@ -645,7 +645,7 @@ ros2_control 配置通过 ``LaunchBuilder`` 模式与启动系统集成。启动
    source install/setup.bash
 
 校准文件缺失
-^^^^^^^^^^^^
+~~~~~~~~~~~~
 
 **错误**：
 ``Calibration file not found: /home/user/.calibrate/so101_follower_calibrate.json``
@@ -658,7 +658,7 @@ ros2_control 配置通过 ``LaunchBuilder`` 模式与启动系统集成。启动
      # calib_file: $(env HOME)/.calibrate/so101_follower_calibrate.json  # 注释掉
 
 URDF 路径解析失败
-^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~
 
 **错误**：``URDF file not found: $(find robot_description)/urdf/...``
 
@@ -669,12 +669,10 @@ URDF 路径解析失败
    ros2 pkg prefix robot_description
 
 控制器生成失败
-^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~
 
 **错误**：``Controller 'arm_position_controller' not found``
 
 **解决方案**：验证控制器在 controllers_config 文件中定义，并与控制模式规范匹配。
 
 **来源**：`src/robot_config/README.md:470-515 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/README.md#L470-L515>`__
-
---------------

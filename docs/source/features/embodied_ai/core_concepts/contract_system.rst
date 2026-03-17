@@ -104,8 +104,6 @@
 **来源**：`src/robot_config/robot_config/loader.py:94-144 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/loader.py#L94-L144>`__，
 `src/robot_config/config/robots/so101_single_arm.yaml:198-301 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L198-L301>`__
 
---------------
-
 契约结构
 --------
 
@@ -501,7 +499,7 @@ QoS 模式
      depth: 10                 # 缓冲区大小
 
 常见 QoS 模式
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 
 
 .. list-table::
@@ -545,7 +543,7 @@ QoS 模式
 ``selector.names`` 字段使用 **点分路径表示法** 从 ROS 消息和张量中提取数据。
 
 用于 ROS 消息（观测）
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 格式：``field.subfield[.arrayKey]``
 
@@ -566,7 +564,7 @@ QoS 模式
 (``dot_get()`` 函数)
 
 用于张量（动作）
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 格式：``key.index``
 
@@ -654,8 +652,6 @@ QoS 模式
 **来源**：
 `src/robot_config/config/robots/so101_single_arm.yaml:198-301 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L198-L301>`__
 
---------------
-
 总结
 ----
 
@@ -672,5 +668,3 @@ QoS 模式
 **来源**：`README.md:1-192 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L1-L192>`__，
 `docs/architecture.md:187-215 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/docs/architecture.md#L187-L215>`__，
 `src/robot_config/config/robots/so101_single_arm.yaml:198-301 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L198-L301>`__
-
---------------

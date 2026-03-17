@@ -413,5 +413,3 @@
 
 **源码：** `src/inference_service/README.en.md:1-74 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/README.en.md#L1-L74>`__,
 `src/inference_service/README.md:1-76 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/README.md#L1-L76>`__
-
---------------

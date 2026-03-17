@@ -560,8 +560,6 @@ ActionExecutor 性能概况
 **来源**：`src/action_dispatch/README.en.md:174-185 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L174-L185>`__,
 `README.md:1-192 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L1-L192>`__
 
---------------
-
 安全与错误处理
 --------------
 
@@ -654,5 +652,3 @@ ActionExecutor 安全机制
 **来源**：`src/action_dispatch/README.en.md:1-447 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L1-L447>`__,
 `src/action_dispatch/action_dispatch/action_dispatcher_node.py:1-319 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L1-L319>`__,
 `README.md:1-192 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L1-L192>`__
-
---------------

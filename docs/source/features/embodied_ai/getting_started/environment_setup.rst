@@ -227,7 +227,7 @@ Git 子模块管理
 --------------
 
 Python 虚拟环境
---------------
+----------------
 
 虚拟环境设置是最关键的组件，确保 ROS 2 系统包与 LeRobot 依赖之间的兼容性。
 
@@ -455,5 +455,3 @@ Conda 冲突检测
      - 克隆前设置 ``export GIT_LFS_SKIP_SMUDGE=1``
 
 **来源**: `scripts/setup.sh:25-33 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/scripts/setup.sh#L25-L33>`__, `scripts/setup.sh:271-277 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/scripts/setup.sh#L271-L277>`__
-
---------------

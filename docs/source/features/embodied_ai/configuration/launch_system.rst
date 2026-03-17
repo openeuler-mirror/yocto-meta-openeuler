@@ -853,5 +853,3 @@
 
 **源码：** `src/robot_config/launch/robot.launch.py:1-360 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L1-L360>`__,
 `src/robot_config/robot_config/launch_builders/ <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/>`__
-
---------------

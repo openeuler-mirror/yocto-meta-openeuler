@@ -31,7 +31,7 @@ MoveIt 启动配置
 本文档介绍 IB-Robot 中的 MoveIt 2 启动配置系统，该系统为 ``moveit_planning`` 控制模式提供运动规划功能。有关 MoveItGateway 节点的 IK 求解和约束处理信息，请参阅 `10.1 <#10.1>`__。有关 5DOF 运动学约束的详细信息，请参阅 `10.2 <#10.2>`__。
 
 目的与范围
----------
+----------
 
 MoveIt 启动配置系统在机器人以 ``moveit_planning`` 控制模式启动时，协调 MoveIt 2 组件的启动。它处理：
 
@@ -223,24 +223,24 @@ MoveItConfigsBuilder 使用
    * - 构建器方法
      - 配置文件
      - 用途
-   * - ` `.robot_description()``
-     - ``urdf/lero bot/so101/so101.urdf.xacro``
-     - 机器人 运动学模型
-   * - ``.robot_d escription_semantic()``
+   * - ``.robot_description()``
+     - ``urdf/lerobot/so101/so101.urdf.xacro``
+     - 机器人运动学模型
+   * - ``.robot_description_semantic()``
      - ``config/.../so101.srdf``
-     - 规划组、 末端执行器
-   * - ``.robot_des cription_kinematics()``
-     - `` config/.../kinematics.yaml``
-     - IK 求解器 配置
+     - 规划组、末端执行器
+   * - ``.robot_description_kinematics()``
+     - ``config/.../kinematics.yaml``
+     - IK 求解器配置
    * - ``.joint_limits()``
-     - ``co nfig/.../joint_limits.yaml``
-     - 速度/ 加速度限制
-   * - ``.t rajectory_execution()``
-     - ``config/. ../moveit_controllers.yaml``
-     - 控制器 映射
-   * - `` .planning_pipelines()``
+     - ``config/.../joint_limits.yaml``
+     - 速度/加速度限制
+   * - ``.trajectory_execution()``
+     - ``config/../moveit_controllers.yaml``
+     - 控制器映射
+   * - ``.planning_pipelines()``
      - ``pipelines=["ompl"]``
-     - OMPL 规划器 配置
+     - OMPL 规划器配置
 
 **来源**：`src/robot_moveit/launch/so101_moveit.launch.py:61-90 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/launch/so101_moveit.launch.py#L61-L90>`__
 
@@ -482,7 +482,7 @@ MoveIt 启动根据控制模式条件性包含：
 --------
 
 MoveIt 启动文件未找到
-~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 **症状**：启动期间警告消息：
 
@@ -552,7 +552,7 @@ MoveIt 启动文件未找到
 `src/robot_config/robot_config/launch_builders/moveit.py:47-49 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/moveit.py#L47-L49>`__
 
 IK 求解器频繁失败
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
 
 **症状**：MoveIt 规划对大多数目标返回 ``NO_IK_SOLUTION``。
 
@@ -567,5 +567,3 @@ IK 求解器频繁失败
 **来源**：
 `src/robot_moveit/config/lerobot/so101/kinematics.yaml:1-7 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/config/lerobot/so101/kinematics.yaml#L1-L7>`__，
 `src/robot_moveit/docs/moveit_gateway.md:32-58 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L32-L58>`__
-
---------------

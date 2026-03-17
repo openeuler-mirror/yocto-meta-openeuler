@@ -23,7 +23,7 @@ MoveItGateway 节点
    </details>
 
 目的与范围
----------
+----------
 
 ``MoveItGateway`` 节点作为高层笛卡尔位姿命令与 MoveIt2 运动规划框架之间的接口层。它专门解决 5 自由度（5DOF）机械臂的运动学约束问题，实现了带姿态松弛技术的多策略逆运动学（IK）求解。
 
@@ -313,7 +313,7 @@ MoveItGateway 类
 `src/robot_moveit/docs/moveit_gateway.md:63-66 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L63-L66>`__
 
 策略 2：肩部 XZ 平面投影（``project_orientation_to_shoulder_xz_plane``）
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 将姿态投影到肩部坐标系的 XZ 平面，与机械臂的自然运动约束对齐。
 
@@ -629,7 +629,7 @@ IK 求解和执行流水线
 `src/robot_moveit/launch/so101_moveit.launch.py:1-134 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/launch/so101_moveit.launch.py#L1-L134>`__
 
 机器人配置 YAML 规范
-~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
 
 MoveIt 网关要求 ``robot_config`` YAML 中包含以下字段：
 
@@ -726,5 +726,3 @@ TF 变换失败
 **解决方案**：- 验证 ``/joint_states`` 话题包含所有必需关节 - 检查 ``joint_names`` 参数与实际关节名称匹配 - 确保关节名称与 URDF 和 ros2_control 配置中的匹配
 
 **来源**：`src/robot_moveit/scripts/moveit_gateway.py:476-482 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L476-L482>`__
-
---------------
