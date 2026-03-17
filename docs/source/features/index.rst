@@ -5,7 +5,7 @@
 ################################
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: 内容
 
    system/index.rst

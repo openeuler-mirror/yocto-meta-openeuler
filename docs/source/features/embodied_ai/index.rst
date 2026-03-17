@@ -1,11 +1,11 @@
-.. _embbodied_ai:
+.. _embodied_ai:
 
-
-具身智能
+具身智能 (Embodied AI)
 ################################
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
    :caption: 内容
 
    ros.rst
+   ib_robot.rst

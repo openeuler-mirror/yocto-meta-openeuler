@@ -33,7 +33,8 @@ release = '24.03'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx_multiversion',
-              'sphinx_tabs.tabs']
+              'sphinx_tabs.tabs',
+              'sphinxcontrib.mermaid']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -70,12 +71,17 @@ exclude_patterns = []
 #html_theme = 'alabaster'
 html_theme = "sphinx_rtd_theme"
 html_theme_options = {
-    'navigation_depth': 5,
+    'navigation_depth': 7,
     'sticky_navigation': False,
 }
 
 html_css_files = [
     'css/custom.css',
+]
+
+html_js_files = [
+    'js/mermaid-init.js',
+    'js/custom.js',
 ]
 
 # Add any paths that contain custom static files (such as style sheets) here,
