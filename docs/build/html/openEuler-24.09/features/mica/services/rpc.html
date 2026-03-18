@@ -9,13 +9,17 @@
   <title>基于UniProton的RPC服务 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=458d985c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
 
   
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -62,7 +66,13 @@
 <li class="toctree-l4"><a class="reference internal" href="../developer_guides/index.html">开发者指南</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="index.html">跨OS服务</a><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="debug.html">调试支持 GDB stub 的 Client OS</a></li>
-<li class="toctree-l5 current"><a class="current reference internal" href="#">基于UniProton的RPC服务</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">基于UniProton的RPC服务</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#rpc">RPC简介</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id1">基于UniProton的RPC服务使用方法</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id2">UniProton目前支持的RPC接口类型</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id3">UniProton新增RPC接口</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../lopper_devicetree.html">外设分区管理</a></li>
@@ -125,23 +135,23 @@
            <div itemprop="articleBody">
              
   <section id="uniprotonrpc">
-<h1>基于UniProton的RPC服务<a class="headerlink" href="#uniprotonrpc" title="Link to this heading">¶</a></h1>
+<h1>基于UniProton的RPC服务<a class="headerlink" href="#uniprotonrpc" title="Link to this heading"></a></h1>
 <section id="rpc">
-<h2>RPC简介<a class="headerlink" href="#rpc" title="Link to this heading">¶</a></h2>
+<h2>RPC简介<a class="headerlink" href="#rpc" title="Link to this heading"></a></h2>
 <p>远程调用（Remote Procedure Call，简称RPC）是一种分布式计算中的通信方式，用于实现不同计算机之间的程序调用。它允许在一个计算机上运行的程序能够调用另一个计算机上的程序，就像调用本地程序一样简单。</p>
 <p>当实时侧需要访问Linux侧的文件或者依靠Linux的网络协议栈与其他终端进行网络通信的时候，可以使用RPC服务。</p>
 <p>基于UniProton的RPC服务基于mica混合部署框架，UniProton侧将用户的请求信息和接口进行封装，写入共享内存，并通过中断通知Linux。Linux侧收到消息后，进行请求信息解析和分发，找到对应的函数和方法，执行相应的逻辑。执行完成后，Linux将结果通过共享内存和中断的方式发送给UniProton。UniProton接收到Linux消息后，解析结果并进行相应的处理。</p>
 </section>
 <hr class="docutils" />
 <section id="id1">
-<h2>基于UniProton的RPC服务使用方法<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<h2>基于UniProton的RPC服务使用方法<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <p>首先，需要构建含有MICA的openEuler Embedded镜像，请参考 <a class="reference internal" href="../build.html#mcs-build"><span class="std std-ref">MICA镜像构建指南</span></a> 。</p>
 <p>然后，需要在UniProton的build/uniproton_config/<cite>*</cite>/defconfig中开启CONFIG_OS_OPTION_PROXY选项开关即可使用RPC远程调用功能，UniProton构建请参考 <a class="reference external" href="https://gitee.com/openeuler/UniProton/blob/master/doc/UniProton_build.md">UniProton构建</a> 。</p>
 <p>最后，通过MICA混合部署拉起UniProton，请参考 <a class="reference internal" href="../mica_ctl.html#mica-ctl"><span class="std std-ref">MICA使用指南</span></a> 。</p>
 </section>
 <hr class="docutils" />
 <section id="id2">
-<h2>UniProton目前支持的RPC接口类型<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<h2>UniProton目前支持的RPC接口类型<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 20.0%" />
@@ -177,7 +187,7 @@ accept4</p></td>
 </section>
 <hr class="docutils" />
 <section id="id3">
-<h2>UniProton新增RPC接口<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<h2>UniProton新增RPC接口<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
 <p>如果上诉支持的接口无法满足要求，需要新增RPC接口，基于RPC服务的endpoint已经创建，名称为rpmsg-rpc，用户可参考如下进行修改</p>
 <p>UniProton：参考文件src/component/proxy/rpc_routines.c，实现消息格式的封装。</p>
 <p>Linux：参考文件mica/micad/services/rpc/rpc_backend.c，实现消息的解封装和处理。</p>
@@ -244,6 +254,7 @@ accept4</p></td>
       <dd><a href="../../../../openEuler-24.03-LTS/features/mica/services/rpc.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="rpc.html">openEuler-24.09</a></dd>
       <dd><a href="../../../../openEuler-25.03/features/mica/services/rpc.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../pr_2786/index.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

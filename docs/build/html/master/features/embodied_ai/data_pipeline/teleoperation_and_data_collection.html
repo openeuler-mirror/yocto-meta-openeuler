@@ -1,0 +1,1208 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>遥操作与数据收集 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
+    /* Same as .mermaid-container > pre */
+    display: block;
+    width: 100%;
+}
+
+pre.mermaid > svg {
+    /* Same as .mermaid-container > pre > svg */
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}`;
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.mermaid-container > pre {
+    display: block;
+    width: 100%;
+}
+
+.mermaid-container > pre > svg {
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.mermaid-fullscreen-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: #333;
+}
+
+.mermaid-fullscreen-btn:hover {
+    opacity: 100% !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-btn.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-btn.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 95vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    padding: 20px;
+    overflow: auto;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.mermaid-fullscreen-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen.dark-theme {
+    background: #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen .mermaid svg {
+    height: 100% !important;
+    width: 100% !important;
+    cursor: grab;
+}
+
+.mermaid-fullscreen-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: white;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-close.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-close.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
+    display: none !important;
+}`;
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+
+    if ("False" === "True") {
+        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("");
+            if(all_mermaids.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else if(svgs.size() !== mermaids_to_add_zoom) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else {
+                svgs.each(function() {
+                    var svg = d3.select(this);
+                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                    var inner = svg.select("g");
+                    var zoom = d3.zoom().on("zoom", function(event) {
+                        inner.attr("transform", event.transform);
+                    });
+                    svg.call(zoom);
+                });
+            }
+        }
+    } else if(all_mermaids.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if ("True" !== "True") return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = '⛶';
+        fullscreenBtn.style.opacity = '50%';
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scroll, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.sdisplay = 'block';
+
+                if ("False" === "True") {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="回合录制" href="episode_recording.html" />
+    <link rel="prev" title="数据服务概述" href="overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">具身机器人框架IB Robot</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../introduction/ib-robot_overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture/system_architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统 (robot_config)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol/protocol_conversion_tensormsg.html">协议转换 (tensormsg)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference/index.html">推理服务</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../action_dispatch/index.html">动作调度</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">数据服务</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">数据服务概述</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">遥操作与数据收集</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">目的与范围</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">遥操作概述</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id6">数据收集架构</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id8">回合录制系统</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#record-cli">使用 record_cli 进行交互式录制</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id15">契约驱动的录制</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id18">完整数据收集流程</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id21">输出数据格式</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id23">关键参数与配置</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id26">数据流水线的下一步</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="episode_recording.html">回合录制</a></li>
+<li class="toctree-l6"><a class="reference internal" href="dataset_conversion_bag_to_lerobot.html">数据集转换 (bag_to_lerobot)</a></li>
+<li class="toctree-l6"><a class="reference internal" href="training_integration.html">训练集成</a></li>
+<li class="toctree-l6"><a class="reference internal" href="deployment_feedback_loop.html">部署反馈循环</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../motion_planning/index.html">运动规划 (MoveIt)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../hardware/index.html">硬件集成</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference/package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">具身机器人框架IB Robot</a></li>
+          <li class="breadcrumb-item"><a href="index.html">数据服务</a></li>
+      <li class="breadcrumb-item active">遥操作与数据收集</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>遥操作与数据收集<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<details><p>相关源文件</p>
+<p>以下文件用于生成此 wiki 页面的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="README.en.md">README.en.md</a></p></li>
+<li><p><a class="reference external" href="README.md">README.md</a></p></li>
+<li><p><a class="reference external" href="docs/architecture.md">docs/architecture.md</a></p></li>
+<li><p><a class="reference external" href="/image/architecture.png">/image/architecture.png</a></p></li>
+<li><p><a class="reference external" href="docs/roadmap.md">docs/roadmap.md</a></p></li>
+<li><p><a class="reference external" href="scripts/build.sh">scripts/build.sh</a></p></li>
+<li><p><a class="reference external" href="src/README.md">src/README.md</a></p></li>
+<li><p><a class="reference external" href="src/action_dispatch/README.en.md">src/action_dispatch/README.en.md</a></p></li>
+<li><p><a class="reference external" href="src/action_dispatch/README.md">src/action_dispatch/README.md</a></p></li>
+<li><p><a class="reference external" href="src/dataset_tools/README.md">src/dataset_tools/README.md</a></p></li>
+</ul>
+</details><section id="id2">
+<h2>目的与范围<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>本文档介绍 IB-Robot 中的遥操作界面和数据收集流水线，涵盖从人工演示到录制 ROS2 bag 的工作流程。它解释了专家操作员如何通过各种输入设备控制机器人，以及这些演示如何被捕获为训练数据。</p>
+<p>有关将数据集转换为 LeRobot 格式，请参阅 <a class="reference external" href="#9.3">数据集转换 (bag_to_lerobot)</a>。有关与外部 lerobot 库的训练集成，请参阅 <a class="reference external" href="#9.4">训练集成</a>。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L1-L192">README.md:1-192</a>, <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/docs/architecture.md#L1-L313">docs/architecture.md:1-313</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L1-L208">src/dataset_tools/README.md:1-208</a></p>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h2>遥操作概述<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>IB-Robot 支持多种遥操作界面来收集专家演示。所有遥操作方法都向同一个 ros2_control 界面发布命令，确保无论输入设备如何都能保持一致的行为。</p>
+<section id="id4">
+<h3>支持的输入设备<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>设备类型</p></th>
+<th class="head"><p>用例</p></th>
+<th class="head"><p>包</p></th>
+<th class="head"><p>状态</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>VR 控制器</strong></p></td>
+<td><p>沉浸式 6DOF 操作</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">obot_teleop</span></code></p></td>
+<td><p>已实现</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Xbox/PS 控制器</strong></p></td>
+<td><p>易用的游戏手柄 输入</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">obot_teleop</span></code></p></td>
+<td><p>已实现</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>移动 IMU</strong></p></td>
+<td><p>基于智能手机的 方向控制</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">obot_teleop</span></code></p></td>
+<td><p>已实现</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>主从臂</strong></p></td>
+<td><p>直接动力学教学</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">r</span> <span class="pre">obot_teleop</span></code></p></td>
+<td><p>已实现</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L27-L28">README.md:27-28</a>, <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.en.md#L27-L28">README.en.md:27-28</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/docs/architecture.md#L238-L239">docs/architecture.md:238-239</a></p>
+</section>
+<section id="id5">
+<h3>遥操作控制流程<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;Input Devices&quot;
+        VR[&quot;VR Controllers&lt;br/&gt;(Meta Quest/Vive)&quot;]
+        XBOX[&quot;Xbox/PS Gamepad&quot;]
+        IMU[&quot;Mobile IMU&lt;br/&gt;(Phone sensor)&quot;]
+        LEADER[&quot;Leader Arm&lt;br/&gt;(Kinesthetic)&quot;]
+    end
+
+    subgraph &quot;robot_teleop Package&quot;
+        TELEOP_NODE[&quot;robot_teleop Node&quot;]
+        INPUT_HANDLER[&quot;Input Handler&quot;]
+        DEADMAN[&quot;Deadman Switch&lt;br/&gt;Safety Logic&quot;]
+        MAPPER[&quot;Joint Mapper&quot;]
+    end
+
+    subgraph &quot;Control Layer&quot;
+        TOPIC_EXEC[&quot;TopicExecutor&lt;br/&gt;Direct Position Control&quot;]
+        POS_CTRL[&quot;position_controllers&lt;br/&gt;(ros2_control)&quot;]
+    end
+
+    subgraph &quot;Hardware&quot;
+        HW_INTERFACE[&quot;Hardware Interface&quot;]
+        MOTORS[&quot;Physical Motors&quot;]
+    end
+
+    VR --&gt; INPUT_HANDLER
+    XBOX --&gt; INPUT_HANDLER
+    IMU --&gt; INPUT_HANDLER
+    LEADER --&gt; INPUT_HANDLER
+
+    INPUT_HANDLER --&gt; TELEOP_NODE
+    TELEOP_NODE --&gt; DEADMAN
+    DEADMAN --&gt; MAPPER
+    MAPPER --&gt; TOPIC_EXEC
+
+    TOPIC_EXEC --&gt; POS_CTRL
+    POS_CTRL --&gt; HW_INTERFACE
+    HW_INTERFACE --&gt; MOTORS
+    </pre><p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L149-L154">src/action_dispatch/README.en.md:149-154</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L27-L28">README.md:27-28</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id6">
+<h2>数据收集架构<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p>数据收集系统围绕 ROS2 Actions 构建，用于同步录制控制。<code class="docutils literal notranslate"><span class="pre">episode_recorder</span></code> 节点充当 Action Server，允许外部客户端触发分集或连续录制。</p>
+<section id="id7">
+<h3>组件架构<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;Teleoperation Layer&quot;
+        HUMAN[&quot;Human Operator&quot;]
+        INPUT[&quot;Input Device&lt;br/&gt;(VR/Xbox/IMU)&quot;]
+        TELEOP[&quot;robot_teleop Node&quot;]
+    end
+
+    subgraph &quot;Robot Execution&quot;
+        ROBOT[&quot;Physical Robot&quot;]
+        SENSORS[&quot;Sensors&lt;br/&gt;(Cameras + Joint States)&quot;]
+    end
+
+    subgraph &quot;Recording Layer - dataset_tools Package&quot;
+        RECORDER[&quot;episode_recorder Node&lt;br/&gt;(Action Server)&quot;]
+        CLI[&quot;record_cli&lt;br/&gt;(Action Client)&quot;]
+        WRITER[&quot;MCAP Writer&quot;]
+    end
+
+    subgraph &quot;Storage&quot;
+        BAG[&quot;ROS2 Bag Files&lt;br/&gt;(MCAP format)&quot;]
+    end
+
+    subgraph &quot;Configuration Source&quot;
+        CONFIG[&quot;robot_config YAML&lt;br/&gt;Contract Definition&quot;]
+    end
+
+    HUMAN --&gt; INPUT
+    INPUT --&gt; TELEOP
+    TELEOP --&gt; ROBOT
+    ROBOT --&gt; SENSORS
+
+    SENSORS --&gt; RECORDER
+    CLI --&gt; RECORDER
+    CONFIG -.-&gt;|&quot;defines topics&lt;br/&gt;to record&quot;| RECORDER
+
+    RECORDER --&gt; WRITER
+    WRITER --&gt; BAG
+    </pre><p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L1-L208">src/dataset_tools/README.md:1-208</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L56-L61">README.md:56-61</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id8">
+<h2>回合录制系统<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<section id="episode-recorder">
+<h3>episode_recorder 节点<a class="headerlink" href="#episode-recorder" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">episode_recorder</span></code> 节点在 <code class="docutils literal notranslate"><span class="pre">/record_episode</span></code> 提供一个 <code class="docutils literal notranslate"><span class="pre">RecordEpisode</span></code> Action Server。它订阅机器人契约中定义的所有话题（观测和动作），并将它们以 MCAP 格式写入 ROS2 bag 文件。</p>
+<p><strong>关键特性</strong>：- <strong>契约驱动的订阅</strong>：自动从 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML 订阅话题 - <strong>元数据嵌入</strong>：在 bag 元数据中存储契约定义，供下游处理 - <strong>双录制模式</strong>：分集（手动开始/停止）或连续（始终录制）- <strong>QoS 配置</strong>：使用契约指定的 QoS 配置文件进行可靠的消息捕获</p>
+<p><strong>启动集成</strong>：</p>
+<p>录制器在 <code class="docutils literal notranslate"><span class="pre">record:=true</span></code> 时通过 <code class="docutils literal notranslate"><span class="pre">robot.launch.py</span></code> 启动：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>launch<span class="w"> </span>robot_config<span class="w"> </span>robot.launch.py<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>robot_config:<span class="o">=</span>so101_single_arm<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>control_mode:<span class="o">=</span>teleop<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>record:<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>record_mode:<span class="o">=</span>episodic<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>use_sim:<span class="o">=</span><span class="nb">false</span>
+</pre></div>
+</div>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L115-L119">src/dataset_tools/README.md:115-119</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L36-L45">src/dataset_tools/README.md:36-45</a></p>
+</section>
+<section id="id9">
+<h3>录制模式<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>模式</p></th>
+<th class="head"><p>描述</p></th>
+<th class="head"><p>用例</p></th>
+<th class="head"><p>触发方式</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ep</span> <span class="pre">isodic</span></code></p></td>
+<td><p>每个回合手动开始/停止</p></td>
+<td><p>收集离散任务 演示</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">record_cli</span></code> 或自定义 Action Client</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cont</span> <span class="pre">inuous</span></code></p></td>
+<td><p>将整个会话录制到 单个 bag</p></td>
+<td><p>长时间数据日志</p></td>
+<td><p>启动时自动</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L203-L207">src/dataset_tools/README.md:203-207</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="record-cli">
+<h2>使用 record_cli 进行交互式录制<a class="headerlink" href="#record-cli" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">record_cli</span></code> 工具提供了一个命令行界面来控制分集录制。它作为 <code class="docutils literal notranslate"><span class="pre">/record_episode</span></code> 服务器的 Action Client。</p>
+<section id="id10">
+<h3>工作流程<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<section id="id11">
+<h4>步骤 1：启用录制启动机器人<a class="headerlink" href="#id11" title="Link to this heading"></a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>launch<span class="w"> </span>robot_config<span class="w"> </span>robot.launch.py<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>robot_config:<span class="o">=</span>so101_single_arm<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>control_mode:<span class="o">=</span>teleop<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>record:<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>record_mode:<span class="o">=</span>episodic<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>use_sim:<span class="o">=</span><span class="nb">false</span>
+</pre></div>
+</div>
+<p>这将启动：- 遥操作控制栈 - <code class="docutils literal notranslate"><span class="pre">episode_recorder</span></code> Action Server - 相机驱动和 joint_state_broadcaster</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L38-L45">src/dataset_tools/README.md:38-45</a></p>
+</section>
+<section id="id12">
+<h4>步骤 2：启动录制客户端<a class="headerlink" href="#id12" title="Link to this heading"></a></h4>
+<p>在单独的终端中：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>run<span class="w"> </span>dataset_tools<span class="w"> </span>record_cli
+</pre></div>
+</div>
+<p>输出：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">========================================================</span>
+<span class="n">Dataset</span> <span class="n">Collection</span> <span class="n">CLI</span>
+<span class="n">Enter</span> <span class="n">prompt</span> <span class="n">text</span> <span class="n">to</span> <span class="n">start</span> <span class="n">recording</span><span class="o">.</span> <span class="p">(</span><span class="n">Press</span> <span class="n">Enter</span> <span class="n">to</span> <span class="n">reuse</span><span class="p">:</span> <span class="s1">&#39;get&#39;</span><span class="p">)</span>
+<span class="n">Type</span> <span class="s1">&#39;q&#39;</span> <span class="ow">or</span> <span class="s1">&#39;quit&#39;</span> <span class="n">to</span> <span class="n">exit</span><span class="o">.</span>
+<span class="o">========================================================</span>
+<span class="n">Prompt</span> <span class="o">&gt;</span>
+</pre></div>
+</div>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L47-L51">src/dataset_tools/README.md:47-51</a></p>
+</section>
+<section id="id13">
+<h4>步骤 3：录制回合<a class="headerlink" href="#id13" title="Link to this heading"></a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Prompt &gt; pick up the red cube
+[INFO] 🔴 RECORDING STARTED. (Press Enter to stop early)
+</pre></div>
+</div>
+<p>此时：1. 使用遥操作设备操作机器人 2. 执行任务（例如，”拿起红色方块”）3. 任务完成后按 Enter</p>
+<p>输出：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[INFO] ✅ RECORDING SAVED: Wrote 1894 messages to /path/to/dataset/episode_000
+Prompt &gt;
+</pre></div>
+</div>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L53-L62">src/dataset_tools/README.md:53-62</a></p>
+</section>
+<section id="id14">
+<h4>步骤 4：重复或退出<a class="headerlink" href="#id14" title="Link to this heading"></a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Prompt &gt; place it in the box
+[INFO] 🔴 RECORDING STARTED...
+[INFO] ✅ RECORDING SAVED: Wrote 2103 messages to /path/to/dataset/episode_001
+Prompt &gt; q
+</pre></div>
+</div>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L53-L62">src/dataset_tools/README.md:53-62</a></p>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id15">
+<h2>契约驱动的录制<a class="headerlink" href="#id15" title="Link to this heading"></a></h2>
+<section id="id16">
+<h3>单一事实来源<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<p>录制系统使用 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML 中的契约定义作为单一事实来源。这确保：- 训练数据和部署观测使用相同的处理 - 无需维护重复的契约文件 - 传感器配置的更改自动传播到录制</p>
+<p><strong>so101_single_arm.yaml 中的契约示例</strong>：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">contract</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">rate_hz</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">  </span><span class="nt">max_duration_s</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90.0</span>
+
+<span class="w">  </span><span class="nt">observations</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">observation.images.front</span>
+<span class="w">      </span><span class="nt">topic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/camera/front/image_raw</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sensor_msgs/msg/Image</span>
+<span class="w">      </span><span class="nt">image</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">resize</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">480</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">640</span><span class="p p-Indicator">]</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">observation.images.top</span>
+<span class="w">      </span><span class="nt">topic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/camera/top/image_raw</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sensor_msgs/msg/Image</span>
+<span class="w">      </span><span class="nt">image</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">resize</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">480</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">640</span><span class="p p-Indicator">]</span>
+
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">observation.state</span>
+<span class="w">      </span><span class="nt">topic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/joint_states</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sensor_msgs/msg/JointState</span>
+<span class="w">      </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">names</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">position.1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">position.2</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">position.3</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">position.4</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">position.5</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">position.6</span><span class="p p-Indicator">]</span>
+
+<span class="w">  </span><span class="nt">actions</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">action</span>
+<span class="w">      </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">names</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">action.0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">action.1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">action.2</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">action.3</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">action.4</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">action.5</span><span class="p p-Indicator">]</span>
+<span class="w">      </span><span class="nt">publish</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">topic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/arm_position_controller/commands</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">std_msgs/msg/Float64MultiArray</span>
+</pre></div>
+</div>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L148-L198">src/dataset_tools/README.md:148-198</a></p>
+</section>
+<section id="id17">
+<h3>契约消费者<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;robot_config YAML&quot;
+        CONTRACT[&quot;contract:&lt;br/&gt;- observations&lt;br/&gt;- actions&lt;br/&gt;- rate_hz&quot;]
+    end
+
+    subgraph &quot;Recording (dataset_tools)&quot;
+        RECORDER[&quot;episode_recorder&quot;]
+        REC_SUBS[&quot;Topic Subscriptions&quot;]
+        REC_META[&quot;Bag Metadata&lt;br/&gt;(embeds contract)&quot;]
+    end
+
+    subgraph &quot;Conversion (dataset_tools)&quot;
+        BAG2LR[&quot;bag_to_lerobot&quot;]
+        B2L_DECODE[&quot;Message Decoder&quot;]
+        B2L_RESAMPLE[&quot;Resampler &#64; rate_hz&quot;]
+    end
+
+    subgraph &quot;Inference (inference_service)&quot;
+        INF_NODE[&quot;lerobot_policy_node&quot;]
+        INF_SUBS[&quot;Topic Subscriptions&quot;]
+        INF_FILTER[&quot;Filter by model's&lt;br/&gt;input_features&quot;]
+    end
+
+    CONTRACT -.-&gt;|&quot;defines topics&quot;| REC_SUBS
+    CONTRACT -.-&gt;|&quot;embedded in&quot;| REC_META
+    CONTRACT -.-&gt;|&quot;loaded from&quot;| B2L_DECODE
+    CONTRACT -.-&gt;|&quot;rate_hz drives&quot;| B2L_RESAMPLE
+    CONTRACT -.-&gt;|&quot;observation keys&quot;| INF_FILTER
+    CONTRACT -.-&gt;|&quot;defines topics&quot;| INF_SUBS
+
+    RECORDER --&gt; REC_SUBS
+    RECORDER --&gt; REC_META
+    BAG2LR --&gt; B2L_DECODE
+    BAG2LR --&gt; B2L_RESAMPLE
+    INF_NODE --&gt; INF_FILTER
+    INF_NODE --&gt; INF_SUBS
+    </pre><p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L13-L30">src/dataset_tools/README.md:13-30</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L122-L144">src/dataset_tools/README.md:122-144</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id18">
+<h2>完整数据收集流程<a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
+<section id="id19">
+<h3>阶段分解<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph LR
+    subgraph &quot;Phase 1: Setup&quot;
+        CONFIG_LOAD[&quot;Load robot_config&lt;br/&gt;so101_single_arm.yaml&quot;]
+        LAUNCH[&quot;robot.launch.py&lt;br/&gt;record:=true&quot;]
+        RECORDER_START[&quot;episode_recorder&lt;br/&gt;Action Server Ready&quot;]
+    end
+
+    subgraph &quot;Phase 2: Recording Trigger&quot;
+        CLI_START[&quot;record_cli sends&lt;br/&gt;RecordEpisode Goal&quot;]
+        RECORDER_ACTIVE[&quot;Recorder subscribes&lt;br/&gt;to contract topics&quot;]
+    end
+
+    subgraph &quot;Phase 3: Demonstration&quot;
+        TELEOP_CONTROL[&quot;Human operates robot&lt;br/&gt;via input device&quot;]
+        SENSORS_PUBLISH[&quot;Cameras + joint_states&lt;br/&gt;publish data&quot;]
+        RECORDER_WRITE[&quot;episode_recorder&lt;br/&gt;writes to MCAP&quot;]
+    end
+
+    subgraph &quot;Phase 4: Save&quot;
+        CLI_STOP[&quot;CLI sends stop&lt;br/&gt;(Enter key)&quot;]
+        RECORDER_FINALIZE[&quot;Recorder finalizes&lt;br/&gt;bag file&quot;]
+        BAG_SAVED[&quot;ROS2 Bag with&lt;br/&gt;embedded contract&quot;]
+    end
+
+    CONFIG_LOAD --&gt; LAUNCH
+    LAUNCH --&gt; RECORDER_START
+    RECORDER_START --&gt; CLI_START
+    CLI_START --&gt; RECORDER_ACTIVE
+    RECORDER_ACTIVE --&gt; TELEOP_CONTROL
+    TELEOP_CONTROL --&gt; SENSORS_PUBLISH
+    SENSORS_PUBLISH --&gt; RECORDER_WRITE
+    RECORDER_WRITE --&gt; CLI_STOP
+    CLI_STOP --&gt; RECORDER_FINALIZE
+    RECORDER_FINALIZE --&gt; BAG_SAVED
+    </pre><p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L123-L143">src/dataset_tools/README.md:123-143</a></p>
+</section>
+<section id="id20">
+<h3>详细消息流程<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        sequenceDiagram
+    participant Human
+    participant record_cli
+    participant episode_recorder
+    participant Cameras
+    participant JointStates
+    participant MCAP_Writer
+
+    Human-&gt;&gt;record_cli: Enter task prompt
+    record_cli-&gt;&gt;episode_recorder: SendGoal(RecordEpisode)&lt;br/&gt;prompt=&quot;pick cube&quot;
+    episode_recorder-&gt;&gt;episode_recorder: Create subscriptions&lt;br/&gt;from contract
+    episode_recorder-&gt;&gt;record_cli: GoalAccepted
+
+    loop During Recording
+        Cameras-&gt;&gt;episode_recorder: Image messages
+        JointStates-&gt;&gt;episode_recorder: Joint state messages
+        episode_recorder-&gt;&gt;MCAP_Writer: Write messages&lt;br/&gt;with timestamps
+    end
+
+    Human-&gt;&gt;record_cli: Press Enter to stop
+    record_cli-&gt;&gt;episode_recorder: CancelGoal()
+    episode_recorder-&gt;&gt;MCAP_Writer: Finalize bag file
+    episode_recorder-&gt;&gt;record_cli: Result(success=true,&lt;br/&gt;message_count=1894)
+    record_cli-&gt;&gt;Human: Display save confirmation
+    </pre><p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L33-L62">src/dataset_tools/README.md:33-62</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id21">
+<h2>输出数据格式<a class="headerlink" href="#id21" title="Link to this heading"></a></h2>
+<section id="ros2-bag">
+<h3>ROS2 Bag 结构<a class="headerlink" href="#ros2-bag" title="Link to this heading"></a></h3>
+<p>每个录制的回合创建一个 MCAP 格式的 ROS2 bag 目录：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>episode_000/
+├── metadata.yaml          # Bag metadata with contract
+└── episode_000.mcap       # Binary message storage
+</pre></div>
+</div>
+</section>
+<section id="id22">
+<h3>嵌入的契约元数据<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
+<p>bag 的 <code class="docutils literal notranslate"><span class="pre">metadata.yaml</span></code> 包含完整的契约定义，确保下游工具可以正确处理数据：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">rosbag2_bagfile_information</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">  </span><span class="nt">storage_identifier</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mcap</span>
+<span class="w">  </span><span class="nt">duration</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">nanoseconds</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">45000000000</span><span class="w">  </span><span class="c1"># 45 seconds</span>
+<span class="w">  </span><span class="nt">starting_time</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">nanoseconds_since_epoch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1234567890123456789</span>
+<span class="w">  </span><span class="nt">message_count</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1894</span>
+<span class="w">  </span><span class="nt">topics_with_message_count</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">topic_metadata</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/camera/front/image_raw</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sensor_msgs/msg/Image</span>
+<span class="w">        </span><span class="nt">serialization_format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cdr</span>
+<span class="w">      </span><span class="nt">message_count</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">900</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">topic_metadata</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/camera/top/image_raw</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sensor_msgs/msg/Image</span>
+<span class="w">        </span><span class="nt">serialization_format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cdr</span>
+<span class="w">      </span><span class="nt">message_count</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">900</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">topic_metadata</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/joint_states</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sensor_msgs/msg/JointState</span>
+<span class="w">        </span><span class="nt">serialization_format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cdr</span>
+<span class="w">        </span><span class="nt">offered_qos_profiles</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;...&quot;</span>
+<span class="w">      </span><span class="nt">message_count</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">900</span>
+<span class="w">  </span><span class="nt">custom_data</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">contract</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">      </span><span class="no">{contract YAML content embedded here}</span>
+</pre></div>
+</div>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L98-L113">src/dataset_tools/README.md:98-113</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id23">
+<h2>关键参数与配置<a class="headerlink" href="#id23" title="Link to this heading"></a></h2>
+<section id="id24">
+<h3>录制的启动参数<a class="headerlink" href="#id24" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>类型</p></th>
+<th class="head"><p>默认值</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">record</span></code></p></td>
+<td><p>bool</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p>启用/禁用 录制系统</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">record_mode</span></code></p></td>
+<td><p>string</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">episodic</span></code></p></td>
+<td><p>录制模式： <code class="docutils literal notranslate"><span class="pre">episodic</span></code> 或 <code class="docutils literal notranslate"><span class="pre">continuous</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">record_path</span></code></p></td>
+<td><p>string</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">~/datasets</span></code></p></td>
+<td><p>保存 bag 的 基础目录</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>使用示例</strong>：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>launch<span class="w"> </span>robot_config<span class="w"> </span>robot.launch.py<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>robot_config:<span class="o">=</span>so101_single_arm<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>control_mode:<span class="o">=</span>teleop<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>record:<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>record_mode:<span class="o">=</span>episodic<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>record_path:<span class="o">=</span>/data/robot_demos
+</pre></div>
+</div>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L36-L45">src/dataset_tools/README.md:36-45</a></p>
+</section>
+<section id="id25">
+<h3>契约配置<a class="headerlink" href="#id25" title="Link to this heading"></a></h3>
+<p>影响录制的关键契约参数：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>位置</p></th>
+<th class="head"><p>对录制的影响</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rate_hz</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">contract.rate_hz</span></code></p></td>
+<td><p>用于验证的预期数据率</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_duration_s</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cont</span> <span class="pre">ract.max_duration_s</span></code></p></td>
+<td><p>最大回合持续时间</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">observations</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cont</span> <span class="pre">ract.observations[]</span></code></p></td>
+<td><p>要订阅和录制的话题</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">actions</span></code></p></td>
+<td><p>` <cite>contract.actions[]`</cite></p></td>
+<td><p>要录制的动作话题 （来自遥操作）</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L148-L199">src/dataset_tools/README.md:148-199</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id26">
+<h2>数据流水线的下一步<a class="headerlink" href="#id26" title="Link to this heading"></a></h2>
+<p>将回合录制为 ROS2 bag 后，接下来的步骤是：</p>
+<ol class="arabic simple">
+<li><p><strong>数据集转换</strong>：使用 <code class="docutils literal notranslate"><span class="pre">bag_to_lerobot</span></code> 将 MCAP bag 转换为带有视频编码和 parquet 文件的 LeRobot v3 格式。请参阅 <a class="reference external" href="#9.3">数据集转换 (bag_to_lerobot)</a>。</p></li>
+<li><p><strong>训练</strong>：在外部 lerobot 库中加载 LeRobot 数据集以训练 ACT、Diffusion Policy 或 VLA 模型。请参阅 <a class="reference external" href="#9.4">训练集成</a>。</p></li>
+<li><p><strong>部署</strong>：使用相同的契约通过 <code class="docutils literal notranslate"><span class="pre">lerobot_policy_node</span></code> 部署训练好的策略进行推理。请参阅 <a class="reference external" href="#7.4">策略节点</a>。</p></li>
+</ol>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L67-L84">src/dataset_tools/README.md:67-84</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L1-L192">README.md:1-192</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="overview.html" class="btn btn-neutral float-left" title="数据服务概述" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="episode_recording.html" class="btn btn-neutral float-right" title="回合录制" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../../24.03-lts/index.html">24.03-lts</a></dd>
+      <dd><a href="../../../../llvm-toolchain-v0.1.1/index.html">llvm-toolchain-v0.1.1</a></dd>
+      <dd><a href="../../../../nativesdk-v0.1.2/index.html">nativesdk-v0.1.2</a></dd>
+      <dd><a href="../../../../nativesdk-v0.1.3/index.html">nativesdk-v0.1.3</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.5/index.html">toolchains-v0.1.5</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.7/index.html">toolchains-v0.1.7</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.8/index.html">toolchains-v0.1.8</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="teleoperation_and_data_collection.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../pr_2786/features/embodied_ai/data_pipeline/teleoperation_and_data_collection.html">pr_2786</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

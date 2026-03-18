@@ -1,0 +1,1420 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>启动系统 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
+    /* Same as .mermaid-container > pre */
+    display: block;
+    width: 100%;
+}
+
+pre.mermaid > svg {
+    /* Same as .mermaid-container > pre > svg */
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}`;
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.mermaid-container > pre {
+    display: block;
+    width: 100%;
+}
+
+.mermaid-container > pre > svg {
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.mermaid-fullscreen-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: #333;
+}
+
+.mermaid-fullscreen-btn:hover {
+    opacity: 100% !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-btn.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-btn.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 95vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    padding: 20px;
+    overflow: auto;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.mermaid-fullscreen-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen.dark-theme {
+    background: #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen .mermaid svg {
+    height: 100% !important;
+    width: 100% !important;
+    cursor: grab;
+}
+
+.mermaid-fullscreen-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: white;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-close.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-close.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
+    display: none !important;
+}`;
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+
+    if ("False" === "True") {
+        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("");
+            if(all_mermaids.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else if(svgs.size() !== mermaids_to_add_zoom) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else {
+                svgs.each(function() {
+                    var svg = d3.select(this);
+                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                    var inner = svg.select("g");
+                    var zoom = d3.zoom().on("zoom", function(event) {
+                        inner.attr("transform", event.transform);
+                    });
+                    svg.call(zoom);
+                });
+            }
+        }
+    } else if(all_mermaids.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if ("True" !== "True") return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = '⛶';
+        fullscreenBtn.style.opacity = '50%';
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scroll, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.sdisplay = 'block';
+
+                if ("False" === "True") {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="配置验证" href="configuration_validation.html" />
+    <link rel="prev" title="外设配置" href="peripheral_configuration.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">具身机器人框架IB Robot</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../introduction/ib-robot_overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture/system_architecture.html">系统架构</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">配置系统 (robot_config)</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">配置系统概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="robot_configuration_files.html">机器人配置文件</a></li>
+<li class="toctree-l6"><a class="reference internal" href="contract_definition.html">契约定义</a></li>
+<li class="toctree-l6"><a class="reference internal" href="peripheral_configuration.html">外设配置</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">启动系统</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">架构概述</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#robot-launch-py">主启动文件：robot.launch.py</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id7">启动构建器</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id9">控制模式系统</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id12">条件节点生成</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id15">启动示例</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id18">参数传播</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id21">调试启动问题</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id25">总结</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="configuration_validation.html">配置验证</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol/protocol_conversion_tensormsg.html">协议转换 (tensormsg)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference/index.html">推理服务</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../action_dispatch/index.html">动作调度</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_pipeline/index.html">数据服务</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../motion_planning/index.html">运动规划 (MoveIt)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../hardware/index.html">硬件集成</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference/package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">具身机器人框架IB Robot</a></li>
+          <li class="breadcrumb-item"><a href="index.html">配置系统 (robot_config)</a></li>
+      <li class="breadcrumb-item active">启动系统</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>启动系统<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<details><p>相关源文件</p>
+<p>以下文件用于生成此文档页面：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="src/action_dispatch/action_dispatch/action_dispatcher_node.py">src/action_dispatch/action_dispatch/action_dispatcher_node.py</a></p></li>
+<li><p><a class="reference external" href="src/dataset_tools/dataset_tools/bag_to_lerobot.py">src/dataset_tools/dataset_tools/bag_to_lerobot.py</a></p></li>
+<li><p><a class="reference external" href="src/dataset_tools/dataset_tools/episode_recorder.py">src/dataset_tools/dataset_tools/episode_recorder.py</a></p></li>
+<li><p><a class="reference external" href="src/inference_service/inference_service/lerobot_policy_node.py">src/inference_service/inference_service/lerobot_policy_node.py</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/README.en.md">src/robot_config/README.en.md</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/README.md">src/robot_config/README.md</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/config/robots/so101_dual_arm.yaml">src/robot_config/config/robots/so101_dual_arm.yaml</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/config/robots/so101_single_arm.yaml">src/robot_config/config/robots/so101_single_arm.yaml</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/launch/robot.launch.py">src/robot_config/launch/robot.launch.py</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/robot_config/config.py">src/robot_config/robot_config/config.py</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/robot_config/contract_builder.py">src/robot_config/robot_config/contract_builder.py</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/robot_config/contract_utils.py">src/robot_config/robot_config/contract_utils.py</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/robot_config/launch_builders/execution.py">src/robot_config/robot_config/launch_builders/execution.py</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/robot_config/launch_builders/recording.py">src/robot_config/robot_config/launch_builders/recording.py</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/robot_config/loader.py">src/robot_config/robot_config/loader.py</a></p></li>
+<li><p><a class="reference external" href="src/tensormsg/tensormsg/converter.py">src/tensormsg/tensormsg/converter.py</a></p></li>
+</ul>
+</details><p>启动系统是根据配置动态生成并启动机器人操作所需所有 ROS2 节点的编排层。它加载 robot_config YAML 文件并调用专门的构建器模块来创建感知、控制、执行和其他子系统的节点。系统支持多种控制模式，并根据运行时参数有条件地生成节点。</p>
+<p>有关 robot_config YAML 结构本身的信息，请参阅 <a class="reference external" href="#5.1">机器人配置文件</a>。有关契约定义详情，请参阅 <a class="reference external" href="#5.2">契约定义</a>。有关外设配置，请参阅 <a class="reference external" href="#5.3">外设配置</a>。</p>
+<hr class="docutils" />
+<section id="id2">
+<h2>架构概述<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>启动系统遵循 <strong>构建器模式</strong>，其中中央编排器（<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/robot.launch.py#L123-L360">robot.launch.py:123-360</a>）加载配置并将节点生成委托给专门的构建器模块。每个构建器负责特定子系统（如相机、控制器、推理）并返回启动动作列表。</p>
+<section id="id3">
+<h3>启动系统组件<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;入口点&quot;
+        MAIN[&quot;robot.launch.py&lt;br/&gt;generate_launch_description()&quot;]
+        SETUP[&quot;launch_setup()&lt;br/&gt;OpaqueFunction&quot;]
+    end
+
+    subgraph &quot;配置加载&quot;
+        LOAD[&quot;load_robot_config()&lt;br/&gt;lines 87-120&quot;]
+        YAML[&quot;robot_config YAML&lt;br/&gt;so101_single_arm.yaml&quot;]
+        CONFIG[&quot;RobotConfig 对象&lt;br/&gt;来自 loader.py&quot;]
+    end
+
+    subgraph &quot;启动构建器&quot;
+        CONTROL[&quot;control.py&lt;br/&gt;generate_ros2_control_nodes()&quot;]
+        PERCEPTION[&quot;perception.py&lt;br/&gt;generate_camera_nodes()&lt;br/&gt;generate_tf_nodes()&quot;]
+        SIMULATION[&quot;simulation.py&lt;br/&gt;generate_gazebo_nodes()&quot;]
+        EXECUTION[&quot;execution.py&lt;br/&gt;generate_inference_node()&lt;br/&gt;generate_action_dispatcher_node()&quot;]
+        TELEOP[&quot;teleop.py&lt;br/&gt;generate_teleop_nodes()&quot;]
+        RECORDING[&quot;recording.py&lt;br/&gt;generate_recording_nodes()&quot;]
+    end
+
+    subgraph &quot;生成的节点&quot;
+        CTRL_NODES[&quot;ros2_control_node&lt;br/&gt;controller_spawner&quot;]
+        CAM_NODES[&quot;usb_cam/realsense_node&lt;br/&gt;static_transform_publisher&quot;]
+        SIM_NODES[&quot;gzserver&lt;br/&gt;gzclient&lt;br/&gt;spawn_entity&quot;]
+        EXEC_NODES[&quot;lerobot_policy_node&lt;br/&gt;action_dispatcher_node&quot;]
+        TELE_NODES[&quot;robot_teleop_node&quot;]
+        REC_NODES[&quot;episode_recorder&lt;br/&gt;或 ros2 bag record&quot;]
+    end
+
+    MAIN --&gt; SETUP
+    SETUP --&gt; LOAD
+    LOAD --&gt; YAML
+    YAML --&gt; CONFIG
+
+    SETUP --&gt; CONTROL
+    SETUP --&gt; PERCEPTION
+    SETUP --&gt; SIMULATION
+    SETUP --&gt; EXECUTION
+    SETUP --&gt; TELEOP
+    SETUP --&gt; RECORDING
+
+    CONTROL --&gt; CTRL_NODES
+    PERCEPTION --&gt; CAM_NODES
+    SIMULATION --&gt; SIM_NODES
+    EXECUTION --&gt; EXEC_NODES
+    TELEOP --&gt; TELE_NODES
+    RECORDING --&gt; REC_NODES
+    </pre><p><strong>源码：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L1-L360">src/robot_config/launch/robot.launch.py:1-360</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/control.py">src/robot_config/robot_config/launch_builders/control.py</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/perception.py">src/robot_config/robot_config/launch_builders/perception.py</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/execution.py">src/robot_config/robot_config/launch_builders/execution.py</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="robot-launch-py">
+<h2>主启动文件：robot.launch.py<a class="headerlink" href="#robot-launch-py" title="Link to this heading"></a></h2>
+<p>主启动文件 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/robot.launch.py">robot.launch.py</a> 位于 <code class="docutils literal notranslate"><span class="pre">src/robot_config/launch/robot.launch.py</span></code>，作为启动整个机器人系统的单一入口点。</p>
+<section id="id4">
+<h3>启动参数<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>默认值</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">robot_config</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">test_cam</span></code></p></td>
+<td><p>机器人配置名称 (从 <code class="docutils literal notranslate"><span class="pre">co</span> <span class="pre">nfig/robots/&lt;name&gt;.yaml</span></code> 加载)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">config_path</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">''</span></code></p></td>
+<td><p>配置文件的可选完整路径 (覆盖 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">use_sim</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p>启用仿真模式 (Gazebo)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">auto_</span> <span class="pre">start_controllers</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p>自动启动控制器 (设为 false 用于调试)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">control_mode</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">''</span></code></p></td>
+<td><p>从 YAML 覆盖控制模式 (<code class="docutils literal notranslate"><span class="pre">teleop</span></code>、 <code class="docutils literal notranslate"><span class="pre">model_inference</span></code>、 <code class="docutils literal notranslate"><span class="pre">moveit_planning</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">with_inference</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">''</span></code></p></td>
+<td><p>启用推理管道 (为空时自动检测)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">with_moveit</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">''</span></code></p></td>
+<td><p>启用 MoveIt 规划 (为空时自动检测)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">moveit_display</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">true</span></code></p></td>
+<td><p>为 MoveIt 启动 RViz (仅当 MoveIt 启用时)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">record</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p>启用 rosbag 录制</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">record_mode</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">continuous</span></code></p></td>
+<td><p>录制模式： <code class="docutils literal notranslate"><span class="pre">continuous</span></code> 或 <code class="docutils literal notranslate"><span class="pre">episodic</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>源码：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L51-L62">src/robot_config/launch/robot.launch.py:51-62</a></p>
+</section>
+<section id="id5">
+<h3>启动流程<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    START[&quot;generate_launch_description()&quot;]
+    ARGS[&quot;声明启动参数&lt;br/&gt;robot_config, use_sim, control_mode 等&quot;]
+    OPAQUE[&quot;OpaqueFunction(launch_setup)&quot;]
+
+    SETUP_START[&quot;launch_setup(context)&quot;]
+
+    PARSE[&quot;解析启动参数&lt;br/&gt;lines 140-155&quot;]
+    NORMALIZE[&quot;规范化布尔值&lt;br/&gt;use_sim, auto_start_controllers&quot;]
+
+    LOAD[&quot;load_robot_config()&lt;br/&gt;lines 157-164&quot;]
+    PATH_INJECT[&quot;将 '_config_path' 注入 robot_config&lt;br/&gt;lines 167-174&quot;]
+
+    MODE_OVERRIDE[&quot;应用 control_mode 覆盖&lt;br/&gt;lines 177-181&quot;]
+    MODE_SELECT[&quot;选择活动控制模式&lt;br/&gt;line 180&quot;]
+
+    INFER_DETECT[&quot;确定 with_inference 标志&lt;br/&gt;lines 183-196&quot;]
+
+    BUILD_CONTROL[&quot;生成控制节点&lt;br/&gt;lines 199-206&quot;]
+    BUILD_SIM{&quot;use_sim?&lt;br/&gt;lines 209-217&quot;}
+    BUILD_PERCEPTION[&quot;生成感知节点&lt;br/&gt;lines 220-240&quot;]
+    BUILD_TELEOP{&quot;control_mode == 'teleop'?&lt;br/&gt;lines 243-262&quot;}
+    BUILD_EXECUTION{&quot;with_inference?&lt;br/&gt;lines 265-275&quot;}
+    BUILD_MOVEIT{&quot;with_moveit?&lt;br/&gt;lines 278-308&quot;}
+    BUILD_RECORDING{&quot;record?&lt;br/&gt;lines 311-323&quot;}
+
+    RETURN[&quot;返回动作列表&quot;]
+
+    START --&gt; ARGS
+    ARGS --&gt; OPAQUE
+    OPAQUE --&gt; SETUP_START
+
+    SETUP_START --&gt; PARSE
+    PARSE --&gt; NORMALIZE
+    NORMALIZE --&gt; LOAD
+    LOAD --&gt; PATH_INJECT
+
+    PATH_INJECT --&gt; MODE_OVERRIDE
+    MODE_OVERRIDE --&gt; MODE_SELECT
+    MODE_SELECT --&gt; INFER_DETECT
+
+    INFER_DETECT --&gt; BUILD_CONTROL
+    BUILD_CONTROL --&gt; BUILD_SIM
+
+    BUILD_SIM --&gt;|是| SIM_NODES[&quot;Gazebo 节点&quot;]
+    BUILD_SIM --&gt;|否| BUILD_PERCEPTION
+    SIM_NODES --&gt; BUILD_PERCEPTION
+
+    BUILD_PERCEPTION --&gt; BUILD_TELEOP
+
+    BUILD_TELEOP --&gt;|是| TELEOP_NODES[&quot;遥控节点&quot;]
+    BUILD_TELEOP --&gt;|否| BUILD_EXECUTION
+    TELEOP_NODES --&gt; BUILD_EXECUTION
+
+    BUILD_EXECUTION --&gt;|是| EXEC_NODES[&quot;推理 + 分发器&quot;]
+    BUILD_EXECUTION --&gt;|否| BUILD_MOVEIT
+    EXEC_NODES --&gt; BUILD_MOVEIT
+
+    BUILD_MOVEIT --&gt;|是| MOVEIT_NODES[&quot;MoveIt 节点&quot;]
+    BUILD_MOVEIT --&gt;|否| BUILD_RECORDING
+    MOVEIT_NODES --&gt; BUILD_RECORDING
+
+    BUILD_RECORDING --&gt;|是| RECORD_NODES[&quot;录制节点&quot;]
+    BUILD_RECORDING --&gt;|否| RETURN
+    RECORD_NODES --&gt; RETURN
+    </pre><p><strong>源码：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L123-L360">src/robot_config/launch/robot.launch.py:123-360</a></p>
+</section>
+<section id="id6">
+<h3>配置路径注入<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<p>启动系统将 <code class="docutils literal notranslate"><span class="pre">_config_path</span></code> 键注入 robot_config 字典，使下游节点能够访问原始 YAML 文件：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># lines 167-174</span>
+<span class="n">robot_config</span><span class="p">[</span><span class="s1">&#39;_config_path&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">robot_config_share</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;config&quot;</span> <span class="o">/</span> <span class="s2">&quot;robots&quot;</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">robot_config_name</span><span class="si">}</span><span class="s2">.yaml&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>这对于以下组件至关重要：- <strong>episode_recorder</strong>：需要路径来加载契约（<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/episode_recorder.py#L195-L206">episode_recorder.py:195-206</a>）- <strong>inference_service</strong>：需要路径来加载观测规格（<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/lerobot_policy_node.py#L158-L159">lerobot_policy_node.py:158-159</a>）- <strong>action_dispatcher</strong>：需要路径来加载动作规格（<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/action_dispatcher_node.py#L106-L117">action_dispatcher_node.py:106-117</a>）</p>
+<p><strong>源码：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L167-L174">src/robot_config/launch/robot.launch.py:167-174</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id7">
+<h2>启动构建器<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<p>启动构建器是为特定子系统生成节点的模块化函数。每个构建器位于 <code class="docutils literal notranslate"><span class="pre">src/robot_config/robot_config/launch_builders/</span></code>。</p>
+<section id="id8">
+<h3>构建器模块架构<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph LR
+    subgraph &quot;launch_builders/&quot;
+        CONTROL[&quot;control.py&lt;br/&gt;ros2_control + 控制器&quot;]
+        PERCEPTION[&quot;perception.py&lt;br/&gt;相机 + TF&quot;]
+        SIMULATION[&quot;simulation.py&lt;br/&gt;Gazebo&quot;]
+        EXECUTION[&quot;execution.py&lt;br/&gt;推理 + 分发&quot;]
+        TELEOP[&quot;teleop.py&lt;br/&gt;遥控操作&quot;]
+        RECORDING[&quot;recording.py&lt;br/&gt;数据录制&quot;]
+    end
+
+    subgraph &quot;输入&quot;
+        CONFIG[&quot;robot_config dict&quot;]
+        MODE[&quot;control_mode str&quot;]
+        SIM[&quot;use_sim bool&quot;]
+    end
+
+    subgraph &quot;输出&quot;
+        NODES[&quot;List[Node | ExecuteProcess]&quot;]
+    end
+
+    CONFIG --&gt; CONTROL
+    CONFIG --&gt; PERCEPTION
+    CONFIG --&gt; SIMULATION
+    CONFIG --&gt; EXECUTION
+    CONFIG --&gt; TELEOP
+    CONFIG --&gt; RECORDING
+
+    MODE --&gt; CONTROL
+    MODE --&gt; EXECUTION
+    MODE --&gt; TELEOP
+    MODE --&gt; RECORDING
+
+    SIM --&gt; CONTROL
+    SIM --&gt; PERCEPTION
+    SIM --&gt; SIMULATION
+    SIM --&gt; EXECUTION
+
+    CONTROL --&gt; NODES
+    PERCEPTION --&gt; NODES
+    SIMULATION --&gt; NODES
+    EXECUTION --&gt; NODES
+    TELEOP --&gt; NODES
+    RECORDING --&gt; NODES
+    </pre><p><strong>源码：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/">src/robot_config/robot_config/launch_builders/</a></p>
+</section>
+<section id="control-py">
+<h3>控制构建器 (control.py)<a class="headerlink" href="#control-py" title="Link to this heading"></a></h3>
+<p>生成 ros2_control 节点和控制器启动器。</p>
+<p><strong>关键函数：</strong> -
+<code class="docutils literal notranslate"><span class="pre">generate_ros2_control_nodes(robot_config,</span> <span class="pre">use_sim,</span> <span class="pre">auto_start_controllers)</span></code>
+- 主入口点 - 返回：<code class="docutils literal notranslate"><span class="pre">(nodes_list,</span> <span class="pre">spawners_dict)</span></code>，其中 spawners_dict 将控制器名称映射到启动器节点</p>
+<p><strong>逻辑：</strong> 1. 从 robot_config 确定活动控制模式 2. 从 <code class="docutils literal notranslate"><span class="pre">control_modes[mode].controllers</span></code> 提取控制器列表 3. 仿真模式：启动器等待 Gazebo 的 controller_manager 4. 硬件模式：先启动 <code class="docutils literal notranslate"><span class="pre">ros2_control_node</span></code>，然后启动器 5. 使用 <code class="docutils literal notranslate"><span class="pre">RegisterEventHandler(OnProcessExit)</span></code> 进行顺序启动</p>
+<p><strong>示例：</strong></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">control_modes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">model_inference</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">controllers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">joint_state_broadcaster</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arm_position_controller</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gripper_position_controller</span>
+</pre></div>
+</div>
+<p>生成 3 个启动器节点来激活这些控制器。</p>
+<p><strong>源码：</strong>
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/control.py">src/robot_config/robot_config/launch_builders/control.py</a></p>
+</section>
+<section id="perception-py">
+<h3>感知构建器 (perception.py)<a class="headerlink" href="#perception-py" title="Link to this heading"></a></h3>
+<p>生成相机驱动节点和静态 TF 发布器。</p>
+<p><strong>关键函数：</strong> - <code class="docutils literal notranslate"><span class="pre">generate_camera_nodes(robot_config,</span> <span class="pre">use_sim)</span></code> - 创建相机驱动节点 - <code class="docutils literal notranslate"><span class="pre">generate_tf_nodes(robot_config)</span></code> - 创建静态变换发布器 - <code class="docutils literal notranslate"><span class="pre">generate_virtual_camera_relays(robot_config)</span></code> - 为虚拟相机创建主题中继节点</p>
+<p><strong>相机驱动：</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>驱动</p></th>
+<th class="head"><p>ROS2 包</p></th>
+<th class="head"><p>配置字段</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">opencv</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">usb_cam</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">index</span></code>、<code class="docutils literal notranslate"><span class="pre">width</span></code>、<code class="docutils literal notranslate"><span class="pre">height</span></code>、<code class="docutils literal notranslate"><span class="pre">fps</span></code>、 <code class="docutils literal notranslate"><span class="pre">pixel_format</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">realsense</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">realsense2_camera</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">serial_number</span></code>、<code class="docutils literal notranslate"><span class="pre">width</span></code>、<code class="docutils literal notranslate"><span class="pre">height</span></code>、 <code class="docutils literal notranslate"><span class="pre">fps</span></code>、<code class="docutils literal notranslate"><span class="pre">enable_depth</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>TF 发布：</strong> 对于每个带有 <code class="docutils literal notranslate"><span class="pre">transform</span></code> 字段的相机，生成一个 <code class="docutils literal notranslate"><span class="pre">static_transform_publisher</span></code> 节点，发布相机坐标系相对于其父坐标系的变换。</p>
+<p><strong>源码：</strong>
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/perception.py">src/robot_config/robot_config/launch_builders/perception.py</a></p>
+</section>
+<section id="execution-py">
+<h3>执行构建器 (execution.py)<a class="headerlink" href="#execution-py" title="Link to this heading"></a></h3>
+<p>生成推理服务和动作分发器节点。</p>
+<p><strong>关键函数：</strong> -
+<code class="docutils literal notranslate"><span class="pre">generate_inference_node(robot_config,</span> <span class="pre">control_mode,</span> <span class="pre">use_sim)</span></code> - 路由到单体或分布式 -
+<code class="docutils literal notranslate"><span class="pre">generate_monolithic_inference_node()</span></code> - 单进程推理 -
+<code class="docutils literal notranslate"><span class="pre">generate_distributed_inference_nodes()</span></code> - 边缘 + 云端推理 -
+<code class="docutils literal notranslate"><span class="pre">generate_action_dispatcher_node(robot_config,</span> <span class="pre">control_mode,</span> <span class="pre">use_sim)</span></code>
+- 动作分发器</p>
+<p><strong>执行模式：</strong></p>
+<pre  class="mermaid">
+        graph TB
+    INFER_CHECK{&quot;inference.enabled?&quot;}
+
+    EXEC_MODE{&quot;execution_mode&quot;}
+
+    MONO[&quot;generate_monolithic_inference_node()&lt;br/&gt;单个 lerobot_policy_node&quot;]
+
+    DIST[&quot;generate_distributed_inference_nodes()&lt;br/&gt;边缘: lerobot_policy_node&lt;br/&gt;云端: pure_inference_node&quot;]
+
+    DISPATCH[&quot;generate_action_dispatcher_node()&lt;br/&gt;action_dispatcher_node&quot;]
+
+    INFER_CHECK --&gt;|否| NONE[&quot;None&quot;]
+    INFER_CHECK --&gt;|是| EXEC_MODE
+
+    EXEC_MODE --&gt;|monolithic| MONO
+    EXEC_MODE --&gt;|distributed| DIST
+
+    MONO --&gt; DISPATCH
+    DIST --&gt; DISPATCH
+    </pre><p><strong>单体节点参数：</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;checkpoint&quot;</span><span class="p">:</span> <span class="n">model_config</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;robot_config_path&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">robot_config_path</span><span class="p">),</span>
+    <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;execution_mode&quot;</span><span class="p">:</span> <span class="s2">&quot;monolithic&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;node_name&quot;</span><span class="p">:</span> <span class="s2">&quot;act_inference_node&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>分布式节点参数：</strong> - <strong>边缘节点：</strong> 与单体相同但 <code class="docutils literal notranslate"><span class="pre">execution_mode:</span> <span class="pre">&quot;distributed&quot;</span></code> - <strong>云端节点：</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;policy_path&quot;</span><span class="p">:</span> <span class="n">policy_path</span><span class="p">,</span>
+    <span class="s2">&quot;input_topic&quot;</span><span class="p">:</span> <span class="s2">&quot;/preprocessed/batch&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;output_topic&quot;</span><span class="p">:</span> <span class="s2">&quot;/inference/action&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="s2">&quot;auto&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>源码：</strong>
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/execution.py#L1-L360">src/robot_config/robot_config/launch_builders/execution.py:1-360</a></p>
+</section>
+<section id="teleop-py">
+<h3>遥控构建器 (teleop.py)<a class="headerlink" href="#teleop-py" title="Link to this heading"></a></h3>
+<p>生成人工控制设备的遥控操作节点。</p>
+<p><strong>条件激活：</strong> 仅当 <code class="docutils literal notranslate"><span class="pre">control_mode</span> <span class="pre">==</span> <span class="pre">'teleop'</span></code> 且 <code class="docutils literal notranslate"><span class="pre">teleoperation.enabled</span> <span class="pre">==</span> <span class="pre">true</span></code> 时生成节点。</p>
+<p><strong>设备类型：</strong> - <code class="docutils literal notranslate"><span class="pre">leader_arm</span></code>：用于双边遥控操作的 SO-101 主臂 - <code class="docutils literal notranslate"><span class="pre">gamepad</span></code>：Xbox/PlayStation 控制器 - <code class="docutils literal notranslate"><span class="pre">vr</span></code>：VR 控制器输入 - <code class="docutils literal notranslate"><span class="pre">imu</span></code>：基于 IMU 的控制</p>
+<p><strong>源码：</strong>
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/teleop.py">src/robot_config/robot_config/launch_builders/teleop.py</a></p>
+</section>
+<section id="recording-py">
+<h3>录制构建器 (recording.py)<a class="headerlink" href="#recording-py" title="Link to this heading"></a></h3>
+<p>生成数据录制节点。</p>
+<p><strong>录制模式：</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>模式</p></th>
+<th class="head"><p>描述</p></th>
+<th class="head"><p>生成的节点</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">con</span> <span class="pre">tinuous</span></code></p></td>
+<td><p>传统 ros2 bag record (一体化文件)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ExecuteProcess</span> <span class="pre">(['ros2',</span> <span class="pre">'bag',</span> <span class="pre">'record'])</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">e</span> <span class="pre">pisodic</span></code></p></td>
+<td><p>通过 Action Server 逐 episode 触发</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Node('dataset_</span> <span class="pre">tools',</span> <span class="pre">'episode_recorder')</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>连续模式：</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># lines 58-99</span>
+<span class="n">recording_action</span> <span class="o">=</span> <span class="n">ExecuteProcess</span><span class="p">(</span>
+    <span class="n">cmd</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ros2&#39;</span><span class="p">,</span> <span class="s1">&#39;bag&#39;</span><span class="p">,</span> <span class="s1">&#39;record&#39;</span><span class="p">,</span> <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="n">output_file</span><span class="p">]</span> <span class="o">+</span> <span class="n">topics</span><span class="p">,</span>
+    <span class="n">output</span><span class="o">=</span><span class="s1">&#39;screen&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>从 robot_config 自动发现主题（关节、相机、控制器）。</p>
+<p><strong>Episodic 模式：</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># lines 102-168</span>
+<span class="n">episode_recorder_node</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span>
+    <span class="n">package</span><span class="o">=</span><span class="s1">&#39;dataset_tools&#39;</span><span class="p">,</span>
+    <span class="n">executable</span><span class="o">=</span><span class="s1">&#39;episode_recorder&#39;</span><span class="p">,</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s1">&#39;robot_config_path&#39;</span><span class="p">:</span> <span class="n">robot_config_path</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;bag_base_dir&#39;</span><span class="p">:</span> <span class="n">bag_base_dir</span><span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>需要在单独的终端中手动运行 <code class="docutils literal notranslate"><span class="pre">ros2</span> <span class="pre">run</span> <span class="pre">dataset_tools</span> <span class="pre">record_cli</span></code> 来触发录制。</p>
+<p><strong>源码：</strong>
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/recording.py#L1-L226">src/robot_config/robot_config/launch_builders/recording.py:1-226</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id9">
+<h2>控制模式系统<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<p>启动系统根据活动控制模式调整节点生成，控制模式决定机器人的操作行为。</p>
+<section id="id10">
+<h3>控制模式确定<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TD
+    START[&quot;启动参数: control_mode&quot;]
+
+    CHECK_OVERRIDE{&quot;control_mode != ''?&quot;}
+
+    USE_OVERRIDE[&quot;robot_config['default_control_mode'] = control_mode&lt;br/&gt;line 178&quot;]
+
+    USE_DEFAULT[&quot;active_control_mode = robot_config.get('default_control_mode', 'model_inference')&lt;br/&gt;line 180&quot;]
+
+    VALIDATE{&quot;模式存在于&lt;br/&gt;control_modes?&quot;}
+
+    ERROR[&quot;抛出错误:&lt;br/&gt;无效控制模式&quot;]
+
+    PROCEED[&quot;继续使用 active_control_mode&quot;]
+
+    START --&gt; CHECK_OVERRIDE
+
+    CHECK_OVERRIDE --&gt;|是| USE_OVERRIDE
+    CHECK_OVERRIDE --&gt;|否| USE_DEFAULT
+
+    USE_OVERRIDE --&gt; USE_DEFAULT
+
+    USE_DEFAULT --&gt; VALIDATE
+
+    VALIDATE --&gt;|否| ERROR
+    VALIDATE --&gt;|是| PROCEED
+    </pre><p><strong>源码：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L177-L181">src/robot_config/launch/robot.launch.py:177-181</a></p>
+</section>
+<section id="id11">
+<h3>控制模式对节点生成的影响<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<p>每个控制模式定义：1. <strong>要启动的控制器</strong> - 在 <code class="docutils literal notranslate"><span class="pre">control_modes[mode].controllers</span></code> 中列出 2. <strong>推理启用</strong> - <code class="docutils literal notranslate"><span class="pre">control_modes[mode].inference.enabled</span></code> 3. <strong>执行器配置</strong> - <code class="docutils literal notranslate"><span class="pre">control_modes[mode].executor</span></code></p>
+<p><strong>示例模式：</strong></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">control_modes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">teleop</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">controllers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">joint_state_broadcaster</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arm_position_controller</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gripper_position_controller</span>
+<span class="w">    </span><span class="nt">inference</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">force_disable</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">executor</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">topic</span>
+<span class="w">      </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">teleop</span>
+
+<span class="w">  </span><span class="nt">model_inference</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">controllers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">joint_state_broadcaster</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arm_position_controller</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gripper_position_controller</span>
+<span class="w">    </span><span class="nt">inference</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">so101_act</span>
+<span class="w">    </span><span class="nt">executor</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">topic</span>
+<span class="w">      </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model_inference</span>
+
+<span class="w">  </span><span class="nt">moveit_planning</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">controllers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">joint_state_broadcaster</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arm_trajectory_controller</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gripper_trajectory_controller</span>
+<span class="w">    </span><span class="nt">inference</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">    </span><span class="nt">executor</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">action</span>
+<span class="w">      </span><span class="nt">mode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">moveit_planning</span>
+</pre></div>
+</div>
+<p><strong>源码：</strong>
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L46-L103">src/robot_config/config/robots/so101_single_arm.yaml:46-103</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id12">
+<h2>条件节点生成<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
+<p>启动系统使用条件逻辑根据运行时标志生成适当的节点。</p>
+<section id="id13">
+<h3>推理管道启用<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TD
+    WITH_INFERENCE_ARG[&quot;启动参数: with_inference&quot;]
+
+    CHECK_ARG{&quot;with_inference != ''?&quot;}
+
+    USE_ARG[&quot;with_inference = parse_bool(with_inference_str)&lt;br/&gt;line 186&quot;]
+
+    AUTO_DETECT[&quot;with_inference = control_modes[mode].inference.enabled&lt;br/&gt;line 189&quot;]
+
+    TELEOP_CHECK{&quot;control_mode == 'teleop'&lt;br/&gt;&amp;&amp; with_inference_str == ''?&quot;}
+
+    FORCE_FALSE[&quot;with_inference = False&lt;br/&gt;line 193&quot;]
+
+    GENERATE{&quot;with_inference?&quot;}
+
+    GEN_INFERENCE[&quot;generate_inference_node()&lt;br/&gt;generate_action_dispatcher_node()&quot;]
+
+    SKIP[&quot;跳过推理节点&quot;]
+
+    WITH_INFERENCE_ARG --&gt; CHECK_ARG
+
+    CHECK_ARG --&gt;|是| USE_ARG
+    CHECK_ARG --&gt;|否| AUTO_DETECT
+
+    USE_ARG --&gt; TELEOP_CHECK
+    AUTO_DETECT --&gt; TELEOP_CHECK
+
+    TELEOP_CHECK --&gt;|是| FORCE_FALSE
+    TELEOP_CHECK --&gt;|否| GENERATE
+
+    FORCE_FALSE --&gt; GENERATE
+
+    GENERATE --&gt;|True| GEN_INFERENCE
+    GENERATE --&gt;|False| SKIP
+    </pre><p><strong>逻辑：</strong> 1. 如果显式设置 <code class="docutils literal notranslate"><span class="pre">--with_inference</span></code>，使用该值 2. 否则，从 <code class="docutils literal notranslate"><span class="pre">control_modes[mode].inference.enabled</span></code> 自动检测 3. 在 teleop 模式下强制禁用（除非显式覆盖）</p>
+<p><strong>源码：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L183-L196">src/robot_config/launch/robot.launch.py:183-196</a></p>
+</section>
+<section id="id14">
+<h3>仿真与硬件模式<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TD
+    USE_SIM[&quot;启动参数: use_sim&quot;]
+
+    PARSE[&quot;parse_bool(use_sim_str, default=False)&quot;]
+
+    SIM_CHECK{&quot;use_sim == True?&quot;}
+
+    SIM_PATH[&quot;仿真路径&quot;]
+    HW_PATH[&quot;硬件路径&quot;]
+
+    SIM_GAZEBO[&quot;生成 Gazebo 节点&lt;br/&gt;gzserver, gzclient, spawn_entity&quot;]
+    SIM_CTRL[&quot;控制器等待 Gazebo 的&lt;br/&gt;controller_manager&quot;]
+    SIM_CAM[&quot;跳过物理相机驱动&lt;br/&gt;使用 Gazebo 相机插件&quot;]
+
+    HW_CTRL[&quot;启动 ros2_control_node&lt;br/&gt;然后启动控制器&quot;]
+    HW_CAM[&quot;生成相机驱动节点&lt;br/&gt;usb_cam, realsense2_camera&quot;]
+    HW_HARDWARE[&quot;加载 so101_hardware 插件&quot;]
+
+    USE_SIM --&gt; PARSE
+    PARSE --&gt; SIM_CHECK
+
+    SIM_CHECK --&gt;|是| SIM_PATH
+    SIM_CHECK --&gt;|否| HW_PATH
+
+    SIM_PATH --&gt; SIM_GAZEBO
+    SIM_GAZEBO --&gt; SIM_CTRL
+    SIM_CTRL --&gt; SIM_CAM
+
+    HW_PATH --&gt; HW_CTRL
+    HW_CTRL --&gt; HW_CAM
+    HW_CAM --&gt; HW_HARDWARE
+    </pre><p><strong>源码：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L142-L217">src/robot_config/launch/robot.launch.py:142-217</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id15">
+<h2>启动示例<a class="headerlink" href="#id15" title="Link to this heading"></a></h2>
+<section id="id16">
+<h3>示例 1：带模型推理的仿真<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>launch<span class="w"> </span>robot_config<span class="w"> </span>robot.launch.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>robot_config:<span class="o">=</span>so101_single_arm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>use_sim:<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>control_mode:<span class="o">=</span>model_inference
+</pre></div>
+</div>
+<p><strong>生成的节点：</strong> 1. Gazebo 服务器/客户端 2. spawn_entity（URDF 机器人） 3. joint_state_broadcaster 4. arm_position_controller 5. gripper_position_controller 6. Gazebo 相机插件 7. static_transform_publisher（用于相机） 8. lerobot_policy_node 9. action_dispatcher_node</p>
+<p><strong>源码：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L22-L26">src/robot_config/launch/robot.launch.py:22-26</a></p>
+</section>
+<section id="id17">
+<h3>示例 2：带遥控和录制的真实硬件<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>launch<span class="w"> </span>robot_config<span class="w"> </span>robot.launch.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>robot_config:<span class="o">=</span>so101_single_arm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>control_mode:<span class="o">=</span>teleop<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>record:<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>record_mode:<span class="o">=</span>episodic
+</pre></div>
+</div>
+<p><strong>生成的节点：</strong> 1. ros2_control_node (so101_hardware) 2. joint_state_broadcaster 3. arm_position_controller 4. gripper_position_controller 5. usb_cam 节点（顶部、腕部相机） 6. realsense_node（前置相机） 7. static_transform_publisher（相机坐标系） 8. robot_teleop_node 9. episode_recorder（后台服务）</p>
+<p><strong>需要手动步骤：</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 在单独终端中</span>
+ros2<span class="w"> </span>run<span class="w"> </span>dataset_tools<span class="w"> </span>record_cli
+</pre></div>
+</div>
+<p><strong>源码：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L28-L32">src/robot_config/launch/robot.launch.py:28-32</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/recording.py#L102-L168">src/robot_config/robot_config/launch_builders/recording.py:102-168</a></p>
+</section>
+<section id="moveit">
+<h3>示例 3：MoveIt 规划模式<a class="headerlink" href="#moveit" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>launch<span class="w"> </span>robot_config<span class="w"> </span>robot.launch.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>robot_config:<span class="o">=</span>so101_single_arm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>control_mode:<span class="o">=</span>moveit_planning<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>use_sim:<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>moveit_display:<span class="o">=</span><span class="nb">true</span>
+</pre></div>
+</div>
+<p><strong>生成的节点：</strong> 1. Gazebo 服务器/客户端 2. spawn_entity 3. joint_state_broadcaster 4. arm_trajectory_controller 5. gripper_trajectory_controller 6. move_group (MoveIt) 7. moveit_gateway_node 8. rviz2（带 MoveIt 配置）</p>
+<p><strong>源码：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L34-L38">src/robot_config/launch/robot.launch.py:34-38</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id18">
+<h2>参数传播<a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
+<p>启动系统通过多种机制将配置参数传播到下游节点：</p>
+<section id="ros">
+<h3>1. ROS 参数（节点特定）<a class="headerlink" href="#ros" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 示例: action_dispatcher_node</span>
+<span class="n">parameters</span><span class="o">=</span><span class="p">[{</span>
+    <span class="s2">&quot;robot_config_path&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">robot_config_path</span><span class="p">),</span>
+    <span class="s2">&quot;control_frequency&quot;</span><span class="p">:</span> <span class="mf">100.0</span><span class="p">,</span>
+    <span class="s2">&quot;queue_size&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="s2">&quot;watermark_threshold&quot;</span><span class="p">:</span> <span class="mi">20</span>
+<span class="p">}]</span>
+</pre></div>
+</div>
+<p><strong>源码：</strong>
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/execution.py#L270-L305">src/robot_config/robot_config/launch_builders/execution.py:270-305</a></p>
+</section>
+<section id="id19">
+<h3>2. 环境变量<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 为 LeRobot 环境注入 PYTHONPATH</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">prepare_lerobot_env</span><span class="p">()</span>
+<span class="c1"># env[&#39;PYTHONPATH&#39;] = &#39;/path/to/lerobot:...&#39;</span>
+
+<span class="n">Node</span><span class="p">(</span>
+    <span class="n">package</span><span class="o">=</span><span class="s1">&#39;inference_service&#39;</span><span class="p">,</span>
+    <span class="n">executable</span><span class="o">=</span><span class="s1">&#39;lerobot_policy_node&#39;</span><span class="p">,</span>
+    <span class="n">env</span><span class="o">=</span><span class="n">env</span><span class="p">,</span>  <span class="c1"># LeRobot 环境</span>
+    <span class="n">parameters</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>源码：</strong>
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/execution.py#L99-L123">src/robot_config/robot_config/launch_builders/execution.py:99-123</a></p>
+</section>
+<section id="id20">
+<h3>3. 直接文件路径<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 传递 robot_config_path 用于契约加载</span>
+<span class="n">robot_config_path</span> <span class="o">=</span> <span class="n">robot_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;_config_path&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+<span class="n">parameters</span><span class="o">=</span><span class="p">[{</span><span class="s1">&#39;robot_config_path&#39;</span><span class="p">:</span> <span class="n">robot_config_path</span><span class="p">}]</span>
+</pre></div>
+</div>
+<p>节点直接从 YAML 加载契约：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 在 episode_recorder.py 中</span>
+<span class="kn">from</span> <span class="nn">robot_config.loader</span> <span class="kn">import</span> <span class="n">load_robot_config</span>
+<span class="n">robot_config</span> <span class="o">=</span> <span class="n">load_robot_config</span><span class="p">(</span><span class="n">robot_config_path</span><span class="p">)</span>
+<span class="n">contract</span> <span class="o">=</span> <span class="n">robot_config</span><span class="o">.</span><span class="n">to_contract</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>源码：</strong>
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/episode_recorder.py#L194-L206">src/dataset_tools/dataset_tools/episode_recorder.py:194-206</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L158-L159">src/inference_service/inference_service/lerobot_policy_node.py:158-159</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id21">
+<h2>调试启动问题<a class="headerlink" href="#id21" title="Link to this heading"></a></h2>
+<section id="id22">
+<h3>启用调试输出<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>launch<span class="w"> </span>robot_config<span class="w"> </span>robot.launch.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>robot_config:<span class="o">=</span>so101_single_arm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>use_sim:<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--log-level<span class="w"> </span>debug
+</pre></div>
+</div>
+</section>
+<section id="id23">
+<h3>禁用自动启动以便手动检查<a class="headerlink" href="#id23" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>launch<span class="w"> </span>robot_config<span class="w"> </span>robot.launch.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>robot_config:<span class="o">=</span>so101_single_arm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>auto_start_controllers:<span class="o">=</span><span class="nb">false</span>
+</pre></div>
+</div>
+<p>这会启动 ros2_control_node 但不启动控制器。手动启动它们进行调试：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>control<span class="w"> </span>load_controller<span class="w"> </span>joint_state_broadcaster
+ros2<span class="w"> </span>control<span class="w"> </span>set_controller_state<span class="w"> </span>joint_state_broadcaster<span class="w"> </span>active
+</pre></div>
+</div>
+</section>
+<section id="id24">
+<h3>常见问题<a class="headerlink" href="#id24" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>问题</p></th>
+<th class="head"><p>原因</p></th>
+<th class="head"><p>解决方案</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>“Controller already loaded”</p></td>
+<td><p>之前的 ros2_control_node 仍在运行</p></td>
+<td><p>运行 <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">kill</span> <span class="pre">-9</span> <span class="pre">ros2_control_node</span></code> 或 <code class="docutils literal notranslate"><span class="pre">./scripts/cleanup_ros.sh</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>“Config file not found”</p></td>
+<td><p>无效的 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> 名称</p></td>
+<td><p>检查 <code class="docutils literal notranslate"><span class="pre">config/robots/</span></code> 目录中的可用配置</p></td>
+</tr>
+<tr class="row-even"><td><p>“Invalid control mode”</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">control_mode</span></code> 不在 YAML 中</p></td>
+<td><p>验证 robot_config YAML 中的 <code class="docutils literal notranslate"><span class="pre">control_modes</span></code> 部分</p></td>
+</tr>
+<tr class="row-odd"><td><p>推理节点失败</p></td>
+<td><p>缺少模型 检查点</p></td>
+<td><p>验证 robot_config 中 <code class="docutils literal notranslate"><span class="pre">models[name].path</span></code> 存在</p></td>
+</tr>
+<tr class="row-even"><td><p>相机无法打开</p></td>
+<td><p>权限被拒绝</p></td>
+<td><p>运行 <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">chmod</span> <span class="pre">666</span> <span class="pre">/dev/video*</span></code> 或将用户添加到 <code class="docutils literal notranslate"><span class="pre">video</span></code> 组</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>源码：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L46-L49">src/robot_config/launch/robot.launch.py:46-49</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/README.en.md#L510-L516">src/robot_config/README.en.md:510-516</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id25">
+<h2>总结<a class="headerlink" href="#id25" title="Link to this heading"></a></h2>
+<p>启动系统提供 <strong>配置驱动、模块化的编排层</strong> 用于机器人启动：</p>
+<ol class="arabic simple">
+<li><p><strong>单一入口点：</strong> <code class="docutils literal notranslate"><span class="pre">robot.launch.py</span></code> 加载配置并编排所有构建器</p></li>
+<li><p><strong>构建器模式：</strong> 每个子系统有专门的构建器模块</p></li>
+<li><p><strong>条件生成：</strong> 节点根据控制模式、use_sim 和功能标志生成</p></li>
+<li><p><strong>参数传播：</strong> 配置通过 ROS 参数、环境变量和文件路径流向节点</p></li>
+<li><p><strong>模式灵活性：</strong> 支持具有不同控制器/执行器配置的 teleop、model_inference 和 moveit_planning</p></li>
+</ol>
+<p><strong>关键文件：</strong> - <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py">src/robot_config/launch/robot.launch.py</a> - 主编排器 - <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/">src/robot_config/robot_config/launch_builders/</a> - 构建器模块 - <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml">src/robot_config/config/robots/so101_single_arm.yaml</a> - 配置源</p>
+<p><strong>源码：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L1-L360">src/robot_config/launch/robot.launch.py:1-360</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/">src/robot_config/robot_config/launch_builders/</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="peripheral_configuration.html" class="btn btn-neutral float-left" title="外设配置" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="configuration_validation.html" class="btn btn-neutral float-right" title="配置验证" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../../24.03-lts/index.html">24.03-lts</a></dd>
+      <dd><a href="../../../../llvm-toolchain-v0.1.1/index.html">llvm-toolchain-v0.1.1</a></dd>
+      <dd><a href="../../../../nativesdk-v0.1.2/index.html">nativesdk-v0.1.2</a></dd>
+      <dd><a href="../../../../nativesdk-v0.1.3/index.html">nativesdk-v0.1.3</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.5/index.html">toolchains-v0.1.5</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.7/index.html">toolchains-v0.1.7</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.8/index.html">toolchains-v0.1.8</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="launch_system.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../pr_2786/features/embodied_ai/configuration/launch_system.html">pr_2786</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

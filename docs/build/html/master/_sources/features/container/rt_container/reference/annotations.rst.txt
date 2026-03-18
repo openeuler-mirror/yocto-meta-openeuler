@@ -20,7 +20,7 @@ MicRun 注解参考
    * - **常用注解**
      - **类型**
      - **默认值**
-   * - :ref:`org.openeuler.micrun.container.os <container_os>`
+   * - :ref:`org.openeuler.micrun.container.os <micrun_container_os>`
      - 字符串
      - ``uniproton``
    * - :ref:`org.openeuler.micrun.container.firmware_path <firmware_path>`
@@ -88,7 +88,7 @@ MicRun 注解参考
 容器配置注解
 ==============
 
-.. _container_os:
+.. _micrun_container_os:
 
 org.openeuler.micrun.container.os
 ----------------------------------
@@ -312,7 +312,7 @@ org.openeuler.micrun.container.auto_close_timeout
 
 **超时机制说明**：
 
-* 默认情况下，**所有容器**都会在 30 秒后自动关闭（无论 TTY/Non-TTY、前台/后台）
+* 默认情况下，**所有容器** 都会在 30 秒后自动关闭（无论 TTY/Non-TTY、前台/后台）
 * 这是为防止测试/调试会话资源泄漏而设计的保护机制
 * 如需长期运行服务，请显式设置 ``auto_close=false`` 或 ``auto_close_timeout=0``
 
@@ -371,7 +371,7 @@ org.openeuler.micrun.container.auto_close_timeout
 
    **超时机制使用注意**：
 
-   * ⚠️ ``auto_close`` 是布尔值注解，**不要**使用数字（如 ``auto_close=60``）
+   * ⚠️ ``auto_close`` 是布尔值注解，**不要** 使用数字（如 ``auto_close=60``）
    * 需要设置超时时长时，使用 ``auto_close_timeout`` 注解（如 ``auto_close_timeout=60s``）
    * **所有 IO 模式默认启用 30 秒超时**，防止资源泄漏
    * 长期运行服务需显式禁用：``auto_close=false`` 或 ``auto_close_timeout=0``
@@ -531,7 +531,7 @@ org.openeuler.micrun.runtime.disable_new_netns
        org.openeuler.micrun.runtime.disable_new_netns: "true"
 
 org.openeuler.micrun.runtime.pipe_size
--------------------------------------
+-----------------------------------------
 
 指定 IO 管道的大小(字节)。
 
@@ -614,7 +614,7 @@ Sandbox 级别注解
 以下注解用于配置整个 Sandbox。
 
 org.openeuler.micrun.runtime.enable_vcpus_pinning
------------------------------------------------
+-------------------------------------------------
 
 启用 Sandbox 级别的 VCPU 亲和性设置。
 
@@ -640,7 +640,7 @@ org.openeuler.micrun.runtime.enable_vcpus_pinning
        org.openeuler.micrun.runtime.enable_vcpus_pinning: "true"
 
 org.openeuler.micrun.runtime.static_resource
--------------------------------------------
+-----------------------------------------------
 
 启用静态资源管理模式。
 
@@ -668,7 +668,7 @@ org.openeuler.micrun.runtime.static_resource
        org.openeuler.micrun.runtime.static_resource: "true"
 
 org.openeuler.micrun.runtime.hugepage_enable
--------------------------------------------
+-----------------------------------------------
 
 启用 HugePage 支持。
 
@@ -800,7 +800,7 @@ Pod 配置
 
 6. **超时机制使用注意**:
 
-   * ⚠️ ``auto_close`` 是布尔值注解，**不要**使用数字（如 ``auto_close=60``）
+   * ⚠️ ``auto_close`` 是布尔值注解，**不要** 使用数字（如 ``auto_close=60``）
    * 如需设置超时时长，使用 ``auto_close_timeout`` 注解（如 ``auto_close_timeout=60s``）
    * **所有 IO 模式默认启用 30 秒超时**，防止资源泄漏
    * 长期运行服务需显式禁用：``auto_close=false`` 或 ``auto_close_timeout=0``

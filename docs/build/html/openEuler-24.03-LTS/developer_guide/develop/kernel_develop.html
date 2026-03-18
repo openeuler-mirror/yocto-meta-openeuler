@@ -9,13 +9,17 @@
   <title>Linux内核开发指导 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=458d985c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=d35d3fb5" />
 
   
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../_static/documentation_options.js?v=7eb38eeb"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../_static/js/custom.js?v=2b2e6f96"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -62,8 +66,20 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Linux内核开发指导</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#id1">内核代码修改指导</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#id2">内核代码下载</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#id3">内核代码修改</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#id6">内核选项配置</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id3">内核代码修改</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#id4">1. 源码修改</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id5">2. 设备树指定</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="#id6">内核选项配置</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#config">1. 指定内核CONFIG文件</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id7">2. 调整内核CONFIG选项</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#menuconfig">方式一：通过 menuconfig 调整</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#kernel-metadata">方式二：通过 kernel_metadata 调整</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -105,15 +121,15 @@
            <div itemprop="articleBody">
              
   <section id="linux">
-<h1>Linux内核开发指导<a class="headerlink" href="#linux" title="Link to this heading">¶</a></h1>
+<h1>Linux内核开发指导<a class="headerlink" href="#linux" title="Link to this heading"></a></h1>
 <p>在使用 openEuler Embedded 时，通常需要对内核进行定制。目前，meta-openeuler 提供了一系列与 Linux kernel 相关的配方，借助 Yocto 的支持，用户可以在 meta-openeuler 的基础上，高效地调试并定制所需的内核。</p>
 <p>本章节内容会基于 meta-openeuler 介绍如何进行内核开发指导，包括如何下载内核代码以及修改内核代码、选项配置等内容，其它更详细的流程，可以参阅 <a class="reference external" href="https://docs.yoctoproject.org/kernel-dev/index.html#">Yocto Project Linux Kernel Development Manual</a> 进一步了解。</p>
 <section id="id1">
-<h2>内核代码修改指导<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<h2>内核代码修改指导<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <p>目前，openEuler Embedded 提供了两种内核配方：<code class="docutils literal notranslate"><span class="pre">linux-openeuler.bb</span></code> 和 <code class="docutils literal notranslate"><span class="pre">linux-openeuler-rt.bb</span></code>。在使用 oebuild 构建时，如果通过 <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">rt</span></code> 选项指定构建 Preempt RT 版本，会通过设置 <code class="docutils literal notranslate"><span class="pre">PREFERRED_PROVIDER_virtual/kernel</span> <span class="pre">=</span> <span class="pre">&quot;linux-openeuler-rt&quot;</span></code> 来选择 <code class="docutils literal notranslate"><span class="pre">linux-openeuler-rt.bb</span></code>。
 实际上，这两种配方的构建流程基本一致，区别在于构建 Preempt RT 版本时，会额外应用一些内核补丁并调整部分内核配置。因此，下文将以 <code class="docutils literal notranslate"><span class="pre">linux-openeuler-rt.bb</span></code> 为例进行详细说明。</p>
 <section id="id2">
-<h3>内核代码下载<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<h3>内核代码下载<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <p>执行以下命令下载内核代码：</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span># 由于内核构建配方名称为 linux-openeuler-rt.bb，因此下载命令为：
 $ bitbake linux-openeuler-rt -c do_fetch
@@ -192,9 +208,9 @@ $ bitbake linux-openeuler-rt -c do_fetch
 </section>
 <hr class="docutils" />
 <section id="id3">
-<h3>内核代码修改<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<h3>内核代码修改<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <section id="id4">
-<h4>1. 源码修改<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h4>
+<h4>1. 源码修改<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
 <ul>
 <li><p><strong>场景一：为内核应用补丁</strong></p>
 <blockquote>
@@ -257,7 +273,7 @@ $<span class="w"> </span>bitbake<span class="w"> </span>linux-openeuler-rt<span 
 </ul>
 </section>
 <section id="id5">
-<h4>2. 设备树指定<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h4>
+<h4>2. 设备树指定<a class="headerlink" href="#id5" title="Link to this heading"></a></h4>
 <p>在 Yocto 工程里，可以通过 <code class="docutils literal notranslate"><span class="pre">KERNEL_DEVICETREE</span></code> 来指定DTB，具体的用法如下：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 在 machine.conf 里，指定 KERNEL_DEVICETREE</span>
 <span class="c1"># 例如：bsp/meta-openeuler-bsp/conf/machine/orangepi5.conf</span>
@@ -276,9 +292,9 @@ $<span class="w"> </span>bitbake<span class="w"> </span>linux-openeuler-rt<span 
 </section>
 <hr class="docutils" />
 <section id="id6">
-<h3>内核选项配置<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<h3>内核选项配置<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <section id="config">
-<h4>1. 指定内核CONFIG文件<a class="headerlink" href="#config" title="Link to this heading">¶</a></h4>
+<h4>1. 指定内核CONFIG文件<a class="headerlink" href="#config" title="Link to this heading"></a></h4>
 <ul>
 <li><p><strong>场景一：使用内核源码树外的config文件</strong></p>
 <blockquote>
@@ -318,10 +334,10 @@ $<span class="w"> </span>bitbake<span class="w"> </span>linux-openeuler-rt<span 
 </ul>
 </section>
 <section id="id7">
-<h4>2. 调整内核CONFIG选项<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h4>
+<h4>2. 调整内核CONFIG选项<a class="headerlink" href="#id7" title="Link to this heading"></a></h4>
 <p>在 Yocto 工程中，可以通过多种方式进行内核的CONFIG调整，以下为详细介绍：</p>
 <section id="menuconfig">
-<h5>方式一：通过 menuconfig 调整<a class="headerlink" href="#menuconfig" title="Link to this heading">¶</a></h5>
+<h5>方式一：通过 menuconfig 调整<a class="headerlink" href="#menuconfig" title="Link to this heading"></a></h5>
 <p>执行以下命令打开 menuconfig 窗口：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>bitbake<span class="w"> </span>linux-openeuler-rt<span class="w"> </span>-c<span class="w"> </span>menuconfig
 </pre></div>
@@ -343,7 +359,7 @@ $<span class="w"> </span>vim<span class="w"> </span>&lt;oebuild_workdir&gt;/src/
 </div>
 </section>
 <section id="kernel-metadata">
-<h5>方式二：通过 kernel_metadata 调整<a class="headerlink" href="#kernel-metadata" title="Link to this heading">¶</a></h5>
+<h5>方式二：通过 kernel_metadata 调整<a class="headerlink" href="#kernel-metadata" title="Link to this heading"></a></h5>
 <p>Yocto提供了 <a class="reference external" href="https://docs.yoctoproject.org/kernel-dev/advanced.html#configuration">Kernel Metadata</a> 机制，metadata 包含配置一个或多个配置片段文件(.cfg)以及一个描述这些配置片段的文件(.scc)组成。</p>
 <p>例如，可以将与 Preempt RT 相关的选项，通过 <code class="docutils literal notranslate"><span class="pre">preempt-rt.scc</span></code> 和 <code class="docutils literal notranslate"><span class="pre">preempt-rt.cfg</span></code> 来承载：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>meta-data/features/preempt-rt/preempt-rt.scc:
@@ -428,6 +444,7 @@ KERNEL_FEATURES:append<span class="w"> </span><span class="o">=</span><span clas
       <dd><a href="kernel_develop.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
       <dd><a href="../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../pr_2786/index.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

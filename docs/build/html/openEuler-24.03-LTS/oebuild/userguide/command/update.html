@@ -9,13 +9,17 @@
   <title>更新命令-update &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=458d985c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
 
   
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -62,7 +66,12 @@
 <li class="toctree-l4"><a class="reference internal" href="../configure/index.html">oebuild 配置文件</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="index.html">oebuild 命令手册</a><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="init.html">初始化目录命令-init</a></li>
-<li class="toctree-l5 current"><a class="current reference internal" href="#">更新命令-update</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">更新命令-update</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#yocto">yocto更新</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#layer">layer更新</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#docker">docker更新</a></li>
+</ul>
+</li>
 <li class="toctree-l5"><a class="reference internal" href="generate.html">构建文件生成命令-generate</a></li>
 <li class="toctree-l5"><a class="reference internal" href="bitbake.html">bitbake编译命令-bitbake</a></li>
 <li class="toctree-l5"><a class="reference internal" href="manifest.html">manifest管理命令-manifest</a></li>
@@ -118,7 +127,7 @@
            <div itemprop="articleBody">
              
   <section id="update">
-<span id="command-index-update"></span><h1>更新命令-update<a class="headerlink" href="#update" title="Link to this heading">¶</a></h1>
+<span id="command-index-update"></span><h1>更新命令-update<a class="headerlink" href="#update" title="Link to this heading"></a></h1>
 <p>该命令用于对oebuild的构建环境做初始化准备工作，主要是对必要的启动代码和执行容器做更新操作。openEuler Embedded的构建框架采用的是yocto构建框架，yocto构建的一个特点就是分层模型，这也意味着对于特性组件可进行插拔式选用，openEuler Embedded的代码主要分为三层，如下图所示：</p>
 <img alt="../../../_images/update_yocto_layer.png" src="../../../_images/update_yocto_layer.png" />
 <p>最上层是主构建层，即为openEuler Embedded的源码，决定着openEuler Embedded的特性配置，第二层为构建特性相关的layer层，这里需要额外说明的是poky，poky在yocto中是主干，yocto的构建离不开poky，其他层是特性层，例如添加图形特性，那么就需要添加图形层，想要添加ros特性，那么就需要添加ros层等。第三层是openEuler Embedded依赖的包列表，主构建仓决定着依赖的其他层的版本，也决定着依赖的软件包。</p>
@@ -132,7 +141,7 @@
 </div>
 <p>更新主要面向的对象有三个，分别是yocto，docker和layer。</p>
 <section id="yocto">
-<h2>yocto更新<a class="headerlink" href="#yocto" title="Link to this heading">¶</a></h2>
+<h2>yocto更新<a class="headerlink" href="#yocto" title="Link to this heading"></a></h2>
 <p>对yocto更新使用如下命令：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild update yocto</span>
 </pre></div>
@@ -144,7 +153,7 @@
 </div>
 </section>
 <section id="layer">
-<h2>layer更新<a class="headerlink" href="#layer" title="Link to this heading">¶</a></h2>
+<h2>layer更新<a class="headerlink" href="#layer" title="Link to this heading"></a></h2>
 <p>对layer的更新使用如下命令：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild update layer</span>
 </pre></div>
@@ -152,7 +161,7 @@
 <p>对layer的更新需要依赖到yocto-meta-openeuler，前文介绍过，主构建仓决定着依赖的其他layer层及其版本，因此在更新layer时会检测yocto-meta-openeuler是否存在，如果不存在，则先对yocto-meta-openeuler进行下载，执行逻辑与 <cite>oebuild update yocto</cite> 一致。然后检测当下目录是否为构建目录，如果为构建目录，则会根据构建目录下的构建配置文件解析依赖的layer层，然后进行更新操作，否则解析 <cite>yocto-meta-openeuler/.oebuild/common.yaml</cite> 配置文件，该文件中记录着构建openEuler Embedded标准镜像所依赖的layer层信息。</p>
 </section>
 <section id="docker">
-<h2>docker更新<a class="headerlink" href="#docker" title="Link to this heading">¶</a></h2>
+<h2>docker更新<a class="headerlink" href="#docker" title="Link to this heading"></a></h2>
 <p>对docker的更新使用如下命令：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild update docker -tag &lt;tag&gt;</span>
 </pre></div>
@@ -228,6 +237,7 @@
       <dd><a href="update.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../../../openEuler-24.09/oebuild/userguide/command/update.html">openEuler-24.09</a></dd>
       <dd><a href="../../../../openEuler-25.03/oebuild/userguide/command/update.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../pr_2786/oebuild/userguide/command/update.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

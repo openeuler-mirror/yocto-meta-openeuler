@@ -9,13 +9,17 @@
   <title>MicRun API 参考文档 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=458d985c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=d35d3fb5" />
 
   
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=7eb38eeb"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../../../_static/js/custom.js?v=2b2e6f96"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
@@ -54,7 +58,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../../../../user_guide/index.html">用户使用指导</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">关键特性指导</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../../../system/index.html">系统基础</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../embodied_ai/index.html">具身智能</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../embodied_ai/index.html">具身智能 (Embodied AI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../embedded_ai/index.html">嵌入式AI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../mica/index.html">混合关键性部署 (MICA)</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../../index.html">边缘容器</a><ul class="current">
@@ -63,7 +67,24 @@
 <li class="toctree-l5"><a class="reference internal" href="../intro.html">MicRun 简介</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../quick-start.html">MicRun 快速入门</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../kubernetes/index.html">MicRun Kubernetes 云边协同指南</a></li>
-<li class="toctree-l5 current"><a class="reference internal" href="index.html">参考文档</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">参考文档</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="annotations.html">MicRun 注解参考</a></li>
+<li class="toctree-l6"><a class="reference internal" href="troubleshooting.html">MicRun 故障排查指南</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">MicRun API 参考文档</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id1">概述</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#sandbox-api">Sandbox 层 API</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#container-api">Container 层 API</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#pedestal-api">Pedestal 层 API</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#io-api">IO 层 API</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id16">状态常量</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id19">使用示例</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id22">相关文档</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="configuration.html">MicRun 配置参考手册</a></li>
+<li class="toctree-l6"><a class="reference internal" href="resources.html">MicRun 资源映射参考</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -114,9 +135,9 @@
            <div itemprop="articleBody">
              
   <section id="micrun-api">
-<span id="micrun-api-reference"></span><h1>MicRun API 参考文档<a class="headerlink" href="#micrun-api" title="Link to this heading">¶</a></h1>
+<span id="micrun-api-reference"></span><h1>MicRun API 参考文档<a class="headerlink" href="#micrun-api" title="Link to this heading"></a></h1>
 <section id="id1">
-<h2>概述<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<h2>概述<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <p>本文档描述 MicRun 的核心 API 接口。MicRun 采用分层架构设计，接口分为：</p>
 <ol class="arabic simple">
 <li><p><strong>Sandbox 层</strong> (<code class="docutils literal notranslate"><span class="pre">SandboxTraits</span></code>) - 管理 Sandbox 和容器生命周期</p></li>
@@ -126,12 +147,12 @@
 </ol>
 </section>
 <section id="sandbox-api">
-<h2>Sandbox 层 API<a class="headerlink" href="#sandbox-api" title="Link to this heading">¶</a></h2>
+<h2>Sandbox 层 API<a class="headerlink" href="#sandbox-api" title="Link to this heading"></a></h2>
 <section id="sandboxtraits">
-<h3>SandboxTraits 接口<a class="headerlink" href="#sandboxtraits" title="Link to this heading">¶</a></h3>
+<h3>SandboxTraits 接口<a class="headerlink" href="#sandboxtraits" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">SandboxTraits</span></code> 是 Sandbox 的核心接口，位于 <code class="docutils literal notranslate"><span class="pre">pkg/micantainer/interfaces.go</span></code>。</p>
 <section id="id2">
-<h4>标识和状态方法<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h4>
+<h4>标识和状态方法<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 25.0%" />
@@ -173,7 +194,7 @@
 </table>
 </section>
 <section id="sandbox">
-<h4>Sandbox 生命周期方法<a class="headerlink" href="#sandbox" title="Link to this heading">¶</a></h4>
+<h4>Sandbox 生命周期方法<a class="headerlink" href="#sandbox" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 25.0%" />
@@ -214,7 +235,7 @@
 </ul>
 </section>
 <section id="id3">
-<h4>容器管理方法<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h4>
+<h4>容器管理方法<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 30.0%" />
@@ -269,7 +290,7 @@
 </table>
 </section>
 <section id="id4">
-<h4>资源更新方法<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h4>
+<h4>资源更新方法<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 30.0%" />
@@ -295,7 +316,7 @@
 <p><strong>注意</strong>：如果 <code class="docutils literal notranslate"><span class="pre">StaticResourceMgmt</span></code> 为 true，此操作将被忽略。</p>
 </section>
 <section id="io">
-<h4>IO 和控制方法<a class="headerlink" href="#io" title="Link to this heading">¶</a></h4>
+<h4>IO 和控制方法<a class="headerlink" href="#io" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 30.0%" />
@@ -347,9 +368,9 @@
 </section>
 </section>
 <section id="container-api">
-<h2>Container 层 API<a class="headerlink" href="#container-api" title="Link to this heading">¶</a></h2>
+<h2>Container 层 API<a class="headerlink" href="#container-api" title="Link to this heading"></a></h2>
 <section id="containertraits">
-<h3>ContainerTraits 接口<a class="headerlink" href="#containertraits" title="Link to this heading">¶</a></h3>
+<h3>ContainerTraits 接口<a class="headerlink" href="#containertraits" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">ContainerTraits</span></code> 是单个容器的接口，位于 <code class="docutils literal notranslate"><span class="pre">pkg/micantainer/interfaces.go</span></code>。</p>
 <table class="docutils align-default">
 <colgroup>
@@ -409,12 +430,12 @@
 </section>
 </section>
 <section id="pedestal-api">
-<h2>Pedestal 层 API<a class="headerlink" href="#pedestal-api" title="Link to this heading">¶</a></h2>
+<h2>Pedestal 层 API<a class="headerlink" href="#pedestal-api" title="Link to this heading"></a></h2>
 <section id="pedestal">
-<h3>Pedestal 接口<a class="headerlink" href="#pedestal" title="Link to this heading">¶</a></h3>
+<h3>Pedestal 接口<a class="headerlink" href="#pedestal" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">Pedestal</span></code> 是 Hypervisor 的抽象接口，位于 <code class="docutils literal notranslate"><span class="pre">pkg/pedestal/interface.go</span></code>。</p>
 <section id="id5">
-<h4>核心方法<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h4>
+<h4>核心方法<a class="headerlink" href="#id5" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 25.0%" />
@@ -444,7 +465,7 @@
 </table>
 </section>
 <section id="id6">
-<h4>主机资源查询<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h4>
+<h4>主机资源查询<a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 30.0%" />
@@ -483,9 +504,9 @@
 </section>
 </section>
 <section id="id7">
-<h3>可选扩展接口<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
+<h3>可选扩展接口<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
 <section id="cpuscheduler">
-<h4>CPUScheduler<a class="headerlink" href="#cpuscheduler" title="Link to this heading">¶</a></h4>
+<h4>CPUScheduler<a class="headerlink" href="#cpuscheduler" title="Link to this heading"></a></h4>
 <p>CPU 调度操作（可选）：</p>
 <table class="docutils align-default">
 <colgroup>
@@ -521,7 +542,7 @@
 </table>
 </section>
 <section id="lifecyclemanager">
-<h4>LifecycleManager<a class="headerlink" href="#lifecyclemanager" title="Link to this heading">¶</a></h4>
+<h4>LifecycleManager<a class="headerlink" href="#lifecyclemanager" title="Link to this heading"></a></h4>
 <p>生命周期管理（可选）：</p>
 <table class="docutils align-default">
 <colgroup>
@@ -552,7 +573,7 @@
 </table>
 </section>
 <section id="statequerier">
-<h4>StateQuerier<a class="headerlink" href="#statequerier" title="Link to this heading">¶</a></h4>
+<h4>StateQuerier<a class="headerlink" href="#statequerier" title="Link to this heading"></a></h4>
 <p>状态查询（可选）：</p>
 <table class="docutils align-default">
 <colgroup>
@@ -578,7 +599,7 @@
 </table>
 </section>
 <section id="memorymanager">
-<h4>MemoryManager<a class="headerlink" href="#memorymanager" title="Link to this heading">¶</a></h4>
+<h4>MemoryManager<a class="headerlink" href="#memorymanager" title="Link to this heading"></a></h4>
 <p>内存管理（可选）：</p>
 <table class="docutils align-default">
 <colgroup>
@@ -611,12 +632,12 @@
 </section>
 </section>
 <section id="io-api">
-<h2>IO 层 API<a class="headerlink" href="#io-api" title="Link to this heading">¶</a></h2>
+<h2>IO 层 API<a class="headerlink" href="#io-api" title="Link to this heading"></a></h2>
 <section id="session">
-<h3>Session<a class="headerlink" href="#session" title="Link to this heading">¶</a></h3>
+<h3>Session<a class="headerlink" href="#session" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">Session</span></code> 管理 IO 会话，位于 <code class="docutils literal notranslate"><span class="pre">pkg/io/session.go</span></code>。</p>
 <section id="id8">
-<h4>构造函数<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h4>
+<h4>构造函数<a class="headerlink" href="#id8" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 30.0%" />
@@ -641,7 +662,7 @@
 </table>
 </section>
 <section id="id9">
-<h4>实例方法<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h4>
+<h4>实例方法<a class="headerlink" href="#id9" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 25.0%" />
@@ -696,10 +717,37 @@
 </table>
 </section>
 <section id="id10">
-<h4>辅助函数<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h4>
+<h4>辅助函数<a class="headerlink" href="#id10" title="Link to this heading"></a></h4>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 35.0%" />
+<col style="width: 25.0%" />
+<col style="width: 15.0%" />
+<col style="width: 25.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>函数</p></th>
+<th class="head"><p>参数</p></th>
+<th class="head"><p>返回</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">GenerateStandardFIFOPath(ns,</span> <span class="pre">id,</span> <span class="pre">stream)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string,</span> <span class="pre">string,</span> <span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>生成标准 FIFO 路径</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">IsValidFIFOPath(path)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p>检查是否为有效 FIFO 路径</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="config">
-<h4>Config 结构<a class="headerlink" href="#config" title="Link to this heading">¶</a></h4>
+<h4>Config 结构<a class="headerlink" href="#config" title="Link to this heading"></a></h4>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span><span class="w"> </span><span class="nx">Config</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="c1">// 标识</span>
 <span class="w">    </span><span class="nx">ContainerID</span><span class="w"> </span><span class="kt">string</span>
@@ -728,10 +776,10 @@
 </section>
 </section>
 <section id="copier">
-<h3>Copier<a class="headerlink" href="#copier" title="Link to this heading">¶</a></h3>
+<h3>Copier<a class="headerlink" href="#copier" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">Copier</span></code> 负责双向数据复制，位于 <code class="docutils literal notranslate"><span class="pre">pkg/io/copier.go</span></code>。</p>
 <section id="id11">
-<h4>构造函数<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h4>
+<h4>构造函数<a class="headerlink" href="#id11" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 25.0%" />
@@ -756,7 +804,7 @@
 </table>
 </section>
 <section id="id12">
-<h4>实例方法<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h4>
+<h4>实例方法<a class="headerlink" href="#id12" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 30.0%" />
@@ -833,10 +881,10 @@
 </section>
 </section>
 <section id="eventbus">
-<h3>EventBus<a class="headerlink" href="#eventbus" title="Link to this heading">¶</a></h3>
+<h3>EventBus<a class="headerlink" href="#eventbus" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">EventBus</span></code> 提供事件发布/订阅机制，位于 <code class="docutils literal notranslate"><span class="pre">pkg/io/events.go</span></code>。</p>
 <section id="id13">
-<h4>事件类型<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h4>
+<h4>事件类型<a class="headerlink" href="#id13" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 30.0%" />
@@ -874,7 +922,7 @@
 </table>
 </section>
 <section id="id14">
-<h4>构造函数<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h4>
+<h4>构造函数<a class="headerlink" href="#id14" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 25.0%" />
@@ -899,7 +947,7 @@
 </table>
 </section>
 <section id="id15">
-<h4>实例方法<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h4>
+<h4>实例方法<a class="headerlink" href="#id15" title="Link to this heading"></a></h4>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 25.0%" />
@@ -943,7 +991,7 @@
 </table>
 </section>
 <section id="event">
-<h4>Event 结构<a class="headerlink" href="#event" title="Link to this heading">¶</a></h4>
+<h4>Event 结构<a class="headerlink" href="#event" title="Link to this heading"></a></h4>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kd">type</span><span class="w"> </span><span class="nx">Event</span><span class="w"> </span><span class="kd">struct</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nx">Type</span><span class="w">        </span><span class="nx">EventType</span>
 <span class="w">    </span><span class="nx">ContainerID</span><span class="w"> </span><span class="kt">string</span>
@@ -956,9 +1004,9 @@
 </section>
 </section>
 <section id="id16">
-<h2>状态常量<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h2>
+<h2>状态常量<a class="headerlink" href="#id16" title="Link to this heading"></a></h2>
 <section id="id17">
-<h3>Sandbox 状态<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h3>
+<h3>Sandbox 状态<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 25.0%" />
@@ -996,7 +1044,7 @@
 </table>
 </section>
 <section id="id18">
-<h3>容器状态<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h3>
+<h3>容器状态<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
 <p>容器状态使用以下状态常量：</p>
 <table class="docutils align-default">
 <colgroup>
@@ -1036,9 +1084,9 @@
 </section>
 </section>
 <section id="id19">
-<h2>使用示例<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h2>
+<h2>使用示例<a class="headerlink" href="#id19" title="Link to this heading"></a></h2>
 <section id="id20">
-<h3>创建和使用 Sandbox<a class="headerlink" href="#id20" title="Link to this heading">¶</a></h3>
+<h3>创建和使用 Sandbox<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="p">(</span>
 <span class="w">    </span><span class="s">&quot;context&quot;</span>
 <span class="w">    </span><span class="s">&quot;micrun/pkg/micantainer&quot;</span>
@@ -1102,7 +1150,7 @@
 </div>
 </section>
 <section id="io-session">
-<h3>使用 IO Session<a class="headerlink" href="#io-session" title="Link to this heading">¶</a></h3>
+<h3>使用 IO Session<a class="headerlink" href="#io-session" title="Link to this heading"></a></h3>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="p">(</span>
 <span class="w">    </span><span class="s">&quot;context&quot;</span>
 <span class="w">    </span><span class="s">&quot;micrun/pkg/io&quot;</span>
@@ -1149,7 +1197,7 @@
 </div>
 </section>
 <section id="id21">
-<h3>使用 EventBus<a class="headerlink" href="#id21" title="Link to this heading">¶</a></h3>
+<h3>使用 EventBus<a class="headerlink" href="#id21" title="Link to this heading"></a></h3>
 <div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="p">(</span>
 <span class="w">    </span><span class="s">&quot;context&quot;</span>
 <span class="w">    </span><span class="s">&quot;micrun/pkg/io&quot;</span>
@@ -1184,7 +1232,7 @@
 </section>
 </section>
 <section id="id22">
-<h2>相关文档<a class="headerlink" href="#id22" title="Link to this heading">¶</a></h2>
+<h2>相关文档<a class="headerlink" href="#id22" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="annotations.html"><span class="doc">MicRun 注解参考</span></a> - 注解配置</p></li>
 <li><p><a class="reference internal" href="resources.html"><span class="doc">MicRun 资源映射参考</span></a> - 资源限制映射规则</p></li>
@@ -1248,6 +1296,7 @@
       <dd><a href="../../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
       <dd><a href="../../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../../pr_2786/features/container/rt_container/reference/api-reference.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

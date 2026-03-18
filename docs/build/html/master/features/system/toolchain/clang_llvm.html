@@ -9,13 +9,17 @@
   <title>clang/llvm 编译工具链支持 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=458d985c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
 
   
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -56,7 +60,17 @@
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html">系统基础</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../kernel/index.html">内核支持</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="index.html">基础库与工具链</a><ul class="current">
-<li class="toctree-l5 current"><a class="current reference internal" href="#">clang/llvm 编译工具链支持</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">clang/llvm 编译工具链支持</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#id2">clang/llvm 介绍</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#meta-clang">meta-clang 层介绍</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id3">构建指导</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#oebuild">1. 使用 oebuild 和标准容器进行构建</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id4">2. 使用自定义 clang/llvm 编译工具链进行构建</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#sdk">3. SDK 生成</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l5"><a class="reference internal" href="muslc.html">musl libc的支持</a></li>
 <li class="toctree-l5"><a class="reference internal" href="rust.html">Rust支持</a></li>
 </ul>
@@ -66,7 +80,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../software_package/index.html">软件包</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../../embodied_ai/index.html">具身智能</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../embodied_ai/index.html">具身智能 (Embodied AI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
@@ -115,10 +129,10 @@
            <div itemprop="articleBody">
              
   <section id="clang-llvm">
-<span id="id1"></span><h1>clang/llvm 编译工具链支持<a class="headerlink" href="#clang-llvm" title="Link to this heading">¶</a></h1>
+<span id="id1"></span><h1>clang/llvm 编译工具链支持<a class="headerlink" href="#clang-llvm" title="Link to this heading"></a></h1>
 <p>本章介绍如何使用 clang/llvm 编译工具链构建 openEuler Embedded。</p>
 <section id="id2">
-<h2>clang/llvm 介绍<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<h2>clang/llvm 介绍<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <p>LLVM 项目是模块化和可重用编译器以及工具链的集合，clang 是其编译器前端。相比较于 GNU 编译工具链，其优势在于编译速度更快，静态检查工具更加完善，可拓展性更强等等。</p>
 <p>GNU 工具链与 LLVM 工具链主要区别如下表：</p>
 <table class="docutils align-default">
@@ -177,14 +191,14 @@
 </table>
 </section>
 <section id="meta-clang">
-<h2>meta-clang 层介绍<a class="headerlink" href="#meta-clang" title="Link to this heading">¶</a></h2>
+<h2>meta-clang 层介绍<a class="headerlink" href="#meta-clang" title="Link to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">meta-clang</span></code> 层包含使用 clang/llvm 编译工具链所需要的 recipes 和 bbclass 文件，由于 openEuler 使用 external-toolchain 机制，无需在 yocto 工程中编译 clang/llvm 工具链。</p>
 <p>meta-clang 层中主要起作用的是 clang.bbclass 文件，该文件用来控制编译时传入 clang/llvm 编译工具链的变量和依赖，除此之外，目前还有一小部分软件包并不完美支持使用 clang/llvm 来编译，nonclangable.conf 文件记录了这些软件包的情况。</p>
 </section>
 <section id="id3">
-<h2>构建指导<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<h2>构建指导<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
 <section id="oebuild">
-<h3>1. 使用 oebuild 和标准容器进行构建<a class="headerlink" href="#oebuild" title="Link to this heading">¶</a></h3>
+<h3>1. 使用 oebuild 和标准容器进行构建<a class="headerlink" href="#oebuild" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p>参考 <a class="reference internal" href="../../../oebuild/userguide/install/index.html#oebuild-install"><span class="std std-ref">安装步骤</span></a> 初始化容器环境，并熟悉使用 oebuild 构建 openEuler Embedded。使能 clang/llvm 编译工具链需要在生成配置文件时增加 <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">clang</span></code></p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild generate -p ${platform} -d ${build_directory} -f clang</span>
@@ -201,12 +215,12 @@
 </div></blockquote>
 </section>
 <section id="id4">
-<h3>2. 使用自定义 clang/llvm 编译工具链进行构建<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<h3>2. 使用自定义 clang/llvm 编译工具链进行构建<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p>用户也可以自定义定制 clang/llvm 编译工具链来进行 openEuler Embedded 的构建。</p>
 </div></blockquote>
 <section id="llvm">
-<h4>2.1 LLVM 工具链构建方式<a class="headerlink" href="#llvm" title="Link to this heading">¶</a></h4>
+<h4>2.1 LLVM 工具链构建方式<a class="headerlink" href="#llvm" title="Link to this heading"></a></h4>
 <blockquote>
 <div><ol class="arabic simple">
 <li><p>获取编译容器</p></li>
@@ -267,7 +281,7 @@
 </div></blockquote>
 </section>
 <section id="openeuler-embedded">
-<h4>2.2 openEuler Embedded 构建方式<a class="headerlink" href="#openeuler-embedded" title="Link to this heading">¶</a></h4>
+<h4>2.2 openEuler Embedded 构建方式<a class="headerlink" href="#openeuler-embedded" title="Link to this heading"></a></h4>
 <blockquote>
 <div><ol class="arabic simple">
 <li><p>生成配置文件时使用如下命令</p></li>
@@ -295,7 +309,7 @@
 </section>
 </section>
 <section id="sdk">
-<h3>3. SDK 生成<a class="headerlink" href="#sdk" title="Link to this heading">¶</a></h3>
+<h3>3. SDK 生成<a class="headerlink" href="#sdk" title="Link to this heading"></a></h3>
 <blockquote>
 <div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">bitbake openeuler-image-llvm -c populate_sdk</span>
 </pre></div>
@@ -365,6 +379,7 @@
       <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
       <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../pr_2786/features/system/toolchain/clang_llvm.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

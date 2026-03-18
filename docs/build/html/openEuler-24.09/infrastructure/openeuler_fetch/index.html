@@ -9,13 +9,17 @@
   <title>通过openeuler_fetch使用openEuler软件包 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=458d985c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=d35d3fb5" />
 
   
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../_static/documentation_options.js?v=7eb38eeb"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../_static/js/custom.js?v=2b2e6f96"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -104,20 +108,20 @@
            <div itemprop="articleBody">
              
   <section id="openeuler-fetchopeneuler">
-<span id="openeuler-fetch"></span><h1>通过openeuler_fetch使用openEuler软件包<a class="headerlink" href="#openeuler-fetchopeneuler" title="Link to this heading">¶</a></h1>
+<span id="openeuler-fetch"></span><h1>通过openeuler_fetch使用openEuler软件包<a class="headerlink" href="#openeuler-fetchopeneuler" title="Link to this heading"></a></h1>
 <section id="id1">
-<h2>特性介绍<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<h2>特性介绍<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <p>在openEuler Embedded构建镜像时，所有上游软件包仓全部来自于欧拉社区，对于欧拉社区来说，其代码托管平台为gitee，一个软件包仓库不止有源码压缩包，还有对应的patch以及其他编译依赖文件，而openEuler Embedded在构建时通过SRC_URI指定了依赖文件查询地址，因此这些依赖文件需要预先准备在对应的路径下，而对于构建所依赖的上游软件包，要不一次性全部下载完全，要不在构建时按需下载，openeuler_fetch就是为了解决按需下载的理想情况。openeuler_fetch是一个类，这个类被设置为所有的bb文件都将继承，在&lt;meta-openeuler/conf/distro/openeuler.conf&gt;中可以看到INHERIT字段添加了openeuler。</p>
 </section>
 <section id="id2">
-<h2>openeuler_fetch运行机制<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<h2>openeuler_fetch运行机制<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <p>openeuler_fetch在classes/openeuler.bbclass中实现，函数名为do_openeuler_fetch，该函数在base_do_fetch:prepend中通过bb.build.exec_func()函数调用，即openeuler_fetch运行完还会继续执行do_fetch，这样做的原因是不管openeuler_fetch运行成功与否都可以让fetch继续补充。
 在openeuler_fetch运行时，在最开始阶段，会检测是否有缓存源码，如果有则利用，否则继续执行下一步
 如果下载的软件仓是oee_archive，则会进行特殊处理，这是因为oee_archive仓库主要用于存放一些欧拉社区不存在的软件包或者一些比较大的源码包，每个源码压缩包会在某个二级目录下，而对于整个oee_archive来说，一次性全部下载会很臃肿占空间而且还很耗费时间，因此会只下载指定的二级目录
 如果openeuler_fetch在运行时检测到已经准备好的软件包仓（已准备好是指已正常在软件包仓检出某一个版本）存在.gitattributes，则意味着该仓存在大文件，则会默认执行git-lfs来将对应的大文件下载下来</p>
 </section>
 <section id="id3">
-<h2>openeuler_fetch运行逻辑<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<h2>openeuler_fetch运行逻辑<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
 <p>与openeuler_fetch相关的变量介绍：</p>
 <blockquote>
 <div><ul class="simple">
@@ -146,7 +150,7 @@
 <p>整体openeuler_fetch下载就是依靠以上相关变量确定下载的包信息，而获取下载包的信息是在openEuler Embedded的基线文件中记录的，该文件目录为.oebuild/manifest.yaml，如果在基线文件中能命中该包信息，则会进行下载，否则不做任何操作。基线文件中的包信息包含该包的version，因此在命中该包后会根据version来确定该包的版本，并且为了更快的完成下载任务，我们尽可能的减少下载的代码量，因此openeuler_fetch在下载代码时其深度设定为1。在对该包的匹配过程中，如果本地可以检出该包的version，则直接切换包版本，否则进行fetch操作，然后再进行包版本检出。</p>
 </section>
 <section id="id4">
-<h2>如何适配其他软件包<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+<h2>如何适配其他软件包<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
 <p>在构建openEuler Embedded时经常会引入其他相关包或修改非指定包版本，那么此时该如何做呢？直接修改基线文件即可，内核是例外，接下来我们分以下几种情况进行讲解。</p>
 <p><strong>情形一：配方名和仓库名一致，我们以busybox为例进行讲解</strong></p>
 <p>我们查看manifest.yaml中busybox的信息</p>
@@ -187,7 +191,7 @@
 否则不会有任何下载功能，OPENEULER_REPO_NAMES变量的设定是为在do_openeuler_fetch中获取依赖的包列表，do_openeuler_fetch将依次解析OPENEULER_REPO_NAMES，并调用do_openeuler_fetch完成相关包的下载。</p>
 </section>
 <section id="id5">
-<h2>如何关闭openeuler_fetch功能<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
+<h2>如何关闭openeuler_fetch功能<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
 <p>OPENEULER_FETCH有两种关闭方式：</p>
 <ol class="arabic simple">
 <li><p>在meta-openeuler/conf/layer.conf中有一个全局变量OPENEULER_FETCH，该值默认为enable，即openeuler_fetch是开启状态，如果想要关闭openeuler_fetch，设置该值为disable即可。</p></li>
@@ -253,6 +257,7 @@
       <dd><a href="../../../openEuler-24.03-LTS/infrastructure/openeuler_fetch/index.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="index.html">openEuler-24.09</a></dd>
       <dd><a href="../../../openEuler-25.03/infrastructure/openeuler_fetch/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../pr_2786/infrastructure/openeuler_fetch/index.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

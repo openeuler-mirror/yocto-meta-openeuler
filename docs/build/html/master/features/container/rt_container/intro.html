@@ -9,13 +9,17 @@
   <title>MicRun 简介 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=458d985c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
 
   
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -54,13 +58,31 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../embodied_ai/index.html">具身智能</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../embodied_ai/index.html">具身智能 (Embodied AI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html">边缘容器</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../embedded_container/index.html">嵌入式容器</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="index.html">实时容器</a><ul class="current">
-<li class="toctree-l5 current"><a class="current reference internal" href="#">MicRun 简介</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">MicRun 简介</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#id1">读者要求</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id2">术语表</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id3">什么是 MicRun</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id4">核心特性</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#id5">技术架构</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id6">整体架构层次</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id7">核心设计原则</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#mica">与 MICA 的关系</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id8">技术栈</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id9">使用场景</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id10">项目状态</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id11">下一步</a></li>
+</ul>
+</li>
 <li class="toctree-l5"><a class="reference internal" href="quick-start.html">MicRun 快速入门</a></li>
 <li class="toctree-l5"><a class="reference internal" href="kubernetes/index.html">MicRun Kubernetes 云边协同指南</a></li>
 <li class="toctree-l5"><a class="reference internal" href="reference/index.html">参考文档</a></li>
@@ -113,9 +135,9 @@
            <div itemprop="articleBody">
              
   <section id="micrun">
-<span id="micrun-intro"></span><h1>MicRun 简介<a class="headerlink" href="#micrun" title="Link to this heading">¶</a></h1>
+<span id="micrun-intro"></span><h1>MicRun 简介<a class="headerlink" href="#micrun" title="Link to this heading"></a></h1>
 <section id="id1">
-<h2>读者要求<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<h2>读者要求<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <p>在阅读本文档前，建议具备以下基础知识：</p>
 <p><strong>必需知识</strong>：</p>
 <ul class="simple">
@@ -131,7 +153,7 @@
 </ul>
 </section>
 <section id="id2">
-<h2>术语表<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<h2>术语表<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <p>本文档使用以下核心术语：</p>
 <table class="docutils align-default">
 <colgroup>
@@ -166,10 +188,10 @@
 </table>
 </section>
 <section id="id3">
-<h2>什么是 MicRun<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<h2>什么是 MicRun<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
 <p>MicRun 是一个基于 containerd shimv2 的容器运行时,专为 Mica 项目设计,用于在同一 SoC 的不同 CPU 核上运行 RTOS(实时操作系统)。它是 openEuler Embedded 混合关键性系统(MCS)生态的重要组成部分。</p>
 <section id="id4">
-<h3>核心特性<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<h3>核心特性<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><strong>RTOS 容器化</strong>: 将 Zephyr、UniProton 等 RTOS 作为容器运行在异构计算平台上</p></li>
 <li><p><strong>混合部署</strong>: 通过 Xen、Baremetal 等 hypervisor 在不同 CPU 核上运行 RTOS,实现实时与非实时系统共存</p></li>
@@ -180,9 +202,9 @@
 </section>
 </section>
 <section id="id5">
-<h2>技术架构<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
+<h2>技术架构<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
 <section id="id6">
-<h3>整体架构层次<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<h3>整体架构层次<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────────────────────────┐
 │                Kubernetes CRI Interface                 │
 └───────────────────────────┬─────────────────────────────┘
@@ -238,7 +260,7 @@
 </div>
 </section>
 <section id="id7">
-<h3>核心设计原则<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
+<h3>核心设计原则<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 25.0%" />
@@ -270,7 +292,7 @@
 </section>
 </section>
 <section id="mica">
-<h2>与 MICA 的关系<a class="headerlink" href="#mica" title="Link to this heading">¶</a></h2>
+<h2>与 MICA 的关系<a class="headerlink" href="#mica" title="Link to this heading"></a></h2>
 <p>MicRun 是 MICA(Mixed Criticality System,混合关键性系统)框架的容器运行时层。</p>
 <p><strong>MicRun 的职责</strong>：</p>
 <table class="docutils align-default">
@@ -323,7 +345,7 @@
 </table>
 </section>
 <section id="id8">
-<h2>技术栈<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
+<h2>技术栈<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><strong>语言</strong>: Go 1.22+ (静态链接,无 CGO)</p></li>
 <li><p><strong>容器运行时接口</strong>: containerd shimv2 API</p></li>
@@ -348,7 +370,7 @@
 </div>
 </section>
 <section id="id9">
-<h2>使用场景<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
+<h2>使用场景<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><strong>工业控制</strong>: 实时控制任务容器化部署</p></li>
 <li><p><strong>车载系统</strong>: 混合关键性车载软件管理</p></li>
@@ -357,11 +379,11 @@
 </ul>
 </section>
 <section id="id10">
-<h2>项目状态<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h2>
+<h2>项目状态<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
 <p>当前处于 Preview 阶段,支持 Xen 为主要 hypervisor,已实现基本容器生命周期管理。</p>
 </section>
 <section id="id11">
-<h2>下一步<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h2>
+<h2>下一步<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="quick-start.html"><span class="doc">MicRun 快速入门</span></a> - 快速入门指南,了解如何部署 MicRun 并运行第一个 RTOS 容器</p></li>
 <li><p><a class="reference internal" href="kubernetes/index.html"><span class="doc">MicRun Kubernetes 云边协同指南</span></a> - Kubernetes 集成指南,实现云边协同部署</p></li>
@@ -426,6 +448,7 @@
       <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
       <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../pr_2786/features/container/rt_container/intro.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

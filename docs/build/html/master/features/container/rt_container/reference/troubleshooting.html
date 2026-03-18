@@ -9,13 +9,17 @@
   <title>MicRun 故障排查指南 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=458d985c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=d35d3fb5" />
 
   
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=7eb38eeb"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../../../_static/js/custom.js?v=2b2e6f96"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
@@ -54,7 +58,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../../../../user_guide/index.html">用户使用指导</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">关键特性指导</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../../../system/index.html">系统基础</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../embodied_ai/index.html">具身智能</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../embodied_ai/index.html">具身智能 (Embodied AI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../embedded_ai/index.html">嵌入式AI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../mica/index.html">混合关键性部署 (MICA)</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../../index.html">边缘容器</a><ul class="current">
@@ -63,7 +67,22 @@
 <li class="toctree-l5"><a class="reference internal" href="../intro.html">MicRun 简介</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../quick-start.html">MicRun 快速入门</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../kubernetes/index.html">MicRun Kubernetes 云边协同指南</a></li>
-<li class="toctree-l5 current"><a class="reference internal" href="index.html">参考文档</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">参考文档</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="annotations.html">MicRun 注解参考</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">MicRun 故障排查指南</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id1">诊断工具</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">常见问题</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id8">调试技巧</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id11">日志标识</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id12">错误码对照表</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id13">相关文档</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="api-reference.html">MicRun API 参考文档</a></li>
+<li class="toctree-l6"><a class="reference internal" href="configuration.html">MicRun 配置参考手册</a></li>
+<li class="toctree-l6"><a class="reference internal" href="resources.html">MicRun 资源映射参考</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -114,12 +133,12 @@
            <div itemprop="articleBody">
              
   <section id="micrun">
-<span id="micrun-troubleshooting"></span><h1>MicRun 故障排查指南<a class="headerlink" href="#micrun" title="Link to this heading">¶</a></h1>
+<span id="micrun-troubleshooting"></span><h1>MicRun 故障排查指南<a class="headerlink" href="#micrun" title="Link to this heading"></a></h1>
 <p>本文档提供 MicRun 常见问题的排查步骤和解决方案。</p>
 <section id="id1">
-<h2>诊断工具<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<h2>诊断工具<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <section id="id2">
-<h3>基础命令<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<h3>基础命令<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 50.0%" />
@@ -159,7 +178,7 @@
 </table>
 </section>
 <section id="sandbox">
-<h3>查看 Sandbox 状态<a class="headerlink" href="#sandbox" title="Link to this heading">¶</a></h3>
+<h3>查看 Sandbox 状态<a class="headerlink" href="#sandbox" title="Link to this heading"></a></h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>以下命令使用 <code class="docutils literal notranslate"><span class="pre">jq</span></code> 格式化 JSON 输出。如果未安装，可使用 <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt</span> <span class="pre">install</span> <span class="pre">jq</span></code> 或 <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">yum</span> <span class="pre">install</span> <span class="pre">jq</span></code> 安装，或者删除 <code class="docutils literal notranslate"><span class="pre">|</span> <span class="pre">jq</span></code> 直接查看原始 JSON。</p>
@@ -173,7 +192,7 @@ cat<span class="w"> </span>/run/micrun/sandbox/&lt;sandbox-id&gt;/state.json<spa
 </div>
 </section>
 <section id="fifo">
-<h3>查看 FIFO 状态<a class="headerlink" href="#fifo" title="Link to this heading">¶</a></h3>
+<h3>查看 FIFO 状态<a class="headerlink" href="#fifo" title="Link to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看 FIFO 路径</span>
 ls<span class="w"> </span>-la<span class="w"> </span>/run/containerd/io.containerd.runtime.v2.task/default/&lt;container-id&gt;/
 
@@ -184,9 +203,9 @@ stat<span class="w"> </span>/run/containerd/io.containerd.runtime.v2.task/defaul
 </section>
 </section>
 <section id="id3">
-<h2>常见问题<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<h2>常见问题<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
 <section id="id4">
-<h3>1. 容器启动失败<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<h3>1. 容器启动失败<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <p><strong>症状</strong>：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ctr<span class="w"> </span>run<span class="w"> </span>--runtime<span class="w"> </span>io.containerd.mica.v2<span class="w"> </span>localhost:5000/rtos:latest<span class="w"> </span><span class="nb">test</span>
 <span class="c1"># 错误: context deadline exceeded</span>
@@ -245,7 +264,7 @@ xl<span class="w"> </span>dmesg<span class="w"> </span><span class="p">|</span><
 </table>
 </section>
 <section id="shim">
-<h3>2. Shim 进程退出<a class="headerlink" href="#shim" title="Link to this heading">¶</a></h3>
+<h3>2. Shim 进程退出<a class="headerlink" href="#shim" title="Link to this heading"></a></h3>
 <p><strong>症状</strong>：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 容器创建后立即退出</span>
 ctr<span class="w"> </span>run<span class="w"> </span>--runtime<span class="w"> </span>io.containerd.mica.v2<span class="w"> </span>localhost:5000/rtos:latest<span class="w"> </span><span class="nb">test</span>
@@ -295,7 +314,7 @@ ctr<span class="w"> </span>run<span class="w"> </span>--runtime<span class="w"> 
 </table>
 </section>
 <section id="io">
-<h3>3. IO 无响应<a class="headerlink" href="#io" title="Link to this heading">¶</a></h3>
+<h3>3. IO 无响应<a class="headerlink" href="#io" title="Link to this heading"></a></h3>
 <p><strong>症状</strong>：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ctr<span class="w"> </span>attach<span class="w"> </span>&lt;container-id&gt;
 <span class="c1"># 无输出，或输入无响应</span>
@@ -347,7 +366,7 @@ ctr<span class="w"> </span>run<span class="w"> </span>--runtime<span class="w"> 
 </table>
 </section>
 <section id="unknown">
-<h3>4. 容器状态显示 UNKNOWN<a class="headerlink" href="#unknown" title="Link to this heading">¶</a></h3>
+<h3>4. 容器状态显示 UNKNOWN<a class="headerlink" href="#unknown" title="Link to this heading"></a></h3>
 <p><strong>症状</strong>：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ctr<span class="w"> </span>task<span class="w"> </span>status<span class="w"> </span>&lt;container-id&gt;
 <span class="c1"># UNKNOWN</span>
@@ -396,7 +415,7 @@ ctr<span class="w"> </span>run<span class="w"> </span>--runtime<span class="w"> 
 </table>
 </section>
 <section id="id5">
-<h3>5. 多余的空行输出<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<h3>5. 多余的空行输出<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
 <p><strong>症状</strong>：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ctr<span class="w"> </span>run<span class="w"> </span>-t<span class="w"> </span>--runtime<span class="w"> </span>io.containerd.mica.v2<span class="w"> </span>localhost:5000/rtos:latest<span class="w"> </span><span class="nb">test</span>
 <span class="c1"># 输出中有多余的空行</span>
@@ -416,7 +435,7 @@ openEuler<span class="w"> </span>UniProton<span class="w"> </span><span class="c
 </ul>
 </section>
 <section id="attach">
-<h3>6. Attach 后没有输出<a class="headerlink" href="#attach" title="Link to this heading">¶</a></h3>
+<h3>6. Attach 后没有输出<a class="headerlink" href="#attach" title="Link to this heading"></a></h3>
 <p><strong>症状</strong>：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ctr<span class="w"> </span>attach<span class="w"> </span>&lt;container-id&gt;
 <span class="c1"># 连接成功，但没有输出</span>
@@ -465,7 +484,7 @@ openEuler<span class="w"> </span>UniProton<span class="w"> </span><span class="c
 </table>
 </section>
 <section id="id6">
-<h3>7. 状态不一致导致无法删除<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<h3>7. 状态不一致导致无法删除<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <p><strong>症状</strong>：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ctr<span class="w"> </span>container<span class="w"> </span>delete<span class="w"> </span>&lt;container-id&gt;
 <span class="c1"># 错误: sandbox is not ready, paused, or stopped, cannot delete</span>
@@ -499,7 +518,7 @@ ctr<span class="w"> </span>container<span class="w"> </span>delete<span class="w
 </div>
 </section>
 <section id="id7">
-<h3>8. 内存不足错误<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
+<h3>8. 内存不足错误<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
 <p><strong>症状</strong>：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 日志显示</span>
 memory<span class="w"> </span>allocation<span class="w"> </span>failed
@@ -541,7 +560,7 @@ xl<span class="w"> </span>info<span class="w"> </span><span class="p">|</span><s
 </div>
 </section>
 <section id="cpu">
-<h3>9. CPU 绑定失败<a class="headerlink" href="#cpu" title="Link to this heading">¶</a></h3>
+<h3>9. CPU 绑定失败<a class="headerlink" href="#cpu" title="Link to this heading"></a></h3>
 <p><strong>症状</strong>：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 日志显示</span>
 failed<span class="w"> </span>to<span class="w"> </span>pin<span class="w"> </span>vcpu:<span class="w"> </span>invalid<span class="w"> </span>argument
@@ -569,7 +588,7 @@ xl<span class="w"> </span>info
 </ul>
 </section>
 <section id="auto-close">
-<h3>10. auto_close 不生效<a class="headerlink" href="#auto-close" title="Link to this heading">¶</a></h3>
+<h3>10. auto_close 不生效<a class="headerlink" href="#auto-close" title="Link to this heading"></a></h3>
 <p><strong>症状</strong>：</p>
 <p>客户端断开后容器继续运行。</p>
 <p><strong>排查步骤</strong>：</p>
@@ -599,9 +618,9 @@ xl<span class="w"> </span>info
 </section>
 </section>
 <section id="id8">
-<h2>调试技巧<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
+<h2>调试技巧<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
 <section id="debug">
-<h3>启用 Debug 日志<a class="headerlink" href="#debug" title="Link to this heading">¶</a></h3>
+<h3>启用 Debug 日志<a class="headerlink" href="#debug" title="Link to this heading"></a></h3>
 <p>使用 debug 构建的 MicRun：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看 debug 日志</span>
 cat<span class="w"> </span>/var/log/mica/mica-runtime.log
@@ -612,14 +631,14 @@ tail<span class="w"> </span>-f<span class="w"> </span>/var/log/mica/mica-runtime
 </div>
 </section>
 <section id="mock-micad">
-<h3>使用 Mock Micad<a class="headerlink" href="#mock-micad" title="Link to this heading">¶</a></h3>
+<h3>使用 Mock Micad<a class="headerlink" href="#mock-micad" title="Link to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>micrun/tests/mock_micad
 make<span class="w"> </span>run
 </pre></div>
 </div>
 </section>
 <section id="id9">
-<h3>检查状态文件<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
+<h3>检查状态文件<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看完整状态</span>
 cat<span class="w"> </span>/run/micrun/sandbox/&lt;id&gt;/state.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.&#39;</span>
 
@@ -632,7 +651,7 @@ cat<span class="w"> </span>/run/micrun/sandbox/&lt;id&gt;/state.json<span class=
 </div>
 </section>
 <section id="id10">
-<h3>清理残留资源<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
+<h3>清理残留资源<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
 <span class="nv">CONTAINER_ID</span><span class="o">=</span><span class="nv">$1</span>
 
@@ -657,7 +676,7 @@ rm<span class="w"> </span>-rf<span class="w"> </span>/run/micrun/containers/<spa
 </section>
 </section>
 <section id="id11">
-<h2>日志标识<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h2>
+<h2>日志标识<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 25.0%" />
@@ -707,7 +726,7 @@ rm<span class="w"> </span>-rf<span class="w"> </span>/run/micrun/containers/<spa
 </table>
 </section>
 <section id="id12">
-<h2>错误码对照表<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h2>
+<h2>错误码对照表<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 25.0%" />
@@ -757,7 +776,7 @@ rm<span class="w"> </span>-rf<span class="w"> </span>/run/micrun/containers/<spa
 </table>
 </section>
 <section id="id13">
-<h2>相关文档<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h2>
+<h2>相关文档<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="annotations.html"><span class="doc">MicRun 注解参考</span></a> - 注解参考手册</p></li>
 <li><p><a class="reference internal" href="../quick-start.html"><span class="doc">MicRun 快速入门</span></a> - 快速入门指南</p></li>
@@ -822,6 +841,7 @@ rm<span class="w"> </span>-rf<span class="w"> </span>/run/micrun/containers/<spa
       <dd><a href="../../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
       <dd><a href="../../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../../pr_2786/features/container/rt_container/reference/troubleshooting.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

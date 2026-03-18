@@ -9,13 +9,17 @@
   <title>树莓派的UEFI支持和网络启动 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=458d985c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
 
   
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -61,7 +65,27 @@
 <li class="toctree-l4"><a class="reference internal" href="../phytium/index.html">基于飞腾(Phytium)SoC的硬件</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="index.html">树莓派4B</a><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="build.html">树莓派4B镜像构建与使用</a></li>
-<li class="toctree-l5 current"><a class="current reference internal" href="#">树莓派的UEFI支持和网络启动</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">树莓派的UEFI支持和网络启动</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#openeuler-embedded-uefi-grub">使用openEuler Embedded UEFI+GRUB的树莓派镜像</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#openeuler-image-mcs">构建树梅派openeuler-image-mcs镜像和烧录</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#raspberrypi4-uefi-guide">openeuler-image-mcs启动使用指导</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#buefi">手动刷新固件使树莓派4B支持UEFI引导</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id3">环境/工具准备</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#openeuler-embedded-uefi">openEuler Embedded标准镜像 + UEFI固件下载和刷新方法</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#uefigrubsdopeneuler-embedded">树莓派UEFI之手动制作grub并通过SD卡启动openEuler Embedded</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#grub-grub">grub准备（编译+制作grub启动组件）</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#uefigrubopeneuler-embedded">树莓派UEFI之手动制作grub并通过网络启动openEuler Embedded</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#image-gzinitrd">附：网络启动时，内核Image.gz和文件系统initrd的来源说明</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="../rockchip/index.html">基于瑞芯微(Rockchip)SoC的硬件</a></li>
@@ -110,23 +134,23 @@
            <div itemprop="articleBody">
              
   <section id="uefi">
-<span id="board-raspberrypi4-uefi"></span><h1>树莓派的UEFI支持和网络启动<a class="headerlink" href="#uefi" title="Link to this heading">¶</a></h1>
+<span id="board-raspberrypi4-uefi"></span><h1>树莓派的UEFI支持和网络启动<a class="headerlink" href="#uefi" title="Link to this heading"></a></h1>
 <p>本文档介绍如何让树莓派4B支持UEFI（UEFI第三方固件支持PSCI标准实现，混合部署的从核启停依赖此功能），并可通过SD卡或网络启动 openEuler Embedded。</p>
 <section id="openeuler-embedded-uefi-grub">
-<h2>使用openEuler Embedded UEFI+GRUB的树莓派镜像<a class="headerlink" href="#openeuler-embedded-uefi-grub" title="Link to this heading">¶</a></h2>
+<h2>使用openEuler Embedded UEFI+GRUB的树莓派镜像<a class="headerlink" href="#openeuler-embedded-uefi-grub" title="Link to this heading"></a></h2>
 <blockquote>
 <div><p>openEuler Embedded 的树莓派混合关键部署镜像(openeuler-image-mcs for RPI4)默认使能了UEFI+GRUB，并集成了基于树梅派4B的混合部署环境依赖。</p>
 <p>以下会基于mcs镜像介绍如何使用树莓派UEFI。</p>
 </div></blockquote>
 <section id="openeuler-image-mcs">
-<h3>构建树梅派openeuler-image-mcs镜像和烧录<a class="headerlink" href="#openeuler-image-mcs" title="Link to this heading">¶</a></h3>
+<h3>构建树梅派openeuler-image-mcs镜像和烧录<a class="headerlink" href="#openeuler-image-mcs" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p>镜像构建参考 <a class="reference internal" href="../../../features/mica/mica_core/build.html#mcs-build"><span class="std std-ref">mcs镜像构建指导</span></a> ,
 镜像烧录参考 <a class="reference internal" href="build.html#board-raspberrypi4-build"><span class="std std-ref">树莓派镜像镜像烧录</span></a></p>
 </div></blockquote>
 </section>
 <section id="raspberrypi4-uefi-guide">
-<span id="id1"></span><h3>openeuler-image-mcs启动使用指导<a class="headerlink" href="#raspberrypi4-uefi-guide" title="Link to this heading">¶</a></h3>
+<span id="id1"></span><h3>openeuler-image-mcs启动使用指导<a class="headerlink" href="#raspberrypi4-uefi-guide" title="Link to this heading"></a></h3>
 <ol class="arabic">
 <li><p><strong>烧录后首次启动需修改UEFI配置，启动阶段按ESC进入UEFI，按下图操作解锁3G内存限制并关闭ACPI选用DEVICETREE，保存重启后再操作步骤2</strong></p>
 <blockquote>
@@ -181,14 +205,14 @@
 </section>
 <hr class="docutils" />
 <section id="buefi">
-<h2>手动刷新固件使树莓派4B支持UEFI引导<a class="headerlink" href="#buefi" title="Link to this heading">¶</a></h2>
+<h2>手动刷新固件使树莓派4B支持UEFI引导<a class="headerlink" href="#buefi" title="Link to this heading"></a></h2>
 <section id="id3">
-<h3>环境/工具准备<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h3>
+<h3>环境/工具准备<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <p>编译工具链：可用openEuler Embedded的交叉编译工具链，参考 <a class="reference internal" href="../../../getting_started/index.html#install-openeuler-embedded-sdk"><span class="std std-ref">基于SDK的应用开发</span></a> 部分。</p>
 <p>设备：建议树莓派4B的出厂配置，包括树莓派4B基础套件和SD卡</p>
 </section>
 <section id="openeuler-embedded-uefi">
-<h3>openEuler Embedded标准镜像 + UEFI固件下载和刷新方法<a class="headerlink" href="#openeuler-embedded-uefi" title="Link to this heading">¶</a></h3>
+<h3>openEuler Embedded标准镜像 + UEFI固件下载和刷新方法<a class="headerlink" href="#openeuler-embedded-uefi" title="Link to this heading"></a></h3>
 <ol class="arabic">
 <li><p><strong>将openEuler Embedded树莓派镜像烧录到SD卡</strong></p>
 <p>参考： <a class="reference external" href="https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E5%88%B7%E5%86%99%E9%95%9C%E5%83%8F.md#%E5%88%B7%E5%86%99-sd-%E5%8D%A1">openEuler烧录参考</a></p>
@@ -246,9 +270,9 @@
 </section>
 <hr class="docutils" />
 <section id="uefigrubsdopeneuler-embedded">
-<h2>树莓派UEFI之手动制作grub并通过SD卡启动openEuler Embedded<a class="headerlink" href="#uefigrubsdopeneuler-embedded" title="Link to this heading">¶</a></h2>
+<h2>树莓派UEFI之手动制作grub并通过SD卡启动openEuler Embedded<a class="headerlink" href="#uefigrubsdopeneuler-embedded" title="Link to this heading"></a></h2>
 <section id="grub-grub">
-<h3>grub准备（编译+制作grub启动组件）<a class="headerlink" href="#grub-grub" title="Link to this heading">¶</a></h3>
+<h3>grub准备（编译+制作grub启动组件）<a class="headerlink" href="#grub-grub" title="Link to this heading"></a></h3>
 <p><strong>grub源码获取</strong></p>
 <blockquote>
 <div><p>下载地址：<a class="reference external" href="https://github.com/coreos/grub/releases/tag/grub-2.02">https://github.com/coreos/grub/releases/tag/grub-2.02</a></p>
@@ -299,7 +323,7 @@
 </section>
 <hr class="docutils" />
 <section id="uefigrubopeneuler-embedded">
-<h2>树莓派UEFI之手动制作grub并通过网络启动openEuler Embedded<a class="headerlink" href="#uefigrubopeneuler-embedded" title="Link to this heading">¶</a></h2>
+<h2>树莓派UEFI之手动制作grub并通过网络启动openEuler Embedded<a class="headerlink" href="#uefigrubopeneuler-embedded" title="Link to this heading"></a></h2>
 <ol class="arabic">
 <li><p><strong>准备PXE部署服务器</strong></p>
 <p>以ubunutu 14.04为例，dhcp中指定的filename就是grup的efi引导文件名</p>
@@ -402,7 +426,7 @@
 </ol>
 <hr class="docutils" />
 <section id="image-gzinitrd">
-<h3>附：网络启动时，内核Image.gz和文件系统initrd的来源说明<a class="headerlink" href="#image-gzinitrd" title="Link to this heading">¶</a></h3>
+<h3>附：网络启动时，内核Image.gz和文件系统initrd的来源说明<a class="headerlink" href="#image-gzinitrd" title="Link to this heading"></a></h3>
 <p><strong>文件系统例子</strong></p>
 <blockquote>
 <div><p>若使用网络启动，可使用openEuler Embedded构建的标准树梅派镜像构建过程中的rootfs并手动打包，也可使用openEuler Embedded发布的qemu-aarch64参考 <a class="reference external" href="https://repo.openeuler.org/openEuler-22.03-LTS/embedded_img/arm64/aarch64-std/openeuler-image-qemu-aarch64-20220331025547.rootfs.cpio.gz">文件系统</a></p>
@@ -510,6 +534,7 @@
       <dd><a href="../../../../openEuler-24.03-LTS/bsp/arm64/raspberrypi4/uefi.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../../../openEuler-24.09/bsp/arm64/raspberrypi4/uefi.html">openEuler-24.09</a></dd>
       <dd><a href="../../../../openEuler-25.03/bsp/arm64/raspberrypi4/uefi.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../pr_2786/bsp/arm64/raspberrypi4/uefi.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

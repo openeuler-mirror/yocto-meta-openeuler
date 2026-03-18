@@ -9,13 +9,17 @@
   <title>简介 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=458d985c" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=d35d3fb5" />
 
   
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../_static/documentation_options.js?v=7eb38eeb"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../_static/js/custom.js?v=2b2e6f96"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -54,7 +58,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../../user_guide/index.html">用户使用指导</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">关键特性指导</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../system/index.html">系统基础</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../embodied_ai/index.html">具身智能</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../embodied_ai/index.html">具身智能 (Embodied AI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../embedded_ai/index.html">嵌入式AI</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">混合关键性部署 (MICA)</a><ul class="current">
 <li class="toctree-l4 current"><a class="current reference internal" href="#">简介</a><ul>
@@ -111,9 +115,9 @@
            <div itemprop="articleBody">
              
   <section id="id1">
-<h1>简介<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<h1>简介<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
 <section id="id2">
-<h2>混合关键性系统总体介绍<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<h2>混合关键性系统总体介绍<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <p>在嵌入式场景中，虽然Linux已经得到了广泛应用，但并不能覆盖所有需求，例如高实时、高可靠、高安全的场合。这些场合往往是实时操作系统的用武之地。有些应用场景既需要Linux的管理能力、丰富的生态，又需要实时操作系统的高实时、高可靠、高安全，那么一种典型的设计是采用一颗性能较强的处理器运行Linux负责富功能，一颗微控制器/DSP/实时处理器运行实时操作系统负责实时控制或者信号处理，两者之间通过I/O、网络或片外总线的形式通信。这种方式存在的问题是，硬件上需要两套系统、集成度不高，通信受限于片外物理机制的限制（如速度、时延等），软件上Linux和实时操作系统两者之间是割裂的，在灵活性上、可维护性上存在改进空间。</p>
 <p>受益于硬件技术的快速发展，嵌入式系统的硬件能力越来越强大，如单核能力不断提升、单核到多核、异构多核乃至众核的演进，虚拟化技术和可信执行环境(TEE)技术的发展和应用，未来先进封装技术会带来更高的集成度等等，为在一个片上系统（SoC）中部署多个OS提供了坚实的物理基础。</p>
 <p>同时，受物联网化、智能化、功能安全与信息安全等应用需求的推动，整个嵌入式软件系统也越发复杂，全部由单一OS承载所有功能所面临的挑战越来越大。解决方式之一就是不同系统负责所各自所擅长的功能，如Windows的UI、Linux的网络通信与管理、实时操作系统的高实时与高可靠等，而且还要易于开发、部署、扩展，实现的形式可以是容器、虚拟化等。</p>
@@ -122,7 +126,7 @@
 <div><figure class="align-center" id="id3">
 <img alt="../../_images/mcs_architecture.png" src="../../_images/mcs_architecture.png" />
 <figcaption>
-<p><span class="caption-text">图 1 openEuler Embedded中的混合关键性系统大致架构</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
+<p><span class="caption-text">图 1 openEuler Embedded中的混合关键性系统大致架构</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 </div></blockquote>
@@ -137,14 +141,14 @@
 <p>对于上述问题，openEuler Embedded的当前思路是 <strong>混合关键性系统 = 部署 + 隔离 + 调度</strong> ，即首先实现多OS的混合部署，再实现多OS之间的隔离与保护，最后通过混合关键性调度提升资源利用率， 具体可以映射到 <strong>混合部署框架</strong> 和 <strong>嵌入式虚拟化</strong>。混合部署框架解决 <strong>高效地混合部署问题</strong> 和 <strong>高效地通信与协作问题</strong>，嵌入式虚拟化解决 <strong>高效地隔离与保护问题</strong> 和 <strong>高效地资源共享与调度问题</strong>。</p>
 </section>
 <section id="os">
-<h2>多OS混合关键性部署框架<a class="headerlink" href="#os" title="Link to this heading">¶</a></h2>
+<h2>多OS混合关键性部署框架<a class="headerlink" href="#os" title="Link to this heading"></a></h2>
 <p>openEuler Embedded中多OS混合部署框架的架构图如下所示，引入了开源框架 <a class="reference external" href="https://www.openampproject.org/">OpenAMP</a> 作为基础， 并结合自身需要
 进一步创新。</p>
 <blockquote>
 <div><figure class="align-center" id="id4">
 <img alt="../../_images/openamp_architecture.png" src="../../_images/openamp_architecture.png" />
 <figcaption>
-<p><span class="caption-text">图 2 多OS混合部署框架的基础架构</span><a class="headerlink" href="#id4" title="Link to this image">¶</a></p>
+<p><span class="caption-text">图 2 多OS混合部署框架的基础架构</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 </div></blockquote>
@@ -154,7 +158,7 @@
 <div><figure class="align-center" id="id5">
 <img alt="../../_images/os_services.png" src="../../_images/os_services.png" />
 <figcaption>
-<p><span class="caption-text">图 3 多OS服务化部署架构</span><a class="headerlink" href="#id5" title="Link to this image">¶</a></p>
+<p><span class="caption-text">图 3 多OS服务化部署架构</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 </div></blockquote>
@@ -218,6 +222,7 @@
       <dd><a href="../../../openEuler-24.03-LTS/features/mica/intro.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../../openEuler-24.09/features/mica/intro.html">openEuler-24.09</a></dd>
       <dd><a href="../../../openEuler-25.03/features/mica/intro.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../pr_2786/features/mica/intro.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>
