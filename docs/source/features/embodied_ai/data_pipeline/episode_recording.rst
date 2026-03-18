@@ -153,8 +153,6 @@ IB-Robot 支持两种录制范式，通过 ``record_mode`` 启动参数选择：
 `src/dataset_tools/dataset_tools/record_cli.py:1-23 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/record_cli.py#L1-L23>`__,
 `src/robot_config/robot_config/launch_builders/recording.py:102-168 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/recording.py#L102-L168>`__
 
---------------
-
 回合录制服务器
 --------------
 
@@ -410,7 +408,11 @@ Record CLI 客户端
        ACTION_CLIENT -.->|feedback| FB
        ACTION_CLIENT -.->|result| RESULT
 
-**初始化** `record_cli.py:21-32 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/record_cli.py#L21-L32>`__：- 创建用于发送 ``RecordEpisode`` 目标的 ``ActionClient`` - 创建用于通过 ``Trigger`` 服务提前取消的服务客户端 - 等待 Action Server 可用
+**初始化** `record_cli.py:21-32 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/record_cli.py#L21-L32>`__：
+
+- 创建用于发送 ``RecordEpisode`` 目标的 ``ActionClient``
+- 创建用于通过 ``Trigger`` 服务提前取消的服务客户端
+- 等待 Action Server 可用
 
 **交互循环** `record_cli.py:87-123 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/record_cli.py#L87-L123>`__：
 
@@ -816,7 +818,10 @@ Record CLI 客户端
        
        self._feedback_timer = self.create_timer(FEEDBACK_PERIOD_S, _tick)
 
-**反馈字段**：- ``seconds_remaining``（int）：距离超时的时间 - ``feedback_message``（string）：已写入的总消息数
+**反馈字段**：
+
+- ``seconds_remaining`` （int）：距离超时的时间
+- ``feedback_message`` （string）：已写入的总消息数
 
 **来源**：
 `src/dataset_tools/dataset_tools/episode_recorder.py:447-479 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/episode_recorder.py#L447-L479>`__,
@@ -853,10 +858,12 @@ Record CLI 客户端
      - ``generate_epi sodic_recording_node()``
      - ``generate_cont inuous_recording_action()``
 
-**连续模式实现** `recording.py:58-100 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/recording.py#L58-L100>`__：- 使用 ``ExecuteProcess`` 生成 ``ros2 bag record`` 命令 - 从 Contract 自动发现话题 `recording.py:79 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/recording.py#L79>`__ - 文件名：``~/rosbag/<robot_name>_<timestamp>.mcap`` `recording.py:83-84 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/recording.py#L83-L84>`__
+**连续模式实现** `recording.py:58-100 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/recording.py#L58-L100>`__：
+
+- 使用 ``ExecuteProcess`` 生成 ``ros2 bag record`` 命令
+- 从 Contract 自动发现话题 `recording.py:79 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/recording.py#L79>`__
+- 文件名：``~/rosbag/<robot_name>_<timestamp>.mcap`` `recording.py:83-84 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/recording.py#L83-L84>`__
 
 **来源**：
 `src/robot_config/robot_config/launch_builders/recording.py:58-100 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/recording.py#L58-L100>`__,
 `src/robot_config/robot_config/launch_builders/recording.py:102-168 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/recording.py#L102-L168>`__
-
---------------

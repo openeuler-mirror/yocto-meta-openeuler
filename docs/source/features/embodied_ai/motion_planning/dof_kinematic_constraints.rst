@@ -236,16 +236,16 @@ SO101 机械臂的 5 个旋转关节可以控制：- 3 DOF 用于末端执行器
      - 0.1
      - ±17° (XY), ±5.7° (Z)
      - 通用 操作
-   * - ** 宽松**
+   * - **宽 松**
      - 0.5
      - 0.15
      - ±28° (XY), ±8.6° (Z)
      - 粗略 定位
-   * - **仅 Z 轴 **
+   * - **仅 Z 轴**
      - 1.0
      - 0.2
      - ±57° (XY), ±11.5° (Z)
-     - 方向 重要， roll 自由
+     - 方向 重要, roll 自由
    * - **无 约束**
      - None
      - None
@@ -685,5 +685,3 @@ SO101 机械臂的 5 个旋转关节可以控制：- 3 DOF 用于末端执行器
 `src/robot_moveit/docs/moveit_gateway.md:1-389 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L1-L389>`__，
 `src/robot_config/config/robots/test_single_arm_single_cam.yaml:30-35 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/test_single_arm_single_cam.yaml#L30-L35>`__，
 `src/robot_config/robot_config/launch_builders/moveit.py:15-78 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/moveit.py#L15-L78>`__
-
---------------

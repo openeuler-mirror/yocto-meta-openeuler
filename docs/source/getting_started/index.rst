@@ -1,4 +1,4 @@
-.. _getting_started:
+.. _getting_started_openeuler:
 
 快速上手
 ********

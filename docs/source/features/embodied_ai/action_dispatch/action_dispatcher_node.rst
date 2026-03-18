@@ -784,5 +784,3 @@
 
 **来源**：
 `src/action_dispatch/action_dispatch/action_dispatcher_node.py:304-318 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L304-L318>`__
-
---------------

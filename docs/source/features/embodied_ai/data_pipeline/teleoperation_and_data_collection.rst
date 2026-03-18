@@ -610,5 +610,3 @@ bag 的 ``metadata.yaml`` 包含完整的契约定义，确保下游工具可以
 
 **来源**：`src/dataset_tools/README.md:67-84 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L67-L84>`__,
 `README.md:1-192 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L1-L192>`__
-
---------------

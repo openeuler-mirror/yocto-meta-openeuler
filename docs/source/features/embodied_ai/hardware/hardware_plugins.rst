@@ -30,7 +30,7 @@
    </details>
 
 目的与范围
----------
+----------
 
 本文档介绍 IB-Robot 用于与物理机器人和仿真环境交互的硬件插件实现。硬件插件实现了 ``ros2_control`` 硬件接口，提供了一个统一的抽象层，使相同的控制代码可以在真实硬件和仿真环境中运行。
 
@@ -209,7 +209,7 @@ SO101SystemHardware 插件
 --------------
 
 Gazebo 仿真插件
---------------
+----------------
 
 Gazebo 仿真插件（``gz_ros2_control``）提供了一个基于物理的仿真环境，模拟真实硬件的行为。这使得无需访问物理机器人即可进行算法开发和测试。
 
@@ -513,5 +513,3 @@ Gazebo 集成架构
 
 **来源**：`README.md:1-192 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L1-L192>`__，`docs/architecture.md:1-313 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/docs/architecture.md#L1-L313>`__，
 `src/robot_config/config/robots/so101_single_arm.yaml:1-329 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L1-L329>`__
-
---------------

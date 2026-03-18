@@ -376,7 +376,7 @@
 具有相同键的多个动作规范
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-当多个动作规范共享相同的 ``key: action``（例如，机械臂控制器 + 夹爪控制器）时，它们被连接：
+当多个动作规范共享相同的 ``key: action`` （例如，机械臂控制器 + 夹爪控制器）时，它们被连接：
 
 .. mermaid::
 
@@ -414,7 +414,7 @@
 --------------
 
 LeRobot v3 数据集输出
---------------------
+~~~~~~~~~~~~~~~~~~~~~
 
 转换器使用 ``LeRobotDataset.create()`` 创建 LeRobot v3 数据集，特征从契约规范派生：
 
@@ -674,5 +674,3 @@ LeRobot v3 数据集输出
 **来源**：
 `src/dataset_tools/dataset_tools/bag_to_lerobot.py:5-19 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L5-L19>`__,
 `src/dataset_tools/README.md:121-144 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L121-L144>`__
-
---------------

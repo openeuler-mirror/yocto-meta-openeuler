@@ -391,12 +391,12 @@
 **图表**：相机配置加载流程
 
 索引/端口处理
-~~~~~~~~~~~~
+~~~~~~~~~~~~~~
 
 不同的相机驱动使用不同的参数名称来识别设备：
 
-- **opencv**：``index``（``/dev/video<N>`` 的整数）
-- **realsense**：``serial_number``（特定设备的字符串）
+- **opencv**：``index`` （``/dev/video<N>`` 的整数）
+- **realsense**：``serial_number`` （特定设备的字符串）
 
 加载器将这些标准化为 ``index_or_port``：
 
@@ -586,5 +586,3 @@
 
 **来源**：`src/robot_config/README.en.md:1-86 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/README.en.md#L1-L86>`__，
 `src/robot_config/robot_config/loader.py:25-287 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/loader.py#L25-L287>`__
-
---------------

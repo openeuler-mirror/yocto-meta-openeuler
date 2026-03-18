@@ -873,5 +873,3 @@ pure_inference_node 类与函数
 **源码：**
 `src/inference_service/inference_service/lerobot_policy_node.py:1-721 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L1-L721>`__,
 `src/inference_service/inference_service/pure_inference_node.py:1-165 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/pure_inference_node.py#L1-L165>`__
-
---------------

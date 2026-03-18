@@ -320,7 +320,7 @@ src/dataset_tools/dataset_tools/episode_recorder.py:415-420
 ------------
 
 将部署 Bag 转换为 LeRobot 格式
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 一旦部署 episode 被记录，使用 ``bag_to_lerobot`` 将其转换为 LeRobot v3 格式：
 
@@ -562,5 +562,3 @@ src/dataset_tools/dataset_tools/episode_recorder.py:180-210
 
 **来源**：src/dataset_tools/dataset_tools/bag_to_lerobot.py:1-73,
 README.md:98-120
-
---------------

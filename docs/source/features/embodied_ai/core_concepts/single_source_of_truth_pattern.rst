@@ -83,7 +83,7 @@
 --------------
 
 robot_config YAML 结构
----------------------
+----------------------
 
 ``robot_config`` YAML 文件包含多个顶层部分，每个部分服务于特定目的：
 
@@ -123,7 +123,7 @@ robot_config YAML 结构
      - ``robot_teleop`` 节点
 
 关键部分：contract
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``contract`` 部分对单一数据源模式最为重要。它定义：
 
@@ -494,7 +494,7 @@ YAML 契约通过 ``RobotConfig.to_contract()`` 加载到结构化的 ``Contract
 `src/inference_service/inference_service/lerobot_policy_node.py:180-240 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L180-L240>`__
 
 3. 动作映射一致性
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 **问题**：模型生成的动作必须路由到正确的控制器主题，并使用正确的消息结构。
 
@@ -785,5 +785,3 @@ IB-Robot 中的单一数据源模式确保：
 - 录制使用：`src/dataset_tools/dataset_tools/episode_recorder.py:194-206 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/episode_recorder.py#L194-L206>`__
 - 转换使用：`src/dataset_tools/dataset_tools/bag_to_lerobot.py:216-230 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L216-L230>`__
 - 推理使用：`src/inference_service/inference_service/lerobot_policy_node.py:205-240 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L205-L240>`__
-
---------------

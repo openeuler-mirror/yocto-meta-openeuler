@@ -167,7 +167,7 @@
 消息结构
 ~~~~~~~~
 
-``/preprocessed/batch``（设备发布）：
+``/preprocessed/batch`` (设备发布):
 
 .. code:: python
 
@@ -178,7 +178,7 @@
        "task.request_id": [int],                     # 用于请求匹配
    }
 
-``/inference/action``（云端发布）：
+``/inference/action`` (云端发布):
 
 .. code:: python
 
@@ -495,5 +495,3 @@ GPU 推理                    20-100ms        云端 GPU
 
 **源码**：`src/inference_service/pure_inference_node.py:1-165 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/pure_inference_node.py#L1-L165>`__,
 `src/tensormsg/package.xml:1-27 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/tensormsg/package.xml#L1-L27>`__
-
---------------

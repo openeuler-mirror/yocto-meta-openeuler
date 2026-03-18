@@ -272,9 +272,9 @@ ROS 类型                           解码器  编码器  行范围
        RESIZE_OP --> NORMALIZE
        NORMALIZE --> OUT
 
-**支持的编码格式：** - **RGB/BGR**: ``rgb8``、``bgr8``、``rgba8``、``bgra8``（移除 alpha 通道）- **灰度**: ``mono8``、``8uc1``（复制到 3 通道）- **深度**: ``16uc1``、``mono16``（转换为米，归一化）、``32fc1``（直接使用 float32）
+**支持的编码格式:** - **RGB/BGR**: ``rgb8``、``bgr8``、``rgba8``、``bgra8`` (移除 alpha 通道) - **灰度**: ``mono8``、``8uc1`` (复制到 3 通道) - **深度**: ``16uc1``、``mono16`` (转换为米, 归一化)、``32fc1`` (直接使用 float32)
 
-**契约驱动转换：** - **调整大小**: 如果 ``spec.image_resize`` 为 ``[480, 640]``，应用最近邻调整大小 - **归一化**: 始终转换为 ``float32``，范围 ``[0, 1]``
+**契约驱动转换:** - **调整大小**: 如果 ``spec.image_resize`` 为 ``[480, 640]``, 应用最近邻调整大小 - **归一化**: 始终转换为 ``float32``, 范围 ``[0, 1]``
 
 **来源**: `src/tensormsg/tensormsg/converter.py:172-232 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/tensormsg/tensormsg/converter.py#L172-L232>`__,
 `src/robot_config/config/robots/so101_single_arm.yaml:208-209 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L208-L209>`__
@@ -633,5 +633,3 @@ Torch dtype       Variant 类型         MultiArray 消息
 
 **来源**: `src/tensormsg/tensormsg/converter.py:11-262 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/tensormsg/tensormsg/converter.py#L11-L262>`__,
 `README.md:30-31 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L30-L31>`__
-
---------------

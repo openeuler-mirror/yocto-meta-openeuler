@@ -48,8 +48,6 @@
 `src/robot_config/config/robots/so101_single_arm.yaml:198-302 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L198-L302>`__，
 `src/robot_config/robot_config/loader.py:94-144 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/loader.py#L94-L144>`__
 
---------------
-
 契约结构
 --------
 
@@ -340,15 +338,30 @@
 
 **支持的编码**：
 
-| 编码 | 描述 | 处理 |
-|———-|————-|————|
-| ``rgb8``, ``bgr8`` | 8 位彩色 | 转换为 RGB，归一化到 [0, 1] |
-| ``rgba8``, ``bgra8`` | 8 位彩色 + 透明通道 | 丢弃透明通道，转换为 RGB |
-| ``mono8``, ``8uc1`` | 8 位灰度 | 重复到 3 通道 |
-| ``32fc1``, ``32fc`` | 32 位浮点深度 | 裁剪到 [0, 50m]，归一化到 [0, 1]，重复到 3 通道 |
-| ``16uc1``, ``mono16`` | 16 位深度 | 转换为米，裁剪到 [0, 10m]，归一化 |
 
-来源：
+.. list-table::
+   :header-rows: 1
+
+   * - 编码
+     - 描述
+     - 处理
+   * - ``rgb8``, ``bgr8``
+     - 8 位彩色
+     - 转换为 RGB，归一化到 [0, 1]
+   * - ``rgba8``, ``bgra8``
+     - 8 位彩色 + 透明通道
+     - 丢弃透明通道，转换为 RGB
+   * - ``mono8``, ``8uc1``
+     - 8 位灰度
+     - 重复到 3 通道
+   * - ``32fc1``, ``32fc``
+     - 32 位浮点深度
+     - 裁剪到 [0, 50m]，归一化到 [0, 1]，重复到 3 通道
+   * - ``16uc1``, ``mono16``
+     - 16 位深度
+     - 转换为米，裁剪到 [0, 10m]，归一化
+
+**来源**：
 `src/robot_config/config/robots/so101_single_arm.yaml:208-210 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L208-L210>`__，
 `src/tensormsg/tensormsg/converter.py:172-232 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/tensormsg/tensormsg/converter.py#L172-L232>`__
 
@@ -1016,7 +1029,7 @@ lerobot_policy_node 使用
        tensor = TensorMsgConverter.decode(msg, spec=obs)
        obs_buffer[obs.key] = tensor
 
-来源：`src/tensormsg/tensormsg/converter.py:24-39 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/tensormsg/tensormsg/converter.py#L24-L39>`__
+**来源**：`src/tensormsg/tensormsg/converter.py:24-39 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/tensormsg/tensormsg/converter.py#L24-L39>`__
 
 --------------
 
@@ -1031,12 +1044,10 @@ lerobot_policy_node 使用
 4. **类型安全**：ROS 消息类型和张量形状的强类型
 5. **外设集成**：无缝引用相机和传感器元数据
 
-契约从 ``robot_config`` YAML 传播到 ``episode_recorder``（嵌入 bag）、``bag_to_lerobot``（数据集转换）和 ``lerobot_policy_node``（实时推理），保证 ML 流水线的端到端一致性。
+契约从 ``robot_config`` YAML 传播到 ``episode_recorder`` （嵌入 bag）、``bag_to_lerobot`` （数据集转换）和 ``lerobot_policy_node`` （实时推理），保证 ML 流水线的端到端一致性。
 
 有关如何验证契约配置，请参阅 `配置验证 <#5.5>`__。有关使用特定契约启动系统的详情，请参阅 `启动系统 <#5.4>`__。
 
 来源：
 `src/robot_config/config/robots/so101_single_arm.yaml:198-302 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L198-L302>`__，
 `src/robot_config/robot_config/loader.py:94-144 <https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/loader.py#L94-L144>`__
-
---------------
