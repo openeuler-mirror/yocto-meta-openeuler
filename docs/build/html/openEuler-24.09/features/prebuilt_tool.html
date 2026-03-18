@@ -9,13 +9,17 @@
   <title>预构建工具特性 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=458d985c" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=d35d3fb5" />
 
   
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=7eb38eeb"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../_static/js/custom.js?v=2b2e6f96"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -120,17 +124,17 @@
            <div itemprop="articleBody">
              
   <section id="prebuilt-tool">
-<span id="id1"></span><h1>预构建工具特性<a class="headerlink" href="#prebuilt-tool" title="Link to this heading">¶</a></h1>
+<span id="id1"></span><h1>预构建工具特性<a class="headerlink" href="#prebuilt-tool" title="Link to this heading"></a></h1>
 <section id="id2">
-<h2>预构建工具介绍<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<h2>预构建工具介绍<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <p>openEuler Embedded 的预构建工具借鉴了 Yocto 官方的 <a class="reference external" href="https://docs.yoctoproject.org/ref-manual/system-requirements.html#building-your-own-buildtools-tarball">buildtools</a> 方法，通过 nativesdk 方式，将 openeuler-image 构建所需的主机命令和部分依赖的 native 包预先构建并统一安装到 SDK 工具中，即预构建工具。在构建 image 时，这些 native 包无需再次构建，从而显著减少了构建时间。</p>
 <p>在某种意义上，主机包等同于 native 包。举例来说，执行 <code class="docutils literal notranslate"><span class="pre">bitbake</span> <span class="pre">meson-native</span></code> 时，Yocto 会从上游下载 meson 源码，编译出 meson 二进制及其他产物。此 meson 二进制也可以替换为使用主机上的 meson 命令，从而避免去构建 meson-native 包。nativesdk-meson 在 meson-native 的基础上提供了打包功能，将构建出的产物打包成多个 rpm 子包，如 nativesdk-meson-version-xxx.rpm、nativesdk-meson-dev-version-XXX.rpm等。这样做的好处是，这些 rpm 包可以在其他匹配的环境中安装并使用，实现了单次构建的重复应用，大大降低了移植成本。</p>
 <p>openEuler 开发者在 yocto-meta-openeuler 中进行了多项准备工作，以实现兼容预构建工具的构建方式。这些工作包括适配 autotools 类、配置 rpmdeps 以及使用 meson 工具等。社区开发者可以根据需求自行构建预构建工具，例如针对 arm64 架构的特定预构建工具。</p>
 </section>
 <section id="id3">
-<h2>预构建工具开发指南<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<h2>预构建工具开发指南<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
 <section id="id4">
-<h3>预构建工具构建方式<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<h3>预构建工具构建方式<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <p>按照以下步骤构建预构建工具。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ oebuild samples
 ### 根据输出内容选择 prebuilt_tool.yaml 对应的编号，即可自动构建。
@@ -145,7 +149,7 @@ x86_64-buildtools-extended-nativesdk-standalone-version.sh             x86_64-bu
 </div>
 </section>
 <section id="id5">
-<h3>预构建工具安装<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<h3>预构建工具安装<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>### 通过运行 sh 脚本解压安装到指定目录
 $ sh ./tmp/deploy/sdk/x86_64-buildtools-extended-nativesdk-standalone-24.03.sh -y -d /path/to/install_sdk_dir
 $ ls /path/to/install_sdk_dir/
@@ -161,7 +165,7 @@ $ source /path/to/install_sdk_dir/environment-setup-x86_64-openeulersdk-linux
 </div>
 </section>
 <section id="id6">
-<h3>预构建工具中添加包方式<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<h3>预构建工具中添加包方式<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <p><strong>示例：</strong> 预构建工具中添加 make 命令。</p>
 <p>修改 <code class="file docutils literal notranslate"><span class="pre">meta-openeuler/recipes-core/meta/buildtools-extended-tarball.bbappend</span></code> 文件，按照如下方式适配 <strong>TOOLCHAIN_HOST_TASK</strong> 变量：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TOOLCHAIN_HOST_TASK</span> <span class="o">+=</span> <span class="s2">&quot;nativesdk-make&quot;</span>
@@ -171,7 +175,7 @@ $ source /path/to/install_sdk_dir/environment-setup-x86_64-openeulersdk-linux
 </section>
 </section>
 <section id="yocto">
-<h2>Yocto 构建使用主机二进制命令指导<a class="headerlink" href="#yocto" title="Link to this heading">¶</a></h2>
+<h2>Yocto 构建使用主机二进制命令指导<a class="headerlink" href="#yocto" title="Link to this heading"></a></h2>
 <p>尽管主机环境中已经存在某个命令，Yocto 仍会尝试构建对应的 native 包。为了避免构建 native 包，我们需要适配 <strong>ASSUME_PROVIDED</strong> 变量；而为了使用主机中的二进制工具，我们需要适配 <strong>HOSTTOOLS</strong> 变量。</p>
 <p>以下是这两个变量的简要介绍：</p>
 <ul class="simple">
@@ -186,7 +190,7 @@ $ source /path/to/install_sdk_dir/environment-setup-x86_64-openeulersdk-linux
 <p>在 openEuler 中，我们使用 <code class="file docutils literal notranslate"><span class="pre">meta-openeuler/conf/distro/include/openeuler_hosttools.inc</span></code> 文件来统一管理主机工具的构建和使用。</p>
 </section>
 <section id="faq">
-<h2>FAQ<a class="headerlink" href="#faq" title="Link to this heading">¶</a></h2>
+<h2>FAQ<a class="headerlink" href="#faq" title="Link to this heading"></a></h2>
 <p><strong>Q:</strong> 为什么不直接使用主机上的包替代 native 包？</p>
 <p><strong>A:</strong> 对于某些二进制程序，如 rpm 命令，Yocto 需要对其进行特定的修改或打补丁以满足构建要求。因此，预构建工具更适合 Yocto 构建使用，因为它能够更好地处理这些特定的需求。然而，对于一些简单的命令，开发者可以根据自己的需求选择使用主机环境中的命令或预构建工具中的命令。</p>
 <p><strong>Q:</strong> 为什么预构建工具不包含所有的 native 包？</p>
@@ -255,6 +259,7 @@ $ source /path/to/install_sdk_dir/environment-setup-x86_64-openeulersdk-linux
       <dd><a href="../../openEuler-24.03-LTS/features/prebuilt_tool.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="prebuilt_tool.html">openEuler-24.09</a></dd>
       <dd><a href="../../openEuler-25.03/features/prebuilt_tool.html">openEuler-25.03</a></dd>
+      <dd><a href="../../pr_2786/index.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

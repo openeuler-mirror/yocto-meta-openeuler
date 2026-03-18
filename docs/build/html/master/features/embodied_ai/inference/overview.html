@@ -1,0 +1,1230 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>推理服务概述 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
+    /* Same as .mermaid-container > pre */
+    display: block;
+    width: 100%;
+}
+
+pre.mermaid > svg {
+    /* Same as .mermaid-container > pre > svg */
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}`;
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.mermaid-container > pre {
+    display: block;
+    width: 100%;
+}
+
+.mermaid-container > pre > svg {
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.mermaid-fullscreen-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: #333;
+}
+
+.mermaid-fullscreen-btn:hover {
+    opacity: 100% !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-btn.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-btn.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 95vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    padding: 20px;
+    overflow: auto;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.mermaid-fullscreen-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen.dark-theme {
+    background: #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen .mermaid svg {
+    height: 100% !important;
+    width: 100% !important;
+    cursor: grab;
+}
+
+.mermaid-fullscreen-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: white;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-close.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-close.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
+    display: none !important;
+}`;
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+
+    if ("False" === "True") {
+        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("");
+            if(all_mermaids.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else if(svgs.size() !== mermaids_to_add_zoom) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else {
+                svgs.each(function() {
+                    var svg = d3.select(this);
+                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                    var inner = svg.select("g");
+                    var zoom = d3.zoom().on("zoom", function(event) {
+                        inner.attr("transform", event.transform);
+                    });
+                    svg.call(zoom);
+                });
+            }
+        }
+    } else if(all_mermaids.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if ("True" !== "True") return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = '⛶';
+        fullscreenBtn.style.opacity = '50%';
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scroll, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.sdisplay = 'block';
+
+                if ("False" === "True") {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="推理架构" href="inference_architecture.html" />
+    <link rel="prev" title="推理服务" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">具身机器人框架IB Robot</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../introduction/ib-robot_overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture/system_architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统 (robot_config)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol/protocol_conversion_tensormsg.html">协议转换 (tensormsg)</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">推理服务</a><ul class="current">
+<li class="toctree-l6 current"><a class="current reference internal" href="#">推理服务概述</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">系统目的与范围</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">三组件架构</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id5">执行模式</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id9">契约驱动的观测过滤</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#ros">ROS 接口规范</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#streambuffer">观测采样与 StreamBuffer</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id13">启动集成</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id15">健康监控与诊断</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id17">配置参数</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id18">总结</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="inference_architecture.html">推理架构</a></li>
+<li class="toctree-l6"><a class="reference internal" href="monolithic_execution_mode.html">单体执行模式</a></li>
+<li class="toctree-l6"><a class="reference internal" href="distributed_execution_mode.html">分布式执行模式</a></li>
+<li class="toctree-l6"><a class="reference internal" href="policy_nodes.html">策略节点</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../action_dispatch/index.html">动作调度</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_pipeline/index.html">数据服务</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../motion_planning/index.html">运动规划 (MoveIt)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../hardware/index.html">硬件集成</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference/package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">具身机器人框架IB Robot</a></li>
+          <li class="breadcrumb-item"><a href="index.html">推理服务</a></li>
+      <li class="breadcrumb-item active">推理服务概述</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>推理服务概述<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<details><p>相关源文件</p>
+<p>以下文件用作生成此 wiki 页面的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="README.en.md">README.en.md</a></p></li>
+<li><p><a class="reference external" href="README.md">README.md</a></p></li>
+<li><p><a class="reference external" href="docs/architecture.md">docs/architecture.md</a></p></li>
+<li><p><a class="reference external" href="/image/architecture.png">/image/architecture.png</a></p></li>
+<li><p><a class="reference external" href="docs/roadmap.md">docs/roadmap.md</a></p></li>
+<li><p><a class="reference external" href="scripts/build.sh">scripts/build.sh</a></p></li>
+<li><p><a class="reference external" href="src/README.md">src/README.md</a></p></li>
+<li><p><a class="reference external" href="src/action_dispatch/README.en.md">src/action_dispatch/README.en.md</a></p></li>
+<li><p><a class="reference external" href="src/action_dispatch/README.md">src/action_dispatch/README.md</a></p></li>
+<li><p><a class="reference external" href="src/action_dispatch/action_dispatch/action_dispatcher_node.py">src/action_dispatch/action_dispatch/action_dispatcher_node.py</a></p></li>
+<li><p><a class="reference external" href="src/dataset_tools/dataset_tools/bag_to_lerobot.py">src/dataset_tools/dataset_tools/bag_to_lerobot.py</a></p></li>
+<li><p><a class="reference external" href="src/dataset_tools/dataset_tools/episode_recorder.py">src/dataset_tools/dataset_tools/episode_recorder.py</a></p></li>
+<li><p><a class="reference external" href="src/inference_service/README.en.md">src/inference_service/README.en.md</a></p></li>
+<li><p><a class="reference external" href="src/inference_service/README.md">src/inference_service/README.md</a></p></li>
+<li><p><a class="reference external" href="src/inference_service/inference_service/lerobot_policy_node.py">src/inference_service/inference_service/lerobot_policy_node.py</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/launch/robot.launch.py">src/robot_config/launch/robot.launch.py</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/robot_config/config.py">src/robot_config/robot_config/config.py</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/robot_config/contract_builder.py">src/robot_config/robot_config/contract_builder.py</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/robot_config/contract_utils.py">src/robot_config/robot_config/contract_utils.py</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/robot_config/launch_builders/execution.py">src/robot_config/robot_config/launch_builders/execution.py</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/robot_config/launch_builders/recording.py">src/robot_config/robot_config/launch_builders/recording.py</a></p></li>
+</ul>
+</details><p>推理服务是 IB-Robot 的 AI 执行子系统，负责加载 LeRobot 策略模型并将实时传感器观测转换为机器人动作。它实现了契约驱动架构，通过与数据集转换流水线相同的数据处理逻辑，确保训练-部署的一致性。</p>
+<p>关于训练数据准备，请参阅 <a class="reference external" href="#9.3">数据集转换 (bag_to_lerobot)</a>。关于动作执行和时间平滑，请参阅 <a class="reference external" href="#8">动作分发</a>。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/README.en.md#L1-L27">src/inference_service/README.en.md:1-27</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L33-L35">README.md:33-35</a></p>
+<hr class="docutils" />
+<section id="id2">
+<h2>系统目的与范围<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>推理服务包（<code class="docutils literal notranslate"><span class="pre">inference_service</span></code>）连接训练好的 LeRobot 策略与实时机器人控制。其核心职责包括：</p>
+<ol class="arabic simple">
+<li><p><strong>模型加载</strong>：加载 ACT、Diffusion Policy、VLA 及其他 LeRobot 兼容的检查点文件</p></li>
+<li><p><strong>观测处理</strong>：使用契约定义的转换规则，将 ROS 2 传感器流（相机、关节状态）转换为模型就绪的张量</p></li>
+<li><p><strong>GPU 推理</strong>：以最小延迟执行策略前向传播</p></li>
+<li><p><strong>动作生成</strong>：将输出张量转换为 <code class="docutils literal notranslate"><span class="pre">action_dispatch</span></code> 可执行的动作命令</p></li>
+<li><p><strong>部署灵活性</strong>：支持单机（零拷贝）和分布式（边-云）执行</p></li>
+</ol>
+<p>该流水线**不**处理动作执行、时间平滑或电机控制——这些是 <a class="reference external" href="#8">动作分发</a> 系统的职责。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/README.en.md#L1-L13">src/inference_service/README.en.md:1-13</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L1-L34">src/inference_service/inference_service/lerobot_policy_node.py:1-34</a></p>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h2>三组件架构<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>推理服务遵循严格的关注点分离设计，将 AI 执行工作流分解为三个独立、可组合的组件：</p>
+<section id="id4">
+<h3>组件图<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;Core Components (inference_service.core)&quot;
+        Preprocessor[&quot;TensorPreprocessor&lt;br/&gt;(CPU)&quot;]
+        Engine[&quot;PureInferenceEngine&lt;br/&gt;(GPU)&quot;]
+        Postprocessor[&quot;TensorPostprocessor&lt;br/&gt;(CPU)&quot;]
+    end
+
+    subgraph &quot;ROS Integration Layer&quot;
+        PolicyNode[&quot;LeRobotPolicyNode&quot;]
+        Coordinator[&quot;InferenceCoordinator&quot;]
+    end
+
+    subgraph &quot;External Systems&quot;
+        Contract[&quot;robot_config.yaml&lt;br/&gt;(Contract)&quot;]
+        Dispatch[&quot;action_dispatcher_node&quot;]
+        Sensors[&quot;ROS Sensors&lt;br/&gt;(cameras, joint_states)&quot;]
+    end
+
+    Contract --&gt; PolicyNode
+    Sensors --&gt; PolicyNode
+    PolicyNode --&gt; Coordinator
+    Coordinator --&gt; Preprocessor
+    Preprocessor --&gt; Engine
+    Engine --&gt; Postprocessor
+    Postprocessor --&gt; PolicyNode
+    PolicyNode --&gt; Dispatch
+    </pre><p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/README.en.md#L8-L13">src/inference_service/README.en.md:8-13</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L69-L77">src/inference_service/inference_service/lerobot_policy_node.py:69-77</a></p>
+</section>
+<section id="tensorpreprocessor">
+<h3>TensorPreprocessor<a class="headerlink" href="#tensorpreprocessor" title="Link to this heading"></a></h3>
+<p>将原始 ROS 观测字典转换为模型就绪的 PyTorch 张量。此组件是无状态的，运行在 CPU 上。</p>
+<p><strong>主要职责</strong>：</p>
+<ul class="simple">
+<li><p>应用契约定义的图像缩放、归一化和编码转换</p></li>
+<li><p>堆叠时间历史（用于需要观测窗口的模型）</p></li>
+<li><p>应用模型 <code class="docutils literal notranslate"><span class="pre">config.json</span></code> 中的归一化统计量</p></li>
+<li><p>与训练一致地处理灰度、深度和 RGB 图像编码</p></li>
+</ul>
+<p><strong>实现</strong>：<code class="docutils literal notranslate"><span class="pre">inference_service/core/preprocessor.py</span></code></p>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L9-L19">src/dataset_tools/dataset_tools/bag_to_lerobot.py:9-19</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/README.en.md#L8">src/inference_service/README.en.md:8</a></p>
+</section>
+<section id="pureinferenceengine">
+<h3>PureInferenceEngine<a class="headerlink" href="#pureinferenceengine" title="Link to this heading"></a></h3>
+<p>完全独立于 ROS 的无状态 GPU 执行引擎。它加载策略检查点并执行前向传播。</p>
+<p><strong>主要特性</strong>：</p>
+<ul class="simple">
+<li><p><strong>零 ROS 依赖</strong>：可在纯 Python 脚本中导入使用</p></li>
+<li><p><strong>设备无关</strong>：自动处理 CPU/CUDA 张量放置</p></li>
+<li><p><strong>策略类型检测</strong>：读取 <code class="docutils literal notranslate"><span class="pre">config.json</span></code> 确定块大小、动作维度和策略架构（ACT、Diffusion 等）</p></li>
+</ul>
+<p><strong>实现</strong>：<code class="docutils literal notranslate"><span class="pre">inference_service/core/engine.py</span></code></p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/README.en.md#L9">src/inference_service/README.en.md:9</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L69-L74">src/inference_service/inference_service/lerobot_policy_node.py:69-74</a></p>
+</section>
+<section id="tensorpostprocessor">
+<h3>TensorPostprocessor<a class="headerlink" href="#tensorpostprocessor" title="Link to this heading"></a></h3>
+<p>使用模型的归一化统计量，将输出动作张量反归一化为物理关节位置/速度。</p>
+<p><strong>主要职责</strong>：</p>
+<ul class="simple">
+<li><p>应用逆归一化：<code class="docutils literal notranslate"><span class="pre">action_physical</span> <span class="pre">=</span> <span class="pre">action_normalized</span> <span class="pre">*</span> <span class="pre">std</span> <span class="pre">+</span> <span class="pre">mean</span></code></p></li>
+<li><p>根据契约动作规范验证输出张量形状</p></li>
+<li><p>如已配置，将值钳位到安全范围</p></li>
+</ul>
+<p><strong>实现</strong>：<code class="docutils literal notranslate"><span class="pre">inference_service/core/postprocessor.py</span></code></p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/README.en.md#L10">src/inference_service/README.en.md:10</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L76">src/inference_service/inference_service/lerobot_policy_node.py:76</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id5">
+<h2>执行模式<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<p>推理服务支持两种部署架构，可通过 <code class="docutils literal notranslate"><span class="pre">robot_config.yaml</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">execution_mode</span></code> 参数选择。两种模式向下游系统暴露**相同**的 <code class="docutils literal notranslate"><span class="pre">DispatchInfer</span></code> Action 接口。</p>
+<section id="id6">
+<h3>模式对比表<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>方面</p></th>
+<th class="head"><p>单体模式</p></th>
+<th class="head"><p>分布式模式</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>目标硬件</strong></p></td>
+<td><p>配备板载高性能 GPU 的机器人</p></td>
+<td><p>轻量级机器人 （仅 CPU 的边缘设备）</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>组件位置</strong></p></td>
+<td><p>所有三个组件 在同一进程中</p></td>
+<td><p>Preprocessor+Postprocessor 在边缘端，Engine 在云端</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>张量传递</strong></p></td>
+<td><p>零拷贝（进程内引用）</p></td>
+<td><p>通过 ROS 2 话题序列化</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>延迟</strong></p></td>
+<td><p>最小（总计约 10-50ms）</p></td>
+<td><p>较高（由于网络， 约 50-200ms）</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>配置</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">execution</span> <span class="pre">_mode:</span> <span class="pre">&quot;monolithic&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">execu</span> <span class="pre">tion_mode:</span> <span class="pre">&quot;distributed&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>需要云端节点</strong></p></td>
+<td><p>否</p></td>
+<td><p>是 （<code class="docutils literal notranslate"><span class="pre">pure_inference_node</span></code>）</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/README.en.md#L14-L48">src/inference_service/README.en.md:14-48</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L15-L16">README.md:15-16</a></p>
+</section>
+<section id="id7">
+<h3>单体模式（单进程零拷贝）<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<p>在单体模式下，<code class="docutils literal notranslate"><span class="pre">LeRobotPolicyNode</span></code> 实例化一个 <code class="docutils literal notranslate"><span class="pre">InferenceCoordinator</span></code>，在单个进程中串联所有三个组件。</p>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;lerobot_policy_node Process&quot;
+        ActionServer[&quot;DispatchInfer&lt;br/&gt;Action Server&quot;]
+        Coord[&quot;InferenceCoordinator&quot;]
+        Pre[&quot;TensorPreprocessor&quot;]
+        Eng[&quot;PureInferenceEngine&quot;]
+        Post[&quot;TensorPostprocessor&quot;]
+
+        ActionServer --&gt;|&quot;obs_frame dict&quot;| Coord
+        Coord --&gt;|&quot;zero-copy&quot;| Pre
+        Pre --&gt;|&quot;batch tensor&quot;| Eng
+        Eng --&gt;|&quot;action tensor&quot;| Post
+        Post --&gt;|&quot;denormalized&quot;| Coord
+        Coord --&gt;|&quot;VariantsList&quot;| ActionServer
+    end
+
+    Dispatch[&quot;action_dispatcher_node&quot;] --&gt;|&quot;Goal&quot;| ActionServer
+    ActionServer --&gt;|&quot;Result&quot;| Dispatch
+    </pre><p><strong>关键代码流程</strong>：</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">LeRobotPolicyNode._dispatch_infer_callback()</span></code> 接收 <code class="docutils literal notranslate"><span class="pre">DispatchInfer.Goal</span></code> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/lerobot_policy_node.py#L422-L457">lerobot_policy_node.py:422-457</a></p></li>
+<li><p>调用 <code class="docutils literal notranslate"><span class="pre">self._execute_monolithic(obs_frame)</span></code> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/lerobot_policy_node.py#L491-L493">lerobot_policy_node.py:491-493</a></p></li>
+<li><p>委托给 <code class="docutils literal notranslate"><span class="pre">self._coordinator(obs_frame)``（一个</span> <span class="pre">``InferenceCoordinator</span></code> 实例）`lerobot_policy_node.py:291-299 &lt;<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/lerobot_policy_node.py#L291-L299">https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/lerobot_policy_node.py#L291-L299</a>&gt;`__</p></li>
+<li><p>协调器串联：<code class="docutils literal notranslate"><span class="pre">preprocessor(obs)</span> <span class="pre">→</span> <span class="pre">engine(batch)</span> <span class="pre">→</span> <span class="pre">postprocessor(action)</span></code> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/inference_service/core/init.py">inference_service/core/init.py</a></p></li>
+<li><p>返回包含动作张量和延迟指标的 <code class="docutils literal notranslate"><span class="pre">CoordinatorResult</span></code></p></li>
+</ol>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/README.en.md#L18-L24">src/inference_service/README.en.md:18-24</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L285-L299">src/inference_service/inference_service/lerobot_policy_node.py:285-299</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L491-L493">src/inference_service/inference_service/lerobot_policy_node.py:491-493</a></p>
+</section>
+<section id="id8">
+<h3>分布式模式（设备-边缘-云端）<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<p>在分布式模式下，<code class="docutils literal notranslate"><span class="pre">LeRobotPolicyNode</span></code> 在机器人（边缘端）充当**异步代理**，而单独的 <code class="docutils literal notranslate"><span class="pre">pure_inference_node</span></code> 运行在云端 GPU 服务器上。</p>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;Edge Device (Robot CPU)&quot;
+        EdgeNode[&quot;lerobot_policy_node&lt;br/&gt;(Asynchronous Proxy)&quot;]
+        EdgePre[&quot;TensorPreprocessor&quot;]
+        EdgePost[&quot;TensorPostprocessor&quot;]
+
+        EdgeNode --&gt; EdgePre
+        EdgePost --&gt; EdgeNode
+    end
+
+    subgraph &quot;Cloud Server (GPU)&quot;
+        CloudNode[&quot;pure_inference_node&quot;]
+        CloudEngine[&quot;PureInferenceEngine&quot;]
+
+        CloudNode --&gt; CloudEngine
+        CloudEngine --&gt; CloudNode
+    end
+
+    Dispatch[&quot;action_dispatcher_node&quot;] --&gt;|&quot;DispatchInfer Goal&quot;| EdgeNode
+    EdgeNode --&gt;|&quot;Result&quot;| Dispatch
+
+    EdgePre --&gt;|&quot;/preprocessed/batch&lt;br/&gt;(VariantsList)&quot;| CloudNode
+    CloudNode --&gt;|&quot;/inference/action&lt;br/&gt;(VariantsList)&quot;| EdgePost
+    </pre><p><strong>分布式执行流程</strong>：</p>
+<ol class="arabic simple">
+<li><p>边缘节点接收 <code class="docutils literal notranslate"><span class="pre">DispatchInfer.Goal</span></code> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/lerobot_policy_node.py#L422-L457">lerobot_policy_node.py:422-457</a></p></li>
+<li><p>调用 <code class="docutils literal notranslate"><span class="pre">self._execute_distributed(obs_frame,</span> <span class="pre">inference_id)</span></code> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/lerobot_policy_node.py#L495-L554">lerobot_policy_node.py:495-554</a></p></li>
+<li><p>预处理器本地运行：<code class="docutils literal notranslate"><span class="pre">batch</span> <span class="pre">=</span> <span class="pre">self._preprocessor(obs_frame)</span></code> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/lerobot_policy_node.py#L511-L513">lerobot_policy_node.py:511-513</a></p></li>
+<li><p>边缘节点将批次发布到 <code class="docutils literal notranslate"><span class="pre">/preprocessed/batch</span></code>，带有唯一的 <code class="docutils literal notranslate"><span class="pre">request_id</span></code> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/lerobot_policy_node.py#L516-L524">lerobot_policy_node.py:516-524</a></p></li>
+<li><p>边缘节点**阻塞在 threading.Event** 上等待云端响应 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/lerobot_policy_node.py#L526-L530">lerobot_policy_node.py:526-530</a></p></li>
+<li><p>云端节点（<code class="docutils literal notranslate"><span class="pre">pure_inference_node</span></code>）接收批次，运行推理，发布到 <code class="docutils literal notranslate"><span class="pre">/inference/action</span></code></p></li>
+<li><p>边缘节点的 <code class="docutils literal notranslate"><span class="pre">_cloud_result_callback()</span></code> 接收结果，按 <code class="docutils literal notranslate"><span class="pre">request_id</span></code> 匹配，设置 Event <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/lerobot_policy_node.py#L556-L584">lerobot_policy_node.py:556-584</a></p></li>
+<li><p>边缘后处理器运行：<code class="docutils literal notranslate"><span class="pre">action</span> <span class="pre">=</span> <span class="pre">self._postprocessor(cloud_result[&quot;action&quot;])</span></code> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/lerobot_policy_node.py#L540-L542">lerobot_policy_node.py:540-542</a></p></li>
+<li><p>返回 <code class="docutils literal notranslate"><span class="pre">CoordinatorResult</span></code> 给 action server</p></li>
+</ol>
+<p><strong>关键架构说明</strong>：边缘节点的 action 回调在等待云端时**挂起其线程**。这是有意为之——它允许 action server 自然地序列化推理请求，防止多个并发云端调用。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/README.en.md#L25-L48">src/inference_service/README.en.md:25-48</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L306-L351">src/inference_service/inference_service/lerobot_policy_node.py:306-351</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L495-L554">src/inference_service/inference_service/lerobot_policy_node.py:495-554</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id9">
+<h2>契约驱动的观测过滤<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<p>IB-Robot 的一个关键架构原则是，<code class="docutils literal notranslate"><span class="pre">robot_config.yaml</span></code> 作为所有硬件能力的**唯一事实来源**，而各个模型定义其特定的观测需求。推理服务协调这两个来源。</p>
+<section id="id10">
+<h3>观测过滤逻辑<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;robot_config.yaml&quot;
+        AllObs[&quot;contract.observations:&lt;br/&gt;- images.top&lt;br/&gt;- images.wrist&lt;br/&gt;- images.front&lt;br/&gt;- observation.state&quot;]
+    end
+
+    subgraph &quot;Model config.json&quot;
+        ModelInputs[&quot;input_features:&lt;br/&gt;- images.top&lt;br/&gt;- observation.state&quot;]
+    end
+
+    subgraph &quot;lerobot_policy_node&quot;
+        Filter[&quot;Observation Filter&quot;]
+        Subs[&quot;ROS Subscriptions&quot;]
+    end
+
+    AllObs --&gt; Filter
+    ModelInputs --&gt; Filter
+    Filter --&gt;|&quot;Required only&quot;| Subs
+
+    Subs --&gt;|&quot;Subscribe to:&lt;br/&gt;/camera/top/image_raw&lt;br/&gt;/joint_states&quot;| Topics[&quot;ROS Topics&quot;]
+    </pre><p><strong>实现</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/lerobot_policy_node.py#L156-L159">lerobot_policy_node.py:156-159</a> 加载模型的 <code class="docutils literal notranslate"><span class="pre">config.json</span></code> 提取 <code class="docutils literal notranslate"><span class="pre">input_features</span></code>，然后 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/lerobot_policy_node.py#L205-L230">lerobot_policy_node.py:205-230</a> 过滤契约观测：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Filter by model&#39;s required inputs</span>
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_required_inputs</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_obs_specs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">all_obs_specs</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_required_inputs</span>
+    <span class="p">]</span>
+</pre></div>
+</div>
+<p>此设计允许：</p>
+<ul class="simple">
+<li><p><strong>单一 robot_config.yaml</strong> 支持具有不同观测需求的多个模型</p></li>
+<li><p><strong>无需手动配置话题</strong> 每个模型</p></li>
+<li><p><strong>自动错误检测</strong> 如果模型需要机器人未提供的观测</p></li>
+</ul>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L180-L203">src/inference_service/inference_service/lerobot_policy_node.py:180-203</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L205-L240">src/inference_service/inference_service/lerobot_policy_node.py:205-240</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="ros">
+<h2>ROS 接口规范<a class="headerlink" href="#ros" title="Link to this heading"></a></h2>
+<p>推理服务向动作分发器暴露一个**稳定的 Action 接口**。此接口在单体模式和分布式模式下完全相同。</p>
+<section id="dispatchinfer-action">
+<h3>DispatchInfer Action 接口<a class="headerlink" href="#dispatchinfer-action" title="Link to this heading"></a></h3>
+<p><strong>Action 定义</strong>：<code class="docutils literal notranslate"><span class="pre">ibrobot_msgs/action/DispatchInfer</span></code></p>
+<p><strong>Goal 字段</strong>：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">builtin_interfaces</span><span class="o">/</span><span class="n">Time</span> <span class="n">obs_timestamp</span>    <span class="c1"># 采样观测的时间戳</span>
+<span class="n">string</span> <span class="n">inference_id</span>                      <span class="c1"># 可选的请求标识符</span>
+</pre></div>
+</div>
+<p><strong>Result 字段</strong>：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">VariantsList</span> <span class="n">action_chunk</span>                <span class="c1"># 序列化的动作张量</span>
+<span class="n">int32</span> <span class="n">chunk_size</span>                         <span class="c1"># 块中的动作数量</span>
+<span class="nb">bool</span> <span class="n">success</span>                             <span class="c1"># 推理是否成功</span>
+<span class="n">string</span> <span class="n">message</span>                           <span class="c1"># 失败时的错误消息</span>
+<span class="n">float64</span> <span class="n">inference_latency_ms</span>             <span class="c1"># 总延迟（毫秒）</span>
+</pre></div>
+</div>
+<p><strong>Feedback</strong>：未使用（推理通常太快，无法提供有意义的进度更新）</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L344-L351">src/action_dispatch/README.en.md:344-351</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L56">src/inference_service/inference_service/lerobot_policy_node.py:56</a></p>
+</section>
+<section id="id11">
+<h3>与动作分发器的通信流程<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        sequenceDiagram
+    participant Dispatch as action_dispatcher_node
+    participant Policy as lerobot_policy_node
+    participant Smoother as TemporalSmoother
+
+    Note over Dispatch: Queue length &lt; watermark (20)
+    Dispatch-&gt;&gt;Policy: DispatchInfer.Goal&lt;br/&gt;(obs_timestamp)
+    activate Policy
+    Policy-&gt;&gt;Policy: Sample obs_frame at timestamp
+    Policy-&gt;&gt;Policy: Execute inference&lt;br/&gt;(monolithic or distributed)
+    Policy--&gt;&gt;Dispatch: DispatchInfer.Result&lt;br/&gt;(action_chunk, chunk_size)
+    deactivate Policy
+    Dispatch-&gt;&gt;Smoother: Update plan with new chunk
+    Smoother-&gt;&gt;Smoother: Apply temporal smoothing
+    Note over Dispatch: Pop actions at 100Hz
+    </pre><p><strong>关键时间戳</strong>：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">obs_timestamp</span></code>：用于从 <code class="docutils literal notranslate"><span class="pre">StreamBuffer</span></code> 实例采样观测 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/lerobot_policy_node.py#L399-L420">lerobot_policy_node.py:399-420</a></p></li>
+<li><p>确保时间一致性，即使推理耗时不同</p></li>
+</ul>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L79-L130">src/action_dispatch/README.en.md:79-130</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L422-L489">src/inference_service/inference_service/lerobot_policy_node.py:422-489</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="streambuffer">
+<h2>观测采样与 StreamBuffer<a class="headerlink" href="#streambuffer" title="Link to this heading"></a></h2>
+<p>推理节点使用来自 <code class="docutils literal notranslate"><span class="pre">robot_config.contract_utils</span></code> 的 <code class="docutils literal notranslate"><span class="pre">StreamBuffer</span></code> 实例维护最近传感器观测的**滑动窗口**。这允许在动作分发器请求的精确时间戳处采样观测。</p>
+<section id="id12">
+<h3>StreamBuffer 架构<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;Per-Observation StreamBuffer&quot;
+        Buffer[&quot;Circular Buffer&lt;br/&gt;(recent messages)&quot;]
+        Policy[&quot;Resample Policy&lt;br/&gt;(hold/asof/drop)&quot;]
+        Tol[&quot;Tolerance (asof_tol_ms)&quot;]
+    end
+
+    subgraph &quot;Observation Sources&quot;
+        Camera[&quot;/camera/top/image_raw&quot;]
+        Joints[&quot;/joint_states&quot;]
+    end
+
+    Camera --&gt;|&quot;Push with timestamp&quot;| Buffer
+    Joints --&gt;|&quot;Push with timestamp&quot;| Buffer
+
+    Dispatcher[&quot;action_dispatcher_node&quot;] --&gt;|&quot;obs_timestamp_ns&quot;| Sample[&quot;sample(timestamp)&quot;]
+    Sample --&gt; Policy
+    Policy --&gt; Buffer
+    Buffer --&gt;|&quot;Interpolated value&quot;| Frame[&quot;obs_frame dict&quot;]
+    </pre><p><strong>重采样策略</strong>（来自契约）：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">hold</span></code>：返回时间戳前最近的值（零阶保持）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">asof</span></code>：如果在 <code class="docutils literal notranslate"><span class="pre">asof_tol_ms</span></code> 内则返回值，否则返回 None</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">drop</span></code>：仅返回精确匹配，否则返回 None</p></li>
+</ul>
+<p><strong>实现</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/lerobot_policy_node.py#L381-L398">lerobot_policy_node.py:381-398</a> 处理观测回调，将值推入缓冲区。<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/lerobot_policy_node.py#L399-L420">lerobot_policy_node.py:399-420</a> 在请求的时间戳从所有缓冲区采样。</p>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/contract_utils.py#L74-L90">src/robot_config/robot_config/contract_utils.py:74-90</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L381-L420">src/inference_service/inference_service/lerobot_policy_node.py:381-420</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id13">
+<h2>启动集成<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
+<p>推理服务由 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> 启动系统根据控制模式配置动态启动。</p>
+<section id="id14">
+<h3>启动参数流程<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;robot_config.yaml&quot;
+        ControlMode[&quot;control_modes.model_inference:&lt;br/&gt;  inference.enabled: true&lt;br/&gt;  inference.execution_mode: monolithic&lt;br/&gt;  inference.model: act_policy_1&quot;]
+        ModelDef[&quot;models.act_policy_1:&lt;br/&gt;  repo_id: /path/to/checkpoint&lt;br/&gt;  device: cuda&lt;br/&gt;  frequency: 10.0&quot;]
+    end
+
+    subgraph &quot;Launch System&quot;
+        LaunchFile[&quot;robot.launch.py&quot;]
+        ExecBuilder[&quot;execution.py&lt;br/&gt;generate_inference_node()&quot;]
+    end
+
+    subgraph &quot;Generated Nodes&quot;
+        PolicyNode[&quot;lerobot_policy_node&lt;br/&gt;(parameters from config)&quot;]
+    end
+
+    ControlMode --&gt; LaunchFile
+    ModelDef --&gt; LaunchFile
+    LaunchFile --&gt; ExecBuilder
+    ExecBuilder --&gt; PolicyNode
+
+    PolicyNode --&gt;|&quot;loads&quot;| Contract[&quot;robot_config.yaml&lt;br/&gt;(for observations)&quot;]
+    PolicyNode --&gt;|&quot;loads&quot;| Checkpoint[&quot;Policy checkpoint&lt;br/&gt;(for model config)&quot;]
+    </pre><p><strong>关键启动构建函数</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/robot_config/launch_builders/execution.py#L20-L58">robot_config/launch_builders/execution.py:20-58</a> 中的 <code class="docutils literal notranslate"><span class="pre">generate_inference_node()</span></code></p>
+<p><strong>自动检测逻辑</strong>：</p>
+<ol class="arabic simple">
+<li><p>检查控制模式是否有 <code class="docutils literal notranslate"><span class="pre">inference.enabled:</span> <span class="pre">true</span></code></p></li>
+<li><p>从 <code class="docutils literal notranslate"><span class="pre">inference.model</span></code> 字段解析模型引用</p></li>
+<li><p>提取模型配置（repo_id、device、frequency）</p></li>
+<li><p>生成带有契约路径的节点用于观测过滤</p></li>
+<li><p>如果 <code class="docutils literal notranslate"><span class="pre">execution_mode:</span> <span class="pre">distributed</span></code>，还在云端启动 <code class="docutils literal notranslate"><span class="pre">pure_inference_node</span></code></p></li>
+</ol>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/execution.py#L20-L58">src/robot_config/robot_config/launch_builders/execution.py:20-58</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L183-L196">src/robot_config/launch/robot.launch.py:183-196</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id15">
+<h2>健康监控与诊断<a class="headerlink" href="#id15" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">LeRobotPolicyNode</span></code> 发布周期性健康状态，以支持运行时监控和调试。</p>
+<section id="id16">
+<h3>发布话题<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>话题</p></th>
+<th class="head"><p>消息类型</p></th>
+<th class="head"><p>频率</p></th>
+<th class="head"><p>用途</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">~</span> <span class="pre">/health</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">diagnostic_ms</span> <span class="pre">gs/DiagnosticStatus</span></code></p></td>
+<td><p>1 Hz</p></td>
+<td><p>节点健康状态、 错误消息、 推理计数</p></td>
+</tr>
+<tr class="row-odd"><td><p>` <cite>/actions /{name}`</cite></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ibrobo</span> <span class="pre">t_msgs/VariantsList</span></code></p></td>
+<td><p>按需</p></td>
+<td><p>发布动作块 用于调试</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>健康状态级别</strong>：</p>
+<ul class="simple">
+<li><p><strong>OK</strong> (0)：推理正常运行</p></li>
+<li><p><strong>WARN</strong> (1)：超过预期周期 2 倍时间未推理（可能的分发器问题）</p></li>
+<li><p><strong>ERROR</strong> (2)：致命错误（推理失败、超时）</p></li>
+</ul>
+<p><strong>诊断键值对</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/lerobot_policy_node.py#L632-L638">lerobot_policy_node.py:632-638</a>：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">inference_count</span></code>：已完成的推理总数</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model_type</span></code>：策略类型（act、diffusion 等）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">policy_type</span></code>：架构变体</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">chunk_size</span></code>：动作块大小</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">execution_mode</span></code>：单体或分布式</p></li>
+</ul>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L615-L640">src/inference_service/inference_service/lerobot_policy_node.py:615-640</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id17">
+<h2>配置参数<a class="headerlink" href="#id17" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">LeRobotPolicyNode</span></code> 接受以下 ROS 参数，通常通过 <code class="docutils literal notranslate"><span class="pre">robot_config.yaml</span></code> 设置：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>类型</p></th>
+<th class="head"><p>默认值</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>string</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ler</span> <span class="pre">obot_policy</span></code></p></td>
+<td><p>节点名称后缀</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">node_name</span></code></p></td>
+<td><p>string</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lerobot_</span> <span class="pre">policy_node</span></code></p></td>
+<td><p>完整节点名称</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">model_type</span></code></p></td>
+<td><p>string</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ler</span> <span class="pre">obot_policy</span></code></p></td>
+<td><p>模型类型标识符</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">repo_id</span></code></p></td>
+<td><p>string</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p><strong>必需</strong>：策略检查点 目录路径</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">checkpoint</span></code></p></td>
+<td><p>string</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p><code class="docutils literal notranslate"><span class="pre">repo_id</span></code> 的替代</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ro</span> <span class="pre">bot_config_path</span></code></p></td>
+<td><p>string</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p><strong>必需</strong>：用于契约的 robot_config.yaml 路径</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">device</span></code></p></td>
+<td><p>string</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">auto</span></code></p></td>
+<td><p>计算设备 （<code class="docutils literal notranslate"><span class="pre">auto</span></code>、<code class="docutils literal notranslate"><span class="pre">cpu</span></code>、 <code class="docutils literal notranslate"><span class="pre">cuda</span></code>、<code class="docutils literal notranslate"><span class="pre">cuda:0</span></code>）</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">frequency</span></code></p></td>
+<td><p>float</p></td>
+<td><p>10.0</p></td>
+<td><p>预期推理频率（Hz）</p></td>
+</tr>
+<tr class="row-even"><td><p>`` use_header_time``</p></td>
+<td><p>bool</p></td>
+<td><p>true</p></td>
+<td><p>使用消息头时间戳 vs. 接收时间</p></td>
+</tr>
+<tr class="row-odd"><td><p>` <cite>execution_mode`</cite></p></td>
+<td><p>string</p></td>
+<td><p>` <cite>monolithic`</cite></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">monolithic</span></code> 或 <code class="docutils literal notranslate"><span class="pre">distributed</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>`` request_timeout``</p></td>
+<td><p>float</p></td>
+<td><p>5.0</p></td>
+<td><p>分布式云端响应超时 （秒）</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cloud_</span> <span class="pre">inference_topic</span></code></p></td>
+<td><p>string</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/preproc</span> <span class="pre">essed/batch</span></code></p></td>
+<td><p>分布式模式下发布批次 的话题</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">clo</span> <span class="pre">ud_result_topic</span></code></p></td>
+<td><p>string</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/infer</span> <span class="pre">ence/action</span></code></p></td>
+<td><p>接收云端结果的话题</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L88-L103">src/inference_service/inference_service/lerobot_policy_node.py:88-103</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L648-L669">src/inference_service/inference_service/lerobot_policy_node.py:648-669</a></p>
+</section>
+<hr class="docutils" />
+<section id="id18">
+<h2>总结<a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
+<p>推理服务是一个契约驱动、执行模式无关的 AI 运行时，具有以下特点：</p>
+<ol class="arabic simple">
+<li><p><strong>过滤观测</strong>：根据全局契约中的模型需求过滤观测</p></li>
+<li><p><strong>采样时间戳数据</strong>：使用 StreamBuffer 确保时间一致性</p></li>
+<li><p><strong>支持双重部署</strong>：板载 GPU 的零拷贝单体模式，轻量级机器人的分布式边-云模式</p></li>
+<li><p><strong>暴露稳定 Action 接口</strong>：与 action_dispatch 无缝集成</p></li>
+<li><p><strong>复用数据集转换逻辑</strong>：消除训练-服务偏差</p></li>
+</ol>
+<p>三组件架构（Preprocessor、Engine、Postprocessor）允许相同代码同时服务于研究（纯 Python 脚本）和部署（ROS 2 节点）场景。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/README.en.md#L1-L48">src/inference_service/README.en.md:1-48</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L33-L40">README.md:33-40</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="推理服务" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="inference_architecture.html" class="btn btn-neutral float-right" title="推理架构" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../../24.03-lts/index.html">24.03-lts</a></dd>
+      <dd><a href="../../../../llvm-toolchain-v0.1.1/index.html">llvm-toolchain-v0.1.1</a></dd>
+      <dd><a href="../../../../nativesdk-v0.1.2/index.html">nativesdk-v0.1.2</a></dd>
+      <dd><a href="../../../../nativesdk-v0.1.3/index.html">nativesdk-v0.1.3</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.5/index.html">toolchains-v0.1.5</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.7/index.html">toolchains-v0.1.7</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.8/index.html">toolchains-v0.1.8</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="overview.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../pr_2786/features/embodied_ai/inference/overview.html">pr_2786</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

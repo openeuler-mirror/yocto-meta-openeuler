@@ -151,7 +151,7 @@ Shared CPU Pool
 - ``memorymaxmb`` 对应 mica create message 中的 memory
 
 不支持/忽略的资源
-================
+==================
 
 .. list-table::
    :widths: 30 30 40
@@ -177,7 +177,7 @@ Shared CPU Pool
      - 未来可扩展
 
 Kubernetes 资源映射
-==================
+====================
 
 K8s 到 cgroup 的转换
 --------------------

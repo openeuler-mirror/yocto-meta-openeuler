@@ -421,7 +421,7 @@ Session
 ^^^^^^^^
 
 .. list-table::
-   :widths: 40 35 25
+   :widths: 35 25 15 25
    :header-rows: 1
 
    * - 函数

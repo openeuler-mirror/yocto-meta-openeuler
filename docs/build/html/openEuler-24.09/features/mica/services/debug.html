@@ -9,13 +9,17 @@
   <title>调试支持 GDB stub 的 Client OS &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=458d985c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
 
   
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -61,7 +65,15 @@
 <li class="toctree-l4"><a class="reference internal" href="../mica_ctl.html">mica命令与配置文件</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../developer_guides/index.html">开发者指南</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="index.html">跨OS服务</a><ul class="current">
-<li class="toctree-l5 current"><a class="current reference internal" href="#">调试支持 GDB stub 的 Client OS</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">调试支持 GDB stub 的 Client OS</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#buniproton">基于树莓派4B调测Uniproton</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#x86uniproton">基于x86工控机调测Uniproton</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id1">相关接口定义</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id2">使用方法</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l5"><a class="reference internal" href="rpc.html">基于UniProton的RPC服务</a></li>
 </ul>
 </li>
@@ -125,10 +137,10 @@
            <div itemprop="articleBody">
              
   <section id="gdb-stub-client-os">
-<span id="mica-debug"></span><h1>调试支持 GDB stub 的 Client OS<a class="headerlink" href="#gdb-stub-client-os" title="Link to this heading">¶</a></h1>
+<span id="mica-debug"></span><h1>调试支持 GDB stub 的 Client OS<a class="headerlink" href="#gdb-stub-client-os" title="Link to this heading"></a></h1>
 <p>当前仅支持调试运行在树莓派4B（aarch64）和x86工控机（x86_64）的Uniproton。</p>
 <section id="buniproton">
-<h2>基于树莓派4B调测Uniproton<a class="headerlink" href="#buniproton" title="Link to this heading">¶</a></h2>
+<h2>基于树莓派4B调测Uniproton<a class="headerlink" href="#buniproton" title="Link to this heading"></a></h2>
 <p>树莓派4B的具体介绍 <a class="reference internal" href="../../../bsp/arm64/raspberrypi4/index.html#board-raspberrypi4b"><span class="std std-ref">树莓派4B</span></a> 。</p>
 <p>树莓派的openeuler-image-mcs构建，参见 <a class="reference internal" href="../../../bsp/arm64/raspberrypi4/uefi.html#raspberrypi4-uefi-guide"><span class="std std-ref">树莓派mcs镜像构建指导</span></a>。
 由于需要调试，需要在oebuild构建目录中的conf文件夹下的local.conf文件中添加如下配置：</p>
@@ -271,10 +283,10 @@ stop<span class="w"> </span>uniproton-gdb<span class="w"> </span>successfully!
 </div>
 </section>
 <section id="x86uniproton">
-<h2>基于x86工控机调测Uniproton<a class="headerlink" href="#x86uniproton" title="Link to this heading">¶</a></h2>
+<h2>基于x86工控机调测Uniproton<a class="headerlink" href="#x86uniproton" title="Link to this heading"></a></h2>
 <p>工控机的具体介绍 <a class="reference internal" href="../../../bsp/x86/HVAEIPC-M10/m10.html#hvaepic-m10"><span class="std std-ref">工控机</span></a> 。</p>
 <section id="id1">
-<h3>相关接口定义<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<h3>相关接口定义<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
 <p>首先，对于Client OS而言，需要支持GDB stub。
 当前MICA框架仅支持基于简单ring buffer通信的方式进行GDB stub信息的交互，
 ring buffer的地址和大小在MCS仓库中 <code class="docutils literal notranslate"><span class="pre">library/include/mcs/mica_debug_ring_buffer.h</span></code> 中定义：</p>
@@ -288,7 +300,7 @@ ring buffer的地址和大小在MCS仓库中 <code class="docutils literal notra
 <p>ring buffer 的定义在 <code class="docutils literal notranslate"><span class="pre">library/include/mcs/ring_buffer.h</span></code> 文件中。</p>
 </section>
 <section id="id2">
-<h3>使用方法<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<h3>使用方法<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
 <p>首先，需要构建含有MICA的openEuler Embedded镜像，请参考 <a class="reference internal" href="../build.html#mcs-build"><span class="std std-ref">MICA镜像构建指南</span></a> 。</p>
 <p>然后，需要生成适配了GDB stub 的 Uniproton，参考 <a class="reference external" href="https://gitee.com/openeuler/UniProton/blob/master/doc/gdbstub.md">UniProton GDB stub 构建指南</a> 。</p>
 <p>在运行命令时，需要在启动MICA时加上 <code class="docutils literal notranslate"><span class="pre">-d</span></code> 参数。
@@ -390,6 +402,7 @@ Uniproton会清除所有断点，并进入正常的运行状态。</p>
       <dd><a href="../../../../openEuler-24.03-LTS/features/mica/services/debug.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="debug.html">openEuler-24.09</a></dd>
       <dd><a href="../../../../openEuler-25.03/features/mica/services/debug.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../pr_2786/index.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

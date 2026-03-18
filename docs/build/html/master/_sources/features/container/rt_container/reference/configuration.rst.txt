@@ -170,6 +170,7 @@ Mica 节配置
      - 字符串
      - -
      - 默认固件路径
+
 Resource 节配置
 ---------------
 
@@ -450,4 +451,4 @@ Drop-in 目录允许将配置拆分为多个文件：
 
 - :doc:`annotations` - 注解配置
 - :doc:`resources` - 资源限制规则
-- :doc:`../user/troubleshooting` - 配置问题排查
+- :doc:`troubleshooting` - 配置问题排查

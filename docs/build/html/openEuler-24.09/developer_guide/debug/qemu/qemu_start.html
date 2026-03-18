@@ -10,14 +10,18 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css?v=a5c4661c" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=458d985c" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
 
   
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script src="../../../_static/tabs.js?v=3030b3cb"></script>
+      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -64,7 +68,11 @@
 <li class="toctree-l5"><a class="reference internal" href="#id1">1. 安装QEMU</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#openeuler-embedded">2. 获取openEuler Embedded镜像</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#id3">3. 使用QEMU运行镜像</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#qemu-enable-net">4. 使能网络场景</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#qemu-enable-net">4. 使能网络场景</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#qemu-local-network">使能本地网络</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#qemu-internet-nat">使能互联网</a></li>
+</ul>
+</li>
 <li class="toctree-l5"><a class="reference internal" href="#id7">5. 使能共享文件系统场景</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#id8">6. 使能运行虚拟磁盘场景</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#id9">附录：QEMU常用的启动参数</a></li>
@@ -111,10 +119,10 @@
            <div itemprop="articleBody">
              
   <section id="qemu">
-<span id="qemu-start"></span><h1>QEMU使用<a class="headerlink" href="#qemu" title="Link to this heading">¶</a></h1>
+<span id="qemu-start"></span><h1>QEMU使用<a class="headerlink" href="#qemu" title="Link to this heading"></a></h1>
 <p>本文档主要介绍如何通过qemu运行openEuler Embedded，以及如何使能网络，如何共享宿主机的文件。下面以arm64为例，其它架构与之类似。</p>
 <section id="id1">
-<h2>1. 安装QEMU<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<h2>1. 安装QEMU<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <blockquote>
 <div><p>方法一：通过以下命令安装QEMU</p>
 <blockquote>
@@ -161,13 +169,13 @@
 </div></blockquote>
 </section>
 <section id="openeuler-embedded">
-<h2>2. 获取openEuler Embedded镜像<a class="headerlink" href="#openeuler-embedded" title="Link to this heading">¶</a></h2>
+<h2>2. 获取openEuler Embedded镜像<a class="headerlink" href="#openeuler-embedded" title="Link to this heading"></a></h2>
 <blockquote>
 <div><p>参照 <a class="reference internal" href="../../../getting_started/index.html#getting-started"><span class="std std-ref">快速上手</span></a> 部分，使用 <a class="reference external" href="https://gitee.com/openeuler/yocto-meta-openeuler">yocto-meta-openeuler</a> 项目构建 ARM64 QEMU 镜像，或者在 <a class="reference external" href="http://121.36.84.172/dailybuild/openEuler-Mainline/">dailybuild</a> 下载镜像。</p>
 </div></blockquote>
 </section>
 <section id="id3">
-<h2>3. 使用QEMU运行镜像<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<h2>3. 使用QEMU运行镜像<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
 <blockquote>
 <div><p>一个简单的qemu执行命令如下：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>qemu-system-aarch64<span class="w"> </span>-M<span class="w"> </span>virt-4.0<span class="w"> </span>-m<span class="w"> </span>1G<span class="w"> </span>-cpu<span class="w"> </span>cortex-a57<span class="w"> </span>-nographic<span class="w"> </span><span class="se">\</span>
@@ -184,9 +192,9 @@
 </div></blockquote>
 </section>
 <section id="qemu-enable-net">
-<span id="id4"></span><h2>4. 使能网络场景<a class="headerlink" href="#qemu-enable-net" title="Link to this heading">¶</a></h2>
+<span id="id4"></span><h2>4. 使能网络场景<a class="headerlink" href="#qemu-enable-net" title="Link to this heading"></a></h2>
 <section id="qemu-local-network">
-<span id="id5"></span><h3>使能本地网络<a class="headerlink" href="#qemu-local-network" title="Link to this heading">¶</a></h3>
+<span id="id5"></span><h3>使能本地网络<a class="headerlink" href="#qemu-local-network" title="Link to this heading"></a></h3>
 <blockquote>
 <div><p>通过 QEMU 的 <code class="docutils literal notranslate"><span class="pre">virtio-net</span></code> 和宿主机上的虚拟网卡，可以实现宿主机和 openEuler Embedded 之间的网络通信，之后可以通过 <code class="docutils literal notranslate"><span class="pre">scp</span></code> 实现宿主机和 openEuler Embedded 传输文件。</p>
 <p><strong>Step1：宿主上建立虚拟网卡</strong></p>
@@ -249,7 +257,7 @@ ip<span class="w"> </span>addr<span class="w"> </span>add<span class="w"> </span
 </div></blockquote>
 </section>
 <section id="qemu-internet-nat">
-<span id="id6"></span><h3>使能互联网<a class="headerlink" href="#qemu-internet-nat" title="Link to this heading">¶</a></h3>
+<span id="id6"></span><h3>使能互联网<a class="headerlink" href="#qemu-internet-nat" title="Link to this heading"></a></h3>
 <p>如果宿主机可以与互联网连接，则可以通过NAT模式，与互联网连接。</p>
 <blockquote>
 <div><p><strong>Step1：在宿主机添加新的网桥</strong></p>
@@ -318,7 +326,7 @@ ip<span class="w"> </span>addr<span class="w"> </span>add<span class="w"> </span
 </section>
 </section>
 <section id="id7">
-<h2>5. 使能共享文件系统场景<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
+<h2>5. 使能共享文件系统场景<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
 <blockquote>
 <div><p>通过共享文件系统，可以使得运行 QEMU 仿真器的宿主机和 openEuler Embedded 共享文件，这样在宿主机上交叉编译的程序，拷贝到共享目录中，即可在 openEuler Embedded 上运行。注意 QEMU 必须支持 virtfs，即配置了 <code class="docutils literal notranslate"><span class="pre">--enable-virtfs</span></code>。</p>
 <p>假设将宿主机的 <code class="docutils literal notranslate"><span class="pre">/tmp</span></code> 目录作为共享目录，并事先在其中创建了名为 <code class="file docutils literal notranslate"><span class="pre">hello_openeuler.txt</span></code> 的文件，使能共享文件系统功能的操作指导如下：</p>
@@ -354,7 +362,7 @@ ip<span class="w"> </span>addr<span class="w"> </span>add<span class="w"> </span
 </div></blockquote>
 </section>
 <section id="id8">
-<h2>6. 使能运行虚拟磁盘场景<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
+<h2>6. 使能运行虚拟磁盘场景<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
 <blockquote>
 <div><p><strong>Step1：创建虚拟磁盘</strong></p>
 <blockquote>
@@ -459,7 +467,7 @@ $<span class="w"> </span>vi<span class="w"> </span>authorized_keys
 </div></blockquote>
 </section>
 <section id="id9">
-<h2>附录：QEMU常用的启动参数<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
+<h2>附录：QEMU常用的启动参数<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
 <blockquote>
 <div><p>以下是一些常用的QEMU启动参数：</p>
 <ul class="simple">
@@ -534,6 +542,7 @@ $<span class="w"> </span>vi<span class="w"> </span>authorized_keys
       <dd><a href="../../../../openEuler-24.03-LTS/developer_guide/debug/qemu/qemu_start.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="qemu_start.html">openEuler-24.09</a></dd>
       <dd><a href="../../../../openEuler-25.03/developer_guide/debug/qemu/qemu_start.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../pr_2786/developer_guide/debug/qemu/qemu_start.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

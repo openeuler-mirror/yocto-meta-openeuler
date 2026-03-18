@@ -1,0 +1,1155 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MoveIt 启动配置 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
+    /* Same as .mermaid-container > pre */
+    display: block;
+    width: 100%;
+}
+
+pre.mermaid > svg {
+    /* Same as .mermaid-container > pre > svg */
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}`;
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.mermaid-container > pre {
+    display: block;
+    width: 100%;
+}
+
+.mermaid-container > pre > svg {
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.mermaid-fullscreen-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: #333;
+}
+
+.mermaid-fullscreen-btn:hover {
+    opacity: 100% !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-btn.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-btn.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 95vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    padding: 20px;
+    overflow: auto;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.mermaid-fullscreen-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen.dark-theme {
+    background: #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen .mermaid svg {
+    height: 100% !important;
+    width: 100% !important;
+    cursor: grab;
+}
+
+.mermaid-fullscreen-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: white;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-close.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-close.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
+    display: none !important;
+}`;
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+
+    if ("False" === "True") {
+        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("");
+            if(all_mermaids.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else if(svgs.size() !== mermaids_to_add_zoom) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else {
+                svgs.each(function() {
+                    var svg = d3.select(this);
+                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                    var inner = svg.select("g");
+                    var zoom = d3.zoom().on("zoom", function(event) {
+                        inner.attr("transform", event.transform);
+                    });
+                    svg.call(zoom);
+                });
+            }
+        }
+    } else if(all_mermaids.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if ("True" !== "True") return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = '⛶';
+        fullscreenBtn.style.opacity = '50%';
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scroll, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.sdisplay = 'block';
+
+                if ("False" === "True") {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="硬件集成" href="../hardware/index.html" />
+    <link rel="prev" title="5DOF 运动学约束" href="dof_kinematic_constraints.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">具身机器人框架IB Robot</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../introduction/ib-robot_overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture/system_architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统 (robot_config)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol/protocol_conversion_tensormsg.html">协议转换 (tensormsg)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference/index.html">推理服务</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../action_dispatch/index.html">动作调度</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_pipeline/index.html">数据服务</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">运动规划 (MoveIt)</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">运动规划概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="moveitgateway_node.html">MoveItGateway 节点</a></li>
+<li class="toctree-l6"><a class="reference internal" href="dof_kinematic_constraints.html">5DOF 运动学约束</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">MoveIt 启动配置</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id1">目的与范围</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id2">启动架构概述</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">配置参数</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id5">启动文件包含流程</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#moveitconfigsbuilder">MoveItConfigsBuilder 使用</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id6">节点配置</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id7">运动学配置</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id8">控制模式集成</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id9">配置文件依赖图</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id10">启动命令示例</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id13">参数映射表</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id14">故障排除</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../hardware/index.html">硬件集成</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference/package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">具身机器人框架IB Robot</a></li>
+          <li class="breadcrumb-item"><a href="index.html">运动规划 (MoveIt)</a></li>
+      <li class="breadcrumb-item active">MoveIt 启动配置</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="moveit">
+<h1>MoveIt 启动配置<a class="headerlink" href="#moveit" title="Link to this heading"></a></h1>
+<details><p>相关源文件</p>
+<p>以下文件用作生成此 wiki 页面的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="src/robot_config/README.en.md">src/robot_config/README.en.md</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/README.md">src/robot_config/README.md</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/config/robots/so101_dual_arm.yaml">src/robot_config/config/robots/so101_dual_arm.yaml</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/config/robots/so101_single_arm.yaml">src/robot_config/config/robots/so101_single_arm.yaml</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/config/robots/test_single_arm_single_cam.yaml">src/robot_config/config/robots/test_single_arm_single_cam.yaml</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/robot_config/launch_builders/moveit.py">src/robot_config/robot_config/launch_builders/moveit.py</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/robot_config/loader.py">src/robot_config/robot_config/loader.py</a></p></li>
+<li><p><a class="reference external" href="src/robot_moveit/CMakeLists.txt">src/robot_moveit/CMakeLists.txt</a></p></li>
+<li><p><a class="reference external" href="src/robot_moveit/config/lerobot/so101/kinematics.yaml">src/robot_moveit/config/lerobot/so101/kinematics.yaml</a></p></li>
+<li><p><a class="reference external" href="src/robot_moveit/docs/moveit_gateway.md">src/robot_moveit/docs/moveit_gateway.md</a></p></li>
+<li><p><a class="reference external" href="src/robot_moveit/launch/so101_moveit.launch.py">src/robot_moveit/launch/so101_moveit.launch.py</a></p></li>
+<li><p><a class="reference external" href="src/robot_moveit/package.xml">src/robot_moveit/package.xml</a></p></li>
+<li><p><a class="reference external" href="src/robot_moveit/scripts/moveit_gateway.py">src/robot_moveit/scripts/moveit_gateway.py</a></p></li>
+<li><p><a class="reference external" href="src/tensormsg/tensormsg/converter.py">src/tensormsg/tensormsg/converter.py</a></p></li>
+</ul>
+</details><p>本文档介绍 IB-Robot 中的 MoveIt 2 启动配置系统，该系统为 <code class="docutils literal notranslate"><span class="pre">moveit_planning</span></code> 控制模式提供运动规划功能。有关 MoveItGateway 节点的 IK 求解和约束处理信息，请参阅 <a class="reference external" href="#10.1">10.1</a>。有关 5DOF 运动学约束的详细信息，请参阅 <a class="reference external" href="#10.2">10.2</a>。</p>
+<section id="id1">
+<h2>目的与范围<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<p>MoveIt 启动配置系统在机器人以 <code class="docutils literal notranslate"><span class="pre">moveit_planning</span></code> 控制模式启动时，协调 MoveIt 2 组件的启动。它处理：</p>
+<ul class="simple">
+<li><p>基于控制模式条件性包含 MoveIt 节点</p></li>
+<li><p>参数从 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML 传播到 MoveIt 启动文件</p></li>
+<li><p>MoveIt 规划组、运动学求解器和控制器的配置</p></li>
+<li><p>可选的运动规划 RViz 可视化</p></li>
+</ul>
+<p>此系统将 robot_config 单一数据源模式与 MoveIt 的配置需求连接起来，确保关节定义、链接名称和规划组参数在整个工作空间中保持一致。</p>
+</section>
+<section id="id2">
+<h2>启动架构概述<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>MoveIt 启动系统使用两级架构：<code class="docutils literal notranslate"><span class="pre">robot_config</span></code> 中的启动构建器条件性地包含 <code class="docutils literal notranslate"><span class="pre">robot_moveit</span></code> 包中的主 MoveIt 启动文件。</p>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;robot_config Package&quot;
+        RobotLaunch[&quot;robot.launch.py&quot;]
+        MoveItBuilder[&quot;launch_builders/moveit.py&lt;br/&gt;generate_moveit_nodes()&quot;]
+        RobotYAML[&quot;config/robots/so101_single_arm.yaml&lt;br/&gt;moveit: {...}&quot;]
+    end
+
+    subgraph &quot;robot_moveit Package&quot;
+        SO101Launch[&quot;launch/so101_moveit.launch.py&lt;br/&gt;generate_launch_description()&quot;]
+        MoveItBuilder2[&quot;MoveItConfigsBuilder&quot;]
+
+        subgraph &quot;MoveIt Configuration Files&quot;
+            SRDF[&quot;config/.../so101.srdf&lt;br/&gt;planning groups&quot;]
+            Kinematics[&quot;config/.../kinematics.yaml&lt;br/&gt;position_only_ik: True&quot;]
+            JointLimits[&quot;config/.../joint_limits.yaml&quot;]
+            Controllers[&quot;config/.../moveit_controllers.yaml&quot;]
+            PilzLimits[&quot;config/.../pilz_cartesian_limits.yaml&quot;]
+        end
+
+        subgraph &quot;Launched Nodes&quot;
+            MoveGroup[&quot;move_group node&lt;br/&gt;moveit_ros_move_group&quot;]
+            RViz[&quot;rviz2 node&lt;br/&gt;(conditional)&quot;]
+            Gateway[&quot;moveit_gateway.py&lt;br/&gt;IK gateway&quot;]
+        end
+    end
+
+    RobotLaunch --&gt;|&quot;control_mode:=moveit_planning&quot;| MoveItBuilder
+    MoveItBuilder --&gt;|&quot;read moveit section&quot;| RobotYAML
+    MoveItBuilder --&gt;|&quot;IncludeLaunchDescription&quot;| SO101Launch
+
+    SO101Launch --&gt;|&quot;loads configurations&quot;| MoveItBuilder2
+    MoveItBuilder2 --&gt; SRDF
+    MoveItBuilder2 --&gt; Kinematics
+    MoveItBuilder2 --&gt; JointLimits
+    MoveItBuilder2 --&gt; Controllers
+    MoveItBuilder2 --&gt; PilzLimits
+
+    SO101Launch --&gt; MoveGroup
+    SO101Launch --&gt; RViz
+    SO101Launch --&gt; Gateway
+    </pre><p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/moveit.py#L1-L79">src/robot_config/robot_config/launch_builders/moveit.py:1-79</a>，
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/launch/so101_moveit.launch.py#L1-L134">src/robot_moveit/launch/so101_moveit.launch.py:1-134</a></p>
+</section>
+<section id="id3">
+<h2>配置参数<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="robot-config-yaml">
+<h3>robot_config YAML 部分<a class="headerlink" href="#robot-config-yaml" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML 中的 <code class="docutils literal notranslate"><span class="pre">moveit:</span></code> 部分定义传递给启动系统的 MoveIt 特定参数：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>类型</p></th>
+<th class="head"><p>描述</p></th>
+<th class="head"><p>示例</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">arm_group_name</span></code></p></td>
+<td><p>string</p></td>
+<td><p>MoveIt 规划组名称</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;arm&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">base_link</span></code></p></td>
+<td><p>string</p></td>
+<td><p>基座坐标系</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;base&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ee_link</span></code></p></td>
+<td><p>string</p></td>
+<td><p>末端执行器链接名称</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;gripper&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">shoulder_link</span></code></p></td>
+<td><p>string</p></td>
+<td><p>用于 5DOF 约束的肩部链接</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;shoulder&quot;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>机器人配置示例</strong>：</p>
+<p><a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L37-L43">src/robot_config/config/robots/so101_single_arm.yaml:37-43</a></p>
+<p>这些参数由启动构建器提取并作为启动参数传播。</p>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L37-L43">src/robot_config/config/robots/so101_single_arm.yaml:37-43</a>，
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/moveit.py#L46-L68">src/robot_config/robot_config/launch_builders/moveit.py:46-68</a></p>
+</section>
+<section id="id4">
+<h3>启动参数<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">so101_moveit.launch.py</span></code> 声明以下控制 MoveIt 行为的启动参数：</p>
+<pre  class="mermaid">
+        graph LR
+    subgraph &quot;Launch Arguments&quot;
+        IsSim[&quot;is_sim&lt;br/&gt;(default: True)&quot;]
+        Display[&quot;display&lt;br/&gt;(default: True)&quot;]
+        JointNames[&quot;joint_names&lt;br/&gt;(required)&quot;]
+        ArmGroup[&quot;arm_group_name&lt;br/&gt;(required)&quot;]
+        BaseLink[&quot;base_link&lt;br/&gt;(required)&quot;]
+        EELink[&quot;ee_link&lt;br/&gt;(required)&quot;]
+        ShoulderLink[&quot;shoulder_link&lt;br/&gt;(required)&quot;]
+    end
+
+    subgraph &quot;Parameter Consumers&quot;
+        MoveGroup[&quot;move_group&lt;br/&gt;use_sim_time&quot;]
+        RViz2[&quot;rviz2&lt;br/&gt;condition&quot;]
+        Gateway[&quot;moveit_gateway&lt;br/&gt;parameters&quot;]
+    end
+
+    IsSim --&gt; MoveGroup
+    IsSim --&gt; Gateway
+    Display --&gt; RViz2
+    JointNames --&gt; Gateway
+    ArmGroup --&gt; Gateway
+    BaseLink --&gt; Gateway
+    EELink --&gt; Gateway
+    ShoulderLink --&gt; Gateway
+    </pre><p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/launch/so101_moveit.launch.py#L13-L54">src/robot_moveit/launch/so101_moveit.launch.py:13-54</a></p>
+</section>
+</section>
+<section id="id5">
+<h2>启动文件包含流程<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<p>以下图表显示参数如何从 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> 流向 MoveIt 节点：</p>
+<pre  class="mermaid">
+        sequenceDiagram
+    participant User
+    participant RobotLaunch as robot.launch.py
+    participant MoveItBuilder as generate_moveit_nodes()
+    participant RobotYAML as robot_config YAML
+    participant SO101Launch as so101_moveit.launch.py
+    participant MoveItCfg as MoveItConfigsBuilder
+    participant Nodes as MoveIt Nodes
+
+    User-&gt;&gt;RobotLaunch: ros2 launch robot_config robot.launch.py&lt;br/&gt;control_mode:=moveit_planning
+    RobotLaunch-&gt;&gt;MoveItBuilder: generate_moveit_nodes(config, mode)
+    MoveItBuilder-&gt;&gt;RobotYAML: Read moveit section
+    RobotYAML--&gt;&gt;MoveItBuilder: arm_group_name, base_link, ee_link, shoulder_link
+    MoveItBuilder-&gt;&gt;RobotYAML: Read joints.arm
+    RobotYAML--&gt;&gt;MoveItBuilder: [&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;]
+
+    MoveItBuilder-&gt;&gt;SO101Launch: IncludeLaunchDescription&lt;br/&gt;joint_names=&quot;1 2 3 4 5&quot;&lt;br/&gt;arm_group_name=&quot;arm&quot;&lt;br/&gt;base_link=&quot;base&quot;&lt;br/&gt;ee_link=&quot;gripper&quot;&lt;br/&gt;shoulder_link=&quot;shoulder&quot;
+
+    SO101Launch-&gt;&gt;MoveItCfg: MoveItConfigsBuilder(&quot;so101&quot;)&lt;br/&gt;.robot_description(...)&lt;br/&gt;.robot_description_semantic(...)&lt;br/&gt;.robot_description_kinematics(...)
+    MoveItCfg--&gt;&gt;SO101Launch: moveit_config.to_dict()
+
+    SO101Launch-&gt;&gt;Nodes: Launch move_group, rviz2, moveit_gateway
+    Nodes--&gt;&gt;User: MoveIt services available
+    </pre><p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/moveit.py#L40-L78">src/robot_config/robot_config/launch_builders/moveit.py:40-78</a>，
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/launch/so101_moveit.launch.py#L56-L90">src/robot_moveit/launch/so101_moveit.launch.py:56-90</a></p>
+</section>
+<section id="moveitconfigsbuilder">
+<h2>MoveItConfigsBuilder 使用<a class="headerlink" href="#moveitconfigsbuilder" title="Link to this heading"></a></h2>
+<p>启动文件使用 <code class="docutils literal notranslate"><span class="pre">moveit_configs_utils</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">MoveItConfigsBuilder</span></code> 加载和合并配置文件：</p>
+<p><a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/launch/so101_moveit.launch.py#L61-L70">src/robot_moveit/launch/so101_moveit.launch.py:61-70</a></p>
+<p>配置文件映射：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>构建器方法</p></th>
+<th class="head"><p>配置文件</p></th>
+<th class="head"><p>用途</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.robot_description()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">urdf/lerobot/so101/so101.urdf.xacro</span></code></p></td>
+<td><p>机器人运动学模型</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.robot_description_semantic()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">config/.../so101.srdf</span></code></p></td>
+<td><p>规划组、末端执行器</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.robot_description_kinematics()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">config/.../kinematics.yaml</span></code></p></td>
+<td><p>IK 求解器配置</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.joint_limits()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">config/.../joint_limits.yaml</span></code></p></td>
+<td><p>速度/加速度限制</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.trajectory_execution()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">config/../moveit_controllers.yaml</span></code></p></td>
+<td><p>控制器映射</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.planning_pipelines()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pipelines=[&quot;ompl&quot;]</span></code></p></td>
+<td><p>OMPL 规划器配置</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/launch/so101_moveit.launch.py#L61-L90">src/robot_moveit/launch/so101_moveit.launch.py:61-90</a></p>
+</section>
+<section id="id6">
+<h2>节点配置<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<section id="move-group">
+<h3>move_group 节点<a class="headerlink" href="#move-group" title="Link to this heading"></a></h3>
+<p>核心 MoveIt 规划服务使用合并的配置参数启动：</p>
+<p><a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/launch/so101_moveit.launch.py#L79-L90">src/robot_moveit/launch/so101_moveit.launch.py:79-90</a></p>
+<p>关键参数：- <code class="docutils literal notranslate"><span class="pre">moveit_config.to_dict()</span></code>：所有配置文件合并 - <code class="docutils literal notranslate"><span class="pre">use_sim_time</span></code>：与 <code class="docutils literal notranslate"><span class="pre">is_sim</span></code> 启动参数同步 - <code class="docutils literal notranslate"><span class="pre">publish_robot_description_semantic</span></code>：将 SRDF 发布到 <code class="docutils literal notranslate"><span class="pre">/robot_description_semantic</span></code> - <code class="docutils literal notranslate"><span class="pre">pilz_cartesian_limits_path</span></code>：额外的 Pilz 规划器限制</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/launch/so101_moveit.launch.py#L79-L90">src/robot_moveit/launch/so101_moveit.launch.py:79-90</a></p>
+</section>
+<section id="rviz2">
+<h3>RViz2 可视化节点<a class="headerlink" href="#rviz2" title="Link to this heading"></a></h3>
+<p>RViz 根据 <code class="docutils literal notranslate"><span class="pre">display</span></code> 参数条件性启动：</p>
+<p><a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/launch/so101_moveit.launch.py#L94-L105">src/robot_moveit/launch/so101_moveit.launch.py:94-105</a></p>
+<p>RViz 配置从
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/config/lerobot/so101/moveit.rviz#L1-L1">src/robot_moveit/config/lerobot/so101/moveit.rviz:1-1</a> 加载，包括：- 用于交互式规划的 MotionPlanning 插件 - RobotModel 显示 - PlanningScene 可视化 - TF 坐标树</p>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/launch/so101_moveit.launch.py#L92-L105">src/robot_moveit/launch/so101_moveit.launch.py:92-105</a></p>
+</section>
+<section id="moveit-gateway">
+<h3>moveit_gateway 节点<a class="headerlink" href="#moveit-gateway" title="Link to this heading"></a></h3>
+<p>自定义网关节点从 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> 接收参数：</p>
+<p><a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/launch/so101_moveit.launch.py#L107-L120">src/robot_moveit/launch/so101_moveit.launch.py:107-120</a></p>
+<p>参数使用 <code class="docutils literal notranslate"><span class="pre">PythonExpression</span></code> 构建，将空格分隔的 <code class="docutils literal notranslate"><span class="pre">joint_names</span></code> 字符串拆分回列表：</p>
+<p><a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/launch/so101_moveit.launch.py#L117">src/robot_moveit/launch/so101_moveit.launch.py:117</a></p>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/launch/so101_moveit.launch.py#L107-L120">src/robot_moveit/launch/so101_moveit.launch.py:107-120</a></p>
+</section>
+</section>
+<section id="id7">
+<h2>运动学配置<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<p>5DOF 机械臂支持最关键的配置文件是 <code class="docutils literal notranslate"><span class="pre">kinematics.yaml</span></code>：</p>
+<p><a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/config/lerobot/so101/kinematics.yaml#L1-L7">src/robot_moveit/config/lerobot/so101/kinematics.yaml:1-7</a></p>
+<section id="position-only-ik-true">
+<h3>position_only_ik: True<a class="headerlink" href="#position-only-ik-true" title="Link to this heading"></a></h3>
+<p>此参数对 5DOF 机械臂 IK 求解至关重要。启用时：</p>
+<ul class="simple">
+<li><p>KDL 求解器使用 <code class="docutils literal notranslate"><span class="pre">ChainIkSolverPos</span></code> 而非 <code class="docutils literal notranslate"><span class="pre">ChainIkSolverPos_NR</span></code></p></li>
+<li><p>优化仅针对位置精度，忽略姿态</p></li>
+<li><p>姿态约束仍可通过 <code class="docutils literal notranslate"><span class="pre">Constraints</span></code> 消息应用，但用于验证而非优化</p></li>
+<li><p>显著提高 5DOF 机械臂的 IK 成功率</p></li>
+</ul>
+<p>有关 5DOF 运动学约束的详细说明，请参阅 <a class="reference external" href="#10.2">10.2</a>。</p>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/config/lerobot/so101/kinematics.yaml#L1-L7">src/robot_moveit/config/lerobot/so101/kinematics.yaml:1-7</a>，
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L32-L58">src/robot_moveit/docs/moveit_gateway.md:32-58</a></p>
+</section>
+</section>
+<section id="id8">
+<h2>控制模式集成<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<p>MoveIt 启动根据控制模式条件性包含：</p>
+<pre  class="mermaid">
+        graph TB
+    LaunchBuilder[&quot;generate_moveit_nodes()&quot;]
+    CheckMode{&quot;'moveit' in&lt;br/&gt;control_mode.lower()?&quot;}
+    FindPkg[&quot;get_package_share_directory('robot_moveit')&quot;]
+    CheckFile{&quot;so101_moveit.launch.py&lt;br/&gt;exists?&quot;}
+    Include[&quot;IncludeLaunchDescription&quot;]
+    Skip[&quot;return []&lt;br/&gt;(no MoveIt)&quot;]
+    Warn[&quot;Print warning&lt;br/&gt;'MoveIt launch file not found'&quot;]
+
+    LaunchBuilder --&gt; CheckMode
+    CheckMode --&gt;|&quot;No&lt;br/&gt;(teleop, model_inference)&quot;| Skip
+    CheckMode --&gt;|&quot;Yes&lt;br/&gt;(moveit_planning)&quot;| FindPkg
+    FindPkg --&gt; CheckFile
+    CheckFile --&gt;|Yes| Include
+    CheckFile --&gt;|No| Warn
+    Warn --&gt; Skip
+    </pre><p><a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/moveit.py#L29-L34">src/robot_config/robot_config/launch_builders/moveit.py:29-34</a></p>
+<p>此设计确保 MoveIt 节点仅在需要时启动，减少其他控制模式下的资源消耗。</p>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/moveit.py#L15-L78">src/robot_config/robot_config/launch_builders/moveit.py:15-78</a></p>
+</section>
+<section id="id9">
+<h2>配置文件依赖图<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;robot_config Package&quot;
+        RobotYAML[&quot;so101_single_arm.yaml&quot;]
+    end
+
+    subgraph &quot;robot_description Package&quot;
+        URDF[&quot;urdf/lerobot/so101/so101.urdf.xacro&quot;]
+    end
+
+    subgraph &quot;robot_moveit Package&quot;
+        SO101Launch[&quot;so101_moveit.launch.py&quot;]
+
+        SRDF[&quot;so101.srdf&quot;]
+        Kinematics[&quot;kinematics.yaml&quot;]
+        JointLimits[&quot;joint_limits.yaml&quot;]
+        Controllers[&quot;moveit_controllers.yaml&quot;]
+        Pilz[&quot;pilz_cartesian_limits.yaml&quot;]
+    end
+
+    subgraph &quot;MoveIt Nodes&quot;
+        MoveGroup[&quot;move_group&quot;]
+        Gateway[&quot;moveit_gateway&quot;]
+    end
+
+    RobotYAML --&gt;|&quot;moveit: {...}&quot;| SO101Launch
+    RobotYAML --&gt;|&quot;joints: {...}&quot;| SO101Launch
+
+    SO101Launch --&gt; URDF
+    SO101Launch --&gt; SRDF
+    SO101Launch --&gt; Kinematics
+    SO101Launch --&gt; JointLimits
+    SO101Launch --&gt; Controllers
+    SO101Launch --&gt; Pilz
+
+    URDF --&gt; MoveGroup
+    SRDF --&gt; MoveGroup
+    Kinematics --&gt; MoveGroup
+    JointLimits --&gt; MoveGroup
+    Controllers --&gt; MoveGroup
+    Pilz --&gt; MoveGroup
+
+    RobotYAML --&gt;|&quot;parameters&quot;| Gateway
+    Kinematics -.-&gt;|&quot;IK solver&quot;| Gateway
+    </pre><p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/launch/so101_moveit.launch.py#L58-L90">src/robot_moveit/launch/so101_moveit.launch.py:58-90</a>，
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/moveit.py#L40-L78">src/robot_config/robot_config/launch_builders/moveit.py:40-78</a></p>
+</section>
+<section id="id10">
+<h2>启动命令示例<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<section id="moveit-rviz">
+<h3>基本 MoveIt 启动（带 RViz）<a class="headerlink" href="#moveit-rviz" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>launch<span class="w"> </span>robot_config<span class="w"> </span>robot.launch.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>robot_config:<span class="o">=</span>so101_single_arm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>control_mode:<span class="o">=</span>moveit_planning
+</pre></div>
+</div>
+<p>此命令启动：- <code class="docutils literal notranslate"><span class="pre">move_group</span></code> 节点（运动规划服务）- 带 MoveIt 插件的 <code class="docutils literal notranslate"><span class="pre">rviz2</span></code> - <code class="docutils literal notranslate"><span class="pre">moveit_gateway</span></code> 节点（IK 求解器接口）</p>
+</section>
+<section id="id11">
+<h3>无头 MoveIt 启动（不带 RViz）<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>launch<span class="w"> </span>robot_config<span class="w"> </span>robot.launch.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>robot_config:<span class="o">=</span>so101_single_arm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>control_mode:<span class="o">=</span>moveit_planning<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>moveit_display:<span class="o">=</span><span class="nb">false</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">moveit_display</span></code> 参数作为 <code class="docutils literal notranslate"><span class="pre">display</span></code> 参数转发到 <code class="docutils literal notranslate"><span class="pre">so101_moveit.launch.py</span></code>。</p>
+</section>
+<section id="id12">
+<h3>带 MoveIt 的仿真<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>launch<span class="w"> </span>robot_config<span class="w"> </span>robot.launch.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>robot_config:<span class="o">=</span>so101_single_arm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>control_mode:<span class="o">=</span>moveit_planning<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>use_sim:<span class="o">=</span><span class="nb">true</span>
+</pre></div>
+</div>
+<p>为所有 MoveIt 节点设置 <code class="docutils literal notranslate"><span class="pre">use_sim_time:=True</span></code> 以与 Gazebo 时钟同步。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/README.en.md#L350-L354">src/robot_config/README.en.md:350-354</a></p>
+</section>
+</section>
+<section id="id13">
+<h2>参数映射表<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
+<p>下表显示参数如何从 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> 提取并映射到 MoveIt 启动参数：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>robot_config 路径</p></th>
+<th class="head"><p>转换</p></th>
+<th class="head"><p>启动参数</p></th>
+<th class="head"><p>消费节点</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">moveit.ar</span> <span class="pre">m_group_name</span></code></p></td>
+<td><p>direct</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ar</span> <span class="pre">m_group_name</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mo</span> <span class="pre">veit_gateway</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">move</span> <span class="pre">it.base_link</span></code></p></td>
+<td><p>direct</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">base_link</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mo</span> <span class="pre">veit_gateway</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mo</span> <span class="pre">veit.ee_link</span></code></p></td>
+<td><p>direct</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ee_link</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mo</span> <span class="pre">veit_gateway</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">moveit.s</span> <span class="pre">houlder_link</span></code></p></td>
+<td><p>direct</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">s</span> <span class="pre">houlder_link</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mo</span> <span class="pre">veit_gateway</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">joints.arm</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'</span> <span class="pre">'.join(list)</span></code></p></td>
+<td><p>` <cite>joint_names`</cite></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mo</span> <span class="pre">veit_gateway</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">use_sim</span></code> (launch arg)</p></td>
+<td><p>boolean</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">is_sim</span></code></p></td>
+<td><p>` <cite>move_group`</cite>, <code class="docutils literal notranslate"><span class="pre">mo</span> <span class="pre">veit_gateway</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">mo</span> <span class="pre">veit_display</span></code> (launch arg)</p></td>
+<td><p>boolean</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">display</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rviz2</span></code> (condition)</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/moveit.py#L46-L68">src/robot_config/robot_config/launch_builders/moveit.py:46-68</a>，
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/launch/so101_moveit.launch.py#L26-L54">src/robot_moveit/launch/so101_moveit.launch.py:26-54</a></p>
+</section>
+<section id="id14">
+<h2>故障排除<a class="headerlink" href="#id14" title="Link to this heading"></a></h2>
+<section id="id15">
+<h3>MoveIt 启动文件未找到<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<p><strong>症状</strong>：启动期间警告消息：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">robot_config</span><span class="p">]</span> <span class="n">WARNING</span><span class="p">:</span> <span class="n">MoveIt</span> <span class="n">launch</span> <span class="n">file</span> <span class="ow">not</span> <span class="n">found</span> <span class="n">at</span> <span class="o">.../</span><span class="n">so101_moveit</span><span class="o">.</span><span class="n">launch</span><span class="o">.</span><span class="n">py</span>
+<span class="p">[</span><span class="n">robot_config</span><span class="p">]</span> <span class="n">Continuing</span> <span class="n">without</span> <span class="n">MoveIt</span><span class="o">...</span>
+</pre></div>
+</div>
+<p><strong>原因</strong>：<code class="docutils literal notranslate"><span class="pre">robot_moveit</span></code> 包未构建或安装。</p>
+<p><strong>解决方案</strong>：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>~/IB_Robot
+colcon<span class="w"> </span>build<span class="w"> </span>--packages-select<span class="w"> </span>robot_moveit
+<span class="nb">source</span><span class="w"> </span>install/setup.bash
+</pre></div>
+</div>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/moveit.py#L73-L76">src/robot_config/robot_config/launch_builders/moveit.py:73-76</a></p>
+</section>
+<section id="id16">
+<h3>缺少 MoveIt 配置参数<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<p><strong>症状</strong>：启动失败，提示：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">moveit_gateway</span><span class="o">-</span><span class="n">X</span><span class="p">]</span> <span class="n">rclpy</span><span class="o">.</span><span class="n">_exceptions</span><span class="o">.</span><span class="n">ParameterNotDeclaredException</span><span class="p">:</span> <span class="n">Parameter</span> <span class="s1">&#39;arm_group_name&#39;</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">declared</span>
+</pre></div>
+</div>
+<p><strong>原因</strong>：<code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML 中缺少 <code class="docutils literal notranslate"><span class="pre">moveit:</span></code> 部分。</p>
+<p><strong>解决方案</strong>：在机器人配置中添加 <code class="docutils literal notranslate"><span class="pre">moveit:</span></code> 部分：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">robot</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">moveit</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">arm_group_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arm</span>
+<span class="w">    </span><span class="nt">base_link</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">base</span>
+<span class="w">    </span><span class="nt">ee_link</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gripper</span>
+<span class="w">    </span><span class="nt">shoulder_link</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shoulder</span>
+</pre></div>
+</div>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L37-L43">src/robot_config/config/robots/so101_single_arm.yaml:37-43</a></p>
+</section>
+<section id="id17">
+<h3>关节名称不匹配<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<p><strong>症状</strong>：MoveIt 规划因关节名称无效而失败。</p>
+<p><strong>原因</strong>：<code class="docutils literal notranslate"><span class="pre">robot_config</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">joints.arm</span></code> 与 URDF 或 SRDF 中的关节名称不匹配。</p>
+<p><strong>解决方案</strong>：使用以下命令验证一致性：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 检查 URDF 关节</span>
+ros2<span class="w"> </span>topic<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>/robot_description<span class="w"> </span>--once<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="s2">&quot;joint name&quot;</span>
+
+<span class="c1"># 检查 robot_config</span>
+cat<span class="w"> </span>src/robot_config/config/robots/so101_single_arm.yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="s2">&quot;joints:&quot;</span>
+</pre></div>
+</div>
+<p>确保关节列表完全匹配。</p>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/moveit.py#L47-L49">src/robot_config/robot_config/launch_builders/moveit.py:47-49</a></p>
+</section>
+<section id="ik">
+<h3>IK 求解器频繁失败<a class="headerlink" href="#ik" title="Link to this heading"></a></h3>
+<p><strong>症状</strong>：MoveIt 规划对大多数目标返回 <code class="docutils literal notranslate"><span class="pre">NO_IK_SOLUTION</span></code>。</p>
+<p><strong>原因</strong>：5DOF 机械臂的 <code class="docutils literal notranslate"><span class="pre">kinematics.yaml</span></code> 中未设置 <code class="docutils literal notranslate"><span class="pre">position_only_ik:</span> <span class="pre">True</span></code>。</p>
+<p><strong>解决方案</strong>：验证运动学配置：</p>
+<p><a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/config/lerobot/so101/kinematics.yaml#L6">src/robot_moveit/config/lerobot/so101/kinematics.yaml:6</a></p>
+<p>此参数对 5DOF 机械臂至关重要。详情请参阅 <a class="reference external" href="#10.2">10.2</a>。</p>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/config/lerobot/so101/kinematics.yaml#L1-L7">src/robot_moveit/config/lerobot/so101/kinematics.yaml:1-7</a>，
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L32-L58">src/robot_moveit/docs/moveit_gateway.md:32-58</a></p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dof_kinematic_constraints.html" class="btn btn-neutral float-left" title="5DOF 运动学约束" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../hardware/index.html" class="btn btn-neutral float-right" title="硬件集成" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../../24.03-lts/index.html">24.03-lts</a></dd>
+      <dd><a href="../../../../llvm-toolchain-v0.1.1/index.html">llvm-toolchain-v0.1.1</a></dd>
+      <dd><a href="../../../../nativesdk-v0.1.2/index.html">nativesdk-v0.1.2</a></dd>
+      <dd><a href="../../../../nativesdk-v0.1.3/index.html">nativesdk-v0.1.3</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.5/index.html">toolchains-v0.1.5</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.7/index.html">toolchains-v0.1.7</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.8/index.html">toolchains-v0.1.8</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="moveit_launch_configuration.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../pr_2786/features/embodied_ai/motion_planning/moveit_launch_configuration.html">pr_2786</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

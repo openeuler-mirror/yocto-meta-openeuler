@@ -1,0 +1,1283 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5DOF 运动学约束 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
+    /* Same as .mermaid-container > pre */
+    display: block;
+    width: 100%;
+}
+
+pre.mermaid > svg {
+    /* Same as .mermaid-container > pre > svg */
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}`;
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.mermaid-container > pre {
+    display: block;
+    width: 100%;
+}
+
+.mermaid-container > pre > svg {
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.mermaid-fullscreen-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: #333;
+}
+
+.mermaid-fullscreen-btn:hover {
+    opacity: 100% !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-btn.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-btn.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 95vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    padding: 20px;
+    overflow: auto;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.mermaid-fullscreen-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen.dark-theme {
+    background: #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen .mermaid svg {
+    height: 100% !important;
+    width: 100% !important;
+    cursor: grab;
+}
+
+.mermaid-fullscreen-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: white;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-close.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-close.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
+    display: none !important;
+}`;
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+
+    if ("False" === "True") {
+        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("");
+            if(all_mermaids.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else if(svgs.size() !== mermaids_to_add_zoom) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else {
+                svgs.each(function() {
+                    var svg = d3.select(this);
+                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                    var inner = svg.select("g");
+                    var zoom = d3.zoom().on("zoom", function(event) {
+                        inner.attr("transform", event.transform);
+                    });
+                    svg.call(zoom);
+                });
+            }
+        }
+    } else if(all_mermaids.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if ("True" !== "True") return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = '⛶';
+        fullscreenBtn.style.opacity = '50%';
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scroll, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.sdisplay = 'block';
+
+                if ("False" === "True") {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="MoveIt 启动配置" href="moveit_launch_configuration.html" />
+    <link rel="prev" title="MoveItGateway 节点" href="moveitgateway_node.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">具身机器人框架IB Robot</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../introduction/ib-robot_overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture/system_architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统 (robot_config)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol/protocol_conversion_tensormsg.html">协议转换 (tensormsg)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference/index.html">推理服务</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../action_dispatch/index.html">动作调度</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_pipeline/index.html">数据服务</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">运动规划 (MoveIt)</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">运动规划概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="moveitgateway_node.html">MoveItGateway 节点</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">5DOF 运动学约束</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id1">5DOF 问题</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#ik">配置：仅位置 IK</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id5">姿态预处理策略</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id6">分层容差策略</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id9">多策略回退工作流</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id12">带约束的 IK 求解</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id14">配置集成</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id16">坐标系变换</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id18">性能特征</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id21">数学工具</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id23">故障排除</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="moveit_launch_configuration.html">MoveIt 启动配置</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../hardware/index.html">硬件集成</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference/package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">具身机器人框架IB Robot</a></li>
+          <li class="breadcrumb-item"><a href="index.html">运动规划 (MoveIt)</a></li>
+      <li class="breadcrumb-item active">5DOF 运动学约束</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dof">
+<h1>5DOF 运动学约束<a class="headerlink" href="#dof" title="Link to this heading"></a></h1>
+<details><p>相关源文件</p>
+<p>以下文件用作生成此 wiki 页面的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="src/robot_config/config/robots/test_single_arm_single_cam.yaml">src/robot_config/config/robots/test_single_arm_single_cam.yaml</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/robot_config/launch_builders/moveit.py">src/robot_config/robot_config/launch_builders/moveit.py</a></p></li>
+<li><p><a class="reference external" href="src/robot_moveit/CMakeLists.txt">src/robot_moveit/CMakeLists.txt</a></p></li>
+<li><p><a class="reference external" href="src/robot_moveit/config/lerobot/so101/kinematics.yaml">src/robot_moveit/config/lerobot/so101/kinematics.yaml</a></p></li>
+<li><p><a class="reference external" href="src/robot_moveit/docs/moveit_gateway.md">src/robot_moveit/docs/moveit_gateway.md</a></p></li>
+<li><p><a class="reference external" href="src/robot_moveit/launch/so101_moveit.launch.py">src/robot_moveit/launch/so101_moveit.launch.py</a></p></li>
+<li><p><a class="reference external" href="src/robot_moveit/package.xml">src/robot_moveit/package.xml</a></p></li>
+<li><p><a class="reference external" href="src/robot_moveit/scripts/moveit_gateway.py">src/robot_moveit/scripts/moveit_gateway.py</a></p></li>
+</ul>
+</details><p>本文档介绍 IB-Robot 框架中 5 自由度（DOF）机械臂的运动学约束处理系统。SO101 机械臂只有 5 个驱动关节，但末端执行器位姿命令指定 6DOF（3 位置 + 3 姿态）。本文档解释数学问题、<code class="docutils literal notranslate"><span class="pre">MoveItGateway</span></code> 中实现的约束松弛策略，以及成功逆运动学（IK）求解所需的配置。</p>
+<p>有关 MoveItGateway 节点的整体架构和位姿命令接口信息，请参阅 <a class="reference external" href="#10.1">MoveItGateway 节点</a>。有关 MoveIt 启动配置和控制器设置，请参阅 <a class="reference external" href="#10.3">MoveIt 启动配置</a>。</p>
+<hr class="docutils" />
+<section id="id1">
+<h2>5DOF 问题<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<section id="id2">
+<h3>数学约束<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p>6DOF 位姿规范提供 6 个约束：- <strong>位置</strong>：3 个约束（x, y, z）- <strong>姿态</strong>：3 个约束（roll, pitch, yaw）</p>
+<p>5DOF 机械臂只有 5 个关节变量。标准 IK 求解器尝试同时满足所有 6 个约束将因系统过度约束（6 个方程，5 个未知数）而失败并返回 <code class="docutils literal notranslate"><span class="pre">NO_IK_SOLUTION</span></code> 错误。</p>
+</section>
+<section id="id3">
+<h3>运动学限制<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>SO101 机械臂的 5 个旋转关节可以控制：- 3 DOF 用于末端执行器位置 - 2 DOF 用于末端执行器姿态（通常是工具轴的方向）- <strong>缺失</strong>：1 DOF 用于绕工具轴旋转（roll）</p>
+<p>这意味着末端执行器无法实现任意 6DOF 位姿。对于大多数目标姿态，不存在精确解。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L22-L51">src/robot_moveit/docs/moveit_gateway.md:22-51</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="ik">
+<h2>配置：仅位置 IK<a class="headerlink" href="#ik" title="Link to this heading"></a></h2>
+<section id="id4">
+<h3>运动学配置<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p>主要解决方案是在 KDL 运动学求解器中启用仅位置 IK 模式：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">arm</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">kinematics_solver</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kdl_kinematics_plugin/KDLKinematicsPlugin</span>
+<span class="w">  </span><span class="nt">kinematics_solver_search_resolution</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.01</span>
+<span class="w">  </span><span class="nt">kinematics_solver_timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2.0</span>
+<span class="w">  </span><span class="nt">kinematics_solver_attempts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50</span>
+<span class="w">  </span><span class="nt">position_only_ik</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span>
+</pre></div>
+</div>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/config/lerobot/so101/kinematics.yaml#L1-L7">src/robot_moveit/config/lerobot/so101/kinematics.yaml:1-7</a></p>
+</section>
+<section id="position-only-ik-true">
+<h3><code class="docutils literal notranslate"><span class="pre">position_only_ik:</span> <span class="pre">True</span></code> 时的求解器行为<a class="headerlink" href="#position-only-ik-true" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>方面</p></th>
+<th class="head"><p>标准模式</p></th>
+<th class="head"><p>仅位置模式</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>目标</strong></p></td>
+<td><p>最小化位置 + 姿态误差</p></td>
+<td><p>仅最小化位置误差</p></td>
+</tr>
+<tr class="row-odd"><td><p>** 姿态输入**</p></td>
+<td><p>硬约束， 无法到达时失败</p></td>
+<td><p>用作解选择的提示</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>解 空间</strong></p></td>
+<td><p>需要精确 6DOF 匹配</p></td>
+<td><p>任何达到位置目标的姿态</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>成功 率</strong></p></td>
+<td><p>5DOF 机械臂低 （~10-30%）</p></td>
+<td><p>高（~80-95%）</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>求解器 类</strong></p></td>
+<td><p>`` ChainIkSolverPos_NR``</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ChainIkSolverPos</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>传递给 <code class="docutils literal notranslate"><span class="pre">compute_ik_async()</span></code> 的姿态四元数仍然影响从满足位置的配置集中选择哪个解，但它不强制严格的姿态匹配。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L33-L58">src/robot_moveit/docs/moveit_gateway.md:33-58</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id5">
+<h2>姿态预处理策略<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<p>即使启用了 <code class="docutils literal notranslate"><span class="pre">position_only_ik:</span> <span class="pre">True</span></code>，<code class="docutils literal notranslate"><span class="pre">MoveItGateway</span></code> 节点仍应用姿态预处理以改善 IK 收敛性，并引导求解器朝向运动学可行的姿态。</p>
+<section id="z">
+<h3>策略 1：仅 Z 轴约束<a class="headerlink" href="#z" title="Link to this heading"></a></h3>
+<p><strong>方法</strong>：<code class="docutils literal notranslate"><span class="pre">constrain_to_z_axis_only(quat)</span></code></p>
+<p><strong>原理</strong>：- 保留末端执行器 Z 轴方向（2 DOF：pitch + yaw）- 释放绕 Z 轴的旋转（1 DOF：roll）- 使用最小旋转原理保持接近原始姿态</p>
+<p><strong>算法</strong>：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. 将四元数转换为旋转矩阵 R
+2. 提取并归一化 Z 轴：z = R[:, 2]
+3. 将原始 X 轴投影到垂直于 Z 的平面：x&#39; = x - (x·z)z
+4. 重新正交化：y&#39; = z × x&#39;
+5. 重建旋转矩阵 R&#39; = [x&#39;, y&#39;, z]
+6. 转换回四元数
+</pre></div>
+</div>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L118-L175">src/robot_moveit/scripts/moveit_gateway.py:118-175</a></p>
+<pre  class="mermaid">
+        graph TD
+    InputQuat[&quot;Input Quaternion&lt;br/&gt;(x, y, z, w)&quot;]
+    ToMatrix[&quot;quaternion_to_rotation_matrix()&quot;]
+    ExtractZ[&quot;Extract Z-axis&lt;br/&gt;z = R[:, 2]&quot;]
+    NormalizeZ[&quot;Normalize Z-axis&quot;]
+    ProjectX[&quot;Project X-axis to&lt;br/&gt;perpendicular plane&lt;br/&gt;x' = x - (x·z)z&quot;]
+    CrossY[&quot;Compute Y-axis&lt;br/&gt;y' = z × x'&quot;]
+    RebuildMatrix[&quot;Rebuild rotation matrix&lt;br/&gt;R' = [x', y', z]&quot;]
+    ToQuat[&quot;rotation_matrix_to_quaternion()&quot;]
+    OutputQuat[&quot;Constrained Quaternion&lt;br/&gt;(x', y', z', w')&quot;]
+
+    InputQuat --&gt; ToMatrix
+    ToMatrix --&gt; ExtractZ
+    ExtractZ --&gt; NormalizeZ
+    NormalizeZ --&gt; ProjectX
+    ProjectX --&gt; CrossY
+    CrossY --&gt; RebuildMatrix
+    RebuildMatrix --&gt; ToQuat
+    ToQuat --&gt; OutputQuat
+    </pre><p><strong>图：Z 轴约束算法</strong></p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L118-L175">src/robot_moveit/scripts/moveit_gateway.py:118-175</a></p>
+</section>
+<hr class="docutils" />
+<section id="xz">
+<h3>策略 2：肩部 XZ 平面投影<a class="headerlink" href="#xz" title="Link to this heading"></a></h3>
+<p><strong>方法</strong>：<code class="docutils literal notranslate"><span class="pre">project_orientation_to_shoulder_xz_plane(quat)</span></code></p>
+<p><strong>原理</strong>：- 将姿态变换到肩部坐标系 - 约束旋转轴位于肩部 XZ 平面（Y 分量 = 0）- 变换回基座坐标系</p>
+<p>此方法具有几何动机：SO101 的运动链由于其串联结构，自然与肩部 XZ 平面对齐。</p>
+<p><strong>算法</strong>：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. 查找 TF：base → shoulder（旋转 Q_b2s）
+2. 变换姿态：q_shoulder = Q_b2s * q_base
+3. 转换为旋转矩阵：R_shoulder
+4. 将 Y 分量置零：x_axis[1] = 0, z_axis[1] = 0
+5. 重新归一化和正交化
+6. 转换回：q_shoulder_constrained
+7. 变换到基座：q_base_constrained = Q_s2b * q_shoulder_constrained
+</pre></div>
+</div>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L177-L271">src/robot_moveit/scripts/moveit_gateway.py:177-271</a></p>
+<pre  class="mermaid">
+        graph TB
+    InputQuat[&quot;Input Quaternion&lt;br/&gt;in base frame&quot;]
+    LookupTF[&quot;tf_buffer.lookup_transform()&lt;br/&gt;base → shoulder&quot;]
+    Transform1[&quot;quaternion_multiply()&lt;br/&gt;q_shoulder = Q_b2s * q_base&quot;]
+    ToMatrix[&quot;quaternion_to_rotation_matrix()&quot;]
+    ZeroY[&quot;Zero Y components&lt;br/&gt;x[1]=0, z[1]=0&quot;]
+    Renormalize[&quot;Renormalize x, z axes&quot;]
+    CrossY[&quot;y = z × x&quot;]
+    RebuildMatrix[&quot;Rebuild matrix R'&quot;]
+    ToQuat[&quot;rotation_matrix_to_quaternion()&quot;]
+    Transform2[&quot;quaternion_multiply()&lt;br/&gt;q_base' = Q_s2b * q_shoulder'&quot;]
+    OutputQuat[&quot;Constrained Quaternion&lt;br/&gt;in base frame&quot;]
+
+    InputQuat --&gt; LookupTF
+    LookupTF --&gt; Transform1
+    Transform1 --&gt; ToMatrix
+    ToMatrix --&gt; ZeroY
+    ZeroY --&gt; Renormalize
+    Renormalize --&gt; CrossY
+    CrossY --&gt; RebuildMatrix
+    RebuildMatrix --&gt; ToQuat
+    ToQuat --&gt; Transform2
+    Transform2 --&gt; OutputQuat
+    </pre><p><strong>图：肩部 XZ 平面投影算法</strong></p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L177-L271">src/robot_moveit/scripts/moveit_gateway.py:177-271</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id6">
+<h2>分层容差策略<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p>当姿态约束通过 <code class="docutils literal notranslate"><span class="pre">Constraints</span></code> 消息传递给 IK 求解器时，求解器验证最终解满足容差边界。<code class="docutils literal notranslate"><span class="pre">MoveItGateway</span></code> 实现渐进式松弛策略。</p>
+<section id="id7">
+<h3>容差级别<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>策略名称</p></th>
+<th class="head"><p>X/Y 容差 (rad)</p></th>
+<th class="head"><p>Z 容差 (rad)</p></th>
+<th class="head"><p>角度（约）</p></th>
+<th class="head"><p>用例</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><ul class="simple">
+<li><p><em>严格*</em></p></li>
+</ul>
+</td>
+<td><p>0.1</p></td>
+<td><p>0.05</p></td>
+<td><p>±5.7° (XY), ±2.8° (Z)</p></td>
+<td><p>高精度 任务</p></td>
+</tr>
+<tr class="row-odd"><td><ul class="simple">
+<li><p><em>中等*</em></p></li>
+</ul>
+</td>
+<td><p>0.3</p></td>
+<td><p>0.1</p></td>
+<td><p>±17° (XY), ±5.7° (Z)</p></td>
+<td><p>通用 操作</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>宽 松</strong></p></td>
+<td><p>0.5</p></td>
+<td><p>0.15</p></td>
+<td><p>±28° (XY), ±8.6° (Z)</p></td>
+<td><p>粗略 定位</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>仅 Z 轴</strong></p></td>
+<td><p>1.0</p></td>
+<td><p>0.2</p></td>
+<td><p>±57° (XY), ±11.5° (Z)</p></td>
+<td><p>方向 重要, roll 自由</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>无 约束</strong></p></td>
+<td><p>None</p></td>
+<td><p>None</p></td>
+<td><p>N/A</p></td>
+<td><p>仅位置</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>注意</strong>：X 和 Y 容差较大（松弛 roll）是因为 5DOF 机械臂缺乏控制绕 Z 轴旋转的自由度。Z 容差较小以保持工具方向。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L397-L404">src/robot_moveit/scripts/moveit_gateway.py:397-404</a>，
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L73-L82">src/robot_moveit/docs/moveit_gateway.md:73-82</a></p>
+</section>
+<section id="id8">
+<h3>姿态约束消息<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">create_orientation_constraint()</span></code> 方法构建 <code class="docutils literal notranslate"><span class="pre">OrientationConstraint</span></code> 消息：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">constraint</span> <span class="o">=</span> <span class="n">OrientationConstraint</span><span class="p">()</span>
+<span class="n">constraint</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="n">frame_id</span>           <span class="c1"># &quot;base&quot;</span>
+<span class="n">constraint</span><span class="o">.</span><span class="n">link_name</span> <span class="o">=</span> <span class="n">link_name</span>                <span class="c1"># &quot;gripper&quot;</span>
+<span class="n">constraint</span><span class="o">.</span><span class="n">orientation</span> <span class="o">=</span> <span class="n">target_quat</span>            <span class="c1"># (x, y, z, w)</span>
+<span class="n">constraint</span><span class="o">.</span><span class="n">absolute_x_axis_tolerance</span> <span class="o">=</span> <span class="n">tol_x</span>
+<span class="n">constraint</span><span class="o">.</span><span class="n">absolute_y_axis_tolerance</span> <span class="o">=</span> <span class="n">tol_y</span>
+<span class="n">constraint</span><span class="o">.</span><span class="n">absolute_z_axis_tolerance</span> <span class="o">=</span> <span class="n">tol_z</span>
+<span class="n">constraint</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="mf">1.0</span>
+</pre></div>
+</div>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L273-L306">src/robot_moveit/scripts/moveit_gateway.py:273-306</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id9">
+<h2>多策略回退工作流<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">cmd_pose_callback()</span></code> 实现嵌套回退循环：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">For</span> <span class="n">each</span> <span class="n">orientation</span> <span class="n">preprocessing</span> <span class="n">strategy</span><span class="p">:</span>
+    <span class="n">For</span> <span class="n">each</span> <span class="n">tolerance</span> <span class="n">level</span><span class="p">:</span>
+        <span class="n">Try</span> <span class="n">IK</span> <span class="n">solve</span>
+        <span class="n">If</span> <span class="n">success</span><span class="p">:</span> <span class="n">execute</span> <span class="ow">and</span> <span class="k">return</span>
+        <span class="n">Else</span><span class="p">:</span> <span class="k">continue</span> <span class="n">to</span> <span class="nb">next</span> <span class="n">tolerance</span>
+    <span class="n">Next</span> <span class="n">strategy</span>
+<span class="n">Report</span> <span class="n">failure</span> <span class="k">if</span> <span class="nb">all</span> <span class="n">combinations</span> <span class="n">fail</span>
+</pre></div>
+</div>
+<section id="id10">
+<h3>回退序列<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TD
+    Start[&quot;Receive /cmd_pose&quot;]
+    S1[&quot;Strategy 1:&lt;br/&gt;constrain_to_z_axis_only()&quot;]
+    S2[&quot;Strategy 2:&lt;br/&gt;project_orientation_to_shoulder_xz_plane()&quot;]
+    S3[&quot;Strategy 3:&lt;br/&gt;Current EE orientation&lt;br/&gt;(position-only move)&quot;]
+    S4[&quot;Strategy 4:&lt;br/&gt;Default orientation&lt;br/&gt;(0, 0, 0, 1)&quot;]
+
+    T1[&quot;Tolerance Loop:&lt;br/&gt;Strict → Medium → Relaxed&lt;br/&gt;→ Z-only → None&quot;]
+    T2[&quot;Tolerance Loop:&lt;br/&gt;Strict → Medium → Relaxed&lt;br/&gt;→ Z-only → None&quot;]
+    T3[&quot;Tolerance Loop:&lt;br/&gt;Strict → Medium → Relaxed&lt;br/&gt;→ Z-only → None&quot;]
+    T4[&quot;Tolerance Loop:&lt;br/&gt;Strict → Medium → Relaxed&lt;br/&gt;→ Z-only → None&quot;]
+
+    Solve1[&quot;solve_and_move()&quot;]
+    Solve2[&quot;solve_and_move()&quot;]
+    Solve3[&quot;solve_and_move()&quot;]
+    Solve4[&quot;solve_and_move()&quot;]
+
+    Success[&quot;IK Success&lt;br/&gt;Execute Motion&quot;]
+    Failure[&quot;All strategies failed&lt;br/&gt;Log error&quot;]
+
+    Start --&gt; S1
+    S1 --&gt; T1
+    T1 --&gt; Solve1
+    Solve1 --&gt;|Success| Success
+    Solve1 --&gt;|Fail all tolerances| S2
+
+    S2 --&gt; T2
+    T2 --&gt; Solve2
+    Solve2 --&gt;|Success| Success
+    Solve2 --&gt;|Fail all tolerances| S3
+
+    S3 --&gt; T3
+    T3 --&gt; Solve3
+    Solve3 --&gt;|Success| Success
+    Solve3 --&gt;|Fail all tolerances| S4
+
+    S4 --&gt; T4
+    T4 --&gt; Solve4
+    Solve4 --&gt;|Success| Success
+    Solve4 --&gt;|Fail all tolerances| Failure
+    </pre><p><strong>图：多策略回退决策树</strong></p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L316-L430">src/robot_moveit/scripts/moveit_gateway.py:316-430</a></p>
+</section>
+<section id="id11">
+<h3>代码结构<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">cmd_pose_callback</span></code> 中的回退逻辑：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">strategies</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;Gripper Z-axis constraint&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">constrain_to_z_axis_only</span><span class="p">(</span><span class="n">orig_quat</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s2">&quot;Shoulder XZ plane projection&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_orientation_to_shoulder_xz_plane</span><span class="p">(</span><span class="n">orig_quat</span><span class="p">)),</span>
+<span class="p">]</span>
+
+<span class="c1"># Fallback: current orientation (lookup via TF)</span>
+<span class="n">current_quat</span> <span class="o">=</span> <span class="n">tf_buffer</span><span class="o">.</span><span class="n">lookup_transform</span><span class="p">(</span><span class="n">base_link</span><span class="p">,</span> <span class="n">ee_link</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+<span class="n">strategies</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;Current orientation (position only)&quot;</span><span class="p">,</span> <span class="n">current_quat</span><span class="p">))</span>
+
+<span class="c1"># Final fallback: identity quaternion</span>
+<span class="n">strategies</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s2">&quot;Default orientation (no rotation)&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)))</span>
+
+<span class="n">tolerance_strategies</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;Strict tolerance&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s2">&quot;Medium tolerance&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s2">&quot;Relaxed tolerance&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s2">&quot;Z-axis only&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)),</span>
+    <span class="p">(</span><span class="s2">&quot;No constraints&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="k">for</span> <span class="n">strategy_name</span><span class="p">,</span> <span class="n">quat</span> <span class="ow">in</span> <span class="n">strategies</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">tol_name</span><span class="p">,</span> <span class="n">tolerances</span> <span class="ow">in</span> <span class="n">tolerance_strategies</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">solve_and_move</span><span class="p">(</span><span class="n">adjusted_pose</span><span class="p">,</span> <span class="n">orientation_tolerance</span><span class="o">=</span><span class="n">tolerances</span><span class="p">):</span>
+            <span class="k">return</span>  <span class="c1"># Success</span>
+</pre></div>
+</div>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L372-L430">src/robot_moveit/scripts/moveit_gateway.py:372-430</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id12">
+<h2>带约束的 IK 求解<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
+<section id="solve-and-move">
+<h3><code class="docutils literal notranslate"><span class="pre">solve_and_move()</span></code> 实现<a class="headerlink" href="#solve-and-move" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    Start[&quot;solve_and_move(target_pose,&lt;br/&gt;orientation_tolerance)&quot;]
+    ValidateState[&quot;Validate latest_joint_state&lt;br/&gt;has required joints&quot;]
+    CreateConstraints{&quot;orientation_tolerance&lt;br/&gt;is not None?&quot;}
+    BuildConstraint[&quot;create_orientation_constraint()&lt;br/&gt;Build OrientationConstraint&quot;]
+    NoConstraint[&quot;constraints = None&quot;]
+
+    ComputeIK[&quot;moveit2.compute_ik_async(&lt;br/&gt;position, quat_xyzw,&lt;br/&gt;start_joint_state, constraints)&quot;]
+    WaitFuture[&quot;Wait for future.done()&lt;br/&gt;(timeout 5.0s)&quot;]
+    GetResult[&quot;moveit2.get_compute_ik_result(future)&quot;]
+
+    CheckResult{&quot;ik_solution&lt;br/&gt;is not None?&quot;}
+    ExtractJoints[&quot;Extract joint_positions&lt;br/&gt;from solution&quot;]
+    MoveJoint[&quot;move_to_joint(joint_positions)&quot;]
+    Success[&quot;Return True&quot;]
+    Fail[&quot;Log warning&lt;br/&gt;Return False&quot;]
+
+    Start --&gt; ValidateState
+    ValidateState --&gt; CreateConstraints
+    CreateConstraints --&gt;|Yes| BuildConstraint
+    CreateConstraints --&gt;|No| NoConstraint
+    BuildConstraint --&gt; ComputeIK
+    NoConstraint --&gt; ComputeIK
+
+    ComputeIK --&gt; WaitFuture
+    WaitFuture --&gt; GetResult
+    GetResult --&gt; CheckResult
+    CheckResult --&gt;|Yes| ExtractJoints
+    CheckResult --&gt;|No| Fail
+    ExtractJoints --&gt; MoveJoint
+    MoveJoint --&gt; Success
+    </pre><p><strong>图：solve_and_move() 工作流</strong></p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L444-L577">src/robot_moveit/scripts/moveit_gateway.py:444-577</a></p>
+</section>
+<section id="id13">
+<h3>关键方法调用<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>方法</p></th>
+<th class="head"><p>用途</p></th>
+<th class="head"><p>文件位置</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">compute_ik_async()</span></code></p></td>
+<td><p>异步 IK 计算 (pymoveit2)</p></td>
+<td><p><a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/moveit_gateway.py#L506-L534">moveit_gateway.py:506-534</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">get_compute_ik_result()</span></code></p></td>
+<td><p>从 future 提取关节解</p></td>
+<td><p><a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/moveit_gateway.py#L545">moveit_gateway.py:545</a></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">move_to_configuration()</span></code></p></td>
+<td><p>通过 MoveGroup 执行关节轨迹</p></td>
+<td><p><a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/moveit_gateway.py#L573">moveit_gateway.py:573</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">create_orientation_constraint()</span></code></p></td>
+<td><p>构建 OrientationConstraint 消息</p></td>
+<td><p><a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/moveit_gateway.py#L273-L306">moveit_gateway.py:273-306</a></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L444-L577">src/robot_moveit/scripts/moveit_gateway.py:444-577</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id14">
+<h2>配置集成<a class="headerlink" href="#id14" title="Link to this heading"></a></h2>
+<section id="yaml">
+<h3>机器人配置 YAML<a class="headerlink" href="#yaml" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML 包含传递给启动系统的 MoveIt 特定参数：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">moveit</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">arm_group_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arm</span>
+<span class="w">  </span><span class="nt">base_link</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">base</span>
+<span class="w">  </span><span class="nt">ee_link</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gripper</span>
+<span class="w">  </span><span class="nt">shoulder_link</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shoulder</span>
+</pre></div>
+</div>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/test_single_arm_single_cam.yaml#L30-L35">src/robot_config/config/robots/test_single_arm_single_cam.yaml:30-35</a></p>
+</section>
+<section id="id15">
+<h3>启动构建器集成<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">robot_config</span></code> 包中的 <code class="docutils literal notranslate"><span class="pre">generate_moveit_nodes()</span></code> 函数提取这些参数并传递给 MoveIt 启动文件：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">arm_group_name</span> <span class="o">=</span> <span class="n">robot_config</span><span class="p">[</span><span class="s1">&#39;moveit&#39;</span><span class="p">][</span><span class="s1">&#39;arm_group_name&#39;</span><span class="p">]</span>
+<span class="n">base_link</span> <span class="o">=</span> <span class="n">robot_config</span><span class="p">[</span><span class="s1">&#39;moveit&#39;</span><span class="p">][</span><span class="s1">&#39;base_link&#39;</span><span class="p">]</span>
+<span class="n">ee_link</span> <span class="o">=</span> <span class="n">robot_config</span><span class="p">[</span><span class="s1">&#39;moveit&#39;</span><span class="p">][</span><span class="s1">&#39;ee_link&#39;</span><span class="p">]</span>
+<span class="n">shoulder_link</span> <span class="o">=</span> <span class="n">robot_config</span><span class="p">[</span><span class="s1">&#39;moveit&#39;</span><span class="p">][</span><span class="s1">&#39;shoulder_link&#39;</span><span class="p">]</span>
+
+<span class="n">moveit_launch</span> <span class="o">=</span> <span class="n">IncludeLaunchDescription</span><span class="p">(</span>
+    <span class="n">PythonLaunchDescriptionSource</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">moveit_launch_file</span><span class="p">)),</span>
+    <span class="n">launch_arguments</span><span class="o">=</span><span class="p">{</span>
+        <span class="s1">&#39;arm_group_name&#39;</span><span class="p">:</span> <span class="n">arm_group_name</span><span class="p">,</span>
+        <span class="s1">&#39;base_link&#39;</span><span class="p">:</span> <span class="n">base_link</span><span class="p">,</span>
+        <span class="s1">&#39;ee_link&#39;</span><span class="p">:</span> <span class="n">ee_link</span><span class="p">,</span>
+        <span class="s1">&#39;shoulder_link&#39;</span><span class="p">:</span> <span class="n">shoulder_link</span><span class="p">,</span>
+    <span class="p">}</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">shoulder_link</span></code> 参数对肩部 XZ 平面投影策略至关重要。</p>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/moveit.py#L47-L68">src/robot_config/robot_config/launch_builders/moveit.py:47-68</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id16">
+<h2>坐标系变换<a class="headerlink" href="#id16" title="Link to this heading"></a></h2>
+<section id="id17">
+<h3>工作空间分析<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">cmd_pose_callback()</span></code> 通过将目标位置变换到肩部坐标系来记录详细的工作空间信息：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. Lookup transform: base → shoulder (translation T, rotation Q)
+2. Compute relative position: p_relative = p_base - T
+3. Apply rotation: p_shoulder = Q * p_relative
+4. Compute distances from base and shoulder origins
+</pre></div>
+</div>
+<p><strong>日志输出示例</strong>：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">Target</span> <span class="n">Pose</span><span class="p">:</span> <span class="n">x</span><span class="o">=-</span><span class="mf">0.046</span><span class="p">,</span> <span class="n">y</span><span class="o">=-</span><span class="mf">0.000</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mf">0.423</span>
+<span class="p">[</span><span class="n">INFO</span><span class="p">]</span>   <span class="n">Target</span> <span class="ow">in</span> <span class="n">shoulder</span> <span class="n">frame</span><span class="p">:</span> <span class="n">x</span><span class="o">=-</span><span class="mf">0.034</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.012</span><span class="p">,</span> <span class="n">z</span><span class="o">=-</span><span class="mf">0.323</span>
+<span class="p">[</span><span class="n">INFO</span><span class="p">]</span>   <span class="n">Distance</span> <span class="kn">from</span> <span class="nn">base</span> <span class="n">origin</span><span class="p">:</span> <span class="mf">0.426</span> <span class="n">m</span>
+<span class="p">[</span><span class="n">INFO</span><span class="p">]</span>   <span class="n">Distance</span> <span class="kn">from</span> <span class="nn">shoulder</span> <span class="n">origin</span><span class="p">:</span> <span class="mf">0.325</span> <span class="n">m</span>
+</pre></div>
+</div>
+<p>这有助于诊断可达性问题，因为 SO101 的典型工作空间从肩关节延伸约 0.3-0.4m。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L317-L367">src/robot_moveit/scripts/moveit_gateway.py:317-367</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id18">
+<h2>性能特征<a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
+<section id="id19">
+<h3>典型成功率<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>配置</p></th>
+<th class="head"><p>IK 成功率</p></th>
+<th class="head"><p>备注</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>标准 6DOF 约束</p></td>
+<td><p>~10-20%</p></td>
+<td><p>大多数位姿 无解</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">osition_only_ik:</span> <span class="pre">True</span></code> 仅</p></td>
+<td><p>~70-80%</p></td>
+<td><p>适合位置 关键任务</p></td>
+</tr>
+<tr class="row-even"><td><ul class="simple">
+<li><p>Z 轴约束 + 中等容差</p></li>
+</ul>
+</td>
+<td><p>~85-90%</p></td>
+<td><p>平衡姿态 和成功率</p></td>
+</tr>
+<tr class="row-odd"><td><ul class="simple">
+<li><p>完整回退 流水线</p></li>
+</ul>
+</td>
+<td><p>~95-98%</p></td>
+<td><p>几乎总是 找到解</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L26-L51">src/robot_moveit/docs/moveit_gateway.md:26-51</a></p>
+</section>
+<section id="id20">
+<h3>计算成本<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
+<p>回退流水线最多测试 4 策略 × 5 容差级别 = 每个位姿命令 20 次 IK 尝试。典型时间线：</p>
+<ul class="simple">
+<li><p>单次 IK 尝试：50-200ms（KDL 求解器，50 次尝试）</p></li>
+<li><p>完整回退最坏情况：2-4 秒</p></li>
+<li><p>典型情况（第一次策略成功）：100-300ms</p></li>
+</ul>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/config/lerobot/so101/kinematics.yaml#L4-L5">src/robot_moveit/config/lerobot/so101/kinematics.yaml:4-5</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id21">
+<h2>数学工具<a class="headerlink" href="#id21" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">MoveItGateway</span></code> 类使用 <code class="docutils literal notranslate"><span class="pre">scipy.spatial.transform.Rotation</span></code> 和 <code class="docutils literal notranslate"><span class="pre">numpy</span></code> 实现四元数和旋转矩阵操作：</p>
+<pre  class="mermaid">
+        classDiagram
+    class MoveItGateway {
+        +quaternion_multiply(q1, q2)
+        +quaternion_conjugate(q)
+        +quaternion_to_rotation_matrix(q)
+        +rotation_matrix_to_quaternion(R)
+        +constrain_to_z_axis_only(quat)
+        +project_orientation_to_shoulder_xz_plane(quat)
+        +create_orientation_constraint(target_quat, link_name, frame_id, tolerances)
+        +cmd_pose_callback(msg)
+        +solve_and_move(target_pose, orientation_tolerance)
+    }
+
+    class scipy_Rotation {
+        &lt;&lt;external&gt;&gt;
+        +from_quat(quat)
+        +from_matrix(R)
+        +as_quat()
+        +as_matrix()
+        +inv()
+    }
+
+    class numpy {
+        &lt;&lt;external&gt;&gt;
+        +linalg.norm(vec)
+        +dot(a, b)
+        +cross(a, b)
+        +column_stack(arrays)
+    }
+
+    MoveItGateway --&gt; scipy_Rotation : uses
+    MoveItGateway --&gt; numpy : uses
+    </pre><p><strong>图：数学依赖关系</strong></p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L81-L175">src/robot_moveit/scripts/moveit_gateway.py:81-175</a></p>
+<section id="id22">
+<h3>关键方法<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">quaternion_multiply(q1,</span> <span class="pre">q2)</span></code>：使用 <code class="docutils literal notranslate"><span class="pre">scipy</span></code> 的 Hamilton 乘积 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/moveit_gateway.py#L82-L90">moveit_gateway.py:82-90</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">quaternion_conjugate(q)</span></code>：通过 <code class="docutils literal notranslate"><span class="pre">R.inv()</span></code> 的逆旋转 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/moveit_gateway.py#L93-L98">moveit_gateway.py:93-98</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">quaternion_to_rotation_matrix(q)</span></code>：通过 <code class="docutils literal notranslate"><span class="pre">R.as_matrix()</span></code> 的 3×3 矩阵 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/moveit_gateway.py#L101-L107">moveit_gateway.py:101-107</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rotation_matrix_to_quaternion(R)</span></code>：通过 <code class="docutils literal notranslate"><span class="pre">R.from_matrix()</span></code> 的四元数 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/moveit_gateway.py#L110-L116">moveit_gateway.py:110-116</a></p></li>
+</ul>
+<p>所有操作使用 <code class="docutils literal notranslate"><span class="pre">[x,</span> <span class="pre">y,</span> <span class="pre">z,</span> <span class="pre">w]</span></code> 四元数格式（标量在后约定）。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L81-L116">src/robot_moveit/scripts/moveit_gateway.py:81-116</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id23">
+<h2>故障排除<a class="headerlink" href="#id23" title="Link to this heading"></a></h2>
+<section id="id24">
+<h3>常见失败模式<a class="headerlink" href="#id24" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>症状</p></th>
+<th class="head"><p>可能原因</p></th>
+<th class="head"><p>解决方案</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>` <cite>NO_IK_SOLUTION`</cite> 错误</p></td>
+<td><p>` <cite>position_only_ik: False`</cite></p></td>
+<td><p>在 kinematics.yaml 中设置 <code class="docutils literal notranslate"><span class="pre">posit</span> <span class="pre">ion_only_ik:</span> <span class="pre">True</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>成功率低 (~20%)</p></td>
+<td><p>姿态约束过紧</p></td>
+<td><p>验证回退流水线 正在运行</p></td>
+</tr>
+<tr class="row-even"><td><p>超时错误</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">k</span> <span class="pre">inematics_solver_timeout</span></code> 过低</p></td>
+<td><p>增加到 2.0+ 秒</p></td>
+</tr>
+<tr class="row-odd"><td><p>解的姿态与 预期相差甚远</p></td>
+<td><p>仅位置模式激活</p></td>
+<td><p>添加中等容差的 姿态约束</p></td>
+</tr>
+<tr class="row-even"><td><p>所有策略失败</p></td>
+<td><p>目标超出工作空间</p></td>
+<td><p>检查肩部坐标系距离 （应 &lt; 0.4m）</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L339-L355">src/robot_moveit/docs/moveit_gateway.md:339-355</a></p>
+</section>
+<section id="id25">
+<h3>调试日志<a class="headerlink" href="#id25" title="Link to this heading"></a></h3>
+<p>启用调试日志以查看策略尝试：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>run<span class="w"> </span>robot_moveit<span class="w"> </span>moveit_gateway.py<span class="w"> </span>--ros-args<span class="w"> </span>--log-level<span class="w"> </span>debug
+</pre></div>
+</div>
+<p>示例输出：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="n">Trying</span> <span class="n">Gripper</span> <span class="n">Z</span><span class="o">-</span><span class="n">axis</span> <span class="n">constraint</span>
+<span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span>   <span class="n">Failed</span> <span class="k">with</span> <span class="n">Strict</span> <span class="n">tolerance</span><span class="p">,</span> <span class="n">trying</span> <span class="nb">next</span> <span class="n">tolerance</span><span class="o">...</span>
+<span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span>   <span class="n">Failed</span> <span class="k">with</span> <span class="n">Medium</span> <span class="n">tolerance</span><span class="p">,</span> <span class="n">trying</span> <span class="nb">next</span> <span class="n">tolerance</span><span class="o">...</span>
+<span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">IK</span> <span class="n">succeeded</span> <span class="k">with</span> <span class="n">Gripper</span> <span class="n">Z</span><span class="o">-</span><span class="n">axis</span> <span class="n">constraint</span> <span class="o">+</span> <span class="n">Relaxed</span> <span class="n">tolerance</span>
+</pre></div>
+</div>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L416-L428">src/robot_moveit/scripts/moveit_gateway.py:416-428</a></p>
+<hr class="docutils" />
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L1-L596">src/robot_moveit/scripts/moveit_gateway.py:1-596</a>，
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/config/lerobot/so101/kinematics.yaml#L1-L7">src/robot_moveit/config/lerobot/so101/kinematics.yaml:1-7</a>，
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L1-L389">src/robot_moveit/docs/moveit_gateway.md:1-389</a>，
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/test_single_arm_single_cam.yaml#L30-L35">src/robot_config/config/robots/test_single_arm_single_cam.yaml:30-35</a>，
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/moveit.py#L15-L78">src/robot_config/robot_config/launch_builders/moveit.py:15-78</a></p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="moveitgateway_node.html" class="btn btn-neutral float-left" title="MoveItGateway 节点" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="moveit_launch_configuration.html" class="btn btn-neutral float-right" title="MoveIt 启动配置" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../../24.03-lts/index.html">24.03-lts</a></dd>
+      <dd><a href="../../../../llvm-toolchain-v0.1.1/index.html">llvm-toolchain-v0.1.1</a></dd>
+      <dd><a href="../../../../nativesdk-v0.1.2/index.html">nativesdk-v0.1.2</a></dd>
+      <dd><a href="../../../../nativesdk-v0.1.3/index.html">nativesdk-v0.1.3</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.5/index.html">toolchains-v0.1.5</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.7/index.html">toolchains-v0.1.7</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.8/index.html">toolchains-v0.1.8</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="dof_kinematic_constraints.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../pr_2786/features/embodied_ai/motion_planning/dof_kinematic_constraints.html">pr_2786</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

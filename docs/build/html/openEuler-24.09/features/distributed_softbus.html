@@ -9,13 +9,17 @@
   <title>分布式软总线 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=458d985c" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=d35d3fb5" />
 
   
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=7eb38eeb"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../_static/js/custom.js?v=2b2e6f96"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -131,9 +135,9 @@
            <div itemprop="articleBody">
              
   <section id="distributed-softbus">
-<span id="id1"></span><h1>分布式软总线<a class="headerlink" href="#distributed-softbus" title="Link to this heading">¶</a></h1>
+<span id="id1"></span><h1>分布式软总线<a class="headerlink" href="#distributed-softbus" title="Link to this heading"></a></h1>
 <section id="id2">
-<h2>特性介绍<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<h2>特性介绍<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <p><strong>背景</strong></p>
 <p>openEuler秉承着打造“数字化基础设施操作系统”的愿景，为促进与OpenHarmony生态的合作与互通，实现端边领域的互通和协同，首次在嵌入式领域引入分布式软总线技术。</p>
 <p>分布式软总线是OpenHarmony社区开源的分布式设备通信基座，为设备之间的互通互联提供统一的分布式协同能力，实现设备无感发现和高效传输。</p>
@@ -156,9 +160,9 @@
 <p>24.03-LTS版本之后，软总线从3.1版本升级到了3.2版本，支持5.10内核，暂不支持6.6内核。原有接口保持兼容，启动方式有所不同，3.2版本不再通过softbus_server_main启动软总线服务，而是通过脚本进行启动。各个子模块以组件化的方式进行协同，而不是原先的单独进程。</p>
 </section>
 <section id="id3">
-<h2>嵌入式软总线应用指南<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<h2>嵌入式软总线应用指南<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
 <section id="id4">
-<h3>部署示意<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h3>
+<h3>部署示意<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <p>软总线支持局域网内多设备部署，设备间通过以太网通信。</p>
 <p>单设备上分为server和client，二者通过IPC模块进行交互。</p>
 <p>单节点上支持多client同时接入单一server。</p>
@@ -169,7 +173,7 @@
 </div></blockquote>
 </section>
 <section id="id5">
-<h3>服务端启动<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h3>
+<h3>服务端启动<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
 <p>服务端的服务启动脚本为start_services.sh。</p>
 <p>如部署模型，软总线通过独立进程部署的方式对外提供服务，通过执行服务端主程序可拉起软总线进程提供对外服务。</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">openeuler ~ # /system/bin/start_services.sh softbus</span>
@@ -188,7 +192,7 @@
 </div>
 </section>
 <section id="id6">
-<h3>客户端使用<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<h3>客户端使用<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <p><strong>客户端API</strong></p>
 <p>softbus客户端API头文件在嵌入式版本提供的sdk中对外开放，可在客户端代码中引用。</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">#</span>include<span class="w"> </span><span class="s2">&quot;discovery_service.h&quot;</span>
@@ -687,7 +691,7 @@
 </ol>
 </section>
 <section id="id7">
-<h3>可信设备添加<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
+<h3>可信设备添加<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
 <p>软总线在创建连接的过程中，会调用hichain模块的认证接口，与对端的设备进行认证操作。hichain模块为OpenHarmony提供设备认证能力，支持通过点对点认证方式创建可信群组。</p>
 <p>若仅为openEuler之间的软总线连接，可以通过绕过hichain认证或者自定义认证实现。但如果openEuler和OpenHarmony设备之间要互连互通，则需要在openEuler上支持hichain的点对点认证和可信群组创建能力。</p>
 <p><strong>应用说明</strong></p>
@@ -1110,7 +1114,7 @@
 <p>2.与OpenHarmony互联时，可通过上述方式创建双方信任的可信群组和成员，也可使用分布式硬件中的device manger模块进行更便捷的可信群组创建，该模块兼容OpenHarmony的pin码弹窗等功能，但需要openEuler额外支持。</p>
 </section>
 <section id="id8">
-<h3>全量编译指导<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h3>
+<h3>全量编译指导<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
 <p>当用户有需求自定义修改软总线功能模块时，可使用全量编译方式构建软总线的各个子模块。</p>
 <p>嵌入式版本提供的dsoftbus代码已集成于yocto构建系统，作为一个package存在，编译参照 <a class="reference internal" href="../oebuild/userguide/install/index.html#oebuild-install"><span class="std std-ref">安装步骤</span></a> 章节。</p>
 <p>用户也可按照镜像编译指导完成环境准备后按如下命令单独进行编译（和单独编译package方法一致）</p>
@@ -1121,7 +1125,7 @@
 </section>
 </section>
 <section id="isula">
-<h2>基于isula的软总线应用指南<a class="headerlink" href="#isula" title="Link to this heading">¶</a></h2>
+<h2>基于isula的软总线应用指南<a class="headerlink" href="#isula" title="Link to this heading"></a></h2>
 <p>嵌入式23.09版本中，利用isula，制作了预装3.2版本软总线容器镜像。在嵌入式环境中通过几行命令就可以安装软总线及其复杂依赖，并完成设备间通信测试。此版本软总线使用binder作为IPC底层驱动，在树莓派静默无业务场景下，资源占用由原来的CPU单核80%降低到1%，并且为支持上层的分布式数据模块的拓展打下了基础。</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1133,7 +1137,7 @@
 </ul>
 </div>
 <section id="id9">
-<h3>宿主机环境准备<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
+<h3>宿主机环境准备<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
 <p>以下操作均在宿主机执行</p>
 <p>1.使用对isula支持较完善的systemd嵌入式镜像烧录树莓派</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">https://repo.openeuler.org/openEuler-23.09/embedded_img/aarch64/raspberrypi4-64-systemd/openeuler-image-raspberrypi4-64-20230927180859.rootfs.rpi-sdimg</span>
@@ -1175,7 +1179,7 @@
 </div>
 </section>
 <section id="id10">
-<h3>容器中启动并测试软总线<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
+<h3>容器中启动并测试软总线<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
 <p>以下操作均在容器中执行</p>
 <p>1.在容器中写SN号，注意此SN号是本设备标识，需要与其他设备不一致，建议使用本机IP</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">echo  192.168.8.115  &gt; /etc/SN</span>
@@ -1202,7 +1206,7 @@
 </section>
 </section>
 <section id="id11">
-<h2>3.2版本接口变更<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h2>
+<h2>3.2版本接口变更<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
 <p>3.2版本的软总线与3.1版本相比，主要的一些接口变化如下：</p>
 <table class="docutils align-default">
 <thead>
@@ -1232,7 +1236,7 @@
 </table>
 <p>各API参数详见头文件描述。</p>
 <section id="id12">
-<h3>服务端使用<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h3>
+<h3>服务端使用<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
 <p>3.2版本的软总线启动方式与3.1版本有所不同。由 <code class="file docutils literal notranslate"><span class="pre">/system/bin/start_services.sh</span></code> 脚本进行启动软总线相关服务，而 <code class="file docutils literal notranslate"><span class="pre">/system/bin/stop_services.sh</span></code>  脚本关闭服务。如下：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">/system/bin/start_services.sh softbus</span>
 <span class="go">/system/bin/stop_services.sh all</span>
@@ -1241,12 +1245,12 @@
 </section>
 </section>
 <section id="id13">
-<h2>限制约束<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h2>
+<h2>限制约束<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
 <p>1.支持wifi和有限的标准以太局域网下的coap设备发现和传输。蓝牙目前仅支持ble发现，ble发现需要开启蓝牙，参照 <a class="reference internal" href="../linux/bluetooth/bluetooth_config.html#bluetooth-config"><span class="std std-ref">openEuler Embedded蓝牙配置</span></a> ，br连接和通信功能在后续版本中持续支持。
 2.目前3.2版本软总线目前暂不支持蓝牙发现能力。</p>
 </section>
 <section id="faq">
-<h2>FAQ<a class="headerlink" href="#faq" title="Link to this heading">¶</a></h2>
+<h2>FAQ<a class="headerlink" href="#faq" title="Link to this heading"></a></h2>
 <ol class="arabic simple">
 <li><p>执行softbus_client程序输入c后没有可传输的node节点？</p></li>
 </ol>
@@ -1355,6 +1359,7 @@
       <dd><a href="../../openEuler-24.03-LTS/features/distributed_softbus.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="distributed_softbus.html">openEuler-24.09</a></dd>
       <dd><a href="../../openEuler-25.03/features/distributed_softbus.html">openEuler-25.03</a></dd>
+      <dd><a href="../../pr_2786/index.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

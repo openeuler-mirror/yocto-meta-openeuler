@@ -9,13 +9,17 @@
   <title>MicRun Kubernetes 云边协同指南 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=458d985c" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=d35d3fb5" />
 
   
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=7eb38eeb"></script>
       <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../../../_static/js/custom.js?v=2b2e6f96"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
@@ -54,7 +58,7 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../../../../user_guide/index.html">用户使用指导</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">关键特性指导</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../../../system/index.html">系统基础</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../../embodied_ai/index.html">具身智能</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../embodied_ai/index.html">具身智能 (Embodied AI)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../embedded_ai/index.html">嵌入式AI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../mica/index.html">混合关键性部署 (MICA)</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../../index.html">边缘容器</a><ul class="current">
@@ -62,7 +66,33 @@
 <li class="toctree-l4 current"><a class="reference internal" href="../index.html">实时容器</a><ul class="current">
 <li class="toctree-l5"><a class="reference internal" href="../intro.html">MicRun 简介</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../quick-start.html">MicRun 快速入门</a></li>
-<li class="toctree-l5 current"><a class="current reference internal" href="#">MicRun Kubernetes 云边协同指南</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">MicRun Kubernetes 云边协同指南</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#id2">架构概览</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id3">前置准备</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id4">云侧部署</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#k3s-server">安装 K3s Server</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#id5">边侧部署</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#k3s-containerd">配置 K3s 使用系统 containerd</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#k3s-agent">安装 K3s Agent</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#runtimeclass">注册 RuntimeClass</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#rtos-pod">运行 RTOS Pod</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#pod">创建 Pod</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id6">使用注解配置</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id7">验证</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#id8">故障排查</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id9">快速诊断</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id10">通用排查命令</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#id11">参考资源</a></li>
+</ul>
+</li>
 <li class="toctree-l5"><a class="reference internal" href="../reference/index.html">参考文档</a></li>
 </ul>
 </li>
@@ -113,14 +143,14 @@
            <div itemprop="articleBody">
              
   <section id="micrun-kubernetes">
-<span id="id1"></span><h1>MicRun Kubernetes 云边协同指南<a class="headerlink" href="#micrun-kubernetes" title="Link to this heading">¶</a></h1>
+<span id="id1"></span><h1>MicRun Kubernetes 云边协同指南<a class="headerlink" href="#micrun-kubernetes" title="Link to this heading"></a></h1>
 <p>本文档介绍如何在 K3s 环境中配置 MicRun，实现 RTOS 容器的云边协同部署。</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>约定</strong>：云侧运行 K3s Server，边侧运行 K3s Agent 和 RTOS 容器。</p>
 </div>
 <section id="id2">
-<h2>架构概览<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<h2>架构概览<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌───────────────────────────────┐
 │      Cloud - K3s Server       │
 │  Kubernetes API / Scheduler   │
@@ -138,7 +168,7 @@
 </div>
 </section>
 <section id="id3">
-<h2>前置准备<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<h2>前置准备<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 25.0%" />
@@ -173,9 +203,9 @@
 <p>边侧需完成 <a class="reference internal" href="../quick-start.html"><span class="doc">MicRun 快速入门</span></a> 前 5 步。</p>
 </section>
 <section id="id4">
-<h2>云侧部署<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+<h2>云侧部署<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
 <section id="k3s-server">
-<h3>安装 K3s Server<a class="headerlink" href="#k3s-server" title="Link to this heading">¶</a></h3>
+<h3>安装 K3s Server<a class="headerlink" href="#k3s-server" title="Link to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 安装（替换 &lt;cloud-ip&gt; 为云侧 IP）</span>
 curl<span class="w"> </span>-sfL<span class="w"> </span>https://get.k3s.io<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span><span class="nv">INSTALL_K3S_EXEC</span><span class="o">=</span><span class="s2">&quot;--write-kubeconfig-mode=644 --tls-san &lt;cloud-ip&gt;&quot;</span><span class="w"> </span><span class="se">\</span>
@@ -191,9 +221,9 @@ kubectl<span class="w"> </span>get<span class="w"> </span>nodes
 </section>
 </section>
 <section id="id5">
-<h2>边侧部署<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
+<h2>边侧部署<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
 <section id="k3s-containerd">
-<h3>配置 K3s 使用系统 containerd<a class="headerlink" href="#k3s-containerd" title="Link to this heading">¶</a></h3>
+<h3>配置 K3s 使用系统 containerd<a class="headerlink" href="#k3s-containerd" title="Link to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/etc/systemd/system/k3s-agent.service.env
 sudo<span class="w"> </span>tee<span class="w"> </span>/etc/systemd/system/k3s-agent.service.env/10-containerd.conf<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
 <span class="s">K3S_SUPERVISOR_CONTAINERD=false</span>
@@ -203,7 +233,7 @@ sudo<span class="w"> </span>tee<span class="w"> </span>/etc/systemd/system/k3s-a
 </div>
 </section>
 <section id="k3s-agent">
-<h3>安装 K3s Agent<a class="headerlink" href="#k3s-agent" title="Link to this heading">¶</a></h3>
+<h3>安装 K3s Agent<a class="headerlink" href="#k3s-agent" title="Link to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 替换 &lt;cloud-ip&gt; 和 &lt;node-token&gt;</span>
 <span class="nb">export</span><span class="w"> </span><span class="nv">K3S_URL</span><span class="o">=</span><span class="s2">&quot;https://&lt;cloud-ip&gt;:6443&quot;</span>
 <span class="nb">export</span><span class="w"> </span><span class="nv">K3S_TOKEN</span><span class="o">=</span><span class="s2">&quot;&lt;node-token&gt;&quot;</span>
@@ -216,7 +246,7 @@ sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="
 </div>
 </section>
 <section id="runtimeclass">
-<h3>注册 RuntimeClass<a class="headerlink" href="#runtimeclass" title="Link to this heading">¶</a></h3>
+<h3>注册 RuntimeClass<a class="headerlink" href="#runtimeclass" title="Link to this heading"></a></h3>
 <p>在云侧执行：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
 <span class="s">apiVersion: node.k8s.io/v1</span>
@@ -230,9 +260,9 @@ sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="
 </section>
 </section>
 <section id="rtos-pod">
-<h2>运行 RTOS Pod<a class="headerlink" href="#rtos-pod" title="Link to this heading">¶</a></h2>
+<h2>运行 RTOS Pod<a class="headerlink" href="#rtos-pod" title="Link to this heading"></a></h2>
 <section id="pod">
-<h3>创建 Pod<a class="headerlink" href="#pod" title="Link to this heading">¶</a></h3>
+<h3>创建 Pod<a class="headerlink" href="#pod" title="Link to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>kubectl<span class="w"> </span>apply<span class="w"> </span>-f<span class="w"> </span>-<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
 <span class="s">apiVersion: v1</span>
 <span class="s">kind: Pod</span>
@@ -276,7 +306,7 @@ sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="
 </table>
 </section>
 <section id="id6">
-<h3>使用注解配置<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h3>
+<h3>使用注解配置<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <p>MicRun 通过 Pod 的 <code class="docutils literal notranslate"><span class="pre">metadata.annotations</span></code> 字段接收配置：</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
 <span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span>
@@ -346,7 +376,7 @@ sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="
 </div>
 </section>
 <section id="id7">
-<h3>验证<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h3>
+<h3>验证<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 云侧查看 Pod</span>
 kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-o<span class="w"> </span>wide
 
@@ -358,9 +388,9 @@ sudo<span class="w"> </span>xl<span class="w"> </span>list
 </section>
 </section>
 <section id="id8">
-<h2>故障排查<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
+<h2>故障排查<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
 <section id="id9">
-<h3>快速诊断<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h3>
+<h3>快速诊断<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 35.0%" />
@@ -390,7 +420,7 @@ sudo<span class="w"> </span>xl<span class="w"> </span>list
 </table>
 </section>
 <section id="id10">
-<h3>通用排查命令<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h3>
+<h3>通用排查命令<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看 Pod 状态</span>
 kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-o<span class="w"> </span>wide
 
@@ -407,7 +437,7 @@ tail<span class="w"> </span>-f<span class="w"> </span>/var/log/mica/mica-runtime
 </section>
 </section>
 <section id="id11">
-<h2>参考资源<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h2>
+<h2>参考资源<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <ul class="simple">
@@ -476,6 +506,7 @@ tail<span class="w"> </span>-f<span class="w"> </span>/var/log/mica/mica-runtime
       <dd><a href="../../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
       <dd><a href="../../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../../pr_2786/features/container/rt_container/kubernetes/index.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

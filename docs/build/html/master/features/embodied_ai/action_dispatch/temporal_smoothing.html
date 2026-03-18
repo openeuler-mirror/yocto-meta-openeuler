@@ -1,0 +1,1413 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>时间平滑 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
+    /* Same as .mermaid-container > pre */
+    display: block;
+    width: 100%;
+}
+
+pre.mermaid > svg {
+    /* Same as .mermaid-container > pre > svg */
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}`;
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.mermaid-container > pre {
+    display: block;
+    width: 100%;
+}
+
+.mermaid-container > pre > svg {
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.mermaid-fullscreen-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: #333;
+}
+
+.mermaid-fullscreen-btn:hover {
+    opacity: 100% !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-btn.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-btn.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 95vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    padding: 20px;
+    overflow: auto;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.mermaid-fullscreen-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen.dark-theme {
+    background: #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen .mermaid svg {
+    height: 100% !important;
+    width: 100% !important;
+    cursor: grab;
+}
+
+.mermaid-fullscreen-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: white;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-close.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-close.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
+    display: none !important;
+}`;
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+
+    if ("False" === "True") {
+        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("");
+            if(all_mermaids.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else if(svgs.size() !== mermaids_to_add_zoom) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else {
+                svgs.each(function() {
+                    var svg = d3.select(this);
+                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                    var inner = svg.select("g");
+                    var zoom = d3.zoom().on("zoom", function(event) {
+                        inner.attr("transform", event.transform);
+                    });
+                    svg.call(zoom);
+                });
+            }
+        }
+    } else if(all_mermaids.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if ("True" !== "True") return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = '⛶';
+        fullscreenBtn.style.opacity = '50%';
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scroll, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.sdisplay = 'block';
+
+                if ("False" === "True") {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="话题与动作执行器" href="topic_and_action_executors.html" />
+    <link rel="prev" title="动作调度器节点" href="action_dispatcher_node.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">具身机器人框架IB Robot</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../introduction/ib-robot_overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture/system_architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统 (robot_config)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol/protocol_conversion_tensormsg.html">协议转换 (tensormsg)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference/index.html">推理服务</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">动作调度</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">动作调度概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="action_dispatcher_node.html">动作调度器节点</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">时间平滑</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">问题陈述：动作块重叠</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">算法概述</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id4">核心组件</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id6">平滑公式</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id8">时间对齐过程</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id11">平滑系数效果</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id13">使用模式</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id17">与动作分发器的集成</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id18">启动文件中的配置参数</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id19">运行时服务</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id20">测试</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="topic_and_action_executors.html">话题与动作执行器</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../data_pipeline/index.html">数据服务</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../motion_planning/index.html">运动规划 (MoveIt)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../hardware/index.html">硬件集成</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference/package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">具身机器人框架IB Robot</a></li>
+          <li class="breadcrumb-item"><a href="index.html">动作调度</a></li>
+      <li class="breadcrumb-item active">时间平滑</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>时间平滑<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<details><p>相关源文件</p>
+<p>以下文件用于生成此 wiki 页面的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="README.en.md">README.en.md</a></p></li>
+<li><p><a class="reference external" href="README.md">README.md</a></p></li>
+<li><p><a class="reference external" href="docs/architecture.md">docs/architecture.md</a></p></li>
+<li><p><a class="reference external" href="/image/architecture.png">/image/architecture.png</a></p></li>
+<li><p><a class="reference external" href="docs/roadmap.md">docs/roadmap.md</a></p></li>
+<li><p><a class="reference external" href="scripts/build.sh">scripts/build.sh</a></p></li>
+<li><p><a class="reference external" href="src/README.md">src/README.md</a></p></li>
+<li><p><a class="reference external" href="src/action_dispatch/README.en.md">src/action_dispatch/README.en.md</a></p></li>
+<li><p><a class="reference external" href="src/action_dispatch/README.md">src/action_dispatch/README.md</a></p></li>
+<li><p><a class="reference external" href="src/action_dispatch/action_dispatch/__init__.py">src/action_dispatch/action_dispatch/init.py</a></p></li>
+<li><p><a class="reference external" href="src/action_dispatch/action_dispatch/temporal_smoother.py">src/action_dispatch/action_dispatch/temporal_smoother.py</a></p></li>
+<li><p><a class="reference external" href="src/action_dispatch/test/test_temporal_smoother.py">src/action_dispatch/test/test_temporal_smoother.py</a></p></li>
+</ul>
+</details><p>本文档深入介绍 <strong>TemporalSmoother</strong> 算法，该算法对 Action Chunking 策略（如 ACT、Diffusion Policy）产生的动作块执行跨帧指数加权混合。时间平滑确保连续推理输出之间的平滑过渡，防止动作计划在执行中途更新时出现突然的运动不连续。</p>
+<p>有关整体动作分发系统和队列管理的信息，请参阅 <a class="reference external" href="#8.1">动作分发器节点</a>。有关平滑后的动作如何通过话题或动作服务器执行的详细信息，请参阅 <a class="reference external" href="#8.3">话题与动作执行器</a>。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L1-L447">src/action_dispatch/README.en.md:1-447</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L1-L322">src/action_dispatch/action_dispatch/temporal_smoother.py:1-322</a></p>
+<hr class="docutils" />
+<section id="id2">
+<h2>问题陈述：动作块重叠<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>Action Chunking 策略每次推理输出 <code class="docutils literal notranslate"><span class="pre">n</span></code> 个动作序列（通常 <code class="docutils literal notranslate"><span class="pre">n=100</span></code>）。然而，推理并非瞬间完成——当模型计算下一个动作块时，机器人继续执行前一个块中的动作。这产生了时间重叠问题：</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>T1: First inference produces [a1, a2, a3, ..., a100]
+    Robot begins executing: a1, a2, a3...
+
+T2: Inference starts (queue watermark triggered)
+    Robot continues: a4, a5, a6...
+
+T3: Inference completes after robot executed 30 actions
+    New chunk: [b1, b2, b3, ..., b100]
+    Remaining old actions: [a31, a32, ..., a100]
+
+Problem: How to transition from old plan to new plan?
+</pre></div>
+</div>
+<p>如果不进行平滑，有两个糟糕的选择：1. <strong>丢弃新块</strong>：继续执行过时的预测 → 模型预测变得无关 2. <strong>立即替换</strong>：从 <code class="docutils literal notranslate"><span class="pre">a30</span></code> 跳到 <code class="docutils literal notranslate"><span class="pre">b31</span></code> → 突然的运动不连续</p>
+<p>时间平滑通过 <strong>混合重叠区域</strong> 使用指数加权来解决这个问题，既保持连续性又保持对新预测的响应性。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L212-L221">src/action_dispatch/README.en.md:212-221</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.md#L211-L221">src/action_dispatch/README.md:211-221</a></p>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h2>算法概述<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>时间平滑算法分三个阶段运行：</p>
+<p><strong>阶段 1：时间对齐图</strong></p>
+<pre  class="mermaid">
+        graph LR
+    subgraph &quot;T1: First Inference&quot;
+        A1[&quot;actions1[0:100]&lt;br/&gt;(100 actions)&quot;]
+    end
+
+    subgraph &quot;T2: Execution During Inference&quot;
+        E1[&quot;executed[0:30]&lt;br/&gt;(30 actions consumed)&quot;]
+        R1[&quot;remaining[30:100]&lt;br/&gt;(70 actions left)&quot;]
+    end
+
+    subgraph &quot;T3: Second Inference&quot;
+        A2[&quot;actions2[0:100]&lt;br/&gt;(100 new actions)&quot;]
+    end
+
+    subgraph &quot;T4: Alignment&quot;
+        Skip[&quot;actions2[0:30]&lt;br/&gt;(skip outdated)&quot;]
+        Relevant[&quot;actions2[30:100]&lt;br/&gt;(70 relevant new)&quot;]
+    end
+
+    A1 --&gt; E1
+    A1 --&gt; R1
+    A2 --&gt; Skip
+    A2 --&gt; Relevant
+
+    R1 -.-&gt;|&quot;overlap with&quot;| Relevant
+    </pre><p><strong>阶段 2：指数加权混合</strong></p>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;Overlap Region Processing&quot;
+        Old[&quot;old_actions[30:100]&lt;br/&gt;(70 old remaining)&quot;]
+        New[&quot;new_actions[30:100]&lt;br/&gt;(70 new relevant)&quot;]
+
+        Old --&gt; Blend[&quot;Exponential Weighted&lt;br/&gt;Blending Formula&quot;]
+        New --&gt; Blend
+
+        Blend --&gt; Result[&quot;blended[30:100]&lt;br/&gt;(70 smoothed actions)&quot;]
+    end
+
+    subgraph &quot;Weight Calculation&quot;
+        Count[&quot;action_counts[i]&lt;br/&gt;(how many times seen)&quot;]
+        Weights[&quot;weights = exp(-coeff * k)&quot;]
+        Cumsum[&quot;cumsum(weights)&quot;]
+
+        Count --&gt; Formula[&quot;blended[i] = &lt;br/&gt;(old[i] * cumsum[count-1] + &lt;br/&gt;new[i] * weights[count]) &lt;br/&gt;/ cumsum[count]&quot;]
+        Weights --&gt; Formula
+        Cumsum --&gt; Formula
+    end
+
+    Formula -.-&gt; Blend
+    </pre><p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L224-L257">src/action_dispatch/README.en.md:224-257</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L44-L77">src/action_dispatch/action_dispatch/temporal_smoother.py:44-77</a></p>
+</section>
+<hr class="docutils" />
+<section id="id4">
+<h2>核心组件<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<p>时间平滑实现由 <code class="docutils literal notranslate"><span class="pre">src/action_dispatch/action_dispatch/temporal_smoother.py</span></code> 中的三个主要类组成：</p>
+<section id="id5">
+<h3>类层次图<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    Config[&quot;TemporalSmootherConfig&lt;br/&gt;&#64;dataclass&quot;]
+    Smoother[&quot;TemporalSmoother&lt;br/&gt;Core smoothing logic&quot;]
+    Manager[&quot;TemporalSmootherManager&lt;br/&gt;Convenience wrapper&quot;]
+
+    Config --&gt;|&quot;configures&quot;| Smoother
+    Smoother --&gt;|&quot;wrapped by&quot;| Manager
+
+    subgraph &quot;TemporalSmootherConfig Fields&quot;
+        F1[&quot;enabled: bool = True&quot;]
+        F2[&quot;chunk_size: int = 100&quot;]
+        F3[&quot;temporal_ensemble_coeff: float = 0.01&quot;]
+        F4[&quot;device: Optional[str] = None&quot;]
+    end
+
+    Config --- F1
+    Config --- F2
+    Config --- F3
+    Config --- F4
+
+    subgraph &quot;TemporalSmoother State&quot;
+        S1[&quot;_smoothed_actions: Tensor&quot;]
+        S2[&quot;_action_counts: Tensor&quot;]
+        S3[&quot;_weights: Tensor&quot;]
+        S4[&quot;_weights_cumsum: Tensor&quot;]
+    end
+
+    Smoother --- S1
+    Smoother --- S2
+    Smoother --- S3
+    Smoother --- S4
+
+    subgraph &quot;Key Methods&quot;
+        M1[&quot;update(new_actions, actions_executed)&quot;]
+        M2[&quot;get_next_action()&quot;]
+        M3[&quot;peek_next_action()&quot;]
+        M4[&quot;reset()&quot;]
+    end
+
+    Smoother --- M1
+    Smoother --- M2
+    Smoother --- M3
+    Smoother --- M4
+    </pre><p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L19-L42">src/action_dispatch/action_dispatch/temporal_smoother.py:19-42</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L44-L257">src/action_dispatch/action_dispatch/temporal_smoother.py:44-257</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L259-L322">src/action_dispatch/action_dispatch/temporal_smoother.py:259-322</a></p>
+</section>
+<section id="temporalsmootherconfig">
+<h3>TemporalSmootherConfig<a class="headerlink" href="#temporalsmootherconfig" title="Link to this heading"></a></h3>
+<p>定义在 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L19-L42">src/action_dispatch/action_dispatch/temporal_smoother.py:19-42</a> 的配置数据类。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>字段</p></th>
+<th class="head"><p>类型</p></th>
+<th class="head"><p>默认值</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">enabled</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+<td><p>启用平滑。如果 <code class="docutils literal notranslate"><span class="pre">False</span></code>，仅作为 对齐的直通模式。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">hunk_size</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">100</span></code></p></td>
+<td><p>每块最大动作数。 用于权重预计算。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tem</span> <span class="pre">poral_ensem</span> <span class="pre">ble_coeff</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.01</span></code></p></td>
+<td><p>指数衰减系数。参见 <a class="reference external" href="#smoothing-coefficient-effects">平滑系数效果</a>。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">device</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Option</span> <span class="pre">al[str]</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p></td>
+<td><p>张量操作设备 （<code class="docutils literal notranslate"><span class="pre">'cpu'</span></code>、<code class="docutils literal notranslate"><span class="pre">'cuda'</span></code>、 <code class="docutils literal notranslate"><span class="pre">'npu:0'</span></code>）。 如果 <code class="docutils literal notranslate"><span class="pre">None</span></code> 则自动检测。</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L19-L42">src/action_dispatch/action_dispatch/temporal_smoother.py:19-42</a></p>
+</section>
+<section id="temporalsmoother">
+<h3>TemporalSmoother<a class="headerlink" href="#temporalsmoother" title="Link to this heading"></a></h3>
+<p>核心平滑实现位于
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L44-L257">src/action_dispatch/action_dispatch/temporal_smoother.py:44-257</a>。
+维护内部状态：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_smoothed_actions</span></code>：当前平滑后的动作计划（形状：<code class="docutils literal notranslate"><span class="pre">[plan_length,</span> <span class="pre">action_dim]</span></code>）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_action_counts</span></code>：每个动作被混合的次数（形状：<code class="docutils literal notranslate"><span class="pre">[plan_length,</span> <span class="pre">1]</span></code>）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_weights</span></code>：预计算的指数权重（形状：<code class="docutils literal notranslate"><span class="pre">[chunk_size]</span></code>）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_weights_cumsum</span></code>：权重的累加和（形状：<code class="docutils literal notranslate"><span class="pre">[chunk_size]</span></code>）</p></li>
+</ul>
+<p><strong>关键方法</strong>：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>方法</p></th>
+<th class="head"><p>签名</p></th>
+<th class="head"><p>用途</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">update()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">update(new_ac</span> <span class="pre">tions,</span> <span class="pre">actions_executed_d</span> <span class="pre">uring_inference)</span> <span class="pre">-&gt;</span> <span class="pre">int</span></code></p></td>
+<td><p>核心平滑逻辑。 对齐并混合新块。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ge</span> <span class="pre">t_next_action()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">get_</span> <span class="pre">next_action()</span> <span class="pre">-&gt;</span> <span class="pre">Tensor</span></code></p></td>
+<td><p>弹出并返回计划中的 下一个动作。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pee</span> <span class="pre">k_next_action()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">peek_next_actio</span> <span class="pre">n()</span> <span class="pre">-&gt;</span> <span class="pre">Optional[Tensor]</span></code></p></td>
+<td><p>返回下一个动作 但不移除它。</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">reset()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">reset()</span></code></p></td>
+<td><p>清除内部状态以 开始新回合。</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">plan_length</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&#64;prop</span> <span class="pre">erty</span> <span class="pre">plan_length</span> <span class="pre">-&gt;</span> <span class="pre">int</span></code></p></td>
+<td><p>返回当前计划中的 动作数量。</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L44-L257">src/action_dispatch/action_dispatch/temporal_smoother.py:44-257</a></p>
+</section>
+<section id="temporalsmoothermanager">
+<h3>TemporalSmootherManager<a class="headerlink" href="#temporalsmoothermanager" title="Link to this heading"></a></h3>
+<p>便捷包装器位于
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L259-L322">src/action_dispatch/action_dispatch/temporal_smoother.py:259-322</a>，
+提供运行时切换和统一接口。将所有操作委托给内部 <code class="docutils literal notranslate"><span class="pre">TemporalSmoother</span></code> 实例。</p>
+<p>额外方法：- <code class="docutils literal notranslate"><span class="pre">set_enabled(enabled:</span> <span class="pre">bool)</span></code>：运行时开启/关闭平滑</p>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L259-L322">src/action_dispatch/action_dispatch/temporal_smoother.py:259-322</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id6">
+<h2>平滑公式<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p>指数加权混合公式在
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L208-L246">src/action_dispatch/action_dispatch/temporal_smoother.py:208-246</a> 中实现：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># For each action i in the overlap region:</span>
+<span class="n">blended</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">old</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">cumsum</span><span class="p">[</span><span class="n">count</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">new</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">weights</span><span class="p">[</span><span class="n">count</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
+             <span class="o">/</span> <span class="n">cumsum</span><span class="p">[</span><span class="n">count</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>其中：- <code class="docutils literal notranslate"><span class="pre">old[i]</span></code>：前一个平滑计划中的第 i 个动作 - <code class="docutils literal notranslate"><span class="pre">new[i]</span></code>：新推理结果中的第 i 个动作（对齐后）- <code class="docutils literal notranslate"><span class="pre">count[i]</span></code>：动作 i 被混合的次数（从 1 开始）- <code class="docutils literal notranslate"><span class="pre">weights[k]</span> <span class="pre">=</span> <span class="pre">exp(-temporal_ensemble_coeff</span> <span class="pre">*</span> <span class="pre">k)</span></code> - <code class="docutils literal notranslate"><span class="pre">cumsum[k]</span></code> = 索引 k 之前的权重累加和</p>
+<section id="id7">
+<h3>权重计算<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<p>权重在初始化时预计算，位于
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L86-L92">src/action_dispatch/action_dispatch/temporal_smoother.py:86-92</a>：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coeff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">temporal_ensemble_coeff</span>
+<span class="n">chunk_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">chunk_size</span>
+
+<span class="bp">self</span><span class="o">.</span><span class="n">_weights</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">coeff</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">_weights_cumsum</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_weights</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>权重进展示例</strong>（对于 <code class="docutils literal notranslate"><span class="pre">coeff=0.01</span></code>，前 5 步）：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>k</p></th>
+<th class="head"><p>weight[k]</p></th>
+<th class="head"><p>cumsum[k]</p></th>
+<th class="head"><p>解释</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>1.000</p></td>
+<td><p>1.000</p></td>
+<td><p>第一次贡献（新动作）</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>0.990</p></td>
+<td><p>1.990</p></td>
+<td><p>第二次混合（旧权重累积）</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>0.980</p></td>
+<td><p>2.970</p></td>
+<td><p>第三次混合</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>0.970</p></td>
+<td><p>3.940</p></td>
+<td><p>第四次混合</p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p>0.961</p></td>
+<td><p>4.901</p></td>
+<td><p>第五次混合</p></td>
+</tr>
+</tbody>
+</table>
+<p>随着 <code class="docutils literal notranslate"><span class="pre">count[i]</span></code> 增加，分母增长，给予累积旧值更多影响。这通过优先考虑已提交的动作来创造 <strong>稳定性</strong>。</p>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L86-L92">src/action_dispatch/action_dispatch/temporal_smoother.py:86-92</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L208-L246">src/action_dispatch/action_dispatch/temporal_smoother.py:208-246</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L311-L322">src/action_dispatch/README.en.md:311-322</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id8">
+<h2>时间对齐过程<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">update()</span></code> 方法位于
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L145-L206">src/action_dispatch/action_dispatch/temporal_smoother.py:145-206</a>
+处理时间对齐：</p>
+<section id="id9">
+<h3>对齐流程图<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        flowchart TD
+    Start[&quot;update(new_actions, actions_executed)&quot;]
+
+    ValidateInput[&quot;Validate input shape&lt;br/&gt;[temporal_smoother.py:168-173]&quot;]
+
+    CheckEmpty{&quot;new_actions.shape[0] == 0?&quot;}
+    ReturnEarly[&quot;Return current plan_length&quot;]
+
+    ConvertTensor[&quot;Convert to tensor on device&lt;br/&gt;[temporal_smoother.py:175-179]&quot;]
+
+    Align[&quot;Slice alignment:&lt;br/&gt;relevant_new = new_actions[actions_executed:]&lt;br/&gt;[temporal_smoother.py:181]&quot;]
+
+    CheckState{&quot;Is _smoothed_actions None&lt;br/&gt;or empty?&quot;}
+
+    InitializePlan[&quot;Initialize plan:&lt;br/&gt;_smoothed_actions = relevant_new&lt;br/&gt;_action_counts = ones(...)&lt;br/&gt;[temporal_smoother.py:183-189]&quot;]
+
+    CheckSmoothing{&quot;config.enabled?&quot;}
+
+    ReplaceNoSmooth[&quot;Replace without smoothing:&lt;br/&gt;_smoothed_actions = relevant_new&lt;br/&gt;[temporal_smoother.py:190-196]&quot;]
+
+    ApplySmoothing[&quot;_apply_smoothing()&lt;br/&gt;[temporal_smoother.py:198-204]&quot;]
+
+    ReturnLength[&quot;Return plan_length&quot;]
+
+    Start --&gt; ValidateInput
+    ValidateInput --&gt; CheckEmpty
+    CheckEmpty --&gt;|&quot;Yes&quot;| ReturnEarly
+    CheckEmpty --&gt;|&quot;No&quot;| ConvertTensor
+    ConvertTensor --&gt; Align
+    Align --&gt; CheckState
+    CheckState --&gt;|&quot;Yes&quot;| InitializePlan
+    CheckState --&gt;|&quot;No&quot;| CheckSmoothing
+    CheckSmoothing --&gt;|&quot;No&quot;| ReplaceNoSmooth
+    CheckSmoothing --&gt;|&quot;Yes&quot;| ApplySmoothing
+    InitializePlan --&gt; ReturnLength
+    ReplaceNoSmooth --&gt; ReturnLength
+    ApplySmoothing --&gt; ReturnLength
+    </pre><p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L145-L206">src/action_dispatch/action_dispatch/temporal_smoother.py:145-206</a></p>
+</section>
+<section id="id10">
+<h3>混合实现<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">_apply_smoothing()</span></code> 方法位于
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L208-L246">src/action_dispatch/action_dispatch/temporal_smoother.py:208-246</a>
+执行实际混合：</p>
+<pre  class="mermaid">
+        flowchart TD
+    Start[&quot;_apply_smoothing(old_actions, old_counts, new_actions, weights, weights_cumsum)&quot;]
+
+    CalcOverlap[&quot;overlap_len = min(old.shape[0], new.shape[0])&lt;br/&gt;[temporal_smoother.py:226]&quot;]
+
+    SliceRegions[&quot;old_overlap = old[:overlap_len]&lt;br/&gt;new_overlap = new[:overlap_len]&lt;br/&gt;new_tail = new[overlap_len:]&lt;br/&gt;[temporal_smoother.py:228-230]&quot;]
+
+    GetCounts[&quot;counts_for_update = old_counts[:overlap_len]&lt;br/&gt;[temporal_smoother.py:232]&quot;]
+
+    ComputeOldSum[&quot;old_sum = old_overlap * weights_cumsum[counts - 1]&lt;br/&gt;[temporal_smoother.py:234]&quot;]
+
+    ComputeNewTerm[&quot;new_term = new_overlap * weights[counts]&lt;br/&gt;[temporal_smoother.py:235]&quot;]
+
+    Blend[&quot;blended = (old_sum + new_term) / weights_cumsum[counts]&lt;br/&gt;[temporal_smoother.py:236]&quot;]
+
+    UpdateCounts[&quot;updated_counts = clamp(counts + 1, max=chunk_size)&lt;br/&gt;[temporal_smoother.py:238]&quot;]
+
+    Concat[&quot;smoothed_actions = cat([blended, new_tail])&lt;br/&gt;action_counts = cat([updated_counts, ones(...)])&lt;br/&gt;[temporal_smoother.py:240-244]&quot;]
+
+    Return[&quot;return (smoothed_actions, action_counts)&quot;]
+
+    Start --&gt; CalcOverlap
+    CalcOverlap --&gt; SliceRegions
+    SliceRegions --&gt; GetCounts
+    GetCounts --&gt; ComputeOldSum
+    ComputeOldSum --&gt; ComputeNewTerm
+    ComputeNewTerm --&gt; Blend
+    Blend --&gt; UpdateCounts
+    UpdateCounts --&gt; Concat
+    Concat --&gt; Return
+    </pre><p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L208-L246">src/action_dispatch/action_dispatch/temporal_smoother.py:208-246</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id11">
+<h2>平滑系数效果<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">temporal_ensemble_coeff</span></code> 参数控制指数衰减率。其值决定了稳定性（遵循已提交动作）和响应性（适应新预测）之间的平衡。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>系数值</p></th>
+<th class="head"><p>权重行为</p></th>
+<th class="head"><p>效果</p></th>
+<th class="head"><p>用例</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
+<td><p>均匀（所有 k 的 <code class="docutils literal notranslate"><span class="pre">weights[k]</span> <span class="pre">=</span> <span class="pre">1.0</span></code>）</p></td>
+<td><p>新旧等权</p></td>
+<td><p>最大响应性，可能导致抖动</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0.01</span></code> （默认）</p></td>
+<td><p>慢衰减（<code class="docutils literal notranslate"><span class="pre">weights[4]</span> <span class="pre">≈</span> <span class="pre">0.96</span></code>）</p></td>
+<td><p>略微偏好旧动作</p></td>
+<td><p>平衡稳定性和响应性（ACT 论文默认值）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0.1</span></code></p></td>
+<td><p>快衰减（<code class="docutils literal notranslate"><span class="pre">weights[4]</span> <span class="pre">≈</span> <span class="pre">0.67</span></code>）</p></td>
+<td><p>强烈偏好旧动作</p></td>
+<td><p>保守、稳定、较少反应性</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-0.01</span></code></p></td>
+<td><p>指数增长</p></td>
+<td><p>偏好 <strong>新</strong> 动作</p></td>
+<td><p>高度反应性，可能导致不稳定</p></td>
+</tr>
+</tbody>
+</table>
+<section id="id12">
+<h3>权重衰减可视化<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<p>对于不同系数值，k=10 时的权重：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>系数</p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">weights[10]</span></code></p></th>
+<th class="head"><p>累加和</p></th>
+<th class="head"><p>解释</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></td>
+<td><p>1.000</p></td>
+<td><p>11.000</p></td>
+<td><p>新动作获得 1/11 = 9.1% 权重</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0.01</span></code></p></td>
+<td><p>0.905</p></td>
+<td><p>9.517</p></td>
+<td><p>新动作获得 9.5% 权重</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0.05</span></code></p></td>
+<td><p>0.607</p></td>
+<td><p>7.869</p></td>
+<td><p>新动作获得 7.7% 权重</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0.1</span></code></p></td>
+<td><p>0.368</p></td>
+<td><p>6.321</p></td>
+<td><p>新动作获得 5.8% 权重</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L323-L331">src/action_dispatch/README.en.md:323-331</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L26-L31">src/action_dispatch/action_dispatch/temporal_smoother.py:26-31</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id13">
+<h2>使用模式<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
+<section id="id14">
+<h3>使用 TemporalSmoother 的基本用法<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<p>来自 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/test/test_temporal_smoother.py#L51-L63">src/action_dispatch/test/test_temporal_smoother.py:51-63</a> 的示例：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">action_dispatch</span> <span class="kn">import</span> <span class="n">TemporalSmoother</span><span class="p">,</span> <span class="n">TemporalSmootherConfig</span>
+
+<span class="c1"># Configure</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">TemporalSmootherConfig</span><span class="p">(</span>
+    <span class="n">enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">chunk_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">temporal_ensemble_coeff</span><span class="o">=</span><span class="mf">0.01</span>
+<span class="p">)</span>
+<span class="n">smoother</span> <span class="o">=</span> <span class="n">TemporalSmoother</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+<span class="c1"># First inference: 100 actions for 7-DOF robot</span>
+<span class="n">actions1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+<span class="n">smoother</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">actions1</span><span class="p">,</span> <span class="n">actions_executed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">smoother</span><span class="o">.</span><span class="n">plan_length</span> <span class="o">==</span> <span class="mi">100</span>
+
+<span class="c1"># Execute actions</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">):</span>
+    <span class="n">action</span> <span class="o">=</span> <span class="n">smoother</span><span class="o">.</span><span class="n">get_next_action</span><span class="p">()</span>  <span class="c1"># shape: (7,)</span>
+    <span class="c1"># Send action to robot...</span>
+
+<span class="c1"># Second inference (30 actions executed during inference)</span>
+<span class="n">actions2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+<span class="n">smoother</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">actions2</span><span class="p">,</span> <span class="n">actions_executed</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+<span class="c1"># Plan now contains 70 blended + 30 new = 100 actions</span>
+<span class="k">assert</span> <span class="n">smoother</span><span class="o">.</span><span class="n">plan_length</span> <span class="o">==</span> <span class="mi">100</span>
+</pre></div>
+</div>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/test/test_temporal_smoother.py#L51-L90">src/action_dispatch/test/test_temporal_smoother.py:51-90</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L383-L413">src/action_dispatch/README.en.md:383-413</a></p>
+</section>
+<section id="id15">
+<h3>使用 TemporalSmootherManager<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<p>管理器提供运行时切换能力，位于
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L259-L322">src/action_dispatch/action_dispatch/temporal_smoother.py:259-322</a>：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">action_dispatch</span> <span class="kn">import</span> <span class="n">TemporalSmootherManager</span>
+
+<span class="n">manager</span> <span class="o">=</span> <span class="n">TemporalSmootherManager</span><span class="p">(</span>
+    <span class="n">enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">chunk_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">temporal_ensemble_coeff</span><span class="o">=</span><span class="mf">0.01</span>
+<span class="p">)</span>
+
+<span class="c1"># Check status</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Smoothing enabled: </span><span class="si">{</span><span class="n">manager</span><span class="o">.</span><span class="n">is_enabled</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Plan length: </span><span class="si">{</span><span class="n">manager</span><span class="o">.</span><span class="n">plan_length</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Runtime toggle</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">set_enabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># Disable smoothing</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">set_enabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>   <span class="c1"># Re-enable smoothing</span>
+
+<span class="c1"># Use same interface as TemporalSmoother</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">actions</span><span class="p">,</span> <span class="n">actions_executed</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">action</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_next_action</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L415-L426">src/action_dispatch/README.en.md:415-426</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/test/test_temporal_smoother.py#L176-L216">src/action_dispatch/test/test_temporal_smoother.py:176-216</a></p>
+</section>
+<section id="id16">
+<h3>禁用平滑（仅对齐）<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<p>当平滑被禁用时，位于
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/test/test_temporal_smoother.py#L66-L90">src/action_dispatch/test/test_temporal_smoother.py:66-90</a>，
+平滑器仍执行时间对齐但替换计划而非混合：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">config</span> <span class="o">=</span> <span class="n">TemporalSmootherConfig</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">smoother</span> <span class="o">=</span> <span class="n">TemporalSmoother</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+<span class="c1"># First chunk</span>
+<span class="n">actions1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+<span class="n">smoother</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">actions1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Execute 3 actions</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">smoother</span><span class="o">.</span><span class="n">get_next_action</span><span class="p">()</span>
+
+<span class="c1"># Second chunk arrives after 3 more actions executed</span>
+<span class="n">actions2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+<span class="n">smoother</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">actions2</span><span class="p">,</span> <span class="n">actions_executed</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># Plan is replaced with aligned actions2[3:]</span>
+<span class="c1"># Result: 7 actions, all zeros (no blending with ones)</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">7</span><span class="p">):</span>
+    <span class="n">action</span> <span class="o">=</span> <span class="n">smoother</span><span class="o">.</span><span class="n">get_next_action</span><span class="p">()</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_almost_equal</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">7</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/test/test_temporal_smoother.py#L66-L90">src/action_dispatch/test/test_temporal_smoother.py:66-90</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id17">
+<h2>与动作分发器的集成<a class="headerlink" href="#id17" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TemporalSmoother</span></code> 集成到 <code class="docutils literal notranslate"><span class="pre">ActionDispatcherNode</span></code>
+（参见 <a class="reference external" href="#8.1">动作分发器节点</a>）中，如下所示：</p>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;ActionDispatcherNode&quot;
+        Client[&quot;Action Client&lt;br/&gt;(DispatchInfer)&quot;]
+        Queue[&quot;Action Queue&lt;br/&gt;(FIFO buffer)&quot;]
+        Smoother[&quot;TemporalSmoother&lt;br/&gt;(Optional)&quot;]
+        Executor[&quot;TopicExecutor&lt;br/&gt;(100Hz publish)&quot;]
+    end
+
+    subgraph &quot;Inference Service&quot;
+        InfServer[&quot;lerobot_policy_node&lt;br/&gt;Action Server&quot;]
+    end
+
+    subgraph &quot;Control Loop State&quot;
+        QueueLen[&quot;queue_length at&lt;br/&gt;inference start&quot;]
+        Executed[&quot;actions_executed =&lt;br/&gt;queue_len_start - queue_len_now&quot;]
+    end
+
+    Client --&gt;|&quot;Send goal when&lt;br/&gt;queue &lt; watermark&quot;| InfServer
+    InfServer --&gt;|&quot;Return action chunk&lt;br/&gt;(VariantsList)&quot;| Client
+
+    Client --&gt;|&quot;Decode to tensor&quot;| Smoother
+    QueueLen --&gt; Executed
+    Executed --&gt;|&quot;actions_executed&quot;| Smoother
+
+    Smoother --&gt;|&quot;Smoothed actions&quot;| Queue
+    Queue --&gt;|&quot;Pop at 100Hz&quot;| Executor
+
+    Executor --&gt;|&quot;/joint_commands&quot;| Hardware[&quot;ros2_control&quot;]
+    </pre><p>动作分发器：1. 在推理开始时记录队列长度 2. 计算 <code class="docutils literal notranslate"><span class="pre">actions_executed</span> <span class="pre">=</span> <span class="pre">queue_len_start</span> <span class="pre">-</span> <span class="pre">current_queue_len</span></code> 3. 将 <code class="docutils literal notranslate"><span class="pre">(new_chunk,</span> <span class="pre">actions_executed)</span></code> 传递给平滑器 4. 将平滑后的动作入队以执行</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L84-L130">src/action_dispatch/README.en.md:84-130</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L36-L38">README.md:36-38</a></p>
+</section>
+<hr class="docutils" />
+<section id="id18">
+<h2>启动文件中的配置参数<a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
+<p>时间平滑参数可以通过 ROS 2 参数配置：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>类型</p></th>
+<th class="head"><p>默认值</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">temporal_s</span> <span class="pre">moothing_enabled</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p>启用/禁用平滑</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tempora</span> <span class="pre">l_ensemble_coeff</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">double</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">0.01</span></code></p></td>
+<td><p>指数衰减系数</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">chunk_size</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">100</span></code></p></td>
+<td><p>每块最大动作数</p></td>
+</tr>
+<tr class="row-odd"><td><p>`` smoothing_device``</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">''</span></code></p></td>
+<td><p>计算设备 （空 = 自动检测）</p></td>
+</tr>
+</tbody>
+</table>
+<p>来自 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L186-L209">src/action_dispatch/README.en.md:186-209</a> 的启动配置示例：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">launch</span> <span class="kn">import</span> <span class="n">LaunchDescription</span>
+<span class="kn">from</span> <span class="nn">launch_ros.actions</span> <span class="kn">import</span> <span class="n">Node</span>
+
+<span class="k">def</span> <span class="nf">generate_launch_description</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">LaunchDescription</span><span class="p">([</span>
+        <span class="n">Node</span><span class="p">(</span>
+            <span class="n">package</span><span class="o">=</span><span class="s1">&#39;action_dispatch&#39;</span><span class="p">,</span>
+            <span class="n">executable</span><span class="o">=</span><span class="s1">&#39;action_dispatcher_node&#39;</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="s1">&#39;action_dispatcher&#39;</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="p">[{</span>
+                <span class="s1">&#39;temporal_smoothing_enabled&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s1">&#39;temporal_ensemble_coeff&#39;</span><span class="p">:</span> <span class="mf">0.01</span><span class="p">,</span>
+                <span class="s1">&#39;chunk_size&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+                <span class="s1">&#39;smoothing_device&#39;</span><span class="p">:</span> <span class="s1">&#39;cuda:0&#39;</span><span class="p">,</span>  <span class="c1"># or &#39;cpu&#39;, &#39;npu:0&#39;</span>
+            <span class="p">}]</span>
+        <span class="p">)</span>
+    <span class="p">])</span>
+</pre></div>
+</div>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L172-L209">src/action_dispatch/README.en.md:172-209</a></p>
+</section>
+<hr class="docutils" />
+<section id="id19">
+<h2>运行时服务<a class="headerlink" href="#id19" title="Link to this heading"></a></h2>
+<p>动作分发器提供用于运行时控制的 ROS 2 服务
+（在 <a class="reference external" href="#8.1">动作分发器节点</a> 中记录）：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>服务</p></th>
+<th class="head"><p>类型</p></th>
+<th class="head"><p>效果</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">~/toggle_smoothing</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">std_s</span> <span class="pre">rvs/srv/Empty</span></code></p></td>
+<td><p>切换平滑 启用/禁用状态</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">~/reset</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">std_s</span> <span class="pre">rvs/srv/Empty</span></code></p></td>
+<td><p>重置平滑器状态 （清除计划）</p></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Toggle smoothing on/off</span>
+ros2<span class="w"> </span>service<span class="w"> </span>call<span class="w"> </span>/action_dispatcher/toggle_smoothing<span class="w"> </span>std_srvs/srv/Empty
+
+<span class="c1"># Reset smoother state</span>
+ros2<span class="w"> </span>service<span class="w"> </span>call<span class="w"> </span>/action_dispatcher/reset<span class="w"> </span>std_srvs/srv/Empty
+</pre></div>
+</div>
+<p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L335-L341">src/action_dispatch/README.en.md:335-341</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.md#L326-L334">src/action_dispatch/README.md:326-334</a></p>
+</section>
+<hr class="docutils" />
+<section id="id20">
+<h2>测试<a class="headerlink" href="#id20" title="Link to this heading"></a></h2>
+<p>全面的测试位于
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/test/test_temporal_smoother.py#L1-L247">src/action_dispatch/test/test_temporal_smoother.py:1-247</a>。关键测试场景：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>测试类</p></th>
+<th class="head"><p>覆盖范围</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TestTemporalSmootherConfig</span></code></p></td>
+<td><p>配置验证、参数默认值</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TestTemporalSmoother</span></code></p></td>
+<td><p>基本更新/获取、禁用平滑、 跨帧平滑、张量输入、重置</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">TestTemporalSmootherManager</span></code></p></td>
+<td><p>管理器接口、运行时切换、 peek 操作</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">TestSmoothingFormula</span></code></p></td>
+<td><p>权重计算、系数效果、累加和</p></td>
+</tr>
+</tbody>
+</table>
+<p>验证跨帧平滑的示例测试位于
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/test/test_temporal_smoother.py#L91-L118">src/action_dispatch/test/test_temporal_smoother.py:91-118</a>：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">test_cross_frame_smoothing</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">TemporalSmootherConfig</span><span class="p">(</span><span class="n">enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">temporal_ensemble_coeff</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+    <span class="n">smoother</span> <span class="o">=</span> <span class="n">TemporalSmoother</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+    <span class="c1"># First inference: actions of value 1.0</span>
+    <span class="n">actions1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span> <span class="o">*</span> <span class="mf">1.0</span>
+    <span class="n">smoother</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">actions1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">smoother</span><span class="o">.</span><span class="n">get_next_action</span><span class="p">()</span>
+
+    <span class="c1"># Second inference: actions of value 2.0</span>
+    <span class="n">actions2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span> <span class="o">*</span> <span class="mf">2.0</span>
+    <span class="n">smoother</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">actions2</span><span class="p">,</span> <span class="n">actions_executed</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="c1"># First action should be blended (not exactly 1.0 or 2.0)</span>
+    <span class="n">first_action</span> <span class="o">=</span> <span class="n">smoother</span><span class="o">.</span><span class="n">peek_next_action</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">first_action</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">first_action</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">7</span><span class="p">)</span> <span class="o">*</span> <span class="mf">2.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>运行测试：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>src/action_dispatch
+python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>test/test_temporal_smoother.py<span class="w"> </span>-v
+</pre></div>
+</div>
+<p><strong>来源</strong>：
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/test/test_temporal_smoother.py#L1-L247">src/action_dispatch/test/test_temporal_smoother.py:1-247</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="action_dispatcher_node.html" class="btn btn-neutral float-left" title="动作调度器节点" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="topic_and_action_executors.html" class="btn btn-neutral float-right" title="话题与动作执行器" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../../24.03-lts/index.html">24.03-lts</a></dd>
+      <dd><a href="../../../../llvm-toolchain-v0.1.1/index.html">llvm-toolchain-v0.1.1</a></dd>
+      <dd><a href="../../../../nativesdk-v0.1.2/index.html">nativesdk-v0.1.2</a></dd>
+      <dd><a href="../../../../nativesdk-v0.1.3/index.html">nativesdk-v0.1.3</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.5/index.html">toolchains-v0.1.5</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.7/index.html">toolchains-v0.1.7</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.8/index.html">toolchains-v0.1.8</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="temporal_smoothing.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../pr_2786/features/embodied_ai/action_dispatch/temporal_smoothing.html">pr_2786</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

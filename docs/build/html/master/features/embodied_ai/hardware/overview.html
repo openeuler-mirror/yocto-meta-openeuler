@@ -1,0 +1,1395 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>硬件集成概述 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
+    /* Same as .mermaid-container > pre */
+    display: block;
+    width: 100%;
+}
+
+pre.mermaid > svg {
+    /* Same as .mermaid-container > pre > svg */
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}`;
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.mermaid-container > pre {
+    display: block;
+    width: 100%;
+}
+
+.mermaid-container > pre > svg {
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.mermaid-fullscreen-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: #333;
+}
+
+.mermaid-fullscreen-btn:hover {
+    opacity: 100% !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-btn.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-btn.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 95vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    padding: 20px;
+    overflow: auto;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.mermaid-fullscreen-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen.dark-theme {
+    background: #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen .mermaid svg {
+    height: 100% !important;
+    width: 100% !important;
+    cursor: grab;
+}
+
+.mermaid-fullscreen-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: white;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-close.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-close.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
+    display: none !important;
+}`;
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+
+    if ("False" === "True") {
+        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("");
+            if(all_mermaids.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else if(svgs.size() !== mermaids_to_add_zoom) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else {
+                svgs.each(function() {
+                    var svg = d3.select(this);
+                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                    var inner = svg.select("g");
+                    var zoom = d3.zoom().on("zoom", function(event) {
+                        inner.attr("transform", event.transform);
+                    });
+                    svg.call(zoom);
+                });
+            }
+        }
+    } else if(all_mermaids.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if ("True" !== "True") return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = '⛶';
+        fullscreenBtn.style.opacity = '50%';
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scroll, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.sdisplay = 'block';
+
+                if ("False" === "True") {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script>
+      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
+      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="ros2_control 配置" href="ros2_control_configuration.html" />
+    <link rel="prev" title="硬件集成" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">具身机器人框架IB Robot</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../introduction/ib-robot_overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture/system_architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统 (robot_config)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol/protocol_conversion_tensormsg.html">协议转换 (tensormsg)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference/index.html">推理服务</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../action_dispatch/index.html">动作调度</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_pipeline/index.html">数据服务</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../motion_planning/index.html">运动规划 (MoveIt)</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">硬件集成</a><ul class="current">
+<li class="toctree-l6 current"><a class="current reference internal" href="#">硬件集成概述</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">目的与范围</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#ros2-control">ros2_control 架构</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id4">硬件插件系统</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#so101systemhardware">SO101SystemHardware 插件</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#gazebo">Gazebo 仿真插件</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id9">控制器配置</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#robot-config">robot_config 中的硬件配置</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id14">在仿真和真实硬件之间切换</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id16">控制器生命周期管理</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id19">硬件集成故障排除</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id21">总结</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html">ros2_control 配置</a></li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html#id4">插件规范</a></li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html#id5">路径解析</a></li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html#id7">控制器配置文件</a></li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html#id8">控制模式特定控制器</a></li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html#id10">加载流程</a></li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html#id11">代码实现</a></li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html#id12">启动时配置流程</a></li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html#id13">硬件与仿真选择</a></li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html#id15">验证规则</a></li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html#id16">验证脚本</a></li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html#id19">核心参数</a></li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html#id20">硬件特定参数</a></li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html#id23">常见配置错误</a></li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html#id24">硬件插件未找到</a></li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html#id25">校准文件缺失</a></li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html#urdf">URDF 路径解析失败</a></li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html#id26">控制器生成失败</a></li>
+<li class="toctree-l6"><a class="reference internal" href="hardware_plugins.html">硬件插件</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference/package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">具身机器人框架IB Robot</a></li>
+          <li class="breadcrumb-item"><a href="index.html">硬件集成</a></li>
+      <li class="breadcrumb-item active">硬件集成概述</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>硬件集成概述<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<details><p>相关源文件</p>
+<p>以下文件用作生成此文档页面的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="README.en.md">README.en.md</a></p></li>
+<li><p><a class="reference external" href="README.md">README.md</a></p></li>
+<li><p><a class="reference external" href="docs/architecture.md">docs/architecture.md</a></p></li>
+<li><p><a class="reference external" href="/image/architecture.png">/image/architecture.png</a></p></li>
+<li><p><a class="reference external" href="docs/roadmap.md">docs/roadmap.md</a></p></li>
+<li><p><a class="reference external" href="scripts/build.sh">scripts/build.sh</a></p></li>
+<li><p><a class="reference external" href="src/README.md">src/README.md</a></p></li>
+<li><p><a class="reference external" href="src/action_dispatch/README.en.md">src/action_dispatch/README.en.md</a></p></li>
+<li><p><a class="reference external" href="src/action_dispatch/README.md">src/action_dispatch/README.md</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/README.en.md">src/robot_config/README.en.md</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/README.md">src/robot_config/README.md</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/config/robots/so101_dual_arm.yaml">src/robot_config/config/robots/so101_dual_arm.yaml</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/config/robots/so101_single_arm.yaml">src/robot_config/config/robots/so101_single_arm.yaml</a></p></li>
+<li><p><a class="reference external" href="src/robot_config/robot_config/loader.py">src/robot_config/robot_config/loader.py</a></p></li>
+<li><p><a class="reference external" href="src/tensormsg/tensormsg/converter.py">src/tensormsg/tensormsg/converter.py</a></p></li>
+</ul>
+</details><section id="id2">
+<h2>目的与范围<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>本文档介绍 IB-Robot 的硬件抽象层，该抽象层使相同的高级控制逻辑能够与物理机器人和仿真环境无缝协作。系统使用 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 作为抽象边界，下方是特定硬件的插件，上方是与控制模式无关的控制器。</p>
+<p>关于控制模式和控制器的配置，请参阅 <a class="reference external" href="#3.3">控制模式架构</a>。关于定义运动学结构的 URDF/SRDF 机器人模型，请参阅第 12 页（包参考）。</p>
+</section>
+<hr class="docutils" />
+<section id="ros2-control">
+<h2>ros2_control 架构<a class="headerlink" href="#ros2-control" title="Link to this heading"></a></h2>
+<p>IB-Robot 使用标准的 ROS 2 Control 框架，在控制逻辑和硬件驱动之间创建清晰的分离。这种三层架构确保在仿真和真实硬件之间切换只需要配置更改，无需修改代码。</p>
+<section id="id3">
+<h3>三层堆栈<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;Application Layer&quot;
+        TeleopNode[&quot;robot_teleop&lt;br/&gt;(Human Control)&quot;]
+        InferenceNode[&quot;lerobot_policy_node&lt;br/&gt;(AI Control)&quot;]
+        MoveItNode[&quot;MoveItGateway&lt;br/&gt;(Planning Control)&quot;]
+    end
+
+    subgraph &quot;Control Layer&quot;
+        ActionDispatch[&quot;action_dispatcher_node&lt;br/&gt;(Action Chunking)&quot;]
+        TopicExec[&quot;TopicExecutor&lt;br/&gt;(Position Commands)&quot;]
+        ActionExec[&quot;ActionExecutor&lt;br/&gt;(Trajectory Commands)&quot;]
+    end
+
+    subgraph &quot;ros2_control Framework&quot;
+        ControllerMgr[&quot;controller_manager&quot;]
+
+        subgraph &quot;Controllers&quot;
+            JSB[&quot;joint_state_broadcaster&lt;br/&gt;(State Publisher)&quot;]
+            ArmPos[&quot;arm_position_controller&lt;br/&gt;(JointGroupPositionController)&quot;]
+            GripPos[&quot;gripper_position_controller&lt;br/&gt;(ForwardCommandController)&quot;]
+            ArmTraj[&quot;arm_trajectory_controller&lt;br/&gt;(JointTrajectoryController)&quot;]
+            GripTraj[&quot;gripper_trajectory_controller&lt;br/&gt;(JointTrajectoryController)&quot;]
+        end
+
+        HWInterface[&quot;Hardware Interface&lt;br/&gt;(read/write abstraction)&quot;]
+    end
+
+    subgraph &quot;Hardware Plugin Layer&quot;
+        HWChoice{&quot;use_sim&lt;br/&gt;parameter?&quot;}
+    end
+
+    subgraph &quot;Physical Layer&quot;
+        RealHW[&quot;so101_hardware/SO101SystemHardware&lt;br/&gt;(Feetech SDK)&quot;]
+        SimHW[&quot;gz_ros2_control&lt;br/&gt;(Gazebo Physics)&quot;]
+    end
+
+    TeleopNode --&gt; TopicExec
+    InferenceNode --&gt; ActionDispatch
+    MoveItNode --&gt; ActionExec
+
+    ActionDispatch --&gt; TopicExec
+    ActionDispatch --&gt; ActionExec
+
+    TopicExec --&gt; ArmPos
+    TopicExec --&gt; GripPos
+    ActionExec --&gt; ArmTraj
+    ActionExec --&gt; GripTraj
+
+    ArmPos --&gt; ControllerMgr
+    GripPos --&gt; ControllerMgr
+    ArmTraj --&gt; ControllerMgr
+    GripTraj --&gt; ControllerMgr
+    JSB --&gt; ControllerMgr
+
+    ControllerMgr --&gt; HWInterface
+    HWInterface --&gt; HWChoice
+
+    HWChoice --&gt;|&quot;false&quot;| RealHW
+    HWChoice --&gt;|&quot;true&quot;| SimHW
+
+    RealHW --&gt; Motors[&quot;/dev/ttyACM0&lt;br/&gt;Physical Motors&quot;]
+    SimHW --&gt; Physics[&quot;Gazebo Physics Engine&quot;]
+
+    Motors -.-&gt;|&quot;State Feedback&quot;| RealHW
+    Physics -.-&gt;|&quot;Simulated State&quot;| SimHW
+
+    RealHW -.-&gt; JSB
+    SimHW -.-&gt; JSB
+    </pre><p><strong>来源：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L23-L41">README.md:23-41</a>, <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/docs/architecture.md#L86-L177">docs/architecture.md:86-177</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L104-L129">src/robot_config/config/robots/so101_single_arm.yaml:104-129</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id4">
+<h2>硬件插件系统<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 硬件接口由与真实硬件或仿真环境通信的插件实现。IB-Robot 支持两种主要的硬件后端。</p>
+<section id="id5">
+<h3>插件选择机制<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    LaunchFile[&quot;robot.launch.py&lt;br/&gt;--use_sim parameter&quot;]
+
+    ConfigYAML[&quot;robot_config YAML&lt;br/&gt;ros2_control section&quot;]
+
+    LaunchFile --&gt;|&quot;reads&quot;| ConfigYAML
+
+    URDFGen[&quot;URDF Generation&lt;br/&gt;(xacro processing)&quot;]
+
+    ConfigYAML --&gt; URDFGen
+
+    URDFChoice{&quot;use_sim&lt;br/&gt;== true?&quot;}
+
+    URDFGen --&gt; URDFChoice
+
+    URDFChoice --&gt;|&quot;Yes&quot;| SimPlugin[&quot;&lt;ros2_control&gt;&lt;br/&gt;  &lt;hardware&gt;&lt;br/&gt;    &lt;plugin&gt;gz_ros2_control/GazeboSimSystem&lt;/plugin&gt;&quot;]
+
+    URDFChoice --&gt;|&quot;No&quot;| RealPlugin[&quot;&lt;ros2_control&gt;&lt;br/&gt;  &lt;hardware&gt;&lt;br/&gt;    &lt;plugin&gt;so101_hardware/SO101SystemHardware&lt;/plugin&gt;&lt;br/&gt;    &lt;param name='port'&gt;/dev/ttyACM0&lt;/param&gt;&lt;br/&gt;    &lt;param name='calib_file'&gt;~/.calibrate/...&lt;/param&gt;&quot;]
+
+    SimPlugin --&gt; ControllerMgr[&quot;controller_manager&lt;br/&gt;(loads plugin at runtime)&quot;]
+    RealPlugin --&gt; ControllerMgr
+
+    ControllerMgr --&gt; HWInterface[&quot;Hardware Interface API&lt;br/&gt;(read_state / write_command)&quot;]
+    </pre><p>选择过程通过由 <code class="docutils literal notranslate"><span class="pre">use_sim</span></code> 参数驱动的 xacro 条件语句在 URDF 生成期间发生。然后 <code class="docutils literal notranslate"><span class="pre">controller_manager</span></code> 节点在运行时加载相应的插件。</p>
+<p><strong>来源：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L121-L149">README.md:121-149</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L104-L121">src/robot_config/config/robots/so101_single_arm.yaml:104-121</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="so101systemhardware">
+<h2>SO101SystemHardware 插件<a class="headerlink" href="#so101systemhardware" title="Link to this heading"></a></h2>
+<p>真实硬件插件使用 Feetech 舵机 SDK 提供与物理 SO-101 机械臂的接口。</p>
+<section id="id6">
+<h3>插件配置<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<p>插件在 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML 文件的 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 部分中配置：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">ros2_control</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">hardware_plugin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">so101_hardware/SO101SystemHardware</span>
+<span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/dev/ttyACM0</span>
+<span class="w">  </span><span class="nt">calib_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$(env HOME)/.calibrate/so101_follower_calibrate.json</span>
+<span class="w">  </span><span class="nt">joint_names</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;1&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;2&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;3&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;4&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;5&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;6&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">reset_positions</span><span class="p">:</span>
+<span class="w">    </span><span class="s">&quot;1&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">    </span><span class="s">&quot;2&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">    </span><span class="s">&quot;3&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">    </span><span class="s">&quot;4&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">    </span><span class="s">&quot;5&quot;</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">  </span><span class="nt">urdf_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$(find robot_description)/urdf/lerobot/so101/so101.urdf.xacro</span>
+</pre></div>
+</div>
+<p><strong>配置参数：</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>类型</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hardware_plugin</span></code></p></td>
+<td><p>string</p></td>
+<td><p>完全限定的插件类名</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">port</span></code></p></td>
+<td><p>string</p></td>
+<td><p>串口设备（例如 <code class="docutils literal notranslate"><span class="pre">/dev/ttyACM0</span></code>）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">calib_file</span></code></p></td>
+<td><p>path</p></td>
+<td><p>包含舵机校准偏移的 JSON 文件</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">joint_names</span></code></p></td>
+<td><p>list</p></td>
+<td><p>与 URDF 关节名称匹配的关节标识符</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">reset_positions</span></code></p></td>
+<td><p>dict</p></td>
+<td><p>用于初始化的默认关节位置（弧度）</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">urdf_path</span></code></p></td>
+<td><p>path</p></td>
+<td><p>包含 <code class="docutils literal notranslate"><span class="pre">&lt;ros2_control&gt;</span></code> 标签的 机器人描述文件</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源：</strong>
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L104-L118">src/robot_config/config/robots/so101_single_arm.yaml:104-118</a></p>
+</section>
+<section id="id7">
+<h3>硬件接口实现<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">SO101SystemHardware</span></code> 插件必须实现标准的 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 硬件接口生命周期：</p>
+<pre  class="mermaid">
+        stateDiagram-v2
+    [*] --&gt; Unconfigured
+
+    Unconfigured --&gt; Inactive: on_configure()&lt;br/&gt;(open serial port,&lt;br/&gt;load calibration)
+
+    Inactive --&gt; Active: on_activate()&lt;br/&gt;(enable servo torque,&lt;br/&gt;move to reset positions)
+
+    Active --&gt; Inactive: on_deactivate()&lt;br/&gt;(disable torque)
+
+    Inactive --&gt; Unconfigured: on_cleanup()&lt;br/&gt;(close serial port)
+
+    Active --&gt; Active: read()&lt;br/&gt;(query servo positions)&lt;br/&gt;&lt;br/&gt;write()&lt;br/&gt;(send position commands)
+
+    Unconfigured --&gt; [*]
+    Inactive --&gt; [*]
+    Active --&gt; [*]: on_shutdown()
+    </pre><p><strong>关键方法：</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">on_configure()</span></code>：打开串口，加载校准文件，初始化 Feetech SDK</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">on_activate()</span></code>：启用电机扭矩，将关节移动到重置位置</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">read()</span></code>：从舵机查询当前关节位置和速度（以控制频率调用）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">write()</span></code>：向舵机发送命令位置（以控制频率调用）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">on_deactivate()</span></code>：出于安全考虑禁用电机扭矩</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">on_cleanup()</span></code>：关闭串口并释放资源</p></li>
+</ul>
+<p><strong>来源：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L23-L41">README.md:23-41</a>, <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/docs/architecture.md#L254-L265">docs/architecture.md:254-265</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="gazebo">
+<h2>Gazebo 仿真插件<a class="headerlink" href="#gazebo" title="Link to this heading"></a></h2>
+<p>对于仿真环境，IB-Robot 使用标准的 <code class="docutils literal notranslate"><span class="pre">gz_ros2_control</span></code> 插件，该插件与 Gazebo 的物理引擎交互。</p>
+<section id="id8">
+<h3>仿真硬件配置<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<p>当 <code class="docutils literal notranslate"><span class="pre">use_sim:=true</span></code> 时，URDF 生成过程会自动替换为仿真插件：</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;ros2_control</span><span class="w"> </span><span class="na">name=</span><span class="s">&quot;GazeboSimSystem&quot;</span><span class="w"> </span><span class="na">type=</span><span class="s">&quot;system&quot;</span><span class="nt">&gt;</span>
+<span class="w">  </span><span class="nt">&lt;hardware&gt;</span>
+<span class="w">    </span><span class="nt">&lt;plugin&gt;</span>gz_ros2_control/GazeboSimSystem<span class="nt">&lt;/plugin&gt;</span>
+<span class="w">  </span><span class="nt">&lt;/hardware&gt;</span>
+<span class="w">  </span><span class="cm">&lt;!-- Joint definitions identical to real hardware --&gt;</span>
+<span class="nt">&lt;/ros2_control&gt;</span>
+</pre></div>
+</div>
+<p>该插件提供：</p>
+<ul class="simple">
+<li><p><strong>基于物理的状态反馈</strong>：由 Gazebo 计算的关节位置、速度和力</p></li>
+<li><p><strong>命令执行</strong>：将命令位置应用于仿真关节</p></li>
+<li><p><strong>相同的 API</strong>：暴露与真实硬件相同的 <code class="docutils literal notranslate"><span class="pre">read()</span></code>/<code class="docutils literal notranslate"><span class="pre">write()</span></code> 接口</p></li>
+</ul>
+<p><strong>仿真模式的优势：</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>方面</p></th>
+<th class="head"><p>优势</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>开发速度</strong></p></td>
+<td><p>算法开发期间无需访问物理硬件</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>安全性</strong></p></td>
+<td><p>测试危险轨迹而无硬件损坏风险</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>调试</strong></p></td>
+<td><p>在 RViz/Gazebo GUI 中通过视觉反馈 单步调试物理</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>可重复性</strong></p></td>
+<td><p>确定性物理用于回归测试</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L121-L149">README.md:121-149</a>, <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.en.md#L76-L93">README.en.md:76-93</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id9">
+<h2>控制器配置<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<p>控制器是高级命令和硬件接口之间的桥梁。IB-Robot 根据控制模式使用不同类型的控制器。</p>
+<section id="id10">
+<h3>控制器类型<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph LR
+    subgraph &quot;State Broadcasting&quot;
+        JSB[&quot;joint_state_broadcaster&lt;br/&gt;(Always Active)&quot;]
+    end
+
+    subgraph &quot;Position Control (model_inference/teleop modes)&quot;
+        ArmPos[&quot;arm_position_controller&lt;br/&gt;Type: JointGroupPositionController&quot;]
+        GripPos[&quot;gripper_position_controller&lt;br/&gt;Type: ForwardCommandController&quot;]
+    end
+
+    subgraph &quot;Trajectory Control (moveit_planning mode)&quot;
+        ArmTraj[&quot;arm_trajectory_controller&lt;br/&gt;Type: JointTrajectoryController&quot;]
+        GripTraj[&quot;gripper_trajectory_controller&lt;br/&gt;Type: JointTrajectoryController&quot;]
+    end
+
+    JSB --&gt;|&quot;/joint_states&quot;| App[&quot;Application Nodes&quot;]
+
+    ArmPos --&gt;|&quot;read/write&quot;| HW[&quot;Hardware Interface&quot;]
+    GripPos --&gt;|&quot;read/write&quot;| HW
+    ArmTraj --&gt;|&quot;read/write&quot;| HW
+    GripTraj --&gt;|&quot;read/write&quot;| HW
+
+    Teleop[&quot;robot_teleop&quot;] --&gt;|&quot;Float64MultiArray&quot;| ArmPos
+    Inference[&quot;action_dispatcher&quot;] --&gt;|&quot;Float64MultiArray&quot;| ArmPos
+
+    MoveIt[&quot;MoveItGateway&quot;] --&gt;|&quot;FollowJointTrajectory&lt;br/&gt;(Action)&quot;| ArmTraj
+    </pre><p><strong>控制器职责：</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>控制器</p></th>
+<th class="head"><p>类型</p></th>
+<th class="head"><p>输入</p></th>
+<th class="head"><p>输出</p></th>
+<th class="head"><p>用途</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">joint_state_broadcaster</span></code></p></td>
+<td><p>状态发布器</p></td>
+<td><p>硬件状态</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/joint_states</span></code> 话题</p></td>
+<td><p>为所有消费者发布当前机器人状态</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">arm_position_controller</span></code></p></td>
+<td><p>位置命令</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/commands</span></code> 话题</p></td>
+<td><p>硬件写入</p></td>
+<td><p>高频位置流（ACT、遥操作）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gripper_position_controller</span></code></p></td>
+<td><p>位置命令</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/commands</span></code> 话题</p></td>
+<td><p>硬件写入</p></td>
+<td><p>夹爪开合命令</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">arm_trajectory_controller</span></code></p></td>
+<td><p>轨迹执行</p></td>
+<td><p>Action 目标</p></td>
+<td><p>硬件写入</p></td>
+<td><p>MoveIt 规划的带时间参数化的轨迹</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gripper_trajectory_controller</span></code></p></td>
+<td><p>轨迹执行</p></td>
+<td><p>Action 目标</p></td>
+<td><p>硬件写入</p></td>
+<td><p>协调的夹爪轨迹</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源：</strong>
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L46-L103">src/robot_config/config/robots/so101_single_arm.yaml:46-103</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/README.md#L88-L243">src/robot_config/README.md:88-243</a></p>
+</section>
+<section id="id11">
+<h3>控制器配置文件<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<p>控制器在由 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> 引用的单独 YAML 文件中定义：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># so101_controllers.yaml (referenced by robot_config)</span>
+<span class="nt">controller_manager</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ros__parameters</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">update_rate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w">  </span><span class="c1"># Hz</span>
+
+<span class="w">    </span><span class="nt">joint_state_broadcaster</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">joint_state_broadcaster/JointStateBroadcaster</span>
+
+<span class="w">    </span><span class="nt">arm_position_controller</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">position_controllers/JointGroupPositionController</span>
+
+<span class="w">    </span><span class="nt">gripper_position_controller</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">forward_command_controller/ForwardCommandController</span>
+
+<span class="w">    </span><span class="nt">arm_trajectory_controller</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">joint_trajectory_controller/JointTrajectoryController</span>
+
+<span class="w">    </span><span class="nt">gripper_trajectory_controller</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">joint_trajectory_controller/JointTrajectoryController</span>
+
+<span class="nt">arm_position_controller</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ros__parameters</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">joints</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;1&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;2&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;3&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;4&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;5&quot;</span>
+
+<span class="nt">gripper_position_controller</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ros__parameters</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">joints</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;6&quot;</span>
+</pre></div>
+</div>
+<p><strong>来源：</strong>
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L119-L122">src/robot_config/config/robots/so101_single_arm.yaml:119-122</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="robot-config">
+<h2>robot_config 中的硬件配置<a class="headerlink" href="#robot-config" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML 作为所有硬件相关配置的唯一真实来源，消除了 URDF、启动文件和控制器配置之间的重复。</p>
+<section id="id12">
+<h3>配置结构<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    RobotYAML[&quot;robot_config YAML&lt;br/&gt;(so101_single_arm.yaml)&quot;]
+
+    subgraph &quot;Hardware Definition&quot;
+        ROS2Ctrl[&quot;ros2_control:&lt;br/&gt;- hardware_plugin&lt;br/&gt;- port&lt;br/&gt;- calib_file&lt;br/&gt;- joint_names&lt;br/&gt;- reset_positions&quot;]
+
+        ControllersRef[&quot;controllers_config:&lt;br/&gt;path to controllers.yaml&quot;]
+
+        URDFPath[&quot;urdf_path:&lt;br/&gt;path to URDF/xacro&quot;]
+    end
+
+    subgraph &quot;Joint Definition (DRY)&quot;
+        Joints[&quot;joints:&lt;br/&gt;  arm: [1, 2, 3, 4, 5]&lt;br/&gt;  gripper: [6]&lt;br/&gt;  all: [1, 2, 3, 4, 5, 6]&quot;]
+    end
+
+    subgraph &quot;Control Mode Mapping&quot;
+        Modes[&quot;control_modes:&lt;br/&gt;  teleop: [position_controllers]&lt;br/&gt;  model_inference: [position_controllers]&lt;br/&gt;  moveit_planning: [trajectory_controllers]&quot;]
+    end
+
+    RobotYAML --&gt; ROS2Ctrl
+    RobotYAML --&gt; ControllersRef
+    RobotYAML --&gt; URDFPath
+    RobotYAML --&gt; Joints
+    RobotYAML --&gt; Modes
+
+    ROS2Ctrl --&gt; URDFGen[&quot;URDF Generation&lt;br/&gt;(xacro with use_sim conditional)&quot;]
+    ControllersRef --&gt; CtrlSpawn[&quot;Controller Spawning&lt;br/&gt;(based on control_mode)&quot;]
+    URDFPath --&gt; URDFGen
+    Joints --&gt; URDFGen
+    Joints --&gt; CtrlSpawn
+    Modes --&gt; CtrlSpawn
+    </pre><p><strong>配置层次：</strong></p>
+<ol class="arabic simple">
+<li><p><strong>硬件插件选择</strong>：<code class="docutils literal notranslate"><span class="pre">ros2_control.hardware_plugin</span></code> + <code class="docutils literal notranslate"><span class="pre">use_sim</span></code> 参数</p></li>
+<li><p><strong>关节定义</strong>：单个 <code class="docutils literal notranslate"><span class="pre">joints</span></code> 部分传播到 URDF、控制器和合约</p></li>
+<li><p><strong>控制器映射</strong>：每个 <code class="docutils literal notranslate"><span class="pre">control_mode</span></code> 指定要激活的控制器</p></li>
+<li><p><strong>外设集成</strong>：摄像头和传感器在 <code class="docutils literal notranslate"><span class="pre">peripherals</span></code> 部分定义</p></li>
+</ol>
+<p><strong>来源：</strong>
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L1-L329">src/robot_config/config/robots/so101_single_arm.yaml:1-329</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/README.md#L40-L86">src/robot_config/README.md:40-86</a></p>
+</section>
+<section id="id13">
+<h3>参数解析<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<p>配置系统支持环境变量替换和 ROS 包路径解析：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>语法</p></th>
+<th class="head"><p>示例</p></th>
+<th class="head"><p>解析</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">$(env</span> <span class="pre">VAR)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">$(env</span> <span class="pre">HOME)/.calibrate/file.json</span></code></p></td>
+<td><p>展开为环境变量值</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">$(find</span> <span class="pre">pkg)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">$(find</span> <span class="pre">robot_description)/urdf/...</span></code></p></td>
+<td><p>解析为 ROS 包安装路径</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>实现：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/utils.py">src/robot_config/robot_config/utils.py</a> （未在文件中显示，但在加载器中引用）</p>
+<p><strong>来源：</strong>
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L108-L117">src/robot_config/config/robots/so101_single_arm.yaml:108-117</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/loader.py#L20-L21">src/robot_config/robot_config/loader.py:20-21</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id14">
+<h2>在仿真和真实硬件之间切换<a class="headerlink" href="#id14" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">use_sim</span></code> 参数提供了在仿真和物理硬件之间切换的一行命令，无需任何代码更改。</p>
+<section id="id15">
+<h3>切换机制<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    LaunchCmd[&quot;ros2 launch robot_config robot.launch.py&lt;br/&gt;--use_sim true/false&quot;]
+
+    LaunchCmd --&gt; ParamCheck{&quot;use_sim&lt;br/&gt;parameter&quot;}
+
+    ParamCheck --&gt;|&quot;true&quot;| SimPath[&quot;Simulation Path&quot;]
+    ParamCheck --&gt;|&quot;false&quot;| RealPath[&quot;Real Hardware Path&quot;]
+
+    subgraph SimPath[&quot;Simulation Path&quot;]
+        SimGazebo[&quot;Launch Gazebo&lt;br/&gt;(gz_sim)&quot;]
+        SimURDF[&quot;Load URDF with&lt;br/&gt;gz_ros2_control plugin&quot;]
+        SimCtrl[&quot;Spawn Controllers&lt;br/&gt;(same as real hardware)&quot;]
+
+        SimGazebo --&gt; SimURDF
+        SimURDF --&gt; SimCtrl
+    end
+
+    subgraph RealPath[&quot;Real Hardware Path&quot;]
+        RealURDF[&quot;Load URDF with&lt;br/&gt;SO101SystemHardware plugin&quot;]
+        RealInit[&quot;Initialize Serial Port&lt;br/&gt;(port: /dev/ttyACM0)&quot;]
+        RealCtrl[&quot;Spawn Controllers&lt;br/&gt;(same as simulation)&quot;]
+
+        RealURDF --&gt; RealInit
+        RealInit --&gt; RealCtrl
+    end
+
+    SimCtrl --&gt; Unified[&quot;Unified Interface&lt;br/&gt;(/joint_states, controller topics)&quot;]
+    RealCtrl --&gt; Unified
+
+    Unified --&gt; App[&quot;Application Layer&lt;br/&gt;(inference_service, action_dispatch, etc.)&quot;]
+    </pre><p><strong>启动命令示例：</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Simulation with AI inference</span>
+ros2<span class="w"> </span>launch<span class="w"> </span>robot_config<span class="w"> </span>robot.launch.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>robot_config:<span class="o">=</span>so101_single_arm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>use_sim:<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>control_mode:<span class="o">=</span>model_inference
+
+<span class="c1"># Real hardware with teleoperation</span>
+ros2<span class="w"> </span>launch<span class="w"> </span>robot_config<span class="w"> </span>robot.launch.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>robot_config:<span class="o">=</span>so101_single_arm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>use_sim:<span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>control_mode:<span class="o">=</span>teleop
+
+<span class="c1"># Simulation with MoveIt planning</span>
+ros2<span class="w"> </span>launch<span class="w"> </span>robot_config<span class="w"> </span>robot.launch.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>robot_config:<span class="o">=</span>so101_single_arm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>use_sim:<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>control_mode:<span class="o">=</span>moveit_planning
+</pre></div>
+</div>
+<p><strong>切换时的变化：</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>方面</p></th>
+<th class="head"><p>仿真 (<code class="docutils literal notranslate"><span class="pre">use_sim:=true</span></code>)</p></th>
+<th class="head"><p>真实硬件 (<code class="docutils literal notranslate"><span class="pre">use_sim:=false</span></code>)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>硬件插件</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gz_ros2_control/GazeboSimSystem</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">so101_hardware/SO101SystemHardware</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>状态来源</strong></p></td>
+<td><p>Gazebo 物理引擎</p></td>
+<td><p>与 Feetech 舵机的串口通信</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>命令执行</strong></p></td>
+<td><p>仿真关节执行器</p></td>
+<td><p>物理电机控制器</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>延迟</strong></p></td>
+<td><p>~1-2ms (进程内)</p></td>
+<td><p>~5-10ms (串口 + 舵机响应)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>安全性</strong></p></td>
+<td><p>无物理风险</p></td>
+<td><p>需要关节限位、碰撞监控</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>额外进程</strong></p></td>
+<td><p>Gazebo 仿真器 (<code class="docutils literal notranslate"><span class="pre">gz_sim</span></code>)</p></td>
+<td><p>无（直接硬件访问）</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>保持不变的内容：</strong></p>
+<ul class="simple">
+<li><p>控制器类型和参数</p></li>
+<li><p>控制器话题名称（<code class="docutils literal notranslate"><span class="pre">/arm_position_controller/commands</span></code> 等）</p></li>
+<li><p>状态话题（<code class="docutils literal notranslate"><span class="pre">/joint_states</span></code>）</p></li>
+<li><p>应用层代码（推理、动作分发、遥操作）</p></li>
+<li><p>合约定义</p></li>
+</ul>
+<p><strong>来源：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L121-L168">README.md:121-168</a>, <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.en.md#L76-L93">README.en.md:76-93</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.en.md#L126-L154">README.en.md:126-154</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id16">
+<h2>控制器生命周期管理<a class="headerlink" href="#id16" title="Link to this heading"></a></h2>
+<p>控制器由 <code class="docutils literal notranslate"><span class="pre">controller_manager</span></code> 节点管理，该节点处理生成、激活和切换。</p>
+<section id="id17">
+<h3>控制器生成过程<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<pre  class="mermaid">
+        sequenceDiagram
+    participant Launch as robot.launch.py
+    participant Manager as controller_manager
+    participant Loader as spawner.py
+    participant HW as Hardware Plugin
+
+    Launch-&gt;&gt;Manager: Start controller_manager node
+    Manager-&gt;&gt;HW: Load hardware plugin (on_configure)
+    HW--&gt;&gt;Manager: Plugin loaded
+    Manager-&gt;&gt;HW: Activate hardware (on_activate)
+    HW--&gt;&gt;Manager: Hardware active
+
+    Launch-&gt;&gt;Loader: Spawn controllers (per control_mode)
+
+    loop For each controller
+        Loader-&gt;&gt;Manager: load_controller(name)
+        Manager--&gt;&gt;Loader: Controller loaded
+        Loader-&gt;&gt;Manager: configure_controller(name)
+        Manager--&gt;&gt;Loader: Controller configured
+        Loader-&gt;&gt;Manager: activate_controller(name)
+        Manager--&gt;&gt;Loader: Controller active
+    end
+
+    Note over Manager,HW: Main control loop (100 Hz)
+    loop Every 10ms
+        Manager-&gt;&gt;HW: read() - get joint states
+        HW--&gt;&gt;Manager: Current positions/velocities
+        Manager-&gt;&gt;Manager: Controller update()
+        Manager-&gt;&gt;HW: write() - send commands
+    end
+    </pre><p><strong>控制器激活规则：</strong></p>
+<ol class="arabic simple">
+<li><p><strong>始终激活</strong>：<code class="docutils literal notranslate"><span class="pre">joint_state_broadcaster</span></code> （为所有模式发布状态）</p></li>
+<li><p><strong>模式特定</strong>：仅激活当前 <code class="docutils literal notranslate"><span class="pre">control_mode</span></code> 中列出的控制器</p></li>
+<li><p><strong>互斥</strong>：同一关节的位置控制器和轨迹控制器不能同时激活</p></li>
+</ol>
+<p><strong>来源：</strong>
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L46-L103">src/robot_config/config/robots/so101_single_arm.yaml:46-103</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/docs/architecture.md#L209-L228">docs/architecture.md:209-228</a></p>
+</section>
+<section id="id18">
+<h3>运行时控制器切换<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
+<p>虽然 IB-Robot 通常在启动时通过 <code class="docutils literal notranslate"><span class="pre">control_mode</span></code> 选择控制器，但 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 支持运行时切换：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># List active controllers</span>
+ros2<span class="w"> </span>control<span class="w"> </span>list_controllers
+
+<span class="c1"># Deactivate position controllers</span>
+ros2<span class="w"> </span>control<span class="w"> </span>set_controller_state<span class="w"> </span>arm_position_controller<span class="w"> </span>inactive
+ros2<span class="w"> </span>control<span class="w"> </span>set_controller_state<span class="w"> </span>gripper_position_controller<span class="w"> </span>inactive
+
+<span class="c1"># Activate trajectory controllers</span>
+ros2<span class="w"> </span>control<span class="w"> </span>set_controller_state<span class="w"> </span>arm_trajectory_controller<span class="w"> </span>active
+ros2<span class="w"> </span>control<span class="w"> </span>set_controller_state<span class="w"> </span>gripper_trajectory_controller<span class="w"> </span>active
+</pre></div>
+</div>
+<p><strong>运行时切换的用例：</strong></p>
+<ul class="simple">
+<li><p>从遥操作过渡到 AI 控制而无需重启</p></li>
+<li><p>通过停用所有控制器实现紧急停止</p></li>
+<li><p>单独调试控制器行为</p></li>
+</ul>
+<p><strong>来源：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/README.md#L305-L338">src/robot_config/README.md:305-338</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/README.en.md#L366-L404">src/robot_config/README.en.md:366-404</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id19">
+<h2>硬件集成故障排除<a class="headerlink" href="#id19" title="Link to this heading"></a></h2>
+<section id="id20">
+<h3>常见问题与解决方案<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>问题</p></th>
+<th class="head"><p>症状</p></th>
+<th class="head"><p>解决方案</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>串口权限</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Failed</span> <span class="pre">t</span> <span class="pre">o</span> <span class="pre">open</span> <span class="pre">/dev/ttyACM0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">usermod</span> <span class="pre">-a</span> <span class="pre">-G</span> <span class="pre">dialout</span> <span class="pre">$USER</span></code> （需要注销）</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>控制器无法 启动</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Failed</span> <span class="pre">to</span> <span class="pre">activate</span> <span class="pre">controller</span></code></p></td>
+<td><p>检查 YAML 中的控制器 配置；验证关节名称 与 URDF 匹配</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>控制器冲突</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Resource</span> <span class="pre">conflict</span></code> 错误</p></td>
+<td><p>确保每个关节只有一个 控制器处于活动状态； 检查 <code class="docutils literal notranslate"><span class="pre">control_mode</span></code> 配置</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>校准文件未 找到</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Calibra</span> <span class="pre">tion</span> <span class="pre">file</span> <span class="pre">not</span> <span class="pre">found</span></code> 错误</p></td>
+<td><p>验证 <code class="docutils literal notranslate"><span class="pre">calib_file</span></code> 路径；确保文件存在 且可读</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>高延迟</strong></p></td>
+<td><p>真实硬件上运动 不流畅</p></td>
+<td><p>检查串口波特率；降低 控制频率；验证无 USB 集线器干扰</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>仿真无法启动</strong></p></td>
+<td><p>Gazebo 无法启动</p></td>
+<td><p>确保 <code class="docutils literal notranslate"><span class="pre">gz_sim</span></code> 已 安装；检查 URDF 语法 错误</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>调试命令：</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check controller manager status</span>
+ros2<span class="w"> </span>control<span class="w"> </span>list_controllers
+
+<span class="c1"># View controller manager logs</span>
+ros2<span class="w"> </span>run<span class="w"> </span>controller_manager<span class="w"> </span>spawner<span class="w"> </span>--help
+
+<span class="c1"># Monitor joint states</span>
+ros2<span class="w"> </span>topic<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>/joint_states
+
+<span class="c1"># Test hardware interface directly</span>
+ros2<span class="w"> </span>control<span class="w"> </span>list_hardware_interfaces
+
+<span class="c1"># Check URDF validity</span>
+check_urdf<span class="w"> </span><span class="k">$(</span>ros2<span class="w"> </span>pkg<span class="w"> </span>prefix<span class="w"> </span>robot_description<span class="k">)</span>/share/robot_description/urdf/...
+</pre></div>
+</div>
+<p><strong>来源：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L171-L186">README.md:171-186</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/README.md#L471-L516">src/robot_config/README.md:471-516</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id21">
+<h2>总结<a class="headerlink" href="#id21" title="Link to this heading"></a></h2>
+<p>IB-Robot 的硬件集成层提供：</p>
+<ol class="arabic simple">
+<li><p><strong>抽象</strong>：<code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 将控制逻辑与硬件细节解耦</p></li>
+<li><p><strong>灵活性</strong>：单个 <code class="docutils literal notranslate"><span class="pre">use_sim</span></code> 参数在仿真和真实硬件之间切换</p></li>
+<li><p><strong>一致性</strong>：相同的控制器、话题和应用代码在两种环境中工作</p></li>
+<li><p><strong>安全性</strong>：具有显式激活/停用阶段的生命周期管理</p></li>
+<li><p><strong>可扩展性</strong>：插件架构支持添加新的硬件后端</p></li>
+</ol>
+<p>配置驱动的方法消除了 URDF、控制器配置和启动文件之间的手动同步，减少了错误并提高了可维护性。</p>
+<p><strong>来源：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L1-L192">README.md:1-192</a>, <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/docs/architecture.md#L1-L313">docs/architecture.md:1-313</a>,
+<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L1-L329">src/robot_config/config/robots/so101_single_arm.yaml:1-329</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="硬件集成" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ros2_control_configuration.html" class="btn btn-neutral float-right" title="ros2_control 配置" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Tags</dt>
+      <dd><a href="../../../../24.03-lts/index.html">24.03-lts</a></dd>
+      <dd><a href="../../../../llvm-toolchain-v0.1.1/index.html">llvm-toolchain-v0.1.1</a></dd>
+      <dd><a href="../../../../nativesdk-v0.1.2/index.html">nativesdk-v0.1.2</a></dd>
+      <dd><a href="../../../../nativesdk-v0.1.3/index.html">nativesdk-v0.1.3</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.5/index.html">toolchains-v0.1.5</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.7/index.html">toolchains-v0.1.7</a></dd>
+      <dd><a href="../../../../toolchains-v0.1.8/index.html">toolchains-v0.1.8</a></dd>
+    </dl>
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="overview.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../pr_2786/features/embodied_ai/hardware/overview.html">pr_2786</a></dd>
+    </dl>
+  </div>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>
