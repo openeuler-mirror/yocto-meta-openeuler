@@ -26,6 +26,7 @@ SRC_URI:append = " \
         file://HiEuler-driver/linux/5.10.0-153.28.0.patch \
 	file://dtbs/ss928-pi.dts \
 	file://dtbs/ss928-pi_mcs.dts \
+    file://config/hieulerpi1/cfgs/net.cfg \
     ', d)} \
 "
 
