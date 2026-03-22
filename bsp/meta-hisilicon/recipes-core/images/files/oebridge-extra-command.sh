@@ -16,5 +16,5 @@ usermod -aG ${USER_NAME} ${DM_USER}
 usermod -aG ${DM_USER} ${USER_NAME}
 usermod -aG ${USER_NAME} ${BASE_USER}
 mkdir -p /usr/local/Ascend/
-chmod 777 /usr/local
-chmod 777 /usr/local/Ascend/
+chmod 755 /usr/local
+chmod 755 /usr/local/Ascend/

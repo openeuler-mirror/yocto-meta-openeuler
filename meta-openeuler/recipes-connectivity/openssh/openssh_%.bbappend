@@ -40,3 +40,22 @@ SRC_URI[sha256sum] = "200ebe147f6cb3f101fd0cdf9e02442af7ddca298dffd9f456878e7cca
 
 # 9.3p1 version of bb file adds this configuration
 RDEPENDS:${PN}-ptest += "openssl-bin"
+
+SRC_URI:append = " \
+        ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' file://sshd.service ', '', d)} \
+"
+
+do_install:append() {
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
+        # 当DISTRO_FEATURES包含systemd时执行以下操作
+        install -d ${D}${systemd_system_unitdir}
+        install -c -m 0644 ${WORKDIR}/sshd.service ${D}${systemd_system_unitdir}/
+    fi
+}
+
+# 确保文件被打包
+FILES:${PN}-sshd += "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' ${systemd_system_unitdir}/sshd.service ', '', d)}"
+
+SYSTEMD_SERVICE:${PN}-sshd = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' sshd.service ', ' sshd.socket ', d)}"
+
+ASSUME_PROVIDE_PKGS = "openssh"
