@@ -13,4 +13,11 @@ SRC_URI += " \
     file://backport-sed-fix-symlink-bufsize-readlink-check.patch \
 "
 
+# note: libtool script need /usr/bin/sed, not /bin/sed, so we need to create a symlink
+do_install:append() {
+    install -d ${D}${bindir}
+    cd ${D}${bindir}
+    ln -sf ${base_bindir}/sed sed
+}
+
 ASSUME_PROVIDE_PKGS = "sed"

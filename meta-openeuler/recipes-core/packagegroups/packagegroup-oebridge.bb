@@ -31,6 +31,7 @@ INSTALL_PKG_LISTS = " \
     newt \
     slang \
     kpartx \
+    openssh \
     openssl-pkcs11 \
     crypto-policies \
     dracut \
