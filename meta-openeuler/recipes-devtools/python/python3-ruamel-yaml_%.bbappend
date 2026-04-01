@@ -6,4 +6,4 @@ SRC_URI[sha256sum] = "8b27e6a217e786c6fbe5634d8f3f11bc63e0f80f6a5890f28863d9c45a
 LIC_FILES_CHKSUM = "file://LICENSE;md5=30cbbccd94bf3a2b0285ec35671a1938"
 
 require pypi-src-openeuler.inc
-OPENEULER_LOCAL_NAME = "python3-ruamel-yaml"
+OPENEULER_LOCAL_NAME = "python-ruamel-yaml"

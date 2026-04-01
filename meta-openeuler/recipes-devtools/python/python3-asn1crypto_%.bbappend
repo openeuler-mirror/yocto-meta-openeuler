@@ -9,5 +9,3 @@ SRC_URI[sha256sum] = "13ae38502be632115abf8a24cbe5f4da52e3b5231990aff31123c80530
 
 require pypi-src-openeuler.inc
 
-OPENEULER_LOCAL_NAME = "python3-${PYPI_PACKAGE}"
-
