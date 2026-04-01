@@ -209,8 +209,15 @@ fakeroot python do_dnf_install_pkgs(){
     else:
         bb.error("openEuler.repo not found")
 
+    extra_file_name = ""
+    preenv_extra_file_name = ""
     if d.getVar('OEBRIDGE_EXTRA_FILE_PATH'):
         temp_file_path = f"{d.getVar('OEBRIDGE_EXTRA_FILE_PATH')}"
+        extra_file_name = os.path.basename(temp_file_path)
+        run_cmd_with_cwd(f"cp {temp_file_path} rootfs", d.getVar("WORKDIR"))
+    if d.getVar('OEBRIDGE_EXTRA_PRE_HOSTENV_FILE_PATH'):
+        temp_file_path = f"{d.getVar('OEBRIDGE_EXTRA_PRE_HOSTENV_FILE_PATH')}"
+        preenv_extra_file_name = os.path.basename(temp_file_path)
         run_cmd_with_cwd(f"cp {temp_file_path} rootfs", d.getVar("WORKDIR"))
 
     # do some prepare action
@@ -219,7 +226,9 @@ fakeroot python do_dnf_install_pkgs(){
     run_cmd_with_cwd(f"find rootfs -type l -printf '%u:%g %p\n' > temp/rootfs_softlink", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo setfacl --restore=rootfs_permission", d.getVar("WORKDIR")+"/temp")
     run_cmd_with_cwd(f"cat rootfs_softlink | while read -r o p;do PSEUDO_UNLOAD=1 sudo chown -h \"$o\" \"$p\"; done", d.getVar("WORKDIR")+"/temp")
-        
+    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs sed -i 's/^gpgcheck=1/gpgcheck=0/' /etc/dnf/dnf.conf", d.getVar("WORKDIR"))
+    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf clean all", d.getVar("WORKDIR"))
+
     if len(real_list) > 0:
         real_list_str = " ".join(real_list)
         bb.plain("install real packages: " + real_list_str)
@@ -227,6 +236,8 @@ fakeroot python do_dnf_install_pkgs(){
         {real_list_str} -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
 
     if len(extra_list) > 0:
+        extra_list_str = " ".join(extra_list)
+        bb.plain("install extra packages: " + extra_list_str)
         # here add extra repo for installing pkgs from oepkgs.net, but the repo source is extras, like:
         # https://repo.oepkgs.net/openeuler/rpm/openEuler-24.03-LTS/extras/aarch64/
         run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
@@ -243,14 +254,17 @@ fakeroot python do_dnf_install_pkgs(){
         # disable extra mirror
         run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf config-manager --set-disabled {extra_repo_id}", d.getVar("WORKDIR"))
 
-    if os.path.exists(os.path.join(d.getVar("WORKDIR"), "temp/rootfs/oebridge-extra-command.sh")):
+    if os.path.exists(os.path.join(d.getVar("WORKDIR"), f"temp/rootfs/{extra_file_name}")):
+        bb.plain(f"run {preenv_extra_file_name}")
+        run_cmd_with_cwd(f"pushd temp/rootfs && PSEUDO_UNLOAD=1 bash {preenv_extra_file_name} && popd", d.getVar("WORKDIR"))  
+        run_cmd_with_cwd(f"pushd temp/rootfs && PSEUDO_UNLOAD=1 sudo rm -f /{preenv_extra_file_name} && popd", d.getVar("WORKDIR"))
         # 从WORKDIR复制oebridge_extra_command.sh到rootfs
         image_rootfs = d.getVar("IMAGE_ROOTFS")
         # 给oebridge_extra_command.sh添加可执行权限
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs chmod +x /oebridge-extra-command.sh", d.getVar("WORKDIR"))
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs /oebridge-extra-command.sh", d.getVar("WORKDIR"))
+        bb.plain(f"run {extra_file_name}")
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs bash /{extra_file_name}", d.getVar("WORKDIR"))
         # 删除oebridge_extra_command.sh
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs rm -f /oebridge-extra-command.sh", d.getVar("WORKDIR"))
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs rm -f /{extra_file_name}", d.getVar("WORKDIR"))
     
     # the OEBRIDGE_PIP_LISTS may be none, so check it, else raise None has no attribute 'split'
     if d.getVar('OEBRIDGE_PIP_LISTS') is not None:
@@ -260,6 +274,7 @@ fakeroot python do_dnf_install_pkgs(){
             run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs pip3 install {oebridge_pip_list_str} -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple", d.getVar("WORKDIR"))
 
     # remove all dnf cache data before pack the rootfs
+    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs sed -i 's/^gpgcheck=0/gpgcheck=1/' /etc/dnf/dnf.conf", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf clean all", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo getfacl -R rootfs > ../rootfs_permission", d.getVar("WORKDIR")+"/temp")
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo find rootfs -type l -printf '%u:%g %p\n' > ../rootfs_softlink", d.getVar("WORKDIR")+"/temp")
