@@ -223,8 +223,6 @@ python do_openeuler_fetch() {
             bb.fatal("do_openeuler_fetch failed: OPENEULER_SP_DIR %s OPENEULER_LOCAL_NAME %s exception %s" % (src_dir, repo_name, str(e)))
 
     repo_list = d.getVar("OPENEULER_REPO_NAMES").split()
-    if d.getVar("OPENEULER_LOCAL_NAME"):
-        repo_list.append(d.getVar("OPENEULER_LOCAL_NAME"))
     for repo_name in repo_list:
         # download code from openEuler
         if repo_name == "oee_archive":
