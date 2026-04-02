@@ -10,7 +10,6 @@ SRC_URI:remove = " \
 "
 
 # fetch kernel and patch for phytium
-OPENEULER_REPO_NAME = "phytium-kernel-${PV}"
 OPENEULER_REPO_NAMES = "phytium-kernel-${PV} src-kernel-${PV}-tag-phytium"
 
 # use phytium kernel repo

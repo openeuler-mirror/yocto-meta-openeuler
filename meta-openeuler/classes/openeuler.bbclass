@@ -47,15 +47,26 @@ def openeuler_get_checksum_file_list(d):
     fetch = bb.fetch2.Fetch([], d, cache = False, localonly = True)
 
     dl_dir = d.getVar('OPENEULER_DL_DIR')
+    filespath = d.getVar('FILESPATH')
     filelist = []
     for u in fetch.urls:
         if u.startswith("file://"):
             ud = fetch.ud[u]
             if ud:
-                paths = ud.method.localpaths(ud, d)
-                for f in paths:
-                    if os.path.exists(f) and not f.startswith(dl_dir):
-                        filelist.append(f + ":True")
+                path = ud.decodedurl
+                # Absolute paths are checked directly
+                if path[0] == "/":
+                    if os.path.exists(path) and not path.startswith(dl_dir):
+                        filelist.append(path + ":True")
+                    continue
+                # Search FILESPATH via bb.utils.which() to avoid the
+                # bb.utils.mkdirhier(DL_DIR/path) side-effect that occurs in
+                # local.py:localpaths() when a file is not found in FILESPATH,
+                # which would create empty subdirectories under DL_DIR (e.g.
+                # DL_DIR/aclocal/).
+                found = bb.utils.which(filespath, path) if filespath else ""
+                if found and os.path.exists(found) and not found.startswith(dl_dir):
+                    filelist.append(found + ":True")
 
     return " ".join(filelist)
 
@@ -223,8 +234,6 @@ python do_openeuler_fetch() {
             bb.fatal("do_openeuler_fetch failed: OPENEULER_SP_DIR %s OPENEULER_LOCAL_NAME %s exception %s" % (src_dir, repo_name, str(e)))
 
     repo_list = d.getVar("OPENEULER_REPO_NAMES").split()
-    if d.getVar("OPENEULER_LOCAL_NAME"):
-        repo_list.append(d.getVar("OPENEULER_LOCAL_NAME"))
     for repo_name in repo_list:
         # download code from openEuler
         if repo_name == "oee_archive":

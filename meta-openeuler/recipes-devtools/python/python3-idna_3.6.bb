@@ -9,6 +9,9 @@ SRC_URI[sha256sum] = "9ecdbbd083b06798ae1e86adcbfe8ab1479cf864e4ee30fe4e46a003d1
 inherit pypi python_flit_core
 require pypi-src-openeuler.inc
 
+SRC_URI:append = "file://backport-CVE-2024-3651.patch \
+"
+
 RDEPENDS:${PN}:class-target = "\
     python3-codecs \
 "
