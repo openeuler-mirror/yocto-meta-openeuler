@@ -334,6 +334,11 @@ python parse_manifest() {
             return yaml.load(r_f.read(), yaml.Loader)['manifest_list']
 
     d.setVar('MANIFEST_LIST', get_manifest(d.getVar("MANIFEST_DIR")))
+    # ConfigParsed fires exactly once per BitBake session, so this git
+    # subprocess runs only once regardless of how many recipes are parsed.
+    # get_openeuler_epoch uses --git-dir (not git -C), so it is immune to
+    # the GIT_DIR environment variable injected by BitBake's git fetcher.
+    d.setVar('SOURCE_DATE_EPOCH', str(get_openeuler_epoch(d)))
 }
 parse_manifest[eventmask] = "bb.event.ConfigParsed"
 
