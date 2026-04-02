@@ -20,7 +20,9 @@ mkdir -p /usr/local/Ascend/
 chmod 755 /usr/local
 chmod 755 /usr/local/Ascend/
 export PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
-export ROS_OS_OVERRIDE=rhel:8
+export ROS_OS_OVERRIDE="rhel:8"
+pip3 install aiortc
+pip3 install setuptools==71.0.0
 pip3 install rosdepc
 sed -i 's/sudo //g' /usr/local/lib/python3.11/site-packages/rosdepc/rosdepc.py
 git clone -b master --single-branch  --depth 1 https://atomgit.com/openeuler/IB_Robot.git
