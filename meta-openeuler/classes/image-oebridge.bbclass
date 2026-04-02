@@ -211,6 +211,7 @@ fakeroot python do_dnf_install_pkgs(){
 
     extra_file_name = ""
     preenv_extra_file_name = ""
+    postenv_extra_file_name = ""
     if d.getVar('OEBRIDGE_EXTRA_FILE_PATH'):
         temp_file_path = f"{d.getVar('OEBRIDGE_EXTRA_FILE_PATH')}"
         extra_file_name = os.path.basename(temp_file_path)
@@ -218,6 +219,10 @@ fakeroot python do_dnf_install_pkgs(){
     if d.getVar('OEBRIDGE_EXTRA_PRE_HOSTENV_FILE_PATH'):
         temp_file_path = f"{d.getVar('OEBRIDGE_EXTRA_PRE_HOSTENV_FILE_PATH')}"
         preenv_extra_file_name = os.path.basename(temp_file_path)
+        run_cmd_with_cwd(f"cp {temp_file_path} rootfs", d.getVar("WORKDIR"))
+    if d.getVar('OEBRIDGE_EXTRA_POST_HOSTENV_FILE_PATH'):
+        temp_file_path = f"{d.getVar('OEBRIDGE_EXTRA_POST_HOSTENV_FILE_PATH')}"
+        postenv_extra_file_name = os.path.basename(temp_file_path)
         run_cmd_with_cwd(f"cp {temp_file_path} rootfs", d.getVar("WORKDIR"))
 
     # do some prepare action
@@ -265,6 +270,9 @@ fakeroot python do_dnf_install_pkgs(){
         run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs bash /{extra_file_name}", d.getVar("WORKDIR"))
         # 删除oebridge_extra_command.sh
         run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs rm -f /{extra_file_name}", d.getVar("WORKDIR"))
+        bb.plain(f"run {postenv_extra_file_name}")
+        run_cmd_with_cwd(f"pushd temp/rootfs && PSEUDO_UNLOAD=1 bash {postenv_extra_file_name} && popd", d.getVar("WORKDIR"))
+        run_cmd_with_cwd(f"pushd temp/rootfs && PSEUDO_UNLOAD=1 sudo rm -f /{postenv_extra_file_name} && popd", d.getVar("WORKDIR"))
     
     # the OEBRIDGE_PIP_LISTS may be none, so check it, else raise None has no attribute 'split'
     if d.getVar('OEBRIDGE_PIP_LISTS') is not None:
