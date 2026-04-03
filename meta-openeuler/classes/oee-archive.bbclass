@@ -26,15 +26,15 @@ def init_oee_archive_repo_dir(repo_dir):
     return repo
 
 def init_oee_archive_repo_remote(repo, remote_url):
-    """
-    init repo remote
-    """
-    import git
-
-    try:
+    existing = next((r for r in repo.remotes if r.name == "upstream"), None)
+    if existing:
+        if existing.url.rstrip(".git") != remote_url.rstrip(".git"):
+            # URL changed, update remote
+            repo.delete_remote(existing)
+            repo.create_remote("upstream", remote_url)
+        # else: URL is the same, no action needed
+    else:
         repo.create_remote("upstream", remote_url)
-    except git.exc.GitCommandError:
-        pass
 
 def check_oee_archive_repo_version(repo, version):
     """
@@ -44,19 +44,14 @@ def check_oee_archive_repo_version(repo, version):
     from git.exc import GitCommandError
 
     try:
-        # Set lfs.fetchexclude to * to skip downloading LFS files
         with repo.config_writer() as wr:
             wr.set_value('lfs', 'fetchexclude', '*').release()
-
-        # Use the python-git module to perform the fetch operation
-        repo.git.fetch('upstream', version, '--depth=1')
-
-        # Use the python-git module to perform the checkout operation
-        repo.git.checkout(version)
-
-        # Restore lfs.fetchexclude setting using the python-git module
-        with repo.config_writer() as wr:
-            wr.set_value('lfs', 'fetchexclude', '').release()
+        try:
+            repo.git.fetch('upstream', version, '--depth=1')
+            repo.git.checkout(version)
+        finally:
+            with repo.config_writer() as wr:
+                wr.set_value('lfs', 'fetchexclude', '').release()
     except GitCommandError as e:
         # Use repo.working_dir to get the repository path
         raise Exception("version %s not found in repo %s, error: %s" % (version, repo.working_dir, e))

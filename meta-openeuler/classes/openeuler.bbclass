@@ -275,16 +275,14 @@ def download_repo(d, repo_dir, repo_url ,version = None):
             sync_repo_from_cache(d, repo_dir)
 
     repo = init_repo_dir(repo_dir)
-    remote = None
-    for item in repo.remotes:
-        # for the accuracy of comparison, remove the ".git" from the end of both strings
-        if repo_url.rstrip(".git") == item.url.rstrip(".git"):
-            remote = item
-        else:
-            continue
+    remote = next((r for r in repo.remotes
+               if r.url.rstrip(".git") == repo_url.rstrip(".git")), None)
     if remote is None:
-        remote_name = "upstream"
-        remote = git.Remote.add(repo = repo, name = remote_name, url = repo_url)
+        # if upstream remote exists but URL is different, delete it and add new one
+        existing = next((r for r in repo.remotes if r.name == "upstream"), None)
+        if existing:
+            repo.delete_remote(existing)
+        remote = repo.create_remote("upstream", repo_url)
 
     # the function is used to download large file in repo
     def lfs_download(repo_dir, remote_name, version):
@@ -314,10 +312,16 @@ def download_repo(d, repo_dir, repo_url ,version = None):
     try:
         repo.git.checkout(version)
     except:
-        bb.warn("the version %s checkout failed ..." % version)
+        bb.fatal("checkout %s to version %s failed: %s" % (repo_dir, version, str(e)))
 
-    # if the repo has large file it will has .gitattrbutes
-    if os.path.exists(repo_dir+"/.gitattributes"):
+    def has_lfs(repo_dir):
+        attrs_path = os.path.join(repo_dir, ".gitattributes")
+        if not os.path.exists(attrs_path):
+            return False
+        with open(attrs_path) as f:
+            return "filter=lfs" in f.read()
+
+    if has_lfs(repo_dir):
         lfs_download(repo_dir=repo_dir, remote_name=remote.name, version=version)
 
     bb.utils.unlockfile(lf)
@@ -334,6 +338,11 @@ python parse_manifest() {
             return yaml.load(r_f.read(), yaml.Loader)['manifest_list']
 
     d.setVar('MANIFEST_LIST', get_manifest(d.getVar("MANIFEST_DIR")))
+    # ConfigParsed fires exactly once per BitBake session, so this git
+    # subprocess runs only once regardless of how many recipes are parsed.
+    # get_openeuler_epoch uses --git-dir (not git -C), so it is immune to
+    # the GIT_DIR environment variable injected by BitBake's git fetcher.
+    d.setVar('SOURCE_DATE_EPOCH', str(get_openeuler_epoch(d)))
 }
 parse_manifest[eventmask] = "bb.event.ConfigParsed"
 
