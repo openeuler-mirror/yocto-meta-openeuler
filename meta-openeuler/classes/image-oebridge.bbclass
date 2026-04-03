@@ -262,7 +262,7 @@ fakeroot python do_dnf_install_pkgs(){
     if os.path.exists(os.path.join(d.getVar("WORKDIR"), f"temp/rootfs/{extra_file_name}")):
         bb.plain(f"run {preenv_extra_file_name}")
         run_cmd_with_cwd(f"pushd temp/rootfs && PSEUDO_UNLOAD=1 bash {preenv_extra_file_name} && popd", d.getVar("WORKDIR"))  
-        run_cmd_with_cwd(f"pushd temp/rootfs && PSEUDO_UNLOAD=1 sudo rm -f /{preenv_extra_file_name} && popd", d.getVar("WORKDIR"))
+        run_cmd_with_cwd(f"pushd temp/rootfs && PSEUDO_UNLOAD=1 sudo rm -f {preenv_extra_file_name} && popd", d.getVar("WORKDIR"))
         # 从WORKDIR复制oebridge_extra_command.sh到rootfs
         image_rootfs = d.getVar("IMAGE_ROOTFS")
         # 给oebridge_extra_command.sh添加可执行权限
@@ -272,7 +272,7 @@ fakeroot python do_dnf_install_pkgs(){
         run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs rm -f /{extra_file_name}", d.getVar("WORKDIR"))
         bb.plain(f"run {postenv_extra_file_name}")
         run_cmd_with_cwd(f"pushd temp/rootfs && PSEUDO_UNLOAD=1 bash {postenv_extra_file_name} && popd", d.getVar("WORKDIR"))
-        run_cmd_with_cwd(f"pushd temp/rootfs && PSEUDO_UNLOAD=1 sudo rm -f /{postenv_extra_file_name} && popd", d.getVar("WORKDIR"))
+        run_cmd_with_cwd(f"pushd temp/rootfs && PSEUDO_UNLOAD=1 sudo rm -f {postenv_extra_file_name} && popd", d.getVar("WORKDIR"))
     
     # the OEBRIDGE_PIP_LISTS may be none, so check it, else raise None has no attribute 'split'
     if d.getVar('OEBRIDGE_PIP_LISTS') is not None:
