@@ -332,14 +332,19 @@ def download_repo(d, repo_dir, repo_url ,version = None):
 # store YAML data within MANIFEST_LIST variable
 addhandler parse_manifest
 python parse_manifest() {
-    # used to read YAML file data
-    def get_manifest(manifest_yaml):
-        import yaml
+    import yaml
+    import os
 
-        with open(manifest_yaml, 'r' ,encoding="utf-8") as r_f:
-            return yaml.load(r_f.read(), yaml.Loader)['manifest_list']
+    manifest_yaml = d.getVar("MANIFEST_DIR")
+    if not manifest_yaml or not os.path.exists(manifest_yaml):
+        bb.warn("parse_manifest: MANIFEST_DIR not set or not found: %s" % manifest_yaml)
+        return
 
-    d.setVar('MANIFEST_LIST', get_manifest(d.getVar("MANIFEST_DIR")))
+    with open(manifest_yaml, 'r', encoding="utf-8") as f:
+        # Use SafeLoader to prevent arbitrary Python object instantiation
+        data = yaml.load(f.read(), Loader=yaml.SafeLoader)
+
+    d.setVar('MANIFEST_LIST', data['manifest_list'])
     # ConfigParsed fires exactly once per BitBake session, so this git
     # subprocess runs only once regardless of how many recipes are parsed.
     # get_openeuler_epoch uses --git-dir (not git -C), so it is immune to
