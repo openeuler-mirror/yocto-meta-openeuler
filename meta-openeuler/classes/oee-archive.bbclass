@@ -75,7 +75,12 @@ python do_download_oee_archive(){
 
     # Initialize the oee_archive repo
     oee_archive_repo = init_oee_archive_repo_dir(d.getVar('OEE_ARCHIVE_DIR'))
-    repo_item = d.getVar('MANIFEST_LIST')['oee_archive']
+    manifest_list = d.getVar('MANIFEST_LIST')
+    if manifest_list is None:
+        bb.fatal("do_download_oee_archive: MANIFEST_LIST is not set, check MANIFEST_DIR")
+    if 'oee_archive' not in manifest_list:
+        bb.fatal("do_download_oee_archive: 'oee_archive' entry not found in manifest.yaml")
+    repo_item = manifest_list['oee_archive']
     # Add oee_archive remote
     init_oee_archive_repo_remote(oee_archive_repo, repo_item['remote_url'])
     # Check oee_archive version
