@@ -161,6 +161,13 @@ python src_uri_set() {
     if not local_name or local_name not in manifest_list:
         return
 
+    # Register manifest.yaml as a parse-cache dependency for this recipe.
+    # When manifest.yaml changes (any entry), bitbake will re-parse all
+    # recipes that called mark_dependency, ensuring SRCREV stays current.
+    manifest_dir = d.getVar("MANIFEST_DIR")
+    if manifest_dir:
+        bb.parse.mark_dependency(d, manifest_dir)
+
     # handle the SRC_URI for openeuler adapted recipes
     if  src_uri and remove_list_str:
         uri_list = src_uri.split()
@@ -171,14 +178,9 @@ python src_uri_set() {
 
         d.setVar('SRC_URI', updated_src_uri)
 
-        # all recipes adapted in openeuler will not be cached during bb parsing if BB_SRCREV_POLICY
-        # is not set to cache
-        # so there will alway be a chance to update SRCREV
-        if d.getVar('BB_SRCREV_POLICY') != "cache":
-            d.setVar('BB_DONT_CACHE', '1')
-        # set SRCREV, if SRCREV changed because of the corresponding changes in manifest.yaml,
-        # do_fetch will re-run
-        d.setVar('SRCREV', manifest_list[local_name]['version'])
+    # set SRCREV, if SRCREV changed because of the corresponding changes in manifest.yaml,
+    # do_fetch will re-run
+    d.setVar('SRCREV', manifest_list[local_name]['version'])
 }
 
 addhandler src_uri_set
