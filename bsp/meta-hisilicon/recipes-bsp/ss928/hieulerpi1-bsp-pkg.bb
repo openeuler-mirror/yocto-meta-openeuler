@@ -32,7 +32,7 @@ SRC_URI = " \
 S = "${WORKDIR}/HiEuler-driver/drivers"
 
 INSANE_SKIP:${PN} += "already-stripped"
-FILES:${PN} = "${sysconfdir} ${systemd_system_unitdir} /usr/bin /ko /opt /vendor /usr/sbin /firmware ${libdir}"
+FILES:${PN} = "${sysconfdir} ${systemd_system_unitdir} /usr/bin /ko /opt /vendor /firmware"
 
 do_install () {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'true', 'false', d)}; then
@@ -166,7 +166,6 @@ do_install () {
     fi
 
     install -d ${D}/usr/bin
-    install -d ${D}${libdir}
     install -d ${D}/firmware
     install -d ${D}${sysconfdir}/init.d
     install -d ${D}${sysconfdir}/rc5.d
@@ -229,16 +228,16 @@ do_install () {
     install -m 0755 ${WORKDIR}/env/fw_printenv ${D}/usr/bin/
     install -m 0755 ${WORKDIR}/env/fw_setenv ${D}/usr/bin/
 
-    cp -r ${WORKDIR}/can-tools/canutils/sbin ${D}/usr/
-    cp -r ${WORKDIR}/can-tools/canutils/bin/* ${D}/usr/bin/
-    cp -r ${WORKDIR}/can-tools/libsocketcan/lib/* ${D}${libdir}
+    install -m 0755 ${WORKDIR}/can-tools/ip ${D}/usr/bin
+    install -m 0755 ${WORKDIR}/can-tools/candump ${D}/usr/bin
+    install -m 0755 ${WORKDIR}/can-tools/cansend ${D}/usr/bin
 
-    install -m 0755 ${WORKDIR}/HiEuler-driver/mcu/load_riscv ${D}/usr/sbin
-    install -m 0755 ${WORKDIR}/HiEuler-driver/mcu/virt-tty ${D}/usr/sbin
+    install -m 0755 ${WORKDIR}/HiEuler-driver/mcu/load_riscv ${D}/usr/bin
+    install -m 0755 ${WORKDIR}/HiEuler-driver/mcu/virt-tty ${D}/usr/bin
     install -m 0755 ${WORKDIR}/HiEuler-driver/mcu/LiteOS.bin ${D}/firmware
 
-    install -m 0755 ${WORKDIR}/sparklink-tools/sparklinkd ${D}/usr/sbin
-    install -m 0755 ${WORKDIR}/sparklink-tools/sparklinkctrl ${D}/usr/sbin
+    install -m 0755 ${WORKDIR}/sparklink-tools/sparklinkd ${D}/usr/bin
+    install -m 0755 ${WORKDIR}/sparklink-tools/sparklinkctrl ${D}/usr/bin
 }
 
 INHIBIT_PACKAGE_STRIP = "1"
