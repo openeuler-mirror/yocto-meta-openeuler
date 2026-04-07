@@ -1,7 +1,5 @@
 PV = "2024a"
 
-DL_DIR = "${OPENEULER_SP_DIR}/tzdata"
-
 OPENEULER_LOCAL_NAME = "tzdata"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=c679c9d6b02bc2757b3eaf8f53c43fba"
