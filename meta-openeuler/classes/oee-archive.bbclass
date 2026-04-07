@@ -6,7 +6,7 @@
 OEE_ARCHIVE_SUB_DIR ?= "${BPN}"
 # for real file path to search is ${OPENEULER_LOCAL_NAME}/${OEE_ARCHIVE_SUB_DIR},
 # not OPENEULER_LOCAL_NAME.
-OEE_ARCHIVE_DIR = "${OPENEULER_SP_DIR}/oee_archive"
+OEE_ARCHIVE_DIR = "${OPENEULER_SP_DIR}/openeuler/oee_archive"
 
 FILESEXTRAPATHS:prepend = "${OEE_ARCHIVE_DIR}/${OEE_ARCHIVE_SUB_DIR}/:"
 

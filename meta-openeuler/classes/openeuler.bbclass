@@ -26,12 +26,12 @@ LDFLAGS:toolchain-clang:class-native = "${BUILD_LDFLAGS}"
 TOOLCHAIN:class-native = "gcc"
 
 # for openeuler embedded it is no need to create DL_DIR, here we use
-# ${OPENEULER_SP_DIR}/${OPENEULER_LOCAL_NAME} to represent download
-# directory for each software package. OPENEULER_SP_DIR
+# ${OPENEULER_DL_DIR} to represent download
+# directory for each software package. ${OPENEULER_SP_DIR}/openeuler
 # is already created, and OPENEULER_LOCAL_NAME will be created
 # in openeuler_fetch or fetch
 # Thus, overrides the definition in base.bbclass
-do_fetch[dirs] = "${OPENEULER_SP_DIR}"
+do_fetch[dirs] = "${OPENEULER_SP_DIR}/openeuler"
 
 # we can't use poky's original get_checksum_file_list in base.bbclass
 # because of the src repo organization and special handling of DL_DIR
@@ -217,7 +217,7 @@ python do_openeuler_fetch() {
 
     def openeuler_fetch(d, repo_name):
         # get source directory where to download
-        src_dir = d.getVar('OPENEULER_SP_DIR')
+        src_dir = os.path.join(d.getVar('OPENEULER_SP_DIR'), 'openeuler')
         # local download path
         repo_dir = os.path.join(src_dir, repo_name)
 
@@ -233,7 +233,7 @@ python do_openeuler_fetch() {
         except GitError as e:
             bb.fatal("could not find or init gitee repository %s because %s" % (repo_name, str(e)))
         except Exception as e:
-            bb.fatal("do_openeuler_fetch failed: OPENEULER_SP_DIR %s OPENEULER_LOCAL_NAME %s exception %s" % (src_dir, repo_name, str(e)))
+            bb.fatal("do_openeuler_fetch failed: OPENEULER_DL_DIR %s OPENEULER_LOCAL_NAME %s exception %s" % (src_dir, repo_name, str(e)))
 
     repo_list = d.getVar("OPENEULER_REPO_NAMES").split()
     for repo_name in repo_list:
@@ -366,7 +366,7 @@ python do_openeuler_clean() {
         except:
             return False
 
-    src_dir = d.getVar('OPENEULER_SP_DIR')
+    src_dir = os.path.join(d.getVar('OPENEULER_SP_DIR'), 'openeuler')
     repo_name = d.getVar("OPENEULER_LOCAL_NAME")
     repo_dir = os.path.join(src_dir, repo_name)
     remove_lock(repo_dir)

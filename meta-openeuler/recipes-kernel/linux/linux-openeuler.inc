@@ -22,7 +22,7 @@ def get_dirs_with_metadata(d):
     extrapathsvalue = (d.getVar("FILESEXTRAPATHS") or "")
 
     # Remove global openeuler src dir
-    openeuler_src_dir = d.getVar("OPENEULER_SP_DIR")
+    openeuler_src_dir = os.path.join(d.getVar("OPENEULER_SP_DIR"), "openeuler")
     extrapathsvalue = extrapathsvalue.replace(openeuler_src_dir, "")
 
     # Remove default flag which was used for checking

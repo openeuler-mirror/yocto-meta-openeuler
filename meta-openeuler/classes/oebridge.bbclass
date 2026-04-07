@@ -4,7 +4,7 @@ python(){
 
     repo_name = d.getVar('OPENEULER_LOCAL_NAME')
 
-    src_dir = d.getVar('OPENEULER_SP_DIR')
+    src_dir = os.path.join(d.getVar('OPENEULER_SP_DIR'), 'openeuler')
     repo_dir = os.path.join(src_dir, repo_name)
     spec_path = os.path.join(repo_dir, repo_name+".spec")
     spec_name = repo_name+".spec"
