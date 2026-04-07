@@ -22,7 +22,7 @@ ROS_BUILD_DEPENDS = " \
     geometry-msgs \
     rclcpp \
     rclcpp-action \
-    rosidl-default-rutime \
+    rosidl-default-runtime \
 "
 
 ROS_BUILDTOOL_DEPENDS = " \
@@ -35,7 +35,7 @@ ROS_EXPORT_DEPENDS = ""
 ROS_BUILDTOOL_EXPORT_DEPENDS = ""
 
 ROS_EXEC_DEPENDS = " \
-    rosidl-default-rutime \
+    rosidl-default-runtime \
 "
 
 # Currently informational only -- see http://www.ros.org/reps/rep-0149.html#dependency-tags.
