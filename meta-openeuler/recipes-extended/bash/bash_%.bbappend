@@ -37,8 +37,11 @@ SRC_URI:prepend = " \
 
 SRC_URI[tarball.sha256sum] = "c8e31bdc59b69aaffc5b36509905ba3e5cbb12747091d27b4b977f078560d5b8"
 
-# When testing the performance of the shell using UnixBench, we found that the sh of busybox(ash)
-# outperformed bash, so we still make sh link to busybox instead of bash.
-ALTERNATIVE:${PN}:remove = "sh"
+# When busybox is used as init manager (mdev-busybox), busybox/ash outperforms
+# bash in UnixBench, so let busybox own /bin/sh in that case.
+# When busybox is not present (e.g. systemd mode), bash must provide /bin/sh
+# because nothing else does — removing "sh" from ALTERNATIVE would leave
+# /bin/sh missing and break do_rootfs RPM dependency resolution.
+ALTERNATIVE:${PN}:remove = "${@bb.utils.contains('INIT_MANAGER', 'mdev-busybox', 'sh', '', d)}"
 
 ASSUME_PROVIDE_PKGS = "bash"
