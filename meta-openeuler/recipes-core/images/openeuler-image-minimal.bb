@@ -6,17 +6,11 @@ deltask populate_sdk
 
 DEPENDS = "linux-openeuler busybox run-postinsts"
 RDEPENDS = ""
-PACKAGE_INTALL = "kernel-img busybox musl"
+PACKAGE_INSTALL = "kernel-img busybox musl"
 # origin set is packagegroup-core-ssh-openssh
 FEATURE_INSTALL = ""
 # we don't need extra users
 EXTRA_USERS_PARAMS = ""
-
-IMAGE_INSTALL = " \
-    kernel-img \
-    busybox \
-    musl \
-"
 
 create_other_directory() {
     cd "${IMAGE_ROOTFS}"
