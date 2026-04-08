@@ -4,7 +4,6 @@ inherit ${@bb.utils.contains('DISTRO_FEATURES', 'oebridge', 'image-oebridge', ''
 # openeuler standard image packages
 IMAGE_INSTALL = " \
 packagegroup-core-boot \
-packagegroup-core-base-utils \
 packagegroup-core-tools-debug \
 packagegroup-base-extended \
 packagegroup-network \
