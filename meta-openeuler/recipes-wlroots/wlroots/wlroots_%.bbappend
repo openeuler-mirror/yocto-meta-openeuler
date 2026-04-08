@@ -20,3 +20,8 @@ PACKAGECONFIG += " \
         ${@bb.utils.contains('DISTRO_FEATURES', 'x11 wayland', 'xwayland', '', d)} \
 "
 EXTRA_OEMESON += " -Dbackends=drm,libinput,x11 "
+
+# The default RPATH of tinywl points to $ORIGIN/.., which is ineffective and insecure and needs to be removed
+do_install:append() {
+        patchelf --remove-rpath ${D}${bindir}/tinywl
+}
