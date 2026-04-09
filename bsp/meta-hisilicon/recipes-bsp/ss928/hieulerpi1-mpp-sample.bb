@@ -16,7 +16,7 @@ inherit module oee-archive
 do_compile() {
     cd ${S}/src
     sed -i 's/aarch64-openeuler-linux-gnu-/aarch64-openeuler-linux-/' Makefile.param
-	
+
     install -d ${S}/src/vio/imx347
     install -d ${S}/src/vio/os04a10
     install -d ${S}/src/vio/os08a20
@@ -121,8 +121,7 @@ do_deploy() {
     install -m 0644 ${S}/deploy/lib.tar.gz ${DEPLOY_DIR}/third_party_sdk
 }
 
+INSANE_SKIP:${PN} += "already-stripped"
 FILES:${PN} = " /root/sample /opt/sample "
-
-INHIBIT_PACKAGE_STRIP = "1"
 
 addtask deploy after do_install

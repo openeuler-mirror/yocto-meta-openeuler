@@ -53,7 +53,7 @@ do_install () {
     install -d ${D}/opt/sample/mipi_rx/imx347
     install -d ${D}/opt/sample/mipi_rx/sc450ai
     install -m 644 ${S}/i2c_soft/i2c_soft_driver.ko ${D}/opt/sample/mipi_rx
-    #install -m 755 ${S}/scripts_and_configs/mipi_rx/imx347/sns23_reset_4x2lane.sh ${D}/opt/sample/mipi_rx/imx347
+    install -m 755 ${S}/scripts_and_configs/mipi_rx/imx347/sns23_reset_4x2lane.sh ${D}/opt/sample/mipi_rx/imx347
     install -m 755 ${S}/scripts_and_configs/mipi_rx/sc450ai/sns23_reset_4x2lane.sh ${D}/opt/sample/mipi_rx/sc450ai
 
     install -d ${D}/opt/sample/gpio

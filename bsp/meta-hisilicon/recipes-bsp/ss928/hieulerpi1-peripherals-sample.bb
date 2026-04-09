@@ -36,6 +36,5 @@ do_install () {
     install -m 755 ${S}/mcu_tool/mcu_tool ${D}/sbin
 }
 
+INSANE_SKIP:${PN} += "already-stripped"
 FILES:${PN} = " /opt/sample /sbin "
-
-INHIBIT_PACKAGE_STRIP = "1"
