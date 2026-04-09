@@ -5,8 +5,6 @@ MULTILIBS = ""
 
 DEFAULTTUNE = "aarch64"
 
-ROOTFS_PACKAGE_ARCH = "aarch64"
-
 KERNEL_IMAGETYPE = "Image"
 
 # serial console setting
