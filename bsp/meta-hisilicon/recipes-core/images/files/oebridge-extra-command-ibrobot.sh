@@ -21,13 +21,16 @@ chmod 755 /usr/local
 chmod 755 /usr/local/Ascend/
 export PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
 export ROS_OS_OVERRIDE="rhel:8"
-pip3 install aiortc
 pip3 install setuptools==71.0.0
+pip3 install aiortc matplotlib onnx onnxsim
 pip3 install rosdepc
 sed -i 's/sudo //g' /usr/local/lib/python3.11/site-packages/rosdepc/rosdepc.py
 git clone -b master --single-branch  --depth 1 https://atomgit.com/openeuler/IB_Robot.git
 cd IB_Robot/
+sed -i 's|https://github.com/AndrejOrsula/pymoveit2|https://atomgit.com/ib_robot/pymoveit2|g' .gitmodules
+sed -i 's|https://github.com/PlaiPin/rosclaw|https://atomgit.com/ib_robot/rosclaw|g' .gitmodules
 git config --global http.sslVerify false
 ./scripts/setup.sh -y --git-http --no-sudo
+sed -i 's|https://github.com/ftservo/FTServo_Linux|https://atomgit.com/ib_robot/FTServo_Linux|g' src/so101_hardware/CMakeLists.txt
 source .shrc_local
 ./scripts/build.sh

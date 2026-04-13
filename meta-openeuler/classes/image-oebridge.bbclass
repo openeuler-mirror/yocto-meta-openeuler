@@ -233,6 +233,8 @@ fakeroot python do_dnf_install_pkgs(){
     run_cmd_with_cwd(f"cat rootfs_softlink | while read -r o p;do PSEUDO_UNLOAD=1 sudo chown -h \"$o\" \"$p\"; done", d.getVar("WORKDIR")+"/temp")
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs sed -i 's/^gpgcheck=1/gpgcheck=0/' /etc/dnf/dnf.conf", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf clean all", d.getVar("WORKDIR"))
+    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
+        dnf-plugins-core -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
 
     if len(real_list) > 0:
         real_list_str = " ".join(real_list)
@@ -245,8 +247,6 @@ fakeroot python do_dnf_install_pkgs(){
         bb.plain("install extra packages: " + extra_list_str)
         # here add extra repo for installing pkgs from oepkgs.net, but the repo source is extras, like:
         # https://repo.oepkgs.net/openeuler/rpm/openEuler-24.03-LTS/extras/aarch64/
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
-        dnf-plugins-core -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
         extra_mirror = "repo.oepkgs.net/openeuler/rpm"
         # add extra mirror
         extra_repo = f"{extra_mirror}/{d.getVar('SERVER_VERSION')}/extras/{d.getVar('TUNE_ARCH')}/"
