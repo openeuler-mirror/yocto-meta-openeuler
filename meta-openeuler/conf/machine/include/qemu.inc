@@ -5,5 +5,5 @@ IMAGE_FSTYPES_DEBUGFS = "cpio.gz"
 MACHINEOVERRIDES =. "qemuall:"
 
 # support runqemu function
-IMAGE_CLASSES += "qemuboot"
+IMAGE_CLASSES += "qemuboot qemu-image"
 EXTRA_IMAGEDEPENDS += "qemu-system-native qemu-helper-native:do_addto_recipe_sysroot"
