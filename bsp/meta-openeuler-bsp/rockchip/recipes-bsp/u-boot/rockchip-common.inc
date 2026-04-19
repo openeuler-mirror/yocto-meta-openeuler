@@ -35,6 +35,13 @@ DEPENDS:append = " ${PYTHON_PN}-native"
 # Needed for packing BSP u-boot
 DEPENDS:append = " coreutils-native ${PYTHON_PN}-pyelftools-native"
 
+remove_broken_symlinks() {
+    # Remove broken symlinks from rk-binary-native that cause checksum warnings
+    rm -f "${S}/rk-binary-native/linux/Linux_Pack_Firmware/rockdev/Image"
+    rm -f "${S}/rk-binary-native/linux/Firmware_Merger/rockdev"
+}
+
 do_unpack:append() {
+    bb.build.exec_func('remove_broken_symlinks', d)
     bb.build.exec_func('do_copy_rkbin_source', d)
 }
