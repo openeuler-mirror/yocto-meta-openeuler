@@ -313,7 +313,7 @@ def download_repo(d, repo_dir, repo_url ,version = None):
     # here, we use try to avoid users modify the repo, if user modified, just given warning
     try:
         repo.git.checkout(version)
-    except:
+    except Exception as e:
         bb.fatal("checkout %s to version %s failed: %s" % (repo_dir, version, str(e)))
 
     def has_lfs(repo_dir):
