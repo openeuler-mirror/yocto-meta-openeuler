@@ -61,15 +61,3 @@ do_custom_install_complete:append() {
 		fi
 	fi
 }
-
-python () {
-    machine = d.getVar("MACHINE")
-    features = (d.getVar("DISTRO_FEATURES") or "").split()
-
-    if (machine == "hieulerpi1" and
-        "kernel6" in features and
-        "oebridge" in features):
-
-        d.setVar("EXTRA_USERS_PARAMS",
-            "usermod -p '\$6\$W98yZpfH..hPALxl\$Ll69z2FP4h52M9/VhuHuGzrKZT5/QQjacDsQLK2QUr2XapRSH6yUsCJgNa4/MSUM.SW9/oquyx2YdwYhN68D01' root;")
-}
