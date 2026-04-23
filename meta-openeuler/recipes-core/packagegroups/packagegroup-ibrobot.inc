@@ -35,6 +35,9 @@ INSTALL_PKG_LISTS += " \
     ros-humble-rosbridge-library:real \
     python3-websockets:real \
     nlohmann-json-devel:real \
+    ros-humble-rosbag2-storage-mcap:real \
+    python3-pyserial:real \
+    python3-scipy:real \
     cmake:real \
     gcc:real \
     gcc-c++:real \

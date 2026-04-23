@@ -30,7 +30,7 @@ cd IB_Robot/
 sed -i 's|https://github.com/AndrejOrsula/pymoveit2|https://atomgit.com/ib_robot/pymoveit2|g' .gitmodules
 sed -i 's|https://github.com/PlaiPin/rosclaw|https://atomgit.com/ib_robot/rosclaw|g' .gitmodules
 git config --global http.sslVerify false
-./scripts/setup.sh -y --git-http --no-sudo
+./scripts/setup.sh -y --no-sudo
 sed -i 's|https://github.com/ftservo/FTServo_Linux|https://atomgit.com/ib_robot/FTServo_Linux|g' src/so101_hardware/CMakeLists.txt
 source .shrc_local
 ./scripts/build.sh
