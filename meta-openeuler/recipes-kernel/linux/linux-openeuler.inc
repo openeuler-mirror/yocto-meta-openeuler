@@ -224,7 +224,7 @@ pkg_postinst_${KERNEL_PACKAGE_NAME}-base () {
 # for other BSP, plese do it in its own layer and use dynamic layer mechanism under bsp/met-openeuler-bsp, for example, see
 # raspberrypi bsp
 # Enable generic qemu-aarch64 graphics kernel options when grachics related features are enabled
-SRC_URI:append:qemu-aarch64= "${@bb.utils.contains_any('DISTRO_FEATURES', 'opengl x11 wayland vulkan', 'file://config/cfg-fragments/qemu-aarch64-graphics.cfg', '', d)}"
+SRC_URI:append:qemu-aarch64= "${@bb.utils.contains_any('DISTRO_FEATURES', 'opengl x11 wayland vulkan oe-xfce', 'file://config/cfg-fragments/qemu-aarch64-graphics.cfg', '', d)}"
 
 do_container_configs[doc] = "Checks the kernel configs required by container, parses the output, and issues warnings/notes for missing configs."
 do_container_configs() {
