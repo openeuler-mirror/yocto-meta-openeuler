@@ -12,10 +12,19 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0822a32f7acdbe013606746641746ee8 \
 
 SRC_URI[sha256sum] = "0d9ade222c64e912d6957b11c923e214e2e010a18f39bec102f572e693ba2867"
 
-do_compile:append () {
-    oe_runmake ${PACKAGECONFIG_CONFARGS} ZSTD_LEGACY_SUPPORT=${ZSTD_LEGACY_SUPPORT} -C contrib/pzstd
+ZSTD_PZSTD_ENABLED ?= "1"
+ZSTD_PZSTD_ENABLED:toolchain-clang:arm:libc-musl = "0"
+
+do_compile () {
+    oe_runmake ${PACKAGECONFIG_CONFARGS} ZSTD_LEGACY_SUPPORT=${ZSTD_LEGACY_SUPPORT}
+    if [ "${ZSTD_PZSTD_ENABLED}" = "1" ]; then
+        oe_runmake ${PACKAGECONFIG_CONFARGS} ZSTD_LEGACY_SUPPORT=${ZSTD_LEGACY_SUPPORT} -C contrib/pzstd
+    fi
 }
 
-do_install:append () {
-    oe_runmake install 'DESTDIR=${D}' PREFIX=${prefix} -C contrib/pzstd
+do_install () {
+    oe_runmake install 'DESTDIR=${D}'
+    if [ "${ZSTD_PZSTD_ENABLED}" = "1" ]; then
+        oe_runmake install 'DESTDIR=${D}' PREFIX=${prefix} -C contrib/pzstd
+    fi
 }

@@ -6,4 +6,6 @@ SRC_URI:prepend = " \
         file://fix-AARCH64EB-support.patch \
 "
 
+LDFLAGS:append:toolchain-clang = "${@bb.utils.contains('DISTRO_FEATURES', 'ld-is-lld', ' -Wl,--undefined-version', '', d)}"
+
 ASSUME_PROVIDE_PKGS = "libffi"

@@ -6,7 +6,13 @@ DEPENDS += "u-boot-tools-native dtc-native"
 
 OPENEULER_REPO_NAMES = "kernel-5.10-tag626 src-kernel-5.10-tag626"
 
-OPENEULER_KERNEL_CONFIG = "file://config/hipico/hipico_defconfig"
+OPENEULER_KERNEL_CONFIG = " \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'mini-img', ' \
+        file://config/hipico/hipico_mini_defconfig \
+    ', ' \
+        file://config/hipico/hipico_defconfig \
+    ', d)} \
+"
 
 PV = "5.10-tag626"
 

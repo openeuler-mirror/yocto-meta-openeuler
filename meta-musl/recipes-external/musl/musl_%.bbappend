@@ -21,6 +21,26 @@ FILES:${PN}:append:riscv64 = " \
     ${sysconfdir}/ld-musl-riscv64.path \
 "
 
+musl_external_do_install_extra:arm (){
+    mkdir -p ${D}${sysconfdir}
+    touch ${D}${sysconfdir}/ld-musl-arm.path
+    echo "${base_libdir}" > ${D}${sysconfdir}/ld-musl-arm.path
+    echo "${libdir}" >> ${D}${sysconfdir}/ld-musl-arm.path
+
+    if ${@bb.utils.contains('DISTRO_FEATURES', 'mini-img', 'false', 'true', d)}; then
+        sed -i '/#include <asm\/swab.h>/a\#include <sys/cdefs.h>' ${D}${includedir}/linux/swab.h
+        sed -i '/#include <linux\/swab.h>/a\#include <sys/cdefs.h>' ${D}${includedir}/linux/byteorder/little_endian.h
+    fi
+
+    rm -f ${D}${base_libdir}/libgcc_s.so
+    rm -f ${D}${base_libdir}/libgcc_s.so.1
+}
+
+RPROVIDES:${PN} += "glibc"
+RPROVIDES:${PN}-dev += "glibc-dev"
+RPROVIDES:${PN}-staticdev += "glibc-staticdev"
+
 FILES:${PN}:append:arm = " \
     ${base_libdir}/ld-musl-arm.so.1 \
+    ${sysconfdir}/ld-musl-arm.path \
 "

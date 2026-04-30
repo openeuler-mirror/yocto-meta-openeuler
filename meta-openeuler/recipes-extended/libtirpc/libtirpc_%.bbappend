@@ -21,4 +21,6 @@ PACKAGECONFIG ??= "\
 PACKAGECONFIG[ipv6] = "--enable-ipv6,--disable-ipv6"
 PACKAGECONFIG[gssapi] = "--enable-gssapi,--disable-gssapi,krb5"
 
+DEPENDS:append:libc-musl = " bsd-headers"
+
 ASSUME_PROVIDE_PKGS = "libtirpc"

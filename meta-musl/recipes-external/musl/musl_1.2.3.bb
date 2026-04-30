@@ -94,4 +94,4 @@ INSANE_SKIP:${PN} += "installed-vs-shipped"
 INSANE_SKIP += "dev-elf dev-so"
 
 
-SYSROOT_DIRS = "/usr/*"
+SYSROOT_DIRS = "/usr/* ${base_libdir}"

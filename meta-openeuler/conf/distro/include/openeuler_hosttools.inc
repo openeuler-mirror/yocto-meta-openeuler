@@ -13,7 +13,7 @@ ASSUME_PROVIDED += "util-linux-native chrpath-replacement-native sgdisk"
 
 # package management tools
 HOSTTOOLS_NONFATAL += "rpm rpmbuild createrepo_c dnf unzip rpm2cpio xzcat"
-ASSUME_PROVIDED += "rpm-native createrepo-c-native unzip-native"
+ASSUME_PROVIDED += "unzip-native"
 
 HOSTTOOLS += "quilt"
 ASSUME_PROVIDED += "quilt-native"
