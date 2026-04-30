@@ -1,460 +1,29 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../../">
+<html class="writer-html5" lang="en">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>话题与动作执行器 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
   
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
-      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.15.0/dist/mermaid.esm.min.mjs";
-
-
-
-
-
-const initStyles = () => {
-    const defaultStyle = document.createElement('style');
-    defaultStyle.textContent = `pre.mermaid {
-    /* Same as .mermaid-container > pre */
-    display: block;
-    width: 100%;
-}
-
-pre.mermaid > svg {
-    /* Same as .mermaid-container > pre > svg */
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}`;
-    document.head.appendChild(defaultStyle);
-
-    const fullscreenStyle = document.createElement('style');
-    fullscreenStyle.textContent = `.mermaid-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-}
-
-.mermaid-container > pre {
-    display: block;
-    width: 100%;
-}
-
-.mermaid-container > pre > svg {
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}
-
-.mermaid-fullscreen-btn {
-    width: 28px;
-    height: 28px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    font-size: 14px;
-    line-height: 1;
-    padding: 0;
-    color: #333;
-}
-
-.mermaid-fullscreen-btn:hover {
-    opacity: 100% !important;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-btn.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-btn.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal {
-    display: none;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 95vw;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.98);
-    z-index: 9999;
-    padding: 20px;
-    overflow: auto;
-}
-
-.mermaid-fullscreen-modal.dark-theme {
-    background: rgba(0, 0, 0, 0.98);
-}
-
-.mermaid-fullscreen-modal.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen {
-    position: relative;
-    width: 95vw;
-    height: 90vh;
-    max-width: 95vw;
-    max-height: 90vh;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    overflow: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen.dark-theme {
-    background: #1a1a1a;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-}
-
-.mermaid-container-fullscreen pre.mermaid {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen .mermaid svg {
-    height: 100% !important;
-    width: 100% !important;
-    cursor: grab;
-}
-
-.mermaid-fullscreen-close {
-    position: fixed !important;
-    top: 20px !important;
-    right: 20px !important;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s;
-    font-size: 24px;
-    line-height: 1;
-    color: #333;
-}
-
-.mermaid-fullscreen-close:hover {
-    background: white;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-close.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-close.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
-    display: none !important;
-}`;
-    document.head.appendChild(fullscreenStyle);
-}
-
-// Detect if page has dark background
-const isDarkTheme = () => {
-    // We use a set of heuristics:
-    // 1. Check for common dark mode classes or attributes
-    // 2. Check computed background color brightness
-    if (document.documentElement.classList.contains('dark') ||
-        document.documentElement.getAttribute('data-theme') === 'dark' ||
-        document.body.classList.contains('dark') ||
-        document.body.getAttribute('data-theme') === 'dark') {
-        // console.log("Dark theme detected via class/attribute");
-        return true;
-    }
-    if (document.documentElement.classList.contains('light') ||
-        document.documentElement.getAttribute('data-theme') === 'light' ||
-        document.body.classList.contains('light') ||
-        document.body.getAttribute('data-theme') === 'light') {
-        // console.log("Light theme detected via class/attribute");
-        return false;
-    }
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        // console.log("Dark theme detected via prefers-color-scheme");
-        return true;
-    }
-    const bgColor = window.getComputedStyle(document.body).backgroundColor;
-    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
-    if (match) {
-        const r = parseInt(match[1]);
-        const g = parseInt(match[2]);
-        const b = parseInt(match[3]);
-        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        // console.log("Background color brightness:", brightness);
-        return brightness < 128;
-    }
-    // console.log("No dark or light theme detected, defaulting to light theme");
-    return false;
-};
-
-let darkTheme = isDarkTheme();
-let modal = null;
-let modalContent = null;
-let previousScrollOffset = [window.scrollX, window.scrollY];
-
-const runMermaid = async (rerun) => {
-    console.log("Running mermaid diagrams, rerun =", rerun);
-    // clear all existing mermaid charts
-    let all_mermaids = document.querySelectorAll(".mermaid");
-
-    if (rerun) {
-        all_mermaids.forEach((el) => {
-            if(!el.hasAttribute("data-original-code")) {
-                // store original code
-                // console.log(`Storing original code for first run: `, el.innerHTML);
-                el.setAttribute('data-original-code', el.innerHTML);
-            }
-            if(el.getAttribute("data-processed") === "true") {
-                // remove and restore original
-                el.removeAttribute("data-processed");
-                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
-                el.innerHTML = el.getAttribute('data-original-code');
-            } else {
-                // store original code
-                // console.log(`Storing original code for re-run: `, el.innerHTML);
-                el.setAttribute('data-original-code', el.innerHTML);
-            }
-        });
-        await mermaid.run();
-    }
-
-    all_mermaids = document.querySelectorAll(".mermaid");
-    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
-
-    if ("False" === "True") {
-        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
-        if(mermaids_to_add_zoom > 0) {
-            var svgs = d3.selectAll("");
-            if(all_mermaids.length !== mermaids_processed.length) {
-                setTimeout(() => runMermaid(false), 200);
-                return;
-            } else if(svgs.size() !== mermaids_to_add_zoom) {
-                setTimeout(() => runMermaid(false), 200);
-                return;
-            } else {
-                svgs.each(function() {
-                    var svg = d3.select(this);
-                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
-                    var inner = svg.select("g");
-                    var zoom = d3.zoom().on("zoom", function(event) {
-                        inner.attr("transform", event.transform);
-                    });
-                    svg.call(zoom);
-                });
-            }
-        }
-    } else if(all_mermaids.length !== mermaids_processed.length) {
-        // Wait for mermaid to process all diagrams
-        setTimeout(() => runMermaid(false), 200);
-        return;
-    }
-
-    // Stop here if not adding fullscreen capability
-    if ("True" !== "True") return;
-
-    if (modal !== null ) {
-        // Destroy existing modal
-        modal.remove();
-        modal = null;
-        modalContent = null;
-    }
-
-    modal = document.createElement('div');
-    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
-    modal.setAttribute('role', 'dialog');
-    modal.setAttribute('aria-modal', 'true');
-    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
-    modal.innerHTML = `
-        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
-        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
-    `;
-    document.body.appendChild(modal);
-
-    modalContent = modal.querySelector('.mermaid-container-fullscreen');
-    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
-
-    const closeModal = () => {
-        modal.classList.remove('active');
-        modalContent.innerHTML = '';
-        document.body.style.overflow = ''
-        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
-    };
-
-    closeBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('active')) {
-            closeModal();
-        }
-    });
-
-    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
-        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
-            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
-            // Already processed, adjust button class if needed
-            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
-            if (existingBtn) {
-                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
-            }
-            return;
-        }
-
-        const container = document.createElement('div');
-        container.className = 'mermaid-container';
-        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
-        container.appendChild(mermaidDiv);
-
-        const fullscreenBtn = document.createElement('button');
-        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
-        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
-        fullscreenBtn.textContent = '⛶';
-        fullscreenBtn.style.opacity = '50%';
-
-        // Calculate dynamic position based on diagram's margin and padding
-        const diagramStyle = window.getComputedStyle(mermaidDiv);
-        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
-        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
-        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
-        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
-        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
-        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
-
-        fullscreenBtn.addEventListener('click', () => {
-            previousScrollOffset = [window.scroll, window.scrollY];
-            const clone = mermaidDiv.cloneNode(true);
-            modalContent.innerHTML = '';
-            modalContent.appendChild(clone);
-
-            const svg = clone.querySelector('svg');
-            if (svg) {
-                svg.removeAttribute('width');
-                svg.removeAttribute('height');
-                svg.style.width = '100%';
-                svg.style.height = 'auto';
-                svg.style.maxWidth = '100%';
-                svg.style.sdisplay = 'block';
-
-                if ("False" === "True") {
-                    setTimeout(() => {
-                        const g = svg.querySelector('g');
-                        if (g) {
-                            var svgD3 = d3.select(svg);
-                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
-                            var inner = svgD3.select("g");
-                            var zoom = d3.zoom().on("zoom", function(event) {
-                                inner.attr("transform", event.transform);
-                            });
-                            svgD3.call(zoom);
-                        }
-                    }, 100);
-                }
-            }
-
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        });
-        container.appendChild(fullscreenBtn);
-    });
-};
-
-const load = async () => {
-    initStyles();
-
-    await runMermaid(true);
-
-    const reRunIfThemeChanges = async () => {
-        const newDarkTheme = isDarkTheme();
-        if (newDarkTheme !== darkTheme) {
-            darkTheme = newDarkTheme;
-            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
-            await mermaid.initialize(
-                {...JSON.parse(
-                    `{"startOnLoad": false}`
-                ),
-                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
-                }
-            );
-            await runMermaid(true);
-        }
-    };
-
-    // Update theme classes when theme changes
-    const themeObserver = new MutationObserver(reRunIfThemeChanges);
-    themeObserver.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['class', 'style', 'data-theme']
-    });
-    themeObserver.observe(document.body, {
-        attributes: true,
-        attributeFilter: ['class', 'style', 'data-theme']
-    });
-};
-
-
-
-
-
-console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
-mermaid.initialize(
-    {...JSON.parse(
-        `{"startOnLoad": false}`
-    ),
-    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
-    }
-);
-
-window.addEventListener("load", load);</script>
-      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
-      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+        <script>mermaid.initialize({startOnLoad:true});</script>
+        <script src="../../../_static/js/mermaid-init.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -579,8 +148,8 @@ window.addEventListener("load", load);</script>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="id1">
-<h1>话题与动作执行器<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+  <div class="section" id="id1">
+<h1>话题与动作执行器<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
 <details><p>相关源文件</p>
 <p>以下文件用于生成此 wiki 页面的上下文：</p>
 <ul class="simple">
@@ -607,13 +176,13 @@ window.addEventListener("load", load);</script>
 </details><p><strong>目的</strong>：本文档介绍 <code class="docutils literal notranslate"><span class="pre">action_dispatch</span></code> 包中的执行器层，它将抽象的动作张量转换为具体的 ROS 2 控制命令。两种执行器类型——<code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code> 和 <code class="docutils literal notranslate"><span class="pre">ActionExecutor</span></code>——提供不同的机器人硬件控制机制，各自针对特定的控制范式进行了优化。</p>
 <p><strong>范围</strong>：本文档涵盖执行器架构、实现细节、消息路由以及与动作分发器控制循环的集成。有关整体分发架构，请参阅 <a class="reference external" href="#8.1">动作分发器节点</a>。有关动作队列管理和平滑，请参阅 <a class="reference external" href="#8.2">时间平滑</a>。</p>
 <hr class="docutils" />
-<section id="id2">
-<h2>执行器架构概述<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<div class="section" id="id2">
+<h2>执行器架构概述<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
 <p>执行器层位于动作分发器的控制循环和 ROS 2 控制系统之间，提供了一个将动作生成与硬件通信协议隔离的抽象。</p>
-<section id="id3">
-<h3>执行器职责图<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph TB
+<div class="section" id="id3">
+<h3>执行器职责图<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph TB
     subgraph &quot;Action Dispatcher Control Loop&quot;
         Queue[&quot;Action Queue / TemporalSmoother&quot;]
         ControlLoop[&quot;100 Hz Control Timer&quot;]
@@ -650,17 +219,21 @@ window.addEventListener("load", load);</script>
     end
 
     Controllers --&gt; Hardware[&quot;Hardware Interface&quot;]
-    </pre><p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L1-L447">src/action_dispatch/README.en.md:1-447</a>,
+        </div><p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L1-L447">src/action_dispatch/README.en.md:1-447</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L1-L319">src/action_dispatch/action_dispatch/action_dispatcher_node.py:1-319</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="topicexecutor">
-<h2>TopicExecutor：高频位置控制<a class="headerlink" href="#topicexecutor" title="Link to this heading"></a></h2>
+<div class="section" id="topicexecutor">
+<h2>TopicExecutor：高频位置控制<a class="headerlink" href="#topicexecutor" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code> 通过以高频率（通常为 100 Hz）向 ROS 2 话题发布单个动作向量来实现流式位置控制。这是输出动作块的端到端策略模型（ACT、Diffusion Policy）的默认执行器。</p>
-<section id="id4">
-<h3>设计原则<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<div class="section" id="id4">
+<h3>设计原则<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 67%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>方面</p></th>
 <th class="head"><p>实现</p></th>
@@ -684,12 +257,12 @@ window.addEventListener("load", load);</script>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="id5">
-<h3>消息路由策略<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id5">
+<h3>消息路由策略<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
 <p>执行器使用 <code class="docutils literal notranslate"><span class="pre">Contract</span></code> 系统将动作张量维度映射到特定的控制器话题：</p>
-<pre  class="mermaid">
-        graph LR
+<div class="mermaid">
+            graph LR
     ActionTensor[&quot;Action Tensor&lt;br/&gt;(N, 7)&quot;]
     Specs[&quot;ActionSpec List&lt;br/&gt;from Contract&quot;]
 
@@ -701,12 +274,12 @@ window.addEventListener("load", load);</script>
 
     ArmPub --&gt; ArmCtrl[&quot;arm_position_controller&quot;]
     GripperPub --&gt; GripperCtrl[&quot;gripper_position_controller&quot;]
-    </pre><p><strong>来源</strong>：
+        </div><p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L118-L122">src/action_dispatch/action_dispatch/action_dispatcher_node.py:118-122</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/contract_utils.py#L60-L70">src/robot_config/robot_config/contract_utils.py:60-70</a></p>
-</section>
-<section id="id6">
-<h3>初始化与设置<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id6">
+<h3>初始化与设置<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code> 在动作分发器节点中创建和初始化：</p>
 <p><a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L118-L122">src/action_dispatch/action_dispatch/action_dispatcher_node.py:118-122</a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 5. Executor (Topic-based)</span>
@@ -719,9 +292,9 @@ window.addEventListener("load", load);</script>
 - 每个动作维度组的话题名称 - 消息类型（通常为 <code class="docutils literal notranslate"><span class="pre">Float64MultiArray</span></code>）- 可靠传递的 QoS 配置文件 - 关节名称映射</p>
 <p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L106-L122">src/action_dispatch/action_dispatch/action_dispatcher_node.py:106-122</a></p>
-</section>
-<section id="id7">
-<h3>执行流程<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id7">
+<h3>执行流程<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
 <p>在每次控制循环迭代（100 Hz）时，分发器调用 <code class="docutils literal notranslate"><span class="pre">executor.execute(action)</span></code>：</p>
 <p><a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L195-L201">src/action_dispatch/action_dispatch/action_dispatcher_node.py:195-201</a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># B. Get Action</span>
@@ -748,9 +321,9 @@ window.addEventListener("load", load);</script>
 <p>执行器根据契约规范拆分动作数组并发布到相应的话题。</p>
 <p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L172-L201">src/action_dispatch/action_dispatch/action_dispatcher_node.py:172-201</a></p>
-</section>
-<section id="id8">
-<h3>契约驱动的话题映射<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id8">
+<h3>契约驱动的话题映射<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
 <p>契约中的动作规范定义动作张量维度如何映射到控制器话题：</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example contract action specifications</span>
 <span class="nt">actions</span><span class="p">:</span>
@@ -777,15 +350,19 @@ window.addEventListener("load", load);</script>
 <p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/contract_utils.py#L60-L70">src/robot_config/robot_config/contract_utils.py:60-70</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L1-L300">src/robot_config/config/robots/so101_single_arm.yaml:1-300</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="actionexecutor">
-<h2>ActionExecutor：轨迹控制<a class="headerlink" href="#actionexecutor" title="Link to this heading"></a></h2>
+<div class="section" id="actionexecutor">
+<h2>ActionExecutor：轨迹控制<a class="headerlink" href="#actionexecutor" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">ActionExecutor</span></code> 通过向 ROS 2 动作服务器发送完整的运动计划来实现基于轨迹的控制。当与 MoveIt 集成或需要轨迹控制器时使用此执行器。</p>
-<section id="design-principles-1">
-<span id="id9"></span><h3>设计原则<a class="headerlink" href="#design-principles-1" title="Link to this heading"></a></h3>
+<div class="section" id="design-principles-1">
+<span id="id9"></span><h3>设计原则<a class="headerlink" href="#design-principles-1" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 36%" />
+<col style="width: 64%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>方面</p></th>
 <th class="head"><p>实现</p></th>
@@ -809,12 +386,12 @@ window.addEventListener("load", load);</script>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="id10">
-<h3>轨迹构建<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id10">
+<h3>轨迹构建<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
 <p>与发送单个位置的 <code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code> 不同，<code class="docutils literal notranslate"><span class="pre">ActionExecutor</span></code> 构建完整的轨迹消息：</p>
-<pre  class="mermaid">
-        graph TB
+<div class="mermaid">
+            graph TB
     ActionQueue[&quot;Action Queue&lt;br/&gt;(N x 7 positions)&quot;]
     TrajBuilder[&quot;Trajectory Builder&quot;]
 
@@ -830,14 +407,14 @@ window.addEventListener("load", load);</script>
 
     TrajMsg --&gt; ActionClient[&quot;Action Client&quot;]
     ActionClient --&gt;|&quot;send_goal_async&quot;| Server[&quot;/arm_controller/follow_joint_trajectory&quot;]
-    </pre><p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L1-L447">src/action_dispatch/README.en.md:1-447</a>,
+        </div><p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L1-L447">src/action_dispatch/README.en.md:1-447</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L1-L300">src/robot_moveit/scripts/moveit_gateway.py:1-300</a></p>
-</section>
-<section id="moveit">
-<h3>与 MoveIt 集成<a class="headerlink" href="#moveit" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="moveit">
+<h3>与 MoveIt 集成<a class="headerlink" href="#moveit" title="Permalink to this heading"></a></h3>
 <p>当控制模式为 <code class="docutils literal notranslate"><span class="pre">moveit_planning</span></code> 时，系统使用 <code class="docutils literal notranslate"><span class="pre">ActionExecutor</span></code> 执行规划的轨迹：</p>
-<pre  class="mermaid">
-        graph LR
+<div class="mermaid">
+            graph LR
     PoseCmd[&quot;Pose Command&lt;br/&gt;/cmd_pose&quot;]
     Gateway[&quot;MoveItGateway&quot;]
     Planner[&quot;MoveIt2 Core&lt;br/&gt;OMPL/Pilz&quot;]
@@ -848,11 +425,11 @@ window.addEventListener("load", load);</script>
 
     Executor --&gt;|&quot;FollowJointTrajectory&lt;br/&gt;action&quot;| TrajController[&quot;trajectory_controller&quot;]
     TrajController --&gt; Hardware[&quot;ros2_control&quot;]
-    </pre><p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L1-L300">src/robot_moveit/scripts/moveit_gateway.py:1-300</a>,
+        </div><p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L1-L300">src/robot_moveit/scripts/moveit_gateway.py:1-300</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L134-L143">README.md:134-143</a></p>
-</section>
-<section id="id11">
-<h3>动作服务器通信<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id11">
+<h3>动作服务器通信<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
 <p>执行器使用 ROS 2 动作协议进行异步轨迹执行：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pseudo-code for ActionExecutor operation</span>
 <span class="k">class</span> <span class="nc">ActionExecutor</span><span class="p">:</span>
@@ -872,15 +449,20 @@ window.addEventListener("load", load);</script>
 <p>这允许分发器在轨迹执行期间继续运行，而不像 <code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code> 需要持续供给。</p>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L66-L78">src/action_dispatch/README.en.md:66-78</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L1-L300">src/robot_moveit/scripts/moveit_gateway.py:1-300</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id12">
-<h2>执行器选择与控制模式<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
+<div class="section" id="id12">
+<h2>执行器选择与控制模式<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code> 和 <code class="docutils literal notranslate"><span class="pre">ActionExecutor</span></code> 之间的选择由控制模式配置决定：</p>
-<section id="id13">
-<h3>控制模式到执行器的映射<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<div class="section" id="id13">
+<h3>控制模式到执行器的映射<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>控制模式</p></th>
 <th class="head"><p>执行器类型</p></th>
@@ -902,9 +484,9 @@ window.addEventListener("load", load);</script>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="id14">
-<h3>配置示例<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id14">
+<h3>配置示例<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
 <p>来自 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML：</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">control_modes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">model_inference</span><span class="p">:</span>
@@ -928,12 +510,12 @@ window.addEventListener("load", load);</script>
 <p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml#L1-L300">src/robot_config/config/robots/so101_single_arm.yaml:1-300</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L1-L300">src/robot_config/launch/robot.launch.py:1-300</a></p>
-</section>
-<section id="id15">
-<h3>运行时选择逻辑<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id15">
+<h3>运行时选择逻辑<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
 <p>执行器根据活动控制模式实例化：</p>
-<pre  class="mermaid">
-        graph TB
+<div class="mermaid">
+            graph TB
     LaunchFile[&quot;robot.launch.py&quot;]
     ControlMode[&quot;control_mode parameter&quot;]
 
@@ -948,15 +530,15 @@ window.addEventListener("load", load);</script>
 
     CreateTopic --&gt; Dispatcher[&quot;ActionDispatcherNode&quot;]
     CreateAction --&gt; Dispatcher
-    </pre><p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L176-L196">src/robot_config/launch/robot.launch.py:176-196</a>,
+        </div><p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L176-L196">src/robot_config/launch/robot.launch.py:176-196</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L118-L122">src/action_dispatch/action_dispatch/action_dispatcher_node.py:118-122</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id16">
-<h2>消息类型详情<a class="headerlink" href="#id16" title="Link to this heading"></a></h2>
-<section id="float64multiarray">
-<h3>Float64MultiArray 结构<a class="headerlink" href="#float64multiarray" title="Link to this heading"></a></h3>
+<div class="section" id="id16">
+<h2>消息类型详情<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h2>
+<div class="section" id="float64multiarray">
+<h3>Float64MultiArray 结构<a class="headerlink" href="#float64multiarray" title="Permalink to this heading"></a></h3>
 <p>由 <code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code> 用于位置命令：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># std_msgs/Float64MultiArray message structure</span>
 <span class="p">{</span>
@@ -972,9 +554,9 @@ window.addEventListener("load", load);</script>
 </div>
 <p>执行器从原始动作数组构建这些消息，按动作规范定义进行拆分。</p>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L370-L378">src/action_dispatch/README.en.md:370-378</a></p>
-</section>
-<section id="followjointtrajectory">
-<h3>FollowJointTrajectory 结构<a class="headerlink" href="#followjointtrajectory" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="followjointtrajectory">
+<h3>FollowJointTrajectory 结构<a class="headerlink" href="#followjointtrajectory" title="Permalink to this heading"></a></h3>
 <p>由 <code class="docutils literal notranslate"><span class="pre">ActionExecutor</span></code> 用于轨迹命令：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># control_msgs/action/FollowJointTrajectory.action</span>
 <span class="n">Goal</span><span class="p">:</span>
@@ -993,14 +575,14 @@ window.addEventListener("load", load);</script>
 </pre></div>
 </div>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L370-L378">src/action_dispatch/README.en.md:370-378</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id17">
-<h2>契约驱动的动作路由<a class="headerlink" href="#id17" title="Link to this heading"></a></h2>
+<div class="section" id="id17">
+<h2>契约驱动的动作路由<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h2>
 <p>契约系统确保从训练到部署的动作路由一致：</p>
-<section id="id18">
-<h3>契约加载与动作规范提取<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
+<div class="section" id="id18">
+<h3>契约加载与动作规范提取<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h3>
 <p><a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L106-L117">src/action_dispatch/action_dispatch/action_dispatcher_node.py:106-117</a></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 4. Load Contract (Essential for TopicExecutor mapping)</span>
 <span class="n">robot_config_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parameter</span><span class="p">(</span><span class="s1">&#39;robot_config_path&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
@@ -1015,9 +597,9 @@ window.addEventListener("load", load);</script>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to load contract from </span><span class="si">{</span><span class="n">robot_config_path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="id19">
-<h3>动作规范处理<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id19">
+<h3>动作规范处理<a class="headerlink" href="#id19" title="Permalink to this heading"></a></h3>
 <p>执行器遍历动作规范以创建发布者：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pseudo-code for TopicExecutor initialization</span>
 <span class="k">class</span> <span class="nc">TopicExecutor</span><span class="p">:</span>
@@ -1041,14 +623,19 @@ window.addEventListener("load", load);</script>
 <p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/contract_utils.py#L60-L70">src/robot_config/robot_config/contract_utils.py:60-70</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L106-L117">src/action_dispatch/action_dispatch/action_dispatcher_node.py:106-117</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id20">
-<h2>性能特征<a class="headerlink" href="#id20" title="Link to this heading"></a></h2>
-<section id="id21">
-<h3>TopicExecutor 性能概况<a class="headerlink" href="#id21" title="Link to this heading"></a></h3>
+<div class="section" id="id20">
+<h2>性能特征<a class="headerlink" href="#id20" title="Permalink to this heading"></a></h2>
+<div class="section" id="id21">
+<h3>TopicExecutor 性能概况<a class="headerlink" href="#id21" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>指标</p></th>
 <th class="head"><p>值</p></th>
@@ -1074,10 +661,15 @@ window.addEventListener("load", load);</script>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="id22">
-<h3>ActionExecutor 性能概况<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id22">
+<h3>ActionExecutor 性能概况<a class="headerlink" href="#id22" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>指标</p></th>
 <th class="head"><p>值</p></th>
@@ -1105,12 +697,12 @@ window.addEventListener("load", load);</script>
 </table>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L174-L185">src/action_dispatch/README.en.md:174-185</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L1-L192">README.md:1-192</a></p>
-</section>
-</section>
-<section id="id23">
-<h2>安全与错误处理<a class="headerlink" href="#id23" title="Link to this heading"></a></h2>
-<section id="id24">
-<h3>TopicExecutor 安全机制<a class="headerlink" href="#id24" title="Link to this heading"></a></h3>
+</div>
+</div>
+<div class="section" id="id23">
+<h2>安全与错误处理<a class="headerlink" href="#id23" title="Permalink to this heading"></a></h2>
+<div class="section" id="id24">
+<h3>TopicExecutor 安全机制<a class="headerlink" href="#id24" title="Permalink to this heading"></a></h3>
 <ol class="arabic simple">
 <li><p><strong>最后动作保持</strong>：当动作队列为空时，执行器保持最后一个有效动作以防止突然停止：</p></li>
 </ol>
@@ -1119,9 +711,9 @@ window.addEventListener("load", load);</script>
 <li><p><strong>零动作回退</strong>：如果从未收到动作，执行器发布零值（可通过动作规范中的 <code class="docutils literal notranslate"><span class="pre">safety_behavior</span></code> 配置）。</p></li>
 <li><p><strong>QoS 可靠性</strong>：可靠的 QoS 确保即使网络压力下也能传递命令。</p></li>
 </ol>
-</section>
-<section id="id25">
-<h3>ActionExecutor 安全机制<a class="headerlink" href="#id25" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id25">
+<h3>ActionExecutor 安全机制<a class="headerlink" href="#id25" title="Permalink to this heading"></a></h3>
 <ol class="arabic simple">
 <li><p><strong>轨迹验证</strong>：动作服务器在执行前验证轨迹（关节限制、速度限制）。</p></li>
 <li><p><strong>抢占支持</strong>：新轨迹可以抢占正在执行的轨迹以实现响应式控制。</p></li>
@@ -1130,15 +722,15 @@ window.addEventListener("load", load);</script>
 <p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/contract_utils.py#L60-L70">src/robot_config/robot_config/contract_utils.py:60-70</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L195-L201">src/action_dispatch/action_dispatch/action_dispatcher_node.py:195-201</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id26">
-<h2>与动作分发器的集成<a class="headerlink" href="#id26" title="Link to this heading"></a></h2>
-<section id="id27">
-<h3>控制循环上下文中的执行器<a class="headerlink" href="#id27" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph TB
+<div class="section" id="id26">
+<h2>与动作分发器的集成<a class="headerlink" href="#id26" title="Permalink to this heading"></a></h2>
+<div class="section" id="id27">
+<h3>控制循环上下文中的执行器<a class="headerlink" href="#id27" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph TB
     subgraph &quot;ActionDispatcherNode Control Loop (100 Hz)&quot;
         Timer[&quot;ROS Timer Callback&quot;]
         QueueCheck[&quot;Check Queue Length&quot;]
@@ -1173,14 +765,14 @@ window.addEventListener("load", load);</script>
 
     TopicExec --&gt; ROS2Control[&quot;ros2_control&quot;]
     ActionExec --&gt; ROS2Control
-    </pre><p><strong>来源</strong>：
+        </div><p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L171-L201">src/action_dispatch/action_dispatch/action_dispatcher_node.py:171-201</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L81-L129">src/action_dispatch/README.en.md:81-129</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id28">
-<h2>总结<a class="headerlink" href="#id28" title="Link to this heading"></a></h2>
+<div class="section" id="id28">
+<h2>总结<a class="headerlink" href="#id28" title="Permalink to this heading"></a></h2>
 <p>执行器层为机器人控制提供了契约驱动的抽象，支持两种互补的范式：</p>
 <ul class="simple">
 <li><p><strong>TopicExecutor</strong>：针对端到端策略的高频位置控制进行了优化，具有最小延迟和简单的基于话题的通信。</p></li>
@@ -1190,8 +782,8 @@ window.addEventListener("load", load);</script>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L1-L447">src/action_dispatch/README.en.md:1-447</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L1-L319">src/action_dispatch/action_dispatch/action_dispatcher_node.py:1-319</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L1-L192">README.md:1-192</a></p>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>
@@ -1226,16 +818,6 @@ window.addEventListener("load", load);</script>
   </span>
   <div class="rst-other-versions">
     <dl>
-      <dt>Tags</dt>
-      <dd><a href="../../../../24.03-lts/index.html">24.03-lts</a></dd>
-      <dd><a href="../../../../llvm-toolchain-v0.1.1/index.html">llvm-toolchain-v0.1.1</a></dd>
-      <dd><a href="../../../../nativesdk-v0.1.2/index.html">nativesdk-v0.1.2</a></dd>
-      <dd><a href="../../../../nativesdk-v0.1.3/index.html">nativesdk-v0.1.3</a></dd>
-      <dd><a href="../../../../toolchains-v0.1.5/index.html">toolchains-v0.1.5</a></dd>
-      <dd><a href="../../../../toolchains-v0.1.7/index.html">toolchains-v0.1.7</a></dd>
-      <dd><a href="../../../../toolchains-v0.1.8/index.html">toolchains-v0.1.8</a></dd>
-    </dl>
-    <dl>
       <dt>Branches</dt>
       <dd><a href="topic_and_action_executors.html">master</a></dd>
       <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
@@ -1246,10 +828,10 @@ window.addEventListener("load", load);</script>
       <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
       <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
       <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
       <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
       <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
-      <dd><a href="../../../../pr_2786/features/embodied_ai/action_dispatch/topic_and_action_executors.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

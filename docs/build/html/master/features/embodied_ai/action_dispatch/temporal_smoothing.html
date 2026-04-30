@@ -1,460 +1,29 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../../">
+<html class="writer-html5" lang="en">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>时间平滑 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
   
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
-      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.15.0/dist/mermaid.esm.min.mjs";
-
-
-
-
-
-const initStyles = () => {
-    const defaultStyle = document.createElement('style');
-    defaultStyle.textContent = `pre.mermaid {
-    /* Same as .mermaid-container > pre */
-    display: block;
-    width: 100%;
-}
-
-pre.mermaid > svg {
-    /* Same as .mermaid-container > pre > svg */
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}`;
-    document.head.appendChild(defaultStyle);
-
-    const fullscreenStyle = document.createElement('style');
-    fullscreenStyle.textContent = `.mermaid-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-}
-
-.mermaid-container > pre {
-    display: block;
-    width: 100%;
-}
-
-.mermaid-container > pre > svg {
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}
-
-.mermaid-fullscreen-btn {
-    width: 28px;
-    height: 28px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    font-size: 14px;
-    line-height: 1;
-    padding: 0;
-    color: #333;
-}
-
-.mermaid-fullscreen-btn:hover {
-    opacity: 100% !important;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-btn.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-btn.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal {
-    display: none;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 95vw;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.98);
-    z-index: 9999;
-    padding: 20px;
-    overflow: auto;
-}
-
-.mermaid-fullscreen-modal.dark-theme {
-    background: rgba(0, 0, 0, 0.98);
-}
-
-.mermaid-fullscreen-modal.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen {
-    position: relative;
-    width: 95vw;
-    height: 90vh;
-    max-width: 95vw;
-    max-height: 90vh;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    overflow: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen.dark-theme {
-    background: #1a1a1a;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-}
-
-.mermaid-container-fullscreen pre.mermaid {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen .mermaid svg {
-    height: 100% !important;
-    width: 100% !important;
-    cursor: grab;
-}
-
-.mermaid-fullscreen-close {
-    position: fixed !important;
-    top: 20px !important;
-    right: 20px !important;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s;
-    font-size: 24px;
-    line-height: 1;
-    color: #333;
-}
-
-.mermaid-fullscreen-close:hover {
-    background: white;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-close.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-close.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
-    display: none !important;
-}`;
-    document.head.appendChild(fullscreenStyle);
-}
-
-// Detect if page has dark background
-const isDarkTheme = () => {
-    // We use a set of heuristics:
-    // 1. Check for common dark mode classes or attributes
-    // 2. Check computed background color brightness
-    if (document.documentElement.classList.contains('dark') ||
-        document.documentElement.getAttribute('data-theme') === 'dark' ||
-        document.body.classList.contains('dark') ||
-        document.body.getAttribute('data-theme') === 'dark') {
-        // console.log("Dark theme detected via class/attribute");
-        return true;
-    }
-    if (document.documentElement.classList.contains('light') ||
-        document.documentElement.getAttribute('data-theme') === 'light' ||
-        document.body.classList.contains('light') ||
-        document.body.getAttribute('data-theme') === 'light') {
-        // console.log("Light theme detected via class/attribute");
-        return false;
-    }
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        // console.log("Dark theme detected via prefers-color-scheme");
-        return true;
-    }
-    const bgColor = window.getComputedStyle(document.body).backgroundColor;
-    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
-    if (match) {
-        const r = parseInt(match[1]);
-        const g = parseInt(match[2]);
-        const b = parseInt(match[3]);
-        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        // console.log("Background color brightness:", brightness);
-        return brightness < 128;
-    }
-    // console.log("No dark or light theme detected, defaulting to light theme");
-    return false;
-};
-
-let darkTheme = isDarkTheme();
-let modal = null;
-let modalContent = null;
-let previousScrollOffset = [window.scrollX, window.scrollY];
-
-const runMermaid = async (rerun) => {
-    console.log("Running mermaid diagrams, rerun =", rerun);
-    // clear all existing mermaid charts
-    let all_mermaids = document.querySelectorAll(".mermaid");
-
-    if (rerun) {
-        all_mermaids.forEach((el) => {
-            if(!el.hasAttribute("data-original-code")) {
-                // store original code
-                // console.log(`Storing original code for first run: `, el.innerHTML);
-                el.setAttribute('data-original-code', el.innerHTML);
-            }
-            if(el.getAttribute("data-processed") === "true") {
-                // remove and restore original
-                el.removeAttribute("data-processed");
-                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
-                el.innerHTML = el.getAttribute('data-original-code');
-            } else {
-                // store original code
-                // console.log(`Storing original code for re-run: `, el.innerHTML);
-                el.setAttribute('data-original-code', el.innerHTML);
-            }
-        });
-        await mermaid.run();
-    }
-
-    all_mermaids = document.querySelectorAll(".mermaid");
-    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
-
-    if ("False" === "True") {
-        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
-        if(mermaids_to_add_zoom > 0) {
-            var svgs = d3.selectAll("");
-            if(all_mermaids.length !== mermaids_processed.length) {
-                setTimeout(() => runMermaid(false), 200);
-                return;
-            } else if(svgs.size() !== mermaids_to_add_zoom) {
-                setTimeout(() => runMermaid(false), 200);
-                return;
-            } else {
-                svgs.each(function() {
-                    var svg = d3.select(this);
-                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
-                    var inner = svg.select("g");
-                    var zoom = d3.zoom().on("zoom", function(event) {
-                        inner.attr("transform", event.transform);
-                    });
-                    svg.call(zoom);
-                });
-            }
-        }
-    } else if(all_mermaids.length !== mermaids_processed.length) {
-        // Wait for mermaid to process all diagrams
-        setTimeout(() => runMermaid(false), 200);
-        return;
-    }
-
-    // Stop here if not adding fullscreen capability
-    if ("True" !== "True") return;
-
-    if (modal !== null ) {
-        // Destroy existing modal
-        modal.remove();
-        modal = null;
-        modalContent = null;
-    }
-
-    modal = document.createElement('div');
-    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
-    modal.setAttribute('role', 'dialog');
-    modal.setAttribute('aria-modal', 'true');
-    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
-    modal.innerHTML = `
-        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
-        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
-    `;
-    document.body.appendChild(modal);
-
-    modalContent = modal.querySelector('.mermaid-container-fullscreen');
-    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
-
-    const closeModal = () => {
-        modal.classList.remove('active');
-        modalContent.innerHTML = '';
-        document.body.style.overflow = ''
-        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
-    };
-
-    closeBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('active')) {
-            closeModal();
-        }
-    });
-
-    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
-        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
-            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
-            // Already processed, adjust button class if needed
-            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
-            if (existingBtn) {
-                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
-            }
-            return;
-        }
-
-        const container = document.createElement('div');
-        container.className = 'mermaid-container';
-        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
-        container.appendChild(mermaidDiv);
-
-        const fullscreenBtn = document.createElement('button');
-        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
-        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
-        fullscreenBtn.textContent = '⛶';
-        fullscreenBtn.style.opacity = '50%';
-
-        // Calculate dynamic position based on diagram's margin and padding
-        const diagramStyle = window.getComputedStyle(mermaidDiv);
-        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
-        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
-        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
-        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
-        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
-        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
-
-        fullscreenBtn.addEventListener('click', () => {
-            previousScrollOffset = [window.scroll, window.scrollY];
-            const clone = mermaidDiv.cloneNode(true);
-            modalContent.innerHTML = '';
-            modalContent.appendChild(clone);
-
-            const svg = clone.querySelector('svg');
-            if (svg) {
-                svg.removeAttribute('width');
-                svg.removeAttribute('height');
-                svg.style.width = '100%';
-                svg.style.height = 'auto';
-                svg.style.maxWidth = '100%';
-                svg.style.sdisplay = 'block';
-
-                if ("False" === "True") {
-                    setTimeout(() => {
-                        const g = svg.querySelector('g');
-                        if (g) {
-                            var svgD3 = d3.select(svg);
-                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
-                            var inner = svgD3.select("g");
-                            var zoom = d3.zoom().on("zoom", function(event) {
-                                inner.attr("transform", event.transform);
-                            });
-                            svgD3.call(zoom);
-                        }
-                    }, 100);
-                }
-            }
-
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        });
-        container.appendChild(fullscreenBtn);
-    });
-};
-
-const load = async () => {
-    initStyles();
-
-    await runMermaid(true);
-
-    const reRunIfThemeChanges = async () => {
-        const newDarkTheme = isDarkTheme();
-        if (newDarkTheme !== darkTheme) {
-            darkTheme = newDarkTheme;
-            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
-            await mermaid.initialize(
-                {...JSON.parse(
-                    `{"startOnLoad": false}`
-                ),
-                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
-                }
-            );
-            await runMermaid(true);
-        }
-    };
-
-    // Update theme classes when theme changes
-    const themeObserver = new MutationObserver(reRunIfThemeChanges);
-    themeObserver.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['class', 'style', 'data-theme']
-    });
-    themeObserver.observe(document.body, {
-        attributes: true,
-        attributeFilter: ['class', 'style', 'data-theme']
-    });
-};
-
-
-
-
-
-console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
-mermaid.initialize(
-    {...JSON.parse(
-        `{"startOnLoad": false}`
-    ),
-    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
-    }
-);
-
-window.addEventListener("load", load);</script>
-      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
-      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+        <script>mermaid.initialize({startOnLoad:true});</script>
+        <script src="../../../_static/js/mermaid-init.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -580,8 +149,8 @@ window.addEventListener("load", load);</script>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="id1">
-<h1>时间平滑<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+  <div class="section" id="id1">
+<h1>时间平滑<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
 <details><p>相关源文件</p>
 <p>以下文件用于生成此 wiki 页面的上下文：</p>
 <ul class="simple">
@@ -603,8 +172,8 @@ window.addEventListener("load", load);</script>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L1-L447">src/action_dispatch/README.en.md:1-447</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L1-L322">src/action_dispatch/action_dispatch/temporal_smoother.py:1-322</a></p>
 <hr class="docutils" />
-<section id="id2">
-<h2>问题陈述：动作块重叠<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<div class="section" id="id2">
+<h2>问题陈述：动作块重叠<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
 <p>Action Chunking 策略每次推理输出 <code class="docutils literal notranslate"><span class="pre">n</span></code> 个动作序列（通常 <code class="docutils literal notranslate"><span class="pre">n=100</span></code>）。然而，推理并非瞬间完成——当模型计算下一个动作块时，机器人继续执行前一个块中的动作。这产生了时间重叠问题：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>T1: First inference produces [a1, a2, a3, ..., a100]
     Robot begins executing: a1, a2, a3...
@@ -623,14 +192,14 @@ Problem: How to transition from old plan to new plan?
 <p>时间平滑通过 <strong>混合重叠区域</strong> 使用指数加权来解决这个问题，既保持连续性又保持对新预测的响应性。</p>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L212-L221">src/action_dispatch/README.en.md:212-221</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.md#L211-L221">src/action_dispatch/README.md:211-221</a></p>
-</section>
+</div>
 <hr class="docutils" />
-<section id="id3">
-<h2>算法概述<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<div class="section" id="id3">
+<h2>算法概述<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
 <p>时间平滑算法分三个阶段运行：</p>
 <p><strong>阶段 1：时间对齐图</strong></p>
-<pre  class="mermaid">
-        graph LR
+<div class="mermaid">
+            graph LR
     subgraph &quot;T1: First Inference&quot;
         A1[&quot;actions1[0:100]&lt;br/&gt;(100 actions)&quot;]
     end
@@ -655,9 +224,9 @@ Problem: How to transition from old plan to new plan?
     A2 --&gt; Relevant
 
     R1 -.-&gt;|&quot;overlap with&quot;| Relevant
-    </pre><p><strong>阶段 2：指数加权混合</strong></p>
-<pre  class="mermaid">
-        graph TB
+        </div><p><strong>阶段 2：指数加权混合</strong></p>
+<div class="mermaid">
+            graph TB
     subgraph &quot;Overlap Region Processing&quot;
         Old[&quot;old_actions[30:100]&lt;br/&gt;(70 old remaining)&quot;]
         New[&quot;new_actions[30:100]&lt;br/&gt;(70 new relevant)&quot;]
@@ -679,17 +248,17 @@ Problem: How to transition from old plan to new plan?
     end
 
     Formula -.-&gt; Blend
-    </pre><p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L224-L257">src/action_dispatch/README.en.md:224-257</a>,
+        </div><p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L224-L257">src/action_dispatch/README.en.md:224-257</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L44-L77">src/action_dispatch/action_dispatch/temporal_smoother.py:44-77</a></p>
-</section>
+</div>
 <hr class="docutils" />
-<section id="id4">
-<h2>核心组件<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<div class="section" id="id4">
+<h2>核心组件<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
 <p>时间平滑实现由 <code class="docutils literal notranslate"><span class="pre">src/action_dispatch/action_dispatch/temporal_smoother.py</span></code> 中的三个主要类组成：</p>
-<section id="id5">
-<h3>类层次图<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph TB
+<div class="section" id="id5">
+<h3>类层次图<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph TB
     Config[&quot;TemporalSmootherConfig&lt;br/&gt;&#64;dataclass&quot;]
     Smoother[&quot;TemporalSmoother&lt;br/&gt;Core smoothing logic&quot;]
     Manager[&quot;TemporalSmootherManager&lt;br/&gt;Convenience wrapper&quot;]
@@ -732,15 +301,21 @@ Problem: How to transition from old plan to new plan?
     Smoother --- M2
     Smoother --- M3
     Smoother --- M4
-    </pre><p><strong>来源</strong>：
+        </div><p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L19-L42">src/action_dispatch/action_dispatch/temporal_smoother.py:19-42</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L44-L257">src/action_dispatch/action_dispatch/temporal_smoother.py:44-257</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L259-L322">src/action_dispatch/action_dispatch/temporal_smoother.py:259-322</a></p>
-</section>
-<section id="temporalsmootherconfig">
-<h3>TemporalSmootherConfig<a class="headerlink" href="#temporalsmootherconfig" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="temporalsmootherconfig">
+<h3>TemporalSmootherConfig<a class="headerlink" href="#temporalsmootherconfig" title="Permalink to this heading"></a></h3>
 <p>定义在 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L19-L42">src/action_dispatch/action_dispatch/temporal_smoother.py:19-42</a> 的配置数据类。</p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>字段</p></th>
 <th class="head"><p>类型</p></th>
@@ -773,9 +348,9 @@ Problem: How to transition from old plan to new plan?
 </table>
 <p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L19-L42">src/action_dispatch/action_dispatch/temporal_smoother.py:19-42</a></p>
-</section>
-<section id="temporalsmoother">
-<h3>TemporalSmoother<a class="headerlink" href="#temporalsmoother" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="temporalsmoother">
+<h3>TemporalSmoother<a class="headerlink" href="#temporalsmoother" title="Permalink to this heading"></a></h3>
 <p>核心平滑实现位于
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L44-L257">src/action_dispatch/action_dispatch/temporal_smoother.py:44-257</a>。
 维护内部状态：</p>
@@ -787,6 +362,11 @@ Problem: How to transition from old plan to new plan?
 </ul>
 <p><strong>关键方法</strong>：</p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>方法</p></th>
 <th class="head"><p>签名</p></th>
@@ -818,20 +398,20 @@ Problem: How to transition from old plan to new plan?
 </table>
 <p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L44-L257">src/action_dispatch/action_dispatch/temporal_smoother.py:44-257</a></p>
-</section>
-<section id="temporalsmoothermanager">
-<h3>TemporalSmootherManager<a class="headerlink" href="#temporalsmoothermanager" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="temporalsmoothermanager">
+<h3>TemporalSmootherManager<a class="headerlink" href="#temporalsmoothermanager" title="Permalink to this heading"></a></h3>
 <p>便捷包装器位于
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L259-L322">src/action_dispatch/action_dispatch/temporal_smoother.py:259-322</a>，
 提供运行时切换和统一接口。将所有操作委托给内部 <code class="docutils literal notranslate"><span class="pre">TemporalSmoother</span></code> 实例。</p>
 <p>额外方法：- <code class="docutils literal notranslate"><span class="pre">set_enabled(enabled:</span> <span class="pre">bool)</span></code>：运行时开启/关闭平滑</p>
 <p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L259-L322">src/action_dispatch/action_dispatch/temporal_smoother.py:259-322</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id6">
-<h2>平滑公式<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<div class="section" id="id6">
+<h2>平滑公式<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
 <p>指数加权混合公式在
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L208-L246">src/action_dispatch/action_dispatch/temporal_smoother.py:208-246</a> 中实现：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># For each action i in the overlap region:</span>
@@ -840,8 +420,8 @@ Problem: How to transition from old plan to new plan?
 </pre></div>
 </div>
 <p>其中：- <code class="docutils literal notranslate"><span class="pre">old[i]</span></code>：前一个平滑计划中的第 i 个动作 - <code class="docutils literal notranslate"><span class="pre">new[i]</span></code>：新推理结果中的第 i 个动作（对齐后）- <code class="docutils literal notranslate"><span class="pre">count[i]</span></code>：动作 i 被混合的次数（从 1 开始）- <code class="docutils literal notranslate"><span class="pre">weights[k]</span> <span class="pre">=</span> <span class="pre">exp(-temporal_ensemble_coeff</span> <span class="pre">*</span> <span class="pre">k)</span></code> - <code class="docutils literal notranslate"><span class="pre">cumsum[k]</span></code> = 索引 k 之前的权重累加和</p>
-<section id="id7">
-<h3>权重计算<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<div class="section" id="id7">
+<h3>权重计算<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
 <p>权重在初始化时预计算，位于
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L86-L92">src/action_dispatch/action_dispatch/temporal_smoother.py:86-92</a>：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coeff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">temporal_ensemble_coeff</span>
@@ -853,6 +433,12 @@ Problem: How to transition from old plan to new plan?
 </div>
 <p><strong>权重进展示例</strong>（对于 <code class="docutils literal notranslate"><span class="pre">coeff=0.01</span></code>，前 5 步）：</p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 2%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 68%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>k</p></th>
 <th class="head"><p>weight[k]</p></th>
@@ -893,18 +479,18 @@ Problem: How to transition from old plan to new plan?
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L86-L92">src/action_dispatch/action_dispatch/temporal_smoother.py:86-92</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L208-L246">src/action_dispatch/action_dispatch/temporal_smoother.py:208-246</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L311-L322">src/action_dispatch/README.en.md:311-322</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id8">
-<h2>时间对齐过程<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<div class="section" id="id8">
+<h2>时间对齐过程<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">update()</span></code> 方法位于
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L145-L206">src/action_dispatch/action_dispatch/temporal_smoother.py:145-206</a>
 处理时间对齐：</p>
-<section id="id9">
-<h3>对齐流程图<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        flowchart TD
+<div class="section" id="id9">
+<h3>对齐流程图<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            flowchart TD
     Start[&quot;update(new_actions, actions_executed)&quot;]
 
     ValidateInput[&quot;Validate input shape&lt;br/&gt;[temporal_smoother.py:168-173]&quot;]
@@ -941,16 +527,16 @@ Problem: How to transition from old plan to new plan?
     InitializePlan --&gt; ReturnLength
     ReplaceNoSmooth --&gt; ReturnLength
     ApplySmoothing --&gt; ReturnLength
-    </pre><p><strong>来源</strong>：
+        </div><p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L145-L206">src/action_dispatch/action_dispatch/temporal_smoother.py:145-206</a></p>
-</section>
-<section id="id10">
-<h3>混合实现<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id10">
+<h3>混合实现<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">_apply_smoothing()</span></code> 方法位于
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L208-L246">src/action_dispatch/action_dispatch/temporal_smoother.py:208-246</a>
 执行实际混合：</p>
-<pre  class="mermaid">
-        flowchart TD
+<div class="mermaid">
+            flowchart TD
     Start[&quot;_apply_smoothing(old_actions, old_counts, new_actions, weights, weights_cumsum)&quot;]
 
     CalcOverlap[&quot;overlap_len = min(old.shape[0], new.shape[0])&lt;br/&gt;[temporal_smoother.py:226]&quot;]
@@ -980,15 +566,21 @@ Problem: How to transition from old plan to new plan?
     Blend --&gt; UpdateCounts
     UpdateCounts --&gt; Concat
     Concat --&gt; Return
-    </pre><p><strong>来源</strong>：
+        </div><p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L208-L246">src/action_dispatch/action_dispatch/temporal_smoother.py:208-246</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id11">
-<h2>平滑系数效果<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
+<div class="section" id="id11">
+<h2>平滑系数效果<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">temporal_ensemble_coeff</span></code> 参数控制指数衰减率。其值决定了稳定性（遵循已提交动作）和响应性（适应新预测）之间的平衡。</p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>系数值</p></th>
 <th class="head"><p>权重行为</p></th>
@@ -1019,10 +611,16 @@ Problem: How to transition from old plan to new plan?
 </tr>
 </tbody>
 </table>
-<section id="id12">
-<h3>权重衰减可视化<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<div class="section" id="id12">
+<h3>权重衰减可视化<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
 <p>对于不同系数值，k=10 时的权重：</p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>系数</p></th>
 <th class="head"><p><code class="docutils literal notranslate"><span class="pre">weights[10]</span></code></p></th>
@@ -1055,13 +653,13 @@ Problem: How to transition from old plan to new plan?
 </table>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L323-L331">src/action_dispatch/README.en.md:323-331</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L26-L31">src/action_dispatch/action_dispatch/temporal_smoother.py:26-31</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id13">
-<h2>使用模式<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
-<section id="id14">
-<h3>使用 TemporalSmoother 的基本用法<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<div class="section" id="id13">
+<h2>使用模式<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h2>
+<div class="section" id="id14">
+<h3>使用 TemporalSmoother 的基本用法<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
 <p>来自 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/test/test_temporal_smoother.py#L51-L63">src/action_dispatch/test/test_temporal_smoother.py:51-63</a> 的示例：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">action_dispatch</span> <span class="kn">import</span> <span class="n">TemporalSmoother</span><span class="p">,</span> <span class="n">TemporalSmootherConfig</span>
 
@@ -1095,9 +693,9 @@ Problem: How to transition from old plan to new plan?
 <p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/test/test_temporal_smoother.py#L51-L90">src/action_dispatch/test/test_temporal_smoother.py:51-90</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L383-L413">src/action_dispatch/README.en.md:383-413</a></p>
-</section>
-<section id="id15">
-<h3>使用 TemporalSmootherManager<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id15">
+<h3>使用 TemporalSmootherManager<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
 <p>管理器提供运行时切换能力，位于
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py#L259-L322">src/action_dispatch/action_dispatch/temporal_smoother.py:259-322</a>：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">action_dispatch</span> <span class="kn">import</span> <span class="n">TemporalSmootherManager</span>
@@ -1123,9 +721,9 @@ Problem: How to transition from old plan to new plan?
 </div>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L415-L426">src/action_dispatch/README.en.md:415-426</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/test/test_temporal_smoother.py#L176-L216">src/action_dispatch/test/test_temporal_smoother.py:176-216</a></p>
-</section>
-<section id="id16">
-<h3>禁用平滑（仅对齐）<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id16">
+<h3>禁用平滑（仅对齐）<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h3>
 <p>当平滑被禁用时，位于
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/test/test_temporal_smoother.py#L66-L90">src/action_dispatch/test/test_temporal_smoother.py:66-90</a>，
 平滑器仍执行时间对齐但替换计划而非混合：</p>
@@ -1153,15 +751,15 @@ Problem: How to transition from old plan to new plan?
 </div>
 <p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/test/test_temporal_smoother.py#L66-L90">src/action_dispatch/test/test_temporal_smoother.py:66-90</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id17">
-<h2>与动作分发器的集成<a class="headerlink" href="#id17" title="Link to this heading"></a></h2>
+<div class="section" id="id17">
+<h2>与动作分发器的集成<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">TemporalSmoother</span></code> 集成到 <code class="docutils literal notranslate"><span class="pre">ActionDispatcherNode</span></code>
 （参见 <a class="reference external" href="#8.1">动作分发器节点</a>）中，如下所示：</p>
-<pre  class="mermaid">
-        graph TB
+<div class="mermaid">
+            graph TB
     subgraph &quot;ActionDispatcherNode&quot;
         Client[&quot;Action Client&lt;br/&gt;(DispatchInfer)&quot;]
         Queue[&quot;Action Queue&lt;br/&gt;(FIFO buffer)&quot;]
@@ -1189,15 +787,21 @@ Problem: How to transition from old plan to new plan?
     Queue --&gt;|&quot;Pop at 100Hz&quot;| Executor
 
     Executor --&gt;|&quot;/joint_commands&quot;| Hardware[&quot;ros2_control&quot;]
-    </pre><p>动作分发器：1. 在推理开始时记录队列长度 2. 计算 <code class="docutils literal notranslate"><span class="pre">actions_executed</span> <span class="pre">=</span> <span class="pre">queue_len_start</span> <span class="pre">-</span> <span class="pre">current_queue_len</span></code> 3. 将 <code class="docutils literal notranslate"><span class="pre">(new_chunk,</span> <span class="pre">actions_executed)</span></code> 传递给平滑器 4. 将平滑后的动作入队以执行</p>
+        </div><p>动作分发器：1. 在推理开始时记录队列长度 2. 计算 <code class="docutils literal notranslate"><span class="pre">actions_executed</span> <span class="pre">=</span> <span class="pre">queue_len_start</span> <span class="pre">-</span> <span class="pre">current_queue_len</span></code> 3. 将 <code class="docutils literal notranslate"><span class="pre">(new_chunk,</span> <span class="pre">actions_executed)</span></code> 传递给平滑器 4. 将平滑后的动作入队以执行</p>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L84-L130">src/action_dispatch/README.en.md:84-130</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L36-L38">README.md:36-38</a></p>
-</section>
+</div>
 <hr class="docutils" />
-<section id="id18">
-<h2>启动文件中的配置参数<a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
+<div class="section" id="id18">
+<h2>启动文件中的配置参数<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h2>
 <p>时间平滑参数可以通过 ROS 2 参数配置：</p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>参数</p></th>
 <th class="head"><p>类型</p></th>
@@ -1249,13 +853,18 @@ Problem: How to transition from old plan to new plan?
 </pre></div>
 </div>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L172-L209">src/action_dispatch/README.en.md:172-209</a></p>
-</section>
+</div>
 <hr class="docutils" />
-<section id="id19">
-<h2>运行时服务<a class="headerlink" href="#id19" title="Link to this heading"></a></h2>
+<div class="section" id="id19">
+<h2>运行时服务<a class="headerlink" href="#id19" title="Permalink to this heading"></a></h2>
 <p>动作分发器提供用于运行时控制的 ROS 2 服务
 （在 <a class="reference external" href="#8.1">动作分发器节点</a> 中记录）：</p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>服务</p></th>
 <th class="head"><p>类型</p></th>
@@ -1282,13 +891,17 @@ ros2<span class="w"> </span>service<span class="w"> </span>call<span class="w"> 
 </div>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L335-L341">src/action_dispatch/README.en.md:335-341</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.md#L326-L334">src/action_dispatch/README.md:326-334</a></p>
-</section>
+</div>
 <hr class="docutils" />
-<section id="id20">
-<h2>测试<a class="headerlink" href="#id20" title="Link to this heading"></a></h2>
+<div class="section" id="id20">
+<h2>测试<a class="headerlink" href="#id20" title="Permalink to this heading"></a></h2>
 <p>全面的测试位于
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/test/test_temporal_smoother.py#L1-L247">src/action_dispatch/test/test_temporal_smoother.py:1-247</a>。关键测试场景：</p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>测试类</p></th>
 <th class="head"><p>覆盖范围</p></th>
@@ -1339,8 +952,8 @@ python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> <
 </div>
 <p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/test/test_temporal_smoother.py#L1-L247">src/action_dispatch/test/test_temporal_smoother.py:1-247</a></p>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>
@@ -1375,16 +988,6 @@ python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> <
   </span>
   <div class="rst-other-versions">
     <dl>
-      <dt>Tags</dt>
-      <dd><a href="../../../../24.03-lts/index.html">24.03-lts</a></dd>
-      <dd><a href="../../../../llvm-toolchain-v0.1.1/index.html">llvm-toolchain-v0.1.1</a></dd>
-      <dd><a href="../../../../nativesdk-v0.1.2/index.html">nativesdk-v0.1.2</a></dd>
-      <dd><a href="../../../../nativesdk-v0.1.3/index.html">nativesdk-v0.1.3</a></dd>
-      <dd><a href="../../../../toolchains-v0.1.5/index.html">toolchains-v0.1.5</a></dd>
-      <dd><a href="../../../../toolchains-v0.1.7/index.html">toolchains-v0.1.7</a></dd>
-      <dd><a href="../../../../toolchains-v0.1.8/index.html">toolchains-v0.1.8</a></dd>
-    </dl>
-    <dl>
       <dt>Branches</dt>
       <dd><a href="temporal_smoothing.html">master</a></dd>
       <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
@@ -1395,10 +998,10 @@ python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> <
       <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
       <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
       <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
       <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
       <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
-      <dd><a href="../../../../pr_2786/features/embodied_ai/action_dispatch/temporal_smoothing.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

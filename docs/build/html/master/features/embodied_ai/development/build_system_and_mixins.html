@@ -1,460 +1,29 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../../">
+<html class="writer-html5" lang="en">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>构建系统与 Mixin &mdash; openEuler Embedded在线文档 24.03 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
   
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
-      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.15.0/dist/mermaid.esm.min.mjs";
-
-
-
-
-
-const initStyles = () => {
-    const defaultStyle = document.createElement('style');
-    defaultStyle.textContent = `pre.mermaid {
-    /* Same as .mermaid-container > pre */
-    display: block;
-    width: 100%;
-}
-
-pre.mermaid > svg {
-    /* Same as .mermaid-container > pre > svg */
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}`;
-    document.head.appendChild(defaultStyle);
-
-    const fullscreenStyle = document.createElement('style');
-    fullscreenStyle.textContent = `.mermaid-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-}
-
-.mermaid-container > pre {
-    display: block;
-    width: 100%;
-}
-
-.mermaid-container > pre > svg {
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}
-
-.mermaid-fullscreen-btn {
-    width: 28px;
-    height: 28px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    font-size: 14px;
-    line-height: 1;
-    padding: 0;
-    color: #333;
-}
-
-.mermaid-fullscreen-btn:hover {
-    opacity: 100% !important;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-btn.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-btn.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal {
-    display: none;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 95vw;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.98);
-    z-index: 9999;
-    padding: 20px;
-    overflow: auto;
-}
-
-.mermaid-fullscreen-modal.dark-theme {
-    background: rgba(0, 0, 0, 0.98);
-}
-
-.mermaid-fullscreen-modal.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen {
-    position: relative;
-    width: 95vw;
-    height: 90vh;
-    max-width: 95vw;
-    max-height: 90vh;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    overflow: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen.dark-theme {
-    background: #1a1a1a;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-}
-
-.mermaid-container-fullscreen pre.mermaid {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen .mermaid svg {
-    height: 100% !important;
-    width: 100% !important;
-    cursor: grab;
-}
-
-.mermaid-fullscreen-close {
-    position: fixed !important;
-    top: 20px !important;
-    right: 20px !important;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s;
-    font-size: 24px;
-    line-height: 1;
-    color: #333;
-}
-
-.mermaid-fullscreen-close:hover {
-    background: white;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-close.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-close.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
-    display: none !important;
-}`;
-    document.head.appendChild(fullscreenStyle);
-}
-
-// Detect if page has dark background
-const isDarkTheme = () => {
-    // We use a set of heuristics:
-    // 1. Check for common dark mode classes or attributes
-    // 2. Check computed background color brightness
-    if (document.documentElement.classList.contains('dark') ||
-        document.documentElement.getAttribute('data-theme') === 'dark' ||
-        document.body.classList.contains('dark') ||
-        document.body.getAttribute('data-theme') === 'dark') {
-        // console.log("Dark theme detected via class/attribute");
-        return true;
-    }
-    if (document.documentElement.classList.contains('light') ||
-        document.documentElement.getAttribute('data-theme') === 'light' ||
-        document.body.classList.contains('light') ||
-        document.body.getAttribute('data-theme') === 'light') {
-        // console.log("Light theme detected via class/attribute");
-        return false;
-    }
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        // console.log("Dark theme detected via prefers-color-scheme");
-        return true;
-    }
-    const bgColor = window.getComputedStyle(document.body).backgroundColor;
-    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
-    if (match) {
-        const r = parseInt(match[1]);
-        const g = parseInt(match[2]);
-        const b = parseInt(match[3]);
-        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        // console.log("Background color brightness:", brightness);
-        return brightness < 128;
-    }
-    // console.log("No dark or light theme detected, defaulting to light theme");
-    return false;
-};
-
-let darkTheme = isDarkTheme();
-let modal = null;
-let modalContent = null;
-let previousScrollOffset = [window.scrollX, window.scrollY];
-
-const runMermaid = async (rerun) => {
-    console.log("Running mermaid diagrams, rerun =", rerun);
-    // clear all existing mermaid charts
-    let all_mermaids = document.querySelectorAll(".mermaid");
-
-    if (rerun) {
-        all_mermaids.forEach((el) => {
-            if(!el.hasAttribute("data-original-code")) {
-                // store original code
-                // console.log(`Storing original code for first run: `, el.innerHTML);
-                el.setAttribute('data-original-code', el.innerHTML);
-            }
-            if(el.getAttribute("data-processed") === "true") {
-                // remove and restore original
-                el.removeAttribute("data-processed");
-                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
-                el.innerHTML = el.getAttribute('data-original-code');
-            } else {
-                // store original code
-                // console.log(`Storing original code for re-run: `, el.innerHTML);
-                el.setAttribute('data-original-code', el.innerHTML);
-            }
-        });
-        await mermaid.run();
-    }
-
-    all_mermaids = document.querySelectorAll(".mermaid");
-    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
-
-    if ("False" === "True") {
-        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
-        if(mermaids_to_add_zoom > 0) {
-            var svgs = d3.selectAll("");
-            if(all_mermaids.length !== mermaids_processed.length) {
-                setTimeout(() => runMermaid(false), 200);
-                return;
-            } else if(svgs.size() !== mermaids_to_add_zoom) {
-                setTimeout(() => runMermaid(false), 200);
-                return;
-            } else {
-                svgs.each(function() {
-                    var svg = d3.select(this);
-                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
-                    var inner = svg.select("g");
-                    var zoom = d3.zoom().on("zoom", function(event) {
-                        inner.attr("transform", event.transform);
-                    });
-                    svg.call(zoom);
-                });
-            }
-        }
-    } else if(all_mermaids.length !== mermaids_processed.length) {
-        // Wait for mermaid to process all diagrams
-        setTimeout(() => runMermaid(false), 200);
-        return;
-    }
-
-    // Stop here if not adding fullscreen capability
-    if ("True" !== "True") return;
-
-    if (modal !== null ) {
-        // Destroy existing modal
-        modal.remove();
-        modal = null;
-        modalContent = null;
-    }
-
-    modal = document.createElement('div');
-    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
-    modal.setAttribute('role', 'dialog');
-    modal.setAttribute('aria-modal', 'true');
-    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
-    modal.innerHTML = `
-        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
-        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
-    `;
-    document.body.appendChild(modal);
-
-    modalContent = modal.querySelector('.mermaid-container-fullscreen');
-    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
-
-    const closeModal = () => {
-        modal.classList.remove('active');
-        modalContent.innerHTML = '';
-        document.body.style.overflow = ''
-        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
-    };
-
-    closeBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('active')) {
-            closeModal();
-        }
-    });
-
-    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
-        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
-            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
-            // Already processed, adjust button class if needed
-            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
-            if (existingBtn) {
-                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
-            }
-            return;
-        }
-
-        const container = document.createElement('div');
-        container.className = 'mermaid-container';
-        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
-        container.appendChild(mermaidDiv);
-
-        const fullscreenBtn = document.createElement('button');
-        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
-        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
-        fullscreenBtn.textContent = '⛶';
-        fullscreenBtn.style.opacity = '50%';
-
-        // Calculate dynamic position based on diagram's margin and padding
-        const diagramStyle = window.getComputedStyle(mermaidDiv);
-        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
-        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
-        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
-        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
-        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
-        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
-
-        fullscreenBtn.addEventListener('click', () => {
-            previousScrollOffset = [window.scroll, window.scrollY];
-            const clone = mermaidDiv.cloneNode(true);
-            modalContent.innerHTML = '';
-            modalContent.appendChild(clone);
-
-            const svg = clone.querySelector('svg');
-            if (svg) {
-                svg.removeAttribute('width');
-                svg.removeAttribute('height');
-                svg.style.width = '100%';
-                svg.style.height = 'auto';
-                svg.style.maxWidth = '100%';
-                svg.style.sdisplay = 'block';
-
-                if ("False" === "True") {
-                    setTimeout(() => {
-                        const g = svg.querySelector('g');
-                        if (g) {
-                            var svgD3 = d3.select(svg);
-                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
-                            var inner = svgD3.select("g");
-                            var zoom = d3.zoom().on("zoom", function(event) {
-                                inner.attr("transform", event.transform);
-                            });
-                            svgD3.call(zoom);
-                        }
-                    }, 100);
-                }
-            }
-
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        });
-        container.appendChild(fullscreenBtn);
-    });
-};
-
-const load = async () => {
-    initStyles();
-
-    await runMermaid(true);
-
-    const reRunIfThemeChanges = async () => {
-        const newDarkTheme = isDarkTheme();
-        if (newDarkTheme !== darkTheme) {
-            darkTheme = newDarkTheme;
-            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
-            await mermaid.initialize(
-                {...JSON.parse(
-                    `{"startOnLoad": false}`
-                ),
-                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
-                }
-            );
-            await runMermaid(true);
-        }
-    };
-
-    // Update theme classes when theme changes
-    const themeObserver = new MutationObserver(reRunIfThemeChanges);
-    themeObserver.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['class', 'style', 'data-theme']
-    });
-    themeObserver.observe(document.body, {
-        attributes: true,
-        attributeFilter: ['class', 'style', 'data-theme']
-    });
-};
-
-
-
-
-
-console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
-mermaid.initialize(
-    {...JSON.parse(
-        `{"startOnLoad": false}`
-    ),
-    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
-    }
-);
-
-window.addEventListener("load", load);</script>
-      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
-      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+        <script>mermaid.initialize({startOnLoad:true});</script>
+        <script src="../../../_static/js/mermaid-init.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -580,8 +149,8 @@ window.addEventListener("load", load);</script>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="mixin">
-<h1>构建系统与 Mixin<a class="headerlink" href="#mixin" title="Link to this heading"></a></h1>
+  <div class="section" id="mixin">
+<h1>构建系统与 Mixin<a class="headerlink" href="#mixin" title="Permalink to this heading"></a></h1>
 <details><p>相关源文件</p>
 <p>以下文件用于生成此 Wiki 页面的上下文：</p>
 <ul class="simple">
@@ -596,17 +165,17 @@ window.addEventListener("load", load);</script>
 <li><p><a class="reference external" href=".vscode/tasks.json">.vscode/tasks.json</a></p></li>
 <li><p><a class="reference external" href="scripts/validate_config.py">scripts/validate_config.py</a></p></li>
 </ul>
-</details><section id="id1">
-<h2>目的与范围<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+</details><div class="section" id="id1">
+<h2>目的与范围<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
 <p>本文档介绍 IB-Robot 工作区中使用的 colcon 构建系统配置和 mixin 系统。内容包括工作区级默认设置、不同配置（debug、release、dev、prod）的构建 mixin，以及用于简化开发的 VS Code 集成。</p>
 <p>有关初始环境设置和首次构建项目，请参阅 <a class="reference external" href="#2">入门指南</a>。有关构建任务之外的 VS Code 特定开发设置，请参阅 <a class="reference external" href="#13.1">VS Code 配置</a>。有关调试配置，请参阅 <a class="reference external" href="#13.3">调试与测试</a>。</p>
-</section>
+</div>
 <hr class="docutils" />
-<section id="id2">
-<h2>构建系统概述<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<div class="section" id="id2">
+<h2>构建系统概述<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
 <p>IB-Robot 工作区使用 <strong>colcon</strong>（集体构建），这是标准的 ROS2 构建工具，可协调具有不同构建系统（C++ 使用 CMake，Python 使用 setuptools）的多个包的构建。Colcon 提供工作区级配置、依赖管理和并行构建。</p>
-<section id="id3">
-<h3>工作区目录结构<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<div class="section" id="id3">
+<h3>工作区目录结构<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>IB_Robot/
 ├── src/                    # 源码包
 │   ├── robot_config/
@@ -627,16 +196,16 @@ window.addEventListener("load", load);</script>
 </div>
 <p>工作区遵循标准的 ROS2 覆盖模式，其中 <code class="docutils literal notranslate"><span class="pre">install/</span></code> 包含已构建的包及其设置脚本。<code class="docutils literal notranslate"><span class="pre">build/</span></code> 目录包含 CMake 产物和 Python 构建元数据，而 <code class="docutils literal notranslate"><span class="pre">log/</span></code> 存储详细的构建和测试输出。</p>
 <p><strong>来源:</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/.gitignore#L1-L20">.gitignore:1-20</a>, <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/.colcon/defaults.yaml#L1-L23">.colcon/defaults.yaml:1-23</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id4">
-<h2>工作区默认配置<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<div class="section" id="id4">
+<h2>工作区默认配置<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">.colcon/defaults.yaml</span></code> 中的工作区级默认设置自动应用于所有 colcon 命令，无需重复指定常用参数。</p>
-<section id="id5">
-<h3>默认构建配置<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph TB
+<div class="section" id="id5">
+<h3>默认构建配置<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph TB
     subgraph &quot;Workspace Defaults Application&quot;
         CMD[&quot;colcon build&quot;]
         DEFAULTS[&quot;.colcon/defaults.yaml&quot;]
@@ -657,11 +226,16 @@ window.addEventListener("load", load);</script>
     MERGE --&gt; EXPANDED
     EVENTS --&gt; EXPANDED
     BASEPATH --&gt; EXPANDED
-    </pre><p><strong>图：工作区默认设置自动展开</strong></p>
-</section>
-<section id="id6">
-<h3>关键默认设置<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+        </div><p><strong>图：工作区默认设置自动展开</strong></p>
+</div>
+<div class="section" id="id6">
+<h3>关键默认设置<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>设置</p></th>
 <th class="head"><p>值</p></th>
@@ -685,19 +259,19 @@ window.addEventListener("load", load);</script>
 </table>
 <p><code class="docutils literal notranslate"><span class="pre">merge-install</span></code> 设置特别重要，因为它创建了扁平的 <code class="docutils literal notranslate"><span class="pre">install/</span></code> 结构，简化了覆盖设置并减少了需要 source 的设置脚本数量。</p>
 <p><strong>来源:</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/.colcon/defaults.yaml#L5-L18">.colcon/defaults.yaml:5-18</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id7">
-<h2>构建 Mixin 系统<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
-<section id="id8">
-<h3>什么是 Mixin？<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<div class="section" id="id7">
+<h2>构建 Mixin 系统<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h2>
+<div class="section" id="id8">
+<h3>什么是 Mixin？<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
 <p>Mixin 是存储在 YAML 文件中的可重用 colcon 命令行参数集。它们使开发者能够在不同构建配置（debug、release、development、production）之间切换，而无需记住复杂的参数列表。Mixin 是可组合的——多个 mixin 可以在单个构建命令中组合使用。</p>
-</section>
-<section id="id9">
-<h3>Mixin 架构<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph LR
+</div>
+<div class="section" id="id9">
+<h3>Mixin 架构<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph LR
     subgraph &quot;Mixin Definition&quot;
         INDEX[&quot;.colcon/mixin/index.yaml&quot;]
         BUILD_MIXIN[&quot;.colcon/mixin/build.mixin.yaml&quot;]
@@ -719,18 +293,25 @@ window.addEventListener("load", load);</script>
         CMAKE[&quot;cmake invocation with&lt;br/&gt;resolved flags&quot;]
         RESOLVED --&gt; CMAKE
     end
-    </pre><p><strong>图：Mixin 解析与应用流程</strong></p>
+        </div><p><strong>图：Mixin 解析与应用流程</strong></p>
 <p>位于 <code class="docutils literal notranslate"><span class="pre">.colcon/mixin/index.yaml</span></code> 的 mixin 索引声明可用的 mixin 文件，而 <code class="docutils literal notranslate"><span class="pre">build.mixin.yaml</span></code> 包含实际的 mixin 定义。</p>
 <p><strong>来源:</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/.colcon/mixin/index.yaml#L1-L4">.colcon/mixin/index.yaml:1-4</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/.colcon/mixin/build.mixin.yaml#L1-L19">.colcon/mixin/build.mixin.yaml:1-19</a></p>
-</section>
-</section>
-<section id="id10">
-<h2>可用的构建 Mixin<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+</div>
+</div>
+<div class="section" id="id10">
+<h2>可用的构建 Mixin<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h2>
 <p>工作区提供了多个预配置的 mixin，针对不同的开发和部署场景进行了优化。所有 mixin 都启用 <code class="docutils literal notranslate"><span class="pre">CMAKE_EXPORT_COMPILE_COMMANDS</span></code> 以支持 IDE 集成（clangd、IntelliSense）。</p>
-<section id="id11">
-<h3>构建配置 Mixin<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<div class="section" id="id11">
+<h3>构建配置 Mixin<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Mixin 名称</p></th>
 <th class="head"><p>CMake 构建</p></th>
@@ -772,10 +353,15 @@ window.addEventListener("load", load);</script>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="id12">
-<h3>测试与代码检查 Mixin<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id12">
+<h3>测试与代码检查 Mixin<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Mixin 名称</p></th>
 <th class="head"><p>CMake 参数</p></th>
@@ -797,11 +383,11 @@ window.addEventListener("load", load);</script>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="id13">
-<h3>Mixin 定义参考<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
-<section id="mixin-dev">
-<h4>开发 Mixin (<code class="docutils literal notranslate"><span class="pre">dev</span></code>)<a class="headerlink" href="#mixin-dev" title="Link to this heading"></a></h4>
+</div>
+<div class="section" id="id13">
+<h3>Mixin 定义参考<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
+<div class="section" id="mixin-dev">
+<h4>开发 Mixin (<code class="docutils literal notranslate"><span class="pre">dev</span></code>)<a class="headerlink" href="#mixin-dev" title="Permalink to this heading"></a></h4>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">dev</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">symlink-install</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">  </span><span class="nt">cmake-args</span><span class="p">:</span>
@@ -812,9 +398,9 @@ window.addEventListener("load", load);</script>
 </div>
 <p><strong>用途:</strong> 开发过程中的快速迭代。<code class="docutils literal notranslate"><span class="pre">symlink-install</span></code> 标志在 <code class="docutils literal notranslate"><span class="pre">install/</span></code> 中创建指向 Python 源文件的符号链接，因此对 <code class="docutils literal notranslate"><span class="pre">.py</span></code> 文件的更改立即生效，无需重新构建。启用调试符号用于调试。禁用测试以减少构建时间。</p>
 <p><strong>用法:</strong> <code class="docutils literal notranslate"><span class="pre">colcon</span> <span class="pre">build</span> <span class="pre">--mixin</span> <span class="pre">dev</span></code></p>
-</section>
-<section id="mixin-prod">
-<h4>生产 Mixin (<code class="docutils literal notranslate"><span class="pre">prod</span></code>)<a class="headerlink" href="#mixin-prod" title="Link to this heading"></a></h4>
+</div>
+<div class="section" id="mixin-prod">
+<h4>生产 Mixin (<code class="docutils literal notranslate"><span class="pre">prod</span></code>)<a class="headerlink" href="#mixin-prod" title="Permalink to this heading"></a></h4>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">prod</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">cmake-args</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;-DCMAKE_BUILD_TYPE=Release&quot;</span>
@@ -824,9 +410,9 @@ window.addEventListener("load", load);</script>
 </div>
 <p><strong>用途:</strong> 优化的生产构建。完全编译器优化（<code class="docutils literal notranslate"><span class="pre">-O3</span></code>），无调试符号，禁用测试，禁用 ROS2 追踪以最小化开销。</p>
 <p><strong>用法:</strong> <code class="docutils literal notranslate"><span class="pre">colcon</span> <span class="pre">build</span> <span class="pre">--mixin</span> <span class="pre">prod</span></code></p>
-</section>
-<section id="mixin-debug">
-<h4>调试 Mixin (<code class="docutils literal notranslate"><span class="pre">debug</span></code>)<a class="headerlink" href="#mixin-debug" title="Link to this heading"></a></h4>
+</div>
+<div class="section" id="mixin-debug">
+<h4>调试 Mixin (<code class="docutils literal notranslate"><span class="pre">debug</span></code>)<a class="headerlink" href="#mixin-debug" title="Permalink to this heading"></a></h4>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">debug</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">cmake-args</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;-DCMAKE_BUILD_TYPE=Debug&quot;</span>
@@ -835,9 +421,9 @@ window.addEventListener("load", load);</script>
 </div>
 <p><strong>用途:</strong> 带符号且无优化的标准调试配置。适用于 GDB/LLDB 调试。</p>
 <p><strong>用法:</strong> <code class="docutils literal notranslate"><span class="pre">colcon</span> <span class="pre">build</span> <span class="pre">--mixin</span> <span class="pre">debug</span></code></p>
-</section>
-<section id="mixin-release">
-<h4>发布 Mixin (<code class="docutils literal notranslate"><span class="pre">release</span></code>)<a class="headerlink" href="#mixin-release" title="Link to this heading"></a></h4>
+</div>
+<div class="section" id="mixin-release">
+<h4>发布 Mixin (<code class="docutils literal notranslate"><span class="pre">release</span></code>)<a class="headerlink" href="#mixin-release" title="Permalink to this heading"></a></h4>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">release</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">cmake-args</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;-DCMAKE_BUILD_TYPE=Release&quot;</span>
@@ -847,14 +433,14 @@ window.addEventListener("load", load);</script>
 <p><strong>用途:</strong> 带编译命令的优化发布构建，用于 IDE 支持。用于基准测试和性能测试。</p>
 <p><strong>用法:</strong> <code class="docutils literal notranslate"><span class="pre">colcon</span> <span class="pre">build</span> <span class="pre">--mixin</span> <span class="pre">release</span></code></p>
 <p><strong>来源:</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/.colcon/mixin/build.mixin.yaml#L1-L19">.colcon/mixin/build.mixin.yaml:1-19</a></p>
-</section>
-</section>
-</section>
-<section id="id14">
-<h2>组合 Mixin<a class="headerlink" href="#id14" title="Link to this heading"></a></h2>
+</div>
+</div>
+</div>
+<div class="section" id="id14">
+<h2>组合 Mixin<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h2>
 <p>Mixin 可以组合以创建自定义配置。参数会合并，如果存在冲突，后面的 mixin 会覆盖前面的。</p>
-<section id="id15">
-<h3>常用 Mixin 组合<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<div class="section" id="id15">
+<h3>常用 Mixin 组合<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 启用测试的开发构建</span>
 colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w"> </span>dev<span class="w"> </span><span class="nb">test</span>
 
@@ -865,11 +451,11 @@ colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w
 colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w"> </span>debug<span class="w"> </span>--packages-skip<span class="w"> </span>robot_moveit
 </pre></div>
 </div>
-</section>
-<section id="id16">
-<h3>Mixin 组合流程<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph TB
+</div>
+<div class="section" id="id16">
+<h3>Mixin 组合流程<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph TB
     subgraph &quot;Command&quot;
         CMD[&quot;colcon build&lt;br/&gt;--mixin dev test&quot;]
     end
@@ -890,17 +476,17 @@ colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w
     CMD --&gt; TEST_ARGS
     DEV_ARGS --&gt; MERGED
     TEST_ARGS --&gt; MERGED
-    </pre><p><strong>图：Mixin 参数合并</strong></p>
+        </div><p><strong>图：Mixin 参数合并</strong></p>
 <p><strong>来源:</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/.colcon/mixin/build.mixin.yaml#L1-L19">.colcon/mixin/build.mixin.yaml:1-19</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id17">
-<h2>构建输出结构<a class="headerlink" href="#id17" title="Link to this heading"></a></h2>
-<section id="id18">
-<h3>目录用途<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph TB
+<div class="section" id="id17">
+<h2>构建输出结构<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h2>
+<div class="section" id="id18">
+<h3>目录用途<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph TB
     subgraph &quot;Source Space&quot;
         SRC[&quot;src/&lt;br/&gt;Python + CMake packages&quot;]
     end
@@ -926,10 +512,10 @@ colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w
     BUILD -.-&gt;|&quot;git ignored&quot;| GITIGNORE
     INSTALL -.-&gt;|&quot;git ignored&quot;| GITIGNORE
     LOG -.-&gt;|&quot;git ignored&quot;| GITIGNORE
-    </pre><p><strong>图：构建输出目录结构</strong></p>
-</section>
-<section id="merge-install">
-<h3>安装空间布局（Merge-Install）<a class="headerlink" href="#merge-install" title="Link to this heading"></a></h3>
+        </div><p><strong>图：构建输出目录结构</strong></p>
+</div>
+<div class="section" id="merge-install">
+<h3>安装空间布局（Merge-Install）<a class="headerlink" href="#merge-install" title="Permalink to this heading"></a></h3>
 <p>使用 <code class="docutils literal notranslate"><span class="pre">merge-install:</span> <span class="pre">true</span></code>，安装空间具有扁平结构：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>install/
 ├── setup.bash           # ROS2 覆盖设置脚本
@@ -951,16 +537,16 @@ colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w
 </div>
 <p>此结构意味着 source <code class="docutils literal notranslate"><span class="pre">install/setup.bash</span></code> 会将所有已构建的包覆盖到环境中。</p>
 <p><strong>来源:</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/.colcon/defaults.yaml#L6-L8">.colcon/defaults.yaml:6-8</a>, <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/.gitignore#L1-L8">.gitignore:1-8</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="vs-code">
-<h2>VS Code 集成<a class="headerlink" href="#vs-code" title="Link to this heading"></a></h2>
-<section id="id19">
-<h3>构建任务配置<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+<div class="section" id="vs-code">
+<h2>VS Code 集成<a class="headerlink" href="#vs-code" title="Permalink to this heading"></a></h2>
+<div class="section" id="id19">
+<h3>构建任务配置<a class="headerlink" href="#id19" title="Permalink to this heading"></a></h3>
 <p>工作区为常用构建操作提供了预配置的 VS Code 任务。这些任务出现在命令面板的 “Tasks: Run Task” 下。</p>
-<pre  class="mermaid">
-        graph TB
+<div class="mermaid">
+            graph TB
     subgraph &quot;VS Code Tasks&quot;
         TASK_FILE[&quot;.vscode/tasks.json&quot;]
 
@@ -985,12 +571,12 @@ colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w
         TERMINAL[&quot;New Terminal Panel&lt;br/&gt;Build Output&quot;]
         BUILD_CMD --&gt; TERMINAL
     end
-    </pre><p><strong>图：VS Code 任务执行流程</strong></p>
-</section>
-<section id="id20">
-<h3>可用的构建任务<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
-<section id="id21">
-<h4>默认构建任务<a class="headerlink" href="#id21" title="Link to this heading"></a></h4>
+        </div><p><strong>图：VS Code 任务执行流程</strong></p>
+</div>
+<div class="section" id="id20">
+<h3>可用的构建任务<a class="headerlink" href="#id20" title="Permalink to this heading"></a></h3>
+<div class="section" id="id21">
+<h4>默认构建任务<a class="headerlink" href="#id21" title="Permalink to this heading"></a></h4>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;colcon build&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;source /opt/ros/humble/setup.sh &amp;&amp; source venv/bin/activate &amp;&amp; colcon build --symlink-install --cmake-args -DCMAKE_BUILD_TYPE=Release&quot;</span><span class="p">,</span>
@@ -1003,9 +589,9 @@ colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w
 </div>
 <p><strong>触发:</strong> <code class="docutils literal notranslate"><span class="pre">Ctrl+Shift+B</span></code> 或 “Tasks: Run Build Task”</p>
 <p><strong>配置:</strong> 使用 symlink-install 和 Release 构建类型。不使用 mixin（使用内联参数）。</p>
-</section>
-<section id="id22">
-<h4>构建选中包任务<a class="headerlink" href="#id22" title="Link to this heading"></a></h4>
+</div>
+<div class="section" id="id22">
+<h4>构建选中包任务<a class="headerlink" href="#id22" title="Permalink to this heading"></a></h4>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;colcon build selected&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;source /opt/ros/humble/setup.sh &amp;&amp; source venv/bin/activate &amp;&amp; colcon build --symlink-install --packages-select ${relativeFileDirname}&quot;</span><span class="p">,</span>
@@ -1015,10 +601,10 @@ colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w
 </div>
 <p><strong>触发:</strong> 命令面板 → “Tasks: Run Task” → “colcon build selected”</p>
 <p><strong>用途:</strong> 仅构建包含当前打开文件的包。<code class="docutils literal notranslate"><span class="pre">${relativeFileDirname}</span></code> 变量解析为包名。适用于单个包的快速迭代。</p>
-</section>
-</section>
-<section id="id23">
-<h3>扩展构建任务<a class="headerlink" href="#id23" title="Link to this heading"></a></h3>
+</div>
+</div>
+<div class="section" id="id23">
+<h3>扩展构建任务<a class="headerlink" href="#id23" title="Permalink to this heading"></a></h3>
 <p>要添加自定义构建配置（如调试构建或基于 mixin 的任务），扩展 <code class="docutils literal notranslate"><span class="pre">.vscode/tasks.json</span></code>:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;colcon build (dev mixin)&quot;</span><span class="p">,</span>
@@ -1029,13 +615,13 @@ colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w
 </pre></div>
 </div>
 <p><strong>来源:</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/.vscode/tasks.json#L1-L26">.vscode/tasks.json:1-26</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id24">
-<h2>构建工作流示例<a class="headerlink" href="#id24" title="Link to this heading"></a></h2>
-<section id="id25">
-<h3>典型开发工作流<a class="headerlink" href="#id25" title="Link to this heading"></a></h3>
+<div class="section" id="id24">
+<h2>构建工作流示例<a class="headerlink" href="#id24" title="Permalink to this heading"></a></h2>
+<div class="section" id="id25">
+<h3>典型开发工作流<a class="headerlink" href="#id25" title="Permalink to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 使用开发 mixin 进行初始完整构建</span>
 colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w"> </span>dev
 
@@ -1053,9 +639,9 @@ python<span class="w"> </span>scripts/validate_config.py<span class="w"> </span>
 colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w"> </span>prod
 </pre></div>
 </div>
-</section>
-<section id="id26">
-<h3>清理重建<a class="headerlink" href="#id26" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id26">
+<h3>清理重建<a class="headerlink" href="#id26" title="Permalink to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 删除所有构建产物</span>
 rm<span class="w"> </span>-rf<span class="w"> </span>build/<span class="w"> </span>install/<span class="w"> </span>log/
 
@@ -1063,9 +649,9 @@ rm<span class="w"> </span>-rf<span class="w"> </span>build/<span class="w"> </sp
 colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w"> </span>dev
 </pre></div>
 </div>
-</section>
-<section id="id27">
-<h3>选择性包构建<a class="headerlink" href="#id27" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id27">
+<h3>选择性包构建<a class="headerlink" href="#id27" title="Permalink to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 仅构建推理相关包</span>
 colcon<span class="w"> </span>build<span class="w"> </span>--packages-select<span class="w"> </span>inference_service<span class="w"> </span>tensormsg<span class="w"> </span>--mixin<span class="w"> </span>dev
 
@@ -1078,16 +664,16 @@ colcon<span class="w"> </span>build<span class="w"> </span>--packages-skip<span 
 </div>
 <p><strong>来源:</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/.colcon/mixin/build.mixin.yaml#L14-L18">.colcon/mixin/build.mixin.yaml:14-18</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/.vscode/tasks.json#L1-L26">.vscode/tasks.json:1-26</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id28">
-<h2>构建系统集成点<a class="headerlink" href="#id28" title="Link to this heading"></a></h2>
-<section id="id29">
-<h3>与配置系统的交互<a class="headerlink" href="#id29" title="Link to this heading"></a></h3>
+<div class="section" id="id28">
+<h2>构建系统集成点<a class="headerlink" href="#id28" title="Permalink to this heading"></a></h2>
+<div class="section" id="id29">
+<h3>与配置系统的交互<a class="headerlink" href="#id29" title="Permalink to this heading"></a></h3>
 <p>构建系统生成包含机器人配置文件和启动系统的安装空间。配置验证脚本操作源文件，但检查与构建输出的一致性。</p>
-<pre  class="mermaid">
-        graph TB
+<div class="mermaid">
+            graph TB
     subgraph &quot;Build Process&quot;
         SRC_CONFIG[&quot;src/robot_config/&lt;br/&gt;config/robots/*.yaml&quot;]
         BUILD[&quot;colcon build&quot;]
@@ -1109,10 +695,10 @@ colcon<span class="w"> </span>build<span class="w"> </span>--packages-skip<span 
         LAUNCH[&quot;robot.launch.py&quot;]
         INSTALL_CONFIG --&gt;|&quot;loads at runtime&quot;| LAUNCH
     end
-    </pre><p><strong>图：构建系统与配置验证</strong></p>
-</section>
-<section id="python">
-<h3>Python 虚拟环境<a class="headerlink" href="#python" title="Link to this heading"></a></h3>
+        </div><p><strong>图：构建系统与配置验证</strong></p>
+</div>
+<div class="section" id="python">
+<h3>Python 虚拟环境<a class="headerlink" href="#python" title="Permalink to this heading"></a></h3>
 <p>工作区使用 Python 虚拟环境（<code class="docutils literal notranslate"><span class="pre">venv/</span></code>），必须在构建前激活：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">source</span><span class="w"> </span>venv/bin/activate
 colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w"> </span>dev
@@ -1121,14 +707,19 @@ colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w
 <p>VS Code 任务在构建前自动激活 venv。venv 包含：- LeRobot 库和依赖 - ROS2 Python 包覆盖在系统 ROS2 之上 - 开发工具（pytest、black 等）</p>
 <p><strong>来源:</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/.vscode/tasks.json#L7">.vscode/tasks.json:7</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/.vscode/settings.json#L2">.vscode/settings.json:2</a>, <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/scripts/validate_config.py#L1-L350">scripts/validate_config.py:1-350</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id30">
-<h2>性能考虑<a class="headerlink" href="#id30" title="Link to this heading"></a></h2>
-<section id="id31">
-<h3>构建时间优化<a class="headerlink" href="#id31" title="Link to this heading"></a></h3>
+<div class="section" id="id30">
+<h2>性能考虑<a class="headerlink" href="#id30" title="Permalink to this heading"></a></h2>
+<div class="section" id="id31">
+<h3>构建时间优化<a class="headerlink" href="#id31" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>策略</p></th>
 <th class="head"><p>命令</p></th>
@@ -1154,10 +745,15 @@ colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w
 </tr>
 </tbody>
 </table>
-</section>
-<section id="id32">
-<h3>按使用场景推荐的配置<a class="headerlink" href="#id32" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id32">
+<h3>按使用场景推荐的配置<a class="headerlink" href="#id32" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>使用场景</p></th>
 <th class="head"><p>推荐命令</p></th>
@@ -1189,9 +785,9 @@ colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w
 </table>
 <p><strong>来源:</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/.colcon/defaults.yaml#L9-L10">.colcon/defaults.yaml:9-10</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/.colcon/mixin/build.mixin.yaml#L1-L19">.colcon/mixin/build.mixin.yaml:1-19</a></p>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
            </div>
@@ -1226,16 +822,6 @@ colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w
   </span>
   <div class="rst-other-versions">
     <dl>
-      <dt>Tags</dt>
-      <dd><a href="../../../../24.03-lts/index.html">24.03-lts</a></dd>
-      <dd><a href="../../../../llvm-toolchain-v0.1.1/index.html">llvm-toolchain-v0.1.1</a></dd>
-      <dd><a href="../../../../nativesdk-v0.1.2/index.html">nativesdk-v0.1.2</a></dd>
-      <dd><a href="../../../../nativesdk-v0.1.3/index.html">nativesdk-v0.1.3</a></dd>
-      <dd><a href="../../../../toolchains-v0.1.5/index.html">toolchains-v0.1.5</a></dd>
-      <dd><a href="../../../../toolchains-v0.1.7/index.html">toolchains-v0.1.7</a></dd>
-      <dd><a href="../../../../toolchains-v0.1.8/index.html">toolchains-v0.1.8</a></dd>
-    </dl>
-    <dl>
       <dt>Branches</dt>
       <dd><a href="build_system_and_mixins.html">master</a></dd>
       <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
@@ -1246,10 +832,10 @@ colcon<span class="w"> </span>build<span class="w"> </span>--mixin<span class="w
       <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
       <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
       <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
       <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
       <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
-      <dd><a href="../../../../pr_2786/features/embodied_ai/development/build_system_and_mixins.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

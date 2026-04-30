@@ -1,27 +1,29 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../../">
+<html class="writer-html5" lang="en">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>实时OS的对接工作 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css?v=a5c4661c" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
   
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
-      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../../../_static/tabs.js?v=3030b3cb"></script>
-      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
-      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/tabs.js"></script>
+        <script src="../../../_static/js/mermaid-init.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -134,8 +136,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="os">
-<h1>实时OS的对接工作<a class="headerlink" href="#os" title="Link to this heading"></a></h1>
+  <div class="section" id="os">
+<h1>实时OS的对接工作<a class="headerlink" href="#os" title="Permalink to this heading"></a></h1>
 <p>两个 OS 之间的通信，最底层的依赖可以概括为共享内存的读写和中断的收发。但为了实现高效的通信，还需要借助 OpenAMP 在不同的OS上实现一个传输层。
 因此在 RTOS 侧，需要基于共享内存和中断完成 OpenAMP 的初始化。</p>
 <p>此外，为了避免在代码中引入过多的静态资源定义，MICA 规定了实时OS需要添加 <code class="docutils literal notranslate"><span class="pre">.resource_table</span></code> 段（资源表）。
@@ -146,8 +148,8 @@
 <li><p>OpenAMP 的初始化。</p></li>
 </ol>
 <hr class="docutils" />
-<section id="id1">
-<h2>资源表的适配<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<div class="section" id="id1">
+<h2>资源表的适配<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
 <ol class="arabic simple">
 <li><p>资源表介绍</p></li>
 </ol>
@@ -333,10 +335,10 @@
 <p>初始化流程如下：</p>
 <img alt="../../../_images/rtos_init.jpg" src="../../../_images/rtos_init.jpg" />
 </div></blockquote>
-</section>
+</div>
 <hr class="docutils" />
-<section id="id3">
-<h2>OpenAMP的初始化<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<div class="section" id="id3">
+<h2>OpenAMP的初始化<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
 <p>针对资源表中的 RSC_VDEV 表项，Linux 首先会为其中的 tx/rx vring 分配共享内存地址，再根据表项中的配置初始化 Linux 侧的 vdev (virtio device)。
 之后，RTOS 可以根据资源表中的信息，获取 tx/rx vring 的起始地址，动态初始化 vring，而不需要在代码中做过多的静态定义。</p>
 <p>因此，RTOS侧的 OpenAMP 的初始化流程可以简单概括为以下几个步骤：</p>
@@ -415,8 +417,8 @@
 name service 会在本地分配一个唯一的源地址，并将该服务名称(“rpmsg-tty”)和源地址(“src”)封装成 NS Msg(Name service Message)发送到Linux，触发 Linux 的 ns_bind_cb 回调。
 在回调中，Linux侧可以进行服务的匹配和对应的初始化流程，并且会为 rpmsg-tty 服务分配 Linux 侧的源地址。这之后，Linux 侧 endpoint 的信息已经完整了，即 Linux 可以通过 rpmsg_send 向 RTOS 发送消息。
 RTOS 侧首次接到该消息时，会更新 rpmsg-tty 的目的地址，完成 endpoint 的建立和绑定。</p>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>
@@ -451,16 +453,6 @@ RTOS 侧首次接到该消息时，会更新 rpmsg-tty 的目的地址，完成 
   </span>
   <div class="rst-other-versions">
     <dl>
-      <dt>Tags</dt>
-      <dd><a href="../../../../24.03-lts/features/mica/developer_guides/rtos.html">24.03-lts</a></dd>
-      <dd><a href="../../../../llvm-toolchain-v0.1.1/features/mica/developer_guides/rtos.html">llvm-toolchain-v0.1.1</a></dd>
-      <dd><a href="../../../../nativesdk-v0.1.2/features/mica/developer_guides/rtos.html">nativesdk-v0.1.2</a></dd>
-      <dd><a href="../../../../nativesdk-v0.1.3/features/mica/developer_guides/rtos.html">nativesdk-v0.1.3</a></dd>
-      <dd><a href="../../../../toolchains-v0.1.5/features/mica/developer_guides/rtos.html">toolchains-v0.1.5</a></dd>
-      <dd><a href="../../../../toolchains-v0.1.7/features/mica/developer_guides/rtos.html">toolchains-v0.1.7</a></dd>
-      <dd><a href="../../../../toolchains-v0.1.8/features/mica/developer_guides/rtos.html">toolchains-v0.1.8</a></dd>
-    </dl>
-    <dl>
       <dt>Branches</dt>
       <dd><a href="../../../../master/index.html">master</a></dd>
       <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
@@ -471,10 +463,10 @@ RTOS 侧首次接到该消息时，会更新 rpmsg-tty 的目的地址，完成 
       <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
       <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
       <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
       <dd><a href="rtos.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../../../openEuler-24.09/features/mica/developer_guides/rtos.html">openEuler-24.09</a></dd>
       <dd><a href="../../../../openEuler-25.03/features/mica/developer_guides/rtos.html">openEuler-25.03</a></dd>
-      <dd><a href="../../../../pr_2786/index.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

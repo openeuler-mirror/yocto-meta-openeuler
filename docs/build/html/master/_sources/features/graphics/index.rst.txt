@@ -9,3 +9,4 @@
    :caption: 内容
 
    qt5_wayland.rst
+   xfce.rst

@@ -1,460 +1,29 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../../">
+<html class="writer-html5" lang="en">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>系统架构 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
   
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
-      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.15.0/dist/mermaid.esm.min.mjs";
-
-
-
-
-
-const initStyles = () => {
-    const defaultStyle = document.createElement('style');
-    defaultStyle.textContent = `pre.mermaid {
-    /* Same as .mermaid-container > pre */
-    display: block;
-    width: 100%;
-}
-
-pre.mermaid > svg {
-    /* Same as .mermaid-container > pre > svg */
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}`;
-    document.head.appendChild(defaultStyle);
-
-    const fullscreenStyle = document.createElement('style');
-    fullscreenStyle.textContent = `.mermaid-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-}
-
-.mermaid-container > pre {
-    display: block;
-    width: 100%;
-}
-
-.mermaid-container > pre > svg {
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}
-
-.mermaid-fullscreen-btn {
-    width: 28px;
-    height: 28px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    font-size: 14px;
-    line-height: 1;
-    padding: 0;
-    color: #333;
-}
-
-.mermaid-fullscreen-btn:hover {
-    opacity: 100% !important;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-btn.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-btn.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal {
-    display: none;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 95vw;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.98);
-    z-index: 9999;
-    padding: 20px;
-    overflow: auto;
-}
-
-.mermaid-fullscreen-modal.dark-theme {
-    background: rgba(0, 0, 0, 0.98);
-}
-
-.mermaid-fullscreen-modal.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen {
-    position: relative;
-    width: 95vw;
-    height: 90vh;
-    max-width: 95vw;
-    max-height: 90vh;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    overflow: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen.dark-theme {
-    background: #1a1a1a;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-}
-
-.mermaid-container-fullscreen pre.mermaid {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen .mermaid svg {
-    height: 100% !important;
-    width: 100% !important;
-    cursor: grab;
-}
-
-.mermaid-fullscreen-close {
-    position: fixed !important;
-    top: 20px !important;
-    right: 20px !important;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s;
-    font-size: 24px;
-    line-height: 1;
-    color: #333;
-}
-
-.mermaid-fullscreen-close:hover {
-    background: white;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-close.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-close.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
-    display: none !important;
-}`;
-    document.head.appendChild(fullscreenStyle);
-}
-
-// Detect if page has dark background
-const isDarkTheme = () => {
-    // We use a set of heuristics:
-    // 1. Check for common dark mode classes or attributes
-    // 2. Check computed background color brightness
-    if (document.documentElement.classList.contains('dark') ||
-        document.documentElement.getAttribute('data-theme') === 'dark' ||
-        document.body.classList.contains('dark') ||
-        document.body.getAttribute('data-theme') === 'dark') {
-        // console.log("Dark theme detected via class/attribute");
-        return true;
-    }
-    if (document.documentElement.classList.contains('light') ||
-        document.documentElement.getAttribute('data-theme') === 'light' ||
-        document.body.classList.contains('light') ||
-        document.body.getAttribute('data-theme') === 'light') {
-        // console.log("Light theme detected via class/attribute");
-        return false;
-    }
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        // console.log("Dark theme detected via prefers-color-scheme");
-        return true;
-    }
-    const bgColor = window.getComputedStyle(document.body).backgroundColor;
-    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
-    if (match) {
-        const r = parseInt(match[1]);
-        const g = parseInt(match[2]);
-        const b = parseInt(match[3]);
-        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        // console.log("Background color brightness:", brightness);
-        return brightness < 128;
-    }
-    // console.log("No dark or light theme detected, defaulting to light theme");
-    return false;
-};
-
-let darkTheme = isDarkTheme();
-let modal = null;
-let modalContent = null;
-let previousScrollOffset = [window.scrollX, window.scrollY];
-
-const runMermaid = async (rerun) => {
-    console.log("Running mermaid diagrams, rerun =", rerun);
-    // clear all existing mermaid charts
-    let all_mermaids = document.querySelectorAll(".mermaid");
-
-    if (rerun) {
-        all_mermaids.forEach((el) => {
-            if(!el.hasAttribute("data-original-code")) {
-                // store original code
-                // console.log(`Storing original code for first run: `, el.innerHTML);
-                el.setAttribute('data-original-code', el.innerHTML);
-            }
-            if(el.getAttribute("data-processed") === "true") {
-                // remove and restore original
-                el.removeAttribute("data-processed");
-                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
-                el.innerHTML = el.getAttribute('data-original-code');
-            } else {
-                // store original code
-                // console.log(`Storing original code for re-run: `, el.innerHTML);
-                el.setAttribute('data-original-code', el.innerHTML);
-            }
-        });
-        await mermaid.run();
-    }
-
-    all_mermaids = document.querySelectorAll(".mermaid");
-    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
-
-    if ("False" === "True") {
-        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
-        if(mermaids_to_add_zoom > 0) {
-            var svgs = d3.selectAll("");
-            if(all_mermaids.length !== mermaids_processed.length) {
-                setTimeout(() => runMermaid(false), 200);
-                return;
-            } else if(svgs.size() !== mermaids_to_add_zoom) {
-                setTimeout(() => runMermaid(false), 200);
-                return;
-            } else {
-                svgs.each(function() {
-                    var svg = d3.select(this);
-                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
-                    var inner = svg.select("g");
-                    var zoom = d3.zoom().on("zoom", function(event) {
-                        inner.attr("transform", event.transform);
-                    });
-                    svg.call(zoom);
-                });
-            }
-        }
-    } else if(all_mermaids.length !== mermaids_processed.length) {
-        // Wait for mermaid to process all diagrams
-        setTimeout(() => runMermaid(false), 200);
-        return;
-    }
-
-    // Stop here if not adding fullscreen capability
-    if ("True" !== "True") return;
-
-    if (modal !== null ) {
-        // Destroy existing modal
-        modal.remove();
-        modal = null;
-        modalContent = null;
-    }
-
-    modal = document.createElement('div');
-    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
-    modal.setAttribute('role', 'dialog');
-    modal.setAttribute('aria-modal', 'true');
-    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
-    modal.innerHTML = `
-        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
-        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
-    `;
-    document.body.appendChild(modal);
-
-    modalContent = modal.querySelector('.mermaid-container-fullscreen');
-    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
-
-    const closeModal = () => {
-        modal.classList.remove('active');
-        modalContent.innerHTML = '';
-        document.body.style.overflow = ''
-        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
-    };
-
-    closeBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('active')) {
-            closeModal();
-        }
-    });
-
-    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
-        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
-            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
-            // Already processed, adjust button class if needed
-            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
-            if (existingBtn) {
-                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
-            }
-            return;
-        }
-
-        const container = document.createElement('div');
-        container.className = 'mermaid-container';
-        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
-        container.appendChild(mermaidDiv);
-
-        const fullscreenBtn = document.createElement('button');
-        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
-        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
-        fullscreenBtn.textContent = '⛶';
-        fullscreenBtn.style.opacity = '50%';
-
-        // Calculate dynamic position based on diagram's margin and padding
-        const diagramStyle = window.getComputedStyle(mermaidDiv);
-        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
-        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
-        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
-        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
-        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
-        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
-
-        fullscreenBtn.addEventListener('click', () => {
-            previousScrollOffset = [window.scroll, window.scrollY];
-            const clone = mermaidDiv.cloneNode(true);
-            modalContent.innerHTML = '';
-            modalContent.appendChild(clone);
-
-            const svg = clone.querySelector('svg');
-            if (svg) {
-                svg.removeAttribute('width');
-                svg.removeAttribute('height');
-                svg.style.width = '100%';
-                svg.style.height = 'auto';
-                svg.style.maxWidth = '100%';
-                svg.style.sdisplay = 'block';
-
-                if ("False" === "True") {
-                    setTimeout(() => {
-                        const g = svg.querySelector('g');
-                        if (g) {
-                            var svgD3 = d3.select(svg);
-                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
-                            var inner = svgD3.select("g");
-                            var zoom = d3.zoom().on("zoom", function(event) {
-                                inner.attr("transform", event.transform);
-                            });
-                            svgD3.call(zoom);
-                        }
-                    }, 100);
-                }
-            }
-
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        });
-        container.appendChild(fullscreenBtn);
-    });
-};
-
-const load = async () => {
-    initStyles();
-
-    await runMermaid(true);
-
-    const reRunIfThemeChanges = async () => {
-        const newDarkTheme = isDarkTheme();
-        if (newDarkTheme !== darkTheme) {
-            darkTheme = newDarkTheme;
-            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
-            await mermaid.initialize(
-                {...JSON.parse(
-                    `{"startOnLoad": false}`
-                ),
-                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
-                }
-            );
-            await runMermaid(true);
-        }
-    };
-
-    // Update theme classes when theme changes
-    const themeObserver = new MutationObserver(reRunIfThemeChanges);
-    themeObserver.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['class', 'style', 'data-theme']
-    });
-    themeObserver.observe(document.body, {
-        attributes: true,
-        attributeFilter: ['class', 'style', 'data-theme']
-    });
-};
-
-
-
-
-
-console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
-mermaid.initialize(
-    {...JSON.parse(
-        `{"startOnLoad": false}`
-    ),
-    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
-    }
-);
-
-window.addEventListener("load", load);</script>
-      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
-      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+        <script>mermaid.initialize({startOnLoad:true});</script>
+        <script src="../../../_static/js/mermaid-init.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -619,8 +188,8 @@ window.addEventListener("load", load);</script>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="id1">
-<h1>系统架构<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+  <div class="section" id="id1">
+<h1>系统架构<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
 <details><p>相关源文件</p>
 <p>以下文件用作生成此 wiki 页面的上下文：</p>
 <ul class="simple">
@@ -647,13 +216,13 @@ window.addEventListener("load", load);</script>
 </details><p>本文档全面概述了 IB-Robot 系统架构，解释了组件如何组织成层级、数据如何在系统中流动，以及各个子系统如何交互以实现从数据采集到部署的端到端具身 AI 开发。</p>
 <p>有关详细的配置规范，请参阅 <a class="reference external" href="#5">配置系统 (robot_config)</a>。有关此设计背后的基本架构原则，请参阅 <a class="reference external" href="#3">核心概念</a>。有关各个子系统的详细信息，请参阅 <a class="reference external" href="#7">推理服务</a>、<a class="reference external" href="#8">动作分发</a> 和 <a class="reference external" href="#9">数据流水线</a>。</p>
 <hr class="docutils" />
-<section id="id2">
-<h2>架构概述<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<div class="section" id="id2">
+<h2>架构概述<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
 <p>IB-Robot 实现了分层架构，每一层为其上层提供明确定义的抽象。系统围绕**单一数据源**原则组织，其中 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML 文件通过契约驱动的合成来驱动所有子系统的行为。</p>
-<section id="id3">
-<h3>系统层级<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph TB
+<div class="section" id="id3">
+<h3>系统层级<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph TB
     subgraph &quot;Layer 1: Global Management&quot;
         RC[&quot;robot_config&lt;br/&gt;(Single Source of Truth)&lt;br/&gt;YAML configuration&quot;]
         MSGS[&quot;ibrobot_msgs&lt;br/&gt;(Interface Definitions)&lt;br/&gt;Action/Message types&quot;]
@@ -714,18 +283,18 @@ window.addEventListener("load", load);</script>
 
     ROS2CTRL --&gt;|&quot;hardware_interface&quot;| HW
     ROS2CTRL --&gt;|&quot;hardware_interface&quot;| SIM
-    </pre><p><strong>来源：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L18-L43">README.md:18-43</a>, <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/docs/architecture.md#L86-L177">docs/architecture.md:86-177</a>,
+        </div><p><strong>来源：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L18-L43">README.md:18-43</a>, <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/docs/architecture.md#L86-L177">docs/architecture.md:86-177</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/README.md#L20-L44">src/README.md:20-44</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id4">
-<h2>包架构与依赖<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<div class="section" id="id4">
+<h2>包架构与依赖<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
 <p>系统由 10 个核心 ROS 2 包组成，具有明确定义的职责和依赖关系。</p>
-<section id="id5">
-<h3>核心包层次结构<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph LR
+<div class="section" id="id5">
+<h3>核心包层次结构<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph LR
     subgraph &quot;Configuration &amp; Interfaces&quot;
         RC[&quot;robot_config&quot;]
         MSGS[&quot;ibrobot_msgs&quot;]
@@ -772,8 +341,14 @@ window.addEventListener("load", load);</script>
 
     HW --&gt;|&quot;independent&quot;| RC
     HW --&gt;|&quot;uses URDF from&quot;| DESC
-    </pre><p><strong>包职责矩阵：</strong></p>
+        </div><p><strong>包职责矩阵：</strong></p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>包</p></th>
 <th class="head"><p>主要职责</p></th>
@@ -836,16 +411,16 @@ window.addEventListener("load", load);</script>
 </table>
 <p><strong>来源：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L44-L71">README.md:44-71</a>, <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/README.md#L49-L84">src/README.md:49-84</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/docs/architecture.md#L216-L265">docs/architecture.md:216-265</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id6">
-<h2>配置驱动架构<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<div class="section" id="id6">
+<h2>配置驱动架构<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
 <p>整个系统由 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML 文件驱动，该文件作为所有系统规范的单一数据源。</p>
-<section id="id7">
-<h3>配置流程<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph TB
+<div class="section" id="id7">
+<h3>配置流程<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph TB
     YAML[&quot;robot_config YAML&lt;br/&gt;so101_single_arm.yaml&quot;]
 
     subgraph &quot;Configuration Sections&quot;
@@ -879,7 +454,7 @@ window.addEventListener("load", load);</script>
     LAUNCH --&gt;|&quot;generates&quot;| EXECNODES[&quot;Execution Nodes&quot;]
 
     ROS2C --&gt;|&quot;spawns&quot;| CONTROLLERS[&quot;Controller Manager&lt;br/&gt;position_controllers&lt;br/&gt;trajectory_controllers&quot;]
-    </pre><p><strong>关键配置文件：</strong></p>
+        </div><p><strong>关键配置文件：</strong></p>
 <ul class="simple">
 <li><p>主配置：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml">src/robot_config/config/robots/so101_single_arm.yaml</a></p></li>
 <li><p>加载器：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/loader.py">src/robot_config/robot_config/loader.py</a></p></li>
@@ -890,6 +465,11 @@ window.addEventListener("load", load);</script>
 </ul>
 <p><strong>配置到代码映射：</strong></p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>配置节</p></th>
 <th class="head"><p>代码消费者</p></th>
@@ -927,15 +507,15 @@ window.addEventListener("load", load);</script>
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml">src/robot_config/config/robots/so101_single_arm.yaml</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L87-L175">src/robot_config/launch/robot.launch.py:87-175</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/execution.py#L20-L157">src/robot_config/robot_config/launch_builders/execution.py:20-157</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id8">
-<h2>数据流架构<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
-<section id="id9">
-<h3>观测流（传感器 → 推理）<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph LR
+<div class="section" id="id8">
+<h2>数据流架构<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
+<div class="section" id="id9">
+<h3>观测流（传感器 → 推理）<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph LR
     CAM[&quot;Cameras&lt;br/&gt;/camera/cam_top/image_raw&lt;br/&gt;/camera/cam_wrist/image_raw&quot;]
     JS[&quot;Joint State Publisher&lt;br/&gt;/joint_states&quot;]
 
@@ -955,7 +535,7 @@ window.addEventListener("load", load);</script>
     INFENG --&gt;|&quot;action tensor&quot;| POSTPROC[&quot;TensorPostprocessor&lt;br/&gt;denormalize&lt;br/&gt;safety clipping&quot;]
 
     POSTPROC --&gt;|&quot;VariantsList&quot;| DISPINFER[&quot;DispatchInfer.Result&lt;br/&gt;action_chunk&quot;]
-    </pre><p><strong>关键代码路径：</strong></p>
+        </div><p><strong>关键代码路径：</strong></p>
 <ol class="arabic simple">
 <li><p><strong>观测回调：</strong>
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L381-L397">src/inference_service/inference_service/lerobot_policy_node.py:381-397</a></p>
@@ -986,11 +566,11 @@ window.addEventListener("load", load);</script>
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L381-L420">src/inference_service/inference_service/lerobot_policy_node.py:381-420</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/contract_utils.py">src/robot_config/robot_config/contract_utils.py</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/core/preprocessor.py">src/inference_service/inference_service/core/preprocessor.py</a></p>
-</section>
-<section id="id10">
-<h3>动作流（推理 → 硬件）<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph LR
+</div>
+<div class="section" id="id10">
+<h3>动作流（推理 → 硬件）<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph LR
     INFRESULT[&quot;推理结果&lt;br/&gt;VariantsList&lt;br/&gt;action chunk (N, action_dim)&quot;]
 
     INFRESULT --&gt;|&quot;TensorMsgConverter.from_variant()&quot;| DECODE[&quot;解码为&lt;br/&gt;torch.Tensor 或 np.ndarray&quot;]
@@ -1008,7 +588,7 @@ window.addEventListener("load", load);</script>
     POSCTRL --&gt;|&quot;FollowJointTrajectory&quot;| ROS2CTRL[&quot;ros2_control&lt;br/&gt;PositionJointInterface&quot;]
 
     ROS2CTRL --&gt;|&quot;write()&quot;| HW[&quot;so101_hardware&lt;br/&gt;Feetech SDK&quot;]
-    </pre><p><strong>关键代码路径：</strong></p>
+        </div><p><strong>关键代码路径：</strong></p>
 <ol class="arabic simple">
 <li><p><strong>动作解码：</strong>
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L232-L278">src/action_dispatch/action_dispatch/action_dispatcher_node.py:232-278</a></p>
@@ -1039,16 +619,16 @@ window.addEventListener("load", load);</script>
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L172-L278">src/action_dispatch/action_dispatch/action_dispatcher_node.py:172-278</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py">src/action_dispatch/action_dispatch/temporal_smoother.py</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/topic_executor.py">src/action_dispatch/action_dispatch/topic_executor.py</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id11">
-<h2>控制模式架构<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
+<div class="section" id="id11">
+<h2>控制模式架构<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h2>
 <p>IB-Robot 支持三种不同的控制模式，它们汇聚到同一个 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 硬件接口。</p>
-<section id="id12">
-<h3>控制模式选择与路由<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph TB
+<div class="section" id="id12">
+<h3>控制模式选择与路由<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph TB
     LAUNCH[&quot;robot.launch.py&lt;br/&gt;--control_mode parameter&quot;]
     YAML[&quot;default_control_mode&lt;br/&gt;from robot_config YAML&quot;]
 
@@ -1093,7 +673,7 @@ window.addEventListener("load", load);</script>
     ROS2CTRL --&gt; HWCHOICE{&quot;use_sim?&quot;}
     HWCHOICE --&gt;|&quot;false&quot;| REAL[&quot;so101_hardware&quot;]
     HWCHOICE --&gt;|&quot;true&quot;| SIM[&quot;Gazebo gz_ros2_control&quot;]
-    </pre><p><strong>控制模式配置：</strong></p>
+        </div><p><strong>控制模式配置：</strong></p>
 <p>每种模式在机器人配置 YAML 的 <code class="docutils literal notranslate"><span class="pre">control_modes</span></code> 节中定义：</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">control_modes</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">teleop</span><span class="p">:</span>
@@ -1123,16 +703,16 @@ window.addEventListener("load", load);</script>
 <p><strong>来源：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L123-L300">src/robot_config/launch/robot.launch.py:123-300</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml">src/robot_config/config/robots/so101_single_arm.yaml</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L121-L154">README.md:121-154</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id13">
-<h2>推理执行模式<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
+<div class="section" id="id13">
+<h2>推理执行模式<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h2>
 <p>推理服务支持两种执行架构：<strong>单体</strong>（一体化进程）和**分布式**（边缘-云端分离）。</p>
-<section id="id14">
-<h3>单体模式架构<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph TB
+<div class="section" id="id14">
+<h3>单体模式架构<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph TB
     SENSORS[&quot;传感器&lt;br/&gt;相机 + JointState&quot;]
 
     subgraph &quot;lerobot_policy_node 进程&quot;
@@ -1152,7 +732,7 @@ window.addEventListener("load", load);</script>
     SENSORS --&gt;|&quot;ROS topics&quot;| COORD
     POST --&gt;|&quot;VariantsList&quot;| DISP[&quot;action_dispatcher_node&quot;]
     DISP --&gt; ROBOT[&quot;机器人控制&quot;]
-    </pre><p><strong>关键实现：</strong>
+        </div><p><strong>关键实现：</strong>
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L285-L304">src/inference_service/inference_service/lerobot_policy_node.py:285-304</a></p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">_setup_monolithic_mode()</span></code> 创建 <code class="docutils literal notranslate"><span class="pre">InferenceCoordinator</span></code></p></li>
@@ -1161,11 +741,11 @@ window.addEventListener("load", load);</script>
 <li><p><code class="docutils literal notranslate"><span class="pre">_execute_monolithic()</span></code> 位于
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L491-L493">src/inference_service/inference_service/lerobot_policy_node.py:491-493</a></p></li>
 </ul>
-</section>
-<section id="id15">
-<h3>分布式模式架构<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph TB
+</div>
+<div class="section" id="id15">
+<h3>分布式模式架构<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph TB
     subgraph &quot;设备节点（机器人 CPU）&quot;
         SENSORS[&quot;传感器&quot;]
         EDGENODE[&quot;lerobot_policy_node&lt;br/&gt;(边缘代理)&quot;]
@@ -1188,7 +768,7 @@ window.addEventListener("load", load);</script>
     ENG --&gt;|&quot;/inference/action&lt;br/&gt;VariantsList&lt;br/&gt;ROS2 topic&quot;| POST
 
     DISP --&gt; ROBOT[&quot;机器人控制&quot;]
-    </pre><p><strong>关键实现：</strong>
+        </div><p><strong>关键实现：</strong>
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L306-L351">src/inference_service/inference_service/lerobot_policy_node.py:306-351</a></p>
 <ol class="arabic simple">
 <li><p><strong>边缘节点设置：</strong> <code class="docutils literal notranslate"><span class="pre">_setup_distributed_mode()</span></code></p>
@@ -1228,15 +808,15 @@ window.addEventListener("load", load);</script>
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py#L285-L584">src/inference_service/inference_service/lerobot_policy_node.py:285-584</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/pure_inference_node.py">src/inference_service/inference_service/pure_inference_node.py</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/README.en.md#L1-L130">src/inference_service/README.en.md:1-130</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id16">
-<h2>数据采集与训练流水线<a class="headerlink" href="#id16" title="Link to this heading"></a></h2>
-<section id="id17">
-<h3>录制架构<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph TB
+<div class="section" id="id16">
+<h2>数据采集与训练流水线<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h2>
+<div class="section" id="id17">
+<h3>录制架构<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph TB
     HUMAN[&quot;人类专家&quot;]
     CONTROLLER[&quot;VR/Xbox/IMU 控制器&quot;]
     ROBOT[&quot;物理机器人&quot;]
@@ -1257,7 +837,7 @@ window.addEventListener("load", load);</script>
     RECORDER --&gt;|&quot;rosbag2_py.SequentialWriter&quot;| BAG[&quot;ROS2 Bag&lt;br/&gt;/tmp/episodes/&lt;timestamp&gt;&lt;br/&gt;MCAP 格式&quot;]
 
     BAG --&gt;|&quot;metadata.yaml&quot;| META[&quot;Episode 元数据&lt;br/&gt;operator_prompt&lt;br/&gt;duration_ns&lt;br/&gt;contract fingerprint&quot;]
-    </pre><p><strong>录制实现：</strong>
+        </div><p><strong>录制实现：</strong>
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/episode_recorder.py#L161-L274">src/dataset_tools/dataset_tools/episode_recorder.py:161-274</a></p>
 <ol class="arabic simple">
 <li><p><strong>持久订阅：</strong> 在节点启动时为所有契约主题创建</p>
@@ -1283,11 +863,11 @@ window.addEventListener("load", load);</script>
 </ul>
 </li>
 </ol>
-</section>
-<section id="id18">
-<h3>数据集转换流水线<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph LR
+</div>
+<div class="section" id="id18">
+<h3>数据集转换流水线<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph LR
     BAG[&quot;ROS2 Bag 文件&lt;br/&gt;(MCAP)&quot;]
 
     BAG --&gt;|&quot;rosbag2_py.SequentialReader&quot;| B2L[&quot;bag_to_lerobot&lt;br/&gt;转换脚本&quot;]
@@ -1302,7 +882,7 @@ window.addEventListener("load", load);</script>
     RESAMPLED --&gt;|&quot;每帧&quot;| WRITER[&quot;LeRobotDataset.add_frame()&quot;]
 
     WRITER --&gt; LRDS[&quot;LeRobot v3 数据集&lt;br/&gt;videos/*.mp4&lt;br/&gt;data/*.parquet&lt;br/&gt;meta/info.json&quot;]
-    </pre><p><strong>转换实现：</strong>
+        </div><p><strong>转换实现：</strong>
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L233-L648">src/dataset_tools/dataset_tools/bag_to_lerobot.py:233-648</a></p>
 <ol class="arabic simple">
 <li><p><strong>契约加载：</strong>
@@ -1339,16 +919,16 @@ window.addEventListener("load", load);</script>
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/episode_recorder.py#L161-L547">src/dataset_tools/dataset_tools/episode_recorder.py:161-547</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L216-L648">src/dataset_tools/dataset_tools/bag_to_lerobot.py:216-648</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md">src/dataset_tools/README.md</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id19">
-<h2>动作分发与时间平滑<a class="headerlink" href="#id19" title="Link to this heading"></a></h2>
+<div class="section" id="id19">
+<h2>动作分发与时间平滑<a class="headerlink" href="#id19" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">action_dispatcher_node</span></code> 实现了一个复杂的拉取式执行系统，具有跨帧时间平滑功能用于动作块。</p>
-<section id="id20">
-<h3>分发架构<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph TB
+<div class="section" id="id20">
+<h3>分发架构<a class="headerlink" href="#id20" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph TB
     TIMER[&quot;控制循环定时器&lt;br/&gt;100 Hz&quot;]
 
     TIMER --&gt; CHECK{&quot;队列长度&lt;br/&gt;&lt; watermark?&quot;}
@@ -1372,7 +952,7 @@ window.addEventListener("load", load);</script>
     QUEUE --&gt; EXECUTE
 
     EXECUTE --&gt;|&quot;TopicExecutor.execute()&quot;| TOPICS[&quot;控制器主题&lt;br/&gt;/arm_position_controller/commands&lt;br/&gt;/gripper_position_controller/commands&quot;]
-    </pre><p><strong>关键实现细节：</strong></p>
+        </div><p><strong>关键实现细节：</strong></p>
 <ol class="arabic simple">
 <li><p><strong>控制循环：</strong>
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L172-L201">src/action_dispatch/action_dispatch/action_dispatcher_node.py:172-201</a></p>
@@ -1397,12 +977,12 @@ window.addEventListener("load", load);</script>
 </ul>
 </li>
 </ol>
-</section>
-<section id="id21">
-<h3>时间平滑算法<a class="headerlink" href="#id21" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id21">
+<h3>时间平滑算法<a class="headerlink" href="#id21" title="Permalink to this heading"></a></h3>
 <p>时间平滑器解决了在执行前一个动作块时新推理完成时的动作块对齐问题：</p>
-<pre  class="mermaid">
-        graph TB
+<div class="mermaid">
+            graph TB
     subgraph &quot;第一次推理 (t=0)&quot;
         A1[&quot;[a1, a2, a3, a4, a5, a6, a7, a8, a9, a10]&lt;br/&gt;chunk_size=10&quot;]
     end
@@ -1437,7 +1017,7 @@ window.addEventListener("load", load);</script>
     OVERLAP --&gt; BLEND
 
     BLEND --&gt; FINAL[&quot;最终平滑计划:&lt;br/&gt;[blend(a4,b4), blend(a5,b5), ..., blend(a10,b10)]&lt;br/&gt;长度: 7&quot;]
-    </pre><p><strong>平滑实现：</strong>
+        </div><p><strong>平滑实现：</strong>
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py">src/action_dispatch/action_dispatch/temporal_smoother.py</a></p>
 <ol class="arabic">
 <li><p><strong>更新方法：</strong></p>
@@ -1476,16 +1056,16 @@ k=0..chunk_size</p></li>
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L49-L301">src/action_dispatch/action_dispatch/action_dispatcher_node.py:49-301</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py">src/action_dispatch/action_dispatch/temporal_smoother.py</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/README.en.md#L212-L342">src/action_dispatch/README.en.md:212-342</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id22">
-<h2>启动系统与节点生成<a class="headerlink" href="#id22" title="Link to this heading"></a></h2>
+<div class="section" id="id22">
+<h2>启动系统与节点生成<a class="headerlink" href="#id22" title="Permalink to this heading"></a></h2>
 <p>启动系统使用模块化构建器模式，每个子系统都有专用的构建器模块。</p>
-<section id="id23">
-<h3>启动构建器架构<a class="headerlink" href="#id23" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph TB
+<div class="section" id="id23">
+<h3>启动构建器架构<a class="headerlink" href="#id23" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph TB
     MAIN[&quot;robot.launch.py&lt;br/&gt;launch_setup()&quot;]
 
     MAIN --&gt;|&quot;加载&quot;| YAML[&quot;robot_config YAML&quot;]
@@ -1522,8 +1102,13 @@ k=0..chunk_size</p></li>
     EXECNODES --&gt; LD
     TELEOPNODES --&gt; LD
     RECNODES --&gt; LD
-    </pre><p><strong>启动构建器模块：</strong></p>
+        </div><p><strong>启动构建器模块：</strong></p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>构建器模块</p></th>
 <th class="head"><p>职责</p></th>
@@ -1579,15 +1164,15 @@ k=0..chunk_size</p></li>
 <p><strong>来源：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/launch/robot.launch.py#L123-L300">src/robot_config/launch/robot.launch.py:123-300</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/execution.py#L20-L281">src/robot_config/robot_config/launch_builders/execution.py:20-281</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/control.py">src/robot_config/robot_config/launch_builders/control.py</a></p>
-</section>
-</section>
-<section id="ros2-control">
-<h2>硬件抽象与 ros2_control 集成<a class="headerlink" href="#ros2-control" title="Link to this heading"></a></h2>
+</div>
+</div>
+<div class="section" id="ros2-control">
+<h2>硬件抽象与 ros2_control 集成<a class="headerlink" href="#ros2-control" title="Permalink to this heading"></a></h2>
 <p>系统使用 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 作为硬件抽象层，支持真实硬件和仿真使用相同的控制器。</p>
-<section id="id24">
-<h3>ros2_control 架构<a class="headerlink" href="#id24" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph TB
+<div class="section" id="id24">
+<h3>ros2_control 架构<a class="headerlink" href="#id24" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph TB
     subgraph &quot;控制器层&quot;
         POSCTRL[&quot;position_controllers&lt;br/&gt;(JointGroupPositionController)&quot;]
         TRAJCTRL[&quot;trajectory_controllers&lt;br/&gt;(JointTrajectoryController)&quot;]
@@ -1620,7 +1205,7 @@ k=0..chunk_size</p></li>
 
     REAL --&gt;|&quot;read/write&quot;| MOTORS[&quot;物理电机&quot;]
     SIM --&gt;|&quot;read/write&quot;| GAZEBO[&quot;Gazebo 物理引擎&quot;]
-    </pre><p><strong>控制器配置：</strong></p>
+        </div><p><strong>控制器配置：</strong></p>
 <p>控制器在机器人配置的 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 节中定义：</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">ros2_control</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">hardware</span><span class="p">:</span>
@@ -1660,15 +1245,15 @@ k=0..chunk_size</p></li>
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/control.py">src/robot_config/robot_config/launch_builders/control.py</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/so101_hardware/">src/so101_hardware/</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml">src/robot_config/config/robots/so101_single_arm.yaml</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id25">
-<h2>构建系统与环境管理<a class="headerlink" href="#id25" title="Link to this heading"></a></h2>
-<section id="id26">
-<h3>构建架构<a class="headerlink" href="#id26" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph TB
+<div class="section" id="id25">
+<h2>构建系统与环境管理<a class="headerlink" href="#id25" title="Permalink to this heading"></a></h2>
+<div class="section" id="id26">
+<h3>构建架构<a class="headerlink" href="#id26" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph TB
     SETUP[&quot;setup.sh&lt;br/&gt;(一次性初始化)&quot;]
 
     SETUP --&gt;|&quot;1. git submodule update&quot;| SUBMOD[&quot;下载 src/ 子模块&lt;br/&gt;libs/lerobot&quot;]
@@ -1686,9 +1271,14 @@ k=0..chunk_size</p></li>
     BUILD --&gt;|&quot;4. colcon build&quot;| COLCON[&quot;构建 ROS 包&lt;br/&gt;--mixin dev/release/debug&quot;]
 
     COLCON --&gt;|&quot;生成&quot;| INSTALL[&quot;install/&lt;br/&gt;setup.sh&lt;br/&gt;包二进制&quot;]
-    </pre><p><strong>构建 Mixin：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/scripts/build.sh#L19-L67">scripts/build.sh:19-67</a></p>
+        </div><p><strong>构建 Mixin：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/scripts/build.sh#L19-L67">scripts/build.sh:19-67</a></p>
 <p>构建系统支持不同构建配置的 mixin：</p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Mixin</p></th>
 <th class="head"><p>描述</p></th>
@@ -1749,49 +1339,49 @@ k=0..chunk_size</p></li>
 </div>
 <p><strong>来源：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/scripts/build.sh#L1-L229">scripts/build.sh:1-229</a>, <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/scripts/setup.sh">scripts/setup.sh</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L75-L118">README.md:75-118</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id27">
-<h2>总结：关键架构模式<a class="headerlink" href="#id27" title="Link to this heading"></a></h2>
-<section id="id28">
-<h3>1. 单一数据源<a class="headerlink" href="#id28" title="Link to this heading"></a></h3>
+<div class="section" id="id27">
+<h2>总结：关键架构模式<a class="headerlink" href="#id27" title="Permalink to this heading"></a></h2>
+<div class="section" id="id28">
+<h3>1. 单一数据源<a class="headerlink" href="#id28" title="Permalink to this heading"></a></h3>
 <p>所有系统行为由 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML 文件驱动。Contract 抽象确保录制、训练和推理使用相同的数据处理流水线。</p>
 <p><strong>文件：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/so101_single_arm.yaml">src/robot_config/config/robots/so101_single_arm.yaml</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/loader.py">src/robot_config/robot_config/loader.py</a></p>
-</section>
-<section id="id29">
-<h3>2. 契约驱动设计<a class="headerlink" href="#id29" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id29">
+<h3>2. 契约驱动设计<a class="headerlink" href="#id29" title="Permalink to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">Contract</span></code> 数据类定义观测、动作及其 ROS 到张量的映射。消费者使用共享工具（<code class="docutils literal notranslate"><span class="pre">decode_value</span></code>、<code class="docutils literal notranslate"><span class="pre">resample</span></code>、<code class="docutils literal notranslate"><span class="pre">feature_from_spec</span></code>）确保一致性。</p>
 <p><strong>文件：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/contract_utils.py">src/robot_config/robot_config/contract_utils.py</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/tensormsg/tensormsg/converter.py">src/tensormsg/tensormsg/converter.py</a></p>
-</section>
-<section id="id30">
-<h3>3. 模块化启动构建器<a class="headerlink" href="#id30" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id30">
+<h3>3. 模块化启动构建器<a class="headerlink" href="#id30" title="Permalink to this heading"></a></h3>
 <p>启动文件生成被拆分为特定领域的构建器（控制、感知、执行等），可根据控制模式和配置进行组合。</p>
 <p><strong>文件：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/">src/robot_config/robot_config/launch_builders/</a></p>
-</section>
-<section id="id31">
-<h3>4. 双执行模式<a class="headerlink" href="#id31" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id31">
+<h3>4. 双执行模式<a class="headerlink" href="#id31" title="Permalink to this heading"></a></h3>
 <p>推理服务支持单体（零拷贝、单机）和分布式（边缘-云端）模式，使用相同的 Action Server 接口。</p>
 <p><strong>文件：</strong>
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/lerobot_policy_node.py">src/inference_service/inference_service/lerobot_policy_node.py</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/inference_service/inference_service/pure_inference_node.py">src/inference_service/inference_service/pure_inference_node.py</a></p>
-</section>
-<section id="id32">
-<h3>5. 时间平滑<a class="headerlink" href="#id32" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id32">
+<h3>5. 时间平滑<a class="headerlink" href="#id32" title="Permalink to this heading"></a></h3>
 <p>跨帧动作块平滑消除了在前一个块执行期间新推理完成时的运动不连续性。</p>
 <p><strong>文件：</strong>
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/temporal_smoother.py">src/action_dispatch/action_dispatch/temporal_smoother.py</a></p>
-</section>
-<section id="id33">
-<h3>6. 硬件抽象<a class="headerlink" href="#id33" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id33">
+<h3>6. 硬件抽象<a class="headerlink" href="#id33" title="Permalink to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 框架为真实硬件和仿真提供统一接口，实现无缝模式切换。</p>
 <p><strong>文件：</strong> <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/so101_hardware/">src/so101_hardware/</a>,
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/control.py">src/robot_config/robot_config/launch_builders/control.py</a></p>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
            </div>
@@ -1826,16 +1416,6 @@ k=0..chunk_size</p></li>
   </span>
   <div class="rst-other-versions">
     <dl>
-      <dt>Tags</dt>
-      <dd><a href="../../../../24.03-lts/index.html">24.03-lts</a></dd>
-      <dd><a href="../../../../llvm-toolchain-v0.1.1/index.html">llvm-toolchain-v0.1.1</a></dd>
-      <dd><a href="../../../../nativesdk-v0.1.2/index.html">nativesdk-v0.1.2</a></dd>
-      <dd><a href="../../../../nativesdk-v0.1.3/index.html">nativesdk-v0.1.3</a></dd>
-      <dd><a href="../../../../toolchains-v0.1.5/index.html">toolchains-v0.1.5</a></dd>
-      <dd><a href="../../../../toolchains-v0.1.7/index.html">toolchains-v0.1.7</a></dd>
-      <dd><a href="../../../../toolchains-v0.1.8/index.html">toolchains-v0.1.8</a></dd>
-    </dl>
-    <dl>
       <dt>Branches</dt>
       <dd><a href="system_architecture.html">master</a></dd>
       <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
@@ -1846,10 +1426,10 @@ k=0..chunk_size</p></li>
       <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
       <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
       <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
       <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
       <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
-      <dd><a href="../../../../pr_2786/features/embodied_ai/architecture/system_architecture.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

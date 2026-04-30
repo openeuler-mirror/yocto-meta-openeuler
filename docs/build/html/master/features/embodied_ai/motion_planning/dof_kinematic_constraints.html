@@ -1,460 +1,29 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../../">
+<html class="writer-html5" lang="en">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>5DOF 运动学约束 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=d35d3fb5" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
 
   
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
-      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.15.0/dist/mermaid.esm.min.mjs";
-
-
-
-
-
-const initStyles = () => {
-    const defaultStyle = document.createElement('style');
-    defaultStyle.textContent = `pre.mermaid {
-    /* Same as .mermaid-container > pre */
-    display: block;
-    width: 100%;
-}
-
-pre.mermaid > svg {
-    /* Same as .mermaid-container > pre > svg */
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}`;
-    document.head.appendChild(defaultStyle);
-
-    const fullscreenStyle = document.createElement('style');
-    fullscreenStyle.textContent = `.mermaid-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-}
-
-.mermaid-container > pre {
-    display: block;
-    width: 100%;
-}
-
-.mermaid-container > pre > svg {
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}
-
-.mermaid-fullscreen-btn {
-    width: 28px;
-    height: 28px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    font-size: 14px;
-    line-height: 1;
-    padding: 0;
-    color: #333;
-}
-
-.mermaid-fullscreen-btn:hover {
-    opacity: 100% !important;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-btn.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-btn.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal {
-    display: none;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 95vw;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.98);
-    z-index: 9999;
-    padding: 20px;
-    overflow: auto;
-}
-
-.mermaid-fullscreen-modal.dark-theme {
-    background: rgba(0, 0, 0, 0.98);
-}
-
-.mermaid-fullscreen-modal.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen {
-    position: relative;
-    width: 95vw;
-    height: 90vh;
-    max-width: 95vw;
-    max-height: 90vh;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    overflow: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen.dark-theme {
-    background: #1a1a1a;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-}
-
-.mermaid-container-fullscreen pre.mermaid {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen .mermaid svg {
-    height: 100% !important;
-    width: 100% !important;
-    cursor: grab;
-}
-
-.mermaid-fullscreen-close {
-    position: fixed !important;
-    top: 20px !important;
-    right: 20px !important;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s;
-    font-size: 24px;
-    line-height: 1;
-    color: #333;
-}
-
-.mermaid-fullscreen-close:hover {
-    background: white;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-close.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-close.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
-    display: none !important;
-}`;
-    document.head.appendChild(fullscreenStyle);
-}
-
-// Detect if page has dark background
-const isDarkTheme = () => {
-    // We use a set of heuristics:
-    // 1. Check for common dark mode classes or attributes
-    // 2. Check computed background color brightness
-    if (document.documentElement.classList.contains('dark') ||
-        document.documentElement.getAttribute('data-theme') === 'dark' ||
-        document.body.classList.contains('dark') ||
-        document.body.getAttribute('data-theme') === 'dark') {
-        // console.log("Dark theme detected via class/attribute");
-        return true;
-    }
-    if (document.documentElement.classList.contains('light') ||
-        document.documentElement.getAttribute('data-theme') === 'light' ||
-        document.body.classList.contains('light') ||
-        document.body.getAttribute('data-theme') === 'light') {
-        // console.log("Light theme detected via class/attribute");
-        return false;
-    }
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        // console.log("Dark theme detected via prefers-color-scheme");
-        return true;
-    }
-    const bgColor = window.getComputedStyle(document.body).backgroundColor;
-    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
-    if (match) {
-        const r = parseInt(match[1]);
-        const g = parseInt(match[2]);
-        const b = parseInt(match[3]);
-        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        // console.log("Background color brightness:", brightness);
-        return brightness < 128;
-    }
-    // console.log("No dark or light theme detected, defaulting to light theme");
-    return false;
-};
-
-let darkTheme = isDarkTheme();
-let modal = null;
-let modalContent = null;
-let previousScrollOffset = [window.scrollX, window.scrollY];
-
-const runMermaid = async (rerun) => {
-    console.log("Running mermaid diagrams, rerun =", rerun);
-    // clear all existing mermaid charts
-    let all_mermaids = document.querySelectorAll(".mermaid");
-
-    if (rerun) {
-        all_mermaids.forEach((el) => {
-            if(!el.hasAttribute("data-original-code")) {
-                // store original code
-                // console.log(`Storing original code for first run: `, el.innerHTML);
-                el.setAttribute('data-original-code', el.innerHTML);
-            }
-            if(el.getAttribute("data-processed") === "true") {
-                // remove and restore original
-                el.removeAttribute("data-processed");
-                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
-                el.innerHTML = el.getAttribute('data-original-code');
-            } else {
-                // store original code
-                // console.log(`Storing original code for re-run: `, el.innerHTML);
-                el.setAttribute('data-original-code', el.innerHTML);
-            }
-        });
-        await mermaid.run();
-    }
-
-    all_mermaids = document.querySelectorAll(".mermaid");
-    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
-
-    if ("False" === "True") {
-        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
-        if(mermaids_to_add_zoom > 0) {
-            var svgs = d3.selectAll("");
-            if(all_mermaids.length !== mermaids_processed.length) {
-                setTimeout(() => runMermaid(false), 200);
-                return;
-            } else if(svgs.size() !== mermaids_to_add_zoom) {
-                setTimeout(() => runMermaid(false), 200);
-                return;
-            } else {
-                svgs.each(function() {
-                    var svg = d3.select(this);
-                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
-                    var inner = svg.select("g");
-                    var zoom = d3.zoom().on("zoom", function(event) {
-                        inner.attr("transform", event.transform);
-                    });
-                    svg.call(zoom);
-                });
-            }
-        }
-    } else if(all_mermaids.length !== mermaids_processed.length) {
-        // Wait for mermaid to process all diagrams
-        setTimeout(() => runMermaid(false), 200);
-        return;
-    }
-
-    // Stop here if not adding fullscreen capability
-    if ("True" !== "True") return;
-
-    if (modal !== null ) {
-        // Destroy existing modal
-        modal.remove();
-        modal = null;
-        modalContent = null;
-    }
-
-    modal = document.createElement('div');
-    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
-    modal.setAttribute('role', 'dialog');
-    modal.setAttribute('aria-modal', 'true');
-    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
-    modal.innerHTML = `
-        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
-        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
-    `;
-    document.body.appendChild(modal);
-
-    modalContent = modal.querySelector('.mermaid-container-fullscreen');
-    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
-
-    const closeModal = () => {
-        modal.classList.remove('active');
-        modalContent.innerHTML = '';
-        document.body.style.overflow = ''
-        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
-    };
-
-    closeBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('active')) {
-            closeModal();
-        }
-    });
-
-    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
-        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
-            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
-            // Already processed, adjust button class if needed
-            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
-            if (existingBtn) {
-                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
-            }
-            return;
-        }
-
-        const container = document.createElement('div');
-        container.className = 'mermaid-container';
-        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
-        container.appendChild(mermaidDiv);
-
-        const fullscreenBtn = document.createElement('button');
-        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
-        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
-        fullscreenBtn.textContent = '⛶';
-        fullscreenBtn.style.opacity = '50%';
-
-        // Calculate dynamic position based on diagram's margin and padding
-        const diagramStyle = window.getComputedStyle(mermaidDiv);
-        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
-        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
-        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
-        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
-        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
-        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
-
-        fullscreenBtn.addEventListener('click', () => {
-            previousScrollOffset = [window.scroll, window.scrollY];
-            const clone = mermaidDiv.cloneNode(true);
-            modalContent.innerHTML = '';
-            modalContent.appendChild(clone);
-
-            const svg = clone.querySelector('svg');
-            if (svg) {
-                svg.removeAttribute('width');
-                svg.removeAttribute('height');
-                svg.style.width = '100%';
-                svg.style.height = 'auto';
-                svg.style.maxWidth = '100%';
-                svg.style.sdisplay = 'block';
-
-                if ("False" === "True") {
-                    setTimeout(() => {
-                        const g = svg.querySelector('g');
-                        if (g) {
-                            var svgD3 = d3.select(svg);
-                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
-                            var inner = svgD3.select("g");
-                            var zoom = d3.zoom().on("zoom", function(event) {
-                                inner.attr("transform", event.transform);
-                            });
-                            svgD3.call(zoom);
-                        }
-                    }, 100);
-                }
-            }
-
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        });
-        container.appendChild(fullscreenBtn);
-    });
-};
-
-const load = async () => {
-    initStyles();
-
-    await runMermaid(true);
-
-    const reRunIfThemeChanges = async () => {
-        const newDarkTheme = isDarkTheme();
-        if (newDarkTheme !== darkTheme) {
-            darkTheme = newDarkTheme;
-            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
-            await mermaid.initialize(
-                {...JSON.parse(
-                    `{"startOnLoad": false}`
-                ),
-                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
-                }
-            );
-            await runMermaid(true);
-        }
-    };
-
-    // Update theme classes when theme changes
-    const themeObserver = new MutationObserver(reRunIfThemeChanges);
-    themeObserver.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['class', 'style', 'data-theme']
-    });
-    themeObserver.observe(document.body, {
-        attributes: true,
-        attributeFilter: ['class', 'style', 'data-theme']
-    });
-};
-
-
-
-
-
-console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
-mermaid.initialize(
-    {...JSON.parse(
-        `{"startOnLoad": false}`
-    ),
-    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
-    }
-);
-
-window.addEventListener("load", load);</script>
-      <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
-      <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+        <script>mermaid.initialize({startOnLoad:true});</script>
+        <script src="../../../_static/js/mermaid-init.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -580,8 +149,8 @@ window.addEventListener("load", load);</script>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="dof">
-<h1>5DOF 运动学约束<a class="headerlink" href="#dof" title="Link to this heading"></a></h1>
+  <div class="section" id="dof">
+<h1>5DOF 运动学约束<a class="headerlink" href="#dof" title="Permalink to this heading"></a></h1>
 <details><p>相关源文件</p>
 <p>以下文件用作生成此 wiki 页面的上下文：</p>
 <ul class="simple">
@@ -597,25 +166,25 @@ window.addEventListener("load", load);</script>
 </details><p>本文档介绍 IB-Robot 框架中 5 自由度（DOF）机械臂的运动学约束处理系统。SO101 机械臂只有 5 个驱动关节，但末端执行器位姿命令指定 6DOF（3 位置 + 3 姿态）。本文档解释数学问题、<code class="docutils literal notranslate"><span class="pre">MoveItGateway</span></code> 中实现的约束松弛策略，以及成功逆运动学（IK）求解所需的配置。</p>
 <p>有关 MoveItGateway 节点的整体架构和位姿命令接口信息，请参阅 <a class="reference external" href="#10.1">MoveItGateway 节点</a>。有关 MoveIt 启动配置和控制器设置，请参阅 <a class="reference external" href="#10.3">MoveIt 启动配置</a>。</p>
 <hr class="docutils" />
-<section id="id1">
-<h2>5DOF 问题<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
-<section id="id2">
-<h3>数学约束<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<div class="section" id="id1">
+<h2>5DOF 问题<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<div class="section" id="id2">
+<h3>数学约束<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
 <p>6DOF 位姿规范提供 6 个约束：- <strong>位置</strong>：3 个约束（x, y, z）- <strong>姿态</strong>：3 个约束（roll, pitch, yaw）</p>
 <p>5DOF 机械臂只有 5 个关节变量。标准 IK 求解器尝试同时满足所有 6 个约束将因系统过度约束（6 个方程，5 个未知数）而失败并返回 <code class="docutils literal notranslate"><span class="pre">NO_IK_SOLUTION</span></code> 错误。</p>
-</section>
-<section id="id3">
-<h3>运动学限制<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id3">
+<h3>运动学限制<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
 <p>SO101 机械臂的 5 个旋转关节可以控制：- 3 DOF 用于末端执行器位置 - 2 DOF 用于末端执行器姿态（通常是工具轴的方向）- <strong>缺失</strong>：1 DOF 用于绕工具轴旋转（roll）</p>
 <p>这意味着末端执行器无法实现任意 6DOF 位姿。对于大多数目标姿态，不存在精确解。</p>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L22-L51">src/robot_moveit/docs/moveit_gateway.md:22-51</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="ik">
-<h2>配置：仅位置 IK<a class="headerlink" href="#ik" title="Link to this heading"></a></h2>
-<section id="id4">
-<h3>运动学配置<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<div class="section" id="ik">
+<h2>配置：仅位置 IK<a class="headerlink" href="#ik" title="Permalink to this heading"></a></h2>
+<div class="section" id="id4">
+<h3>运动学配置<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
 <p>主要解决方案是在 KDL 运动学求解器中启用仅位置 IK 模式：</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">arm</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">kinematics_solver</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kdl_kinematics_plugin/KDLKinematicsPlugin</span>
@@ -627,10 +196,15 @@ window.addEventListener("load", load);</script>
 </div>
 <p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/config/lerobot/so101/kinematics.yaml#L1-L7">src/robot_moveit/config/lerobot/so101/kinematics.yaml:1-7</a></p>
-</section>
-<section id="position-only-ik-true">
-<h3><code class="docutils literal notranslate"><span class="pre">position_only_ik:</span> <span class="pre">True</span></code> 时的求解器行为<a class="headerlink" href="#position-only-ik-true" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="position-only-ik-true">
+<h3><code class="docutils literal notranslate"><span class="pre">position_only_ik:</span> <span class="pre">True</span></code> 时的求解器行为<a class="headerlink" href="#position-only-ik-true" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>方面</p></th>
 <th class="head"><p>标准模式</p></th>
@@ -662,14 +236,14 @@ window.addEventListener("load", load);</script>
 </table>
 <p>传递给 <code class="docutils literal notranslate"><span class="pre">compute_ik_async()</span></code> 的姿态四元数仍然影响从满足位置的配置集中选择哪个解，但它不强制严格的姿态匹配。</p>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L33-L58">src/robot_moveit/docs/moveit_gateway.md:33-58</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id5">
-<h2>姿态预处理策略<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<div class="section" id="id5">
+<h2>姿态预处理策略<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
 <p>即使启用了 <code class="docutils literal notranslate"><span class="pre">position_only_ik:</span> <span class="pre">True</span></code>，<code class="docutils literal notranslate"><span class="pre">MoveItGateway</span></code> 节点仍应用姿态预处理以改善 IK 收敛性，并引导求解器朝向运动学可行的姿态。</p>
-<section id="z">
-<h3>策略 1：仅 Z 轴约束<a class="headerlink" href="#z" title="Link to this heading"></a></h3>
+<div class="section" id="z">
+<h3>策略 1：仅 Z 轴约束<a class="headerlink" href="#z" title="Permalink to this heading"></a></h3>
 <p><strong>方法</strong>：<code class="docutils literal notranslate"><span class="pre">constrain_to_z_axis_only(quat)</span></code></p>
 <p><strong>原理</strong>：- 保留末端执行器 Z 轴方向（2 DOF：pitch + yaw）- 释放绕 Z 轴的旋转（1 DOF：roll）- 使用最小旋转原理保持接近原始姿态</p>
 <p><strong>算法</strong>：</p>
@@ -682,8 +256,8 @@ window.addEventListener("load", load);</script>
 </pre></div>
 </div>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L118-L175">src/robot_moveit/scripts/moveit_gateway.py:118-175</a></p>
-<pre  class="mermaid">
-        graph TD
+<div class="mermaid">
+            graph TD
     InputQuat[&quot;Input Quaternion&lt;br/&gt;(x, y, z, w)&quot;]
     ToMatrix[&quot;quaternion_to_rotation_matrix()&quot;]
     ExtractZ[&quot;Extract Z-axis&lt;br/&gt;z = R[:, 2]&quot;]
@@ -702,12 +276,12 @@ window.addEventListener("load", load);</script>
     CrossY --&gt; RebuildMatrix
     RebuildMatrix --&gt; ToQuat
     ToQuat --&gt; OutputQuat
-    </pre><p><strong>图：Z 轴约束算法</strong></p>
+        </div><p><strong>图：Z 轴约束算法</strong></p>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L118-L175">src/robot_moveit/scripts/moveit_gateway.py:118-175</a></p>
-</section>
+</div>
 <hr class="docutils" />
-<section id="xz">
-<h3>策略 2：肩部 XZ 平面投影<a class="headerlink" href="#xz" title="Link to this heading"></a></h3>
+<div class="section" id="xz">
+<h3>策略 2：肩部 XZ 平面投影<a class="headerlink" href="#xz" title="Permalink to this heading"></a></h3>
 <p><strong>方法</strong>：<code class="docutils literal notranslate"><span class="pre">project_orientation_to_shoulder_xz_plane(quat)</span></code></p>
 <p><strong>原理</strong>：- 将姿态变换到肩部坐标系 - 约束旋转轴位于肩部 XZ 平面（Y 分量 = 0）- 变换回基座坐标系</p>
 <p>此方法具有几何动机：SO101 的运动链由于其串联结构，自然与肩部 XZ 平面对齐。</p>
@@ -722,8 +296,8 @@ window.addEventListener("load", load);</script>
 </pre></div>
 </div>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L177-L271">src/robot_moveit/scripts/moveit_gateway.py:177-271</a></p>
-<pre  class="mermaid">
-        graph TB
+<div class="mermaid">
+            graph TB
     InputQuat[&quot;Input Quaternion&lt;br/&gt;in base frame&quot;]
     LookupTF[&quot;tf_buffer.lookup_transform()&lt;br/&gt;base → shoulder&quot;]
     Transform1[&quot;quaternion_multiply()&lt;br/&gt;q_shoulder = Q_b2s * q_base&quot;]
@@ -746,17 +320,24 @@ window.addEventListener("load", load);</script>
     RebuildMatrix --&gt; ToQuat
     ToQuat --&gt; Transform2
     Transform2 --&gt; OutputQuat
-    </pre><p><strong>图：肩部 XZ 平面投影算法</strong></p>
+        </div><p><strong>图：肩部 XZ 平面投影算法</strong></p>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L177-L271">src/robot_moveit/scripts/moveit_gateway.py:177-271</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id6">
-<h2>分层容差策略<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<div class="section" id="id6">
+<h2>分层容差策略<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
 <p>当姿态约束通过 <code class="docutils literal notranslate"><span class="pre">Constraints</span></code> 消息传递给 IK 求解器时，求解器验证最终解满足容差边界。<code class="docutils literal notranslate"><span class="pre">MoveItGateway</span></code> 实现渐进式松弛策略。</p>
-<section id="id7">
-<h3>容差级别<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<div class="section" id="id7">
+<h3>容差级别<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>策略名称</p></th>
 <th class="head"><p>X/Y 容差 (rad)</p></th>
@@ -807,9 +388,9 @@ window.addEventListener("load", load);</script>
 <p><strong>注意</strong>：X 和 Y 容差较大（松弛 roll）是因为 5DOF 机械臂缺乏控制绕 Z 轴旋转的自由度。Z 容差较小以保持工具方向。</p>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L397-L404">src/robot_moveit/scripts/moveit_gateway.py:397-404</a>，
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L73-L82">src/robot_moveit/docs/moveit_gateway.md:73-82</a></p>
-</section>
-<section id="id8">
-<h3>姿态约束消息<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id8">
+<h3>姿态约束消息<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">create_orientation_constraint()</span></code> 方法构建 <code class="docutils literal notranslate"><span class="pre">OrientationConstraint</span></code> 消息：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">constraint</span> <span class="o">=</span> <span class="n">OrientationConstraint</span><span class="p">()</span>
 <span class="n">constraint</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">frame_id</span> <span class="o">=</span> <span class="n">frame_id</span>           <span class="c1"># &quot;base&quot;</span>
@@ -822,11 +403,11 @@ window.addEventListener("load", load);</script>
 </pre></div>
 </div>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L273-L306">src/robot_moveit/scripts/moveit_gateway.py:273-306</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id9">
-<h2>多策略回退工作流<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<div class="section" id="id9">
+<h2>多策略回退工作流<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">cmd_pose_callback()</span></code> 实现嵌套回退循环：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">For</span> <span class="n">each</span> <span class="n">orientation</span> <span class="n">preprocessing</span> <span class="n">strategy</span><span class="p">:</span>
     <span class="n">For</span> <span class="n">each</span> <span class="n">tolerance</span> <span class="n">level</span><span class="p">:</span>
@@ -837,10 +418,10 @@ window.addEventListener("load", load);</script>
 <span class="n">Report</span> <span class="n">failure</span> <span class="k">if</span> <span class="nb">all</span> <span class="n">combinations</span> <span class="n">fail</span>
 </pre></div>
 </div>
-<section id="id10">
-<h3>回退序列<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph TD
+<div class="section" id="id10">
+<h3>回退序列<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph TD
     Start[&quot;Receive /cmd_pose&quot;]
     S1[&quot;Strategy 1:&lt;br/&gt;constrain_to_z_axis_only()&quot;]
     S2[&quot;Strategy 2:&lt;br/&gt;project_orientation_to_shoulder_xz_plane()&quot;]
@@ -880,11 +461,11 @@ window.addEventListener("load", load);</script>
     T4 --&gt; Solve4
     Solve4 --&gt;|Success| Success
     Solve4 --&gt;|Fail all tolerances| Failure
-    </pre><p><strong>图：多策略回退决策树</strong></p>
+        </div><p><strong>图：多策略回退决策树</strong></p>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L316-L430">src/robot_moveit/scripts/moveit_gateway.py:316-430</a></p>
-</section>
-<section id="id11">
-<h3>代码结构<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id11">
+<h3>代码结构<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">cmd_pose_callback</span></code> 中的回退逻辑：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">strategies</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="s2">&quot;Gripper Z-axis constraint&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">constrain_to_z_axis_only</span><span class="p">(</span><span class="n">orig_quat</span><span class="p">)),</span>
@@ -913,15 +494,15 @@ window.addEventListener("load", load);</script>
 </pre></div>
 </div>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L372-L430">src/robot_moveit/scripts/moveit_gateway.py:372-430</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id12">
-<h2>带约束的 IK 求解<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
-<section id="solve-and-move">
-<h3><code class="docutils literal notranslate"><span class="pre">solve_and_move()</span></code> 实现<a class="headerlink" href="#solve-and-move" title="Link to this heading"></a></h3>
-<pre  class="mermaid">
-        graph TB
+<div class="section" id="id12">
+<h2>带约束的 IK 求解<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h2>
+<div class="section" id="solve-and-move">
+<h3><code class="docutils literal notranslate"><span class="pre">solve_and_move()</span></code> 实现<a class="headerlink" href="#solve-and-move" title="Permalink to this heading"></a></h3>
+<div class="mermaid">
+            graph TB
     Start[&quot;solve_and_move(target_pose,&lt;br/&gt;orientation_tolerance)&quot;]
     ValidateState[&quot;Validate latest_joint_state&lt;br/&gt;has required joints&quot;]
     CreateConstraints{&quot;orientation_tolerance&lt;br/&gt;is not None?&quot;}
@@ -952,12 +533,17 @@ window.addEventListener("load", load);</script>
     CheckResult --&gt;|No| Fail
     ExtractJoints --&gt; MoveJoint
     MoveJoint --&gt; Success
-    </pre><p><strong>图：solve_and_move() 工作流</strong></p>
+        </div><p><strong>图：solve_and_move() 工作流</strong></p>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L444-L577">src/robot_moveit/scripts/moveit_gateway.py:444-577</a></p>
-</section>
-<section id="id13">
-<h3>关键方法调用<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id13">
+<h3>关键方法调用<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>方法</p></th>
 <th class="head"><p>用途</p></th>
@@ -984,13 +570,13 @@ window.addEventListener("load", load);</script>
 </tbody>
 </table>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L444-L577">src/robot_moveit/scripts/moveit_gateway.py:444-577</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id14">
-<h2>配置集成<a class="headerlink" href="#id14" title="Link to this heading"></a></h2>
-<section id="yaml">
-<h3>机器人配置 YAML<a class="headerlink" href="#yaml" title="Link to this heading"></a></h3>
+<div class="section" id="id14">
+<h2>配置集成<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h2>
+<div class="section" id="yaml">
+<h3>机器人配置 YAML<a class="headerlink" href="#yaml" title="Permalink to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML 包含传递给启动系统的 MoveIt 特定参数：</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">moveit</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">arm_group_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arm</span>
@@ -1001,9 +587,9 @@ window.addEventListener("load", load);</script>
 </div>
 <p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/test_single_arm_single_cam.yaml#L30-L35">src/robot_config/config/robots/test_single_arm_single_cam.yaml:30-35</a></p>
-</section>
-<section id="id15">
-<h3>启动构建器集成<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id15">
+<h3>启动构建器集成<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">robot_config</span></code> 包中的 <code class="docutils literal notranslate"><span class="pre">generate_moveit_nodes()</span></code> 函数提取这些参数并传递给 MoveIt 启动文件：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">arm_group_name</span> <span class="o">=</span> <span class="n">robot_config</span><span class="p">[</span><span class="s1">&#39;moveit&#39;</span><span class="p">][</span><span class="s1">&#39;arm_group_name&#39;</span><span class="p">]</span>
 <span class="n">base_link</span> <span class="o">=</span> <span class="n">robot_config</span><span class="p">[</span><span class="s1">&#39;moveit&#39;</span><span class="p">][</span><span class="s1">&#39;base_link&#39;</span><span class="p">]</span>
@@ -1024,13 +610,13 @@ window.addEventListener("load", load);</script>
 <p><code class="docutils literal notranslate"><span class="pre">shoulder_link</span></code> 参数对肩部 XZ 平面投影策略至关重要。</p>
 <p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/moveit.py#L47-L68">src/robot_config/robot_config/launch_builders/moveit.py:47-68</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id16">
-<h2>坐标系变换<a class="headerlink" href="#id16" title="Link to this heading"></a></h2>
-<section id="id17">
-<h3>工作空间分析<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<div class="section" id="id16">
+<h2>坐标系变换<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h2>
+<div class="section" id="id17">
+<h3>工作空间分析<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">cmd_pose_callback()</span></code> 通过将目标位置变换到肩部坐标系来记录详细的工作空间信息：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. Lookup transform: base → shoulder (translation T, rotation Q)
 2. Compute relative position: p_relative = p_base - T
@@ -1047,14 +633,19 @@ window.addEventListener("load", load);</script>
 </div>
 <p>这有助于诊断可达性问题，因为 SO101 的典型工作空间从肩关节延伸约 0.3-0.4m。</p>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L317-L367">src/robot_moveit/scripts/moveit_gateway.py:317-367</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id18">
-<h2>性能特征<a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
-<section id="id19">
-<h3>典型成功率<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+<div class="section" id="id18">
+<h2>性能特征<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h2>
+<div class="section" id="id19">
+<h3>典型成功率<a class="headerlink" href="#id19" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>配置</p></th>
 <th class="head"><p>IK 成功率</p></th>
@@ -1087,9 +678,9 @@ window.addEventListener("load", load);</script>
 </tbody>
 </table>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L26-L51">src/robot_moveit/docs/moveit_gateway.md:26-51</a></p>
-</section>
-<section id="id20">
-<h3>计算成本<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id20">
+<h3>计算成本<a class="headerlink" href="#id20" title="Permalink to this heading"></a></h3>
 <p>回退流水线最多测试 4 策略 × 5 容差级别 = 每个位姿命令 20 次 IK 尝试。典型时间线：</p>
 <ul class="simple">
 <li><p>单次 IK 尝试：50-200ms（KDL 求解器，50 次尝试）</p></li>
@@ -1098,14 +689,14 @@ window.addEventListener("load", load);</script>
 </ul>
 <p><strong>来源</strong>：
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/config/lerobot/so101/kinematics.yaml#L4-L5">src/robot_moveit/config/lerobot/so101/kinematics.yaml:4-5</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id21">
-<h2>数学工具<a class="headerlink" href="#id21" title="Link to this heading"></a></h2>
+<div class="section" id="id21">
+<h2>数学工具<a class="headerlink" href="#id21" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">MoveItGateway</span></code> 类使用 <code class="docutils literal notranslate"><span class="pre">scipy.spatial.transform.Rotation</span></code> 和 <code class="docutils literal notranslate"><span class="pre">numpy</span></code> 实现四元数和旋转矩阵操作：</p>
-<pre  class="mermaid">
-        classDiagram
+<div class="mermaid">
+            classDiagram
     class MoveItGateway {
         +quaternion_multiply(q1, q2)
         +quaternion_conjugate(q)
@@ -1137,10 +728,10 @@ window.addEventListener("load", load);</script>
 
     MoveItGateway --&gt; scipy_Rotation : uses
     MoveItGateway --&gt; numpy : uses
-    </pre><p><strong>图：数学依赖关系</strong></p>
+        </div><p><strong>图：数学依赖关系</strong></p>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L81-L175">src/robot_moveit/scripts/moveit_gateway.py:81-175</a></p>
-<section id="id22">
-<h3>关键方法<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
+<div class="section" id="id22">
+<h3>关键方法<a class="headerlink" href="#id22" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">quaternion_multiply(q1,</span> <span class="pre">q2)</span></code>：使用 <code class="docutils literal notranslate"><span class="pre">scipy</span></code> 的 Hamilton 乘积 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/moveit_gateway.py#L82-L90">moveit_gateway.py:82-90</a></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">quaternion_conjugate(q)</span></code>：通过 <code class="docutils literal notranslate"><span class="pre">R.inv()</span></code> 的逆旋转 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/moveit_gateway.py#L93-L98">moveit_gateway.py:93-98</a></p></li>
@@ -1149,14 +740,19 @@ window.addEventListener("load", load);</script>
 </ul>
 <p>所有操作使用 <code class="docutils literal notranslate"><span class="pre">[x,</span> <span class="pre">y,</span> <span class="pre">z,</span> <span class="pre">w]</span></code> 四元数格式（标量在后约定）。</p>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L81-L116">src/robot_moveit/scripts/moveit_gateway.py:81-116</a></p>
-</section>
-</section>
+</div>
+</div>
 <hr class="docutils" />
-<section id="id23">
-<h2>故障排除<a class="headerlink" href="#id23" title="Link to this heading"></a></h2>
-<section id="id24">
-<h3>常见失败模式<a class="headerlink" href="#id24" title="Link to this heading"></a></h3>
+<div class="section" id="id23">
+<h2>故障排除<a class="headerlink" href="#id23" title="Permalink to this heading"></a></h2>
+<div class="section" id="id24">
+<h3>常见失败模式<a class="headerlink" href="#id24" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>症状</p></th>
 <th class="head"><p>可能原因</p></th>
@@ -1187,9 +783,9 @@ window.addEventListener("load", load);</script>
 </tbody>
 </table>
 <p><strong>来源</strong>：<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L339-L355">src/robot_moveit/docs/moveit_gateway.md:339-355</a></p>
-</section>
-<section id="id25">
-<h3>调试日志<a class="headerlink" href="#id25" title="Link to this heading"></a></h3>
+</div>
+<div class="section" id="id25">
+<h3>调试日志<a class="headerlink" href="#id25" title="Permalink to this heading"></a></h3>
 <p>启用调试日志以查看策略尝试：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>run<span class="w"> </span>robot_moveit<span class="w"> </span>moveit_gateway.py<span class="w"> </span>--ros-args<span class="w"> </span>--log-level<span class="w"> </span>debug
 </pre></div>
@@ -1208,9 +804,9 @@ window.addEventListener("load", load);</script>
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L1-L389">src/robot_moveit/docs/moveit_gateway.md:1-389</a>，
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/test_single_arm_single_cam.yaml#L30-L35">src/robot_config/config/robots/test_single_arm_single_cam.yaml:30-35</a>，
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/moveit.py#L15-L78">src/robot_config/robot_config/launch_builders/moveit.py:15-78</a></p>
-</section>
-</section>
-</section>
+</div>
+</div>
+</div>
 
 
            </div>
@@ -1245,16 +841,6 @@ window.addEventListener("load", load);</script>
   </span>
   <div class="rst-other-versions">
     <dl>
-      <dt>Tags</dt>
-      <dd><a href="../../../../24.03-lts/index.html">24.03-lts</a></dd>
-      <dd><a href="../../../../llvm-toolchain-v0.1.1/index.html">llvm-toolchain-v0.1.1</a></dd>
-      <dd><a href="../../../../nativesdk-v0.1.2/index.html">nativesdk-v0.1.2</a></dd>
-      <dd><a href="../../../../nativesdk-v0.1.3/index.html">nativesdk-v0.1.3</a></dd>
-      <dd><a href="../../../../toolchains-v0.1.5/index.html">toolchains-v0.1.5</a></dd>
-      <dd><a href="../../../../toolchains-v0.1.7/index.html">toolchains-v0.1.7</a></dd>
-      <dd><a href="../../../../toolchains-v0.1.8/index.html">toolchains-v0.1.8</a></dd>
-    </dl>
-    <dl>
       <dt>Branches</dt>
       <dd><a href="dof_kinematic_constraints.html">master</a></dd>
       <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
@@ -1265,10 +851,10 @@ window.addEventListener("load", load);</script>
       <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
       <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
       <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
       <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
       <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
-      <dd><a href="../../../../pr_2786/features/embodied_ai/motion_planning/dof_kinematic_constraints.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

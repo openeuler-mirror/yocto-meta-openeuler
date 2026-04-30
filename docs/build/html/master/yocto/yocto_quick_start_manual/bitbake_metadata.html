@@ -1,25 +1,27 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../">
+<html class="writer-html5" lang="en">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bitbake 与 元数据 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=d35d3fb5" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
 
   
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
-      <script src="../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=7eb38eeb"></script>
-      <script src="../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../../_static/js/mermaid-init.js?v=43679785"></script>
-      <script src="../../_static/js/custom.js?v=2b2e6f96"></script>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/js/mermaid-init.js"></script>
+        <script src="../../_static/js/custom.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -121,8 +123,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="bitbake">
-<span id="bitbake-and-metadata"></span><h1>Bitbake 与 元数据<a class="headerlink" href="#bitbake" title="Link to this heading"></a></h1>
+  <div class="section" id="bitbake">
+<span id="bitbake-and-metadata"></span><h1>Bitbake 与 元数据<a class="headerlink" href="#bitbake" title="Permalink to this heading"></a></h1>
 <p>yocto工程的主要组成部分是bitbake工具与元数据。bitbake是一个通用任务执行引擎，元数据文件主要分为conf、bbclass、bb文件。bitbake与元数据的关系类似于gcc与c代码。</p>
 <p>一门新的语言的学习往往从编写 <code class="docutils literal notranslate"><span class="pre">hello</span> <span class="pre">world</span></code> 开始，bitbake也是如此。本教程介绍了如何创建一个yocto项目以及bitbake构建该项目所需的适用元数据文件。以下从一个新用户的角度来使用bitbake工具构建 <code class="docutils literal notranslate"><span class="pre">hello</span> <span class="pre">world</span></code> 程序。</p>
 <p>本节将通过编写一个简单的 <code class="docutils literal notranslate"><span class="pre">printhello.bb</span></code> 探讨bitbake与元数据文件之间的关联。</p>
@@ -130,8 +132,8 @@
 <p class="admonition-title">Note</p>
 <p>小知识：bitbake英文直译为烘培，bb文件也被称为recipe文件，意为食谱、配方。bitbake构建目标的主要形式是 <code class="docutils literal notranslate"><span class="pre">bitbake</span> <span class="pre">recipe_name</span></code>，组合在一起意思就是根据食谱完成烘培。</p>
 </div>
-<section id="id1">
-<h2>一、获取 BitBake<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<div class="section" id="id1">
+<h2>一、获取 BitBake<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
 <div class="line-block">
 <div class="line">Bitbake官网链接：<a class="reference external" href="https://github.com/openembedded/bitbake">https://github.com/openembedded/bitbake</a></div>
 <div class="line">建议下载Poky仓库，Poky是yocto工程的一个参考发行版，仓库中配套了对应的bitbake程序。步骤如下：</div>
@@ -151,9 +153,9 @@ $ cd yocto-poky/bitbake
 <p>BitBake最初是OpenEmbedded项目的一部分。2004年，OpenEmbedded项目被拆分为BitBake与OpenEmbedded（元数据集）。
 Poky在结合bitbake与OpenEmbedded部分的基础上，创建了自己的发行版。</p>
 </div>
-</section>
-<section id="id2">
-<h2>二、配置 BitBake 运行环境<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+</div>
+<div class="section" id="id2">
+<h2>二、配置 BitBake 运行环境<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
 <p>将bitbake路径添加到shell环境中，以便能从任何目录运行bitbake。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ export PATH=/path/to/bitbake/bin:$PATH
 $ bitbake --version
@@ -164,9 +166,9 @@ BitBake Build Tool Core version 1.50.0
 <p class="admonition-title">Note</p>
 <p>/path/to/为目录实际路径。</p>
 </div>
-</section>
-<section id="hello-world">
-<h2>三、编写 Hello World 示例<a class="headerlink" href="#hello-world" title="Link to this heading"></a></h2>
+</div>
+<div class="section" id="hello-world">
+<h2>三、编写 Hello World 示例<a class="headerlink" href="#hello-world" title="Permalink to this heading"></a></h2>
 <ol class="arabic simple">
 <li><p><strong>创建工程目录：</strong> 创建一个目录，bitbake在此目录完成所有的构建工作。</p></li>
 </ol>
@@ -386,15 +388,15 @@ meta-mylayer/
 <p>到此，是否注意到 <code class="file docutils literal notranslate"><span class="pre">base.bbclass</span></code> 没有任何内容，试着把 <code class="file docutils literal notranslate"><span class="pre">printhello.bb</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">do_build</span></code> 任务定义与 <code class="docutils literal notranslate"><span class="pre">addtask</span> <span class="pre">build</span></code> 移到 <code class="file docutils literal notranslate"><span class="pre">base.bbclass</span></code> 重新构建试试；下一步创建一个新的bb，这个bb并不需要添加 <code class="docutils literal notranslate"><span class="pre">addtask</span> <span class="pre">build</span></code> 语句也可以执行 <code class="docutils literal notranslate"><span class="pre">do_build</span></code> 任务。</p>
 </div>
 </div></blockquote>
-</section>
-<section id="id3">
-<h2>小结<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+</div>
+<div class="section" id="id3">
+<h2>小结<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>yocto项目依托于bitbake工具，存在了比较完善的元数据文件，包括bitbake.conf与base.bbclass，这两个文件在 <a class="reference external" href="https://git.openembedded.org/openembedded-core/tree/meta">OpenEmbedded</a> 中已有定义，用户可以在此基础上进行开发。在初步接触到yocto项目时，用户总会感慨这个项目的庞大，本文档从bitbake工具开始，从根剖析，完成了一个helloworld程序，当学习yocto工程的语法后，用户会了解到工程中大部分的文件都是通过bitbake.conf与base.bbclass文件运行的。</p></li>
 <li><p>bblayers.conf与layer.conf作用是管理层文件，当进行某一个项目开发时，独立的层更加易于模块化实现。通过这种模块化设计，开发者可以更容易地管理和扩展他们的项目，确保各个功能组件的独立性和可重用性。</p></li>
 </ul>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>
@@ -429,16 +431,6 @@ meta-mylayer/
   </span>
   <div class="rst-other-versions">
     <dl>
-      <dt>Tags</dt>
-      <dd><a href="../../../24.03-lts/yocto/yocto_quick_start_manual/bitbake_metadata.html">24.03-lts</a></dd>
-      <dd><a href="../../../llvm-toolchain-v0.1.1/index.html">llvm-toolchain-v0.1.1</a></dd>
-      <dd><a href="../../../nativesdk-v0.1.2/index.html">nativesdk-v0.1.2</a></dd>
-      <dd><a href="../../../nativesdk-v0.1.3/yocto/yocto_quick_start_manual/bitbake_metadata.html">nativesdk-v0.1.3</a></dd>
-      <dd><a href="../../../toolchains-v0.1.5/index.html">toolchains-v0.1.5</a></dd>
-      <dd><a href="../../../toolchains-v0.1.7/yocto/yocto_quick_start_manual/bitbake_metadata.html">toolchains-v0.1.7</a></dd>
-      <dd><a href="../../../toolchains-v0.1.8/yocto/yocto_quick_start_manual/bitbake_metadata.html">toolchains-v0.1.8</a></dd>
-    </dl>
-    <dl>
       <dt>Branches</dt>
       <dd><a href="bitbake_metadata.html">master</a></dd>
       <dd><a href="../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
@@ -449,10 +441,10 @@ meta-mylayer/
       <dd><a href="../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
       <dd><a href="../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
       <dd><a href="../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
       <dd><a href="../../../openEuler-24.03-LTS/yocto/yocto_quick_start_manual/bitbake_metadata.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../../openEuler-24.09/yocto/yocto_quick_start_manual/bitbake_metadata.html">openEuler-24.09</a></dd>
       <dd><a href="../../../openEuler-25.03/yocto/yocto_quick_start_manual/bitbake_metadata.html">openEuler-25.03</a></dd>
-      <dd><a href="../../../pr_2786/yocto/yocto_quick_start_manual/bitbake_metadata.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

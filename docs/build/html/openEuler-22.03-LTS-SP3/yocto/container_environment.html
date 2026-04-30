@@ -1,25 +1,27 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../">
+<html class="writer-html5" lang="en">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>openEuler Embedded 容器环境介绍 &mdash; openEuler Embedded在线文档 1.0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=d35d3fb5" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
 
   
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
-      <script src="../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=8d563738"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../_static/js/mermaid-init.js?v=43679785"></script>
-      <script src="../_static/js/custom.js?v=2b2e6f96"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/js/mermaid-init.js"></script>
+        <script src="../_static/js/custom.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -108,24 +110,24 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="openeuler-embedded">
-<h1>openEuler Embedded 容器环境介绍<a class="headerlink" href="#openeuler-embedded" title="Link to this heading"></a></h1>
+  <div class="section" id="openeuler-embedded">
+<h1>openEuler Embedded 容器环境介绍<a class="headerlink" href="#openeuler-embedded" title="Permalink to this heading"></a></h1>
 <p>相比较22.03版本，22.09版本执行构建前多了一个步骤：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ source /opt/buildtools/nativesdk/environment-setup-x86_64-pokysdk-linux
 </pre></div>
 </div>
 <p>此步骤会修改环境配置，生成一个适合 openeuler-image 构建的环境，可通过 env 命令对比执行前后的环境配置；此外，/opt/buildtools/nativesdk 的生成与 Yocto 密不可分，接下来介绍为什么需要这个步骤。</p>
-<section id="yocto">
-<h2>1. Yocto 构建对主机环境有要求<a class="headerlink" href="#yocto" title="Link to this heading"></a></h2>
+<div class="section" id="yocto">
+<h2>1. Yocto 构建对主机环境有要求<a class="headerlink" href="#yocto" title="Permalink to this heading"></a></h2>
 <p>为了 Yocto 能够正常的构建，主机上需要存在一些工具包，如 git，tar，python 等，Yocto 对这些工具的版本有一定的要求，如果主机环境并不满足要求，那么构建可能会报错。</p>
-</section>
-<section id="id1">
-<h2>2. 配置适合 Yocto 构建的主机环境<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+</div>
+<div class="section" id="id1">
+<h2>2. 配置适合 Yocto 构建的主机环境<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
 <p>Yocto 官网指明了三种方式可以方便地配置主机环境：第一种是使用 poky 自带的 install-buildtools 脚本安装；第二种是从官网下载 buildtools 压缩文件，该压缩文件同时是一个 shell 脚本，执行脚本就可以安装 sdk 工具到指定的位置；第三种是开发者提前构建 buildtools 压缩文件。</p>
 <p>参考：<a class="reference external" href="https://docs.yoctoproject.org/current/ref-manual/system-requirements.html#required-git-tar-python-and-gcc-versions">yocto 官方文档1.3节</a></p>
-</section>
-<section id="id2">
-<h2>3. Yocto 构建方式<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+</div>
+<div class="section" id="id2">
+<h2>3. Yocto 构建方式<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
 <p>Yocto 针对一个包文件通常会有三种构建方式：target、native、nativesdk。</p>
 <ul class="simple">
 <li><p><strong>target</strong> 即目标构建，一般以 bitbake package 实现，使用交叉编译工具链去编译包，如 x86 环境中构建 arm32 的包；</p></li>
@@ -138,9 +140,9 @@
 <div class="line"><strong>BBCLASSEXTEND = “native”</strong>：表示支持 target 及 native 构建方式；</div>
 <div class="line"><strong>inherit native</strong> or <strong>inherit nativesdk</strong>：表示该 bb 只是一个 native 或者 nativesdk 包，只支持一种构建方式。</div>
 </div>
-</section>
-<section id="openeuler-image">
-<h2>4. 配置一个适合 openeuler-image 构建的环境<a class="headerlink" href="#openeuler-image" title="Link to this heading"></a></h2>
+</div>
+<div class="section" id="openeuler-image">
+<h2>4. 配置一个适合 openeuler-image 构建的环境<a class="headerlink" href="#openeuler-image" title="Permalink to this heading"></a></h2>
 <p>openEuler Embedded 为了减少构建主机包的时间，将尽可能多的 native 包都配置到了环境中，这是为了做到构建时不去构建所依赖的 native 包，而是直接从环境中获取，这样可以大幅减少构建时间，配置环境参考第二节 buildtools 的构建方式。</p>
 <p>openEuler Embedded buildtools 构建方法：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ git clone -b nativesdk-3.3.6 https://gitee.com/openeuler/yocto-poky.git
@@ -163,8 +165,8 @@ $ bitbake buildtools-tarball or bitbake buildtools-extended-tarball
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ source /opt/buildtools/nativesdk/environment-setup-x86_64-pokysdk-linux
 </pre></div>
 </div>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>
@@ -199,16 +201,6 @@ $ bitbake buildtools-tarball or bitbake buildtools-extended-tarball
   </span>
   <div class="rst-other-versions">
     <dl>
-      <dt>Tags</dt>
-      <dd><a href="../../24.03-lts/yocto/container_environment.html">24.03-lts</a></dd>
-      <dd><a href="../../llvm-toolchain-v0.1.1/yocto/container_environment.html">llvm-toolchain-v0.1.1</a></dd>
-      <dd><a href="../../nativesdk-v0.1.2/yocto/container_environment.html">nativesdk-v0.1.2</a></dd>
-      <dd><a href="../../nativesdk-v0.1.3/yocto/container_environment.html">nativesdk-v0.1.3</a></dd>
-      <dd><a href="../../toolchains-v0.1.5/yocto/container_environment.html">toolchains-v0.1.5</a></dd>
-      <dd><a href="../../toolchains-v0.1.7/yocto/container_environment.html">toolchains-v0.1.7</a></dd>
-      <dd><a href="../../toolchains-v0.1.8/yocto/container_environment.html">toolchains-v0.1.8</a></dd>
-    </dl>
-    <dl>
       <dt>Branches</dt>
       <dd><a href="../../master/yocto/container_environment.html">master</a></dd>
       <dd><a href="../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
@@ -219,10 +211,10 @@ $ bitbake buildtools-tarball or bitbake buildtools-extended-tarball
       <dd><a href="../../openEuler-22.03-LTS-SP4/yocto/container_environment.html">openEuler-22.03-LTS-SP4</a></dd>
       <dd><a href="../../openEuler-22.09/yocto/container_environment.html">openEuler-22.09</a></dd>
       <dd><a href="../../openEuler-23.03/yocto/container_environment.html">openEuler-23.03</a></dd>
+      <dd><a href="../../openEuler-23.09/yocto/container_environment.html">openEuler-23.09</a></dd>
       <dd><a href="../../openEuler-24.03-LTS/yocto/container_environment.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../openEuler-24.09/yocto/container_environment.html">openEuler-24.09</a></dd>
       <dd><a href="../../openEuler-25.03/yocto/container_environment.html">openEuler-25.03</a></dd>
-      <dd><a href="../../pr_2786/yocto/container_environment.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>

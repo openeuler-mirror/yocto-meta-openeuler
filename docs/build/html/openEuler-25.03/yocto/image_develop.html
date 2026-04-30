@@ -1,25 +1,27 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../">
+<html class="writer-html5" lang="en">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>镜像定制 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=d35d3fb5" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
 
   
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
-      <script src="../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=7eb38eeb"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script src="../_static/js/mermaid-init.js?v=43679785"></script>
-      <script src="../_static/js/custom.js?v=2b2e6f96"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/js/mermaid-init.js"></script>
+        <script src="../_static/js/custom.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -117,10 +119,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="yocto-image-develop">
-<span id="id1"></span><h1>镜像定制<a class="headerlink" href="#yocto-image-develop" title="Link to this heading"></a></h1>
-<section id="id2">
-<h2>镜像配方<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+  <div class="section" id="yocto-image-develop">
+<span id="id1"></span><h1>镜像定制<a class="headerlink" href="#yocto-image-develop" title="Permalink to this heading"></a></h1>
+<div class="section" id="id2">
+<h2>镜像配方<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
 <p>镜像的最终生成是通过一个特殊的配方文件来控制的，这个配方通常会继承自 <code class="docutils literal notranslate"><span class="pre">core-image</span></code> 类。在镜像配置中，有几个关键的变量需要关注：</p>
 <ul class="simple">
 <li><p>IMAGE_FSTYPES：指定镜像的生成类型，如 cpio.gz、iso、wic（分区镜像）等；</p></li>
@@ -130,9 +132,9 @@
 <li><p>TOOLCHAIN_HOST_TASK：指定生成的 SDK 工具中应包含的主机工具和库等；</p></li>
 <li><p>TOOLCHAIN_TARGET_TASK：指定生成的 SDK 工具中应包含的目标端工具和库；</p></li>
 </ul>
-</section>
-<section id="id3">
-<h2>如何往镜像中添加包<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+</div>
+<div class="section" id="id3">
+<h2>如何往镜像中添加包<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
 <p>从 <a class="reference internal" href="recipe.html#yocto-recipe"><span class="std std-ref">Yocto 标准配方解析</span></a> 章节我们了解到，软件包构建后会生成多个子包，并分布在每个配方 <code class="file docutils literal notranslate"><span class="pre">$</span><em><span class="pre">WORKDIR</span></em><span class="pre">/packages-split</span></code> 目录下，这些子包的目录名可以看作是 <strong>IMAGE_INSTALL</strong> 的参数，实际上也可以通过 <code class="docutils literal notranslate"><span class="pre">bitbake-getvar</span></code> 命令获取每个配方的 <strong>PACKAGES</strong> 变量值。</p>
 <p><strong>示例一：</strong> 基于 <a class="reference internal" href="recipe.html#yocto-recipe"><span class="std std-ref">Yocto 标准配方解析</span></a> 章节，添加 <strong>hello</strong> 子包到镜像中，需添加如下代码到镜像配方：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">IMAGE_INSTALL</span> <span class="o">+=</span> <span class="s2">&quot;hello&quot;</span>
@@ -145,9 +147,9 @@
 </pre></div>
 </div>
 <p>然而，一个镜像通常会包含很多个软件包，如果每次都需要手动添加一系列软件包到镜像中，这将变得相当乏味。因此，Yocto 提供了一套 packagegroup 方案，用于将软件包进行分组，从而简化了软件包的安装和管理。我们将在下文中详细介绍 packagegroup 的使用方法和优势。</p>
-</section>
-<section id="packagegroup">
-<h2>packagegroup 介绍<a class="headerlink" href="#packagegroup" title="Link to this heading"></a></h2>
+</div>
+<div class="section" id="packagegroup">
+<h2>packagegroup 介绍<a class="headerlink" href="#packagegroup" title="Permalink to this heading"></a></h2>
 <p>packagegroup 为 Yocto 提供了一种方便的方式来定义和管理软件包集合，这使得用户能够轻松地一次性安装或卸载多个相关的软件包。通过使用 packagegroup，用户可以避免手动添加每个单独的软件包到构建过程中，从而简化了构建过程并提高了效率。这对于大型项目或具有特定需求的用户来说非常有用，因为它可以帮助他们更好地组织和管理软件包。</p>
 <p>实际上，packagegroup 也是通过配方来实现功能的，这些配方专注于配置软件包依赖关系，而不会包含任何具体的文件。例如，<code class="file docutils literal notranslate"><span class="pre">packagegroup-core-boot.bb</span></code> 配置了一个系统启动所需的最小软件包集合，包含了内核、启动脚本、busybox/systemd等关键组件。而 <code class="file docutils literal notranslate"><span class="pre">packagegroup-isulad.bb</span></code> 则专注于配置 iSulad 运行时所需的一些必要软件包。这样的配置方式使得用户可以更方便地管理和维护软件包的依赖关系，从而简化了构建过程。</p>
 <p>在使用时，开发者只需要将对应的 packagegroup 添加到镜像配方 <strong>IMAGE_INSTALL</strong> 变量。如下：</p>
@@ -155,9 +157,9 @@
 </pre></div>
 </div>
 <p>综上所述，Yocto 需要 packagegroup 来提供一种方便、高效的方式来组织和控制软件包的安装，以及管理和维护复杂的软件包依赖关系。这有助于简化构建过程、提高效率，并满足不同项目和用户的特定需求。</p>
-</section>
-<section id="rdepends">
-<h2>运行时依赖（RDEPENDS）知识<a class="headerlink" href="#rdepends" title="Link to this heading"></a></h2>
+</div>
+<div class="section" id="rdepends">
+<h2>运行时依赖（RDEPENDS）知识<a class="headerlink" href="#rdepends" title="Permalink to this heading"></a></h2>
 <p><strong>RDEPENDS</strong> 变量通常用于指定运行时依赖关系，这意味着这些依赖项是在目标系统上部署软件包时需要的。此外，Yocto 会自动在包之间添加常见类型的运行时依赖项，这意味着用户不需要显式声明每个依赖项。然而，对于特定的需求或特殊的依赖关系，用户需要使用 <strong>RDEPENDS</strong> 变量进行自定义配置。</p>
 <p><strong>RDEPENDS</strong> 变量的语法如下：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>RDEPENDS:${PN} = &quot;dependency1 dependency2 ...&quot;
@@ -173,9 +175,9 @@
 <p class="admonition-title">Note</p>
 <p>与 RDEPENDS 作用类似的还有 RRECOMMENDS 变量，这里不作详细说明。</p>
 </div>
-</section>
-<section id="id4">
-<h2>镜像配方示例<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+</div>
+<div class="section" id="id4">
+<h2>镜像配方示例<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
 <p><strong>示例一：</strong> <code class="file docutils literal notranslate"><span class="pre">meta/recipes-core/images/core-image-minimal.bb</span></code> 。</p>
 <p>来自 Poky 的极简 image 配方示例。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>SUMMARY = &quot;A small image just capable of allowing a device to boot.&quot;
@@ -241,16 +243,16 @@ $ bitbake openeuler-image-tiny
 $ cd tmp/deploy/images/MACHINE
 </pre></div>
 </div>
-</section>
-<section id="id5">
-<h2>镜像定制方式<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+</div>
+<div class="section" id="id5">
+<h2>镜像定制方式<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>参考官方示例新建镜像配方；</p></li>
 <li><p>基于已存在的镜像配方文件，使用 bbappend 方式适配；</p></li>
 <li><p>提前镜像公共配置到 inc 文件，通过 <code class="docutils literal notranslate"><span class="pre">require</span></code> 去调用。例如 <code class="file docutils literal notranslate"><span class="pre">meta-openeuler/recipes-core/images/openeuler-image-common.inc</span></code> 同时被 <code class="file docutils literal notranslate"><span class="pre">openeuler-image-tiny.bb</span></code>、 <code class="file docutils literal notranslate"><span class="pre">openeuler-image.bb</span></code> 调用。</p></li>
 </ul>
-</section>
-</section>
+</div>
+</div>
 
 
            </div>
@@ -285,16 +287,6 @@ $ cd tmp/deploy/images/MACHINE
   </span>
   <div class="rst-other-versions">
     <dl>
-      <dt>Tags</dt>
-      <dd><a href="../../24.03-lts/yocto/image_develop.html">24.03-lts</a></dd>
-      <dd><a href="../../llvm-toolchain-v0.1.1/yocto/image_develop.html">llvm-toolchain-v0.1.1</a></dd>
-      <dd><a href="../../nativesdk-v0.1.2/yocto/image_develop.html">nativesdk-v0.1.2</a></dd>
-      <dd><a href="../../nativesdk-v0.1.3/yocto/image_develop.html">nativesdk-v0.1.3</a></dd>
-      <dd><a href="../../toolchains-v0.1.5/yocto/image_develop.html">toolchains-v0.1.5</a></dd>
-      <dd><a href="../../toolchains-v0.1.7/yocto/image_develop.html">toolchains-v0.1.7</a></dd>
-      <dd><a href="../../toolchains-v0.1.8/yocto/image_develop.html">toolchains-v0.1.8</a></dd>
-    </dl>
-    <dl>
       <dt>Branches</dt>
       <dd><a href="../../master/yocto/image_develop.html">master</a></dd>
       <dd><a href="../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
@@ -305,10 +297,10 @@ $ cd tmp/deploy/images/MACHINE
       <dd><a href="../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
       <dd><a href="../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
       <dd><a href="../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
       <dd><a href="../../openEuler-24.03-LTS/yocto/image_develop.html">openEuler-24.03-LTS</a></dd>
       <dd><a href="../../openEuler-24.09/yocto/image_develop.html">openEuler-24.09</a></dd>
       <dd><a href="image_develop.html">openEuler-25.03</a></dd>
-      <dd><a href="../../pr_2786/yocto/image_develop.html">pr_2786</a></dd>
     </dl>
   </div>
 </div>
