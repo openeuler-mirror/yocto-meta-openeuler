@@ -24,7 +24,7 @@ S = "${WORKDIR}/librsvg-${PV}"
 
 # use local deps, provided by source tarball
 create_cargo_config:append() {
-    cat <<- EOF >> ${CARGO_HOME}/config
+    cat <<- EOF >> ${CARGO_HOME}/config.toml
 [source.crates-io]
 replace-with = "local-registry"
 

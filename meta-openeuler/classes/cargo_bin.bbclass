@@ -81,7 +81,7 @@ EOF
 
 create_cargo_config() {
     if [ "${RUST_BUILD}" != "${RUST_TARGET}" ]; then
-        cat <<- EOF > ${CARGO_HOME}/config
+        cat <<- EOF > ${CARGO_HOME}/config.toml
 [target.${RUST_BUILD}]
 linker = '${WRAPPER_DIR}/ld-native-wrapper.sh'
 
@@ -90,14 +90,14 @@ linker = '${WRAPPER_DIR}/ld-wrapper.sh'
 
 EOF
     else
-        cat <<- EOF > ${CARGO_HOME}/config
+        cat <<- EOF > ${CARGO_HOME}/config.toml
 [target.${RUST_TARGET}]
 linker = '${WRAPPER_DIR}/ld-wrapper.sh'
 
 EOF
     fi
 
-    cat <<- EOF >> ${CARGO_HOME}/config
+    cat <<- EOF >> ${CARGO_HOME}/config.toml
 [build]
 rustflags = ['-C', 'rpath']
 
@@ -107,7 +107,7 @@ debug = true
 EOF
 
     if [ -n "${CARGO_CRATES_SOURCE}" ]; then
-        cat <<- EOF >> ${CARGO_HOME}/config
+        cat <<- EOF >> ${CARGO_HOME}/config.toml
 [source.crates-io]
 replace-with = "${CARGO_CRATES_SOURCE}"
 
@@ -123,6 +123,11 @@ EOF
     write_cargo_source "tag" "${@d.getVarFlag('CARGO_CRATES_SOURCE', 'tag', True)}"
     write_cargo_source "rev" "${@d.getVarFlag('CARGO_CRATES_SOURCE', 'rev', True)}"
     fi
+}
+
+# Helper: return the path of the active Cargo config file (used by subclasses)
+cargo_config_file() {
+    echo "${CARGO_HOME}/config.toml"
 }
 
 cargo_bin_do_configure() {
@@ -205,7 +210,7 @@ cargo_bin_do_install() {
             *.so|*.rlib)
                 so_name=$(basename $tgt)
                 install -d "${D}${libdir}"
-                install -m755 "$tgt" "${D}${libdir}/$so_name.${PV}"
+                install -m755 "$tgt" "${D}${libdir}/$so_name"
                 cd "${D}${libdir}" && ln -fs "$so_name" "$so_name.${PV}"
                 files_installed="$files_installed $tgt"
                 ;;
@@ -315,6 +320,12 @@ rust_target[vardepsexclude] += "rust_target[vardeps]"
 
 EXPORT_FUNCTIONS do_configure do_compile do_install
 
-# skip riscv as they are not well supported by rust now
+# riscv: not well supported by Rust yet
 COMPATIBLE_HOST:riscv64 = "null"
 COMPATIBLE_HOST:riscv32 = "null"
+
+# arm 32-bit: oee_archive/rust/ does not carry rust-std for any arm32 triple
+# (arm-unknown-linux-gnueabi / armv7-unknown-linux-gnueabihf).
+# Until the tarballs are added to oee_archive, mark arm32 as unsupported so
+# BitBake skips the recipe cleanly instead of dying with a fetch error.
+COMPATIBLE_HOST:arm = "null"
