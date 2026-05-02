@@ -26,10 +26,15 @@ DEPENDS:remove = "\
     ${@ "cargo-bin-cross-${TARGET_ARCH}" if d.getVar('TARGET_ARCH') != "${BUILD_ARCH}" else "cargo-bin-native" }    \
 "
 
-# Required to link binaries
-DEPENDS += "${@ "gcc-cross-${TARGET_ARCH}" if d.getVar('TARGET_ARCH') == "X86_64" else "" }"
+# Required to link binaries when cross-compiling to x86_64 from a different build host.
+# Not needed when BUILD_ARCH == TARGET_ARCH (native x86_64 build).
+DEPENDS += "${@ "gcc-cross-${TARGET_ARCH}" if (d.getVar('TARGET_ARCH') == "x86_64" and d.getVar('BUILD_ARCH') != d.getVar('TARGET_ARCH')) else "" }"
 
 PN = "rustc-bin-cross-${TARGET_ARCH}"
+
+# Provide Yocto-standard virtual provider so recipes using `inherit cargo`
+# (from yocto-poky/meta/classes/cargo.bbclass) can resolve the Rust toolchain.
+PROVIDES += "virtual/${TARGET_PREFIX}rust"
 
 # Extra architectures to install standard library for. Must match one of the
 # standard rust targets. The standard library for the default host and target
