@@ -42,6 +42,7 @@ def parse_mirrors(mirrors_string):
             pathname, subst = entry.strip().split('|', 1)
         except ValueError:
             invalid.append(entry)
+            continue
         mirrors.append(('^' + re.escape(pathname), subst))
     return mirrors, invalid
 
@@ -130,7 +131,7 @@ def search_sysroots(path_entries, sysroots):
             check_path = sysroot + os.sep + pathname
             found_paths = glob.glob(check_path)
             if found_paths:
-                print("%s --> %s" % (path, found_paths))
+                bb.debug(1, "%s --> %s" % (path, found_paths))
                 yield path, found_paths
                 break
         else:

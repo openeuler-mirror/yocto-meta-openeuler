@@ -31,5 +31,13 @@ do_install_extra () {
     # location changing, breaking the libnsl.so symlink, so recreate it here.
     cd ${D}${libdir}/ || exit 1
     rm -f libnsl.so
-    ln -s libnsl.so.[12] libnsl.so
+    # Use an explicit loop instead of a glob pattern to avoid creating a broken
+    # symlink when both libnsl.so.1 and libnsl.so.2 exist (ln -s <glob> fails
+    # with multiple matches), or a dangling symlink when neither exists.
+    for soname in libnsl.so.1 libnsl.so.2; do
+        if [ -e "$soname" ]; then
+            ln -s "$soname" libnsl.so
+            break
+        fi
+    done
 }

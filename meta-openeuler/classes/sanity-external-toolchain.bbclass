@@ -33,8 +33,12 @@ def check_toolchain_sanity(d, generate_events=False):
     # Test 4: we can run it to get the version
     cmd = d.expand('${EXTERNAL_TOOLCHAIN_BIN}/${EXTERNAL_CC} -dumpversion')
     sourcery_version = exttc_sanity_run(shlex.split(cmd), d, generate_events)
+    # exttc_sanity_run returns bytes; decode for string comparison with configparser
+    if isinstance(sourcery_version, bytes):
+        sourcery_version = sourcery_version.decode('utf-8', errors='replace').strip()
     if cfgdata.get('sourcery_version') == sourcery_version:
         return
+    cfgdata['sourcery_version'] = sourcery_version
 
     # Test 5: we can compile an empty test app
     with tempfile.TemporaryDirectory() as tmpdir:
