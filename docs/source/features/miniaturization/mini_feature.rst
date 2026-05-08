@@ -141,210 +141,296 @@ clang+musl对busybox的编译数据对比
 编译链的制作
 :::::::::::::
 
+前置条件准备（可选手动或自动下载）
++++++++++++++++++++++++++++++++++++++
+
+制作clang+musl ARM32交叉编译链前，需要准备以下前置条件：
+
 1. 准备32位gcc+musl编译链
 
-  可以直接从openEuler Embedded的源码仓发布件下载，发布件名称为openeuler_gcc_arm32le-musl
+  可以直接从openEuler Embedded的源码仓发布件下载，发布件名称为openeuler_gcc_arm32le-musl，该编译链在后续步骤中作为compiler-rt和libunwind的交叉编译基础运行时库使用。
 
 2. 准备编译链源码
 
-  llvm-project源码为：https://gitee.com/openeuler/llvm-project这里我们选用dev_19.1.7版本,执行以下命令下载llvm-project源码：
+  llvm-project源码为：https://atomgit.com/openeuler/llvm-project 这里我们选用dev_19.1.7版本,执行以下命令下载llvm-project源码：
         
   .. code::
 
-    git clone https://gitee.com/openeuler/llvm-project.git -b dev_19.1.7 --depth=1
+    git clone https://atomgit.com/openeuler/llvm-project.git -b dev_19.1.7 --depth=1
         
-  musl源码为：https://gitee.com/src-openeuler/musl.git，这里我们参考manifest.yaml中的musl版本，执行以下命令下载musl源码：
+  musl源码为：https://atomgit.com/src-openeuler/musl.git，这里我们参考manifest.yaml中的musl版本，执行以下命令下载musl源码：
         
   .. code::
 
       git init openeuler-musl
       cd openeuler-musl
-      git remote add origin https://gitee.com/src-openeuler/musl.git
+      git remote add origin https://atomgit.com/src-openeuler/musl.git
       git fetch origin <version> --depth=1
       git checkout <version>
-        
-3. 单步编译llvm
 
-  我们编译链的安装目录设定为：/home/lixinyu/toolchain/llvm-musl-arm，这里开发者可以自行设置，但是前提要有写入权限
-        
-  编译llvm二进制：
+方式一：使用脚本一键下载并制作（推荐）
++++++++++++++++++++++++++++++++++++++++
+
+openEuler Embedded提供了完整的编译链制作工具链，位于 ``yocto-meta-openeuler`` 代码仓的 ``.oebuild/arm32-clang-musl-toolchain/`` 目录下，可自动完成前置依赖下载和编译链构建，无需手动操作。
+
+1. 下载前置依赖
+
+  运行 ``prepare.sh`` 可自动下载32位gcc+musl编译链（分块文件自动合并解压）、llvm-project源码、musl源码：
+
+  .. code::
+
+      sh arm32-clang-musl-toolchain/prepare.sh <work_dir>
+
+  其中 ``<work_dir>`` 为工作目录，所有依赖将下载到该目录下的 ``open_source/`` 子目录中。若不指定，默认使用脚本所在目录。
+
+  所有版本参数（gcc-musl分块数量、llvm分支、musl commit hash等）集中在 ``configs/config.xml`` 中管理，便于后续版本更新。
+
+2. 构建编译链
+
+  前置依赖下载完成后，运行 ``build-llvm-musl-arm32.sh`` 一键构建：
+
+  .. code::
+
+      cd <work_dir>
+      ./arm32-clang-musl-toolchain/build-llvm-musl-arm32.sh all \
+          --gcc-dir ./open_source/openeuler_gcc_arm32le-musl \
+          --llvm-src ./open_source/llvm-project \
+          --musl-src ./open_source/openeuler-musl/ \
+          --output-dir ./toolchain
+
+构建完成后，编译链安装在 ``<work_dir>/toolchain/llvm-musl-arm/`` 目录下。
+
+  ``build-llvm-musl-arm32.sh`` 会自动完成以下7个步骤：
+
+  1. 检查前置条件（cmake、ninja等）
+  2. 拷贝源码到输出目录并应用compiler-rt和libunwind补丁
+  3. 构建LLVM/Clang/LLD
+  4. 构建compiler-rt（ARM运行时库）
+  5. 构建libunwind（ARM异常处理库）
+  6. 构建musl C库
+  7. 设置sysroot、创建符号链接、验证编译链
+
+  更详细的使用说明请参考 ``.oebuild/arm32-clang-musl-toolchain/README.md``。
+
+方式二：手动逐步制作
++++++++++++++++++++++
+
+  后续步骤中，设定安装目录为 ``<toolchain-dir>`` （如 ``/home/user/toolchain/llvm-musl-arm``），设定gcc-musl编译链目录为 ``<gcc-musl-dir>`` （如 ``./openeuler_gcc_arm32le-musl``），请根据实际路径替换。
+
+3. 单步编译LLVM/Clang/LLD
 
   .. code::
 
       cd llvm-project
       mkdir build-llvm
       cd build-llvm
-      cmake \
-      -G "Unix Makefiles" \
+      cmake -G Ninja ../llvm \
       -DCMAKE_BUILD_TYPE=Release \
       -DLLVM_ENABLE_PROJECTS="clang;lld" \
       -DLLVM_TARGETS_TO_BUILD="ARM" \
       -DLLVM_DEFAULT_TARGET_TRIPLE=arm-openeuler-linux-musleabi \
-      -DCMAKE_INSTALL_PREFIX=/home/lixinyu/toolchain/llvm-musl-arm \
-      -DCMAKE_C_COMPILER=gcc \
-      -DCMAKE_CXX_COMPILER=g++ \
-      -DCMAKE_CROSSCOMPILING=ON \
-      -DCLANG_DEFAULT_CXX_STDLIB=none \
-      -DCLANG_DEFAULT_LINKER=lld \
-      -DCLANG_DEFAULT_RTLIB=compiler-rt \
-      -DLLVM_ENABLE_LIBCXX=OFF \
-      ../llvm
-      make -j$(nproc)
-      make install
+      -DCMAKE_INSTALL_PREFIX=<toolchain-dir> \
+      -DLLVM_ENABLE_RTTI=ON \
+      -DLLVM_ENABLE_TERMINFO=OFF \
+      -DLLVM_ENABLE_LIBXML2=OFF \
+      -DLLVM_ENABLE_ZLIB=OFF \
+      -DLLVM_ENABLE_ZSTD=OFF \
+      -DLLVM_BUILD_UTILS=OFF \
+      -DLLVM_BUILD_TESTS=OFF \
+      -DLLVM_INCLUDE_TESTS=OFF \
+      -DLLVM_INCLUDE_BENCHMARKS=OFF \
+      -DLLVM_INCLUDE_DOCS=OFF \
+      -DLLVM_INCLUDE_EXAMPLES=OFF \
+      -DCLANG_ENABLE_ARCMT=OFF \
+      -DCLANG_ENABLE_STATIC_ANALYZER=OFF \
+      -DCLANG_INCLUDE_TESTS=OFF \
+      -DLLVM_ENABLE_PIC=ON
+      cmake --build . -j$(nproc)
+      cmake --install .
     
   将clang编译器加入到PATH路径中，例如：
 
   .. code::
 
-      export PATH=/home/lixinyu/toolchain/llvm-musl-arm/bin:$PATH
-        
-  编译compiler-rt：
-  
-  编译compiler-rt需要用到gcc的运行时库，前面编译好的32位gcc+musl这里就派上了用场，执行以下命令来拷贝gcc运行时库：
+      export PATH=<toolchain-dir>/bin:$PATH
+
+4. 修改compiler-rt源码并编译
+
+  musl libc不提供单独的stat64结构体，在设定_FILE_OFFSET_BITS=64时，musl的<sys/stat.h>中的stat就是64位版本，因此需要将compiler-rt中sanitizer相关的stat64调用改为stat。
+
+  修改 ``sanitizer_platform_limits_posix.h`` ，在 ``SANITIZER_HAS_STAT64`` 和 ``SANITIZER_HAS_STATFS64`` 的条件判断中，为非glibc/Android平台添加置0的分支：
 
   .. code::
 
-      cp -rf <gcc-musl-arm>/lib/gcc /home/lixinyu/toolchain/llvm-musl-arm/lib/
-      cp -rf <gcc-musl-arm>/arm-openeuler-linux-musleabi/include /home/lixinyu/toolchain/llvm-musl-arm/arm-openeuler-linux-musleabi
-      cp -rf <gcc-musl-arm>/arm-openeuler-linux-musleabi/sysroot/* /home/lixinyu/toolchain/llvm-musl-arm/arm-openeuler-linux-musleabi/sysroot/
-        
-  修改compiler-rt源码，将智能检查中所有stat64的定义改为stat，这是因为musl libc不提供单独的stat64结构体，在设定_FILE_OFFSET_BITS=64时，musl的<sys/stat.h>中的stat就是64位版本。执行以下命令进行修改：
-        
-  .. code::
-  
-      cd llvm-project
-      vim compiler-rt/lib/sanitizer_common/sanitizer_linux.cpp
-      # 将所有state64的定义改为stat，注意是要将所有stat64的调用改为stat，直接进行替换即可,例如：
-      bool FileExists(const char *filename) {
-          if (ShouldMockFailureToOpen(filename))
-              return false;
-          # struct stat64 st;
-          struct stat st;
-          if (internal_stat(filename, &st))
-              return false;
-          // Sanity check: filename is a regular file.
-          return S_ISREG(st.st_mode);
-      }
+      // 原代码：
+      #elif SANITIZER_GLIBC || SANITIZER_ANDROID
+      #define SANITIZER_HAS_STAT64 1
+      #define SANITIZER_HAS_STATFS64 1
+      #endif
 
-  继续执行以下命令：
+      // 修改为：
+      #elif SANITIZER_GLIBC || SANITIZER_ANDROID
+      #define SANITIZER_HAS_STAT64 1
+      #define SANITIZER_HAS_STATFS64 1
+      #else
+      #define SANITIZER_HAS_STAT64 0
+      #define SANITIZER_HAS_STATFS64 0
+      #endif
+
+  修改 ``sanitizer_linux.cpp`` ，将所有 ``stat64`` 相关调用替换为 ``stat``：
+
+  - 删除 ``stat64_to_stat`` 函数定义
+  - 将 ``internal_stat`` 中的 ``fstatat64`` 系统调用替换为 ``stat`` 系统调用
+  - 将 ``internal_lstat`` 中的 ``fstatat64`` 系统调用替换为 ``lstat`` 系统调用
+  - 将 ``internal_fstat`` 中的 ``fstat64`` 系统调用替换为 ``fstat`` 系统调用
+
+  编译compiler-rt需要用到gcc的运行时库，前面准备好的32位gcc+musl编译链在此使用。注意编译ARM32目标时 ``CMAKE_SIZEOF_VOID_P`` 应设为4（而非8），且编译参数需包含 ``--target``、``--sysroot``、``--gcc-toolchain`` 以正确指定交叉编译目标：
 
   .. code::
-  
+
       cd llvm-project
       mkdir build-compiler-rt
       cd build-compiler-rt
-      cmake -G "Unix Makefiles" \
+      cmake -G Ninja ../compiler-rt \
       -DCOMPILER_RT_BUILD_BUILTINS=ON \
       -DCOMPILER_RT_INCLUDE_TESTS=OFF \
       -DCOMPILER_RT_BUILD_SANITIZERS=OFF \
       -DCOMPILER_RT_BUILD_XRAY=OFF \
       -DCOMPILER_RT_BUILD_LIBFUZZER=OFF \
       -DCOMPILER_RT_BUILD_PROFILE=OFF \
+      -DCOMPILER_RT_BUILD_MEMPROF=OFF \
       -DCOMPILER_RT_DEFAULT_TARGET_ONLY=ON \
-      -DLLVM_TARGETS_TO_BUILD="ARM" \
-      -DCMAKE_C_COMPILER=clang \
-      -DCMAKE_CXX_COMPILER=clang++ \
-      -DCMAKE_ASM_COMPILER=clang \
-      -DCMAKE_C_FLAGS="-march=armv7-a" \
-      -DCMAKE_CXX_FLAGS="-march=armv7-a" \
-      -DCMAKE_EXE_LINKER_FLAGS="-march=armv7-a" \
-      -DCMAKE_ASM_FLAGS="-march=armv7-a" \
-      -DCMAKE_ASM_COMPILER_TARGET="arm-openeuler-linux-musleabi" \
+      -DCMAKE_C_COMPILER=<toolchain-dir>/bin/clang \
+      -DCMAKE_CXX_COMPILER=<toolchain-dir>/bin/clang++ \
+      -DCMAKE_AR=<toolchain-dir>/bin/llvm-ar \
+      -DCMAKE_NM=<toolchain-dir>/bin/llvm-nm \
+      -DCMAKE_RANLIB=<toolchain-dir>/bin/llvm-ranlib \
+      -DCMAKE_LINKER=<toolchain-dir>/bin/ld.lld \
       -DCMAKE_C_COMPILER_TARGET="arm-openeuler-linux-musleabi" \
-      -DCMAKE_CXX_COMPILER_TARGET="arm-openeuler-linux-musleabi" \
-      -DCMAKE_SYSROOT=/home/lixinyu/toolchain/llvm-musl-arm/arm-openeuler-linux-musleabi/sysroot \
-      -DCMAKE_INSTALL_PREFIX=/home/lixinyu/toolchain/llvm-musl-arm/arm-openeuler-linux-musleabi/sysroot \
-      -DCMAKE_C_COMPILER_WORKS=1 \
-      -DCMAKE_CXX_COMPILER_WORKS=1 \
-      -DCMAKE_SIZEOF_VOID_P=8 \
-      ../compiler-rt
-      make -j$(nproc)
-      make install
-        
-  编译musl：
+      -DCMAKE_C_FLAGS="--target=arm-openeuler-linux-musleabi --sysroot=<gcc-musl-dir>/arm-openeuler-linux-musleabi/sysroot --gcc-toolchain=<gcc-musl-dir> -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -fuse-ld=lld" \
+      -DCMAKE_CXX_FLAGS="--target=arm-openeuler-linux-musleabi --sysroot=<gcc-musl-dir>/arm-openeuler-linux-musleabi/sysroot --gcc-toolchain=<gcc-musl-dir> -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -fuse-ld=lld" \
+      -DCMAKE_ASM_FLAGS="--target=arm-openeuler-linux-musleabi -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard" \
+      -DCMAKE_EXE_LINKER_FLAGS="-fuse-ld=lld" \
+      -DCMAKE_INSTALL_PREFIX=<toolchain-dir> \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DLLVM_CONFIG_PATH=<toolchain-dir>/bin/llvm-config
+      cmake --build . -j$(nproc)
+      cmake --install .
 
-  执行以下命令来编译musl：
+  将compiler-rt builtins库复制到clang资源目录：
+
+  .. code::
+
+      mkdir -p <toolchain-dir>/lib/clang/19/lib/arm-openeuler-linux-musleabi
+      cp <toolchain-dir>/lib/linux/libclang_rt.builtins-arm.a \
+         <toolchain-dir>/lib/clang/19/lib/arm-openeuler-linux-musleabi/libclang_rt.builtins.a
+
+5. 编译musl
+
+  首先解压musl源码tar包：
 
   .. code::
 
       cd openeuler-musl
-      cd musl-1.2.4
-      ARCH=arm \
-      CROSS_COMPILER=llvm- \
-      CC="clang" \
-      LIBCC="/home/lixinyu/toolchain/llvm-musl-arm/arm-openeuler-linux-musleabi/sysroot/lib/linux/libclang_rt.builtins-arm.a" \
-      ./configure --prefix=/home/lixinyu/toolchain/llvm-musl-arm/arm-openeuler-linux-musleabi/sysroot
-      make -j$(nproc)
-      make install
+      tar xzf musl-1.2.4.tar.gz
 
-  编译libunwind：
-
-  编译libunwind需要修改的地方较多，这里我直接打了一个补丁，就可直接将补丁内容打在linunwind中：
+  创建交叉编译器符号链接，并将工具链bin目录加入PATH：
 
   .. code::
 
-      diff --git a/libunwind/CMakeLists.txt b/libunwind/CMakeLists.txt
-      index 28d67b0fe..c3e2bc02e 100644
-      --- a/libunwind/CMakeLists.txt
-      +++ b/libunwind/CMakeLists.txt
-      @@ -55,6 +55,8 @@ option(LIBUNWIND_USE_FRAME_HEADER_CACHE "Cache frame headers for unwinding. Requ
-      option(LIBUNWIND_REMEMBER_HEAP_ALLOC "Use heap instead of the stack for .cfi_remember_state." OFF)
-      option(LIBUNWIND_INSTALL_HEADERS "Install the libunwind headers." ON)
-      option(LIBUNWIND_ENABLE_FRAME_APIS "Include libgcc-compatible frame apis." OFF)
-      +option(LIBUNWIND_ENABLE_ASSEMBLY "Enable assembly support" ON)
-      +
+      cd <toolchain-dir>/bin
+      ln -sf clang arm-openeuler-linux-musleabi-clang
+      ln -sf clang++ arm-openeuler-linux-musleabi-clang++
+      ln -sf clang-cpp arm-openeuler-linux-musleabi-clang-cpp
+      ln -sf lld arm-openeuler-linux-musleabi-ld
+      ln -sf lld arm-openeuler-linux-musleabi-ld.lld
+      ln -sf llvm-ar arm-openeuler-linux-musleabi-ar
+      ln -sf llvm-nm arm-openeuler-linux-musleabi-nm
+      ln -sf llvm-objcopy arm-openeuler-linux-musleabi-objcopy
+      ln -sf llvm-objdump arm-openeuler-linux-musleabi-objdump
+      ln -sf llvm-ranlib arm-openeuler-linux-musleabi-ranlib
+      ln -sf llvm-readelf arm-openeuler-linux-musleabi-readelf
+      ln -sf llvm-strip arm-openeuler-linux-musleabi-strip
+      ln -sf llvm-strings arm-openeuler-linux-musleabi-strings
+      export PATH=<toolchain-dir>/bin:$PATH
 
-      set(LIBUNWIND_LIBDIR_SUFFIX "${LLVM_LIBDIR_SUFFIX}" CACHE STRING
-          "Define suffix of library directory name (32/64)")
-      @@ -292,6 +294,7 @@ if (LIBUNWIND_ENABLE_ARM_WMMX)
-      # provide the option to explicitly enable support for WMMX registers in the
-      # unwinder.
-      add_compile_flags(-D__ARM_WMMX)
-      +  add_compile_flags(-D_LIBUNWIND_ARM_WMMX)
-      endif()
+  编译musl时CC参数需包含 ``--target``、``-march``、``-mfpu``、``-mfloat-abi``、``-rtlib=compiler-rt`` 和 ``-fuse-ld=lld``，以正确指定交叉编译目标和运行时库：
 
-      if(LIBUNWIND_IS_BAREMETAL)
-      diff --git a/libunwind/src/CMakeLists.txt b/libunwind/src/CMakeLists.txt
-      index 780430ba7..b26f79467 100644
-      --- a/libunwind/src/CMakeLists.txt
-      +++ b/libunwind/src/CMakeLists.txt
-      @@ -1,5 +1,9 @@
-      # Get sources
+  .. code::
 
-      +enable_language(ASM)
-      +set(CMAKE_C_FLAGS "-march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard")
-      +set(CMAKE_CXX_FLAGS "-march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard")
-      +
-      set(LIBUNWIND_CXX_SOURCES
-          libunwind.cpp
-          Unwind-EHABI.cpp
-      ~
+      mkdir build-musl
+      cd build-musl
+      CC="<toolchain-dir>/bin/clang --target=arm-openeuler-linux-musleabi -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -rtlib=compiler-rt -fuse-ld=lld" \
+      ../musl-1.2.4/configure \
+          --target=arm-openeuler-linux-musleabi \
+          --prefix=/usr \
+          --disable-wrapper \
+          --enable-static \
+          --enable-shared
+      make -j$(nproc)
+      make DESTDIR=<toolchain-dir>/arm-openeuler-linux-musleabi/sysroot install
+
+6. 编译libunwind
+
+  编译libunwind需要应用两个补丁：
+
+  补丁1：在 ``libunwind/CMakeLists.txt`` 中添加 ``LIBUNWIND_ENABLE_ASSEMBLY`` 选项，在 ``LIBUNWIND_ENABLE_FRAME_APIS`` 选项行后添加：
+
+  .. code::
+
+      option(LIBUNWIND_ENABLE_ASSEMBLY "Enable assembly support" ON)
+
+  补丁2：在 ``libunwind/src/CMakeLists.txt`` 文件首行添加 ``enable_language(ASM)`` 以启用ASM语言支持。
+
+  .. warning::
+
+      **重要**：切勿在 ``libunwind/src/CMakeLists.txt`` 中使用 ``set(CMAKE_C_FLAGS "...")`` 或 ``set(CMAKE_CXX_FLAGS "...")`` 来设置ARM编译选项。这些 ``set()`` 调用会覆盖通过 ``-DCMAKE_C_FLAGS`` / ``-DCMAKE_CXX_FLAGS`` 命令行传入的交叉编译参数（``--target``、``--sysroot``、``--gcc-toolchain``），导致编译器回退使用宿主机的系统头文件，产生架构不兼容错误。ARM相关编译选项应通过cmake命令行的 ``-DCMAKE_C_FLAGS`` / ``-DCMAKE_CXX_FLAGS`` 参数传入。
+
+  同时注意：libunwind的 ``CMAKE_CXX_FLAGS`` 中应使用 ``-nostdinc++`` （仅排除C++标准库头文件），而**不要**使用 ``-nostdinc`` （会排除所有标准C头文件包括 ``stdint.h``、``assert.h`` 等）。因为 ``--target`` + ``--sysroot`` + ``--gcc-toolchain`` 已能正确将C头文件搜索重定向到目标sysroot，无需 ``-nostdinc``。
 
   执行libunwind编译命令：
-        
+
   .. code::
 
-      cmake -G "Unix Makefiles" \
-      -DCMAKE_C_COMPILER=clang \
-      -DCMAKE_CXX_COMPILER=clang++ \
-      -DCMAKE_ASM_COMPILER=clang \
-      -DCMAKE_VERBOSE_MAKEFILE=True \
-      -DLIBUNWIND_USE_COMPILER_RT=ON \
+      mkdir build-libunwind
+      cd build-libunwind
+      cmake -G Ninja ../libunwind \
+      -DCMAKE_C_COMPILER=<toolchain-dir>/bin/clang \
+      -DCMAKE_CXX_COMPILER=<toolchain-dir>/bin/clang++ \
+      -DCMAKE_AR=<toolchain-dir>/bin/llvm-ar \
+      -DCMAKE_NM=<toolchain-dir>/bin/llvm-nm \
+      -DCMAKE_RANLIB=<toolchain-dir>/bin/llvm-ranlib \
+      -DCMAKE_LINKER=<toolchain-dir>/bin/ld.lld \
+      -DCMAKE_C_FLAGS="--target=arm-openeuler-linux-musleabi --sysroot=<gcc-musl-dir>/arm-openeuler-linux-musleabi/sysroot --gcc-toolchain=<gcc-musl-dir> -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -D_LIBUNWIND_IS_BAREMETAL=1 -fuse-ld=lld" \
+      -DCMAKE_CXX_FLAGS="--target=arm-openeuler-linux-musleabi --sysroot=<gcc-musl-dir>/arm-openeuler-linux-musleabi/sysroot --gcc-toolchain=<gcc-musl-dir> -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -D_LIBUNWIND_IS_BAREMETAL=1 -nostdinc++ -fuse-ld=lld" \
+      -DCMAKE_EXE_LINKER_FLAGS="-fuse-ld=lld" \
+      -DCMAKE_INSTALL_PREFIX=<toolchain-dir> \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DLIBUNWIND_ENABLE_SHARED=ON \
+      -DLIBUNWIND_ENABLE_STATIC=ON \
       -DLIBUNWIND_ENABLE_CROSS_UNWINDING=ON \
-      -DLIBUNWIND_ENABLE_ARM_WMMX=ON \
+      -DLIBUNWIND_ENABLE_ARM_WMMX=OFF \
       -DLIBUNWIND_ENABLE_ASSEMBLY=ON \
-      -DCMAKE_C_COMPILER_TARGET="arm-openeuler-linux-musleabi" \
-      -DCMAKE_CXX_COMPILER_TARGET="arm-openeuler-linux-musleabi" \
-      -DCMAKE_C_FLAGS="-march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard" \
-      -DCMAKE_CXX_FLAGS="-march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard" \
-      -DCMAKE_ASM_FLAGS="-march=armv7-a" \
-      -DCMAKE_EXE_LINKER_FLAGS="-march=armv7-a" \
-      -DCMAKE_SYSROOT=/home/lixinyu/toolchain/llvm-musl-arm/arm-openeuler-linux-musleabi/sysroot \
-      -DCMAKE_INSTALL_PREFIX=/home/lixinyu/toolchain/llvm-musl-arm/arm-openeuler-linux-musleabi/sysroot \
-      -DCMAKE_CXX_COMPILER_WORKS=1 \
-      ../libunwind
-      make -j$(nproc)
-      make install
+      -DLIBUNWIND_USE_COMPILER_RT=ON \
+      -DLIBUNWIND_INSTALL_HEADERS=ON \
+      -DLLVM_PATH=<llvm-project-src-dir> \
+      -DLLVM_ENABLE_RTTI=ON
+      cmake --build . -j$(nproc)
+      cmake --install .
+
+7. 设置sysroot
+
+  将gcc运行时库、头文件复制到工具链sysroot中：
+
+  .. code::
+
+      GCC_VERSION=$(ls <gcc-musl-dir>/lib/gcc/arm-openeuler-linux-musleabi/ | head -1)
+      mkdir -p <toolchain-dir>/arm-openeuler-linux-musleabi/sysroot/lib
+      cp -a <gcc-musl-dir>/arm-openeuler-linux-musleabi/sysroot/lib/* <toolchain-dir>/arm-openeuler-linux-musleabi/sysroot/lib/
+      mkdir -p <toolchain-dir>/lib/gcc/arm-openeuler-linux-musleabi/$GCC_VERSION
+      cp -a <gcc-musl-dir>/lib/gcc/arm-openeuler-linux-musleabi/$GCC_VERSION/* <toolchain-dir>/lib/gcc/arm-openeuler-linux-musleabi/$GCC_VERSION/
+      mkdir -p <toolchain-dir>/arm-openeuler-linux-musleabi/sysroot/usr/include
+      cp -a <gcc-musl-dir>/arm-openeuler-linux-musleabi/include/* <toolchain-dir>/arm-openeuler-linux-musleabi/sysroot/usr/include/
 
   至此，llvm-musl-arm编译链制作完毕
 
