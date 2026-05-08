@@ -1,0 +1,130 @@
+def downloadEmbeddedCI(){
+    sh 'rm -rf embedded-ci'
+    sh "git clone ${embeddedRemote} -b ${embeddedBranch} -v embedded-ci --depth=1"
+}
+
+def downloadYoctoWithPr(String workspace, String namespace, String repo, Integer prnum, Integer deepth){
+    sh """
+        python3 main.py clone_repo \
+        -w ${workspace} \
+        -r https://atomgit.com/${namespace}/${repo} \
+        -p ${repo} \
+        -pr ${prnum} \
+        -dp ${deepth}
+    """
+}
+
+def createReleaseAndUploadFile(String yaml_path, String file_dir){
+    sh """
+        python3 main.py create_release \
+        -gt ${env.GITEETOKEN} \
+        -y ${yaml_path} \
+        -f ${file_dir}
+    """
+}
+
+pipeline {
+    agent { node "${node}" }
+    environment {
+        PATH = "/home/jenkins/.local/bin:${env.PATH}"
+    }
+    stages {
+        stage("check release"){
+            steps{
+                script{
+                    def ptitle = "$pr_title"
+                    if (ptitle.contains("arm32-clang-musl-toolchain版本升级到")){
+                        env.is_release = "true"
+                    }else{
+                        env.is_release = "failed"
+                    }
+                }
+            }
+        }
+        stage("download repo"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+            steps{
+                dir('/home/jenkins/agent'){
+                    script{
+                        downloadEmbeddedCI()
+                    }
+                }
+                dir('/home/jenkins/agent/embedded-ci'){
+                    script{
+                        downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), 1)
+                    }
+                }
+            }
+        }
+        stage("prepare source"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+            steps{
+                dir('/home/jenkins/agent/yocto-meta-openeuler/.oebuild/arm32-clang-musl-toolchain'){
+                    sh "sh prepare.sh /home/jenkins/agent/arm32-clang-musl-workdir"
+                }
+            }
+        }
+        stage("build toolchain"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+            steps{
+                dir('/home/jenkins/agent/arm32-clang-musl-workdir'){
+                    sh """
+                        cp /home/jenkins/agent/yocto-meta-openeuler/.oebuild/arm32-clang-musl-toolchain/build-llvm-musl-arm32.sh .
+                        ./build-llvm-musl-arm32.sh all \
+                            --gcc-dir ./open_source/openeuler_gcc_arm32le-musl \
+                            --llvm-src ./open_source/llvm-project \
+                            --musl-src ./open_source/openeuler-musl/ \
+                            --output-dir ./toolchain \
+                            2>&1 | tee build.log
+                    """
+                }
+            }
+        }
+        stage("package toolchain"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+            steps{
+                dir("/home/jenkins/agent/arm32-clang-musl-workdir/toolchain"){
+                    sh """
+                        tar czf llvm-musl-arm.tar.gz llvm-musl-arm
+                        mkdir release
+                        mv llvm-musl-arm.tar.gz release/
+                    """
+                }
+            }
+        }
+        stage("release arm32-clang-musl-toolchain"){
+            when {
+                expression {
+                    return env.is_release == "true"
+                }
+            }
+            steps{
+                dir('/home/jenkins/agent/embedded-ci'){
+                    script{
+                        withCredentials([string(credentialsId: "${giteeId}", variable: 'GITEETOKEN')]){
+                            yamlPath = "/home/jenkins/agent/yocto-meta-openeuler/.oebuild/arm32-clang-musl-toolchain/release.yaml"
+                            fileDir = "/home/jenkins/agent/arm32-clang-musl-workdir/toolchain/release"
+                            createReleaseAndUploadFile(yamlPath, fileDir)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
