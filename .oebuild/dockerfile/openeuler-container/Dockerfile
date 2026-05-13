@@ -40,7 +40,7 @@ RUN chmod 777 /var/log/hawkey.log && chmod -R 777 /var/cache/dnf
 
 USER openeuler
 
-ARG openeuler_repo=https://gitee.com/openeuler/yocto-meta-openeuler
+ARG openeuler_repo=https://atomgit.com/openeuler/yocto-meta-openeuler
 ARG openeuler_base_version=latest
 
 # download nativesdk release and install it
@@ -114,6 +114,13 @@ RUN wget ${openeuler_repo}/releases/download/${llvm_toolchain_version}/1_clang-l
     && tar zxf clang-llvm-17.0.6.tar.gz \
     && sudo mv clang-llvm-17.0.6 llvm \
     && sudo rm -rf clang-llvm-17.0.6.tar.gz merge_data.sh
+
+# download llvm-musl-arm toolchain and install it
+ARG llvm_musl_arm_version=arm32-clang-musl-toolchain-v0.1.0
+WORKDIR /usr1/openeuler
+RUN wget ${openeuler_repo}/releases/download/${llvm_musl_arm_version}/llvm-musl-arm.tar.gz \
+    && tar zxf llvm-musl-arm.tar.gz \
+    && rm -rf llvm-musl-arm.tar.gz
 
 RUN sudo chmod -R 777 /opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-linux/var/
 
