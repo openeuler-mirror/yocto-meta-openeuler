@@ -74,7 +74,7 @@ openEuler Embedded提供了基于yocto工程的开发方式，开发者可以依
      .. code-block:: console
 
          hello:
-            remote_url: https://gitee.com/openeuler/hello.git
+            remote_url: https://atomgit.com/openeuler/hello.git
             version: 4da472bba5924d1d422b595ae7497935ee678de0
 
 3. 添加BB文件

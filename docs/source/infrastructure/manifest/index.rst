@@ -14,7 +14,7 @@ Embedded整体的构建环境相对稳定，比如编译链，sdk等等，因此
 ::
 
    zlib:
-       remote_url: https://gitee.com/src-openeuler/zlib.git
+       remote_url: https://atomgit.com/src-openeuler/zlib.git
        version: 19f7d916543c44e2f2e8c52c81ac5d194d0573ad
 
 zlib: 是一个key键，同时也标识在本地会创建的目录名

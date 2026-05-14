@@ -9,7 +9,7 @@
 openEuler Embedded是基于openEuler社区面向嵌入式场景的Linux版本。由于嵌入式系统应用受到如资源、功耗、多样性等因素的约束，面向服务器领域的Linux及相应的构建系统很难满足嵌入式场景的要求，因此业界广泛采用 `Yocto <https://www.yoctoproject.org/>`_
 来定制化构建嵌入式Linux。openEuler Embedded当前也采用了Yocto进行构建，但实现了与openEuler其他版本代码同源。
 
-本章节将介绍如何基于 `yocto-meta-openeuler <https://gitee.com/openeuler/yocto-meta-openeuler>`_
+本章节将介绍如何基于 `yocto-meta-openeuler <https://atomgit.com/openeuler/yocto-meta-openeuler>`_
 仓库构建ARM64 QEMU镜像，以及如何基于镜像和生成的SDK完成基本的嵌入式Linux应用开发。建议按照指导步骤完成镜像构建和运行，以熟悉 openEuler Embedded的镜像构建流程。树莓派等其它平台镜像的构建开发流程也类似，具体可参阅 :ref:`南向支持 <bsp>` 章节。
 
 ____
@@ -17,7 +17,7 @@ ____
 构建 ARM64 QEMU 镜像
 ====================
 
-openEuler Embedded采用yocto构建，同时设计了基于Python的元工具 `oebuild <https://gitee.com/openeuler/oebuild>`_ 以简化相对复杂的yocto构建流程。按照以下步骤可以快速构建出一个openEuler Embedded镜像。
+openEuler Embedded采用yocto构建，同时设计了基于Python的元工具 `oebuild <https://atomgit.com/openeuler/oebuild>`_ 以简化相对复杂的yocto构建流程。按照以下步骤可以快速构建出一个openEuler Embedded镜像。
 
 .. note::
 
@@ -412,4 +412,4 @@ ____
    - | `SIG组例会视频 <https://space.bilibili.com/527064077/channel/collectiondetail?sid=230709>`_ ：
      | 可以观看往期的SIG组例会回放，了解openEuler Embedded的发展以及一些有趣的知识分享。
 
-   非常希望您在深入了解openEuler Embedded之后，能有一个良好的体验。对于遇到的问题，欢迎到SIG组例会上交流，或者在 `Issues <https://gitee.com/openeuler/yocto-meta-openeuler/issues>`_ 中反馈，同时也十分欢迎您的提交。
+   非常希望您在深入了解openEuler Embedded之后，能有一个良好的体验。对于遇到的问题，欢迎到SIG组例会上交流，或者在 `Issues <https://atomgit.com/openeuler/yocto-meta-openeuler/issues>`_ 中反馈，同时也十分欢迎您的提交。

@@ -22,7 +22,7 @@ ____
 
 .. seealso::
 
-   详细使用方法请参考 `EPKG包管理器使用说明 <https://gitee.com/openeuler/epkg/blob/master/doc/epkg-usage.md#epkg%E5%8C%85%E7%AE%A1%E7%90%86%E5%99%A8%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E>`_ 。
+   详细使用方法请参考 `EPKG包管理器使用说明 <https://atomgit.com/openeuler/epkg/blob/master/doc/epkg-usage.md#epkg%E5%8C%85%E7%AE%A1%E7%90%86%E5%99%A8%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E>`_ 。
 
 以下为使用示例：
 

@@ -16,7 +16,7 @@
     .. code:: 
 
         libxcb:
-            remote_url: https://gitee.com/src-openeuler/libxcb.git
+            remote_url: https://atomgit.com/src-openeuler/libxcb.git
             version: a8fbea0090769fe5e80962aed7bd14216a4274cf
         ...
 
@@ -37,7 +37,7 @@
 
 **场景二：所添加的包在上游openEuler中不存在**
 
-openEuler Embedded的软件包组成在设计之初是全部来源于openEuler社区，然而在实际项目发展过程中对于该前提条件存在一定的不确定性以及实施的困难性。原因就在于openEuler上游软件包虽然覆盖了几乎所有的openEuler Embedded所需软件包，但仍然有一些特殊软件包并没有被收录到openeuler中，针对既需要一些特殊包，而openeuler未收录，并且还要遵循openEuler Embedded的软件包来源策略，我们在openeuler下创建了oee_archive仓库，该仓库的作用就是为了解决这样的特殊场景。oee_archive仓库用来放置openEuler Embedded所需的上游源码压缩包，同时为了针对oee_archive仓库的下载更加快速、有效，我们专门实现了oee_archive_download方法来应对。oee_archive的仓库地址为：https://gitee.com/openeuler/oee_archive.git
+openEuler Embedded的软件包组成在设计之初是全部来源于openEuler社区，然而在实际项目发展过程中对于该前提条件存在一定的不确定性以及实施的困难性。原因就在于openEuler上游软件包虽然覆盖了几乎所有的openEuler Embedded所需软件包，但仍然有一些特殊软件包并没有被收录到openeuler中，针对既需要一些特殊包，而openeuler未收录，并且还要遵循openEuler Embedded的软件包来源策略，我们在openeuler下创建了oee_archive仓库，该仓库的作用就是为了解决这样的特殊场景。oee_archive仓库用来放置openEuler Embedded所需的上游源码压缩包，同时为了针对oee_archive仓库的下载更加快速、有效，我们专门实现了oee_archive_download方法来应对。oee_archive的仓库地址为：https://atomgit.com/openeuler/oee_archive.git
 
 现在将为您添加一个新包提供指导：
 

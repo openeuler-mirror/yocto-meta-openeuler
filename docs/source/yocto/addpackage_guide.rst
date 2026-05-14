@@ -73,7 +73,7 @@ bbappend 需要基于已知的配方文件，如果在已知的 :file:`poky/meta
 ::
 
     libcomps:
-    remote_url: https://gitee.com/src-openeuler/libcomps.git
+    remote_url: https://atomgit.com/src-openeuler/libcomps.git
     version: ba528fe723a61dbccc67f557b7566318c3e4193d
 
 2. :file:`meta-openeuler/recipes-devtools/libcomps/libcomps_%.bbappend` 内容如下：

@@ -21,7 +21,7 @@
 
 命令参数介绍：
 
--u：表示主构建仓远程地址，该参数默认值为"https://gitee.com/openeuler/yocto-meta-openeuler.git"
+-u：表示主构建仓远程地址，该参数默认值为"https://atomgit.com/openeuler/yocto-meta-openeuler.git"
 
 -b：表示主构建仓的分支选项，该参数默认值为"master"
 

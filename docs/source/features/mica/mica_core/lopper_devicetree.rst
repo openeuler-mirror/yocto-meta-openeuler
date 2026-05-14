@@ -86,7 +86,7 @@ ____
 .. seealso::
 
    yocto-meta-openeuler 中为树莓派添加了一个使用案例，将 ``serial@7e201a00`` 提取给zephyr使用，
-   参考提交 `rpi4: extract a serial for zephyr <https://gitee.com/openeuler/yocto-meta-openeuler/commit/144641062>`_。
+   参考提交 `rpi4: extract a serial for zephyr <https://atomgit.com/openeuler/yocto-meta-openeuler/commit/144641062>`_。
 
 ____
 
@@ -344,7 +344,7 @@ ____
 
 .. note::
 
-   应用示例： `rpi4: extract a serial for zephyr <https://gitee.com/openeuler/yocto-meta-openeuler/commit/144641062>`_
+   应用示例： `rpi4: extract a serial for zephyr <https://atomgit.com/openeuler/yocto-meta-openeuler/commit/144641062>`_
 
    除本文介绍的接口外，lopper 还支持一些其它的 lops，比如 conditional, exec, code 等，还支持通过 assists 加载自定义的 python 代码进行 dts 的解析处理。
 

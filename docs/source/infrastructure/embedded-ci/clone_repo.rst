@@ -14,7 +14,7 @@ clone_repo主要有如下参数：
 
 .. code-block:: console
 
-    -r https://gitee.com/openeuler/yocto-meta-openeuler.git
+    -r https://atomgit.com/openeuler/yocto-meta-openeuler.git
 
 在jenkins-file中，可以动态指定，例如空间使用pull_request.base.repo.namespace，可以设置别名为giteeTargetNameSpace，仓名采用repository.name，可以设置别名为giteeRepoName，因此在jenkins-file中，该参数可以这样设定 -r https://gitee.com/${giteeTargetNameSpace}/${giteeRepoName}。
 

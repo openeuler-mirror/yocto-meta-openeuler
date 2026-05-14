@@ -183,7 +183,7 @@ base-files      setup filesystem basesystem
     "
     # add for advance install oe pkgs using chroot target arch with qemu, need qemu-user-static of host
     # note kernel bellow 6.9 patch need xorg-x11-server-1.20.11-32
-    # see https://gitee.com/src-openeuler/xorg-x11-server/commit/d8c7ac6e53e01fa757e58ed044b9915756d826b1
+    # see https://atomgit.com/src-openeuler/xorg-x11-server/commit/d8c7ac6e53e01fa757e58ed044b9915756d826b1
     XFCE_PKG_LISTS = " \
         dejavu-fonts:real \
         liberation-fonts:real \

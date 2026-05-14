@@ -207,7 +207,7 @@ UMT 提供了两类接口：上下文接口和一次性接口。
 
 Linux 端示例可以参考 `test_umt <https://atomgit.com/openeuler/mcs/tree/master/test/test_umt#>`_ 。
 
-RTOS 端实现可以参考 UniProton `PR454 <https://gitee.com/openeuler/UniProton/pulls/454>`_，`PR457 <https://gitee.com/openeuler/UniProton/pulls/457>`_ 。
+RTOS 端实现可以参考 UniProton `PR454 <https://atomgit.com/openeuler/UniProton/pulls/454>`_，`PR457 <https://atomgit.com/openeuler/UniProton/pulls/457>`_ 。
 
 性能指标
 --------
