@@ -83,7 +83,7 @@ meta-clang 层中主要起作用的是 clang.bbclass 文件，该文件用来控
      .. code-block:: console
 
        cd ~
-       git clone -b dev_17.0.6 https://gitee.com/openeuler/llvm-project.git --depth=1
+       git clone -b dev_17.0.6 https://atomgit.com/openeuler/llvm-project.git --depth=1
 
      .. attention::
 
@@ -102,7 +102,7 @@ meta-clang 层中主要起作用的是 clang.bbclass 文件，该文件用来控
 
      因此，使用LLVM工具链进行交叉构建时，需要使用 ``--gcc-toolchain=`` 和 ``--sysroot=`` 选项指定目标架构的头文件和库文件所在的路径，或者将相关的文件集成到LLVM工具链当中，openEuler LLVM已经使能特性能够搜索默认集成的路径。
 
-     集成所需的头文件和库文件来自于GCC交叉工具链，可以从该 `下载链接 <https://gitee.com/openeuler/yocto-meta-openeuler/releases>`_ 中下载最新 ``openEuler Embedded Toolchains`` 版本的GCC交叉工具链，选择其中的 ``aarch64`` 版本。集成方式如下，
+     集成所需的头文件和库文件来自于GCC交叉工具链，可以从该 `下载链接 <https://atomgit.com/openeuler/yocto-meta-openeuler/releases>`_ 中下载最新 ``openEuler Embedded Toolchains`` 版本的GCC交叉工具链，选择其中的 ``aarch64`` 版本。集成方式如下，
 
      .. code-block:: console
 
@@ -122,7 +122,7 @@ meta-clang 层中主要起作用的是 clang.bbclass 文件，该文件用来控
 
      6. LLVM 工具链预发布版本获取
 
-     预发布的 LLVM 工具链版本可以从如下地址获取 `openEuler Embedded LLVM Toolchains <https://gitee.com/openeuler/yocto-meta-openeuler/releases>`_ ，预发布版本支持 x86_64 的 native 构建和 aarch64 的交叉构建，并且已经集成了交叉构建所需的目标架构的头文件和库文件。
+     预发布的 LLVM 工具链版本可以从如下地址获取 `openEuler Embedded LLVM Toolchains <https://atomgit.com/openeuler/yocto-meta-openeuler/releases>`_ ，预发布版本支持 x86_64 的 native 构建和 aarch64 的交叉构建，并且已经集成了交叉构建所需的目标架构的头文件和库文件。
 
 2.2 openEuler Embedded 构建方式
 ---------------------------------

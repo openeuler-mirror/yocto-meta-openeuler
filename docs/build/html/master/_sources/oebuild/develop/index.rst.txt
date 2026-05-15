@@ -13,7 +13,7 @@ oebuild是用python3开发的，因此在做开发工作前请先安装好python
 
 .. code-block:: console
 
-    git clone https://gitee.com/openeuler/oebuild.git
+    git clone https://atomgit.com/openeuler/oebuild.git
 
 2. 将oebuild以开发模式安装到本地，使用如下命令：
 

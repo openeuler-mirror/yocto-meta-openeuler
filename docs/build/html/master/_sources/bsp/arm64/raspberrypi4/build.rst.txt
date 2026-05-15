@@ -62,7 +62,7 @@
 
 - windows
 
-  参考: `树莓派SD卡烧录指导 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E5%88%B7%E5%86%99%E9%95%9C%E5%83%8F.md#%E5%88%B7%E5%86%99-sd-%E5%8D%A1>`_
+  参考: `树莓派SD卡烧录指导 <https://atomgit.com/openeuler/raspberrypi/blob/master/documents/%E5%88%B7%E5%86%99%E9%95%9C%E5%83%8F.md#%E5%88%B7%E5%86%99-sd-%E5%8D%A1>`_
 
 2.镜像使用
 
@@ -190,7 +190,7 @@ b.使用HDMI登录：
 
 默认根目录分区空间比较小，在使用之前，需要对分区进行扩容（在22.09及其之后的版本中，已实现自动扩容，首次烧录镜像启动会自动执行扩容并提示重启）
 
-以下为手动扩容方法，内容引用: `树莓派使用：启用树莓派：分区扩容 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E6%A0%91%E8%8E%93%E6%B4%BE%E4%BD%BF%E7%94%A8.md#%E5%88%86%E5%8C%BA%E6%89%A9%E5%AE%B9>`_
+以下为手动扩容方法，内容引用: `树莓派使用：启用树莓派：分区扩容 <https://atomgit.com/openeuler/raspberrypi/blob/master/documents/%E6%A0%91%E8%8E%93%E6%B4%BE%E4%BD%BF%E7%94%A8.md#%E5%88%86%E5%8C%BA%E6%89%A9%E5%AE%B9>`_
 
 1.查看磁盘分区信息
 
@@ -253,7 +253,7 @@ SD 卡对应盘符为 /dev/mmcblk0，包括 2 个分区，分别为
 树莓派镜像特性介绍
 **************************
 
-1.树莓派硬件特性，参考:`树莓派使用:GPIO介绍 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E6%A0%91%E8%8E%93%E6%B4%BE%E4%BD%BF%E7%94%A8.md#gpio>`_
+1.树莓派硬件特性，参考:`树莓派使用:GPIO介绍 <https://atomgit.com/openeuler/raspberrypi/blob/master/documents/%E6%A0%91%E8%8E%93%E6%B4%BE%E4%BD%BF%E7%94%A8.md#gpio>`_
 
 目前已使能串口设备，可以访问mini-uart，其他硬件特性暂不支持。
 

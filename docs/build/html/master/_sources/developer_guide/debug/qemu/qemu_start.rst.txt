@@ -24,13 +24,13 @@ QEMU使用
 
            $ sudo zepper install qemu-arm
 
-   方法二：基于openEuler社区 `QEMU <https://gitee.com/openeuler/qemu/tree/stable-5.0/>`_ 代码自行编译
+   方法二：基于openEuler社区 `QEMU <https://atomgit.com/openeuler/qemu/tree/stable-5.0/>`_ 代码自行编译
 
      1. 首先下载对应的代码并切换到stable-5.0分支：
 
      .. code-block:: console
 
-        $ git clone https://gitee.com/openeuler/qemu.git qemu
+        $ git clone https://atomgit.com/openeuler/qemu.git qemu
         $ cd qemu
         $ git checkout -b stable-5.0 remotes/origin/stable-5.0
 
@@ -54,7 +54,7 @@ QEMU使用
 2. 获取openEuler Embedded镜像
 =============================
 
-   参照 :ref:`快速上手<getting_started>` 部分，使用 `yocto-meta-openeuler <https://gitee.com/openeuler/yocto-meta-openeuler>`_ 项目构建 ARM64 QEMU 镜像，或者在 `dailybuild <http://121.36.84.172/dailybuild/openEuler-Mainline/>`_ 下载镜像。
+   参照 :ref:`快速上手<getting_started>` 部分，使用 `yocto-meta-openeuler <https://atomgit.com/openeuler/yocto-meta-openeuler>`_ 项目构建 ARM64 QEMU 镜像，或者在 `dailybuild <http://121.36.84.172/dailybuild/openEuler-Mainline/>`_ 下载镜像。
 
 3. 使用QEMU运行镜像
 ===================

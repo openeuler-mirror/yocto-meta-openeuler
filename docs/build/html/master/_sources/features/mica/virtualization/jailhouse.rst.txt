@@ -37,11 +37,11 @@ Jailhouse 构建指导
      .. code-block:: console
 
         # 下载 Jailhouse 源码：
-        $ git clone https://gitee.com/src-openeuler/Jailhouse.git
+        $ git clone https://atomgit.com/src-openeuler/Jailhouse.git
         $ cd Jailhouse; tar -xzf jailhouse-0.12.tar.gz
 
         # 打入 openEuler Embedded 的增强补丁：
-        $ curl -OL https://gitee.com/openeuler/yocto-meta-openeuler/raw/master/meta-openeuler/recipes-mcs/jailhouse/files/0001-driver-Add-support-for-remote-proc.patch
+        $ curl -OL https://atomgit.com/openeuler/yocto-meta-openeuler/raw/master/meta-openeuler/recipes-mcs/jailhouse/files/0001-driver-Add-support-for-remote-proc.patch
         $ cd jailhouse-0.12; patch -p1 < ../0001-driver-Add-support-for-remote-proc.patch
 
     执行以上步骤后，代码目录为：jailhouse-0.12，即我们的构建目录。

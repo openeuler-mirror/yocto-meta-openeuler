@@ -21,7 +21,7 @@ config：全局配置文件
     basic_repo:
         yocto_meta_openeuler:
             path: yocto-meta-openeuler
-            remote_url: https://gitee.com/openeuler/yocto-meta-openeuler.git
+            remote_url: https://atomgit.com/openeuler/yocto-meta-openeuler.git
             branch: master
 
 从内容上看，全局配置文件主要分为两大类，一类是跟docker相关的，一类是跟basic_repo相关的，下面将对这两类做详细的说明。

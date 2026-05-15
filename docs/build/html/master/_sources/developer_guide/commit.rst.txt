@@ -3,10 +3,10 @@
 代码提交指导
 ######################################
 
-开发人员通过git commit和gitee pr的形式向openEuler Embedded进行贡献，其中git commit msg需遵循相应的规范。
+开发人员通过git commit和atomgit pr的形式向openEuler Embedded进行贡献，其中git commit msg需遵循相应的规范。
 
 openEuler Embedded部署了基于 `gitlint <https://jorisroovers.com/gitlint/latest>`_ 的机制来检查git commit是否符合规范，
-具体的规范实现位于 `代码仓 <https://gitee.com/openeuler/yocto-meta-openeuler>`_ 下的 :file:`.gitlint` 和 :file:`scripts/gitlint/openeuler_embedded_commit_rules.py` 中。
+具体的规范实现位于 `代码仓 <https://atomgit.com/openeuler/yocto-meta-openeuler>`_ 下的 :file:`.gitlint` 和 :file:`scripts/gitlint/openeuler_embedded_commit_rules.py` 中。
 
 commit msg样式与示例
 ========================
@@ -49,7 +49,7 @@ commit msg样式与示例
     * fix find_path err in numpy for cross-compile
     
     Fixes: adii232naidf(ros2: Upgrade ros2 sdk for humble)  #假定这是对应产生问题的commit，非真实commit
-    Closes: https://gitee.com/openeuler/yocto-meta-openeuler/issues/T7SQ40?from=project-issue   #假设这是要关闭的issue，非真实链接
+    Closes: https://atomgit.com/openeuler/yocto-meta-openeuler/issues/T7SQ40?from=project-issue   #假设这是要关闭的issue，非真实链接
     Co-developed-by: zhangsan <zhangsan@163.com>    #共同贡献者
     Signed-off-by: zhangsan <zhangsan@163.com>
     Co-developed-by: lisi <lisi@163.com>            #共同贡献者
@@ -120,12 +120,12 @@ commit msg详细说明
       #注意commiter-name左右两边有空格
       Signed-off-by: commiter-name <random@developer.example.org>
 
-    ``Closes`` ：用于说明该次提交修复了 `issue问题 <https://gitee.com/openeuler/yocto-meta-openeuler/issues>`_ ，标签后带上被修复的issue链接，由于issue位于openEuler社区，因此链接的前缀必须为：https://gitee.com/openeuler/  。如果同时修复了多个issue，则可写多行 ``Closes`` 标签，每行带一个issue链接，如下所示：
+    ``Closes`` ：用于说明该次提交修复了 `issue问题 <https://atomgit.com/openeuler/yocto-meta-openeuler/issues>`_ ，标签后带上被修复的issue链接，由于issue位于openEuler社区，因此链接的前缀必须为：https://atomgit.com/openeuler/  。如果同时修复了多个issue，则可写多行 ``Closes`` 标签，每行带一个issue链接，如下所示：
 
     .. code-block:: shell
       
-      Closes: https://gitee.com/openeuler/yocto-meta-openeuler/issues/I7SQ40?from=project-issue
-      Closes: https://gitee.com/openeuler/yocto-meta-openeuler/issues/I7071W?from=project-issue
+      Closes: https://atomgit.com/openeuler/yocto-meta-openeuler/issues/I7SQ40?from=project-issue
+      Closes: https://atomgit.com/openeuler/yocto-meta-openeuler/issues/I7071W?from=project-issue
 
     ``Fixes`` ：用于说明该次提交是为了解决之前 commit id 带来的问题，标签后附加之前产生问题的提交，包括其commit id（取SHA-1的前12个字符）和对应的header信息，如下所示（假设解决 :ref:`完整示例2 <完整示例2>` 带来的问题）：
 

@@ -59,7 +59,7 @@ openeuler_fetch运行逻辑
 .. code:: 
 
     busybox:
-        remote_url: https://gitee.com/src-openeuler/busybox.git
+        remote_url: https://atomgit.com/src-openeuler/busybox.git
         version: aa2fc58263cf357d0c2f4f30118f3b4614fa25f6
 
 - 如果想要某一个版本的busybox参与构建：在manifest.yaml中将busybox的version进行修改即可
@@ -75,7 +75,7 @@ openeuler_fetch运行逻辑
 .. code:: 
 
     pcre2:
-        remote_url: https://gitee.com/src-openeuler/pcre2.git
+        remote_url: https://atomgit.com/src-openeuler/pcre2.git
         version: 82f14dfaf634ca8ae076aef7a19c65136c4e4a3d
 
 可以看到其key键是pcre2，那么这种情况是因为其bbappend文件中设置了OPENEULER_LOCAL_NAME，关于这两个变量的使用请参考上文“openeuler_fetch运行机制”，这里不再详述，下面附上其代码范例：

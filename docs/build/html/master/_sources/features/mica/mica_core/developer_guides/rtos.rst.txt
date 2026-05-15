@@ -116,7 +116,7 @@ ____
      |   `rsc_table.h <https://github.com/OpenAMP/open-amp/blob/main/apps/machine/zynq7/rsc_table.h>`_, `rsc_table.c <https://github.com/OpenAMP/open-amp/blob/main/apps/machine/zynq7/rsc_table.c>`_。
      |
      | UniProton：
-     |   `resource_table.h <https://gitee.com/openeuler/UniProton/blob/master/demos/raspi4/apps/openamp/resource_table.h>`_, `resource_table.c <https://gitee.com/openeuler/UniProton/blob/master/demos/raspi4/apps/openamp/resource_table.c>`_。
+     |   `resource_table.h <https://atomgit.com/openeuler/UniProton/blob/master/demos/raspi4/apps/openamp/resource_table.h>`_, `resource_table.c <https://atomgit.com/openeuler/UniProton/blob/master/demos/raspi4/apps/openamp/resource_table.c>`_。
 
 
   以 UniProton 的 resource_table 为例，通过使用 ``__attribute__((section(".resource_table")))`` 将下面的结构体放置到 ``.resource_table`` 段中：
@@ -266,7 +266,7 @@ OpenAMP的初始化
 
 .. seealso::
 
-   `UniProton 的示例代码: <https://gitee.com/openeuler/UniProton/blob/master/src/component/mica/rpmsg_backend_rsc_table.c>`_。
+   `UniProton 的示例代码: <https://atomgit.com/openeuler/UniProton/blob/master/src/component/mica/rpmsg_backend_rsc_table.c>`_。
 
 另外，为了避免中断时间过长，影响实时性，可以考虑将 `rproc_virtio_notified` 放到线程中执行，在中断流程仅做线程的唤醒：
 

@@ -19,7 +19,7 @@ ______________________________
 
 首先，需要构建含有MICA的openEuler Embedded镜像，请参考 :ref:`MICA镜像构建指南 <mcs_build>` 。
 
-然后，需要在UniProton的build/uniproton_config/`*`/defconfig中开启CONFIG_OS_OPTION_PROXY选项开关即可使用RPC远程调用功能，UniProton构建请参考 `UniProton构建 <https://gitee.com/openeuler/UniProton/blob/master/doc/UniProton_build.md>`_ 。
+然后，需要在UniProton的build/uniproton_config/`*`/defconfig中开启CONFIG_OS_OPTION_PROXY选项开关即可使用RPC远程调用功能，UniProton构建请参考 `UniProton构建 <https://atomgit.com/openeuler/UniProton/blob/master/doc/UniProton_build.md>`_ 。
 
 最后，通过MICA混合部署拉起UniProton，请参考 :ref:`MICA使用指南 <mica_ctl>` 。
 

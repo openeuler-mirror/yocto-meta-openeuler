@@ -82,7 +82,7 @@ openEuler Embedded标准镜像 + UEFI固件下载和刷新方法
 
 1. **将openEuler Embedded树莓派镜像烧录到SD卡**
 
-   参考： `openEuler烧录参考 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E5%88%B7%E5%86%99%E9%95%9C%E5%83%8F.md#%E5%88%B7%E5%86%99-sd-%E5%8D%A1>`_
+   参考： `openEuler烧录参考 <https://atomgit.com/openeuler/raspberrypi/blob/master/documents/%E5%88%B7%E5%86%99%E9%95%9C%E5%83%8F.md#%E5%88%B7%E5%86%99-sd-%E5%8D%A1>`_
 
    - 如何获得openEuler Embedded树莓派镜像，参照 :ref:`关键特性/树莓派4B的支持/树莓派镜像构建指导 <board_raspberrypi4_build>` 部分
 
@@ -331,7 +331,7 @@ ____
 
 **内核单独编译例子（openEuler）**
 
-   参考： `openEuler树莓派交叉编译内核 <https://gitee.com/openeuler/raspberrypi/blob/master/documents/%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91%E5%86%85%E6%A0%B8.md>`_ 
+   参考： `openEuler树莓派交叉编译内核 <https://atomgit.com/openeuler/raspberrypi/blob/master/documents/%E4%BA%A4%E5%8F%89%E7%BC%96%E8%AF%91%E5%86%85%E6%A0%B8.md>`_ 
 
    .. attention::
 

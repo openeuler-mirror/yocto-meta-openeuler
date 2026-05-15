@@ -191,7 +191,7 @@ ring buffer 的定义在 ``library/include/mcs/ring_buffer.h`` 文件中。
 
 首先，需要构建含有MICA的openEuler Embedded镜像，请参考 :ref:`MICA镜像构建指南 <mcs_build>` 。
 
-然后，需要生成适配了GDB stub 的 Uniproton，参考 `UniProton GDB stub 构建指南 <https://gitee.com/openeuler/UniProton/blob/master/doc/gdbstub.md>`_ 。
+然后，需要生成适配了GDB stub 的 Uniproton，参考 `UniProton GDB stub 构建指南 <https://atomgit.com/openeuler/UniProton/blob/master/doc/gdbstub.md>`_ 。
 
 在运行命令时，需要在启动MICA时加上 ``-d`` 参数。
 并且，由于需要对可执行文件进行调试， ``-t`` 参数需要指定包含符号表的可执行文件的路径。
