@@ -1,4 +1,4 @@
-SRC_URI:append:raspberrypi4 = " \
+SRC_URI:append:raspberrypi4-64 = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
         file://src-kernel-${PV}/0000-raspberrypi-kernel.patch \
     ' ,' \

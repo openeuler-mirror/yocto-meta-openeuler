@@ -17,15 +17,15 @@ KBUILD_DEFCONFIG = "bcm2711_defconfig"
 COMPATIBLE_MACHINE = "raspberrypi4-64"
 
 # use rpi kernel tag
-SRC_URI:raspberrypi4 = " \
+SRC_URI:raspberrypi4-64 = " \
     ${OPENEULER_KERNEL_CONFIG} \
     file://meta-data;type=kmeta;destsuffix=meta-data \
     file://kernel-${PV}-tag-rpi \
 "
 
-OPENEULER_LOACL_NAME:raspberrypi4 = "kernel-${PV}-tag-rpi"
-S:raspberrypi4 = "${WORKDIR}/kernel-${PV}-tag-rpi"
-OPENEULER_REPO_NAMES:raspberrypi4 = " \
+OPENEULER_LOCAL_NAME:raspberrypi4-64 = "kernel-${PV}-tag-rpi"
+S:raspberrypi4-64 = "${WORKDIR}/kernel-${PV}-tag-rpi"
+OPENEULER_REPO_NAMES:raspberrypi4-64 = " \
     kernel-${PV}-tag-rpi \
     ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'src-kernel-${PV}', 'src-kernel-${PV}-tag-rpi', d)} \
 "
