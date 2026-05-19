@@ -85,4 +85,27 @@ do_install:append () {
     fi
 }
 
+# Add glib-abi-check.c to verify GLib ABI compatibility on target.
+# This task is not triggered during normal builds. Run it manually:
+#   bitbake glib-2.0 -c do_populate_abi_check
+# After execution, the binary is at ${B}/glib-abi-check.
+# Copy it to the target and run to check ABI compatibility.
+SRC_URI:append = " \
+    file://glib-abi-check.c \
+"
+
+# Compile glib-abi-check against the installed glib headers and libraries.
+# Depends on do_install so that headers and .so are available in ${D}.
+do_populate_abi_check(){
+    ${CC} ${CFLAGS} ${LDFLAGS} ${WORKDIR}/glib-abi-check.c \
+        -o ${B}/glib-abi-check \
+        -I${D}${includedir}/glib-2.0 \
+        -I${D}${libdir}/glib-2.0/include \
+        -L${D}${libdir} \
+        -Wl,-rpath,${D}${libdir} \
+        -lglib-2.0
+}
+
+addtask do_populate_abi_check after do_install
+
 ASSUME_PROVIDE_PKGS = "glib2"
