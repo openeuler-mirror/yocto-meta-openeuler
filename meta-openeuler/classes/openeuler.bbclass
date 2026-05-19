@@ -25,6 +25,11 @@ CXXFLAGS:toolchain-clang:class-native = "${BUILD_CXXFLAGS}"
 LDFLAGS:toolchain-clang:class-native = "${BUILD_LDFLAGS}"
 TOOLCHAIN:class-native = "gcc"
 
+# Add OPENEULER_LOCAL_NAME to package information
+# to facilitate later locating which source package
+# the final installation package comes from
+PKGDATA_VARS:append = " OPENEULER_LOCAL_NAME "
+
 # for openeuler embedded it is no need to create DL_DIR, here we use
 # ${OPENEULER_DL_DIR} to represent download
 # directory for each software package. ${OPENEULER_SP_DIR}/openeuler
