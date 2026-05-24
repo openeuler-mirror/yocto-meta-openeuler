@@ -5,7 +5,6 @@ PV = "0.56.14"
 DEPENDS += "gobject-introspection"
 
 SRC_URI:prepend = " file://${BP}.tar.xz \
-            file://fix-build-error-TRUE-ture.patch \
 "
 
-SRC_URI[sha256sum] = "9382c268ca9bdc02aaedc8152a9818bf3935273041f629c56de410e360a3f557"
+SRC_URI:remove = "file://0001-gtk4-Preserve-compatibility-with-4.14.patch"

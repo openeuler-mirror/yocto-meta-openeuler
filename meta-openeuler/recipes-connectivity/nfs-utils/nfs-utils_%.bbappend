@@ -16,18 +16,15 @@ SRC_URI:prepend = " \
 # patch in oe-core
 SRC_URI += "file://0001-configure.ac-libevent-and-libsqlite3-checked-when-nf.patch"
 
+# this patch targets nfs-utils 2.6.4's support/reexport/ dir which doesn't exist in 2.6.3
+SRC_URI:remove = "file://0001-reexport.h-Include-unistd.h-to-compile-with-musl.patch"
+
 # we current use rc5.d of rcS, in normal mode we don't want it autostart default for security
 INITSCRIPT_PARAMS = "start 20 2 3 4 . stop 20 0 1 6 ."
 INITSCRIPT_PARAMS-${PN}-client = "start 19 2 3 4 . stop 21 0 1 6 ."
 
 
-# from upstream nfs-utils_2.6.2.bb, fix error:
-# do_package_qa: QA Issue: /usr/sbin/rpcctl contained in package nfs-utils requires /usr/bin/python3, but no providers found in RDEPENDS:nfs-utils? [file-rdeps]
-PACKAGES =+ "${PN}-rpcctl"
-FILES:${PN}-rpcctl = "${sbindir}/rpcctl"
-RDEPENDS:${PN}-rpcctl = "python3-core"
-
-
+# nfs-utils-rpcctl is already in upstream scarthgap recipe
 FILES:${PN}-client += "${libdir}/libnfsidmap.so.*"
 
 FILES:${PN} += "${nonarch_libdir}/modprobe.d"

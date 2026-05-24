@@ -3,12 +3,12 @@
 # ref: http://cgit.openembedded.org/openembedded-core/tree/meta/recipes-support/lz4/lz4_1.9.4.bb
 LICENSE = "BSD-2-Clause | GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://lib/LICENSE;md5=5cd5f851b52ec832b10eedb3f01f885a \
-                    file://programs/COPYING;md5=492daf447d6db0e5eb344a7922e7ec25 \
-                    file://LICENSE;md5=c111c47e301c2ffe8776729b40b44477 \
+                    file://programs/COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
+                    file://LICENSE;md5=c5cc3cd6f9274b4d32988096df9c3ec3 \
                     "
 
 # attr version in openEuler
-PV = "1.10.0"
+PV = "1.9.4"
 
 S = "${WORKDIR}/${BP}"
 

@@ -1,5 +1,5 @@
 
-PV = "0.25.5"
+PV = "0.25.0"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}/:"
 
@@ -25,3 +25,6 @@ BBCLASSEXTEND += " native"
 EXTRA_OEMESON += "-Dtrust_paths=/etc/pki/ca-trust/source:/usr/share/pki/ca-trust-source"
 
 ASSUME_PROVIDE_PKGS = "p11-kit p11-kit-trust"
+
+# fix-parallel-build-failures.patch is for 0.25.3 source; already fixed in 0.25.5
+SRC_URI:remove = "file://fix-parallel-build-failures.patch"

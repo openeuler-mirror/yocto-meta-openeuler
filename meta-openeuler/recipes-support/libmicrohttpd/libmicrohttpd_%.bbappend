@@ -1,6 +1,6 @@
 # main bb file: yocto-poky/meta/recipes-support/libmicrohttpd/libmicrohttpd_0.9.76.bb
 
-PV = "1.0.1"
+PV = "1.0.5"
 
 SRC_URI:append = " \
     file://${BP}.tar.gz \

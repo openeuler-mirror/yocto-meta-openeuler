@@ -1,4 +1,6 @@
 # the main bb file: yocto-poky/meta/recipes-support/libusb/libusb1_1.0.26.bb
+# SP4 only has libusb-1.0.26; override PV to avoid using poky's 1.0.27
+PV = "1.0.26"
 
 OPENEULER_LOCAL_NAME = "libusbx"
 

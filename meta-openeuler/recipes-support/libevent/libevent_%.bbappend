@@ -13,8 +13,7 @@ SRC_URI:prepend = " \
         file://backport-http-fix-fd-leak-on-fd-reset-by-using-bufferevent_re.patch \
         file://backport-bufferevent-introduce-bufferevent_replacefd-like-set.patch \
         file://backport-evutil-don-t-call-memset-before-memcpy.patch \
-        file://0002-Avoid-calling-read-2-on-eventfd-on-each-event-loop-w.patch \
-        file://backport-Fix-potential-Null-pointer-dereference-in-regress_fi.patch \
+        file://backport-0002-Avoid-calling-read-2-on-eventfd-on-each-event-loop-w.patch \
         "
 
 ASSUME_PROVIDE_PKGS = "libevent"

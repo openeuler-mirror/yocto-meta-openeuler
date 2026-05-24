@@ -4,23 +4,18 @@
 PV = "3.6"
 
 SRC_URI += "file://${BP}.tar.xz \
-            file://0001-add-support-of-gpt_sync_mbr.patch \
-            file://0002-Add-extra-judgment-for-a-partition-created-success.patch \
-            file://0003-bugfix-parted-fix-failure-of-mklabel-gpt_sync_mbr.patch \
-            file://0004-hfsplus_btree_search-free-node-when-hfsplus_file_rea.patch \
-            file://0005-amiga_read-need-free-part-and-partition-when-constra.patch \
-            file://0006-scsi_get_product_info-fix-memleak-and-avoid-to-use-N.patch \
-            file://0007-fat_op_context_new-free-ctx-remap-and-goto-correct-l.patch \
-            file://0008-hfsplus_cache_from_extent-fix-memleak.patch \
-            file://0009-fat_clobber-set-boot_sector-NULL-and-free-boot_secto.patch \
+            file://0001-Add-extra-judgment-for-a-partition-created-success.patch \
+            file://0002-hfsplus_btree_search-free-node-when-hfsplus_file_rea.patch \
+            file://0003-amiga_read-need-free-part-and-partition-when-constra.patch \
+            file://0004-scsi_get_product_info-fix-memleak-and-avoid-to-use-N.patch \
+            file://0005-fat_op_context_new-free-ctx-remap-and-goto-correct-l.patch \
+            file://0006-hfsplus_cache_from_extent-fix-memleak.patch \
+            file://0007-fat_clobber-set-boot_sector-NULL-and-free-boot_secto.patch \
             file://9000-parted-remove-patch-which-modifid-cyl-size.patch \
             "
 
-# patch from oe-core
-SRC_URI += " \
-            file://0001-fs-Add-libuuid-to-linker-flags-for-libparted-fs-resi.patch \
-            file://autoconf-2.73.patch \
-"
+# 0001-fs-Add-libuuid-to-linker-flags-for-libparted-fs-resi.patch and autoconf-2.73.patch
+# are already in poky's parted recipe - do not add here to avoid double-application
 
 # the patch check-vfat.patch will result in error
 SRC_URI:remove = "file://check-vfat.patch \

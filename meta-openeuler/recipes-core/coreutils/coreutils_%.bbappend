@@ -1,13 +1,13 @@
 # main bbfile: yocto-poky/meta/recipes-core/coreutils/coreutils_9.0.bb
 # version in openEuler
-PV = "9.5"
+PV = "9.4"
 
 # solve lic check failed
 LIC_FILES_CHKSUM:remove = " \
         file://src/ls.c;beginline=1;endline=15;md5=3b8fbaee597c8a9bb88d30840d53048c \
 "
 LIC_FILES_CHKSUM += " \
-        file://src/ls.c;beginline=1;endline=15;md5=9ac94aaed7fd46fd8df7147a9e3410cb \
+        file://src/ls.c;beginline=1;endline=15;md5=b720a8b317035d66c555fc6d89e3674c \
 "
 
 # files, patches can't be applied in openeuler or conflict with openeuler
@@ -18,6 +18,9 @@ SRC_URI:remove = " \
         file://0001-uname-report-processor-and-hardware-correctly.patch \
         file://e8b56ebd536e82b15542a00c888109471936bfda.patch \
 "
+
+# openeuler patches apply with fuzz and lack Upstream-Status headers;
+# INSANE_SKIP does not suppress do_qa_patch errors, only do_package_qa.
 
 # files, patches that come from openeuler
 SRC_URI:prepend = " \

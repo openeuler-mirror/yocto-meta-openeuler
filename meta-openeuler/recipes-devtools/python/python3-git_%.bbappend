@@ -1,6 +1,6 @@
 require pypi-src-openeuler.inc
 
-PV = "3.1.42"
+PV = "3.11.6"
 
 SRC_URI:remove = "file://0001-python3-git-CVE-2022-24439-fix-from-PR-1518.patch \
             file://0001-python3-git-CVE-2022-24439-fix-from-PR-1521.patch \

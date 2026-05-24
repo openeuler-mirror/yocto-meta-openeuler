@@ -2,7 +2,7 @@
 # isolinux.bin is used to support PCBIOS startup ISO, which is also the bootloader like grub
 
 # version in openEuler
-PV = "6.04-pre1"
+PV = "6.04"
 
 # files, patches can't be applied in openeuler or conflict with openeuler
 SRC_URI:remove = " \

@@ -1,4 +1,4 @@
-PV = "3.3.0"
+PV = "3.2.7"
 
 SRC_URI:prepend = " \
         file://${BP}.tar.gz \

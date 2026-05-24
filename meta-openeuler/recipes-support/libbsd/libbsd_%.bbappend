@@ -1,8 +1,8 @@
 # bbfile: yocto-poky/meta/recipes-support/libbsd/libbsd_0.11.5.bb
 
-PV = "0.12.2"
+PV = "0.10.0"
 
-LIC_FILES_CHKSUM = "file://COPYING;md5=9b087a0981a1fcad42efbba6d4925a0f"
+LIC_FILES_CHKSUM = "file://COPYING;md5=2120be0173469a06ed185b688e0e1ae0"
 
 SRC_URI = " \
         file://${BP}.tar.xz \

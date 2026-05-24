@@ -38,10 +38,8 @@ SRC_URI:prepend = "file://LVM2.${PV}.tgz \
 "
 
 # from meta-oe lvm2-2.03.22 recipe
-SRC_URI += " \
-           file://0001-configure.ac-check-egrep.patch \
-           file://0001-include-libgen.h-for-basename.patch \
-"
+# Note: 0001-configure.ac-check-egrep.patch and 0001-include-libgen.h-for-basename.patch
+# are already in meta-oe's lvm2.inc - do not add here to avoid double-application
 
 SRC_URI[sha256sum] = "4a63bc8a084a8ae3c7bc5e6530cac264139d218575c64416c8b99e3fe039a05c"
 

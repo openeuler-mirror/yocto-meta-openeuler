@@ -1,16 +1,12 @@
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:${THISDIR}/systemd:"
 
-# files, patches that come from openeuler
+# files, patches that come from openeuler 255
 SRC_URI =+ " \
         file://systemd-${PV}.tar.gz \
         file://backport-Revert-sysctl.d-switch-net.ipv4.conf.all.rp_filter-f.patch \
         file://backport-Avoid-tmp-being-mounted-as-tmpfs-without-the-user-s-.patch \
         file://backport-temporarily-disable-test-seccomp.patch \
-        file://backport-sd-event-always-initialize-sd_event.perturb.patch \
-        file://backport-sd-event-fix-error-handling.patch \
-        file://backport-core-refuse-dbus-activation-if-dbus-is-not-running.patch \
-        file://backport-core-only-refuse-Type-dbus-service-enqueuing-if-dbus.patch \
         file://udev-add-actions-while-rename-netif-failed.patch \
         file://fix-two-VF-virtual-machines-have-same-mac-address.patch \
         file://logind-set-RemoveIPC-to-false-by-default.patch \
@@ -38,7 +34,6 @@ SRC_URI =+ " \
         file://Don-t-set-AlternativeNamesPolicy-by-default.patch \
         file://change-NTP-server-to-x.pool.ntp.org.patch \
         file://keep-weight-consistent-with-the-set-value.patch \
-        file://Systemd-Add-sw64-architecture.patch \
         file://core-update-arg_default_rlimit-in-bump_rlimit.patch \
         file://set-forwardtowall-no-to-avoid-emerg-log-shown-on-she.patch \
         file://core-cgroup-support-cpuset.patch \
@@ -48,7 +43,6 @@ SRC_URI =+ " \
         file://bugfix-also-stop-machine-when-a-machine-un.patch \
         file://print-the-process-status-to-console-when-shutdown.patch \
         file://Retry-to-handle-the-uevent-when-worker-is-terminated.patch \
-        file://treat-hyphen-as-valid-hostname-char.patch \
         file://process-util-log-more-information-when-runnin.patch \
         file://fuser-print-umount-message-to-reboot-umount-msg.patch \
         file://shutdown-reboot-when-recieve-crash-signal.patch \
@@ -58,13 +52,16 @@ SRC_URI =+ " \
         file://let-the-child-of-one-unit-don-t-affect-each-other.patch \
         file://support-disable-cgroup-controllers-we-don-t-want.patch \
         file://bugfix-for-cgroup-Swap-cgroup-v1-deletion-and-migration.patch \
-        file://delete-journal-files-except-system.journal-when-jour.patch \
-        file://set-the-cpuset.cpus-mems-of-machine.slice-to-all-by-.patch \
-"
-
-# This patch provided by openEuler doesn't work for embedded's current needs.
-# Because embedded's "base_dir" is "/bin" instead of "/usr/bin". So, we need
-# to use our updated patch.
-SRC_URI += " \
-        file://update-rtc-with-system-clock-when-shutdown.patch \
+        file://add-a-new-switch-to-control-whether-udev-complies-wi.patch \
+        file://add-sw_64-support-for-virt.patch \
+        file://backport-CVE-2023-50387.patch \
+        file://backport-CVE-2023-50868.patch \
+        file://backport-CVE-2023-7008.patch \
+        file://backport-CVE-2026-29111-1.patch \
+        file://backport-CVE-2026-29111-2.patch \
+        file://backport-CVE-2026-29111-3.patch \
+        file://backport-CVE-2026-29111-4.patch \
+        file://backport-CVE-2026-40226-nspawn-apply-BindUser-Ephemeral-from-settings-file-o.patch \
+        file://backport-CVE-2026-40226-nspawn-normalize-pivot_root-paths.patch \
+        file://backport-machined-validate-machine-class-for-CVE-2026-4105.patch \
 "

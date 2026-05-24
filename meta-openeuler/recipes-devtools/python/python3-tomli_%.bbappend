@@ -1,5 +1,5 @@
 # python3-pbr Dependencies
-PV = "2.0.1"
+PV = "3.11.6"
 
 OPENEULER_LOCAL_NAME = "python-tomli"
 

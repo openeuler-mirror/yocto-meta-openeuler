@@ -2,13 +2,6 @@
 
 PV = "7.8.2"
 
-# license checksum changed
-LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263 \
-                    file://LICENSE;md5=5700d28353dfa2f191ca9b1bd707865e \
-                    "
-
-# apply src and patch from openEuler
+# apply src from openEuler (tarball uses underscore in name)
 SRC_URI:prepend = "file://libatomic_ops-${PV}.tar.gz \
-                file://0001-add-sw_64-support.patch \
-	        "
-SRC_URI[sha256sum] = "d305207fe207f2b3fb5cb4c019da12b44ce3fcbc593dfd5080d867b1a2419b51"
+                "

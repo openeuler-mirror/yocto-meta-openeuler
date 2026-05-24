@@ -3,37 +3,20 @@
 # version in openEuler
 PV = "3.8.2"
 
-LIC_FILES_CHKSUM = "file://LICENSE;md5=71391c8e0c1cfe68077e7fce3b586283 \
-                    file://doc/COPYING;md5=1ebbd3e34237af26da5dc08a4e440464 \
-                    file://doc/COPYING.LESSER;md5=4fbd65380cdd255951079008b364516c"
-
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-# files, patches from poky can't be applied in openeuler or conflict with openeuler
-SRC_URI:remove = " \
-        file://CVE-2022-2509.patch \
-        file://CVE-2023-0361.patch \
-"
+# files, patches from poky can't be applied to openeuler 3.8.13 (incorporates these CVEs)
+SRC_URI:remove = "         file://CVE-2022-2509.patch         file://CVE-2023-0361.patch         file://CVE-2024-12243.patch         file://CVE-2025-32989.patch         file://0001-psk-fix-read-buffer-overrun-in-the-pre_shared_key-ex.patch         file://0001-x509-reject-zero-length-version-in-certificate-reque.patch         file://CVE-2025-32988.patch         file://CVE-2025-32990.patch         file://CVE-2025-6395.patch         file://CVE-2025-9820.patch         file://CVE-2025-14831-1.patch         file://CVE-2025-14831-2.patch         file://CVE-2025-14831-3.patch         file://CVE-2025-14831-4.patch         file://CVE-2025-14831-5.patch         file://CVE-2025-14831-6.patch         file://CVE-2025-14831-7.patch         file://CVE-2025-14831-8.patch         file://CVE-2025-14831-9.patch "
 
-SRC_URI:append = " \
-        file://0001-Creating-.hmac-file-should-be-excuted-in-target-envi.patch \
-        file://run-ptest \
-        file://Add-ptest-support.patch \
-"
+# 0001-Creating-.hmac-file-should-be-excuted-in-target-envi.patch and
+# Add-ptest-support.patch are already in the upstream recipe SRC_URI; keeping
+# them here too caused double-application on 3.8.13 source
+SRC_URI:append = "         file://run-ptest "
 
-# files, patches that come from openeuler
-SRC_URI:append = " \
-        file://${BP}.tar.xz \
-        file://fix-ipv6-handshake-failed.patch \
-        file://backport-CVE-2024-0553-rsa-psk-minimize-branching-after-decryption.patch \
-        file://backport-CVE-2024-0567-x509-detect-loop-in-certificate-chain.patch \
-        file://backport-fix-CVE-2024-28834-nettle-avoid-normalization-of-mpz_t-in-deterministic.patch \
-        file://backport-fix-CVE-2024-28835-gnutls_x509_trust_list_verify_crt2-remove-length-lim.patch \
-"
+# files, patches that come from openeuler 3.8.13
+SRC_URI:append = "         file://${BP}.tar.xz         file://fix-ipv6-handshake-failed.patch "
 
-EXTRA_OECONF:remove = "--disable-libdane \
-                        --disable-guile \
-"
+EXTRA_OECONF:remove = "--disable-libdane                         --disable-guile "
 
 do_compile_ptest() {
     oe_runmake -C tests buildtest-TESTS
@@ -49,10 +32,8 @@ do_install:append:class-target() {
 DEPENDS:remove:libc-musl = "argp-standalone"
 LDFLAGS:remove:libc-musl = " -largp"
 
-SRC_URI[sha256sum] = "0ea0d11a1660a1e63f960f157b197abe6d0c8cb3255be24e1fb3815930b9bdc5"
-
 PACKAGECONFIG[fips] = "--enable-fips140-mode --with-libdl-prefix=${STAGING_BASELIBDIR}"
-PACKAGES:append = " ${PN}-fips ${PN}-dane"
+
 
 FILES:${PN}-dane = "${libdir}/libgnutls-dane.so.*"
 FILES:${PN}-fips = "${bindir}/fipshmac"

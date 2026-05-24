@@ -1,5 +1,5 @@
 
-PV = "2.15"
+PV = "2.14"
 
 # upstream src and patches
 SRC_URI = " file://${BP}.tar.bz2 \
@@ -10,7 +10,6 @@ SRC_URI = " file://${BP}.tar.bz2 \
             file://cpio-2.10-patternnamesigsegv.patch \
             file://cpio-2.10-longnames-split.patch \
             file://cpio-2.11-crc-fips-nit.patch \
-            file://backport-Do-not-set-exit-code-to-2-when-failing-to-create-symlink.patch \
             file://add-option-to-add-metadata-in-copy-out-mode.patch \
             file://Fix-use-after-free-and-return-appropriate-error.patch \
 "

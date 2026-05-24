@@ -1,5 +1,5 @@
 
-PV = "2.8"
+PV = "2.7"
 
 # upstream src and patches
 SRC_URI:prepend = " file://${BP}.tar.gz \

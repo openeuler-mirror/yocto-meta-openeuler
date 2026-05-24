@@ -48,8 +48,6 @@ SRC_URI:prepend = " \
            file://fix-coredump-when-client-active-is-NULL.patch \
            file://feature-lease-time-config-ipv6.patch \
            file://add-a-test-case-to-parse-code93-in-option_unittest.patch \
-           file://backport-Fix-CVE-2022-2928.patch \
-           file://backport-Fix-CVE-2022-2929.patch \
            file://Revert-correcting-the-logic-in-dhclient.patch \
            file://IAID-is-output-has-hexe-if-it-contains-or.patch \
            file://support-for-building-with-clang.patch \
@@ -69,4 +67,5 @@ do_install:append() {
 
 FILES:${PN}-client += "${sbindir}/dhclient-script "
 
-FILES:${PN}-client:remove = "${base_sbindir}/dhclient-script"
+# With usrmerge, ${base_sbindir} == ${sbindir}; only remove if they differ
+FILES:${PN}-client:remove = "${@'' if '${base_sbindir}' == '${sbindir}' else '${base_sbindir}/dhclient-script'}"

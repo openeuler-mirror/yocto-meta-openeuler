@@ -11,12 +11,6 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
            file://0001-Remove-sub-classing-from-OO.o-mime-types.patch \
 "
 
-# poky patch
-SRC_URI:append = " \
-            file://0001-Fix-build-with-libxml2-2.12.0-and-clang-17.patch \
-            file://0002-Handle-build-with-older-versions-of-GCC.patch \
-"
-
 S = "${WORKDIR}/${BP}"
 
 ASSUME_PROVIDE_PKGS = "shared-mime-info"

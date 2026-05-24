@@ -1,4 +1,4 @@
-PV = "1.4.1"
+PV = "3.11.6"
 OPENEULER_LOCAL_NAME = "python-${PYPI_PACKAGE}"
 
 SRC_URI[sha256sum] = "81b2c9071a49367a7f770170e5eec8cb66567cfbbc8c73d20ce5ca4a8d71cf11"

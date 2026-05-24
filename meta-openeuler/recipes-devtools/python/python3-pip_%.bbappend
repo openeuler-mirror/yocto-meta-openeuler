@@ -1,4 +1,4 @@
-PV = "23.3.1"
+PV = "3.11.6"
 LIC_FILES_CHKSUM:remove = "\
     file://src/pip/_vendor/pkg_resources/LICENSE;md5=9a33897f1bca1160d7aad3835152e158 \
     file://src/pip/_vendor/typing_extensions.LICENSE;md5=f16b323917992e0f8a6f0071bc9913e2 \

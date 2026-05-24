@@ -1,7 +1,7 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-devtools/protobuf/protobuf_3.21.12.bb
 
 # version in openEuler
-PV = "3.19.6"
+PV = "25.1"
 S = "${WORKDIR}/${BP}"
 
 # files, patches that come from openeuler

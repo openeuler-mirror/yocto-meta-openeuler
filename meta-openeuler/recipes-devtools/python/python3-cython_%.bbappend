@@ -1,4 +1,4 @@
-PV = "3.0.8"
+PV = "3.11.6"
 require pypi-src-openeuler.inc
 OPENEULER_LOCAL_NAME = "Cython"
 

@@ -1,6 +1,6 @@
-OPENEULER_LOCAL_NAME = "kernel-5.10"
+OPENEULER_LOCAL_NAME = "kernel-6.6"
 
-PV = "5.10"
+PV = "6.6"
 
 # apply openeuler source package and patches
 SRC_URI:prepend = "file://kernel-${PV} \

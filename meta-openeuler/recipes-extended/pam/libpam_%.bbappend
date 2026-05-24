@@ -14,19 +14,13 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 SRC_URI += " \
             file://Linux-PAM-${PV}.tar.xz \
             file://bugfix-pam-1.1.8-faillock-systemtime.patch \
-            file://backport-CVE-2024-22365-pam_namespace-protect_dir-use-O_DIRECTORY-to-prevent.patch \
-            file://backport-pam_pwhistory-fix-passing-NULL-filename-argument-to-pwhistory-helper.patch \
-            file://backport-pam_shells-Plug-econf-memory-leak.patch \
-            file://backport-pam_selinux-fix-formatting-of-audit-messages.patch \
             file://change-ndbm-to-gdbm.patch \
             file://add-sm3-crypt-support.patch \
 "
 
-# patch from oe-core
-SRC_URI += " \
-           file://0001-examples-Replace-use-of-termio.h-with-termios.h.patch \
-           file://0001-pam_namespace-include-stdint-h.patch \
-"
+# 0001-examples-Replace-use-of-termio.h-with-termios.h.patch and
+# 0001-pam_namespace-include-stdint-h.patch are already in poky's libpam_1.5.3.bb
+# do not add here to avoid double-application
 
 SRC_URI[sha256sum] = "7ac4b50feee004a9fa88f1dfd2d2fa738a82896763050cd773b3c54b0a818283"
 

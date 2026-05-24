@@ -1,5 +1,5 @@
 # source bb: yocto-meta-openeuler/meta-openeuler/recipes-devtools/tcltk/tcl_8.6.14.bb
-PV = "8.6.14"
+PV = "8.6.17"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/tcl/:"
 

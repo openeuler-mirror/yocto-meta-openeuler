@@ -5,9 +5,8 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 # to avoid network download
 inherit oee-archive
 
-SRC_URI:prepend = " file://${BPN}_${PV}.tar.gz "
+SRC_URI:prepend = " file://${BPN}_${PV}.tar.xz "
 
-SRC_URI:append = " file://revert_nobash.patch "
 
 SYSROOT_DIRS += "${localstatedir}"
 

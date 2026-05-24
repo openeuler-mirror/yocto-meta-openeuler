@@ -1,4 +1,4 @@
-PV = "2022.6.26"
+PV = "3.11.6"
 
 OPENEULER_LOCAL_NAME = "python-calver"
 SRC_URI = "file://calver-${PV}.tar.gz "

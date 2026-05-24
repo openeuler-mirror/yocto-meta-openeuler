@@ -1,6 +1,6 @@
 # main: yocto-poky/meta/recipes-devtools/python/python3-docutils_0.18.1.bb
 
-PV = "0.20.1"
+PV = "3.11.6"
 LIC_FILES_CHKSUM = "file://COPYING.txt;md5=08f5f8aa6a1db2500c08a2bb558e45af"
 require pypi-src-openeuler.inc
 

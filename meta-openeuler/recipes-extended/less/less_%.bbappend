@@ -1,10 +1,10 @@
 # main bbfile: yocto-poky/meta/recipes-extended/less/less_563.bb
 
 # less version in openEuler
-PV = "661"
+PV = "692"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=1ebbd3e34237af26da5dc08a4e440464 \
-                    file://LICENSE;md5=ea7ea443692720f3015859945c0fb65d \
+                    file://LICENSE;md5=bee5763a5e2bccdcdbd9bfe982ffc82b \
                     "
 
 # Use the source packages and patches from openEuler

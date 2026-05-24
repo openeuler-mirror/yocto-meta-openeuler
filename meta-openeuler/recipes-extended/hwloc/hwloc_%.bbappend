@@ -2,7 +2,7 @@
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=79179bb373cd55cbd834463a514fb714"
 
-PV = "2.11.2"
+PV = "2.9.1"
 
 SRC_URI = "\
         file://hwloc-${PV}.tar.bz2 \

@@ -14,9 +14,7 @@ SRC_URI:remove = " \
 
 # sync 1.8.9 SRC_URI files
 SRC_URI:append = " \
-    file://0002-iptables-xshared.h-add-missing-sys.types.h-include.patch \
     file://0003-Makefile.am-do-not-install-etc-ethertypes.patch \
-    file://0004-configure.ac-only-check-conntrack-when-libnfnetlink-.patch \
     file://format-security.patch \
 "
 
@@ -43,6 +41,8 @@ SRC_URI:append = " \
 # file://0001-extensions-NAT-Fix-for-Werror-format-security.patch
 
 SRC_URI[sha256sum] = "ef6639a43be8325a4f8ea68123ffac236cb696e8c78501b64e8106afb008c87f"
+
+SRC_URI:remove = "file://0005-nft-ruleparse-Add-missing-braces-around-ternary.patch"
 
 do_configure:prepend() {
     # Remove some libtool m4 files

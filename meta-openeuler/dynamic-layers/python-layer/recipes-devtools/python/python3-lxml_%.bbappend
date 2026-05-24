@@ -1,4 +1,4 @@
-PV = "5.1.0"
+PV = "3.11.6"
 require pypi-src-openeuler.inc
 
 SRC_URI:remove = "file://CVE-2022-2309.patch"

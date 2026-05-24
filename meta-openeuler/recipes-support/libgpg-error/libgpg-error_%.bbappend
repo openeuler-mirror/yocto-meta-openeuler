@@ -1,9 +1,9 @@
 # version in openEuler
-PV = "1.50"
+PV = "1.47"
 
-# License update
-LIC_FILES_CHKSUM:remove = "file://src/gpg-error.h.in;beginline=2;endline=18;md5=d82591bc81561f617da71e00ff4a9d79"
-LIC_FILES_CHKSUM:append = " file://src/gpg-error.h.in;beginline=2;endline=18;md5=badc79a9308e1cbd2657b2441c7cf017"
+# 0001-Do-not-fail-when-testing-config-scripts.patch applies with fuzz on 1.50
+
+# License update - remove incorrect duplicate entry, 1.47 matches base recipe checksum
 
 # patch directory
 FILESEXTRAPATHS:append := "${THISDIR}/files/:"
@@ -12,12 +12,12 @@ FILESEXTRAPATHS:append := "${THISDIR}/files/:"
 SRC_URI:remove = "file://pkgconfig.patch \
 "
 
-# pkgconfig.patch must be applied, otherwise it makes libgcrypy package
-# configure failed. This patch is from open embedded to support version 1.43
-SRC_URI += "file://pkgconfig-fix.patch"
+SRC_URI:remove = "${GNUPG_MIRROR}/libgpg-error/libgpg-error-${PV}.tar.bz2"
 
-SRC_URI:prepend = "file://${BP}.tar.bz2 \
-        file://libgpg-error-1.48-multilib.patch \
+SRC_URI:prepend = "file://${BP}.tar.gz \
+        file://libgpg-error-1.29-multilib.patch \
 "
+
+SRC_URI[sha256sum] = "685d4bd9d05576c4fc7f0870903dfdfbe41f2dd6a12e76fd8bd1717278f6b365"
 
 ASSUME_PROVIDE_PKGS = "libgpg-error"

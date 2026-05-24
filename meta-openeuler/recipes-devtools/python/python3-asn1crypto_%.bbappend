@@ -1,6 +1,6 @@
 # source bb: yocto-poky/meta/recipes-devtools/python/python3-asn1crypto_1.5.1.bb
 
-PV = "1.5.1"
+PV = "3.11.6"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=b5cda97fbd7959ad47a952651a87051a"
 

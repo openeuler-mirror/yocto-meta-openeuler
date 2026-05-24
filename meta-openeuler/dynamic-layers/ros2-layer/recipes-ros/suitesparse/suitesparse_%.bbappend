@@ -1,7 +1,7 @@
 # reference: yocto-meta-openembedded/meta-oe/recipes-devtools/suitesparse/suitesparse_5.10.1.bb
 inherit ros_distro_humble
 
-PV = "5.10.1"
+PV = "5.13.0"
 
 # the local directory name holding suitesparse-${PV}.tar.gz
 S = "${WORKDIR}/SuiteSparse-${PV}"

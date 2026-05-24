@@ -1,10 +1,46 @@
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
+
 PV = "3.11.6"
+PYTHON_MAJMIN = "3.11"
+
+# Ensure the overridden check_build_completeness.py is executable before do_install
+do_install:prepend:class-native() {
+    chmod +x "${WORKDIR}/check_build_completeness.py"
+}
+
+# SP4 backport patches may fuzz against 3.11.6 sources
+
+# shebang-size check can fail when sstate is reused across different build paths
+INSANE_SKIP:append:class-native = " shebang-size"
+
+# libedit in sysroot defines rl_compdisp_func_t but not VFunction;
+# force readline.c to use the rl_compdisp_func_t path
+CACHED_CONFIGUREVARS:append = " CFLAGS_NODIST='${CFLAGS} -D_RL_FUNCTION_TYPEDEF'"
 
 SRC_URI:prepend = "file://Python-${PV}.tar.xz \
 "
 
 # remove conflicting patch
-SRC_URI:remove = "file://0001-Skip-failing-tests-due-to-load-variability-on-YP-AB.patch"
+SRC_URI:remove = "file://0001-Skip-failing-tests-due-to-load-variability-on-YP-AB.patch \
+        file://0001-Makefile.pre-use-qemu-wrapper-when-gathering-profile.patch \
+        file://0001-python3-use-cc_basename-to-replace-CC-for-checking-c.patch \
+        file://0020-configure.ac-setup.py-do-not-add-a-curses-include-pa.patch \
+        file://0001-test_ctypes.test_find-skip-without-tools-sdk.patch \
+        file://makerace.patch \
+        file://0001-Avoid-shebang-overflow-on-python-config.py.patch \
+        file://0001-test_readline-skip-limited-history-test.patch \
+        file://CVE-2025-6075.patch \
+        file://CVE-2025-12084.patch \
+        file://CVE-2025-13836.patch \
+        file://CVE-2025-13837.patch \
+        file://0001-sysconfig.py-use-platlibdir-also-for-purelib.patch \
+        file://0001-Lib-pty.py-handle-stdin-I-O-errors-same-way-as-maste.patch \
+        file://deterministic_imports.patch \
+        file://0001-Update-test_sysconfig-for-posix_user-purelib.patch \
+        file://0001-skip-no_stdout_fileno-test-due-to-load-variability.patch \
+        file://0001-test_storlines-skip-due-to-load-variability.patch \
+        file://0001-Lib-sysconfig.py-use-prefix-value-from-build-configu.patch \
+"
 
 SRC_URI:prepend = " \
         file://00001-rpath.patch \

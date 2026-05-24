@@ -1,6 +1,6 @@
 # the main bb file: yocto-poky/meta/recipes-graphics/xorg-lib/pixman_0.40.0.bb
 
-PV = "0.43.4"
+PV = "0.42.2"
 
 SRC_URI = "file://${BPN}-${BP}.tar.bz2 \
 "

@@ -25,8 +25,6 @@ SRC_URI:remove = " \
         "
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
-
-
 SRC_URI[sha256sum] = "b615a6f7e1d1d82c928d2c79b36242a29d04cd28e267a5e8a6996435d9f97997"
 
 S = "${WORKDIR}/${BP}"

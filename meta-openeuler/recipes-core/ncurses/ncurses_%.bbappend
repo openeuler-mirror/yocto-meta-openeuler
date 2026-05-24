@@ -19,15 +19,14 @@ SRC_URI += "file://${BP}.tar.gz \
            file://backport-0002-CVE-2023-29491-env-access.patch \
            file://backport-fix-for-out-of-memory-condition.patch \
            file://backport-fix-coredump-when-use-Memmove.patch \
-           file://backport-CVE-2023-50495.patch \
-           file://backport-CVE-2023-45918.patch \
 "
+# backport-CVE-2023-50495.patch already incorporated in ncurses 6.4
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
-# from oe-core
-SRC_URI += "\
-           file://exit_prototype.patch \
-"
+
+# exit_prototype.patch patches specific line numbers in configure that differ
+# in the openEuler tarball; remove from both bbappend and upstream recipe
+SRC_URI:remove = "file://exit_prototype.patch"
 
 S = "${WORKDIR}/${BP}"
 

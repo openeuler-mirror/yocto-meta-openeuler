@@ -5,21 +5,16 @@ PV = "3.10.0"
 # update configure.patch of poky
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-
 SRC_URI:prepend = " \
     file://${BP}.tar.gz \
-    file://0000-pciutils-2.2.1-idpath.patch \
-    file://0001-pciutils-dir-d.patch \
     file://0002-Support-specify-CC.patch \
 "
 
-SRC_URI[sha256sum] = "01f5b9ee8eff577e9953a43bafb3ead76e0654a7288dc26d79627074956fb1e0"
-
 # use newer do_install
 do_install () {
-	oe_runmake DESTDIR=${D} install install-lib
-	install -d ${D}${bindir}
-	oe_multilib_header pci/config.h
+        oe_runmake DESTDIR=${D} install install-lib
+        install -d ${D}${bindir}
+        oe_multilib_header pci/config.h
 }
 
 # avoid lspci conflict with busybox

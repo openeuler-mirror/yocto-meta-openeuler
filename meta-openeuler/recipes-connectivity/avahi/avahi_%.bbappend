@@ -18,8 +18,23 @@ SRC_URI:prepend = "\
     file://backport-CVE-2023-38469.patch \
 "
 
-# poky conflict
+# poky conflict (fixes already in openEuler source)
 SRC_URI:remove = " \
     file://handle-hup.patch \
     file://local-ping.patch \
+    file://CVE-2023-1981.patch \
+    file://CVE-2023-38469-1.patch \
+    file://CVE-2023-38469-2.patch \
+    file://CVE-2023-38470-1.patch \
+    file://CVE-2023-38470-2.patch \
+    file://CVE-2023-38471-1.patch \
+    file://CVE-2023-38471-2.patch \
+    file://CVE-2023-38472.patch \
+    file://CVE-2023-38473.patch \
+    file://CVE-2024-52616.patch \
+    file://CVE-2024-52615.patch \
+    file://CVE-2025-68276.patch \
+    file://CVE-2025-68468.patch \
+    file://CVE-2025-68471.patch \
+    file://CVE-2026-24401.patch \
 "

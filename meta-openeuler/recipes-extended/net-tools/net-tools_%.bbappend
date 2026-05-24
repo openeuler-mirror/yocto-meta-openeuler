@@ -11,3 +11,6 @@ SRC_URI:prepend = "file://${BP}.tar.xz \
         file://backport-net-tools-cycle.patch \
         file://backport-net-tools-man.patch \
         "
+
+# poky's CVE patches fail on SP4 2.10 tarball (already fixed)
+SRC_URI:remove = "file://CVE-2025-46836-01.patch file://CVE-2025-46836-02.patch"

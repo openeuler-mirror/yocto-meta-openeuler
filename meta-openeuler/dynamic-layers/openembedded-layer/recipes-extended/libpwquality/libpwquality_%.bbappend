@@ -6,10 +6,11 @@ SRC_URI:remove = "file://add-missing-python-include-dir-for-cross.patch \
 
 
 PV = "1.4.5"
+# Source tarball extracts to libpwquality-1.4.5/ (not git/)
+S = "${WORKDIR}/${BP}"
 
 SRC_URI =+ " \
     file://libpwquality-1.4.5.tar.bz2 \
-    file://modify-pwquality_conf.patch \
     file://fix-password-similarity.patch \
     file://fix-doc-about-difok.patch \
     file://backport-Make-maxclassrepeat-1-behavior-consistent-with-docs.patch \

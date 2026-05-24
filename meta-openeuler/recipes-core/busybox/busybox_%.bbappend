@@ -20,24 +20,34 @@ SRC_URI:remove = " \
             file://recognize_connmand.patch \
             "
 
+# The following SP4 patches duplicate CVEs already applied by poky's busybox_1.36.1.bb:
+#   backport-CVE-2022-48174.patch    -> poky: CVE-2022-48174.patch
+#   backport-CVE-2023-42363.patch    -> poky: CVE-2023-42363.patch
+#   backport-CVE-2023-42364-CVE-2023-42365.patch -> poky: CVE-2023-42363 area
+#   backport-CVE-2023-42366.patch    -> poky: 0001-awk.c-fix-CVE-2023-42366-bug-15874.patch
+#   backport-CVE-2023-39810.patch    -> poky: CVE-2023-39810.patch
+#   backport-CVE-2025-46394.patch    -> poky: CVE-2025-46394-01.patch + CVE-2025-46394-02.patch
+#   backport-CVE-2025-60876.patch    -> poky: CVE-2025-60876.patch
+# Only add SP4-specific patches not already covered by poky
 #we always want busybox with mdev\init packages to support multi init manager
 SRC_URI:append = " \
         file://${BP}.tar.bz2 \
+        file://busybox-1.36.1-kernel-6.8.patch \
         file://backport-CVE-2022-28391.patch \
-        file://backport-CVE-2022-48174.patch \
-        file://backport-CVE-2023-42363.patch \
+        file://backport-CVE-2024-58251.patch \
+        file://backport-CVE-2026-26157-CVE-2026-26158.patch \
+        file://backport-tar-only-strip-unsafe-components-from-hardlinks-not-.patch \
+        file://backport-0001-CVE-2026-29004.patch \
+        file://backport-0002-CVE-2026-29004.patch \
         file://init.cfg \
         file://rcS.default \
         file://mdev.cfg \
         ${@bb.utils.contains('IMAGE_FEATURES', 'debug-tweaks', 'file://devmem.cfg', '', d)} \
         "
-
 # support NFS, which depends on libtirpc
 DEPENDS += "libtirpc"
 DEPENDS:remove = "${@bb.utils.contains('TCLIBC', 'musl', 'libtirpc', '', d)}"
 CFLAGS += "${@bb.utils.contains('DEPENDS', 'libtirpc', '-I${STAGING_INCDIR}/tirpc', '', d)}"
-
-
 do_prepare_config:append () {
     set +e
     if ! ${@bb.utils.contains('DISTRO_FEATURES', 'mini-img', 'true', 'false', d)}; then

@@ -1,2 +1,2 @@
-PV = "15.0.1"
+PV = "3.11.6"
 require pypi-src-openeuler.inc

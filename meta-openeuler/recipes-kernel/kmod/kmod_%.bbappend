@@ -8,9 +8,16 @@ SRC_URI:remove = " \
         file://0001-depmod-Add-support-for-excluding-a-directory.patch \
         "
 SRC_URI:prepend = "file://${BP}.tar.xz \
-        file://0001-Module-replace-the-module-with-new-module.patch \
-        file://0002-Module-suspend-the-module-by-rmmod-r-option.patch \
-        file://0003-clear-file-memory-if-map-fails.patch \
+        file://backport-check-strtol-strtoul-strtoull-results.patch \
+        file://backport-libkmod-clear-file-memory-if-map-fails.patch \
+        file://backport-libkmod-do-not-crash-on-unknown-signature-algorithm.patch \
+        file://backport-libkmod-error-out-on-unknown-hash-algorithm.patch \
+        file://backport-libkmod-fix-possible-out-of-bounds-memory-access.patch \
+        file://backport-libkmod-Fix-UB-for-non-existent-keys.patch \
+        file://backport-shared-avoid-passing-NULL-0-array-to-bsearch.patch \
+        file://backport-testsuite-repair-read-of-uninitialized-memory.patch \
+        file://backport-tools-modprobe-Fix-odd-remove-holders-behavior.patch \
+        file://backport-util-fix-endless-loop-in-get_backoff_delta_msec.patch \
         "
 
 SRC_URI[md5sum] = "85202f0740a75eb52f2163c776f9b564"

@@ -1,13 +1,8 @@
 require openeuler-xorg-lib-common.inc
 
-
 XORG_EXT = "tar.xz"
 
-PV = "1.8.7"
-
-# update LICENSE checksum
-LICENSE = "MIT & BSD-1-Clause & HPND & HPND-sell-variant & ISC"
-LIC_FILES_CHKSUM = "file://COPYING;md5=1d49cdd2b386c5db11ec636d680b7116"
+PV = "1.8.13"
 
 SRC_URI:remove = "file://CVE-2022-3554.patch \
            file://CVE-2022-3555.patch \

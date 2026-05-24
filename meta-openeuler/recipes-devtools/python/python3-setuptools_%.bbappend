@@ -10,9 +10,22 @@ SRC_URI:remove = " \
         file://0001-change-shebang-to-python3.patch \
         file://0001-_distutils-sysconfig-append-STAGING_LIBDIR-python-sy.patch \
         file://0001-Limit-the-amount-of-whitespace-to-search-backtrack.-.patch \
+        file://0001-_distutils-sysconfig.py-make-it-possible-to-substite.patch \
+        file://CVE-2024-6345.patch \
+        file://CVE-2025-47273-pre1.patch \
+        file://CVE-2025-47273.patch \
 "
 
 SRC_URI[sha256sum] = "baf1fdb41c6da4cd2eae722e135500da913332ab3f2f5c7d33af9b492acb5235"
+
+# nativepython3 sysconfig returns native sysroot paths; use direct unzip instead
+DEPENDS:append = " unzip-native"
+do_install() {
+    install -d ${D}${PYTHON_SITEPACKAGES_DIR}
+    unzip -d ${D}${PYTHON_SITEPACKAGES_DIR} ${PEP517_WHEEL_PATH}/*.whl
+    # Remove Windows launcher executables
+    rm -f ${D}${PYTHON_SITEPACKAGES_DIR}/setuptools/*.exe
+}
 
 # the openeuler patch
 SRC_URI:append = " file://bugfix-eliminate-random-order-in-metadata.patch \

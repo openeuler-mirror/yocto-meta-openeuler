@@ -1,4 +1,4 @@
-PV = "0.68"
+PV = "0.67"
 
 # openeuler src
 SRC_URI:prepend = " \

@@ -3,6 +3,11 @@ S = "${WORKDIR}/${BP}"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
+# bugfix-rpm-4.14.2-wait-once-get-rpmlock-fail.patch applies with fuzz on 4.18.2
+INSANE_SKIP:append = " patch-fuzz"
+# SP4 backport patches are missing Upstream-Status header
+# some patches apply with fuzz
+
 # fix-declaration.patch same as backport-Fix-compiler-error-on-clang.patch in openeuler
 # ea3187cfcf9cac87e5bc5e7db79b0338da9e355e has merged in new version
 SRC_URI:remove = " \
@@ -51,7 +56,5 @@ SRC_URI:prepend = " \
 "
 
 SRC_URI[sha256sum] = "2e0d220b24749b17810ed181ac1ed005a56bbb6bc8ac429c21f314068dc65e6a"
-
-
 # openeuler configuration
 PACKAGECONFIG:append = " ndb"

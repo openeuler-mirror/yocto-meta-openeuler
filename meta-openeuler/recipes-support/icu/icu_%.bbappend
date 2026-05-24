@@ -1,6 +1,8 @@
-# main bb file: yocto-poky/meta/recipes-support/icu/icu_68.2.bb
+# main bb file: yocto-poky/meta/recipes-support/icu/icu_74-2.bb
+# PV uses hyphen format to match upstream icu_download_version()/icu_install_folder() functions
+# which do PV.split('-') — e.g. "74-1" → ICU_PV="74_1", install folder "74.1"
 
-PV = "74.1"
+PV = "74-1"
 
 LIC_FILES_CHKSUM = "file://../LICENSE;md5=08dc3852df8fffa807301902ad899ff8"
 

@@ -21,9 +21,11 @@ LIC_FILES_CHKSUM:append = "file://LICENSE;md5=2965a646645b72ecee859b43c592dcaa"
 
 # use cross compile objcopy
 # set lib dir, not use ldd to find, maybe fail
+# use baselib (e.g. "lib64"), not base_libdir (e.g. "/usr/lib64") to avoid
+# DESTDIR/prefix/lib resolving to image/usr/usr/lib64 on aarch64
 EXTRA_OEMAKE:class-target = " \
     OBJCOPY="${OBJCOPY}" \ 
-    lib="${base_libdir}" \
+    lib="${baselib}" \
 "
 
 # The Go application for libcap does not currently support cross-compilation. 

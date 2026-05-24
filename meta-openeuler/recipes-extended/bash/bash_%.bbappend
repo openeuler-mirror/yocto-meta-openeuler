@@ -1,7 +1,7 @@
 # main bbfile: yocto-poky/meta/recipes-extended/bash/bash_5.1.16.bb
 
 # bash version in openeuler
-PV = "5.2.21"
+PV = "5.2.15"
 
 # These patches have been merged in this version
 SRC_URI:remove = " file://CVE-2022-3715.patch \
@@ -30,7 +30,6 @@ SRC_URI:prepend = " \
            file://backport-fix-for-E-transformation-fixes-for-failures-in-arith.patch \
            file://backport-changes-for-quoting-special-and-multibyte-characters.patch \
            file://backport-fixes-for-LINENO-in-multi-line-simple-commands-print.patch \
-           file://backport-changes-to-SIGINT-handler-while-waiting-for-a-child-.patch \
            file://backport-renamed-several-functions-beginning-with-legal_-chan.patch \
            file://backport-fix-for-cd-when-curent-directory-doesn-t-exist-fix-w.patch \
 "

@@ -1,5 +1,5 @@
 # bbfile: yocto-meta-ros/meta-ros-python2/recipes-imported-oe-core-warrior/python/python-numpy_1.16.3.bb
-PV = "1.24.3"
+PV = "3.11.6"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 

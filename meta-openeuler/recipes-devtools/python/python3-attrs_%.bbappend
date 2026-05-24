@@ -1,4 +1,4 @@
-PV = "23.2.0"
+PV = "3.11.6"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=5e55731824cf9205cfabeab9a0600887"
 

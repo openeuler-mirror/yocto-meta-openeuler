@@ -1,5 +1,7 @@
 # version in openEuler
 PV = "2.1.1"
+# Source tarball extracts to sysfsutils-2.1.1/ (not git/)
+S = "${WORKDIR}/sysfsutils-${PV}"
 
 # remove patches that can't apply in poky
 SRC_URI:remove = " \
@@ -9,11 +11,6 @@ SRC_URI:remove = " \
 "
 
 SRC_URI:prepend = " file://v${PV}.tar.gz \
-"
-
-SRC_URI += "file://0001-lib-Fixed-a-memory-leak-in-lib-sysfs_driver.patch \
-        file://0002-lib-Fixed-memory-leaks-in-lib-sysfs_device.c.patch \
-        file://0003-lib-Fixed-memory-leaks-in-lib-sysfs_attr.c.patch \
 "
 
 # checksum changed in this version

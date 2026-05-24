@@ -1,4 +1,3 @@
-PV = "1.16.0"
 require pypi-src-openeuler.inc
 
 SRC_URI[md5sum] = "a7c927740e4964dd29b72cebfc1429bb"

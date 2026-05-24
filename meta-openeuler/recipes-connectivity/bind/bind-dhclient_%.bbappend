@@ -1,6 +1,11 @@
 # source bb: meta-overc/recipes-connectivity/bind/bind-dhclient_9.11.22.bb
 OPENEULER_LOCAL_NAME = "dhcp"
 
+# bind-dhclient provides the ISC BIND library built from the dhcp source tree.
+# dhcp.inc removes "${PN}" (dhcp) from PACKAGES, so we RPROVIDE the 'dhcp'
+# package name here to satisfy any auto-generated RDEPENDS on 'dhcp'.
+RPROVIDES:${PN} += "dhcp"
+
 # version in openeuler/dhcp
 PV = "9.11.36"
 DHCP_PV = "4.4.3"

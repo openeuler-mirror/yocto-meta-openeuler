@@ -1,4 +1,4 @@
-PV = "0.7.0"
+PV = "3.11.6"
 require pypi-src-openeuler.inc
 
 # apply openeuler's patches

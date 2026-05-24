@@ -1,4 +1,4 @@
-PV = "2.4.3"
+PV = "3.11.6"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=fad7740aa21780c8b9a214f5b320b4ad"
 require pypi-src-openeuler.inc
 

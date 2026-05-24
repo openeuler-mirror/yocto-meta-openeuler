@@ -1,4 +1,4 @@
-PV = "1.6.2"
+PV = "3.11.6"
 require pypi-src-openeuler.inc
 
 # rolls back the conflicting patches

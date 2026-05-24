@@ -1,6 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-graphics/xorg-lib/xkeyboard-config_2.32.bb
 
-
 # version in src-openEuler
 PV = "2.39"
 

@@ -12,6 +12,9 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
 PV = "df1d1321fb093283485c387e3c933d2d264e509c"
 S = "${WORKDIR}/${BP}"
 
+# older-glibc-symbols.patch is in scarthgap recipe but not needed for openeuler pseudo
+SRC_URI:remove = "file://older-glibc-symbols.patch"
+
 # set --with-sqlite to native sdk path
 do_compile:class-native:openeuler-prebuilt () {
         if [ "${SITEINFO_BITS}" = "64" ]; then

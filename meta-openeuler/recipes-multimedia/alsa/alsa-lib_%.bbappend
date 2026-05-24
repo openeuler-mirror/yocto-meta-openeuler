@@ -1,5 +1,12 @@
 PV = "1.2.10"
 
-SRC_URI:prepend = "file://${BP}.tar.bz2 "
+SRC_URI:prepend = "file://${BP}.tar.bz2 \
+        file://alsa-lib-1.2.5.1-sw.patch \
+        file://backport-CVE-2026-25068.patch \
+"
 
-SRC_URI[sha256sum] = "dc9c643fdc4ccfd0572cc685858dd41e08afb583f30460b317e4188275f615b2"
+# poky patches for 1.2.11 - not compatible with 1.2.10
+SRC_URI:remove = " \
+    file://0001-topology-correct-version-script-path.patch \
+    file://CVE-2026-25068.patch \
+"

@@ -1,7 +1,7 @@
 # main bbfile: yocto-poky/meta/recipes-extended/logrotate/logrotate_3.18.0.bb
 
 # version in openEuler
-PV = "3.22.0"
+PV = "3.21.0"
 
 # files, patches that come from openeuler
 SRC_URI:prepend = " \
@@ -17,7 +17,7 @@ inherit ptest
 
 do_install:append() {
     # don't create logrotate.status, ref oe-core logrotate-3.21.0
-    rm ${D}${localstatedir}/lib/logrotate.status
+    rm -f ${D}${localstatedir}/lib/logrotate.status
 }
 
 do_install_ptest() {

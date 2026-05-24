@@ -18,9 +18,6 @@ SRC_URI:prepend = "file://${BP}.tar.xz \
             file://usermod-unlock.patch \
             file://shadow-add-sm3-crypt-support.patch \
             file://shadow-Remove-encrypted-passwd-for-useradd-gr.patch \
-            file://backport-port-fix-OVERRUN-CWE-119.patch \
-            file://backport-src-usermod.c-update_group_file-Fix-RESOURCE_LEAK-CW.patch \
-            file://backport-src-usermod.c-update_gshadow_file-Fix-RESOURCE_LEAK-.patch \
             file://backport-src-groupmod.c-delete-gr_free_members-grp-to-avoid-d.patch \
            "
 # remove patches with the same functionality in src-openeuler from poky:
@@ -31,6 +28,12 @@ SRC_URI:remove = " \
 "
 
 inherit pkgconfig
+
+# native libbsd in recipe-sysroot-native lacks freezero; disable for native
+PACKAGECONFIG:remove:class-native = "libbsd"
+# But poky's do_install:append:class-native unconditionally copies libbsd.so.* and libmd.so.*
+# so we add libbsd-native as a DEPENDS to ensure those libraries exist in the sysroot
+DEPENDS:append:class-native = " libbsd-native"
 
 # add extra pam files for openeuler
 # poky shadow.inc have added: chfn chpasswd chsh login newusers passwd su

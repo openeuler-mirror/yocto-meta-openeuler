@@ -1,5 +1,5 @@
 OPENEULER_LOCAL_NAME = "python-psutil"
-PV = "5.9.8"
+PV = "3.11.6"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=a9c72113a843d0d732a0ac1c200d81b1"
 

@@ -9,6 +9,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 #  0001-Add-loongarch-architecture-support.patch
 SRC_URI:prepend = " \
         file://${BP}.tar.gz \
+        file://0001-crypto-gracefully-handle-missing-gpg-and-gpgme-modul.patch \
         file://add-rpm-transaction-debuginfo.patch \
         file://fix-dnf-history-undo-error-when-history-sqlite-missing.patch \
         file://get-lockfile-exists-before-unlick.patch \

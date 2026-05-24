@@ -3,12 +3,15 @@ PV = "20230802.1"
 SRC_URI = " \
         file://${BP}.tar.gz \
         file://abseil-cpp-20210324.2-sw.patch \
+        file://0001-add-loongarch-suopport-for-abseil-cpp.patch \
+        file://backport-identify-numcpus-on-linux.patch \
+        file://test_instance_tracker.patch \
         "
 
 EXTRA_OECMAKE += " \
-	-DABSL_ENABLE_INSTALL=ON \
-	-DCMAKE_SHARED_LINKER_FLAGS="-Wl,--as-needed" \
-	-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+        -DABSL_ENABLE_INSTALL=ON \
+        -DCMAKE_SHARED_LINKER_FLAGS=\"-Wl,--as-needed\" \
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo \
 "
 
 S = "${WORKDIR}/${BP}"

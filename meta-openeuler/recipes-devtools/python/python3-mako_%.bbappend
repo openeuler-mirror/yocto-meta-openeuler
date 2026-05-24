@@ -2,7 +2,7 @@ require pypi-src-openeuler.inc
 
 OPENEULER_LOCAL_NAME = "python-mako"
 
-PV = "1.2.4"
+PV = "3.11.6"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=ad08dd28df88e64b35bcac27c822ee34"
 

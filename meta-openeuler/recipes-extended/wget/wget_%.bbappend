@@ -13,3 +13,6 @@ SRC_URI:prepend = "file://${BP}.tar.gz \
 SRC_URI[sha256sum] = "81542f5cefb8faacc39bbbc6c82ded80e3e4a88505ae72ea51df27525bcde04c"
 
 S = "${WORKDIR}/${BP}"
+
+# poky's CVE-2024-38428 patch conflicts with our backport
+SRC_URI:remove = "file://CVE-2024-38428.patch"

@@ -4,11 +4,9 @@ PV = "2.5.4"
 
 SRC_URI:prepend = " \
     file://${BP}.tar.gz \
-    file://backport-arch-disambiguate-in-arch-syscall-validate.patch \
-    file://Add-64-bit-LoongArch-support.patch \
-    file://fix-build-error-for-libseccomp.patch \
-    file://fix_undefined_behavior_in_scmp_bpf_sim.patch \
 "
+
+# backport-api-fix-seccomp_export_bpf_mem-out-of-bounds.patch not in SP4, removed
 
 S = "${WORKDIR}/${BP}"
 

@@ -17,10 +17,10 @@ PACKAGECONFIG:append:class-target = " \
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 
-SRC_URI += " \
-        file://tweak-for-lvmdbusd.patch \
-        file://0001-lvmdbusd-create-dirs-for-lock-file.patch \
-"
+# tweak-for-lvmdbusd.patch and 0001-lvmdbusd-create-dirs-for-lock-file.patch are
+# already in meta-oe's lvm2_2.03.22.bb SRC_URI; do not add again to avoid
+# duplicate patch application failure.  Our FILESEXTRAPATHS:prepend above ensures
+# our local copies are used when meta-oe resolves the file:// URLs.
 
 inherit python3native
 

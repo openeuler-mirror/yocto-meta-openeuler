@@ -1,7 +1,7 @@
 # bbfile: yocto-poky/meta/recipes-graphics/wayland/wayland-protocols_1.25.bb
 # version in src-openEuler
 
-PV = "1.36"
+PV = "1.33"
 
 UPSTREAM_CHECK_URI = "https://gitlab.freedesktop.org/wayland/wayland-protocols/-/tags"
 

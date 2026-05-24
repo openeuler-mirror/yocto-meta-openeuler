@@ -1,6 +1,6 @@
 # main bb file: yocto-poky/meta/recipes-graphics/harfbuzz/harfbuzz_2.7.4.bb
 
-PV = "8.4.0"
+PV = "8.3.0"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=b98429b8e8e3c2a67cfef01e99e4893d \
 "

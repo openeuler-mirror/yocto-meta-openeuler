@@ -14,10 +14,13 @@ SRC_URI += " \
 "
 
 # note: libtool script need /usr/bin/sed, not /bin/sed, so we need to create a symlink
+# skip if base_bindir == bindir (usrmerge) to avoid circular symlink
 do_install:append() {
-    install -d ${D}${bindir}
-    cd ${D}${bindir}
-    ln -sf ${base_bindir}/sed sed
+    if [ "${base_bindir}" != "${bindir}" ]; then
+        install -d ${D}${bindir}
+        cd ${D}${bindir}
+        ln -sf ${base_bindir}/sed sed
+    fi
 }
 
 ASSUME_PROVIDE_PKGS = "sed"

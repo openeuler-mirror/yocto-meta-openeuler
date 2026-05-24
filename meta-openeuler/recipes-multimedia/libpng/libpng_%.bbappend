@@ -1,6 +1,7 @@
-LIC_FILES_CHKSUM = "file://LICENSE;md5=0fdbfbe10fc294a6fca24dc76134222a"
+# LIC_FILES_CHKSUM is correctly set in libpng_1.6.40.bb; remove this override
+# LIC_FILES_CHKSUM = "file://LICENSE;md5=8f533bc367bfd43f556b6f782234c076"
 
-PV = "1.6.43"
+PV = "1.6.40"
 
 # patch in openEuler
 # build error: libpng-fix-arm-neon.patch
