@@ -1,3 +1,7 @@
+# NOTE: In Yocto scarthgap (5.0+), 'inherit kernel-module-split' resolves from classes-recipe/
+# before classes/, so this file is NOT used. The active override is at:
+#   meta-openeuler/classes-recipe/kernel-module-split.bbclass
+# This file is retained for reference and compatibility with pre-scarthgap builds.
 pkg_postinst:modules () {
 if [ -z "$D" ]; then
 	depmod -a ${KERNEL_VERSION}

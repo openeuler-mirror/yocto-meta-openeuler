@@ -74,6 +74,7 @@ export GOPATH = "${B}"
 export GOENV = "off"
 export GOTMPDIR ?= "${WORKDIR}/build-tmp"
 GOTMPDIR[vardepvalue] = ""
+export GOPROXY ??= "off"
 
 python go_do_unpack() {
     src_uri = (d.getVar('SRC_URI') or "").split()

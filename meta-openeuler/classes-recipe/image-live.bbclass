@@ -1,3 +1,7 @@
+# NOTE: In Yocto scarthgap (5.0+), 'inherit image-live' resolves from classes-recipe/
+# before classes/, so this file is NOT used. The active override is at:
+#   meta-openeuler/classes-recipe/image-live.bbclass
+# This file is retained for reference and compatibility with pre-scarthgap builds.
 # Copyright (C) 2004, Advanced Micro Devices, Inc.  All Rights Reserved
 # Released under the MIT license (see packages/COPYING)
 

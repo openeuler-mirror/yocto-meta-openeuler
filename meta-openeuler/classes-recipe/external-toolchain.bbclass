@@ -170,23 +170,23 @@ FILES:${PN}-locale = ""
 
 def debug_paths(d):
     l = d.createCopy()
-    l.finalize()
+    # Note: DataSmart.finalize() was removed in BitBake 2.8 (scarthgap)
     paths = []
     exclude = [
-        l.getVar('datadir', True),
-        l.getVar('includedir', True),
+        l.getVar('datadir'),
+        l.getVar('includedir'),
     ]
-    for p in l.getVar('PACKAGES', True).split():
+    for p in (l.getVar('PACKAGES') or '').split():
         if p.endswith('-dbg'):
             continue
-        for f in (l.getVar('FILES:%s' % p, True) or '').split():
+        for f in (l.getVar('FILES:%s' % p) or '').split():
             if any((f == x or f.startswith(x + '/')) for x in exclude):
                 continue
-            d = os.path.dirname(f)
+            pdir = os.path.dirname(f)
             b = os.path.basename(f)
-            paths.append('/usr/lib/debug{0}/{1}.debug'.format(d, b))
-            paths.append('{0}/.debug/{1}'.format(d, b))
-            paths.append('{0}/.debug/{1}.debug'.format(d, b))
+            paths.append('/usr/lib/debug{0}/{1}.debug'.format(pdir, b))
+            paths.append('{0}/.debug/{1}'.format(pdir, b))
+            paths.append('{0}/.debug/{1}.debug'.format(pdir, b))
     return set(paths)
 
 FILES:${PN}-dbg = "${@' '.join(debug_paths(d))}"
