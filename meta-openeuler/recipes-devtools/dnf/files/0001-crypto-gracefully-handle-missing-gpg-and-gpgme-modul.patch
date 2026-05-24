@@ -1,0 +1,34 @@
+From: OpenEuler Yocto <openeuler@openeuler.org>
+Date: Mon, 19 May 2025 00:00:00 +0800
+Subject: [PATCH] crypto: gracefully handle missing gpg and gpgme modules
+
+When building dnf as a native tool in Yocto, neither python3-gpg nor
+python3-gpgme (the older SWIG-based bindings) may be available in the
+native sysroot. Wrapping the fallback 'import gpgme' in its own
+try/except prevents a ModuleNotFoundError from propagating at import
+time and allows dnf-native to run when GPG signature verification is
+not actually needed (e.g., for unsigned local Yocto package feeds).
+
+Upstream-Status: Inappropriate [Yocto-specific build environment]
+
+Signed-off-by: OpenEuler Yocto <openeuler@openeuler.org>
+---
+ dnf/crypto.py | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/dnf/crypto.py b/dnf/crypto.py
+index 1234567..abcdefg 100644
+--- a/dnf/crypto.py
++++ b/dnf/crypto.py
+@@ -35,7 +35,10 @@
+     from gpg import Context
+     from gpg import Data
+ except ImportError:
+-    import gpgme
++    try:
++        import gpgme
++    except ImportError:
++        gpgme = None
+ 
+ 
+     class Context(object):
