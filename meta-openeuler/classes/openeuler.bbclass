@@ -79,31 +79,6 @@ def openeuler_get_checksum_file_list(d):
 # exist at parse time. Missing files are still caught at do_fetch time.
 do_fetch[file-checksums] = "${@openeuler_get_checksum_file_list(d)}"
 
-# set_rpmdpes is used to set RPMDEPS which comes from nativesdk/host
-python set_rpmdeps() {
-    import subprocess, os
-
-    if d.getVar('OPENEULER_PREBUILT_TOOLS_ENABLE') != 'yes':
-        return
-
-    # when the version of rpm is 4.18.0+, we need add RPM_CONFIGDIR to env
-    rpm_configdir = oe.path.join(d.getVar('OPENEULER_NATIVESDK_SYSROOT'), '/usr/lib/rpm')
-
-    env = os.environ.copy()
-    env["RPM_CONFIGDIR"] = rpm_configdir
-
-    rpmdeps  = subprocess.Popen('rpm --eval="%{_rpmconfigdir}"', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
-    stdout, stderr = rpmdeps.communicate()
-    d.setVar('RPMDEPS', os.path.join(str(stdout, "utf-8").strip(), "rpmdeps --alldeps --define '__font_provides %{nil}'"))
-
-    # export RPM_CONFIGDIR
-    d.setVar('RPM_CONFIGDIR', rpm_configdir)
-    d.setVarFlag('RPM_CONFIGDIR', 'export', '1')
-}
-
-addhandler set_rpmdeps
-set_rpmdeps[eventmask] = "bb.event.RecipePreFinalise"
-
 # do_unpack does not depends on xz-native， avoid dependency loops
 python() {
     all_depends = d.getVarFlag("do_unpack", "depends") or ''

@@ -5,15 +5,6 @@
 
 require ${COREBASE}/meta/classes-recipe/meson.bbclass
 
-# this is a workaround fix meson.native usage error: 
-# use nativesdk's pkg-config command instead of pkg-config-native
-# method: pkgconfig = 'pkg-config-native' -> pkgconfig = 'pkg-config'
-do_write_config:append() {
-    if [ "${OPENEULER_PREBUILT_TOOLS_ENABLE}" = "yes" ];then
-        sed -i "s/pkgconfig = 'pkg-config-native'/pkgconfig = 'pkg-config'/g" ${WORKDIR}/meson.native
-    fi
-}
-
 # On targets where libdir differs from Python's sysconfig platlib (e.g. aarch64
 # openeuler uses libdir=/usr/lib64 but Python sysconfig reports /usr/lib/...), meson's
 # Python module would install .so extensions and pure .py files to the wrong path.

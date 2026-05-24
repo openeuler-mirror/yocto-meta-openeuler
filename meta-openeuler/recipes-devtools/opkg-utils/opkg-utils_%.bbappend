@@ -18,4 +18,3 @@ SRC_URI[sha256sum] = "55733c0f8ffde2bb4f9593cfd66a1f68e6a2f814e8e62f6fd78472911c
 S = "${WORKDIR}/${BP}"
 
 # currently, openeuler_embedded only supports update-alternatives, no python
-PACKAGECONFIG:remove = "${@['', 'python']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"

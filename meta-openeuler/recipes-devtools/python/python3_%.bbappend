@@ -76,16 +76,3 @@ setup_target_config:append:class-native () {
         export PYTHONPATH=${STAGING_LIBDIR}/../lib64/python-sysconfigdata:$PYTHONPATH
 }
 
-# meta-openeuler layer does not need to build python3-native dependency packages,
-# but gets them directly from the nativesdk tool
-# Find header from nativesdk
-CPPFLAGS:append:class-native = " ${@oe.utils.vartrue('OPENEULER_PREBUILT_TOOLS_ENABLE', \
-    '-I${OPENEULER_NATIVESDK_SYSROOT}/usr/include \
-     -I${OPENEULER_NATIVESDK_SYSROOT}/usr/include/ncursesw \
-     -I${OPENEULER_NATIVESDK_SYSROOT}/usr/include/uuid', \
-    '', d)} \
-"
-
-# Find library from nativesdk
-LDFLAGS:append:class-native = " ${@oe.utils.vartrue('OPENEULER_PREBUILT_TOOLS_ENABLE', \
-    '-L${OPENEULER_NATIVESDK_SYSROOT}/usr/lib', '', d)}"

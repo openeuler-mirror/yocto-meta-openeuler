@@ -11,10 +11,3 @@ SRC_URI:append = " \
 SRC_URI[libgphoto2.md5sum] = "36c386f4c4e450d20bbc8b5a448e8b73"
 SRC_URI[libgphoto2.sha256sum] = "5b17b89d7ca0ec35c72c94ac3701e87d49e52371f9509b8e5c08c913ae57a7ec"
 
-# for native sdk of gettext, its a workaround to avoid STAGING_DATADIR_NATIVE gettext files not exist
-do_configure:prepend() {
-    if [ "${OPENEULER_PREBUILT_TOOLS_ENABLE}" = "yes" ] && [ ! -e  ${STAGING_DATADIR_NATIVE}/gettext/po/Makefile.in.in ];then
-        mkdir -p ${STAGING_DATADIR_NATIVE}/gettext/po
-        cp -f ${OPENEULER_NATIVESDK_SYSROOT}/usr/share/gettext/po/Makefile.in.in ${STAGING_DATADIR_NATIVE}/gettext/po
-    fi
-}

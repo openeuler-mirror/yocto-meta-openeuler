@@ -4,15 +4,12 @@ IMAGE_LOCALES_ARCHIVE = "0"
 
 # currently we don't install language configurations
 SDKIMAGE_LINGUAS = ""
-SDK_RELOCATE_AFTER_INSTALL = "${@['1', '0']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
 export SDK_OS = "linux"
 # when PREBUILT_TOOLCHAIN_ENABLE is yes
 # no need generate host packages, we directly use them in docker env, default in populate_sdk_base.bbclass
 # when PREBUILT_TOOLCHAIN_ENABLE is no, most native/nativesdk packages can be built
 # so we can follow poky's original way to handle sdk
-TOOLCHAIN_HOST_TASK:remove = "${@["", 'nativesdk-packagegroup-sdk-host']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
 # use prebuilt tools build
-SDK_DEPENDS:remove = "${@['', '${SDK_ARCHIVE_DEPENDS} cross-localedef-native']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
 
 # do not need nativesdk-glibc-locale in external toolchain build
 SDK_DEPENDS:remove:tcmode-external = "nativesdk-glibc-locale"

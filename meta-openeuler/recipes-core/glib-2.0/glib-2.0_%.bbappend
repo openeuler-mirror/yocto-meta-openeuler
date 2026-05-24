@@ -45,7 +45,6 @@ SRC_URI:append:arm = " file://0001-fix-compile-error-for-arm32.patch"
 PV = "2.78.3"
 
 # delete depends to shared-mime-info
-SHAREDMIMEDEP:remove = "${@['', 'shared-mime-info']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
 
 # glib2-codegn is a collection of python scripts.
 # here, remove the runtime depends of python3, to simplify build
@@ -54,7 +53,6 @@ RDEPENDS:${PN}-codegen:openeuler-prebuilt = ""
 
 # glib needs meson, meson needs python3-native
 # here use nativesdk's meson-native and python3-native
-DEPENDS:remove = "${@['', 'python3-native']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"
 
 # glib-2.0 will inherit gio-module-cache.bbclass to update
 # gio module after glib-2.0 is installed.
@@ -71,7 +69,6 @@ GIO_MODULE_PACKAGES:openeuler-prebuilt = ""
 
 # rpath may generate by meson and may not auto delete rpath, it is no secure, so let we do it as a workaround
 do_install:append () {
-    if [ "${OPENEULER_PREBUILT_TOOLS_ENABLE}" = "yes" ];then
         if [ -f ${D}${libexecdir}/gio-querymodules${EXEEXT} ]; then
             chrpath --delete ${D}${libexecdir}/gio-querymodules${EXEEXT}
         fi
@@ -82,7 +79,6 @@ do_install:append () {
         chrpath --delete ${D}${libdir}/libgthread-2.0.so
         chrpath --delete ${D}${libdir}/libgobject-2.0.so
         chrpath --delete ${D}${libdir}/libgmodule-2.0.so
-    fi
 }
 
 ASSUME_PROVIDE_PKGS = "glib2"
