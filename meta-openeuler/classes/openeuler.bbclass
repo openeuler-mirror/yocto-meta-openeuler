@@ -3,6 +3,9 @@
 ## openeuler.bbclass is inherited after base.bbclass,
 ## some definitions in it can be overridden here
 
+# openEuler sources differ from poky/upstream, so backport patches frequently fuzz
+ERROR_QA:remove = "patch-fuzz patch-status"
+
 # When using the Clang compiler to build the target, we still employ
 # GCC to compile native packages. The following settings reconfigure
 # the toolchain-related parameters to enforce the use of the x86 GCC
@@ -70,7 +73,11 @@ def openeuler_get_checksum_file_list(d):
 
     return " ".join(filelist)
 
-do_fetch[file-checksums] += "${@openeuler_get_checksum_file_list(d)}"
+# Replace base.bbclass's get_checksum_file_list (which calls bb.fatal on missing
+# files) with openeuler's graceful version that skips not-yet-downloaded sources.
+# openeuler uses deferred download (do_openeuler_fetch), so sources may not
+# exist at parse time. Missing files are still caught at do_fetch time.
+do_fetch[file-checksums] = "${@openeuler_get_checksum_file_list(d)}"
 
 # set_rpmdpes is used to set RPMDEPS which comes from nativesdk/host
 python set_rpmdeps() {
