@@ -41,6 +41,8 @@ GO_BUILD_LDFLAGS = "-X github.com/k3s-io/k3s/pkg/version.Version=${PV} \
                     -w -s \
                     -extldflags '${GO_EXTRA_LDFLAGS}' \
                    "
+K3S_UPSTREAM_GOLANG ?= "go1.22.0"
+GO_BUILD_LDFLAGS += " -X github.com/k3s-io/k3s/pkg/version.UpstreamGolang=${K3S_UPSTREAM_GOLANG}"
 
 K3S_AGENT_BUILD_TAGS ?= "${K3S_BUILD_TAGS}"
 
