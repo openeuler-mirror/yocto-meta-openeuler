@@ -4,7 +4,7 @@ OEE_ARCHIVE_SUB_DIR = "cni"
 
 # Ensure cni repo directory takes precedence over oee_archive for file:// URLs
 # This allows file://v1.2.0.tar.gz to be fetched from the correct location
-FILESEXTRAPATHS:prepend := "${OPENEULER_SP_DIR}/cni:"
+FILESEXTRAPATHS:prepend := "${OPENEULER_SP_DIR}/openeuler/cni:"
 
 PV = "1.2.0"
 
