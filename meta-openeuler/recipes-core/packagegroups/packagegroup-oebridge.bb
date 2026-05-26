@@ -10,6 +10,7 @@ RDEPENDS:${PN} = " \
     glibc-external-utils \
     libgpg-error \
     libgcrypt \
+    util-linux-libsmartcols \
 "
 
 # will call dnf to install INSTALL_PKG_LISTS's pkgs when do_rootfs
