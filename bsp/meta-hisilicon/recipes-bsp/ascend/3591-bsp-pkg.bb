@@ -27,8 +27,8 @@ INSANE_SKIP:${PN} += "already-stripped"
 FILES:${PN} = "${sysconfdir} ${systemd_system_unitdir} /etc /var /fw /usr /home"
 
 do_compile () {
-    if [ ! -f ${OPENEULER_SP_DIR}/3591rc/${DRIVER_RUN_FILE} ];then
-        bberror "${OPENEULER_SP_DIR}/3591rc/${DRIVER_RUN_FILE} not exist, please put it here first"
+    if [ ! -f ${WORKDIR}/3591rc/${DRIVER_RUN_FILE} ];then
+        bberror "${DRIVER_RUN_FILE} not exist, please put it here first"
     fi
     if [ -d ${S}/install_cache ];then
         rm -rf ${S}/install_cache
