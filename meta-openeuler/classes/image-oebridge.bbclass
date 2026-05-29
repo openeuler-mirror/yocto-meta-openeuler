@@ -72,7 +72,7 @@ fakeroot python do_make_rootfs_db(){
     make_db(db_dir=db_cache_dir, rpms_dir=rpms_cache_dir, root_tmp=d.getVar("IMAGE_ROOTFS"))
 }
 
-fakeroot python do_dnf_install_pkgs(){
+fakeroot python do_dnf_rootfs_prepare(){
     import os
     import shutil
     import subprocess
@@ -104,7 +104,6 @@ fakeroot python do_dnf_install_pkgs(){
             repo.enable()
 
         dnf.rpm.transaction.rpm.addMacro('_dbpath', '/var/lib/rpm')
-        # load remote data
         base.fill_sack(load_system_repo=True, load_available_repos=True)
         return base
 
@@ -128,6 +127,7 @@ fakeroot python do_dnf_install_pkgs(){
         if res.returncode != 0:
                 bb.fatal(res.stderr)
 
+    # parse package list and categorize
     cache_dir = f"{d.getVar('TOPDIR')}/cache/install_pkgs"
     force_list = []
     real_list = []
@@ -150,8 +150,14 @@ fakeroot python do_dnf_install_pkgs(){
                 continue
             install_pkg(d.getVar('IMAGE_ROOTFS'), cache_dir, pkg)
 
+    # save categorized lists for subsequent tasks
+    with open(f"{d.getVar('TOPDIR')}/cache/REAL_PKG_LIST", 'w', encoding='utf-8') as f:
+        f.write("\n".join(real_list))
+    with open(f"{d.getVar('TOPDIR')}/cache/EXTRA_PKG_LIST", 'w', encoding='utf-8') as f:
+        f.write("\n".join(extra_list))
+
+    # install force packages to IMAGE_ROOTFS via host rpm
     base = init_base_common(DEFAULT_REPO_LIST)
-    # download server rpm
     rpms_cache_dir = f"{d.getVar('TOPDIR')}/cache/rpms"
     download_pre_dir = rpms_cache_dir+ \
                 "/"+d.getVar('SERVER_VERSION')+ \
@@ -184,6 +190,33 @@ fakeroot python do_dnf_install_pkgs(){
         if res.returncode != 0:
             bb.fatal(res.stderr)
 
+    # reinstall critical packages that may be registered with --justdb by do_make_rootfs_db
+    # to ensure actual files are extracted (e.g. ca-certificates, p11-kit)
+    for pkg in ['p11-kit', 'p11-kit-trust', 'ca-certificates']:
+        pkg_dir = download_pre_dir+"/"+pkg
+        os.makedirs(name=pkg_dir, exist_ok=True)
+        rpm_info = get_package_details(base, pkg)
+        if rpm_info is None:
+            continue
+        if not os.path.exists(os.path.join(pkg_dir, rpm_info['Package'])):
+            res = subprocess.run(f"wget {rpm_info['Url']}",
+                shell=True,
+                stderr=subprocess.PIPE,
+                cwd=pkg_dir,
+                text=True)
+            if res.returncode != 0:
+                bb.warn(f"Failed to download {pkg}: {res.stderr}")
+                continue
+        res = subprocess.run(f"rpm -ivh --dbpath /var/lib/rpm --nosignature \
+            --root {d.getVar('IMAGE_ROOTFS')} --nodeps --ignorearch {rpm_info['Package']} --force",
+                    shell=True,
+                    stderr=subprocess.PIPE,
+                    cwd=pkg_dir,
+                    text=True)
+        if res.returncode != 0:
+            bb.warn(f"Failed to reinstall {pkg}: {res.stderr}")
+
+    # setup repo files
     repo_dir = d.getVar('IMAGE_ROOTFS') + "/etc/yum.repos.d"
     os.makedirs(repo_dir, exist_ok=True)
 
@@ -209,6 +242,7 @@ fakeroot python do_dnf_install_pkgs(){
     else:
         bb.error("openEuler.repo not found")
 
+    # copy extra files to rootfs
     extra_file_name = ""
     preenv_extra_file_name = ""
     postenv_extra_file_name = ""
@@ -225,7 +259,23 @@ fakeroot python do_dnf_install_pkgs(){
         postenv_extra_file_name = os.path.basename(temp_file_path)
         run_cmd_with_cwd(f"cp {temp_file_path} rootfs", d.getVar("WORKDIR"))
 
-    # do some prepare action
+    # save extra file names for subsequent tasks
+    with open(f"{d.getVar('TOPDIR')}/cache/EXTRA_FILE_NAMES", 'w', encoding='utf-8') as f:
+        f.write(f"{extra_file_name}\n{preenv_extra_file_name}\n{postenv_extra_file_name}\n")
+
+    # extract CA certificates to fix missing bundle (rpm scriptlets may fail in cross-arch QEMU env)
+    image_rootfs = d.getVar('IMAGE_ROOTFS')
+    ca_src = f"{image_rootfs}/usr/share/pki/ca-trust-source/ca-bundle.trust.p11-kit"
+    ca_dst = f"{image_rootfs}/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
+    ca_ssl_dst = f"{image_rootfs}/etc/ssl/certs/ca-bundle.crt"
+    if os.path.exists(ca_src) and not os.path.exists(ca_dst):
+        os.makedirs(os.path.dirname(ca_dst), exist_ok=True)
+        subprocess.run(f"awk '/-----BEGIN CERTIFICATE-----/{{found=1}} found{{print}} /-----END CERTIFICATE-----/{{found=0}}' {ca_src} > {ca_dst}", shell=True)
+    if os.path.exists(ca_dst) and not os.path.exists(ca_ssl_dst):
+        os.makedirs(os.path.dirname(ca_ssl_dst), exist_ok=True)
+        subprocess.run(f"cp {ca_dst} {ca_ssl_dst}", shell=True)
+
+    # do some prepare action: copy rootfs to temp, fix permissions, prepare chroot env
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 cp -rfP rootfs temp/", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"getfacl -R rootfs > temp/rootfs_permission", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"find rootfs -type l -printf '%u:%g %p\n' > temp/rootfs_softlink", d.getVar("WORKDIR"))
@@ -235,6 +285,34 @@ fakeroot python do_dnf_install_pkgs(){
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf clean all", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
         dnf-plugins-core -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
+}
+
+fakeroot python do_dnf_install_pkg(){
+    import os
+    import subprocess
+
+    def run_cmd_with_cwd(cmd, cwd):
+        res = subprocess.run(cmd,
+                        shell=True,
+                        stderr=subprocess.PIPE,
+                        cwd=cwd,
+                        text=True)
+        if res.returncode != 0:
+                bb.fatal(res.stderr)
+
+    # read package lists saved by do_dnf_rootfs_prepare
+    real_list = []
+    extra_list = []
+    with open(f"{d.getVar('TOPDIR')}/cache/REAL_PKG_LIST", 'r', encoding='utf-8') as f:
+        for line in f.readlines():
+            pkg = line.strip()
+            if pkg:
+                real_list.append(pkg)
+    with open(f"{d.getVar('TOPDIR')}/cache/EXTRA_PKG_LIST", 'r', encoding='utf-8') as f:
+        for line in f.readlines():
+            pkg = line.strip()
+            if pkg:
+                extra_list.append(pkg)
 
     if len(real_list) > 0:
         real_list_str = " ".join(real_list)
@@ -245,56 +323,80 @@ fakeroot python do_dnf_install_pkgs(){
     if len(extra_list) > 0:
         extra_list_str = " ".join(extra_list)
         bb.plain("install extra packages: " + extra_list_str)
-        # here add extra repo for installing pkgs from oepkgs.net, but the repo source is extras, like:
-        # https://repo.oepkgs.net/openeuler/rpm/openEuler-24.03-LTS/extras/aarch64/
         extra_mirror = "repo.oepkgs.net/openeuler/rpm"
-        # add extra mirror
         extra_repo = f"{extra_mirror}/{d.getVar('SERVER_VERSION')}/extras/{d.getVar('TUNE_ARCH')}/"
         run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf config-manager --add-repo http://{extra_repo}/", d.getVar("WORKDIR"))
         extra_repo_id = f"{extra_repo}".replace("/", "_")
-        # install extra mirror package
         extra_list_str = " ".join(extra_list)
         run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
         {extra_list_str} -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
-        # disable extra mirror
         run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf config-manager --set-disabled {extra_repo_id}", d.getVar("WORKDIR"))
+}
+
+fakeroot python do_dnf_run_extra(){
+    import os
+    import subprocess
+
+    def run_cmd_with_cwd(cmd, cwd):
+        res = subprocess.run(cmd,
+                        shell=True,
+                        stderr=subprocess.PIPE,
+                        cwd=cwd,
+                        text=True)
+        if res.returncode != 0:
+                bb.fatal(res.stderr)
+
+    extra_file_name = ""
+    preenv_extra_file_name = ""
+    postenv_extra_file_name = ""
+    with open(f"{d.getVar('TOPDIR')}/cache/EXTRA_FILE_NAMES", 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+        if len(lines) >= 3:
+            extra_file_name = lines[0].strip()
+            preenv_extra_file_name = lines[1].strip()
+            postenv_extra_file_name = lines[2].strip()
 
     if os.path.exists(os.path.join(d.getVar("WORKDIR"), f"temp/rootfs/{extra_file_name}")):
-        # 执行预环境额外脚本
         if preenv_extra_file_name:
             bb.plain(f"run {preenv_extra_file_name}")
             run_cmd_with_cwd(f"pushd temp/rootfs && PSEUDO_UNLOAD=1 bash {preenv_extra_file_name} && popd", d.getVar("WORKDIR"))
             run_cmd_with_cwd(f"pushd temp/rootfs && PSEUDO_UNLOAD=1 sudo rm -f {preenv_extra_file_name} && popd", d.getVar("WORKDIR"))
 
-        # 从WORKDIR复制oebridge_extra_command.sh到rootfs
-        image_rootfs = d.getVar("IMAGE_ROOTFS")
-
-        # 执行主要额外脚本
         if extra_file_name:
             bb.plain(f"run {extra_file_name}")
             run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs bash /{extra_file_name}", d.getVar("WORKDIR"))
-            # 删除oebridge_extra_command.sh
             run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs rm -f /{extra_file_name}", d.getVar("WORKDIR"))
 
-        # 执行后环境额外脚本
         if postenv_extra_file_name:
             bb.plain(f"run {postenv_extra_file_name}")
             run_cmd_with_cwd(f"pushd temp/rootfs && PSEUDO_UNLOAD=1 bash {postenv_extra_file_name} && popd", d.getVar("WORKDIR"))
             run_cmd_with_cwd(f"pushd temp/rootfs && PSEUDO_UNLOAD=1 sudo rm -f {postenv_extra_file_name} && popd", d.getVar("WORKDIR"))
-    
-    # the OEBRIDGE_PIP_LISTS may be none, so check it, else raise None has no attribute 'split'
+
     if d.getVar('OEBRIDGE_PIP_LISTS') is not None:
         oebridge_pip_list = d.getVar('OEBRIDGE_PIP_LISTS',"").split("\n")
         if len(oebridge_pip_list) > 0:
             oebridge_pip_list_str = " ".join(oebridge_pip_list)
             run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs pip3 install {oebridge_pip_list_str} -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple", d.getVar("WORKDIR"))
+}
 
-    # remove all dnf cache data and /root/.cache data before pack the rootfs
+fakeroot python do_dnf_rootfs_restore(){
+    import os
+    import subprocess
+
+    def run_cmd_with_cwd(cmd, cwd):
+        res = subprocess.run(cmd,
+                        shell=True,
+                        stderr=subprocess.PIPE,
+                        cwd=cwd,
+                        text=True)
+        if res.returncode != 0:
+                bb.fatal(res.stderr)
+
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs sed -i 's/^gpgcheck=0/gpgcheck=1/' /etc/dnf/dnf.conf", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf clean all", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs rm -rf /root/.cache", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo getfacl -R rootfs > ../rootfs_permission", d.getVar("WORKDIR")+"/temp")
-    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo find rootfs -type l -printf '%u:%g %p\n' > ../rootfs_softlink", d.getVar("WORKDIR")+"/temp")
+    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo find rootfs -type l -printf '%U:%G %p\n' > ../rootfs_softlink", d.getVar("WORKDIR")+"/temp")
     res = subprocess.run("stat -c '%u:%g' temp",
                     shell=True,
                     stderr=subprocess.PIPE,
@@ -306,11 +408,11 @@ fakeroot python do_dnf_install_pkgs(){
     ugid = res.stdout.strip()
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs chown -R {ugid} /", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs chmod -R 777 /", d.getVar("WORKDIR"))
-    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo rm -f temp/rootfs/root/.bash_history", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"rm -rf ./rootfs", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"cp -rfP temp/rootfs ./", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"setfacl --restore=rootfs_permission", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"cat rootfs_softlink | while read -r o p;do chown -h \"$o\" \"$p\"; done", d.getVar("WORKDIR"))
+    run_cmd_with_cwd(f"rm -f rootfs/root/.bash_history", d.getVar("WORKDIR"))
 
     subprocess.run(f"rm -f rootfs/oebridge-extra-command.tmp", shell=True, text=True)
 }
@@ -419,17 +521,47 @@ fakeroot do_custom_install_complete() {
     fi
 }
 
-do_oebridge_clean() {
-    sudo rm -rf ${WORKDIR}/temp/rootfs
+python do_oebridge_clean() {
+    import os
+    import subprocess
+
+    workdir = d.getVar('WORKDIR')
+    for dirpath in [f"{workdir}/temp/rootfs", f"{workdir}/rootfs"]:
+        if not os.path.isdir(dirpath):
+            continue
+        mounts = subprocess.run(f'PSEUDO_UNLOAD=1 /usr/bin/sudo -n cat /proc/mounts | grep "{dirpath}"',
+                                shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        for line in mounts.stdout.strip().split('\n'):
+            if not line:
+                continue
+            mount_point = line.split()[1]
+            subprocess.run(f'PSEUDO_UNLOAD=1 /usr/bin/sudo -n umount -l "{mount_point}"',
+                           shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        res = subprocess.run(f'PSEUDO_UNLOAD=1 /usr/bin/sudo -n rm -rf "{dirpath}"', shell=True,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        if res.returncode != 0:
+            bb.warn(f"do_oebridge_clean: sudo rm failed for {dirpath}: {res.stderr.strip()}")
+            res2 = subprocess.run(f'rm -rf "{dirpath}"', shell=True,
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if res2.returncode != 0:
+                bb.warn(f"do_oebridge_clean: failed to remove {dirpath}")
 }
 
 do_make_rootfs_db[network] = "1"
-do_dnf_install_pkgs[network] = "1"
+do_dnf_rootfs_prepare[network] = "1"
+do_dnf_install_pkg[network] = "1"
+do_dnf_run_extra[network] = "1"
+do_dnf_rootfs_restore[network] = "1"
+do_oebridge_clean[network] = "1"
 
-# do_rootfs -> do_make_rootfs_db -> do_custom_install_prepare -> do_dnf_install_pkgs -> do_custom_install_complete -> do_run_post_action -> do_image
-addtask do_make_rootfs_db after do_rootfs before do_dnf_install_pkgs
-addtask do_dnf_install_pkgs before do_run_post_action
+
+# do_rootfs -> do_make_rootfs_db -> do_custom_install_prepare -> do_dnf_rootfs_prepare -> do_dnf_install_pkg -> do_dnf_run_extra -> do_dnf_rootfs_restore -> do_custom_install_complete -> do_run_post_action -> do_image
+addtask do_make_rootfs_db after do_rootfs before do_dnf_rootfs_prepare
+addtask do_dnf_rootfs_prepare before do_dnf_install_pkg
+addtask do_dnf_install_pkg before do_dnf_run_extra
+addtask do_dnf_run_extra before do_dnf_rootfs_restore
+addtask do_dnf_rootfs_restore before do_run_post_action
 addtask do_run_post_action before do_image
-addtask do_custom_install_prepare before do_dnf_install_pkgs after do_make_rootfs_db
-addtask do_custom_install_complete after do_dnf_install_pkgs before do_run_post_action
+addtask do_custom_install_prepare before do_dnf_rootfs_prepare after do_make_rootfs_db
+addtask do_custom_install_complete after do_dnf_rootfs_restore before do_run_post_action
 addtask do_oebridge_clean before do_clean
