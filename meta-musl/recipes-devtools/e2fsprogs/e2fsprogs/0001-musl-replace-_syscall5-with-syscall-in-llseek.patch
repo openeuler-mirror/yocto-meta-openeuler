@@ -1,0 +1,43 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: OpenEuler Embedded <openeuler-embedded@openeuler.org>
+Date: Thu, 01 Jan 2026 00:00:00 +0000
+Subject: [PATCH] lib/ext2fs/llseek: replace _syscall5 with syscall() for musl
+
+The _syscall5() macro is a legacy Linux kernel header macro unavailable in
+musl libc. Replace it with a direct syscall() invocation so that e2fsprogs
+builds cleanly against musl on 32-bit ARM. The original _syscall5 path is
+preserved via an #ifdef guard for environments where it is still defined.
+
+Upstream-Status: Pending
+Signed-off-by: OpenEuler Embedded <openeuler-embedded@openeuler.org>
+---
+ lib/ext2fs/llseek.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+--- a/lib/ext2fs/llseek.c
++++ b/lib/ext2fs/llseek.c
+@@ -64,12 +64,24 @@
+ #endif
+ 
+ #ifndef __i386__
++#ifdef _syscall5
+ static int _llseek (unsigned int, unsigned long,
+ 		   unsigned long, ext2_loff_t *, unsigned int);
+ 
+ static _syscall5(int,_llseek,unsigned int,fd,unsigned long,offset_high,
+ 		 unsigned long, offset_low,ext2_loff_t *,result,
+ 		 unsigned int, origin);
++#else
++/* _syscall5 is not available (e.g. musl libc); use syscall() instead */
++#include <sys/syscall.h>
++static int _llseek(unsigned int fd, unsigned long offset_high,
++		   unsigned long offset_low, ext2_loff_t *result,
++		   unsigned int origin)
++{
++	return (int) syscall(__NR__llseek, fd, offset_high, offset_low,
++	                     result, origin);
++}
++#endif /* _syscall5 */
+ #endif
+ 
+ static ext2_loff_t my_llseek (int fd, ext2_loff_t offset, int origin)

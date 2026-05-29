@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: OpenEuler Embedded <openeuler-embedded@openeuler.org>
+Date: Thu, 01 Jan 2026 00:00:00 +0000
+Subject: [PATCH] load_policy: guard malloc_trim() with __GLIBC__
+
+malloc_trim() is a glibc extension that is not available in musl libc.
+The call is only a hint to the allocator to release unused memory back
+to the OS; it has no effect on correctness. Guard it so the code
+compiles cleanly against musl.
+
+Upstream-Status: Pending
+Signed-off-by: OpenEuler Embedded <openeuler-embedded@openeuler.org>
+---
+ src/load_policy.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/load_policy.c b/src/load_policy.c
+index 1111111..2222222 100644
+--- a/src/load_policy.c
++++ b/src/load_policy.c
+@@ -367,7 +367,9 @@ int selinux_init_load_policy(int *enforce)
+ 
+ 	/* Load the policy. */
+ 	rc = selinux_mkload_policy(0);
++#ifdef __GLIBC__
+ 	malloc_trim(0);
++#endif
+ 	return rc;
+ 
+       noload:
