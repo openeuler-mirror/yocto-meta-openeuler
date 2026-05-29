@@ -40,7 +40,8 @@ CFLAGS += "${@bb.utils.contains('DEPENDS', 'libtirpc', '-I${STAGING_INCDIR}/tirp
 
 do_prepare_config:append () {
     set +e
-    if ! ${@bb.utils.contains('DISTRO_FEATURES', 'mini-img', 'true', 'false', d)}; then
+    if ! ${@bb.utils.contains('DISTRO_FEATURES', 'mini-img', 'true', 'false', d)} && \
+       ! ${@bb.utils.contains('TCLIBC', 'musl', 'true', 'false', d)}; then
         grep -E '^CONFIG_FEATURE_MOUNT_NFS=y|^CONFIG_FEATURE_INETD_RPC=y' ${S}/.config
         ret=$?
         if [ $ret -eq 0 ]; then
