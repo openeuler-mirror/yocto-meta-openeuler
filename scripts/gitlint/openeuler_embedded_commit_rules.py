@@ -25,7 +25,7 @@ from typing import List
 from gitlint.rules import CommitRule, RuleViolation, CommitMessageTitle, LineRule
 from gitlint.options import IntOption, StrOption, RegexOption
 
-openeuler_footers = ['Signed-off-by', 'Closes', 'Fixes', 'Co-developed-by', 'Link']
+openeuler_footers = ['Signed-off-by', 'Closes', 'Fixes', 'Co-developed-by', 'Link', 'Assisted-by']
 
 
 # pylint:disable=[C0116,R1710,R0912]
