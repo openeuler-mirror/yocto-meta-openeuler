@@ -7,9 +7,5 @@ SRC_URI:append:phytium = "\
        ', d)} \
 "
 
-do_configure:append() {
-     echo "CONFIG_PREEMPT_RT=y" >> ${B}/.config
-}
-
 # add COMPATIBLE_MACHINE
 COMPATIBLE_MACHINE = "phytium"
