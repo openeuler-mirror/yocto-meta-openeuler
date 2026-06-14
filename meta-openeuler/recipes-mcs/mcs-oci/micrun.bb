@@ -34,6 +34,7 @@ MICRUN_SHIM_NAME ?= "io.containerd.mica.v2"
 GOBUILD_MODE ?= "online"
 
 GO_MOD_VENDOR_SRC_DIR = "${MICRUN_SRC}"
+MICRUN_GOPROXY ?= "https://mirrors.aliyun.com/goproxy/,https://goproxy.cn,direct"
 GO_MOD_VENDOR_GOPROXY = "${MICRUN_GOPROXY}"
 GO_MOD_VENDOR_GOARCH = "${TARGET_ARCH}"
 

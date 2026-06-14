@@ -45,6 +45,12 @@ K3S_UPSTREAM_GOLANG ?= "go1.22.0"
 GO_BUILD_LDFLAGS += " -X github.com/k3s-io/k3s/pkg/version.UpstreamGolang=${K3S_UPSTREAM_GOLANG}"
 
 K3S_AGENT_BUILD_TAGS ?= "${K3S_BUILD_TAGS}"
+K3S_GOPROXY ?= "https://mirrors.aliyun.com/goproxy/,https://goproxy.cn,direct"
+K3S_GOSUMDB ?= "off"
+K3S_GODEBUG ?= "http2client=0"
+K3S_HTTP_PROXY ?= "${@d.getVar('HTTP_PROXY') or d.getVar('http_proxy') or ''}"
+K3S_HTTPS_PROXY ?= "${@d.getVar('HTTPS_PROXY') or d.getVar('https_proxy') or ''}"
+K3S_NO_PROXY ?= "${@d.getVar('NO_PROXY') or d.getVar('no_proxy') or ''}"
 
 
 do_download_prebuilt() {
@@ -131,12 +137,34 @@ do_compile() {
     export GO111MODULE=on
     export GOMODCACHE="${B}/.mod"
     export CGO_ENABLED="1"
-    export GOPROXY="https://goproxy.cn,https://goproxy.io,https://mirrors.aliyun.com/goproxy/,direct"
+    export GOPROXY="${K3S_GOPROXY}"
+    export GOSUMDB="${K3S_GOSUMDB}"
+    export GODEBUG="${K3S_GODEBUG}"
+    if [ -n "${K3S_HTTP_PROXY}" ]; then
+        export HTTP_PROXY="${K3S_HTTP_PROXY}"
+        export http_proxy="${K3S_HTTP_PROXY}"
+    fi
+    if [ -n "${K3S_HTTPS_PROXY}" ]; then
+        export HTTPS_PROXY="${K3S_HTTPS_PROXY}"
+        export https_proxy="${K3S_HTTPS_PROXY}"
+    fi
+    if [ -n "${K3S_NO_PROXY}" ]; then
+        export NO_PROXY="${K3S_NO_PROXY}"
+        export no_proxy="${K3S_NO_PROXY}"
+    fi
     export GOARCH=${TARGET_ARCH}
     export GIT_SSL_NO_VERIFY=1
     git config --global http.sslVerify false
     bbnote "GOPRIVATE=${GOPRIVATE},GOSUMDB=${GOSUMDB}"
     cd ${S}/src/import
+
+    if [ -n "${K3S_DEP_MODULES_TXT}" ] && [ -d vendor.copy ] && [ -f "${WORKDIR}/${K3S_DEP_MODULES_TXT}" ]; then
+        rm -rf vendor
+        ln -s vendor.copy vendor
+        cp "${WORKDIR}/${K3S_DEP_MODULES_TXT}" vendor/modules.txt
+        export GOFLAGS="-mod=vendor ${GOFLAGS}"
+        bbnote "Using vendored k3s module dependencies from ${K3S_DEP_MODULES_TXT}"
+    fi
 
     build_target="./cmd/server/main.go"
     build_output="./dist/artifacts/k3s"

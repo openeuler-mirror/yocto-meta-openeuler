@@ -17,7 +17,7 @@ PIEFLAG = "${@bb.utils.contains('GOBUILDFLAGS', '-buildmode=pie', '-buildmode=pi
 S = "${WORKDIR}/git"
 GO_IMPORT = "import"
 NERDCTL_SRC = "${S}/src/import"
-NERDCTL_GOPROXY = "https://goproxy.cn,https://goproxy.io,https://mirrors.aliyun.com/goproxy/,direct"
+NERDCTL_GOPROXY ?= "https://mirrors.aliyun.com/goproxy/,https://goproxy.cn,direct"
 
 GO_MOD_VENDOR_SRC_DIR = "${NERDCTL_SRC}"
 GO_MOD_VENDOR_GOPROXY = "${NERDCTL_GOPROXY}"
@@ -33,6 +33,41 @@ do_compile() {
     export GOFLAGS="-mod=vendor -trimpath ${PIEFLAG}"
 
     chmod_modcache
+
+    if [ -f vendor/modules.txt ]; then
+        awk '
+            NR == FNR {
+                if ($1 == "require" && $2 == "(") {
+                    in_require = 1
+                    next
+                }
+                if (in_require && $1 == ")") {
+                    in_require = 0
+                    next
+                }
+                if ($1 == "require" && $2 != "") {
+                    explicit[$2] = 1
+                    next
+                }
+                if (in_require && $1 != "" && $1 !~ /^\/\//) {
+                    explicit[$1] = 1
+                }
+                next
+            }
+            /^# / {
+                print
+                if ($2 in explicit) {
+                    print "## explicit"
+                }
+                next
+            }
+            /^## explicit$/ {
+                next
+            }
+            { print }
+        ' go.mod vendor/modules.txt > vendor/modules.txt.new
+        mv vendor/modules.txt.new vendor/modules.txt
+    fi
 
     oe_runmake GO=${GO} BUILDTAGS="${BUILDTAGS}" binaries
 }
