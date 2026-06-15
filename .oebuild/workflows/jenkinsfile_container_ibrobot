@@ -1,0 +1,58 @@
+def BUILD_COM
+def REGISTRY   = "swr.cn-north-4.myhuaweicloud.com"
+
+pipeline {
+    agent any
+    environment {
+        PATH = "/home/jenkins/.local/bin:${env.PATH}"
+    }
+    stages {
+        stage("init task"){
+            steps{
+                dir("${env.WORKSPACE}"){
+                    stash(name: "scm")
+                }
+                script{
+                    node("${node}"){
+                        dir("/home/jenkins/agent/scm"){
+                            unstash(name: "scm")
+                            BUILD_COM = load '.oebuild/workflows/build_common.groovy'
+                            def INIT_ENV = load '.oebuild/workflows/init_env.groovy'
+                            INIT_ENV.init_environment()
+                        }
+                    }
+                }
+            }
+        }
+        stage("build image"){
+            steps{
+                script{
+                    node("${node}"){
+                        dir("/home/jenkins/agent/scm"){
+                            sh "docker build -t ${IMAGE_TAG} -f .oebuild/dockerfile/openeuler-container/Dockerfile_IBRobot ."
+                        }
+                    }
+                }
+            }
+        }
+        stage("push image"){
+            steps{
+                script{
+                    node("${node}"){
+                        withCredentials([
+                            usernamePassword(credentialsId: 'docker-upload',
+                                             passwordVariable: 'DOCKER_PASSWORD',
+                                             usernameVariable: 'DOCKER_USERNAME')
+                        ]){
+                            sh """
+                                echo \$DOCKER_PASSWORD | docker login ${REGISTRY} -u \$DOCKER_USERNAME --password-stdin
+                                docker push ${IMAGE_TAG}
+                                docker logout ${REGISTRY}
+                            """
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

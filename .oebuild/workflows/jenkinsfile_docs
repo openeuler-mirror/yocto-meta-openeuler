@@ -1,0 +1,92 @@
+// this jenkinsfile is for docs build and publish
+
+pipeline {
+    agent { node "${node}" }
+    environment {
+        PATH = "/home/jenkins/.local/bin:${env.PATH}"
+    }
+    stages {
+        stage("download repo"){
+            steps{
+                dir('/home/jenkins/agent'){
+                    sh """
+                        rm -rf yocto-meta-openeuler docs_upload_work
+                        mkdir -p yocto-meta-openeuler docs_upload_work
+                    """
+                }
+            }
+        }
+        stage("build docs"){
+            steps{
+                dir('/home/jenkins/agent/yocto-meta-openeuler'){
+                    sh """
+                        git init
+
+                        pip3 install sphinx-multiversion sphinx-rtd-theme sphinx_tabs --no-deps
+                        pip3 install 'docutils>=0.18' importlib-metadata pygments zipp sphinxcontrib-mermaid
+
+                        git remote add upstream https://atomgit.com/openeuler/yocto-meta-openeuler.git
+
+                        git fetch --prune upstream \
+                            '+refs/heads/master:refs/remotes/upstream/master' \
+                            '+refs/heads/openEuler-*:refs/remotes/upstream/openEuler-*'
+
+                        git checkout --detach upstream/master
+                        pushd docs
+                        rm -rf build/html
+                        remote_whitelist='^upstream\$'
+                        branch_whitelist='^(master|openEuler-[0-9]+[.][0-9]+(-LTS)?(-SP[0-9]+)?)\$'
+                        tag_whitelist='^\$'
+                        sphinx-multiversion \
+                            -D smv_remote_whitelist="\${remote_whitelist}" \
+                            -D smv_branch_whitelist="\${branch_whitelist}" \
+                            -D smv_tag_whitelist="\${tag_whitelist}" \
+                            -D smv_prefer_remote_refs=1 \
+                            source build/html
+
+                        pushd build/html
+                        rm -f index.html
+                        cat > index.html <<'EOF'
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="refresh" content="0.1;url=https://pages.openeuler.openatom.cn/embedded/docs/build/html/master/index.html">
+    </head>
+</html>
+EOF
+                        popd
+                        popd
+                    """
+                }
+            }
+        }
+        stage("publish docs"){
+            steps{
+                dir('/home/jenkins/agent/docs_upload_work'){
+                    withCredentials([
+                        usernamePassword(credentialsId: "${env.gitcodeId}", usernameVariable: 'GITCODEUSER',passwordVariable: 'GITCODETOKEN')]){
+                            sh """
+                                git init
+                                git remote add origin https://${GITCODEUSER}:${GITCODETOKEN}@gitcode.com/${env.gitcodeOrg}/yocto-meta-openeuler.git
+                                git fetch origin gitee_pages --depth 1
+                                git checkout gitee_pages
+
+                                git config user.email "${env.userEmail}"
+                                git config user.name "${env.userName}"
+
+                                rm -rf docs/build/html
+                                mkdir -p docs/build
+                                cp -r ../yocto-meta-openeuler/docs/build/html docs/build
+
+                                git add docs/build/html
+                                git status --short | grep "html" || exit 0
+                                git commit -m "update docs!"
+                                git push origin gitee_pages
+                            """
+                        }
+                }
+            }
+        }
+    }
+}
