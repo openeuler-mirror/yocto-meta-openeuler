@@ -1,0 +1,160 @@
+.. _board_3591rc_build:
+
+3591RC镜像构建与使用
+##########################################
+
+本章主要介绍3591RC单板的镜像构建说明。
+
+3591RC基础镜像构建
+====================================
+
+1. 参照 :ref:`oebuild_install` 完成oebuild安装，并详细了解构建过程
+
+   .. code-block:: console
+
+      oebuild init my_workspace
+      cd my_workspace
+      oebuild update
+
+2. 生成构建配置并执行构建
+
+   .. code-block:: console
+
+      # 生成3591rc构建配置文件
+      oebuild generate -p 3591rc
+
+      # 按提示进入构建目录，进入bitbake环境
+      oebuild bitbake
+
+   进入构建环境后，需要在构建目录下的 ``conf/local.conf`` 中手动添加以下配置：
+
+   .. code-block:: text
+
+      INIT_MANAGER = "systemd"
+      DISTRO_FEATURES:append = " oebridge oe-xfce "
+      SERVER_MIRROR = "https://mirrors.tuna.tsinghua.edu.cn/openeuler"
+      SERVER_VERSION = "openEuler-24.03-LTS"
+      GLIBC_GENERATE_LOCALES:append = "en_US.UTF-8 zh_CN.UTF-8 "
+      IMAGE_INSTALL:append = " glibc-binary-localedata-en-us glibc-binary-localedata-zh-cn "
+      INSTALL_PKG_LISTS:append = " perf:real iSulad qftp:extra "
+
+   执行构建：
+
+   .. code-block:: console
+
+      # 构建镜像
+      bitbake openeuler-image
+
+      # 构建sdk
+      bitbake openeuler-image -c populate_sdk
+
+   构建完成后，二进制产物位于output目录下，主要包括：
+
+   - ``openeuler-image-3591rc-[时间戳].rootfs.cpio.gz``: cpio.gz根文件系统，用于配合官方制卡包使用。
+
+____
+
+3591B变体构建
+====================================
+
+3591RC支持通过指定 ``3591b`` 特性来构建3591B变体镜像（driver run请自行通过官方/NDA渠道获取）。在 ``local.conf`` 中添加：
+
+.. code-block:: text
+
+   DISTRO_FEATURES:append = " 3591b "
+
+该特性主要影响内核的选择（在fullimg时，也影响制卡镜像所用的配套驱动）：
+
+- 默认（3591P）：使用 ``3591rc/3591p_defconfig``
+- 指定3591b：使用 ``3591rc/3591b_defconfig``
+
+____
+
+制卡镜像（fullimg）构建
+====================================
+
+通过指定 ``3591fullimg`` 特性，可以生成用于制卡的完整烧录镜像（当前仅SD卡镜像，可用于支持SD卡启动的板子，如香橙派AIpro 20T/8T，欢迎通过yocto配方自行定制各类设备资源表/dt.img，其他介质的制卡请使用官方制卡脚本制作）。在 ``local.conf`` 中添加：
+
+.. code-block:: text
+
+   DISTRO_FEATURES:append = " 3591fullimg "
+
+当前需同时指定3591b变体（默认3591p场景的全量制卡镜像待完善）：
+
+.. code-block:: text
+
+   DISTRO_FEATURES:append = " 3591b 3591fullimg "
+
+.. important::
+
+   构建fullimg前，需要将对应的driver包（ ``.run`` 文件）放入源码目录 ``src/3591rc/`` 下。
+
+   - 3591P对应：``Hi3591P-driver-*.run``
+   - 3591B对应：``Hi3591B-driver-*.run``
+
+   若未放置driver包，构建时会报错提示。
+
+fullimg构建产物位于output目录下，主要包括：
+
+- ``openeuler-image-3591rc-[时间戳].rootfs.3591-sdimg``: 制卡镜像
+- ``openeuler-image-3591rc-[时间戳].rootfs.cpio.gz``: cpio根文件系统
+- ``openeuler-image-3591rc-[时间戳].rootfs.ext4``: ext4根文件系统
+- ``Image-5.10.0-openeuler``: 内核镜像
+
+此外，构建目录下的 ``tmp/deploy/images/3591rc/`` 中还包含以下中间产物，可按需自行获取：
+
+- ``3591b-dt.img`` / ``3591p-dt.img``: 设备资源表
+- ``3591b-kernel`` / ``3591p-kernel``: 单板内核
+- ``boot_image_info_*``: 启动镜像信息文件（对应不同存储介质 mmc/nvme）
+- ``parttion_head_info_*``: 分区头信息文件
+- ``modules-3591rc.tgz``: 内核模块
+- ``vmlinux``: 调试内核
+
+____
+
+实验室制卡临时镜像（3591ebl）
+====================================
+
+3591ebl是一个裁剪的临时文件系统镜像，仅用于实验室制卡场景（配套官方制卡工具使用）。
+
+.. warning::
+
+   3591ebl镜像的构建必须使用独立的工作空间，不能与基础镜像或fullimg共用同一个构建目录。
+
+完整构建流程如下：
+
+1. 参照 :ref:`oebuild_install` 完成oebuild安装
+
+   .. code-block:: console
+
+      oebuild init my_workspace_ebl
+      cd my_workspace_ebl
+      oebuild update
+
+2. 生成构建配置并执行构建
+
+   .. code-block:: console
+
+      # 生成3591rc构建配置文件
+      oebuild generate -p 3591rc
+
+      # 按提示进入构建目录，进入bitbake环境
+      oebuild bitbake
+
+   进入构建环境后，需要在构建目录下的 ``conf/local.conf`` 中手动添加以下配置：
+
+   .. code-block:: text
+
+      INIT_MANAGER = "systemd"
+      DISTRO_FEATURES:append = " 3591ebl "
+
+   执行构建：
+
+   .. code-block:: console
+
+      # 构建镜像
+      bitbake openeuler-image
+
+   构建完成后，产物位于output目录下，文件名相比常规镜像多一个 ``-ebl`` 后缀：
+
+   - ``openeuler-image-3591rc-[时间戳]-ebl.cpio.gz``: 裁剪后的cpio根文件系统

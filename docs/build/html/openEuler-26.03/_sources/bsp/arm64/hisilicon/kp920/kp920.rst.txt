@@ -1,0 +1,67 @@
+.. _board_kp920:
+
+鲲鹏920
+#######
+
+基本介绍
+========
+
+鲲鹏920是目前业界领先的ARM-based处理器。该处理器采用7nm制造工艺，基于ARM架构授权，由华为公司自主设计完成，主频可达 2.6 GHz。详细配置可参考： `鲲鹏920 介绍 <https://www.hisilicon.com/cn/products/Kunpeng/Huawei-Kunpeng/Huawei-Kunpeng-920>`_
+
+目前openEuler Embedded已经支持鲲鹏920的镜像构建、安装及运行。
+
+____
+
+构建说明
+========
+
+1. 参照 :ref:`oebuild_install` 完成oebuild安装，并详细了解构建过程
+
+   .. code-block:: console
+
+      # 例如
+      $ oebuild init my_workspace
+
+      # 上述命令没有指定分支，使用默认分支master
+      $ cd xxx/my_workspace
+      $ oebuild update
+
+2. 依次执行以下命令完成构建
+
+   .. code-block:: console
+
+      # 生成kp920构建配置文件，若需额外加入特性，见-f列表(oebuild generate -l)，下例启用systemd和软实时功能
+      $ oebuild generate -p kp920 -f systemd -f rt -d build_kp920
+
+      # 按提示进入构建目录 build_kp920 后，执行如下命令进入bitbake环境，进入构建交互终端
+      $ oebuild bitbake
+
+      # 构建镜像
+      $ bitbake openeuler-image
+
+      # 构建sdk
+      $ bitbake openeuler-image -c populate_sdk
+
+   二进制产物介绍（对应output目录）：
+
+   - ``openeuler-glibc-x86_64-openeuler-image-aarch64-kp920-toolchain-<version>.sh``: SDK工具链
+
+   - ``openeuler-image-kp920-[时间戳].iso``: 适用鲲鹏920的ISO镜像，可直接用于部署
+
+   - ``vmlinux``: 备用调试内核
+
+   - ``Image``: 备用内核镜像
+
+.. note::
+
+   需要其他功能时，请在oebuild初始化时通过 ``-f features`` 添加对应的 feature。见-f列表(oebuild generate -l)
+
+____
+
+安装说明
+========
+
+.. seealso::
+
+   参考 :ref:`openEuler Embedded ISO 镜像安装说明 <iso_install>`，若使用 BMC 进行安装，请在 BMC 界面挂载光驱并选择光驱启动之后进行镜像安装。
+
