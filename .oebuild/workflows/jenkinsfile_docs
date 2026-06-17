@@ -44,6 +44,20 @@ pipeline {
                             -D smv_prefer_remote_refs=1 \
                             source build/html
 
+                        python3 - <<'PY'
+from pathlib import Path
+
+old = 'data-toggle="rst-current-version">'
+old_fallback = 'data-toggle="rst-current-version" onclick="this.parentElement.classList.toggle(\'shift-up\'); return false;">'
+new = 'data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle(\'shift-up\'); return false;">'
+
+for html in Path('build/html').rglob('*.html'):
+    text = html.read_text(encoding='utf-8')
+    updated = text.replace(old_fallback, new).replace(old, new)
+    if updated != text:
+        html.write_text(updated, encoding='utf-8')
+PY
+
                         pushd build/html
                         rm -f index.html
                         cat > index.html <<'EOF'
