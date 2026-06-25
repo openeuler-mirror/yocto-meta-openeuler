@@ -1,15 +1,15 @@
-.. _inference:
+推理流水线
+##########
 
-推理服务
-========
-
-本节介绍 IB-Robot 的推理服务系统，包括架构设计、执行模式和策略节点配置。
+本章节包含关于推理流水线的详细指南和参考资料。
 
 .. toctree::
-   :titlesonly:
+   :maxdepth: 1
 
    overview
    inference_architecture
    monolithic_execution_mode
    distributed_execution_mode
    policy_nodes
+   model_export_validation
+   attention_visualization

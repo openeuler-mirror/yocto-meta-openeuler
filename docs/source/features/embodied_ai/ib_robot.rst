@@ -1,22 +1,26 @@
-.. _ib_robot_framework:
+.. _ib_robot_intro:
 
-具身机器人框架IB Robot
-========================
+IB-Robot 具身智能套件
+################################
+
+IB-Robot（Intelligence Boom Robot）是一个将 Hugging Face LeRobot 机器学习生态系统与 ROS 2 机器人中间件连接起来的集成开发框架，旨在实现端到端的具身智能（Embodied AI）工作流。
 
 .. toctree::
    :maxdepth: 2
-   :titlesonly:
+   :caption: 内容
 
-   introduction/ib-robot_overview
+   overview
    getting_started/index
    core_concepts/index
-   architecture/system_architecture
+   architecture
    configuration/index
-   protocol/protocol_conversion_tensormsg
+   protocol
    inference/index
    action_dispatch/index
    data_pipeline/index
    motion_planning/index
    hardware/index
-   package_reference/package_reference
+   extended_capabilities/index
+   package_reference
    development/index
+   glossary

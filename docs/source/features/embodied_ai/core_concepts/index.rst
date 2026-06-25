@@ -1,10 +1,10 @@
 核心概念
-=========
+########
 
-本节阐述支撑 IB-Robot 系统的三个基本架构原则：**单一数据源**、**契约驱动设计**和**控制模式架构**。
+本章节包含关于核心概念的详细指南和参考资料。
 
 .. toctree::
-   :titlesonly:
+   :maxdepth: 1
 
    overview
    single_source_of_truth_pattern

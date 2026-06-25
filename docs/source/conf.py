@@ -15,6 +15,17 @@
 # sys.path.insert(0, os.path.abspath('.'))
 from pathlib import Path
 
+import sphinxcontrib.mermaid as sphinxcontrib_mermaid
+
+
+def _skip_mermaid_js(*args, **kwargs):
+    pass
+
+
+# Load Mermaid from html_js_files only. This keeps Mermaid dependencies small
+# and avoids extra d3/fullscreen scripts injected by sphinxcontrib-mermaid.
+sphinxcontrib_mermaid.install_js = _skip_mermaid_js
+
 DOC_BASE = Path(__file__).resolve().parents[1]
 
 # -- Project information -----------------------------------------------------
@@ -34,7 +45,15 @@ release = '24.03'
 # ones.
 extensions = ['sphinx_multiversion',
               'sphinx_tabs.tabs',
-              'sphinxcontrib.mermaid']
+              'sphinxcontrib.mermaid',
+              "myst_parser",]
+
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
+
+myst_fence_as_directive = ["mermaid"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -87,9 +106,20 @@ html_css_files = [
 ]
 
 html_js_files = [
-    'js/mermaid-init.js',
+    'js/mermaid.min.js',
+    'js/mermaid-run.js',
     'js/custom.js',
 ]
+
+mermaid_output_format = 'raw'
+mermaid_version = '11.12.1'
+mermaid_include_elk = False
+mermaid_fullscreen = False
+mermaid_init_config = {
+    'startOnLoad': False,
+    'securityLevel': 'loose',
+    'theme': 'default',
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

@@ -1,10 +1,10 @@
-数据服务
-========
+数据流水线
+##########
 
-本节描述 IB-Robot 中的完整数据服务，涵盖从人类示教到数据集创建、模型训练以及部署回机器人的端到端流程。
+本章节包含关于数据流水线的详细指南和参考资料。
 
 .. toctree::
-   :titlesonly:
+   :maxdepth: 1
 
    overview
    teleoperation_and_data_collection
@@ -12,3 +12,4 @@
    dataset_conversion_bag_to_lerobot
    training_integration
    deployment_feedback_loop
+   camera_tools

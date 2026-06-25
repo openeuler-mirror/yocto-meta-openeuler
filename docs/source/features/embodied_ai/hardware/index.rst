@@ -1,11 +1,14 @@
 硬件集成
-========
+########
 
-本节介绍 IB-Robot 的硬件抽象层，该抽象层使相同的高级控制逻辑能够与物理机器人和仿真环境无缝协作。
+本章节包含关于硬件集成的详细指南和参考资料。
 
 .. toctree::
-   :titlesonly:
+   :maxdepth: 1
 
    overview
    ros2_control_configuration
    hardware_plugins
+   simulation_backends
+   lekiwi_mobile_manipulator
+   navigation_stack
