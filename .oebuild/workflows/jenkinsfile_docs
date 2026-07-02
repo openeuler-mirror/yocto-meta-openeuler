@@ -22,8 +22,7 @@ pipeline {
                     sh """
                         git init
 
-                        pip3 install sphinx-multiversion sphinx-rtd-theme sphinx_tabs --no-deps
-                        pip3 install 'docutils>=0.18' importlib-metadata pygments zipp sphinxcontrib-mermaid
+                        pip3 install 'docutils>=0.18' importlib-metadata pygments zipp
 
                         git remote add upstream https://atomgit.com/openeuler/yocto-meta-openeuler.git
 
@@ -32,6 +31,8 @@ pipeline {
                             '+refs/heads/openEuler-*:refs/remotes/upstream/openEuler-*'
 
                         git checkout --detach upstream/master
+                        pip3 install -r scripts/requirements-doc.txt
+
                         pushd docs
                         rm -rf build/html
                         remote_whitelist='^upstream\$'
