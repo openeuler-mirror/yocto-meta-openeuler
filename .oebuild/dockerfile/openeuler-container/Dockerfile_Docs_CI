@@ -1,0 +1,52 @@
+FROM hub.oepkgs.net/openeuler/openeuler:24.03
+
+ARG VERSION=3107.v665000b_51092
+ARG user=jenkins
+ARG group=jenkins
+#must to be 1001 for adapt disk mount in jenkins'job
+ARG uid=1001
+ARG gid=1001
+ARG AGENT_WORKDIR=/home/${user}/agent
+
+USER root
+
+RUN set -eux; \
+    yum -y install --setopt=install_weak_deps=False --setopt=tsflags=nodocs \
+        git-core python3 python3-pip openssh-clients java-17-openjdk-headless; \
+    curl --create-dirs -fsSLo /usr/share/jenkins/agent.jar \
+        https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar; \
+    chmod 755 /usr/share/jenkins; \
+    chmod 644 /usr/share/jenkins/agent.jar; \
+    ln -sf /usr/share/jenkins/agent.jar /usr/share/jenkins/slave.jar; \
+    curl --create-dirs -fsSLo /usr/local/bin/jenkins-agent http://121.36.53.23/AdoptOpenJDK/jenkins-agent; \
+    chmod a+rx /usr/local/bin/jenkins-agent; \
+    ln -s /usr/local/bin/jenkins-agent /usr/local/bin/jenkins-slave; \
+    groupadd -g ${gid} ${group}; \
+    useradd -c "Jenkins user" -d /home/${user} -u ${uid} -g ${gid} -m ${user}; \
+    echo "${user} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers; \
+    echo "umask 002" >> /etc/bashrc; \
+    mkdir -p /home/${user}/.jenkins ${AGENT_WORKDIR} /usr1; \
+    chown -R ${user}:${group} /opt /usr1 ${AGENT_WORKDIR}; \
+    chmod -R 755 /opt /usr1 ${AGENT_WORKDIR}; \
+    yum clean all; \
+    rm -rf /var/cache/yum /var/cache/dnf /var/lib/rpm/__db* \
+        /usr/share/locale /usr/share/man /usr/share/doc \
+        /tmp/* /var/tmp/*
+
+USER ${user}
+
+RUN echo "PATH=$PATH:/home/${user}/.local/bin" >> ${HOME}/.bashrc \
+    && echo "export PATH" >> ${HOME}/.bashrc \
+    && pip install --user --no-cache-dir \
+        sphinx-multiversion sphinx-rtd-theme sphinx_tabs \
+        'docutils>=0.18' sphinxcontrib-mermaid \
+        importlib-metadata pygments zipp \
+        -i https://pypi.tuna.tsinghua.edu.cn/simple \
+    && rm -rf ~/.cache/pip
+
+VOLUME /home/${user}/.jenkins
+VOLUME ${AGENT_WORKDIR}
+
+WORKDIR ${AGENT_WORKDIR}
+
+ENTRYPOINT ["jenkins-agent"]
