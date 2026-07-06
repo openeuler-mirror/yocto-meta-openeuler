@@ -1,12 +1,49 @@
 #! /bin/sh
 
+do_expand_rootfs() {
+  ROOT_PART_DEV=$(findmnt / -o source -n)
+  ROOT_PART_NAME=$(echo "$ROOT_PART_DEV" | sed 's|^/dev/||')
+  ROOT_DEV_NAME=$(ls -l /sys/block/*/"$ROOT_PART_NAME" 2>/dev/null | sed 's|.*/sys/block/||;s|/.*||')
+  if [ -z "$ROOT_DEV_NAME" ]; then
+    ROOT_DEV_NAME=$(echo "$ROOT_PART_NAME" | sed 's|p[0-9]*$||')
+  fi
+  ROOT_DEV="/dev/$ROOT_DEV_NAME"
+  ROOT_PART_NUM=$(cat "/sys/block/$ROOT_DEV_NAME/$ROOT_PART_NAME/partition" 2>/dev/null)
+  if [ -z "$ROOT_PART_NUM" ]; then
+    ROOT_PART_NUM=$(echo "$ROOT_PART_NAME" | sed 's|.*/p\|^.*p||')
+  fi
+
+  ROOT_DEV_SIZE=$(cat "/sys/block/$ROOT_DEV_NAME/size")
+  TARGET_END=$((ROOT_DEV_SIZE - 1))
+
+  PARTITION_TABLE=$(parted -m "$ROOT_DEV" unit s print | tr -d 's')
+  ROOT_PART_LINE=$(echo "$PARTITION_TABLE" | grep "^${ROOT_PART_NUM}:")
+  ROOT_PART_END=$(echo "$ROOT_PART_LINE" | cut -d ":" -f 3)
+
+  if [ "$ROOT_PART_END" -eq "$TARGET_END" ]; then
+    echo "Partition is already at maximum size."
+    return 0
+  fi
+
+  if ! parted -m "$ROOT_DEV" u s resizepart "$ROOT_PART_NUM" "$TARGET_END"; then
+    echo "Failed to resize partition."
+    return 1
+  fi
+
+  return 0
+}
+
 case "$1" in
   start)
     echo "Starting resize2fs_once."
-    ROOT_DEV=$(findmnt / -o source -n) &&
-    resize2fs $ROOT_DEV &&
-    rm /etc/init.d/resize2fs_once &&
-    echo "done"
+    if do_expand_rootfs; then
+      ROOT_DEV=$(findmnt / -o source -n) &&
+      resize2fs "$ROOT_DEV" &&
+      rm /etc/init.d/resize2fs_once &&
+      echo "done"
+    else
+      echo "Could not expand root partition."
+    fi
     ;;
   *)
     echo "Usage: $0 start" >&2
