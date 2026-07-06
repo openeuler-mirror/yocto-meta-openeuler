@@ -1,12 +1,10 @@
-.. _getting_started:
-
 入门指南
-========
+########
 
-本节提供 IB-Robot 开发环境的设置指南和项目构建说明。
+本章节包含关于入门指南的详细指南和参考资料。
 
 .. toctree::
-   :titlesonly:
+   :maxdepth: 1
 
    overview
    environment_setup

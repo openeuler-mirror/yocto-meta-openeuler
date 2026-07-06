@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>语音 ASR 服务 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="社交控制与 AI Agent 集成" href="social_control_ai_agent_integration.html" />
+    <link rel="prev" title="扩展能力概述" href="overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol.html">协议转换</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference/index.html">推理流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../action_dispatch/index.html">动作分发</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_pipeline/index.html">数据流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../motion_planning/index.html">运动规划</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../hardware/index.html">硬件集成</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">扩展能力</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">扩展能力概述</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">语音 ASR 服务</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id1">系统架构</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">核心模块</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#ros">数据流和 ROS 接口</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#robot-config">配置 (<code class="docutils literal notranslate"><span class="pre">robot_config</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="social_control_ai_agent_integration.html">社交控制与 AI Agent 集成</a></li>
+<li class="toctree-l6"><a class="reference internal" href="performance_tracing.html">性能追踪</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">扩展能力</a></li>
+      <li class="breadcrumb-item active">语音 ASR 服务</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="asr">
+<h1>语音 ASR 服务<a class="headerlink" href="#asr" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源文件</summary>
+<p>以下文件被用作生成此 wiki 页面时的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/package.xml">src/robot_config/package.xml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/config.py">src/robot_config/robot_config/config.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/voice_asr.py">src/robot_config/robot_config/launch_builders/voice_asr.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/loader.py">src/robot_config/robot_config/loader.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/test/test_config.py">src/robot_config/test/test_config.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/README.md">src/voice_asr_service/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/package.xml">src/voice_asr_service/package.xml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/__init__.py">src/voice_asr_service/voice_asr_service/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/asr_inference_module.py">src/voice_asr_service/voice_asr_service/asr_inference_module.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/audio_capture_module.py">src/voice_asr_service/voice_asr_service/audio_capture_module.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/defaults.py">src/voice_asr_service/voice_asr_service/defaults.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/model_manager.py">src/voice_asr_service/voice_asr_service/model_manager.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/vad_module.py">src/voice_asr_service/voice_asr_service/vad_module.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/voice_asr_node.py">src/voice_asr_service/voice_asr_service/voice_asr_node.py</a></p></li>
+</ul>
+</details>
+<p><code class="docutils literal notranslate"><span class="pre">voice_asr_service</span></code> 包为 IB-Robot 系统提供 Speech-to-Text（STT）接口。它集成 <code class="docutils literal notranslate"><span class="pre">sherpa-onnx</span></code> 引擎执行高性能本地推理，使用 Voice Activity Detection（VAD）切分语音，并通过状态机管理 idle、listening、recognizing 等状态之间的切换。</p>
+<section id="id1">
+<h2>系统架构<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">VoiceASRNode</span></code> 作为中心协调器，编排多个专用模块，用于处理来自麦克风或本地文件的音频流。</p>
+<section id="id2">
+<h3>组件关系<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<p>下图展示 <code class="docutils literal notranslate"><span class="pre">voice_asr_service</span></code> 内部代码实体如何协作，将原始音频转换为文本命令。</p>
+<p><strong>Voice ASR Component Map</strong></p>
+<pre  class="mermaid">
+        graph TD
+    subgraph &quot;VoiceASRNode [voice_asr_service/voice_asr_node.py]&quot;
+        SM[&quot;StateMachine [state_machine.py]&quot;]
+        AC[&quot;AudioCaptureModule [audio_capture_module.py]&quot;]
+        FI[&quot;FileInputModule [file_input_module.py]&quot;]
+        VM[&quot;VADModule [vad_module.py]&quot;]
+        ASR[&quot;ASRInferenceModule [asr_inference_module.py]&quot;]
+        MM[&quot;ModelManager [model_manager.py]&quot;]
+    end
+
+    MIC[(&quot;Microphone&quot;)] --&gt; AC
+    FILE[(&quot;Audio File&quot;)] --&gt; FI
+    
+    AC --&gt;|&quot;Audio Chunks&quot;| VM
+    FI --&gt;|&quot;Audio Buffer&quot;| VM
+    
+    VM --&gt;|&quot;Speech Segments&quot;| ASR
+    ASR --&gt;|&quot;Partial/Final Text&quot;| OUT[&quot;/voice_command Topic&quot;]
+    
+    SM --&gt;|&quot;ActiveMode &amp; NodeState&quot;| VAN[&quot;VoiceASRNode&quot;]
+    VAN --&gt;|&quot;Control Signals&quot;| AC
+    VAN --&gt;|&quot;Control Signals&quot;| ASR
+    VAN --&gt;|&quot;Model Config&quot;| MM
+    MM --&gt;|&quot;Resolved Model Paths&quot;| ASR
+    </pre><p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/voice_asr_node.py#L22-L29">src/voice_asr_service/voice_asr_service/voice_asr_node.py:22-29</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/README.md#L67-L77">src/voice_asr_service/README.md:67-77</a></p>
+</section>
+</section>
+<section id="id3">
+<h2>核心模块<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<section id="id4">
+<h3>1. ASR 推理模块<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ASRInferenceModule</span></code> 封装 <code class="docutils literal notranslate"><span class="pre">sherpa-onnx</span></code> 库。它同时支持流式模型（Transducer/Paraformer）和离线模型（Paraformer）。节点会根据目录结构或路径提示自动检测模型类型。</p>
+<ul class="simple">
+<li><p><strong>初始化</strong>：使用 <code class="docutils literal notranslate"><span class="pre">_create_streaming_recognizer</span></code> 或 <code class="docutils literal notranslate"><span class="pre">_create_offline_recognizer</span></code> 加载模型和 tokens <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/asr_inference_module.py#L173-L240">src/voice_asr_service/voice_asr_service/asr_inference_module.py:173-240</a>。</p></li>
+<li><p><strong>模型检测</strong>：<code class="docutils literal notranslate"><span class="pre">_detect_model_type</span></code> 检查是否存在 <code class="docutils literal notranslate"><span class="pre">encoder*.onnx</span></code>、<code class="docutils literal notranslate"><span class="pre">decoder*.onnx</span></code>、<code class="docutils literal notranslate"><span class="pre">joiner*.onnx</span></code> 文件，以识别流式能力 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/asr_inference_module.py#L144-L171">src/voice_asr_service/voice_asr_service/asr_inference_module.py:144-171</a>。</p></li>
+<li><p><strong>安全性</strong>：包含初始化保护 <code class="docutils literal notranslate"><span class="pre">_ensure_asr_ready</span></code>，避免模型文件缺失或损坏时节点崩溃 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/voice_asr_node.py#L92-L101">src/voice_asr_service/voice_asr_service/voice_asr_node.py:92-101</a>。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/asr_inference_module.py#L1-L143">src/voice_asr_service/voice_asr_service/asr_inference_module.py:1-143</a></p>
+</section>
+<section id="vad">
+<h3>2. VAD 模块<a class="headerlink" href="#vad" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">VADModule</span></code> 识别语音边界，避免 ASR 引擎处理静音。它使用多层策略：</p>
+<ol class="arabic simple">
+<li><p><strong>Silero VAD</strong>：基于神经网络的高精度检测，支持 JIT 或 ONNX 后端 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/vad_module.py#L107-L160">src/voice_asr_service/voice_asr_service/vad_module.py:107-160</a>。</p></li>
+<li><p><strong>基于能量的 VAD</strong>：使用自适应能量阈值的回退机制 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/vad_module.py#L175-L180">src/voice_asr_service/voice_asr_service/vad_module.py:175-180</a>。</p></li>
+<li><p><strong>预滚缓冲区</strong>：维护一小段音频缓冲（<code class="docutils literal notranslate"><span class="pre">realtime_pre_roll_seconds</span></code>），避免句首被截断 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/voice_asr_node.py#L154">src/voice_asr_service/voice_asr_service/voice_asr_node.py:154</a>。</p></li>
+</ol>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/vad_module.py#L1-L106">src/voice_asr_service/voice_asr_service/vad_module.py:1-106</a></p>
+</section>
+<section id="id5">
+<h3>3. 音频采集模块<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">AudioCaptureModule</span></code> 处理麦克风输入，在 <code class="docutils literal notranslate"><span class="pre">pyaudio</span></code> 或 <code class="docutils literal notranslate"><span class="pre">sounddevice</span></code> 之上提供统一接口。它管理 <code class="docutils literal notranslate"><span class="pre">RingBuffer</span></code> 以保存预滚音频，并在独立线程中运行，避免阻塞 ROS 主循环。</p>
+<ul class="simple">
+<li><p><strong>设备枚举</strong>：<code class="docutils literal notranslate"><span class="pre">list_audio_devices()</span></code> 识别可用输入设备 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/audio_capture_module.py#L131-L174">src/voice_asr_service/voice_asr_service/audio_capture_module.py:131-174</a>。</p></li>
+<li><p><strong>环形缓冲区</strong>：<code class="docutils literal notranslate"><span class="pre">RingBuffer</span></code> 类 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/audio_capture_module.py#L39-L91">src/voice_asr_service/voice_asr_service/audio_capture_module.py:39-91</a> 保存音频块，便于高效获取最近的预滚音频。</p></li>
+<li><p><strong>错误处理</strong>：包含重试机制和错误回调，用于稳定运行 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/audio_capture_module.py#L214-L221">src/voice_asr_service/voice_asr_service/audio_capture_module.py:214-221</a>。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/audio_capture_module.py#L1-L130">src/voice_asr_service/voice_asr_service/audio_capture_module.py:1-130</a></p>
+</section>
+<section id="id6">
+<h3>4. 模型管理器<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">model_manager.py</span></code> 模块负责解析并可选自动下载 ASR 模型 bundle。它根据配置参数选择合适的模型（流式或离线），并确保模型资源在本地可用。</p>
+<ul class="simple">
+<li><p><strong>模型 Bundle</strong>：定义用于流式和离线中文模型的 <code class="docutils literal notranslate"><span class="pre">ModelBundle</span></code> dataclass，包括 URL 和必需文件模式 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/model_manager.py#L17-L66">src/voice_asr_service/voice_asr_service/model_manager.py:17-66</a>。</p></li>
+<li><p><strong>推理逻辑</strong>：<code class="docutils literal notranslate"><span class="pre">infer_model_bundle</span></code> 根据 <code class="docutils literal notranslate"><span class="pre">model_path</span></code> 提示、<code class="docutils literal notranslate"><span class="pre">model_type</span></code>、<code class="docutils literal notranslate"><span class="pre">active_mode</span></code> 和 <code class="docutils literal notranslate"><span class="pre">language</span></code> 选择 bundle <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/model_manager.py#L117-L132">src/voice_asr_service/voice_asr_service/model_manager.py:117-132</a>。</p></li>
+<li><p><strong>自动下载</strong>：如果本地未找到模型且启用了 <code class="docutils literal notranslate"><span class="pre">auto_download_model</span></code>，<code class="docutils literal notranslate"><span class="pre">download_model_bundle</span></code> 会从指定 URL 拉取并解压模型归档 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/model_manager.py#L135-L178">src/voice_asr_service/voice_asr_service/model_manager.py:135-178</a>。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/model_manager.py#L1-L179">src/voice_asr_service/voice_asr_service/model_manager.py:1-179</a></p>
+</section>
+<section id="id7">
+<h3>5. 状态机<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">StateMachine</span></code> 管理运行生命周期和交互模式 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/state_machine.py#L1-L40">src/voice_asr_service/voice_asr_service/state_machine.py:1-40</a>。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>状态 (<code class="docutils literal notranslate"><span class="pre">NodeState</span></code>)</p></th>
+<th class="head text-left"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">IDLE</span></code></p></td>
+<td class="text-left"><p>默认状态，不处理音频 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/state_machine.py#L10">src/voice_asr_service/voice_asr_service/state_machine.py:10</a>。</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">LISTENING</span></code></p></td>
+<td class="text-left"><p>主动监听音频，等待 VAD 触发 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/state_machine.py#L11">src/voice_asr_service/voice_asr_service/state_machine.py:11</a>。</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">RECOGNIZING</span></code></p></td>
+<td class="text-left"><p>VAD 已检测到语音，音频正在送入 ASR <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/state_machine.py#L12">src/voice_asr_service/voice_asr_service/state_machine.py:12</a>。</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">BUSY</span></code></p></td>
+<td class="text-left"><p>正在处理文件输入或被 service 阻塞 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/state_machine.py#L13">src/voice_asr_service/voice_asr_service/state_machine.py:13</a>。</p></td>
+</tr>
+</tbody>
+</table>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/state_machine.py#L8-L15">src/voice_asr_service/voice_asr_service/state_machine.py:8-15</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/README.md#L90-L98">src/voice_asr_service/README.md:90-98</a></p>
+</section>
+</section>
+<section id="ros">
+<h2>数据流和 ROS 接口<a class="headerlink" href="#ros" title="Permalink to this heading"></a></h2>
+<p>该服务支持两种主要输入模式：<strong>实时麦克风</strong> 和 <strong>基于文件的识别</strong>。</p>
+<section id="id8">
+<h3>识别序列<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
+<p>下图将识别请求的逻辑流程映射到内部类方法。</p>
+<p><strong>Recognition Logic Flow</strong></p>
+<pre  class="mermaid">
+        sequenceDiagram
+    participant ROS as &quot;ROS Interface&quot;
+    participant VAN as &quot;VoiceASRNode&quot;
+    participant AC as &quot;AudioCaptureModule&quot;
+    participant VM as &quot;VADModule&quot;
+    participant ASR as &quot;ASRInferenceModule&quot;
+
+    Note over ROS, ASR: Start Recognition Trigger
+    ROS-&gt;&gt;VAN: ~/start_recognition (Service)
+    VAN-&gt;&gt;VAN: _transition_state(LISTENING, &quot;service_start&quot;)
+    VAN-&gt;&gt;AC: start_capture()
+    
+    loop Process Audio Timer
+        AC-&gt;&gt;VAN: _audio_queue.get()
+        VAN-&gt;&gt;VM: process(chunk)
+        alt VADState.STARTING
+            VAN-&gt;&gt;VAN: _transition_state(RECOGNIZING, &quot;speech_start&quot;)
+            VAN-&gt;&gt;ASR: create_stream()
+        else VADState.SPEAKING
+            VAN-&gt;&gt;ASR: push_samples(chunk)
+            ASR--&gt;&gt;ROS: /voice_partial (Topic)
+        else VADState.ENDING
+            VAN-&gt;&gt;ASR: finalize_stream()
+            ASR--&gt;&gt;ROS: output_topic (Topic)
+            VAN-&gt;&gt;VAN: _transition_state(LISTENING, &quot;speech_end&quot;)
+        end
+    end
+    </pre><p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/voice_asr_node.py#L388-L460">src/voice_asr_service/voice_asr_service/voice_asr_node.py:388-460</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/README.md#L144-L161">src/voice_asr_service/README.md:144-161</a></p>
+</section>
+<section id="ros-api">
+<h3>ROS API 参考<a class="headerlink" href="#ros-api" title="Permalink to this heading"></a></h3>
+<section id="topics">
+<h4>Topics<a class="headerlink" href="#topics" title="Permalink to this heading"></a></h4>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">output_topic</span></code></strong>（默认：<code class="docutils literal notranslate"><span class="pre">/voice_command</span></code>）：最终识别文本 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/voice_asr_node.py#L150">src/voice_asr_service/voice_asr_service/voice_asr_node.py:150</a>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">/voice_partial</span></code></strong>：语音识别过程中的中间结果 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/voice_asr_node.py#L246">src/voice_asr_service/voice_asr_service/voice_asr_node.py:246</a>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">/voice_status</span></code></strong>：当前状态机状态 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/voice_asr_node.py#L247">src/voice_asr_service/voice_asr_service/voice_asr_node.py:247</a>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">/voice_control</span></code></strong>：用于文本控制命令的 subscriber，例如 “start”、”stop” <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/voice_asr_node.py#L252">src/voice_asr_service/voice_asr_service/voice_asr_node.py:252</a>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">/voice_confidence</span></code></strong>：最终结果的置信度分数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/voice_asr_node.py#L248">src/voice_asr_service/voice_asr_service/voice_asr_node.py:248</a>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">/voice_file_input</span></code></strong>：用于提交文件路径进行异步识别的 topic <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/voice_asr_node.py#L253">src/voice_asr_service/voice_asr_service/voice_asr_node.py:253</a>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">/voice_file_progress</span></code></strong>：文件识别进度 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/voice_asr_node.py#L249">src/voice_asr_service/voice_asr_service/voice_asr_node.py:249</a>。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/README.md#L195-L209">src/voice_asr_service/README.md:195-209</a></p>
+</section>
+<section id="services">
+<h4>Services<a class="headerlink" href="#services" title="Permalink to this heading"></a></h4>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">~/start_recognition</span></code></strong> (<code class="docutils literal notranslate"><span class="pre">std_srvs/srv/Empty</span></code>)：开始实时麦克风监听 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/voice_asr_node.py#L255">src/voice_asr_service/voice_asr_service/voice_asr_node.py:255</a>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">~/stop_recognition</span></code></strong> (<code class="docutils literal notranslate"><span class="pre">std_srvs/srv/Empty</span></code>)：停止当前实时麦克风监听 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/voice_asr_node.py#L256">src/voice_asr_service/voice_asr_service/voice_asr_node.py:256</a>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">~/set_hotwords</span></code></strong> (<code class="docutils literal notranslate"><span class="pre">ibrobot_msgs/srv/SetHotwords</span></code>)：动态更新热词增强分数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/voice_asr_node.py#L257">src/voice_asr_service/voice_asr_service/voice_asr_node.py:257</a>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">~/recognize_file</span></code></strong> (<code class="docutils literal notranslate"><span class="pre">ibrobot_msgs/srv/RecognizeFile</span></code>)：同步识别本地 WAV 文件 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/voice_asr_node.py#L258">src/voice_asr_service/voice_asr_service/voice_asr_node.py:258</a>。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/README.md#L223-L227">src/voice_asr_service/README.md:223-227</a></p>
+</section>
+</section>
+</section>
+<section id="robot-config">
+<h2>配置 (<code class="docutils literal notranslate"><span class="pre">robot_config</span></code>)<a class="headerlink" href="#robot-config" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">voice_asr_service</span></code> 通常通过 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> launch 系统启动。<code class="docutils literal notranslate"><span class="pre">generate_voice_asr_nodes</span></code> builder 从机器人 YAML 中提取参数并解析文件路径。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>参数</p></th>
+<th class="head text-left"><p>说明</p></th>
+<th class="head text-left"><p>默认值</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">active_mode</span></code></p></td>
+<td class="text-left"><p>激活策略（<code class="docutils literal notranslate"><span class="pre">manual</span></code>、<code class="docutils literal notranslate"><span class="pre">continuous</span></code>）</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">continuous</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">model_path</span></code></p></td>
+<td class="text-left"><p>模型目录或文件路径</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>（为空且启用时自动下载）</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">tokens_path</span></code></p></td>
+<td class="text-left"><p>tokens 文件路径</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>（为空时自动解析）</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">provider</span></code></p></td>
+<td class="text-left"><p>推理后端（<code class="docutils literal notranslate"><span class="pre">cpu</span></code>、<code class="docutils literal notranslate"><span class="pre">cuda</span></code>、<code class="docutils literal notranslate"><span class="pre">coreml</span></code>）</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">cpu</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">model_type</span></code></p></td>
+<td class="text-left"><p>模型类型提示（<code class="docutils literal notranslate"><span class="pre">auto</span></code>、<code class="docutils literal notranslate"><span class="pre">streaming</span></code>、<code class="docutils literal notranslate"><span class="pre">offline</span></code>）</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">auto</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">auto_download_model</span></code></p></td>
+<td class="text-left"><p>缺失时自动下载默认 bundle</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">max_recording_duration</span></code></p></td>
+<td class="text-left"><p>单次实时录音最大时长</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">10.0</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">vad_sensitivity</span></code></p></td>
+<td class="text-left"><p>VAD 灵敏度阈值（0.0 到 1.0）</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">0.6</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">realtime_pre_roll_seconds</span></code></p></td>
+<td class="text-left"><p>拼接到识别前的音频缓冲</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">0.5</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">publish_partial</span></code></p></td>
+<td class="text-left"><p>是否发布部分识别结果</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">output_topic</span></code></p></td>
+<td class="text-left"><p>最终识别文本的 ROS topic</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">/voice_command</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">sample_rate</span></code></p></td>
+<td class="text-left"><p>音频采样率</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">16000</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">chunk_size</span></code></p></td>
+<td class="text-left"><p>以帧为单位的音频块大小</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">512</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">buffer_seconds</span></code></p></td>
+<td class="text-left"><p>音频采集环形缓冲区大小，单位秒</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">5.0</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">device_index</span></code></p></td>
+<td class="text-left"><p>音频输入设备索引</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">-1</span></code>（自动检测）</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">device_name</span></code></p></td>
+<td class="text-left"><p>音频输入设备名称（子串匹配）</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">exit_on_init_failure</span></code></p></td>
+<td class="text-left"><p>ASR 初始化失败时退出节点</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">True</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/config.py#L109-L130">src/robot_config/robot_config/config.py:109-130</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/voice_asr.py#L132-L185">src/robot_config/robot_config/launch_builders/voice_asr.py:132-185</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/voice_asr_service/voice_asr_service/defaults.py#L3-L23">src/voice_asr_service/voice_asr_service/defaults.py:3-23</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="overview.html" class="btn btn-neutral float-left" title="扩展能力概述" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="social_control_ai_agent_integration.html" class="btn btn-neutral float-right" title="社交控制与 AI Agent 集成" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="voice_asr_service.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

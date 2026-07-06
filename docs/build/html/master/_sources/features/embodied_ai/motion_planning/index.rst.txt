@@ -1,14 +1,13 @@
-运动规划 (MoveIt)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+运动规划
+########
 
-本节介绍 IB-Robot 中的 MoveIt2 运动规划集成，包括系统架构、MoveItGateway 节点、5DOF 运动学约束处理和启动配置。
+本章节包含关于运动规划的详细指南和参考资料。
 
 .. toctree::
-   :titlesonly:
+   :maxdepth: 1
 
    overview
    moveitgateway_node
-   dof_kinematic_constraints
+   5dof_kinematic_constraints
    moveit_launch_configuration
-
-
+   task_dispatch

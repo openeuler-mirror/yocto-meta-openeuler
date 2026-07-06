@@ -1,392 +1,33 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>数据集转换 (bag_to_lerobot) &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+  <title>数据集转换 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
-        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs"></script>
-        <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.2.0/dist/mermaid-layout-elk.esm.min.mjs"></script>
-        <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.2.0/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
-        <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-        <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
-
-const defaultStyle = document.createElement('style');
-defaultStyle.textContent = `pre.mermaid {
-    /* Same as .mermaid-container > pre */
-    display: block;
-    width: 100%;
-}
-
-pre.mermaid > svg {
-    /* Same as .mermaid-container > pre > svg */
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}
-`;
-document.head.appendChild(defaultStyle);
-
-const fullscreenStyle = document.createElement('style');
-fullscreenStyle.textContent = `.mermaid-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-}
-
-.mermaid-container > pre {
-    display: block;
-    width: 100%;
-}
-
-.mermaid-container > pre > svg {
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}
-
-.mermaid-fullscreen-btn {
-    width: 28px;
-    height: 28px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    font-size: 14px;
-    line-height: 1;
-    padding: 0;
-    color: #333;
-}
-
-.mermaid-fullscreen-btn:hover {
-    opacity: 100% !important;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-btn.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-btn.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal {
-    display: none;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 95vw;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.98);
-    z-index: 9999;
-    padding: 20px;
-    overflow: auto;
-}
-
-.mermaid-fullscreen-modal.dark-theme {
-    background: rgba(0, 0, 0, 0.98);
-}
-
-.mermaid-fullscreen-modal.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen {
-    position: relative;
-    width: 95vw;
-    height: 90vh;
-    max-width: 95vw;
-    max-height: 90vh;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    overflow: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen.dark-theme {
-    background: #1a1a1a;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-}
-
-.mermaid-container-fullscreen pre.mermaid {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen .mermaid svg {
-    height: 100% !important;
-    width: 100% !important;
-    cursor: grab;
-}
-
-.mermaid-fullscreen-close {
-    position: fixed !important;
-    top: 20px !important;
-    right: 20px !important;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s;
-    font-size: 24px;
-    line-height: 1;
-    color: #333;
-}
-
-.mermaid-fullscreen-close:hover {
-    background: white;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-close.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-close.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
-    display: none !important;
-}`;
-document.head.appendChild(fullscreenStyle);
-
-// Detect if page has dark background
-const isDarkTheme = () => {
-    const bgColor = window.getComputedStyle(document.body).backgroundColor;
-    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
-    if (match) {
-        const r = parseInt(match[1]);
-        const g = parseInt(match[2]);
-        const b = parseInt(match[3]);
-        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        return brightness < 128;
-    }
-    return false;
-};
-
-const load = async () => {
-    await mermaid.run();
-
-    const all_mermaids = document.querySelectorAll(".mermaid");
-    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
-
-    if ("False" === "True") {
-        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
-        if(mermaids_to_add_zoom > 0) {
-            var svgs = d3.selectAll("");
-            if(all_mermaids.length !== mermaids_processed.length) {
-                setTimeout(load, 200);
-                return;
-            } else if(svgs.size() !== mermaids_to_add_zoom) {
-                setTimeout(load, 200);
-                return;
-            } else {
-                svgs.each(function() {
-                    var svg = d3.select(this);
-                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
-                    var inner = svg.select("g");
-                    var zoom = d3.zoom().on("zoom", function(event) {
-                        inner.attr("transform", event.transform);
-                    });
-                    svg.call(zoom);
-                });
-            }
-        }
-    } else if(all_mermaids.length !== mermaids_processed.length) {
-        // Wait for mermaid to process all diagrams
-        setTimeout(load, 200);
-        return;
-    }
-
-    const darkTheme = isDarkTheme();
-
-    // Stop here if not adding fullscreen capability
-    if ("True" !== "True") return;
-
-    const modal = document.createElement('div');
-    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
-    modal.setAttribute('role', 'dialog');
-    modal.setAttribute('aria-modal', 'true');
-    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
-    modal.innerHTML = `
-        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
-        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
-    `;
-    document.body.appendChild(modal);
-
-    const modalContent = modal.querySelector('.mermaid-container-fullscreen');
-    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
-
-    let previousScrollOffset = [window.scrollX, window.scrollY];
-
-    const closeModal = () => {
-        modal.classList.remove('active');
-        modalContent.innerHTML = '';
-        document.body.style.overflow = ''
-        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
-    };
-
-    closeBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('active')) {
-            closeModal();
-        }
-    });
-
-    const allButtons = [];
-
-    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
-        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
-            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
-            return;
-        }
-
-        const container = document.createElement('div');
-        container.className = 'mermaid-container';
-        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
-        container.appendChild(mermaidDiv);
-
-        const fullscreenBtn = document.createElement('button');
-        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
-        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
-        fullscreenBtn.textContent = '⛶';
-        fullscreenBtn.style.opacity = '50%';
-
-        // Calculate dynamic position based on diagram's margin and padding
-        const diagramStyle = window.getComputedStyle(mermaidDiv);
-        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
-        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
-        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
-        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
-        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
-        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
-
-        fullscreenBtn.addEventListener('click', () => {
-            previousScrollOffset = [window.scroll, window.scrollY];
-            const clone = mermaidDiv.cloneNode(true);
-            modalContent.innerHTML = '';
-            modalContent.appendChild(clone);
-
-            const svg = clone.querySelector('svg');
-            if (svg) {
-                svg.removeAttribute('width');
-                svg.removeAttribute('height');
-                svg.style.width = '100%';
-                svg.style.height = 'auto';
-                svg.style.maxWidth = '100%';
-                svg.style.sdisplay = 'block';
-
-                if ("False" === "True") {
-                    setTimeout(() => {
-                        const g = svg.querySelector('g');
-                        if (g) {
-                            var svgD3 = d3.select(svg);
-                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
-                            var inner = svgD3.select("g");
-                            var zoom = d3.zoom().on("zoom", function(event) {
-                                inner.attr("transform", event.transform);
-                            });
-                            svgD3.call(zoom);
-                        }
-                    }, 100);
-                }
-            }
-
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        });
-
-        container.appendChild(fullscreenBtn);
-        allButtons.push(fullscreenBtn);
-    });
-
-    // Update theme classes when theme changes
-    const updateTheme = () => {
-        const dark = isDarkTheme();
-        allButtons.forEach(btn => {
-            if (dark) {
-                btn.classList.add('dark-theme');
-            } else {
-                btn.classList.remove('dark-theme');
-            }
-        });
-        if (dark) {
-            modal.classList.add('dark-theme');
-            modalContent.classList.add('dark-theme');
-            closeBtn.classList.add('dark-theme');
-        } else {
-            modal.classList.remove('dark-theme');
-            modalContent.classList.remove('dark-theme');
-            closeBtn.classList.remove('dark-theme');
-        }
-    };
-
-    // Watch for theme changes
-    const observer = new MutationObserver(updateTheme);
-    observer.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['class', 'style', 'data-theme']
-    });
-    observer.observe(document.body, {
-        attributes: true,
-        attributeFilter: ['class', 'style']
-    });
-};
-
-window.addEventListener("load", load);
-</script>
-        <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
-        <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="训练集成" href="training_integration.html" />
-    <link rel="prev" title="回合录制" href="episode_recording.html" /> 
+    <link rel="prev" title="Episode 录制" href="episode_recording.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -394,11 +35,15 @@ window.addEventListener("load", load);
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> openEuler Embedded在线文档
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -418,41 +63,42 @@ window.addEventListener("load", load);
 <li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">具身机器人框架IB Robot</a><ul class="current">
-<li class="toctree-l5"><a class="reference internal" href="../introduction/ib-robot_overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview.html">IB-Robot 概述</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../core_concepts/index.html">核心概念</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../architecture/system_architecture.html">系统架构</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统 (robot_config)</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../protocol/protocol_conversion_tensormsg.html">协议转换 (tensormsg)</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../inference/index.html">推理服务</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../action_dispatch/index.html">动作调度</a></li>
-<li class="toctree-l5 current"><a class="reference internal" href="index.html">数据服务</a><ul class="current">
-<li class="toctree-l6"><a class="reference internal" href="overview.html">数据服务概述</a></li>
-<li class="toctree-l6"><a class="reference internal" href="teleoperation_and_data_collection.html">遥操作与数据收集</a></li>
-<li class="toctree-l6"><a class="reference internal" href="episode_recording.html">回合录制</a></li>
-<li class="toctree-l6 current"><a class="current reference internal" href="#">数据集转换 (bag_to_lerobot)</a><ul>
-<li class="toctree-l7"><a class="reference internal" href="#id1">目的与范围</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id2">转换流水线概述</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id3">契约作为单一事实来源</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id4">流规划与话题分发</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id5">消息解码与时间戳选择</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id6">重采样到契约频率</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id7">流合并</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id11">图像强制转换与视频编码</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id12">命令行界面</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id15">入口点与主函数</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id16">与数据流水线集成</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol.html">协议转换</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference/index.html">推理流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../action_dispatch/index.html">动作分发</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">数据流水线</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">数据流水线概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="teleoperation_and_data_collection.html">遥操作与数据采集</a></li>
+<li class="toctree-l6"><a class="reference internal" href="episode_recording.html">Episode 录制</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">数据集转换</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">目的与范围</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">转换流水线概览</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#contract">Contract 作为单一事实源</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#stream-planning-topic-dispatch">Stream Planning 与 Topic Dispatch</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id4">消息解码与时间戳选择</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#contract-rate">重采样到 Contract Rate</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#lerobot-v3-dataset">LeRobot v3 Dataset 输出</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id7">图像规整与视频编码</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id8">命令行接口</a></li>
 </ul>
 </li>
 <li class="toctree-l6"><a class="reference internal" href="training_integration.html">训练集成</a></li>
-<li class="toctree-l6"><a class="reference internal" href="deployment_feedback_loop.html">部署反馈循环</a></li>
+<li class="toctree-l6"><a class="reference internal" href="deployment_feedback_loop.html">部署反馈闭环</a></li>
+<li class="toctree-l6"><a class="reference internal" href="camera_tools.html">相机工具</a></li>
 </ul>
 </li>
-<li class="toctree-l5"><a class="reference internal" href="../motion_planning/index.html">运动规划 (MoveIt)</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../motion_planning/index.html">运动规划</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../hardware/index.html">硬件集成</a></li>
-<li class="toctree-l5"><a class="reference internal" href="../package_reference/package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../extended_capabilities/index.html">扩展能力</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference.html">包参考</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
 </ul>
 </li>
 </ul>
@@ -490,13 +136,13 @@ window.addEventListener("load", load);
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../../user_guide/index.html">用户使用指导</a> &raquo;</li>
-          <li><a href="../../index.html">关键特性指导</a> &raquo;</li>
-          <li><a href="../index.html">具身智能 (Embodied AI)</a> &raquo;</li>
-          <li><a href="../ib_robot.html">具身机器人框架IB Robot</a> &raquo;</li>
-          <li><a href="index.html">数据服务</a> &raquo;</li>
-      <li>数据集转换 (bag_to_lerobot)</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">数据流水线</a></li>
+      <li class="breadcrumb-item active">数据集转换</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -505,41 +151,46 @@ window.addEventListener("load", load);
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="bag-to-lerobot">
-<h1>数据集转换 (bag_to_lerobot)<a class="headerlink" href="#bag-to-lerobot" title="Link to this heading"></a></h1>
-<details><p>相关源文件</p>
-<p>以下文件用于生成此 wiki 页面的上下文：</p>
+  <section id="id1">
+<h1>数据集转换<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源文件</summary>
+<p>生成此 wiki 页面时使用了以下文件作为上下文：</p>
 <ul class="simple">
-<li><p><a class="reference external" href="src/action_dispatch/action_dispatch/action_dispatcher_node.py">src/action_dispatch/action_dispatch/action_dispatcher_node.py</a></p></li>
-<li><p><a class="reference external" href="src/dataset_tools/README.md">src/dataset_tools/README.md</a></p></li>
-<li><p><a class="reference external" href="src/dataset_tools/dataset_tools/bag_to_lerobot.py">src/dataset_tools/dataset_tools/bag_to_lerobot.py</a></p></li>
-<li><p><a class="reference external" href="src/dataset_tools/dataset_tools/episode_recorder.py">src/dataset_tools/dataset_tools/episode_recorder.py</a></p></li>
-<li><p><a class="reference external" href="src/inference_service/inference_service/lerobot_policy_node.py">src/inference_service/inference_service/lerobot_policy_node.py</a></p></li>
-<li><p><a class="reference external" href="src/robot_config/launch/robot.launch.py">src/robot_config/launch/robot.launch.py</a></p></li>
-<li><p><a class="reference external" href="src/robot_config/robot_config/config.py">src/robot_config/robot_config/config.py</a></p></li>
-<li><p><a class="reference external" href="src/robot_config/robot_config/contract_builder.py">src/robot_config/robot_config/contract_builder.py</a></p></li>
-<li><p><a class="reference external" href="src/robot_config/robot_config/contract_utils.py">src/robot_config/robot_config/contract_utils.py</a></p></li>
-<li><p><a class="reference external" href="src/robot_config/robot_config/launch_builders/execution.py">src/robot_config/robot_config/launch_builders/execution.py</a></p></li>
-<li><p><a class="reference external" href="src/robot_config/robot_config/launch_builders/recording.py">src/robot_config/robot_config/launch_builders/recording.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/README.md">src/dataset_tools/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py">src/dataset_tools/dataset_tools/bag_to_lerobot.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/camera_alignment.py">src/dataset_tools/dataset_tools/camera_alignment.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py">src/dataset_tools/dataset_tools/episode_recorder.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/opencv_utils.py">src/dataset_tools/dataset_tools/opencv_utils.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/docs/tools/camera_alignment.md">src/dataset_tools/docs/tools/camera_alignment.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/test/test_camera_alignment.py">src/dataset_tools/test/test_camera_alignment.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/test/test_camera_isp_calibrator.py">src/dataset_tools/test/test_camera_isp_calibrator.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_builder.py">src/robot_config/robot_config/contract_builder.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_utils.py">src/robot_config/robot_config/contract_utils.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/__init__.py">src/robot_config/robot_config/generators/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/contract.py">src/robot_config/robot_config/generators/contract.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py">src/robot_config/robot_config/launch_builders/recording.py</a></p></li>
 </ul>
-</details><p>本文档介绍 <code class="docutils literal notranslate"><span class="pre">bag_to_lerobot</span></code> 转换工具，该工具将 ROS2 bag 文件（录制的回合）转换为 LeRobot v3 数据集格式，用于训练机器学习策略。该工具通过使用与实时推理相同的契约驱动处理工具，确保训练与部署的一致性。</p>
-<p>有关录制回合的信息，请参阅 <a class="reference external" href="#9.2">回合录制</a>。有关与 LeRobot 库的训练集成，请参阅 <a class="reference external" href="#9.4">训练集成</a>。</p>
-<hr class="docutils" />
-<section id="id1">
-<h2>目的与范围<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">bag_to_lerobot</span></code> 工具将一个或多个 ROS2 bag 目录转换为 LeRobot v3 数据集，具有以下保证：</p>
-<ul class="simple">
-<li><p><strong>训练-服务一致性</strong>：使用与 <code class="docutils literal notranslate"><span class="pre">lerobot_policy_node</span></code> 相同的 <code class="docutils literal notranslate"><span class="pre">decode_value()</span></code> 函数和重采样逻辑，消除训练-服务偏差</p></li>
-<li><p><strong>单一事实来源</strong>：直接从 <code class="docutils literal notranslate"><span class="pre">robot_config.yaml</span></code> 加载契约规范，确保观测和动作与机器人配置匹配</p></li>
-<li><p><strong>特征对齐</strong>：通过 <code class="docutils literal notranslate"><span class="pre">feature_from_spec()</span></code> 生成与模型输入要求完全匹配形状的数据集特征</p></li>
-</ul>
-<p>该工具作为独立的 Python 脚本运行，不依赖 ROS2 运行时。</p>
-<p><strong>来源</strong>：
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L1-L73">src/dataset_tools/dataset_tools/bag_to_lerobot.py:1-73</a></p>
-</section>
+</details>
+<p>本文档说明 <code class="docutils literal notranslate"><span class="pre">bag_to_lerobot</span></code> 转换工具。该工具将 ROS2 bag files（录制 episodes）转换为 LeRobot v3 dataset format，用于训练机器学习策略。它使用与实时推理相同的 contract-driven 处理工具，保证训练和部署对齐。</p>
+<p>有关录制 episodes，请参见 <a class="reference internal" href="episode_recording.html"><span class="std std-doc">Episode 录制</span></a>。有关与 LeRobot 库的训练集成，请参见 <a class="reference internal" href="training_integration.html"><span class="std std-doc">训练集成</span></a>。</p>
 <hr class="docutils" />
 <section id="id2">
-<h2>转换流水线概述<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<h2>目的与范围<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">bag_to_lerobot</span></code> 工具将一个或多个 ROS 2 bags 转换为 LeRobot v3 dataset，并提供以下保证：</p>
+<ul class="simple">
+<li><p><strong>Training-Serving Consistency</strong>：使用与 <code class="docutils literal notranslate"><span class="pre">lerobot_policy_node</span></code> 相同的 <code class="docutils literal notranslate"><span class="pre">decode_value()</span></code> 函数和重采样逻辑，消除 training-serving skew <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L8-L10">src/dataset_tools/dataset_tools/bag_to_lerobot.py:8-10</a>。</p></li>
+<li><p><strong>单一事实源</strong>：直接从 <code class="docutils literal notranslate"><span class="pre">robot_config.yaml</span></code> 加载 contract specs，确保 observations 和 actions 与机器人配置一致 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L14-L15">src/dataset_tools/dataset_tools/bag_to_lerobot.py:14-15</a>。</p></li>
+<li><p><strong>Feature Alignment</strong>：通过 <code class="docutils literal notranslate"><span class="pre">feature_from_spec()</span></code> 生成与模型输入要求完全匹配的 dataset features <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L71-L73">src/dataset_tools/dataset_tools/bag_to_lerobot.py:71-73</a>。</p></li>
+</ul>
+<p>该工具作为独立 Python 脚本运行，使用 <code class="docutils literal notranslate"><span class="pre">rosbag2_py</span></code> 提取数据，并使用 <code class="docutils literal notranslate"><span class="pre">lerobot</span></code> 库创建数据集 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L86-L91">src/dataset_tools/dataset_tools/bag_to_lerobot.py:86-91</a>。</p>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L1-L73">src/dataset_tools/dataset_tools/bag_to_lerobot.py:1-73</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/README.md#L104-L111">src/dataset_tools/README.md:104-111</a></p>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h2>转换流水线概览<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<p>该工具遵循结构化流水线，以保证数据完整性并与机器人 contract 对齐。</p>
+<p>Title: bag_to_lerobot Processing Pipeline</p>
 <pre  class="mermaid">
         graph TB
     subgraph &quot;Input&quot;
@@ -548,11 +199,11 @@ window.addEventListener("load", load);
         BAGN[&quot;ROS2 Bag&lt;br/&gt;Episode N&lt;br/&gt;(MCAP)&quot;]
         RC[&quot;robot_config.yaml&lt;br/&gt;(Contract Spec)&quot;]
     end
-
+    
     subgraph &quot;bag_to_lerobot.py&quot;
-        LOAD[&quot;_load_contract_from_robot_config()&lt;br/&gt;Load Contract&quot;]
-        PLAN[&quot;_plan_streams()&lt;br/&gt;Build topic→spec mapping&quot;]
-
+        LOAD[&quot;load_contract()&lt;br/&gt;Load Contract&quot;]
+        PLAN[&quot;_Stream Objects&lt;br/&gt;Build topic→spec mapping&quot;]
+        
         subgraph &quot;Per-Episode Processing&quot;
             SCAN[&quot;Scan Bag&lt;br/&gt;deserialize_message()&quot;]
             DECODE[&quot;decode_value()&lt;br/&gt;(shared with inference)&quot;]
@@ -561,23 +212,23 @@ window.addEventListener("load", load);
             COERCE[&quot;Image Coercion&lt;br/&gt;uint8, resize&quot;]
             CONSOLIDATE[&quot;Consolidate Streams&lt;br/&gt;(observation.state, actions)&quot;]
         end
-
+        
         FEATURES[&quot;feature_from_spec()&lt;br/&gt;Generate dataset features&quot;]
         WRITE[&quot;LeRobotDataset.add_frame()&lt;br/&gt;Write frames&quot;]
     end
-
+    
     subgraph &quot;Output&quot;
         DS[&quot;LeRobot v3 Dataset&quot;]
         VID[&quot;videos/*.mp4&quot;]
         DATA[&quot;data/*.parquet&quot;]
         META[&quot;meta/info.json&lt;br/&gt;meta/stats.json&quot;]
     end
-
+    
     BAG1 --&gt; SCAN
     BAG2 --&gt; SCAN
     BAGN --&gt; SCAN
     RC --&gt; LOAD
-
+    
     LOAD --&gt; PLAN
     PLAN --&gt; SCAN
     SCAN --&gt; DECODE
@@ -585,544 +236,204 @@ window.addEventListener("load", load);
     SELECT --&gt; RESAMPLE
     RESAMPLE --&gt; COERCE
     COERCE --&gt; CONSOLIDATE
-
+    
     LOAD --&gt; FEATURES
     FEATURES --&gt; DS
     CONSOLIDATE --&gt; WRITE
     WRITE --&gt; DS
-
+    
     DS --&gt; VID
     DS --&gt; DATA
     DS --&gt; META
-
-    style LOAD fill:#fff3e0,stroke:#ff9800,stroke-width:2px
-    style DECODE fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
-    style FEATURES fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
-    </pre><p><strong>来源</strong>：
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L5-L73">src/dataset_tools/dataset_tools/bag_to_lerobot.py:5-73</a>,
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L233-L648">src/dataset_tools/dataset_tools/bag_to_lerobot.py:233-648</a></p>
+    </pre><p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L12-L19">src/dataset_tools/dataset_tools/bag_to_lerobot.py:12-19</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L454-L648">src/dataset_tools/dataset_tools/bag_to_lerobot.py:454-648</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/README.md#L138-L153">src/dataset_tools/README.md:138-153</a></p>
 </section>
 <hr class="docutils" />
-<section id="id3">
-<h2>契约作为单一事实来源<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
-<p>转换过程直接从 <code class="docutils literal notranslate"><span class="pre">robot_config.yaml</span></code> 加载契约，确保训练数据创建与部署之间的处理一致：</p>
+<section id="contract">
+<h2>Contract 作为单一事实源<a class="headerlink" href="#contract" title="Permalink to this heading"></a></h2>
+<p>转换过程直接从 <code class="docutils literal notranslate"><span class="pre">robot_config.yaml</span></code> 加载 contract，确保训练数据创建和部署之间处理一致。</p>
+<p>Title: Unified Contract Logic across Training and Inference</p>
 <pre  class="mermaid">
         graph LR
     subgraph &quot;robot_config.yaml&quot;
         YAML[&quot;contract:&lt;br/&gt;  observations:&lt;br/&gt;    - key: observation.images.top&lt;br/&gt;      topic: /camera/top/image_raw&lt;br/&gt;      image:&lt;br/&gt;        resize: [480, 640]&lt;br/&gt;  actions:&lt;br/&gt;    - key: action&lt;br/&gt;      publish:&lt;br/&gt;        topic: /arm_controller/commands&quot;]
     end
-
-    subgraph &quot;bag_to_lerobot&quot;
-        LOAD[&quot;_load_contract_from_robot_config()&quot;]
+    
+    subgraph &quot;bag_to_lerobot.py&quot;
+        LOAD[&quot;load_contract()&quot;]
         SPECS[&quot;iter_specs(contract)&lt;br/&gt;→ SpecView objects&quot;]
         FEAT[&quot;feature_from_spec(spec)&lt;br/&gt;→ LeRobot features&quot;]
         DEC[&quot;decode_value(ros_type, msg, spec)&quot;]
     end
-
-    subgraph &quot;lerobot_policy_node&quot;
-        LOAD2[&quot;_load_contract()&quot;]
+    
+    subgraph &quot;lerobot_policy_node.py&quot;
+        LOAD2[&quot;load_contract()&quot;]
         SPECS2[&quot;iter_specs(contract)&lt;br/&gt;→ SpecView objects&quot;]
         DEC2[&quot;decode_value(ros_type, msg, spec)&quot;]
         PREP[&quot;TensorPreprocessor&quot;]
     end
-
+    
     YAML --&gt; LOAD
     YAML --&gt; LOAD2
-
+    
     LOAD --&gt; SPECS
     SPECS --&gt; FEAT
     SPECS --&gt; DEC
-
+    
     LOAD2 --&gt; SPECS2
     SPECS2 --&gt; DEC2
     DEC2 --&gt; PREP
-
-    style YAML fill:#fff3e0,stroke:#ff9800,stroke-width:3px
-    style DEC fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
-    style DEC2 fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
-    </pre><p><code class="docutils literal notranslate"><span class="pre">_load_contract_from_robot_config()</span></code> 函数加载机器人配置并将其转换为 <code class="docutils literal notranslate"><span class="pre">Contract</span></code> 数据类：</p>
-<p><strong>来源</strong>：
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L216-L231">src/dataset_tools/dataset_tools/bag_to_lerobot.py:216-231</a>,
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/config.py#L133-L216">src/robot_config/robot_config/config.py:133-216</a></p>
+    </pre><p>该工具使用 <code class="docutils literal notranslate"><span class="pre">robot_config.contract_utils</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">load_contract</span></code> 解析 YAML，并使用 <code class="docutils literal notranslate"><span class="pre">iter_specs</span></code> 遍历所有定义的 observation 和 action entries <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L94-L99">src/dataset_tools/dataset_tools/bag_to_lerobot.py:94-99</a>。</p>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L94-L105">src/dataset_tools/dataset_tools/bag_to_lerobot.py:94-105</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_builder.py#L49-L57">src/robot_config/robot_config/contract_builder.py:49-57</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/README.md#L14-L29">src/dataset_tools/README.md:14-29</a></p>
+</section>
+<hr class="docutils" />
+<section id="stream-planning-topic-dispatch">
+<h2>Stream Planning 与 Topic Dispatch<a class="headerlink" href="#stream-planning-topic-dispatch" title="Permalink to this heading"></a></h2>
+<p>扫描 bags 前，工具初始化 <code class="docutils literal notranslate"><span class="pre">_Stream</span></code> objects，用于保存每个 contract entry 的解码值和时间戳 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L121-L141">src/dataset_tools/dataset_tools/bag_to_lerobot.py:121-141</a>。</p>
+<p><strong>关键逻辑</strong>：</p>
+<ul class="simple">
+<li><p><strong>Topic Resolution</strong>：工具将 bag topics 与每个 contract spec 中的 <code class="docutils literal notranslate"><span class="pre">topic</span></code> 字段匹配 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L12-L19">src/dataset_tools/dataset_tools/bag_to_lerobot.py:12-19</a>。</p></li>
+<li><p><strong>Data Accumulation</strong>：读取 bag 时，消息被解码并追加到对应 <code class="docutils literal notranslate"><span class="pre">_Stream</span></code> 的 <code class="docutils literal notranslate"><span class="pre">val</span></code> 列表 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L121-L141">src/dataset_tools/dataset_tools/bag_to_lerobot.py:121-141</a>。</p></li>
+<li><p><strong>Joint Normalization</strong>：工具使用 <code class="docutils literal notranslate"><span class="pre">build_joint_conversion_table</span></code> 在解码阶段处理校准和单位转换，例如 degree 到 radian <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L106-L113">src/dataset_tools/dataset_tools/bag_to_lerobot.py:106-113</a>。</p></li>
+</ul>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L121-L141">src/dataset_tools/dataset_tools/bag_to_lerobot.py:121-141</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L106-L113">src/dataset_tools/dataset_tools/bag_to_lerobot.py:106-113</a></p>
 </section>
 <hr class="docutils" />
 <section id="id4">
-<h2>流规划与话题分发<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
-<p>在扫描 bag 之前，<code class="docutils literal notranslate"><span class="pre">_plan_streams()</span></code> 为每个契约规范创建 <code class="docutils literal notranslate"><span class="pre">_Stream</span></code> 缓冲区，并构建分发索引以实现高效的消息路由：</p>
-<pre  class="mermaid">
-        graph TB
-    subgraph &quot;Contract Specs&quot;
-        OBS1[&quot;SpecView:&lt;br/&gt;key: observation.images.top&lt;br/&gt;topic: /camera/top/image_raw&lt;br/&gt;ros_type: sensor_msgs/msg/Image&quot;]
-        OBS2[&quot;SpecView:&lt;br/&gt;key: observation.state&lt;br/&gt;topic: /joint_states&lt;br/&gt;ros_type: sensor_msgs/msg/JointState&quot;]
-        ACT1[&quot;SpecView:&lt;br/&gt;key: action&lt;br/&gt;topic: /arm_controller/commands&lt;br/&gt;is_action: True&quot;]
-    end
-
-    subgraph &quot;_plan_streams()&quot;
-        BUILD[&quot;Build streams dict + by_topic index&quot;]
-    end
-
-    subgraph &quot;Output Data Structures&quot;
-        STREAMS[&quot;streams = {&lt;br/&gt;  'observation.images.top': _Stream(...),&lt;br/&gt;  'observation.state_joint_states': _Stream(...),&lt;br/&gt;  'action_arm_controller_commands': _Stream(...)&lt;br/&gt;}&quot;]
-
-        BYTOPIC[&quot;by_topic = {&lt;br/&gt;  '/camera/top/image_raw': ['observation.images.top'],&lt;br/&gt;  '/joint_states': ['observation.state_joint_states'],&lt;br/&gt;  '/arm_controller/commands': ['action_arm_controller_commands']&lt;br/&gt;}&quot;]
-    end
-
-    OBS1 --&gt; BUILD
-    OBS2 --&gt; BUILD
-    ACT1 --&gt; BUILD
-
-    BUILD --&gt; STREAMS
-    BUILD --&gt; BYTOPIC
-
-    style BUILD fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-    </pre><p><strong>关键逻辑</strong>
-（<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L151-L210">src/dataset_tools/dataset_tools/bag_to_lerobot.py:151-210</a>）：</p>
-<ul class="simple">
-<li><p><strong>唯一键生成</strong>：对于具有多个话题的 <code class="docutils literal notranslate"><span class="pre">observation.state</span></code> 规范，通过附加经过处理的话题名称创建唯一键，如 <code class="docutils literal notranslate"><span class="pre">observation.state_joint_states</span></code></p></li>
-<li><p><strong>动作合并</strong>：具有相同 <code class="docutils literal notranslate"><span class="pre">key</span></code> 的多个动作规范在扫描期间分别跟踪，然后在帧组装时合并</p></li>
-<li><p><strong>话题验证</strong>：如果契约话题不在 bag 的话题列表中，则发出警告</p></li>
-</ul>
-<p><strong>来源</strong>：
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L112-L132">src/dataset_tools/dataset_tools/bag_to_lerobot.py:112-132</a>,
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L151-L210">src/dataset_tools/dataset_tools/bag_to_lerobot.py:151-210</a></p>
-</section>
-<hr class="docutils" />
-<section id="id5">
-<h2>消息解码与时间戳选择<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
-<p>每条消息使用来自 <code class="docutils literal notranslate"><span class="pre">robot_config.contract_utils</span></code> 的共享 <code class="docutils literal notranslate"><span class="pre">decode_value()</span></code> 函数解码，确保与实时推理的处理一致：</p>
-<pre  class="mermaid">
-        graph TB
-    subgraph &quot;Bag Scanning Loop&quot;
-        READ[&quot;reader.read_next()&lt;br/&gt;(topic, data, bag_ns)&quot;]
-        DESER[&quot;deserialize_message(data,&lt;br/&gt;  get_message(ros_type))&quot;]
-    end
-
-    subgraph &quot;Timestamp Selection&quot;
-        POLICY{timestamp_source?}
-        RECEIVE[&quot;ts_sel = bag_ns&quot;]
-        HEADER[&quot;ts_sel = stamp_from_header_ns(msg)&lt;br/&gt;fallback: bag_ns&quot;]
-        CONTRACT[&quot;if spec.stamp_src == 'header':&lt;br/&gt;  ts_sel = stamp_from_header_ns(msg)&lt;br/&gt;else:&lt;br/&gt;  ts_sel = bag_ns&quot;]
-    end
-
-    subgraph &quot;Decoding&quot;
-        DECODE[&quot;decode_value(ros_type, msg, spec)&quot;]
-        PUSH[&quot;st.ts.append(ts_sel)&lt;br/&gt;st.val.append(val)&quot;]
-    end
-
-    READ --&gt; DESER
-    DESER --&gt; POLICY
-
-    POLICY --&gt;|&quot;'receive'&quot;| RECEIVE
-    POLICY --&gt;|&quot;'header'&quot;| HEADER
-    POLICY --&gt;|&quot;'contract'&quot;| CONTRACT
-
-    RECEIVE --&gt; DECODE
-    HEADER --&gt; DECODE
-    CONTRACT --&gt; DECODE
-
-    DECODE --&gt; PUSH
-
-    style DECODE fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
-    </pre><p><strong>时间戳选择模式</strong>
-（<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L464-L475">src/dataset_tools/dataset_tools/bag_to_lerobot.py:464-475</a>）：</p>
+<h2>消息解码与时间戳选择<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
+<p>每条消息都通过共享的 <code class="docutils literal notranslate"><span class="pre">decode_value()</span></code> 函数解码。该函数支持 <code class="docutils literal notranslate"><span class="pre">sensor_msgs/Image</span></code>、<code class="docutils literal notranslate"><span class="pre">sensor_msgs/JointState</span></code> 和 <code class="docutils literal notranslate"><span class="pre">geometry_msgs/Twist</span></code> 等 ROS types <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L100-L101">src/dataset_tools/dataset_tools/bag_to_lerobot.py:100-101</a>。</p>
+<p><strong>Timestamp Selection Modes</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L49-L54">src/dataset_tools/dataset_tools/bag_to_lerobot.py:49-54</a>：</p>
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>模式</p></th>
-<th class="head"><p>行为</p></th>
+<tr class="row-odd"><th class="head"><p>Mode</p></th>
+<th class="head"><p>Behavior</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">contract</span></code></p></td>
-<td><p>使用每个规范的 <code class="docutils literal notranslate"><span class="pre">stamp_src</span></code> 字段 （默认：接收时间，可覆盖为 header）</p></td>
+<td><p>使用每个 spec 的 <code class="docutils literal notranslate"><span class="pre">stamp_src</span></code> 字段，默认 receive time，可覆盖为 header <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_utils.py#L34-L35">src/robot_config/robot_config/contract_utils.py:34-35</a></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">receive</span></code></p></td>
-<td><p>始终使用 bag 接收时间戳 （<code class="docutils literal notranslate"><span class="pre">bag_ns</span></code>）</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">bag</span></code></p></td>
+<td><p>使用 bag receive time（录制时间）<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L52-L52">src/dataset_tools/dataset_tools/bag_to_lerobot.py:52-52</a></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">header</span></code></p></td>
-<td><p>优先使用 <code class="docutils literal notranslate"><span class="pre">msg.header.stamp</span></code>，如果缺失 则回退到 <code class="docutils literal notranslate"><span class="pre">bag_ns</span></code></p></td>
+<td><p>优先使用 <code class="docutils literal notranslate"><span class="pre">msg.header.stamp</span></code>，bag time 作为 fallback <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L53-L53">src/dataset_tools/dataset_tools/bag_to_lerobot.py:53-53</a></p></td>
 </tr>
 </tbody>
 </table>
-<p><strong>来源</strong>：
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L454-L481">src/dataset_tools/dataset_tools/bag_to_lerobot.py:454-481</a>,
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/contract_utils.py#L264-L267">src/robot_config/robot_config/contract_utils.py:264-267</a></p>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L49-L54">src/dataset_tools/dataset_tools/bag_to_lerobot.py:49-54</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L103-L105">src/dataset_tools/dataset_tools/bag_to_lerobot.py:103-105</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_utils.py#L29-L40">src/robot_config/robot_config/contract_utils.py:29-40</a></p>
 </section>
 <hr class="docutils" />
-<section id="id6">
-<h2>重采样到契约频率<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
-<p>扫描后，工具将所有流重采样到契约的 <code class="docutils literal notranslate"><span class="pre">rate_hz</span></code> 的统一时间点：</p>
-<pre  class="mermaid">
-        graph TB
-    subgraph &quot;Per-Stream Data&quot;
-        TS[&quot;ts = [t0, t1, t2, ..., tn]&lt;br/&gt;(nanoseconds, unsorted)&quot;]
-        VAL[&quot;vals = [v0, v1, v2, ..., vn]&lt;br/&gt;(decoded values)&quot;]
-    end
-
-    subgraph &quot;Tick Generation&quot;
-        START[&quot;start_ns = min(all stream timestamps)&quot;]
-        DUR[&quot;dur_ns = max(all) - start_ns&quot;]
-        TICKS[&quot;ticks_ns = start_ns + np.arange(n_ticks) * step_ns&lt;br/&gt;step_ns = int(1e9 / rate_hz)&quot;]
-    end
-
-    subgraph &quot;Resampling&quot;
-        POLICY{spec.resample_policy}
-        HOLD[&quot;resample_hold()&lt;br/&gt;Forward-fill&quot;]
-        ASOF[&quot;resample_asof()&lt;br/&gt;Within tolerance only&quot;]
-        DROP[&quot;resample_drop()&lt;br/&gt;Require fresh data&quot;]
-
-        RESULT[&quot;resampled[key] = [val_at_tick0, val_at_tick1, ...]&quot;]
-    end
-
-    TS --&gt; START
-    TS --&gt; DUR
-    START --&gt; TICKS
-    DUR --&gt; TICKS
-
-    TICKS --&gt; POLICY
-    VAL --&gt; POLICY
-
-    POLICY --&gt;|&quot;'hold'&quot;| HOLD
-    POLICY --&gt;|&quot;'asof'&quot;| ASOF
-    POLICY --&gt;|&quot;'drop'&quot;| DROP
-
-    HOLD --&gt; RESULT
-    ASOF --&gt; RESULT
-    DROP --&gt; RESULT
-    </pre><p><strong>重采样策略</strong>
-（<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/contract_utils.py#L273-L326">src/robot_config/robot_config/contract_utils.py:273-326</a>）：</p>
+<section id="contract-rate">
+<h2>重采样到 Contract Rate<a class="headerlink" href="#contract-rate" title="Permalink to this heading"></a></h2>
+<p>扫描后，工具使用 <code class="docutils literal notranslate"><span class="pre">resample()</span></code> utility 将所有 streams 重采样到 contract 的 <code class="docutils literal notranslate"><span class="pre">rate_hz</span></code> 所定义的均匀 ticks <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L102-L102">src/dataset_tools/dataset_tools/bag_to_lerobot.py:102-102</a>。</p>
+<p><strong>重采样细节</strong>：</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">hold</span></code>：前向填充最后可用值（机器人状态最常用）</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">asof</span></code>：仅使用 <code class="docutils literal notranslate"><span class="pre">asof_tol_ms</span></code> 容差内的值；否则为 <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">drop</span></code>：要求数据在当前时间周期内接收；否则为 <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>Temporal Alignment</strong>：所有 observations 和 actions 基于 episode 持续时间对齐到公共时钟 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L12-L19">src/dataset_tools/dataset_tools/bag_to_lerobot.py:12-19</a>。</p></li>
+<li><p><strong>Zero Padding</strong>：如果某个 stream 开始较晚或结束较早，使用 <code class="docutils literal notranslate"><span class="pre">zero_pad</span></code> 保持 tensor shapes 一致 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L104-L105">src/dataset_tools/dataset_tools/bag_to_lerobot.py:104-105</a>。</p></li>
 </ul>
-<p><strong>来源</strong>：
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L516-L531">src/dataset_tools/dataset_tools/bag_to_lerobot.py:516-531</a>,
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/contract_utils.py#L273-L326">src/robot_config/robot_config/contract_utils.py:273-326</a></p>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L102-L105">src/dataset_tools/dataset_tools/bag_to_lerobot.py:102-105</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L12-L19">src/dataset_tools/dataset_tools/bag_to_lerobot.py:12-19</a></p>
 </section>
 <hr class="docutils" />
-<section id="id7">
-<h2>流合并<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
-<p>转换器处理两种合并场景以支持灵活的契约配置：</p>
-<section id="observation-state">
-<h3>多个 observation.state 规范<a class="headerlink" href="#observation-state" title="Link to this heading"></a></h3>
-<p>当多个 <code class="docutils literal notranslate"><span class="pre">observation.state</span></code> 规范引用不同话题（例如，<code class="docutils literal notranslate"><span class="pre">/joint_states</span></code> 用于机械臂，<code class="docutils literal notranslate"><span class="pre">/gripper_states</span></code> 用于夹爪）时，它们被连接为单个特征：</p>
-<pre  class="mermaid">
-        graph LR
-    subgraph &quot;Contract&quot;
-        OBS1[&quot;observation.state&lt;br/&gt;topic: /joint_states&lt;br/&gt;names: [pos.1, pos.2, pos.3, pos.4, pos.5]&quot;]
-        OBS2[&quot;observation.state&lt;br/&gt;topic: /gripper_states&lt;br/&gt;names: [pos.6]&quot;]
-    end
-
-    subgraph &quot;During Scanning&quot;
-        STREAM1[&quot;observation.state_joint_states:&lt;br/&gt;[a1, a2, a3, a4, a5]&quot;]
-        STREAM2[&quot;observation.state_gripper_states:&lt;br/&gt;[g1]&quot;]
-    end
-
-    subgraph &quot;Consolidation&quot;
-        CONCAT[&quot;np.concatenate([&lt;br/&gt;  [a1, a2, a3, a4, a5],&lt;br/&gt;  [g1]&lt;br/&gt;])&quot;]
-
-        FRAME[&quot;frame['observation.state'] =&lt;br/&gt;[a1, a2, a3, a4, a5, g1]&quot;]
-    end
-
-    OBS1 --&gt; STREAM1
-    OBS2 --&gt; STREAM2
-
-    STREAM1 --&gt; CONCAT
-    STREAM2 --&gt; CONCAT
-
-    CONCAT --&gt; FRAME
-
-    style CONCAT fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-    </pre><p><strong>来源</strong>：
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L329-L341">src/dataset_tools/dataset_tools/bag_to_lerobot.py:329-341</a>,
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L537-L555">src/dataset_tools/dataset_tools/bag_to_lerobot.py:537-555</a></p>
-</section>
-<section id="id8">
-<h3>具有相同键的多个动作规范<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
-<p>当多个动作规范共享相同的 <code class="docutils literal notranslate"><span class="pre">key:</span> <span class="pre">action</span></code> （例如，机械臂控制器 + 夹爪控制器）时，它们被连接：</p>
-<pre  class="mermaid">
-        graph LR
-    subgraph &quot;Contract&quot;
-        ACT1[&quot;key: action&lt;br/&gt;topic: /arm_controller/commands&lt;br/&gt;names: [action.0, action.1, ..., action.4]&quot;]
-        ACT2[&quot;key: action&lt;br/&gt;topic: /gripper_controller/commands&lt;br/&gt;names: [action.5]&quot;]
-    end
-
-    subgraph &quot;During Scanning&quot;
-        STREAM1[&quot;action_arm_controller_commands:&lt;br/&gt;[0.1, 0.2, 0.3, 0.4, 0.5]&quot;]
-        STREAM2[&quot;action_gripper_controller_commands:&lt;br/&gt;[0.8]&quot;]
-    end
-
-    subgraph &quot;Consolidation&quot;
-        CONCAT[&quot;np.concatenate([&lt;br/&gt;  [0.1, 0.2, 0.3, 0.4, 0.5],&lt;br/&gt;  [0.8]&lt;br/&gt;])&quot;]
-
-        FRAME[&quot;frame['action'] =&lt;br/&gt;[0.1, 0.2, 0.3, 0.4, 0.5, 0.8]&quot;]
-    end
-
-    ACT1 --&gt; STREAM1
-    ACT2 --&gt; STREAM2
-
-    STREAM1 --&gt; CONCAT
-    STREAM2 --&gt; CONCAT
-
-    CONCAT --&gt; FRAME
-
-    style CONCAT fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-    </pre><p><strong>来源</strong>：
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L344-L362">src/dataset_tools/dataset_tools/bag_to_lerobot.py:344-362</a>,
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L558-L584">src/dataset_tools/dataset_tools/bag_to_lerobot.py:558-584</a></p>
-</section>
-<hr class="docutils" />
-<section id="lerobot-v3">
-<h3>LeRobot v3 数据集输出<a class="headerlink" href="#lerobot-v3" title="Link to this heading"></a></h3>
-<p>转换器使用 <code class="docutils literal notranslate"><span class="pre">LeRobotDataset.create()</span></code> 创建 LeRobot v3 数据集，特征从契约规范派生：</p>
-</section>
-<section id="id9">
-<h3>输出目录结构<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>output_dataset/
+<section id="lerobot-v3-dataset">
+<h2>LeRobot v3 Dataset 输出<a class="headerlink" href="#lerobot-v3-dataset" title="Permalink to this heading"></a></h2>
+<p>转换器使用 <code class="docutils literal notranslate"><span class="pre">lerobot</span></code> 库中的 <code class="docutils literal notranslate"><span class="pre">LeRobotDataset</span></code> 创建 LeRobot v3 dataset <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L91-L91">src/dataset_tools/dataset_tools/bag_to_lerobot.py:91-91</a>。</p>
+<section id="id5">
+<h3>输出目录结构<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>output_dataset/
 ├── videos/
 │   ├── observation.images.top/
-│   │   └── chunk-000/
-│   │       └── file-000.mp4
-│   ├── observation.images.wrist/
-│   └── observation.images.front/
+│   │   └── chunk-000/file-000.mp4
+│   └── ...
 ├── data/
-│   └── chunk-000/
-│       └── file-000.parquet
+│   └── chunk-000/file-000.parquet
 └── meta/
     ├── info.json
     ├── tasks.parquet
     ├── stats.json
     └── episodes/
-        └── episode_0.parquet
 </pre></div>
 </div>
 </section>
-<section id="id10">
-<h3>特征生成<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
-<p>特征使用 <code class="docutils literal notranslate"><span class="pre">feature_from_spec()</span></code> 生成，确保与模型期望完全对齐：</p>
-<pre  class="mermaid">
-        graph TB
-    subgraph &quot;SpecView&quot;
-        SPEC[&quot;key: observation.images.top&lt;br/&gt;image_resize: (480, 640)&lt;br/&gt;image_channels: 3&quot;]
-    end
-
-    subgraph &quot;feature_from_spec()&quot;
-        CHECK{image_resize?}
-        IMG[&quot;dtype: 'video' or 'image'&lt;br/&gt;shape: (H, W, C)&lt;br/&gt;names: ['height', 'width', 'channel']&quot;]
-        VEC[&quot;dtype: 'float32'&lt;br/&gt;shape: (len(names),)&lt;br/&gt;names: spec.names&quot;]
-    end
-
-    subgraph &quot;LeRobotDataset&quot;
-        FEATURES[&quot;features = {&lt;br/&gt;  'observation.images.top': {&lt;br/&gt;    'dtype': 'video',&lt;br/&gt;    'shape': (480, 640, 3)&lt;br/&gt;  },&lt;br/&gt;  'observation.state': {&lt;br/&gt;    'dtype': 'float32',&lt;br/&gt;    'shape': (6,)&lt;br/&gt;  },&lt;br/&gt;  'action': {&lt;br/&gt;    'dtype': 'float32',&lt;br/&gt;    'shape': (6,)&lt;br/&gt;  }&lt;br/&gt;}&quot;]
-    end
-
-    SPEC --&gt; CHECK
-    CHECK --&gt;|Yes| IMG
-    CHECK --&gt;|No| VEC
-
-    IMG --&gt; FEATURES
-    VEC --&gt; FEATURES
-
-    style FEATURES fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
-    </pre><p><strong>特殊处理</strong>
-（<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L288-L394">src/dataset_tools/dataset_tools/bag_to_lerobot.py:288-394</a>）：</p>
+<section id="id6">
+<h3>元数据与指纹<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<p>工具管理 dataset metadata，用于跟踪转换设置：</p>
 <ul class="simple">
-<li><p><strong>深度图像</strong>：自动设置为 3 通道，并在特征元数据中标记 <code class="docutils literal notranslate"><span class="pre">video.is_depth_map:</span> <span class="pre">True</span></code></p></li>
-<li><p><strong>任务字符串</strong>：任务规范（例如，提示）归一化为 <code class="docutils literal notranslate"><span class="pre">dtype:</span> <span class="pre">'string',</span> <span class="pre">shape:</span> <span class="pre">[1]</span></code></p></li>
-<li><p><strong>契约指纹</strong>：嵌入到 <code class="docutils literal notranslate"><span class="pre">info.json</span></code> 中作为 <code class="docutils literal notranslate"><span class="pre">ibrobot_fingerprint</span></code>，用于训练期间验证</p></li>
+<li><p><strong>Fingerprints</strong>：使用 <code class="docutils literal notranslate"><span class="pre">contract_fingerprint</span></code> 确保数据集匹配机器人配置 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L97-L97">src/dataset_tools/dataset_tools/bag_to_lerobot.py:97-97</a>。</p></li>
+<li><p><strong>Metadata Resolution</strong>：<code class="docutils literal notranslate"><span class="pre">_dataset_metadata_for_bag</span></code> 和 <code class="docutils literal notranslate"><span class="pre">_lerobot_metadata_entry</span></code> 解析 normalization modes、joint orders 等转换参数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L155-L193">src/dataset_tools/dataset_tools/bag_to_lerobot.py:155-193</a>。</p></li>
 </ul>
-<p><strong>来源</strong>：
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L288-L394">src/dataset_tools/dataset_tools/bag_to_lerobot.py:288-394</a>,
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/contract_utils.py#L214-L235">src/robot_config/robot_config/contract_utils.py:214-235</a></p>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L60-L66">src/dataset_tools/dataset_tools/bag_to_lerobot.py:60-66</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L155-L193">src/dataset_tools/dataset_tools/bag_to_lerobot.py:155-193</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/README.md#L138-L153">src/dataset_tools/README.md:138-153</a></p>
 </section>
 </section>
 <hr class="docutils" />
-<section id="id11">
-<h2>图像强制转换与视频编码<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
-<p>图像被强制转换为 uint8 格式以实现确定性存储：</p>
-<pre  class="mermaid">
-        graph TB
-    subgraph &quot;Decoded Image Value&quot;
-        ARR[&quot;np.ndarray&lt;br/&gt;dtype: float32 or uint8&lt;br/&gt;range: [0, 1] or [0, 255]&quot;]
-    end
-
-    subgraph &quot;Coercion&quot;
-        CHECK{arr.dtype == np.uint8?}
-        CONVERT[&quot;arr = np.clip(arr * 255.0, 0, 255).astype(np.uint8)&quot;]
-        KEEP[&quot;arr (already uint8)&quot;]
-    end
-
-    subgraph &quot;LeRobot Storage&quot;
-        FRAME[&quot;frame[key] = arr&quot;]
-        ENCODE[&quot;LeRobotDataset encodes to MP4&lt;br/&gt;(if use_videos=True)&quot;]
-    end
-
-    ARR --&gt; CHECK
-    CHECK --&gt;|No| CONVERT
-    CHECK --&gt;|Yes| KEEP
-
-    CONVERT --&gt; FRAME
-    KEEP --&gt; FRAME
-
-    FRAME --&gt; ENCODE
-    </pre><p><strong>注意</strong>：- LeRobot 加载器在训练期间自动将 uint8 转换回 float32 [0, 1] - 视频编码使用 H.264 编解码器，具有可配置的分块大小（<code class="docutils literal notranslate"><span class="pre">--video-mb</span></code>）</p>
-<p><strong>来源</strong>：
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L603-L608">src/dataset_tools/dataset_tools/bag_to_lerobot.py:603-608</a></p>
+<section id="id7">
+<h2>图像规整与视频编码<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h2>
+<p>图像会被处理为完全匹配训练要求：</p>
+<ul class="simple">
+<li><p><strong>Shared Helpers</strong>：使用与实时推理相同的图像 resize 和 normalization 逻辑 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L69-L70">src/dataset_tools/dataset_tools/bag_to_lerobot.py:69-70</a>。</p></li>
+<li><p><strong>Video Storage</strong>：默认情况下，图像 streams 会使用 H.264 编码为 MP4 视频 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L62-L63">src/dataset_tools/dataset_tools/bag_to_lerobot.py:62-63</a>。</p></li>
+<li><p><strong>PNG Fallback</strong>：如果提供 <code class="docutils literal notranslate"><span class="pre">--no-videos</span></code>，工具改为保存单独 PNG 文件 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L55-L56">src/dataset_tools/dataset_tools/bag_to_lerobot.py:55-56</a>。</p></li>
+</ul>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L55-L73">src/dataset_tools/dataset_tools/bag_to_lerobot.py:55-73</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/README.md#L133-L133">src/dataset_tools/README.md:133-133</a></p>
 </section>
 <hr class="docutils" />
-<section id="id12">
-<h2>命令行界面<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
-<section id="id13">
-<h3>基本用法<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 单个回合</span>
-ros2<span class="w"> </span>run<span class="w"> </span>dataset_tools<span class="w"> </span>bag_to_lerobot<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--bag<span class="w"> </span>/path/to/episode_dir<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--robot-config<span class="w"> </span>src/robot_config/config/robots/so101_single_arm.yaml<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--out<span class="w"> </span>/path/to/output_dataset
-
-<span class="c1"># 多个回合</span>
-ros2<span class="w"> </span>run<span class="w"> </span>dataset_tools<span class="w"> </span>bag_to_lerobot<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--bags<span class="w"> </span>/path/to/epi1<span class="w"> </span>/path/to/epi2<span class="w"> </span>/path/to/epi3<span class="w"> </span><span class="se">\</span>
+<section id="id8">
+<h2>命令行接口<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
+<p>该工具通常通过 <code class="docutils literal notranslate"><span class="pre">bag_to_lerobot</span></code> entry point 调用。</p>
+<section id="id9">
+<h3>基本用法<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>run<span class="w"> </span>dataset_tools<span class="w"> </span>bag_to_lerobot<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--bags-dir<span class="w"> </span>~/rosbag/episodes/so101_single_arm<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--robot-config<span class="w"> </span>src/robot_config/config/robots/so101_single_arm.yaml<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--out<span class="w"> </span>/path/to/output_dataset
 </pre></div>
 </div>
 </section>
-<section id="id14">
-<h3>参数<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<section id="src-dataset-tools-dataset-tools-bag-to-lerobot-py-43-57">
+<h3>关键选项 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L43-L57">src/dataset_tools/dataset_tools/bag_to_lerobot.py:43-57</a><a class="headerlink" href="#src-dataset-tools-dataset-tools-bag-to-lerobot-py-43-57" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"><p>参数</p></th>
-<th class="head"><p>描述</p></th>
-<th class="head"><p>默认值</p></th>
+<tr class="row-odd"><th class="head"><p>Flag</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Default</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--bag</span></code></p></td>
-<td><p>单个 bag 目录路径</p></td>
-<td><p>必需 （与 <code class="docutils literal notranslate"><span class="pre">--bags</span></code> 互斥）</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--bags</span></code></p></td>
-<td><p>多个 bag 目录路径</p></td>
-<td><p>必需 （与 <code class="docutils literal notranslate"><span class="pre">--bag</span></code> 互斥）</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--robot-config</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">robot_config.yaml</span></code> 的路径</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--bags-dir</span></code></p></td>
+<td><p>dataset 根目录或 episodes 目录，自动发现多个 episode bag</p></td>
 <td><p>必需</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--out</span></code></p></td>
-<td><p>输出数据集根目录</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--robot-config</span></code></p></td>
+<td><p>单一事实源配置 YAML 的路径</p></td>
 <td><p>必需</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--repo-id</span></code></p></td>
-<td><p>数据集仓库 ID 元数据</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--out</span></code></p></td>
+<td><p>输出数据集目录</p></td>
+<td><p>必需</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--repo-id</span></code></p></td>
+<td><p>数据集 repo_id</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">rosbag_v30</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--no-videos</span></code></p></td>
-<td><p>存储 PNG 图像而非 MP4 视频</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">False</span></code></p></td>
-</tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--timestamp</span></code></p></td>
-<td><p>时间戳来源： <code class="docutils literal notranslate"><span class="pre">contract</span></code>、<code class="docutils literal notranslate"><span class="pre">bag</span></code>、 <code class="docutils literal notranslate"><span class="pre">header</span></code></p></td>
+<td><p>重采样策略：<code class="docutils literal notranslate"><span class="pre">contract</span></code>（默认）、<code class="docutils literal notranslate"><span class="pre">bag</span></code> 或 <code class="docutils literal notranslate"><span class="pre">header</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">contract</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--image-threads</span></code></p></td>
-<td><p>每个进程的图像写入线程数</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--no-videos</span></code></p></td>
+<td><p>禁用 MP4 编码，改为存储 PNG</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--image-threads</span></code></p></td>
+<td><p>图像写入线程数</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">4</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--image-processes</span></code></p></td>
-<td><p>图像写入进程数</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
-</tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--chunk-size</span></code></p></td>
-<td><p>每个 Parquet/视频分块的 最大帧数</p></td>
+<td><p>每个 chunk 的帧数</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">1000</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--data-mb</span></code></p></td>
-<td><p>目标数据文件大小（MB）</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">100</span></code></p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--video-mb</span></code></p></td>
-<td><p>目标视频文件大小（MB）</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">500</span></code></p></td>
 </tr>
 </tbody>
 </table>
-<p><strong>来源</strong>：
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L653-L693">src/dataset_tools/dataset_tools/bag_to_lerobot.py:653-693</a></p>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L27-L57">src/dataset_tools/dataset_tools/bag_to_lerobot.py:27-57</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/README.md#L118-L137">src/dataset_tools/README.md:118-137</a></p>
 </section>
-</section>
-<hr class="docutils" />
-<section id="id15">
-<h2>入口点与主函数<a class="headerlink" href="#id15" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">main()</span></code> 函数解析参数并调用 <code class="docutils literal notranslate"><span class="pre">export_bags_to_lerobot()</span></code>：</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># CLI invocation</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-    <span class="n">args</span> <span class="o">=</span> <span class="n">parse_args</span><span class="p">()</span>
-    <span class="n">bag_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">bag</span><span class="p">)]</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">bag</span> <span class="k">else</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">bags</span><span class="p">]</span>
-
-    <span class="n">export_bags_to_lerobot</span><span class="p">(</span>
-        <span class="n">bag_dirs</span><span class="o">=</span><span class="n">bag_dirs</span><span class="p">,</span>
-        <span class="n">robot_config_path</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">robot_config</span><span class="p">),</span>
-        <span class="n">out_root</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">out</span><span class="p">),</span>
-        <span class="n">repo_id</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">repo_id</span><span class="p">,</span>
-        <span class="n">use_videos</span><span class="o">=</span><span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_videos</span><span class="p">,</span>
-        <span class="n">timestamp_source</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">timestamp</span><span class="p">,</span>
-        <span class="c1"># ... other parameters</span>
-    <span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>来源</strong>：
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L696-L717">src/dataset_tools/dataset_tools/bag_to_lerobot.py:696-717</a></p>
-</section>
-<hr class="docutils" />
-<section id="id16">
-<h2>与数据流水线集成<a class="headerlink" href="#id16" title="Link to this heading"></a></h2>
-<p>转换工具融入更广泛的数据生命周期：</p>
-<pre  class="mermaid">
-        graph LR
-    subgraph &quot;Phase 1: Collection&quot;
-        TELEOP[&quot;Teleoperation&lt;br/&gt;robot_teleop&quot;]
-        ROBOT[&quot;Physical Robot&quot;]
-    end
-
-    subgraph &quot;Phase 2: Recording&quot;
-        RECORDER[&quot;episode_recorder&lt;br/&gt;Action Server&quot;]
-        BAG[&quot;ROS2 Bag&lt;br/&gt;(MCAP)&quot;]
-    end
-
-    subgraph &quot;Phase 3: Conversion&quot;
-        B2L[&quot;bag_to_lerobot&lt;br/&gt;Contract-driven&quot;]
-        DS[&quot;LeRobot v3&lt;br/&gt;Dataset&quot;]
-    end
-
-    subgraph &quot;Phase 4: Training&quot;
-        TRAIN[&quot;lerobot library&lt;br/&gt;ACT/Diffusion/VLA&quot;]
-        CKPT[&quot;Policy Checkpoint&lt;br/&gt;(.pt file)&quot;]
-    end
-
-    subgraph &quot;Phase 5: Deployment&quot;
-        INF[&quot;lerobot_policy_node&lt;br/&gt;(same contract)&quot;]
-        DISP[&quot;action_dispatcher&quot;]
-    end
-
-    TELEOP --&gt; ROBOT
-    ROBOT --&gt; RECORDER
-    RECORDER --&gt; BAG
-    BAG --&gt; B2L
-    B2L --&gt; DS
-    DS --&gt; TRAIN
-    TRAIN --&gt; CKPT
-    CKPT --&gt; INF
-    INF --&gt; DISP
-    DISP --&gt; ROBOT
-
-    style B2L fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
-    style DS fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
-    </pre><p>有关录制回合，请参阅 <a class="reference external" href="#9.2">回合录制</a>。有关使用转换后数据集进行部署，请参阅 <a class="reference external" href="#7.4">策略节点</a> 和 <a class="reference external" href="#9.4">训练集成</a>。</p>
-<p><strong>来源</strong>：
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L5-L19">src/dataset_tools/dataset_tools/bag_to_lerobot.py:5-19</a>,
-<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/dataset_tools/README.md#L121-L144">src/dataset_tools/README.md:121-144</a></p>
 </section>
 </section>
 
@@ -1130,7 +441,7 @@ ros2<span class="w"> </span>run<span class="w"> </span>dataset_tools<span class=
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="episode_recording.html" class="btn btn-neutral float-left" title="回合录制" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="episode_recording.html" class="btn btn-neutral float-left" title="Episode 录制" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="training_integration.html" class="btn btn-neutral float-right" title="训练集成" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

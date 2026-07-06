@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>系统架构 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/js/mermaid.min.js"></script>
+        <script src="../../_static/js/mermaid-run.js"></script>
+        <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="配置系统" href="configuration/index.html" />
+    <link rel="prev" title="控制模式架构" href="core_concepts/control_mode_architecture.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">系统架构</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#id2">架构概览</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id3">系统分层</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#package">Package 架构与依赖</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id4">核心 Package 层级</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#id5">配置驱动架构</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id6">配置流</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#id7">数据流架构</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#observation-flow-sensors-inference">Observation Flow (Sensors → Inference)</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#action-flow-inference-hardware">Action Flow (Inference → Hardware)</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#id8">推理执行模式</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#monolithic-mode-architecture">Monolithic Mode Architecture</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#distributed-mode-architecture">Distributed Mode Architecture</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#id9">总结：关键架构模式</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#single-source-of-truth-ssot">1. Single Source of Truth (SSOT)</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#contract-driven-protocol">2. Contract-Driven Protocol</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#dual-mode-control">3. Dual-Mode Control</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#distributed-synergy">4. Distributed Synergy</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="configuration/index.html">配置系统</a></li>
+<li class="toctree-l5"><a class="reference internal" href="protocol.html">协议转换</a></li>
+<li class="toctree-l5"><a class="reference internal" href="inference/index.html">推理流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="action_dispatch/index.html">动作分发</a></li>
+<li class="toctree-l5"><a class="reference internal" href="data_pipeline/index.html">数据流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="motion_planning/index.html">运动规划</a></li>
+<li class="toctree-l5"><a class="reference internal" href="hardware/index.html">硬件集成</a></li>
+<li class="toctree-l5"><a class="reference internal" href="extended_capabilities/index.html">扩展能力</a></li>
+<li class="toctree-l5"><a class="reference internal" href="package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="development/index.html">开发指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="ib_robot.html">IB-Robot 具身智能套件</a></li>
+      <li class="breadcrumb-item active">系统架构</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>系统架构<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源文件</summary>
+<p>以下文件被用作生成本 wiki 页面时的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/README.en.md">README.en.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/README.md">README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/architecture.md">docs/architecture.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/ib_robot_social_skill.md">docs/ib_robot_social_skill.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/pictures/architecture.png">docs/pictures/architecture.png</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/pictures/openclaw_real.gif">docs/pictures/openclaw_real.gif</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/pictures/openclaw_sim.gif">docs/pictures/openclaw_sim.gif</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/roadmap.md">docs/roadmap.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/videos/openclaw_real.mp4">docs/videos/openclaw_real.mp4</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/videos/openclaw_sim.mp4">docs/videos/openclaw_sim.mp4</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/scripts/start_rosclaw.sh">scripts/start_rosclaw.sh</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/README.md">src/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/README.en.md">src/action_dispatch/README.en.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/coordinator.py">src/inference_service/inference_service/core/coordinator.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/package.xml">src/inference_service/package.xml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/tests/test_inference_coordinator.py">src/inference_service/tests/test_inference_coordinator.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/__init__.py">src/robot_config/robot_config/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/test/test_launch_readiness.py">src/robot_config/test/test_launch_readiness.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/so101_hardware/README.en.md">src/so101_hardware/README.en.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/so101_hardware/README.md">src/so101_hardware/README.md</a></p></li>
+</ul>
+</details>
+<p>本文档全面介绍 IB-Robot 系统架构，说明组件如何按层组织、数据如何在系统中流动，以及各子系统如何协同，支持从数据采集到部署的端到端具身智能开发。</p>
+<p>详细配置规格见 <strong>Section 5: Configuration System (robot_config)</strong>。支撑该设计的基础架构原则见 <strong>Section 3: Core Concepts</strong>。各子系统详情见 <strong>Section 7: Inference Pipeline</strong>、<strong>Section 8: Action Dispatch</strong> 和 <strong>Section 9: Data Pipeline</strong>。</p>
+<hr class="docutils" />
+<section id="id2">
+<h2>架构概览<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>IB-Robot 采用分层架构，每一层都为上层提供定义清晰的抽象。系统围绕 <strong>Single Source of Truth</strong> 原则组织，<code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML 文件通过 contract-driven synthesis 驱动所有子系统行为。</p>
+<section id="id3">
+<h3>系统分层<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;Layer 1: Global Management&quot;
+        RC[&quot;robot_config&lt;br/&gt;(Single Source of Truth)&lt;br/&gt;YAML configuration&quot;]
+        MSGS[&quot;ibrobot_msgs&lt;br/&gt;(Interface Definitions)&lt;br/&gt;Action/Message types&quot;]
+    end
+    
+    subgraph &quot;Layer 2: Application &amp; Planning&quot;
+        MOVEIT[&quot;robot_moveit&lt;br/&gt;(Motion Planning)&lt;br/&gt;MoveItGateway&quot;]
+        TELEOP[&quot;robot_teleop&lt;br/&gt;(Teleoperation)&lt;br/&gt;VR/Xbox/IMU control&quot;]
+        SOCIAL[&quot;rosclaw&lt;br/&gt;(Social Control)&lt;br/&gt;OpenClaw Integration&quot;]
+        TASK[&quot;task_dispatch&lt;br/&gt;(Task Execution)&lt;br/&gt;TaskExecutorNode&quot;]
+    end
+    
+    subgraph &quot;Layer 3: Inference &amp; Dispatch&quot;
+        INFSVC[&quot;inference_service&lt;br/&gt;(Policy Inference)&lt;br/&gt;lerobot_policy_node&lt;br/&gt;pure_inference_node&quot;]
+        ACTDISP[&quot;action_dispatch&lt;br/&gt;(Action Execution)&lt;br/&gt;action_dispatcher_node&lt;br/&gt;TemporalSmoother&quot;]
+    end
+    
+    subgraph &quot;Layer 4: Protocol Conversion&quot;
+        TENSORMSG[&quot;tensormsg&lt;br/&gt;(ROS↔Tensor Bridge)&lt;br/&gt;TensorMsgConverter&quot;]
+    end
+    
+    subgraph &quot;Layer 5: Data Collection&quot;
+        RECORDER[&quot;dataset_tools&lt;br/&gt;(Episode Recording)&lt;br/&gt;episode_recorder&lt;br/&gt;bag_to_lerobot&quot;]
+    end
+    
+    subgraph &quot;Layer 6: Control Abstraction&quot;
+        ROS2CTRL[&quot;ros2_control&lt;br/&gt;(Hardware Interface)&lt;br/&gt;position_controllers&lt;br/&gt;trajectory_controllers&quot;]
+        DESC[&quot;robot_description&lt;br/&gt;(URDF/SRDF)&lt;br/&gt;Robot models&quot;]
+    end
+    
+    subgraph &quot;Layer 7: Hardware/Simulation&quot;
+        HW[&quot;so101_hardware&lt;br/&gt;(Feetech SDK)&lt;br/&gt;SO101Hardware&quot;]
+        SIM[&quot;Gazebo/MuJoCo&lt;br/&gt;(gz_ros2_control)&lt;br/&gt;Physics simulation&quot;]
+    end
+    
+    RC -.-&gt;|&quot;defines specs&quot;| INFSVC
+    RC -.-&gt;|&quot;defines specs&quot;| ACTDISP
+    RC -.-&gt;|&quot;defines specs&quot;| RECORDER
+    RC -.-&gt;|&quot;defines specs&quot;| ROS2CTRL
+    RC -.-&gt;|&quot;defines specs&quot;| MOVEIT
+    
+    MSGS -.-&gt;|&quot;types&quot;| INFSVC
+    MSGS -.-&gt;|&quot;types&quot;| ACTDISP
+    MSGS -.-&gt;|&quot;types&quot;| RECORDER
+    
+    MOVEIT --&gt;|&quot;trajectories&quot;| ACTDISP
+    TELEOP --&gt;|&quot;commands&quot;| ACTDISP
+    INFSVC --&gt;|&quot;action chunks&quot;| ACTDISP
+    SOCIAL --&gt;|&quot;commands&quot;| MOVEIT
+    TASK --&gt;|&quot;planning goals&quot;| MOVEIT
+    
+    ACTDISP --&gt;|&quot;actions&quot;| TENSORMSG
+    TENSORMSG --&gt;|&quot;observations&quot;| INFSVC
+    
+    RECORDER --&gt;|&quot;subscribes via&quot;| TENSORMSG
+    
+    TENSORMSG --&gt;|&quot;Float64MultiArray&quot;| ROS2CTRL
+    ROS2CTRL --&gt;|&quot;JointState&quot;| TENSORMSG
+    
+    DESC -.-&gt;|&quot;URDF&quot;| ROS2CTRL
+    DESC -.-&gt;|&quot;SRDF&quot;| MOVEIT
+    
+    ROS2CTRL --&gt;|&quot;hardware_interface&quot;| HW
+    ROS2CTRL --&gt;|&quot;hardware_interface&quot;| SIM
+    </pre><p><strong>来源：</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/README.md#L15-L59">README.md:15-59</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/README.en.md#L40-L58">README.en.md:40-58</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/architecture.md#L86-L177">docs/architecture.md:86-177</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="package">
+<h2>Package 架构与依赖<a class="headerlink" href="#package" title="Permalink to this heading"></a></h2>
+<p>系统由职责和依赖清晰的核心 ROS 2 packages 组成。</p>
+<section id="id4">
+<h3>核心 Package 层级<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph LR
+    subgraph &quot;Configuration &amp; Interfaces&quot;
+        RC[&quot;robot_config&quot;]
+        MSGS[&quot;ibrobot_msgs&quot;]
+    end
+    
+    subgraph &quot;Perception &amp; Data&quot;
+        RECORDER[&quot;dataset_tools&quot;]
+        TENSORMSG[&quot;tensormsg&quot;]
+    end
+    
+    subgraph &quot;Execution &amp; Planning&quot;
+        INFSVC[&quot;inference_service&quot;]
+        ACTDISP[&quot;action_dispatch&quot;]
+        TELEOP[&quot;robot_teleop&quot;]
+        MOVEIT[&quot;robot_moveit&quot;]
+        VOICE[&quot;voice_asr_service&quot;]
+    end
+    
+    subgraph &quot;Hardware &amp; Description&quot;
+        DESC[&quot;robot_description&quot;]
+        HW[&quot;so101_hardware&quot;]
+    end
+    
+    RC --&gt;|&quot;depends on&quot;| MSGS
+    
+    RECORDER --&gt;|&quot;depends on&quot;| RC
+    RECORDER --&gt;|&quot;depends on&quot;| MSGS
+    RECORDER --&gt;|&quot;uses&quot;| TENSORMSG
+    
+    TENSORMSG --&gt;|&quot;depends on&quot;| RC
+    TENSORMSG --&gt;|&quot;depends on&quot;| MSGS
+    
+    INFSVC --&gt;|&quot;depends on&quot;| RC
+    INFSVC --&gt;|&quot;depends on&quot;| MSGS
+    INFSVC --&gt;|&quot;uses&quot;| TENSORMSG
+    
+    ACTDISP --&gt;|&quot;depends on&quot;| RC
+    ACTDISP --&gt;|&quot;depends on&quot;| MSGS
+    ACTDISP --&gt;|&quot;uses&quot;| TENSORMSG
+    
+    TELEOP --&gt;|&quot;depends on&quot;| RC
+    
+    MOVEIT --&gt;|&quot;depends on&quot;| RC
+    MOVEIT --&gt;|&quot;depends on&quot;| DESC
+    
+    VOICE --&gt;|&quot;depends on&quot;| RC
+    
+    HW --&gt;|&quot;independent&quot;| RC
+    HW --&gt;|&quot;uses URDF from&quot;| DESC
+    </pre><p><strong>Package 职责矩阵：</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Package</p></th>
+<th class="head"><p>主要职责</p></th>
+<th class="head"><p>关键 Classes/Nodes</p></th>
+<th class="head"><p>依赖</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">robot_config</span></code></p></td>
+<td><p>配置管理、launch 编排</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">robot.launch.py</span></code>, <code class="docutils literal notranslate"><span class="pre">launch_builders/*</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ibrobot_msgs</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ibrobot_msgs</span></code></p></td>
+<td><p>接口定义</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">DispatchInfer.action</span></code>, <code class="docutils literal notranslate"><span class="pre">RecordEpisode.action</span></code></p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tensormsg</span></code></p></td>
+<td><p>ROS↔Tensor 协议转换</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TensorMsgConverter</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">robot_config</span></code>, <code class="docutils literal notranslate"><span class="pre">ibrobot_msgs</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">inference_service</span></code></p></td>
+<td><p>Policy 推理，monolithic/distributed</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lerobot_policy_node</span></code>, <code class="docutils literal notranslate"><span class="pre">pure_inference_node</span></code>, <code class="docutils literal notranslate"><span class="pre">InferenceCoordinator</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">robot_config</span></code>, <code class="docutils literal notranslate"><span class="pre">tensormsg</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">action_dispatch</span></code></p></td>
+<td><p>带 temporal smoothing 的动作执行</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">action_dispatcher_node</span></code>, <code class="docutils literal notranslate"><span class="pre">TemporalSmoother</span></code>, <code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">robot_config</span></code>, <code class="docutils literal notranslate"><span class="pre">tensormsg</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dataset_tools</span></code></p></td>
+<td><p>Episode 录制和数据集转换</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">episode_recorder</span></code>, <code class="docutils literal notranslate"><span class="pre">bag_to_lerobot</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">robot_config</span></code>, <code class="docutils literal notranslate"><span class="pre">tensormsg</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">robot_teleop</span></code></p></td>
+<td><p>遥操作接口</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">teleop_node</span></code> (VR/Xbox/IMU/Leader)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">robot_config</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">robot_moveit</span></code></p></td>
+<td><p>运动规划集成</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MoveItGateway</span></code>, MoveIt configuration</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">robot_config</span></code>, <code class="docutils literal notranslate"><span class="pre">robot_description</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">voice_asr_service</span></code></p></td>
+<td><p>语音识别和命令输入</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">voice_asr_node</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">robot_config</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">so101_hardware</span></code></p></td>
+<td><p>硬件驱动</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SO101SystemHardware</span></code> (ros2_control plugin)</p></td>
+<td><p>None</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源：</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/README.md#L62-L102">README.md:62-102</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/README.en.md#L64-L105">README.en.md:64-105</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/architecture.md#L219-L266">docs/architecture.md:219-266</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/package.xml#L25-L27">src/inference_service/package.xml:25-27</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id5">
+<h2>配置驱动架构<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
+<p>整个系统由 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML 文件驱动，它们是所有系统规格的 Single Source of Truth (SSOT)。</p>
+<section id="id6">
+<h3>配置流<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    YAML[&quot;robot_config YAML&lt;br/&gt;so101_single_arm.yaml&quot;]
+    
+    subgraph &quot;Configuration Sections&quot;
+        ROBOT[&quot;robot:&lt;br/&gt;name, joints, models&quot;]
+        PERIPH[&quot;peripherals:&lt;br/&gt;cameras, sensors, TF&quot;]
+        CONTRACT[&quot;contract:&lt;br/&gt;observations, actions&quot;]
+        MODES[&quot;control_modes:&lt;br/&gt;teleop, model_inference,&lt;br/&gt;moveit_planning&quot;]
+        ROS2C[&quot;ros2_control:&lt;br/&gt;controllers, hardware&quot;]
+    end
+    
+    YAML --&gt;|&quot;parsed by&quot;| LOADER[&quot;load_robot_config_dict&quot;]
+    
+    LOADER --&gt; ROBOT
+    LOADER --&gt; PERIPH
+    LOADER --&gt; CONTRACT
+    LOADER --&gt; MODES
+    LOADER --&gt; ROS2C
+    
+    CONTRACT --&gt;|&quot;consumed by&quot;| INFNODE[&quot;lerobot_policy_node&quot;]
+    CONTRACT --&gt;|&quot;consumed by&quot;| DISPNODE[&quot;action_dispatcher_node&quot;]
+    
+    MODES --&gt;|&quot;selects&quot;| ACTMODE[&quot;Active Control Mode&quot;]
+    ACTMODE --&gt;|&quot;determines&quot;| LAUNCH[&quot;Launch Configuration&lt;br/&gt;launch_builders&quot;]
+    
+    LAUNCH --&gt;|&quot;generates&quot;| CTRLNODES[&quot;Control Nodes&quot;]
+    LAUNCH --&gt;|&quot;generates&quot;| INFNODES[&quot;Inference Nodes&quot;]
+    LAUNCH --&gt;|&quot;generates&quot;| EXECNODES[&quot;Execution Nodes&quot;]
+    
+    ROS2C --&gt;|&quot;spawns&quot;| CONTROLLERS[&quot;Controller Manager&quot;]
+    </pre><p><strong>关键配置组件：</strong></p>
+<ul class="simple">
+<li><p><strong>Launch Orchestrator:</strong> <code class="docutils literal notranslate"><span class="pre">robot.launch.py</span></code> 加载配置，并使用 <code class="docutils literal notranslate"><span class="pre">launch_builders</span></code> 生成 nodes <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/test/test_launch_readiness.py#L26-L31">src/robot_config/test/test_launch_readiness.py:26-31</a>。</p></li>
+<li><p><strong>Contract System:</strong> <code class="docutils literal notranslate"><span class="pre">contract</span></code> section 定义 ROS topics 如何映射到 observations 和 actions 的 tensors <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/README.md#L52-L54">src/README.md:52-54</a>。</p></li>
+<li><p><strong>Control Modes:</strong> 支持 <code class="docutils literal notranslate"><span class="pre">teleop</span></code>、<code class="docutils literal notranslate"><span class="pre">model_inference</span></code> 和 <code class="docutils literal notranslate"><span class="pre">moveit_planning</span></code>，可通过单一参数切换整体系统行为 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/README.md#L65-L66">src/README.md:65-66</a>。</p></li>
+</ul>
+<p><strong>来源：</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/README.md#L7-L14">src/README.md:7-14</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/__init__.py#L10-L15">src/robot_config/robot_config/<strong>init</strong>.py:10-15</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/test/test_launch_readiness.py#L11-L24">src/robot_config/test/test_launch_readiness.py:11-24</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id7">
+<h2>数据流架构<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h2>
+<section id="observation-flow-sensors-inference">
+<h3>Observation Flow (Sensors → Inference)<a class="headerlink" href="#observation-flow-sensors-inference" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph LR
+    CAM[&quot;Cameras&lt;br/&gt;/camera/{name}/image_raw&quot;]
+    JS[&quot;Joint State Publisher&lt;br/&gt;/joint_states&quot;]
+    
+    CAM --&gt;|&quot;sensor_msgs/Image&quot;| PREPROC[&quot;TensorPreprocessor&lt;br/&gt;resize, normalize&quot;]
+    JS --&gt;|&quot;sensor_msgs/JointState&quot;| PREPROC
+    
+    PREPROC --&gt;|&quot;batch&quot;| INFENG[&quot;PureInferenceEngine&lt;br/&gt;policy.select_action()&quot;]
+    
+    INFENG --&gt;|&quot;action tensor&quot;| POSTPROC[&quot;TensorPostprocessor&lt;br/&gt;denormalize&quot;]
+    
+    POSTPROC --&gt;|&quot;Action Result&quot;| DISPINFER[&quot;Dispatch Result&quot;]
+    </pre><p><strong>关键处理组件：</strong></p>
+<ul class="simple">
+<li><p><strong>TensorPreprocessor:</strong> 负责将原始 ROS 2 sensor data 转换为 normalized PyTorch Tensors <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/coordinator.py#L27-L30">src/inference_service/inference_service/core/coordinator.py:27-30</a>。</p></li>
+<li><p><strong>PureInferenceEngine:</strong> 无状态执行引擎，在解析后的 device 上运行实际 ML policy <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/coordinator.py#L31-L35">src/inference_service/inference_service/core/coordinator.py:31-35</a>。</p></li>
+<li><p><strong>TensorPostprocessor:</strong> 将 action tensors 反归一化回物理控制命令 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/coordinator.py#L23-L26">src/inference_service/inference_service/core/coordinator.py:23-26</a>。</p></li>
+</ul>
+<p><strong>来源：</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/coordinator.py#L5-L12">src/inference_service/inference_service/core/coordinator.py:5-12</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/coordinator.py#L91-L120">src/inference_service/inference_service/core/coordinator.py:91-120</a></p>
+</section>
+<section id="action-flow-inference-hardware">
+<h3>Action Flow (Inference → Hardware)<a class="headerlink" href="#action-flow-inference-hardware" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph LR
+    INFRESULT[&quot;Inference Result&quot;]
+    
+    INFRESULT --&gt;|&quot;TemporalSmoother&quot;| SMOOTHER[&quot;Cross-frame blending&quot;]
+    
+    SMOOTHER --&gt;|&quot;Action Queue&quot;| QUEUE[&quot;Chunked Actions&quot;]
+    
+    QUEUE --&gt;|&quot;TopicExecutor&quot;| POSCTRL[&quot;ros2_control&lt;br/&gt;Position Controllers&quot;]
+    
+    POSCTRL --&gt;|&quot;hardware_interface&quot;| HW[&quot;so101_hardware&quot;]
+    </pre><p><strong>关键执行组件：</strong></p>
+<ul class="simple">
+<li><p><strong>Temporal Smoothing:</strong> 处理 action chunks 的跨帧混合，确保运动流畅 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/README.en.md#L7">src/action_dispatch/README.en.md:7</a>。</p></li>
+<li><p><strong>Action Chunking:</strong> 管理多个预测未来动作的调度 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/README.md#L64">src/README.md:64</a>。</p></li>
+<li><p><strong>Hardware Abstraction:</strong> <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 为仿真和真实硬件提供统一接口 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/so101_hardware/README.md#L21-L31">src/so101_hardware/README.md:21-31</a>。</p></li>
+</ul>
+<p><strong>来源：</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/README.en.md#L13-L42">src/action_dispatch/README.en.md:13-42</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/README.en.md#L84-L110">src/action_dispatch/README.en.md:84-110</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/so101_hardware/README.md#L71-L81">src/so101_hardware/README.md:71-81</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id8">
+<h2>推理执行模式<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
+<p>推理流水线支持两种执行架构：<strong>monolithic</strong>，单进程一体化，和 <strong>distributed</strong>，edge-cloud split。</p>
+<section id="monolithic-mode-architecture">
+<h3>Monolithic Mode Architecture<a class="headerlink" href="#monolithic-mode-architecture" title="Permalink to this heading"></a></h3>
+<p>在 Monolithic mode 中，sensor data 完全保留在单个进程的 RAM/VRAM 内。Tensors 通过 <code class="docutils literal notranslate"><span class="pre">InferenceCoordinator</span></code> 按引用传递，提供最低延迟 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/coordinator.py#L93-L98">src/inference_service/inference_service/core/coordinator.py:93-98</a>。</p>
+</section>
+<section id="distributed-mode-architecture">
+<h3>Distributed Mode Architecture<a class="headerlink" href="#distributed-mode-architecture" title="Permalink to this heading"></a></h3>
+<p>在 Distributed mode 中，系统将计算拆分到 <strong>Device</strong>，机器人，和 <strong>Edge/Cloud</strong> node，GPU server：</p>
+<ul class="simple">
+<li><p><strong>Device Node (<code class="docutils literal notranslate"><span class="pre">lerobot_policy_node</span></code>)</strong>：运行在机器人侧，处理本地感知和命令分发 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/README.md#L58-L60">src/README.md:58-60</a>。</p></li>
+<li><p><strong>Edge/Cloud Node (<code class="docutils literal notranslate"><span class="pre">pure_inference_node</span></code>)</strong>：订阅预处理 tensor batches，执行高性能 GPU inference，并返回结果 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/README.md#L58-L60">src/README.md:58-60</a>。</p></li>
+</ul>
+<p><strong>来源：</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/README.md#L28">README.md:28</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/coordinator.py#L10-L12">src/inference_service/inference_service/core/coordinator.py:10-12</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/README.md#L56-L60">src/README.md:56-60</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id9">
+<h2>总结：关键架构模式<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h2>
+<section id="single-source-of-truth-ssot">
+<h3>1. Single Source of Truth (SSOT)<a class="headerlink" href="#single-source-of-truth-ssot" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">robot_config</span></code> package 集中管理 hardware、model 和 contract definitions。这确保训练数据和部署参数始终同步 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/README.md#L9-L14">src/README.md:9-14</a>。</p>
+</section>
+<section id="contract-driven-protocol">
+<h3>2. Contract-Driven Protocol<a class="headerlink" href="#contract-driven-protocol" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">tensormsg</span></code> package 处理 <code class="docutils literal notranslate"><span class="pre">ros_msg</span></code> 与 <code class="docutils literal notranslate"><span class="pre">tensor</span></code> 之间的双向转换，并通过 Contract 机制保证数据类型安全和一致性 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/README.md#L51-L52">README.md:51-52</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/architecture.md#L205-L208">docs/architecture.md:205-208</a>。</p>
+</section>
+<section id="dual-mode-control">
+<h3>3. Dual-Mode Control<a class="headerlink" href="#dual-mode-control" title="Permalink to this heading"></a></h3>
+<p>架构同时支持端到端 neural policy control，ACT/Diffusion，和传统 motion planning，MoveIt 2，使机器人可以在高频响应式控制和精确运动学执行之间切换 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/README.md#L27">README.md:27</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/README.md#L65-L66">src/README.md:65-66</a>。</p>
+</section>
+<section id="distributed-synergy">
+<h3>4. Distributed Synergy<a class="headerlink" href="#distributed-synergy" title="Permalink to this heading"></a></h3>
+<p>通过同时支持 monolithic 和 distributed execution modes，IB-Robot 可以适配多种硬件约束，从高端工作站到 openEuler 或 OpenHarmony 等低功耗 edge boards <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/README.md#L32-L39">README.md:32-39</a>。</p>
+<p><strong>来源：</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/README.md#L15-L61">README.md:15-61</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/architecture.md#L179-L184">docs/architecture.md:179-184</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/README.md#L3-L14">src/README.md:3-14</a></p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="core_concepts/control_mode_architecture.html" class="btn btn-neutral float-left" title="控制模式架构" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="configuration/index.html" class="btn btn-neutral float-right" title="配置系统" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="architecture.html">master</a></dd>
+      <dd><a href="../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,12 +1,10 @@
-.. _action_dispatch:
+动作分发
+########
 
-动作调度
-========
-
-本节介绍动作调度（Action Dispatch）系统，实现 AI 推理服务与 ros2_control 硬件接口之间的动作分发层。
+本章节包含关于动作分发的详细指南和参考资料。
 
 .. toctree::
-   :titlesonly:
+   :maxdepth: 1
 
    overview
    action_dispatcher_node

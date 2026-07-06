@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>仿真后端 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="LeKiwi 移动机械臂" href="lekiwi_mobile_manipulator.html" />
+    <link rel="prev" title="硬件插件" href="hardware_plugins.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol.html">协议转换</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference/index.html">推理流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../action_dispatch/index.html">动作分发</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_pipeline/index.html">数据流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../motion_planning/index.html">运动规划</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">硬件集成</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">硬件集成概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="ros2_control_configuration.html">ros2_control 配置</a></li>
+<li class="toctree-l6"><a class="reference internal" href="hardware_plugins.html">硬件插件</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">仿真后端</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">仿真架构</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#gazebo">Gazebo 后端实现</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#mujoco">MuJoCo 后端实现</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id8">场景编译器与资源</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id10">仿真配置摘要</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="lekiwi_mobile_manipulator.html">LeKiwi 移动机械臂</a></li>
+<li class="toctree-l6"><a class="reference internal" href="navigation_stack.html">导航栈</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../extended_capabilities/index.html">扩展能力</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">硬件集成</a></li>
+      <li class="breadcrumb-item active">仿真后端</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>仿真后端<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<details>
+<summary>Relevant source files</summary>
+<p>The following files were used as context for generating this wiki page:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/scripts/openharmony/build_ibrobot_oh_custom.sh">scripts/openharmony/build_ibrobot_oh_custom.sh</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/topic_executor.py">src/action_dispatch/action_dispatch/topic_executor.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/rknn/__init__.py">src/inference_service/inference_service/core/rknn/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/setup.py">src/inference_service/setup.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/base_adapter.py">src/robot_config/robot_config/launch_builders/sim_backend/base_adapter.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py">src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py">src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/simulation.py">src/robot_config/robot_config/launch_builders/simulation.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/test/test_sim_backend.py">src/robot_config/test/test_sim_backend.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_description/mujoco/so101.xml.template">src/robot_description/mujoco/so101.xml.template</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_description/urdf/lerobot/so101/so101_cameras.xacro">src/robot_description/urdf/lerobot/so101/so101_cameras.xacro</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/package.xml">src/sim_models/package.xml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/resource/sim_models">src/sim_models/resource/sim_models</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/empty/empty.world.template">src/sim_models/scenes/empty/empty.world.template</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/empty/empty.xml.template">src/sim_models/scenes/empty/empty.xml.template</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/layout.yaml">src/sim_models/scenes/pick_banana/layout.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/meshes/banana.obj">src/sim_models/scenes/pick_banana/meshes/banana.obj</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/meshes/banana_col_0.stl">src/sim_models/scenes/pick_banana/meshes/banana_col_0.stl</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/meshes/banana_col_1.stl">src/sim_models/scenes/pick_banana/meshes/banana_col_1.stl</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/meshes/banana_col_2.stl">src/sim_models/scenes/pick_banana/meshes/banana_col_2.stl</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/meshes/banana_g.obj">src/sim_models/scenes/pick_banana/meshes/banana_g.obj</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/meshes/banana_mj.obj">src/sim_models/scenes/pick_banana/meshes/banana_mj.obj</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/meshes/bluetable.obj">src/sim_models/scenes/pick_banana/meshes/bluetable.obj</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/meshes/greencurten.obj">src/sim_models/scenes/pick_banana/meshes/greencurten.obj</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/pick_banana.world.template">src/sim_models/scenes/pick_banana/pick_banana.world.template</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/pick_banana.xml.template">src/sim_models/scenes/pick_banana/pick_banana.xml.template</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/setup.py">src/sim_models/setup.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/sim_models/scene_compiler.py">src/sim_models/sim_models/scene_compiler.py</a></p></li>
+</ul>
+</details>
+<p>IB-Robot 框架提供统一的仿真抽象层，支持 <strong>Gazebo Ignition</strong> 和 <strong>MuJoCo</strong>。该架构允许相同的机器人配置和高层控制代码运行在不同物理引擎上，既支持接触丰富的操作任务（MuJoCo），也支持大规模环境导航（Gazebo）。</p>
+<section id="id2">
+<h2>仿真架构<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>仿真系统围绕 <code class="docutils literal notranslate"><span class="pre">SimBackendAdapter</span></code> 抽象基类构建 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/base_adapter.py#L22-L27">src/robot_config/robot_config/launch_builders/sim_backend/base_adapter.py:22-27</a>。该设计模式确保主启动系统（<code class="docutils literal notranslate"><span class="pre">robot.launch.py</span></code>）不依赖具体仿真器。</p>
+<section id="id3">
+<h3>系统实体映射<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<p>下列图示把高层仿真概念连接到实现它们的具体代码实体和数据结构。</p>
+<p><strong>Diagram: Simulation Backend Code Mapping</strong></p>
+<pre  class="mermaid">
+        graph TD
+    subgraph &quot;Natural Language Space&quot;
+        A[&quot;Simulation Platform Selection&quot;]
+        B[&quot;Simulator Process&quot;]
+        C[&quot;Sensor Data Bridge&quot;]
+        D[&quot;Physics Scene&quot;]
+    end
+
+    subgraph &quot;Code Entity Space&quot;
+        A --&gt;|&quot;simulation.platform&quot;| E[&quot;get_sim_backend()&quot;]
+        E --&gt; F[&quot;SimBackendAdapter&quot;]
+        F --&gt; G[&quot;GazeboAdapter&quot;]
+        F --&gt; H[&quot;MujocoAdapter&quot;]
+        
+        G --&gt;|&quot;spawns&quot;| I[&quot;ros_gz_sim&quot;]
+        H --&gt;|&quot;spawns&quot;| J[&quot;mujoco_ros2_control_node&quot;]
+        
+        C --&gt; K[&quot;sim_peripheral_bridge.py&quot;]
+        K --&gt;|&quot;ros_gz_bridge&quot;| L[&quot;bridge_node&quot;]
+        
+        D --&gt; M[&quot;scene_compiler.py&quot;]
+        M --&gt;|&quot;generates&quot;| N[&quot;pick_banana.xml.template&quot;]
+        M --&gt;|&quot;generates&quot;| O[&quot;pick_banana.world.template&quot;]
+    end
+    </pre><p><strong>Diagram: Data Flow and Adapter Interfaces</strong></p>
+<pre  class="mermaid">
+        graph LR
+    subgraph &quot;robot_config (Launch Logic)&quot;
+        LC[&quot;robot.launch.py&quot;]
+        BA[&quot;SimBackendAdapter&quot;]
+    end
+
+    subgraph &quot;Gazebo Implementation&quot;
+        GA[&quot;GazeboAdapter&quot;]
+        GZ[&quot;gz_ros2_control&quot;]
+        GB[&quot;bridge_node&quot;]
+    end
+
+    subgraph &quot;MuJoCo Implementation&quot;
+        MA[&quot;MujocoAdapter&quot;]
+        MS[&quot;MujocoSystemInterface&quot;]
+    end
+
+    LC --&gt; BA
+    BA --&gt; GA
+    BA --&gt; MA
+
+    GA --&gt;|&quot;start_backend()&quot;| GZ
+    GA --&gt;|&quot;spawn_peripheral_bridges()&quot;| GB
+    
+    MA --&gt;|&quot;start_backend()&quot;| MS
+    MS --&gt;|&quot;internal&quot;| MA
+    </pre><p><strong>来源:</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/base_adapter.py#L22-L27">src/robot_config/robot_config/launch_builders/sim_backend/base_adapter.py:22-27</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py#L44-L54">src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py:44-54</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py#L32-L33">src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py:32-33</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py#L138-L161">src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py:138-161</a></p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="gazebo">
+<h2>Gazebo 后端实现<a class="headerlink" href="#gazebo" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">GazeboAdapter</span></code> 管理 Ignition Gazebo（GZ Sim）环境的生命周期。它负责环境变量、world 文件解析和实体生成。</p>
+<section id="id4">
+<h3>关键组件<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>环境设置</strong>: 配置 <code class="docutils literal notranslate"><span class="pre">GZ_SIM_RESOURCE_PATH</span></code> 和 <code class="docutils literal notranslate"><span class="pre">GAZEBO_MODEL_PATH</span></code>，加入 <code class="docutils literal notranslate"><span class="pre">robot_description</span></code> 包和 <code class="docutils literal notranslate"><span class="pre">lekiwi_description</span></code>（如果存在），确保 mesh 可发现 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py#L68-L105">src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py:68-105</a>。</p></li>
+<li><p><strong>实体生成</strong>: 使用 <code class="docutils literal notranslate"><span class="pre">ros_gz_sim</span></code> 的 <code class="docutils literal notranslate"><span class="pre">create</span></code> 可执行文件，从 <code class="docutils literal notranslate"><span class="pre">/robot_description</span></code> 话题生成机器人 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py#L175-L188">src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py:175-188</a>。</p></li>
+<li><p><strong>外设桥接</strong>: Gazebo 使用自己的传输层，因此需要 <code class="docutils literal notranslate"><span class="pre">ros_gz_bridge</span></code> 把传感器数据转换为 ROS 2 话题。</p></li>
+</ol>
+</section>
+<section id="id5">
+<h3>数据流：Gazebo 传感器桥接<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">sim_peripheral_bridge.py</span></code> 脚本生成 YAML 配置，将 Gazebo 传感器路径映射到 IB-Robot 命名契约。它专门使用 <code class="docutils literal notranslate"><span class="pre">parent_frame</span></code> 作为 link 名称，因为 Ignition Gazebo 6 会把固定关节子 link 合并到父 link <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py#L30-L37">src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py:30-37</a>。</p>
+<p><strong>Diagram: Gazebo Topic Mapping</strong></p>
+<pre  class="mermaid">
+        sequenceDiagram
+    participant G as Gazebo Physics
+    participant B as bridge_node (ros_gz_bridge)
+    participant R as ROS 2 System
+
+    G-&gt;&gt;B: /sensor/top_camera/image
+    Note over B: Uses config at /tmp/ros_gz_camera_bridge.yaml
+    B-&gt;&gt;R: /camera/top/image_raw (sensor_msgs/Image)
+    B-&gt;&gt;R: /camera/top/camera_info (sensor_msgs/CameraInfo)
+    </pre><p><strong>来源:</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py#L12-L37">src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py:12-37</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py#L45-L76">src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py:45-76</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py#L56-L65">src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py:56-65</a></p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="mujoco">
+<h2>MuJoCo 后端实现<a class="headerlink" href="#mujoco" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">MujocoAdapter</span></code> 使用 <code class="docutils literal notranslate"><span class="pre">mujoco_ros2_control</span></code> 提供高性能仿真环境，特别适合抓取等接触丰富任务。</p>
+<section id="id6">
+<h3>实现细节<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>单进程</strong>: 与 Gazebo 不同，MuJoCo 通过 <code class="docutils literal notranslate"><span class="pre">MujocoSystemInterface</span></code> 硬件插件运行在 <code class="docutils literal notranslate"><span class="pre">ros2_control_node</span></code> 内 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py#L6-L10">src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py:6-10</a>。</p></li>
+<li><p><strong>原生话题发布</strong>: MuJoCo 直接发布 ROS 话题。适配器通过标准 ROS 2 Node 重映射处理相机话题，而不是使用 bridge 节点 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py#L12-L16">src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py:12-16</a>。</p></li>
+<li><p><strong>XML 生成</strong>: 适配器通过替换 <code class="docutils literal notranslate"><span class="pre">so101.xml.template</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">{{MESHES_DIR}}</span></code>、<code class="docutils literal notranslate"><span class="pre">{{ROBOT_BASE_POS}}</span></code> 等占位符，并为 OpenCV 外设注入 <code class="docutils literal notranslate"><span class="pre">&lt;camera&gt;</span></code> 元素，动态生成临时 MJCF（<code class="docutils literal notranslate"><span class="pre">.xml</span></code>）文件 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_description/mujoco/so101.xml.template#L1-L29">src/robot_description/mujoco/so101.xml.template:1-29</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py#L153-L165">src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py:153-165</a>。</p></li>
+</ul>
+</section>
+<section id="id7">
+<h3>物理参数调优<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<p>MuJoCo 模型针对 “pick-and-place” 任务做了稳定性调优：</p>
+<ul class="simple">
+<li><p><strong>Timestep</strong>: 设为 <code class="docutils literal notranslate"><span class="pre">0.001s</span></code>（1ms），保持稳定裕量，使求解器时间常数至少为 timestep 的 10 倍 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_description/mujoco/so101.xml.template#L39-L41">src/robot_description/mujoco/so101.xml.template:39-41</a>。</p></li>
+<li><p><strong>Solver</strong>: 使用 <code class="docutils literal notranslate"><span class="pre">implicitfast</span></code>，并设置 <code class="docutils literal notranslate"><span class="pre">noslip_iterations=&quot;20&quot;</span></code> 和 <code class="docutils literal notranslate"><span class="pre">cone=&quot;elliptic&quot;</span></code>，防止摩擦通道中的微滑移和数值抖动 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_description/mujoco/so101.xml.template#L43-L53">src/robot_description/mujoco/so101.xml.template:43-53</a>。<code class="docutils literal notranslate"><span class="pre">noslip_iterations</span></code> 从 5 增加到 20，以改善夹爪与香蕉无滑移接触的收敛性 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_description/mujoco/so101.xml.template#L43-L48">src/robot_description/mujoco/so101.xml.template:43-48</a>。</p></li>
+</ul>
+<p><strong>来源:</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py#L35-L59">src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py:35-59</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_description/mujoco/so101.xml.template#L37-L55">src/robot_description/mujoco/so101.xml.template:37-55</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py#L87-L112">src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py:87-112</a></p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id8">
+<h2>场景编译器与资源<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">sim_models</span></code> 包包含 <code class="docutils literal notranslate"><span class="pre">scene_compiler</span></code>，用于统一两个后端的场景定义。</p>
+<section id="pick-banana">
+<h3>场景结构：<code class="docutils literal notranslate"><span class="pre">pick_banana</span></code><a class="headerlink" href="#pick-banana" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">pick_banana</span></code> 场景是操作任务的主要基准。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>对象</p></th>
+<th class="head text-left"><p>类型</p></th>
+<th class="head text-left"><p>质量</p></th>
+<th class="head text-left"><p>作用</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">bluetable</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">static_mesh</span></code></p></td>
+<td class="text-left"><p>N/A</p></td>
+<td class="text-left"><p>工作台面 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/layout.yaml#L21-L28">src/sim_models/scenes/pick_banana/layout.yaml:21-28</a></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">plate</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">dynamic</span></code></p></td>
+<td class="text-left"><p>0.2 kg</p></td>
+<td class="text-left"><p>放置目标 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/layout.yaml#L39-L47">src/sim_models/scenes/pick_banana/layout.yaml:39-47</a></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">banana</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">dynamic</span></code></p></td>
+<td class="text-left"><p>0.03 kg</p></td>
+<td class="text-left"><p>抓取目标 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/layout.yaml#L49-L57">src/sim_models/scenes/pick_banana/layout.yaml:49-57</a></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="scene-compiler-scene-compiler-py">
+<h3>Scene Compiler（<code class="docutils literal notranslate"><span class="pre">scene_compiler.py</span></code>）<a class="headerlink" href="#scene-compiler-scene-compiler-py" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">scene_compiler.py</span></code> 模块会从模板动态生成 Gazebo 和 MuJoCo 场景文件。它处理占位符替换，并在 MuJoCo 中为特定 mesh 启用基于 SDF 的非凸碰撞。</p>
+<p><strong>Diagram: Scene Compilation Process</strong></p>
+<pre  class="mermaid">
+        graph TD
+    A[&quot;scene_name (e.g., 'pick_banana')&quot;] --&gt; B{&quot;get_scene_file(scene_name, platform)&quot;}
+    B --&gt; C[&quot;Template File (e.g., pick_banana.world.template)&quot;]
+    C --&gt; D{Read Template Content}
+    D --&gt; E[&quot;Replace {{MESHES_DIR}} with absolute path&quot;]
+    E --&gt; F{Is MuJoCo?}
+    F --&gt;|Yes| G[&quot;Replace {{ROBOT_XML_PATH}} (if provided)&quot;]
+    F --&gt;|Yes| H[&quot;Write intermediate XML to /tmp&quot;]
+    H --&gt; I{Import mujoco library?}
+    I --&gt;|Yes| J[&quot;Load XML into MjSpec&quot;]
+    J --&gt; K[&quot;Set needsdf=True for _SDF_MESH_NAMES&quot;]
+    K --&gt; L[&quot;Compile to MjModel&quot;]
+    L --&gt; M[&quot;Save as /tmp/sim_models_{scene_name}.mjb&quot;]
+    I --&gt;|&quot;No / Error&quot;| N[&quot;Return /tmp/sim_models_{scene_name}.xml&quot;]
+    F --&gt;|No| O[&quot;Write to /tmp/sim_models_{scene_name}.world&quot;]
+    M --&gt; P[&quot;Return Path to .mjb&quot;]
+    N --&gt; P
+    O --&gt; P
+    </pre><p><code class="docutils literal notranslate"><span class="pre">_SDF_MESH_NAMES</span></code> 常量 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/sim_models/scene_compiler.py#L49-L54">src/sim_models/sim_models/scene_compiler.py:49-54</a> 指定 MuJoCo 中需要基于 SDF 的非凸碰撞的 mesh，例如夹爪手指（<code class="docutils literal notranslate"><span class="pre">wrist_roll_follower</span></code>、<code class="docutils literal notranslate"><span class="pre">moving_jaw</span></code>）。这能为这些复杂几何提供准确的接触物理。</p>
+<p><strong>来源:</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/sim_models/scene_compiler.py#L1-L28">src/sim_models/sim_models/scene_compiler.py:1-28</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/sim_models/scene_compiler.py#L49-L54">src/sim_models/sim_models/scene_compiler.py:49-54</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/sim_models/scene_compiler.py#L105-L158">src/sim_models/sim_models/scene_compiler.py:105-158</a></p></li>
+</ul>
+</section>
+<section id="id9">
+<h3>物理约束<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<p>为保证交互真实，场景模板定义了特定接触参数：</p>
+<ul class="simple">
+<li><p><strong>桌面</strong>: 高刚度（<code class="docutils literal notranslate"><span class="pre">solref=&quot;0.004</span> <span class="pre">1&quot;</span></code>），防止物体“陷入”桌面 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/pick_banana.xml.template#L81-L82">src/sim_models/scenes/pick_banana/pick_banana.xml.template:81-82</a>。</p></li>
+<li><p><strong>香蕉碰撞</strong>: 香蕉使用 4 个 STL 部分做凸分解碰撞 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/pick_banana.xml.template#L48-L51">src/sim_models/scenes/pick_banana/pick_banana.xml.template:48-51</a>。其摩擦参数设置为 <code class="docutils literal notranslate"><span class="pre">friction=&quot;50.0</span> <span class="pre">1.0</span> <span class="pre">0.05&quot;</span></code>，分别对应滑动、扭转和滚动摩擦，并使用比夹爪略软的 <code class="docutils literal notranslate"><span class="pre">solref=&quot;0.006</span> <span class="pre">1&quot;</span></code> 缓冲冲击 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/pick_banana.xml.template#L64-L68">src/sim_models/scenes/pick_banana/pick_banana.xml.template:64-68</a>。</p></li>
+<li><p><strong>盘子碰撞</strong>: 盘子使用 8 个 STL 部分做凸分解碰撞 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/pick_banana.xml.template#L37-L44">src/sim_models/scenes/pick_banana/pick_banana.xml.template:37-44</a>。它带有 <code class="docutils literal notranslate"><span class="pre">free</span></code> joint 和 <code class="docutils literal notranslate"><span class="pre">damping=&quot;0.01&quot;</span></code>，允许移动并衰减振荡 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/pick_banana.xml.template#L102">src/sim_models/scenes/pick_banana/pick_banana.xml.template:102</a>。</p></li>
+</ul>
+<p><strong>来源:</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/layout.yaml#L1-L58">src/sim_models/scenes/pick_banana/layout.yaml:1-58</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/pick_banana.xml.template#L81-L82">src/sim_models/scenes/pick_banana/pick_banana.xml.template:81-82</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/pick_banana.xml.template#L48-L51">src/sim_models/scenes/pick_banana/pick_banana.xml.template:48-51</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/pick_banana.xml.template#L64-L68">src/sim_models/scenes/pick_banana/pick_banana.xml.template:64-68</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/pick_banana.xml.template#L37-L44">src/sim_models/scenes/pick_banana/pick_banana.xml.template:37-44</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/sim_models/scenes/pick_banana/pick_banana.xml.template#L102">src/sim_models/scenes/pick_banana/pick_banana.xml.template:102</a></p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id10">
+<h2>仿真配置摘要<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>特性</p></th>
+<th class="head text-left"><p>Gazebo Adapter</p></th>
+<th class="head text-left"><p>MuJoCo Adapter</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><strong>插件</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">gz_ros2_control-system</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_description/urdf/lerobot/so101/so101_gazebo.xacro#L9">src/robot_description/urdf/lerobot/so101/so101_gazebo.xacro:9</a></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">MujocoSystemInterface</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py#L9">src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py:9</a></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><strong>话题桥接</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ros_gz_bridge</span></code>（外部）<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py#L177">src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py:177</a></p></td>
+<td class="text-left"><p>直接重映射 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py#L88">src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py:88</a></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><strong>模型格式</strong></p></td>
+<td class="text-left"><p>URDF / SDF</p></td>
+<td class="text-left"><p>MJCF (XML) <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_description/mujoco/so101.xml.template#L1">src/robot_description/mujoco/so101.xml.template:1</a></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><strong>时间源</strong></p></td>
+<td class="text-left"><p>来自 Gazebo 的 <code class="docutils literal notranslate"><span class="pre">/clock</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ros2_control_node</span></code> 内部</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><strong>场景加载</strong></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">pick_banana.world.template</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">pick_banana.xml.template</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><strong>GUI 规避设置</strong></p></td>
+<td class="text-left"><p>Software GL / QT Platform <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py#L112-L122">src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py:112-122</a></p></td>
+<td class="text-left"><p>原生 MuJoCo Viewer</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源:</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_description/urdf/lerobot/so101/so101_gazebo.xacro#L8-L12">src/robot_description/urdf/lerobot/so101/so101_gazebo.xacro:8-12</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py#L52-L54">src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py:52-54</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py#L6-L9">src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py:6-9</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py#L172-L183">src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py:172-183</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="hardware_plugins.html" class="btn btn-neutral float-left" title="硬件插件" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lekiwi_mobile_manipulator.html" class="btn btn-neutral float-right" title="LeKiwi 移动机械臂" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="simulation_backends.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

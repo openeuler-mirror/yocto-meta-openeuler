@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>社交控制与 AI Agent 集成 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="性能追踪" href="performance_tracing.html" />
+    <link rel="prev" title="语音 ASR 服务" href="voice_asr_service.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol.html">协议转换</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference/index.html">推理流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../action_dispatch/index.html">动作分发</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_pipeline/index.html">数据流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../motion_planning/index.html">运动规划</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../hardware/index.html">硬件集成</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">扩展能力</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">扩展能力概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="voice_asr_service.html">语音 ASR 服务</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">社交控制与 AI Agent 集成</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id1">概览与目标</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id2">系统架构与数据流</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#ai-agent-skill-skill-md">AI Agent Skill 系统 (<code class="docutils literal notranslate"><span class="pre">SKILL.md</span></code>)</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#rosclaw-openclaw">rosclaw 桥接器与 OpenClaw 集成</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id6">配置与设置</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id8">交互工作流</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="performance_tracing.html">性能追踪</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">扩展能力</a></li>
+      <li class="breadcrumb-item active">社交控制与 AI Agent 集成</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ai-agent">
+<h1>社交控制与 AI Agent 集成<a class="headerlink" href="#ai-agent" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源文件</summary>
+<p>以下文件被用作生成此 wiki 页面时的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/README.md">.agents/skills/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-architecture/SKILL.md">.agents/skills/ibrobot-architecture/SKILL.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-build/SKILL.md">.agents/skills/ibrobot-build/SKILL.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-env/SKILL.md">.agents/skills/ibrobot-env/SKILL.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-git-flow/SKILL.md">.agents/skills/ibrobot-git-flow/SKILL.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-launch/SKILL.md">.agents/skills/ibrobot-launch/SKILL.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-lerobot-patch/SKILL.md">.agents/skills/ibrobot-lerobot-patch/SKILL.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-lerobot-patch/scripts/export_lerobot_patch.py">.agents/skills/ibrobot-lerobot-patch/scripts/export_lerobot_patch.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/intro/SKILL.md">.agents/skills/intro/SKILL.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/intro/scripts/intro.py">.agents/skills/intro/scripts/intro.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.vscode/settings.json">.vscode/settings.json</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/architecture.md">docs/architecture.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/ib_robot_social_skill.md">docs/ib_robot_social_skill.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/pictures/architecture.png">docs/pictures/architecture.png</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/roadmap.md">docs/roadmap.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/videos/openclaw_real.mp4">docs/videos/openclaw_real.mp4</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/videos/openclaw_sim.mp4">docs/videos/openclaw_sim.mp4</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/scripts/start_rosclaw.sh">scripts/start_rosclaw.sh</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/scripts/validate_config.py">scripts/validate_config.py</a></p></li>
+</ul>
+</details>
+<p>IB-Robot 框架提供完整的“Social Control”层，让用户可以通过常见社交平台（Feishu、QQ、Discord）用自然语言与机器人交互。该能力通过集成 <strong>OpenClaw</strong> AI Agent 框架、<strong>rosbridge</strong> WebSocket 接口，以及结构化 <strong>Agent Skill</strong> 系统实现，把高层人类意图转换为可执行的机器人命令。</p>
+<section id="id1">
+<h2>概览与目标<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<p>社交控制集成的主要目标，是打通“Natural Language Space”（人类沟通）和“Code Entity Space”（ROS 2 节点、action 和 service）。通过 <code class="docutils literal notranslate"><span class="pre">rosbridge</span></code> 接口和 OpenClaw AI Agent 框架，系统支持：</p>
+<ol class="arabic simple">
+<li><p><strong>远程遥操作</strong>：通过聊天界面控制机器人 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/architecture.md#L103-L104">docs/architecture.md:103-104</a>。</p></li>
+<li><p><strong>自动化技能执行</strong>：使用 AI Agent 触发 <code class="docutils literal notranslate"><span class="pre">ibrobot-launch</span></code> 或 <code class="docutils literal notranslate"><span class="pre">ibrobot-build</span></code> 等预定义工作流 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/README.md#L11-L12">.agents/skills/README.md:11-12</a>。</p></li>
+<li><p><strong>跨平台交互</strong>：通过基于意图的启动方式，同时支持 Gazebo 仿真和真实 SO-101 硬件 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-launch/SKILL.md#L49-L71">.agents/skills/ibrobot-launch/SKILL.md:49-71</a>。</p></li>
+<li><p><strong>协作开发</strong>：通过 AtomGit 集成实现 AI 驱动的代码审查和 PR 管理 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/README.md#L17-L22">.agents/skills/README.md:17-22</a>。</p></li>
+</ol>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/architecture.md#L86-L105">docs/architecture.md:86-105</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/README.md#L1-L22">.agents/skills/README.md:1-22</a>。</p>
+</section>
+<section id="id2">
+<h2>系统架构与数据流<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>该集成依赖分层架构，其中 OpenClaw agent 作为决策者，通过 WebSocket 桥接器与 ROS 2 生态通信。</p>
+<section id="id3">
+<h3>社交控制数据流图<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<p>下图展示从社交应用中的用户消息，到机器人硬件执行命令的流转过程。</p>
+<p>Title: Social Control and AI Agent Data Flow</p>
+<pre  class="mermaid">
+        graph TD
+    subgraph &quot;Natural Language Space&quot;
+        User[&quot;User (Feishu/QQ/Discord)&quot;]
+        OC[&quot;OpenClaw AI Agent&quot;]
+    end
+
+    subgraph &quot;Bridge Layer&quot;
+        WS[&quot;rosbridge_suite (WebSocket)&quot;]
+        RC[&quot;rosclaw_bridge (src/rosclaw)&quot;]
+    end
+
+    subgraph &quot;Code Entity Space (ROS 2)&quot;
+        LD[&quot;robot.launch.py (src/robot_config)&quot;]
+        AD[&quot;action_dispatcher_node (src/action_dispatch)&quot;]
+        HW[&quot;so101_hardware (src/so101_hardware)&quot;]
+    end
+
+    User --&gt;|&quot;Natural Language&quot;| OC
+    OC --&gt;|&quot;JSON/WebSocket&quot;| WS
+    WS --&gt;|&quot;ROS 2 Topics/Services&quot;| RC
+    RC --&gt;|&quot;Triggers&quot;| LD
+    LD --&gt;|&quot;Configures&quot;| AD
+    AD --&gt;|&quot;Joint Commands&quot;| HW
+    </pre><p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/docs/architecture.md#L86-L177">docs/architecture.md:86-177</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-launch/SKILL.md#L38-L40">.agents/skills/ibrobot-launch/SKILL.md:38-40</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-architecture/SKILL.md#L117-L140">.agents/skills/ibrobot-architecture/SKILL.md:117-140</a>。</p>
+</section>
+</section>
+<section id="ai-agent-skill-skill-md">
+<h2>AI Agent Skill 系统 (<code class="docutils literal notranslate"><span class="pre">SKILL.md</span></code>)<a class="headerlink" href="#ai-agent-skill-skill-md" title="Permalink to this heading"></a></h2>
+<p>IB-Robot 使用位于 <code class="docutils literal notranslate"><span class="pre">.agents/skills/</span></code> 的结构化 skill 系统，定义 AI Agent（如 Claude Code）可用的能力。每个 skill 都由一个 <code class="docutils literal notranslate"><span class="pre">SKILL.md</span></code> 文件定义，其中包含触发条件（Description）和技术参考 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/README.md#L1-L4">.agents/skills/README.md:1-4</a>。</p>
+<section id="skill">
+<h3>关键 Skill 和代码实体<a class="headerlink" href="#skill" title="Permalink to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Skill 名称</p></th>
+<th class="head text-left"><p>主要职责</p></th>
+<th class="head text-left"><p>相关代码实体</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">intro</span></code></p></td>
+<td class="text-left"><p>引导用户查看可用 skill</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">.agents/skills/intro/SKILL.md</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ibrobot-launch</span></code></p></td>
+<td class="text-left"><p>启动机器人节点和仿真</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">src/robot_config/launch/robot.launch.py</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ibrobot-build</span></code></p></td>
+<td class="text-left"><p>使用指定标志编译工作空间</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">scripts/build.sh</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ibrobot-env</span></code></p></td>
+<td class="text-left"><p>管理 shell 上下文和 ROS_DOMAIN_ID</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">.shrc_local</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ibrobot-architecture</span></code></p></td>
+<td class="text-left"><p>解释 SSOT 和 Contract 逻辑</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">src/robot_config/robot_config/config.py</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ibrobot-lerobot-patch</span></code></p></td>
+<td class="text-left"><p>管理 <code class="docutils literal notranslate"><span class="pre">libs/lerobot</span></code> patch 栈</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">.agents/skills/ibrobot-lerobot-patch/scripts/export_lerobot_patch.py</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ibrobot-git-flow</span></code></p></td>
+<td class="text-left"><p>处理 Git commit 和 push 工作流</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">git</span></code> commands, DCO compliance</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">atomgit-collaboration</span></code></p></td>
+<td class="text-left"><p>路由通用 AtomGit 请求</p></td>
+<td class="text-left"><p>AtomGit API</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">atomgit-pr</span></code></p></td>
+<td class="text-left"><p>管理 PR 生命周期</p></td>
+<td class="text-left"><p>AtomGit API</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">atomgit-issue</span></code></p></td>
+<td class="text-left"><p>管理 Issue 生命周期</p></td>
+<td class="text-left"><p>AtomGit API</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">atomgit-pr-review</span></code></p></td>
+<td class="text-left"><p>自动化代码质量和逻辑检查</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">libs/atomgit_sdk</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">atomgit-pr-architecture-review</span></code></p></td>
+<td class="text-left"><p>检查 PR 架构合规性</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">libs/atomgit_sdk</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">atomgit-review-resolution</span></code></p></td>
+<td class="text-left"><p>处理 review 评论和修复</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">libs/atomgit_sdk</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/README.md#L7-L27">.agents/skills/README.md:7-27</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/intro/SKILL.md#L16-L47">.agents/skills/intro/SKILL.md:16-47</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-architecture/SKILL.md#L24-L27">.agents/skills/ibrobot-architecture/SKILL.md:24-27</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-git-flow/SKILL.md#L8-L12">.agents/skills/ibrobot-git-flow/SKILL.md:8-12</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-lerobot-patch/SKILL.md#L11-L19">.agents/skills/ibrobot-lerobot-patch/SKILL.md:11-19</a>。</p>
+</section>
+<section id="id4">
+<h3>将自然语言映射到代码实体<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<p>下图把用户意图桥接到处理请求的具体 Python 类和配置文件。</p>
+<p>Title: Mapping Intent to Code Entities</p>
+<pre  class="mermaid">
+        graph LR
+    subgraph &quot;User Intent&quot;
+        I1[&quot;'Launch simulation'&quot;]
+        I2[&quot;'What is the config?'&quot;]
+        I3[&quot;'Check PR #25'&quot;]
+        I4[&quot;'Export lerobot patch'&quot;]
+        I5[&quot;'Commit changes'&quot;]
+    end
+
+    subgraph &quot;Skill Logic (.agents/skills/)&quot;
+        S1[&quot;ibrobot-launch/SKILL.md&quot;]
+        S2[&quot;ibrobot-architecture/SKILL.md&quot;]
+        S3[&quot;atomgit-pr-review/SKILL.md&quot;]
+        S4[&quot;ibrobot-lerobot-patch/SKILL.md&quot;]
+        S5[&quot;ibrobot-git-flow/SKILL.md&quot;]
+    end
+
+    subgraph &quot;Implementation (src/)&quot;
+        C1[&quot;robot_config/launch/robot.launch.py&quot;]
+        C2[&quot;robot_config/config/robots/so101_single_arm.yaml&quot;]
+        C3[&quot;libs/atomgit_sdk/client.py&quot;]
+        C4[&quot;.agents/skills/ibrobot-lerobot-patch/scripts/export_lerobot_patch.py&quot;]
+        C5[&quot;git commands&quot;]
+    end
+
+    I1 --&gt; S1 --&gt; C1
+    I2 --&gt; S2 --&gt; C2
+    I3 --&gt; S3 --&gt; C3
+    I4 --&gt; S4 --&gt; C4
+    I5 --&gt; S5 --&gt; C5
+    </pre><p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-launch/SKILL.md#L52-L53">.agents/skills/ibrobot-launch/SKILL.md:52-53</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-architecture/SKILL.md#L24-L27">.agents/skills/ibrobot-architecture/SKILL.md:24-27</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/README.md#L17-L22">.agents/skills/README.md:17-22</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-lerobot-patch/SKILL.md#L11-L19">.agents/skills/ibrobot-lerobot-patch/SKILL.md:11-19</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-git-flow/SKILL.md#L47-L77">.agents/skills/ibrobot-git-flow/SKILL.md:47-77</a>。</p>
+</section>
+</section>
+<section id="rosclaw-openclaw">
+<h2>rosclaw 桥接器与 OpenClaw 集成<a class="headerlink" href="#rosclaw-openclaw" title="Permalink to this heading"></a></h2>
+<p>OpenClaw 框架的集成点由 <code class="docutils literal notranslate"><span class="pre">rosbridge_suite</span></code> 提供。它把社交消息转换为 ROS 2 service 调用和 topic 发布，让 Agent 可以像本地节点一样与机器人交互。</p>
+<section id="id5">
+<h3>关键实现细节<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>环境继承</strong>：agent 执行的每个命令都必须 source <code class="docutils literal notranslate"><span class="pre">.shrc_local</span></code>，确保 <code class="docutils literal notranslate"><span class="pre">venv</span></code> 和 <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code>（包括 <code class="docutils literal notranslate"><span class="pre">libs/lerobot/src</span></code>）正确设置 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-build/SKILL.md#L170-L175">.agents/skills/ibrobot-build/SKILL.md:170-175</a>。VS Code 用户的 <code class="docutils literal notranslate"><span class="pre">PYTHONPATH</span></code> 在 <code class="docutils literal notranslate"><span class="pre">.vscode/settings.json</span></code> 中配置 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.vscode/settings.json#L3-L16">.vscode/settings.json:3-16</a>。</p></li>
+<li><p><strong>DDS 发现</strong>：桥接器和所有启动的节点都必须使用 <code class="docutils literal notranslate"><span class="pre">ROS_DOMAIN_ID=42</span></code> 才能有效通信 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-launch/SKILL.md#L107-L112">.agents/skills/ibrobot-launch/SKILL.md:107-112</a>。这对 ROS 2 运行时操作很关键，否则 controller 会启动失败，节点也无法互相发现 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-build/SKILL.md#L180-L184">.agents/skills/ibrobot-build/SKILL.md:180-184</a>。</p></li>
+<li><p><strong>Build Launch 工作流</strong>：agent 遵循严格的“先构建，再启动”协议，保证二进制一致性 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-launch/SKILL.md#L10-L20">.agents/skills/ibrobot-launch/SKILL.md:10-20</a>。该流程先使用 <code class="docutils literal notranslate"><span class="pre">ibrobot-build</span></code> skill 构建项目，再在单个 Bash 调用中带环境启动 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-launch/SKILL.md#L23-L46">.agents/skills/ibrobot-launch/SKILL.md:23-46</a>。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-build/SKILL.md#L170-L184">.agents/skills/ibrobot-build/SKILL.md:170-184</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-launch/SKILL.md#L10-L112">.agents/skills/ibrobot-launch/SKILL.md:10-112</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.vscode/settings.json#L3-L16">.vscode/settings.json:3-16</a>。</p>
+</section>
+</section>
+<section id="id6">
+<h2>配置与设置<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
+<p>要启用自动化协作（AtomGit），系统需要具备 <code class="docutils literal notranslate"><span class="pre">repo</span></code> 和 <code class="docutils literal notranslate"><span class="pre">pull_request</span></code> 权限的 Personal Access Token <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/README.md#L46-L54">.agents/skills/README.md:46-54</a>。</p>
+<section id="atomgit">
+<h3>AtomGit 配置<a class="headerlink" href="#atomgit" title="Permalink to this heading"></a></h3>
+<p>配置通常存放在项目根目录的 <code class="docutils literal notranslate"><span class="pre">config.json</span></code> 中，并通过 <code class="docutils literal notranslate"><span class="pre">$ATOMGIT_TOKEN</span></code> 环境变量引用 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/README.md#L56-L61">.agents/skills/README.md:56-61</a>。<code class="docutils literal notranslate"><span class="pre">atomgit_sdk</span></code> 库用于 AtomGit API 交互，<code class="docutils literal notranslate"><span class="pre">intro.py</span></code> 脚本会检查它是否可用，用于生成推荐项 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/intro/scripts/intro.py#L74-L78">.agents/skills/intro/scripts/intro.py:74-78</a>。</p>
+</section>
+<section id="id7">
+<h3>多平台验证<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<p>skill 系统包含面向不同环境的专用验证工具：</p>
+<ul class="simple">
+<li><p><strong>Ubuntu 22.04</strong>：<code class="docutils literal notranslate"><span class="pre">ibrobot-docker-verify</span></code> 用于标准 clean-room 测试 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/README.md#L15">.agents/skills/README.md:15</a>。</p></li>
+<li><p><strong>openEuler Embedded</strong>：<code class="docutils literal notranslate"><span class="pre">ibrobot-docker-verify-oee</span></code> 使用 <code class="docutils literal notranslate"><span class="pre">qemu-user</span></code> 模拟 aarch64 硬件环境 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/README.md#L16">.agents/skills/README.md:16</a>。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/README.md#L15-L16">.agents/skills/README.md:15-16</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/README.md#L46-L61">.agents/skills/README.md:46-61</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/intro/scripts/intro.py#L74-L78">.agents/skills/intro/scripts/intro.py:74-78</a>。</p>
+</section>
+</section>
+<section id="id8">
+<h2>交互工作流<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>用户消息</strong>：用户在社交频道中发送 “Launch SO-101 simulation”。</p></li>
+<li><p><strong>意图识别</strong>：AI Agent 根据 “launch” 或 “启动” 等关键词识别 <code class="docutils literal notranslate"><span class="pre">ibrobot-launch</span></code> skill <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-launch/SKILL.md#L2-L4">.agents/skills/ibrobot-launch/SKILL.md:2-4</a>。</p></li>
+<li><p><strong>环境设置</strong>：agent 通过 source <code class="docutils literal notranslate"><span class="pre">.shrc_local</span></code> 并导出 <code class="docutils literal notranslate"><span class="pre">ROS_DOMAIN_ID=42</span></code> 来准备 shell <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-launch/SKILL.md#L38">.agents/skills/ibrobot-launch/SKILL.md:38</a>。</p></li>
+<li><p><strong>命令执行</strong>：agent 执行启动命令：
+<code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">.shrc_local</span> <span class="pre">&amp;&amp;</span> <span class="pre">export</span> <span class="pre">ROS_DOMAIN_ID=42</span> <span class="pre">&amp;&amp;</span> <span class="pre">source</span> <span class="pre">install/setup.zsh</span> <span class="pre">&amp;&amp;</span> <span class="pre">ros2</span> <span class="pre">launch</span> <span class="pre">robot_config</span> <span class="pre">robot.launch.py</span> <span class="pre">robot_config:=so101_single_arm</span> <span class="pre">use_sim:=true</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-launch/SKILL.md#L52">.agents/skills/ibrobot-launch/SKILL.md:52</a>。</p></li>
+<li><p><strong>反馈</strong>：agent 监控进程输出中的错误，例如 “Controllers fail to spawn”，并向用户提供排障建议 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-launch/SKILL.md#L153-L166">.agents/skills/ibrobot-launch/SKILL.md:153-166</a>。<code class="docutils literal notranslate"><span class="pre">intro.py</span></code> 脚本也会根据当前仓库状态提供智能推荐，例如在缺少构建产物时建议 <code class="docutils literal notranslate"><span class="pre">ibrobot-build</span></code>，或在有未处理 PR 评论时建议 <code class="docutils literal notranslate"><span class="pre">atomgit-review-resolution</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/intro/SKILL.md#L91-L99">.agents/skills/intro/SKILL.md:91-99</a>。</p></li>
+</ol>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-launch/SKILL.md#L1-L195">.agents/skills/ibrobot-launch/SKILL.md:1-195</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/ibrobot-build/SKILL.md#L1-L206">.agents/skills/ibrobot-build/SKILL.md:1-206</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/intro/SKILL.md#L91-L99">.agents/skills/intro/SKILL.md:91-99</a>、<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/intro/scripts/intro.py#L148-L183">.agents/skills/intro/scripts/intro.py:148-183</a>。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="voice_asr_service.html" class="btn btn-neutral float-left" title="语音 ASR 服务" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="performance_tracing.html" class="btn btn-neutral float-right" title="性能追踪" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="social_control_ai_agent_integration.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

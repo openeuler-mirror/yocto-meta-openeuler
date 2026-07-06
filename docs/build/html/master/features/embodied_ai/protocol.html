@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>协议转换 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/js/mermaid.min.js"></script>
+        <script src="../../_static/js/mermaid-run.js"></script>
+        <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="推理流水线" href="inference/index.html" />
+    <link rel="prev" title="配置验证" href="configuration/configuration_validation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5"><a class="reference internal" href="architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="configuration/index.html">配置系统</a></li>
+<li class="toctree-l5 current"><a class="current reference internal" href="#">协议转换</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#id2">系统角色与数据流</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id3">数据转换架构</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#tensormsgconverter">TensorMsgConverter 类</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id4">核心实体映射</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#id5">注册系统</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#encoder">Encoder 注册</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#decoder">Decoder 注册</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#variant">分布式推理的 Variant 序列化</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id6">序列化逻辑</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#tensor">支持的 Tensor 类型</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#id7">实现细节</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#dotted-path">Dotted Path 访问</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id8">图像解码</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#multiarray">MultiArray 创建</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="inference/index.html">推理流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="action_dispatch/index.html">动作分发</a></li>
+<li class="toctree-l5"><a class="reference internal" href="data_pipeline/index.html">数据流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="motion_planning/index.html">运动规划</a></li>
+<li class="toctree-l5"><a class="reference internal" href="hardware/index.html">硬件集成</a></li>
+<li class="toctree-l5"><a class="reference internal" href="extended_capabilities/index.html">扩展能力</a></li>
+<li class="toctree-l5"><a class="reference internal" href="package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="development/index.html">开发指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="ib_robot.html">IB-Robot 具身智能套件</a></li>
+      <li class="breadcrumb-item active">协议转换</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>协议转换<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源文件</summary>
+<p>生成此 wiki 页面时使用了以下文件作为上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.shrc_local">.shrc_local</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py">src/dataset_tools/dataset_tools/bag_to_lerobot.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py">src/dataset_tools/dataset_tools/episode_recorder.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/frame_detector.py">src/dataset_tools/dataset_tools/frame_detector.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/setup.py">src/dataset_tools/setup.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_builder.py">src/robot_config/robot_config/contract_builder.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_utils.py">src/robot_config/robot_config/contract_utils.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/__init__.py">src/robot_config/robot_config/generators/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/contract.py">src/robot_config/robot_config/generators/contract.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py">src/robot_config/robot_config/launch_builders/recording.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py">src/tensormsg/tensormsg/converter.py</a></p></li>
+</ul>
+</details>
+<p><code class="docutils literal notranslate"><span class="pre">tensormsg</span></code> 包是 ROS 2 消息流与机器学习 tensor 表示之间的<strong>双向协议转换器</strong>。它让 LeRobot 策略无需手写序列化代码，即可消费机器人观测并产生动作。该包使用契约驱动的规格系统，确保数据采集、训练和部署之间保持一致。</p>
+<p>关于契约如何定义和加载，请参见 <a class="reference internal" href="core_concepts/contract_system.html"><span class="std std-doc">Contract System</span></a>。关于使用 tensormsg 的推理流水线，请参见 <a class="reference internal" href="inference/overview.html"><span class="std std-doc">Inference Pipeline</span></a>。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L1-L20">src/tensormsg/tensormsg/converter.py:1-20</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L115-L116">src/dataset_tools/dataset_tools/bag_to_lerobot.py:115-116</a></p>
+<hr class="docutils" />
+<section id="id2">
+<h2>系统角色与数据流<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">tensormsg</span></code> 包在 IB-Robot 架构中充当中心协议枢纽，支持以下数据转换：</p>
+<section id="id3">
+<h3>数据转换架构<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    subgraph ROS2_World[&quot;ROS 2 World&quot;]
+        CAM[&quot;/camera/top/image_raw&lt;br/&gt;(sensor_msgs/Image)&quot;]
+        JS[&quot;/joint_states&lt;br/&gt;(sensor_msgs/JointState)&quot;]
+        CMD[&quot;/arm_position_controller/commands&lt;br/&gt;(Float64MultiArray)&quot;]
+    end
+    
+    subgraph tensormsg_Package[&quot;tensormsg Package&quot;]
+        CONV[&quot;TensorMsgConverter&quot;]
+        DECODE[&quot;decode()&lt;br/&gt;ROS to NumPy&quot;]
+        ENCODE[&quot;encode()&lt;br/&gt;Tensor to ROS&quot;]
+        VARIANT_TO[&quot;to_variant()&lt;br/&gt;Dict to VariantsList&quot;]
+        VARIANT_FROM[&quot;from_variant()&lt;br/&gt;VariantsList to Dict&quot;]
+        
+        CONV --&gt; DECODE
+        CONV --&gt; ENCODE
+        CONV --&gt; VARIANT_TO
+        CONV --&gt; VARIANT_FROM
+    end
+    
+    subgraph ML_World[&quot;ML / LeRobot World&quot;]
+        OBS[&quot;observation.images.top&lt;br/&gt;(H, W, 3) float32&quot;]
+        STATE[&quot;observation.state&lt;br/&gt;(N,) float32&quot;]
+        ACTION[&quot;action&lt;br/&gt;(N,) float32&quot;]
+    end
+    
+    CAM --&gt;|&quot;TensorMsgConverter.decode&quot;| DECODE
+    JS --&gt;|&quot;TensorMsgConverter.decode&quot;| DECODE
+    DECODE --&gt; OBS
+    DECODE --&gt; STATE
+    
+    ACTION --&gt; ENCODE
+    ENCODE --&gt;|&quot;TensorMsgConverter.encode&quot;| CMD
+    
+    OBS -.-&gt;|&quot;distributed mode&quot;| VARIANT_TO
+    STATE -.-&gt;|&quot;distributed mode&quot;| VARIANT_TO
+    VARIANT_FROM -.-&gt;|&quot;distributed mode&quot;| ACTION
+    </pre><p><strong>关键转换路径：</strong></p>
+<ol class="arabic simple">
+<li><p><strong>观测路径（ROS → Tensor）</strong>：相机图像和关节状态通过 <code class="docutils literal notranslate"><span class="pre">TensorMsgConverter.decode</span></code> 从 ROS 消息解码为 NumPy 数组 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L36-L50">src/tensormsg/tensormsg/converter.py:36-50</a>。</p></li>
+<li><p><strong>动作路径（Tensor → ROS）</strong>：策略输出 tensor 通过 <code class="docutils literal notranslate"><span class="pre">TensorMsgConverter.encode</span></code> 编码回 ROS 消息 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L21-L34">src/tensormsg/tensormsg/converter.py:21-34</a>。</p></li>
+<li><p><strong>分布式推理路径</strong>：观测和动作被序列化为 <code class="docutils literal notranslate"><span class="pre">ibrobot_msgs/msg/VariantsList</span></code>，用于 edge 节点和 cloud 节点之间的网络传输，使用 <code class="docutils literal notranslate"><span class="pre">to_variant</span></code> 和 <code class="docutils literal notranslate"><span class="pre">from_variant</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L53-L82">src/tensormsg/tensormsg/converter.py:53-82</a>。</p></li>
+<li><p><strong>数据集转换路径</strong>：执行 <code class="docutils literal notranslate"><span class="pre">bag_to_lerobot</span></code> 时，转换器用于将 bag 消息解码为训练原生格式 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L115-L117">src/dataset_tools/dataset_tools/bag_to_lerobot.py:115-117</a>。</p></li>
+</ol>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L17-L82">src/tensormsg/tensormsg/converter.py:17-82</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L9-L19">src/dataset_tools/dataset_tools/bag_to_lerobot.py:9-19</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="tensormsgconverter">
+<h2>TensorMsgConverter 类<a class="headerlink" href="#tensormsgconverter" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TensorMsgConverter</span></code> 类为所有协议转换提供核心 API。它是无状态工具，通过静态方法委托给已注册的 encoder/decoder 函数。</p>
+<section id="id4">
+<h3>核心实体映射<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph LR
+    subgraph TensorMsgConverter_API[&quot;TensorMsgConverter API&quot;]
+        API[&quot;TensorMsgConverter&quot;]
+        
+        subgraph Core_Methods[&quot;Core Methods&quot;]
+            DEC[&quot;decode(msg, spec)&quot;]
+            ENC[&quot;encode(ros_type, data)&quot;]
+            TO_VAR[&quot;to_variant(batch)&quot;]
+            FROM_VAR[&quot;from_variant(msg, device)&quot;]
+        end
+        
+        API --&gt; DEC
+        API --&gt; ENC
+        API --&gt; TO_VAR
+        API --&gt; FROM_VAR
+    end
+    
+    subgraph Registry_System[&quot;Registry System&quot;]
+        ENC_REG[&quot;ENCODER_REGISTRY&quot;]
+        DEC_REG[&quot;DECODER_REGISTRY&quot;]
+    end
+    
+    subgraph Registered_Handlers[&quot;Registered Handlers&quot;]
+        IMG_DEC[&quot;_dec_image()&lt;br/&gt;sensor_msgs/Image&quot;]
+        JS_DEC[&quot;_dec_joint_state()&lt;br/&gt;sensor_msgs/JointState&quot;]
+        TWIST_ENC[&quot;_enc_twist()&lt;br/&gt;geometry_msgs/Twist&quot;]
+    end
+    
+    DEC --&gt;|&quot;lookup&quot;| DEC_REG
+    ENC --&gt;|&quot;lookup&quot;| ENC_REG
+    
+    DEC_REG --&gt; IMG_DEC
+    DEC_REG --&gt; JS_DEC
+    ENC_REG --&gt; TWIST_ENC
+    </pre><p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L17-L82">src/tensormsg/tensormsg/converter.py:17-82</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L183-L199">src/tensormsg/tensormsg/converter.py:183-199</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id5">
+<h2>注册系统<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
+<p>该包使用基于装饰器的注册模式，将 ROS 消息类型关联到转换函数。这便于扩展自定义消息类型，而无需修改核心逻辑。</p>
+<section id="encoder">
+<h3>Encoder 注册<a class="headerlink" href="#encoder" title="Permalink to this heading"></a></h3>
+<p>Encoders 将 Python 数据（tensors、arrays、sequences）转换为 ROS 消息。例如，<code class="docutils literal notranslate"><span class="pre">geometry_msgs/Twist</span></code> encoder 处理线速度和角速度 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L183-L196">src/tensormsg/tensormsg/converter.py:183-196</a>。</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@register_encoder</span><span class="p">(</span><span class="s2">&quot;geometry_msgs/msg/Twist&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_enc_twist</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">clamp</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">names</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_encode_via_dotted_paths</span><span class="p">(</span><span class="s2">&quot;geometry_msgs/msg/Twist&quot;</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">clamp</span><span class="p">)</span>
+    <span class="c1"># ... logic to fill linear.x and angular.z</span>
+</pre></div>
+</div>
+</section>
+<section id="decoder">
+<h3>Decoder 注册<a class="headerlink" href="#decoder" title="Permalink to this heading"></a></h3>
+<p>Decoders 从 ROS 消息中提取 NumPy 数组。如果没有注册特定 decoder，且规格中包含 names，系统会尝试通过 names 解码 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L47-L48">src/tensormsg/tensormsg/converter.py:47-48</a>。</p>
+<p><strong>converter.py 中的关键注册：</strong></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>ROS Type</p></th>
+<th class="head"><p>Decoder</p></th>
+<th class="head"><p>Encoder</p></th>
+<th class="head"><p>行范围</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sensor_msgs/msg/Image</span></code></p></td>
+<td><p>✅</p></td>
+<td><p>❌</p></td>
+<td><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L198-L204">src/tensormsg/tensormsg/converter.py:198-204</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">geometry_msgs/msg/Twist</span></code></p></td>
+<td><p>❌</p></td>
+<td><p>✅</p></td>
+<td><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L183-L196">src/tensormsg/tensormsg/converter.py:183-196</a></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L11-L16">src/tensormsg/tensormsg/converter.py:11-16</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L183-L204">src/tensormsg/tensormsg/converter.py:183-204</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="variant">
+<h2>分布式推理的 Variant 序列化<a class="headerlink" href="#variant" title="Permalink to this heading"></a></h2>
+<p>在分布式推理模式中，<code class="docutils literal notranslate"><span class="pre">tensormsg</span></code> 为 <code class="docutils literal notranslate"><span class="pre">ibrobot_msgs/msg/VariantsList</span></code> 提供序列化能力。它用于连接 “Natural Language Space”（如 <code class="docutils literal notranslate"><span class="pre">observation.state</span></code> 这样的键名）与 “Code Entity Space”（具体 ROS 消息字段）。</p>
+<section id="id6">
+<h3>序列化逻辑<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">to_variant(batch)</span></code></strong>：将 Tensor 字典编码为 <code class="docutils literal notranslate"><span class="pre">VariantsList</span></code>。它会过滤键，只保留以 <code class="docutils literal notranslate"><span class="pre">task</span></code>、<code class="docutils literal notranslate"><span class="pre">observation</span></code> 或 <code class="docutils literal notranslate"><span class="pre">action</span></code> 开头的项 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L53-L74">src/tensormsg/tensormsg/converter.py:53-74</a>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">from_variant(msg,</span> <span class="pre">device)</span></code></strong>：将 <code class="docutils literal notranslate"><span class="pre">VariantsList</span></code> 解码回 Tensor 字典，可选择移动到特定硬件设备（例如 CUDA 或 NPU）<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L77-L82">src/tensormsg/tensormsg/converter.py:77-82</a>。</p></li>
+</ol>
+</section>
+<section id="tensor">
+<h3>支持的 Tensor 类型<a class="headerlink" href="#tensor" title="Permalink to this heading"></a></h3>
+<p>系统将 Torch dtypes 映射到 <code class="docutils literal notranslate"><span class="pre">Variant</span></code> 消息中的特定数组类型 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L112-L129">src/tensormsg/tensormsg/converter.py:112-129</a>：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">torch.bool</span></code> → <code class="docutils literal notranslate"><span class="pre">bool_array</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">torch.int32</span></code> → <code class="docutils literal notranslate"><span class="pre">int_32_array</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">torch.int64</span></code> → <code class="docutils literal notranslate"><span class="pre">int_64_array</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">torch.float32</span></code> → <code class="docutils literal notranslate"><span class="pre">float_32_array</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">torch.float64</span></code> → <code class="docutils literal notranslate"><span class="pre">float_64_array</span></code></p></li>
+</ul>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L53-L82">src/tensormsg/tensormsg/converter.py:53-82</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L112-L129">src/tensormsg/tensormsg/converter.py:112-129</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id7">
+<h2>实现细节<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h2>
+<section id="dotted-path">
+<h3>Dotted Path 访问<a class="headerlink" href="#dotted-path" title="Permalink to this heading"></a></h3>
+<p>转换器使用 <code class="docutils literal notranslate"><span class="pre">dot_get</span></code> 和 <code class="docutils literal notranslate"><span class="pre">dot_set</span></code> helper 访问 ROS 消息中的嵌套字段。这允许契约规格引用数组中的特定索引，例如 <code class="docutils literal notranslate"><span class="pre">JointState</span></code> 消息中的 <code class="docutils literal notranslate"><span class="pre">position.0</span></code> 表示第一个关节 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L96-L98">src/tensormsg/tensormsg/converter.py:96-98</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L102-L109">src/tensormsg/tensormsg/converter.py:102-109</a>。</p>
+</section>
+<section id="id8">
+<h3>图像解码<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
+<p>图像 decoder 处理常见 ROS encoding。在 <code class="docutils literal notranslate"><span class="pre">rerun_viewer</span></code> 中，如果快速路径原始解码失败，它会作为 fallback 使用 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L115-L117">src/dataset_tools/dataset_tools/bag_to_lerobot.py:115-117</a>。它还处理浮点图像归一化和 resize <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L198-L204">src/tensormsg/tensormsg/converter.py:198-204</a>。</p>
+</section>
+<section id="multiarray">
+<h3>MultiArray 创建<a class="headerlink" href="#multiarray" title="Permalink to this heading"></a></h3>
+<p>将 tensor 编码为 <code class="docutils literal notranslate"><span class="pre">MultiArray</span></code> 消息时，系统会使用 <code class="docutils literal notranslate"><span class="pre">_create_multiarray_msg</span></code> 自动填充 <code class="docutils literal notranslate"><span class="pre">layout.dim</span></code> 字段，以保留原始 tensor shape <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L132-L147">src/tensormsg/tensormsg/converter.py:132-147</a>。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L88-L109">src/tensormsg/tensormsg/converter.py:88-109</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/tensormsg/tensormsg/converter.py#L132-L147">src/tensormsg/tensormsg/converter.py:132-147</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L100-L117">src/dataset_tools/dataset_tools/bag_to_lerobot.py:100-117</a></p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="configuration/configuration_validation.html" class="btn btn-neutral float-left" title="配置验证" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="inference/index.html" class="btn btn-neutral float-right" title="推理流水线" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="protocol.html">master</a></dd>
+      <dd><a href="../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,387 +1,28 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>动作调度器节点 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
-        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs"></script>
-        <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.2.0/dist/mermaid-layout-elk.esm.min.mjs"></script>
-        <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.2.0/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
-        <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-        <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
-
-const defaultStyle = document.createElement('style');
-defaultStyle.textContent = `pre.mermaid {
-    /* Same as .mermaid-container > pre */
-    display: block;
-    width: 100%;
-}
-
-pre.mermaid > svg {
-    /* Same as .mermaid-container > pre > svg */
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}
-`;
-document.head.appendChild(defaultStyle);
-
-const fullscreenStyle = document.createElement('style');
-fullscreenStyle.textContent = `.mermaid-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-}
-
-.mermaid-container > pre {
-    display: block;
-    width: 100%;
-}
-
-.mermaid-container > pre > svg {
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}
-
-.mermaid-fullscreen-btn {
-    width: 28px;
-    height: 28px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    font-size: 14px;
-    line-height: 1;
-    padding: 0;
-    color: #333;
-}
-
-.mermaid-fullscreen-btn:hover {
-    opacity: 100% !important;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-btn.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-btn.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal {
-    display: none;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 95vw;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.98);
-    z-index: 9999;
-    padding: 20px;
-    overflow: auto;
-}
-
-.mermaid-fullscreen-modal.dark-theme {
-    background: rgba(0, 0, 0, 0.98);
-}
-
-.mermaid-fullscreen-modal.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen {
-    position: relative;
-    width: 95vw;
-    height: 90vh;
-    max-width: 95vw;
-    max-height: 90vh;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    overflow: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen.dark-theme {
-    background: #1a1a1a;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-}
-
-.mermaid-container-fullscreen pre.mermaid {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen .mermaid svg {
-    height: 100% !important;
-    width: 100% !important;
-    cursor: grab;
-}
-
-.mermaid-fullscreen-close {
-    position: fixed !important;
-    top: 20px !important;
-    right: 20px !important;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s;
-    font-size: 24px;
-    line-height: 1;
-    color: #333;
-}
-
-.mermaid-fullscreen-close:hover {
-    background: white;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-close.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-close.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
-    display: none !important;
-}`;
-document.head.appendChild(fullscreenStyle);
-
-// Detect if page has dark background
-const isDarkTheme = () => {
-    const bgColor = window.getComputedStyle(document.body).backgroundColor;
-    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
-    if (match) {
-        const r = parseInt(match[1]);
-        const g = parseInt(match[2]);
-        const b = parseInt(match[3]);
-        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        return brightness < 128;
-    }
-    return false;
-};
-
-const load = async () => {
-    await mermaid.run();
-
-    const all_mermaids = document.querySelectorAll(".mermaid");
-    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
-
-    if ("False" === "True") {
-        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
-        if(mermaids_to_add_zoom > 0) {
-            var svgs = d3.selectAll("");
-            if(all_mermaids.length !== mermaids_processed.length) {
-                setTimeout(load, 200);
-                return;
-            } else if(svgs.size() !== mermaids_to_add_zoom) {
-                setTimeout(load, 200);
-                return;
-            } else {
-                svgs.each(function() {
-                    var svg = d3.select(this);
-                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
-                    var inner = svg.select("g");
-                    var zoom = d3.zoom().on("zoom", function(event) {
-                        inner.attr("transform", event.transform);
-                    });
-                    svg.call(zoom);
-                });
-            }
-        }
-    } else if(all_mermaids.length !== mermaids_processed.length) {
-        // Wait for mermaid to process all diagrams
-        setTimeout(load, 200);
-        return;
-    }
-
-    const darkTheme = isDarkTheme();
-
-    // Stop here if not adding fullscreen capability
-    if ("True" !== "True") return;
-
-    const modal = document.createElement('div');
-    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
-    modal.setAttribute('role', 'dialog');
-    modal.setAttribute('aria-modal', 'true');
-    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
-    modal.innerHTML = `
-        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
-        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
-    `;
-    document.body.appendChild(modal);
-
-    const modalContent = modal.querySelector('.mermaid-container-fullscreen');
-    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
-
-    let previousScrollOffset = [window.scrollX, window.scrollY];
-
-    const closeModal = () => {
-        modal.classList.remove('active');
-        modalContent.innerHTML = '';
-        document.body.style.overflow = ''
-        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
-    };
-
-    closeBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('active')) {
-            closeModal();
-        }
-    });
-
-    const allButtons = [];
-
-    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
-        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
-            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
-            return;
-        }
-
-        const container = document.createElement('div');
-        container.className = 'mermaid-container';
-        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
-        container.appendChild(mermaidDiv);
-
-        const fullscreenBtn = document.createElement('button');
-        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
-        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
-        fullscreenBtn.textContent = '⛶';
-        fullscreenBtn.style.opacity = '50%';
-
-        // Calculate dynamic position based on diagram's margin and padding
-        const diagramStyle = window.getComputedStyle(mermaidDiv);
-        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
-        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
-        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
-        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
-        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
-        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
-
-        fullscreenBtn.addEventListener('click', () => {
-            previousScrollOffset = [window.scroll, window.scrollY];
-            const clone = mermaidDiv.cloneNode(true);
-            modalContent.innerHTML = '';
-            modalContent.appendChild(clone);
-
-            const svg = clone.querySelector('svg');
-            if (svg) {
-                svg.removeAttribute('width');
-                svg.removeAttribute('height');
-                svg.style.width = '100%';
-                svg.style.height = 'auto';
-                svg.style.maxWidth = '100%';
-                svg.style.sdisplay = 'block';
-
-                if ("False" === "True") {
-                    setTimeout(() => {
-                        const g = svg.querySelector('g');
-                        if (g) {
-                            var svgD3 = d3.select(svg);
-                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
-                            var inner = svgD3.select("g");
-                            var zoom = d3.zoom().on("zoom", function(event) {
-                                inner.attr("transform", event.transform);
-                            });
-                            svgD3.call(zoom);
-                        }
-                    }, 100);
-                }
-            }
-
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        });
-
-        container.appendChild(fullscreenBtn);
-        allButtons.push(fullscreenBtn);
-    });
-
-    // Update theme classes when theme changes
-    const updateTheme = () => {
-        const dark = isDarkTheme();
-        allButtons.forEach(btn => {
-            if (dark) {
-                btn.classList.add('dark-theme');
-            } else {
-                btn.classList.remove('dark-theme');
-            }
-        });
-        if (dark) {
-            modal.classList.add('dark-theme');
-            modalContent.classList.add('dark-theme');
-            closeBtn.classList.add('dark-theme');
-        } else {
-            modal.classList.remove('dark-theme');
-            modalContent.classList.remove('dark-theme');
-            closeBtn.classList.remove('dark-theme');
-        }
-    };
-
-    // Watch for theme changes
-    const observer = new MutationObserver(updateTheme);
-    observer.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['class', 'style', 'data-theme']
-    });
-    observer.observe(document.body, {
-        attributes: true,
-        attributeFilter: ['class', 'style']
-    });
-};
-
-window.addEventListener("load", load);
-</script>
-        <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
-        <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -394,11 +35,15 @@ window.addEventListener("load", load);
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> openEuler Embedded在线文档
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -490,13 +135,13 @@ window.addEventListener("load", load);
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../../user_guide/index.html">用户使用指导</a> &raquo;</li>
-          <li><a href="../../index.html">关键特性指导</a> &raquo;</li>
-          <li><a href="../index.html">具身智能 (Embodied AI)</a> &raquo;</li>
-          <li><a href="../ib_robot.html">具身机器人框架IB Robot</a> &raquo;</li>
-          <li><a href="index.html">动作调度</a> &raquo;</li>
-      <li>动作调度器节点</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">具身机器人框架IB Robot</a></li>
+          <li class="breadcrumb-item"><a href="index.html">动作调度</a></li>
+      <li class="breadcrumb-item active">动作调度器节点</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -506,7 +151,7 @@ window.addEventListener("load", load);
            <div itemprop="articleBody">
              
   <section id="id1">
-<h1>动作调度器节点<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<h1>动作调度器节点<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
 <details><p>相关源文件</p>
 <p>以下文件用于生成此文档页面：</p>
 <ul class="simple">
@@ -531,7 +176,7 @@ window.addEventListener("load", load);
 <li><p><a class="reference external" href="src/robot_config/robot_config/launch_builders/recording.py">src/robot_config/robot_config/launch_builders/recording.py</a></p></li>
 </ul>
 </details><section id="id2">
-<h2>目的与范围<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<h2>目的与范围<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">ActionDispatcherNode</span></code> 是 IB-Robot 动作调度流水线中的核心执行协调器。它实现了基于拉取的架构，维护一个动作队列，当队列不足时触发推理请求，并以固定频率（默认 100Hz）向 ros2_control 发布动作。本文档介绍该节点的控制循环、队列管理和基于水位线的推理触发机制。</p>
 <div class="line-block">
 <div class="line"><strong>相关页面</strong>：- 有关时间平滑算法和跨帧混合，请参阅 <a class="reference external" href="#8.2">时间平滑</a> - 有关通过 TopicExecutor 和 ActionExecutor 执行动作，请参阅 <a class="reference external" href="#8.3">话题和动作执行器</a></div>
@@ -543,10 +188,10 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id3">
-<h2>概述<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<h2>概述<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">ActionDispatcherNode</span></code> 充当机器人的”小脑”，将推理延迟与控制频率解耦。它解决了 AI 策略推理（通常 50-200ms）远慢于所需控制速率（100Hz = 10ms）的根本问题。</p>
 <section id="id4">
-<h3>关键职责<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<h3>关键职责<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>职责</p></th>
@@ -578,9 +223,9 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id5">
-<h2>系统架构<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<h2>系统架构<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
 <section id="id6">
-<h3>执行流水线中的位置<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<h3>执行流水线中的位置<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
 <pre  class="mermaid">
         graph TB
     subgraph &quot;Inference Layer&quot;
@@ -616,7 +261,7 @@ window.addEventListener("load", load);
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L165-L201">src/action_dispatch/action_dispatch/action_dispatcher_node.py:165-201</a></p>
 </section>
 <section id="id7">
-<h3>通信接口<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<h3>通信接口<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
 <pre  class="mermaid">
         graph LR
     subgraph &quot;Inputs&quot;
@@ -658,9 +303,9 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id8">
-<h2>控制循环实现<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<h2>控制循环实现<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
 <section id="id9">
-<h3>基于定时器的执行<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<h3>基于定时器的执行<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">ActionDispatcherNode</span></code> 的核心是 <code class="docutils literal notranslate"><span class="pre">_control_loop()</span></code> 方法，以固定频率（默认 100Hz）执行：</p>
 <pre  class="mermaid">
         graph TD
@@ -721,9 +366,9 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id10">
-<h2>队列管理<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<h2>队列管理<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h2>
 <section id="id11">
-<h3>双模式架构<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<h3>双模式架构<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
 <p>该节点支持两种队列管理模式：</p>
 <p><strong>1. 简单队列模式</strong>（<code class="docutils literal notranslate"><span class="pre">temporal_smoothing_enabled=false</span></code>）- 使用 <code class="docutils literal notranslate"><span class="pre">collections.deque</span></code>，设置 <code class="docutils literal notranslate"><span class="pre">maxlen=queue_size</span></code> - 推理完成时直接替换动作 - 适用于单步策略或调试</p>
 <p><strong>2. 时间平滑模式</strong>（<code class="docutils literal notranslate"><span class="pre">temporal_smoothing_enabled=true</span></code>）- 使用 <code class="docutils literal notranslate"><span class="pre">TemporalSmootherManager</span></code> 包装器 - 跨帧指数加权混合 - 动作分块模型（ACT、Diffusion Policy）必需</p>
@@ -760,7 +405,7 @@ window.addEventListener("load", load);
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L165-L178">src/action_dispatch/action_dispatch/action_dispatcher_node.py:165-178</a></p>
 </section>
 <section id="id12">
-<h3>动作执行跟踪<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<h3>动作执行跟踪<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
 <p>为了正确对齐新的推理结果与现有队列，节点跟踪推理期间执行了多少动作：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># At inference request time (line 209)</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">_plan_length_at_inference_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_plan_length</span><span class="p">()</span>
@@ -778,9 +423,9 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id13">
-<h2>基于水位线的推理触发<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
+<h2>基于水位线的推理触发<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h2>
 <section id="id14">
-<h3>触发逻辑<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<h3>触发逻辑<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
 <p>节点使用水位线阈值异步触发推理：</p>
 <pre  class="mermaid">
         graph TD
@@ -832,7 +477,7 @@ window.addEventListener("load", load);
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L203-L220">src/action_dispatch/action_dispatch/action_dispatcher_node.py:203-220</a></p>
 </section>
 <section id="id15">
-<h3>推理请求流程<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<h3>推理请求流程<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
 <pre  class="mermaid">
         sequenceDiagram
     participant CL as _control_loop
@@ -869,9 +514,9 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id16">
-<h2>结果处理与队列更新<a class="headerlink" href="#id16" title="Link to this heading"></a></h2>
+<h2>结果处理与队列更新<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h2>
 <section id="id17">
-<h3>推理结果回调<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<h3>推理结果回调<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h3>
 <p>当推理完成时，<code class="docutils literal notranslate"><span class="pre">_result_cb()</span></code> 处理结果并更新队列：</p>
 <pre  class="mermaid">
         graph TD
@@ -936,7 +581,7 @@ window.addEventListener("load", load);
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L232-L278">src/action_dispatch/action_dispatch/action_dispatcher_node.py:232-278</a></p>
 </section>
 <section id="id18">
-<h3>简单队列模式更新<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
+<h3>简单队列模式更新<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h3>
 <p>对于简单队列模式，更新逻辑跳过已执行的动作：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Skip actions that were executed during inference (line 272)</span>
 <span class="n">relevant_actions</span> <span class="o">=</span> <span class="n">action_chunk_np</span><span class="p">[</span><span class="n">actions_executed</span><span class="p">:]</span>
@@ -953,9 +598,9 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id19">
-<h2>状态管理<a class="headerlink" href="#id19" title="Link to this heading"></a></h2>
+<h2>状态管理<a class="headerlink" href="#id19" title="Permalink to this heading"></a></h2>
 <section id="id20">
-<h3>状态变量<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
+<h3>状态变量<a class="headerlink" href="#id20" title="Permalink to this heading"></a></h3>
 <p>节点维护多个状态变量以协调推理和执行：</p>
 <pre  class="mermaid">
         graph TB
@@ -1009,9 +654,9 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id21">
-<h2>服务接口<a class="headerlink" href="#id21" title="Link to this heading"></a></h2>
+<h2>服务接口<a class="headerlink" href="#id21" title="Permalink to this heading"></a></h2>
 <section id="id22">
-<h3>重置服务<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
+<h3>重置服务<a class="headerlink" href="#id22" title="Permalink to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">~/reset</span></code> 服务将调度器重置为初始状态：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_reset_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Resetting dispatcher state&quot;</span><span class="p">)</span>
@@ -1029,7 +674,7 @@ window.addEventListener("load", load);
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L280-L288">src/action_dispatch/action_dispatch/action_dispatcher_node.py:280-288</a></p>
 </section>
 <section id="id23">
-<h3>切换平滑服务<a class="headerlink" href="#id23" title="Link to this heading"></a></h3>
+<h3>切换平滑服务<a class="headerlink" href="#id23" title="Permalink to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">~/toggle_smoothing</span></code> 服务支持运行时在平滑模式和直接模式之间切换：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_toggle_smoothing_cb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_smoother</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1051,9 +696,9 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id24">
-<h2>参数参考<a class="headerlink" href="#id24" title="Link to this heading"></a></h2>
+<h2>参数参考<a class="headerlink" href="#id24" title="Permalink to this heading"></a></h2>
 <section id="id25">
-<h3>完整参数表<a class="headerlink" href="#id25" title="Link to this heading"></a></h3>
+<h3>完整参数表<a class="headerlink" href="#id25" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>参数</p></th>
@@ -1122,9 +767,9 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id26">
-<h2>初始化序列<a class="headerlink" href="#id26" title="Link to this heading"></a></h2>
+<h2>初始化序列<a class="headerlink" href="#id26" title="Permalink to this heading"></a></h2>
 <section id="id27">
-<h3>节点启动流程<a class="headerlink" href="#id27" title="Link to this heading"></a></h3>
+<h3>节点启动流程<a class="headerlink" href="#id27" title="Permalink to this heading"></a></h3>
 <pre  class="mermaid">
         graph TD
     Init[&quot;__init__()&quot;]
@@ -1173,9 +818,9 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id28">
-<h2>与其他组件的集成<a class="headerlink" href="#id28" title="Link to this heading"></a></h2>
+<h2>与其他组件的集成<a class="headerlink" href="#id28" title="Permalink to this heading"></a></h2>
 <section id="id29">
-<h3>契约驱动执行<a class="headerlink" href="#id29" title="Link to this heading"></a></h3>
+<h3>契约驱动执行<a class="headerlink" href="#id29" title="Permalink to this heading"></a></h3>
 <p>节点依赖 robot_config 契约来正确映射动作：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load contract (lines 106-113)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">robot_config.loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_robot_config</span>
@@ -1191,7 +836,7 @@ window.addEventListener("load", load);
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L106-L122">src/action_dispatch/action_dispatch/action_dispatcher_node.py:106-122</a></p>
 </section>
 <section id="id30">
-<h3>启动配置示例<a class="headerlink" href="#id30" title="Link to this heading"></a></h3>
+<h3>启动配置示例<a class="headerlink" href="#id30" title="Permalink to this heading"></a></h3>
 <p>从 <code class="docutils literal notranslate"><span class="pre">robot.launch.py</span></code> 中，调度器使用正确的参数启动：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Parameter binding from control mode config</span>
 <span class="n">parameters</span> <span class="o">=</span> <span class="p">[{</span>
@@ -1212,7 +857,7 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id31">
-<h2>主入口点<a class="headerlink" href="#id31" title="Link to this heading"></a></h2>
+<h2>主入口点<a class="headerlink" href="#id31" title="Permalink to this heading"></a></h2>
 <p>节点通过标准 ROS 2 Python 可执行模式启动：</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">rclpy</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">)</span>

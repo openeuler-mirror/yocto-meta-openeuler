@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>任务分发 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="硬件集成" href="../hardware/index.html" />
+    <link rel="prev" title="MoveIt 启动配置" href="moveit_launch_configuration.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol.html">协议转换</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference/index.html">推理流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../action_dispatch/index.html">动作分发</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_pipeline/index.html">数据流水线</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">运动规划</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">运动规划概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="moveitgateway_node.html">MoveItGateway 节点</a></li>
+<li class="toctree-l6"><a class="reference internal" href="5dof_kinematic_constraints.html">5DOF 运动学约束</a></li>
+<li class="toctree-l6"><a class="reference internal" href="moveit_launch_configuration.html">MoveIt 启动配置</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">任务分发</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">架构概览</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id4">关键组件</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id5">数据接口</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id7">配置与启动</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../hardware/index.html">硬件集成</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../extended_capabilities/index.html">扩展能力</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">运动规划</a></li>
+      <li class="breadcrumb-item active">任务分发</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>任务分发<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<details>
+<summary>Relevant source files</summary>
+<p>The following files were used as context for generating this wiki page:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/action/ExecuteTaskPlan.action">src/ibrobot_msgs/action/ExecuteTaskPlan.action</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/action/PrimitiveCommand.action">src/ibrobot_msgs/action/PrimitiveCommand.action</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/action/SkillCommand.action">src/ibrobot_msgs/action/SkillCommand.action</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/msg/SceneAnalysisRequest.msg">src/ibrobot_msgs/msg/SceneAnalysisRequest.msg</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/msg/SceneAnalysisResult.msg">src/ibrobot_msgs/msg/SceneAnalysisResult.msg</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/msg/TaskCommand.msg">src/ibrobot_msgs/msg/TaskCommand.msg</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/msg/TaskStatus.msg">src/ibrobot_msgs/msg/TaskStatus.msg</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/msg/TaskStep.msg">src/ibrobot_msgs/msg/TaskStep.msg</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/package.xml">src/ibrobot_msgs/package.xml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/srv/MoveToPose.srv">src/ibrobot_msgs/srv/MoveToPose.srv</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/srv/ValidatePrimitive.srv">src/ibrobot_msgs/srv/ValidatePrimitive.srv</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/srv/ValidateSkill.srv">src/ibrobot_msgs/srv/ValidateSkill.srv</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/task_execution.py">src/robot_config/robot_config/launch_builders/task_execution.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/package.xml">src/robot_moveit/package.xml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/README.en.md">src/task_dispatch/README.en.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/README.md">src/task_dispatch/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/task_dispatch/task_executor_node.py">src/task_dispatch/task_dispatch/task_executor_node.py</a></p></li>
+</ul>
+</details>
+<p><code class="docutils literal notranslate"><span class="pre">task_dispatch</span></code> 是 IB-Robot 的任务级执行框架。它对应 <code class="docutils literal notranslate"><span class="pre">action_dispatch</span></code> 的高层侧，面向复杂操作任务提供顺序化、事件驱动的架构。<code class="docutils literal notranslate"><span class="pre">action_dispatch</span></code> 负责模仿学习策略（ACT/VLA）的高频（100Hz）关节流，而 <code class="docutils literal notranslate"><span class="pre">task_dispatch</span></code> 编排 “move to pose”、“open gripper”、“wait” 等离散步骤，是 <strong>VoxPoser</strong> 和 <strong>visual_grasp</strong> 等运动规划器的主要接口 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/README.md#L5-L11">src/task_dispatch/README.md:5-11</a>。</p>
+<section id="id2">
+<h2>架构概览<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>该框架位于高层规划器和运动执行层之间。它把一组 <code class="docutils literal notranslate"><span class="pre">TaskStep</span></code> 消息转换为具体硬件命令，并委托 <code class="docutils literal notranslate"><span class="pre">moveit_gateway</span></code> 和 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 控制器执行 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/task_dispatch/task_executor_node.py#L4-L12">src/task_dispatch/task_dispatch/task_executor_node.py:4-12</a>。</p>
+<section id="id3">
+<h3>任务执行流程<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<p>下图展示任务计划如何从规划器进入 <code class="docutils literal notranslate"><span class="pre">TaskExecutorNode</span></code>，再到达硬件。</p>
+<p><strong>Task Dispatch Execution Pipeline</strong></p>
+<pre  class="mermaid">
+        graph TD
+    subgraph &quot;Planner_Space_(Action_Clients)&quot;
+        A[&quot;VoxPoser_Planner&quot;]
+        B[&quot;Visual_Grasp_Planner&quot;]
+    end
+
+    subgraph &quot;Task_Dispatch_Layer&quot;
+        C[&quot;TaskExecutorNode&quot;]
+    end
+
+    subgraph &quot;Execution_Layer&quot;
+        D[&quot;MoveItGateway&quot;]
+        E[&quot;Gripper_Trajectory_Controller&quot;]
+        F[&quot;Clock_Timer&quot;]
+    end
+
+    A --&gt;|&quot;ExecuteTaskPlan.action&quot;| C
+    B --&gt;|&quot;ExecuteTaskPlan.action&quot;| C
+
+    C --&gt;|&quot;MoveToPose.srv&quot;| D
+    C --&gt;|&quot;FollowJointTrajectory.action&quot;| E
+    C --&gt;|&quot;time.sleep()&quot;| F
+
+    D --&gt;|&quot;IK_+_Path_Planning&quot;| G[&quot;ros2_control_Hardware&quot;]
+    E --&gt;|&quot;Joint_Command&quot;| G
+    </pre><p>来源: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/README.md#L24-L46">src/task_dispatch/README.md:24-46</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/task_dispatch/task_executor_node.py#L14-L23">src/task_dispatch/task_dispatch/task_executor_node.py:14-23</a></p>
+</section>
+</section>
+<section id="id4">
+<h2>关键组件<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
+<section id="taskexecutornode">
+<h3>TaskExecutorNode<a class="headerlink" href="#taskexecutornode" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">TaskExecutorNode</span></code> 实现 <code class="docutils literal notranslate"><span class="pre">ExecuteTaskPlan</span></code> action server <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/task_dispatch/task_executor_node.py#L110-L118">src/task_dispatch/task_dispatch/task_executor_node.py:110-118</a>。它解析步骤列表并按顺序执行，同时向调用方提供实时反馈 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/task_dispatch/task_executor_node.py#L58-L62">src/task_dispatch/task_dispatch/task_executor_node.py:58-62</a>。</p>
+<ul class="simple">
+<li><p><strong>初始化</strong>: 从 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> 加载机器人配置，解析具体夹爪关节名和控制器 action 话题 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/task_dispatch/task_executor_node.py#L67-L81">src/task_dispatch/task_dispatch/task_executor_node.py:67-81</a>。</p></li>
+<li><p><strong>并发</strong>: 对 service/action client 使用 <code class="docutils literal notranslate"><span class="pre">ReentrantCallbackGroup</span></code>，对主 action server 使用 <code class="docutils literal notranslate"><span class="pre">MutuallyExclusiveCallbackGroup</span></code>，在保持目标串行化的同时避免阻塞执行 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/task_dispatch/task_executor_node.py#L64-L65">src/task_dispatch/task_dispatch/task_executor_node.py:64-65</a>。</p></li>
+<li><p><strong>夹爪解析</strong>: 通过检查 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML 中包含 “gripper” 和 “trajectory” 的控制器，动态确定夹爪关节和 action 话题 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/task_dispatch/task_executor_node.py#L132-L155">src/task_dispatch/task_dispatch/task_executor_node.py:132-155</a>。</p></li>
+</ul>
+</section>
+<section id="moveitgateway">
+<h3>MoveItGateway 集成<a class="headerlink" href="#moveitgateway" title="Permalink to this heading"></a></h3>
+<p>对于机械臂运动，执行器依赖 <code class="docutils literal notranslate"><span class="pre">moveit_gateway</span></code> 节点。该集成通过 <code class="docutils literal notranslate"><span class="pre">/moveit_gateway/move_to_pose</span></code> 服务完成 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/srv/MoveToPose.srv#L1-L4">src/ibrobot_msgs/srv/MoveToPose.srv:1-4</a>。</p>
+<ul class="simple">
+<li><p><strong>同步执行</strong>: 执行器会阻塞等待服务调用，直到机械臂到达目标或失败，从而确保步骤按顺序完成 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/srv/MoveToPose.srv#L1-L4">src/ibrobot_msgs/srv/MoveToPose.srv:1-4</a>。</p></li>
+<li><p><strong>运动学处理</strong>: gateway 管理 5DOF 约束（例如 SO101 机械臂），通过 <code class="docutils literal notranslate"><span class="pre">constrain_to_z_axis_only</span></code> 方法放宽 roll 约束并保持 Z 轴姿态 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/package.xml#L23-L26">src/robot_moveit/package.xml:23-26</a>（引用 <code class="docutils literal notranslate"><span class="pre">robot_moveit</span></code> 包，所给文件中未包含具体方法）。</p></li>
+</ul>
+<p>来源: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/task_dispatch/task_executor_node.py#L84-L88">src/task_dispatch/task_dispatch/task_executor_node.py:84-88</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/srv/MoveToPose.srv#L1-L4">src/ibrobot_msgs/srv/MoveToPose.srv:1-4</a></p>
+</section>
+</section>
+<section id="id5">
+<h2>数据接口<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
+<section id="taskstep">
+<h3>TaskStep 定义<a class="headerlink" href="#taskstep" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">TaskStep.msg</span></code> 是基本工作单元。它与硬件无关，支持三类主要操作 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/msg/TaskStep.msg#L1-L6">src/ibrobot_msgs/msg/TaskStep.msg:1-6</a>。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>步骤类型</p></th>
+<th class="head text-left"><p>常量</p></th>
+<th class="head text-left"><p>说明</p></th>
+<th class="head text-left"><p>实现</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">MOVE_TO_POSE</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">0</span></code></p></td>
+<td class="text-left"><p>笛卡尔移动</p></td>
+<td class="text-left"><p>调用 <code class="docutils literal notranslate"><span class="pre">MoveToPose.srv</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/README.md#L52">src/task_dispatch/README.md:52</a></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">GRIPPER</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
+<td class="text-left"><p>夹爪开合</p></td>
+<td class="text-left"><p>发送 <code class="docutils literal notranslate"><span class="pre">FollowJointTrajectory.action</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/README.md#L53">src/task_dispatch/README.md:53</a></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">WAIT</span></code></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">2</span></code></p></td>
+<td class="text-left"><p>时间暂停</p></td>
+<td class="text-left"><p>可取消的 <code class="docutils literal notranslate"><span class="pre">time.sleep()</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/README.md#L54">src/task_dispatch/README.md:54</a></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="action-executetaskplan">
+<h3>Action 接口：ExecuteTaskPlan<a class="headerlink" href="#action-executetaskplan" title="Permalink to this heading"></a></h3>
+<p>规划器通过 <code class="docutils literal notranslate"><span class="pre">ExecuteTaskPlan.action</span></code> 与系统交互 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/action/ExecuteTaskPlan.action#L1-L4">src/ibrobot_msgs/action/ExecuteTaskPlan.action:1-4</a>。</p>
+<p><strong>Entity Mapping: Natural Language to Code</strong></p>
+<pre  class="mermaid">
+        classDiagram
+    class ExecuteTaskPlan_Goal {
+        +TaskStep[] steps
+        +string task_id
+        +string task_description
+    }
+    class TaskStep {
+        +uint8 type
+        +string label
+        +geometry_msgs/Pose target_pose
+        +float64 velocity_scaling
+        +float64 gripper_position
+        +float64 wait_duration_s
+    }
+    class ExecuteTaskPlan_Feedback {
+        +int32 current_step
+        +int32 total_steps
+        +string status
+        +float32 progress
+    }
+    ExecuteTaskPlan_Goal *-- TaskStep : &quot;contains sequence of&quot;
+    </pre><p>来源: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/action/ExecuteTaskPlan.action#L6-L23">src/ibrobot_msgs/action/ExecuteTaskPlan.action:6-23</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/msg/TaskStep.msg#L8-L26">src/ibrobot_msgs/msg/TaskStep.msg:8-26</a></p>
+</section>
+<section id="id6">
+<h3>其他相关消息和服务<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ibrobot_msgs</span></code> 包还定义了多个与任务级操作相关的消息和服务，常由更高层 AI agent 或规划模块使用，并可能最终进入 <code class="docutils literal notranslate"><span class="pre">ExecuteTaskPlan</span></code>。</p>
+<p><strong>Task-Level Communication Interfaces</strong></p>
+<pre  class="mermaid">
+        graph TD
+    subgraph &quot;Task_Command_Interfaces&quot;
+        TC[&quot;ibrobot_msgs/TaskCommand.msg&quot;]
+        SKC[&quot;ibrobot_msgs/SkillCommand.action&quot;]
+        PRC[&quot;ibrobot_msgs/PrimitiveCommand.action&quot;]
+    end
+
+    subgraph &quot;Task_Status_and_Validation&quot;
+        TS[&quot;ibrobot_msgs/TaskStatus.msg&quot;]
+        VSP[&quot;ibrobot_msgs/srv/ValidateSkill.srv&quot;]
+        VPP[&quot;ibrobot_msgs/srv/ValidatePrimitive.srv&quot;]
+    end
+
+    subgraph &quot;Scene_Analysis&quot;
+        SAR[&quot;ibrobot_msgs/SceneAnalysisRequest.msg&quot;]
+        SARR[&quot;ibrobot_msgs/SceneAnalysisResult.msg&quot;]
+    end
+
+    TC --&gt;|&quot;Can trigger skill execution&quot;| SKC
+    SKC --&gt;|&quot;Skills composed of primitives&quot;| PRC
+    SKC --&gt;|&quot;Reports status&quot;| TS
+    PRC --&gt;|&quot;Reports status&quot;| TS
+
+    VSP --&gt;|&quot;Pre-execution check&quot;| SKC
+    VPP --&gt;|&quot;Pre-execution check&quot;| PRC
+
+    SAR --&gt;|&quot;Request scene info&quot;| SARR
+    SARR --&gt;|&quot;Inform planning&quot;| TC
+    </pre><p>来源:
+<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/msg/TaskCommand.msg#L1-L12">src/ibrobot_msgs/msg/TaskCommand.msg:1-12</a>,
+<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/action/SkillCommand.action#L1-L16">src/ibrobot_msgs/action/SkillCommand.action:1-16</a>,
+<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/action/PrimitiveCommand.action#L1-L17">src/ibrobot_msgs/action/PrimitiveCommand.action:1-17</a>,
+<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/msg/TaskStatus.msg#L1-L10">src/ibrobot_msgs/msg/TaskStatus.msg:1-10</a>,
+<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/srv/ValidateSkill.srv#L1-L7">src/ibrobot_msgs/srv/ValidateSkill.srv:1-7</a>,
+<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/srv/ValidatePrimitive.srv#L1-L13">src/ibrobot_msgs/srv/ValidatePrimitive.srv:1-13</a>,
+<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/msg/SceneAnalysisRequest.msg#L1-L7">src/ibrobot_msgs/msg/SceneAnalysisRequest.msg:1-7</a>,
+<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/msg/SceneAnalysisResult.msg#L1-L14">src/ibrobot_msgs/msg/SceneAnalysisResult.msg:1-14</a></p>
+</section>
+</section>
+<section id="id7">
+<h2>配置与启动<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">task_executor_node</span></code> 会根据 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> 中指定的 <code class="docutils literal notranslate"><span class="pre">control_mode</span></code> 动态启动 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/task_execution.py#L3-L9">src/robot_config/robot_config/launch_builders/task_execution.py:3-9</a>。</p>
+<section id="id8">
+<h3>自动检测<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
+<p>启动构建器中的 <code class="docutils literal notranslate"><span class="pre">generate_task_executor_node</span></code> 函数会检查 <code class="docutils literal notranslate"><span class="pre">control_mode</span></code> 中的特定关键词。如果模式名包含 “moveit”、”visual_grasp” 或 “voxposer”，该节点会自动加入启动图 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/task_execution.py#L36-L42">src/robot_config/robot_config/launch_builders/task_execution.py:36-42</a>。</p>
+</section>
+<section id="id9">
+<h3>参数<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<p>节点需要 <code class="docutils literal notranslate"><span class="pre">robot_config_path</span></code> 来解析关节映射和控制器名称 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/task_dispatch/task_executor_node.py#L68-L73">src/task_dispatch/task_dispatch/task_executor_node.py:68-73</a>：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">robot_config_path</span></code>: 指向 YAML 文件的绝对路径，该文件定义机器人的物理结构和控制器 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/task_dispatch/task_executor_node.py#L25">src/task_dispatch/task_dispatch/task_executor_node.py:25</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_sim_time</span></code>: 从全局启动配置继承，用于仿真同步 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/task_execution.py#L62">src/robot_config/robot_config/launch_builders/task_execution.py:62</a>。</p></li>
+</ul>
+<p>来源: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/task_execution.py#L55-L66">src/robot_config/robot_config/launch_builders/task_execution.py:55-66</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/package.xml#L23-L26">src/robot_moveit/package.xml:23-26</a></p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="moveit_launch_configuration.html" class="btn btn-neutral float-left" title="MoveIt 启动配置" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../hardware/index.html" class="btn btn-neutral float-right" title="硬件集成" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="task_dispatch.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

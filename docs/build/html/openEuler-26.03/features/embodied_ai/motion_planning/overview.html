@@ -1,387 +1,28 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>运动规划概述 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/documentation_options.js?v=7eb38eeb"></script>
-        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs"></script>
-        <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.2.0/dist/mermaid-layout-elk.esm.min.mjs"></script>
-        <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.2.0/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
-        <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-        <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
-
-const defaultStyle = document.createElement('style');
-defaultStyle.textContent = `pre.mermaid {
-    /* Same as .mermaid-container > pre */
-    display: block;
-    width: 100%;
-}
-
-pre.mermaid > svg {
-    /* Same as .mermaid-container > pre > svg */
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}
-`;
-document.head.appendChild(defaultStyle);
-
-const fullscreenStyle = document.createElement('style');
-fullscreenStyle.textContent = `.mermaid-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-}
-
-.mermaid-container > pre {
-    display: block;
-    width: 100%;
-}
-
-.mermaid-container > pre > svg {
-    height: 500px;
-    width: 100%;
-    max-width: 100% !important;
-}
-
-.mermaid-fullscreen-btn {
-    width: 28px;
-    height: 28px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.3);
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    font-size: 14px;
-    line-height: 1;
-    padding: 0;
-    color: #333;
-}
-
-.mermaid-fullscreen-btn:hover {
-    opacity: 100% !important;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-btn.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-btn.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal {
-    display: none;
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 95vw;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.98);
-    z-index: 9999;
-    padding: 20px;
-    overflow: auto;
-}
-
-.mermaid-fullscreen-modal.dark-theme {
-    background: rgba(0, 0, 0, 0.98);
-}
-
-.mermaid-fullscreen-modal.active {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen {
-    position: relative;
-    width: 95vw;
-    height: 90vh;
-    max-width: 95vw;
-    max-height: 90vh;
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    overflow: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen.dark-theme {
-    background: #1a1a1a;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
-}
-
-.mermaid-container-fullscreen pre.mermaid {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mermaid-container-fullscreen .mermaid svg {
-    height: 100% !important;
-    width: 100% !important;
-    cursor: grab;
-}
-
-.mermaid-fullscreen-close {
-    position: fixed !important;
-    top: 20px !important;
-    right: 20px !important;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 10000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    transition: all 0.2s;
-    font-size: 24px;
-    line-height: 1;
-    color: #333;
-}
-
-.mermaid-fullscreen-close:hover {
-    background: white;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-    transform: scale(1.1);
-}
-
-.mermaid-fullscreen-close.dark-theme {
-    background: rgba(50, 50, 50, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #e0e0e0;
-}
-
-.mermaid-fullscreen-close.dark-theme:hover {
-    background: rgba(60, 60, 60, 1);
-    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
-}
-
-.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
-    display: none !important;
-}`;
-document.head.appendChild(fullscreenStyle);
-
-// Detect if page has dark background
-const isDarkTheme = () => {
-    const bgColor = window.getComputedStyle(document.body).backgroundColor;
-    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
-    if (match) {
-        const r = parseInt(match[1]);
-        const g = parseInt(match[2]);
-        const b = parseInt(match[3]);
-        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-        return brightness < 128;
-    }
-    return false;
-};
-
-const load = async () => {
-    await mermaid.run();
-
-    const all_mermaids = document.querySelectorAll(".mermaid");
-    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
-
-    if ("False" === "True") {
-        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
-        if(mermaids_to_add_zoom > 0) {
-            var svgs = d3.selectAll("");
-            if(all_mermaids.length !== mermaids_processed.length) {
-                setTimeout(load, 200);
-                return;
-            } else if(svgs.size() !== mermaids_to_add_zoom) {
-                setTimeout(load, 200);
-                return;
-            } else {
-                svgs.each(function() {
-                    var svg = d3.select(this);
-                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
-                    var inner = svg.select("g");
-                    var zoom = d3.zoom().on("zoom", function(event) {
-                        inner.attr("transform", event.transform);
-                    });
-                    svg.call(zoom);
-                });
-            }
-        }
-    } else if(all_mermaids.length !== mermaids_processed.length) {
-        // Wait for mermaid to process all diagrams
-        setTimeout(load, 200);
-        return;
-    }
-
-    const darkTheme = isDarkTheme();
-
-    // Stop here if not adding fullscreen capability
-    if ("True" !== "True") return;
-
-    const modal = document.createElement('div');
-    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
-    modal.setAttribute('role', 'dialog');
-    modal.setAttribute('aria-modal', 'true');
-    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
-    modal.innerHTML = `
-        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
-        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
-    `;
-    document.body.appendChild(modal);
-
-    const modalContent = modal.querySelector('.mermaid-container-fullscreen');
-    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
-
-    let previousScrollOffset = [window.scrollX, window.scrollY];
-
-    const closeModal = () => {
-        modal.classList.remove('active');
-        modalContent.innerHTML = '';
-        document.body.style.overflow = ''
-        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
-    };
-
-    closeBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('active')) {
-            closeModal();
-        }
-    });
-
-    const allButtons = [];
-
-    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
-        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
-            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
-            return;
-        }
-
-        const container = document.createElement('div');
-        container.className = 'mermaid-container';
-        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
-        container.appendChild(mermaidDiv);
-
-        const fullscreenBtn = document.createElement('button');
-        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
-        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
-        fullscreenBtn.textContent = '⛶';
-        fullscreenBtn.style.opacity = '50%';
-
-        // Calculate dynamic position based on diagram's margin and padding
-        const diagramStyle = window.getComputedStyle(mermaidDiv);
-        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
-        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
-        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
-        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
-        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
-        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
-
-        fullscreenBtn.addEventListener('click', () => {
-            previousScrollOffset = [window.scroll, window.scrollY];
-            const clone = mermaidDiv.cloneNode(true);
-            modalContent.innerHTML = '';
-            modalContent.appendChild(clone);
-
-            const svg = clone.querySelector('svg');
-            if (svg) {
-                svg.removeAttribute('width');
-                svg.removeAttribute('height');
-                svg.style.width = '100%';
-                svg.style.height = 'auto';
-                svg.style.maxWidth = '100%';
-                svg.style.sdisplay = 'block';
-
-                if ("False" === "True") {
-                    setTimeout(() => {
-                        const g = svg.querySelector('g');
-                        if (g) {
-                            var svgD3 = d3.select(svg);
-                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
-                            var inner = svgD3.select("g");
-                            var zoom = d3.zoom().on("zoom", function(event) {
-                                inner.attr("transform", event.transform);
-                            });
-                            svgD3.call(zoom);
-                        }
-                    }, 100);
-                }
-            }
-
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        });
-
-        container.appendChild(fullscreenBtn);
-        allButtons.push(fullscreenBtn);
-    });
-
-    // Update theme classes when theme changes
-    const updateTheme = () => {
-        const dark = isDarkTheme();
-        allButtons.forEach(btn => {
-            if (dark) {
-                btn.classList.add('dark-theme');
-            } else {
-                btn.classList.remove('dark-theme');
-            }
-        });
-        if (dark) {
-            modal.classList.add('dark-theme');
-            modalContent.classList.add('dark-theme');
-            closeBtn.classList.add('dark-theme');
-        } else {
-            modal.classList.remove('dark-theme');
-            modalContent.classList.remove('dark-theme');
-            closeBtn.classList.remove('dark-theme');
-        }
-    };
-
-    // Watch for theme changes
-    const observer = new MutationObserver(updateTheme);
-    observer.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: ['class', 'style', 'data-theme']
-    });
-    observer.observe(document.body, {
-        attributes: true,
-        attributeFilter: ['class', 'style']
-    });
-};
-
-window.addEventListener("load", load);
-</script>
-        <script src="../../../_static/js/mermaid-init.js?v=43679785"></script>
-        <script src="../../../_static/js/custom.js?v=2b2e6f96"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -394,11 +35,15 @@ window.addEventListener("load", load);
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> openEuler Embedded在线文档
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -487,13 +132,13 @@ window.addEventListener("load", load);
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../../user_guide/index.html">用户使用指导</a> &raquo;</li>
-          <li><a href="../../index.html">关键特性指导</a> &raquo;</li>
-          <li><a href="../index.html">具身智能 (Embodied AI)</a> &raquo;</li>
-          <li><a href="../ib_robot.html">具身机器人框架IB Robot</a> &raquo;</li>
-          <li><a href="index.html">运动规划 (MoveIt)</a> &raquo;</li>
-      <li>运动规划概述</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">具身机器人框架IB Robot</a></li>
+          <li class="breadcrumb-item"><a href="index.html">运动规划 (MoveIt)</a></li>
+      <li class="breadcrumb-item active">运动规划概述</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -503,7 +148,7 @@ window.addEventListener("load", load);
            <div itemprop="articleBody">
              
   <section id="id1">
-<h1>运动规划概述<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<h1>运动规划概述<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
 <details><p>相关源文件</p>
 <p>以下文件用作生成此 wiki 页面的上下文：</p>
 <ul class="simple">
@@ -529,10 +174,10 @@ window.addEventListener("load", load);
 <p>关于使用模型推理的端到端 AI 策略控制，请参阅 <a class="reference external" href="#8">动作分发</a>。关于控制模式切换，请参阅 <a class="reference external" href="#3.3">控制模式架构</a>。</p>
 <hr class="docutils" />
 <section id="id2">
-<h2>系统架构<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<h2>系统架构<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
 <p>MoveIt2 作为 IB-Robot 中三种控制模式之一运行，通过运动规划和 IK 求解将高级笛卡尔位姿命令转换为关节轨迹。</p>
 <section id="ib-robot-moveit">
-<h3>IB-Robot 中的 MoveIt 集成<a class="headerlink" href="#ib-robot-moveit" title="Link to this heading"></a></h3>
+<h3>IB-Robot 中的 MoveIt 集成<a class="headerlink" href="#ib-robot-moveit" title="Permalink to this heading"></a></h3>
 <pre  class="mermaid">
         graph TB
     subgraph &quot;Application Layer&quot;
@@ -580,7 +225,7 @@ window.addEventListener("load", load);
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L15-L16">README.md:15-16</a></p>
 </section>
 <section id="id3">
-<h3>控制模式架构<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<h3>控制模式架构<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
 <p>MoveIt 规划模式通过 <code class="docutils literal notranslate"><span class="pre">control_mode</span></code> 参数激活，并与统一的硬件抽象层集成：</p>
 <pre  class="mermaid">
         graph LR
@@ -618,10 +263,10 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="moveitgateway">
-<h2>MoveItGateway 节点<a class="headerlink" href="#moveitgateway" title="Link to this heading"></a></h2>
+<h2>MoveItGateway 节点<a class="headerlink" href="#moveitgateway" title="Permalink to this heading"></a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">moveit_gateway.py</span></code> 节点作为 MoveIt2 的高级接口，提供位姿命令订阅、多策略 IK 求解和末端执行器状态发布功能。</p>
 <section id="id4">
-<h3>节点接口<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<h3>节点接口<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>接口类型</strong></p></th>
@@ -677,7 +322,7 @@ window.addEventListener("load", load);
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L9-L22">src/robot_moveit/docs/moveit_gateway.md:9-22</a></p>
 </section>
 <section id="id5">
-<h3>关键组件<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<h3>关键组件<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
 <p><a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L24-L310">src/robot_moveit/scripts/moveit_gateway.py:24-310</a> 中的 <code class="docutils literal notranslate"><span class="pre">MoveItGateway</span></code> 类初始化以下内容：</p>
 <ol class="arabic simple">
 <li><p><strong>TF2 缓冲区和监听器</strong> (<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/line48-49">line 48-49</a>): 用于坐标系变换</p></li>
@@ -692,10 +337,10 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="dof">
-<h2>5DOF 运动学约束<a class="headerlink" href="#dof" title="Link to this heading"></a></h2>
+<h2>5DOF 运动学约束<a class="headerlink" href="#dof" title="Permalink to this heading"></a></h2>
 <p>SO101 机械臂有 5 个关节，提供 5 个自由度 (DOF)。标准的 6DOF 位姿目标 (3 位置 + 3 姿态) 对该机械臂来说在数学上是过约束的，会导致频繁的 IK 失败。MoveIt 集成实现了专门的约束处理来解决这个问题。</p>
 <section id="ik">
-<h3>仅位置 IK 配置<a class="headerlink" href="#ik" title="Link to this heading"></a></h3>
+<h3>仅位置 IK 配置<a class="headerlink" href="#ik" title="Permalink to this heading"></a></h3>
 <p>运动学求解器在 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/config/lerobot/so101/kinematics.yaml#L6">src/robot_moveit/config/lerobot/so101/kinematics.yaml:6</a> 中配置了 <code class="docutils literal notranslate"><span class="pre">position_only_ik:</span> <span class="pre">True</span></code>：</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">arm</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">kinematics_solver</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kdl_kinematics_plugin/KDLKinematicsPlugin</span>
@@ -711,10 +356,10 @@ window.addEventListener("load", load);
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L34-L67">src/robot_moveit/docs/moveit_gateway.md:34-67</a></p>
 </section>
 <section id="id6">
-<h3>姿态约束策略<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<h3>姿态约束策略<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
 <p>网关实现了两种几何约束投影方法，用于引导 IK 求解器找到可行的姿态：</p>
 <section id="z">
-<h4>策略 1：仅 Z 轴约束<a class="headerlink" href="#z" title="Link to this heading"></a></h4>
+<h4>策略 1：仅 Z 轴约束<a class="headerlink" href="#z" title="Permalink to this heading"></a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">constrain_to_z_axis_only()</span></code> 方法
 (<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L118-L175">src/robot_moveit/scripts/moveit_gateway.py:118-175</a>) 保持末端执行器 Z 轴方向，同时放宽绕 Z 轴的旋转 (滚转)：</p>
 <pre  class="mermaid">
@@ -744,7 +389,7 @@ window.addEventListener("load", load);
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L62-L67">src/robot_moveit/docs/moveit_gateway.md:62-67</a></p>
 </section>
 <section id="xz">
-<h4>策略 2：肩部 XZ 平面投影<a class="headerlink" href="#xz" title="Link to this heading"></a></h4>
+<h4>策略 2：肩部 XZ 平面投影<a class="headerlink" href="#xz" title="Permalink to this heading"></a></h4>
 <p><code class="docutils literal notranslate"><span class="pre">project_orientation_to_shoulder_xz_plane()</span></code> 方法
 (<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L177-L264">src/robot_moveit/scripts/moveit_gateway.py:177-264</a>) 将姿态变换到肩部坐标系，并将其约束在 XZ 平面上：</p>
 <pre  class="mermaid">
@@ -778,7 +423,7 @@ window.addEventListener("load", load);
 </section>
 </section>
 <section id="id7">
-<h3>多策略回退系统<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<h3>多策略回退系统<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">cmd_pose_callback()</span></code> 方法
 (<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L266-L310">src/robot_moveit/scripts/moveit_gateway.py:266-310</a>) 实现了一个分层回退系统，包含 4 种姿态策略 × 5 个容差级别 = 共 20 次尝试：</p>
 <table class="docutils align-default">
@@ -862,10 +507,10 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id8">
-<h2>配置系统<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<h2>配置系统<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
 <p>MoveIt 配置在 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML 中定义，并通过启动系统传递。</p>
 <section id="yaml">
-<h3>机器人配置 YAML 结构<a class="headerlink" href="#yaml" title="Link to this heading"></a></h3>
+<h3>机器人配置 YAML 结构<a class="headerlink" href="#yaml" title="Permalink to this heading"></a></h3>
 <p>示例来自
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/config/robots/test_single_arm_single_cam.yaml#L30-L35">src/robot_config/config/robots/test_single_arm_single_cam.yaml:30-35</a>：</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">moveit</span><span class="p">:</span>
@@ -883,7 +528,7 @@ window.addEventListener("load", load);
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/moveit.py#L52-L68">src/robot_config/robot_config/launch_builders/moveit.py:52-68</a></p>
 </section>
 <section id="moveit2">
-<h3>MoveIt2 配置文件<a class="headerlink" href="#moveit2" title="Link to this heading"></a></h3>
+<h3>MoveIt2 配置文件<a class="headerlink" href="#moveit2" title="Permalink to this heading"></a></h3>
 <p>位于 <code class="docutils literal notranslate"><span class="pre">robot_moveit/config/lerobot/so101/</span></code>：</p>
 <table class="docutils align-default">
 <thead>
@@ -917,10 +562,10 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id9">
-<h2>启动系统<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<h2>启动系统<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h2>
 <p>MoveIt2 通过统一的 <code class="docutils literal notranslate"><span class="pre">robot.launch.py</span></code> 入口点使用 <code class="docutils literal notranslate"><span class="pre">moveit_planning</span></code> 控制模式启动。</p>
 <section id="id10">
-<h3>启动流程<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<h3>启动流程<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
 <pre  class="mermaid">
         graph TB
     ROBOT_LAUNCH[&quot;robot.launch.py&quot;]
@@ -948,7 +593,7 @@ window.addEventListener("load", load);
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L136-L143">README.md:136-143</a></p>
 </section>
 <section id="id11">
-<h3>启动命令<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<h3>启动命令<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
 <p><strong>带 RViz 可视化</strong>：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>launch<span class="w"> </span>robot_config<span class="w"> </span>robot.launch.py<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>robot_config:<span class="o">=</span>so101_single_arm<span class="w"> </span><span class="se">\</span>
@@ -967,7 +612,7 @@ window.addEventListener("load", load);
 <p><strong>来源</strong>: <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/README.md#L136-L143">README.md:136-143</a></p>
 </section>
 <section id="id12">
-<h3>启动构建器实现<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<h3>启动构建器实现<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
 <p>位于 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_config/robot_config/launch_builders/moveit.py#L15-L78">src/robot_config/robot_config/launch_builders/moveit.py:15-78</a>
 的 <code class="docutils literal notranslate"><span class="pre">generate_moveit_nodes()</span></code> 函数执行：</p>
 <ol class="arabic simple">
@@ -981,9 +626,9 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id13">
-<h2>控制流程<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
+<h2>控制流程<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h2>
 <section id="id14">
-<h3>位姿命令处理<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<h3>位姿命令处理<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
 <p>从位姿命令到关节运动的完整流程：</p>
 <pre  class="mermaid">
         graph TB
@@ -1028,7 +673,7 @@ window.addEventListener("load", load);
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L122-L205">src/robot_moveit/docs/moveit_gateway.md:122-205</a></p>
 </section>
 <section id="id15">
-<h3>约束创建<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<h3>约束创建<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">create_orientation_constraint()</span></code> 方法
 (<a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/scripts/moveit_gateway.py#L312-L340">src/robot_moveit/scripts/moveit_gateway.py:312-340</a>) 生成
 <code class="docutils literal notranslate"><span class="pre">OrientationConstraint</span></code> 消息：</p>
@@ -1052,9 +697,9 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id16">
-<h2>坐标系变换<a class="headerlink" href="#id16" title="Link to this heading"></a></h2>
+<h2>坐标系变换<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h2>
 <section id="id17">
-<h3>基座到肩部坐标系转换<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<h3>基座到肩部坐标系转换<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h3>
 <p>网关执行坐标变换以准确评估工作空间可达性。从基座坐标系到肩部坐标系的变换为：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>P_shoulder = R × (P_base - T)
 </pre></div>
@@ -1080,7 +725,7 @@ window.addEventListener("load", load);
 <a class="reference external" href="https://gitcode.com/openeuler/IB_Robot/blob/9e382ea2320c3260b03e9c838696f8ac89eb8944/src/robot_moveit/docs/moveit_gateway.md#L97-L120">src/robot_moveit/docs/moveit_gateway.md:97-120</a></p>
 </section>
 <section id="id18">
-<h3>四元数工具<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
+<h3>四元数工具<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h3>
 <p>网关使用 <code class="docutils literal notranslate"><span class="pre">scipy.spatial.transform.Rotation</span></code> 实现四元数运算：</p>
 <table class="docutils align-default">
 <thead>
@@ -1113,9 +758,9 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id19">
-<h2>使用示例<a class="headerlink" href="#id19" title="Link to this heading"></a></h2>
+<h2>使用示例<a class="headerlink" href="#id19" title="Permalink to this heading"></a></h2>
 <section id="id20">
-<h3>发送位姿命令<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
+<h3>发送位姿命令<a class="headerlink" href="#id20" title="Permalink to this heading"></a></h3>
 <p>向 <code class="docutils literal notranslate"><span class="pre">/cmd_pose</span></code> 发布目标位姿：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>topic<span class="w"> </span>pub<span class="w"> </span>--once<span class="w"> </span>/cmd_pose<span class="w"> </span>geometry_msgs/msg/Pose<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span><span class="s2">&quot;{position: {x: 0.3, y: 0.0, z: 0.2}, \</span>
@@ -1124,14 +769,14 @@ window.addEventListener("load", load);
 </div>
 </section>
 <section id="id21">
-<h3>监控末端执行器状态<a class="headerlink" href="#id21" title="Link to this heading"></a></h3>
+<h3>监控末端执行器状态<a class="headerlink" href="#id21" title="Permalink to this heading"></a></h3>
 <p>订阅当前末端执行器位姿：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>topic<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>/robot_status/ee_pose
 </pre></div>
 </div>
 </section>
 <section id="id22">
-<h3>调试 IK 失败<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
+<h3>调试 IK 失败<a class="headerlink" href="#id22" title="Permalink to this heading"></a></h3>
 <p>启用调试日志以查看 IK 策略尝试：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ros2<span class="w"> </span>run<span class="w"> </span>robot_moveit<span class="w"> </span>moveit_gateway.py<span class="w"> </span>--ros-args<span class="w"> </span>--log-level<span class="w"> </span>debug
 </pre></div>
@@ -1142,7 +787,7 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id23">
-<h2>与动作分发的集成<a class="headerlink" href="#id23" title="Link to this heading"></a></h2>
+<h2>与动作分发的集成<a class="headerlink" href="#id23" title="Permalink to this heading"></a></h2>
 <p>在 <code class="docutils literal notranslate"><span class="pre">moveit_planning</span></code> 控制模式下，MoveIt2 生成轨迹，通过 <code class="docutils literal notranslate"><span class="pre">action_dispatch</span></code> 的 <code class="docutils literal notranslate"><span class="pre">ActionExecutor</span></code> 组件执行。这与 <code class="docutils literal notranslate"><span class="pre">model_inference</span></code> 模式不同，后者使用 <code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code> 进行高频位置流传输。</p>
 <p><strong>执行路径</strong>：</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>moveit_gateway → move_group → trajectory → ActionExecutor → trajectory_controllers → ros2_control
@@ -1154,7 +799,7 @@ window.addEventListener("load", load);
 </section>
 <hr class="docutils" />
 <section id="id24">
-<h2>性能特征<a class="headerlink" href="#id24" title="Link to this heading"></a></h2>
+<h2>性能特征<a class="headerlink" href="#id24" title="Permalink to this heading"></a></h2>
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p><strong>指标</strong></p></th>

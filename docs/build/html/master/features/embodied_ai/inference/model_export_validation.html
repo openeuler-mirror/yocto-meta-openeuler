@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>模型导出与验证 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="注意力可视化" href="attention_visualization.html" />
+    <link rel="prev" title="策略节点" href="policy_nodes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol.html">协议转换</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">推理流水线</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">推理流水线概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="inference_architecture.html">推理架构</a></li>
+<li class="toctree-l6"><a class="reference internal" href="monolithic_execution_mode.html">单体执行模式</a></li>
+<li class="toctree-l6"><a class="reference internal" href="distributed_execution_mode.html">分布式执行模式</a></li>
+<li class="toctree-l6"><a class="reference internal" href="policy_nodes.html">策略节点</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">模型导出与验证</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">架构与数据流</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id4">模型导出工具</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#loss-compare">跨平台验证 (loss_compare)</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#npu-runtime-pi05ommodel">专用 NPU Runtime：PI05OMModel</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="attention_visualization.html">注意力可视化</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../action_dispatch/index.html">动作分发</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_pipeline/index.html">数据流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../motion_planning/index.html">运动规划</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../hardware/index.html">硬件集成</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../extended_capabilities/index.html">扩展能力</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">推理流水线</a></li>
+      <li class="breadcrumb-item active">模型导出与验证</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>模型导出与验证<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源文件</summary>
+<p>生成此 wiki 页面时使用了以下文件作为上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/rknn-convert/SKILL.md">.agents/skills/rknn-convert/SKILL.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/.agents/skills/rknn-convert/convert_to_rknn.py">.agents/skills/rknn-convert/convert_to_rknn.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/ascend_om/_common.py">src/inference_service/inference_service/core/ascend_om/_common.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/ascend_om/pi05/PI05OMModel.py">src/inference_service/inference_service/core/ascend_om/pi05/PI05OMModel.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/ascend_om/pi05/__init__.py">src/inference_service/inference_service/core/ascend_om/pi05/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/ascend_om/pi05/policy_wrapper.py">src/inference_service/inference_service/core/ascend_om/pi05/policy_wrapper.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/ascend_om/pi05/prefix_mask_utils.py">src/inference_service/inference_service/core/ascend_om/pi05/prefix_mask_utils.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/README.md">src/model_utils/model_utils/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/__init__.py">src/model_utils/model_utils/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/export_onnx_3403.py">src/model_utils/model_utils/export_onnx_3403.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/export_onnx_atc.py">src/model_utils/model_utils/export_onnx_atc.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/export_onnx_rknn.py">src/model_utils/model_utils/export_onnx_rknn.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/loss_compare.py">src/model_utils/model_utils/loss_compare.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/pi05_dist_metrics.py">src/model_utils/model_utils/pi05_dist_metrics.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/package.xml">src/model_utils/package.xml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/resource/model_utils">src/model_utils/resource/model_utils</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/setup.cfg">src/model_utils/setup.cfg</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/setup.py">src/model_utils/setup.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/README.md">src/robot_moveit/README.md</a></p></li>
+</ul>
+</details>
+<p><code class="docutils literal notranslate"><span class="pre">model_utils</span></code> 包提供一组工具，用于将 LeRobot 策略从 PyTorch 训练环境迁移到面向专用 NPU（Neural Processing Unit）硬件的高性能部署环境。它支持将模型导出为 ONNX 和专用二进制格式（Ascend OM、Rockchip RKNN），并提供严格的跨平台精度验证工具，用于检测量化或转换过程中的数值漂移。</p>
+<section id="id2">
+<h2>架构与数据流<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>模型部署流水线遵循结构化路径，从高层 PyTorch 模型转换为适合嵌入式执行的优化二进制产物。</p>
+<section id="id3">
+<h3>部署流水线<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<p>下图展示从已训练 LeRobot checkpoint 到已验证硬件专用模型的流程。</p>
+<p><strong>模型转换与验证流程</strong></p>
+<pre  class="mermaid">
+        graph TD
+    subgraph &quot;Training Environment (GPU/CPU)&quot;
+        A[&quot;LeRobot Checkpoint (model.safetensors)&quot;] --&gt; B[&quot;export_onnx_atc.py&quot;]
+        A --&gt; C[&quot;export_onnx_rknn.py&quot;]
+        A --&gt; D[&quot;export_onnx_3403.py&quot;]
+        B --&gt; E[&quot;General ONNX&quot;]
+        C --&gt; F[&quot;RKNN-Optimized ONNX&quot;]
+        D --&gt; G[&quot;3403-Optimized ONNX&quot;]
+    end
+
+    subgraph &quot;NPU Toolchains&quot;
+        E --&gt;|&quot;atc tool&quot;| H[&quot;Ascend OM Model&quot;]
+        F --&gt;|&quot;rknn-toolkit2&quot;| I[&quot;RKNN Model&quot;]
+        G --&gt;|&quot;3403 SDK&quot;| J[&quot;3403 OM Model&quot;]
+    end
+
+    subgraph &quot;Accuracy Validation&quot;
+        K[&quot;loss_compare.py (Generate Target)&quot;] --&gt;|&quot;JSON Baseline&quot;| L[&quot;loss_compare.py (Compute Loss)&quot;]
+        A --&gt; K
+        H --&gt; L
+        I --&gt; L
+        L --&gt; M[&quot;L1 / Cosine Sim Report&quot;]
+    end
+    </pre><p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/export_onnx_atc.py#L106-L152">src/model_utils/model_utils/export_onnx_atc.py:106-152</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/export_onnx_rknn.py#L117-L129">src/model_utils/model_utils/export_onnx_rknn.py:117-129</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/loss_compare.py#L17-L26">src/model_utils/model_utils/loss_compare.py:17-26</a></p>
+</section>
+</section>
+<section id="id4">
+<h2>模型导出工具<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
+<p>该包为不同硬件后端提供专用导出脚本，处理输入 tensor 重构等模型专属需求。</p>
+<section id="export-onnx-atc-py-general-ascend">
+<h3>export_onnx_atc.py (General Ascend)<a class="headerlink" href="#export-onnx-atc-py-general-ascend" title="Permalink to this heading"></a></h3>
+<p>该脚本自动执行标准 Ascend 硬件（例如 Ascend 310P3）的端到端转换。</p>
+<ul class="simple">
+<li><p><strong>输入过滤</strong>：解析 <code class="docutils literal notranslate"><span class="pre">config.json</span></code> 以提取 <code class="docutils literal notranslate"><span class="pre">input_features</span></code>，只保留 <code class="docutils literal notranslate"><span class="pre">observation.state</span></code> 和 <code class="docutils literal notranslate"><span class="pre">observation.images.*</span></code>，并跳过无关元数据 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/export_onnx_atc.py#L81-L90">src/model_utils/model_utils/export_onnx_atc.py:81-90</a>。</p></li>
+<li><p><strong>Manifest 生成</strong>：转换后写入 <code class="docutils literal notranslate"><span class="pre">config.om.json</span></code> manifest <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/export_onnx_atc.py#L53-L78">src/model_utils/model_utils/export_onnx_atc.py:53-78</a>，该 sidecar 文件供 <code class="docutils literal notranslate"><span class="pre">inference_service</span></code> 识别正确后端和产物 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/README.md#L68-L78">src/model_utils/model_utils/README.md:68-78</a>。</p></li>
+<li><p><strong>ATC 执行</strong>：调用 <code class="docutils literal notranslate"><span class="pre">atc</span></code>（Ascend Tensor Compiler），并传入 <code class="docutils literal notranslate"><span class="pre">--soc_version</span></code> 和 <code class="docutils literal notranslate"><span class="pre">--input_shape</span></code> 参数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/export_onnx_atc.py#L93-L103">src/model_utils/model_utils/export_onnx_atc.py:93-103</a>。</p></li>
+</ul>
+</section>
+<section id="export-onnx-rknn-py-rockchip-rk3588">
+<h3>export_onnx_rknn.py (Rockchip RK3588)<a class="headerlink" href="#export-onnx-rknn-py-rockchip-rk3588" title="Permalink to this heading"></a></h3>
+<p>该脚本面向 Rockchip NPU 定制，实现特定优化以降低开销。</p>
+<ul class="simple">
+<li><p><strong>输出裁剪</strong>：移除中间 tensor 和辅助输出，仅保留 <code class="docutils literal notranslate"><span class="pre">action</span></code> tensor，以减少 NPU 内存流量 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/export_onnx_rknn.py#L15-L30">src/model_utils/model_utils/export_onnx_rknn.py:15-30</a>。</p></li>
+<li><p><strong>环境隔离</strong>：由于 <code class="docutils literal notranslate"><span class="pre">rknn-toolkit2</span></code> 对 <code class="docutils literal notranslate"><span class="pre">torch</span></code> 和 <code class="docutils literal notranslate"><span class="pre">numpy</span></code> 有严格版本要求，且会与 <code class="docutils literal notranslate"><span class="pre">lerobot</span></code> 冲突，脚本为最终转换步骤管理专用 <code class="docutils literal notranslate"><span class="pre">.venv-rknn</span></code> 环境 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/export_onnx_rknn.py#L132-L141">src/model_utils/model_utils/export_onnx_rknn.py:132-141</a>。</p></li>
+<li><p><strong>量化模式</strong>：支持 <code class="docutils literal notranslate"><span class="pre">float16</span></code>、<code class="docutils literal notranslate"><span class="pre">int8</span></code>（需要校准数据）和 <code class="docutils literal notranslate"><span class="pre">hybrid</span></code> 量化 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/export_onnx_rknn.py#L185-L207">src/model_utils/model_utils/export_onnx_rknn.py:185-207</a>。</p></li>
+</ul>
+</section>
+<section id="export-onnx-3403-py-ascend-3403">
+<h3>export_onnx_3403.py (Ascend 3403)<a class="headerlink" href="#export-onnx-3403-py-ascend-3403" title="Permalink to this heading"></a></h3>
+<p>该脚本面向 Ascend 3403 平台，重点生成简化 ONNX 图。</p>
+<ul class="simple">
+<li><p><strong>ACTONNXWrapper</strong>：标准 LeRobot ACT 策略使用基于字典的输入。该 wrapper <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/export_onnx_3403.py#L21-L31">src/model_utils/model_utils/export_onnx_3403.py:21-31</a> 在导出期间将位置参数 <code class="docutils literal notranslate"><span class="pre">*args</span></code> 转回模型所需的 batch 字典结构 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/export_onnx_3403.py#L29-L31">src/model_utils/model_utils/export_onnx_3403.py:29-31</a>。</p></li>
+<li><p><strong>图简化</strong>：使用 <code class="docutils literal notranslate"><span class="pre">onnxsim</span></code> 验证并简化导出的图，确保面向 NPU 消费的常量折叠正确执行 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/export_onnx_3403.py#L72-L78">src/model_utils/model_utils/export_onnx_3403.py:72-78</a>。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/export_onnx_atc.py#L93-L103">src/model_utils/model_utils/export_onnx_atc.py:93-103</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/export_onnx_rknn.py#L15-L30">src/model_utils/model_utils/export_onnx_rknn.py:15-30</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/export_onnx_3403.py#L21-L31">src/model_utils/model_utils/export_onnx_3403.py:21-31</a></p>
+</section>
+</section>
+<section id="loss-compare">
+<h2>跨平台验证 (loss_compare)<a class="headerlink" href="#loss-compare" title="Permalink to this heading"></a></h2>
+<p>模型转换期间数值精度可能下降，例如 FP32 转 FP16 或 INT8。<code class="docutils literal notranslate"><span class="pre">loss_compare.py</span></code> 提供一个框架，用于将 NPU 输出与 PyTorch baseline 比较。</p>
+<section id="id5">
+<h3>精度指标<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<p>该工具计算 L1 Loss 和 Cosine Similarity。</p>
+<ul class="simple">
+<li><p><strong>归一化空间</strong>：比较 postprocessor 之前的输出，将模型漂移与数据集缩放因子隔离 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/loss_compare.py#L74-L81">src/model_utils/model_utils/loss_compare.py:74-81</a>。</p></li>
+<li><p><strong>非归一化空间</strong>：比较最终物理动作（例如弧度单位的关节角），评估误差对真实世界的影响 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/loss_compare.py#L56-L64">src/model_utils/model_utils/loss_compare.py:56-64</a>。</p></li>
+</ul>
+</section>
+<section id="pi05">
+<h3>PI05 分布式评估<a class="headerlink" href="#pi05" title="Permalink to this heading"></a></h3>
+<p>对于 PI05 等 flow-matching 模型，由于 ODE solver 中的混沌放大，逐点 L1 比较通常会产生误导 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/pi05_dist_metrics.py#L6-L11">src/model_utils/model_utils/pi05_dist_metrics.py:6-11</a>。该包包含 <code class="docutils literal notranslate"><span class="pre">pi05_dist_metrics.py</span></code>，提供对混沌更稳定的指标：</p>
+<ul class="simple">
+<li><p><strong>Method A (Marginal Wasserstein-1)</strong>：比较每个动作维度的值分布，对精确时间对齐不敏感 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/pi05_dist_metrics.py#L95-L103">src/model_utils/model_utils/pi05_dist_metrics.py:95-103</a>。</p></li>
+<li><p><strong>Method C (First-frame Cosine)</strong>：只比较动作 chunk 的第一帧，因为这是最稳定的帧，也是 receding-horizon 控制中唯一实际执行的帧 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/pi05_dist_metrics.py#L166-L173">src/model_utils/model_utils/pi05_dist_metrics.py:166-173</a>。</p></li>
+</ul>
+<p><strong>PI05 验证逻辑</strong></p>
+<pre  class="mermaid">
+        graph TD
+    subgraph &quot;loss_compare.py&quot;
+        A[&quot;Load Preds (NPU)&quot;] --&gt; B{&quot;Policy Type?&quot;}
+        B --&gt;|&quot;Standard (ACT)&quot;| C[&quot;Pointwise L1 / Cosine&quot;]
+        B --&gt;|&quot;PI05&quot;| D[&quot;pi05_dist_metrics.py&quot;]
+    end
+
+    subgraph &quot;pi05_dist_metrics.py&quot;
+        D --&gt; E[&quot;Method A: Wasserstein-1&quot;]
+        D --&gt; F[&quot;Method C: First-frame Cosine&quot;]
+        E --&gt; G[&quot;Scale-invariant Ratio (W1/std)&quot;]
+        G --&gt; H[&quot;Verdict: Excellent/Good/Poor&quot;]
+    end
+    </pre><p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/loss_compare.py#L65-L71">src/model_utils/model_utils/loss_compare.py:65-71</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/pi05_dist_metrics.py#L25-L33">src/model_utils/model_utils/pi05_dist_metrics.py:25-33</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/model_utils/model_utils/pi05_dist_metrics.py#L116-L124">src/model_utils/model_utils/pi05_dist_metrics.py:116-124</a></p>
+</section>
+</section>
+<section id="npu-runtime-pi05ommodel">
+<h2>专用 NPU Runtime：PI05OMModel<a class="headerlink" href="#npu-runtime-pi05ommodel" title="Permalink to this heading"></a></h2>
+<p>对于 Ascend 上的 PI05 部署，<code class="docutils literal notranslate"><span class="pre">PI05OMModel</span></code> 实现了高性能 runtime，用于最小化 VLM（Vision Language Model）与 Action Expert 之间的数据移动。</p>
+<ul class="simple">
+<li><p><strong>Buffer 共享</strong>：VLM 输出 buffer（KV cache、padding masks）会直接映射为 Action Expert 的输入，避免 Device-to-Host-to-Device（D2H + H2D）拷贝 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/ascend_om/pi05/PI05OMModel.py#L71-L78">src/inference_service/inference_service/core/ascend_om/pi05/PI05OMModel.py:71-78</a>。</p></li>
+<li><p><strong>内存管理</strong>：使用 <code class="docutils literal notranslate"><span class="pre">acl.rt.malloc</span></code> 和 <code class="docutils literal notranslate"><span class="pre">ACL_MEM_MALLOC_HUGE_FIRST</span></code> 进行优化的 NPU 内存分配 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/ascend_om/pi05/PI05OMModel.py#L180">src/inference_service/inference_service/core/ascend_om/pi05/PI05OMModel.py:180</a>。</p></li>
+<li><p><strong>动态 Shape 检测</strong>：自动从 VLM 模型描述符检测 <code class="docutils literal notranslate"><span class="pre">prefix_seq_len</span></code>，以正确配置 attention masks <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/ascend_om/pi05/PI05OMModel.py#L157-L168">src/inference_service/inference_service/core/ascend_om/pi05/PI05OMModel.py:157-168</a>。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/ascend_om/pi05/PI05OMModel.py#L71-L180">src/inference_service/inference_service/core/ascend_om/pi05/PI05OMModel.py:71-180</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/ascend_om/pi05/policy_wrapper.py#L11-L15">src/inference_service/inference_service/core/ascend_om/pi05/policy_wrapper.py:11-15</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="policy_nodes.html" class="btn btn-neutral float-left" title="策略节点" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="attention_visualization.html" class="btn btn-neutral float-right" title="注意力可视化" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="model_export_validation.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>
