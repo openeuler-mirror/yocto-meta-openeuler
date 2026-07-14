@@ -1,4 +1,4 @@
-# Neo oebuild feature generation specifications
+# oebuild feature generation specifications
 
 > **Core Feature**: 
 > 1. Systemetic
@@ -27,7 +27,7 @@ the sample of categories:
 
 ### File Structure & Identification
 
-  * **Directory Structure**: `nightly-features/<category_id>/<leaf_id>.yaml`
+  * **Directory Structure**: `features/<category_id>/<leaf_id>.yaml`
   * **Category ID**: Derived directly from the directory name.
   * **Feature ID (Leaf)**: Defined in the `id` field of the YAML.
   * **Full ID**: `<category_id>/<leaf_id>` (Globally unique identifier).
@@ -48,6 +48,10 @@ the sample of categories:
   * **`machines`**: List of supported machines.
       * Empty list `[]` or omitted implies **all machines**.
       * **Recursive Rule**: If a feature does not support a machine, it and all its sub-features/dependents become invisible for that machine.
+  * **`aliases`**: Optional list of alternative identifiers (e.g. legacy flat feature names) that should resolve to this feature.
+      * Used for backward compatibility: an old `-f <name>` resolves to the renamed feature instead of erroring.
+      * Aliases are matched case-insensitively after stripping, like full IDs. Two features must not claim the same alias (load fails on conflict).
+      * Example: a feature renamed from `ros` to `robotics/ros2` can declare `aliases: [ros]` so `-f ros` still works.
 
 #### Configuration Injection (`config`)
 
@@ -133,7 +137,7 @@ If a dependency does not support the current machine, the dependent feature is s
 
 ### Simple Feature
 
-*File: `nightly-features/package_manager/oebridge.yaml`*
+*File: `features/package_manager/oebridge.yaml`*
 
 ```yaml
 id: oebridge
@@ -152,7 +156,7 @@ config:
 
 ### Feature with Dependencies & Auto-Select
 
-*File: `nightly-features/containers/k3s.yaml`*
+*File: `features/containers/k3s.yaml`*
 
 ```yaml
 id: k3s
@@ -189,7 +193,7 @@ sub_feats:
 
 ### Feature with `one_of` (Restructured)
 
-*File: `nightly-features/mcs/mcs.yaml`*
+*File: `features/mcs/mcs.yaml`*
 
 ```yaml
 id: mcs
@@ -239,7 +243,7 @@ default_one_of: self/baremetal
 
 ### Feature with `sub_feats` and `choice`
 
-*File: `nightly-features/containers/containers.yaml`*
+*File: `features/containers/containers.yaml`*
 
 ```yaml
 id: containers
@@ -280,7 +284,7 @@ choice:
 
 ### Feature with Machine Restrictions
 
-*File: `nightly-features/toolchain/clang.yaml`*
+*File: `features/toolchain/clang.yaml`*
 
 ```yaml
 id: clang
