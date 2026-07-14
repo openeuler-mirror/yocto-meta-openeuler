@@ -323,35 +323,30 @@ The CLI treats feature selection as a declaration of intent.
 
 Too long; Don't Read.
 
-just learn oebuild generate(neo-generate) examples below:
+just learn `oebuild generate` examples below:
 
 ```sh
 oebuild generate -p <machine> [-f <feature_identifier>]... [-d <build_dir>]
-oebuild neo-generate -p <machine> [-f <feature_identifier>]... -d <build_dir>
 ```
+
+Feature identifiers accept both independent leaf names and full category paths:
 
 ```sh
 # generate xen-based-mica, and with oebridge, for hi3591
 oebuild generate -p hi3591 -f mcs -f xen -f oebridge
-oebuild neo-generate -p hi3591 -f mcs/xen -f oebridge
+oebuild generate -p hi3591 -f mcs/xen -f oebridge   # equivalent compound form
 
 # generate micrun
-oebuild generate -p qemu-aarch64 -f micrun -f mcs -f xen -f containers
-oebuild neo-generate -p qemu-aarch64 -f micrun 
+oebuild generate -p qemu-aarch64 -f micrun -f mcs -f xen -f containerd
 
-# generate qemu-aarch64 target, install k3s-server
-oebuild generate -p qemu-aarch64 -f k3s -d target; 
-cd target; sed -i 's/k3s-agent/k3s-server/g' ./compile.yaml
-oebuild generate -p qemu-aarch64 -f k3s-server -d target; 
-oebuild bitbake openeuler-image # found conflicts when building!
+# generate qemu-aarch64 target, k3s selects k3s-agent by default
+oebuild generate -p qemu-aarch64 -f k3s -d target
 
+# install k3s-server instead of the default k3s-agent
+oebuild generate -p qemu-aarch64 -f k3s -f containers/k3s/k3s-server -d target
 
-# generate qemu-aarch64 target, install both k3s-server and k3s-agent
-oebuild generate -p qemu-aarch64 -f k3s -d target;
-cd target;
-sed '/k3s-agent/a\ k3s-server' ./compile.yaml
-
-oebuild neo-generate -p qemu-aarch64 -f k3s-server -f k3s-agent -d target;  # Error! k3s-agent and k3s-server are conflicting
+# Error! k3s-agent and k3s-server are mutually exclusive (one_of)
+oebuild generate -p qemu-aarch64 -f containers/k3s/k3s-server -f containers/k3s/k3s-agent -d target
 
 ```
 
@@ -418,7 +413,7 @@ You requested both 'baremetal' and 'xen', but they are mutually exclusive (one_o
 
 ## list options modification
 
-now `oebuild neo-generate --list` prints features tree instead of flat list
+now `oebuild generate --list` prints the features tree grouped by category
 
 ```
 │ mcs

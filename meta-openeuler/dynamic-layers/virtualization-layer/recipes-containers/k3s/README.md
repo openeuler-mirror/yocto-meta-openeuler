@@ -16,8 +16,8 @@
 
 ## 快速开始
 
-1. 在 oebuild generate 中添加 k3s feature, 默认启用 k3s-agent
-2. 可以在 `local.conf` 中将 DISTRO_FEATURES:append = "k3s-agent" 改为 "k3s-server", 来构建 完整的k3s server二进制，默认静态链接分发
+1. 在 oebuild generate 中添加 k3s feature（`-f k3s` 或 `-f containers/k3s/k3s-agent`），默认启用 k3s-agent
+2. 如需构建 k3s server 而非默认的 agent，使用 `-f containers/k3s/k3s-server`（k3s-agent 与 k3s-server 互斥，不能同时选）
 3. 运行：
    ```bash
    bitbake k3s
