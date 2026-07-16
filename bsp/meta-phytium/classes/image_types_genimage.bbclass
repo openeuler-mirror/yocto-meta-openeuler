@@ -1,7 +1,7 @@
 # this bbclass like image_types_wic.bbclass
 # it's used to automatic pack the image which can put spl at "0" offset
 
-GENIMAGE_CONFIG_FILE ??= "${MACHINE}.config"
+GENIMAGE_CONFIG_FILE ??= "{BOOT}-${MACHINE}.config"
 GENIMAGE_CONFIG_FILE_NAME = "${@d.getVar('GENIMAGE_CONFIG_FILE').split('.')[0]}"
 GENIMAGE_SEARCH_PATH ?= "${THISDIR}:${@':'.join('%s/genimage' % p for p in '${BBPATH}'.split(':'))}"
 GENIMAGE_CONFIG_FILE_PATH = "${@genimage_search(d.getVar('GENIMAGE_CONFIG_FILE'), d.getVar('GENIMAGE_SEARCH_PATH')) or ''}"

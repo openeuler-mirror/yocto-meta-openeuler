@@ -1,34 +1,25 @@
 SUMMARY = "phytium uboot"
 DESCRIPTION = "phytium uboot"
 LICENSE = "PPL-1.0"
-LIC_FILES_CHKSUM = "file://PPL-1.0;md5=9dd6301488f42abb6e3196ef96b8daa9"
+LIC_FILES_CHKSUM = "file://COPYING;md5=9dd6301488f42abb6e3196ef96b8daa9"
 
 inherit deploy
 
-inherit oee-archive
+SRC_URI = "git://git@gitee.com/phytium_embedded/phytium-rogue-umlibs.git;branch=${BRANCH};protocol=https"
+BRANCH = "develop"
+SRCREV = "291d906e69389fcb7acb04733b50ea9a12c9c886"
 
-SRC_URI = " \
-    file://${BPN}.tar.gz \
-"
-
-S = "${WORKDIR}/phyuboot"
+S = "${WORKDIR}/git"
 
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
-
-OPTEE_ENABLED = "1"
 
 # option size is "2GB" and "4GB"
 RAMSIZE = "4GB"
 
 do_install () {
     install -d ${D}
-    
-    if [ "${OPTEE_ENABLED}" = "1" ]; then
-        cp -r ${S}/fip-all-optee-${RAMSIZE}.bin  ${D}/fip-all.bin
-    else
-        cp -r ${S}/fip-all-${RAMSIZE}.bin  ${D}/fip-all.bin
-    fi
+    cp -r ${S}/phyuboot/fip-all-optee-${RAMSIZE}.bin  ${D}/fip-all.bin
 }
 
 do_deploy () {

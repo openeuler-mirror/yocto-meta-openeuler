@@ -1,0 +1,78 @@
+From 1a3d8e9a4aab116b74ae0e8264ab41c8d1e98607 Mon Sep 17 00:00:00 2001
+From: zuoqian <zuoqian2032@phytium.com.cn>
+Date: Tue, 20 May 2025 15:36:51 +0800
+Subject: [PATCH] mm/page_alloc: replace local_irq_save/spin_lock with RT-safe
+ local_lock_irqsave
+
+In the RT kernel, combining `local_irq_save`/`local_irq_restore` with `spin_lock()`
+creates a risk of sleeping in atomic context.
+
+local_irq_save/local_irq_restore cause sleeping function called when irq disabled,
+log as below:
+
+[  687.546417] BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:986
+[  687.546420] in_atomic(): 0, irqs_disabled(): 128, non_block: 0, pid: 2299, name: dhcpcd
+[  687.546425] CPU: 2 PID: 2299 Comm: dhcpcd Not tainted 5.10.0-openeuler #1
+[  687.546428] Hardware name: Phytium Pd1904 Development Board (DT)
+[  687.546431] Call trace:
+[  687.546432]  dump_backtrace+0x0/0x170
+[  687.546443]  show_stack+0x14/0x1c
+[  687.546446]  dump_stack+0xb4/0xf4
+[  687.546451]  ___might_sleep+0xfc/0x118
+[  687.546455]  rt_spin_lock+0x24/0x68
+[  687.546460]  rmqueue_bulk.constprop.0+0x60/0x450
+[  687.546464]  __alloc_pages_bulk+0x3e4/0x5c0
+[  687.546468]  __page_pool_alloc_pages_slow+0x1c4/0x320
+[  687.546472]  page_pool_alloc_pages+0x3c/0x50
+[  687.546475]  stmmac_open+0x5a8/0xbc8
+[  687.546480]  __dev_open+0x164/0x17c
+[  687.546484]  __dev_change_flags+0x178/0x198
+[  687.546486]  dev_change_flags+0x20/0x5c
+[  687.546489]  devinet_ioctl+0x138/0x548
+[  687.546492]  inet_ioctl+0x298/0x2c4
+[  687.546496]  sock_ioctl+0x1a0/0x64c
+[  687.546499]  vfs_ioctl+0x24/0x40
+[  687.546502]  __arm64_sys_ioctl+0xc8/0x9c0
+[  687.546504]  invoke_syscall.constprop.0+0x78/0xd0
+[  687.546508]  do_el0_svc+0xa0/0x114
+[  687.546510]  el0_svc+0x1c/0x28
+[  687.546514]  el0_sync_handler+0xa8/0x150
+[  687.546518]  el0_sync+0x138/0x140
+
+Signed-off-by: zuoqian <zuoqian2032@phytium.com.cn>
+---
+ mm/page_alloc.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 492f473ed..dbe0b83ca 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -5266,7 +5266,7 @@ unsigned long __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+ 		goto failed;
+ 
+ 	/* Attempt the batch allocation */
+-	local_irq_save(flags);
++	local_lock_irqsave(&pa_lock.l, flags);
+ 	pcp = &this_cpu_ptr(zone->pageset)->pcp;
+ 	pcp_list = &pcp->lists[ac.migratetype];
+ 
+@@ -5305,13 +5305,13 @@ unsigned long __alloc_pages_bulk(gfp_t gfp, int preferred_nid,
+ 		nr_populated++;
+ 	}
+ 
+-	local_irq_restore(flags);
++	local_unlock_irqrestore(&pa_lock.l, flags);
+ 
+ out:
+ 	return nr_populated;
+ 
+ failed_irq:
+-	local_irq_restore(flags);
++	local_unlock_irqrestore(&pa_lock.l, flags);
+ 
+ failed:
+ 	page = __alloc_pages(gfp, 0, preferred_nid, nodemask);
+-- 
+2.34.1
+
