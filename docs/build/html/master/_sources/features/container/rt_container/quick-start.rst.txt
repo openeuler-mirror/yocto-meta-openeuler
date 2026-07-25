@@ -157,7 +157,7 @@ openEuler Embedded 基础构建过程可参考：
 .. code-block:: bash
 
    # 安装/更新 oebuild
-   oebuild neo-generate -p qemu-aarch64 \
+   oebuild generate -p qemu-aarch64 \
      -f zephyr \      # Zephyr RTOS 支持
      -f micrun \      # MicRun 运行时
      -f mcs/xen \     # mcs 和 xen 支持
@@ -207,7 +207,7 @@ openEuler Embedded 基础构建过程可参考：
 
 .. code-block:: bash
 
-   oebuild neo-generate -p qemu-aarch64 \
+   oebuild generate -p qemu-aarch64 \
      -f zephyr \
      -f micrun \
      -f mcs/xen \
