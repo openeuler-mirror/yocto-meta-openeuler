@@ -1,0 +1,17 @@
+#!/bin/sh
+
+mount -t proc proc /proc 2>/dev/null
+mount -t sysfs sysfs /sys 2>/dev/null
+mount -t devtmpfs devtmpfs /dev 2>/dev/null
+mkdir -p /dev/pts /dev/shm
+mount -t devpts devpts /dev/pts 2>/dev/null
+mount -t tmpfs tmpfs /tmp 2>/dev/null
+mount -t tmpfs tmpfs /run 2>/dev/null
+
+hostname "$(cat /etc/hostname 2>/dev/null || echo openeuler)" 2>/dev/null
+
+if [ -d /etc/init.d ]; then
+    for script in /etc/init.d/S??* ; do
+        [ -x "$script" ] && "$script"
+    done
+fi
