@@ -3,7 +3,7 @@
 MicRun 故障排查指南
 ###################
 
-本文档提供 MicRun 常见问题的排查步骤和解决方案。
+本文档提供 MicRun 常见问题的排查步骤和解决方案。排查时优先检查 ``runtime.json`` 快照；``state.json`` 为兼容格式的状态文件，在 ``runtime.json`` 缺失时可作回退排查入口。
 
 诊断工具
 ========
@@ -43,11 +43,22 @@ MicRun 故障排查指南
 
 .. code-block:: bash
 
-   # 列出所有 Sandbox
-   ls -la /run/micrun/sandbox/
+   # 列出所有 sandbox 快照
+   ls -la /run/micrun/runtime/sandbox/
 
-   # 查看特定 Sandbox 状态
+   # 查看当前权威快照
+   cat /run/micrun/runtime/sandbox/<sandbox-id>/runtime.json | jq
+
+   # 查看 container 快照
+   find /run/micrun/runtime/container -maxdepth 3 -name runtime.json | grep <container-id>
+
+   # 查看兼容格式状态文件（runtime.json 缺失时回退）
    cat /run/micrun/sandbox/<sandbox-id>/state.json | jq
+
+说明：
+
+* 排查 sandbox 生命周期问题时，优先使用 ``<sandbox-id>``
+* 单容器场景下 ``<sandbox-id>`` 往往与 ``<container-id>`` 相同，但在 Kubernetes/Pod 场景里两者不一定相同
 
 查看 FIFO 状态
 --------------
@@ -147,7 +158,7 @@ MicRun 故障排查指南
 
    .. code-block:: bash
 
-      cat /run/micrun/sandbox/<container-id>/state.json
+      cat /run/micrun/runtime/sandbox/<sandbox-id>/runtime.json
 
 **解决方案**：
 
@@ -162,7 +173,7 @@ MicRun 故障排查指南
    * - 缺少权限
      - 确保有访问 ``/dev/ttyRPMSG*`` 的权限
    * - Sandbox 状态不一致
-     - 删除 ``/run/micrun/sandbox/<id>/`` 后重试
+     - 优先核对 ``/run/micrun/runtime/sandbox/<id>/runtime.json``，确认 stale 后再清理对应运行时目录
 
 3. IO 无响应
 ------------
@@ -233,7 +244,7 @@ MicRun 故障排查指南
 
    .. code-block:: bash
 
-      cat /run/micrun/sandbox/<container-id>/state.json | jq '.state'
+      cat /run/micrun/runtime/sandbox/<sandbox-id>/runtime.json | jq '.state'
 
 3. **检查 containerd 连接**
 
@@ -278,8 +289,8 @@ TTY 输出处理导致 ``\r\n`` 转换为 ``\r\r\n``。
 
 确保使用正确版本的 MicRun：
 
-* 检查 ``pkg/micantainer/rpmsg_tty.go`` 中禁用了 ``OPOST|ONLCR``
-* 检查 ``pkg/io/copier.go`` 中调用了 ``compressLineEndings()``
+* 检查 ``internal/domain/container/rpmsg_tty.go`` 中禁用了 ``OPOST|ONLCR``
+* 检查 ``internal/adapters/io/copier.go`` 中调用了 ``compressLineEndings()``
 
 6. Attach 后没有输出
 --------------------
@@ -342,7 +353,7 @@ TTY 输出处理导致 ``\r\n`` 转换为 ``\r\r\n``。
 
    .. code-block:: bash
 
-      cat /run/micrun/sandbox/<container-id>/state.json | jq '.state.state'
+      cat /run/micrun/runtime/sandbox/<sandbox-id>/runtime.json | jq '.state.state'
 
 2. **检查 shim 是否仍在运行**
 
@@ -360,7 +371,10 @@ TTY 输出处理导致 ``\r\n`` 转换为 ``\r\r\n``。
 
    # 方法 2: 如果 shim 已崩溃，手动清理
    xl destroy <container-id>
-   rm -rf /run/micrun/sandbox/<container-id>/
+   rm -rf /run/micrun/runtime/sandbox/<sandbox-id>/
+   find /run/micrun/runtime/container -maxdepth 3 | grep <container-id>
+   # 确认上面的路径后，再手工删除对应 container 运行时目录
+   rm -rf /run/micrun/sandbox/<sandbox-id>/
    rm -rf /run/micrun/containers/<container-id>/
    ctr task delete -f <container-id>
    ctr container delete <container-id>
@@ -430,7 +444,7 @@ TTY 输出处理导致 ``\r\n`` 转换为 ``\r\r\n``。
 
    .. code-block:: bash
 
-      cat /run/micrun/sandbox/<container-id>/state.json | jq '.config.container_configs'
+      cat /run/micrun/runtime/sandbox/<sandbox-id>/runtime.json | jq '.config.container_configs'
 
 2. **检查主机 CPU 数量**
 
@@ -509,14 +523,17 @@ TTY 输出处理导致 ``\r\n`` 转换为 ``\r\r\n``。
 
 .. code-block:: bash
 
-   # 查看完整状态
-   cat /run/micrun/sandbox/<id>/state.json | jq '.'
+   # 查看完整 sandbox 快照
+   cat /run/micrun/runtime/sandbox/<id>/runtime.json | jq '.'
 
    # 查看状态
-   cat /run/micrun/sandbox/<id>/state.json | jq '.state'
+   cat /run/micrun/runtime/sandbox/<id>/runtime.json | jq '.state'
 
    # 查看配置
-   cat /run/micrun/sandbox/<id>/state.json | jq '.config'
+   cat /run/micrun/runtime/sandbox/<id>/runtime.json | jq '.config'
+
+   # 必要时查看兼容格式状态文件
+   cat /run/micrun/sandbox/<id>/state.json | jq '.'
 
 清理残留资源
 ------------
@@ -524,24 +541,31 @@ TTY 输出处理导致 ``\r\n`` 转换为 ``\r\r\n``。
 .. code-block:: bash
 
    #!/bin/bash
-   CONTAINER_ID=$1
+   TASK_ID=$1
+   SANDBOX_ID=${2:-$TASK_ID}
 
    # 1. 销毁 Xen 域
-   xl destroy $CONTAINER_ID 2>/dev/null
+   xl destroy $TASK_ID 2>/dev/null
 
    # 2. 删除 containerd 任务
-   ctr task delete -f $CONTAINER_ID 2>/dev/null
+   ctr task delete -f $TASK_ID 2>/dev/null
 
    # 3. 删除 containerd 容器
-   ctr container delete $CONTAINER_ID 2>/dev/null
+   ctr container delete $TASK_ID 2>/dev/null
 
-   # 4. 删除 Sandbox 状态
-   rm -rf /run/micrun/sandbox/$CONTAINER_ID
+   # 4. 删除运行时快照
+   rm -rf /run/micrun/runtime/sandbox/$SANDBOX_ID
 
-   # 5. 删除容器状态
-   rm -rf /run/micrun/containers/$CONTAINER_ID
+   # 5. 输出待清理的 container 运行时路径
+   find /run/micrun/runtime/container -maxdepth 3 | grep "$TASK_ID"
 
-   echo "Cleanup complete for $CONTAINER_ID"
+   # 6. 删除 Sandbox 兼容状态
+   rm -rf /run/micrun/sandbox/$SANDBOX_ID
+
+   # 7. 删除容器兼容状态
+   rm -rf /run/micrun/containers/$TASK_ID
+
+   echo "Cleanup complete for task=$TASK_ID sandbox=$SANDBOX_ID"
 
 日志标识
 ========

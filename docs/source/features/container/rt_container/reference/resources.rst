@@ -8,6 +8,13 @@ MicRun 资源映射参考
 
 本文档详细说明 MicRun 如何将容器资源（来自 Kubernetes/containerd）映射到 RTOS 客户机的资源配置。
 
+当前实现中，资源解析链路已经收敛为：
+
+1. ``internal/adapters/hypervisor/pedestal/planner.go`` 负责把 OCI 资源转换为 pedestal 侧基础资源视图
+2. ``internal/domain/container/container_resource_parse.go`` 负责把资源计划并入容器领域配置
+3. ``internal/domain/container/container_resource_cpu.go`` 负责 CPU mask 归一化、越界过滤与 VCPU 回退策略
+4. ``internal/adapters/config/oci/resource_defaults.go`` 负责运行时默认值与内存阈值补全
+
 CPU 资源映射
 ============
 
@@ -103,7 +110,9 @@ VCPU 数量策略
    * - 策略
      - 说明
    * - **默认**
-     - VCPU = 1，大多数 RTOS 客户机只需要 1 个 vCPU
+     - 无 ``cpuset`` 时，``VCPU = max(1, ceil(CPUCapacity / 100))``，保证客户机可见的 vCPU 数能覆盖请求的 CPU 容量
+   * - **设置了 cpuset**
+     - ``VCPU = cpuset_size``，并受 ``cpuset`` 物理核心数量约束
    * - **vcpu_pcpu_binding=true**
      - VCPUs : PCPUs = 1:1，每个 vCPU 绑定到物理核心
 
@@ -112,6 +121,22 @@ Shared CPU Pool
 
 - **shared_cpu_pool** 选项：sandbox 内的所有容器都只能运行在指定的 CPU pool 上
 - **注意**：机器上可能有多个 sandbox，它们的 CPU pool 范围可能重合
+
+cpuset 归一化与越界处理
+-----------------------
+
+MicRun 当前会在容器领域层对 ``cpu.cpus`` 做一次本地归一化，而不是把该逻辑下沉到 guest adapter：
+
+1. 先按 ``cpuset`` 语法解析 CPU mask
+2. 若存在超出宿主机物理 CPU 上限的条目，则过滤这些条目
+3. 过滤后若仍有合法 CPU，则使用过滤后的 mask，并将 ``VCPU`` 数同步为合法 CPU 个数
+4. 若过滤后已无合法 CPU，则清空 ``cpuset``，并回退到基于 ``quota/period`` 推导的 ``VCPU = ceil(capacity / 100)``
+
+这意味着：
+
+- ``0,2,9`` 在 4 物理核机器上会被归一化为 ``0,2``
+- ``8,9`` 这类全越界配置会清空 ``cpuset``，再按 CPU capacity 决定 VCPU 数
+- ``0,,2``、``-1`` 这类非法 mask 会被视为解析错误，不进入归一化成功路径
 
 内存资源映射
 ============
@@ -211,12 +236,25 @@ K8s 到 cgroup 的转换
 配置优先级
 ==========
 
-配置来源优先级（从高到低）：
+资源相关配置在当前实现里分成"运行时配置来源选择"和"最终值覆盖"两层：
 
-1. **Annotation** - Pod/容器注解
-2. **Config Files** - ``/etc/mica/micrun/micrun.conf`` (INI/TOML 格式)
-3. **Environment Variables** - ``MICRUN_CONF_FILE``, ``MICRUN_CONF_DIR``
-4. **Default Values**
+1. 先选择运行时配置来源
+
+   - annotation 指定的 config path
+   - CRI runtime options 的 ``ConfigPath``
+   - ``MICRUN_CONF_FILE``
+   - ``MICRUN_CONF_DIR``
+   - ``/etc/mica/micrun/conf.d/*``
+   - ``/etc/mica/micrun/micrun.conf``
+
+2. 再由 annotations 对最终值做 overlay
+
+因此更准确的理解应该是：
+
+- **Annotation** - 最终覆盖值，优先级最高
+- **Config Files** - 运行时默认值来源
+- **Environment Variables** - 主要决定读取哪份配置文件，不直接承载资源值
+- **Default Values** - 最后兜底
 
 注解配置示例
 ------------
@@ -301,13 +339,17 @@ vCPU 固定
 
    * - 文件
      - 说明
-   * - ``pkg/pedestal/planner.go``
-     - 资源解析，``PlanEssentialResources()``, ``linuxResourceToEssential()``
-   * - ``pkg/pedestal/resources.go``
+   * - ``internal/adapters/hypervisor/pedestal/planner.go``
+     - 资源解析，``(*PedestalFacade).PlanEssentialResources()``, ``linuxResourceToEssential()``
+   * - ``internal/adapters/hypervisor/pedestal/resources.go``
      - 资源结构定义 ``EssentialResource``
-   * - ``pkg/pedestal/xen.go``
-     - CPU shares 到 weight 转换 ``ShareToWeight()``
-   * - ``pkg/oci/oci_configs.go``
+   * - ``internal/domain/container/container_resource_parse.go``
+     - ``ParseOCIResources()``、``ValidateResourceLimits()``、CPU/Memory 解析编排
+   * - ``internal/domain/container/container_resource_cpu.go``
+     - CPU capacity、cpuset 归一化、越界 CPU 过滤
+   * - ``internal/domain/container/container_resource_memory.go``
+     - memory limit / reservation 映射
+   * - ``internal/adapters/config/oci/resource_defaults.go``
      - 内存阈值计算 ``calculateClientMemThreshold()``
 
 关键函数
@@ -315,14 +357,18 @@ vCPU 固定
 
 .. code-block:: go
 
-   // CPU 资源转换 (pkg/pedestal/planner.go)
-   func PlanEssentialResources(spec *specs.Spec) *EssentialResource
+   // pedestal 资源规划 (internal/adapters/hypervisor/pedestal/planner.go)
+   func (f *PedestalFacade) PlanEssentialResources(spec *specs.Spec) *EssentialResource
    func linuxResourceToEssential(spec *specs.Spec, convertShares bool) *EssentialResource
 
-   // CPU shares 到 weight 转换 (pkg/pedestal/xen.go)
-   func ShareToWeight(shares uint64) uint32
+   // 容器领域资源解析 (internal/domain/container/container_resource_parse.go)
+   func (r *ContainerConfig) ParseOCIResources(spec *specs.Spec) error
+   func ValidateResourceLimits(config *ContainerConfig) error
 
-   // 内存阈值管理 (pkg/oci/oci_configs.go)
+   // 容器领域 CPU mask 归一化 (internal/domain/container/container_resource_cpu.go)
+   func normalizeCPUSet(mask string, fallbackVCPUs uint32) (string, uint32)
+
+   // 内存阈值管理 (internal/adapters/config/oci/resource_defaults.go)
    func calculateClientMemThreshold(config *cntr.ContainerConfig, runtimeCfg *RuntimeConfig) uint32
 
 测试验证
@@ -359,3 +405,9 @@ MicRun 实现了与 ``runc`` 相同的资源限制语义：
 - **cpuset**：作为物理天花板
 - **quota/period**：作为逻辑上限
 - **最终限制**：取两者的最小值
+
+另外，MicRun 会额外做一层 RTOS/Xen 场景下的防御性处理：
+
+- 过滤超出宿主机物理 CPU 范围的 ``cpuset``
+- 在 ``cpuset`` 完全失效时回退到 capacity 导出的 ``VCPU``
+- 在 guest 侧通过 ``memoryThreshold >= memory limit`` 保持内存扩容路径稳定
