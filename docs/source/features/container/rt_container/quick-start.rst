@@ -157,13 +157,14 @@ openEuler Embedded 基础构建过程可参考：
 .. code-block:: bash
 
    # 安装/更新 oebuild
+   # Features: zephyr (RTOS), micrun (runtime), mcs/xen, systemd, containerd
    oebuild generate -p qemu-aarch64 \
-     -f zephyr \      # Zephyr RTOS 支持
-     -f micrun \      # MicRun 运行时
-     -f mcs/xen \     # mcs 和 xen 支持
-     -f systemd \     # systemd 服务管理
-     -f containerd \  # containerd 容器引擎（必须）
-     -d <build_dir>   # 构建目录名称，自定义（如 playmicrun）
+     -f zephyr \
+     -f micrun \
+     -f mcs/xen \
+     -f systemd \
+     -f containerd \
+     -d <build_dir>
 
    cd <build_dir>
    oebuild bitbake
@@ -207,13 +208,14 @@ openEuler Embedded 基础构建过程可参考：
 
 .. code-block:: bash
 
+   # Add -f k3s-agent to enable K3s agent support
    oebuild generate -p qemu-aarch64 \
      -f zephyr \
      -f micrun \
      -f mcs/xen \
      -f systemd \
      -f containerd \
-     -f k3s-agent \   # 添加 K3s agent 支持
+     -f k3s-agent \
      -d <build_dir>
 
 步骤 2：启动系统
@@ -241,8 +243,8 @@ openEuler Embedded 基础构建过程可参考：
      -cpu cortex-a53 -smp 4 -m 4096 \
      -serial mon:stdio -nographic \
      -kernel xen-qemu-aarch64 \
-     -append 'root=/dev/ram0 rw debugshell mem=1024M console=ttyAMA0,115200' \
-     -dtb openeuler-image-mcs-qemu-aarch64-*.qemuboot.dtb
+     -append 'root=/dev/ram0 rw debugshell mem=1536M console=hvc0,115200' \
+     -dtb openeuler-image-qemu-aarch64-*.qemuboot.dtb
 
 **参数说明**：
 
@@ -387,7 +389,8 @@ openEuler Embedded 基础构建过程可参考：
 
    [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.micrun]
      runtime_type = "io.containerd.mica.v2"
-     pod_annotations = ["org.openeuler.micrun."]
+     pod_annotations = ["org.openeuler.micrun.*"]
+     container_annotations = ["org.openeuler.micrun.*"]
 
 **配置说明**：
 

@@ -403,6 +403,7 @@ org.openeuler.micrun.ped.pedestal
 
 * 如果指定的类型与主机不匹配,容器创建会失败
 * 通常不需要设置,自动使用主机 Hypervisor
+* Baremetal 不会自动探测；需要在宿主环境显式设置 ``MICRUN_ENABLE_BAREMETAL=1``
 
 **示例**:
 
