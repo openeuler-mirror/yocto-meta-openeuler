@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=74b1b7a7ee537a16390ed514498bf23c"
 # TODO: after DISTRO_FEATURES "containers" established well, replace "containerd" with "containers"
 REQUIRED_DISTRO_FEATURES += " mcs containerd "
 
-SRCREV = "5c64255ab80a8dc2641699dd8d8076c95fef6b84"
+SRCREV = "82c7452680e56a19fc9e13088eecbedbf001c716"
 PV = "0.1-nightly-git-${SRCREV}"
 
 OPENEULER_LOCAL_NAME = "mcs"
