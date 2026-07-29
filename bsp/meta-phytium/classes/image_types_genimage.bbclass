@@ -52,3 +52,4 @@ IMAGE_CMD:genimage () {
 do_image_genimage[cleandirs] = "${GENIMAGE_BUILD_PATH}"
 
 do_image_genimage[depends] += "${@' '.join('%s-native:do_populate_sysroot' % r for r in ('genimage', 'genext2fs', 'e2fsprogs'))}"
+do_image_genimage[depends] += "virtual/kernel:do_deploy"
