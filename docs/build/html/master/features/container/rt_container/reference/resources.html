@@ -144,6 +144,13 @@
 <section id="id1">
 <h2>概述<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
 <p>本文档详细说明 MicRun 如何将容器资源（来自 Kubernetes/containerd）映射到 RTOS 客户机的资源配置。</p>
+<p>当前实现中，资源解析链路已经收敛为：</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">internal/adapters/hypervisor/pedestal/planner.go</span></code> 负责把 OCI 资源转换为 pedestal 侧基础资源视图</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">internal/domain/container/container_resource_parse.go</span></code> 负责把资源计划并入容器领域配置</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">internal/domain/container/container_resource_cpu.go</span></code> 负责 CPU mask 归一化、越界过滤与 VCPU 回退策略</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">internal/adapters/config/oci/resource_defaults.go</span></code> 负责运行时默认值与内存阈值补全</p></li>
+</ol>
 </section>
 <section id="cpu">
 <h2>CPU 资源映射<a class="headerlink" href="#cpu" title="Permalink to this heading"></a></h2>
@@ -277,9 +284,12 @@
 </thead>
 <tbody>
 <tr class="row-even"><td><p><strong>默认</strong></p></td>
-<td><p>VCPU = 1，大多数 RTOS 客户机只需要 1 个 vCPU</p></td>
+<td><p>无 <code class="docutils literal notranslate"><span class="pre">cpuset</span></code> 时，<code class="docutils literal notranslate"><span class="pre">VCPU</span> <span class="pre">=</span> <span class="pre">max(1,</span> <span class="pre">ceil(CPUCapacity</span> <span class="pre">/</span> <span class="pre">100))</span></code>，保证客户机可见的 vCPU 数能覆盖请求的 CPU 容量</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>vcpu_pcpu_binding=true</strong></p></td>
+<tr class="row-odd"><td><p><strong>设置了 cpuset</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">VCPU</span> <span class="pre">=</span> <span class="pre">cpuset_size</span></code>，并受 <code class="docutils literal notranslate"><span class="pre">cpuset</span></code> 物理核心数量约束</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>vcpu_pcpu_binding=true</strong></p></td>
 <td><p>VCPUs : PCPUs = 1:1，每个 vCPU 绑定到物理核心</p></td>
 </tr>
 </tbody>
@@ -290,6 +300,22 @@
 <ul class="simple">
 <li><p><strong>shared_cpu_pool</strong> 选项：sandbox 内的所有容器都只能运行在指定的 CPU pool 上</p></li>
 <li><p><strong>注意</strong>：机器上可能有多个 sandbox，它们的 CPU pool 范围可能重合</p></li>
+</ul>
+</section>
+<section id="cpuset">
+<h3>cpuset 归一化与越界处理<a class="headerlink" href="#cpuset" title="Permalink to this heading"></a></h3>
+<p>MicRun 当前会在容器领域层对 <code class="docutils literal notranslate"><span class="pre">cpu.cpus</span></code> 做一次本地归一化，而不是把该逻辑下沉到 guest adapter：</p>
+<ol class="arabic simple">
+<li><p>先按 <code class="docutils literal notranslate"><span class="pre">cpuset</span></code> 语法解析 CPU mask</p></li>
+<li><p>若存在超出宿主机物理 CPU 上限的条目，则过滤这些条目</p></li>
+<li><p>过滤后若仍有合法 CPU，则使用过滤后的 mask，并将 <code class="docutils literal notranslate"><span class="pre">VCPU</span></code> 数同步为合法 CPU 个数</p></li>
+<li><p>若过滤后已无合法 CPU，则清空 <code class="docutils literal notranslate"><span class="pre">cpuset</span></code>，并回退到基于 <code class="docutils literal notranslate"><span class="pre">quota/period</span></code> 推导的 <code class="docutils literal notranslate"><span class="pre">VCPU</span> <span class="pre">=</span> <span class="pre">ceil(capacity</span> <span class="pre">/</span> <span class="pre">100)</span></code></p></li>
+</ol>
+<p>这意味着：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">0,2,9</span></code> 在 4 物理核机器上会被归一化为 <code class="docutils literal notranslate"><span class="pre">0,2</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">8,9</span></code> 这类全越界配置会清空 <code class="docutils literal notranslate"><span class="pre">cpuset</span></code>，再按 CPU capacity 决定 VCPU 数</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">0,,2</span></code>、<code class="docutils literal notranslate"><span class="pre">-1</span></code> 这类非法 mask 会被视为解析错误，不进入归一化成功路径</p></li>
 </ul>
 </section>
 </section>
@@ -419,13 +445,27 @@
 </section>
 <section id="id11">
 <h2>配置优先级<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h2>
-<p>配置来源优先级（从高到低）：</p>
+<p>资源相关配置在当前实现里分成”运行时配置来源选择”和”最终值覆盖”两层：</p>
 <ol class="arabic simple">
-<li><p><strong>Annotation</strong> - Pod/容器注解</p></li>
-<li><p><strong>Config Files</strong> - <code class="docutils literal notranslate"><span class="pre">/etc/mica/micrun/micrun.conf</span></code> (INI/TOML 格式)</p></li>
-<li><p><strong>Environment Variables</strong> - <code class="docutils literal notranslate"><span class="pre">MICRUN_CONF_FILE</span></code>, <code class="docutils literal notranslate"><span class="pre">MICRUN_CONF_DIR</span></code></p></li>
-<li><p><strong>Default Values</strong></p></li>
+<li><p>先选择运行时配置来源</p>
+<ul class="simple">
+<li><p>annotation 指定的 config path</p></li>
+<li><p>CRI runtime options 的 <code class="docutils literal notranslate"><span class="pre">ConfigPath</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MICRUN_CONF_FILE</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MICRUN_CONF_DIR</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/etc/mica/micrun/conf.d/*</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/etc/mica/micrun/micrun.conf</span></code></p></li>
+</ul>
+</li>
+<li><p>再由 annotations 对最终值做 overlay</p></li>
 </ol>
+<p>因此更准确的理解应该是：</p>
+<ul class="simple">
+<li><p><strong>Annotation</strong> - 最终覆盖值，优先级最高</p></li>
+<li><p><strong>Config Files</strong> - 运行时默认值来源</p></li>
+<li><p><strong>Environment Variables</strong> - 主要决定读取哪份配置文件，不直接承载资源值</p></li>
+<li><p><strong>Default Values</strong> - 最后兜底</p></li>
+</ul>
 <section id="id12">
 <h3>注解配置示例<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
@@ -535,16 +575,22 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pkg/pedestal/planner.go</span></code></p></td>
-<td><p>资源解析，<code class="docutils literal notranslate"><span class="pre">PlanEssentialResources()</span></code>, <code class="docutils literal notranslate"><span class="pre">linuxResourceToEssential()</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">internal/adapters/hypervisor/pedestal/planner.go</span></code></p></td>
+<td><p>资源解析，<code class="docutils literal notranslate"><span class="pre">(*PedestalFacade).PlanEssentialResources()</span></code>, <code class="docutils literal notranslate"><span class="pre">linuxResourceToEssential()</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pkg/pedestal/resources.go</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">internal/adapters/hypervisor/pedestal/resources.go</span></code></p></td>
 <td><p>资源结构定义 <code class="docutils literal notranslate"><span class="pre">EssentialResource</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pkg/pedestal/xen.go</span></code></p></td>
-<td><p>CPU shares 到 weight 转换 <code class="docutils literal notranslate"><span class="pre">ShareToWeight()</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">internal/domain/container/container_resource_parse.go</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ParseOCIResources()</span></code>、<code class="docutils literal notranslate"><span class="pre">ValidateResourceLimits()</span></code>、CPU/Memory 解析编排</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pkg/oci/oci_configs.go</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">internal/domain/container/container_resource_cpu.go</span></code></p></td>
+<td><p>CPU capacity、cpuset 归一化、越界 CPU 过滤</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">internal/domain/container/container_resource_memory.go</span></code></p></td>
+<td><p>memory limit / reservation 映射</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">internal/adapters/config/oci/resource_defaults.go</span></code></p></td>
 <td><p>内存阈值计算 <code class="docutils literal notranslate"><span class="pre">calculateClientMemThreshold()</span></code></p></td>
 </tr>
 </tbody>
@@ -552,14 +598,18 @@
 </section>
 <section id="id20">
 <h3>关键函数<a class="headerlink" href="#id20" title="Permalink to this heading"></a></h3>
-<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// CPU 资源转换 (pkg/pedestal/planner.go)</span>
-<span class="kd">func</span><span class="w"> </span><span class="nx">PlanEssentialResources</span><span class="p">(</span><span class="nx">spec</span><span class="w"> </span><span class="o">*</span><span class="nx">specs</span><span class="p">.</span><span class="nx">Spec</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="nx">EssentialResource</span>
+<div class="highlight-go notranslate"><div class="highlight"><pre><span></span><span class="c1">// pedestal 资源规划 (internal/adapters/hypervisor/pedestal/planner.go)</span>
+<span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">f</span><span class="w"> </span><span class="o">*</span><span class="nx">PedestalFacade</span><span class="p">)</span><span class="w"> </span><span class="nx">PlanEssentialResources</span><span class="p">(</span><span class="nx">spec</span><span class="w"> </span><span class="o">*</span><span class="nx">specs</span><span class="p">.</span><span class="nx">Spec</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="nx">EssentialResource</span>
 <span class="kd">func</span><span class="w"> </span><span class="nx">linuxResourceToEssential</span><span class="p">(</span><span class="nx">spec</span><span class="w"> </span><span class="o">*</span><span class="nx">specs</span><span class="p">.</span><span class="nx">Spec</span><span class="p">,</span><span class="w"> </span><span class="nx">convertShares</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="nx">EssentialResource</span>
 
-<span class="c1">// CPU shares 到 weight 转换 (pkg/pedestal/xen.go)</span>
-<span class="kd">func</span><span class="w"> </span><span class="nx">ShareToWeight</span><span class="p">(</span><span class="nx">shares</span><span class="w"> </span><span class="kt">uint64</span><span class="p">)</span><span class="w"> </span><span class="kt">uint32</span>
+<span class="c1">// 容器领域资源解析 (internal/domain/container/container_resource_parse.go)</span>
+<span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">r</span><span class="w"> </span><span class="o">*</span><span class="nx">ContainerConfig</span><span class="p">)</span><span class="w"> </span><span class="nx">ParseOCIResources</span><span class="p">(</span><span class="nx">spec</span><span class="w"> </span><span class="o">*</span><span class="nx">specs</span><span class="p">.</span><span class="nx">Spec</span><span class="p">)</span><span class="w"> </span><span class="kt">error</span>
+<span class="kd">func</span><span class="w"> </span><span class="nx">ValidateResourceLimits</span><span class="p">(</span><span class="nx">config</span><span class="w"> </span><span class="o">*</span><span class="nx">ContainerConfig</span><span class="p">)</span><span class="w"> </span><span class="kt">error</span>
 
-<span class="c1">// 内存阈值管理 (pkg/oci/oci_configs.go)</span>
+<span class="c1">// 容器领域 CPU mask 归一化 (internal/domain/container/container_resource_cpu.go)</span>
+<span class="kd">func</span><span class="w"> </span><span class="nx">normalizeCPUSet</span><span class="p">(</span><span class="nx">mask</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">fallbackVCPUs</span><span class="w"> </span><span class="kt">uint32</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32</span><span class="p">)</span>
+
+<span class="c1">// 内存阈值管理 (internal/adapters/config/oci/resource_defaults.go)</span>
 <span class="kd">func</span><span class="w"> </span><span class="nx">calculateClientMemThreshold</span><span class="p">(</span><span class="nx">config</span><span class="w"> </span><span class="o">*</span><span class="nx">cntr</span><span class="p">.</span><span class="nx">ContainerConfig</span><span class="p">,</span><span class="w"> </span><span class="nx">runtimeCfg</span><span class="w"> </span><span class="o">*</span><span class="nx">RuntimeConfig</span><span class="p">)</span><span class="w"> </span><span class="kt">uint32</span>
 </pre></div>
 </div>
@@ -608,6 +658,12 @@
 <li><p><strong>cpuset</strong>：作为物理天花板</p></li>
 <li><p><strong>quota/period</strong>：作为逻辑上限</p></li>
 <li><p><strong>最终限制</strong>：取两者的最小值</p></li>
+</ul>
+<p>另外，MicRun 会额外做一层 RTOS/Xen 场景下的防御性处理：</p>
+<ul class="simple">
+<li><p>过滤超出宿主机物理 CPU 范围的 <code class="docutils literal notranslate"><span class="pre">cpuset</span></code></p></li>
+<li><p>在 <code class="docutils literal notranslate"><span class="pre">cpuset</span></code> 完全失效时回退到 capacity 导出的 <code class="docutils literal notranslate"><span class="pre">VCPU</span></code></p></li>
+<li><p>在 guest 侧通过 <code class="docutils literal notranslate"><span class="pre">memoryThreshold</span> <span class="pre">&gt;=</span> <span class="pre">memory</span> <span class="pre">limit</span></code> 保持内存扩容路径稳定</p></li>
 </ul>
 </section>
 </section>

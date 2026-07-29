@@ -72,28 +72,34 @@
 <li class="toctree-l5 current"><a class="current reference internal" href="#">MicRun Kubernetes 云边协同指南</a><ul>
 <li class="toctree-l6"><a class="reference internal" href="#id2">架构概览</a></li>
 <li class="toctree-l6"><a class="reference internal" href="#id3">前置准备</a></li>
-<li class="toctree-l6"><a class="reference internal" href="#id4">云侧部署</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#id4">部署前检查</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id5">云侧部署</a><ul>
 <li class="toctree-l7"><a class="reference internal" href="#k3s-server">安装 K3s Server</a></li>
 </ul>
 </li>
-<li class="toctree-l6"><a class="reference internal" href="#id5">边侧部署</a><ul>
-<li class="toctree-l7"><a class="reference internal" href="#k3s-containerd">配置 K3s 使用系统 containerd</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#k3s-agent">安装 K3s Agent</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id6">边侧部署</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#k3s-agent-containerd">当前推荐模式：构建内置 K3s Agent + 系统 containerd</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#containerd-cni">配置系统 containerd 和 CNI</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#k3s-state">每次重跑前清理旧的 K3s state</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#k3s-agent">启动 K3s Agent</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#pause-rtos">预置 pause 镜像与 RTOS 镜像</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#e2e">可重复的云边 e2e 脚本</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id7">单节点调试模式</a></li>
 <li class="toctree-l7"><a class="reference internal" href="#runtimeclass">注册 RuntimeClass</a></li>
 </ul>
 </li>
 <li class="toctree-l6"><a class="reference internal" href="#rtos-pod">运行 RTOS Pod</a><ul>
 <li class="toctree-l7"><a class="reference internal" href="#pod">创建 Pod</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id6">使用注解配置</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id7">验证</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id8">使用注解配置</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id9">验证</a></li>
 </ul>
 </li>
-<li class="toctree-l6"><a class="reference internal" href="#id8">故障排查</a><ul>
-<li class="toctree-l7"><a class="reference internal" href="#id9">快速诊断</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id10">通用排查命令</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id10">故障排查</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id11">快速诊断</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id12">通用排查命令</a></li>
 </ul>
 </li>
-<li class="toctree-l6"><a class="reference internal" href="#id11">参考资源</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id13">参考资源</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="../reference/index.html">参考文档</a></li>
@@ -150,7 +156,7 @@
 <p>本文档介绍如何在 K3s 环境中配置 MicRun，实现 RTOS 容器的云边协同部署。</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><strong>约定</strong>：云侧运行 K3s Server，边侧运行 K3s Agent 和 RTOS 容器。</p>
+<p><strong>约定</strong>：优先推荐”云侧 K3s Server + 边侧 K3s Agent”模式；资源受限或离线调试场景也可使用单节点 K3s Server 进行验证。</p>
 </div>
 <section id="id2">
 <h2>架构概览<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
@@ -190,12 +196,12 @@
 <td><p>openEuler Embedded（含 micrun, micad, xen）</p></td>
 </tr>
 <tr class="row-odd"><td><p>K3s</p></td>
-<td><p>v1.28+ server</p></td>
-<td><p>v1.28+ agent</p></td>
+<td><p>与边侧版本匹配的 server</p></td>
+<td><p>rootfs 内置 agent</p></td>
 </tr>
 <tr class="row-even"><td><p>containerd</p></td>
-<td><p>K3s 自带</p></td>
-<td><p>1.7.27+</p></td>
+<td><p>K3s 自带或容器内置</p></td>
+<td><p>rootfs 内置系统 containerd</p></td>
 </tr>
 <tr class="row-odd"><td><p>MicRun</p></td>
 <td><p>不需要</p></td>
@@ -206,7 +212,142 @@
 <p>边侧需完成 <a class="reference internal" href="../quick-start.html"><span class="doc">MicRun 快速入门</span></a> 前 5 步。</p>
 </section>
 <section id="id4">
-<h2>云侧部署<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
+<h2>部署前检查<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
+<p>在 openEuler Embedded 边侧机上，下面几个前置条件会直接影响 K3s 能否跑起来：</p>
+<ol class="arabic">
+<li><p><strong>系统时间必须正确</strong></p>
+<p>如果系统时间仍停留在 <code class="docutils literal notranslate"><span class="pre">1970-01-01</span></code>，K3s 会直接报 <code class="docutils literal notranslate"><span class="pre">server</span> <span class="pre">time</span> <span class="pre">isn't</span> <span class="pre">set</span> <span class="pre">properly</span></code> 并退出。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>date<span class="w"> </span>-u
+date<span class="w"> </span>-u<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;2026-03-12 12:00:00&quot;</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>内存必须留有余量</strong></p>
+<p>本机实测在 <code class="docutils literal notranslate"><span class="pre">1.5GiB</span></code> 左右可用内存下，未清理旧 Xen 域时，K3s 初始化可能被 OOM kill。
+建议先清理残留 RTOS 域：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>xl<span class="w"> </span>list
+xl<span class="w"> </span>destroy<span class="w"> </span>&lt;old-domain&gt;
+free<span class="w"> </span>-m
+</pre></div>
+</div>
+<p>如果内存仍不足，建议先配置 swap。对于 initrd/内存盘环境，不要在恢复网络的同一步骤里无条件创建 swapfile，建议在确认根文件系统可承载后再单独执行：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>dd<span class="w"> </span><span class="k">if</span><span class="o">=</span>/dev/zero<span class="w"> </span><span class="nv">of</span><span class="o">=</span>/swapfile<span class="w"> </span><span class="nv">bs</span><span class="o">=</span>1M<span class="w"> </span><span class="nv">count</span><span class="o">=</span><span class="m">1024</span><span class="w"> </span><span class="nv">status</span><span class="o">=</span>progress
+chmod<span class="w"> </span><span class="m">600</span><span class="w"> </span>/swapfile
+mkswap<span class="w"> </span>/swapfile
+swapon<span class="w"> </span>/swapfile
+grep<span class="w"> </span>-q<span class="w"> </span><span class="s1">&#39;^/swapfile &#39;</span><span class="w"> </span>/etc/fstab<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;/swapfile none swap sw 0 0&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>/etc/fstab
+swapon<span class="w"> </span>--show
+</pre></div>
+</div>
+</li>
+<li><p><strong>oEE/QEMU 的 cgroup 能力需要按运行态配置处理</strong></p>
+<p>在当前 QEMU/oEE guest 中，kubelet 的 Pod QoS cgroup 可能无法完整创建。
+如果保持默认 <code class="docutils literal notranslate"><span class="pre">cgroupsPerQOS=true</span></code>，Pod 进入 Running 后下一次同步会因为
+Pod cgroup 不存在而触发 <code class="docutils literal notranslate"><span class="pre">killPod</span></code>，表现为 kubelet 立即记录
+<code class="docutils literal notranslate"><span class="pre">Stopping</span> <span class="pre">container</span> <span class="pre">&lt;name&gt;</span></code>。测试环境推荐给 kubelet 增加：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>--kubelet-arg<span class="o">=</span>cgroups-per-qos<span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--kubelet-arg<span class="o">=</span>enforce-node-allocatable<span class="o">=</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--kubelet-arg<span class="o">=</span>fail-cgroupv1<span class="o">=</span><span class="nb">false</span>
+</pre></div>
+</div>
+<p>这是 K3s/kubelet 运行态参数，不需要修改或重新打包 QEMU rootfs。</p>
+<p>较新的 kubelet 在 cgroup v1 环境中可能需要 <code class="docutils literal notranslate"><span class="pre">fail-cgroupv1=false</span></code>。
+旧版本 kubelet 可能不支持该参数；遇到 <code class="docutils literal notranslate"><span class="pre">unknown</span> <span class="pre">flag:</span>
+<span class="pre">--fail-cgroupv1</span></code> 时，通过 <code class="docutils literal notranslate"><span class="pre">K3S_KUBELET_ARGS</span></code> 移除它。已验证的 oEE
+K3s v1.27 云边测试只保留 <code class="docutils literal notranslate"><span class="pre">cgroups-per-qos=false</span></code> 和空
+<code class="docutils literal notranslate"><span class="pre">enforce-node-allocatable</span></code>。</p>
+</li>
+<li><p><strong>当前平台不支持 Flannel VXLAN</strong></p>
+<p>如果日志里出现 <code class="docutils literal notranslate"><span class="pre">failed</span> <span class="pre">to</span> <span class="pre">create</span> <span class="pre">vxlan</span> <span class="pre">device:</span> <span class="pre">operation</span> <span class="pre">not</span> <span class="pre">supported</span></code>，需要改用：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>--flannel-backend<span class="o">=</span>none
+</pre></div>
+</div>
+<p>这会让节点在没有额外 CNI 时保持 <code class="docutils literal notranslate"><span class="pre">NotReady</span></code>，但可用 <code class="docutils literal notranslate"><span class="pre">hostNetwork:</span> <span class="pre">true</span></code> + <code class="docutils literal notranslate"><span class="pre">not-ready</span></code> toleration 做 MicRun/runtime 验证。</p>
+</li>
+<li><p><strong>边侧必须能拿到 Pod sandbox 镜像</strong></p>
+<p>K3s/CRI 在创建 Pod sandbox 时会先使用 <code class="docutils literal notranslate"><span class="pre">rancher/mirrored-pause:3.6</span></code>。如果边侧无法访问默认镜像仓库，需要提前把 pause 镜像导入到运行中的 containerd。</p>
+</li>
+<li><p><strong>用于自动化部署/测试的账号不要处于密码过期状态</strong></p>
+<p>如果远程 SSH 会话一登录就要求改密，自动化脚本会直接失败。可按需关闭账号过期限制：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chage<span class="w"> </span>-I<span class="w"> </span>-1<span class="w"> </span>-m<span class="w"> </span><span class="m">0</span><span class="w"> </span>-M<span class="w"> </span><span class="m">99999</span><span class="w"> </span>-E<span class="w"> </span>-1<span class="w"> </span>root
+passwd<span class="w"> </span>-x<span class="w"> </span>-1<span class="w"> </span>root
+</pre></div>
+</div>
+</li>
+<li><p><strong>RTOS 镜像在 K3s 中需要显式提供 ``command``</strong></p>
+<p>当前 <code class="docutils literal notranslate"><span class="pre">localhost:5000/mica-uniproton-app:xen-0.1</span></code> 这类 RTOS 镜像没有标准 Linux 容器入口点。
+Kubelet/CRI 在生成 OCI spec 时若没有 <code class="docutils literal notranslate"><span class="pre">command</span></code>，会报：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>failed to generate spec: no command specified
+</pre></div>
+</div>
+<p>运行时实际不会执行这个占位命令，但 Pod YAML 必须写一个占位值，例如：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;/micrun-placeholder&quot;</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>边侧 IP 必须固定，避免 DHCP/链路本地地址漂移</strong></p>
+<p>在 QEMU/openEuler Embedded 场景中，如果 <code class="docutils literal notranslate"><span class="pre">systemd-networkd</span></code> 和 <code class="docutils literal notranslate"><span class="pre">dhcpcd</span></code> 同时管理 <code class="docutils literal notranslate"><span class="pre">enp0s1</span></code>，容易出现：</p>
+<ul class="simple">
+<li><p>同时持有实验网段静态地址和 <code class="docutils literal notranslate"><span class="pre">169.254.x.y/16</span></code></p></li>
+<li><p>默认路由被切到链路本地地址</p></li>
+<li><p>SSH 间歇性可达，甚至完全失联</p></li>
+</ul>
+<p>以下命令使用仓库默认 QEMU/K3s 示例网段。若你的环境不同，先改
+<code class="docutils literal notranslate"><span class="pre">EDGE_IFACE</span></code>、<code class="docutils literal notranslate"><span class="pre">EDGE_IP</span></code> 和 <code class="docutils literal notranslate"><span class="pre">HOST_TAP_IP</span></code>：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">EDGE_IFACE</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">EDGE_IFACE</span><span class="k">:-</span><span class="nv">enp0s1</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nv">EDGE_IP</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">EDGE_IP</span><span class="k">:-</span><span class="nv">192</span><span class="p">.168.7.2</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nv">HOST_TAP_IP</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">HOST_TAP_IP</span><span class="k">:-</span><span class="nv">192</span><span class="p">.168.7.1</span><span class="si">}</span><span class="s2">&quot;</span>
+
+cat<span class="w"> </span>&gt;/etc/systemd/network/10-eth-static.network<span class="w"> </span><span class="s">&lt;&lt;&#39;EOF&#39;</span>
+<span class="s">[Match]</span>
+<span class="s">Name=__EDGE_IFACE__</span>
+
+<span class="s">[Network]</span>
+<span class="s">Address=__EDGE_IP__/24</span>
+<span class="s">Gateway=__HOST_TAP_IP__</span>
+<span class="s">DNS=__HOST_TAP_IP__</span>
+<span class="s">DHCP=no</span>
+<span class="s">LinkLocalAddressing=no</span>
+<span class="s">LLMNR=no</span>
+<span class="s">MulticastDNS=no</span>
+<span class="s">IPv6AcceptRA=no</span>
+<span class="s">EOF</span>
+sed<span class="w"> </span>-i<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="s2">&quot;s/__EDGE_IFACE__/</span><span class="si">${</span><span class="nv">EDGE_IFACE</span><span class="si">}</span><span class="s2">/g&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="s2">&quot;s/__EDGE_IP__/</span><span class="si">${</span><span class="nv">EDGE_IP</span><span class="si">}</span><span class="s2">/g&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="s2">&quot;s/__HOST_TAP_IP__/</span><span class="si">${</span><span class="nv">HOST_TAP_IP</span><span class="si">}</span><span class="s2">/g&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>/etc/systemd/network/10-eth-static.network
+
+systemctl<span class="w"> </span>disable<span class="w"> </span>--now<span class="w"> </span>dhcpcd
+systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>systemd-networkd
+systemctl<span class="w"> </span>restart<span class="w"> </span>systemd-networkd
+
+ip<span class="w"> </span>-br<span class="w"> </span>addr<span class="w"> </span>show<span class="w"> </span>dev<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$EDGE_IFACE</span><span class="s2">&quot;</span>
+ip<span class="w"> </span>route
+</pre></div>
+</div>
+<p>如果你是通过串口终端恢复环境，也可以直接执行仓库里的脚本：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sh<span class="w"> </span>&lt;path-to-mcs-repo&gt;/micrun/tests/k3s/prepare_edge_node.sh
+</pre></div>
+</div>
+<p>可选环境变量：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">IFACE</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">EDGE_IFACE</span><span class="k">:-</span><span class="nv">enp0s1</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="nv">IP_ADDR</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">EDGE_IP</span><span class="k">:-</span><span class="nv">192</span><span class="p">.168.7.2</span><span class="si">}</span><span class="s2">/24&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="nv">GATEWAY</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">HOST_TAP_IP</span><span class="k">:-</span><span class="nv">192</span><span class="p">.168.7.1</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="nv">DNS_SERVER</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">HOST_TAP_IP</span><span class="k">:-</span><span class="nv">192</span><span class="p">.168.7.1</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="nv">ENABLE_SWAP</span><span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
+<span class="nv">DISABLE_ROOT_EXPIRY</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
+sh<span class="w"> </span>&lt;path-to-mcs-repo&gt;/micrun/tests/k3s/prepare_edge_node.sh
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">ENABLE_SWAP=true</span></code> 只适合确认 guest 有足够可写空间的调试场景。ramfs
+rootfs 上创建大 swap 文件可能触发内存压力，标准 QEMU/K3s 测试不要依赖
+这一步。</p>
+</li>
+</ol>
+</section>
+<section id="id5">
+<h2>云侧部署<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
 <section id="k3s-server">
 <h3>安装 K3s Server<a class="headerlink" href="#k3s-server" title="Permalink to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 安装（替换 &lt;cloud-ip&gt; 为云侧 IP）</span>
@@ -223,29 +364,190 @@ kubectl<span class="w"> </span>get<span class="w"> </span>nodes
 </div>
 </section>
 </section>
-<section id="id5">
-<h2>边侧部署<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
-<section id="k3s-containerd">
-<h3>配置 K3s 使用系统 containerd<a class="headerlink" href="#k3s-containerd" title="Permalink to this heading"></a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/etc/systemd/system/k3s-agent.service.env
-sudo<span class="w"> </span>tee<span class="w"> </span>/etc/systemd/system/k3s-agent.service.env/10-containerd.conf<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
-<span class="s">K3S_SUPERVISOR_CONTAINERD=false</span>
-<span class="s">CONTAINERD_SOCK=/run/containerd/containerd.sock</span>
+<section id="id6">
+<h2>边侧部署<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
+<section id="k3s-agent-containerd">
+<h3>当前推荐模式：构建内置 K3s Agent + 系统 containerd<a class="headerlink" href="#k3s-agent-containerd" title="Permalink to this heading"></a></h3>
+<p>标准 QEMU 云边测试必须使用 rootfs 构建产物中已经存在的 K3s。oEE 镜像中
+K3s 默认路径是 <code class="docutils literal notranslate"><span class="pre">/usr/bin/k3s</span></code>；如果该文件不存在，应回到构建配置补齐
+<code class="docutils literal notranslate"><span class="pre">packagegroup-k3s-agent</span></code> 后重新构建，不要在 QEMU guest 里安装或复制 K3s。</p>
+<p>当前已验证的云边路径使用系统 <code class="docutils literal notranslate"><span class="pre">containerd</span></code>，K3s agent 通过
+<code class="docutils literal notranslate"><span class="pre">--container-runtime-endpoint=unix:///run/containerd/containerd.sock</span></code> 接入。
+这样可以复用 rootfs 中的 <code class="docutils literal notranslate"><span class="pre">containerd</span></code>、<code class="docutils literal notranslate"><span class="pre">ctr</span></code> 和 <code class="docutils literal notranslate"><span class="pre">containerd-shim-mica-v2</span></code>。</p>
+</section>
+<section id="containerd-cni">
+<h3>配置系统 containerd 和 CNI<a class="headerlink" href="#containerd-cni" title="Permalink to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/etc/containerd<span class="w"> </span>/etc/cni/net.d<span class="w"> </span>/opt/cni
+sudo<span class="w"> </span>tee<span class="w"> </span>/etc/containerd/config.toml<span class="w"> </span><span class="s">&lt;&lt;&#39;EOF&#39;</span>
+<span class="s">version = 2</span>
+
+<span class="s">[plugins.&quot;io.containerd.grpc.v1.cri&quot;]</span>
+<span class="s">  sandbox_image = &quot;docker.io/rancher/mirrored-pause:3.6&quot;</span>
+
+<span class="s">[plugins.&quot;io.containerd.grpc.v1.cri&quot;.cni]</span>
+<span class="s">  bin_dir = &quot;/opt/cni/bin&quot;</span>
+<span class="s">  conf_dir = &quot;/etc/cni/net.d&quot;</span>
+
+<span class="s">[plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes.runc]</span>
+<span class="s">  runtime_type = &quot;io.containerd.runc.v2&quot;</span>
+
+<span class="s">[plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes.micrun]</span>
+<span class="s">  runtime_type = &quot;io.containerd.mica.v2&quot;</span>
+<span class="s">  pod_annotations = [&quot;org.openeuler.micrun.*&quot;]</span>
+<span class="s">  container_annotations = [&quot;org.openeuler.micrun.*&quot;]</span>
+
+<span class="s">[plugins.&quot;io.containerd.cri.v1.runtime&quot;.containerd.runtimes.micrun]</span>
+<span class="s">  runtime_type = &quot;io.containerd.mica.v2&quot;</span>
+<span class="s">  pod_annotations = [&quot;org.openeuler.micrun.*&quot;]</span>
+<span class="s">  container_annotations = [&quot;org.openeuler.micrun.*&quot;]</span>
 <span class="s">EOF</span>
+
+sudo<span class="w"> </span>tee<span class="w"> </span>/etc/cni/net.d/10-micrun.conflist<span class="w"> </span><span class="s">&lt;&lt;&#39;EOF&#39;</span>
+<span class="s">{</span>
+<span class="s">  &quot;cniVersion&quot;: &quot;1.0.0&quot;,</span>
+<span class="s">  &quot;name&quot;: &quot;micrun-bridge&quot;,</span>
+<span class="s">  &quot;plugins&quot;: [</span>
+<span class="s">    {</span>
+<span class="s">      &quot;type&quot;: &quot;bridge&quot;,</span>
+<span class="s">      &quot;bridge&quot;: &quot;cni0&quot;,</span>
+<span class="s">      &quot;isGateway&quot;: true,</span>
+<span class="s">      &quot;ipMasq&quot;: true,</span>
+<span class="s">      &quot;promiscMode&quot;: true,</span>
+<span class="s">      &quot;ipam&quot;: {</span>
+<span class="s">        &quot;type&quot;: &quot;host-local&quot;,</span>
+<span class="s">        &quot;ranges&quot;: [[{ &quot;subnet&quot;: &quot;10.42.1.0/24&quot; }]],</span>
+<span class="s">        &quot;routes&quot;: [{ &quot;dst&quot;: &quot;0.0.0.0/0&quot; }]</span>
+<span class="s">      }</span>
+<span class="s">    },</span>
+<span class="s">    {</span>
+<span class="s">      &quot;type&quot;: &quot;portmap&quot;,</span>
+<span class="s">      &quot;capabilities&quot;: { &quot;portMappings&quot;: true }</span>
+<span class="s">    }</span>
+<span class="s">  ]</span>
+<span class="s">}</span>
+<span class="s">EOF</span>
+
+sudo<span class="w"> </span>ln<span class="w"> </span>-sfn<span class="w"> </span>/var/lib/rancher/k3s/data/current/bin<span class="w"> </span>/opt/cni/bin
+sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class="w"> </span>containerd
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>系统 containerd 的 CRI 插件会按 <code class="docutils literal notranslate"><span class="pre">sandbox_image</span></code> 拉取 pause 镜像。离线测试必须让该值与已导入镜像一致。</p></li>
+<li><p>CNI 二进制需要通过 <code class="docutils literal notranslate"><span class="pre">/opt/cni/bin</span></code> 可见；当前做法是链接到 K3s 数据目录中的 CNI 工具。</p></li>
+</ul>
+</div>
+<p>重启后检查生成结果：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">8</span><span class="w"> </span>runtimes.micrun<span class="w"> </span>/etc/containerd/config.toml
+ctr<span class="w"> </span>-a<span class="w"> </span>/run/containerd/containerd.sock<span class="w"> </span>plugins<span class="w"> </span>ls<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>cri
 </pre></div>
 </div>
 </section>
-<section id="k3s-agent">
-<h3>安装 K3s Agent<a class="headerlink" href="#k3s-agent" title="Permalink to this heading"></a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 替换 &lt;cloud-ip&gt; 和 &lt;node-token&gt;</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">K3S_URL</span><span class="o">=</span><span class="s2">&quot;https://&lt;cloud-ip&gt;:6443&quot;</span>
-<span class="nb">export</span><span class="w"> </span><span class="nv">K3S_TOKEN</span><span class="o">=</span><span class="s2">&quot;&lt;node-token&gt;&quot;</span>
-
-curl<span class="w"> </span>-sfL<span class="w"> </span>https://get.k3s.io<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nv">K3S_URL</span><span class="o">=</span><span class="si">${</span><span class="nv">K3S_URL</span><span class="si">}</span><span class="w"> </span><span class="nv">K3S_TOKEN</span><span class="o">=</span><span class="si">${</span><span class="nv">K3S_TOKEN</span><span class="si">}</span><span class="w"> </span>sh<span class="w"> </span>-
-
-<span class="c1"># 验证</span>
-sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>k3s-agent
+<section id="k3s-state">
+<h3>每次重跑前清理旧的 K3s state<a class="headerlink" href="#k3s-state" title="Permalink to this heading"></a></h3>
+<p>如果边侧之前跑过单节点 K3s、旧的 RTOS Pod 或残留 <code class="docutils literal notranslate"><span class="pre">containerd-shim-mica-v2</span></code>，Agent 可能会一直卡在：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Waiting for containerd startup: rpc error: code = Unavailable desc = server is not initialized yet: unavailable
 </pre></div>
+</div>
+<p>推荐在每次重新拉起边侧 Agent 前执行：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>systemctl<span class="w"> </span>stop<span class="w"> </span>micrun-k3s-agent.service<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+sudo<span class="w"> </span>pkill<span class="w"> </span>-9<span class="w"> </span>-f<span class="w"> </span><span class="s1">&#39;/usr/bin/k3s agent&#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+sudo<span class="w"> </span>pkill<span class="w"> </span>-9<span class="w"> </span>-f<span class="w"> </span><span class="s1">&#39;containerd-shim-mica-v2 -namespace k8s.io -address /run/k3s/containerd/containerd.sock&#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+sudo<span class="w"> </span>pkill<span class="w"> </span>-9<span class="w"> </span>-f<span class="w"> </span><span class="s1">&#39;containerd-shim-mica-v2 -namespace k8s.io -address /run/containerd/containerd.sock&#39;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+sudo<span class="w"> </span>find<span class="w"> </span>/run/k3s<span class="w"> </span>-mindepth<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="se">\(</span><span class="w"> </span>-name<span class="w"> </span>rootfs<span class="w"> </span>-o<span class="w"> </span>-name<span class="w"> </span>shm<span class="w"> </span><span class="se">\)</span><span class="w"> </span>-exec<span class="w"> </span>umount<span class="w"> </span>-l<span class="w"> </span><span class="o">{}</span><span class="w"> </span><span class="se">\;</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
+sudo<span class="w"> </span>rm<span class="w"> </span>-rf<span class="w"> </span>/var/lib/rancher/k3s/agent/containerd<span class="w"> </span>/run/k3s
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>如果清理了系统 containerd state 或重启了 rootfs，后续必须重新导入 <code class="docutils literal notranslate"><span class="pre">pause</span></code> 和 RTOS 镜像。</p>
+</div>
+</section>
+<section id="k3s-agent">
+<h3>启动 K3s Agent<a class="headerlink" href="#k3s-agent" title="Permalink to this heading"></a></h3>
+<p>当前已验证方式是显式写一个独立的 systemd 服务：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 替换 &lt;cloud-ip&gt; &lt;node-token&gt; &lt;edge-ip&gt;</span>
+sudo<span class="w"> </span>tee<span class="w"> </span>/etc/systemd/system/micrun-k3s-agent.service<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+<span class="s">[Unit]</span>
+<span class="s">Description=MicRun K3s Edge Agent</span>
+<span class="s">After=network-online.target containerd.service</span>
+<span class="s">Wants=network-online.target</span>
+
+<span class="s">[Service]</span>
+<span class="s">Type=simple</span>
+<span class="s">Environment=K3S_URL=https://&lt;cloud-ip&gt;:6443</span>
+<span class="s">Environment=K3S_TOKEN=&lt;node-token&gt;</span>
+<span class="s">ExecStart=/usr/bin/k3s agent --container-runtime-endpoint=unix:///run/containerd/containerd.sock --node-ip &lt;edge-ip&gt; --pause-image docker.io/rancher/mirrored-pause:3.6 --kubelet-arg=cgroups-per-qos=false --kubelet-arg=enforce-node-allocatable=</span>
+<span class="s">Restart=always</span>
+<span class="s">RestartSec=5</span>
+
+<span class="s">[Install]</span>
+<span class="s">WantedBy=multi-user.target</span>
+<span class="s">EOF</span>
+
+sudo<span class="w"> </span>systemctl<span class="w"> </span>daemon-reload
+sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>--now<span class="w"> </span>micrun-k3s-agent.service
+sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>micrun-k3s-agent.service
+</pre></div>
+</div>
+</section>
+<section id="pause-rtos">
+<h3>预置 pause 镜像与 RTOS 镜像<a class="headerlink" href="#pause-rtos" title="Permalink to this heading"></a></h3>
+<p>如果边侧不能直接从镜像仓库拉取镜像，需要在 Agent 运行后，把 pause 镜像和 RTOS 镜像重新导入到系统 containerd：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">K3S_IMAGE_TAR</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">K3S_IMAGE_TAR</span><span class="k">:-</span><span class="p">/tmp/localhost_5000_mica-uniproton-app_xen-0.1.tar</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nv">K3S_PAUSE_TAR</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">K3S_PAUSE_TAR</span><span class="k">:-</span><span class="p">/tmp/pause-image-arm64.tar</span><span class="si">}</span><span class="s2">&quot;</span>
+
+ctr<span class="w"> </span>-a<span class="w"> </span>/run/containerd/containerd.sock<span class="w"> </span>plugins<span class="w"> </span>ls<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>cri
+
+ctr<span class="w"> </span>-a<span class="w"> </span>/run/containerd/containerd.sock<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>import<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$K3S_PAUSE_TAR</span><span class="s2">&quot;</span>
+ctr<span class="w"> </span>-a<span class="w"> </span>/run/containerd/containerd.sock<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>ls<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s1">&#39;rancher/mirrored-pause:3.6&#39;</span>
+
+ctr<span class="w"> </span>-a<span class="w"> </span>/run/containerd/containerd.sock<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>import<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$K3S_IMAGE_TAR</span><span class="s2">&quot;</span>
+ctr<span class="w"> </span>-a<span class="w"> </span>/run/containerd/containerd.sock<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>images<span class="w"> </span>ls<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>mica-uniproton-app
+</pre></div>
+</div>
+</section>
+<section id="e2e">
+<h3>可重复的云边 e2e 脚本<a class="headerlink" href="#e2e" title="Permalink to this heading"></a></h3>
+<p>仓库已提供一条已验证的端到端脚本，会自动完成云侧 server 容器、边侧 agent、镜像导入和 RTOS Pod 验证：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>&lt;path-to-mcs-repo&gt;/micrun/tests/k3s
+<span class="nb">export</span><span class="w"> </span><span class="nv">EDGE_SSH_USER</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">EDGE_SSH_USER</span><span class="k">:-</span><span class="nv">root</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">EDGE_IP</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">EDGE_IP</span><span class="k">:-</span><span class="nv">192</span><span class="p">.168.7.2</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">HOST_TAP_IP</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">HOST_TAP_IP</span><span class="k">:-</span><span class="nv">192</span><span class="p">.168.7.1</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">CLOUD_IP</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">CLOUD_IP</span><span class="k">:-</span><span class="nv">192</span><span class="p">.168.7.10</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">TEST_REMOTE_HOST</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">EDGE_SSH_USER</span><span class="si">}</span><span class="s2">@</span><span class="si">${</span><span class="nv">EDGE_IP</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">K3S_CLOUD_NETWORK_PARENT</span><span class="o">=</span><span class="s2">&quot;tap0&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">K3S_CLOUD_NETWORK_GATEWAY</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">HOST_TAP_IP</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">K3S_CLOUD_SERVER_IP</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">CLOUD_IP</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="nb">export</span><span class="w"> </span><span class="nv">K3S_EDGE_NODE_IP</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">EDGE_IP</span><span class="si">}</span><span class="s2">&quot;</span>
+./run_cloud_edge_e2e.sh
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h3>单节点调试模式<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<p>当没有云侧控制平面，或需要在一台边侧机上快速验证 MicRun + K3s，可直接启动单节点 K3s Server：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>k3s<span class="w"> </span>server<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--write-kubeconfig-mode<span class="o">=</span><span class="m">644</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--disable<span class="w"> </span>traefik<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--disable<span class="w"> </span>servicelb<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--disable<span class="w"> </span>local-storage<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--disable<span class="w"> </span>metrics-server<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--disable<span class="w"> </span>coredns<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--disable-network-policy<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--flannel-backend<span class="o">=</span>none<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--kubelet-arg<span class="o">=</span>cgroups-per-qos<span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--kubelet-arg<span class="o">=</span>enforce-node-allocatable<span class="o">=</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--kubelet-arg<span class="o">=</span>fail-cgroupv1<span class="o">=</span><span class="nb">false</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--flannel-backend=none</span></code> 适合 MicRun/hostNetwork 验证，不适合通用 Pod 网络测试</p></li>
+<li><p>若节点保持 <code class="docutils literal notranslate"><span class="pre">NotReady</span></code>，可以给验证 Pod 增加 <code class="docutils literal notranslate"><span class="pre">hostNetwork:</span> <span class="pre">true</span></code> 和 <code class="docutils literal notranslate"><span class="pre">node.kubernetes.io/not-ready:NoSchedule</span></code> toleration</p></li>
+</ul>
 </div>
 </section>
 <section id="runtimeclass">
@@ -272,11 +574,20 @@ sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="
 <span class="s">metadata:</span>
 <span class="s">  name: rtos-demo</span>
 <span class="s">spec:</span>
+<span class="s">  hostNetwork: true</span>
 <span class="s">  runtimeClassName: micrun</span>
+<span class="s">  nodeSelector:</span>
+<span class="s">    kubernetes.io/hostname: qemu-aarch64</span>
+<span class="s">  tolerations:</span>
+<span class="s">  - key: node.kubernetes.io/not-ready</span>
+<span class="s">    operator: Exists</span>
+<span class="s">    effect: NoSchedule</span>
 <span class="s">  containers:</span>
 <span class="s">  - name: rtos-app</span>
 <span class="s">    image: localhost:5000/mica-uniproton-app:xen-0.1</span>
-<span class="s">    tty: true</span>
+<span class="s">    imagePullPolicy: IfNotPresent</span>
+<span class="s">    command: [&quot;/micrun-placeholder&quot;]</span>
+<span class="s">    tty: false</span>
 <span class="s">    stdin: true</span>
 <span class="s">EOF</span>
 </pre></div>
@@ -293,23 +604,38 @@ sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">runtimeClassName</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hostNetwork:</span> <span class="pre">true</span></code></p></td>
+<td><p>复用边侧节点网络（Flannel VXLAN 不可用时的通用绕过手段）</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">runtimeClassName</span></code></p></td>
 <td><p>指定使用 MicRun 运行时</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">image</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">nodeSelector</span></code></p></td>
+<td><p>将 Pod 调度到指定边侧节点</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tolerations</span></code></p></td>
+<td><p>容忍 <code class="docutils literal notranslate"><span class="pre">not-ready</span></code> 节点（无 CNI 时节点会保持 NotReady）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">image</span></code></p></td>
 <td><p>RTOS 镜像名称（必须是边缘已导入的镜像）</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tty:</span> <span class="pre">true</span></code></p></td>
-<td><p>分配伪终端（RTOS 容器通常需要）</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">imagePullPolicy:</span> <span class="pre">IfNotPresent</span></code></p></td>
+<td><p>边侧已导入镜像时优先本地使用，避免触发仓库拉取</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">stdin:</span> <span class="pre">true</span></code></p></td>
-<td><p>保持标准输入打开（支持交互式操作）</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">command</span></code></p></td>
+<td><p>RTOS 镜像无标准入口点，必须显式提供占位命令</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tty:</span> <span class="pre">false</span></code></p></td>
+<td><p>默认关闭 TTY（<code class="docutils literal notranslate"><span class="pre">tty=true</span></code> 与 stderr 不兼容，会触发 CRI 拒绝 attach）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">stdin:</span> <span class="pre">true</span></code></p></td>
+<td><p>保持标准输入打开（支持交互式操作，配合 <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">attach</span> <span class="pre">-i</span></code>）</p></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="id6">
-<h3>使用注解配置<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<section id="id8">
+<h3>使用注解配置<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
 <p>MicRun 通过 Pod 的 <code class="docutils literal notranslate"><span class="pre">metadata.annotations</span></code> 字段接收配置：</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">apiVersion</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
 <span class="nt">kind</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span>
@@ -378,22 +704,22 @@ sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="
 <p>详细的注解参考请参见 <a class="reference internal" href="../reference/annotations.html"><span class="doc">MicRun 注解参考</span></a>。</p>
 </div>
 </section>
-<section id="id7">
-<h3>验证<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<section id="id9">
+<h3>验证<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 云侧查看 Pod</span>
 kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-o<span class="w"> </span>wide
 
 <span class="c1"># 边侧验证</span>
-ctr<span class="w"> </span>task<span class="w"> </span>ls<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>rtos
+ctr<span class="w"> </span>-a<span class="w"> </span>/run/containerd/containerd.sock<span class="w"> </span>-n<span class="w"> </span>k8s.io<span class="w"> </span>tasks<span class="w"> </span>ls
 sudo<span class="w"> </span>xl<span class="w"> </span>list
 </pre></div>
 </div>
 </section>
 </section>
-<section id="id8">
-<h2>故障排查<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
-<section id="id9">
-<h3>快速诊断<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<section id="id10">
+<h2>故障排查<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h2>
+<section id="id11">
+<h3>快速诊断<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 35%" />
@@ -408,22 +734,70 @@ sudo<span class="w"> </span>xl<span class="w"> </span>list
 </thead>
 <tbody>
 <tr class="row-even"><td><p>Pod ContainerCreating 超时</p></td>
-<td><p>镜像不存在</p></td>
-<td><p>边侧执行 <code class="docutils literal notranslate"><span class="pre">ctr</span> <span class="pre">image</span> <span class="pre">import</span></code> 导入镜像</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pause</span></code> 镜像或 RTOS 镜像不存在，或系统 containerd 的 <code class="docutils literal notranslate"><span class="pre">sandbox_image</span></code> 仍指向默认仓库</p></td>
+<td><p>系统 containerd 用 <code class="docutils literal notranslate"><span class="pre">ctr</span> <span class="pre">-a</span> <span class="pre">/run/containerd/containerd.sock</span> <span class="pre">-n</span> <span class="pre">k8s.io</span> <span class="pre">images</span> <span class="pre">import</span></code>；同时检查 <code class="docutils literal notranslate"><span class="pre">/etc/containerd/config.toml</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p>边侧节点 NotReady</p></td>
 <td><p>K3s Agent 未运行或网络问题</p></td>
-<td><p>检查 <code class="docutils literal notranslate"><span class="pre">systemctl</span> <span class="pre">status</span> <span class="pre">k3s-agent</span></code></p></td>
+<td><p>检查 <code class="docutils literal notranslate"><span class="pre">systemctl</span> <span class="pre">status</span> <span class="pre">micrun-k3s-agent.service</span></code> 或你当前使用的 agent 服务</p></td>
 </tr>
-<tr class="row-even"><td><p>runtime ‘micrun’ not found</p></td>
-<td><p>containerd 未加载 MicRun</p></td>
-<td><p>检查 <code class="docutils literal notranslate"><span class="pre">/etc/containerd/config.toml</span></code> 配置</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Waiting</span> <span class="pre">for</span> <span class="pre">containerd</span> <span class="pre">startup:</span> <span class="pre">server</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">initialized</span> <span class="pre">yet</span></code></p></td>
+<td><p>CNI 路径不完整，或旧 K3s state/shim 未清理</p></td>
+<td><p>同时检查 <code class="docutils literal notranslate"><span class="pre">/etc/cni/net.d</span></code>、<code class="docutils literal notranslate"><span class="pre">/opt/cni/bin</span></code>，并清理旧 <code class="docutils literal notranslate"><span class="pre">/run/k3s</span></code> state 和残留 shim</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">failed</span> <span class="pre">to</span> <span class="pre">load</span> <span class="pre">cni</span> <span class="pre">during</span> <span class="pre">init</span></code> / <code class="docutils literal notranslate"><span class="pre">no</span> <span class="pre">network</span> <span class="pre">config</span> <span class="pre">found</span> <span class="pre">in</span> <span class="pre">/etc/cni/net.d</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">10-micrun.conflist</span></code> 未写入系统 CNI 目录</p></td>
+<td><p>将 CNI 配置写入 <code class="docutils literal notranslate"><span class="pre">/etc/cni/net.d</span></code>，并确认 <code class="docutils literal notranslate"><span class="pre">/opt/cni/bin</span></code> 可用</p></td>
+</tr>
+<tr class="row-even"><td><p>runtime <code class="docutils literal notranslate"><span class="pre">micrun</span></code> not found</p></td>
+<td><p>目标 containerd 未加载 MicRun runtime</p></td>
+<td><p>external 模式检查 <code class="docutils literal notranslate"><span class="pre">/etc/containerd/config.toml</span></code>，bundled 模式检查 <code class="docutils literal notranslate"><span class="pre">config.toml.tmpl</span></code> 与生成后的 <code class="docutils literal notranslate"><span class="pre">config.toml</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Pod 刚 Running 后立刻被 kubelet <code class="docutils literal notranslate"><span class="pre">Stopping</span> <span class="pre">container</span></code></p></td>
+<td><p>Pod QoS cgroup 未创建，kubelet 执行 <code class="docutils literal notranslate"><span class="pre">killPod</span></code></p></td>
+<td><p>增加 <code class="docutils literal notranslate"><span class="pre">cgroups-per-qos=false</span></code>、空 <code class="docutils literal notranslate"><span class="pre">enforce-node-allocatable</span></code> 和必要的 <code class="docutils literal notranslate"><span class="pre">fail-cgroupv1=false</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>K3s 日志出现 <code class="docutils literal notranslate"><span class="pre">configured</span> <span class="pre">to</span> <span class="pre">not</span> <span class="pre">run</span> <span class="pre">on</span> <span class="pre">a</span> <span class="pre">host</span> <span class="pre">using</span> <span class="pre">cgroup</span> <span class="pre">v1</span></code></p></td>
+<td><p>当前 kubelet 默认拒绝 cgroup v1</p></td>
+<td><p>增加 <code class="docutils literal notranslate"><span class="pre">--kubelet-arg=fail-cgroupv1=false</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">attach</span></code> 无输出</p></td>
+<td><p>Pod 未开启 <code class="docutils literal notranslate"><span class="pre">stdin</span></code>，<code class="docutils literal notranslate"><span class="pre">tty=true</span></code> 与 stderr 不兼容，或 shim IO 未连上 RTOS shell</p></td>
+<td><p>使用 <code class="docutils literal notranslate"><span class="pre">test-k3s-interaction</span></code> 复现，并检查边侧 containerd task、<code class="docutils literal notranslate"><span class="pre">journalctl</span> <span class="pre">-u</span> <span class="pre">micad</span></code> 和 <code class="docutils literal notranslate"><span class="pre">/var/log/mica/mica-runtime.log</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>删除 Pod 后 Xen domain 仍存在</p></td>
+<td><p>CRI 删除链路或 shim 清理异常</p></td>
+<td><p>对照 Pod container ID 检查 <code class="docutils literal notranslate"><span class="pre">ctr</span> <span class="pre">-a</span> <span class="pre">/run/containerd/containerd.sock</span> <span class="pre">-n</span> <span class="pre">k8s.io</span> <span class="pre">tasks</span> <span class="pre">ls</span></code> 和 <code class="docutils literal notranslate"><span class="pre">xl</span> <span class="pre">list</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>K3s 启动即退出</p></td>
+<td><p>系统时间错误</p></td>
+<td><p>校正时间，避免 <code class="docutils literal notranslate"><span class="pre">1970-01-01</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>K3s 启动被杀</p></td>
+<td><p>宿主内存不足</p></td>
+<td><p>清理旧 Xen 域、释放缓存、减少附加组件</p></td>
+</tr>
+<tr class="row-odd"><td><p>K3s 日志出现 <code class="docutils literal notranslate"><span class="pre">failed</span> <span class="pre">to</span> <span class="pre">create</span> <span class="pre">vxlan</span> <span class="pre">device</span></code></p></td>
+<td><p>宿主不支持 VXLAN</p></td>
+<td><p>改用 <code class="docutils literal notranslate"><span class="pre">--flannel-backend=none</span></code> 或安装其他 CNI</p></td>
+</tr>
+<tr class="row-even"><td><p>K3s 日志出现 <code class="docutils literal notranslate"><span class="pre">unknown</span> <span class="pre">flag:</span> <span class="pre">--fail-cgroupv1</span></code></p></td>
+<td><p>kubelet 版本不支持该参数</p></td>
+<td><p>移除该参数；保留 <code class="docutils literal notranslate"><span class="pre">cgroups-per-qos=false</span></code> 组合</p></td>
+</tr>
+<tr class="row-odd"><td><p>SSH 自动化一登录就要求改密</p></td>
+<td><p>账号密码已过期</p></td>
+<td><p>对自动化账号执行 <code class="docutils literal notranslate"><span class="pre">chage</span></code>/<code class="docutils literal notranslate"><span class="pre">passwd</span> <span class="pre">-x</span></code> 关闭过期限制</p></td>
+</tr>
+<tr class="row-even"><td><p>找不到 <code class="docutils literal notranslate"><span class="pre">/var/log/mica/mica-runtime.log</span></code></p></td>
+<td><p>当前环境未开启 MicRun 文件日志或目录未创建</p></td>
+<td><p>检查 <code class="docutils literal notranslate"><span class="pre">/etc/mica/micrun/config.json</span></code> 的日志输出配置，再决定是否创建 <code class="docutils literal notranslate"><span class="pre">/var/log/mica</span></code></p></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="id10">
-<h3>通用排查命令<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<section id="id12">
+<h3>通用排查命令<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看 Pod 状态</span>
 kubectl<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-o<span class="w"> </span>wide
 
@@ -439,8 +813,8 @@ tail<span class="w"> </span>-f<span class="w"> </span>/var/log/mica/mica-runtime
 </div>
 </section>
 </section>
-<section id="id11">
-<h2>参考资源<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h2>
+<section id="id13">
+<h2>参考资源<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h2>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <ul class="simple">

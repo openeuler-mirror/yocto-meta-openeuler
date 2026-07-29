@@ -81,10 +81,10 @@
 <li class="toctree-l7"><a class="reference internal" href="#id6">配置项详解</a></li>
 <li class="toctree-l7"><a class="reference internal" href="#id7">配置优先级示例</a></li>
 <li class="toctree-l7"><a class="reference internal" href="#drop-in">Drop-in 目录</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id10">配置验证</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id13">生产环境配置示例</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id17">日志配置</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id18">相关文档</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id11">配置验证</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id14">生产环境配置示例</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id18">日志配置</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id19">相关文档</a></li>
 </ul>
 </li>
 <li class="toctree-l6"><a class="reference internal" href="resources.html">MicRun 资源映射参考</a></li>
@@ -143,13 +143,27 @@
 <span id="micrun-configuration"></span><h1>MicRun 配置参考手册<a class="headerlink" href="#micrun" title="Permalink to this heading"></a></h1>
 <section id="id1">
 <h2>概述<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
-<p>MicRun 支持多种配置方式，按优先级从高到低：</p>
+<p>MicRun 当前的运行时配置解析分成两步：</p>
 <ol class="arabic simple">
-<li><p><strong>注解</strong> (Pod/Container annotations) - 最高优先级</p></li>
-<li><p><strong>配置文件</strong> (INI/TOML)</p></li>
-<li><p><strong>环境变量</strong></p></li>
-<li><p><strong>默认值</strong> - 最低优先级</p></li>
+<li><p><strong>先决定读取哪份运行时配置</strong></p></li>
+<li><p><strong>再把 annotations 作为最终 overlay 叠加到解析结果上</strong></p></li>
 </ol>
+<p>以 <code class="docutils literal notranslate"><span class="pre">internal/adapters/config/runtimeconfig/resolver.go</span></code> 为准，当前实际顺序如下：</p>
+<ol class="arabic simple">
+<li><p>调用方已传入 <code class="docutils literal notranslate"><span class="pre">current</span> <span class="pre">*RuntimeConfig</span></code> 时，直接复用</p></li>
+<li><p>注解里指定的 sandbox config path</p></li>
+<li><p>CRI runtime options 中的 <code class="docutils literal notranslate"><span class="pre">ConfigPath</span></code></p></li>
+<li><p>环境变量 <code class="docutils literal notranslate"><span class="pre">MICRUN_CONF_FILE</span></code></p></li>
+<li><p>自动发现配置文件集合</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MICRUN_CONF_DIR</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/etc/mica/micrun/conf.d/*.conf|*.toml</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/etc/mica/micrun/micrun.conf</span></code></p></li>
+</ul>
+</li>
+<li><p>最后统一叠加 annotations</p></li>
+</ol>
+<p>这里要特别注意：<strong>环境变量主要用于选择配置文件来源，不是直接承载 workload 参数值。</strong></p>
 </section>
 <section id="id2">
 <h2>配置文件<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
@@ -167,19 +181,31 @@
 </thead>
 <tbody>
 <tr class="row-even"><td><p>1</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">MICRUN_CONF_FILE</span></code> 环境变量指定的文件</p></td>
+<td><p>注解指定的 config path</p></td>
 </tr>
 <tr class="row-odd"><td><p>2</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">MICRUN_CONF_DIR</span></code> 环境变量指定的目录（读取所有 .conf/.toml 文件）</p></td>
+<td><p>CRI runtime options 中的 <code class="docutils literal notranslate"><span class="pre">ConfigPath</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p>3</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">/etc/mica/micrun/conf.d/*.conf</span></code> (drop-in 目录)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MICRUN_CONF_FILE</span></code> 环境变量指定的文件</p></td>
 </tr>
 <tr class="row-odd"><td><p>4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MICRUN_CONF_DIR</span></code> 环境变量指定的目录（读取所有 <code class="docutils literal notranslate"><span class="pre">.conf</span></code>/<code class="docutils literal notranslate"><span class="pre">.toml</span></code> 文件）</p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/etc/mica/micrun/conf.d/*.conf</span></code> 或 <code class="docutils literal notranslate"><span class="pre">.toml</span></code> (drop-in 目录)</p></td>
+</tr>
+<tr class="row-odd"><td><p>6</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">/etc/mica/micrun/micrun.conf</span></code> (默认配置文件)</p></td>
 </tr>
 </tbody>
 </table>
+<p>补充说明：</p>
+<ul class="simple">
+<li><p>当 <code class="docutils literal notranslate"><span class="pre">MICRUN_CONF_FILE</span></code> 指向的文件解析失败时，当前实现会记录告警并回退默认配置栈。</p></li>
+<li><p>当注解或 CRI options 指定的配置文件解析失败时，当前创建链路会直接报错返回。</p></li>
+<li><p>无论配置文件从哪里来，annotations 都会在最后一步覆盖最终值。</p></li>
+</ul>
 </section>
 <section id="id4">
 <h3>配置文件格式<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
@@ -251,6 +277,9 @@
 
 <span class="c1"># 辅助文件路径</span>
 <span class="na">aux_file_path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">/usr/local/share/mica/xen-aux.bin</span>
+
+<span class="c1"># 启用主机容器</span>
+<span class="na">enable_host_container</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
 </pre></div>
 </div>
 </section>
@@ -294,25 +323,42 @@
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MICRUN_CONF_FILE</span></code></p></td>
-<td><p>指定配置文件路径</p></td>
+<td><p>指定单个运行时配置文件路径</p></td>
 <td><ul class="simple">
 <li></li>
 </ul>
 </td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MICRUN_CONF_DIR</span></code></p></td>
-<td><p>指定配置目录路径</p></td>
+<td><p>指定运行时配置目录路径</p></td>
 <td><ul class="simple">
 <li></li>
 </ul>
 </td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">CONTAINERD_NAMESPACE</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MICRUN_LOG_CONFIG</span></code></p></td>
+<td><p>指定日志配置文件路径（覆盖 <code class="docutils literal notranslate"><span class="pre">/etc/mica/micrun/config.json</span></code>）</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/etc/mica/micrun/config.json</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">MICRUN_LOG_FILE</span></code></p></td>
+<td><p>指定日志文件路径（仅 debug 版本）</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/var/log/mica/mica-runtime.log</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">MICRUN_CONTAINERD_LOG_PATH</span></code></p></td>
+<td><p>指定 containerd 日志输出路径（默认 shim 工作目录下 <code class="docutils literal notranslate"><span class="pre">log</span></code>）</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">./log</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">CONTAINERD_NAMESPACE</span></code></p></td>
 <td><p>容器命名空间</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">default</span></code></p></td>
 </tr>
 </tbody>
 </table>
+<p>说明：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MICRUN_CONF_FILE</span></code> 与 <code class="docutils literal notranslate"><span class="pre">MICRUN_CONF_DIR</span></code> 影响的是”加载哪份运行时配置”。</p></li>
+<li><p>workload 级细项（如固件、pedestal、资源限制覆盖）仍以 annotations 和 OCI spec 为主。</p></li>
+</ul>
 </section>
 <section id="id6">
 <h2>配置项详解<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
@@ -350,6 +396,11 @@
 </ul>
 </td>
 <td><p>默认固件路径</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">enable_host_container</span></code></p></td>
+<td><p>布尔</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
+<td><p>启用主机容器</p></td>
 </tr>
 </tbody>
 </table>
@@ -485,39 +536,50 @@
 <section id="id7">
 <h2>配置优先级示例<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h2>
 <section id="id8">
-<h3>示例 1：注解覆盖配置文件<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
+<h3>示例 1：注解覆盖最终配置值<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Pod 注解</span>
 <span class="nt">metadata</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">org.openeuler.micrun.container.min_memory_mb</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;64&quot;</span><span class="w">  </span><span class="c1"># 覆盖配置文件</span>
 </pre></div>
 </div>
-<p>优先级：注解 (64 MiB) &gt; 配置文件 (32 MiB) &gt; 默认值 (16 MiB)</p>
+<p>优先级：注解最终 overlay &gt; 已解析出的 <code class="docutils literal notranslate"><span class="pre">RuntimeConfig</span></code> &gt; 默认值</p>
 </section>
 <section id="id9">
-<h3>示例 2：环境变量指定配置文件<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<h3>示例 2：环境变量选择配置文件<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 使用自定义配置文件</span>
 <span class="nb">export</span><span class="w"> </span><span class="nv">MICRUN_CONF_FILE</span><span class="o">=</span>/etc/mica/micrun/custom.conf
 </pre></div>
 </div>
-<p>优先级：<code class="docutils literal notranslate"><span class="pre">$MICRUN_CONF_FILE</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">$MICRUN_CONF_DIR</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">/etc/mica/micrun/conf.d/</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">/etc/mica/micrun/micrun.conf</span></code></p>
+<p>优先级：注解 config path &gt; runtime options <code class="docutils literal notranslate"><span class="pre">ConfigPath</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">$MICRUN_CONF_FILE</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">$MICRUN_CONF_DIR</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">/etc/mica/micrun/conf.d/</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">/etc/mica/micrun/micrun.conf</span></code></p>
+</section>
+<section id="id10">
+<h3>示例 3：当前解析顺序<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>current RuntimeConfig
+  -&gt; annotation config path
+  -&gt; CRI options ConfigPath
+  -&gt; MICRUN_CONF_FILE
+  -&gt; MICRUN_CONF_DIR / conf.d / default file
+  -&gt; annotations overlay
+</pre></div>
+</div>
 </section>
 </section>
 <section id="drop-in">
 <h2>Drop-in 目录<a class="headerlink" href="#drop-in" title="Permalink to this heading"></a></h2>
 <p>Drop-in 目录允许将配置拆分为多个文件：</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/etc/mica/micrun/conf.d/
-├── 00-base.conf      # 基础配置
-├── 10-resource.conf  # 资源配置
-└── 99-local.conf     # 本地覆盖配置
+|-- 00-base.conf      # base config
+|-- 10-resource.conf  # resource config
+`-- 99-local.conf     # local overrides
 </pre></div>
 </div>
 <p>加载顺序：按文件名字母序加载，后加载的配置覆盖先加载的配置。</p>
 </section>
-<section id="id10">
-<h2>配置验证<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h2>
 <section id="id11">
-<h3>检查当前配置<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
+<h2>配置验证<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h2>
+<section id="id12">
+<h3>检查当前配置<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看使用的配置文件</span>
 journalctl<span class="w"> </span>-u<span class="w"> </span>containerd<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;micrun config&quot;</span>
 
@@ -526,8 +588,8 @@ cat<span class="w"> </span>/proc/<span class="k">$(</span>pgrep<span class="w"> 
 </pre></div>
 </div>
 </section>
-<section id="id12">
-<h3>常见配置错误<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
+<section id="id13">
+<h3>常见配置错误<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 30%" />
@@ -557,10 +619,10 @@ cat<span class="w"> </span>/proc/<span class="k">$(</span>pgrep<span class="w"> 
 </table>
 </section>
 </section>
-<section id="id13">
-<h2>生产环境配置示例<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h2>
 <section id="id14">
-<h3>高性能配置<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
+<h2>生产环境配置示例<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h2>
+<section id="id15">
+<h3>高性能配置<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Mica]</span>
 <span class="na">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
 <span class="na">max_client_number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">16</span>
@@ -581,8 +643,8 @@ cat<span class="w"> </span>/proc/<span class="k">$(</span>pgrep<span class="w"> 
 </pre></div>
 </div>
 </section>
-<section id="id15">
-<h3>低资源配置<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
+<section id="id16">
+<h3>低资源配置<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h3>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Mica]</span>
 <span class="na">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">false</span>
 <span class="na">max_client_number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">4</span>
@@ -603,8 +665,8 @@ cat<span class="w"> </span>/proc/<span class="k">$(</span>pgrep<span class="w"> 
 </pre></div>
 </div>
 </section>
-<section id="id16">
-<h3>开发调试配置<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h3>
+<section id="id17">
+<h3>开发调试配置<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h3>
 <div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[Mica]</span>
 <span class="na">debug</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">true</span>
 <span class="na">max_client_number</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">4</span>
@@ -626,8 +688,8 @@ cat<span class="w"> </span>/proc/<span class="k">$(</span>pgrep<span class="w"> 
 </div>
 </section>
 </section>
-<section id="id17">
-<h2>日志配置<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h2>
+<section id="id18">
+<h2>日志配置<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h2>
 <p>日志配置位于 <code class="docutils literal notranslate"><span class="pre">/etc/mica/micrun/config.json</span></code>，由 logger 包读取。</p>
 <p>配置结构:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -678,8 +740,8 @@ cat<span class="w"> </span>/proc/<span class="k">$(</span>pgrep<span class="w"> 
 </tbody>
 </table>
 </section>
-<section id="id18">
-<h2>相关文档<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h2>
+<section id="id19">
+<h2>相关文档<a class="headerlink" href="#id19" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="annotations.html"><span class="doc">MicRun 注解参考</span></a> - 注解配置</p></li>
 <li><p><a class="reference internal" href="resources.html"><span class="doc">MicRun 资源映射参考</span></a> - 资源限制规则</p></li>

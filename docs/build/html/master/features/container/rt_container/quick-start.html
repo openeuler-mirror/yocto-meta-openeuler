@@ -360,13 +360,14 @@
 <section id="id9">
 <h3>生成构建环境<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 安装/更新 oebuild</span>
+<span class="c1"># Features: zephyr (RTOS), micrun (runtime), mcs/xen, systemd, containerd</span>
 oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"> </span>qemu-aarch64<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-f<span class="w"> </span>zephyr<span class="w"> </span><span class="se">\ </span><span class="w">     </span><span class="c1"># Zephyr RTOS 支持</span>
-<span class="w">  </span>-f<span class="w"> </span>micrun<span class="w"> </span><span class="se">\ </span><span class="w">     </span><span class="c1"># MicRun 运行时</span>
-<span class="w">  </span>-f<span class="w"> </span>mcs/xen<span class="w"> </span><span class="se">\ </span><span class="w">    </span><span class="c1"># mcs 和 xen 支持</span>
-<span class="w">  </span>-f<span class="w"> </span>systemd<span class="w"> </span><span class="se">\ </span><span class="w">    </span><span class="c1"># systemd 服务管理</span>
-<span class="w">  </span>-f<span class="w"> </span>containerd<span class="w"> </span><span class="se">\ </span><span class="w"> </span><span class="c1"># containerd 容器引擎（必须）</span>
-<span class="w">  </span>-d<span class="w"> </span>&lt;build_dir&gt;<span class="w">   </span><span class="c1"># 构建目录名称，自定义（如 playmicrun）</span>
+<span class="w">  </span>-f<span class="w"> </span>zephyr<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-f<span class="w"> </span>micrun<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-f<span class="w"> </span>mcs/xen<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-f<span class="w"> </span>systemd<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-f<span class="w"> </span>containerd<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span>&lt;build_dir&gt;
 
 <span class="nb">cd</span><span class="w"> </span>&lt;build_dir&gt;
 oebuild<span class="w"> </span>bitbake
@@ -414,13 +415,14 @@ bitbake<span class="w"> </span>micrun
 <section id="k3s">
 <h3>（可选）添加 K3s 支持<a class="headerlink" href="#k3s" title="Permalink to this heading"></a></h3>
 <p>如果需要使用 Kubernetes 集群功能：</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"> </span>qemu-aarch64<span class="w"> </span><span class="se">\</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add -f k3s-agent to enable K3s agent support</span>
+oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"> </span>qemu-aarch64<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-f<span class="w"> </span>zephyr<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-f<span class="w"> </span>micrun<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-f<span class="w"> </span>mcs/xen<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-f<span class="w"> </span>systemd<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-f<span class="w"> </span>containerd<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-f<span class="w"> </span>k3s-agent<span class="w"> </span><span class="se">\ </span><span class="w">  </span><span class="c1"># 添加 K3s agent 支持</span>
+<span class="w">  </span>-f<span class="w"> </span>k3s-agent<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-d<span class="w"> </span>&lt;build_dir&gt;
 </pre></div>
 </div>
@@ -445,8 +447,8 @@ bitbake<span class="w"> </span>micrun
 <span class="w">  </span>-cpu<span class="w"> </span>cortex-a53<span class="w"> </span>-smp<span class="w"> </span><span class="m">4</span><span class="w"> </span>-m<span class="w"> </span><span class="m">4096</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-serial<span class="w"> </span>mon:stdio<span class="w"> </span>-nographic<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-kernel<span class="w"> </span>xen-qemu-aarch64<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-append<span class="w"> </span><span class="s1">&#39;root=/dev/ram0 rw debugshell mem=1024M console=ttyAMA0,115200&#39;</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-dtb<span class="w"> </span>openeuler-image-mcs-qemu-aarch64-*.qemuboot.dtb
+<span class="w">  </span>-append<span class="w"> </span><span class="s1">&#39;root=/dev/ram0 rw debugshell mem=1536M console=hvc0,115200&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-dtb<span class="w"> </span>openeuler-image-qemu-aarch64-*.qemuboot.dtb
 </pre></div>
 </div>
 <p><strong>参数说明</strong>：</p>
@@ -609,7 +611,8 @@ docker<span class="w"> </span>save<span class="w"> </span>-o<span class="w"> </s
 
 <span class="k">[plugins.</span><span class="s2">&quot;io.containerd.grpc.v1.cri&quot;</span><span class="k">.containerd.runtimes.micrun]</span>
 <span class="w">  </span><span class="n">runtime_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;io.containerd.mica.v2&quot;</span>
-<span class="w">  </span><span class="n">pod_annotations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;org.openeuler.micrun.&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="n">pod_annotations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;org.openeuler.micrun.*&quot;</span><span class="p">]</span>
+<span class="w">  </span><span class="n">container_annotations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;org.openeuler.micrun.*&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p><strong>配置说明</strong>：</p>

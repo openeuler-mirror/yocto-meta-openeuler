@@ -137,7 +137,7 @@
              
   <section id="micrun">
 <span id="micrun-troubleshooting"></span><h1>MicRun 故障排查指南<a class="headerlink" href="#micrun" title="Permalink to this heading"></a></h1>
-<p>本文档提供 MicRun 常见问题的排查步骤和解决方案。</p>
+<p>本文档提供 MicRun 常见问题的排查步骤和解决方案。排查时优先检查 <code class="docutils literal notranslate"><span class="pre">runtime.json</span></code> 快照；<code class="docutils literal notranslate"><span class="pre">state.json</span></code> 为兼容格式的状态文件，在 <code class="docutils literal notranslate"><span class="pre">runtime.json</span></code> 缺失时可作回退排查入口。</p>
 <section id="id1">
 <h2>诊断工具<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
 <section id="id2">
@@ -186,13 +186,24 @@
 <p class="admonition-title">Note</p>
 <p>以下命令使用 <code class="docutils literal notranslate"><span class="pre">jq</span></code> 格式化 JSON 输出。如果未安装，可使用 <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">apt</span> <span class="pre">install</span> <span class="pre">jq</span></code> 或 <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">yum</span> <span class="pre">install</span> <span class="pre">jq</span></code> 安装，或者删除 <code class="docutils literal notranslate"><span class="pre">|</span> <span class="pre">jq</span></code> 直接查看原始 JSON。</p>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 列出所有 Sandbox</span>
-ls<span class="w"> </span>-la<span class="w"> </span>/run/micrun/sandbox/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 列出所有 sandbox 快照</span>
+ls<span class="w"> </span>-la<span class="w"> </span>/run/micrun/runtime/sandbox/
 
-<span class="c1"># 查看特定 Sandbox 状态</span>
+<span class="c1"># 查看当前权威快照</span>
+cat<span class="w"> </span>/run/micrun/runtime/sandbox/&lt;sandbox-id&gt;/runtime.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq
+
+<span class="c1"># 查看 container 快照</span>
+find<span class="w"> </span>/run/micrun/runtime/container<span class="w"> </span>-maxdepth<span class="w"> </span><span class="m">3</span><span class="w"> </span>-name<span class="w"> </span>runtime.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>&lt;container-id&gt;
+
+<span class="c1"># 查看兼容格式状态文件（runtime.json 缺失时回退）</span>
 cat<span class="w"> </span>/run/micrun/sandbox/&lt;sandbox-id&gt;/state.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq
 </pre></div>
 </div>
+<p>说明：</p>
+<ul class="simple">
+<li><p>排查 sandbox 生命周期问题时，优先使用 <code class="docutils literal notranslate"><span class="pre">&lt;sandbox-id&gt;</span></code></p></li>
+<li><p>单容器场景下 <code class="docutils literal notranslate"><span class="pre">&lt;sandbox-id&gt;</span></code> 往往与 <code class="docutils literal notranslate"><span class="pre">&lt;container-id&gt;</span></code> 相同，但在 Kubernetes/Pod 场景里两者不一定相同</p></li>
+</ul>
 </section>
 <section id="fifo">
 <h3>查看 FIFO 状态<a class="headerlink" href="#fifo" title="Permalink to this heading"></a></h3>
@@ -287,7 +298,7 @@ ctr<span class="w"> </span>run<span class="w"> </span>--runtime<span class="w"> 
 </div>
 </li>
 <li><p><strong>检查状态文件</strong></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat<span class="w"> </span>/run/micrun/sandbox/&lt;container-id&gt;/state.json
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat<span class="w"> </span>/run/micrun/runtime/sandbox/&lt;sandbox-id&gt;/runtime.json
 </pre></div>
 </div>
 </li>
@@ -311,7 +322,7 @@ ctr<span class="w"> </span>run<span class="w"> </span>--runtime<span class="w"> 
 <td><p>确保有访问 <code class="docutils literal notranslate"><span class="pre">/dev/ttyRPMSG*</span></code> 的权限</p></td>
 </tr>
 <tr class="row-even"><td><p>Sandbox 状态不一致</p></td>
-<td><p>删除 <code class="docutils literal notranslate"><span class="pre">/run/micrun/sandbox/&lt;id&gt;/</span></code> 后重试</p></td>
+<td><p>优先核对 <code class="docutils literal notranslate"><span class="pre">/run/micrun/runtime/sandbox/&lt;id&gt;/runtime.json</span></code>，确认 stale 后再清理对应运行时目录</p></td>
 </tr>
 </tbody>
 </table>
@@ -383,7 +394,7 @@ ctr<span class="w"> </span>run<span class="w"> </span>--runtime<span class="w"> 
 </div>
 </li>
 <li><p><strong>检查状态文件</strong></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat<span class="w"> </span>/run/micrun/sandbox/&lt;container-id&gt;/state.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.state&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat<span class="w"> </span>/run/micrun/runtime/sandbox/&lt;sandbox-id&gt;/runtime.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.state&#39;</span>
 </pre></div>
 </div>
 </li>
@@ -433,8 +444,8 @@ openEuler<span class="w"> </span>UniProton<span class="w"> </span><span class="c
 <p><strong>解决方案</strong>：</p>
 <p>确保使用正确版本的 MicRun：</p>
 <ul class="simple">
-<li><p>检查 <code class="docutils literal notranslate"><span class="pre">pkg/micantainer/rpmsg_tty.go</span></code> 中禁用了 <code class="docutils literal notranslate"><span class="pre">OPOST|ONLCR</span></code></p></li>
-<li><p>检查 <code class="docutils literal notranslate"><span class="pre">pkg/io/copier.go</span></code> 中调用了 <code class="docutils literal notranslate"><span class="pre">compressLineEndings()</span></code></p></li>
+<li><p>检查 <code class="docutils literal notranslate"><span class="pre">internal/domain/container/rpmsg_tty.go</span></code> 中禁用了 <code class="docutils literal notranslate"><span class="pre">OPOST|ONLCR</span></code></p></li>
+<li><p>检查 <code class="docutils literal notranslate"><span class="pre">internal/adapters/io/copier.go</span></code> 中调用了 <code class="docutils literal notranslate"><span class="pre">compressLineEndings()</span></code></p></li>
 </ul>
 </section>
 <section id="attach">
@@ -496,7 +507,7 @@ openEuler<span class="w"> </span>UniProton<span class="w"> </span><span class="c
 <p><strong>排查步骤</strong>：</p>
 <ol class="arabic">
 <li><p><strong>检查当前状态</strong></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat<span class="w"> </span>/run/micrun/sandbox/&lt;container-id&gt;/state.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.state.state&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat<span class="w"> </span>/run/micrun/runtime/sandbox/&lt;sandbox-id&gt;/runtime.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.state.state&#39;</span>
 </pre></div>
 </div>
 </li>
@@ -513,7 +524,10 @@ ctr<span class="w"> </span>task<span class="w"> </span><span class="nb">kill</sp
 
 <span class="c1"># 方法 2: 如果 shim 已崩溃，手动清理</span>
 xl<span class="w"> </span>destroy<span class="w"> </span>&lt;container-id&gt;
-rm<span class="w"> </span>-rf<span class="w"> </span>/run/micrun/sandbox/&lt;container-id&gt;/
+rm<span class="w"> </span>-rf<span class="w"> </span>/run/micrun/runtime/sandbox/&lt;sandbox-id&gt;/
+find<span class="w"> </span>/run/micrun/runtime/container<span class="w"> </span>-maxdepth<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>&lt;container-id&gt;
+<span class="c1"># 确认上面的路径后，再手工删除对应 container 运行时目录</span>
+rm<span class="w"> </span>-rf<span class="w"> </span>/run/micrun/sandbox/&lt;sandbox-id&gt;/
 rm<span class="w"> </span>-rf<span class="w"> </span>/run/micrun/containers/&lt;container-id&gt;/
 ctr<span class="w"> </span>task<span class="w"> </span>delete<span class="w"> </span>-f<span class="w"> </span>&lt;container-id&gt;
 ctr<span class="w"> </span>container<span class="w"> </span>delete<span class="w"> </span>&lt;container-id&gt;
@@ -572,7 +586,7 @@ failed<span class="w"> </span>to<span class="w"> </span>pin<span class="w"> </sp
 <p><strong>排查步骤</strong>：</p>
 <ol class="arabic">
 <li><p><strong>检查 cpuset 配置</strong></p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat<span class="w"> </span>/run/micrun/sandbox/&lt;container-id&gt;/state.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.config.container_configs&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat<span class="w"> </span>/run/micrun/runtime/sandbox/&lt;sandbox-id&gt;/runtime.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.config.container_configs&#39;</span>
 </pre></div>
 </div>
 </li>
@@ -642,38 +656,48 @@ make<span class="w"> </span>run
 </section>
 <section id="id9">
 <h3>检查状态文件<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看完整状态</span>
-cat<span class="w"> </span>/run/micrun/sandbox/&lt;id&gt;/state.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看完整 sandbox 快照</span>
+cat<span class="w"> </span>/run/micrun/runtime/sandbox/&lt;id&gt;/runtime.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.&#39;</span>
 
 <span class="c1"># 查看状态</span>
-cat<span class="w"> </span>/run/micrun/sandbox/&lt;id&gt;/state.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.state&#39;</span>
+cat<span class="w"> </span>/run/micrun/runtime/sandbox/&lt;id&gt;/runtime.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.state&#39;</span>
 
 <span class="c1"># 查看配置</span>
-cat<span class="w"> </span>/run/micrun/sandbox/&lt;id&gt;/state.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.config&#39;</span>
+cat<span class="w"> </span>/run/micrun/runtime/sandbox/&lt;id&gt;/runtime.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.config&#39;</span>
+
+<span class="c1"># 必要时查看兼容格式状态文件</span>
+cat<span class="w"> </span>/run/micrun/sandbox/&lt;id&gt;/state.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.&#39;</span>
 </pre></div>
 </div>
 </section>
 <section id="id10">
 <h3>清理残留资源<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
-<span class="nv">CONTAINER_ID</span><span class="o">=</span><span class="nv">$1</span>
+<span class="nv">TASK_ID</span><span class="o">=</span><span class="nv">$1</span>
+<span class="nv">SANDBOX_ID</span><span class="o">=</span><span class="si">${</span><span class="nv">2</span><span class="k">:-</span><span class="nv">$TASK_ID</span><span class="si">}</span>
 
 <span class="c1"># 1. 销毁 Xen 域</span>
-xl<span class="w"> </span>destroy<span class="w"> </span><span class="nv">$CONTAINER_ID</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null
+xl<span class="w"> </span>destroy<span class="w"> </span><span class="nv">$TASK_ID</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null
 
 <span class="c1"># 2. 删除 containerd 任务</span>
-ctr<span class="w"> </span>task<span class="w"> </span>delete<span class="w"> </span>-f<span class="w"> </span><span class="nv">$CONTAINER_ID</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null
+ctr<span class="w"> </span>task<span class="w"> </span>delete<span class="w"> </span>-f<span class="w"> </span><span class="nv">$TASK_ID</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null
 
 <span class="c1"># 3. 删除 containerd 容器</span>
-ctr<span class="w"> </span>container<span class="w"> </span>delete<span class="w"> </span><span class="nv">$CONTAINER_ID</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null
+ctr<span class="w"> </span>container<span class="w"> </span>delete<span class="w"> </span><span class="nv">$TASK_ID</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null
 
-<span class="c1"># 4. 删除 Sandbox 状态</span>
-rm<span class="w"> </span>-rf<span class="w"> </span>/run/micrun/sandbox/<span class="nv">$CONTAINER_ID</span>
+<span class="c1"># 4. 删除运行时快照</span>
+rm<span class="w"> </span>-rf<span class="w"> </span>/run/micrun/runtime/sandbox/<span class="nv">$SANDBOX_ID</span>
 
-<span class="c1"># 5. 删除容器状态</span>
-rm<span class="w"> </span>-rf<span class="w"> </span>/run/micrun/containers/<span class="nv">$CONTAINER_ID</span>
+<span class="c1"># 5. 输出待清理的 container 运行时路径</span>
+find<span class="w"> </span>/run/micrun/runtime/container<span class="w"> </span>-maxdepth<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$TASK_ID</span><span class="s2">&quot;</span>
 
-<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Cleanup complete for </span><span class="nv">$CONTAINER_ID</span><span class="s2">&quot;</span>
+<span class="c1"># 6. 删除 Sandbox 兼容状态</span>
+rm<span class="w"> </span>-rf<span class="w"> </span>/run/micrun/sandbox/<span class="nv">$SANDBOX_ID</span>
+
+<span class="c1"># 7. 删除容器兼容状态</span>
+rm<span class="w"> </span>-rf<span class="w"> </span>/run/micrun/containers/<span class="nv">$TASK_ID</span>
+
+<span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Cleanup complete for task=</span><span class="nv">$TASK_ID</span><span class="s2"> sandbox=</span><span class="nv">$SANDBOX_ID</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
 </section>

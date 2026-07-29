@@ -208,57 +208,103 @@
 <h2>技术架构<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
 <section id="id6">
 <h3>整体架构层次<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────────────────────────┐
-│                Kubernetes CRI Interface                 │
-└───────────────────────────┬─────────────────────────────┘
-                            │
-┌───────────────────────────▼─────────────────────────────┐
-│                  Containerd Container Engine            │
-│                  (runtime: io.containerd.mica.v2)       │
-└───────────────────────────┬─────────────────────────────┘
-                            │
-┌───────────────────────────▼─────────────────────────────┐
-│                  MicRun Shimv2 Runtime                  │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
-│  │ Task Service │  │Sandbox Svc   │  │ Shim IO      │   │
-│  │              │  │              │  │              │   │
-│  │ - Create     │  │ - Create     │  │ - Binary IO  │   │
-│  │ - Start      │  │ - Start      │  │ - Pipe IO    │   │
-│  │ - Kill       │  │ - Stop       │  │ - File IO    │   │
-│  │ - Delete     │  │ - Status     │  │ - TTY IO     │   │
-│  │ - Wait       │  │              │  │              │   │
-│  └──────────────┘  └──────────────┘  └──────────────┘   │
-└───────────────────────────┬─────────────────────────────┘
-                            │
-┌───────────────────────────▼─────────────────────────────┐
-│                Hypervisor Abstraction Layer             │
-│                     (Pedestal)                          │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
-│  │ Xen          │  │ Baremetal    │  │ Resource Pln │   │
-│  │              │  │              │  │              │   │
-│  │ - Domain     │  │ - Channel    │  │ - CPU Mapping│   │
-│  │ - vCPU       │  │ - Buffer     │  │ - Mem Mapping│   │
-│  │ - Memory     │  │ - RPMSG      │  │ - Affinity   │   │
-│  │ - Weight     │  │              │  │              │   │
-│  └──────────────┘  └──────────────┘  └──────────────┘   │
-└───────────────────────────┬─────────────────────────────┘
-                            │
-┌───────────────────────────▼─────────────────────────────┐
-│                   Hypervisor Layer                      │
-│  ┌───────────────────────────────────────────────────┐  │
-│  │ Xen Domain | Baremetal Channel                    │  │
-│  └───────────────────────────────────────────────────┘  │
-└───────────────────────────┬─────────────────────────────┘
-                            │
-┌───────────────────────────▼─────────────────────────────┐
-│                      RTOS Layer                         │
-│  ┌──────────────────────┐  ┌──────────────────────┐     │
-│  │ Zephyr               │  │ UniProton            │     │
-│  │                      │  │                      │     │
-│  │ - App                │  │ - App                │     │
-│  │ - Shell              │  │ - Shell              │     │
-│  └──────────────────────┘  └──────────────────────┘     │
-└─────────────────────────────────────────────────────────┘
+<p>MicRun 采用 <code class="docutils literal notranslate"><span class="pre">transport/shimv2</span> <span class="pre">-&gt;</span> <span class="pre">application</span> <span class="pre">-&gt;</span> <span class="pre">domain</span> <span class="pre">-&gt;</span> <span class="pre">ports</span> <span class="pre">-&gt;</span> <span class="pre">adapters</span></code> 的分层结构。<code class="docutils literal notranslate"><span class="pre">shimv2</span></code> 是 containerd runtime-v2 的语义边界与系统总入口，<code class="docutils literal notranslate"><span class="pre">application</span></code> 负责把 containerd 请求翻译成 MicRun 内部动作序列，<code class="docutils literal notranslate"><span class="pre">domain</span></code> 承载容器聚合与输入输出规则，<code class="docutils literal notranslate"><span class="pre">ports</span></code> 定义跨层稳定接口，<code class="docutils literal notranslate"><span class="pre">adapters</span></code> 把端口落到外部系统(micad、Xen/pedestal、文件状态、FIFO/TTY)。各层之间通过显式依赖注入协作，<code class="docutils literal notranslate"><span class="pre">HostProfile</span></code>、<code class="docutils literal notranslate"><span class="pre">ResourcePolicy</span></code>、<code class="docutils literal notranslate"><span class="pre">Dependencies</span></code> 等关键对象在 transport 装配后贯穿创建与恢复链路。</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">+--------------------------------------------------------------------------------+</span>
+<span class="o">|</span>                            <span class="n">Kubernetes</span> <span class="n">CRI</span> <span class="n">Interface</span>                            <span class="o">|</span>
+<span class="o">+--------------------------------------------------------------------------------+</span>
+<span class="o">|</span>                                        <span class="o">|</span>                                       <span class="o">|</span>
+<span class="o">+----------------------------------------</span><span class="n">v</span><span class="o">---------------------------------------+</span>
+<span class="o">|</span>                          <span class="n">Containerd</span> <span class="n">Container</span> <span class="n">Engine</span>                           <span class="o">|</span>
+<span class="o">+--------------------------------------------------------------------------------+</span>
+<span class="o">|</span>                         <span class="n">runtime</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">containerd</span><span class="o">.</span><span class="n">mica</span><span class="o">.</span><span class="n">v2</span>                         <span class="o">|</span>
+<span class="o">+--------------------------------------------------------------------------------+</span>
+<span class="o">|</span>                                        <span class="o">|</span>  <span class="n">ttrpc</span>                                <span class="o">|</span>
+<span class="o">+----------------------------------------</span><span class="n">v</span><span class="o">---------------------------------------+</span>
+<span class="o">|</span>                  <span class="n">Transport</span> <span class="n">Layer</span>    <span class="n">internal</span><span class="o">/</span><span class="n">transport</span><span class="o">/</span><span class="n">shimv2</span>                  <span class="o">|</span>
+<span class="o">+--------------------------------------------------------------------------------+</span>
+<span class="o">|</span>                         <span class="n">containerd</span> <span class="n">runtime</span><span class="o">-</span><span class="n">v2</span> <span class="n">boundary</span>                         <span class="o">|</span>
+<span class="o">|</span>                                                                                <span class="o">|</span>
+<span class="o">|</span>                 <span class="n">TaskService</span> <span class="n">RPC</span>    <span class="n">one</span><span class="o">-</span><span class="n">shot</span>    <span class="n">recovery</span> <span class="n">entry</span>                  <span class="o">|</span>
+<span class="o">|</span>                         <span class="n">event</span> <span class="n">bridge</span>    <span class="n">error</span> <span class="n">mapping</span>                          <span class="o">|</span>
+<span class="o">+--------------------------------------------------------------------------------+</span>
+<span class="o">|</span>                                        <span class="o">|</span>                                       <span class="o">|</span>
+<span class="o">+----------------------------------------</span><span class="n">v</span><span class="o">---------------------------------------+</span>
+<span class="o">|</span>                   <span class="n">Application</span> <span class="n">Layer</span>    <span class="n">internal</span><span class="o">/</span><span class="n">application</span>                    <span class="o">|</span>
+<span class="o">+--------------------------------------------------------------------------------+</span>
+<span class="o">|</span>                                                                                <span class="o">|</span>
+<span class="o">|</span>  <span class="o">+--------------+</span>    <span class="o">+--------------+</span>    <span class="o">+--------------+</span>    <span class="o">+--------------+</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">|</span>   <span class="n">runtime</span>    <span class="o">|</span>    <span class="o">|</span>     <span class="n">task</span>     <span class="o">|</span>    <span class="o">|</span>  <span class="n">lifecycle</span>   <span class="o">|</span>    <span class="o">|</span>    <span class="n">attach</span>    <span class="o">|</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">|</span>  <span class="n">svc</span> <span class="n">graph</span>   <span class="o">|</span>    <span class="o">|</span> <span class="n">create</span> <span class="o">/</span> <span class="k">del</span> <span class="o">|</span>    <span class="o">|</span>  <span class="n">start</span><span class="o">/</span><span class="n">stop</span>  <span class="o">|</span>    <span class="o">|</span>    <span class="n">resize</span>    <span class="o">|</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">|</span> <span class="n">consistency</span>  <span class="o">|</span>    <span class="o">|</span> <span class="n">orchestrate</span>  <span class="o">|</span>    <span class="o">|</span>     <span class="n">wait</span>     <span class="o">|</span>    <span class="o">|</span> <span class="n">stdin</span> <span class="n">close</span>  <span class="o">|</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">+--------------+</span>    <span class="o">+--------------+</span>    <span class="o">+--------------+</span>    <span class="o">+--------------+</span>  <span class="o">|</span>
+<span class="o">|</span>                                                                                <span class="o">|</span>
+<span class="o">|</span>                <span class="o">+----------------------------------------------+</span>                <span class="o">|</span>
+<span class="o">|</span>                <span class="o">|</span>                   <span class="n">recovery</span>                   <span class="o">|</span>                <span class="o">|</span>
+<span class="o">|</span>                <span class="o">|</span>       <span class="n">restore</span> <span class="o">+</span> <span class="n">task</span> <span class="n">registry</span> <span class="n">rebuild</span>        <span class="o">|</span>                <span class="o">|</span>
+<span class="o">|</span>                <span class="o">+----------------------------------------------+</span>                <span class="o">|</span>
+<span class="o">|</span>                                                                                <span class="o">|</span>
+<span class="o">+--------------------------------------------------------------------------------+</span>
+<span class="o">|</span>                                        <span class="o">|</span>                                       <span class="o">|</span>
+<span class="o">+----------------------------------------</span><span class="n">v</span><span class="o">---------------------------------------+</span>
+<span class="o">|</span>                        <span class="n">Domain</span> <span class="n">Layer</span>    <span class="n">internal</span><span class="o">/</span><span class="n">domain</span>                         <span class="o">|</span>
+<span class="o">+--------------------------------------------------------------------------------+</span>
+<span class="o">|</span>                                                                                <span class="o">|</span>
+<span class="o">|</span>  <span class="o">+----------------------------------+</span>    <span class="o">+----------------------------------+</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">|</span>            <span class="n">container</span>             <span class="o">|</span>    <span class="o">|</span>             <span class="n">console</span>              <span class="o">|</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">|</span>  <span class="n">Sandbox</span> <span class="o">/</span> <span class="n">Container</span> <span class="n">aggregate</span>   <span class="o">|</span>    <span class="o">|</span>         <span class="nb">input</span> <span class="n">semantics</span>          <span class="o">|</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">|</span>          <span class="n">state</span> <span class="n">machine</span>           <span class="o">|</span>    <span class="o">|</span>    <span class="n">detach</span> <span class="o">/</span> <span class="n">interrupt</span> <span class="o">/</span> <span class="n">exit</span>     <span class="o">|</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">|</span>             <span class="n">validate</span>             <span class="o">|</span>    <span class="o">|</span>         <span class="n">output</span> <span class="n">normalize</span>         <span class="o">|</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">|</span>          <span class="n">snapshot</span> <span class="n">load</span>           <span class="o">|</span>    <span class="o">|</span>          <span class="n">state</span> <span class="n">machine</span>           <span class="o">|</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">+----------------------------------+</span>    <span class="o">+----------------------------------+</span>  <span class="o">|</span>
+<span class="o">|</span>                                                                                <span class="o">|</span>
+<span class="o">+--------------------------------------------------------------------------------+</span>
+<span class="o">|</span>                                        <span class="o">|</span>                                       <span class="o">|</span>
+<span class="o">+----------------------------------------</span><span class="n">v</span><span class="o">---------------------------------------+</span>
+<span class="o">|</span>                         <span class="n">Ports</span> <span class="n">Layer</span>    <span class="n">internal</span><span class="o">/</span><span class="n">ports</span>                          <span class="o">|</span>
+<span class="o">+--------------------------------------------------------------------------------+</span>
+<span class="o">|</span>                                                                                <span class="o">|</span>
+<span class="o">|</span>  <span class="o">+----------------------+</span>  <span class="o">+----------------------+</span>  <span class="o">+----------------------+</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">|</span>     <span class="n">GuestControl</span>     <span class="o">|</span>  <span class="o">|</span>      <span class="n">StateStore</span>      <span class="o">|</span>  <span class="o">|</span>     <span class="n">TaskRuntime</span>      <span class="o">|</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">|</span>    <span class="n">GuestExecutor</span>     <span class="o">|</span>  <span class="o">|</span>   <span class="n">IOSessionFactory</span>   <span class="o">|</span>  <span class="o">|</span> <span class="n">create</span><span class="o">/</span><span class="n">start</span><span class="o">/</span><span class="n">delete</span>  <span class="o">|</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">|</span>  <span class="n">HypervisorControl</span>   <span class="o">|</span>  <span class="o">|</span>      <span class="n">IOManager</span>       <span class="o">|</span>  <span class="o">|</span>  <span class="n">query</span><span class="o">/</span><span class="n">wait</span><span class="o">/</span><span class="n">signal</span>   <span class="o">|</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">+----------------------+</span>  <span class="o">+----------------------+</span>  <span class="o">+----------------------+</span>  <span class="o">|</span>
+<span class="o">|</span>                                                                                <span class="o">|</span>
+<span class="o">+--------------------------------------------------------------------------------+</span>
+<span class="o">|</span>                                        <span class="o">|</span>  <span class="n">explicit</span> <span class="n">DI</span>                          <span class="o">|</span>
+<span class="o">+----------------------------------------</span><span class="n">v</span><span class="o">---------------------------------------+</span>
+<span class="o">|</span>                      <span class="n">Adapters</span> <span class="n">Layer</span>    <span class="n">internal</span><span class="o">/</span><span class="n">adapters</span>                       <span class="o">|</span>
+<span class="o">+--------------------------------------------------------------------------------+</span>
+<span class="o">|</span>                                                                                <span class="o">|</span>
+<span class="o">|</span>  <span class="o">+--------------+</span>    <span class="o">+--------------+</span>    <span class="o">+--------------+</span>    <span class="o">+--------------+</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">|</span>    <span class="n">guest</span><span class="o">/</span>    <span class="o">|</span>    <span class="o">|</span>  <span class="n">hypervisor</span>  <span class="o">|</span>    <span class="o">|</span> <span class="n">state</span> <span class="o">/</span> <span class="n">file</span> <span class="o">|</span>    <span class="o">|</span>    <span class="n">config</span>    <span class="o">|</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">|</span>   <span class="n">libmica</span>    <span class="o">|</span>    <span class="o">|</span>   <span class="n">pedestal</span>   <span class="o">|</span>    <span class="o">|</span>  <span class="n">authority</span>   <span class="o">|</span>    <span class="o">|</span> <span class="n">oci</span> <span class="o">/</span> <span class="n">stack</span>  <span class="o">|</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">|</span> <span class="n">micad</span> <span class="n">proto</span>  <span class="o">|</span>    <span class="o">|</span>   <span class="n">Xen</span> <span class="o">/</span> <span class="n">bm</span>   <span class="o">|</span>    <span class="o">|</span> <span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">micrun</span>  <span class="o">|</span>    <span class="o">|</span>   <span class="n">overlay</span>    <span class="o">|</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">+--------------+</span>    <span class="o">+--------------+</span>    <span class="o">+--------------+</span>    <span class="o">+--------------+</span>  <span class="o">|</span>
+<span class="o">|</span>                                                                                <span class="o">|</span>
+<span class="o">|</span>                <span class="o">+----------------------------------------------+</span>                <span class="o">|</span>
+<span class="o">|</span>                <span class="o">|</span>                      <span class="n">io</span>                      <span class="o">|</span>                <span class="o">|</span>
+<span class="o">|</span>                <span class="o">|</span>   <span class="n">FIFO</span> <span class="o">/</span> <span class="n">TTY</span> <span class="o">/</span> <span class="n">copier</span> <span class="o">/</span> <span class="n">epoll</span> <span class="o">/</span> <span class="n">event</span> <span class="n">bus</span>    <span class="o">|</span>                <span class="o">|</span>
+<span class="o">|</span>                <span class="o">+----------------------------------------------+</span>                <span class="o">|</span>
+<span class="o">|</span>                                                                                <span class="o">|</span>
+<span class="o">+--------------------------------------------------------------------------------+</span>
+<span class="o">|</span>                                        <span class="o">|</span>                                       <span class="o">|</span>
+<span class="o">+----------------------------------------</span><span class="n">v</span><span class="o">---------------------------------------+</span>
+<span class="o">|</span>                            <span class="n">micad</span> <span class="o">+</span> <span class="n">Xen</span> <span class="o">/</span> <span class="n">Baremetal</span>                             <span class="o">|</span>
+<span class="o">+--------------------------------------------------------------------------------+</span>
+<span class="o">|</span>                        <span class="n">MICA</span> <span class="n">daemon</span>  <span class="o">+</span>  <span class="n">Hypervisor</span> <span class="n">base</span>                         <span class="o">|</span>
+<span class="o">+--------------------------------------------------------------------------------+</span>
+<span class="o">|</span>                                        <span class="o">|</span>  <span class="n">RPMSG</span> <span class="n">TTY</span> <span class="o">/</span> <span class="n">lifecycle</span> <span class="n">events</span>         <span class="o">|</span>
+<span class="o">+----------------------------------------</span><span class="n">v</span><span class="o">---------------------------------------+</span>
+<span class="o">|</span>                                   <span class="n">RTOS</span> <span class="n">Layer</span>                                   <span class="o">|</span>
+<span class="o">+--------------------------------------------------------------------------------+</span>
+<span class="o">|</span>                                                                                <span class="o">|</span>
+<span class="o">|</span>  <span class="o">+----------------------------------+</span>    <span class="o">+----------------------------------+</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">|</span>              <span class="n">Zephyr</span>              <span class="o">|</span>    <span class="o">|</span>            <span class="n">UniProton</span>             <span class="o">|</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">|</span>              <span class="o">-</span> <span class="n">App</span>               <span class="o">|</span>    <span class="o">|</span>              <span class="o">-</span> <span class="n">App</span>               <span class="o">|</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">|</span>             <span class="o">-</span> <span class="n">Shell</span>              <span class="o">|</span>    <span class="o">|</span>             <span class="o">-</span> <span class="n">Shell</span>              <span class="o">|</span>  <span class="o">|</span>
+<span class="o">|</span>  <span class="o">+----------------------------------+</span>    <span class="o">+----------------------------------+</span>  <span class="o">|</span>
+<span class="o">|</span>                                                                                <span class="o">|</span>
+<span class="o">+--------------------------------------------------------------------------------+</span>
 </pre></div>
 </div>
 </section>
@@ -275,20 +321,26 @@
 </tr>
 </thead>
 <tbody>
+<tr class="row-even"><td><p><strong>分层隔离</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">transport/application/domain/ports/adapters</span></code> 各司其职，<code class="docutils literal notranslate"><span class="pre">application</span></code> 只编排用例，不直接操作文件、TTY、micad socket 或 Xen 命令</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>显式依赖注入</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">HostProfile</span></code>、<code class="docutils literal notranslate"><span class="pre">ResourcePolicy</span></code>、<code class="docutils literal notranslate"><span class="pre">Dependencies</span></code> 从 transport 装配后显式注入创建与恢复链路，<code class="docutils literal notranslate"><span class="pre">newSandbox</span></code> 要求非空依赖</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>StateStore 权威状态源</strong></p></td>
+<td><p>运行时快照统一写入 <code class="docutils literal notranslate"><span class="pre">/run/micrun/runtime/.../runtime.json</span></code>，作为容器状态与恢复的权威数据源</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>端口隔离外部依赖</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ports</span></code> 接口(GuestControl / HypervisorControl / StateStore / IOSessionFactory / TaskRuntime 等)隔离 <code class="docutils literal notranslate"><span class="pre">application</span></code> 与 <code class="docutils literal notranslate"><span class="pre">libmica</span></code>、<code class="docutils literal notranslate"><span class="pre">pedestal</span></code>、<code class="docutils literal notranslate"><span class="pre">state/file</span></code>、<code class="docutils literal notranslate"><span class="pre">io</span></code> 等具体实现</p></td>
+</tr>
 <tr class="row-even"><td><p><strong>1:1:1 模型</strong></p></td>
 <td><p>一个 shim 实例管理一个容器，运行一个 RTOS 实例</p></td>
 </tr>
 <tr class="row-odd"><td><p><strong>资源映射</strong></p></td>
-<td><p>将 Kubernetes/containerd 的资源限制(cgroup)转换为 hypervisor 的资源分配配置</p></td>
+<td><p>将 Kubernetes/containerd 的资源限制(cgroup)通过 <code class="docutils literal notranslate"><span class="pre">HostProfile</span></code>/<code class="docutils literal notranslate"><span class="pre">ResourcePolicy</span></code> 转换为 hypervisor 的资源分配配置</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>IO 代理</strong></p></td>
-<td><p>通过 <code class="docutils literal notranslate"><span class="pre">/dev/ttyRPMSG*</span></code> 设备处理 RTOS 的终端输入输出</p></td>
-</tr>
-<tr class="row-odd"><td><p><strong>沙箱管理</strong></p></td>
-<td><p>使用 pause 容器维护 Pod 的网络命名空间</p></td>
-</tr>
-<tr class="row-even"><td><p><strong>配置优先级</strong></p></td>
-<td><p>注解配置 &gt; 运行时配置文件 &gt; 默认值</p></td>
+<tr class="row-even"><td><p><strong>配置解析顺序可文档化</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RuntimeConfig</span></code> 解析顺序: 显式传入 &gt; 注解 sandbox config path &gt; CRI ConfigPath &gt; <code class="docutils literal notranslate"><span class="pre">MICRUN_CONF_FILE</span></code> &gt; <code class="docutils literal notranslate"><span class="pre">MICRUN_CONF_DIR</span></code> 等自动发现 &gt; 注解 overlay</p></td>
 </tr>
 </tbody>
 </table>
@@ -356,7 +408,7 @@
 <li><p><strong>pedestal 支持</strong>:</p>
 <ul>
 <li><p>Xen (完整功能，支持自动检测)</p></li>
-<li><p>Baremetal (基础功能，需通过注解显式配置)</p></li>
+<li><p>Baremetal (基础功能，需显式启用)</p></li>
 </ul>
 </li>
 <li><p><strong>RTOS 支持</strong>: Zephyr、UniProton</p></li>
@@ -368,7 +420,7 @@
 <p><strong>Hypervisor 检测说明</strong>:</p>
 <ul class="simple">
 <li><p><strong>自动检测</strong>: 仅 Xen hypervisor 支持自动检测（通过检查 <code class="docutils literal notranslate"><span class="pre">/proc/xen/xenbus</span></code>）</p></li>
-<li><p><strong>显式配置</strong>: Baremetal 需要通过注解 <code class="docutils literal notranslate"><span class="pre">org.openeuler.micrun.ped.pedestal:</span> <span class="pre">&quot;baremetal&quot;</span></code> 显式指定</p></li>
+<li><p><strong>Baremetal</strong>: 不会自动探测；需要在宿主环境显式设置环境变量 <code class="docutils literal notranslate"><span class="pre">MICRUN_ENABLE_BAREMETAL=1</span></code>，同时通过注解 <code class="docutils literal notranslate"><span class="pre">org.openeuler.micrun.ped.pedestal:</span> <span class="pre">&quot;baremetal&quot;</span></code> 指定</p></li>
 </ul>
 </div>
 </section>

@@ -6,817 +6,514 @@ MicRun API 参考文档
 概述
 ====
 
-本文档描述 MicRun 的核心 API 接口。MicRun 采用分层架构设计，接口分为：
+本文档描述 MicRun 当前代码中的核心接口与主要调用链。重点不是列出所有导出符号，而是回答三个问题：
 
-1. **Sandbox 层** (``SandboxTraits``) - 管理 Sandbox 和容器生命周期
-2. **Container 层** (``ContainerTraits``) - 管理单个容器
-3. **Pedestal 层** (``Pedestal``) - 抽象 Hypervisor 接口
-4. **IO 层** (``Session``, ``Copier``, ``EventBus``) - 管理 IO 流
+1. 当前有哪些稳定的内部边界
+2. 这些边界分别位于哪里
+3. 从 ``containerd`` 请求进入后，主要调用链如何流转
 
-Sandbox 层 API
-==============
-
-SandboxTraits 接口
--------------------
-
-``SandboxTraits`` 是 Sandbox 的核心接口，位于 ``pkg/micantainer/interfaces.go``。
-
-标识和状态方法
-^^^^^^^^^^^^^^
-
-.. list-table::
-   :widths: 25 25 50
-   :header-rows: 1
-
-   * - 方法
-     - 返回类型
-     - 说明
-   * - ``SandboxID()``
-     - ``string``
-     - 返回 Sandbox ID
-   * - ``Annotation(key string)``
-     - ``(string, error)``
-     - 获取指定注解的值
-   * - ``GetState()``
-     - ``StateString``
-     - 获取当前状态
-   * - ``GetNetNamespace()``
-     - ``string``
-     - 获取网络命名空间
-   * - ``NetnsHolderPID()``
-     - ``int``
-     - 获取网络命名空间持有者 PID
-   * - ``GetAllContainers()``
-     - ``[]ContainerTraits``
-     - 获取所有容器列表
-
-Sandbox 生命周期方法
-^^^^^^^^^^^^^^^^^^^^
-
-.. list-table::
-   :widths: 25 20 15 40
-   :header-rows: 1
-
-   * - 方法
-     - 参数
-     - 返回
-     - 说明
-   * - ``Start(ctx)``
-     - ``context.Context``
-     - ``error``
-     - 启动 Sandbox 和所有容器
-   * - ``Stop(ctx, force)``
-     - ``context.Context, bool``
-     - ``error``
-     - 停止所有容器和 Sandbox
-   * - ``Delete(ctx)``
-     - ``context.Context``
-     - ``error``
-     - 删除 Sandbox，清理资源
-
-**状态要求**：
-
-- ``Start()``: 当前状态必须为 ``Ready`` 或 ``Running``
-- ``Stop()``: 任何状态（幂等）
-- ``Delete()``: 当前状态必须为 ``Ready``/``Paused``/``Stopped``
-
-容器管理方法
-^^^^^^^^^^^^
-
-.. list-table::
-   :widths: 30 25 15 30
-   :header-rows: 1
-
-   * - 方法
-     - 参数
-     - 返回
-     - 说明
-   * - ``CreateContainer(ctx, config)``
-     - ``context.Context, ContainerConfig``
-     - ``(ContainerTraits, error)``
-     - 创建新容器
-   * - ``DeleteContainer(ctx, id)``
-     - ``context.Context, string``
-     - ``(ContainerTraits, error)``
-     - 删除指定容器
-   * - ``StartContainer(ctx, id)``
-     - ``context.Context, string``
-     - ``(ContainerTraits, error)``
-     - 启动指定容器
-   * - ``StopContainer(ctx, id, force)``
-     - ``context.Context, string, bool``
-     - ``(ContainerTraits, error)``
-     - 停止指定容器
-   * - ``KillContainer(ctx, id)``
-     - ``context.Context, string``
-     - ``(ContainerTraits, error)``
-     - 强制终止容器
-   * - ``StatusContainer(id)``
-     - ``string``
-     - ``(ContainerStatus, error)``
-     - 获取容器状态
-   * - ``StatsContainer(ctx, id)``
-     - ``context.Context, string``
-     - ``(ContainerStats, error)``
-     - 获取容器统计信息
-
-资源更新方法
-^^^^^^^^^^^^
-
-.. list-table::
-   :widths: 30 30 15 25
-   :header-rows: 1
-
-   * - 方法
-     - 参数
-     - 返回
-     - 说明
-   * - ``UpdateContainer(ctx, id, resources)``
-     - ``context.Context, string, LinuxResources``
-     - ``error``
-     - 更新容器资源限制
-
-**注意**：如果 ``StaticResourceMgmt`` 为 true，此操作将被忽略。
-
-IO 和控制方法
-^^^^^^^^^^^^^
-
-.. list-table::
-   :widths: 30 35 15 20
-   :header-rows: 1
-
-   * - 方法
-     - 参数
-     - 返回
-     - 说明
-   * - ``IOStream(containerID, taskID)``
-     - ``string, string``
-     - ``(WriteCloser, Reader, Reader, error)``
-     - 获取 stdin, stdout, stderr
-   * - ``WaitContainerExit(ctx, id)``
-     - ``context.Context, string``
-     - ``(int32, error)``
-     - 等待容器退出
-   * - ``WinResize(ctx, containerID, height, width)``
-     - ``context.Context, string, uint32, uint32``
-     - ``error``
-     - 调整终端窗口大小
-   * - ``OpenTTYs(ctx, containerID)``
-     - ``context.Context, string``
-     - ``(*os.File, *os.File, error)``
-     - 打开新的 TTY 句柄
-   * - ``PauseContainer(ctx, id)``
-     - ``context.Context, string``
-     - ``error``
-     - 暂停容器
-   * - ``ResumeContainer(ctx, id)``
-     - ``context.Context, string``
-     - ``error``
-     - 恢复容器
-
-Container 层 API
-================
-
-ContainerTraits 接口
---------------------
-
-``ContainerTraits`` 是单个容器的接口，位于 ``pkg/micantainer/interfaces.go``。
-
-.. list-table::
-   :widths: 30 25 45
-   :header-rows: 1
-
-   * - 方法
-     - 返回类型
-     - 说明
-   * - ``ID()``
-     - ``string``
-     - 容器 ID
-   * - ``GetPid()``
-     - ``int``
-     - 容器 PID（RTOS 可能是虚拟值）
-   * - ``Sandbox()``
-     - ``SandboxTraits``
-     - 所属 Sandbox
-   * - ``GetAnnotations()``
-     - ``map[string]string``
-     - 容器注解
-   * - ``Status()``
-     - ``StateString``
-     - 容器状态
-   * - ``State()``
-     - ``*ContainerState``
-     - 容器详细状态
-   * - ``GetMemoryLimit()``
-     - ``uint64``
-     - 内存限制（字节）
-   * - ``GetClientCPU()``
-     - ``string``
-     - CPU 亲和性配置
-   * - ``SaveState()``
-     - ``error``
-     - 保存容器状态
-   * - ``Signal(ctx, signal)``
-     - ``error``
-     - 发送信号到容器
-
-Pedestal 层 API
-===============
-
-Pedestal 接口
--------------
-
-``Pedestal`` 是 Hypervisor 的抽象接口，位于 ``pkg/pedestal/interface.go``。
-
-核心方法
-^^^^^^^^
-
-.. list-table::
-   :widths: 25 25 50
-   :header-rows: 1
-
-   * - 方法
-     - 返回类型
-     - 说明
-   * - ``Type()``
-     - ``PedType``
-     - 返回 Hypervisor 类型（Xen, Baremetal）
-   * - ``String()``
-     - ``string``
-     - 返回字符串表示
-   * - ``GeneratePedConf()``
-     - ``string``
-     - 生成 Hypervisor 配置路径
-
-主机资源查询
-^^^^^^^^^^^^
-
-.. list-table::
-   :widths: 30 40 30
-   :header-rows: 1
-
-   * - 方法
-     - 返回类型
-     - 说明
-   * - ``MaxCPUNum()``
-     - ``uint32``
-     - 最大 CPU 数量
-   * - ``MemoryMB()``
-     - ``(free, total uint32)``
-     - 可用和总内存（MiB）
-   * - ``MemLowThreshold()``
-     - ``uint32``
-     - 内存低阈值
-   * - ``MemHighThreshold()``
-     - ``uint32``
-     - 内存高阈值
-   * - ``HostCPUSeta()``
-     - ``CPUSet``
-     - 主机 CPU 集合
-
-可选扩展接口
-------------
-
-CPUScheduler
-^^^^^^^^^^^^
-
-CPU 调度操作（可选）：
-
-.. list-table::
-   :widths: 35 25 15 25
-   :header-rows: 1
-
-   * - 方法
-     - 参数
-     - 返回
-     - 说明
-   * - ``SetCPUAffinity(clientID, cpus)``
-     - ``string, CPUSet``
-     - ``error``
-     - 设置 CPU 亲和性
-   * - ``SetCPUWeight(clientID, weight)``
-     - ``string, uint32``
-     - ``error``
-     - 设置 CPU 调度权重
-   * - ``SetCPUCapacity(clientID, capacity)``
-     - ``string, uint32``
-     - ``error``
-     - 设置 CPU 容量上限
-
-LifecycleManager
-^^^^^^^^^^^^^^^^
-
-生命周期管理（可选）：
-
-.. list-table::
-   :widths: 25 20 15 40
-   :header-rows: 1
-
-   * - 方法
-     - 参数
-     - 返回
-     - 说明
-   * - ``Pause(clientID)``
-     - ``string``
-     - ``error``
-     - 暂停客户端
-   * - ``Resume(clientID)``
-     - ``string``
-     - ``error``
-     - 恢复客户端
-
-StateQuerier
-^^^^^^^^^^^^
-
-状态查询（可选）：
-
-.. list-table::
-   :widths: 30 20 20 30
-   :header-rows: 1
-
-   * - 方法
-     - 参数
-     - 返回
-     - 说明
-   * - ``ClientState(clientID)``
-     - ``string``
-     - ``(string, error)``
-     - 获取客户端状态
-
-MemoryManager
-^^^^^^^^^^^^^
-
-内存管理（可选）：
-
-.. list-table::
-   :widths: 25 25 15 35
-   :header-rows: 1
-
-   * - 方法
-     - 参数
-     - 返回
-     - 说明
-   * - ``SetMemory(clientID, memMB)``
-     - ``string, uint32``
-     - ``error``
-     - 设置内存
-   * - ``SetMaxMemory(clientID, memMB)``
-     - ``string, uint32``
-     - ``error``
-     - 设置最大内存
-
-IO 层 API
-=========
-
-Session
--------
-
-``Session`` 管理 IO 会话，位于 ``pkg/io/session.go``。
-
-构造函数
-^^^^^^^^
-
-.. list-table::
-   :widths: 30 25 20 25
-   :header-rows: 1
-
-   * - 函数
-     - 参数
-     - 返回
-     - 说明
-   * - ``NewSession(config)``
-     - ``Config``
-     - ``(*Session, error)``
-     - 创建新会话
-
-实例方法
-^^^^^^^^
-
-.. list-table::
-   :widths: 25 15 15 45
-   :header-rows: 1
-
-   * - 方法
-     - 参数
-     - 返回
-     - 说明
-   * - ``Start()``
-     - -
-     - ``error``
-     - 创建 FIFO，启动 Copier
-   * - ``Stop()``
-     - -
-     - -
-     - 停止 Copier，关闭 FIFO
-   * - ``Restart()``
-     - -
-     - ``error``
-     - 平滑切换到新 FIFO（支持 attach）
-   * - ``GetCopier()``
-     - -
-     - ``*Copier``
-     - 获取 Copier（设置回调）
-
-辅助函数
-^^^^^^^^
-
-.. list-table::
-   :widths: 35 25 15 25
-   :header-rows: 1
-
-   * - 函数
-     - 参数
-     - 返回
-     - 说明
-   * - ``GenerateStandardFIFOPath(ns, id, stream)``
-     - ``string, string, string``
-     - ``string``
-     - 生成标准 FIFO 路径
-   * - ``IsValidFIFOPath(path)``
-     - ``string``
-     - ``bool``
-     - 检查是否为有效 FIFO 路径
-
-Config 结构
-^^^^^^^^^^^
-
-.. code-block:: go
-
-   type Config struct {
-       // 标识
-       ContainerID string
-
-       // FIFO 路径（来自 containerd）
-       StdinFIFO  string
-       StdoutFIFO string
-       StderrFIFO string
-
-       // TTY 接口（来自 RPMSG）
-       TTYIn  io.WriteCloser  // stdin to TTY
-       TTYOut io.Reader       // stdout from TTY
-       TTYErr io.Reader       // stderr from TTY (optional)
-
-       // 配置选项
-       Terminal       bool
-       StdinBufSize   int
-       StdoutBufSize  int
-       EventBus       *EventBus
-       FilterNUL      bool
-       ExecMode       bool
-       DetachKeys     string  // detach key sequence (e.g., "ctrl-p,ctrl-q")
-   }
-
-Copier
-------
-
-``Copier`` 负责双向数据复制，位于 ``pkg/io/copier.go``。
-
-构造函数
-^^^^^^^^
-
-.. list-table::
-   :widths: 25 20 20 35
-   :header-rows: 1
-
-   * - 函数
-     - 参数
-     - 返回
-     - 说明
-   * - ``NewCopier(config)``
-     - ``Config``
-     - ``*Copier``
-     - 创建新 Copier
-
-实例方法
-^^^^^^^^
-
-.. list-table::
-   :widths: 30 45 15 10
-   :header-rows: 1
-
-   * - 方法
-     - 参数
-     - 返回
-     - 说明
-   * - ``SetTTYs(ttyIn, ttyOut, ttyErr)``
-     - ``io.WriteCloser, io.Reader, io.Reader``
-     - -
-     - 设置 TTY 句柄
-   * - ``SetStdin(fifo)``
-     - ``io.ReadCloser``
-     - -
-     - 设置 stdin FIFO
-   * - ``SetStdout(fifo)``
-     - ``io.WriteCloser``
-     - -
-     - 设置 stdout FIFO
-   * - ``SetStderr(fifo)``
-     - ``io.WriteCloser``
-     - -
-     - 设置 stderr FIFO
-   * - ``SetStdoutFifoForEcho(stdout)``
-     - ``io.WriteCloser``
-     - -
-     - 设置 stdout FIFO 用于 TTY 模式本地回显
-   * - ``Start()``
-     - -
-     - ``error``
-     - 启动数据复制
-   * - ``Stop()``
-     - -
-     - ``error``
-     - 停止复制
-
-EventBus
---------
-
-``EventBus`` 提供事件发布/订阅机制，位于 ``pkg/io/events.go``。
-
-事件类型
-^^^^^^^^
-
-.. list-table::
-   :widths: 30 15 55
-   :header-rows: 1
-
-   * - 常量
-     - 值
-     - 说明
-   * - ``ExitCommandDetected``
-     - 0
-     - 用户输入 "exit" 命令
-   * - ``IOError``
-     - 1
-     - IO 错误
-   * - ``TTYReady``
-     - 2
-     - TTY 准备就绪
-   * - ``StdinClosed``
-     - 3
-     - stdin FIFO 被关闭
-   * - ``DetachDetected``
-     - 4
-     - 用户输入 detach 序列
-
-构造函数
-^^^^^^^^
-
-.. list-table::
-   :widths: 25 25 20 30
-   :header-rows: 1
-
-   * - 函数
-     - 参数
-     - 返回
-     - 说明
-   * - ``NewEventBus(ctx)``
-     - ``context.Context``
-     - ``*EventBus``
-     - 创建新 EventBus
-
-实例方法
-^^^^^^^^
-
-.. list-table::
-   :widths: 25 20 15 40
-   :header-rows: 1
-
-   * - 方法
-     - 参数
-     - 返回
-     - 说明
-   * - ``Subscribe(eventType)``
-     - ``EventType``
-     - ``EventSubscriber``
-     - 订阅事件类型
-   * - ``Publish(event)``
-     - ``Event``
-     - -
-     - 发布事件
-   * - ``Close()``
-     - -
-     - -
-     - 关闭 EventBus（无返回值）
-
-Event 结构
-^^^^^^^^^^
-
-.. code-block:: go
-
-   type Event struct {
-       Type        EventType
-       ContainerID string
-       Data        interface{}
-       Timestamp   time.Time
-   }
-
-状态常量
+总体分层
 ========
 
-Sandbox 状态
-------------
+.. code-block:: text
+
+   containerd runtime v2 RPC
+           |
+           v
+   internal/transport/shimv2
+           |
+           v
+   internal/application
+           |
+           v
+   internal/domain/container
+           |
+           v
+   internal/ports
+           |
+           v
+   internal/adapters
+
+对应代码落点：
 
 .. list-table::
-   :widths: 25 20 55
+   :widths: 20 50
    :header-rows: 1
 
-   * - 常量
-     - 值
-     - 说明
-   * - ``StateCreating``
-     - ``"creating"``
-     - 创建中
-   * - ``StateReady``
-     - ``"ready"``
-     - 已就绪
-   * - ``StateRunning``
-     - ``"running"``
-     - 运行中
-   * - ``StateStopped``
-     - ``"stopped"``
-     - 已停止
-   * - ``StatePaused``
-     - ``"paused"``
-     - 已暂停
+   * - 层
+     - 代码路径
+   * - transport
+     - ``internal/transport/shimv2``
+   * - application
+     - ``internal/application``
+   * - domain
+     - ``internal/domain/container``
+   * - ports
+     - ``internal/ports``
+   * - adapters
+     - ``internal/adapters``
 
-容器状态
---------
+Domain 接口
+===========
 
-容器状态使用以下状态常量：
-
-.. list-table::
-   :widths: 25 20 55
-   :header-rows: 1
-
-   * - 常量
-     - 值
-     - 说明
-   * - ``StateReady``
-     - ``"ready"``
-     - 已就绪
-   * - ``StateRunning``
-     - ``"running"``
-     - 运行中
-   * - ``StateStopped``
-     - ``"stopped"``
-     - 已停止
-   * - ``StatePaused``
-     - ``"paused"``
-     - 已暂停
-   * - ``StateDown``
-     - ``"down"``
-     - 已退出
-
-使用示例
-========
-
-创建和使用 Sandbox
-------------------
-
-.. code-block:: go
-
-   import (
-       "context"
-       "micrun/pkg/micantainer"
-   )
-
-   func example() {
-       ctx := context.Background()
-
-       // 创建 Sandbox 配置
-       config := micantainer.SandboxConfig{
-           ID:       "my-sandbox",
-           Hostname: "rtos-host",
-           // ... 其他配置
-       }
-
-       // 创建 Sandbox
-       sandbox, err := micantainer.CreateSandbox(ctx, &config)
-       if err != nil {
-           // 处理错误
-       }
-
-       // 启动 Sandbox
-       if err := sandbox.Start(ctx); err != nil {
-           // 处理错误
-       }
-
-       // 创建容器
-       containerConfig := micantainer.ContainerConfig{
-           ID:    "my-container",
-           // ... 其他配置
-       }
-       container, err := sandbox.CreateContainer(ctx, containerConfig)
-       if err != nil {
-           // 处理错误
-       }
-
-       // 启动容器
-       if _, err := sandbox.StartContainer(ctx, container.ID()); err != nil {
-           // 处理错误
-       }
-
-       // 获取 IO 流
-       stdin, stdout, stderr, err := sandbox.IOStream(container.ID(), "")
-       if err != nil {
-           // 处理错误
-       }
-
-       // 使用 IO 流...
-
-       // 停止 Sandbox
-       if err := sandbox.Stop(ctx, false); err != nil {
-           // 处理错误
-       }
-
-       // 删除 Sandbox
-       if err := sandbox.Delete(ctx); err != nil {
-           // 处理错误
-       }
-   }
-
-使用 IO Session
+ContainerTraits
 ---------------
 
-.. code-block:: go
+定义位置：``internal/domain/container/interfaces.go``
 
-   import (
-       "context"
-       "micrun/pkg/io"
-   )
+它描述"单个 RTOS workload 容器"对外暴露的最小能力，包括：
 
-   func example() {
-       ctx := context.Background()
+.. list-table::
+   :widths: 30 70
+   :header-rows: 1
 
-       // 创建 IO 配置
-       config := io.Config{
-           ContainerID:  "my-container",
-           StdinFIFO:    "/run/containerd/.../stdin",
-           StdoutFIFO:   "/run/containerd/.../stdout",
-           StderrFIFO:   "/run/containerd/.../stderr",
-           TTYIn:        ttyIn,
-           TTYOut:       ttyOut,
-           TTYErr:       ttyErr,
-           Terminal:     true,
-           FilterNUL:    true,
-       }
+   * - 方法
+     - 说明
+   * - ``ID()``
+     - 标识
+   * - ``GetAnnotations()``
+     - 注解
+   * - ``Sandbox()``
+     - sandbox 归属
+   * - ``Status()`` / ``State()``
+     - 状态
+   * - ``GetMemoryLimit()`` / ``GetClientCPU()``
+     - 资源
+   * - ``SaveState()``
+     - 状态持久化
+   * - ``Signal(...)``
+     - 控制
 
-       // 创建 Session
-       session, err := io.NewSession(config)
-       if err != nil {
-           // 处理错误
-       }
+这层接口仍然贴近当前实现，没有刻意追求更抽象的 runtime model。
 
-       // 启动 Session
-       if err := session.Start(); err != nil {
-           // 处理错误
-       }
-
-       // 获取 Copier 用于后续操作
-       // Copier 提供了 SetTTYs、SetStdin、SetStdout、SetStderr 等方法
-       copier := session.GetCopier()
-       _ = copier // 通过 EventBus 监听事件来处理 IO 状态变化
-
-       // ... 使用 IO ...
-
-       // 停止 Session
-       session.Stop()
-   }
-
-使用 EventBus
+SandboxTraits
 -------------
 
-.. code-block:: go
+定义位置：``internal/domain/container/interfaces.go``
 
-   import (
-       "context"
-       "micrun/pkg/io"
-   )
+它是 application / transport 层感知 sandbox 的主要入口，能力包括：
 
-   func example() {
-       ctx := context.Background()
+.. list-table::
+   :widths: 30 70
+   :header-rows: 1
 
-       // 创建 EventBus
-       eventBus := io.NewEventBus(ctx)
+   * - 分类
+     - 方法
+   * - sandbox 生命周期
+     - ``Start`` / ``Stop`` / ``Delete``
+   * - container 生命周期
+     - ``CreateContainer`` / ``StartContainer`` / ``StopContainer`` / ``DeleteContainer`` / ``KillContainer``
+   * - 状态与查询
+     - ``GetState`` / ``GetAllContainers`` / ``StatusContainer`` / ``StatsContainer``
+   * - IO
+     - ``IOStream`` / ``OpenTTYs`` / ``WinResize`` / ``WaitContainerExit``
+   * - 资源更新
+     - ``UpdateContainer``
 
-       // 订阅事件
-       ch := eventBus.Subscribe(io.StdinClosed)
-       go func() {
-           for event := range ch {
-               // 处理事件
-               log.Printf("Event: %v for container %s", event.Type, event.ContainerID)
-           }
-       }()
+实现主体位于：
 
-       // 发布事件
-       eventBus.Publish(io.Event{
-           Type:        io.TTYReady,
-           ContainerID: "my-container",
-       })
+- ``internal/domain/container/sandbox.go``
+- ``internal/domain/container/sandbox_factory.go``
+- ``internal/domain/container/sandbox_loader.go``
+- ``internal/domain/container/sandbox_lifecycle.go``
 
-       // 关闭 EventBus
-       defer eventBus.Close()
-   }
+Ports
+=====
+
+MicRun 当前比较重要的 ports 如下。
+
+GuestControl
+------------
+
+定义位置：``internal/ports/guest.go``
+
+负责 guest 生命周期和状态交互：
+
+.. list-table::
+   :widths: 25 75
+   :header-rows: 1
+
+   * - 方法
+     - 说明
+   * - ``Start``
+     - 启动 guest
+   * - ``Stop``
+     - 停止 guest
+   * - ``Remove``
+     - 移除 guest
+   * - ``Pause``
+     - 暂停 guest
+   * - ``Resume``
+     - 恢复 guest
+   * - ``Exists``
+     - 查询 guest 是否存在
+   * - ``Status``
+     - 查询 guest 状态
+
+当前默认实现链路：
+
+.. code-block:: text
+
+   shimv2 -> buildContainerDependencies() -> guest/micad -> libmica
+
+HypervisorControl
+-----------------
+
+定义位置：``internal/ports/hypervisor.go``
+
+负责宿主 / hypervisor 的控制面：
+
+.. list-table::
+   :widths: 25 75
+   :header-rows: 1
+
+   * - 方法
+     - 说明
+   * - ``Type``
+     - 返回 Hypervisor 类型
+   * - ``MaxCPUNum``
+     - 最大 CPU 数量
+   * - ``DomainState``
+     - 查询 domain 状态
+   * - ``SetVCPUCount``
+     - 设置 VCPU 数量
+   * - ``Pause``
+     - 暂停
+   * - ``Resume``
+     - 恢复
+
+当前默认实现来自 pedestal adapter。
+
+StateStore
+----------
+
+定义位置：``internal/ports/state_store.go``
+
+用于持久化 runtime snapshot：
+
+.. list-table::
+   :widths: 25 75
+   :header-rows: 1
+
+   * - 方法
+     - 说明
+   * - ``Load``
+     - 加载 snapshot
+   * - ``Save``
+     - 保存 snapshot
+   * - ``Delete``
+     - 删除 snapshot
+
+当前文件实现位于：``internal/adapters/state/file/store.go``
+
+IOSessionFactory
+----------------
+
+定义位置：``internal/ports/io.go``
+
+用于 application 层创建 attach/session：
+
+.. list-table::
+   :widths: 30 70
+   :header-rows: 1
+
+   * - 方法
+     - 说明
+   * - ``NewSession``
+     - 创建新会话
+   * - ``IsValidFIFOPath``
+     - 检查是否为有效 FIFO 路径
+   * - ``GenerateFIFOPath``
+     - 生成 FIFO 路径
+
+TaskRuntime
+-----------
+
+定义位置：``internal/ports/task.go``
+
+这是 application 层看到的 "runtime-facing shim 接口"，由 ``shimService`` 实现。
+它不是 domain 接口，而是 transport/application 之间的编排边界。
+
+``TaskRuntime`` 由 6 个基础子接口组合：
+
+.. list-table::
+   :widths: 30 70
+   :header-rows: 1
+
+   * - 子接口
+     - 说明
+   * - ``TaskLocker``
+     - 任务锁
+   * - ``TaskIdentity``
+     - 任务标识
+   * - ``TaskStore``
+     - 任务存储
+   * - ``TaskFactory``
+     - 任务创建
+   * - ``TaskSandboxAccess``
+     - sandbox 访问
+   * - ``TaskStatusOps``
+     - 任务状态操作
+
+application/task 的方法不直接要求完整 ``TaskRuntime``，而是按用例接收更窄的复合接口：
+
+- ``TaskCreateRuntime``
+- ``TaskStartRuntime``
+- ``TaskDeleteRuntime``
+- ``TaskQueryRuntime``
+- ``TaskWaitRuntime``
+- ``TaskSignalRuntime``
+- ``TaskIORuntime``
+
+``TaskLifecycleRuntime`` 和 ``TaskAttachRuntime`` 仍分别服务于 lifecycle/attach 子应用。
+metrics 采集已经回收到 ``transport/shimv2`` 内部，不再属于 application/task 的 runtime port。
+在 ``taskManager`` 内部，transport 读写视图继续按用途拆分为 process、metrics、task presence、events、shutdown。
+这样 ``Stats``、``Pids``/``Connect``、``Shutdown`` 和事件发布不会共享一个全能 transport runtime 接口。
+
+实现位置：``internal/transport/shimv2/runtime_ports.go``
+
+GuestExecutor
+-------------
+
+定义位置：``internal/ports/guest_executor.go``
+
+``GuestExecutor`` 是一个复合接口，由三个子接口按 Interface Segregation Principle 组合而成：
+
+GuestResourceReader
+^^^^^^^^^^^^^^^^^^^
+
+读取当前资源状态：
+
+.. list-table::
+   :widths: 35 65
+   :header-rows: 1
+
+   * - 方法
+     - 说明
+   * - ``ReadResource() *ResourceSnapshot``
+     - 读取资源快照
+   * - ``CurrentMaxMem() uint32``
+     - 当前最大内存
+   * - ``MemoryThresholdMB() uint32``
+     - 内存阈值（MB）
+
+GuestResourceUpdater
+^^^^^^^^^^^^^^^^^^^^
+
+应用资源变更：
+
+.. list-table::
+   :widths: 50 50
+   :header-rows: 1
+
+   * - 方法
+     - 说明
+   * - ``UpdateCPUCapacity(capacity uint32) error``
+     - 更新 CPU 容量上限
+   * - ``UpdateCPUWeight(weight uint32) error``
+     - 更新 CPU 调度权重
+   * - ``UpdateVCPUNum(vcpu uint32) (oldCPUs, newCPUs uint32, err error)``
+     - 更新 VCPU 数量
+   * - ``UpdatePCPUConstraints(cpuSet string) error``
+     - 更新 PCPU 约束
+   * - ``EnsureMemoryLimit(mb uint32) error``
+     - 确保内存上限
+   * - ``UpdateMemoryThreshold(memMiB uint32) error``
+     - 更新内存阈值
+   * - ``UpdateMemory(memMiB uint32) error``
+     - 更新内存
+   * - ``RecordMemoryState(current, threshold uint32)``
+     - 记录内存状态
+   * - ``VCPUPin(cpuList []int) error``
+     - VCPU 绑核
+
+GuestResourceDiff
+^^^^^^^^^^^^^^^^^
+
+检查是否需要资源更新：
+
+.. list-table::
+   :widths: 45 55
+   :header-rows: 1
+
+   * - 方法
+     - 说明
+   * - ``NeedUpdateCPUCap(target uint32) bool``
+     - 是否需要更新 CPU 容量
+   * - ``NeedUpdateMemLimit(target uint32) bool``
+     - 是否需要更新内存上限
+   * - ``NeedUpdateCPUSet(oldSet, newSet string) bool``
+     - 是否需要更新 CPU 集合
+   * - ``NeedUpdateCPUShare(target uint32) bool``
+     - 是否需要更新 CPU share
+   * - ``NeedUpdateVCPUs(target uint32) bool``
+     - 是否需要更新 VCPU 数量
+
+关联类型：
+
+- ``ResourceSnapshot``：guest 当前资源状态快照（``CPUCapacity``、``CPUWeight``、``ClientCPUSet``、``VCPU``、``MemoryMaxMB``）
+
+当前默认实现：``adapters/guest/libmica.MicaExecutor``
+
+Application 层服务
+==================
+
+task.Service
+------------
+
+定义位置：``internal/application/task/service.go``
+
+职责：
+
+- 聚合 attach + lifecycle 能力
+- 为 transport 层提供 task 语义编排入口
+
+attach.Service
+--------------
+
+定义位置：``internal/application/attach/service.go``
+
+职责：
+
+- attach / reattach
+- resize 前的会话准备
+- stdin close 语义
+- detach 后会话状态维护
+
+lifecycle.Service
+-----------------
+
+定义位置：``internal/application/lifecycle/service.go``
+
+职责：
+
+- 启动任务时的 IO 与 exit orchestration
+- 退出等待与退出事件关联
+
+recovery.Service
+----------------
+
+定义位置：``internal/application/recovery/service.go``
+
+职责：
+
+- orphan cleanup
+- sandbox/task reconstruction
+
+Transport 层关键入口
+====================
+
+Shim 启动
+---------
+
+入口：``internal/transport/shimv2/shim_bootstrap.go``
+
+关键步骤：
+
+1. ``bootstrapPlatformBindings()``
+
+   - 返回 ``runtimeEnvironment`` （封装宿主平台探测结果）
+
+2. ``buildContainerDependencies(bindings)``
+3. ``buildRuntimeDependencies(bindings, containerDeps)``
+4. 创建 one-shot 或 daemon shim service
+
+相关代码：
+
+- ``internal/transport/shimv2/platform_bindings.go``
+- ``internal/transport/shimv2/container_dependencies.go``
+- ``internal/transport/shimv2/runtime_dependencies.go``
+
+创建链路
+--------
+
+大致路径：
+
+.. code-block:: text
+
+   Create RPC
+    -> shimv2/create
+    -> buildCreatePlan
+    -> loadRuntimeConfig
+    -> createSandboxContainer / createPodContainer
+    -> oci.ParseContainerCfg / oci.SandboxConfig
+    -> domain/container.CreateSandbox / CreateContainer
+
+代码落点：
+
+- ``internal/transport/shimv2/create_plan.go``
+- ``internal/transport/shimv2/runtime_config_helpers.go``
+- ``internal/transport/shimv2/create_sandbox_runtime.go``
+- ``internal/transport/shimv2/create_pod_runtime.go``
+
+恢复链路
+--------
+
+大致路径：
+
+.. code-block:: text
+
+   shim daemon start
+    -> application/recovery.Service
+    -> shimRecoveryBackend.Restore
+    -> domain/container.LoadSandboxWithDependencies
+    -> StateStore runtime snapshot (runtime.json)
+    -> state.json compatibility fallback
+
+代码落点：
+
+- ``internal/transport/shimv2/recovery_backend.go``
+- ``internal/domain/container/sandbox_loader.go``
+- ``internal/domain/container/state_repository.go``
+- ``internal/domain/container/state_legacy.go``
+
+配置与资源相关接口
+==================
+
+RuntimeConfig
+-------------
+
+定义位置：``internal/adapters/config/oci/runtime_setup.go``
+
+作用：
+
+- 管理 MicRun 运行时默认值
+- 解析 INI / annotations
+- 承载 ``HostProfile``
+
+HostProfile
+-----------
+
+定义位置：``internal/adapters/config/oci/host_profile.go``
+
+作用：
+
+- 显式携带宿主平台画像
+- 供 ``RuntimeConfig`` / ``SandboxConfig`` / 容器配置解析使用
+- 避免 ``oci`` 链路里直接读取 ``pedestal.Host``
+
+ResourcePolicy
+--------------
+
+定义位置：``internal/domain/container/deps.go``
+
+作用：
+
+- 从 ``Dependencies`` 中抽取资源规划和资源校验所需能力
+- 从 ``shimv2`` 显式传到 ``oci`` 配置解析链
+- ``PlanEssentialRes`` 接收 ``*specs.Spec``，资源规划边界不再使用 ``any`` 后做运行时类型断言
+
+依赖注入
+========
+
+所有创建和恢复链路通过显式注入完成：
+
+- ``containerDeps`` （``Dependencies`` 结构体，包含 ``StateStoreFactory``、``GuestExecutorFactory`` 等 9 个必需字段）
+- ``resourcePolicy`` （从 ``Dependencies`` 中提取的资源规划能力子集）
+- ``runtimeResolver`` （运行时配置解析器）
+- ``HostProfile`` （宿主平台画像）
+
+默认 bootstrap 通过 ``pedestal.DetectHost()`` 检测宿主类型，依赖由 ``SandboxConfig.Dependencies`` 显式注入。
 
 相关文档
 ========
