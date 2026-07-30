@@ -162,7 +162,7 @@ config:
 id: k3s
 name: K3s Kubernetes
 prompt: Enable K3s (default k3s-agent)
-machines: [qemu-aarch64, phytiumpi]
+machines: [qemu-aarch64, phytium]
 
 dependencies:
   - containers
@@ -249,7 +249,7 @@ default_one_of: self/baremetal
 id: containers
 name: Container host support
 prompt: Enable container tooling
-machines: [qemu-aarch64, phytiumpi, raspberrypi4-64, x86-64]
+machines: [qemu-aarch64, phytium, raspberrypi4-64, x86-64]
 
 config:
   local_conf:
@@ -417,16 +417,16 @@ now `oebuild generate --list` prints the features tree grouped by category
 
 ```
 │ mcs
-│ - mcs/mcs                              hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
+│ - mcs/mcs                              hi3093, hieulerpi1, kp920, ok3568, phytium, qemu-aarch64,  │
 │                                        raspberrypi4-64, x86-64                                      │
 │  - mcs/mcs/baremetal                     hi3093, hieulerpi1, kp920, ok3568, qemu-aarch64,             │
 │                                        raspberrypi4-64, x86-64                                      │
 │  - mcs/mcs/jailhouse                     hi3093, kp920, ok3568, qemu-aarch64, raspberrypi4-64         │
-│  - mcs/mcs/xen                           phytiumpi, qemu-aarch64                                      │
-│  - mcs/mcs-rtos                         hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
-│   - mcs/mcs-rtos/uniproton              hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
+│  - mcs/mcs/xen                           phytium, qemu-aarch64                                      │
+│  - mcs/mcs-rtos                         hi3093, hieulerpi1, kp920, ok3568, phytium, qemu-aarch64,  │
+│   - mcs/mcs-rtos/uniproton              hi3093, hieulerpi1, kp920, ok3568, phytium, qemu-aarch64,  │
 │                                        raspberrypi4-64, x86-64                                      │
-│   - mcs/mcs-rtos/zephyr                hi3093, hieulerpi1, kp920, ok3568, phytiumpi, qemu-aarch64,  │
+│   - mcs/mcs-rtos/zephyr                hi3093, hieulerpi1, kp920, ok3568, phytium, qemu-aarch64,  │
 │                                        raspberrypi4-64, x86-64                                      │
-│ - mcs/micrun                             phytiumpi, qemu-aarch64  
+│ - mcs/micrun                             phytium, qemu-aarch64  
 ```
