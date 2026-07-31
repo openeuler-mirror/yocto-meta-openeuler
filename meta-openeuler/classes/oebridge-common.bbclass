@@ -3,9 +3,12 @@ def init_base_common(repo_list=None):
     import dnf.base
     import dnf.conf
 
-    base = dnf.Base()
+    # 预先构造 Conf 并设置 releasever，避免 dnf.Base() 在 _setup_default_conf()
+    # 中调用 detect_releasever() 去打开容器宿主 rpmdb（会报 "rpmdb open failed"）
+    conf = dnf.conf.Conf()
+    conf.substitutions['releasever'] = ''
+    base = dnf.Base(conf)
     # disable systemd repo
-    base.conf.substitutions['releasever'] = ''
     base.repos.all().disable()
     base.conf.sslverify = False
     dnf.rpm.transaction.rpm.addMacro('_dbpath', '/var/lib/rpm')
