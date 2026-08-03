@@ -14,23 +14,32 @@ toolchains/
 ├── gcc/                      # GCC 交叉编译链（crosstool-NG 驱动）
 │   ├── configs/              #   7 个架构 + libc 组合的 config_*
 │   ├── patches/             #   OE 专有补丁
-│   ├── prepare.sh           #   下载源码 + 解包 + 应用补丁
-│   ├── update.sh            #   GCC 头文件特性 + config 路径刷新
-│   ├── release.yaml         #   gitee release 元数据
-│   └── README.md            #   GCC 编译链详细文档
+│   ├── prepare.sh            #   下载源码 + 解包 + 应用补丁
+│   ├── update.sh             #   GCC 头文件特性 + config 路径刷新
+│   ├── release.yaml          #   gitee release 元数据
+│   └── README.md             #   GCC 编译链详细文档
 ├── llvm/                    # LLVM 主机工具链
-│   ├── configs/             #   LLVM 仓库名与分支
-│   ├── prepare.sh           #   下载 LLVM 源码
-│   ├── build.sh             #   构建 + GCC 集成 + 打包（包装脚本）
-│   ├── release.yaml         #   gitee release 元数据
-│   └── README.md            #   LLVM 工具链详细文档
-└── clang-musl-arm32/        # Clang+musl ARM32 专用编译链
-    ├── configs/             #   依赖仓和版本配置
-    ├── prepare.sh           #   下载 gcc-musl + llvm-project + musl
-    ├── build-llvm-musl-arm32.sh  #  7 步构建脚本
-    ├── release.yaml         #   gitee release 元数据
-    └── README.md            #   Clang+musl ARM32 详细文档
+│   ├── configs/              #   LLVM 仓库名与分支
+│   ├── prepare.sh            #   下载 LLVM 源码
+│   ├── build.sh              #   构建 + GCC 集成 + 打包（包装脚本）
+│   ├── release.yaml          #   gitee release 元数据
+│   └── README.md             #   LLVM 工具链详细文档
+├── clang-musl-arm32/        # Clang+musl ARM32 专用编译链
+│   ├── configs/              #   依赖仓和版本配置
+│   ├── prepare.sh            #   下载 gcc-musl + llvm-project + musl
+│   ├── build-llvm-musl-arm32.sh  #  7 步构建脚本
+│   ├── release.yaml          #   gitee release 元数据
+│   └── README.md             #   Clang+musl ARM32 详细文档
+├── work/                    # 工作目录（运行时生成，已 gitignore）
+│   └── <choice>/            #   如 gcc-aarch64/，含 open_source/ 源码 + 中间产物
+└── output/                  # 产物目录（运行时生成，已 gitignore）
+    ├── <target-triple>/     #   GCC 系列（如 aarch64-openeuler-linux-gnu/）
+    ├── clang-llvm-17.0.6/   #   LLVM
+    └── llvm-musl-arm/       #   Clang+musl ARM32
 ```
+
+> `work/` 与 `output/` 由 `menu.sh` 运行时创建，已加入 `.gitignore`，
+> 不会提交到仓库。
 
 ## 编译链一览
 
@@ -54,7 +63,8 @@ toolchains/
 自动完成以下操作：
 
 1. 检查 Docker 镜像 `openeuler-sdk:latest` 是否存在，不存在则自动构建；
-2. 将仓库上级目录挂载到容器内同路径（确保容器内外路径一致）；
+2. 将 `MOUNT_ROOT`（仓库上两级目录）挂载到容器内同路径，确保容器内外路径
+   一致（`work/`、`output/` 均在挂载范围内）；
 3. 将容器内 `openeuler` 用户的 UID/GID 调整为与主机一致，避免挂载目录
    权限问题；
 4. 以 `openeuler` 用户身份在容器内执行构建脚本。
@@ -64,11 +74,10 @@ toolchains/
 | 变量 | 默认值 | 说明 |
 | --- | --- | --- |
 | `DOCKER_IMAGE` | `openeuler-sdk:latest` | 容器镜像名 |
+| `MOUNT_ROOT` | 自动检测（`yocto-meta-openeuler/../..`） | 挂载到容器的根目录，覆盖仓库本身及其上级目录 |
 | `OUTPUT_DIR` | `toolchains/output` | 统一产物输出目录 |
 | `WORK_BASE` | `toolchains/work` | 工作目录基址 |
-
-> `MOUNT_ROOT` 自动检测为仓库上级目录（`yocto-meta-openeuler/../..`），
-> 覆盖仓库本身和 `build/` 目录。
+| `CT_PREFIX` | 等于 `OUTPUT_DIR` | ct-ng 安装前缀，控制 GCC 交叉链安装位置（由 menu.sh 自动传入容器） |
 
 ### 交互式菜单
 
@@ -161,11 +170,16 @@ oebuild（`toolchain.py`、`generate.py`）和 CI jenkinsfile 通过这些旧路
 UID 匹配、目录挂载等操作，用户无需手动管理容器。
 
 容器启动流程：
+
 1. 检查镜像是否存在，不存在则从 `.oebuild/dockerfile/openeuler-sdk/Dockerfile`
    自动构建；
-2. 以 root 启动容器，将 `openeuler` 用户的 UID/GID 调整为与主机一致；
-3. 切换到 `openeuler` 用户执行构建脚本；
-4. 通过 `CT_PREFIX` 环境变量将 GCC 交叉链直接安装到产物目录。
+2. 以 root（`--user 0:0`）启动容器，挂载 `MOUNT_ROOT` 到容器内同路径，
+   并通过 `CT_PREFIX` 环境变量指向 `OUTPUT_DIR`；
+3. 容器入口脚本将 `openeuler` 用户的 UID/GID 调整为与主机一致
+   （`usermod -u <HOST_UID> -g <HOST_GID>`）；
+4. 切换到 `openeuler` 用户，在 `work_dir` 下执行构建脚本；
+5. GCC 系列通过 `CT_PREFIX` 直接安装到 `OUTPUT_DIR/<target-triple>/`，
+   LLVM / Clang+musl 构建后将产物复制到 `OUTPUT_DIR/` 对应子目录。
 
 容器内环境：
 
@@ -193,12 +207,12 @@ docker build -t openeuler-sdk:latest .
 ./menu.sh gcc-aarch64 interactive
 ```
 
-或直接启动：
+或直接启动（假设仓库位于 `/path/to/demo/src/yocto-meta-openeuler`）：
 
 ```bash
 docker run -it --rm \
   -v /path/to/demo:/path/to/demo \
-  -e CT_PREFIX=/path/to/demo/build/toolchains \
+  -e CT_PREFIX=/path/to/demo/src/yocto-meta-openeuler/.oebuild/toolchains/output \
   --user 0:0 \
   openeuler-sdk:latest bash
 # 容器内执行 usermod 调整 UID 后切换到 openeuler 用户
