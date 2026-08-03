@@ -26,7 +26,7 @@
 # 环境变量：
 #   DOCKER_IMAGE            容器镜像名（默认 openeuler-sdk:latest）
 #   OUTPUT_DIR              统一产物输出目录（默认 <MOUNT_ROOT>/build/toolchains）
-#   WORK_BASE               工作目录基址（默认 <MOUNT_ROOT>/build）
+#   WORK_BASE               工作目录基址（默认 menu.sh 同级 work/）
 #
 # 详见 .oebuild/toolchains/README.md。
 #
@@ -70,7 +70,8 @@ MOUNT_ROOT="$(cd "${YOCTO_DIR}/../.." && pwd)"
 OUTPUT_DIR="${OUTPUT_DIR:-${MOUNT_ROOT}/build/toolchains}"
 
 # 工作目录基址
-WORK_BASE="${WORK_BASE:-${MOUNT_ROOT}/build}"
+# 默认工作目录基址（menu.sh 所在目录下的 work/）
+WORK_BASE="${WORK_BASE:-${TOOLCHAINS_DIR}/work}"
 
 # ---------------------------------------------------------------------------
 # 公共函数
@@ -108,7 +109,7 @@ openEuler Embedded 编译链统一构建入口
   raw          只打印 docker 命令与构建步骤，不执行
 
 可选 work_dir:
-  构建工作目录，缺省为 ${WORK_BASE}/<choice>-work
+  构建工作目录，缺省为 ${TOOLCHAINS_DIR}/work/<choice>
 
 环境变量:
   DOCKER_IMAGE  容器镜像名（默认 openeuler-sdk:latest）
@@ -342,7 +343,7 @@ run_choice() {
 	local subdir_path="${TOOLCHAINS_DIR}/${subdir}"
 	[ -d "${subdir_path}" ] || die "subdir '${subdir_path}' not found"
 
-	local default_wd="${WORK_BASE}/${choice}-work"
+	local default_wd="${WORK_BASE}/${choice}"
 	local work_dir
 	if [ -n "${work_dir_arg}" ]; then
 		mkdir -p "${work_dir_arg}"

@@ -65,7 +65,7 @@ toolchains/
 | --- | --- | --- |
 | `DOCKER_IMAGE` | `openeuler-sdk:latest` | 容器镜像名 |
 | `OUTPUT_DIR` | `<MOUNT_ROOT>/build/toolchains` | 统一产物输出目录 |
-| `WORK_BASE` | `<MOUNT_ROOT>/build` | 工作目录基址 |
+| `WORK_BASE` | `toolchains/work` | 工作目录基址 |
 
 > `MOUNT_ROOT` 自动检测为仓库上级目录（`yocto-meta-openeuler/../..`），
 > 覆盖仓库本身和 `build/` 目录。
@@ -108,8 +108,9 @@ cd .oebuild/toolchains
 
 ### 产物与工作目录
 
-- **工作目录**：默认 `<WORK_BASE>/<choice>-work`（如 `build/gcc-aarch64-work`），
+- **工作目录**：默认 `toolchains/work/<choice>`（如 `work/gcc-aarch64`），
   包含 `open_source/` 源码和中间构建产物。已准备过的源码会跳过重复下载。
+  可通过 `WORK_BASE` 环境变量或命令行参数覆盖。
 - **产物目录**：统一存放在 `OUTPUT_DIR`（默认 `build/toolchains/`）：
   - GCC 系列：通过 `CT_PREFIX` 环境变量直接安装到 `OUTPUT_DIR/<target-triple>/`
   - LLVM：构建后复制到 `OUTPUT_DIR/clang-llvm-17.0.6/`
