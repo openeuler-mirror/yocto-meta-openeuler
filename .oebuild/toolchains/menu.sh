@@ -25,7 +25,7 @@
 #
 # 环境变量：
 #   DOCKER_IMAGE            容器镜像名（默认 openeuler-sdk:latest）
-#   OUTPUT_DIR              统一产物输出目录（默认 <MOUNT_ROOT>/build/toolchains）
+#   OUTPUT_DIR              统一产物输出目录（默认 menu.sh 同级 output/）
 #   WORK_BASE               工作目录基址（默认 menu.sh 同级 work/）
 #
 # 详见 .oebuild/toolchains/README.md。
@@ -66,8 +66,8 @@ HOST_GID="$(id -g)"
 # MOUNT_ROOT: 挂载到容器中的根目录（repo 上两级，覆盖 repo + build/）
 MOUNT_ROOT="$(cd "${YOCTO_DIR}/../.." && pwd)"
 
-# 统一产物输出目录
-OUTPUT_DIR="${OUTPUT_DIR:-${MOUNT_ROOT}/build/toolchains}"
+# 统一产物输出目录（menu.sh 所在目录下的 output/）
+OUTPUT_DIR="${OUTPUT_DIR:-${TOOLCHAINS_DIR}/output}"
 
 # 工作目录基址
 # 默认工作目录基址（menu.sh 所在目录下的 work/）
