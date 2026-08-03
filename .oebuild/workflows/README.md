@@ -1,6 +1,13 @@
 # workflows简介
 
-workflows承载着整个openEuler Embedded基础设施相关的自动化控制脚本，里面包含有门禁运行脚本、CI运行脚本、CI失败补偿运行脚本、gcc交叉编译链发布脚本、llvm交叉编译链发布脚本以及nativesdk发布脚本，下面将依次介绍各个脚本的作用以及相应工程的承载环境。所有的jenkinsfile运行在jenkins的pipline工程中，由流水线来指定，以下将详细给出如何创建基本的pipline工程。
+workflows承载着整个openEuler Embedded基础设施相关的自动化控制脚本，里面包含有门禁运行脚本、CI运行脚本、CI失败补偿运行脚本、gcc交叉编译链发布脚本、llvm交叉编译链发布脚本、arm32-clang-musl编译链发布脚本以及nativesdk发布脚本，下面将依次介绍各个脚本的作用以及相应工程的承载环境。所有的jenkinsfile运行在jenkins的pipline工程中，由流水线来指定，以下将详细给出如何创建基本的pipline工程。
+
+> 注意：三类编译链脚本现已统一收纳于 `.oebuild/toolchains/` 目录下
+> （`gcc/`、`llvm/`、`clang-musl-arm32/`），并保留了 `cross-tools`、
+> `llvm-toolchain`、`arm32-clang-musl-toolchain` 符号链接指向新目录，
+> 因此以下 jenkinsfile 中引用的旧路径仍然有效。用户也可通过
+> `.oebuild/toolchains/menu.sh` 统一入口选择构建。详见
+> [toolchains/README.md](../toolchains/README.md)。
 
 > 注意：jenkins环境的搭建请自行学习，查找，这里不做细述。
 
@@ -308,3 +315,51 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 | pull_action          | $.action                                    | pr的行为，例如已合入，等待合入等               |
 | pr_title             | pull_request.title                          | pr标题                                         |
 
+
+## jenkinsfile_arm32_clang_musl_release
+
+该脚本应用于arm32 clang+musl toolchain版本发布，类似于门禁工程，需要由外部条件触发，这里的外部条件是在评论区输入"/arm32_clang_musl_release"评论即可触发。arm32_clang_musl_toolchain版本发布stage流程如下：
+
+- check release
+
+  版本检测，arm32-clang-musl的版本发布需要由pr进行控制，并且对pr的格式有一定的要求，这里要求pr的标题一定是"arm32-clang-musl-toolchain版本升级到xxx"，而该stage即为检测此pr是否是版本发布的pr，如果是则将env.is_release置为true，否则置为false，接下来下面所有的stage都是围绕着env.is_release为true来执行。
+
+- download repo
+
+  下载相关代码仓，这里主要是两个，一个是功能函数库"embedded-ci"，另一个是yocto-meta-openeuler源码，这里的源码版本为pr提出时的版本。
+
+- prepare source
+
+  准备源码，这一步执行了prepare.sh脚本，该脚本的作用是下载构建所需的前置依赖（32位gcc+musl交叉编译链、llvm-project源码、musl源码）。
+
+- build toolchain
+
+  执行arm32 clang+musl交叉编译链的编译，调用build-llvm-musl-arm32.sh完成7步构建（LLVM/Clang/LLD、compiler-rt、libunwind、musl等），详细步骤不再细述。
+
+- package toolchain
+
+  对编译产物进行打包，生成llvm-musl-arm.tar.gz。
+
+- release arm32-clang-musl-toolchain
+
+  arm32-clang-musl版本发布，该流程会调用功能函数库中create_release功能来进行二进制版本发布，而版本发布平台为atomgit上openEuler源码仓。
+
+其依赖的外部变量列表如下：
+
+| 变量名               | 变量值/默认值                                 | 说明                                           |
+| -------------------- | --------------------------------------------- | ---------------------------------------------- |
+| embeddedRemote       | https://gitee.com/openeuler/embedded-ci.git   | 运行脚本需要的功能库                           |
+| embeddedBranch       | master                                        | 运行脚本需要的功能库分支名                     |
+| node                 | xxxx                                          | 运行任务的节点名                               |
+| giteeId              | xxxx                                          | 目标分支的管理者ID                             |
+| jenkinsId            | xxxx                                          | jenkins的管理者ID，用于对一些jenkins任务做管理 |
+| giteePullRequestid   | pull_request.number                           | 提交pr的ID号                                   |
+| giteeSourceBranch    | pull_request.head.ref                         | 提交pr的分支名                                 |
+| giteeTargetBranch    | pull_request.base.ref                         | 要合入的目标分支                               |
+| giteeSourceNamespace | pull_request.head.repo.namespace              | 提交pr的namespace                              |
+| giteeTargetNamespace | pull_request.base.repo.namespace              | 要合入的目标namespace                          |
+| giteeCommitter       | pull_request.user.login                       | pr提交者                                       |
+| comment              | comment.body                                  | 评论内容                                       |
+| commitCount          | pull_request.commits                          | 此pr提交的commit数                             |
+| pull_action          | $.action                                      | pr的行为，例如已合入，等待合入等               |
+| pr_title             | pull_request.title                            | pr标题                                         |
