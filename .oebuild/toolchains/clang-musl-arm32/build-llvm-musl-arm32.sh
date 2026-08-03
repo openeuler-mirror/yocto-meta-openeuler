@@ -46,6 +46,18 @@ check_prerequisites() {
     GCC_VERSION=$(ls "${GCC_TOOLCHAIN_DIR}/lib/gcc/${TARGET}/" 2>/dev/null | head -1)
     [ -n "${GCC_VERSION}" ] || error "无法确定GCC版本"
     info "GCC版本: ${GCC_VERSION}"
+
+    # 选择主机编译器：Clang/LLVM 19 要求 GCC >= 7.4
+    # 统一构建容器中 gcc-12 可用，优先使用；否则回退到系统默认 gcc
+    if command -v gcc-12 >/dev/null 2>&1; then
+        export CC=gcc-12
+        export CXX=g++-12
+        info "主机编译器: gcc-12 ($(gcc-12 -dumpversion))"
+    else
+        export CC="${CC:-gcc}"
+        export CXX="${CXX:-g++}"
+        warn "gcc-12 未找到，使用默认: $(gcc -dumpversion)"
+    fi
 }
 
 copy_and_patch_sources() {
