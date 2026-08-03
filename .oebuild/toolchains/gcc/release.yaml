@@ -1,0 +1,27 @@
+tag_name: toolchains-v0.1.9
+name: openEuler Embedded Toolchains V0.1.9
+body: 1.此发行版为对应 toolchains V0.1.9 版本，由 .oebuild/cross-tools 下的
+        config_<arch> + crosstool-NG 1.26.0 构建。
+      2.本发行版共发布 5 条 gcc 交叉编译链，对应文件名如下：
+          openeuler_gcc_arm64le.tar.gz        （aarch64 + glibc 2.38 + gcc 12.3.0）
+          openeuler_gcc_arm32le.tar.gz        （arm32   + glibc 2.38 + gcc 12.3.0）
+          openeuler_gcc_x86_64.tar.gz         （x86_64  + glibc 2.38 + gcc 12.3.0）
+          openeuler_gcc_riscv64.tar.gz        （riscv64 + glibc 2.38 + gcc 12.3.0）
+          openeuler_gcc_arm32le-musl.tar.gz   （arm32   + musl 1.2.4 + gcc 12.3.0）
+      3.仓库内同时保留 aarch64-musl、riscv64-musl 两套 config，供社区按需
+        自行构建，本发行版不在 CI 流水线中产出对应产物。其中 aarch64-musl
+        仍停留在 gcc 10.3.0 / crosstool-NG 1.25.0 旧栈，如需使用请参照
+        .oebuild/cross-tools/README.md 中的说明。
+      4.请下载所有 .tar.gz 结尾的压缩包及 merge_data.sh 文件，给
+        merge_data.sh 加可执行权限后执行，即可还原得到对应工具链目录。
+      5.相对 V0.1.8 的变化：
+          - 各 config 的 CT_*_VERSION / CT_*_CUSTOM_LOCATION 与
+            configs/config.xml 完成对齐，避免跳过 update.sh 直接构建时
+            因路径版本不一致而失败；
+          - config_arm32-musl 路径统一为 ${OPENSOURCE_DIR} 变量，并将
+            musl 源切换到 SRC_CUSTOM，与其它 musl 配置保持一致；
+          - prepare.sh / update.sh 健壮性增强（不再依赖调用方当前工作
+            目录、update_feature 幂等、变量加引号、补丁按行读取等）。
+target_commitish: master
+owner: openeuler
+repo: yocto-meta-openeuler
