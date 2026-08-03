@@ -417,6 +417,7 @@ ct-ng build
 
 echo ""
 echo "GCC build done. 产物位于: \${CT_PREFIX}/"
+chmod -R u+w "\${CT_PREFIX}/" 2>/dev/null || true
 ls -la "\${CT_PREFIX}/" 2>/dev/null || true
 BUILD
 			chmod +x "${build_script}"
