@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>构建Ascend加速的FFmpeg使用指导 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/js/mermaid.min.js"></script>
+        <script src="../../_static/js/mermaid-run.js"></script>
+        <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="混合关键性部署 (MICA)" href="../mica/index.html" />
+    <link rel="prev" title="构建Mindspore Lite使用指导" href="mindspore_lite.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../system/index.html">系统基础</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../embodied_ai/index.html">具身智能 (Embodied AI)</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">嵌入式AI</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="armnn.html">ArmNN的支持</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mindspore_lite.html">构建Mindspore Lite使用指导</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">构建Ascend加速的FFmpeg使用指导</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="#id1">简介</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id2">资源准备</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#ffmpeg">1. FFmpeg 源码</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#ascend">2. ascend 补丁</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#cann-toolkit">3. CANN toolkit</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="#id3">第 1 步：准备构建环境</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#id4">1. 拉取镜像并以守护态启动容器</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#chroot">2. 在 chroot 内执行命令</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id5">3. 验证 chroot 环境</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="#cann-runtime-stub">第 2 步：提取 CANN runtime（stub 库）</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#cann">1. 准备 CANN 安装包</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#var-log">2. 修复 /var/log 符号链接</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id6">3. 第一层提取</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#cann-runtime">4. 第二层提取（CANN-runtime）</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id7">5. 确认产物</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="#id8">第 3 步：应用补丁</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#id9">1. 解压 FFmpeg 源码</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id10">2. 应用 ascend 补丁</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="#id11">第 4 步：配置与编译</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#id12">1. 配置</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id13">2. 编译与安装</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id14">3. 验证构建产物</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="#rpm">第 5 步：打包为 RPM（可选）</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#staging">1. 准备 staging 树</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#rpmbuild">2. 在宿主层用 rpmbuild 打包</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="#id15">第 6 步：真机部署与运行验证</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="#id16">1. 安装 RPM</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id17">2. 验证编解码器注册</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id18">3. 转码验证</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="#id19">注意事项</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id20">参考链接</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="index.html">嵌入式AI</a></li>
+      <li class="breadcrumb-item active">构建Ascend加速的FFmpeg使用指导</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ascendffmpeg">
+<span id="ascend-ffmpeg"></span><h1>构建Ascend加速的FFmpeg使用指导<a class="headerlink" href="#ascendffmpeg" title="Permalink to this heading"></a></h1>
+<p>本章主要介绍如何在 openEuler Embedded 构建环境中，为 FFmpeg 6.1.1 增加 Ascend NPU 硬件加速能力（H.264/H.265 编解码），以及如何打包部署到 Orange Pi AI Pro 等带 Ascend NPU 的真机上进行验证。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>在构建前，请确保构建主机满足以下条件：</p>
+<ul class="simple">
+<li><p>至少有 <strong>8G</strong> 内存（交叉编译 FFmpeg 较耗内存）。</p></li>
+<li><p>建议有 <strong>100G</strong> 以上存储（CANN 安装包、源码、构建产物合计较大）。</p></li>
+<li><p>已安装 Docker，并具备拉取构建镜像的网络条件。</p></li>
+<li><p>目标真机已安装 Ascend NPU 驱动与 CANN runtime（用于最终转码验证）。</p></li>
+</ul>
+</div>
+<section id="id1">
+<h2>简介<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<p>FFmpeg 是一套开源的多媒体处理库与工具集，广泛用于音视频编解码、转码、流媒体处理。openEuler Embedded 默认携带 FFmpeg 6.1.1，但未启用 NPU 加速。</p>
+<p>Ascend NPU（如 Orange Pi AI Pro 20T 搭载的 Atlas 200I A2 / Ascend 310B）通过 CANN（Compute Architecture for Neural Networks）的 DVPP/HiMpi 接口提供硬件视频编解码能力。华为针对 FFmpeg 4.4.2 提供了一套 ascend 补丁（<code class="docutils literal notranslate"><span class="pre">addfile</span></code>），新增了 <code class="docutils literal notranslate"><span class="pre">h264_ascend</span></code> / <code class="docutils literal notranslate"><span class="pre">h265_ascend</span></code> 编解码器与 <code class="docutils literal notranslate"><span class="pre">ascend</span></code> hwaccel。</p>
+<p>由于 openEuler Embedded 使用 FFmpeg 6.1.1，编解码器结构（<code class="docutils literal notranslate"><span class="pre">AVCodec</span></code> → <code class="docutils literal notranslate"><span class="pre">FFCodec</span></code>）、AVFifo API、配置宏分离（<code class="docutils literal notranslate"><span class="pre">config_components.h</span></code>）等均有变化，不能直接使用 4.4.2 补丁。本文档对应的 <code class="docutils literal notranslate"><span class="pre">ffmpeg-6.1.1-ascend.patch</span></code> 已完成 4.4.2 → 6.1.1 的适配，可直接应用。</p>
+<p><strong>特性概览：</strong></p>
+<blockquote>
+<div><ul class="simple">
+<li><p>新增 <code class="docutils literal notranslate"><span class="pre">h264_ascend</span></code> / <code class="docutils literal notranslate"><span class="pre">h265_ascend</span></code> 编码器与解码器</p></li>
+<li><p>新增 <code class="docutils literal notranslate"><span class="pre">ascend</span></code> 硬件加速方法（<code class="docutils literal notranslate"><span class="pre">-hwaccel</span> <span class="pre">ascend</span></code>）</p></li>
+<li><p>通过 CANN stub 库完成离线链接，运行时由真机 CANN runtime 提供真实实现</p></li>
+</ul>
+</div></blockquote>
+<p><strong>预编译 RPM（可直接下载使用）</strong></p>
+<p>如果不想自行编译，可直接下载已构建好的预编译 RPM 包，跳过第 1~5 步，按 <code class="docutils literal notranslate"><span class="pre">第</span> <span class="pre">6</span> <span class="pre">步：真机部署与运行验证</span></code> 进行安装与验证：</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>下载地址：<a class="reference external" href="https://ug.link/oee-nas-server/filemgr/share-download/?id=07f089745f7e4e60b5e96080bd9a9dd1">https://ug.link/oee-nas-server/filemgr/share-download/?id=07f089745f7e4e60b5e96080bd9a9dd1</a></p></li>
+</ul>
+</div></blockquote>
+<p>下载得到 <code class="docutils literal notranslate"><span class="pre">ffmpeg-ascend-6.1.1-1.ascend.aarch64.rpm</span></code>，安装到 <code class="docutils literal notranslate"><span class="pre">/usr/local/ffmpeg-ascend</span></code>，含 <code class="docutils literal notranslate"><span class="pre">/usr/bin/ffmpeg-ascend</span></code> 自动探测 CANN 路径的 wrapper。真机需先就绪 CANN runtime（提供 <code class="docutils literal notranslate"><span class="pre">libacl_dvpp_mpi.so</span></code> / <code class="docutils literal notranslate"><span class="pre">libascendcl.so</span></code>）。</p>
+</section>
+<section id="id2">
+<h2>资源准备<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>构建需要三类资源：FFmpeg 源码、ascend 补丁、CANN toolkit。</p>
+<section id="ffmpeg">
+<h3>1. FFmpeg 源码<a class="headerlink" href="#ffmpeg" title="Permalink to this heading"></a></h3>
+<p>FFmpeg 源码信息以 <code class="docutils literal notranslate"><span class="pre">yocto-meta-openeuler</span></code> 仓库的 <code class="docutils literal notranslate"><span class="pre">.oebuild/manifest.yaml</span></code> 为准：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">ffmpeg</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">remote_url</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://atomgit.com/src-openeuler/ffmpeg.git</span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">f8154f398b1e593446792f5dfd091f57e4789de6</span>
+</pre></div>
+</div>
+<p>获取方式：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://atomgit.com/src-openeuler/ffmpeg.git
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>ffmpeg
+$<span class="w"> </span>git<span class="w"> </span>checkout<span class="w"> </span>f8154f398b1e593446792f5dfd091f57e4789de6
+</pre></div>
+</div>
+<p>该仓库内含上游 <code class="docutils literal notranslate"><span class="pre">ffmpeg-6.1.1.tar.xz</span></code> 源码包与 openEuler 打包所用的 <code class="docutils literal notranslate"><span class="pre">ffmpeg.spec</span></code>。</p>
+</section>
+<section id="ascend">
+<h3>2. ascend 补丁<a class="headerlink" href="#ascend" title="Permalink to this heading"></a></h3>
+<p>已适配 6.1.1 的补丁从以下链接获取（包含 6 个新增文件与 8 个现有文件修改）：</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://ug.link/oee-nas-server/filemgr/share-download/?id=4c311b2ab3084cf594c267fb1f56d3ab">https://ug.link/oee-nas-server/filemgr/share-download/?id=4c311b2ab3084cf594c267fb1f56d3ab</a></p></li>
+</ul>
+</div></blockquote>
+<p>下载后得到 <code class="docutils literal notranslate"><span class="pre">ffmpeg-6.1.1-ascend.patch</span></code>。</p>
+</section>
+<section id="cann-toolkit">
+<h3>3. CANN toolkit<a class="headerlink" href="#cann-toolkit" title="Permalink to this heading"></a></h3>
+<p>CANN 7.0.0 toolkit 用于链接（实际转码依赖真机上的 CANN runtime）。下载地址：</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://ug.link/oee-nas-server/filemgr/share-download/?id=a63fe76f6be741aa9e96774d575439de">https://ug.link/oee-nas-server/filemgr/share-download/?id=a63fe76f6be741aa9e96774d575439de</a></p></li>
+</ul>
+</div></blockquote>
+<p>下载后得到 <code class="docutils literal notranslate"><span class="pre">Ascend-cann-toolkit_7.0.0_linux-aarch64.run</span></code>。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>CANN toolkit 安装器对 python 版本与运行环境有要求，且其真实库（<code class="docutils literal notranslate"><span class="pre">libacl_dvpp_mpi.so</span></code>）会传递依赖 NPU 驱动符号，无法在无 NPU 的构建主机上直接链接。因此本文档**不运行完整安装器**，而是从中**提取 stub 库**用于离线链接（见后文）。</p>
+</div>
+</section>
+</section>
+<section id="id3">
+<h2>第 1 步：准备构建环境<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<p>构建在一个基于 Docker 的 aarch64 模拟环境内进行（x86 宿主 + qemu 用户态模拟）。推荐使用 openEuler Embedded 提供的 <code class="docutils literal notranslate"><span class="pre">openeuler-ibrobot-dev</span></code> 镜像。</p>
+<section id="id4">
+<h3>1. 拉取镜像并以守护态启动容器<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nv">IMAGE</span><span class="o">=</span>swr.cn-north-4.myhuaweicloud.com/openeuler-embedded-2/openeuler-ibrobot-dev:latest
+$<span class="w"> </span>docker<span class="w"> </span>pull<span class="w"> </span><span class="nv">$IMAGE</span>
+$<span class="w"> </span>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>ascend-build<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-v<span class="w"> </span>&lt;work_dir&gt;:/root/openeuler_rootfs/work<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--entrypoint<span class="w"> </span>/bin/bash<span class="w"> </span><span class="nv">$IMAGE</span><span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;sleep infinity&#39;</span>
+</pre></div>
+</div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">&lt;work_dir&gt;</span></code> 是主机上的工作目录，需放置源码、补丁、CANN 安装包。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>容器入口脚本会自动 <code class="docutils literal notranslate"><span class="pre">chroot</span></code> 进入 <code class="docutils literal notranslate"><span class="pre">/root/openeuler_rootfs``（aarch64</span> <span class="pre">rootfs），依赖宿主</span> <span class="pre">``binfmt_misc</span></code> + <code class="docutils literal notranslate"><span class="pre">qemu-aarch64-static</span></code> 运行 aarch64 二进制。</p></li>
+<li><p>因此挂载点必须落在 <code class="docutils literal notranslate"><span class="pre">/root/openeuler_rootfs</span></code> 之下（如上例的 <code class="docutils literal notranslate"><span class="pre">/root/openeuler_rootfs/work</span></code>），chroot 内才能看到挂载内容。</p></li>
+</ul>
+</div>
+</section>
+<section id="chroot">
+<h3>2. 在 chroot 内执行命令<a class="headerlink" href="#chroot" title="Permalink to this heading"></a></h3>
+<p>容器内不能直接 <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span> <span class="pre">-it</span> <span class="pre">xxx</span> <span class="pre">bash</span></code> 进入，应使用以下形式在 aarch64 rootfs 中执行命令：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>ascend-build<span class="w"> </span>/usr/sbin/chroot<span class="w"> </span>/root/openeuler_rootfs<span class="w"> </span>/bin/bash.bash<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;&lt;command&gt;&#39;</span>
+</pre></div>
+</div>
+<p>注意 rootfs 内 shell 为 <code class="docutils literal notranslate"><span class="pre">/bin/bash.bash</span></code>。下文为简洁，统一用 <code class="docutils literal notranslate"><span class="pre">chroot-run</span></code> 代指该执行形式。</p>
+</section>
+<section id="id5">
+<h3>3. 验证 chroot 环境<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>ascend-build<span class="w"> </span>/usr/sbin/chroot<span class="w"> </span>/root/openeuler_rootfs<span class="w"> </span>/bin/bash.bash<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;uname -m; gcc --version | head -1&#39;</span>
+</pre></div>
+</div>
+<p>期望输出 <code class="docutils literal notranslate"><span class="pre">aarch64</span></code> 与 gcc 12.x。chroot 内已具备 gcc、make、automake、autoconf、libtool、pkg-config、patch、python3 等构建工具。</p>
+</section>
+</section>
+<section id="cann-runtime-stub">
+<h2>第 2 步：提取 CANN runtime（stub 库）<a class="headerlink" href="#cann-runtime-stub" title="Permalink to this heading"></a></h2>
+<p>CANN 安装器无法直接跑，需要手动提取出 <code class="docutils literal notranslate"><span class="pre">include</span></code> 头文件与 <code class="docutils literal notranslate"><span class="pre">lib64/stub</span></code> 链接库。</p>
+<section id="cann">
+<h3>1. 准备 CANN 安装包<a class="headerlink" href="#cann" title="Permalink to this heading"></a></h3>
+<p>将 <code class="docutils literal notranslate"><span class="pre">Ascend-cann-toolkit_7.0.0_linux-aarch64.run</span></code> 放入工作目录（chroot 内路径为 <code class="docutils literal notranslate"><span class="pre">/work</span></code>）：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>ascend-build<span class="w"> </span>/usr/sbin/chroot<span class="w"> </span>/root/openeuler_rootfs<span class="w"> </span>/bin/bash.bash<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s1">&#39;chmod +x /work/Ascend-cann-toolkit_7.0.0_linux-aarch64.run&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="var-log">
+<h3>2. 修复 /var/log 符号链接<a class="headerlink" href="#var-log" title="Permalink to this heading"></a></h3>
+<p>rootfs 中 <code class="docutils literal notranslate"><span class="pre">/var/log</span></code> 是指向 <code class="docutils literal notranslate"><span class="pre">volatile/log</span></code> 的符号链接，目标目录不存在会导致提取脚本失败：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>ascend-build<span class="w"> </span>/usr/sbin/chroot<span class="w"> </span>/root/openeuler_rootfs<span class="w"> </span>/bin/bash.bash<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s1">&#39;mkdir -p /var/volatile/log&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h3>3. 第一层提取<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>ascend-build<span class="w"> </span>/usr/sbin/chroot<span class="w"> </span>/root/openeuler_rootfs<span class="w"> </span>/bin/bash.bash<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s1">&#39;cd /work &amp;&amp; ./Ascend-cann-toolkit_7.0.0_linux-aarch64.run --extract=/work/cann_extract&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="cann-runtime">
+<h3>4. 第二层提取（CANN-runtime）<a class="headerlink" href="#cann-runtime" title="Permalink to this heading"></a></h3>
+<p>第一层产物中包含若干内层 <code class="docutils literal notranslate"><span class="pre">.run</span></code> 包，其中 <code class="docutils literal notranslate"><span class="pre">CANN-runtime</span></code> 含我们需要的 ACL 头文件与 stub 库：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>ascend-build<span class="w"> </span>/usr/sbin/chroot<span class="w"> </span>/root/openeuler_rootfs<span class="w"> </span>/bin/bash.bash<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s1">&#39;cd /work/cann_extract &amp;&amp; ls *.run&#39;</span>
+<span class="c1"># 找到类似 Ascend-cann-runtime_7.0.0_linux-aarch64.run 的包</span>
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>ascend-build<span class="w"> </span>/usr/sbin/chroot<span class="w"> </span>/root/openeuler_rootfs<span class="w"> </span>/bin/bash.bash<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s1">&#39;cd /work/cann_extract &amp;&amp; ./Ascend-cann-runtime_7.0.0_linux-aarch64.run --extract=/work/rt_extract&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h3>5. 确认产物<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<p>提取后关键路径如下：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/work/rt_extract/runtime/
+├── include/
+│   └── acl/
+│       ├── acl.h
+│       ├── acl/ops/acl_dvpp.h
+│       └── acl/dvpp/hi_*.h        # hi_mpi_* 接口头文件
+└── lib64/
+    └── stub/
+        └── aarch64/
+            ├── libacl_dvpp_mpi.so  # DVPP stub（仅导出 hi_mpi_* 符号）
+            └── libascendcl.so      # AscendCL stub
+</pre></div>
+</div>
+<p>这些 stub 库仅依赖系统库、不含 NPU 驱动符号，专用于离线/交叉链接；真实实现由真机上的 CANN runtime 提供。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>一定要使用 <code class="docutils literal notranslate"><span class="pre">lib64/stub/aarch64</span></code> 下的 stub 库，而**不是** <code class="docutils literal notranslate"><span class="pre">lib64</span></code> 顶层真实库。真实库会传递依赖 <code class="docutils literal notranslate"><span class="pre">libruntime.so</span></code> → <code class="docutils literal notranslate"><span class="pre">drv_*/hal_*</span></code> 等 NPU 驱动符号，在无驱动的构建主机上链接会失败。</p>
+</div>
+</section>
+</section>
+<section id="id8">
+<h2>第 3 步：应用补丁<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
+<section id="id9">
+<h3>1. 解压 FFmpeg 源码<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>ascend-build<span class="w"> </span>/usr/sbin/chroot<span class="w"> </span>/root/openeuler_rootfs<span class="w"> </span>/bin/bash.bash<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s1">&#39;cd /work &amp;&amp; tar xf /work/ffmpeg/ffmpeg-6.1.1.tar.xz&#39;</span>
+</pre></div>
+</div>
+<p>得到 <code class="docutils literal notranslate"><span class="pre">/work/ffmpeg-6.1.1/</span></code> 源码树。</p>
+</section>
+<section id="id10">
+<h3>2. 应用 ascend 补丁<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<p>将下载的补丁放入工作目录后应用：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>ascend-build<span class="w"> </span>/usr/sbin/chroot<span class="w"> </span>/root/openeuler_rootfs<span class="w"> </span>/bin/bash.bash<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s1">&#39;cd /work/ffmpeg-6.1.1 &amp;&amp; patch -p1 &lt; /work/ffmpeg-6.1.1-ascend.patch&#39;</span>
+</pre></div>
+</div>
+<p>预期输出 14 个 <code class="docutils literal notranslate"><span class="pre">patching</span> <span class="pre">file</span> <span class="pre">...</span></code>，无 <code class="docutils literal notranslate"><span class="pre">FAILED</span></code>。补丁涵盖：</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>新增 6 个文件</strong>：<code class="docutils literal notranslate"><span class="pre">libavcodec/ascend_enc.{c,h}</span></code>、<code class="docutils literal notranslate"><span class="pre">libavcodec/ascend_dec.{c,h}</span></code>、<code class="docutils literal notranslate"><span class="pre">libavutil/hwcontext_ascend.{c,h}</span></code></p></li>
+<li><p><strong>修改 8 个现有文件</strong>：<code class="docutils literal notranslate"><span class="pre">libavutil/{pixfmt.h,</span> <span class="pre">pixdesc.c,</span> <span class="pre">hwcontext.h,</span> <span class="pre">hwcontext_internal.h,</span> <span class="pre">hwcontext.c,</span> <span class="pre">Makefile}</span></code>、<code class="docutils literal notranslate"><span class="pre">libavcodec/{allcodecs.c,</span> <span class="pre">Makefile}</span></code></p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="id11">
+<h2>第 4 步：配置与编译<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h2>
+<section id="id12">
+<h3>1. 配置<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>ascend-build<span class="w"> </span>/usr/sbin/chroot<span class="w"> </span>/root/openeuler_rootfs<span class="w"> </span>/bin/bash.bash<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s1">&#39;cd /work/ffmpeg-6.1.1 &amp;&amp; \</span>
+<span class="s1">     export LD_LIBRARY_PATH=/work/rt_extract/runtime/lib64/stub/aarch64:$LD_LIBRARY_PATH &amp;&amp; \</span>
+<span class="s1">     ./configure \</span>
+<span class="s1">       --prefix=/usr/local/ffmpeg-ascend \</span>
+<span class="s1">       --enable-shared \</span>
+<span class="s1">       --extra-cflags=&quot;-I/work/rt_extract/runtime/include&quot; \</span>
+<span class="s1">       --extra-ldflags=&quot;-L/work/rt_extract/runtime/lib64/stub/aarch64&quot; \</span>
+<span class="s1">       --extra-libs=&quot;-lacl_dvpp_mpi -lascendcl&quot; \</span>
+<span class="s1">       --enable-decoder=h264_ascend \</span>
+<span class="s1">       --enable-decoder=h265_ascend \</span>
+<span class="s1">       --enable-encoder=h264_ascend \</span>
+<span class="s1">       --enable-encoder=h265_ascend&#39;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p><strong>不修改 ``configure`` 脚本</strong>。ascend 编解码器通过 <code class="docutils literal notranslate"><span class="pre">allcodecs.c</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">extern</span> <span class="pre">const</span> <span class="pre">FFCodec</span></code> 声明被自动探测，<code class="docutils literal notranslate"><span class="pre">configure</span></code> 据此生成 <code class="docutils literal notranslate"><span class="pre">CONFIG_H264_ASCEND_*</span></code> 宏，使用标准 <code class="docutils literal notranslate"><span class="pre">--enable-decoder/encoder</span></code> 即可启用。</p></li>
+<li><p>安装前缀用 <code class="docutils literal notranslate"><span class="pre">/usr/local/ffmpeg-ascend</span></code>，避免覆盖系统 <code class="docutils literal notranslate"><span class="pre">/usr</span></code> 下的 FFmpeg 6.1.1。</p></li>
+</ul>
+</div>
+</section>
+<section id="id13">
+<h3>2. 编译与安装<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>ascend-build<span class="w"> </span>/usr/sbin/chroot<span class="w"> </span>/root/openeuler_rootfs<span class="w"> </span>/bin/bash.bash<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s1">&#39;cd /work/ffmpeg-6.1.1 &amp;&amp; \</span>
+<span class="s1">     export LD_LIBRARY_PATH=/work/rt_extract/runtime/lib64/stub/aarch64:$LD_LIBRARY_PATH &amp;&amp; \</span>
+<span class="s1">     make -j$(nproc) &amp;&amp; make install&#39;</span>
+</pre></div>
+</div>
+<p>由于 chroot 走 qemu 模拟，完整编译耗时较长（约 15~30 分钟，取决于宿主性能）。</p>
+</section>
+<section id="id14">
+<h3>3. 验证构建产物<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>ascend-build<span class="w"> </span>/usr/sbin/chroot<span class="w"> </span>/root/openeuler_rootfs<span class="w"> </span>/bin/bash.bash<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s1">&#39;export LD_LIBRARY_PATH=/usr/local/ffmpeg-ascend/lib:/work/rt_extract/runtime/lib64/stub/aarch64:$LD_LIBRARY_PATH &amp;&amp; \</span>
+<span class="s1">     /usr/local/ffmpeg-ascend/bin/ffmpeg -hwaccels 2&gt;/dev/null | grep ascend &amp;&amp; \</span>
+<span class="s1">     /usr/local/ffmpeg-ascend/bin/ffmpeg -hide_banner -encoders 2&gt;/dev/null | grep ascend &amp;&amp; \</span>
+<span class="s1">     /usr/local/ffmpeg-ascend/bin/ffmpeg -hide_banner -decoders 2&gt;/dev/null | grep ascend&#39;</span>
+</pre></div>
+</div>
+<p>期望输出：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ascend
+ V..... h264_ascend          Ascend HiMpi H264 encoder (codec h264)
+ V..... h265_ascend          Ascend HiMpi H265 encoder (codec hevc)
+ V..... h264_ascend          Ascend HiMpi H264 decoder (codec h264)
+ V..... h265_ascend          Ascend HiMpi H265 decoder (codec hevc)
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>运行时必须将 stub 库目录加入 <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code>，否则 <code class="docutils literal notranslate"><span class="pre">libavcodec.so</span></code> 因找不到 <code class="docutils literal notranslate"><span class="pre">libacl_dvpp_mpi.so</span></code> 无法加载。真机上替换为真实 CANN 库路径即可。</p>
+</div>
+</section>
+</section>
+<section id="rpm">
+<h2>第 5 步：打包为 RPM（可选）<a class="headerlink" href="#rpm" title="Permalink to this heading"></a></h2>
+<p>为便于部署到真机，可基于构建产物打一个 aarch64 RPM。</p>
+<section id="staging">
+<h3>1. 准备 staging 树<a class="headerlink" href="#staging" title="Permalink to this heading"></a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>ascend-build<span class="w"> </span>/usr/sbin/chroot<span class="w"> </span>/root/openeuler_rootfs<span class="w"> </span>/bin/bash.bash<span class="w"> </span>-c<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span><span class="s1">&#39;mkdir -p /work/staging/usr/local &amp;&amp; \</span>
+<span class="s1">     cp -a /usr/local/ffmpeg-ascend /work/staging/usr/local/ &amp;&amp; \</span>
+<span class="s1">     cd /work/staging &amp;&amp; tar czf /work/staging.tar.gz .&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="rpmbuild">
+<h3>2. 在宿主层用 rpmbuild 打包<a class="headerlink" href="#rpmbuild" title="Permalink to this heading"></a></h3>
+<p>chroot 内无 <code class="docutils literal notranslate"><span class="pre">rpmbuild</span></code>，需在宿主层（x86）打包。准备精简 spec：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Name:           ffmpeg-ascend
+Version:        6.1.1
+Release:        1.ascend%{?dist}
+Summary:        FFmpeg 6.1.1 with Ascend NPU hardware acceleration
+License:        LGPLv2.1+
+Source0:        %{name}-%{version}-staging.tar.gz
+
+# 禁用 strip（x86 strip 无法处理 aarch64 ELF）
+%global __strip /bin/true
+%global __objdump /bin/true
+# CANN 库由真机提供，不写入自动 Requires
+%global __requires_exclude ^libacl_dvpp_mpi\\.so.*|^libascendcl\\.so.*
+
+%description
+FFmpeg with Ascend hardware-accelerated H.264/H.265 encoders/decoders.
+
+%prep
+%build
+
+%install
+rm -rf %{buildroot}
+mkdir -p %{buildroot}
+tar xzf %{SOURCE0} -C %{buildroot}
+mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d
+echo &quot;/usr/local/ffmpeg-ascend/lib&quot; &gt; %{buildroot}%{_sysconfdir}/ld.so.conf.d/ffmpeg-ascend.conf
+mkdir -p %{buildroot}%{_bindir}
+cat &gt; %{buildroot}%{_bindir}/ffmpeg-ascend &lt;&lt;&#39;EOF&#39;
+#!/bin/bash
+FFMPEG_LIB=/usr/local/ffmpeg-ascend/lib
+for p in /usr/local/Ascend/ascend-toolkit/latest/aarch64/lib64 \
+         /usr/local/Ascend/driver/lib64; do
+    [ -d &quot;$p&quot; ] &amp;&amp; EXTRA=&quot;$EXTRA:$p&quot;
+done
+export LD_LIBRARY_PATH=&quot;$FFMPEG_LIB$EXTRA${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}&quot;
+exec /usr/local/ffmpeg-ascend/bin/ffmpeg &quot;$@&quot;
+EOF
+chmod 0755 %{buildroot}%{_bindir}/ffmpeg-ascend
+
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
+%files
+%dir /usr/local/ffmpeg-ascend
+/usr/local/ffmpeg-ascend/bin
+/usr/local/ffmpeg-ascend/lib
+/usr/local/ffmpeg-ascend/include
+/usr/local/ffmpeg-ascend/share
+%config(noreplace) %{_sysconfdir}/ld.so.conf.d/ffmpeg-ascend.conf
+%{_bindir}/ffmpeg-ascend
+</pre></div>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>~/rpmbuild/<span class="o">{</span>BUILD,RPMS,SOURCES,SPECS<span class="o">}</span>
+$<span class="w"> </span>cp<span class="w"> </span>&lt;work_dir&gt;/staging.tar.gz<span class="w"> </span>~/rpmbuild/SOURCES/ffmpeg-ascend-6.1.1-staging.tar.gz
+$<span class="w"> </span>cp<span class="w"> </span>ffmpeg-ascend.spec<span class="w"> </span>~/rpmbuild/SPECS/
+$<span class="w"> </span>rpmbuild<span class="w"> </span>--target<span class="w"> </span>aarch64<span class="w"> </span>-bb<span class="w"> </span>~/rpmbuild/SPECS/ffmpeg-ascend.spec
+</pre></div>
+</div>
+<p>产物为 <code class="docutils literal notranslate"><span class="pre">~/rpmbuild/RPMS/aarch64/ffmpeg-ascend-6.1.1-1.ascend.aarch64.rpm</span></code>。spec 通过 <code class="docutils literal notranslate"><span class="pre">--target</span> <span class="pre">aarch64</span></code> 设定包架构（不要在 spec 内硬编码 <code class="docutils literal notranslate"><span class="pre">BuildArch</span></code>，否则会触发宿主架构兼容性检查失败）。</p>
+</section>
+</section>
+<section id="id15">
+<h2>第 6 步：真机部署与运行验证<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h2>
+<section id="id16">
+<h3>1. 安装 RPM<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h3>
+<p>将 RPM 传到真机后安装：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># rpm -ivh ffmpeg-ascend-6.1.1-1.ascend.aarch64.rpm</span>
+</pre></div>
+</div>
+<p>若提示缺少 <code class="docutils literal notranslate"><span class="pre">libSDL2</span></code> / <code class="docutils literal notranslate"><span class="pre">libxcb``（ffplay/avdevice</span> <span class="pre">依赖，与转码验证无关），加</span> <span class="pre">``--nodeps</span></code> 即可。</p>
+</section>
+<section id="id17">
+<h3>2. 验证编解码器注册<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ffmpeg-ascend<span class="w"> </span>-hwaccels<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>ascend
+$<span class="w"> </span>ffmpeg-ascend<span class="w"> </span>-encoders<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>ascend
+$<span class="w"> </span>ffmpeg-ascend<span class="w"> </span>-decoders<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>ascend
+</pre></div>
+</div>
+<p>wrapper <code class="docutils literal notranslate"><span class="pre">/usr/bin/ffmpeg-ascend</span></code> 会自动探测 CANN runtime 库路径（<code class="docutils literal notranslate"><span class="pre">/usr/local/Ascend/ascend-toolkit/latest/aarch64/lib64</span></code> 等）并设置 <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code>，无需手动配置。</p>
+</section>
+<section id="id18">
+<h3>3. 转码验证<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ffmpeg-ascend<span class="w"> </span>-hwaccel<span class="w"> </span>ascend<span class="w"> </span>-i<span class="w"> </span>input.mp4<span class="w"> </span>-c:v<span class="w"> </span>h264_ascend<span class="w"> </span>output.h264
+</pre></div>
+</div>
+<p>若 CANN runtime 装在非默认路径，需手动 <code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">LD_LIBRARY_PATH</span></code> 指向真实库目录后再运行。</p>
+</section>
+</section>
+<section id="id19">
+<h2>注意事项<a class="headerlink" href="#id19" title="Permalink to this heading"></a></h2>
+<ol class="arabic">
+<li><p><strong>stub 库与真实库的区别</strong></p>
+<ul class="simple">
+<li><p>构建链接用 stub 库（<code class="docutils literal notranslate"><span class="pre">lib64/stub/aarch64</span></code>），仅含符号声明，无真实实现。</p></li>
+<li><p>真机运行用真实 CANN runtime 库（<code class="docutils literal notranslate"><span class="pre">lib64</span></code> 顶层或驱动目录），含 NPU 调用实现。</p></li>
+<li><p>仅用 stub 运行时，<code class="docutils literal notranslate"><span class="pre">ffmpeg</span> <span class="pre">-encoders</span></code> 能列出 ascend 编解码器，但实际转码会失败（stub 是空实现）。</p></li>
+</ul>
+</li>
+<li><p><strong>与系统 FFmpeg 共存</strong></p>
+<p>ascend 版本装在 <code class="docutils literal notranslate"><span class="pre">/usr/local/ffmpeg-ascend</span></code>，不覆盖 <code class="docutils literal notranslate"><span class="pre">/usr</span></code> 下的系统 FFmpeg 6.1.1。通过 <code class="docutils literal notranslate"><span class="pre">/etc/ld.so.conf.d/ffmpeg-ascend.conf</span></code> 与 wrapper <code class="docutils literal notranslate"><span class="pre">ffmpeg-ascend</span></code> 隔离调用。</p>
+</li>
+<li><p><strong>补丁不含 configure 改动</strong></p>
+<p>补丁不修改 <code class="docutils literal notranslate"><span class="pre">configure</span></code> 脚本，编解码器通过 <code class="docutils literal notranslate"><span class="pre">allcodecs.c</span></code> 自动探测。启用方式为标准 <code class="docutils literal notranslate"><span class="pre">--enable-decoder/encoder=h264_ascend</span></code>，无需 <code class="docutils literal notranslate"><span class="pre">--enable-ascend</span></code>。</p>
+</li>
+<li><p><strong>关于 AVC/HEVC 补丁与 CVE 补丁</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">atomgit.com/src-openeuler/ffmpeg</span></code> 仓库还含若干 CVE 修复补丁。本文 ascend 补丁基于**纯净 6.1.1** 生成，若需同时应用 CVE 补丁，建议先应用 CVE 补丁再应用 ascend 补丁，遇冲突时手动处理。</p>
+</li>
+</ol>
+</section>
+<section id="id20">
+<h2>参考链接<a class="headerlink" href="#id20" title="Permalink to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>FFmpeg 官方网站: <a class="reference external" href="https://ffmpeg.org/">https://ffmpeg.org/</a></p></li>
+<li><p>openEuler Embedded 在线文档: <a class="reference external" href="https://embedded.pages.openeuler.org/">https://embedded.pages.openeuler.org/</a></p></li>
+<li><p>CANN 商用版文档: <a class="reference external" href="https://www.hiascend.com/document/detail/zh/canncommercial/">https://www.hiascend.com/document/detail/zh/canncommercial/</a></p></li>
+<li><p>Orange Pi AI Pro 用户手册（Ascend FFmpeg 章节）: 参见随设备文档</p></li>
+<li><p>ffmpeg 源码仓库（manifest 锁定版本）: <a class="reference external" href="https://atomgit.com/src-openeuler/ffmpeg.git">https://atomgit.com/src-openeuler/ffmpeg.git</a></p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mindspore_lite.html" class="btn btn-neutral float-left" title="构建Mindspore Lite使用指导" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../mica/index.html" class="btn btn-neutral float-right" title="混合关键性部署 (MICA)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="ascend_ffmpeg.html">master</a></dd>
+      <dd><a href="../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

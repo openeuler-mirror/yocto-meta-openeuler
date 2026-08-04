@@ -10,3 +10,4 @@
 
    armnn.rst
    mindspore_lite.rst
+   ascend_ffmpeg.rst
