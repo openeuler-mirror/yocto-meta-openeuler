@@ -118,4 +118,4 @@ WORKDIR /home/${user}
 
 # fix nativesdk var perms and install python package without caching
 RUN sudo chmod -R 777 /opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-linux/var/ \
-    && pip3 install --no-cache-dir cryptography -i https://pypi.tuna.tsinghua.edu.cn/simple
+    && pip3 install --no-cache-dir cryptography pyyaml GitPython -i https://pypi.tuna.tsinghua.edu.cn/simple
