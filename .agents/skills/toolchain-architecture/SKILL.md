@@ -1,6 +1,6 @@
 ---
 name: toolchain-architecture
-description: "Understand the unified toolchain directory structure, oebuild integration, and backward compatibility. Use when user asks about '目录结构', '架构', 'oebuild', 'menu.sh 和 oebuild 的关系', 'backward compat', '向后兼容', 'symlink', '符号链接', 'cross-tools', 'llvm-toolchain', 'arm32-clang-musl', 'container image', 'Dockerfile', 'openeuler-sdk', 'ct-ng', 'crosstool-NG', 'how does it work', '工作原理', 'design rationale', or needs architectural guidance."
+description: '理解统一的编译链目录结构、oebuild 集成与向后兼容机制。当用户询问目录结构、架构、oebuild、menu.sh 和 oebuild 的关系、向后兼容、backward compat、符号链接、symlink、cross-tools、llvm-toolchain、arm32-clang-musl、容器镜像、container image、Dockerfile、openeuler-sdk、ct-ng、crosstool-NG、工作原理、how does it work、设计理由、design rationale，或需要架构指导时使用。'
 ---
 
 # toolchain-architecture Skill

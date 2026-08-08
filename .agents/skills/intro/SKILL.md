@@ -13,17 +13,22 @@ Agent 在触发本 skill 时，**必须首先**向用户展示以下欢迎文案
 
 ## 技能分类列表
 
-### 编译链构建
+### 构建
 
 | Skill | 一句话描述 |
 | :--- | :--- |
+| **oebuild** | oebuild 构建工具：init/update/generate/bitbake/runqemu 全流程 |
+| **yocto-openeuler-recipe** | 新增/更新 BitBake recipe 与 bbappend，file:// SRC_URI 适配 |
+| **sstate-cache-debug** | 诊断 sstate-cache 未命中，bitbake-diffsigs 对比签名、export 哈希污染 |
 | **toolchain-build** | 通过 `menu.sh` 构建 GCC / LLVM / Clang+musl 交叉编译链（Docker 容器化） |
 
 ### 工作流
 
 | Skill | 一句话描述 |
 | :--- | :--- |
+| **send-pr** | 从 upstream 建分支、推送 fork、通过 GitCode API 向上游提交 PR |
 | **toolchain-git-flow** | 提交代码、推送至个人 fork，确保符合 openEuler Embedded DCO / gitlint 规范 |
+| **git-commit** | 编写符合 openEuler 规范的 commit message（标题、正文、Signed-off-by） |
 
 ### 知识
 
@@ -45,9 +50,19 @@ menu.sh 怎么用                  → toolchain-build
 提交代码                       → toolchain-git-flow
 推送 commit                    → toolchain-git-flow
 检查提交信息规范               → toolchain-git-flow
+写/改 commit message           → git-commit
+提交标题正文怎么写             → git-commit
 目录结构是怎样的               → toolchain-architecture
 oebuild 和 menu.sh 的关系      → toolchain-architecture
 向后兼容怎么做的               → toolchain-architecture
+如何构建 openeuler-image       → oebuild
+更新/生成构建配置              → oebuild
+新增/更新 recipe               → yocto-openeuler-recipe
+bbappend / SRC_URI 适配        → yocto-openeuler-recipe
+sstate 缓存未命中/意外重建      → sstate-cache-debug
+native 任务哈希不一致           → sstate-cache-debug
+发送 PR 到上游                 → send-pr
+创建 merge request             → send-pr
 有哪些功能 / help / 入门       → intro (本技能)
 ```
 
@@ -78,13 +93,16 @@ cd "$(git rev-parse --show-toplevel)" && \
 
 ---
 
-## AtomGit 路由优先级
+## 远端路由优先级
 
-当用户在 yocto-meta-openeuler 仓库里提到 PR / merge request / Issue / review / comments，且没有明确说 GitHub / github.com 时，Agent 应默认使用 AtomGit 相关操作（本仓库远端为 atomgit.com）。
+当用户在 yocto-meta-openeuler 仓库里提到 PR / merge request / Issue / review / comments，且没有明确说 GitHub / github.com 时，Agent 应默认使用 GitCode/AtomGit 相关操作。
 
-仓库远端配置：
-- `origin`: 个人 fork（`git@atomgit.com:alichinese_admin/yocto-meta-openeuler.git`）
-- `upstream`: 主仓库（`https://atomgit.com/openeuler/yocto-meta-openeuler`）
+仓库远端配置因开发者而异：
+- `upstream`：主仓库（`openeuler/yocto-meta-openeuler`）
+- 个人 fork：远端名（如 `origin`、`myrepo`）与用户名因人而异
 
+涉及推送或 PR 的操作前，**必须**先运行 `git remote -v` 确认实际配置。
 PR 创建链接格式：
-`https://atomgit.com/<username>/yocto-meta-openeuler/merge_requests/new?source_branch=<current-branch>`
+`https://gitcode.com/<username>/yocto-meta-openeuler/merge_requests/new?source_branch=<current-branch>`
+
+完整 PR 流程见 `send-pr` 技能。

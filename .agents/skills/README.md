@@ -9,8 +9,13 @@
 | 技能名称 | 分类 | 主要触发场景 (Triggers) |
 | --- | --- | --- |
 | [intro](intro) | 引导 | 「介绍」「有哪些功能」「help」「入门」「intro」等，作为所有 skill 的导航入口。 |
+| [oebuild](oebuild) | 构建 | oebuild init/update/generate/bitbake/runqemu 等构建流程，Docker 容器、compile.yaml 配置。 |
+| [send-pr](send-pr) | 工作流 | 向上游仓库提交 PR，从 upstream 建分支、cherry-pick、推送 fork、GitCode API 创建 PR。 |
+| [yocto-openeuler-recipe](yocto-openeuler-recipe) | 构建 | 新增/更新/分析 BitBake recipe 与 bbappend，SRC_URI file:// 适配、补丁合并。 |
+| [sstate-cache-debug](sstate-cache-debug) | 构建 | 诊断 sstate-cache 未命中，bitbake-diffsigs 对比签名、machine conf 误用 export 导致 native 哈希污染。 |
 | [toolchain-build](toolchain-build) | 构建 | 构建 GCC/LLVM/Clang+musl 交叉编译链，`menu.sh`、`ct-ng build`、容器构建等。 |
 | [toolchain-git-flow](toolchain-git-flow) | 工作流 | 提交代码、推送至个人 fork，确保符合 openEuler DCO/Commit 规范。 |
+| [git-commit](git-commit) | 工作流 | 编写符合 openEuler 规范的 commit message：标题格式、正文 why/what、Signed-off-by。 |
 | [toolchain-architecture](toolchain-architecture) | 知识 | 理解统一目录结构、oebuild 集成、向后兼容符号链接与容器镜像设计。 |
 
 ---
@@ -22,17 +27,33 @@
 - **技能导航 ([intro](intro))**: 所有 skill 的统一入口，展示分类列表与使用示例，
   并根据仓库状态智能推荐最合适的 skill。
 
-### 编译链构建
+### 构建
 
+- **oebuild 构建工具 ([oebuild](oebuild))**: 管理 OpenEuler Embedded 的
+  构建全流程——init/update/generate/bitbake/manifest/runqemu 等命令、
+  Docker 容器生命周期、compile.yaml 配置与 inotify 限制等。
+- **Recipe 适配 ([yocto-openeuler-recipe](yocto-openeuler-recipe))**:
+  新增/更新/分析 BitBake recipe 与 bbappend，定位 src-openeuler 源码、
+  适配 file:// 风格 SRC_URI、合并 openEuler 与上游补丁并验证构建。
 - **编译链构建 ([toolchain-build](toolchain-build))**: 通过 `menu.sh` 构建
   GCC / LLVM / Clang+musl 三类交叉编译链，自动管理 Docker 容器（镜像检测、
   UID 匹配、目录挂载、CT_PREFIX 安装控制）。
+- **sstate 缓存调试 ([sstate-cache-debug](sstate-cache-debug))**: 诊断
+  sstate-cache 未命中与 native 任务意外重建，用 `bitbake -S none` 生成
+  sigdata、`bitbake-diffsigs` 对比任务签名、定位 machine conf 误用 `export`
+  导致的哈希污染并修复。
 
 ### 工作流
 
+- **提交 PR ([send-pr](send-pr))**: 向 GitCode/AtomGit 上游仓库提交 PR，
+  从 `upstream/master` 创建功能分支、cherry-pick 提交、推送到 fork、
+  通过 GitCode API 创建中文 PR。
 - **Git 工作流 ([toolchain-git-flow](toolchain-git-flow))**: 自动化执行
   openEuler Embedded 繁琐的提交规范校验（DCO sign-off、gitlint 规则），
   覆盖暂存、提交、推送、PR 描述生成全流程。
+- **Commit Message 规范 ([git-commit](git-commit))**: 提供 openEuler
+  commit message 的格式与写作规范——标题 `scope: subject`、正文 why/what
+  原则、Signed-off-by、单一逻辑变更拆分与批量改写。
 
 ### 知识
 
@@ -76,35 +97,21 @@ description: "<if-then trigger description with bilingual keywords>"
 
 ---
 
-## AtomGit 集成
+## AtomGit / GitCode 集成
 
-本仓库远端为 AtomGit（atomgit.com），PR / Issue 操作使用 AtomGit 平台。
+本仓库远端为 AtomGit（atomgit.com），上游 PR 通过 GitCode 平台创建。
 
-- `origin`: `git@atomgit.com:alichinese_admin/yocto-meta-openeuler.git`（个人 fork）
-- `upstream`: `https://atomgit.com/openeuler/yocto-meta-openeuler`（主仓库）
+远端配置因开发者而异，操作前用 `git remote -v` 确认：
 
-PR 创建链接格式：
+- `upstream`：主仓库 `openeuler/yocto-meta-openeuler`
+- 个人 fork：远端名（如 `origin`、`myrepo`）与用户名因人而异
+
+PR 创建链接格式（GitCode）：
 ```
-https://atomgit.com/<username>/yocto-meta-openeuler/merge_requests/new?source_branch=<branch>
-```
-
-如需 AtomGit API 集成，在项目根目录的 `config.json` 中配置 Token：
-
-```json
-{
-  "atomgit": {
-    "token": "$ATOMGIT_TOKEN",
-    "owner": "openeuler",
-    "repo": "yocto-meta-openeuler",
-    "baseUrl": "https://api.atomgit.com"
-  }
-}
+https://gitcode.com/<username>/yocto-meta-openeuler/merge_requests/new?source_branch=<branch>
 ```
 
-设置环境变量：
-```bash
-export ATOMGIT_TOKEN="your_token_here"
-```
+如需 API 集成，可参考 `send-pr` 技能中的 GitCode API v5 用法。
 
 所有符合 Agent Skills 标准的客户端都会自动扫描 `.agents/skills/`，
 详见 [agentskills.io](https://agentskills.io)。

@@ -1,6 +1,6 @@
 ---
 name: toolchain-build
-description: "Build openEuler Embedded cross-compilation toolchains via menu.sh. Use when user needs to 'build toolchain', 'compile gcc', 'build llvm', 'clang musl', 'menu.sh', '构建编译链', '编译交叉链', 'ct-ng build', 'cross compile', '交叉编译', 'prepare', 'docker container build', '容器构建', 'aarch64', 'arm32', 'riscv64', 'x86_64', 'llvm', 'clang-musl', or needs to start/enter/verify the build container. NOT for oebuild Python package operations."
+description: '通过 menu.sh 构建 openEuler Embedded 交叉编译链。当用户需要 build toolchain、构建编译链、编译交叉链、compile gcc、编译 gcc、build llvm、构建 llvm、clang musl、menu.sh、ct-ng build、cross compile、交叉编译、prepare、docker container build、容器构建，或需要启动/进入/验证构建容器（aarch64、arm32、riscv64、x86_64、llvm、clang-musl）时使用。不适用于 oebuild Python 包操作。'
 ---
 
 # toolchain-build Skill

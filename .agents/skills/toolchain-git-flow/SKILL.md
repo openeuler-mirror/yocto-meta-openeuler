@@ -1,6 +1,6 @@
 ---
 name: toolchain-git-flow
-description: "Handles Git commit and push workflow with openEuler Embedded compliance. Use when user asks to 'git commit', 'git push', '提交代码', '推送代码', 'git status', 'commit -s', 'DCO sign-off', 'check git message', 'euler compliance', '符合规范', '检查提交信息', 'Signed-off-by', 'gitlint', or when preparing code for submission. Enforces openEuler Embedded commit message format (area: subject, body, Signed-off-by footer)."
+description: '处理符合 openEuler Embedded 规范的 Git 提交与推送工作流。当用户要求 git commit、git push、提交代码、推送代码、git status、commit -s、DCO sign-off、检查提交信息、符合规范、Signed-off-by、gitlint，或准备提交代码时使用。强制执行 openEuler Embedded 提交信息格式（area: subject、body、Signed-off-by footer）。'
 ---
 
 # toolchain-git-flow Skill
@@ -159,15 +159,14 @@ PR 描述应使用**中文**，包含以下部分：
 | 检查提交信息 | `git log --format="%B" -1` |
 | 查看 gitlint 规则 | `cat .gitlint` |
 
-## 已知 Git 用户信息
+## Git 用户信息
 
-仓库 git 配置：
-- 用户名：`alichinese_admin`
-- 邮箱：`lixinyu44@huawei.com`
+Git 提交人信息（`user.name` / `user.email`）由各开发者本地配置，
+`git commit -s` 会自动据此生成 `Signed-off-by` 行。查看当前配置：
 
-Signed-off-by 格式：
-```
-Signed-off-by: alichinese_admin <lixinyu44@huawei.com>
+```bash
+git config user.name
+git config user.email
 ```
 
 ## 何时使用
