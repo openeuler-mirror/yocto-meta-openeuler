@@ -81,11 +81,9 @@ do_prepare_build_directory() {
     cp -rfp ${WORKDIR}/${pkg-build-lite}/* ${S}/build/lite
 
     rm -f ${S}/build.sh
-    sed -i "s@PYTHON3_DIR=/usr@PYTHON3_DIR=${OPENEULER_NATIVESDK_SYSROOT}/usr@" ${S}/build/build_scripts/build.sh
     ln -s ${S}/build/build_scripts/build.sh ${S}/build.sh
 
     rm -f ${S}/.gn
-    sed -i "s@^script_executable = \"/usr/bin/env\"@script_executable = \"${OPENEULER_NATIVESDK_SYSROOT}/usr/bin/python\"@" ${S}/build/core/gn/dotfile.gn
     ln -s ${S}/build/core/gn/dotfile.gn ${S}/.gn
 
     rm -f ${S}/build.py

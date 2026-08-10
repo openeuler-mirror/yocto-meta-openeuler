@@ -5,11 +5,6 @@ IMAGE_LOCALES_ARCHIVE = "0"
 # currently we don't install language configurations
 SDKIMAGE_LINGUAS = ""
 export SDK_OS = "linux"
-# when PREBUILT_TOOLCHAIN_ENABLE is yes
-# no need generate host packages, we directly use them in docker env, default in populate_sdk_base.bbclass
-# when PREBUILT_TOOLCHAIN_ENABLE is no, most native/nativesdk packages can be built
-# so we can follow poky's original way to handle sdk
-# use prebuilt tools build
 
 # do not need nativesdk-glibc-locale in external toolchain build
 SDK_DEPENDS:remove:tcmode-external = "nativesdk-glibc-locale"
