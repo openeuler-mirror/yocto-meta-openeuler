@@ -21,9 +21,6 @@ SRC_URI:append:rpi = " \
 # remove udev if not enable systemd
 PACKAGECONFIG:remove = "${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '', 'udev', d)}"
 
-# testtools depends python3-core python3-dbus python3-pygobject, we do not need these
-RDEPENDS:${PN}-testtools:openeuler-prebuilt = ""
-
 INSANE_SKIP:${PN}-testtools += "file-rdeps"
 
 # From oe-core bluez5_5.71.bb

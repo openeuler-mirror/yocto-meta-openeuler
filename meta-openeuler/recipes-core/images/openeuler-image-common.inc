@@ -49,20 +49,6 @@ FEATURE_PACKAGES_tools-sdk:tcmode-external = " "
 TOOLCHAIN_TARGET_TASK:remove:tcmode-external = "${@multilib_pkg_extend(d, 'packagegroup-core-standalone-sdk-target')}"
 
 
-### prebuilt tools use
-# no depends on some native tools: cross-localdef-native
-
-# do_rootfs not depends to ldconfig-native as prebuilt tools provided it
-# learn more about LDCONFIGDEPEND in image.bbclass
-LDCONFIGDEPEND:openeuler-prebuilt = ""
-
-# rpm depends in rootfs_rpm.bbclass
-RPMROOTFSDEPENDS:openeuler-prebuilt = ""
-
-# rootfs_rpm.bbclass line 14
-# as we use dnf in hosttools, we don't need python3-native
-# directly use python3 in prebuilt hosttools
-
 # set file permission for secure configuration
 set_permissions_from_rootfs() {
     cd "${IMAGE_ROOTFS}"
