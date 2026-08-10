@@ -73,7 +73,9 @@ FILES:${PN} += " \
         /lib/systemd/system \
 "
 
-inherit autotools
+RDEPENDS:${PN} += "bash"
+
+inherit autotools pkgconfig
 
 BBCLASSEXTEND = "native nativesdk"
 
