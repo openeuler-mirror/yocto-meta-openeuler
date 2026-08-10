@@ -109,11 +109,12 @@ curl -s -X POST "https://gitcode.com/api/v5/repos/openeuler/yocto-meta-openeuler
 <如何验证改动正确>
 
 ### 当前PR是否有AI参与:
-- [ ] 否
-- [x] 是
-  1. Agent平台信息: <Agent平台名称及版本>
-  2. 模型信息: <AI模型名称及版本>
-  3. Prompt摘要: <核心提示词或核心意图>
+- [ ]  否
+
+- [x]  是
+__1. Agent平台信息: <Agent平台名称及版本>
+__2. 模型信息: <AI模型名称及版本>
+__3. Prompt摘要: <核心提示词或核心意图>
 
 ### 希望检视人员了解:
 1. 代码由AI辅助开发者编写，且开发者已人工逐行核对逻辑、校验功能正确性，且与开发者预期一致；
