@@ -2,12 +2,6 @@
 
 PV = "0.164"
 
-# in openeuler, prebuilt external toolchain is used, so the chain x264->binutils-native-
-# ->gnu-config-native will be broken. so we add gnu-config-native to the DEPENDS here.
-#
-# when ${OPENEULER_PREBUILT_TOOLS_ENABLE}" = "yes", the special handling in 
-# do_prepare_gnu_config is required, because DEPENDS += "gnu-config-native" does not work
-# as in openeuler_hosttools.inc, ASSUME_PROVIDED += "gnu-config-native" is set
 DEPENDS += "gnu-config-native"
 
 # source change to openEuler
@@ -31,17 +25,6 @@ X264_DISABLE_ASM:remove = " \
 # ref 31e19f92f00c7003fa115047ce50978bc98c3a0d from openembedded-core recipes
 COMPATIBLE_HOST:x86-x32 = "null"
 
-do_prepare_gnu_config() {
-    if [ "${OPENEULER_PREBUILT_TOOLS_ENABLE}" = "yes" ];then
-        test -d "${STAGING_DATADIR_NATIVE}/gnu-config/" || mkdir -p "${STAGING_DATADIR_NATIVE}/gnu-config/"
-        rm -rf ${STAGING_DATADIR_NATIVE}/gnu-config/*
-        install -m 0755 ${OPENEULER_NATIVESDK_SYSROOT}/usr/share/gnu-config/config.guess  ${STAGING_DATADIR_NATIVE}/gnu-config/
-        install -m 0755 ${OPENEULER_NATIVESDK_SYSROOT}/usr/share/gnu-config/config.sub  ${STAGING_DATADIR_NATIVE}/gnu-config/
-    fi
-}
-
 do_configure:append() {
     cat ${WORKDIR}/version.h >> ${S}/x264_config.h
 }
-
-do_prepare_recipe_sysroot[postfuncs] += "do_prepare_gnu_config"
