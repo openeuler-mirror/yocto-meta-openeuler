@@ -58,13 +58,13 @@ git push <fork远端名> <branch-name> -u
 
 ### 第 4 步 — 通过 API 创建 PR
 
-使用 GitCode API 和 private-token 认证（token 从环境变量 `GITCODE_TOKEN` 读取，
-无需手动输入；若未配置先执行 `export GITCODE_TOKEN=<token>`）：
+使用 GitCode API 和 private-token 认证（token 从环境变量 `ATOMGIT_TOKEN` 读取，
+无需手动输入；若未配置先执行 `export ATOMGIT_TOKEN=<token>`）：
 
 ```bash
 curl -s -X POST "https://gitcode.com/api/v5/repos/openeuler/yocto-meta-openeuler/pulls" \
   -H "Content-Type: application/json" \
-  -H "private-token: $GITCODE_TOKEN" \
+  -H "private-token: $ATOMGIT_TOKEN" \
   -d '{
     "title": "<PR 标题（中文）>",
     "body": "<PR 描述（中文）>",
@@ -153,7 +153,7 @@ git checkout master
 
 | 问题 | 原因 | 解决方法 |
 |---|---|---|
-| `404 token not found` | 认证格式错误 | 使用 `-H "private-token: $GITCODE_TOKEN"` 请求头 |
+| `404 token not found` | 认证格式错误 | 使用 `-H "private-token: $ATOMGIT_TOKEN"` 请求头 |
 | `Invalid header parameter: private-token` | token 位置错误 | token 必须在请求头，不能放在 body |
 | `Branch not found` | 分支未推送到 fork | 先执行 `git push <fork远端名> <branch>` |
 | Commit 包含无关改动 | 从本地 master 建分支 | 始终从 `upstream/master` 建分支 |
