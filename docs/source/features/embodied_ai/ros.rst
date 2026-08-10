@@ -311,13 +311,11 @@ openEuler Embedded支持ROS2快速开发SDK，目前支持在主机或者oebuild
     # 以树莓派ROS2镜像为例
     $ oebuild generate -p raspberrypi4-64 -f openeuler-ros -d raspberrypi4-64-ros
     $ oebuild bitbake
-    # 在conf/local.conf中，设置 OPENEULER_PREBUILT_TOOLS_ENABLE = "no" ,这样就可以尽可能
-    # 生成nativesdk所需要的工具
     $ bitbake openeuler-image
     $ bitbake openeuler-image -c populate_sdk
 
   .. note::
-    如果要使用ROS2 SDK，请确认 :file:`conf/local.conf` 中OPENEULER_PREBUILT_TOOLS_ENABLE = "no" ，只有这样SDK中才会包含
+    如果要使用ROS2 SDK，SDK中会包含
     colcon, cmake, python, make等主机工具，可以进行ROS2应用的开发。
 
   随后在 :file:`output/[时间戳]/` 目录下即可找到对应SDK安装文件，例如

@@ -9,4 +9,3 @@
    :caption: 内容
 
    openbmc.rst
-   prebuilt_tool.rst
