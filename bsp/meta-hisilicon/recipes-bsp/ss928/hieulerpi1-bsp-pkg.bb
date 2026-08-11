@@ -33,6 +33,7 @@ S = "${WORKDIR}/HiEuler-driver/drivers"
 
 INSANE_SKIP:${PN} += "already-stripped"
 FILES:${PN} = "${sysconfdir} ${systemd_system_unitdir} /usr/bin /ko /opt /vendor /firmware"
+RDEPENDS:${PN} += "libmnl libselinux libelf libtirpc"
 
 do_install () {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'true', 'false', d)}; then
