@@ -61,4 +61,5 @@ EOF
 
 FILES:${PN} += "/opt"
 FILES:${PN} += "/etc/profile.d/epkg.sh"
+RDEPENDS:${PN} += "perl bash python3-core"
 INSANE_SKIP:${PN} += "already-stripped"
