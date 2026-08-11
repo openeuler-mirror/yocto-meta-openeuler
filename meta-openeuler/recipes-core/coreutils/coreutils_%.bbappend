@@ -36,3 +36,10 @@ SRC_URI:prepend = " \
 SRC_URI[sha256sum] = "ea613a4cf44612326e917201bbbcdfbd301de21ffc3b59b6e5c07e040b275e52"
 
 ASSUME_PROVIDE_PKGS = "coreutils"
+
+# coreutils 9.5 requires C23 (bool/nullptr are keywords only in C23 mode).
+# The external SDK gcc defaults to -std=gnu17, so gnulib's C23 bool check
+# fails (gl_cv_c_bool=no) and config.h triggers the stdbool fallback #error
+# (<stdbool.h> does not exist on this platform). Force C23 mode for both
+# configure checks and compilation. gnu2x is the C23 name supported by gcc 12.
+CFLAGS:append = " -std=gnu2x"
