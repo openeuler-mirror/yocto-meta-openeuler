@@ -22,9 +22,7 @@ Yocto 官网指明了三种方式可以方便地配置主机环境：第一种�
 
 **3. 配置一个适合 openeuler-image 构建的环境**
 
-对比 Yocto 原生工程，openEuler Embedded 将更多的包加入了 buildtools 中，这是为了在正式构建镜像时不去构建所依赖的 native 包，而是直接从 buildtools 中获取，这样可以大幅减少构建时间。我们将此 buildtools 称为预构建工具。
-
-关于预构建工具的构建方法及更多细节，请参阅 :ref:`预构建工具特性 <prebuilt_tool>` 章节。
+对比 Yocto 原生工程，openEuler Embedded 将更多的包加入了 buildtools 中，这是为了在正式构建镜像时不去构建所依赖的 native 包，而是直接从 buildtools 中获取，这样可以大幅减少构建时间。
 
 假设您已经获取了预构建工具文件，接下来介绍如何使用预构建工具：
 

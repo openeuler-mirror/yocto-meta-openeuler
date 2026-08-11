@@ -15,7 +15,6 @@ Yocto 元数据优先级
       layer.conf: 各个层的配置文件, 说明怎么查找bb文件等;
       bitbake.conf: yocto核心配置文件;
       local.conf: 说明采用的bsp文件与distro文件;
-      openeuler_hosttools.inc: openeuler用于配置主机工具的文件;
       ${MACHINE}.conf: bsp配置文件, 如qemu-aarch64.conf;
       ${DISTRO}.conf: distro配置文件, openeuler.conf;
       tcmode-external-openeuler.inc: 外部工具链配置。

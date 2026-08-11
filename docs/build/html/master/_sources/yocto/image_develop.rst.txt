@@ -103,14 +103,13 @@ packagegroup 为 Yocto 提供了一种方便的方式来定义和管理软件包
     IMAGE_ROOTFS_SIZE ?= "8192"
     IMAGE_ROOTFS_EXTRA_SPACE:append = "${@bb.utils.contains("DISTRO_FEATURES", "systemd", " + 4096", "", d)}"
 
-目前 Poky 官方示例没有增加预构建工具兼容代码，因此只支持 native 构建模式，构建任务会多一些；此外如果使用了外部工具链构建方式，需要添加 ``TOOLCHAIN_HOST_TASK = ""`` 到镜像配方中。构建方式如下：
+目前构建方式仅支持 native 构建模式，构建任务会多一些；此外如果使用了外部工具链构建方式，需要添加 ``TOOLCHAIN_HOST_TASK = ""`` 到镜像配方中。构建方式如下：
 
 ::
 
     ...
     $ oebuild bitbake
     $ vi conf/local.conf
-    ### 使用 native 构架模式需修改 OPENEULER_PREBUILT_TOOLS_ENABLE = "no"
     $ bitbake core-image-minimal
     ### 镜像生成目录
     $ cd tmp/deploy/images/MACHINE
