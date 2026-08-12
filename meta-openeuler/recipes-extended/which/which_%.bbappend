@@ -24,7 +24,7 @@ do_configure:prepend() {
 
     sed -i 's/char \*found = NULL, \*full_path;/char *found = NULL, *full_path = NULL;/' ${S}/which.c
     sed -i 's/int status, name_len;/int status, name_len;\n  char *p;/' ${S}/which.c
-    sed -i '/absolute_path_given = 0;/{N;/char \*p;/d}' ${S}/which.c
+    sed -i '/int status, name_len;/{n;/char \*p;/d}' ${S}/which.c
     sed -i '/name_len = strlen(name);/{n;/^$/d}' ${S}/which.c
     sed -i 's/char buf\[1024\];/char buf[1024] = {};/' ${S}/which.c
 }
