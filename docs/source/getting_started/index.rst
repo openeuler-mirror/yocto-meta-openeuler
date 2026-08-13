@@ -163,7 +163,11 @@ openEuler Embedded采用yocto构建，同时设计了基于Python的元工具 `o
 
    .. note::
 
-      - 由于标准根文件系统镜像进行了安全加固，因此第一次启动时，需要为登录用户名root设置密码，且密码强度有相应要求，需要 **数字、字母、特殊字符组合最少8位**，例如openEuler@2023
+      - 标准根文件系统镜像默认预设 root 密码为 ``openEuler@2021``，可直接登录使用，无需在首次登录时设置密码。该密码默认不会过期，便于自动化测试与快速体验。
+
+      - 预设密码是公开的默认值，仅适用于开发、测试与演示环境，请勿用于生产环境或直接暴露到公网。如需部署，可设置 ``OPENEULER_ROOT_PASSWORD_POLICY = "expire"`` 恢复首次登录强制改密策略，或自定义 ``OPENEULER_ROOT_PASSWORD`` 并修改 ``OPENEULER_ROOT_PASSWORD_HASH``。
+
+      - 若需恢复安全加固策略（首次登录必须重新设置密码），可在镜像配方中设置 ``OPENEULER_ROOT_PASSWORD_POLICY = "expire"`` 后重新构建镜像。
 
       - 如果想了解有关运行 QEMU 的更多帮助信息，包括如何使能网络、如何共享主机文件等，请参阅开发手册中的 :ref:`QEMU使用 <qemu_start>` 章节。
 
