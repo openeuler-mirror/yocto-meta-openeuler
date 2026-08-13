@@ -1,7 +1,7 @@
 
 SRC_URI:prepend = " file://${BP}.tar.xz "
 
-PACKAGECONFIG:remove = " virglrenderer epoxy "
+PACKAGECONFIG:remove = " virglrenderer epoxy sdl "
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
