@@ -4,6 +4,17 @@ IMAGE_LOCALES_ARCHIVE = "0"
 
 # currently we don't install language configurations
 SDKIMAGE_LINGUAS = ""
+# Slim SDK (default): the SDK only contains the cross toolchain, rootfs and
+# environment scripts; host-side build tools (cmake/meson/python3/...) are
+# expected from the host system, which skips building about 40 nativesdk
+# packages during do_populate_sdk.
+# Set OPENEULER_FULL_SDK_ENABLE = "1" to pack nativesdk-packagegroup-sdk-host
+# so that the SDK is self-contained and works on any x86_64 host.
+OPENEULER_FULL_SDK_ENABLE ??= "0"
+SDK_RELOCATE_AFTER_INSTALL = "${@'0' if d.getVar('OPENEULER_FULL_SDK_ENABLE') == '0' else '1'}"
+TOOLCHAIN_HOST_TASK:remove = "${@'nativesdk-packagegroup-sdk-host' if d.getVar('OPENEULER_FULL_SDK_ENABLE') == '0' else ''}"
+# use host tools for sdk creation
+SDK_DEPENDS:remove = "${@'${SDK_ARCHIVE_DEPENDS} cross-localedef-native' if d.getVar('OPENEULER_FULL_SDK_ENABLE') == '0' else ''}"
 export SDK_OS = "linux"
 
 # do not need nativesdk-glibc-locale in external toolchain build
