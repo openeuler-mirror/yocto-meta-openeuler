@@ -11,7 +11,7 @@ RUN set -eux; \
         autoconf automake m4 bison bc libtool gettext-devel createrepo_c net-tools \
         wget sudo hostname rpcgen texinfo python meson dosfstools mtools libmpc-devel \
         gmp-devel ninja-build numactl-devel make python3 python3-pip screen glibc-locale-archive \
-        iproute xz unzip help2man libstdc++-static gcc g++ rsync python3-devel gdisk umoci skopeo \
+        iproute xz unzip help2man libstdc++-static gcc g++ rsync python3-devel python3-dnf gdisk umoci skopeo \
         libxslt vim hwdata perl-XML-Parser iptables golang quilt; \
     wget -P /tmp https://repo.oepkgs.net/openeuler/rpm/openEuler-20.03-LTS-SP1/compatible/c7/x86_64/Packages/git-lfs-2.10.0-1.x86_64.rpm; \
     rpm -ivh /tmp/git-lfs-2.10.0-1.x86_64.rpm && rm -f /tmp/git-lfs-2.10.0-1.x86_64.rpm; \
@@ -34,25 +34,6 @@ RUN groupadd -g ${gid} ${group} && useradd -c "${user}" -d /home/${user} -u ${ui
 USER openeuler
 
 ARG openeuler_repo=https://atomgit.com/openeuler/yocto-meta-openeuler
-ARG openeuler_base_version=latest
-
-# download, install and clean nativesdk in a single layer
-ARG nativesdk_version=v0.1.3
-ARG nativesdk_name=x86_64-buildtools-extended-nativesdk-standalone
-RUN mkdir -p /opt/buildtools/nativesdk/sdk_info
-WORKDIR /opt/buildtools/nativesdk/sdk_info
-RUN set -eux; \
-    wget ${openeuler_repo}/releases/download/nativesdk-${nativesdk_version}/${nativesdk_name}-${openeuler_base_version}.testdata.json \
-    && wget ${openeuler_repo}/releases/download/nativesdk-${nativesdk_version}/1_${nativesdk_name}-${openeuler_base_version}.sh \
-    && wget ${openeuler_repo}/releases/download/nativesdk-${nativesdk_version}/2_${nativesdk_name}-${openeuler_base_version}.sh \
-    && wget ${openeuler_repo}/releases/download/nativesdk-${nativesdk_version}/3_${nativesdk_name}-${openeuler_base_version}.sh \
-    && wget ${openeuler_repo}/releases/download/nativesdk-${nativesdk_version}/${nativesdk_name}-${openeuler_base_version}.target.manifest \
-    && wget ${openeuler_repo}/releases/download/nativesdk-${nativesdk_version}/${nativesdk_name}-${openeuler_base_version}.host.manifest \
-    && wget ${openeuler_repo}/releases/download/nativesdk-${nativesdk_version}/merge_data.sh \
-    && bash ./merge_data.sh \
-    && ./${nativesdk_name}-${openeuler_base_version}.sh -d /opt/buildtools/nativesdk -y \
-    && . /opt/buildtools/nativesdk/environment-setup-x86_64-openeulersdk-linux \
-    && rm -rf /opt/buildtools/nativesdk/sdk_info
 
 # download, install and clean gcc toolchains in a single layer
 ARG toolchain_version=toolchains-v0.1.8
@@ -116,6 +97,5 @@ RUN set -eux; \
 
 WORKDIR /home/${user}
 
-# fix nativesdk var perms and install python package without caching
-RUN sudo chmod -R 777 /opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-linux/var/ \
-    && pip3 install --no-cache-dir cryptography pyyaml GitPython -i https://pypi.tuna.tsinghua.edu.cn/simple
+# install python package without caching
+RUN pip3 install --no-cache-dir cryptography pyyaml GitPython -i https://pypi.tuna.tsinghua.edu.cn/simple
