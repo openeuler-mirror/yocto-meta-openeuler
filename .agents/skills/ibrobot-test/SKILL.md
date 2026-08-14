@@ -1,13 +1,14 @@
 ---
-name: ibrobot-qemu-aarch64-test
-description: '在 qemu-aarch64 平台构建带 IB-Robot 特性的镜像并对 IB-Robot 进行功能测试。覆盖：用 oebuild 生成带 oebridge/ibrobot/systemd 三特性的 qemu-aarch64 镜像、创建 100G 大容量磁盘并灌 rootfs、从盘启动 qemu、guest 内 setup.sh/build.sh/run_tests.sh 全流程、以及 torch_npu/ROS domain/跳过包互导等典型失败的诊断与修复。触发关键词：IB-Robot 测试、qemu-aarch64 ibrobot、构建 ibrobot 镜像、oebridge ibrobot systemd、100G 磁盘、prep-disk、从盘启动、run_tests、torch_npu、ROS_DOMAIN_ID。'
-argument-hint: "描述任务，例如 '构建带 ibrobot 的 qemu-aarch64 镜像并测试' 或 'IB-Robot 在 qemu 上测试报 torch 错'"
+name: ibrobot-test
+description: 'IB-Robot 跨平台功能测试(qemu-aarch64 与真机昇腾)。覆盖：用 oebuild 构建带 oebridge/ibrobot/systemd 三特性的 qemu-aarch64 镜像、100G 大磁盘灌 rootfs、从盘启动 qemu、guest 内 setup.sh/build.sh/run_tests.sh(组件单测/colcon + inference 推理闭环冒烟,ACT 模型 zip)、qemu(无 NPU,AUTOLOAD=0)与真机(Ascend+CANN,torch_npu 加载)平台差异、torch_npu/ROS domain/跳过包互导/resnet18 等典型失败的诊断与修复。触发关键词：IB-Robot 测试、ibrobot test、qemu-aarch64 ibrobot、构建 ibrobot 镜像、oebridge ibrobot systemd、100G 磁盘、prep-disk、从盘启动、run_tests、inference、ACT 模型、torch_npu、ROS_DOMAIN_ID、真机测试。'
+argument-hint: "描述任务，例如 '构建带 ibrobot 的 qemu-aarch64 镜像并测试' 或 '真机跑 ACT 推理闭环' 或 'IB-Robot 测试报 torch 错'"
 ---
 
-# Skill: ibrobot-qemu-aarch64-test — 构建 IB-Robot qemu 镜像并做功能测试
+# Skill: ibrobot-test — IB-Robot 跨平台测试(qemu-aarch64 / 真机昇腾)
 
-本技能覆盖在 **qemu-aarch64** 平台从零构建带 IB-Robot 特性的镜像、创建大容量磁盘、
-启动 qemu、并在 guest 内对 IB-Robot 跑功能测试的完整闭环，以及调试中遇到的典型
+本技能覆盖 IB-Robot 在 **qemu-aarch64**(无 NPU)与**真机**(Ascend NPU + CANN)上的功能测试：
+从零构建带 IB-Robot 特性的 qemu 镜像、创建大容量磁盘、启动 qemu、并在 guest 内跑功能测试的完整闭环，以及真机上
+跑 ACT 推理闭环（mock-sim + 策略），和调试中遇到的典型
 失败（环境变量、torch_npu、ROS 域守卫、跳过包互导等）的诊断与修复。
 
 > 关联文档：IB-Robot 仓库内的 `TESTING_GUIDE.md`（测试细节与环境变量总览）、`run_tests.sh`（测试脚本）。
@@ -204,13 +205,19 @@ source .shrc_local
 
 ## 6. 第 5 步：跑测试（`run_tests.sh`）
 
+> 本技能目录已附带 `run_tests.sh`（测试执行器）与 `TESTING_GUIDE.md`（完整测试指南）。
+> 用法：把 `run_tests.sh` 拷到 IB-Robot 工作区根目录（它 `cd` 到自身目录、测 `src/`）再运行；
+> 已构建的工作区直接 `./run_tests.sh ...`。详见 `TESTING_GUIDE.md`。
+
 ### 6.1 必设环境变量（决定能否跑通，缺一整批失败）
 
 `run_tests.sh` 的 `setup_env()` 已内置；手动跑也须设：
 
 ```bash
 export PYTEST_DISABLE_PLUGIN_AUTOLOAD=1       # 跳过 launch_testing 插件冲突
-export TORCH_DEVICE_BACKEND_AUTOLOAD=0         # 跳过 torch_npu 自动加载（无昇腾）
+# TORCH_DEVICE_BACKEND_AUTOLOAD：仅 qemu（无昇腾 CANN）才设 0；真机有 CANN 不设。
+# run_tests.sh 已内置 NPU 自适应（import torch_npu 探测）；手动跑才需：
+export TORCH_DEVICE_BACKEND_AUTOLOAD=0         # ← 仅 qemu/无昇腾时；真机勿设
 export ROS_DOMAIN_ID=42                        # 测试隔离域（强制，见下）
 export IBROBOT_TEST_ROS_DOMAIN_ID=42
 export ROS_LOCALHOST_ONLY=1                    # 强制！不能用 ${ROS_LOCALHOST_ONLY:-1}
@@ -228,6 +235,8 @@ source .shrc_local && source install/setup.sh  # 后者让生成消息 ibrobot_m
 ./run_tests.sh <component> [args]   # 单组件
 ./run_tests.sh all [--no-build]     # 全量
 ./run_tests.sh build [pkgs...]     # 仅 colcon 构建
+./run_tests.sh inference [--model <ACT.zip|dir>] [--platform qemu|real] [--no-inference]
+                                    # mock-sim + ACT 推理闭环冒烟（见 §6.4）
 ```
 
 ### 6.3 C++ 组件跑 gtest（默认 dev 构建不编测试目标）
@@ -246,6 +255,39 @@ colcon build --packages-select so101_hardware lekiwi_hardware omni_wheel_control
 colcon build --packages-select vlm_task_planner manipulation_service semantic_mapping \
   perception_service embodied_bringup --merge-install --symlink-install
 ```
+
+### 6.4 推理闭环测试（`inference` 子命令 + ACT 模型）
+
+`run_tests.sh inference` 跑 mock-sim + ACT 策略闭环冒烟：契约 mock 发 mock 图像/关节 → ACT 策略推理 → 动作分发到 `/arm_position_controller/commands`，验证全链路。
+
+> ⚠️ **前置：测试 ACT 推理前，请先自行下载 ACT 策略模型文件**（如 `ACT_1arm_2cam_banana_pick_v1_step_160000_distill_20260515.zip`），通过 `--model <path>` 传入（脚本自动解压到 `models/`、校验 `inference_manifest.json`）。
+> **未提供模型时只能用 `--no-inference` 跑纯 mock**（组件测试 `list`/`all` 不需要模型）。模型 zip 通常由训练侧产出/发布，请向项目模型仓库或训练负责人获取。
+
+```bash
+# 真机（Ascend NPU + CANN）：完整推理闭环，ACT 模型 zip 自动解压到 models/
+./run_tests.sh inference --model /path/to/ACT_1arm_2cam_banana_pick_v1_step_160000_distill_20260515.zip --platform real
+
+# qemu（无 aarch64 CANN）：仅 mock（完整推理在 qemu 跑不了）
+./run_tests.sh inference --no-inference --platform qemu
+```
+
+| 参数 | 说明 |
+|---|---|
+| `--model <ACT.zip\|dir>` | ACT 策略包；zip 自动解压到 `models/`、校验 `inference_manifest.json` |
+| `--platform qemu\|real` | 显式平台（默认 auto/NPU 自适应） |
+| `--no-inference` | 仅 mock（`with_inference:=false`），无需模型 |
+| `--duration/--robot/--warmup` | 运行秒数（默认 60）/ robot_config（默认 so101_single_arm）/ 预热秒数（默认 20） |
+
+**平台差异**：
+
+| | qemu-aarch64 | 真机（Ascend+CANN） |
+|---|---|---|
+| 组件测试 | ✅ 大多过（torch CPU） | ✅ + Ascend 测试可跑 |
+| 完整 ACT 推理闭环 | ❌ lerobot 策略工厂需 `libhccl.so`（aarch64 CANN），qemu 无 → 跑不了 | ✅ torch_npu 加载，~200ms/步 |
+
+**真机离线前置（无外网）**：① **先下载 ACT 模型** zip，用 `--model` 传入（自动解压到 `models/`）；② ACT 的 resnet18 编码器需 `~/.cache/torch/hub/checkpoints/resnet18-f37072fd.pth`（torchvision 首次用会下载 → 离线机先缓存好）。
+
+**真机实测基线**：`pipeline_policy_node` 加载 ACT（`deployment=cpu, backend=torch`）、`action_dispatcher` 收推理（100/chunk、~200ms/步）、`/arm_position_controller/commands` ~15-20Hz。
 
 ---
 
@@ -348,6 +390,10 @@ cd /IB_Robot && ./scripts/setup.sh -y && source .shrc_local && ./scripts/build.s
 # C++ 测试目标 + 补建跳过包
 colcon build --packages-select so101_hardware lekiwi_hardware omni_wheel_controller ibrobot_msgs lekiwi_description robot_description --merge-install --symlink-install --cmake-args -Wno-dev -DBUILD_TESTING=ON
 colcon build --packages-select vlm_task_planner manipulation_service semantic_mapping perception_service embodied_bringup --merge-install --symlink-install
-# 测试
-./run_tests.sh list && ./run_tests.sh all
+# 测试（run_tests.sh 在本技能目录；拷到 IB-Robot 工作区根目录后运行）
+cp .agents/skills/ibrobot-test/run_tests.sh /IB_Robot/ && chmod +x /IB_Robot/run_tests.sh
+cd /IB_Robot && ./run_tests.sh list && ./run_tests.sh all
+# 推理闭环：真机 ./run_tests.sh inference --model <ACT.zip> --platform real；qemu 用 --no-inference
+./run_tests.sh inference --model /path/to/ACT.zip --platform real   # 真机
+./run_tests.sh inference --no-inference --platform qemu             # qemu（仅 mock）
 ```

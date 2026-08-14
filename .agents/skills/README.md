@@ -13,7 +13,7 @@
 | [send-pr](send-pr) | 工作流 | 向上游仓库提交 PR，从 upstream 建分支、cherry-pick、推送 fork、GitCode API 创建 PR。 |
 | [yocto-openeuler-recipe](yocto-openeuler-recipe) | 构建 | 新增/更新/分析 BitBake recipe 与 bbappend，SRC_URI file:// 适配、补丁合并。 |
 | [sstate-cache-debug](sstate-cache-debug) | 构建 | 诊断 sstate-cache 未命中，bitbake-diffsigs 对比签名、machine conf 误用 export 导致 native 哈希污染。 |
-| [ibrobot-qemu-aarch64-test](ibrobot-qemu-aarch64-test) | 构建/测试 | 构建带 oebridge+ibrobot+systemd 三特性的 qemu-aarch64 镜像、创建 100G 大磁盘并从盘启动、IB-Robot setup/build/run_tests.sh 全流程及 torch_npu/ROS domain 等典型失败诊断。 |
+| [ibrobot-test](ibrobot-test) | 构建/测试 | 构建 qemu-aarch64 镜像(oebridge/ibrobot/systemd)+ 跨平台测试 IB-Robot(qemu 无 NPU / 真机昇腾):setup/build、`run_tests.sh`(组件单测/colcon + `inference` 推理闭环冒烟,ACT 模型 zip)、torch_npu/ROS domain/跳过包互导/resnet18 等典型失败诊断。 |
 | [toolchain-build](toolchain-build) | 构建 | 构建 GCC/LLVM/Clang+musl 交叉编译链，`menu.sh`、`ct-ng build`、容器构建等。 |
 | [toolchain-git-flow](toolchain-git-flow) | 工作流 | 提交代码、推送至个人 fork，确保符合 openEuler DCO/Commit 规范。 |
 | [git-commit](git-commit) | 工作流 | 编写符合 openEuler 规范的 commit message：标题格式、正文 why/what、Signed-off-by。 |
@@ -43,11 +43,10 @@
   sstate-cache 未命中与 native 任务意外重建，用 `bitbake -S none` 生成
   sigdata、`bitbake-diffsigs` 对比任务签名、定位 machine conf 误用 `export`
   导致的哈希污染并修复。
-- **IB-Robot qemu 测试 ([ibrobot-qemu-aarch64-test](ibrobot-qemu-aarch64-test))**:
-  在 qemu-aarch64 平台构建带 `oebridge`+`ibrobot`+`systemd` 三特性的镜像，
-  创建 100G 大容量磁盘作根盘、从盘启动 qemu，并在 guest 内完成 IB-Robot 的
-  `setup.sh`/`build.sh`/`run_tests.sh` 功能测试；覆盖 `torch_npu` 自动加载、
-  ROS 域守卫、跳过包互导、`colcon test` 误报等典型失败的诊断与修复。
+- **IB-Robot 跨平台测试 ([ibrobot-test](ibrobot-test))**:
+  构建 qemu-aarch64 镜像（`oebridge`+`ibrobot`+`systemd`）、创建 100G 大容量磁盘作根盘、从盘启动 qemu，并在 guest 内完成 IB-Robot 的
+  `setup.sh`/`build.sh`/`run_tests.sh` 功能测试（组件单测/colcon + `inference` 推理闭环冒烟，ACT 模型 zip）；区分 qemu（无 NPU，`TORCH_DEVICE_BACKEND_AUTOLOAD=0`）与真机（Ascend+CANN，torch_npu 可用，跑完整 ACT 推理闭环）；覆盖 `torch_npu` 自动加载、
+  ROS 域守卫、跳过包互导、`colcon test` 误报、resnet18 离线缓存等典型失败的诊断与修复。
 
 ### 工作流
 
