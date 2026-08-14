@@ -332,11 +332,13 @@ def translateCompileToHost(String yocto_dir,
                         String arch,
                         String image_name,
                         String image_date,
-                        String cache_src_dir){
+                        String cache_src_dir,
+                        List exclude_cmds = []){
     def read_image_yaml = "${yocto_dir}/.oebuild/samples/${arch}/${image_name}.yaml"
     def samples_dir = "/home/jenkins/agent/samples/${arch}"
     sh "mkdir -p ${samples_dir}"
     def write_image_yaml = "${samples_dir}/${image_name}.yaml"
+    def exclude_cmds_py = exclude_cmds.collect { "'${it}'" }.join(", ")
     def code = """
 import subprocess
 try:
@@ -356,6 +358,11 @@ data["build_in"] = "host"
 data["cache_src_dir"] = "$cache_src_dir"
 data["local_conf"] += '\\nDATETIME = "$image_date"\\nINHERIT += "rm_work"'
 
+exclude_cmds = [$exclude_cmds_py]
+if data.get("bitbake_cmds") and exclude_cmds:
+    data["bitbake_cmds"] = [cmd for cmd in data["bitbake_cmds"]
+                            if not any(p in cmd for p in exclude_cmds)]
+
 with open("$write_image_yaml", "w", encoding="utf-8") as file:
     yaml = YAML()
     yaml.dump(data, file)
@@ -372,8 +379,9 @@ def dynamicBuild(String yocto_dir,
                 String image_name,
                 String image_date,
                 String random_str,
-                String cache_src_dir){
-    def compile_path = translateCompileToHost(yocto_dir, arch, image_name, image_date, cache_src_dir)
+                String cache_src_dir,
+                List exclude_cmds = []){
+    def compile_path = translateCompileToHost(yocto_dir, arch, image_name, image_date, cache_src_dir, exclude_cmds)
     // prepare oebuild build environment
     def task_res_code = sh (script: """
         oebuild init ${Config.OEBUILD_DIR}
@@ -419,7 +427,7 @@ def unstashRepo(String workdir,String stash_name){
     }
 }
 
-def buildTask(String build_imgs, String image_date){
+def buildTask(String build_imgs, String image_date, List exclude_cmds = []){
     unstashRepo('/home/jenkins/agent', 'embedded-ci')
     unstashRepo('/home/jenkins/agent', 'yocto-meta-openeuler')
     dir('/home/jenkins/agent/embedded-ci'){
@@ -435,7 +443,8 @@ def buildTask(String build_imgs, String image_date){
                         imageSplit[1],
                         image_date,
                         randomStr,
-                        cacheSrcDir)
+                        cacheSrcDir,
+                        exclude_cmds)
         }
         artifactsLogs()
     }
