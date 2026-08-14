@@ -316,6 +316,66 @@ pipeline {
                         }
                     }
                 }
+                stage("qemu-riscv64"){
+                    when {
+                        expression {
+                            return env.pr_check_result.contains("code")
+                        }
+                    }
+                    steps {
+                        script{
+                            node("${node}"){
+                                BUILD_COM.unstashRepo('/home/jenkins/agent', 'embedded-ci')
+                                BUILD_COM.unstashRepo('/home/jenkins/agent', 'yocto-meta-openeuler')
+                                dir('/home/jenkins/agent/embedded-ci'){
+                                    // 执行qemu-riscv64编译
+                                    def randomStr = BUILD_COM.getRandomStr()
+                                    def cacheSrcDir = "$shareDir/$giteeTargetBranch/oebuild_workspace/src"
+                                    def yoctoDir = "/home/jenkins/agent/yocto-meta-openeuler"
+                                    BUILD_COM.mkdirOpeneulerLog()
+                                    // 执行镜像编译检查
+                                    BUILD_COM.dynamicBuild(yoctoDir,
+                                                        "riscv64",
+                                                        "qemu-riscv64",
+                                                        IMAGE_DATE,
+                                                        randomStr,
+                                                        cacheSrcDir,
+                                                        ["do_populate_sdk"])
+                                }
+                            }
+                        }
+                    }
+                }
+                stage("phytium"){
+                    when {
+                        expression {
+                            return env.pr_check_result.contains("code")
+                        }
+                    }
+                    steps {
+                        script{
+                            node("${node}"){
+                                BUILD_COM.unstashRepo('/home/jenkins/agent', 'embedded-ci')
+                                BUILD_COM.unstashRepo('/home/jenkins/agent', 'yocto-meta-openeuler')
+                                dir('/home/jenkins/agent/embedded-ci'){
+                                    // 执行phytium编译
+                                    def randomStr = BUILD_COM.getRandomStr()
+                                    def cacheSrcDir = "$shareDir/$giteeTargetBranch/oebuild_workspace/src"
+                                    def yoctoDir = "/home/jenkins/agent/yocto-meta-openeuler"
+                                    BUILD_COM.mkdirOpeneulerLog()
+                                    // 执行镜像编译检查
+                                    BUILD_COM.dynamicBuild(yoctoDir,
+                                                        "aarch64",
+                                                        "phytium",
+                                                        IMAGE_DATE,
+                                                        randomStr,
+                                                        cacheSrcDir,
+                                                        ["do_populate_sdk"])
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
