@@ -161,3 +161,12 @@ do_write_mcs_qemuboot_dtb:qemu-aarch64() {
 }
 
 addtask do_write_mcs_qemuboot_dtb after do_write_qemuboot_conf before do_image
+
+# Task-level dependencies ensure native tools are built and their sysroots
+# are populated BEFORE do_write_mcs_qemuboot_dtb runs.
+# - qemu-system-native: provides qemu-system-aarch64 for dumpdtb
+# - dtc-native: provides dtc for dtb↔dts conversion
+# - lopper-native: provides lopper binary (conditional on lopper-devicetree)
+# - lopper-ops: provides user lop .dts files in recipe-sysroot (conditional)
+do_write_mcs_qemuboot_dtb[depends] += "qemu-system-native:do_populate_sysroot"
+do_write_mcs_qemuboot_dtb[depends] += "${@bb.utils.contains('MCS_FEATURES', 'lopper-devicetree', 'lopper-native:do_populate_sysroot lopper-ops:do_populate_sysroot dtc-native:do_populate_sysroot', 'dtc-native:do_populate_sysroot', d)}"
