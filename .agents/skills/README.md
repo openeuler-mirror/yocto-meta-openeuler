@@ -18,6 +18,7 @@
 | [toolchain-git-flow](toolchain-git-flow) | 工作流 | 提交代码、推送至个人 fork，确保符合 openEuler DCO/Commit 规范。 |
 | [git-commit](git-commit) | 工作流 | 编写符合 openEuler 规范的 commit message：标题格式、正文 why/what、Signed-off-by。 |
 | [toolchain-architecture](toolchain-architecture) | 知识 | 理解统一目录结构、oebuild 集成、向后兼容符号链接与容器镜像设计。 |
+| [sdk-verify](sdk-verify) | 构建/测试 | 验证 SDK（do_populate_sdk 产物）是否支持内核驱动与用户态 C/C++ 开发，一键交叉编译 + QEMU 运行验证，覆盖 qemu-aarch64/qemu-arm/qemu-riscv64。 |
 
 ---
 
@@ -47,6 +48,12 @@
   构建 qemu-aarch64 镜像（`oebridge`+`ibrobot`+`systemd`）、创建 100G 大容量磁盘作根盘、从盘启动 qemu，并在 guest 内完成 IB-Robot 的
   `setup.sh`/`build.sh`/`run_tests.sh` 功能测试（组件单测/colcon + `inference` 推理闭环冒烟，ACT 模型 zip）；区分 qemu（无 NPU，`TORCH_DEVICE_BACKEND_AUTOLOAD=0`）与真机（Ascend+CANN，torch_npu 可用，跑完整 ACT 推理闭环）；覆盖 `torch_npu` 自动加载、
   ROS 域守卫、跳过包互导、`colcon test` 误报、resnet18 离线缓存等典型失败的诊断与修复。
+- **SDK 验证 ([sdk-verify](sdk-verify))**: 端到端验证 SDK 安装包能力——用
+  一键脚本自动完成 SDK 安装、用户态 C/C++ 交叉编译、内核驱动模块编译
+  （kernel-devsrc），经 `oebuild runqemu nographic` 启动 qemu 镜像并
+  scp 传输产物、SSH 登录运行验证（insmod + 运行测试程序），覆盖
+  qemu-aarch64/qemu-arm/qemu-riscv64，用于 SDK 生成或内容改动后的
+  快速回归。
 
 ### 工作流
 
