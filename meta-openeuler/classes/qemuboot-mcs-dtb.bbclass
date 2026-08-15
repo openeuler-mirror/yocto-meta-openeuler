@@ -13,6 +13,21 @@
 # QB_SYSTEM_NAME requires qemu-system-native
 DEPENDS += "qemu-system-native"
 
+# When lopper-devicetree is in MCS_FEATURES, pull in lopper tools and
+# user lop files so that peripheral partition operations are applied
+# to the QEMU-generated device tree.
+DEPENDS += "${@bb.utils.contains('MCS_FEATURES', 'lopper-devicetree', 'lopper-ops lopper-native', '', d)}"
+
+# Directory where user lopper operation files (.dts) are installed by
+# the lopper-ops recipe (populated via recipe-sysroot).
+LOPS_DIR = "${WORKDIR}/recipe-sysroot/${libdir}/lops"
+
+# Output directory for extracted guest-side device trees.
+LOP_DTS_OUT_DIR = "${B}/lop_dts"
+
+# Whether lopper-devicetree is enabled (expanded at parse time).
+LOPPER_ENABLED = "${@bb.utils.contains('MCS_FEATURES', 'lopper-devicetree', '1', '0', d)}"
+
 write_mcs_section() {
     # remove last '}'
     sed -i '$ d' $1
@@ -49,6 +64,23 @@ write_mcs_section() {
 	END
 }
 
+# Collect -i arguments for all lopper operation files in LOPS_DIR.
+# Mirrors the logic in lopper-devicetree.bbclass so that the same
+# user .dts configs (lop-extract-rtc-for-guest.dts, etc.) are applied.
+apply_lopper_ops() {
+    local args=""
+
+    if [ ! -d "${LOPS_DIR}" ]; then
+        bbfatal_log "qemuboot-mcs-dtb: lopper-devicetree enabled but no lopper-ops found. No such directory: ${LOPS_DIR}"
+    fi
+
+    for lops in "${LOPS_DIR}"/*; do
+        bbnote "lopper: apply ${lops}"
+        args+=" -i ${lops}"
+    done
+    echo ${args}
+}
+
 generate_mcs_qemuboot_dtb() {
     TMP_DTS="tmp.qemu.dts"
     # First: invoke qemu to generate an initial device tree.
@@ -74,6 +106,36 @@ generate_mcs_qemuboot_dtb() {
     QEMUBOOT_DTB_LINK="${IMGDEPLOYDIR}/${QB_DTB_LINK}"
 
     dtc -I dts -O dtb -o ${QEMUBOOT_DTB} ${B}/${TMP_DTS}
+
+    # When lopper-devicetree is enabled, apply user lopper operations to
+    # the generated device tree.  This extracts devices (e.g. RTC) for
+    # the guest OS and removes them from the Linux device tree.
+    if [ "${LOPPER_ENABLED}" = "1" ]; then
+        local include_lops=$(apply_lopper_ops)
+        mkdir -p ${LOP_DTS_OUT_DIR}
+
+        bbnote "lopper: applying peripheral partition operations to ${QEMUBOOT_DTB}"
+        # Use a temp file as lopper output to avoid reading and writing
+        # the same file simultaneously.
+        local LOPPER_OUTPUT="${B}/qemu-lopper-output.dtb"
+
+        lopper -v --werror --enhanced \
+            ${include_lops} \
+            -f -O ${LOP_DTS_OUT_DIR} \
+            -o ${LOPPER_OUTPUT} \
+            ${QEMUBOOT_DTB}
+
+        # Replace the original dtb with the lopper-processed version
+        cp ${LOPPER_OUTPUT} ${QEMUBOOT_DTB}
+
+        # Deploy extracted guest device trees alongside the qemuboot dtb
+        if ls ${LOP_DTS_OUT_DIR}/*.dts 1>/dev/null 2>&1; then
+            for dt in ${LOP_DTS_OUT_DIR}/*.dts; do
+                bbnote "lopper: deploying guest dts ${dt}"
+                cp ${dt} ${IMGDEPLOYDIR}/
+            done
+        fi
+    fi
 
     if [ "${QEMUBOOT_DTB_LINK}" != "${QEMUBOOT_DTB}" ] ; then
         if [ -e "${QEMUBOOT_DTB_LINK}" ] ; then

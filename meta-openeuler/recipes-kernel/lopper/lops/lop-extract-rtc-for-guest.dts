@@ -3,20 +3,20 @@
 / {
 	compatible = "system-device-tree-v1";
 	lops {
-		// Extract a serial(serial@7e201a00) from rpi4 device tree
-		// and output it to zephyr-rpi4.dts
+		// Select the QEMU virt device tree (compatible = "linux,dummy-virt")
 		lop_1: lop_1 {
 			compatible = "system-device-tree-v1,lop,select-v1";
 			// clear any old selections
 			select_1;
-			select_2 = "/:compatible:raspberrypi,4-model-b\0brcm,bcm2711";
+			select_2 = "/:compatible:linux,dummy-virt";
 		};
+
 		lop_1_1: lop_1_1 {
 			compatible = "system-device-tree-v1,lop,code-v1";
 			code = "
 				tree.process = False
 				if __selected__:
-					print( 'Compatible dts (rpi4) found: %s' % node )
+					print('Compatible dts (qemu virt) found: %s' % node)
 					tree.process = True
 
 				if __selected__:
@@ -25,23 +25,28 @@
 					return False
 				";
 
+			// Build a virtual tree containing only the RTC node
 			lop_1_1_1 {
 				compatible = "system-device-tree-v1,lop,tree";
 				cond = <&lop_1>;
-				tree = "zephyr-tree";
-				nodes = "serial@7e201a00";
+				tree = "guest-tree";
+				nodes = "pl031@9010000";
 			};
+
+			// Output the guest tree to rtc-for-guest.dts
 			lop_1_1_2 {
 				compatible = "system-device-tree-v1,lop,output";
 				cond = <&lop_1>;
-				tree = "zephyr-tree";
-				outfile = "zephyr-rpi4.dts";
+				tree = "guest-tree";
+				outfile = "rtc-for-guest.dts";
 				nodes = "*";
 			};
+
+			// Delete the RTC node from the Linux device tree
 			lop_1_1_3 {
 				compatible = "system-device-tree-v1,lop,modify";
 				cond = <&lop_1>;
-				modify = "/soc/serial@7e201a00/::";
+				modify = "/pl031@9010000/::";
 			};
 		};
 	};
