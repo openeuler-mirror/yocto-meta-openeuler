@@ -4,7 +4,17 @@ PR = "r1"
 LICENSE = "CLOSED"
 
 inherit python3native
-DEPENDS = "ninja-native libboundscheck python3-jinja2-native"
+DEPENDS = "ninja-native libboundscheck python3-jinja2-native python3-pyyaml-native"
+
+# The OHOS build.sh / GN invokes python scripts via /usr/bin/env python3,
+# which resolves to the container's system python3 instead of the bitbake
+# native python3.  Export PYTHONPATH so the system python3 can still locate
+# modules (jinja2, markupsafe, ...) provided by python3-jinja2-native through
+# the per-recipe native sysroot, avoiding a hard dependency on system-level
+# pip packages.
+do_compile:prepend() {
+    export PYTHONPATH="${STAGING_LIBDIR_NATIVE}/${PYTHON_DIR}/site-packages${PYTHONPATH:+:${PYTHONPATH}}"
+}
 
 openHarmony_release_version = "OpenHarmony-v3.2-Release"
 pkg-build = "build-${openHarmony_release_version}"

@@ -30,7 +30,7 @@ do_unpack:append() {
 }
 
 do_extract_device_auth_source() {
-    tar -oxf ${DL_DIR}/${pkg-device-auth}.tar.gz -C ${WORKDIR}/
+    tar -oxf ${WORKDIR}/security_device_auth/${pkg-device-auth}.tar.gz -C ${WORKDIR}/
 }
 
 do_configure:prepend() {
