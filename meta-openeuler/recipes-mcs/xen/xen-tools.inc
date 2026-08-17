@@ -786,6 +786,7 @@ do_install() {
         ${localstatedir}/lock/xen \
         ${localstatedir}/lock/subsys \
         ${localstatedir}/lib/xen \
+        ${localstatedir}/lib/xenstored \
         "
 
     # install volatiles using populate_volatiles mechanism
