@@ -11,7 +11,8 @@ argument-hint: "描述任务，例如 '构建带 ibrobot 的 qemu-aarch64 镜像
 跑 ACT 推理闭环（mock-sim + 策略），和调试中遇到的典型
 失败（环境变量、torch_npu、ROS 域守卫、跳过包互导等）的诊断与修复。
 
-> 关联文档：IB-Robot 仓库内的 `TESTING_GUIDE.md`（测试细节与环境变量总览）、`run_tests.sh`（测试脚本）。
+> 关联文档：本技能目录附带 `TESTING_GUIDE.md`（完整测试指南）与
+> `run_tests.sh`（测试脚本）；权威版本在 IB-Robot 仓库内。
 
 ---
 
@@ -362,7 +363,7 @@ colcon build --packages-select vlm_task_planner manipulation_service semantic_ma
 
 - **8 个 FAIL 全为环境/数据/版本类，无 IB-Robot 功能代码 bug**。
 - C++ 6 组件全部功能正常（2 个仅 lint 失败、1 个仅 vendored 测试夹具版本错配，控制器逻辑 gmock 均过）。
-- 详见 IB-Robot 仓库 `TESTING_GUIDE.md` 第 6 章。
+- 详见本技能目录 `TESTING_GUIDE.md` 第 6 章。
 
 ---
 

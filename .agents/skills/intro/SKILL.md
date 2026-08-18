@@ -21,6 +21,8 @@ Agent 在触发本 skill 时，**必须首先**向用户展示以下欢迎文案
 | **yocto-openeuler-recipe** | 新增/更新 BitBake recipe 与 bbappend，file:// SRC_URI 适配 |
 | **sstate-cache-debug** | 诊断 sstate-cache 未命中，bitbake-diffsigs 对比签名、export 哈希污染 |
 | **toolchain-build** | 通过 `menu.sh` 构建 GCC / LLVM / Clang+musl 交叉编译链（Docker 容器化） |
+| **sdk-verify** | 一键验证 SDK：交叉编译 C/C++ + 内核模块，qemu 内 SSH 验证 |
+| **ibrobot-test** | IB-Robot 跨平台测试：qemu-aarch64（无 NPU）/ 真机昇腾（ACT 推理闭环） |
 
 ### 工作流
 
@@ -61,6 +63,8 @@ oebuild 和 menu.sh 的关系      → toolchain-architecture
 bbappend / SRC_URI 适配        → yocto-openeuler-recipe
 sstate 缓存未命中/意外重建      → sstate-cache-debug
 native 任务哈希不一致           → sstate-cache-debug
+验证 SDK / 内核模块编译        → sdk-verify
+IB-Robot 测试 / 推理闭环       → ibrobot-test
 发送 PR 到上游                 → send-pr
 创建 merge request             → send-pr
 有哪些功能 / help / 入门       → intro (本技能)
@@ -95,14 +99,10 @@ cd "$(git rev-parse --show-toplevel)" && \
 
 ## 远端路由优先级
 
-当用户在 yocto-meta-openeuler 仓库里提到 PR / merge request / Issue / review / comments，且没有明确说 GitHub / github.com 时，Agent 应默认使用 GitCode/AtomGit 相关操作。
+当用户在 yocto-meta-openeuler 仓库里提到 PR / merge request / Issue / review /
+comments，且没有明确说 GitHub / github.com 时，Agent 应默认使用 GitCode/AtomGit
+相关操作。
 
-仓库远端配置因开发者而异：
-- `upstream`：主仓库（`openeuler/yocto-meta-openeuler`）
-- 个人 fork：远端名（如 `origin`、`myrepo`）与用户名因人而异
-
-涉及推送或 PR 的操作前，**必须**先运行 `git remote -v` 确认实际配置。
-PR 创建链接格式：
-`https://gitcode.com/<username>/yocto-meta-openeuler/merge_requests/new?source_branch=<current-branch>`
-
-完整 PR 流程见 `send-pr` 技能。
+仓库远端配置因开发者而异（`upstream` 指主仓库，个人 fork 远端名与用户名
+因人而异），涉及推送或 PR 的操作前**必须**先运行 `git remote -v` 确认实际
+配置。完整 PR 流程见 `send-pr` 技能。

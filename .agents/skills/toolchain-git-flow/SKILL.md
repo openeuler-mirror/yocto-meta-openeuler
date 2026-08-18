@@ -46,22 +46,34 @@ openEuler Embedded 提交规范（DCO sign-off + gitlint 规则）。
 - **Footer（标签）**：
   - 必须包含 `Signed-off-by: Name <email>`
   - `Signed-off-by` 必须是最后一行
-  - 允许的标签：`Signed-off-by`、`Closes`、`Fixes`、`Co-developed-by`、`Link`、`Assisted-by`
+  - 允许的标签：`Signed-off-by`、`Closes`、`Fixes`、`Co-developed-by`、
+    `Co-Authored-By`、`Link`、`Assisted-by`
+  - AI 协助生成的提交须在 `Signed-off-by` 之前追加
+    `Co-Authored-By: <本次提交实际使用的AI模型名称及版本>`（见下节）
   - 标签首字母大写，冒号后一个空格
   - `Fixes` 格式：`Fixes: <12-char-SHA1>(<original-commit-title>)`
   - `Closes` 格式：`Closes: https://gitee.com/openeuler/<repo>/pull/<NUM>`
 
-### 2. 强制要求
+### 2. AI 元数据（Co-Authored-By）
+
+- AI 协助生成的提交必须披露模型信息，且与 PR 披露保持一致（社区门禁校验）。
+- **模型名称及版本必须每次提交时动态确定**：取当前会话实际使用的 AI 模型，
+  不得照抄历史 commit 或文档示例中的模型名；无法确定时先向用户确认。
+- 写作细节与格式示例见 [git-commit 技能](../git-commit/SKILL.md)，
+  PR 侧元数据见 [send-pr 技能](../send-pr/SKILL.md)。
+
+### 3. 强制要求
 
 - **所有提交必须签名**：使用 `git commit -s`（或 `-m` + 手动添加 `Signed-off-by`）。
   确保 `Signed-off-by` 行在最后。
-- **远程仓库**：
-  - `origin`：个人 fork（用于推送代码）
-  - `upstream`：主项目仓库（用于提交 Pull Request）
+- **远程仓库**：远端配置因开发者而异，操作前先运行 `git remote -v` 确认：
+  - `upstream`：通常指主仓库 `openeuler/yocto-meta-openeuler`（PR 目标）
+  - 个人 fork：远端名（常见 `origin`、`myrepo`）与用户名因人而异，
+    下文以 `<fork远端名>` 指代
 - **gitlint 验证**：提交后运行 gitlint 检查（仓库已配置 `.gitlint` 和
   `scripts/gitlint/openeuler_embedded_commit_rules.py`）。
 
-### 3. openEuler Embedded 特有规则
+### 4. openEuler Embedded 特有规则
 
 仓库的 gitlint 规则文件（`.gitlint`）定义了以下额外检查：
 - body 最少 15 字符
@@ -116,44 +128,28 @@ git log --oneline -5
    ```bash
    git commit -s  # 打开编辑器
    ```
-4. 如果**不是"仅本地提交"**：
-   - 执行 `git push origin <branch>`（amend 推送使用 `--force-with-lease`）。
-   - 获取远端信息：`git remote get-url origin`。
+4. 如果**不是“仅本地提交”**：
+   - 执行 `git push <fork远端名> <branch>`（amend 推送使用 `--force-with-lease`）。
    - 检查 PR：push 输出或远端 hook 响应中是否包含 PR/MR URL。
      如果包含，提取 PR 编号。
    - **如果已有 PR**：PR 描述现在已过时，需要同步更新。分析 PR 中所有
      commit，重新生成完整的 PR 描述（中文），覆盖更新。
-   - **如果没有 PR**：生成 AtomGit PR 链接：
-     `https://atomgit.com/<username>/yocto-meta-openeuler/merge_requests/new?source_branch=<current-branch>`
-     并从提交信息 body 组成 PR 描述。
+   - **如果没有 PR**：按 [send-pr 技能](../send-pr/SKILL.md) 的 GitCode 流程
+     创建 PR（GitCode API，PR 标题与描述用中文，并包含 AI 参与声明与
+     Agent 元数据）。
 
-## PR 描述格式
+## PR 描述要求
 
-PR 描述应使用**中文**，包含以下部分：
-
-```
-### 背景
-<为什么需要这个 PR>
-
-### 主要变更
-<具体做了什么>
-
-### 关键修复（如有）
-<bug 修复列表>
-
-### 使用方式
-<代码示例>
-
-### 提交列表
-<commit 列表>
-```
+PR 描述使用**中文**，内容至少覆盖：背景、改动说明、影响范围、测试建议、
+提交列表；AI 协助时必须附 AI 参与声明与 Agent 元数据（平台信息、模型信息
+动态确定）。完整模板见 [send-pr 技能](../send-pr/SKILL.md)。
 
 ## 常用命令参考
 
 | 操作 | 命令 |
 | --- | --- |
-| 推送到个人 fork | `git push origin <branch>` |
-| 强制推送（amend） | `git push origin <branch> --force-with-lease` |
+| 推送到个人 fork | `git push <fork远端名> <branch>` |
+| 强制推送（amend） | `git push <fork远端名> <branch> --force-with-lease` |
 | 签名提交 | `git commit -s` |
 | 撤销最近提交（保留改动） | `git reset --soft HEAD~1` |
 | 检查提交信息 | `git log --format="%B" -1` |

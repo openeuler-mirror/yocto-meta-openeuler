@@ -228,7 +228,6 @@ oebuild bitbake openeuler-image-tiny --with-docker-image=my-image:tag
 docker exec <container_name> bash -c "pkill -f bitbake; pkill -f cooker"
 # 查找容器名：
 docker ps
-# 本工作区容器通常名为：gallant_pike
 ```
 
 #### 预期成功输出
@@ -413,8 +412,8 @@ oebuild bitbake <target>
 ### 构建挂起或容器过期
 
 ```bash
-docker ps                    # 查找容器名（如 gallant_pike）
-docker exec gallant_pike bash -c "pkill -f bitbake; pkill -f cooker"
+docker ps                    # 查找容器名（Docker 随机名，按实际输出替换）
+docker exec <container_name> bash -c "pkill -f bitbake; pkill -f cooker"
 oebuild clear docker         # 清理已停止的容器
 ```
 

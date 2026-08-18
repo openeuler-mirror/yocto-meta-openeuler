@@ -13,7 +13,7 @@ argument-hint: "要提交/改写的改动描述，例如 '修复 openeuler.bbcla
 ## 格式
 
 ```
-<scope>: <what changed, imperative mood, ≤72 chars>
+<scope>: <what changed, imperative mood, ≤72 chars 推荐>
 <blank line>
 <body — why and what, NOT how>
 <blank line>
@@ -25,7 +25,8 @@ Signed-off-by: Name <email>
 
 - 使用 `<scope>: <summary>` —— scope 为文件/组件/recipe 名（不含路径）。
 - 祈使句：`fix`、`add`、`remove`、`use`，而非 `fixed`/`adds`。
-- ≤ 72 字符，结尾无句号。
+- 长度：门禁硬上限 80 字符（revert 提交 102，见 `.gitlint`），推荐 ≤ 72；
+  结尾无句号。
 - 示例：
   - `openeuler.bbclass: avoid empty subdirs in DL_DIR during checksum evaluation`
   - `python3-idna: consolidate CVE patch into versioned .bb file`
@@ -70,11 +71,13 @@ regardless of whether libdir has been modified by ros_libdir_set...
 ## Sign-off 与 AI 元数据
 
 - 始终以 `Signed-off-by: Name <email>` 作为最后一行，使用 `git commit -s` 自动追加。
-- AI 协助生成的提交必须在 `Signed-off-by` 之前追加 `Co-Authored-By:` 行，
-  标注实际使用的 AI 模型名称及版本（随模型变化更新）：
+- AI 协助生成的提交必须在 `Signed-off-by` 之前追加 `Co-Authored-By:` 行。
+- **模型名称及版本必须每次提交时动态确定**：取当前会话实际使用的 AI 模型，
+  不得照抄历史 commit 或文档示例中的模型名——模型会更换，历史信息不一定正确。
+  若无法确定，向用户确认后再提交：
 
 ```
-Co-Authored-By: <AI模型名称及版本>
+Co-Authored-By: <本次提交实际使用的AI模型名称及版本>
 ```
 
 ## 单一逻辑变更一次提交
@@ -120,8 +123,9 @@ git commit -s -F /tmp/msg2.txt
 
 ## 检查清单
 
-- [ ] 标题为 `<scope>: <summary>`，祈使句，≤72 字符
+- [ ] 标题为 `<scope>: <summary>`，祈使句，≤ 80 字符（门禁，推荐 ≤ 72）
 - [ ] 正文说明 why/what，3–4 行，按 72 字符换行
 - [ ] 末行为 `Signed-off-by`（`git commit -s`）
-- [ ] AI 协助生成时包含 `Co-Authored-By: <AI模型名称及版本>`（在 `Signed-off-by` 之前）
+- [ ] AI 协助生成时包含 `Co-Authored-By: <本次提交实际使用的AI模型名称及版本>`（在 `Signed-off-by` 之前）
+- [ ] `Co-Authored-By` 模型名为**本次提交动态确定**（非历史 commit / 文档示例照抄）
 - [ ] 按单一逻辑变更拆分 commit

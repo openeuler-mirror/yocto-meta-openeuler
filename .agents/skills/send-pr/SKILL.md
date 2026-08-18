@@ -82,8 +82,12 @@ curl -s -X POST "https://gitcode.com/api/v5/repos/openeuler/yocto-meta-openeuler
 **元数据填写要求**（依据 openEuler 社区生成式AI工具使用与开源贡献策略，
 来源：<https://www.openeuler.openatom.cn/zh/community/ai-coding-assistants/>）：
 
-- Agent平台信息（Tool）：**平台名称及版本**，如 `Qoder 1.8.1`、`Claude Code 2.1.156`
-- 模型信息（Model）：**模型名称及版本**，如 `DeepSeek-V4-Flash`、`GPT-4o`
+- Agent平台信息（Tool）：**平台名称及版本**，取当前会话实际使用的 Agent
+  平台（如 `<Agent平台名称及版本>`），不得照抄历史或示例
+- 模型信息（Model）：**模型名称及版本**，取当前会话实际使用的模型
+  （如 `<AI模型名称及版本>`）；平台与模型信息均必须**每次提交时动态
+  确定**，不得照抄历史 commit 或文档示例中的名称——平台与模型会更换，
+  历史信息不一定正确；无法确定时先向用户确认再提交
 - Prompt摘要：简要概述核心提示词或核心意图
 - **一致性门禁**：Commit Message 中 `Co-Authored-By` 的模型信息必须与 PR
   披露的模型信息一致，不一致会被社区门禁拦截
@@ -122,10 +126,11 @@ __3. Prompt摘要: <核心提示词或核心意图>
 
 **Commit Message 元数据：**
 
-AI 协助生成的提交必须在 Footer 中追加（`Signed-off-by` 仍为最后一行）：
+AI 协助生成的提交必须在 Footer 中追加（`Signed-off-by` 仍为最后一行），
+模型名称及版本与 PR 元数据一致，取**本次提交动态确定**的当前会话模型：
 
 ```
-Co-Authored-By: <AI模型名称及版本>
+Co-Authored-By: <本次提交实际使用的AI模型名称及版本>
 ```
 
 ---
@@ -168,7 +173,8 @@ git checkout master
 - [ ] 分支已推送到个人 fork 远端
 - [ ] PR 标题为中文
 - [ ] PR 描述包含：背景、改动说明、影响范围、测试建议
-- [ ] PR 描述包含 AI 参与声明与 Agent 元数据（Agent平台信息**含版本号**、模型信息、Prompt摘要）
+- [ ] PR 描述包含 AI 参与声明与 Agent 元数据（Agent平台信息**含版本号**、模型信息、Prompt摘要，均为本次动态确定）
 - [ ] PR 披露的模型信息与 Commit Message 的 `Co-Authored-By` **一致**（门禁要求）
+- [ ] 模型信息为**本次提交动态确定**（非历史 commit / 文档示例照抄）
 - [ ] Commit Message 包含 `Co-Authored-By`（AI 协助生成时）
 - [ ] PR 创建后已切回 master
