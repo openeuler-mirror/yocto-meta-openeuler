@@ -56,6 +56,19 @@ MicRun 当前的运行时配置解析分成两步：
 - 当 ``MICRUN_CONF_FILE`` 指向的文件解析失败时，当前实现会记录告警并回退默认配置栈。
 - 当注解或 CRI options 指定的配置文件解析失败时，当前创建链路会直接报错返回。
 - 无论配置文件从哪里来，annotations 都会在最后一步覆盖最终值。
+- 注解来源的配置文件属于 pod 作者可控输入：其中的宿主机路径类键
+  （``state_dir``、``firmware_path``）会被忽略并回退默认值，防止非特权 pod 驱动
+  root 权限的 shim 在任意宿主机位置创建目录、写入状态/缓存文件或读取任意文件。
+  标量类键（如 ``debug``、``container_minmem``）不受影响。CRI runtime options、
+  环境变量和默认发现等管理员侧来源保留全部键。
+- **``state_dir`` 的恢复发现**：若 ``state_dir`` 只通过 CRI RuntimeClass
+  ``ConfigPath`` 配置（宿主机文件未固定同名值），shim 重启做恢复时拿不到
+  Create 请求、看不到该值。为避免恢复在默认 ``/run/micrun`` 扑空，shim 每次
+  绑定非默认 ``state_dir`` 时会在默认状态根下记录指针文件
+  ``/run/micrun/state-dir``，重启恢复与 one-shot ``delete`` 清理会优先采纳该指针
+  （宿主机显式配置仍然优先）。指针位于 tmpfs：shim 重启（domain 存活、恢复
+  有意义）时可用；guest 整机重启后随 domain 一起消失，空状态即为正确结果。
+  如需绝对确定性，仍建议在宿主机配置文件固定 ``state_dir``。
 
 配置文件格式
 ------------
@@ -190,6 +203,11 @@ TOML 配置示例
 Mica 节配置
 -----------
 
+.. note::
+
+   ``max_client_number``、``enable_host_container``、``image_path``、``aux_file_path``
+   为 micad 侧配置键（与本文件同处一份配置时由 micad 消费），MicRun 读取配置时不解析这些键。
+
 .. list-table::
    :widths: 30 15 20 35
    :header-rows: 1
@@ -205,15 +223,23 @@ Mica 节配置
    * - ``max_client_number``
      - 整数
      - ``0`` (无限制)
-     - 最大客户端数量（0表示无限制）
+     - 最大客户端数量（0表示无限制）。**由 micad 消费，MicRun 忽略**
    * - ``firmware_path``
      - 字符串
      - -
      - 默认固件路径
+   * - ``pause_image``
+     - 字符串
+     - ``registry.k8s.io/pause``
+     - sandbox pause 镜像（配置占位，暂无下游消费）
+   * - ``state_dir``
+     - 字符串
+     - ``/run/micrun``
+     - 运行时状态根目录；亦可通过 CRI RuntimeClass ``ConfigPath`` 配置
    * - ``enable_host_container``
      - 布尔
      - ``false``
-     - 启用主机容器
+     - 启用主机容器。**由 micad 消费，MicRun 忽略**
 
 Resource 节配置
 ---------------
@@ -233,7 +259,7 @@ Resource 节配置
    * - ``container_maxmem``
      - 整数
      - *系统相关*
-     - 容器最大内存 (MiB)，默认使用系统内存高阈值
+     - **尚未接线**：解析后无消费点，不会形成容器内存上限；实际生效的只有"限制不得超过宿主总内存"校验
    * - ``container_minmem``
      - 整数
      - ``32``
@@ -249,7 +275,7 @@ Resource 节配置
    * - ``hugepage_enable``
      - 布尔
      - ``false``
-     - 启用 HugePage 支持（仅 Xen）
+     - **配置文件形态尚未接线**：实际 HugePage 开关来自宿主探测（气球驱动等），仅注解 ``org.openeuler.micrun.runtime.hugepage_enable`` 可覆盖；此配置键的值当前不被读取
 
 Static Resource Management
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -296,11 +322,11 @@ Xen 节配置
    * - ``image_path``
      - 字符串
      - -
-     - Xen 镜像路径
+     - Xen 镜像路径。MicRun 运行时不读取此键，Xen 底座镜像实际取自容器镜像内的 ``image.bin``；该键供 MICA 工具链使用
    * - ``aux_file_path``
      - 字符串
      - -
-     - Xen 辅助文件路径
+     - Xen 辅助文件路径。**由 MICA 侧消费，MicRun 解析但不使用**
 
 配置优先级示例
 ==============
@@ -318,7 +344,7 @@ Xen 节配置
 优先级：注解最终 overlay > 已解析出的 ``RuntimeConfig`` > 默认值
 
 示例 2：环境变量选择配置文件
----------------------------
+----------------------------
 
 .. code-block:: bash
 
@@ -469,7 +495,7 @@ Drop-in 目录允许将配置拆分为多个文件：
 .. code-block:: json
 
    {
-     "Log": {
+     "log": {
        "level": "info",
        "file": "/var/log/mica/mica-runtime.log",
        "color": false,

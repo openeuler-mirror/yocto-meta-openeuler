@@ -100,17 +100,17 @@ MicRun 是一个容器运行时，用于以容器的方式管理 RTOS（实时�
      - 启动系统
      - 启动构建好的系统镜像
    * - 3
-     - 构建 RTOS 镜像
+     - 构建 RTOS 容器镜像
      - 使用 mica-image-builder 打包固件
    * - 4
-     - 导入镜像
-     - 将镜像导入 containerd
-   * - 5
-     - 注册运行时
      - 在 containerd 中注册 MicRun
+     - 注册运行时
+   * - 5
+     - 导入并运行 RTOS 容器
+     - 导入镜像、启动并测试
    * - 6
-     - 运行容器
-     - 启动并测试 RTOS 容器
+     - （可选）接入 Kubernetes 集群
+     - K3s RuntimeClass 与 Pod 方式使用
 
 步骤 1：构建系统镜像
 ====================
@@ -150,6 +150,9 @@ openEuler Embedded 基础构建过程可参考：
    * - containerd
      - ≥1.7.19
      - 容器引擎（构建时需 ≥1.7.27）
+   * - k3s（可选）
+     - v1.27.15
+     - 边侧 K3s；云侧镜像已验证 ``rancher/k3s:v1.27.15-k3s1``。kubelet 不得新于 apiserver（K8s skew 约束），其他组合未验证
 
 生成构建环境
 ------------
@@ -158,6 +161,8 @@ openEuler Embedded 基础构建过程可参考：
 
    # 安装/更新 oebuild
    # Features: zephyr (RTOS), micrun (runtime), mcs/xen, systemd, containerd
+   # （Zephyr 镜像/固件制作流程已就绪；固件需经 meta-zephyr layer 自行
+   #  构建，当前端到端验证记录为 UniProton）
    oebuild generate -p qemu-aarch64 \
      -f zephyr \
      -f micrun \
@@ -243,7 +248,7 @@ openEuler Embedded 基础构建过程可参考：
      -cpu cortex-a53 -smp 4 -m 4096 \
      -serial mon:stdio -nographic \
      -kernel xen-qemu-aarch64 \
-     -append 'root=/dev/ram0 rw debugshell mem=1536M console=hvc0,115200' \
+     -append 'root=/dev/ram0 rw debugshell mem=1536M console=ttyAMA0,115200' \
      -dtb openeuler-image-qemu-aarch64-*.qemuboot.dtb
 
 **参数说明**：
@@ -279,6 +284,12 @@ openEuler Embedded 基础构建过程可参考：
 
 **QEMU 注意事项**：
 
+* MicRun 的完整生命周期测试必须通过 Xen 启动路径执行。直接用 ``-kernel Image -initrd <rootfs>``
+  启动 Linux 只能验证 rootfs、containerd 和 shim 是否存在；此时 ``/proc/xen/xenbus`` 不存在，
+  MicRun 默认会把宿主 pedestal 判定为 ``unsupported``；只有明确设置
+  ``MICRUN_ENABLE_BAREMETAL=1`` 时，才会进入 baremetal pedestal 路径
+* rootfs 应直接使用构建输出中的 ``openeuler-image-qemu-aarch64-*.rootfs.cpio.gz`` 产物；
+  标准化测试不得重命名、解包或改写该产物
 * QEMU 版本不宜过低，低版本存在影响 Xen 的 bug
 * 确保 Xen DTS 为 Domain-0 预留足够内存（建议 1536M）
 * 如需调整，在 ``conf/local.conf`` 中设置：``QB_XEN_CMDLINE_EXTRA = "dom0_mem=1536M"``
@@ -318,8 +329,8 @@ openEuler Embedded 基础构建过程可参考：
 
 .. code-block:: bash
 
-   # 进入构建产物目录
-   cd <build_dir>/output/micrun-files
+   # 进入一次构建的时间戳产物目录；micrun-files 是其子目录
+   cd <build_dir>/output/<timestamp>
 
    # 初始化 Python 环境
    uv init
@@ -327,7 +338,7 @@ openEuler Embedded 基础构建过程可参考：
    source .venv/bin/activate
 
    # 安装依赖
-   uv pip install -r requirements.txt
+   uv pip install -r micrun-files/requirements.txt
 
 .. note::
 
@@ -335,16 +346,16 @@ openEuler Embedded 基础构建过程可参考：
 
    .. code-block:: bash
 
-      pip install -r requirements.txt
-      python mica-image-builder.py
+      pip install -r micrun-files/requirements.txt
+      python3 micrun-files/mica-image-builder.py --help
 
 交互式构建镜像
 --------------
 
 .. code-block:: bash
 
-   # 启动交互式构建工具
-   uv run mica-image-builder.py
+   # 启动交互式构建工具（不推送镜像仓库，直接导出 tarball）
+   uv run micrun-files/mica-image-builder.py --no-push --export ./exports
 
 根据提示选择：
 
@@ -353,10 +364,10 @@ openEuler Embedded 基础构建过程可参考：
 3. **固件文件**：选择 ``<firmware>.elf`` 或 ``<firmware>.bin`` 文件
 4. **镜像名称**：使用默认或自定义名称
 
-导出镜像
---------
+手动导出镜像
+------------
 
-构建完成后，将镜像导出为 tarball：
+如果构建时没有传 ``--export``，可以手动导出已构建镜像：
 
 .. code-block:: bash
 
@@ -394,9 +405,10 @@ openEuler Embedded 基础构建过程可参考：
 
 **配置说明**：
 
-* ``version = 2``：显示声明配置文件格式版本
+* ``version = 2``：显式声明配置文件格式版本
 * ``runtime_type``：指定运行时类型为 MicRun 的 shimv2 实现 ``io.containerd.mica.v2``
-* ``pod_annotations``：声明 MicRun 支持的注解前缀，用于接收来自 Kubernetes/Pod 的配置
+* ``pod_annotations`` / ``container_annotations``：声明 MicRun 支持的注解通配规则，
+  用于接收来自 Kubernetes/Pod 的配置。containerd 使用通配匹配，需写成 ``org.openeuler.micrun.*``
 
 .. note::
 
@@ -485,7 +497,7 @@ openEuler Embedded 基础构建过程可参考：
      - ``true``/``false``
    * - ``org.openeuler.micrun.container.auto_close_timeout``
      - 自动关闭超时时间
-     - ``30s``（默认），支持 ``60s``、``5m`` 等格式
+     - ``30s``\ （默认），支持 ``60s``、``5m`` 等格式
 
 .. note::
 
@@ -522,7 +534,7 @@ nerdctl 是 Docker 兼容的 CLI 工具，与 ctr 相比提供更友好的用户
    **重要说明**：
 
    * ``--network=none``：RTOS 容器通常不需要网络，这是测试验证过的配置
-   * 如果需要网络，可以尝试省略此参数或配置 CNI 网络插件
+   * 网络场景当前未支持、未验证（交付规格面向无网络配置场景；省略 ``--network=none`` 属未定义行为）
 
 **管理容器**：
 
@@ -623,9 +635,15 @@ nerdctl 使用 ``-l`` (label) 参数来传递 MicRun 的注解配置：
 
 **退出容器**：
 
-* 在 TTY 中输入 ``exit`` 命令并回车，容器会停止（推荐方式）
-* 使用 ``Ctrl+P`` 然后 ``Ctrl+Q`` 可以**临时退出**容器（容器继续运行，仅 TTY 模式）
-* 外部终止：使用 ``ctr task kill -s SIGTERM <容器名>`` 或 ``SIGKILL``
+* 停止容器：在外部执行 ``nerdctl stop <容器名>`` 或 ``ctr task kill -s SIGTERM <容器名>``；
+  TTY 会话内按 ``Ctrl+C`` 会被转换为 interrupt/stop（退出状态 130）
+* 在 UniProton shell 内输入 ``exit`` 是兼容兜底的退出方式
+* 使用 ``Ctrl+P`` 然后 ``Ctrl+Q`` 可以**临时退出**\ 容器（容器继续运行，仅 TTY 模式）
+
+.. note::
+
+   ``Ctrl+C`` 只在 TTY 会话里表示停止容器。非 TTY 或管道输入中的 ``0x03``
+   仍按普通输入字节处理，避免破坏脚本和二进制输入。
 
 **Detach 和 Attach 功能说明**：
 
@@ -679,7 +697,7 @@ nerdctl 使用 ``-l`` (label) 参数来传递 MicRun 的注解配置：
 **命名空间说明**：
 
 * ``ctr`` 默认使用 ``default`` 命名空间
-* ``nerdctl`` 在此 openEuler Embedded 环境中默认使用 ``default`` 命名空间（与标准 nerdctl 不同，标准版本默认使用 ``k8s.io``）
+* ``nerdctl`` 在此 openEuler Embedded 环境中默认使用 ``default`` 命名空间，与标准 nerdctl 的默认一致；``k8s.io`` 是 K8s/CRI 场景下容器所在的命名空间，由 kubelet/crictl 使用
 * 可以用 ``ctr -n <namespace>`` 或 ``nerdctl -n <namespace>`` 来指定命名空间
 * 使用 ``ctr namespace ls`` 或 ``nerdctl namespace ls`` 查看所有命名空间
 
@@ -778,7 +796,8 @@ MicRun 在 Kubernetes 中的角色
 
 **Q：必须使用 K3s 吗？**
 
-**A**：不是必须的。MicRun 兼容标准 Kubernetes（1.28+），但 K3s 更轻量，适合边缘场景。
+**A**：不是必须的。MicRun 面向标准 Kubernetes CRI/RuntimeClass 集成；云侧和边侧
+Kubernetes/K3s 版本应保持兼容（已验证组合见 :doc:`kubernetes/index`）。K3s 更轻量，适合边缘场景。
 
 **Q：可以在单节点测试吗？**
 
@@ -786,7 +805,9 @@ MicRun 在 Kubernetes 中的角色
 
 **Q：如何监控 RTOS 容器状态？**
 
-**A**：使用 ``kubectl get pods`` 和 ``kubectl describe pod`` 查看。详细日志在边侧的 ``/var/log/mica/mica-runtime.log``（如果日志目录不存在，请先创建：``sudo mkdir -p /var/log/mica``）。
+**A**：使用 ``kubectl get pods`` 和 ``kubectl describe pod`` 查看。详细日志在边侧的
+``/var/log/mica/mica-runtime.log``\ （仅 debug 构建输出文件日志，release 构建日志走 journald。
+如果日志目录不存在，请先创建：``sudo mkdir -p /var/log/mica``）。
 
 **Q：Pod 无法启动怎么办？**
 
@@ -825,7 +846,7 @@ Q：如何调试容器启动问题？
 
 **A**：
 
-1. 查看 MicRun 日志：``tail -f /var/log/mica/mica-runtime.log`` (需先创建目录)
+1. 查看 MicRun 日志：``tail -f /var/log/mica/mica-runtime.log``\ （仅 debug 构建；需先创建目录）
 2. 查看 containerd 日志：``journalctl -u containerd -f``
 
 Q：遇到 ``ctr: task xxx: already exists`` 错误怎么办？

@@ -47,7 +47,7 @@ MicRun 简介
 什么是 MicRun
 ==============
 
-MicRun 是一个基于 containerd shimv2 的容器运行时,专为 Mica 项目设计,用于在同一 SoC 的不同 CPU 核上运行 RTOS(实时操作系统)。它是 openEuler Embedded 混合关键性系统(MCS)生态的重要组成部分。
+MicRun 是一个基于 containerd shimv2 的容器运行时，专为 Mica 项目设计，用于在同一 SoC 的不同 CPU 核上运行 RTOS(实时操作系统)。它是 openEuler Embedded 混合关键性系统(MCS)生态的重要组成部分。
 
 核心特性
 --------
@@ -56,7 +56,7 @@ MicRun 是一个基于 containerd shimv2 的容器运行时,专为 Mica 项目�
 * **混合部署**: 通过 Xen、Baremetal 等 hypervisor 在不同 CPU 核上运行 RTOS,实现实时与非实时系统共存
 * **云原生集成**: 实现 containerd shimv2 API,与 Kubernetes 生态无缝集成
 * **资源映射**: 将容器资源限制(CPU、内存)转换为底层 hypervisor 的资源分配
-* **镜像分发**: 利用容器镜像仓库管理 RTOS 固件,简化部署流程
+* **镜像分发**: 利用容器镜像仓库管理 RTOS 固件，简化部署流程
 
 技术架构
 ========
@@ -229,7 +229,7 @@ MicRun 是 MICA(Mixed Criticality System,混合关键性系统)框架的容器�
 技术栈
 ======
 
-* **语言**: Go 1.22+ (静态链接,无 CGO)
+* **语言**: Go 1.22+ (静态链接，无 CGO)
 * **容器运行时接口**: containerd shimv2 API
 * **通信协议**: ttrpc (轻量 RPC)
 * **pedestal 支持**:
@@ -237,7 +237,8 @@ MicRun 是 MICA(Mixed Criticality System,混合关键性系统)框架的容器�
   - Xen (完整功能，支持自动检测)
   - Baremetal (基础功能，需显式启用)
 
-* **RTOS 支持**: Zephyr、UniProton
+* **RTOS 支持**: Zephyr、UniProton（端到端验证记录目前为 UniProton；
+  Zephyr 固件需经 meta-zephyr layer 自行构建，测试入口已就绪）
 * **OCI 规范**: 遵循 OCI runtime-spec
 * **构建系统**: Yocto(openEuler yocto 工程集成相关组件进入镜像)
 
@@ -259,13 +260,13 @@ MicRun 是 MICA(Mixed Criticality System,混合关键性系统)框架的容器�
 项目状态
 ========
 
-当前处于 Preview 阶段,支持 Xen 为主要 hypervisor,已实现基本容器生命周期管理。
+当前处于 Preview 阶段，支持 Xen 为主要 hypervisor,已实现基本容器生命周期管理。
 
 下一步
 ======
 
-* :doc:`quick-start` - 快速入门指南,了解如何部署 MicRun 并运行第一个 RTOS 容器
-* :doc:`kubernetes/index` - Kubernetes 集成指南,实现云边协同部署
+* :doc:`quick-start` - 快速入门指南，了解如何部署 MicRun 并运行第一个 RTOS 容器
+* :doc:`kubernetes/index` - Kubernetes 集成指南，实现云边协同部署
 * :doc:`reference/index` - 配置和注解参考文档
 
 

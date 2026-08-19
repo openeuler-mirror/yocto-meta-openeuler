@@ -107,8 +107,10 @@ MicRun Kubernetes 云边协同指南
    较新的 kubelet 在 cgroup v1 环境中可能需要 ``fail-cgroupv1=false``。
    旧版本 kubelet 可能不支持该参数；遇到 ``unknown flag:
    --fail-cgroupv1`` 时，通过 ``K3S_KUBELET_ARGS`` 移除它。已验证的 oEE
-   K3s v1.27 云边测试只保留 ``cgroups-per-qos=false`` 和空
-   ``enforce-node-allocatable``。
+   K3s v1.27（边侧 v1.27.15、云侧 ``rancher/k3s:v1.27.15-k3s1``）云边
+   测试只保留 ``cgroups-per-qos=false`` 和空
+   ``enforce-node-allocatable``；kubelet 版本不得新于 apiserver
+   （K8s skew 约束），其他版本组合未验证。
 
 4. **当前平台不支持 Flannel VXLAN**
 
@@ -652,7 +654,7 @@ MicRun 通过 Pod 的 ``metadata.annotations`` 字段接收配置：
    # 查看 Pod 日志
    kubectl logs <pod_name>
 
-   # 在边缘查看 MicRun 日志
+   # 在边缘查看 MicRun 日志（仅 debug 构建输出文件日志）
    tail -f /var/log/mica/mica-runtime.log
 
 参考资源
