@@ -1,5 +1,10 @@
 inherit oebridge-common
 
+# acl-native provides getfacl/setfacl used by do_dnf_rootfs_prepare/restore to
+# snapshot and restore rootfs ACLs across pseudo, so those tools are on the
+# task PATH without relying on the host/container providing acl.
+DEPENDS += "acl-native"
+
 def get_package_details(base, package_name):
     query = base.sack.query().available().filter(name=package_name)
     if not query:
