@@ -22,6 +22,7 @@ PACKAGECONFIG += " \
 EXTRA_OEMESON += " -Dbackends=drm,libinput,x11 "
 
 # The default RPATH of tinywl points to $ORIGIN/.., which is ineffective and insecure and needs to be removed
+DEPENDS += "patchelf-native"
 do_install:append() {
         patchelf --remove-rpath ${D}${bindir}/tinywl
 }
