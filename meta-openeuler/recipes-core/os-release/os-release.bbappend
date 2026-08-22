@@ -8,9 +8,17 @@
 # what that means!
 
 def get_oee_revision(d):
+    import os
     import git
 
-    repo_dir = oe.path.join(d.getVar("OPENEULER_SP_DIR"), "yocto-meta-openeuler")
+    # Locate yocto-meta-openeuler via the meta-openeuler layer dir (the
+    # workspace layer being built) instead of OPENEULER_SP_DIR, which points
+    # at the download cache and may not hold the layer repo. Mirrors
+    # get_openeuler_epoch in openeuler.bbclass.
+    layer_dir = d.getVar("LAYERDIR_openeuler")
+    if layer_dir is None:
+        raise ValueError("LAYERDIR_openeuler is not defined")
+    repo_dir = os.path.dirname(layer_dir)
 
     repo = git.Repo(repo_dir)
 
