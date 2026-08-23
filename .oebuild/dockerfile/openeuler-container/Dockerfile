@@ -11,7 +11,7 @@ RUN set -eux; \
         autoconf automake m4 bison bc libtool gettext-devel createrepo_c net-tools \
         wget sudo hostname rpcgen texinfo python meson dosfstools mtools libmpc-devel \
         gmp-devel ninja-build numactl-devel make python3 python3-pip screen glibc-locale-archive \
-        iproute xz unzip help2man libstdc++-static gcc g++ rsync python3-devel python3-dnf gdisk umoci skopeo \
+        iproute xz unzip help2man libstdc++-static gcc g++ libatomic rsync python3-devel python3-dnf gdisk umoci skopeo \
         libxslt vim hwdata perl-XML-Parser iptables golang quilt; \
     wget -P /tmp https://repo.oepkgs.net/openeuler/rpm/openEuler-20.03-LTS-SP1/compatible/c7/x86_64/Packages/git-lfs-2.10.0-1.x86_64.rpm; \
     rpm -ivh /tmp/git-lfs-2.10.0-1.x86_64.rpm && rm -f /tmp/git-lfs-2.10.0-1.x86_64.rpm; \
