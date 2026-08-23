@@ -236,16 +236,23 @@ fakeroot python do_dnf_rootfs_prepare(){
     else:
         bb.error("openEuler.repo not found")
     
+    # only add the ROS repo when a ROS DISTRO_FEATURE is enabled: 'oe-ros'
+    # pulls ros-humble-* RPMs from the ROS-SIG repo via oebridge dnf, and 'ros'
+    # enables the Yocto packagegroup-ros. Without this guard the
+    # openEulerROS-humble endpoint (eulermaker ROS-SIG) is fetched for every
+    # oebridge build and 403s for non-ROS builds, aborting do_dnf_rootfs_prepare.
     ros_repo_path = f"{d.getVar('THISDIR')}/../../recipes-devtools/dnf/files/openEulerROS.repo"
-    if os.path.exists(ros_repo_path):
-        subprocess.run(f"cp {ros_repo_path} {repo_dir}",
-            shell=True,
-            cwd=repo_dir)
-        subprocess.run(f"sed -i 's/OPENEULER_VER/{d.getVar('SERVER_VERSION')}/g' openEulerROS.repo",
-            shell=True,
-            cwd=repo_dir)
-    else:
-        bb.error("openEuler.repo not found")
+    distro_features = (d.getVar('DISTRO_FEATURES') or '').split()
+    if ('oe-ros' in distro_features) or ('ros' in distro_features):
+        if os.path.exists(ros_repo_path):
+            subprocess.run(f"cp {ros_repo_path} {repo_dir}",
+                shell=True,
+                cwd=repo_dir)
+            subprocess.run(f"sed -i 's/OPENEULER_VER/{d.getVar('SERVER_VERSION')}/g' openEulerROS.repo",
+                shell=True,
+                cwd=repo_dir)
+        else:
+            bb.error("openEulerROS.repo not found")
 
     # copy extra files to rootfs
     extra_file_name = ""
