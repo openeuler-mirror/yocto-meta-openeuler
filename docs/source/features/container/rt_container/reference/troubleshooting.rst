@@ -39,7 +39,7 @@ MicRun 故障排查指南
 
 .. note::
 
-   以下命令使用 ``jq`` 格式化 JSON 输出。如果未安装，可使用 ``sudo apt install jq`` 或 ``sudo yum install jq`` 安装，或者删除 ``| jq`` 直接查看原始 JSON。
+   以下命令使用 ``jq`` 格式化 JSON 输出。如果未安装，可使用 ``sudo dnf install jq`` 或 ``sudo yum install jq`` 安装，或者删除 ``| jq`` 直接查看原始 JSON。
 
 .. code-block:: bash
 
@@ -290,7 +290,7 @@ TTY 输出处理导致 ``\r\n`` 转换为 ``\r\r\n``。
 确保使用正确版本的 MicRun：
 
 * 检查 ``internal/domain/container/rpmsg_tty.go`` 中禁用了 ``OPOST|ONLCR``
-* 检查 ``internal/adapters/io/copier.go`` 中调用了 ``compressLineEndings()``
+* 检查 ``internal/adapters/io/copier_stdout.go`` 中启用了 ``OutputNormalizer`` 的 ``CompressLineEndings``
 
 6. Attach 后没有输出
 --------------------
@@ -571,71 +571,36 @@ TTY 输出处理导致 ``\r\n`` 转换为 ``\r\r\n``。
 ========
 
 .. list-table::
-   :widths: 25 35 40
+   :widths: 20 35 45
    :header-rows: 1
 
    * - 标识
-     - 来源
-     - 说明
-   * - ``[SESSION]``
-     - ``session.go``
-     - 会话管理日志
-   * - ``[IO]``
-     - ``copier.go``
-     - 数据复制日志
-   * - ``[EVENT]``
-     - ``events.go``
-     - 事件总线日志
+     - 含义
+     - 典型来源
+   * - ``[IO]`` / ``[SESSION]``
+     - IO 会话与数据复制
+     - ``internal/adapters/io``
    * - ``[TTY]``
-     - ``rpmsg_tty.go``
-     - TTY 配置日志
-   * - ``[SANDBOX]``
-     - ``sandbox.go``
-     - Sandbox 操作日志
-   * - ``[CONTAINER]``
-     - ``container.go``
-     - 容器操作日志
-   * - ``[RESTORE]``
-     - ``sandbox.go``
-     - 状态恢复日志
-   * - ``[StoreSandbox]``
-     - ``sandbox.go``
-     - 状态保存日志
+     - RPMSG TTY 配置与生命周期
+     - ``internal/domain/container/rpmsg_tty.go``
+   * - ``[EVENTS]`` / ``[ATTACH]``
+     - attach 事件策略处理
+     - ``internal/application/attach``
+   * - ``[TIMEOUT]``
+     - auto-close 计时
+     - ``internal/application/lifecycle``
+   * - ``[SHIM]`` / ``[RESTORE]``
+     - shim 侧生命周期与状态恢复
+     - ``internal/transport/shimv2``
+   * - ``[PERF]``
+     - 阶段耗时埋点（``MICRUN_PERF=1`` 时输出）
+     - ``internal/support/perf``
 
-错误码对照表
-============
+错误定位
+========
 
-.. list-table::
-   :widths: 25 40 35
-   :header-rows: 1
-
-   * - 错误
-     - 说明
-     - 解决方案
-   * - ``ERRO[0001]``
-     - 容器 ID 为空
-     - 检查容器 ID 参数
-   * - ``ERRO[0002]``
-     - Sandbox 未找到
-     - 检查 Sandbox 是否存在
-   * - ``ERRO[0003]``
-     - 容器未找到
-     - 检查容器是否在 Sandbox 中
-   * - ``ERRO[0004]``
-     - 无效状态
-     - 检查当前状态是否允许该操作
-   * - ``ERRO[0005]``
-     - 固件文件未找到
-     - 检查 ``firmware_path`` 注解
-   * - ``ERRO[0006]``
-     - Pedestal 配置错误
-     - 检查 ``ped.conf`` 注解
-   * - ``ERRO[0007]``
-     - 状态转换无效
-     - 检查状态转换规则
-   * - ``ERRO[0008]``
-     - IO 错误
-     - 检查 FIFO 和 TTY 状态
+``ERRO[0123]`` 中的数字是进程启动以来经过的秒数（logrus 默认格式），**不是可检索的错误码**。
+排障时应以日志消息关键字检索源码定位，常用关键字见上方日志标识表。
 
 相关文档
 ========

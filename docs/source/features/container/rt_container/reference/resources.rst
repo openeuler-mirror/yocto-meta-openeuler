@@ -229,9 +229,9 @@ K8s 到 cgroup 的转换
 
 .. math::
 
-   W(S) = \max{1, \min{\frac{S}{R}, 65535}}; \quad R=4
+   W(S) = \max\left\{1,\ \min\left\{\frac{S}{R},\ 65535\right\}\right\},\quad R = 4
 
-其中 S 为 cgroup cpu.shares 值 (2-262144)
+其中 :math:`S` 为 cgroup ``cpu.shares`` 值（2-262144），与"CPU Shares (权重)"一节的转换公式一致。
 
 配置优先级
 ==========
@@ -344,7 +344,7 @@ vCPU 固定
    * - ``internal/adapters/hypervisor/pedestal/resources.go``
      - 资源结构定义 ``EssentialResource``
    * - ``internal/domain/container/container_resource_parse.go``
-     - ``ParseOCIResources()``、``ValidateResourceLimits()``、CPU/Memory 解析编排
+     - ``ParseOCIResourcesWithPolicy()``、``ValidateResourceLimitsWithPolicy()``、CPU/Memory 解析编排
    * - ``internal/domain/container/container_resource_cpu.go``
      - CPU capacity、cpuset 归一化、越界 CPU 过滤
    * - ``internal/domain/container/container_resource_memory.go``
@@ -362,11 +362,11 @@ vCPU 固定
    func linuxResourceToEssential(spec *specs.Spec, convertShares bool) *EssentialResource
 
    // 容器领域资源解析 (internal/domain/container/container_resource_parse.go)
-   func (r *ContainerConfig) ParseOCIResources(spec *specs.Spec) error
-   func ValidateResourceLimits(config *ContainerConfig) error
+   func (r *ContainerConfig) ParseOCIResourcesWithPolicy(ctx context.Context, spec *specs.Spec, policy ResourcePolicy) error
+   func ValidateResourceLimitsWithPolicy(ctx context.Context, config *ContainerConfig, policy ResourcePolicy) error
 
    // 容器领域 CPU mask 归一化 (internal/domain/container/container_resource_cpu.go)
-   func normalizeCPUSet(mask string, fallbackVCPUs uint32) (string, uint32)
+   func normalizeCPUSetWithLimit(mask string, fallbackVCPUs uint32, maxCPUs uint32) normalizedCPUSet
 
    // 内存阈值管理 (internal/adapters/config/oci/resource_defaults.go)
    func calculateClientMemThreshold(config *cntr.ContainerConfig, runtimeCfg *RuntimeConfig) uint32

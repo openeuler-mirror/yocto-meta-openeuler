@@ -3,9 +3,9 @@
 MicRun 注解参考
 ################
 
-本文档列出 MicRun 支持的核心注解(annotations),这些注解用于配置 RTOS 容器的行为。
+本文档列出 MicRun 支持的核心注解（annotations），这些注解用于配置 RTOS 容器的行为。
 
-注解通过 Pod/容器的 ``metadata.annotations`` 字段设置,**不支持通过环境变量配置**。
+注解通过 Pod/容器的 ``metadata.annotations`` 字段设置，**不支持通过环境变量配置**。
 
 注解速查表
 ==========
@@ -59,7 +59,7 @@ MicRun 注解参考
    * - :ref:`org.openeuler.micrun.runtime.exclusive_dom0_cpu <exclusive_dom0_cpu>`
      - 布尔值
      - ``false``
-   * - ``org.openeuler.micrun.runtime.vcpu_pcpu_binding``
+   * - :ref:`org.openeuler.micrun.runtime.vcpu_pcpu_binding <vcpu_pcpu_binding>`
      - 布尔值
      - ``false``
 
@@ -145,14 +145,27 @@ org.openeuler.micrun.container.firmware_path
 
 **路径解析规则**:
 
-1. 如果使用绝对路径(以 ``/`` 开头),会去掉前缀 ``/``,然后相对于 rootfs 解析
-2. 如果使用相对路径,直接相对于 rootfs 解析
-3. 如果注解不存在,会尝试查找 ``*.elf`` 文件或使用默认值 ``firmware.elf``
+1. 如果使用绝对路径（以 ``/`` 开头），会去掉前缀 ``/``，然后相对于 rootfs 解析
+2. 如果使用相对路径，直接相对于 rootfs 解析
+3. 如果注解不存在，会尝试查找 ``*.elf`` 文件或使用默认值 ``firmware.elf``
 
 org.openeuler.micrun.container.firmware_hash
 ---------------------------------------------
 
 指定 RTOS 固件的 SHA-256 哈希值，用于验证固件完整性。
+
+.. list-table::
+   :widths: 30 70
+   :header-rows: 1
+
+   * - 属性
+     - 值
+   * - 类型
+     - 字符串
+   * - 格式
+     - 64 位十六进制摘要，或带 ``sha256:`` 前缀的摘要
+   * - 校验失败行为
+     - 摘要与实际固件不匹配时，容器创建失败
 
 **示例**:
 
@@ -167,7 +180,7 @@ org.openeuler.micrun.container.firmware_hash
 org.openeuler.micrun.container.min_memory_mb
 --------------------------------------------
 
-指定 RTOS 容器的初始内存分配(单位:MiB)。
+指定 RTOS 容器的初始内存分配（单位：MiB）。
 
 .. list-table::
    :widths: 30 70
@@ -186,7 +199,7 @@ org.openeuler.micrun.container.min_memory_mb
 
 * 这是容器的**预留内存** (memory reservation)
 * 实际分配的内存不会低于此值
-* 如果 OCI spec 中设置了 ``memory.reservation``,会覆盖此注解
+* 与 OCI spec 的 ``memory.reservation`` 同时设置时，**此注解优先**\ （注解在 OCI 资源解析之后应用，遵循"注解优先级最高"的统一规则）
 * 可通过运行时配置 ``container_minmem`` 覆盖默认值
 
 **示例**:
@@ -257,13 +270,11 @@ org.openeuler.micrun.container.auto_close
 
 .. warning::
 
-   ⚠️ **重要**：此注解是布尔值，**不要使用数字值** （如 ``"60"``）。
+   ⚠️ **重要**：此注解是布尔值，**不要使用数字值**\ （如 ``"60"``）。
    如需设置超时时长，请使用 :ref:`auto_close_timeout <auto_close_timeout_annotation>` 注解。
 
    **所有 IO 模式** （TTY/Non-TTY、前台/后台）默认都启用 30 秒超时机制。
    只有显式设置 ``auto_close=false`` 或 ``auto_close_timeout=0`` 才能禁用超时。
-
-   **示例**：
 
 **示例**：
 
@@ -279,6 +290,14 @@ org.openeuler.micrun.container.auto_close_timeout
 --------------------------------------------------
 
 指定自动关闭的超时时间。
+
+.. note::
+
+   已弃用别名 ``org.openeuler.micrun.container.auto_disconnect_timeout``
+   **不再生效**：检测到该键时只输出 Error 级迁移告警，其值不会被读取
+   （超时仍按 ``auto_close_timeout`` 或默认 ``30s`` 计算）。迁移时必须
+   改用 ``auto_close_timeout``，否则旧配置的超时语义（如 ``0`` 表示
+   禁用）会被静默替换为默认行为。
 
 .. list-table::
    :widths: 30 70
@@ -367,15 +386,6 @@ org.openeuler.micrun.container.auto_close_timeout
    * - **需要多次 attach**
      - ``auto_close: "false"``
 
-.. important::
-
-   **超时机制使用注意**：
-
-   * ⚠️ ``auto_close`` 是布尔值注解，**不要** 使用数字（如 ``auto_close=60``）
-   * 需要设置超时时长时，使用 ``auto_close_timeout`` 注解（如 ``auto_close_timeout=60s``）
-   * **所有 IO 模式默认启用 30 秒超时**，防止资源泄漏
-   * 长期运行服务需显式禁用：``auto_close=false`` 或 ``auto_close_timeout=0``
-
 Hypervisor 配置注解
 ====================
 
@@ -401,8 +411,8 @@ org.openeuler.micrun.ped.pedestal
 
 **说明**:
 
-* 如果指定的类型与主机不匹配,容器创建会失败
-* 通常不需要设置,自动使用主机 Hypervisor
+* 如果指定的类型与主机不匹配，容器创建会失败
+* 通常不需要设置，自动使用主机 Hypervisor
 * Baremetal 不会自动探测；需要在宿主环境显式设置 ``MICRUN_ENABLE_BAREMETAL=1``
 
 **示例**:
@@ -452,6 +462,61 @@ org.openeuler.micrun.ped.compatibility
 
 运行时配置注解
 ==============
+
+org.openeuler.micrun.runtime.pause
+-----------------------------------
+
+Pause 镜像名（配置占位）。注解会被读取进运行时配置的 ``PauseImage``，
+当前无下游消费路径，留待后续 pause 容器支持使用。
+
+.. list-table::
+   :widths: 30 70
+   :header-rows: 1
+
+   * - 属性
+     - 值
+   * - 类型
+     - 字符串
+   * - 默认值
+     - 无
+   * - 作用域
+     - Pod / 容器注解
+
+org.openeuler.micrun.runtime.max_container_cpus
+------------------------------------------------
+
+限制单个容器可用的最大 CPU 数（覆盖配置文件中的同名默认值）。
+
+.. list-table::
+   :widths: 30 70
+   :header-rows: 1
+
+   * - 属性
+     - 值
+   * - 类型
+     - 整数
+   * - 默认值
+     - 继承配置文件 ``max_container_vcpu``
+   * - 作用域
+     - Pod / 容器注解
+
+org.openeuler.micrun.runtime.max_container_memory
+--------------------------------------------------
+
+限制单个容器可用的最大内存。
+
+.. list-table::
+   :widths: 30 70
+   :header-rows: 1
+
+   * - 属性
+     - 值
+   * - 类型
+     - 整数
+   * - 默认值
+     - 继承配置文件 ``container_maxmem``
+   * - 状态
+     - **尚未接线**：该键（与配置文件 ``container_maxmem``）解析后写入运行时配置，但当前没有消费点，**不会对容器内存形成上限约束**；实际生效的内存校验只有"容器内存限制不得超过宿主总内存"
 
 .. _runtime_debug:
 
@@ -522,14 +587,16 @@ org.openeuler.micrun.runtime.disable_new_netns
      - 布尔值
    * - 默认值
      - ``false``
+   * - 状态
+     - **尚未接线**：常量与文档已定义，Create 路径仍无条件创建网络命名空间，设置该注解目前不会生效
 
-**示例**:
+**示例** （目标行为，当前未实现）:
 
 .. code-block:: yaml
 
    metadata:
      annotations:
-       org.openeuler.micrun.runtime.disable_new_netns: "true"
+       org.openeuler.micrun.runtime.disable_new_netns: "true"   # 读取但暂不生效
 
 org.openeuler.micrun.runtime.pipe_size
 -----------------------------------------
@@ -548,8 +615,10 @@ org.openeuler.micrun.runtime.pipe_size
      - 字节
    * - 默认值
      - 系统默认
+   * - 状态
+     - **尚未接线**：注解常量存在，但 runtime/IO 路径未读取或应用该值
 
-**示例**:
+**示例** （目标行为，当前未实现）:
 
 .. code-block:: yaml
 
@@ -560,7 +629,7 @@ org.openeuler.micrun.runtime.pipe_size
 org.openeuler.micrun.runtime.experimental
 -----------------------------------------
 
-启用实验性功能。
+启用实验性功能（预留开关）。
 
 .. list-table::
    :widths: 30 70
@@ -572,8 +641,10 @@ org.openeuler.micrun.runtime.experimental
      - 布尔值
    * - 默认值
      - ``false``
+   * - 状态
+     - **尚未接线**：MicRun 当前不读取此注解，预留供实验特性开关使用
 
-**示例**:
+**示例** （目标行为，当前未实现）:
 
 .. code-block:: yaml
 
@@ -581,10 +652,17 @@ org.openeuler.micrun.runtime.experimental
      annotations:
        org.openeuler.micrun.runtime.experimental: "true"
 
+.. _vcpu_pcpu_binding:
+
 org.openeuler.micrun.runtime.vcpu_pcpu_binding
 -----------------------------------------------
 
 启用 VCPU 到 PCPU 的绑定。
+
+.. note::
+
+   本注解是 :ref:`enable_vcpus_pinning <enable_vcpus_pinning>` 的兼容别名，
+   二者设置同一开关，同时设置时无需重复。
 
 .. list-table::
    :widths: 30 70
@@ -613,6 +691,8 @@ Sandbox 级别注解
 ================
 
 以下注解用于配置整个 Sandbox。
+
+.. _enable_vcpus_pinning:
 
 org.openeuler.micrun.runtime.enable_vcpus_pinning
 -------------------------------------------------
@@ -712,7 +792,7 @@ org.openeuler.micrun.runtime.hugepage_enable
    * - ``org.openeuler.micrun.pkg.oci.container_type``
      - 容器类型
    * - ``org.openeuler.micrun.config_path``
-     - Sandbox 配置路径
+     - Sandbox 配置路径（注解来源的配置文件会忽略 ``state_dir``/``firmware_path`` 等宿主机路径类键）
 
 Kubernetes 使用示例
 ====================
@@ -748,7 +828,6 @@ Pod 配置
        org.openeuler.micrun.ped.pedestal: "xen"
 
        # 运行时配置
-       org.openeuler.micrun.runtime.disable_new_netns: "true"
        org.openeuler.micrun.runtime.vcpu_pcpu_binding: "true"
    spec:
      runtimeClassName: micrun
@@ -771,7 +850,6 @@ Pod 配置
      --annotation org.openeuler.micrun.container.os=zephyr \
      --annotation org.openeuler.micrun.container.firmware_path=images/zephyr.elf \
      --annotation org.openeuler.micrun.container.auto_close=false \
-     --annotation org.openeuler.micrun.runtime.disable_new_netns=true \
      --annotation org.openeuler.micrun.runtime.vcpu_pcpu_binding=true \
      localhost:5000/zephyr-app:latest zephyr-container
 
@@ -797,7 +875,7 @@ Pod 配置
 
 4. **路径解析**: 固件和配置文件路径相对于容器 rootfs (``<bundle>/rootfs/``)
 
-5. **资源限制**: OCI spec 中的资源限制(``resources.limits``)与注解配置会互相影响。
+5. **资源限制**: OCI spec 中的资源限制(``resources.limits``)与注解配置会互相影响，详见 :doc:`resources`。
 
 6. **超时机制使用注意**:
 
