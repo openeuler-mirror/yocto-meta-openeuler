@@ -87,6 +87,15 @@ RUN set -eux; \
     && sudo mv clang-llvm-17.0.6 llvm \
     && sudo rm -rf clang-llvm-17.0.6.tar.gz [0-9]_clang-llvm-17.0.6.tar.gz merge_data.sh
 
+# The external LLVM toolchain ships libclang_rt.builtins at the triple-based
+# path lib/clang/17/lib/x86_64-unknown-linux-gnu/libclang_rt.builtins.a, but
+# the clang driver with -rtlib=compiler-rt looks for the OS-based path
+# lib/clang/17/lib/linux/libclang_rt.builtins-x86_64.a. Create the expected
+# symlink so -rtlib=compiler-rt links (e.g. efivar libefisec.so) find it.
+RUN mkdir -p /usr1/openeuler/llvm/lib/clang/17/lib/linux && \
+    ln -sf ../x86_64-unknown-linux-gnu/libclang_rt.builtins.a \
+           /usr1/openeuler/llvm/lib/clang/17/lib/linux/libclang_rt.builtins-x86_64.a
+
 # download, install and clean llvm-musl-arm toolchain
 ARG llvm_musl_arm_version=arm32-clang-musl-toolchain-v0.1.0
 WORKDIR /usr1/openeuler

@@ -31,3 +31,18 @@ BBCLASSEXTEND = "native"
 RRECOMMENDS:${PN}:class-target = "kernel-module-efivarfs"
 
 CLEANBROKEN = "1"
+
+# With the clang toolchain + ld-is-lld, libefisec.so fails to link because:
+#   ld.lld: error: unknown argument '--add-needed'
+# efivar's defaults.mk hardcodes -Wl,--add-needed (a legacy GNU ld no-op flag)
+# in its "override LDFLAGS = ..." (the override keyword blocks Yocto's
+# LDFLAGS from removing it). lld rejects this flag, so strip the line from
+# defaults.mk before compiling when lld is the linker.
+do_compile:prepend() {
+    if echo "${LDFLAGS}" | grep -q "fuse-ld=lld"; then
+        # efivar's defaults.mk hardcodes -Wl,--add-needed (a legacy GNU ld
+        # no-op) in its "override LDFLAGS = ..."; lld rejects it with
+        # "unknown argument '--add-needed'". Strip the line.
+        sed -i '/--add-needed/d' "${S}/src/include/defaults.mk"
+    fi
+}
