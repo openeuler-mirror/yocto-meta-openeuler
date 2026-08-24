@@ -1,4 +1,4 @@
-DEPENDS += "lopper-ops lopper-native"
+DEPENDS += "lopper-ops lopper-native dtc-native"
 
 LOPS_DIR = "${WORKDIR}/recipe-sysroot/${libdir}/lops"
 
@@ -42,6 +42,13 @@ do_mkdts() {
         ${include_lops} \
         -f -O ${OUT_DIR} \
         -o ${OUTPUT_DT} ${INPUT_DT}
+
+    # lopper outputs compiled .dts.dtb files in OUT_DIR; decompile them
+    # to .dts source so do_install_lop_dts can install them.
+    for f in "${OUT_DIR}"/*.dts.dtb; do
+        [ -f "$f" ] || continue
+        dtc -I dtb -O dts -o "${f%.dtb}" "$f"
+    done
 }
 addtask mkdts before do_install after do_compile
 
@@ -53,10 +60,17 @@ FILES:${PN} = "${INSTALL_PATH}/*.dts"
 do_install_lop_dts() {
     install -d ${D}${INSTALL_PATH}
 
+    # Use nullglob so the loop body is skipped (instead of passing the
+    # literal "*.dts" to install) when no .dts files were generated.
+    local nullglob_saved=$(shopt -p nullglob 2>/dev/null || true)
+    shopt -s nullglob
+
     for dt in "${OUT_DIR}"/*.dts; do
         bbnote "lopper: install ${dt}"
         install ${dt} ${D}${INSTALL_PATH}/
     done
+
+    eval "${nullglob_saved}"
 }
 do_install_lop_dts[dirs] = "${OUT_DIR}"
 addtask install_lop_dts after do_install before do_package do_populate_sysroot
