@@ -266,7 +266,7 @@ application/task 的方法不直接要求完整 ``TaskRuntime``，而是按用�
 - ``TaskIORuntime``
 
 ``TaskLifecycleRuntime`` 和 ``TaskAttachRuntime`` 仍分别服务于 lifecycle/attach 子应用。
-metrics 采集已经回收到 ``transport/shimv2`` 内部，不再属于 application/task 的 runtime port。
+metrics 采集位于 ``transport/shimv2`` 内部，不属于 application/task 的 runtime port。
 在 ``taskManager`` 内部，transport 读写视图继续按用途拆分为 process、metrics、task presence、events、shutdown。
 这样 ``Stats``、``Pids``/``Connect``、``Shutdown`` 和事件发布不会共享一个全能 transport runtime 接口。
 
@@ -277,7 +277,7 @@ GuestExecutor
 
 定义位置：``internal/ports/guest_executor.go``
 
-``GuestExecutor`` 是一个复合接口，由三个子接口按 Interface Segregation Principle 组合而成：
+``GuestExecutor`` 是一个复合接口，由四个子接口按 Interface Segregation Principle 组合而成：
 
 GuestResourceReader
 ^^^^^^^^^^^^^^^^^^^
@@ -300,7 +300,7 @@ GuestResourceReader
 GuestResourceUpdater
 ^^^^^^^^^^^^^^^^^^^^
 
-应用资源变更：
+应用资源变更（除两个 ``Record*`` 方法外，均以 ``ctx context.Context`` 作为首个参数）：
 
 .. list-table::
    :widths: 50 50
@@ -308,29 +308,31 @@ GuestResourceUpdater
 
    * - 方法
      - 说明
-   * - ``UpdateCPUCapacity(capacity uint32) error``
+   * - ``UpdateCPUCapacity(ctx, capacity uint32) error``
      - 更新 CPU 容量上限
-   * - ``UpdateCPUWeight(weight uint32) error``
+   * - ``UpdateCPUWeight(ctx, weight uint32) error``
      - 更新 CPU 调度权重
-   * - ``UpdateVCPUNum(vcpu uint32) (oldCPUs, newCPUs uint32, err error)``
+   * - ``UpdateVCPUNum(ctx, vcpu uint32) (oldCPUs, newCPUs uint32, err error)``
      - 更新 VCPU 数量
-   * - ``UpdatePCPUConstraints(cpuSet string) error``
+   * - ``RecordVCPUCount(vcpu uint32)``
+     - 记录 VCPU 数量
+   * - ``UpdatePCPUConstraints(ctx, cpuSet string) error``
      - 更新 PCPU 约束
-   * - ``EnsureMemoryLimit(mb uint32) error``
+   * - ``EnsureMemoryLimit(ctx, mb uint32) error``
      - 确保内存上限
-   * - ``UpdateMemoryThreshold(memMiB uint32) error``
+   * - ``UpdateMemoryThreshold(ctx, memMiB uint32) error``
      - 更新内存阈值
-   * - ``UpdateMemory(memMiB uint32) error``
+   * - ``UpdateMemory(ctx, memMiB uint32) error``
      - 更新内存
    * - ``RecordMemoryState(current, threshold uint32)``
      - 记录内存状态
-   * - ``VCPUPin(cpuList []int) error``
+   * - ``VCPUPin(ctx, cpuList []int) error``
      - VCPU 绑核
 
 GuestResourceDiff
 ^^^^^^^^^^^^^^^^^
 
-检查是否需要资源更新：
+检查纯本地可判定的资源增量：
 
 .. list-table::
    :widths: 45 55
@@ -338,15 +340,27 @@ GuestResourceDiff
 
    * - 方法
      - 说明
-   * - ``NeedUpdateCPUCap(target uint32) bool``
-     - 是否需要更新 CPU 容量
    * - ``NeedUpdateMemLimit(target uint32) bool``
      - 是否需要更新内存上限
    * - ``NeedUpdateCPUSet(oldSet, newSet string) bool``
      - 是否需要更新 CPU 集合
-   * - ``NeedUpdateCPUShare(target uint32) bool``
-     - 是否需要更新 CPU share
-   * - ``NeedUpdateVCPUs(target uint32) bool``
+   * - ``NeedUpdateCPUWeight(target uint32) bool``
+     - 是否需要更新 CPU 权重
+
+GuestResourceCapacityDiff
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+检查可能需要宿主上限参与判定的资源增量：
+
+.. list-table::
+   :widths: 45 55
+   :header-rows: 1
+
+   * - 方法
+     - 说明
+   * - ``NeedUpdateCPUCap(ctx, target uint32) bool``
+     - 是否需要更新 CPU 容量
+   * - ``NeedUpdateVCPUs(ctx, target uint32) bool``
      - 是否需要更新 VCPU 数量
 
 关联类型：
@@ -501,14 +515,14 @@ ResourcePolicy
 
 - 从 ``Dependencies`` 中抽取资源规划和资源校验所需能力
 - 从 ``shimv2`` 显式传到 ``oci`` 配置解析链
-- ``PlanEssentialRes`` 接收 ``*specs.Spec``，资源规划边界不再使用 ``any`` 后做运行时类型断言
+- ``PlanEssentialRes`` 接收 ``*specs.Spec``，资源规划边界不使用 ``any`` 后做运行时类型断言
 
 依赖注入
 ========
 
 所有创建和恢复链路通过显式注入完成：
 
-- ``containerDeps`` （``Dependencies`` 结构体，包含 ``StateStoreFactory``、``GuestExecutorFactory`` 等 9 个必需字段）
+- ``containerDeps`` （``Dependencies`` 结构体，包含 ``StateStoreFactory``、``GuestExecutorFactory`` 等 10 个必需字段）
 - ``resourcePolicy`` （从 ``Dependencies`` 中提取的资源规划能力子集）
 - ``runtimeResolver`` （运行时配置解析器）
 - ``HostProfile`` （宿主平台画像）

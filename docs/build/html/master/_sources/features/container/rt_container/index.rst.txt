@@ -22,4 +22,5 @@ MicRun 是一个基于 containerd shimv2 的容器运行时，用于在异构计
    intro.rst
    quick-start.rst
    kubernetes/index.rst
+   testing.rst
    reference/index.rst

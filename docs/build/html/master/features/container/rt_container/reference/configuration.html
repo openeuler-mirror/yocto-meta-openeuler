@@ -70,6 +70,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../intro.html">MicRun 简介</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../quick-start.html">MicRun 快速入门</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../kubernetes/index.html">MicRun Kubernetes 云边协同指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../testing.html">MicRun 测试指导</a></li>
 <li class="toctree-l5 current"><a class="reference internal" href="index.html">参考文档</a><ul class="current">
 <li class="toctree-l6"><a class="reference internal" href="annotations.html">MicRun 注解参考</a></li>
 <li class="toctree-l6"><a class="reference internal" href="troubleshooting.html">MicRun 故障排查指南</a></li>
@@ -205,6 +206,19 @@
 <li><p>当 <code class="docutils literal notranslate"><span class="pre">MICRUN_CONF_FILE</span></code> 指向的文件解析失败时，当前实现会记录告警并回退默认配置栈。</p></li>
 <li><p>当注解或 CRI options 指定的配置文件解析失败时，当前创建链路会直接报错返回。</p></li>
 <li><p>无论配置文件从哪里来，annotations 都会在最后一步覆盖最终值。</p></li>
+<li><p>注解来源的配置文件属于 pod 作者可控输入：其中的宿主机路径类键
+（<code class="docutils literal notranslate"><span class="pre">state_dir</span></code>、<code class="docutils literal notranslate"><span class="pre">firmware_path</span></code>）会被忽略并回退默认值，防止非特权 pod 驱动
+root 权限的 shim 在任意宿主机位置创建目录、写入状态/缓存文件或读取任意文件。
+标量类键（如 <code class="docutils literal notranslate"><span class="pre">debug</span></code>、<code class="docutils literal notranslate"><span class="pre">container_minmem</span></code>）不受影响。CRI runtime options、
+环境变量和默认发现等管理员侧来源保留全部键。</p></li>
+<li><p><strong>``state_dir`` 的恢复发现</strong>：若 <code class="docutils literal notranslate"><span class="pre">state_dir</span></code> 只通过 CRI RuntimeClass
+<code class="docutils literal notranslate"><span class="pre">ConfigPath</span></code> 配置（宿主机文件未固定同名值），shim 重启做恢复时拿不到
+Create 请求、看不到该值。为避免恢复在默认 <code class="docutils literal notranslate"><span class="pre">/run/micrun</span></code> 扑空，shim 每次
+绑定非默认 <code class="docutils literal notranslate"><span class="pre">state_dir</span></code> 时会在默认状态根下记录指针文件
+<code class="docutils literal notranslate"><span class="pre">/run/micrun/state-dir</span></code>，重启恢复与 one-shot <code class="docutils literal notranslate"><span class="pre">delete</span></code> 清理会优先采纳该指针
+（宿主机显式配置仍然优先）。指针位于 tmpfs：shim 重启（domain 存活、恢复
+有意义）时可用；guest 整机重启后随 domain 一起消失，空状态即为正确结果。
+如需绝对确定性，仍建议在宿主机配置文件固定 <code class="docutils literal notranslate"><span class="pre">state_dir</span></code>。</p></li>
 </ul>
 </section>
 <section id="id4">
@@ -364,6 +378,11 @@
 <h2>配置项详解<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
 <section id="mica">
 <h3>Mica 节配置<a class="headerlink" href="#mica" title="Permalink to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">max_client_number</span></code>、<code class="docutils literal notranslate"><span class="pre">enable_host_container</span></code>、<code class="docutils literal notranslate"><span class="pre">image_path</span></code>、<code class="docutils literal notranslate"><span class="pre">aux_file_path</span></code>
+为 micad 侧配置键（与本文件同处一份配置时由 micad 消费），MicRun 读取配置时不解析这些键。</p>
+</div>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 30%" />
@@ -387,7 +406,7 @@
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_client_number</span></code></p></td>
 <td><p>整数</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">0</span></code> (无限制)</p></td>
-<td><p>最大客户端数量（0表示无限制）</p></td>
+<td><p>最大客户端数量（0表示无限制）。<strong>由 micad 消费，MicRun 忽略</strong></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">firmware_path</span></code></p></td>
 <td><p>字符串</p></td>
@@ -397,10 +416,20 @@
 </td>
 <td><p>默认固件路径</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pause_image</span></code></p></td>
+<td><p>字符串</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">registry.k8s.io/pause</span></code></p></td>
+<td><p>sandbox pause 镜像（配置占位，暂无下游消费）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">state_dir</span></code></p></td>
+<td><p>字符串</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/run/micrun</span></code></p></td>
+<td><p>运行时状态根目录；亦可通过 CRI RuntimeClass <code class="docutils literal notranslate"><span class="pre">ConfigPath</span></code> 配置</p></td>
+</tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">enable_host_container</span></code></p></td>
 <td><p>布尔</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
-<td><p>启用主机容器</p></td>
+<td><p>启用主机容器。<strong>由 micad 消费，MicRun 忽略</strong></p></td>
 </tr>
 </tbody>
 </table>
@@ -430,7 +459,7 @@
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">container_maxmem</span></code></p></td>
 <td><p>整数</p></td>
 <td><p><em>系统相关</em></p></td>
-<td><p>容器最大内存 (MiB)，默认使用系统内存高阈值</p></td>
+<td><p><strong>尚未接线</strong>：解析后无消费点，不会形成容器内存上限；实际生效的只有”限制不得超过宿主总内存”校验</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">container_minmem</span></code></p></td>
 <td><p>整数</p></td>
@@ -450,7 +479,7 @@
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hugepage_enable</span></code></p></td>
 <td><p>布尔</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
-<td><p>启用 HugePage 支持（仅 Xen）</p></td>
+<td><p><strong>配置文件形态尚未接线</strong>：实际 HugePage 开关来自宿主探测（气球驱动等），仅注解 <code class="docutils literal notranslate"><span class="pre">org.openeuler.micrun.runtime.hugepage_enable</span></code> 可覆盖；此配置键的值当前不被读取</p></td>
 </tr>
 </tbody>
 </table>
@@ -519,7 +548,7 @@
 <li></li>
 </ul>
 </td>
-<td><p>Xen 镜像路径</p></td>
+<td><p>Xen 镜像路径。MicRun 运行时不读取此键，Xen 底座镜像实际取自容器镜像内的 <code class="docutils literal notranslate"><span class="pre">image.bin</span></code>；该键供 MICA 工具链使用</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">aux_file_path</span></code></p></td>
 <td><p>字符串</p></td>
@@ -527,7 +556,7 @@
 <li></li>
 </ul>
 </td>
-<td><p>Xen 辅助文件路径</p></td>
+<td><p>Xen 辅助文件路径。<strong>由 MICA 侧消费，MicRun 解析但不使用</strong></p></td>
 </tr>
 </tbody>
 </table>
@@ -693,7 +722,7 @@ cat<span class="w"> </span>/proc/<span class="k">$(</span>pgrep<span class="w"> 
 <p>日志配置位于 <code class="docutils literal notranslate"><span class="pre">/etc/mica/micrun/config.json</span></code>，由 logger 包读取。</p>
 <p>配置结构:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;Log&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;log&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;info&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/var/log/mica/mica-runtime.log&quot;</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;color&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>

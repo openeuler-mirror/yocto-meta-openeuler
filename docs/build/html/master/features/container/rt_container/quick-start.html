@@ -93,7 +93,7 @@
 <li class="toctree-l7"><a class="reference internal" href="#id12">为什么需要特殊构建工具</a></li>
 <li class="toctree-l7"><a class="reference internal" href="#id13">准备构建环境</a></li>
 <li class="toctree-l7"><a class="reference internal" href="#id14">交互式构建镜像</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id15">导出镜像</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id15">手动导出镜像</a></li>
 </ul>
 </li>
 <li class="toctree-l6"><a class="reference internal" href="#containerd-micrun">步骤 4：在 containerd 中注册 MicRun</a><ul>
@@ -129,6 +129,7 @@
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="kubernetes/index.html">MicRun Kubernetes 云边协同指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="testing.html">MicRun 测试指导</a></li>
 <li class="toctree-l5"><a class="reference internal" href="reference/index.html">参考文档</a></li>
 </ul>
 </li>
@@ -289,20 +290,20 @@
 <td><p>启动构建好的系统镜像</p></td>
 </tr>
 <tr class="row-even"><td><p>3</p></td>
-<td><p>构建 RTOS 镜像</p></td>
+<td><p>构建 RTOS 容器镜像</p></td>
 <td><p>使用 mica-image-builder 打包固件</p></td>
 </tr>
 <tr class="row-odd"><td><p>4</p></td>
-<td><p>导入镜像</p></td>
-<td><p>将镜像导入 containerd</p></td>
+<td><p>在 containerd 中注册 MicRun</p></td>
+<td><p>注册运行时</p></td>
 </tr>
 <tr class="row-even"><td><p>5</p></td>
-<td><p>注册运行时</p></td>
-<td><p>在 containerd 中注册 MicRun</p></td>
+<td><p>导入并运行 RTOS 容器</p></td>
+<td><p>导入镜像、启动并测试</p></td>
 </tr>
 <tr class="row-odd"><td><p>6</p></td>
-<td><p>运行容器</p></td>
-<td><p>启动并测试 RTOS 容器</p></td>
+<td><p>（可选）接入 Kubernetes 集群</p></td>
+<td><p>K3s RuntimeClass 与 Pod 方式使用</p></td>
 </tr>
 </tbody>
 </table>
@@ -354,6 +355,10 @@
 <td><p>≥1.7.19</p></td>
 <td><p>容器引擎（构建时需 ≥1.7.27）</p></td>
 </tr>
+<tr class="row-even"><td><p>k3s（可选）</p></td>
+<td><p>v1.27.15</p></td>
+<td><p>边侧 K3s；云侧镜像已验证 <code class="docutils literal notranslate"><span class="pre">rancher/k3s:v1.27.15-k3s1</span></code>。kubelet 不得新于 apiserver（K8s skew 约束），其他组合未验证</p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -361,6 +366,8 @@
 <h3>生成构建环境<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 安装/更新 oebuild</span>
 <span class="c1"># Features: zephyr (RTOS), micrun (runtime), mcs/xen, systemd, containerd</span>
+<span class="c1"># （Zephyr 镜像/固件制作流程已就绪；固件需经 meta-zephyr layer 自行</span>
+<span class="c1">#  构建，当前端到端验证记录为 UniProton）</span>
 oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"> </span>qemu-aarch64<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-f<span class="w"> </span>zephyr<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-f<span class="w"> </span>micrun<span class="w"> </span><span class="se">\</span>
@@ -447,7 +454,7 @@ oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"
 <span class="w">  </span>-cpu<span class="w"> </span>cortex-a53<span class="w"> </span>-smp<span class="w"> </span><span class="m">4</span><span class="w"> </span>-m<span class="w"> </span><span class="m">4096</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-serial<span class="w"> </span>mon:stdio<span class="w"> </span>-nographic<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-kernel<span class="w"> </span>xen-qemu-aarch64<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-append<span class="w"> </span><span class="s1">&#39;root=/dev/ram0 rw debugshell mem=1536M console=hvc0,115200&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-append<span class="w"> </span><span class="s1">&#39;root=/dev/ram0 rw debugshell mem=1536M console=ttyAMA0,115200&#39;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-dtb<span class="w"> </span>openeuler-image-qemu-aarch64-*.qemuboot.dtb
 </pre></div>
 </div>
@@ -500,6 +507,12 @@ oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"
 </table>
 <p><strong>QEMU 注意事项</strong>：</p>
 <ul class="simple">
+<li><p>MicRun 的完整生命周期测试必须通过 Xen 启动路径执行。直接用 <code class="docutils literal notranslate"><span class="pre">-kernel</span> <span class="pre">Image</span> <span class="pre">-initrd</span> <span class="pre">&lt;rootfs&gt;</span></code>
+启动 Linux 只能验证 rootfs、containerd 和 shim 是否存在；此时 <code class="docutils literal notranslate"><span class="pre">/proc/xen/xenbus</span></code> 不存在，
+MicRun 默认会把宿主 pedestal 判定为 <code class="docutils literal notranslate"><span class="pre">unsupported</span></code>；只有明确设置
+<code class="docutils literal notranslate"><span class="pre">MICRUN_ENABLE_BAREMETAL=1</span></code> 时，才会进入 baremetal pedestal 路径</p></li>
+<li><p>rootfs 应直接使用构建输出中的 <code class="docutils literal notranslate"><span class="pre">openeuler-image-qemu-aarch64-*.rootfs.cpio.gz</span></code> 产物；
+标准化测试不得重命名、解包或改写该产物</p></li>
 <li><p>QEMU 版本不宜过低，低版本存在影响 Xen 的 bug</p></li>
 <li><p>确保 Xen DTS 为 Domain-0 预留足够内存（建议 1536M）</p></li>
 <li><p>如需调整，在 <code class="docutils literal notranslate"><span class="pre">conf/local.conf</span></code> 中设置：<code class="docutils literal notranslate"><span class="pre">QB_XEN_CMDLINE_EXTRA</span> <span class="pre">=</span> <span class="pre">&quot;dom0_mem=1536M&quot;</span></code></p></li>
@@ -546,8 +559,8 @@ oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"
 </section>
 <section id="id13">
 <h3>准备构建环境<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 进入构建产物目录</span>
-<span class="nb">cd</span><span class="w"> </span>&lt;build_dir&gt;/output/micrun-files
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 进入一次构建的时间戳产物目录；micrun-files 是其子目录</span>
+<span class="nb">cd</span><span class="w"> </span>&lt;build_dir&gt;/output/&lt;timestamp&gt;
 
 <span class="c1"># 初始化 Python 环境</span>
 uv<span class="w"> </span>init
@@ -555,22 +568,22 @@ uv<span class="w"> </span>venv
 <span class="nb">source</span><span class="w"> </span>.venv/bin/activate
 
 <span class="c1"># 安装依赖</span>
-uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>micrun-files/requirements.txt
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><strong>替代方案</strong>：如果没有 <code class="docutils literal notranslate"><span class="pre">uv</span></code>，可以用传统方式：</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
-python<span class="w"> </span>mica-image-builder.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>micrun-files/requirements.txt
+python3<span class="w"> </span>micrun-files/mica-image-builder.py<span class="w"> </span>--help
 </pre></div>
 </div>
 </div>
 </section>
 <section id="id14">
 <h3>交互式构建镜像<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 启动交互式构建工具</span>
-uv<span class="w"> </span>run<span class="w"> </span>mica-image-builder.py
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 启动交互式构建工具（不推送镜像仓库，直接导出 tarball）</span>
+uv<span class="w"> </span>run<span class="w"> </span>micrun-files/mica-image-builder.py<span class="w"> </span>--no-push<span class="w"> </span>--export<span class="w"> </span>./exports
 </pre></div>
 </div>
 <p>根据提示选择：</p>
@@ -582,8 +595,8 @@ uv<span class="w"> </span>run<span class="w"> </span>mica-image-builder.py
 </ol>
 </section>
 <section id="id15">
-<h3>导出镜像<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
-<p>构建完成后，将镜像导出为 tarball：</p>
+<h3>手动导出镜像<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
+<p>如果构建时没有传 <code class="docutils literal notranslate"><span class="pre">--export</span></code>，可以手动导出已构建镜像：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 方法1: 使用 ctr 导出（推荐，在目标系统上可用）</span>
 ctr<span class="w"> </span>image<span class="w"> </span><span class="nb">export</span><span class="w"> </span>&lt;image_file&gt;.tar<span class="w"> </span>&lt;image_name&gt;:&lt;tag&gt;
 <span class="c1"># 例如：ctr image export my-rtos-image.tar localhost:5000/mica-uniproton-app:xen-0.1</span>
@@ -617,9 +630,10 @@ docker<span class="w"> </span>save<span class="w"> </span>-o<span class="w"> </s
 </div>
 <p><strong>配置说明</strong>：</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">version</span> <span class="pre">=</span> <span class="pre">2</span></code>：显示声明配置文件格式版本</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">version</span> <span class="pre">=</span> <span class="pre">2</span></code>：显式声明配置文件格式版本</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">runtime_type</span></code>：指定运行时类型为 MicRun 的 shimv2 实现 <code class="docutils literal notranslate"><span class="pre">io.containerd.mica.v2</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pod_annotations</span></code>：声明 MicRun 支持的注解前缀，用于接收来自 Kubernetes/Pod 的配置</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pod_annotations</span></code> / <code class="docutils literal notranslate"><span class="pre">container_annotations</span></code>：声明 MicRun 支持的注解通配规则，
+用于接收来自 Kubernetes/Pod 的配置。containerd 使用通配匹配，需写成 <code class="docutils literal notranslate"><span class="pre">org.openeuler.micrun.*</span></code></p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -719,7 +733,7 @@ ctr<span class="w"> </span>container<span class="w"> </span>delete<span class="w
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">org.openeuler.micrun.container.auto_close_timeout</span></code></p></td>
 <td><p>自动关闭超时时间</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">30s``（默认），支持</span> <span class="pre">``60s</span></code>、<code class="docutils literal notranslate"><span class="pre">5m</span></code> 等格式</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">30s</span></code>（默认），支持 <code class="docutils literal notranslate"><span class="pre">60s</span></code>、<code class="docutils literal notranslate"><span class="pre">5m</span></code> 等格式</p></td>
 </tr>
 </tbody>
 </table>
@@ -755,7 +769,7 @@ nerdctl<span class="w"> </span>start<span class="w"> </span>&lt;container_name&g
 <p><strong>重要说明</strong>：</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">--network=none</span></code>：RTOS 容器通常不需要网络，这是测试验证过的配置</p></li>
-<li><p>如果需要网络，可以尝试省略此参数或配置 CNI 网络插件</p></li>
+<li><p>网络场景当前未支持、未验证（交付规格面向无网络配置场景；省略 <code class="docutils literal notranslate"><span class="pre">--network=none</span></code> 属未定义行为）</p></li>
 </ul>
 </div>
 <p><strong>管理容器</strong>：</p>
@@ -848,10 +862,16 @@ nerdctl<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </s
 </div>
 <p><strong>退出容器</strong>：</p>
 <ul class="simple">
-<li><p>在 TTY 中输入 <code class="docutils literal notranslate"><span class="pre">exit</span></code> 命令并回车，容器会停止（推荐方式）</p></li>
+<li><p>停止容器：在外部执行 <code class="docutils literal notranslate"><span class="pre">nerdctl</span> <span class="pre">stop</span> <span class="pre">&lt;容器名&gt;</span></code> 或 <code class="docutils literal notranslate"><span class="pre">ctr</span> <span class="pre">task</span> <span class="pre">kill</span> <span class="pre">-s</span> <span class="pre">SIGTERM</span> <span class="pre">&lt;容器名&gt;</span></code>；
+TTY 会话内按 <code class="docutils literal notranslate"><span class="pre">Ctrl+C</span></code> 会被转换为 interrupt/stop（退出状态 130）</p></li>
+<li><p>在 UniProton shell 内输入 <code class="docutils literal notranslate"><span class="pre">exit</span></code> 是兼容兜底的退出方式</p></li>
 <li><p>使用 <code class="docutils literal notranslate"><span class="pre">Ctrl+P</span></code> 然后 <code class="docutils literal notranslate"><span class="pre">Ctrl+Q</span></code> 可以**临时退出**容器（容器继续运行，仅 TTY 模式）</p></li>
-<li><p>外部终止：使用 <code class="docutils literal notranslate"><span class="pre">ctr</span> <span class="pre">task</span> <span class="pre">kill</span> <span class="pre">-s</span> <span class="pre">SIGTERM</span> <span class="pre">&lt;容器名&gt;</span></code> 或 <code class="docutils literal notranslate"><span class="pre">SIGKILL</span></code></p></li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">Ctrl+C</span></code> 只在 TTY 会话里表示停止容器。非 TTY 或管道输入中的 <code class="docutils literal notranslate"><span class="pre">0x03</span></code>
+仍按普通输入字节处理，避免破坏脚本和二进制输入。</p>
+</div>
 <p><strong>Detach 和 Attach 功能说明</strong>：</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">Ctrl+P,</span> <span class="pre">Ctrl+Q</span></code> 序列可以临时退出容器 shell，容器在后台继续运行</p></li>
@@ -921,7 +941,7 @@ nerdctl<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </s
 <p><strong>命名空间说明</strong>：</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">ctr</span></code> 默认使用 <code class="docutils literal notranslate"><span class="pre">default</span></code> 命名空间</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">nerdctl</span></code> 在此 openEuler Embedded 环境中默认使用 <code class="docutils literal notranslate"><span class="pre">default</span></code> 命名空间（与标准 nerdctl 不同，标准版本默认使用 <code class="docutils literal notranslate"><span class="pre">k8s.io</span></code>）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nerdctl</span></code> 在此 openEuler Embedded 环境中默认使用 <code class="docutils literal notranslate"><span class="pre">default</span></code> 命名空间，与标准 nerdctl 的默认一致；<code class="docutils literal notranslate"><span class="pre">k8s.io</span></code> 是 K8s/CRI 场景下容器所在的命名空间，由 kubelet/crictl 使用</p></li>
 <li><p>可以用 <code class="docutils literal notranslate"><span class="pre">ctr</span> <span class="pre">-n</span> <span class="pre">&lt;namespace&gt;</span></code> 或 <code class="docutils literal notranslate"><span class="pre">nerdctl</span> <span class="pre">-n</span> <span class="pre">&lt;namespace&gt;</span></code> 来指定命名空间</p></li>
 <li><p>使用 <code class="docutils literal notranslate"><span class="pre">ctr</span> <span class="pre">namespace</span> <span class="pre">ls</span></code> 或 <code class="docutils literal notranslate"><span class="pre">nerdctl</span> <span class="pre">namespace</span> <span class="pre">ls</span></code> 查看所有命名空间</p></li>
 </ul>
@@ -1015,11 +1035,14 @@ curl<span class="w"> </span>-sfL<span class="w"> </span>https://get.k3s.io<span 
 <section id="id22">
 <h3>常见问题<a class="headerlink" href="#id22" title="Permalink to this heading"></a></h3>
 <p><strong>Q：必须使用 K3s 吗？</strong></p>
-<p><strong>A</strong>：不是必须的。MicRun 兼容标准 Kubernetes（1.28+），但 K3s 更轻量，适合边缘场景。</p>
+<p><strong>A</strong>：不是必须的。MicRun 面向标准 Kubernetes CRI/RuntimeClass 集成；云侧和边侧
+Kubernetes/K3s 版本应保持兼容（已验证组合见 <a class="reference internal" href="kubernetes/index.html"><span class="doc">MicRun Kubernetes 云边协同指南</span></a>）。K3s 更轻量，适合边缘场景。</p>
 <p><strong>Q：可以在单节点测试吗？</strong></p>
 <p><strong>A</strong>：可以。K3s 支持单节点模式，云侧和边侧可以在同一台机器上运行（仅用于测试）。</p>
 <p><strong>Q：如何监控 RTOS 容器状态？</strong></p>
-<p><strong>A</strong>：使用 <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pods</span></code> 和 <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">pod</span></code> 查看。详细日志在边侧的 <code class="docutils literal notranslate"><span class="pre">/var/log/mica/mica-runtime.log``（如果日志目录不存在，请先创建：``sudo</span> <span class="pre">mkdir</span> <span class="pre">-p</span> <span class="pre">/var/log/mica</span></code>）。</p>
+<p><strong>A</strong>：使用 <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">get</span> <span class="pre">pods</span></code> 和 <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">describe</span> <span class="pre">pod</span></code> 查看。详细日志在边侧的
+<code class="docutils literal notranslate"><span class="pre">/var/log/mica/mica-runtime.log</span></code>（仅 debug 构建输出文件日志，release 构建日志走 journald。
+如果日志目录不存在，请先创建：<code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">mkdir</span> <span class="pre">-p</span> <span class="pre">/var/log/mica</span></code>）。</p>
 <p><strong>Q：Pod 无法启动怎么办？</strong></p>
 <p><strong>A</strong>：参考 <a class="reference internal" href="kubernetes/index.html"><span class="doc">MicRun Kubernetes 云边协同指南</span></a> 中的故障排查章节，涵盖了常见问题和解决方法。</p>
 </section>
@@ -1050,7 +1073,7 @@ ctr<span class="w"> </span>container<span class="w"> </span>delete<span class="w
 <h3>Q：如何调试容器启动问题？<a class="headerlink" href="#id24" title="Permalink to this heading"></a></h3>
 <p><strong>A</strong>：</p>
 <ol class="arabic simple">
-<li><p>查看 MicRun 日志：<code class="docutils literal notranslate"><span class="pre">tail</span> <span class="pre">-f</span> <span class="pre">/var/log/mica/mica-runtime.log</span></code> (需先创建目录)</p></li>
+<li><p>查看 MicRun 日志：<code class="docutils literal notranslate"><span class="pre">tail</span> <span class="pre">-f</span> <span class="pre">/var/log/mica/mica-runtime.log</span></code>（仅 debug 构建；需先创建目录）</p></li>
 <li><p>查看 containerd 日志：<code class="docutils literal notranslate"><span class="pre">journalctl</span> <span class="pre">-u</span> <span class="pre">containerd</span> <span class="pre">-f</span></code></p></li>
 </ol>
 </section>

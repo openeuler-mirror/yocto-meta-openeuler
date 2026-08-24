@@ -70,6 +70,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../intro.html">MicRun 简介</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../quick-start.html">MicRun 快速入门</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../kubernetes/index.html">MicRun Kubernetes 云边协同指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../testing.html">MicRun 测试指导</a></li>
 <li class="toctree-l5 current"><a class="reference internal" href="index.html">参考文档</a><ul class="current">
 <li class="toctree-l6 current"><a class="current reference internal" href="#">MicRun 注解参考</a><ul>
 <li class="toctree-l7"><a class="reference internal" href="#id1">注解速查表</a></li>
@@ -143,8 +144,8 @@
              
   <section id="micrun">
 <span id="micrun-annotations"></span><h1>MicRun 注解参考<a class="headerlink" href="#micrun" title="Permalink to this heading"></a></h1>
-<p>本文档列出 MicRun 支持的核心注解(annotations),这些注解用于配置 RTOS 容器的行为。</p>
-<p>注解通过 Pod/容器的 <code class="docutils literal notranslate"><span class="pre">metadata.annotations</span></code> 字段设置,**不支持通过环境变量配置**。</p>
+<p>本文档列出 MicRun 支持的核心注解（annotations），这些注解用于配置 RTOS 容器的行为。</p>
+<p>注解通过 Pod/容器的 <code class="docutils literal notranslate"><span class="pre">metadata.annotations</span></code> 字段设置，<strong>不支持通过环境变量配置</strong>。</p>
 <section id="id1">
 <h2>注解速查表<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
 <table class="docutils align-default">
@@ -216,7 +217,7 @@
 <td><p>布尔值</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">org.openeuler.micrun.runtime.vcpu_pcpu_binding</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#vcpu-pcpu-binding"><span class="std std-ref">org.openeuler.micrun.runtime.vcpu_pcpu_binding</span></a></p></td>
 <td><p>布尔值</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
 </tr>
@@ -319,14 +320,36 @@
 </div>
 <p><strong>路径解析规则</strong>:</p>
 <ol class="arabic simple">
-<li><p>如果使用绝对路径(以 <code class="docutils literal notranslate"><span class="pre">/</span></code> 开头),会去掉前缀 <code class="docutils literal notranslate"><span class="pre">/</span></code>,然后相对于 rootfs 解析</p></li>
-<li><p>如果使用相对路径,直接相对于 rootfs 解析</p></li>
-<li><p>如果注解不存在,会尝试查找 <code class="docutils literal notranslate"><span class="pre">*.elf</span></code> 文件或使用默认值 <code class="docutils literal notranslate"><span class="pre">firmware.elf</span></code></p></li>
+<li><p>如果使用绝对路径（以 <code class="docutils literal notranslate"><span class="pre">/</span></code> 开头），会去掉前缀 <code class="docutils literal notranslate"><span class="pre">/</span></code>，然后相对于 rootfs 解析</p></li>
+<li><p>如果使用相对路径，直接相对于 rootfs 解析</p></li>
+<li><p>如果注解不存在，会尝试查找 <code class="docutils literal notranslate"><span class="pre">*.elf</span></code> 文件或使用默认值 <code class="docutils literal notranslate"><span class="pre">firmware.elf</span></code></p></li>
 </ol>
 </section>
 <section id="org-openeuler-micrun-container-firmware-hash">
 <h3>org.openeuler.micrun.container.firmware_hash<a class="headerlink" href="#org-openeuler-micrun-container-firmware-hash" title="Permalink to this heading"></a></h3>
 <p>指定 RTOS 固件的 SHA-256 哈希值，用于验证固件完整性。</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>属性</p></th>
+<th class="head"><p>值</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>类型</p></td>
+<td><p>字符串</p></td>
+</tr>
+<tr class="row-odd"><td><p>格式</p></td>
+<td><p>64 位十六进制摘要，或带 <code class="docutils literal notranslate"><span class="pre">sha256:</span></code> 前缀的摘要</p></td>
+</tr>
+<tr class="row-even"><td><p>校验失败行为</p></td>
+<td><p>摘要与实际固件不匹配时，容器创建失败</p></td>
+</tr>
+</tbody>
+</table>
 <p><strong>示例</strong>:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">metadata</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
@@ -336,7 +359,7 @@
 </section>
 <section id="org-openeuler-micrun-container-min-memory-mb">
 <span id="min-memory-mb"></span><h3>org.openeuler.micrun.container.min_memory_mb<a class="headerlink" href="#org-openeuler-micrun-container-min-memory-mb" title="Permalink to this heading"></a></h3>
-<p>指定 RTOS 容器的初始内存分配(单位:MiB)。</p>
+<p>指定 RTOS 容器的初始内存分配（单位：MiB）。</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 30%" />
@@ -363,7 +386,7 @@
 <ul class="simple">
 <li><p>这是容器的**预留内存** (memory reservation)</p></li>
 <li><p>实际分配的内存不会低于此值</p></li>
-<li><p>如果 OCI spec 中设置了 <code class="docutils literal notranslate"><span class="pre">memory.reservation</span></code>,会覆盖此注解</p></li>
+<li><p>与 OCI spec 的 <code class="docutils literal notranslate"><span class="pre">memory.reservation</span></code> 同时设置时，<strong>此注解优先</strong>（注解在 OCI 资源解析之后应用，遵循”注解优先级最高”的统一规则）</p></li>
 <li><p>可通过运行时配置 <code class="docutils literal notranslate"><span class="pre">container_minmem</span></code> 覆盖默认值</p></li>
 </ul>
 <p><strong>示例</strong>:</p>
@@ -438,11 +461,10 @@
 </ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>⚠️ <strong>重要</strong>：此注解是布尔值，<strong>不要使用数字值</strong> （如 <code class="docutils literal notranslate"><span class="pre">&quot;60&quot;</span></code>）。
+<p>⚠️ <strong>重要</strong>：此注解是布尔值，<strong>不要使用数字值</strong>（如 <code class="docutils literal notranslate"><span class="pre">&quot;60&quot;</span></code>）。
 如需设置超时时长，请使用 <a class="reference internal" href="#auto-close-timeout-annotation"><span class="std std-ref">auto_close_timeout</span></a> 注解。</p>
 <p><strong>所有 IO 模式</strong> （TTY/Non-TTY、前台/后台）默认都启用 30 秒超时机制。
 只有显式设置 <code class="docutils literal notranslate"><span class="pre">auto_close=false</span></code> 或 <code class="docutils literal notranslate"><span class="pre">auto_close_timeout=0</span></code> 才能禁用超时。</p>
-<p><strong>示例</strong>：</p>
 </div>
 <p><strong>示例</strong>：</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">metadata</span><span class="p">:</span>
@@ -454,6 +476,14 @@
 <section id="org-openeuler-micrun-container-auto-close-timeout">
 <span id="auto-close-timeout-annotation"></span><h3>org.openeuler.micrun.container.auto_close_timeout<a class="headerlink" href="#org-openeuler-micrun-container-auto-close-timeout" title="Permalink to this heading"></a></h3>
 <p>指定自动关闭的超时时间。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>已弃用别名 <code class="docutils literal notranslate"><span class="pre">org.openeuler.micrun.container.auto_disconnect_timeout</span></code>
+<strong>不再生效</strong>：检测到该键时只输出 Error 级迁移告警，其值不会被读取
+（超时仍按 <code class="docutils literal notranslate"><span class="pre">auto_close_timeout</span></code> 或默认 <code class="docutils literal notranslate"><span class="pre">30s</span></code> 计算）。迁移时必须
+改用 <code class="docutils literal notranslate"><span class="pre">auto_close_timeout</span></code>，否则旧配置的超时语义（如 <code class="docutils literal notranslate"><span class="pre">0</span></code> 表示
+禁用）会被静默替换为默认行为。</p>
+</div>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 30%" />
@@ -577,16 +607,6 @@
 </tr>
 </tbody>
 </table>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p><strong>超时机制使用注意</strong>：</p>
-<ul class="simple">
-<li><p>⚠️ <code class="docutils literal notranslate"><span class="pre">auto_close</span></code> 是布尔值注解，<strong>不要</strong> 使用数字（如 <code class="docutils literal notranslate"><span class="pre">auto_close=60</span></code>）</p></li>
-<li><p>需要设置超时时长时，使用 <code class="docutils literal notranslate"><span class="pre">auto_close_timeout</span></code> 注解（如 <code class="docutils literal notranslate"><span class="pre">auto_close_timeout=60s</span></code>）</p></li>
-<li><p><strong>所有 IO 模式默认启用 30 秒超时</strong>，防止资源泄漏</p></li>
-<li><p>长期运行服务需显式禁用：<code class="docutils literal notranslate"><span class="pre">auto_close=false</span></code> 或 <code class="docutils literal notranslate"><span class="pre">auto_close_timeout=0</span></code></p></li>
-</ul>
-</div>
 </section>
 <section id="hypervisor">
 <h2>Hypervisor 配置注解<a class="headerlink" href="#hypervisor" title="Permalink to this heading"></a></h2>
@@ -617,8 +637,8 @@
 </table>
 <p><strong>说明</strong>:</p>
 <ul class="simple">
-<li><p>如果指定的类型与主机不匹配,容器创建会失败</p></li>
-<li><p>通常不需要设置,自动使用主机 Hypervisor</p></li>
+<li><p>如果指定的类型与主机不匹配，容器创建会失败</p></li>
+<li><p>通常不需要设置，自动使用主机 Hypervisor</p></li>
 <li><p>Baremetal 不会自动探测；需要在宿主环境显式设置 <code class="docutils literal notranslate"><span class="pre">MICRUN_ENABLE_BAREMETAL=1</span></code></p></li>
 </ul>
 <p><strong>示例</strong>:</p>
@@ -668,6 +688,85 @@
 </section>
 <section id="id6">
 <h2>运行时配置注解<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
+<section id="org-openeuler-micrun-runtime-pause">
+<h3>org.openeuler.micrun.runtime.pause<a class="headerlink" href="#org-openeuler-micrun-runtime-pause" title="Permalink to this heading"></a></h3>
+<p>Pause 镜像名（配置占位）。注解会被读取进运行时配置的 <code class="docutils literal notranslate"><span class="pre">PauseImage</span></code>，
+当前无下游消费路径，留待后续 pause 容器支持使用。</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>属性</p></th>
+<th class="head"><p>值</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>类型</p></td>
+<td><p>字符串</p></td>
+</tr>
+<tr class="row-odd"><td><p>默认值</p></td>
+<td><p>无</p></td>
+</tr>
+<tr class="row-even"><td><p>作用域</p></td>
+<td><p>Pod / 容器注解</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="org-openeuler-micrun-runtime-max-container-cpus">
+<h3>org.openeuler.micrun.runtime.max_container_cpus<a class="headerlink" href="#org-openeuler-micrun-runtime-max-container-cpus" title="Permalink to this heading"></a></h3>
+<p>限制单个容器可用的最大 CPU 数（覆盖配置文件中的同名默认值）。</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>属性</p></th>
+<th class="head"><p>值</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>类型</p></td>
+<td><p>整数</p></td>
+</tr>
+<tr class="row-odd"><td><p>默认值</p></td>
+<td><p>继承配置文件 <code class="docutils literal notranslate"><span class="pre">max_container_vcpu</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>作用域</p></td>
+<td><p>Pod / 容器注解</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="org-openeuler-micrun-runtime-max-container-memory">
+<h3>org.openeuler.micrun.runtime.max_container_memory<a class="headerlink" href="#org-openeuler-micrun-runtime-max-container-memory" title="Permalink to this heading"></a></h3>
+<p>限制单个容器可用的最大内存。</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 70%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>属性</p></th>
+<th class="head"><p>值</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>类型</p></td>
+<td><p>整数</p></td>
+</tr>
+<tr class="row-odd"><td><p>默认值</p></td>
+<td><p>继承配置文件 <code class="docutils literal notranslate"><span class="pre">container_maxmem</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>状态</p></td>
+<td><p><strong>尚未接线</strong>：该键（与配置文件 <code class="docutils literal notranslate"><span class="pre">container_maxmem</span></code>）解析后写入运行时配置，但当前没有消费点，<strong>不会对容器内存形成上限约束</strong>；实际生效的内存校验只有”容器内存限制不得超过宿主总内存”</p></td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="org-openeuler-micrun-runtime-debug">
 <span id="runtime-debug"></span><h3>org.openeuler.micrun.runtime.debug<a class="headerlink" href="#org-openeuler-micrun-runtime-debug" title="Permalink to this heading"></a></h3>
 <p>启用调试模式。</p>
@@ -749,12 +848,15 @@
 <tr class="row-odd"><td><p>默认值</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
 </tr>
+<tr class="row-even"><td><p>状态</p></td>
+<td><p><strong>尚未接线</strong>：常量与文档已定义，Create 路径仍无条件创建网络命名空间，设置该注解目前不会生效</p></td>
+</tr>
 </tbody>
 </table>
-<p><strong>示例</strong>:</p>
+<p><strong>示例</strong> （目标行为，当前未实现）:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">metadata</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">org.openeuler.micrun.runtime.disable_new_netns</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span>
+<span class="w">    </span><span class="nt">org.openeuler.micrun.runtime.disable_new_netns</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span><span class="w">   </span><span class="c1"># 读取但暂不生效</span>
 </pre></div>
 </div>
 </section>
@@ -781,9 +883,12 @@
 <tr class="row-even"><td><p>默认值</p></td>
 <td><p>系统默认</p></td>
 </tr>
+<tr class="row-odd"><td><p>状态</p></td>
+<td><p><strong>尚未接线</strong>：注解常量存在，但 runtime/IO 路径未读取或应用该值</p></td>
+</tr>
 </tbody>
 </table>
-<p><strong>示例</strong>:</p>
+<p><strong>示例</strong> （目标行为，当前未实现）:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">metadata</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">org.openeuler.micrun.runtime.pipe_size</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;65536&quot;</span>
@@ -792,7 +897,7 @@
 </section>
 <section id="org-openeuler-micrun-runtime-experimental">
 <h3>org.openeuler.micrun.runtime.experimental<a class="headerlink" href="#org-openeuler-micrun-runtime-experimental" title="Permalink to this heading"></a></h3>
-<p>启用实验性功能。</p>
+<p>启用实验性功能（预留开关）。</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 30%" />
@@ -810,9 +915,12 @@
 <tr class="row-odd"><td><p>默认值</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
 </tr>
+<tr class="row-even"><td><p>状态</p></td>
+<td><p><strong>尚未接线</strong>：MicRun 当前不读取此注解，预留供实验特性开关使用</p></td>
+</tr>
 </tbody>
 </table>
-<p><strong>示例</strong>:</p>
+<p><strong>示例</strong> （目标行为，当前未实现）:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">metadata</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">org.openeuler.micrun.runtime.experimental</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span>
@@ -820,8 +928,13 @@
 </div>
 </section>
 <section id="org-openeuler-micrun-runtime-vcpu-pcpu-binding">
-<h3>org.openeuler.micrun.runtime.vcpu_pcpu_binding<a class="headerlink" href="#org-openeuler-micrun-runtime-vcpu-pcpu-binding" title="Permalink to this heading"></a></h3>
+<span id="vcpu-pcpu-binding"></span><h3>org.openeuler.micrun.runtime.vcpu_pcpu_binding<a class="headerlink" href="#org-openeuler-micrun-runtime-vcpu-pcpu-binding" title="Permalink to this heading"></a></h3>
 <p>启用 VCPU 到 PCPU 的绑定。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>本注解是 <a class="reference internal" href="#enable-vcpus-pinning"><span class="std std-ref">enable_vcpus_pinning</span></a> 的兼容别名，
+二者设置同一开关，同时设置时无需重复。</p>
+</div>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 30%" />
@@ -859,7 +972,7 @@
 <h2>Sandbox 级别注解<a class="headerlink" href="#sandbox" title="Permalink to this heading"></a></h2>
 <p>以下注解用于配置整个 Sandbox。</p>
 <section id="org-openeuler-micrun-runtime-enable-vcpus-pinning">
-<h3>org.openeuler.micrun.runtime.enable_vcpus_pinning<a class="headerlink" href="#org-openeuler-micrun-runtime-enable-vcpus-pinning" title="Permalink to this heading"></a></h3>
+<span id="enable-vcpus-pinning"></span><h3>org.openeuler.micrun.runtime.enable_vcpus_pinning<a class="headerlink" href="#org-openeuler-micrun-runtime-enable-vcpus-pinning" title="Permalink to this heading"></a></h3>
 <p>启用 Sandbox 级别的 VCPU 亲和性设置。</p>
 <table class="docutils align-default">
 <colgroup>
@@ -982,7 +1095,7 @@
 <td><p>容器类型</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">org.openeuler.micrun.config_path</span></code></p></td>
-<td><p>Sandbox 配置路径</p></td>
+<td><p>Sandbox 配置路径（注解来源的配置文件会忽略 <code class="docutils literal notranslate"><span class="pre">state_dir</span></code>/<code class="docutils literal notranslate"><span class="pre">firmware_path</span></code> 等宿主机路径类键）</p></td>
 </tr>
 </tbody>
 </table>
@@ -1016,7 +1129,6 @@
 <span class="w">    </span><span class="nt">org.openeuler.micrun.ped.pedestal</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;xen&quot;</span>
 
 <span class="w">    </span><span class="c1"># 运行时配置</span>
-<span class="w">    </span><span class="nt">org.openeuler.micrun.runtime.disable_new_netns</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span>
 <span class="w">    </span><span class="nt">org.openeuler.micrun.runtime.vcpu_pcpu_binding</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;true&quot;</span>
 <span class="nt">spec</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">runtimeClassName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">micrun</span>
@@ -1038,7 +1150,6 @@
 <span class="w">  </span>--annotation<span class="w"> </span>org.openeuler.micrun.container.os<span class="o">=</span>zephyr<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--annotation<span class="w"> </span>org.openeuler.micrun.container.firmware_path<span class="o">=</span>images/zephyr.elf<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--annotation<span class="w"> </span>org.openeuler.micrun.container.auto_close<span class="o">=</span><span class="nb">false</span><span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>--annotation<span class="w"> </span>org.openeuler.micrun.runtime.disable_new_netns<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--annotation<span class="w"> </span>org.openeuler.micrun.runtime.vcpu_pcpu_binding<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>localhost:5000/zephyr-app:latest<span class="w"> </span>zephyr-container
 </pre></div>
@@ -1062,7 +1173,7 @@
 <li><p><strong>优先级</strong>: 注解配置 &gt; 运行时配置文件 &gt; 默认值</p></li>
 <li><p><strong>类型转换</strong>: 布尔值使用 <code class="docutils literal notranslate"><span class="pre">&quot;true&quot;</span></code>/<code class="docutils literal notranslate"><span class="pre">&quot;false&quot;</span></code> 字符串，整数使用数字字符串</p></li>
 <li><p><strong>路径解析</strong>: 固件和配置文件路径相对于容器 rootfs (<code class="docutils literal notranslate"><span class="pre">&lt;bundle&gt;/rootfs/</span></code>)</p></li>
-<li><p><strong>资源限制</strong>: OCI spec 中的资源限制(<code class="docutils literal notranslate"><span class="pre">resources.limits</span></code>)与注解配置会互相影响。</p></li>
+<li><p><strong>资源限制</strong>: OCI spec 中的资源限制(<code class="docutils literal notranslate"><span class="pre">resources.limits</span></code>)与注解配置会互相影响，详见 <a class="reference internal" href="resources.html"><span class="doc">MicRun 资源映射参考</span></a>。</p></li>
 <li><p><strong>超时机制使用注意</strong>:</p>
 <ul class="simple">
 <li><p>⚠️ <code class="docutils literal notranslate"><span class="pre">auto_close</span></code> 是布尔值注解，<strong>不要</strong> 使用数字（如 <code class="docutils literal notranslate"><span class="pre">auto_close=60</span></code>）</p></li>

@@ -71,6 +71,7 @@
 <li class="toctree-l5"><a class="reference internal" href="../intro.html">MicRun 简介</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../quick-start.html">MicRun 快速入门</a></li>
 <li class="toctree-l5"><a class="reference internal" href="../kubernetes/index.html">MicRun Kubernetes 云边协同指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../testing.html">MicRun 测试指导</a></li>
 <li class="toctree-l5 current"><a class="reference internal" href="index.html">参考文档</a><ul class="current">
 <li class="toctree-l6"><a class="reference internal" href="annotations.html">MicRun 注解参考</a></li>
 <li class="toctree-l6"><a class="reference internal" href="troubleshooting.html">MicRun 故障排查指南</a></li>
@@ -439,8 +440,8 @@
 <section id="id10">
 <h3>权重转换公式<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
 <div class="math notranslate nohighlight">
-\[W(S) = \max{1, \min{\frac{S}{R}, 65535}}; \quad R=4\]</div>
-<p>其中 S 为 cgroup cpu.shares 值 (2-262144)</p>
+\[W(S) = \max\left\{1,\ \min\left\{\frac{S}{R},\ 65535\right\}\right\},\quad R = 4\]</div>
+<p>其中 <span class="math notranslate nohighlight">\(S\)</span> 为 cgroup <code class="docutils literal notranslate"><span class="pre">cpu.shares</span></code> 值（2-262144），与”CPU Shares (权重)”一节的转换公式一致。</p>
 </section>
 </section>
 <section id="id11">
@@ -582,7 +583,7 @@
 <td><p>资源结构定义 <code class="docutils literal notranslate"><span class="pre">EssentialResource</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">internal/domain/container/container_resource_parse.go</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">ParseOCIResources()</span></code>、<code class="docutils literal notranslate"><span class="pre">ValidateResourceLimits()</span></code>、CPU/Memory 解析编排</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ParseOCIResourcesWithPolicy()</span></code>、<code class="docutils literal notranslate"><span class="pre">ValidateResourceLimitsWithPolicy()</span></code>、CPU/Memory 解析编排</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">internal/domain/container/container_resource_cpu.go</span></code></p></td>
 <td><p>CPU capacity、cpuset 归一化、越界 CPU 过滤</p></td>
@@ -603,11 +604,11 @@
 <span class="kd">func</span><span class="w"> </span><span class="nx">linuxResourceToEssential</span><span class="p">(</span><span class="nx">spec</span><span class="w"> </span><span class="o">*</span><span class="nx">specs</span><span class="p">.</span><span class="nx">Spec</span><span class="p">,</span><span class="w"> </span><span class="nx">convertShares</span><span class="w"> </span><span class="kt">bool</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="nx">EssentialResource</span>
 
 <span class="c1">// 容器领域资源解析 (internal/domain/container/container_resource_parse.go)</span>
-<span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">r</span><span class="w"> </span><span class="o">*</span><span class="nx">ContainerConfig</span><span class="p">)</span><span class="w"> </span><span class="nx">ParseOCIResources</span><span class="p">(</span><span class="nx">spec</span><span class="w"> </span><span class="o">*</span><span class="nx">specs</span><span class="p">.</span><span class="nx">Spec</span><span class="p">)</span><span class="w"> </span><span class="kt">error</span>
-<span class="kd">func</span><span class="w"> </span><span class="nx">ValidateResourceLimits</span><span class="p">(</span><span class="nx">config</span><span class="w"> </span><span class="o">*</span><span class="nx">ContainerConfig</span><span class="p">)</span><span class="w"> </span><span class="kt">error</span>
+<span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">r</span><span class="w"> </span><span class="o">*</span><span class="nx">ContainerConfig</span><span class="p">)</span><span class="w"> </span><span class="nx">ParseOCIResourcesWithPolicy</span><span class="p">(</span><span class="nx">ctx</span><span class="w"> </span><span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span><span class="w"> </span><span class="nx">spec</span><span class="w"> </span><span class="o">*</span><span class="nx">specs</span><span class="p">.</span><span class="nx">Spec</span><span class="p">,</span><span class="w"> </span><span class="nx">policy</span><span class="w"> </span><span class="nx">ResourcePolicy</span><span class="p">)</span><span class="w"> </span><span class="kt">error</span>
+<span class="kd">func</span><span class="w"> </span><span class="nx">ValidateResourceLimitsWithPolicy</span><span class="p">(</span><span class="nx">ctx</span><span class="w"> </span><span class="nx">context</span><span class="p">.</span><span class="nx">Context</span><span class="p">,</span><span class="w"> </span><span class="nx">config</span><span class="w"> </span><span class="o">*</span><span class="nx">ContainerConfig</span><span class="p">,</span><span class="w"> </span><span class="nx">policy</span><span class="w"> </span><span class="nx">ResourcePolicy</span><span class="p">)</span><span class="w"> </span><span class="kt">error</span>
 
 <span class="c1">// 容器领域 CPU mask 归一化 (internal/domain/container/container_resource_cpu.go)</span>
-<span class="kd">func</span><span class="w"> </span><span class="nx">normalizeCPUSet</span><span class="p">(</span><span class="nx">mask</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">fallbackVCPUs</span><span class="w"> </span><span class="kt">uint32</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32</span><span class="p">)</span>
+<span class="kd">func</span><span class="w"> </span><span class="nx">normalizeCPUSetWithLimit</span><span class="p">(</span><span class="nx">mask</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">fallbackVCPUs</span><span class="w"> </span><span class="kt">uint32</span><span class="p">,</span><span class="w"> </span><span class="nx">maxCPUs</span><span class="w"> </span><span class="kt">uint32</span><span class="p">)</span><span class="w"> </span><span class="nx">normalizedCPUSet</span>
 
 <span class="c1">// 内存阈值管理 (internal/adapters/config/oci/resource_defaults.go)</span>
 <span class="kd">func</span><span class="w"> </span><span class="nx">calculateClientMemThreshold</span><span class="p">(</span><span class="nx">config</span><span class="w"> </span><span class="o">*</span><span class="nx">cntr</span><span class="p">.</span><span class="nx">ContainerConfig</span><span class="p">,</span><span class="w"> </span><span class="nx">runtimeCfg</span><span class="w"> </span><span class="o">*</span><span class="nx">RuntimeConfig</span><span class="p">)</span><span class="w"> </span><span class="kt">uint32</span>
