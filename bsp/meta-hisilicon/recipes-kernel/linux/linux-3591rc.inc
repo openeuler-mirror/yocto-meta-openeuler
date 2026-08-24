@@ -1,8 +1,8 @@
 # add recipes-kernel path to find patch and defconfig
 FILESEXTRAPATHS:append := "${THISDIR}/files/:"
 
-# for mkimage
-DEPENDS += "u-boot-tools-native dtc-native"
+# for mkimage and dtbtool (cmake builds the dtbtool that produces dt.img)
+DEPENDS += "u-boot-tools-native dtc-native cmake-native"
 
 KERNEL_VERSION_SANITY_SKIP = "1"
 
