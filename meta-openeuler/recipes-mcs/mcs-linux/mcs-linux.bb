@@ -48,8 +48,8 @@ RDEPENDS:${PN} = "libgcc-external"
 do_install:append () {
     # Install micad service/init files when present in the source tree.
     # On aarch64 the mcs source ships mica/micad/init/; on x86-64 the
-    # mcs-x86 source may or may not include it yet. Guard each install
-    # so the task does not fail if the files are absent.
+    # mcs-x86 source does not include it. Guard each install so the
+    # task does not fail if the files are absent.
     if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
         if [ -f "${S}/mica/micad/init/micad.service" ]; then
             install -d ${D}${systemd_system_unitdir}
@@ -68,13 +68,11 @@ do_install:append () {
 }
 
 SYSTEMD_PACKAGES = "mcs-linux"
-# micad.service is installed by do_install:append when the source tree
-# includes mica/micad/init/micad.service (currently aarch64; x86-64
-# mcs-x86 source may include it in future). The file guard in
-# do_install:append skips gracefully if absent, but SYSTEMD_SERVICE must
-# still match — declared for all arches so the systemd class checks for
-# it wherever do_install installed it.
-SYSTEMD_SERVICE:mcs-linux = "micad.service"
+# Only declare micad.service as a systemd service when the source tree
+# actually ships it (aarch64 mcs source has mica/micad/init/micad.service;
+# x86-64 mcs-x86 does not). Declaring a service that was not installed
+# makes the systemd class fail do_package with "Didn't find service unit".
+SYSTEMD_SERVICE:mcs-linux = "${@bb.utils.contains('OPENEULER_LOCAL_NAME', 'mcs-x86', '', 'micad.service', d)}"
 
 FILES:${PN} = " \
      ${bindir}/* \
