@@ -56,4 +56,12 @@ FILES:${PN} = " \
 	/lib/ \
 "
 
-INSANE_SKIP:${PN} += "already-stripped"
+INSANE_SKIP:${PN} += "already-stripped file-rdeps"
+
+# hipico-mpp-sample ships pre-built vendor binaries and their bundled
+# .so files in the same package. The binaries NEEDED libsecurec.so etc.
+# but the package only ships libsecurec.so.1.0 (no .so symlink). The
+# auto-generated RPM Requires(libsecurec.so) have no providers in
+# oe-repo, so do_rootfs (dnf) fails. SKIP_FILEDEPS disables per-file
+# dependency generation so the RPM doesn't carry those Requires.
+SKIP_FILEDEPS = "1"
