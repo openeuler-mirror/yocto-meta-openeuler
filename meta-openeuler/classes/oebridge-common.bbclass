@@ -42,11 +42,13 @@ def get_default_repo_list(d):
     # for the nativesdk variant of an aarch64 build) that does not correspond
     # to any openEuler repo arch dir, causing a 404 on repomd.xml.
     # For allarch recipes TARGET_ARCH is "allarch" (no repo dir); fall back to
-    # TUNE_PKGARCH (the MACHINE's tune, e.g. aarch64 — noarch RPMs are in
-    # every arch repo) or BUILD_ARCH (x86_64 build host).
+    # TUNE_ARCH (the MACHINE's base arch, e.g. aarch64 — noarch RPMs are in
+    # every arch repo) or BUILD_ARCH (x86_64 build host). Note: TUNE_PKGARCH
+    # can be a tune-specific value like "cortexa72" which is NOT a valid repo
+    # dir; TUNE_ARCH gives the base arch (aarch64) which is valid.
     arch = d.getVar('TARGET_ARCH')
     if not arch or arch in ('all', 'allarch', ''):
-        arch = d.getVar('TUNE_PKGARCH') or d.getVar('BUILD_ARCH') or 'x86_64'
+        arch = d.getVar('TUNE_ARCH') or d.getVar('BUILD_ARCH') or 'x86_64'
     return [
         {
             "name": "remote_everything",
