@@ -33,7 +33,14 @@ fakeroot python do_make_rootfs_db(){
     def make_db(db_dir, rpms_dir, root_tmp):
         installed_set = set()
         bad_map_set = set()
-        with open(f"{d.getVar('TOPDIR')}/cache/ASSUME_PROVIDE_PKGS", 'r', encoding='utf-8') as f:
+        assume_provide_pkgs = f"{d.getVar('TOPDIR')}/cache/ASSUME_PROVIDE_PKGS"
+        if not os.path.exists(assume_provide_pkgs):
+            bb.fatal(f"make_db: {assume_provide_pkgs} not found — "
+                     "the producer tasks (do_download_oepkg) were likely "
+                     "restored from sstate without writing the cache file. "
+                     "Try cleaning the sstate for the affected recipes or "
+                     "remove {}/cache/ and rebuild.".format(d.getVar('TOPDIR')))
+        with open(assume_provide_pkgs, 'r', encoding='utf-8') as f:
             pkg_data = f.readlines()
             for pkg in pkg_data:
                 pkg = pkg.strip("\n").strip(" ")
@@ -137,7 +144,14 @@ fakeroot python do_dnf_rootfs_prepare(){
     force_list = []
     real_list = []
     extra_list = []
-    with open(f"{d.getVar('TOPDIR')}/cache/INSTALL_PKG_LIST", 'r', encoding='utf-8') as f:
+    install_pkg_list = f"{d.getVar('TOPDIR')}/cache/INSTALL_PKG_LIST"
+    if not os.path.exists(install_pkg_list):
+        bb.fatal(f"do_dnf_rootfs_prepare: {install_pkg_list} not found — "
+                 "the producer task (do_install_list_prepare in "
+                 "packagegroup-oebridge.bb) was likely restored from sstate "
+                 "without writing the cache file. Try cleaning sstate for "
+                 "packagegroup-oebridge or remove {}/cache/ and rebuild.".format(d.getVar('TOPDIR')))
+    with open(install_pkg_list, 'r', encoding='utf-8') as f:
         pkg_lists = f.read().replace("\n"," ")
         for pkg in pkg_lists.split():
             if pkg == "":

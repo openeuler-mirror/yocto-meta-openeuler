@@ -111,3 +111,9 @@ python do_install_list_prepare(){
         f.write(d.getVar('INSTALL_PKG_LISTS').replace(" ", "\n"))
 }
 addtask do_install_list_prepare before do_download_oepkg
+# This task writes a cache file (${TOPDIR}/cache/INSTALL_PKG_LIST) that is
+# consumed by do_dnf_rootfs_prepare in image-oebridge.bbclass. The file is
+# outside WORKDIR, so sstate restoration of this task skips writing it,
+# causing FileNotFoundError in the consumer. nostamp forces this task to
+# always execute (it is trivial — just writes a variable to a file).
+do_install_list_prepare[nostamp] = "1"
