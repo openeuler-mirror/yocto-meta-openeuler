@@ -24,4 +24,4 @@ do_install:append() {
     install -m 0644 ${WORKDIR}/"zvm-openeuler.dtb" ${DEPLOY_DIR_IMAGE}
     install -m 0644 ${WORKDIR}/"zvm-openeuler.dts" ${DEPLOY_DIR_IMAGE}
 }
-addtask generate_zvm_openeuler_dtb after do_fetch before do_install
+addtask generate_zvm_openeuler_dtb after do_prepare_recipe_sysroot before do_install
