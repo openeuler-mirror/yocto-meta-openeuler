@@ -307,6 +307,60 @@ fakeroot python do_dnf_rootfs_prepare(){
     run_cmd_with_cwd(f"find rootfs -type l -printf '%u:%g %p\n' > temp/rootfs_softlink", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo setfacl --restore=rootfs_permission", d.getVar("WORKDIR")+"/temp")
     run_cmd_with_cwd(f"cat rootfs_softlink | while read -r o p;do PSEUDO_UNLOAD=1 sudo chown -h \"$o\" \"$p\"; done", d.getVar("WORKDIR")+"/temp")
+
+    # usr-merge the base rootfs for oe-xfce builds: the yocto-built base ships
+    # /bin,/sbin,/lib,/lib64 as real directories, but the openEuler server RPMs
+    # pulled in do_dnf_install_pkg (e.g. xorg/xfce4 and their deps) ship a
+    # usr-merged filesystem package that provides them as symlinks to /usr/*.
+    # Installing that over the directories fails with
+    # "File from package already exists as a directory in system". Merge the
+    # directory contents into /usr/<dir> and replace the directories with
+    # symlinks so the openEuler filesystem installs cleanly. Idempotent: skipped
+    # when /bin is already a symlink. The reverse symlinks created later by
+    # do_run_post_action (ln_list) become no-ops here because their targets
+    # already exist.
+    distro_features = (d.getVar('DISTRO_FEATURES') or '').split()
+    if 'oe-xfce' in distro_features:
+        workdir = d.getVar('WORKDIR')
+        tr = os.path.join(workdir, 'temp', 'rootfs')
+
+        def _usrmerge_entry(s, dst):
+            # move/merge a single migrated entry `s` into destination `dst`
+            if not os.path.lexists(dst):
+                subprocess.run(f'PSEUDO_UNLOAD=1 sudo mv "{s}" "{dst}"', shell=True, cwd=workdir)
+                return
+            s_link = os.path.islink(s)
+            d_link = os.path.islink(dst)
+            s_dir = os.path.isdir(s) and not s_link
+            d_dir = os.path.isdir(dst) and not d_link
+            if s_dir and d_dir:
+                # both real directories: recurse to merge contents
+                for name in os.listdir(s):
+                    _usrmerge_entry(os.path.join(s, name), os.path.join(dst, name))
+                subprocess.run(f'PSEUDO_UNLOAD=1 sudo rm -rf "{s}"', shell=True, cwd=workdir)
+            elif d_link and not s_link:
+                # destination is a symlink but source is a real file: real wins
+                subprocess.run(f'PSEUDO_UNLOAD=1 sudo rm -f "{dst}"', shell=True, cwd=workdir)
+                subprocess.run(f'PSEUDO_UNLOAD=1 sudo mv "{s}" "{dst}"', shell=True, cwd=workdir)
+            else:
+                # keep the /usr copy (real file, or both symlinks): drop source
+                subprocess.run(f'PSEUDO_UNLOAD=1 sudo rm -rf "{s}"', shell=True, cwd=workdir)
+
+        for sub in ('bin', 'sbin', 'lib', 'lib64'):
+            src = f"{tr}/{sub}"
+            if subprocess.run(f"test -d {src} && ! test -L {src}", shell=True).returncode != 0:
+                continue
+            migr = f"{src}.usrmerge"
+            usr = f"{tr}/usr/{sub}"
+            subprocess.run(f"PSEUDO_UNLOAD=1 sudo rm -rf {migr}", shell=True, cwd=workdir)
+            subprocess.run(f"PSEUDO_UNLOAD=1 sudo mv {src} {migr}", shell=True, cwd=workdir)
+            subprocess.run(f"PSEUDO_UNLOAD=1 sudo mkdir -p {usr}", shell=True, cwd=workdir)
+            subprocess.run(f"PSEUDO_UNLOAD=1 sudo ln -s usr/{sub} {src}", shell=True, cwd=workdir)
+            for name in os.listdir(migr):
+                _usrmerge_entry(os.path.join(migr, name), os.path.join(usr, name))
+            subprocess.run(f"PSEUDO_UNLOAD=1 sudo rm -rf {migr}", shell=True, cwd=workdir)
+        bb.plain("usrmerge: converted base rootfs /bin,/sbin,/lib,/lib64 to /usr symlinks")
+
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs sed -i 's/^gpgcheck=1/gpgcheck=0/' /etc/dnf/dnf.conf", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf clean all", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
