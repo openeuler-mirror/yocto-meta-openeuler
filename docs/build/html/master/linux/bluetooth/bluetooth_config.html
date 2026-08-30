@@ -68,7 +68,8 @@
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">蓝牙使用</a><ul class="current">
 <li class="toctree-l4 current"><a class="current reference internal" href="#">openEuler Embedded蓝牙配置</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="#id1">环境/工具准备</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#id2">蓝牙使用说明</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id2">蓝牙服务说明</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id3">蓝牙使用说明</a></li>
 </ul>
 </li>
 </ul>
@@ -118,19 +119,40 @@
 <p>编译openEuler Embedded版本的树莓派镜像, 并烧录进SD卡中, 参考 <a class="reference internal" href="../../bsp/arm64/raspberrypi4/build.html#board-raspberrypi4-build"><span class="std std-ref">关键特性/树莓派4B支持/树莓派镜像构建指导</span></a></p>
 </section>
 <section id="id2">
-<h2>蓝牙使用说明<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<h2>蓝牙服务说明<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>openEuler Embedded默认使用 <code class="docutils literal notranslate"><span class="pre">systemd</span></code> 作为系统初始化管理器（<code class="docutils literal notranslate"><span class="pre">INIT_MANAGER</span> <span class="pre">=</span> <span class="pre">&quot;systemd&quot;</span></code>），
+因此蓝牙服务由systemd统一管理，而非传统的SysV init脚本。树莓派镜像中与蓝牙相关的systemd服务如下：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bluetooth.service</span></code>：由bluez5提供，负责启动 <code class="docutils literal notranslate"><span class="pre">bluetoothd</span></code> 守护进程（D-Bus服务，PID 1为systemd）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hciuart.service</span></code>：由pi-bluetooth提供，负责配置蓝牙UART串口（由 <code class="docutils literal notranslate"><span class="pre">dev-serial1.device</span></code> 自动触发）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bthelper&#64;.service</span></code>：由pi-bluetooth提供，当udev检测到HCI设备时自动触发</p></li>
+</ul>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>树莓派镜像中 <strong>不存在</strong> <code class="docutils literal notranslate"><span class="pre">/etc/init.d/bluetooth</span></code> 脚本。openEuler Embedded使用systemd且不在
+<code class="docutils literal notranslate"><span class="pre">DISTRO_FEATURES</span></code> 中包含 <code class="docutils literal notranslate"><span class="pre">sysvinit</span></code>，Yocto的 <code class="docutils literal notranslate"><span class="pre">systemd.bbclass</span></code> 会在打包阶段通过
+<code class="docutils literal notranslate"><span class="pre">rm_sysvinit_initddir</span></code> 删除冗余的SysV init脚本，仅保留systemd service文件。
+因此请使用 <code class="docutils literal notranslate"><span class="pre">systemctl</span></code> 命令而非 <code class="docutils literal notranslate"><span class="pre">/etc/init.d/</span></code> 脚本来管理蓝牙服务。</p>
+</div>
+</section>
+<section id="id3">
+<h2>蓝牙使用说明<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
 <p>使用如下命令开启蓝牙：</p>
 <ul>
 <li><p>开启蓝牙</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>默认系统启动的时候bluetooth进程已经启动
-<span class="gp"># </span>如果没有启动，可以使用如下命令启动
-<span class="gp">$ </span>/etc/init.d/bluetooth<span class="w"> </span>start
+<p><code class="docutils literal notranslate"><span class="pre">bluetooth.service</span></code> 默认已启用（preset为enable），系统启动时 <code class="docutils literal notranslate"><span class="pre">bluetoothd</span></code> 会自动启动。
+如果服务未运行，可手动启动：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>启动蓝牙守护进程
+<span class="gp">$ </span>systemctl<span class="w"> </span>start<span class="w"> </span>bluetooth
 
-<span class="gp"># </span>启动蓝牙设备，必须执行
+<span class="gp"># </span>查看蓝牙服务状态
+<span class="gp">$ </span>systemctl<span class="w"> </span>status<span class="w"> </span>bluetooth
+
+<span class="gp"># </span>启动蓝牙设备（将hci0接口up），必须执行
 <span class="gp">$ </span>hciconfig<span class="w"> </span>hci0<span class="w"> </span>up
 </pre></div>
 </div>
-<p>如果开启成功，则可以使用hciconfig命令查看蓝牙设备信息,表示设备已经启动：</p>
+<p>如果开启成功，则可以使用hciconfig命令查看蓝牙设备信息，表示设备已经启动：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>hciconfig
 <span class="go">hci0:       Type: Primary  Bus: UART</span>
 <span class="go">BD Address: xx:xx:xx:xx:xx:xx  ACL MTU: 1021:8  SCO MTU: 64:1</span>
@@ -159,9 +181,29 @@
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Changing discoverable on succeeded</span>
 </pre></div>
 </div>
-<p>并且，利用其他设备，打开蓝牙搜索选项，可以看到名为“BlueZ [current version number]”的设备。</p>
+<p>开启后，在其他设备的蓝牙搜索列表中可以看到本设备。</p>
 </li>
 </ul>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<blockquote>
+<div><p><strong>关于蓝牙设备名称：</strong></p>
+<p>BlueZ在 <code class="docutils literal notranslate"><span class="pre">/etc/bluetooth/main.conf</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">Name</span></code> 配置项被注释掉时（默认状态），
+蓝牙适配器名称会回退为系统主机名（hostname）。树莓派镜像的主机名默认为
+<code class="docutils literal notranslate"><span class="pre">raspberrypi4-64</span></code>，因此其他设备搜索到的名称为 <code class="docutils literal notranslate"><span class="pre">raspberrypi4-64</span></code>，
+而非 <code class="docutils literal notranslate"><span class="pre">BlueZ</span> <span class="pre">&lt;版本号&gt;</span></code>。</p>
+<p>若希望显示为 <code class="docutils literal notranslate"><span class="pre">BlueZ</span></code>，需编辑 <code class="docutils literal notranslate"><span class="pre">/etc/bluetooth/main.conf</span></code>，取消注释 <code class="docutils literal notranslate"><span class="pre">Name</span></code> 项：</p>
+</div></blockquote>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="c1"># /etc/bluetooth/main.conf</span>
+<span class="k">[General]</span>
+<span class="na">Name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">BlueZ</span>
+</pre></div>
+</div>
+<p>修改后重启蓝牙服务使配置生效：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>systemctl<span class="w"> </span>restart<span class="w"> </span>bluetooth
+</pre></div>
+</div>
+</div>
 <div class="admonition attention">
 <p class="admonition-title">Attention</p>
 <ol class="arabic simple">
