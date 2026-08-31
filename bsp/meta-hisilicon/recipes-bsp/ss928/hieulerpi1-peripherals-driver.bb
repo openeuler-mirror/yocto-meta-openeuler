@@ -13,6 +13,8 @@ S = "${WORKDIR}/HiEuler-driver-kernel6"
 
 inherit module
 
+DEPENDS += "cmake-native coreutils-native"
+
 do_compile() {
     export CROSS_COMPILE=aarch64-openeuler-linux-
     export KERNELDIR=${STAGING_KERNEL_BUILDDIR}
