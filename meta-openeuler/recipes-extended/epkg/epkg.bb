@@ -45,6 +45,12 @@ do_install() {
     # The binary is fully self-contained (statically linked). Environment and
     # shell rc initialization is done at runtime via 'epkg self install'.
     install -d ${D}${prefix}/local/bin
+    # The prebuilt binary bundles a busybox libbb that opens /dev/kmsg and
+    # writes get_applet_name debug lines on every invocation, polluting the
+    # kernel log (dmesg). Redirect that log path to /dev/null (same byte
+    # length) so the writes are silently discarded; epkg's normal stdout/stderr
+    # output and functionality are unaffected.
+    perl -pi -e 's{/dev/kmsg}{/dev/null}g' ${WORKDIR}/epkg-linux-${TARGET_ARCH}-${PV}
     install -m 0755 ${WORKDIR}/epkg-linux-${TARGET_ARCH}-${PV} ${D}${prefix}/local/bin/epkg
 }
 
