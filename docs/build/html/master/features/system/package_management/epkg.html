@@ -68,7 +68,10 @@
 <li class="toctree-l5 current"><a class="current reference internal" href="#">openEuler包管理器EPKG</a><ul>
 <li class="toctree-l6"><a class="reference internal" href="#id1">总体介绍</a></li>
 <li class="toctree-l6"><a class="reference internal" href="#id2">构建指导</a></li>
-<li class="toctree-l6"><a class="reference internal" href="#id3">使用指导</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id3">使用指导</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id4">首次使用前初始化</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -144,6 +147,20 @@
 <p class="admonition-title">See also</p>
 <p>详细使用方法请参考 <a class="reference external" href="https://atomgit.com/openeuler/epkg/blob/master/doc/epkg-usage.md#epkg%E5%8C%85%E7%AE%A1%E7%90%86%E5%99%A8%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E">EPKG包管理器使用说明</a> 。</p>
 </div>
+<section id="id4">
+<h3>首次使用前初始化<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<p>epkg 的 <code class="docutils literal notranslate"><span class="pre">env</span> <span class="pre">create</span></code> / <code class="docutils literal notranslate"><span class="pre">install</span></code> 等命令依赖 epkg 自身环境（self environment）提供的 channel 配置等资产。镜像默认仅预装 epkg 二进制，<strong>首次使用前需执行一次</strong> <code class="docutils literal notranslate"><span class="pre">epkg</span> <span class="pre">self</span> <span class="pre">install</span></code> 完成 self 环境初始化：该命令会从上游下载 epkg 源码与运行时资产，在 <code class="docutils literal notranslate"><span class="pre">/opt/epkg/envs/root/self</span></code> 下建立 self 环境与 <code class="docutils literal notranslate"><span class="pre">main</span></code> 环境，并创建 <code class="docutils literal notranslate"><span class="pre">/usr/local/bin/epkg</span></code> 等符号链接。未初始化时执行 <code class="docutils literal notranslate"><span class="pre">epkg</span> <span class="pre">env</span> <span class="pre">create</span></code> / <code class="docutils literal notranslate"><span class="pre">epkg</span> <span class="pre">install</span></code> 会因找不到 channel 配置（如 <code class="docutils literal notranslate"><span class="pre">/root/.epkg/envs/self/usr/src/epkg/assets/repos/*.yaml</span></code>）而报错。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>epkg<span class="w"> </span>self<span class="w"> </span>install
+<span class="go">         ____  _  ______</span>
+<span class="go">... (Checking for updates / Downloading epkg source code / elf-loader / sandbox kernel)</span>
+<span class="go">Installation complete!</span>
+<span class="go">Creating environment &#39;main&#39; in /opt/epkg/envs/root/main</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">epkg</span> <span class="pre">self</span> <span class="pre">install</span></code> 需要网络连接（从 gitee 下载 epkg 源码、elf-loader、sandbox kernel）。在持久 rootfs 上只需执行一次；在 ramdisk（如 cpio initrd）镜像上每次重启后需重新执行。</p>
+</div>
 <p>以下为使用示例：</p>
 <ol class="arabic">
 <li><p>EPKG包管理器命令说明</p>
@@ -206,6 +223,7 @@
 </pre></div>
 </div>
 </div></blockquote>
+</section>
 </section>
 </section>
 

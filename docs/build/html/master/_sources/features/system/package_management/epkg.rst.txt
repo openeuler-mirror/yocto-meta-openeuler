@@ -24,6 +24,23 @@ ____
 
    详细使用方法请参考 `EPKG包管理器使用说明 <https://atomgit.com/openeuler/epkg/blob/master/doc/epkg-usage.md#epkg%E5%8C%85%E7%AE%A1%E7%90%86%E5%99%A8%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E>`_ 。
 
+首次使用前初始化
+----------------
+
+epkg 的 ``env create`` / ``install`` 等命令依赖 epkg 自身环境（self environment）提供的 channel 配置等资产。镜像默认仅预装 epkg 二进制，**首次使用前需执行一次** ``epkg self install`` 完成 self 环境初始化：该命令会从上游下载 epkg 源码与运行时资产，在 ``/opt/epkg/envs/root/self`` 下建立 self 环境与 ``main`` 环境，并创建 ``/usr/local/bin/epkg`` 等符号链接。未初始化时执行 ``epkg env create`` / ``epkg install`` 会因找不到 channel 配置（如 ``/root/.epkg/envs/self/usr/src/epkg/assets/repos/*.yaml``）而报错。
+
+.. code-block:: console
+
+   $ epkg self install
+            ____  _  ______
+   ... (Checking for updates / Downloading epkg source code / elf-loader / sandbox kernel)
+   Installation complete!
+   Creating environment 'main' in /opt/epkg/envs/root/main
+
+.. note::
+
+   ``epkg self install`` 需要网络连接（从 gitee 下载 epkg 源码、elf-loader、sandbox kernel）。在持久 rootfs 上只需执行一次；在 ramdisk（如 cpio initrd）镜像上每次重启后需重新执行。
+
 以下为使用示例：
 
 1. EPKG包管理器命令说明
