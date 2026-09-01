@@ -361,10 +361,21 @@ fakeroot python do_dnf_rootfs_prepare(){
             subprocess.run(f"PSEUDO_UNLOAD=1 sudo rm -rf {migr}", shell=True, cwd=workdir)
         bb.plain("usrmerge: converted base rootfs /bin,/sbin,/lib,/lib64 to /usr symlinks")
 
-    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs sed -i 's/^gpgcheck=1/gpgcheck=0/' /etc/dnf/dnf.conf", d.getVar("WORKDIR"))
-    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf clean all", d.getVar("WORKDIR"))
-    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
+    try:
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs sed -i 's/^gpgcheck=1/gpgcheck=0/' /etc/dnf/dnf.conf", d.getVar("WORKDIR"))
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf clean all", d.getVar("WORKDIR"))
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
         dnf-plugins-core -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
+    except Exception:
+        bb.warn("do_dnf_rootfs_prepare: dnf setup failed; restoring temp/rootfs ownership for cleanup")
+        _ugid = subprocess.run("stat -c '%u:%g' temp", shell=True,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                                cwd=d.getVar("WORKDIR"))
+        if _ugid.returncode == 0 and _ugid.stdout.strip():
+            subprocess.run(f'PSEUDO_UNLOAD=1 sudo chroot temp/rootfs chown -R {_ugid.stdout.strip()} /',
+                           shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                           cwd=d.getVar("WORKDIR"), text=True)
+        raise
 }
 
 fakeroot python do_dnf_install_pkg(){
