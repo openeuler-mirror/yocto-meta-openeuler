@@ -10,3 +10,4 @@
 
    build.rst
    uefi.rst
+   mcs_zephyr.rst
