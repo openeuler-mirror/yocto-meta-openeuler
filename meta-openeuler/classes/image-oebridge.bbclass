@@ -1,5 +1,10 @@
 inherit oebridge-common
 
+# acl-native provides getfacl/setfacl used by do_dnf_rootfs_prepare/restore to
+# snapshot and restore rootfs ACLs across pseudo, so those tools are on the
+# task PATH without relying on the host/container providing acl.
+DEPENDS += "acl-native"
+
 def get_package_details(base, package_name):
     query = base.sack.query().available().filter(name=package_name)
     if not query:
@@ -28,7 +33,14 @@ fakeroot python do_make_rootfs_db(){
     def make_db(db_dir, rpms_dir, root_tmp):
         installed_set = set()
         bad_map_set = set()
-        with open(f"{d.getVar('TOPDIR')}/cache/ASSUME_PROVIDE_PKGS", 'r', encoding='utf-8') as f:
+        assume_provide_pkgs = f"{d.getVar('TOPDIR')}/cache/ASSUME_PROVIDE_PKGS"
+        if not os.path.exists(assume_provide_pkgs):
+            bb.fatal(f"make_db: {assume_provide_pkgs} not found — "
+                     "the producer tasks (do_download_oepkg) were likely "
+                     "restored from sstate without writing the cache file. "
+                     "Try cleaning the sstate for the affected recipes or "
+                     "remove {}/cache/ and rebuild.".format(d.getVar('TOPDIR')))
+        with open(assume_provide_pkgs, 'r', encoding='utf-8') as f:
             pkg_data = f.readlines()
             for pkg in pkg_data:
                 pkg = pkg.strip("\n").strip(" ")
@@ -132,7 +144,14 @@ fakeroot python do_dnf_rootfs_prepare(){
     force_list = []
     real_list = []
     extra_list = []
-    with open(f"{d.getVar('TOPDIR')}/cache/INSTALL_PKG_LIST", 'r', encoding='utf-8') as f:
+    install_pkg_list = f"{d.getVar('TOPDIR')}/cache/INSTALL_PKG_LIST"
+    if not os.path.exists(install_pkg_list):
+        bb.fatal(f"do_dnf_rootfs_prepare: {install_pkg_list} not found — "
+                 "the producer task (do_install_list_prepare in "
+                 "packagegroup-oebridge.bb) was likely restored from sstate "
+                 "without writing the cache file. Try cleaning sstate for "
+                 "packagegroup-oebridge or remove {}/cache/ and rebuild.".format(d.getVar('TOPDIR')))
+    with open(install_pkg_list, 'r', encoding='utf-8') as f:
         pkg_lists = f.read().replace("\n"," ")
         for pkg in pkg_lists.split():
             if pkg == "":
@@ -231,16 +250,23 @@ fakeroot python do_dnf_rootfs_prepare(){
     else:
         bb.error("openEuler.repo not found")
     
+    # only add the ROS repo when a ROS DISTRO_FEATURE is enabled: 'oe-ros'
+    # pulls ros-humble-* RPMs from the ROS-SIG repo via oebridge dnf, and 'ros'
+    # enables the Yocto packagegroup-ros. Without this guard the
+    # openEulerROS-humble endpoint (eulermaker ROS-SIG) is fetched for every
+    # oebridge build and 403s for non-ROS builds, aborting do_dnf_rootfs_prepare.
     ros_repo_path = f"{d.getVar('THISDIR')}/../../recipes-devtools/dnf/files/openEulerROS.repo"
-    if os.path.exists(ros_repo_path):
-        subprocess.run(f"cp {ros_repo_path} {repo_dir}",
-            shell=True,
-            cwd=repo_dir)
-        subprocess.run(f"sed -i 's/OPENEULER_VER/{d.getVar('SERVER_VERSION')}/g' openEulerROS.repo",
-            shell=True,
-            cwd=repo_dir)
-    else:
-        bb.error("openEuler.repo not found")
+    distro_features = (d.getVar('DISTRO_FEATURES') or '').split()
+    if ('oe-ros' in distro_features) or ('ros' in distro_features):
+        if os.path.exists(ros_repo_path):
+            subprocess.run(f"cp {ros_repo_path} {repo_dir}",
+                shell=True,
+                cwd=repo_dir)
+            subprocess.run(f"sed -i 's/OPENEULER_VER/{d.getVar('SERVER_VERSION')}/g' openEulerROS.repo",
+                shell=True,
+                cwd=repo_dir)
+        else:
+            bb.error("openEulerROS.repo not found")
 
     # copy extra files to rootfs
     extra_file_name = ""
@@ -281,6 +307,60 @@ fakeroot python do_dnf_rootfs_prepare(){
     run_cmd_with_cwd(f"find rootfs -type l -printf '%u:%g %p\n' > temp/rootfs_softlink", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo setfacl --restore=rootfs_permission", d.getVar("WORKDIR")+"/temp")
     run_cmd_with_cwd(f"cat rootfs_softlink | while read -r o p;do PSEUDO_UNLOAD=1 sudo chown -h \"$o\" \"$p\"; done", d.getVar("WORKDIR")+"/temp")
+
+    # usr-merge the base rootfs for oe-xfce builds: the yocto-built base ships
+    # /bin,/sbin,/lib,/lib64 as real directories, but the openEuler server RPMs
+    # pulled in do_dnf_install_pkg (e.g. xorg/xfce4 and their deps) ship a
+    # usr-merged filesystem package that provides them as symlinks to /usr/*.
+    # Installing that over the directories fails with
+    # "File from package already exists as a directory in system". Merge the
+    # directory contents into /usr/<dir> and replace the directories with
+    # symlinks so the openEuler filesystem installs cleanly. Idempotent: skipped
+    # when /bin is already a symlink. The reverse symlinks created later by
+    # do_run_post_action (ln_list) become no-ops here because their targets
+    # already exist.
+    distro_features = (d.getVar('DISTRO_FEATURES') or '').split()
+    if 'oe-xfce' in distro_features:
+        workdir = d.getVar('WORKDIR')
+        tr = os.path.join(workdir, 'temp', 'rootfs')
+
+        def _usrmerge_entry(s, dst):
+            # move/merge a single migrated entry `s` into destination `dst`
+            if not os.path.lexists(dst):
+                subprocess.run(f'PSEUDO_UNLOAD=1 sudo mv "{s}" "{dst}"', shell=True, cwd=workdir)
+                return
+            s_link = os.path.islink(s)
+            d_link = os.path.islink(dst)
+            s_dir = os.path.isdir(s) and not s_link
+            d_dir = os.path.isdir(dst) and not d_link
+            if s_dir and d_dir:
+                # both real directories: recurse to merge contents
+                for name in os.listdir(s):
+                    _usrmerge_entry(os.path.join(s, name), os.path.join(dst, name))
+                subprocess.run(f'PSEUDO_UNLOAD=1 sudo rm -rf "{s}"', shell=True, cwd=workdir)
+            elif d_link and not s_link:
+                # destination is a symlink but source is a real file: real wins
+                subprocess.run(f'PSEUDO_UNLOAD=1 sudo rm -f "{dst}"', shell=True, cwd=workdir)
+                subprocess.run(f'PSEUDO_UNLOAD=1 sudo mv "{s}" "{dst}"', shell=True, cwd=workdir)
+            else:
+                # keep the /usr copy (real file, or both symlinks): drop source
+                subprocess.run(f'PSEUDO_UNLOAD=1 sudo rm -rf "{s}"', shell=True, cwd=workdir)
+
+        for sub in ('bin', 'sbin', 'lib', 'lib64'):
+            src = f"{tr}/{sub}"
+            if subprocess.run(f"test -d {src} && ! test -L {src}", shell=True).returncode != 0:
+                continue
+            migr = f"{src}.usrmerge"
+            usr = f"{tr}/usr/{sub}"
+            subprocess.run(f"PSEUDO_UNLOAD=1 sudo rm -rf {migr}", shell=True, cwd=workdir)
+            subprocess.run(f"PSEUDO_UNLOAD=1 sudo mv {src} {migr}", shell=True, cwd=workdir)
+            subprocess.run(f"PSEUDO_UNLOAD=1 sudo mkdir -p {usr}", shell=True, cwd=workdir)
+            subprocess.run(f"PSEUDO_UNLOAD=1 sudo ln -s usr/{sub} {src}", shell=True, cwd=workdir)
+            for name in os.listdir(migr):
+                _usrmerge_entry(os.path.join(migr, name), os.path.join(usr, name))
+            subprocess.run(f"PSEUDO_UNLOAD=1 sudo rm -rf {migr}", shell=True, cwd=workdir)
+        bb.plain("usrmerge: converted base rootfs /bin,/sbin,/lib,/lib64 to /usr symlinks")
+
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs sed -i 's/^gpgcheck=1/gpgcheck=0/' /etc/dnf/dnf.conf", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf clean all", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \

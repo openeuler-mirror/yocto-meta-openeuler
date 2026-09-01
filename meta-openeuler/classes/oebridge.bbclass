@@ -82,7 +82,7 @@ python do_download_oepkg(){
         download_pre_dir = rpms_cache_dir+ \
                     "/"+d.getVar('SERVER_VERSION')+ \
                     "/oe"+ \
-                    "/"+d.getVar('TUNE_ARCH')
+                    "/"+d.getVar('TARGET_ARCH')
         pn_dir = download_pre_dir+"/"+d.getVar("PN")
         os.makedirs(name=pn_dir, exist_ok=True)
         for server_rpm in server_rpms.split(" "):

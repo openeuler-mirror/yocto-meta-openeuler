@@ -4,7 +4,15 @@
 # KERNEL_SRC can be referenced in the make file of kernel module
 export KERNEL_SRC="${SDKTARGETSYSROOT}/usr/src/kernel"
 cd "${KERNEL_SRC}"
-make modules_prepare PKG_CONFIG_SYSROOT_DIR= PKG_CONFIG_PATH=
+# objtool is built with HOSTCC and uses `pkg-config libelf` to find
+# host libelf. The SDK environment sets PKG_CONFIG_SYSROOT_DIR and
+# PKG_CONFIG_PATH to the target sysroot, which makes pkg-config return
+# the target libelf (wrong arch for a host tool) — objtool then fails
+# with "Cannot generate ORC metadata for CONFIG_UNWINDER_ORC=y, please
+# install libelf-dev". Clear PKG_CONFIG_* in the environment for the
+# make invocation so objtool finds the host libelf via the default
+# pkg-config search path.
+env -u PKG_CONFIG_SYSROOT_DIR -u PKG_CONFIG_PATH make modules_prepare PKG_CONFIG_SYSROOT_DIR= PKG_CONFIG_PATH=
 cd -
 
 # ROS2 SDK related handling
