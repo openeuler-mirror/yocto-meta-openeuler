@@ -46,7 +46,19 @@ do_install:append () {
     done
 }
 
-INSANE_SKIP:${PN} += "dev-so staticdev"
+# clang-external-cross-canadian repacks an external (openEuler) LLVM/clang
+# toolchain as a nativesdk (x86_64) package. Its ELF binaries (clang, lld,
+# llvm-* tools) NEEDED host x86_64 libs (glibc/libstdc++/libm/libz/libtinfo/
+# libgcc_s/ld-linux-x86-64/rtld(GNU_HASH)) that are provided by the build
+# host, not by Yocto packages. The per-file (SONAME) auto-deps generated into
+# the RPM as Requires(libstdc++.so.6(GLIBCXX_3.4)(64bit))... cannot be
+# satisfied by oe-sdk-repo and break do_populate_sdk ("nothing provides
+# libstdc++.so.6 ... needed by clang-external-cross-canadian-aarch64-...-
+# x86_64_nativesdk"). SKIP_FILEDEPS disables the per-file dep generation so
+# the RPM installs cleanly; the host provides those libs at runtime. (Same
+# pattern as firefox-bin's fix.)
+INSANE_SKIP:${PN} += "dev-so staticdev file-rdeps"
+SKIP_FILEDEPS = "1"
 INHIBIT_PACKAGE_STRIP = "1"
 INHIBIT_SYSROOT_STRIP = "1"
 

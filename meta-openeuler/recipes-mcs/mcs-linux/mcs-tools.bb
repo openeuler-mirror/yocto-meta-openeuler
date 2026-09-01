@@ -27,5 +27,5 @@ do_install () {
 }
 
 FILES:${PN} += "${bindir}/*"
-INSANE_SKIP:${PN} += "already-stripped"
+INSANE_SKIP:${PN} += "already-stripped file-rdeps"
 COMPATIBLE_MACHINE = "generic-x86-64"

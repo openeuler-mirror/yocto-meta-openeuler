@@ -7,6 +7,11 @@ PV = "2.6"
 
 inherit oee-archive
 
+# TF-A's Makefile calls dtc to compile .dts -> .dtb (FVP/rpi4 device tree
+# configs). Without dtc-native in DEPENDS, dtc is not in PATH and do_compile
+# fails with "make: dtc: No such file or directory" (exit 127).
+DEPENDS += "dtc-native"
+
 SRC_URI = "file://${BP}.tar.gz \
            file://0001-RPI3-RPI4-revert-rpi3_pwr_down_wfi.patch \
         "

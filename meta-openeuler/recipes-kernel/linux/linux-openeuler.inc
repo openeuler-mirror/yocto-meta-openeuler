@@ -12,6 +12,16 @@ inherit kernel-yocto
 deltask do_validate_branches
 deltask do_kernel_checkout
 
+# x86-64 uses the ORC unwinder (CONFIG_UNWINDER_ORC=y), so the kernel build
+# invokes objtool to generate ORC unwind metadata. objtool is a host tool
+# that needs libelf (gelf.h / libelf.so from elfutils). elfutils-native is
+# built in the layer but was not a dependency of this recipe, so it was not
+# populated into the kernel's native sysroot and objtool failed with:
+#   "Cannot generate ORC metadata for CONFIG_UNWINDER_ORC=y, please install
+#    libelf-dev, libelf-devel or elfutils-libelf-devel"
+# aarch64 uses frame-pointer unwinding (no ORC/objtool), so this is x86-only.
+DEPENDS:append:x86-64 = " elfutils-native"
+
 ## handling for kernel meta data
 # the original get_dirs_with_fragments will include OPENEULER_SP_DIR
 # so that all the files under OPENEULER_SP_DIR will be in the file-checksums

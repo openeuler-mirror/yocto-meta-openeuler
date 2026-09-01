@@ -45,22 +45,34 @@ DEPENDS = "openamp libmetal update-rc.d-native"
 # libgcc_s.so must be installed for pthread_cancel to work in rpmsg_main
 RDEPENDS:${PN} = "libgcc-external"
 
-do_install:append:aarch64 () {
+do_install:append () {
+    # Install micad service/init files when present in the source tree.
+    # On aarch64 the mcs source ships mica/micad/init/; on x86-64 the
+    # mcs-x86 source does not include it. Guard each install so the
+    # task does not fail if the files are absent.
     if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
-        install -d ${D}${systemd_system_unitdir}
-        install -m 0644 ${S}/mica/micad/init/micad.service ${D}${systemd_system_unitdir}
+        if [ -f "${S}/mica/micad/init/micad.service" ]; then
+            install -d ${D}${systemd_system_unitdir}
+            install -m 0644 ${S}/mica/micad/init/micad.service ${D}${systemd_system_unitdir}
+        fi
     fi
 
     if ${@bb.utils.contains('DISTRO_FEATURES', 'sysvinit', 'true', 'false', d)}; then
-        install -d ${D}${sysconfdir}/init.d
-        install -d ${D}${sysconfdir}/rc5.d
-        install -m 0755 ${S}/mica/micad/init/micad.init ${D}${sysconfdir}/init.d
-        update-rc.d -r ${D} micad.init start 90 5 .
+        if [ -f "${S}/mica/micad/init/micad.init" ]; then
+            install -d ${D}${sysconfdir}/init.d
+            install -d ${D}${sysconfdir}/rc5.d
+            install -m 0755 ${S}/mica/micad/init/micad.init ${D}${sysconfdir}/init.d
+            update-rc.d -r ${D} micad.init start 90 5 .
+        fi
     fi
 }
 
 SYSTEMD_PACKAGES = "mcs-linux"
-SYSTEMD_SERVICE:mcs-linux = "micad.service"
+# Only declare micad.service as a systemd service when the source tree
+# actually ships it (aarch64 mcs source has mica/micad/init/micad.service;
+# x86-64 mcs-x86 does not). Declaring a service that was not installed
+# makes the systemd class fail do_package with "Didn't find service unit".
+SYSTEMD_SERVICE:mcs-linux = "${@bb.utils.contains('OPENEULER_LOCAL_NAME', 'mcs-x86', '', 'micad.service', d)}"
 
 FILES:${PN} = " \
      ${bindir}/* \

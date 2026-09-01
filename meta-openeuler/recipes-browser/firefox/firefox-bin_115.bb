@@ -58,6 +58,23 @@ FILES:${PN} = " \
 "
  
 # don't need '/etc/ima'
-INSANE_SKIP:${PN} += "already-stripped installed-vs-shipped"
+# file-rdeps: this recipe repacks openEuler's firefox RPM. Its ELF binaries
+# (firefox, vaapitest, libxul.so) NEEDED many GUI/X11/alsa/freetype/fontconfig
+# libs that are NOT Yocto-provided — they are pulled as openEuler RPMs via the
+# oebridge dnf flow (oe-xfce feature installs xfce4-* which brings gtk3/pango/
+# cairo/X11/etc.) at image-assembly time. Yocto's file-rdeps resolves against
+# Yocto package providers only and cannot see those dnf-provided RPMs, so it
+# falsely flags them. The runtime deps are satisfied in the final image, so
+# skip file-rdeps for this binary repack.
+INSANE_SKIP:${PN} += "already-stripped installed-vs-shipped file-rdeps"
+
+# SKIP_FILEDEPS: INSANE_SKIP only silences the QA check; the per-file (SONAME)
+# auto-deps are still generated into the RPM as Requires(libX11.so.6()(64bit))...
+# which then break do_rootfs (oe-repo has no providers -> "nothing provides").
+# Disabling per-file dep generation removes those Requires so firefox-bin
+# installs cleanly from oe-repo; the GUI libs arrive at runtime via the
+# dnf-installed xfce4-* RPMs. Safe here: firefox's internal .so's (libxul etc.)
+# are self-contained in the package and not required by anything external.
+SKIP_FILEDEPS = "1"
 
 ASSUME_PROVIDE_PKGS = "firefox"
