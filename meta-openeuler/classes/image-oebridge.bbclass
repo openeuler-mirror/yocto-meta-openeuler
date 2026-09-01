@@ -380,6 +380,22 @@ fakeroot python do_dnf_install_pkg(){
         if res.returncode != 0:
                 bb.fatal(res.stderr)
 
+    def restore_temp_rootfs_owner():
+        # On failure, temp/rootfs contains real-root-owned files written by
+        # the sudo chroot dnf install. do_dnf_rootfs_restore (which normally
+        # chowns them back to the build user) only runs on success, so the
+        # leftover would be undeletable by the build user and would block the
+        # next build's cp. Restore ownership here so the leftover is deletable.
+        ugid = subprocess.run("stat -c '%u:%g' temp",
+                              shell=True, stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE, text=True,
+                              cwd=d.getVar("WORKDIR"))
+        if ugid.returncode == 0 and ugid.stdout.strip():
+            workdir = d.getVar("WORKDIR")
+            subprocess.run(f'PSEUDO_UNLOAD=1 sudo chroot temp/rootfs chown -R {ugid.stdout.strip()} /',
+                           shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                           cwd=workdir, text=True)
+
     # read package lists saved by do_dnf_rootfs_prepare
     real_list = []
     extra_list = []
@@ -394,23 +410,28 @@ fakeroot python do_dnf_install_pkg(){
             if pkg:
                 extra_list.append(pkg)
 
-    if len(real_list) > 0:
-        real_list_str = " ".join(real_list)
-        bb.plain("install real packages: " + real_list_str)
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
+    try:
+        if len(real_list) > 0:
+            real_list_str = " ".join(real_list)
+            bb.plain("install real packages: " + real_list_str)
+            run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
         {real_list_str} -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
 
-    if len(extra_list) > 0:
-        extra_list_str = " ".join(extra_list)
-        bb.plain("install extra packages: " + extra_list_str)
-        extra_mirror = "repo.oepkgs.net/openeuler/rpm"
-        extra_repo = f"{extra_mirror}/{d.getVar('SERVER_VERSION')}/extras/{d.getVar('TUNE_ARCH')}/"
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf config-manager --add-repo http://{extra_repo}/", d.getVar("WORKDIR"))
-        extra_repo_id = f"{extra_repo}".replace("/", "_")
-        extra_list_str = " ".join(extra_list)
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
+        if len(extra_list) > 0:
+            extra_list_str = " ".join(extra_list)
+            bb.plain("install extra packages: " + extra_list_str)
+            extra_mirror = "repo.oepkgs.net/openeuler/rpm"
+            extra_repo = f"{extra_mirror}/{d.getVar('SERVER_VERSION')}/extras/{d.getVar('TUNE_ARCH')}/"
+            run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf config-manager --add-repo http://{extra_repo}/", d.getVar("WORKDIR"))
+            extra_repo_id = f"{extra_repo}".replace("/", "_")
+            extra_list_str = " ".join(extra_list)
+            run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
         {extra_list_str} -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf config-manager --set-disabled {extra_repo_id}", d.getVar("WORKDIR"))
+            run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf config-manager --set-disabled {extra_repo_id}", d.getVar("WORKDIR"))
+    except Exception:
+        bb.warn("do_dnf_install_pkg: dnf install failed; restoring temp/rootfs ownership for cleanup")
+        restore_temp_rootfs_owner()
+        raise
 }
 
 fakeroot python do_dnf_run_extra(){
