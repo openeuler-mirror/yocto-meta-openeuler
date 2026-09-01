@@ -1,23 +1,21 @@
 # src verion is in yocto-pseudo repo
-# prebuilt version is in oee-archive repo
 OPENEULER_LOCAL_NAME = "yocto-pseudo"
 
-inherit oee-archive
-OEE_ARCHIVE_SUB_DIR = "pseudo"
+SRC_URI:prepend = "file://${BP}.tar.gz "
 
-SRC_URI:prepend = "file://${BP}.tar.gz \
-          file://pseudo-prebuilt-2.33.tar.xz;subdir=${BP}/prebuilt;name=prebuilt \
-           "
+# pseudo >= 1.9.10 prunes PIE flags in configure itself, the poky patch no
+# longer applies and is not needed anymore.
+SRC_URI:remove = "file://0001-configure-Prune-PIE-flags.patch"
 
-PV = "df1d1321fb093283485c387e3c933d2d264e509c"
+# The prebuilt libpseudo and its symbol patch exist for running pseudo on
+# hosts with older glibc. With nativesdk/prebuilt host tools removed the
+# build container glibc is used everywhere, and the patch does not apply to
+# the updated source anyway.
+SRC_URI:remove:class-native = "file://older-glibc-symbols.patch"
+SRC_URI:remove:class-native = "http://downloads.yoctoproject.org/mirror/sources/pseudo-prebuilt-2.33.tar.xz;subdir=git/prebuilt;name=prebuilt"
+SRC_URI:remove:class-nativesdk = "file://older-glibc-symbols.patch"
+SRC_URI:remove:class-nativesdk = "http://downloads.yoctoproject.org/mirror/sources/pseudo-prebuilt-2.33.tar.xz;subdir=git/prebuilt;name=prebuilt"
+
+# pseudo 1.9.11 (adds openat2 wrapping required by GNU tar >= 1.35)
+PV = "ba8887e5f1e922f866681ec7dec1a00b602a9328"
 S = "${WORKDIR}/${BP}"
-
-# set --with-sqlite to native sdk path
-do_compile:class-native:openeuler-prebuilt () {
-        if [ "${SITEINFO_BITS}" = "64" ]; then
-          ${S}/configure ${PSEUDO_EXTRA_OPTS} --prefix=${prefix} --libdir=${prefix}/lib/pseudo/lib${SITEINFO_BITS} --with-sqlite-lib=/lib --with-sqlite=${OPENEULER_NATIVESDK_SYSROOT}/usr --cflags="${CFLAGS}" --bits=${SITEINFO_BITS} --without-rpath
-        else
-          ${S}/configure ${PSEUDO_EXTRA_OPTS} --prefix=${prefix} --libdir=${prefix}/lib/pseudo/lib --with-sqlite-lib=/lib --with-sqlite=${OPENEULER_NATIVESDK_SYSROOT}/usr --cflags="${CFLAGS}" --bits=${SITEINFO_BITS} --without-rpath
-        fi
-        oe_runmake ${MAKEOPTS}
-}
