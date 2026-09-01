@@ -40,6 +40,27 @@ do_install:append () {
     fi
 
 
+    # Remove mica configs that require features not enabled in MCS_FEATURES.
+    # rpi4-zephyr-ivshmem.conf requires Pedestal=jailhouse + zephyr.elf;
+    # only keep it when jailhouse is enabled.
+    if ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'false', 'true', d)}; then
+        rm -f ${D}/etc/mica/*zephyr-ivshmem*
+    fi
+
+    # When zephyr is enabled, create a baremetal (openamp) mica config for it.
+    # The source tree only ships rpi4-zephyr-ivshmem.conf (jailhouse mode);
+    # this generates the openamp counterpart so zephyr.elf can be used
+    # without jailhouse.
+    if ${@bb.utils.contains('MCS_FEATURES', 'zephyr', 'true', 'false', d)}; then
+        cat > ${D}/etc/mica/${RTOS_IMGS}-zephyr.conf << ZEPHYRCONF
+[Mica]
+Name=${RTOS_IMGS}-zephyr
+CPU=3
+ClientPath=/lib/firmware/zephyr.elf
+AutoBoot=no
+ZEPHYRCONF
+    fi
+
     # install rtos firmware
     set -- "${S}/rtos/arm64/${RTOS_IMGS}"*.elf
     if [ -f "$1" ]; then

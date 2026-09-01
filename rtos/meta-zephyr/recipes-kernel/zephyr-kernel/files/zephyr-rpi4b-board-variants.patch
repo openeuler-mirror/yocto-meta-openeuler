@@ -1,0 +1,137 @@
+diff -ruN orig/boards/raspberrypi/rpi_4b/board.yml new/boards/raspberrypi/rpi_4b/board.yml
+--- orig/boards/raspberrypi/rpi_4b/board.yml	2026-09-01 14:38:41.202095439 +0800
++++ new/boards/raspberrypi/rpi_4b/board.yml	2026-09-01 14:38:41.206095545 +0800
+@@ -3,3 +3,5 @@
+   vendor: raspberrypi
+   socs:
+   - name: bcm2711
++    variants:
++    - name: remote
+diff -ruN orig/boards/raspberrypi/rpi_4b/rpi_4b_bcm2711_remote_defconfig new/boards/raspberrypi/rpi_4b/rpi_4b_bcm2711_remote_defconfig
+--- orig/boards/raspberrypi/rpi_4b/rpi_4b_bcm2711_remote_defconfig	1970-01-01 08:00:00.000000000 +0800
++++ new/boards/raspberrypi/rpi_4b/rpi_4b_bcm2711_remote_defconfig	2026-09-01 14:38:41.210095652 +0800
+@@ -0,0 +1,46 @@
++# SPDX-License-Identifier: Apache-2.0
++
++# Platform Configuration
++CONFIG_ARM64_VA_BITS_36=y
++CONFIG_ARM64_PA_BITS_36=y
++
++# Zephyr Kernel Configuration
++CONFIG_XIP=n
++CONFIG_FLASH_SIZE=0
++CONFIG_FLASH_BASE_ADDRESS=0x0
++
++# to use remote, must be in Non-Secure world
++CONFIG_ARMV8_A_NS=y
++
++# Cache management
++CONFIG_CACHE_MANAGEMENT=y
++
++# IPM via GIC SGI
++CONFIG_IPM=y
++CONFIG_IPM_GIC_SGI=y
++
++# Serial Drivers
++CONFIG_SERIAL=y
++CONFIG_UART_INTERRUPT_DRIVEN=y
++
++# Enable Console
++CONFIG_CONSOLE=y
++CONFIG_BOOT_BANNER=n
++CONFIG_EARLY_CONSOLE=n
++CONFIG_UART_CONSOLE=y
++CONFIG_PRINTK=n
++
++# Enable RPMsg based serial port
++CONFIG_UART_RPMSG=y
++
++# support psci ops
++CONFIG_PM_CPU_OPS=y
++CONFIG_OPENAMP=y
++CONFIG_RPMSG_SERVICE_MODE_REMOTE=y
++CONFIG_OPENAMP_MASTER=n
++CONFIG_OPENAMP_RSC_TABLE_NUM_RPMSG_BUFF=8
++CONFIG_OPENAMP_RSC_TABLE=y
++CONFIG_HEAP_MEM_POOL_SIZE=4096
++CONFIG_SHELL_BACKEND_SERIAL_INIT_PRIORITY=60
++CONFIG_SHELL_BACKEND_SERIAL_TX_RING_BUFFER_SIZE=512
++CONFIG_TIMER_READS_ITS_FREQUENCY_AT_RUNTIME=y
+diff -ruN orig/boards/raspberrypi/rpi_4b/rpi_4b_bcm2711_remote.dts new/boards/raspberrypi/rpi_4b/rpi_4b_bcm2711_remote.dts
+--- orig/boards/raspberrypi/rpi_4b/rpi_4b_bcm2711_remote.dts	1970-01-01 08:00:00.000000000 +0800
++++ new/boards/raspberrypi/rpi_4b/rpi_4b_bcm2711_remote.dts	2026-09-01 14:38:41.210095652 +0800
+@@ -0,0 +1,74 @@
++/*
++ * Copyright 2023 honglin leng <a909204013@gmail.com>
++ * SPDX-License-Identifier: Apache-2.0
++ */
++
++/dts-v1/;
++
++#include <broadcom/bcm2711.dtsi>
++#include <zephyr/dt-bindings/gpio/gpio.h>
++
++/ {
++	model = "Raspberry Pi 4 Model B";
++	compatible = "raspberrypi,4-model-b", "brcm,bcm2838";
++	#address-cells = <1>;
++	#size-cells = <1>;
++
++	aliases {
++		led0 = &led_act;
++	};
++
++	chosen {
++		zephyr,console = &uart1;
++		zephyr,shell-uart = &uart_rpmsg0;
++		zephyr,sram = &sram_remote;
++		zephyr,ipc_shm = &ipc_shm0;
++		zephyr,ipc = &ipm_gic_sgi0;
++	};
++
++	psci {
++		compatible = "arm,psci-0.2";
++		method = "hvc";
++		label = "PSCI";
++	};
++
++	ipm_gic_sgi0: ipm {
++		compatible = "arm,gic-sgi";
++		label = "gic_sgi0";
++	};
++
++	uart_rpmsg0: ep0 {
++		status = "okay";
++		compatible = "zephyr,rpmsg-uart";
++		ep-name = "rpmsg-tty";
++	};
++
++	soc {
++		ipc_shm0: memory@70000000 {
++			compatible = "mmio-sram";
++			reg = <0x70000000 0x100000>;
++		};
++
++		sram_remote: memory@7a000000 {
++			compatible = "mmio-sram";
++			reg = <0x7a000000 0x4000000>;
++		};
++	};
++
++	leds {
++		compatible = "gpio-leds";
++		led_act: led-act {
++			gpios = <&gpio1 14 GPIO_ACTIVE_HIGH>;
++			label = "ACT";
++		};
++	};
++};
++
++&gpio1 {
++	status = "okay";
++};
++
++&uart1 {
++	status = "okay";
++	current-speed = <115200>;
++};
