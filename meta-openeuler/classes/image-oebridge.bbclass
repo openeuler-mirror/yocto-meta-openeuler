@@ -82,6 +82,20 @@ fakeroot python do_make_rootfs_db(){
     rootfs_db_files = d.getVar('IMAGE_ROOTFS') + "/var/lib/rpm/*" 
     subprocess.run(f"rm -rf {rootfs_db_files}",shell=True)
     make_db(db_dir=db_cache_dir, rpms_dir=rpms_cache_dir, root_tmp=d.getVar("IMAGE_ROOTFS"))
+    # Register yocto-only packages (not in openEuler repos) into the chroot
+    # rpmdb so dnf sees them as installed to satisfy deps of openEuler/ROS
+    # packages. Without this, the wipe above makes yocto packages invisible
+    # to dnf ("nothing provides"). Only register yocto-only packages to
+    # avoid file conflicts with openEuler versions of overlapping packages
+    # (python3, filesystem, etc.).
+    import glob
+    oe_repo = d.getVar("WORKDIR") + "/oe-rootfs-repo/rpm/" + d.getVar("TUNE_ARCH")
+    for rpm_path in glob.glob(f"{oe_repo}/python3-cbor2-[0-9]*.aarch64.rpm"):
+        if "-dbg" in rpm_path or "-dev" in rpm_path or "-staticdev" in rpm_path:
+            continue
+        subprocess.run(f"rpm -ivh --dbpath /var/lib/rpm --root {d.getVar('IMAGE_ROOTFS')} "
+                       f"--justdb --nodeps --force --ignorearch {rpm_path}",
+                       shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 }
 
 fakeroot python do_dnf_rootfs_prepare(){
@@ -363,9 +377,12 @@ fakeroot python do_dnf_rootfs_prepare(){
 
     try:
         run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs sed -i 's/^gpgcheck=1/gpgcheck=0/' /etc/dnf/dnf.conf", d.getVar("WORKDIR"))
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf clean all", d.getVar("WORKDIR"))
+        # Exclude 'filesystem' — its directories (/usr/lib64 etc.) are already
+        # provided by the yocto base rootfs, and it conflicts with yocto-only
+        # packages registered in the chroot rpmdb (e.g. python3-cbor2).
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf clean all --exclude=filesystem", d.getVar("WORKDIR"))
         run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
-        dnf-plugins-core -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
+        dnf-plugins-core -y --nogpgcheck --setopt=sslverify=0 --nobest --exclude=filesystem", d.getVar("WORKDIR"))
     except Exception:
         bb.warn("do_dnf_rootfs_prepare: dnf setup failed; restoring temp/rootfs ownership for cleanup")
         _ugid = subprocess.run("stat -c '%u:%g' temp", shell=True,
@@ -426,7 +443,7 @@ fakeroot python do_dnf_install_pkg(){
             real_list_str = " ".join(real_list)
             bb.plain("install real packages: " + real_list_str)
             run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
-        {real_list_str} -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
+        {real_list_str} -y --nogpgcheck --setopt=sslverify=0 --nobest --exclude=filesystem", d.getVar("WORKDIR"))
 
         if len(extra_list) > 0:
             extra_list_str = " ".join(extra_list)
@@ -437,7 +454,7 @@ fakeroot python do_dnf_install_pkg(){
             extra_repo_id = f"{extra_repo}".replace("/", "_")
             extra_list_str = " ".join(extra_list)
             run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
-        {extra_list_str} -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
+        {extra_list_str} -y --nogpgcheck --setopt=sslverify=0 --nobest --exclude=filesystem", d.getVar("WORKDIR"))
             run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf config-manager --set-disabled {extra_repo_id}", d.getVar("WORKDIR"))
     except Exception:
         bb.warn("do_dnf_install_pkg: dnf install failed; restoring temp/rootfs ownership for cleanup")
