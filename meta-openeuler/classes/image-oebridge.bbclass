@@ -82,20 +82,79 @@ fakeroot python do_make_rootfs_db(){
     rootfs_db_files = d.getVar('IMAGE_ROOTFS') + "/var/lib/rpm/*" 
     subprocess.run(f"rm -rf {rootfs_db_files}",shell=True)
     make_db(db_dir=db_cache_dir, rpms_dir=rpms_cache_dir, root_tmp=d.getVar("IMAGE_ROOTFS"))
-    # Register yocto-only packages (not in openEuler repos) into the chroot
-    # rpmdb so dnf sees them as installed to satisfy deps of openEuler/ROS
-    # packages. Without this, the wipe above makes yocto packages invisible
-    # to dnf ("nothing provides"). Only register yocto-only packages to
-    # avoid file conflicts with openEuler versions of overlapping packages
-    # (python3, filesystem, etc.).
+
+    def register_rpm_justdb(rpm_path, root_tmp):
+        # register a package into the chroot rpmdb without unpacking files
+        # (--justdb) and without dependency checks (--nodeps)
+        res = subprocess.run(f"rpm -ivh --dbpath {db_cache_dir} --nosignature \
+            --root {root_tmp} --nodeps --justdb --ignorearch {rpm_path} --force",
+            shell=True, stderr=subprocess.PIPE, text=True)
+        if res.returncode != 0:
+            bb.fatal(f"do_make_rootfs_db: failed to register {rpm_path}: {res.stderr}")
+
+    def rpm_installed(pkg, root_tmp):
+        res = subprocess.run(f"rpm --root {root_tmp} -q {pkg}",
+                             shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        return res.returncode == 0
+
     import glob
-    oe_repo = d.getVar("WORKDIR") + "/oe-rootfs-repo/rpm/" + d.getVar("TUNE_ARCH")
-    for rpm_path in glob.glob(f"{oe_repo}/python3-cbor2-[0-9]*.aarch64.rpm"):
-        if "-dbg" in rpm_path or "-dev" in rpm_path or "-staticdev" in rpm_path:
+    image_rootfs = d.getVar("IMAGE_ROOTFS")
+
+    # Register yocto-only packages (built by do_rootfs, no openEuler
+    # counterpart in ASSUME_PROVIDE) into the chroot rpmdb so the dnf
+    # transactions in do_dnf_rootfs_prepare / do_dnf_install_pkg see them
+    # as installed, e.g. python3-cbor2 required by
+    # ros-humble-rosbridge-library. --nodeps is essential: the yocto RPM's
+    # dependencies use yocto names (python3-core) that would otherwise be
+    # pulled in and conflict with the openEuler python3.
+    for pkg_name in (d.getVar('OEBRIDGE_YOCTO_PROVIDE_PKGS') or "").split():
+        if rpm_installed(pkg_name, image_rootfs):
             continue
-        subprocess.run(f"rpm -ivh --dbpath /var/lib/rpm --root {d.getVar('IMAGE_ROOTFS')} "
-                       f"--justdb --nodeps --force --ignorearch {rpm_path}",
-                       shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        oe_rootfs_repo = d.getVar("WORKDIR") + "/oe-rootfs-repo/rpm/" + d.getVar("TUNE_ARCH")
+        matches = glob.glob(f"{oe_rootfs_repo}/{pkg_name}-[0-9]*.rpm")
+        for rpm_path in matches:
+            if any(s in rpm_path for s in ("-dbg-", "-dev-", "-staticdev-", "-src")):
+                continue
+            bb.plain(f"do_make_rootfs_db: register yocto-only package {rpm_path}")
+            register_rpm_justdb(rpm_path, image_rootfs)
+
+    # Ensure the openEuler 'filesystem' package is registered. A stale
+    # ASSUME_PROVIDE_PKGS (do_download_oepkg writes it as a side effect
+    # outside WORKDIR, so it is not restored from sstate) can leave it
+    # missing; dnf would then pull it into install transactions, where its
+    # usr-merge /usr/lib64 symlink conflicts with directory entries owned
+    # by the yocto-only registrations above. Look for the RPM in the cache
+    # first, and download it from the everything repo as a fallback.
+    if not rpm_installed("filesystem", image_rootfs):
+        fs_rpms = glob.glob(f"{rpms_cache_dir}/*/filesystem-*.rpm")
+        fs_rpm = fs_rpms[0] if fs_rpms else None
+        if not fs_rpm:
+            everything_url = f"{d.getVar('SERVER_MIRROR')}/{d.getVar('SERVER_VERSION')}/everything/{d.getVar('TUNE_ARCH')}/Packages/"
+            # wget (not curl) is in HOSTTOOLS for bitbake tasks
+            listing = subprocess.run(f"wget -qO- --timeout=60 {everything_url}",
+                                     shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            if listing.returncode == 0:
+                import re
+                # anchor on href=" so the filename itself starts with
+                # 'filesystem' (otherwise e.g. 'boost-filesystem-...' matches)
+                fs_pattern = f'href="(filesystem-[0-9][^"<]*?\\.{d.getVar("TUNE_ARCH")}\\.rpm)"'
+                m = re.search(fs_pattern, listing.stdout)
+                if m:
+                    fs_dir = f"{rpms_cache_dir}/filesystem-fallback"
+                    os.makedirs(fs_dir, exist_ok=True)
+                    fs_rpm = os.path.join(fs_dir, m.group(1))
+                    wget = subprocess.run(f"wget -q {everything_url}{m.group(1)}",
+                                          shell=True, cwd=fs_dir,
+                                          stderr=subprocess.PIPE, text=True)
+                    if wget.returncode != 0:
+                        bb.warn(f"do_make_rootfs_db: failed to download filesystem: {wget.stderr}")
+                        fs_rpm = None
+        if fs_rpm and os.path.isfile(fs_rpm):
+            bb.plain(f"do_make_rootfs_db: register filesystem {fs_rpm}")
+            register_rpm_justdb(fs_rpm, image_rootfs)
+        else:
+            bb.warn("do_make_rootfs_db: filesystem RPM not found in cache or mirror; "
+                    "dnf may pull it later and conflict with yocto-only registrations")
 }
 
 fakeroot python do_dnf_rootfs_prepare(){
@@ -316,6 +375,11 @@ fakeroot python do_dnf_rootfs_prepare(){
         subprocess.run(f"cp {ca_dst} {ca_ssl_dst}", shell=True)
 
     # do some prepare action: copy rootfs to temp, fix permissions, prepare chroot env
+    # Remove stale temp/rootfs leftovers from a previously failed build
+    # before copying: they may contain root-owned files or dangling symlinks
+    # that would make 'cp -rfP' fail (e.g. "not writing through dangling
+    # symlink"). Always clean to keep the task idempotent.
+    run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo rm -rf temp/rootfs", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 cp -rfP rootfs temp/", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"getfacl -R rootfs > temp/rootfs_permission", d.getVar("WORKDIR"))
     run_cmd_with_cwd(f"find rootfs -type l -printf '%u:%g %p\n' > temp/rootfs_softlink", d.getVar("WORKDIR"))
@@ -380,9 +444,9 @@ fakeroot python do_dnf_rootfs_prepare(){
         # Exclude 'filesystem' — its directories (/usr/lib64 etc.) are already
         # provided by the yocto base rootfs, and it conflicts with yocto-only
         # packages registered in the chroot rpmdb (e.g. python3-cbor2).
-        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf clean all --exclude=filesystem", d.getVar("WORKDIR"))
+        run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf clean all", d.getVar("WORKDIR"))
         run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
-        dnf-plugins-core -y --nogpgcheck --setopt=sslverify=0 --nobest --exclude=filesystem", d.getVar("WORKDIR"))
+        dnf-plugins-core -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
     except Exception:
         bb.warn("do_dnf_rootfs_prepare: dnf setup failed; restoring temp/rootfs ownership for cleanup")
         _ugid = subprocess.run("stat -c '%u:%g' temp", shell=True,
@@ -443,7 +507,7 @@ fakeroot python do_dnf_install_pkg(){
             real_list_str = " ".join(real_list)
             bb.plain("install real packages: " + real_list_str)
             run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
-        {real_list_str} -y --nogpgcheck --setopt=sslverify=0 --nobest --exclude=filesystem", d.getVar("WORKDIR"))
+        {real_list_str} -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
 
         if len(extra_list) > 0:
             extra_list_str = " ".join(extra_list)
@@ -454,7 +518,7 @@ fakeroot python do_dnf_install_pkg(){
             extra_repo_id = f"{extra_repo}".replace("/", "_")
             extra_list_str = " ".join(extra_list)
             run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf install \
-        {extra_list_str} -y --nogpgcheck --setopt=sslverify=0 --nobest --exclude=filesystem", d.getVar("WORKDIR"))
+        {extra_list_str} -y --nogpgcheck --setopt=sslverify=0 --nobest", d.getVar("WORKDIR"))
             run_cmd_with_cwd(f"PSEUDO_UNLOAD=1 sudo chroot temp/rootfs dnf config-manager --set-disabled {extra_repo_id}", d.getVar("WORKDIR"))
     except Exception:
         bb.warn("do_dnf_install_pkg: dnf install failed; restoring temp/rootfs ownership for cleanup")
