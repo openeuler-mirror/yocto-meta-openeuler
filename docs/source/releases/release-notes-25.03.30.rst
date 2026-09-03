@@ -30,7 +30,7 @@ openEuler Embedded 25.03特性上最大亮点是率先支持了openEuler新一�
 
   - 混合关键性部署框架(MICA)
 
-    - 实现对Zephy的从源代码开始的端到端集成
+    - 实现对Zephyr的从源代码开始的端到端集成
 
   - 嵌入式弹性底座的探索
 

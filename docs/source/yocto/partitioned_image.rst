@@ -41,7 +41,7 @@ wic 命令使用
     $ wic --help
     $ wic help rm   ### rm可替换为其它需要查看的命令
 
-    ### 列出已存在的的 wks 文件
+    ### 列出已存在的 wks 文件
     $ wic list images
     ### 查看 beaglebone-yocto.wks 的帮助信息
     $ wic list beaglebone-yocto help

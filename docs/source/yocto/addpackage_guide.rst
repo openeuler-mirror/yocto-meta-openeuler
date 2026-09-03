@@ -40,7 +40,7 @@ bbappend 需要基于已知的配方文件，如果在已知的 :file:`poky/meta
 
   面对情形一，openEuler 首先在默认的 ``do_fetch`` 任务中配置了 ``do_openeuler_fetch`` 子任务，用于获取自 openEuler 的源代码。 ``do_openeuler_fetch`` 任务会根据 :file:`.oebuild/manifest.yaml` 中软件包的 commit 信息，下载源码到本地路径（:file:`/usr/openeuler/src`），原理见 :ref:`openeuler_fetch` 。关于软件包源码的组织方式，详情参考 :ref:`add_package_src`。
 
-  下一步需要在在配方中将 **SRC_URI** 指定的官方链接删除，并添加本地源码路径，详细步骤参考 :ref:`openeuler_src_uri_remove`。
+  下一步需要在配方中将 **SRC_URI** 指定的官方链接删除，并添加本地源码路径，详细步骤参考 :ref:`openeuler_src_uri_remove`。
 
 
 - **情形二：** 源码版本不一致。由于选择源码来源自 openEuler，这可能会导致源码版本不一致，因为不同来源的版本维护可能存在差异。
