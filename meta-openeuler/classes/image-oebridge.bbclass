@@ -420,8 +420,16 @@ fakeroot python do_dnf_rootfs_prepare(){
                 # destination is a symlink but source is a real file: real wins
                 subprocess.run(f'PSEUDO_UNLOAD=1 sudo rm -f "{dst}"', shell=True, cwd=workdir)
                 subprocess.run(f'PSEUDO_UNLOAD=1 sudo mv "{s}" "{dst}"', shell=True, cwd=workdir)
+            elif s_link and d_link:
+                # both symlinks: prefer the migrated /bin copy. The /usr side
+                # commonly holds absolute links into /bin (e.g. /usr/bin/sed ->
+                # /bin/sed) which become self-referential once /bin becomes a
+                # symlink to usr/bin (ELOOP), while the /bin side keeps the
+                # openEuler-style alternative chain (sed -> /bin/sed.sed).
+                subprocess.run(f'PSEUDO_UNLOAD=1 sudo rm -f "{dst}"', shell=True, cwd=workdir)
+                subprocess.run(f'PSEUDO_UNLOAD=1 sudo mv "{s}" "{dst}"', shell=True, cwd=workdir)
             else:
-                # keep the /usr copy (real file, or both symlinks): drop source
+                # keep the /usr copy (real file vs real file): drop source
                 subprocess.run(f'PSEUDO_UNLOAD=1 sudo rm -rf "{s}"', shell=True, cwd=workdir)
 
         for sub in ('bin', 'sbin', 'lib', 'lib64'):
@@ -437,6 +445,19 @@ fakeroot python do_dnf_rootfs_prepare(){
             for name in os.listdir(migr):
                 _usrmerge_entry(os.path.join(migr, name), os.path.join(usr, name))
             subprocess.run(f"PSEUDO_UNLOAD=1 sudo rm -rf {migr}", shell=True, cwd=workdir)
+
+        # Rewrite absolute symlinks pointing into /{bin,sbin,lib,lib64} to
+        # their /usr locations. After the conversion those targets resolve
+        # through the new top-level symlinks; a link whose rewritten target
+        # is the link itself (e.g. a dangling /usr/bin/X -> /bin/X with no
+        # migrated X entry) would be self-referential (ELOOP) and break the
+        # chroot entirely, so such links are removed instead.
+        fixup_cmd = ("find . -xdev -type l \\( -lname '/bin/*' -o -lname '/sbin/*' "
+                     "-o -lname '/lib/*' -o -lname '/lib64/*' \\) -exec sh -c '"
+                     "for l do t=$(readlink \"$l\"); "
+                     "if [ \"/usr$t\" = \"/${l#./}\" ]; then rm -f \"$l\"; "
+                     "else ln -sfn \"/usr$t\" \"$l\"; fi; done' _ {} +")
+        subprocess.run(f'PSEUDO_UNLOAD=1 sudo {fixup_cmd}', shell=True, cwd=tr)
         bb.plain("usrmerge: converted base rootfs /bin,/sbin,/lib,/lib64 to /usr symlinks")
 
     try:
