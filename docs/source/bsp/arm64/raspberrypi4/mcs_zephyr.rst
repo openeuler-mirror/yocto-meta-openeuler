@@ -106,13 +106,21 @@ Mica 配置文件
 
 RTOS 的 mica 配置文件位于 ``/etc/mica/`` 目录下：
 
-============================== ================================== ====================
-配置文件                        RTOS                               运行模式
-============================== ================================== ====================
-``rpi4-uniproton.conf``        UniProton                          openamp（裸金属）
-``rpi4-uniproton-gdb.conf``    UniProton (GDB 调试)              openamp（裸金属）
-``rpi4-zephyr.conf``           Zephyr                             openamp（裸金属）
-============================== ================================== ====================
+.. list-table::
+   :header-rows: 1
+
+   * - 配置文件
+     - RTOS
+     - 运行模式
+   * - ``rpi4-uniproton.conf``
+     - UniProton
+     - openamp（裸金属）
+   * - ``rpi4-uniproton-gdb.conf``
+     - UniProton (GDB 调试)
+     - openamp（裸金属）
+   * - ``rpi4-zephyr.conf``
+     - Zephyr
+     - openamp（裸金属）
 
 .. note::
 
@@ -143,7 +151,7 @@ RTOS 的 mica 配置文件位于 ``/etc/mica/`` 目录下：
 ----
 
 - 从干净重启状态启动任意 RTOS **可成功**
-- 停止 RTOS（``mica stop``）后，**无法再次启动**任何 RTOS
+- 停止 RTOS（``mica stop``）后，**无法再次启动任何 RTOS**
 - 需要重启树莓派才能切换到另一个 RTOS
 
 正确使用方式
@@ -152,7 +160,7 @@ RTOS 的 mica 配置文件位于 ``/etc/mica/`` 目录下：
 1. 重启树莓派
 2. 启动需要的 RTOS：``mica start <rtos_name>``
 3. 使用完毕后停止：``mica stop <rtos_name>``
-4. 如需切换 RTOS，**重启树莓派**后重复步骤 2-3
+4. 如需切换 RTOS，请**先重启树莓派**，再重复步骤 2-3
 
 .. warning::
 
