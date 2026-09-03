@@ -34,7 +34,7 @@ bbappend 需要基于已知的配方文件，如果在已知的 :file:`poky/meta
 切换 openEuler 源码
 -----------------------
 
-构建时，我们使用的源码主要来源是 `src-openEuler <https://gitee.com/organizations/src-openeuler/projects>`_  与 `openEuler <https://gitee.com/organizations/openeuler/projects>`_  。在切换源码时，需要考虑以下几种情形。
+构建时，我们使用的源码主要来源是 `src-openEuler <https://atomgit.com/src-openeuler>`_  与 `openEuler <https://atomgit.com/openeuler>`_  。在切换源码时，需要考虑以下几种情形。
 
 - **情形一：** 源码来源不一致。Poky 通常使用官方链接作为源码的来源，这有其明显的优势，但可能会受到国内网络速度的限制，导致源码获取速度较慢。
 
