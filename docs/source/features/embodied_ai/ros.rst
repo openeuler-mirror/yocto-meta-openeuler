@@ -3,14 +3,6 @@
 嵌入式ROS运行时支持
 ####################
 
-.. warning::
-
-   originbot 相关软件包及其补丁已于 2026 年 4 月从 meta-openeuler 层移除
-   （上游仓库已删除、相关配方不再维护），本文中的 originbot 小车示例仅作
-   历史参考，已无法按文中步骤构建。具身智能的最新实践请参考
-   :ref:`ib_robot_intro` 章节。
-
-
 总体介绍
 ==========================
 
@@ -96,7 +88,7 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
 镜像使用示例
 ============
 
-以qemu-aarch64和originbot小车（树莓派作为主控板）为例:
+以qemu-aarch64为例:
 
 **1.QEMU多机部署和demo_nodes_cpp示例**
 
@@ -193,109 +185,6 @@ openEuler Embedded 支持ROS运行时相关组件的单独构建和镜像集成�
   .. note:: 
     
     单机通信同理，在同一台设备上通过多个终端分别执行demo_nodes_cpp发布和订阅即可，属于ROS常规用法，不再详述。
-
-
-**2.originbot小车制图和导航示例（树莓派作为主控板）**
-
-  - **step1: originbot小车雷达USB、底盘驱动板串口完成连接**
-
-    以树莓派作为主控板为例，假如雷达使用USB串口且对应设备为ttyUSB0、底盘串口使用GPIO 14/15且对应ttyS0
-
-    .. note:: 
-
-        以上串口设备为示例配置，雷达串口号和originbot底盘串口号用户可自行修改配置，配置文件位置例（直接修改即生效）：
-
-        /usr/share/originbot_base/launch/robot.launch.py
-
-        /usr/share/originbot_bringup/param/ydlidar.yaml
-
-  - **step2: 环境准备，并配置originbot小车和观测PC处于同一网段**
-
-    以树莓派作为主控板通过无线网络连接为例（可使用无线路由器或无线热点，需要小车和观测PC处于同一个网段）
-
-    openEuler Embedded树莓派使能无线连接参见 :ref:`openEuler Embedded网络配置-Wi-Fi网络配置 <network_config_wifi>`
-
-    .. note:: 
-
-      观测PC可为ubuntu，需要安装ROS和oringbot观测端，参见：
-
-      `PC端ubuntu ROS2安装 <http://originbot.org/guide/pc_config/#2-ros2>`_
-
-      `PC端ubuntu oringbot安装 <http://originbot.org/guide/pc_config/#3-pc>`_
-
-  - **step3: 通过观测PC，远程ssh登录originbot小车，执行运行时ROS应用**
-
-    以建图为例，整体过程和originbot官网过程一样，可参考
-
-    `originbot 启动底盘和雷达 <http://originbot.org/application/slam/#1>`_
-
-    `originbot 启动SLAM <http://originbot.org/application/slam/#2-slam>`_
-
-    首先，ssh登录originbot小车终端1，执行如下命令：
-
-    .. code-block:: console
-
-        # ROS环境变量初始化
-        $ source /etc/profile.d/ros/setup.bash
-        # 启动机器人底盘和激光雷达：
-        $ ros2 launch originbot_bringup originbot.launch.py use_lidar:=true
-
-    然后，ssh登录originbot小车终端2，执行如下命令：
-
-    .. code-block:: console
-
-        # ROS环境变量初始化
-        $ source /etc/profile.d/ros/setup.bash
-        # 启动cartographer建图算法：
-        $ ros2 launch originbot_navigation cartographer.launch.py
-
-
-  - **step4: 在观测端PC，启动上位机可视化软件以便查看SLAM的完整过程，同时启动上位机键盘控制远程小车**
-
-    整体过程和originbot官网过程一样，可参考
-
-    `originbot 上位机可视化显示 <http://originbot.org/application/slam/#3>`_
-
-    `originbot 上位机键盘控制小车建图 <http://originbot.org/application/slam/#4>`_
-
-    首先，观测端PC开启一个终端，进入ROS环境后启动rviz观测软件
-
-    .. code-block:: console
-
-        $ ros2 launch originbot_viz display_slam.launch.py
-
-    然后，观测端PC开启另一个终端，进入ROS环境后启动键盘控制节点用于控制小车，并按照提示控制小车完成建图
-
-    .. code-block:: console
-
-        $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
-
-  - **step5: 保存运行时数据（建图数据等）**
-
-    以建图保存为例，整体过程和originbot官网过程一样，可参考
-
-    `originbot 保存地图 <http://originbot.org/application/slam/#5>`_
-
-    不要关闭之前步骤的端口，ssh登录originbot小车终端3，执行如下命令
-
-    .. code-block:: console
-
-        # ROS环境变量初始化
-        $ source /etc/profile.d/ros/setup.bash
-        # 保存地图：
-        $ ros2 run nav2_map_server map_saver_cli -f my_map --ros-args -p save_map_timeout:=10000
-
-  .. figure:: ../../../image/ros/slam_demo1.png
-        :align: center
-
-  .. figure:: ../../../image/ros/slam_demo2.png
-        :align: center
-
-        图 2 openEuler Embedded中ROS SLAM DEMO示例
-
-  .. note::
-      其他应用如导航类似，请直接参考orinbot官方资料。如自主导航，将建好的地图至于对应包位置即可，
-      参见 `originbot 自主导航 <http://originbot.org/application/navigation/>`_
 
 
 快速开发SDK
@@ -423,7 +312,7 @@ openEuler Embedded支持ROS2快速开发SDK，目前支持在主机或者oebuild
 ros2recipe当前还处于前期开发阶段，在依赖解析部分还存在较多工作，其原理类似meta-ros的生成工具superflore。
 
 **例子:**
-我们在yocto工程中集成了originbot ros第三方包，其基础bb配方是通过ros2recipe工具转化，但目前还需要增加bbappend文件来适配部分依赖。
+我们在yocto工程中通过ros2recipe工具将第三方ROS包转化为基础bb配方进行集成，转化后通常还需要增加bbappend文件来适配部分依赖。
 
 **其他说明:**
 superfores能够实现以一个ROS版本生成全量官方ROS组件包，对整体ROS和oe层进行了复杂的依赖关联，但不支持将独立的第三方包转换为yocto配方。
