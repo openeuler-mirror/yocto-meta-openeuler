@@ -31,11 +31,11 @@ DOC_BASE = Path(__file__).resolve().parents[1]
 # -- Project information -----------------------------------------------------
 
 project = 'openEuler Embedded在线文档'
-copyright = '2024, openEuler Embedded'
+copyright = '2026, openEuler Embedded'
 author = 'openEuler Embedded'
 
 # The full version, including alpha/beta/rc tags
-release = '24.03'
+release = '25.03'
 
 
 # -- General configuration ---------------------------------------------------
