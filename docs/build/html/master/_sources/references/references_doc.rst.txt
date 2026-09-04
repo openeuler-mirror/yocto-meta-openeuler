@@ -19,7 +19,7 @@
 
     [6] `OpenAMP 文档 <https://openamp.readthedocs.io/en/latest/protocol_details/lifecyclemgmt.html>`_.
 
-    [7] `飞腾嵌入式OpenAMP技术文档 <https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxff219d611a159737&redirect_uri=https%3A%2F%2Fgitee.com%2Fweixin%2Foperations%2Fredirect_do%3Furl%3Dhttps%253A%252F%252Fgitee.com%252Fphytium_embedded%252Fphytium-embedded-docs%252Ftree%252F46de73731daa08fd5acfc68b34cdf414cf8adb7e%252Fopen-amp&response_type=code&scope=snsapi_base&state=weixin#wechat_redirect>`_.
+    [7] `飞腾嵌入式OpenAMP技术文档 <https://gitee.com/phytium_embedded/phytium-embedded-docs/tree/46de73731daa08fd5acfc68b34cdf414cf8adb7e/open-amp>`_.
 
     [8] `AVF架构 <https://source.android.com/docs/core/virtualization/architecture?hl=zh-cn>`_.
 

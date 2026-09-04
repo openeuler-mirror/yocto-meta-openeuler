@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>新增配方支持指导 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+  <title>新增配方支持指导 &mdash; openEuler Embedded在线文档 25.03 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
@@ -141,11 +141,11 @@
 </section>
 <section id="openeuler">
 <h3>切换 openEuler 源码<a class="headerlink" href="#openeuler" title="Permalink to this heading"></a></h3>
-<p>构建时，我们使用的源码主要来源是 <a class="reference external" href="https://gitee.com/organizations/src-openeuler/projects">src-openEuler</a>  与 <a class="reference external" href="https://gitee.com/organizations/openeuler/projects">openEuler</a>  。在切换源码时，需要考虑以下几种情形。</p>
+<p>构建时，我们使用的源码主要来源是 <a class="reference external" href="https://atomgit.com/src-openeuler">src-openEuler</a>  与 <a class="reference external" href="https://atomgit.com/openeuler">openEuler</a>  。在切换源码时，需要考虑以下几种情形。</p>
 <ul>
 <li><p><strong>情形一：</strong> 源码来源不一致。Poky 通常使用官方链接作为源码的来源，这有其明显的优势，但可能会受到国内网络速度的限制，导致源码获取速度较慢。</p>
 <p>面对情形一，openEuler 首先在默认的 <code class="docutils literal notranslate"><span class="pre">do_fetch</span></code> 任务中配置了 <code class="docutils literal notranslate"><span class="pre">do_openeuler_fetch</span></code> 子任务，用于获取自 openEuler 的源代码。 <code class="docutils literal notranslate"><span class="pre">do_openeuler_fetch</span></code> 任务会根据 <code class="file docutils literal notranslate"><span class="pre">.oebuild/manifest.yaml</span></code> 中软件包的 commit 信息，下载源码到本地路径（<code class="file docutils literal notranslate"><span class="pre">/usr/openeuler/src</span></code>），原理见 <a class="reference internal" href="../infrastructure/openeuler_fetch/index.html#openeuler-fetch"><span class="std std-ref">通过openeuler_fetch使用openEuler软件包</span></a> 。关于软件包源码的组织方式，详情参考 <a class="reference internal" href="add_package_src.html#add-package-src"><span class="std std-ref">如何添加或修改软件包源</span></a>。</p>
-<p>下一步需要在在配方中将 <strong>SRC_URI</strong> 指定的官方链接删除，并添加本地源码路径，详细步骤参考 <a class="reference internal" href="openeuler_src_uri_remove.html#openeuler-src-uri-remove"><span class="std std-ref">OPENEULER_SRC_URI_REMOVE</span></a>。</p>
+<p>下一步需要在配方中将 <strong>SRC_URI</strong> 指定的官方链接删除，并添加本地源码路径，详细步骤参考 <a class="reference internal" href="openeuler_src_uri_remove.html#openeuler-src-uri-remove"><span class="std std-ref">OPENEULER_SRC_URI_REMOVE</span></a>。</p>
 </li>
 <li><p><strong>情形二：</strong> 源码版本不一致。由于选择源码来源自 openEuler，这可能会导致源码版本不一致，因为不同来源的版本维护可能存在差异。</p>
 <p>面对情形二，在处理源码版本不一致的问题时，openEuler 借助 bbappend 文件中的模糊匹配机制来有效地解决。通过这种方式，开发者能够根据不同的源码版本进行匹配，并在追加配方中重新配置相应的版本号。以 openEuler 例子 <code class="file docutils literal notranslate"><span class="pre">meta-openeuler/recipes-devtools/libcomps/libcomps_%.bbappend</span></code> 来说，openEuler 中 libcomps 源码的实际版本为 0.1.19，而 Poky 中 libcomps 配方的版本是 0.1.18, 但我们可以使用 <code class="file docutils literal notranslate"><span class="pre">libcomps_%.bbappend</span></code> 进行模糊匹配，并在追加配方中重新配置 <strong>PV</strong> 为匹配的版本号（如 0.1.19）。这种机制使得我们可以轻松地处理源码版本不一致的问题，确保构建过程的顺利进行。配置如下：</p>
@@ -215,7 +215,7 @@ $ bitbake libcomps
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

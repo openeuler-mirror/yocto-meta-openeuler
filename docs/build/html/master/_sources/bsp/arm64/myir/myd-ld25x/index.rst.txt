@@ -51,7 +51,7 @@ STM32MP257D是ST推出的搭载了双核 Cortex-A35 @1.5 GHz和Cortex-M33@400MHz
 
 3. 烧录镜像
 
-    最终构建好的的相关产物位于构建目录中的 :file:`temp/deploy/images/myd-ld25x-oee/` 目录下，包含了myd-ld25x-oee诸多镜像文件，需要从中提取
+    最终构建好的相关产物位于构建目录中的 :file:`temp/deploy/images/myd-ld25x-oee/` 目录下，包含了myd-ld25x-oee诸多镜像文件，需要从中提取
     烧录相关的目录和镜像，可以参考如下结构，并通过STM32CubeProgrammer工具在Windows环境下通过USB直接烧录到开发板的emmc存储中。
 
     .. figure:: images/burn_folder.png

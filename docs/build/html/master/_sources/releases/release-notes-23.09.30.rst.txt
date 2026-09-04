@@ -23,7 +23,7 @@ openEuler Embedded 23.09是openEuler Embedded第四个创新版本，本版本�
 
   - 使能了Yocto内核meta机制，可以更加灵活的配置内核， 具体可见 `上游社区的文档 <https://docs.yoctoproject.org/current/kernel-dev/advanced.html>`_ 。
 
-  - 完善了软件包manifest机制, 把软件包的版本与软件包仓库的的commit绑定，并持续完善对应do_openeuler_fetch机制
+  - 完善了软件包manifest机制, 把软件包的版本与软件包仓库的commit绑定，并持续完善对应do_openeuler_fetch机制
 
   - 不断完善的文档
 

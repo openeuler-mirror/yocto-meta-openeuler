@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>嵌入式ROS运行时支持 &mdash; openEuler Embedded在线文档 24.03 documentation</title>
+  <title>嵌入式ROS运行时支持 &mdash; openEuler Embedded在线文档 25.03 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
@@ -68,7 +68,7 @@
 <li class="toctree-l5"><a class="reference internal" href="#id3">镜像构建指南</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#id4">镜像使用示例</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#sdk">快速开发SDK</a></li>
-<li class="toctree-l5"><a class="reference internal" href="#id9">关于ROS源码</a></li>
+<li class="toctree-l5"><a class="reference internal" href="#id5">关于ROS源码</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#ros2recipe">快速镜像集成(ros2recipe)</a></li>
 <li class="toctree-l5"><a class="reference internal" href="#ros2-sdkfaq">ROS2 SDK上层开发者常见FAQ</a></li>
 </ul>
@@ -137,10 +137,10 @@
 <h2>框架<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
 <p>openEuler Embedded中ROS2运行时整体架构图如下所示，分为运行视图和构建视图，构建视图总体基于开源meta-ros layer <a class="reference external" href="https://github.com/ros/meta-ros/">meta-ros</a> 作为基础。</p>
 <blockquote>
-<div><figure class="align-center" id="id10">
+<div><figure class="align-center" id="id6">
 <img alt="../../_images/plan_ros_architecture.png" src="../../_images/plan_ros_architecture.png" />
 <figcaption>
-<p><span class="caption-text">图 1 openEuler Embedded中ROS运行时支持基础架构</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
+<p><span class="caption-text">图 1 openEuler Embedded中ROS运行时支持基础架构</span><a class="headerlink" href="#id6" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </div></blockquote>
@@ -196,7 +196,7 @@
 </section>
 <section id="id4">
 <h2>镜像使用示例<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
-<p>以qemu-aarch64和originbot小车（树莓派作为主控板）为例:</p>
+<p>以qemu-aarch64为例:</p>
 <p><strong>1.QEMU多机部署和demo_nodes_cpp示例</strong></p>
 <blockquote>
 <div><ul>
@@ -273,87 +273,6 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>单机通信同理，在同一台设备上通过多个终端分别执行demo_nodes_cpp发布和订阅即可，属于ROS常规用法，不再详述。</p>
-</div>
-</div></blockquote>
-<p><strong>2.originbot小车制图和导航示例（树莓派作为主控板）</strong></p>
-<blockquote>
-<div><ul>
-<li><p><strong>step1: originbot小车雷达USB、底盘驱动板串口完成连接</strong></p>
-<p>以树莓派作为主控板为例，假如雷达使用USB串口且对应设备为ttyUSB0、底盘串口使用GPIO 14/15且对应ttyS0</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>以上串口设备为示例配置，雷达串口号和originbot底盘串口号用户可自行修改配置，配置文件位置例（直接修改即生效）：</p>
-<p>/usr/share/originbot_base/launch/robot.launch.py</p>
-<p>/usr/share/originbot_bringup/param/ydlidar.yaml</p>
-</div>
-</li>
-<li><p><strong>step2: 环境准备，并配置originbot小车和观测PC处于同一网段</strong></p>
-<p>以树莓派作为主控板通过无线网络连接为例（可使用无线路由器或无线热点，需要小车和观测PC处于同一个网段）</p>
-<p>openEuler Embedded树莓派使能无线连接参见 <a class="reference internal" href="../../linux/network/network_config.html#network-config-wifi"><span class="std std-ref">openEuler Embedded网络配置-Wi-Fi网络配置</span></a></p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>观测PC可为ubuntu，需要安装ROS和oringbot观测端，参见：</p>
-<p><a class="reference external" href="http://originbot.org/guide/pc_config/#2-ros2">PC端ubuntu ROS2安装</a></p>
-<p><a class="reference external" href="http://originbot.org/guide/pc_config/#3-pc">PC端ubuntu oringbot安装</a></p>
-</div>
-</li>
-<li><p><strong>step3: 通过观测PC，远程ssh登录originbot小车，执行运行时ROS应用</strong></p>
-<p>以建图为例，整体过程和originbot官网过程一样，可参考</p>
-<p><a class="reference external" href="http://originbot.org/application/slam/#1">originbot 启动底盘和雷达</a></p>
-<p><a class="reference external" href="http://originbot.org/application/slam/#2-slam">originbot 启动SLAM</a></p>
-<p>首先，ssh登录originbot小车终端1，执行如下命令：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>ROS环境变量初始化
-<span class="gp">$ </span><span class="nb">source</span><span class="w"> </span>/etc/profile.d/ros/setup.bash
-<span class="gp"># </span>启动机器人底盘和激光雷达：
-<span class="gp">$ </span>ros2<span class="w"> </span>launch<span class="w"> </span>originbot_bringup<span class="w"> </span>originbot.launch.py<span class="w"> </span>use_lidar:<span class="o">=</span><span class="nb">true</span>
-</pre></div>
-</div>
-<p>然后，ssh登录originbot小车终端2，执行如下命令：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>ROS环境变量初始化
-<span class="gp">$ </span><span class="nb">source</span><span class="w"> </span>/etc/profile.d/ros/setup.bash
-<span class="gp"># </span>启动cartographer建图算法：
-<span class="gp">$ </span>ros2<span class="w"> </span>launch<span class="w"> </span>originbot_navigation<span class="w"> </span>cartographer.launch.py
-</pre></div>
-</div>
-</li>
-<li><p><strong>step4: 在观测端PC，启动上位机可视化软件以便查看SLAM的完整过程，同时启动上位机键盘控制远程小车</strong></p>
-<p>整体过程和originbot官网过程一样，可参考</p>
-<p><a class="reference external" href="http://originbot.org/application/slam/#3">originbot 上位机可视化显示</a></p>
-<p><a class="reference external" href="http://originbot.org/application/slam/#4">originbot 上位机键盘控制小车建图</a></p>
-<p>首先，观测端PC开启一个终端，进入ROS环境后启动rviz观测软件</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ros2<span class="w"> </span>launch<span class="w"> </span>originbot_viz<span class="w"> </span>display_slam.launch.py
-</pre></div>
-</div>
-<p>然后，观测端PC开启另一个终端，进入ROS环境后启动键盘控制节点用于控制小车，并按照提示控制小车完成建图</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ros2<span class="w"> </span>run<span class="w"> </span>teleop_twist_keyboard<span class="w"> </span>teleop_twist_keyboard
-</pre></div>
-</div>
-</li>
-<li><p><strong>step5: 保存运行时数据（建图数据等）</strong></p>
-<p>以建图保存为例，整体过程和originbot官网过程一样，可参考</p>
-<p><a class="reference external" href="http://originbot.org/application/slam/#5">originbot 保存地图</a></p>
-<p>不要关闭之前步骤的端口，ssh登录originbot小车终端3，执行如下命令</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>ROS环境变量初始化
-<span class="gp">$ </span><span class="nb">source</span><span class="w"> </span>/etc/profile.d/ros/setup.bash
-<span class="gp"># </span>保存地图：
-<span class="gp">$ </span>ros2<span class="w"> </span>run<span class="w"> </span>nav2_map_server<span class="w"> </span>map_saver_cli<span class="w"> </span>-f<span class="w"> </span>my_map<span class="w"> </span>--ros-args<span class="w"> </span>-p<span class="w"> </span>save_map_timeout:<span class="o">=</span><span class="m">10000</span>
-</pre></div>
-</div>
-</li>
-</ul>
-<figure class="align-center">
-<img alt="../../_images/slam_demo1.png" src="../../_images/slam_demo1.png" />
-</figure>
-<figure class="align-center" id="id11">
-<img alt="../../_images/slam_demo2.png" src="../../_images/slam_demo2.png" />
-<figcaption>
-<p><span class="caption-text">图 2 openEuler Embedded中ROS SLAM DEMO示例</span><a class="headerlink" href="#id11" title="Permalink to this image"></a></p>
-</figcaption>
-</figure>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>其他应用如导航类似，请直接参考orinbot官方资料。如自主导航，将建好的地图至于对应包位置即可，
-参见 <a class="reference external" href="http://originbot.org/application/navigation/">originbot 自主导航</a></p>
 </div>
 </div></blockquote>
 </section>
@@ -446,8 +365,8 @@ colcon, cmake, python, make等主机工具，可以进行ROS2应用的开发。<
 </div></blockquote>
 </div></blockquote>
 </section>
-<section id="id9">
-<h2>关于ROS源码<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h2>
+<section id="id5">
+<h2>关于ROS源码<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
 <p>当前src-openeuler已集成ROS humble的所有软件源码，对应通过yocto-meta-openeuler/.oebuild/目录下的maplist.yaml和manifest.yaml可以查询源码包列表和基线。</p>
 <p>所有ROS软件包，默认都加上了openeuler_source.bbclass，yocto构建时将自动映射软件包基线，若需定制且您有yocto经验，可参见相关实现: openeuler_source.bbclass</p>
 </section>
@@ -456,7 +375,7 @@ colcon, cmake, python, make等主机工具，可以进行ROS2应用的开发。<
 <p><strong>现状:</strong>
 ros2recipe当前还处于前期开发阶段，在依赖解析部分还存在较多工作，其原理类似meta-ros的生成工具superflore。</p>
 <p><strong>例子:</strong>
-我们在yocto工程中集成了originbot ros第三方包，其基础bb配方是通过ros2recipe工具转化，但目前还需要增加bbappend文件来适配部分依赖。</p>
+我们在yocto工程中通过ros2recipe工具将第三方ROS包转化为基础bb配方进行集成，转化后通常还需要增加bbappend文件来适配部分依赖。</p>
 <p><strong>其他说明:</strong>
 superfores能够实现以一个ROS版本生成全量官方ROS组件包，对整体ROS和oe层进行了复杂的依赖关联，但不支持将独立的第三方包转换为yocto配方。</p>
 <p>针对该场景，ros2recipe如何能够更好更快的补全依赖关系、减少手工bbappend的适配，是一个很有挑战性的工作。需要大量的案例进行逐步完善，在此期待您的贡献。</p>
@@ -490,7 +409,7 @@ superfores能够实现以一个ROS版本生成全量官方ROS组件包，对整�
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, openEuler Embedded.</p>
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

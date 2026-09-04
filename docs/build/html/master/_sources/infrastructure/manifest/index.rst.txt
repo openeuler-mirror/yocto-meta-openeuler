@@ -36,7 +36,7 @@ Embedded对支撑的镜像会进行每日定时构建，构建产物会存放在
 
 ::
 
-   http://121.36.84.172/dailybuild/openEuler-Mainline/openeuler-2023-04-20-13-13-45/embedded_img/
+   http://121.36.84.172/dailybuild/openEuler-Mainline/
 
 可以看到如下图所示：
 
