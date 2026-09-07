@@ -208,6 +208,15 @@ fi
 # for rounding in the above subtractions
 boot_size=$(( boot_size + 64 ))
 
+# enforce a minimum size: the MB-to-sector conversion below under-sizes the
+# boot partition (MB * logical_sector_size is treated as a sector count while
+# one MB is 2048 512-byte sectors), which made it too small for the kernel
+# Image plus the EFI/BOOT and EFI/euleros trees ("No space left on device"
+# during install, leaving an unbootable target disk)
+if [ "$boot_size" -lt 512 ]; then
+    boot_size=512
+fi
+
 # 5% for swap
 swap_ratio=5
 
