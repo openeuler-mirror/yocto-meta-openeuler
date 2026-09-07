@@ -14,6 +14,7 @@ Features are stored as individual YAML files organized by category directories. 
 
 the sample of categories: 
   - **`mcs/`**: Virtualization and multi-tenant core components (MCS, Micrun, z/VM, etc.)
+  - **`peripheral_partition/`**: Peripheral partition management via lopper device tree operations; depends on `mcs`.
   - **`containers/`**: Container runtime support (containerd/isulad/docker/podman) and Kubernetes helpers.
   - **`system/`**: Init managers, debug tooling, OpenBMC, webserver stacks.
   - **`robotics/`**: Robotics middleware stacks (ROS 2, AiROS).
