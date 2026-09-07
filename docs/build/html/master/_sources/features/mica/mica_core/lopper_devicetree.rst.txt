@@ -15,6 +15,49 @@ ____
 如何使用外设分区管理
 ====================
 
+方式一：通过 oebuild 独立特性快速使能（推荐）
+--------------------------------------------
+
+外设分区已作为独立的 oebuild 顶层特性 ``peripheral_partition`` 提供。该特性依赖
+``mcs`` （会自动拉入），当前支持 ``qemu-aarch64`` 与 ``raspberrypi4-64`` 平台。
+
+.. code-block:: console
+
+   $ oebuild generate -p raspberrypi4-64 -f peripheral_partition -d build/rpi4-pp -y
+   $ cd build/rpi4-pp && oebuild bitbake openeuler-image
+
+选择该特性后，等价于在 local.conf 中追加了如下配置（无需手动填写）：
+
+.. code-block:: shell
+
+   DISTRO_FEATURES:append = " mcs "
+   MCS_FEATURES ?= "openamp"
+   MCS_FEATURES:append = " lopper-devicetree "
+
+当前内置的分区案例如下：
+
+.. list-table::
+   :widths: 25 30 45
+   :header-rows: 1
+
+   * - 平台
+     - 被分区的外设
+     - 效果
+   * - qemu-aarch64
+     - PL031 RTC (``pl031@9010000``)
+     - 提取给 guest 侧，Linux 不再枚举该 RTC 设备
+   * - raspberrypi4-64
+     - UART5 (``serial@7e201a00``)
+     - 提取生成 ``zephyr-rpi4.dts``，并从 Linux 设备树中删除该节点
+
+内置案例对应的 lop 文件位于：
+
+- ``meta-openeuler/recipes-kernel/lopper/lops/lop-extract-rtc-for-guest.dts``
+- ``bsp/meta-openeuler-bsp/raspberrypi/recipes-kernel/lopper/lops/lop-extract-uart5-for-zephyr.dts``
+
+方式二：手动接入（自定义外设分区）
+----------------------------------
+
 1. 在对应的BSP层添加 ``lopper-ops.bbappend`` 和 ``lops`` 文件夹，用于承载用户的配置文件。例如：
 
    .. code-block:: console

@@ -74,8 +74,12 @@
 <li class="toctree-l5"><a class="reference internal" href="services/index.html">跨OS服务</a></li>
 <li class="toctree-l5 current"><a class="current reference internal" href="#">外设分区管理</a><ul>
 <li class="toctree-l6"><a class="reference internal" href="#id2">总体介绍</a></li>
-<li class="toctree-l6"><a class="reference internal" href="#id3">如何使用外设分区管理</a></li>
-<li class="toctree-l6"><a class="reference internal" href="#id4">如何编写外设分区配置文件</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id3">如何使用外设分区管理</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#oebuild">方式一：通过 oebuild 独立特性快速使能（推荐）</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id4">方式二：手动接入（自定义外设分区）</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="#id5">如何编写外设分区配置文件</a></li>
 </ul>
 </li>
 </ul>
@@ -139,6 +143,52 @@
 <hr class="docutils" />
 <section id="id3">
 <h2>如何使用外设分区管理<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<section id="oebuild">
+<h3>方式一：通过 oebuild 独立特性快速使能（推荐）<a class="headerlink" href="#oebuild" title="Permalink to this heading"></a></h3>
+<p>外设分区已作为独立的 oebuild 顶层特性 <code class="docutils literal notranslate"><span class="pre">peripheral_partition</span></code> 提供。该特性依赖
+<code class="docutils literal notranslate"><span class="pre">mcs</span></code> （会自动拉入），当前支持 <code class="docutils literal notranslate"><span class="pre">qemu-aarch64</span></code> 与 <code class="docutils literal notranslate"><span class="pre">raspberrypi4-64</span></code> 平台。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"> </span>raspberrypi4-64<span class="w"> </span>-f<span class="w"> </span>peripheral_partition<span class="w"> </span>-d<span class="w"> </span>build/rpi4-pp<span class="w"> </span>-y
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>build/rpi4-pp<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>oebuild<span class="w"> </span>bitbake<span class="w"> </span>openeuler-image
+</pre></div>
+</div>
+<p>选择该特性后，等价于在 local.conf 中追加了如下配置（无需手动填写）：</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>DISTRO_FEATURES:append<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot; mcs &quot;</span>
+MCS_FEATURES<span class="w"> </span>?<span class="o">=</span><span class="w"> </span><span class="s2">&quot;openamp&quot;</span>
+MCS_FEATURES:append<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot; lopper-devicetree &quot;</span>
+</pre></div>
+</div>
+<p>当前内置的分区案例如下：</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 30%" />
+<col style="width: 45%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>平台</p></th>
+<th class="head"><p>被分区的外设</p></th>
+<th class="head"><p>效果</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>qemu-aarch64</p></td>
+<td><p>PL031 RTC (<code class="docutils literal notranslate"><span class="pre">pl031&#64;9010000</span></code>)</p></td>
+<td><p>提取给 guest 侧，Linux 不再枚举该 RTC 设备</p></td>
+</tr>
+<tr class="row-odd"><td><p>raspberrypi4-64</p></td>
+<td><p>UART5 (<code class="docutils literal notranslate"><span class="pre">serial&#64;7e201a00</span></code>)</p></td>
+<td><p>提取生成 <code class="docutils literal notranslate"><span class="pre">zephyr-rpi4.dts</span></code>，并从 Linux 设备树中删除该节点</p></td>
+</tr>
+</tbody>
+</table>
+<p>内置案例对应的 lop 文件位于：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">meta-openeuler/recipes-kernel/lopper/lops/lop-extract-rtc-for-guest.dts</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bsp/meta-openeuler-bsp/raspberrypi/recipes-kernel/lopper/lops/lop-extract-uart5-for-zephyr.dts</span></code></p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>方式二：手动接入（自定义外设分区）<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
 <ol class="arabic">
 <li><p>在对应的BSP层添加 <code class="docutils literal notranslate"><span class="pre">lopper-ops.bbappend</span></code> 和 <code class="docutils literal notranslate"><span class="pre">lops</span></code> 文件夹，用于承载用户的配置文件。例如：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">.</span>
@@ -207,9 +257,10 @@ do_configure:append<span class="o">()</span><span class="w"> </span><span class=
 参考提交 <a class="reference external" href="https://atomgit.com/openeuler/yocto-meta-openeuler/commit/144641062">rpi4: extract a serial for zephyr</a>。</p>
 </div>
 </section>
+</section>
 <hr class="docutils" />
-<section id="id4">
-<h2>如何编写外设分区配置文件<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
+<section id="id5">
+<h2>如何编写外设分区配置文件<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
 <p>外设分区管理是基于开源工具 lopper 完成的，用户可以自定义配置文件（lopper operations），以实现设备树节点的修改、删除、提取等操作。
 关于 lopper operations 详细完整的语法配置，可以阅读学习 <a class="reference external" href="https://github.com/devicetree-org/lopper/blob/master/README-architecture.md">lopper/README-architecture</a>。
 下面，会介绍一些较为常用的功能接口。</p>
