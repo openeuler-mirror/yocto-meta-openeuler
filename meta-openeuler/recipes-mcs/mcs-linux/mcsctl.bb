@@ -28,6 +28,7 @@ RDEPENDS:${PN} = "python3 python3-argcomplete"
 RTOS_IMGS:raspberrypi4-64 = "rpi4"
 RTOS_IMGS:qemu-aarch64 = "qemu"
 RTOS_IMGS:hieulerpi1 = "hieulerpi"
+RTOS_IMGS:kp920 = "kp920"
 
 do_install:append () {
     ## todo: more fine-grained process of mica conf file and
