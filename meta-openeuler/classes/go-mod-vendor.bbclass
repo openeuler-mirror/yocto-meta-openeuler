@@ -24,7 +24,7 @@
 GO_MOD_VENDOR_DIR ?= "${GO_MOD_VENDOR_SRC_DIR}/vendor"
 GO_MOD_VENDOR_GOARCH ?= "${TARGET_GOARCH}"
 GO_MOD_VENDOR_WORKDIR ?= "${GO_MOD_VENDOR_SRC_DIR}"
-GO_MOD_VENDOR_GOPROXY ?= "https://mirrors.aliyun.com/goproxy/,https://goproxy.cn,direct"
+GO_MOD_VENDOR_GOPROXY ?= "https://goproxy.cn,https://mirrors.aliyun.com/goproxy/,direct"
 GO_MOD_VENDOR_GOSUMDB ?= "off"
 GO_MOD_VENDOR_GODEBUG ?= "http2client=0"
 GO_MOD_VENDOR_HTTP_PROXY ?= "${@d.getVar('HTTP_PROXY') or d.getVar('http_proxy') or ''}"
@@ -108,7 +108,17 @@ do_setup_deps() {
     fi
 
     bbwarn "** use GOPROXY=${GOPROXY}, if network issues occurred, try setting GOPROXY or modify your network configs"
-    ${GO} mod vendor
+    if ! ${GO} mod vendor; then
+        # A proxy can serve a corrupted module zip ("zip: not a valid
+        # zip file") and the broken artifact then lingers in the module
+        # cache, failing every rerun.  Reset the cache once and retry
+        # so a poisoned cache heals itself instead of wedging builds
+        # until WORKDIR is removed by hand.
+        bbwarn "** go mod vendor failed, resetting module cache and retrying once"
+        chmod_modcache
+        rm -rf "${GOMODCACHE}"
+        ${GO} mod vendor || bbfatal "go mod vendor failed after module cache reset"
+    fi
 
     bbnote "go mod vendor finished"
 }
