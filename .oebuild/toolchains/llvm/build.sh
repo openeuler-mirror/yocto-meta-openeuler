@@ -9,10 +9,11 @@
 #   1) 在 ${WORK_DIR}/open_source/llvm-project/ 下执行 llvm-project/build.sh；
 #   2) 若提供 --gcc-dir，则将 aarch64 GCC 交叉链的头文件与库文件集成到
 #      LLVM 工具链中，并创建 ld 软链接；
-#   3) 若提供 --package，则将产物打包为 .tar.gz。
+#   3) 若提供 --package，则将产物打包为 .tar.gz；
+#   4) 若提供 --split-size，则将 .tar.gz 按指定大小分卷并生成 merge_data.sh。
 #
 # 调用方式：
-#   ./build.sh <work_dir> [--gcc-dir <path>] [--package]
+#   ./build.sh <work_dir> [--gcc-dir <path>] [--package] [--split-size <size>]
 #
 # 示例：
 #   ./build.sh /tmp/llvm-work                           # 仅构建
@@ -65,6 +66,8 @@ ${CYAN}openEuler Embedded LLVM 工具链构建脚本${NC}
 选项:
   --gcc-dir <path>   aarch64 GCC 交叉链目录，用于集成头文件与库文件
   --package          构建完成后将产物打包为 .tar.gz
+  --split-size <size> 打包后按 size（如 500M）分卷，分卷命名为 N_<产物名>.tar.gz，
+                    并生成 merge_data.sh 供下载侧合并解压
   -h, --help         显示此帮助信息
 
 示例:
@@ -78,6 +81,7 @@ EOF
 WORK_DIR=""
 GCC_DIR=""
 DO_PACKAGE=false
+SPLIT_SIZE=""
 
 while [ $# -gt 0 ]; do
 	case "$1" in
@@ -89,6 +93,11 @@ while [ $# -gt 0 ]; do
 			;;
 		--package)
 			DO_PACKAGE=true
+			;;
+		--split-size)
+			shift
+			[ $# -gt 0 ] || die "--split-size requires an argument"
+			SPLIT_SIZE="$1"
 			;;
 		-*)
 			die "unknown option: $1"
@@ -188,6 +197,34 @@ if [ "${DO_PACKAGE}" = true ]; then
 	} )
 
 	info "Package created at ${LLVM_SRC}/output/${INSTALL_DIR_NAME}.tar.gz"
+
+	# 发布平台对单个附件有大小限制，超大产物按 --split-size 分卷上传；
+	# 分卷命名沿用既有发布惯例（N_<产物名>.tar.gz），下载侧用 merge_data.sh 合并解压
+	if [ -n "${SPLIT_SIZE}" ]; then
+		info "Splitting package into ${SPLIT_SIZE} parts..."
+
+		( cd "${LLVM_SRC}/output" && {
+			split -b "${SPLIT_SIZE}" "${INSTALL_DIR_NAME}.tar.gz" ".part_"
+			rm -f "${INSTALL_DIR_NAME}.tar.gz"
+			idx=1
+			for part in .part_*; do
+				mv "${part}" "${idx}_${INSTALL_DIR_NAME}.tar.gz"
+				idx=$((idx + 1))
+			done
+			cat > merge_data.sh <<MERGE_EOF
+#!/bin/bash
+# 用法：将所有分卷与本脚本放在同一目录，执行本脚本即可得到工具链目录
+set -e
+cat \$(ls -v *_${INSTALL_DIR_NAME}.tar.gz) > ${INSTALL_DIR_NAME}.tar.gz
+tar zxf ${INSTALL_DIR_NAME}.tar.gz
+rm -f ${INSTALL_DIR_NAME}.tar.gz
+echo "Toolchain extracted to ${INSTALL_DIR_NAME}/"
+MERGE_EOF
+			chmod +x merge_data.sh
+		} )
+
+		info "Split parts and merge_data.sh created in ${LLVM_SRC}/output"
+	fi
 fi
 
 echo
