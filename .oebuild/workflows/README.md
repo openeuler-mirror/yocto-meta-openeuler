@@ -195,7 +195,7 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 
 - build llvm toolchain
 
-  执行llvm 交叉编译链的编译，调用toolchains/llvm/build.sh包装脚本完成：优先选用镜像内的gcc-12作为宿主编译器（LLVM 17要求GCC>=7.4），构建完成后集成aarch64 GCC库，产物按500M分卷（N_clang-llvm-<版本>.tar.gz）并生成merge_data.sh供下载侧合并解压，详细步骤不再细述。
+  执行llvm 交叉编译链的编译，调用toolchains/llvm/build.sh包装脚本完成：优先选用镜像内的gcc-12作为宿主编译器（LLVM 17要求GCC>=7.4），构建完成后集成aarch64 GCC库，产物按200M分卷（N_clang-llvm-<版本>.tar.gz）并生成merge_data.sh供下载侧合并解压，详细步骤不再细述。
 
 - release llvm-toolchain
 
@@ -280,7 +280,7 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 
 - package toolchain
 
-  对gcc编译产物进行打包。
+  对gcc编译产物进行打包，各工具链tar.gz按200M分卷（N_<工具链名>.tar.gz），并生成merge_data.sh供下载侧合并解压。
 
 - release gcc-toolchain
 
@@ -320,7 +320,7 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 
 - package toolchain
 
-  对编译产物进行打包，生成llvm-musl-arm.tar.gz。
+  对编译产物进行打包，生成llvm-musl-arm.tar.gz并按200M分卷（N_llvm-musl-arm.tar.gz），同时生成merge_data.sh供下载侧合并解压。
 
 - release arm32-clang-musl-toolchain
 

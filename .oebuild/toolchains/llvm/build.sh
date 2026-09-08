@@ -66,7 +66,7 @@ ${CYAN}openEuler Embedded LLVM 工具链构建脚本${NC}
 选项:
   --gcc-dir <path>   aarch64 GCC 交叉链目录，用于集成头文件与库文件
   --package          构建完成后将产物打包为 .tar.gz
-  --split-size <size> 打包后按 size（如 500M）分卷，分卷命名为 N_<产物名>.tar.gz，
+  --split-size <size> 打包后按 size（如 200M）分卷，分卷命名为 N_<产物名>.tar.gz，
                     并生成 merge_data.sh 供下载侧合并解压
   -h, --help         显示此帮助信息
 

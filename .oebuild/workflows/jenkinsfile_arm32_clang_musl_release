@@ -61,8 +61,23 @@ pipeline {
                     sh """
                         tar czf llvm-musl-arm.tar.gz llvm-musl-arm
                         mkdir release
-                        mv llvm-musl-arm.tar.gz release/
+                        split -b 200M llvm-musl-arm.tar.gz release/.part_
+                        rm -f llvm-musl-arm.tar.gz
+                        cd release
+                        idx=1
+                        for part in .part_*; do
+                            mv "\$part" "\${idx}_llvm-musl-arm.tar.gz"
+                            idx=\$((idx + 1))
+                        done
                     """
+                    writeFile(file: "release/merge_data.sh", text: '''#!/bin/bash
+set -e
+cat $(ls -v [0-9]*_llvm-musl-arm.tar.gz) > llvm-musl-arm.tar.gz
+tar zxf llvm-musl-arm.tar.gz
+rm -f llvm-musl-arm.tar.gz
+echo "Toolchain extracted to llvm-musl-arm/"
+''')
+                    sh "chmod +x release/merge_data.sh"
                 }
             }
         }
