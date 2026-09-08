@@ -195,13 +195,13 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 
 - build llvm toolchain
 
-  执行llvm 交叉编译链的编译，详细步骤不再细述。
+  执行llvm 交叉编译链的编译，调用toolchains/llvm/build.sh包装脚本完成：优先选用镜像内的gcc-12作为宿主编译器（LLVM 17要求GCC>=7.4），构建完成后集成aarch64 GCC库并打包产物，详细步骤不再细述。
 
 - release llvm-toolchain
 
   llvm版本发布，该流程会调用功能函数库中create_release功能来进行二进制版本发布，而版本发布平台为gitee上openEuler 源码仓。
 
->注意：运行节点调用的容器镜像为swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-sdk-ci
+>注意：运行节点调用的容器镜像为swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-sdk-ci，且镜像内需提供gcc-12（由当前openeuler-sdk基础镜像内置的/opt/gcc-12提供），否则LLVM 17的构建会因宿主GCC版本低于7.4而失败。
 
 其依赖的外部变量列表如下：
 

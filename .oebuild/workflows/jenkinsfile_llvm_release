@@ -68,24 +68,9 @@ pipeline {
         }
         stage("build llvm toolchain"){
             steps{
-                dir("${env.WORKSPACE}/.oebuild/llvm-toolchain/open_source/llvm-project"){
+                dir("${env.WORKSPACE}/.oebuild/llvm-toolchain"){
                     sh """
-                        ./build.sh -e -o -s -i -b release -I clang-llvm-17.0.6
-                        cd clang-llvm-17.0.6
-                        mkdir lib64 aarch64-openeuler-linux-gnu
-                        cp -rf /home/jenkins/agent/openeuler_gcc_arm64le/lib64/gcc lib64/
-                        cp -rf /home/jenkins/agent/openeuler_gcc_arm64le/aarch64-openeuler-linux-gnu/include aarch64-openeuler-linux-gnu/
-                        cp -rf /home/jenkins/agent/openeuler_gcc_arm64le/aarch64-openeuler-linux-gnu/sysroot aarch64-openeuler-linux-gnu/
-                        cd bin
-                        ln -sf ld.lld aarch64-openeuler-linux-gnu-ld
-                    """
-                }
-                dir("${env.WORKSPACE}/.oebuild/llvm-toolchain/open_source"){
-                    sh """
-                        cd llvm-project
-                        tar zcf clang-llvm-17.0.6.tar.gz clang-llvm-17.0.6
-                        mkdir output
-                        mv clang-llvm-17.0.6.tar.gz output
+                        ./build.sh ${env.WORKSPACE}/.oebuild/llvm-toolchain --gcc-dir /home/jenkins/agent/openeuler_gcc_arm64le --package
                     """
                 }
             }
