@@ -1,7 +1,7 @@
 # base image
 FROM swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-sdk:latest
 
-ARG VERSION=4.3
+ARG VERSION=3107.v665000b_51092
 ARG user=jenkins
 ARG group=jenkins
 #must to be 1001 for adapt disk mount in jenkins'job
@@ -10,6 +10,16 @@ ARG gid=1001
 ARG AGENT_WORKDIR=/home/${user}/agent
 
 USER root
+
+ENV JAVA_HOME /usr/local/openjdk-17
+ENV PATH $JAVA_HOME/bin:$PATH
+
+RUN wget -q https://mirrors.huaweicloud.com/openjdk/17/openjdk-17_linux-x64_bin.tar.gz -O /tmp/jdk.tar.gz && \
+    mkdir -p /usr/local && \
+    tar -xzf /tmp/jdk.tar.gz -C /usr/local && \
+    rm /tmp/jdk.tar.gz && \
+    mv /usr/local/jdk-17 /usr/local/openjdk-17 && \
+    chmod a+rx /usr/local/openjdk-17
 
 RUN curl --create-dirs -fsSLo /usr/share/jenkins/agent.jar https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar \
     && chmod 755 /usr/share/jenkins \
