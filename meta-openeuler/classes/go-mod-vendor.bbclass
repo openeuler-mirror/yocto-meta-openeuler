@@ -123,4 +123,13 @@ do_setup_deps() {
     bbnote "go mod vendor finished"
 }
 
+# Go marks module cache contents read-only (files 0444, dirs 0555) to
+# enforce cache immutability. bitbake's base do_clean removes WORKDIR
+# with shutil.rmtree, which fails with PermissionError on those
+# entries, so -c cleanall / cleansstate abort and leave the recipe
+# uncleanable. Make the cache writable before WORKDIR is removed.
+do_clean[prefuncs] += "chmod_modcache"
+do_cleanall[prefuncs] += "chmod_modcache"
+do_cleansstate[prefuncs] += "chmod_modcache"
+
 addtask do_setup_deps after do_patch before do_compile
