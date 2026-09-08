@@ -17,7 +17,7 @@ PIEFLAG = "${@bb.utils.contains('GOBUILDFLAGS', '-buildmode=pie', '-buildmode=pi
 S = "${WORKDIR}/git"
 GO_IMPORT = "import"
 NERDCTL_SRC = "${S}/src/import"
-NERDCTL_GOPROXY ?= "https://mirrors.aliyun.com/goproxy/,https://goproxy.cn,direct"
+NERDCTL_GOPROXY ?= "https://goproxy.cn,https://mirrors.aliyun.com/goproxy/,direct"
 
 GO_MOD_VENDOR_SRC_DIR = "${NERDCTL_SRC}"
 GO_MOD_VENDOR_GOPROXY = "${NERDCTL_GOPROXY}"
