@@ -22,10 +22,9 @@ do_deploy() {
     GRUBCFG=${DEPLOYDIR}/EFI/BOOT/grub.cfg
     cp ${S}/grub-bootconf $GRUBCFG
 
-    # change grub.cfg to use Image.gz to launch the kernel if enable mcs DISTRO_FEATURES
-    if ${@bb.utils.contains('DISTRO_FEATURES', 'mcs', 'true', 'false', d)}; then
-        sed -i 's/linux \/Image /linux \/Image.gz /' $GRUBCFG
-    fi
+    # boot partition always carries Image.gz (see sdcard_image-rpi.bbclass),
+    # so grub.cfg must load /Image.gz regardless of the mcs feature
+    sed -i 's/linux \/Image /linux \/Image.gz /' $GRUBCFG
 }
 
 addtask deploy after do_install before do_build
