@@ -28,7 +28,7 @@ openEuler Embedded的总体架构如下图所示：
 
 - **南向生态**
 
-openEuler Embedded当前主要支持ARM64、ARM32、x86-64、RISC-V等多种体系架构，支持海鸥派、RK3568/RK3588、Hi3093、树莓派4B、x86-64工控机等具体硬件。同时openEuler Embedded的南向生态依靠openEuler社区的力量仍然在不断完善中。
+openEuler Embedded当前主要支持ARM64、ARM32、x86-64、RISC-V等多种体系架构：既提供QEMU（aarch64/arm/riscv64/x86-64）仿真环境用于快速开发与验证，也支持树莓派4B、瑞芯微Rockchip（RK3399/RK3568/RK3588等）、海思（Hi3093、海鸥派HiEulerPi、KP920等）、香橙派、MYIR、飞腾Phytium、x86-64工控机、VisionFive2（RISC-V）等具体硬件，各平台的构建与使用方法可参阅 :ref:`南向硬件支持与使用指导 <bsp>` 。同时openEuler Embedded的南向生态依靠openEuler社区的力量仍然在不断完善中。
 
 - **融合弹性底座(FusionDock)**
 
@@ -45,9 +45,9 @@ openEuler Embedded的混合关键性部署框架(**MI** xed **C** ritic **A** li
 
 - **高质量的Linux内核**
 
-openEuler Embedded的中心是Linux，当前采用了与openEuler其他场景相同的，高质量的，openEuler Linux内核版本，目前支持5.10，6.6两大版本。在软件包层面也与内核一样和所有场景共代码、共演进，当前已经支持 **800+** 软件包，远期目标是支持尽可能多的openEuler社区软件包。
+openEuler Embedded的中心是Linux，采用与openEuler其他场景同源、同等高质量的openEuler Linux内核，默认构建5.10（对应22.03 LTS）内核，并支持通过kernel6特性构建6.6（对应24.03 LTS）内核（参见 :ref:`内核多版本支持 <kernelversions_intro>`）。在软件包层面也与内核一样和所有场景共代码、共演进，当前已经支持 **800+** 软件包，远期目标是支持尽可能多的openEuler社区软件包。
 
-同时针对嵌入式场景的需求，openEuler Embedded会在内核特性、系统配置、软件包组合、镜像裁剪等方面进行创新，包括但不限于 **基于Preempt-RT补丁提供软实时能力、小型化（最小OS镜像<5 MB）、快速启动（启动时间小于<5S）** 等。
+同时针对嵌入式场景的需求，openEuler Embedded会在内核特性、系统配置、软件包组合、镜像裁剪等方面进行创新，包括但不限于 **基于Preempt-RT补丁提供软实时能力、小型化（最小OS镜像<5 MB）、快速启动（启动时间小于5秒）** 等。
 
 - **实时操作系统**
 
@@ -61,8 +61,7 @@ openEuler和OpenHarmony两大社区积极合作，通过在openEuler中引入分
 
 - **工具体系**
 
-由于嵌入式系统资源受限，无法像通用系统那样方便地进行开发工作，因此非常依赖开发工具体系的支持。除了嵌入式Linux运行时外，openEuler Embedded的发布件中还包含能够有力支持嵌入式开发工作的SDK(Software Development Kit)，同时近期也会集成与openEuler Embedded配套嵌
-入式系统仿真方案，未来还计划集成图形化的IDE(Integrated Development Environment)，最终形成一套相对完整的开发工具体系。
+由于嵌入式系统资源受限，无法像通用系统那样方便地进行开发工作，因此非常依赖开发工具体系的支持。除了嵌入式Linux运行时外，openEuler Embedded的发布件中还包含能够有力支持嵌入式开发工作的SDK(Software Development Kit，自解压安装包，可支撑用户态程序与内核模块的交叉开发)；同时提供了与openEuler Embedded配套的嵌入式系统仿真方案（oebuild runqemu）与交叉编译工具链（GCC/LLVM/Clang+musl三类，统一由menu.sh构建管理），并持续完善图形化的IDE(Integrated Development Environment)等能力，最终形成一套相对完整的开发工具体系。
 
 - **维测体系**
 
@@ -79,4 +78,4 @@ openEuler Embedded的测试框架主要配合CI/CD的流程，完成相应的测
 
 - **北向生态**
 
-openEuler Embedded的北向生态已经初具规模，并会与openEuler相关SIG组与社区伙伴持续合作不断完善，当前重点聚焦在工控、机器人、能源等OT（Operation Technology）场景，例如从openEuler 23.03开始，轻量级机器人运行时成为了openEuler Embedded关键特性之一。
+openEuler Embedded的北向生态已经初具规模，并会与openEuler相关SIG组与社区伙伴持续合作不断完善，当前重点聚焦在工控、机器人、能源等OT（Operation Technology）场景。其中机器人方向已形成ROS2运行时支持与具身智能框架IB-Robot（覆盖动作分发、数据管线、模型推理等，支持基于qemu-aarch64的仿真开发与基于昇腾NPU的推理验证）等关键特性，详细介绍可参阅 :ref:`具身智能 (Embodied AI) <embodied_ai>` 与 :ref:`关键特性指导 <openeuler_embedded_features>` 。
