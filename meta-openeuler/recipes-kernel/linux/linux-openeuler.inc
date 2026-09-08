@@ -142,11 +142,13 @@ KERNEL_FEATURES:append = "${@bb.utils.contains_any('DISTRO_FEATURES', 'container
 # kubeedge kernel support
 KERNEL_FEATURES:append = " \
     ${@bb.utils.contains('DISTRO_FEATURES', 'kubeedge', 'features/kubeedge/kubeedge.scc', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kubeedge', bb.utils.contains('DISTRO_FEATURES', 'kernel6', '', 'features/kubeedge/psi-v1.scc', d), '', d)} \
 "
 
 # K8s/K3s kernel support
 KERNEL_FEATURES:append = " \
     ${@bb.utils.contains_any('DISTRO_FEATURES', 'k3s-agent k3s-server', 'features/k3s/k3s.scc', '', d)} \
+    ${@bb.utils.contains_any('DISTRO_FEATURES', 'k3s-agent k3s-server', bb.utils.contains('DISTRO_FEATURES', 'kernel6', '', 'features/k3s/psi-v1.scc', d), '', d)} \
 "
 
 # 3rd_driver librealsense kernel support
