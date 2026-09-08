@@ -1,18 +1,4 @@
-def downloadEmbeddedCI(){
-    sh 'rm -rf embedded-ci'
-    sh "git clone ${embeddedRemote} -b ${embeddedBranch} -v embedded-ci --depth=1"
-}
-
-def downloadYoctoWithPr(String workspace, String namespace, String repo, Integer prnum, Integer deepth){
-    sh """
-        python3 main.py clone_repo \
-        -w ${workspace} \
-        -r https://gitee.com/${namespace}/${repo} \
-        -p ${repo} \
-        -pr ${prnum} \
-        -dp ${deepth}
-    """
-}
+def BUILD_COM
 
 def createReleaseAndUploadFile(String yaml_path, String file_dir, gitee_token){
     sh """
@@ -29,48 +15,27 @@ pipeline {
         PATH = "/home/jenkins/.local/bin:${env.PATH}"
     }
     stages {
-        stage("check release"){
+        stage("init task"){
             steps{
                 script{
-                    // 检查是否版本发布pr，并且是否是指定人
-                    def ptitle = "$pr_title"
-                    if (ptitle.contains("版本升级到")){
-                        env.is_release = "true"
-                    }else{
-                        env.is_release = "failed"
-                    }
+                    BUILD_COM = load '.oebuild/workflows/build_common.groovy'
+                    def INIT_ENV = load '.oebuild/workflows/init_env.groovy'
+                    INIT_ENV.init_environment()
                 }
             }
         }
-        stage("download repo"){
-            when {
-                expression {
-                    return env.is_release == "true"
-                }
-            }
+        stage("download embedded-ci"){
             steps{
-                dir('/home/jenkins/agent'){
+                dir("/home/jenkins/agent"){
                     script{
-                        // 下载embedded-ci源码
-                        downloadEmbeddedCI()
-                    }
-                }
-                dir('/home/jenkins/agent/embedded-ci'){
-                    script{
-                        // 下载yocto源码
-                        downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), Integer.parseInt(commitCount))
+                        BUILD_COM.downloadEmbeddedCI(env.embeddedRemote, env.embeddedBranch)
                     }
                 }
             }
         }
         stage("download aarch64 chains"){
-            when {
-                expression {
-                    return env.is_release == "true"
-                }
-            }
             steps{
-                dir('/home/jenkins/agent'){
+                dir("/home/jenkins/agent"){
                     script{
                         // 下载aarch64-toolchains二进制编译链
                         sh """
@@ -93,13 +58,8 @@ pipeline {
             }
         }
         stage("prepare source"){
-            when {
-                expression {
-                    return env.is_release == "true"
-                }
-            }
             steps{
-                dir('/home/jenkins/agent/yocto-meta-openeuler/.oebuild/llvm-toolchain'){
+                dir("${env.WORKSPACE}/.oebuild/llvm-toolchain"){
                     sh """
                         ./prepare.sh
                     """
@@ -107,50 +67,35 @@ pipeline {
             }
         }
         stage("build llvm toolchain"){
-            when {
-                expression {
-                    return env.is_release == "true"
-                }
-            }
-
             steps{
-                dir("/home/jenkins/agent/yocto-meta-openeuler/.oebuild/llvm-toolchain/open_source/llvm-project"){
-                    script{
-                        sh """
-                            ./build.sh -e -o -s -i -b release -I clang-llvm-17.0.6
-                            cd clang-llvm-17.0.6
-                            mkdir lib64 aarch64-openeuler-linux-gnu
-                            cp -rf /home/jenkins/agent/openeuler_gcc_arm64le/lib64/gcc lib64/
-                            cp -rf /home/jenkins/agent/openeuler_gcc_arm64le/aarch64-openeuler-linux-gnu/include aarch64-openeuler-linux-gnu/
-                            cp -rf /home/jenkins/agent/openeuler_gcc_arm64le/aarch64-openeuler-linux-gnu/sysroot aarch64-openeuler-linux-gnu/
-                            cd bin
-                            ln -sf ld.lld aarch64-openeuler-linux-gnu-ld
-                        """
-                    }
+                dir("${env.WORKSPACE}/.oebuild/llvm-toolchain/open_source/llvm-project"){
+                    sh """
+                        ./build.sh -e -o -s -i -b release -I clang-llvm-17.0.6
+                        cd clang-llvm-17.0.6
+                        mkdir lib64 aarch64-openeuler-linux-gnu
+                        cp -rf /home/jenkins/agent/openeuler_gcc_arm64le/lib64/gcc lib64/
+                        cp -rf /home/jenkins/agent/openeuler_gcc_arm64le/aarch64-openeuler-linux-gnu/include aarch64-openeuler-linux-gnu/
+                        cp -rf /home/jenkins/agent/openeuler_gcc_arm64le/aarch64-openeuler-linux-gnu/sysroot aarch64-openeuler-linux-gnu/
+                        cd bin
+                        ln -sf ld.lld aarch64-openeuler-linux-gnu-ld
+                    """
                 }
-                dir("/home/jenkins/agent/yocto-meta-openeuler/.oebuild/llvm-toolchain/open_source"){
-                    script{
-                        sh """
-                            cd llvm-project
-                            tar zcf clang-llvm-17.0.6.tar.gz clang-llvm-17.0.6
-                            mkdir output
-                            mv clang-llvm-17.0.6.tar.gz output
-                        """
-                    }
+                dir("${env.WORKSPACE}/.oebuild/llvm-toolchain/open_source"){
+                    sh """
+                        cd llvm-project
+                        tar zcf clang-llvm-17.0.6.tar.gz clang-llvm-17.0.6
+                        mkdir output
+                        mv clang-llvm-17.0.6.tar.gz output
+                    """
                 }
             }
         }
         stage("release llvm-toolchain"){
-            when {
-                expression {
-                    return env.is_release == "true"
-                }
-            }
             steps{
-                dir('/home/jenkins/agent/embedded-ci'){
+                dir("/home/jenkins/agent/embedded-ci"){
                     script{
                         withCredentials([string(credentialsId: "${giteeId}", variable: 'GITEETOKEN')]){
-                            pre_path = "/home/jenkins/agent/yocto-meta-openeuler/.oebuild/llvm-toolchain"
+                            pre_path = "${env.WORKSPACE}/.oebuild/llvm-toolchain"
                             sdkYamlPath = "${pre_path}/release.yaml"
                             fileDir = "${pre_path}/open_source/llvm-project/output"
                             createReleaseAndUploadFile(sdkYamlPath, fileDir, "$GITEETOKEN")

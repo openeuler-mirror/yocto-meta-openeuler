@@ -1,18 +1,4 @@
-def downloadEmbeddedCI(){
-    sh 'rm -rf embedded-ci'
-    sh "git clone ${embeddedRemote} -b ${embeddedBranch} -v embedded-ci --depth=1"
-}
-
-def downloadYoctoWithPr(String workspace, String namespace, String repo, Integer prnum, Integer deepth){
-    sh """
-        python3 main.py clone_repo \
-        -w ${workspace} \
-        -r https://gitee.com/${namespace}/${repo} \
-        -p ${repo} \
-        -pr ${prnum} \
-        -dp ${deepth}
-    """
-}
+def BUILD_COM
 
 def createReleaseAndUploadFile(String yaml_path, String file_dir, gitee_token){
     sh """
@@ -29,48 +15,46 @@ pipeline {
         PATH = "/home/jenkins/.local/bin:${env.PATH}"
     }
     stages {
-        stage("check release"){
+        stage("init task"){
             steps{
                 script{
-                    // 检查是否版本发布pr，并且是否是指定人
-                    def ptitle = "$pr_title"
-                    if (ptitle.contains("版本升级到")){
-                        env.is_release = "true"
-                    }else{
-                        env.is_release = "failed"
+                    BUILD_COM = load '.oebuild/workflows/build_common.groovy'
+                    def INIT_ENV = load '.oebuild/workflows/init_env.groovy'
+                    INIT_ENV.init_environment()
+                }
+            }
+        }
+        stage("download embedded-ci"){
+            steps{
+                dir("/home/jenkins/agent"){
+                    script{
+                        BUILD_COM.downloadEmbeddedCI(env.embeddedRemote, env.embeddedBranch)
                     }
                 }
             }
         }
-        stage("download repo"){
-            when {
-                expression {
-                    return env.is_release == "true"
-                }
-            }
+        stage("install crosstool-ng"){
             steps{
-                dir('/home/jenkins/agent'){
-                    script{
-                        // 下载embedded-ci源码
-                        downloadEmbeddedCI()
-                    }
+                dir("/home/jenkins/agent/crosstool-ng"){
+                    sh """
+                        if command -v ct-ng >/dev/null 2>&1; then
+                            echo "ct-ng already installed"
+                            exit 0
+                        fi
+                        wget -q http://crosstool-ng.org/download/crosstool-ng/crosstool-ng-1.26.0.tar.bz2
+                        tar jxf crosstool-ng-1.26.0.tar.bz2
+                        cd crosstool-ng-1.26.0
+                        ./configure --prefix=/home/jenkins/.local
+                        make -j\$(nproc)
+                        make install
+                    """
                 }
-                dir('/home/jenkins/agent/embedded-ci'){
-                    script{
-                        // 下载yocto源码
-                        downloadYoctoWithPr("/home/jenkins/agent", giteeTargetNamespace, giteeRepoName, Integer.parseInt(giteePullRequestid), Integer.parseInt(commitCount))
-                    }
-                }
+                sh "rm -rf /home/jenkins/agent/crosstool-ng"
             }
         }
         stage("prepare source"){
-            when {
-                expression {
-                    return env.is_release == "true"
-                }
-            }
             steps{
-                dir('/home/jenkins/agent/yocto-meta-openeuler/.oebuild/cross-tools'){
+                dir("${env.WORKSPACE}/.oebuild/cross-tools"){
                     sh """
                         ./prepare.sh
                         ./update.sh
@@ -79,13 +63,8 @@ pipeline {
             }
         }
         stage("build toolchain"){
-            when {
-                expression {
-                    return env.is_release == "true"
-                }
-            }
             steps{
-                dir("/home/jenkins/agent/yocto-meta-openeuler/.oebuild/cross-tools"){
+                dir("${env.WORKSPACE}/.oebuild/cross-tools"){
                     script{
                         // 构建aarch64-toolchain
                         sh """
@@ -95,7 +74,7 @@ pipeline {
                         // 构建arm32-toolchain
                         sh """
                             cp config_arm32 .config
-                            ct-ng build                           
+                            ct-ng build
                         """
                         // 构建x86-64-toolchain
                         sh """
@@ -112,17 +91,11 @@ pipeline {
                             cp config_arm32-musl .config
                             ct-ng build
                         """
-
                     }
                 }
             }
         }
         stage("package toolchain"){
-            when {
-                expression {
-                    return env.is_release == "true"
-                }
-            }
             steps{
                 dir("/home/jenkins/x-tools"){
                     // 打包aarch64-toolchain
@@ -159,16 +132,11 @@ pipeline {
             }
         }
         stage("release gcc-toolchain"){
-            when {
-                expression {
-                    return env.is_release == "true"
-                }
-            }
             steps{
-                dir('/home/jenkins/agent/embedded-ci'){
+                dir("/home/jenkins/agent/embedded-ci"){
                     script{
                         withCredentials([string(credentialsId: "${giteeId}", variable: 'GITEETOKEN')]){
-                            sdkYamlPath = "/home/jenkins/agent/yocto-meta-openeuler/.oebuild/cross-tools/release.yaml"
+                            sdkYamlPath = "${env.WORKSPACE}/.oebuild/cross-tools/release.yaml"
                             fileDir = "/home/jenkins/x-tools"
                             createReleaseAndUploadFile(sdkYamlPath, fileDir, "$GITEETOKEN")
                         }

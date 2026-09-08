@@ -175,15 +175,15 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 
 ## jenkinsfile_llvm_release
 
-该脚本应用于llvm toolchain版本发布，类似于门禁工程，需要由外部条件触发，这里的外部条件是在评论区输入"/llvm_toolchain_release"评论即可触发。llvm_toolchain版本发布stage流程如下：
+该脚本应用于llvm toolchain版本发布，由人工在jenkins上主动触发，无需外部条件触发。触发前需将流水线工程的SCM分支配置为待发布的源码分支（包含对应的release.yaml），llvm_toolchain版本发布stage流程如下：
 
-- check release
+- init task
 
-  版本检测，llvm的版本发布需要由pr进行控制，并且对pr的格式有一定的要求，这里要求pr的标题一定是"版本升级到xxx"，而该stage即为检测此pr是否是版本发布的pr，如果是则将env.is_release置为true，否则置为false，接下来下面所有的stage都是围绕着env.is_release为true来执行。
+  初始化任务，在运行节点上加载功能函数库build_common.groovy与init_env.groovy完成环境变量初始化。整个流水线固定运行在同一个节点上，源码直接使用流水线检出的工作空间（WORKSPACE），构建产物在各stage间保持连续。
 
-- download repo
+- download embedded-ci
 
-  下载相关代码仓，这里主要是两个，一个是功能函数库"embedded-ci"，另一个是yocto-meta-openeuler源码，这里的源码版本为pr提出时的版本。
+  下载功能函数库"embedded-ci"，版本发布阶段会用到其中的create_release功能。yocto-meta-openeuler源码不再通过pr下载，直接使用流水线检出的版本。
 
 - download aarch64 chans
 
@@ -205,23 +205,12 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 
 其依赖的外部变量列表如下：
 
-| 变量名               | 变量值/默认值                               | 说明                                           |
-| -------------------- | ------------------------------------------- | ---------------------------------------------- |
-| embeddedRemote       | https://gitee.com/openeuler/embedded-ci.git | 运行脚本需要的功能库                           |
-| embeddedBranch       | master                                      | 运行脚本需要的功能库分支名                     |
-| node                 | xxxx                                        | 运行任务的节点名                               |
-| giteeId              | xxxx                                        | 目标分支的管理者ID                             |
-| jenkinsId            | xxxx                                        | jenkins的管理者ID，用于对一些jenkins任务做管理 |
-| giteePullRequestid   | pull_request.number                         | 提交pr的ID号                                   |
-| giteeSourceBranch    | pull_request.head.ref                       | 提交pr的分支名                                 |
-| giteeTargetBranch    | pull_request.base.ref                       | 要合入的目标分支                               |
-| giteeSourceNamespace | pull_request.head.repo.namespace            | 提交pr的namespace                              |
-| giteeTargetNamespace | pull_request.base.repo.namespace            | 要合入的目标namespace                          |
-| giteeCommitter       | pull_request.user.login                     | pr提交者                                       |
-| comment              | comment.body                                | 评论内容                                       |
-| commitCount          | pull_request.commits                        | 此pr提交的commit数                             |
-| pull_action          | $.action                                    | pr的行为，例如已合入，等待合入等               |
-| pr_title             | pull_request.title                          | pr标题                                         |
+| 变量名          | 变量值/默认值                                 | 说明                            |
+| --------------- | --------------------------------------------- | ------------------------------- |
+| embeddedRemote  | https://atomgit.com/openeuler/embedded-ci.git | 运行脚本需要的功能库            |
+| embeddedBranch  | master                                        | 运行脚本需要的功能库分支名      |
+| node            | xxxx                                          | 运行任务的节点名                |
+| giteeId         | gitee-api-token                               | 版本发布所需的token凭证ID       |
 
 ## jenkinsfile_nativesdk_release
 
@@ -267,15 +256,19 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 
 ## jenkinsfile_toolchain_release
 
-该脚本应用于gcc toolchain版本发布，类似于门禁工程，需要由外部条件触发，这里的外部条件是在评论区输入"/toolchain_release"评论即可触发。gcc_toolchain版本发布stage流程如下：
+该脚本应用于gcc toolchain版本发布，由人工在jenkins上主动触发，无需外部条件触发。触发前需将流水线工程的SCM分支配置为待发布的源码分支（包含对应的release.yaml），gcc_toolchain版本发布stage流程如下：
 
-- check release
+- init task
 
-  版本检测，gcc的版本发布需要由pr进行控制，并且对pr的格式有一定的要求，这里要求pr的标题一定是"版本升级到xxx"，而该stage即为检测此pr是否是版本发布的pr，如果是则将env.is_release置为true，否则置为false，接下来下面所有的stage都是围绕着env.is_release为true来执行。
+  初始化任务，在运行节点上加载功能函数库build_common.groovy与init_env.groovy完成环境变量初始化。整个流水线固定运行在同一个节点上，源码直接使用流水线检出的工作空间（WORKSPACE），构建产物在各stage间保持连续。
 
-- download repo
+- download embedded-ci
 
-  下载相关代码仓，这里主要是两个，一个是功能函数库"embedded-ci"，另一个是yocto-meta-openeuler源码，这里的源码版本为pr提出时的版本。
+  下载功能函数库"embedded-ci"，版本发布阶段会用到其中的create_release功能。yocto-meta-openeuler源码不再通过pr下载，直接使用流水线检出的版本。
+
+- install crosstool-ng
+
+  编译安装crosstool-NG构建引擎。运行节点镜像（Dockerfile_CI）未预置ct-ng，该stage从源码编译crosstool-NG 1.26.0并安装到/home/jenkins/.local（PATH中已包含），与openeuler-sdk镜像内置版本一致；若节点已存在ct-ng则自动跳过。
 
 - prepare source
 
@@ -293,40 +286,29 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 
   gcc版本发布，该流程会调用功能函数库中create_release功能来进行二进制版本发布，而版本发布平台为gitee上openEuler 源码仓。
 
->注意：运行节点调用的容器镜像为swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-sdk-ci
+>注意：流水线内会自行编译安装crosstool-NG，运行节点镜像可使用Dockerfile_CI构建的CI镜像（编译依赖已内置），也可使用自带ct-ng的openeuler-sdk-ci镜像。
 
 其依赖的外部变量列表如下：
 
-| 变量名               | 变量值/默认值                               | 说明                                           |
-| -------------------- | ------------------------------------------- | ---------------------------------------------- |
-| embeddedRemote       | https://gitee.com/openeuler/embedded-ci.git | 运行脚本需要的功能库                           |
-| embeddedBranch       | master                                      | 运行脚本需要的功能库分支名                     |
-| node                 | xxxx                                        | 运行任务的节点名                               |
-| giteeId              | xxxx                                        | 目标分支的管理者ID                             |
-| jenkinsId            | xxxx                                        | jenkins的管理者ID，用于对一些jenkins任务做管理 |
-| giteePullRequestid   | pull_request.number                         | 提交pr的ID号                                   |
-| giteeSourceBranch    | pull_request.head.ref                       | 提交pr的分支名                                 |
-| giteeTargetBranch    | pull_request.base.ref                       | 要合入的目标分支                               |
-| giteeSourceNamespace | pull_request.head.repo.namespace            | 提交pr的namespace                              |
-| giteeTargetNamespace | pull_request.base.repo.namespace            | 要合入的目标namespace                          |
-| giteeCommitter       | pull_request.user.login                     | pr提交者                                       |
-| comment              | comment.body                                | 评论内容                                       |
-| commitCount          | pull_request.commits                        | 此pr提交的commit数                             |
-| pull_action          | $.action                                    | pr的行为，例如已合入，等待合入等               |
-| pr_title             | pull_request.title                          | pr标题                                         |
+| 变量名          | 变量值/默认值                                 | 说明                            |
+| --------------- | --------------------------------------------- | ------------------------------- |
+| embeddedRemote  | https://atomgit.com/openeuler/embedded-ci.git | 运行脚本需要的功能库            |
+| embeddedBranch  | master                                        | 运行脚本需要的功能库分支名      |
+| node            | xxxx                                          | 运行任务的节点名                |
+| giteeId         | gitee-api-token                               | 版本发布所需的token凭证ID       |
 
 
 ## jenkinsfile_arm32_clang_musl_release
 
-该脚本应用于arm32 clang+musl toolchain版本发布，类似于门禁工程，需要由外部条件触发，这里的外部条件是在评论区输入"/arm32_clang_musl_release"评论即可触发。arm32_clang_musl_toolchain版本发布stage流程如下：
+该脚本应用于arm32 clang+musl toolchain版本发布，由人工在jenkins上主动触发，无需外部条件触发。触发前需将流水线工程的SCM分支配置为待发布的源码分支（包含对应的release.yaml），arm32_clang_musl_toolchain版本发布stage流程如下：
 
-- check release
+- init task
 
-  版本检测，arm32-clang-musl的版本发布需要由pr进行控制，并且对pr的格式有一定的要求，这里要求pr的标题一定是"arm32-clang-musl-toolchain版本升级到xxx"，而该stage即为检测此pr是否是版本发布的pr，如果是则将env.is_release置为true，否则置为false，接下来下面所有的stage都是围绕着env.is_release为true来执行。
+  初始化任务，在运行节点上加载功能函数库build_common.groovy与init_env.groovy完成环境变量初始化。整个流水线固定运行在同一个节点上，源码直接使用流水线检出的工作空间（WORKSPACE），构建产物在各stage间保持连续。
 
-- download repo
+- download embedded-ci
 
-  下载相关代码仓，这里主要是两个，一个是功能函数库"embedded-ci"，另一个是yocto-meta-openeuler源码，这里的源码版本为pr提出时的版本。
+  下载功能函数库"embedded-ci"，版本发布阶段会用到其中的create_release功能。yocto-meta-openeuler源码不再通过pr下载，直接使用流水线检出的版本。
 
 - prepare source
 
@@ -346,20 +328,9 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 
 其依赖的外部变量列表如下：
 
-| 变量名               | 变量值/默认值                                 | 说明                                           |
-| -------------------- | --------------------------------------------- | ---------------------------------------------- |
-| embeddedRemote       | https://gitee.com/openeuler/embedded-ci.git   | 运行脚本需要的功能库                           |
-| embeddedBranch       | master                                        | 运行脚本需要的功能库分支名                     |
-| node                 | xxxx                                          | 运行任务的节点名                               |
-| giteeId              | xxxx                                          | 目标分支的管理者ID                             |
-| jenkinsId            | xxxx                                          | jenkins的管理者ID，用于对一些jenkins任务做管理 |
-| giteePullRequestid   | pull_request.number                           | 提交pr的ID号                                   |
-| giteeSourceBranch    | pull_request.head.ref                         | 提交pr的分支名                                 |
-| giteeTargetBranch    | pull_request.base.ref                         | 要合入的目标分支                               |
-| giteeSourceNamespace | pull_request.head.repo.namespace              | 提交pr的namespace                              |
-| giteeTargetNamespace | pull_request.base.repo.namespace              | 要合入的目标namespace                          |
-| giteeCommitter       | pull_request.user.login                       | pr提交者                                       |
-| comment              | comment.body                                  | 评论内容                                       |
-| commitCount          | pull_request.commits                          | 此pr提交的commit数                             |
-| pull_action          | $.action                                      | pr的行为，例如已合入，等待合入等               |
-| pr_title             | pull_request.title                            | pr标题                                         |
+| 变量名          | 变量值/默认值                                 | 说明                            |
+| --------------- | --------------------------------------------- | ------------------------------- |
+| embeddedRemote  | https://atomgit.com/openeuler/embedded-ci.git | 运行脚本需要的功能库            |
+| embeddedBranch  | master                                        | 运行脚本需要的功能库分支名      |
+| node            | xxxx                                          | 运行任务的节点名                |
+| giteeId         | gitee-api-token                               | 版本发布所需的token凭证ID       |
