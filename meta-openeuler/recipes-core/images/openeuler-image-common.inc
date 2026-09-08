@@ -9,6 +9,7 @@ packagegroup-base-extended \
 packagegroup-network \
 packagegroup-kernel-modules \
 packagegroup-core-full-cmdline \
+openeuler-motd \
 "
 
 # no extra language settings
