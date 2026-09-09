@@ -37,17 +37,17 @@ pipeline {
             steps{
                 dir("/home/jenkins/agent"){
                     script{
-                        // 下载aarch64-toolchains二进制编译链
+                        // 下载aarch64-toolchains二进制编译链：v0.1.9起为单文件，历史版本及未来分卷发布为N_前缀分卷
                         sh """
-                            wget https://gitee.com/openeuler/yocto-meta-openeuler/releases/download/toolchains-v0.1.5/1_openeuler_gcc_arm64le.tar.gz
-                            wget https://gitee.com/openeuler/yocto-meta-openeuler/releases/download/toolchains-v0.1.5/2_openeuler_gcc_arm64le.tar.gz
-                            wget https://gitee.com/openeuler/yocto-meta-openeuler/releases/download/toolchains-v0.1.5/3_openeuler_gcc_arm64le.tar.gz
-                            wget https://gitee.com/openeuler/yocto-meta-openeuler/releases/download/toolchains-v0.1.5/4_openeuler_gcc_arm64le.tar.gz
-                        """
-                        // 拼接二进制文件
-                        sh """
-                            cat 1_openeuler_gcc_arm64le.tar.gz 2_openeuler_gcc_arm64le.tar.gz 3_openeuler_gcc_arm64le.tar.gz 4_openeuler_gcc_arm64le.tar.gz > openeuler_gcc_arm64le.tar.gz
-                            rm 1_openeuler_gcc_arm64le.tar.gz 2_openeuler_gcc_arm64le.tar.gz 3_openeuler_gcc_arm64le.tar.gz 4_openeuler_gcc_arm64le.tar.gz
+                            wget -q --tries=3 https://atomgit.com/openeuler/yocto-meta-openeuler/releases/download/toolchains-v0.1.9/openeuler_gcc_arm64le.tar.gz || {
+                                idx=1
+                                while wget -q --tries=3 https://atomgit.com/openeuler/yocto-meta-openeuler/releases/download/toolchains-v0.1.9/\${idx}_openeuler_gcc_arm64le.tar.gz; do
+                                    idx=\$((idx + 1))
+                                done
+                                [ \${idx} -gt 1 ] || { echo "no openeuler_gcc_arm64le assets found in toolchains-v0.1.9"; exit 1; }
+                                cat \$(ls -v [0-9]*_openeuler_gcc_arm64le.tar.gz) > openeuler_gcc_arm64le.tar.gz
+                                rm -f [0-9]*_openeuler_gcc_arm64le.tar.gz
+                            }
                         """
                         // 解压二进制文件
                         sh """

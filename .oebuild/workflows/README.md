@@ -185,9 +185,9 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 
   下载功能函数库"embedded-ci"，版本发布阶段会用到其中的create_release功能。yocto-meta-openeuler源码不再通过pr下载，直接使用流水线检出的版本。
 
-- download aarch64 chans
+- download aarch64 chains
 
-  下载openeuler-aarch4的编译链，这是因为llvm的构建需要用到aarch64的编译链。
+  从atomgit的toolchains发布页（当前为v0.1.9）下载aarch64 gcc编译链，优先下载单文件，不存在则下载N_前缀分卷并合并，这是因为llvm的构建需要将aarch64编译链的库集成到产物中。
 
 - prepare source
 
