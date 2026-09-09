@@ -123,9 +123,8 @@ openEuler Embedded采用yocto构建，同时设计了基于Python的元工具 `o
 
    完成构建后，在构建目录下的 :file:`output` 目录下可以看到如下文件：
 
-   - :file:`zImage`: 内核镜像，基于openEuler社区Linux 5.10内核构建；
+   - :file:`zImage`: 内核镜像，默认基于openEuler社区Linux 5.10内核构建（使能kernel6特性后可选用6.6内核）；
    - :file:`openeuler-image-qemu-xxx.cpio.gz`: 标准根文件系统镜像， 进行了必要安全加固，增加了audit、cracklib、OpenSSH、Linux PAM、shadow、iSulad容器等所支持的软件包；
-   - :file:`openeuler-image-qemu-aarch64-xxx.iso`: iso格式的镜像，可用于制作U盘启动盘；
    - :file:`vmlinux`: 对应的vmlinux镜像，可用于内核调试。
 
    在主机上通过以下命令安装QEMU:
@@ -403,10 +402,10 @@ ____
    您可以阅读文档相关的介绍，或参与SIG组例会，更深入地了解openEuler Embedded：
 
    - | :ref:`openEuler Embedded 关键特性 <openeuler_embedded_features>`：
-     | 可以了解openEuler Embedded 正在进行的一些技术探索，包括ROS与具身智能（IB-Robot）的支持；包括混合关键性系统的支持，如何在一颗SoC上同时部署Linux和RTOS；也包括嵌入式容器iSulad的支持等。
+     | 可以了解openEuler Embedded 当前提供的关键特性，包括机器人ROS2运行时与具身智能（IB-Robot）框架，以及嵌入式AI的支持；包括混合关键性部署框架（MICA），如何在一颗SoC上同时部署Linux和RTOS；也包括嵌入式容器iSulad、图形栈等。
 
    - | :ref:`openEuler Embedded 南向支持 <bsp>`：
-     | 可以将openEuler Embedded部署在不同架构的板子上，包括树莓派4B、海思的Hi3093、瑞芯微的RK3568，以及x86_64架构的工控机，RISC-V的visionfive2等。
+     | 可以将openEuler Embedded部署在不同架构的平台上，既可使用QEMU（aarch64/arm/riscv64/x86-64）仿真环境进行开发验证，也可运行在树莓派4B、瑞芯微Rockchip（RK3399/RK3568/RK3588等）、海思（Hi3093、海鸥派HiEulerPi等）、香橙派、MYIR、飞腾Phytium、x86-64工控机、VisionFive2（RISC-V）等具体硬件上。
 
    - | :ref:`openEuler Embedded 构建系统 <yocto>`：
      | 可以了解yocto的一些基础知识，学习如何新增一个软件包，如何增加新的南向BSP支持等。

@@ -143,8 +143,8 @@
 <section id="openeuler-embedded-uefi-grub">
 <h2>使用openEuler Embedded UEFI+GRUB的树莓派镜像<a class="headerlink" href="#openeuler-embedded-uefi-grub" title="Permalink to this heading"></a></h2>
 <blockquote>
-<div><p>openEuler Embedded 的树莓派混合关键部署镜像(openeuler-image-mcs for RPI4)默认使能了UEFI+GRUB，并集成了基于树梅派4B的混合部署环境依赖。</p>
-<p>以下会基于mcs镜像介绍如何使用树莓派UEFI。</p>
+<div><p>openEuler Embedded 的树莓派镜像可在构建时通过 <code class="docutils literal notranslate"><span class="pre">RPI_USE_UEFI</span></code> 使能UEFI+GRUB引导，其混合关键部署镜像(openeuler-image-mcs for RPI4)默认使能了UEFI+GRUB，并集成了基于树莓派4B的混合部署环境依赖。</p>
+<p>凡构建时使能UEFI的openEuler Embedded树莓派镜像（不限于mcs镜像），后续的启动流程与注意事项均同样适用，以下基于mcs镜像介绍如何使用树莓派UEFI。</p>
 </div></blockquote>
 <section id="openeuler-image-mcs">
 <h3>构建树梅派openeuler-image-mcs镜像和烧录<a class="headerlink" href="#openeuler-image-mcs" title="Permalink to this heading"></a></h3>
@@ -155,6 +155,10 @@
 </section>
 <section id="raspberrypi4-uefi-guide">
 <span id="id1"></span><h3>openeuler-image-mcs启动使用指导<a class="headerlink" href="#raspberrypi4-uefi-guide" title="Permalink to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>凡在构建时使能UEFI的openEuler Embedded树莓派镜像（openeuler-image-mcs默认使能），其boot分区集成的UEFI固件（基于 pftf v1.33 定制）在构建时均已预置UEFI配置：System Table Selection 为 DEVICETREE（关闭 ACPI），3G 内存限制已关闭。<strong>此类镜像烧录后首次启动无需进入 UEFI 菜单配置</strong>，可直接执行步骤 2 选择 SD 卡启动；步骤 1 的菜单操作仅在使用出厂原版 pftf 固件（见下文“手动刷新固件使树莓派4B支持UEFI引导”章节）或需要自定义 UEFI 设置时才需要执行。预置配置与 v1.33 固件版本绑定，后续升级固件版本后以实际行为为准。</p>
+</div>
 <ol class="arabic">
 <li><p><strong>烧录后首次启动需修改UEFI配置，启动阶段按ESC进入UEFI，按下图操作解锁3G内存限制并关闭ACPI选用DEVICETREE，保存重启后再操作步骤2</strong></p>
 <blockquote>
@@ -199,8 +203,8 @@
 <div class="admonition attention">
 <p class="admonition-title">Attention</p>
 <ul class="simple">
-<li><p>此UEFI版本的固件默认使用3G内存limit，可以在UEFI菜单中关闭3G limit，否则系统启动后你看到的内存只有3G【<a class="reference external" href="https://github.com/pftf/RPi4/">官方说明</a> 】</p></li>
-<li><p>该版本UEFI+ACPI部署方法有缺陷（HDMI驱动异常），首次使用必须进入UEFI菜单，使用DEVICETREE模式</p></li>
+<li><p>出厂原版 pftf 固件默认使用3G内存limit，可在UEFI菜单中关闭3G limit，否则系统启动后能看到的内存只有3G【<a class="reference external" href="https://github.com/pftf/RPi4/">官方说明</a> 】；使能UEFI构建的镜像集成的固件已预置关闭3G limit，无需进入UEFI菜单设置</p></li>
+<li><p>出厂原版固件的UEFI+ACPI部署方式有缺陷（HDMI驱动异常），首次使用需进入UEFI菜单切换为DEVICETREE模式；使能UEFI构建的镜像集成的固件已预置为DEVICETREE模式</p></li>
 </ul>
 </div>
 </li>
@@ -257,7 +261,7 @@
 <div class="admonition attention">
 <p class="admonition-title">Attention</p>
 <ul class="simple">
-<li><p>3G内存解锁和关闭ACPI使能DEVICETREE请参考上述”openeuler-image-uefi启动使用指导”章节</p></li>
+<li><p>3G内存解锁和关闭ACPI使能DEVICETREE请参考上述”openeuler-image-mcs启动使用指导”章节</p></li>
 <li><p>kernel8.img不再需要，清务必删除，否则将影响启动。</p></li>
 </ul>
 </div>
@@ -456,7 +460,7 @@
 <div class="admonition attention">
 <p class="admonition-title">Attention</p>
 <ul class="simple">
-<li><p>若使用上述UEFI+ACPI部署方法，必须在config中开启ACPI系列功能支持。在make menuconfig ARCH=arm64菜单中，选中ACPI默认系列支持。建议在UEFI中关闭ACPI选用DEVICETREE（参考openeuler-image-uefi启动使用指导相关配置)</p></li>
+<li><p>若使用上述UEFI+ACPI部署方法，必须在config中开启ACPI系列功能支持。在make menuconfig ARCH=arm64菜单中，选中ACPI默认系列支持。建议在UEFI中关闭ACPI选用DEVICETREE（参考openeuler-image-mcs启动使用指导相关配置)</p></li>
 <li><p>编译生成的Image，在上述efi配置下，grub.cfg的linux格式需使用gz命令压缩成Image.gz</p></li>
 </ul>
 </div>
