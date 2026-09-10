@@ -1,7 +1,5 @@
 PV = "2.12"
 
-inherit oee-archive
-
 # upstream source
 SRC_URI:prepend = " \
             file://${BP}.tar.xz  \
