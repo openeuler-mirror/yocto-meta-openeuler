@@ -27,14 +27,13 @@ PR = "r10"
 DEPENDS += "libnsl2"
 
 PACKAGES = "${PN}-dbg libwrap libwrap-doc libwrap-dev libwrap-staticdev ${PN} ${PN}-doc"
-# oe_libinstall places libwrap.so.1/.so.1.0.0 under ${libdir} besides
-# the runtime one under ${base_libdir}, and libwrap.a under
-# ${base_libdir}; widen the package files to ship them all
-FILES:libwrap = "${base_libdir}/lib*${SOLIBS} \
-                 ${libdir}/libwrap.so.1 ${libdir}/libwrap.so.1.0.0"
+# the runtime library ships from ${base_libdir} only, so that
+# libwrap.so.1 has a single shlib provider; ${libdir} keeps just the
+# dev symlink and the static archive
+FILES:libwrap = "${base_libdir}/lib*${SOLIBS}"
 FILES:libwrap-doc = "${mandir}/man3 ${mandir}/man5"
 FILES:libwrap-dev = "${libdir}/lib*${SOLIBSDEV} ${includedir}"
-FILES:libwrap-staticdev = "${libdir}/lib*.a ${base_libdir}/libwrap.a"
+FILES:libwrap-staticdev = "${libdir}/lib*.a"
 FILES:${PN} = "${sbindir}"
 FILES:${PN}-doc = "${mandir}/man8"
 
@@ -152,6 +151,12 @@ do_install () {
 	oe_libinstall -so libwrap ${D}${base_libdir}
 
 	if [ "${libdir}" != "${base_libdir}" ] ; then
+		# oe_libinstall copies the runtime objects into ${libdir} and
+		# the static archive into ${base_libdir}; drop the duplicates
+		# so that libwrap.so.1 is provided by ${base_libdir} alone
+		# and the static archive stays in ${libdir}
+		rm -f ${D}${libdir}/libwrap.so.1 ${D}${libdir}/libwrap.so.1.0.0
+		rm -f ${D}${base_libdir}/libwrap.a
 		rel_lib_prefix=`echo ${libdir} | sed 's,\(^/\|\)[^/][^/]*,..,g'`
 		libname=`readlink ${D}${base_libdir}/libwrap.so | xargs basename`
 		rm -f ${D}${libdir}/libwrap.so
