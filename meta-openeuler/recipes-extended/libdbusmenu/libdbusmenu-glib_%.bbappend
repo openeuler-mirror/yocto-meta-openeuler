@@ -1,11 +1,18 @@
 # main bb: https://github.com/MarkusVolk/meta-wayland/blob/master/recipes-extended/libdbusmenu/libdbusmenu-glib_git.bb
-inherit oee-archive
-OEE_ARCHIVE_SUB_DIR = "libdbusmenu"
+#
+# consume the release tarball from src-openeuler/libdbusmenu
+# (https://atomgit.com/src-openeuler/libdbusmenu) instead of the oee
+# archive; bump PV from 16.0.4 (git) to the 16.04.0 release
 
-PV = "16.0.4"
+PV = "16.04.0"
+
+SRC_URI:remove = "git://github.com/AyatanaIndicators/libdbusmenu.git;protocol=https;branch=master"
 
 SRC_URI:prepend = " \
-    file://libdbusmenu-4d03141.zip \
+    file://libdbusmenu-${PV}.tar.gz \
+    file://0001-libdbusmenu-add-patch-to-modify-build-err.patch;striplevel=2 \
 "
 
-S = "${WORKDIR}/libdbusmenu-master"
+SRC_URI[sha256sum] = "b9cc4a2acd74509435892823607d966d424bd9ad5d0b00938f27240a1bfa878a"
+
+S = "${WORKDIR}/libdbusmenu-${PV}"
