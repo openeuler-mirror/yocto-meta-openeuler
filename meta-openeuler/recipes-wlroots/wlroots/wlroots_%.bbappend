@@ -2,9 +2,7 @@
 # from https://github.com/MarkusVolk/meta-wayland.git 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
-inherit oee-archive
-
-PV = "0.17.2"
+PV = "0.17.4"
 
 # issue: hwdata or hwdata native not found in do_configure
 # Using the host's data file as a workaround:
