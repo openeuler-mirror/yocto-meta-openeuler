@@ -64,7 +64,7 @@
 .. code-block:: console
 
     oebuild generate -f clang
-    oebuild generate -f openeuler-mcs
+    oebuild generate -f mcs
     ...
 
 .. note:: 

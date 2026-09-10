@@ -25,21 +25,21 @@ openEuler社区主线已作为主流版本支持Linux 6.6内核，考虑到有�
 构建6.6内核配套镜像
 =====================================
 
-可在构建之前，在初始化平台时候，追加-f kernel6，案例命令如下：
+可在构建之前，在初始化平台时候，追加-f kernel/kernel6，案例命令如下：
 
 .. code-block:: console
 
     # 构建x86_64的6.6内核镜像、不开启其他特性
-    $ oebuild generate -p x86-64 -f kernel6
+    $ oebuild generate -p x86-64 -f kernel/kernel6
 
     # 构建x86_64的6.6内核镜像，同时启用preempt-rt
-    $ oebuild generate -p x86-64 -f kernel6 -f openeuler-rt
+    $ oebuild generate -p x86-64 -f kernel/kernel6 -f kernel/rt
 
     # 构建树莓派的6.6内核镜像，不开启其他特性
-    $ oebuild generate -p raspberrypi4-64 -f kernel6
+    $ oebuild generate -p raspberrypi4-64 -f kernel/kernel6
 
     # 构建树莓派的6.6内核镜像，同时启用preempt-rt
-    $ oebuild generate -p raspberrypi4-64 -f kernel6 -f openeuler-rt
+    $ oebuild generate -p raspberrypi4-64 -f kernel/kernel6 -f kernel/rt
 
 
 其他构建过程不变，以x86_64为例，6.6内核镜像构建的完整命令如下：
@@ -50,7 +50,7 @@ openEuler社区主线已作为主流版本支持Linux 6.6内核，考虑到有�
     $ cd <work_dir>
     
     # 为镜像创建配置文件compile.yaml（打开6.6内核特性，打开preempt-rt特性，打开hmi特性）
-    $ oebuild generate -p x86-64 -f kernel6 -f openeuler-rt -f hmi -d build_example_x86
+    $ oebuild generate -p x86-64 -f kernel/kernel6 -f kernel/rt -f desktop/hmi -d build_example_x86
     
     # 根据提示，切换到包含 compile.yaml 的编译空间目录，如 build/build_example_x86/
     $ cd build/build_example_x86/

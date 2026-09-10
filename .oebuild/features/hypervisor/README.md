@@ -8,6 +8,6 @@
 
 ## how these files are used
 
-The `mcs/mica.yaml` feature exposes a **hypervisor** choice that picks exactly
+The `mcs/mcs` feature (sub-features `mcs/xen`, `mcs/jailhouse`, `mcs/baremetal`) picks exactly
 one of the files above, guaranteeing that baremetal, Xen, or Jailhouse wins
 and the dependent config flows into the menuconfig experience.

@@ -165,7 +165,11 @@ org.openeuler.micrun.container.firmware_hash
    * - 格式
      - 64 位十六进制摘要，或带 ``sha256:`` 前缀的摘要
    * - 校验失败行为
-     - 摘要与实际固件不匹配时，容器创建失败
+     - 校验时机是 task start（shim 创建任务）阶段，不是 ``ctr container create``
+  （create 是 containerd 的纯元数据操作，不触达 shim）；摘要不匹配或格式非法时
+  start 失败且固件不会加载，错误形如
+  ``failed to create shim task: firmware sha256 mismatch ...`` /
+  ``invalid firmware sha256 length``
 
 **示例**:
 
@@ -248,7 +252,7 @@ MicRun 提供了两个注解来控制容器的自动关闭行为，适用于调�
 org.openeuler.micrun.container.auto_close
 ------------------------------------------
 
-控制容器是否在 IO 关闭后自动退出。
+控制容器是否在**最后一个 stdin 写端消失**后按超时回收。
 
 .. list-table::
    :widths: 30 70
@@ -265,16 +269,16 @@ org.openeuler.micrun.container.auto_close
 
 **行为说明**：
 
-* ``true``: 启用自动关闭，客户端断开后容器会在超时后自动退出
-* ``false``: 禁用自动关闭（除非设置了 ``auto_close_timeout``）
+* ``true``（默认）: **最后一个 stdin 写端消失**（detach 键序送达 / stdin EOF / start 后无人 attach）后开始计时，超时内无人重新 attach 即回收容器
+* ``false``: 禁用自动回收（除非设置了非零 ``auto_close_timeout``），容器保持运行等待重连
+* ``false`` 只对"仅 stdin 结束/detach"类离开方式有效，**不能阻止 attach 客户端进程死亡**（关终端/断 SSH/Ctrl+C 杀死 attach 进程）导致的秒级停止（该路径不走超时计时）
 
 .. warning::
 
    ⚠️ **重要**：此注解是布尔值，**不要使用数字值**\ （如 ``"60"``）。
    如需设置超时时长，请使用 :ref:`auto_close_timeout <auto_close_timeout_annotation>` 注解。
 
-   **所有 IO 模式** （TTY/Non-TTY、前台/后台）默认都启用 30 秒超时机制。
-   只有显式设置 ``auto_close=false`` 或 ``auto_close_timeout=0`` 才能禁用超时。
+   所有 IO 模式（TTY/Non-TTY、前台/后台）默认都启用超时机制，**计时起点是最后一个 stdin 写端消失**（不是容器启动时刻；attach 期间挂起）。只有显式设置 ``auto_close=false`` 或 ``auto_close_timeout=0`` 才能禁用回收。
 
 **示例**：
 
@@ -331,9 +335,9 @@ org.openeuler.micrun.container.auto_close_timeout
 
 **超时机制说明**：
 
-* 默认情况下，**所有容器** 都会在 30 秒后自动关闭（无论 TTY/Non-TTY、前台/后台）
-* 这是为防止测试/调试会话资源泄漏而设计的保护机制
-* 如需长期运行服务，请显式设置 ``auto_close=false`` 或 ``auto_close_timeout=0``
+* 计时起点是**最后一个 stdin 写端消失**（detach、stdin EOF、start 后无人 attach），attach 期间计时挂起；容器运行时长本身没有上限
+* attach 客户端进程死亡（关终端/断 SSH）不走该计时：容器秒级停止，与 ``auto_close`` 值无关
+* 长期运行请设 ``auto_close=false`` 或 ``auto_close_timeout=0``
 
 **示例**：
 
@@ -881,7 +885,7 @@ Pod 配置
 
    * ⚠️ ``auto_close`` 是布尔值注解，**不要** 使用数字（如 ``auto_close=60``）
    * 如需设置超时时长，使用 ``auto_close_timeout`` 注解（如 ``auto_close_timeout=60s``）
-   * **所有 IO 模式默认启用 30 秒超时**，防止资源泄漏
+   * **所有 IO 模式默认启用超时机制，计时从最后一个 stdin 写端消失起算（默认 30s，attach 期间挂起；容器运行时长没有上限）
    * 长期运行服务需显式禁用：``auto_close=false`` 或 ``auto_close_timeout=0``
 
 .. seealso::

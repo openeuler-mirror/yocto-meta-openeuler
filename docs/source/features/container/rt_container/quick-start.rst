@@ -160,19 +160,25 @@ openEuler Embedded 基础构建过程可参考：
 .. code-block:: bash
 
    # 安装/更新 oebuild
-   # Features: zephyr (RTOS), micrun (runtime), mcs/xen, systemd, containerd
-   # （Zephyr 镜像/固件制作流程已就绪；固件需经 meta-zephyr layer 自行
-   #  构建，当前端到端验证记录为 UniProton）
+   # 交付验证口径（UniProton RTOS + micrun 运行时 + Xen + k3s-agent）：
    oebuild generate -p qemu-aarch64 \
-     -f zephyr \
-     -f micrun \
      -f mcs/xen \
-     -f systemd \
-     -f containerd \
-     -d <build_dir>
+     -f mcs/micrun \
+     -f containers/k3s/k3s-agent \
+     -y -d <build_dir>
+
+   # kp920 交付目标为 kernel 6，测试 QEMU 镜像需与交付同内核：
+   # 追加 -f kernel/kernel6（需层包含 kernel6 feature 修复，
+   # 即 DISTRO_FEATURES 口径版本；旧版 feature 会静默构建出 5.10 内核）
+
+   # Zephyr RTOS 形态（固件需经 meta-zephyr layer 自行构建，
+   # 当前端到端验证记录为 UniProton）：
+   oebuild generate -p qemu-aarch64 \
+     -f mcs/xen -f mcs/rtos/zephyr -f mcs/micrun \
+     -y -d <build_dir>
 
    cd <build_dir>
-   oebuild bitbake
+   oebuild bitbake openeuler-image
 
 **选项说明**：
 
@@ -209,19 +215,9 @@ openEuler Embedded 基础构建过程可参考：
 （可选）添加 K3s 支持
 ----------------------
 
-如果需要使用 Kubernetes 集群功能：
-
-.. code-block:: bash
-
-   # Add -f k3s-agent to enable K3s agent support
-   oebuild generate -p qemu-aarch64 \
-     -f zephyr \
-     -f micrun \
-     -f mcs/xen \
-     -f systemd \
-     -f containerd \
-     -f k3s-agent \
-     -d <build_dir>
+如果需要使用 Kubernetes 集群功能：上面的主命令已含
+``containers/k3s/k3s-agent``；如需 k3s-server 形态，将该参数替换为
+``containers/k3s/k3s-server`` 重新 generate 即可。
 
 步骤 2：启动系统
 ================
@@ -364,6 +360,21 @@ openEuler Embedded 基础构建过程可参考：
 3. **固件文件**：选择 ``<firmware>.elf`` 或 ``<firmware>.bin`` 文件
 4. **镜像名称**：使用默认或自定义名称
 
+命令行构建（UniProton 交付口径，可脚本化）
+------------------------------------------
+
+.. code-block:: bash
+
+   python3 micrun-files/mica-image-builder.py \
+     --pedestal xen --os uniproton \
+     --firmware micrun-files/uniproton.elf \
+     --xen-image micrun-files/uniproton.bin \
+     --image-name local/mica-uniproton-app:xen-arm64-0.1 \
+     --platform linux/arm64 --export ./exports
+
+产物为 ``exports/local_mica-uniproton-app_xen-arm64-0.1.tar``
+（两个固件参数均取自构建产物的 ``micrun-files/`` 部署文件）。
+
 手动导出镜像
 ------------
 
@@ -501,7 +512,7 @@ openEuler Embedded 基础构建过程可参考：
 
 .. note::
 
-   ``auto_close`` 默认为 ``true``，当断开连接（如关闭终端）或超时后，容器会自动停止。如果希望容器保持运行以支持多次 attach，可以设置 ``auto_close=false`` 或使用较长的超时时间（>60秒）。
+   ``auto_close`` 默认为 ``true``：**最后一个 stdin 写端消失**（detach 键序送达 / stdin EOF / start 后无人 attach）后开始计时，超时（默认 30s）内无人重新 attach 即回收容器；attach 期间计时挂起。注意两类例外：**attach 客户端进程死亡**（关闭终端、断开 SSH、Ctrl+C 杀死 attach 进程）会让容器**秒级停止**，不走 auto-close 计时，与 ``auto_close`` 值无关；``auto_close=false`` 只对"仅 stdin 结束/detach"类离开方式保活。如果希望容器长期运行以支持多次 attach，请设置 ``auto_close=false``。
 
 使用 nerdctl 运行容器（推荐用于生产）
 --------------------------------------
@@ -633,23 +644,17 @@ nerdctl 使用 ``-l`` (label) 参数来传递 MicRun 的注解配置：
      --name <container_name> \
      <image_name>:<tag>
 
-**退出容器**：
+**退出与离开容器**：
 
-* 停止容器：在外部执行 ``nerdctl stop <容器名>`` 或 ``ctr task kill -s SIGTERM <容器名>``；
-  TTY 会话内按 ``Ctrl+C`` 会被转换为 interrupt/stop（退出状态 130）
-* 在 UniProton shell 内输入 ``exit`` 是兼容兜底的退出方式
-* 使用 ``Ctrl+P`` 然后 ``Ctrl+Q`` 可以**临时退出**\ 容器（容器继续运行，仅 TTY 模式）
+* 停止（推荐）：``nerdctl stop`` / ``ctr task kill -s INT``
+* 离开但不停：``Ctrl+P`` 然后 ``Ctrl+Q``（默认 ``auto_close`` 下 30 秒内重新 attach，长期保活设 ``auto_close=false``）；nerdctl 可用 ``--detach-keys`` 自定义键序（``ctrl-a`` 到 ``ctrl-z`` 及常见符号控制键片段，任一片段非法则整条不生效）
+* 交互 shell 内 ``exit`` 为兼容兜底
 
-.. note::
+使用时注意三点（均为设计内行为）：
 
-   ``Ctrl+C`` 只在 TTY 会话里表示停止容器。非 TTY 或管道输入中的 ``0x03``
-   仍按普通输入字节处理，避免破坏脚本和二进制输入。
-
-**Detach 和 Attach 功能说明**：
-
-* ``Ctrl+P, Ctrl+Q`` 序列可以临时退出容器 shell，容器在后台继续运行
-* 这是类似 Docker 的行为，方便从交互式会话中临时脱离
-* 退出后容器继续运行，可以使用 ``nerdctl attach <容器名>`` 重新连接
+1. ``Ctrl+C`` 只在 **raw 终端**的 TTY 会话（如 ``nerdctl run -it``）里表示停止容器；普通终端下它被转成 SIGINT 杀死 attach 客户端，容器会**秒级停止**且 task 记录消失。
+2. 关闭终端/断开 SSH 等使 attach 客户端进程死亡的操作，同样导致容器秒级停止（与 ``auto_close`` 设置无关）。
+3. 判断容器是否真的停止看 ``xl list``（域消失）与 ``/dev/ttyRPMSG*``；``ctr task ls`` 的 STOPPED/消失与 ``nerdctl ps -a`` 的 ``Created`` 都是正常表现。
 
 **与 ctr 命令对照**：
 
@@ -816,11 +821,6 @@ Kubernetes/K3s 版本应保持兼容（已验证组合见 :doc:`kubernetes/index
 常见问题（通用）
 ================
 
-Q：micran 和 micrun 有什么区别？
---------------------------------
-
-**A**：``micran`` 是旧名称，现在统一使用 ``micrun``。
-
 Q：为什么需要 ``-t`` 参数？
 ---------------------------
 
@@ -829,7 +829,9 @@ Q：为什么需要 ``-t`` 参数？
 Q：如何退出 RTOS 容器？
 ------------------------
 
-**A**：在容器中输入 ``exit`` 命令。完全清理需要：
+**A**：优先用 ``nerdctl stop <容器名>`` 或 ``ctr task kill -s INT``（远程、可靠）；
+交互 shell 内输入 ``exit`` 是兼容兜底方式。完全清理需要（注意 ``ctr task delete``
+要求任务先停止，对 RUNNING 容器执行会被拒绝：``task must be stopped before deletion: failed precondition``）：
 
 .. code-block:: bash
 

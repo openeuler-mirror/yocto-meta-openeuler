@@ -460,14 +460,18 @@ TTY 输出处理导致 ``\r\n`` 转换为 ``\r\r\n``。
 * cpus 编号必须在有效范围内
 * SharedCPUPool 模式下，CPU 数量必须等于 vCPU 数量
 
-10. auto_close 不生效
----------------------
+10. 容器在离开后停止/回收，或没有按预期回收
+---------------------------------------------
 
-**症状**：
+**先分清"正常行为"与"配置问题"**——以下都是设计内行为，不是 auto_close 故障：
 
-客户端断开后容器继续运行。
+* detach（Ctrl+P Ctrl+Q）后约 30 秒容器被回收：默认 ``auto_close=true``，detach 即"最后一个 stdin 写端消失"，30s 内无人重新 attach 就回收（计时从 detach 起算）；
+* attach 会话被关闭/断开后容器**秒级停止**、task 记录消失：attach **客户端进程死亡**路径，绕过 auto-close 计时，与 ``auto_close`` 值无关；
+* 普通（非 raw）终端里 Ctrl+C 后容器停止但看不到 STOPPED(130)：Ctrl+C 被终端转成 SIGINT 杀死了 attach 客户端，``0x03`` 从未送达；
+* ``ctr task start -d`` 后不 attach，约 30 秒容器被回收：无人 attach 即开始计时；
+* ``nerdctl ps -a`` 显示 ``Created``：task 记录消失后的回退显示，判断容器生死看 ``xl list`` 与 ``/dev/ttyRPMSG*``。
 
-**排查步骤**：
+确属"想要的行为没配置对"时，检查注解：
 
 1. **检查注解配置**
 
@@ -475,7 +479,10 @@ TTY 输出处理导致 ``\r\n`` 转换为 ``\r\r\n``。
 
       ctr container info <container-id> | grep annotations
 
-2. **检查超时设置**
+   注意 ``auto_close`` 是布尔值：``"false"`` 生效；数字值（如 ``"60"``）会被忽略；
+   非法值（如 ``"notabool"``）静默按默认 ``true`` 处理。
+
+2. **检查超时设置**（debug shim 才有文件日志）
 
    .. code-block:: bash
 
@@ -487,12 +494,12 @@ TTY 输出处理导致 ``\r\n`` 转换为 ``\r\r\n``。
 
    metadata:
      annotations:
-       # 方法 1: 禁用自动关闭
+       # 方法 1: 禁用自动回收（detach/EOF/无人 attach 都不再回收；attach 进程死亡仍会停止容器，属设计语义）
        org.openeuler.micrun.container.auto_close: "false"
 
        # 方法 2: 设置超时（优先级更高）
        org.openeuler.micrun.container.auto_close_timeout: "0"  # 禁用
-       org.openeuler.micrun.container.auto_close_timeout: "60s"  # 60秒后关闭
+       org.openeuler.micrun.container.auto_close_timeout: "60s"  # 60秒后回收
 
 调试技巧
 ========
