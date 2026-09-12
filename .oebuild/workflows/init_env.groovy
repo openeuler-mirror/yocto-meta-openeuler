@@ -106,7 +106,7 @@ def init_environment(){
         env.baseImgUrl = "https://build-logs.openeuler.openatom.cn:38080/packages/openEuler-24.03-LTS-Next"
     }
     if (env.targetImgUrl == null || env.targetImgUrl == ""){
-        env.targetImgUrl = "http://121.36.84.172/dailybuild/EBS-openEuler-Mainline/embedded_img"
+        env.targetImgUrl = "http://121.36.84.172/dailybuild/EBS-openEuler-24.03-LTS-Next/embedded_img"
     }
     if (env.archList == null || env.archList == ""){
         env.archList = "aarch64 arm32 x86-64 riscv64"
