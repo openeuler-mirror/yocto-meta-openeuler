@@ -26,6 +26,27 @@ BINARY_LOCALE_ARCHES ?= "arc arm.* aarch64 i[3-6]86 x86_64 powerpc mips mips64 r
 # set "0" for qemu emulation of native localedef for locale generation
 LOCALE_GENERATION_WITH_CROSS-LOCALEDEF = "1"
 
+# The same locale may be listed in GLIBC_GENERATE_LOCALES more than once,
+# e.g. when a feature snippet and local.conf both append it. libc-package
+# prepends one locale-base-* package to PACKAGES for every entry, so a
+# duplicated locale makes do_package fail QA with "locale-base-... is
+# listed in PACKAGES multiple times". Deduplicate the list here so that
+# repeated entries are harmless.
+python () {
+    locales = (d.getVar('GLIBC_GENERATE_LOCALES') or '').split()
+    if len(locales) <= 1:
+        return
+    seen = set()
+    deduped = []
+    for locale in locales:
+        if locale not in seen:
+            seen.add(locale)
+            deduped.append(locale)
+    if len(deduped) != len(locales):
+        bb.warn("GLIBC_GENERATE_LOCALES contains duplicate entries, keeping one of each: '%s'" % ' '.join(deduped))
+        d.setVar('GLIBC_GENERATE_LOCALES', ' '.join(deduped))
+}
+
 PROVIDES = "virtual/libc-locale"
 
 PACKAGES = "localedef ${PN}-dbg"
