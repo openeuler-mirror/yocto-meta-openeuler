@@ -49,6 +49,7 @@ SRC_URI = " \
            file://fix_warnings.patch \
            file://0001-Remove-fgets-extern-declaration.patch \
            file://0001-Fix-implicit-function-declaration-warnings.patch \
+           file://0001-Fix-clang17-implicit-decl-errors.patch \
            file://try-from.8 \
            file://safe_finger.8 \
            file://tcp_wrappers-7.6-fixgethostbyname.patch \
