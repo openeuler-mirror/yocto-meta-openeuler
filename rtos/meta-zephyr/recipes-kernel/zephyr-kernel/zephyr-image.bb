@@ -18,13 +18,18 @@ python () {
     distro_features = d.getVar('DISTRO_FEATURES').split()
 
     # qemu-aarch64 related handling
+    # Board selection must prioritize the pedestal (jailhouse/xen) over the
+    # openamp transport: MCS_FEATURES carries an "openamp" base value in the
+    # xen/jailhouse feature sets, so testing openamp first silently builds
+    # the bare-metal qemu_cortex_a53 remote-core image instead of the Xen
+    # guest image, which then spins forever when loaded as a domU kernel.
     if 'qemu-aarch64' in machine:
-        if 'openamp' in mcs_features:
-            d.setVar('ZEPHYR_BOARD', 'qemu_cortex_a53/qemu_cortex_a53/remote')
-        elif 'jailhouse' in mcs_features:
+        if 'jailhouse' in mcs_features:
             d.setVar('ZEPHYR_BOARD', 'qemu_cortex_a53/qemu_cortex_a53/ivshmem')
         elif 'xen' in distro_features:
             d.setVar('ZEPHYR_BOARD', 'xenvm/xenvm/mcs')
+        elif 'openamp' in mcs_features:
+            d.setVar('ZEPHYR_BOARD', 'qemu_cortex_a53/qemu_cortex_a53/remote')
     elif 'raspberrypi4-64' in machine:
         if 'openamp' in mcs_features:
             d.setVar('ZEPHYR_BOARD', 'rpi_4b/rpi_4b/remote')
