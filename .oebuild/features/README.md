@@ -163,20 +163,21 @@ config:
 id: k3s
 name: K3s Kubernetes
 prompt: Enable K3s (default k3s-agent)
-machines: [qemu-aarch64, phytium]
+machines: [qemu-aarch64, phytium, kp920]
 
 dependencies:
   - containers
 
-selects:
+one_of:
   - self/k3s-agent
   - self/k3s-server
+default_one_of: self/k3s-agent
 
 config:
+  repos:
+    - yocto-meta-virtualization
   layers:
     - yocto-meta-virtualization
-  local_conf:
-    - 'DISTRO_FEATURES:append = " k3s-agent "'
 
 sub_feats:
   - id: k3s-agent
@@ -423,11 +424,11 @@ now `oebuild generate --list` prints the features tree grouped by category
 │  - mcs/mcs/baremetal                     hi3093, hieulerpi1, kp920, ok3568, qemu-aarch64,             │
 │                                        raspberrypi4-64, x86-64                                      │
 │  - mcs/mcs/jailhouse                     hi3093, kp920, ok3568, qemu-aarch64, raspberrypi4-64         │
-│  - mcs/mcs/xen                           phytium, qemu-aarch64                                      │
+│  - mcs/mcs/xen                           kp920, phytium, qemu-aarch64                               │
 │  - mcs/mcs-rtos                         hi3093, hieulerpi1, kp920, ok3568, phytium, qemu-aarch64,  │
 │   - mcs/mcs-rtos/uniproton              hi3093, hieulerpi1, kp920, ok3568, phytium, qemu-aarch64,  │
 │                                        raspberrypi4-64, x86-64                                      │
 │   - mcs/mcs-rtos/zephyr                hi3093, hieulerpi1, kp920, ok3568, phytium, qemu-aarch64,  │
 │                                        raspberrypi4-64, x86-64                                      │
-│ - mcs/micrun                             phytium, qemu-aarch64  
+│ - mcs/micrun                             kp920, phytium, qemu-aarch64
 ```
