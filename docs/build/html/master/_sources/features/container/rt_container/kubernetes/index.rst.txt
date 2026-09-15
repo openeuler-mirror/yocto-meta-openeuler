@@ -506,7 +506,10 @@ K3s 默认路径是 ``/usr/bin/k3s``；如果该文件不存在，应回到构�
    * - ``tty: false``
      - 默认关闭 TTY（``tty=true`` 与 stderr 不兼容，会触发 CRI 拒绝 attach）
    * - ``stdin: true``
-     - 保持标准输入打开（支持交互式操作，配合 ``kubectl attach -i``）
+     - 保持标准输入打开（支持交互式操作，配合 ``kubectl attach -i``）。
+       **不可省略**：未 attach 的 RTOS 任务默认在 30 秒后按 auto-close 回收；
+       无 stdin 的常驻任务请显式设置注解 ``org.openeuler.micrun.container.auto_close_timeout: "0"``
+       禁用计时
 
 使用注解配置
 ------------
@@ -556,7 +559,7 @@ MicRun 通过 Pod 的 ``metadata.annotations`` 字段接收配置：
      - 固件文件路径
      - ``images/zephyr.elf``
    * - ``org.openeuler.micrun.container.auto_close``
-     - IO 关闭时自动停止
+     - 最后一个 stdin 写端消失后按超时回收（默认 30s，attach 期间挂起）
      - ``true``/``false``
    * - ``org.openeuler.micrun.container.auto_close_timeout``
      - 自动关闭超时

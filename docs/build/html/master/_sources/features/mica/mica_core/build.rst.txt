@@ -38,7 +38,7 @@
 
         `hetero` 也是裸金属部署的一种，用于在ARM64主机上运行RISC-V架构MCU上的RTOS，与 `bare-metal` 共用相同的构建流程。
 
-        若需要支持 `jailhouse`，请修改编译配置文件 ``compile.yaml``，把 **MCS_FEATURES 中的 openamp 改成 jailhouse**。
+        若需要支持 `jailhouse`，请在 oebuild generate 时添加 ``-f mcs/jailhouse``（无需手改 ``compile.yaml``）。
 
         若需要支持 `xen`，请在oebuild generate时额外添加 -f xen，无需修改 ``compile.yaml``。
 

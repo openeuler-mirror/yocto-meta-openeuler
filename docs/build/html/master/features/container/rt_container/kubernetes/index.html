@@ -632,7 +632,10 @@ ctr<span class="w"> </span>-a<span class="w"> </span>/run/containerd/containerd.
 <td><p>默认关闭 TTY（<code class="docutils literal notranslate"><span class="pre">tty=true</span></code> 与 stderr 不兼容，会触发 CRI 拒绝 attach）</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">stdin:</span> <span class="pre">true</span></code></p></td>
-<td><p>保持标准输入打开（支持交互式操作，配合 <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">attach</span> <span class="pre">-i</span></code>）</p></td>
+<td><p>保持标准输入打开（支持交互式操作，配合 <code class="docutils literal notranslate"><span class="pre">kubectl</span> <span class="pre">attach</span> <span class="pre">-i</span></code>）。
+<strong>不可省略</strong>：未 attach 的 RTOS 任务默认在 30 秒后按 auto-close 回收；
+无 stdin 的常驻任务请显式设置注解 <code class="docutils literal notranslate"><span class="pre">org.openeuler.micrun.container.auto_close_timeout:</span> <span class="pre">&quot;0&quot;</span></code>
+禁用计时</p></td>
 </tr>
 </tbody>
 </table>
@@ -689,7 +692,7 @@ ctr<span class="w"> </span>-a<span class="w"> </span>/run/containerd/containerd.
 <td><p><code class="docutils literal notranslate"><span class="pre">images/zephyr.elf</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">org.openeuler.micrun.container.auto_close</span></code></p></td>
-<td><p>IO 关闭时自动停止</p></td>
+<td><p>最后一个 stdin 写端消失后按超时回收（默认 30s，attach 期间挂起）</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">true</span></code>/<code class="docutils literal notranslate"><span class="pre">false</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">org.openeuler.micrun.container.auto_close_timeout</span></code></p></td>

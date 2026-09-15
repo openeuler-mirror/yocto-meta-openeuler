@@ -514,19 +514,19 @@ Drop-in 目录允许将配置拆分为多个文件：
    * - ``level``
      - 字符串
      - ``info``
-     - 日志级别 (debug, info, warn, error)
+     - 日志级别（debug, info, warn, error；``trace`` 仅 debug 版本生效）
    * - ``file``
      - 字符串
      - ``/var/log/mica/mica-runtime.log``
-     - 日志文件路径
+     - 日志文件路径（**仅 debug 版本**写入文件；release 版本仅 FIFO 输出）
    * - ``color``
      - 布尔
      - ``false``
-     - 是否启用颜色输出
+     - 是否启用颜色输出（仅 debug 版本）
    * - ``caller``
      - 布尔
      - ``true``
-     - 是否显示调用位置
+     - 是否显示调用栈信息（仅 debug 版本）
 
 相关文档
 ========

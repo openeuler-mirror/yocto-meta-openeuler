@@ -93,6 +93,7 @@
 <li class="toctree-l7"><a class="reference internal" href="#id12">为什么需要特殊构建工具</a></li>
 <li class="toctree-l7"><a class="reference internal" href="#id13">准备构建环境</a></li>
 <li class="toctree-l7"><a class="reference internal" href="#id14">交互式构建镜像</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#uniproton">命令行构建（UniProton 交付口径，可脚本化）</a></li>
 <li class="toctree-l7"><a class="reference internal" href="#id15">手动导出镜像</a></li>
 </ul>
 </li>
@@ -108,24 +109,23 @@
 </ul>
 </li>
 <li class="toctree-l6"><a class="reference internal" href="#kubernetes">步骤 6：（可选）接入 Kubernetes 集群</a><ul>
-<li class="toctree-l7"><a class="reference internal" href="#id19">什么是云边协同</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id21">什么是云边协同</a></li>
 <li class="toctree-l7"><a class="reference internal" href="#micrun-kubernetes">MicRun 在 Kubernetes 中的角色</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id20">快速体验</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id21">学习路径</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id22">常见问题</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id22">快速体验</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id23">学习路径</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id24">常见问题</a></li>
 </ul>
 </li>
-<li class="toctree-l6"><a class="reference internal" href="#id23">常见问题（通用）</a><ul>
-<li class="toctree-l7"><a class="reference internal" href="#q-micran-micrun">Q：micran 和 micrun 有什么区别？</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id25">常见问题（通用）</a><ul>
 <li class="toctree-l7"><a class="reference internal" href="#q-t">Q：为什么需要 <code class="docutils literal notranslate"><span class="pre">-t</span></code> 参数？</a></li>
 <li class="toctree-l7"><a class="reference internal" href="#q-rtos">Q：如何退出 RTOS 容器？</a></li>
 <li class="toctree-l7"><a class="reference internal" href="#q">Q：镜像导入后如何查看完整名称？</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id24">Q：如何调试容器启动问题？</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id26">Q：如何调试容器启动问题？</a></li>
 <li class="toctree-l7"><a class="reference internal" href="#q-ctr-task-xxx-already-exists">Q：遇到 <code class="docutils literal notranslate"><span class="pre">ctr:</span> <span class="pre">task</span> <span class="pre">xxx:</span> <span class="pre">already</span> <span class="pre">exists</span></code> 错误怎么办？</a></li>
 </ul>
 </li>
-<li class="toctree-l6"><a class="reference internal" href="#id25">下一步</a></li>
-<li class="toctree-l6"><a class="reference internal" href="#id26">更多资源</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id27">下一步</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id28">更多资源</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="kubernetes/index.html">MicRun Kubernetes 云边协同指南</a></li>
@@ -365,19 +365,25 @@
 <section id="id9">
 <h3>生成构建环境<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 安装/更新 oebuild</span>
-<span class="c1"># Features: zephyr (RTOS), micrun (runtime), mcs/xen, systemd, containerd</span>
-<span class="c1"># （Zephyr 镜像/固件制作流程已就绪；固件需经 meta-zephyr layer 自行</span>
-<span class="c1">#  构建，当前端到端验证记录为 UniProton）</span>
+<span class="c1"># 交付验证口径（UniProton RTOS + micrun 运行时 + Xen + k3s-agent）：</span>
 oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"> </span>qemu-aarch64<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-f<span class="w"> </span>zephyr<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-f<span class="w"> </span>micrun<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-f<span class="w"> </span>mcs/xen<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-f<span class="w"> </span>systemd<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-f<span class="w"> </span>containerd<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-d<span class="w"> </span>&lt;build_dir&gt;
+<span class="w">  </span>-f<span class="w"> </span>mcs/micrun<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-f<span class="w"> </span>containers/k3s/k3s-agent<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-y<span class="w"> </span>-d<span class="w"> </span>&lt;build_dir&gt;
+
+<span class="c1"># kp920 交付目标为 kernel 6，测试 QEMU 镜像需与交付同内核：</span>
+<span class="c1"># 追加 -f kernel/kernel6（需层包含 kernel6 feature 修复，</span>
+<span class="c1"># 即 DISTRO_FEATURES 口径版本；旧版 feature 会静默构建出 5.10 内核）</span>
+
+<span class="c1"># Zephyr RTOS 形态（固件需经 meta-zephyr layer 自行构建，</span>
+<span class="c1"># 当前端到端验证记录为 UniProton）：</span>
+oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"> </span>qemu-aarch64<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-f<span class="w"> </span>mcs/xen<span class="w"> </span>-f<span class="w"> </span>mcs/rtos/zephyr<span class="w"> </span>-f<span class="w"> </span>mcs/micrun<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-y<span class="w"> </span>-d<span class="w"> </span>&lt;build_dir&gt;
 
 <span class="nb">cd</span><span class="w"> </span>&lt;build_dir&gt;
-oebuild<span class="w"> </span>bitbake
+oebuild<span class="w"> </span>bitbake<span class="w"> </span>openeuler-image
 </pre></div>
 </div>
 <p><strong>选项说明</strong>：</p>
@@ -421,18 +427,9 @@ bitbake<span class="w"> </span>micrun
 </section>
 <section id="k3s">
 <h3>（可选）添加 K3s 支持<a class="headerlink" href="#k3s" title="Permalink to this heading"></a></h3>
-<p>如果需要使用 Kubernetes 集群功能：</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add -f k3s-agent to enable K3s agent support</span>
-oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"> </span>qemu-aarch64<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-f<span class="w"> </span>zephyr<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-f<span class="w"> </span>micrun<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-f<span class="w"> </span>mcs/xen<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-f<span class="w"> </span>systemd<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-f<span class="w"> </span>containerd<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-f<span class="w"> </span>k3s-agent<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-d<span class="w"> </span>&lt;build_dir&gt;
-</pre></div>
-</div>
+<p>如果需要使用 Kubernetes 集群功能：上面的主命令已含
+<code class="docutils literal notranslate"><span class="pre">containers/k3s/k3s-agent</span></code>；如需 k3s-server 形态，将该参数替换为
+<code class="docutils literal notranslate"><span class="pre">containers/k3s/k3s-server</span></code> 重新 generate 即可。</p>
 </section>
 </section>
 <section id="id11">
@@ -594,6 +591,19 @@ uv<span class="w"> </span>run<span class="w"> </span>micrun-files/mica-image-bui
 <li><p><strong>镜像名称</strong>：使用默认或自定义名称</p></li>
 </ol>
 </section>
+<section id="uniproton">
+<h3>命令行构建（UniProton 交付口径，可脚本化）<a class="headerlink" href="#uniproton" title="Permalink to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>micrun-files/mica-image-builder.py<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--pedestal<span class="w"> </span>xen<span class="w"> </span>--os<span class="w"> </span>uniproton<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--firmware<span class="w"> </span>micrun-files/uniproton.elf<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--xen-image<span class="w"> </span>micrun-files/uniproton.bin<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--image-name<span class="w"> </span>local/mica-uniproton-app:xen-arm64-0.1<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--platform<span class="w"> </span>linux/arm64<span class="w"> </span>--export<span class="w"> </span>./exports
+</pre></div>
+</div>
+<p>产物为 <code class="docutils literal notranslate"><span class="pre">exports/local_mica-uniproton-app_xen-arm64-0.1.tar</span></code>
+（两个固件参数均取自构建产物的 <code class="docutils literal notranslate"><span class="pre">micrun-files/</span></code> 部署文件）。</p>
+</section>
 <section id="id15">
 <h3>手动导出镜像<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
 <p>如果构建时没有传 <code class="docutils literal notranslate"><span class="pre">--export</span></code>，可以手动导出已构建镜像：</p>
@@ -739,7 +749,7 @@ ctr<span class="w"> </span>container<span class="w"> </span>delete<span class="w
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">auto_close</span></code> 默认为 <code class="docutils literal notranslate"><span class="pre">true</span></code>，当断开连接（如关闭终端）或超时后，容器会自动停止。如果希望容器保持运行以支持多次 attach，可以设置 <code class="docutils literal notranslate"><span class="pre">auto_close=false</span></code> 或使用较长的超时时间（&gt;60秒）。</p>
+<p><code class="docutils literal notranslate"><span class="pre">auto_close</span></code> 默认为 <code class="docutils literal notranslate"><span class="pre">true</span></code>：<strong>最后一个 stdin 写端消失**（detach 键序送达 / stdin EOF / start 后无人 attach）后开始计时，超时（默认 30s）内无人重新 attach 即回收容器；attach 期间计时挂起。注意两类例外：**attach 客户端进程死亡**（关闭终端、断开 SSH、Ctrl+C 杀死 attach 进程）会让容器**秒级停止</strong>，不走 auto-close 计时，与 <code class="docutils literal notranslate"><span class="pre">auto_close</span></code> 值无关；<code class="docutils literal notranslate"><span class="pre">auto_close=false</span></code> 只对”仅 stdin 结束/detach”类离开方式保活。如果希望容器长期运行以支持多次 attach，请设置 <code class="docutils literal notranslate"><span class="pre">auto_close=false</span></code>。</p>
 </div>
 </section>
 <section id="nerdctl">
@@ -860,24 +870,18 @@ nerdctl<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </s
 <span class="w">  </span>&lt;image_name&gt;:&lt;tag&gt;
 </pre></div>
 </div>
-<p><strong>退出容器</strong>：</p>
+<p><strong>退出与离开容器</strong>：</p>
 <ul class="simple">
-<li><p>停止容器：在外部执行 <code class="docutils literal notranslate"><span class="pre">nerdctl</span> <span class="pre">stop</span> <span class="pre">&lt;容器名&gt;</span></code> 或 <code class="docutils literal notranslate"><span class="pre">ctr</span> <span class="pre">task</span> <span class="pre">kill</span> <span class="pre">-s</span> <span class="pre">SIGTERM</span> <span class="pre">&lt;容器名&gt;</span></code>；
-TTY 会话内按 <code class="docutils literal notranslate"><span class="pre">Ctrl+C</span></code> 会被转换为 interrupt/stop（退出状态 130）</p></li>
-<li><p>在 UniProton shell 内输入 <code class="docutils literal notranslate"><span class="pre">exit</span></code> 是兼容兜底的退出方式</p></li>
-<li><p>使用 <code class="docutils literal notranslate"><span class="pre">Ctrl+P</span></code> 然后 <code class="docutils literal notranslate"><span class="pre">Ctrl+Q</span></code> 可以**临时退出**容器（容器继续运行，仅 TTY 模式）</p></li>
+<li><p>停止（推荐）：<code class="docutils literal notranslate"><span class="pre">nerdctl</span> <span class="pre">stop</span></code> / <code class="docutils literal notranslate"><span class="pre">ctr</span> <span class="pre">task</span> <span class="pre">kill</span> <span class="pre">-s</span> <span class="pre">INT</span></code></p></li>
+<li><p>离开但不停：<code class="docutils literal notranslate"><span class="pre">Ctrl+P</span></code> 然后 <code class="docutils literal notranslate"><span class="pre">Ctrl+Q``（默认</span> <span class="pre">``auto_close</span></code> 下 30 秒内重新 attach，长期保活设 <code class="docutils literal notranslate"><span class="pre">auto_close=false</span></code>）；nerdctl 可用 <code class="docutils literal notranslate"><span class="pre">--detach-keys</span></code> 自定义键序（<code class="docutils literal notranslate"><span class="pre">ctrl-a</span></code> 到 <code class="docutils literal notranslate"><span class="pre">ctrl-z</span></code> 及常见符号控制键片段，任一片段非法则整条不生效）</p></li>
+<li><p>交互 shell 内 <code class="docutils literal notranslate"><span class="pre">exit</span></code> 为兼容兜底</p></li>
 </ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">Ctrl+C</span></code> 只在 TTY 会话里表示停止容器。非 TTY 或管道输入中的 <code class="docutils literal notranslate"><span class="pre">0x03</span></code>
-仍按普通输入字节处理，避免破坏脚本和二进制输入。</p>
-</div>
-<p><strong>Detach 和 Attach 功能说明</strong>：</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Ctrl+P,</span> <span class="pre">Ctrl+Q</span></code> 序列可以临时退出容器 shell，容器在后台继续运行</p></li>
-<li><p>这是类似 Docker 的行为，方便从交互式会话中临时脱离</p></li>
-<li><p>退出后容器继续运行，可以使用 <code class="docutils literal notranslate"><span class="pre">nerdctl</span> <span class="pre">attach</span> <span class="pre">&lt;容器名&gt;</span></code> 重新连接</p></li>
-</ul>
+<p>使用时注意三点（均为设计内行为）：</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Ctrl+C</span></code> 只在 <a href="#id19"><span class="problematic" id="id20">**</span></a>raw 终端**的 TTY 会话（如 <code class="docutils literal notranslate"><span class="pre">nerdctl</span> <span class="pre">run</span> <span class="pre">-it</span></code>）里表示停止容器；普通终端下它被转成 SIGINT 杀死 attach 客户端，容器会**秒级停止**且 task 记录消失。</p></li>
+<li><p>关闭终端/断开 SSH 等使 attach 客户端进程死亡的操作，同样导致容器秒级停止（与 <code class="docutils literal notranslate"><span class="pre">auto_close</span></code> 设置无关）。</p></li>
+<li><p>判断容器是否真的停止看 <code class="docutils literal notranslate"><span class="pre">xl</span> <span class="pre">list``（域消失）与</span> <span class="pre">``/dev/ttyRPMSG*</span></code>；<code class="docutils literal notranslate"><span class="pre">ctr</span> <span class="pre">task</span> <span class="pre">ls</span></code> 的 STOPPED/消失与 <code class="docutils literal notranslate"><span class="pre">nerdctl</span> <span class="pre">ps</span> <span class="pre">-a</span></code> 的 <code class="docutils literal notranslate"><span class="pre">Created</span></code> 都是正常表现。</p></li>
+</ol>
 <p><strong>与 ctr 命令对照</strong>：</p>
 <table class="docutils align-default">
 <colgroup>
@@ -954,8 +958,8 @@ TTY 会话内按 <code class="docutils literal notranslate"><span class="pre">Ct
 <p><strong>详细指南</strong>：完整的 Kubernetes 云边协同部署指南，请参考 <a class="reference internal" href="kubernetes/index.html"><span class="doc">MicRun Kubernetes 云边协同指南</span></a>。</p>
 </div>
 <p>本节简要介绍 Kubernetes 集成的概念。</p>
-<section id="id19">
-<h3>什么是云边协同<a class="headerlink" href="#id19" title="Permalink to this heading"></a></h3>
+<section id="id21">
+<h3>什么是云边协同<a class="headerlink" href="#id21" title="Permalink to this heading"></a></h3>
 <p><strong>云边协同</strong> （Cloud-Edge Collaboration）是指在云侧集中管理多个边侧节点，实现：</p>
 <ul class="simple">
 <li><p>统一的资源调度和管理</p></li>
@@ -984,8 +988,8 @@ TTY 会话内按 <code class="docutils literal notranslate"><span class="pre">Ct
 <li><p><strong>K3s</strong>：轻量级 Kubernetes 发行版，适合边缘场景</p></li>
 </ul>
 </section>
-<section id="id20">
-<h3>快速体验<a class="headerlink" href="#id20" title="Permalink to this heading"></a></h3>
+<section id="id22">
+<h3>快速体验<a class="headerlink" href="#id22" title="Permalink to this heading"></a></h3>
 <p><strong>前提条件</strong>：</p>
 <ol class="arabic simple">
 <li><p>已完成步骤 1-5，MicRun 在边侧节点正常运行</p></li>
@@ -1024,16 +1028,16 @@ curl<span class="w"> </span>-sfL<span class="w"> </span>https://get.k3s.io<span 
 </li>
 </ol>
 </section>
-<section id="id21">
-<h3>学习路径<a class="headerlink" href="#id21" title="Permalink to this heading"></a></h3>
+<section id="id23">
+<h3>学习路径<a class="headerlink" href="#id23" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p><strong>新手</strong>：建议先完成步骤 1-5，熟悉 MicRun 基本用法后再尝试 Kubernetes 集成</p></li>
 <li><p><strong>有经验用户</strong>：直接参考 <a class="reference internal" href="kubernetes/index.html"><span class="doc">MicRun Kubernetes 云边协同指南</span></a> 进行完整部署</p></li>
 <li><p><strong>生产环境</strong>：需要考虑高可用、监控、安全等，详见集成指南的高级用法章节</p></li>
 </ul>
 </section>
-<section id="id22">
-<h3>常见问题<a class="headerlink" href="#id22" title="Permalink to this heading"></a></h3>
+<section id="id24">
+<h3>常见问题<a class="headerlink" href="#id24" title="Permalink to this heading"></a></h3>
 <p><strong>Q：必须使用 K3s 吗？</strong></p>
 <p><strong>A</strong>：不是必须的。MicRun 面向标准 Kubernetes CRI/RuntimeClass 集成；云侧和边侧
 Kubernetes/K3s 版本应保持兼容（已验证组合见 <a class="reference internal" href="kubernetes/index.html"><span class="doc">MicRun Kubernetes 云边协同指南</span></a>）。K3s 更轻量，适合边缘场景。</p>
@@ -1047,19 +1051,17 @@ Kubernetes/K3s 版本应保持兼容（已验证组合见 <a class="reference in
 <p><strong>A</strong>：参考 <a class="reference internal" href="kubernetes/index.html"><span class="doc">MicRun Kubernetes 云边协同指南</span></a> 中的故障排查章节，涵盖了常见问题和解决方法。</p>
 </section>
 </section>
-<section id="id23">
-<h2>常见问题（通用）<a class="headerlink" href="#id23" title="Permalink to this heading"></a></h2>
-<section id="q-micran-micrun">
-<h3>Q：micran 和 micrun 有什么区别？<a class="headerlink" href="#q-micran-micrun" title="Permalink to this heading"></a></h3>
-<p><strong>A</strong>：<code class="docutils literal notranslate"><span class="pre">micran</span></code> 是旧名称，现在统一使用 <code class="docutils literal notranslate"><span class="pre">micrun</span></code>。</p>
-</section>
+<section id="id25">
+<h2>常见问题（通用）<a class="headerlink" href="#id25" title="Permalink to this heading"></a></h2>
 <section id="q-t">
 <h3>Q：为什么需要 <code class="docutils literal notranslate"><span class="pre">-t</span></code> 参数？<a class="headerlink" href="#q-t" title="Permalink to this heading"></a></h3>
 <p><strong>A</strong>：<code class="docutils literal notranslate"><span class="pre">-t</span></code> 为容器分配伪终端，支持交互式操作和 <code class="docutils literal notranslate"><span class="pre">exit</span></code> 命令退出。</p>
 </section>
 <section id="q-rtos">
 <h3>Q：如何退出 RTOS 容器？<a class="headerlink" href="#q-rtos" title="Permalink to this heading"></a></h3>
-<p><strong>A</strong>：在容器中输入 <code class="docutils literal notranslate"><span class="pre">exit</span></code> 命令。完全清理需要：</p>
+<p><strong>A</strong>：优先用 <code class="docutils literal notranslate"><span class="pre">nerdctl</span> <span class="pre">stop</span> <span class="pre">&lt;容器名&gt;</span></code> 或 <code class="docutils literal notranslate"><span class="pre">ctr</span> <span class="pre">task</span> <span class="pre">kill</span> <span class="pre">-s</span> <span class="pre">INT``（远程、可靠）；</span>
+<span class="pre">交互</span> <span class="pre">shell</span> <span class="pre">内输入</span> <span class="pre">``exit</span></code> 是兼容兜底方式。完全清理需要（注意 <code class="docutils literal notranslate"><span class="pre">ctr</span> <span class="pre">task</span> <span class="pre">delete</span></code>
+要求任务先停止，对 RUNNING 容器执行会被拒绝：<code class="docutils literal notranslate"><span class="pre">task</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">stopped</span> <span class="pre">before</span> <span class="pre">deletion:</span> <span class="pre">failed</span> <span class="pre">precondition</span></code>）：</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ctr<span class="w"> </span>task<span class="w"> </span>delete<span class="w"> </span>&lt;container_name&gt;
 ctr<span class="w"> </span>container<span class="w"> </span>delete<span class="w"> </span>&lt;container_name&gt;
 </pre></div>
@@ -1069,8 +1071,8 @@ ctr<span class="w"> </span>container<span class="w"> </span>delete<span class="w
 <h3>Q：镜像导入后如何查看完整名称？<a class="headerlink" href="#q" title="Permalink to this heading"></a></h3>
 <p><strong>A</strong>：运行 <code class="docutils literal notranslate"><span class="pre">ctr</span> <span class="pre">image</span> <span class="pre">ls</span></code>，格式为 <code class="docutils literal notranslate"><span class="pre">&lt;registry&gt;/&lt;image-name&gt;:&lt;tag&gt;</span></code></p>
 </section>
-<section id="id24">
-<h3>Q：如何调试容器启动问题？<a class="headerlink" href="#id24" title="Permalink to this heading"></a></h3>
+<section id="id26">
+<h3>Q：如何调试容器启动问题？<a class="headerlink" href="#id26" title="Permalink to this heading"></a></h3>
 <p><strong>A</strong>：</p>
 <ol class="arabic simple">
 <li><p>查看 MicRun 日志：<code class="docutils literal notranslate"><span class="pre">tail</span> <span class="pre">-f</span> <span class="pre">/var/log/mica/mica-runtime.log</span></code>（仅 debug 构建；需先创建目录）</p></li>
@@ -1094,15 +1096,15 @@ rm<span class="w"> </span>-rf<span class="w"> </span>/run/containerd/io.containe
 </div>
 </section>
 </section>
-<section id="id25">
-<h2>下一步<a class="headerlink" href="#id25" title="Permalink to this heading"></a></h2>
+<section id="id27">
+<h2>下一步<a class="headerlink" href="#id27" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="kubernetes/index.html"><span class="doc">MicRun Kubernetes 云边协同指南</span></a> - Kubernetes 集成指南，实现云边协同部署</p></li>
 <li><p><a class="reference internal" href="reference/index.html"><span class="doc">参考文档</span></a> - 配置和注解参考文档</p></li>
 </ul>
 </section>
-<section id="id26">
-<h2>更多资源<a class="headerlink" href="#id26" title="Permalink to this heading"></a></h2>
+<section id="id28">
+<h2>更多资源<a class="headerlink" href="#id28" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://atomgit.com/openeuler/mcs">项目仓库</a></p></li>
 <li><p><a class="reference external" href="https://atomgit.com/openeuler/mcs/issues">问题反馈</a></p></li>

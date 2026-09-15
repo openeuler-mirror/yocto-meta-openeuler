@@ -77,14 +77,14 @@
 <li class="toctree-l7"><a class="reference internal" href="#id2">注解前缀</a></li>
 <li class="toctree-l7"><a class="reference internal" href="#id3">容器配置注解</a></li>
 <li class="toctree-l7"><a class="reference internal" href="#auto-close">容器自动关闭控制</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id5">两个注解的对比</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id13">两个注解的对比</a></li>
 <li class="toctree-l7"><a class="reference internal" href="#hypervisor">Hypervisor 配置注解</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id6">运行时配置注解</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id14">运行时配置注解</a></li>
 <li class="toctree-l7"><a class="reference internal" href="#sandbox">Sandbox 级别注解</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id7">内部注解</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id15">内部注解</a></li>
 <li class="toctree-l7"><a class="reference internal" href="#kubernetes">Kubernetes 使用示例</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id8">注意事项</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id9">下一步</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id16">注意事项</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id19">下一步</a></li>
 </ul>
 </li>
 <li class="toctree-l6"><a class="reference internal" href="troubleshooting.html">MicRun 故障排查指南</a></li>
@@ -328,28 +328,6 @@
 <section id="org-openeuler-micrun-container-firmware-hash">
 <h3>org.openeuler.micrun.container.firmware_hash<a class="headerlink" href="#org-openeuler-micrun-container-firmware-hash" title="Permalink to this heading"></a></h3>
 <p>指定 RTOS 固件的 SHA-256 哈希值，用于验证固件完整性。</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 30%" />
-<col style="width: 70%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>属性</p></th>
-<th class="head"><p>值</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>类型</p></td>
-<td><p>字符串</p></td>
-</tr>
-<tr class="row-odd"><td><p>格式</p></td>
-<td><p>64 位十六进制摘要，或带 <code class="docutils literal notranslate"><span class="pre">sha256:</span></code> 前缀的摘要</p></td>
-</tr>
-<tr class="row-even"><td><p>校验失败行为</p></td>
-<td><p>摘要与实际固件不匹配时，容器创建失败</p></td>
-</tr>
-</tbody>
-</table>
 <p><strong>示例</strong>:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">metadata</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">annotations</span><span class="p">:</span>
@@ -431,7 +409,7 @@
 <p>MicRun 提供了两个注解来控制容器的自动关闭行为，适用于调试、测试和生产场景。</p>
 <section id="org-openeuler-micrun-container-auto-close">
 <span id="auto-close-annotation"></span><h3>org.openeuler.micrun.container.auto_close<a class="headerlink" href="#org-openeuler-micrun-container-auto-close" title="Permalink to this heading"></a></h3>
-<p>控制容器是否在 IO 关闭后自动退出。</p>
+<p>控制容器是否在**最后一个 stdin 写端消失**后按超时回收。</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 30%" />
@@ -456,15 +434,15 @@
 </table>
 <p><strong>行为说明</strong>：</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">true</span></code>: 启用自动关闭，客户端断开后容器会在超时后自动退出</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">false</span></code>: 禁用自动关闭（除非设置了 <code class="docutils literal notranslate"><span class="pre">auto_close_timeout</span></code>）</p></li>
+<li><p><a href="#id5"><span class="problematic" id="id6">``</span></a>true``（默认）: <a href="#id7"><span class="problematic" id="id8">**</span></a>最后一个 stdin 写端消失**（detach 键序送达 / stdin EOF / start 后无人 attach）后开始计时，超时内无人重新 attach 即回收容器</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">false</span></code>: 禁用自动回收（除非设置了非零 <code class="docutils literal notranslate"><span class="pre">auto_close_timeout</span></code>），容器保持运行等待重连</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">false</span></code> 只对”仅 stdin 结束/detach”类离开方式有效，<a href="#id9"><span class="problematic" id="id10">**</span></a>不能阻止 attach 客户端进程死亡**（关终端/断 SSH/Ctrl+C 杀死 attach 进程）导致的秒级停止（该路径不走超时计时）</p></li>
 </ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>⚠️ <strong>重要</strong>：此注解是布尔值，<strong>不要使用数字值</strong>（如 <code class="docutils literal notranslate"><span class="pre">&quot;60&quot;</span></code>）。
 如需设置超时时长，请使用 <a class="reference internal" href="#auto-close-timeout-annotation"><span class="std std-ref">auto_close_timeout</span></a> 注解。</p>
-<p><strong>所有 IO 模式</strong> （TTY/Non-TTY、前台/后台）默认都启用 30 秒超时机制。
-只有显式设置 <code class="docutils literal notranslate"><span class="pre">auto_close=false</span></code> 或 <code class="docutils literal notranslate"><span class="pre">auto_close_timeout=0</span></code> 才能禁用超时。</p>
+<p>所有 IO 模式（TTY/Non-TTY、前台/后台）默认都启用超时机制，<a href="#id11"><span class="problematic" id="id12">**</span></a>计时起点是最后一个 stdin 写端消失**（不是容器启动时刻；attach 期间挂起）。只有显式设置 <code class="docutils literal notranslate"><span class="pre">auto_close=false</span></code> 或 <code class="docutils literal notranslate"><span class="pre">auto_close_timeout=0</span></code> 才能禁用回收。</p>
 </div>
 <p><strong>示例</strong>：</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">metadata</span><span class="p">:</span>
@@ -534,9 +512,9 @@
 </table>
 <p><strong>超时机制说明</strong>：</p>
 <ul class="simple">
-<li><p>默认情况下，<strong>所有容器</strong> 都会在 30 秒后自动关闭（无论 TTY/Non-TTY、前台/后台）</p></li>
-<li><p>这是为防止测试/调试会话资源泄漏而设计的保护机制</p></li>
-<li><p>如需长期运行服务，请显式设置 <code class="docutils literal notranslate"><span class="pre">auto_close=false</span></code> 或 <code class="docutils literal notranslate"><span class="pre">auto_close_timeout=0</span></code></p></li>
+<li><p>计时起点是**最后一个 stdin 写端消失**（detach、stdin EOF、start 后无人 attach），attach 期间计时挂起；容器运行时长本身没有上限</p></li>
+<li><p>attach 客户端进程死亡（关终端/断 SSH）不走该计时：容器秒级停止，与 <code class="docutils literal notranslate"><span class="pre">auto_close</span></code> 值无关</p></li>
+<li><p>长期运行请设 <code class="docutils literal notranslate"><span class="pre">auto_close=false</span></code> 或 <code class="docutils literal notranslate"><span class="pre">auto_close_timeout=0</span></code></p></li>
 </ul>
 <p><strong>示例</strong>：</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">metadata</span><span class="p">:</span>
@@ -546,8 +524,8 @@
 </div>
 </section>
 </section>
-<section id="id5">
-<h2>两个注解的对比<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
+<section id="id13">
+<h2>两个注解的对比<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h2>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 25%" />
@@ -686,8 +664,8 @@
 <p>兼容性选项配置（格式：<code class="docutils literal notranslate"><span class="pre">^versionX</span></code>）。</p>
 </section>
 </section>
-<section id="id6">
-<h2>运行时配置注解<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
+<section id="id14">
+<h2>运行时配置注解<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h2>
 <section id="org-openeuler-micrun-runtime-pause">
 <h3>org.openeuler.micrun.runtime.pause<a class="headerlink" href="#org-openeuler-micrun-runtime-pause" title="Permalink to this heading"></a></h3>
 <p>Pause 镜像名（配置占位）。注解会被读取进运行时配置的 <code class="docutils literal notranslate"><span class="pre">PauseImage</span></code>，
@@ -1074,8 +1052,8 @@
 </div>
 </section>
 </section>
-<section id="id7">
-<h2>内部注解<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h2>
+<section id="id15">
+<h2>内部注解<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h2>
 <p>以下注解由 MicRun 内部使用，通常不需要手动设置。</p>
 <table class="docutils align-default">
 <colgroup>
@@ -1166,8 +1144,8 @@
 </div>
 </section>
 </section>
-<section id="id8">
-<h2>注意事项<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
+<section id="id16">
+<h2>注意事项<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h2>
 <ol class="arabic simple">
 <li><p><strong>注解 vs 环境变量</strong>: MicRun 只通过 Pod/容器的 <code class="docutils literal notranslate"><span class="pre">metadata.annotations</span></code> 读取配置，不支持通过环境变量配置。</p></li>
 <li><p><strong>优先级</strong>: 注解配置 &gt; 运行时配置文件 &gt; 默认值</p></li>
@@ -1178,7 +1156,7 @@
 <ul class="simple">
 <li><p>⚠️ <code class="docutils literal notranslate"><span class="pre">auto_close</span></code> 是布尔值注解，<strong>不要</strong> 使用数字（如 <code class="docutils literal notranslate"><span class="pre">auto_close=60</span></code>）</p></li>
 <li><p>如需设置超时时长，使用 <code class="docutils literal notranslate"><span class="pre">auto_close_timeout</span></code> 注解（如 <code class="docutils literal notranslate"><span class="pre">auto_close_timeout=60s</span></code>）</p></li>
-<li><p><strong>所有 IO 模式默认启用 30 秒超时</strong>，防止资源泄漏</p></li>
+<li><p><a href="#id17"><span class="problematic" id="id18">**</span></a>所有 IO 模式默认启用超时机制，计时从最后一个 stdin 写端消失起算（默认 30s，attach 期间挂起；容器运行时长没有上限）</p></li>
 <li><p>长期运行服务需显式禁用：<code class="docutils literal notranslate"><span class="pre">auto_close=false</span></code> 或 <code class="docutils literal notranslate"><span class="pre">auto_close_timeout=0</span></code></p></li>
 </ul>
 </li>
@@ -1188,8 +1166,8 @@
 <p>关于超时机制的详细说明，请参考 <a class="reference internal" href="#auto-close"><span class="std std-ref">容器自动关闭控制</span></a> 章节。</p>
 </div>
 </section>
-<section id="id9">
-<h2>下一步<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h2>
+<section id="id19">
+<h2>下一步<a class="headerlink" href="#id19" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="../quick-start.html"><span class="doc">MicRun 快速入门</span></a> - 快速入门指南</p></li>
 <li><p><a class="reference internal" href="../kubernetes/index.html"><span class="doc">MicRun Kubernetes 云边协同指南</span></a> - Kubernetes 集成指南</p></li>
