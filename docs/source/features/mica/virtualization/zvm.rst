@@ -32,7 +32,7 @@ ZVM 构建指导
       .. code-block:: console
 
          # 使用qemu-aarch64平台、包含mcs和zvm特性、此处构建目录名为zvm
-         oebuild generate -p qemu-aarch64 -f openeuler-mcs -f zvm -d zvm
+         oebuild generate -p qemu-aarch64 -f mcs -f zvm -d zvm
    
    3. 进入 ``build_zvm`` 目录使用oebuild容器构建:
    

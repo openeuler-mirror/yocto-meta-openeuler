@@ -88,7 +88,7 @@ ____
 
       # 例如：
       # 创建支持混合部署和systemd的 qemu-aarch64 镜像构建配置文件，构建目录为 build_arm64-mcs-systemd：
-      $ oebuild generate -p qemu-aarch64 -f openeuler-mcs -f systemd -d build_arm64-mcs-systemd
+      $ oebuild generate -p qemu-aarch64 -f mcs -f systemd -d build_arm64-mcs-systemd
 
       # 创建支持软实时和systemd的 x86-64 镜像构建配置文件，构建目录为 build_x86-rt-systemd：
       $ oebuild generate -p x86-64 -f openeuler-rt -f systemd -d build_x86-rt-systemd

@@ -192,7 +192,7 @@ MicRun 采用 ``transport/shimv2 -> application -> domain -> ports -> adapters``
 与 MICA 的关系
 ==============
 
-MicRun 是 MICA(Mixed Criticality System,混合关键性系统)框架的容器运行时层。
+MicRun 是 MICA 混合关键性部署框架的容器运行时层（Mixed Criticality System 指上层的 MCS 概念）。
 
 **MicRun 的职责**：
 
@@ -247,7 +247,7 @@ MicRun 是 MICA(Mixed Criticality System,混合关键性系统)框架的容器�
    **Hypervisor 检测说明**:
 
    - **自动检测**: 仅 Xen hypervisor 支持自动检测（通过检查 ``/proc/xen/xenbus``）
-   - **Baremetal**: 不会自动探测；需要在宿主环境显式设置环境变量 ``MICRUN_ENABLE_BAREMETAL=1``，同时通过注解 ``org.openeuler.micrun.ped.pedestal: "baremetal"`` 指定
+   - **Baremetal**: 不会自动探测；需要在宿主环境显式设置环境变量 ``MICRUN_ENABLE_BAREMETAL=1``（如需显式指定类型，可另配注解 ``org.openeuler.micrun.ped.pedestal: "baremetal"``）
 
 使用场景
 ========
