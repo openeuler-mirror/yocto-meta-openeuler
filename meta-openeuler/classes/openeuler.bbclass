@@ -133,6 +133,25 @@ python src_uri_set() {
     if manifest_list is None:
         return
 
+    # All recipes that name a manifest repository in OPENEULER_REPO_NAMES share
+    # the repo checkout under ${OPENEULER_SP_DIR}/openeuler/<repo>.
+    # do_openeuler_fetch mutates that checkout (git fetch + git checkout) while
+    # holding <repo>/file.lock, but the standard file:// do_unpack of ANOTHER
+    # recipe copies the very same directory without taking the lock and can
+    # observe the checkout mid-rewrite (e.g. cp fails with return value 1 when
+    # a file git is replacing disappears for a moment). Give do_unpack the
+    # same per-repo lock files so bitbake serializes unpack against fetch.
+    # Paths are sorted so every task acquires them in the same order and
+    # lock ordering deadlocks cannot happen.
+    import os
+    repo_locks = []
+    for repo_name in (d.getVar('OPENEULER_REPO_NAMES') or '').split():
+        if repo_name in manifest_list:
+            repo_locks.append(os.path.join(d.getVar('OPENEULER_SP_DIR'),
+                                           'openeuler', repo_name, 'file.lock'))
+    if repo_locks:
+        d.setVarFlag('do_unpack', 'lockfiles', ' '.join(sorted(repo_locks)))
+
     # oee-archive.bbclass is included, it must be adated for openeuler
     # so need to process the SRC_URI
     if d.getVar("OEE_ARCHIVE_DIR"):
