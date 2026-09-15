@@ -25,7 +25,10 @@ SRC_URI:raspberrypi4-64 = " \
 
 OPENEULER_LOCAL_NAME:raspberrypi4-64 = "kernel-${PV}-tag-rpi"
 S:raspberrypi4-64 = "${WORKDIR}/kernel-${PV}-tag-rpi"
+# the RPi kernel tree stays on its own tag, so its patches must come
+# from the matching src-openeuler packaging tag, not from src-kernel-6.6
+# which follows the mainline kernel6 packaging (rebased per baseline)
 OPENEULER_REPO_NAMES:raspberrypi4-64 = " \
     kernel-${PV}-tag-rpi \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'src-kernel-${PV}', 'src-kernel-${PV}-tag-rpi', d)} \
+    src-kernel-${PV}-tag-rpi \
 "
