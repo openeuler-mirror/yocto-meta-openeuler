@@ -3,7 +3,7 @@ DESCRIPTION = "Expand file system to use all the space on the card at first boot
 SECTION = "base"
 LICENSE = "CLOSED"
 
-RDEPENDS:${PN} = "parted e2fsprogs-resize2fs"
+RDEPENDS:${PN} = "parted e2fsprogs-resize2fs bash"
 
 # init_once.sh: 
 # perform the partition resize,resize file system, add BSP users at first boot/login

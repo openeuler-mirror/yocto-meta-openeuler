@@ -2,7 +2,7 @@ DESCRIPTION = "Some pre-compiled ko, firmware and initscripts for 3591rc"
 LICENSE = "CLOSED"
 
 DEPENDS = "update-rc.d-native linux-openeuler"
-RDEPENDS:${PN} = " libyaml bash-completion "
+RDEPENDS:${PN} = " libyaml bash-completion bash libselinux "
 
 DRIVER_RUN_FILE = "${@bb.utils.contains('DISTRO_FEATURES', '3591b', 'Hi3591B-driver-7.7.0.1.231-openEuler24.03.aarch64-rc-spc001.run', 'Hi3591P-driver-7.7.0.1.231-openEuler24.03.aarch64-rc-spc001.run', d)}"
 
@@ -23,7 +23,14 @@ S = "${WORKDIR}/bsp"
 MAKE_EMMC_HEAD = "${@bb.utils.contains('DISTRO_FEATURES', '3591fullimg', 'true', 'false', d)}"
 PRODUCT_OUTPUT_NAME = "${@bb.utils.contains('DISTRO_FEATURES', '3591b', '3591b', '3591p', d)}"
 
-INSANE_SKIP:${PN} += "already-stripped"
+INSANE_SKIP:${PN} += "already-stripped file-rdeps"
+# The pre-compiled Ascend driver binaries in install_cache reference runtime
+# libraries (libacl_tdt_queue.so, libacl_isp_mpi.so, libascendalog.so) that
+# are only provided by the on-device driver installer, not by any RPM.
+# Disable per-file dep generation so those SONAMEs are not written into the
+# RPM as Requires (which dnf cannot resolve at do_rootfs time). Real runtime
+# dependencies are declared explicitly via RDEPENDS above.
+SKIP_FILEDEPS = "1"
 FILES:${PN} = "${sysconfdir} ${systemd_system_unitdir} /etc /var /fw /usr /home"
 
 do_compile () {
