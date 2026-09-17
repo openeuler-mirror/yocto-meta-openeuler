@@ -252,6 +252,11 @@ EXTRA_OEMESON += "-Dkexec-path=${sbindir}/kexec \
 
 # The 60 seconds is watchdog's default vaule.
 WATCHDOG_TIMEOUT ??= "60"
+# systemd only arms /dev/watchdog when RuntimeWatchdogSec is set; without it
+# nobody ever starts the hardware watchdog, so a kernel panic leaves the board
+# hung until power cycle. Keep the value within the board's watchdog hardware
+# limit, e.g. the BCM2835 watchdog on Raspberry Pi 4 caps at 15 seconds.
+RUNTIME_WATCHDOG_SEC ??= "10"
 
 do_configure:prepend() {
   sed s@:ROOT_HOME:@${ROOT_HOME}@g ${WORKDIR}/basic.conf.in > ${S}/sysusers.d/basic.conf.in
@@ -366,6 +371,11 @@ do_install() {
 
     if [ -n "${WATCHDOG_TIMEOUT}" ]; then
         sed -i -e 's/#RebootWatchdogSec=10min/RebootWatchdogSec=${WATCHDOG_TIMEOUT}/' \
+            ${D}/${sysconfdir}/systemd/system.conf
+    fi
+
+    if [ -n "${RUNTIME_WATCHDOG_SEC}" ]; then
+        sed -i -e 's/#RuntimeWatchdogSec=off/RuntimeWatchdogSec=${RUNTIME_WATCHDOG_SEC}/' \
             ${D}/${sysconfdir}/systemd/system.conf
     fi
 }
