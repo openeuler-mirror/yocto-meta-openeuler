@@ -5,8 +5,7 @@ require recipes-kernel/linux/${@bb.utils.contains('DISTRO_FEATURES', 'mpu_soluti
 
 SRC_URI:remove:hieulerpi1 = " \
     file://src-kernel-${PV}/0001-apply-preempt-RT-patch.patch \
-    file://src-kernel-${PV}/patch-6.6.0-6.0.0-rt20.patch \
-    file://src-kernel-${PV}/patch-6.6.0-6.0.0-rt20.patch-openeuler_defconfig.patch \
+    file://src-kernel-${PV}/patch-6.6.0-6.0.0-rt79.patch \
     file://patches/rt/0001-Revert-mm-convert-mm-s-rss-stats-to-use-atomic-mode.patch \
     file://patches/rt/0002-Revert-percpu_counter-introduce-atomic-mode-for-perc.patch \
 "
