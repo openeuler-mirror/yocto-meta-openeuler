@@ -1,8 +1,8 @@
-FROM hub.oepkgs.net/openeuler/openeuler:24.03 AS builder
+FROM hub.oepkgs.net/openeuler/openeuler:26.09 AS builder
 
 RUN yum -y install cpio wget
 
-ARG BASE_URL=http://121.36.84.172/dailybuild/EBS-openEuler-Mainline/embedded_img/aarch64/3591rc-ibrobot-dev
+ARG BASE_URL=http://121.36.84.172/dailybuild/EBS-openEuler-26.09/embedded_img/aarch64/3591rc-ibrobot-dev
 
 RUN TIMESTAMP=$(curl -s ${BASE_URL}/ | grep -oP 'href="\K\d+(?=/")' | head -1) && \
     wget -c --tries=0 --timeout=30 -O /root/rootfs.cpio.gz "${BASE_URL}/${TIMESTAMP}/openeuler-image-3591rc-${TIMESTAMP}.rootfs.cpio.gz"
@@ -13,7 +13,7 @@ RUN cd /root && \
     gzip -dc /root/rootfs.cpio.gz | cpio -idm && \
     rm -f /root/rootfs.cpio.gz
 
-FROM hub.oepkgs.net/openeuler/openeuler:24.03
+FROM hub.oepkgs.net/openeuler/openeuler:26.09
 
 RUN yum -y install qemu-user-static cpio
 
