@@ -19,7 +19,7 @@ usermod -aG ${USER_NAME} ${BASE_USER}
 mkdir -p /usr/local/Ascend/
 chmod 755 /usr/local
 chmod 755 /usr/local/Ascend/
-git clone -b master --single-branch  --depth 1 https://atomgit.com/openeuler/IB_Robot.git
+git clone -b openEuler-26.09 --single-branch  --depth 1 https://atomgit.com/openeuler/IB_Robot.git
 cd IB_Robot/
 git config --global http.sslVerify false
 ./scripts/setup.sh -y

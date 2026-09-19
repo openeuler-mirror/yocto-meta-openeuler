@@ -11,7 +11,7 @@ def init_environment(){
         env.yoctoRemote = "https://atomgit.com/openeuler/yocto-meta-openeuler.git"
     }
     if (env.yoctoBranch == null || env.yoctoBranch == ""){
-        env.yoctoBranch = "master"
+        env.yoctoBranch = "openEuler-26.09"
     }
     // set test mugen
     if (env.isTest == null || env.isTest == ""){
@@ -68,7 +68,7 @@ def init_environment(){
         env.openEulerImgCreditType = "UserPwd"
     }
     if (env.openEulerImgRemoteDir == null || env.openEulerImgRemoteDir == ""){
-        env.openEulerImgRemoteDir = "/data/logs/packages/master"
+        env.openEulerImgRemoteDir = "/data/logs/packages/openEuler-26.09"
     }
     if (env.openEulerImgRemoteUrl == null || env.openEulerImgRemoteUrl == ""){
         env.openEulerImgRemoteUrl = "https://build-logs.openeuler.openatom.cn:38080/packages"
@@ -94,7 +94,7 @@ def init_environment(){
         env.shareDir = "/home/jenkins/ccache"
     }
     if (env.ciBranch == null || env.ciBranch == ""){
-        env.ciBranch = "master"
+        env.ciBranch = "openEuler-26.09"
     }
     if (env.parallelNum == null || env.parallelNum == ""){
         env.parallelNum = "5"
@@ -103,10 +103,10 @@ def init_environment(){
         env.buildImages = "aarch64/qemu-aarch64 aarch64/hieulerpi1 arm32/qemu-arm riscv/qemu-riscv54 x86-64/x86-64"
     }
     if (env.baseImgUrl == null  || env.baseImgUrl == ""){
-        env.baseImgUrl = "https://build-logs.openeuler.openatom.cn:38080/packages/master"
+        env.baseImgUrl = "https://build-logs.openeuler.openatom.cn:38080/packages/openEuler-26.09"
     }
     if (env.targetImgUrl == null || env.targetImgUrl == ""){
-        env.targetImgUrl = "http://121.36.84.172/dailybuild/EBS-openEuler-Mainline/embedded_img"
+        env.targetImgUrl = "http://121.36.84.172/dailybuild/EBS-openEuler-26.09/embedded_img"
     }
     if (env.archList == null || env.archList == ""){
         env.archList = "aarch64 arm32 x86-64 riscv64"
