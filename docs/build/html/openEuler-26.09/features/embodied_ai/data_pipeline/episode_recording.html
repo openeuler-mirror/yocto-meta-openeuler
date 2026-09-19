@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Episode 录制 &mdash; openEuler Embedded在线文档 25.03 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="数据集转换" href="dataset_conversion_bag_to_lerobot.html" />
+    <link rel="prev" title="遥操作与数据采集" href="teleoperation_and_data_collection.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol.html">协议转换</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference/index.html">推理流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../action_dispatch/index.html">动作分发</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">数据流水线</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">数据流水线概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="teleoperation_and_data_collection.html">遥操作与数据采集</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">Episode 录制</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id1">目的与范围</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id2">录制模式</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">架构概览</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#episode-recorder-server">Episode Recorder Server</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#record-cli-client">Record CLI Client</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#launch">Launch 集成</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#episodic-vs-continuous">对比：Episodic vs Continuous</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="dataset_conversion_bag_to_lerobot.html">数据集转换</a></li>
+<li class="toctree-l6"><a class="reference internal" href="training_integration.html">训练集成</a></li>
+<li class="toctree-l6"><a class="reference internal" href="deployment_feedback_loop.html">部署反馈闭环</a></li>
+<li class="toctree-l6"><a class="reference internal" href="camera_tools.html">相机工具</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../motion_planning/index.html">运动规划</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../hardware/index.html">硬件集成</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../extended_capabilities/index.html">扩展能力</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">数据流水线</a></li>
+      <li class="breadcrumb-item active">Episode 录制</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="episode">
+<h1>Episode 录制<a class="headerlink" href="#episode" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源文件</summary>
+<p>生成此 wiki 页面时使用了以下文件作为上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/README.md">src/action_dispatch/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/package.xml">src/action_dispatch/package.xml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py">src/dataset_tools/dataset_tools/bag_to_lerobot.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py">src/dataset_tools/dataset_tools/episode_recorder.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/record_cli.py">src/dataset_tools/dataset_tools/record_cli.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/package.xml">src/dataset_tools/package.xml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/test/test_bag_to_lerobot.py">src/dataset_tools/test/test_bag_to_lerobot.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/test/test_episode_recorder.py">src/dataset_tools/test/test_episode_recorder.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_builder.py">src/robot_config/robot_config/contract_builder.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_utils.py">src/robot_config/robot_config/contract_utils.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/__init__.py">src/robot_config/robot_config/generators/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/contract.py">src/robot_config/robot_config/generators/contract.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py">src/robot_config/robot_config/launch_builders/recording.py</a></p></li>
+</ul>
+</details>
+<section id="id1">
+<h2>目的与范围<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<p>Episode Recording 为 IB-Robot 框架提供<strong>按触发执行的 episodic 数据采集系统</strong>。用户可以按需录制单次示教（episodes），每个 episode 会保存为独立 ROS 2 bag 文件，并包含语义元数据（任务 prompts）。本文档说明 <code class="docutils literal notranslate"><span class="pre">episode_recorder</span></code> Action Server 和 <code class="docutils literal notranslate"><span class="pre">record_cli</span></code> 交互式客户端。</p>
+<p><strong>相关页面：</strong></p>
+<ul class="simple">
+<li><p>产生待录制示教的遥操作接口，请参见 <a class="reference internal" href="teleoperation_and_data_collection.html"><span class="std std-doc">遥操作与数据采集</span></a>。</p></li>
+<li><p>将录制 bags 转换为 LeRobot datasets，请参见 <a class="reference internal" href="dataset_conversion_bag_to_lerobot.html"><span class="std std-doc">数据集转换</span></a>。</p></li>
+<li><p>continuous（all-in-one）录制模式请参见 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L79-L117">src/robot_config/robot_config/launch_builders/recording.py:79-117</a> 中的 launch 配置。</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id2">
+<h2>录制模式<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>IB-Robot 支持两种录制范式，通过 <code class="docutils literal notranslate"><span class="pre">record_mode</span></code> launch 参数选择：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Mode</p></th>
+<th class="head"><p>Trigger</p></th>
+<th class="head"><p>Output</p></th>
+<th class="head"><p>Use Case</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Continuous</strong></p></td>
+<td><p>Launch time</p></td>
+<td><p>包含全部数据的单个 bag 文件</p></td>
+<td><p>长时数据采集、调试</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Episodic</strong></p></td>
+<td><p>Action Server goal</p></td>
+<td><p>每个 episode 一个 bag，并包含 prompt 元数据</p></td>
+<td><p>用于训练的语义任务数据集</p></td>
+</tr>
+</tbody>
+</table>
+<p>本文重点介绍 <strong>episodic recording</strong>。</p>
+<p><strong>来源：</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L6-L9">src/robot_config/robot_config/launch_builders/recording.py:6-9</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L73-L76">src/robot_config/robot_config/launch_builders/recording.py:73-76</a></p>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h2>架构概览<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<section id="id4">
+<h3>录制系统组件图<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<p>此图将逻辑录制功能关联到代码库中的具体实现实体。</p>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;Launch_System [robot_config]&quot;
+        LAUNCH[&quot;robot.launch.py&lt;br/&gt;(record:=true record_mode:=episodic)&quot;]
+        BUILDER[&quot;generate_episodic_recording_node()&lt;br/&gt;recording.py:120-194&quot;]
+    end
+    
+    subgraph &quot;Episode_Recorder_Node [dataset_tools]&quot;
+        direction TB
+        NODE[&quot;EpisodeRecorderServer&lt;br/&gt;episode_recorder.py:169-677&quot;]
+        
+        ACTION_SRV[&quot;RecordEpisode Action Server&lt;br/&gt;action name: 'record_episode'&quot;]
+        CANCEL_SRV[&quot;Trigger Service&lt;br/&gt;'record_episode/cancel'&quot;]
+        
+        SUBSCRIPTIONS[&quot;Topic Subscriptions&lt;br/&gt;(created from Contract)&quot;]
+        
+        WRITER[&quot;rosbag2_py.SequentialWriter&lt;br/&gt;episode_recorder.py:345-378&quot;]
+        
+        TIMERS[&quot;Episode Timers&lt;br/&gt;- Feedback (0.5Hz)&lt;br/&gt;- Timeout (max_duration_s)&quot;]
+        
+        NODE --&gt; ACTION_SRV
+        NODE --&gt; CANCEL_SRV
+        NODE --&gt; SUBSCRIPTIONS
+        NODE --&gt; WRITER
+        NODE --&gt; TIMERS
+    end
+    
+    subgraph &quot;Record_CLI_Client [dataset_tools]&quot;
+        CLI[&quot;RecordCLI Node&lt;br/&gt;record_cli.py:20-85&quot;]
+        INPUT[&quot;send_goal()&lt;br/&gt;record_cli.py:52-66&quot;]
+        ACTION_CLIENT[&quot;ActionClient&lt;br/&gt;(RecordEpisode)&quot;]
+        
+        CLI --&gt; ACTION_CLIENT
+        INPUT --&gt; CLI
+    end
+    
+    subgraph &quot;Configuration_Layer&quot;
+        ROBOT_CONFIG[&quot;robot_config.yaml&lt;br/&gt;(Single Source of Truth)&quot;]
+        CONTRACT[&quot;Contract.observations&lt;br/&gt;Contract.actions&lt;br/&gt;Contract.rate_hz&quot;]
+        
+        ROBOT_CONFIG --&gt; CONTRACT
+    end
+    
+    subgraph &quot;Output_Filesystem&quot;
+        BAG_DIR[&quot;bag_base_dir/dataset_name/episodes/episode_XXXXXX&quot;]
+        MCAP[&quot;*.mcap file&quot;]
+        METADATA[&quot;metadata.yaml&lt;br/&gt;(ibrobot.operator_prompt)&quot;]
+        
+        BAG_DIR --&gt; MCAP
+        BAG_DIR --&gt; METADATA
+    end
+    
+    LAUNCH --&gt; BUILDER
+    BUILDER --&gt;|spawns| NODE
+    
+    CONTRACT -.-&gt;|topic list| SUBSCRIPTIONS
+    
+    INPUT --&gt;|&quot;prompt text&quot;| ACTION_CLIENT
+    ACTION_CLIENT --&gt;|RecordEpisode.Goal| ACTION_SRV
+    
+    ACTION_SRV --&gt;|feedback| ACTION_CLIENT
+    ACTION_SRV -.-&gt;|controls| WRITER
+    
+    SUBSCRIPTIONS --&gt;|messages| WRITER
+    
+    WRITER --&gt;|writes| BAG_DIR
+    
+    TIMERS -.-&gt;|timeout/feedback| ACTION_SRV
+    </pre><p><strong>分析：</strong> 录制系统遵循 ROS 2 Action Server 模式。<code class="docutils literal notranslate"><span class="pre">EpisodeRecorderServer</span></code> 节点暴露 <code class="docutils literal notranslate"><span class="pre">record_episode</span></code> Action Server，<code class="docutils literal notranslate"><span class="pre">record_cli</span></code> 客户端可触发它。收到 goal 后，server 打开 <code class="docutils literal notranslate"><span class="pre">rosbag2_py.SequentialWriter</span></code>，注册 Contract 中的所有 topics，并将收到的消息直接流式写入磁盘。两个 timers 提供周期性反馈并强制执行最大时长。episode 完成时（由于 timeout、cancel 或 error），server 关闭 writer，并用 operator prompt 修补 <code class="docutils literal notranslate"><span class="pre">metadata.yaml</span></code>。</p>
+<p><strong>来源：</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L1-L68">src/dataset_tools/dataset_tools/episode_recorder.py:1-68</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/record_cli.py#L1-L18">src/dataset_tools/dataset_tools/record_cli.py:1-18</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L120-L144">src/robot_config/robot_config/launch_builders/recording.py:120-144</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="episode-recorder-server">
+<h2>Episode Recorder Server<a class="headerlink" href="#episode-recorder-server" title="Permalink to this heading"></a></h2>
+<section id="contract-driven-subscription">
+<h3>Contract-Driven Subscription<a class="headerlink" href="#contract-driven-subscription" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">EpisodeRecorderServer</span></code> 从 <code class="docutils literal notranslate"><span class="pre">robot_config.yaml</span></code> 加载 topic 配置，并将其作为<strong>单一事实源</strong>。这保证录制和推理使用相同 topic 映射。</p>
+<pre  class="mermaid">
+        graph LR
+    subgraph &quot;Initialization_Sequence&quot;
+        INIT[&quot;EpisodeRecorderServer.__init__()&lt;br/&gt;episode_recorder.py:169-273&quot;]
+        LOAD[&quot;load_robot_config_dict()&lt;br/&gt;loader.py&quot;]
+        CONTRACT[&quot;build_contract_from_robot_config_dict()&lt;br/&gt;contract.py:197-248&quot;]
+        
+        UNION[&quot;Merge observations + tasks + actions&lt;br/&gt;episode_recorder.py:230-236&quot;]
+        
+        SUBS[&quot;_make_sub()&lt;br/&gt;episode_recorder.py:388-439&quot;]
+        
+        INIT --&gt; LOAD
+        LOAD --&gt; CONTRACT
+        CONTRACT --&gt; UNION
+        UNION --&gt; SUBS
+    end
+    
+    subgraph &quot;Subscription_Logic&quot;
+        CB[&quot;_make_sub.cb()&lt;br/&gt;episode_recorder.py:401-436&quot;]
+        CHECK[&quot;Flags.is_recording?&quot;]
+        SERIALIZE[&quot;serialize_message(msg)&quot;]
+        WRITE[&quot;writer.write(topic, data, ts_ns)&lt;br/&gt;episode_recorder.py:425&quot;]
+        
+        SUBS --&gt; CB
+        CB --&gt; CHECK
+        CHECK --&gt;|Yes| SERIALIZE
+        SERIALIZE --&gt; WRITE
+    end
+    </pre><p><strong>关键实现细节：</strong></p>
+<ol class="arabic simple">
+<li><p><strong>Topic List Construction</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L230-L236">src/dataset_tools/dataset_tools/episode_recorder.py:230-236</a>：server 将 Contract 中的 <code class="docutils literal notranslate"><span class="pre">observations</span></code>、<code class="docutils literal notranslate"><span class="pre">tasks</span></code> 和 <code class="docutils literal notranslate"><span class="pre">actions</span></code> 合并为统一的 <code class="docutils literal notranslate"><span class="pre">_topics</span></code> 列表，元素为 <code class="docutils literal notranslate"><span class="pre">(topic,</span> <span class="pre">type,</span> <span class="pre">qos)</span></code> tuples。</p></li>
+<li><p><strong>Persistent Subscriptions</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L238-L242">src/dataset_tools/dataset_tools/episode_recorder.py:238-242</a>：订阅在节点启动时创建一次，并跨 episodes 持续存在，避免 DDS 重新协商开销。</p></li>
+<li><p><strong>Conditional Write</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L401-L436">src/dataset_tools/dataset_tools/episode_recorder.py:401-436</a>：订阅回调在写入前检查 <code class="docutils literal notranslate"><span class="pre">Flags.is_recording</span></code> 标志。这让订阅可在 episodes 之间保持活跃，而不会产生无效数据。</p></li>
+<li><p><strong>Timestamp Policy</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L419-L425">src/dataset_tools/dataset_tools/episode_recorder.py:419-425</a>：使用到达时间（<code class="docutils literal notranslate"><span class="pre">get_clock().now().nanoseconds</span></code>）作为写入时间戳，保证确定性排序。</p></li>
+</ol>
+<p><strong>来源：</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L169-L273">src/dataset_tools/dataset_tools/episode_recorder.py:169-273</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L230-L242">src/dataset_tools/dataset_tools/episode_recorder.py:230-242</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L388-L439">src/dataset_tools/dataset_tools/episode_recorder.py:388-439</a></p>
+</section>
+<hr class="docutils" />
+<section id="action-server">
+<h3>Action Server 生命周期<a class="headerlink" href="#action-server" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        stateDiagram-v2
+    [*] --&gt; Idle: Node starts
+    
+    Idle --&gt; GoalEvaluation: handle_goal()&lt;br/&gt;episode_recorder.py#58;277-288
+    
+    GoalEvaluation --&gt; Idle: REJECT (already recording)
+    GoalEvaluation --&gt; Executing: ACCEPT
+    
+    Executing --&gt; WriterOpen: _open_writer()&lt;br/&gt;episode_recorder.py#58;345-378
+    WriterOpen --&gt; TopicRegistration: _register_topic()&lt;br/&gt;episode_recorder.py#58;380-386
+    TopicRegistration --&gt; TimersStart: _start_timers()&lt;br/&gt;episode_recorder.py#58;441-499
+    
+    TimersStart --&gt; Recording: Set Flags.is_recording=True
+    
+    Recording --&gt; Recording: Write messages via callbacks
+    
+    Recording --&gt; Stopping: execute_callback() loop exits&lt;br/&gt;(Cancel/Timeout/Error)
+    
+    Stopping --&gt; WriterClose: _stop_recording()&lt;br/&gt;episode_recorder.py#58;522-549
+    WriterClose --&gt; MetadataPatch: _write_episode_metadata()&lt;br/&gt;episode_recorder.py#58;641-677
+    MetadataPatch --&gt; ResultEmit: succeed/canceled/abort
+    
+    ResultEmit --&gt; Idle: Ready for next episode
+    </pre><p><strong>Goal Callback</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L277-L288">src/dataset_tools/dataset_tools/episode_recorder.py:277-288</a>：如果 <code class="docutils literal notranslate"><span class="pre">Flags.is_recording</span></code> 为 <code class="docutils literal notranslate"><span class="pre">True</span></code>，拒绝新 goal，防止并发 episodes。</p>
+<p><strong>Execute Callback</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L551-L637">src/dataset_tools/dataset_tools/episode_recorder.py:551-637</a>：主编排循环：</p>
+<ol class="arabic simple">
+<li><p><strong>Setup Phase</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L564-L604">src/dataset_tools/dataset_tools/episode_recorder.py:564-604</a>：使用 <code class="docutils literal notranslate"><span class="pre">_unique_bag_dir()</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L501-L520">src/dataset_tools/dataset_tools/episode_recorder.py:501-520</a> 生成唯一目录，打开 MCAP writer，并注册 topics。</p></li>
+<li><p><strong>Recording Phase</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L606-L616">src/dataset_tools/dataset_tools/episode_recorder.py:606-616</a>：阻塞等待 event，同时检查 <code class="docutils literal notranslate"><span class="pre">goal_handle.is_cancel_requested</span></code>。</p></li>
+<li><p><strong>Finalization Phase</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L619-L636">src/dataset_tools/dataset_tools/episode_recorder.py:619-636</a>：调用 <code class="docutils literal notranslate"><span class="pre">_stop_recording()</span></code> 关闭 writer、销毁 timers，并修补 metadata。</p></li>
+</ol>
+<p><strong>来源：</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L277-L288">src/dataset_tools/dataset_tools/episode_recorder.py:277-288</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L551-L637">src/dataset_tools/dataset_tools/episode_recorder.py:551-637</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L501-L520">src/dataset_tools/dataset_tools/episode_recorder.py:501-520</a></p>
+</section>
+<hr class="docutils" />
+<section id="id5">
+<h3>元数据嵌入<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<p>server 将 operator prompt 嵌入 bag 的 <code class="docutils literal notranslate"><span class="pre">metadata.yaml</span></code> 文件，供下游数据集转换使用。</p>
+<p><strong>实现</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L641-L677">src/dataset_tools/dataset_tools/episode_recorder.py:641-677</a>：
+<code class="docutils literal notranslate"><span class="pre">_write_episode_metadata</span></code> 函数将用户 prompt 修补到 MCAP metadata 中。它包含 retry loop <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L651-L677">src/dataset_tools/dataset_tools/episode_recorder.py:651-677</a>，用于处理 <code class="docutils literal notranslate"><span class="pre">rosbag2</span></code> writer 可能带来的文件系统锁延迟。</p>
+<p><strong>Metadata Structure:</strong>
+prompt 作为 <code class="docutils literal notranslate"><span class="pre">ibrobot.operator_prompt</span></code> 存储在 <code class="docutils literal notranslate"><span class="pre">custom_data</span></code> key 下 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L666">src/dataset_tools/dataset_tools/episode_recorder.py:666</a>。</p>
+<p><strong>来源：</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L641-L677">src/dataset_tools/dataset_tools/episode_recorder.py:641-677</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L104-L105">src/dataset_tools/dataset_tools/episode_recorder.py:104-105</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="record-cli-client">
+<h2>Record CLI Client<a class="headerlink" href="#record-cli-client" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">record_cli</span></code> 可执行文件提供触发录制的交互式接口。</p>
+<p><strong>Interactive Loop</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/record_cli.py#L118-L127">src/dataset_tools/dataset_tools/record_cli.py:118-127</a>：</p>
+<ol class="arabic simple">
+<li><p>可选地在新 episode 前重置 <code class="docutils literal notranslate"><span class="pre">action_dispatcher</span></code> 或 policy state <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/record_cli.py#L118-L127">src/dataset_tools/dataset_tools/record_cli.py:118-127</a>。</p></li>
+<li><p>提示用户输入任务描述（prompt）。</p></li>
+<li><p>向 <code class="docutils literal notranslate"><span class="pre">record_episode</span></code> Action Server 发送 goal <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/record_cli.py#L62-L65">src/dataset_tools/dataset_tools/record_cli.py:62-65</a>。</p></li>
+<li><p>监听 Enter 或 signal，并通过 <code class="docutils literal notranslate"><span class="pre">record_episode/cancel</span></code> service 取消录制 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/record_cli.py#L99-L107">src/dataset_tools/dataset_tools/record_cli.py:99-107</a>。</p></li>
+</ol>
+<p><strong>来源：</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/record_cli.py#L20-L85">src/dataset_tools/dataset_tools/record_cli.py:20-85</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/record_cli.py#L118-L127">src/dataset_tools/dataset_tools/record_cli.py:118-127</a></p>
+</section>
+<hr class="docutils" />
+<section id="launch">
+<h2>Launch 集成<a class="headerlink" href="#launch" title="Permalink to this heading"></a></h2>
+<p>录制系统通过 <code class="docutils literal notranslate"><span class="pre">generate_recording_nodes</span></code> 与机器人 launch 系统集成。</p>
+<p><strong>Launch Arguments:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">record:=true</span></code>：启用录制节点。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">record_mode:=episodic</span></code>：选择 <code class="docutils literal notranslate"><span class="pre">episode_recorder</span></code> Action Server 模式 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L73-L74">src/robot_config/robot_config/launch_builders/recording.py:73-74</a>。</p></li>
+</ul>
+<p><strong>Behavior:</strong>
+在 episodic 模式下，builder 从 <code class="docutils literal notranslate"><span class="pre">robot_config.yaml</span></code> 的 <code class="docutils literal notranslate"><span class="pre">recording</span></code> section 中提取 <code class="docutils literal notranslate"><span class="pre">bag_base_dir</span></code>、<code class="docutils literal notranslate"><span class="pre">dataset_name</span></code> 和 <code class="docutils literal notranslate"><span class="pre">max_cache_size</span></code> 等参数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L154-L175">src/robot_config/robot_config/launch_builders/recording.py:154-175</a>。随后从 <code class="docutils literal notranslate"><span class="pre">dataset_tools</span></code> 包启动 <code class="docutils literal notranslate"><span class="pre">episode_recorder</span></code> 节点 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L180-L194">src/robot_config/robot_config/launch_builders/recording.py:180-194</a>。</p>
+<p><strong>来源：</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L38-L76">src/robot_config/robot_config/launch_builders/recording.py:38-76</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L120-L194">src/robot_config/robot_config/launch_builders/recording.py:120-194</a></p>
+</section>
+<hr class="docutils" />
+<section id="episodic-vs-continuous">
+<h2>对比：Episodic vs Continuous<a class="headerlink" href="#episodic-vs-continuous" title="Permalink to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Aspect</p></th>
+<th class="head"><p>Episodic Mode</p></th>
+<th class="head"><p>Continuous Mode</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Trigger</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RecordEpisode</span></code> Action Goal</p></td>
+<td><p>Launch time（automatic）</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Interface</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">record_cli</span></code>（interactive）</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ros2</span> <span class="pre">bag</span> <span class="pre">record</span></code>（passive）</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Output</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">episode_XXXXXX/</span></code>（directory）</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">robot_timestamp.mcap</span></code>（file）</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Metadata</strong></p></td>
+<td><p>每个 episode 的 operator prompt</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Use Case</strong></p></td>
+<td><p>ML Training Datasets</p></td>
+<td><p>System Debugging</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Implementation</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">EpisodeRecorderServer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ExecuteProcess</span></code>（standard ROS 2）</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源：</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L7-L9">src/robot_config/robot_config/launch_builders/recording.py:7-9</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L79-L117">src/robot_config/robot_config/launch_builders/recording.py:79-117</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L120-L144">src/robot_config/robot_config/launch_builders/recording.py:120-144</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="teleoperation_and_data_collection.html" class="btn btn-neutral float-left" title="遥操作与数据采集" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dataset_conversion_bag_to_lerobot.html" class="btn btn-neutral float-right" title="数据集转换" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-26.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/features/embodied_ai/data_pipeline/episode_recording.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/features/embodied_ai/data_pipeline/episode_recording.html">openEuler-26.03</a></dd>
+      <dd><a href="episode_recording.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

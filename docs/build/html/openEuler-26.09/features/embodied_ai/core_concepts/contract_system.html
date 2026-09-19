@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>契约系统 &mdash; openEuler Embedded在线文档 25.03 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="控制模式架构" href="control_mode_architecture.html" />
+    <link rel="prev" title="单一事实源模式" href="single_source_of_truth_pattern.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">核心概念</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">核心概念概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="single_source_of_truth_pattern.html">单一事实源模式</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">契约系统</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">目的与范围</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#contract">Contract 架构概览</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">Contract 结构</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#observation-specifications">Observation Specifications</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#action-specifications">Action Specifications</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#bag-lerobot">数据流：从 Bag 到 LeRobot</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id4">验证与安全</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="control_mode_architecture.html">控制模式架构</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol.html">协议转换</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference/index.html">推理流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../action_dispatch/index.html">动作分发</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_pipeline/index.html">数据流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../motion_planning/index.html">运动规划</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../hardware/index.html">硬件集成</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../extended_capabilities/index.html">扩展能力</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">核心概念</a></li>
+      <li class="breadcrumb-item active">契约系统</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>契约系统<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源文件</summary>
+<p>以下文件被用作生成本 wiki 页面时的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py">src/dataset_tools/dataset_tools/bag_to_lerobot.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py">src/dataset_tools/dataset_tools/episode_recorder.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/README.en.md">src/robot_config/README.en.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/README.md">src/robot_config/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_builder.py">src/robot_config/robot_config/contract_builder.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_utils.py">src/robot_config/robot_config/contract_utils.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/__init__.py">src/robot_config/robot_config/generators/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/contract.py">src/robot_config/robot_config/generators/contract.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py">src/robot_config/robot_config/launch_builders/recording.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/utils.py">src/robot_config/robot_config/utils.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/test/test_joint_conversion.py">src/robot_config/test/test_joint_conversion.py</a></p></li>
+</ul>
+</details>
+<section id="id2">
+<h2>目的与范围<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>Contract System 是 IB-Robot 的架构抽象，用于定义系统的 <strong>observations</strong>，传感器输入，和 <strong>actions</strong>，机器人输出，以及它们从 ROS 到 tensor 的映射。它作为 Single Source of Truth，保证从数据采集、训练到部署的整条流水线中数据格式一致。</p>
+<p>本页覆盖：</p>
+<ul class="simple">
+<li><p>Contract 定义结构和 YAML 语法</p></li>
+<li><p>Observation 和 action specifications</p></li>
+<li><p>Peripheral 集成与 metadata 传播</p></li>
+<li><p>对齐策略和 QoS settings</p></li>
+</ul>
+<p>机器人配置如何使用 contracts，见 <a class="reference internal" href="../configuration/robot_configuration_files.html"><span class="std std-doc">机器人配置文件</span></a>。实际 ROS-to-tensor 转换实现，见 <a class="reference internal" href="../protocol.html"><span class="std std-doc">协议转换</span></a>。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_builder.py#L12-L24">src/robot_config/robot_config/contract_builder.py:12-24</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/contract.py#L24-L52">src/robot_config/robot_config/generators/contract.py:24-52</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L10-L12">src/dataset_tools/dataset_tools/episode_recorder.py:10-12</a></p>
+</section>
+<hr class="docutils" />
+<section id="contract">
+<h2>Contract 架构概览<a class="headerlink" href="#contract" title="Permalink to this heading"></a></h2>
+<p>Contract 抽象位于 IB-Robot 数据一致性保证的核心。通过在 YAML 中一次定义 observation-action 接口，所有下游消费者，recorder、dataset converter、inference nodes，都会自动使用相同处理逻辑。</p>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;Contract_Definition_Layer&quot;
+        YAML[&quot;robot_config YAML&lt;br/&gt;(Single_Source_of_Truth)&quot;]
+        CONTRACT[&quot;contract_section&quot;]
+        OBS[&quot;observations[]&quot;]
+        ACT[&quot;actions[]&quot;]
+        PERIPH[&quot;peripherals[]&quot;]
+        
+        YAML --&gt; CONTRACT
+        CONTRACT --&gt; OBS
+        CONTRACT --&gt; ACT
+        YAML --&gt; PERIPH
+    end
+    
+    subgraph &quot;Contract_Loading_Layer&quot;
+        LOADER[&quot;robot_config.loader&lt;br/&gt;build_contract_from_robot_config_dict()&quot;]
+        CONFIG[&quot;Contract_dataclass&quot;]
+        OBS_OBJ[&quot;ObservationSpec[]&quot;]
+        ACT_OBJ[&quot;ActionSpec[]&quot;]
+        
+        CONTRACT --&gt; LOADER
+        LOADER --&gt; CONFIG
+        CONFIG --&gt; OBS_OBJ
+        CONFIG --&gt; ACT_OBJ
+    end
+    
+    subgraph &quot;Contract_Consumption_Layer&quot;
+        RECORDER[&quot;episode_recorder_node&lt;br/&gt;subscribes_to_topics&quot;]
+        BAG2LR[&quot;bag_to_lerobot.py&lt;br/&gt;decode_+_resample&quot;]
+        POLICY[&quot;lerobot_policy_node&lt;br/&gt;StreamBuffer_creation&quot;]
+        
+        OBS_OBJ --&gt; RECORDER
+        OBS_OBJ --&gt; BAG2LR
+        OBS_OBJ --&gt; POLICY
+        
+        ACT_OBJ --&gt; RECORDER
+        ACT_OBJ --&gt; BAG2LR
+        ACT_OBJ --&gt; POLICY
+    end
+    
+    PERIPH -.-&gt;|&quot;_resolve_peripheral_references&quot;| OBS_OBJ
+    </pre><p><strong>图</strong>：Contract system architecture，展示 definition、loading 和 consumption layers。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/contract.py#L123-L170">src/robot_config/robot_config/generators/contract.py:123-170</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/contract.py#L197-L210">src/robot_config/robot_config/generators/contract.py:197-210</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L94-L117">src/dataset_tools/dataset_tools/bag_to_lerobot.py:94-117</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L128-L143">src/dataset_tools/dataset_tools/episode_recorder.py:128-143</a></p>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h2>Contract 结构<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<p>Contract 定义在 robot configuration YAML 的 <code class="docutils literal notranslate"><span class="pre">robot.contract</span></code> section 中。系统使用 <code class="docutils literal notranslate"><span class="pre">Contract</span></code> dataclass 在运行时管理这些定义。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>字段</p></th>
+<th class="head"><p>类型</p></th>
+<th class="head"><p>必需</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rate_hz</span></code></p></td>
+<td><p>float</p></td>
+<td><p>Yes</p></td>
+<td><p>录制/推理频率，单位 Hz，别名为 <code class="docutils literal notranslate"><span class="pre">fps</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_duration_s</span></code></p></td>
+<td><p>float</p></td>
+<td><p>Yes</p></td>
+<td><p>最大 episode 时长，单位秒，默认 30.0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">observations</span></code></p></td>
+<td><p>list</p></td>
+<td><p>Yes</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ObservationSpec</span></code> objects 列表</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">actions</span></code></p></td>
+<td><p>list</p></td>
+<td><p>Yes</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ActionSpec</span></code> objects 列表</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">timestamp_source</span></code></p></td>
+<td><p>string</p></td>
+<td><p>No</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">receive</span></code>，默认，或 <code class="docutils literal notranslate"><span class="pre">header</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Contract 结构示例</strong>：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">contract</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">rate_hz</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">  </span><span class="nt">max_duration_s</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">90.0</span>
+<span class="w">  </span><span class="nt">timestamp_source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">receive</span>
+<span class="w">  </span>
+<span class="w">  </span><span class="nt">observations</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">observation.images.top</span>
+<span class="w">      </span><span class="nt">topic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/camera/top/image_raw</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sensor_msgs/msg/Image</span>
+<span class="w">      </span><span class="nt">peripheral</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">top</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">observation.state</span>
+<span class="w">      </span><span class="nt">topic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/joint_states</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sensor_msgs/msg/JointState</span>
+<span class="w">  </span>
+<span class="w">  </span><span class="nt">actions</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">action</span>
+<span class="w">      </span><span class="nt">publish</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">topic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/arm_position_controller/commands</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">std_msgs/msg/Float64MultiArray</span>
+</pre></div>
+</div>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/contract.py#L106-L120">src/robot_config/robot_config/generators/contract.py:106-120</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_builder.py#L49-L57">src/robot_config/robot_config/contract_builder.py:49-57</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_utils.py#L83-L97">src/robot_config/robot_config/contract_utils.py:83-97</a></p>
+</section>
+<hr class="docutils" />
+<section id="observation-specifications">
+<h2>Observation Specifications<a class="headerlink" href="#observation-specifications" title="Permalink to this heading"></a></h2>
+<p>每个 observation 定义一个 ROS topic 如何转换为 tensor。<code class="docutils literal notranslate"><span class="pre">ObservationSpec</span></code> class 封装这些规则。</p>
+<section id="observation-schema">
+<h3>Observation Schema<a class="headerlink" href="#observation-schema" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph LR
+    OBS[&quot;ObservationSpec&quot;]
+    
+    OBS --&gt; KEY[&quot;key: str&lt;br/&gt;(e.g., 'observation.images.top')&quot;]
+    OBS --&gt; TOPIC[&quot;topic: str&lt;br/&gt;(ROS_topic_path)&quot;]
+    OBS --&gt; TYPE[&quot;type: str&lt;br/&gt;(ROS_message_type)&quot;]
+    OBS --&gt; PERIPH[&quot;peripheral: str&lt;br/&gt;(references_peripherals[])&quot;]
+    OBS --&gt; SELECTOR[&quot;selector: dict&lt;br/&gt;(names: [])&quot;]
+    OBS --&gt; IMAGE[&quot;image: dict&lt;br/&gt;(resize: [H, W], encoding)&quot;]
+    OBS --&gt; ALIGN[&quot;align: dict&lt;br/&gt;(strategy, stamp, tol_ms)&quot;]
+    OBS --&gt; QOS[&quot;qos: dict&lt;br/&gt;(reliability, depth)&quot;]
+    </pre><p><strong>图</strong>：Observation specification schema，展示内部 <code class="docutils literal notranslate"><span class="pre">ObservationSpec</span></code> attributes。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/contract.py#L61-L74">src/robot_config/robot_config/generators/contract.py:61-74</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_builder.py#L59-L71">src/robot_config/robot_config/contract_builder.py:59-71</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_utils.py#L43-L55">src/robot_config/robot_config/contract_utils.py:43-55</a></p>
+</section>
+<section id="image-observations-peripheral-metadata">
+<h3>Image Observations 与 Peripheral Metadata<a class="headerlink" href="#image-observations-peripheral-metadata" title="Permalink to this heading"></a></h3>
+<p>Image observations 可以引用 peripherals，以继承硬件专属 metadata，例如 native resolution 和 pixel formats。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">observations</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">observation.images.top</span>
+<span class="w">    </span><span class="nt">topic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/camera/top/image_raw</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sensor_msgs/msg/Image</span>
+<span class="w">    </span><span class="nt">peripheral</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">top</span><span class="w">  </span><span class="c1"># References peripherals[name=&#39;top&#39;]</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">resize</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">480</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">640</span><span class="p p-Indicator">]</span><span class="w">  </span><span class="c1"># [height, width]</span>
+</pre></div>
+</div>
+<p>当引用 peripheral 时，<code class="docutils literal notranslate"><span class="pre">_resolve_peripheral_references</span></code> 函数会根据该 peripheral 的 <code class="docutils literal notranslate"><span class="pre">height</span></code>、<code class="docutils literal notranslate"><span class="pre">width</span></code> 和 <code class="docutils literal notranslate"><span class="pre">pixel_format</span></code> 自动填充缺失的 <code class="docutils literal notranslate"><span class="pre">image.resize</span></code> 与 <code class="docutils literal notranslate"><span class="pre">image.encoding</span></code> 字段。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/contract.py#L151-L170">src/robot_config/robot_config/generators/contract.py:151-170</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_builder.py#L60-L71">src/robot_config/robot_config/contract_builder.py:60-71</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="action-specifications">
+<h2>Action Specifications<a class="headerlink" href="#action-specifications" title="Permalink to this heading"></a></h2>
+<p>Actions 定义模型输出 tensors 如何通过 <code class="docutils literal notranslate"><span class="pre">ActionSpec</span></code> 映射到 ROS topics。</p>
+<section id="action-schema">
+<h3>Action Schema<a class="headerlink" href="#action-schema" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph LR
+    ACT[&quot;ActionSpec&quot;]
+    
+    ACT --&gt; KEY[&quot;key: str&lt;br/&gt;(e.g., 'action')&quot;]
+    ACT --&gt; SELECTOR[&quot;selector: dict&lt;br/&gt;(names: [])&quot;]
+    ACT --&gt; FROM_TENSOR[&quot;from_tensor: dict&quot;]
+    ACT --&gt; PUBLISH_TOPIC[&quot;publish_topic: str&quot;]
+    ACT --&gt; PUBLISH_TYPE[&quot;type: str&quot;]
+    ACT --&gt; STRATEGY[&quot;publish_strategy: dict&quot;]
+    ACT --&gt; SAFETY[&quot;safety_behavior: str&lt;br/&gt;('hold' | 'zeros')&quot;]
+    </pre><p><strong>图</strong>：Action specification schema，将 <code class="docutils literal notranslate"><span class="pre">ActionSpec</span></code> attributes 映射到 YAML fields。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/contract.py#L76-L90">src/robot_config/robot_config/generators/contract.py:76-90</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_builder.py#L73-L81">src/robot_config/robot_config/contract_builder.py:73-81</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_utils.py#L59-L69">src/robot_config/robot_config/contract_utils.py:59-69</a></p>
+</section>
+<section id="action">
+<h3>Action 分发<a class="headerlink" href="#action" title="Permalink to this heading"></a></h3>
+<p>系统支持将单个 action tensor 拆分到多个 ROS topics。当不同 joint groups，例如 arm 与 gripper，由不同 ROS controllers 处理时，这很常见。</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">actions</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">action</span>
+<span class="w">    </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">names</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;action.0&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;action.1&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;action.2&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;action.3&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;action.4&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">publish</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">topic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/arm_position_controller/commands</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">std_msgs/msg/Float64MultiArray</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">action</span>
+<span class="w">    </span><span class="nt">selector</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">names</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;action.5&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">publish</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">topic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/gripper_position_controller/commands</span>
+<span class="w">      </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">std_msgs/msg/Float64MultiArray</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">tensormsg</span></code> converter 使用这些 selectors 在发布到对应 topics 前切分输入 tensor。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/contract.py#L76-L90">src/robot_config/robot_config/generators/contract.py:76-90</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L101-L105">src/dataset_tools/dataset_tools/bag_to_lerobot.py:101-105</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="bag-lerobot">
+<h2>数据流：从 Bag 到 LeRobot<a class="headerlink" href="#bag-lerobot" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">bag_to_lerobot</span></code> tool 展示 Contract system 的实际作用，它将录制的 ROS bags 转换为可训练数据集。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>步骤</p></th>
+<th class="head"><p>Function/Class</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1. Load Contract</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">load_contract</span></code></p></td>
+<td><p>从 <code class="docutils literal notranslate"><span class="pre">robot_config.yaml</span></code> 加载 Single Source of Truth。</p></td>
+</tr>
+<tr class="row-odd"><td><p>2. Scan Bag</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_Stream</span></code></p></td>
+<td><p>为每个 contract topic 累积原始 ROS messages。</p></td>
+</tr>
+<tr class="row-even"><td><p>3. Decode</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">decode_value</span></code></p></td>
+<td><p>使用 <code class="docutils literal notranslate"><span class="pre">tensormsg</span></code> 将 ROS messages 转换为 contract-native forms，例如 HWC arrays。</p></td>
+</tr>
+<tr class="row-odd"><td><p>4. Resample</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">resample</span></code></p></td>
+<td><p>使用选定 timestamps 将所有 streams 对齐到 contract 的 <code class="docutils literal notranslate"><span class="pre">rate_hz</span></code>。</p></td>
+</tr>
+<tr class="row-even"><td><p>5. Export</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LeRobotDataset</span></code></p></td>
+<td><p>将最终对齐数据写入 Parquet 和 MP4/PNG 文件。</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L12-L18">src/dataset_tools/dataset_tools/bag_to_lerobot.py:12-18</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L121-L142">src/dataset_tools/dataset_tools/bag_to_lerobot.py:121-142</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L94-L113">src/dataset_tools/dataset_tools/bag_to_lerobot.py:94-113</a></p>
+</section>
+<hr class="docutils" />
+<section id="id4">
+<h2>验证与安全<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
+<p>Contract System 包含启动前验证，用于在系统启动前捕获架构错误。</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">validate_control_mode_config</span></code></strong>：检查引用的 models 是否存在，以及每个 observation 的 peripheral 是否在 <code class="docutils literal notranslate"><span class="pre">peripherals</span></code> section 中定义。<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_builder.py#L12-L71">src/robot_config/robot_config/contract_builder.py:12-71</a></p></li>
+<li><p><strong>Safety Behaviors</strong>：Actions 支持 <code class="docutils literal notranslate"><span class="pre">safety_behavior</span></code>，即 <code class="docutils literal notranslate"><span class="pre">hold</span></code> 或 <code class="docutils literal notranslate"><span class="pre">zeros</span></code>。如果 inference service 超时或失败，系统会回退到该行为以保护硬件。<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/contract.py#L78-L81">src/robot_config/robot_config/generators/contract.py:78-81</a></p></li>
+<li><p><strong>Fingerprinting</strong>：<code class="docutils literal notranslate"><span class="pre">contract_fingerprint</span></code> 生成 contract configuration 的 hash。它被存储在 bag metadata 中，确保 dataset converter 使用录制时完全相同的 contract。<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L97-L98">src/dataset_tools/dataset_tools/episode_recorder.py:97-98</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L182-L194">src/dataset_tools/dataset_tools/bag_to_lerobot.py:182-194</a></p></li>
+</ul>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_builder.py#L12-L107">src/robot_config/robot_config/contract_builder.py:12-107</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/contract.py#L76-L90">src/robot_config/robot_config/generators/contract.py:76-90</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L139-L143">src/dataset_tools/dataset_tools/episode_recorder.py:139-143</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="single_source_of_truth_pattern.html" class="btn btn-neutral float-left" title="单一事实源模式" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="control_mode_architecture.html" class="btn btn-neutral float-right" title="控制模式架构" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-26.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/features/embodied_ai/core_concepts/contract_system.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/features/embodied_ai/core_concepts/contract_system.html">openEuler-26.03</a></dd>
+      <dd><a href="contract_system.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

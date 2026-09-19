@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Topic 与 Action 执行器 &mdash; openEuler Embedded在线文档 25.03 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="数据流水线" href="../data_pipeline/index.html" />
+    <link rel="prev" title="时序平滑" href="temporal_smoothing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol.html">协议转换</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference/index.html">推理流水线</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">动作分发</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">动作分发概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="action_dispatcher_node.html">动作分发器节点</a></li>
+<li class="toctree-l6"><a class="reference internal" href="temporal_smoothing.html">时序平滑</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">Topic 与 Action 执行器</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id1">执行器架构概览</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#topicexecutor">TopicExecutor：高频位置控制</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#actionexecutor">ActionExecutor：轨迹控制</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id8">性能追踪</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id9">安全与错误处理</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id11">总结</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../data_pipeline/index.html">数据流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../motion_planning/index.html">运动规划</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../hardware/index.html">硬件集成</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../extended_capabilities/index.html">扩展能力</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">动作分发</a></li>
+      <li class="breadcrumb-item active">Topic 与 Action 执行器</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="topic-action">
+<h1>Topic 与 Action 执行器<a class="headerlink" href="#topic-action" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源文件</summary>
+<p>生成此 wiki 页面时使用了以下文件作为上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/scripts/openharmony/build_ibrobot_oh_custom.sh">scripts/openharmony/build_ibrobot_oh_custom.sh</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/action_dispatcher_node.py">src/action_dispatch/action_dispatch/action_dispatcher_node.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/topic_executor.py">src/action_dispatch/action_dispatch/topic_executor.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/rknn/__init__.py">src/inference_service/inference_service/core/rknn/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/lerobot_policy_node.py">src/inference_service/inference_service/lerobot_policy_node.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/setup.py">src/inference_service/setup.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/config/robots/so101_single_arm.yaml">src/robot_config/config/robots/so101_single_arm.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/execution.py">src/robot_config/robot_config/launch_builders/execution.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/base_adapter.py">src/robot_config/robot_config/launch_builders/sim_backend/base_adapter.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py">src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py">src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/simulation.py">src/robot_config/robot_config/launch_builders/simulation.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/test/test_sim_backend.py">src/robot_config/test/test_sim_backend.py</a></p></li>
+</ul>
+</details>
+<p><strong>目的</strong>：本文档说明 <code class="docutils literal notranslate"><span class="pre">action_dispatch</span></code> 包中的执行器层，该层把抽象动作 tensor 转换为具体 ROS 2 控制命令。两类执行器 <code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code> 和 <code class="docutils literal notranslate"><span class="pre">ActionExecutor</span></code> 提供不同的机器人硬件控制机制，并分别针对特定控制范式优化。</p>
+<p><strong>范围</strong>：本文覆盖执行器架构、实现细节、消息路由，以及与动作分发器控制循环的集成。整体分发架构请参见 <a class="reference internal" href="action_dispatcher_node.html"><span class="std std-doc">动作分发器节点</span></a>。动作队列管理和平滑请参见 <a class="reference internal" href="temporal_smoothing.html"><span class="std std-doc">时序平滑</span></a>。</p>
+<hr class="docutils" />
+<section id="id1">
+<h2>执行器架构概览<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<p>执行器层位于动作分发器控制循环和 ROS 2 控制系统之间，提供一个抽象层，将动作生成与硬件通信协议隔离。</p>
+<section id="id2">
+<h3>执行器职责图<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;Action Dispatcher Control Loop&quot;
+        Queue[&quot;collections.deque / TemporalSmootherManager&quot;]
+        ControlLoop[&quot;ActionDispatcherNode._control_loop (100 Hz)&quot;]
+        
+        Queue --&gt;|&quot;pop action (Nx7 array)&quot;| ControlLoop
+    end
+    
+    subgraph &quot;Executor Layer&quot;
+        Executor[&quot;TopicExecutor / ActionExecutor&quot;]
+        Router[&quot;Contract-Driven Router&quot;]
+        
+        ControlLoop --&gt;|&quot;TopicExecutor.execute(action)&quot;| Executor
+        Executor --&gt; Router
+    end
+    
+    subgraph &quot;ROS 2 Control Interface&quot;
+        TopicPub[&quot;Topic Publishers&quot;]
+        ActionClient[&quot;Action Clients&quot;]
+        
+        Router --&gt;|&quot;TopicExecutor&quot;| TopicPub
+        Router --&gt;|&quot;ActionExecutor&quot;| ActionClient
+        
+        TopicPub --&gt;|&quot;Float64MultiArray&quot;| JointCmd[&quot;/joint_commands&quot;]
+        TopicPub --&gt;|&quot;JointTrajectory&quot;| TrajTopic[&quot;/arm_controller/joint_trajectory&quot;]
+        ActionClient --&gt;|&quot;FollowJointTrajectory&quot;| TrajAction[&quot;/arm_controller/follow_joint_trajectory&quot;]
+    end
+    
+    subgraph &quot;ros2_control Layer&quot;
+        Controllers[&quot;Position Controllers / Trajectory Controllers&quot;]
+        
+        JointCmd --&gt; Controllers
+        TrajTopic --&gt; Controllers
+        TrajAction --&gt; Controllers
+    end
+    
+    Controllers --&gt; Hardware[&quot;Hardware Interface&quot;]
+    </pre><p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L43-L52">src/action_dispatch/action_dispatch/action_dispatcher_node.py:43-52</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/topic_executor.py#L20-L25">src/action_dispatch/action_dispatch/topic_executor.py:20-25</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="topicexecutor">
+<h2>TopicExecutor：高频位置控制<a class="headerlink" href="#topicexecutor" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code> 通过按高频（通常 100 Hz）向 ROS 2 topics 发布单个动作向量，实现流式位置控制。它是端到端策略模型（ACT、Diffusion Policy）输出动作 chunk 时的默认执行器。</p>
+<section id="id3">
+<h3>设计原则<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Aspect</p></th>
+<th class="head"><p>Implementation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Control Frequency</strong></p></td>
+<td><p>100 Hz，可通过 <code class="docutils literal notranslate"><span class="pre">control_frequency</span></code> 配置</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Message Type</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">std_msgs/Float64MultiArray</span></code> 或 <code class="docutils literal notranslate"><span class="pre">trajectory_msgs/JointTrajectory</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Latency</strong></p></td>
+<td><p>很低，单次 topic publish</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Use Case</strong></p></td>
+<td><p>端到端策略推理、遥操作</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Safety</strong></p></td>
+<td><p>队列为空时保持最后一个动作</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/topic_executor.py#L41-L46">src/action_dispatch/action_dispatch/topic_executor.py:41-46</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L58-L61">src/action_dispatch/action_dispatch/action_dispatcher_node.py:58-61</a></p>
+</section>
+<section id="id4">
+<h3>消息路由策略<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<p>执行器使用 <code class="docutils literal notranslate"><span class="pre">Contract</span></code> 系统将动作 tensor 维度映射到具体控制器 topics：</p>
+<pre  class="mermaid">
+        graph LR
+    ActionTensor[&quot;Action Tensor&lt;br/&gt;(N, 7)&quot;]
+    Specs[&quot;ActionSpec List&lt;br/&gt;from self.action_specs&quot;]
+    
+    ActionTensor --&gt; Router[&quot;TopicExecutor.execute&quot;]
+    Specs --&gt; Router
+    
+    Router --&gt;|&quot;indices [0:5]&quot;| ArmPub[&quot;Publisher: /arm_position_controller/commands&quot;]
+    Router --&gt;|&quot;index [6]&quot;| GripperPub[&quot;Publisher: /gripper_position_controller/commands&quot;]
+    
+    ArmPub --&gt; ArmCtrl[&quot;arm_position_controller&quot;]
+    GripperPub --&gt; GripperCtrl[&quot;gripper_position_controller&quot;]
+    </pre><p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/topic_executor.py#L61-L75">src/action_dispatch/action_dispatch/topic_executor.py:61-75</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L125-L135">src/action_dispatch/action_dispatch/action_dispatcher_node.py:125-135</a></p>
+</section>
+<section id="id5">
+<h3>初始化和设置<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code> 在动作分发器节点中创建并初始化：</p>
+<p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L153-L157">src/action_dispatch/action_dispatch/action_dispatcher_node.py:153-157</a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 5. Executor (Topic-based)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">_executor</span> <span class="o">=</span> <span class="n">TopicExecutor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;action_specs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_action_specs</span><span class="p">})</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">initialize</span><span class="p">():</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Failed to initialize TopicExecutor&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>执行器从 contract 接收 <code class="docutils literal notranslate"><span class="pre">action_specs</span></code>，这些 specs 定义 topic 名称和消息类型。它使用 Reliable 和 Volatile durability 的默认 QoS 初始化 publishers，确保 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 命令订阅者接受实时动作 topics <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/topic_executor.py#L31-L33">src/action_dispatch/action_dispatch/topic_executor.py:31-33</a>。</p>
+</section>
+<section id="id6">
+<h3>执行流程<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<p>每次控制循环迭代时，分发器调用 <code class="docutils literal notranslate"><span class="pre">self._executor.execute(action)</span></code>：</p>
+<p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/topic_executor.py#L51-L55">src/action_dispatch/action_dispatch/topic_executor.py:51-55</a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Route action to publishers.&quot;&quot;&quot;</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">request_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;request_id&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+    <span class="c1"># ...</span>
+</pre></div>
+</div>
+<p>执行器按每个 <code class="docutils literal notranslate"><span class="pre">ActionSpec</span></code> 期望的关节数量切分动作数组 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/topic_executor.py#L67-L75">src/action_dispatch/action_dispatch/topic_executor.py:67-75</a>。</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="actionexecutor">
+<h2>ActionExecutor：轨迹控制<a class="headerlink" href="#actionexecutor" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ActionExecutor</span></code> 通过向 ROS 2 action servers 发送完整运动计划来实现基于轨迹的控制。当与 MoveIt 集成，或需要轨迹控制器时，会使用该执行器。</p>
+<section id="id7">
+<h3>轨迹构造<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<p>不同于发送单个位置的 <code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code>，<code class="docutils literal notranslate"><span class="pre">ActionExecutor</span></code> 构造完整轨迹消息。当前 <code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code> 可以发送单点 <code class="docutils literal notranslate"><span class="pre">JointTrajectory</span></code> 消息 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/topic_executor.py#L81-L86">src/action_dispatch/action_dispatch/topic_executor.py:81-86</a>，完整的 <code class="docutils literal notranslate"><span class="pre">ActionExecutor</span></code> 通常会管理 <code class="docutils literal notranslate"><span class="pre">FollowJointTrajectory</span></code> action 生命周期。</p>
+<pre  class="mermaid">
+        graph TB
+    ActionQueue[&quot;Action Queue&lt;br/&gt;(N x 7 positions)&quot;]
+    TrajBuilder[&quot;Trajectory Builder&quot;]
+    
+    ActionQueue --&gt; TrajBuilder
+    
+    TrajBuilder --&gt; Points[&quot;JointTrajectoryPoint&quot;]
+    TrajBuilder --&gt; TimeStamps[&quot;time_from_start&quot;]
+    
+    Points --&gt; TrajMsg[&quot;FollowJointTrajectory.Goal&quot;]
+    TimeStamps --&gt; TrajMsg
+    
+    TrajMsg --&gt; ActionClient[&quot;Action Client&quot;]
+    ActionClient --&gt;|&quot;send_goal_async&quot;| Server[&quot;/follow_joint_trajectory&quot;]
+    </pre><p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/topic_executor.py#L81-L86">src/action_dispatch/action_dispatch/topic_executor.py:81-86</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id8">
+<h2>性能追踪<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
+<p>执行层通过 Python logging 接入 LTTng，用于延迟分析。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Event</p></th>
+<th class="head"><p>Logger</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">action_topic_publish</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ib_trace.execute</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code> 发布到 ROS topic 时记录</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">action_execute</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ib_trace.dispatch</span></code></p></td>
+<td><p>分发器触发执行步骤时记录</p></td>
+</tr>
+</tbody>
+</table>
+<p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/topic_executor.py#L87-L94">src/action_dispatch/action_dispatch/topic_executor.py:87-94</a></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_trace</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+    <span class="s2">&quot;[action_topic_publish] request_id=</span><span class="si">%s</span><span class="s2"> index=</span><span class="si">%d</span><span class="s2"> topic=</span><span class="si">%s</span><span class="s2"> values=</span><span class="si">%d</span><span class="s2"> queue_size=</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="n">request_id</span><span class="p">,</span>
+    <span class="n">execute_index</span><span class="p">,</span>
+    <span class="n">topic</span><span class="p">,</span>
+    <span class="nb">len</span><span class="p">(</span><span class="n">data_list</span><span class="p">),</span>
+    <span class="n">queue_size</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/topic_executor.py#L17">src/action_dispatch/action_dispatch/topic_executor.py:17</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/topic_executor.py#L87-L94">src/action_dispatch/action_dispatch/topic_executor.py:87-94</a></p>
+</section>
+<hr class="docutils" />
+<section id="id9">
+<h2>安全与错误处理<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h2>
+<section id="id10">
+<h3>TopicExecutor 安全机制<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>保持最后动作</strong>：当动作队列为空时，分发器节点保持最后一个有效动作，避免硬件突然停止 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L94-L95">src/action_dispatch/action_dispatch/action_dispatcher_node.py:94-95</a>。</p></li>
+<li><p><strong>QoS Profile</strong>：默认使用 <code class="docutils literal notranslate"><span class="pre">ReliabilityPolicy.RELIABLE</span></code> 和 <code class="docutils literal notranslate"><span class="pre">DurabilityPolicy.VOLATILE</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/topic_executor.py#L31-L33">src/action_dispatch/action_dispatch/topic_executor.py:31-33</a>，确保 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 命令订阅者接收命令，同时避免排队过期消息。</p></li>
+<li><p><strong>初始化检查</strong>：如果 contract specs 缺失或无效，<code class="docutils literal notranslate"><span class="pre">initialize()</span></code> 方法返回 <code class="docutils literal notranslate"><span class="pre">False</span></code>，防止节点以未定义状态启动 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/topic_executor.py#L34-L49">src/action_dispatch/action_dispatch/topic_executor.py:34-49</a>。</p></li>
+</ol>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/topic_executor.py#L31-L49">src/action_dispatch/action_dispatch/topic_executor.py:31-49</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L94-L95">src/action_dispatch/action_dispatch/action_dispatcher_node.py:94-95</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id11">
+<h2>总结<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h2>
+<p>执行器层为机器人控制提供 contract 驱动的抽象：</p>
+<ul class="simple">
+<li><p><strong>TopicExecutor</strong>：面向端到端策略的高频位置控制优化，延迟低，使用简单的 topic 通信。它根据 <code class="docutils literal notranslate"><span class="pre">ActionSpec</span></code> 关节名称将扁平动作 tensor 映射到多个 topics <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/topic_executor.py#L61-L72">src/action_dispatch/action_dispatch/topic_executor.py:61-72</a>。</p></li>
+<li><p><strong>ActionExecutor</strong>：面向基于轨迹的控制，通常与 MoveIt 或长时域规划器配合使用。</p></li>
+</ul>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/topic_executor.py#L1-L96">src/action_dispatch/action_dispatch/topic_executor.py:1-96</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L153-L157">src/action_dispatch/action_dispatch/action_dispatcher_node.py:153-157</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="temporal_smoothing.html" class="btn btn-neutral float-left" title="时序平滑" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../data_pipeline/index.html" class="btn btn-neutral float-right" title="数据流水线" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-26.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/features/embodied_ai/action_dispatch/topic_and_action_executors.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/features/embodied_ai/action_dispatch/topic_and_action_executors.html">openEuler-26.03</a></dd>
+      <dd><a href="topic_and_action_executors.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

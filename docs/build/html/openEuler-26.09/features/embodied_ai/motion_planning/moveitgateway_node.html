@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MoveItGateway 节点 &mdash; openEuler Embedded在线文档 25.03 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="5DOF 运动学约束" href="5dof_kinematic_constraints.html" />
+    <link rel="prev" title="运动规划概述" href="overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol.html">协议转换</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference/index.html">推理流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../action_dispatch/index.html">动作分发</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_pipeline/index.html">数据流水线</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">运动规划</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">运动规划概述</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">MoveItGateway 节点</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id1">目的与范围</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id2">系统集成</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#ros2">ROS2 接口</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id7">核心组件</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#dof">5DOF 运动学约束处理</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id12">多策略回退系统</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id14">任务分发集成</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id15">数学工具</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="5dof_kinematic_constraints.html">5DOF 运动学约束</a></li>
+<li class="toctree-l6"><a class="reference internal" href="moveit_launch_configuration.html">MoveIt 启动配置</a></li>
+<li class="toctree-l6"><a class="reference internal" href="task_dispatch.html">任务分发</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../hardware/index.html">硬件集成</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../extended_capabilities/index.html">扩展能力</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">运动规划</a></li>
+      <li class="breadcrumb-item active">MoveItGateway 节点</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="moveitgateway">
+<h1>MoveItGateway 节点<a class="headerlink" href="#moveitgateway" title="Permalink to this heading"></a></h1>
+<details>
+<summary>Relevant source files</summary>
+<p>The following files were used as context for generating this wiki page:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/action/ExecuteTaskPlan.action">src/ibrobot_msgs/action/ExecuteTaskPlan.action</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/msg/TaskStep.msg">src/ibrobot_msgs/msg/TaskStep.msg</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/package.xml">src/ibrobot_msgs/package.xml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/srv/MoveToPose.srv">src/ibrobot_msgs/srv/MoveToPose.srv</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/moveit.py">src/robot_config/robot_config/launch_builders/moveit.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/task_execution.py">src/robot_config/robot_config/launch_builders/task_execution.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/config/lerobot/so101/kinematics.yaml">src/robot_moveit/config/lerobot/so101/kinematics.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/launch/so101_moveit.launch.py">src/robot_moveit/launch/so101_moveit.launch.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/package.xml">src/robot_moveit/package.xml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py">src/robot_moveit/scripts/moveit_gateway.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_teleop/package.xml">src/robot_teleop/package.xml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/README.en.md">src/task_dispatch/README.en.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/README.md">src/task_dispatch/README.md</a></p></li>
+</ul>
+</details>
+<section id="id1">
+<h2>目的与范围<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">MoveItGateway</span></code> 节点是高层笛卡尔位姿命令与 MoveIt2 运动规划框架之间的接口层。它专门处理 5 自由度（5DOF）机械臂的运动学约束，通过姿态放宽技术实现多策略逆运动学（IK）求解。</p>
+<p>该节点运行在 <code class="docutils literal notranslate"><span class="pre">moveit_planning</span></code> 控制模式下。它同时提供基于话题的异步接口，用于即发即忘命令，也提供基于服务的同步接口，用于任务编排。</p>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L1-L14">src/robot_moveit/scripts/moveit_gateway.py:1-14</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L43-L45">src/robot_moveit/scripts/moveit_gateway.py:43-45</a></p>
+</section>
+<hr class="docutils" />
+<section id="id2">
+<h2>系统集成<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">MoveItGateway</span></code> 节点通过 MoveIt2 的 IK 求解器和轨迹规划器，把笛卡尔空间控制桥接到关节空间执行。</p>
+<p><strong>架构位置</strong></p>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;High-Level Commands&quot;
+        CMD[&quot;/cmd_pose&lt;br/&gt;(geometry_msgs/Pose)&quot;]
+        SRV[&quot;/moveit_gateway/move_to_pose&lt;br/&gt;(ibrobot_msgs/srv/MoveToPose)&quot;]
+    end
+    
+    subgraph &quot;MoveItGateway Node [moveit_gateway.py]&quot;
+        GW[&quot;MoveItGateway Class&quot;]
+        STRATEGIES[&quot;Multi-Strategy&lt;br/&gt;IK Solver&quot;]
+        FALLBACK[&quot;Tolerance Fallback&lt;br/&gt;System&quot;]
+    end
+    
+    subgraph &quot;MoveIt2 Core&quot;
+        MOVEIT2[&quot;MoveIt2 Interface&lt;br/&gt;(pymoveit2.MoveIt2)&quot;]
+        IK_SOLVER[&quot;KDL IK Solver&lt;br/&gt;(position_only_ik)&quot;]
+        PLANNER[&quot;OMPL/Pilz&lt;br/&gt;Trajectory Planner&quot;]
+    end
+    
+    subgraph &quot;Execution Layer&quot;
+        TRAJECTORY_CTRL[&quot;trajectory_controllers&lt;br/&gt;(FollowJointTrajectory)&quot;]
+        ROS2_CTRL[&quot;ros2_control&quot;]
+    end
+    
+    subgraph &quot;Feedback&quot;
+        JS[&quot;/joint_states&lt;br/&gt;(sensor_msgs/JointState)&quot;]
+        TF[&quot;TF2 Tree&quot;]
+        EE_POSE[&quot;/robot_status/ee_pose&lt;br/&gt;(geometry_msgs/PoseStamped)&quot;]
+        STATUS[&quot;/moveit_gateway/motion_status&lt;br/&gt;(std_msgs/String)&quot;]
+    end
+    
+    CMD --&gt; GW
+    SRV --&gt; GW
+    GW --&gt; STRATEGIES
+    STRATEGIES --&gt; FALLBACK
+    FALLBACK --&gt; MOVEIT2
+    
+    MOVEIT2 --&gt; IK_SOLVER
+    IK_SOLVER --&gt; PLANNER
+    PLANNER --&gt; TRAJECTORY_CTRL
+    TRAJECTORY_CTRL --&gt; ROS2_CTRL
+    
+    ROS2_CTRL --&gt; JS
+    JS --&gt; GW
+    TF --&gt; GW
+    GW --&gt; EE_POSE
+    GW --&gt; STATUS
+    </pre><p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L43-L125">src/robot_moveit/scripts/moveit_gateway.py:43-125</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/README.md#L26-L46">src/task_dispatch/README.md:26-46</a></p>
+</section>
+<hr class="docutils" />
+<section id="ros2">
+<h2>ROS2 接口<a class="headerlink" href="#ros2" title="Permalink to this heading"></a></h2>
+<section id="id3">
+<h3>订阅话题<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>话题</p></th>
+<th class="head"><p>类型</p></th>
+<th class="head"><p>用途</p></th>
+<th class="head"><p>回调</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">/cmd_pose</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">geometry_msgs/Pose</span></code></p></td>
+<td><p>目标末端位姿命令（异步）</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cmd_pose_callback</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">/joint_states</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">sensor_msgs/JointState</span></code></p></td>
+<td><p>当前关节位置，用于 IK 种子</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">joint_state_callback</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id4">
+<h3>发布话题<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>话题</p></th>
+<th class="head"><p>类型</p></th>
+<th class="head"><p>频率</p></th>
+<th class="head"><p>用途</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">/robot_status/ee_pose</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">geometry_msgs/PoseStamped</span></code></p></td>
+<td><p>10 Hz</p></td>
+<td><p>当前末端在基坐标系下的位姿</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">/moveit_gateway/motion_status</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">std_msgs/String</span></code></p></td>
+<td><p>事件驱动</p></td>
+<td><p>“idle”, “executing”, “succeeded”, “failed”</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id5">
+<h3>服务<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>服务</p></th>
+<th class="head"><p>类型</p></th>
+<th class="head"><p>用途</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">/moveit_gateway/move_to_pose</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ibrobot_msgs/srv/MoveToPose</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">task_dispatch</span></code> 使用的同步 move-to-pose</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id6">
+<h3>节点参数<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>类型</p></th>
+<th class="head"><p>必需</p></th>
+<th class="head"><p>用途</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">arm_group_name</span></code></p></td>
+<td><p>string</p></td>
+<td><p>是</p></td>
+<td><p>MoveIt 规划组名称，例如 “arm”</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">base_link</span></code></p></td>
+<td><p>string</p></td>
+<td><p>是</p></td>
+<td><p>位姿命令的基坐标系</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ee_link</span></code></p></td>
+<td><p>string</p></td>
+<td><p>是</p></td>
+<td><p>末端执行器 link 名称</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">shoulder_link</span></code></p></td>
+<td><p>string</p></td>
+<td><p>是</p></td>
+<td><p>用于工作空间计算的肩部 link</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">joint_names</span></code></p></td>
+<td><p>string[]</p></td>
+<td><p>是</p></td>
+<td><p>机械臂规划组的关节名称</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L51-L61">src/robot_moveit/scripts/moveit_gateway.py:51-61</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L87-L123">src/robot_moveit/scripts/moveit_gateway.py:87-123</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/srv/MoveToPose.srv#L1-L12">src/ibrobot_msgs/srv/MoveToPose.srv:1-12</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id7">
+<h2>核心组件<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h2>
+<section id="id8">
+<h3>MoveItGateway 类<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">MoveItGateway</span></code> 类（<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L43-L45">src/robot_moveit/scripts/moveit_gateway.py:43-45</a>）实现为 ROS2 节点，并通过 <code class="docutils literal notranslate"><span class="pre">ReentrantCallbackGroup</span></code>（<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L48">src/robot_moveit/scripts/moveit_gateway.py:48</a>）支持多线程回调处理。它封装 <code class="docutils literal notranslate"><span class="pre">pymoveit2</span></code> 接口，提供高层运动原语。</p>
+<p><strong>类初始化序列</strong></p>
+<pre  class="mermaid">
+        graph TB
+    INIT[&quot;MoveItGateway.__init__()&quot;]
+    CBG[&quot;ReentrantCallbackGroup&quot;]
+    PARAMS[&quot;Declare Parameters&lt;br/&gt;(arm_group_name, etc.)&quot;]
+    TF2[&quot;TF2 Buffer + Listener&quot;]
+    MOVEIT2_INIT[&quot;MoveIt2 Interface&lt;br/&gt;(pymoveit2.MoveIt2)&quot;]
+    SUBS[&quot;Create Subscriptions&lt;br/&gt;(/joint_states, /cmd_pose)&quot;]
+    PUBS[&quot;Create Publishers&lt;br/&gt;(/robot_status/ee_pose, /moveit_gateway/motion_status)&quot;]
+    SRV[&quot;Create Service&lt;br/&gt;(/moveit_gateway/move_to_pose)&quot;]
+    TIMER[&quot;10Hz Timer&lt;br/&gt;(publish_ee_pose)&quot;]
+    
+    INIT --&gt; CBG
+    CBG --&gt; PARAMS
+    PARAMS --&gt; TF2
+    TF2 --&gt; MOVEIT2_INIT
+    MOVEIT2_INIT --&gt; SUBS
+    SUBS --&gt; PUBS
+    PUBS --&gt; SRV
+    SRV --&gt; TIMER
+    </pre><p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L44-L125">src/robot_moveit/scripts/moveit_gateway.py:44-125</a></p>
+</section>
+<section id="id9">
+<h3>关键类成员<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>成员</p></th>
+<th class="head"><p>类型</p></th>
+<th class="head"><p>用途</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">callback_group</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ReentrantCallbackGroup</span></code></p></td>
+<td><p>线程安全的回调执行</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">moveit2</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pymoveit2.MoveIt2</span></code></p></td>
+<td><p>连接 MoveIt2 <code class="docutils literal notranslate"><span class="pre">move_group</span></code> action server 的接口</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tf_buffer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tf2_ros.Buffer</span></code></p></td>
+<td><p>坐标系 TF 变换查询</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">latest_joint_state</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">JointState</span></code></p></td>
+<td><p>缓存关节状态，用于 IK 种子和验证</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">_motion_status</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">string</span></code></p></td>
+<td><p>网关当前内部状态</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L48-L107">src/robot_moveit/scripts/moveit_gateway.py:48-107</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="dof">
+<h2>5DOF 运动学约束处理<a class="headerlink" href="#dof" title="Permalink to this heading"></a></h2>
+<section id="id10">
+<h3>问题描述<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<p>5DOF 机械臂（如 SO101）有 5 个关节角，但完整 6DOF 位姿需要 3 个位置参数和 3 个姿态参数。这会形成欠约束系统，大多数目标姿态在数学上不可达。<code class="docutils literal notranslate"><span class="pre">MoveItGateway</span></code> 通过放宽姿态约束来解决该问题。机械臂规划组的 <code class="docutils literal notranslate"><span class="pre">kinematics.yaml</span></code> 配置中还设置了 <code class="docutils literal notranslate"><span class="pre">position_only_ik:</span> <span class="pre">True</span></code>，使 MoveIt 的 KDL 求解器在求解 IK 时优先位置而非姿态 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/config/lerobot/so101/kinematics.yaml#L6">src/robot_moveit/config/lerobot/so101/kinematics.yaml:6</a>。</p>
+</section>
+<section id="id11">
+<h3>姿态处理策略<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
+<p>该节点实现两种数学策略，将目标姿态适配到 5DOF 约束：</p>
+<section id="z-constrain-to-z-axis-only">
+<h4>策略 1：Z 轴约束（<code class="docutils literal notranslate"><span class="pre">constrain_to_z_axis_only</span></code>）<a class="headerlink" href="#z-constrain-to-z-axis-only" title="Permalink to this heading"></a></h4>
+<p>保持 Z 轴方向（约束俯仰和偏航），同时释放绕 Z 轴的旋转（滚转）。它使用“最小旋转”原则，让末端执行器尽量接近原始位姿。</p>
+<p><strong>实现</strong>:</p>
+<ol class="arabic simple">
+<li><p>从旋转矩阵提取 Z 轴：<code class="docutils literal notranslate"><span class="pre">z_axis</span> <span class="pre">=</span> <span class="pre">R[:,</span> <span class="pre">2]</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L184">src/robot_moveit/scripts/moveit_gateway.py:184</a></p></li>
+<li><p>将原始 X 轴投影到垂直于 Z 的平面：<code class="docutils literal notranslate"><span class="pre">x_axis</span> <span class="pre">=</span> <span class="pre">orig_x_axis</span> <span class="pre">-</span> <span class="pre">np.dot(orig_x_axis,</span> <span class="pre">z_axis)</span> <span class="pre">*</span> <span class="pre">z_axis</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L194">src/robot_moveit/scripts/moveit_gateway.py:194</a></p></li>
+<li><p>通过叉乘重建 Y 轴：<code class="docutils literal notranslate"><span class="pre">y_axis</span> <span class="pre">=</span> <span class="pre">np.cross(z_axis,</span> <span class="pre">x_axis)</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L210">src/robot_moveit/scripts/moveit_gateway.py:210</a></p></li>
+</ol>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L164-L220">src/robot_moveit/scripts/moveit_gateway.py:164-220</a></p>
+</section>
+<section id="xz-project-orientation-to-shoulder-xz-plane">
+<h4>策略 2：肩部 XZ 平面投影（<code class="docutils literal notranslate"><span class="pre">project_orientation_to_shoulder_xz_plane</span></code>）<a class="headerlink" href="#xz-project-orientation-to-shoulder-xz-plane" title="Permalink to this heading"></a></h4>
+<p>将姿态投影到肩部坐标系的 XZ 平面，使其符合机械臂的自然运动约束，即末端执行器保持竖直或位于机械臂平面内。</p>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L222-L271">src/robot_moveit/scripts/moveit_gateway.py:222-271</a></p>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id12">
+<h2>多策略回退系统<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">cmd_pose_callback</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L97-L103">src/robot_moveit/scripts/moveit_gateway.py:97-103</a> 和 <code class="docutils literal notranslate"><span class="pre">_move_to_pose_service_cb</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L110-L116">src/robot_moveit/scripts/moveit_gateway.py:110-116</a> 实现级联回退系统。它遍历不同姿态策略和逐级放宽的容差，直到找到有效 IK 解。</p>
+<section id="id13">
+<h3>回退层级<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    START[&quot;Receive Pose Request&quot;]
+    
+    subgraph &quot;Strategy Loop (4 strategies)&quot;
+        S1[&quot;1. Z-axis constraint&quot;]
+        S2[&quot;2. Shoulder XZ projection&quot;]
+        S3[&quot;3. Current orientation&lt;br/&gt;(position-only)&quot;]
+        S4[&quot;4. Default orientation&lt;br/&gt;(identity)&quot;]
+    end
+    
+    subgraph &quot;Tolerance Loop (5 levels per strategy)&quot;
+        T1[&quot;Strict: (0.1, 0.1, 0.05)&quot;]
+        T2[&quot;Medium: (0.3, 0.3, 0.1)&quot;]
+        T3[&quot;Relaxed: (0.5, 0.5, 0.15)&quot;]
+        T4[&quot;Z-only: (1.0, 1.0, 0.2)&quot;]
+        T5[&quot;No constraints: None&quot;]
+    end
+    
+    SOLVE[&quot;solve_and_move()&quot;]
+    SUCCESS{&quot;IK Success?&quot;}
+    
+    START --&gt; S1
+    S1 --&gt; T1
+    T1 --&gt; SOLVE
+    SOLVE --&gt; SUCCESS
+    SUCCESS --&gt;|No| T2
+    T2 --&gt; SOLVE
+    SUCCESS --&gt;|Yes| DONE[&quot;Execute &amp; Finish&quot;]
+    </pre><p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L316-L430">src/robot_moveit/scripts/moveit_gateway.py:316-430</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L397-L404">src/robot_moveit/scripts/moveit_gateway.py:397-404</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id14">
+<h2>任务分发集成<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">MoveItGateway</span></code> 为 <code class="docutils literal notranslate"><span class="pre">task_dispatch</span></code> 包提供关键的底层运动服务。</p>
+<p><strong>数据流</strong>:</p>
+<ol class="arabic simple">
+<li><p>规划器（例如 VoxPoser）向 <code class="docutils literal notranslate"><span class="pre">task_executor_node</span></code> 发送 <code class="docutils literal notranslate"><span class="pre">ExecuteTaskPlan</span></code> action goal <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/README.md#L62">src/task_dispatch/README.md:62</a>。</p></li>
+<li><p>对计划中的每个 <code class="docutils literal notranslate"><span class="pre">MOVE_TO_POSE</span></code> 步骤 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/msg/TaskStep.msg#L9">src/ibrobot_msgs/msg/TaskStep.msg:9</a>，<code class="docutils literal notranslate"><span class="pre">task_executor_node</span></code> 调用 <code class="docutils literal notranslate"><span class="pre">/moveit_gateway/move_to_pose</span></code> 服务 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/README.md#L68">src/task_dispatch/README.md:68</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MoveItGateway</span></code> 执行多策略 IK 求解和轨迹执行。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MoveItGateway</span></code> 向 <code class="docutils literal notranslate"><span class="pre">task_executor_node</span></code> 返回成功/失败结果，后者再继续下一步，例如 <code class="docutils literal notranslate"><span class="pre">GRIPPER</span></code>。</p></li>
+</ol>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/task_dispatch/README.md#L26-L46">src/task_dispatch/README.md:26-46</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/ibrobot_msgs/msg/TaskStep.msg#L1-L27">src/ibrobot_msgs/msg/TaskStep.msg:1-27</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/task_execution.py#L1-L9">src/robot_config/robot_config/launch_builders/task_execution.py:1-9</a></p>
+</section>
+<hr class="docutils" />
+<section id="id15">
+<h2>数学工具<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h2>
+<p>该节点使用 <code class="docutils literal notranslate"><span class="pre">scipy.spatial.transform.Rotation</span></code> 提供四元数和旋转矩阵工具。</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>函数</p></th>
+<th class="head"><p>签名</p></th>
+<th class="head"><p>实现</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">quaternion_multiply</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(q1,</span> <span class="pre">q2)</span> <span class="pre">-&gt;</span> <span class="pre">q</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">R.from_quat(q1)</span> <span class="pre">*</span> <span class="pre">R.from_quat(q2)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">quaternion_to_rotation_matrix</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(q)</span> <span class="pre">-&gt;</span> <span class="pre">np.ndarray</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">R.from_quat(q).as_matrix()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">rotation_matrix_to_quaternion</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">(R_mat)</span> <span class="pre">-&gt;</span> <span class="pre">tuple</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">R.from_matrix(R_mat).as_quat()</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_moveit/scripts/moveit_gateway.py#L127-L162">src/robot_moveit/scripts/moveit_gateway.py:127-162</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="overview.html" class="btn btn-neutral float-left" title="运动规划概述" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="5dof_kinematic_constraints.html" class="btn btn-neutral float-right" title="5DOF 运动学约束" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-26.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/features/embodied_ai/motion_planning/moveitgateway_node.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/features/embodied_ai/motion_planning/moveitgateway_node.html">openEuler-26.03</a></dd>
+      <dd><a href="moveitgateway_node.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

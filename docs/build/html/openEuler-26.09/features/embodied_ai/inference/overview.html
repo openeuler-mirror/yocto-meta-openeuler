@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>推理流水线概述 &mdash; openEuler Embedded在线文档 25.03 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="推理架构" href="inference_architecture.html" />
+    <link rel="prev" title="推理流水线" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol.html">协议转换</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">推理流水线</a><ul class="current">
+<li class="toctree-l6 current"><a class="current reference internal" href="#">推理流水线概述</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">系统目的与范围</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">三组件架构</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id5">执行模式</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id6">策略节点</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#model-utils">模型导出与验证 (model_utils)</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#attention-viz">注意力可视化 (attention_viz)</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#launch">Launch 集成</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="inference_architecture.html">推理架构</a></li>
+<li class="toctree-l6"><a class="reference internal" href="monolithic_execution_mode.html">单体执行模式</a></li>
+<li class="toctree-l6"><a class="reference internal" href="distributed_execution_mode.html">分布式执行模式</a></li>
+<li class="toctree-l6"><a class="reference internal" href="policy_nodes.html">策略节点</a></li>
+<li class="toctree-l6"><a class="reference internal" href="model_export_validation.html">模型导出与验证</a></li>
+<li class="toctree-l6"><a class="reference internal" href="attention_visualization.html">注意力可视化</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../action_dispatch/index.html">动作分发</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_pipeline/index.html">数据流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../motion_planning/index.html">运动规划</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../hardware/index.html">硬件集成</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../extended_capabilities/index.html">扩展能力</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">推理流水线</a></li>
+      <li class="breadcrumb-item active">推理流水线概述</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>推理流水线概述<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源文件</summary>
+<p>生成此 wiki 页面时使用了以下文件作为上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/action_dispatch/action_dispatch/action_dispatcher_node.py">src/action_dispatch/action_dispatch/action_dispatcher_node.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/README.en.md">src/inference_service/README.en.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/README.md">src/inference_service/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/_policy_config.py">src/inference_service/inference_service/core/_policy_config.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/compiled_policy.py">src/inference_service/inference_service/core/compiled_policy.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/postprocessor.py">src/inference_service/inference_service/core/postprocessor.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/preprocessor.py">src/inference_service/inference_service/core/preprocessor.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/pure_inference_engine.py">src/inference_service/inference_service/core/pure_inference_engine.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/lerobot_policy_node.py">src/inference_service/inference_service/lerobot_policy_node.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/pure_inference_node.py">src/inference_service/inference_service/pure_inference_node.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/tests/test_ascend_om.py">src/inference_service/tests/test_ascend_om.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/tests/test_policy_config.py">src/inference_service/tests/test_policy_config.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/config/robots/so101_single_arm.yaml">src/robot_config/config/robots/so101_single_arm.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/execution.py">src/robot_config/robot_config/launch_builders/execution.py</a></p></li>
+</ul>
+</details>
+<p>推理流水线是 IB-Robot 的 AI 执行子系统，负责加载 LeRobot 策略模型，并将实时传感器观测转换为机器人动作。它采用契约驱动架构，通过复用与数据集转换流水线相同的数据处理逻辑，保证训练与部署对齐。</p>
+<p>关于训练数据准备，请参见 <a class="reference internal" href="../data_pipeline/dataset_conversion_bag_to_lerobot.html"><span class="std std-doc">Dataset Conversion (bag_to_lerobot)</span></a>。关于动作执行和时间平滑，请参见 <a class="reference internal" href="../action_dispatch/overview.html"><span class="std std-doc">Action Dispatch</span></a>。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/lerobot_policy_node.py#L1-L33">src/inference_service/inference_service/lerobot_policy_node.py:1-33</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/README.md#L1-L6">src/inference_service/README.md:1-6</a></p>
+<hr class="docutils" />
+<section id="id2">
+<h2>系统目的与范围<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>推理服务包（<code class="docutils literal notranslate"><span class="pre">inference_service</span></code>）连接已训练的 LeRobot 策略与实时机器人控制。其核心职责包括：</p>
+<ol class="arabic simple">
+<li><p><strong>模型加载</strong>：加载 ACT、Diffusion Policy、VLA 和其他 LeRobot 兼容 checkpoint 文件 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/pure_inference_engine.py#L169-L176">src/inference_service/inference_service/core/pure_inference_engine.py:169-176</a>。</p></li>
+<li><p><strong>观测处理</strong>：使用 <code class="docutils literal notranslate"><span class="pre">TensorPreprocessor</span></code> 将 ROS 2 传感器流（相机、关节状态）转换为模型可用的 tensor <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/preprocessor.py#L73-L86">src/inference_service/inference_service/core/preprocessor.py:73-86</a>。</p></li>
+<li><p><strong>GPU 推理</strong>：通过 <code class="docutils literal notranslate"><span class="pre">PureInferenceEngine</span></code> 执行策略 forward pass <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/pure_inference_engine.py#L1-L14">src/inference_service/inference_service/core/pure_inference_engine.py:1-14</a>。</p></li>
+<li><p><strong>动作生成</strong>：通过 <code class="docutils literal notranslate"><span class="pre">TensorPostprocessor</span></code> 将输出 tensor 转换为可执行命令 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/postprocessor.py#L70-L86">src/inference_service/inference_service/core/postprocessor.py:70-86</a>。</p></li>
+<li><p><strong>部署灵活性</strong>：同时支持单机（zero-copy）和分布式（edge-cloud）执行 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/lerobot_policy_node.py#L5-L26">src/inference_service/inference_service/lerobot_policy_node.py:5-26</a>。</p></li>
+</ol>
+<p>该流水线<strong>不</strong>处理动作执行、时间平滑或电机控制，这些由 <a class="reference internal" href="../action_dispatch/overview.html"><span class="std std-doc">Action Dispatch</span></a> 系统负责。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/lerobot_policy_node.py#L1-L33">src/inference_service/inference_service/lerobot_policy_node.py:1-33</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/pure_inference_engine.py#L1-L14">src/inference_service/inference_service/core/pure_inference_engine.py:1-14</a></p>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h2>三组件架构<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<p>推理流水线遵循 “Composition over Inheritance” 设计，将 AI 执行工作流拆分为三个独立且不依赖 ROS 的核心组件。深入技术细节请参见 <a class="reference internal" href="inference_architecture.html"><span class="std std-doc">Inference Architecture</span></a>。</p>
+<section id="id4">
+<h3>组件图<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;Core Components (inference_service.core)&quot;
+        Preprocessor[&quot;TensorPreprocessor&lt;br/&gt;(CPU)&quot;]
+        Engine[&quot;PureInferenceEngine&lt;br/&gt;(GPU)&quot;]
+        Postprocessor[&quot;TensorPostprocessor&lt;br/&gt;(CPU)&quot;]
+    end
+    
+    subgraph &quot;ROS Integration Layer&quot;
+        PolicyNode[&quot;LeRobotPolicyNode&quot;]
+        Coordinator[&quot;InferenceCoordinator&quot;]
+    end
+    
+    subgraph &quot;External Systems&quot;
+        Contract[&quot;robot_config.yaml&lt;br/&gt;(Contract)&quot;]
+        Dispatch[&quot;ActionDispatcherNode&quot;]
+        Sensors[&quot;ROS Sensors&lt;br/&gt;(cameras, joint_states)&quot;]
+    end
+    
+    Contract --&gt; PolicyNode
+    Sensors --&gt; PolicyNode
+    PolicyNode --&gt; Coordinator
+    Coordinator --&gt; Preprocessor
+    Preprocessor --&gt; Engine
+    Engine --&gt; Postprocessor
+    Postprocessor --&gt; PolicyNode
+    PolicyNode --&gt; Dispatch
+    </pre><p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/README.md#L7-L14">src/inference_service/README.md:7-14</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/lerobot_policy_node.py#L57-L67">src/inference_service/inference_service/lerobot_policy_node.py:57-67</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/pure_inference_engine.py#L3-L14">src/inference_service/inference_service/core/pure_inference_engine.py:3-14</a></p>
+</section>
+<section id="tensorpreprocessor">
+<h3>TensorPreprocessor<a class="headerlink" href="#tensorpreprocessor" title="Permalink to this heading"></a></h3>
+<p>处理观测 tensor 的转换与归一化，例如 <code class="docutils literal notranslate"><span class="pre">numpy</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">torch</span></code>、<code class="docutils literal notranslate"><span class="pre">HWC</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">CHW</span></code>。它使用模型数据集统计信息准备输入 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/preprocessor.py#L73-L94">src/inference_service/inference_service/core/preprocessor.py:73-94</a>。</p>
+</section>
+<section id="pureinferenceengine">
+<h3>PureInferenceEngine<a class="headerlink" href="#pureinferenceengine" title="Permalink to this heading"></a></h3>
+<p>无状态执行引擎，封装 ACT、Pi0 等策略模型。它支持 CUDA、Ascend NPU 和 Rockchip RKNN 等多种后端 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/pure_inference_engine.py#L29-L49">src/inference_service/inference_service/core/pure_inference_engine.py:29-49</a>。</p>
+</section>
+<section id="tensorpostprocessor">
+<h3>TensorPostprocessor<a class="headerlink" href="#tensorpostprocessor" title="Permalink to this heading"></a></h3>
+<p>将输出动作 tensor 反归一化为物理控制命令，并可按物理安全限制进行 clamp <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/postprocessor.py#L70-L86">src/inference_service/inference_service/core/postprocessor.py:70-86</a>。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/preprocessor.py#L1-L13">src/inference_service/inference_service/core/preprocessor.py:1-13</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/pure_inference_engine.py#L1-L14">src/inference_service/inference_service/core/pure_inference_engine.py:1-14</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/postprocessor.py#L1-L14">src/inference_service/inference_service/core/postprocessor.py:1-14</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id5">
+<h2>执行模式<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
+<p>推理流水线支持两种部署架构，可通过 <code class="docutils literal notranslate"><span class="pre">robot_config.yaml</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">execution_mode</span></code> 参数选择 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/config/robots/so101_single_arm.yaml#L100-L101">src/robot_config/config/robots/so101_single_arm.yaml:100-101</a>。</p>
+<section id="monolithic-mode-single-machine">
+<h3>Monolithic Mode (Single-Machine)<a class="headerlink" href="#monolithic-mode-single-machine" title="Permalink to this heading"></a></h3>
+<p>在 monolithic 模式中，所有处理（Pre -&gt; Infer -&gt; Post）都在机器人上的单个进程中完成。该模式面向搭载高性能板载 GPU 的机器人，用于获得 zero-copy 延迟 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/README.md#L20-L26">src/inference_service/README.md:20-26</a>。详情请参见 <a class="reference internal" href="monolithic_execution_mode.html"><span class="std std-doc">Monolithic Execution Mode</span></a>。</p>
+</section>
+<section id="distributed-mode-edge-cloud">
+<h3>Distributed Mode (Edge-Cloud)<a class="headerlink" href="#distributed-mode-edge-cloud" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">LeRobotPolicyNode</span></code> 在机器人（device）上作为代理运行，执行基于 CPU 的预处理，然后把轻量 tensor batch 发送到局域网中的 GPU 服务器上的 <code class="docutils literal notranslate"><span class="pre">pure_inference_node</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/README.md#L28-L35">src/inference_service/README.md:28-35</a>。详情请参见 <a class="reference internal" href="distributed_execution_mode.html"><span class="std std-doc">Distributed Execution Mode</span></a>。</p>
+<pre  class="mermaid">
+        graph LR
+    subgraph &quot;Device (Robot)&quot;
+        EdgeNode[&quot;LeRobotPolicyNode (Proxy)&quot;]
+        EdgePre[&quot;Preprocessor (CPU)&quot;]
+        EdgePost[&quot;Postprocessor (CPU)&quot;]
+    end
+
+    subgraph &quot;Cloud/Edge (GPU Server)&quot;
+        CloudNode[&quot;PureInferenceNode&quot;]
+        CloudEngine[&quot;PureInferenceEngine (GPU)&quot;]
+    end
+
+    EdgeNode --&gt; EdgePre
+    EdgePre --&gt;|&quot;/preprocessed/batch&quot;| CloudNode
+    CloudNode --&gt; CloudEngine
+    CloudEngine --&gt;|&quot;/inference/action&quot;| EdgeNode
+    EdgeNode --&gt; EdgePost
+    </pre><p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/lerobot_policy_node.py#L5-L26">src/inference_service/inference_service/lerobot_policy_node.py:5-26</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/README.md#L37-L54">src/inference_service/README.md:37-54</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id6">
+<h2>策略节点<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
+<p>流水线通过两个主要 ROS 节点实现。实现细节请参见 <a class="reference internal" href="policy_nodes.html"><span class="std std-doc">Policy Nodes</span></a>。</p>
+<ol class="arabic simple">
+<li><p><strong>LeRobotPolicyNode</strong>：主入口。它管理对传感器数据的 ROS 订阅，提供 <code class="docutils literal notranslate"><span class="pre">DispatchInfer</span></code> action server，并协调推理工作流 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/lerobot_policy_node.py#L148-L169">src/inference_service/inference_service/lerobot_policy_node.py:148-169</a>。</p></li>
+<li><p><strong>PureInferenceNode</strong>：分布式模式中的轻量节点。它订阅预处理 tensor 并发布原始动作，用于 GPU offloading <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/pure_inference_node.py#L38-L46">src/inference_service/inference_service/pure_inference_node.py:38-46</a>。</p></li>
+</ol>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/lerobot_policy_node.py#L1-L34">src/inference_service/inference_service/lerobot_policy_node.py:1-34</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/pure_inference_node.py#L1-L15">src/inference_service/inference_service/pure_inference_node.py:1-15</a></p>
+</section>
+<hr class="docutils" />
+<section id="model-utils">
+<h2>模型导出与验证 (model_utils)<a class="headerlink" href="#model-utils" title="Permalink to this heading"></a></h2>
+<p>流水线支持标准 PyTorch 之外的专用硬件后端。详情请参见 <a class="reference internal" href="model_export_validation.html"><span class="std std-doc">Model Export and Validation (model_utils)</span></a>。</p>
+<ul class="simple">
+<li><p><strong>Ascend NPU</strong>：通过 <code class="docutils literal notranslate"><span class="pre">AscendOMPolicyWrapper</span></code> 支持 <code class="docutils literal notranslate"><span class="pre">.om</span></code> 模型 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/pure_inference_engine.py#L83-L85">src/inference_service/inference_service/core/pure_inference_engine.py:83-85</a>。</p></li>
+<li><p><strong>Rockchip NPU</strong>：支持用于 RK3588 部署的 <code class="docutils literal notranslate"><span class="pre">.rknn</span></code> 模型 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/pure_inference_engine.py#L83-L85">src/inference_service/inference_service/core/pure_inference_engine.py:83-85</a>。</p></li>
+<li><p><strong>验证</strong>：测试确保编译后端产生与 PyTorch 一致的结果 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/tests/test_ascend_om.py#L103-L111">src/inference_service/tests/test_ascend_om.py:103-111</a>。</p></li>
+</ul>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/README.md#L156-L188">src/inference_service/README.md:156-188</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/core/pure_inference_engine.py#L29-L49">src/inference_service/inference_service/core/pure_inference_engine.py:29-49</a></p>
+</section>
+<hr class="docutils" />
+<section id="attention-viz">
+<h2>注意力可视化 (attention_viz)<a class="headerlink" href="#attention-viz" title="Permalink to this heading"></a></h2>
+<p>流水线集成 <code class="docutils literal notranslate"><span class="pre">attention_viz</span></code> 包，用于观察模型决策过程。详情请参见 <a class="reference internal" href="attention_visualization.html"><span class="std std-doc">Attention Visualization (attention_viz)</span></a>。</p>
+<ul class="simple">
+<li><p><strong>Heatmap 生成</strong>：向 ROS topic 发布 cross-attention 权重用于可视化 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/lerobot_policy_node.py#L102-L111">src/inference_service/inference_service/lerobot_policy_node.py:102-111</a>。</p></li>
+<li><p><strong>交互式 Masking</strong>：支持 UI 驱动的 masking，用于调试 ACT transformer attention <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/README.md#L80-L95">src/inference_service/README.md:80-95</a>。</p></li>
+</ul>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/inference_service/inference_service/lerobot_policy_node.py#L102-L113">src/inference_service/inference_service/lerobot_policy_node.py:102-113</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/execution.py#L64-L70">src/robot_config/robot_config/launch_builders/execution.py:64-70</a></p>
+</section>
+<hr class="docutils" />
+<section id="launch">
+<h2>Launch 集成<a class="headerlink" href="#launch" title="Permalink to this heading"></a></h2>
+<p>推理流水线由 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> 启动系统根据当前 <code class="docutils literal notranslate"><span class="pre">control_mode</span></code> 动态启动。</p>
+<p><strong>关键 launch builder 函数</strong>：<code class="docutils literal notranslate"><span class="pre">generate_inference_node()</span></code>，位于 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/execution.py#L123-L142">src/robot_config/robot_config/launch_builders/execution.py:123-142</a>。它解析模型路径，配置执行模式（monolithic vs distributed），并设置可选的注意力可视化 sidecar <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/execution.py#L72-L120">src/robot_config/robot_config/launch_builders/execution.py:72-120</a>。</p>
+<p><strong>来源</strong>：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/execution.py#L123-L166">src/robot_config/robot_config/launch_builders/execution.py:123-166</a>，<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/config/robots/so101_single_arm.yaml#L88-L103">src/robot_config/config/robots/so101_single_arm.yaml:88-103</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="推理流水线" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="inference_architecture.html" class="btn btn-neutral float-right" title="推理架构" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-26.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/features/embodied_ai/inference/overview.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/features/embodied_ai/inference/overview.html">openEuler-26.03</a></dd>
+      <dd><a href="overview.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>数据流水线概述 &mdash; openEuler Embedded在线文档 25.03 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="遥操作与数据采集" href="teleoperation_and_data_collection.html" />
+    <link rel="prev" title="数据流水线" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview.html">IB-Robot 概述</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../getting_started/index.html">入门指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../core_concepts/index.html">核心概念</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../architecture.html">系统架构</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration/index.html">配置系统</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../protocol.html">协议转换</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference/index.html">推理流水线</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../action_dispatch/index.html">动作分发</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">数据流水线</a><ul class="current">
+<li class="toctree-l6 current"><a class="current reference internal" href="#">数据流水线概述</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">目的与范围</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">系统概览</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id4">端到端流水线架构</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#phase-1">Phase 1：数据采集</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#phase-2-episode">Phase 2：Episode 录制</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#phase-3">Phase 3：数据集转换</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#phase-4">Phase 4：训练集成</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#phase-5">Phase 5：部署反馈闭环</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="teleoperation_and_data_collection.html">遥操作与数据采集</a></li>
+<li class="toctree-l6"><a class="reference internal" href="episode_recording.html">Episode 录制</a></li>
+<li class="toctree-l6"><a class="reference internal" href="dataset_conversion_bag_to_lerobot.html">数据集转换</a></li>
+<li class="toctree-l6"><a class="reference internal" href="training_integration.html">训练集成</a></li>
+<li class="toctree-l6"><a class="reference internal" href="deployment_feedback_loop.html">部署反馈闭环</a></li>
+<li class="toctree-l6"><a class="reference internal" href="camera_tools.html">相机工具</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../motion_planning/index.html">运动规划</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../hardware/index.html">硬件集成</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../extended_capabilities/index.html">扩展能力</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../package_reference.html">包参考</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development/index.html">开发指南</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">数据流水线</a></li>
+      <li class="breadcrumb-item active">数据流水线概述</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>数据流水线概述<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源文件</summary>
+<p>生成此 wiki 页面时使用了以下文件作为上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/README.md">src/dataset_tools/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py">src/dataset_tools/dataset_tools/bag_to_lerobot.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/camera_alignment.py">src/dataset_tools/dataset_tools/camera_alignment.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py">src/dataset_tools/dataset_tools/episode_recorder.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/opencv_utils.py">src/dataset_tools/dataset_tools/opencv_utils.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/docs/tools/camera_alignment.md">src/dataset_tools/docs/tools/camera_alignment.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/test/test_camera_alignment.py">src/dataset_tools/test/test_camera_alignment.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/test/test_camera_isp_calibrator.py">src/dataset_tools/test/test_camera_isp_calibrator.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_builder.py">src/robot_config/robot_config/contract_builder.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_utils.py">src/robot_config/robot_config/contract_utils.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/__init__.py">src/robot_config/robot_config/generators/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/generators/contract.py">src/robot_config/robot_config/generators/contract.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py">src/robot_config/robot_config/launch_builders/recording.py</a></p></li>
+</ul>
+</details>
+<section id="id2">
+<h2>目的与范围<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>本文档描述 IB-Robot 中完整的数据流水线，覆盖从人工示教到数据集创建、模型训练，再部署回机器人的端到端流程。该流水线实现了<strong>契约驱动架构</strong>，保证训练数据和部署观测保持一致，消除 training-serving skew。</p>
+<p>流水线内各子系统请参见：</p>
+<ul class="simple">
+<li><p>遥操作接口与数据采集工作流：<a class="reference internal" href="teleoperation_and_data_collection.html"><span class="std std-doc">遥操作与数据采集</span></a></p></li>
+<li><p>Episode 录制实现细节：<a class="reference internal" href="episode_recording.html"><span class="std std-doc">Episode 录制</span></a></p></li>
+<li><p>数据集转换工具（<code class="docutils literal notranslate"><span class="pre">bag_to_lerobot</span></code>）：<a class="reference internal" href="dataset_conversion_bag_to_lerobot.html"><span class="std std-doc">数据集转换（bag_to_lerobot）</span></a></p></li>
+<li><p>外部训练集成：<a class="reference internal" href="training_integration.html"><span class="std std-doc">训练集成</span></a></p></li>
+<li><p>在线评估与反馈闭环：<a class="reference internal" href="deployment_feedback_loop.html"><span class="std std-doc">部署反馈闭环</span></a></p></li>
+<li><p>相机标定与对齐工具：<a class="reference internal" href="camera_tools.html"><span class="std std-doc">相机工具（对齐与 ISP 标定）</span></a></p></li>
+</ul>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L3-L19">src/dataset_tools/dataset_tools/bag_to_lerobot.py:3-19</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L1-L9">src/robot_config/robot_config/launch_builders/recording.py:1-9</a></p>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h2>系统概览<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<p>IB-Robot 数据流水线通过系统化流程，将人类专家示教转换为可部署的 AI 策略。关键创新是把 <strong>robot_config YAML 作为单一事实源</strong>，其中的 Contract 定义会贯穿所有流水线阶段，确保训练数据和部署观测经过完全相同的处理。</p>
+<p>流水线包含六个主要阶段：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Phase</p></th>
+<th class="head"><p>Purpose</p></th>
+<th class="head"><p>Key Components</p></th>
+<th class="head"><p>Output</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Collection</strong></p></td>
+<td><p>捕获专家示教</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">robot_teleop</span></code>, teleoperation devices</p></td>
+<td><p>人类控制信号</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Recording</strong></p></td>
+<td><p>保存多模态传感器数据</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">episode_recorder</span></code>, <code class="docutils literal notranslate"><span class="pre">record_cli</span></code></p></td>
+<td><p>ROS2 bag files（MCAP 格式）</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Conversion</strong></p></td>
+<td><p>转换为训练格式</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bag_to_lerobot</span></code></p></td>
+<td><p>LeRobot v3 dataset（parquet + video）</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Training</strong></p></td>
+<td><p>从示教中学习策略</p></td>
+<td><p>外部 <code class="docutils literal notranslate"><span class="pre">lerobot</span></code> 库</p></td>
+<td><p>Policy checkpoint（.pt 文件）</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Deployment</strong></p></td>
+<td><p>执行学习到的策略</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lerobot_policy_node</span></code>, <code class="docutils literal notranslate"><span class="pre">action_dispatcher_node</span></code></p></td>
+<td><p>机器人动作</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Evaluation</strong></p></td>
+<td><p>记录部署表现</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">episode_recorder</span></code></p></td>
+<td><p>用于迭代的新 episodes</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L6-L73">src/dataset_tools/dataset_tools/bag_to_lerobot.py:6-73</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L6-L9">src/robot_config/robot_config/launch_builders/recording.py:6-9</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/README.md#L12-L30">src/dataset_tools/README.md:12-30</a></p>
+</section>
+<hr class="docutils" />
+<section id="id4">
+<h2>端到端流水线架构<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
+<section id="id5">
+<h3>数据流图<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;Phase_1[Phase 1: Data Collection]&quot;
+        Human[&quot;Human Expert&lt;br/&gt;(VR/Xbox/IMU controller)&quot;]
+        TeleopNode[&quot;robot_teleop node&quot;]
+        Robot1[&quot;Physical Robot&lt;br/&gt;Execution&quot;]
+        
+        Human --&gt;|control signals| TeleopNode
+        TeleopNode --&gt;|/joint_commands| Robot1
+    end
+    
+    subgraph &quot;Phase_2[Phase 2: Recording]&quot;
+        RecorderServer[&quot;episode_recorder&lt;br/&gt;(EpisodeRecorderServer)&quot;]
+        RecordCLI[&quot;record_cli&lt;br/&gt;(interactive trigger)&quot;]
+        Sensors[&quot;Multimodal Sensors&lt;br/&gt;(cameras + /joint_states)&quot;]
+        BagFiles[&quot;ROS2 Bag Files&lt;br/&gt;(MCAP storage)&quot;]
+        
+        Robot1 --&gt; Sensors
+        Sensors --&gt;|subscribe topics| RecorderServer
+        RecordCLI --&gt;|&quot;RecordEpisode.action&quot;| RecorderServer
+        RecorderServer --&gt;|&quot;rosbag2_py.SequentialWriter&quot;| BagFiles
+    end
+    
+    subgraph &quot;Phase_3[Phase 3: Dataset Conversion]&quot;
+        BagToLR[&quot;bag_to_lerobot.py&lt;br/&gt;(main conversion script)&quot;]
+        RobotConfig[&quot;robot_config.yaml&lt;br/&gt;(Contract definition)&quot;]
+        LRDataset[&quot;LeRobot v3 Dataset&lt;br/&gt;(videos/ + data/)&quot;]
+        
+        BagFiles --&gt; BagToLR
+        RobotConfig -.-&gt;|&quot;Contract (Single Source of Truth)&quot;| BagToLR
+        BagToLR --&gt;|&quot;LeRobotDataset&quot;| LRDataset
+    end
+    
+    subgraph &quot;Phase_4[Phase 4: Training (External)]&quot;
+        LRLib[&quot;lerobot library&lt;br/&gt;(Hugging Face)&quot;]
+        PolicyCkpt[&quot;Policy Checkpoint&lt;br/&gt;(.pt file)&quot;]
+        
+        LRDataset --&gt; LRLib
+        LRLib --&gt;|&quot;train(policy_type='act')&quot;| PolicyCkpt
+    end
+    
+    subgraph &quot;Phase_5[Phase 5: Deployment]&quot;
+        PolicyNode[&quot;lerobot_policy_node&quot;]
+        DispatchNode[&quot;action_dispatcher_node&quot;]
+        Sensors2[&quot;Multimodal Sensors&lt;br/&gt;(runtime)&quot;]
+        Robot2[&quot;Physical Robot&lt;br/&gt;Execution&quot;]
+        
+        PolicyCkpt --&gt; PolicyNode
+        RobotConfig -.-&gt;|&quot;same Contract&quot;| PolicyNode
+        Sensors2 --&gt;|observations| PolicyNode
+        PolicyNode --&gt;|&quot;DispatchInfer Action&quot;| DispatchNode
+        DispatchNode --&gt;|/joint_commands| Robot2
+        Robot2 --&gt; Sensors2
+    end
+    
+    style RobotConfig fill:none,stroke-dasharray: 5 5
+    </pre><p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L10-L32">src/dataset_tools/dataset_tools/episode_recorder.py:10-32</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L12-L18">src/dataset_tools/dataset_tools/bag_to_lerobot.py:12-18</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L38-L76">src/robot_config/robot_config/launch_builders/recording.py:38-76</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="phase-1">
+<h2>Phase 1：数据采集<a class="headerlink" href="#phase-1" title="Permalink to this heading"></a></h2>
+<p>人类专家通过遥操作接口控制机器人。系统支持多种输入设备。遥操作期间，机器人实时执行动作，同时传感器数据流入 ROS2 topics。</p>
+<p>采集前，相机一致性通过以下工具保证：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">camera_alignment</span></code>：基于 ArUco 的工具，用于将当前相机位姿与参考图像匹配 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/README.md#L162-L181">src/dataset_tools/README.md:162-181</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">camera_isp_calibrator</span></code>：用于匹配相机间曝光、白平衡和色彩参数的工具 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/README.md#L189-L204">src/dataset_tools/README.md:189-204</a>。</p></li>
+</ul>
+<p>详情请参见 <a class="reference internal" href="teleoperation_and_data_collection.html"><span class="std std-doc">遥操作与数据采集</span></a> 和 <a class="reference internal" href="camera_tools.html"><span class="std std-doc">相机工具（对齐与 ISP 标定）</span></a>。</p>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/README.md#L162-L204">src/dataset_tools/README.md:162-204</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L40-L72">src/robot_config/robot_config/launch_builders/recording.py:40-72</a></p>
+</section>
+<hr class="docutils" />
+<section id="phase-2-episode">
+<h2>Phase 2：Episode 录制<a class="headerlink" href="#phase-2-episode" title="Permalink to this heading"></a></h2>
+<section id="id6">
+<h3>录制模式<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<p>系统在 <code class="docutils literal notranslate"><span class="pre">robot_config.launch_builders.recording</span></code> 中实现了两种录制模式：</p>
+<ol class="arabic simple">
+<li><p><strong>Continuous Mode</strong>：使用标准 <code class="docutils literal notranslate"><span class="pre">ros2</span> <span class="pre">bag</span> <span class="pre">record</span></code> 从 launch 到 shutdown 将所有 topics 捕获到单个 MCAP 文件 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L79-L117">src/robot_config/robot_config/launch_builders/recording.py:79-117</a>。</p></li>
+<li><p><strong>Episodic Mode</strong>：使用 <code class="docutils literal notranslate"><span class="pre">EpisodeRecorderServer</span></code> Action Server 录制带语义元数据（operator prompts）的单次示教 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L120-L143">src/robot_config/robot_config/launch_builders/recording.py:120-143</a>。</p></li>
+</ol>
+</section>
+<section id="episode-recorder">
+<h3>Episode Recorder 内部架构<a class="headerlink" href="#episode-recorder" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TB
+    subgraph &quot;EpisodeRecorderServer_Node&quot;
+        ActionServer[&quot;RecordEpisode_ActionServer&lt;br/&gt;(ibrobot_msgs/action/RecordEpisode)&quot;]
+        
+        subgraph &quot;Contract_Subscriptions&quot;
+            ObsSubs[&quot;Observation Subscriptions&lt;br/&gt;(from contract.observations)&quot;]
+            ActionSubs[&quot;Action Subscriptions&lt;br/&gt;(from contract.actions)&quot;]
+        end
+        
+        WriterState[&quot;WriterState&lt;br/&gt;(SequentialWriter + Lock)&quot;]
+        BagWriter[&quot;rosbag2_py.SequentialWriter&quot;]
+    end
+    
+    RecordCLI[&quot;record_cli.py&lt;br/&gt;(interactive client)&quot;]
+    RobotConfig[&quot;robot_config.yaml&lt;br/&gt;(Contract definition)&quot;]
+    
+    RecordCLI --&gt;|&quot;RecordEpisode.Goal(prompt='...')&quot;| ActionServer
+    RobotConfig -.-&gt;|&quot;defines topics/types/QoS&quot;| ObsSubs
+    RobotConfig -.-&gt;|&quot;defines topics/types/QoS&quot;| ActionSubs
+    
+    ActionServer --&gt;|&quot;WriterState.writer&quot;| BagWriter
+    ObsSubs --&gt;|&quot;serialize_message()&quot;| BagWriter
+    ActionSubs --&gt;|&quot;serialize_message()&quot;| BagWriter
+    WriterState --- BagWriter
+    </pre><p><strong>关键特性</strong>：</p>
+<ul class="simple">
+<li><p><strong>单一事实源</strong>：订阅在节点启动时基于 <code class="docutils literal notranslate"><span class="pre">robot_config.yaml</span></code> 的 <code class="docutils literal notranslate"><span class="pre">contract</span></code> section 创建 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L21-L25">src/dataset_tools/dataset_tools/episode_recorder.py:21-25</a>。</p></li>
+<li><p><strong>直接流式写入 Bag</strong>：消息收到后立即通过 <code class="docutils literal notranslate"><span class="pre">rosbag2_py.SequentialWriter</span></code> 写入，并使用内部缓存平滑写入突发 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L8-L12">src/dataset_tools/dataset_tools/episode_recorder.py:8-12</a>。</p></li>
+<li><p><strong>元数据嵌入</strong>：operator prompt 和 dataset 级元数据存储在 bag 的 <code class="docutils literal notranslate"><span class="pre">metadata.yaml</span></code> 中 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L29-L32">src/dataset_tools/dataset_tools/episode_recorder.py:29-32</a>。</p></li>
+</ul>
+<p>详情请参见 <a class="reference internal" href="episode_recording.html"><span class="std std-doc">Episode 录制</span></a>。</p>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L1-L68">src/dataset_tools/dataset_tools/episode_recorder.py:1-68</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L120-L143">src/robot_config/robot_config/launch_builders/recording.py:120-143</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/README.md#L9-L10">src/dataset_tools/README.md:9-10</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="phase-3">
+<h2>Phase 3：数据集转换<a class="headerlink" href="#phase-3" title="Permalink to this heading"></a></h2>
+<section id="bag-to-lerobot">
+<h3>bag_to_lerobot 工具<a class="headerlink" href="#bag-to-lerobot" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">bag_to_lerobot.py</span></code> 脚本将 ROS 2 bags 转换为 LeRobot v3 格式。它使用与实时推理流水线<strong>完全相同的 contract-aware 处理工具</strong>，避免 training-serving skew <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L8-L10">src/dataset_tools/dataset_tools/bag_to_lerobot.py:8-10</a>。</p>
+<p><strong>转换工作流</strong>：</p>
+<ol class="arabic simple">
+<li><p><strong>加载 Contract</strong>：从 <code class="docutils literal notranslate"><span class="pre">robot_config.yaml</span></code> 读取 <code class="docutils literal notranslate"><span class="pre">contract</span></code> section <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L14-L15">src/dataset_tools/dataset_tools/bag_to_lerobot.py:14-15</a>。</p></li>
+<li><p><strong>解码</strong>：扫描 bag，并使用共享的 <code class="docutils literal notranslate"><span class="pre">tensormsg</span></code> converters 解码消息 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L115-L117">src/dataset_tools/dataset_tools/bag_to_lerobot.py:115-117</a>。</p></li>
+<li><p><strong>重采样</strong>：将所有数据流对齐到 <code class="docutils literal notranslate"><span class="pre">contract.rate_hz</span></code> 定义的频率 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L17-L18">src/dataset_tools/dataset_tools/bag_to_lerobot.py:17-18</a>。</p></li>
+<li><p><strong>写入</strong>：将数据导出为 Parquet 文件，将图像导出为 H.264/MP4 视频 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L60-L66">src/dataset_tools/dataset_tools/bag_to_lerobot.py:60-66</a>。</p></li>
+</ol>
+<p>详情请参见 <a class="reference internal" href="dataset_conversion_bag_to_lerobot.html"><span class="std std-doc">数据集转换（bag_to_lerobot）</span></a>。</p>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L1-L73">src/dataset_tools/dataset_tools/bag_to_lerobot.py:1-73</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/contract_utils.py#L94-L105">src/robot_config/robot_config/contract_utils.py:94-105</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="phase-4">
+<h2>Phase 4：训练集成<a class="headerlink" href="#phase-4" title="Permalink to this heading"></a></h2>
+<p>IB-Robot 与外部 <code class="docutils literal notranslate"><span class="pre">lerobot</span></code> 库集成，用于策略训练。转换后的数据集包含 LeRobot 训练脚本所需的 <code class="docutils literal notranslate"><span class="pre">meta/info.json</span></code>、<code class="docutils literal notranslate"><span class="pre">meta/stats.json</span></code> 和 <code class="docutils literal notranslate"><span class="pre">meta/tasks.parquet</span></code> 文件。</p>
+<p><strong>集成点</strong>：</p>
+<ul class="simple">
+<li><p><strong>Contract Fingerprint</strong>：<code class="docutils literal notranslate"><span class="pre">bag_to_lerobot</span></code> 使用 <code class="docutils literal notranslate"><span class="pre">contract_fingerprint</span></code> 确保模型基于正确的硬件配置训练 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L94-L98">src/dataset_tools/dataset_tools/bag_to_lerobot.py:94-98</a>。</p></li>
+<li><p><strong>Normalization</strong>：支持 <code class="docutils literal notranslate"><span class="pre">lerobot_norm_mode</span></code>（例如 <code class="docutils literal notranslate"><span class="pre">min_max</span></code>）和 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> 中定义的关节转换表 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L106-L113">src/dataset_tools/dataset_tools/bag_to_lerobot.py:106-113</a>。</p></li>
+</ul>
+<p>详情请参见 <a class="reference internal" href="training_integration.html"><span class="std std-doc">训练集成</span></a>。</p>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/bag_to_lerobot.py#L60-L66">src/dataset_tools/dataset_tools/bag_to_lerobot.py:60-66</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/dataset_tools/episode_recorder.py#L97-L99">src/dataset_tools/dataset_tools/episode_recorder.py:97-99</a></p>
+</section>
+<hr class="docutils" />
+<section id="phase-5">
+<h2>Phase 5：部署反馈闭环<a class="headerlink" href="#phase-5" title="Permalink to this heading"></a></h2>
+<p>流水线支持持续改进闭环，在线评估数据可被记录并用于领域适配或微调。</p>
+<ol class="arabic simple">
+<li><p><strong>Deploy</strong>：使用 <code class="docutils literal notranslate"><span class="pre">lerobot_policy_node</span></code> 以 <code class="docutils literal notranslate"><span class="pre">model_inference</span></code> 模式运行机器人。</p></li>
+<li><p><strong>Evaluate</strong>：使用 <code class="docutils literal notranslate"><span class="pre">record_cli</span></code> 在模型执行期间触发 episodic recording。处于 <code class="docutils literal notranslate"><span class="pre">model_inference</span></code> 模式时，recorder 会在每个 episode 前调用 <code class="docutils literal notranslate"><span class="pre">/action_dispatcher/reset</span></code> 清空动作队列 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/README.md#L96-L102">src/dataset_tools/README.md:96-102</a>。</p></li>
+<li><p><strong>Refine</strong>：将新的 “evaluation bags” 转换为 LeRobot 格式，并追加到训练集中。</p></li>
+</ol>
+<p>详情请参见 <a class="reference internal" href="deployment_feedback_loop.html"><span class="std std-doc">部署反馈闭环</span></a>。</p>
+<p><strong>来源</strong>: <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/robot_config/robot_config/launch_builders/recording.py#L65-L72">src/robot_config/robot_config/launch_builders/recording.py:65-72</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/master/src/dataset_tools/README.md#L96-L102">src/dataset_tools/README.md:96-102</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="数据流水线" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="teleoperation_and_data_collection.html" class="btn btn-neutral float-right" title="遥操作与数据采集" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-26.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/features/embodied_ai/data_pipeline/overview.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/features/embodied_ai/data_pipeline/overview.html">openEuler-26.03</a></dd>
+      <dd><a href="overview.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>
