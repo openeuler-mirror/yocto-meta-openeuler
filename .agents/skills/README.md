@@ -16,6 +16,7 @@
 | [sdk-verify](sdk-verify) | 构建/测试 | 一键验证 SDK（do_populate_sdk 产物）的内核驱动与 C/C++ 交叉编译能力 | SDK 生成或改动后的回归验证，覆盖 qemu-aarch64/qemu-arm/qemu-riscv64。 |
 | [ibrobot-test](ibrobot-test) | 构建/测试 | IB-Robot 跨平台功能测试（qemu 无 NPU / 真机昇腾） | 构建 oebridge/ibrobot/systemd 镜像、100G 大磁盘从盘启动、run_tests/inference 推理闭环。 |
 | [send-pr](send-pr) | 工作流 | 向 GitCode/AtomGit 上游仓库提交 PR | 从 upstream 建分支、cherry-pick、推送 fork、GitCode API 创建 PR。 |
+| [branch-infra-adapt](branch-infra-adapt) | 工作流 | 拉取新版本分支并适配分支基础设施 | 「拉 XX 分支」「适配基础设施」「版本分支工程适配」：env.yaml 容器标签、samples 镜像名、init_env 参数、镜像脚本克隆分支、Dockerfile 基础镜像同步及 PR 提交。 |
 | [toolchain-git-flow](toolchain-git-flow) | 工作流 | Git 提交与推送全流程，强制 DCO/gitlint 规范 | 提交代码、推送、检查提交信息、修复 gitlint 报错。 |
 | [git-commit](git-commit) | 工作流 | commit message 格式与写作规范 | 标题/正文/签名、Co-Authored-By AI 元数据、单一逻辑变更拆分。 |
 | [toolchain-architecture](toolchain-architecture) | 知识 | 编译链目录结构、oebuild 集成与向后兼容设计 | 目录结构、符号链接、容器镜像设计、工作原理。 |
