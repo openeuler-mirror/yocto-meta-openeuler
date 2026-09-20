@@ -6,14 +6,8 @@ SRC_URI:append:aarch64 = " file://fix-link-error-unknown-argument.patch \
         "
 
 SRC_URI:append:toolchain-clang = " \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '', \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' file://fix-asm-ifc-string-compare.patch', \
         ' file://fix-extra-warning-in-clang.patch', d)} \
-    "
-SRC_URI:append:toolchain-clang:qemu-aarch64 = " \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' file://fix-asm-ifc-string-compare-qemu-aarch64.patch', '', d)} \
-    "
-SRC_URI:append:toolchain-clang:raspberrypi4-64 = " \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' file://fix-asm-ifc-string-compare-raspberrypi4-64.patch', '', d)} \
     "
 
 DEPENDS:append = " clang-cross-${TARGET_ARCH}"
