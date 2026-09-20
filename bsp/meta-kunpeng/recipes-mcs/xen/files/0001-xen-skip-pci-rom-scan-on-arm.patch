@@ -1,0 +1,17 @@
+--- a/xen/common/efi/boot.c	2026-09-17 17:28:37.274793592 +0800
++++ b/pci-only.c	2026-09-17 22:07:04.317595092 +0800
+@@ -1015,6 +1015,14 @@
+     UINTN i, nr_pci, size = 0;
+     struct efi_pci_rom *last = NULL;
+ 
++#ifdef CONFIG_ARM
++    /* Shadowing x86 option ROMs is meaningless on ARM, and the scan pokes
++     * host bridges / option ROMs of potentially faulty devices before
++     * the guest kernel and its drivers load - it has been observed to wedge such
++     * devices. Skip it entirely.
++     */
++    return;
++#endif
+     status = efi_bs->LocateHandle(ByProtocol, &pci_guid, NULL, &size, NULL);
+     if ( status != EFI_BUFFER_TOO_SMALL )
+         return;
