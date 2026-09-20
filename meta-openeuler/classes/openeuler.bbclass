@@ -320,7 +320,16 @@ def download_repo(d, repo_dir, repo_url ,version = None):
     # manifest pin bump. Skipping the no-op checkout removes the rewrite
     # and with it the race window.
     try:
-        if str(repo.head.commit) != version:
+        # repo.head.commit raises ValueError on an unborn HEAD: a repo
+        # freshly fetched by SHA (remote.fetch(version, depth=1)) has the
+        # commit object but no branch ref yet. Treat that as "not at
+        # version" so the checkout below populates it, as the previous
+        # unconditional checkout did.
+        try:
+            at_version = repo.head.is_valid() and str(repo.head.commit) == version
+        except Exception:
+            at_version = False
+        if not at_version:
             repo.git.checkout(version)
     except Exception as e:
         bb.fatal("checkout %s to version %s failed: %s" % (repo_dir, version, str(e)))
