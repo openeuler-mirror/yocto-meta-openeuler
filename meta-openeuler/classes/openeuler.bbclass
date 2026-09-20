@@ -309,9 +309,19 @@ def download_repo(d, repo_dir, repo_url ,version = None):
         bb.debug(1, 'commit does not exist, shallow fetch: ' + version)
         remote.fetch(version, depth=1)
 
-    # here, we use try to avoid users modify the repo, if user modified, just given warning
+    # Only check out when the working tree is not already at the target
+    # version. Multiple recipes share one source repo directory via
+    # OPENEULER_LOCAL_NAME: their do_fetch tasks serialize on file.lock,
+    # but do_unpack of one recipe copies the shared directory while
+    # another recipe's do_fetch may still be running. An unconditional
+    # checkout re-checks-out the same commit for every recipe (rewriting
+    # the tree/index) and races those concurrent copies, making
+    # "cp -fpPRH <repo_dir> ." fail intermittently right after any
+    # manifest pin bump. Skipping the no-op checkout removes the rewrite
+    # and with it the race window.
     try:
-        repo.git.checkout(version)
+        if str(repo.head.commit) != version:
+            repo.git.checkout(version)
     except Exception as e:
         bb.fatal("checkout %s to version %s failed: %s" % (repo_dir, version, str(e)))
 
