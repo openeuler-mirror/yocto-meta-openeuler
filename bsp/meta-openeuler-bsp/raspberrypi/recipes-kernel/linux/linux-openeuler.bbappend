@@ -5,14 +5,8 @@
 SRC_URI:append:raspberrypi4-64 = " \
     file://src-kernel-${PV}-tag-rpi/0000-raspberrypi-kernel.patch \
 "
-# same for the kernel6 zImage patch: the mainline variant is refreshed
-# per the kernel-6.6 baseline (arch/arm64/Kconfig gained more trailing
-# sources), while the tag-rpi tree still ends right after the kvm
-# source, so take a tag-matching variant
-SRC_URI:remove:raspberrypi4-64 = "file://patches/${ARCH}/0001-kernel6.6-arm64-add-zImage-support-for-arm64.patch"
-SRC_URI:append:raspberrypi4-64 = " \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
-        file://patches/${ARCH}/0001-kernel6.6-arm64-add-zImage-support-for-arm64-tag-rpi.patch \
-    ', '', d)} \
-"
+# since the 6.6.0-174.0.0 packaging the tag-rpi tree moves to the same
+# kernel tag as the mainline kernel-6.6 baseline, so the mainline zImage
+# patch (refreshed for 174.0.0) applies and no tag-matching variant is
+# needed anymore
 require linux-openeuler-rpi.inc
