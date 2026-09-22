@@ -48,37 +48,63 @@
 .. code-block:: shell
 
     $ mica gdb uniproton-gdb
-    gdb /root/raspi4.elf -ex 'target extended-remote :5678' -ex 'set remote run-packet off' -ex 'set remotetimeout unlimited'
+    gdb /lib/firmware/rpi4-uniproton-gdb.elf -ex 'set remotetimeout unlimited' -ex 'target extended-remote :5678' -ex 'set remote run-packet off'
     GNU gdb (GDB) 14.1
     Copyright (C) 2023 Free Software Foundation, Inc.
-    License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+    License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
     This is free software: you are free to change and redistribute it.
     There is NO WARRANTY, to the extent permitted by law.
     Type "show copying" and "show warranty" for details.
     This GDB was configured as "aarch64-openeuler-linux".
-    Type "show configuration" for configuration details.
-    For bug reporting instructions, please see:
-    <https://www.gnu.org/software/gdb/bugs/>.
-    Find the GDB manual and other documentation resources online at:
-        <http://www.gnu.org/software/gdb/documentation/>.
-
     For help, type "help".
     Type "apropos word" to search for commands related to "word"...
-    Reading symbols from /root/raspi4.elf...
+    Reading symbols from /lib/firmware/rpi4-uniproton-gdb.elf...
+    (No debugging symbols found in /lib/firmware/rpi4-uniproton-gdb.elf)
     Remote debugging using :5678
     warning: Remote gdbserver does not support determining executable automatically.
-    RHEL <=6.8 and <=7.2 versions of gdbserver do not support such automatic executable detection.
-    The following versions of gdbserver support it:
-    - Upstream version of gdbserver (unsupported) 7.10 or later
-    - Red Hat Developer Toolset (DTS) version of gdbserver from DTS 4.0 or later (only on x86_64)
-    - RHEL-7.3 versions of gdbserver (on any architecture)
-    0x000000007b025eb4 in OsGdbArchInit ()
+    0x000000007b025f80 in ?? ()
     Support for the 'vRun' packet on the current remote target is set to "off".
     (gdb)
 
 第一行打印的gdb命令是输入 ``mica gdb <name>`` 后所实际执行的gdb命令，
 用户可以依据此提示进一步调试。之后，用户进入GDB命令行，可以执行相应的GDB命令。
-接下来会演示一些当前Uniproton支持的调测命令：
+
+对于镜像自带的精简版 ``rpi4-uniproton-gdb.elf``（无符号表），基本控制流程如下：
+
+.. code-block:: shell
+
+    (gdb) set confirm off
+    (gdb) kill
+    [Inferior 1 (Remote target) killed]
+    [openamp] get rsctable ...
+    [openamp]: get vring0: da 70060000
+    [openamp]: get vring1: da 700600e0
+    [rp] started
+    [rp] umt task started
+    The program is not being run.
+    (gdb) quit
+    gdb uniproton-gdb successfully!
+
+1. ``set confirm off`` 关闭GDB的交互确认提示。
+2. ``kill`` 终止当前的RTOS，之后Uniproton会自动重新启动，openamp相关服务
+   （rpmsg等）随之重新初始化，内核日志中可以看到 ``get rsctable``、
+   ``get vring0/1`` 及 ``rpmsg/umt task started`` 等输出。
+3. ``quit`` 退出GDB调试模式，Uniproton会清除所有断点，并进入正常的运行状态。
+
+退出GDB后，可以通过 ``mica status`` 确认实例处于Running状态且相关服务已经就绪：
+
+.. code-block:: shell
+
+    $ mica status
+    Name                          Assigned CPU        State               Service
+    uniproton                     3                   Offline
+    uniproton-gdb                 3                   Running             debug-rtos-kernel rpmsg-tty(/dev/ttyRPMSG0) rpmsg-rpc rpmsg-umt
+
+如需源码级的断点、单步、监视点等调测，需要使用带符号表的UniProton elf
+（镜像自带的 ``rpi4-uniproton-gdb.elf`` 为精简版本，GDB会提示
+``No debugging symbols found``）。可以在GDB中通过 ``file`` 命令加载带符号的elf，
+或参考第一行打印的gdb命令替换elf路径后自行启动GDB。
+接下来会演示一些当前Uniproton支持的源码级调测命令：
 
 .. code-block:: shell
 
