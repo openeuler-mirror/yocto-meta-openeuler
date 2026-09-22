@@ -3,7 +3,18 @@ PV = "1.36.1"
 # use openEuler defconfig
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
-# files, patches can't be applied in openeuler or conflict with openeuler
+# The base recipe is poky busybox_1.35.0.bb; PV is overridden to openEuler's
+# 1.36.1 above. Most poky patches below are obsolete or unwanted against the
+# 1.36.1 source, so they are dropped via SRC_URI:remove. Each entry falls into
+# one of three buckets (none is a textual clash with an openEuler patch: openEuler
+# only backports 3 CVEs, applied via SRC_URI:append further down):
+#   (1) already in the 1.36.1 baseline / upstream -- CVE-2022-30065 and its two
+#       follow-ups (sockaddr2str / nslookup printable-char sanitize) plus the
+#       uudecode testsuite check; keeping them would fail to apply or double-fix.
+#   (2) poky / distro-specific policy Embedded does not want: depmod-debug,
+#       devmem-128bit (devmem is instead gated by files/devmem.cfg),
+#       udhcpc-no_deconfig, fail_on_no_media, recognize_connmand.
+#   (3) config fragment longopts.cfg, superseded by the openEuler defconfig.
 SRC_URI:remove = " \
             file://0001-depmod-Ignore-.debug-directories.patch \
             file://longopts.cfg \
@@ -13,9 +24,6 @@ SRC_URI:remove = " \
             file://0001-devmem-add-128-bit-width.patch \
             file://busybox-udhcpc-no_deconfig.patch \
             file://0001-testsuite-check-uudecode-before-using-it.patch \
-            file://0001-gen_build_files-Use-C-locale-when-calling-sed-on-glo.patch \
-            file://0001-awk-fix-CVEs.patch \
-            file://0002-man-fix-segfault-in-man-1.patch \
             file://fail_on_no_media.patch \
             file://recognize_connmand.patch \
             "
