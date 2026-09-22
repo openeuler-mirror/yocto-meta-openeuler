@@ -1,0 +1,54 @@
+From 0b3833d6c3b751c6dfb40eeb2ef852984c58f546 Mon Sep 17 00:00:00 2001
+From: openEuler Buildteam <buildteam@openeuler.org>
+Date: Wed, 1 Aug 2018 10:58:28 +0200
+Subject: logind: set RemoveIPC to false by default
+
+Resolves: #1523233
+---
+ man/logind.conf.xml      | 2 +-
+ src/login/logind-core.c  | 2 +-
+ src/login/logind.conf.in | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/man/logind.conf.xml b/man/logind.conf.xml
+index 9682add..1a87cf6 100644
+--- a/man/logind.conf.xml
++++ b/man/logind.conf.xml
+@@ -341,7 +341,7 @@
+         user fully logs out. Takes a boolean argument. If enabled, the user may not consume IPC resources after the
+         last of the user's sessions terminated. This covers System V semaphores, shared memory and message queues, as
+         well as POSIX shared memory and message queues. Note that IPC objects of the root user and other system users
+-        are excluded from the effect of this setting. Defaults to <literal>yes</literal>.</para></listitem>
++        are excluded from the effect of this setting. Defaults to <literal>no</literal>.</para></listitem>
+       </varlistentry>
+ 
+       <varlistentry>
+diff --git a/src/login/logind-core.c b/src/login/logind-core.c
+index 7d4ff6c..05fd198 100644
+--- a/src/login/logind-core.c
++++ b/src/login/logind-core.c
+@@ -34,7 +34,7 @@ void manager_reset_config(Manager *m) {
+ 
+         m->n_autovts = 6;
+         m->reserve_vt = 6;
+-        m->remove_ipc = true;
++        m->remove_ipc = false;
+         m->inhibit_delay_max = 5 * USEC_PER_SEC;
+         m->user_stop_delay = 10 * USEC_PER_SEC;
+ 
+diff --git a/src/login/logind.conf.in b/src/login/logind.conf.in
+index 0b10df6..09c3638 100644
+--- a/src/login/logind.conf.in
++++ b/src/login/logind.conf.in
+@@ -43,7 +43,7 @@
+ #IdleActionSec=30min
+ #RuntimeDirectorySize=10%
+ #RuntimeDirectoryInodesMax=
+-#RemoveIPC=yes
++#RemoveIPC=no
+ #InhibitorsMax=8192
+ #SessionsMax=8192
+ #StopIdleSessionSec=infinity
+-- 
+2.23.0
+
