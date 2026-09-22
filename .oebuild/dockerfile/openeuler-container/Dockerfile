@@ -10,7 +10,7 @@ autoconf automake m4 bison bc libtool gettext-devel createrepo_c net-tools \
 wget sudo hostname rpcgen texinfo python meson dosfstools mtools libmpc-devel \
 gmp-devel ninja-build numactl-devel make python3 python3-pip screen glibc-locale-archive \
 iproute xz unzip help2man libstdc++-static gcc g++ rsync python3-devel gdisk umoci skopeo \
-libxslt vim hwdata perl-XML-Parser iptables golang quilt
+libxslt vim hwdata perl-XML-Parser iptables golang quilt dtc patchelf e2fsprogs-devel
 
 RUN wget https://repo.oepkgs.net/openeuler/rpm/openEuler-20.03-LTS-SP1/compatible/c7/x86_64/Packages/git-lfs-2.10.0-1.x86_64.rpm
 RUN rpm -ivh git-lfs-2.10.0-1.x86_64.rpm && rm -f git-lfs-2.10.0-1.x86_64.rpm
@@ -110,6 +110,18 @@ RUN tar zxf clang-llvm-17.0.6.tar.gz
 RUN sudo mv clang-llvm-17.0.6 llvm && sudo rm -rf clang-llvm-17.0.6.tar.gz merge_data.sh
 
 RUN sudo chmod -R 777 /opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-linux/var/
+
+# Fix llvm directory permissions (clang-17 and include files need to be readable by all users)
+RUN chmod -R 755 /usr1/openeuler/llvm/
+
+# Configure pip to use Chinese mirror for better connectivity
+RUN mkdir -p /etc/pip.conf.d && \
+    echo '[global]' > /etc/pip.conf && \
+    echo 'index-url = https://pypi.tuna.tsinghua.edu.cn/simple' >> /etc/pip.conf && \
+    echo 'trusted-host = pypi.tuna.tsinghua.edu.cn' >> /etc/pip.conf
+
+# Pre-install Python dependencies used by oebuild inside the container
+RUN pip3 install pyyaml GitPython
 
 WORKDIR /home/${user}
 

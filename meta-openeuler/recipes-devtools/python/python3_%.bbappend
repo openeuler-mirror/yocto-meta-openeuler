@@ -37,7 +37,15 @@ SRC_URI:prepend = " \
 # achieved with just an environment variable. Reference: poky's commit af4284d39d8(python3targetconfig.bbclass:
 # use PYTHONPATH to point to the target config)
 setup_target_config:append:class-native () {
-        export PYTHONPATH=${STAGING_LIBDIR}/../lib64/python-sysconfigdata:$PYTHONPATH
+        export PYTHONPATH=${STAGING_LIBDIR_NATIVE}/python-sysconfigdata:$PYTHONPATH
+}
+
+# openEuler uses /usr/lib64 (not /usr/lib) as the default libdir, so the
+# target sysconfigdata lands in ${STAGING_LIBDIR}/../lib64/python-sysconfigdata
+# instead of ${STAGING_LIBDIR}/python-sysconfigdata where python3targetconfig
+# expects it. Fix the PYTHONPATH for target builds accordingly.
+setup_target_config:append:class-target () {
+        export PYTHONPATH=${STAGING_LIBDIR}/../lib64/python-sysconfigdata:${STAGING_LIBDIR}/python-sysconfigdata:$PYTHONPATH
 }
 
 # meta-openeuler layer does not need to build python3-native dependency packages,
