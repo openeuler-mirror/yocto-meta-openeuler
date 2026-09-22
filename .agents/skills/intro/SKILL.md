@@ -19,6 +19,7 @@ Agent 在触发本 skill 时，**必须首先**向用户展示以下欢迎文案
 | :--- | :--- |
 | **oebuild** | oebuild 构建工具：init/update/generate/bitbake/runqemu 全流程 |
 | **yocto-openeuler-recipe** | 新增/更新 BitBake recipe 与 bbappend，file:// SRC_URI 适配 |
+| **yocto-openeuler-patch-analysis** | 多来源补丁分析与融合：分类/取舍、死补丁与 patch-fuzz 消除、do_patch 验证（配合 yocto-openeuler-recipe） |
 | **sstate-cache-debug** | 诊断 sstate-cache 未命中，bitbake-diffsigs 对比签名、export 哈希污染 |
 | **toolchain-build** | 通过 `menu.sh` 构建 GCC / LLVM / Clang+musl 交叉编译链（Docker 容器化） |
 | **sdk-verify** | 一键验证 SDK：交叉编译 C/C++ + 内核模块，qemu 内 SSH 验证 |
@@ -61,6 +62,7 @@ oebuild 和 menu.sh 的关系      → toolchain-architecture
 更新/生成构建配置              → oebuild
 新增/更新 recipe               → yocto-openeuler-recipe
 bbappend / SRC_URI 适配        → yocto-openeuler-recipe
+补丁分析/融合/死补丁/fuzz       → yocto-openeuler-patch-analysis
 sstate 缓存未命中/意外重建      → sstate-cache-debug
 native 任务哈希不一致           → sstate-cache-debug
 验证 SDK / 内核模块编译        → sdk-verify

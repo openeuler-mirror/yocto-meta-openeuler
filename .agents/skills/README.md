@@ -11,6 +11,7 @@
 | [intro](intro) | 引导 | 所有 skill 的统一导航入口，按仓库状态推荐技能 | 「介绍」「有哪些功能」「help」「入门」「intro」等。 |
 | [oebuild](oebuild) | 构建 | OpenEuler Embedded 构建全流程与容器环境管理 | oebuild init/update/generate/bitbake/runqemu，Docker 容器、compile.yaml 配置。 |
 | [yocto-openeuler-recipe](yocto-openeuler-recipe) | 构建 | BitBake recipe 新增/更新/分析，openEuler 源码适配 | 新增/更新 recipe 与 bbappend，SRC_URI file:// 适配、补丁合并。 |
+| [yocto-openeuler-patch-analysis](yocto-openeuler-patch-analysis) | 构建 | 多来源补丁分析与融合（src-openeuler + yocto + 本层），配合 yocto-openeuler-recipe | 补丁分类/取舍、冲突/重复/死补丁检测、patch-fuzz 消除、do_patch 顺序与验证。 |
 | [toolchain-build](toolchain-build) | 构建 | 通过 `menu.sh` 构建 GCC/LLVM/Clang+musl 交叉编译链 | `menu.sh`、`ct-ng build`、容器构建、产物验证。 |
 | [sstate-cache-debug](sstate-cache-debug) | 构建 | 诊断 sstate-cache 未命中与 native 意外重建 | bitbake-diffsigs 对比签名、machine conf 误用 export 哈希污染。 |
 | [sdk-verify](sdk-verify) | 构建/测试 | 一键验证 SDK（do_populate_sdk 产物）的内核驱动与 C/C++ 交叉编译能力 | SDK 生成或改动后的回归验证，覆盖 qemu-aarch64/qemu-arm/qemu-riscv64。 |
