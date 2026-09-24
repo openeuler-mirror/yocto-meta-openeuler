@@ -5,7 +5,8 @@
 openEuler Embedded 25.03
 ###########################
 
-openEuler Embedded 25.03特性上最大亮点是率先支持了openEuler新一代软件包机制epkg，同时本版本对以往遗留的深层次的问题做了系统性的清理
+openEuler Embedded 25.03特性上最大亮点是率先支持了openEuler新一代软件包机制epkg，同时本版本对以往遗留的深层次的问题做了系统性的清理。
+
 本版的主要更新如下：
 
 * 基础设施

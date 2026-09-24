@@ -65,7 +65,7 @@ openEuler Embedded 23.03是openEuler Embedded第三个创新版本，从本次�
 
     - meta-ROS，ros-core，ros-base的支持
 
-    - 基于Priginbot的激光雷达导航Demo
+    - 基于Originbot的激光雷达导航Demo
 
   - 南向BSP
 

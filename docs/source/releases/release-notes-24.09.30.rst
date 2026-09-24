@@ -5,8 +5,9 @@
 openEuler Embedded 24.09
 ###########################
 
-openEuler Embedded 24.09是openEuler Embedded第二个LTS版本后的第一个创新版本，在总体上相对于24.03没有大的变化，主要是修复发现的问题，完善已有实现，
-本版的主要更新如下：
+openEuler Embedded 24.09是openEuler Embedded第二个LTS版本后的第一个创新版本，在总体上相对于24.03没有大的变化，主要是修复发现的问题，完善已有实现。
+
+本版本的主要更新如下：
 
 * 基础设施
 

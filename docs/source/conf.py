@@ -35,7 +35,7 @@ copyright = '2026, openEuler Embedded'
 author = 'openEuler Embedded'
 
 # The full version, including alpha/beta/rc tags
-release = '25.03'
+release = '26.09'
 
 
 # -- General configuration ---------------------------------------------------
