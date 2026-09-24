@@ -153,7 +153,7 @@ openEuler Embedded采用yocto构建，同时设计了基于Python的元工具 `o
 
    QEMU运行成功并登录后，将会呈现openEuler Embedded的Shell。
 
-   如果想关闭当前镜像，可以使用'<Ctrl-A>+X'直接退出，或者在初始用户登录完成后，通过以下命令关闭:
+   如果想关闭当前镜像，可以先按 `Ctrl+A` 再按 `X` 退出，或者在初始用户登录完成后，通过以下命令关闭:
 
    .. code-block:: console
 

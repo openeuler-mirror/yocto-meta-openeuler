@@ -19,5 +19,5 @@ openEuler Embedded 22.09是openEuler Embedded第二个创新版本，包含的�
    - 安全加固指导，详见 :ref:`security_hardening`
    - 基于Preempt-RT的软实时，详见 :ref:`preempt_rt`
 * 构建系统
-   - 优化后的openEuler Embedded构建体系, 详见 openEuler-22.09版本->构建系统->快速构建->容器环境下的快速构建指导
+   - 优化后的openEuler Embedded构建体系，详见 `容器环境下的快速构建指导 <https://pages.openeuler.openatom.cn/embedded/docs/build/html/openEuler-22.09/yocto/quickbuild/container-build.html>`_
 
