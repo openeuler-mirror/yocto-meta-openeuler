@@ -106,5 +106,12 @@ RUN set -eux; \
 
 WORKDIR /home/${user}
 
-# install python package without caching
-RUN pip3 install --no-cache-dir cryptography pyyaml GitPython -i https://pypi.tuna.tsinghua.edu.cn/simple
+# install python packages system-wide (not into openeuler's ~/.local):
+# bitbake launched by oebuild runqemu runs as root in a fresh container and
+# must import pyyaml/GitPython from system site-packages for
+# openeuler.bbclass manifest parsing; also make /etc/shadow readable by the
+# shadow group so sudo PAM works when runqemu sets up tap devices
+USER root
+RUN pip3 install --no-cache-dir cryptography pyyaml GitPython -i https://pypi.tuna.tsinghua.edu.cn/simple \
+    && chmod 640 /etc/shadow
+USER openeuler
