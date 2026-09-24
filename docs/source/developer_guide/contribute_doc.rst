@@ -3,7 +3,7 @@
 文档提交指导
 ##################
 
-openEuler Embedded采用Sphinx来构建文档，生成html静态页面，并最终托管在gitee pages上。
+openEuler Embedded采用Sphinx来构建文档，生成html静态页面。
 本章主要简述如何通过Sphinx向openEuler Embedded贡献文档。
 
 关于Sphinx
@@ -92,7 +92,7 @@ reStructuredText的语法无需专门记忆，用时查询即可，具体可参�
 
   .. attention::
 
-   - 新增文档必须将该文档加入到对应目录的index索引文件中，新增目录必须将目录和索引加入到 :file:`docs/source/getting_started/index.html` 中，图片加入到 :file:`docs/image/` 目录中。
+   - 新增文档必须将该文档加入到对应目录的index索引文件中，新增目录必须将目录和索引加入到 :file:`docs/source/getting_started/index.rst` 中，图片加入到 :file:`docs/image/` 目录中。
    - git提交时标题加上 :file:`doc:` 开头，例如doc:(空一格)modify doc。并加上Signed-off-by，与提交的message中间空一行。
    - 提交PR时标题要以  :file:`[文档]` 开头，例如[文档]：修改xx文档内容。如果有issue，要和issue进行关联。
 
@@ -242,8 +242,8 @@ easy_install可以自动下载并安装sphinx以及它所依赖的其他模块�
 
   .. attention::
 
-   - 新增文档必须将该文档加入到对应目录的index索引文件中，新增目录必须将目录和索引加入到 :file:`docs/source/getting_started/index.html` 中，图片加入到 :file:`docs/image/` 目录中。
-   - git提交时标题加上 :file:`doc:` 开头，例如doc:(空一格)modify doc。并加上Signed-off-by，与提交的message中间空一行。
+   - 新增文档必须将该文档加入到对应目录的index索引文件中，新增目录必须将目录和索引加入到 :file:`docs/source/getting_started/index.rst` 中，图片加入到 :file:`docs/image/` 目录中。
+   - git提交时标题加上 :file:`doc:` 开头，例如 `doc: modify doc`。并加上Signed-off-by，与提交的message中间空一行。
    - 提交PR时标题要以  :file:`[文档]` 开头，例如[文档]：修改xx文档内容。如果有issue，要和issue进行关联。
 
 .. [#sphinx_web] `Sphinx官方网站 <https://www.sphinx-doc.org/en/master/>`_
