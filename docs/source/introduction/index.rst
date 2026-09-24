@@ -14,7 +14,7 @@
 
         openEuler Embedded概貌
 
-在上述背景下，openEuler Embedded旨在成为一个以Linux为中心的综合嵌入式软件平台。如上图所示，openEuler Embedded中各组成部分的关系类似于一个“太阳系”的结构：
+在上述背景下，openEuler Embedded（下文可简称OEE）旨在成为一个以Linux为中心的综合嵌入式软件平台。如上图所示，openEuler Embedded中各组成部分的关系类似于一个“太阳系”的结构：
 复杂而强大的Linux平台作为整个星系的中心，提供丰富的生态与功能、强大的基础设施，而不同的非Linux运行时“行星”则围绕着Linux这颗“太阳”提供各具特色的功能与生态，例如通过硬实时操作系统（Real-Time Operating System, RTOS）可以满足us级的硬实时的需求，
 基于可信执行环境(Trusted Execution Environment, TEE)技术的运行时可以保障信息安全、与硬件紧密结合的裸金属运行时可以实现极致性能、借助硬件辅助的虚拟化技术嵌入式虚拟机可以实现不同运行时之间的高效隔离和灵活调度等。openEuler Embedded
 以Linux丰富的生态与功能、重点构建的混合关键性系统、分布式软总线等关键特性、以及作为一个平台所必须的基础设施等为“引力”，把诸多的运行时与Linux有机地集成在一起。

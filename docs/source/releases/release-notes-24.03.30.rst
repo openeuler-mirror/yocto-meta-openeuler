@@ -5,7 +5,7 @@
 openEuler Embedded 24.03
 ###########################
 
-openEuler Embedded 24.03是openEuler Embedded第二个LTS版本，本版本的主要更新如下
+openEuler Embedded 24.03是openEuler Embedded第二个LTS版本，本版本的主要更新如下：
 
 * release manager：
 
