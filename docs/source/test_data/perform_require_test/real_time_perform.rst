@@ -106,7 +106,7 @@
 
     .. code-block:: console
     
-       stress --cpu 4 --io 2 --vm 2 --vm-bytes 512M --hdd 2 --hdd -bytes 512M 
+       stress --cpu 4 --io 2 --vm 2 --vm-bytes 512M --hdd 2 --hdd-bytes 512M 
 
     执行如下指令运行cyclictest：
 
