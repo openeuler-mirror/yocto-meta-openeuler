@@ -3,7 +3,7 @@ DESCRIPTION = "SFWBar (S* Floating Window Bar) is a flexible taskbar application
 HOMEPAGE = "https://github.com/Alexays/Waybar"
 BUGTRACKER = "https://github.com/Alexays/Waybar/issues"
 SECTION = "graphics"
-LICENSE = "GPLv3 & MIT"
+LICENSE = "GPL-3.0-only & MIT"
 
 LIC_FILES_CHKSUM = "file://LICENSE;md5=1ebbd3e34237af26da5dc08a4e440464"
 

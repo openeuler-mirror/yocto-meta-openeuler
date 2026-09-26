@@ -2,7 +2,7 @@ SUMMARY = "LXDE task manager"
 HOMEPAGE = "http://lxde.org/"
 SECTION = "x11"
 
-LICENSE = "GPLv2"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 DEPENDS = "glib-2.0 glib-2.0-native intltool-native virtual/libintl"
