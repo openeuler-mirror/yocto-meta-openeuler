@@ -67,11 +67,11 @@ openEuler Embedded采用yocto构建，同时设计了基于Python的元工具 `o
          $ sudo chmod o+rw /var/run/docker.sock
          $ sudo systemctl enable docker
 
-         #配置最新版python
-         $ cd /usr/bin
-         $ sudo rm python python3
-         $ sudo ln -s python3.11 python
-         $ sudo ln -s python3.11 python3
+         #配置最新版python（使用update-alternatives，避免直接删除系统python3影响zypper等系统工具）
+         $ sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.11 2
+         $ sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 2
+         $ sudo update-alternatives --set python /usr/bin/python3.11
+         $ sudo update-alternatives --set python3 /usr/bin/python3.11
 
 2. 初始化oebuild构建环境
 ------------------------
@@ -163,7 +163,7 @@ openEuler Embedded采用yocto构建，同时设计了基于Python的元工具 `o
 
    .. note::
 
-      - 标准根文件系统镜像默认预设 root 密码为 ``openEuler@2021``，可直接登录使用，无需在首次登录时设置密码。该密码默认不会过期，便于自动化测试与快速体验。
+      - 标准根文件系统镜像默认预设 root 密码为 ``openEuler@2021``（自初始版本沿用至今的固定标识，不随版本年份变化），可直接登录使用，无需在首次登录时设置密码。该密码默认不会过期，便于自动化测试与快速体验。
 
       - 预设密码是公开的默认值，仅适用于开发、测试与演示环境，请勿用于生产环境或直接暴露到公网。如需部署，可设置 ``OPENEULER_ROOT_PASSWORD_POLICY = "expire"`` 恢复首次登录强制改密策略，或自定义 ``OPENEULER_ROOT_PASSWORD`` 并修改 ``OPENEULER_ROOT_PASSWORD_HASH``。
 
@@ -234,7 +234,7 @@ openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发�
 
        $ sh openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-*.sh
 
-    根据提示输入工具链的安装路径，默认路径是 :file:`/opt/openeuler/<openeuler version>`，若不设置，则按默认路径安装；也可以配置相对路径或绝对路径。
+    根据提示输入工具链的安装路径，默认路径是 :file:`/opt/openeuler/oecore-x86_64`，若不设置，则按默认路径安装；也可以配置相对路径或绝对路径。
     其中 "*" 代表不同的版本。
 
     一个例子如下：
@@ -244,7 +244,7 @@ openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发�
        $ sh openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-*.sh
        openEuler embedded(openEuler Embedded Reference Distro) SDK installer version *
        ================================================================
-       Enter target directory for SDK (default: /opt/openeuler/<openeuler version>): sdk
+       Enter target directory for SDK (default: /opt/openeuler/oecore-x86_64): sdk
        You are about to install the SDK to "/usr1/openeuler/sdk". Proceed [Y/n]? y
        Extracting SDK...............................................done
        Setting it up...SDK has been successfully set up and is ready to be used.
@@ -270,10 +270,12 @@ openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发�
        $ aarch64-openeuler-linux-gcc -v
        Using built-in specs.
             COLLECT_GCC=aarch64-openeuler-linux-gcc
-       COLLECT_LTO_WRAPPER=/opt/openeuler/oecore-x86_64/sysroots/ x86_64-openeulersdk-linux/...(较长省略)
+       COLLECT_LTO_WRAPPER=/opt/openeuler/oecore-x86_64/sysroots/x86_64-openeulersdk-linux/usr/libexec/gcc/aarch64-openeuler-linux/10.3.1/lto-wrapper
        Thread model: posix
        Supported LTO compression algorithms: zlib
        gcc version 10.3.1 (crosstool-NG 1.25.0) 
+
+    .. note:: 上述输出中的 ``COLLECT_LTO_WRAPPER`` 路径较长，此处仅展示其结尾为 ``lto-wrapper``，实际路径以SDK安装目录为准。
 
 3. 使用SDK编译hello world样例
 -----------------------------
