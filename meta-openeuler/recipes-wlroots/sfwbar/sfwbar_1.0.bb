@@ -55,7 +55,7 @@ PACKAGECONFIG ?= " \
     nm \
     idleinhibit \
     network \
-    ${@bb.utils.filter('DISTRO_FEATURES', 'pulseaudio', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'pulseaudio', 'pulse', '', d)} \
     xkb \ 
 "
 FILES:${PN} += " ${datadir} "
