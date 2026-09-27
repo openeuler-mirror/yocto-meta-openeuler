@@ -63,13 +63,13 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#sdk">基于SDK的应用开发</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id7">1. 构建SDK</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">1. 构建SDK</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#install-openeuler-embedded-sdk">2. 安装SDK</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#sdkhello-world">3. 使用SDK编译hello world样例</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id9">4. 使用SDK编译内核模块样例</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">4. 使用SDK编译内核模块样例</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#id10">了解更多</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id12">了解更多</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../releases/index.html">版本说明</a></li>
@@ -164,11 +164,11 @@ $<span class="w"> </span>sudo<span class="w"> </span>systemctl<span class="w"> <
 $<span class="w"> </span>sudo<span class="w"> </span>chmod<span class="w"> </span>o+rw<span class="w"> </span>/var/run/docker.sock
 $<span class="w"> </span>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>docker
 
-<span class="c1">#配置最新版python</span>
-$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/usr/bin
-$<span class="w"> </span>sudo<span class="w"> </span>rm<span class="w"> </span>python<span class="w"> </span>python3
-$<span class="w"> </span>sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>python3.11<span class="w"> </span>python
-$<span class="w"> </span>sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>python3.11<span class="w"> </span>python3
+<span class="c1">#配置最新版python（使用update-alternatives，避免直接删除系统python3影响zypper等系统工具）</span>
+$<span class="w"> </span>sudo<span class="w"> </span>update-alternatives<span class="w"> </span>--install<span class="w"> </span>/usr/bin/python<span class="w"> </span>python<span class="w"> </span>/usr/bin/python3.11<span class="w"> </span><span class="m">2</span>
+$<span class="w"> </span>sudo<span class="w"> </span>update-alternatives<span class="w"> </span>--install<span class="w"> </span>/usr/bin/python3<span class="w"> </span>python3<span class="w"> </span>/usr/bin/python3.11<span class="w"> </span><span class="m">2</span>
+$<span class="w"> </span>sudo<span class="w"> </span>update-alternatives<span class="w"> </span>--set<span class="w"> </span>python<span class="w"> </span>/usr/bin/python3.11
+$<span class="w"> </span>sudo<span class="w"> </span>update-alternatives<span class="w"> </span>--set<span class="w"> </span>python3<span class="w"> </span>/usr/bin/python3.11
 </pre></div>
 </div>
 </div></div>
@@ -245,7 +245,7 @@ $<span class="w"> </span>oebuild<span class="w"> </span>bitbake<span class="w"> 
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <ul class="simple">
-<li><p>标准根文件系统镜像默认预设 root 密码为 <code class="docutils literal notranslate"><span class="pre">openEuler&#64;2021</span></code>，可直接登录使用，无需在首次登录时设置密码。该密码默认不会过期，便于自动化测试与快速体验。</p></li>
+<li><p>标准根文件系统镜像默认预设 root 密码为 <a href="#id7"><span class="problematic" id="id8">``</span></a>openEuler&#64;2021``（自初始版本沿用至今的固定标识，不随版本年份变化），可直接登录使用，无需在首次登录时设置密码。该密码默认不会过期，便于自动化测试与快速体验。</p></li>
 <li><p>预设密码是公开的默认值，仅适用于开发、测试与演示环境，请勿用于生产环境或直接暴露到公网。如需部署，可设置 <code class="docutils literal notranslate"><span class="pre">OPENEULER_ROOT_PASSWORD_POLICY</span> <span class="pre">=</span> <span class="pre">&quot;expire&quot;</span></code> 恢复首次登录强制改密策略，或自定义 <code class="docutils literal notranslate"><span class="pre">OPENEULER_ROOT_PASSWORD</span></code> 并修改 <code class="docutils literal notranslate"><span class="pre">OPENEULER_ROOT_PASSWORD_HASH</span></code>。</p></li>
 <li><p>若需恢复安全加固策略（首次登录必须重新设置密码），可在镜像配方中设置 <code class="docutils literal notranslate"><span class="pre">OPENEULER_ROOT_PASSWORD_POLICY</span> <span class="pre">=</span> <span class="pre">&quot;expire&quot;</span></code> 后重新构建镜像。</p></li>
 <li><p>如果想了解有关运行 QEMU 的更多帮助信息，包括如何使能网络、如何共享主机文件等，请参阅开发手册中的 <a class="reference internal" href="../developer_guide/debug/qemu/qemu_start.html#qemu-start"><span class="std std-ref">QEMU使用</span></a> 章节。</p></li>
@@ -259,8 +259,8 @@ $<span class="w"> </span>oebuild<span class="w"> </span>bitbake<span class="w"> 
 <h2>基于SDK的应用开发<a class="headerlink" href="#sdk" title="Permalink to this heading"></a></h2>
 <p>嵌入式系统往往面临资源受限的问题，包括处理器性能、内存容量、存储空间等方面。因此，需要使用交叉编译器在构建主机上编译目标代码，并在目标系统（开发板/仿真器）上运行。</p>
 <p>openEuler Embedded提供了SDK自解压安装包，包含了应用程序开发所依赖的交叉编译器、库、头文件。下面将介绍如何构建ARM64的SDK，以及如何使用SDK进行用户态程序和内核模块的开发。</p>
-<section id="id7">
-<h3>1. 构建SDK<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<section id="id9">
+<h3>1. 构建SDK<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
 <blockquote>
 <div><p>进入到镜像构建目录 <code class="docutils literal notranslate"><span class="pre">build_arm64</span></code>，执行以下命令：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>oebuild<span class="w"> </span>bitbake<span class="w"> </span>openeuler-image<span class="w"> </span>-c<span class="w"> </span>do_populate_sdk
@@ -285,7 +285,7 @@ $<span class="w"> </span>oebuild<span class="w"> </span>bitbake<span class="w"> 
 </div></blockquote>
 </section>
 <section id="install-openeuler-embedded-sdk">
-<span id="id8"></span><h3>2. 安装SDK<a class="headerlink" href="#install-openeuler-embedded-sdk" title="Permalink to this heading"></a></h3>
+<span id="id10"></span><h3>2. 安装SDK<a class="headerlink" href="#install-openeuler-embedded-sdk" title="Permalink to this heading"></a></h3>
 <blockquote>
 <div><ul>
 <li><p><strong>安装依赖软件包</strong></p>
@@ -302,13 +302,13 @@ $<span class="w"> </span>oebuild<span class="w"> </span>bitbake<span class="w"> 
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sh<span class="w"> </span>openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-*.sh
 </pre></div>
 </div>
-<p>根据提示输入工具链的安装路径，默认路径是 <code class="file docutils literal notranslate"><span class="pre">/opt/openeuler/&lt;openeuler</span> <span class="pre">version&gt;</span></code>，若不设置，则按默认路径安装；也可以配置相对路径或绝对路径。
+<p>根据提示输入工具链的安装路径，默认路径是 <code class="file docutils literal notranslate"><span class="pre">/opt/openeuler/oecore-x86_64</span></code>，若不设置，则按默认路径安装；也可以配置相对路径或绝对路径。
 其中 “*” 代表不同的版本。</p>
 <p>一个例子如下：</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sh<span class="w"> </span>openeuler-glibc-x86_64-openeuler-image-aarch64-qemu-aarch64-toolchain-*.sh
 <span class="go">openEuler embedded(openEuler Embedded Reference Distro) SDK installer version *</span>
 <span class="go">================================================================</span>
-<span class="go">Enter target directory for SDK (default: /opt/openeuler/&lt;openeuler version&gt;): sdk</span>
+<span class="go">Enter target directory for SDK (default: /opt/openeuler/oecore-x86_64): sdk</span>
 <span class="go">You are about to install the SDK to &quot;/usr1/openeuler/sdk&quot;. Proceed [Y/n]? y</span>
 <span class="go">Extracting SDK...............................................done</span>
 <span class="go">Setting it up...SDK has been successfully set up and is ready to be used.</span>
@@ -329,11 +329,15 @@ $<span class="w"> </span>oebuild<span class="w"> </span>bitbake<span class="w"> 
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>aarch64-openeuler-linux-gcc<span class="w"> </span>-v
 <span class="go">Using built-in specs.</span>
 <span class="go">     COLLECT_GCC=aarch64-openeuler-linux-gcc</span>
-<span class="go">COLLECT_LTO_WRAPPER=/opt/openeuler/oecore-x86_64/sysroots/ x86_64-openeulersdk-linux/...(较长省略)</span>
+<span class="go">COLLECT_LTO_WRAPPER=/opt/openeuler/oecore-x86_64/sysroots/x86_64-openeulersdk-linux/usr/libexec/gcc/aarch64-openeuler-linux/10.3.1/lto-wrapper</span>
 <span class="go">Thread model: posix</span>
 <span class="go">Supported LTO compression algorithms: zlib</span>
 <span class="go">gcc version 10.3.1 (crosstool-NG 1.25.0)</span>
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>上述输出中的 <code class="docutils literal notranslate"><span class="pre">COLLECT_LTO_WRAPPER</span></code> 路径较长，此处仅展示其结尾为 <code class="docutils literal notranslate"><span class="pre">lto-wrapper</span></code>，实际路径以SDK安装目录为准。</p>
 </div>
 </li>
 </ul>
@@ -379,8 +383,8 @@ $<span class="w"> </span>oebuild<span class="w"> </span>bitbake<span class="w"> 
 </ol>
 </div></blockquote>
 </section>
-<section id="id9">
-<h3>4. 使用SDK编译内核模块样例<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<section id="id11">
+<h3>4. 使用SDK编译内核模块样例<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
 <blockquote>
 <div><ol class="arabic">
 <li><p><strong>准备代码</strong></p>
@@ -442,8 +446,8 @@ $<span class="w"> </span>oebuild<span class="w"> </span>bitbake<span class="w"> 
 </section>
 </section>
 <hr class="docutils" />
-<section id="id10">
-<h2>了解更多<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h2>
+<section id="id12">
+<h2>了解更多<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h2>
 <blockquote>
 <div><p>相信根据上述指导完成了QEMU镜像的构建、运行后，您对 openEuler Embedded 的开发构建流程已经有所熟悉，但您也许会有一些疑惑：
 openEuler Embedded还能用来做些什么？如何理解和学习yocto？如何更深入地参与项目的讨论建设？</p>

@@ -45,7 +45,7 @@ openEuler Embedded的混合关键性部署框架(Mixed Criticality, **MICA**)构
 
 - **高质量的Linux内核**
 
-openEuler Embedded的中心是Linux，采用与openEuler其他场景同源、同等高质量的openEuler Linux内核，默认构建5.10（对应22.03 LTS）内核，并支持通过kernel6特性构建6.6（对应24.03 LTS）内核（参见 :ref:`内核多版本支持 <kernelversions_intro>`）。在软件包层面也与内核一样和所有场景共代码、共演进，当前已经支持 **800+** 软件包，远期目标是支持尽可能多的openEuler社区软件包。
+openEuler Embedded的中心是Linux，采用与openEuler其他场景同源、同等高质量的openEuler Linux内核。默认构建5.10内核（源自22.03 LTS版本基线），并支持通过kernel6特性构建6.6内核（已与openEuler 26.09社区版本基线对齐）（参见 :ref:`内核多版本支持 <kernelversions_intro>`）。在软件包层面也与内核一样和所有场景共代码、共演进，当前已经支持 **790+** 软件包，远期目标是支持尽可能多的openEuler社区软件包。
 
 同时针对嵌入式场景的需求，openEuler Embedded会在内核特性、系统配置、软件包组合、镜像裁剪等方面进行创新，包括但不限于 **基于Preempt-RT补丁提供软实时能力、小型化（最小OS镜像<5 MB）、快速启动（启动时间小于5秒）** 等。
 
@@ -70,7 +70,7 @@ openEuler和OpenHarmony两大社区积极合作，通过在openEuler中引入分
 - **基础设施**
 
 openEuler Embedded采用了面向嵌入式系统Yocto构建系统，而非openEuler服务器场景的OBS构建系统。虽然实现了与服务器场景在内核和软件包代码层面的共享，但在具体构建上有着巨大的差异，需要专门编写相应的构建配方文件，这也意味当前openEuler服务器场景中众多软件包的构建规则不能
-直接应用于嵌入式场景。当前openEuler Embedded已经实现了800+软件包的支持，未来为了实现所有软件包的支持，显然不能把所有的软件包的构建在Yocto下重新实现一遍。因此，openEuler Embedded正在与其他场景共同努力，希望打造一套支持全场景的统一构建系统。
+直接应用于嵌入式场景。当前openEuler Embedded已经实现了790+软件包的支持，未来为了实现所有软件包的支持，显然不能把所有的软件包的构建在Yocto下重新实现一遍。因此，openEuler Embedded正在与其他场景共同努力，希望打造一套支持全场景的统一构建系统。
 
 openEuler Embedded的CI/CD主要完成代码检查、门禁构建、每日构建、每周构建、发布构建等功能。
 
