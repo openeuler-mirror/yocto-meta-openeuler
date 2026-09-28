@@ -5,6 +5,7 @@ RDEPENDS:${PN}:append = " \
     xsimd-dev \
     xtensor-bin \
     xtensor-bin-dev \
+    python3-cbor2 \
 "
 
 INSTALL_PKG_LISTS += " \

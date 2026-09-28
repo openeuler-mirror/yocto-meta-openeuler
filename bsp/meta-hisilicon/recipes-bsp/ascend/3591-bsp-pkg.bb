@@ -53,6 +53,15 @@ do_install () {
     cp ${S}/install_cache/firmware/* ${D}/fw
     cp -rf ${S}/install_cache/* ${D}/var/Ascend/install_cache/
 
+    # The Ascend driver installer replaces /usr/lib64/libcrypto.so.3 and
+    # /usr/lib64/libssl.so.3 with its own copies on first boot (via
+    # minirc_cp_file.sh -> install_common_parser.sh -> filelist.csv).
+    # The OS already ships openssl 3.x and IB_Robot requires the original
+    # system versions; removing these entries from filelist.csv prevents
+    # the overwrite (see issue #1421).
+    sed -i '/libcrypto\.so\.3,/d; /libssl\.so\.3,/d' \
+        ${D}/var/Ascend/install_cache/scripts/filelist.csv
+
     # mkInstallInfo -- ref: sdtool/make_os_sd.sh
     Driver_Install_Path_Param="/var/davinci"
     Driver_Install_For_All="no"
