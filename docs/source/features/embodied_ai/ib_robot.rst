@@ -7,20 +7,16 @@ IB-Robot（Intelligence Boom Robot）是一个将 Hugging Face LeRobot 机器学
 
 .. toctree::
    :maxdepth: 2
-   :caption: 内容
 
-   overview
-   getting_started/index
-   core_concepts/index
-   architecture
-   configuration/index
-   protocol
-   inference/index
-   action_dispatch/index
-   data_pipeline/index
-   motion_planning/index
-   hardware/index
-   extended_capabilities/index
-   package_reference
-   development/index
+   overview/index
+   configuration_ssot/index
+   inference_service/index
+   model_export_deployment_toolchain/index
+   robot_hardware_control_simulation/index
+   perception_manipulation_semantic_mapping/index
+   embodied_agent_skills/index
+   voice_audio/index
+   data_tools_benchmarks_observability/index
+   interfaces/index
+   development_workflow_tooling/index
    glossary
