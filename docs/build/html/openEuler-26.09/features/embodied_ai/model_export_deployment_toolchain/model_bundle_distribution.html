@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>模型 Bundle 分发 &mdash; openEuler Embedded在线文档 26.09 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="机器人硬件、控制与仿真" href="../robot_hardware_control_simulation/index.html" />
+    <link rel="prev" title="其他目标：RKNN、HMM、910B Torch" href="other_targets_rknn_hmm_910b_torch.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview/index.html">项目概览</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration_ssot/index.html">配置单一事实源（robot_config）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference_service/index.html">推理服务</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">模型导出与部署工具链</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">模型导出与部署工具链概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pi0_5_split_export_pipeline.html">PI0.5 分离式导出流水线</a></li>
+<li class="toctree-l6"><a class="reference internal" href="accuracy_diagnostics_schedules.html">精度诊断与调度表</a></li>
+<li class="toctree-l6"><a class="reference internal" href="other_targets_rknn_hmm_910b_torch.html">其他目标：RKNN、HMM、910B Torch</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">模型 Bundle 分发</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id1">目的与范围</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#download-models-py">1. <code class="docutils literal notranslate"><span class="pre">download_models.py</span></code> 统一下载器</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id5">2. 感知与语音 Bundle 打包器</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#huggingface">3. HuggingFace 清单与模型资产校验</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#mermaid">4. 数据流与实现概览 Mermaid 图</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id12">5. 测试中的模型资产校验</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id13">总结</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id14">参考</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../robot_hardware_control_simulation/index.html">机器人硬件、控制与仿真</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../perception_manipulation_semantic_mapping/index.html">感知、操作与语义建图</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../embodied_agent_skills/index.html">具身智能体与技能</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../voice_audio/index.html">语音与音频</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_tools_benchmarks_observability/index.html">数据工具、基准测试与可观测性</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../interfaces/index.html">接口（ibrobot_msgs）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development_workflow_tooling/index.html">开发工作流与工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">模型导出与部署工具链</a></li>
+      <li class="breadcrumb-item active">模型 Bundle 分发</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bundle">
+<h1>模型 Bundle 分发<a class="headerlink" href="#bundle" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源码文件</summary>
+<p>以下文件被用作生成此 wiki 页面的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-inference-verify/SKILL.md">.agents/skills/ibrobot-inference-verify/SKILL.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-inference-verify/references/board.md">.agents/skills/ibrobot-inference-verify/references/board.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-inference-verify/references/host.md">.agents/skills/ibrobot-inference-verify/references/host.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-inference-verify/references/troubleshooting.md">.agents/skills/ibrobot-inference-verify/references/troubleshooting.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-inference-verify/scripts/generate_verify_yaml.py">.agents/skills/ibrobot-inference-verify/scripts/generate_verify_yaml.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.gitattributes">.gitattributes</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/embodied_pipeline.md">docs/embodied_pipeline.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/fullsubnet_310b_deployment.md">docs/fullsubnet_310b_deployment.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/so101_banana_pick_pipeline_commands.md">docs/so101_banana_pick_pipeline_commands.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/so101_handeye_calibration_commands.md">docs/so101_handeye_calibration_commands.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/requirements/perception.txt">requirements/perception.txt</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/scripts/build_ram_plus_wheel.sh">scripts/build_ram_plus_wheel.sh</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/scripts/download_models.py">scripts/download_models.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/scripts/download_perception_models.sh">scripts/download_perception_models.sh</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/scripts/verify_speech_direction_assets.py">scripts/verify_speech_direction_assets.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/README.md">src/perception_service/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/perception_service/package_ascend_perception_bundles.py">src/perception_service/perception_service/package_ascend_perception_bundles.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/perception_service/ram_plus_wrapper.py">src/perception_service/perception_service/ram_plus_wrapper.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/perception_service/torch_model_loaders.py">src/perception_service/perception_service/torch_model_loaders.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/test/test_package_ascend_perception_bundles.py">src/perception_service/test/test_package_ascend_perception_bundles.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml">src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_handeye_realsense_grasp_pc.yaml">src/robot_config/config/robots/lekiwi_handeye_realsense_grasp_pc.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_nav_grasp.yaml">src/robot_config/config/robots/lekiwi_nav_grasp.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/test/test_unified_lekiwi_grasp_navigation_config.py">src/robot_config/test/test_unified_lekiwi_grasp_navigation_config.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/test/test_voice_tts_launch_builder.py">src/robot_config/test/test_voice_tts_launch_builder.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/voice_asr_service/test/speech_direction/test_model_sessions.py">src/voice_asr_service/test/speech_direction/test_model_sessions.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/voice_asr_service/test/test_audio_contract_validation.py">src/voice_asr_service/test/test_audio_contract_validation.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/voice_asr_service/test/test_package_fullsubnet_bundle.py">src/voice_asr_service/test/test_package_fullsubnet_bundle.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/voice_asr_service/test/test_package_silero_vad_bundle.py">src/voice_asr_service/test/test_package_silero_vad_bundle.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/voice_asr_service/voice_asr_service/package_fullsubnet_bundle.py">src/voice_asr_service/voice_asr_service/package_fullsubnet_bundle.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/voice_asr_service/voice_asr_service/package_silero_vad_bundle.py">src/voice_asr_service/voice_asr_service/package_silero_vad_bundle.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/voice_asr_service/voice_asr_service/speech_direction/model_sessions.py">src/voice_asr_service/voice_asr_service/speech_direction/model_sessions.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/voice_tts_service/test/test_model_service_plugin.py">src/voice_tts_service/test/test_model_service_plugin.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/voice_tts_service/voice_tts_service/model_service_plugin.py">src/voice_tts_service/voice_tts_service/model_service_plugin.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/tests/test_download_models.py">tests/test_download_models.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/third_party/README.md">third_party/README.md</a></p></li>
+</ul>
+</details>
+<section id="id1">
+<h2>目的与范围<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<p>本节详述 RoboFrame_stable 中模型 bundle 分发工具与基础设施的实现与用法。聚焦：</p>
+<ul class="simple">
+<li><p>统一模型 bundle 下载脚本 <code class="docutils literal notranslate"><span class="pre">download_models.py</span></code>，从 HuggingFace 仓库拉取 IB-Robot 推理模型 bundle。</p></li>
+<li><p>感知与语音模型 bundle 的打包工具，特别是 Ascend OM 感知 bundle 与 Silero VAD 语音 bundle。</p></li>
+<li><p>依据 schema v3 处理与校验 HuggingFace 清单，清单编码 bundle 内容、面向不同硬件的部署与文件 SHA256 摘要。</p></li>
+<li><p>确保下载的 artifact 与其声明摘要一致的校验机制，保证模型资产完整性。</p></li>
+</ul>
+<p>本页面面向管理感知、策略推理与语音服务运行时所用 AI 模型包的部署、更新与校验的开发者与系统集成者。</p>
+</section>
+<hr class="docutils" />
+<section id="download-models-py">
+<h2>1. <code class="docutils literal notranslate"><span class="pre">download_models.py</span></code> 统一下载器<a class="headerlink" href="#download-models-py" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">scripts/download_models.py</span></code> 脚本是从 HuggingFace Hub 上 <code class="docutils literal notranslate"><span class="pre">openEuler</span></code> 组织或其他白名单仓库下载推理模型 bundle 的中心工具。它支持 schema v3 推理清单格式——一种描述模型 bundle 文件及其面向不同硬件目标（如 Ascend 310P、Torch CPU/GPU）的变体部署的 JSON 清单。</p>
+<section id="id2">
+<h3>关键特性<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>下载 <code class="docutils literal notranslate"><span class="pre">bundle.files</span></code> 下的共享基础文件，如通用 tokenizer 与资产文件。</p></li>
+<li><p>下载 <code class="docutils literal notranslate"><span class="pre">deployments</span></code> 中按硬件目标划定的编译产物，对 <code class="docutils literal notranslate"><span class="pre">--target</span></code> 参数应用关键字过滤（如 <code class="docutils literal notranslate"><span class="pre">310p</span></code>、<code class="docutils literal notranslate"><span class="pre">rk3588</span></code>）。</p></li>
+<li><p>校验每个下载文件的 SHA256 哈希与清单声明一致。</p></li>
+<li><p>通过手动解析清单处理清单与 schema 兼容性，不完全依赖代码库 inference_manifest loader。</p></li>
+<li><p>通过环境变量 <code class="docutils literal notranslate"><span class="pre">HF_TOKEN</span></code> 与 <code class="docutils literal notranslate"><span class="pre">HF_ENDPOINT</span></code> 支持认证与端点镜像。</p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>核心数据结构<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>BundleSource（<code class="docutils literal notranslate"><span class="pre">&#64;dataclass</span></code>）：</strong> 表示白名单 bundle 定义，指定本地 bundle 名称、HuggingFace 仓库、预期模型接口与操作，指导校验与下载行为。</p></li>
+<li><p><strong>BundlePlan（<code class="docutils literal notranslate"><span class="pre">&#64;dataclass</span></code>）：</strong> 封装单个 bundle 的已解析下载计划，包括待下载文件模式、artifact 路径、校验映射与匹配的部署。</p></li>
+<li><p><strong>DownloadError、NoMatchingDeploymentError：</strong> 用于下载失败或不支持目标的自定义异常。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>工作流概览<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>脚本维护可信 bundle 白名单（<code class="docutils literal notranslate"><span class="pre">MODEL_BUNDLE_ALLOWLIST</span></code>）及其仓库名与运行时模型身份。</p></li>
+<li><p>以模型名称（或 <code class="docutils literal notranslate"><span class="pre">all</span></code> 下载全部白名单 bundle）调用时，它从 HF 仓库下载 <code class="docutils literal notranslate"><span class="pre">inference_manifest.json</span></code> 解析 bundle 清单。</p></li>
+<li><p>应用目标与部署过滤器，选择特定硬件后端的 artifact。</p></li>
+<li><p>调度 <code class="docutils literal notranslate"><span class="pre">bundle.files</span></code>（共享资产）加上部署特定 artifact 的下载。</p></li>
+<li><p>下载后校验 SHA256 摘要，确保文件完整性。</p></li>
+<li><p>可选清理 HuggingFace 缓存残留。</p></li>
+</ol>
+</section>
+<section id="cli">
+<h3>CLI 使用示例<a class="headerlink" href="#cli" title="Permalink to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./scripts/download_models.py<span class="w"> </span>--list
+./scripts/download_models.py<span class="w"> </span>--models<span class="w"> </span>sam2.1_hiera_tiny<span class="w"> </span>--target<span class="w"> </span>310p
+./scripts/download_models.py<span class="w"> </span>--models<span class="w"> </span>pi05,fullsubnet
+./scripts/download_models.py<span class="w"> </span>--models<span class="w"> </span>ACT_1arm_2cam_banana_pick_v1_step_160000_distill_20260515<span class="w"> </span>--target<span class="w"> </span>rk3588<span class="w"> </span>--dest<span class="w"> </span>/data/models
+</pre></div>
+</div>
+<p>代码组织使用 dataclass、按关键字过滤部署的辅助函数、解析清单与 SHA256 校验逻辑。</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id5">
+<h2>2. 感知与语音 Bundle 打包器<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
+<section id="id6">
+<h3>2.1. 感知服务 Bundle 打包<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<p>感知服务使用专用打包器，将 Ascend OM 目标检测与分割模型准备为一致的 schema-v3 bundle 以供部署。<code class="docutils literal notranslate"><span class="pre">src/perception_service/perception_service/package_ascend_perception_bundles.py</span></code> 中的打包代码以编程方式为以下场景构建丰富清单：</p>
+<ul class="simple">
+<li><p>面向不同 Ascend 片上系统（SoC）（如 <code class="docutils literal notranslate"><span class="pre">Ascend310P1</span></code>）的多个部署。</p></li>
+<li><p>Artifact 规格包括输入/输出张量绑定、语义身份与面向多部件运行时执行的设备链接。</p></li>
+<li><p>语义张量为运行时定义输入/输出形状、dtype 与语义角色。</p></li>
+</ul>
+<p>bundle 规格 dataclass 表达这些信息，生成清单文件并打包 OM 模型文件。</p>
+</section>
+<section id="id7">
+<h3>2.2. 语音模型 Bundle<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<p>语音 ASR 与语音方向模型的会话适配器依赖清单兼容性，特别是 Silero VAD 与 FullSubNet 模型。<code class="docutils literal notranslate"><span class="pre">src/voice_asr_service/voice_asr_service/speech_direction/model_sessions.py</span></code> 模块定义 <code class="docutils literal notranslate"><span class="pre">SpeechDirectionRoleRunner</span></code>，一个管理流水线与面向 Ascend 硬件或 CPU 后端的有状态模型会话之间交互的适配器类。该类处理：</p>
+<ul class="simple">
+<li><p>基于角色的推理调用执行（”silero_vad”、”fullsubnet_fb”、”fullsubnet_sb”）。</p></li>
+<li><p>作用域执行，将多个角色分组到单一上下文。</p></li>
+<li><p>与清单声明的张量语义匹配的输入整形与输出提取。</p></li>
+<li><p>状态复位与资源管理。</p></li>
+</ul>
+<p>打包脚本与测试工具帮助生成可被运行时服务消费的经过校验的 bundle。</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="huggingface">
+<h2>3. HuggingFace 清单与模型资产校验<a class="headerlink" href="#huggingface" title="Permalink to this heading"></a></h2>
+<p>bundle 分发的基石是带版本的推理清单（<code class="docutils literal notranslate"><span class="pre">inference_manifest.json</span></code>），它编码：</p>
+<ul class="simple">
+<li><p>schema 版本 3 合规。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bundle.files</span></code> 公共文件列表（tokenizer、适配器 JSON、权重文件）。</p></li>
+<li><p>多个 <code class="docutils literal notranslate"><span class="pre">deployments</span></code> 条目，每个带名称与指定后端、目标 SoC、设备 profile 的运行时 profile。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deployments.artifacts</span></code> 携带每个编译运行时 artifact（如 ONNX、OM、RKNN 文件）的文件路径与 SHA256 校验和。</p></li>
+<li><p>可选字段如嵌入元数据与逻辑模型修订号。</p></li>
+</ul>
+<p>下载器使用 SHA256 摘要校验，确保下载的 artifact 与清单声明完全一致。任何不匹配都会抛出异常并中止部署。</p>
+<p>校验也是集成测试的一部分，体现在 <code class="docutils literal notranslate"><span class="pre">tests/test_download_models.py</span></code> 中，它使用伪造清单对部署过滤、文件选择与校验映射进行单元测试。</p>
+</section>
+<hr class="docutils" />
+<section id="mermaid">
+<h2>4. 数据流与实现概览 Mermaid 图<a class="headerlink" href="#mermaid" title="Permalink to this heading"></a></h2>
+<section id="id8">
+<h3>4.1. 从自然语言命令到代码执行的模型 Bundle 下载流<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        flowchart TD
+  A[&quot;User CLI: ./scripts/download_models.py --models sam2.1_hiera_tiny --target 310p&quot;] --&gt; B[&quot;download_models.py main&quot;]
+  B --&gt; C[&quot;Fetch inference_manifest.json from HF repo&quot;]
+  C --&gt; D[&quot;Parse manifest JSON to discover bundle.files&quot;]
+  D --&gt; E[&quot;Filter deployments by '--target 310p'&quot;]
+  E --&gt; F[&quot;Build BundlePlan with filtered artifact paths&quot;]
+  F --&gt; G[&quot;Download bundle.files and deployment artifacts&quot;]
+  G --&gt; H[&quot;Verify SHA256 digests against manifest&quot;]
+  H --&gt; I[&quot;Write verified files to local models/&lt;bundle&gt; directory&quot;]
+  I --&gt; J[&quot;Cleanup temporary caches&quot;]
+    </pre></section>
+<section id="id9">
+<h3>图例：<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">download_models.py</span></code> 协调整个下载与校验过程。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BundlePlan</span></code> 表示每个 bundle 已解析的待下载文件集合。</p></li>
+<li><p>SHA256 校验保证模型资产完整性。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/scripts/download_models.py#L1-L194">scripts/download_models.py:1-194</a></p>
+</section>
+<section id="id10">
+<h3>4.2. 带代码实体的感知 Bundle 打包数据流<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        flowchart LR
+  PA[&quot;Package Ascend OM Candidates (package_ascend_perception_bundles.py)&quot;]
+  PA --&gt; PM[Create DeploymentSpec objects for each SoC]
+  PM --&gt; PS[Define ArtifactSpec for OM files with input/output bindings]
+  PS --&gt; PMF[Generate ManifestBundle with ModelDescriptor, SemanticTensor, ArtifactBindings]
+  PMF --&gt; WM[&quot;write_inference_manifest() writes inference_manifest.json to disk&quot;]
+  WM --&gt; BDIR[Bundle directory created with artifacts/ and assets/]
+
+  subgraph Packaging Inputs
+    OM_FILES[&quot;_work/sam2.1_hiera_tiny/candidates/...&quot;]
+    BINDINGS[TensorBindings and DeviceLinks]
+  end
+
+  OM_FILES --&gt; PA
+  BINDINGS --&gt; PA
+    </pre><p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/perception_service/package_ascend_perception_bundles.py#L1-L207">src/perception_service/perception_service/package_ascend_perception_bundles.py:1-207</a></p>
+</section>
+<section id="id11">
+<h3>4.3. 代码中的语音方向模型会话交互<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        flowchart TD
+  C[SpeechDirectionRoleRunner]
+  C --&gt; S[ModelSession]
+  C --&gt; R[RuntimeContext]
+
+  UserReq[&quot;User Audio Input&quot;] --&gt; C
+  C --&gt;|run_fb| S[&quot;execute_role('fullsubnet_fb', ...)&quot;]
+  C --&gt;|run_sb| S[&quot;execute_role('fullsubnet_sb', ...)&quot;]
+  C --&gt;|infer| S[&quot;execute_role('silero_vad', ...)&quot;]
+
+  S --&gt; R
+  C --&gt;|reset/close| S
+    </pre><p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/voice_asr_service/voice_asr_service/speech_direction/model_sessions.py#L15-L104">src/voice_asr_service/voice_asr_service/speech_direction/model_sessions.py:15-104</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id12">
+<h2>5. 测试中的模型资产校验<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/test_download_models.py</span></code> 定义了用于校验下载期间 artifact 选择与 SHA256 摘要匹配的测试与 mock。</p></li>
+<li><p>它创建模拟真实 bundle（如 <code class="docutils literal notranslate"><span class="pre">sam2</span></code> 与 <code class="docutils literal notranslate"><span class="pre">pi05</span></code> 风格清单）的代表性清单。</p></li>
+<li><p>测试覆盖按目标关键字过滤部署、共享文件存在性、未匹配部署的失败模式与清单解析正确性。</p></li>
+</ul>
+<p>该单元测试骨架保证下载器的正确性，防止跨硬件变体的意外部署不匹配。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/tests/test_download_models.py#L1-L176">tests/test_download_models.py:1-176</a></p>
+</section>
+<hr class="docutils" />
+<section id="id13">
+<h2>总结<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h2>
+<p>模型 Bundle 分发系统为 RoboFrame 具身 AI 流水线提供一致、经过校验且目标明确的 AI 模型分发：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">download_models.py</span></code> 提供从 HuggingFace 仓库下载模型 bundle 的健壮、经过校验的统一方法。</p></li>
+<li><p>感知与语音服务使用声明式打包，严格遵循清单，面向多种硬件后端。</p></li>
+<li><p>SHA256 摘要校验结合基于 schema-v3 推理清单的部署过滤，保证运行时模型正确性。</p></li>
+<li><p>该设计支持异构计算平台（CPU、CUDA、Ascend NPU、RKNN 目标），简化维护与部署自动化。</p></li>
+<li><p>测试与校验脚本对在运行时使用前验证清单与部署基础设施至关重要。</p></li>
+</ul>
+<p>开发者可以参考上文详述的数据流与代码实体，自信地扩展或审计 bundle 定义与部署逻辑。</p>
+</section>
+<hr class="docutils" />
+<section id="id14">
+<h2>参考<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>scripts/download_models.py:1-194</p></li>
+<li><p>tests/test_download_models.py:1-176</p></li>
+<li><p>src/perception_service/perception_service/package_ascend_perception_bundles.py:1-207</p></li>
+<li><p>src/voice_asr_service/voice_asr_service/speech_direction/model_sessions.py:15-104</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="other_targets_rknn_hmm_910b_torch.html" class="btn btn-neutral float-left" title="其他目标：RKNN、HMM、910B Torch" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../robot_hardware_control_simulation/index.html" class="btn btn-neutral float-right" title="机器人硬件、控制与仿真" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-26.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/index.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+      <dd><a href="model_bundle_distribution.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

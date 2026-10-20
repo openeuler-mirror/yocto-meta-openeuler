@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>机器人配置档案与控制模式 &mdash; openEuler Embedded在线文档 26.09 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="推理服务" href="../inference_service/index.html" />
+    <link rel="prev" title="Launch 构建器" href="launch_builders.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview/index.html">项目概览</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">配置单一事实源（robot_config）</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">配置单一事实源（robot_config）概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="config_loader_validation.html">配置加载与校验</a></li>
+<li class="toctree-l6"><a class="reference internal" href="launch_builders.html">Launch 构建器</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">机器人配置档案与控制模式</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">机器人配置档案</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">控制模式</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id4">控制模式管理</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id5">图：机器人配置档案与控制模式</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id6">图：推理流水线配置</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../inference_service/index.html">推理服务</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../model_export_deployment_toolchain/index.html">模型导出与部署工具链</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../robot_hardware_control_simulation/index.html">机器人硬件、控制与仿真</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../perception_manipulation_semantic_mapping/index.html">感知、操作与语义建图</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../embodied_agent_skills/index.html">具身智能体与技能</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../voice_audio/index.html">语音与音频</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_tools_benchmarks_observability/index.html">数据工具、基准测试与可观测性</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../interfaces/index.html">接口（ibrobot_msgs）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development_workflow_tooling/index.html">开发工作流与工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">配置单一事实源（robot_config）</a></li>
+      <li class="breadcrumb-item active">机器人配置档案与控制模式</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>机器人配置档案与控制模式<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源码文件</summary>
+<p>以下文件被用作生成此 wiki 页面的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-inference-verify/references/board.md">.agents/skills/ibrobot-inference-verify/references/board.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-inference-verify/references/troubleshooting.md">.agents/skills/ibrobot-inference-verify/references/troubleshooting.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-inference-verify/scripts/generate_verify_yaml.py">.agents/skills/ibrobot-inference-verify/scripts/generate_verify_yaml.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/embodied_pipeline.md">docs/embodied_pipeline.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/so101_banana_pick_pipeline_commands.md">docs/so101_banana_pick_pipeline_commands.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/so101_handeye_calibration_commands.md">docs/so101_handeye_calibration_commands.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/scripts/download_models.py">scripts/download_models.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/ibrobot_msgs/action/ArmReturnHome.action">src/ibrobot_msgs/action/ArmReturnHome.action</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/ibrobot_msgs/action/DispatchInfer.action">src/ibrobot_msgs/action/DispatchInfer.action</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/ibrobot_msgs/msg/DistributedInferenceResult.msg">src/ibrobot_msgs/msg/DistributedInferenceResult.msg</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/ibrobot_msgs/msg/InferenceError.msg">src/ibrobot_msgs/msg/InferenceError.msg</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/ibrobot_msgs/msg/InferenceFeatureSummary.msg">src/ibrobot_msgs/msg/InferenceFeatureSummary.msg</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/ibrobot_msgs/msg/InferencePipelineStatus.msg">src/ibrobot_msgs/msg/InferencePipelineStatus.msg</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/ibrobot_msgs/msg/InferencePolicySummary.msg">src/ibrobot_msgs/msg/InferencePolicySummary.msg</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/README.md">src/perception_service/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/perception_service/package_ascend_perception_bundles.py">src/perception_service/perception_service/package_ascend_perception_bundles.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/test/test_package_ascend_perception_bundles.py">src/perception_service/test/test_package_ascend_perception_bundles.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/lekiwi/lekiwi_gamepad_base.yaml">src/robot_config/config/lekiwi/lekiwi_gamepad_base.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/lekiwi/rtp_recording_bundle/config.json">src/robot_config/config/lekiwi/rtp_recording_bundle/config.json</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/lekiwi/rtp_recording_bundle/inference_manifest.json">src/robot_config/config/lekiwi/rtp_recording_bundle/inference_manifest.json</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/lekiwi/rtp_recording_bundle/policy_postprocessor.json">src/robot_config/config/lekiwi/rtp_recording_bundle/policy_postprocessor.json</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/lekiwi/rtp_recording_bundle/policy_preprocessor.json">src/robot_config/config/lekiwi/rtp_recording_bundle/policy_preprocessor.json</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml">src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_handeye_realsense_grasp_pc.yaml">src/robot_config/config/robots/lekiwi_handeye_realsense_grasp_pc.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_nav_grasp.yaml">src/robot_config/config/robots/lekiwi_nav_grasp.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_rtp_distributed.yaml">src/robot_config/config/robots/lekiwi_rtp_distributed.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/__init__.py">src/robot_config/robot_config/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/inference_config.py">src/robot_config/robot_config/inference_config.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/test/test_phone_teleop_config.py">src/robot_config/test/test_phone_teleop_config.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/test/test_teleop_home_action.py">src/robot_config/test/test_teleop_home_action.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/test/test_unified_lekiwi_grasp_navigation_config.py">src/robot_config/test/test_unified_lekiwi_grasp_navigation_config.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/test/test_voice_tts_launch_builder.py">src/robot_config/test/test_voice_tts_launch_builder.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/voice_tts_service/test/test_model_service_plugin.py">src/voice_tts_service/test/test_model_service_plugin.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/voice_tts_service/voice_tts_service/model_service_plugin.py">src/voice_tts_service/voice_tts_service/model_service_plugin.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/tests/test_download_models.py">tests/test_download_models.py</a></p></li>
+</ul>
+</details>
+<p>本页面编目 YAML 配置文件中定义的各类机器人配置档案（profile）及其支持的控制模式。它详述这些档案的实现、加载与校验方式，以及机器人操作可用的不同控制模式，包括遥操作、模型推理与 MoveIt 规划。</p>
+<section id="id2">
+<h2>机器人配置档案<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>机器人配置档案定义于 <code class="docutils literal notranslate"><span class="pre">src/robot_config/config/robots/</span></code> 目录下的 YAML 文件中。这些文件是机器人硬件配置、关节定义、MoveIt 设置、感知服务与控制模式的唯一事实来源（SSOT）。</p>
+<section id="lekiwi-lekiwi-nav-grasp-yaml">
+<h3>LeKiwi 导航与抓取（<code class="docutils literal notranslate"><span class="pre">lekiwi_nav_grasp.yaml</span></code>）<a class="headerlink" href="#lekiwi-lekiwi-nav-grasp-yaml" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">lekiwi_nav_grasp.yaml</span></code> 档案 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_nav_grasp.yaml#L1-L168">src/robot_config/config/robots/lekiwi_nav_grasp.yaml:1-168</a> 配置一台同时执行抓取与导航任务的 LeKiwi 移动操作平台。</p>
+<p><strong>硬件假设：</strong></p>
+<ul class="simple">
+<li><p>LeKiwi 全向底盘（关节 7/8/9）与 SO-101 从臂（关节 1-6），由 <code class="docutils literal notranslate"><span class="pre">LeKiwiSystemHardware</span></code> 插件驱动。</p></li>
+<li><p>从臂关节标定来自 <code class="docutils literal notranslate"><span class="pre">~/.calibrate/so101_follower_calibrate.json</span></code>。</p></li>
+<li><p>两台 D435i 相机连接到 310P 板卡：一台装在 SO-101 夹爪上（“wrist”），一台固定在 LeKiwi 底盘上（“front”）用于语义建图。</p></li>
+<li><p>一个 ReSpeaker 麦克风阵列用于语音定向。</p></li>
+<li><p>抓取执行期间底盘保持静止，仅手臂与夹爪运动。</p></li>
+<li><p>导航仅控制底盘关节 7/8/9，运动模式强制互斥。</p></li>
+</ul>
+<p><strong>关键配置细节：</strong></p>
+<ul class="simple">
+<li><p><strong>关节：</strong> 定义 <code class="docutils literal notranslate"><span class="pre">arm</span></code>、<code class="docutils literal notranslate"><span class="pre">gripper</span></code>、<code class="docutils literal notranslate"><span class="pre">base</span></code> 与 <code class="docutils literal notranslate"><span class="pre">all</span></code> 关节组 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_nav_grasp.yaml#L32-L45">src/robot_config/config/robots/lekiwi_nav_grasp.yaml:32-45</a>。</p></li>
+<li><p><strong>MoveIt：</strong> 配置 <code class="docutils literal notranslate"><span class="pre">arm_group_name</span></code>、<code class="docutils literal notranslate"><span class="pre">base_link</span></code>、<code class="docutils literal notranslate"><span class="pre">ee_link</span></code>、<code class="docutils literal notranslate"><span class="pre">shoulder_link</span></code> 与运动反馈参数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_nav_grasp.yaml#L47-L64">src/robot_config/config/robots/lekiwi_nav_grasp.yaml:47-64</a>。MoveIt 主要消费手臂/夹爪关节，同时完整关节状态可用于导航与数据集录制。</p></li>
+<li><p><strong>运动模式：</strong> 支持操作与导航控制之间的动态切换。<code class="docutils literal notranslate"><span class="pre">manipulation_controllers</span></code> 包括 <code class="docutils literal notranslate"><span class="pre">arm_trajectory_controller</span></code> 与 <code class="docutils literal notranslate"><span class="pre">gripper_trajectory_controller</span></code>，<code class="docutils literal notranslate"><span class="pre">navigation_controllers</span></code> 包括 <code class="docutils literal notranslate"><span class="pre">base_velocity_controller</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_nav_grasp.yaml#L68-L80">src/robot_config/config/robots/lekiwi_nav_grasp.yaml:68-80</a>。</p></li>
+<li><p><strong>语义建图：</strong> 默认在 <code class="docutils literal notranslate"><span class="pre">hybrid</span></code> 阶段启用，使用 “front” 相机进行 RGB-D 更新与定位 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_nav_grasp.yaml#L83-L114">src/robot_config/config/robots/lekiwi_nav_grasp.yaml:83-114</a>。它包含 SAM2、RAM++、SigLIP2 等感知后端配置 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_nav_grasp.yaml#L115-L123">src/robot_config/config/robots/lekiwi_nav_grasp.yaml:115-123</a>。</p></li>
+<li><p><strong>控制模式：</strong> <code class="docutils literal notranslate"><span class="pre">lekiwi_nav_grasp.yaml</span></code> 档案支持不同导航阶段（<code class="docutils literal notranslate"><span class="pre">hybrid</span></code>、<code class="docutils literal notranslate"><span class="pre">grasp</span></code>、<code class="docutils literal notranslate"><span class="pre">mapping</span></code>、<code class="docutils literal notranslate"><span class="pre">navigation</span></code>），动态启停各项功能。例如 <code class="docutils literal notranslate"><span class="pre">grasp</span></code> 阶段禁用导航，仅启用 <code class="docutils literal notranslate"><span class="pre">respeaker</span></code> 与 <code class="docutils literal notranslate"><span class="pre">wrist</span></code> 外设 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/test/test_unified_lekiwi_grasp_navigation_config.py#L120-L122">src/robot_config/test/test_unified_lekiwi_grasp_navigation_config.py:120-122</a>。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_nav_grasp.yaml#L1-L168">src/robot_config/config/robots/lekiwi_nav_grasp.yaml:1-168</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/test/test_unified_lekiwi_grasp_navigation_config.py#L120-L122">src/robot_config/test/test_unified_lekiwi_grasp_navigation_config.py:120-122</a></p>
+</section>
+<section id="lekiwi-realsense-lekiwi-handeye-realsense-grasp-yaml">
+<h3>LeKiwi 手眼 RealSense 抓取（<code class="docutils literal notranslate"><span class="pre">lekiwi_handeye_realsense_grasp.yaml</span></code>）<a class="headerlink" href="#lekiwi-realsense-lekiwi-handeye-realsense-grasp-yaml" title="Permalink to this heading"></a></h3>
+<p>该档案 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml#L1-L175">src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml:1-175</a> 聚焦于使用单台安装于夹爪的 RealSense 相机进行抓取。</p>
+<p><strong>硬件假设：</strong></p>
+<ul class="simple">
+<li><p>LeKiwi 全向底盘（关节 7/8/9）与 SO-101 从臂（关节 1-6）。</p></li>
+<li><p>一台 RealSense 相机连接到 310P 板卡，刚性安装在 SO-101 夹爪上。</p></li>
+<li><p>无独立的顶部/前部固定相机。</p></li>
+<li><p>抓取执行期间底盘保持静止。</p></li>
+</ul>
+<p><strong>关键配置细节：</strong></p>
+<ul class="simple">
+<li><p><strong>感知服务：</strong> 配置 <code class="docutils literal notranslate"><span class="pre">grasp_grounding</span></code>（Grounding DINO）与 <code class="docutils literal notranslate"><span class="pre">grasp_segmentation</span></code>（SAM2）服务，均部署于 <code class="docutils literal notranslate"><span class="pre">ascend_310p</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml#L71-L95">src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml:71-95</a>。</p></li>
+<li><p><strong>抓取执行：</strong> 启用抓取执行，指定动作名、模型 bundle 路径（<code class="docutils literal notranslate"><span class="pre">models/graspgen</span></code>）与部署目标（<code class="docutils literal notranslate"><span class="pre">ascend_310p</span></code>）<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml#L97-L105">src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml:97-105</a>。它还定义规划、校验、检测与 IK/FK 服务。</p></li>
+<li><p><strong>相机：</strong> 指定 <code class="docutils literal notranslate"><span class="pre">wrist</span></code> 相机的 RGB 与深度话题 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml#L145-L149">src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml:145-149</a>。</p></li>
+</ul>
+<p>面向 PC 的变体 <code class="docutils literal notranslate"><span class="pre">lekiwi_handeye_realsense_grasp_pc.yaml</span></code> 用于在 NVIDIA CUDA 上运行，主要差异在推理后端 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/so101_banana_pick_pipeline_commands.md#L11-L12">docs/so101_banana_pick_pipeline_commands.md:11-12</a>。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml#L1-L175">src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml:1-175</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/so101_banana_pick_pipeline_commands.md#L11-L12">docs/so101_banana_pick_pipeline_commands.md:11-12</a></p>
+</section>
+<section id="lekiwi-rtp-lekiwi-rtp-distributed-yaml">
+<h3>LeKiwi RTP 分布式遥操作（<code class="docutils literal notranslate"><span class="pre">lekiwi_rtp_distributed.yaml</span></code>）<a class="headerlink" href="#lekiwi-rtp-lekiwi-rtp-distributed-yaml" title="Permalink to this heading"></a></h3>
+<p>该档案 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_rtp_distributed.yaml#L1-L188">src/robot_config/config/robots/lekiwi_rtp_distributed.yaml:1-188</a> 为带 RTP 视频流的遥操作数据采集设计，支持机器人主机与录制主机之间的分布式运行。</p>
+<p><strong>数据流：</strong></p>
+<ul class="simple">
+<li><p><strong>机器人主机：</strong> 前部/腕部相机编码 H.264 视频经 RTP 发送。关节状态与命令经 DDS 发送。</p></li>
+<li><p><strong>录制主机：</strong> 接收视频流、关节状态与命令，组装为回合（episode）。</p></li>
+</ul>
+<p><strong>关键配置细节：</strong></p>
+<ul class="simple">
+<li><p><strong>控制模式：</strong> 默认为 <code class="docutils literal notranslate"><span class="pre">teleop</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_rtp_distributed.yaml#L67">src/robot_config/config/robots/lekiwi_rtp_distributed.yaml:67</a>。</p></li>
+<li><p><strong>推理：</strong> 对 <code class="docutils literal notranslate"><span class="pre">teleop</span></code> 控制模式启用，但执行器被禁用（<code class="docutils literal notranslate"><span class="pre">executor.enabled:</span> <span class="pre">false</span></code>）以防止策略驱动机器人 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_rtp_distributed.yaml#L89-L98">src/robot_config/config/robots/lekiwi_rtp_distributed.yaml:89-98</a>。这允许流水线为录制目的持有视频编码器与 RTP 发送器。</p></li>
+<li><p><strong>遥操作：</strong> <code class="docutils literal notranslate"><span class="pre">teleoperation.enabled</span></code> 默认为 <code class="docutils literal notranslate"><span class="pre">false</span></code>，因为主臂与手柄通常连接到单独的工作站。若遥操作硬件位于机器人主机上，应将该标志设为 <code class="docutils literal notranslate"><span class="pre">true</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_rtp_distributed.yaml#L24-L40">src/robot_config/config/robots/lekiwi_rtp_distributed.yaml:24-40</a>。</p></li>
+<li><p><strong>导航：</strong> 启用，但 <code class="docutils literal notranslate"><span class="pre">nav2_bringup</span></code> 与 <code class="docutils literal notranslate"><span class="pre">ekf_rtabmap</span></code> 默认禁用。<code class="docutils literal notranslate"><span class="pre">cmd_vel_bridge</span></code> 启用于底盘速度控制 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_rtp_distributed.yaml#L123-L164">src/robot_config/config/robots/lekiwi_rtp_distributed.yaml:123-164</a>。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_rtp_distributed.yaml#L1-L188">src/robot_config/config/robots/lekiwi_rtp_distributed.yaml:1-188</a></p>
+</section>
+</section>
+<section id="id3">
+<h2>控制模式<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<p>控制模式定义机器人如何接收与执行命令。它们在 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML 文件的 <code class="docutils literal notranslate"><span class="pre">control_modes</span></code> 章节中指定。</p>
+<section id="teleop">
+<h3>遥操作（<code class="docutils literal notranslate"><span class="pre">teleop</span></code>）<a class="headerlink" href="#teleop" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">teleop</span></code> 控制模式允许人类操作员直接控制机器人，通常使用主臂或手柄。</p>
+<p><strong>特征：</strong></p>
+<ul class="simple">
+<li><p><strong>控制器：</strong> 激活 <code class="docutils literal notranslate"><span class="pre">joint_state_broadcaster</span></code>、<code class="docutils literal notranslate"><span class="pre">arm_position_controller</span></code>、<code class="docutils literal notranslate"><span class="pre">gripper_position_controller</span></code> 与 <code class="docutils literal notranslate"><span class="pre">base_velocity_controller</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_rtp_distributed.yaml#L73-L76">src/robot_config/config/robots/lekiwi_rtp_distributed.yaml:73-76</a>。</p></li>
+<li><p><strong>推理：</strong> 推理流水线可能为数据采集启用（如 RTP 视频编码），但执行器通常被禁用以防止自主运动 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_rtp_distributed.yaml#L89-L98">src/robot_config/config/robots/lekiwi_rtp_distributed.yaml:89-98</a>。</p></li>
+<li><p><strong>用例：</strong> 主要用于数据采集或直接人工控制。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_rtp_distributed.yaml#L73-L76">src/robot_config/config/robots/lekiwi_rtp_distributed.yaml:73-76</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_rtp_distributed.yaml#L89-L98">src/robot_config/config/robots/lekiwi_rtp_distributed.yaml:89-98</a></p>
+</section>
+<section id="model-inference">
+<h3>模型推理（<code class="docutils literal notranslate"><span class="pre">model_inference</span></code>）<a class="headerlink" href="#model-inference" title="Permalink to this heading"></a></h3>
+<p>在该模式下，机器人动作由 AI 模型驱动。这涉及感知、推理与动作分发的流水线。</p>
+<p><strong>特征：</strong></p>
+<ul class="simple">
+<li><p><strong>推理流水线：</strong> 配置具体推理流水线，包括其 <code class="docutils literal notranslate"><span class="pre">model_path</span></code>、<code class="docutils literal notranslate"><span class="pre">deployment</span></code>（如 <code class="docutils literal notranslate"><span class="pre">ascend_310p</span></code>、<code class="docutils literal notranslate"><span class="pre">torch-cuda</span></code>）、<code class="docutils literal notranslate"><span class="pre">execution_mode</span></code>（单体或分布式）与 <code class="docutils literal notranslate"><span class="pre">request_timeout</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/inference_config.py#L203-L206">src/robot_config/robot_config/inference_config.py:203-206</a>。</p></li>
+<li><p><strong>执行器：</strong> 执行器节点负责将推理流水线生成的动作分发给机器人的控制器。</p></li>
+<li><p><strong>感知服务：</strong> 通常依赖 <code class="docutils literal notranslate"><span class="pre">perception_service</span></code> 处理传感器数据并向推理模型提供场景理解 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/README.md#L1-L12">src/perception_service/README.md:1-12</a>。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/inference_config.py#L203-L206">src/robot_config/robot_config/inference_config.py:203-206</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/README.md#L1-L12">src/perception_service/README.md:1-12</a></p>
+</section>
+<section id="moveit-moveit-planning">
+<h3>MoveIt 规划（<code class="docutils literal notranslate"><span class="pre">moveit_planning</span></code>）<a class="headerlink" href="#moveit-moveit-planning" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">moveit_planning</span></code> 控制模式利用 MoveIt 进行运动规划与执行，支持复杂的操作任务。</p>
+<p><strong>特征：</strong></p>
+<ul class="simple">
+<li><p><strong>控制器：</strong> 通常激活 <code class="docutils literal notranslate"><span class="pre">joint_state_broadcaster</span></code>、<code class="docutils literal notranslate"><span class="pre">arm_trajectory_controller</span></code> 与 <code class="docutils literal notranslate"><span class="pre">gripper_trajectory_controller</span></code>。该模式下 <code class="docutils literal notranslate"><span class="pre">base_velocity_controller</span></code> 可能不激活，以确保手臂运动期间底盘保持静止 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/test/test_unified_lekiwi_grasp_navigation_config.py#L110-L111">src/robot_config/test/test_unified_lekiwi_grasp_navigation_config.py:110-111</a>。</p></li>
+<li><p><strong>运动规划：</strong> MoveIt 负责为机器人手臂与夹爪生成无碰撞轨迹。</p></li>
+<li><p><strong>抓取执行：</strong> 与抓取规划及校验服务集成，执行抓取-放置操作 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml#L97-L105">src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml:97-105</a>。</p></li>
+<li><p><strong>技能集成：</strong> <code class="docutils literal notranslate"><span class="pre">pick_object</span></code> 等技能可委托 MoveIt 执行运动，确保安全与正确的轨迹生成 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/embodied_pipeline.md#L26-L28">docs/embodied_pipeline.md:26-28</a>。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/test/test_unified_lekiwi_grasp_navigation_config.py#L110-L111">src/robot_config/test/test_unified_lekiwi_grasp_navigation_config.py:110-111</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml#L97-L105">src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml:97-105</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/embodied_pipeline.md#L26-L28">docs/embodied_pipeline.md:26-28</a></p>
+</section>
+</section>
+<section id="id4">
+<h2>控制模式管理<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
+<p>机器人配置中的 <code class="docutils literal notranslate"><span class="pre">motion_mode</span></code> 块 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_nav_grasp.yaml#L68-L80">src/robot_config/config/robots/lekiwi_nav_grasp.yaml:68-80</a> 对管理不同控制模式之间的切换至关重要，尤其是兼具操作与导航能力的机器人。</p>
+<p><strong>关键参数：</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">enabled</span></code>：激活或停用运动模式管理。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">navigation_enabled_on_startup</span></code>：决定启动时导航是否激活。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">navigation_enabled_topic</span></code>：发布导航启用状态的话题。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set_navigation_enabled_service</span></code>：请求导航启用变更的服务。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">controller_switch_service</span></code>：用于切换活动控制器的服务（如手臂/夹爪与底盘控制器之间）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">manipulation_controllers</span></code>：操作期间活动的控制器列表。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">navigation_controllers</span></code>：导航期间活动的控制器列表。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">transition_timeout_s</span></code>：控制器切换超时。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">manipulation_control_mode</span></code>：与操作关联的控制模式。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">navigation_control_mode</span></code>：与导航关联的控制模式。</p></li>
+</ul>
+<p>该机制确保运动所有权的互斥，防止多个子系统试图控制相同关节时产生冲突。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_nav_grasp.yaml#L68-L80">src/robot_config/config/robots/lekiwi_nav_grasp.yaml:68-80</a></p>
+</section>
+<section id="id5">
+<h2>图：机器人配置档案与控制模式<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
+<pre  class="mermaid">
+        graph TD
+    subgraph &quot;Robot Configuration Files (YAML)&quot;
+        A[lekiwi_nav_grasp.yaml] --&gt; B{Robot Profile: LeKiwi Nav+Grasp}
+        C[lekiwi_handeye_realsense_grasp.yaml] --&gt; D{Robot Profile: LeKiwi Hand-Eye Grasp}
+        E[lekiwi_rtp_distributed.yaml] --&gt; F{Robot Profile: LeKiwi RTP Distributed}
+    end
+
+    subgraph &quot;Control Modes&quot;
+        B -- &quot;Default: base_navigation&quot; --&gt; CM1[Control Mode: base_navigation]
+        B -- &quot;Skill Required: moveit_planning&quot; --&gt; CM2[Control Mode: moveit_planning]
+        D -- &quot;Skill Required: moveit_planning&quot; --&gt; CM2
+        F -- &quot;Default: teleop&quot; --&gt; CM3[Control Mode: teleop]
+        CM1 -- &quot;Controllers: joint_state_broadcaster, base_velocity_controller&quot; --&gt; C1[ROS2 Controllers]
+        CM2 -- &quot;Controllers: arm_trajectory_controller, gripper_trajectory_controller&quot; --&gt; C1
+        CM3 -- &quot;Controllers: arm_position_controller, gripper_position_controller, base_velocity_controller&quot; --&gt; C1
+    end
+
+    subgraph &quot;Key Functionalities&quot;
+        B -- &quot;Semantic Mapping (enabled)&quot; --&gt; SM[Semantic Mapping Node]
+        B -- &quot;Grasp Execution (enabled)&quot; --&gt; GE[Grasp Execution Node]
+        D -- &quot;Grasp Execution (enabled)&quot; --&gt; GE
+        D -- &quot;Perception Services (Grounding DINO, SAM2)&quot; --&gt; PS[Perception Service Node]
+        GE -- &quot;Uses&quot; --&gt; PS
+        F -- &quot;RTP Video Streaming&quot; --&gt; VS[Video Streamer Node]
+        F -- &quot;Distributed Inference (executor disabled)&quot; --&gt; DI[Distributed Inference Pipeline]
+    end
+
+    subgraph &quot;Motion Mode Management&quot;
+        MM[motion_mode block]
+        MM -- &quot;Switches between&quot; --&gt; CM1
+        MM -- &quot;Switches between&quot; --&gt; CM2
+        MM -- &quot;Uses service&quot; --&gt; SCM[controller_manager/switch_controller]
+    end
+
+    style A fill:#f9f,stroke:#333,stroke-width:2px
+    style C fill:#f9f,stroke:#333,stroke-width:2px
+    style E fill:#f9f,stroke:#333,stroke-width:2px
+    style B fill:#ccf,stroke:#333,stroke-width:2px
+    style D fill:#ccf,stroke:#333,stroke-width:2px
+    style F fill:#ccf,stroke:#333,stroke-width:2px
+    style CM1 fill:#bbf,stroke:#333,stroke-width:2px
+    style CM2 fill:#bbf,stroke:#333,stroke-width:2px
+    style CM3 fill:#bbf,stroke:#333,stroke-width:2px
+    style C1 fill:#eef,stroke:#333,stroke-width:2px
+    style SM fill:#eef,stroke:#333,stroke-width:2px
+    style GE fill:#eef,stroke:#333,stroke-width:2px
+    style PS fill:#eef,stroke:#333,stroke-width:2px
+    style VS fill:#eef,stroke:#333,stroke-width:2px
+    style DI fill:#eef,stroke:#333,stroke-width:2px
+    style MM fill:#ddf,stroke:#333,stroke-width:2px
+    style SCM fill:#eef,stroke:#333,stroke-width:2px
+    </pre><p><strong>图题：机器人配置档案与控制模式概览</strong></p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_nav_grasp.yaml">src/robot_config/config/robots/lekiwi_nav_grasp.yaml</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml">src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_rtp_distributed.yaml">src/robot_config/config/robots/lekiwi_rtp_distributed.yaml</a></p>
+</section>
+<section id="id6">
+<h2>图：推理流水线配置<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
+<pre  class="mermaid">
+        graph TD
+    subgraph &quot;Robot Configuration (YAML)&quot;
+        RC[robot_config] --&gt; INF_CFG{inference block}
+    end
+
+    subgraph &quot;Inference Pipeline Configuration&quot;
+        INF_CFG --&gt; P1[Pipeline 1: policy]
+        INF_CFG --&gt; P2[Pipeline 2: perception_service]
+        INF_CFG --&gt; P3[Pipeline N: ...]
+
+        P1 -- &quot;model_path: models/lekiwi_rtp_recording&quot; --&gt; MP1[Model Bundle Path]
+        P1 -- &quot;deployment: recording&quot; --&gt; DPL1[Deployment Name]
+        P1 -- &quot;execution_mode: distributed&quot; --&gt; EM1[Execution Mode]
+        P1 -- &quot;request_timeout: 5.0&quot; --&gt; RT1[Request Timeout]
+        P1 -- &quot;executor.enabled: false&quot; --&gt; EX1[Executor Enabled Flag]
+
+        P2 -- &quot;bundle_path: models/grounding_dino_swint_seq8_1280x720&quot; --&gt; MP2[Model Bundle Path]
+        P2 -- &quot;deployment: ascend_310p&quot; --&gt; DPL2[Deployment Name]
+        P2 -- &quot;adapter_class: GroundingDINORawDetectPlugin&quot; --&gt; AC2[Adapter Class]
+        P2 -- &quot;service_type: ibrobot_msgs/srv/GroundingDetect&quot; --&gt; ST2[Service Type]
+        P2 -- &quot;endpoint: /perception/grasp/grounding_detect&quot; --&gt; EP2[Service Endpoint]
+        P2 -- &quot;node_name: grasp_grounding_detect&quot; --&gt; NN2[Node Name]
+        P2 -- &quot;runtime_options: device_id: 0&quot; --&gt; RO2[Runtime Options]
+    end
+
+    subgraph &quot;Inference Manifest &amp; Deployment&quot;
+        MP1 --&gt; IM1[inference_manifest.json]
+        MP2 --&gt; IM2[inference_manifest.json]
+
+        IM1 -- &quot;Defines&quot; --&gt; DEP1[Deployment: recording]
+        IM2 -- &quot;Defines&quot; --&gt; DEP2[Deployment: ascend_310p]
+
+        DEP1 -- &quot;runtime_profile&quot; --&gt; RP1[Runtime Profile]
+        DEP1 -- &quot;artifacts&quot; --&gt; ART1[Compiled Artifacts]
+
+        DEP2 -- &quot;runtime_profile&quot; --&gt; RP2[Runtime Profile]
+        DEP2 -- &quot;artifacts&quot; --&gt; ART2[Compiled Artifacts]
+    end
+
+    subgraph &quot;Code Entities&quot;
+        INF_CFG -- &quot;Validated by&quot; --&gt; ICC[&quot;InferenceConfig.validate_config()&quot;]
+        ICC -- &quot;Loads&quot; --&gt; VAM[ValidatedManifest]
+        VAM -- &quot;Uses&quot; --&gt; LIM[&quot;load_inference_manifest()&quot;]
+        LIM -- &quot;From&quot; --&gt; IM1
+        LIM -- &quot;From&quot; --&gt; IM2
+        AC2 -- &quot;Instantiates&quot; --&gt; MSP[Model Service Plugin]
+        MSP -- &quot;Runs on&quot; --&gt; MS_NODE[model_service_node]
+    end
+
+    style RC fill:#f9f,stroke:#333,stroke-width:2px
+    style INF_CFG fill:#ccf,stroke:#333,stroke-width:2px
+    style P1 fill:#bbf,stroke:#333,stroke-width:2px
+    style P2 fill:#bbf,stroke:#333,stroke-width:2px
+    style P3 fill:#bbf,stroke:#333,stroke-width:2px
+    style MP1 fill:#eef,stroke:#333,stroke-width:2px
+    style DPL1 fill:#eef,stroke:#333,stroke-width:2px
+    style EM1 fill:#eef,stroke:#333,stroke-width:2px
+    style RT1 fill:#eef,stroke:#333,stroke-width:2px
+    style EX1 fill:#eef,stroke:#333,stroke-width:2px
+    style MP2 fill:#eef,stroke:#333,stroke-width:2px
+    style DPL2 fill:#eef,stroke:#333,stroke-width:2px
+    style AC2 fill:#eef,stroke:#333,stroke-width:2px
+    style ST2 fill:#eef,stroke:#333,stroke-width:2px
+    style EP2 fill:#eef,stroke:#333,stroke-width:2px
+    style NN2 fill:#eef,stroke:#333,stroke-width:2px
+    style RO2 fill:#eef,stroke:#333,stroke-width:2px
+    style IM1 fill:#ddf,stroke:#333,stroke-width:2px
+    style IM2 fill:#ddf,stroke:#333,stroke-width:2px
+    style DEP1 fill:#ddf,stroke:#333,stroke-width:2px
+    style DEP2 fill:#ddf,stroke:#333,stroke-width:2px
+    style RP1 fill:#eef,stroke:#333,stroke-width:2px
+    style ART1 fill:#eef,stroke:#333,stroke-width:2px
+    style RP2 fill:#eef,stroke:#333,stroke-width:2px
+    style ART2 fill:#eef,stroke:#333,stroke-width:2px
+    style ICC fill:#ccf,stroke:#333,stroke-width:2px
+    style VAM fill:#ccf,stroke:#333,stroke-width:2px
+    style LIM fill:#ccf,stroke:#333,stroke-width:2px
+    style MSP fill:#ccf,stroke:#333,stroke-width:2px
+    style MS_NODE fill:#ccf,stroke:#333,stroke-width:2px
+    </pre><p><strong>图题：推理流水线配置流</strong></p>
+<p>此图说明推理流水线如何在 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> YAML 中配置，并链接到底层 <code class="docutils literal notranslate"><span class="pre">inference_manifest.json</span></code> 文件以及负责其校验与执行的代码实体。<code class="docutils literal notranslate"><span class="pre">inference_manifest.json</span></code> 定义模型 bundle 的结构与 artifacts，包括面向不同硬件目标（如 <code class="docutils literal notranslate"><span class="pre">ascend_310p</span></code>、<code class="docutils literal notranslate"><span class="pre">recording</span></code>）的部署。<code class="docutils literal notranslate"><span class="pre">InferenceConfig</span></code> 类 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/inference_config.py#L146-L217">src/robot_config/robot_config/inference_config.py:146-217</a> 负责校验这些配置，确保指定的 <code class="docutils literal notranslate"><span class="pre">model_path</span></code> 与 <code class="docutils literal notranslate"><span class="pre">deployment</span></code> 对应由 <code class="docutils literal notranslate"><span class="pre">load_inference_manifest</span></code> 加载的有效 <code class="docutils literal notranslate"><span class="pre">ValidatedManifest</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/inference_config.py#L22-L23">src/robot_config/robot_config/inference_config.py:22-23</a>。模型服务插件（<code class="docutils literal notranslate"><span class="pre">MSP</span></code>）随后基于 <code class="docutils literal notranslate"><span class="pre">adapter_class</span></code> 实例化，运行于 <code class="docutils literal notranslate"><span class="pre">model_service_node</span></code>。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/inference_config.py#L22-L23">src/robot_config/robot_config/inference_config.py:22-23</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/inference_config.py#L146-L217">src/robot_config/robot_config/inference_config.py:146-217</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_rtp_distributed.yaml#L89-L98">src/robot_config/config/robots/lekiwi_rtp_distributed.yaml:89-98</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml#L71-L95">src/robot_config/config/robots/lekiwi_handeye_realsense_grasp.yaml:71-95</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/perception_service/package_ascend_perception_bundles.py#L1-L67">src/perception_service/perception_service/package_ascend_perception_bundles.py:1-67</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/tests/test_download_models.py#L18-L47">tests/test_download_models.py:18-47</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/scripts/download_models.py#L52-L139">scripts/download_models.py:52-139</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-inference-verify/references/troubleshooting.md#L155-L164">.agents/skills/ibrobot-inference-verify/references/troubleshooting.md:155-164</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="launch_builders.html" class="btn btn-neutral float-left" title="Launch 构建器" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../inference_service/index.html" class="btn btn-neutral float-right" title="推理服务" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-26.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/index.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+      <dd><a href="robot_profiles_control_modes.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

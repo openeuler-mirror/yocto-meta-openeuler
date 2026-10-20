@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>流水线运行时与处理器 &mdash; openEuler Embedded在线文档 26.09 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="分布式边云推理" href="distributed_edge_cloud_inference.html" />
+    <link rel="prev" title="推理服务概述" href="overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview/index.html">项目概览</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration_ssot/index.html">配置单一事实源（robot_config）</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">推理服务</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">推理服务概述</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">流水线运行时与处理器</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">流水线工厂</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">阶段</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id5">处理器</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id6">执行器</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id8">统一运行时句柄</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id9">编解码器与绑定</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="distributed_edge_cloud_inference.html">分布式边云推理</a></li>
+<li class="toctree-l6"><a class="reference internal" href="observation_video_transport.html">观测视频传输（RTP/H.264）</a></li>
+<li class="toctree-l6"><a class="reference internal" href="backends_model_sessions.html">后端与模型会话</a></li>
+<li class="toctree-l6"><a class="reference internal" href="inference_manifest_schema.html">推理清单 Schema</a></li>
+<li class="toctree-l6"><a class="reference internal" href="scheduling_action_dispatch.html">调度与动作分发</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../model_export_deployment_toolchain/index.html">模型导出与部署工具链</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../robot_hardware_control_simulation/index.html">机器人硬件、控制与仿真</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../perception_manipulation_semantic_mapping/index.html">感知、操作与语义建图</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../embodied_agent_skills/index.html">具身智能体与技能</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../voice_audio/index.html">语音与音频</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_tools_benchmarks_observability/index.html">数据工具、基准测试与可观测性</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../interfaces/index.html">接口（ibrobot_msgs）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development_workflow_tooling/index.html">开发工作流与工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">推理服务</a></li>
+      <li class="breadcrumb-item active">流水线运行时与处理器</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>流水线运行时与处理器<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源码文件</summary>
+<p>以下文件被用作生成此 wiki 页面的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/oh-build-roboframe/SKILL.md">.agents/skills/oh-build-roboframe/SKILL.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/oh-cross-build-ros-pkg/SKILL.md">.agents/skills/oh-cross-build-ros-pkg/SKILL.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ohloha-build-pkg/SKILL.md">.agents/skills/ohloha-build-pkg/SKILL.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/backends/__init__.py">src/inference_service/inference_service/backends/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/__init__.py">src/inference_service/inference_service/codecs/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/bindings.py">src/inference_service/inference_service/codecs/bindings.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/execution.py">src/inference_service/inference_service/codecs/execution.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/types.py">src/inference_service/inference_service/codecs/types.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/lerobot_assets.py">src/inference_service/inference_service/lerobot_assets.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/__init__.py">src/inference_service/inference_service/pipeline/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/executor.py">src/inference_service/inference_service/pipeline/executor.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/factory.py">src/inference_service/inference_service/pipeline/factory.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/manager.py">src/inference_service/inference_service/pipeline/manager.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/processors.py">src/inference_service/inference_service/pipeline/processors.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/runtime.py">src/inference_service/inference_service/pipeline/runtime.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/runtime_core.py">src/inference_service/inference_service/pipeline/runtime_core.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/stages.py">src/inference_service/inference_service/pipeline/stages.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/unified_runtime/handle.py">src/inference_service/inference_service/unified_runtime/handle.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/tests/test_codec_execution_plan.py">src/inference_service/tests/test_codec_execution_plan.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/tests/test_native_runtime_pipeline.py">src/inference_service/tests/test_native_runtime_pipeline.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/tests/test_pipeline_processors.py">src/inference_service/tests/test_pipeline_processors.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/tests/test_policy_codecs.py">src/inference_service/tests/test_policy_codecs.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/tests/test_runtime_migration.py">src/inference_service/tests/test_runtime_migration.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_pi05_export_manifest.py">src/model_utils/test/test_pi05_export_manifest.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/perception_service/graspgen_session.py">src/perception_service/perception_service/graspgen_session.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/perception_service/sam2_automatic_ascend_session.py">src/perception_service/perception_service/sam2_automatic_ascend_session.py</a></p></li>
+</ul>
+</details>
+<p>本页面详述 RoboFrame 中执行推理流水线的核心组件。它覆盖流水线工厂、构成流水线的阶段与处理器、管理其执行的执行器、抽象模型交互的统一运行时句柄，以及促进数据流动的编解码器与绑定。</p>
+<section id="id2">
+<h2>流水线工厂<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">inference_service.pipeline.factory</span></code> 模块负责构建和校验后端与流水线实例。它是创建 <code class="docutils literal notranslate"><span class="pre">InferencePipeline</span></code> 对象的中心点，后者封装给定模型部署的整个推理过程。</p>
+<p>工厂使用 <code class="docutils literal notranslate"><span class="pre">RuntimeAssemblerRegistry</span></code> 管理各类模型会话与执行器的创建。它通过提供专用会话构建器支持不同后端类型，包括 LeRobot Torch、Ascend OM、HMM、RKNN 与 Hisilicon <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/factory.py#L68-L134">src/inference_service/inference_service/pipeline/factory.py:68-134</a>。</p>
+<p>关键函数与类：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_new_lerobot_torch_session</span></code>：为 Torch 部署创建 <code class="docutils literal notranslate"><span class="pre">LeRobotTorchModelSession</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/factory.py#L68-L83">src/inference_service/inference_service/pipeline/factory.py:68-83</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_new_ascend_session</span></code>：为 Ascend 部署创建 <code class="docutils literal notranslate"><span class="pre">AscendOmModelSession</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/factory.py#L86-L99">src/inference_service/inference_service/pipeline/factory.py:86-99</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_new_hmm_session</span></code>：创建 <code class="docutils literal notranslate"><span class="pre">HMMModelSession</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/factory.py#L102-L112">src/inference_service/inference_service/pipeline/factory.py:102-112</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_new_rknn_session</span></code>：创建 <code class="docutils literal notranslate"><span class="pre">RKNNModelSession</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/factory.py#L115-L123">src/inference_service/inference_service/pipeline/factory.py:115-123</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_new_hisilicon_session</span></code>：创建 <code class="docutils literal notranslate"><span class="pre">HisiliconModelSession</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/factory.py#L126-L134">src/inference_service/inference_service/pipeline/factory.py:126-134</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_create_policy_session</span></code>：使用已注册构建器创建模型会话的辅助函数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/factory.py#L136-L162">src/inference_service/inference_service/pipeline/factory.py:136-162</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_PolicyRuntimeAssembly</span></code>：将 <code class="docutils literal notranslate"><span class="pre">_PolicySessionHandle</span></code> 适配到 <code class="docutils literal notranslate"><span class="pre">RuntimeAssembly</span></code> 接口的私有桥接类 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/factory.py#L165-L173">src/inference_service/inference_service/pipeline/factory.py:165-173</a>。</p></li>
+</ul>
+<p>工厂还处理为 PI0.5 与 SmolVLA 等模型创建专用执行器，推导其拓扑并加载配置 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/factory.py#L35-L49">src/inference_service/inference_service/pipeline/factory.py:35-49</a>。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/factory.py#L1-L194">src/inference_service/inference_service/pipeline/factory.py:1-194</a></p>
+</section>
+<section id="id3">
+<h2>阶段<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<p>推理流水线由有序的 <code class="docutils literal notranslate"><span class="pre">InferenceStage</span></code> 对象组成，每个对象表示一个独立操作。这些阶段作用于持有请求数据与中间值的 <code class="docutils literal notranslate"><span class="pre">StageFrame</span></code>。</p>
+<p><code class="docutils literal notranslate"><span class="pre">inference_service.pipeline.stages</span></code> 模块定义这些阶段的接口与具体实现。</p>
+<p>关键接口：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">InferenceStage</span></code>：定义 <code class="docutils literal notranslate"><span class="pre">execute</span></code> 方法的协议，接收 <code class="docutils literal notranslate"><span class="pre">StageFrame</span></code> 与截止时间 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/stages.py#L17-L20">src/inference_service/inference_service/pipeline/stages.py:17-20</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ResultAdapter</span></code>：将最终 <code class="docutils literal notranslate"><span class="pre">StageFrame</span></code> 转换为领域专用结果或适配错误的协议 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/stages.py#L24-L29">src/inference_service/inference_service/pipeline/stages.py:24-29</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IterationStateAdapter</span></code>：在迭代式模型中管理族专用循环状态的协议 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/stages.py#L51-L63">src/inference_service/inference_service/pipeline/stages.py:51-63</a>。</p></li>
+</ul>
+<p>具体阶段实现：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ModelResultAdapter</span></code>：从 <code class="docutils literal notranslate"><span class="pre">StageFrame</span></code> 提取模型结果 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/stages.py#L33-L49">src/inference_service/inference_service/pipeline/stages.py:33-49</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IterativeStage</span></code>：基于 <code class="docutils literal notranslate"><span class="pre">IterationStep</span></code> 计划与 <code class="docutils literal notranslate"><span class="pre">IterationStateAdapter</span></code> 重复执行一系列阶段 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/stages.py#L78-L107">src/inference_service/inference_service/pipeline/stages.py:78-107</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EulerIterationStateAdapter</span></code>：对语义循环状态应用 Euler 更新，通常用于扩散模型 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/stages.py#L110-L149">src/inference_service/inference_service/pipeline/stages.py:110-149</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DirectIterationStateAdapter</span></code>：用每次模型输出替换迭代状态 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/stages.py#L152-L175">src/inference_service/inference_service/pipeline/stages.py:152-175</a>。</p></li>
+</ul>
+<section id="id4">
+<h3>迭代阶段执行<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TD
+    A[IterativeStage.execute] --&gt; B{Initialize State Adapter};
+    B --&gt; C{Loop through IterationStep};
+    C --&gt; D{&quot;Prepare Step (IterationStateAdapter)&quot;};
+    D --&gt; E{Execute Body Stages};
+    E --&gt; F{&quot;Update State (IterationStateAdapter)&quot;};
+    F --&gt; C;
+    C -- Loop ends --&gt; G{Finalize State Adapter};
+    G --&gt; H[Return];
+    </pre><p>Title: Iterative Stage Execution Flow
+来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/stages.py#L78-L107">src/inference_service/inference_service/pipeline/stages.py:78-107</a></p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/stages.py#L1-L175">src/inference_service/inference_service/pipeline/stages.py:1-175</a></p>
+</section>
+</section>
+<section id="id5">
+<h2>处理器<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
+<p>处理器负责推理前的输入观测变换与模型输出的后处理。对 LeRobot 模型，它们由 <code class="docutils literal notranslate"><span class="pre">_ProcessorPair</span></code> 及其视图管理。</p>
+<p><code class="docutils literal notranslate"><span class="pre">inference_service.pipeline.processors</span></code> 模块提供 <code class="docutils literal notranslate"><span class="pre">create_lerobot_processor_views</span></code> 函数，为已编译的 LeRobot 部署实例化前处理与后处理器 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/processors.py#L145-L147">src/inference_service/inference_service/pipeline/processors.py:145-147</a>。</p>
+<p>关键类：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_ProcessorPair</span></code>：管理 LeRobot 前处理器与后处理器的加载与生命周期。它确保这些组件只加载一次并提供线程安全访问 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/processors.py#L16-L111">src/inference_service/inference_service/pipeline/processors.py:16-111</a>。</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">load</span></code>：导入 LeRobot 策略配置与工厂模块以创建前/后处理器，处理 tokenizer 路径解析 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/processors.py#L23-L71">src/inference_service/inference_service/pipeline/processors.py:23-71</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">preprocess</span></code>：将已加载的前处理器应用于输入数据 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/processors.py#L73-L78">src/inference_service/inference_service/pipeline/processors.py:73-78</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">postprocess</span></code>：将已加载的后处理器应用于模型动作，必要时转换为 <code class="docutils literal notranslate"><span class="pre">torch.Tensor</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/processors.py#L80-L87">src/inference_service/inference_service/pipeline/processors.py:80-87</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reset</span></code>：若前处理器与后处理器支持，重置二者状态 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/processors.py#L89-L103">src/inference_service/inference_service/pipeline/processors.py:89-103</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">close</span></code>：释放处理器持有的资源 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/processors.py#L105-L111">src/inference_service/inference_service/pipeline/processors.py:105-111</a>。</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_PreprocessorView</span></code>：封装 <code class="docutils literal notranslate"><span class="pre">_ProcessorPair</span></code> 并暴露前处理器功能的包装器 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/processors.py#L114-L129">src/inference_service/inference_service/pipeline/processors.py:114-129</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_PostprocessorView</span></code>：封装 <code class="docutils literal notranslate"><span class="pre">_ProcessorPair</span></code> 并暴露后处理器功能的包装器 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/processors.py#L132-L143">src/inference_service/inference_service/pipeline/processors.py:132-143</a>。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/processors.py#L1-L147">src/inference_service/inference_service/pipeline/processors.py:1-147</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/tests/test_pipeline_processors.py#L17-L60">src/inference_service/tests/test_pipeline_processors.py:17-60</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/tests/test_pipeline_processors.py#L63-L88">src/inference_service/tests/test_pipeline_processors.py:63-88</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/tests/test_pipeline_processors.py#L90-L121">src/inference_service/tests/test_pipeline_processors.py:90-121</a></p>
+</section>
+<section id="id6">
+<h2>执行器<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
+<p>执行器负责编排流水线内各阶段的执行。它们管理组件生命周期并处理错误上报。</p>
+<p><code class="docutils literal notranslate"><span class="pre">inference_service.pipeline.executor</span></code> 模块定义基类 <code class="docutils literal notranslate"><span class="pre">ComponentModelExecutor</span></code> 及其具体实现 <code class="docutils literal notranslate"><span class="pre">SequentialModelExecutor</span></code>。</p>
+<p>关键类：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ComponentModelExecutor</span></code>：模型执行器基类，管理共享组件所有权、健康检查与取消。它提供执行 <code class="docutils literal notranslate"><span class="pre">InferenceStage</span></code> 序列的核心逻辑 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/executor.py#L14-L160">src/inference_service/inference_service/pipeline/executor.py:14-160</a>。</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">_execute_stages</span></code>：遍历各阶段并传入 <code class="docutils literal notranslate"><span class="pre">StageFrame</span></code> 与 <code class="docutils literal notranslate"><span class="pre">ExecutionContext</span></code> 的内部方法 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/executor.py#L73-L96">src/inference_service/inference_service/pipeline/executor.py:73-96</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cancel</span></code>：尝试取消所拥有组件上的进行中操作 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/executor.py#L98-L111">src/inference_service/inference_service/pipeline/executor.py:98-111</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">health</span></code>：聚合所有已拥有组件的健康状态 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/executor.py#L113-L142">src/inference_service/inference_service/pipeline/executor.py:113-142</a>。</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">SequentialModelExecutor</span></code>：<code class="docutils literal notranslate"><span class="pre">ComponentModelExecutor</span></code> 的具体实现，以固定顺序执行各阶段 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/executor.py#L163-L167">src/inference_service/inference_service/pipeline/executor.py:163-167</a>。</p></li>
+</ul>
+<section id="id7">
+<h3>执行器数据流<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TD
+    A[ModelRequest] --&gt; B{SequentialModelExecutor.execute};
+    B --&gt; C[ExecutionContext];
+    B --&gt; D[StageFrame Creation];
+    D -- Initial values --&gt; E[StageFrame];
+    E --&gt; F{For each InferenceStage};
+    F --&gt; G[&quot;Stage.execute(frame, deadline)&quot;];
+    G -- Updates frame --&gt; E;
+    F -- All stages complete --&gt; H{&quot;ResultAdapter.adapt(frame)&quot;};
+    H --&gt; I[Pipeline Result];
+    G -- Error --&gt; J{&quot;ResultAdapter.adapt_error(error)&quot;};
+    J --&gt; K[Pipeline Error];
+    </pre><p>Title: Sequential Model Executor Data Flow
+来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/executor.py#L73-L96">src/inference_service/inference_service/pipeline/executor.py:73-96</a></p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/executor.py#L1-L167">src/inference_service/inference_service/pipeline/executor.py:1-167</a></p>
+</section>
+</section>
+<section id="id8">
+<h2>统一运行时句柄<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">ModelRuntimeHandle</span></code> 在底层模型运行时之上提供统一门面，抽象掉不同后端与执行策略的复杂性。它确保策略请求与结果遵循一致的契约。</p>
+<p><code class="docutils literal notranslate"><span class="pre">inference_service.pipeline.runtime</span></code> 模块定义 <code class="docutils literal notranslate"><span class="pre">InferencePipeline</span></code> 类，该类在本地执行中使用 <code class="docutils literal notranslate"><span class="pre">ModelRuntimeHandle</span></code>。</p>
+<p>关键类：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">InferencePipeline</span></code>：充当策略门面的主类。它将所有本地执行路由到 <code class="docutils literal notranslate"><span class="pre">ModelRuntimeHandle</span></code>，并管理前/后处理、调度与结果归一化 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/runtime.py#L1-L182">src/inference_service/inference_service/pipeline/runtime.py:1-182</a>。</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">_PolicyFrameResult</span></code>：用于在发布公开 <code class="docutils literal notranslate"><span class="pre">PipelineResult</span></code> 前归一化各后端结果的内部数据结构 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/runtime.py#L101-L120">src/inference_service/inference_service/pipeline/runtime.py:101-120</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_normalize_policy_frame</span></code>：将不同的模型输出格式转换为一致的 <code class="docutils literal notranslate"><span class="pre">_PolicyFrameResult</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/runtime.py#L123-L163">src/inference_service/inference_service/pipeline/runtime.py:123-163</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_PolicyPreprocessStage</span></code>：处理提示选择、处理器应用、控制输入合并与截止时间门控 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/runtime.py#L176-L182">src/inference_service/inference_service/pipeline/runtime.py:176-182</a>。</p></li>
+</ul>
+</li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/pipeline/runtime.py#L1-L182">src/inference_service/inference_service/pipeline/runtime.py:1-182</a></p>
+</section>
+<section id="id9">
+<h2>编解码器与绑定<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h2>
+<p>编解码器与绑定对于在应用使用的语义张量表示与模型后端期望的运行时专用格式之间进行转换至关重要。</p>
+<p><code class="docutils literal notranslate"><span class="pre">inference_service.codecs.bindings</span></code> 模块定义 manifest 驱动的转换如何发生。</p>
+<p>关键类与函数：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">BindingError</span></code>：绑定期间问题的基础异常 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/bindings.py#L20">src/inference_service/inference_service/codecs/bindings.py:20-20</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MissingSemanticTensorError</span></code>：找不到必需语义张量时抛出 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/bindings.py#L23">src/inference_service/inference_service/codecs/bindings.py:23-23</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">validate_artifact_bindings</span></code>：确保输入与输出绑定的一致性，检查重复的语义、运行时名称与索引 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/bindings.py#L53-L59">src/inference_service/inference_service/codecs/bindings.py:53-59</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_numpy_dtype</span></code>：将字符串 dtype 转换为 NumPy dtype，必要时用 <code class="docutils literal notranslate"><span class="pre">ml_dtypes</span></code> 处理 <code class="docutils literal notranslate"><span class="pre">bfloat16</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/bindings.py#L60-L71">src/inference_service/inference_service/codecs/bindings.py:60-71</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_as_numpy</span></code>：将任意对象转换为指定 dtype 的 NumPy 数组，处理 PyTorch 张量并确保连续性 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/bindings.py#L73-L95">src/inference_service/inference_service/codecs/bindings.py:73-95</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_validate_shape</span></code>：检查 NumPy 数组的形状是否与 <code class="docutils literal notranslate"><span class="pre">TensorBinding</span></code> 中定义的期望形状匹配 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/bindings.py#L97-L110">src/inference_service/inference_service/codecs/bindings.py:97-110</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">convert_input</span></code>：将单个规范张量转换为其声明的运行时 ABI，包括布局变换（如图像的 NCHW 到 NHWC） <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/bindings.py#L113-L124">src/inference_service/inference_service/codecs/bindings.py:113-124</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bind_inputs</span></code>：从 <code class="docutils literal notranslate"><span class="pre">CodecRequest</span></code> 解析语义输入，并依据 <code class="docutils literal notranslate"><span class="pre">ArtifactBindings</span></code> 将其转换为 <code class="docutils literal notranslate"><span class="pre">BoundInputs</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/bindings.py#L127-L146">src/inference_service/inference_service/codecs/bindings.py:127-146</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_resolve_output_value</span></code>：依据语义、运行时名称或索引从运行时输出中提取输出值 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/bindings.py#L149-L167">src/inference_service/inference_service/codecs/bindings.py:149-167</a>。</p></li>
+</ul>
+<section id="id10">
+<h3>执行计划<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">inference_service.codecs.execution</span></code> 模块负责构建与校验有序的多模块执行计划。这对由多个需按特定顺序执行、可能在彼此间传递中间张量的子模型（角色）组成的模型尤为重要。</p>
+<p>关键类与函数：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ExecutionPlanError</span></code>：声明的多模块张量所有权不一致时抛出 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/execution.py#L15">src/inference_service/inference_service/codecs/execution.py:15-15</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ExecutionRolePlan</span></code>：表示执行计划中的单个角色（子模型），包括其名称、位置与产物绑定 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/execution.py#L19-L22">src/inference_service/inference_service/codecs/execution.py:19-22</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">HostInternalLink</span></code>：描述角色间由主机管理的张量链接，指定其语义、生产者、消费者与生命周期 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/execution.py#L25-L34">src/inference_service/inference_service/codecs/execution.py:25-34</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DeviceLinkMetadata</span></code>：描述角色间由设备管理的张量链接，指示设备指针传输 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/execution.py#L37-L48">src/inference_service/inference_service/codecs/execution.py:37-48</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ExecutionPlan</span></code>：完整计划，由有序角色、主机管理的链接与设备管理的链接组成 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/execution.py#L51-L55">src/inference_service/inference_service/codecs/execution.py:51-55</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">build_execution_plan</span></code>：从一系列执行角色及其产物绑定构建并校验 <code class="docutils literal notranslate"><span class="pre">ExecutionPlan</span></code>。它检查重复角色、缺失绑定，并确保正确的生产者-消费者顺序与张量兼容性 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/execution.py#L104-L178">src/inference_service/inference_service/codecs/execution.py:104-178</a>。</p></li>
+</ul>
+</section>
+<section id="id11">
+<h3>执行计划构建<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TD
+    A[Start build_execution_plan] --&gt; B{Validate role names and bindings};
+    B -- Invalid --&gt; E[ExecutionPlanError];
+    B -- Valid --&gt; C[Identify internal tensor producers and consumers];
+    C --&gt; D{Validate host and device links};
+    D -- Inconsistent --&gt; E;
+    D -- Consistent --&gt; F[Construct ExecutionPlan];
+    F --&gt; G[Return ExecutionPlan];
+    </pre><p>Title: Execution Plan Building Process
+来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/execution.py#L104-L178">src/inference_service/inference_service/codecs/execution.py:104-178</a></p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/bindings.py#L1-L167">src/inference_service/inference_service/codecs/bindings.py:1-167</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/codecs/execution.py#L1-L178">src/inference_service/inference_service/codecs/execution.py:1-178</a></p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="overview.html" class="btn btn-neutral float-left" title="推理服务概述" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="distributed_edge_cloud_inference.html" class="btn btn-neutral float-right" title="分布式边云推理" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-26.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/index.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+      <dd><a href="pipeline_runtime_processors.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

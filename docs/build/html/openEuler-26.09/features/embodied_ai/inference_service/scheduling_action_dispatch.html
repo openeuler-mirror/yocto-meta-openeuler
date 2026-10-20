@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>调度与动作分发 &mdash; openEuler Embedded在线文档 26.09 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="模型导出与部署工具链" href="../model_export_deployment_toolchain/index.html" />
+    <link rel="prev" title="推理清单 Schema" href="inference_manifest_schema.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview/index.html">项目概览</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration_ssot/index.html">配置单一事实源（robot_config）</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">推理服务</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">推理服务概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pipeline_runtime_processors.html">流水线运行时与处理器</a></li>
+<li class="toctree-l6"><a class="reference internal" href="distributed_edge_cloud_inference.html">分布式边云推理</a></li>
+<li class="toctree-l6"><a class="reference internal" href="observation_video_transport.html">观测视频传输（RTP/H.264）</a></li>
+<li class="toctree-l6"><a class="reference internal" href="backends_model_sessions.html">后端与模型会话</a></li>
+<li class="toctree-l6"><a class="reference internal" href="inference_manifest_schema.html">推理清单 Schema</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">调度与动作分发</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">动作分发概览</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">系统架构</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id7">分发节点</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id8">全局推理调度器</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id11">动作分块与时间平滑</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id12">执行器</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#lekiwi">硬件接口示例：LeKiwi</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../model_export_deployment_toolchain/index.html">模型导出与部署工具链</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../robot_hardware_control_simulation/index.html">机器人硬件、控制与仿真</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../perception_manipulation_semantic_mapping/index.html">感知、操作与语义建图</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../embodied_agent_skills/index.html">具身智能体与技能</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../voice_audio/index.html">语音与音频</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_tools_benchmarks_observability/index.html">数据工具、基准测试与可观测性</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../interfaces/index.html">接口（ibrobot_msgs）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development_workflow_tooling/index.html">开发工作流与工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">推理服务</a></li>
+      <li class="breadcrumb-item active">调度与动作分发</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>调度与动作分发<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源码文件</summary>
+<p>以下文件被用作生成此 wiki 页面的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/README.en.md">src/action_dispatch/README.en.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/README.md">src/action_dispatch/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/action_dispatch/__init__.py">src/action_dispatch/action_dispatch/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/action_dispatch/action_dispatcher_node.py">src/action_dispatch/action_dispatch/action_dispatcher_node.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/action_dispatch/scheduled_action_dispatcher_node.py">src/action_dispatch/action_dispatch/scheduled_action_dispatcher_node.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/action_dispatch/temporal_smoother.py">src/action_dispatch/action_dispatch/temporal_smoother.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/test/test_scheduled_dispatcher_lifecycle.py">src/action_dispatch/test/test_scheduled_dispatcher_lifecycle.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/test/test_temporal_smoother.py">src/action_dispatch/test/test_temporal_smoother.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/global_inference_scheduler_node.py">src/inference_service/inference_service/global_inference_scheduler_node.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/test/test_scheduler_node_guards.py">src/inference_service/test/test_scheduler_node_guards.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/test/test_scheduler_ros_integration.py">src/inference_service/test/test_scheduler_ros_integration.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_description/urdf/lekiwi_assembled.urdf.xacro">src/lekiwi_description/urdf/lekiwi_assembled.urdf.xacro</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/CMakeLists.txt">src/lekiwi_hardware/CMakeLists.txt</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/README.md">src/lekiwi_hardware/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/config/lekiwi_controllers.yaml">src/lekiwi_hardware/config/lekiwi_controllers.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/include/lekiwi_hardware/lekiwi_system_hardware.hpp">src/lekiwi_hardware/include/lekiwi_hardware/lekiwi_system_hardware.hpp</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/lekiwi_hardware_plugin.xml">src/lekiwi_hardware/lekiwi_hardware_plugin.xml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/package.xml">src/lekiwi_hardware/package.xml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/src/lekiwi_system_hardware.cpp">src/lekiwi_hardware/src/lekiwi_system_hardware.cpp</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/launch/teleop_operator.launch.py">src/robot_config/launch/teleop_operator.launch.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/execution.py">src/robot_config/robot_config/launch_builders/execution.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/test/test_execution_scheduler_branch.py">src/robot_config/test/test_execution_scheduler_branch.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/test/test_teleop_operator_launch.py">src/robot_config/test/test_teleop_operator_launch.py</a></p></li>
+</ul>
+</details>
+<p>本页面详述 RoboFrame 中的全局推理调度器与动作分发机制。它覆盖推理结果如何被调度、处理并分发给机器人控制器，包括动作分块、时间平滑及各类执行器等概念。</p>
+<section id="id2">
+<h2>动作分发概览<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">action_dispatch</span></code> 包提供拉取式动作分发层，将推理模型（如 ACT 与 Diffusion Policy）桥接到 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code>。它管理动作块的流转，确保其及时且连贯地交付给机器人控制器。系统支持时间混合以平滑重叠预测之间的过渡，目标是实现连续的物理运动。</p>
+<p>有两个互斥的分发节点，依据 <code class="docutils literal notranslate"><span class="pre">control_modes.&lt;mode&gt;.inference.scheduler.enable</span></code> 配置选择：</p>
+<ol class="arabic simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">action_dispatcher_node</span></code></strong>：旧版分发器。在 <code class="docutils literal notranslate"><span class="pre">scheduler.enable</span></code> 缺失或为 <code class="docutils literal notranslate"><span class="pre">false</span></code> 时运行。它通过 <code class="docutils literal notranslate"><span class="pre">DispatchInfer</span> <span class="pre">/dispatch</span></code> 与 <code class="docutils literal notranslate"><span class="pre">/reset</span></code> 服务使用指定的 <code class="docutils literal notranslate"><span class="pre">executor.inference_pipeline</span></code>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">scheduled_action_dispatcher_node</span></code></strong>：调度式分发器，在 <code class="docutils literal notranslate"><span class="pre">scheduler.enable</span></code> 为 <code class="docutils literal notranslate"><span class="pre">true</span></code> 时激活。它与全局推理调度器集成，等待全局就绪后使用 <code class="docutils literal notranslate"><span class="pre">OpenInferenceSession</span></code>、<code class="docutils literal notranslate"><span class="pre">ScheduledDispatchInfer</span></code> 与 <code class="docutils literal notranslate"><span class="pre">CloseInferenceSession</span></code>。该分发器管理逻辑会话、校验结果身份，并通过清空队列、发布安全停止命令并关闭会话来处理终结失败。它支持带绝对截止时间与优先级 0 请求回退链的优先级分发。</p></li>
+</ol>
+<p>两个分发器都使用 <code class="docutils literal notranslate"><span class="pre">/action_dispatcher</span></code> 话题，并暴露启动、停止、状态与时间平滑开关的公共接口。它们被设计为不在同一 launch 图中并存。调度式分发器消费全局推理调度器返回的全图动作块。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/README.en.md#L1-L34">src/action_dispatch/README.en.md:1-34</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/README.md#L1-L29">src/action_dispatch/README.md:1-29</a></p>
+</section>
+<section id="id3">
+<h2>系统架构<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<p>动作分发系统充当推理服务与 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 之间的中介。</p>
+<section id="id4">
+<h3>组件架构<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<p>下图展示高层组件交互：</p>
+<pre  class="mermaid">
+        graph TD
+    subgraph &quot;IB Robot System&quot;
+        subgraph &quot;Inference Service&quot;
+            Model[&quot;Model (ACT/Diff)&quot;]
+        end
+
+        subgraph &quot;Action Dispatch&quot;
+            ActionDispatcherNode[&quot;Action Dispatcher Node&quot;]
+            TemporalSmoother[&quot;Temporal Smoother&quot;]
+            TopicExecutor[&quot;Topic Executor&quot;]
+        end
+
+        subgraph &quot;ros2_control&quot;
+            JointStatePubSub[&quot;Joint State Pub/Sub&quot;]
+            Controllers[&quot;Controllers&quot;]
+        end
+
+        Model --&gt; ActionDispatcherNode
+        ActionDispatcherNode --&gt; TemporalSmoother
+        TemporalSmoother --&gt; TopicExecutor
+        TopicExecutor --&gt; Controllers
+        Controllers --&gt; JointStatePubSub
+    end
+    </pre><p>图题：动作分发组件架构
+来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/README.en.md#L35-L68">src/action_dispatch/README.en.md:35-68</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/README.md#L30-L64">src/action_dispatch/README.md:30-64</a></p>
+</section>
+<section id="id5">
+<h3>通信架构<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<p>通信架构突出用于数据交换的 ROS 2 接口。</p>
+<pre  class="mermaid">
+        graph TD
+    subgraph &quot;ROS2 Communication&quot;
+        InferenceService[&quot;Inference Service&quot;]
+        ActionDispatch[&quot;Action Dispatch&quot;]
+        ros2_control[&quot;ros2_control&quot;]
+        SensorLayer[&quot;Sensor Layer&quot;]
+
+        InferenceService -- &quot;DispatchInfer Action (ibrobot_msgs/action)&quot; --&gt; ActionDispatch
+        ActionDispatch -- &quot;VariantsList (Result) (action chunk tensor)&quot; --&gt; InferenceService
+        ActionDispatch -- &quot;Float64MultiArray / JointTrajectory&quot; --&gt; ros2_control
+        ros2_control -- &quot;/joint_commands /arm_commands&quot; --&gt; ActionDispatch
+        SensorLayer -- &quot;/joint_states (JointState) optional&quot; --&gt; ActionDispatch
+    end
+    </pre><p>图题：动作分发通信架构
+来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/README.en.md#L70-L104">src/action_dispatch/README.en.md:70-104</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/README.md#L65-L101">src/action_dispatch/README.md:65-101</a></p>
+</section>
+<section id="id6">
+<h3>内部数据流<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">continuous</span></code> 策略的内部数据流包括每个控制节拍消费一个动作，将剩余规划长度对照水位线检查，并异步请求新的推理结果。</p>
+<pre  class="mermaid">
+        graph TD
+    ControlTick[&quot;Control tick&quot;] --&gt; LifecycleGate[&quot;Lifecycle gate&quot;]
+    LifecycleGate --&gt; CheckWatermark[&quot;Check remaining plan / watermark&quot;]
+    CheckWatermark --&gt; RecordPlanLength[&quot;Record plan length &amp; async request inference&quot;]
+    RecordPlanLength --&gt; ActivePlanConsume[&quot;ActivePlan consume one step (or hold/empty)&quot;]
+    ActivePlanConsume --&gt; Executor[&quot;Executor&quot;]
+
+    InferenceReturn[&quot;Inference return&quot;] --&gt; ValidateIdentity[&quot;Validate identity / decode&quot;]
+    ValidateIdentity --&gt; CalculateConsumedSteps[&quot;Calculate steps consumed during request&quot;]
+    CalculateConsumedSteps --&gt; FullChunkPlanner[&quot;FullChunkPlanner select interval&quot;]
+    FullChunkPlanner --&gt; ActivePlanAccept[&quot;ActivePlan atomic accept: none replace; temporal_ensemble blend overlap &amp; append new tail&quot;]
+    </pre><p>图题：连续分发的内部数据流
+来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/README.en.md#L107-L117">src/action_dispatch/README.en.md:107-117</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/README.md#L104-L117">src/action_dispatch/README.md:104-117</a></p>
+<p><code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code> 路由 <code class="docutils literal notranslate"><span class="pre">Float64MultiArray</span></code> 或 <code class="docutils literal notranslate"><span class="pre">JointTrajectory</span></code> 消息。用于基准评测时，反馈提交驱动消费。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/README.en.md#L119-L122">src/action_dispatch/README.en.md:119-122</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/README.md#L119-L122">src/action_dispatch/README.md:119-122</a></p>
+</section>
+</section>
+<section id="id7">
+<h2>分发节点<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h2>
+<section id="action-dispatcher-node">
+<h3><code class="docutils literal notranslate"><span class="pre">action_dispatcher_node</span></code>（旧版）<a class="headerlink" href="#action-dispatcher-node" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">action_dispatcher_node</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/action_dispatch/action_dispatcher_node.py">src/action_dispatch/action_dispatch/action_dispatcher_node.py</a> 是一个最小动作分发器。它维护一个动作队列，当队列低于水位线阈值时触发推理。动作通过 <code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code> 以固定频率发布到 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code>。它支持动作块的跨帧时间平滑。</p>
+<p>该节点声明的关键参数包括：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">queue_size</span></code>：动作队列的最大长度（默认：100）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">watermark_threshold</span></code>：触发新推理请求的阈值（默认：20）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">control_frequency</span></code>：动作分发频率（默认：100.0 Hz）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inference_action_server</span></code>：推理请求的 ROS 动作服务器（默认：<code class="docutils literal notranslate"><span class="pre">/inference/policy/dispatch</span></code>）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inference_reset_service</span></code>：重置推理的 ROS 服务（默认：<code class="docutils literal notranslate"><span class="pre">/inference/policy/reset</span></code>）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inference_prompt</span></code>：推理的 prompt。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">policy_reset_timeout_sec</span></code>：策略重置超时（默认：2.0 秒）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inference_timeout_sec</span></code>：推理目标超时（默认：10.0 秒）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">robot_config_path</span></code>：机器人配置路径。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">joint_state_topic</span></code>：关节状态反馈话题（默认：<code class="docutils literal notranslate"><span class="pre">/joint_states</span></code>）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">navigation_mode</span></code>：导航模式布尔标志。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">executor_type</span></code>：使用的执行器类型（默认：<code class="docutils literal notranslate"><span class="pre">topic</span></code>）。</p></li>
+</ul>
+<p>该节点基于 <code class="docutils literal notranslate"><span class="pre">executor_type</span></code>、<code class="docutils literal notranslate"><span class="pre">scheduler_mode</span></code>、<code class="docutils literal notranslate"><span class="pre">chunking_strategy</span></code> 与 <code class="docutils literal notranslate"><span class="pre">blending_strategy</span></code> 等参数解析分发策略 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L145-L158">src/action_dispatch/action_dispatch/action_dispatcher_node.py:145-158</a>。它还处理旧版执行器类型别名，将 <code class="docutils literal notranslate"><span class="pre">&quot;action&quot;</span></code> 映射为 <code class="docutils literal notranslate"><span class="pre">&quot;topic&quot;</span></code> 以保持兼容 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/execution.py#L34-L55">src/robot_config/robot_config/launch_builders/execution.py:34-55</a>。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L1-L179">src/action_dispatch/action_dispatch/action_dispatcher_node.py:1-179</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/execution.py#L34-L55">src/robot_config/robot_config/launch_builders/execution.py:34-55</a></p>
+</section>
+<section id="scheduled-action-dispatcher-node">
+<h3><code class="docutils literal notranslate"><span class="pre">scheduled_action_dispatcher_node</span></code><a class="headerlink" href="#scheduled-action-dispatcher-node" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">scheduled_action_dispatcher_node</span></code> 为与全局推理调度器集成而设计。它管理推理会话、校验结果并以更健壮的方式处理失败。它使用 <code class="docutils literal notranslate"><span class="pre">OpenInferenceSession</span></code>、<code class="docutils literal notranslate"><span class="pre">ScheduledDispatchInfer</span></code> 与 <code class="docutils literal notranslate"><span class="pre">CloseInferenceSession</span></code> 与推理服务交互。该节点确保动作块与推理期间消费的步数对齐，并可在队列暂时耗尽时保持最后一个动作。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/README.en.md#L14-L30">src/action_dispatch/README.en.md:14-30</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/README.md#L15-L29">src/action_dispatch/README.md:15-29</a></p>
+</section>
+</section>
+<section id="id8">
+<h2>全局推理调度器<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
+<p>全局推理调度器负责跨多条流水线编排推理请求并管理其执行。它确保推理请求被高效处理，尊重截止时间与资源约束。</p>
+<p><code class="docutils literal notranslate"><span class="pre">GlobalInferenceSchedulerNode</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/global_inference_scheduler_node.py">src/inference_service/inference_service/global_inference_scheduler_node.py</a> 是关键组件。它与 <code class="docutils literal notranslate"><span class="pre">PipelinePolicyNode</span></code> 实例交互以管理推理会话与分发请求。</p>
+<section id="id9">
+<h3>调度逻辑<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<p>调度器采用精密的逻辑管理推理请求：</p>
+<ul class="simple">
+<li><p><strong>会话管理</strong>：处理推理会话的打开与关闭（<code class="docutils literal notranslate"><span class="pre">OpenInferenceSession</span></code>、<code class="docutils literal notranslate"><span class="pre">CloseInferenceSession</span></code>）及流水线绑定（<code class="docutils literal notranslate"><span class="pre">OpenPipelineBinding</span></code>、<code class="docutils literal notranslate"><span class="pre">ClosePipelineBinding</span></code>）。</p></li>
+<li><p><strong>请求分发</strong>：将调度的推理请求（<code class="docutils literal notranslate"><span class="pre">ScheduledDispatchInfer</span></code>）分发给可用流水线。</p></li>
+<li><p><strong>幂等账本</strong>：使用 <code class="docutils literal notranslate"><span class="pre">IdempotencyLedger</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/test/test_scheduler_node_guards.py#L95">src/inference_service/test/test_scheduler_node_guards.py:95</a> 追踪推理操作，防止重复处理并支持终结结果重放。</p></li>
+<li><p><strong>截止时间预订</strong>：<code class="docutils literal notranslate"><span class="pre">DeadlineReservationTable</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/test/test_scheduler_node_guards.py#L41">src/inference_service/test/test_scheduler_node_guards.py:41</a> 管理推理请求的截止时间，确保按时完成。</p></li>
+<li><p><strong>工作容量</strong>：<code class="docutils literal notranslate"><span class="pre">WorkClassCapacity</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/test/test_scheduler_node_guards.py#L85">src/inference_service/test/test_scheduler_node_guards.py:85</a> 定义不同类型工作（如会话控制、动作生成）的容量，允许调度器排定优先级并管理资源分配。</p></li>
+</ul>
+</section>
+<section id="id10">
+<h3>错误处理与防护<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<p>调度器包含健壮的错误处理与防护以确保系统稳定：</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">ExecutorSchedulerPairingError</span></code></strong>：在 launch 时检测到不兼容的执行器/调度器配对时抛出 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/execution.py#L112-L114">src/robot_config/robot_config/launch_builders/execution.py:112-114</a>。该检查委托给 <code class="docutils literal notranslate"><span class="pre">robot_config.dispatch_strategies</span></code> 以快速失败。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">BenchmarkEvaluationError</span></code></strong>：在基准评测选择校验期间抛出 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/execution.py#L134-L136">src/robot_config/robot_config/launch_builders/execution.py:134-136</a>。</p></li>
+<li><p><strong>线上传输边界</strong>：调度器对错误消息与详情强制线上传输边界，防止消息过大 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/test/test_scheduler_node_guards.py#L87">src/inference_service/test/test_scheduler_node_guards.py:87</a>。</p></li>
+<li><p><strong>终结重放</strong>：<code class="docutils literal notranslate"><span class="pre">replay_terminal</span></code> 函数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/test/test_scheduler_node_guards.py#L32">src/inference_service/test/test_scheduler_node_guards.py:32</a> 允许为幂等操作重放终结结果。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/test/test_scheduler_node_guards.py#L1-L172">src/inference_service/test/test_scheduler_node_guards.py:1-172</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/execution.py#L112-L136">src/robot_config/robot_config/launch_builders/execution.py:112-136</a></p>
+</section>
+</section>
+<section id="id11">
+<h2>动作分块与时间平滑<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h2>
+<p>动作分块指从推理模型接收一串动作（一个”块”）。随后对这些块应用时间平滑以确保流畅的机器人运动，尤其是当新推理结果到达并与现有动作规划重叠时。</p>
+<section id="temporalsmoother">
+<h3><code class="docutils literal notranslate"><span class="pre">TemporalSmoother</span></code><a class="headerlink" href="#temporalsmoother" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">TemporalSmoother</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/action_dispatch/temporal_smoother.py#L45">src/action_dispatch/action_dispatch/temporal_smoother.py:45</a> 模块为动作块提供跨帧指数平滑。它对产生分块输出的策略（如 ACT 与 Diffusion Policy）至关重要。</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">TemporalSmootherConfig</span></code></strong>：以 <code class="docutils literal notranslate"><span class="pre">enabled</span></code>、<code class="docutils literal notranslate"><span class="pre">chunk_size</span></code>、<code class="docutils literal notranslate"><span class="pre">temporal_ensemble_coeff</span></code> 与 <code class="docutils literal notranslate"><span class="pre">device</span></code> 等参数配置平滑器 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/action_dispatch/temporal_smoother.py#L19-L40">src/action_dispatch/action_dispatch/temporal_smoother.py:19-40</a>。</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">chunk_size</span></code>：块中动作的最大数量。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">temporal_ensemble_coeff</span></code>：平滑权重的指数衰减系数。正值给较旧动作更多权重（稳定），负值给较新动作更多权重（灵敏）。默认 0.01，与原始 ACT 论文一致。</p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">update(new_actions,</span> <span class="pre">actions_executed_during_inference)</span></code></strong>：核心方法。当新动作到达时，将其与当前规划中的剩余动作混合。<code class="docutils literal notranslate"><span class="pre">actions_executed_during_inference</span></code> 参数计入推理运行期间被消费的动作，确保正确的时间对齐 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/action_dispatch/temporal_smoother.py#L151-L173">src/action_dispatch/action_dispatch/temporal_smoother.py:151-173</a>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">get_next_action()</span></code></strong>：弹出并返回平滑后规划中的下一个动作 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/action_dispatch/temporal_smoother.py#L130-L149">src/action_dispatch/action_dispatch/temporal_smoother.py:130-149</a>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">reset()</span></code></strong>：清空内部状态，在新回合开始时使用 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/action_dispatch/temporal_smoother.py#L112-L116">src/action_dispatch/action_dispatch/temporal_smoother.py:112-116</a>。</p></li>
+<li><p><strong>权重预计算</strong>：指数权重基于 <code class="docutils literal notranslate"><span class="pre">temporal_ensemble_coeff</span></code> 与 <code class="docutils literal notranslate"><span class="pre">chunk_size</span></code> 预计算以优化平滑计算 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/action_dispatch/temporal_smoother.py#L89-L96">src/action_dispatch/action_dispatch/temporal_smoother.py:89-96</a>。</p></li>
+</ul>
+<p>若平滑被禁用（<code class="docutils literal notranslate"><span class="pre">config.enabled=False</span></code>），<code class="docutils literal notranslate"><span class="pre">update</span></code> 方法在对齐后直接以新动作替换剩余规划，实际上作为直通 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/action_dispatch/temporal_smoother.py#L170-L173">src/action_dispatch/action_dispatch/temporal_smoother.py:170-173</a>。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/action_dispatch/temporal_smoother.py#L1-L184">src/action_dispatch/action_dispatch/temporal_smoother.py:1-184</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/test/test_temporal_smoother.py#L1-L211">src/action_dispatch/test/test_temporal_smoother.py:1-211</a></p>
+</section>
+</section>
+<section id="id12">
+<h2>执行器<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h2>
+<p>执行器负责将处理后的动作发送给机器人的硬件接口，通常经由 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code>。</p>
+<section id="topicexecutor">
+<h3><code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code><a class="headerlink" href="#topicexecutor" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">TopicExecutor</span></code> 是 <code class="docutils literal notranslate"><span class="pre">action_dispatcher_node</span></code> 使用的主要执行器。它将动作命令作为 ROS 2 消息（如 <code class="docutils literal notranslate"><span class="pre">Float64MultiArray</span></code> 或 <code class="docutils literal notranslate"><span class="pre">JointTrajectory</span></code>）发布到 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 控制器。这允许以高频（如 100 Hz）向机器人连续流式发送命令。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/action_dispatch/action_dispatch/action_dispatcher_node.py#L179">src/action_dispatch/action_dispatch/action_dispatcher_node.py:179</a></p>
+</section>
+<section id="benchmarkexecutor">
+<h3><code class="docutils literal notranslate"><span class="pre">BenchmarkExecutor</span></code><a class="headerlink" href="#benchmarkexecutor" title="Permalink to this heading"></a></h3>
+<p>虽然提供的片段未明确详述，<code class="docutils literal notranslate"><span class="pre">benchmark</span></code> 执行器类型在 <code class="docutils literal notranslate"><span class="pre">_validate_executor_scheduler_pairing</span></code> 的上下文中被提及 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/execution.py#L128">src/robot_config/robot_config/launch_builders/execution.py:128</a>。该执行器可能用于评估与测试场景，动作可能通过反馈机制提交而非直接流式发送到硬件。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/execution.py#L128">src/robot_config/robot_config/launch_builders/execution.py:128</a></p>
+</section>
+</section>
+<section id="lekiwi">
+<h2>硬件接口示例：LeKiwi<a class="headerlink" href="#lekiwi" title="Permalink to this heading"></a></h2>
+<p>LeKiwi 机器人的硬件接口（<code class="docutils literal notranslate"><span class="pre">lekiwi_hardware</span></code>）提供了动作最终如何转化为物理机器人运动的具体示例。它是一个驱动 Feetech SMS_STS 串行总线舵机的 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> <code class="docutils literal notranslate"><span class="pre">SystemInterface</span></code> 插件。</p>
+<section id="id13">
+<h3>LeKiwi 硬件架构<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TD
+    UpperLevelNodes[&quot;Upper-level Nodes (ACT Policy / Teleop / MoveIt)&quot;] --&gt; Commands[&quot;Topics (position/velocity commands)&quot;]
+    Commands --&gt; ros2_controlControllers[&quot;ros2_control Controllers (JointGroupPosition/ForwardCommand/JointGroupVelocity)&quot;]
+    ros2_controlControllers --&gt; CommandStateInterface[&quot;CommandInterface / StateInterface&quot;]
+    CommandStateInterface --&gt; LeKiwiSystemHardware[&quot;LeKiwiSystemHardware (this package)&quot;]
+    LeKiwiSystemHardware --&gt; FeetechProtocol[&quot;Feetech SMS_STS Protocol (Serial 1Mbps)&quot;]
+    FeetechProtocol --&gt; FeetechServos[&quot;Feetech Servos (ID 1-9)&quot;]
+    </pre><p>图题：LeKiwi 硬件接口架构
+来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/README.md#L18-L42">src/lekiwi_hardware/README.md:18-42</a></p>
+</section>
+<section id="id14">
+<h3>关键特性<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 插件</strong>：实现 <code class="docutils literal notranslate"><span class="pre">SystemInterface</span></code> 以即插即用集成。</p></li>
+<li><p><strong>舵机控制</strong>：驱动 6 个手臂位置舵机（ID 1-6）与 3 个全向轮速度舵机（ID 7-9）。</p></li>
+<li><p><strong>同步读写</strong>：使用 <code class="docutils literal notranslate"><span class="pre">SyncRead</span></code> / <code class="docutils literal notranslate"><span class="pre">SyncWrite</span></code> 保证一致的多电机时序。</p></li>
+<li><p><strong>标定</strong>：支持用于归零偏移与关节限位的 JSON 标定文件。</p></li>
+<li><p><strong>控制频率</strong>：以 100 Hz 运行。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">scan_motors</span></code> 工具</strong>：扫描已连接电机的诊断工具 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/tools/scan_motors.cpp">src/lekiwi_hardware/tools/scan_motors.cpp</a>。</p></li>
+</ul>
+</section>
+<section id="id15">
+<h3>关节映射与控制模式<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
+<p>LeKiwi 机器人定义了具体的关节 ID 及其对应的控制模式：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>关节 ID</p></th>
+<th class="head"><p>命名约定</p></th>
+<th class="head"><p>控制模式</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>arm_shoulder_pan</p></td>
+<td><p>位置</p></td>
+<td><p>肩部偏航</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>arm_shoulder_lift</p></td>
+<td><p>位置</p></td>
+<td><p>肩部俯仰</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>arm_elbow_flex</p></td>
+<td><p>位置</p></td>
+<td><p>肘部弯曲</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>arm_wrist_flex</p></td>
+<td><p>位置</p></td>
+<td><p>腕部弯曲</p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p>arm_wrist_roll</p></td>
+<td><p>位置</p></td>
+<td><p>腕部滚转</p></td>
+</tr>
+<tr class="row-odd"><td><p>6</p></td>
+<td><p>arm_gripper</p></td>
+<td><p>位置</p></td>
+<td><p>夹爪</p></td>
+</tr>
+<tr class="row-even"><td><p>7</p></td>
+<td><p>base_left_wheel</p></td>
+<td><p>速度</p></td>
+<td><p>底盘左轮</p></td>
+</tr>
+<tr class="row-odd"><td><p>8</p></td>
+<td><p>base_back_wheel</p></td>
+<td><p>速度</p></td>
+<td><p>底盘后轮</p></td>
+</tr>
+<tr class="row-even"><td><p>9</p></td>
+<td><p>base_right_wheel</p></td>
+<td><p>速度</p></td>
+<td><p>底盘右轮</p></td>
+</tr>
+</tbody>
+</table>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/README.md#L181-L193">src/lekiwi_hardware/README.md:181-193</a></p>
+</section>
+<section id="id16">
+<h3>坐标转换<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h3>
+<p>所有坐标转换逻辑集中在 <code class="docutils literal notranslate"><span class="pre">lekiwi_conversions.hpp</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/include/lekiwi_hardware/lekiwi_conversions.hpp">src/lekiwi_hardware/include/lekiwi_hardware/lekiwi_conversions.hpp</a>，提供纯函数：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ticks_to_radians(raw_ticks)</span></code>：手臂位置：原始 ticks → 弧度。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">radians_to_ticks(radians)</span></code>：手臂位置：弧度 → ticks（截断 [0, 4095]）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">steps_to_rad_s(raw_speed)</span></code>：速度：原始 steps/s → rad/s。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rad_s_to_steps(rad_per_sec)</span></code>：速度：rad/s → 原始 steps/s（截断 [-32768, 32767]）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">decode_motor_register(low,</span> <span class="pre">high)</span></code>：解码 2 字节寄存器。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">encode_homing_offset(offset)</span></code>：编码归零偏移。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/README.md#L198-L207">src/lekiwi_hardware/README.md:198-207</a></p>
+<p>转换公式基于手臂位置 4096 ticks = 2π 弧度、中心点在 2048 ticks。底盘速度使用 <code class="docutils literal notranslate"><span class="pre">TICKS_PER_RAD</span></code> 在 rad/s 与原始 steps/s 之间转换。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/README.md#L209-L216">src/lekiwi_hardware/README.md:209-216</a></p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/CMakeLists.txt#L1-L104">src/lekiwi_hardware/CMakeLists.txt:1-104</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/README.md#L1-L234">src/lekiwi_hardware/README.md:1-234</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/src/lekiwi_system_hardware.cpp">src/lekiwi_hardware/src/lekiwi_system_hardware.cpp</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/include/lekiwi_hardware/lekiwi_system_hardware.hpp">src/lekiwi_hardware/include/lekiwi_hardware/lekiwi_system_hardware.hpp</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/package.xml">src/lekiwi_hardware/package.xml</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/lekiwi_hardware_plugin.xml">src/lekiwi_hardware/lekiwi_hardware_plugin.xml</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/lekiwi_hardware/config/lekiwi_controllers.yaml">src/lekiwi_hardware/config/lekiwi_controllers.yaml</a></p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="inference_manifest_schema.html" class="btn btn-neutral float-left" title="推理清单 Schema" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../model_export_deployment_toolchain/index.html" class="btn btn-neutral float-right" title="模型导出与部署工具链" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-26.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/index.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+      <dd><a href="scheduling_action_dispatch.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

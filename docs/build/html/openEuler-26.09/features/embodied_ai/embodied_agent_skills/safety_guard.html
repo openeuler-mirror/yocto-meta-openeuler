@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>安全防护 &mdash; openEuler Embedded在线文档 26.09 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="语音与音频" href="../voice_audio/index.html" />
+    <link rel="prev" title="robot-skill CLI 与 Hermes" href="robot_skill_cli_hermes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview/index.html">项目概览</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration_ssot/index.html">配置单一事实源（robot_config）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference_service/index.html">推理服务</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../model_export_deployment_toolchain/index.html">模型导出与部署工具链</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../robot_hardware_control_simulation/index.html">机器人硬件、控制与仿真</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../perception_manipulation_semantic_mapping/index.html">感知、操作与语义建图</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">具身智能体与技能</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">具身智能体与技能概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="embodied_pipeline_agent_nodes.html">具身流水线与智能体节点</a></li>
+<li class="toctree-l6"><a class="reference internal" href="skill_catalog_skill_library.html">技能目录与技能库</a></li>
+<li class="toctree-l6"><a class="reference internal" href="robot_skill_cli_hermes.html">robot-skill CLI 与 Hermes</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">安全防护</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">1. 安全校验规则</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#safetyguardnode-ros-2">2. SafetyGuardNode ROS 2 节点</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id9">3. 分发绑定校验</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id11">4. 数据与控制流图</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id12">5. 自然语言到代码实体映射</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id15">6. 关键类与函数汇总</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id16">7. 结语</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../voice_audio/index.html">语音与音频</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_tools_benchmarks_observability/index.html">数据工具、基准测试与可观测性</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../interfaces/index.html">接口（ibrobot_msgs）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development_workflow_tooling/index.html">开发工作流与工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">具身智能体与技能</a></li>
+      <li class="breadcrumb-item active">安全防护</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>安全防护<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源码文件</summary>
+<p>以下文件被用作生成此 wiki 页面的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/embodied_agent/embodied_agent/task_executor_node.py">src/embodied_agent/embodied_agent/task_executor_node.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/embodied_common/embodied_common/dispatch_binding.py">src/embodied_common/embodied_common/dispatch_binding.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/safety_guard/package.xml">src/safety_guard/package.xml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/safety_guard/resource/safety_guard">src/safety_guard/resource/safety_guard</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/safety_guard/safety_guard/__init__.py">src/safety_guard/safety_guard/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/safety_guard/safety_guard/rules.py">src/safety_guard/safety_guard/rules.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/safety_guard/safety_guard/safety_guard_node.py">src/safety_guard/safety_guard/safety_guard_node.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/safety_guard/setup.py">src/safety_guard/setup.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/safety_guard/test/test_rules.py">src/safety_guard/test/test_rules.py</a></p></li>
+</ul>
+</details>
+<p><strong>安全防护</strong>（Safety Guard）组件在 RoboFrame 的具身最小闭环框架内提供严格的安全校验服务。其核心职责包括强制工作空间边界、应用技能与原语的安全规则及白名单，以及在任务执行前校验分发绑定。这对通过尽早发现并拒绝不安全或不受支持的命令来维护安全的机器人操作至关重要。</p>
+<p>本叶子页面记录 Safety Guard 系统的实现细节、数据流与关键代码实体，覆盖：</p>
+<ul class="simple">
+<li><p>技能与原语的安全校验规则。</p></li>
+<li><p>命名位姿与目标白名单。</p></li>
+<li><p>工作空间边界强制。</p></li>
+<li><p>分发绑定校验。</p></li>
+<li><p>暴露校验服务的 SafetyGuardNode ROS 2 节点。</p></li>
+</ul>
+<hr class="docutils" />
+<section id="id2">
+<h2>1. 安全校验规则<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>校验安全约束的基础逻辑位于模块 <code class="docutils literal notranslate"><span class="pre">safety_guard.rules</span></code>（<code class="docutils literal notranslate"><span class="pre">src/safety_guard/safety_guard/rules.py</span></code>）。该模块提供检查技能请求、原语命令与机器人位姿相对所配置限位的有效性与安全性的函数。</p>
+<section id="rules-py">
+<h3><code class="docutils literal notranslate"><span class="pre">rules.py</span></code> 中的关键函数：<a class="headerlink" href="#rules-py" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_is_finite_number(value)</span> <span class="pre">-&gt;</span> <span class="pre">bool</span></code>：<br />
+检查一个值是否为非布尔的有限数。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">validate_xyz_within_workspace(x,</span> <span class="pre">y,</span> <span class="pre">z,</span> <span class="pre">workspace)</span> <span class="pre">-&gt;</span> <span class="pre">tuple[bool,</span> <span class="pre">str]</span></code>：<br />
+校验提供的 3D 点是否位于定义的工作空间边界内。支持按轴的 min/max 限位，并可选以原点为中心的最大半径约束。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">validate_pose_within_workspace(pose,</span> <span class="pre">workspace)</span> <span class="pre">-&gt;</span> <span class="pre">tuple[bool,</span> <span class="pre">str]</span></code>：<br />
+从位姿字典中提取 XYZ 位置并调用 <code class="docutils literal notranslate"><span class="pre">validate_xyz_within_workspace</span></code>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_validate_quaternion(qx,</span> <span class="pre">qy,</span> <span class="pre">qz,</span> <span class="pre">qw)</span> <span class="pre">-&gt;</span> <span class="pre">tuple[bool,</span> <span class="pre">str]</span></code>：<br />
+校验四元数姿态已归一化且非零。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_validate_joint_targets(joint_positions,</span> <span class="pre">arm_joint_names,</span> <span class="pre">joint_limits,</span> <span class="pre">label)</span> <span class="pre">-&gt;</span> <span class="pre">tuple[bool,</span> <span class="pre">str]</span></code>：<br />
+校验关节位置为有限值、（若提供）对应已知关节，且（若指定）遵循关节限位。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">validate_skill_request(...)</span></code>：<br />
+技能请求的核心校验器。它检查：</p>
+<ul>
+<li><p>技能名称受支持（存在于技能模板中）。</p></li>
+<li><p>技能未被禁用。</p></li>
+<li><p>必需字段与参数存在。</p></li>
+<li><p>请求 schema 版本与预期匹配。</p></li>
+<li><p>目标位姿与关节在工作空间与限位之内。</p></li>
+<li><p>委派执行器名称（如适用）受支持。</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">validate_primitive_request(...)</span></code>：<br />
+与技能校验类似但面向原语命令，校验允许的原语、工作空间约束与参数正确性。</p></li>
+</ul>
+<p>这些校验强制所有运动目标、关节命令与技能调用严格遵循所配置的安全约束与白名单。</p>
+<section id="id3">
+<h4>工作空间定义<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h4>
+<p>位姿校验使用的工作空间参数是一个字典，含可选键 <code class="docutils literal notranslate"><span class="pre">&quot;x&quot;</span></code>、<code class="docutils literal notranslate"><span class="pre">&quot;y&quot;</span></code>、<code class="docutils literal notranslate"><span class="pre">&quot;z&quot;</span></code>，各自映射为 <code class="docutils literal notranslate"><span class="pre">[min,</span> <span class="pre">max]</span></code> 浮点限位。它还可包含 <code class="docutils literal notranslate"><span class="pre">&quot;max_radius_m&quot;</span></code> 以强制距原点的最大半径。这允许为机器人操作定义复杂的体积边界。</p>
+</section>
+</section>
+<section id="id4">
+<h3>数据流与设计<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>收到待校验的技能或原语请求时，Safety Guard 调用这些规则函数校验请求参数。</p></li>
+<li><p>技能模板、关节限位、命名位姿与工作空间被传入或加载以供检查。</p></li>
+<li><p>校验返回布尔允许标志，以及被拒绝时的字符串原因或错误消息。</p></li>
+</ul>
+<p>该设计将纯安全逻辑（rules.py）与 ROS 2 节点代码干净分离。</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="safetyguardnode-ros-2">
+<h2>2. SafetyGuardNode ROS 2 节点<a class="headerlink" href="#safetyguardnode-ros-2" title="Permalink to this heading"></a></h2>
+<p><strong>SafetyGuardNode</strong> 类（<code class="docutils literal notranslate"><span class="pre">src/safety_guard/safety_guard/safety_guard_node.py</span></code>）是将安全校验逻辑暴露为服务并订阅技能注册事件的 ROS 2 节点。</p>
+<section id="id5">
+<h3>节点初始化与参数<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>声明服务名、JSON 编码的配置块与调试控制参数。</p></li>
+<li><p>加载如下配置：</p>
+<ul>
+<li><p>命名位姿 JSON</p></li>
+<li><p>命名目标 JSON</p></li>
+<li><p>用于边界定义的工作空间 JSON</p></li>
+<li><p>手臂关节名称列表 JSON</p></li>
+<li><p>关节限位 JSON</p></li>
+</ul>
+</li>
+<li><p>实例化 <code class="docutils literal notranslate"><span class="pre">SafetySnapshotCache</span></code> 以管理技能目录的快照版本。</p></li>
+<li><p>创建服务服务器：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">/embodied/validate_skill</span></code> 用于技能校验请求。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">/embodied/validate_primitive</span></code> 用于原语校验请求。</p></li>
+</ul>
+</li>
+<li><p>订阅 <code class="docutils literal notranslate"><span class="pre">/embodied/skill_registry_events</span></code> 以获取技能目录状态更新。</p></li>
+<li><p>周期性与技能网关状态服务 <code class="docutils literal notranslate"><span class="pre">/embodied/get_skill_gateway_status</span></code> 同步。</p></li>
+</ul>
+</section>
+<section id="id6">
+<h3>校验服务处理器<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_handle_validate_skill</span></code>：<br />
+通过以下方式处理传入的技能校验请求：</p>
+<ul>
+<li><p>检查技能目录快照身份与已发布快照身份完全一致以保证一致性。</p></li>
+<li><p>以当前命名位姿、目标、工作空间、关节限位调用 <code class="docutils literal notranslate"><span class="pre">validate_skill_request</span></code>。</p></li>
+<li><p>返回带描述性错误码的接受/拒绝决定。</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_handle_validate_primitive</span></code>：<br />
+对原语命令执行类似校验。</p></li>
+</ul>
+</section>
+<section id="id7">
+<h3>同步逻辑<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>维护锁以串行化状态请求与学习者。</p></li>
+<li><p>使用技能网关状态服务获取当前技能注册状态，确保快照目录为最新。</p></li>
+<li><p>管理快照身份并保留相关世代，以对技能定义保证安全性。</p></li>
+</ul>
+</section>
+<section id="id8">
+<h3>主要成员汇总<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>成员</p></th>
+<th class="head text-left"><p>角色/描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">_named_poses</span></code></p></td>
+<td class="text-left"><p>从 JSON 解析的允许命名位姿字典。</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">_named_targets</span></code></p></td>
+<td class="text-left"><p>从 JSON 解析的允许命名目标字典。</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">_workspace</span></code></p></td>
+<td class="text-left"><p>从 JSON 解析的工作空间边界配置。</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">_arm_joint_names</span></code></p></td>
+<td class="text-left"><p>手臂关节名称字符串列表。</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">_joint_limits</span></code></p></td>
+<td class="text-left"><p>来自 JSON 的关节限位范围字典。</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">_snapshot_cache</span></code></p></td>
+<td class="text-left"><p>追踪技能目录状态的 SafetySnapshotCache 实例。</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">_validate_skill_service</span></code></p></td>
+<td class="text-left"><p>技能校验请求的服务名。</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">_validate_primitive_service</span></code></p></td>
+<td class="text-left"><p>原语校验请求的服务名。</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">_sync_gateway_status</span></code></p></td>
+<td class="text-left"><p>周期性同步技能状态信息的函数。</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id9">
+<h2>3. 分发绑定校验<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h2>
+<p>Safety Guard 与 <code class="docutils literal notranslate"><span class="pre">dispatch_binding</span></code> 模块（<code class="docutils literal notranslate"><span class="pre">src/embodied_common/embodied_common/dispatch_binding.py</span></code>）协作，校验提供任务分发元数据的<strong>分发绑定</strong>。</p>
+<section id="id10">
+<h3>关键分发绑定概念<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>DispatchBinding：</strong> 封装任务分发元数据的 ROS 消息，如 <code class="docutils literal notranslate"><span class="pre">task_id</span></code>、<code class="docutils literal notranslate"><span class="pre">root_task_id</span></code>、<code class="docutils literal notranslate"><span class="pre">workflow_step_index</span></code>、任务预算与技能目录快照期望。</p></li>
+<li><p>函数：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">new_binding</span></code>：以默认与给定参数创建新的 DispatchBinding。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">copy_binding</span></code>：复制绑定以维持安全保证。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delegated_executor_identity</span></code>：为委派执行器计算身份指纹（用于技能校验）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delegated_executor_identity_matches</span></code>：校验绑定的委派执行器身份与预期的部署/模型信息匹配。</p></li>
+</ul>
+</li>
+</ul>
+<p>这确保任务分发与一致的技能目录快照对齐，且被调用的委派执行器确实有效且安全。</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id11">
+<h2>4. 数据与控制流图<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h2>
+<p>下图展示从传入校验请求到 Safety Guard 系统内部决策的流程。</p>
+<pre  class="mermaid">
+        flowchart TD
+    subgraph ROS[ROS 2 Layer]
+        direction TB
+        ValidateSkillSrv[/ValidateSkill Service/]
+        ValidatePrimitiveSrv[/ValidatePrimitive Service/]
+        SkillRegistrySub[/SkillRegistryEvent Topic/]
+        SkillGatewayStatusSvc[/GetSkillGatewayStatus Service/]
+    end
+
+    subgraph SafetyGuardNode[&quot;SafetyGuardNode (safety_guard_node.py)&quot;]
+        direction TB
+        LoadConfig[/&quot;Load Named Poses/Targets, Workspace, Joint Limits&quot;/]
+        SnapshotCache[&quot;SafetySnapshotCache&quot;]
+        ServiceHandlers[/_handle_validate_skill/_handle_validate_primitive/]
+        SyncStatus[/_sync_gateway_status Timer/]
+    end
+
+    subgraph RulesModule[&quot;Safety Rules (rules.py)&quot;]
+        direction TB
+        ValidateSkill[&quot;validate_skill_request()&quot;]
+        ValidatePrimitive[&quot;validate_primitive_request()&quot;]
+        WorkspaceChecks[&quot;validate_pose_within_workspace()&quot;]
+        JointLimitChecks[&quot;_validate_joint_targets()&quot;]
+    end
+
+    ValidateSkillSrv --&gt; ServiceHandlers
+    ValidatePrimitiveSrv --&gt; ServiceHandlers
+    SkillRegistrySub --&gt; SafetyGuardNode
+    SkillGatewayStatusSvc --&gt; SyncStatus
+    ServiceHandlers --&gt;|Calls| ValidateSkill
+    ServiceHandlers --&gt;|Calls| ValidatePrimitive
+    ValidateSkill --&gt; WorkspaceChecks
+    ValidateSkill --&gt; JointLimitChecks
+    ValidatePrimitive --&gt; WorkspaceChecks
+    </pre></section>
+<hr class="docutils" />
+<section id="id12">
+<h2>5. 自然语言到代码实体映射<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h2>
+<section id="id13">
+<h3>5.1 技能请求安全校验<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph LR
+    NL_Skill_Request[&quot;Natural Language\nSkill Request&quot;] --&gt; SkillTemplates[&quot;Skill Templates\n(get_skill_templates)&quot;]
+    SkillTemplates --&gt;|Lookup by skill_name| validate_skill_request[&quot;validate_skill_request(skill_name, ...)&quot;]
+
+    validate_skill_request --&gt; Workspace[&quot;Workspace Boundaries\n(validate_pose_within_workspace)&quot;]
+    validate_skill_request --&gt; JointLimits[&quot;Joint Limits\n(_validate_joint_targets)&quot;]
+
+    validate_skill_request --&gt; Result[&quot;Allowed/Rejected with reason&quot;]
+
+    SafetyGuardNode[&quot;SafetyGuardNode._handle_validate_skill()&quot;] --&gt; validate_skill_request
+    </pre></section>
+<section id="id14">
+<h3>5.2 原语请求安全校验<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph LR
+    NL_Primitive_Request[&quot;Natural Language\nPrimitive Request&quot;] --&gt; validate_primitive_request[&quot;validate_primitive_request(primitive_name, ...)&quot;]
+
+    validate_primitive_request --&gt; Workspace[&quot;Workspace Boundaries\n(validate_xyz_within_workspace)&quot;]
+    validate_primitive_request --&gt; OtherChecks[&quot;Additional Parameter Checks&quot;]
+
+    validate_primitive_request --&gt; Result[&quot;Allowed/Rejected with reason&quot;]
+
+    SafetyGuardNode[&quot;SafetyGuardNode._handle_validate_primitive()&quot;] --&gt; validate_primitive_request
+    </pre></section>
+</section>
+<hr class="docutils" />
+<section id="id15">
+<h2>6. 关键类与函数汇总<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>类 / 函数</p></th>
+<th class="head"><p>描述</p></th>
+<th class="head"><p>定义位置 / 行号</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">validate_skill_request</span></code></p></td>
+<td><p>校验技能请求的安全性与正确性</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rules.py:117-&gt;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">validate_primitive_request</span></code></p></td>
+<td><p>校验原语的安全性与正确性</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rules.py</span></code>（未完整展示）</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">validate_pose_within_workspace</span></code></p></td>
+<td><p>检查位姿是否在工作空间限位内</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rules.py:73-79</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SafetyGuardNode</span></code></p></td>
+<td><p>暴露校验服务的 ROS 2 节点</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">safety_guard_node.py:25-486</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SafetySnapshotCache</span></code></p></td>
+<td><p>为节点管理技能目录快照缓存</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">safety_guard_node.py:...</span></code>（导入）</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">new_binding</span></code></p></td>
+<td><p>创建分发绑定消息</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dispatch_binding.py:14-21</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">delegated_executor_identity</span></code></p></td>
+<td><p>构造委派执行器身份字典</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dispatch_binding.py:41-73</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<hr class="docutils" />
+<section id="id16">
+<h2>7. 结语<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>SafetyGuardNode</strong> 与技能目录快照及技能注册系统紧密配合，确保被调用的技能反映最新的安全定义。</p></li>
+<li><p>安全规则模块设计为纯函数且独立，便于单元测试与安全约束推理。</p></li>
+<li><p>校验包括数值检查、schema 版本强制、关节范围限制、工作空间边界与执行器一致性。</p></li>
+<li><p>系统在规划/分发周期早期拒绝任何可能违反安全约束的命令。</p></li>
+</ul>
+<hr class="docutils" />
+<p>来源：<code class="docutils literal notranslate"><span class="pre">src/safety_guard/safety_guard/rules.py:1-164</span></code>, <code class="docutils literal notranslate"><span class="pre">src/safety_guard/safety_guard/safety_guard_node.py:1-146</span></code>, <code class="docutils literal notranslate"><span class="pre">src/embodied_common/embodied_common/dispatch_binding.py:1-162</span></code>, <code class="docutils literal notranslate"><span class="pre">src/safety_guard/test/test_rules.py:1-253</span></code></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="robot_skill_cli_hermes.html" class="btn btn-neutral float-left" title="robot-skill CLI 与 Hermes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../voice_audio/index.html" class="btn btn-neutral float-right" title="语音与音频" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-26.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/index.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+      <dd><a href="safety_guard.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

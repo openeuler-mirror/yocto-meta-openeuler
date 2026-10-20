@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>精度诊断与调度表 &mdash; openEuler Embedded在线文档 26.09 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="其他目标：RKNN、HMM、910B Torch" href="other_targets_rknn_hmm_910b_torch.html" />
+    <link rel="prev" title="PI0.5 分离式导出流水线" href="pi0_5_split_export_pipeline.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview/index.html">项目概览</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration_ssot/index.html">配置单一事实源（robot_config）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference_service/index.html">推理服务</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">模型导出与部署工具链</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">模型导出与部署工具链概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pi0_5_split_export_pipeline.html">PI0.5 分离式导出流水线</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">精度诊断与调度表</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#loss-compare">损失对比（<code class="docutils literal notranslate"><span class="pre">loss_compare</span></code>）</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#pi0-5-om-pi05-om-dump">PI0.5 OM 转储（<code class="docutils literal notranslate"><span class="pre">pi05_om_dump</span></code>）</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#pi0-5-pi05-dist-metrics">PI0.5 的分布度量（<code class="docutils literal notranslate"><span class="pre">pi05_dist_metrics</span></code>）</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id8">曲率与调优调度表</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#profile">量化 Profile</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#observation-batch">观测批次（<code class="docutils literal notranslate"><span class="pre">observation_batch</span></code>）</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="other_targets_rknn_hmm_910b_torch.html">其他目标：RKNN、HMM、910B Torch</a></li>
+<li class="toctree-l6"><a class="reference internal" href="model_bundle_distribution.html">模型 Bundle 分发</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../robot_hardware_control_simulation/index.html">机器人硬件、控制与仿真</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../perception_manipulation_semantic_mapping/index.html">感知、操作与语义建图</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../embodied_agent_skills/index.html">具身智能体与技能</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../voice_audio/index.html">语音与音频</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_tools_benchmarks_observability/index.html">数据工具、基准测试与可观测性</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../interfaces/index.html">接口（ibrobot_msgs）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development_workflow_tooling/index.html">开发工作流与工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">模型导出与部署工具链</a></li>
+      <li class="breadcrumb-item active">精度诊断与调度表</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>精度诊断与调度表<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源码文件</summary>
+<p>以下文件被用作生成此 wiki 页面的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare.py">src/model_utils/model_utils/loss_compare.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare_cli.py">src/model_utils/model_utils/loss_compare_cli.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/observation_batch.py">src/model_utils/model_utils/observation_batch.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/observation_batch_cli.py">src/model_utils/model_utils/observation_batch_cli.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_dist_metrics.py">src/model_utils/model_utils/pi05_dist_metrics.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_export/curvature_schedule.py">src/model_utils/model_utils/pi05_export/curvature_schedule.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_export/quant/profiles.py">src/model_utils/model_utils/pi05_export/quant/profiles.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_export/quantization_profiles/pi05-ae-attn-v1.yaml">src/model_utils/model_utils/pi05_export/quantization_profiles/pi05-ae-attn-v1.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_export/tune_schedule.py">src/model_utils/model_utils/pi05_export/tune_schedule.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py">src/model_utils/model_utils/pi05_om_dump.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_ascend_diagnostic_capture.py">src/model_utils/test/test_ascend_diagnostic_capture.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_curvature_schedule.py">src/model_utils/test/test_curvature_schedule.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_loss_compare.py">src/model_utils/test/test_loss_compare.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_loss_compare_cli.py">src/model_utils/test/test_loss_compare_cli.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_observation_batch.py">src/model_utils/test/test_observation_batch.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_observation_batch_cli.py">src/model_utils/test/test_observation_batch_cli.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_pi05_dist_metrics.py">src/model_utils/test/test_pi05_dist_metrics.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_pi05_export_cli.py">src/model_utils/test/test_pi05_export_cli.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_pi05_om_dump.py">src/model_utils/test/test_pi05_om_dump.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_pi05_quant_profiles.py">src/model_utils/test/test_pi05_quant_profiles.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_pi05_quantize_ae.py">src/model_utils/test/test_pi05_quantize_ae.py</a></p></li>
+</ul>
+</details>
+<p>本页面详细介绍 RoboFrame 项目中用于诊断模型精度和管理推理调度表的工具与方法，重点关注 PI0.5 模型。内容涵盖用于定量评估的 <code class="docutils literal notranslate"><span class="pre">loss_compare</span></code>、用于详尽诊断数据采集的 <code class="docutils literal notranslate"><span class="pre">pi05_om_dump</span></code>、用于稳健验证 PI0.5 的分布度量指标，以及曲率与调优调度表的管理、量化 profile 与观测批次。</p>
+<section id="loss-compare">
+<h2>损失对比（<code class="docutils literal notranslate"><span class="pre">loss_compare</span></code>）<a class="headerlink" href="#loss-compare" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">loss_compare</span></code> 工具是相对于基线定量评估已部署策略精度的关键工具。它计算预测动作与目标动作之间的 L1 损失和余弦相似度，同时覆盖非归一化（物理）与归一化（后处理器之前）两个动作空间。这种双空间对比有助于区分模型漂移与动作反归一化引发的问题。</p>
+<p>该工具通过 <code class="docutils literal notranslate"><span class="pre">loss_compare_cli.py</span></code> 调用 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare_cli.py#L1-L22">src/model_utils/model_utils/loss_compare_cli.py:1-22</a>，由其负责参数解析、配置加载与派生路径解析。</p>
+<section id="id2">
+<h3>核心功能<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">LossUtils</span></code> 类 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare.py#L32-L37">src/model_utils/model_utils/loss_compare.py:32-37</a> 统筹整个对比流程：</p>
+<ol class="arabic simple">
+<li><p><strong>策略准备</strong>：<code class="docutils literal notranslate"><span class="pre">prepare_policy()</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare.py#L500-L503">src/model_utils/model_utils/loss_compare.py:500-503</a> 根据提供的 <code class="docutils literal notranslate"><span class="pre">policy_path</span></code> 与 <code class="docutils literal notranslate"><span class="pre">deployment</span></code> 初始化推理引擎，还可将 <code class="docutils literal notranslate"><span class="pre">schedule_override_path</span></code>、<code class="docutils literal notranslate"><span class="pre">curvature_log_path</span></code> 等临时诊断选项透传给运行时 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_loss_compare.py#L116-L147">src/model_utils/test/test_loss_compare.py:116-147</a>。</p></li>
+<li><p><strong>批次加载</strong>：<code class="docutils literal notranslate"><span class="pre">load_batches_as_tensors()</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare.py#L52">src/model_utils/model_utils/loss_compare.py:52</a> 加载观测批次，支持 <code class="docutils literal notranslate"><span class="pre">.safetensors</span></code> 或旧版 <code class="docutils literal notranslate"><span class="pre">.json</span></code> 格式。</p></li>
+<li><p><strong>执行推理</strong>：<code class="docutils literal notranslate"><span class="pre">forward()</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare.py#L53">src/model_utils/model_utils/loss_compare.py:53</a> 使用已加载的策略执行推理。对于有状态流水线（如 PI0.5），它会确保每个批次前重置引擎以保持确定性 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_loss_compare.py#L78-L96">src/model_utils/test/test_loss_compare.py:78-96</a>。若启用了 <code class="docutils literal notranslate"><span class="pre">capture_raw_action</span></code>，它还会采集原始（后处理器之前）动作。</p></li>
+<li><p><strong>损失计算</strong>：<code class="docutils literal notranslate"><span class="pre">compute_loss()</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare.py#L43-L44">src/model_utils/model_utils/loss_compare.py:43-44</a> 计算非归一化与归一化两个动作空间的 L1 损失和余弦相似度。</p></li>
+<li><p><strong>噪声生成</strong>：对于 PI0.5 策略，<code class="docutils literal notranslate"><span class="pre">generate_pi05_noise()</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare.py#L20-L29">src/model_utils/model_utils/loss_compare.py:20-29</a> 会在 CPU 上生成确定性的 fp32 噪声，这对可复现的扩散/flow-matching 至关重要。该噪声可持久化到 <code class="docutils literal notranslate"><span class="pre">noise_dir</span></code> 以便跨机器对比 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_loss_compare.py#L161-L169">src/model_utils/test/test_loss_compare.py:161-169</a>。</p></li>
+<li><p><strong>目标生成</strong>：该工具可在 <code class="docutils literal notranslate"><span class="pre">generate_target</span></code> 模式 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare.py#L40-L41">src/model_utils/model_utils/loss_compare.py:40-41</a> 下运行，基于给定策略与观测批次生成基线目标 JSON 文件（<code class="docutils literal notranslate"><span class="pre">target.json</span></code> 与 <code class="docutils literal notranslate"><span class="pre">target_raw.json</span></code>）。这有助于为后续对比建立真值（ground truth）<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_loss_compare.py#L183-L188">src/model_utils/test/test_loss_compare.py:183-188</a>。</p></li>
+</ol>
+</section>
+<section id="id3">
+<h3>归一化与非归一化动作空间<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">loss_compare</span></code> 的一个关键特性是能够在非归一化与归一化两个空间中对比动作 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare.py#L102-L110">src/model_utils/model_utils/loss_compare.py:102-110</a>。</p>
+<ul class="simple">
+<li><p><strong>非归一化</strong>：经过后处理器之后的动作，代表物理机器人指令。</p></li>
+<li><p><strong>归一化</strong>：直接来自模型输出的动作，尚未经后处理器做任何缩放或变换。</p></li>
+</ul>
+<p>这一区分对于诊断较大的 L1 误差究竟源自模型预测本身不准确，还是后处理问题（如缩放系数错误）至关重要。</p>
+</section>
+<section id="cli">
+<h3>CLI 与配置<a class="headerlink" href="#cli" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">loss_compare_cli.py</span></code> 模块 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare_cli.py#L1-L22">src/model_utils/model_utils/loss_compare_cli.py:1-22</a> 提供了功能完善的命令行接口，包括：</p>
+<ul class="simple">
+<li><p><strong>参数元数据</strong>：定义 CLI 标志位、含义、示例与默认值 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare_cli.py#L57-L87">src/model_utils/model_utils/loss_compare_cli.py:57-87</a>。</p></li>
+<li><p><strong>YAML 配置</strong>：支持通过 <code class="docutils literal notranslate"><span class="pre">~/.config/model_utils/loss_compare.yaml</span></code> 持久化设置，包括 <code class="docutils literal notranslate"><span class="pre">defaults</span></code>、<code class="docutils literal notranslate"><span class="pre">profiles</span></code> 与 <code class="docutils literal notranslate"><span class="pre">_last</span></code> 运行参数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare_cli.py#L9-L16">src/model_utils/model_utils/loss_compare_cli.py:9-16</a>。</p></li>
+<li><p><strong>合并优先级</strong>：CLI 参数覆盖 profile 设置，profile 设置再覆盖默认值，依此类推 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare_cli.py#L13-L15">src/model_utils/model_utils/loss_compare_cli.py:13-15</a>。</p></li>
+<li><p><strong>派生路径</strong>：<code class="docutils literal notranslate"><span class="pre">--exp-dir</span></code> 可自动解析 <code class="docutils literal notranslate"><span class="pre">target.json</span></code>、<code class="docutils literal notranslate"><span class="pre">target_raw.json</span></code> 与 <code class="docutils literal notranslate"><span class="pre">noises/</span></code> 路径，简化常用操作 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare_cli.py#L16-L18">src/model_utils/model_utils/loss_compare_cli.py:16-18</a>。</p></li>
+<li><p><strong>向导模式</strong>：引导首次使用的用户完成参数设置 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare_cli.py#L18-L20">src/model_utils/model_utils/loss_compare_cli.py:18-20</a>。</p></li>
+</ul>
+<pre  class="mermaid">
+        graph TD
+    A[User Invokes loss_compare] --&gt; B{loss_compare_cli.py}
+    B --&gt; C{Load Configuration}
+    C --&gt; D[CLI Arguments]
+    C --&gt; E[~/.config/model_utils/loss_compare.yaml]
+    E --&gt; E1[defaults]
+    E --&gt; E2[profiles]
+    E --&gt; E3[_last]
+    C --&gt; F[&quot;Merged Configuration (args)&quot;]
+    F --&gt; G[&quot;LossUtils(args)&quot;]
+    G --&gt; H[&quot;prepare_policy()&quot;]
+    H --&gt; I[PureInferenceEngine]
+    G --&gt; J[&quot;load_batches_as_tensors()&quot;]
+    J --&gt; K[Observation Batches]
+    G --&gt; L[&quot;forward(batches)&quot;]
+    L --&gt; M[Inference Engine]
+    M --&gt; N[Raw Predictions]
+    M --&gt; O[Final Predictions]
+    G --&gt; P[&quot;compute_loss()&quot;]
+    P --&gt; Q[Compare Final Predictions vs. Targets]
+    P --&gt; R[Compare Raw Predictions vs. Raw Targets]
+    Q --&gt; S[&quot;L1 Loss (Unnormalized)&quot;]
+    Q --&gt; T[&quot;Cosine Similarity (Unnormalized)&quot;]
+    R --&gt; U[&quot;L1 Loss (Normalized)&quot;]
+    R --&gt; V[&quot;Cosine Similarity (Normalized)&quot;]
+    S &amp; T &amp; U &amp; V --&gt; W[Print Summary Table]
+    W --&gt; X[Optional: Write metrics_json]
+
+    subgraph &quot;PI0.5 Specifics&quot;
+        L --&gt; L1[&quot;generate_pi05_noise()&quot;]
+        L1 --&gt; L2[Deterministic Noise]
+        L2 --&gt; M
+        G --&gt; G1{generate_target mode?}
+        G1 -- Yes --&gt; G2[&quot;generate_target()&quot;]
+        G2 --&gt; G3[Write target.json]
+        G2 --&gt; G4[Write target_raw.json]
+        G2 --&gt; G5[Persist Noise to noise_dir]
+    end
+    </pre><p>标题：<code class="docutils literal notranslate"><span class="pre">loss_compare</span></code> 数据流与配置
+来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare.py#L32-L37">src/model_utils/model_utils/loss_compare.py:32-37</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare.py#L40-L41">src/model_utils/model_utils/loss_compare.py:40-41</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare.py#L43-L44">src/model_utils/model_utils/loss_compare.py:43-44</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare.py#L52">src/model_utils/model_utils/loss_compare.py:52</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare.py#L53">src/model_utils/model_utils/loss_compare.py:53</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare.py#L102-L110">src/model_utils/model_utils/loss_compare.py:102-110</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare.py#L20-L29">src/model_utils/model_utils/loss_compare.py:20-29</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare.py#L500-L503">src/model_utils/model_utils/loss_compare.py:500-503</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare_cli.py#L1-L22">src/model_utils/model_utils/loss_compare_cli.py:1-22</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare_cli.py#L9-L16">src/model_utils/model_utils/loss_compare_cli.py:9-16</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare_cli.py#L13-L15">src/model_utils/model_utils/loss_compare_cli.py:13-15</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare_cli.py#L16-L18">src/model_utils/model_utils/loss_compare_cli.py:16-18</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare_cli.py#L18-L20">src/model_utils/model_utils/loss_compare_cli.py:18-20</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare_cli.py#L57-L87">src/model_utils/model_utils/loss_compare_cli.py:57-87</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_loss_compare.py#L78-L96">src/model_utils/test/test_loss_compare.py:78-96</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_loss_compare.py#L116-L147">src/model_utils/test/test_loss_compare.py:116-147</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_loss_compare.py#L161-L169">src/model_utils/test/test_loss_compare.py:161-169</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_loss_compare.py#L183-L188">src/model_utils/test/test_loss_compare.py:183-188</a></p>
+</section>
+</section>
+<section id="pi0-5-om-pi05-om-dump">
+<h2>PI0.5 OM 转储（<code class="docutils literal notranslate"><span class="pre">pi05_om_dump</span></code>）<a class="headerlink" href="#pi0-5-om-pi05-om-dump" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pi05_om_dump</span></code> 工具用于从昇腾（Ascend）上部署的 PI0.5 模型采集详尽的诊断数据。由于基于 ODE 的推理（如 PI0.5 的 Euler 积分）具有混沌特性，微小的数值差异会随步数放大，导致逐点对比不可靠。该工具采集中间张量与输出，便于深入分析模型在目标硬件上的行为。</p>
+<section id="diagnosticcapture">
+<h3>诊断采集（<code class="docutils literal notranslate"><span class="pre">DiagnosticCapture</span></code>）<a class="headerlink" href="#diagnosticcapture" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">DiagnosticCapture</span></code> 类 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L22-L71">src/model_utils/model_utils/pi05_om_dump.py:22-71</a> 是该工具的核心。它将显式请求的诊断值保存为 NumPy 文件（<code class="docutils literal notranslate"><span class="pre">.npy</span></code>），并生成包含所采集张量元数据的 <code class="docutils literal notranslate"><span class="pre">diagnostic_capture.json</span></code> 索引文件。</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">save(name,</span> <span class="pre">value)</span></code></strong>：将张量或数组存入输出目录下的 <code class="docutils literal notranslate"><span class="pre">.npy</span></code> 文件。必要时它会处理计算图脱离（detach）与搬运到 CPU。对 PI0.5 特定张量（如 <code class="docutils literal notranslate"><span class="pre">action_expert_in_noise</span></code> 重命名为 <code class="docutils literal notranslate"><span class="pre">ae_in_noise</span></code> 或 <code class="docutils literal notranslate"><span class="pre">x_t_stepXX</span></code>，<code class="docutils literal notranslate"><span class="pre">action_expert_out_action</span></code> 重命名为 <code class="docutils literal notranslate"><span class="pre">velocity_stepXX</span></code>）会应用特殊命名约定 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L34-L40">src/model_utils/model_utils/pi05_om_dump.py:34-40</a>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">reset(output_dir)</span></code></strong>：允许为后续采集启用新的样本目录 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L58-L63">src/model_utils/model_utils/pi05_om_dump.py:58-63</a>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">write_index(metadata)</span></code></strong>：创建 <code class="docutils literal notranslate"><span class="pre">diagnostic_capture.json</span></code> 文件，列出所有已采集张量及其形状与 dtype，并附带策略和部署的通用元数据 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L65-L71">src/model_utils/model_utils/pi05_om_dump.py:65-71</a>。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>转储流程<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">dump_pi05_om</span></code> 函数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L200-L201">src/model_utils/model_utils/pi05_om_dump.py:200-201</a> 统筹整个诊断转储流程：</p>
+<ol class="arabic simple">
+<li><p><strong>创建引擎</strong>：创建 <code class="docutils literal notranslate"><span class="pre">PureInferenceEngine</span></code>，配置为使用集成了 <code class="docutils literal notranslate"><span class="pre">DiagnosticCapture</span></code> 实例的 <code class="docutils literal notranslate"><span class="pre">AscendOmModelSession</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L104-L131">src/model_utils/model_utils/pi05_om_dump.py:104-131</a>。</p></li>
+<li><p><strong>批次准备</strong>：<code class="docutils literal notranslate"><span class="pre">_prepare_batch()</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L73-L101">src/model_utils/model_utils/pi05_om_dump.py:73-101</a> 加载并预处理观测批次，包括图像归一化与任务字符串处理。</p></li>
+<li><p><strong>噪声生成</strong>：使用 <code class="docutils literal notranslate"><span class="pre">generate_pi05_noise()</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L154-L157">src/model_utils/model_utils/pi05_om_dump.py:154-157</a> 为 PI0.5 模型生成确定性噪声，确保可复现。</p></li>
+<li><p><strong>推理与采集</strong>：引擎执行推理，传入 <code class="docutils literal notranslate"><span class="pre">AscendOmModelSession</span></code> 的 <code class="docutils literal notranslate"><span class="pre">DiagnosticCapture</span></code> 实例采集指定的中间张量以及最终的 <code class="docutils literal notranslate"><span class="pre">raw_action</span></code> 与 <code class="docutils literal notranslate"><span class="pre">action</span></code> 输出 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L163-L172">src/model_utils/model_utils/pi05_om_dump.py:163-172</a>。</p></li>
+<li><p><strong>原子输出</strong>：转储流程使用暂存目录（<code class="docutils literal notranslate"><span class="pre">_staging_path</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L193-L197">src/model_utils/model_utils/pi05_om_dump.py:193-197</a>）与原子重命名（<code class="docutils literal notranslate"><span class="pre">_rename_exchange</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L209-L210">src/model_utils/model_utils/pi05_om_dump.py:209-210</a>），确保输出目录要么完整写入、要么完全不创建，防止出现残缺或损坏的转储 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_pi05_om_dump.py#L95-L140">src/model_utils/test/test_pi05_om_dump.py:95-140</a>。</p></li>
+</ol>
+<pre  class="mermaid">
+        graph TD
+    A[User Invokes pi05_om_dump] --&gt; B[&quot;dump_pi05_om()&quot;]
+    B --&gt; C[&quot;Create DiagnosticCapture(staging_dir)&quot;]
+    B --&gt; D[Create PureInferenceEngine]
+    D --&gt; D1[AscendOmModelSession]
+    D1 --&gt; C
+    B --&gt; E[Load Observation Batch]
+    B --&gt; F[&quot;Prepare Batch (_prepare_batch)&quot;]
+    B --&gt; G[Generate PI0.5 Noise]
+    G --&gt; H[&quot;control_inputs={#quot;noise#quot;: noise}&quot;]
+    F &amp; H --&gt; I[&quot;engine(batch, control_inputs, capture_raw_action=True)&quot;]
+    I --&gt; J[&quot;DiagnosticCapture.save(intermediate_tensors)&quot;]
+    I --&gt; K[&quot;DiagnosticCapture.save(#quot;raw_action#quot;, result.raw_action)&quot;]
+    I --&gt; L[&quot;DiagnosticCapture.save(#quot;action#quot;, result.action)&quot;]
+    L --&gt; M[&quot;DiagnosticCapture.write_index(metadata)&quot;]
+    M --&gt; N[diagnostic_capture.json]
+    N &amp; J --&gt; O[Atomic Rename staging_dir to output_dir]
+    O --&gt; P[Completed Diagnostic Dump]
+    </pre><p>标题：<code class="docutils literal notranslate"><span class="pre">pi05_om_dump</span></code> 流程
+来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L22-L71">src/model_utils/model_utils/pi05_om_dump.py:22-71</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L34-L40">src/model_utils/model_utils/pi05_om_dump.py:34-40</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L58-L63">src/model_utils/model_utils/pi05_om_dump.py:58-63</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L65-L71">src/model_utils/model_utils/pi05_om_dump.py:65-71</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L73-L101">src/model_utils/model_utils/pi05_om_dump.py:73-101</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L104-L131">src/model_utils/model_utils/pi05_om_dump.py:104-131</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L154-L157">src/model_utils/model_utils/pi05_om_dump.py:154-157</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L163-L172">src/model_utils/model_utils/pi05_om_dump.py:163-172</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L193-L197">src/model_utils/model_utils/pi05_om_dump.py:193-197</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L200-L201">src/model_utils/model_utils/pi05_om_dump.py:200-201</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_om_dump.py#L209-L210">src/model_utils/model_utils/pi05_om_dump.py:209-210</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_pi05_om_dump.py#L95-L140">src/model_utils/test/test_pi05_om_dump.py:95-140</a></p>
+</section>
+</section>
+<section id="pi0-5-pi05-dist-metrics">
+<h2>PI0.5 的分布度量（<code class="docutils literal notranslate"><span class="pre">pi05_dist_metrics</span></code>）<a class="headerlink" href="#pi0-5-pi05-dist-metrics" title="Permalink to this heading"></a></h2>
+<p>对于 PI0.5 模型，由于基于 ODE 的推理具有混沌特性，L1 损失、余弦相似度等传统逐点度量指标可能产生误导。<code class="docutils literal notranslate"><span class="pre">pi05_dist_metrics</span></code> 模块 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_dist_metrics.py#L1-L46">src/model_utils/model_utils/pi05_dist_metrics.py:1-46</a> 提供了抗混沌的度量指标，用于验证 PI0.5 部署。</p>
+<section id="id5">
+<h3>为什么需要分布度量？<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<p>PI0.5 使用 10 步 Euler 积分求解 flow-matching ODE。微小的扰动（例如 FP16 KV-cache 漂移）会呈指数放大，导致轨迹去相关。这意味着即使两个实现在数学上都是正确的，其逐点输出也可能显著发散。分布度量关注输出的整体统计特性，而非精确的逐点匹配。</p>
+</section>
+<section id="id6">
+<h3>关键指标<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<p>该模块实现了两种主要方法：</p>
+<ol class="arabic simple">
+<li><p><strong>按动作维度计算的边际 Wasserstein-1（<code class="docutils literal notranslate"><span class="pre">wasserstein_per_dim</span></code>）</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_dist_metrics.py#L98-L171">src/model_utils/model_utils/pi05_dist_metrics.py:98-171</a>：</p>
+<ul class="simple">
+<li><p>对比预测与目标在每个动作维度上的取值分布。</p></li>
+<li><p>对动作顺序不敏感，因此对 ODE 混沌具有鲁棒性。</p></li>
+<li><p>计算每个维度的 Wasserstein-1 距离（W1）与 Kolmogorov-Smirnov（KS）统计量。</p></li>
+<li><p>用目标标准差对 W1 归一化（<code class="docutils literal notranslate"><span class="pre">W1/std</span></code>），得到尺度无关的指标，从而可在不同动作空间（归一化与非归一化）之间比较。</p></li>
+<li><p>基于平均 <code class="docutils literal notranslate"><span class="pre">W1/std</span></code> 比值给出“判定结果”（EXCELLENT、GOOD、MARGINAL、POOR）。</p></li>
+</ul>
+</li>
+<li><p><strong>首帧余弦相似度（<code class="docutils literal notranslate"><span class="pre">first_frame_cosine</span></code>）</strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_dist_metrics.py#L173-L209">src/model_utils/model_utils/pi05_dist_metrics.py:173-209</a>：</p>
+<ul class="simple">
+<li><p>在滚动时域控制中，通常只有第一个动作帧（<code class="docutils literal notranslate"><span class="pre">chunk[:,</span> <span class="pre">0,</span> <span class="pre">:]</span></code>）会在下一次推理前发送给机器人。</p></li>
+<li><p>该指标仅对比第一个动作帧的余弦相似度，这是轨迹中最稳定、物理上最相关的部分。</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="id7">
+<h3>用法<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<p>指定 <code class="docutils literal notranslate"><span class="pre">--policy_type</span> <span class="pre">pi05</span></code> 时，<code class="docutils literal notranslate"><span class="pre">loss_compare.py</span></code> 会自动调用这些指标。它们也可独立用于自定义分析。</p>
+<pre  class="mermaid">
+        graph TD
+    A[&quot;PI0.5 Predictions (P)&quot;] --&gt; B[&quot;pi05_dist_metrics.evaluate_pi05()&quot;]
+    A --&gt; C[&quot;PI0.5 Targets (T)&quot;]
+    B --&gt; D[&quot;wasserstein_per_dim(P, T)&quot;]
+    D --&gt; D1[Calculate W1 per action dim]
+    D1 --&gt; D2[Calculate KS per action dim]
+    D2 --&gt; D3[&quot;Normalize W1 by Target Std (W1/std)&quot;]
+    D3 --&gt; D4[&quot;Assign Verdict (EXCELLENT, GOOD, etc.)&quot;]
+    B --&gt; E[&quot;first_frame_cosine(P, T)&quot;]
+    E --&gt; E1[Extract First Frame of P]
+    E1 --&gt; E2[Extract First Frame of T]
+    E2 --&gt; E3[Calculate Cosine Similarity]
+    D4 &amp; E3 --&gt; F[Aggregate PI0.5 Distributional Metrics]
+    F --&gt; G[Report to User / metrics_json]
+    </pre><p>标题：PI0.5 分布度量流程
+来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_dist_metrics.py#L1-L46">src/model_utils/model_utils/pi05_dist_metrics.py:1-46</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_dist_metrics.py#L98-L171">src/model_utils/model_utils/pi05_dist_metrics.py:98-171</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_dist_metrics.py#L173-L209">src/model_utils/model_utils/pi05_dist_metrics.py:173-209</a></p>
+</section>
+</section>
+<section id="id8">
+<h2>曲率与调优调度表<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
+<p>对于 PI0.5 模型，去噪过程依赖一个调度表，它决定 Euler 积分的时间步与其他参数。该调度表会显著影响模型的行为与精度。</p>
+<section id="curvature-schedule-py">
+<h3>曲率调度表（<code class="docutils literal notranslate"><span class="pre">curvature_schedule.py</span></code>）<a class="headerlink" href="#curvature-schedule-py" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">curvature_schedule.py</span></code> 模块 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_export/curvature_schedule.py">src/model_utils/model_utils/pi05_export/curvature_schedule.py</a> 用于分析去噪过程的曲率。该分析可为设计更有效的去噪调度表提供依据。<code class="docutils literal notranslate"><span class="pre">loss_compare</span></code> 的 <code class="docutils literal notranslate"><span class="pre">curvature_log_path</span></code> 参数允许在推理过程中记录曲率数据 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare_cli.py#L184-L185">src/model_utils/model_utils/loss_compare_cli.py:184-185</a>，供后续分析使用。</p>
+</section>
+<section id="tune-schedule-py">
+<h3>调优调度表（<code class="docutils literal notranslate"><span class="pre">tune_schedule.py</span></code>）<a class="headerlink" href="#tune-schedule-py" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">tune_schedule.py</span></code> 模块 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_export/tune_schedule.py">src/model_utils/model_utils/pi05_export/tune_schedule.py</a> 提供去噪调度表的调优功能，通过优化时间步等参数来提升生成动作的质量。<code class="docutils literal notranslate"><span class="pre">loss_compare</span></code> 的 <code class="docutils literal notranslate"><span class="pre">schedule_override_path</span></code> 参数允许临时覆盖默认的 PI0.5 调度表，从而无需直接修改模型 bundle 即可试验不同调度表 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/loss_compare_cli.py#L180-L183">src/model_utils/model_utils/loss_compare_cli.py:180-183</a>。</p>
+</section>
+</section>
+<section id="profile">
+<h2>量化 Profile<a class="headerlink" href="#profile" title="Permalink to this heading"></a></h2>
+<p>量化 profile 定义了可复用的模型量化策略，尤其面向昇腾等 NPU 上的 PI0.5 模型。这些 profile 确保不同部署之间的量化一致且经过验证。</p>
+<section id="quantizationprofile-quantizationroleprofile">
+<h3><code class="docutils literal notranslate"><span class="pre">QuantizationProfile</span></code> 与 <code class="docutils literal notranslate"><span class="pre">QuantizationRoleProfile</span></code><a class="headerlink" href="#quantizationprofile-quantizationroleprofile" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">profiles.py</span></code> 模块 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_export/quant/profiles.py#L1-L472">src/model_utils/model_utils/pi05_export/quant/profiles.py:1-472</a> 定义了量化 profile 的数据结构：</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">QuantizationProfile</span></code></strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_export/quant/profiles.py#L48-L83">src/model_utils/model_utils/pi05_export/quant/profiles.py:48-83</a>：表示一套完整的量化策略，包括名称、状态、目标 SoC、导出设备/dtype、donor 设备、fast GELU 范围，以及 VLM 与 Action Expert 两个角色各自的具体 profile。它还包含用于完整性校验的 <code class="docutils literal notranslate"><span class="pre">digest</span></code>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">QuantizationRoleProfile</span></code></strong> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_export/quant/profiles.py#L30-L45">src/model_utils/model_utils/pi05_export/quant/profiles.py:30-45</a>：定义特定模型角色（如 VLM 或 Action Expert）的量化设置，包括是否启用、节点选择器（正则与期望数量）、禁用正则、期望量化节点数，以及融合 GELU、校准步数和 SmoothQuant 参数的具体设置。</p></li>
+</ul>
+</section>
+<section id="id9">
+<h3>内置与自定义 Profile<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>内置 profile</strong>：系统提供一组预定义且经过验证的量化 profile（如 <code class="docutils literal notranslate"><span class="pre">pi05-q40-v1</span></code>、<code class="docutils literal notranslate"><span class="pre">pi05-ae-attn-v1</span></code>、<code class="docutils literal notranslate"><span class="pre">pi05-vlm-text-ae-attn-mlp-sq-v1</span></code>）<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_pi05_quant_profiles.py#L49-L62">src/model_utils/test/test_pi05_quant_profiles.py:49-62</a>。它们通过 <code class="docutils literal notranslate"><span class="pre">bundled_quantization_profiles()</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_export/quant/profiles.py#L300-L301">src/model_utils/model_utils/pi05_export/quant/profiles.py:300-301</a> 加载，确保经过验证的量化策略开箱可用。</p></li>
+<li><p><strong>自定义 profile</strong>：用户可在 <code class="docutils literal notranslate"><span class="pre">pi05-export.yaml</span></code> 配置文件中定义自己的量化 profile <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_pi05_quant_profiles.py#L172-L177">src/model_utils/test/test_pi05_quant_profiles.py:172-177</a>。</p></li>
+</ul>
+</section>
+<section id="id10">
+<h3>节点选择与校验<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<p>量化 profile 使用正则表达式（<code class="docutils literal notranslate"><span class="pre">regex</span></code>）与期望节点数（<code class="docutils literal notranslate"><span class="pre">expected</span></code>）精确选择 ONNX 图中需要量化的节点 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_export/quant/profiles.py#L23-L27">src/model_utils/model_utils/pi05_export/quant/profiles.py:23-27</a>。这确保量化过程作用于模型的预期部分，并有助于在模型架构变化时检测图漂移 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_pi05_quant_profiles.py#L114-L139">src/model_utils/test/test_pi05_quant_profiles.py:114-139</a>。</p>
+</section>
+<section id="smoothquant">
+<h3>SmoothQuant<a class="headerlink" href="#smoothquant" title="Permalink to this heading"></a></h3>
+<p>部分 profile 包含 SmoothQuant 参数。SmoothQuant 是一种训练后量化技术，通过对激活值做平滑来降低量化误差。相关参数包括 <code class="docutils literal notranslate"><span class="pre">smoothquant_alpha</span></code>、<code class="docutils literal notranslate"><span class="pre">smoothquant_epsilon</span></code> 以及校验容差（<code class="docutils literal notranslate"><span class="pre">smoothquant_verify_rtol</span></code>、<code class="docutils literal notranslate"><span class="pre">smoothquant_verify_atol</span></code>）<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_export/quant/profiles.py#L41-L44">src/model_utils/model_utils/pi05_export/quant/profiles.py:41-44</a>。</p>
+<pre  class="mermaid">
+        graph TD
+    A[QuantizationProfile] --&gt; B[name]
+    A --&gt; C[status]
+    A --&gt; D[target_soc]
+    A --&gt; E[export_device]
+    A --&gt; F[export_dtype]
+    A --&gt; G[donor_device]
+    A --&gt; H[fast_gelu_scope]
+    A --&gt; I[vlm: QuantizationRoleProfile]
+    A --&gt; J[action_expert: QuantizationRoleProfile]
+    A --&gt; K[digest]
+
+    I --&gt; I1[enabled]
+    I --&gt; I2[selectors: List&lt;QuantizationSelector&gt;]
+    I --&gt; I3[disable_regex: List&lt;str&gt;]
+    I --&gt; I4[expected_selected_nodes]
+    I --&gt; I5[expected_quantized_nodes]
+    I --&gt; I6[quantize_convs]
+    I --&gt; I7[fused_geglu_donor]
+    I --&gt; I8[expected_npu_geglu_nodes]
+    I --&gt; I9[expected_calibration_steps]
+    I --&gt; I10[donor_dtype]
+    I --&gt; I11[smoothquant_alpha]
+    I --&gt; I12[smoothquant_epsilon]
+    I --&gt; I13[smoothquant_verify_rtol]
+    I --&gt; I14[smoothquant_verify_atol]
+
+    J --&gt; J1[enabled]
+    J --&gt; J2[selectors: List&lt;QuantizationSelector&gt;]
+    J --&gt; J3[disable_regex: List&lt;str&gt;]
+    J --&gt; J4[expected_selected_nodes]
+    J --&gt; J5[expected_quantized_nodes]
+    J --&gt; J6[quantize_convs]
+    J --&gt; J7[fused_geglu_donor]
+    J --&gt; J8[expected_npu_geglu_nodes]
+    J --&gt; J9[expected_calibration_steps]
+    J --&gt; J10[donor_dtype]
+    J --&gt; J11[smoothquant_alpha]
+    J --&gt; J12[smoothquant_epsilon]
+    J --&gt; J13[smoothquant_verify_rtol]
+    J --&gt; J14[smoothquant_verify_atol]
+
+    I2 --&gt; I2a[QuantizationSelector: name, regex, expected]
+    J2 --&gt; J2a[QuantizationSelector: name, regex, expected]
+
+    L[Bundled Profiles] --&gt; A
+    M[&quot;Custom Profiles (pi05-export.yaml)&quot;] --&gt; A
+    </pre><p>标题：量化 Profile 结构
+来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_export/quant/profiles.py#L1-L472">src/model_utils/model_utils/pi05_export/quant/profiles.py:1-472</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_export/quant/profiles.py#L23-L27">src/model_utils/model_utils/pi05_export/quant/profiles.py:23-27</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_export/quant/profiles.py#L30-L45">src/model_utils/model_utils/pi05_export/quant/profiles.py:30-45</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_export/quant/profiles.py#L41-L44">src/model_utils/model_utils/pi05_export/quant/profiles.py:41-44</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/pi05_export/quant/profiles.py#L48-L83">src/model_utils/model_utils/pi05_export/quant/profiles.py:48-83</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_pi05_quant_profiles.py#L49-L62">src/model_utils/test/test_pi05_quant_profiles.py:49-62</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_pi05_quant_profiles.py#L114-L139">src/model_utils/test/test_pi05_quant_profiles.py:114-139</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_pi05_quant_profiles.py#L172-L177">src/model_utils/test/test_pi05_quant_profiles.py:172-177</a></p>
+</section>
+</section>
+<section id="observation-batch">
+<h2>观测批次（<code class="docutils literal notranslate"><span class="pre">observation_batch</span></code>）<a class="headerlink" href="#observation-batch" title="Permalink to this heading"></a></h2>
+<p>观测批次是传感器读数及其他上下文数据的集合，用作策略的输入。<code class="docutils literal notranslate"><span class="pre">observation_batch</span></code> 模块 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/observation_batch.py">src/model_utils/model_utils/observation_batch.py</a> 提供了创建、加载与操作这些批次的工具。</p>
+<section id="fieldspec">
+<h3><code class="docutils literal notranslate"><span class="pre">FieldSpec</span></code><a class="headerlink" href="#fieldspec" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">FieldSpec</span></code> 类 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/observation_batch.py#L19-L27">src/model_utils/model_utils/observation_batch.py:19-27</a> 定义观测中每个字段的期望形状、dtype 与语义（例如 “image”）。对于图像字段，它还指定 <code class="docutils literal notranslate"><span class="pre">layout</span></code>（如 “CHW” 或 “HWC”）<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/observation_batch.py#L19-L27">src/model_utils/model_utils/observation_batch.py:19-27</a>。</p>
+</section>
+<section id="id11">
+<h3>加载与保存<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">load_observation_batch(path)</span></code></strong>：从文件加载观测批次，同时支持旧版 JSON 格式与更高效的 <code class="docutils literal notranslate"><span class="pre">safetensors</span></code> 格式 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/observation_batch.py#L100-L101">src/model_utils/model_utils/observation_batch.py:100-101</a>。加载时图像会被规范化为 HWC（Height, Width, Channel）格式，若是浮点型则转换为 <code class="docutils literal notranslate"><span class="pre">uint8</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_observation_batch.py#L37-L65">src/model_utils/test/test_observation_batch.py:37-65</a>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">save_observation_batch(path,</span> <span class="pre">samples,</span> <span class="pre">field_specs,</span> <span class="pre">...)</span></code></strong>：将一组观测样本保存为 <code class="docutils literal notranslate"><span class="pre">safetensors</span></code> 文件。它要求为所有数值字段提供显式 <code class="docutils literal notranslate"><span class="pre">FieldSpec</span></code>，并校验数据与声明的形状和 dtype 一致 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_observation_batch.py#L134-L141">src/model_utils/test/test_observation_batch.py:134-141</a>。它还负责保存时的图像布局转换 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_observation_batch.py#L70-L84">src/model_utils/test/test_observation_batch.py:70-84</a>。</p></li>
+</ul>
+</section>
+<section id="id12">
+<h3>批次生成与选取<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">generate_random_observations(field_specs,</span> <span class="pre">count,</span> <span class="pre">seed)</span></code></strong>：根据提供的 <code class="docutils literal notranslate"><span class="pre">FieldSpec</span></code> 生成随机观测批次。这适用于测试与校准，并可通过 <code class="docutils literal notranslate"><span class="pre">seed</span></code> 保证确定性 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_observation_batch.py#L20-L26">src/model_utils/test/test_observation_batch.py:20-26</a>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">select_dataset_indices(episode_groups,</span> <span class="pre">count,</span> <span class="pre">seed)</span></code></strong>：从数据集中选取指定数量的不重复帧，并确保覆盖不同 episode。这对构建有代表性的校准数据集至关重要 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_observation_batch.py#L154-L158">src/model_utils/test/test_observation_batch.py:154-158</a>。</p></li>
+</ul>
+</section>
+<section id="observation-batch-cli-py">
+<h3><code class="docutils literal notranslate"><span class="pre">observation_batch_cli.py</span></code><a class="headerlink" href="#observation-batch-cli-py" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">observation_batch_cli.py</span></code> 模块 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/observation_batch_cli.py">src/model_utils/model_utils/observation_batch_cli.py</a> 提供与观测批次交互的命令行接口，包括生成、查看与转换。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/observation_batch.py">src/model_utils/model_utils/observation_batch.py</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/observation_batch.py#L19-L27">src/model_utils/model_utils/observation_batch.py:19-27</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/observation_batch.py#L100-L101">src/model_utils/model_utils/observation_batch.py:100-101</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/observation_batch_cli.py">src/model_utils/model_utils/observation_batch_cli.py</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_observation_batch.py#L20-L26">src/model_utils/test/test_observation_batch.py:20-26</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_observation_batch.py#L37-L65">src/model_utils/test/test_observation_batch.py:37-65</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_observation_batch.py#L70-L84">src/model_utils/test/test_observation_batch.py:70-84</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_observation_batch.py#L134-L141">src/model_utils/test/test_observation_batch.py:134-141</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/test/test_observation_batch.py#L154-L158">src/model_utils/test/test_observation_batch.py:154-158</a></p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="pi0_5_split_export_pipeline.html" class="btn btn-neutral float-left" title="PI0.5 分离式导出流水线" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="other_targets_rknn_hmm_910b_torch.html" class="btn btn-neutral float-right" title="其他目标：RKNN、HMM、910B Torch" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-26.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/index.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+      <dd><a href="accuracy_diagnostics_schedules.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

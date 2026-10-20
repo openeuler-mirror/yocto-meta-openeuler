@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>系统架构与数据流 &mdash; openEuler Embedded在线文档 26.09 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="支持的平台" href="supported_platforms.html" />
+    <link rel="prev" title="入门与环境" href="getting_started_environment.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">项目概览</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">项目概览概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="getting_started_environment.html">入门与环境</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">系统架构与数据流</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">1. 目的与范围</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">2. 系统总览与包角色</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#ros2-control">3. 契约驱动的数据流：从传感器到 ros2_control</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id8">4. 包图与关系</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id9">5. 数据流详细时序</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id10">6. 关键类与函数参考</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id11">7. 连接概念与代码的摘要图</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id13">8. 参考与延伸阅读</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="supported_platforms.html">支持的平台</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration_ssot/index.html">配置单一事实源（robot_config）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference_service/index.html">推理服务</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../model_export_deployment_toolchain/index.html">模型导出与部署工具链</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../robot_hardware_control_simulation/index.html">机器人硬件、控制与仿真</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../perception_manipulation_semantic_mapping/index.html">感知、操作与语义建图</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../embodied_agent_skills/index.html">具身智能体与技能</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../voice_audio/index.html">语音与音频</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_tools_benchmarks_observability/index.html">数据工具、基准测试与可观测性</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../interfaces/index.html">接口（ibrobot_msgs）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development_workflow_tooling/index.html">开发工作流与工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">项目概览</a></li>
+      <li class="breadcrumb-item active">系统架构与数据流</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>系统架构与数据流<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源码文件</summary>
+<p>以下文件被用作生成此 wiki 页面的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-architecture/SKILL.md">.agents/skills/ibrobot-architecture/SKILL.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-architecture/references/data-flow.md">.agents/skills/ibrobot-architecture/references/data-flow.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-architecture/references/key-files.md">.agents/skills/ibrobot-architecture/references/key-files.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-architecture/references/launch-and-troubleshooting.md">.agents/skills/ibrobot-architecture/references/launch-and-troubleshooting.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-build/SKILL.md">.agents/skills/ibrobot-build/SKILL.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-env/SKILL.md">.agents/skills/ibrobot-env/SKILL.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-launch/SKILL.md">.agents/skills/ibrobot-launch/SKILL.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/architecture.md">docs/architecture.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/ib_robot_social_skill.md">docs/ib_robot_social_skill.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/libero_310b_transport_validation.md">docs/libero_310b_transport_validation.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/pictures/architecture.png">docs/pictures/architecture.png</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/roadmap.md">docs/roadmap.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/videos/openclaw_real.mp4">docs/videos/openclaw_real.mp4</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/videos/openclaw_sim.mp4">docs/videos/openclaw_sim.mp4</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/scripts/start_rosclaw.sh">scripts/start_rosclaw.sh</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/README.md">src/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/dataset_tools/dataset_tools/frame_detector.py">src/dataset_tools/dataset_tools/frame_detector.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/dataset_tools/test/test_frame_detector.py">src/dataset_tools/test/test_frame_detector.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/hardware_mock/hardware_mock/contract_mock_node.py">src/hardware_mock/hardware_mock/contract_mock_node.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/hardware_mock/hardware_mock/contract_plan.py">src/hardware_mock/hardware_mock/contract_plan.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/hardware_mock/hardware_mock/image_sources.py">src/hardware_mock/hardware_mock/image_sources.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/hardware_mock/hardware_mock/joint_model.py">src/hardware_mock/hardware_mock/joint_model.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/hardware_mock/test/test_contract_plan.py">src/hardware_mock/test/test_contract_plan.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/hardware_mock/test/test_image_sources.py">src/hardware_mock/test/test_image_sources.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/observation_sync.py">src/inference_service/inference_service/observation_sync.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/pytest.ini">src/inference_service/pytest.ini</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/tests/test_observation_sync.py">src/inference_service/tests/test_observation_sync.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/tests/test_observation_video_verification.py">src/inference_service/tests/test_observation_video_verification.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/contract_utils.py">src/robot_config/robot_config/contract_utils.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/tensormsg/tensormsg/converter.py">src/tensormsg/tensormsg/converter.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/tensormsg/test/test_converter.py">src/tensormsg/test/test_converter.py</a></p></li>
+</ul>
+</details>
+<p>本页面呈现 IB-Robot / RoboFrame_stable 项目的端到端系统架构与数据流，强调传感器、张量消息协议、AI 模型推理、动作分发机制与 ros2_control 硬件接口的集成。它是导航包图、核心数据路径与系统实现细节的综合技术参考，这些内容对理解原始传感器数据如何被转化为机器人控制命令至关重要。</p>
+<hr class="docutils" />
+<section id="id2">
+<h2>1. 目的与范围<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>IB-Robot 框架无缝桥接 LeRobot AI 策略模型与 ROS 2 生态，以支撑具身 AI 机器人应用。系统摄取传感器数据流，通过契约驱动的张量消息协议转换，在 tensormsg 上执行推理流水线，分发高频关节命令，并最终通过 ros2_control 接口驱动执行器。</p>
+<p>本页面聚焦：</p>
+<ul class="simple">
+<li><p>从 sensors → tensormsg → inference_service → action_dispatch → ros2_control 的分层的数据流</p></li>
+<li><p>作为系统一致性与类型化基础的契约驱动配置（机器人 YAML）</p></li>
+<li><p>负责消息转换、同步、mock 仿真与真实硬件接口的关键实现类与函数</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/README.md</span></code> 中概述的包关系与模块职责</p></li>
+<li><p>连接自然语言概念与代码实体的详细 Mermaid 图，以增强清晰度</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h2>2. 系统总览与包角色<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<section id="id4">
+<h3>2.1 高层架构<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<p>系统以分层组件组织，如归档架构图（<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/architecture.md#L86-L177">docs/architecture.md:86-177</a>）所示：</p>
+<pre  class="mermaid">
+        flowchart TB
+    subgraph Application[&quot;Application Layer&quot;]
+        Hermes[&quot;Hermes / Agent&quot;]
+        NLProc[&quot;ASR / VLM / Rules&quot;]
+        PolicyReq[&quot;Policy Inference Request&quot;]
+    end
+
+    subgraph Orchestration[&quot;Orchestration and Safety Layer&quot;]
+        AgentSkill[&quot;ibrobot-control Agent Skill&quot;]
+        CLI[&quot;robot-skill CLI&quot;]
+        Gateway[&quot;ROS Capability Gateway&quot;]
+        Agent[&quot;embodied_agent&quot;]
+        SkillLib[&quot;skill_library&quot;]
+        Safety[&quot;safety_guard&quot;]
+        Pick[&quot;manipulation_execution&quot;]
+        Motion[&quot;task_dispatch / MoveIt gateway&quot;]
+        MoveIt[&quot;MoveIt 2 core&quot;]
+        Dispatch[&quot;action_dispatch&quot;]
+    end
+
+    subgraph Inference[&quot;Perception and Inference Layer&quot;]
+        Sensor[&quot;Cameras / Joint States / Currents&quot;]
+        GraspPercep[&quot;Grasp Perception (Grounded-SAM2 / GraspGen)&quot;]
+        Tensor[&quot;tensormsg&quot;]
+        InferenceSvc[&quot;inference_service&quot;]
+    end
+
+    subgraph Control[&quot;Control and Execution Layer&quot;]
+        Controller[&quot;ros2_control&quot;]
+        Hardware[&quot;so101_hardware&quot;]
+        Sim[&quot;Gazebo / Ignition Simulation&quot;]
+    end
+
+    subgraph GlobalContracts[&quot;Global Contracts and Descriptions&quot;]
+        Config[&quot;robot_config (SSOT)&quot;]
+        Interfaces[&quot;ibrobot_msgs&quot;]
+        Description[&quot;robot_description URDF&quot;]
+    end
+
+    Hermes --&gt; AgentSkill
+    AgentSkill --&gt; CLI
+    CLI --&gt; Gateway
+    Gateway --&gt;|&quot;SkillCommand&quot;| SkillLib
+    SkillLib -.-&gt;|&quot;feedback&quot;| Gateway
+    Gateway -.-&gt; CLI
+    CLI -.-&gt; Hermes
+
+    NLProc --&gt; Agent
+    Agent --&gt;|&quot;SkillCommand&quot;| SkillLib
+    SkillLib --&gt;|&quot;ValidateSkill / ValidatePrimitive&quot;| Safety
+    SkillLib --&gt;|&quot;PickObject&quot;| Pick
+    Pick --&gt;|&quot;PlanGrasp / VerifyGrasp&quot;| GraspPercep
+    GraspPercep --&gt;|&quot;Candidates, Scene, Evidence&quot;| Pick
+    Pick --&gt;|&quot;Restricted PrimitiveCommand&quot;| SkillLib
+    SkillLib --&gt;|&quot;ValidatedMotion&quot;| Motion
+    Pick -.-&gt;|&quot;IK/FK Queries&quot;| MoveIt
+    Motion --&gt; MoveIt
+    MoveIt --&gt;|&quot;Planned Trajectories&quot;| Controller
+
+    PolicyReq --&gt; InferenceSvc
+    Sensor --&gt; Tensor
+    Tensor --&gt;|&quot;Observations aligned by contract&quot;| InferenceSvc
+    InferenceSvc --&gt;|&quot;Action chunks&quot;| Dispatch
+    Dispatch --&gt;|&quot;High-frequency joint commands&quot;| Controller
+
+    Controller --&gt; Hardware
+    Controller --&gt; Sim
+    Hardware --&gt;|&quot;Feedback State&quot;| Sensor
+    Sim --&gt;|&quot;Feedback State&quot;| Sensor
+    Sensor --&gt; GraspPercep
+    Sensor --&gt; Pick
+
+    Config -.-&gt; CLI
+    Config -.-&gt; Gateway
+    Config -.-&gt; Agent
+    Config -.-&gt; SkillLib
+    Config -.-&gt; Pick
+    Config -.-&gt; Tensor
+    Config -.-&gt; InferenceSvc
+    Config -.-&gt; Controller
+    Interfaces -.-&gt; Gateway
+    Interfaces -.-&gt; SkillLib
+    Interfaces -.-&gt; Pick
+    Interfaces -.-&gt; GraspPercep
+    Description -.-&gt; MoveIt
+    Description -.-&gt; Controller
+    </pre><p>该分层设计强调模块化分离：数据契约与机器人配置持有唯一事实来源，tensormsg 桥接 ROS 消息与张量，inference_service 执行 AI 策略，action_dispatch 向 ros2_control 发送命令。</p>
+</section>
+<section id="src-readme-md">
+<h3>2.2 包布局（src/README.md 摘要）<a class="headerlink" href="#src-readme-md" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">robot_config</span></code>：中央配置加载与校验；契约 schema；launch 文件编排。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tensormsg</span></code>：在 ROS 2 消息与张量之间转换，以兼容 ML。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inference_service</span></code>：运行推理流水线；观测契约对齐的数据流。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">action_dispatch</span></code>：将模型动作分发到 ROS 话题或基准服务。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hardware_mock</span></code>：提供契约驱动的 mock 硬件仿真节点，用于无真实硬件的测试。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">so101_hardware</span></code>：用于真实机器人驱动的 ros2_control 硬件接口插件。</p></li>
+<li><p>以及用于数据处理、标定与评估的 dataset_tools 等工具。</p></li>
+</ul>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/architecture.md#L1-L246">docs/architecture.md:1-246</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/README.md">src/README.md</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="ros2-control">
+<h2>3. 契约驱动的数据流：从传感器到 ros2_control<a class="headerlink" href="#ros2-control" title="Permalink to this heading"></a></h2>
+<section id="ssot">
+<h3>3.1 机器人配置唯一事实来源（SSOT）<a class="headerlink" href="#ssot" title="Permalink to this heading"></a></h3>
+<p>机器人的全部运行时 I/O 契约定义在 <code class="docutils literal notranslate"><span class="pre">robot_config/config/robots/</span></code> 下的 YAML 配置中。该配置指定：</p>
+<ul class="simple">
+<li><p><strong>观测（Observations）</strong>：命名的传感器数据流及其 ROS 话题、类型、QoS、对齐策略、图像缩放选项等。</p></li>
+<li><p><strong>动作（Actions）</strong>：机器人命令的发布话题，以及从张量输出索引到关节的映射。</p></li>
+<li><p><strong>控制模式（Control Modes）</strong>：遥操作、model_inference、moveit_planning 等映射到不同 ros2_control 控制器。</p></li>
+</ul>
+<p>YAML 通过 <code class="docutils literal notranslate"><span class="pre">robot_config.loader.load_robot_config_dict()</span></code> 加载与校验，并合成为不可变的 <code class="docutils literal notranslate"><span class="pre">Contract</span></code> dataclass（<code class="docutils literal notranslate"><span class="pre">robot_config.contract_utils.Contract</span></code>）。该契约为张量与 ROS 消息互转暴露统一、类型化的 schema。</p>
+<p>契约包括：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Contract</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">version</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">rate_hz</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">max_duration_s</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">observations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ObservationSpec</span><span class="p">]</span>
+    <span class="n">actions</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ActionSpec</span><span class="p">]</span>
+    <span class="n">tasks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TaskSpec</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>每个 <code class="docutils literal notranslate"><span class="pre">ObservationSpec</span></code> 详述话题、ROS 类型、对齐策略、QoS、传输与张量编解码提示。</p>
+<p>契约系统还包括运行时辅助函数 <code class="docutils literal notranslate"><span class="pre">decode_value()</span></code> 与 <code class="docutils literal notranslate"><span class="pre">encode_value()</span></code>，它们使用 <code class="docutils literal notranslate"><span class="pre">tensormsg</span></code> 内的注册表进行序列化。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/contract_utils.py#L1-L216">src/robot_config/robot_config/contract_utils.py:1-216</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-architecture/SKILL.md#L14-L90">.agents/skills/ibrobot-architecture/SKILL.md:14-90</a></p>
+</section>
+<hr class="docutils" />
+<section id="tensormsg-ros">
+<h3>3.2 tensormsg：ROS 消息与张量的双向转换<a class="headerlink" href="#tensormsg-ros" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">tensormsg</span></code> 包是将 ROS 2 消息转换为 ML 推理模型所需张量数据（及反向转换）的关键桥梁。</p>
+<ul class="simple">
+<li><p>核心类：<code class="docutils literal notranslate"><span class="pre">TensorMsgConverter</span></code>，提供 <code class="docutils literal notranslate"><span class="pre">encode()</span></code>、<code class="docutils literal notranslate"><span class="pre">decode()</span></code>、<code class="docutils literal notranslate"><span class="pre">to_variant()</span></code>、<code class="docutils literal notranslate"><span class="pre">from_variant()</span></code> 静态方法实现透明转换。</p></li>
+<li><p>编解码器按 ROS 消息类型字符串注册，支持可扩展的编解码。</p></li>
+<li><p>支持带缩放、颜色格式转换的图像及数值张量等复杂类型。</p></li>
+</ul>
+<p>例如，<code class="docutils literal notranslate"><span class="pre">TensorMsgConverter.decode(msg)</span></code> 将 <code class="docutils literal notranslate"><span class="pre">sensor_msgs/msg/Image</span></code> 等 ROS 消息转换为 Numpy 数组，并应用指定的缩放或颜色通道映射。</p>
+<p>张量批次被编码为 <code class="docutils literal notranslate"><span class="pre">ibrobot_msgs/msg/VariantsList</span></code>，以便高效传输到推理节点。</p>
+<p>该逻辑实现了契约驱动的类型安全以及 ROS 层与神经网络流水线之间的零拷贝张量传递。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/tensormsg/tensormsg/converter.py#L1-L181">src/tensormsg/tensormsg/converter.py:1-181</a></p>
+</section>
+<hr class="docutils" />
+<section id="id5">
+<h3>3.3 观测同步与时间戳映射<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<p>由于传感器异步运作且 ROS 时间戳可能不同，系统实现了健壮的同步层，确保推理的张量输入对应于对齐的采集时间。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">observation_sync.py</span></code> 实现时间戳映射器（<code class="docutils literal notranslate"><span class="pre">RtpTimestampMapper</span></code>）与同步流选择器（<code class="docutils literal notranslate"><span class="pre">select_synchronized_streams()</span></code>）。</p></li>
+<li><p>来自相机的 RTP 时间戳被映射到公共采集时钟，并修正回绕。</p></li>
+<li><p>同步选择校验相机间偏差容限、新鲜度与帧完整性。</p></li>
+<li><p>该同步确保推理在契约容限内获得时间上连贯的多模态输入。</p></li>
+</ul>
+<p>该层带来少量对齐延迟，但关键在于防止对陈旧或未对齐数据进行推理。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/observation_sync.py#L1-L180">src/inference_service/inference_service/observation_sync.py:1-180</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/tests/test_observation_sync.py#L1-L175">src/inference_service/tests/test_observation_sync.py:1-175</a></p>
+</section>
+<hr class="docutils" />
+<section id="id6">
+<h3>3.4 推理服务流水线<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<p>同步后的张量批次馈入 <code class="docutils literal notranslate"><span class="pre">inference_service</span></code> 节点：</p>
+<ul class="simple">
+<li><p>LeRobot 训练的模型经清单驱动的运行时会话加载。</p></li>
+<li><p>流水线处理多模态输入，应用时间平滑、分块与分布式边云调度。</p></li>
+<li><p>输出是与契约对齐的动作张量。</p></li>
+</ul>
+<p>推理服务发出动作块，由动作分发节点接收。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-architecture/SKILL.md#L80-L97">.agents/skills/ibrobot-architecture/SKILL.md:80-97</a></p>
+</section>
+<hr class="docutils" />
+<section id="id7">
+<h3>3.5 动作分发与控制模式切换<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">action_dispatch</span></code> 包接收推理输出张量并承担以下职责：</p>
+<ul class="simple">
+<li><p>将张量解码为机器人控制话题（如 <code class="docutils literal notranslate"><span class="pre">Float64MultiArray</span></code>）的 ROS 消息。</p></li>
+<li><p>支持依赖模式的执行器：话题发布或基准服务。</p></li>
+<li><p>管理分发调度器与时序平滑器以确保连续控制。</p></li>
+<li><p>将策略释放时机与底层硬件接口解耦。</p></li>
+<li><p>按契约中的关节顺序将动作向量索引映射到关节命令。</p></li>
+</ul>
+<p>四种控制模式统一于 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code>：</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>模式</p></th>
+<th class="head"><p>控制器</p></th>
+<th class="head"><p>执行方式</p></th>
+<th class="head"><p>用例</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>teleop</p></td>
+<td><p>*_position_controller</p></td>
+<td><p>topic</p></td>
+<td><p>人工遥操作</p></td>
+</tr>
+<tr class="row-odd"><td><p>model_inference</p></td>
+<td><p>*_position_controller</p></td>
+<td><p>topic</p></td>
+<td><p>AI 策略控制</p></td>
+</tr>
+<tr class="row-even"><td><p>moveit_planning</p></td>
+<td><p>*_trajectory_controller</p></td>
+<td><p>action (MoveIt)</p></td>
+<td><p>规划与技能</p></td>
+</tr>
+<tr class="row-odd"><td><p>base_navigation</p></td>
+<td><p>base_controller / velocity</p></td>
+<td><p>topic (cmd_vel)</p></td>
+<td><p>移动底盘</p></td>
+</tr>
+</tbody>
+</table>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-architecture/SKILL.md#L60-L81">.agents/skills/ibrobot-architecture/SKILL.md:60-81</a></p>
+</section>
+<hr class="docutils" />
+<section id="ros2-control-mock">
+<h3>3.6 ros2_control 硬件接口与 Mock 仿真<a class="headerlink" href="#ros2-control-mock" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">so101_hardware</span></code> 包为 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 实现真实机器人硬件接口。</p>
+<p>用于测试与离线开发的契约驱动 mock 节点存在于 <code class="docutils literal notranslate"><span class="pre">hardware_mock</span></code>，它：</p>
+<ul class="simple">
+<li><p>读取同一份机器人 YAML 契约。</p></li>
+<li><p>以合成数据发布全部观测话题。</p></li>
+<li><p>订阅动作话题并即时回馈关节状态更新以闭环控制。</p></li>
+<li><p>仅支持 <code class="docutils literal notranslate"><span class="pre">model_inference</span></code> 模式，无真实硬件依赖。</p></li>
+<li><p>以简单内部关节模型模拟关节位置与电流。</p></li>
+</ul>
+<p>这允许在无硬件情况下对从传感器到动作分发的数据流进行完整端到端校验。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/hardware_mock/hardware_mock/contract_mock_node.py#L1-L159">src/hardware_mock/hardware_mock/contract_mock_node.py:1-159</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/hardware_mock/hardware_mock/contract_plan.py#L1-L183">src/hardware_mock/hardware_mock/contract_plan.py:1-183</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id8">
+<h2>4. 包图与关系<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
+<p>以下是与系统数据流相关的主要包及其职责的简化映射：</p>
+<pre  class="mermaid">
+        graph TB
+    robot_config[&quot;robot_config\n- Load &amp; validate YAML config\n- Generate Contract dataclasses&quot;]
+    tensormsg[&quot;tensormsg\n- ROS Msg ⟷ Tensor conversion\n- Variant encoding&quot;]
+    inference_service[&quot;inference_service\n- Pipeline Runtime\n- Model Sessions\n- Temporal smoothing&quot;]
+    action_dispatch[&quot;action_dispatch\n- Dispatch tensor actions\n- Scheduled executors&quot;]
+    ros2_control[&quot;ros2_control / so101_hardware\n- Hardware driver\n- Joint controller interfaces&quot;]
+    hardware_mock[&quot;hardware_mock\n- Contract-driven mock hardware\n- Synthetic sensor and actuator I/O&quot;]
+    sensor_data[&quot;Sensors\n- Cameras / JointState / Currents&quot;]
+
+    sensor_data --&gt;|ROS Msg| tensormsg
+    tensormsg --&gt;|Tensor batches| inference_service
+    inference_service --&gt;|Action tensors| action_dispatch
+    action_dispatch --&gt;|ROS Command Msgs| ros2_control
+    ros2_control --&gt;|Hardware actuation| sensor_data
+
+    robot_config -.-&gt; sensor_data
+    robot_config -.-&gt; tensormsg
+    robot_config -.-&gt; inference_service
+    robot_config -.-&gt; action_dispatch
+    robot_config -.-&gt; ros2_control
+    robot_config -.-&gt; hardware_mock
+
+    hardware_mock --&gt;|Simulated ROS I/O| tensormsg
+    hardware_mock -.-&gt; ros2_control
+    </pre></section>
+<hr class="docutils" />
+<section id="id9">
+<h2>5. 数据流详细时序<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>传感器输入：</strong></p>
+<ul class="simple">
+<li><p>物理传感器发布 ROS 消息（如 <code class="docutils literal notranslate"><span class="pre">sensor_msgs/Image</span></code>、<code class="docutils literal notranslate"><span class="pre">sensor_msgs/JointState</span></code>、<code class="docutils literal notranslate"><span class="pre">ibrobot_msgs/JointCurrent</span></code>）。</p></li>
+<li><p>话题与 QoS 与机器人契约对齐。</p></li>
+</ul>
+</li>
+<li><p><strong>张量转换（<code class="docutils literal notranslate"><span class="pre">tensormsg</span></code>）：</strong></p>
+<ul class="simple">
+<li><p>传入的 ROS 消息被 tensormsg 转换器拦截。</p></li>
+<li><p>数据被解码为 Numpy 数组或 Torch 张量，应用缩放与颜色转换，并保持契约字段顺序。</p></li>
+<li><p>张量批次被封装为 <code class="docutils literal notranslate"><span class="pre">ibrobot_msgs/msg/VariantsList</span></code> 消息以供传输。</p></li>
+</ul>
+</li>
+<li><p><strong>同步（<code class="docutils literal notranslate"><span class="pre">inference_service/observation_sync.py</span></code>）：</strong></p>
+<ul class="simple">
+<li><p>RTP 时间戳映射器与流选择器确保多相机流在容限内对齐。</p></li>
+<li><p>迟到或偏斜的帧触发可恢复的错误以等待或重试。</p></li>
+</ul>
+</li>
+<li><p><strong>推理执行：</strong></p>
+<ul class="simple">
+<li><p>张量批次馈入运行于 CPU、GPU 或 NPU 后端的推理流水线，后端由部署清单决定。</p></li>
+<li><p>AI 模型产生符合契约动作规范的动作块。</p></li>
+</ul>
+</li>
+<li><p><strong>动作分发：</strong></p>
+<ul class="simple">
+<li><p>分发节点将输出张量解码为 ROS 消息命令。</p></li>
+<li><p>时序平滑器跨块边界混合，确保平滑控制。</p></li>
+<li><p>所选执行器方案（话题或基准）以契约频率发布命令。</p></li>
+</ul>
+</li>
+<li><p><strong>ROS 2 控制与硬件接口：</strong></p>
+<ul class="simple">
+<li><p>ros2_control 控制器接受关节命令消息。</p></li>
+<li><p>驱动器将命令施加到电机或仿真器。</p></li>
+<li><p>状态反馈以关节状态/电流形式回传到传感器。</p></li>
+</ul>
+</li>
+<li><p><strong>Mock 仿真（可选）：</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">hardware_mock</span></code> 作为节点运行，基于契约仿真传感器与执行器。</p></li>
+<li><p>支持无硬件情况下测试整条流水线。</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="id10">
+<h2>6. 关键类与函数参考<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>概念</p></th>
+<th class="head"><p>代码实体</p></th>
+<th class="head"><p>位置</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>机器人契约 dataclasses</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Contract</span></code>, <code class="docutils literal notranslate"><span class="pre">ObservationSpec</span></code>, <code class="docutils literal notranslate"><span class="pre">ActionSpec</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">robot_config/contract_utils.py</span></code></p></td>
+<td><p>定义类型化的观测与动作 schema</p></td>
+</tr>
+<tr class="row-odd"><td><p>机器人配置加载器</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">load_robot_config_dict()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">robot_config/loader.py</span></code></p></td>
+<td><p>加载并校验 YAML SSOT</p></td>
+</tr>
+<tr class="row-even"><td><p>张量 ↔ ROS 转换</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TensorMsgConverter</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tensormsg/converter.py</span></code></p></td>
+<td><p>编解码 ROS 消息与张量</p></td>
+</tr>
+<tr class="row-odd"><td><p>观测同步</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">RtpTimestampMapper</span></code>, <code class="docutils literal notranslate"><span class="pre">select_synchronized_streams()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">inference_service/observation_sync.py</span></code></p></td>
+<td><p>映射 RTP 时间戳并选择同步流</p></td>
+</tr>
+<tr class="row-even"><td><p>动作分发节点</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ActionDispatcherNode</span></code>, <code class="docutils literal notranslate"><span class="pre">ScheduledActionDispatcherNode</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">action_dispatch</span></code> (implied)</p></td>
+<td><p>将 AI 动作分发到 ROS 控制器话题</p></td>
+</tr>
+<tr class="row-odd"><td><p>Mock 仿真计划</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MockPlan</span></code>, <code class="docutils literal notranslate"><span class="pre">build_plan()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">hardware_mock/contract_plan.py</span></code></p></td>
+<td><p>为 mock 节点编译契约规格</p></td>
+</tr>
+<tr class="row-even"><td><p>Mock 契约节点</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ContractMockNode</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">hardware_mock/contract_mock_node.py</span></code></p></td>
+<td><p>运行 mock 传感器与执行器</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<hr class="docutils" />
+<section id="id11">
+<h2>7. 连接概念与代码的摘要图<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h2>
+<section id="tensormsg">
+<h3>7.1 自然语言到契约与 tensormsg 转换<a class="headerlink" href="#tensormsg" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        graph TD
+    SensorData[&quot;Raw Sensor Data\n(sensor_msgs/Image, JointState)&quot;]
+    Contract[&quot;Robot Contract\n(ObservationSpec, ActionSpec)&quot;]
+    Tensormsg[&quot;tensormsg\nTensorMsgConverter&quot;]
+    TensorBatch[&quot;Tensor Batch\n(VariantsList)&quot;]
+
+    SensorData --&gt;|ROS Msgs| Tensormsg
+    Contract --&gt;|Defines Tensor Fields| Tensormsg
+    Tensormsg --&gt;|Tensor batches| TensorBatch
+    </pre><p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/tensormsg/tensormsg/converter.py#L32-L100">src/tensormsg/tensormsg/converter.py:32-100</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/contract_utils.py#L25-L150">src/robot_config/robot_config/contract_utils.py:25-150</a></p>
+</section>
+<hr class="docutils" />
+<section id="id12">
+<h3>7.2 从传感器经推理到 ros2_control 的数据流<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        flowchart LR
+    Sensors[&quot;Sensors\n(sensor_msgs/JointState, Image, Current)&quot;]
+    TensorConv[&quot;tensormsg\nTensorMsgConverter&quot;]
+    Sync[&quot;observation_sync\nRtpTimestampMapper + StreamSelector&quot;]
+    Inference[&quot;inference_service\nModel sessions + runtime&quot;]
+    ActionDisp[&quot;action_dispatch\nDispatchInfer clients + Executors&quot;]
+    ros2Ctrl[&quot;ros2_control\nControllers + Hardware Interface&quot;]
+    Hardware[&quot;Physical Robot Hardware&quot;]
+
+    Sensors --&gt;|ROS Messages| TensorConv
+    TensorConv --&gt;|Tensor Batches| Sync
+    Sync --&gt;|Aligned Tensors| Inference
+    Inference --&gt;|Actions Tensors| ActionDisp
+    ActionDisp --&gt;|ROS Control Commands| ros2Ctrl
+    ros2Ctrl --&gt;|Actuation| Hardware
+    Hardware --&gt;|State Feedback| Sensors
+    </pre><p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/architecture.md#L86-L177">docs/architecture.md:86-177</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/observation_sync.py#L1-L180">src/inference_service/inference_service/observation_sync.py:1-180</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/.agents/skills/ibrobot-architecture/SKILL.md#L14-L97">.agents/skills/ibrobot-architecture/SKILL.md:14-97</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id13">
+<h2>8. 参考与延伸阅读<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">robot_config</span></code> 目录：机器人 YAML 配置、契约 schema 与配置加载器（<code class="docutils literal notranslate"><span class="pre">robot_config/robot_config/</span></code>）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tensormsg</span></code> 包：ROS 消息与张量间的灵活转换（<code class="docutils literal notranslate"><span class="pre">tensormsg/tensormsg/converter.py</span></code>）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inference_service</span></code>：推理运行时、流水线处理、同步（<code class="docutils literal notranslate"><span class="pre">inference_service/</span></code>）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">action_dispatch</span></code>：发送命令的执行器节点（<code class="docutils literal notranslate"><span class="pre">action_dispatch/</span></code>）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hardware_mock</span></code>：用于离线测试的 mock 节点与契约计划构建器（<code class="docutils literal notranslate"><span class="pre">hardware_mock/contract_mock_node.py</span></code>、<code class="docutils literal notranslate"><span class="pre">hardware_mock/contract_plan.py</span></code>）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">docs/architecture.md</span></code> 中的系统架构文档</p></li>
+<li><p>源仓库 <code class="docutils literal notranslate"><span class="pre">src/README.md</span></code>，含包角色与 launch 编排</p></li>
+</ul>
+<hr class="docutils" />
+<p>以上完成了 IB-Robot RoboFrame_stable 的详细系统架构与数据流描述，为使用机器人配置、数据处理、模型推理与控制分发的开发者与集成者提供坚实基础。</p>
+<hr class="docutils" />
+<p><strong>来源：</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.agents/skills/ibrobot-architecture/SKILL.md:14-97</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/robot_config/robot_config/contract_utils.py:1-216</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/tensormsg/tensormsg/converter.py:1-181</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/inference_service/inference_service/observation_sync.py:1-180</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/hardware_mock/hardware_mock/contract_mock_node.py:1-159</span></code></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="getting_started_environment.html" class="btn btn-neutral float-left" title="入门与环境" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="supported_platforms.html" class="btn btn-neutral float-right" title="支持的平台" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-26.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/index.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+      <dd><a href="system_architecture_data_flow.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

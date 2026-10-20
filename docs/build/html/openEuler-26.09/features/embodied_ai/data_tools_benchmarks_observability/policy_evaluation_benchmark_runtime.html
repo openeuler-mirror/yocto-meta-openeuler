@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>策略评估与基准运行时 &mdash; openEuler Embedded在线文档 26.09 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="追踪与 Web UI" href="tracing_web_ui.html" />
+    <link rel="prev" title="相机标定与 ISP 调优" href="camera_calibration_isp_tuning.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview/index.html">项目概览</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration_ssot/index.html">配置单一事实源（robot_config）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference_service/index.html">推理服务</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../model_export_deployment_toolchain/index.html">模型导出与部署工具链</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../robot_hardware_control_simulation/index.html">机器人硬件、控制与仿真</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../perception_manipulation_semantic_mapping/index.html">感知、操作与语义建图</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../embodied_agent_skills/index.html">具身智能体与技能</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../voice_audio/index.html">语音与音频</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">数据工具、基准测试与可观测性</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">数据工具、基准测试与可观测性概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="dataset_recording_conversion.html">数据集录制与转换</a></li>
+<li class="toctree-l6"><a class="reference internal" href="camera_calibration_isp_tuning.html">相机标定与 ISP 调优</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">策略评估与基准运行时</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">目的与范围</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">核心组件</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id18">汇总图：系统概览与关键代码实体</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id19">代码文件参考</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id20">附加说明</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="tracing_web_ui.html">追踪与 Web UI</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../interfaces/index.html">接口（ibrobot_msgs）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development_workflow_tooling/index.html">开发工作流与工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">数据工具、基准测试与可观测性</a></li>
+      <li class="breadcrumb-item active">策略评估与基准运行时</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>策略评估与基准运行时<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源码文件</summary>
+<p>以下文件被用作生成此 wiki 页面的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/benchmark/benchmark_runtime/benchmark_runtime/environment_node.py">src/benchmark/benchmark_runtime/benchmark_runtime/environment_node.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/benchmark/benchmark_runtime/benchmark_runtime/evaluator_node.py">src/benchmark/benchmark_runtime/benchmark_runtime/evaluator_node.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/benchmark/benchmark_runtime/benchmark_runtime/io_descriptor.py">src/benchmark/benchmark_runtime/benchmark_runtime/io_descriptor.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/dataset_tools/dataset_tools/policy_eval.py">src/dataset_tools/dataset_tools/policy_eval.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/dataset_tools/dataset_tools/policy_eval_compare.py">src/dataset_tools/dataset_tools/policy_eval_compare.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/dataset_tools/test/test_policy_eval.py">src/dataset_tools/test/test_policy_eval.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/observation_transport/observation_transport/__init__.py">src/observation_transport/observation_transport/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/observation_transport/observation_transport/ascend_ffmpeg_video_codec.py">src/observation_transport/observation_transport/ascend_ffmpeg_video_codec.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi.yaml">src/robot_config/config/robots/lekiwi.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/so101_single_arm_rgbd.yaml">src/robot_config/config/robots/so101_single_arm_rgbd.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/perception.py">src/robot_config/robot_config/launch_builders/perception.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py">src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/peripherals/camera.py">src/robot_config/robot_config/peripherals/camera.py</a></p></li>
+</ul>
+</details>
+<p>本页面详述 RoboFrame 中策略评估与基准运行时节点的实现与集成，重点介绍环境与评估器 ROS 节点、它们与 LIBERO 适配器的交互，以及相应的 launch 构建器。这些组件共同支持针对机器人配置与录制或仿真数据流对具身 AI 策略进行测试、验证与基准评测。</p>
+<hr class="docutils" />
+<section id="id2">
+<h2>目的与范围<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>RoboFrame 中的策略评估与基准运行时系统提供工具与 ROS 2 节点，用于：</p>
+<ul class="simple">
+<li><p>针对机器人数据回放或仿真评估学习型或启发式策略。</p></li>
+<li><p>以可配置的重置、步进、规划与收尾契约执行基准测试。</p></li>
+<li><p>支持与提供方无关的机器人硬件或仿真后端适配器（LIBERO 适配器）。</p></li>
+<li><p>发布符合契约的观测并向受控机器人或仿真器发送动作。</p></li>
+<li><p>与 RoboFrame 机器人配置（SSOT）紧密集成并利用契约定义。</p></li>
+<li><p>为基准评测结果生成标准化报告与诊断。</p></li>
+</ul>
+<p>本页面覆盖关键 ROS 节点（<code class="docutils literal notranslate"><span class="pre">environment_node.py</span></code>、<code class="docutils literal notranslate"><span class="pre">evaluator_node.py</span></code>）、基准运行时接口抽象（<code class="docutils literal notranslate"><span class="pre">io_descriptor.py</span></code>）、策略评估工具（<code class="docutils literal notranslate"><span class="pre">policy_eval.py</span></code>），以及支撑这些组件的 launch 编排。</p>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h2>核心组件<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<section id="id4">
+<h3>1. 基准运行时环境节点<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<section id="id5">
+<h4>概览<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h4>
+<p><strong>环境节点</strong>（<code class="docutils literal notranslate"><span class="pre">benchmark_runtime.environment_node</span></code>）充当桥接机器人环境与基准基础设施的 ROS 2 节点。它加载实现基准提供方接口的已配置后端适配器，并管理以下服务：</p>
+<ul class="simple">
+<li><p>重置环境。</p></li>
+<li><p>应用策略动作推进环境时间。</p></li>
+<li><p>规划执行序列。</p></li>
+<li><p>收尾与报告提交。</p></li>
+</ul>
+<p>它发布遵循机器人契约的观测，并维护回合/步骤标识以保证一致性。</p>
+</section>
+<hr class="docutils" />
+<section id="id6">
+<h4>实现要点<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h4>
+<ul class="simple">
+<li><p>直接从 YAML 文件加载机器人配置（<code class="docutils literal notranslate"><span class="pre">_load_robot_config_dict</span></code>），不导入 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> 以避免循环依赖。</p></li>
+<li><p>从节点参数读取基准端点参数（ROS 服务名）。</p></li>
+<li><p>执行机器人与模型 I/O 描述子之间的兼容性检查。</p></li>
+<li><p>使用 <code class="docutils literal notranslate"><span class="pre">BenchmarkAdapter</span></code> 插件接口抽象底层机器人或仿真控制。</p></li>
+<li><p>协调向符合契约的 ROS 话题发布观测的流量。</p></li>
+<li><p>通过 <code class="docutils literal notranslate"><span class="pre">observation_transport.create_managed_frame_ingress</span></code> 管理图像与传感器数据流的帧入口。</p></li>
+<li><p>以就绪标签处理生命周期状态，并通过日志标签上报错误。</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id7">
+<h4>数据流与关键类/函数<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h4>
+<pre  class="mermaid">
+        flowchart TD
+    A[Robot YAML Config] --&gt;|Load| B[EnvironmentNode]
+    B --&gt;|Load Adapter| C[BenchmarkAdapter Plugin]
+    B --&gt;|Create Services| D[Reset, Step, Plan, Finalize ROS Services]
+    B --&gt;|Publish| E[Contract Observation Topics]
+    E --&gt;|Subscribers| F[Policy/Evaluator/Agent Nodes]
+    D --&gt;|Handle| C
+    C --&gt;|Interact with| G[Robot Hardware / Simulation Backend]
+    subgraph EnvironmentNode [benchmark_runtime.environment_node.py]
+        B
+        D
+    end
+    subgraph BenchmarkAdapter [&quot;benchmark_runtime.adapter.py (abstract)&quot;]
+        C
+    end
+    </pre><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">EnvironmentNode</span></code> 以指定重置、步进、规划与收尾服务的基准端点参数初始化。</p></li>
+<li><p>观测依据动态解析的契约规范，通过 DDS 或 ROS 话题发布。</p></li>
+<li><p>提供方适配器处理实际的环境操纵命令与策略环境步进。</p></li>
+<li><p>来自相机或传感器的帧入口由 <code class="docutils literal notranslate"><span class="pre">ManagedFrameIngress</span></code> 实例管理。</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id8">
+<h3>2. 基准运行时评估器节点<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
+<section id="id9">
+<h4>概览<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h4>
+<p><strong>评估器节点</strong>（<code class="docutils literal notranslate"><span class="pre">benchmark_runtime.evaluator_node</span></code>）执行串行基准评估。它编排以下循环：</p>
+<ul class="simple">
+<li><p>环境重置（开启回合）。</p></li>
+<li><p>运行策略以产生动作。</p></li>
+<li><p>调用步进服务。</p></li>
+<li><p>查询收尾报告。</p></li>
+</ul>
+<p>它记录记录回合结果与整体运行摘要的规范化报告。</p>
+</section>
+<hr class="docutils" />
+<section id="id10">
+<h4>实现要点<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h4>
+<ul class="simple">
+<li><p>启动时加载并校验机器人配置以及与模型描述子的契约兼容性。</p></li>
+<li><p>维护驱动评估状态机的串行监督器（<code class="docutils literal notranslate"><span class="pre">SerialSupervisor</span></code>）。</p></li>
+<li><p>支持诊断就绪检查（<code class="docutils literal notranslate"><span class="pre">ReadinessBarrier</span></code>），确保基准测试前所有组件可运行。</p></li>
+<li><p>使用 ROS 2 ActionClient 驱动步进动作。</p></li>
+<li><p>以预定义错误码与条件处理错误状态。</p></li>
+<li><p>写入包含回合动作成功指标的持久化 JSON 报告。</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id11">
+<h4>数据流与关键类/函数<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h4>
+<pre  class="mermaid">
+        flowchart TD
+    I[EvaluatorNode] --&gt;|Load Robot Config| J[Contract &amp; IO Descriptor Validation]
+    I --&gt;|Create Action Clients| K[Reset, Step, Plan, Finalize Clients]
+    I --&gt;|Run Episodes| L[SerialSupervisor]
+    L --&gt; M[Issue Reset Command]
+    L --&gt; N[Run Policy &amp; Send Actions]
+    L --&gt; O[Step Environment]
+    L --&gt; P[Finalize Episode]
+    P --&gt; Q[Write Canonical Report]
+    Q --&gt;|JSON Output| R[Result Files]
+    subgraph EvaluatorNode [benchmark_runtime.evaluator_node.py]
+        I
+        L
+        K
+    end
+    </pre><ul class="simple">
+<li><p>评估器节点严格校验输入以保证稳健性。</p></li>
+<li><p>通过监督器命令协调策略执行与回合生命周期。</p></li>
+<li><p>对回合结果分类以生成指标（成功、失败、中止）。</p></li>
+<li><p>产出与规范评估标准兼容的报告。</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id12">
+<h3>3. 策略评估工具<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
+<section id="id13">
+<h4>概览<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h4>
+<p><strong>策略评估</strong>（<code class="docutils literal notranslate"><span class="pre">dataset_tools.policy_eval.py</span></code>）模块提供：</p>
+<ul class="simple">
+<li><p>用于离线策略评估的 rosbag 消息帧门控回放。</p></li>
+<li><p>按策略输入特征过滤观测的工具。</p></li>
+<li><p>构建并校验带定时观测注入的回放帧的工具。</p></li>
+<li><p>记录预测、诊断与标注动作的数据结构。</p></li>
+<li><p>标定检视与时间戳兼容性校验。</p></li>
+</ul>
+<p>这些功能支持针对录制数据集开发并校验与机器人契约一致的策略。</p>
+</section>
+<hr class="docutils" />
+<section id="id14">
+<h4>关键函数与数据流<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h4>
+<pre  class="mermaid">
+        flowchart TD
+    A[ROS Bag Playback] --&gt;|Replay Messages| B[Replay Frame Builder]
+    B --&gt;|Extract Observations| C[Observation Spec Filtering]
+    C --&gt;|Time-align| D[DispatchInfer Action Requests]
+    D --&gt;|Collect Actions| E[Prediction Records]
+    E --&gt;|Compare &amp; Plot| F[Policy Evaluation Compare]
+    </pre><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">load_contract_context</span></code> 从机器人配置与策略 manifest 构建上下文。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filter_observations_by_input_features</span></code> 确保仅回放与策略匹配的输入。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">build_replay_frames</span></code> 按时间戳同步消息以构造回放帧。</p></li>
+<li><p>预测记录为可 JSON 序列化的结构（<code class="docutils literal notranslate"><span class="pre">PredictionRecord</span></code>）。</p></li>
+<li><p>支持就绪与标定状态检查的诊断。</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="i-o">
+<h3>4. 基准 I/O 描述子<a class="headerlink" href="#i-o" title="Permalink to this heading"></a></h3>
+<section id="id15">
+<h4>概览<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h4>
+<p><strong>I/O 描述子</strong>模块（<code class="docutils literal notranslate"><span class="pre">benchmark_runtime.io_descriptor.py</span></code>）为基准观测与动作定义规范化格式描述子：</p>
+<ul class="simple">
+<li><p>定义 <code class="docutils literal notranslate"><span class="pre">FeatureDescriptor</span></code>，按 key、种类（image/state/action）、dtype、形状与布局精确描述每个观测或动作特征。</p></li>
+<li><p>定义 <code class="docutils literal notranslate"><span class="pre">BenchmarkIODescriptor</span></code> 表示完整的观测与动作集合。</p></li>
+<li><p>包含确保机器人契约与已部署模型之间描述子兼容性的校验例程。</p></li>
+<li><p>定义 <code class="docutils literal notranslate"><span class="pre">ObservationSample</span></code> 表示采集的观测。</p></li>
+</ul>
+<p>该抽象将基准运行时与适配器同 ROS 消息细节隔离，提供稳定的语义 I/O 界面。</p>
+</section>
+<hr class="docutils" />
+<section id="id16">
+<h4>关键概念与校验<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h4>
+<pre  class="mermaid">
+        classDiagram
+    class FeatureDescriptor {
+        +key: str
+        +kind: str
+        +dtype: str
+        +shape: tuple[int,...]
+        +layout: str
+        +optional: bool
+        +__post_init__()
+    }
+    class BenchmarkIODescriptor {
+        +observations: tuple[FeatureDescriptor,...]
+        +actions: tuple[FeatureDescriptor,...]
+        +__post_init__()
+        +observation_map
+        +action_map
+    }
+    FeatureDescriptor &lt;.. BenchmarkIODescriptor : contains
+    </pre><ul class="simple">
+<li><p>支持的特征种类：<code class="docutils literal notranslate"><span class="pre">&quot;image&quot;</span></code>、<code class="docutils literal notranslate"><span class="pre">&quot;state&quot;</span></code>、<code class="docutils literal notranslate"><span class="pre">&quot;action&quot;</span></code>。</p></li>
+<li><p>图像布局限定为 <code class="docutils literal notranslate"><span class="pre">&quot;CHW&quot;</span></code> 或 <code class="docutils literal notranslate"><span class="pre">&quot;HWC&quot;</span></code>；状态与动作为 1D。</p></li>
+<li><p>观测与动作之间的 key 重叠被禁止。</p></li>
+<li><p>用于兼容性检查与运行时校验。</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="launch">
+<h3>5. Launch 构建器：集成点<a class="headerlink" href="#launch" title="Permalink to this heading"></a></h3>
+<section id="id17">
+<h4>基准 Launch 构建器<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h4>
+<p>基准运行时的 launch 系统导入机器人专用参数并解析所需的 ROS 服务端点（<code class="docutils literal notranslate"><span class="pre">reset_service</span></code>、<code class="docutils literal notranslate"><span class="pre">step_service</span></code>、<code class="docutils literal notranslate"><span class="pre">plan_service</span></code>、<code class="docutils literal notranslate"><span class="pre">finalize_service</span></code>）。</p>
+<ul class="simple">
+<li><p>接收机器人配置输入。</p></li>
+<li><p>以正确的重映射与参数构建 <code class="docutils literal notranslate"><span class="pre">environment_node</span></code> 与 <code class="docutils literal notranslate"><span class="pre">evaluator_node</span></code> 节点。</p></li>
+<li><p>使用传输适配器设置帧入口。</p></li>
+<li><p>与其他系统 launch 协同编排整体基准测试台。</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="libero">
+<h3>6. LIBERO 适配器<a class="headerlink" href="#libero" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>基准运行时使用 LIBERO（一种 ROS 中间件抽象）适配器将环境节点接口到不同机器人后端或仿真器。</p></li>
+<li><p>适配器模式支持与提供方无关的基准评测，在真实或仿真硬件上透明地校验策略。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BenchmarkAdapter</span></code> 抽象接口定义适配器必须实现的服务，支持即插即用的环境控制。</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id18">
+<h2>汇总图：系统概览与关键代码实体<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h2>
+<pre  class="mermaid">
+        flowchart TD
+    subgraph RobotConfig [&quot;Robot Config (src/robot_config)&quot;]
+        A[robot YAML SSOT]
+        B[Peripherals / Contract Definition]
+    end
+
+    subgraph BenchmarkRuntime [&quot;benchmark_runtime package&quot;]
+        subgraph EnvNode[&quot;Environment Node (environment_node.py)&quot;]
+            E1[Load Robot Config]
+            E2[Load Benchmark Adapter]
+            E3[Publish Observations]
+            E4[ROS Services: Reset/Step/Plan/Finalize]
+        end
+        subgraph EvalNode[&quot;Evaluator Node (evaluator_node.py)&quot;]
+            V1[Load Config &amp; Validation]
+            V2[SerialSupervisor]
+            V3[Execute Episodes]
+            V4[Write Reports]
+        end
+        subgraph IODesc[&quot;I/O Descriptors (io_descriptor.py)&quot;]
+            D1[FeatureDescriptor]
+            D2[BenchmarkIODescriptor]
+        end
+    end
+
+    subgraph PolicyEval [&quot;Policy Evaluation (dataset_tools.policy_eval.py)&quot;]
+        P1[Rosbag Replay]
+        P2[Generate Replay Frames]
+        P3[Filtered Observations]
+        P4[&quot;Action Server Calls (DispatchInfer)&quot;]
+    end
+
+    subgraph LaunchSys [&quot;Launch Builders&quot;]
+        L1[benchmark.launch.py]
+        L2[robot_config.launch_builders.benchmark]
+    end
+
+    A --&gt; B
+    B --&gt; |Define Observations &amp; Actions| IODesc
+    IODesc --&gt; EnvNode
+    EnvNode --&gt; EvalNode
+    EvalNode --&gt; |Invoke| PolicyEval
+    LaunchSys --&gt; EnvNode
+    LaunchSys --&gt; EvalNode
+    PolicyEval --&gt; |Replay Topics| EnvNode
+
+    classDef codeEntity fill:#f9f,stroke:#333,stroke-width:1px
+    class EnvNode,EvalNode,IODesc,PolicyEval,LaunchSys codeEntity
+    </pre></section>
+<hr class="docutils" />
+<section id="id19">
+<h2>代码文件参考<a class="headerlink" href="#id19" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>环境节点</strong>： <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/benchmark/benchmark_runtime/benchmark_runtime/environment_node.py#L1-L156">src/benchmark/benchmark_runtime/benchmark_runtime/environment_node.py:1-156</a></p></li>
+<li><p><strong>评估器节点</strong>： <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/benchmark/benchmark_runtime/benchmark_runtime/evaluator_node.py#L1-L160">src/benchmark/benchmark_runtime/benchmark_runtime/evaluator_node.py:1-160</a></p></li>
+<li><p><strong>I/O 描述子</strong>： <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/benchmark/benchmark_runtime/benchmark_runtime/io_descriptor.py#L1-L167">src/benchmark/benchmark_runtime/benchmark_runtime/io_descriptor.py:1-167</a></p></li>
+<li><p><strong>策略评估工具</strong>： <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/dataset_tools/dataset_tools/policy_eval.py#L1-L201">src/dataset_tools/dataset_tools/policy_eval.py:1-201</a></p></li>
+<li><p><strong>策略评估测试</strong>： <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/dataset_tools/test/test_policy_eval.py#L1-L202">src/dataset_tools/test/test_policy_eval.py:1-202</a></p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id20">
+<h2>附加说明<a class="headerlink" href="#id20" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>该系统重度依赖 ROS 2，以动作服务器与服务作为控制与数据传输原语。</p></li>
+<li><p>强制执行严格的运行时类型与契约校验，以维护基准完整性。</p></li>
+<li><p>独立的纯 Python 策略评估辅助工具帮助独立于 ROS 对策略回放逻辑做单元测试。</p></li>
+<li><p>基准运行时设计为不依赖任何特定硬件后端，支持公平且可复现的具身 AI 评估。</p></li>
+<li><p>通过 <code class="docutils literal notranslate"><span class="pre">observation_transport</span></code> 库的帧入口将来自相机流的原生帧数据抽象为规范化观测形式。</p></li>
+</ul>
+<hr class="docutils" />
+<p>至此完成 RoboFrame 中策略评估与基准运行时的详细技术概览。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="camera_calibration_isp_tuning.html" class="btn btn-neutral float-left" title="相机标定与 ISP 调优" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tracing_web_ui.html" class="btn btn-neutral float-right" title="追踪与 Web UI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-26.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/index.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+      <dd><a href="policy_evaluation_benchmark_runtime.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

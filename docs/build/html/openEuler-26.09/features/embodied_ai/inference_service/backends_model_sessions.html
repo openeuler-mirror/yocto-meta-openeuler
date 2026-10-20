@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>后端与模型会话 &mdash; openEuler Embedded在线文档 26.09 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="推理清单 Schema" href="inference_manifest_schema.html" />
+    <link rel="prev" title="观测视频传输（RTP/H.264）" href="observation_video_transport.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview/index.html">项目概览</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration_ssot/index.html">配置单一事实源（robot_config）</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">推理服务</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">推理服务概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pipeline_runtime_processors.html">流水线运行时与处理器</a></li>
+<li class="toctree-l6"><a class="reference internal" href="distributed_edge_cloud_inference.html">分布式边云推理</a></li>
+<li class="toctree-l6"><a class="reference internal" href="observation_video_transport.html">观测视频传输（RTP/H.264）</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">后端与模型会话</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">目的与范围</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">后端注册表</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id6">模型会话</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id9">有状态 Ascend OM 模型会话：实现细节</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#torch-models">torch_models 策略提供者</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id17">汇总表：后端与会话职责</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id18">结语</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id19">附录：关键类与函数（用于检索）</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#wiki">相关 Wiki 页面引用</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="inference_manifest_schema.html">推理清单 Schema</a></li>
+<li class="toctree-l6"><a class="reference internal" href="scheduling_action_dispatch.html">调度与动作分发</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../model_export_deployment_toolchain/index.html">模型导出与部署工具链</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../robot_hardware_control_simulation/index.html">机器人硬件、控制与仿真</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../perception_manipulation_semantic_mapping/index.html">感知、操作与语义建图</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../embodied_agent_skills/index.html">具身智能体与技能</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../voice_audio/index.html">语音与音频</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_tools_benchmarks_observability/index.html">数据工具、基准测试与可观测性</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../interfaces/index.html">接口（ibrobot_msgs）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development_workflow_tooling/index.html">开发工作流与工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">推理服务</a></li>
+      <li class="breadcrumb-item active">后端与模型会话</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>后端与模型会话<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源码文件</summary>
+<p>以下文件被用作生成此 wiki 页面的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/docs/unify.md">docs/unify.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/backends/admission.py">src/inference_service/inference_service/backends/admission.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/backends/ascend/__init__.py">src/inference_service/inference_service/backends/ascend/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/backends/ascend/acl_runtime.py">src/inference_service/inference_service/backends/ascend/acl_runtime.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/backends/ascend/model.py">src/inference_service/inference_service/backends/ascend/model.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/backends/errors.py">src/inference_service/inference_service/backends/errors.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/backends/hisilicon/__init__.py">src/inference_service/inference_service/backends/hisilicon/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/backends/hisilicon/sd3403_protocol.py">src/inference_service/inference_service/backends/hisilicon/sd3403_protocol.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/backends/registry.py">src/inference_service/inference_service/backends/registry.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/backends/types.py">src/inference_service/inference_service/backends/types.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/model_sessions/__init__.py">src/inference_service/inference_service/model_sessions/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/model_sessions/ascend.py">src/inference_service/inference_service/model_sessions/ascend.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/model_sessions/ascend_stateful.py">src/inference_service/inference_service/model_sessions/ascend_stateful.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/model_sessions/base.py">src/inference_service/inference_service/model_sessions/base.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/model_sessions/lerobot_torch.py">src/inference_service/inference_service/model_sessions/lerobot_torch.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/model_sessions/onnx.py">src/inference_service/inference_service/model_sessions/onnx.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/tests/test_ascend_stateful_session.py">src/inference_service/tests/test_ascend_stateful_session.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/tests/test_onnx_model_session.py">src/inference_service/tests/test_onnx_model_session.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/tests/test_stateful_ascend_session.py">src/inference_service/tests/test_stateful_ascend_session.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/tests/test_v3_routing.py">src/inference_service/tests/test_v3_routing.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi_nav_grasp_sound_real.yaml">src/robot_config/config/robots/lekiwi_nav_grasp_sound_real.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/torch_models/NOTICE">src/torch_models/NOTICE</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/torch_models/README.md">src/torch_models/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/torch_models/package.xml">src/torch_models/package.xml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/torch_models/resource/torch_models">src/torch_models/resource/torch_models</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/torch_models/setup.cfg">src/torch_models/setup.cfg</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/torch_models/setup.py">src/torch_models/setup.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/torch_models/test/test_policy_provider.py">src/torch_models/test/test_policy_provider.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/torch_models/torch_models/__init__.py">src/torch_models/torch_models/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/torch_models/torch_models/demo_torch_model/__init__.py">src/torch_models/torch_models/demo_torch_model/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/torch_models/torch_models/demo_torch_model/demo_torch_model.py">src/torch_models/torch_models/demo_torch_model/demo_torch_model.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/torch_models/torch_models/policy_provider.py">src/torch_models/torch_models/policy_provider.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/voice_asr_service/voice_asr_service/model_session_builders.py">src/voice_asr_service/voice_asr_service/model_session_builders.py</a></p></li>
+</ul>
+</details>
+<p>本节记录 RoboFrame 具身智能框架中用于集成多种软硬件推理后端的<strong>后端注册表</strong>、关键<strong>模型会话实现</strong>以及会话<strong>策略提供者</strong>机制。内容涵盖 ONNX Runtime、Ascend/Hisilicon/HMM 后端，以及有状态 Ascend 模型会话变体；此外还详述基于 PyTorch 的 torch_models 策略提供者集成。</p>
+<hr class="docutils" />
+<section id="id2">
+<h2>目的与范围<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>RoboFrame 推理支持面向各类 AI 加速器平台优化的多种软硬件后端。本页面说明：</p>
+<ul class="simple">
+<li><p>推理服务后端如何在系统中注册与识别。</p></li>
+<li><p>具体的后端会话实现：ONNX、Ascend OM、Hisilicon SDK、HMM 与 LeRobot Torch 会话。</p></li>
+<li><p>支持循环模型状态的<strong>有状态 Ascend OM 模型会话</strong>的生命周期与能力。</p></li>
+<li><p>与模型会话框架集成的 <code class="docutils literal notranslate"><span class="pre">torch_models</span></code> 原生 PyTorch 策略提供者。</p></li>
+</ul>
+<p>目标是建立统一的模型会话抽象，覆盖后端身份、实例化、推理执行与资源生命周期管理。</p>
+</section>
+<hr class="docutils" />
+<section id="id3">
+<h2>后端注册表<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<section id="id4">
+<h3>概览<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<p>后端注册表是支撑推理运行时的后端能力与一致性证据的<strong>静态惰性注册表</strong>。它枚举规范后端与接口、各自支持的模型类型和操作，并将其映射到会话实现。</p>
+<ul class="simple">
+<li><p>已识别后端：<code class="docutils literal notranslate"><span class="pre">&quot;torch&quot;</span></code>、<code class="docutils literal notranslate"><span class="pre">&quot;ascend&quot;</span></code>、<code class="docutils literal notranslate"><span class="pre">&quot;hisilicon&quot;</span></code>、<code class="docutils literal notranslate"><span class="pre">&quot;rknn&quot;</span></code>、<code class="docutils literal notranslate"><span class="pre">&quot;hmm&quot;</span></code>、<code class="docutils literal notranslate"><span class="pre">&quot;onnx&quot;</span></code></p></li>
+<li><p>接口：<code class="docutils literal notranslate"><span class="pre">&quot;policy&quot;</span></code> 与 <code class="docutils literal notranslate"><span class="pre">&quot;tensor_model&quot;</span></code></p></li>
+<li><p>模型类型包括策略变体（<code class="docutils literal notranslate"><span class="pre">&quot;act&quot;</span></code>、<code class="docutils literal notranslate"><span class="pre">&quot;pi05&quot;</span></code> 等）与其他专用网络（如 <code class="docutils literal notranslate"><span class="pre">&quot;ram_plus&quot;</span></code>、<code class="docutils literal notranslate"><span class="pre">&quot;sam2&quot;</span></code>、<code class="docutils literal notranslate"><span class="pre">&quot;grounding_dino&quot;</span></code>、<code class="docutils literal notranslate"><span class="pre">&quot;zipvoice&quot;</span></code>）</p></li>
+<li><p>每个后端/会话提供声明其支持的 <code class="docutils literal notranslate"><span class="pre">(interface,</span> <span class="pre">model_type,</span> <span class="pre">operation)</span></code> 三元组的一致性元数据。</p></li>
+</ul>
+<p>注册表条目包括：</p>
+<ul class="simple">
+<li><p>会话类型字符串标识符</p></li>
+<li><p>后端运行时 profile 类</p></li>
+<li><p>支持的运行时目标与 SoC</p></li>
+<li><p>平台专属的设备集合</p></li>
+</ul>
+<p>该注册表入口<strong>不导入</strong>ACL SDK、Torch 或厂商运行时等重依赖；这些在会话实例化时才延迟加载。</p>
+</section>
+<hr class="docutils" />
+<section id="id5">
+<h3>关键概念与类型<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ConformanceEvidence</span></code>：记录对特定 <code class="docutils literal notranslate"><span class="pre">(interface,</span> <span class="pre">model_type,</span> <span class="pre">operation)</span></code> 支持情况的数据类，附会话后端、运行时 profile、目标硬件与设备的元数据。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_canonical_identity</span></code>：校验并规范化后端身份元组。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">BackendDescriptor</span></code>：单个后端的不可变声明，可携带多条一致性证据。</p></li>
+</ul>
+<p>该注册表支持按推理 manifest 与运行时 profile 将调用分派到正确的具体会话类。</p>
+</section>
+<hr class="docutils" />
+<section id="mermaid">
+<h3>Mermaid 图：后端注册表身份映射<a class="headerlink" href="#mermaid" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        flowchart TD
+    A[&quot;Backend Registry (registry.py)&quot;]
+    subgraph Identity Matching
+        B1[&quot;_canonical_identity(interface, model_type, operation)&quot;]
+        B2[&quot;ConformanceEvidence(interface, model_type, operation, session_type, profile_type, targets)&quot;]
+        B3[&quot;BackendDescriptor(conformance evidences)&quot;]
+    end
+    A --&gt; IdentityMatching[&quot;Supports canonical backend identities&quot;]
+    IdentityMatching --&gt; B1
+    B1 --&gt; B2
+    B2 --&gt; B3
+    </pre><hr class="docutils" />
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/inference_service/backends/registry.py#L1-L169">src/inference_service/inference_service/backends/registry.py:1-169</a></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id6">
+<h2>模型会话<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
+<p>模型会话是<strong>运行时可执行的绑定对象</strong>，管理部署 manifest 中一个或多个角色的模型加载、设备内存、资源租约、推理调用与生命周期阶段。它们抽象硬件细节并统一分派。</p>
+<hr class="docutils" />
+<section id="ascend-om">
+<h3>Ascend OM 模型会话<a class="headerlink" href="#ascend-om" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">AscendOmModelSession</span></code></strong> 是使用华为 ACL 运行时租约与模型句柄进行 Ascend NPU 推理的主实现。</p></li>
+<li><p>加载与部署 manifest 角色绑定的 <code class="docutils literal notranslate"><span class="pre">om</span></code> 格式产物。</p></li>
+<li><p>支持独占设备分配与可选的优先级调度，用于资源仲裁。</p></li>
+<li><p>管理 ACL 运行时租约以共享设备会话，并具备健壮的错误与生命周期处理。</p></li>
+<li><p>强制执行 manifest 与运行时 profile 校验，确保部署兼容性。</p></li>
+<li><p>支持对被隔离推理调用的排空（drain），实现确定性的清理而无需卸载模型。</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id7">
+<h3>有状态 Ascend OM 模型会话<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">StatefulAscendOmModelSession</span></code> 在基础 Ascend 会话之上扩展了<strong>有状态循环链路支持</strong>。</p></li>
+<li><p>为部署 manifest 中由<strong>状态链路</strong>标记的模型角色管理<strong>双缓冲的设备侧循环状态张量</strong>。</p></li>
+<li><p>校验循环输入/输出张量对的严格 ABI 一致性（静态形状与类型）。</p></li>
+<li><p>要求 <code class="docutils literal notranslate"><span class="pre">runtime_exclusive</span></code> <strong>状态 bank 模式</strong>，且所有执行角色都具备链路状态。</p></li>
+<li><p>不支持设备链路与状态 bank 组合使用。</p></li>
+<li><p>实现 <code class="docutils literal notranslate"><span class="pre">reset()</span></code> 以清空循环状态。</p></li>
+<li><p>内部维护：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">_state_indices</span></code>：将角色映射到定义循环输入-输出绑定对的元组的字典。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_state_buffers</span></code>：每条状态链路的双缓冲设备缓冲。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_state_banks</span></code>：整数标记当前活跃的 bank 缓冲。</p></li>
+</ul>
+</li>
+</ul>
+<p>该会话对 LSTM、RNN 等需要在 Ascend 设备上帧间就地传递循环状态的模型至关重要。</p>
+</section>
+<hr class="docutils" />
+<section id="hisilicon-hmm">
+<h3>Hisilicon 与 HMM 会话<a class="headerlink" href="#hisilicon-hmm" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">HisiliconModelSession</span></code> 与 <code class="docutils literal notranslate"><span class="pre">HMMModelSession</span></code> 提供 Hisilicon SDK 与 HMM 加速后端的运行时集成。</p></li>
+<li><p>它们绑定原生设备运行时并暴露标准会话生命周期。</p></li>
+<li><p>支持与 manifest 绑定的产物加载及运行时 ABI 校验。</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="onnx-runtime">
+<h3>ONNX Runtime 会话<a class="headerlink" href="#onnx-runtime" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">OnnxRuntimeModelSession</span></code> 支持通过 ONNX Runtime 在 CPU 或 GPU 后端上推理。</p></li>
+<li><p>加载标准 ONNX 格式模型。</p></li>
+<li><p>提供标准的后端生命周期与推理调用语义。</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="lerobot-torch">
+<h3>LeRobot Torch 会话（策略提供者）<a class="headerlink" href="#lerobot-torch" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">LeRobotTorchModelSession</span></code> 封装实现 LeRobot 策略接口的原生 PyTorch 模型。</p></li>
+<li><p>支持：</p>
+<ul>
+<li><p>加载 PyTorch 运行时，以及面向 NPU 设备的可选 torch_npu。</p></li>
+<li><p>模型设备分配与 dtype 配置（<code class="docutils literal notranslate"><span class="pre">fp16</span></code>、<code class="docutils literal notranslate"><span class="pre">bf16</span></code>、<code class="docutils literal notranslate"><span class="pre">fp32</span></code> 或原生）。</p></li>
+<li><p>前后处理钩子。</p></li>
+<li><p>执行元数据收集（attention、中间诊断信息）。</p></li>
+</ul>
+</li>
+<li><p>使用 <code class="docutils literal notranslate"><span class="pre">torch_models.policy_provider</span></code> 中定义的<strong>策略提供者机制</strong>：</p>
+<ul>
+<li><p>加载期间按 <code class="docutils literal notranslate"><span class="pre">(model_type,</span> <span class="pre">backend,</span> <span class="pre">device)</span></code> 动态解析提供者模块。</p></li>
+<li><p>提供者实现加载配置、配置模型、校验兼容性、准备优化推理对象与提供元数据的钩子。</p></li>
+</ul>
+</li>
+<li><p>该方式将策略实现与核心推理运行时解耦，并支持“自研” PyTorch 模型的动态加载。</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id8">
+<h3>Mermaid 图：模型会话实现与后端注册表身份<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        flowchart TD
+    A[&quot;Backend Registry (registry.py)&quot;]
+
+    A --&gt;|ascend + pi05| AscendSession[&quot;AscendOmModelSession (ascend.py)&quot;]
+    A --&gt;|ascend + pi05 stateful| AscendStatefulSession[&quot;StatefulAscendOmModelSession (ascend_stateful.py)&quot;]
+    A --&gt;|onnx + multiple| OnnxSession[&quot;OnnxRuntimeModelSession (onnx.py)&quot;]
+    A --&gt;|hisilicon| HisiliconSession[&quot;HisiliconModelSession (hisilicon.py)&quot;]
+    A --&gt;|hmm| HMMModelSession[&quot;HMMModelSession (hmm.py)&quot;]
+    A --&gt;|torch + act/pi05/smolvla| LeRobotTorchSession[&quot;LeRobotTorchModelSession (lerobot_torch.py)&quot;]
+
+    classDef backend fill:#eee,stroke:#aaa,stroke-width:1px;
+    class A backend;
+    class AscendSession,AscendStatefulSession,OnnxSession,HisiliconSession,HMMModelSession,LeRobotTorchSession backend;
+    </pre><hr class="docutils" />
+<p>来源：<code class="docutils literal notranslate"><span class="pre">src/inference_service/inference_service/model_sessions/ascend.py:1-156</span></code>, <code class="docutils literal notranslate"><span class="pre">src/inference_service/inference_service/model_sessions/ascend_stateful.py:1-143</span></code>, <code class="docutils literal notranslate"><span class="pre">src/inference_service/inference_service/model_sessions/lerobot_torch.py:1-161</span></code>, <code class="docutils literal notranslate"><span class="pre">src/inference_service/inference_service/model_sessions/__init__.py:1-26</span></code>, <code class="docutils literal notranslate"><span class="pre">src/inference_service/inference_service/backends/registry.py:1-169</span></code></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id9">
+<h2>有状态 Ascend OM 模型会话：实现细节<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h2>
+<section id="id10">
+<h3>初始化与能力<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>声明支持：</p>
+<ul>
+<li><p>有状态执行</p></li>
+<li><p>通过 <code class="docutils literal notranslate"><span class="pre">reset()</span></code> API 重置状态</p></li>
+<li><p>运行时独占状态 bank（由 manifest 契约强制）</p></li>
+</ul>
+</li>
+<li><p>维护循环状态索引、设备缓冲与双 bank 状态的内部映射，保证循环输入/输出缓冲安全。</p></li>
+</ul>
+</section>
+<section id="id11">
+<h3>加载期校验<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>确认 manifest 是在执行契约中声明了状态链路的已编译部署。</p></li>
+<li><p>校验所有执行角色都有状态链路绑定。</p></li>
+<li><p>校验循环张量对的形状与 dtype 一致性。</p></li>
+<li><p>检查状态 bank 模式为 <code class="docutils literal notranslate"><span class="pre">&quot;runtime_exclusive&quot;</span></code>。</p></li>
+<li><p>校验部署未将设备链路与状态链路混用。</p></li>
+<li><p>任何契约不匹配都会抛出 <code class="docutils literal notranslate"><span class="pre">BackendLoadError</span></code>。</p></li>
+</ul>
+</section>
+<section id="id12">
+<h3>模型准备<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>为每个模型角色的每对循环状态张量创建双缓冲。</p></li>
+<li><p>检查引用的输入/输出绑定确实存在于模型运行时 ABI 中。</p></li>
+<li><p>通过继承的 <code class="docutils literal notranslate"><span class="pre">_prepare_models()</span></code> 方法准备 Ascend OM 模型角色。</p></li>
+</ul>
+</section>
+<section id="id13">
+<h3>会话使用<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>推理调用时，用双缓冲交换活跃循环状态缓冲，把上一次调用的输出作为下一次的输入。</p></li>
+<li><p>处理状态重置以初始化循环缓冲。</p></li>
+<li><p>与 ACL 运行时管理器和设备租约集成，管理 Ascend 设备生命周期。</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="mermaid-statefulascendommodelsession">
+<h3>Mermaid 图：StatefulAscendOmModelSession 数据流<a class="headerlink" href="#mermaid-statefulascendommodelsession" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        stateDiagram-v2
+    [*] --&gt; LoadSession: call _load(context)
+    LoadSession --&gt; ValidateManifest
+    ValidateManifest: Check compiled deployment type
+    ValidateManifest --&gt; ValidateStateLinks
+    ValidateStateLinks: State links presence and correctness
+    ValidateStateLinks --&gt; CreateStateMappings
+    CreateStateMappings: Build _state_indices and buffers
+    CreateStateMappings --&gt; PrepareModels
+    PrepareModels: Create double-buffered device tensors
+    PrepareModels --&gt; Ready
+
+    Ready --&gt; InferenceCall: run model inference
+    InferenceCall --&gt; SwapBuffers: swap recurrent state banks
+    SwapBuffers --&gt; Ready
+
+    Ready --&gt; Reset: reset recurrent state buffers
+    Reset --&gt; Ready
+    
+    Ready --&gt; CloseSession: close and release resources
+    </pre><hr class="docutils" />
+<p>来源：<code class="docutils literal notranslate"><span class="pre">src/inference_service/inference_service/model_sessions/ascend_stateful.py:1-143</span></code>, <code class="docutils literal notranslate"><span class="pre">src/inference_service/tests/test_ascend_stateful_session.py:1-180</span></code>, <code class="docutils literal notranslate"><span class="pre">src/inference_service/tests/test_stateful_ascend_session.py:1-61</span></code></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="torch-models">
+<h2>torch_models 策略提供者<a class="headerlink" href="#torch-models" title="Permalink to this heading"></a></h2>
+<section id="id14">
+<h3>概览<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">torch_models</span></code> 包含<strong>自研 PyTorch 模型</strong>，不依赖 ROS 运行时。</p></li>
+<li><p>模型按隔离的子目录组织，例如：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>src/torch_models/
+  torch_models/
+    demo_torch_model/
+    pi05_ascend_310p/
+    pi05_ascend_910b/
+</pre></div>
+</div>
+</li>
+<li><p>每个模型子目录导出一个 <code class="docutils literal notranslate"><span class="pre">provider.py</span></code>，其 <code class="docutils literal notranslate"><span class="pre">create_provider()</span></code> 函数返回支持以下能力的 <code class="docutils literal notranslate"><span class="pre">PolicyProvider</span></code>：</p>
+<ul class="simple">
+<li><p>配置加载与校验</p></li>
+<li><p>模型准备（如设备放置、dtype 转换）</p></li>
+<li><p>执行钩子</p></li>
+<li><p>诊断元数据</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">torch_models.policy_provider</span></code> 按目标设备名（如带物理 SKU <code class="docutils literal notranslate"><span class="pre">&quot;Ascend310P&quot;</span></code> 或 <code class="docutils literal notranslate"><span class="pre">&quot;Ascend910B&quot;</span></code> 的 <code class="docutils literal notranslate"><span class="pre">&quot;npu&quot;</span></code>）动态解析 <code class="docutils literal notranslate"><span class="pre">(model_type,</span> <span class="pre">backend,</span> <span class="pre">device)</span></code> 元组对应的提供者。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LeRobotTorchModelSession</span></code> 在其 <code class="docutils literal notranslate"><span class="pre">_load()</span></code> 方法中使用该提供者解析，实例化实际的 PyTorch 策略模型并挂接前后处理。</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id15">
+<h3>构建与安装 torch_models<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>使用 <code class="docutils literal notranslate"><span class="pre">ament_python</span></code> 风格的 <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> 构建，支持纯 Python 包数据与对 <code class="docutils literal notranslate"><span class="pre">&quot;torch&quot;</span></code> 的依赖。</p></li>
+<li><p>模型不内嵌权重或部署配置——这些来自外部 bundle。</p></li>
+<li><p>torch_models 包设计为零依赖导入，并使用运行时动态导入避免加载不必要的重型模块。</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id16">
+<h3>与推理运行时集成<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>加载类型为 <code class="docutils literal notranslate"><span class="pre">&quot;torch&quot;</span></code> 的策略部署时，<code class="docutils literal notranslate"><span class="pre">LeRobotTorchModelSession</span></code>：</p>
+<ul>
+<li><p>校验设备与运行时 profile。</p></li>
+<li><p>按需导入 torch/torch_npu 模块。</p></li>
+<li><p>通过 <code class="docutils literal notranslate"><span class="pre">torch_models.policy_provider.resolve_policy_provider()</span></code> 解析提供者。</p></li>
+<li><p>加载模型配置与权重。</p></li>
+<li><p>以可选的 dtype 转换准备推理模型。</p></li>
+<li><p>管理设备与优先级调度。</p></li>
+</ul>
+</li>
+<li><p>自定义运行时选项（如 dtype）会被校验并透传。</p></li>
+<li><p>新增 provider 条目即可扩展新的基于 torch 的策略。</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="mermaid-torch-models">
+<h3>Mermaid 图：torch_models 提供者解析流程<a class="headerlink" href="#mermaid-torch-models" title="Permalink to this heading"></a></h3>
+<pre  class="mermaid">
+        flowchart TD
+    A[&quot;LeRobotTorchModelSession._load()&quot;]
+    B[&quot;Import torch, torch_npu (if NPU)&quot;]
+    C[&quot;Import torch_models.policy_provider&quot;]
+    D[&quot;Call resolve_policy_provider(model_type, backend, device)&quot;]
+    E[&quot;Provider Module with create_provider()&quot;]
+    F[&quot;Load model configuration&quot;]
+    G[&quot;Configure model and dtype&quot;]
+    H[&quot;Prepare optimized model execution&quot;]
+    I[&quot;Session ready for inference&quot;]
+
+    A --&gt; B --&gt; C --&gt; D --&gt; E --&gt; F --&gt; G --&gt; H --&gt; I
+    </pre><hr class="docutils" />
+<p>来源：<code class="docutils literal notranslate"><span class="pre">src/torch_models/README.md:1-127</span></code>, <code class="docutils literal notranslate"><span class="pre">src/inference_service/inference_service/model_sessions/lerobot_torch.py:1-161</span></code>, <code class="docutils literal notranslate"><span class="pre">src/torch_models/setup.py:1-26</span></code>, <code class="docutils literal notranslate"><span class="pre">src/torch_models/torch_models/policy_provider.py</span></code> (mentioned but not listed)</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id17">
+<h2>汇总表：后端与会话职责<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>后端</p></th>
+<th class="head"><p>会话类</p></th>
+<th class="head"><p>模型格式</p></th>
+<th class="head"><p>关键特性</p></th>
+<th class="head"><p>位置</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Ascend OM</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AscendOmModelSession</span></code></p></td>
+<td><p>OM</p></td>
+<td><p>ACL 租约、设备管理、优先级调度</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">model_sessions/ascend.py</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Ascend OM 有状态</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">StatefulAscendOmModelSession</span></code></p></td>
+<td><p>OM</p></td>
+<td><p>循环状态处理、双缓冲状态</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">model_sessions/ascend_stateful.py</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>ONNX Runtime</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">OnnxRuntimeModelSession</span></code></p></td>
+<td><p>ONNX</p></td>
+<td><p>标准 ONNX RT 集成</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">model_sessions/onnx.py</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Hisilicon SDK</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">HisiliconModelSession</span></code></p></td>
+<td><p>专有格式</p></td>
+<td><p>Hisilicon 设备/SDK 集成</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">model_sessions/hisilicon.py</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>HMM</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">HMMModelSession</span></code></p></td>
+<td><p>专有格式</p></td>
+<td><p>HMM 硬件加速</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">model_sessions/hmm.py</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Torch Models</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LeRobotTorchModelSession</span></code></p></td>
+<td><p>PyTorch</p></td>
+<td><p>带 provider 钩子的原生 PyTorch 策略模型</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">model_sessions/lerobot_torch.py</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<hr class="docutils" />
+<section id="id18">
+<h2>结语<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h2>
+<p>RoboFrame 的<strong>后端与模型会话</strong>层使 AI 模型能够在多种 NPU/CPU 加速器上执行，既与硬件无关又可优化。通过集中式后端注册表与统一会话接口，系统灵活支持华为昇腾 NPU 与自定义 PyTorch 策略等不断演进的架构。有状态循环会话实现增强了对序列敏感推理的模型支持。torch_models 的 provider 模式进一步将策略逻辑与推理运行时模块化解耦。</p>
+</section>
+<hr class="docutils" />
+<section id="id19">
+<h2>附录：关键类与函数（用于检索）<a class="headerlink" href="#id19" title="Permalink to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>名称</p></th>
+<th class="head"><p>描述</p></th>
+<th class="head"><p>文件与行号</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">BackendRegistry</span></code></p></td>
+<td><p>静态后端能力注册表</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">backends/registry.py:1-169</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AscendOmModelSession</span></code></p></td>
+<td><p>Ascend OM 模型会话</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">model_sessions/ascend.py:1-156</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">StatefulAscendOmModelSession</span></code></p></td>
+<td><p>带循环状态的有状态 Ascend OM 会话</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">model_sessions/ascend_stateful.py:1-143</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">LeRobotTorchModelSession</span></code></p></td>
+<td><p>带 provider 的 PyTorch 策略会话</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">model_sessions/lerobot_torch.py:1-161</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">build_speech_direction_session()</span></code></p></td>
+<td><p>语音方向在 ascend 上的示例会话构建器</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">voice_asr_service/model_session_builders.py:21-50</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">resolve_policy_provider()</span></code></p></td>
+<td><p>动态解析 torch_models provider</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">torch_models/torch_models/policy_provider.py</span></code> (not shown)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<hr class="docutils" />
+<section id="wiki">
+<h2>相关 Wiki 页面引用<a class="headerlink" href="#wiki" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>流水线执行细节见 <strong>3.1 流水线运行时</strong>。</p></li>
+<li><p>管辖部署元数据的 manifest 格式见 <strong>3.4 推理清单 Schema</strong>。</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="observation_video_transport.html" class="btn btn-neutral float-left" title="观测视频传输（RTP/H.264）" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="inference_manifest_schema.html" class="btn btn-neutral float-right" title="推理清单 Schema" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-26.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/index.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+      <dd><a href="backends_model_sessions.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Launch 构建器 &mdash; openEuler Embedded在线文档 26.09 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="机器人配置档案与控制模式" href="robot_profiles_control_modes.html" />
+    <link rel="prev" title="配置加载与校验" href="config_loader_validation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview/index.html">项目概览</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">配置单一事实源（robot_config）</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">配置单一事实源（robot_config）概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="config_loader_validation.html">配置加载与校验</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">Launch 构建器</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id1">Launch 构建器模块概览</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id2">控制子图</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id5">描述子图</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id7">感知子图</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id10">仿真子图</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id13">导航子图</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id14">遥操作子图</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id15">录制子图</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id16">追踪子图</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id17">语音子图</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="robot_profiles_control_modes.html">机器人配置档案与控制模式</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../inference_service/index.html">推理服务</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../model_export_deployment_toolchain/index.html">模型导出与部署工具链</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../robot_hardware_control_simulation/index.html">机器人硬件、控制与仿真</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../perception_manipulation_semantic_mapping/index.html">感知、操作与语义建图</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../embodied_agent_skills/index.html">具身智能体与技能</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../voice_audio/index.html">语音与音频</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_tools_benchmarks_observability/index.html">数据工具、基准测试与可观测性</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../interfaces/index.html">接口（ibrobot_msgs）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development_workflow_tooling/index.html">开发工作流与工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">配置单一事实源（robot_config）</a></li>
+      <li class="breadcrumb-item active">Launch 构建器</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="launch">
+<h1>Launch 构建器<a class="headerlink" href="#launch" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源码文件</summary>
+<p>以下文件被用作生成此 wiki 页面的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/scripts/model_infer_panel.py">scripts/model_infer_panel.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/dataset_tools/dataset_tools/policy_eval.py">src/dataset_tools/dataset_tools/policy_eval.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/dataset_tools/dataset_tools/policy_eval_compare.py">src/dataset_tools/dataset_tools/policy_eval_compare.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/dataset_tools/test/test_policy_eval.py">src/dataset_tools/test/test_policy_eval.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/hardware_mock/README.md">src/hardware_mock/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/hardware_mock/launch/hardware_mock.launch.py">src/hardware_mock/launch/hardware_mock.launch.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/lekiwi.yaml">src/robot_config/config/robots/lekiwi.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/config/robots/so101_single_arm_rgbd.yaml">src/robot_config/config/robots/so101_single_arm_rgbd.yaml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/control.py">src/robot_config/robot_config/launch_builders/control.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/description.py">src/robot_config/robot_config/launch_builders/description.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/hardware_mock.py">src/robot_config/robot_config/launch_builders/hardware_mock.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/perception.py">src/robot_config/robot_config/launch_builders/perception.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/__init__.py">src/robot_config/robot_config/launch_builders/sim_backend/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/base_adapter.py">src/robot_config/robot_config/launch_builders/sim_backend/base_adapter.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/camera_presets.py">src/robot_config/robot_config/launch_builders/sim_backend/camera_presets.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py">src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/mock_adapter.py">src/robot_config/robot_config/launch_builders/sim_backend/mock_adapter.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py">src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py">src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/simulation.py">src/robot_config/robot_config/launch_builders/simulation.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/speech_direction.py">src/robot_config/robot_config/launch_builders/speech_direction.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/task_execution.py">src/robot_config/robot_config/launch_builders/task_execution.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/voice_asr.py">src/robot_config/robot_config/launch_builders/voice_asr.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/peripherals/camera.py">src/robot_config/robot_config/peripherals/camera.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/scripts/validate_config.py">src/robot_config/robot_config/scripts/validate_config.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/test/test_sim_backend.py">src/robot_config/test/test_sim_backend.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/task_dispatch/README.en.md">src/task_dispatch/README.en.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/task_dispatch/README.md">src/task_dispatch/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/task_dispatch/package.xml">src/task_dispatch/package.xml</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/task_dispatch/task_dispatch/task_executor_node.py">src/task_dispatch/task_dispatch/task_executor_node.py</a></p></li>
+</ul>
+</details>
+<p>本页面详述 <code class="docutils literal notranslate"><span class="pre">robot.launch.py</span></code> 如何编排机器人系统的各个子图，包括控制、描述、感知、导航、遥操作、录制、追踪与语音。它解释每个 launch 构建器模块在基于单一事实源（SSOT）YAML 配置组装完整 ROS 2 launch 描述中的角色。</p>
+<section id="id1">
+<h2>Launch 构建器模块概览<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">robot_config.launch_builders</span></code> 包包含基于机器人 YAML 配置生成 ROS 2 launch 组件的模块 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L1-L9">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:1-9</a>。每个模块聚焦一个特定子系统：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">description.py</span></code>：处理 URDF 构建，包括 xacro 处理与动态相机注入 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L4">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:4</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">control.py</span></code>：管理 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 节点与控制器 spawner <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L5">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:5</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">perception.py</span></code>：生成相机驱动、LiDAR 驱动与静态 TF 发布器 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L6">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:6</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">simulation.py</span></code>：编排 Gazebo 及其他仿真相关节点 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L7">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:7</a>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">task_execution.py</span></code>：负责 action 分发器与推理节点。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hardware_mock.py</span></code>：提供用于开发与测试的 mock 硬件接口。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">moveit.py</span></code>：生成用于运动规划的 MoveIt 相关节点。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">navigation.py</span></code>：设置 Nav2 bringup 及相关组件。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">voice_asr.py</span></code>、<code class="docutils literal notranslate"><span class="pre">voice_tts.py</span></code>、<code class="docutils literal notranslate"><span class="pre">speech_direction.py</span></code>、<code class="docutils literal notranslate"><span class="pre">audio_io.py</span></code>：处理语音与音频处理节点。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">benchmark.py</span></code>：生成用于策略评估与基准测试的节点。</p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>控制子图<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">control.py</span></code> 模块是搭建机器人控制系统的核心。它生成 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 节点与控制器 spawner，并执行关节配置校验 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/control.py#L1-L7">src/robot_config/robot_config/launch_builders/control.py:1-7</a>。</p>
+<section id="ros2-control">
+<h3><code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 节点生成<a class="headerlink" href="#ros2-control" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 节点负责管理机器人的硬件接口与控制器。<code class="docutils literal notranslate"><span class="pre">generate_ros2_control_nodes</span></code> 函数（未完整展示，但由 <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">generate_ros2_control_nodes</span></code> 暗示 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L64">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:64</a>）通常会为 <code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 创建一个 <code class="docutils literal notranslate"><span class="pre">Node</span></code> action。</p>
+</section>
+<section id="spawner">
+<h3>控制器 Spawner 创建<a class="headerlink" href="#spawner" title="Permalink to this heading"></a></h3>
+<p>控制器使用 <code class="docutils literal notranslate"><span class="pre">controller_manager</span></code> 的 <code class="docutils literal notranslate"><span class="pre">spawner</span></code> 可执行文件生成。<code class="docutils literal notranslate"><span class="pre">generate_controller_spawners</span></code> 函数（由 <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">generate_controller_spawners</span></code> 暗示 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L65">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:65</a>）会创建 <code class="docutils literal notranslate"><span class="pre">Node</span></code> action 来加载并启动已配置的控制器。</p>
+</section>
+<section id="id3">
+<h3>关节配置校验<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<p>启动前，<code class="docutils literal notranslate"><span class="pre">validate_joint_config</span></code> 函数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/control.py#L28">src/robot_config/robot_config/launch_builders/control.py:28</a> 确保机器人 YAML 中定义的关节配置有效。这防止了因错误关节定义导致的运行时错误。</p>
+</section>
+<section id="id4">
+<h3>运行时资源校验<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">validate_runtime_resources</span></code> 函数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/control.py#L64-L139">src/robot_config/robot_config/launch_builders/control.py:64-139</a> 检查真实硬件资源（如串口）的冲突，防止多个组件尝试使用同一个独占资源。这对物理机器人部署至关重要。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/control.py#L1-L162">src/robot_config/robot_config/launch_builders/control.py:1-162</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L64-L68">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:64-68</a></p>
+</section>
+</section>
+<section id="id5">
+<h2>描述子图<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">description.py</span></code> 模块负责从 YAML 配置生成机器人的统一机器人描述格式（URDF）<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/description.py#L1-L3">src/robot_config/robot_config/launch_builders/description.py:1-3</a>。这包括处理 xacro 文件与动态注入相机描述。</p>
+<section id="xacro-urdf">
+<h3>基于 Xacro 的 URDF 生成<a class="headerlink" href="#xacro-urdf" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">generate_robot_description</span></code> 函数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L62">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:62</a> 接收机器人配置并生成完整 URDF。该过程包括：</p>
+<ol class="arabic simple">
+<li><p><strong>Xacro 处理</strong>：展开基础 URDF 文件中定义的 xacro 宏。</p></li>
+<li><p><strong>动态相机注入</strong>：<code class="docutils literal notranslate"><span class="pre">_build_cameras_urdf_from_yaml</span></code> 函数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/description.py#L61-L178">src/robot_config/robot_config/launch_builders/description.py:61-178</a> 基于机器人 YAML 的 <code class="docutils literal notranslate"><span class="pre">peripherals</span></code> 节动态添加相机 link、joint 与 Gazebo 传感器定义。这确保相机在仿真与可视化中都正确呈现在机器人模型中。</p>
+<ul class="simple">
+<li><p>它处理 <code class="docutils literal notranslate"><span class="pre">parent_frame=&quot;world&quot;</span></code> 的相机，基于 <code class="docutils literal notranslate"><span class="pre">simulation.robot_spawn</span></code> 偏移调整其原点，确保它们在 Gazebo 世界中正确放置 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/description.py#L130-L137">src/robot_config/robot_config/launch_builders/description.py:130-137</a>。</p></li>
+<li><p>它还从垂直视场角（<code class="docutils literal notranslate"><span class="pre">fovy</span></code>）与图像尺寸计算水平视场角（<code class="docutils literal notranslate"><span class="pre">hfov_rad</span></code>）<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/description.py#L147-L148">src/robot_config/robot_config/launch_builders/description.py:147-148</a>。</p></li>
+</ul>
+</li>
+</ol>
+</section>
+<section id="id6">
+<h3>模型生成偏移<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">_get_model_spawn_offset</span></code> 函数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/description.py#L25-L47">src/robot_config/robot_config/launch_builders/description.py:25-47</a> 从 YAML 的 <code class="docutils literal notranslate"><span class="pre">simulation.robot_spawn</span></code> 节获取机器人的生成位置。该偏移对于在 URDF 中正确定位 <code class="docutils literal notranslate"><span class="pre">parent=&quot;world&quot;</span></code> 相机至关重要。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/description.py#L1-L178">src/robot_config/robot_config/launch_builders/description.py:1-178</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L62">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:62</a></p>
+</section>
+</section>
+<section id="id7">
+<h2>感知子图<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">perception.py</span></code> 模块负责启动机器人传感器（主要是相机与 LiDAR）相关的节点 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/perception.py#L1-L8">src/robot_config/robot_config/launch_builders/perception.py:1-8</a>。</p>
+<section id="id8">
+<h3>相机驱动节点<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">generate_camera_nodes</span></code> 函数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/perception.py#L25-L147">src/robot_config/robot_config/launch_builders/perception.py:25-147</a> 基于机器人 YAML 中的 <code class="docutils literal notranslate"><span class="pre">peripherals</span></code> 配置为各类相机驱动创建 <code class="docutils literal notranslate"><span class="pre">Node</span></code> action。</p>
+<ul class="simple">
+<li><p><strong>OpenCV（<code class="docutils literal notranslate"><span class="pre">usb_cam</span></code>）</strong>：对于标准 USB 相机，它配置 <code class="docutils literal notranslate"><span class="pre">usb_cam_node_exe</span></code>，参数包括 <code class="docutils literal notranslate"><span class="pre">framerate</span></code>、<code class="docutils literal notranslate"><span class="pre">image_width</span></code>、<code class="docutils literal notranslate"><span class="pre">image_height</span></code> 与 <code class="docutils literal notranslate"><span class="pre">pixel_format</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/perception.py#L61-L75">src/robot_config/robot_config/launch_builders/perception.py:61-75</a>。它还应用来自标定结果的 ISP 覆盖 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/perception.py#L103-L105">src/robot_config/robot_config/launch_builders/perception.py:103-105</a>。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">camera_ros</span></code></strong>：对于特定相机硬件，它使用 <code class="docutils literal notranslate"><span class="pre">camera_ros</span></code> 包 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/perception.py#L123-L147">src/robot_config/robot_config/launch_builders/perception.py:123-147</a>。</p></li>
+<li><p><strong>RealSense</strong>：它使用 <code class="docutils literal notranslate"><span class="pre">rs_launch.py</span></code> 配置 RealSense 相机，设置流（color、depth、pointcloud）、分辨率与 frame ID 的参数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/perception.py#L149-L178">src/robot_config/robot_config/launch_builders/perception.py:149-178</a>。</p></li>
+</ul>
+</section>
+<section id="lidar">
+<h3>LiDAR 驱动节点<a class="headerlink" href="#lidar" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">generate_lidar_nodes</span></code> 函数（由 <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">generate_lidar_nodes</span></code> 暗示 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L71">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:71</a>）会类似地为 LiDAR 传感器创建 <code class="docutils literal notranslate"><span class="pre">Node</span></code> action。</p>
+</section>
+<section id="tf">
+<h3>静态 TF 发布器<a class="headerlink" href="#tf" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">generate_tf_nodes</span></code> 函数（由 <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">generate_tf_nodes</span></code> 暗示 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L72">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:72</a>）负责发布外围设备坐标系的静态变换，确保传感器与机器人之间正确的空间关系。</p>
+</section>
+<section id="id9">
+<h3>虚拟相机中继<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">generate_virtual_camera_relays</span></code> 函数（由 <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">generate_virtual_camera_relays</span></code> 暗示 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L73">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:73</a>）处理虚拟相机，可能用于特定仿真或测试场景。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/perception.py#L1-L178">src/robot_config/robot_config/launch_builders/perception.py:1-178</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L70-L74">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:70-74</a></p>
+</section>
+</section>
+<section id="id10">
+<h2>仿真子图<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">simulation.py</span></code> 模块及其后端适配器管理仿真环境。它支持多种仿真平台，如 Gazebo 与 MuJoCo。</p>
+<section id="id11">
+<h3>仿真后端适配器<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">robot_config.launch_builders.sim_backend</span></code> 包为不同仿真平台提供适配器 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/__init__.py">src/robot_config/robot_config/launch_builders/sim_backend/<strong>init</strong>.py</a>。</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">GazeboAdapter</span></code></strong>：处理 Gazebo Ignition 仿真 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py#L45-L55">src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py:45-55</a>。它设置环境变量，启动 Gazebo 服务器与 GUI，生成机器人实体，并桥接时钟与关节状态 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py#L73-L74">src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py:73-74</a>。</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">start_backend</span></code> 方法 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py#L60-L152">src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py:60-152</a> 编排 Gazebo 的启动，包括设置 <code class="docutils literal notranslate"><span class="pre">GZ_SIM_RESOURCE_PATH</span></code>、<code class="docutils literal notranslate"><span class="pre">IGN_GAZEBO_RESOURCE_PATH</span></code> 与 <code class="docutils literal notranslate"><span class="pre">GAZEBO_MODEL_PATH</span></code> 环境变量 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py#L101-L109">src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py:101-109</a>。它还处理世界文件解析与场景覆盖 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py#L128-L152">src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py:128-152</a>。</p></li>
+<li><p>Gazebo 的外围桥接由 <code class="docutils literal notranslate"><span class="pre">generate_peripheral_sim_bridges</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py#L149-L173">src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py:149-173</a> 处理，它使用 YAML 配置创建单个 <code class="docutils literal notranslate"><span class="pre">bridge_node</span></code>，将 Gazebo 传感器 topic 映射到 ROS topic 名称 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py#L1-L10">src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py:1-10</a>。</p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">MujocoAdapter</span></code></strong>：编排加载 <code class="docutils literal notranslate"><span class="pre">MujocoSystemInterface</span></code> 作为硬件插件的 <code class="docutils literal notranslate"><span class="pre">ros2_control_node</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py#L3-L5">src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py:3-5</a>。</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">start_backend</span></code> 方法 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py#L38-L125">src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py:38-125</a> 生成机器人的 MuJoCo XML，解析场景 XML，然后生成带 <code class="docutils literal notranslate"><span class="pre">MujocoSystemInterface</span></code> 插件的 URDF。它还设置 <code class="docutils literal notranslate"><span class="pre">MUJOCO_PLUGIN_PATH</span></code> 并配置相机 topic 重映射 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py#L49-L121">src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py:49-121</a>。</p></li>
+</ul>
+</li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">MockAdapter</span></code></strong>：提供面向契约的硬件 mock，用于无真实硬件或完整仿真器的开发与测试 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/mock_adapter.py">src/robot_config/robot_config/launch_builders/sim_backend/mock_adapter.py</a>。</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">hardware_mock</span></code> 包允许端到端推理流水线在无物理相机、机械臂或 Gazebo 的情况下运行 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/hardware_mock/README.md#L3-L5">src/hardware_mock/README.md:3-5</a>。它基于 <code class="docutils literal notranslate"><span class="pre">robot.contract</span></code> 自动发布观测 topic 并订阅动作 topic <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/hardware_mock/README.md#L25-L27">src/hardware_mock/README.md:25-27</a>。</p></li>
+<li><p>使用 <code class="docutils literal notranslate"><span class="pre">sim_platform:=mock</span></code> 时，<code class="docutils literal notranslate"><span class="pre">ros2_control</span></code> 节点、相机/LiDAR 驱动与导航被跳过，而 <code class="docutils literal notranslate"><span class="pre">inference_service</span></code> 与 <code class="docutils literal notranslate"><span class="pre">action_dispatch</span></code> 正常启动，伴随 <code class="docutils literal notranslate"><span class="pre">hardware_mock.contract_mock</span></code> <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/hardware_mock/README.md#L80-L88">src/hardware_mock/README.md:80-88</a>。</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="id12">
+<h3>仿真数据流<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
+<p>仿真后端适配器确保来自仿真器的传感器数据正确发布到 ROS topic，且控制命令被发送到仿真机器人。</p>
+<section id="gazebo">
+<h4>Gazebo 数据流<a class="headerlink" href="#gazebo" title="Permalink to this heading"></a></h4>
+<p>Title: Gazebo Simulation Data Flow</p>
+<pre  class="mermaid">
+        graph TD
+    subgraph &quot;Gazebo Simulation&quot;
+        GZ_WORLD[&quot;Gazebo World&quot;] --&gt; GZ_SENSOR_TOPICS[&quot;Gazebo Sensor Topics (e.g., /camera/top_camera/image)&quot;]
+    end
+
+    subgraph &quot;ROS 2 System&quot;
+        GZ_SENSOR_TOPICS --&gt; BRIDGE_NODE[&quot;ros_gz_bridge bridge_node (YAML Config)&quot;]
+        BRIDGE_NODE --&gt; ROS_CONTRACT_TOPICS[&quot;ROS Contract Topics (e.g., /camera/top/image_raw)&quot;]
+        ROS_CONTRACT_TOPICS --&gt; PERCEPTION_NODES[&quot;Perception Nodes&quot;]
+        ROS_CONTRACT_TOPICS --&gt; INFERENCE_SERVICE[&quot;Inference Service&quot;]
+        ACTION_DISPATCH[&quot;Action Dispatch&quot;] --&gt; ROS2_CONTROL_NODE[&quot;ros2_control_node (Gazebo Hardware Interface)&quot;]
+        ROS2_CONTROL_NODE --&gt; GZ_WORLD
+    end
+
+    style GZ_WORLD fill:#f9f,stroke:#333,stroke-width:2px
+    style GZ_SENSOR_TOPICS fill:#bbf,stroke:#333,stroke-width:2px
+    style BRIDGE_NODE fill:#ccf,stroke:#333,stroke-width:2px
+    style ROS_CONTRACT_TOPICS fill:#cfc,stroke:#333,stroke-width:2px
+    style PERCEPTION_NODES fill:#ffc,stroke:#333,stroke-width:2px
+    style INFERENCE_SERVICE fill:#fcf,stroke:#333,stroke-width:2px
+    style ACTION_DISPATCH fill:#fcc,stroke:#333,stroke-width:2px
+    style ROS2_CONTROL_NODE fill:#cff,stroke:#333,stroke-width:2px
+    </pre><p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py#L1-L152">src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py:1-152</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py#L1-L183">src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py:1-183</a></p>
+</section>
+<section id="mujoco">
+<h4>MuJoCo 数据流<a class="headerlink" href="#mujoco" title="Permalink to this heading"></a></h4>
+<p>Title: MuJoCo Simulation Data Flow</p>
+<pre  class="mermaid">
+        graph TD
+    subgraph &quot;MuJoCo Simulation&quot;
+        MUJOCO_SIM[&quot;MuJoCo Simulator&quot;] --&gt; MUJOCO_ROS2_CONTROL_NODE[&quot;mujoco_ros2_control ros2_control_node&quot;]
+    end
+
+    subgraph &quot;ROS 2 System&quot;
+        MUJOCO_ROS2_CONTROL_NODE --&gt; ROS_CONTRACT_TOPICS[&quot;ROS Contract Topics (e.g., /camera/top/image_raw)&quot;]
+        ROS_CONTRACT_TOPICS --&gt; PERCEPTION_NODES[&quot;Perception Nodes&quot;]
+        ROS_CONTRACT_TOPICS --&gt; INFERENCE_SERVICE[&quot;Inference Service&quot;]
+        ACTION_DISPATCH[&quot;Action Dispatch&quot;] --&gt; MUJOCO_ROS2_CONTROL_NODE
+    end
+
+    style MUJOCO_SIM fill:#f9f,stroke:#333,stroke-width:2px
+    style MUJOCO_ROS2_CONTROL_NODE fill:#cff,stroke:#333,stroke-width:2px
+    style ROS_CONTRACT_TOPICS fill:#cfc,stroke:#333,stroke-width:2px
+    style PERCEPTION_NODES fill:#ffc,stroke:#333,stroke-width:2px
+    style INFERENCE_SERVICE fill:#fcf,stroke:#333,stroke-width:2px
+    style ACTION_DISPATCH fill:#fcc,stroke:#333,stroke-width:2px
+    </pre><p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py#L1-L125">src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py:1-125</a></p>
+</section>
+<section id="mock">
+<h4>硬件 Mock 数据流<a class="headerlink" href="#mock" title="Permalink to this heading"></a></h4>
+<p>Title: Hardware Mock Data Flow</p>
+<pre  class="mermaid">
+        graph TD
+    subgraph &quot;Hardware Mock&quot;
+        CONTRACT_MOCK_NODE[&quot;hardware_mock.contract_mock Node&quot;]
+        CONTRACT_MOCK_NODE -- &quot;Publishes Image / JointState&quot; --&gt; ROS_OBSERVATION_TOPICS[&quot;ROS Observation Topics&quot;]
+        ROS_ACTION_TOPICS[&quot;ROS Action Topics&quot;] -- &quot;Subscribes Float64MultiArray&quot; --&gt; CONTRACT_MOCK_NODE
+        CONTRACT_MOCK_NODE -- &quot;Updates internal JointModel&quot; --&gt; CONTRACT_MOCK_NODE
+        CONTRACT_MOCK_NODE -- &quot;Immediately publishes /joint_states&quot; --&gt; ROS_OBSERVATION_TOPICS
+    end
+
+    subgraph &quot;ROS 2 System&quot;
+        ROS_OBSERVATION_TOPICS --&gt; INFERENCE_SERVICE[&quot;Inference Service&quot;]
+        INFERENCE_SERVICE --&gt; ACTION_DISPATCH[&quot;Action Dispatch&quot;]
+        ACTION_DISPATCH --&gt; ROS_ACTION_TOPICS
+    end
+
+    style CONTRACT_MOCK_NODE fill:#ccf,stroke:#333,stroke-width:2px
+    style ROS_OBSERVATION_TOPICS fill:#cfc,stroke:#333,stroke-width:2px
+    style ROS_ACTION_TOPICS fill:#fcc,stroke:#333,stroke-width:2px
+    style INFERENCE_SERVICE fill:#fcf,stroke:#333,stroke-width:2px
+    style ACTION_DISPATCH fill:#fcc,stroke:#333,stroke-width:2px
+    </pre><p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/hardware_mock/README.md#L199-L200">src/hardware_mock/README.md:199-200</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/hardware_mock/README.md#L145-L158">src/hardware_mock/README.md:145-158</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/hardware_mock/README.md#L25-L27">src/hardware_mock/README.md:25-27</a></p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py#L1-L152">src/robot_config/robot_config/launch_builders/sim_backend/gazebo_adapter.py:1-152</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py#L1-L125">src/robot_config/robot_config/launch_builders/sim_backend/mujoco_adapter.py:1-125</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_backend/mock_adapter.py">src/robot_config/robot_config/launch_builders/sim_backend/mock_adapter.py</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/hardware_mock/README.md#L1-L279">src/hardware_mock/README.md:1-279</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/test/test_sim_backend.py#L1-L184">src/robot_config/test/test_sim_backend.py:1-184</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py#L1-L183">src/robot_config/robot_config/launch_builders/sim_peripheral_bridge.py:1-183</a></p>
+</section>
+</section>
+</section>
+<section id="id13">
+<h2>导航子图<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">navigation.py</span></code> 模块负责启动 Nav2 栈及相关组件。<code class="docutils literal notranslate"><span class="pre">generate_navigation_nodes</span></code> 函数（由 <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">generate_navigation_nodes</span></code> 暗示 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L85">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:85</a>）会配置并启动必要的 Nav2 节点、参数与控制器。这包括在机器人配置指定时与 FAST-LIO/Livox 等 LiDAR 系统的集成。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L85">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:85</a></p>
+</section>
+<section id="id14">
+<h2>遥操作子图<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h2>
+<p>遥操作子图通过机器人 YAML 的 <code class="docutils literal notranslate"><span class="pre">teleoperation</span></code> 节配置。<code class="docutils literal notranslate"><span class="pre">control.py</span></code> 模块的 <code class="docutils literal notranslate"><span class="pre">validate_runtime_resources</span></code> 函数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/control.py#L92-L115">src/robot_config/robot_config/launch_builders/control.py:92-115</a> 检查遥操作设备（如游戏手柄或主臂）使用的独占资源。遥操作节点的实际启动由专用构建器处理（未在提供的代码片段中明确展示，但由 <code class="docutils literal notranslate"><span class="pre">teleoperation</span></code> 配置暗示）。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/control.py#L92-L115">src/robot_config/robot_config/launch_builders/control.py:92-115</a></p>
+</section>
+<section id="id15">
+<h2>录制子图<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h2>
+<p>录制子图由 <code class="docutils literal notranslate"><span class="pre">dataset_tools</span></code> 包（特别是 <code class="docutils literal notranslate"><span class="pre">episode_recorder</span></code>）管理。虽然它不是 <code class="docutils literal notranslate"><span class="pre">robot_config</span></code> 中的直接 launch 构建器，但 <code class="docutils literal notranslate"><span class="pre">dataset_tools</span></code> 内的 <code class="docutils literal notranslate"><span class="pre">policy_eval.py</span></code> 模块演示了如何回放与处理录制数据（rosbag）以进行策略评估 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/dataset_tools/dataset_tools/policy_eval.py#L1-L9">src/dataset_tools/dataset_tools/policy_eval.py:1-9</a>。这暗示录制功能将作为更广泛系统的一部分启动。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/dataset_tools/dataset_tools/policy_eval.py#L1-L201">src/dataset_tools/dataset_tools/policy_eval.py:1-201</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/dataset_tools/test/test_policy_eval.py#L1-L202">src/dataset_tools/test/test_policy_eval.py:1-202</a></p>
+</section>
+<section id="id16">
+<h2>追踪子图<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h2>
+<p>追踪子图未在提供的 launch 构建器片段中明确详述，但它是系统用于性能分析与调试的核心组件。它涉及启动收集与可视化追踪数据的节点或工具。</p>
+</section>
+<section id="id17">
+<h2>语音子图<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h2>
+<p>语音子图包括自动语音识别（ASR）、文本转语音（TTS）与语音方向组件。</p>
+<section id="asr">
+<h3>语音 ASR<a class="headerlink" href="#asr" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">voice_asr.py</span></code> 模块生成 ASR 节点 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/voice_asr.py#L1-L191">src/robot_config/robot_config/launch_builders/voice_asr.py:1-191</a>。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">generate_voice_asr_nodes</span></code> 函数 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/voice_asr.py#L104-L110">src/robot_config/robot_config/launch_builders/voice_asr.py:104-110</a> 为 <code class="docutils literal notranslate"><span class="pre">voice_asr_service</span></code> 创建 <code class="docutils literal notranslate"><span class="pre">Node</span></code> action。</p></li>
+<li><p>它校验 ASR 模型配置（包括 <code class="docutils literal notranslate"><span class="pre">bundle_path</span></code> 与 <code class="docutils literal notranslate"><span class="pre">deployment</span></code>），并在 <code class="docutils literal notranslate"><span class="pre">active_mode</span></code> 需要时检查流式能力 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/voice_asr.py#L128-L138">src/robot_config/robot_config/launch_builders/voice_asr.py:128-138</a>。</p></li>
+<li><p>它还根据节点的 <code class="docutils literal notranslate"><span class="pre">sample_rate</span></code> 与 <code class="docutils literal notranslate"><span class="pre">chunk_size</span></code> 等音频输入参数校验部署的音频契约 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/voice_asr.py#L45-L66">src/robot_config/robot_config/launch_builders/voice_asr.py:45-66</a>。</p></li>
+</ul>
+</section>
+<section id="tts">
+<h3>语音 TTS<a class="headerlink" href="#tts" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">generate_voice_tts_nodes</span></code> 函数（由 <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">generate_voice_tts_nodes</span></code> 暗示 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L50">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:50</a>）会为文本转语音功能创建节点。</p>
+</section>
+<section id="id18">
+<h3>语音方向<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">generate_speech_direction_actions</span></code> 函数（由 <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">generate_speech_direction_actions</span></code> 暗示 <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L55">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:55</a>）会启动与判定语音方向相关的节点。</p>
+<p>来源：<a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/voice_asr.py#L1-L191">src/robot_config/robot_config/launch_builders/voice_asr.py:1-191</a>, <a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/robot_config/robot_config/launch_builders/__init__.py#L48-L56">src/robot_config/robot_config/launch_builders/<strong>init</strong>.py:48-56</a></p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="config_loader_validation.html" class="btn btn-neutral float-left" title="配置加载与校验" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="robot_profiles_control_modes.html" class="btn btn-neutral float-right" title="机器人配置档案与控制模式" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-26.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/index.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+      <dd><a href="launch_builders.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

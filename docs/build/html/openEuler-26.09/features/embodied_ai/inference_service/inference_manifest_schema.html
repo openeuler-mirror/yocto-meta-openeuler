@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>推理清单 Schema &mdash; openEuler Embedded在线文档 26.09 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="调度与动作分发" href="scheduling_action_dispatch.html" />
+    <link rel="prev" title="后端与模型会话" href="backends_model_sessions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview/index.html">项目概览</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration_ssot/index.html">配置单一事实源（robot_config）</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">推理服务</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="overview.html">推理服务概述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="pipeline_runtime_processors.html">流水线运行时与处理器</a></li>
+<li class="toctree-l6"><a class="reference internal" href="distributed_edge_cloud_inference.html">分布式边云推理</a></li>
+<li class="toctree-l6"><a class="reference internal" href="observation_video_transport.html">观测视频传输（RTP/H.264）</a></li>
+<li class="toctree-l6"><a class="reference internal" href="backends_model_sessions.html">后端与模型会话</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">推理清单 Schema</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id1">1. 目的与范围</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id2">2. 推理清单 Schema 结构</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#api">3. 核心运行时 API 类</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#loader-api">4. 清单加载与验证（Loader API）</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id6">5. 完整性与摘要检查</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id7">6. 数据流与生命周期概览</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id8">7. 图：桥接概念与代码的清单实体关系</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id9">8. 图：清单加载与完整性验证流程（代码上下文）</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id10">9. 关键实现细节与概念</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id15">10. 支持工具与导出 API</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id16">11. 总结</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id17">参考</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="scheduling_action_dispatch.html">调度与动作分发</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../model_export_deployment_toolchain/index.html">模型导出与部署工具链</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../robot_hardware_control_simulation/index.html">机器人硬件、控制与仿真</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../perception_manipulation_semantic_mapping/index.html">感知、操作与语义建图</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../embodied_agent_skills/index.html">具身智能体与技能</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../voice_audio/index.html">语音与音频</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_tools_benchmarks_observability/index.html">数据工具、基准测试与可观测性</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../interfaces/index.html">接口（ibrobot_msgs）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development_workflow_tooling/index.html">开发工作流与工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">推理服务</a></li>
+      <li class="breadcrumb-item active">推理清单 Schema</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="schema">
+<h1>推理清单 Schema<a class="headerlink" href="#schema" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源码文件</summary>
+<p>以下文件被用作生成此 wiki 页面的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/ibrobot_msgs/action/ClosePipelineBinding.action">src/ibrobot_msgs/action/ClosePipelineBinding.action</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/ibrobot_msgs/action/DispatchPipelineBinding.action">src/ibrobot_msgs/action/DispatchPipelineBinding.action</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/ibrobot_msgs/action/OpenPipelineBinding.action">src/ibrobot_msgs/action/OpenPipelineBinding.action</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_manifest/README.md">src/inference_manifest/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_manifest/inference_manifest/__init__.py">src/inference_manifest/inference_manifest/<strong>init</strong>.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_manifest/inference_manifest/inference_manifest.schema.json">src/inference_manifest/inference_manifest/inference_manifest.schema.json</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_manifest/inference_manifest/integrity.py">src/inference_manifest/inference_manifest/integrity.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_manifest/inference_manifest/json_utils.py">src/inference_manifest/inference_manifest/json_utils.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_manifest/inference_manifest/loader.py">src/inference_manifest/inference_manifest/loader.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_manifest/inference_manifest/metadata.py">src/inference_manifest/inference_manifest/metadata.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_manifest/inference_manifest/models.py">src/inference_manifest/inference_manifest/models.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_manifest/inference_manifest/writer.py">src/inference_manifest/inference_manifest/writer.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_manifest/test/test_v3_manifest.py">src/inference_manifest/test/test_v3_manifest.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/tests/manifest_fixtures.py">src/inference_service/tests/manifest_fixtures.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/tests/test_bundle_metadata.py">src/inference_service/tests/test_bundle_metadata.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/inference_service/tests/test_inference_manifest.py">src/inference_service/tests/test_inference_manifest.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/inference_manifest_export.py">src/model_utils/model_utils/inference_manifest_export.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/model_utils/model_utils/package_torch_deployment.py">src/model_utils/model_utils/package_torch_deployment.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/perception_service/adapter_support.py">src/perception_service/perception_service/adapter_support.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/perception_service/model_service_plugins.py">src/perception_service/perception_service/model_service_plugins.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/perception_service/model_session_builders.py">src/perception_service/perception_service/model_session_builders.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/perception_service/pear_adapter.py">src/perception_service/perception_service/pear_adapter.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/perception_service/semantic_model_adapters.py">src/perception_service/perception_service/semantic_model_adapters.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/perception_service/yolox_adapter.py">src/perception_service/perception_service/yolox_adapter.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/perception_service/test/test_hri_perception_adapters.py">src/perception_service/test/test_hri_perception_adapters.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/third_party/patches/lerobot/v0.5.1/0017-diffusion-accept-observation-histories.patch">third_party/patches/lerobot/v0.5.1/0017-diffusion-accept-observation-histories.patch</a></p></li>
+</ul>
+</details>
+<p>本文档呈现 RoboFrame 推理子系统中实现的推理清单 schema 第 3 版（v3）的技术细节。推理清单是一种关键契约格式，描述 bundle、其部署、模型元数据、数据契约、摘要与运行时执行角色。它在 RoboFrame 具身 AI 流水线中支撑机器学习模型部署的健壮加载、校验、完整性检查与运行时集成。</p>
+<hr class="docutils" />
+<section id="id1">
+<h2>1. 目的与范围<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<p>推理清单 schema v3 标准化推理 bundle 包及其所含部署的描述。它是以下内容的单一事实源：</p>
+<ul class="simple">
+<li><p>模型描述、类型与语义身份。</p></li>
+<li><p>带唯一标识符与完整性摘要的打包 artifact 文件。</p></li>
+<li><p>面向特定硬件后端、运行时 profile 与执行角色的部署。</p></li>
+<li><p>带数据类型、形状与布局标注的语义张量。</p></li>
+<li><p>用于清单与 artifact 校验的完整性验证与加密摘要。</p></li>
+<li><p>用于以编程方式访问与校验清单的 Loader API。</p></li>
+</ul>
+<p>清单与硬件无关，并经 schema 校验，以保证稳定识别、可复现性以及推理运行时与后端会话之间的互操作性。</p>
+</section>
+<hr class="docutils" />
+<section id="id2">
+<h2>2. 推理清单 Schema 结构<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>清单 schema 以 JSON schema 形式化定义，保证机器可校验的正确性以及对所有字段的稳定约束。根清单对象要求以下顶层属性：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">schema_version</span></code>（常量 3）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bundle</span></code> — 描述包身份、修订号、文件列表与摘要。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code> — 描述模型接口、类型、操作与语义身份。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deployments</span></code> — 命名部署的字典，每个部署代表面向目标后端与运行时的已配置模型。</p></li>
+</ul>
+<section id="bundle">
+<h3>2.1. Bundle 描述<a class="headerlink" href="#bundle" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">bundle</span></code> 表示带版本号的模型包，必填字段如下：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">uuid</span></code>：bundle 的规范非空 UUID。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">revision</span></code>：正整数修订号。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>：稳定的人类可读名称。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">files</span></code>：文件元数据对象数组（至少包含规范化后的文件路径字符串）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">digest</span></code>：覆盖 bundle 结构的加密 SHA-256 摘要。</p></li>
+</ul>
+<p>摘要基于排序后的规范化文件路径、<code class="docutils literal notranslate"><span class="pre">uuid</span></code>、<code class="docutils literal notranslate"><span class="pre">revision</span></code> 与 <code class="docutils literal notranslate"><span class="pre">name</span></code> 规范化计算，用于在不要求文件内容哈希的情况下校验结构完整性（文件内容可按需单独哈希）。</p>
+</section>
+<section id="id3">
+<h3>2.2. 模型描述符<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">model</span></code> 节描述 ML 模型的契约：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">interface</span></code>：如 <code class="docutils literal notranslate"><span class="pre">&quot;tensor_model&quot;</span></code> 或 <code class="docutils literal notranslate"><span class="pre">&quot;policy&quot;</span></code>，表示模型 API 风格。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model_type</span></code>：概念模型类型的字符串标识符。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">operation</span></code>：描述模型操作或能力的字符串。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">semantic_identity</span></code>：捕获输入输出的版本化数据契约、预处理与嵌入元数据。</p></li>
+</ul>
+</section>
+<section id="id4">
+<h3>2.3. 部署<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">deployments</span></code> 映射按部署名称枚举模型的基于角色的已部署 artifact：</p>
+<ul class="simple">
+<li><p>每个部署定义：</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">target</span></code>：描述硬件与运行时平台约束的 <code class="docutils literal notranslate"><span class="pre">DeploymentTarget</span></code>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">artifacts</span></code>：与该部署关联的文件、其格式、共享组与摘要。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bindings</span></code>：将 artifact 张量映射到语义名称、形状、dtype 与布局。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">runtime_profile</span></code>：可选的 <code class="docutils literal notranslate"><span class="pre">RoleRuntimeProfile</span></code>，指定后端特定的调优参数。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">execution_contract</span></code>：描述执行结构、取消粒度与角色的编排级元数据。</p></li>
+</ul>
+</li>
+</ul>
+<p>部署表示运行时将加载用于推理的、模型 bundle 面向特定硬件与运行时的实例化。</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="api">
+<h2>3. 核心运行时 API 类<a class="headerlink" href="#api" title="Permalink to this heading"></a></h2>
+<p>清单 schema v3 由 Python <code class="docutils literal notranslate"><span class="pre">inference_manifest</span></code> 包实现，提供类 dataclass 的 Pydantic 模型，用于类型安全的加载、校验与检查。</p>
+<section id="src-inference-manifest-inference-manifest-models-py">
+<h3>关键类（src/inference_manifest/inference_manifest/models.py）<a class="headerlink" href="#src-inference-manifest-inference-manifest-models-py" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">InferenceManifest</span></code></strong>：根清单类型，包含 bundle、model、deployments。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">ManifestBundle</span></code></strong>：Bundle 元数据，包括 UUID、修订号、名称、文件条目与摘要校验。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">Deployment</span></code></strong>：描述命名部署，包括 artifacts、target 与执行契约。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">DeploymentArtifact</span></code></strong>：表示部署中的文件 artifact，包括路径与格式。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">DeploymentTarget</span></code></strong>：目标运行时/硬件说明符，用于将部署匹配到运行时。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">ModelDescriptor</span></code></strong>：带语义身份的模型接口/类型/操作。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">SemanticTensor</span></code></strong>：以语义名称、dtype、形状与布局标注的类型化张量元数据。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">ExecutionContract</span></code></strong>：定义执行编排属性与运行时取消行为。</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">RoleRuntimeProfile</span></code></strong> 及硬件特定子类（如 <code class="docutils literal notranslate"><span class="pre">AscendRuntimeProfile</span></code>）定义调优参数。</p></li>
+</ul>
+<p>models 包将字符串模式限制为稳定的逻辑标识符，并对语义字段强制 JSON 安全值（如 _validate_identifier 与 _json_safe）。它还声明了 <code class="docutils literal notranslate"><span class="pre">internal.</span></code> 与 <code class="docutils literal notranslate"><span class="pre">host.</span></code> 等已知前缀，用于特殊张量语义角色。</p>
+</section>
+<section id="id5">
+<h3>校验与工具<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>字符串校验器确保适合长期稳定引用的逻辑名称。</p></li>
+<li><p>校验 SHA-256 摘要、UUID 格式与张量形状。</p></li>
+<li><p>摘要函数提供规范化 bundle 哈希计算，用于免 diff 的验证与签名。</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="loader-api">
+<h2>4. 清单加载与验证（Loader API）<a class="headerlink" href="#loader-api" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">inference_manifest.loader</span></code> 模块提供从磁盘安全加载清单并产出 <code class="docutils literal notranslate"><span class="pre">ValidatedManifest</span></code> 实例的 API，保证：</p>
+<ul class="simple">
+<li><p>完整 schema 合规。</p></li>
+<li><p>Bundle 摘要验证。</p></li>
+<li><p>部署 artifact 路径在 bundle 内解析。</p></li>
+<li><p>运行时 profile 一致性。</p></li>
+</ul>
+<p>该 API 与 RoboFrame 统一推理服务紧密集成。它在保持严格契约校验的同时，支持大型 policy 与嵌入模型的惰性加载。</p>
+</section>
+<hr class="docutils" />
+<section id="id6">
+<h2>5. 完整性与摘要检查<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">inference_manifest.integrity</span></code> 模块提供以下机制：</p>
+<ul class="simple">
+<li><p>基于 bundle 元数据计算规范化 bundle 摘要。</p></li>
+<li><p>校验 bundle 摘要与声明的 SHA-256 一致。</p></li>
+<li><p>定义 <code class="docutils literal notranslate"><span class="pre">IntegrityReport</span></code> 与 <code class="docutils literal notranslate"><span class="pre">ArtifactIntegrityStatus</span></code> 以跟踪运行时验证状态。</p></li>
+<li><p>以详细错误码报告摘要不匹配。</p></li>
+<li><p>区分完整性处理模式（仅声明、安装时验证、按需验证）。</p></li>
+</ul>
+<p>这使系统能够检测 bundle 的损坏或篡改，保证可信执行。</p>
+</section>
+<hr class="docutils" />
+<section id="id7">
+<h2>6. 数据流与生命周期概览<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Bundle 打包</strong><br />
+模型与编译产物连同清单一起打包（例如通过 <code class="docutils literal notranslate"><span class="pre">model_utils/inference_manifest_export.py</span></code> 中的工具）。清单在生成时包含 artifact 元数据与摘要。</p></li>
+<li><p><strong>清单加载</strong><br />
+运行时，推理服务加载清单 JSON，校验 schema，验证摘要，并在 bundle 内安全解析相对 artifact 路径。</p></li>
+<li><p><strong>部署选择</strong><br />
+基于硬件与后端运行时 profile，服务选择合适的部署条目。</p></li>
+<li><p><strong>会话构建</strong><br />
+使用部署元数据，推理运行时构建后端会话，提供必要的 artifact 路径与执行角色。</p></li>
+<li><p><strong>运行时执行</strong><br />
+会话执行推理，产生的张量输出映射回语义契约张量。</p></li>
+<li><p><strong>完整性监控</strong><br />
+周期性或按需的完整性验证确保 artifact 文件内容与清单声明保持一致。</p></li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="id8">
+<h2>7. 图：桥接概念与代码的清单实体关系<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
+<pre  class="mermaid">
+        classDiagram
+  class InferenceManifest {
+    +ManifestBundle bundle
+    +ModelDescriptor model
+    +dict~str, Deployment~ deployments
+  }
+  class ManifestBundle {
+    +str uuid
+    +int revision
+    +str name
+    +list~BundleFile~ files
+    +str digest
+  }
+  class Deployment {
+    +DeploymentTarget target
+    +list~DeploymentArtifact~ artifacts
+    +ArtifactBindings bindings
+    +RoleRuntimeProfile runtime_profile
+    +ExecutionContract execution_contract
+  }
+  class ModelDescriptor {
+    +str interface
+    +str model_type
+    +str operation
+    +SemanticIdentity semantic_identity
+  }
+  class BundleFile {
+    +str path
+  }
+  class DeploymentArtifact {
+    +str path
+    +str format
+    +Optional~str~ share_group
+  }
+  class DeploymentTarget {
+    +str backend
+    +dict~str, Any~ parameters
+  }
+  class RoleRuntimeProfile
+  class ArtifactBindings
+  class ExecutionContract
+
+  InferenceManifest &quot;1&quot; --&gt; &quot;1&quot; ManifestBundle : contains
+  InferenceManifest &quot;1&quot; --&gt; &quot;1&quot; ModelDescriptor : describes
+  InferenceManifest &quot;1&quot; --&gt; &quot;*&quot; Deployment : has
+  ManifestBundle &quot;1&quot; --&gt; &quot;*&quot; BundleFile : includes
+  Deployment &quot;1&quot; --&gt; &quot;*&quot; DeploymentArtifact : references
+  Deployment &quot;1&quot; --&gt; &quot;1&quot; DeploymentTarget : targets
+  Deployment &quot;1&quot; --&gt; &quot;1&quot; RoleRuntimeProfile : profiles
+  Deployment &quot;1&quot; --&gt; &quot;1&quot; ArtifactBindings : maps tensors
+  Deployment &quot;1&quot; --&gt; &quot;1&quot; ExecutionContract : defines execution
+  ModelDescriptor &quot;1&quot; --&gt; &quot;1&quot; SemanticIdentity : owns
+    </pre><p>来源：<code class="docutils literal notranslate"><span class="pre">src/inference_manifest/inference_manifest/models.py:1-207</span></code>, <code class="docutils literal notranslate"><span class="pre">src/inference_manifest/inference_manifest/inference_manifest.schema.json:1-190</span></code>, <code class="docutils literal notranslate"><span class="pre">src/inference_manifest/inference_manifest/__init__.py:1-192</span></code>, <code class="docutils literal notranslate"><span class="pre">src/inference_manifest/inference_manifest/integrity.py:1-193</span></code></p>
+</section>
+<hr class="docutils" />
+<section id="id9">
+<h2>8. 图：清单加载与完整性验证流程（代码上下文）<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h2>
+<pre  class="mermaid">
+        flowchart TD
+  A[&quot;LoadManifest(filename)&quot;] --&gt; B[Parse JSON &amp; Validate Schema]
+  B --&gt; C{Validation Success?}
+  C --&gt;|No| D[Raise ManifestValidationError]
+  C --&gt;|Yes| E[Create ValidatedManifest]
+  E --&gt; F[VerifyBundleDigest]
+  F --&gt; G{Digest Match?}
+  G --&gt;|No| H[Raise ManifestIntegrityError]
+  G --&gt;|Yes| I[ResolveDeploymentArtifacts]
+  I --&gt; J[Provide Deployment Metadata to Inference Runtime]
+  J --&gt; K[Build Backend Sessions]
+  K --&gt; L[Execute Inference]
+    </pre><p><strong>代码实体：</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">inference_manifest.loader</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">load_inference_manifest()</span></code> 启动该流程。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">validate_manifest_schema()</span></code> 应用 <code class="docutils literal notranslate"><span class="pre">inference_manifest.schema.manifest_schema</span></code>。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inference_manifest.integrity</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">verify_bundle_digest()</span></code> 被调用。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ValidatedManifest</span></code> 持有完整验证、可用的清单状态。</p></li>
+</ul>
+<p>来源：<code class="docutils literal notranslate"><span class="pre">src/inference_manifest/inference_manifest/__init__.py:31-36</span></code>, <code class="docutils literal notranslate"><span class="pre">src/inference_manifest/inference_manifest/integrity.py:140-173</span></code>, <code class="docutils literal notranslate"><span class="pre">src/inference_manifest/inference_manifest/loader.py</span></code> (not fully shown)</p>
+</section>
+<hr class="docutils" />
+<section id="id10">
+<h2>9. 关键实现细节与概念<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h2>
+<section id="id11">
+<h3>9.1. 运行时角色与执行契约<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>执行角色（<code class="docutils literal notranslate"><span class="pre">ExecutionRole</span></code>）是部署内角色的逻辑名称，按严格正则模式校验。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ExecutionContract</span></code> 声明执行结构（直接或迭代）与取消粒度等属性。</p></li>
+<li><p>这些允许推理服务内的编排器调度并管理推理的各个阶段，包括流式或批处理流水线。</p></li>
+</ul>
+</section>
+<section id="id12">
+<h3>9.2. 语义张量与绑定<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SemanticTensor</span></code> 条目以语义名称（如 <code class="docutils literal notranslate"><span class="pre">&quot;observation.image&quot;</span></code>、<code class="docutils literal notranslate"><span class="pre">&quot;detection.boxes&quot;</span></code>）、数据类型与形状描述张量。</p></li>
+<li><p>张量可在相关时指定数据布局（如图像张量的 <code class="docutils literal notranslate"><span class="pre">&quot;NCHW&quot;</span></code>、<code class="docutils literal notranslate"><span class="pre">&quot;NHWC&quot;</span></code>）。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ArtifactBindings</span></code> 将运行时 ABI 张量索引或名称链接到语义契约，实现运行时张量映射与适配。</p></li>
+</ul>
+</section>
+<section id="id13">
+<h3>9.3. Bundle 路径规范化<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>清单内的路径经 <code class="docutils literal notranslate"><span class="pre">normalize_bundle_path()</span></code> 规范化，以强制安全性与稳定性。</p></li>
+<li><p>这防止路径穿越攻击，并确保所有相对引用都留在 bundle 根目录内。</p></li>
+</ul>
+</section>
+<section id="id14">
+<h3>9.4. 模型语义身份<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>语义身份将抽象模型契约关联到具体的预处理与输出语义。</p></li>
+<li><p>嵌入元数据（如维度、归一化方法）可在 <code class="docutils literal notranslate"><span class="pre">EmbeddingMetadata</span></code> 内声明。</p></li>
+<li><p>识别旧版别名以维持向后兼容而不造成污染。</p></li>
+</ul>
+</section>
+<section id="json">
+<h3>9.5. 严格校验器与 JSON 安全<a class="headerlink" href="#json" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>SHA-256 摘要、UUID、角色与逻辑标识符的校验器防止畸形清单。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_json_safe</span></code> 确保任意 <code class="docutils literal notranslate"><span class="pre">details</span></code> 字典中的所有细节都是 JSON 安全且规范化可序列化的。</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="id15">
+<h2>10. 支持工具与导出 API<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">model_utils</span></code> 包包含导出期间创建有效清单的工具：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">load_inference_manifest()</span></code> 与 <code class="docutils literal notranslate"><span class="pre">write_inference_manifest()</span></code> 执行带 schema 校验的 IO。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">canonical_bundle_digest()</span></code> 计算纳入清单的结构化 bundle 摘要。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deployment_artifact()</span></code> 从 bundle 相对路径安全构造部署 artifact 描述符。</p></li>
+<li><p>检查 ONNX 与运行时 ABI 张量的辅助工具将已部署模型链接到清单语义。</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="id16">
+<h2>11. 总结<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h2>
+<p>推理清单 Schema v3 为描述 RoboFrame 推理服务中的 ML 模型 bundle 与部署提供健壮、类型安全且安全的契约。它支撑一致的加载、校验、完整性保证与语义运行时映射，这些都是跨多样硬件目标与后端进行生产级具身 AI 模型部署的关键。</p>
+</section>
+<hr class="docutils" />
+<section id="id17">
+<h2>参考<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">src/inference_manifest/inference_manifest/models.py:1-207</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/inference_manifest/inference_manifest/inference_manifest.schema.json:1-190</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/inference_manifest/inference_manifest/__init__.py:1-192</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/inference_manifest/inference_manifest/integrity.py:1-193</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/model_utils/model_utils/inference_manifest_export.py:1-197</span></code></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="backends_model_sessions.html" class="btn btn-neutral float-left" title="后端与模型会话" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="scheduling_action_dispatch.html" class="btn btn-neutral float-right" title="调度与动作分发" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-26.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/index.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+      <dd><a href="inference_manifest_schema.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

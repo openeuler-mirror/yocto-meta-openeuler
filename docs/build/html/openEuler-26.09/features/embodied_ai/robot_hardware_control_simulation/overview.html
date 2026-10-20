@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>机器人硬件、控制与仿真概述 &mdash; openEuler Embedded在线文档 26.09 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="硬件接口与描述" href="hardware_interfaces_descriptions.html" />
+    <link rel="prev" title="机器人硬件、控制与仿真" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../index.html">关键特性指导</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../system/index.html">系统基础</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html">具身智能 (Embodied AI)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../ros.html">嵌入式ROS运行时支持</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../ib_robot.html">IB-Robot 具身智能套件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../overview/index.html">项目概览</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../configuration_ssot/index.html">配置单一事实源（robot_config）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../inference_service/index.html">推理服务</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../model_export_deployment_toolchain/index.html">模型导出与部署工具链</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">机器人硬件、控制与仿真</a><ul class="current">
+<li class="toctree-l6 current"><a class="current reference internal" href="#">机器人硬件、控制与仿真概述</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">5.1 硬件接口与描述</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#moveit">5.2 MoveIt 与运动学</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id4">5.3 遥操作</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#mock">5.4 仿真与 Mock 硬件</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id5">5.5 导航</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id6">汇总图：自然语言子系统到代码实体</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id7">子页面深度导读链接</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="hardware_interfaces_descriptions.html">硬件接口与描述</a></li>
+<li class="toctree-l6"><a class="reference internal" href="moveit_kinematics.html">MoveIt 与运动学</a></li>
+<li class="toctree-l6"><a class="reference internal" href="teleoperation.html">遥操作</a></li>
+<li class="toctree-l6"><a class="reference internal" href="simulation_mock_hardware.html">仿真与模拟硬件</a></li>
+<li class="toctree-l6"><a class="reference internal" href="navigation.html">导航</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../perception_manipulation_semantic_mapping/index.html">感知、操作与语义建图</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../embodied_agent_skills/index.html">具身智能体与技能</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../voice_audio/index.html">语音与音频</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../data_tools_benchmarks_observability/index.html">数据工具、基准测试与可观测性</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../interfaces/index.html">接口（ibrobot_msgs）</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../development_workflow_tooling/index.html">开发工作流与工具</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../glossary.html">术语表</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../embedded_ai/index.html">嵌入式AI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../mica/index.html">混合关键性部署 (MICA)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../container/index.html">边缘容器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../rt/index.html">实时性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../miniaturization/index.html">小型化特性</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../graphics/index.html">图形</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../distributed/index.html">分布式系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../bsp/index.html">南向硬件支持与使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">关键特性指导</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">具身智能 (Embodied AI)</a></li>
+          <li class="breadcrumb-item"><a href="../ib_robot.html">IB-Robot 具身智能套件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">机器人硬件、控制与仿真</a></li>
+      <li class="breadcrumb-item active">机器人硬件、控制与仿真概述</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>机器人硬件、控制与仿真概述<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h1>
+<details>
+<summary>相关源码文件</summary>
+<p>以下文件被用作生成此 wiki 页面的上下文：</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/so101_hardware/CMakeLists.txt">src/so101_hardware/CMakeLists.txt</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/so101_hardware/README.en.md">src/so101_hardware/README.en.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/so101_hardware/README.md">src/so101_hardware/README.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/so101_hardware/docs/tools/arm_calibration_transfer.md">src/so101_hardware/docs/tools/arm_calibration_transfer.md</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/so101_hardware/scripts/arm_calibration_transfer.py">src/so101_hardware/scripts/arm_calibration_transfer.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/so101_hardware/so101_hardware/calibration/transfer.py">src/so101_hardware/so101_hardware/calibration/transfer.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/so101_hardware/so101_hardware/calibration/validation.py">src/so101_hardware/so101_hardware/calibration/validation.py</a></p></li>
+<li><p><a class="reference external" href="https://atomgit.com/openeuler/IB_Robot/blob/openEuler-26.09/src/so101_hardware/test/test_transfer.py">src/so101_hardware/test/test_transfer.py</a></p></li>
+</ul>
+</details>
+<p>本节提供 RoboFrame_stable 代码库中集成的机器人硬件接口、控制基础设施、运动规划、遥操作能力与仿真后端的高层概览。目标是为以下问题提供上下文：物理机器人硬件如何被接口化与控制、运动如何被规划与执行、遥操作输入设备如何参与机器人控制，以及仿真环境如何支持开发与测试。</p>
+<p>每个子领域都有专门的子页面详尽覆盖其技术细节。这里我们呈现架构关系、主要软件组件与工作流集成，帮助理解 RoboFrame 中机器人硬件控制与仿真的整体图景。</p>
+<hr class="docutils" />
+<section id="id2">
+<h2>5.1 硬件接口与描述<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>硬件接口层将物理机器人执行器与传感器桥接到 ROS 2 控制框架。对于 SO-101 机械臂与 LeKiwi 平台，以 C++ 实现的自定义 ros2_control 插件通过 FTServo SDK 提供与 Feetech 舵机的低延迟、高性能通信。</p>
+<section id="so-101">
+<h3>SO-101 硬件<a class="headerlink" href="#so-101" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>SO-101 硬件包（<code class="docutils literal notranslate"><span class="pre">so101_hardware</span></code>）将 Feetech FTServo Linux SDK 作为 git 子模块集成，提供对舵机的直接控制。</p></li>
+<li><p>它暴露名为 <code class="docutils literal notranslate"><span class="pre">SO101SystemHardware</span></code> 的 ros2_control 硬件接口插件（见 <code class="docutils literal notranslate"><span class="pre">src/so101_hardware/src/so101_system_hardware.cpp</span></code>），处理生命周期管理（<code class="docutils literal notranslate"><span class="pre">on_configure</span></code>、<code class="docutils literal notranslate"><span class="pre">on_activate</span></code>、<code class="docutils literal notranslate"><span class="pre">on_deactivate</span></code>）与舵机命令同步。</p></li>
+<li><p>该插件通过实现启动位置保护（<code class="docutils literal notranslate"><span class="pre">reset_positions</span></code> 参数）确保安全，通过指令安全初始位形防止执行器在启动时跳变。</p></li>
+<li><p>来自舵机的电流反馈以固定比例因子（1 LSB = 6.5mA）转换并通过 ROS 话题发布，供外部使用（如数据集导出）。</p></li>
+<li><p>激活回滚语义确保激活期间的失败会安全地关闭力矩并重新锁定舵机 EPROM，以保护执行器设置。</p></li>
+<li><p>该包包含 Python 工具脚本，提供标定工具（<code class="docutils literal notranslate"><span class="pre">calibrate_arm</span></code>）、标定迁移（<code class="docutils literal notranslate"><span class="pre">arm_calibration_transfer</span></code>）、数据采集（<code class="docutils literal notranslate"><span class="pre">leader_arm_pub</span></code>）与诊断命令。</p></li>
+</ul>
+</section>
+<section id="id3">
+<h3>标定迁移与校验<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>旧版 SO-101 标定数据可迁移到当前 schema，以保留偏移与驱动模式，允许复用旧数据与模型。</p></li>
+<li><p>标定迁移工具读取旧版与模板 JSON 标定文件，使用向后兼容公式计算兼容的关节限位，应用驱动模式翻转，并写入更新后的标定 JSON 文件供机器人配置使用。</p></li>
+<li><p>全面的校验检查确保标定数据完整性，包括关节 ID 唯一性、有效范围与驱动模式正确性。</p></li>
+<li><p>关于标定迁移与检查的完整用法与细节，见 <code class="docutils literal notranslate"><span class="pre">so101_hardware</span></code> 包文档与脚本（<code class="docutils literal notranslate"><span class="pre">arm_calibration_transfer.py</span></code>）。</p></li>
+</ul>
+</section>
+<section id="lekiwi-aero-hand">
+<h3>LeKiwi 硬件与 Aero Hand<a class="headerlink" href="#lekiwi-aero-hand" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>LeKiwi 平台的硬件接口遵循类似的 ros2_control 插件模式，处理导航与抓取硬件。</p></li>
+<li><p>Aero Hand 夹爪设备及其控制集成在硬件描述子页面中详述。</p></li>
+</ul>
+<p>完整规格、硬件插件实现、标定工作流与 URDF/xacro 机器人描述，请参阅子页面：<a class="reference internal" href="hardware_interfaces_descriptions.html"><span class="std std-doc">硬件接口与描述</span></a>。</p>
+<pre  class="mermaid">
+        flowchart LR
+    subgraph ros2_control
+        CM[Controller Manager]
+    end
+    subgraph so101_hardware[&quot;so101_hardware Package&quot;]
+        HWPlugin[&quot;SO101SystemHardware (C++ Plugin)&quot;]
+        PythonUtils[Calibration &amp; Diagnostic Scripts]
+        SDK[&quot;FTServo SDK (C++ Library)&quot;]
+    end
+    CM --&gt;|Hardware Interface| HWPlugin
+    HWPlugin --&gt;|Calls| SDK
+    SDK --&gt;|Controls| Servos[Feetech Servos]
+    PythonUtils --&gt;|Communicates| Servos
+    </pre><p>来源：<code class="docutils literal notranslate"><span class="pre">src/so101_hardware/CMakeLists.txt:13-70</span></code>, <code class="docutils literal notranslate"><span class="pre">src/so101_hardware/README.md:1-161</span></code>, <code class="docutils literal notranslate"><span class="pre">src/so101_hardware/scripts/arm_calibration_transfer.py:1-66</span></code>, <code class="docutils literal notranslate"><span class="pre">src/so101_hardware/so101_hardware/calibration/transfer.py:1-158</span></code></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="moveit">
+<h2>5.2 MoveIt 与运动学<a class="headerlink" href="#moveit" title="Permalink to this heading"></a></h2>
+<p>运动规划与逆解计算对机器人操作任务至关重要。RoboFrame 通过专门的网关包（<code class="docutils literal notranslate"><span class="pre">moveit_gateway</span></code>）集成 MoveIt 2，便于与 MoveIt 的规划流水线与运动学求解器无缝交互。</p>
+<ul class="simple">
+<li><p>系统使用 <code class="docutils literal notranslate"><span class="pre">placo</span></code> 伺服架构与自定义逆解工作节点，从高层位姿目标计算关节轨迹。</p></li>
+<li><p>运动学配置（包括关节限位与 DH 参数）以声明式存储在配置文件中，并通过动态 launch 构建器传递给 MoveIt。</p></li>
+<li><p>moveit launch 构建器装配规划器、运动执行与监视器，提供以 URDF/xacro 派生的机器人描述为基础、开箱即用的规划场景。</p></li>
+</ul>
+<p>该集成允许上层 skill 节点与遥操作客户端下发遵循硬件约束与环境障碍的高效运动规划。</p>
+<p>完整细节见专门子页面：<a class="reference internal" href="moveit_kinematics.html"><span class="std std-doc">MoveIt 与运动学</span></a>。</p>
+<p>来源：（未展示，但由仓库结构中 MoveIt 集成部分指示）</p>
+</section>
+<hr class="docutils" />
+<section id="id4">
+<h2>5.3 遥操作<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
+<p>遥操作使人类操作员能够通过多样化输入设备控制机器人的手臂与底盘。</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">teleop_node</span></code> 聚合控制输入，支持主臂设备、Xbox 手柄与手机/WebXR XR 设备。</p></li>
+<li><p>主臂可用作发布关节状态的主控制器，其他设备提供互补输入通道。</p></li>
+<li><p>遥操作 launch 构建器将这些节点组装为便捷的 launch 配置，并管理用于交互控制的 Web UI 资产。</p></li>
+<li><p>该子系统支持灵活的实时操作与导航控制，有利于演示数据采集、测试与人在环操作。</p></li>
+</ul>
+<p>实现与使用细节见子页面：<a class="reference internal" href="teleoperation.html"><span class="std std-doc">遥操作</span></a>。</p>
+<p>来源：（由 <code class="docutils literal notranslate"><span class="pre">teleop_node</span></code> 引用推断的用法）</p>
+</section>
+<hr class="docutils" />
+<section id="mock">
+<h2>5.4 仿真与 Mock 硬件<a class="headerlink" href="#mock" title="Permalink to this heading"></a></h2>
+<p>仿真是在无需物理硬件的情况下进行快速原型、验证与测试的基石。</p>
+<ul class="simple">
+<li><p>RoboFrame 支持 MuJoCo 与 Gazebo 仿真后端，通过模拟硬件接口的适配器节点接入。</p></li>
+<li><p>Mock 硬件契约节点提供复刻真实硬件行为的仿真话题与服务，用于 CI 与开发环境。</p></li>
+<li><p>仿真模型与场景（如 <code class="docutils literal notranslate"><span class="pre">pick_banana</span></code>）位于 sim_models 中；ArUco 标记生成器辅助标定与定位。</p></li>
+<li><p>这些配置支持在相同软件栈下无缝切换真实与仿真硬件层。</p></li>
+</ul>
+<p>完整细节见子页面：<a class="reference internal" href="simulation_mock_hardware.html"><span class="std std-doc">仿真与 Mock 硬件</span></a>。</p>
+<p>来源：（由仓库仿真适配器描述指示）</p>
+</section>
+<hr class="docutils" />
+<section id="id5">
+<h2>5.5 导航<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
+<p>导航功能利用 Nav2 栈，为 RoboFrame 机器人定制配置参数、控制器与传感器集成。</p>
+<ul class="simple">
+<li><p>导航 bringup 管理面向移动平台调优的路径规划、定位与避障。</p></li>
+<li><p>与 Livox 激光雷达及 FAST-LIO SLAM 模块的集成支持精确的定位与建图。</p></li>
+<li><p>导航 launch 构建器装配所有组件，形成可部署的机器人导航能力。</p></li>
+</ul>
+<p>详尽的导航节点与 launch 细节，见：<a class="reference internal" href="navigation.html"><span class="std std-doc">导航</span></a>。</p>
+<p>来源：（由仓库导航包指示）</p>
+</section>
+<hr class="docutils" />
+<section id="id6">
+<h2>汇总图：自然语言子系统到代码实体<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h2>
+<pre  class="mermaid">
+        flowchart TD
+    HW[&quot;Hardware Interfaces &amp; Descriptions&quot;] --&gt; so101[so101_hardware Package]
+    so101 --&gt; SDK[FTServo SDK]
+    so101 --&gt; CalibScripts[arm_calibration_transfer.py etc.]
+
+    Motion[&quot;MoveIt &amp; Kinematics&quot;] --&gt; moveit_gw[moveit_gateway Package]
+    moveit_gw --&gt; IK[IK Workers]
+
+    Teleop[&quot;Teleoperation&quot;] --&gt; teleop_node[teleop_node]
+    teleop_node --&gt; Xbox[Xbox Controller Input]
+    teleop_node --&gt; Phone[Phone/WebXR Input]
+
+    Sim[&quot;Simulation &amp; Mock Hardware&quot;] --&gt; sim_adapters[MuJoCo/Gazebo Adapters]
+    sim_adapters --&gt; MockHW[Mock Hardware Contract Nodes]
+
+    Nav[&quot;Navigation&quot;] --&gt; nav_bringup[Nav2 Bringup]
+    nav_bringup --&gt; FASTLIO[FAST-LIO Livox Integration]
+
+    subgraph &quot;Robot Hardware, Control &amp; Simulation&quot;
+        HW
+        Motion
+        Teleop
+        Sim
+        Nav
+    end
+    </pre><hr class="docutils" />
+<p>至此完成 RoboFrame_stable 机器人硬件、控制与仿真层的概览。深入的技术细节与使用说明，请参阅每个主题专门的子页面链接。</p>
+</section>
+<hr class="docutils" />
+<section id="id7">
+<h2>子页面深度导读链接<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>子章节</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="hardware_interfaces_descriptions.html"><span class="std std-doc">硬件接口与描述</span></a></p></td>
+<td><p>详细的 C++ ros2_control 插件、硬件标定迁移、URDF/xacro 描述、Aero Hand 夹爪集成。</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="moveit_kinematics.html"><span class="std std-doc">MoveIt 与运动学</span></a></p></td>
+<td><p>运动规划网关、运动学工作节点、配置与 launch 装配。</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="teleoperation.html"><span class="std std-doc">遥操作</span></a></p></td>
+<td><p>遥操作架构、输入设备、ROS 节点、launch 构建器与 Web UI 资产。</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="simulation_mock_hardware.html"><span class="std std-doc">仿真与 Mock 硬件</span></a></p></td>
+<td><p>仿真后端（MuJoCo、Gazebo）、mock 硬件契约、仿真场景、ArUco 生成器。</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="navigation.html"><span class="std std-doc">导航</span></a></p></td>
+<td><p>Nav2 bringup、参数调优、导航控制器与 Livox 集成。</p></td>
+</tr>
+</tbody>
+</table>
+<hr class="docutils" />
+<p><strong>来源：</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">src/so101_hardware/CMakeLists.txt:13-129</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/so101_hardware/README.md:1-161</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/so101_hardware/scripts/arm_calibration_transfer.py:1-66</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/so101_hardware/so101_hardware/calibration/transfer.py:1-158</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/so101_hardware/so101_hardware/calibration/validation.py:1-65</span></code></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="机器人硬件、控制与仿真" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="hardware_interfaces_descriptions.html" class="btn btn-neutral float-right" title="硬件接口与描述" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: openEuler-26.09
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="../../../../master/index.html">master</a></dd>
+      <dd><a href="../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+      <dd><a href="overview.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>
