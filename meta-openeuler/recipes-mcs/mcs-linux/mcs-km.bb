@@ -17,6 +17,16 @@ require mcs-resources-overlay.inc
 PV = "0.0.1"
 OPENEULER_LOCAL_NAME = "mcs"
 
+# Select exactly one MCS kernel pedestal backend.  The generic SMP AMP
+# implementation is the aarch64 backend; STM32MP2 machines advertise the
+# m33copro feature.  Machines with a HiSilicon heterogeneous RISC-V core
+# should set MCS_PEDESTAL = "hisi-riscv".
+MCS_PEDESTAL ?= "${@bb.utils.contains('MACHINE_FEATURES', 'm33copro', 'stm32mp2', 'aarch64', d)}"
+# x86-64 builds the separate mcs-x86 source tree, whose Makefile does not
+# use the pedestal variables. Clear the default so the aarch64 backend is
+# not requested for it.
+MCS_PEDESTAL:x86-64 = ""
+
 SRC_URI:append:aarch64 = " \
     file://mcs/mcs_km \
     "
@@ -35,7 +45,18 @@ do_fetch[depends] += "mcs-linux:do_fetch"
 DEPENDS += "${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'jailhouse', '', d)}"
 
 do_compile() {
-        oe_runmake
+        # CONFIG_XEN in the kernel .config does not tell whether the MCS xen
+        # backend is selected: aarch64 kernels may enable Xen guest support
+        # while MCS runs the openamp stack. Select the backend from
+        # MCS_FEATURES and pass it to kbuild explicitly.
+        #
+        # The pedestal variables select the single backend linked into
+        # mcs_km.ko; empty values must be passed explicitly so that the
+        # Makefile does not fall back to its aarch64 default.
+        oe_runmake CONFIG_XEN=${@bb.utils.contains('MCS_FEATURES', 'xen', 'y', '', d)} \
+                CONFIG_MCS_PED_AARCH64=${@bb.utils.contains('MCS_PEDESTAL', 'aarch64', 'y', '', d)} \
+                CONFIG_MCS_PED_HISI_RISCV=${@bb.utils.contains('MCS_PEDESTAL', 'hisi-riscv', 'y', '', d)} \
+                CONFIG_MCS_PED_STM32MP2=${@bb.utils.contains('MCS_PEDESTAL', 'stm32mp2', 'y', '', d)}
 }
 
 # The inherit of module.bbclass will automatically name module packages with
