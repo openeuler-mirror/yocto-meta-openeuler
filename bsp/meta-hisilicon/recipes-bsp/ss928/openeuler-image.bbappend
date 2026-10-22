@@ -57,6 +57,15 @@ do_custom_install_complete:append() {
 				ln -sf ${systemd_system_unitdir}/lightdm.service ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/display-manager.service
 				ln -sf ${systemd_system_unitdir}/NetworkManager.service ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/multi-user.target.wants/NetworkManager.service
 				ln -sf ${sysconfdir}/systemd/system/kill-xfce4-screensaver.service ${IMAGE_ROOTFS}${sysconfdir}/systemd/system/multi-user.target.wants/kill-xfce4-screensaver.service
+
+				mkdir -p ${IMAGE_ROOTFS}${sysconfdir}/NetworkManager/conf.d
+				cat > "${IMAGE_ROOTFS}${sysconfdir}/NetworkManager/conf.d/mac.conf" <<-'EOF'
+				[device]
+				wifi.scan-rand-mac-address=no
+
+				[connection]
+				wifi.cloned-mac-address=preserve
+				EOF
 			fi
 		fi
 	fi
