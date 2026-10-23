@@ -4,9 +4,9 @@ description: '使用 oebuild 构建、配置、更新或排查 openEuler Embedde
 argument-hint: "描述任务，例如 '构建 openeuler-image-tiny' 或 '生成 rpi64 构建配置'"
 ---
 
-# Skill: oebuild — OpenEuler Embedded 构建元工具
+# Skill: oebuild — openEuler Embedded 构建元工具
 
-oebuild 是一个基于 Python 的元工具，封装了 BitBake 并管理 OpenEuler Embedded
+oebuild 是一个基于 Python 的元工具，封装了 BitBake 并管理 openEuler Embedded
 基于 Docker 的构建环境。实际构建**在容器内**进行；oebuild 负责启动、配置和
 复用该容器。
 
@@ -27,7 +27,7 @@ oebuild 是一个基于 Python 的元工具，封装了 BitBake 并管理 OpenEu
 │   ├── oebuild/                        # oebuild 源码
 │   ├── yocto-poky/                     # OE 核心（oe-init-build-env、bitbake/）
 │   ├── yocto-meta-openembedded/        # 社区 meta 层
-│   └── yocto-meta-openeuler/           # OpenEuler Embedded 发行版层
+│   └── yocto-meta-openeuler/           # openEuler Embedded 发行版层
 └── build/
     └── qemu_arm64/                     # QEMU AArch64 构建目录
         ├── compile.yaml                # 由 oebuild bitbake 解析的构建配置
@@ -315,7 +315,7 @@ oebuild clear docker
 
 ### `oebuild menv`
 
-管理基于 OpenEuler 镜像构建的 SDK 开发环境：
+管理基于 openEuler 镜像构建的 SDK 开发环境：
 
 ```bash
 oebuild menv create -d <sdk-dir> -n <env-name>    # 从预初始化的 SDK 目录

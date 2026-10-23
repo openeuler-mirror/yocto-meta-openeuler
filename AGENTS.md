@@ -68,7 +68,7 @@ openEuler 社区的合规与质量要求。
 - [oebuild 技能](.agents/skills/oebuild/SKILL.md)
 - [yocto-openeuler-recipe 技能](.agents/skills/yocto-openeuler-recipe/SKILL.md)
 - [send-pr 技能](.agents/skills/send-pr/SKILL.md)
-- [OpenEuler Embedded 文档](https://pages.openeuler.openatom.cn/embedded/docs/build/html/master/)
+- [openEuler Embedded 文档](https://pages.openeuler.openatom.cn/embedded/docs/build/html/master/)
 - [oebuild 快速入门](https://pages.openeuler.openatom.cn/embedded/docs/build/html/master/oebuild/index.html)
 
 ## 技能与专业 Agent

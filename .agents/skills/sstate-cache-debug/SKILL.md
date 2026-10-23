@@ -7,7 +7,7 @@ argument-hint: "描述意外重建的 recipe 与两个构建目录，例如 'cma
 # Skill: sstate-cache-debug — 用 bitbake-diffsigs 诊断 sstate 缓存未命中
 
 本技能覆盖如何诊断 BitBake sstate-cache 条目为何在不同构建目录或机器间未被
-复用，提供对比任务签名、定位根因、应用修复的分步流程——基于 OpenEuler
+复用，提供对比任务签名、定位根因、应用修复的分步流程——基于 openEuler
 Embedded 工作区。与 `sstate-optimizer` agent 互补：该 agent 侧重性能优化策略，
 本技能侧重具体的 miss 诊断与修复操作。
 
@@ -144,7 +144,7 @@ machine conf 中取值不同，会污染**所有**依赖它的任务哈希——
 
 ### 问题
 
-在 OpenEuler Embedded 中，部分 machine conf 对仅对目标 rootfs 有意义的变量
+在 openEuler Embedded 中，部分 machine conf 对仅对目标 rootfs 有意义的变量
 使用了 `export` 关键字：
 
 ```bitbake
@@ -214,7 +214,7 @@ docker exec <container-A> bash -c "
 "
 ```
 
-OpenEuler 中 `openeuler.conf` 向该列表追加：
+openEuler 中 `openeuler.conf` 向该列表追加：
 
 ```bitbake
 BB_BASEHASH_IGNORE_VARS:append = " OPENEULER_SP_DIR do_openeuler_fetch MANIFEST_LIST"

@@ -1,10 +1,10 @@
 ---
 name: yocto-openeuler-recipe
-description: '为 OpenEuler Embedded 新增、更新或分析 BitBake recipe 文件（*.bb、*.bbappend）时使用。覆盖从 src-openeuler/openeuler atomgit 仓库定位正确源码、在 meta-openeuler 中创建/更新 .bbappend、将 SRC_URI 适配为 file:// 路径（openeuler.bbclass 要求）、合并 openEuler 与上游 Yocto 补丁、通过 oebuild bitbake 在 qemu-aarch64 上验证构建。触发关键词：recipe、bbappend、bbfile、SRC_URI、patch、包适配、openeuler 源码、atomgit、PV 版本升级、FILESEXTRAPATHS。'
+description: '为 openEuler Embedded 新增、更新或分析 BitBake recipe 文件（*.bb、*.bbappend）时使用。覆盖从 src-openeuler/openeuler atomgit 仓库定位正确源码、在 meta-openeuler 中创建/更新 .bbappend、将 SRC_URI 适配为 file:// 路径（openeuler.bbclass 要求）、合并 openEuler 与上游 Yocto 补丁、通过 oebuild bitbake 在 qemu-aarch64 上验证构建。触发关键词：recipe、bbappend、bbfile、SRC_URI、patch、包适配、openeuler 源码、atomgit、PV 版本升级、FILESEXTRAPATHS。'
 argument-hint: "要新增或更新的包名，例如 libfoo 或 libfoo_1.2.3"
 ---
 
-# Skill: OpenEuler Embedded — Recipe 新增与更新
+# Skill: openEuler Embedded — Recipe 新增与更新
 
 ## 工作区布局（相关路径）
 
@@ -35,7 +35,7 @@ yocto-meta-openembedded/meta-oe/    ← 上游 recipe 参考（社区）
 | `OPENEULER_SRC_URI_REMOVE` | `"https git http"` | 被 `openeuler.bbclass` 去除的 URI 协议 |
 
 由于 `FILESEXTRAPATHS:prepend = "${OPENEULER_DL_DIR}:"`，`SRC_URI` 中所有
-`file://` 条目优先从 OpenEuler 下载目录解析，其次从 recipe 的 `files/`
+`file://` 条目优先从 openEuler 下载目录解析，其次从 recipe 的 `files/`
 子目录解析。
 
 ---
@@ -79,7 +79,7 @@ oebuild bitbake -e <package> 2>/dev/null | grep -E "^(PV|FILE|SRC_URI|FILESEXTRA
 - `SRC_URI` 条目及已应用的补丁
 - Recipe 分类（`recipes-core`、`recipes-support` 等）
 
-### 第 2 步 — 检查 OpenEuler 源码仓库
+### 第 2 步 — 检查 openEuler 源码仓库
 
 ```
 https://atomgit.com/src-openeuler/<package>
@@ -120,7 +120,7 @@ mkdir -p <workspace-root>/src/yocto-meta-openeuler/meta-openeuler/recipes-<categ
 
 PV = "<openeuler-version>"
 
-# 使用 OpenEuler 源码压缩包；openeuler.bbclass 会从 SRC_URI 中去除 http/https/git
+# 使用 openEuler 源码压缩包；openeuler.bbclass 会从 SRC_URI 中去除 http/https/git
 SRC_URI:prepend = " \
     file://${BP}.tar.gz \
     "
@@ -145,7 +145,7 @@ SRC_URI:remove = " \
     "
 ```
 
-**当 OpenEuler 仓库名与 `${BPN}` 不同时：**
+**当 openEuler 仓库名与 `${BPN}` 不同时：**
 
 ```bitbake
 # 例如：上游 BPN=glib-2.0，openEuler 仓库名=glib2
@@ -181,11 +181,11 @@ SRC_URI[sha256sum] = "<openeuler 压缩包的 sha256>"
 - 新版本**已合入上游**的补丁 → 用 `SRC_URI:remove` 移除
 - **无法干净应用**的补丁 → 丢弃或手动移植
 
-#### 5b. OpenEuler .spec 文件中的补丁
+#### 5b. openEuler .spec 文件中的补丁
 
 读取 `Patch*:` 并应用规则：
 
-- 如果补丁不在 OpenEuler 下载目录中，将其移植到 recipe 的 `files/` 子目录
+- 如果补丁不在 openEuler 下载目录中，将其移植到 recipe 的 `files/` 子目录
 - `src-openeuler` 的补丁通过 `FILESEXTRAPATHS` 和 `OPENEULER_DL_DIR` 自动可用
 - 始终验证补丁在新 `PV` 下能否干净应用
 
@@ -298,7 +298,7 @@ OPENEULER_LOCAL_NAME = "bigpackage-repo"
 当以下三个条件都满足时使用 `pypi-src-openeuler.inc`：
 
 1. 上游 `.bb` 有 `inherit pypi`
-2. OpenEuler 仓库名为 `python-<PYPI_PACKAGE>`
+2. openEuler 仓库名为 `python-<PYPI_PACKAGE>`
 3. 压缩包名为 `<PYPI_PACKAGE>-<PV>.tar.gz`
 
 ```bitbake
@@ -312,11 +312,11 @@ SRC_URI[sha256sum] = "<sha256>"
 ## 提交前检查清单
 
 - [ ] `.bbappend` 文件名为 `<package>_%.bbappend`（版本通配符）
-- [ ] `PV` 与 OpenEuler `.spec` 或压缩包中的版本一致
+- [ ] `PV` 与 openEuler `.spec` 或压缩包中的版本一致
 - [ ] `SRC_URI:prepend` 以源码压缩包开头，格式为 `file://${BP}.tar.{gz,xz,bz2}`
 - [ ] atomgit 仓库名与 `${BPN}` 不同时已设置 `OPENEULER_LOCAL_NAME`
 - [ ] 所有上游补丁已保留、移除或干净移植
-- [ ] 所有 OpenEuler `.spec` 补丁已应用或明确记录为跳过（附原因）
+- [ ] 所有 openEuler `.spec` 补丁已应用或明确记录为跳过（附原因）
 - [ ] 版本变更时已更新 `LIC_FILES_CHKSUM` 和 `SRC_URI[sha256sum]`
 - [ ] `oebuild bitbake <package>` 在 qemu-aarch64 上无错误通过
 - [ ] 构建输出没有此前不存在的 `WARNING:` 行
