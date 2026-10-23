@@ -26,7 +26,7 @@ inherit live-vm-common image-artifact-names
 
 do_bootimg[depends] += "dosfstools-native:do_populate_sysroot \
                         mtools-native:do_populate_sysroot \
-                        cdrkit-native:do_populate_sysroot \
+                        cdrtools-native:do_populate_sysroot \
                         virtual/kernel:do_deploy \
                         ${@bb.utils.contains("MACHINE_FEATURES", "isohybrid", "syslinux-native:do_populate_sysroot", "", d)} \
                         ${@'%s:do_image_%s' % (d.getVar('PN'), d.getVar('LIVE_ROOTFS_TYPE').replace('-', '_')) if d.getVar('ROOTFS') else ''} \
@@ -155,7 +155,7 @@ build_iso() {
             ${@bb.utils.contains("MACHINE_FEATURES", "isohybrid", "-b ${ISO_BOOTIMG} -c ${ISO_BOOTCAT}", "", d)} \
             ${@bb.utils.contains("MACHINE_FEATURES", "isohybrid", "$mkisofs_compress_opts ${MKISOFS_OPTIONS} $mkisofs_iso_level", "", d)} \
             ${@bb.utils.contains("MACHINE_FEATURES", "isohybrid", "-eltorito-alt-boot", "", d)} \
-            -e efi.img -no-emul-boot \
+            -b efi.img -no-emul-boot \
 			${ISODIR}
 		isohybrid_args="-u"
 	fi
