@@ -1,5 +1,5 @@
 SUMMARY = "System ability manager"
-DESCRIPTION = "OpenEuler supports device auth for distributed softbus capability"
+DESCRIPTION = "openEuler supports device auth for distributed softbus capability"
 PR = "r1"
 LICENSE = "CLOSED"
 

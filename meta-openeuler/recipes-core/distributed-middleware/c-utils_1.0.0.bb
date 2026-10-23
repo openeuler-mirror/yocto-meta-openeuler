@@ -1,5 +1,5 @@
 SUMMARY = "C++ common basic library for distributed module construction and operation"
-DESCRIPTION = "Provide some commonly used C++ development tool classes for standard systems, This repository is compatible with compilation on the OpenEuler operating system"
+DESCRIPTION = "Provide some commonly used C++ development tool classes for standard systems, This repository is compatible with compilation on the openEuler operating system"
 PR = "r1"
 LICENSE = "CLOSED"
 

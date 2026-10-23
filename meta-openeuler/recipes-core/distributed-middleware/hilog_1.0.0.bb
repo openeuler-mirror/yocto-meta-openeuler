@@ -1,5 +1,5 @@
-SUMMARY = "OpenEuler supports hilog for distributed softbus capability"
-DESCRIPTION = "OpenEuler supports hilog for distributed softbus capability"
+SUMMARY = "openEuler supports hilog for distributed softbus capability"
+DESCRIPTION = "openEuler supports hilog for distributed softbus capability"
 PR = "r1"
 LICENSE = "CLOSED"
 

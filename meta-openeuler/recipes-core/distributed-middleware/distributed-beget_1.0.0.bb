@@ -1,5 +1,5 @@
 SUMMARY = "openEuler embedded softbus capability support"
-DESCRIPTION = "OpenEuler supports param service for distributed softbus capability"
+DESCRIPTION = "openEuler supports param service for distributed softbus capability"
 PR = "r1"
 LICENSE = "CLOSED"
 

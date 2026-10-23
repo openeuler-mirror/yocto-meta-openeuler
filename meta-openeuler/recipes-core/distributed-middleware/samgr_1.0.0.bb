@@ -1,5 +1,5 @@
 SUMMARY = "System ability manager"
-DESCRIPTION = "OpenEuler supports samgr for distributed softbus capability"
+DESCRIPTION = "openEuler supports samgr for distributed softbus capability"
 PR = "r1"
 LICENSE = "CLOSED"
 

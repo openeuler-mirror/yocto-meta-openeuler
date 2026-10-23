@@ -1,4 +1,4 @@
-# Currently, version 1.21.4 is on src-OpenEuler/master branch. 
+# Currently, version 1.21.4 is on src-openEuler/master branch.
 # There are conflicts between upstream community Yocto provided cross compilation patches, 
 # so we use the latest version from upstream go stored at oee_archive. 
 # If there are updates later on src-openEuler, this part can be optimized
