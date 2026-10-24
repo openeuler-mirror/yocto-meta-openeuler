@@ -1,12 +1,12 @@
 ---
 name: send-pr
-description: '向 yocto-meta-openeuler 上游仓库提交 PR 时使用。覆盖从 upstream 创建功能分支、cherry-pick 提交、推送到 fork、通过 GitCode API 创建 PR。触发关键词：PR、pull request、upstream、merge request、发送 PR、创建 PR、提交到上游。'
+description: '向 yocto-meta-openeuler 上游仓库提交 PR 时使用。覆盖从 upstream 创建功能分支、cherry-pick 提交、推送到 fork、通过 ag-cli 创建并验证 PR。触发关键词：PR、pull request、upstream、merge request、发送 PR、创建 PR、提交到上游、ag-cli、AtomGit。'
 argument-hint: "要发送的 commit SHA 或分支名，例如 '22df813' 或 'qemu-remove-boot'"
 ---
 
 # Skill: send-pr — 向上游提交 Pull Request
 
-本技能处理向 GitCode/AtomGit 上的 openEuler 上游仓库提交 PR 的完整工作流。
+本技能处理向 AtomGit 上的 openEuler 上游仓库提交 PR 的完整工作流。
 
 ## 仓库配置
 
@@ -56,21 +56,45 @@ git cherry-pick <sha1> <sha2> ...
 git push <fork远端名> <branch-name> -u
 ```
 
-### 第 4 步 — 通过 API 创建 PR
+### 第 4 步 — 使用 ag-cli 创建 PR
 
-使用 GitCode API 和 private-token 认证（token 从环境变量 `ATOMGIT_TOKEN` 读取，
-无需手动输入；若未配置先执行 `export ATOMGIT_TOKEN=<token>`）：
+前置条件（首次使用）：
 
 ```bash
-curl -s -X POST "https://gitcode.com/api/v5/repos/openeuler/yocto-meta-openeuler/pulls" \
-  -H "Content-Type: application/json" \
-  -H "private-token: $ATOMGIT_TOKEN" \
-  -d '{
-    "title": "<PR 标题（中文）>",
-    "body": "<PR 描述（中文）>",
-    "head": "<fork用户名>:<branch-name>",
-    "base": "master"
-  }'
+npm install -g @hust-open-atom-club/atomgit-cli
+# 全局目录无写权限（EACCES）时改用用户级 prefix，并确保 ~/.local/bin 在 PATH 中：
+# npm install -g --prefix "$HOME/.local" @hust-open-atom-club/atomgit-cli
+
+ag-cli auth status        # 未登录时执行 ag-cli auth login
+```
+
+从个人 fork 的远端地址确认用户名（例如 `git@atomgit.com:vonhust/yocto-meta-openeuler.git`
+中的 `vonhust`）：
+
+```bash
+git remote -v
+```
+
+将 PR 描述写入文件后创建 PR（`--body-file` 避免中文与换行的转义问题）：
+
+```bash
+ag-cli pr create openeuler/yocto-meta-openeuler \
+  --title "<PR 标题（中文）>" \
+  --body-file /tmp/pr-body.md \
+  --base master \
+  --head "<fork用户名>:<branch-name>"
+```
+
+- 必须显式传入 `openeuler/yocto-meta-openeuler`：本仓库通常同时存在 `upstream`
+  与个人 fork 两个 AtomGit 远端，省略仓库参数会导致推断不明确。
+- 跨 fork PR 的 `--head` 使用 `<fork用户名>:<分支名>`，ag-cli 会自动转换为
+  AtomGit API 所需的 `<用户名>/<仓库>:<分支>` 格式。
+- 需要草稿 PR 时追加 `--draft`。
+
+成功输出示例：
+
+```
+Created PR #123: https://atomgit.com/openeuler/yocto-meta-openeuler/pull/123
 ```
 
 **PR 格式约定：**
@@ -135,19 +159,18 @@ Co-Authored-By: <本次提交实际使用的AI模型名称及版本>
 
 ---
 
-## API 响应
+### 第 5 步 — 验证 PR
 
-成功响应包含：
-
-- `web_url`: PR 链接（如 https://gitcode.com/openeuler/yocto-meta-openeuler/merge_requests/XXXX）
-- `number`: PR 编号
-- `state`: "opened"
+```bash
+ag-cli pr view openeuler/yocto-meta-openeuler <PR编号>
+ag-cli pr checks openeuler/yocto-meta-openeuler <PR编号> --watch
+```
 
 ---
 
 ## PR 创建之后
 
-切回 master 继续后续工作：
+确认 PR 链接与内容无误后，切回 master 继续后续工作：
 
 ```bash
 git checkout master
@@ -159,9 +182,10 @@ git checkout master
 
 | 问题 | 原因 | 解决方法 |
 |---|---|---|
-| `404 token not found` | 认证格式错误 | 使用 `-H "private-token: $ATOMGIT_TOKEN"` 请求头 |
-| `Invalid header parameter: private-token` | token 位置错误 | token 必须在请求头，不能放在 body |
-| `Branch not found` | 分支未推送到 fork | 先执行 `git push <fork远端名> <branch>` |
+| `ag-cli: command not found` | 未安装 CLI，或用户级安装目录不在 PATH | 按第 4 步安装；用户级安装时检查 `~/.local/bin` 是否在 PATH |
+| `No local credentials` | 未登录 AtomGit | 执行 `ag-cli auth login` 后重试 |
+| PR 建到了个人 fork 仓库 | 省略仓库参数导致推断到个人远端 | 显式传入 `openeuler/yocto-meta-openeuler` |
+| `Branch not found` | 分支未推送到 fork，或 `--head` 用户名/分支名有误 | 先 push，再用 `git remote -v` 核对 fork 用户名 |
 | Commit 包含无关改动 | 从本地 master 建分支 | 始终从 `upstream/master` 建分支 |
 
 ---
@@ -171,6 +195,9 @@ git checkout master
 - [ ] 分支从 `upstream/master` 创建（而非本地 master）
 - [ ] 仅 cherry-pick 了相关提交
 - [ ] 分支已推送到个人 fork 远端
+- [ ] `ag-cli` 已安装且已登录（`ag-cli auth status` 通过）
+- [ ] 创建命令显式指定了上游仓库与 `--head <fork用户名>:<分支名>`
+- [ ] 已用 `ag-cli pr view` 确认 PR 链接与内容
 - [ ] PR 标题为中文
 - [ ] PR 描述包含：背景、改动说明、影响范围、测试建议
 - [ ] PR 描述包含 AI 参与声明与 Agent 元数据（Agent平台信息**含版本号**、模型信息、Prompt摘要，均为本次动态确定）

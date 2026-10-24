@@ -17,7 +17,7 @@
 | [sdk-verify](sdk-verify) | 构建/测试 | 一键验证 SDK（do_populate_sdk 产物）的内核驱动与 C/C++ 交叉编译能力 | SDK 生成或改动后的回归验证，覆盖 qemu-aarch64/qemu-arm/qemu-riscv64。 |
 | [ibrobot-test](ibrobot-test) | 构建/测试 | IB-Robot 跨平台功能测试（qemu 无 NPU / 真机昇腾） | 构建 oebridge/ibrobot/systemd 镜像、100G 大磁盘从盘启动、run_tests/inference 推理闭环。 |
 | [serial-ssh-debug](serial-ssh-debug) | 测试/调试 | 真机板卡串口登录调试与 SSH 登录调试，串口托底判启动链与网络就绪，网络可用时切 SSH | 串口登录、ttyUSB、板子连不上、TF-A/U-Boot 启动日志、SSH 登录、板上验证、网络就绪判定。 |
-| [send-pr](send-pr) | 工作流 | 向 GitCode/AtomGit 上游仓库提交 PR | 从 upstream 建分支、cherry-pick、推送 fork、GitCode API 创建 PR。 |
+| [send-pr](send-pr) | 工作流 | 向 AtomGit 上游仓库提交 PR | 从 upstream 建分支、cherry-pick、推送 fork、ag-cli 创建并验证 PR。 |
 | [branch-infra-adapt](branch-infra-adapt) | 工作流 | 拉取新版本分支并适配分支基础设施 | 「拉 XX 分支」「适配基础设施」「版本分支工程适配」：env.yaml 容器标签、samples 镜像名、init_env 参数、镜像脚本克隆分支、Dockerfile 基础镜像同步及 PR 提交。 |
 | [toolchain-git-flow](toolchain-git-flow) | 工作流 | Git 提交与推送全流程，强制 DCO/gitlint 规范 | 提交代码、推送、检查提交信息、修复 gitlint 报错。 |
 | [git-commit](git-commit) | 工作流 | commit message 格式与写作规范 | 标题/正文/签名、Co-Authored-By AI 元数据、单一逻辑变更拆分。 |
@@ -61,11 +61,11 @@ description: "<if-then trigger description with bilingual keywords>"
 
 ---
 
-## AtomGit / GitCode 集成
+## AtomGit 集成
 
-本仓库远端为 AtomGit（atomgit.com），上游 PR 通过 GitCode 平台创建。
+本仓库远端为 AtomGit（atomgit.com），上游 PR 通过 `ag-cli` 创建。
 远端配置因开发者而异，操作前用 `git remote -v` 确认（`upstream` 指主仓库，
-个人 fork 远端名与用户名因人而异）。完整 PR 流程与 GitCode API 用法见
+个人 fork 远端名与用户名因人而异）。完整 PR 流程见
 [send-pr 技能](send-pr/SKILL.md)。
 
 所有符合 Agent Skills 标准的客户端都会自动扫描 `.agents/skills/`，
