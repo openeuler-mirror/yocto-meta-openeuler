@@ -177,4 +177,3 @@ git config user.email
 
 - 查看文件内容（使用 Read 工具）
 - 搜索代码（使用 Grep/Glob 工具）
-- 构建编译链（使用 toolchain-build skill）

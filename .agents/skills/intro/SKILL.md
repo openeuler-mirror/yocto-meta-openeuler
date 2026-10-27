@@ -21,7 +21,6 @@ Agent 在触发本 skill 时，**必须首先**向用户展示以下欢迎文案
 | **yocto-openeuler-recipe** | 新增/更新 BitBake recipe 与 bbappend，file:// SRC_URI 适配 |
 | **yocto-openeuler-patch-analysis** | 多来源补丁分析与融合：分类/取舍、死补丁与 patch-fuzz 消除、do_patch 验证（配合 yocto-openeuler-recipe） |
 | **sstate-cache-debug** | 诊断 sstate-cache 未命中，bitbake-diffsigs 对比签名、export 哈希污染 |
-| **toolchain-build** | 通过 `menu.sh` 构建 GCC / LLVM / Clang+musl 交叉编译链（Docker 容器化） |
 | **sdk-verify** | 一键验证 SDK：交叉编译 C/C++ + 内核模块，qemu 内 SSH 验证 |
 | **ibrobot-test** | IB-Robot 跨平台测试：qemu-aarch64（无 NPU）/ 真机昇腾（ACT 推理闭环） |
 
@@ -37,7 +36,6 @@ Agent 在触发本 skill 时，**必须首先**向用户展示以下欢迎文案
 
 | Skill | 一句话描述 |
 | :--- | :--- |
-| **toolchain-architecture** | 理解统一目录结构、oebuild 集成、向后兼容符号链接与容器镜像 |
 
 ---
 
@@ -46,18 +44,11 @@ Agent 在触发本 skill 时，**必须首先**向用户展示以下欢迎文案
 只需用自然语言告诉 Agent 你想做什么：
 
 ```
-构建 aarch64 交叉编译链        → toolchain-build
-编译 LLVM 工具链               → toolchain-build
-menu.sh 怎么用                  → toolchain-build
-交互模式构建                   → toolchain-build
 提交代码                       → toolchain-git-flow
 推送 commit                    → toolchain-git-flow
 检查提交信息规范               → toolchain-git-flow
 写/改 commit message           → git-commit
 提交标题正文怎么写             → git-commit
-目录结构是怎样的               → toolchain-architecture
-oebuild 和 menu.sh 的关系      → toolchain-architecture
-向后兼容怎么做的               → toolchain-architecture
 如何构建 openeuler-image       → oebuild
 更新/生成构建配置              → oebuild
 新增/更新 recipe               → yocto-openeuler-recipe
@@ -93,8 +84,6 @@ cd "$(git rev-parse --show-toplevel)" && \
 | 检测条件 | 推荐 Skill |
 | :--- | :--- |
 | 有未提交的代码改动 (`git status`) | `toolchain-git-flow` |
-| `work/` 目录有源码但 `output/` 为空 | `toolchain-build` |
-| `output/` 目录已有产物 | `toolchain-architecture`（验证产物结构） |
 | 无特殊状态 | 展示「今日推荐」skill |
 
 ---
