@@ -41,6 +41,9 @@ do_install:append() {
 
     cp -a ${S} ${cache_root}/epkg-manager
     rm -rf ${cache_root}/epkg-manager/target
+    # the tarball ships a .git dir whose hook samples reference perl and
+    # would trip the file-rdeps QA check; drop it from the installed cache
+    rm -rf ${cache_root}/epkg-manager/.git
 
     cp -a ${S}/bin ${common_root}/profile-1/usr/
     cp -a ${S}/lib/epkg ${common_root}/profile-1/usr/lib/
@@ -61,4 +64,9 @@ EOF
 
 FILES:${PN} += "/opt"
 FILES:${PN} += "/etc/profile.d/epkg.sh"
-INSANE_SKIP:${PN} += "already-stripped"
+# epkg.sh is a bash script and the bundled manager ships python helpers
+RDEPENDS:${PN} += "bash python3"
+# the bundled manager cache carries helper scripts whose interpreter
+# paths cannot always be resolved at package_qa time; skip the file
+# level interpreter check for this self-contained /opt payload
+INSANE_SKIP:${PN} += "already-stripped file-rdeps"

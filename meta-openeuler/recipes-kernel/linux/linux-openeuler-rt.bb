@@ -20,12 +20,12 @@ SRC_URI:append:x86-64 = " \
     ', d)} \
 "
 
-SRC_URI:append = " \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
-        file://patches/rt/0001-Revert-mm-convert-mm-s-rss-stats-to-use-atomic-mode.patch \
-        file://patches/rt/0002-Revert-percpu_counter-introduce-atomic-mode-for-perc.patch \
-    ', '', d)} \
-"
+# The rss/percpu reverts were needed at the old rt20 rebases: the RT
+# patchset conflicted with the openEuler "rss stats in atomic mode"
+# feature. The 6.6.0-180.0.0.1 rt20 (src-kernel-6.6 @956b13b) applies
+# cleanly without them -- the new baseline carries the reworked
+# percpu/atomic dual-mode rss implementation and the upstream
+# kernel-rt.spec drops the reverts as well.
 
 COMPATIBLE_MACHINE = "qemu-aarch64|generic-x86-64"
 

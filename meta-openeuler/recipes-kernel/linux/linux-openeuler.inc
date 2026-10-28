@@ -82,10 +82,14 @@ OPENEULER_LOCAL_NAME = "kernel-${PV}"
 OPENEULER_REPO_NAMES = "src-kernel-${PV} kernel-${PV}"
 
 # workaround: avoid issue of '+' vermagic of module out-tree of yocto: 0001-fix-yocto-localversion-outtree-ko-error-for-6.6.patch
+# the nebula-matrix nbl driver (default m since 6.6.0-180.0.0) calls
+# page_pool_create() but its Kconfig never selects PAGE_POOL, so any
+# config without BPF_SYSCALL breaks modpost; make the driver select
+# its own dependency: 0001-nbl-select-page-pool.patch
 SRC_URI = "file://kernel-${PV} \
     ${OPENEULER_KERNEL_CONFIG} \
     file://meta-data;type=kmeta;destsuffix=meta-data \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'file://patches/0001-fix-yocto-localversion-outtree-ko-error-for-6.6.patch', '', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'file://patches/0001-fix-yocto-localversion-outtree-ko-error-for-6.6.patch file://patches/0001-nbl-select-page-pool.patch', '', d)} \
 "
 
 # add common patches only for aarch64
