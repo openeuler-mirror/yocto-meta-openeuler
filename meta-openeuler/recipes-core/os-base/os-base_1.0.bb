@@ -20,6 +20,7 @@ SRC_URI = " \
 	file://protocols \
 	file://rpc \
 	file://10-eth-static.network  \
+	file://20-eth-secondary.network  \
 	file://70-persistent-net.rules \
 "
 
@@ -46,6 +47,7 @@ do_install() {
 		install -d ${D}${sysconfdir}/systemd/network
 		install -d ${D}${sysconfdir}/udev/rules.d
 		install -m 0644 ${WORKDIR}/10-eth-static.network ${D}${sysconfdir}/systemd/network
+		install -m 0644 ${WORKDIR}/20-eth-secondary.network ${D}${sysconfdir}/systemd/network
                 # make your rules like 70-persistent-net.rules if need
 		# install -m 0644 ${WORKDIR}/70-persistent-net.rules ${D}${sysconfdir}/udev/rules.d
 	fi
