@@ -6,7 +6,10 @@
 #   * kea is not used
 #   * audit, auditd, audispd-plugins are fore secure reasons.
 #     kexec-tools for kernel core dump
-#   * dhcpcd serves as a client for dhcp and dhcpv6.
+#   * dhcpcd serves as a client for dhcp and dhcpv6 in non-systemd images.
+#     systemd images use systemd-networkd instead; running both makes dhcpcd
+#     add an IPv4LL (169.254/16) address and a scope-link default route that
+#     breaks the static network configuration.
 #
 RDEPENDS:${PN} = "\
     base-passwd \
@@ -14,7 +17,7 @@ RDEPENDS:${PN} = "\
     bzip2 \
     coreutils \
     cpio \
-    dhcpcd \
+    ${@bb.utils.contains("DISTRO_FEATURES", "systemd", "", "dhcpcd", d)} \
     diffutils \
     e2fsprogs \
     file \
