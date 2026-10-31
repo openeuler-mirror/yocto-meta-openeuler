@@ -23,9 +23,35 @@ SRC_URI:remove = " \
 #we always want busybox with mdev\init packages to support multi init manager
 SRC_URI:append = " \
         file://${BP}.tar.bz2 \
+        file://busybox-1.36.1-kernel-6.8.patch \
+        file://fix-CVE-2026-76014.patch \
         file://backport-CVE-2022-28391.patch \
         file://backport-CVE-2022-48174.patch \
         file://backport-CVE-2023-42363.patch \
+        file://backport-CVE-2023-42364-CVE-2023-42365.patch \
+        file://backport-CVE-2023-42366.patch \
+        file://backport-CVE-2023-39810.patch \
+        file://backport-CVE-2025-46394.patch \
+        file://backport-CVE-2024-58251.patch \
+        file://backport-CVE-2026-26157-CVE-2026-26158.patch \
+        file://backport-tar-only-strip-unsafe-components-from-hardlinks-not-.patch \
+        file://backport-CVE-2025-60876.patch \
+        file://backport-0001-CVE-2026-29004.patch \
+        file://backport-0002-CVE-2026-29004.patch \
+        file://backport-CVE-2026-38752.patch \
+        file://backport-CVE-2026-38753.patch \
+        file://backport-CVE-2026-38754.patch \
+        file://backport-CVE-2026-38755.patch \
+        file://backport-CVE-2026-88831-httpd-fix-handling-of-D-1.2.3-999.patch \
+        file://backport-CVE-2026-88832-volume_id-romfs-limit-the-maximum-size-of-label-to-V.patch \
+        file://backport-dpkg-free-results-of-read_package_field-preliminary-.patch \
+        file://backport-dpkg-reformat-code-in-read_package_field-exposing-wh.patch \
+        file://backport-CVE-2026-88835-dpkg-fix-cases-where-read_package_field-returns-offs.patch \
+        file://backport-CVE-2026-88837-httpd-allow-yescrypt-passwords-y.patch \
+        file://backport-CVE-2026-88839-libpwdgrp-tokenizer-fix-for-trailing-whitespace-remo.patch \
+        file://backport-CVE-2026-88834-httpd-do-not-try-to-use-obviously-bogus-password-fro.patch \
+        file://backport-dpkg-deindent-read_package_field-rename-variables.-N.patch \
+        file://backport-CVE-2026-88842-dpkg-fix-field-handling-in-write_status_file.patch \
         file://init.cfg \
         file://rcS.default \
         file://mdev.cfg \

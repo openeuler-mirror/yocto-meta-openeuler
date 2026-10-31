@@ -11,7 +11,7 @@ MAJ_VER = "${@oe.utils.trim_version("${PV}", 2)}"
 
 SRC_URI = "${GNOME_MIRROR}/${BPN}/${MAJ_VER}/${BPN}-${PV}.tar.xz"
 
-SRC_URI[sha256sum] = "5727b5c0687ac57ba8040e79bd6731b714a36b8fcf32190f236b8fb3698789e7"
+SRC_URI[sha256sum] = "8dd07c6160e3115f4f77e2205963449def6822a3dc85d495c5db389f56663037"
 
 DEPENDS = " \
 	dbus \

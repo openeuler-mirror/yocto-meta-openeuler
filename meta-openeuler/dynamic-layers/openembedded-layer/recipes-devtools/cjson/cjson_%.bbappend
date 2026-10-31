@@ -11,6 +11,9 @@ SRC_URI = "file://v${PV}.tar.gz \
         file://backport-Add-test-for-heap-buffer-overflow.patch \
         file://backport-Fix-heap-buffer-overflow.patch \
         file://backport-Set-free-d-pointers-to-NULL-whenever-they-are-not-re.patch \
+	file://backport-CVE-2023-26819.patch \
+	file://backport-CVE-2025-57052.patch \
+	file://backport-CVE-2026-87933.patch \
 "
 
 S = "${WORKDIR}/cJSON-${PV}"

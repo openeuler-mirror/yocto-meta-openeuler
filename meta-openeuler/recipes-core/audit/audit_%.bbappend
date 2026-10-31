@@ -27,6 +27,15 @@ SRC_URI += " \
         file://backport-lib-cast-to-unsigned-char-for-character-test-functio.patch \
         file://backport-Make-session-id-consistently-typed-327.patch \
         file://backport-Avoid-file-descriptor-leaks-in-multi-threaded-applic.patch \
+        file://backport-fix-the-use-of-isdigit-everywhere.patch \
+        file://backport-Fix-new-warnings-for-unused-results.patch \
+        file://backport-Change-the-first-iteration-test-so-static-analysis-b.patch \
+        file://backport-Consolidate-end-of-event-detection-to-a-common-funct.patch \
+        file://backport-Issue343-Fix-checkpoint-issue-to-ensure-all-complete.patch \
+        file://backport-lib-avoid-UB-on-sequence-wrap-around-347.patch \
+        file://backport-Change-python-bindings-to-switch-from-PyEval_CallObj.patch \
+        file://backport-Cleanup-shell-script-warnings.patch \
+        file://backport-Solve-issue-363-by-moving-check-to-after-load_config.patch \
         file://backport-first-part-of-NULL-pointer-checks.patch \
         file://backport-second-part-of-NULL-pointer-checks.patch \
         file://backport-last-part-of-NULL-pointer-checks.patch \
@@ -40,6 +49,45 @@ SRC_URI += " \
         file://backport-Cleanup-code-in-LRU.patch \
         file://backport-Fix-memory-leaks.patch \
         file://backport-fix-one-more-leak.patch \
+        file://backport-Correct-output-when-displaying-rules-with-exe-path-d.patch \
+        file://backport-ausearch-format-Fix-display-of-renamed-file-411.patch \
+        file://backport-Fix-a-maybe-uninitialized-warning.patch \
+        file://backport-ausearch-parse-fix-parsing-for-success-uid-in-parse_.patch \
+        file://backport-Check-return-of-audit_strsplit.patch \
+        file://backport-Fix-audisp-remote-segfault-on-connection-error-446.patch \
+        file://backport-Fix-fuzzer-induced-parsing.patch \
+        file://backport-Fixup-leaks-in-testing-with-ASAN.patch \
+        file://backport-cllist_append-append-improvement.patch \
+        file://backport-Terminate-a-couple-strncpy.patch \
+        file://backport-Release-queue-mutexes-during-teardown.patch \
+        file://backport-Modify-ausearch-checkpoint-code-to-address-audit-use.patch \
+        file://backport-Update-_get_hostname-436.patch \
+        file://backport-If-we-are-checkpointing-decide-if-we-output-this-eve.patch \
+        file://backport-Fix-filename-lookup-for-AUSOURCE_FILE_POINTER-in-aup.patch \
+        file://backport-add-some-error-checking-around-timer-services.patch \
+        file://backport-make-slist_last-a-static-function.patch \
+        file://backport-code-cleanup-constification-deadcode-removal-lower-s.patch \
+        file://backport-Implicit-builtin-functions.patch \
+        file://backport-Fix-allocation-failure-in-list_append.patch \
+        file://backport-Fix-possible-segfault-in-auparse_interp_adjust_type.patch \
+        file://backport-merged.patch \
+        file://backport-Verify-the-rule-is-empty-before-adding-a-watch.patch \
+        file://backport-IDS-safe_exec-returns-without-confirming-child-succe.patch \
+        file://backport-safe_exec-exits-the-child-process-directly-on-execve.patch \
+        file://backport-Invalid-magic-number-on-remote-reply-leaves-connecti.patch \
+        file://backport-AVC-parser-overwrites-existing-syscall-success-statu.patch \
+        file://backport-Re-enable-missing-audit-event-on-reconfiguration-fai.patch \
+        file://backport-Make-h_errno-more-reliable-and-remove-FIXME.patch \
+        file://backport-Path-normalization-fix-segmentation-fault-for-.-hand.patch \
+        file://backport-Adjust-path_norm-for-malformed-input.patch \
+        file://backport-Add-missing-reports-to-aureport.patch \
+        file://backport-Fix-some-static-analysis-findings.patch \
+        file://backport-Harden-against-a-couple-memory-issues.patch \
+        file://backport-LDAP-extended-operation-error-path-may-leak-response.patch \
+        file://backport-Sockaddr-helpers-rely-on-initialized-ss_family.patch \
+        file://backport-Fix-more-static-analysis-issues.patch \
+        file://backport-Fix-python-bindings-to-correctly-handle-passing-file.patch \
+        file://backport-Fix-introduced-warnings.patch \
         file://auditd.conf \
         file://audit.rules \
         "

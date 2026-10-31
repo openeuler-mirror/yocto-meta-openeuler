@@ -8,7 +8,7 @@ BOOST_VER = "${@"_".join(d.getVar("PV").split("."))}"
 BOOST_P = "boost_${BOOST_VER}"
 
 SRC_URI:prepend = " \
-        file://${BOOST_P}.tar.gz \
+        file://${BOOST_P}.tar.bz2 \
 "
 
 S = "${WORKDIR}/${BOOST_P}/tools/build"

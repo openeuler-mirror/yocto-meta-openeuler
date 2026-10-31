@@ -1,6 +1,8 @@
-
-PV = "0.16"
+PV = "0.18"
 
 # apply openeuler source package and patches
-SRC_URI:prepend = "file://${BP}.tar.gz \
+# upstream source is codeberg release archive: release-0.18.tar.gz (extracts to chrpath/)
+SRC_URI:prepend = "file://release-${PV}.tar.gz \
 "
+
+S = "${WORKDIR}/chrpath"

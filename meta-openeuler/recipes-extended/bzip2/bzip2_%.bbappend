@@ -13,6 +13,7 @@ SRC_URI:append = " \
     file://0002-CVE-2019-12900.patch \
     file://0003-license-and-version-print-should-output-to-stdout-and-exit-with-code-0.patch \
     file://bzip2-1.0.8-toolchain-variable.patch \
+    file://backport-CVE-2026-42250.patch \
 "
 
 ASSUME_PROVIDE_PKGS = "bzip2"

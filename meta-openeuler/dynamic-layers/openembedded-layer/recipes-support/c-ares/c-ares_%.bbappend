@@ -20,4 +20,5 @@ SRC_URI:prepend = " \
     file://0000-Use-RPM-compiler-options.patch \
     file://backport-disable-live-tests.patch \
     file://backport-CVE-2024-25629.patch \
+    file://backport-tests-set-ndots-1-as-default-don-t-honor-system-conf.patch \
 "

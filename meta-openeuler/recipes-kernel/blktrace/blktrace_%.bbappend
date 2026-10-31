@@ -11,6 +11,8 @@ SRC_URI:prepend = " \
         file://0004-blkparse-skip-check_cpu_map-with-pipe-input.patch \
         file://0005-blkparse-fix-incorrectly-sized-memset-in-check_cpu_m.patch \
         file://0006-fix-hang-when-BLKTRACESETUP-fails-and-o-is-used.patch \
+        file://0007-blkparse-Fix-a-potential-coredump-issue.patch \
+        file://0008-Update-git-tree-references.patch \
         "
 
 S = "${WORKDIR}/${BP}"
