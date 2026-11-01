@@ -1,0 +1,29 @@
+build_in: docker
+machine: qemu-aarch64
+toolchain_type: EXTERNAL_TOOLCHAIN:aarch64
+no_layer: false
+repos:
+- yocto-poky
+- yocto-meta-openembedded
+local_conf: |+
+  MCS_FEATURES ?= "openamp external-firmware"
+  DISTRO_FEATURES:append = " mcs"
+
+  # zephyr.elf built by the external west workspace. Replace
+  # /path/to/zephyrproject with your own workspace and keep the container
+  # mount below in sync. The openamp_rsc_table sample sets KERNEL_BIN_NAME,
+  # so the artifact is zephyr_openamp_rsc_table.elf, installed as
+  # /lib/firmware/zephyr.elf.
+  MCS_FIRMWARE_ELF ?= "/path/to/zephyrproject/builds/qemu_mcs_remote/zephyr/zephyr_openamp_rsc_table.elf"
+
+layers: []
+docker_param:
+  image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
+  parameters: -itd --network host --cap-add NET_ADMIN
+  volumns:
+  - /dev/net/tun:/dev/net/tun
+  - /path/to/zephyrproject:/path/to/zephyrproject:ro
+  command: bash
+bitbake_cmds:
+- bitbake openeuler-image-mcs
+- bitbake openeuler-image-mcs -c do_populate_sdk
