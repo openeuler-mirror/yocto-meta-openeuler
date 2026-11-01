@@ -11,7 +11,7 @@ QB_QEMU_CLASSES = ""
 QB_QEMU_CLASSES:append:qemuall = "${@bb.utils.contains('DISTRO_FEATURES', 'xen', ' qemuboot-xen-defaults qemuboot-xen-dtb', '', d)}"
 QB_QEMU_CLASSES:append:qemuall = "${@bb.utils.contains('MCS_FEATURES', 'openamp', ' qemuboot-mcs-dtb', '', d)}"
 QB_QEMU_CLASSES:append:qemuall = "${@bb.utils.contains('MCS_FEATURES', 'zvm', ' qemuboot-zvm-defaults', '', d)}"
-QB_MEM = "-m 1048"
+QB_MEM = "-m 2048"
 inherit ${QB_QEMU_CLASSES}
 inherit ${@bb.utils.contains('MCS_FEATURES', 'micrun', 'mcs-oci-utils', '', d)}
 
