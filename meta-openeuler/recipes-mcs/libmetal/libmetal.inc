@@ -13,7 +13,7 @@ SECTION = "libs"
 
 ### License metadata
 LICENSE = "BSD-3-Clause"
-LIC_FILES_CHKSUM = "file://LICENSE.md;md5=fe0b8a4beea8f0813b606d15a3df3d3c"
+LIC_FILES_CHKSUM = "file://LICENSE.md;md5=f4d5df0f12dcea1b1a0124219c0dbab4"
 
 ### Inheritance and includes if needed
 inherit cmake
@@ -33,9 +33,11 @@ DEPENDS = "sysfsutils"
 PROVIDES = "libmetal"
 
 # extra cmake options
+# tests and docs are not shipped, and only the shared library is needed
 EXTRA_OECMAKE = " \
-	-DWITH_EXAMPLES=ON \
-    -DWITH_DOC=OFF \
+	-DWITH_TESTS=OFF \
+	-DWITH_DOC=OFF \
+	-DWITH_STATIC_LIB=OFF \
 	"
 
 ### Runtime metadata
@@ -45,19 +47,3 @@ EXTRA_OECMAKE = " \
 FILES:${PN} = " \
     ${libdir}/*.so* \
 "
-
-FILES:${PN}-dev += " \
-    ${bindir}/test-* \
-"
-
-### Tasks for package
-
-do_install:append () {
-	# Only install the shared lib binaries
-	rm -rf ${D}/${bindir}/*-static
-
-	for f in `find ${D}/${bindir}/ -type f -regex ".*-shared*"`; do
-		newf="`echo ${f} | sed 's/-shared*$//g'`"
-		mv "${f}" "${newf}"
-	done
-}
