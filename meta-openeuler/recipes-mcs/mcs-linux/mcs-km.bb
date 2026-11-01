@@ -41,9 +41,6 @@ S:x86-64 = "${WORKDIR}/mcs-x86/mcs_km"
 
 do_fetch[depends] += "mcs-linux:do_fetch"
 
-# include jailhouse/Module.symvers for mcs_ivshmem.c
-DEPENDS += "${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'jailhouse', '', d)}"
-
 do_compile() {
         # CONFIG_XEN in the kernel .config does not tell whether the MCS xen
         # backend is selected: aarch64 kernels may enable Xen guest support
