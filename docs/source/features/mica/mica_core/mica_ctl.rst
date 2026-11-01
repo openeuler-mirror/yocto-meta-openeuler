@@ -132,10 +132,10 @@ ____
       [Mica]
       Name=qemu-zephyr
       CPU=3
-      ClientPath=/lib/firmware/qemu-zephyr-rproc.elf
+      ClientPath=/lib/firmware/zephyr.elf
       AutoBoot=yes
 
-   该配置文件表明，micad启动时，会默认启动一个名为 qemu-zephyr 的实例，即在 CPU3 上加载 `/lib/firmware/qemu-zephyr-rproc.elf` 并启动。
+   该配置文件表明，micad启动时，会默认启动一个名为 qemu-zephyr 的实例，即在 CPU3 上加载 `/lib/firmware/zephyr.elf` 并启动。
 
 示例二：
 
@@ -143,13 +143,13 @@ ____
 
       [Mica]
       Name=qemu-zephyr-ivshmem
-      CPU=3
-      ClientPath=/lib/firmware/qemu-zephyr-ivshmem.elf
+      CPU=1
+      ClientPath=/lib/firmware/zephyr.elf
       AutoBoot=no
       Pedestal=jailhouse
       PedestalConf=/usr/share/jailhouse/cells/qemu-arm64-zephyr-mcs-demo.cell
 
-   该配置文件定义了一个名为 qemu-zephyr-ivshmem 的实例，并指定使用 jailhouse 作为部署底座，同时该实例使用的 jailhouse Non-Root Cell 为 `/usr/share/jailhouse/cells/qemu-arm64-zephyr-mcs-demo.cell`。
+   该配置文件定义了一个名为 qemu-zephyr-ivshmem 的实例，并指定使用 jailhouse 作为部署底座，同时该实例使用的 jailhouse Non-Root Cell 为 `/usr/share/jailhouse/cells/qemu-arm64-zephyr-mcs-demo.cell`。CPU 实际由 cell 文件中的 cpus 位图决定，此处的 CPU=1 仅用于 ``mica status`` 展示。
 
 示例三：
 

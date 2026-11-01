@@ -73,7 +73,8 @@ ____
 
         | 按照以下命令启动 QEMU，注意：
         | 1. 启动 Jailhouse 需要指定 psci method 为 smc，因此，`-M` 需要配置为 ``virt,gic-version=3,virtualization=on,its=off``。
-        | 2. 需要通过添加启动参数 ``mem=750M`` 来预留出 Jailhouse 和 Non-root-cell 的内存。
+        | 2. 需要通过添加启动参数 ``mem=780M`` 来预留出 Jailhouse 和 Non-root-cell 的内存；
+        |    同时 ivshmem 共享内存（0x6fffe000 起）需要落在 Linux 可用内存范围内，因此该参数不能小于 780M。
 
         .. code-block:: console
 
@@ -82,7 +83,7 @@ ____
               -device virtio-net-device,netdev=tap0 \
               -netdev tap,id=tap0,script=/etc/qemu-ifup \
               -m 2G -smp 4 \
-              -append 'mem=750M' \
+              -append 'mem=780M' \
               -kernel zImage \
               -initrd openeuler-image-*.cpio.gz
 
@@ -151,21 +152,21 @@ ____
 
           qemu-aarch64:~$ mica status
           Name                          Assigned CPU        State               Service
-          qemu-zephyr                   3                   Running             rpmsg-tty1(/dev/ttyRPMSG0) rpmsg-tty(/dev/ttyRPMSG1)
+          qemu-zephyr                   3                   Running             rpmsg-tty(/dev/ttyRPMSG0)
 
-        状态更新为 Running，并且能观察到该实例提供了两个服务：rpmsg-tty 以及 rpmsg-tty1。
-        rpmsg-tty 绑定了 zephyr 的 shell，因此可以通过 screen 打开 tty 设备 ``/dev/ttyRPMSG1`` 来访问 zephyr 的 shell：
+        状态更新为 Running，并且能观察到该实例提供了 rpmsg-tty 服务，该服务绑定了 zephyr 的 shell，
+        因此可以通过 screen 打开 tty 设备 ``/dev/ttyRPMSG0`` 来访问 zephyr 的 shell：
 
         .. code-block:: console
 
           # 打开 Client OS 的 shell
-          qemu-aarch64:~$ screen /dev/ttyRPMSG1
+          qemu-aarch64:~$ screen /dev/ttyRPMSG0
 
           ... ...
           # 回车后可以连上 shell，并执行 zephyr 的 shell 命令
 
           uart:~$ kernel version
-          Zephyr version 3.2.0
+          Zephyr version 4.5.0
 
         之后，可以通过 ``Ctrl-a k`` 或 ``Ctrl-a Ctrl-k`` 组合键退出shell，参考 `screen(1) — Linux manual page <https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS>`_ 。
 
@@ -237,21 +238,21 @@ ____
 
           qemu-aarch64:~$ mica status
           Name                          Assigned CPU        State               Service
-          qemu-zephyr-ivshmem           3                   Running             rpmsg-tty1(/dev/ttyRPMSG0) rpmsg-tty(/dev/ttyRPMSG1)
+          qemu-zephyr-ivshmem           1                   Running             rpmsg-tty(/dev/ttyRPMSG0)
 
-        可以观察到，状态为 Running，并且该实例提供了两个服务：rpmsg-tty 以及 rpmsg-tty1。
-        rpmsg-tty 绑定了 zephyr 的 shell，因此可以通过 screen 打开 tty 设备 ``/dev/ttyRPMSG1`` 来访问 zephyr 的 shell：
+        可以观察到，状态为 Running，并且该实例提供了 rpmsg-tty 服务，该服务绑定了 zephyr 的 shell，
+        因此可以通过 screen 打开 tty 设备 ``/dev/ttyRPMSG0`` 来访问 zephyr 的 shell：
 
         .. code-block:: console
 
           # 打开 Client OS 的 shell
-          qemu-aarch64:~$ screen /dev/ttyRPMSG1
+          qemu-aarch64:~$ screen /dev/ttyRPMSG0
 
           ... ...
           # 回车后可以连上 shell，并执行 zephyr 的 shell 命令
 
           uart:~$ kernel version
-          Zephyr version 3.2.0
+          Zephyr version 4.5.0
 
         之后，可以通过 ``Ctrl-a k`` 或 ``Ctrl-a Ctrl-k`` 组合键退出shell，参考 `screen(1) — Linux manual page <https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS>`_ 。
 
@@ -266,7 +267,7 @@ ____
           stop qemu-zephyr-ivshmem successfully!
           qemu-aarch64:~$ mica status
           Name                          Assigned CPU        State               Service
-          qemu-zephyr-ivshmem           3                   Offline
+          qemu-zephyr-ivshmem           1                   Offline
 
         (4) 销毁 client OS：
 

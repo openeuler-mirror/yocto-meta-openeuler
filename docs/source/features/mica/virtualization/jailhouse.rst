@@ -24,7 +24,11 @@ Jailhouse 构建指导
 
    openEuler Embedded 目前支持在 qemu-arm64 和 RPI4 上运行 Jailhouse，默认集成到了 openeuler-image-mcs 镜像，构建方法可参考 :ref:`mcs镜像构建指导 <mcs_build>`。
 
-   请注意，需要修改 oebuild 的编译配置文件 compile.yaml，把 MCS_FEATURES 中的 openamp 改成 jailhouse。
+   请注意，需要修改 oebuild 的编译配置文件 compile.yaml，把 MCS_FEATURES 中的 openamp 改成 jailhouse，
+   例如 ``MCS_FEATURES = "jailhouse external-firmware"``，其中 external-firmware 表示 client OS 使用
+   外部工作区构建的固件（样例为 Zephyr，也可以是其它遵循 MCS 接口的 RTOS 或裸机程序）。
+   也可以直接使用样例配置 ``.oebuild/samples/aarch64/qemu-aarch64-mcs-jailhouse.yaml``
+   生成 qemu-aarch64 构建工程。
 
 
 方法二：使用 MCS 镜像的 SDK 构建
@@ -41,8 +45,8 @@ Jailhouse 构建指导
         $ cd Jailhouse; tar -xzf jailhouse-0.12.tar.gz
 
         # 打入 openEuler Embedded 的增强补丁：
-        $ curl -OL https://atomgit.com/openeuler/yocto-meta-openeuler/raw/master/meta-openeuler/recipes-mcs/jailhouse/files/0001-driver-Add-support-for-remote-proc.patch
-        $ cd jailhouse-0.12; patch -p1 < ../0001-driver-Add-support-for-remote-proc.patch
+        $ curl -OL https://atomgit.com/openeuler/yocto-meta-openeuler/raw/master/meta-openeuler/recipes-mcs/jailhouse/files/0001-Support-for-loading-ELF_64-image.patch
+        $ cd jailhouse-0.12; patch -p1 < ../0001-Support-for-loading-ELF_64-image.patch
 
     执行以上步骤后，代码目录为：jailhouse-0.12，即我们的构建目录。
 
@@ -97,7 +101,7 @@ Jailhouse 使用指导
 
          qemu-system-aarch64 -machine virt,gic-version=3,virtualization=on,its=off \
             -cpu cortex-a57 -nographic -smp 4 -m 2G  \
-            -append "console=ttyAMA0 loglevel=8 mem=1G" \
+            -append "console=ttyAMA0 loglevel=8 mem=780M" \
             -kernel zImage \
             -initrd openeuler-image-mcs-qemu-aarch64-*.rootfs.cpio.gz
 
