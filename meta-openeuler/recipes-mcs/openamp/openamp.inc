@@ -14,7 +14,7 @@ OPENEULER_LOCAL_NAME = "OpenAMP"
 
 ### License metadata
 LICENSE = "BSD-2-Clause & BSD-3-Clause & GPL-2.0-only & Apache-2.0"
-LIC_FILES_CHKSUM = "file://LICENSE.md;md5=a8d8cf662ef6bf9936a1e1413585ecbf"
+LIC_FILES_CHKSUM = "file://LICENSE.md;md5=dfc0adf4d04cc738ba65b7d3f587dca5"
 
 ### Inheritance and includes if needed
 inherit cmake
@@ -22,7 +22,7 @@ inherit cmake
 ### Build metadata: SRC_URI, SRCDATA, S, B, FILESEXTRAPATHS....
 SRC_URI = " \
 	file://${BP}.tar.gz \
-	file://0001-remoteproc-Fix-management-of-non-loadable-program-se.patch \
+	file://0001-fix-CVE-2026-37540-ELF-loader-integer-overflow.patch \
 	"
 
 S = "${WORKDIR}/${BP}"
@@ -34,32 +34,17 @@ DEPENDS = "libmetal"
 PROVIDES = "openamp"
 
 # extra cmake options
+# rpmsg_rpc is required by mcs, only the shared library is packaged
 EXTRA_OECMAKE = " \
-	-DLIB_INSTALL_DIR=${libdir} \
-	-DLIBEXEC_INSTALL_DIR=${libexecdir} \
 	-DMACHINE=generic \
 	-DWITH_PROXY=ON \
-	-DWITH_APPS=ON \
+	-DWITH_STATIC_LIB=OFF \
 	"
 
 ### Runtime metadata
 
 
 ### Package metadata
-ALLOW_EMPTY:${PN}-demos = "1"
-PACKAGES:append = " ${PN}-demos"
-
 FILES:${PN} = " \
     ${libdir}/*.so* \
 "
-
-FILES:${PN}-demos = " \
-    ${bindir}/*-shared \
-"
-### Tasks for package
-
-do_install:append () {
-	# Only install echo test client, matrix multiplication client,
-	# and proxy app server for ZynqMP
-	rm -rf ${D}/${bindir}/*-static
-}

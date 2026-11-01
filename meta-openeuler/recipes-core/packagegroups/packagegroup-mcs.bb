@@ -29,15 +29,16 @@ RDEPENDS:${PN}:append:aarch64 = " mcsctl"
 RDEPENDS:${PN}:append:x86-64 = " mcs-tools"
 RDEPENDS:${PN}:append = " ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'mcs-script', '', d)}"
 
-# add openamp dev to sdk
+# add openamp dev to sdk, debian.bbclass renames openamp-dev according to
+# the libopen_amp.so.1 SONAME, so the sdk has to ask for the new name.
 TOOLCHAIN_TARGET_TASK += " \
-openamp-dev \
+libopen-amp-dev \
 libmetal-dev \
 sysfsutils-dev \
 "
 # no support for riscv currently
 TOOLCHAIN_TARGET_TASK:remove:riscv64 = " \
-openamp-dev \
+libopen-amp-dev \
 libmetal-dev \
 sysfsutils-dev \
 "
