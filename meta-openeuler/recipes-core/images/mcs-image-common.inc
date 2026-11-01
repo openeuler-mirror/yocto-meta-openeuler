@@ -12,6 +12,9 @@ QB_QEMU_CLASSES:append:qemuall = "${@bb.utils.contains('DISTRO_FEATURES', 'xen',
 QB_QEMU_CLASSES:append:qemuall = "${@bb.utils.contains('MCS_FEATURES', 'openamp', ' qemuboot-mcs-dtb', '', d)}"
 QB_QEMU_CLASSES:append:qemuall = "${@bb.utils.contains('MCS_FEATURES', 'zvm', ' qemuboot-zvm-defaults', '', d)}"
 QB_MEM = "-m 2048"
+# qemuboot-xen-defaults overrides QB_MEM with this value and defaults it to
+# 1024, which is too small for the MCS rootfs plus the client OS.
+QB_MEM_VALUE ?= "2048"
 inherit ${QB_QEMU_CLASSES}
 inherit ${@bb.utils.contains('MCS_FEATURES', 'micrun', 'mcs-oci-utils', '', d)}
 
