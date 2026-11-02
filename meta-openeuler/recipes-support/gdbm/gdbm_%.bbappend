@@ -20,7 +20,8 @@ SRC_URI += " \
         file://Fix-allocated-memory-not-released.patch \
         file://Restore-accidentally-removed-parameter-and-New-macro.patch \
         file://Minor-fix-in-the-compatibility-library.patch \
-        "
+        file://backport-Fix-coredump-in-parseopt_next.patch \
+"
 
 SRC_URI[sha256sum] = "f366c823a6724af313b6bbe975b2809f9a157e5f6a43612a72949138d161d762"
 

@@ -1,9 +1,9 @@
 # main bbfile: yocto-meta-openembedded/meta-oe/recipes-graphics/gphoto2/libgphoto2_2.5.27.bb
-PV = "2.5.31"
+PV = "2.5.34"
 
 # source change to openEuler
 SRC_URI:append = " \
-    file://${BP}.tar.bz2;name=libgphoto2 \
+    file://${BP}.tar.xz;name=libgphoto2 \
     file://gphoto2-pkgcfg.patch \
     file://gphoto2-device-return.patch \
 "

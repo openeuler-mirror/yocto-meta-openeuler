@@ -2,7 +2,7 @@
 
 OPENEULER_LOCAL_NAME = "gtkmm30"
 
-PV = "3.24.7"
+PV = "3.24.11"
 
 SRC_URI += " \
         file://gtkmm-${PV}.tar.xz \
