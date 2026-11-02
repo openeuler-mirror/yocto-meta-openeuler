@@ -8,8 +8,11 @@ KERNEL_IMAGETYPE = "Image"
 
 # Xen and Dom0 command line options
 QB_XEN_CMDLINE_EXTRA ??= "dom0_mem=512M"
+# QEMU -append only reaches Xen, so Dom0 options such as net.ifnames=0 must be
+# set here: without it udev renames eth0 to enp0s1 and the static
+# /etc/systemd/network/10-eth-static.network (Name=eth*) no longer matches.
 QB_XEN_DOM0_BOOTARGS ??= \
-    "console=hvc0 earlyprintk clk_ignore_unused root=/dev/vda"
+    "console=hvc0 earlyprintk clk_ignore_unused root=/dev/vda net.ifnames=0"
 
 # Launch with one initial domain, dom0, with one boot module, the kernel
 DOM0_KERNEL ??= "${DEPLOY_DIR_IMAGE}/${KERNEL_IMAGETYPE}"
