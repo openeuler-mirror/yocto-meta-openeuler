@@ -1,6 +1,6 @@
 OPENEULER_LOCAL_NAME = "gstreamer1-plugins-bad-free"
 
-PV = "1.16.2"
+PV = "1.28.7"
 
 FILESEXTRAPATHS:append := "${THISDIR}/gstreamer1.0-plugins-bad/:"
 

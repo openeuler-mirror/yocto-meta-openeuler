@@ -15,12 +15,6 @@ SRC_URI:remove = " \
         file://CVE-2023-0361.patch \
 "
 
-SRC_URI:append = " \
-        file://0001-Creating-.hmac-file-should-be-excuted-in-target-envi.patch \
-        file://run-ptest \
-        file://Add-ptest-support.patch \
-"
-
 # files, patches that come from openeuler
 SRC_URI:append = " \
         file://${BP}.tar.xz \

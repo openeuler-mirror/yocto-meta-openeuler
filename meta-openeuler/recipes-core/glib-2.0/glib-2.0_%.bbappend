@@ -16,19 +16,41 @@ SRC_URI:remove = " \
 # The following patches cannot be successfully applied to version 2.78.3,
 # it causes building error.
 # file://0001-Switch-from-the-deprecated-distutils-module-to-the-p.patch
+# add patches from openEuler spec (2.78.6) and openeuler-specific patches
 SRC_URI:append = " \
-    file://memory-monitor.patch \
-    file://fix-regex.patch \
-    file://skip-timeout.patch \
-"
-
-# add more patches for version 2.78.3 from openEuler
-SRC_URI:append = " \
-    file://gspawn-eperm.patch \
-    file://backport-gmessages-fix-dropping-irrelevant-log-domains.patch \
-    file://backport-gutils-Fix-an-unlikely-minor-leak-in-g_build_user_data_dir.patch \
-    file://backport-CVE-2024-34397.patch \
-    file://backport-gdbusconnection-Allow-name-owners-to-have-the-syntax-of-a-well-known-name.patch \
+    file://gio-fix-filesystem-type-ext-err.patch \
+    file://gio-Fix-a-few-precondition-return-values-to-match-the-return-type.patch \
+    file://backport-gdbusmessage-Clean-the-cached-arg0-when-setting-the-message-body.patch \
+    file://backport-gsocketclient-Fix-a-use-after-free-in-g_socket_client_connected_callback.patch \
+    file://backport-gcontextspecificgroup-Wait-until-stop_func-is-done.patch \
+    file://backport-gresources-fix-memory-leak-from-libelf.patch \
+    file://Correct-translation-information.patch \
+    file://backport-CVE-2024-52533.patch \
+    file://backport-CVE-2025-4056.patch \
+    file://backport-CVE-2025-3360.patch \
+    file://backport-CVE-2025-4373.patch \
+    file://backport-CVE-2025-6052.patch \
+    file://backport-CVE-2025-7039.patch \
+    file://backport-CVE-2025-13601.patch \
+    file://backport-CVE-2025-14087.patch \
+    file://backport-CVE-2025-14512.patch \
+    file://backport-CVE-2026-0988.patch \
+    file://backport-CVE-2026-1484.patch \
+    file://backport-CVE-2026-1485.patch \
+    file://backport-CVE-2026-1489.patch \
+    file://backport-gsocks4aproxy--Fix-a-buffer-leak-when-finishing-co.patch \
+    file://backport-tests--Add-thread-pool-stress-test-to-task-c.patch \
+    file://backport-test--cleanup-trailing-spaces-task-c.patch \
+    file://backport-CVE-2026-58010.patch \
+    file://backport-CVE-2026-58011.patch \
+    file://backport-CVE-2026-58012_part1.patch \
+    file://backport-CVE-2026-58012_part2.patch \
+    file://backport-CVE-2026-58013.patch \
+    file://backport-CVE-2026-58014.patch \
+    file://backport-CVE-2026-58015.patch \
+    file://backport-CVE-2026-58016.patch \
+    file://backport-CVE-2026-15588.patch \
+    file://backport-CVE-2026-16118.patch \
 "
 
 SRC_URI:append:class-native:append = " \
@@ -42,7 +64,7 @@ FILES:${PN}:append = " \
 # fix arm build error: 'errno' undeclared (first use in this function)
 SRC_URI:append:arm = " file://0001-fix-compile-error-for-arm32.patch"
 
-PV = "2.78.3"
+PV = "2.78.6"
 
 # delete depends to shared-mime-info
 SHAREDMIMEDEP:remove = "${@['', 'shared-mime-info']['${OPENEULER_PREBUILT_TOOLS_ENABLE}' == 'yes']}"

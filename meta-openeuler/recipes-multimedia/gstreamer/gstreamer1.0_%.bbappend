@@ -2,7 +2,7 @@ OPENEULER_LOCAL_NAME = "gstreamer1"
 
 FILESEXTRAPATHS:append := "${THISDIR}/gstreamer1.0/:"
 
-PV = "1.24.0"
+PV = "1.28.8"
 
 SRC_URI = " file://gstreamer-${PV}.tar.xz \
 "

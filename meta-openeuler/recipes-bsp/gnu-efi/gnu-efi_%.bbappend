@@ -1,27 +1,28 @@
-# main bbfile: yocto-poky/meta/recipes-bsp/gnu-efi/gnu-efi_3.0.12.bb
+# main bbfile: yocto-poky/meta/recipes-bsp/gnu-efi/gnu-efi_3.0.14.bb
 
-PV = "3.0.17"
+PV = "3.0.19"
 
-SRC_URI =+ "file://${BP}.tar.bz2 "
+SRC_URI =+ "file://${PV}.tar.gz "
 
-# new configuration for version 3.0.17
+# patches from openeuler spec (src-openeuler repo)
+SRC_URI:append = " \
+    file://0001-gnu-efi-add-CHAR16-for-loongarch64.patch \
+    file://0001-Add-support-for-SW64.patch \
+    file://no-werror.patch \
+"
+
+# poky patches not applicable to 3.0.19
+SRC_URI:remove = " \
+    file://lib-Makefile-fix-parallel-issue.patch \
+    file://parallel-make-archives.patch \
+    file://gnu-efi-3.0.9-fix-clang-build.patch \
+"
+
 do_compile:prepend() {
     unset LDFLAGS
 }
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
-
-# patches needed for version 3.0.17
-SRC_URI:append = " \
-    file://0001-riscv64-adjust-type-definitions.patch \
-    file://0001-riscv64-ignore-unknown-relocs.patch \
-    file://no-werror.patch \
-"
-
-# patches unneeded for version 3.0.17
-SRC_URI:remove = " \
-    file://file://lib-Makefile-fix-parallel-issue.patch \
-"
 
 FILES:${PN} += "${libdir}/gnuefi/apps"
 

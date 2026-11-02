@@ -1,5 +1,5 @@
 # main bb: yocto-meta-openembedded/meta-oe/recipes-devtools/grpc/grpc_1.46.7.bb
-PV = "1.54.2"
+PV = "1.60.0"
 
 S = "${WORKDIR}/${BP}"
 
