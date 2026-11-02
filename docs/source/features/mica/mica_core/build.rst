@@ -40,7 +40,29 @@
 
         若需要支持 `jailhouse`，请在 oebuild generate 时添加 ``-f mcs/jailhouse``（无需手改 ``compile.yaml``）。
 
-        若需要支持 `xen`，请在oebuild generate时额外添加 -f xen，无需修改 ``compile.yaml``。
+        若需要支持 `xen`，推荐直接使用样例工程
+        ``.oebuild/samples/aarch64/qemu-aarch64-mcs-xen.yaml``，或参考其中的配置创建
+        构建目录。Xen 部署的 Client OS 使用外部工作区构建的固件（样例为 Zephyr），需要在
+        ``compile.yaml`` 的 ``local_conf`` 中设置：
+
+        .. code-block:: yaml
+
+           MCS_FEATURES ?= "external-firmware xen"
+           DISTRO_FEATURES:append = " mcs xen"
+           MCS_FIRMWARE_ELF ?= "/path/to/zephyrproject/build-xen/zephyr/zephyr_openamp_rsc_table.elf"
+           MCS_FIRMWARE_BIN ?= "/path/to/zephyrproject/build-xen/zephyr/zephyr_openamp_rsc_table.bin"
+
+        ``MCS_FIRMWARE_ELF`` 和 ``MCS_FIRMWARE_BIN`` 必须指向实际构建产物，并确保
+        该路径在 oebuild 构建容器内可见（可以将 Zephyr 工作区只读挂载到容器中）。
+        固件不限于 Zephyr：任何实现 MCS Client 接口（OpenAMP resource table 与
+        micad 使用的 rpmsg 端点）的 RTOS 或裸机程序都可以通过 ``external-firmware``
+        安装。产物默认安装为 ``zephyr.elf``/``zephyr.bin``，可用
+        ``MCS_FIRMWARE_NAME`` 修改，此时需同步修改 mica/Xen 配置中的路径。
+
+        .. note::
+
+           不要将 ``openamp`` 加入 ``MCS_FEATURES``。``openamp`` 会使镜像继承
+           ``qemuboot-mcs-dtb``，覆盖 Xen 使用的 qemuboot 设备树和启动参数。
 
   3. 进入 ``<build_mcs>`` 目录，编译 openeuler-image 或 openeuler-image-mcs，两个镜像都会安装 mcs 组件，但 openeuler-image-mcs 仅包含少量的基础软件包：
 

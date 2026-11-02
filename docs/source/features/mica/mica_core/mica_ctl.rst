@@ -55,7 +55,7 @@ mica命令介绍
 
     ``mica set qemu-uniproton-xen Memory 1024`` 表示将名字为 ``qemu-uniproton-xen`` 的实例的内存更新为1024MB。
 
-    ``mica set qemu-uniproton-xen CPUCapacity 100`` 表示将名字为 ``qemu-uniproton-xen`` 的实例的CPU算力更新为1个物理CPU。
+    ``mica set qemu-uniproton-xen CPUCapacity 100`` 表示将名字为 ``qemu-uniproton-xen`` 的实例的CPU算力更新为单个vCPU的100%，即占满1个vCPU。
 
 ____
 
@@ -95,10 +95,10 @@ ____
   |``CPUWeight=``      |为实时OS分配的CPU算力权重，             |int（范围1~65535）            |xen       |
   |                    |默认256                                 |                              |          |
   +--------------------+----------------------------------------+------------------------------+----------+
-  |``CPUCapacity=``    |为实时OS分配的CPU算力（百分比）         |int（范围0~100*nproc）        |xen       |
+  |``CPUCapacity=``    |为实时OS分配的CPU算力（单个vCPU百分比） |int（范围0~100）              |xen       |
   |                    |                                        |                              |          |
-  |                    |例如100表示1个物理CPU，50表示           |                              |          |
-  |                    |半个物理CPU，默认0即不限制              |                              |          |
+  |                    |100表示占满1个vCPU，50表示半个          |                              |          |
+  |                    |vCPU，默认0即不限制                     |                              |          |
   +--------------------+----------------------------------------+------------------------------+----------+
   |``Memory=``         |为实时OS分配的内存大小（MB）            |int                           |xen       |
   +--------------------+----------------------------------------+------------------------------+----------+
@@ -113,7 +113,7 @@ ____
 - baremetal：仅支持单核，范围 0 ~ nproc - 1
 - hetero：指定为 riscv
 - jailhouse：实际由cell文件配置
-- xen：支持多核，范围 0 ~ nproc - 1，例如 1-3 表示使用 CPU1、CPU2、CPU3 这三个物理核
+- xen：指定可供 DomU 使用的物理 CPU 范围，范围 0 ~ nproc - 1，例如 1-3 表示使用 CPU1、CPU2、CPU3 这三个物理核；实际创建的 vCPU 数量由 ``VCPU=`` 指定
 
 **``PedestalConf=`` 参数：**
 
@@ -182,6 +182,26 @@ ____
     该配置文件定义了一个名为 qemu-uniproton-xen 的实例，并指定使用 xen 作为部署底座，同时该实例使用的 xen 引导文件为 `/lib/firmware/qemu-uniproton-xen.bin`，RTOS运行在核1、2、3。
 
 示例五：
+
+    .. code-block:: console
+
+       [Mica]
+       Name=qemu-zephyr-xen
+       CPU=1-3
+       ClientPath=/lib/firmware/zephyr.elf
+       AutoBoot=no
+       Pedestal=xen
+       PedestalConf=/lib/firmware/zephyr.bin
+       Memory=256
+       VCPU=1
+       CPUCapacity=100
+
+    该配置文件定义了一个名为 qemu-zephyr-xen 的实例，并指定使用 xen 作为部署底座。
+    ``zephyr.bin`` 由 Xen 作为 DomU kernel 引导，``zephyr.elf`` 由 MICA 解析 resource
+    table；``CPU=1-3`` 是可供 DomU 使用的物理 CPU 范围，``VCPU=1`` 与 xenvm 设备的单
+    CPU 配置保持一致，``CPUCapacity=100`` 表示占满 1 个 vCPU 的算力。
+
+示例六：
 
     .. code-block:: console
 
