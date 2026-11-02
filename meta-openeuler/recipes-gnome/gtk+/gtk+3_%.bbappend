@@ -1,5 +1,5 @@
 
-PV = "3.24.41"
+PV = "3.24.52"
 
 # openeuler src
 SRC_URI:prepend = "file://gtk+-${PV}.tar.xz \
