@@ -3,10 +3,31 @@ DESCRIPTION = "Install epkg"
 
 PV = "0.3.0"
 
+# NOTE (workaround): upstream rootfs.tar.gz is actually xz-compressed data
+# despite the .gz name — it was repacked in the elf-loader fix (src-openeuler
+# epkg !20 / PR-18, commit f2c1542) without renaming the file. bitbake picks
+# the unpack command by suffix, so tar -z fails on it. Mark it unpack=0 and
+# unpack by real format below; drop the workaround once upstream fixes the
+# filename.
 SRC_URI += " \
    file://${BPN}-${PV}.tar.gz \
-   file://rootfs.tar.gz \
+   file://rootfs.tar.gz;unpack=0 \
    "
+
+# unpack rootfs.tar.gz by its real format (gzip or xz), see NOTE above.
+# NOTE: do_unpack is a python wrapper in this poky version, so the append
+# must be python syntax.
+python do_unpack:append() {
+    import subprocess
+    workdir = d.getVar('WORKDIR')
+    rootfs = os.path.join(workdir, 'rootfs.tar.gz')
+    if subprocess.call('tar -tzf %s >/dev/null 2>&1' % rootfs, shell=True) == 0:
+        cmd = 'tar -xzf %s -C %s' % (rootfs, workdir)
+    else:
+        cmd = 'xz -dc %s | tar -x -C %s' % (rootfs, workdir)
+    bb.note('epkg rootfs unpack: %s' % cmd)
+    subprocess.check_call(cmd, shell=True)
+}
 
 do_compile[noexec] = "1"
 

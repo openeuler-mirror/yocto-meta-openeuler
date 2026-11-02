@@ -29,6 +29,15 @@ SRC_URI += " \
     file://0014-e2fsck-update-quota-accounting-after-directory-optim.patch \
     file://0015-e2fsck-update-quota-when-deallocating-a-bad-inode.patch \
     file://0016-fsck-fix-memory-leak-on-an-error-exit.patch \
+    file://0017-mke2fs-batch-zeroing-inode-table.patch \
+    file://0018-debugfs-Use-the-hash_version-from-superblock-if-a-fi.patch \
+    file://0019-e2fsck-fix-acl-block-leak-when-process-orphan-list.patch \
+    file://0020-e2fsck-fix-handling-of-a-invalid-symlink-in-an-inlin.patch \
+    file://0021-e2fsprogs-modify-dumpe2fs-to-report-free-block-range.patch \
+    file://0022-resize2fs-use-Direct-I-O-when-reading-the-superblock.patch \
+    file://0023-libext2fs-fix-potential-divide-by-zero-bug-caused-by.patch \
+    file://0024-fuse2fs-don-t-try-to-mount-after-option-parsing-errors.patch \
+    file://0025-badblocks-avoid-an-error-when-n-or-w-is-specified-tw.patch \
 "
 
 SRC_URI[sha256sum] = "144af53f2bbd921cef6f8bea88bb9faddca865da3fbc657cc9b4d2001097d5db"

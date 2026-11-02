@@ -2,6 +2,7 @@
 
 # expect-5.43.0-pkgpath.patch: build error, delete it from openeuler
 SRC_URI:prepend = "file://expect${PV}.tar.gz \
+           file://backport-expect-5.45-headers.patch \
            file://expect-5.43.0-log_file.patch \
            file://expect-5.45-man-page.patch \
            file://expect-5.45-match-gt-numchars-segfault.patch \

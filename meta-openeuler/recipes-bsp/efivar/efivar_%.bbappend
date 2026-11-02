@@ -12,6 +12,7 @@ SRC_URI:prepend = " \
     file://0002-Fix-glibc-2.36-build-mount.h-conflicts.patch \
     file://dp_h-check-_ucs2size-in-format_ucs2.patch \
     file://backport-Fix-invalid-free-in-main.patch \
+    file://backport-esl-iter.h-fix-type-declaration-of-return-value-for-.patch \
     file://add-loongarch64-support-for-efivar.patch \
     file://0002-fix-ld.patch \
     file://0002-fix-ld2.patch \
