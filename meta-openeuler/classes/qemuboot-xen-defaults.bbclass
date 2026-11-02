@@ -17,12 +17,15 @@ DOM0_KERNEL_LOAD_ADDR ??= "0x45000000"
 QB_XEN_DOMAIN_MODULES ??= "${DOM0_KERNEL}:${DOM0_KERNEL_LOAD_ADDR}:xen,linux-zimage"
 
 # Qemuboot for Arm uses the QB_DEFAULT_KERNEL method to load Xen
-# and the device loader option for the dom0 kernel:
+# and the device loader option for the dom0 kernel. Keep the deploy
+# path as a runqemu placeholder: runqemu mounts the build directory at
+# a different path than the bitbake container, so an absolute path here
+# would not exist when runqemu executes.
 QB_OPT_APPEND:append:aarch64 = " \
-    -device loader,file=${DOM0_KERNEL},addr=${DOM0_KERNEL_LOAD_ADDR} \
+    -device loader,file=@DEPLOY_DIR_IMAGE@/${@os.path.basename(d.getVar('DOM0_KERNEL'))},addr=${DOM0_KERNEL_LOAD_ADDR} \
     "
 QB_OPT_APPEND:append:qemuarm = " \
-    -device loader,file=${DOM0_KERNEL},addr=${DOM0_KERNEL_LOAD_ADDR} \
+    -device loader,file=@DEPLOY_DIR_IMAGE@/${@os.path.basename(d.getVar('DOM0_KERNEL'))},addr=${DOM0_KERNEL_LOAD_ADDR} \
     "
 QB_DEFAULT_KERNEL:qemuarm64 = "xen-${MACHINE}"
 QB_DEFAULT_KERNEL:qemu-aarch64 = "xen-${MACHINE}"
