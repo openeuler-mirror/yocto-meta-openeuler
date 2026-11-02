@@ -48,11 +48,11 @@ SRC_URI:prepend = " \
            file://fix-coredump-when-client-active-is-NULL.patch \
            file://feature-lease-time-config-ipv6.patch \
            file://add-a-test-case-to-parse-code93-in-option_unittest.patch \
-           file://backport-Fix-CVE-2022-2928.patch \
-           file://backport-Fix-CVE-2022-2929.patch \
            file://Revert-correcting-the-logic-in-dhclient.patch \
            file://IAID-is-output-has-hexe-if-it-contains-or.patch \
            file://support-for-building-with-clang.patch \
+           file://bugfix-cancel-rebind6-timer-after-ipv6-expire.patch \
+           file://bugfix-dhclient-fscanf-buffer-overflow.patch \
 "
 
 SRC_URI[md5sum] = "9076af4cc1293dde5a7c6cae7de6ab45"
