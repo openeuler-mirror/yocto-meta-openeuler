@@ -15,6 +15,14 @@ SRC_URI:append = " \
         file://backport-exit-exec-in-child-process-if-setup-fails.patch \
         file://feature-iproute-add-support-for-ipvlan-l2e-mode.patch \
         file://bugfix-iproute2-cancel-some-test-cases.patch \
+        file://backport-ss-fix-expired-time-format-of-timer.patch \
+        file://backport-route-filter-by-interface-on-multipath-routes.patch \
+        file://backport-lib-names-check-calloc-return-value-in-db_names_alloc.patch \
+        file://backport-fix-fd-leak-when-playing-with-netns.patch \
+        file://revert-ip-vrf-make-ipvrf_exec-SELinux-aware.patch \
+        file://backport-iproute2-bond-fix-stack-smash-in-xstats.patch \
+        file://backport-change-makefile-use-share-for-config-files.patch \
+        file://feature-iproute2-supports-to-parse-UB-device-and-related-display-of-vf-address.patch \
 "
 
 SRC_URI[sha256sum] = "4c51b8decbc7e4da159ffb066f590cfb93dbf9af7ff86b1647ce42b7c179a272"

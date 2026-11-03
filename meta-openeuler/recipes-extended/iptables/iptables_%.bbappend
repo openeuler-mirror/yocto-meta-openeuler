@@ -38,6 +38,13 @@ SRC_URI:append = " \
     file://backport-libiptc-Fix-for-another-segfault-due-to-chain-index-NULL-pointer.patch \
     file://backport-libxtables-Fix-memleak-of-matches-udata.patch \
     file://backport-xshared-Fix-parsing-of-empty-string-arg-in-c-option.patch \
+    file://backport-extensions-recent-Fix-format-string-for-unsigned-values.patch \
+    file://backport-ip6tables-Fix-checking-existence-of-rule.patch \
+    file://backport-iptables-legacy-Fix-for-mandatory-lock-waiting.patch \
+    file://backport-nft-cmd-Init-struct-nft_cmd-head-early.patch \
+    file://backport-nft-Support-replacing-a-rule-added-in-the-same-batch.patch \
+    file://backport-tests-shell-iptables-0010-wait_0-is-unreliable.patch \
+    file://tests-extensions-add-some-testcases.patch \
 "
 # the openeuler patch apply failed
 # file://0001-extensions-NAT-Fix-for-Werror-format-security.patch

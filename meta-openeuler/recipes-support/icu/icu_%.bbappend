@@ -9,6 +9,11 @@ SRC_URI:prepend = " \
     file://gennorm2-man.patch;striplevel=2 \
     file://icuinfo-man.patch;striplevel=2 \
     file://backport-remove-TestJitterbug6175.patch;striplevel=2 \
+    file://0001-add-support-loongarch64.patch;striplevel=2 \
+    file://icu-Add-sw64-architecture.patch;striplevel=2 \
+    file://0001-ICU-21667-Fix-coverity-warnings.patch;striplevel=2 \
+    file://0002-Fix-coverity-warnings-icu-74.2.patch;striplevel=2 \
+    file://backport-CVE-2025-5222.patch;striplevel=2 \
 "
 
 # the patch delete-taboo-words.patch apply failed
