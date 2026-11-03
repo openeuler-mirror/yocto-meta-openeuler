@@ -1,6 +1,6 @@
 # main bb file: yocto-poky/meta/recipes-devtools/mtd/mtd-utils_git.bb
 
-PV = "2.2.0"
+PV = "2.1.4"
 
 SRC_URI:prepend = " \
     file://${BP}.tar.bz2 \

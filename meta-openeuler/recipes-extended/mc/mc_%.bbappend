@@ -1,15 +1,14 @@
 # bbfile: yocto-poky/meta/recipes-extended/mc/mc_4.8.27.bb
 
-PV = "4.8.29"
+PV = "4.8.33"
 
-SRC_URI = "file://${PV}.tar.gz \
+SRC_URI = "file://${BP}.tar.xz \
         file://mc-spec.syntax.patch \
-        file://mc-python3.patch \
         file://mc-default_setup.patch \
         file://mc-tmpdir.patch \
         "
 
-SRC_URI[sha256sum] = "09c8b9689d065e5a59d380338ed0bc0d529b3dcab860a40655333928a2b2e0ba"
+SRC_URI[sha256sum] = "cae149d42f844e5185d8c81d7db3913a8fa214c65f852200a9d896b468af164c"
 
 PACKAGECONFIG[smb] = ",,,"
 

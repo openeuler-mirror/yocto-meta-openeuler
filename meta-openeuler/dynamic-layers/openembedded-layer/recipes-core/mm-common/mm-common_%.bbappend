@@ -1,6 +1,8 @@
 # main bb: yocto-meta-openembedded/meta-oe/recipes-core/mm-common/mm-common_1.0.4.bb
 
-PV = "1.0.5"
+PV = "1.0.8"
+
+LIC_FILES_CHKSUM = "file://COPYING;md5=570a9b3749dd0463a1778803b12a6dce"
 
 # this patch just for 1.0.4
 SRC_URI:remove = " \
