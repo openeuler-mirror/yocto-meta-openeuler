@@ -1,6 +1,6 @@
 OPENEULER_LOCAL_NAME = "kexec-tools"
 
-PV = "1.7.4"
+PV = "1.7.9"
 
 S = "${WORKDIR}/${BP}"
 

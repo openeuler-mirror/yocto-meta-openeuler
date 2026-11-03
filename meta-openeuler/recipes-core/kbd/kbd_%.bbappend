@@ -14,6 +14,7 @@ SRC_URI:prepend = "file://${BP}.tar.xz \
            file://kbd-1.15.5-loadkeys-search-path.patch \
            file://kbd-2.0.2-unicode-start-font.patch \
            file://kbd-2.4.0-covscan-fixes.patch \
+        file://backport-CVE-2026-72693.patch \
            "
 
 SRC_URI[sha256sum] = "ccdf452387a6380973d2927363e9cbb939fa2068915a6f937ff9d24522024683"
