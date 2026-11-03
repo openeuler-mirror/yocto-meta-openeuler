@@ -1,11 +1,15 @@
-# main bb: meta-openembedded/meta-oe/recipes-devtools/nodejs/nodejs_20.11.1.bb
+# main bb: meta-openembedded/meta-oe/recipes-devtools/nodejs/nodejs_24.18.1.bb
+# (kept in-tree in meta-openeuler, based on the same meta-oe recipe;
+#  0002-Revert-deps-V8-tagged.patch and 0003-fix-fd-is-null-when-calling-
+#  clearBuffer.patch from the src repo were dropped upstream and are no
+#  longer shipped there)
 
-PV = "20.11.1"
-
-# 0001-Use-system-uv-zlib.patch from openeuler is the same as 
-# 0001-Disable-running-gyp-files-for-bundled-deps.patch from openembedded
+# apply source package in openEuler
 SRC_URI:prepend = " \
     file://node-v${PV}.tar.xz \
-    file://0002-Revert-deps-V8-tagged.patch \
-    file://0003-fix-fd-is-null-when-calling-clearBuffer.patch \
 "
+
+# the src-openeuler spec builds against the bundled c-ares; the system
+# c-ares in this layer (1.19.1) is too old for node 24 (needs >= 1.27
+# for the ares_dns_* API), so use the bundled one as well
+PACKAGECONFIG:remove = "ares"
