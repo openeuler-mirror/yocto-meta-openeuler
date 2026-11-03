@@ -1,10 +1,10 @@
-LIC_FILES_CHKSUM = "file://LICENSE;md5=0fdbfbe10fc294a6fca24dc76134222a"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=9dc350edbbbee660c7d9af79487168f2"
 
-PV = "1.6.43"
+PV = "1.6.59"
 
 # patch in openEuler
 # build error: libpng-fix-arm-neon.patch
-SRC_URI:prepend = "file://${BP}.tar.gz \
+SRC_URI:prepend = "file://${BP}.tar.xz \
            file://libpng-multilib.patch \
 "
 

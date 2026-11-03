@@ -1,6 +1,6 @@
 # the main bb file: yocto-meta-openembedded/meta-oe/recipes-multimedia/webm/libvpx_1.11.0.bb
 
-PV = "1.14.1"
+PV = "1.13.1"
 
 SRC_URI:prepend = " \
     file://v${PV}.tar.gz \

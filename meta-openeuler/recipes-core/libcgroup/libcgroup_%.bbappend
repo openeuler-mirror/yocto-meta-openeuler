@@ -1,6 +1,6 @@
 # the main bb file: yocto-poky/meta/recipes-core/libcgroup/libcgroup_2.0.2.bb
 
-PV = "3.1.0"
+PV = "3.2.0"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=4d794c5d710e5b3547a6cc6a6609a641"
 

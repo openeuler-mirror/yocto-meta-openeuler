@@ -1,6 +1,6 @@
 # main bb file: yocto-poky/meta/recipes-support/libevdev/libevent_2.1.12.bb
 
-PV = "2.1.12"
+PV = "2.1.13"
 
 SRC_URI:prepend = " \
         file://${BP}-stable.tar.gz \

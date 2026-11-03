@@ -16,20 +16,9 @@ inherit cmake pkgconfig
 ### Build metadata
 SRC_URI = " \
         file://v${PV}.tar.gz \
-        file://0001-add-systemd-cgroup-field-in-isulad-and-shim-config.patch \
-        file://0002-Add-http-parser-as-third-party-component.patch \
-        file://0003-add-enable-pod-events-field.patch \
-        file://0004-add-swap-usage-fields-in-shim-stats-and-container-in.patch \
-        file://0005-Add-oomkilled-field-in-inspect.json.patch \
-        file://0006-add-runtime-in-process-state.patch \
-        file://0007-restore-bufsize-to-prevent-log-loss.patch \
-        file://0008-support-clang-build.patch \
-        file://0009-support-cdi-spec.patch \
-        file://0010-remove-file-mode-check-in-ut.patch \
-        file://0011-remove-lcr-created-spec-only-if-create-failed.patch \
-        file://0012-Fix-info-inproper-data-type-for-timestamp.patch \
-        file://0013-fix-bug-for-potential-config-seccomp-ocihook-write-e.patch \
-        file://0014-add-codecheck-fix.patch \
+        file://0001-fix-build-with-cmake-4.patch \
+        file://0002-modify-cmake-file-for-ninja.patch \
+        file://0003-add-isula_fopen-util-func.patch \
 "
 
 S = "${WORKDIR}/${BPN}-v${PV}"

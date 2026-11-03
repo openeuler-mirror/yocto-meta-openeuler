@@ -12,11 +12,13 @@ SRC_URI:prepend = "\
         file://backport-Add-testcase-for-last-commit.patch \
         file://backport-choice-rules-also-do-solver_choicerulecheck-for-package-downgrades.patch \
         file://backport-Fix-a-couple-small-static-analysis-findings-for-uninitialized-structs.patch \
-        file://backport-resolve-installed-remove-dead-code.patch \
+        file://backport-resolve_installed-remove-dead-code.patch \
         file://backport-Move-special-updaters-handling-into-its-own-function.patch \
         file://backport-Handle-installed-packages-in-three-passes.patch \
-        file://backport-Fix-incomplete-headers.patch \
-        file://backport-Fix-a-possible-format-overflow-in-dump_genid.patch \
+        file://backport-CVE-2026-9149.patch \
+        file://backport-CVE-2026-9150.patch \
+        file://backport-CVE-2026-48863.patch \
+        file://backport-CVE-2026-82327.patch \
 "
 
 # delete -DENABLE_RPMDB_BDB=ON, not used with new rpm version
