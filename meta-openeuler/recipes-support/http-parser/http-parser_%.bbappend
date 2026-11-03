@@ -1,7 +1,7 @@
 # source bb: meta-networking/recipes-support/http-parser/http-parser_2.9.4.bb;branch=master
 
 # apply openeuler source and patch
-SRC_URI:prepend = "file://${BP}.tar.gz \
+SRC_URI:prepend = "file://${PV}.tar.gz \
 		   file://backport-url-treat-empty-port-as-default.patch \
 "
 

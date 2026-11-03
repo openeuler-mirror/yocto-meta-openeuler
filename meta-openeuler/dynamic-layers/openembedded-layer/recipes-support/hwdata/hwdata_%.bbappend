@@ -1,12 +1,12 @@
 inherit pkgconfig
 
-PV = "v0.372"
+PV = "v0.412"
 
 SRC_URI += " \
         file://${PV}.tar.gz \
 "
 
-S = "${WORKDIR}/hwdata-0.372"
+S = "${WORKDIR}/hwdata-0.412"
 
 do_install:append() {
     install -d ${D}${libdir}/pkgconfig/

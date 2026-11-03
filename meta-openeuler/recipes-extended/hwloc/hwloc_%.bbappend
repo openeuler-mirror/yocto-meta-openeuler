@@ -1,8 +1,8 @@
 # bb file: ./yocto-meta-openembedded/meta-oe/recipes-extended/hwloc/hwloc_1.11.13.bb
 
-LIC_FILES_CHKSUM = "file://COPYING;md5=79179bb373cd55cbd834463a514fb714"
+LIC_FILES_CHKSUM = "file://COPYING;md5=883e49a2e0f7142a345f9b0c01a380e7"
 
-PV = "2.11.2"
+PV = "2.14.0"
 
 SRC_URI = "\
         file://hwloc-${PV}.tar.bz2 \
