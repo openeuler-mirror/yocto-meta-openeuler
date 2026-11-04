@@ -29,4 +29,6 @@ SRC_URI:prepend = "file://0001-Remove-unused-QPointer-QQuickPointerMask.patch \
            file://qt5-qtdeclarative-gcc11.patch \
            file://qtdeclarative-5.15.0-FixMaxXMaxYExtent.patch \
            file://qt-QTBUG-111935-fix-V4-jit.patch \
+           file://qtdeclarative-5.15-CVE-2025-12385.patch \
+           file://qtdeclarative-5.15-CVE-2026-79616.patch \
            "

@@ -7,6 +7,7 @@ DEPENDS = "zlib jpeg gnutls"
 SRC_URI:remove = "${SOURCEFORGE_MIRROR}/qpdf/qpdf-${PV}.tar.gz \
                  "
 SRC_URI:prepend = "file://${BPN}-${PV}.tar.gz \
+                   file://0001-Tune-QUtil-hex_encode.patch \
                   "
 SRC_URI[sha256sum] = "34a7cf3ac6e239510e9a20d7cbe10a4aff0f572c20e0a9bed0badb820a69e22d"
 
