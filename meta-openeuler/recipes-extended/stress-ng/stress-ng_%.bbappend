@@ -1,6 +1,6 @@
 # main bbfile: yocto-poky/meta/recipes-extended/stress-ng/stress-ng_0.13.12.bb
 
-PV = "0.15.03"
+PV = "0.18.12"
 
 # powerpc64 is not supported now 
 # and this patch is located in the dir of 
@@ -15,4 +15,5 @@ SRC_URI:prepend = " \
     file://V${PV}.tar.gz \
 "
 
-S = "${WORKDIR}/${BP}"
+# the src repo switched to GitHub tag archives (V-prefixed top dir)
+S = "${WORKDIR}/stress-ng-V${PV}"

@@ -23,6 +23,9 @@ CXXFLAGS += "-Wno-dangling-pointer"
 # src package and patches from openEuler
 SRC_URI:prepend = " \
         file://${BP}.tar.gz \
+        file://Add-basic-LoongArch64-support.patch \
+        file://Make-stp_task_work-compatible-with-6.11-kernels.patch \
+        file://Backport-PR31039-Make-autoconf-utrace-via-tracepoints.c-work-with-struct-folio.patch \
         "
 
 S = "${WORKDIR}/${BP}"

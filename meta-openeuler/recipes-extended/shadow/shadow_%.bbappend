@@ -18,9 +18,6 @@ SRC_URI:prepend = "file://${BP}.tar.xz \
             file://usermod-unlock.patch \
             file://shadow-add-sm3-crypt-support.patch \
             file://shadow-Remove-encrypted-passwd-for-useradd-gr.patch \
-            file://backport-port-fix-OVERRUN-CWE-119.patch \
-            file://backport-src-usermod.c-update_group_file-Fix-RESOURCE_LEAK-CW.patch \
-            file://backport-src-usermod.c-update_gshadow_file-Fix-RESOURCE_LEAK-.patch \
             file://backport-src-groupmod.c-delete-gr_free_members-grp-to-avoid-d.patch \
            "
 # remove patches with the same functionality in src-openeuler from poky:
@@ -28,6 +25,15 @@ SRC_URI:prepend = "file://${BP}.tar.xz \
 SRC_URI:remove = " \
     file://CVE-2023-29383.patch \
     file://0001-Overhaul-valid_field.patch \
+            file://shadow-libsubid-Dealocate-memory-on-exit.patch \
+            file://backport-lib-idmapping.c--Use-long-constants-in-prctl-2.patch \
+            file://backport-man-lastlog-remove-wrong-use-of-keyword-term.patch \
+            file://backport-lib-csrand.c-Fix-the-lower-part-of-the-domain-of-csr.patch \
+            file://limit-username-length-to-32.patch \
+            file://backport-src-useradd.c-get_groups-Fix-memory-leak.patch \
+            file://backport-src-gpasswd-Clear-password-in-more-cases.patch \
+            file://backport-lib-encrypt.c-Do-not-exit-in-error-case.patch \
+            file://fix-zh-translation-errors.patch \
 "
 
 inherit pkgconfig

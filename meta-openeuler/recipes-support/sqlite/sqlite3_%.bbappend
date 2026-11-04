@@ -1,9 +1,11 @@
-# main bb file: yocto-poky/meta/recipes-support/sqlite/sqlite3_3.38.5.bb
+# main bb file: yocto-poky/meta/recipes-support/sqlite/sqlite/sqlite3_3.38.5.bb
 
 # version in openEuler
 PV = "3.42.0"
 
-# two .zip files in openEuler are not used, so patches don't work
+# two .zip files (sqlite-src / sqlite-doc) in openEuler are not used here,
+# and the src repo backport patches target that full source tree, so they
+# cannot be applied to the autoconf tarball; no patches are mirrored
 SRC_URI = " \
     file://sqlite-autoconf-${SQLITE_PV}.tar.gz \
     "

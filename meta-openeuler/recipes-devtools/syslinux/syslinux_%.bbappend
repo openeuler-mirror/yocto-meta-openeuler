@@ -19,6 +19,8 @@ SRC_URI:prepend = " \
     file://backport-add-RPMOPTFLAGS-to-CFLAGS-for-some-stuff.patch \
     file://backport-tweak-for-gcc-10.patch \
     file://backport-zlib-update.patch \
+            file://backport-libpng-update-to-1.6.36.patch \
+            file://backport-CVE-2020-24370.patch \
 "
 
 SRC_URI[tarball.md5sum] = "f9c956fde0de29be297402ecbc8ff4d0"
