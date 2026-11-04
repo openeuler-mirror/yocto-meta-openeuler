@@ -12,6 +12,7 @@ SRC_URI:remove = " \
 SRC_URI:prepend = " \
         file://${BP}.tar.gz \
         file://readline-8.0-shlib.patch \
+        file://backport-Readline-8.2-patch-1-fix-crash-when-readline-is-star.patch \
 "
 
 SRC_URI[archive.md5sum] = "44c762f4abaca8114858e44ca8ee9777"

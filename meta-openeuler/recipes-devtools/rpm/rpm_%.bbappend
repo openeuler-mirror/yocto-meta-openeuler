@@ -48,6 +48,62 @@ SRC_URI:prepend = " \
         file://backport-Use-proper-type-for-copyTagsFromMainDebug.patch \
         file://Add-digest-list-plugin.patch \
         file://Add-IMA-digest-list-support.patch \
+        file://rpm-selinux-plugin-check-context-file-exist.patch \
+        file://disable-automatic-maintenance-also.patch \
+        file://backport-Reset-recursion-depth-for-error-message.patch \
+        file://backport-Fix-division-by-zero-in-elfdeps-RhBug-2299414.patch \
+        file://backport-Make-sure-dirs-are-not-relocated-twice.patch \
+        file://backport-Fix-root-relocation-regression.patch \
+        file://backport-Fix-crash-on-Lua-file-trigger-exiting-with-return-ed.patch \
+        file://backport-Fix-V-option-usage-in-our-tests.patch \
+        file://backport-Remove-libtool-la-symlinks.patch \
+        file://backport-Specify-the-private-key-in-rpm-addsign.patch \
+        file://backport-Use-EVP_PKEY_verify-to-verify-DSA-signatures.patch \
+        file://backport-No-longer-use-the-low-level-API-in-openssl-3.patch \
+        file://backport-Add-ECDSA-support-to-digest_openssl.patch \
+        file://backport-Support-NIST-P-521.patch \
+        file://backport-Allow-signing-with-ECDSA-keys.patch \
+        file://backport-Support-ECDSA-in-key-parsing.patch \
+        file://backport-Fix-memleak-when-process-policies.patch \
+        file://backport-Enforce-the-same-sanity-checks-on-db-add-and-rebuild.patch \
+        file://backport-Fix-a-memory-leak-on-rpmdb-importdb.patch \
+        file://backport-Require-macro-filenames-to-end-in-alphanum-char.patch \
+        file://backport-Allow-version-to-be-omitted-in-the-replace-test-spec.patch \
+        file://backport-Fix-wrong-return-code-on-O_DIRECTORY-open-of-invalid.patch \
+        file://backport-Refactor-fsmOpenat-return-style-for-consistency-with.patch \
+        file://backport-Report-unsafe-symlinks-during-installation-as-a-spec.patch \
+        file://backport-Fix-FA_TOUCH-ed-files-getting-removed-on-failed-upda.patch \
+        file://backport-Fix-race-condition-in-rpmioMkpath.patch \
+        file://backport-Ignore-EPERM-for-root-when-setting-IMA-signature-xat.patch \
+        file://backport-Fix-a-copy-paste-help-description-of-rpmbuild-rf-and.patch \
+        file://backport-Return-1-from-fdSize-for-non-regular-files.patch \
+        file://backport-Check-RPATH-and-RUNPATH-separately-in-check-rpaths.patch \
+        file://backport-Avoid-Python-reference-leaks.patch \
+        file://backport-Ensure-header-object-is-cleaned-even-in-case-of-an-e.patch \
+        file://backport-revert-Make-brp-strip-comment-note-multi-process.patch \
+        file://backport-rpmrc-Drop-left-over-free.patch \
+        file://backport-Fix-segfault-in-rpmgraph.patch \
+        file://backport-rpmgraph-Prevent-memory-leaks-in-error-handling.patch \
+        file://backport-Fix-rpmds-trigger-index-to-be-optional-as-originally.patch \
+        file://backport-Fix-rpmds-segfault-s-memleaks-on-incomplete-header-d.patch \
+        file://backport-Split-testsuite-rpmdb-reset-to-a-macro-of-its-own.patch \
+        file://backport-Add-a-test-for-CVE-2026-44605.patch \
+        file://backport-CVE-2026-44605-Harden-the-ndb-implementation-against-integer-overfl.patch \
+        file://backport-CVE-2026-78367.patch \
+        file://backport-CVE-2026-84837-CVE-2026-84838-1.patch \
+        file://backport-CVE-2026-84837-CVE-2026-84838-2.patch \
+        file://backport-CVE-2026-84837-CVE-2026-84838-3.patch \
+        file://backport-CVE-2026-84837-CVE-2026-84838-4.patch \
+        file://backport-CVE-2026-84837-CVE-2026-84838-5.patch \
+        file://backport-Make-the-hex-validator-helper-function-internally-available.patch \
+        file://backport-CVE-2026-103242-1.patch \
+        file://backport-CVE-2026-103242-2.patch \
+        file://backport-CVE-2026-103242-3.patch \
+        file://backport-CVE-2026-103242-4.patch \
+        file://Support-sm2p256v1-of-ECDSA-and-sm3-of-hash.patch \
+        file://support-config-enable-default-subr-macro.patch \
+        file://huawei-fix-test-failed-basic-file-tigger-scripts.patch \
+        file://fix-rpm-install-coredump-when-sigp-data-is-null.patch \
 "
 
 SRC_URI[sha256sum] = "2e0d220b24749b17810ed181ac1ed005a56bbb6bc8ac429c21f314068dc65e6a"
