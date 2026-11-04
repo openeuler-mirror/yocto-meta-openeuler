@@ -1,17 +1,17 @@
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
-LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
+# COPYING checksum matches the 1.2.1 base recipe (cbbd794e...)
 
 # not support of libcap from 1.2.1
 PACKAGECONFIG:remove = "libcap"
 PACKAGECONFIG[libcap] = ""
 
-PV = "1.3.0"
+PV = "1.2.1"
 
 SRC_URI:prepend = "file://${BP}.tar.bz2 \
            "
 
-SRC_URI[sha256sum] = "9b3cd5226e7597f2fded399a3bc659923351536559e9db0826981bca316494de"
+SRC_URI[sha256sum] = "457a185e5a85238fb945a955dc6352ab962dc8b48720b62fc9fa48c7540a4067"
 
 S = "${WORKDIR}/${BP}"

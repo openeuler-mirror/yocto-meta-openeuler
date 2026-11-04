@@ -1,10 +1,10 @@
 # python3-pbr Dependencies
-PV = "0.42.0"
+PV = "0.40.0"
 
 require pypi-src-openeuler.inc
 
 # from version 0.40.0, compare the differences in upstream recipe
-SRC_URI[sha256sum] = "000b0bb617ff3914f7a352687a7087ededd5b96a95e70e743c484904115a1021"
+SRC_URI[sha256sum] = "3ef5fd1a211b34028d72fd3037692db8301dc2bc5e82646fded18cddf5af1ae9"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=7ffb0db04527cfe380e4f2726bd05ebf"
 
 # remove 0.37.1 patch

@@ -1,5 +1,5 @@
 # main bbfile: yocto-poky/meta/recipes-connectivity/ppp/ppp_2.4.9.bb
-PV = "2.4.9"
+PV = "2.5.0"
 
 # source and patches from openeuler
 # can't apply: backport-ppp-2.4.9-config.patch, no support new feature(pam,cbcp) here
@@ -24,5 +24,5 @@ SRC_URI:prepend = " \
     file://backport-pppd-Negotiate-IP-address-when-only-peer-addresses-are-provided.patch \
 "
 
-SRC_URI[sha256sum] = "f938b35eccde533ea800b15a7445b2f1137da7f88e32a16898d02dee8adc058d"
+SRC_URI[sha256sum] = "5cae0e8075f8a1755f16ca290eb44e6b3545d3f292af4da65ecffe897de636ff"
 

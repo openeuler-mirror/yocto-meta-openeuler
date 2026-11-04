@@ -1,5 +1,5 @@
 
-PV = "0.25.5"
+PV = "0.25.0"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}/:"
 

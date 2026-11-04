@@ -6,11 +6,11 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=f27445198ba1500f508fce2b183ce0ff"
 DEPENDS = "sqlite3 sqlite3-native"
 
 SRC_URI = "http://download.osgeo.org/${BPN}/${BP}.tar.gz"
-SRC_URI[sha256sum] = "91a3695a004ea28db0448a34460bed4cc3b130e5c7d74339ec999efdab0e547d"
+SRC_URI[sha256sum] = "791a0610547eeabb17006cfd49cdbd2034f3240f47ed5e88a1031811f4e2bcf3"
 
-inherit cmake lib_package
+inherit bash-completion cmake lib_package
 
-EXTRA_OECMAKE = "-DBUILD_TESTING=OFF -DSQLITE3_LIBRARY:STRING=sqlite3"
+EXTRA_OECMAKE = "-DBUILD_TESTING=OFF"
 
 FILES:${PN} += "${datadir}/proj"
 

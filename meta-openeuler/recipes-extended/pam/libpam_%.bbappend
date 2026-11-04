@@ -16,8 +16,6 @@ SRC_URI += " \
             file://bugfix-pam-1.1.8-faillock-systemtime.patch \
             file://backport-CVE-2024-22365-pam_namespace-protect_dir-use-O_DIRECTORY-to-prevent.patch \
             file://backport-pam_pwhistory-fix-passing-NULL-filename-argument-to-pwhistory-helper.patch \
-            file://backport-pam_shells-Plug-econf-memory-leak.patch \
-            file://backport-pam_selinux-fix-formatting-of-audit-messages.patch \
             file://change-ndbm-to-gdbm.patch \
             file://add-sm3-crypt-support.patch \
 "
