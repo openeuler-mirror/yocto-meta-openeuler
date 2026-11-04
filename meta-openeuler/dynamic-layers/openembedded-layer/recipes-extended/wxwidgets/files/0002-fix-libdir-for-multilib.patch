@@ -1,0 +1,43 @@
+From 42b1d9e8138b8b4f7160f208a5d15fe25d0223a3 Mon Sep 17 00:00:00 2001
+From: Kai Kang <kai.kang@windriver.com>
+Date: Sat, 12 Oct 2024 18:43:25 +0800
+Subject: [PATCH] fix libdir for multilib
+
+wxWidgets hardcodes libdir with 'lib' and does not support multilib
+which will change it. Respect variable wxPLATFORM_LIB_DIR to support
+libdir be configurable.
+
+Upstream-Status: Pending
+
+Signed-off-by: Kai Kang <kai.kang@windriver.com>
+
+Rebase for wxWidgets 3.2.1. Replace wxPLATFORM_LIB_DIR with LIB_SUFFIX
+in this patch that LIB_SUFFIX has been passed to cmake in cmake.bbclass.
+
+Signed-off-by: Kai Kang <kai.kang@windriver.com>
+
+Rebased on 3.2.11: upstream refactored install.cmake/config.cmake/
+webview/CMakeLists.txt to derive their install paths from a new
+library_dir variable (= CMAKE_INSTALL_LIBDIR, from GNUInstallDirs) and
+wxCONFIG_DIR (derived from wxOUTPUT_DIR), which are already multilib-aware
+on their own -- dropped those 3 now-redundant hunks. Only wxOUTPUT_DIR
+in CMakeLists.txt (a build-dir path, not an install path, so untouched by
+that refactor) still needs the LIB_SUFFIX fix.
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -48,7 +48,7 @@
+ # Initialize variables for quick access to wx root dir in sub dirs
+ set(wxSOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+ set(wxBINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
+-set(wxOUTPUT_DIR ${wxBINARY_DIR}/lib)
++set(wxOUTPUT_DIR ${wxBINARY_DIR}/lib${LIB_SUFFIX})
+ 
+ # parse the version number from wx/version.h and include in wxMAJOR_VERSION and wxMINOR_VERSION
+ file(READ "${wxSOURCE_DIR}/include/wx/version.h" WX_VERSION_H_CONTENTS)
+--
+2.49.0

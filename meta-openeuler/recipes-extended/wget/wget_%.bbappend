@@ -7,6 +7,17 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6f65012d1daf98cb09b386cfb68df26b"
 # openeuler SRC_URI
 SRC_URI:prepend = "file://${BP}.tar.gz \
     file://backport-CVE-2024-38428.patch \
+    file://backport-wget-1.17-path.patch \
+    file://backport-CVE-2024-10524.patch \
+    file://backport-src-url.c-maybe_prepend_scheme-Print-message-only-in.patch \
+    file://backport-CVE-2026-58469-1.patch \
+    file://backport-CVE-2026-58469-2.patch \
+    file://backport-CVE-2026-58470.patch \
+    file://backport-CVE-2026-58471.patch \
+    file://backport-CVE-2026-58472-1.patch \
+    file://backport-CVE-2026-58472-2.patch \
+    file://backport-CVE-2026-15146.patch \
+    file://backport-CVE-2026-16599.patch \
                   "
 
 # openeuler SRC_URI[sha256sum]

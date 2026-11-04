@@ -1,5 +1,5 @@
 # bbfile: yocto-meta-openembedded/meta-oe/recipes-extended/wxwidgets/wxwidgets_3.1.5.bb
-PV = "3.2.2.1"
+PV = "3.2.11"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
@@ -10,20 +10,20 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 # the patch had fixed in the version
 # file://0001-locale-Avoid-using-glibc-specific-defines-on-musl.patch
 
+# patch set overlaid from the meta-oe master wxwidgets_3.2.11 recipe
+# (rebased for 3.2.11; the old 3.2.2-era patches no longer apply)
 SRC_URI = " \
         file://wxWidgets-${PV}.tar.bz2 \
         file://0001-wx-config.in-Disable-cross-magic-it-does-not-work-fo.patch \
-        file://fix-libdir-for-multilib.patch \
-        file://create-links-with-relative-path.patch \
-        file://not-append-system-name-to-lib-name.patch \
-        file://wx-config-fix-libdir-for-multilib.patch \
-        file://musl-locale-l.patch \
-        file://0001-Set-HAVE_LARGEFILE_SUPPORT-to-1-explicitly.patch \
+        file://0002-fix-libdir-for-multilib.patch \
+        file://0004-don-not-append-system-name-to-lib-name.patch \
+        file://0006-Fix-locale-on-musl.patch \
+        file://0007-Set-HAVE_LARGEFILE_SUPPORT-to-1-explicitly.patch \
 "
 
 S = "${WORKDIR}/wxWidgets-${PV}"
 
-SRC_URI[sha256sum] = "dffcb6be71296fff4b7f8840eb1b510178f57aa2eb236b20da41182009242c02"
+SRC_URI[sha256sum] = "6a129015bce2e914e4bf61ec4411854ad962801d47e92f2eb8340adb6a90af08"
 
 EXTRA_OECMAKE:remove = "-DwxPLATFORM_LIB_DIR=${@d.getVar('baselib').replace('lib', '')}"
 
