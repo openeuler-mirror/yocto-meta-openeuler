@@ -18,6 +18,11 @@ SRC_URI:prepend = "file://${BP}.tar.xz \
         file://tar-1.35-add-forgotten-tests-from-upstream.patch \
         file://tar-1.35-revert-fix-savannah-bug-633567.patch \
         file://tar-Add-sw64-architecture.patch \
+        file://CVE-2025-45582.patch \
+        file://backport-Avoid-acl_-prefix-for-functions.patch \
+        file://backport-CVE-2026-5704.patch \
+        file://backport-CVE-2026-18477.patch \
+        file://backport-CVE-2026-18508.patch \
 "
 
 SRC_URI[md5sum] = "aa1621ec7013a19abab52a8aff04fe5b"

@@ -11,6 +11,7 @@ SRC_URI = "file://tbb-${PV}.tar.gz \
         file://tbb-2021-Werror.patch \
         file://tbb-2021-strict-aliasing.patch \
         file://bugfix-tbb-fix-__TBB_machine_fetchadd4-was-not-declared-on-.patch \
+        file://fix-test-error-when-allocSize-not-equal-HUGE_PAGE_SI.patch \
 "
 
 S = "${WORKDIR}/oneTBB-${PV}"
