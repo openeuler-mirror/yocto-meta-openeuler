@@ -5,6 +5,8 @@ PV = "4.3.4"
 SRC_URI:append = " \
         file://libzmq-${PV}.tar.gz \
         file://fix-test_inproc_connect-occasionally-fails-on-slow-archs.patch \
+        file://backport-Fix-Fedora33-s390x-build.patch \
+        file://backport-fix-fix-build-on-qemu-user.patch \
 "
 
 SRC_URI[md5sum] = "cc20b769ac10afa352e5ed2769bb23b3"
