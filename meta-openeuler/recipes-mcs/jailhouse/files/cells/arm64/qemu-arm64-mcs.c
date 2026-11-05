@@ -4,7 +4,7 @@
  * Configuration for QEMU arm64 virtual target, 2G RAM, 4 cores
  * Support virtio-rpmsg
  *
- * NOTE: Add "mem=780M" to the kernel command line.
+ * NOTE: Add "mem=750M" to the kernel command line.
  */
 
 #include <jailhouse/types.h>
@@ -86,8 +86,10 @@ struct {
 		/* RAM
 		 * 0x4000 0000 - 0x7fa1 0000 for root
 		 * 0x7a00 0000 - 0x7f00 0000 for non-root
-		 * so we need to use mem=780 (0x70c0 0000) to reserved mem for non-root
-		 * Note: mem=xxx must cover ivshmem(0x70103000) for us now (because we need to init the ivshmem as a dma pool)
+		 * use mem=750M (0x6ee0 0000) to reserve the rest for the
+		 * hypervisor and non-root cells; the ivshmem windows starting
+		 * at 0x6fffe000 must stay outside the Linux RAM resource so
+		 * that uio_ivshmem can claim them
 		 */ {
 			.phys_start = 0x40000000,
 			.virt_start = 0x40000000,
