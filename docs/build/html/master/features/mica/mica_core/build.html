@@ -155,7 +155,27 @@
 <p>MICA 支持在 <cite>bare-metal</cite>、<cite>hetero</cite>、<cite>jailhouse</cite>、<cite>xen</cite> 四种不同的环境上运行，默认构建 <cite>bare-metal</cite>。</p>
 <p><cite>hetero</cite> 也是裸金属部署的一种，用于在ARM64主机上运行RISC-V架构MCU上的RTOS，与 <cite>bare-metal</cite> 共用相同的构建流程。</p>
 <p>若需要支持 <cite>jailhouse</cite>，请在 oebuild generate 时添加 <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">mcs/jailhouse``（无需手改</span> <span class="pre">``compile.yaml</span></code>）。</p>
-<p>若需要支持 <cite>xen</cite>，请在oebuild generate时额外添加 -f xen，无需修改 <code class="docutils literal notranslate"><span class="pre">compile.yaml</span></code>。</p>
+<p>若需要支持 <cite>xen</cite>，推荐直接使用样例工程
+<code class="docutils literal notranslate"><span class="pre">.oebuild/samples/aarch64/qemu-aarch64-mcs-xen.yaml</span></code>，或参考其中的配置创建
+构建目录。Xen 部署的 Client OS 使用外部工作区构建的固件（样例为 Zephyr），需要在
+<code class="docutils literal notranslate"><span class="pre">compile.yaml</span></code> 的 <code class="docutils literal notranslate"><span class="pre">local_conf</span></code> 中设置：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">MCS_FEATURES ?= &quot;external-firmware xen&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">DISTRO_FEATURES:append = &quot; mcs xen&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">MCS_FIRMWARE_ELF ?= &quot;/path/to/zephyrproject/build-xen/zephyr/zephyr_openamp_rsc_table.elf&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">MCS_FIRMWARE_BIN ?= &quot;/path/to/zephyrproject/build-xen/zephyr/zephyr_openamp_rsc_table.bin&quot;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">MCS_FIRMWARE_ELF</span></code> 和 <code class="docutils literal notranslate"><span class="pre">MCS_FIRMWARE_BIN</span></code> 必须指向实际构建产物，并确保
+该路径在 oebuild 构建容器内可见（可以将 Zephyr 工作区只读挂载到容器中）。
+固件不限于 Zephyr：任何实现 MCS Client 接口（OpenAMP resource table 与
+micad 使用的 rpmsg 端点）的 RTOS 或裸机程序都可以通过 <code class="docutils literal notranslate"><span class="pre">external-firmware</span></code>
+安装。产物默认安装为 <code class="docutils literal notranslate"><span class="pre">zephyr.elf</span></code>/<code class="docutils literal notranslate"><span class="pre">zephyr.bin</span></code>，可用
+<code class="docutils literal notranslate"><span class="pre">MCS_FIRMWARE_NAME</span></code> 修改，此时需同步修改 mica/Xen 配置中的路径。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>不要将 <code class="docutils literal notranslate"><span class="pre">openamp</span></code> 加入 <code class="docutils literal notranslate"><span class="pre">MCS_FEATURES</span></code>。<code class="docutils literal notranslate"><span class="pre">openamp</span></code> 会使镜像继承
+<code class="docutils literal notranslate"><span class="pre">qemuboot-mcs-dtb</span></code>，覆盖 Xen 使用的 qemuboot 设备树和启动参数。</p>
+</div>
 </div>
 </li>
 <li><p>进入 <code class="docutils literal notranslate"><span class="pre">&lt;build_mcs&gt;</span></code> 目录，编译 openeuler-image 或 openeuler-image-mcs，两个镜像都会安装 mcs 组件，但 openeuler-image-mcs 仅包含少量的基础软件包：</p>

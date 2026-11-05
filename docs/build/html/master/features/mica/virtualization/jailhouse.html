@@ -150,7 +150,11 @@ Jailhouse 的第一个 cell 叫 Root Cell，这是一个特权Cell，内部运�
 <h3>方法一：使用 oebuild 构建<a class="headerlink" href="#oebuild" title="Permalink to this heading"></a></h3>
 <blockquote>
 <div><p>openEuler Embedded 目前支持在 qemu-arm64 和 RPI4 上运行 Jailhouse，默认集成到了 openeuler-image-mcs 镜像，构建方法可参考 <a class="reference internal" href="../mica_core/build.html#mcs-build"><span class="std std-ref">mcs镜像构建指导</span></a>。</p>
-<p>请注意，需要修改 oebuild 的编译配置文件 compile.yaml，把 MCS_FEATURES 中的 openamp 改成 jailhouse。</p>
+<p>请注意，需要修改 oebuild 的编译配置文件 compile.yaml，把 MCS_FEATURES 中的 openamp 改成 jailhouse，
+例如 <code class="docutils literal notranslate"><span class="pre">MCS_FEATURES</span> <span class="pre">=</span> <span class="pre">&quot;jailhouse</span> <span class="pre">external-firmware&quot;</span></code>，其中 external-firmware 表示 client OS 使用
+外部工作区构建的固件（样例为 Zephyr，也可以是其它遵循 MCS 接口的 RTOS 或裸机程序）。
+也可以直接使用样例配置 <code class="docutils literal notranslate"><span class="pre">.oebuild/samples/aarch64/qemu-aarch64-mcs-jailhouse.yaml</span></code>
+生成 qemu-aarch64 构建工程。</p>
 </div></blockquote>
 </section>
 <section id="mcs-sdk">
@@ -164,8 +168,8 @@ Jailhouse 的第一个 cell 叫 Root Cell，这是一个特权Cell，内部运�
 <span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>Jailhouse<span class="p">;</span><span class="w"> </span>tar<span class="w"> </span>-xzf<span class="w"> </span>jailhouse-0.12.tar.gz
 
 <span class="gp"># </span>打入<span class="w"> </span>openEuler<span class="w"> </span>Embedded<span class="w"> </span>的增强补丁：
-<span class="gp">$ </span>curl<span class="w"> </span>-OL<span class="w"> </span>https://atomgit.com/openeuler/yocto-meta-openeuler/raw/master/meta-openeuler/recipes-mcs/jailhouse/files/0001-driver-Add-support-for-remote-proc.patch
-<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>jailhouse-0.12<span class="p">;</span><span class="w"> </span>patch<span class="w"> </span>-p1<span class="w"> </span>&lt;<span class="w"> </span>../0001-driver-Add-support-for-remote-proc.patch
+<span class="gp">$ </span>curl<span class="w"> </span>-OL<span class="w"> </span>https://atomgit.com/openeuler/yocto-meta-openeuler/raw/master/meta-openeuler/recipes-mcs/jailhouse/files/0001-Support-for-loading-ELF_64-image.patch
+<span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>jailhouse-0.12<span class="p">;</span><span class="w"> </span>patch<span class="w"> </span>-p1<span class="w"> </span>&lt;<span class="w"> </span>../0001-Support-for-loading-ELF_64-image.patch
 </pre></div>
 </div>
 </li>
@@ -221,7 +225,7 @@ Jailhouse 的第一个 cell 叫 Root Cell，这是一个特权Cell，内部运�
 <li><p>启动 QEMU</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">qemu-system-aarch64 -machine virt,gic-version=3,virtualization=on,its=off \</span>
 <span class="go">   -cpu cortex-a57 -nographic -smp 4 -m 2G  \</span>
-<span class="go">   -append &quot;console=ttyAMA0 loglevel=8 mem=1G&quot; \</span>
+<span class="go">   -append &quot;console=ttyAMA0 loglevel=8 mem=750M&quot; \</span>
 <span class="go">   -kernel zImage \</span>
 <span class="go">   -initrd openeuler-image-mcs-qemu-aarch64-*.rootfs.cpio.gz</span>
 </pre></div>

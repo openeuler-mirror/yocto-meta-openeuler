@@ -71,11 +71,14 @@
 <li class="toctree-l5 current"><a class="current reference internal" href="#">嵌入式实时虚拟机XEN</a><ul>
 <li class="toctree-l6"><a class="reference internal" href="#id2">总体介绍</a></li>
 <li class="toctree-l6"><a class="reference internal" href="#id3">Xen 构建指导</a><ul>
-<li class="toctree-l7"><a class="reference internal" href="#oebuild">使用 oebuild 构建</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#zephyr">构建 Zephyr 固件</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#mcs">构建 MCS 镜像</a></li>
 </ul>
 </li>
 <li class="toctree-l6"><a class="reference internal" href="#id4">Xen 使用指导</a><ul>
-<li class="toctree-l7"><a class="reference internal" href="#xendom0domu">引导Xen、Dom0和DomU流程</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#qemu-arm64">在 QEMU-ARM64 上启动</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#zephyr-4-5-client-os">部署 Zephyr 4.5 Client OS</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#linux-domu">引导 Linux DomU</a></li>
 <li class="toctree-l7"><a class="reference internal" href="#kp920osdomu">示例：基于KP920引导一个实时OS作为DomU</a></li>
 </ul>
 </li>
@@ -138,53 +141,242 @@
 <p>Xen 是开源的 Type-1 型虚拟机管理器（HyperVisor），属于 Linux 基金会 <a class="reference external" href="https://xenproject.org/">Xen Project</a> 的重要部分。</p>
 <p>Xen 包含以下核心组件：</p>
 <ul class="simple">
-<li><p>Xen Core：Xen 的虚拟化层，负责CPU 调度、内存分配、中断处理等</p></li>
+<li><p>Xen Core：Xen 的虚拟化层，负责 CPU 调度、内存分配、中断处理等</p></li>
 <li><p>特权域（Dom0）：唯一拥有硬件驱动访问权的管理虚拟机，负责创建和管理其他虚拟机（DomU）</p></li>
 <li><p>一个或多个用户域（DomU）：各种用户/应用程序域。这些域运行用户应用程序和操作系统</p></li>
+</ul>
+<p>在混合关键性系统中，Dom0 运行 openEuler Embedded，由 MICA 管理端负责创建和管理
+Client OS；DomU 运行实时操作系统，例如 Zephyr。MICA 通过 <code class="docutils literal notranslate"><span class="pre">xen-mcsback.ko</span></code>
+作为 Xen backend，在 Dom0 与 DomU 之间建立基于 grant table 的共享内存和事件通道，
+并在其上运行 OpenAMP rpmsg 通信。</p>
+<p>MCS 的 Xen 数据通路具有以下特点：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">xen-mcsback.ko</span></code> 在 Dom0 侧申请 32 页（128 KiB）grant 共享池，其中第 0 页
+用于存放 resource table；</p></li>
+<li><p>backend 将共享页的 gref、事件通道号等发布到
+<code class="docutils literal notranslate"><span class="pre">/local/domain/0/backend/mica/&lt;domid&gt;/0/</span></code>，DomU 从 xenstore 获取这些信息后
+映射共享内存并建立 vring；</p></li>
+<li><p>MICA 先通过 <code class="docutils literal notranslate"><span class="pre">xl</span> <span class="pre">create</span> <span class="pre">-p</span></code> 创建处于暂停状态的 DomU，完成 backend 配置和
+resource table 拷贝后再解除暂停，因此 Client OS 的配置需要同时提供 ELF 和
+原始二进制镜像。</p></li>
 </ul>
 </section>
 <hr class="docutils" />
 <section id="id3">
 <h2>Xen 构建指导<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
-<section id="oebuild">
-<h3>使用 oebuild 构建<a class="headerlink" href="#oebuild" title="Permalink to this heading"></a></h3>
-<p>目前已经在 yocto-meta-openeuler 中实现了对 QEMU-ARM64、KP920 的支持。</p>
+<p>目前已在 yocto-meta-openeuler 中实现了对 QEMU-ARM64 和 KP920 的支持。
+QEMU-ARM64 的 Client OS 以外部 Zephyr 4.5 工作区构建的固件为例。</p>
+<section id="zephyr">
+<h3>构建 Zephyr 固件<a class="headerlink" href="#zephyr" title="Permalink to this heading"></a></h3>
+<p>MCS Xen 的 Client OS 使用 Zephyr 的 <code class="docutils literal notranslate"><span class="pre">openamp_rsc_table</span></code> 样例，板级配置为
+<code class="docutils literal notranslate"><span class="pre">xenvm/xenvm/gicv3</span></code>。在已合入 MCS Xen transport 补丁的 Zephyr 4.5 工作区中执行：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>west<span class="w"> </span>build<span class="w"> </span>-b<span class="w"> </span>xenvm/xenvm/gicv3<span class="w"> </span>-d<span class="w"> </span>build-xen<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>zephyr/samples/subsys/ipc/openamp_rsc_table
+</pre></div>
+</div>
+<p>构建产物为：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">build-xen/zephyr/zephyr_openamp_rsc_table.elf</span></code>：MICA 解析 resource table 使用；</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">build-xen/zephyr/zephyr_openamp_rsc_table.bin</span></code>：Xen 引导 DomU 使用的原始镜像。</p></li>
+</ul>
+<p>该样例的板级配置文件 <code class="docutils literal notranslate"><span class="pre">boards/xenvm_xenvm_gicv3.conf</span></code> 已使能 Xen transport：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">CONFIG_IPM=n</span>
+<span class="go">CONFIG_OPENAMP_RSC_TABLE_XEN=y</span>
+<span class="go">CONFIG_OPENAMP_RSC_TABLE_TTY_ECHO=n</span>
+<span class="go">CONFIG_SHELL_RPMSG_INIT_LOG_LEVEL_NONE=y</span>
+<span class="go">CONFIG_SHELL_BACKEND_RPMSG_FORCE_TX_BLOCKING_MODE=y</span>
+<span class="go">CONFIG_HEAP_MEM_POOL_SIZE=262144</span>
+</pre></div>
+</div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">CONFIG_OPENAMP_RSC_TABLE_XEN</span></code> 会同时使能
+<code class="docutils literal notranslate"><span class="pre">CONFIG_OPENAMP_RSC_TABLE_VRING_OFFSET</span></code> 和 <code class="docutils literal notranslate"><span class="pre">CONFIG_XEN_STORE_COMMON</span></code>；
+<code class="docutils literal notranslate"><span class="pre">CONFIG_OPENAMP_RSC_TABLE_TTY_ECHO=n</span></code> 用于避免 echo 端点与 shell 争用
+<code class="docutils literal notranslate"><span class="pre">rpmsg-tty</span></code> 服务。</p>
+</section>
+<section id="mcs">
+<h3>构建 MCS 镜像<a class="headerlink" href="#mcs" title="Permalink to this heading"></a></h3>
 <ol class="arabic">
 <li><p>根据 <a class="reference internal" href="../mica_core/build.html#mcs-build"><span class="std std-ref">mcs镜像构建指导</span></a>，使用 oebuild 初始化编译环境。</p></li>
-<li><p>进入oebuild工作目录，创建编译配置文件 <code class="docutils literal notranslate"><span class="pre">compile.yaml</span></code> :</p>
-<blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>构建<span class="w"> </span>qemu-aarch64<span class="w"> </span>镜像，包含mcs和xen特性，此处构建目录名为<span class="w"> </span>build_xen
-<span class="go">oebuild generate -p qemu-aarch64 -f mcs -f xen -d qemu-xen</span>
-
-<span class="gp"># </span>或者，构建<span class="w"> </span>KP920<span class="w"> </span>镜像，包含mcs和xen特性，此处构建目录名为<span class="w"> </span>build_xen
-<span class="go">oebuild generate -p kp920 -f mcs -f xen -d kp920-xen</span>
+<li><p>推荐直接使用 Xen 样例工程
+<code class="docutils literal notranslate"><span class="pre">.oebuild/samples/aarch64/qemu-aarch64-mcs-xen.yaml</span></code>，或参考其中的配置创建
+构建目录。样例的关键配置如下：</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">MCS_FEATURES ?= &quot;external-firmware xen&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">DISTRO_FEATURES:append = &quot; mcs xen&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">MCS_FIRMWARE_ELF ?= &quot;/path/to/zephyrproject/build-xen/zephyr/zephyr_openamp_rsc_table.elf&quot;</span>
+<span class="l l-Scalar l-Scalar-Plain">MCS_FIRMWARE_BIN ?= &quot;/path/to/zephyrproject/build-xen/zephyr/zephyr_openamp_rsc_table.bin&quot;</span>
 </pre></div>
 </div>
-</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">external-firmware</span></code> 表示 Client OS 使用外部工作区构建的固件（样例为 Zephyr）；
+<code class="docutils literal notranslate"><span class="pre">MCS_FIRMWARE_ELF</span></code> 和 <code class="docutils literal notranslate"><span class="pre">MCS_FIRMWARE_BIN</span></code> 需要指向实际产物，并确保
+该路径在 oebuild 构建容器内可见（可以将 Zephyr 工作区只读挂载到容器中）。
+固件不限于 Zephyr：任何实现 MCS Client 接口（OpenAMP resource table 与
+micad 使用的 rpmsg 端点）的 RTOS 或裸机程序都可以通过 <code class="docutils literal notranslate"><span class="pre">external-firmware</span></code>
+安装。产物默认安装为 <code class="docutils literal notranslate"><span class="pre">zephyr.elf</span></code>/<code class="docutils literal notranslate"><span class="pre">zephyr.bin</span></code>，可用
+<code class="docutils literal notranslate"><span class="pre">MCS_FIRMWARE_NAME</span></code> 修改，此时需同步修改下文 Xen 配置中的 kernel 路径。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>不要将 <code class="docutils literal notranslate"><span class="pre">openamp</span></code> 加入 <code class="docutils literal notranslate"><span class="pre">MCS_FEATURES</span></code>。<code class="docutils literal notranslate"><span class="pre">openamp</span></code> 会使镜像同时继承
+<code class="docutils literal notranslate"><span class="pre">qemuboot-mcs-dtb</span></code>，覆盖 Xen 使用的 qemuboot 设备树和启动参数。</p>
+</div>
+<p>也可以使用 oebuild 的样例选择功能，选择 <code class="docutils literal notranslate"><span class="pre">qemu-aarch64-mcs-xen</span></code>：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>oebuild<span class="w"> </span>samples
+</pre></div>
+</div>
 </li>
-<li><p>进入 <code class="docutils literal notranslate"><span class="pre">build_xen</span></code> 目录使用oebuild容器构建:</p>
-<blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">oebuild bitbake</span>
+<li><p>进入构建目录，编译 MCS 镜像和 SDK：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>oebuild<span class="w"> </span>bitbake
 <span class="gp"># </span>进入容器后
-<span class="go">bitbake openeuler-image</span>
+<span class="gp">$ </span>bitbake<span class="w"> </span>openeuler-image-mcs
+<span class="gp">$ </span>bitbake<span class="w"> </span>openeuler-image-mcs<span class="w"> </span>-c<span class="w"> </span>do_populate_sdk
 </pre></div>
 </div>
-</div></blockquote>
+<p>构建完成后，在 <code class="docutils literal notranslate"><span class="pre">output</span></code> 目录下可以看到 <code class="docutils literal notranslate"><span class="pre">xen-qemu-aarch64</span></code>、
+<code class="docutils literal notranslate"><span class="pre">openeuler-image-mcs-qemu-aarch64-*.rootfs.cpio.gz</span></code> 和
+<code class="docutils literal notranslate"><span class="pre">openeuler-image-mcs-qemu-aarch64-*.qemuboot.dtb</span></code> 等产物。如需构建包含更多
+基础软件包的完整镜像，可将 <code class="docutils literal notranslate"><span class="pre">openeuler-image-mcs</span></code> 替换为 <code class="docutils literal notranslate"><span class="pre">openeuler-image</span></code>。</p>
 </li>
-<li><p>构建完成后，在 output 目录下有对应的部署件：KP920提供iso镜像，QEMU提供zImage和initrd。</p></li>
+<li><p>KP920 平台仍可使用以下命令生成构建配置，并正常安装 ISO 镜像：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"> </span>kp920<span class="w"> </span>-f<span class="w"> </span>mcs<span class="w"> </span>-f<span class="w"> </span>xen<span class="w"> </span>-d<span class="w"> </span>kp920-xen
+</pre></div>
+</div>
+</li>
 </ol>
 </section>
 </section>
 <hr class="docutils" />
 <section id="id4">
 <h2>Xen 使用指导<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
-<section id="xendom0domu">
-<h3>引导Xen、Dom0和DomU流程<a class="headerlink" href="#xendom0domu" title="Permalink to this heading"></a></h3>
+<section id="qemu-arm64">
+<h3>在 QEMU-ARM64 上启动<a class="headerlink" href="#qemu-arm64" title="Permalink to this heading"></a></h3>
 <ol class="arabic">
-<li><p>构建完成后使用 <code class="docutils literal notranslate"><span class="pre">runqemu</span></code> 启动 QEMU，或者是在 KP920 上正常安装 ISO 镜像，之后默认会通过 qemu 参数或 grub 配置完成 Xen 和 Dom0 的引导。</p></li>
-<li><p>之后，可以通过以下 config 配置，并执行 <code class="docutils literal notranslate"><span class="pre">xl</span> <span class="pre">create</span> <span class="pre">xen-linux.cfg</span></code> 启动 Linux DomU：</p>
-<blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cat<span class="w"> </span>xen-linux.cfg
+<li><p>构建完成后，可以在构建目录下使用 <code class="docutils literal notranslate"><span class="pre">runqemu</span></code> 启动 QEMU：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>oebuild<span class="w"> </span>runqemu<span class="w"> </span>nographic
+</pre></div>
+</div>
+<p>镜像默认使用 2G 内存，Xen 为 Dom0 分配 512M 内存，Dom0 控制台为 <code class="docutils literal notranslate"><span class="pre">hvc0</span></code>。</p>
+</li>
+<li><p>如果不使用 runqemu，也可以参考以下命令手工启动：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>qemu-system-aarch64<span class="w"> </span>-machine<span class="w"> </span>virt,gic-version<span class="o">=</span><span class="m">3</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-machine<span class="w"> </span><span class="nv">virtualization</span><span class="o">=</span><span class="nb">true</span><span class="w"> </span>-cpu<span class="w"> </span>cortex-a53<span class="w"> </span>-smp<span class="w"> </span><span class="m">4</span><span class="w"> </span>-m<span class="w"> </span><span class="m">2048</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-nographic<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-device<span class="w"> </span>virtio-net-pci,netdev<span class="o">=</span>net0<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-netdev<span class="w"> </span>tap,id<span class="o">=</span>net0,ifname<span class="o">=</span>tap0,script<span class="o">=</span>/etc/qemu-ifup<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-device<span class="w"> </span>loader,file<span class="o">=</span>Image,addr<span class="o">=</span>0x45000000<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-kernel<span class="w"> </span>xen-qemu-aarch64<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-initrd<span class="w"> </span>openeuler-image-mcs-qemu-aarch64-*.rootfs.cpio.gz<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-dtb<span class="w"> </span>openeuler-image-mcs-qemu-aarch64-*.qemuboot.dtb<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-append<span class="w"> </span><span class="s1">&#39;root=/dev/ram0 rw debugshell mem=2048M console=hvc0 net.ifnames=0&#39;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">qemuboot.dtb</span></code> 中包含 Xen 与 Dom0 的启动参数以及 Dom0 内核的 multiboot
+模块信息，必须使用与镜像同一次构建生成的 dtb。<code class="docutils literal notranslate"><span class="pre">dom0_mem=512M</span></code> 来自该 dtb，
+Dom0 实际使用的内存以 Xen 的配置为准。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>低版本 QEMU 存在影响 Xen 的缺陷，可能造成 Xen 镜像卡死，建议使用较新版本的
+qemu-system-aarch64。</p>
+</div>
+</li>
+<li><p>Dom0 启动后，确认 Xen backend 已加载：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>lsmod<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>xen_mcsback
+<span class="go">xen_mcsback             ...</span>
+<span class="gp">qemu-aarch64:~$ </span>ls<span class="w"> </span>/dev/mcs_xen
+<span class="go">/dev/mcs_xen</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="zephyr-4-5-client-os">
+<h3>部署 Zephyr 4.5 Client OS<a class="headerlink" href="#zephyr-4-5-client-os" title="Permalink to this heading"></a></h3>
+<p>MCS 镜像默认安装 <code class="docutils literal notranslate"><span class="pre">/etc/mica/qemu-zephyr-xen.conf</span></code>，其内容如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[Mica]</span>
+<span class="go">Name=qemu-zephyr-xen</span>
+<span class="go">CPU=1-3</span>
+<span class="go">ClientPath=/lib/firmware/zephyr.elf</span>
+<span class="go">AutoBoot=no</span>
+<span class="go">Pedestal=xen</span>
+<span class="go">PedestalConf=/lib/firmware/zephyr.bin</span>
+<span class="go">Memory=256</span>
+<span class="go">VCPU=1</span>
+<span class="go">CPUCapacity=100</span>
+</pre></div>
+</div>
+<p>其中 <code class="docutils literal notranslate"><span class="pre">zephyr.bin</span></code> 由 Xen 作为 DomU kernel 引导，<code class="docutils literal notranslate"><span class="pre">zephyr.elf</span></code> 由 MICA 解析
+resource table；两者必须来自同一次 Zephyr 构建。<code class="docutils literal notranslate"><span class="pre">CPU=1-3</span></code> 是可供 DomU 使用的
+物理 CPU 范围，<code class="docutils literal notranslate"><span class="pre">VCPU=1</span></code> 与 xenvm 设备的单 CPU 配置保持一致；
+<code class="docutils literal notranslate"><span class="pre">CPUCapacity=100</span></code> 表示占满 1 个 vCPU 的算力。</p>
+<ol class="arabic">
+<li><p>查看实例状态：</p>
+<p>micad 启动时会根据 <code class="docutils literal notranslate"><span class="pre">/etc/mica/*.conf</span></code> 自动创建实例，无需手工执行
+<code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">create</span></code>。通过 <code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">status</span></code> 可以确认实例处于 Offline 状态：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica<span class="w"> </span>status
+<span class="go">Name                          Assigned CPU        State               Service</span>
+<span class="go">qemu-zephyr-xen               1-3                 Offline</span>
+</pre></div>
+</div>
+</li>
+<li><p>启动实例：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica<span class="w"> </span>start<span class="w"> </span>qemu-zephyr-xen
+<span class="go">starting qemu-zephyr-xen...</span>
+<span class="go">start qemu-zephyr-xen successfully!</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">start</span></code> 内部会先通过 <code class="docutils literal notranslate"><span class="pre">xl</span> <span class="pre">create</span> <span class="pre">-p</span></code> 创建 DomU，配置 Xen backend 的
+grant table 和事件通道，然后解除 DomU 暂停。</p>
+<p>启动成功后，<code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">status</span></code> 会显示 Running 状态和 rpmsg-tty 服务：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica<span class="w"> </span>status
+<span class="go">Name                          Assigned CPU        State               Service</span>
+<span class="go">qemu-zephyr-xen               1-3                 Running             rpmsg-tty(/dev/ttyRPMSG0)</span>
+</pre></div>
+</div>
+<p>也可以通过 <code class="docutils literal notranslate"><span class="pre">xl</span> <span class="pre">list</span></code> 确认 DomU 资源：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>xl<span class="w"> </span>list
+<span class="go">Name                                        ID   Mem VCPUs      State   Time(s)</span>
+<span class="go">Domain-0                                     0   512     4     r-----       ...</span>
+<span class="go">qemu-zephyr-xen                              1   256     1     -b----       ...</span>
+</pre></div>
+</div>
+</li>
+<li><p>访问 Zephyr shell：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>screen<span class="w"> </span>/dev/ttyRPMSG0
+
+<span class="go">... ...</span>
+<span class="gp">uart:~$ </span>kernel<span class="w"> </span>version
+<span class="go">Zephyr version 4.5.99</span>
+</pre></div>
+</div>
+<p>之后可以通过 <code class="docutils literal notranslate"><span class="pre">Ctrl-a</span> <span class="pre">k</span></code> 或 <code class="docutils literal notranslate"><span class="pre">Ctrl-a</span> <span class="pre">Ctrl-k</span></code> 组合键退出 shell，参考
+<a class="reference external" href="https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS">screen(1) — Linux manual page</a> 。</p>
+</li>
+<li><p>停止与销毁实例：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">qemu-aarch64:~$ </span>mica<span class="w"> </span>stop<span class="w"> </span>qemu-zephyr-xen
+<span class="go">stopping qemu-zephyr-xen...</span>
+<span class="go">stop qemu-zephyr-xen successfully!</span>
+<span class="gp">qemu-aarch64:~$ </span>mica<span class="w"> </span>rm<span class="w"> </span>qemu-zephyr-xen
+<span class="go">removing qemu-zephyr-xen...</span>
+<span class="go">rm qemu-zephyr-xen successfully!</span>
+<span class="gp">qemu-aarch64:~$ </span>mica<span class="w"> </span>create<span class="w"> </span>qemu-zephyr-xen.conf
+<span class="go">Creating qemu-zephyr-xen...</span>
+<span class="go">Successfully created qemu-zephyr-xen!</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">stop</span></code> 会销毁对应的 Xen DomU，<code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">rm</span></code> 会移除 MICA 实例。实例被移除后，
+如需再次部署，可执行 <code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">create</span> <span class="pre">qemu-zephyr-xen.conf</span></code> 重新创建。</p>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>镜像中还提供了 UniProton 的 Xen 配置 <code class="docutils literal notranslate"><span class="pre">/etc/mica/qemu-uniproton-xen.conf</span></code>，
+可以通过相同的 <code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">start</span></code> / <code class="docutils literal notranslate"><span class="pre">mica</span> <span class="pre">stop</span></code> 流程部署，其 rpmsg-tty 绑定
+UniProton 的 shell。</p>
+</div>
+</section>
+<section id="linux-domu">
+<h3>引导 Linux DomU<a class="headerlink" href="#linux-domu" title="Permalink to this heading"></a></h3>
+<p>除了通过 MICA 部署实时操作系统，也可以直接使用 <code class="docutils literal notranslate"><span class="pre">xl</span></code> 创建 Linux DomU。
+通过以下 config 配置，并执行 <code class="docutils literal notranslate"><span class="pre">xl</span> <span class="pre">create</span> <span class="pre">xen-linux.cfg</span></code> 启动 Linux DomU：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>cat<span class="w"> </span>xen-linux.cfg
 <span class="go">name = &quot;domU&quot;</span>
 <span class="go">memory = 512</span>
 <span class="go">vcpus = 1</span>
@@ -193,15 +385,14 @@
 <span class="go">extra = &quot;console=hvc0 root=/dev/xvda rw&quot;</span>
 </pre></div>
 </div>
-</div></blockquote>
-</li>
-</ol>
-<p>如果需要退出 DomU 的 shell，可以通过 <code class="docutils literal notranslate"><span class="pre">ctrl</span> <span class="pre">+</span> <span class="pre">]</span></code> 组合键切换回 Dom0，通过 <code class="docutils literal notranslate"><span class="pre">xl</span> <span class="pre">console</span> <span class="pre">domU</span></code> 可以重新进入。</p>
+<p>如果需要退出 DomU 的 shell，可以通过 <code class="docutils literal notranslate"><span class="pre">ctrl</span> <span class="pre">+</span> <span class="pre">]</span></code> 组合键切换回 Dom0，通过
+<code class="docutils literal notranslate"><span class="pre">xl</span> <span class="pre">console</span> <span class="pre">domU</span></code> 可以重新进入。</p>
 </section>
 <section id="kp920osdomu">
 <h3>示例：基于KP920引导一个实时OS作为DomU<a class="headerlink" href="#kp920osdomu" title="Permalink to this heading"></a></h3>
 <ol class="arabic">
-<li><p>KP920使能xen的镜像已默认打包一个实时OS的示例，包括xen config和使能xen的zephyr镜像。</p>
+<li><p>KP920 使能 xen 的镜像已默认打包一个实时 OS 的示例，包括 xen config 和使能
+xen 的 Zephyr 镜像。该示例基于 Zephyr 3.7.1。</p>
 <blockquote>
 <div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">kp920 ~ # cat /etc/xen/xen-kp920-zephyr.cfg</span>
 <span class="go">name = &quot;zephyr&quot;</span>

@@ -73,7 +73,9 @@ ____
 
         | 按照以下命令启动 QEMU，注意：
         | 1. 启动 Jailhouse 需要指定 psci method 为 smc，因此，`-M` 需要配置为 ``virt,gic-version=3,virtualization=on,its=off``。
-        | 2. 需要通过添加启动参数 ``mem=750M`` 来预留出 Jailhouse 和 Non-root-cell 的内存。
+        | 2. 需要通过添加启动参数 ``mem=750M`` 来预留出 Jailhouse 和 Non-root-cell 的内存；
+        |    ivshmem 共享内存（0x6fffe000 起）需要位于 Linux 可用内存之外，以便 ``uio_ivshmem``
+        |    驱动接管该区域，因此该参数不能大于 750M。
 
         .. code-block:: console
 
@@ -90,22 +92,23 @@ ____
 
         | 按照以下命令启动 QEMU，注意：
         | 1. **低版本qemu存在影响xen的bug，会造成RTOS xen镜像卡死，建议使用高版本qemu。** 可参考 `qemu.org — Build instructions <https://www.qemu.org/download/>`_ 。
-        | 2. 构建-f mcs -f xen的镜像后，生成的 ``*.qemuboot.dtb`` 已带有 `multiboot,module xen,linux-zimage` 节点，可直接用于部署xen dom0。
-        | 3. 启动参数 ``mem=1024M`` 是预留给xen总共的内存，dom0 Linux的内存请通过dts ``xen,xen-bootargs`` 的 ``dom0_mem`` 进行配置。
+        | 2. 需要同时加载 ``xen-qemu-aarch64``、Dom0 内核 ``Image`` 以及 ``*.qemuboot.dtb``。``qemuboot.dtb`` 已包含 Xen/Dom0 启动参数和 Dom0 内核的 multiboot 模块信息，必须使用与镜像同一次构建生成的 dtb。
+        | 3. 镜像默认使用 2G 内存，其中 Dom0 内存由 dtb 中 ``xen,xen-bootargs`` 的 ``dom0_mem`` 配置（默认 512M）。
 
         .. code-block:: console
 
-          $ sudo /home/user/qemu-10.1.2/build/qemu-system-aarch64 -device virtio-net-pci,netdev=net0 \
+          $ sudo qemu-system-aarch64 -machine virt,gic-version=3 \
+              -machine virtualization=true -cpu cortex-a53 -smp 4 -m 2048 \
+              -nographic \
+              -device virtio-net-pci,netdev=net0 \
               -netdev tap,id=net0,ifname=tap0,script=/etc/qemu-ifup \
-              -initrd openeuler-image-*.cpio.gz\
               -device loader,file=Image,addr=0x45000000 \
-              -machine virt,gic-version=3 \
-              -machine virtualization=true \
-              -cpu cortex-a53 -smp 4 -m 4096 \
-              -serial mon:stdio -nographic \
               -kernel xen-qemu-aarch64 \
-              -append 'root=/dev/ram0 rw debugshell  mem=1024M console=ttyAMA0,115200' \
-              -dtb openeuler-image-mcs-qemu-aarch64-*.qemuboot.dtb
+              -initrd openeuler-image-mcs-qemu-aarch64-*.rootfs.cpio.gz \
+              -dtb openeuler-image-mcs-qemu-aarch64-*.qemuboot.dtb \
+              -append 'root=/dev/ram0 rw debugshell mem=2048M console=hvc0 net.ifnames=0'
+
+        也可以在构建目录下直接执行 ``oebuild runqemu nographic`` 启动。
 
 3. 部署 Client OS
 
@@ -151,21 +154,21 @@ ____
 
           qemu-aarch64:~$ mica status
           Name                          Assigned CPU        State               Service
-          qemu-zephyr                   3                   Running             rpmsg-tty1(/dev/ttyRPMSG0) rpmsg-tty(/dev/ttyRPMSG1)
+          qemu-zephyr                   3                   Running             rpmsg-tty(/dev/ttyRPMSG0)
 
-        状态更新为 Running，并且能观察到该实例提供了两个服务：rpmsg-tty 以及 rpmsg-tty1。
-        rpmsg-tty 绑定了 zephyr 的 shell，因此可以通过 screen 打开 tty 设备 ``/dev/ttyRPMSG1`` 来访问 zephyr 的 shell：
+        状态更新为 Running，并且能观察到该实例提供了 rpmsg-tty 服务，该服务绑定了 zephyr 的 shell，
+        因此可以通过 screen 打开 tty 设备 ``/dev/ttyRPMSG0`` 来访问 zephyr 的 shell：
 
         .. code-block:: console
 
           # 打开 Client OS 的 shell
-          qemu-aarch64:~$ screen /dev/ttyRPMSG1
+          qemu-aarch64:~$ screen /dev/ttyRPMSG0
 
           ... ...
           # 回车后可以连上 shell，并执行 zephyr 的 shell 命令
 
           uart:~$ kernel version
-          Zephyr version 3.2.0
+          Zephyr version 4.5.99
 
         之后，可以通过 ``Ctrl-a k`` 或 ``Ctrl-a Ctrl-k`` 组合键退出shell，参考 `screen(1) — Linux manual page <https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS>`_ 。
 
@@ -237,21 +240,21 @@ ____
 
           qemu-aarch64:~$ mica status
           Name                          Assigned CPU        State               Service
-          qemu-zephyr-ivshmem           3                   Running             rpmsg-tty1(/dev/ttyRPMSG0) rpmsg-tty(/dev/ttyRPMSG1)
+          qemu-zephyr-ivshmem           1                   Running             rpmsg-tty(/dev/ttyRPMSG0)
 
-        可以观察到，状态为 Running，并且该实例提供了两个服务：rpmsg-tty 以及 rpmsg-tty1。
-        rpmsg-tty 绑定了 zephyr 的 shell，因此可以通过 screen 打开 tty 设备 ``/dev/ttyRPMSG1`` 来访问 zephyr 的 shell：
+        可以观察到，状态为 Running，并且该实例提供了 rpmsg-tty 服务，该服务绑定了 zephyr 的 shell，
+        因此可以通过 screen 打开 tty 设备 ``/dev/ttyRPMSG0`` 来访问 zephyr 的 shell：
 
         .. code-block:: console
 
           # 打开 Client OS 的 shell
-          qemu-aarch64:~$ screen /dev/ttyRPMSG1
+          qemu-aarch64:~$ screen /dev/ttyRPMSG0
 
           ... ...
           # 回车后可以连上 shell，并执行 zephyr 的 shell 命令
 
           uart:~$ kernel version
-          Zephyr version 3.2.0
+          Zephyr version 4.5.99
 
         之后，可以通过 ``Ctrl-a k`` 或 ``Ctrl-a Ctrl-k`` 组合键退出shell，参考 `screen(1) — Linux manual page <https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS>`_ 。
 
@@ -266,7 +269,7 @@ ____
           stop qemu-zephyr-ivshmem successfully!
           qemu-aarch64:~$ mica status
           Name                          Assigned CPU        State               Service
-          qemu-zephyr-ivshmem           3                   Offline
+          qemu-zephyr-ivshmem           1                   Offline
 
         (4) 销毁 client OS：
 
@@ -293,8 +296,8 @@ ____
 
         (2) 启动 client OS：
 
-        | 镜像启动时默认会根据 `/etc/mica/qemu-uniproton-xen.conf` 和 `/etc/mica/qemu-zephyr-xen.conf`  创建 client OS 实例。
-        | 通过 ``mica status`` 查看该实例状态：
+        | micad 启动时会根据 `/etc/mica/*.conf` 创建 client OS 实例。
+        | 通过 ``mica status`` 查看实例状态：
 
         .. code-block:: console
 
@@ -303,14 +306,18 @@ ____
           qemu-uniproton-xen            1-3                 Offline
           qemu-zephyr-xen               1-3                 Offline
 
-        | 可以看到实例的名称为 qemu-uniproton-xen 和 qemu-zephyr-xen，关联的 CPU ID 为1-3，状态为 Offline。
-        | 通过 ``mica start <Name>`` 启动实例，以 qemu-uniproton-xen 为例：
+        | 可以看到实例的名称为 qemu-uniproton-xen 和 qemu-zephyr-xen，关联的 CPU 范围为 1-3，状态为 Offline。
+        | 对 Xen 部署，``CPU`` 表示可供 DomU 使用的物理 CPU 范围，实际 vCPU 数量由配置文件的 ``VCPU`` 指定。
+        | 通过 ``mica start <Name>`` 启动实例，以 qemu-zephyr-xen 为例：
 
         .. code-block:: console
 
-          qemu-aarch64:~$ mica start qemu-uniproton-xen
-          starting qemu-uniproton-xen...
-          start qemu-uniproton-xen successfully!
+          qemu-aarch64:~$ mica start qemu-zephyr-xen
+          starting qemu-zephyr-xen...
+          start qemu-zephyr-xen successfully!
+
+        ``mica start`` 内部会先通过 ``xl create -p`` 创建处于暂停状态的 DomU，配置 Xen
+        backend 的 grant table 和事件通道，然后解除 DomU 暂停。
 
         启动成功后，执行 ``mica status`` 查询状态：
 
@@ -318,12 +325,11 @@ ____
 
           qemu-aarch64:~$ mica status
           Name                          Assigned CPU        State               Service
-          qemu-uniproton-xen            1-3                 Running             rpmsg-tty(/dev/ttyRPMSG0) rpmsg-rpc rpmsg-umt
-          qemu-zephyr-xen               1-3                 Offline
+          qemu-uniproton-xen            1-3                 Offline
+          qemu-zephyr-xen               1-3                 Running             rpmsg-tty(/dev/ttyRPMSG0)
 
-        状态更新为 Running，并且能观察到该实例提供了服务：rpmsg-tty。
-
-        rpmsg-tty 绑定了 uniproton 的 shell，因此可以通过 screen 打开 tty 设备 ``/dev/ttyRPMSG0`` 来访问 uniproton 的 shell：
+        状态更新为 Running，并且能观察到该实例提供了 rpmsg-tty 服务，该服务绑定了 zephyr 的 shell，
+        因此可以通过 screen 打开 tty 设备 ``/dev/ttyRPMSG0`` 来访问 zephyr 的 shell：
 
         .. code-block:: console
 
@@ -331,16 +337,10 @@ ____
           qemu-aarch64:~$ screen /dev/ttyRPMSG0
 
           ... ...
-          # 回车后可以连上 shell，并执行 uniproton 的 shell 命令
-          openEuler UniProton # taskInfo
-          Pid              Name             Status
-          ---------------- ---------------- ----------------
-          1                IdleTask         0x41
-          3                pthread          0x41
-          4                pthread          0x9
-          6                SerialShellTask  0xc1
-          0                                 0x1
+          # 回车后可以连上 shell，并执行 zephyr 的 shell 命令
 
+          uart:~$ kernel version
+          Zephyr version 4.5.99
 
         之后，可以通过 ``Ctrl-a k`` 或 ``Ctrl-a Ctrl-k`` 组合键退出shell，参考 `screen(1) — Linux manual page <https://man7.org/linux/man-pages/man1/screen.1.html#DEFAULT_KEY_BINDINGS>`_ 。
 
@@ -350,13 +350,15 @@ ____
 
         .. code-block:: console
 
-          qemu-aarch64:~$ mica stop qemu-uniproton-xen
-          stopping qemu-uniproton-xen...
-          stop qemu-uniproton-xen successfully!
+          qemu-aarch64:~$ mica stop qemu-zephyr-xen
+          stopping qemu-zephyr-xen...
+          stop qemu-zephyr-xen successfully!
           qemu-aarch64:~$ mica status
           Name                          Assigned CPU        State               Service
           qemu-uniproton-xen            1-3                 Offline
           qemu-zephyr-xen               1-3                 Offline
+
+        ``mica stop`` 会销毁对应的 Xen DomU，并释放 grant table 和事件通道资源。
 
         (4) 销毁 client OS：
 
@@ -364,14 +366,20 @@ ____
 
         .. code-block:: console
 
-          qemu-aarch64:~$ mica rm qemu-uniproton-xen
-          removing qemu-uniproton-xen...
-          rm qemu-uniproton-xen successfully!
+          qemu-aarch64:~$ mica rm qemu-zephyr-xen
+          removing qemu-zephyr-xen...
+          rm qemu-zephyr-xen successfully!
           qemu-aarch64:~$ mica status
           Name                          Assigned CPU        State               Service
-          qemu-zephyr-xen               1-3                 Offline
+          qemu-uniproton-xen            1-3                 Offline
 
-        销毁实例后，可以执行 ``mica create qemu-uniproton-xen.conf`` 重新创建实例。
+        销毁实例后，可以执行 ``mica create qemu-zephyr-xen.conf`` 重新创建实例。
+
+        .. note::
+
+           镜像中还提供了 UniProton 的 Xen 配置 ``/etc/mica/qemu-uniproton-xen.conf``，
+           可以通过相同的 ``mica start`` / ``mica stop`` 流程部署，其 rpmsg-tty 绑定
+           UniProton 的 shell。
 
 ____
 
