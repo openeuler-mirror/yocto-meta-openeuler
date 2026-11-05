@@ -73,8 +73,9 @@ ____
 
         | 按照以下命令启动 QEMU，注意：
         | 1. 启动 Jailhouse 需要指定 psci method 为 smc，因此，`-M` 需要配置为 ``virt,gic-version=3,virtualization=on,its=off``。
-        | 2. 需要通过添加启动参数 ``mem=780M`` 来预留出 Jailhouse 和 Non-root-cell 的内存；
-        |    同时 ivshmem 共享内存（0x6fffe000 起）需要落在 Linux 可用内存范围内，因此该参数不能小于 780M。
+        | 2. 需要通过添加启动参数 ``mem=750M`` 来预留出 Jailhouse 和 Non-root-cell 的内存；
+        |    ivshmem 共享内存（0x6fffe000 起）需要位于 Linux 可用内存之外，以便 ``uio_ivshmem``
+        |    驱动接管该区域，因此该参数不能大于 750M。
 
         .. code-block:: console
 
@@ -83,7 +84,7 @@ ____
               -device virtio-net-device,netdev=tap0 \
               -netdev tap,id=tap0,script=/etc/qemu-ifup \
               -m 2G -smp 4 \
-              -append 'mem=780M' \
+              -append 'mem=750M' \
               -kernel zImage \
               -initrd openeuler-image-*.cpio.gz
 

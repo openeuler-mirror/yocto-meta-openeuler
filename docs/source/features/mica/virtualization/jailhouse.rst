@@ -101,7 +101,7 @@ Jailhouse 使用指导
 
          qemu-system-aarch64 -machine virt,gic-version=3,virtualization=on,its=off \
             -cpu cortex-a57 -nographic -smp 4 -m 2G  \
-            -append "console=ttyAMA0 loglevel=8 mem=780M" \
+            -append "console=ttyAMA0 loglevel=8 mem=750M" \
             -kernel zImage \
             -initrd openeuler-image-mcs-qemu-aarch64-*.rootfs.cpio.gz
 
