@@ -3,7 +3,7 @@
 # version in openEuler
 # We have to use 3.2.4+ version because in 3.2.4 version it
 # contains the fix of "cross-compiling failed" bug
-PV = "3.2.5"
+PV = "3.2.4"
 S = "${WORKDIR}/${BP}"
 
 # files, patches that come from openeuler

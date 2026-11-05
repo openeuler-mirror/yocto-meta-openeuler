@@ -12,6 +12,7 @@ SRC_URI:prepend = " \
         file://0007-add-cmake-option-for-test-and-binary.patch \
         file://backport-CVE-2022-24795.patch \
         file://yajl-assert-error-when-memory-allocation-failed.patch \
+        file://backport-Fix-for-CVE-2017-16516.patch \
 	"
 
 S = "${WORKDIR}/${BP}"

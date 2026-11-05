@@ -11,8 +11,9 @@ DEPENDS = "nasm-native gnutls zlib libpcre numactl"
 inherit lib_package pkgconfig cmake
 
 # source from openeuler 
-SRC_URI = "file://x265_3.5.tar.gz \
-        file://x265-3.5-port-to-newer-cmake.patch \
+# the src repo renamed the tarball to "3.5.tar.gz" and dropped the
+# port-to-newer-cmake patch (fixed upstream in this snapshot)
+SRC_URI = "file://3.5.tar.gz \
         "
 
 S = "${WORKDIR}/x265_3.5"

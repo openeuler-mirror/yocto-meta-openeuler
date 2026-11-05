@@ -12,6 +12,12 @@ PV = "5.4.7"
 SRC_URI += " \
     file://${BP}.tar.xz \
     file://xz-5213-547-562-libtool.patch \
+    file://0001-fix-CVE-2024-47611.patch \
+    file://add-sw_64-support.patch \
+    file://xz-cve-2025-31115.patch \
+    file://backport-Autodetect-unaligned-access-support-on-LoongArch.patch \
+    file://backport-CVE-2026-34743.patch \
+    file://backport-GHSA-5qpq-xqfv-j9pg.patch \
 "
 
 ASSUME_PROVIDE_PKGS = "xz-libs xz"
