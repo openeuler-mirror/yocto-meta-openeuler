@@ -11,6 +11,14 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=189af8afca6d6075ba6c9e0aa8077626 \
 
 DEPENDS = "npth libassuan libksba zlib bzip2 readline libgcrypt"
 
+require recipes-support/gnupg/drop-unknown-suffix.inc
+
+# match the src repo spec %build options; --enable-sm2 is required by
+# the SM2 patch whose AM_CONDITIONAL lives inside the enable_sm2 shell
+# branch (without the flag configure aborts with
+# 'conditional GPG_USE_SM2 was never defined')
+EXTRA_OECONF:append = " --enable-g13 --enable-large-secmem --enable-sm2"
+
 inherit autotools gettext texinfo pkgconfig
 
 UPSTREAM_CHECK_URI = "https://gnupg.org/download/index.html"
