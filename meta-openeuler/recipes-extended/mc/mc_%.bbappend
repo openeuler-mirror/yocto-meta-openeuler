@@ -24,4 +24,10 @@ do_configure:append() {
     printf 'all:\ninstall:\nclean:\ndistdir:\n' > ${B}/po/Makefile
 }
 
+# mc 4.8.33 no longer installs the fish scripts (the fish VFS moved
+# into the binary), leaving mc-fish empty; keep the package as an
+# allowed-empty RPM so packagegroup-core-full-cmdline-utils (which
+# still depends on mc-fish) resolves
+ALLOW_EMPTY:${BPN}-fish = "1"
+
 ASSUME_PROVIDE_PKGS = "mc"
