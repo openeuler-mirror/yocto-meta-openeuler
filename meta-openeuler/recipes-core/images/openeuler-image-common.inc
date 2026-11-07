@@ -50,6 +50,31 @@ IMAGE_FEATURES:append = " ${OPENEULER_IMAGE_FEATURES}"
 # image-level user and user group configuration
 EXTRA_USERS_PARAMS = '${@bb.utils.contains_any("IMAGE_FEATURES", [ 'debug-tweaks', 'empty-root-password' ], "", "${OPENEUELR_IMAGE_USERS}; ",d)}'
 
+# SSH preset key policy (test images only):
+#   preset - install the shared public key (OPENEULER_TEST_SSH_PUBKEY) into
+#            root's authorized_keys, so test infrastructure can log in with the
+#            matching private key kept in the source tree, without any manual
+#            key injection. The private key is never packaged into the image.
+#   none   - do not preset any key; production images must use this.
+# The key is only installed when an SSH server feature is enabled.
+OPENEULER_SSH_PRESET_KEY_POLICY ?= "preset"
+OPENEULER_TEST_SSH_PUBKEY ?= "${OPENEULER_TEST_SSH_KEY_DIR}/id_ed25519.pub"
+
+preset_ssh_authorized_key() {
+    if [ ! -f "${OPENEULER_TEST_SSH_PUBKEY}" ]; then
+        bbfatal "preset SSH public key not found: ${OPENEULER_TEST_SSH_PUBKEY}"
+    fi
+    install -d -m 0700 "${IMAGE_ROOTFS}${ROOT_HOME}/.ssh"
+    touch "${IMAGE_ROOTFS}${ROOT_HOME}/.ssh/authorized_keys"
+    if ! grep -q -x -F -f "${OPENEULER_TEST_SSH_PUBKEY}" "${IMAGE_ROOTFS}${ROOT_HOME}/.ssh/authorized_keys"; then
+        cat "${OPENEULER_TEST_SSH_PUBKEY}" >> "${IMAGE_ROOTFS}${ROOT_HOME}/.ssh/authorized_keys"
+    fi
+    chmod 0700 "${IMAGE_ROOTFS}${ROOT_HOME}/.ssh"
+    chmod 0600 "${IMAGE_ROOTFS}${ROOT_HOME}/.ssh/authorized_keys"
+    chown -R root:root "${IMAGE_ROOTFS}${ROOT_HOME}/.ssh"
+}
+ROOTFS_POSTPROCESS_COMMAND += '${@bb.utils.contains_any("IMAGE_FEATURES", ["ssh-server-openssh", "ssh-server-dropbear"], bb.utils.contains("OPENEULER_SSH_PRESET_KEY_POLICY", "preset", "preset_ssh_authorized_key; ", "", d), "", d)}'
+
 # For preset policy: relax password aging for root (sp_min=0, sp_max=99999) so
 # that the preset password never expires after the system time is synchronized.
 # Note: `usermod -p` sets sp_lstchg to the build date, which is in the future
