@@ -41,8 +41,10 @@ OPENEUELR_IMAGE_USERS_PRESET = "usermod -p '${OPENEULER_ROOT_PASSWORD_HASH}' roo
 OPENEUELR_IMAGE_USERS_EXPIRE = "usermod -p '' root; passwd-expire root"
 
 OPENEUELR_IMAGE_USERS ?= '${@bb.utils.contains("OPENEULER_ROOT_PASSWORD_POLICY", "expire", d.getVar("OPENEUELR_IMAGE_USERS_EXPIRE"), d.getVar("OPENEUELR_IMAGE_USERS_PRESET"), d)}'
-# by default, allow root login and empty password from ssh
-OPENEULER_IMAGE_FEATURES ?= "allow-root-login allow-empty-password ssh-server-openssh"
+# by default, allow root login from ssh. Empty-password login is only enabled
+# when root actually has an empty password: the legacy expire policy, or an
+# explicit allow-empty-password / debug-tweaks feature.
+OPENEULER_IMAGE_FEATURES ?= "allow-root-login ${@bb.utils.contains("OPENEULER_ROOT_PASSWORD_POLICY", "expire", "allow-empty-password", "", d)} ssh-server-openssh"
 IMAGE_FEATURES:append = " ${OPENEULER_IMAGE_FEATURES}"
 
 # image-level user and user group configuration
