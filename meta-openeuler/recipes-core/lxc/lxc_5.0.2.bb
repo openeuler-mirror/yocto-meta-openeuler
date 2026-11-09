@@ -31,21 +31,16 @@ SRC_URI = " \
         file://0020-CVE-2026-39402-lxc-user-nic-clarify-and-fix.patch \
 "
 
-SRC_URI:append = " \
-"
-
 DEPENDS = " \
         yajl libseccomp libcap \
         libselinux \
         ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'systemd', '', d)} \
 "
 
-EXTRA_OECONF = " \
-        --disable-static --with-rootfs-path=/var/lib/lxc/rootfs --with-distro=openeuler \
-        ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', '--with-init-script=systemd', '', d)} \
-        --enable-seccomp \
-        --enable-selinux \
-        --enable-isulad \
+# meson build options (mirroring the src repo spec %build)
+EXTRA_OEMESON = " \
+        -Disulad=true \
+        -Dman=false \
 "
 
 FILES:${PN} += " \
@@ -55,7 +50,7 @@ FILES:${PN} += " \
 
 RDEPENDS:${PN} += "bash"
 
-inherit autotools pkgconfig
+inherit meson pkgconfig
 
 BBCLASSEXTEND = "native nativesdk"
 
