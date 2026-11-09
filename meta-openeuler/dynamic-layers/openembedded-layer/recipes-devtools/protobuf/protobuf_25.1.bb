@@ -1,3 +1,5 @@
+DEFAULT_PREFERENCE = "1"
+
 SUMMARY = "Protocol Buffers - structured data serialisation mechanism"
 DESCRIPTION = "Protocol Buffers are a way of encoding structured data in an \
 efficient yet extensible format. Google uses Protocol Buffers for almost \
@@ -34,6 +36,10 @@ EXTRA_OECMAKE = " \
     -Dprotobuf_WITH_ZLIB=ON \
     -Dprotobuf_ABSL_PROVIDER=package \
 "
+
+PACKAGES =+ "protobuf-compiler"
+FILES:protobuf-compiler = "${bindir}/protoc*"
+RDEPENDS:protobuf-compiler = ""
 
 FILES:${PN} += "${libdir}/*.so*"
 FILES:${PN}-dev += "${includedir} ${libdir}/cmake ${libdir}/pkgconfig"
