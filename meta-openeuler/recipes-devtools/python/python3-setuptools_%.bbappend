@@ -4,6 +4,12 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=141643e11c48898150daa83802dbc65f"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/python3-setuptools/:"
 
+# the base recipe applies 0001-conditionally-do-not-fetch-code-by-easy_install.patch
+# to class-native only. its context was written for setuptools <= 67 (rmtree(tmpdir)),
+# while openEuler 68.0.0 uses _rmtree(tmpdir), so the poky copy applies with fuzz.
+# the refreshed copy with the same name in python3-setuptools/ shadows the poky one
+# via FILESPATH priority: SRC_URI still has a single entry, so only this copy is
+# applied and do_patch reports no patch-fuzz.
 require pypi-src-openeuler.inc
 
 SRC_URI:remove = " \
