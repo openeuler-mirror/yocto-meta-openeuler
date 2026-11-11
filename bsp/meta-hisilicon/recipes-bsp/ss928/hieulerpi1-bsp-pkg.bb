@@ -7,6 +7,9 @@ DEPENDS = "update-rc.d-native"
 DEPENDS += " ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'hieulerpi1-sdk-pkg', '', d)} "
 do_fetch[depends] += "${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'hieulerpi1-sdk-pkg:do_deploy', '', d)}"
 
+# the prebuilt can-tools 'ip' links against these runtime libraries
+RDEPENDS:${PN} += "libmnl libselinux libtirpc libelf"
+
 OPENEULER_LOCAL_NAME = "HiEuler-driver"
 
 RT_SUFFIX = "${@bb.utils.contains('DISTRO_FEATURES', 'preempt-rt', '-rt', '', d)}"
