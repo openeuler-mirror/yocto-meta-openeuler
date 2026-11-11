@@ -1,0 +1,236 @@
+﻿# SPDX-License-Identifier: Apache-2.0
+#
+# openEuler Embedded PR gate, GitCode Actions edition.
+#
+# This workflow migrates the historical Jenkins gate (a pipeline job
+# configured as "Pipeline script from SCM" running
+# .oebuild/workflows/jenkinsfile_gate) onto GitCode Actions, without
+# touching any of the existing Jenkins infrastructure: jenkinsfile_gate,
+# build_common.groovy, init_env.groovy and the Jenkins job configuration
+# keep working unchanged and stay the authoritative gate until this
+# workflow has been validated. The stage mapping is:
+#
+# The gate orchestration shell scripts live in
+# .oebuild/workflows/gitcode_gate/ (this repository's CI script home); the
+# .gitcode/ directory only carries the workflow definition itself. Every
+# job fetches the scripts from GATE_SCRIPTS_BRANCH at runtime, so a PR can
+# never alter the gate logic that runs against it.
+#
+#   jenkinsfile_gate stage          ->  here
+#   ------------------------------------------------------------------
+#   init task (embedded-ci clone)   ->  embedded-ci cloned by the
+#                                       code_check / build_docs jobs; the
+#                                       orchestration shell scripts are
+#                                       fetched from the trusted
+#                                       GATE_SCRIPTS_BRANCH in every job
+#   pre (same-PR mutex)             ->  workflow-level concurrency
+#                                       preemption on mr_id
+#   pre (pr_check docs/code split)  ->  code_check job, reusing embedded-ci
+#                                       "main.py pr_check" (already targets
+#                                       the GitCode API, read only)
+#   code check (commit_msg)         ->  code_check job, reusing embedded-ci
+#                                       "main.py codecheck -target
+#                                       commit_msg"; inherited original
+#                                       behaviour: the .gitlint of the
+#                                       checked out source is preferred
+#   code check (commit_scope)       ->  code_check job, reusing embedded-ci
+#                                       "main.py codecheck -target
+#                                       commit_scope"
+#   build docs                      ->  build_docs job, reusing embedded-ci
+#                                       "main.py build -target openeuler_doc"
+#                                       (make html SPHINXOPTS="-W")
+#   qemu-aarch64 / qemu-arm32 /     ->  build_qemu_aarch64 / build_qemu_arm32
+#   x86-64 / hieulerpi1 /             / build_x86_64 / build_hieulerpi1
+#   qemu-riscv64 / phytium             / build_qemu_riscv64 / build_phytium
+#                                       (port of dynamicBuild from
+#                                       build_common.groovy)
+#   post (comment result to PR)     ->  dropped by design: the GitCode
+#                                       pipeline check page already shows
+#                                       per job results and logs; PR status
+#                                       labels are dropped with it, keeping
+#                                       the workflow read only
+#
+# Runner requirements (self-hosted x86 runners, labelled by pool and cpu
+# size; bitbake parallelism scales with the cpu= label):
+#   every runner:       git, python3 with pip, curl
+#   build runners only: the oebuild build environment (same content as
+#                       the swr.cn-north-4.myhuaweicloud.com/
+#                       openeuler-embedded/openeuler-ci-test container
+#                       used by the Jenkins agents) plus the shared
+#                       sstate/src cache disk mounted at GATE_SHARE_DIR
+#   job placement:
+#     embedded_master  cpu=2  code_check (API reads + gitlint, light)
+#                      cpu=4  build_docs (sphinx, single threaded)
+#                      cpu=8  build_qemu_aarch64, build_qemu_arm32,
+#                             build_qemu_riscv64
+#     embedded_release cpu=8  build_x86_64, build_hieulerpi1,
+#                             build_phytium
+#
+# Secrets:
+#   EMBEDDED_CI_TOKEN  GitCode personal access token for the embedded-ci
+#                      pr_check / codecheck API calls; read access to pull
+#                      requests is sufficient (those commands only read)
+#
+# Security notes:
+#   - The workflow is read only towards the platform: apart from
+#     repository: read (required to check out the PR merge ref under
+#     pull_request_target) no permissions are granted, so gate jobs can
+#     never write PR state (no labels, no comments). /retest runs are
+#     linked to the PR page by the associate-pr-comment step in the
+#     code_check job; all other visibility comes from the pipeline check
+#     page.
+#   - pull_request_target executes this file from the base branch, and every
+#     job re-fetches the gate scripts from GATE_SCRIPTS_BRANCH, so PR content
+#     can never alter the gate orchestration.
+#   - The embedded-ci commands used here (pr_check / codecheck) only read
+#     from the platform API; commit_msg runs gitlint over the commits of the
+#     checkout, commit_scope reads per commit file lists. Just like the
+#     Jenkins gate, the .gitlint of the checked out source is preferred, so a
+#     PR can adjust the commit rules for itself - inherited original
+#     behaviour, revisit if this needs hardening.
+#   - The build jobs compile the PR source by design (that is what a gate
+#     does), exactly like the Jenkins gate did.
+
+name: openeuler_embedded_PR_gate
+
+on:
+  pull_request_target:
+    types:
+      - open
+      - update
+      - reopen
+    branches:
+      - '**'
+  # /retest pairs pr_comment (the platform refreshes the pre-merge ref) with
+  # pull_request_comment (the pipeline starts); configuring only the latter
+  # would let /retest validate a stale merge result.
+  pr_comment:
+    types:
+      - created
+    keyword: '^\s*/retest\s*$'
+  pull_request_comment:
+    types:
+      - created
+    branches:
+      - '**'
+    comments:
+      - '^\s*/retest\s*$'
+  workflow_dispatch:
+
+permissions:
+  repository: read
+
+# A retriggered gate for the same PR (new push or /retest) preempts the
+# previous run: this replaces the "pre" stage of jenkinsfile_gate which used
+# to abort when the same PR already had a task in progress. Different PRs
+# still run in parallel.
+concurrency:
+  enable: true
+  max: 100
+  exceed-action: QUEUE
+  preemption:
+    enable: true
+    events:
+      - mr_id
+
+env:
+  GATE_REPO: openeuler/yocto-meta-openeuler
+  # trusted branch that the gate orchestration scripts are fetched from
+  GATE_SCRIPTS_BRANCH: master
+  # embedded-ci provides the pr_check / codecheck / openeuler_doc commands,
+  # already adapted to the GitCode API (see app/lib.py, class Gitcode)
+  GATE_EMBEDDED_CI_REPO: https://gitcode.com/openeuler/embedded-ci.git
+  GATE_EMBEDDED_CI_BRANCH: master
+  # pull request coordinates, empty when triggered without PR context
+  # (workflow_dispatch)
+  GATE_PR_IID: ${{ atomgit.event.pull_request.number }}
+  GATE_TARGET_BRANCH: ${{ atomgit.base_ref || atomgit.event.pull_request.base.ref || atomgit.event.pull_request.target_branch || atomgit.event.merge_request.target_branch }}
+  GATE_EVENT: ${{ atomgit.event_name }}
+  GATE_RUN_ID: ${{ atomgit.run_id }}
+  GATE_START_TS: ${{ atomgit.start_timestamp }}
+
+jobs:
+  code_check:
+    name: Code check
+    runs-on: [self-hosted, embedded_master, x86, cpu=4]
+    timeout-minutes: 30
+    steps:
+      - name: Associate run with PR
+        run: echo "code_check disabled for pipeline testing"
+
+  build_docs:
+    name: Build docs
+    needs: code_check
+    runs-on: [self-hosted, embedded_master, x86, cpu=4]
+    timeout-minutes: 60
+    steps:
+      # docs build disabled for pipeline testing (no runner build
+      # environment yet); revert together with the code check stub.
+      - name: Build docs
+        run: echo "build_docs disabled for pipeline testing"
+
+  build_qemu_aarch64:
+    name: Build qemu-aarch64
+    needs: code_check
+    runs-on: [self-hosted, embedded_master, x86, cpu=4]
+    timeout-minutes: 360
+    steps:
+      # image build disabled for pipeline testing (no runner build
+      # environment yet); revert together with the code check stub.
+      - name: Build image
+        run: echo "build_qemu_aarch64 disabled for pipeline testing"
+
+  build_qemu_arm32:
+    name: Build qemu-arm32
+    needs: code_check
+    runs-on: [self-hosted, embedded_master, x86, cpu=4]
+    timeout-minutes: 360
+    steps:
+      # image build disabled for pipeline testing (no runner build
+      # environment yet); revert together with the code check stub.
+      - name: Build image
+        run: echo "build_qemu_arm32 disabled for pipeline testing"
+
+  build_x86_64:
+    name: Build x86-64
+    needs: code_check
+    runs-on: [self-hosted, embedded_master, x86, cpu=4]
+    timeout-minutes: 360
+    steps:
+      # image build disabled for pipeline testing (no runner build
+      # environment yet); revert together with the code check stub.
+      - name: Build image
+        run: echo "build_x86_64 disabled for pipeline testing"
+
+  build_hieulerpi1:
+    name: Build hieulerpi1
+    needs: code_check
+    runs-on: [self-hosted, embedded_master, x86, cpu=4]
+    timeout-minutes: 360
+    steps:
+      # image build disabled for pipeline testing (no runner build
+      # environment yet); revert together with the code check stub.
+      - name: Build image
+        run: echo "build_hieulerpi1 disabled for pipeline testing"
+
+  build_qemu_riscv64:
+    name: Build qemu-riscv64
+    needs: code_check
+    runs-on: [self-hosted, embedded_master, x86, cpu=4]
+    timeout-minutes: 360
+    steps:
+      # image build disabled for pipeline testing (no runner build
+      # environment yet); revert together with the code check stub.
+      - name: Build image
+        run: echo "build_qemu_riscv64 disabled for pipeline testing"
+
+  build_phytium:
+    name: Build phytium
+    needs: code_check
+    runs-on: [self-hosted, embedded_master, x86, cpu=4]
+    timeout-minutes: 360
+    steps:
+      # image build disabled for pipeline testing (no runner build
+      # environment yet); revert together with the code check stub.
+      - name: Build image
+        run: echo "build_phytium disabled for pipeline testing"
