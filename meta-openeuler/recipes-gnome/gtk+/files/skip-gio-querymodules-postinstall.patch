@@ -1,0 +1,25 @@
+Do not pass gio_querymodules to gnome.post_install
+
+gtk does not install any gio module, so running gio-querymodules at
+post-install time is a no-op; the only effect of the kwarg is that
+meson resolves the tool from the gio-2.0 pc file and rejects it when
+the variable is not an absolute path. Poky deliberately writes the
+bare command name into the pc files (for sysroot relocatability), so
+the strict validation makes every gtk+3-native build fail with:
+
+  meson.build: ERROR: Dependency 'gio-2.0' tool variable
+  'gio_querymodules' contains erroneous value: 'gio-querymodules'
+
+Dropping the kwarg keeps the schema compilation and icon cache steps
+and only skips the (empty) gio module dir processing.
+
+--- a/meson.build
++++ b/meson.build
+@@ -1014,7 +1014,6 @@ install_data('m4macros/gtk-3.0.m4', install_dir: join_paths(get_option('datadir'
+ if not meson.is_cross_build()
+   gnome.post_install(
+     glib_compile_schemas: true,
+-    gio_querymodules: gio_module_dirs,
+     gtk_update_icon_cache: get_option('demos'),
+   )
+ else
