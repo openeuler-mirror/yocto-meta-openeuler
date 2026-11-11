@@ -5,6 +5,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}/:"
 
 SRC_URI:prepend = "file://${BP}.tar.xz \
            "
+SRC_URI += "file://meson-run-cross-guard.patch"
 
 S = "${WORKDIR}/${BP}"
 

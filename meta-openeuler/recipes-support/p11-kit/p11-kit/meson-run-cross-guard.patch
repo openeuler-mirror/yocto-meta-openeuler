@@ -1,0 +1,33 @@
+Guard the strerror_r run test for cross builds
+
+The XSI-vs-GNU strerror_r probe compiles and runs a test application;
+nativesdk builds have no exe_wrapper, so meson fails at configure time
+with "Can not run test applications in this cross environment". Fall
+back to the XSI variant when cross compiling (what glibc provides
+without _GNU_SOURCE, and what the qemu-mediated target probe selects
+for the same glibc sysroot).
+
+--- a/meson.build
++++ b/meson.build
+@@ -310,11 +310,17 @@
+     return strerror_r (EINVAL, buf, 32);
+ }
+ '''
+-  strerror_r_check = cc.run(strerror_r_code, name : 'strerror_r check')
+-  if strerror_r_check.returncode() == 0
+-    conf.set('HAVE_XSI_STRERROR_R', 1)
++  if not meson.is_cross_build()
++    strerror_r_check = cc.run(strerror_r_code, name : 'strerror_r check')
++    if strerror_r_check.returncode() == 0
++      conf.set('HAVE_XSI_STRERROR_R', 1)
++    else
++      conf.set('HAVE_GNU_STRERROR_R', 1)
++    endif
+   else
+-    conf.set('HAVE_GNU_STRERROR_R', 1)
++    # cannot run test applications when cross compiling; assume the
++    # XSI variant, which is what glibc provides without _GNU_SOURCE
++    conf.set('HAVE_XSI_STRERROR_R', 1)
+   endif
+ endif
+ 
