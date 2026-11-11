@@ -11,3 +11,8 @@ SRC_URI = " \
 # yocto-poky specifies 'S = "${WORKDIR}/git', but since we are using the openeuler package,
 # we need to re-specify it
 S = "${WORKDIR}/${BP}"
+
+# dtc 1.7.x builds a test helper and runs it at build time; the
+# nativesdk cross file has no exe_wrapper, so disable the test suite
+# there (target builds run it through the qemu exe_wrapper)
+EXTRA_OEMESON:append:class-nativesdk = " -Dtests=false"
