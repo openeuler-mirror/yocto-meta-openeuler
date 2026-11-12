@@ -7,6 +7,13 @@ SRC_URI:prepend = "file://${BP}.tar.xz \
            "
 SRC_URI += "file://meson-run-cross-guard.patch"
 
+# backports from the src-openeuler repo (RPM spec Patch0/Patch1) that
+# the yocto path must consume explicitly
+SRC_URI += " \
+    file://backport-Fix-probing-of-C_GetInterface.patch \
+    file://backport-CVE-2026-18938.patch \
+"
+
 S = "${WORKDIR}/${BP}"
 
 # keep same as upstream
