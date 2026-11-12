@@ -1,0 +1,33 @@
+Give the execveat check bail-outs a return value
+
+The only-scripts-verified-by-execveat patch adds two bare `return;'
+statements to open_shell_script(), which is declared to return int.
+gcc only warns (-Wreturn-type) so the default toolchain build passes,
+but clang makes "non-void function should return a value" a hard
+error, breaking every clang/lld build (qemu-aarch64-clang sample):
+bash 5.2.15 do_compile fails on shell.c:1581/1594.
+
+Return 0 instead: the single caller ignores the return value, so this
+only turns gcc's indeterminate value into a defined one - no behavior
+change.
+
+--- a/shell.c
++++ b/shell.c
+@@ -1578,7 +1578,7 @@
+ 
+   fd = open (filename, O_RDONLY);
+   if (mayexec(filename, fd))
+-      return;
++      return 0;
+   if ((fd < 0) && (errno == ENOENT) && (absolute_program (filename) == 0))
+     {
+       e = errno;
+@@ -1591,7 +1591,7 @@
+ 	  filename = path_filename;
+ 	  fd = open (filename, O_RDONLY);
+       if (mayexec(filename, fd))
+-          return;
++          return 0;
+ 	}
+       else
+ 	errno = e;

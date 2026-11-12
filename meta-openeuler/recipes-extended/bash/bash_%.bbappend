@@ -66,6 +66,12 @@ SRC_URI:prepend = " \
 
 SRC_URI[tarball.sha256sum] = "13720965b5f4fc3a0d4b61dd37e7565c741da9a5be24edc2ae00182fc1b3588c"
 
+# the layer-side follow-up for the execveat check: the repo patch uses
+# bare `return;` in a non-void function, which clang rejects (gcc only
+# warns); must apply after the repo patch above
+FILESEXTRAPATHS:prepend := "${THISDIR}/bash:"
+SRC_URI += "file://fix-execveat-check-return-value.patch"
+
 # When busybox is used as init manager (mdev-busybox), busybox/ash outperforms
 # bash in UnixBench, so let busybox own /bin/sh in that case.
 # When busybox is not present (e.g. systemd mode), bash must provide /bin/sh
