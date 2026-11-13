@@ -2,21 +2,19 @@ TOOLCHAIN = "clang"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files/:"
 
-# -p is only passed by the kernel6 zImage makefiles (the 6.6 and the
-# tag-rpi variants); the 5.10 zImage makefile has no -p at all, so the
-# link fix is both unneeded and inapplicable there - guard it to kernel6
-SRC_URI:append:aarch64 = " \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' file://fix-link-error-unknown-argument.patch', '', d)} \
-    "
-
-# the relocation fix applies wherever zImage support creates
-# compressed/head.S: the kernel6 trees and the mainline 5.10 tree.
-# The 5.10 RPi tree ships no zImage support patch at all (no
-# compressed/ directory), so the fix cannot apply there.
-SRC_URI:append:aarch64 = " file://fix-out-of-range-error.patch \
+# Both patches touch the compressed-image files created by the zImage
+# support patches (which pass LDFLAGS_vmlinux += -p to the linker and
+# use the large-immediate relocation add). They apply to the mainline
+# 5.10 tree (exact pre-image) and to the kernel6 trees.
+SRC_URI:append:aarch64 = " file://fix-link-error-unknown-argument.patch \
+        file://fix-out-of-range-error.patch \
         "
+
+# The 5.10 RPi tree ships no zImage support patch at all - no
+# compressed/ directory is created, so neither patch can apply there.
 SRC_URI:remove:raspberrypi4-64 = " \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '', 'file://fix-out-of-range-error.patch', d)} \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', '', \
+        'file://fix-link-error-unknown-argument.patch file://fix-out-of-range-error.patch', d)} \
     "
 
 # mainline kernel6 tree (kernel-6.6, 180.0.0): entry.S carries the .ifc
