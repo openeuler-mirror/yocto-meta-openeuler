@@ -10,7 +10,6 @@ DEPENDS = "libconfuse dosfstools"
 inherit oee-archive
 
 SRC_URI = "file://${BP}.tar.xz"
-SRC_URI += "file://0001-image-hd-remove-MBR-space.patch"
 
 EXTRA_OECONF = "--enable-largefile"
 
