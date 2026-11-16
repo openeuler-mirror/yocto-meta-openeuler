@@ -12,7 +12,14 @@ OPENEULER_LOCAL_NAME = "lib-shim-v2"
 # 0001-add-loongarch64-support-for-nix.patch
 # 0001-add-loongarch64-support-for-prost-build.patch
 SRC_URI = "file://lib-shim-v2-${PV}.tar.gz \
-        file://0002-add-riscv-support.patch \
+        file://0002-simplify-Store-api-remove-unnecessary-validation.patch \
+        file://0003-Check-if-a-path-is-abstract-before-connection.patch \
+        file://0004-Add-vsock-support.patch \
+        file://0005-sandbox-sandbox-api-update.patch \
+        file://0006-add-adapter-for-runc-sandboxer.patch \
+        file://0007-update-dependent-protobuf-and-ttrpc-version.patch \
+        file://0008-support-stats-cmd.patch \
+        file://0009-add-riscv-support.patch \
 "
 
 # add riscv64 BuildRequires: protobuf-compiler
