@@ -68,14 +68,15 @@ diff -uprN a/src/daemon/executor/container_cb/execution.c b/src/daemon/executor/
              }
          }
          if (sync_fd >= 0) {
-@@ -508,7 +509,7 @@ static int container_start_cb(const cont
+@@ -543,8 +544,8 @@ static int container_start_cb(const cont
      char *fifopath = NULL;
      container_t *cont = NULL;
      int sync_fd = -1;
 -    pthread_t thread_id = 0;
 +    pthread_t thread_id = NULL;
- 
-     DAEMON_CLEAR_ERRMSG();
+ #ifdef ENABLE_CRI_API_V1
+     cri_container_message_t message;
+ #endif
  
 diff -uprN a/src/daemon/executor/container_cb/execution_create.c b/src/daemon/executor/container_cb/execution_create.c
 --- a/src/daemon/executor/container_cb/execution_create.c	2024-03-20 07:35:44.322202962 +0000
@@ -158,13 +159,6 @@ diff -uprN a/src/daemon/executor/image_cb/image_cb.c b/src/daemon/executor/image
  
  #include "utils.h"
  #include "error.h"
-@@ -1203,4 +1204,4 @@ void image_callback_init(service_image_c
- #ifdef ENABLE_IMAGE_SEARCH
-     cb->search = image_search_cb;
- #endif
--}
-\ No newline at end of file
-+}
 diff -uprN a/src/daemon/modules/events/monitord.c b/src/daemon/modules/events/monitord.c
 --- a/src/daemon/modules/events/monitord.c	2024-03-20 07:35:44.327203011 +0000
 +++ b/src/daemon/modules/events/monitord.c	2024-03-20 07:35:52.041278470 +0000
