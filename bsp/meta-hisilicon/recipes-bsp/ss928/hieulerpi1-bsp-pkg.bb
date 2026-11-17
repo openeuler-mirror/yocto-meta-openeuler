@@ -222,12 +222,8 @@ do_install () {
         install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants/
         ln -sf ${systemd_system_unitdir}/hieulerpi1-clear-update.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/hieulerpi1-clear-update.service
         ln -sf ${systemd_system_unitdir}/hieulerpi1-set-mac.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/hieulerpi1-set-mac.service
-        if ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'true', 'false', d)}; then
-            # enable auto start
-            install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants/
-            ln -sf ${systemd_system_unitdir}/hieulerpi1-bsp.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/hieulerpi1-bsp.service
-            ln -sf ${systemd_system_unitdir}/hieulerpi1-fb.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/hieulerpi1-fb.service
-        fi
+        ln -sf ${systemd_system_unitdir}/hieulerpi1-bsp.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/hieulerpi1-bsp.service
+        ln -sf ${systemd_system_unitdir}/hieulerpi1-fb.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/hieulerpi1-fb.service
     else
         update-rc.d -r ${D} S90AutoRun start 90 5 .
         update-rc.d -r ${D} pinmux.sh start 90 5 .
