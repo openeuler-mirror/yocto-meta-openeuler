@@ -82,3 +82,9 @@ u-boot镜像获取
 .. note::
 
     如果需要通过源码构建可参考 :ref:`board_hieulerpi_build`
+
+.. note::
+
+    在线升级通常只需要 ``kernel-pi`` 和 ``rootfs.ext4``；
+    ``boot_image_8G.bin``/``boot_env_8G.bin`` 仅在需要更新 bootloader
+    或 U-Boot 环境时使用。主机在线升级步骤见 :ref:`hieuler_update`。

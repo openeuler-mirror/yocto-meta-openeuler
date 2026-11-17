@@ -11,6 +11,7 @@
    hardware_features.rst
    hieulerpi.rst
    hieulerpi-image.rst
+   hieulerpi-system.rst
    update.rst
    hieulerpi_common_commands.rst
    externed_device_sample.rst
