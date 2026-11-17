@@ -26,13 +26,13 @@ SRC_URI = " \
         file://HiEuler-driver/drivers/can-tools.tar.gz \
         file://HiEuler-driver/drivers/sparklink-tools.tar.gz \
         file://HiEuler-driver/mcu \
-        ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' file://hieulerpi1-bsp.service file://hieulerpi1-fb.service file://hieulerpi1-clear-update.service file://hieulerpi1-set-mac.sh file://hieulerpi1-set-mac.service ', '', d)} \
+        ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', ' file://hieulerpi1-bsp.service file://hieulerpi1-fb.service file://hieulerpi1-fb-tool.sh file://hieulerpi1-clear-update.service file://hieulerpi1-set-mac.sh file://hieulerpi1-set-mac.service ', '', d)} \
 "
 
 S = "${WORKDIR}/HiEuler-driver/drivers"
 
 INSANE_SKIP:${PN} += "already-stripped"
-FILES:${PN} = "${sysconfdir} ${systemd_system_unitdir} /usr/bin ${libexecdir}/hieulerpi1-set-mac /ko /opt /vendor /firmware"
+FILES:${PN} = "${sysconfdir} ${systemd_system_unitdir} /usr/bin ${libexecdir}/hieulerpi1-set-mac ${libexecdir}/hieulerpi1-fb-tool /ko /opt /vendor /firmware"
 RDEPENDS:${PN} += "libmnl libselinux libelf libtirpc bash"
 
 do_install () {
@@ -218,6 +218,7 @@ do_install () {
         install -m 0644 ${WORKDIR}/hieulerpi1-set-mac.service ${D}${systemd_system_unitdir}
         install -d ${D}${libexecdir}
         install -m 0755 ${WORKDIR}/hieulerpi1-set-mac.sh ${D}${libexecdir}/hieulerpi1-set-mac
+        install -m 0755 ${WORKDIR}/hieulerpi1-fb-tool.sh ${D}${libexecdir}/hieulerpi1-fb-tool
         # always enabled: makes a failed U-Boot saveenv non-fatal for upgrades
         install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants/
         ln -sf ${systemd_system_unitdir}/hieulerpi1-clear-update.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/hieulerpi1-clear-update.service
