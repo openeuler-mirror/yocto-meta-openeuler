@@ -157,8 +157,11 @@ if [ ! -e "${REPO_DIR}/.git" ]; then          # worktree 的 .git 是文件
 fi
 ```
 
-- fork PR（源分支不在本仓库）：fetch 失败 → **job 直接失败**（fail-closed，
-  不会测错代码；支持 fork 需改用平台 API 按 PR 号查 head，见 §10）。
+- **fork PR 支持**：`git fetch origin <head分支>` 失败时（fork PR 的源分支
+  不在目标仓），经平台 API 解析 PR（匹配 head 分支 + base 分支 +
+  `ATOMGIT_SOURCE_REPOSITORY_ID`），依次从 fork 仓拉分支 →
+  `refs/merge-requests/<n>/head` → `/merge` 兜底；全部失败才 exit 1
+  （fail-closed）。API 解析用 `ATOMGIT_TOKEN`，不回显日志。
 
 ### 4.2 用户切换与 git 属主
 
@@ -273,6 +276,7 @@ yml 的 `pull_request_comment.comments` 列表加条目（如 `/retest-full`）�
 | 构建"成功"但什么都没干（PASSED 秒回） | oebuild exit-0 假阳性 | 三重判据（§6）就是防这个；若复现说明判据被削弱了 |
 | job 长时间 Pending | 节点首次拉 20GB 镜像 | 等待；同一节点后续秒起 |
 | `/retest` 无反应 | 并发 QUEUE 排队/抢占 | 看流水线页面的队列状态 |
+| `couldn't find remote ref <分支>` | fork PR：源分支不在目标仓 | checkout_pr.sh 会自动转 API 解析；此行单独出现说明 API 解析也失败——查 `ATOMGIT_TOKEN` 有效性与 API 连通性 |
 | `discovered PR=[]`（若见到） | 旧版脚本按 PR 号发现；现版本用 HEAD_REF，不应再出现 | 升级到双检出版 checkout_pr.sh |
 
 ### 本地复现方法（改脚本后先本地跑，再上线）
@@ -313,8 +317,8 @@ ATOMGIT_HEAD_REF=test/gitcode-action ATOMGIT_BASE_REF=master \
 
 - **pull_request（open/update/reopen）事件下 `ATOMGIT_REF` 的值未采样**
   （预期同样是 base 分支，双检出设计对两种事件都免疫，但日志尚未确认过）。
-- **fork PR 不支持**：源分支不在本仓库，HEAD_REF fetch 失败 → 告警 + 回退
-  base（测错代码）。需要时改用平台 API 按 PR 号查 head SHA。
+- ~~fork PR 不支持~~：已支持（API 解析 + fork/merge-ref 拉取，见 §4.1）。
+  残余限制：API 不可达或 token 失效时 fail-closed。
 - runner 忽略 `container.volumes`/`options` 的问题已向平台反馈方向确认
   （文档承诺 vs 实现缺失），若平台修复，可考虑恢复声明式配置——但双检出/
   用户切换逻辑**仍需保留**（它们解决的是插件行为与 oebuild 约束，与挂载无关）。

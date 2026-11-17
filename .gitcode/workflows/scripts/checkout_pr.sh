@@ -57,10 +57,104 @@ fi
 # configurable for large PRs. Failures here are fatal: with the PR
 # context confirmed, silently falling back to the base checkout
 # would let the gate pass without testing the PR.
-if ! git fetch --depth="${GATE_PR_FETCH_DEPTH:-10}" origin "${HEAD_REF}"; then
-    echo "::error::could not fetch the PR head branch ${HEAD_REF};" \
-         "failing instead of building the base branch"
-    exit 1
+GATE_PR_FETCH_DEPTH="${GATE_PR_FETCH_DEPTH:-10}"
+
+if ! git fetch --depth="${GATE_PR_FETCH_DEPTH}" origin "${HEAD_REF}" 2>/dev/null; then
+    # fork PR: the head branch lives in the author's fork, not in
+    # this repository. Resolve the PR through the platform API (match
+    # head branch + target branch + source repo id), then fetch from
+    # the fork, with the merge-request refs on origin as fallbacks.
+    echo "head branch ${HEAD_REF} not in origin - resolving the PR via the platform API (fork PR)"
+    PR_RESOLVED=$(python3 - "${HEAD_REF}" "${BASE_REF}" \
+        "${ATOMGIT_SOURCE_REPOSITORY_ID:-}" << 'PYEOF' 2>/dev/null
+import json
+import os
+import sys
+import urllib.request
+
+head_ref, base_ref, source_id = sys.argv[1], sys.argv[2], sys.argv[3].strip()
+repo = os.environ.get("ATOMGIT_REPOSITORY", "")
+token = os.environ.get("ATOMGIT_TOKEN", "")
+
+# api base candidates: derived from the repository url first (that
+# host definitely serves this repo), then the runner-declared api
+bases = []
+repo_url = os.environ.get("ATOMGIT_REPOSITORYURL", "")
+if repo_url.startswith("http"):
+    bases.append("/".join(repo_url.split("/")[:3]) + "/api/v5")
+api = os.environ.get("ATOMGIT_API_URL", "")
+if api.startswith("http"):
+    bases.append(api.rstrip("/") + "/api/v5")
+
+matches = []
+for base in bases:
+    page = 1
+    while page <= 10:
+        url = (f"{base}/repos/{repo}/pulls"
+               f"?state=open&per_page=100&page={page}")
+        req = urllib.request.Request(url)
+        if token:
+            req.add_header("Authorization", f"Bearer {token}")
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                prs = json.load(resp)
+        except Exception:
+            break
+        for pr in prs or []:
+            head = pr.get("head") or {}
+            if head.get("ref") != head_ref:
+                continue
+            if (pr.get("base") or {}).get("ref") != base_ref:
+                continue
+            head_repo = head.get("repo") or {}
+            if source_id and str(head_repo.get("id", "")) != source_id:
+                continue
+            matches.append((pr.get("number"),
+                            head_repo.get("html_url", "")))
+        if not prs or len(prs) < 100:
+            break
+        page += 1
+    if matches:
+        break
+
+if len(matches) == 1:
+    number, fork = matches[0]
+    print(f"{number}\t{fork}")
+elif not source_id and len(matches) > 1:
+    print(f"ambiguous: {len(matches)} open PRs match "
+          f"head {head_ref} base {base_ref}", file=sys.stderr)
+    sys.exit(1)
+PYEOF
+    )
+    if [ -z "${PR_RESOLVED}" ]; then
+        echo "::error::could not resolve the PR for head branch ${HEAD_REF}" \
+             "via the platform API; failing instead of building the base branch"
+        exit 1
+    fi
+    PR_NUM="${PR_RESOLVED%%	*}"
+    FORK_URL="${PR_RESOLVED#*	}"
+    echo "resolved PR !${PR_NUM} (head repo: ${FORK_URL:-unknown})"
+
+    fetched=0
+    if [ -n "${FORK_URL}" ] \
+        && git fetch --depth="${GATE_PR_FETCH_DEPTH}" "${FORK_URL}" "${HEAD_REF}"; then
+        echo "fetched the PR head branch from the fork"
+        fetched=1
+    fi
+    if [ "${fetched}" = "0" ] && [ -n "${PR_NUM}" ]; then
+        if git fetch --depth="${GATE_PR_FETCH_DEPTH}" origin \
+                "refs/merge-requests/${PR_NUM}/head" \
+            || git fetch --depth="${GATE_PR_FETCH_DEPTH}" origin \
+                "refs/merge-requests/${PR_NUM}/merge"; then
+            echo "fetched the PR via refs/merge-requests/${PR_NUM}"
+            fetched=1
+        fi
+    fi
+    if [ "${fetched}" = "0" ]; then
+        echo "::error::could not fetch the PR head (${HEAD_REF}, PR !${PR_NUM});" \
+             "failing instead of building the base branch"
+        exit 1
+    fi
 fi
 
 rm -rf "${GATE_PR_CODE_DIR}"
