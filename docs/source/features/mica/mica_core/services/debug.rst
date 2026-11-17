@@ -69,7 +69,7 @@
 第一行打印的gdb命令是输入 ``mica gdb <name>`` 后所实际执行的gdb命令，
 用户可以依据此提示进一步调试。之后，用户进入GDB命令行，可以执行相应的GDB命令。
 
-对于镜像自带的精简版 ``rpi4-uniproton-gdb.elf``（无符号表），基本控制流程如下：
+对于镜像自带的精简版 ``rpi4-uniproton-gdb.elf`` （无符号表），基本控制流程如下：
 
 .. code-block:: shell
 

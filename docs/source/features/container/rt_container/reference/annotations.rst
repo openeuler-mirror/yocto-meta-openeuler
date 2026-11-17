@@ -166,10 +166,10 @@ org.openeuler.micrun.container.firmware_hash
      - 64 位十六进制摘要，或带 ``sha256:`` 前缀的摘要
    * - 校验失败行为
      - 校验时机是 task start（shim 创建任务）阶段，不是 ``ctr container create``
-  （create 是 containerd 的纯元数据操作，不触达 shim）；摘要不匹配或格式非法时
-  start 失败且固件不会加载，错误形如
-  ``failed to create shim task: firmware sha256 mismatch ...`` /
-  ``invalid firmware sha256 length``
+       （create 是 containerd 的纯元数据操作，不触达 shim）；摘要不匹配或格式非法时
+       start 失败且固件不会加载，错误形如
+       ``failed to create shim task: firmware sha256 mismatch ...`` /
+       ``invalid firmware sha256 length``
 
 **示例**:
 
@@ -269,16 +269,16 @@ org.openeuler.micrun.container.auto_close
 
 **行为说明**：
 
-* ``true``（默认）: **最后一个 stdin 写端消失**（detach 键序送达 / stdin EOF / start 后无人 attach）后开始计时，超时内无人重新 attach 即回收容器
+* ``true`` （默认）: **最后一个 stdin 写端消失** （detach 键序送达 / stdin EOF / start 后无人 attach）后开始计时，超时内无人重新 attach 即回收容器
 * ``false``: 禁用自动回收（除非设置了非零 ``auto_close_timeout``），容器保持运行等待重连
-* ``false`` 只对"仅 stdin 结束/detach"类离开方式有效，**不能阻止 attach 客户端进程死亡**（关终端/断 SSH/Ctrl+C 杀死 attach 进程）导致的秒级停止（该路径不走超时计时）
+* ``false`` 只对"仅 stdin 结束/detach"类离开方式有效，**不能阻止 attach 客户端进程死亡** （关终端/断 SSH/Ctrl+C 杀死 attach 进程）导致的秒级停止（该路径不走超时计时）
 
 .. warning::
 
    ⚠️ **重要**：此注解是布尔值，**不要使用数字值**\ （如 ``"60"``）。
    如需设置超时时长，请使用 :ref:`auto_close_timeout <auto_close_timeout_annotation>` 注解。
 
-   所有 IO 模式（TTY/Non-TTY、前台/后台）默认都启用超时机制，**计时起点是最后一个 stdin 写端消失**（不是容器启动时刻；attach 期间挂起）。只有显式设置 ``auto_close=false`` 或 ``auto_close_timeout=0`` 才能禁用回收。
+   所有 IO 模式（TTY/Non-TTY、前台/后台）默认都启用超时机制，**计时起点是最后一个 stdin 写端消失** （不是容器启动时刻；attach 期间挂起）。只有显式设置 ``auto_close=false`` 或 ``auto_close_timeout=0`` 才能禁用回收。
 
 **示例**：
 
@@ -885,7 +885,7 @@ Pod 配置
 
    * ⚠️ ``auto_close`` 是布尔值注解，**不要** 使用数字（如 ``auto_close=60``）
    * 如需设置超时时长，使用 ``auto_close_timeout`` 注解（如 ``auto_close_timeout=60s``）
-   * **所有 IO 模式默认启用超时机制，计时从最后一个 stdin 写端消失起算（默认 30s，attach 期间挂起；容器运行时长没有上限）
+   * **所有 IO 模式默认启用超时机制，计时从最后一个 stdin 写端消失起算（默认 30s，attach 期间挂起；容器运行时长没有上限）**
    * 长期运行服务需显式禁用：``auto_close=false`` 或 ``auto_close_timeout=0``
 
 .. seealso::

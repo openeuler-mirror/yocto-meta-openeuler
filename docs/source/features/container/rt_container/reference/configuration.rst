@@ -518,7 +518,7 @@ Drop-in 目录允许将配置拆分为多个文件：
    * - ``file``
      - 字符串
      - ``/var/log/mica/mica-runtime.log``
-     - 日志文件路径（**仅 debug 版本**写入文件；release 版本仅 FIFO 输出）
+     - 日志文件路径（**仅 debug 版本** 写入文件；release 版本仅 FIFO 输出）
    * - ``color``
      - 布尔
      - ``false``
