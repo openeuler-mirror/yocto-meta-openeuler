@@ -1,0 +1,78 @@
+# 以'#'开头的为注释行
+# 以\结尾表示当前行未结束
+
+# 升级文件所在目录
+file_path=/boot
+
+# 升级文件的文件名,boot_image和boot_env会自动加上_${total_mem_size}.bin
+file.boot_image=boot_image
+file.boot_env=boot_env
+file.kernel=kernel
+file.rootfs=rootfs.ext4
+
+# append_reboot会在加载SD卡环境变量后直接执行
+# update=yes 时执行一次性升级：刷写完成后清除标志并保存到eMMC环境，
+# 然后直接引导新系统。若环境保存失败，新系统中的
+# hieulerpi1-clear-update.service 会再次清除标志，避免重复刷写。
+append_preboot=\
+    setenv file.boot_image "${file_path}/${file.boot_image}_${total_mem_size}.bin";\
+    setenv file.boot_env "${file_path}/${file.boot_env}_${total_mem_size}.bin";\
+    setenv file.kernel "${file_path}/${file.kernel}";\
+    setenv file.rootfs "${file_path}/${file.rootfs}";\
+    if test "${update}" = "yes";then \
+        run updatecmd;\
+        setenv update no;\
+        saveenv;\
+        run bootcmd;\
+    fi;\
+
+# 将升级使用的rootfs覆盖到sd卡的第二分区
+mkboot_sdcard=cpfile "mmc 1:1 ${file.rootfs}" "mmc 1:2 0x00";
+
+// boot_media=sd
+boot_media=emmc
+
+# SD卡启动命令
+# 从SD卡加载内核并从SD卡启动，bootargs中注意必须添加rootwait
+bootcmd=\
+    if test "$boot_media" = "sd";then \
+        load mmc 1:1 ${buffer_addr} ${file.kernel};\
+        setenv bootargs "${bootargs} mem=${os_mem_size} total_mem_size=${total_mem_size} root=/dev/mmcblk1p2";\
+        bootm ${buffer_addr};\
+    elif test "$boot_media" = "emmc";then \
+        mmc read 0 ${buffer_addr} 0x1000 0x8000;\
+        setenv bootargs "${bootargs} mem=${os_mem_size} total_mem_size=${total_mem_size} root=/dev/mmcblk0p4";\
+        bootm ${buffer_addr};\
+    fi;
+
+# 升级命令内容
+updatecmd=\
+    setenv update_part 0;\
+    setenv part_ok no;\
+    mmc partcnt 1;\
+    while test "${part_ok}" != "yes" -a "${update_part}" -le "${partcnt}";do \
+        setenv offset 0; \
+        if cpfile "mmc 1:${update_part} ${file.boot_image}" "mmc 0 0x${offset}";then \
+            setenv part_ok yes;\
+        fi; \
+\
+        setexpr offset $offset + $part_uboot; \
+\
+        if cpfile "mmc 1:${update_part} ${file.boot_env}" "mmc 0 0x${offset}";then \
+            setenv part_ok yes;\
+        fi; \
+\
+        setexpr offset $offset + $part_env; \
+\
+        if cpfile "mmc 1:${update_part} ${file.kernel}" "mmc 0 0x${offset}";then \
+            setenv part_ok yes;\
+        fi; \
+\
+        setexpr offset $offset + $part_kernel; \
+\
+        if cpfile "mmc 1:${update_part} ${file.rootfs}" "mmc 0 0x${offset}";then \
+            setenv part_ok yes;\
+        fi; \
+\
+        setexpr update_part ${update_part} + 1; \
+    done;

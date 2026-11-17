@@ -1,0 +1,12 @@
+[Unit]
+Description=Clear hieulerpi1 one-shot upgrade flag
+After=local-fs.target
+ConditionPathExists=/etc/fw_env.config
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c 'if [ "$(fw_printenv -n update 2>/dev/null)" = yes ]; then fw_setenv update no; fi'
+
+[Install]
+WantedBy=multi-user.target
