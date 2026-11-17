@@ -466,7 +466,7 @@ TTY 输出处理导致 ``\r\n`` 转换为 ``\r\r\n``。
 **先分清"正常行为"与"配置问题"**——以下都是设计内行为，不是 auto_close 故障：
 
 * detach（Ctrl+P Ctrl+Q）后约 30 秒容器被回收：默认 ``auto_close=true``，detach 即"最后一个 stdin 写端消失"，30s 内无人重新 attach 就回收（计时从 detach 起算）；
-* attach 会话被关闭/断开后容器**秒级停止**、task 记录消失：attach **客户端进程死亡**路径，绕过 auto-close 计时，与 ``auto_close`` 值无关；
+* attach 会话被关闭/断开后容器 **秒级停止**、task 记录消失：attach **客户端进程死亡** 路径，绕过 auto-close 计时，与 ``auto_close`` 值无关；
 * 普通（非 raw）终端里 Ctrl+C 后容器停止但看不到 STOPPED(130)：Ctrl+C 被终端转成 SIGINT 杀死了 attach 客户端，``0x03`` 从未送达；
 * ``ctr task start -d`` 后不 attach，约 30 秒容器被回收：无人 attach 即开始计时；
 * ``nerdctl ps -a`` 显示 ``Created``：task 记录消失后的回退显示，判断容器生死看 ``xl list`` 与 ``/dev/ttyRPMSG*``。
@@ -482,7 +482,7 @@ TTY 输出处理导致 ``\r\n`` 转换为 ``\r\r\n``。
    注意 ``auto_close`` 是布尔值：``"false"`` 生效；数字值（如 ``"60"``）会被忽略；
    非法值（如 ``"notabool"``）静默按默认 ``true`` 处理。
 
-2. **检查超时设置**（debug shim 才有文件日志）
+2. **检查超时设置** （debug shim 才有文件日志）
 
    .. code-block:: bash
 

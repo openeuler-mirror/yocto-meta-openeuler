@@ -249,6 +249,12 @@ K3s 默认路径是 ``/usr/bin/k3s``；如果该文件不存在，应回到构�
 ``--container-runtime-endpoint=unix:///run/containerd/containerd.sock`` 接入。
 这样可以复用 rootfs 中的 ``containerd``、``ctr`` 和 ``containerd-shim-mica-v2``。
 
+.. note::
+
+   MCS 的 RTOS 容器依赖 micrun（containerd shim-v2，
+   ``io.containerd.mica.v2``），因此不能把这里的容器引擎替换为 iSula。
+   具体原因和可选方案参见 :ref:`isula_mcs`。
+
 配置系统 containerd 和 CNI
 ---------------------------
 

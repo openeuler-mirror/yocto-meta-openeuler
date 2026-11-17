@@ -68,9 +68,13 @@
 <li class="toctree-l4 current"><a class="reference internal" href="index.html">嵌入式容器</a><ul class="current">
 <li class="toctree-l5 current"><a class="current reference internal" href="#">iSula容器引擎及使用方法</a><ul>
 <li class="toctree-l6"><a class="reference internal" href="#id1">iSula简介</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id2">默认配置下集成的功能</a></li>
 <li class="toctree-l6"><a class="reference internal" href="#isulaopeneuler-embedded">构建带有iSula的openEuler Embedded镜像</a></li>
-<li class="toctree-l6"><a class="reference internal" href="#isula-daemon">手动启动iSula daemon</a></li>
-<li class="toctree-l6"><a class="reference internal" href="#id2">iSula容器引擎使用简介</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#isula-daemon">启动iSula daemon</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id3">快速使用</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id4">快速验证</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#mcs-isula">与MCS特性的关系：为什么当前不能集成iSula</a></li>
+<li class="toctree-l6"><a class="reference internal" href="#id5">更多参考</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="docker-image.html">openEuler Embedded Docker镜像构建和使用</a></li>
@@ -125,98 +129,282 @@
            <div itemprop="articleBody">
              
   <section id="isula">
-<h1>iSula容器引擎及使用方法<a class="headerlink" href="#isula" title="Permalink to this heading"></a></h1>
+<span id="isula-engine"></span><h1>iSula容器引擎及使用方法<a class="headerlink" href="#isula" title="Permalink to this heading"></a></h1>
 <section id="id1">
 <h2>iSula简介<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
-<p>iSula是openEuler社区开发的容器引擎，它是一个轻量级的容器引擎，支持容器的创建、启动、停止、删除、暂停、恢复、查看、导入、导出、镜像管理等功能。</p>
-<p>openEuler Embedded在构建时集成了iSula容器引擎，用户可以通过iSula容器引擎来管理容器。
-当前iSula容器引擎的默认容器运行时为lcr，也支持runc和kata-runtime。
-支持的容器镜像格式为OCI镜像，Docker镜像和external rootfs。</p>
-<p>iSula有两种容器管理操作接口：CLI和CRI。
-CLI采用命令行方式，是标准的C/S架构模式，将iSulad作为daemon服务端，iSula作为独立的客户端命令，供用户使用。
-CRI是由K8S对外提供的容器和镜像服务接口，供容器引擎接入K8S使用。</p>
-<p>当前，openEuler Embedded支持iSula容器引擎的CLI接口。之后会支持CRI接口，并与KubeEdge等容器管理工具进行集成。</p>
+<p>iSula是openEuler社区开发的容器引擎，采用C/C++实现，具有轻量、启动快、
+不依赖Go运行时等特点，适合嵌入式与资源受限场景。</p>
+<p>openEuler Embedded在构建时集成了iSula容器引擎，用户可以通过iSula容器引擎
+来管理容器。当前集成的版本为iSulad 2.1.6、lcr 2.1.5。</p>
+<p>iSula采用标准的C/S架构：<code class="docutils literal notranslate"><span class="pre">isulad``是daemon服务端，``isula``是独立的客户端命令，</span>
+<span class="pre">两者通过Unix</span> <span class="pre">socket（默认</span> <span class="pre">``/var/run/isulad.sock</span></code>）通信。</p>
+<p>当前默认容器运行时为 <strong>lcr</strong> （基于liblxc，由isulad通过 <code class="docutils literal notranslate"><span class="pre">dlopen</span></code> 加载到同一进程），
+也支持runc和kata-runtime，但默认镜像中只包含lcr，需要runc或kata-runtime时需自行集成。</p>
+<p>支持的容器镜像格式为OCI镜像、Docker镜像和external rootfs。</p>
+<p>iSula提供两种容器管理接口：</p>
+<ul class="simple">
+<li><p><strong>CLI</strong>：<code class="docutils literal notranslate"><span class="pre">isula</span></code> 命令行，适合本地调试和单机管理。</p></li>
+<li><p><strong>CRI</strong>：供Kubernetes/KubeEdge等编排组件接入。默认提供 <strong>CRI v1alpha2</strong>；
+如需CRI v1，需要在 <code class="docutils literal notranslate"><span class="pre">/etc/isulad/daemon.json</span></code> 中设置 <code class="docutils literal notranslate"><span class="pre">&quot;enable-cri-v1&quot;:</span> <span class="pre">true</span></code>
+（软件的CRI v1能力已在构建时打开）。</p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>默认配置下集成的功能<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<p>当前 <code class="docutils literal notranslate"><span class="pre">isulad_2.1.6.bb</span></code> 的默认配置（未做额外裁剪）包含以下能力：</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 18%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>能力</p></th>
+<th class="head"><p>默认状态</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>默认运行时</p></td>
+<td><p>lcr</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">daemon.json</span></code> 中 <code class="docutils literal notranslate"><span class="pre">&quot;default-runtime&quot;:</span> <span class="pre">&quot;lcr&quot;</span></code>，无需额外安装runc</p></td>
+</tr>
+<tr class="row-odd"><td><p>存储驱动</p></td>
+<td><p>overlay2</p></td>
+<td><p>依赖内核overlayfs；使能isulad特性时构建系统会自动加入overlay内核模块</p></td>
+</tr>
+<tr class="row-even"><td><p>镜像管理</p></td>
+<td><p>开启</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isula</span> <span class="pre">pull/push/login/logout/search/images/tag/rmi/import/export/load/save/prune</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>容器生命周期</p></td>
+<td><p>开启</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isula</span> <span class="pre">run/create/start/stop/restart/kill/pause/resume/rm/rename/update/wait/ps</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>运行时运维</p></td>
+<td><p>开启</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isula</span> <span class="pre">exec/attach/cp/logs/port/top/stats/inspect/events</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>网络</p></td>
+<td><p>开启</p></td>
+<td><p>原生网络与CNI；<code class="docutils literal notranslate"><span class="pre">isula</span> <span class="pre">network</span> <span class="pre">create/ls/inspect/rm</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>本地卷</p></td>
+<td><p>开启</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">isula</span> <span class="pre">volume</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>资源限制</p></td>
+<td><p>开启</p></td>
+<td><p>cgroups v1/v2；CPU、内存、cpuset、blkio、hugetlb等；OOM事件监控</p></td>
+</tr>
+<tr class="row-even"><td><p>安全隔离</p></td>
+<td><p>开启</p></td>
+<td><p>namespace、capabilities、seccomp；SELinux支持已编译（musl变体关闭）</p></td>
+</tr>
+<tr class="row-odd"><td><p>CRI</p></td>
+<td><p>v1alpha2</p></td>
+<td><p>CRI v1需在 <code class="docutils literal notranslate"><span class="pre">daemon.json</span></code> 中设置 <code class="docutils literal notranslate"><span class="pre">&quot;enable-cri-v1&quot;:</span> <span class="pre">true</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>shim v2</p></td>
+<td><p>开启</p></td>
+<td><p>使用预编译的lib-shim-v2，用于CRI pod sandbox</p></td>
+</tr>
+<tr class="row-odd"><td><p>CDI</p></td>
+<td><p>开启</p></td>
+<td><p>配合CRI v1使用，用于设备注入</p></td>
+</tr>
+<tr class="row-even"><td><p>gRPC API</p></td>
+<td><p>开启（仅本地）</p></td>
+<td><p>通过Unix socket提供本地API；远程连接（<code class="docutils literal notranslate"><span class="pre">ENABLE_GRPC_REMOTE_CONNECT</span></code>）关闭</p></td>
+</tr>
+<tr class="row-odd"><td><p>systemd集成</p></td>
+<td><p>可选</p></td>
+<td><p>使用systemd的镜像启用systemd notify；否则由初始化脚本挂载cgroup</p></td>
+</tr>
+</tbody>
+</table>
+<p>架构与裁剪说明：</p>
+<ul class="simple">
+<li><p>arm32 不支持iSula，构建时不安装 <code class="docutils literal notranslate"><span class="pre">packagegroup-isulad</span></code>。</p></li>
+<li><p>riscv64 关闭gRPC和shim v2。</p></li>
+<li><p>musl变体关闭gRPC、shim v2和SELinux，并依赖gcompat。</p></li>
+<li><p>aarch64全功能形态的依赖增量约45–50 MB（strip后，未压缩）；若关闭gRPC、
+shim v2、SELinux、devmapper等功能，可裁剪到约20 MB。</p></li>
+<li><p>默认镜像不包含isula-build，构建容器镜像需另外使用isula-build工具。</p></li>
+</ul>
 </section>
 <section id="isulaopeneuler-embedded">
 <h2>构建带有iSula的openEuler Embedded镜像<a class="headerlink" href="#isulaopeneuler-embedded" title="Permalink to this heading"></a></h2>
-<p>当前openEuler Embedded标准镜像中默认不集成iSula容器引擎。
-如果需要集成isulad，需要在 <code class="docutils literal notranslate"><span class="pre">local.conf</span></code> 文件中添加如下配置：</p>
+<p>openEuler Embedded标准镜像默认不集成iSula容器引擎。
+如果需要集成isulad，可以在 <code class="docutils literal notranslate"><span class="pre">local.conf</span></code> 中添加：</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>DISTRO_FEATURES:append<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot; isulad &quot;</span>
 </pre></div>
 </div>
-<p>当然，也可以通过oebuild，在生成构建目录时增加 <code class="docutils literal notranslate"><span class="pre">-f</span> <span class="pre">openeuler-container</span></code>
-参数,以指定构建openEuler Embedded镜像时集成iSula容器引擎。
-具体的构建过程，参见 <a class="reference internal" href="../../../oebuild/userguide/build/index.html#oebuild-usage"><span class="std std-ref">构建OS镜像使用指导</span></a>。</p>
-<p>构建openeuler-container-os的过程和标准的openEuler Embedded镜像类似，
-不同之处仅仅在于，在构建镜像中需要输入如下命令而非 <code class="docutils literal notranslate"><span class="pre">bitbake</span> <span class="pre">openeuler-image</span></code> ：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>bitbake<span class="w"> </span>openeuler-container-os
+<p>也可以通过oebuild在生成构建目录时选择 <code class="docutils literal notranslate"><span class="pre">isulad</span></code> 特性：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>oebuild<span class="w"> </span>generate<span class="w"> </span>-p<span class="w"> </span>qemu-aarch64<span class="w"> </span>-f<span class="w"> </span>isulad<span class="w"> </span>-d<span class="w"> </span>&lt;build_dir&gt;
+</pre></div>
+</div>
+<p>之后进入构建目录构建标准镜像：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>&lt;build_dir&gt;
+<span class="gp">$ </span>oebuild<span class="w"> </span>bitbake<span class="w"> </span>openeuler-image
+</pre></div>
+</div>
+<p>构建openeuler-container-os的过程和标准镜像类似，区别在于构建目标：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>oebuild<span class="w"> </span>bitbake<span class="w"> </span>openeuler-container-os
 </pre></div>
 </div>
 </section>
 <section id="isula-daemon">
-<h2>手动启动iSula daemon<a class="headerlink" href="#isula-daemon" title="Permalink to this heading"></a></h2>
-<p>如果是标准的openEuler Embedded镜像，默认不会自动启动iSulad。用户可以手动启动iSula daemon服务端。</p>
-<p>首先，进入openEuler Embedded镜像后，我们需要为iSula daemon服务端配置镜像源。
-打开 <code class="docutils literal notranslate"><span class="pre">/etc/isulad/daemon.json</span></code> 文件，并在 <code class="docutils literal notranslate"><span class="pre">registry-mirrors</span></code> 字段中添加镜像源地址。
-我们可以添加 <code class="docutils literal notranslate"><span class="pre">&quot;docker.io&quot;</span></code>。</p>
-<p>之后，运行如下命令启动iSula daemon服务端：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>将isula<span class="w"> </span>daemon服务端作为后台进程启动
-<span class="gp">$ </span>isulad<span class="w"> </span><span class="p">&amp;</span>
-<span class="go">...</span>
+<h2>启动iSula daemon<a class="headerlink" href="#isula-daemon" title="Permalink to this heading"></a></h2>
+<p>标准openEuler Embedded镜像默认不会自动启动iSulad，需要手动启动。</p>
+<p>如果镜像使用systemd：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>启动iSula<span class="w"> </span>daemon服务端
+<span class="gp">$ </span>systemctl<span class="w"> </span>start<span class="w"> </span>isulad
+<span class="gp"># </span>可选：设置为开机自启
+<span class="gp">$ </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>isulad
+</pre></div>
+</div>
+<p>如果镜像不使用systemd，先确保cgroup已挂载（未使用systemd时，<code class="docutils literal notranslate"><span class="pre">config_cgroup</span></code>
+初始化脚本会在启动阶段自动执行），然后以后台进程方式启动：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>isulad<span class="w"> </span><span class="p">&amp;</span>
 <span class="go">...</span>
 <span class="go">isulad 20240131074734.534 - iSulad successfully booted in 0.120 s</span>
 </pre></div>
 </div>
-<p>如果启动成功，会有相应的日志信息输出到串口终端上。</p>
-<p>如果用户在生成构建目录的时候，特性里选择了 <code class="docutils literal notranslate"><span class="pre">systemd</span></code> ，那么在启动openEuler Embedded镜像后，
-可以使用如下命令启动iSula daemon服务端：</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>启动iSula<span class="w"> </span>daemon服务端
-<span class="gp">$ </span>systemctl<span class="w"> </span>start<span class="w"> </span>isulad
+<p>如果需要从公共镜像仓库拉取镜像，先配置镜像源。编辑 <code class="docutils literal notranslate"><span class="pre">/etc/isulad/daemon.json</span></code>，
+在 <code class="docutils literal notranslate"><span class="pre">registry-mirrors</span></code> 中添加镜像源地址，例如：</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="nt">&quot;registry-mirrors&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="s2">&quot;docker.io&quot;</span>
+<span class="p">]</span>
 </pre></div>
 </div>
+<p>修改后重启isulad服务。</p>
 </section>
-<section id="id2">
-<h2>iSula容器引擎使用简介<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
-<p>本文档仅记载一些简单的操作，更具体的参数命令和操作，
-请参见iSula容器引擎的 <a class="reference external" href="https://docs.openeuler.org/zh/docs/23.09/docs/Container/iSula容器引擎.html">官方文档</a> 。</p>
-<p><strong>拉取一个镜像</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>拉取一个镜像
-<span class="gp">$ </span>isula<span class="w"> </span>pull<span class="w"> </span>busybox
+<section id="id3">
+<h2>快速使用<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<p>本文档仅记录常用操作，更完整的命令说明请参见iSulad官方文档。</p>
+<p><strong>拉取镜像</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>isula<span class="w"> </span>pull<span class="w"> </span>busybox
 </pre></div>
 </div>
-<p>此命令从daemon.json中配置的镜像源地址拉取busybox镜像。</p>
-<p><strong>查看本地镜像列表</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>查看镜像列表
-<span class="gp">$ </span>isula<span class="w"> </span>images
-<span class="go">REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE</span>
-<span class="go">busybox             latest              59788edf1f3e        2 weeks ago         1.22MB</span>
+<p><strong>查看本地镜像</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>isula<span class="w"> </span>images
 </pre></div>
 </div>
 <p><strong>运行容器</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>运行一个容器
-<span class="gp">$ </span>isula<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>busybox<span class="w"> </span>sh
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>isula<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>busybox<span class="w"> </span>sh
 <span class="go">/ #</span>
 </pre></div>
 </div>
-<p>成功运行后，我们可以通过命令行与容器进行交互。</p>
-<p>如果想要退出容器，可以在命令行输入 <code class="docutils literal notranslate"><span class="pre">exit</span></code> 命令。</p>
-<p><strong>创建一个容器</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>创建一个容器
-<span class="gp">$ </span>isula<span class="w"> </span>create<span class="w"> </span>-it<span class="w"> </span>busybox<span class="w"> </span>sh
-</pre></div>
-</div>
-<p>上述命令以交互模式创建了一个容器，并且分配了伪终端，但是没有运行。</p>
-<p>如果用户希望启动并接入已有的容器，可以使用如下的两条命令：</p>
-<p><strong>启动一个容器</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>启动一个容器
+<p>输入 <code class="docutils literal notranslate"><span class="pre">exit</span></code> 退出交互界面。</p>
+<p><strong>创建、启动与进入容器</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>isula<span class="w"> </span>create<span class="w"> </span>-it<span class="w"> </span>busybox<span class="w"> </span>sh
 <span class="gp">$ </span>isula<span class="w"> </span>start<span class="w"> </span>&lt;container_id&gt;
-</pre></div>
-</div>
-<p><strong>进入容器交互界面（接入容器）</strong></p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>进入容器交互界面
 <span class="gp">$ </span>isula<span class="w"> </span>attach<span class="w"> </span>&lt;container_id&gt;
 </pre></div>
 </div>
+<p><strong>在运行中的容器内执行命令</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>isula<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>&lt;container_id&gt;<span class="w"> </span>sh
+</pre></div>
+</div>
+<p><strong>查看容器与日志</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>isula<span class="w"> </span>ps<span class="w"> </span>-a
+<span class="gp">$ </span>isula<span class="w"> </span>logs<span class="w"> </span>&lt;container_id&gt;
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h2>快速验证<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
+<p>完成构建并启动isulad后，可以按以下步骤确认默认配置工作正常。</p>
+<p><strong>1. 确认版本与服务状态</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>isula<span class="w"> </span>version
+<span class="gp">$ </span>isula<span class="w"> </span>info
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">isula</span> <span class="pre">info</span></code> 中应能看到 <code class="docutils literal notranslate"><span class="pre">Server</span> <span class="pre">Version:</span> <span class="pre">2.1.6</span></code> 和
+<code class="docutils literal notranslate"><span class="pre">Storage</span> <span class="pre">Driver:</span> <span class="pre">overlay2</span></code> （具体字段以实际版本为准）。</p>
+<p><strong>2. 确认默认运行时为lcr</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>grep<span class="w"> </span><span class="s1">&#39;\&quot;default-runtime\&quot;&#39;</span><span class="w"> </span>/etc/isulad/daemon.json
+<span class="go">    &quot;default-runtime&quot;: &quot;lcr&quot;,</span>
+</pre></div>
+</div>
+<p>也可以运行一个容器后查看其运行时：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>isula<span class="w"> </span>run<span class="w"> </span>-itd<span class="w"> </span>--name<span class="w"> </span>demo<span class="w"> </span>busybox<span class="w"> </span>sh
+<span class="gp">$ </span>isula<span class="w"> </span>ps<span class="w"> </span>-a<span class="w"> </span>--format<span class="w"> </span><span class="s2">&quot;{{.Runtime}}&quot;</span>
+</pre></div>
+</div>
+<p>输出应为 <code class="docutils literal notranslate"><span class="pre">lcr</span></code>。</p>
+<p><strong>3. 验证基本生命周期</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>isula<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>busybox<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;hello isula&quot;</span>
+<span class="go">hello isula</span>
+<span class="gp">$ </span>isula<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>demo<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;uname -a; echo inside-container&#39;</span>
+<span class="gp">$ </span>isula<span class="w"> </span>stats<span class="w"> </span>--no-stream<span class="w"> </span>demo
+<span class="gp">$ </span>isula<span class="w"> </span>inspect<span class="w"> </span>demo<span class="w"> </span><span class="p">|</span><span class="w"> </span>head
+<span class="gp">$ </span>isula<span class="w"> </span>logs<span class="w"> </span>demo
+<span class="gp">$ </span>isula<span class="w"> </span>rm<span class="w"> </span>-f<span class="w"> </span>demo
+</pre></div>
+</div>
+<p><strong>4. 验证离线镜像导入导出</strong></p>
+<p>无网络环境可以先在别处导出镜像，再在目标机上导入：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>有镜像的机器上
+<span class="gp">$ </span>isula<span class="w"> </span>save<span class="w"> </span>busybox<span class="w"> </span>-o<span class="w"> </span>busybox.tar
+<span class="gp"># </span>目标机器上
+<span class="gp">$ </span>isula<span class="w"> </span>load<span class="w"> </span>-i<span class="w"> </span>busybox.tar
+<span class="gp">$ </span>isula<span class="w"> </span>images
+</pre></div>
+</div>
+<p><strong>5. 验证卷和网络</strong></p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>isula<span class="w"> </span>volume<span class="w"> </span>create<span class="w"> </span>testvol
+<span class="gp">$ </span>isula<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span>testvol:/data<span class="w"> </span>busybox<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;echo data &gt; /data/test; cat /data/test&#39;</span>
+<span class="gp">$ </span>isula<span class="w"> </span>volume<span class="w"> </span>ls
+<span class="gp">$ </span>isula<span class="w"> </span>network<span class="w"> </span>ls
+</pre></div>
+</div>
+<p>如果上述命令均正常，说明默认配置下的iSula功能可用。</p>
+</section>
+<section id="mcs-isula">
+<span id="isula-mcs"></span><h2>与MCS特性的关系：为什么当前不能集成iSula<a class="headerlink" href="#mcs-isula" title="Permalink to this heading"></a></h2>
+<p>openEuler Embedded的MCS（Mixed Criticality System）特性中，RTOS容器化能力
+由 <strong>micrun</strong> 提供。micrun 是 <strong>containerd shim-v2</strong> 实现：</p>
+<ul class="simple">
+<li><p>运行时类型为 <code class="docutils literal notranslate"><span class="pre">io.containerd.mica.v2</span></code>，产物为 <code class="docutils literal notranslate"><span class="pre">containerd-shim-mica-v2</span></code>；</p></li>
+<li><p>依赖rootfs中的系统containerd（1.7.19及以上）；</p></li>
+<li><p>当前推荐形态是“K3s Agent + 系统containerd”，K3s Agent 通过
+<code class="docutils literal notranslate"><span class="pre">--container-runtime-endpoint=unix:///run/containerd/containerd.sock</span></code> 接入。</p></li>
+</ul>
+<p>因此，MCS特性当前不能把K3s的容器引擎替换为iSula，原因有三点：</p>
+<ol class="arabic simple">
+<li><p><strong>iSula不支持加载containerd shim-v2。</strong> iSula的runtime只有两类：lcr
+（进程内 <code class="docutils literal notranslate"><span class="pre">dlopen</span> <span class="pre">liblcr.so</span></code>）和isula（通过 <code class="docutils literal notranslate"><span class="pre">isulad-shim</span></code> 执行runc这类
+OCI runtime命令行）。iSula自身也有shim v2，但它面向pod sandbox的
+sandboxer协议，不是containerd的runtime-v2 task服务，不能直接挂载
+<code class="docutils literal notranslate"><span class="pre">containerd-shim-mica-v2</span></code>。</p></li>
+<li><p><strong>iSula的CRI RuntimeClass支持范围有限。</strong> 当前仅支持kata和runc两类
+OCI runtime；micrun是shim而不是OCI runtime命令行，无法通过RuntimeClass接入。</p></li>
+<li><p><strong>一个K3s节点只能配置一个CRI endpoint。</strong> RuntimeClass只能在同一个CRI实现
+内部切换handler，不能把RTOS Pod交给containerd、普通Pod交给iSula。</p></li>
+</ol>
+<p>可选方案：</p>
+<ul class="simple">
+<li><p><strong>需要RTOS容器</strong>：保留containerd + micrun，K3s使用
+<code class="docutils literal notranslate"><span class="pre">K3S_EXTERNAL_ENDPOINT=&quot;containerd&quot;</span></code>。这是当前MCS的推荐方案。</p></li>
+<li><p><strong>不需要RTOS容器</strong> （只使用Jailhouse/OpenAMP等核隔离能力）：可以把K3s引擎
+换成iSula，配置 <code class="docutils literal notranslate"><span class="pre">K3S_EXTERNAL_ENDPOINT=&quot;isulad&quot;</span></code>，并显式安装
+<code class="docutils literal notranslate"><span class="pre">packagegroup-isulad</span></code>。注意该路径当前对应的K3s版本为v1.22.6，
+且需要验证pause镜像、CNI目录和离线镜像导入。</p></li>
+<li><p><strong>必须统一到iSula</strong>：需要为micrun开发iSula sandboxer适配层，或把micrun
+包装成OCI runtime并扩展iSula的RuntimeClass支持，工作量较大。</p></li>
+</ul>
+<p>更多MCS与micrun的说明，参见 <a class="reference internal" href="../rt_container/index.html"><span class="doc">实时容器</span></a>。</p>
+</section>
+<section id="id5">
+<h2>更多参考<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p>iSulad官方文档（openEuler 24.03 LTS）：
+<a class="reference external" href="https://docs.openeuler.openatom.cn/zh/docs/24.03_LTS/docs/Container/iSula容器引擎.html">iSula容器引擎</a></p></li>
+<li><p>本仓库recipe：<code class="docutils literal notranslate"><span class="pre">meta-openeuler/recipes-core/isulad/isulad_2.1.6.bb</span></code></p></li>
+<li><p>默认运行时配置：<code class="docutils literal notranslate"><span class="pre">meta-openeuler/recipes-core/isulad/files/0001-configuration-use-lcr.patch</span></code></p></li>
+</ul>
 </section>
 </section>
 

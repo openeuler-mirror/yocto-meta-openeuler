@@ -652,7 +652,7 @@ nerdctl 使用 ``-l`` (label) 参数来传递 MicRun 的注解配置：
 
 使用时注意三点（均为设计内行为）：
 
-1. ``Ctrl+C`` 只在 **raw 终端**的 TTY 会话（如 ``nerdctl run -it``）里表示停止容器；普通终端下它被转成 SIGINT 杀死 attach 客户端，容器会**秒级停止**且 task 记录消失。
+1. ``Ctrl+C`` 只在 **raw 终端** 的 TTY 会话（如 ``nerdctl run -it``）里表示停止容器；普通终端下它被转成 SIGINT 杀死 attach 客户端，容器会 **秒级停止** 且 task 记录消失。
 2. 关闭终端/断开 SSH 等使 attach 客户端进程死亡的操作，同样导致容器秒级停止（与 ``auto_close`` 设置无关）。
 3. 判断容器是否真的停止看 ``xl list``（域消失）与 ``/dev/ttyRPMSG*``；``ctr task ls`` 的 STOPPED/消失与 ``nerdctl ps -a`` 的 ``Created`` 都是正常表现。
 
