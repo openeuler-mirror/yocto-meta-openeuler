@@ -9,7 +9,8 @@
 海鸥派主控 SS928 内置四核 Cortex-A55@1.4GHz 和一颗 32bit RISC-V
 MCU@500MHz，同时提供 NPU、DSP 等异构算力。Linux 运行在 A55 上，
 RISC-V MCU 运行 LiteOS，二者通过 IPCM 通信。硬件规格见
-:ref:`board_hieulerpi_hardware_features`。
+:ref:`board_hieulerpi_hardware_features`\ ，NPU/DSP/SVP 的用途、参数和
+开发流程见 :ref:`hieulerpi_heterogeneous_compute`。
 
 一、启动流程
 ============
@@ -184,7 +185,8 @@ eMMC 没有 GPT/MBR 分区表，\ ``sfdisk``/``parted`` 会报
     板卡恢复。
 
 - NPU/DSP 是独立的 carveout/模块，由 ``load_ss928v100`` 加载；
-  RISC-V MCU 与它们通过 IPCM/共享内存协作。
+  RISC-V MCU 与它们通过 IPCM/共享内存协作。具体使用见
+  :ref:`hieulerpi_heterogeneous_compute`。
 
 五、BSP 服务
 ============

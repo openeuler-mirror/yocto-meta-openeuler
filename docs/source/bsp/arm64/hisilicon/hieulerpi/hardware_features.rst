@@ -9,6 +9,9 @@ AI算力高达10.4TopsINT8，双内核异构引擎，同时支持 4K\@60fps H.26
 
 海鸥派是一款应用于机器人/机器视觉/工业控制领域的开发板，支持CAN，485等接口灵活满足面向工业领域开发者的不同选型要求，软硬协同以实现系统最优的开发效率。
 同时海鸥派在工业领域提出一套完整的 OS for AI 开发环境，能够支持多类机器人算法与应用的高效部署。
+NNN、SVP_NPU、DSP 等异构算力的用途、核心参数和开发流程见
+:ref:`hieulerpi_heterogeneous_compute`。
+
 **硬件外设接口参考图**
 
 .. image:: images/hieulerpi.png
