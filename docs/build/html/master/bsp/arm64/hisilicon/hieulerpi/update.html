@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>海鸥派镜像升级与启动 &mdash; openEuler Embedded在线文档 26.09 documentation</title>
+  <title>海鸥派镜像在线升级与启动 &mdash; openEuler Embedded在线文档 26.09 documentation</title>
       <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../../../_static/tabs.css" type="text/css" />
@@ -27,7 +27,7 @@
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
     <link rel="next" title="海鸥派常用命令" href="hieulerpi_common_commands.html" />
-    <link rel="prev" title="海鸥派镜像获取" href="hieulerpi-image.html" /> 
+    <link rel="prev" title="海鸥派异构算力（NPU/DSP）使用指南" href="heterogeneous-compute.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -69,12 +69,15 @@
 <li class="toctree-l6"><a class="reference internal" href="hardware_features.html">海鸥派硬件特性</a></li>
 <li class="toctree-l6"><a class="reference internal" href="hieulerpi.html">海鸥派镜像构建与使用</a></li>
 <li class="toctree-l6"><a class="reference internal" href="hieulerpi-image.html">海鸥派镜像获取</a></li>
-<li class="toctree-l6 current"><a class="current reference internal" href="#">海鸥派镜像升级与启动</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="hieulerpi-system.html">海鸥派系统架构、启动流程与内存/存储布局</a></li>
+<li class="toctree-l6"><a class="reference internal" href="heterogeneous-compute.html">海鸥派异构算力（NPU/DSP）使用指南</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">海鸥派镜像在线升级与启动</a><ul>
 <li class="toctree-l7"><a class="reference internal" href="#id2">一、简介</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#sd">二、SD卡升级</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#toolplatform">三、ToolPlatform工具</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id7">四、SD卡启动</a></li>
-<li class="toctree-l7"><a class="reference internal" href="#id11">五、常见问题</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">二、主机工具在线升级（推荐）</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#sd">三、手动 SD 卡升级（旧版/无网络）</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#toolplatform">四、ToolPlatform工具</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id11">五、SD卡启动</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id15">六、常见问题</a></li>
 </ul>
 </li>
 <li class="toctree-l6"><a class="reference internal" href="hieulerpi_common_commands.html">海鸥派常用命令</a></li>
@@ -126,7 +129,7 @@
           <li class="breadcrumb-item"><a href="../../index.html">ARM64硬件</a></li>
           <li class="breadcrumb-item"><a href="../index.html">基于海思(Hisilicon)SoC的硬件</a></li>
           <li class="breadcrumb-item"><a href="index.html">海鸥派</a></li>
-      <li class="breadcrumb-item active">海鸥派镜像升级与启动</li>
+      <li class="breadcrumb-item active">海鸥派镜像在线升级与启动</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -136,59 +139,147 @@
            <div itemprop="articleBody">
              
   <section id="hieuler-update">
-<span id="id1"></span><h1>海鸥派镜像升级与启动<a class="headerlink" href="#hieuler-update" title="Permalink to this heading"></a></h1>
+<span id="id1"></span><h1>海鸥派镜像在线升级与启动<a class="headerlink" href="#hieuler-update" title="Permalink to this heading"></a></h1>
 <section id="id2">
 <h2>一、简介<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
-<p><strong>欧拉派-海鸥</strong> 系列为用户提供以下两种升级方式：</p>
+<p><strong>欧拉派-海鸥</strong> 系列支持以下升级方式：</p>
 <ol class="arabic simple">
-<li><p>ToolPlatform工具网络升级</p></li>
-<li><p>SD卡升级</p></li>
+<li><p>主机工具在线升级（推荐，SD 卡暂存）</p></li>
+<li><p>手动 SD 卡升级（旧版/无网络）</p></li>
+<li><p>ToolPlatform 工具（裸板或 bootloader 损坏时使用）</p></li>
 </ol>
-<p>这两种升级方式都是将文件写入到板载的EMMC存储中，系统默认也从此处启动。除此之外还支持SD卡启动，需要额外配置启动参数，具体操作参考 <a class="reference internal" href="#id7"><span class="std std-ref">四、SD卡启动</span></a> 的部分。</p>
+<p>以上方式都会把镜像写入板载 eMMC，系统默认从 eMMC 启动。此外还支持
+SD 卡启动，需要额外配置启动参数，具体操作参考 <a class="reference internal" href="#id11"><span class="std std-ref">五、SD卡启动</span></a> 的部分。</p>
+</section>
+<section id="id3">
+<h2>二、主机工具在线升级（推荐）<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<p>适用于板卡已正常启动、网络可达、SD 卡已插入的场景。主机工具位于
+<code class="docutils literal notranslate"><span class="pre">bsp/meta-hisilicon/tools/hieulerpi1-upgrade.sh</span></code>，直接把
+<code class="docutils literal notranslate"><span class="pre">kernel-pi</span></code> 和 <code class="docutils literal notranslate"><span class="pre">rootfs.ext4</span></code> 写入板卡 SD 卡，设置
+<code class="docutils literal notranslate"><span class="pre">update=yes</span></code> 后重启；U-Boot 在下次启动时把镜像刷入 eMMC。</p>
+<section id="id4">
+<h3>1) 准备<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>同一次构建输出的 <code class="docutils literal notranslate"><span class="pre">kernel-pi</span></code> 和 <code class="docutils literal notranslate"><span class="pre">rootfs.ext4</span></code>。</p></li>
+<li><p>已插入 SD 卡（默认 <code class="docutils literal notranslate"><span class="pre">/dev/mmcblk1p1</span></code>），文件系统可挂载，剩余空间
+大于根文件系统大小（约 600MB）。</p></li>
+<li><p>板卡 IP、SSH 可达；工具默认使用仓库内的测试私钥，也可用
+<code class="docutils literal notranslate"><span class="pre">--password</span></code> 指定密码。</p></li>
+<li><p>使用密码认证时，主机需要安装 <code class="docutils literal notranslate"><span class="pre">sshpass</span></code>。</p></li>
+</ul>
+</section>
+<section id="id5">
+<h3>2) 执行<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">./bsp/meta-hisilicon/tools/hieulerpi1-upgrade.sh \</span>
+<span class="go">  --ip 192.168.7.3 \</span>
+<span class="go">  --kernel &lt;build&gt;/kernel-pi \</span>
+<span class="go">  --rootfs &lt;build&gt;/openeuler-image-hieulerpi1-&lt;时间戳&gt;.rootfs.ext4</span>
+</pre></div>
+</div>
+<p>常用参数：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">--no-reboot</span></code>：只写 SD 卡并设置升级标志，不重启。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--sd-dev</span></code> / <code class="docutils literal notranslate"><span class="pre">--sd-mount</span></code>：指定 SD 分区/挂载点。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--key</span></code> / <code class="docutils literal notranslate"><span class="pre">--password</span></code>：SSH 认证。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-y</span></code>：跳过确认。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--wait</span> <span class="pre">N</span></code>：重启后等待板卡恢复（要求 IP 不变）。</p></li>
+</ul>
+<p>工具执行流程：</p>
+<ol class="arabic simple">
+<li><p>SSH 登录板卡，挂载 SD 卡到 <code class="docutils literal notranslate"><span class="pre">/mnt/sd</span></code>。</p></li>
+<li><p>直接 scp <code class="docutils literal notranslate"><span class="pre">kernel-pi</span></code> 和 <code class="docutils literal notranslate"><span class="pre">rootfs.ext4</span></code> 到 SD 卡
+<code class="docutils literal notranslate"><span class="pre">/mnt/sd/boot</span></code>，并安装一次性 <code class="docutils literal notranslate"><span class="pre">env_append.txt</span></code>。</p></li>
+<li><p>校验远端文件大小，卸载 SD 卡。</p></li>
+<li><p>执行 <code class="docutils literal notranslate"><span class="pre">fw_setenv</span> <span class="pre">update</span> <span class="pre">yes</span></code>，然后重启板卡。</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>本板 Linux 对大文件的文件系统读写存在不稳定性，工具跳过远程 md5
+校验（仅校验大小），最终以 U-Boot 实际刷写并启动新系统作为验证。</p>
+</div>
+</section>
+<section id="u-boot">
+<h3>3) U-Boot 刷写流程<a class="headerlink" href="#u-boot" title="Permalink to this heading"></a></h3>
+<p>U-Boot 启动时 <code class="docutils literal notranslate"><span class="pre">preboot</span></code> 读取 SD 卡的 <code class="docutils literal notranslate"><span class="pre">/boot/env_append.txt</span></code>；当
+<code class="docutils literal notranslate"><span class="pre">update=yes</span></code> 时执行 <code class="docutils literal notranslate"><span class="pre">updatecmd</span></code>：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">boot_image_8G.bin</span></code> → p1</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">boot_env_8G.bin</span></code> → p2</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kernel</span></code> → p3（2MiB）</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rootfs.ext4</span></code> → p4（18MiB）</p></li>
+</ul>
+<p>在线升级通常只放 <code class="docutils literal notranslate"><span class="pre">kernel</span></code> 和 <code class="docutils literal notranslate"><span class="pre">rootfs.ext4</span></code>，没有
+<code class="docutils literal notranslate"><span class="pre">boot_image_8G.bin</span></code>/<code class="docutils literal notranslate"><span class="pre">boot_env_8G.bin</span></code> 时对应步骤跳过，bootloader
+和 U-Boot 环境保持原样（环境由 <code class="docutils literal notranslate"><span class="pre">saveenv</span></code> 更新）。刷写完成后执行：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">setenv update no</span>
+<span class="go">saveenv</span>
+<span class="go">run bootcmd</span>
+</pre></div>
+</div>
+<p>新系统启动后，<code class="docutils literal notranslate"><span class="pre">hieulerpi1-clear-update.service</span></code> 会兜底清除残留的
+<code class="docutils literal notranslate"><span class="pre">update=yes</span></code>，避免重复刷写。</p>
+</section>
+<section id="id6">
+<h3>4) 验证<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">fw_printenv update          # 应为 no</span>
+<span class="go">uname -r                    # 新内核版本</span>
+<span class="go">systemctl is-active hieulerpi1-clear-update.service</span>
+<span class="go">resize2fs /dev/mmcblk0p4    # 首次启动后可扩展到整个 p4</span>
+</pre></div>
+</div>
+<p>镜像默认 IP 为 <code class="docutils literal notranslate"><span class="pre">192.168.7.2``（本板测试环境使用</span> <span class="pre">``192.168.7.3</span></code>）。
+MAC 由 <code class="docutils literal notranslate"><span class="pre">hieulerpi1-set-mac.service</span></code> 从 eMMC CID 派生，重启后保持
+不变。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">--wait</span></code> 使用执行命令时的 IP；如果新镜像的 IP 发生变化，等待会
+失败，需要先通过串口或本地控制台确认新 IP。</p>
+</div>
+</section>
 </section>
 <section id="sd">
-<h2>二、SD卡升级<a class="headerlink" href="#sd" title="Permalink to this heading"></a></h2>
+<h2>三、手动 SD 卡升级（旧版/无网络）<a class="headerlink" href="#sd" title="Permalink to this heading"></a></h2>
 <p>若不清楚这文件系统和系统分区可以忽略下面一小段备注，继续后面的操作。</p>
 <blockquote>
 <div><p>【备注】
 ：SD卡升级功能支持fat32格式和ext4格式的文件系统，在升级时会逐个扫描SD卡的每个分区，直到找到升级文件。</p>
 </div></blockquote>
-<section id="id3">
-<h3>1) 检查文件系统格式<a class="headerlink" href="#id3" title="Permalink to this heading"></a></h3>
+<section id="id7">
+<h3>1) 检查文件系统格式<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
 <p>在windows中插入SD卡，查看SD卡的文件系统格式，若为FAT32则无需操作，若不是则需要格式化。</p>
 <img alt="../../../../_images/image-20240117160750190.png" src="../../../../_images/image-20240117160750190.png" />
 </section>
-<section id="id4">
-<h3>2) 拷贝固件<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<section id="id8">
+<h3>2) 拷贝固件<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
 <p>若要进行SD卡升级，需要将Boot Loader、kernel和文件系统拷贝到SD卡中，并按以下文件名命名，
 放在SD卡根目录的boot目录下。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
 └── boot
-    ├── boot_env.bin             # uboot
-    ├── boot_image.bin        # uboot环境变量
-    ├── kernel                            # linux内核
-    ├── rootfs.ext4                   # 根文件系统
-    └── env_append.txt                   # 烧录固件辅助文件
+    ├── boot_image_8G.bin      # U-Boot 引导镜像
+    ├── boot_env_8G.bin        # U-Boot 环境
+    ├── kernel                 # 内核（kernel-pi）
+    ├── rootfs.ext4            # 根文件系统
+    └── env_append.txt         # 一次性升级脚本
 </pre></div>
 </div>
 <p>由于FAT32文件系统单文件最大仅支持4G的大小，在升级时除正常的单文件升级外还支持分块文件的升级。分块名为原始文件后追加分区编号，<strong>编号从0开始</strong>，编号不允许带无意义的0，例如<strong>rootfs.ext401</strong>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
 └── boot
     ├── boot_env.bin          # uboot
-    ├── boot_image.bin     # uboot环境变量
-    ├── kernel                         # linux内核
+    ├── boot_env_8G.bin     # U-Boot 环境
+    ├── kernel                 # 内核（kernel-pi）
     ├── rootfs.ext40             # 根文件系统
     ├── rootfs.ext41
     ├── rootfs.ext42
     ├── rootfs.ext43
     ├── rootfs.ext44
     ├── rootfs.ext45
-    └── env_append.txt        # 烧录固件辅助文件
+    └── env_append.txt        # 一次性升级脚本
 </pre></div>
 </div>
 </section>
-<section id="id5">
-<h3>3) 升级固件<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<section id="id9">
+<h3>3) 升级固件<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
 <p>按住update按键，点按reset按键，在reset按键松开之后1~2s即可松开update按键。如果能连接串口可以看到以下输出则表示正在升级。</p>
 <img alt="../../../../_images/image-20240117161546287.png" src="../../../../_images/image-20240117161546287.png" />
 <p>出现以下问题属于正常现象，在分区中未找到升级固件，只要最终出现升级进度条即可。</p>
@@ -200,11 +291,14 @@
 比如，我只希望更新内核，那么只需要将kernel文件放入SD卡中，
 同时将env_append.txt文件放入SD卡中。之后更新的步骤同上，
 但是更新的进度条只会显示内核的更新进度。</p>
+<p><code class="docutils literal notranslate"><span class="pre">env_append.txt</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">boot_image</span></code>/<code class="docutils literal notranslate"><span class="pre">boot_env</span></code> 会自动追加
+<code class="docutils literal notranslate"><span class="pre">_${total_mem_size}.bin</span></code> 后缀，8GB 板对应
+<code class="docutils literal notranslate"><span class="pre">boot_image_8G.bin</span></code>/<code class="docutils literal notranslate"><span class="pre">boot_env_8G.bin</span></code>。</p>
 </div>
 </section>
 </section>
 <section id="toolplatform">
-<span id="id6"></span><h2>三、ToolPlatform工具<a class="headerlink" href="#toolplatform" title="Permalink to this heading"></a></h2>
+<span id="id10"></span><h2>四、ToolPlatform工具<a class="headerlink" href="#toolplatform" title="Permalink to this heading"></a></h2>
 <p>ToolPlatform工具是烧录芯片镜像的最基本工具，未烧录任何芯片的裸板，或者uboot启动损坏都可以使用该工具重新烧录镜像。若正常使用SD卡升级则无需进行本章的操作。</p>
 <p>使用ToolPlatform工具烧录时除了四个固件文件，还需要一个分区表，分区表描述了烧录文件的位置，烧录分区的大小等信息。</p>
 <img alt="../../../../_images/image-20240109190816122.png" src="../../../../_images/image-20240109190816122.png" />
@@ -217,10 +311,10 @@
 <p>下方的控制台在烧录过程中会打印大量日志，在烧录过程中若出现错误可提供更多的错误信息以检查问题。</p>
 <img alt="../../../../_images/image-20240117160750191.png" src="../../../../_images/image-20240117160750191.png" />
 </section>
-<section id="id7">
-<span id="id8"></span><h2>四、SD卡启动<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h2>
-<section id="id9">
-<h3>1) 创建启动SD卡<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<section id="id11">
+<span id="id12"></span><h2>五、SD卡启动<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h2>
+<section id="id13">
+<h3>1) 创建启动SD卡<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
 <p>从SD卡启动需在SD卡中创建对应boot文件分区表及rootfs系统分区表，可以通过修改<code class="docutils literal notranslate"><span class="pre">sd_rootfs_num</span></code>环境变量指定正确的分区。</p>
 <blockquote>
 <div><p>【注】：</p>
@@ -239,9 +333,9 @@ sudo<span class="w"> </span>mount<span class="w">  </span>/dev/sdb1<span class="
 <span class="c1"># 注意此处boot文件夹内不要放入env_append.txt文件</span>
 .
 └──<span class="w"> </span>boot
-<span class="w">   </span>├──<span class="w"> </span>boot_env.bin<span class="w">             </span><span class="c1"># uboot</span>
-<span class="w">   </span>├──<span class="w"> </span>boot_image.bin<span class="w">           </span><span class="c1"># uboot环境变量</span>
-<span class="w">   </span>├──<span class="w"> </span>kernel<span class="w">                   </span><span class="c1"># linux内核</span>
+<span class="w">   </span>├──<span class="w"> </span>boot_image_8G.bin<span class="w">      </span><span class="c1"># U-Boot 引导镜像</span>
+<span class="w">   </span>├──<span class="w"> </span>boot_env_8G.bin<span class="w">           </span><span class="c1"># U-Boot 环境</span>
+<span class="w">   </span>├──<span class="w"> </span>kernel<span class="w">                 </span><span class="c1"># 内核（kernel-pi）</span>
 <span class="w">   </span>└──<span class="w"> </span>rootfs.ext4<span class="w">              </span><span class="c1"># 根文件系统</span>
 
 <span class="c1"># 将分区号为2的分区格式化为 ext4，用于写入rootfs</span>
@@ -251,8 +345,8 @@ sudo<span class="w"> </span>dd<span class="w"> </span><span class="k">if</span><
 </pre></div>
 </div>
 </section>
-<section id="id10">
-<h3>2) 从SD卡启动<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<section id="id14">
+<h3>2) 从SD卡启动<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
 <p>若要从SD卡启动则需要在uboot内修改启动参数<code class="docutils literal notranslate"><span class="pre">boot_media</span></code>，在uboot的串口终端中输入<code class="docutils literal notranslate"><span class="pre">print</span> <span class="pre">boot_media</span></code>命令可查看当前的启动方式，boot_media为<code class="docutils literal notranslate"><span class="pre">emmc</span></code>时从板载的emmc启动，boot_media为<code class="docutils literal notranslate"><span class="pre">sd</span></code>时从SD卡启动。</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># print boot_media</span>
 <span class="n">boot_media</span><span class="o">=</span><span class="n">emmc</span>
@@ -275,8 +369,8 @@ setenv<span class="w"> </span>boot_media<span class="w"> </span>emmc
 </div></blockquote>
 </section>
 </section>
-<section id="id11">
-<h2>五、常见问题<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h2>
+<section id="id15">
+<h2>六、常见问题<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h2>
 <ul>
 <li><p>系统无法启动</p>
 <ol class="arabic simple">
@@ -292,8 +386,22 @@ setenv<span class="w"> </span>boot_media<span class="w"> </span>emmc
 </ol>
 <p>【注】：可直接执行<code class="docutils literal notranslate"><span class="pre">run</span> <span class="pre">updatecmd</span></code>尝试升级查看报错</p>
 </li>
+<li><p>主机工具在线升级失败</p>
+<ol class="arabic simple">
+<li><p>确认 SD 卡已插入且可挂载</p></li>
+<li><p>确认 SSH 密钥/密码正确</p></li>
+<li><p>使用 <code class="docutils literal notranslate"><span class="pre">--wait</span></code> 时确认新系统 IP 未变化</p></li>
+</ol>
+</li>
+<li><p>升级后反复刷写</p>
+<ol class="arabic simple">
+<li><p>执行 <code class="docutils literal notranslate"><span class="pre">fw_printenv</span> <span class="pre">update</span></code>，确认结果为 <code class="docutils literal notranslate"><span class="pre">no</span></code></p></li>
+<li><p>确认 <code class="docutils literal notranslate"><span class="pre">hieulerpi1-clear-update.service</span></code> 为 active</p></li>
+<li><p>可手动执行 <code class="docutils literal notranslate"><span class="pre">fw_setenv</span> <span class="pre">update</span> <span class="pre">no</span></code> 后重启</p></li>
+</ol>
+</li>
 <li><p>无法看到系统打印信息，过一段时间会弹出一段编码</p>
-<p>这种情况可能是uboot损坏导致的无法启动，参考 <a class="reference internal" href="#toolplatform"><span class="std std-ref">三、ToolPlatform工具</span></a> 重新烧录uboot和env</p>
+<p>这种情况可能是uboot损坏导致的无法启动，参考 <a class="reference internal" href="#toolplatform"><span class="std std-ref">四、ToolPlatform工具</span></a> 重新烧录uboot和env</p>
 <img alt="../../../../_images/image-20240118173740655.png" src="../../../../_images/image-20240118173740655.png" />
 </li>
 </ul>
@@ -304,7 +412,7 @@ setenv<span class="w"> </span>boot_media<span class="w"> </span>emmc
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="hieulerpi-image.html" class="btn btn-neutral float-left" title="海鸥派镜像获取" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="heterogeneous-compute.html" class="btn btn-neutral float-left" title="海鸥派异构算力（NPU/DSP）使用指南" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="hieulerpi_common_commands.html" class="btn btn-neutral float-right" title="海鸥派常用命令" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

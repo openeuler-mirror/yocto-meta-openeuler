@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>海鸥派系统架构、启动流程与内存/存储布局 &mdash; openEuler Embedded在线文档 26.09 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../../_static/js/custom.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="海鸥派异构算力（NPU/DSP）使用指南" href="heterogeneous-compute.html" />
+    <link rel="prev" title="海鸥派镜像获取" href="hieulerpi-image.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../features/index.html">关键特性指导</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">南向硬件支持与使用指导</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html">ARM64硬件</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">基于海思(Hisilicon)SoC的硬件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../kp920/kp920.html">鲲鹏920</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../hi3093/hi3093.html">Hi3093 镜像构建与说明</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">海鸥派</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="hardware_features.html">海鸥派硬件特性</a></li>
+<li class="toctree-l6"><a class="reference internal" href="hieulerpi.html">海鸥派镜像构建与使用</a></li>
+<li class="toctree-l6"><a class="reference internal" href="hieulerpi-image.html">海鸥派镜像获取</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">海鸥派系统架构、启动流程与内存/存储布局</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id2">一、启动流程</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">二、内存布局</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#emmc">三、eMMC 分区布局</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#risc-v-mcu-liteos">四、RISC-V 小核（MCU/LiteOS）</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#bsp">五、BSP 服务</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="heterogeneous-compute.html">海鸥派异构算力（NPU/DSP）使用指南</a></li>
+<li class="toctree-l6"><a class="reference internal" href="update.html">海鸥派镜像在线升级与启动</a></li>
+<li class="toctree-l6"><a class="reference internal" href="hieulerpi_common_commands.html">海鸥派常用命令</a></li>
+<li class="toctree-l6"><a class="reference internal" href="externed_device_sample.html">海鸥派镜像驱动测试</a></li>
+<li class="toctree-l6"><a class="reference internal" href="hieulerpi-wifi.html">海鸥派WiFi使用</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../3591rc/3591rc.html">3591RC镜像构建与使用</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../myir/index.html">米尔系列硬件</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../orangepi/index.html">香橙派系列硬件</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../phytium/index.html">基于飞腾(Phytium)SoC的硬件</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../raspberrypi4/index.html">树莓派4B</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../rockchip/index.html">基于瑞芯微(Rockchip)SoC的硬件</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../x86/index.html">x86硬件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../riscv/index.html">RISCV硬件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../arm/index.html">ARM硬件</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">南向硬件支持与使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">ARM64硬件</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">基于海思(Hisilicon)SoC的硬件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">海鸥派</a></li>
+      <li class="breadcrumb-item active">海鸥派系统架构、启动流程与内存/存储布局</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="hieulerpi-system">
+<span id="id1"></span><h1>海鸥派系统架构、启动流程与内存/存储布局<a class="headerlink" href="#hieulerpi-system" title="Permalink to this heading"></a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#id2" id="id4">一、启动流程</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id5">二、内存布局</a></p></li>
+<li><p><a class="reference internal" href="#emmc" id="id6">三、eMMC 分区布局</a></p></li>
+<li><p><a class="reference internal" href="#risc-v-mcu-liteos" id="id7">四、RISC-V 小核（MCU/LiteOS）</a></p></li>
+<li><p><a class="reference internal" href="#bsp" id="id8">五、BSP 服务</a></p></li>
+</ul>
+</nav>
+<p>海鸥派主控 SS928 内置四核 <a class="reference external" href="mailto:Cortex-A55&#37;&#52;&#48;1&#46;4GHz">Cortex-A55<span>&#64;</span>1<span>&#46;</span>4GHz</a> 和一颗 32bit RISC-V
+<a class="reference external" href="mailto:MCU&#37;&#52;&#48;500MHz">MCU<span>&#64;</span>500MHz</a>，同时提供 NPU、DSP 等异构算力。Linux 运行在 A55 上，
+RISC-V MCU 运行 LiteOS，二者通过 IPCM 通信。硬件规格见
+<a class="reference internal" href="hardware_features.html#board-hieulerpi-hardware-features"><span class="std std-ref">海鸥派硬件特性</span></a>，NPU/DSP/SVP 的用途、参数和
+开发流程见 <a class="reference internal" href="heterogeneous-compute.html#hieulerpi-heterogeneous-compute"><span class="std std-ref">海鸥派异构算力（NPU/DSP）使用指南</span></a>。</p>
+<section id="id2">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">一、启动流程</a><a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<ol class="arabic">
+<li><p><strong>BootROM</strong>：上电后 SS928 BootROM 初始化时钟/DDR/eMMC，并从 eMMC
+用户区偏移 0（p1 <code class="docutils literal notranslate"><span class="pre">boot</span></code>）加载 <code class="docutils literal notranslate"><span class="pre">boot_image_8G.bin</span></code>（U-Boot
+2020.01）。</p></li>
+<li><p><strong>U-Boot</strong>：从 p2 <code class="docutils literal notranslate"><span class="pre">env</span></code> 读取环境变量，默认 <code class="docutils literal notranslate"><span class="pre">boot_media=emmc</span></code>。</p></li>
+<li><p><strong>preboot</strong>：扫描 SD 卡（<code class="docutils literal notranslate"><span class="pre">mmc</span> <span class="pre">1</span></code>）各分区的
+<code class="docutils literal notranslate"><span class="pre">/boot/env_append.txt</span></code>，找到后导入环境变量。若 <code class="docutils literal notranslate"><span class="pre">update=yes</span></code>，
+执行 <code class="docutils literal notranslate"><span class="pre">updatecmd</span></code> 将 SD 中的镜像写入 eMMC，然后执行
+<code class="docutils literal notranslate"><span class="pre">setenv</span> <span class="pre">update</span> <span class="pre">no;</span> <span class="pre">saveenv</span></code>。</p></li>
+<li><p><strong>bootcmd</strong>：从 eMMC 2MiB 处（p3 <code class="docutils literal notranslate"><span class="pre">kernel</span></code>）读取 16MiB 到
+<code class="docutils literal notranslate"><span class="pre">0x42000000</span></code>，追加 <code class="docutils literal notranslate"><span class="pre">mem</span></code>/<code class="docutils literal notranslate"><span class="pre">total_mem_size</span></code>/<code class="docutils literal notranslate"><span class="pre">root</span></code> 启动参数
+后执行 <code class="docutils literal notranslate"><span class="pre">bootm</span></code>：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mmc read 0 0x42000000 0x1000 0x8000</span>
+<span class="go">setenv bootargs &quot;... root=/dev/mmcblk0p4&quot;</span>
+<span class="go">bootm 0x42000000</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>FIP</strong>：p3 中是 <code class="docutils literal notranslate"><span class="pre">kernel-pi</span></code>（FIP 镜像），包含 TF-A BL31（EL3）
+和 BL33（Linux 内核 + DTB）。BL31 先运行，随后启动 Linux。</p></li>
+<li><p><strong>Linux</strong>：根据启动参数 <code class="docutils literal notranslate"><span class="pre">blkdevparts</span></code> 创建 p1-p4（eMMC 没有
+分区表），挂载 p4 ext4 为根文件系统，启动 systemd。</p></li>
+<li><p><strong>BSP/systemd</strong>：<code class="docutils literal notranslate"><span class="pre">hieulerpi1-bsp.service</span></code> 执行
+<code class="docutils literal notranslate"><span class="pre">S90AutoRun</span></code>/<code class="docutils literal notranslate"><span class="pre">pinmux.sh</span></code>，加载 IPCM/NPU/DSP 并启动 RISC-V
+LiteOS；<code class="docutils literal notranslate"><span class="pre">hieulerpi1-set-mac.service</span></code> 设置稳定 MAC；
+<code class="docutils literal notranslate"><span class="pre">hieulerpi1-clear-update.service</span></code> 兜底清除升级标志。</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>U-Boot 默认从 eMMC 启动。<code class="docutils literal notranslate"><span class="pre">boot_media=sd</span></code> 时从 SD 卡 p1 加载
+kernel、根文件系统指向 <code class="docutils literal notranslate"><span class="pre">/dev/mmcblk1p2</span></code>，需要单独准备 SD 启动卡，
+见 <a class="reference internal" href="update.html#id11"><span class="std std-ref">五、SD卡启动</span></a>。</p>
+</div>
+</section>
+<section id="id3">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">二、内存布局</a><a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<p>DDR 起始地址为 <code class="docutils literal notranslate"><span class="pre">0x40000000</span></code>，各硬件单元使用固定 carveout。以本板
+8GB 内存、Linux 侧 <code class="docutils literal notranslate"><span class="pre">mem=6144M</span></code> 为例：</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 16%" />
+<col style="width: 66%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>起始地址</p></th>
+<th class="head"><p>大小</p></th>
+<th class="head"><p>用途</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0x40000000</span></code></p></td>
+<td><p>2 MiB</p></td>
+<td><p>IPCM 共享内存</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0x40200000</span></code></p></td>
+<td><p>62 MiB</p></td>
+<td><p>DSP</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0x44000000</span></code></p></td>
+<td><p>192 MiB</p></td>
+<td><p>RISC-V MCU，LiteOS 加载地址</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0x50000000</span></code></p></td>
+<td><p>6144 MiB（本板）</p></td>
+<td><p>Linux 内核/OS</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0x1D0000000</span></code></p></td>
+<td><p>1792 MiB（8GB 总量时）</p></td>
+<td><p>MMZ（NPU/媒体内存池）</p></td>
+</tr>
+</tbody>
+</table>
+<p>本板启动脚本根据 <code class="docutils literal notranslate"><span class="pre">/proc/cmdline</span></code> 中的 <code class="docutils literal notranslate"><span class="pre">mem=6144M</span></code> 和
+<code class="docutils literal notranslate"><span class="pre">total_mem_size=8G</span></code> 设置内存切分：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">./load_ss928v100 -i -total 8192 -osmem 6144</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">load_ss928v100</span></code> 的默认配置为 4GB 总内存、512MB OS 内存；本板计算
+得到的 MMZ 起始地址/大小如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mmz_start: 0x1d0000000, mmz_size: 1792M</span>
+</pre></div>
+</div>
+<p>即 IPCM/DSP/MCU 位于 Linux 内核起始地址 <code class="docutils literal notranslate"><span class="pre">0x50000000</span></code> 以下，Linux
+使用 6GB OS 内存，剩余约 1792MB 作为 MMZ 供 NPU/媒体使用。</p>
+</section>
+<section id="emmc">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">三、eMMC 分区布局</a><a class="headerlink" href="#emmc" title="Permalink to this heading"></a></h2>
+<p>eMMC 没有 GPT/MBR 分区表，<code class="docutils literal notranslate"><span class="pre">sfdisk</span></code>/<code class="docutils literal notranslate"><span class="pre">parted</span></code> 会报
+<code class="docutils literal notranslate"><span class="pre">unrecognized</span> <span class="pre">disk</span> <span class="pre">label</span></code>。p1-p4 由内核启动参数创建：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">blkdevparts=mmcblk0:1M(boot),1M(env),16M(kernel),-(rootfs)</span>
+<span class="go">root=/dev/mmcblk0p4</span>
+</pre></div>
+</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 16%" />
+<col style="width: 20%" />
+<col style="width: 48%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>偏移</p></th>
+<th class="head"><p>大小</p></th>
+<th class="head"><p>设备</p></th>
+<th class="head"><p>作用</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0x0000000</span></code></p></td>
+<td><p>1 MiB</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mmcblk0p1</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">boot</span></code>：<code class="docutils literal notranslate"><span class="pre">boot_image_8G.bin</span></code>（U-Boot 引导镜像）</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0x0100000</span></code></p></td>
+<td><p>1 MiB</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mmcblk0p2</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">env</span></code>：U-Boot 环境变量</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">0x0200000</span></code></p></td>
+<td><p>16 MiB</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mmcblk0p3</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">kernel</span></code>：<code class="docutils literal notranslate"><span class="pre">kernel-pi</span></code>（FIP：BL31 + Linux + DTB）</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">0x1200000</span></code></p></td>
+<td><p>剩余</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mmcblk0p4</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rootfs</span></code>：ext4 根文件系统</p></td>
+</tr>
+</tbody>
+</table>
+<p>补充说明：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mmcblk0boot0</span></code>/<code class="docutils literal notranslate"><span class="pre">mmcblk0boot1</span></code>（各 4MiB）为 eMMC 硬件 Boot
+Partition，本方案中为空，未参与启动。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mmcblk0rpmb</span></code>（4MiB）为 RPMB 安全存储，当前系统未使用。</p></li>
+<li><p>U-Boot 环境通过 <code class="docutils literal notranslate"><span class="pre">/etc/fw_env.config</span></code> 访问
+<code class="docutils literal notranslate"><span class="pre">/dev/mmcblk0p2</span> <span class="pre">0x0</span> <span class="pre">0x100000</span></code>。</p></li>
+<li><p>U-Boot <code class="docutils literal notranslate"><span class="pre">updatecmd</span></code> 按固定偏移写入：<code class="docutils literal notranslate"><span class="pre">boot_image</span></code>&#64;0、
+<code class="docutils literal notranslate"><span class="pre">boot_env</span></code>&#64;1MiB、<code class="docutils literal notranslate"><span class="pre">kernel</span></code>&#64;2MiB、<code class="docutils literal notranslate"><span class="pre">rootfs</span></code>&#64;18MiB。</p></li>
+<li><p>p3 固定 16MiB，<code class="docutils literal notranslate"><span class="pre">kernel-pi</span></code> 必须小于 16MiB。</p></li>
+<li><p>不要使用 <code class="docutils literal notranslate"><span class="pre">sfdisk</span></code>/<code class="docutils literal notranslate"><span class="pre">parted</span></code> 重新分区 eMMC；修改布局需要同步修改
+<code class="docutils literal notranslate"><span class="pre">blkdevparts</span></code>、U-Boot <code class="docutils literal notranslate"><span class="pre">part_*</span></code> 和升级脚本。</p></li>
+</ul>
+</section>
+<section id="risc-v-mcu-liteos">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">四、RISC-V 小核（MCU/LiteOS）</a><a class="headerlink" href="#risc-v-mcu-liteos" title="Permalink to this heading"></a></h2>
+<ul>
+<li><p>硬件：SS928 内置一颗 <strong>32bit RISC-V MCU&#64;500MHz</strong>。</p></li>
+<li><p>内存：MCU carveout 为 192MiB，起始地址 <code class="docutils literal notranslate"><span class="pre">0x44000000</span></code>。</p></li>
+<li><p>固件：<code class="docutils literal notranslate"><span class="pre">/firmware/LiteOS.bin</span></code>，约 173KB，是裸 RISC-V 二进制。</p></li>
+<li><p>加载：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">load_riscv 0x44000000 /firmware/LiteOS.bin</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">load_riscv</span></code> 通过 <code class="docutils literal notranslate"><span class="pre">/dev/mem</span></code> 把固件复制到 MCU 区域并启动 RISC-V
+核，成功时输出 <code class="docutils literal notranslate"><span class="pre">The</span> <span class="pre">RISCV</span> <span class="pre">started!</span></code> / <code class="docutils literal notranslate"><span class="pre">SUCCESS</span> <span class="pre">START</span> <span class="pre">RISCV</span></code>。
+该过程没有 Linux remoteproc/rpmsg 驱动参与。</p>
+</li>
+<li><p>开机初始化：<code class="docutils literal notranslate"><span class="pre">hieulerpi1-bsp.service</span></code> 执行 <code class="docutils literal notranslate"><span class="pre">S90AutoRun</span></code>；
+<code class="docutils literal notranslate"><span class="pre">S90AutoRun</span></code> 在加载 IPCM/NPU/DSP 模块后执行上述 <code class="docutils literal notranslate"><span class="pre">load_riscv</span></code>。</p></li>
+<li><p>IPC：</p>
+<ul class="simple">
+<li><p>IPCM 控制器：<code class="docutils literal notranslate"><span class="pre">ipcm&#64;11031000</span></code>；共享内存 2MiB &#64; <code class="docutils literal notranslate"><span class="pre">0x40000000</span></code>。</p></li>
+<li><p>Linux 侧：<code class="docutils literal notranslate"><span class="pre">ipcm.ko</span></code>，设备节点 <code class="docutils literal notranslate"><span class="pre">/dev/ipcm</span></code>。</p></li>
+<li><p>LiteOS 侧：<code class="docutils literal notranslate"><span class="pre">/dev/ipcm</span></code>、<code class="docutils literal notranslate"><span class="pre">/proc/ipcm</span></code>、<code class="docutils literal notranslate"><span class="pre">proc_ipcm</span></code> 命令。</p></li>
+</ul>
+</li>
+<li><p>虚拟串口：</p>
+<ul class="simple">
+<li><p>内核模块 <code class="docutils literal notranslate"><span class="pre">virt-tty.ko</span></code> 依赖 <code class="docutils literal notranslate"><span class="pre">ipcm.ko</span></code>，创建
+<code class="docutils literal notranslate"><span class="pre">/dev/virt-tty/riscv</span></code>。</p></li>
+<li><p>在 Linux 中执行 <code class="docutils literal notranslate"><span class="pre">virt-tty</span> <span class="pre">riscv</span></code> 可进入 LiteOS shell，提示符为
+<code class="docutils literal notranslate"><span class="pre">Huawei</span> <span class="pre">LiteOS</span> <span class="pre">#</span></code>。常用命令包括 <code class="docutils literal notranslate"><span class="pre">help</span></code>、<code class="docutils literal notranslate"><span class="pre">systeminfo</span></code>、
+<code class="docutils literal notranslate"><span class="pre">uname</span></code>、<code class="docutils literal notranslate"><span class="pre">free</span></code>、<code class="docutils literal notranslate"><span class="pre">task</span></code>、<code class="docutils literal notranslate"><span class="pre">proc_ipcm</span></code>、<code class="docutils literal notranslate"><span class="pre">i2c_read</span></code>、
+<code class="docutils literal notranslate"><span class="pre">i2c_write</span></code>、<code class="docutils literal notranslate"><span class="pre">ssp_read</span></code>、<code class="docutils literal notranslate"><span class="pre">ssp_write</span></code> 等。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">virt-tty</span></code> 是单客户端设备；异常断开后如果无法再次连接，可重启
+板卡恢复。</p></li>
+</ul>
+</li>
+<li><p>NPU/DSP 是独立的 carveout/模块，由 <code class="docutils literal notranslate"><span class="pre">load_ss928v100</span></code> 加载；
+RISC-V MCU 与它们通过 IPCM/共享内存协作。具体使用见
+<a class="reference internal" href="heterogeneous-compute.html#hieulerpi-heterogeneous-compute"><span class="std std-ref">海鸥派异构算力（NPU/DSP）使用指南</span></a>。</p></li>
+</ul>
+</section>
+<section id="bsp">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">五、BSP 服务</a><a class="headerlink" href="#bsp" title="Permalink to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 34%" />
+<col style="width: 66%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>服务</p></th>
+<th class="head"><p>作用</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hieulerpi1-bsp.service</span></code></p></td>
+<td><p>执行 <code class="docutils literal notranslate"><span class="pre">S90AutoRun</span></code>/<code class="docutils literal notranslate"><span class="pre">pinmux.sh</span></code>，加载 BSP 模块、IPCM、NPU、
+DSP，启动 RISC-V LiteOS</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hieulerpi1-fb.service</span></code></p></td>
+<td><p>启动 FB 示例工具；兼容 kernel5 的
+<code class="docutils literal notranslate"><span class="pre">/root/device_sample/ss928_fb_tool/ss928_fb_tool</span></code> 和 kernel6 的
+<code class="docutils literal notranslate"><span class="pre">/root/sample/ss928_fb_tool</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hieulerpi1-set-mac.service</span></code></p></td>
+<td><p>从 eMMC CID 派生每板唯一的稳定 MAC</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hieulerpi1-clear-update.service</span></code></p></td>
+<td><p>升级后兜底清除 U-Boot <code class="docutils literal notranslate"><span class="pre">update</span></code> 标志，防止重复刷写</p></td>
+</tr>
+</tbody>
+</table>
+<p>这些服务在 systemd 镜像中默认启用（kernel5/kernel6 均适用）。
+kernel5 与 kernel6 的 <code class="docutils literal notranslate"><span class="pre">S90AutoRun</span></code> 内容不同：kernel5 使用厂商脚本，
+kernel6 使用 <code class="docutils literal notranslate"><span class="pre">load_sdk_driver</span> <span class="pre">-i</span></code>，但 systemd 服务本身与内核版本无关。</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>在线升级镜像的完整步骤见 <a class="reference internal" href="update.html#hieuler-update"><span class="std std-ref">海鸥派镜像在线升级与启动</span></a>。</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="hieulerpi-image.html" class="btn btn-neutral float-left" title="海鸥派镜像获取" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="heterogeneous-compute.html" class="btn btn-neutral float-right" title="海鸥派异构算力（NPU/DSP）使用指南" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="hieulerpi-system.html">master</a></dd>
+      <dd><a href="../../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+      <dd><a href="../../../../../openEuler-26.09/index.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>

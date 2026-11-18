@@ -47,11 +47,20 @@
 
    - ``Image-5.10.0``: 备用原始Image内核
 
+   - 主机在线升级工具：``bsp/meta-hisilicon/tools/hieulerpi1-upgrade.sh``，
+     使用方式见 :ref:`hieuler_update`
+
 .. note::
 
    需要其他功能时，请在oebuild初始化时通过 ``-f features`` 添加对应的 feature。见-f列表(oebuild generate -l)
 
    若不使能-f openeuler-ros，将生成基础镜像，仅包含hieuler的BSP驱动，无ROS框架和demo
+
+系统架构与在线升级
+===========================
+
+系统启动流程、内存布局、eMMC 分区和 RISC-V 小核说明见
+:ref:`hieulerpi_system`。在线升级镜像见 :ref:`hieuler_update`。
 
 ____
 

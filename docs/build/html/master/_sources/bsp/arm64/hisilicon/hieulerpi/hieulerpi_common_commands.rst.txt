@@ -179,7 +179,7 @@ U-boot
       [语法]
       setenv boot_media sd设置启动介质为SD卡
 
-3. 【sa】保存环境变量配置，使用setenv修改后需要使用sa命令保存，然后再次使用print确认修改生效
+3. 【saveenv】保存环境变量配置，使用setenv修改后需要使用saveenv命令保存，然后再次使用print确认修改生效（部分版本提供sa别名）
 
 4. 【re】重启单板，和【reset】命令一样
 
@@ -198,10 +198,16 @@ LiteOS
    .. code-block:: console
 
       hieulerpi1 ~ # virt-tty riscv
-      LiteOS # help
+      Huawei LiteOS # help
       *******************shell commands:*************************
       cat           cd            dd            free          help          hwi           i2c_read      i2c_write
       ls            lsfd          memcheck      mkdir         proc_ipcm     pwd           reset         rm
       rmdir         ssp_read      ssp_write     stack         swtmr         systeminfo    task          uname
       writeproc
+
+.. note::
+
+   ``hieulerpi1-bsp.service`` 需处于 active 状态（镜像默认已启用）才会在
+   开机时加载 LiteOS。RISC-V 小核、IPCM、内存布局和 ``virt-tty`` 的
+   详细说明见 :ref:`hieulerpi_system`。
 

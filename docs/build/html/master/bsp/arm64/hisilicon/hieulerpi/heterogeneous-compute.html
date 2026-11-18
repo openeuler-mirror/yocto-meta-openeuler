@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>海鸥派异构算力（NPU/DSP）使用指南 &mdash; openEuler Embedded在线文档 26.09 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../../_static/js/mermaid.min.js"></script>
+        <script src="../../../../_static/js/mermaid-run.js"></script>
+        <script src="../../../../_static/js/custom.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="海鸥派镜像在线升级与启动" href="update.html" />
+    <link rel="prev" title="海鸥派系统架构、启动流程与内存/存储布局" href="hieulerpi-system.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            openEuler Embedded在线文档
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">介绍与概述</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../introduction/index.html">总体介绍</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../getting_started/index.html">快速上手</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../releases/index.html">版本说明</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../test_data/index.html">测试数据</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">指导手册</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../../user_guide/index.html">用户使用指导</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../features/index.html">关键特性指导</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../../index.html">南向硬件支持与使用指导</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../index.html">ARM64硬件</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../index.html">基于海思(Hisilicon)SoC的硬件</a><ul class="current">
+<li class="toctree-l5"><a class="reference internal" href="../kp920/kp920.html">鲲鹏920</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../hi3093/hi3093.html">Hi3093 镜像构建与说明</a></li>
+<li class="toctree-l5 current"><a class="reference internal" href="index.html">海鸥派</a><ul class="current">
+<li class="toctree-l6"><a class="reference internal" href="hardware_features.html">海鸥派硬件特性</a></li>
+<li class="toctree-l6"><a class="reference internal" href="hieulerpi.html">海鸥派镜像构建与使用</a></li>
+<li class="toctree-l6"><a class="reference internal" href="hieulerpi-image.html">海鸥派镜像获取</a></li>
+<li class="toctree-l6"><a class="reference internal" href="hieulerpi-system.html">海鸥派系统架构、启动流程与内存/存储布局</a></li>
+<li class="toctree-l6 current"><a class="current reference internal" href="#">海鸥派异构算力（NPU/DSP）使用指南</a><ul>
+<li class="toctree-l7"><a class="reference internal" href="#id1">一、异构算力概览</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id2">二、核心参数</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id3">三、驱动与设备节点</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#nnn-dlite">四、NNN（dlite）开发流程</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#svp-npu-dpico">五、SVP_NPU（dpico）开发流程</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#dsp-vision-q6">六、DSP（Vision Q6）开发流程</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#svp">七、SVP 视频加速引擎</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id15">八、选型建议</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id16">九、已上板验证与已知问题</a></li>
+<li class="toctree-l7"><a class="reference internal" href="#id17">十、快速自检</a></li>
+</ul>
+</li>
+<li class="toctree-l6"><a class="reference internal" href="update.html">海鸥派镜像在线升级与启动</a></li>
+<li class="toctree-l6"><a class="reference internal" href="hieulerpi_common_commands.html">海鸥派常用命令</a></li>
+<li class="toctree-l6"><a class="reference internal" href="externed_device_sample.html">海鸥派镜像驱动测试</a></li>
+<li class="toctree-l6"><a class="reference internal" href="hieulerpi-wifi.html">海鸥派WiFi使用</a></li>
+</ul>
+</li>
+<li class="toctree-l5"><a class="reference internal" href="../3591rc/3591rc.html">3591RC镜像构建与使用</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="../../myir/index.html">米尔系列硬件</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../orangepi/index.html">香橙派系列硬件</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../phytium/index.html">基于飞腾(Phytium)SoC的硬件</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../raspberrypi4/index.html">树莓派4B</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../rockchip/index.html">基于瑞芯微(Rockchip)SoC的硬件</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../../x86/index.html">x86硬件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../riscv/index.html">RISCV硬件</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../arm/index.html">ARM硬件</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../oebuild/index.html">oebuild使用指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../infrastructure/index.html">基础设施指导</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../linux/index.html">其他配置指导</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developer_guide/index.html">开发及贡献指导</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../faq/index.html">常见问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../references/index.html">参考文档</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">openEuler Embedded在线文档</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../user_guide/index.html">用户使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">南向硬件支持与使用指导</a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">ARM64硬件</a></li>
+          <li class="breadcrumb-item"><a href="../index.html">基于海思(Hisilicon)SoC的硬件</a></li>
+          <li class="breadcrumb-item"><a href="index.html">海鸥派</a></li>
+      <li class="breadcrumb-item active">海鸥派异构算力（NPU/DSP）使用指南</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="npu-dsp">
+<span id="hieulerpi-heterogeneous-compute"></span><h1>海鸥派异构算力（NPU/DSP）使用指南<a class="headerlink" href="#npu-dsp" title="Permalink to this heading"></a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#id1" id="id18">一、异构算力概览</a></p></li>
+<li><p><a class="reference internal" href="#id2" id="id19">二、核心参数</a></p></li>
+<li><p><a class="reference internal" href="#id3" id="id20">三、驱动与设备节点</a></p></li>
+<li><p><a class="reference internal" href="#nnn-dlite" id="id21">四、NNN（dlite）开发流程</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id4" id="id22">4.1 模型转换</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id23">4.2 交叉编译</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id24">4.3 运行时流程</a></p></li>
+<li><p><a class="reference internal" href="#id7" id="id25">4.4 样例与限制</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#svp-npu-dpico" id="id26">五、SVP_NPU（dpico）开发流程</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id8" id="id27">5.1 模型转换</a></p></li>
+<li><p><a class="reference internal" href="#id9" id="id28">5.2 交叉编译</a></p></li>
+<li><p><a class="reference internal" href="#id10" id="id29">5.3 运行时流程</a></p></li>
+<li><p><a class="reference internal" href="#id11" id="id30">5.4 输入输出注意事项</a></p></li>
+<li><p><a class="reference internal" href="#id12" id="id31">5.5 样例</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#dsp-vision-q6" id="id32">六、DSP（Vision Q6）开发流程</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id13" id="id33">6.1 固件</a></p></li>
+<li><p><a class="reference internal" href="#arm-rpc" id="id34">6.2 ARM 侧加载与 RPC</a></p></li>
+<li><p><a class="reference internal" href="#id14" id="id35">6.3 样例</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#svp" id="id36">七、SVP 视频加速引擎</a></p></li>
+<li><p><a class="reference internal" href="#id15" id="id37">八、选型建议</a></p></li>
+<li><p><a class="reference internal" href="#id16" id="id38">九、已上板验证与已知问题</a></p></li>
+<li><p><a class="reference internal" href="#id17" id="id39">十、快速自检</a></p></li>
+</ul>
+</nav>
+<p>海鸥派主控 SS928（SD3403V100/Hi3403V100）除四核 Cortex-A55 外，还集成
+NNN、SVP_NPU、双核 Vision Q6 DSP、SVP 视频加速引擎和 RISC-V MCU。
+这些单元使用不同的驱动、用户态库和工具链，不能互相替代。本文给出
+各单元的用途、核心参数、内存/驱动位置和基本开发流程。</p>
+<section id="id1">
+<h2><a class="toc-backref" href="#id18" role="doc-backlink">一、异构算力概览</a><a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 22%" />
+<col style="width: 24%" />
+<col style="width: 40%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>单元</p></th>
+<th class="head"><p>用途</p></th>
+<th class="head"><p>软件接口</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Cortex-A55 x4</p></td>
+<td><p>通用控制、MPP 媒体流水线、后处理</p></td>
+<td><p>Linux 用户态</p></td>
+<td><p>主 CPU，负责调度和 CPU 后处理</p></td>
+</tr>
+<tr class="row-odd"><td><p>NNN（dlite）</p></td>
+<td><p>通用神经网络推理</p></td>
+<td><p>AscendCL <code class="docutils literal notranslate"><span class="pre">acl*</span></code> + <code class="docutils literal notranslate"><span class="pre">.om</span></code></p></td>
+<td><p>支持 INT4/INT8/FP16，适合 ONNX/Caffe/TensorFlow 模型</p></td>
+</tr>
+<tr class="row-even"><td><p>SVP_NPU（dpico）</p></td>
+<td><p>视觉神经网络推理</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">svp_acl*</span></code> + <code class="docutils literal notranslate"><span class="pre">.om</span></code></p></td>
+<td><p>只支持 INT8/INT16，开销低，适合检测/分类</p></td>
+</tr>
+<tr class="row-odd"><td><p>Vision Q6 DSP x2</p></td>
+<td><p>传统 CV、信号处理、几何/深度计算</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ss_mpi_svp_dsp_*</span></code> + DSP 固件</p></td>
+<td><p>Cadence Tensilica IP；定制算法需要 DSP 工具链</p></td>
+</tr>
+<tr class="row-even"><td><p>SVP 引擎</p></td>
+<td><p>IVE 图像预处理、KCF 跟踪、DPU 深度/匹配、MAU 矩阵</p></td>
+<td><p>MPP MPI（<code class="docutils literal notranslate"><span class="pre">ot_ive</span></code>/<code class="docutils literal notranslate"><span class="pre">ot_dpu_*</span></code>/<code class="docutils literal notranslate"><span class="pre">ot_mau</span></code>）</p></td>
+<td><p>硬件加速模块，不需要单独模型</p></td>
+</tr>
+<tr class="row-odd"><td><p>RISC-V MCU</p></td>
+<td><p>实时控制、LiteOS</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/dev/ipcm</span></code>、<code class="docutils literal notranslate"><span class="pre">virt-tty</span></code></p></td>
+<td><p>与 Linux 通过 IPCM 共享内存通信</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id2">
+<h2><a class="toc-backref" href="#id19" role="doc-backlink">二、核心参数</a><a class="headerlink" href="#id2" title="Permalink to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 22%" />
+<col style="width: 22%" />
+<col style="width: 56%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>参数</p></th>
+<th class="head"><p>数值</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>NPU 总算力</p></td>
+<td><p>10.4 TOPS INT8</p></td>
+<td><p>板卡口径为 NNN 4.8T + SVP_NNN 5.6T；部分公开资料只写 NN 4T</p></td>
+</tr>
+<tr class="row-odd"><td><p>NNN</p></td>
+<td><p>4.8 TOPS INT8</p></td>
+<td><p>支持 INT4/INT8/FP16；使用 AscendCL</p></td>
+</tr>
+<tr class="row-even"><td><p>SVP_NPU</p></td>
+<td><p>5.6 TOPS INT8</p></td>
+<td><p>仅支持 INT8/INT16；使用 svp_acl</p></td>
+</tr>
+<tr class="row-odd"><td><p>DSP</p></td>
+<td><p>2 x Vision Q6</p></td>
+<td><p>每核 32KB I-Cache、32KB D-Cache、32KB IRAM、320KB DRAM</p></td>
+</tr>
+<tr class="row-even"><td><p>DSP 预留内存</p></td>
+<td><p>62 MiB &#64; <code class="docutils literal notranslate"><span class="pre">0x40200000</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">load_ss928v100</span></code> 中 <code class="docutils literal notranslate"><span class="pre">dsp_mem_size=62</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>MCU</p></td>
+<td><p>32bit RISC-V &#64;500MHz</p></td>
+<td><p>192 MiB &#64; <code class="docutils literal notranslate"><span class="pre">0x44000000</span></code>，运行 LiteOS</p></td>
+</tr>
+<tr class="row-even"><td><p>MMZ</p></td>
+<td><p>约 1792 MiB（8GB 板）</p></td>
+<td><p>NPU/媒体内存池，起始 <code class="docutils literal notranslate"><span class="pre">0x1d0000000</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>NPU、DSP 和 MCU 使用独立 carveout，Linux 通过 <code class="docutils literal notranslate"><span class="pre">mem=6144M</span></code> 使用其余
+内存。完整内存布局和 eMMC/启动流程见 <a class="reference internal" href="hieulerpi-system.html#hieulerpi-system"><span class="std std-ref">海鸥派系统架构、启动流程与内存/存储布局</span></a>。</p>
+</section>
+<section id="id3">
+<h2><a class="toc-backref" href="#id20" role="doc-backlink">三、驱动与设备节点</a><a class="headerlink" href="#id3" title="Permalink to this heading"></a></h2>
+<p>kernel5 的 <code class="docutils literal notranslate"><span class="pre">S90AutoRun</span></code> 执行 <code class="docutils literal notranslate"><span class="pre">/ko/load_ss928v100</span> <span class="pre">-i</span></code>，与异构算力
+相关的加载项如下：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>NNN
+<span class="go">insmod npu/ot_npu_device.ko</span>
+<span class="go">insmod npu/ot_npu_aicpu.ko</span>
+<span class="go">insmod npu/ot_npu_dfx.ko</span>
+<span class="go">insmod npu/ot_npu_tsfw.ko</span>
+
+<span class="gp"># </span>SVP_NPU
+<span class="go">insmod svp_npu/ot_svp_npu.ko</span>
+
+<span class="gp"># </span>DSP
+<span class="go">insmod ot_dsp.ko</span>
+</pre></div>
+</div>
+<p>设备节点和用户态库：</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 26%" />
+<col style="width: 56%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>单元</p></th>
+<th class="head"><p>设备节点/库</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>NNN</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/usr/lib64/npu/libascendcl.so</span></code></p></td>
+<td><p>驱动为 4 个 <code class="docutils literal notranslate"><span class="pre">ot_npu_*.ko</span></code>，通过 AscendCL runtime 访问</p></td>
+</tr>
+<tr class="row-odd"><td><p>SVP_NPU</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/dev/svp_npu</span></code>、<code class="docutils literal notranslate"><span class="pre">/usr/lib64/svp_npu/libsvp_acl.so</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ot_svp_npu.ko</span></code>与 <code class="docutils literal notranslate"><span class="pre">ot_pqp.ko</span></code> 共用中断，不能同时加载</p></td>
+</tr>
+<tr class="row-even"><td><p>DSP</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/dev/dsp</span></code>、<code class="docutils literal notranslate"><span class="pre">/usr/lib64/libss_dsp.so</span></code></p></td>
+<td><p>使用 <code class="docutils literal notranslate"><span class="pre">ss_mpi_svp_dsp_*</span></code> 接口</p></td>
+</tr>
+</tbody>
+</table>
+<p>自检命令：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">lsmod | grep -E &#39;npu|svp|dsp&#39;</span>
+<span class="go">ls -l /dev/svp_npu /dev/dsp</span>
+<span class="go">ls /usr/lib64/npu /usr/lib64/svp_npu</span>
+<span class="go">dmesg | grep -Ei &#39;npu|svp|dsp&#39;</span>
+</pre></div>
+</div>
+<p>设备节点默认只有 root 可访问。kernel6 的
+<code class="docutils literal notranslate"><span class="pre">bsp/meta-hisilicon/recipes-bsp/ss928/files/load_sdk_driver</span></code> 目前只加载
+<code class="docutils literal notranslate"><span class="pre">ot_svp_npu.ko</span></code>，NNN 和 DSP 模块不会自动加载，使用前需要确认或补充
+加载脚本。</p>
+<p>对应设备树节点位于
+<code class="docutils literal notranslate"><span class="pre">bsp/meta-hisilicon/recipes-kernel/linux/files/dtbs/ss928-pi.dts</span></code>：</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">npu&#64;0x14000000</span></code>：NNN 的 NPU top/HTWS/AICore 和 CRG。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">svp_npu&#64;0x15000000</span></code>：SVP_NPU，与 PQP 共用中断。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dsp&#64;0x16110000</span></code>：DSP0/DSP1。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">smmu_npu&#64;14040000</span></code>、<code class="docutils literal notranslate"><span class="pre">svm_npu&#64;14020000</span></code>：NNN 使用的 SMMU/SVM。</p></li>
+</ul>
+<p>这些 carveout 在 Linux 启动前已经预留，用户态不要按普通内存直接读写。
+如果 SVP_NPU 样例报 <code class="docutils literal notranslate"><span class="pre">open</span> <span class="pre">/dev/svp_npu</span> <span class="pre">err</span></code>，先确认
+<code class="docutils literal notranslate"><span class="pre">ot_svp_npu.ko</span></code> 已加载、<code class="docutils literal notranslate"><span class="pre">/dev/svp_npu</span></code> 存在。</p>
+</section>
+<section id="nnn-dlite">
+<h2><a class="toc-backref" href="#id21" role="doc-backlink">四、NNN（dlite）开发流程</a><a class="headerlink" href="#nnn-dlite" title="Permalink to this heading"></a></h2>
+<p>NNN 使用 AscendCL 接口，模型格式为 <code class="docutils literal notranslate"><span class="pre">.om</span></code>，适合通用 ONNX/Caffe/
+TensorFlow 模型。</p>
+<section id="id4">
+<h3><a class="toc-backref" href="#id22" role="doc-backlink">4.1 模型转换</a><a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<p>在 x86 主机安装厂商 SDK 中的 NNN/CANN 工具链（例如
+<code class="docutils literal notranslate"><span class="pre">Ascend-cann-toolkit_5.20.t6.2.b060_linux-x86_64.run</span></code>），然后使用
+<code class="docutils literal notranslate"><span class="pre">atc</span></code> 将模型转换为 <code class="docutils literal notranslate"><span class="pre">.om</span></code>：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">source /usr/local/Ascend/ascend-toolkit/latest/.../bin/setenv.bash</span>
+<span class="go">atc --model=yolov8n.onnx --framework=5 --output=yolov8n ...</span>
+</pre></div>
+</div>
+<p>INT8 量化通常配合 AMCT 做校准。具体 <code class="docutils literal notranslate"><span class="pre">--soc_version</span></code>、<code class="docutils literal notranslate"><span class="pre">--input_shape</span></code>
+和 <code class="docutils literal notranslate"><span class="pre">--precision_mode</span></code> 以 SDK 中对应版本的 NNN 文档为准。</p>
+</section>
+<section id="id5">
+<h3><a class="toc-backref" href="#id23" role="doc-backlink">4.2 交叉编译</a><a class="headerlink" href="#id5" title="Permalink to this heading"></a></h3>
+<p>头文件来自 <code class="docutils literal notranslate"><span class="pre">hieulerpi1-user-driver-dev</span></code> 或 SDK sysroot：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">aarch64-openeuler-linux-gnu-g++ app.cpp \</span>
+<span class="go">  -I&lt;sysroot&gt;/usr/include/npu \</span>
+<span class="go">  -L&lt;sysroot&gt;/usr/lib64/npu \</span>
+<span class="go">  -lascendcl -lstdc++ -lpthread -ldl -lrt -lm</span>
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h3><a class="toc-backref" href="#id24" role="doc-backlink">4.3 运行时流程</a><a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;npu/acl.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;npu/acl_mdl.h&quot;</span>
+
+<span class="n">aclInit</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+<span class="n">aclrtSetDevice</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">model_id</span><span class="p">;</span>
+<span class="n">aclmdlLoadFromFile</span><span class="p">(</span><span class="s">&quot;/root/model.om&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">model_id</span><span class="p">);</span>
+
+<span class="n">aclmdlDesc</span><span class="w"> </span><span class="o">*</span><span class="n">desc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aclmdlCreateDesc</span><span class="p">();</span>
+<span class="n">aclmdlGetDesc</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span><span class="w"> </span><span class="n">model_id</span><span class="p">);</span>
+
+<span class="kt">size_t</span><span class="w"> </span><span class="n">in_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aclmdlGetInputSizeByIndex</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="kt">size_t</span><span class="w"> </span><span class="n">out_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aclmdlGetOutputSizeByIndex</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">in_dev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">out_dev</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="n">aclrtMalloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">in_dev</span><span class="p">,</span><span class="w"> </span><span class="n">in_size</span><span class="p">,</span><span class="w"> </span><span class="n">ACL_MEM_MALLOC_HUGE_FIRST</span><span class="p">);</span>
+<span class="n">aclrtMalloc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">out_dev</span><span class="p">,</span><span class="w"> </span><span class="n">out_size</span><span class="p">,</span><span class="w"> </span><span class="n">ACL_MEM_MALLOC_HUGE_FIRST</span><span class="p">);</span>
+
+<span class="n">aclmdlDataset</span><span class="w"> </span><span class="o">*</span><span class="n">input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aclmdlCreateDataset</span><span class="p">();</span>
+<span class="n">aclmdlDataset</span><span class="w"> </span><span class="o">*</span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aclmdlCreateDataset</span><span class="p">();</span>
+<span class="n">aclmdlAddDatasetBuffer</span><span class="p">(</span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">aclCreateDataBuffer</span><span class="p">(</span><span class="n">in_dev</span><span class="p">,</span><span class="w"> </span><span class="n">in_size</span><span class="p">));</span>
+<span class="n">aclmdlAddDatasetBuffer</span><span class="p">(</span><span class="n">output</span><span class="p">,</span><span class="w"> </span><span class="n">aclCreateDataBuffer</span><span class="p">(</span><span class="n">out_dev</span><span class="p">,</span><span class="w"> </span><span class="n">out_size</span><span class="p">));</span>
+
+<span class="n">aclrtMemcpy</span><span class="p">(</span><span class="n">in_dev</span><span class="p">,</span><span class="w"> </span><span class="n">in_size</span><span class="p">,</span><span class="w"> </span><span class="n">host_in</span><span class="p">,</span><span class="w"> </span><span class="n">in_size</span><span class="p">,</span>
+<span class="w">            </span><span class="n">ACL_MEMCPY_HOST_TO_DEVICE</span><span class="p">);</span>
+<span class="n">aclmdlExecute</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="p">);</span>
+<span class="n">aclrtMemcpy</span><span class="p">(</span><span class="n">host_out</span><span class="p">,</span><span class="w"> </span><span class="n">out_size</span><span class="p">,</span><span class="w"> </span><span class="n">out_dev</span><span class="p">,</span><span class="w"> </span><span class="n">out_size</span><span class="p">,</span>
+<span class="w">            </span><span class="n">ACL_MEMCPY_DEVICE_TO_HOST</span><span class="p">);</span>
+
+<span class="n">aclmdlDestroyDataset</span><span class="p">(</span><span class="n">input</span><span class="p">);</span>
+<span class="n">aclmdlDestroyDataset</span><span class="p">(</span><span class="n">output</span><span class="p">);</span>
+<span class="n">aclmdlUnload</span><span class="p">(</span><span class="n">model_id</span><span class="p">);</span>
+<span class="n">aclFinalize</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>运行前设置库路径：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">export LD_LIBRARY_PATH=/usr/lib64/npu:$LD_LIBRARY_PATH</span>
+<span class="go">export LD_PRELOAD=/usr/lib64/npu/libascend_protobuf.so</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">LD_PRELOAD</span></code> 是当前镜像的规避项，原因见“八、已上板验证与已知问题”。</p>
+</section>
+<section id="id7">
+<h3><a class="toc-backref" href="#id25" role="doc-backlink">4.4 样例与限制</a><a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<p>NNN 样例和模型转换工具位于厂商 SDK 的 NNN_PC/CANN 包中，当前镜像
+默认只安装运行库，不包含 NNN 样例、头文件和 <code class="docutils literal notranslate"><span class="pre">.om</span></code> 模型。NNN 支持
+INT4/INT8/FP16，但模型必须由与板上 runtime 匹配的工具链转换。</p>
+</section>
+</section>
+<section id="svp-npu-dpico">
+<h2><a class="toc-backref" href="#id26" role="doc-backlink">五、SVP_NPU（dpico）开发流程</a><a class="headerlink" href="#svp-npu-dpico" title="Permalink to this heading"></a></h2>
+<p>SVP_NPU 使用 <code class="docutils literal notranslate"><span class="pre">svp_acl</span></code> 接口，模型同样为 <code class="docutils literal notranslate"><span class="pre">.om</span></code>，但只支持
+INT8/INT16，适合视觉检测/分类等定点模型。</p>
+<section id="id8">
+<h3><a class="toc-backref" href="#id27" role="doc-backlink">5.1 模型转换</a><a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
+<p>使用厂商 SDK 中的 SVP_NNN 工具链/ATC 将 ONNX/Caffe 模型转换为
+INT8/INT16 的 <code class="docutils literal notranslate"><span class="pre">.om</span></code>。SVP_NPU 不支持 NNN 的 INT4/FP16 路径。</p>
+</section>
+<section id="id9">
+<h3><a class="toc-backref" href="#id28" role="doc-backlink">5.2 交叉编译</a><a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">aarch64-openeuler-linux-gnu-g++ app.cpp \</span>
+<span class="go">  -I&lt;sysroot&gt;/usr/include \</span>
+<span class="go">  -L&lt;sysroot&gt;/usr/lib64/svp_npu \</span>
+<span class="go">  -lsvp_acl -lprotobuf-c -lsecurec \</span>
+<span class="go">  -lpthread -ldl -lrt -lm</span>
+</pre></div>
+</div>
+</section>
+<section id="id10">
+<h3><a class="toc-backref" href="#id29" role="doc-backlink">5.3 运行时流程</a><a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;svp_npu/svp_acl.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;svp_npu/svp_acl_rt.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;svp_npu/svp_acl_mdl.h&quot;</span>
+
+<span class="n">svp_acl_init</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+<span class="n">svp_acl_rt_set_device</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="n">svp_acl_rt_create_context</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ctx</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="n">svp_acl_rt_create_stream</span><span class="p">(</span><span class="o">&amp;</span><span class="n">stream</span><span class="p">);</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">model_mem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="n">svp_acl_rt_malloc_cached</span><span class="p">(</span><span class="o">&amp;</span><span class="n">model_mem</span><span class="p">,</span><span class="w"> </span><span class="n">model_size</span><span class="p">,</span>
+<span class="w">                         </span><span class="n">SVP_ACL_MEM_MALLOC_NORMAL_ONLY</span><span class="p">);</span>
+<span class="cm">/* 读取 .om 到 model_mem 后刷新 cache */</span>
+<span class="n">svp_acl_rt_mem_flush</span><span class="p">(</span><span class="n">model_mem</span><span class="p">,</span><span class="w"> </span><span class="n">model_size</span><span class="p">);</span>
+
+<span class="kt">uint32_t</span><span class="w"> </span><span class="n">model_id</span><span class="p">;</span>
+<span class="n">svp_acl_mdl_load_from_mem</span><span class="p">(</span><span class="n">model_mem</span><span class="p">,</span><span class="w"> </span><span class="n">model_size</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">model_id</span><span class="p">);</span>
+
+<span class="n">svp_acl_mdl_desc</span><span class="w"> </span><span class="o">*</span><span class="n">desc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svp_acl_mdl_create_desc</span><span class="p">();</span>
+<span class="n">svp_acl_mdl_get_desc</span><span class="p">(</span><span class="n">desc</span><span class="p">,</span><span class="w"> </span><span class="n">model_id</span><span class="p">);</span>
+
+<span class="n">svp_acl_mdl_dataset</span><span class="w"> </span><span class="o">*</span><span class="n">input</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svp_acl_mdl_create_dataset</span><span class="p">();</span>
+<span class="n">svp_acl_mdl_dataset</span><span class="w"> </span><span class="o">*</span><span class="n">output</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svp_acl_mdl_create_dataset</span><span class="p">();</span>
+
+<span class="cm">/*</span>
+<span class="cm"> * 对每路输入/输出：</span>
+<span class="cm"> * 1. svp_acl_mdl_get_input/output_size_by_index() 获取 size</span>
+<span class="cm"> * 2. svp_acl_rt_malloc_cached() 申请 buffer</span>
+<span class="cm"> * 3. svp_acl_create_data_buffer() 创建 data buffer</span>
+<span class="cm"> * 4. svp_acl_mdl_add_dataset_buffer() 加入 dataset</span>
+<span class="cm"> */</span>
+
+<span class="cm">/* 拷贝图像到输入 buffer 后刷新 cache */</span>
+<span class="n">svp_acl_mdl_execute</span><span class="p">(</span><span class="n">model_id</span><span class="p">,</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">output</span><span class="p">);</span>
+
+<span class="cm">/* 读取输出前刷新输出 buffer cache，再做后处理 */</span>
+</pre></div>
+</div>
+<p>运行环境：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">export LD_LIBRARY_PATH=/usr/lib64/svp_npu:/usr/lib64:$LD_LIBRARY_PATH</span>
+</pre></div>
+</div>
+</section>
+<section id="id11">
+<h3><a class="toc-backref" href="#id30" role="doc-backlink">5.4 输入输出注意事项</a><a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
+<ul class="simple">
+<li><p>用 <code class="docutils literal notranslate"><span class="pre">svp_acl_mdl_get_input_dims</span></code>、<code class="docutils literal notranslate"><span class="pre">svp_acl_mdl_get_input_size_by_index</span></code>
+和 <code class="docutils literal notranslate"><span class="pre">svp_acl_mdl_get_input_default_stride</span></code> 确认尺寸、类型和 stride。</p></li>
+<li><p>视觉模型的第一路输入通常是 YUV420SP 或 NCHW UINT8 图像，由
+VPSS/VGS 等 MPP 模块产出。</p></li>
+<li><p>检测模型可能带有额外的运行时/工作缓冲区输入，不能只按“一路图像
+输入”处理；应遍历 <code class="docutils literal notranslate"><span class="pre">svp_acl_mdl_get_num_inputs</span></code> 返回的所有输入。</p></li>
+<li><p>输出格式常见为 ND/NCHW，需要按模型后处理逻辑解析 stride 和维度。</p></li>
+</ul>
+</section>
+<section id="id12">
+<h3><a class="toc-backref" href="#id31" role="doc-backlink">5.5 样例</a><a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
+<p>SDK 自带 SVP_NPU 样例：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>smp/a55_linux/mpp/sample/svp/svp_npu/
+├── data/model/{resnet50,yolov5,yolov7,yolov8,lstm,rfcn}.om
+├── sample_svp_npu/sample_svp_npu_process.c
+└── sample_svp_npu_main.c
+</pre></div>
+</div>
+<p>编译后运行：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">./sample_svp_npu_main 0   # resnet50</span>
+<span class="go">./sample_svp_npu_main 1   # resnet50 多线程</span>
+<span class="go">./sample_svp_npu_main 3   # lstm</span>
+<span class="go">./sample_svp_npu_main 4   # rfcn</span>
+</pre></div>
+</div>
+<p>海鸥派 <code class="docutils literal notranslate"><span class="pre">hieuler_component_ai</span></code> 的
+<code class="docutils literal notranslate"><span class="pre">component/common/model_impl.cpp</span></code> 也使用同一套接口加载并执行
+<code class="docutils literal notranslate"><span class="pre">.om</span></code>，可作为实际工程参考。</p>
+</section>
+</section>
+<section id="dsp-vision-q6">
+<h2><a class="toc-backref" href="#id32" role="doc-backlink">六、DSP（Vision Q6）开发流程</a><a class="headerlink" href="#dsp-vision-q6" title="Permalink to this heading"></a></h2>
+<p>DSP 是双核 Cadence Tensilica Vision Q6，适合深度转激光、滤波、几何
+变换、光流等传统 CV/信号处理算法，不用于神经网络推理。</p>
+<section id="id13">
+<h3><a class="toc-backref" href="#id33" role="doc-backlink">6.1 固件</a><a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
+<p>每个 DSP 核需要加载 4 个固件文件：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>/root/dsp_bin/dsp0/ot_sram.bin
+/root/dsp_bin/dsp0/ot_iram0.bin
+/root/dsp_bin/dsp0/ot_dram0.bin
+/root/dsp_bin/dsp0/ot_dram1.bin
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">dsp1</span></code> 目录结构相同。DSP 固件由 Cadence Xtensa 工具链编译，公开
+样例只提供 <code class="docutils literal notranslate"><span class="pre">.bin</span></code>，不包含 DSP 源码；自定义 DSP 算子需要厂商 DSP
+开发包。</p>
+</section>
+<section id="arm-rpc">
+<h3><a class="toc-backref" href="#id34" role="doc-backlink">6.2 ARM 侧加载与 RPC</a><a class="headerlink" href="#arm-rpc" title="Permalink to this heading"></a></h3>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ss_mpi_dsp.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ot_common_dsp.h&quot;</span>
+
+<span class="n">ss_mpi_svp_dsp_power_on</span><span class="p">(</span><span class="n">OT_SVP_DSP_ID_0</span><span class="p">);</span>
+
+<span class="n">ss_mpi_svp_dsp_load_bin</span><span class="p">(</span><span class="s">&quot;/root/dsp_bin/dsp0/ot_iram0.bin&quot;</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">OT_SVP_DSP_MEM_TYPE_IRAM_DSP_0</span><span class="p">);</span>
+<span class="n">ss_mpi_svp_dsp_load_bin</span><span class="p">(</span><span class="s">&quot;/root/dsp_bin/dsp0/ot_sram.bin&quot;</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">OT_SVP_DSP_MEM_TYPE_SYS_DDR_DSP_0</span><span class="p">);</span>
+<span class="n">ss_mpi_svp_dsp_load_bin</span><span class="p">(</span><span class="s">&quot;/root/dsp_bin/dsp0/ot_dram0.bin&quot;</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">OT_SVP_DSP_MEM_TYPE_DRAM_0_DSP_0</span><span class="p">);</span>
+<span class="n">ss_mpi_svp_dsp_load_bin</span><span class="p">(</span><span class="s">&quot;/root/dsp_bin/dsp0/ot_dram1.bin&quot;</span><span class="p">,</span>
+<span class="w">                        </span><span class="n">OT_SVP_DSP_MEM_TYPE_DRAM_1_DSP_0</span><span class="p">);</span>
+
+<span class="n">ss_mpi_svp_dsp_enable_core</span><span class="p">(</span><span class="n">OT_SVP_DSP_ID_0</span><span class="p">);</span>
+
+<span class="n">ot_svp_dsp_msg</span><span class="w"> </span><span class="n">msg</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="n">msg</span><span class="p">.</span><span class="n">cmd</span><span class="w">      </span><span class="o">=</span><span class="w"> </span><span class="n">OT_SVP_DSP_CMD_DEPTH_TO_LASER</span><span class="p">;</span>
+<span class="n">msg</span><span class="p">.</span><span class="n">body</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="n">msg_phy_addr</span><span class="p">;</span>
+<span class="n">msg</span><span class="p">.</span><span class="n">body_len</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">msg_size</span><span class="p">;</span>
+
+<span class="n">ot_svp_dsp_handle</span><span class="w"> </span><span class="n">handle</span><span class="p">;</span>
+<span class="n">ss_mpi_svp_dsp_rpc</span><span class="p">(</span><span class="o">&amp;</span><span class="n">handle</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">msg</span><span class="p">,</span><span class="w"> </span><span class="n">OT_SVP_DSP_ID_0</span><span class="p">,</span>
+<span class="w">                   </span><span class="n">OT_SVP_DSP_PRI_0</span><span class="p">);</span>
+
+<span class="n">td_bool</span><span class="w"> </span><span class="n">finish</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TD_FALSE</span><span class="p">;</span>
+<span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">ss_mpi_svp_dsp_query</span><span class="p">(</span><span class="n">OT_SVP_DSP_ID_0</span><span class="p">,</span><span class="w"> </span><span class="n">handle</span><span class="p">,</span>
+<span class="w">                            </span><span class="o">&amp;</span><span class="n">finish</span><span class="p">,</span><span class="w"> </span><span class="n">TD_TRUE</span><span class="p">)</span>
+<span class="w">       </span><span class="o">==</span><span class="w"> </span><span class="n">OT_ERR_SVP_DSP_QUERY_TIMEOUT</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">usleep</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>消息体通过 MMZ 物理地址传递。ARM 写入后、DSP 读取前需要
+<code class="docutils literal notranslate"><span class="pre">ss_mpi_sys_flush_cache</span></code>；DSP 写完后、ARM 读取前同样需要刷新
+cache。</p>
+</section>
+<section id="id14">
+<h3><a class="toc-backref" href="#id35" role="doc-backlink">6.3 样例</a><a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">hieuler_dsp_sample</span></code> 提供深度图转激光扫描样例：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>hieuler_dsp_sample/depth_to_laser_without_ground/
+├── dsp_bin/dsp0/{ot_sram,ot_iram0,ot_dram0,ot_dram1}.bin
+├── dsp_bin/dsp1/...
+└── arm_code/ros2_astra_camera/.../point_cloud_xyz.cpp
+</pre></div>
+</div>
+<p>该样例加载 DSP0 固件后，通过
+<code class="docutils literal notranslate"><span class="pre">OT_SVP_DSP_CMD_DEPTH_TO_LASER</span></code> 命令完成深度图到激光数据的转换。</p>
+</section>
+</section>
+<section id="svp">
+<h2><a class="toc-backref" href="#id36" role="doc-backlink">七、SVP 视频加速引擎</a><a class="headerlink" href="#svp" title="Permalink to this heading"></a></h2>
+<p>SVP 引擎中的 IVE、KCF、DPU、MAU 等模块通过 MPP MPI 使用，不需要
+单独的模型或固件：</p>
+<ul class="simple">
+<li><p>IVE：图像预处理、滤波、CSC、跟踪等。</p></li>
+<li><p>KCF：目标跟踪。</p></li>
+<li><p>DPU：双目深度/匹配。</p></li>
+<li><p>MAU：矩阵计算加速。</p></li>
+</ul>
+<p>对应内核模块为 <code class="docutils literal notranslate"><span class="pre">ot_ive.ko</span></code>、<code class="docutils literal notranslate"><span class="pre">ot_dpu_rect.ko</span></code>、
+<code class="docutils literal notranslate"><span class="pre">ot_dpu_match.ko</span></code>、<code class="docutils literal notranslate"><span class="pre">ot_mau.ko</span></code>等，由 <code class="docutils literal notranslate"><span class="pre">load_ss928v100</span></code> 加载。</p>
+</section>
+<section id="id15">
+<h2><a class="toc-backref" href="#id37" role="doc-backlink">八、选型建议</a><a class="headerlink" href="#id15" title="Permalink to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 34%" />
+<col style="width: 66%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>需求</p></th>
+<th class="head"><p>建议</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>PyTorch/ONNX 通用模型，需要 FP16/INT4</p></td>
+<td><p>NNN + AscendCL</p></td>
+</tr>
+<tr class="row-odd"><td><p>视觉检测/分类，只要 INT8/INT16，希望低开销</p></td>
+<td><p>SVP_NPU + svp_acl</p></td>
+</tr>
+<tr class="row-even"><td><p>深度转激光、滤波、几何/传统 CV</p></td>
+<td><p>DSP</p></td>
+</tr>
+<tr class="row-odd"><td><p>图像缩放/色彩转换/跟踪/双目深度</p></td>
+<td><p>SVP 引擎（IVE/KCF/DPU）</p></td>
+</tr>
+<tr class="row-even"><td><p>实时控制、低功耗协处理</p></td>
+<td><p>RISC-V MCU + LiteOS</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id16">
+<h2><a class="toc-backref" href="#id38" role="doc-backlink">九、已上板验证与已知问题</a><a class="headerlink" href="#id16" title="Permalink to this heading"></a></h2>
+<p>在运行 5.10 内核的海鸥派上已完成以下验证：</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 28%" />
+<col style="width: 18%" />
+<col style="width: 54%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>项目</p></th>
+<th class="head"><p>结果</p></th>
+<th class="head"><p>说明</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>NNN 驱动/设备</p></td>
+<td><p>通过</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ot_npu_*</span></code> 四个模块加载正常</p></td>
+</tr>
+<tr class="row-odd"><td><p>NNN AscendCL 初始化</p></td>
+<td><p>通过</p></td>
+<td><p>需预加载旧版 protobuf，见下文</p></td>
+</tr>
+<tr class="row-even"><td><p>SVP_NPU 驱动/设备</p></td>
+<td><p>通过</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/dev/svp_npu</span></code> 正常</p></td>
+</tr>
+<tr class="row-odd"><td><p>SVP_NPU 模型推理</p></td>
+<td><p>通过</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">barcode_yolov8.om</span></code>，3 输入/3 输出，<code class="docutils literal notranslate"><span class="pre">execute=0</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>DSP 电源控制</p></td>
+<td><p>通过</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">power_on</span></code>/<code class="docutils literal notranslate"><span class="pre">power_off</span></code> 均返回 0</p></td>
+</tr>
+<tr class="row-odd"><td><p>DSP 算法级 RPC</p></td>
+<td><p>未验证</p></td>
+<td><p>板上未部署 <code class="docutils literal notranslate"><span class="pre">dsp_bin</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>NNN 模型推理</p></td>
+<td><p>未验证</p></td>
+<td><p>本地没有 NNN 格式 <code class="docutils literal notranslate"><span class="pre">.om</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>SVP_NPU 实测模型信息：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>inputs=3 outputs=3
+in[0] 1,3,384,640  UINT8 NCHW  size=368640
+in[1] 1,1,1,52     FLOAT       size=208
+in[2] 1,1,1,835584 FLOAT       size=3342336
+out[0] 1,240,5     FLOAT
+out[1] 1,960,5     FLOAT
+out[2] 1,3840,5    FLOAT
+execute=0
+</pre></div>
+</div>
+<p>已知问题：</p>
+<ol class="arabic">
+<li><p><strong>NNN protobuf ABI 不一致</strong>：当前镜像的 <code class="docutils literal notranslate"><span class="pre">libgraph.so</span></code> 需要旧 ABI
+符号，但 <code class="docutils literal notranslate"><span class="pre">libascend_protobuf.so.3.13.0.0</span></code> 只导出 C++11 ABI 符号，
+直接运行 NNN 程序会报 <code class="docutils literal notranslate"><span class="pre">undefined</span> <span class="pre">symbol</span></code>。规避方式：</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">export LD_PRELOAD=/usr/lib64/npu/libascend_protobuf.so</span>
+<span class="go">export LD_LIBRARY_PATH=/usr/lib64/npu:$LD_LIBRARY_PATH</span>
+</pre></div>
+</div>
+<p>长期修复需要调整 <code class="docutils literal notranslate"><span class="pre">hieulerpi1-user-driver</span></code> 中 protobuf 库的打包/
+链接关系。</p>
+</li>
+<li><p><strong>``/tmp`` 为 noexec</strong>：测试程序放到 <code class="docutils literal notranslate"><span class="pre">/tmp</span></code> 会报
+<code class="docutils literal notranslate"><span class="pre">Permission</span> <span class="pre">denied</span></code>，应放在 <code class="docutils literal notranslate"><span class="pre">/root</span></code> 等可执行分区。</p></li>
+<li><p><strong>NNN 初始化时的 CMA 告警</strong>：dmesg 可能出现
+<code class="docutils literal notranslate"><span class="pre">cma:</span> <span class="pre">cma_alloc:</span> <span class="pre">alloc</span> <span class="pre">failed</span></code>，当前不影响初始化；跑大模型时
+如果出现内存错误，需要检查 CMA/MMZ 预留。</p></li>
+<li><p><strong>当前镜像不含样例和头文件</strong>：默认只安装运行库，SVP_NPU/NNN 样例、
+<code class="docutils literal notranslate"><span class="pre">.om</span></code> 模型和 <code class="docutils literal notranslate"><span class="pre">/usr/include/npu</span></code>、<code class="docutils literal notranslate"><span class="pre">/usr/include/svp_npu</span></code>
+需要从 SDK 或 <code class="docutils literal notranslate"><span class="pre">-dev</span></code> 包获取。</p></li>
+<li><p><strong>kernel6 加载差异</strong>：kernel6 的 <code class="docutils literal notranslate"><span class="pre">load_sdk_driver</span></code> 目前只加载
+<code class="docutils literal notranslate"><span class="pre">ot_svp_npu.ko</span></code>；NNN 和 DSP 需要额外确认模块并补充加载。</p></li>
+</ol>
+</section>
+<section id="id17">
+<h2><a class="toc-backref" href="#id39" role="doc-backlink">十、快速自检</a><a class="headerlink" href="#id17" title="Permalink to this heading"></a></h2>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>驱动与设备
+<span class="go">lsmod | grep -E &#39;npu|svp|dsp&#39;</span>
+<span class="go">ls -l /dev/svp_npu /dev/dsp</span>
+
+<span class="gp"># </span>SVP_NPU<span class="w"> </span>运行库
+<span class="go">ls /usr/lib64/svp_npu</span>
+
+<span class="gp"># </span>NNN<span class="w"> </span>运行库
+<span class="go">ls /usr/lib64/npu</span>
+
+<span class="gp"># </span>DSP<span class="w"> </span>运行库
+<span class="go">ls -l /usr/lib64/libss_dsp.so</span>
+
+<span class="gp"># </span>重新加载<span class="w"> </span>BSP<span class="w"> </span>模块（会中断摄像头/显示，空闲时执行）
+<span class="go">cd /ko &amp;&amp; ./load_ss928v100 -a</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="hieulerpi-system.html" class="btn btn-neutral float-left" title="海鸥派系统架构、启动流程与内存/存储布局" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="update.html" class="btn btn-neutral float-right" title="海鸥派镜像在线升级与启动" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, openEuler Embedded.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version" onclick="event.stopPropagation(); this.parentElement.classList.toggle('shift-up'); return false;">
+    <span class="fa fa-book"> Other Versions</span>
+    v: master
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    <dl>
+      <dt>Branches</dt>
+      <dd><a href="heterogeneous-compute.html">master</a></dd>
+      <dd><a href="../../../../../openEuler-21.09/index.html">openEuler-21.09</a></dd>
+      <dd><a href="../../../../../openEuler-22.03-LTS/index.html">openEuler-22.03-LTS</a></dd>
+      <dd><a href="../../../../../openEuler-22.03-LTS-SP1/index.html">openEuler-22.03-LTS-SP1</a></dd>
+      <dd><a href="../../../../../openEuler-22.03-LTS-SP2/index.html">openEuler-22.03-LTS-SP2</a></dd>
+      <dd><a href="../../../../../openEuler-22.03-LTS-SP3/index.html">openEuler-22.03-LTS-SP3</a></dd>
+      <dd><a href="../../../../../openEuler-22.03-LTS-SP4/index.html">openEuler-22.03-LTS-SP4</a></dd>
+      <dd><a href="../../../../../openEuler-22.09/index.html">openEuler-22.09</a></dd>
+      <dd><a href="../../../../../openEuler-23.03/index.html">openEuler-23.03</a></dd>
+      <dd><a href="../../../../../openEuler-23.09/index.html">openEuler-23.09</a></dd>
+      <dd><a href="../../../../../openEuler-24.03-LTS/index.html">openEuler-24.03-LTS</a></dd>
+      <dd><a href="../../../../../openEuler-24.09/index.html">openEuler-24.09</a></dd>
+      <dd><a href="../../../../../openEuler-25.03/index.html">openEuler-25.03</a></dd>
+      <dd><a href="../../../../../openEuler-26.03/index.html">openEuler-26.03</a></dd>
+      <dd><a href="../../../../../openEuler-26.09/index.html">openEuler-26.09</a></dd>
+    </dl>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(false);
+      });
+  </script> 
+
+</body>
+</html>
