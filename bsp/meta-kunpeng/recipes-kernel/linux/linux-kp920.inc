@@ -17,6 +17,15 @@ SRC_URI:append = " \
     file://config/cfg-fragments/no-hisi-pmu.cfg \
 "
 
+# the dinghai driver (kernel6 tree) only ever built in-tree; its
+# quoted includes, SDK include paths and wildcard source collection
+# all break under the O= out-of-tree module build
+SRC_URI:append = " \
+    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
+        file://dinghai-out-of-tree-build-fixes.patch \
+    ', '', d)} \
+"
+
 OPENEULER_KERNEL_CONFIG = ""
 KBUILD_DEFCONFIG = "openeuler_defconfig"
 

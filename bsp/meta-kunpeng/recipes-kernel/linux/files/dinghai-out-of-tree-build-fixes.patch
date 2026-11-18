@@ -1,0 +1,73 @@
+Fix the dinghai driver for out-of-tree (O=) kernel builds
+
+The driver was imported from a vendor SDK that only ever built
+in-tree, and four places assume the build runs with make's cwd equal
+to the kernel source root:
+
+- the quoted includes (e.g. "en_aux.h" from en_aux/en_aux_events.h)
+  resolve through -I$(src); that flag is relative, so under O= the
+  search falls through to -I include/linux/dinghai/ and picks the
+  wrong same-named header (include/linux/dinghai/en_aux.h has no
+  struct zxdh_en_priv), leaving the tag first declared inside a
+  parameter list - a scope-local type that then conflicts with the
+  real definition ("expected 'struct zxdh_en_priv *' but argument is
+  of type 'struct zxdh_en_priv *'")
+- en_np/Makefile.include defines abs_include but never applies it,
+  so the SDK headers pulled in via dpp_tbl_api.h fail with
+  'zxic_common.h: No such file or directory'
+- dinghai_root := $(src) makes the wildcard source collection empty
+  under O=, leaving dinghai10e_np-y empty ("No rule to make target
+  .../dinghai10e_np.o")
+- dpp_tbl_comm.h uses DPP_DEV_SDT_ID_MAX without including its
+  defining header
+
+Anchor the paths to $(srctree), apply the SDK include paths to the
+whole directory tree, and make dpp_tbl_comm.h self-contained.
+
+--- a/drivers/net/ethernet/dinghai/en_np/Makefile	2026-11-18 11:15:45.134726907 +0800
++++ b/drivers/net/ethernet/dinghai/en_np/Makefile	2026-11-18 11:15:45.138726950 +0800
+@@ -11,7 +11,7 @@
+ subdirs += en_np/flow/
+ 
+ #dinghai_root := $(CWD)/drivers/net/ethernet/dinghai
+-dinghai_root := $(src)
++dinghai_root := $(srctree)/$(src)
+ include $(dinghai_root)/en_np/Makefile.include
+ 
+ src_files :=
+
+--- a/drivers/net/ethernet/dinghai/en_np/Makefile.include	2026-11-18 11:15:45.138726950 +0800
++++ b/drivers/net/ethernet/dinghai/en_np/Makefile.include	2026-11-18 11:15:45.142726993 +0800
+@@ -57,4 +57,10 @@
+ silent_redirect := exec >/dev/null;
+ 
+ # printing commands
+-cmd = @set -e; $(echo-cmd) $($(quiet)redirect) $(cmd_$(1))
+\ No newline at end of file
++cmd = @set -e; $(echo-cmd) $($(quiet)redirect) $(cmd_$(1))
++# the SDK include paths apply to every object of this directory tree,
++# not only to the en_np objects: the top-level objects (en_pf, lag,
++# plcr, dh_cmd and their headers) also include the SDK headers.
++# anchor them to $(srctree): abs_include is built from $(src), which
++# is relative and does not resolve from the output directory cwd
++subdir-ccflags-y += $(patsubst -I%,-I$(srctree)/%,$(abs_include))
+
+--- a/drivers/net/ethernet/dinghai/en_np/table/include/dpp_tbl_comm.h	2026-11-18 11:15:45.142726993 +0800
++++ b/drivers/net/ethernet/dinghai/en_np/table/include/dpp_tbl_comm.h	2026-11-18 11:15:45.142726993 +0800
+@@ -6,6 +6,7 @@
+ 
+ #include "zxic_common.h"
+ #include "dpp_type_api.h"
++#include "dpp_dev.h"
+ #include "dpp_tbl_mc.h"
+ #include "dpp_tbl_mac.h"
+ #include "dpp_tbl_qid.h"
+
+--- a/drivers/net/ethernet/dinghai/Makefile	2026-11-18 11:15:45.130726863 +0800
++++ b/drivers/net/ethernet/dinghai/Makefile	2026-11-18 11:15:45.134726907 +0800
+@@ -1,4 +1,4 @@
+-subdir-ccflags-y += -I$(src)
++subdir-ccflags-y += -I$(srctree)/$(src)
+ subdir-ccflags-y += -I$(srctree)/include/linux/dinghai/
+ 
+ ccflags-y += -DZXDH_MSGQ
