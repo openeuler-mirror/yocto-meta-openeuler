@@ -9,6 +9,17 @@ SRC_URI:remove = " \
 ## basic information
 OPENEULER_LOCAL_NAME = "allwinner-kernel"
 
+# linux-openeuler.inc hard-assigns OPENEULER_REPO_NAMES to the mainline
+# src-kernel/kernel pair; without this override do_openeuler_fetch never
+# downloads the allwinner-kernel repo on a cold runner (one that relies on
+# per-recipe fetches instead of a bulk manifest checkout), and the
+# file://allwinner-kernel directory fetch fails. Keep src-kernel-${PV}:
+# the linux-openeuler-rt recipe still pulls the RT patches from the
+# mainline packaging repo (sunxi does not remove those entries, unlike
+# rockchip/rpi), and kernel-${PV} is dropped because this inc removes
+# file://kernel-${PV} from SRC_URI entirely.
+OPENEULER_REPO_NAMES = "src-kernel-${PV} allwinner-kernel"
+
 SRC_URI:prepend = " \
     file://allwinner-kernel \
 "
