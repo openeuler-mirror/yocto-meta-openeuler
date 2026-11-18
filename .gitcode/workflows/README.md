@@ -161,7 +161,11 @@ fi
   不在目标仓），经平台 API 解析 PR（匹配 head 分支 + base 分支 +
   `ATOMGIT_SOURCE_REPOSITORY_ID`），依次从 fork 仓拉分支 →
   `refs/merge-requests/<n>/head` → `/merge` 兜底；全部失败才 exit 1
-  （fail-closed）。API 解析用 `ATOMGIT_TOKEN`，不回显日志。
+  （fail-closed）。
+- **API 认证顺序（匿名优先）**：runner 注入的 `ATOMGIT_TOKEN` 在 workflow
+  未声明 `pr` 权限时会被 pulls API 拒绝（线上实证：带坏凭证比不带更糟），
+  而公开仓匿名可读。因此先匿名请求、失败再带 token（覆盖私有仓，需
+  workflow 声明 `pr: read`）。解析失败的真实原因会打进 job 日志。
 
 ### 4.2 用户切换与 git 属主
 
@@ -276,7 +280,8 @@ yml 的 `pull_request_comment.comments` 列表加条目（如 `/retest-full`）�
 | 构建"成功"但什么都没干（PASSED 秒回） | oebuild exit-0 假阳性 | 三重判据（§6）就是防这个；若复现说明判据被削弱了 |
 | job 长时间 Pending | 节点首次拉 20GB 镜像 | 等待；同一节点后续秒起 |
 | `/retest` 无反应 | 并发 QUEUE 排队/抢占 | 看流水线页面的队列状态 |
-| `couldn't find remote ref <分支>` | fork PR：源分支不在目标仓 | checkout_pr.sh 会自动转 API 解析；此行单独出现说明 API 解析也失败——查 `ATOMGIT_TOKEN` 有效性与 API 连通性 |
+| `couldn't find remote ref <分支>` 后接 `api resolution failed -` | fork PR 的 API 解析失败：token 被拒 + 匿名也失败 | 匿名通常对公开仓可用；查日志里的具体 HTTP 错误（401/403/网络）与 workflow 的 `pr: read` 声明 |
+| `no open PR matches head <分支>` | API 正常但没找到匹配的 PR | 核对 head/base 分支名与 `ATOMGIT_SOURCE_REPOSITORY_ID`；PR 可能已关闭 |
 | `discovered PR=[]`（若见到） | 旧版脚本按 PR 号发现；现版本用 HEAD_REF，不应再出现 | 升级到双检出版 checkout_pr.sh |
 
 ### 本地复现方法（改脚本后先本地跑，再上线）

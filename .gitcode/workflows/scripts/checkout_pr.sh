@@ -66,7 +66,7 @@ if ! git fetch --depth="${GATE_PR_FETCH_DEPTH}" origin "${HEAD_REF}" 2>/dev/null
     # the fork, with the merge-request refs on origin as fallbacks.
     echo "head branch ${HEAD_REF} not in origin - resolving the PR via the platform API (fork PR)"
     PR_RESOLVED=$(python3 - "${HEAD_REF}" "${BASE_REF}" \
-        "${ATOMGIT_SOURCE_REPOSITORY_ID:-}" << 'PYEOF' 2>/dev/null
+        "${ATOMGIT_SOURCE_REPOSITORY_ID:-}" << 'PYEOF'
 import json
 import os
 import sys
@@ -86,21 +86,42 @@ api = os.environ.get("ATOMGIT_API_URL", "")
 if api.startswith("http"):
     bases.append(api.rstrip("/") + "/api/v5")
 
-matches = []
-for base in bases:
+
+def list_pulls(base, tok):
+    prs_all = []
     page = 1
     while page <= 10:
         url = (f"{base}/repos/{repo}/pulls"
                f"?state=open&per_page=100&page={page}")
         req = urllib.request.Request(url)
-        if token:
-            req.add_header("Authorization", f"Bearer {token}")
-        try:
-            with urllib.request.urlopen(req, timeout=30) as resp:
-                prs = json.load(resp)
-        except Exception:
+        if tok:
+            req.add_header("Authorization", f"Bearer {tok}")
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            prs = json.load(resp)
+        prs_all.extend(prs or [])
+        if not prs or len(prs) < 100:
             break
-        for pr in prs or []:
+        page += 1
+    return prs_all
+
+
+matches = []
+errors = []
+listed = False
+# anonymous first: the runner's workflow token is rejected by the
+# pulls API on public repos unless the workflow declares pr
+# permission, while anonymous read works there; the token then
+# covers private repositories
+for base in bases:
+    for tok in (None, token or None):
+        try:
+            prs = list_pulls(base, tok)
+        except Exception as exc:
+            errors.append(f"{base} "
+                          f"({'token' if tok else 'anonymous'}): {exc}")
+            continue
+        listed = True
+        for pr in prs:
             head = pr.get("head") or {}
             if head.get("ref") != head_ref:
                 continue
@@ -111,18 +132,24 @@ for base in bases:
                 continue
             matches.append((pr.get("number"),
                             head_repo.get("html_url", "")))
-        if not prs or len(prs) < 100:
-            break
-        page += 1
-    if matches:
+        break
+    if listed:
         break
 
 if len(matches) == 1:
     number, fork = matches[0]
     print(f"{number}\t{fork}")
-elif not source_id and len(matches) > 1:
-    print(f"ambiguous: {len(matches)} open PRs match "
-          f"head {head_ref} base {base_ref}", file=sys.stderr)
+elif len(matches) > 1:
+    print(f"ambiguous: {len(matches)} open PRs match head {head_ref} "
+          f"base {base_ref} - cannot pick one safely", file=sys.stderr)
+    sys.exit(1)
+elif not listed:
+    print("api resolution failed - " + " | ".join(errors or ["no api"]),
+          file=sys.stderr)
+    sys.exit(1)
+else:
+    print(f"no open PR matches head {head_ref} base {base_ref} "
+          f"(source repo {source_id or 'any'})", file=sys.stderr)
     sys.exit(1)
 PYEOF
     )
