@@ -101,7 +101,11 @@ workflow 里配置 volumes**。共享目录必须在 runner 环境侧由运维�
 - `ATOMGIT_RUN_ID`（= `atomgit.run_id` 上下文）每次运行唯一，用于构建目录命名。
 - pod 首次在某节点运行时要拉 20GB 镜像，Pending 可达几十分钟，属正常。
 - workflow 文件本身取自 **master**（`ATOMGIT_WORKFLOW_REF=...@refs/heads/master`），
-  PR 分支上的 workflow 改动不会生效，必须先合入 master。
+  PR 分支上的 workflow 改动不会生效，必须先合入 master。注意：平台对**任何**
+  `pull_request_target` 事件都跑默认分支的 workflow——即使 PR 的目标分支不是
+  master（例：#3122 目标 `openEuler-24.03-LTS-Next`，该分支没有 gate，master 的
+  gate 照样被触发）。checkout_pr.sh 因此带分支守卫：目标分支不是 gate 所在分支
+  时带明确报错快速失败，不做任何构建。
 - 并发配置：`concurrency QUEUE` + 按 `mr_id` 抢占（yml 顶部）。
 
 ### 3.5 本仓库的提交规范（gitlint 强制）
@@ -280,6 +284,7 @@ yml 的 `pull_request_comment.comments` 列表加条目（如 `/retest-full`）�
 | 构建"成功"但什么都没干（PASSED 秒回） | oebuild exit-0 假阳性 | 三重判据（§6）就是防这个；若复现说明判据被削弱了 |
 | job 长时间 Pending | 节点首次拉 20GB 镜像 | 等待；同一节点后续秒起 |
 | `/retest` 无反应 | 并发 QUEUE 排队/抢占 | 看流水线页面的队列状态 |
+| `bash: .gitcode/workflows/scripts/<脚本>: No such file or directory`（exit 127） | PR 目标分支不是 master：checkout_pr.sh 曾把检出重置到该分支，而该分支没有 gate 脚本 | 现版本带分支守卫会以“this gate lives on master”快速失败；目标分支需要 gate 时，把 gate 提交链 cherry-pick 到该分支 |
 | `couldn't find remote ref <分支>` 后接 `api resolution failed -` | fork PR 的 API 解析失败：token 被拒 + 匿名也失败 | 匿名通常对公开仓可用；查日志里的具体 HTTP 错误（401/403/网络）与 workflow 的 `pr: read` 声明 |
 | `no open PR matches head <分支>` | API 正常但没找到匹配的 PR | 核对 head/base 分支名与 `ATOMGIT_SOURCE_REPOSITORY_ID`；PR 可能已关闭 |
 | `discovered PR=[]`（若见到） | 旧版脚本按 PR 号发现；现版本用 HEAD_REF，不应再出现 | 升级到双检出版 checkout_pr.sh |

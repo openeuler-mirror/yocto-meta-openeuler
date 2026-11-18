@@ -18,6 +18,12 @@
 #     as the code under test
 # Without PR context (e.g. workflow_dispatch) nothing is changed and
 # the build falls back to this checkout.
+#
+# A PR targeting a branch other than the gate's own (derived from
+# ATOMGIT_WORKFLOW_REF, defaulting to master) is rejected before
+# anything is touched: the platform runs this default-branch
+# workflow for every PR, and such a base branch carries no gate
+# scripts to build with.
 
 set -u
 
@@ -40,7 +46,31 @@ fi
 
 echo "== PR detected: head branch ${HEAD_REF}, base ${BASE_REF} =="
 
-# 1. keep this checkout (the gate scripts) on the trusted base branch
+# 1. this gate covers exactly one branch: the one it lives on. The
+# runner executes the default-branch workflow for every
+# pull_request_target event, so a PR targeting a release branch that
+# never carried the gate (e.g. openEuler-24.03-LTS-Next) still lands
+# here - and resetting this checkout to that base would delete the
+# gate scripts the workflow references by relative path (observed
+# live as "build_docs.sh: No such file or directory"). Fail fast
+# with a clear reason instead; the build jobs then skip cleanly.
+# GATE_BRANCH overrides the derivation (which branch this workflow
+# came from), e.g. while testing a gate deployed on another branch.
+GATE_BRANCH="${GATE_BRANCH:-}"
+if [ -z "${GATE_BRANCH}" ]; then
+    case "${ATOMGIT_WORKFLOW_REF:-}" in
+        *@refs/heads/*) GATE_BRANCH="${ATOMGIT_WORKFLOW_REF##*@refs/heads/}" ;;
+        *) GATE_BRANCH="master" ;;
+    esac
+fi
+if [ "${BASE_REF}" != "${GATE_BRANCH}" ]; then
+    echo "::error::this gate lives on ${GATE_BRANCH} and only covers PRs targeting ${GATE_BRANCH}."
+    echo "::error::this PR targets ${BASE_REF}, which has no GitCode gate of its own -"
+    echo "::error::failing instead of building a branch the gate was never written for."
+    exit 1
+fi
+
+# 2. keep this checkout (the gate scripts) on the trusted base branch
 if git fetch --depth=1 origin "${BASE_REF}" 2>/dev/null \
         && git checkout --force -B "${BASE_REF}" \
                "refs/remotes/origin/${BASE_REF}" 2>/dev/null; then
@@ -50,7 +80,7 @@ else
          "gate scripts stay at $(git rev-parse HEAD 2>/dev/null || echo unknown)"
 fi
 
-# 2. materialize the PR code into a git worktree
+# 3. materialize the PR code into a git worktree
 # the tip commit's tree already contains every commit's changes
 # (commits are snapshots), but fetch some history as well so the
 # git log diagnostics show the PR's commit chain; depth is
