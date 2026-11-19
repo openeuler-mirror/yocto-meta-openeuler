@@ -69,9 +69,14 @@ jobs:
         uses: checkout
 
       - name: Point the build at the PR
+        id: pr
         run: bash .gitcode/workflows/scripts/checkout_pr.sh
 
+      # Build only when the PR touches docs sources or the docs toolchain;
+      # checkout_pr.sh writes docs_changed. A missing output keeps docs
+      # enabled (fail open), so dropping step outputs never skips it.
       - name: Build documentation
+        if: ${{ steps.pr.outputs.docs_changed != 'false' }}
         run: |
           set -e
           echo "Building documentation..."
