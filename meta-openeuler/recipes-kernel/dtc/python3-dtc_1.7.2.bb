@@ -11,7 +11,6 @@ OPENEULER_LOCAL_NAME = "dtc"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI = "file://dtc-${PV}.tar.xz \
-           file://0001-disable-setuptools_scm.patch \
           "
 
 LIC_FILES_CHKSUM = "file://pylibfdt/libfdt.i;beginline=1;endline=6;md5=afda088c974174a29108c8d80b5dce90"
