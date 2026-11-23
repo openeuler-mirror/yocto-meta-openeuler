@@ -174,8 +174,12 @@ PR 可以通过改 `.gitcode/` 让自己变绿；如果只用工作区，门禁�
 
 - worktree 保留 git 历史：os-release 的 `get_oee_revision` 读
   `repo.head.object.hexsha`，detached HEAD 可正常读。
-- 无 PR 上下文（`ATOMGIT_HEAD_REF` 为空，如 workflow_dispatch）时不动任何
-  东西，构建回退到当前检出。
+- 无 PR 上下文（`ATOMGIT_HEAD_REF` 为空且触发类型不是 PR 事件，如
+  workflow_dispatch）时不动任何东西，构建回退到当前检出；**PR 事件缺
+  head ref 属于平台上下文异常，直接 `exit 1`**，不静默测 base。
+- **head == base 是合法 PR 形态**（fork 的 master → 上游 master，线上实证
+  #3128：曾被误读为"无 PR 上下文"导致整门禁测了 base），按正常 PR 解析
+  处理（run 记录/PR 列表按 head+base+source 匹配，fetch 链落在 PR head）。
 - **fail-closed**：PR 上下文确认后，解析或 fetch 失败一律 `exit 1`，不静默
   回退默认分支（否则会“测错代码却报绿”）。
 - **分支守卫**：门禁只覆盖它所在的分支（从 `ATOMGIT_WORKFLOW_REF` 推导，
@@ -321,6 +325,11 @@ yml 的 `pull_request_comment.comments` 列表加条目（如 `/retest-full`）�
 
 | 日志特征 | 根因 | 处置 |
 |---|---|---|
+| `PR event (...) carries no head ref`（checkout 步骤） | 平台在 PR 事件上没给 `ATOMGIT_HEAD_REF`——上下文异常 | 平台侧排查；门禁按设计拒绝运行 |
+| `PR context (...) but no PR worktree`（build 步骤） | checkout_pr.sh 未产出 worktree（被跳过/回归） | 看上一步日志；此断言防止静默退回 base |
+| `head ref equals base (master) - resolving the PR...` | master→master 类 PR（head==base），正按正常 PR 解析 | 信息行；若紧接 `resolved PR !N` 即正常 |
+| `no head SHA and head equals base`（checkout 步骤） | head==base 且 API/merge-ref 全失败——无校验拉 origin 分支必然是 base | 按设计拒绝；多为 API 抖动，`/retest` 重试 |
+| `manual run with head equal to base` | 手动 dispatch 带 head==base 引用 | 按设计走手动回退 |
 | `can not use oebuild in root` | 脚本丢失了 runuser 切换（§4.2） | 恢复脚本头部的用户切换块 |
 | `cd: /tmp/oebuild-gate-...: No such file or directory` | oebuild init 静默失败（exit 0），工作区未创建 | 看 init 守卫上方日志；历史上根因是 root 拒绝或父目录不存在 |
 | `detected dubious ownership in repository` | jenkins 读 root 属主的 git 仓库 | 确认 `git config --global --add safe.directory '*'` 在切换用户之后执行 |

@@ -34,6 +34,7 @@ if [ "$(id -un)" != "jenkins" ]; then
             GATE_BB_THREADS="${GATE_BB_THREADS:-}" \
             GATE_RESOURCE_DIAG="${GATE_RESOURCE_DIAG:-}" \
             ATOMGIT_BASE_REF="${ATOMGIT_BASE_REF:-}" \
+            ATOMGIT_HEAD_REF="${ATOMGIT_HEAD_REF:-}" \
             "PATH=${PATH}" \
         bash "$0" "$@"
 fi
@@ -62,6 +63,15 @@ TARGET_BRANCH="${GATE_TARGET_BRANCH:-${ATOMGIT_BASE_REF:-master}}"
 # checkout for manual runs without PR context
 REPO_DIR="${GATE_PR_CODE_DIR:-/tmp/gate-pr-code}"
 if [ ! -e "${REPO_DIR}/.git" ]; then
+    # a PR run must never silently fall back to the base checkout:
+    # checkout_pr.sh creates the head worktree for every PR shape
+    # (including head == base), so its absence here means something
+    # upstream of the build broke
+    if [ -n "${ATOMGIT_HEAD_REF:-}" ]; then
+        echo "::error::PR context (head ${ATOMGIT_HEAD_REF}) but no PR worktree at ${REPO_DIR} -"
+        echo "::error::refusing to build the base branch"
+        exit 1
+    fi
     REPO_DIR="$(git rev-parse --show-toplevel)"
 fi
 SAMPLE_YAML="${REPO_DIR}/.oebuild/samples/${ARCH}/${IMAGE_NAME}.yaml"

@@ -19,7 +19,10 @@ export PATH="/home/jenkins/.local/bin:$PATH"
 # switch to the jenkins user the CI image is built for, whatever user
 # the step was launched with; root needs no sudo to switch users
 if [ "$(id -un)" != "jenkins" ]; then
-    exec runuser -u jenkins -- env "PATH=${PATH}" bash "$0" "$@"
+    exec runuser -u jenkins -- \
+        env GATE_PR_CODE_DIR="${GATE_PR_CODE_DIR:-}" \
+            ATOMGIT_HEAD_REF="${ATOMGIT_HEAD_REF:-}" "PATH=${PATH}" \
+        bash "$0" "$@"
 fi
 
 # the checkout is owned by the root user that ran the runner step,
@@ -32,6 +35,15 @@ git config --global --add safe.directory '*' 2>/dev/null || true
 # checkout for manual runs without PR context
 REPO_DIR="${GATE_PR_CODE_DIR:-/tmp/gate-pr-code}"
 if [ ! -e "${REPO_DIR}/.git" ]; then
+    # a PR run must never silently fall back to the base checkout:
+    # checkout_pr.sh creates the head worktree for every PR shape
+    # (including head == base), so its absence here means something
+    # upstream of the build broke
+    if [ -n "${ATOMGIT_HEAD_REF:-}" ]; then
+        echo "::error::PR context (head ${ATOMGIT_HEAD_REF}) but no PR worktree at ${REPO_DIR} -"
+        echo "::error::refusing to build the base branch"
+        exit 1
+    fi
     REPO_DIR="$(git rev-parse --show-toplevel)"
 fi
 

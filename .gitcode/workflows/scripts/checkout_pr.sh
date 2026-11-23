@@ -16,8 +16,16 @@
 #     repo.head.object.hexsha from it)
 #   - the build scripts link the worktree into the oebuild workspace
 #     as the code under test
-# Without PR context (e.g. workflow_dispatch) nothing is changed and
-# the build falls back to this checkout.
+# Without PR context (a non-PR trigger, e.g. workflow_dispatch) nothing
+# is changed and the build falls back to this checkout. A PR event that
+# carries no head ref fails closed instead: silently building the base
+# would hand the PR a green check for code it does not contain. A head
+# equal to its base is a legitimate PR shape (a fork's master into the
+# upstream master) and is resolved like any other PR - the resolution
+# matches head/base/source and the fetch chain lands on the PR head.
+# Observed live before this guard: a master->master PR ran the whole
+# gate against the base branch, because head == base was misread as
+# "no PR context" and no worktree was created.
 #
 # A PR targeting a branch other than the gate's own (derived from
 # ATOMGIT_WORKFLOW_REF, defaulting to master) is rejected before
@@ -45,13 +53,44 @@ echo "plugin checkout HEAD: $(git rev-parse HEAD 2>/dev/null || echo none)"
 HEAD_REF="${ATOMGIT_HEAD_REF:-}"
 BASE_REF="${ATOMGIT_BASE_REF:-master}"
 
-if [ -z "${HEAD_REF}" ] || [ "${HEAD_REF}" = "${BASE_REF}" ]; then
-    echo "no PR context (head=${HEAD_REF:-<unset>}) - building this checkout"
+TRIGGER_TYPE="${ATOMGIT_TRIGGER_TYPE:-}"
+
+if [ -z "${HEAD_REF}" ]; then
+    case "${TRIGGER_TYPE}" in
+        pull_request_target|pull_request_comment)
+            # a PR event without a head ref is a platform context
+            # anomaly, not a manual run: silently building the base
+            # would hand the PR a green check for code it does not
+            # contain (fake green)
+            echo "::error::PR event (${TRIGGER_TYPE}) carries no head ref -"
+            echo "::error::failing instead of building the base branch"
+            write_docs_output true
+            exit 1
+            ;;
+    esac
+    echo "no PR context (trigger=${TRIGGER_TYPE:-<none>}) - building this checkout"
     write_docs_output true
     echo "== build HEAD =="
     git rev-parse HEAD
     git log --oneline -3
     exit 0
+fi
+
+if [ "${HEAD_REF}" = "${BASE_REF}" ]; then
+    # head == base is a legitimate PR shape: a fork's master into the
+    # upstream master. It is NOT "no PR context": the run record and
+    # PR resolution match head/base/source all the same, and the fetch
+    # chain lands on the fork's head SHA. A manual run that still
+    # carries both refs keeps the dispatch fallback instead.
+    if [ "${TRIGGER_TYPE}" = "workflow_dispatch" ]; then
+        echo "manual run with head equal to base (${HEAD_REF}) - building this checkout"
+        write_docs_output true
+        echo "== build HEAD =="
+        git rev-parse HEAD
+        git log --oneline -3
+        exit 0
+    fi
+    echo "head ref equals base (${BASE_REF}) - resolving the PR that owns this head"
 fi
 
 echo "== PR detected: head branch ${HEAD_REF}, base ${BASE_REF} =="
@@ -404,10 +443,18 @@ if [ "${fetched}" = "0" ] && [ -n "${PR_NUM}" ]; then
     fetch_and_check origin "refs/merge-requests/${PR_NUM}/head" \
         || fetch_and_check origin "refs/merge-requests/${PR_NUM}/merge"
 fi
-if [ "${fetched}" = "0" ] && [ -z "${PR_SHA}" ]; then
+if [ "${fetched}" = "0" ] && [ -z "${PR_SHA}" ] \
+        && [ "${HEAD_REF}" != "${BASE_REF}" ]; then
     echo "::warning::no head SHA available; fetching origin branch" \
          "${HEAD_REF} without verification"
     fetch_and_check origin "${HEAD_REF}"
+fi
+if [ "${fetched}" = "0" ] && [ -z "${PR_SHA}" ] \
+        && [ "${HEAD_REF}" = "${BASE_REF}" ]; then
+    echo "::error::no head SHA and head equals base - the unverified origin" \
+         "branch fetch would fetch the base branch;"
+    echo "::error::failing instead of building the base branch"
+    exit 1
 fi
 if [ "${fetched}" = "0" ]; then
     echo "::error::could not fetch the PR head (${HEAD_REF}, PR !${PR_NUM:-unknown});" \
