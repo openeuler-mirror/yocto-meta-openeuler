@@ -38,5 +38,13 @@ install -m 0755 "$init" "$tmp/init"
 install -m 0755 "$busybox" "$tmp/bin/busybox"
 ln -s busybox "$tmp/bin/sh"
 
-(cd "$tmp" && find . -print0 | cpio --null -o -H newc 2>/dev/null | gzip -9) > "$out"
+archive="$tmp.cpio"
+(cd "$tmp" && find . -print0 | cpio --null -o -H newc) > "$archive"
+[ -s "$archive" ] || { echo "error: cpio produced no archive" >&2; exit 1; }
+
+gzip -9 -c "$archive" > "$out"
+gzip -dc "$out" | cpio -t 2>/dev/null | grep -qxE '(\./)?init' || {
+	echo "error: $out does not contain ./init" >&2
+	exit 1
+}
 echo "wrote $out ($(wc -c < "$out") bytes)"

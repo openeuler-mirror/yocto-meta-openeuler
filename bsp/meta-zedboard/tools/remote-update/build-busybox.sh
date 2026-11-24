@@ -58,7 +58,8 @@ grep -q '^CONFIG_STATIC=y' "$src/.config" || {
 make -C "$src" CROSS_COMPILE="$cross" -j"$jobs" >/dev/null
 
 file "$src/busybox" | grep -q 'statically linked' || {
-	echo "warning: busybox is not statically linked" >&2
+	echo "error: busybox is not statically linked; initramfs would not boot" >&2
+	exit 1
 }
 install -m 0755 "$src/busybox" "$out"
 echo "wrote $out ($(wc -c < "$out") bytes)"
