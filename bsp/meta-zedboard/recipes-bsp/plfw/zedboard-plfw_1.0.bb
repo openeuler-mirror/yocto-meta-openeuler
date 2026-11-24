@@ -16,7 +16,7 @@ SRC_URI = " \
 
 S = "${WORKDIR}"
 
-ZEDBOARD_BITSTREAM ?= "${THISDIR}/../../files/bitstream/system.bit.bin"
+ZEDBOARD_BITSTREAM ?= "${THISDIR}/../../files/bitstream/system.bit.bin.gz"
 
 do_install() {
 	install -d ${D}${systemd_system_unitdir}
@@ -28,7 +28,8 @@ do_install() {
 
 	if [ -f "${ZEDBOARD_BITSTREAM}" ]; then
 		install -d ${D}${nonarch_base_libdir}/firmware
-		install -m 0644 "${ZEDBOARD_BITSTREAM}" ${D}${nonarch_base_libdir}/firmware/system.bit.bin
+		gzip -dc "${ZEDBOARD_BITSTREAM}" > ${D}${nonarch_base_libdir}/firmware/system.bit.bin
+		chmod 0644 ${D}${nonarch_base_libdir}/firmware/system.bit.bin
 	else
 		bbwarn "ZEDBOARD_BITSTREAM (${ZEDBOARD_BITSTREAM}) not found; PL fallback loader disabled"
 	fi
