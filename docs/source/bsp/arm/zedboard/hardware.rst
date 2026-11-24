@@ -102,10 +102,12 @@ PL 侧能力说明：
 bitstream 的安装与加载
 ======================
 
-- bitstream 文件不随仓库分发（``bsp/meta-zedboard/files/bitstream/*.bin``
-  被 gitignore），构建时通过 ``ZEDBOARD_BITSTREAM`` 指向实际文件，默认路径为
-  ``bsp/meta-zedboard/files/bitstream/system.bit.bin``。
-- ``zedboard-plfw`` 把它安装到 ``/lib/firmware/system.bit.bin``。
+- bitstream 随 BSP 入库，以 gzip 压缩形式存放：
+  ``bsp/meta-zedboard/files/bitstream/system.bit.bin.gz``（约 364 KB，来源：
+  Digilent ZedBoard OOB 设计，原始文件约 3.9 MB）；构建时通过
+  ``ZEDBOARD_BITSTREAM`` 指定该压缩文件。
+- ``zedboard-plfw`` 在 ``do_install`` 时解压并安装为
+  ``/lib/firmware/system.bit.bin``，内容与原始 bitstream 完全一致。
 - 开机由 ``zedboard-pl.service`` 加载 ``zedboard-pl`` 模块，模块通过
   ``fpga_mgr_load()`` 把 bitstream 写入 ``fpga0``，完成后
   ``/sys/class/fpga_manager/fpga0/state`` 为 ``operating``。
