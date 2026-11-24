@@ -201,7 +201,7 @@ sub_feats:
 id: mcs
 name: MCS, Mixed Criticality System
 prompt: Enable the MCS virtualization stack
-machines: [qemu-aarch64, raspberrypi4-64, hi3093, ok3568, kp920, x86-64, hieulerpi1]
+machines: [qemu-aarch64, raspberrypi4-64, hi3093, ok3568, kp920, hieulerpi1]
 
 config:
   layers:
@@ -403,7 +403,7 @@ Please use the Full ID (e.g., -f system/debug).
 Trace:
   - Requested: mcs/mcs
   - Selected: mcs/mcs/xen (User Input)
-  - Constraint: xen requires machine [qemu-aarch64, x86-64]
+  - Constraint: xen requires machine [qemu-aarch64, kp920, phytium]
 ```
 
 ### Case 3: Mutually Exclusive Conflict
@@ -420,15 +420,15 @@ now `oebuild generate --list` prints the features tree grouped by category
 ```
 │ mcs
 │ - mcs/mcs                              hi3093, hieulerpi1, kp920, ok3568, phytium, qemu-aarch64,  │
-│                                        raspberrypi4-64, x86-64                                      │
+│                                        raspberrypi4-64                                             │
 │  - mcs/mcs/baremetal                     hi3093, hieulerpi1, kp920, ok3568, qemu-aarch64,             │
-│                                        raspberrypi4-64, x86-64                                      │
+│                                        raspberrypi4-64                                             │
 │  - mcs/mcs/jailhouse                     hi3093, kp920, ok3568, qemu-aarch64, raspberrypi4-64         │
 │  - mcs/mcs/xen                           kp920, phytium, qemu-aarch64                               │
 │  - mcs/mcs-rtos                         hi3093, hieulerpi1, kp920, ok3568, phytium, qemu-aarch64,  │
 │   - mcs/mcs-rtos/uniproton              hi3093, hieulerpi1, kp920, ok3568, phytium, qemu-aarch64,  │
-│                                        raspberrypi4-64, x86-64                                      │
+│                                        raspberrypi4-64                                             │
 │   - mcs/mcs-rtos/zephyr                hi3093, hieulerpi1, kp920, ok3568, phytium, qemu-aarch64,  │
-│                                        raspberrypi4-64, x86-64                                      │
+│                                        raspberrypi4-64                                             │
 │ - mcs/micrun                             kp920, phytium, qemu-aarch64
 ```
