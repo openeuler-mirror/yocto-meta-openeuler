@@ -1,0 +1,116 @@
+#!/bin/busybox sh
+# Updater init: receive a bzip2 wic image over TCP, write it to the SD card,
+# verify it by sha256 and reboot. Runs from kexec, so nothing on the card is
+# mounted while it is being overwritten.
+#
+# Parameters are passed on the kernel command line by zedboard-remote-update.py:
+#   upd_port    TCP port to listen on (default 9000)
+#   upd_dev     target block device; /dev/null means dry run
+#   upd_size    expected image size in bytes
+#   upd_sha     expected sha256 of the whole image
+#   upd_max     refuse streams larger than this (default 400 MB)
+#   upd_reboot  1 = reboot when done (dry run) or after a verified write
+export BB=/bin/busybox
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+
+$BB mkdir -p /proc /sys /dev /tmp /run /mnt /bin /sbin
+$BB --install -s /bin
+$BB ln -sf busybox /bin/sh
+$BB ln -sf busybox /bin/ash
+
+$BB mount -t proc proc /proc 2>/dev/null
+$BB mount -t sysfs sysfs /sys 2>/dev/null
+$BB mount -t devtmpfs devtmpfs /dev 2>/dev/null
+[ -e /dev/null ] || $BB mknod /dev/null c 1 3
+[ -e /dev/console ] || $BB mknod /dev/console c 5 1
+
+for x in $($BB cat /proc/cmdline 2>/dev/null); do
+	case "$x" in
+	upd_*=*) export "$x" ;;
+	esac
+done
+: "${upd_port:=9000}"
+: "${upd_dev:=/dev/null}"
+: "${upd_timeout:=300}"
+: "${upd_max:=400000000}"
+STREAM=/tmp/stream.bin
+
+say() { echo "[updater] $*" > /dev/console; }
+fail() { say "ERROR: $*"; }
+
+say "device=$upd_dev port=$upd_port size=${upd_size:-?} sha=${upd_sha:-?}"
+
+$BB ifconfig eth0 up || fail "cannot bring eth0 up"
+for _ in 1 2 3 4 5 6 7 8 9 10; do
+	[ "$($BB cat /sys/class/net/eth0/carrier 2>/dev/null)" = "1" ] && break
+	$BB sleep 1
+done
+$BB ifconfig eth0 192.168.7.2 netmask 255.255.255.0 || fail "ifconfig addr failed"
+$BB ifconfig eth0 > /dev/console 2>&1
+
+say "listening on 192.168.7.2:$upd_port"
+
+while :; do
+	rm -f "$STREAM"
+	$BB nc -l -p "$upd_port" </dev/null > "$STREAM" &
+	rx_pid=$!
+
+	last=0
+	idle=0
+	while kill -0 "$rx_pid" 2>/dev/null; do
+		$BB sleep 1
+		sz=$($BB stat -c %s "$STREAM" 2>/dev/null || echo 0)
+		if [ "$sz" -gt "$last" ]; then
+			last=$sz
+			idle=0
+		else
+			idle=$((idle + 1))
+		fi
+		# A stalled or oversized stream is never written to the card.
+		if [ "$idle" -ge 60 ] || [ "$sz" -gt "$upd_max" ]; then
+			kill "$rx_pid" 2>/dev/null
+			say "transfer stalled/oversized (${sz} bytes), aborting without touching SD"
+			break
+		fi
+	done
+	wait "$rx_pid" 2>/dev/null
+
+	# Validate the archive in RAM before the first write: a truncated or
+	# corrupt transfer must not leave a half-written card behind.
+	if [ ! -s "$STREAM" ] || ! $BB bzip2 -t "$STREAM" 2>/dev/null; then
+		say "no/invalid image received, waiting for retry"
+		$BB sleep 1
+		continue
+	fi
+	say "received $last bytes, archive OK"
+
+	if [ "$upd_dev" = "/dev/null" ]; then
+		say "dry-run stream consumed"
+		if [ "$upd_reboot" = "1" ]; then
+			say "rebooting"
+			$BB sync
+			$BB reboot -f
+		fi
+		break
+	fi
+
+	$BB bzip2 -dc "$STREAM" | $BB dd of="$upd_dev" bs=1M 2>/dev/null
+	rm -f "$STREAM"
+
+	if [ -n "$upd_size" ] && [ -n "$upd_sha" ]; then
+		got=$($BB dd if="$upd_dev" bs=512 count=$((upd_size / 512)) 2>/dev/null |
+			$BB sha256sum | $BB cut -d" " -f1)
+		if [ "$got" = "$upd_sha" ]; then
+			say "VERIFY OK ($got)"
+			$BB sync
+			say "rebooting"
+			$BB reboot -f
+		else
+			say "VERIFY FAIL got=$got want=$upd_sha, waiting for retry"
+		fi
+	fi
+done
+
+say "done, dropping to shell"
+$BB sync
+exec $BB sh
