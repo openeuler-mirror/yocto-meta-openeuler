@@ -100,7 +100,7 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 | giteeCommitter       | pull_request.user.login                     | pr提交者                                       |
 | comment              | comment.body                                | 评论内容                                       |
 | commitCount          | pull_request.commits                        | 此pr提交的commit数                             |
-| embeddedRemote       | https://gitee.com/openeuler/embedded-ci.git | 运行脚本需要的功能库                           |
+| embeddedRemote       | https://atomgit.com/openeuler/embedded-ci.git | 运行脚本需要的功能库                           |
 | embeddedBranch       | master                                      | 运行脚本需要的功能库分支名                     |
 | node                 | xxxx                                        | 运行任务的节点名                               |
 | giteeId              | xxxx                                        | 目标分支的管理者ID                             |
@@ -123,7 +123,7 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 
 | 变量名          | 变量值/默认值                               | 说明                                           |
 | --------------- | ------------------------------------------- | ---------------------------------------------- |
-| embeddedRemote  | https://gitee.com/openeuler/embedded-ci.git | 运行脚本需要的功能库                           |
+| embeddedRemote  | https://atomgit.com/openeuler/embedded-ci.git | 运行脚本需要的功能库                           |
 | embeddedBranch  | master                                      | 运行脚本需要的功能库分支名                     |
 | node            | xxxx                                        | 运行任务的节点名                               |
 | giteeId         | xxxx                                        | 目标分支的管理者ID                             |
@@ -149,7 +149,7 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 
 | 变量名          | 变量值/默认值                               | 说明                                           |
 | --------------- | ------------------------------------------- | ---------------------------------------------- |
-| embeddedRemote  | https://gitee.com/openeuler/embedded-ci.git | 运行脚本需要的功能库                           |
+| embeddedRemote  | https://atomgit.com/openeuler/embedded-ci.git | 运行脚本需要的功能库                           |
 | embeddedBranch  | master                                      | 运行脚本需要的功能库分支名                     |
 | node            | xxxx                                        | 运行任务的节点名                               |
 | giteeId         | xxxx                                        | 目标分支的管理者ID                             |
@@ -192,7 +192,7 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 
 - release llvm-toolchain
 
-  llvm版本发布，该流程会调用功能函数库中create_release功能来进行二进制版本发布，而版本发布平台为gitee上openEuler 源码仓。
+  llvm版本发布，该流程会调用功能函数库中create_release功能来进行二进制版本发布，而版本发布平台为atomgit上openEuler 源码仓。
 
 >注意：运行节点调用的容器镜像为swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-sdk-ci
 
@@ -200,7 +200,7 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 
 | 变量名               | 变量值/默认值                               | 说明                                           |
 | -------------------- | ------------------------------------------- | ---------------------------------------------- |
-| embeddedRemote       | https://gitee.com/openeuler/embedded-ci.git | 运行脚本需要的功能库                           |
+| embeddedRemote       | https://atomgit.com/openeuler/embedded-ci.git | 运行脚本需要的功能库                           |
 | embeddedBranch       | master                                      | 运行脚本需要的功能库分支名                     |
 | node                 | xxxx                                        | 运行任务的节点名                               |
 | giteeId              | xxxx                                        | 目标分支的管理者ID                             |
@@ -234,7 +234,7 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 
 - release nativesdk
 
-  nativesdk版本发布，该流程会调用功能函数库中create_release功能来进行二进制版本发布，而版本发布平台为gitee上openEuler 源码仓。
+  nativesdk版本发布，该流程会调用功能函数库中create_release功能来进行二进制版本发布，而版本发布平台为atomgit上openEuler 源码仓。
 
 >注意：运行节点调用的容器镜像为swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-ci-test
 
@@ -242,7 +242,7 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 
 | 变量名               | 变量值/默认值                               | 说明                                           |
 | -------------------- | ------------------------------------------- | ---------------------------------------------- |
-| embeddedRemote       | https://gitee.com/openeuler/embedded-ci.git | 运行脚本需要的功能库                           |
+| embeddedRemote       | https://atomgit.com/openeuler/embedded-ci.git | 运行脚本需要的功能库                           |
 | embeddedBranch       | master                                      | 运行脚本需要的功能库分支名                     |
 | node                 | xxxx                                        | 运行任务的节点名                               |
 | giteeId              | xxxx                                        | 目标分支的管理者ID                             |
@@ -284,7 +284,7 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 
 - release gcc-toolchain
 
-  gcc版本发布，该流程会调用功能函数库中create_release功能来进行二进制版本发布，而版本发布平台为gitee上openEuler 源码仓。
+  gcc版本发布，该流程会调用功能函数库中create_release功能来进行二进制版本发布，而版本发布平台为atomgit上openEuler 源码仓。
 
 >注意：运行节点调用的容器镜像为swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-sdk-ci
 
@@ -292,7 +292,7 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 
 | 变量名               | 变量值/默认值                               | 说明                                           |
 | -------------------- | ------------------------------------------- | ---------------------------------------------- |
-| embeddedRemote       | https://gitee.com/openeuler/embedded-ci.git | 运行脚本需要的功能库                           |
+| embeddedRemote       | https://atomgit.com/openeuler/embedded-ci.git | 运行脚本需要的功能库                           |
 | embeddedBranch       | master                                      | 运行脚本需要的功能库分支名                     |
 | node                 | xxxx                                        | 运行任务的节点名                               |
 | giteeId              | xxxx                                        | 目标分支的管理者ID                             |
