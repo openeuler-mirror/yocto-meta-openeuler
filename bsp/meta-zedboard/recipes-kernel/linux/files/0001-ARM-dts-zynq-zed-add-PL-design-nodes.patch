@@ -1,0 +1,197 @@
+ARM: dts: zynq-zed: add PS peripheral and board I/O nodes
+
+Enable the PS I2C/SPI controllers, pin the GEM MAC address and describe
+the board I/O that only depends on PS EMIO GPIOs: the user LEDs, the
+slide switches, the on-board OLED (bit-banged SPI) and the PL bitstream
+loader device.
+
+--- a/arch/arm/boot/dts/zynq-zed.dts	2026-11-23 23:21:13.910016317 +0800
++++ b/arch/arm/boot/dts/zynq-zed.dts	2026-11-24 00:52:31.545879323 +0800
+@@ -5,6 +5,8 @@
+  */
+ /dts-v1/;
+ #include "zynq-7000.dtsi"
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/input/linux-event-codes.h>
+ 
+ / {
+ 	model = "Avnet ZedBoard board";
+@@ -34,12 +36,14 @@
+ 
+ &clkc {
+ 	ps-clk-frequency = <33333333>;
++	fclk-enable = <0xf>;
+ };
+ 
+ &gem0 {
+ 	status = "okay";
+ 	phy-mode = "rgmii-id";
+ 	phy-handle = <&ethernet_phy>;
++	local-mac-address = [00 0a 35 00 01 22];
+ 
+ 	ethernet_phy: ethernet-phy@0 {
+ 		reg = <0>;
+@@ -60,3 +64,162 @@
+ 	dr_mode = "host";
+ 	usb-phy = <&usb_phy0>;
+ };
++
++&i2c0 {
++	status = "okay";
++};
++
++&i2c1 {
++	status = "okay";
++};
++
++&spi0 {
++	status = "okay";
++};
++
++&spi1 {
++	status = "okay";
++};
++
++/*
++ * Peripherals below only rely on PS EMIO GPIOs / PS controllers, so they are
++ * safe to describe regardless of the PL state. The vendor bitstream (which
++ * routes the EMIO lines to the board pins) is programmed from Linux by
++ * zedboard-pl.service.
++ */
++/ {
++
++	/*
++	 * User LEDs (LD0-LD7) and slide switches (SW0-SW7) of the reference
++	 * design are routed through PS EMIO GPIO lines 61-68 (outputs) and
++	 * 69-76 (inputs).
++	 */
++	leds {
++		compatible = "gpio-leds";
++
++		led0 {
++			label = "ld0";
++			gpios = <&gpio0 61 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		led1 {
++			label = "ld1";
++			gpios = <&gpio0 62 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		led2 {
++			label = "ld2";
++			gpios = <&gpio0 63 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		led3 {
++			label = "ld3";
++			gpios = <&gpio0 64 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		led4 {
++			label = "ld4";
++			gpios = <&gpio0 65 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		led5 {
++			label = "ld5";
++			gpios = <&gpio0 66 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		led6 {
++			label = "ld6";
++			gpios = <&gpio0 67 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++
++		led7 {
++			label = "ld7";
++			gpios = <&gpio0 68 GPIO_ACTIVE_HIGH>;
++			default-state = "off";
++		};
++	};
++
++	gpio-keys {
++		compatible = "gpio-keys";
++
++		sw0 {
++			label = "sw0";
++			gpios = <&gpio0 69 GPIO_ACTIVE_HIGH>;
++			linux,code = <BTN_0>;
++		};
++
++		sw1 {
++			label = "sw1";
++			gpios = <&gpio0 70 GPIO_ACTIVE_HIGH>;
++			linux,code = <BTN_1>;
++		};
++
++		sw2 {
++			label = "sw2";
++			gpios = <&gpio0 71 GPIO_ACTIVE_HIGH>;
++			linux,code = <BTN_2>;
++		};
++
++		sw3 {
++			label = "sw3";
++			gpios = <&gpio0 72 GPIO_ACTIVE_HIGH>;
++			linux,code = <BTN_3>;
++		};
++
++		sw4 {
++			label = "sw4";
++			gpios = <&gpio0 73 GPIO_ACTIVE_HIGH>;
++			linux,code = <BTN_4>;
++		};
++
++		sw5 {
++			label = "sw5";
++			gpios = <&gpio0 74 GPIO_ACTIVE_HIGH>;
++			linux,code = <BTN_5>;
++		};
++
++		sw6 {
++			label = "sw6";
++			gpios = <&gpio0 75 GPIO_ACTIVE_HIGH>;
++			linux,code = <BTN_6>;
++		};
++
++		sw7 {
++			label = "sw7";
++			gpios = <&gpio0 76 GPIO_ACTIVE_HIGH>;
++			linux,code = <BTN_7>;
++		};
++	};
++
++	/*
++	 * PL bitstream loader: zedboard-pl takes the manager from the
++	 * fpga-mgr phandle and loads /lib/firmware/system.bit.bin.
++	 */
++	zedboard_pl {
++		compatible = "oe,zedboard-pl";
++		fpga-mgr = <&devcfg>;
++		firmware-name = "system.bit.bin";
++	};
++
++	/*
++	 * On-board OLED (SSD1306, 128x32) driven through PS EMIO GPIOs by
++	 * the bit-banged SPI driver (see recipes-kernel/pmodoled-gpio).
++	 */
++	zed_oled {
++		compatible = "dglnt,pmodoled-gpio";
++		vbat-gpio = <&gpio0 55 GPIO_ACTIVE_HIGH>;
++		vdd-gpio = <&gpio0 56 GPIO_ACTIVE_HIGH>;
++		res-gpio = <&gpio0 57 GPIO_ACTIVE_HIGH>;
++		dc-gpio = <&gpio0 58 GPIO_ACTIVE_HIGH>;
++		spi-sclk-gpio = <&gpio0 59 GPIO_ACTIVE_HIGH>;
++		spi-sdin-gpio = <&gpio0 60 GPIO_ACTIVE_HIGH>;
++		spi-speed-hz = <600000>;
++	};
++};
+\ No newline at end of file
