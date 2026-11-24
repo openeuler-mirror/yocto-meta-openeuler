@@ -1,4 +1,4 @@
-FROM openeuler/openeuler:23.09
+FROM hub.oepkgs.net/openeuler/openeuler:23.09
 
 # RUN sed -i "s#http://repo.openeuler.org#https://repo.huaweicloud.com/openeuler#g" /etc/yum.repos.d/openEuler.repo
 
