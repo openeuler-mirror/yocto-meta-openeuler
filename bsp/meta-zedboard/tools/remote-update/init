@@ -75,14 +75,28 @@ while :; do
 	done
 	wait "$rx_pid" 2>/dev/null
 
-	# Validate the archive in RAM before the first write: a truncated or
-	# corrupt transfer must not leave a half-written card behind.
-	if [ ! -s "$STREAM" ] || ! $BB bzip2 -t "$STREAM" 2>/dev/null; then
-		say "no/invalid image received, waiting for retry"
+	# bzip2 -t only proves the container is intact. Hash the decompressed
+	# stream and compare it with the host before the first write, so a
+	# wrong image (other board, stale build) never reaches the card.
+	if [ ! -s "$STREAM" ]; then
+		say "no image received, waiting for retry"
 		$BB sleep 1
 		continue
 	fi
-	say "received $last bytes, archive OK"
+	if [ -n "$upd_sha" ] && [ -n "$upd_size" ]; then
+		say "verifying image sha256 before writing"
+		got=$($BB bzip2 -dc "$STREAM" 2>/dev/null | $BB sha256sum |
+			$BB cut -d" " -f1)
+		if [ "$got" != "$upd_sha" ]; then
+			say "SHA256 MISMATCH got=$got want=$upd_sha, not writing SD"
+			continue
+		fi
+		say "received $last bytes, sha256 OK"
+	elif ! $BB bzip2 -t "$STREAM" 2>/dev/null; then
+		say "invalid image received, waiting for retry"
+		$BB sleep 1
+		continue
+	fi
 
 	if [ "$upd_dev" = "/dev/null" ]; then
 		say "dry-run stream consumed"
@@ -98,6 +112,11 @@ while :; do
 	rm -f "$STREAM"
 
 	if [ -n "$upd_size" ] && [ -n "$upd_sha" ]; then
+		# Flush the device page cache before reading back, otherwise the
+		# readback can hit the pages just written instead of the card.
+		$BB sync
+		$BB blockdev --flushbufs "$upd_dev" 2>/dev/null ||
+			echo 3 > /proc/sys/vm/drop_caches
 		got=$($BB dd if="$upd_dev" bs=512 count=$((upd_size / 512)) 2>/dev/null |
 			$BB sha256sum | $BB cut -d" " -f1)
 		if [ "$got" = "$upd_sha" ]; then
