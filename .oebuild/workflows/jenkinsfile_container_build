@@ -1,0 +1,66 @@
+// Build and publish the openeuler-container image for openEuler-24.03-LTS.
+// Based on master's jenkinsfile_container_build. Branch adaptation:
+//   IMAGE_TAG defaults to the 24.03-lts release tag when the Jenkins job
+//   does not pass one; a job parameter IMAGE_TAG always takes precedence.
+def BUILD_COM
+def IMAGE_TAG
+def REGISTRY   = "swr.cn-north-4.myhuaweicloud.com"
+
+pipeline {
+    agent any
+    environment {
+        PATH = "/home/jenkins/.local/bin:${env.PATH}"
+    }
+    stages {
+        stage("init task"){
+            steps{
+                dir("${env.WORKSPACE}"){
+                    stash(name: "scm")
+                }
+                script{
+                    node("${node}"){
+                        dir("/home/jenkins/agent/scm"){
+                            unstash(name: "scm")
+                            BUILD_COM = load '.oebuild/workflows/build_common.groovy'
+                            def INIT_ENV = load '.oebuild/workflows/init_env.groovy'
+                            INIT_ENV.init_environment()
+                            if (env.IMAGE_TAG == null || env.IMAGE_TAG == "") {
+                                IMAGE_TAG = "${REGISTRY}/openeuler-embedded/openeuler-container:24.03-lts"
+                            } else {
+                                IMAGE_TAG = env.IMAGE_TAG
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage("build and push image"){
+            steps{
+                script{
+                    node("${node}"){
+                        // re-land the sources: the label may resolve to a
+                        // different agent than the init stage, and stale
+                        // files must not leak into the build context
+                        sh 'rm -rf /home/jenkins/agent/scm'
+                        dir("/home/jenkins/agent/scm"){
+                            unstash(name: "scm")
+                            sh "docker build --no-cache -t ${IMAGE_TAG} -f .oebuild/dockerfile/openeuler-container/Dockerfile ."
+                        }
+                        // push from the same node so the local image is found
+                        withCredentials([
+                            usernamePassword(credentialsId: 'docker-upload',
+                                             passwordVariable: 'DOCKER_PASSWORD',
+                                             usernameVariable: 'DOCKER_USERNAME')
+                        ]){
+                            sh """
+                                echo \$DOCKER_PASSWORD | docker login ${REGISTRY} -u \$DOCKER_USERNAME --password-stdin
+                                docker push ${IMAGE_TAG}
+                                docker logout ${REGISTRY}
+                            """
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

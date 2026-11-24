@@ -308,3 +308,25 @@ workflows承载着整个openEuler Embedded基础设施相关的自动化控制�
 | pull_action          | $.action                                    | pr的行为，例如已合入，等待合入等               |
 | pr_title             | pull_request.title                          | pr标题                                         |
 
+
+
+## jenkinsfile_container_build
+
+该脚本用于构建并发布 openeuler-container 容器镜像，在流水线工程中手动或定时触发，其 stage 流程如下：
+
+- init task
+
+  将工作区代码 stash 后在构建节点上落地，加载 build_common.groovy 与 init_env.groovy 完成环境初始化。若流水线未传入 IMAGE_TAG 参数，默认使用 swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:24.03-lts。
+
+- build and push image
+
+  先清理并重新落地源码（node 标签可能解析到与 init task 不同的 agent，同一 agent 也可能残留旧构建的文件），然后使用 .oebuild/dockerfile/openeuler-container/Dockerfile 构建镜像（--no-cache），最后在同一 node 上用 docker-upload 凭据登录 SWR 推送镜像并登出，确保推送的镜像一定构建于当前节点。
+
+所需外部变量：
+
+| 变量 | 必填 | 说明 |
+| --- | --- | --- |
+| node | 是 | 构建节点标签 |
+| IMAGE_TAG | 否 | 目标镜像完整 tag，未传时默认为 24.03-lts 发布镜像 |
+
+所需凭据：docker-upload（SWR 镜像仓库的推送凭据）。
