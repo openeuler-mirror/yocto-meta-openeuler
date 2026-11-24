@@ -13,6 +13,10 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;m
 inherit module
 require mcs-resources-overlay.inc
 
+# MCS runs only on aarch64 hosts; the x86 client tree and its i210
+# network driver were removed.
+COMPATIBLE_HOST = "aarch64.*-linux"
+
 ### Build metadata: SRC_URI, SRCDATA, S, B, FILESEXTRAPATHS....
 PV = "0.0.1"
 OPENEULER_LOCAL_NAME = "mcs"
