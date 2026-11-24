@@ -1,0 +1,26 @@
+#!/bin/sh
+# Cycle the eight ZedBoard user LEDs: one on at a time, moving each step.
+# usage: zed-marquee [steps] [delay_seconds]
+#        steps = 0 runs until killed
+steps=${1:-16}
+delay=${2:-1}
+all_off() {
+    for j in 0 1 2 3 4 5 6 7; do
+        echo 0 > /sys/class/leds/ld$j/brightness 2>/dev/null
+    done
+}
+trap 'all_off; exit 0' TERM INT
+i=0
+while :; do
+    all_off
+    echo 1 > /sys/class/leds/ld$i/brightness
+    sleep "$delay"
+    i=$(( (i + 1) % 8 ))
+    if [ "$steps" -ne 0 ]; then
+        steps=$((steps - 1))
+        [ "$steps" -le 0 ] && break
+    fi
+done
+all_off
+[ "$steps" -ne 0 ] && echo "marquee done"
+exit 0

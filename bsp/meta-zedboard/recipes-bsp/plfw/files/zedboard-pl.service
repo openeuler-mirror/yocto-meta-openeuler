@@ -1,0 +1,16 @@
+[Unit]
+Description=Program ZedBoard PL bitstream and start the OLED driver
+After=systemd-udevd.service
+ConditionPathExists=/lib/firmware/system.bit.bin
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# zedboard-pl loads the bitstream through the FPGA manager, pmodoled-gpio
+# must run afterwards because the panel is wired through PS EMIO GPIOs that
+# only reach the pins once the PL is configured.
+ExecStart=-/sbin/modprobe zedboard-pl
+ExecStart=-/sbin/modprobe pmodoled-gpio
+
+[Install]
+WantedBy=multi-user.target

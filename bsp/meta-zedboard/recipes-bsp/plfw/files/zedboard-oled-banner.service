@@ -1,0 +1,14 @@
+[Unit]
+Description=Show openEuler Embedded banner on the ZedBoard OLED
+After=zedboard-pl.service
+ConditionPathExists=/dev/zed_oled
+ConditionPathExists=/usr/share/zedboard/oled-banner.bin
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# The panel mirrors horizontally, the banner bitmap is pre-flipped
+ExecStart=/bin/sh -c "cat /usr/share/zedboard/oled-banner.bin > /dev/zed_oled"
+
+[Install]
+WantedBy=multi-user.target
