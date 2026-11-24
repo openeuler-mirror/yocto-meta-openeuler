@@ -38,7 +38,7 @@ RUN echo "umask 022" >> /etc/bashrc
 
 USER openeuler
 
-ARG openeuler_repo=https://gitee.com/openeuler/yocto-meta-openeuler
+ARG openeuler_repo=https://atomgit.com/openeuler/yocto-meta-openeuler
 ARG openeuler_base_version=24.03-LTS
 
 # download nativesdk release and install it
@@ -115,16 +115,16 @@ RUN sudo chmod -R 777 /opt/buildtools/nativesdk/sysroots/x86_64-openeulersdk-lin
 RUN chmod -R 755 /usr1/openeuler/llvm/
 
 # Configure pip to use Chinese mirror for better connectivity
-RUN mkdir -p /etc/pip.conf.d && \
-    echo '[global]' > /etc/pip.conf && \
-    echo 'index-url = https://pypi.tuna.tsinghua.edu.cn/simple' >> /etc/pip.conf && \
-    echo 'trusted-host = pypi.tuna.tsinghua.edu.cn' >> /etc/pip.conf
+# (needs root: writing to /etc while the active USER is openeuler)
+RUN echo '[global]' | sudo tee /etc/pip.conf > /dev/null && \
+    echo 'index-url = https://pypi.tuna.tsinghua.edu.cn/simple' | sudo tee -a /etc/pip.conf > /dev/null && \
+    echo 'trusted-host = pypi.tuna.tsinghua.edu.cn' | sudo tee -a /etc/pip.conf > /dev/null
 
 # Pre-install Python dependencies used by oebuild inside the container
-RUN pip3 install pyyaml GitPython
+RUN sudo pip3 install pyyaml GitPython
 
 WORKDIR /home/${user}
 
 RUN rm -rf /opt/buildtools/nativesdk/sdk_info
 # install necessary python package because Optee-os need this package involve during compile
-RUN pip3 install cryptography -i https://pypi.tuna.tsinghua.edu.cn/simple
+RUN sudo pip3 install cryptography -i https://pypi.tuna.tsinghua.edu.cn/simple
