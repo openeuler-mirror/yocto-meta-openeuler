@@ -1,14 +1,17 @@
 # AI Agent 技能库 (Skills)
 
-此目录包含了专为 AI Agent（如 Claude Code、Gemini CLI、OpenCode 等）设计的
-技能插件，用于自动化 yocto-meta-openeuler 编译链项目的开发工作流。每个技能
-都定义了精准的触发条件（Description），并提供了执行复杂任务所需的工具和上下文。
+本目录包含 yocto-meta-openeuler 仓库的 AI Agent 技能（遵循 Agent Skills 标准），
+配套的专业 Agent 定义在 [../agents/](../agents/)。每个技能通过 frontmatter 的
+`description` 声明触发条件，并附带执行所需的脚本与参考资料。
+
+本文件中的技能清单是**唯一清单来源**；`intro` 技能只做导航与推荐，不再重复
+列表。
 
 ## 技能清单
 
 | 技能名称 | 分类 | 一句话描述 | 主要触发场景 (Triggers) |
 | --- | --- | --- | --- |
-| [intro](intro) | 引导 | 所有 skill 的统一导航入口，按仓库状态推荐技能 | 「介绍」「有哪些功能」「help」「入门」「intro」等。 |
+| [intro](intro) | 引导 | 技能导航入口，按仓库状态推荐技能 | 「介绍」「有哪些功能」「help」「入门」「intro」等。 |
 | [oebuild](oebuild) | 构建 | openEuler Embedded 构建全流程与容器环境管理 | oebuild init/update/generate/bitbake/runqemu，Docker 容器、compile.yaml 配置。 |
 | [yocto-openeuler-recipe](yocto-openeuler-recipe) | 构建 | BitBake recipe 新增/更新/分析，openEuler 源码适配 | 新增/更新 recipe 与 bbappend，SRC_URI file:// 适配、补丁合并。 |
 | [yocto-openeuler-patch-analysis](yocto-openeuler-patch-analysis) | 构建 | 多来源补丁分析与融合（src-openeuler + yocto + 本层），配合 yocto-openeuler-recipe | 补丁分类/取舍、冲突/重复/死补丁检测、patch-fuzz 消除、do_patch 顺序与验证。 |
@@ -19,35 +22,49 @@
 | [serial-ssh-debug](serial-ssh-debug) | 测试/调试 | 真机板卡串口登录调试与 SSH 登录调试，串口托底判启动链与网络就绪，网络可用时切 SSH | 串口登录、ttyUSB、板子连不上、TF-A/U-Boot 启动日志、SSH 登录、板上验证、网络就绪判定。 |
 | [send-pr](send-pr) | 工作流 | 向 AtomGit 上游仓库提交 PR | 从 upstream 建分支、cherry-pick、推送 fork、ag-cli 创建并验证 PR。 |
 | [branch-infra-adapt](branch-infra-adapt) | 工作流 | 拉取新版本分支并适配分支基础设施 | 「拉 XX 分支」「适配基础设施」「版本分支工程适配」：env.yaml 容器标签、samples 镜像名、init_env 参数、镜像脚本克隆分支、Dockerfile 基础镜像同步及 PR 提交。 |
-| [toolchain-git-flow](toolchain-git-flow) | 工作流 | Git 提交与推送全流程，强制 DCO/gitlint 规范 | 提交代码、推送、检查提交信息、修复 gitlint 报错。 |
+| [toolchain-git-flow](toolchain-git-flow) | 工作流 | Git 提交与推送全流程（适用于全仓库），强制 DCO/gitlint 规范 | 提交代码、推送、检查提交信息、修复 gitlint 报错。 |
 | [git-commit](git-commit) | 工作流 | commit message 格式与写作规范 | 标题/正文/签名、Co-Authored-By AI 元数据、单一逻辑变更拆分。 |
 | [toolchain-architecture](toolchain-architecture) | 知识 | 编译链目录结构、oebuild 集成与向后兼容设计 | 目录结构、符号链接、容器镜像设计、工作原理。 |
 
 > 各技能的详细触发关键词见各自 `SKILL.md` 的 `description` 字段。
 
+## 专业 Agent
+
+位于 [../agents/](../agents/)。用于深度诊断：客户端支持 subagent 时按 frontmatter
+调用，否则把 `.agent.md` 正文作为提示词使用。
+
+| Agent | 职责 |
+| --- | --- |
+| [recipe-analyzer](../agents/recipe-analyzer.agent.md) | recipe/bbclass/变量溯源静态分析 |
+| [rootfs-expert](../agents/rootfs-expert.agent.md) | rootfs 构建与 image 生成 |
+| [kernel-debugger](../agents/kernel-debugger.agent.md) | 内核启动/panic/设备树调试 |
+| [sstate-optimizer](../agents/sstate-optimizer.agent.md) | sstate 缓存与构建性能 |
+
 ---
 
 ## 如何增加新技能
 
-若要向本项目添加新技能，请遵循以下步骤：
-
-1. 在 `.agents/skills/` 下创建一个新目录。
-2. 添加 `SKILL.md` 文件，确保 `description` 字段采用 **if-then** 条件触发风格
-   （包含中英双语关键词）。
-3. 编写技能所需的配套脚本（Python/Bash）或库文件。
-4. 更新此 `README.md` 文件，将新技能添加到清单表格中。
+1. 在 `.agents/skills/` 下创建目录 `<skill-name>/`（小写字母、数字、连字符）。
+2. 添加 `SKILL.md`：frontmatter 必须含 `name`（与目录名一致）与 `description`
+   （"当…时使用"+ 中英双语关键词，**不超过 1024 字符**）；可选 `argument-hint`。
+3. 主体只写流程与判定标准。长案例与环境细节放到同目录的 `reference.md`（按需
+   加载，见 `serial-ssh-debug`、`yocto-openeuler-patch-analysis` 的写法），
+   可执行脚本放到 `scripts/`，正文里用相对技能目录的路径引用。
+4. 更新本文件的技能清单表格。`intro` 不需要同步（它指向本文件）。
 
 ### SKILL.md 格式
 
 ```yaml
 ---
 name: <skill-name>
-description: "<if-then trigger description with bilingual keywords>"
+description: "<当…时使用 + 中英双语关键词>"
+# 可选
+argument-hint: "<一句话示例>"
 ---
 
 # <Skill Title>
 
-<skill body: instructions, execution steps, troubleshooting, etc.>
+<流程、判定标准、故障排查；细节引用 reference.md / scripts/>
 ```
 
 ### 命名与拆分原则
@@ -63,10 +80,9 @@ description: "<if-then trigger description with bilingual keywords>"
 
 ## AtomGit 集成
 
-本仓库远端为 AtomGit（atomgit.com），上游 PR 通过 `ag-cli` 创建。
-远端配置因开发者而异，操作前用 `git remote -v` 确认（`upstream` 指主仓库，
-个人 fork 远端名与用户名因人而异）。完整 PR 流程见
-[send-pr 技能](send-pr/SKILL.md)。
+本仓库远端为 AtomGit（atomgit.com），上游 PR 通过 `ag-cli` 创建。远端配置因
+开发者而异，操作前用 `git remote -v` 确认（`upstream` 指主仓库，个人 fork 远端
+名与用户名因人而异）。完整 PR 流程见 [send-pr 技能](send-pr/SKILL.md)。
 
 所有符合 Agent Skills 标准的客户端都会自动扫描 `.agents/skills/`，
 详见 [agentskills.io](https://agentskills.io)。

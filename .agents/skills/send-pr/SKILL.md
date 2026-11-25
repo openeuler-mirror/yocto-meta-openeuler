@@ -50,6 +50,8 @@ git cherry-pick <sha1> <sha2> ...
 
 ### 第 3 步 — 推送到 fork
 
+推送分支与创建 PR 都是对外可见的操作，执行前先与用户确认。
+
 将分支推送到个人 fork（远端名因人而异，此处以 `myrepo` 为例）：
 
 ```bash
@@ -137,9 +139,8 @@ Created PR #123: https://atomgit.com/openeuler/yocto-meta-openeuler/pull/123
 <如何验证改动正确>
 
 ### 当前PR是否有AI参与:
-- [ ]  否
-
-- [x]  是
+[]  否
+[x]  是
 __1. Agent平台信息: <Agent平台名称及版本>
 __2. 模型信息: <AI模型名称及版本>
 __3. Prompt摘要: <核心提示词或核心意图>
@@ -148,14 +149,14 @@ __3. Prompt摘要: <核心提示词或核心意图>
 1. 代码由AI辅助开发者编写，且开发者已人工逐行核对逻辑、校验功能正确性，且与开发者预期一致；
 ```
 
+> 以上 `[]`/`[x]` 写法与 `__1.`/`__2.`/`__3.` 前缀均照抄社区规范原文
+> （<https://www.openeuler.openatom.cn/zh/community/ai-coding-assistants/>），
+> 不要改成 Markdown 列表或去掉下划线。
+
 **Commit Message 元数据：**
 
-AI 协助生成的提交必须在 Footer 中追加（`Signed-off-by` 仍为最后一行），
-模型名称及版本与 PR 元数据一致，取**本次提交动态确定**的当前会话模型：
-
-```
-Co-Authored-By: <本次提交实际使用的AI模型名称及版本>
-```
+Commit Message 侧同样追加 `Co-Authored-By`（`Signed-off-by` 仍为最后一行），
+模型信息与 PR 披露的一致；写法见 [git-commit 技能](../git-commit/SKILL.md)。
 
 ---
 
@@ -202,6 +203,5 @@ git checkout master
 - [ ] PR 描述包含：背景、改动说明、影响范围、测试建议
 - [ ] PR 描述包含 AI 参与声明与 Agent 元数据（Agent平台信息**含版本号**、模型信息、Prompt摘要，均为本次动态确定）
 - [ ] PR 披露的模型信息与 Commit Message 的 `Co-Authored-By` **一致**（门禁要求）
-- [ ] 模型信息为**本次提交动态确定**（非历史 commit / 文档示例照抄）
 - [ ] Commit Message 包含 `Co-Authored-By`（AI 协助生成时）
 - [ ] PR 创建后已切回 master

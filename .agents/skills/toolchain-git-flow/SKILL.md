@@ -19,7 +19,8 @@ openEuler Embedded 提交规范（DCO sign-off + gitlint 规则）。
 1. 仔细检查 `git status` 输出。
 2. 使用 `git add <具体路径>` 暂存相关文件，不要从仓库根目录 `git add .`。
 3. 如果出现与当前任务无关的已修改文件，跳过它们，除非用户明确要求包含。
-4. `work/` 和 `output/` 目录已加入 `.gitignore`，不应出现在暂存区。
+- `work/` 和 `output/` 指 `.oebuild/toolchains/work|output/`，已加入 `.gitignore`，
+  不应出现在暂存区。
 
 ### 1. 提交信息格式
 
@@ -34,7 +35,7 @@ openEuler Embedded 提交规范（DCO sign-off + gitlint 规则）。
 ```
 
 - **标题 (<area>: <subject>)**：
-  - 格式：`<module>: <brief description>`（如 `menu: move output dir to toolchains/output`）
+  - 格式：`<area>: <subject>`（如 `menu: move output dir to toolchains/output`）
   - 长度限制：非 revert 提交最多 80 字符，revert 提交最多 102 字符
   - subject 至少 2 个单词，末尾无标点
   - 冒号后恰好一个空格
@@ -53,6 +54,7 @@ openEuler Embedded 提交规范（DCO sign-off + gitlint 规则）。
   - 标签首字母大写，冒号后一个空格
   - `Fixes` 格式：`Fixes: <12-char-SHA1>(<original-commit-title>)`
   - `Closes` 格式：`Closes: https://gitee.com/openeuler/<repo>/pull/<NUM>`
+    （门禁规则当前仍限定 gitee 前缀）
 
 ### 2. AI 元数据（Co-Authored-By）
 
@@ -71,15 +73,20 @@ openEuler Embedded 提交规范（DCO sign-off + gitlint 规则）。
   - 个人 fork：远端名（常见 `origin`、`myrepo`）与用户名因人而异，
     下文以 `<fork远端名>` 指代
 - **gitlint 验证**：提交后运行 gitlint 检查（仓库已配置 `.gitlint` 和
-  `scripts/gitlint/openeuler_embedded_commit_rules.py`）。
+  `scripts/gitlint/openeuler_embedded_commit_rules.py`）。手动检查
+  `gitlint --msg-filename /tmp/msg.txt`（或对已暂存改动 `gitlint --staged`）；
+  本克隆已装 commit-msg hook，正常 `git commit` 会自动检查。
 
 ### 4. openEuler Embedded 特有规则
 
 仓库的 gitlint 规则文件（`.gitlint`）定义了以下额外检查：
+- title 至少 2 个词、冒号后恰好一个空格、结尾不带标点
 - body 最少 15 字符
 - body 最多 100 行，footer 最多 20 行
 - body 和 footer 每行最多 100 字符
 - 不允许在 title 和 message 中出现中文字符
+- footer 不能有空行；`Co-developed-by` 必须紧跟 `Signed-off-by`，多余的
+  `Signed-off-by` 必须与 `Co-developed-by` 配对
 - `Closes` 标签前缀必须是 `https://gitee.com/openeuler/`
 
 ## 执行步骤
@@ -134,9 +141,8 @@ git log --oneline -5
      如果包含，提取 PR 编号。
    - **如果已有 PR**：PR 描述现在已过时，需要同步更新。分析 PR 中所有
      commit，重新生成完整的 PR 描述（中文），覆盖更新。
-   - **如果没有 PR**：按 [send-pr 技能](../send-pr/SKILL.md) 的 GitCode 流程
-     创建 PR（GitCode API，PR 标题与描述用中文，并包含 AI 参与声明与
-     Agent 元数据）。
+   - **如果没有 PR**：按 [send-pr 技能](../send-pr/SKILL.md) 的 ag-cli 流程
+     创建 PR（PR 标题与描述用中文，并包含 AI 参与声明与 Agent 元数据）。
 
 ## PR 描述要求
 
@@ -164,17 +170,3 @@ Git 提交人信息（`user.name` / `user.email`）由各开发者本地配置�
 git config user.name
 git config user.email
 ```
-
-## 何时使用
-
-- 用户要求提交代码
-- 用户要求推送 commit
-- 用户要求检查提交信息规范
-- 用户要求创建 PR 描述
-- 用户要求修复 gitlint 报错
-
-## 何时不使用
-
-- 查看文件内容（使用 Read 工具）
-- 搜索代码（使用 Grep/Glob 工具）
-- 构建编译链（使用 toolchain-build skill）
