@@ -13,6 +13,10 @@ oebuild 是一个基于 Python 的元工具，封装了 BitBake 并管理 openEu
 源码位置：`<workspace-root>/src/oebuild/`
 
 > `<workspace-root>` 表示 oebuild 工作区根目录，具体路径因开发者环境而异。
+>
+> 本文按 oebuild 0.2.x 编写；子命令与参数以 `oebuild --help` 为准，不同版本
+> 存在差异（例如新版源码已提示 `generate` 弃用、改用 `new`，而旧版本没有
+> `new`）。
 
 ---
 
@@ -29,7 +33,7 @@ oebuild 是一个基于 Python 的元工具，封装了 BitBake 并管理 openEu
 │   ├── yocto-meta-openembedded/        # 社区 meta 层
 │   └── yocto-meta-openeuler/           # openEuler Embedded 发行版层
 └── build/
-    └── qemu_arm64/                     # QEMU AArch64 构建目录
+    └── qemu-aarch64/                     # QEMU AArch64 构建目录
         ├── compile.yaml                # 由 oebuild bitbake 解析的构建配置
         └── .env                        # 会话间持久化的容器 ID
 ```
@@ -47,7 +51,7 @@ oebuild 是一个基于 Python 的元工具，封装了 BitBake 并管理 openEu
 
 ## 前置条件
 
-### 1. 激活 Python venv（每个 shell 会话一次）
+### 1. 激活 Python venv
 
 ```bash
 source <workspace-root>/.venv/bin/activate
@@ -60,7 +64,9 @@ which oebuild   # → <workspace-root>/.venv/bin/oebuild
 oebuild --version
 ```
 
-> **不要**在每条命令前重复 source venv。一次激活对整个会话有效。
+> 交互式 shell 里激活一次即可。但脚本与非交互执行（如 Agent 的每次工具调用）
+> 都是独立 shell，不会保留上一次的激活状态，需每条命令先 `source`，或加 PATH
+> 前缀：`PATH=<workspace-root>/.venv/bin:$PATH oebuild ...`。
 
 ### 2. Docker
 
@@ -150,7 +156,8 @@ oebuild generate
 # 直接生成
 oebuild generate -p qemu-aarch64 -f systemd -f openeuler-qt
 
-# 新版等价命令
+# 新版实现（源码树已提示 generate 弃用）；若 `oebuild new -h` 报
+# invalid choice，说明所用 oebuild 版本较旧，继续用 generate
 oebuild new -p qemu-aarch64
 ```
 
@@ -165,10 +172,13 @@ oebuild new -p qemu-aarch64
 | `-s` | `sstate_cache` | 宿主机 sstate-mirrors 路径 |
 | `-s_dir` | `sstate_dir` | sstate-cache 存放位置 |
 | `-m` | `tmp_dir` | `tmp/` 构建输出位置 |
-| `-tag` | `--docker_tag` | 覆盖 Docker 镜像标签 |
 | `-d` | build directory | 构建目录名（默认 = 平台名） |
 | `-l` | `--list` | 列出支持的平台和特性 |
-| `-df` | `disable_fetch` | 禁用 `openeuler_fetch`（改用 yocto DL_DIR） |
+| `-nf` | `--no_fetch` | 禁用 `openeuler_fetch`（改用 yocto DL_DIR） |
+| `-lt` | `--llvm_toolchain_dir` | 外部 LLVM 工具链路径 |
+
+Docker 镜像标签不在 `generate` 上覆盖：用 `oebuild update docker [-tag <tag>]`，
+或在 `compile.yaml` 的 `docker_param.image` 里指定。
 
 输出：`build/<platform>/compile.yaml`
 
@@ -177,7 +187,7 @@ oebuild new -p qemu-aarch64
 在 Docker 容器内构建。**必须在包含 `compile.yaml` 的构建目录中执行**：
 
 ```bash
-cd <workspace-root>/build/qemu_arm64
+cd <workspace-root>/build/qemu-aarch64
 oebuild bitbake <target>
 ```
 
@@ -225,10 +235,13 @@ oebuild bitbake openeuler-image-tiny --with-docker-image=my-image:tag
 #### 停止正在运行的构建
 
 ```bash
+docker ps                     # 先确认容器名
 docker exec <container_name> bash -c "pkill -f bitbake; pkill -f cooker"
-# 查找容器名：
-docker ps
 ```
+
+> 注意：`pkill -f bitbake` 会杀掉该容器内所有 bitbake/cooker 进程。本机常常
+> 同时有多个构建目录的容器在跑，务必先核实容器名与目标构建目录，避免误杀其他
+> 构建。
 
 #### 预期成功输出
 
@@ -240,7 +253,8 @@ NOTE: Tasks Summary: Attempted 1649 tasks of which 1649 didn't need to be rerun 
 
 ## compile.yaml 参考
 
-本工作区 `qemu_arm64` 构建的 `compile.yaml`：
+`oebuild generate -p qemu-aarch64` 生成的 `compile.yaml` 结构如下（具体值以
+本机实际生成的文件为准）：
 
 ```yaml
 build_in: docker
@@ -255,7 +269,7 @@ docker_param:
   volumns:
     - /dev/net/tun:/dev/net/tun
     - <workspace-root>/src:/usr1/openeuler/src
-    - <workspace-root>/build/qemu_arm64:/home/openeuler/build/qemu_arm64
+    - <workspace-root>/build/qemu-aarch64:/home/openeuler/build/qemu-aarch64
   command: bash
 ```
 
@@ -300,8 +314,10 @@ oebuild runqemu nographic
 oebuild runqemu nographic bootparams="console=ttyAMA0"
 ```
 
-> 需要镜像 recipe 包含 `IMAGE_CLASSES += "qemuboot"`。
-> 机器相关的 QEMU 参数在 `yocto-meta-openeuler/conf/machine/` 中。
+> 需要镜像继承 qemuboot：`meta-openeuler/conf/machine/include/qemu.inc` 里
+> `IMAGE_CLASSES += "qemuboot qemu-image"`。
+> 机器相关的 QEMU 参数在 `meta-openeuler/conf/machine/` 中（qemu 系列见
+> `qemu-aarch64.conf` 等文件的 `# qemuboot options` 段）。
 
 ### `oebuild clear`
 
@@ -361,7 +377,7 @@ oebuild mugentest \
 | `oebuild update yocto` | 仅更新 yocto-meta-openeuler |
 | `oebuild update layer` | 仅更新依赖层 |
 | `oebuild generate [-p platform] [-f feature]` | 创建 `compile.yaml` 构建配置 |
-| `oebuild new [-p platform] [-f feature]` | 同 `generate`（新版实现） |
+| `oebuild new [-p platform] [-f feature]` | 同 `generate`（新版实现；不支持的旧版本用 `generate`） |
 | `oebuild bitbake <target>` | 在容器中构建 BitBake 目标 |
 | `oebuild bitbake -c <task> <recipe>` | 运行特定 BitBake 任务 |
 | `oebuild bitbake -e <recipe>` | 输出展开后的 BitBake 环境 |
@@ -388,34 +404,27 @@ source <workspace-root>/.venv/bin/activate
 
 ### ENOSPC / inotify 错误
 
-```bash
-sudo sysctl -w fs.inotify.max_user_watches=524288
-sudo sysctl -w fs.inotify.max_user_instances=512
-```
+按"前置条件 → inotify 监视限制"一节增大限制
+（`sysctl -w fs.inotify.max_user_watches=524288`）。
 
 ### Docker 容器无法启动
 
-```bash
-docker images | grep openeuler-container
-docker pull swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
-```
+确认镜像存在（镜像地址见本文开头常量表）：`docker images | grep openeuler-container`；
+缺失时用 `oebuild update docker` 拉取，或按提示手动 `docker pull`。
 
 ### `Please do it in compile workspace which contain compile.yaml`
 
 运行 `oebuild bitbake` 前必须先 `cd` 到构建目录：
 
 ```bash
-cd <workspace-root>/build/qemu_arm64
+cd <workspace-root>/build/qemu-aarch64
 oebuild bitbake <target>
 ```
 
 ### 构建挂起或容器过期
 
-```bash
-docker ps                    # 查找容器名（Docker 随机名，按实际输出替换）
-docker exec <container_name> bash -c "pkill -f bitbake; pkill -f cooker"
-oebuild clear docker         # 清理已停止的容器
-```
+先按"停止正在运行的构建"确认容器并终止对应进程，再 `oebuild clear docker`
+清理已停止的容器。
 
 ### 重新进入已有容器（无需重建）
 
@@ -424,14 +433,14 @@ oebuild 读取 `.env` 并复用运行中的容器——无需冷启动。
 
 ---
 
-## 构建配置总结（qemu-aarch64）
+## 构建配置速查
 
-| 字段 | 值 |
-|---|---|
-| Machine | `qemu-aarch64` |
-| Distro | `openeuler` |
-| 目标 sysroot | `aarch64-openeuler-linux` |
-| 工具链 | 外部 GCC（`/usr1/openeuler/gcc/openeuler_gcc_arm64le`） |
-| GCC 版本 | `12.3.1` |
-| 容器 | `openeuler-container:latest` |
-| 层 | meta、meta-oe、meta-python、meta-networking、meta-filesystems、meta-openeuler、meta-openeuler-bsp |
+具体值以构建目录里的 `compile.yaml` 与 bitbake 展开值为准：
+
+```bash
+# 当前构建的 machine / distro / 目标 sysroot
+oebuild bitbake -e <recipe> 2>/dev/null | grep -E '^(MACHINE|DISTRO|TARGET_SYS)='
+
+# 层清单
+cd <workspace-root>/build/<machine> && oebuild bitbake -e 2>/dev/null | grep '^BBLAYERS='
+```
