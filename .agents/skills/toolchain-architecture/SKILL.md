@@ -79,9 +79,10 @@ description: '理解统一的编译链目录结构、oebuild 集成与向后兼�
 
 ## oebuild 集成
 
-`oebuild` 是独立的 Python 包（安装在
-`~/.local/lib/python3.10/site-packages/oebuild/`），**不属于本仓库**，
-无法在本仓库中修改。其 `generate` 子命令可弹出配置菜单并自动调用
+`oebuild` 是独立的 Python 包（安装在工作区的 venv，如
+`<workspace-root>/.venv/lib/python<X.Y>/site-packages/oebuild/`；源码另在
+`<workspace-root>/src/oebuild/`），**不属于本仓库**，无法在本仓库中修改。
+其 `generate`（新版为 `new`）子命令可弹出配置菜单并自动调用
 `cross-tools/prepare.sh` + `update.sh` + `ct-ng build`。
 
 ### oebuild 硬编码路径
@@ -138,7 +139,7 @@ oebuild 在 `toolchain.py` 和 `generate.py` 中硬编码了以下路径：
 | ninja | 1.11.1 | LLVM / Clang 构建 |
 | glibc | 2.28 | 容器基础系统 |
 
-- **基础镜像**：openEuler 22.03 LTS
+- **基础镜像**：openEuler 20.03（`hub.oepkgs.net/openeuler/openeuler:20.03`）
 - **容器用户**：`openeuler`（UID 1000, GID 1000），HOME=/home/openeuler
 - **Dockerfile 位置**：`.oebuild/dockerfile/openeuler-sdk/Dockerfile`
 
@@ -187,18 +188,3 @@ docker build -t openeuler-sdk:latest .
 
 - 需要以 root 执行 `usermod` 和 `chown`。
 - UID 匹配后切换到 `openeuler` 用户执行构建，避免权限问题。
-
-## 何时使用
-
-- 用户询问目录结构
-- 用户询问 oebuild 与 menu.sh 的关系
-- 用户询问向后兼容机制
-- 用户询问容器镜像设计
-- 用户需要架构设计指导
-- 修改目录结构前的参考
-
-## 何时不使用
-
-- 构建编译链（使用 toolchain-build skill）
-- 提交代码（使用 toolchain-git-flow skill）
-- 修改具体脚本文件（直接编辑）

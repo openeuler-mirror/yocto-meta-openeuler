@@ -111,16 +111,9 @@ ls .oebuild/toolchains/output/llvm-musl-arm/bin/
 
 ## 容器化机制
 
-`menu.sh` 自动完成：
-
-1. **镜像检查**：`openeuler-sdk:latest` 不存在则自动从 Dockerfile 构建。
-2. **挂载**：`MOUNT_ROOT`（仓库上两级目录）挂载到容器内同路径，保证
-   `work/` 和 `output/` 路径一致。
-3. **UID 匹配**：以 root（`--user 0:0`）启动，入口脚本执行
-   `usermod -u <HOST_UID> -g <HOST_GID> openeuler`，避免挂载目录权限问题。
-4. **CT_PREFIX**：通过 `-e CT_PREFIX="${OUTPUT_DIR}"` 环境变量控制 GCC
-   交叉链安装位置，ct-ng 直接安装到 `output/<target-triple>/`。
-5. **执行**：切换到 `openeuler` 用户，在 `work_dir` 下执行构建脚本。
+镜像检查、挂载、UID 匹配与 CT_PREFIX 注入的实现，见
+[toolchain-architecture 技能](../toolchain-architecture/SKILL.md) 的
+"容器化构建机制"一节。
 
 ## 环境变量
 
@@ -141,13 +134,8 @@ WORK_BASE=/tmp/my-work ./menu.sh llvm
 
 ## 容器内环境
 
-| 组件 | 版本 | 用途 |
-| --- | --- | --- |
-| gcc（默认） | 7.3.0 | GCC 交叉链（ct-ng） |
-| gcc-12 | 12.4.0 | LLVM / Clang 构建 |
-| ct-ng | 1.26.0 | GCC 交叉链构建引擎 |
-| cmake | 3.27.9 | LLVM / Clang 构建 |
-| ninja | 1.11.1 | LLVM / Clang 构建 |
+镜像组件版本（gcc 7.3.0、gcc-12、ct-ng 1.26.0、cmake、ninja）见
+[toolchain-architecture 技能](../toolchain-architecture/SKILL.md) 的镜像表。
 
 ## 常见问题排查
 
@@ -160,16 +148,3 @@ WORK_BASE=/tmp/my-work ./menu.sh llvm
 | LLVM build.sh `C_COMPILER_PATH` 错误 | llvm-project 脚本硬编码 gcc | build.sh wrapper 已自动 sed 补丁 |
 | Clang+musl 输出复制失败 | GCC tarball 解包 0555 | menu.sh 已自动 `chmod -R u+w` 后复制 |
 | 重复下载源码 | `open_source/` 目录已存在 | menu.sh 自动跳过已准备的源码 |
-
-## 何时使用
-
-- 用户要求构建交叉编译链
-- 用户提到 menu.sh / ct-ng / LLVM / Clang+musl
-- 需要验证编译链产物
-- 需要进入容器调试构建
-
-## 何时不使用
-
-- oebuild Python 包操作（使用 oebuild 命令）
-- 修改 ct-ng config 文件（直接编辑）
-- 构建 openEuler Embedded 系统镜像（使用 oebuild bitbake）
