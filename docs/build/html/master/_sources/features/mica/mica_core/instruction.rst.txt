@@ -417,6 +417,8 @@ ____
 .. note::
 
    当前 x86 工控机只支持运行 UniProton，并且 x86 的部署方法与 arm64 有所不同，整合工作还在进行中。
+   当前版本的 Yocto 构建已暂时移除 x86 MCS 集成（旧的 mcs-x86 分支不再维护），待 MCS 代码统一到
+   主 mcs 仓后再恢复；以下流程仅适用于已包含 MCS 组件的旧镜像或手工自建环境。
 
 首先，需要先根据 :ref:`工控机HVAEIPC-M10 镜像构建安装指导 <board_hvaepic-m10>` 在工控机上安装 openEuler Embedded 镜像。
 
