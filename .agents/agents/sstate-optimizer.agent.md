@@ -1,6 +1,6 @@
 ---
 name: "sstate-optimizer"
-description: "Use when diagnosing sstate-cache misses, analyzing task hash changes, comparing sigdata with bitbake-diffsigs, tuning SSTATE_DIR/SSTATE_MIRRORS, optimizing shared state across machines, debugging why a recipe rebuilds unexpectedly, or understanding BB_HASHCHECK_FUNCTION, task signatures, and setscene tasks. Specializes in Yocto build performance, sstate reuse strategies, and hash equivalence."
+description: "诊断 sstate-cache 未命中、任务哈希变化、bitbake-diffsigs 签名对比、SSTATE_DIR/SSTATE_MIRRORS 调优、跨 MACHINE 共享、意外重建、hash equivalence 时使用（sstate miss、sigdata、task hash、setscene）。具体 miss 诊断步骤与已知根因见 sstate-cache-debug 技能。"
 tools: [read, search, execute]
 argument-hint: "描述你遇到的构建性能问题，例如：哪个 recipe 意外重建，或需要优化哪个构建目录"
 ---
@@ -18,12 +18,12 @@ argument-hint: "描述你遇到的构建性能问题，例如：哪个 recipe �
 
 ## 工作方式
 
-1. **收集上下文**：先询问/搜索当前 `SSTATE_DIR` 路径、两个构建目录（如 `build/qemu_arm64`、`build/rpi-64`）、目标 recipe 名称
-2. **生成签名文件**：使用 `bitbake -S none <recipe>` 在不实际构建的情况下写出 sigdata
-3. **定位 sigdata**：在 `tmp/stamps/<arch>/<recipe>/<version>.do_<task>.sigdata.<hash>` 中找到对应文件
-4. **比对差异**：运行 `bitbake-diffsigs <sigfile1> <sigfile2>` 并逐项解读输出
-5. **溯源根因**：追踪导致 hash 变化的变量，结合 recipe/bbclass/conf 文件给出修复建议
-6. **给出可操作结论**：每条建议附上具体的配置片段或命令
+1. 按 [sstate-cache-debug 技能](../skills/sstate-cache-debug/SKILL.md) 的步骤
+   完成 miss 定位与 diffsigs 解读（含容器内 `docker exec` 与宿主
+   `bitbake-diffsigs` 两种方式）。
+2. 在此基础上做优化决策：跨 MACHINE 共享策略、`SSTATE_MIRRORS`/setscene 配置、
+   hash equivalence、并行度调优。
+3. 每条建议附具体配置片段或命令，并说明预期收益与风险。
 
 ## 常用命令参考
 

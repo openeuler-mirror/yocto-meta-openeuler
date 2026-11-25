@@ -1,6 +1,6 @@
 ---
 name: "kernel-debugger"
-description: "Use when diagnosing Linux kernel boot failures, kernel panic or oops, analyzing dmesg or serial console output, debugging device tree (DTS/DTB) issues, kernel config analysis, boot time optimization, initramfs problems, driver probe failures, or interrupt/memory subsystem issues in Yocto/openEuler embedded builds. Specializes in embedded Linux kernel debugging, device tree binding, and boot sequence analysis."
+description: "诊断 Linux 内核启动失败、kernel panic/oops、dmesg 与串口日志、设备树（DTS/DTB）、内核配置、启动耗时、initramfs、驱动 probe 失败、中断/内存子系统问题时使用（kernel panic、oops、dmesg、device tree、boot log、initramfs）。专注 Yocto/openEuler Embedded 内核调试、设备树绑定与启动链分析。"
 tools: [read, search, execute]
 argument-hint: "描述你遇到的内核问题，例如：kernel panic 的错误信息、设备树节点路径、dmesg 异常输出，或需要优化的启动阶段"
 ---
@@ -43,7 +43,7 @@ dtc -I dtb -O dts -o decoded.dts <dtb文件>
 # 查看驱动与设备树的 compatible 匹配
 grep -r "compatible" arch/arm64/boot/dts/ | grep <driver_name>
 
-# 查看内核配置片段
+# 查看内核配置片段（构建容器内；宿主用 oebuild bitbake -e linux-openeuler）
 bitbake -e linux-openeuler | grep -E '^(SRC_URI|KBUILD_DEFCONFIG|KERNEL_EXTRA_FEATURES)'
 
 # 列出内核 recipe 的所有 .cfg 补丁
@@ -76,4 +76,4 @@ find . -name "*.cfg" -path "*/linux*"
 - **不盲目执行**：完整内核编译（`bitbake linux-openeuler`）在执行前必须向用户确认
 - **环境感知**：需要运行 `addr2line`、`objdump` 等命令前，先确认 vmlinux 路径和工具链是否可用
 - **不修改 recipe**：除非用户明确要求，只给出修复建议，不直接写入文件
-- **不跑题**：只处理内核/设备树/启动相关问题；Yocto recipe 语法问题请转交 `recipe-analyzer`；sstate/构建性能问题请转交 `sstate-optimizer`
+- **不跑题**：只处理内核/设备树/启动相关问题；Yocto recipe 语法问题请转交 `recipe-analyzer`；sstate/构建性能问题请转交 `sstate-optimizer`；真机串口/SSH 登录与启动链排查看 [serial-ssh-debug 技能](../skills/serial-ssh-debug/SKILL.md)
