@@ -52,8 +52,11 @@ openEuler 社区的合规与质量要求。
 | 目录 | 职责 |
 | --- | --- |
 | `meta-openeuler/` | 核心发行版与 recipe 适配（**默认实现区域**） |
-| `bsp/` | 板级支持层（phytium、rockchip、kunpeng 等） |
-| `rtos/` | RTOS 集成层（freertos、rtthread、zephyr） |
+| `meta-clang/` | Clang/LLVM 相关 recipe 与配置 |
+| `meta-musl/` | musl libc 相关 recipe 与配置 |
+| `meta-airos/` | AI 相关 recipe 与配置 |
+| `bsp/` | 板级支持层（phytium、kunpeng、hisilicon、aspeed、visionfive2、zedboard 等） |
+| `rtos/` | RTOS 集成层（freertos、rtthread、zephyr，及公共层 meta-openeuler-rtos） |
 | `scripts/` | 工具与自动化辅助脚本（含 `scripts/gitlint/` 提交规范规则） |
 | `docs/` | 文档源 |
 | `.oebuild/` | 构建系统配置：`toolchains/` 编译链、`workflows/` CI、`manifest.yaml` |
@@ -62,14 +65,16 @@ openEuler 社区的合规与质量要求。
 
 ## 开始之前
 
-在修改任何内容之前，请先阅读：
-
-- [README.md](README.md)
-- [oebuild 技能](.agents/skills/oebuild/SKILL.md)
-- [yocto-openeuler-recipe 技能](.agents/skills/yocto-openeuler-recipe/SKILL.md)
-- [send-pr 技能](.agents/skills/send-pr/SKILL.md)
-- [openEuler Embedded 文档](https://pages.openeuler.openatom.cn/embedded/docs/build/html/master/)
-- [oebuild 快速入门](https://pages.openeuler.openatom.cn/embedded/docs/build/html/master/oebuild/index.html)
+- 先读 [README.md](README.md) 了解仓库定位。
+- 按任务加载技能，不必全部预读：构建看 [oebuild 技能](.agents/skills/oebuild/SKILL.md)，
+  recipe 看 [yocto-openeuler-recipe](.agents/skills/yocto-openeuler-recipe/SKILL.md)，
+  补丁看 [yocto-openeuler-patch-analysis](.agents/skills/yocto-openeuler-patch-analysis/SKILL.md)，
+  提交与 PR 看 [git-commit](.agents/skills/git-commit/SKILL.md) /
+  [toolchain-git-flow](.agents/skills/toolchain-git-flow/SKILL.md) /
+  [send-pr](.agents/skills/send-pr/SKILL.md)。
+- 参考资料：
+  [openEuler Embedded 文档](https://pages.openeuler.openatom.cn/embedded/docs/build/html/master/)，
+  [oebuild 快速入门](https://pages.openeuler.openatom.cn/embedded/docs/build/html/master/oebuild/index.html)。
 
 ## 技能与专业 Agent
 
@@ -81,6 +86,9 @@ openEuler 社区的合规与质量要求。
 - [rootfs-expert](.agents/agents/rootfs-expert.agent.md)：rootfs 构建与 image 生成
 - [kernel-debugger](.agents/agents/kernel-debugger.agent.md)：内核启动/panic/设备树调试
 - [sstate-optimizer](.agents/agents/sstate-optimizer.agent.md)：sstate 缓存与构建性能
+
+调用方式：支持 subagent 的客户端按这些文件的 frontmatter 注册代理；客户端不支持
+`.agent.md` 时，读取该文件正文作为提示词，并按其中的职责范围与约束工作。
 
 ## 远程仓库
 
@@ -108,8 +116,8 @@ openEuler 社区的合规与质量要求。
   `meta-openeuler/recipes-*/<pkg>/`，与上游分类一致
 - openEuler 源码适配使用 `file://` 风格 `SRC_URI`（`openeuler.bbclass` 要求）；
   升级版本时保留或显式协调上游 Yocto 补丁
-- 修改后先做最小构建验证：`oebuild bitbake <pkg>` → `oebuild bitbake -c compile
-  <pkg>` → `oebuild bitbake <image>`；无法运行时应说明原因并给出复现命令
+- 修改后先做最小构建验证：`oebuild bitbake <pkg>`（必要时先 `-c cleansstate`）
+  → `oebuild bitbake <image>`；无法运行时应说明原因并给出复现命令
 
 详细流程见 [yocto-openeuler-recipe 技能](.agents/skills/yocto-openeuler-recipe/SKILL.md)。
 
@@ -118,19 +126,24 @@ openEuler 社区的合规与质量要求。
 ### 提交规范
 
 - 所有 commit 必须包含 `Signed-off-by`（DCO sign-off），且必须是最后一行
+  （cherry-pick 的 `(cherry picked from ...)` 说明行允许紧随其后）
 - 提交信息格式：`<area>: <subject>`（英文，无中文；标题门禁上限 80 字符，
   revert 102）
 - Body 必须解释 why/what，每行 <= 100 字符
 - AI 协助生成的提交须在 `Signed-off-by` 之前追加 `Co-Authored-By:`，模型信息
   动态确定（见"核心行为准则 #3"）
+- 同一个 commit 不允许同时修改 `docs/` 与其他文件（`commit_scope` 门禁），
+  文档改动单独提交
 - gitlint 规则见 `.gitlint` 和 `scripts/gitlint/openeuler_embedded_commit_rules.py`；
-  提交前尽可能运行 gitlint 检查
+  提交前运行 `gitlint --msg-filename <msg.txt>`（本克隆已装 commit-msg hook，
+  正常 `git commit` 会自动检查）
 - 详细写作规范见 [git-commit 技能](.agents/skills/git-commit/SKILL.md)，
   提交推送全流程见 [toolchain-git-flow 技能](.agents/skills/toolchain-git-flow/SKILL.md)
 
 ### 构建产物
 
-- `work/` 和 `output/` 目录已 gitignore，不提交仓库
+- `.oebuild/toolchains/work/` 与 `.oebuild/toolchains/output/` 已 gitignore
+- 本地未跟踪目录 `memory/`、`.qoder/`、`.github/` 是草稿与运行记录，不提交
 - 不要 `git add .`，只暂存当前任务相关的文件
 
 ### 向后兼容

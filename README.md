@@ -41,6 +41,12 @@ oebuild构建后会自动生成如下目录结构：
 ```
 
 
+## 面向 AI Agent
+
+本仓库内置 AI 编程助手资产：入口为 [AGENTS.md](AGENTS.md)，技能与专业 Agent
+位于 [.agents/](.agents/)（技能清单见
+[.agents/skills/README.md](.agents/skills/README.md)）。
+
 ## 参与贡献
 
 1.  Fork 本仓库
@@ -50,13 +56,13 @@ oebuild构建后会自动生成如下目录结构：
     一个合格的git提交信息如下所示，请尽可能在提交信息中描述相关信息，例如改动的地方，修改的原因，如何验证等等。（需要替换的内容用“[]”包含，实际提交信息中不用包含“[]”）
 
     ```
-    [module name, e.g. docs]: [git commit msg title (what to change)]
+    [area, e.g. docs]: [git commit msg title (what to change)]
 
     [git commit msg body (detailed explanation of what to change, why to change, and even how to verify)]
 
     Signed-off-by: [name] <[email]>
     ```
 
-    本仓库采用了gitlint检查每次git提交，建议提交前使用 [**gitlint**](https://jorisroovers.com/gitlint) 检查您的提交，以避免CI门禁检查失败．
+    本仓库采用了gitlint检查每次git提交（`.gitlint` + `scripts/gitlint/`），建议提交前使用 [**gitlint**](https://jorisroovers.com/gitlint) 检查您的提交（`gitlint --msg-filename <msg.txt>`），以避免CI门禁检查失败．
 
 4.  新建 Pull Request，等待审查并将代码合并到本仓库（可以选择合并后删除用于开发的分支）
