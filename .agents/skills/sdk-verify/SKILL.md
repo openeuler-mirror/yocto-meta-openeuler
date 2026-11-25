@@ -17,12 +17,13 @@ description: 验证 openEuler Embedded SDK 安装包（do_populate_sdk 产物）
 
 - 平台：qemu-aarch64 / qemu-arm / qemu-riscv64（openEuler Embedded 全部 qemu 平台）
 - **镜像已预设 root 密码（默认 `openEuler@2021`）**：本技能不修改 /etc/shadow、
-  不做 init=/bin/sh 等登录 hack；密码默认 `openEuler@2021`，可用 `-p` 覆盖
+  不做 init=/bin/sh 等登录 hack；密码可用 `-p` 覆盖
 - **QEMU 由 `oebuild runqemu nographic` 启动**（Docker 容器内执行，tap 网络
   guest=192.168.7.2）：qemu 二进制来自构建产物的 qemu-helper-native
   recipe-sysroot，宿主无需安装 qemu-system-<arch> 包
 - **测试产物经 scp 传输**（镜像含 openssh-sshd 与预设密码，网络可达），
-  不解包 rootfs、不依赖 ext4 与 debugfs
+  不解包 rootfs、不依赖 ext4 与 debugfs；qemu 镜像允许密码直连，真机板卡的
+  认证差异见 serial-ssh-debug 技能
 - 宿主前置条件：`sshpass` 或 OpenSSH ≥ 8.4（SSH_ASKPASS 机制，无需额外包）、
   `oebuild`（workspace/.venv/bin/oebuild）、Docker、`/dev/net/tun`、`file`
 - 构建产物前提：`build/<machine>/tmp/deploy/` 下已有 SDK 安装脚本
@@ -39,7 +40,7 @@ bash $SKILL/scripts/verify-sdk.sh -m qemu-aarch64
 
 # 密码不同时用 -p 覆盖；指定已安装 SDK 目录与构建目录可跳过 SDK 安装与产物发现
 bash $SKILL/scripts/verify-sdk.sh -m qemu-riscv64 -p '<root密码>' \
-    -s ~/sdk-qemu-riscv64 -b ~/openeuler/openeuler/workspace/build/qemu-riscv64
+    -s ~/sdk-qemu-riscv64 -b <workspace-root>/build/qemu-riscv64
 ```
 
 ### 参数
@@ -117,8 +118,9 @@ EOF
 make   # 生成 hello_mod.ko
 
 # 3. 启动 QEMU（oebuild runqemu nographic，容器内 tap 网络 guest=192.168.7.2）
+#    先激活 venv，或确保 .venv/bin 在 PATH 中
 cd build/qemu-riscv64
-nohup script -q -e -c "$HOME/openeuler/openeuler/workspace/.venv/bin/oebuild runqemu nographic" \
+nohup script -q -e -c "$(command -v oebuild) runqemu nographic" \
     qemu-pty.log > qemu.log &
 
 # 4. 等待 guest 网络与 sshd 就绪（ping 192.168.7.2；探测 22 端口）

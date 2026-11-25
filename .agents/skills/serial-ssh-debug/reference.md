@@ -96,7 +96,7 @@ systemd-networkd 以 `systemd-network` 用户运行（`DynamicUser=no`），
 Windows 笔记本默认在"公用网络"配置文件下拦 ICMPv4 Echo——**ping 不通但
 ARP REACHABLE、SSH 能连是常见组合**，不要把 ping 失败当网络故障。
 
-## 环境速记（本工作区/myd-ld25x-oee 实例）
+## 环境速记（示例实例 myd-ld25x-oee，仅作参照，按实际环境替换）
 
 - 串口 `/dev/ttyUSB0` 115200；SSH `root@192.168.7.2`（默认静态）密码
   `openEuler@2021`

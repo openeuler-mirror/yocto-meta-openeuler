@@ -1,7 +1,7 @@
 ---
 name: sstate-cache-debug
 description: '诊断 BitBake sstate-cache 未命中、native 任务意外重建时使用。覆盖用 bitbake -S none 生成 sigdata、bitbake-diffsigs 对比任务签名、定位哈希差异根因、machine conf 中误用 export 导致 native 哈希污染等。触发关键词：sstate-cache、缓存未命中、sstate miss、bitbake-diffsigs、sigdata、任务哈希、native 重建、BB_BASEHASH_IGNORE_VARS、ROOTFS_PACKAGE_ARCH、export。'
-argument-hint: "描述意外重建的 recipe 与两个构建目录，例如 'cmake-native 在 qemu_arm64 与 rpi-64 间未共享 sstate'"
+argument-hint: "描述意外重建的 recipe 与两个构建目录，例如 'cmake-native 在 qemu-aarch64 与 raspberrypi4-64 间未共享 sstate'"
 ---
 
 # Skill: sstate-cache-debug — 用 bitbake-diffsigs 诊断 sstate 缓存未命中
@@ -19,10 +19,13 @@ Embedded 工作区。与 `sstate-optimizer` agent 互补：该 agent 侧重性�
 - 至少完成过一次构建（sstate 已填充且 `tmp/stamps/` 存在）
 - 两个容器在运行（`docker ps` 验证）：每个构建目录一个
 
+> 本文示例在构建容器内直接执行 `bitbake`；也可在宿主用 `oebuild bitbake ...`
+> 触发（见 oebuild 技能），二者等价。
+
 容器映射（用 `docker inspect <name>` 确认）：
 
-- `<container-A>` → `build/qemu_arm64`
-- `<container-B>` → `build/rpi-64`
+- `<container-A>` → `build/qemu-aarch64`
+- `<container-B>` → `build/raspberrypi4-64`
 
 > 容器名为 Docker 自动生成的随机名，请按你实际的容器名替换。
 
@@ -36,7 +39,7 @@ Embedded 工作区。与 `sstate-optimizer` agent 互补：该 agent 侧重性�
 ```bash
 # 在新构建对应的容器内
 docker exec <container-B> bash -c "
-  cd /home/openeuler/build/rpi-64 &&
+  cd /home/openeuler/build/raspberrypi4-64 &&
   source /usr1/openeuler/src/yocto-poky/oe-init-build-env . >/dev/null 2>&1 &&
   bitbake -e cmake-native 2>/dev/null | grep '^SSTATE_DIR='
 "
@@ -51,16 +54,16 @@ docker exec <container-B> bash -c "
 用 `bitbake -S none` 仅计算并写入签名文件，不运行任何任务：
 
 ```bash
-# qemu_arm64 容器
+# qemu-aarch64 容器
 docker exec <container-A> bash -c "
-  cd /home/openeuler/build/qemu_arm64 &&
+  cd /home/openeuler/build/qemu-aarch64 &&
   source /usr1/openeuler/src/yocto-poky/oe-init-build-env . >/dev/null 2>&1 &&
   bitbake -S none cmake-native 2>&1 | tail -3
 "
 
-# rpi-64 容器
+# raspberrypi4-64 容器
 docker exec <container-B> bash -c "
-  cd /home/openeuler/build/rpi-64 &&
+  cd /home/openeuler/build/raspberrypi4-64 &&
   source /usr1/openeuler/src/yocto-poky/oe-init-build-env . >/dev/null 2>&1 &&
   bitbake -S none cmake-native 2>&1 | tail -3
 "
@@ -80,8 +83,8 @@ native 包的 arch 为 `x86_64-linux`。
 
 ```bash
 # 列出两个构建中 cmake-native 的 sigdata
-ls build/qemu_arm64/tmp/stamps/x86_64-linux/cmake-native/
-ls build/rpi-64/tmp/stamps/x86_64-linux/cmake-native/
+ls build/qemu-aarch64/tmp/stamps/x86_64-linux/cmake-native/
+ls build/raspberrypi4-64/tmp/stamps/x86_64-linux/cmake-native/
 ```
 
 若同一任务（如 `do_compile`）的文件名哈希（`.sigdata.` 之后的部分）在两个
@@ -97,8 +100,8 @@ ls build/rpi-64/tmp/stamps/x86_64-linux/cmake-native/
 # 先激活 venv
 source <workspace-root>/.venv/bin/activate
 
-SIG1=<workspace-root>/build/qemu_arm64/tmp/stamps/x86_64-linux/cmake-native/<version>.do_compile.sigdata.<hash1>
-SIG2=<workspace-root>/build/rpi-64/tmp/stamps/x86_64-linux/cmake-native/<version>.do_compile.sigdata.<hash2>
+SIG1=<workspace-root>/build/qemu-aarch64/tmp/stamps/x86_64-linux/cmake-native/<version>.do_compile.sigdata.<hash1>
+SIG2=<workspace-root>/build/raspberrypi4-64/tmp/stamps/x86_64-linux/cmake-native/<version>.do_compile.sigdata.<hash2>
 
 PYTHONPATH=<workspace-root>/src/yocto-poky/bitbake/lib \
   python3 <workspace-root>/src/yocto-poky/bitbake/bin/bitbake-diffsigs "$SIG1" "$SIG2"
@@ -140,15 +143,15 @@ machine conf 中取值不同，会污染**所有**依赖它的任务哈希——
 
 ---
 
-## 已知根因：对 machine 专属变量使用 `export`
+## 历史根因：对 machine 专属变量使用 `export`（已在仓库修复）
 
 ### 问题
 
-在 openEuler Embedded 中，部分 machine conf 对仅对目标 rootfs 有意义的变量
-使用了 `export` 关键字：
+曾经有 machine conf 对仅对目标 rootfs 有意义的变量使用了 `export` 关键字
+（`qemu-aarch64.conf` 现已无该变量，保留案例作为排查模式）：
 
 ```bitbake
-# qemu-aarch64.conf  ← 有问题的写法
+# 历史写法（勿再使用）
 export ROOTFS_PACKAGE_ARCH = "aarch64"
 export ROOTFS_PACKAGE_ARCH:virtclass-multilib-lib32 = "armv7l"
 ```
@@ -208,7 +211,7 @@ BB_BASEHASH_IGNORE_VARS:append = " ROOTFS_PACKAGE_ARCH"
 
 ```bash
 docker exec <container-A> bash -c "
-  cd /home/openeuler/build/qemu_arm64 &&
+  cd /home/openeuler/build/qemu-aarch64 &&
   source /usr1/openeuler/src/yocto-poky/oe-init-build-env . >/dev/null 2>&1 &&
   bitbake -e 2>/dev/null | grep '^BB_BASEHASH_IGNORE_VARS='
 "
@@ -230,12 +233,12 @@ BB_BASEHASH_IGNORE_VARS:append = " OPENEULER_SP_DIR do_openeuler_fetch MANIFEST_
 
 ```bash
 # 在两个构建中重新生成 sigdata
-docker exec <container-A> bash -c "cd /home/openeuler/build/qemu_arm64 && source /usr1/openeuler/src/yocto-poky/oe-init-build-env . >/dev/null 2>&1 && bitbake -S none cmake-native"
-docker exec <container-B> bash -c "cd /home/openeuler/build/rpi-64 && source /usr1/openeuler/src/yocto-poky/oe-init-build-env . >/dev/null 2>&1 && bitbake -S none cmake-native"
+docker exec <container-A> bash -c "cd /home/openeuler/build/qemu-aarch64 && source /usr1/openeuler/src/yocto-poky/oe-init-build-env . >/dev/null 2>&1 && bitbake -S none cmake-native"
+docker exec <container-B> bash -c "cd /home/openeuler/build/raspberrypi4-64 && source /usr1/openeuler/src/yocto-poky/oe-init-build-env . >/dev/null 2>&1 && bitbake -S none cmake-native"
 
 # 对比文件名哈希后缀 —— 现在应一致
-ls build/qemu_arm64/tmp/stamps/x86_64-linux/cmake-native/*.do_compile.sigdata.*
-ls build/rpi-64/tmp/stamps/x86_64-linux/cmake-native/*.do_compile.sigdata.*
+ls build/qemu-aarch64/tmp/stamps/x86_64-linux/cmake-native/*.do_compile.sigdata.*
+ls build/raspberrypi4-64/tmp/stamps/x86_64-linux/cmake-native/*.do_compile.sigdata.*
 ```
 
 若哈希后缀一致，两个构建将对该任务共享 sstate。

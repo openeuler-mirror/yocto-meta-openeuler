@@ -1,6 +1,6 @@
 ---
 name: yocto-openeuler-patch-analysis
-description: '分析并融合 openEuler Embedded recipe 的多来源补丁时使用，与 yocto-openeuler-recipe 配合（后者管 recipe 新增/升级，本 skill 专管补丁）。覆盖 src-openeuler spec 补丁、yocto 基础 recipe 补丁、Embedded 层 files/ 适配补丁三来源的枚举与分类、冲突/重复/漏打/死补丁检测、CVE 与功能正确性补丁的取舍规则、SRC_URI 运算符与补丁应用顺序（=+ prepend / += append / :remove）、FILESEXTRAPATHS 解析优先级（层 files/ 覆盖 src-openeuler 同名补丁）、spec↔SRC_URI 交叉比对查漏打/多余（xcheck）、用 SRC_URI:remove 剔除与 openEuler 冲突的 yocto 基础补丁、大规模 :remove 的四类根因归因（已上游合入/发行版策略/陈旧空操作/配置片段）与陈旧空操作检测（stale）、版本错配（基础 recipe 版本 vs PV）与 Revert→重打补丁对的顺序敏感性、用 devtool 刷新消除 patch-fuzz、按 openEuler spec 做架构对齐（%ifnarch sw_64、%patchNNNN -R）、qemu-aarch64 验证 do_patch 无告警、无 do_patch 日志时的免构建 dry-run 验证（纯净源码 + 存活补丁集干跑）、offset（良性）与 fuzz（风险）严重度区分。触发关键词：补丁分析、patch analysis、补丁融合、patch fusion、src-openeuler 补丁、yocto 补丁、patch-fuzz、fuzz 告警、死补丁、dead patch、补丁分类、patch classification、do_patch、SRC_URI 顺序、FILESEXTRAPATHS、devtool 刷新补丁、CVE 补丁、架构对齐、disable-initialize_clock、交叉比对、xcheck、漏打、多余补丁、SRC_URI:remove、剔除基础补丁、版本错配、Revert 重打、计数对账、class-native 条件补丁、python3 补丁、stale remove、陈旧空操作、免构建 dry-run、offset vs fuzz、PATCHTOOL、版本升级过时补丁、busybox 补丁、四类根因。'
+description: '分析并融合 openEuler Embedded recipe 的多来源补丁时使用，与 yocto-openeuler-recipe 配合（后者管 recipe 新增/升级，本 skill 专管补丁）。覆盖 src-openeuler spec、yocto 基础 recipe、本层 files/ 三来源补丁的枚举与分类、冲突/重复/漏打/死补丁检测、CVE 与功能补丁取舍、SRC_URI 运算符与应用顺序（=+ / += / :remove）、FILESEXTRAPATHS 覆盖优先级、spec 与 SRC_URI 交叉比对（xcheck）、陈旧 :remove 检测（stale）、版本错配与 Revert→重打顺序、devtool 刷新消 patch-fuzz、%ifnarch 架构对齐、do_patch 零告警验证与免构建 dry-run。触发关键词：补丁分析、patch analysis、补丁融合、src-openeuler 补丁、yocto 补丁、patch-fuzz、死补丁、dead patch、补丁分类、do_patch、SRC_URI 顺序、FILESEXTRAPATHS、devtool 刷新补丁、CVE 补丁、架构对齐、xcheck、漏打、多余补丁、SRC_URI:remove、剔除基础补丁、版本错配、Revert 重打、stale remove、offset vs fuzz。'
 argument-hint: "要分析/整改补丁的包名或 recipe 目录，例如 'python3'、'systemd' 或 'meta-openeuler/recipes-core/systemd'"
 ---
 
@@ -13,7 +13,12 @@ argument-hint: "要分析/整改补丁的包名或 recipe 目录，例如 'pytho
 
 需要新增/升级整个包时先走 `yocto-openeuler-recipe`；进入"这个包到底该打哪些补丁、顺序对不对、有没有 fuzz/死补丁"时切到本 skill。
 
-> 路径约定：`<ws-root>` = oebuild 工作区根（含 `src/`、`build/`）；`<layer>` = `src/yocto-meta-openeuler/meta-openeuler`；容器内 `src/` 挂载为 `/usr1/openeuler/src`，`build/<machine>` 挂载为 `/home/openeuler/build/<machine>`。
+> 路径约定：`<workspace-root>` = oebuild 工作区根（含 `src/`、`build/`）；`<layer>` = `src/yocto-meta-openeuler/meta-openeuler`；容器内 `src/` 挂载为 `/usr1/openeuler/src`，`build/<machine>` 挂载为 `/home/openeuler/build/<machine>`。
+>
+> 脚本约定：先设 `SKILL=.agents/skills/yocto-openeuler-patch-analysis`（相对仓库
+> 根），下文 `$SKILL/scripts/patch-audit.sh` 按此展开；在别的目录执行时改用绝对
+> 路径。示例中的 `bitbake` 在构建容器内执行，也可在宿主用 `oebuild bitbake ...`
+> 触发。
 
 ---
 
@@ -65,16 +70,16 @@ A/B 通常由 `openeuler.bbclass` + `OPENEULER_DL_DIR` 自动从 src-openeuler �
 ```bash
 PKG=systemd
 R=<layer>/recipes-core/$PKG          # 本层 recipe 目录（或单个 .bbappend 文件）
-SPEC=<ws-root>/src/openeuler/$PKG/$PKG.spec
+SPEC=<workspace-root>/src/openeuler/$PKG/$PKG.spec
 
 # 本层 recipe 引用的补丁 + 基础 recipe 的 SRC_URI
 grep -rnE 'file://[^ ;"]+\.patch' "$R"
 
 # spec 声明的补丁（other/6xxx/9xxx 分组）与架构条件
-scripts/patch-audit.sh spec "$SPEC"
+$SKILL/scripts/patch-audit.sh spec "$SPEC"
 
 # spec 声明 vs SRC_URI 引用交叉比对：漏打 / 多余 / 已 :remove
-scripts/patch-audit.sh xcheck "$SPEC" "$R"
+$SKILL/scripts/patch-audit.sh xcheck "$SPEC" "$R"
 ```
 
 `spec` 模式输出四段：`other Patch*`（如 `Patch1`/`Patch251`，多是 openEuler 的构建/路径适配
@@ -152,7 +157,7 @@ REMOVED 组、不计入 applied，注释要写明"为何剔除"。
 | ③ 陈旧空操作 | `:remove` 了基础 recipe 里**根本不存在**的补丁（照搬更新版 poky 残留） | 基础 recipe SRC_URI 里搜不到 | **cruft，应清理**（无害但误导） |
 | ④ 配置片段 | 被移除的是 `.cfg`/defconfig 片段而非 `.patch`，已被本层 defconfig 取代 | 后缀非 `.patch` | 移除正确 |
 
-> **③ 陈旧空操作可脚本检出**：`scripts/patch-audit.sh stale <bbappend> <base-recipe>` 逐条比对
+> **③ 陈旧空操作可脚本检出**：`$SKILL/scripts/patch-audit.sh stale <bbappend> <base-recipe>` 逐条比对
 > `:remove` 项是否存在于基础 recipe SRC_URI，列出 STALE。busybox 实测 `removed=13 effective=10
 > stale_noop=3`（`0001-awk-fix-CVEs`、`0002-man-fix-segfault`、`0001-gen_build_files-…` 均不在
 > poky 1.35.0）。**`xcheck` 的盲区**：它只统计 `.patch`，`.cfg` 类 `:remove`（如 busybox
@@ -225,7 +230,7 @@ SRC_URI += " file://update-rtc-...patch "
 ```bash
 # 容器内；-O/--no-overrides 规避 devtool 在容器中的 rebase 报错
 devtool modify -O <pkg>
-cd <ws-root>/build/<machine>/workspace/sources/<pkg>
+cd <workspace-root>/build/<machine>/workspace/sources/<pkg>
 # 找到目标补丁对应的 commit，用其父提交生成规范 diff
 git --no-pager diff --no-color <commit>^ <commit> > /tmp/refreshed.patch
 ```
@@ -246,7 +251,7 @@ git checkout -q <commit>
 本层 `files/` 下未被任何 `.bb/.bbappend/.inc` 引用的 `.patch` 即死补丁：
 
 ```bash
-scripts/patch-audit.sh dead <layer>/recipes-*/<pkg>
+$SKILL/scripts/patch-audit.sh dead <layer>/recipes-*/<pkg>
 ```
 
 确认无引用（全仓库 grep 补丁名）后用删除工具移除，避免误导后续维护者。
@@ -256,7 +261,7 @@ scripts/patch-audit.sh dead <layer>/recipes-*/<pkg>
 ## 验证（qemu-aarch64，默认平台）
 
 **分析任务可直接复用既有日志**（无需重建）：若 build 目录里已有目标包的 `log.do_patch`
-（`find <ws-root>/build -path '*/<pkg>/*-r*/temp/log.do_patch'`），直接对它跑 `fuzz`/`order` 即可，
+（`find <workspace-root>/build -path '*/<pkg>/*-r*/temp/log.do_patch'`），直接对它跑 `fuzz`/`order` 即可，
 跳过下面的重建步骤。**整改任务**改了 recipe 后才必须清理 workspace 并强制重跑。
 
 **没有 `log.do_patch` 时——免构建 dry-run（busybox 实测有效）：** 包若走 sstate 或未构建，可能没有
@@ -265,7 +270,7 @@ do_patch 日志。此时无需重建即可验证：`do_unpack` 后的 workdir �
 做一次等价干跑：
 
 ```bash
-W=$(echo <ws-root>/build/<machine>/tmp/work/*/<pkg>/<pv>-r*)
+W=$(echo <workspace-root>/build/<machine>/tmp/work/*/<pkg>/<pv>-r*)
 ls "$W"/*.patch                    # 存活补丁集：被 :remove 的不在这里 → 实证移除生效
 rm -rf /tmp/verify && cp -r "$W/<pkg>-<pv>" /tmp/verify && cd /tmp/verify
 # 按真实 SRC_URI 顺序干跑（基础补丁去掉 :remove 项，再接 bbappend :append/=+ 的补丁）
@@ -287,9 +292,9 @@ devtool reset <pkg>            # 失败时用 -n 跳过 clean，或手动移除 
 bitbake -p                     # 确认 0 errors
 bitbake <pkg> -c patch -f      # 强制重跑 do_patch
 
-LOG=<ws-root>/build/<machine>/tmp/work/*/<pkg>/*-r*/temp/log.do_patch
-scripts/patch-audit.sh fuzz  "$LOG"    # 期望 OK / exit 0
-scripts/patch-audit.sh order "$LOG"    # 核对顺序 + 每条补丁的实际解析路径
+LOG=<workspace-root>/build/<machine>/tmp/work/*/<pkg>/*-r*/temp/log.do_patch
+$SKILL/scripts/patch-audit.sh fuzz  "$LOG"    # 期望 OK / exit 0
+$SKILL/scripts/patch-audit.sh order "$LOG"    # 核对顺序 + 每条补丁的实际解析路径
 ```
 
 **成功标准：**
@@ -329,15 +334,15 @@ scripts/patch-audit.sh order "$LOG"    # 核对顺序 + 每条补丁的实际解
 
 ## 工具脚本
 
-`scripts/patch-audit.sh`（执行，非阅读）：
+`$SKILL/scripts/patch-audit.sh`（执行，非阅读）：
 
 ```bash
-scripts/patch-audit.sh dead   <recipe-dir>           # 死补丁（未被引用的本地 .patch）
-scripts/patch-audit.sh fuzz   <do_patch-log>         # fuzz/offset/failed hunk 告警
-scripts/patch-audit.sh order  <do_patch-log>         # 应用顺序 + 每条补丁实际解析路径
-scripts/patch-audit.sh spec   <spec-file>            # other/6xxx/9xxx 分组 + %ifnarch 撤销
-scripts/patch-audit.sh xcheck <spec> <dir|bbappend>  # spec↔SRC_URI 交叉比对（漏打/多余/:remove）
-scripts/patch-audit.sh stale  <bbappend> <base-recipe>  # :remove 了基础 recipe 不存在的补丁（陈旧空操作）
+$SKILL/scripts/patch-audit.sh dead   <recipe-dir>           # 死补丁（未被引用的本地 .patch）
+$SKILL/scripts/patch-audit.sh fuzz   <do_patch-log>         # fuzz/offset/failed hunk 告警
+$SKILL/scripts/patch-audit.sh order  <do_patch-log>         # 应用顺序 + 每条补丁实际解析路径
+$SKILL/scripts/patch-audit.sh spec   <spec-file>            # other/6xxx/9xxx 分组 + %ifnarch 撤销
+$SKILL/scripts/patch-audit.sh xcheck <spec> <dir|bbappend>  # spec↔SRC_URI 交叉比对（漏打/多余/:remove）
+$SKILL/scripts/patch-audit.sh stale  <bbappend> <base-recipe>  # :remove 了基础 recipe 不存在的补丁（陈旧空操作）
 ```
 
 退出码：`0` 干净、`1` 有发现（死补丁 / fuzz / 漏打 / 陈旧 remove）、`2` 用法错误。
@@ -359,75 +364,14 @@ scripts/patch-audit.sh stale  <bbappend> <base-recipe>  # :remove 了基础 reci
 - [ ] 架构条件已对齐 openEuler spec（`%ifnarch` 反向撤销的补丁已按需移除；无 `%ifnarch` 则全保留）
 - [ ] `SRC_URI` 运算符与顺序正确（`=+` 前置 / `+=` 后置），分组顺序符合预期
 - [ ] 需覆盖 src-openeuler 同名补丁者已放入本层 `files/`（FILESEXTRAPATHS shadow）
-- [ ] `do_patch` 无 `with fuzz` / `offset` 告警（`patch-audit.sh fuzz` exit 0）
-- [ ] 本层无死补丁（`patch-audit.sh dead` exit 0）
+- [ ] `do_patch` 无 `with fuzz`（`$SKILL/scripts/patch-audit.sh fuzz` exit 0）；offset 按第 6 步判定，良性可保留
+- [ ] 本层无死补丁（`$SKILL/scripts/patch-audit.sh dead` exit 0）
 - [ ] 验证前已清理 devtool workspace，`bitbake -p` 0 errors
 - [ ] `bitbake <pkg> -c patch -f` 在 qemu-aarch64 通过，`order` 输出符合预期
 
 ---
 
-## 附：systemd 案例（ worked example ）
+## 案例
 
-`meta-openeuler/recipes-core/systemd/` 的一次完整整改：
-
-1. **枚举/分类**：`patch-audit.sh spec systemd.spec` → Patch6001–6007（A 组 backport）、Patch9008–9057（B 组定制）；基础 recipe（`systemd.inc` + `systemd_253.7.bb`）带 `0026/0002/0008/0004/27254/27253`；C 组为本层 `update-rtc-...patch`。
-2. **架构对齐**：spec `%prep` 有 `%ifnarch sw_64 / %patch9029 -R -p1`，即 `disable-initialize_clock.patch` 仅 sw_64 生效。Embedded 不支持 sw_64 → **移除**并注释；`Systemd-Add-sw64-architecture.patch`（Patch9036）对所有架构无条件应用、内部 `__sw_64__` 守卫在 aarch64 惰性无害 → **保留**。
-3. **消 fuzz**：`logind-set-RemoveIPC-to-false-by-default.patch` 原报 `Hunk #1 ... with fuzz 1 (offset 10 lines)`。用 `devtool modify -O systemd` 取源码树，`git diff <c>^ <c>` 重生成，`patch -p1 -F0 --dry-run` 与 `git apply --check` 均 0，写入本层 `files/` 覆盖 src-openeuler 版。
-4. **删死补丁**：`patch-audit.sh dead` 之外，全仓库 grep 确认 `fix-glibc-2.36-redefinition-error.patch` 无引用 → 删除。
-5. **保序 + 注释**：`systemd-openeuler.inc` 用 `SYSTEMD_OE_PATCHES` 中间变量分组累积、末尾 `SRC_URI =+ "${SYSTEMD_OE_PATCHES}"`，C 组用 `SRC_URI +=`；每组及每个决策点加注释。
-6. **验证**：清理 devtool workspace → `bitbake -p`（0 errors）→ `bitbake systemd -c patch -f`。结果 62 条补丁全应用、`fuzz` exit 0；`order` 显示 `disable-initialize_clock` 不再出现、`logind` 解析自本层 `files/`、顺序为 A(1–7)→B(8–55)→基础(56–61)→C(62)。
-
----
-
-## 附：python3 案例（纯分析，未改文件）
-
-`meta-openeuler/recipes-devtools/python/python3_%.bbappend` 的一次**只读分析**（示范"分析"用法，
-与 systemd 的"整改"用法互补）：
-
-1. **三来源定位**：本层 `python3_%.bbappend`（`PV=3.11.6`，**无 `files/` 子目录**）；基础
-   `poky python3_3.11.5.bb`（声明 22 个 `.patch`）；src-openeuler `python3.spec`（21 个补丁）。
-2. **枚举/分类**：`patch-audit.sh spec` → `Patch1`/`Patch251`（other，构建适配）+ `Patch6000–6015`
-   （16 个 backport，多为 CVE）+ `Patch9000–9002`（3 个定制）；`%prep` **全部无条件应用、无
-   `%ifnarch`** → 按第 2 步"无 %ifnarch"情形，**全部保留即对齐**（含 loongarch64 专属补丁，
-   aarch64 惰性无害）。
-3. **交叉比对**：`xcheck python3.spec python3_%.bbappend` → `spec=21 referenced=22 removed=1
-   applied=21`，MISSING/EXTRA 均空 → 干净。`removed=1` 是 bbappend 用 `:remove` 剔除的 poky
-   `0001-Skip-failing-tests...`（与 openEuler 测试策略冲突，见第 3 步）。
-4. **无 Group C**：本层无 `files/`，21 个 openEuler 补丁全部经 `OPENEULER_DL_DIR` 从 src-openeuler
-   解析；`openeuler.bbclass` 删除基础 recipe 的 `http://...Python-${PV}.tar.xz`，由 bbappend 前置的
-   `file://Python-${PV}.tar.xz` 取代（**无重复 tarball**）。
-5. **验证（复用既有日志）**：直接读 build 目录 aarch64 `3.11.6-r0` 的 `log.do_patch`，`fuzz` exit 0；
-   `order` 显示 1–21 为 openEuler spec 补丁（严格按 spec 顺序）、22–39 为 poky 基础补丁，被 `:remove`
-   的 `0001-Skip-failing-tests` 确实未出现。**纯分析无需重建。**
-6. **附带发现**：`dead` 审计在同目录报 `python3-pytest` 的一个死补丁——属**另一配方**，不在 python3
-   解释器范围内。说明 `dead`/`xcheck` 传目录时要留意目录内**混放的多个配方**，按需缩小到具体
-   recipe 文件或子目录。
-
----
-
-## 附：busybox 案例（版本错配主导 + 免构建验证）
-
-`meta-openeuler/recipes-core/busybox/busybox_%.bbappend` 的**只读分析**，示范"版本升级导致大规模
-`:remove`"这一最常见场景（与 systemd 整改、python3 分析互补）：
-
-1. **三来源**：本层 bbappend（`PV=1.36.1`，`files/` 只有 defconfig/inittab/devmem.cfg，**无本地
-   `.patch`**）；基础 `poky busybox_1.35.0.bb`（14 个补丁）；src-openeuler `busybox.spec`（**仅 3 个
-   CVE backport** `Patch6000–6002`，无 `%ifnarch`）。`xcheck` → `spec=3 referenced=15 removed=12
-   applied=3`，MISSING/EXTRA 均空 → 干净。
-2. **版本错配是主因**：基础 1.35.0 → `PV` 抬到 1.36.1，大批 poky 补丁过时。`:remove` 13 项按四类
-   根因归因：① 已上游合入（`CVE-2022-30065` + 两个 printable-sanitize + testsuite-uudecode，1.36.1
-   已含）② poky 策略（`fail_on_no_media`/`recognize_connmand`/`depmod-debug`/`udhcpc-no_deconfig`/
-   `devmem-128bit`）③ **陈旧空操作 3 个**（`awk-fix-CVEs`/`man-fix-segfault`/`gen_build_files`，不在
-   poky 1.35.0）④ 配置片段（`longopts.cfg`）。
-3. **纠正"冲突"误解**：openEuler 只带 3 个 CVE 补丁，与被移除的 12 个 poky 补丁**无文本重叠**——不是
-   补丁互相冲突，而是版本升级 + 发行版策略分化。
-4. **`stale` 检出陈旧 remove**：`patch-audit.sh stale busybox_%.bbappend busybox_1.35.0.bb` →
-   `removed=13 effective=10 stale_noop=3`（即 ③ 类，建议清理）。
-5. **免构建 dry-run 验证**（无 do_patch 日志）：`do_unpack` 后 workdir 只含 8 个存活补丁（5 poky +
-   3 openEuler CVE；12 个被移除的确实不在）；对纯净 `busybox-1.36.1/` 按序干跑，**8 个全应用、零
-   FAILED、零真 fuzz**，仅 3 个良性 offset（`makefile-libbb-race` +2、`sysctl-EIO` +2、openEuler
-   `CVE-2023-42363` +14，上下文精确匹配）。`PATCHTOOL=quilt` → offset 进日志但非 bb WARNING。
-6. **CVE 差集对齐**：poky 1.35.0 有 `CVE-2022-30065` 但无 28391/48174/42363；openEuler 1.36.1
-   baseline 已含前者、backport 后三者。bbappend 精确追加这 3 个 → **无安全回退**。
-7. **结论**：大量 `:remove` 是版本升级的**正确副产物**，非功能损失。唯二可动手项：清理 3 个陈旧
-   空操作 remove（③）、可选刷新 3 个 offset（追求日志零告警时）。
+systemd 整改、python3 只读分析、busybox 版本错配三个完整案例见
+[reference.md](reference.md)。

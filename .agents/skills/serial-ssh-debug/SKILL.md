@@ -40,6 +40,7 @@ sudo chmod a+rw /dev/ttyUSB0     # 立即生效（设备重插后需重做）
 ```
 
 脚本依赖 pyserial：`pip3 install --user --break-system-packages pyserial`
+（或在 venv 中安装 `pyserial`）。
 
 ### 会话脚本 scripts/serial_console.py
 
@@ -81,7 +82,7 @@ grep -aE "Found|Retrieving|append:|Command line|Starting kernel" /tmp/boot.log
 |---|---|---|
 | TF-A (BL2/BL31) | `INFO: BL2: Loading image id ...` | 到此说明 SoC 上电与启动介质正常 |
 | U-Boot | `U-Boot 2023.10-...`、`Loading Environment from MMC... OK` | 环境读取失败常见于首次烧录 |
-| extlinux 加载 | `Found /mmc1_extlinux/xxx_extlinux.conf` + `append: <cmdline>` | **看真实加载的文件和 cmdline**（见 reference.md 陷阱 5） |
+| extlinux 加载 | `Found /mmc1_extlinux/xxx_extlinux.conf` + `append: <cmdline>` | **看真实加载的文件和 cmdline**（见 reference.md 陷阱 3） |
 | 内核 | `Starting kernel ...` 后 Linux banner | 无输出=内核/DTB 问题 |
 | 用户态 | systemd 启动、最终 `login:` 提示符 | openEuler logo + `ip: x.x.x.x` motd 行 |
 
@@ -113,14 +114,15 @@ udevadm info /sys/class/net/<iface> | grep ID_NET_NAME        # 接口名来源
 
 若接口名是 `endX`/`enpX` 而非 `ethX`，默认配置不生效——ST MP2 系被 udev
 DT-alias 策略改名（`ID_NET_NAME_ONBOARD=end1`），解法是内核 cmdline 加
-`net.ifnames=0`（详见 reference.md 陷阱 6）。
+`net.ifnames=0`（详见 reference.md 陷阱 2）。
 
 ## 第三步：SSH 通道（网络就绪后）
 
 ### 登录命令模板
 
-openEuler Embedded 的 sshd 通常**只开 keyboard-interactive**（不开 password
-认证），直接 `sshpass ssh` 会报 `Too many authentication failures`：
+openEuler Embedded 真机镜像的 sshd 通常**只开 keyboard-interactive**（不开
+password 认证），直接 `sshpass ssh` 会报 `Too many authentication failures`。
+qemu 镜像多允许密码直连，见 sdk-verify 技能：
 
 ```bash
 sshpass -p 'openEuler@2021' ssh \

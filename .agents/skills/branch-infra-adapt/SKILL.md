@@ -17,10 +17,12 @@ argument-hint: "分支名，例如 'openEuler-26.09'"
 
 ## 第 0 步：前置确认
 
-1. `git fetch upstream`，确认基于最新 `upstream/master` 拉分支：
+1. 先 `git remote -v` 确认远端名（`upstream` 指主仓库，个人 fork 名因人而异，
+   下文以 `<fork远端名>` 指代），再基于最新 `upstream/master` 拉分支：
    ```bash
+   git fetch upstream
    git checkout -b <branch> upstream/master
-   git push origin <branch> -u
+   git push <fork远端名> <branch> -u
    ```
 2. 检查上游是否已存在同名分支（决定 PR base 是否可用）：
    ```bash
@@ -97,7 +99,7 @@ release 资产版本由工具链发布流水线管理）、`Dockerfile_Docs_CI` 
 
 ## 第 7 步：提交与 PR
 
-- 遵循 [git-commit](../git-commit) 与 [send-pr](../send-pr) 技能：
+- 遵循 [git-commit](../git-commit/SKILL.md) 与 [send-pr](../send-pr/SKILL.md) 技能：
   commit 标题建议 `oebuild: adapt environment for the <branch> branch`，
   body 分点列出 4 类改动，`Co-Authored-By` + `Signed-off-by` 收尾。
 - PR：head = fork 的 `<branch>`，base = 上游 `<branch>`。
@@ -117,17 +119,7 @@ release 资产版本由工具链发布流水线管理）、`Dockerfile_Docs_CI` 
 | EBS `dailybuild/EBS-<branch>/` 路径 | 本分支 CI 首轮镜像构建产出 | curl 目录列表 |
 | release 资产（toolchains-* 等） | 既有 release 复用；缺失需补传 | `curl -sL .../merge_data.sh` |
 
-## 已知坑（26.09 实践沉淀）
+## 已知坑
 
-1. **release 资产缺失**：`llvm-toolchain-v0.1.1` 曾缺 `merge_data.sh` 导致
-   容器构建 404。修复方式：按 `toolchains-v0.1.8` 的原版风格（仅 cat 合并
-   分卷 + rm 分卷，**不解压**——Dockerfile 自己 tar）补写脚本并以 **LF 换行**
-   上传；CRLF 会导致 `$'\r': command not found`。
-2. **Docker 层缓存掩盖问题**：CI/本地构建命中旧缓存时不重新下载资产，
-   26.09 已为全部容器构建 workflow 加 `--no-cache`（新分支合入后自动生效）。
-3. **分卷合并脚本不通用**：v0.1.2 的 merge_data.sh 自带解压+删合并包，
-   与 Dockerfile 中"脚本后再 tar zxf"的流程不兼容；补传脚本必须与
-   Dockerfile 调用时序匹配。
-4. **基础镜像标签先有鸡还是先有蛋**：Dockerfile_CI 的 `FROM :<tag>` 依赖
-   本分支先产出基础镜像——容器构建 job 的顺序是先 Dockerfile（基础镜像）
-   再 Dockerfile_CI（CI 镜像），正常流水线顺序执行即可。
+分支适配中的已知问题（release 资产缺失、Docker 层缓存、merge_data.sh 不通用、
+基础镜像标签依赖顺序）见 [reference.md](reference.md)。

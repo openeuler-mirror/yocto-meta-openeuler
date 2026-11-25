@@ -31,7 +31,7 @@ yocto-meta-openembedded/meta-oe/    ← 上游 recipe 参考（社区）
 |---|---|---|
 | `OPENEULER_SP_DIR` | 由 `compile.yaml` 设置 | 所有按包划分的源码目录根 |
 | `OPENEULER_LOCAL_NAME` | `${BPN}` | `OPENEULER_SP_DIR` 下的仓库/子目录名 |
-| `OPENEULER_DL_DIR` | `${OPENEULER_SP_DIR}/${OPENEULER_LOCAL_NAME}` | 源码压缩包和补丁的获取位置 |
+| `OPENEULER_DL_DIR` | `${OPENEULER_SP_DIR}/openeuler/${OPENEULER_LOCAL_NAME}` | 源码压缩包和补丁的获取位置 |
 | `OPENEULER_SRC_URI_REMOVE` | `"https git http"` | 被 `openeuler.bbclass` 去除的 URI 协议 |
 
 由于 `FILESEXTRAPATHS:prepend = "${OPENEULER_DL_DIR}:"`，`SRC_URI` 中所有
@@ -69,7 +69,7 @@ find <workspace-root>/src/yocto-poky \
 
 # 或使用 bitbake 查找并检查 recipe
 source <workspace-root>/.venv/bin/activate
-cd <workspace-root>/build/qemu_arm64
+cd <workspace-root>/build/qemu-aarch64
 oebuild bitbake -e <package> 2>/dev/null | grep -E "^(PV|FILE|SRC_URI|FILESEXTRAPATHS) "
 ```
 
@@ -171,7 +171,10 @@ SRC_URI[sha256sum] = "<openeuler 压缩包的 sha256>"
 
 ### 第 5 步 — 补丁策略
 
-从**两个**来源收集补丁并合并：
+从**上游 Yocto recipe 与 openEuler .spec 两个来源**收集补丁并合并。补丁的
+三来源模型、取舍规则与顺序校验见
+[yocto-openeuler-patch-analysis 技能](../yocto-openeuler-patch-analysis/SKILL.md)，
+本文只覆盖新增/升级 recipe 时的最小集合。
 
 #### 5a. 上游 Yocto recipe 的补丁
 
@@ -204,7 +207,7 @@ file://some.patch;patchdir=subdir
 
 ```bash
 source <workspace-root>/.venv/bin/activate
-cd <workspace-root>/build/qemu_arm64
+cd <workspace-root>/build/qemu-aarch64
 
 # 完整构建（有 sstate 时复用）
 oebuild bitbake <package>
