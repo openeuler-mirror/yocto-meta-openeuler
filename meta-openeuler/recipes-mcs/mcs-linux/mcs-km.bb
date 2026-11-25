@@ -22,22 +22,11 @@ OPENEULER_LOCAL_NAME = "mcs"
 # m33copro feature.  Machines with a HiSilicon heterogeneous RISC-V core
 # should set MCS_PEDESTAL = "hisi-riscv".
 MCS_PEDESTAL ?= "${@bb.utils.contains('MACHINE_FEATURES', 'm33copro', 'stm32mp2', 'aarch64', d)}"
-# x86-64 builds the separate mcs-x86 source tree, whose Makefile does not
-# use the pedestal variables. Clear the default so the aarch64 backend is
-# not requested for it.
-MCS_PEDESTAL:x86-64 = ""
 
 SRC_URI:append:aarch64 = " \
     file://mcs/mcs_km \
     "
 S = "${WORKDIR}/mcs/mcs_km"
-
-# for x86
-OPENEULER_LOCAL_NAME:x86-64 = "mcs-x86"
-SRC_URI:append:x86-64 = " \
-    file://mcs-x86/mcs_km \
-    "
-S:x86-64 = "${WORKDIR}/mcs-x86/mcs_km"
 
 do_fetch[depends] += "mcs-linux:do_fetch"
 
@@ -60,7 +49,6 @@ do_compile() {
 # "kernel-module-" prefix as required by the oe-core build environment.
 RPROVIDES:${PN} += "kernel-module-mcs-km"
 RPROVIDES:${PN} += "${@bb.utils.contains('DISTRO_FEATURES', 'xen', 'kernel-module-xen-mcsback', '', d)}"
-RPROVIDES:${PN}:append:x86-64 = " kernel-module-eth-i210"
 
 KERNEL_MODULE_AUTOLOAD += "${@bb.utils.contains('MCS_FEATURES', 'openamp', 'mcs_km', '', d)}"
 KERNEL_MODULE_AUTOLOAD += "${@bb.utils.contains('DISTRO_FEATURES', 'xen', 'xen-mcsback', '', d)}"

@@ -31,7 +31,7 @@ python () {
 
     # qemu-aarch64 related handling
     if 'qemu-aarch64' in machine:
-        mcs_features = d.getVar('MCS_FEATURES').split()
+        mcs_features = (d.getVar('MCS_FEATURES') or '').split()
         if 'openamp' in mcs_features:
             d.setVar('QB_KERNEL_CMDLINE_APPEND', 'maxcpus=3')
             # IMAGE_NAME variable depends on DATETIME variable, result in error:

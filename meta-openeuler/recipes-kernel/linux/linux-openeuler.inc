@@ -114,10 +114,6 @@ KERNEL_FEATURES:append = " \
 KERNEL_FEATURES:append = " \
         ${@bb.utils.contains('MCS_FEATURES', 'jailhouse', 'features/mcs/mcs_jailhouse.scc', '', d)} \
         "
-# add openamp support for x86 mcs
-KERNEL_FEATURES:append:x86-64 = " \
-    ${@bb.utils.contains('MCS_FEATURES', 'openamp', 'features/mcs/0001-x86-irq-add-a-vector-define-for-mcs.patch', '', d)} \
-"
 
 python () {
     pv = d.getVar("PV", True)

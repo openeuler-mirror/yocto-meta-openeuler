@@ -14,7 +14,7 @@ ZEPHYR_APP_DIR ?= "${ZEPHYR_BASE}/samples/subsys/shell/devmem_load"
 
 python () {
     machine = d.getVar('MACHINE').split()
-    mcs_features = d.getVar('MCS_FEATURES').split()
+    mcs_features = (d.getVar('MCS_FEATURES') or '').split()
     distro_features = d.getVar('DISTRO_FEATURES').split()
 
     # qemu-aarch64 related handling

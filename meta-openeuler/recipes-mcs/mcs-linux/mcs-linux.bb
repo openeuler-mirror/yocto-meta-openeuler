@@ -23,19 +23,6 @@ SRC_URI:append:aarch64 = " \
     "
 S = "${WORKDIR}/mcs"
 
-# for x86
-OPENEULER_LOCAL_NAME:x86-64 = "mcs-x86"
-SRC_URI:append:x86-64 = " \
-    file://mcs-x86 \
-    "
-S:x86-64 = "${WORKDIR}/mcs-x86"
-
-EXTRA_OECMAKE:x86-64 = " \
-    -DDEMO_TARGET=mica_demo \
-    -DCONFIG_RING_BUFFER=y \
-    -DMICA_DEBUG_LOG=y \
-    "
-
 # enable name-based rpmsg tty suffix via CMake option when requested
 EXTRA_OECMAKE:append = " ${@bb.utils.contains('MCS_FEATURES', 'new_tty_suffix', ' -DRPMSG_TTY_USE_CLIENT_NAME=1', '', d)}"
 
@@ -46,33 +33,21 @@ DEPENDS = "openamp libmetal update-rc.d-native"
 RDEPENDS:${PN} = "libgcc-external"
 
 do_install:append () {
-    # Install micad service/init files when present in the source tree.
-    # On aarch64 the mcs source ships mica/micad/init/; on x86-64 the
-    # mcs-x86 source does not include it. Guard each install so the
-    # task does not fail if the files are absent.
     if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
-        if [ -f "${S}/mica/micad/init/micad.service" ]; then
-            install -d ${D}${systemd_system_unitdir}
-            install -m 0644 ${S}/mica/micad/init/micad.service ${D}${systemd_system_unitdir}
-        fi
+        install -d ${D}${systemd_system_unitdir}
+        install -m 0644 ${S}/mica/micad/init/micad.service ${D}${systemd_system_unitdir}
     fi
 
     if ${@bb.utils.contains('DISTRO_FEATURES', 'sysvinit', 'true', 'false', d)}; then
-        if [ -f "${S}/mica/micad/init/micad.init" ]; then
-            install -d ${D}${sysconfdir}/init.d
-            install -d ${D}${sysconfdir}/rc5.d
-            install -m 0755 ${S}/mica/micad/init/micad.init ${D}${sysconfdir}/init.d
-            update-rc.d -r ${D} micad.init start 90 5 .
-        fi
+        install -d ${D}${sysconfdir}/init.d
+        install -d ${D}${sysconfdir}/rc5.d
+        install -m 0755 ${S}/mica/micad/init/micad.init ${D}${sysconfdir}/init.d
+        update-rc.d -r ${D} micad.init start 90 5 .
     fi
 }
 
 SYSTEMD_PACKAGES = "mcs-linux"
-# Only declare micad.service as a systemd service when the source tree
-# actually ships it (aarch64 mcs source has mica/micad/init/micad.service;
-# x86-64 mcs-x86 does not). Declaring a service that was not installed
-# makes the systemd class fail do_package with "Didn't find service unit".
-SYSTEMD_SERVICE:mcs-linux = "${@bb.utils.contains('OPENEULER_LOCAL_NAME', 'mcs-x86', '', 'micad.service', d)}"
+SYSTEMD_SERVICE:mcs-linux = "micad.service"
 
 FILES:${PN} = " \
      ${bindir}/* \
