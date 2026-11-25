@@ -129,39 +129,22 @@ torch/lerobot/构建产物动辄 10G+，必然爆盘。**用一块 100G 物理�
 
 ### 3.2 建盘 + 灌 rootfs（`prep-disk.sh`）
 
-把 `prep-disk.sh` 放在镜像输出目录（与 zImage/rootfs.cpio.gz 同级），它**自动定位本目录的
-`*.rootfs.cpio.gz`**、`losetup` 挂镜像、`mkfs.ext4`、解 cpio、改 root 密码、写 fstab、卸载：
+脚本随技能提供：`.agents/skills/ibrobot-test/scripts/prep-disk.sh`。把它拷到
+镜像输出目录（与 zImage/rootfs.cpio.gz 同级）后执行：脚本**自动定位本目录的
+`*.rootfs.cpio.gz`**、`losetup` 挂镜像、`mkfs.ext4`、解 cpio、改 root 密码、
+写 fstab、卸载。
 
 ```bash
 cd build/qemu-aarch64/output/<ts>
 qemu-img create -f raw ibrobot-disk.img 100G    # 稀疏盘，实际 0 字节起
+cp "$(git rev-parse --show-toplevel)/.agents/skills/ibrobot-test/scripts/prep-disk.sh" .
 sudo bash prep-disk.sh                           # 需 host sudo（losetup/mkfs/cpio）
 ```
 
-`prep-disk.sh` 内容（自定位、可照抄）：
-
-```bash
-#!/bin/bash
-set -euo pipefail
-OUT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-IMG="$OUT/ibrobot-disk.img"
-CPIO="$(ls "$OUT"/openeuler-image-qemu-aarch64-*.rootfs.cpio.gz 2>/dev/null | head -1)"
-MNT="/mnt/ibrobot-disk"; ROOTPW="Aarch64@Qemu"
-[ "$(id -u)" = 0 ] || { echo "run with sudo"; exit 1; }
-[ -n "$CPIO" ] || { echo "no rootfs cpio in $OUT"; exit 1; }
-[ -f "$IMG" ] || qemu-img create -f raw "$IMG" 100G
-DEV="$(losetup -fP --show "$IMG")"
-mkfs.ext4 -F -m 1 "$DEV" >/dev/null 2>&1
-mkdir -p "$MNT"; mount "$DEV" "$MNT"
-cd "$MNT" && zcat "$CPIO" | cpio -idm >/dev/null 2>&1; cd - >/dev/null
-# 设 root 密码 + 清掉强制改密（避免首登走 keyboard-interactive 改密流程）
-chroot "$MNT" /bin/bash -c "echo 'root:$ROOTPW' | chpasswd && chage -m 0 -M 99999 -E -1 -W -1 -I -1 root && chage -d \"\$(date +%Y-%m-%d)\" root"
-grep -q '^[^#].*[[:space:]]/[[:space:]]' "$MNT/etc/fstab" 2>/dev/null || echo '/dev/vda / ext4 defaults,rw 0 1' >> "$MNT/etc/fstab"
-cd /; umount "$MNT"; losetup -d "$DEV"
-echo "DONE: $IMG"
-```
-
-> 真实物理盘/分区：把 `IMG=...ibrobot-disk.img` 改成 `IMG=/dev/sdX`，启动命令 `-drive file=` 相应改 `/dev/sdX`。
+> 真实物理盘/分区：把 `IMG=...ibrobot-disk.img` 改成 `IMG=/dev/sdX`，启动命令
+> `-drive file=` 相应改 `/dev/sdX`。注意脚本会对 `IMG` 执行 `mkfs.ext4 -F`，
+> 改成物理盘前务必用 `lsblk` 核对设备，选错会整盘格式化；块设备需显式确认：
+> `sudo ALLOW_BLOCK_DEVICE=1 bash prep-disk.sh`。
 
 ---
 
@@ -182,6 +165,7 @@ sudo qemu-system-aarch64 -M virt-4.0 -m 20G -cpu cortex-a53 -smp 4 -kernel zImag
 - 网络沿用 `bridge,br=br_qemu` + `virtio-net-pci`（与原命令一致），guest DHCP 得 192.168.122.20。
 - console `ttyAMA0,115200` 配合 `-nographic`。
 - 若启动报 `VFS: Unable to mount root fs`（理论上不会），把 `-initrd` 加回用 initramfs pivot。
+- 网桥 `br_qemu`、guest IP `192.168.122.20`、密码等为验证环境取值，换环境时按实际替换。
 
 > 备选（不改启动方式、最省事）：保留 `-initrd` + 加数据盘挂到 `/workspace`，clone/build 放盘上。
 > 但系统 apt 仍落 rootfs（2.9G 紧张），**推荐用本节的根盘方案**。
@@ -193,7 +177,8 @@ sudo qemu-system-aarch64 -M virt-4.0 -m 20G -cpu cortex-a53 -smp 4 -kernel zImag
 ```bash
 ssh root@192.168.122.20     # 密码 Aarch64@Qemu（prep-disk.sh 已设）
 cd /IB_Robot                # 镜像若已预装（ibrobot 特性）则已在；否则：
-# git clone -b master --single-branch --depth 1 https://atomgit.com/openeuler/IB_Robot.git && git config --global http.sslVerify false
+# git clone -b master --single-branch --depth 1 https://atomgit.com/openeuler/IB_Robot.git
+# （内网证书链异常时只对本次 clone 关闭校验：git -c http.sslVerify=false clone ...）
 ./scripts/setup.sh -y        # venv(torch/lerobot)+rosdep+submodules+lerobot patches；20-60 min
 source .shrc_local
 ./scripts/build.sh           # 默认 --mixin dev（BUILD_TESTING=OFF）；注意 build.sh 无 -y 参数！
@@ -316,15 +301,11 @@ colcon build --packages-select vlm_task_planner manipulation_service semantic_ma
 - 根因：6 个 CUDA/Gazebo-only 包被 build.sh 跳过（未进 install/），但测试互相 import。
 - 修复：补建这 5 个 ament_python 包（§6.3）。
 
-### 7.4 类 D — `run_tests.sh` 脚本 bug（已修复，需用最新版）
+### 7.4 类 D — `run_tests.sh` 脚本 bug（已在附带脚本中修复）
 
-| bug | 修复 |
-|---|---|
-| 未 source `install/setup.sh` | setup_env 增 source |
-| `run_colcon_test` 缺 `--merge-install` | 加 `--merge-install` |
-| `colcon test` exit 0 误报 PASS | 解析 CTest 摘要行 |
-| `colcon test-result` 跨包扫描误报 | 不用 test-result，按本次输出解析 |
-| `${ROS_LOCALHOST_ONLY:-1}` 沿用 0 | 改 force `=1` |
+历史上出现过 `colcon test` 退出码误报 PASS、缺 `--merge-install`、未 source
+`install/setup.sh`、`ROS_LOCALHOST_ONLY` 默认值沿用 0 等问题，均已在技能自带的
+`run_tests.sh` 中修复；请使用本技能目录的版本，不要用旧副本。
 
 ### 7.5 类 E — 真实数据/硬件/版本依赖（qemu 上无法通过，**非代码 bug**）
 
@@ -357,13 +338,10 @@ colcon build --packages-select vlm_task_planner manipulation_service semantic_ma
 
 ---
 
-## 9. 最终测试结果总账（参考基线）
+## 9. 最终测试结果总账
 
-`pass=21 / fail=8 / skip=5`（共 34 组件，约 1400+ 用例通过，lint 忽略）。
-
-- **8 个 FAIL 全为环境/数据/版本类，无 IB-Robot 功能代码 bug**。
-- C++ 6 组件全部功能正常（2 个仅 lint 失败、1 个仅 vendored 测试夹具版本错配，控制器逻辑 gmock 均过）。
-- 详见本技能目录 `TESTING_GUIDE.md` 第 6 章。
+历史基线（pass=21 / fail=8 / skip=5）与逐组件结论见 `TESTING_GUIDE.md`
+第 6 章；数值随 IB-Robot 版本变化，仅作参照。
 
 ---
 
@@ -376,7 +354,9 @@ cd build/qemu-aarch64 && oebuild bitbake openeuler-image
 # 产物：output/<ts>/{zImage, *.rootfs.cpio.gz}
 
 # 宿主机：建大磁盘 + 灌 rootfs
-cd output/<ts> && qemu-img create -f raw ibrobot-disk.img 100G && sudo bash prep-disk.sh
+cd output/<ts>
+cp "$(git rev-parse --show-toplevel)/.agents/skills/ibrobot-test/scripts/prep-disk.sh" .
+qemu-img create -f raw ibrobot-disk.img 100G && sudo bash prep-disk.sh
 
 # 启动 qemu（从盘）
 sudo qemu-system-aarch64 -M virt-4.0 -m 20G -cpu cortex-a53 -smp 4 -kernel zImage \
