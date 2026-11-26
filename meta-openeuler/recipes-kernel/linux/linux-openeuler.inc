@@ -119,11 +119,13 @@ python () {
     pv = d.getVar("PV", True)
     if pv == "5.10":
         d.setVar("MCS_EXPORT_SYMBOL_PATCH", ' ')
+        d.setVar("MCS_OPENAMP_IPI_CFG", ' ')
     else:
         d.setVar("MCS_EXPORT_SYMBOL_PATCH", 'features/mcs/0005-arm64-cpu-export-cpu_logical_map-symbol-for-mcs.patch')
+        d.setVar("MCS_OPENAMP_IPI_CFG", 'features/mcs/mcs_openamp_ipi.scc')
 }
 KERNEL_FEATURES:append:aarch64 = " \
-    ${@bb.utils.contains('MCS_FEATURES', 'openamp', "${MCS_EXPORT_SYMBOL_PATCH}", '', d)} \
+    ${@bb.utils.contains('MCS_FEATURES', 'openamp', "${MCS_EXPORT_SYMBOL_PATCH} ${MCS_OPENAMP_IPI_CFG}", '', d)} \
  "
 
 # xen kernel support
