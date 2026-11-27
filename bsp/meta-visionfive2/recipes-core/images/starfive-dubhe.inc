@@ -6,12 +6,11 @@ IMAGE_FSTYPES:remove = "iso"
 # remove unnecessary files from rootfs to reduce size
 delete_unneeded_from_rootfs() {
     set -x
-    # if the output_dir does not exist, rm will cause an error
-    if test -d "${OUTPUT_DIR}"; then
-        rm -rf "${OUTPUT_DIR}"
-    else
-        mkdir -p "${OUTPUT_DIR}"
-    fi
+    # drop stale output from an earlier build, then always recreate the
+    # directory; the previous if/else left it deleted when it existed and
+    # the boot copy below failed with "No such file or directory"
+    rm -rf "${OUTPUT_DIR}"
+    mkdir -p "${OUTPUT_DIR}"
     # if the ${IMAGE_ROOTFS}/boot does not exist, cp will cause an error
     if [ "$(ls ${IMAGE_ROOTFS}/boot)" ]; then
         cp ${IMAGE_ROOTFS}/boot/* ${OUTPUT_DIR}/
@@ -24,12 +23,8 @@ delete_unneeded_from_rootfs() {
 # We only need to copy the wic image to the output directory
 copy_openeuler_distro() {
     set -x
-    # if the output_dir does not exist, rm will cause an error
-    if test -d "${OUTPUT_DIR}"; then
-        rm -f "${OUTPUT_DIR}"/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.wic.bz2
-    else
-        mkdir -p "${OUTPUT_DIR}"
-    fi
+    mkdir -p "${OUTPUT_DIR}"
+    rm -f "${OUTPUT_DIR}"/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.wic.bz2
     cp -fp ${IMGDEPLOYDIR}/${IMAGE_NAME}${IMAGE_NAME_SUFFIX}.wic.bz2 "${OUTPUT_DIR}"/
     set +x
 }
