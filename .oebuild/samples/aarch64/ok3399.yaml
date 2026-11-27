@@ -1,0 +1,25 @@
+# Features: none (base image only)
+build_in: docker
+machine: ok3399
+toolchain_type: EXTERNAL_TOOLCHAIN:aarch64
+no_layer: false
+repos:
+- yocto-poky
+- yocto-meta-openembedded
+- yocto-meta-rockchip
+local_conf: |
+  PREFERRED_PROVIDER_virtual/kernel ?= "linux-openeuler"
+  # the npu firmware comes from GitHub JeffyCN/mirrors (rknpu-fw) and the
+  # CI container cannot reach GitHub; leave the NPU package out of the
+  # daily base image until the firmware is mirrored by openEuler
+  MACHINE_EXTRA_RRECOMMENDS:remove = "rockchip-npu"
+layers:
+- yocto-meta-rockchip
+docker_param:
+  image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
+  parameters: -itd --network host
+  volumns:
+  - /dev/net/tun:/dev/net/tun
+  command: bash
+bitbake_cmds:
+- bitbake openeuler-image
