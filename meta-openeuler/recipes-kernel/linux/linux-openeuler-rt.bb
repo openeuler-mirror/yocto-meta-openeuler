@@ -20,12 +20,12 @@ SRC_URI:append:x86-64 = " \
     ', d)} \
 "
 
-SRC_URI:append = " \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
-        file://patches/rt/0001-Revert-mm-convert-mm-s-rss-stats-to-use-atomic-mode.patch \
-        file://patches/rt/0002-Revert-percpu_counter-introduce-atomic-mode-for-perc.patch \
-    ', '', d)} \
-"
+# The -Next-era mm rss-stats and percpu_counter reverts are not used on
+# the 145.0.13 kernel6 baseline: neither matches the state of the
+# openEuler-24.03-LTS tree (the rss-stats atomic-mode commit never landed
+# there, and the percpu_counter revert removes helpers that mm.h on this
+# baseline depends on). The kernel-rt rebase to 6.6.0-145.0.13.7
+# reconciles the tree as is.
 
 COMPATIBLE_MACHINE = "qemu-aarch64|generic-x86-64"
 
