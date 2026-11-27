@@ -1,0 +1,344 @@
+From b836ef686efe4d01fb54a12cb1e9df7ec0494201 Mon Sep 17 00:00:00 2001
+From: Hirokazu Takahashi <taka@valinux.co.jp>
+Date: Wed, 26 Aug 2026 12:55:28 +0200
+Subject: [PATCH] xen/arm: Hide PMU registers from the guest, when the vPMU
+ feature is disabled
+
+On ARMv8.4-A and newer platforms, booting Dom0 Linux with ACPI enabled
+causes the domain to probe advanced PMU feature based on system ID
+register ID_AA64DFR0_EL1. During this probe, Linux accesses PMMIR_EL1,
+which causes unhandled register traps and crashes the domain.
+
+To address this issue, implement the following:
+
+- Add emulation for ID_AA64DFR{0,1}_EL1, ID_DFR{0,1}_EL1 and
+  ID_DFR{0,1} register accesses for guest domains.
+- Hide PMU registers from a guest domain when its vPMU feature is
+  disabled.
+- Proactively make SPE, TRBE, BRBE, Trace Extensions, SPMU, ITE and
+  EBEP inaccessible to arm64 guest domains and hide TraceFilt,
+  MMapTrc and CopTrc to arm32 guest domains, as they could
+  potentially cause similar issues.
+
+Fixes: dbb948110a0e ("xen: Expose the PMU to the guests")
+Fixes: 07b9acea116e ("xen/arm: Add handler for ID registers on arm64")
+Fixes: 3669a1cb9598 ("xen/arm: create a cpuinfo structure for guest")
+Signed-off-by: Hirokazu Takahashi <taka@valinux.co.jp>
+Reviewed-by: Michal Orzel <michal.orzel@amd.com>
+(cherry picked from commit b836ef686efe4d01fb54a12cb1e9df7ec0494201)
+
+Upstream-Status: Backport [https://github.com/xen-project/xen/commit/b836ef686efe4d01fb54a12cb1e9df7ec0494201]
+
+Backported to 4.18.2. Only the context of three hunks differs from
+upstream; the added and removed lines are identical:
+- arm64/vsysreg.c: add "case HSR_SYSREG_PMMIR_EL1:" to the PMU RAZ/WI cases
+- vcpreg.c: add "case HSR_CPREG32(PMMIR):" to the PMU RAZ/WI cases
+- include/xen/sched.h: add is_vpmu_domain() after is_iommu_enabled()
+
+Signed-off-by: Wanming Hu <huwanming@huawei.com>
+---
+ xen/arch/arm/arm64/vsysreg.c          | 59 +++++++++++++++++++++++++--
+ xen/arch/arm/cpufeature.c             | 18 ++++++++
+ xen/arch/arm/domain.c                 |  2 +-
+ xen/arch/arm/include/asm/arm64/hsr.h  |  1 +
+ xen/arch/arm/include/asm/cpregs.h     |  1 +
+ xen/arch/arm/include/asm/cpufeature.h | 27 ++++++++----
+ xen/arch/arm/vcpreg.c                 | 34 ++++++++++++---
+ xen/include/xen/sched.h               |  5 +++
+ 8 files changed, 129 insertions(+), 18 deletions(-)
+
+diff --git a/xen/arch/arm/arm64/vsysreg.c b/xen/arch/arm/arm64/vsysreg.c
+index b5d54c5..e42ad2b 100644
+--- a/xen/arch/arm/arm64/vsysreg.c
++++ b/xen/arch/arm/arm64/vsysreg.c
+@@ -201,6 +201,7 @@ void do_sysreg(struct cpu_user_regs *regs,
+      */
+     case HSR_SYSREG_PMINTENSET_EL1:
+     case HSR_SYSREG_PMINTENCLR_EL1:
++    case HSR_SYSREG_PMMIR_EL1:
+         /*
+          * Accessible from EL1 only, but if EL0 trap happens handle as
+          * undef.
+@@ -278,8 +279,32 @@ void do_sysreg(struct cpu_user_regs *regs,
+     GENERATE_TID3_INFO(ID_PFR0_EL1, pfr32, 0)
+     GENERATE_TID3_INFO(ID_PFR1_EL1, pfr32, 1)
+     GENERATE_TID3_INFO(ID_PFR2_EL1, pfr32, 2)
+-    GENERATE_TID3_INFO(ID_DFR0_EL1, dbg32, 0)
+-    GENERATE_TID3_INFO(ID_DFR1_EL1, dbg32, 1)
++
++    case HSR_SYSREG_ID_DFR0_EL1:
++    {
++        union cpuinfo_dbg32 info_dbg32 = domain_cpuinfo.dbg32;
++
++        if ( !is_vpmu_domain(v->domain) )
++            info_dbg32.perfmon = 0;
++
++        return handle_ro_read_val(regs, regidx, hsr.sysreg.read, hsr, 1,
++                                  info_dbg32.bits[0]);
++    }
++
++    case HSR_SYSREG_ID_DFR1_EL1:
++    {
++        union cpuinfo_dbg32 info_dbg32 = domain_cpuinfo.dbg32;
++
++        if ( !is_vpmu_domain(v->domain) )
++        {
++            info_dbg32.mtpmu = 0;
++            info_dbg32.hpmn0 = 0;
++        }
++
++        return handle_ro_read_val(regs, regidx, hsr.sysreg.read, hsr, 1,
++                                  info_dbg32.bits[1]);
++    }
++
+     GENERATE_TID3_INFO(ID_AFR0_EL1, aux32, 0)
+     GENERATE_TID3_INFO(ID_MMFR0_EL1, mm32, 0)
+     GENERATE_TID3_INFO(ID_MMFR1_EL1, mm32, 1)
+@@ -320,8 +345,34 @@ void do_sysreg(struct cpu_user_regs *regs,
+     }
+ 
+     GENERATE_TID3_INFO(ID_AA64PFR1_EL1, pfr64, 1)
+-    GENERATE_TID3_INFO(ID_AA64DFR0_EL1, dbg64, 0)
+-    GENERATE_TID3_INFO(ID_AA64DFR1_EL1, dbg64, 1)
++
++    case HSR_SYSREG_ID_AA64DFR0_EL1:
++    {
++        union cpuinfo_dbg64 info_dbg64 = domain_cpuinfo.dbg64;
++
++        if ( !is_vpmu_domain(v->domain) )
++        {
++            info_dbg64.pmu_ver = 0;
++            info_dbg64.pmss = 0;
++            info_dbg64.mtpmu = 0;
++            info_dbg64.hpmn0 = 0;
++        }
++
++        return handle_ro_read_val(regs, regidx, hsr.sysreg.read, hsr, 1,
++                                  info_dbg64.bits[0]);
++    }
++
++    case HSR_SYSREG_ID_AA64DFR1_EL1:
++    {
++        union cpuinfo_dbg64 info_dbg64 = domain_cpuinfo.dbg64;
++
++        if ( !is_vpmu_domain(v->domain) )
++            info_dbg64.pmicntr = 0;
++
++        return handle_ro_read_val(regs, regidx, hsr.sysreg.read, hsr, 1,
++                                  info_dbg64.bits[1]);
++    }
++
+     GENERATE_TID3_INFO(ID_AA64ISAR0_EL1, isa64, 0)
+     GENERATE_TID3_INFO(ID_AA64ISAR1_EL1, isa64, 1)
+     GENERATE_TID3_INFO(ID_AA64MMFR0_EL1, mm64, 0)
+diff --git a/xen/arch/arm/cpufeature.c b/xen/arch/arm/cpufeature.c
+index f43d5cb..fa1303f 100644
+--- a/xen/arch/arm/cpufeature.c
++++ b/xen/arch/arm/cpufeature.c
+@@ -215,8 +215,26 @@ static int __init create_domain_cpuinfo(void)
+     domain_cpuinfo.isa64.api = 0;
+     domain_cpuinfo.isa64.gpa = 0;
+     domain_cpuinfo.isa64.gpi = 0;
++
++    /* Hide SPE, DPFZS, TRBE, BRBE, Trace Extensions, SPMU, ITE and EBEP */
++    domain_cpuinfo.dbg64.trace_ver = 0;
++    domain_cpuinfo.dbg64.pms_ver = 0;
++    domain_cpuinfo.dbg64.dpfzs = 0;
++    domain_cpuinfo.dbg64.trace_filt = 0;
++    domain_cpuinfo.dbg64.trace_buffer = 0;
++    domain_cpuinfo.dbg64.ext_trc_buff = 0;
++    domain_cpuinfo.dbg64.brbe = 0;
++    domain_cpuinfo.dbg64.syspmuid = 0;
++    domain_cpuinfo.dbg64.spmu = 0;
++    domain_cpuinfo.dbg64.ite = 0;
++    domain_cpuinfo.dbg64.ebep = 0;
+ #endif
+ 
++    /* Hide Trace Extensions for AArch32 domain */
++    domain_cpuinfo.dbg32.coptrc = 0;
++    domain_cpuinfo.dbg32.mmaptrc = 0;
++    domain_cpuinfo.dbg32.tracefilt = 0;
++
+     /* Hide AMU support */
+ #ifdef CONFIG_ARM_64
+     domain_cpuinfo.pfr64.amu = 0;
+diff --git a/xen/arch/arm/domain.c b/xen/arch/arm/domain.c
+index 28e3aaa..ab3a550 100644
+--- a/xen/arch/arm/domain.c
++++ b/xen/arch/arm/domain.c
+@@ -566,7 +566,7 @@ int arch_vcpu_create(struct vcpu *v)
+     v->arch.hcr_el2 = get_default_hcr_flags();
+ 
+     v->arch.mdcr_el2 = HDCR_TDRA | HDCR_TDOSA | HDCR_TDA;
+-    if ( !(v->domain->options & XEN_DOMCTL_CDF_vpmu) )
++    if ( !is_vpmu_domain(v->domain) )
+         v->arch.mdcr_el2 |= HDCR_TPM | HDCR_TPMCR;
+ 
+     if ( (rc = vcpu_vgic_init(v)) != 0 )
+diff --git a/xen/arch/arm/include/asm/arm64/hsr.h b/xen/arch/arm/include/asm/arm64/hsr.h
+index e691d41..df36419 100644
+--- a/xen/arch/arm/include/asm/arm64/hsr.h
++++ b/xen/arch/arm/include/asm/arm64/hsr.h
+@@ -81,6 +81,7 @@
+ #define HSR_SYSREG_FAR_EL1        HSR_SYSREG(3,0,c6, c0,0)
+ #define HSR_SYSREG_PMINTENSET_EL1 HSR_SYSREG(3,0,c9,c14,1)
+ #define HSR_SYSREG_PMINTENCLR_EL1 HSR_SYSREG(3,0,c9,c14,2)
++#define HSR_SYSREG_PMMIR_EL1      HSR_SYSREG(3,0,c9,c14,6)
+ #define HSR_SYSREG_MAIR_EL1       HSR_SYSREG(3,0,c10,c2,0)
+ #define HSR_SYSREG_AMAIR_EL1      HSR_SYSREG(3,0,c10,c3,0)
+ #define HSR_SYSREG_ICC_SGI1R_EL1  HSR_SYSREG(3,0,c12,c11,5)
+diff --git a/xen/arch/arm/include/asm/cpregs.h b/xen/arch/arm/include/asm/cpregs.h
+index 6b083de..04840c3 100644
+--- a/xen/arch/arm/include/asm/cpregs.h
++++ b/xen/arch/arm/include/asm/cpregs.h
+@@ -242,6 +242,7 @@
+ #define PMINTENSET      p15,0,c9,c14,1  /* Perf. Mon. Interrupt Enable Set Register */
+ #define PMINTENCLR      p15,0,c9,c14,2  /* Perf. Mon. Interrupt Enable Clear Register */
+ #define PMOVSSET        p15,0,c9,c14,3  /* Perf. Mon. Overflow Flag Status Set register */
++#define PMMIR           p15,0,c9,c14,6  /* Perf. Mon. Machine Identification Register */
+ 
+ /* CP15 CR10: */
+ #define MAIR0           p15,0,c10,c2,0  /* Memory Attribute Indirection Register 0 AKA PRRR */
+diff --git a/xen/arch/arm/include/asm/cpufeature.h b/xen/arch/arm/include/asm/cpufeature.h
+index 8011076..7fa73a0 100644
+--- a/xen/arch/arm/include/asm/cpufeature.h
++++ b/xen/arch/arm/include/asm/cpufeature.h
+@@ -211,7 +211,7 @@ struct cpuinfo_arm {
+         };
+     } pfr64;
+ 
+-    union {
++    union cpuinfo_dbg64 {
+         register_t bits[2];
+         struct {
+             /* DFR0 */
+@@ -219,19 +219,31 @@ struct cpuinfo_arm {
+             unsigned long trace_ver:4;
+             unsigned long pmu_ver:4;
+             unsigned long brps:4;
+-            unsigned long __res0:4;
++            unsigned long pmss:4;
+             unsigned long wrps:4;
+             unsigned long __res1:4;
+             unsigned long ctx_cmps:4;
+             unsigned long pms_ver:4;
+             unsigned long double_lock:4;
+             unsigned long trace_filt:4;
+-            unsigned long __res2:4;
++            unsigned long trace_buffer:4;
+             unsigned long mtpmu:4;
+-            unsigned long __res3:12;
++            unsigned long brbe:4;
++            unsigned long ext_trc_buff:4;
++            unsigned long hpmn0:4;
+ 
+             /* DFR1 */
+-            unsigned long __res4:64;
++            unsigned long syspmuid:8;
++            unsigned long brps1:8;
++            unsigned long wrps1:8;
++            unsigned long ctx_cmps1:8;
++            unsigned long spmu:4;
++            unsigned long pmicntr:4;
++            unsigned long able:4;
++            unsigned long ite:4;
++            unsigned long ebep:4;
++            unsigned long dpfzs:4;
++            unsigned long abl_cmps:8;
+         };
+     } dbg64;
+ 
+@@ -404,7 +416,7 @@ struct cpuinfo_arm {
+         };
+     } pfr32;
+ 
+-    union {
++    union cpuinfo_dbg32 {
+         register_t bits[2];
+         struct {
+             /* DFR0 */
+@@ -422,7 +434,8 @@ struct cpuinfo_arm {
+ 
+             /* DFR1 */
+             unsigned long mtpmu:4;
+-            unsigned long __res1:28;
++            unsigned long hpmn0:4;
++            unsigned long __res1:24;
+ #ifdef CONFIG_ARM_64
+             unsigned long __res2:32;
+ #endif
+diff --git a/xen/arch/arm/vcpreg.c b/xen/arch/arm/vcpreg.c
+index 39aeda9..d0fabaf 100644
+--- a/xen/arch/arm/vcpreg.c
++++ b/xen/arch/arm/vcpreg.c
+@@ -277,10 +277,7 @@ void do_cp15_32(struct cpu_user_regs *regs, const union hsr hsr)
+      *
+      * NB: Both MDCR_EL2.TPM and MDCR_EL2.TPMCR cause trapping of PMCR.
+      */
+-    /* We could trap ID_DFR0 and tell the guest we don't support
+-     * performance monitoring, but Linux doesn't check the ID_DFR0.
+-     * Therefore it will read PMCR.
+-     *
++    /*
+      * We tell the guest we have 0 counters. Unfortunately we must
+      * always support PMCCNTR (the cyle counter): we just RAZ/WI for all
+      * PM register, which doesn't crash the kernel at least
+@@ -293,6 +290,7 @@ void do_cp15_32(struct cpu_user_regs *regs, const union hsr hsr)
+             return handle_raz_wi(regs, regidx, cp32.read, hsr, 1);
+     case HSR_CPREG32(PMINTENSET):
+     case HSR_CPREG32(PMINTENCLR):
++    case HSR_CPREG32(PMMIR):
+         /* EL1 only, however MDCR_EL2.TPM==1 means EL0 may trap here also. */
+         return handle_raz_wi(regs, regidx, cp32.read, hsr, 1);
+     case HSR_CPREG32(PMCR):
+@@ -322,8 +320,32 @@ void do_cp15_32(struct cpu_user_regs *regs, const union hsr hsr)
+     GENERATE_TID3_INFO(ID_PFR0, pfr32, 0)
+     GENERATE_TID3_INFO(ID_PFR1, pfr32, 1)
+     GENERATE_TID3_INFO(ID_PFR2, pfr32, 2)
+-    GENERATE_TID3_INFO(ID_DFR0, dbg32, 0)
+-    GENERATE_TID3_INFO(ID_DFR1, dbg32, 1)
++
++    case HSR_CPREG32(ID_DFR0):
++    {
++        union cpuinfo_dbg32 info_dbg32 = domain_cpuinfo.dbg32;
++
++        if ( !is_vpmu_domain(v->domain) )
++            info_dbg32.perfmon = 0;
++
++        return handle_ro_read_val(regs, regidx, cp32.read, hsr, 1,
++                                  info_dbg32.bits[0]);
++    }
++
++    case HSR_CPREG32(ID_DFR1):
++    {
++        union cpuinfo_dbg32 info_dbg32 = domain_cpuinfo.dbg32;
++
++        if ( !is_vpmu_domain(v->domain) )
++        {
++            info_dbg32.mtpmu = 0;
++            info_dbg32.hpmn0 = 0;
++        }
++
++        return handle_ro_read_val(regs, regidx, cp32.read, hsr, 1,
++                                  info_dbg32.bits[1]);
++    }
++
+     GENERATE_TID3_INFO(ID_AFR0, aux32, 0)
+     GENERATE_TID3_INFO(ID_MMFR0, mm32, 0)
+     GENERATE_TID3_INFO(ID_MMFR1, mm32, 1)
+diff --git a/xen/include/xen/sched.h b/xen/include/xen/sched.h
+index 3609ef8..d6b3029 100644
+--- a/xen/include/xen/sched.h
++++ b/xen/include/xen/sched.h
+@@ -1165,6 +1165,11 @@ static always_inline bool is_iommu_enabled(const struct domain *d)
+     return evaluate_nospec(d->options & XEN_DOMCTL_CDF_iommu);
+ }
+ 
++static inline bool is_vpmu_domain(const struct domain *d)
++{
++    return d->options & XEN_DOMCTL_CDF_vpmu;
++}
++
+ extern bool sched_smt_power_savings;
+ extern bool sched_disable_smt_switching;
+ 
