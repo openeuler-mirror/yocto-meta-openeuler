@@ -1,0 +1,167 @@
+From a2234959527a420f8736b2789118326b2d3ee35e Mon Sep 17 00:00:00 2001
+From: Oleksii Kurochko <oleksii.kurochko@gmail.com>
+Date: Fri, 9 Jan 2026 10:27:11 +0100
+Subject: [PATCH] acpi/arm: relax MADT GICC entry length check to support
+ newer ACPI revisions
+
+Newer ACPI revisions define the MADT GICC entry with Length = 82 bytes [1].
+The current BAD_MADT_GICC_ENTRY() check rejects entries whose length does not
+match the known values, which leads to:
+  GICv3: No valid GICC entries exist.
+as observed on the AmpereOne platform.
+
+To fix this, import the logic from Linux commit 9eb1c92b47c7:
+  The BAD_MADT_GICC_ENTRY check is a little too strict because
+  it rejects MADT entries that don't match the currently known
+  lengths. We should remove this restriction to avoid problems
+  if the table length changes. Future code which might depend on
+  additional fields should be written to validate those fields
+  before using them, rather than trying to globally check
+  known MADT version lengths.
+
+  Link: https://lkml.kernel.org/r/20181012192937.3819951-1-jeremy.linton@arm.com
+  Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+  [lorenzo.pieralisi@arm.com: added MADT macro comments]
+  Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+  Acked-by: Sudeep Holla <sudeep.holla@arm.com>
+  Cc: Will Deacon <will.deacon@arm.com>
+  Cc: Catalin Marinas <catalin.marinas@arm.com>
+  Cc: Al Stone <ahs3@redhat.com>
+  Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+  Signed-off-by: Will Deacon <will.deacon@arm.com>
+
+As ACPI_MADT_GICC_LENGTH is dropped, update the functions where it is
+used. As we rewrite the MADT for hwdom, reuse the host GICC header length
+instead of ACPI_MADT_GICC_LENGTH.
+
+Mark gic_get_hwdom_madt_size() as __init since its only caller is also
+__init.
+
+[1] https://uefi.org/specs/ACPI/6.6/05_ACPI_Software_Programming_Model.html#gic-cpu-interface-gicc-structure
+
+Reported-By: Yann Dirson <yann.dirson@vates.tech>
+Co-developed-by: Yann Sionneau <yann.sionneau@vates.tech>
+Signed-off-by: Oleksii Kurochko <oleksii.kurochko@gmail.com>
+Link: https://lore.kernel.org/xen-devel/a2234959527a420f8736b2789118326b2d3ee35e.1767950420.git.oleksii.kurochko@gmail.com/
+
+Upstream-Status: Submitted [https://patchwork.kernel.org/project/xen-devel/patch/a2234959527a420f8736b2789118326b2d3ee35e.1767950420.git.oleksii.kurochko@gmail.com/]
+
+Taken unmodified from the v3 posting on xen-devel (patchwork 14373675),
+not yet merged into Xen staging. It applies to 4.18.2 with line offsets
+only. Drop this patch once the final version lands upstream.
+
+Signed-off-by: Wanming Hu <huwanming@huawei.com>
+---
+ xen/arch/arm/acpi/domain_build.c |  6 ++++++
+ xen/arch/arm/gic-v2.c            |  3 ++-
+ xen/arch/arm/gic-v3.c            |  3 ++-
+ xen/arch/arm/gic.c               | 13 +++++++++++--
+ xen/arch/arm/include/asm/acpi.h  | 21 +++++++++++++++------
+ 5 files changed, 36 insertions(+), 10 deletions(-)
+
+diff --git a/xen/arch/arm/acpi/domain_build.c b/xen/arch/arm/acpi/domain_build.c
+index ed824c0..9e9141a 100644
+--- a/xen/arch/arm/acpi/domain_build.c
++++ b/xen/arch/arm/acpi/domain_build.c
+@@ -457,6 +457,12 @@ static int __init estimate_acpi_efi_size(struct domain *d,
+     acpi_size += ROUNDUP(sizeof(struct acpi_table_stao), 8);
+ 
+     madt_size = gic_get_hwdom_madt_size(d);
++    if ( !madt_size )
++    {
++        printk("Unable to get hwdom MADT size\n");
++        return -EINVAL;
++    }
++
+     acpi_size += ROUNDUP(madt_size, 8);
+ 
+     addr = acpi_os_get_root_pointer();
+diff --git a/xen/arch/arm/gic-v2.c b/xen/arch/arm/gic-v2.c
+index cf392bf..fcf9915 100644
+--- a/xen/arch/arm/gic-v2.c
++++ b/xen/arch/arm/gic-v2.c
+@@ -1122,7 +1122,8 @@ static int gicv2_make_hwdom_madt(const struct domain *d, u32 offset)
+     host_gicc = container_of(header, struct acpi_madt_generic_interrupt,
+                              header);
+ 
+-    size = ACPI_MADT_GICC_LENGTH;
++    size = host_gicc->header.length;
++
+     /* Add Generic Interrupt */
+     for ( i = 0; i < d->max_vcpus; i++ )
+     {
+diff --git a/xen/arch/arm/gic-v3.c b/xen/arch/arm/gic-v3.c
+index 95e4f02..757a7aa 100644
+--- a/xen/arch/arm/gic-v3.c
++++ b/xen/arch/arm/gic-v3.c
+@@ -1501,7 +1501,8 @@ static int gicv3_make_hwdom_madt(const struct domain *d, u32 offset)
+ 
+     host_gicc = container_of(header, struct acpi_madt_generic_interrupt,
+                              header);
+-    size = ACPI_MADT_GICC_LENGTH;
++    size = host_gicc->header.length;
++
+     for ( i = 0; i < d->max_vcpus; i++ )
+     {
+         gicc = (struct acpi_madt_generic_interrupt *)(base_ptr + table_len);
+diff --git a/xen/arch/arm/gic.c b/xen/arch/arm/gic.c
+index d922ea6..f96e950 100644
+--- a/xen/arch/arm/gic.c
++++ b/xen/arch/arm/gic.c
+@@ -440,12 +440,21 @@ int gic_make_hwdom_madt(const struct domain *d, u32 offset)
+     return gic_hw_ops->make_hwdom_madt(d, offset);
+ }
+ 
+-unsigned long gic_get_hwdom_madt_size(const struct domain *d)
++unsigned long __init gic_get_hwdom_madt_size(const struct domain *d)
+ {
+     unsigned long madt_size;
++    const struct acpi_subtable_header *header;
++    const struct acpi_madt_generic_interrupt *host_gicc;
++
++    header = acpi_table_get_entry_madt(ACPI_MADT_TYPE_GENERIC_INTERRUPT, 0);
++    if ( !header )
++        return 0;
++
++    host_gicc = container_of(header, const struct acpi_madt_generic_interrupt,
++                             header);
+ 
+     madt_size = sizeof(struct acpi_table_madt)
+-                + ACPI_MADT_GICC_LENGTH * d->max_vcpus
++                + host_gicc->header.length * d->max_vcpus
+                 + sizeof(struct acpi_madt_generic_distributor)
+                 + gic_hw_ops->get_hwdom_extra_madt_size(d);
+ 
+diff --git a/xen/arch/arm/include/asm/acpi.h b/xen/arch/arm/include/asm/acpi.h
+index e53973e..00883bf 100644
+--- a/xen/arch/arm/include/asm/acpi.h
++++ b/xen/arch/arm/include/asm/acpi.h
+@@ -53,13 +53,22 @@ void acpi_smp_init_cpus(void);
+  */
+ paddr_t acpi_get_table_offset(struct membank tbl_add[], EFI_MEM_RES index);
+ 
+-/* Macros for consistency checks of the GICC subtable of MADT */
+-#define ACPI_MADT_GICC_LENGTH	\
+-    (acpi_gbl_FADT.header.revision < 6 ? 76 : 80)
++/*
++ * MADT GICC minimum length refers to the MADT GICC structure table length as
++ * defined in the earliest ACPI version supported on arm64, ie ACPI 5.1.
++ *
++ * The efficiency_class member was added to the
++ * struct acpi_madt_generic_interrupt to represent the MADT GICC structure
++ * "Processor Power Efficiency Class" field, added in ACPI 6.0 whose offset
++ * is therefore used to delimit the MADT GICC structure minimum length
++ * appropriately.
++ */
++#define ACPI_MADT_GICC_MIN_LENGTH   ACPI_OFFSET( \
++    struct acpi_madt_generic_interrupt, efficiency_class)
+ 
+-#define BAD_MADT_GICC_ENTRY(entry, end)						\
+-    (!(entry) || (unsigned long)(entry) + sizeof(*(entry)) > (end) ||	\
+-     (entry)->header.length != ACPI_MADT_GICC_LENGTH)
++#define BAD_MADT_GICC_ENTRY(entry, end) \
++    (!(entry) || (entry)->header.length < ACPI_MADT_GICC_MIN_LENGTH || \
++    (unsigned long)(entry) + (entry)->header.length > (end))
+ 
+ #ifdef CONFIG_ACPI
+ extern bool acpi_disabled;
