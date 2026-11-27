@@ -9,6 +9,14 @@ SRC_URI:remove = " \
 ## basic information
 OPENEULER_LOCAL_NAME = "allwinner-kernel"
 
+# linux-openeuler.inc assigns OPENEULER_REPO_NAMES to the mainline
+# src-kernel/kernel pair, so without this override do_openeuler_fetch
+# never downloads allwinner-kernel and the file:// fetch below fails.
+# src-kernel-${PV} stays because linux-openeuler-rt pulls its patches
+# from there; kernel-${PV} is dropped because SRC_URI:remove above
+# removes file://kernel-${PV} entirely.
+OPENEULER_REPO_NAMES = "src-kernel-${PV} allwinner-kernel"
+
 SRC_URI:prepend = " \
     file://allwinner-kernel \
 "
