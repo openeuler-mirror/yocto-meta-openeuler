@@ -43,8 +43,6 @@ openEuler Embedded 25.03特性上最大亮点是率先支持了openEuler新一�
 
     - 新增意法半导体STM32MP257的支持，详见 :ref:`board_myir_myd_ld25x`
 
-    - 新增嘉立创泰山派的支持，详见 :ref:`board_tspi_3566_build`
-
     - 完善鲲鹏920及鲲鹏模组的支持
 
     - 完善已有的BSP支持
