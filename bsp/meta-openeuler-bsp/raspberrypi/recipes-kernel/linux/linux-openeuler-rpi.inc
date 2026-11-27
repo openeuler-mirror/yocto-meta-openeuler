@@ -25,7 +25,10 @@ SRC_URI:raspberrypi4 = " \
 
 OPENEULER_LOACL_NAME:raspberrypi4 = "kernel-${PV}-tag-rpi"
 S:raspberrypi4 = "${WORKDIR}/kernel-${PV}-tag-rpi"
+# use rpi kernel tag for both the source tree and the packaging assets:
+# the rpi kernel6 patches follow their own tag lineage and do not track
+# the main src-kernel-6.6 baseline
 OPENEULER_REPO_NAMES:raspberrypi4 = " \
     kernel-${PV}-tag-rpi \
-    ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', 'src-kernel-${PV}', 'src-kernel-${PV}-tag-rpi', d)} \
+    src-kernel-${PV}-tag-rpi \
 "

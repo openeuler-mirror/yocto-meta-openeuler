@@ -11,8 +11,8 @@ SRC_URI:remove:raspberrypi4 = " \
 # in kernel 6.6, this patch will patch failed, it is for 5.10
 SRC_URI:append:raspberrypi4 = "\
     ${@bb.utils.contains('DISTRO_FEATURES', 'kernel6', ' \
-        file://src-kernel-${PV}/0000-raspberrypi-kernel.patch \
-        file://src-kernel-${PV}/0001-raspberrypi-kernel-RT.patch \
+        file://src-kernel-${PV}-tag-rpi/0000-raspberrypi-kernel.patch \
+        file://src-kernel-${PV}-tag-rpi/0001-raspberrypi-kernel-RT.patch \
     ' ,' \
         file://src-kernel-${PV}-tag-rpi/0000-raspberrypi-kernel.patch \
         file://src-kernel-${PV}-tag-rpi/0002-modify-bcm2711_defconfig-for-rt-rpi-kernel.patch \
