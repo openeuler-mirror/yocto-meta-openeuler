@@ -1,4 +1,4 @@
-# GitCode Actions PR 门禁（.gitcode/workflows/）
+# GitCode Actions：PR 门禁与每日构建（.gitcode/workflows/）
 
 > **目标读者**：需要修改本门禁的人类或 AI agent。本文覆盖全部已验证的平台事实、
 > 设计决策与调试经验，读完即可安全上手。文中所有"已验证"结论均有线上运行日志
@@ -25,13 +25,20 @@ openEuler Embedded 的 PR 门禁，运行在 GitCode Actions（自托管 k8s run
 ## 2. 文件清单
 
 ```
-.gitcode/workflows/
-├── README.md                       # 本文件
-├── openeuler_embedded_PR_gate.yml  # workflow 定义（7 个 job）
-└── scripts/
-    ├── checkout_pr.sh              # 两棵检出树：脚本用默认分支，PR 代码进 worktree
-    ├── build_docs.sh               # 文档构建（切 jenkins 用户 + Sphinx）
-    └── build_image.sh              # 镜像构建（oebuild 全流程 + 三重判据）
+.gitcode/
+├── ci/
+│   └── daily_targets.yaml          # 每日构建目标清单（必须在 workflows 外，见 §13.2）
+└── workflows/
+    ├── README.md                   # 本文件
+    ├── pr_gate.yml                  # PR 门禁 workflow（7 个 job）
+    ├── daily_build.yml              # 每日构建 workflow（见 §13）
+    └── scripts/
+        ├── checkout_pr.sh          # 两棵检出树：脚本用默认分支，PR 代码进 worktree
+        ├── build_docs.sh           # 文档构建（切 jenkins 用户 + Sphinx）
+        ├── build_image.sh          # 镜像构建（oebuild 全流程 + 三重判据）
+        ├── daily_targets.py        # 目标选择（enabled + dispatch 子集）
+        ├── daily_build.sh          # 单目标构建 + 状态文件
+        └── report_daily.sh         # 每日结果汇总 + 失败时提 issue（桩）
 ```
 
 依赖的仓库外资产：
@@ -68,7 +75,7 @@ fi
 
 ```
 ATOMGIT_REF=refs/heads/master
-ATOMGIT_WORKFLOW_REF=...openeuler_embedded_PR_gate.yml@refs/heads/master
+ATOMGIT_WORKFLOW_REF=...pr_gate.yml@refs/heads/master
 ```
 
 > **触发器必须用 `pull_request_target` 而非 `pull_request`**：评审确认
@@ -375,7 +382,7 @@ ATOMGIT_HEAD_REF=test/gitcode-action ATOMGIT_BASE_REF=master \
 
 | Jenkins（.oebuild/workflows/） | GitCode Actions（本目录） |
 |---|---|
-| `jenkinsfile_gate` pipeline | `openeuler_embedded_PR_gate.yml` |
+| `jenkinsfile_gate` pipeline | `pr_gate.yml` |
 | init 阶段 `downloadYoctoWithPr` → `clone_repo_with_pr` | `checkout_pr.sh`（run 记录解析 PR + SHA 校验 + worktree） |
 | pre 阶段（去重/抢占登记） | yml 的 `concurrency` + 平台自身 |
 | code check（commit_msg/scope） | **未移植**（可后续加 colcon/pytest 型 job 或 script 步骤） |
@@ -404,7 +411,7 @@ ATOMGIT_HEAD_REF=test/gitcode-action ATOMGIT_BASE_REF=master \
 
 ```bash
 # 1. 语法
-python3 -c "import yaml; yaml.safe_load(open('.gitcode/workflows/openeuler_embedded_PR_gate.yml'))"
+python3 -c "import yaml; yaml.safe_load(open('.gitcode/workflows/pr_gate.yml'))"
 bash -n .gitcode/workflows/scripts/*.sh
 
 # 2. 本地冒烟（§8 的命令）
@@ -447,3 +454,91 @@ git push <remote> <branch>:master
   runner 容量。
 - **yml 的 6 个构建 job 不抽公共脚本步骤**：GitCode Actions 无 YAML 锚点，
   重复是刻意的；修改时注意 7 处同步（含 docs）。
+
+## 13. 每日构建（daily build）
+
+每天 22:00（Asia/Shanghai）为固定板卡构建**基础镜像**（只 `openeuler-image`，
+生成器会去掉 `do_populate_sdk`），失败时提一个 issue；也可手动触发做单目标调试。
+
+### 13.1 触发
+
+| 触发 | 说明 |
+| --- | --- |
+| `schedule: '0 22 * * *'` | 平台按 **UTC+8** 解释 cron（2026-11-27 用一对错 8 小时的探针实测，只有 `19 10` 那条在 02:19 UTC 触发），即每天北京时间 22:00（14:00 UTC） |
+| `workflow_dispatch` + `inputs.targets` | 逗号分隔子集，留空 = 清单里所有 `enabled` 目标 |
+| `workflow_dispatch` + `inputs.create_issue` | 默认 `true`；调试时填 `false`，失败也不提 issue |
+
+手动调试（平台页面 → Actions → `openeuler_embedded_daily_build` → Run workflow）：
+
+- 单目标：`targets=ok3588`；多个用逗号：`targets=ok3588,visionfive2`。
+- 先不打扰 issue：`create_issue=false`。
+- 注意平台不支持从 CLI/API dispatch（`ag run` 只读），调试回路靠页面手动触发；
+  push 本身也不会重跑已存在的 workflow，只有新增 workflow 文件会触发一次编译。
+
+只接受 `refs/heads/master`：plan 阶段发现其它 ref 直接失败（YAML 本身也只从
+默认分支加载，这里防的是 dispatch 选了别的分支去 checkout）。
+
+### 13.2 目标清单
+
+目标清单与启用状态在 `.gitcode/ci/daily_targets.yaml`：
+
+```yaml
+builds:
+  - { name: kp920, arch: aarch64, sample: kp920 }
+  - { name: visionfive2, arch: riscv64, sample: visionfive2, enabled: false }
+```
+
+> 位置有讲究：平台会把 `.gitcode/workflows/` 下的**每个 yaml** 当 workflow
+> 编译，放进去的普通配置文件也会在每次 push 时产生一条 FAILED 运行（实测），
+> 所以清单放在 `.gitcode/ci/` 下。
+
+- **平台不支持 `strategy.matrix`（实测编译期失败）**，所以 workflow 里每个目标
+  有一个静态 job；`enabled`/`inputs.targets` 的筛选在 `daily_build.sh` 里做
+  （`daily_targets.py selected <name>` 返回 0=构建、10=跳过、2=配置错误）。
+- 因此新增目标要两步：在 `daily_targets.yaml` 加条目 + 在 workflow 加一个
+  build job（复制现有 stanza 改 3 个参数）；暂停只需 `enabled: false`。
+- **清单与 job 的一致性由 `validate` job 强制**：`daily_targets.py check-workflow`
+  解析 workflow 里所有 `daily_build.sh <name> <arch> <sample>` 调用，与清单双向
+  比对（缺 job、多余 job、arch/sample 不一致都会失败）；所有 build job
+  `needs: validate`，先校验后构建。
+- `sample` 对应 `.oebuild/samples/<arch>/<sample>.yaml`；文件缺失会让该目标
+  失败，而不是静默跳过。
+- 当前启用（12 个）：kp920、ok3588、ok3568、ok-a40i、visionfive2、hi3093、
+  3591rc、hipico、ok3399、orangepi4-lts、orangepi5、roc-rk3588s-pc。
+
+### 13.3 执行与结果传递
+
+1. `validate`：核对清单与静态 job（见 §13.2），不通过则所有 build 被跳过。
+2. `build_*`：一个目标一个静态 job，全部调用
+   `daily_build.sh <name> <arch> <sample>`。未选中/禁用时脚本写 `skip` 状态并
+   以 0 退出（pod 仍会启动，这是平台没有 matrix 的代价）。
+3. 选中时 `daily_build.sh` → `build_image.sh`（host 模式、共享缓存 master
+   分支、线程上限、pinned DATETIME、rm_work）。`GATE_BUILD_SOURCE=checkout`
+   让 `build_image.sh` 直接构建当前检出（日构建没有 PR worktree）。
+4. `report`：`needs` 全部 build job + `if: always()`。自行用
+   `daily_targets.py list` 算期望目标（不依赖 job outputs），读取
+   `$GATE_SHARE_DIR/daily/<run_id>/<name>.json`；期望目标缺状态文件或写成
+   `skip` 都按失败计（pod 超时/被杀不会从报告里消失）。
+
+### 13.4 报告（桩）
+
+- 全绿：只打印摘要，不提 issue。
+- 有失败（含状态缺失）：`create_issue` 未关闭（默认 `true`；`false` 时跳过；
+  定时运行无该输入，按 `true` 处理）时
+  `POST /api/v5/repos/<repo>/issues`，一天一个，标题
+  `每日构建失败：YYYY-MM-DD（N/M 个目标失败）`，正文为三列表格：目标硬件、
+  状态（pass/fail）、指向本次构建的 actions 链接。
+- 需要 workflow 声明 `permissions: issue: write`（实测：缺失时 v5 接口返回
+  `403 apig token has not permission`；声明后创建成功）。
+- 接口/权限不可用时只打 `::warning::`，不让 report job 变红（构建 job 已经是红）。
+- 目标仓库默认是运行所在仓，`GATE_DAILY_ISSUE_REPO` 可覆盖。
+- TODO：同日重跑去重（已有同名 open issue 则评论）、全绿自动关闭、通知渠道。
+
+### 13.5 新增/暂停目标
+
+1. 在 `daily_targets.yaml` 增删条目（暂停用 `enabled: false`）。
+2. 在 `daily_build.yml` 复制一个 `build_*` job，改 3 个
+   参数，并把它加进 `report.needs`。
+3. 确认 `.oebuild/samples/<arch>/<sample>.yaml` 存在。
+4. 用 `workflow_dispatch` 传入该目标单独跑一次（`targets=<name>`、
+   `create_issue=false`），通过后再放开 `enabled`。

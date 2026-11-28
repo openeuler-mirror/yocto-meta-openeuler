@@ -33,6 +33,7 @@ if [ "$(id -un)" != "jenkins" ]; then
             GATE_PR_FETCH_DEPTH="${GATE_PR_FETCH_DEPTH:-}" \
             GATE_BB_THREADS="${GATE_BB_THREADS:-}" \
             GATE_RESOURCE_DIAG="${GATE_RESOURCE_DIAG:-}" \
+            GATE_BUILD_SOURCE="${GATE_BUILD_SOURCE:-}" \
             ATOMGIT_BASE_REF="${ATOMGIT_BASE_REF:-}" \
             ATOMGIT_HEAD_REF="${ATOMGIT_HEAD_REF:-}" \
             "PATH=${PATH}" \
@@ -60,9 +61,13 @@ git config --global --add safe.directory '*' 2>/dev/null || true
 TARGET_BRANCH="${GATE_TARGET_BRANCH:-${ATOMGIT_BASE_REF:-master}}"
 # the code under test: the PR worktree prepared by checkout_pr.sh
 # (created when the run carries PR context); fall back to this
-# checkout for manual runs without PR context
+# checkout for manual runs without PR context. GATE_BUILD_SOURCE=
+# checkout selects this checkout unconditionally (daily builds, which
+# never have a PR worktree).
 REPO_DIR="${GATE_PR_CODE_DIR:-/tmp/gate-pr-code}"
-if [ ! -e "${REPO_DIR}/.git" ]; then
+if [ "${GATE_BUILD_SOURCE:-}" = "checkout" ]; then
+    REPO_DIR="$(git rev-parse --show-toplevel)"
+elif [ ! -e "${REPO_DIR}/.git" ]; then
     # a PR run must never silently fall back to the base checkout:
     # checkout_pr.sh creates the head worktree for every PR shape
     # (including head == base), so its absence here means something

@@ -338,7 +338,7 @@ DOCS_PREFIXES = ("docs/",)
 DOCS_FILES = {
     "scripts/requirements-doc.txt",
     ".gitcode/workflows/scripts/build_docs.sh",
-    ".gitcode/workflows/openeuler_embedded_PR_gate.yml",
+    ".gitcode/workflows/pr_gate.yml",
 }
 
 

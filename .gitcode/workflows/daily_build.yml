@@ -1,0 +1,297 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Daily base-image build for the boards listed in
+# .gitcode/ci/daily_targets.yaml.
+#
+# Schedule: once a day at 22:00 Asia/Shanghai. The platform reads cron
+# in UTC+8 (verified on 2026-11-27 with two hour-shifted probes, only
+# the 10:19 one fired at 02:19 UTC), so 0 22 is 22:00 CST. Manual runs stay
+# available through workflow_dispatch, optionally for a subset and with
+# issue creation switched off for debugging.
+#
+# The platform rejects strategy.matrix at compile time, so every target
+# has a static job below. The jobs all call daily_build.sh, which reads
+# daily_targets.yaml (enabled flag) and inputs.targets and returns
+# without building when the target is not selected. Adding a target
+# therefore needs an entry in daily_targets.yaml *and* a job stanza
+# here; a missing sample fails the target instead of skipping it.
+#
+# Only openeuler-image is built (build_image.sh drops the SDK task).
+# Results: build jobs record a status file in the shared cache; the
+# report job compares them with the expected list and opens one issue
+# per day when anything failed (all-green runs post nothing).
+
+name: openeuler_embedded_daily_build
+
+on:
+  schedule:
+    - cron: '0 22 * * *'
+  workflow_dispatch:
+    inputs:
+      targets:
+        description: 'comma-separated target subset, empty builds all enabled targets'
+        required: false
+        default: ''
+      create_issue:
+        description: 'true opens an issue when a target fails; false for debugging runs'
+        required: false
+        default: 'true'
+
+permissions:
+  repository: read
+  pr: read
+  # the report job opens the daily issue through the v5 API with the
+  # runner token; without this scope the API answers 403 (verified on
+  # the test repository)
+  issue: write
+
+env:
+  GATE_RUN_ID: ${{ atomgit.run_id }}
+  # shared cache root (shareDir), same as the PR gate; the daily build
+  # reads and writes it, and target status files live under it
+  GATE_SHARE_DIR: /home/jenkins/ccache/openeuler_embedded
+  # the daily build always reports against master, whatever ref the
+  # dispatch selected; every build job rejects other refs
+  GATE_TARGET_BRANCH: master
+  # build the checkout directly: there is no PR worktree here
+  GATE_BUILD_SOURCE: checkout
+
+jobs:
+  validate:
+    name: Validate target list
+    runs-on: [self-hosted, embedded_master, x86, cpu=4]
+    container:
+      image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded-2/openeuler-ci:latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout source code
+        uses: checkout
+      - name: Check the config against the build jobs
+        run: |
+          set -e
+          python3 .gitcode/workflows/scripts/daily_targets.py check-workflow
+
+  build_kp920:
+    name: Build kp920
+    needs: validate
+    runs-on: [self-hosted, embedded_master, x86, cpu=8]
+    container:
+      image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded-2/openeuler-ci:latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout source code
+        uses: checkout
+      - name: Build kp920
+        env:
+          GATE_DAILY_TARGETS: ${{ inputs.targets }}
+        run: |
+          set -e
+          bash .gitcode/workflows/scripts/daily_build.sh kp920 aarch64 kp920
+
+  build_ok3588:
+    name: Build ok3588
+    needs: validate
+    runs-on: [self-hosted, embedded_master, x86, cpu=8]
+    container:
+      image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded-2/openeuler-ci:latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout source code
+        uses: checkout
+      - name: Build ok3588
+        env:
+          GATE_DAILY_TARGETS: ${{ inputs.targets }}
+        run: |
+          set -e
+          bash .gitcode/workflows/scripts/daily_build.sh ok3588 aarch64 ok3588
+
+  build_ok3568:
+    name: Build ok3568
+    needs: validate
+    runs-on: [self-hosted, embedded_master, x86, cpu=8]
+    container:
+      image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded-2/openeuler-ci:latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout source code
+        uses: checkout
+      - name: Build ok3568
+        env:
+          GATE_DAILY_TARGETS: ${{ inputs.targets }}
+        run: |
+          set -e
+          bash .gitcode/workflows/scripts/daily_build.sh ok3568 aarch64 ok3568
+
+  build_ok_a40i:
+    name: Build ok-a40i
+    needs: validate
+    runs-on: [self-hosted, embedded_master, x86, cpu=8]
+    container:
+      image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded-2/openeuler-ci:latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout source code
+        uses: checkout
+      - name: Build ok-a40i
+        env:
+          GATE_DAILY_TARGETS: ${{ inputs.targets }}
+        run: |
+          set -e
+          bash .gitcode/workflows/scripts/daily_build.sh ok-a40i arm32 ok-a40i
+
+  build_visionfive2:
+    name: Build visionfive2
+    needs: validate
+    runs-on: [self-hosted, embedded_master, x86, cpu=8]
+    container:
+      image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded-2/openeuler-ci:latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout source code
+        uses: checkout
+      - name: Build visionfive2
+        env:
+          GATE_DAILY_TARGETS: ${{ inputs.targets }}
+        run: |
+          set -e
+          bash .gitcode/workflows/scripts/daily_build.sh visionfive2 riscv64 visionfive2
+
+  build_hi3093:
+    name: Build hi3093
+    needs: validate
+    runs-on: [self-hosted, embedded_master, x86, cpu=8]
+    container:
+      image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded-2/openeuler-ci:latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout source code
+        uses: checkout
+      - name: Build hi3093
+        env:
+          GATE_DAILY_TARGETS: ${{ inputs.targets }}
+        run: |
+          set -e
+          bash .gitcode/workflows/scripts/daily_build.sh hi3093 aarch64 hi3093
+
+  build_3591rc:
+    name: Build 3591rc
+    needs: validate
+    runs-on: [self-hosted, embedded_master, x86, cpu=8]
+    container:
+      image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded-2/openeuler-ci:latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout source code
+        uses: checkout
+      - name: Build 3591rc
+        env:
+          GATE_DAILY_TARGETS: ${{ inputs.targets }}
+        run: |
+          set -e
+          bash .gitcode/workflows/scripts/daily_build.sh 3591rc aarch64 3591rc
+
+  build_hipico:
+    name: Build hipico
+    needs: validate
+    runs-on: [self-hosted, embedded_master, x86, cpu=8]
+    container:
+      image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded-2/openeuler-ci:latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout source code
+        uses: checkout
+      - name: Build hipico
+        env:
+          GATE_DAILY_TARGETS: ${{ inputs.targets }}
+        run: |
+          set -e
+          bash .gitcode/workflows/scripts/daily_build.sh hipico arm32 hipico
+
+  build_ok3399:
+    name: Build ok3399
+    needs: validate
+    runs-on: [self-hosted, embedded_master, x86, cpu=8]
+    container:
+      image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded-2/openeuler-ci:latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout source code
+        uses: checkout
+      - name: Build ok3399
+        env:
+          GATE_DAILY_TARGETS: ${{ inputs.targets }}
+        run: |
+          set -e
+          bash .gitcode/workflows/scripts/daily_build.sh ok3399 aarch64 ok3399
+
+  build_orangepi4_lts:
+    name: Build orangepi4-lts
+    needs: validate
+    runs-on: [self-hosted, embedded_master, x86, cpu=8]
+    container:
+      image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded-2/openeuler-ci:latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout source code
+        uses: checkout
+      - name: Build orangepi4-lts
+        env:
+          GATE_DAILY_TARGETS: ${{ inputs.targets }}
+        run: |
+          set -e
+          bash .gitcode/workflows/scripts/daily_build.sh orangepi4-lts aarch64 orangepi4-lts
+
+  build_orangepi5:
+    name: Build orangepi5
+    needs: validate
+    runs-on: [self-hosted, embedded_master, x86, cpu=8]
+    container:
+      image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded-2/openeuler-ci:latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout source code
+        uses: checkout
+      - name: Build orangepi5
+        env:
+          GATE_DAILY_TARGETS: ${{ inputs.targets }}
+        run: |
+          set -e
+          bash .gitcode/workflows/scripts/daily_build.sh orangepi5 aarch64 orangepi5
+
+  build_roc_rk3588s_pc:
+    name: Build roc-rk3588s-pc
+    needs: validate
+    runs-on: [self-hosted, embedded_master, x86, cpu=8]
+    container:
+      image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded-2/openeuler-ci:latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout source code
+        uses: checkout
+      - name: Build roc-rk3588s-pc
+        env:
+          GATE_DAILY_TARGETS: ${{ inputs.targets }}
+        run: |
+          set -e
+          bash .gitcode/workflows/scripts/daily_build.sh roc-rk3588s-pc aarch64 roc-rk3588s-pc
+
+  report:
+    name: Report daily build
+    needs: [build_kp920, build_ok3588, build_ok3568, build_ok_a40i, build_visionfive2, build_hi3093, build_3591rc, build_hipico, build_ok3399, build_orangepi4_lts, build_orangepi5, build_roc_rk3588s_pc]
+    if: always()
+    runs-on: [self-hosted, embedded_master, x86, cpu=4]
+    container:
+      image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded-2/openeuler-ci:latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout source code
+        uses: checkout
+      - name: Summarize and report
+        env:
+          GATE_DAILY_TARGETS: ${{ inputs.targets }}
+          GATE_BUILD_RESULTS: ${{ needs.build_kp920.result }},${{ needs.build_ok3588.result }},${{ needs.build_ok3568.result }},${{ needs.build_ok_a40i.result }},${{ needs.build_visionfive2.result }}
+          # empty on scheduled runs; the script then defaults to 1
+          GATE_DAILY_ISSUE: ${{ inputs.create_issue }}
+        run: |
+          set -e
+          bash .gitcode/workflows/scripts/report_daily.sh
