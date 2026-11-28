@@ -1,0 +1,21 @@
+# Features: none (base image only)
+build_in: docker
+machine: roc-rk3588s-pc
+toolchain_type: EXTERNAL_TOOLCHAIN:aarch64
+no_layer: false
+repos:
+- yocto-poky
+- yocto-meta-openembedded
+- yocto-meta-rockchip
+local_conf: |
+  PREFERRED_PROVIDER_virtual/kernel ?= "linux-openeuler"
+layers:
+- yocto-meta-rockchip
+docker_param:
+  image: swr.cn-north-4.myhuaweicloud.com/openeuler-embedded/openeuler-container:latest
+  parameters: -itd --network host
+  volumns:
+  - /dev/net/tun:/dev/net/tun
+  command: bash
+bitbake_cmds:
+- bitbake openeuler-image
